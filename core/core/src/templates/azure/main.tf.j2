@@ -1,0 +1,414 @@
+#####################################################
+# DO NOT Modify by hand - Manage by Automation
+#####################################################
+
+#####################################################
+# This file can be used as a base template to build other Terraform files. It attempts to use as much
+# Terraform interprolation as possible by creating Terraform variables instead of changing inline
+# this approach provides an easier way to do creative looping, fetch IDs of created resources etc.
+#####################################################
+
+#####################################################
+# {{ title }}
+#####################################################
+
+# This will import the value so it must exist. The creation is usually done via the base.tf run which happens first.
+data "azurerm_resource_group" "rg" {
+  name = "{{ core.azure.resource_group.name }}"
+  # location = "{{ core.azure.resource_group.location }}"
+}
+
+{%- if core.azure.standard.security.network_security_group.enable %}
+# Take a look at the following for additional rules for applying security:
+# https://docs.microsoft.com/en-us/azure/security/azure-security-network-security-best-practices
+# https://docs.microsoft.com/en-us/azure/virtual-network/security-overview#default-security-rules
+
+resource "azurerm_network_security_group" "nsg" {
+  name                = "{{ core.azure.standard.security.network_security_group.name }}"
+  location            = "${azurerm_resource_group.rg.location}"
+  resource_group_name = "${azurerm_resource_group.rg.name}"
+
+  tags {
+    {%- for item in core.azure.standard.security.network_security_group.tags %}
+    {{ item.key }} = "{{ item.value }}"{%- if not loop.last %},{% endif %}
+    {%- endfor %}
+  }
+}
+
+{% for rule in core.azure.standard.security.network_security_group.rules -%}
+resource "azurerm_network_security_rule" "nsg_rule_{{ rule.name }}" {
+  name                        = "{{ rule.name }}"
+  description                 = "{{ rule.description }}"
+  priority                    = {{ rule.priority }}
+  direction                   = "{{ rule.direction }}"
+  access                      = "{{ rule.access }}"
+  protocol                    = "{{ rule.protocol }}"
+  source_port_range           = "{{ rule.source_port_range }}"
+  destination_port_range      = "{{ rule.destination_port_range }}"
+  source_address_prefix       = "{{ rule.source_address_prefix }}"
+  destination_address_prefix  = "{{ rule.destination_address_prefix }}"
+  resource_group_name         = "${azurerm_resource_group.rg.name}"
+  network_security_group_name = "${azurerm_network_security_group.nsg.name}"
+}
+
+{% endfor -%}
+{% endif -%}
+
+resource "azurerm_virtual_network" "vnet" {
+  name                = "{{ core.azure.standard.security.virtual_network.name }}"
+  address_space       = ["{{ core.azure.standard.security.virtual_network.address_space|join('","') }}"]
+  location            = "${azurerm_resource_group.rg.location}"
+  resource_group_name = "${azurerm_resource_group.rg.name}"
+}
+
+# All VMs in same subnet
+resource "azurerm_subnet" "snet" {
+  name                 = "{{ core.azure.standard.security.subnet.name }}"
+  resource_group_name  = "${azurerm_resource_group.rg.name}"
+  virtual_network_name = "${azurerm_virtual_network.vnet.name}"
+  address_prefix       = "{{ core.azure.standard.security.subnet.address_prefix }}"
+  {%- if core.azure.standard.security.network_security_group.enable %}
+  network_security_group_id = "${azurerm_network_security_group.nsg.id}"
+  {%- endif %}
+  {%- if core.azure.standard.security.subnet.service_endpoints %}
+  service_endpoints    = ["{{ core.azure.standard.security.subnet.service_endpoints|join('","') }}"]
+  {%- endif %}
+}
+
+{%- if core.azure.standard.storage_managed_disk.enable %}
+# WIP
+resource "azurerm_managed_disk" "mdisk" {
+  name                 = "{{ core.azure.standard.storage_managed_disk.name }}-${format("%03d", count.index + 1)}"
+  location             = "${azurerm_resource_group.rg.location}"
+  resource_group_name  = "${azurerm_resource_group.rg.name}"
+  storage_account_type = "{{ core.azure.standard.storage_managed_disk.storage_account_type }}"
+  create_option        = "{{ core.azure.standard.storage_managed_disk.create_option }}"
+  disk_size_gb         = "{{ core.azure.standard.storage_managed_disk.disk_size_gb }}"
+  count                = "{{ core.azure.standard.storage_managed_disk.count }}"
+}
+{%- endif %}
+
+{%- if core.azure.standard.storage_account.enable %}
+# No `-` in storage account name
+resource "azurerm_storage_account" "sa" {
+  name                     = "{{ core.azure.standard.storage_account.name|replace('-', '') }}"
+  resource_group_name      = "${azurerm_resource_group.rg.name}"
+  location                 = "${azurerm_resource_group.rg.location}"
+  account_tier             = "{{ core.azure.standard.storage_account.account.tier }}"
+  account_replication_type = "{{ core.azure.standard.storage_account.account.replication_type }}"
+  account_kind             = "{{ core.azure.standard.storage_account.account.kind }}"
+
+  tags {
+    {%- for item in core.azure.standard.storage_account.tags %}
+    {{ item.key }} = "{{ item.value }}"{%- if not loop.last %},{% endif %}
+    {%- endfor %}
+  }
+}
+{%- endif %}
+
+{%- if core.azure.standard.storage_container.enable %}
+# If you want only one container for all VMs then uncomment the resource below and comment the one in the VM loop
+# Create the container outside of vm loop so only one container is used.
+# resource "azurerm_storage_container" "storage_container" {
+#   name                  = "{{ core.azure.standard.storage_container.name }}"
+#   resource_group_name   = "${azurerm_resource_group.rg.name}"
+#   container_access_type = "{{ core.azure.standard.storage_container.access_type }}"
+#   storage_account_name  = "${azurerm_storage_account.sa.name}"
+# }
+
+{%- if core.azure.standard.storage_blob.enable %}
+# WIP
+resource "azurerm_storage_blob" "blob" {
+  name = "{{ azure.core.standar.storage_blob.name }}-${format("%03d", count.index + 1)}.vhd"
+
+  resource_group_name    = "${azurerm_resource_group.rg.name}"
+  storage_account_name   = "${azurerm_storage_account.sa.name}"
+  storage_container_name = "${azurerm_storage_container.storage_container.name}"
+  count                  = "{{ azure.core.standar.storage_blob.count }}"
+
+  type = "{{ azure.core.standar.storage_blob.type }}"
+  size = azure.core.standar.storage_blob.size
+}
+{%- endif %}
+{%- endif %}
+
+{%- if core.azure.standard.availability.availability_set.enable %}
+resource "azurerm_availability_set" "aset" {
+  name                         = "{{ core.azure.standard.availability.availability_set.name }}"
+  location                     = "${azurerm_resource_group.rg.location}"
+  resource_group_name          = "${azurerm_resource_group.rg.name}"
+  platform_fault_domain_count  = "{{ core.azure.standard.availability.availability_set.platform_fault_domain_count }}"
+  platform_update_domain_count = "{{ core.azure.standard.availability.availability_set.platform_update_domain_count }}"
+  managed                      = "{{ core.azure.standard.availability.availability_set.managed }}"
+
+  tags {
+    {%- for item in core.azure.standard.availability.availability_set.tags %}
+    {{ item.key }} = "{{ item.value }}"{%- if not loop.last %},{% endif %}
+    {%- endfor %}
+  }
+}
+{%- endif %}
+
+{%- if core.azure.standard.security.vpn.enable %}
+#####################################################
+# VPN
+#####################################################
+
+resource "azurerm_subnet" "gatewaySnet" {
+  name                 = "GatewaySubnet"
+  resource_group_name  = "${azurerm_resource_group.rg.name}"
+  virtual_network_name = "${azurerm_virtual_network.vnet.name}"
+  address_prefix       = "{{ core.azure.standard.security.vpn.gateway_subnet_space }}" 
+}
+
+resource "azurerm_public_ip" "vpn_public_ip" {
+  name                         = "{{ core.azure.standard.security.vpn.ip_configuration.public_ip.name }}"
+  location                     = "${azurerm_resource_group.rg.location}"
+  resource_group_name          = "${azurerm_resource_group.rg.name}"
+  public_ip_address_allocation = "{{ core.azure.standard.security.vpn.ip_configuration.public_ip.address_allocation }}"
+  idle_timeout_in_minutes      = "{{ core.azure.standard.security.vpn.ip_configuration.public_ip.idle_timeout_in_minutes }}"
+
+  tags {
+    {%- for item in core.azure.standard.security.vpn.ip_configuration.public_ip.tags %}
+    {{ item.key }} = "{{ item.value }}"{%- if not loop.last %},{% endif %}
+    {%- endfor %}
+  }
+}
+
+resource "azurerm_virtual_network_gateway" "vpn" {
+  name = "{{ core.azure.standard.security.vpn.name }}"
+  location = "${azurerm_resource_group.rg.location}"
+  resource_group_name = "${azurerm_resource_group.rg.name}"
+
+  type = "Vpn"
+  vpn_type = "{{ core.azure.standard.security.vpn.type }}"
+
+  active_active = "{{ core.azure.standard.security.vpn.active_active }}"
+  enable_bgp = "false"
+  sku = "{{ core.azure.standard.security.vpn.sku }}"
+
+  ip_configuration {
+    name = "{{ core.azure.standard.security.vpn.ip_configuration.name }}"
+    public_ip_address_id = "${azurerm_public_ip.vpn_public_ip.id}"
+    private_ip_address_allocation = "{{ core.azure.standard.security.vpn.ip_configuration.private_ip.address_allocation }}"
+    subnet_id = "${azurerm_subnet.gatewaySnet.id}"
+  }
+
+  vpn_client_configuration {
+    address_space = ["{{ core.azure.standard.security.vpn.client_configuration.address_space|join('","') }}"]
+
+    root_certificate {
+      name = "{{ core.azure.standard.security.vpn.client_configuration.root_certificate.name }}"
+      public_cert_data = <<EOF
+{{ core.azure.standard.security.vpn.client_configuration.root_certificate.public_cert_data }}
+EOF
+    }
+
+    revoked_certificate {
+      name = "{{ core.azure.standard.security.vpn.client_configuration.root_certificate.revoked_certificate.name }}"
+      thumbprint = "{{ core.azure.standard.security.vpn.client_configuration.root_certificate.revoked_certificate.thumbprint }}"
+    }
+  }
+}
+{%- endif %}
+
+{% for vm in core.azure.standard.vms -%}
+
+#####################################################
+# VMs - {{ vm.name }}{{ vm.name_suffix}}
+#####################################################
+{% if core.azure.standard.storage_container.enable %}
+resource "azurerm_storage_container" "storage_container_{{ vm.name }}" {
+  name                  = "{{vm.name}}-{{ core.azure.standard.storage_container.name }}"
+  resource_group_name   = "${azurerm_resource_group.rg.name}"
+  container_access_type = "{{ core.azure.standard.storage_container.access_type }}"
+  storage_account_name  = "${azurerm_storage_account.sa.name}"
+}
+{%- endif %}
+
+{%- for vm_interface in vm.interfaces %}
+{%- if vm_interface.network_interface.public_ip.enable %}
+resource "azurerm_public_ip" "public_ip_{{vm.name}}" {
+  name                         = "{{ vm_interface.network_interface.public_ip.name }}-{{vm.name}}-${format("%03d", count.index + 1)}"
+  location                     = "${azurerm_resource_group.rg.location}"
+  resource_group_name          = "${azurerm_resource_group.rg.name}"
+  public_ip_address_allocation = "{{ vm_interface.network_interface.public_ip.address_allocation }}"
+  idle_timeout_in_minutes      = "{{ vm_interface.network_interface.public_ip.idle_timeout_in_minutes }}"
+  sku                          = "{{ vm_interface.network_interface.public_ip.sku }}"
+  count                        = "{{ vm.count }}"
+
+  tags {
+    {%- for item in vm_interface.network_interface.public_ip.tags %}
+    {{ item.key }} = "{{ item.value }}"{%- if not loop.last %},{% endif %}
+    {%- endfor %}
+  }
+}
+{%- endif %}
+
+resource "azurerm_network_interface" "network_interface_{{ vm.name }}" {
+  name                      = "{{ vm_interface.network_interface.name }}-{{ vm.name }}-${format("%03d", count.index + 1)}"
+  location                  = "${azurerm_resource_group.rg.location}"
+  resource_group_name       = "${azurerm_resource_group.rg.name}"
+  {%- if core.azure.standard.security.network_security_group.enable %}
+  network_security_group_id = "${azurerm_network_security_group.nsg.id}"
+  {%- endif %}
+  {%- if vm_interface.network_interface.enable_accelerated_networking %}
+  enable_accelerated_networking = "true"
+  {%- endif %}
+  count                     = "{{ vm.count }}"
+
+  # The ip_configuration blocks can be more than one. The first one is the primary.
+  ip_configuration {
+    {%- if vm_interface.network_interface.public_ip.enable %}
+    name                          = "${element(azurerm_public_ip.public_ip_{{ vm.name }}.*.name, count.index)}"
+    {% else %}
+    name                          = "{{ vm_interface.network_interface.name }}-{{ vm.name }}-${format("%03d", count.index + 1)}"
+    {%- endif %}
+    subnet_id                     = "${azurerm_subnet.snet.id}"
+    private_ip_address_allocation = "{{ vm_interface.network_interface.ip_configuration.private_ip.address_allocation }}"
+    {%- if vm_interface.network_interface.ip_configuration.private_ip.address_allocation == "static" %}
+    private_ip_address            = "{{ vm_interface.network_interface.ip_configuration.private_ip.address }}"
+    {%- endif %}
+    {%- if vm_interface.network_interface.public_ip.enable %}
+    public_ip_address_id          = "${element(azurerm_public_ip.public_ip_{{ vm.name }}.*.id, count.index)}"
+    {%- endif %}
+  }
+
+  tags {
+    {%- for item in vm_interface.network_interface.tags %}
+    {{ item.key }} = "{{ item.value }}"{%- if not loop.last %},{% endif %}
+    {%- endfor %}
+  }
+}
+
+{% endfor -%}
+
+resource "azurerm_virtual_machine" "vm_{{ vm.name }}" {
+  name                  = "{{ vm.name }}-${format("%03d", count.index + 1)}"
+  location              = "${azurerm_resource_group.rg.location}"
+  resource_group_name   = "${azurerm_resource_group.rg.name}"
+  {%- if core.azure.standard.availability.availability_set.enable %}
+  availability_set_id   = "${azurerm_availability_set.aset.id}"
+  {%- endif %}
+  network_interface_ids = ["${element(azurerm_network_interface.network_interface_{{ vm.name }}.*.id, count.index)}"]
+  vm_size               = "{{ vm.size }}"
+  count                 = "{{ vm.count }}"
+  {%- if core.azure.standard.storage_os_disk.managed != true %}
+  delete_os_disk_on_termination    = "{{ vm.delete_os_disk_on_termination }}"
+  {%- endif %}
+  {%- if core.azure.standard.storage_data_disk.managed != true %}
+  delete_data_disks_on_termination = "{{ vm.delete_data_disks_on_termination }}"
+  {%- endif %}
+
+  storage_image_reference {
+    publisher = "{{ core.azure.standard.storage_image_reference.publisher }}"
+    offer     = "{{ core.azure.standard.storage_image_reference.offer }}"
+    sku       = "{{ core.azure.standard.storage_image_reference.sku }}"
+    version   = "{{ core.azure.standard.storage_image_reference.version }}"
+  }
+
+  storage_os_disk {
+    name          = "{{ vm.name }}-${format("%03d", count.index + 1)}-os-disk"
+    caching       = "{{ core.azure.standard.storage_os_disk.caching }}"
+    create_option = "{{ core.azure.standard.storage_os_disk.create_option }}"
+    {%- if core.azure.standard.storage_os_disk.managed != true %}
+    {%- if core.azure.standard.storage_container.enable %}
+    vhd_uri       = "${azurerm_storage_account.sa.primary_blob_endpoint}${azurerm_storage_container.storage_container_{{ vm.name }}.name}/{{ vm.name }}-${format("%03d", count.index + 1)}-os-disk.vhd"
+    {%- endif %}
+    {%- else %}
+    managed_disk_type = "{{ core.azure.standard.storage_os_disk.managed_disk_type }}"
+    {%- endif %}
+  }
+
+  {%- if core.azure.standard.storage_data_disk.enable %}
+  {% for n in range(core.azure.standard.storage_data_disk.count) %}
+  storage_data_disk {
+    name              = "{{ vm.name }}-${format("%03d", count.index + 1)}-data-disk-{{ loop.index }}"
+    caching       = "{{ core.azure.standard.storage_data_disk.caching }}"
+    create_option     = "{{ core.azure.standard.storage_data_disk.create_option }}"
+    {%- if core.azure.standard.storage_data_disk.managed != true %}
+    {%- if core.azure.standard.storage_container.enable %}
+    vhd_uri       = "${azurerm_storage_account.sa.primary_blob_endpoint}${azurerm_storage_container.storage_container_{{ vm.name }}.name}/{{ vm.name }}-${format("%03d", count.index + 1)}-data-disk.vhd"
+    {%- endif %}
+    {%- else %}
+    managed_disk_type = "{{ core.azure.standard.storage_data_disk.managed_disk_type }}"
+    {%- endif %}
+    lun               = {{ loop.index0 }}
+    disk_size_gb      = "{{ core.azure.standard.storage_data_disk.disk_size_gb }}"
+  }
+
+  {%- endfor %}
+  {%- endif %}
+
+  {%- if vm.bootstrap.provisioners %}
+  {%- if vm.bootstrap.provisioners.file and vm.bootstrap.provisioners.file.enable %}
+  # Used for bootstrapping the node...
+  provisioner "file" {
+    source      = "{{ vm.bootstrap.provisioners.file.source }}"
+    destination = "{{ vm.bootstrap.provisioners.file.destination }}"
+
+	  connection {
+		  type     = "ssh"
+		  host     = "${element(azurerm_public_ip.public_ip_{{ vm.name }}.*.id, count.index)}"
+		  user     = "${var.admin_username}"
+		  password = "${var.admin_password}"
+    }
+
+  }
+  {%- endif %}
+
+  {%- if vm.bootstrap.provisioners.remote_exec and vm.bootstrap.provisioners.remote_exec.enable %}
+  # Used for bootstrapping the node...
+  provisioner "remote-exec" {
+    inline = [
+      {%- if core.azure.standard.testing.enable and vm.bootstrap.provisioners.remote_exec.testing_inline %}
+      {%- if vm.bootstrap.provisioners.remote_exec.inline %}
+      "{{ vm.bootstrap.provisioners.remote_exec.inline|join('",\n\t\t\t"') }}",
+      "{{ vm.bootstrap.provisioners.remote_exec.testing_inline|join('",\n\t\t\t"') }}"
+      {%- else %}
+      "{{ vm.bootstrap.provisioners.remote_exec.inline|join('",\n\t\t\t"') }}"
+      {%- endif %}
+      {%- else %}
+      "{{ vm.bootstrap.provisioners.remote_exec.inline|join('",\n\t\t\t"') }}"
+      {%- endif %}
+    ]
+
+    connection {
+      type     = "ssh"
+      host     = "${element(azurerm_public_ip.public_ip_{{ vm.name }}.*.id, count.index)}"
+      user     = "${var.admin_username}"
+      password = "${var.admin_password}"
+    }
+  }
+  {%- endif %}
+  {%- endif %}
+
+  os_profile {
+    computer_name  = "{{ vm.name }}-${format("%03d", count.index + 1)}"
+    admin_username = "${var.admin_username}"
+    admin_password = "${var.admin_password}"
+  }
+
+  {%- if vm.os_type == "linux" %}
+  os_profile_linux_config {
+    disable_password_authentication = {%- if core.azure.standard.os_profile_linux_config.disable_password_authentication == False %} false {% else %} true {% endif %}
+
+    {%- if core.azure.standard.os_profile_linux_config.disable_password_authentication %}
+    ssh_keys {
+      path     = "/home/${var.admin_username}/.ssh/authorized_keys"
+      key_data = "${file("{{ core.azure.standard.security.ssh.key.file }}")}"
+    }
+    {%- endif %}
+  }
+  {%- endif %}
+  {%- if vm.os_type == "windows" %}
+  # Windows stuff here...
+  {%- endif %}
+
+  tags {
+    {%- for item in vm.tags %}
+    {{ item.key }} = "{{ item.value }}"{%- if not loop.last %},{% endif %}
+    {%- endfor %}
+  }
+}
+{% endfor %}

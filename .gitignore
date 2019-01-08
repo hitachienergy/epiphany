@@ -1,0 +1,75 @@
+# Gitignore for Epiphany
+# Ignore specific items from the git repo
+
+# Do want these
+**/!.dockerignore
+/!.editorconfig
+/!.gitattributes
+
+# Visual Studio Code workspace
+epiphany.code-workspace
+
+# Don't want these included
+.scannerwork
+.vagrant
+.terraform
+.idea
+.vscode
+.vs
+.atom
+.chef
+
+.bundle/*
+
+.kitchen/
+.kitchen.local.yml
+
+**/.DS_Store
+.DS_Store
+
+# Below are Terraform files that we DO NOT store in repo
+# These type of Terraform file are maintain in a secure location
+# *.plan
+# *.tfstate
+# *.tf
+
+# These are generated from 'data.yaml' for any given environment and should NOT be in a repo but a vault along with the data!
+
+# For dev testing it's ok to save
+# **/*.plan
+# **/*.tfstate
+**/*.tfstate.*
+# **/*.tf
+# **/config.tfvars
+# **/az_ad_sp.json
+# **/del_rg.sh
+# **/del_sp.sh
+# **/gen_sp.sh
+# **/env.sh
+# **/login.sh
+**/*.retry
+
+# Data/ is the only place for data related files
+# !build/**/*.tf
+# !data/**/*.tf
+# !data/**/*.yaml
+
+# Ignore data folder as this is a part of separate repository - data repository
+data
+
+# /data/*.yaml files will be in a private repo
+# These files will overlay the files in this repo as part of the build process so that the
+# private repo takes precedence over the public repo
+
+# Afterwards, remove all of the build folder except the ansible data from git
+build/azure/infrastructure
+build/aws
+build/metal
+build/vmware
+build/vbox
+build/*
+
+examples/**/bin/
+examples/**/obj/
+
+.python.venv/

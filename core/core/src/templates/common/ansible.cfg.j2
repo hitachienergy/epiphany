@@ -1,0 +1,12 @@
+# Ansible config file for the project
+
+[defaults]
+# Set this as a forced default so if ansible is ran without -i then it will only impact development
+inventory = inventory/development
+host_key_checking = False
+command_warnings = False
+gathering = smart
+fact_caching = jsonfile
+# Must be the directory where cache is stored. Relative to local directory of given project
+fact_caching_connection = cache
+fact_caching_timeout = 86400

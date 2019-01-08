@@ -1,0 +1,8 @@
+admin_user:
+  name: operations
+
+kubernetes:
+  storage:
+    enable: False
+    account: 
+    key: 

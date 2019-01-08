@@ -1,0 +1,64 @@
+#jinja2: trim_blocks: True, lstrip_blocks: True
+# {{ ansible_managed }}
+# 
+
+# Define variables that will be used when creating this file. 
+{% set is_monitoring_enabled = monitoring is defined and monitoring.alerts.enable is defined and monitoring.alerts.enable == True %}
+{% set is_pagerduty_enabled = is_monitoring_enabled == True and monitoring.alerts.handlers.pagerduty is defined and monitoring.alerts.handlers.pagerduty.enable == True %}
+{% set is_slack_enabled = is_monitoring_enabled == True and monitoring.alerts.handlers.slack is defined and monitoring.alerts.handlers.slack.enable == True %}
+{% set is_email_enabled = is_monitoring_enabled == True and monitoring.alerts.handlers.mail is defined and monitoring.alerts.handlers.mail.enable == True %}
+
+global:
+  resolve_timeout: 5m
+  smtp_from: {{ monitoring.alerts.handlers.mail.smtp_from }}
+  smtp_smarthost: {{ monitoring.alerts.handlers.mail.smtp_host }}
+  smtp_auth_username: {{ monitoring.alerts.handlers.mail.smtp_auth_username }}
+  smtp_auth_password: {{ monitoring.alerts.handlers.mail.smtp_auth_password }}
+  smtp_require_tls: {{ monitoring.alerts.handlers.mail.smtp_require_tls }}
+
+
+{% if is_monitoring_enabled == True %}
+
+route:
+  group_by: ['alertname']
+  group_wait: 10s
+  group_interval: 10s
+  repeat_interval: 1h
+  receiver: 'email'
+  routes:
+    {% if is_pagerduty_enabled == True %}
+    - match_re:
+        severity: critical
+      receiver: pagerduty
+      continue: true
+    {% endif %}
+    {% if is_slack_enabled == True %}
+    - match_re:
+        severity: info|warning|critical
+      receiver: slack
+      continue: true
+    {% endif %}  
+    {% if is_email_enabled == True %}
+    - match_re:
+        severity: warning|critical
+      receiver: email
+    {% endif %} 
+
+receivers:
+  {% if is_email_enabled == True %}
+  - name: 'email'
+    email_configs:
+    - to: "{{ monitoring.alerts.handlers.mail.recipients | join(', ') }}"
+  {% endif %}  
+  {% if is_slack_enabled == True %}
+  - name: 'slack'
+    slack_configs:
+    - api_url: "{{ monitoring.alerts.handlers.slack.api_url }}"
+  {% endif %}
+  {% if is_pagerduty_enabled == True %}
+  - name: 'pagerduty'
+    pagerduty_configs:
+    - service_key: "{{ monitoring.alerts.handlers.pagerduty.service_key }}"
+  {% endif %}
+
+{% endif %}

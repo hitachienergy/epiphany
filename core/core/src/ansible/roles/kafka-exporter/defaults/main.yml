@@ -1,0 +1,12 @@
+---
+kafka_exporter_web_listen_port: "9308"
+kafka_exporter_version: 1.2.0
+kafka_exporter_release_name: "kafka_exporter-{{ kafka_exporter_version }}.linux-{{ go_arch_map[ansible_architecture] | default(ansible_architecture) }}"
+
+kafka_exporter_download_dir: "/tmp"
+kafka_exporter_download_path: "{{ kafka_exporter_download_dir }}/{{ kafka_exporter_release_name }}.tar.gz" 
+
+kafka_instances: "--kafka.server={{ groups['kafka']|join(':9092 --kafka.server=') }}:9092"
+prometheus_config_dir: /etc/prometheus
+prometheus_kafka_exporter_file_sd_labels:
+  "job": "kafka-exporter"

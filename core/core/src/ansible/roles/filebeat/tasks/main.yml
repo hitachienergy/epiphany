@@ -1,0 +1,21 @@
+---
+# Filebeat 
+
+- include_tasks: "{{ ansible_os_family }}.yml"
+
+- set_fact: elastic_address="{{ hostvars[groups['elasticsearch'][0]]['ansible_default_ipv4']['address'] }}"
+  when: groups['elasticsearch'][0] is defined
+
+- set_fact: kibana_address="{{ hostvars[groups['kibana'][0]]['ansible_default_ipv4']['address'] }}"
+  when: groups['kibana'][0] is defined
+
+- name: Copy filebeat config
+  template: 
+    dest: /etc/filebeat/filebeat.yml
+    src: filebeat.yml.j2
+
+- name: Start service filebeat
+  service:
+    name: filebeat
+    state: started
+    enabled: yes

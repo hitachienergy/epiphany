@@ -1,0 +1,43 @@
+#!/bin/bash
+#
+# Copyright 2019 The Epiphany-Platform Team.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+# NOTE: Other scripts may call this script so do not change parameters unless you know the impact!
+
+# Can use 'basename' to extract name from parameter 1 and assign it to parameter 2. This can be done
+# in a higher level helper script if desired.
+
+# az_get_ips.sh pulls the ip addresses from the given resource group
+
+# Exit immediately if something goes wrong.
+set -e
+
+OUTPUT_DIR=$1
+
+if [[ -z $OUTPUT_DIR ]]; then
+    echo_red '====> WARNING: MUST specify a valid OUTPUT directory. Using local directory! <===='
+    OUTPUT_DIR=az_vm_ips.json
+else
+    OUTPUT_DIR=$OUTPUT_DIR/az_vm_ips.json
+fi
+
+az account set --subscription "{{ core.azure.subscription }}"
+
+echo '{ "hosts": ' > $OUTPUT_DIR
+
+az vm list-ip-addresses -g {{ core.azure.resource_group.name }} >> $OUTPUT_DIR
+
+echo '}' >> $OUTPUT_DIR

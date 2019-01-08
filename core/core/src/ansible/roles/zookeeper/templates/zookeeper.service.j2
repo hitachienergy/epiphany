@@ -1,0 +1,20 @@
+[Unit]
+Description=ZooKeeper
+After=network.target
+Wants=network.target
+
+[Service]
+Type=simple
+User={{ zookeeper_user }}
+Group={{ zookeeper_group }}
+{% if exporter.stat.exists %}
+Environment="SERVER_JVMFLAGS=-javaagent:{{ prometheus_jmx_path }}={{ prometheus_jmx_exporter_web_listen_port }}:{{ prometheus_jmx_config }}"
+{% endif %}
+ExecStart={{zookeeper_dir}}/bin/zkServer.sh start-foreground
+Restart=always
+RestartSec=3
+
+TimeoutSec=300
+
+[Install]
+WantedBy=multi-user.target

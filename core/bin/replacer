@@ -1,0 +1,92 @@
+#!/usr/bin/env python
+
+from jinja2 import Environment, FileSystemLoader
+import traceback
+import os
+import yaml
+import argparse
+import sys
+import json
+
+
+def load_files(base_file, replacer_file):
+    dictbase = dict()
+    dictreplace = dict()
+    try:
+        with open(base_file) as base_data:
+            dictbase = yaml.safe_load(base_data)
+
+        with open(replacer_file) as replacer_data:
+            dictreplace = yaml.safe_load(replacer_data)
+
+    except Exception as e:
+        print traceback.print_exc(file=sys.stdout)
+        exit(1)
+
+    # The 'core: azure: standard: vms:' part of the data.yaml is matched separetly to allow users
+    #  to define different number of vms than 2 in the simplified config file.
+    dictbase_replaced_vms = vm_matching(dictbase, dictreplace)
+
+    return replacer(dictbase_replaced_vms, dictreplace)
+
+
+def vm_matching(base, replace):
+    # Assumes current structure of the data.yaml is preserved in the future - distincts
+    # between worker vm config and the master vm config.
+    random_vm_master = base['core']['azure']['standard']['vms'][0].copy()
+    random_vm_worker = base['core']['azure']['standard']['vms'][1].copy()
+
+    base['core']['azure']['standard']['vms'] = []
+
+    # This copies default master/worker vm configs desired number of times.
+    for vm_number in range(0, len(replace['core']['azure']['standard']['vms'])):
+        if 'master' in replace['core']['azure']['standard']['vms'][vm_number]['roles']:
+            random_vm_object = random_vm_master.copy()
+            base['core']['azure']['standard']['vms'].append(random_vm_object)
+        else:
+            random_vm_object = random_vm_worker.copy()
+            base['core']['azure']['standard']['vms'].append(random_vm_object)
+
+    # Replacing for the vms configs.
+    for vm_number in range(0, len(replace['core']['azure']['standard']['vms'])):
+        replacer(base['core']['azure']['standard']['vms'][vm_number],
+                 replace['core']['azure']['standard']['vms'][vm_number])
+    return base
+
+
+# Replacing the rest of the data.yaml file
+def replacer(base, replace):
+    for key_old in base:
+        for key_new in replace:
+            # Ignore vms as this part is already done
+            if key_old == 'vms' or key_new == 'vms':
+                pass
+
+            # There is 15 different 'name' properties in the data.yaml,
+            # it is still possible that this will get seriously broken if the structure of the data.yaml changes.
+            elif type(base[key_old]) is dict:
+                if key_new == key_old and type(replace[key_new]) is dict:
+                    replacer(base[key_old], replace[key_new])
+
+            # Replacing on the matched keys - only nested list of dicts is 'vms' which we handled before
+            # Lists have to be replaced whole
+            elif key_old == key_new:
+                base[key_old] = replace[key_new]
+    return base
+
+
+if __name__ == '__main__':
+    p = argparse.ArgumentParser(description='Replacer Engine', prog='Replacer_Engine')
+    p.add_argument('--base_file', '-b', help='The template input file.')
+    p.add_argument('--replacer_file', '-r', help='The rendered output file.')
+
+    options = p.parse_args()
+
+    replaced_data_yaml = load_files(options.base_file, options.replacer_file)
+
+    a = yaml.safe_dump(replaced_data_yaml, default_flow_style=False, indent=2, allow_unicode=True)
+
+    b = a.replace("null", "")
+
+    with open(options.base_file, 'w') as f:
+        f.write(b)

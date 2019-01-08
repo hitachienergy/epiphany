@@ -1,0 +1,82 @@
+require 'rake'
+require 'rspec/core/rake_task'
+
+unless ENV['inventory']
+  print "ERROR: Inventory file must be specified by 'inventory' environment variable\n"
+  print "  e.g.) bundle exec rake inventory=./hosts spec:all\n"
+  exit
+end
+
+unless ENV['user']
+  print "ERROR: Service user must be specified by 'user' environment variable\n"
+  print "  e.g.) bundle exec rake inventory=./hosts user=operations spec:all\n"
+  exit
+end
+
+unless ENV['keypath']
+  print "ERROR: Private key path must be specified by 'keypath' environment variable\n"
+  print "  e.g.) bundle exec rake inventory=./hosts user=operations keypath=./id_rsa spec:all\n"
+  exit
+end
+
+
+
+groups = {}
+hosts  = []
+current_group = nil
+
+File::open(ENV['inventory']) do |f|
+  while line = f.gets
+    # Remove comment
+    md = line.match(/^([^;]+)/)
+    next unless md
+    line = md[0]
+
+    if line =~ /^\[([^\]]+)\]/
+      current_group = $1
+    elsif line =~ /^(\S+)/
+      if current_group
+        groups[current_group] ||= []
+        groups[current_group] << $1
+      else
+        hosts << $1
+      end
+    end
+  end
+end
+
+task :spec    => 'spec:all'
+task :default => :spec
+
+namespace :spec do
+  task :all     => groups.keys.map {|group| 'spec:' + group }
+  task :default => :all
+
+  # Tasks for groups
+  groups.keys.each do |group|
+    task group.to_sym => groups[group].map {|host| 'spec:' + group + ':' + host }
+
+    groups[group].each do |host|
+      desc "Run tests for group '#{group}'"
+      task_name = group + ':' + host
+      RSpec::Core::RakeTask.new(task_name) do |t|
+        ENV['TARGET_HOST'] = host
+#        status = ENV['status'] ? ENV['status'] : 'running'
+#        t.pattern = "spec/#{group}/#{status}/*_spec.rb"
+        t.pattern = "spec/#{group}/*_spec.rb"
+      end
+    end
+  end
+
+  # Tasks for hosts without groups
+  hosts += groups.values.flatten
+  hosts.uniq.each do |host|
+    desc "Run tests for host '#{host}'"
+    RSpec::Core::RakeTask.new(host) do |t|
+      ENV['TARGET_HOST'] = host
+#      status = ENV['status'] ? ENV['status'] : 'running'
+#      t.pattern = "spec/hosts/#{host}/#{status}/*_spec.rb"
+      t.pattern = "spec/#{group}/*_spec.rb"
+    end
+  end
+end

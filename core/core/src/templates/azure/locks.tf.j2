@@ -1,0 +1,26 @@
+#####################################################
+# DO NOT Modify by hand - Manage by Automation
+#####################################################
+#####################################################
+# This file can be used as a base template to build other Terraform files. It attempts to use as much
+# Terraform interprolation as possible by creating Terraform variables instead of changing inline
+# this approach provides an easier way to do creative looping, fetch IDs of created resources etc.
+#####################################################
+#####################################################
+# Lock Resources - {{ title }}
+#####################################################
+
+# NOTE: THIS CAN ONLY BE RAN *AFTER* THE INITIAL RUN
+
+{% if core.azure.standard.resource_group.lock.enable %}
+data "azurerm_resource_group" "rg" {
+  name = "{{ core.azure.resource_group.name }}"
+}
+
+resource "azurerm_management_lock" "rg-lock" {
+  name       = "{{ core.azure.standard.resource_group.lock.name }}"
+  scope      = "${azurerm_resource_group.rg.id}"
+  lock_level = "{{ core.azure.standard.resource_group.lock.level }}"
+  notes      = "{{ core.azure.standard.resource_group.lock.notes }}"
+}
+{% endif %}

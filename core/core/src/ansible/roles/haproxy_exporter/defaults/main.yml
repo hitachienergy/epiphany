@@ -1,0 +1,12 @@
+---
+
+prometheus_haproxy_exporter_url_download: "http://github.com/prometheus/haproxy_exporter/releases/download/v0.9.0/haproxy_exporter-0.9.0.linux-amd64.tar.gz"
+
+prometheus_haproxy_exporter_download_dir: "/tmp"
+
+prometheus_config_dir: "/etc/prometheus"
+
+prometheus_haproxy_exporter_extract_dir: "/tmp"
+
+prometheus_haproxy_exporter_file_sd_labels:
+  "job": "haproxy"

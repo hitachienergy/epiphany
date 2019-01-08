@@ -1,0 +1,25 @@
+---
+# Security.yaml
+
+core:
+  azure:
+    terraform:
+      # This version info is what version is being used at the moment. The version of Terraform in the manifest.yaml in the
+      # root of the repo is for the initial install and the minum version
+      version: {{ core.azure.terraform.version }}
+      service_principal:
+        # Three files are required for SPs to work, az_ad_sp.json, env.sh and security.yaml. By default, these are created if the
+        # 'create' attribute is true. If false then you will need to supply those two files. This allows you to create
+        # a service_principal of your own instead of having one generated.
+        # You will also need to override env.sh that contains the 'ARM_...' environment variables required.
+        enable: {{ core.azure.terraform.service_principal.enable }}
+        create: {{ core.azure.terraform.service_principal.create }} # If you want to use an existing one then set this to false
+      auth: {{ core.azure.terraform.auth }} # Valid is 'pwd' and 'cert'. At this time Terraform only support 'pwd' for service principals
+      # NOTE: Backend is a Terraform resource that stores the *.tfstate files used by Terraform to store state. The default
+      # is to store the state file locally but this can cause issues if working in a team environment.
+      backend:
+        # Only used by Terraform
+        # The backend storage account is '<resource_group_name>''backend' (combined name with suffix)
+        # The storage container is generated as '<resource_group_name>'-'terraform'
+        # NOTE: Known issue with backend tf when having different VM types below when enabled! So, only one VM entry with count set should be used. Set to false for now...
+        enable: {{ core.azure.terraform.backend.enable }}

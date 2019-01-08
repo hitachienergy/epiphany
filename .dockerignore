@@ -1,0 +1,15 @@
+# Ignore all unwanted files from the docker build process
+
+.git
+.git*
+*.log
+certs/
+**/data/*
+
+*.md
+
+tests/
+Dockerfile
+
+data/
+build/

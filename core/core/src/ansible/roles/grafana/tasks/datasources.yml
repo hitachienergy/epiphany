@@ -1,0 +1,39 @@
+---
+- name: Check datasources list
+  uri:
+    url: "{{ grafana_url }}/api/datasources"
+    user: "{{ grafana_security.admin_user }}"
+    password: "{{ grafana_security.admin_password }}"
+    force_basic_auth: true
+    return_content: true
+    client_cert: /etc/grafana/ssl/grafana_cert.pem
+    client_key: /etc/grafana/ssl/grafana_key.key
+    validate_certs: no
+  no_log: true
+  register: datasources
+
+- name: Create grafana datasource
+  uri:
+    url: "{{ grafana_url }}/api/datasources"
+    user: "{{ grafana_security.admin_user }}"
+    password: "{{ grafana_security.admin_password }}"
+    force_basic_auth: true
+    method: POST
+    body_format: json
+    body: "{{ item | to_json }}"
+    client_cert: /etc/grafana/ssl/grafana_cert.pem
+    client_key: /etc/grafana/ssl/grafana_key.key
+    validate_certs: no
+  with_items: "{{ grafana_datasources }}"
+  no_log: true
+  when: ((datasources['json'] | selectattr("name", "search", item['name'])) | list) | length == 0
+
+- name: Create datasources file
+  copy:
+    dest: "/etc/grafana/provisioning/datasources/ansible.yml"
+    content: |
+      delete_datasources: []
+      datasources:
+      {{ grafana_datasources | to_nice_yaml }}
+    backup: false
+  notify: restart grafana

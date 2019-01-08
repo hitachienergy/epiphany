@@ -1,0 +1,9 @@
+---
+
+- name: Copy logrotate config
+  template:
+    dest: /etc/logrotate.d/haproxy
+    owner: root
+    group: root
+    mode: 0644
+    src: logrotate.conf.j2
