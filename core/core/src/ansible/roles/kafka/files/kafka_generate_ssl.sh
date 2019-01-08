@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #
-# Copyright 2019 The Epiphany-Platform Team.
+# Copyright 2019 ABB. All rights reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
