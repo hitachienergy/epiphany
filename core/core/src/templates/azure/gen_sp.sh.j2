@@ -1,0 +1,205 @@
+#!/bin/bash
+#
+# Copyright 2019 The Epiphany-Platform Team.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+# NOTE: Other scripts may call this script so do not change parameters unless you know the impact!
+
+# Can use 'basename' to extract name from parameter 1 and assign it to parameter 2. This can be done
+# in a higher level helper script if desired.
+
+# gen_sp.sh creates the service principal that is needed after the inital az login
+
+# Exit immediately if something goes wrong.
+set -e
+
+export REPO_ROOT=$(git rev-parse --show-toplevel)
+
+# Parameter 4 (data file) is optional
+
+DATA=''
+
+if [[ ! -z $4 ]];then
+    DATA=$4
+fi
+
+AZURE_TEMPLATES_BASE=core/src/templates/azure
+COMMON_SCRIPTS_BASE=core/src/scripts/common
+
+DATA_DIR=$1
+OUTPUT_DIR=$2
+OUTPUT_TF_FILE=$3
+
+source $REPO_ROOT/$COMMON_SCRIPTS_BASE/base_colors.sh
+
+if [[ -z $DATA ]]; then
+    DATA=data.yaml
+fi
+
+if [[ -z $DATA_DIR ]]; then
+    echo_red '====> ERROR: MUST specify a valid Data directory! <===='
+    exit 1
+fi
+
+if [[ -z $OUTPUT_DIR ]]; then
+    echo_red '====> ERROR: MUST specify a valid OUTPUT directory! <===='
+    exit 1
+fi
+
+az account set --subscription "{{ core.azure.subscription }}"
+
+if [[ $? -ne 0 ]]; then
+    echo
+    echo_red '====> ERROR: Incorrect subscription {{ core.azure.subscription }}'
+    echo
+    exit 1
+fi
+
+{%- if core.azure.terraform.service_principal.enable %}
+# This is created in the event you want to delete the service principal.
+# If not enabled then del_sp.sh will only be a stub
+$REPO_ROOT/bin/template_engine -d $DATA_DIR/$DATA -i $REPO_ROOT/$AZURE_TEMPLATES_BASE/del_sp.sh.j2 -o $OUTPUT_DIR/del_sp.sh
+
+chmod +x $OUTPUT_DIR/del_sp.sh
+
+# If you wish to generate the security.yaml file again then you must remove it from the given data directory!
+if [[ -f $OUTPUT_DIR/security.yaml ]]; then
+    echo_purple '====> Security file exists...'
+    # Make sure changes in the templates get reflected in the code
+    $REPO_ROOT/bin/template_engine -d $OUTPUT_DIR/security.yaml -i $REPO_ROOT/$AZURE_TEMPLATES_BASE/env.sh.j2 -o $OUTPUT_DIR/env.sh
+    chmod +x $OUTPUT_DIR/env.sh
+
+    $REPO_ROOT/bin/template_engine -d $OUTPUT_DIR/security.yaml -i $REPO_ROOT/$AZURE_TEMPLATES_BASE/login.sh.j2 -o $OUTPUT_DIR/login.sh
+    chmod +x $OUTPUT_DIR/login.sh
+    exit 0
+fi
+
+# Create service principal now
+echo
+echo_yellow '====> Creating service principal...'
+
+SUBSCRIPTION_ID=$(az account list | jq '.[] | select(.name == "{{ core.azure.subscription }}") | .id')
+
+temp="${SUBSCRIPTION_ID%\"}"
+SUBSCRIPTION_ID="${temp#\"}"
+
+APP_NAME={{ core.azure.ad.name }}
+ROLE={{ core.azure.ad.role }}
+
+{%- if core.azure.terraform.service_principal.create %}
+if [[ ! -f $OUTPUT_DIR/az_ad_sp.json ]]; then
+    # Delete sp if it exits at this stage...
+    set +e
+    az ad sp show --id "http://$APP_NAME" &1>/dev/null
+    if [[ $? -eq 0 ]]; then
+        az ad sp delete --id "http://$APP_NAME"
+    fi
+    set -e
+
+    {%- if core.azure.terraform.auth == 'cert' %}
+    az ad sp create-for-rbac -n "$APP_NAME" --role="$ROLE" --scopes="/subscriptions/$SUBSCRIPTION_ID" --create-cert > $OUTPUT_DIR/az_ad_sp.json
+    {% else %}
+    az ad sp create-for-rbac -n "$APP_NAME" --role="$ROLE" --scopes="/subscriptions/$SUBSCRIPTION_ID" > $OUTPUT_DIR/az_ad_sp.json
+    {%- endif %}
+
+    if [[ $? -ne 0 ]]; then
+        echo
+        echo_red '====> ERROR: Unable to create service principal'
+        echo
+        exit 1
+    fi
+fi
+
+APP_ID=$(jq '.appId' $OUTPUT_DIR/az_ad_sp.json)
+temp="${APP_ID%\"}"
+APP_ID="${temp#\"}"
+
+TENANT_ID=$(jq '.tenant' $OUTPUT_DIR/az_ad_sp.json)
+temp="${TENANT_ID%\"}"
+TENANT_ID="${temp#\"}"
+
+{%- if core.azure.terraform.auth == 'cert' %}
+# AZ will download the pem file to the default user home directory so it needs to be moved
+CERT_FILE=$(jq '.fileWithCertAndPrivateKey' $OUTPUT_DIR/az_ad_sp.json)
+temp="${CERT_FILE%\"}"
+CERT_FILE="${temp#\"}"
+
+if [[ -f $CERT_FILE ]]; then
+    mv $CERT_FILE $OUTPUT_DIR/{{ core.azure.ad.name }}_sp.pem
+fi
+{% else %}
+PWD=$(jq '.password' $OUTPUT_DIR/az_ad_sp.json)
+temp="${PWD%\"}"
+PWD="${temp#\"}"
+{%- endif %}
+
+$REPO_ROOT/bin/template_engine -d $DATA_DIR/$DATA -i $REPO_ROOT/$AZURE_TEMPLATES_BASE/security.yaml.j2 -o $OUTPUT_DIR/security.yaml
+
+cat >> $OUTPUT_DIR/security.yaml <<EOF
+
+subscription_id: $SUBSCRIPTION_ID
+app_name: $APP_NAME
+app_id: $APP_ID
+tenant_id: $TENANT_ID
+role: $ROLE
+{%- if core.azure.terraform.auth == 'cert' %}
+auth: {{ core.azure.ad.name }}_sp.pem
+auth_type: cert
+{% else %}
+auth: $PWD
+auth_type: pwd
+{%- endif %}
+EOF
+
+if [[ ! -f $OUTPUT_DIR/security.yaml ]]; then
+    echo
+    echo_red "====> ERROR: Unable to create $OUTPUT_DIR/security.yaml"
+    echo
+    exit 1
+fi
+{% else %}
+# Did not create the two required files (az_ad_sp.json and security.yaml). This means you must supply those two files.
+
+# This puts the base data in security.yaml but not the service principal specific features
+$REPO_ROOT/bin/template_engine -d $DATA_DIR/$DATA -i $REPO_ROOT/$AZURE_TEMPLATES_BASE/security.yaml.j2 -o $OUTPUT_DIR/security.yaml
+{%- endif %}
+
+if [[ ! -f $OUTPUT_DIR/security.yaml ]]; then
+    # This will create a basic security file. It this is reached then it is assumed no service principal generations...
+    $REPO_ROOT/bin/template_engine -d $DATA_DIR/$DATA -i $REPO_ROOT/$AZURE_TEMPLATES_BASE/security.yaml.j2 -o $OUTPUT_DIR/security.yaml
+fi
+
+$REPO_ROOT/bin/template_engine -d $OUTPUT_DIR/security.yaml -i $REPO_ROOT/$AZURE_TEMPLATES_BASE/env.sh.j2 -o $OUTPUT_DIR/env.sh
+chmod +x $OUTPUT_DIR/env.sh
+
+$REPO_ROOT/bin/template_engine -d $OUTPUT_DIR/security.yaml -i $REPO_ROOT/$AZURE_TEMPLATES_BASE/login.sh.j2 -o $OUTPUT_DIR/login.sh
+chmod +x $OUTPUT_DIR/login.sh
+
+# test...
+# az logout
+
+source $OUTPUT_DIR/env.sh $DATA_DIR
+{% else %}
+# Stubbed out due to core.azure.terraform.service_principal.enable being set to false
+
+$REPO_ROOT/bin/template_engine -d $DATA_DIR/$DATA -i $REPO_ROOT/$AZURE_TEMPLATES_BASE/security.yaml.j2 -o $OUTPUT_DIR/security.yaml
+
+$REPO_ROOT/bin/template_engine -d $OUTPUT_DIR/security.yaml -i $REPO_ROOT/$AZURE_TEMPLATES_BASE/env.sh.j2 -o $OUTPUT_DIR/env.sh
+chmod +x $OUTPUT_DIR/env.sh
+
+$REPO_ROOT/bin/template_engine -d $OUTPUT_DIR/security.yaml -i $REPO_ROOT/$AZURE_TEMPLATES_BASE/login.sh.j2 -o $OUTPUT_DIR/login.sh
+chmod +x $OUTPUT_DIR/login.sh
+{% endif %}
+exit 0

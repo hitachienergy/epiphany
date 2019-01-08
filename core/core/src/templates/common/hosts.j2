@@ -1,0 +1,26 @@
+#
+# If unable to modify DNS then a hosts file can be used. However, DNS is always the preferred way.
+#
+
+127.0.0.1   localhost localhost.localdomain localhost4 localhost4.localdomain4
+::1         localhost localhost.localdomain localhost6 localhost6.localdomain6
+
+# Cluster IPs
+{%- for item in nodes %}
+{%- for host in item.hosts %}
+{{ host.ips.private }}  {{ host.name }}  {{ host.name }}-cluster
+{%- endfor %}
+{%- endfor %}
+
+# Public IPs
+{%- for item in nodes %}
+{%- for host in item.hosts %}
+{%- if item.public_ips %}
+{%- if domain.enable %}
+{{ host.ips.public }}  {{ host.name }}  {{ host.name }}.{{ domain.name }}
+{% else %}
+{{ host.ips.public }}  {{ host.name }}  {{ host.name }}-public
+{%- endif %}
+{%- endif %}
+{%- endfor %}
+{%- endfor %}

@@ -1,0 +1,224 @@
+#!/bin/bash
+#
+# Copyright 2019 The Epiphany-Platform Team.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+# NOTE: Other scripts may call this script so do not change parameters unless you know the impact!
+# NOTE: This script needs to be ran in the directory of the ansible.cfg so the best way to do that is to
+# (cd $EPIPHANY_DATA_DIR && ansible.sh) from the calling script. This is for safety reasons in the event
+# you run ansible commands without -i etc.
+# If you launch by hand then simply be in this directory and pass in the directory like ./ansible.sh $(pwd)
+
+# Can use 'basename' to extract name from parameter 1 and assign it to parameter 2. This can be done
+# in a higher level helper script if desired.
+
+# ansible.sh creates the ansible environment
+
+# Exit immediately if something goes wrong.
+set -e
+
+export REPO_ROOT=$(git rev-parse --show-toplevel)
+
+# Stops the 'cow' ascii art from showing!
+export ANSIBLE_NOCOWS=1
+export ANSIBLE_HOST_KEY_CHECKING=False
+
+COMMON_SCRIPTS_BASE=core/src/scripts/common
+COMMON_TEMPLATES_BASE=core/src/templates/common
+COMMON_ANSIBLE_BASE=core/src/ansible
+
+EPIPHANY_DATA_DIR=$1
+ANSIBLE_ENV=$2
+ENV={{ build.environment }}
+
+# NOTE: The above to vars (ANSIBLE_ENV and ENV) need to be the same for now. WILL NEED to change in the near future!
+
+source $REPO_ROOT/$COMMON_SCRIPTS_BASE/base_colors.sh
+
+if [[ -z $EPIPHANY_DATA_DIR ]]; then
+    echo_red '====> ERROR: MUST specify a valid EPIPHANY_DATA_SUBFOLDER directory! <===='
+    exit 1
+fi
+
+if [[ -z $ANSIBLE_ENV ]]; then
+    echo_red '====> ERROR: MUST specify a valid Ansible environment such as: development, staging, production or qa! <===='
+    exit 1
+fi
+
+if [[ $ANSIBLE_ENV != $ENV ]]; then
+    echo_red "====> ERROR: You specified '$ENV' in your manifest.yaml but passed in '$ANSIBLE_ENV'. They should be equal (for now). <===="
+    exit 1
+fi
+
+# SSH_BASTIAN=
+# If the bastian option is enabled then config information needs to be added to ansible.cfg etc.
+
+# This is needed when running Epiphany from a mounted NTFS volume in a docker image.
+# https://docs.ansible.com/ansible/devel/reference_appendices/config.html#cfg-in-world-writable-dir
+echo_yellow '====> Setting ANSIBLE_CONFIG....'
+export ANSIBLE_CONFIG=$EPIPHANY_DATA_DIR/ansible.cfg
+
+echo
+echo_yellow '====> Creating Ansible layout...'
+
+# Store smart facts in cache. Inventory contains host info. NOTE: data directory was created in epiphany cli
+mkdir -p $EPIPHANY_DATA_DIR/{cache,inventory}
+
+# Just make sure this is present
+mkdir -p $EPIPHANY_DATA_DIR/roles/common/vars
+mkdir -p $EPIPHANY_DATA_DIR/roles/master/vars
+mkdir -p $EPIPHANY_DATA_DIR/roles/worker/vars
+mkdir -p $EPIPHANY_DATA_DIR/roles/jmx-exporter/vars
+mkdir -p $EPIPHANY_DATA_DIR/roles/kafka/vars
+mkdir -p $EPIPHANY_DATA_DIR/roles/zookeeper/vars
+mkdir -p $EPIPHANY_DATA_DIR/roles/prometheus/vars
+mkdir -p $EPIPHANY_DATA_DIR/roles/grafana/vars
+mkdir -p $EPIPHANY_DATA_DIR/roles/elasticsearch/vars
+mkdir -p $EPIPHANY_DATA_DIR/roles/kibana/vars
+mkdir -p $EPIPHANY_DATA_DIR/roles/filebeat/vars
+mkdir -p $EPIPHANY_DATA_DIR/roles/node_exporter/vars
+mkdir -p $EPIPHANY_DATA_DIR/roles/haproxy/vars
+mkdir -p $EPIPHANY_DATA_DIR/roles/haproxy_exporter/vars
+mkdir -p $EPIPHANY_DATA_DIR/roles/haproxy_tls_termination/vars
+mkdir -p $EPIPHANY_DATA_DIR/roles/kafka-exporter/vars
+mkdir -p $EPIPHANY_DATA_DIR/roles/elasticsearch-curator/vars
+mkdir -p $EPIPHANY_DATA_DIR/roles/postgresql/vars
+mkdir -p $EPIPHANY_DATA_DIR/roles/rabbitmq/vars
+mkdir -p $EPIPHANY_DATA_DIR/roles/reboot/vars
+
+rm -f $EPIPHANY_DATA_DIR/roles/common/vars/*
+rm -f $EPIPHANY_DATA_DIR/roles/master/vars/*
+rm -f $EPIPHANY_DATA_DIR/roles/worker/vars/*
+rm -f $EPIPHANY_DATA_DIR/roles/zookeeper/vars/*
+rm -f $EPIPHANY_DATA_DIR/roles/jmx-exporter/vars/*
+rm -f $EPIPHANY_DATA_DIR/roles/kafka/vars/*
+rm -f $EPIPHANY_DATA_DIR/roles/prometheus/vars/*
+rm -f $EPIPHANY_DATA_DIR/roles/grafana/vars/*
+rm -f $EPIPHANY_DATA_DIR/roles/elasticsearch/vars/*
+rm -f $EPIPHANY_DATA_DIR/roles/kibana/vars/*
+rm -f $EPIPHANY_DATA_DIR/roles/filebeat/vars/*
+rm -f $EPIPHANY_DATA_DIR/roles/node_exporter/vars/*
+rm -f $EPIPHANY_DATA_DIR/roles/haproxy/vars/*
+rm -f $EPIPHANY_DATA_DIR/roles/haproxy_exporter/vars/*
+rm -f $EPIPHANY_DATA_DIR/roles/haproxy_tls_termination/vars/*
+rm -f $EPIPHANY_DATA_DIR/roles/kafka-exporter/vars/*
+rm -f $EPIPHANY_DATA_DIR/roles/elasticsearch-curator/vars/*
+rm -f $EPIPHANY_DATA_DIR/roles/postgresql/vars/*
+rm -f $EPIPHANY_DATA_DIR/roles/rabbitmq/vars/*
+rm -f $EPIPHANY_DATA_DIR/roles/reboot/vars/*
+
+# Copy the whole tree over
+cp -R $REPO_ROOT/$COMMON_ANSIBLE_BASE/* $EPIPHANY_DATA_DIR
+
+# May or may not have data specific features but use as a template anyway
+$REPO_ROOT/bin/template_engine -d $EPIPHANY_DATA_DIR/data/manifest.yaml -i $REPO_ROOT/$COMMON_TEMPLATES_BASE/main.yml.j2 -o $EPIPHANY_DATA_DIR/main.yml
+
+echo_yellow '====> Creating Ansible default vars...'
+cat $EPIPHANY_DATA_DIR/data/manifest.yaml >> $EPIPHANY_DATA_DIR/roles/common/vars/main.yml
+cat $EPIPHANY_DATA_DIR/data/manifest.yaml >> $EPIPHANY_DATA_DIR/roles/master/vars/main.yml
+cat $EPIPHANY_DATA_DIR/data/manifest.yaml >> $EPIPHANY_DATA_DIR/roles/worker/vars/main.yml
+cat $EPIPHANY_DATA_DIR/data/manifest.yaml >> $EPIPHANY_DATA_DIR/roles/jmx-exporter/vars/main.yml
+cat $EPIPHANY_DATA_DIR/data/manifest.yaml >> $EPIPHANY_DATA_DIR/roles/kafka/vars/main.yml
+cat $EPIPHANY_DATA_DIR/data/manifest.yaml >> $EPIPHANY_DATA_DIR/roles/zookeeper/vars/main.yml
+cat $EPIPHANY_DATA_DIR/data/manifest.yaml >> $EPIPHANY_DATA_DIR/roles/prometheus/vars/main.yml
+cat $EPIPHANY_DATA_DIR/data/manifest.yaml >> $EPIPHANY_DATA_DIR/roles/grafana/vars/main.yml
+cat $EPIPHANY_DATA_DIR/data/manifest.yaml >> $EPIPHANY_DATA_DIR/roles/elasticsearch/vars/main.yml
+cat $EPIPHANY_DATA_DIR/data/manifest.yaml >> $EPIPHANY_DATA_DIR/roles/kibana/vars/main.yml
+cat $EPIPHANY_DATA_DIR/data/manifest.yaml >> $EPIPHANY_DATA_DIR/roles/filebeat/vars/main.yml
+cat $EPIPHANY_DATA_DIR/data/manifest.yaml >> $EPIPHANY_DATA_DIR/roles/node_exporter/vars/main.yml
+cat $EPIPHANY_DATA_DIR/data/manifest.yaml >> $EPIPHANY_DATA_DIR/roles/haproxy/vars/main.yml
+cat $EPIPHANY_DATA_DIR/data/manifest.yaml >> $EPIPHANY_DATA_DIR/roles/haproxy_exporter/vars/main.yml
+cat $EPIPHANY_DATA_DIR/data/manifest.yaml >> $EPIPHANY_DATA_DIR/roles/haproxy_tls_termination/vars/main.yml
+cat $EPIPHANY_DATA_DIR/data/manifest.yaml >> $EPIPHANY_DATA_DIR/roles/kafka-exporter/vars/main.yml
+cat $EPIPHANY_DATA_DIR/data/manifest.yaml >> $EPIPHANY_DATA_DIR/roles/elasticsearch-curator/vars/main.yml
+cat $EPIPHANY_DATA_DIR/data/manifest.yaml >> $EPIPHANY_DATA_DIR/roles/postgresql/vars/main.yml
+cat $EPIPHANY_DATA_DIR/data/manifest.yaml >> $EPIPHANY_DATA_DIR/roles/rabbitmq/vars/main.yml
+cat $EPIPHANY_DATA_DIR/data/manifest.yaml >> $EPIPHANY_DATA_DIR/roles/reboot/vars/main.yml
+
+echo_yellow '====> Copy certificates to Ansible files for HAProxy...'
+echo_green "Getting certificates directory."
+# Get directory from manifest
+HAPROXY_CERTS_DIR="$(cat $EPIPHANY_DATA_DIR/data/manifest.yaml | grep -v '#' | grep 'haproxy_certs_dir' | awk '{print $2}')"
+
+echo_yellow '====> Copy certificates to Ansible files for HAProxy...'
+echo $HAPROXY_CERTS_DIR
+
+if [[ -n "$HAPROXY_CERTS_DIR" ]]; then
+   echo_green "Copy files."
+
+   cp $HAPROXY_CERTS_DIR/*.pem $EPIPHANY_DATA_DIR/roles/haproxy_tls_termination/files/
+
+else
+   echo_green "Directory for HAProxy certificates not defined. Skipping copy." 
+fi
+
+$REPO_ROOT/bin/template_engine -d $EPIPHANY_DATA_DIR/data/manifest.yaml -i $REPO_ROOT/$COMMON_TEMPLATES_BASE/ansible.cfg.j2 -o $EPIPHANY_DATA_DIR/ansible.cfg
+
+echo_yellow '====> Creating Ansible inventory for the given environment...'
+
+$REPO_ROOT/bin/template_engine -d $EPIPHANY_DATA_DIR/data/manifest.yaml -i $REPO_ROOT/$COMMON_TEMPLATES_BASE/ansible_inventory.j2 -o $EPIPHANY_DATA_DIR/inventory/{{ build.environment }}
+
+# This will generate a hosts file to be placed on each node. DNS is the preferred method
+echo_yellow '====> Generating hosts file...'
+
+$REPO_ROOT/bin/template_engine -d $EPIPHANY_DATA_DIR/data/manifest.yaml -i $REPO_ROOT/$COMMON_TEMPLATES_BASE/hosts.j2 -o $EPIPHANY_DATA_DIR/roles/common/files/hosts
+
+# Validate ansible inventory with a ping to all hosts
+
+echo_yellow '====> Verifying Ansible access to nodes...'
+
+ansible all -i $EPIPHANY_DATA_DIR/inventory/$ANSIBLE_ENV -m ping
+
+if [[ $? -ne 0 ]]; then
+    echo_red "ERROR: Unable to reach all of the hosts in the cluster. Verify 'manifest.yaml' is correct and run this again."
+    echo
+    exit 1
+fi
+
+# Gather all of the facts about the nodes
+echo_yellow '====> Gathering facts on all nodes...'
+
+ansible all -i $EPIPHANY_DATA_DIR/inventory/$ANSIBLE_ENV -m setup
+
+# Gather pre-reqs and move them to the nodes
+
+# Bootstrap the nodes with needed packages etc.
+# ansible-playbook -i $EPIPHANY_DATA_DIR/inventory/$ANSIBLE_ENV $EPIPHANY_DATA_DIR/main.yml
+ansible-playbook -i $EPIPHANY_DATA_DIR/inventory/$ANSIBLE_ENV $EPIPHANY_DATA_DIR/common.yml;
+ansible-playbook -i $EPIPHANY_DATA_DIR/inventory/$ANSIBLE_ENV $EPIPHANY_DATA_DIR/master.yml;
+ansible-playbook -i $EPIPHANY_DATA_DIR/inventory/$ANSIBLE_ENV $EPIPHANY_DATA_DIR/worker.yml;
+ansible-playbook -i $EPIPHANY_DATA_DIR/inventory/$ANSIBLE_ENV $EPIPHANY_DATA_DIR/elasticsearch.yml;
+ansible-playbook -i $EPIPHANY_DATA_DIR/inventory/$ANSIBLE_ENV $EPIPHANY_DATA_DIR/elasticsearch-curator.yml;
+ansible-playbook -i $EPIPHANY_DATA_DIR/inventory/$ANSIBLE_ENV $EPIPHANY_DATA_DIR/kibana.yml;
+ansible-playbook -i $EPIPHANY_DATA_DIR/inventory/$ANSIBLE_ENV $EPIPHANY_DATA_DIR/filebeat.yml;
+ansible-playbook -i $EPIPHANY_DATA_DIR/inventory/$ANSIBLE_ENV $EPIPHANY_DATA_DIR/prometheus.yml;
+ansible-playbook -i $EPIPHANY_DATA_DIR/inventory/$ANSIBLE_ENV $EPIPHANY_DATA_DIR/grafana.yml;
+ansible-playbook -i $EPIPHANY_DATA_DIR/inventory/$ANSIBLE_ENV $EPIPHANY_DATA_DIR/jmx-exporter.yml;
+ansible-playbook -i $EPIPHANY_DATA_DIR/inventory/$ANSIBLE_ENV $EPIPHANY_DATA_DIR/zookeeper.yml;
+ansible-playbook -i $EPIPHANY_DATA_DIR/inventory/$ANSIBLE_ENV $EPIPHANY_DATA_DIR/kafka.yml;
+ansible-playbook -i $EPIPHANY_DATA_DIR/inventory/$ANSIBLE_ENV $EPIPHANY_DATA_DIR/node_exporter.yml;
+ansible-playbook -i $EPIPHANY_DATA_DIR/inventory/$ANSIBLE_ENV $EPIPHANY_DATA_DIR/haproxy.yml;
+ansible-playbook -i $EPIPHANY_DATA_DIR/inventory/$ANSIBLE_ENV $EPIPHANY_DATA_DIR/haproxy_exporter.yml;
+ansible-playbook -i $EPIPHANY_DATA_DIR/inventory/$ANSIBLE_ENV $EPIPHANY_DATA_DIR/haproxy_tls_termination.yml;
+ansible-playbook -i $EPIPHANY_DATA_DIR/inventory/$ANSIBLE_ENV $EPIPHANY_DATA_DIR/postgresql.yml;
+ansible-playbook -i $EPIPHANY_DATA_DIR/inventory/$ANSIBLE_ENV $EPIPHANY_DATA_DIR/rabbitmq.yml;
+ansible-playbook -i $EPIPHANY_DATA_DIR/inventory/$ANSIBLE_ENV $EPIPHANY_DATA_DIR/kafka-exporter.yml;
+ansible-playbook -i $EPIPHANY_DATA_DIR/inventory/$ANSIBLE_ENV $EPIPHANY_DATA_DIR/reboot.yml;
+
+# Make sure Kafka is working
+sleep 15 # Make sure a quorum gets established becase replication factor must be no larger than the number of brokers
+ansible-playbook -i $EPIPHANY_DATA_DIR/inventory/$ANSIBLE_ENV $EPIPHANY_DATA_DIR/kafka_verify.yml
+
+exit 0

@@ -1,0 +1,14 @@
+---
+# Verification installation
+
+- name: PIP install of kafka-python
+  pip:
+    name: kafka-python
+
+- name: Create kafka_producer_consumer.py
+  template:
+    dest: "/home/{{ admin_user.name }}/kafka_producer_consumer.py"
+    owner: "{{ admin_user.name }}"
+    group: "{{ admin_user.name }}"
+    mode: 0755
+    src: kafka_producer_consumer.py.j2

@@ -1,0 +1,56 @@
+---
+# Common Debian family of specific tasks
+
+- name: APT Key
+  apt_key:
+    url: https://packages.cloud.google.com/apt/doc/apt-key.gpg
+    state: present
+
+- name: Install selinux packages as prerequisite for SELinux module
+  apt:
+    name:
+      - build-essential
+      - python-selinux
+    update_cache: yes 
+    state: present    
+
+
+- name: Add kubernetes repository
+  apt_repository:
+    repo: deb http://apt.kubernetes.io/ kubernetes-xenial main
+    state: present
+    filename: kubernetes
+
+- name: Install debian family packages
+  apt:
+    name:
+      - bash-completion
+      - ca-certificates
+      - net-tools
+      - tar
+      - netcat
+      - curl
+      - tmux
+      - fping
+      - iftop
+      - htop
+      - sshpass
+      - vim
+      - sysstat
+      - python-setuptools
+      - apt-transport-https
+      - software-properties-common
+      - openssl
+      - logrotate
+      - ebtables
+      - ethtool
+      - openjdk-8-jre
+      - telnet
+      - ufw 
+    update_cache: yes 
+    state: present  
+
+- name: Append prompt to .profile
+  lineinfile:
+    path: /home/{{ admin_user.name }}/.profile
+    line: source /etc/profile.d/operations.sh

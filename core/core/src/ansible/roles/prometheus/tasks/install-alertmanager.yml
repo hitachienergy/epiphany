@@ -1,0 +1,50 @@
+---
+- name: Download alertmanager package
+  become: false
+  get_url:
+    url: "https://github.com/prometheus/alertmanager/releases/download/v{{ alertmanager_version }}/alertmanager-{{ alertmanager_version }}.linux-{{ go_arch_map[ansible_architecture] | default(ansible_architecture) }}.tar.gz"
+    dest: "/tmp/alertmanager-{{ alertmanager_version }}.linux-{{ go_arch_map[ansible_architecture] | default(ansible_architecture) }}.tar.gz"
+    #checksum: "sha256:{{ prometheus_checksum }}" #checksum is not available due to commenting out delegation to localhost when running tasks
+  register: _download_archive
+  until: _download_archive is succeeded
+  retries: 5
+  delay: 2
+  # run_once: true # <-- this canfalset be set due to multi-arch support
+
+- name: Unpack alertmanager package 
+  become: false
+  unarchive:
+    remote_src: yes
+    src: "/tmp/alertmanager-{{ alertmanager_version }}.linux-{{ go_arch_map[ansible_architecture] | default(ansible_architecture) }}.tar.gz"
+    dest: "/tmp/"
+    creates: "/tmp/alertmanager-{{ alertmanager_version }}.linux-{{ go_arch_map[ansible_architecture] | default(ansible_architecture) }}/alertmanager"
+  check_mode: false
+
+- name: Propagate alertmanager binaries 
+  copy:
+    remote_src: yes
+    src: "/tmp/alertmanager-{{ alertmanager_version }}.linux-{{ go_arch_map[ansible_architecture] | default(ansible_architecture) }}/alertmanager"
+    dest: "/usr/local/bin/alertmanager"
+    mode: 0755
+    owner: root
+    group: root
+  check_mode: false
+  notify:
+    - restart prometheus
+
+- name: Create alertmanager data directory
+  file:
+    path: /var/lib/prometheus/alertmanager
+    state: directory
+    owner: prometheus
+    group: prometheus
+
+- name: Create alertmanager systemd service unit
+  template:
+    src: alertmanager.service.j2
+    dest: /etc/systemd/system/alertmanager.service
+    owner: root
+    group: root
+    mode: 0644
+  notify:
+    - restart prometheus

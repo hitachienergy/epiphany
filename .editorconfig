@@ -1,0 +1,40 @@
+# NOTE: If using Atom/Visual Code then install the EditorConfig plugin. Go to editorconfig.org.
+
+root = true
+
+[*]
+indent_style = space
+indent_size = 4
+end_of_line = lf
+charset = utf-8
+trim_trailing_whitespace = true
+insert_final_newline = true
+
+# 2 space indentation
+[*.yaml]
+indent_size = 2
+
+[*.yml]
+indent_size = 2
+
+[*.rb]
+indent_size = 2
+
+[*.j2]
+indent_size = 2
+
+[*.sh.j2]
+indent_size = 4
+
+[*.tf]
+indent_size = 2
+
+[*.tf.j2]
+indent_size = 2
+
+# Tab indentation (no size specified)
+[Makefile]
+indent_style = tab
+
+[*.md]
+trim_trailing_whitespace = false

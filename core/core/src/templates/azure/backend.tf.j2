@@ -1,0 +1,29 @@
+#####################################################
+# DO NOT Modify by hand - Manage by Automation
+#####################################################
+#####################################################
+# This file can be used as a base template to build other Terraform files. It attempts to use as much
+# Terraform interprolation as possible by creating Terraform variables instead of changing inline
+# this approach provides an easier way to do creative looping, fetch IDs of created resources etc.
+#####################################################
+#####################################################
+# Lock Resources - {{ title }}
+#####################################################
+
+# Will have partial config if backend is enabled or it will be empty if storing *.tfstate locally
+
+{% if core.azure.terraform.backend.enable %}
+# Remote config data is in config.tfvars and is not stored in git.
+# If this file gets updated then you must run 'terraform init' everytime.
+
+terraform {
+  required_version = ">= 0.11.7"
+
+  backend "azurerm" {
+    resource_group_name = "{{ core.azure.resource_group.name }}"
+    storage_account_name = "{{ core.azure.resource_group.name|replace('-', '')|replace('_', '')|truncate(17,True,'') }}backend"
+    container_name = "{{ core.azure.resource_group.name }}terraform"
+    key = "terraform.tfstate"
+  }
+}
+{%- endif %}

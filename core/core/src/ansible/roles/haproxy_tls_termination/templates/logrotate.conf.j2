@@ -1,0 +1,14 @@
+# {{ ansible_managed }}
+
+{{ haproxy_log_path }} {
+  missingok
+  copytruncate
+  notifempty
+  rotate 2
+  monthly
+  size 500M
+  dateext
+  compress
+  delaycompress
+  maxage {{ logs_max_days }}
+}

@@ -1,0 +1,38 @@
+- name: ensure group {{ admin_user.name }} exists
+  group: 
+    name: "{{ admin_user.name }}"
+    state: present
+
+- name: Ensure user {{ admin_user.name }} exists, has correct shell, and groups, and no password
+  user: 
+    name: "{{ admin_user.name }}"
+    shell: /bin/bash
+    groups: "{{ admin_user.name }},wheel"
+    append: yes
+  when: ansible_os_family == "RedHat"
+
+- name: Ensure user {{ admin_user.name }} exists, has correct shell, and groups, and no password
+  user: 
+    name: "{{ admin_user.name }}"
+    shell: /bin/bash
+    groups: "{{ admin_user.name }},sudo"
+    append: yes
+  when: ansible_os_family == "Debian"
+
+- name: Put {{ admin_user.name }} user authorized key on servers
+  authorized_key:
+    user: "{{ admin_user.name }}"
+    state: present
+    key: "{{ item }}"
+  with_file:
+    - keys/epiphany
+
+- name: Set NOPASSWD in /etc/sudoers for wheel group
+  lineinfile:
+    dest: /etc/sudoers
+    state: present
+    regexp: '^%wheel'
+    line: '%wheel ALL=(ALL) NOPASSWD: ALL'
+    validate: visudo -cf %s
+
+  

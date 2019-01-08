@@ -1,0 +1,9 @@
+# {{ ansible_managed }}
+groups:
+- name: {{ item.name }}
+  rules:
+  - alert: {{ item.message }}
+    labels:
+      severity: {{ item.severity }}
+    expr: {{ item.expression }}
+    for: {{ item.duration }}

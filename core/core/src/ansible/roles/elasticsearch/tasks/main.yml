@@ -1,0 +1,5 @@
+---
+## Elasticsearch master
+
+- include_tasks: "set-pam-limits.yml"
+- include_tasks: "{{ ansible_os_family }}.yml"

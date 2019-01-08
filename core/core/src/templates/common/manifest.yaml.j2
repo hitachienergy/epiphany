@@ -1,0 +1,165 @@
+# Primary manifest data file used to build out the given cluster.
+# In Azure, Terraform 'data.yaml' is created with seed data and is used to generate this file.
+# In on-premise, these values are given to us and we create this file.
+# Any platform specific items that may be needed will be added to this common manifest
+
+# DO NOT update this file manually. Only update the data because it will get overridden.
+# Security information is added to the ansible_inventory which contains the key and key_path
+
+# This will apply to a VPN like environment or an air-gapped like environment
+bastian:
+  enable: {{ core.bastian.enable }}
+  # This host will be set ONLY for environments where a bastian host is supplied to us
+  host: {{ core.bastian.host }}
+
+build:
+  version: &version {{ core.build.version }}
+  # Type of build environment
+  environment: &env {{ core.build.environment }}
+  # Name of the given release. Version will be appended
+  release: &release {{ core.build.release }}
+  # If repo_root is true then add that as a prefix for the output
+  repo_root: {{ core.build.repo_root }}
+  # Should only be on of these: azure, aws, metal, vbox, vmware
+  platform: {{ core.build.platform }}
+  output: {{ core.build.output }}
+
+ansible_tags:
+  {%- for item in core.tags %}
+  - key: {{ item.key }}
+    value: {{ item.value }}
+  {%- endfor %}
+
+# The primary 'operations' user and the ssh key path
+admin_user:
+  name: {{ core.admin_user.name }}
+  key_path: {{ core.admin_user.key_path }}
+
+# This is the master set of available roles
+ansible_roles:
+  {%- for item in core.roles %}
+  - {{ item }}
+  {%- endfor %}
+
+domain:
+  enable: {{ core.domain.enable }}
+  name: {{ core.domain.name }}
+
+# Nodes in the cluster along with metadata and the groups they belong to
+nodes:
+  {%- for vm in core.azure.standard.vms %}
+  - name: {{ vm.name }}
+    # Mainly used for Azure because Terraform is being used and has the ability to use count!
+    count: {{ vm.count }}
+    # If enabled then the first host in a 'count' pattern will be used which will end with '-001'
+    bastian_host: {{ vm.bastian_host }}
+    # Represents if there are public IPs. If not then a VPN connection is assumed.
+    # `public` could also mean exposed to a larger network in the case of on-premise with metal or vmware
+    public_ips: {{ vm.public_ips }}
+    # The roles that this given node belongs to
+    ansible_roles:
+      {%- for role in vm.roles %}
+      - {{ role }}
+      {%- endfor %}
+
+    security:
+      firewall:
+        enable: {{ vm.security.firewall.enable }}
+        ports:
+          {%- for port in vm.security.firewall.ports_open %}
+          - {{ port }}
+          {%- endfor %}
+
+    # hosts the individual host names and IPs based on count above
+    hosts:
+      {%- for item in hosts %}
+      {%- if vm.name in item.virtualMachine.name %}
+      - name: {{ item.virtualMachine.name }}
+        # May want to address multiple nics and bonding options later
+        ips:
+          {%- if item.virtualMachine.network.publicIpAddresses %}
+          # Only takes the first public ip
+          public: {{ item.virtualMachine.network.publicIpAddresses[0].ipAddress }}
+          {%- endif %}
+          private: {{ item.virtualMachine.network.privateIpAddresses[0] }}
+      {%- endif %}
+      {%- endfor %}
+  {%- endfor %}
+
+kubernetes:
+  version: 1.13.0 #latest
+  storage:
+    enable: {{ core.kubernetes.storage.enable }}
+    type: {{ core.kubernetes.storage.type }}
+    {% if core.kubernetes.storage.type == 'azure-file' %}
+    account: {{ core.kubernetes.storage.account }}
+    key: {{ core.kubernetes.storage.key }}
+    {% endif %}
+    tags: {{ core.kubernetes.storage.tags }}
+    quota: {{ core.kubernetes.storage.quota }}
+
+{%- if core.haproxy is defined %}
+haproxy:
+  {% if core.haproxy.http_request_timeout is defined and core.haproxy.http_request_timeout is not none %}
+  http_request_timeout: {{ core.haproxy.http_request_timeout }}
+  {%- endif %}
+  {% if core.haproxy.haproxy_certs_dir is defined and core.haproxy.haproxy_certs_dir is not none %}
+  haproxy_certs_dir: {{ core.haproxy.haproxy_certs_dir }}
+  {%- endif %}
+  {%- if core.haproxy.stats is defined %}
+  stats:
+    enable: {{ core.haproxy.stats.enable }}
+    user: {{ core.haproxy.stats.user }}
+    password: {{ core.haproxy.stats.password }}
+  {%- endif %}
+  {%- if core.haproxy.frontend is defined %}
+  frontend:
+  {%- for front in core.haproxy.frontend %}
+  - name: {{ front.name }}
+    port: {{ front.port }}
+    backend:
+    {%- for backend in front.backend %}
+    - {{ backend }}
+    {%- endfor %}
+    {%- if front.https == True %}
+    https: yes
+    {%- else %}
+    https: no
+    {%- endif %}
+    {%- if front.domain_backend_mapping is defined %}
+    domain_backend_mapping:
+    {%- for domain_backend in front.domain_backend_mapping %}
+    - domain: {{ domain_backend.domain }}
+      backend: {{ domain_backend.backend }}
+    {%- endfor %}
+    {%- endif %}
+    {%- endfor %}
+  {%- endif %}
+  {%- if core.haproxy.backend is defined %}
+  backend:
+  {%- for back in core.haproxy.backend %}
+  - name: {{ back.name }}
+
+    {%- if back.server_groups is defined %}
+    server_groups:
+    {%- for server_group in back.server_groups %}
+    - {{ server_group }}
+    {%- endfor %}
+    {%- endif %}
+
+    {%- if back.servers is defined %}
+    servers:
+    {%- for server in back.servers %}
+    - name: {{ server.name }}
+      address: {{ server.address }}    
+    {%- endfor %}
+    {%- endif %}
+    port: {{ back.port }}
+  {%- endfor %}
+  {%- endif %}
+{%- endif %}
+
+{%- if core.monitoring is defined %}
+monitoring:
+  {{ core.monitoring | to_nice_yaml | indent(2,False) }}
+{%- endif %}

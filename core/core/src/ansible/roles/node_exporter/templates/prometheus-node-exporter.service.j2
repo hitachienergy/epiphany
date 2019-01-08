@@ -1,0 +1,12 @@
+[Unit]
+Description=Service that runs Prometheus Node Exporter
+ 
+[Service]
+User=node_exporter
+Group=node_exporter
+ExecStart=/opt/node_exporter/node_exporter {% for prometheus_node_exporter_collector in prometheus_node_exporter_enabled_collectors %}--collector.{{ prometheus_node_exporter_collector }} {% endfor %} {% for flag in prometheus_node_exporter_config_flags %} {{ flag }} {% endfor %} 
+SyslogIdentifier=prometheus_node_exporter 
+Restart=always 
+ 
+[Install]
+WantedBy=multi-user.target
