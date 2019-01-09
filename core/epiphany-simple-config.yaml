@@ -3,7 +3,7 @@ core:
     resource_group: &resource_group
       name: epi-quick
       location: West Europe
-    subscription: PGGA-Epiphany-Dev
+    subscription: YOUR-SUBSCRIPTION-NAME
     ad:
       name: epi-quick
     standard:

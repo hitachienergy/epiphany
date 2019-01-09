@@ -5,7 +5,7 @@ kind: simplified-datafile
 version: 1.0.1
 environment_name: Playground
 azure:
-  subscription_name: PGGA-Epiphany-Dev
+  subscription_name: YOUR-SUBSCRIPTION-NAME
   resource_group: 'playground'
   location: 'West Europe'
   image_offer: RHEL #UbuntuServer
