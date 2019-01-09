@@ -16,7 +16,7 @@
 #
 
 # Creates the REPO_ROOT env var for everything else to use...
-# export REPO_ROOT=$(git rev-parse --show-toplevel)
+# export REPO_ROOT=$(git rev-parse --show-toplevel)/core
 
 set -e
 
