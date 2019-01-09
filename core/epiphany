@@ -15,7 +15,7 @@
 # limitations under the License.
 
 # Creates the REPO_ROOT env var for everything else to use...
-export REPO_ROOT=$(git rev-parse --show-toplevel)
+export REPO_ROOT=$(git rev-parse --show-toplevel)/core
 
 # Exit immediately if anything goes wrong, instead of making things worse.
 set -eu
