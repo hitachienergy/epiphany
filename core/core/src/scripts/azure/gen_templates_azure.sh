@@ -30,7 +30,7 @@ set -e
 TEMPLATES_BASE=core/src/templates/azure
 
 # Get the root of the Epiphany repo
-export REPO_ROOT=$(git rev-parse --show-toplevel)
+export REPO_ROOT=$(git rev-parse --show-toplevel)/core
 
 COMMON_SCRIPTS_BASE=core/src/scripts/common
 COMMON_TEMPLATES_BASE=core/src/templates/common

@@ -49,25 +49,17 @@ epiphany.code-workspace
 # **/login.sh
 **/*.retry
 
-# Data/ is the only place for data related files
-# !build/**/*.tf
-# !data/**/*.tf
-# !data/**/*.yaml
-
-# Ignore data folder as this is a part of separate repository - data repository
-data
-
 # /data/*.yaml files will be in a private repo
 # These files will overlay the files in this repo as part of the build process so that the
 # private repo takes precedence over the public repo
 
 # Afterwards, remove all of the build folder except the ansible data from git
-build/azure/infrastructure
-build/aws
-build/metal
-build/vmware
-build/vbox
-build/*
+core/build/azure/infrastructure
+core/build/aws
+core/build/metal
+core/build/vmware
+core/build/vbox
+core/build/*
 
 examples/**/bin/
 examples/**/obj/
