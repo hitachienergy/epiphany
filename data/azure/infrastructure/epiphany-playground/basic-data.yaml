@@ -1,0 +1,25 @@
+---
+# Simplified datafile that you can use together with template (see README.md in this folder). 
+# Change values according to your needs, start with generating ssh keys and placing them in the directory "keys_directory". Do not forget to update "keys_directory" as well. 
+kind: simplified-datafile
+version: 1.0.1
+environment_name: Playground
+azure:
+  subscription_name: YOUR-SUBSCRIPTION-NAME 
+  resource_group: 'playground'
+  location: 'West Europe'
+  image_offer: RHEL #UbuntuServer
+  boot_storage: 'epiplaygrnd1'
+  image_sku: 7.5 #18.04-LTS
+  image_publisher: RedHat #Canonical
+  image_version: 7.5.2018081519 #18.04.201810030
+  vm_name_prefix: 'vmplaygrnd'
+  create_service_principal: true
+security:
+  keys_directory: '/home/your-username/playground'
+  key_file_name: id_rsa
+  public_key_file_name: id_rsa.pub
+platform:
+  worker_vms: 3
+  kafka_vms: 1
+  postgresql_vms: 1
