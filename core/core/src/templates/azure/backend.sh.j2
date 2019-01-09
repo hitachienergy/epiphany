@@ -26,7 +26,7 @@
 set -e
 
 {% if core.azure.terraform.backend.enable %}
-export REPO_ROOT=$(git rev-parse --show-toplevel)
+export REPO_ROOT=$(git rev-parse --show-toplevel)/core
 
 # Parameter 4 (data file) is optional
 
