@@ -25,7 +25,7 @@
 set -eu
 
 # Get the root of the Epiphany repo
-export REPO_ROOT=$(git rev-parse --show-toplevel)
+export REPO_ROOT=$(git rev-parse --show-toplevel)/core
 
 mkdir -p $REPO_ROOT/docs/home
 mkdir -p $REPO_ROOT/docs/architecture
