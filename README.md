@@ -8,6 +8,23 @@ Epiphany can run on as few as one node (laptop, desktop, server) but the real va
 
 We currently use Terraform and Ansible for our automation orchestration. All automation is idempotent so you can run it as many times as you wish and it will maintain the same state unless you change the data. If someone makes a "snow flake" change to the environment (you should never do this) then simply running the automation again will put the environment back to the desired state.
 
+## Easy get started
+
+Fork `epiphany` repository and modify the yaml's under `core/data/` directory. For example in `data/azure/infrastructure/epiphany-playground/basic-data.yaml` file you will need to modify few values in this file (like you azure subscription name, directory path for ssh keys). Once you done with `basic-data.yaml` you can execute Epiphany with command:
+
+```shell
+./epiphany -a -b -i -f infrastructure/epiphany-playground -t infrastructure/epiphany-template
+```
+
+This setup works on a simplified file that is fine to start with, if you need more control over the infrastructure created you should look at `data/azure/infrastructure/epiphany-bld-apps/data.yaml`.
+Execution of this full profile would look like:
+
+```shell
+./epiphany -a -b -i -f infrastructure/epiphany-bld-apps
+```
+
+Find more information using table of contents below - especially [How-to guides](docs/home/HOWTO.md).
+
 ## Table of Contents
 
 <!-- TOC -->
