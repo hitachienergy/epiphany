@@ -1,6 +1,5 @@
 ---
-## Kubernetes worker tasks
-- include_tasks: "install-packages.yml"
+# Kubernetes worker node specific
 
 - name: Check if node is currently registered with kubernetes cluster
   shell: kubectl --kubeconfig=/home/{{ admin_user.name }}/.kube/config get nodes | grep -w {{ inventory_hostname }} | grep -wi Ready
