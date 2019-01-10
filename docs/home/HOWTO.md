@@ -83,10 +83,10 @@ Now, to build it locally and run it:
 
 
 1. Run the following to build the image locally:
-```docker build -t epiphany-dev -f core/src/docker/dev/Dockerfile .```
+```docker build -t epiphany-dev -f core/core/src/docker/dev/Dockerfile .```
 2. To run the locally build image in a container use:
 ```docker run -it -v LOCAL_DEV_DIR:/epiphany --rm epiphany-dev```
-Where ```LOCAL_DEV_DIR``` should be replaced with the local path to you're core and data repositories. This will then be mapped to ```/epiphany``` inside the container. If everything is ok you will be presentated with a bash terminal from which one can run the Epiphany engine. Note that when filling in your data YAMLs one needs to specify the paths from the containers point of view.
+Where ```LOCAL_DEV_DIR``` should be replaced with the local path to you're epiphany repository. This will then be mapped to ```/epiphany``` inside the container. If everything is ok you will be presentated with a bash terminal from which one can run the Epiphany engine. Note that when filling in your data YAMLs one needs to specify the paths from the containers point of view.
 
 
 
@@ -105,7 +105,7 @@ For people who are only using the Epiphany engine to deploy and maintain cluster
 To get it from the registry and run it:
 1. Build an dev image described [here](#docker-image-for-development).
 2. Run the following command to build the deployment image locally:
-```docker build -t epiphany-deploy -f core/src/docker/deploy/Dockerfile .```
+```docker build -t epiphany-deploy -f core/core/src/docker/deploy/Dockerfile .```
 3. To run the pulled image in a container use:
 
 

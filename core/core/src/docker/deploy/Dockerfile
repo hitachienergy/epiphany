@@ -1,6 +1,6 @@
 FROM epiphany-dev:latest
 
-ADD . /epiphany/
+ADD ./core/ /epiphany/
 
 RUN mkdir /epiphany/data/ \
     && mkdir /epiphany/build/
