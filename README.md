@@ -10,13 +10,13 @@ We currently use Terraform and Ansible for our automation orchestration. All aut
 
 ## Easy get started
 
-Fork `epiphany` repository and modify one of yaml's under `core/data/` directory. For example `data/azure/infrastructure/epiphany-playground/basic-data.yaml` you will need to modify few values in this file (like you azure subscription name, directory path for ssh keys). Once you done with `basic-data.yaml` you can execute Epiphany with command:
+Fork `epiphany` repository and modify the yaml's under `core/data/` directory. For example in `data/azure/infrastructure/epiphany-playground/basic-data.yaml` file you will need to modify few values in this file (like you azure subscription name, directory path for ssh keys). Once you done with `basic-data.yaml` you can execute Epiphany with command:
 
 ```shell
 ./epiphany -a -b -i -f infrastructure/epiphany-playground -t infrastructure/epiphany-template
 ```
 
-This setup works on simplified file that is fine to start with, if you need more control of infrastructure created you should look to `data/azure/infrastructure/epiphany-bld-apps/data.yaml`.
+This setup works on a simplified file that is fine to start with, if you need more control over the infrastructure created you should look at `data/azure/infrastructure/epiphany-bld-apps/data.yaml`.
 Execution of this full profile would look like:
 
 ```shell
