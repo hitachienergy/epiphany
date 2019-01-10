@@ -1,3 +1,2 @@
 ---
 - include_tasks: install-packages.yml
-- include_tasks: configure-kubelet.yml
