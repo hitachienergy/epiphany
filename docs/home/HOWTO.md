@@ -4,10 +4,10 @@
 ## Contents
 
 - [Prerequisites for Epiphany engine](#prerequisites-to-run-epiphany-engine)
-  - [System](#prerequisites-to-run-epiphany-engine-locally)
-  - [Docker image for development](#prerequisites-to-run-epiphany-engine-docker-development)
-  - [Docker image for deployment](#prerequisites-to-run-epiphany-engine-deploy)
-- [Epiphany cluster:](#)
+  - [Run directly from OS](#run-directly-from-os)
+  - [Run with Docker image for development](#run-with-docker-image-for-development)
+  - [Run with Docker image for deployment](#run-with-docker-image-for-deployment)
+- Epiphany cluster
   - [How to create an Epiphany cluster on premise](#how-to-create-an-epiphany-cluster-on-premise)
   - [How to create an Epiphany cluster on Azure](#how-to-create-an-epiphany-cluster-on-azure)
   - [How to create production environment on Azure](#how-to-create-production-environment-on-azure)
@@ -23,6 +23,7 @@
 - Kubernetes
   - [How to do Kubernetes RBAC](#how-to-do-kubernetes-rbac)
   - [How to run an example app](#how-to-run-an-example-app)
+  - [How to set resource requests and limits for Containers](#how-to-set-resource-requests-and-limits-for-containers)
   - [How to run CronJobs](#how-to-run-cronjobs)
   - [How to test the monitoring features](#how-to-test-the-monitoring-features)
   - [How to run chaos on Epiphany Kubernetes cluster and monitor it with Grafana](#how-to-run-chaos-on-epiphany-kubernetes-cluster-and-monitor-it-with-grafana)
@@ -49,11 +50,11 @@
 
 ## Prerequisites to run Epiphany engine
 
-### System
+### Run directly from OS
 
 To be able to run the Epiphany engine from your local OS you have to install:
 
-- Bash 4.4+ 
+- Bash 4.4+
   - Should be natively installed on Linux distributions.
   - MacOS version of bash most likely needs upgrading.
   - For Windows 10 you can install Ubuntu subsystem.
@@ -70,82 +71,54 @@ To be able to run the Epiphany engine from your local OS you have to install:
 
 This can both be used for deploying/managing clusters or for development.
 
-### Docker image for development
+### Run with Docker image for development
 
 To facilitate an easier path for developers to contribute to Epiphany we have a development docker image based on alpine. This image will help to more easily setup a development environment or to develop on systems which do not support bash like Windows 7.
 
 The following prerequisites are needed when working with the development image:
-    - Docker[https://www.docker.com/]
-        - For Windows 7 check here[https://docs.docker.com/toolbox/toolbox_install_windows/]
-    - Git[https://git-scm.com/]
+
+- Docker <https://www.docker.com>
+  - For Windows 7 check [here](https://docs.docker.com/toolbox/toolbox_install_windows)
+- Git <https://git-scm.com>
 
 Now, to build it locally and run it:
 
-
 1. Run the following to build the image locally:
-```docker build -t epiphany-dev -f core/core/src/docker/dev/Dockerfile .```
+    ```bash
+    docker build -t epiphany-dev -f core/core/src/docker/dev/Dockerfile .
+    ```
 2. To run the locally build image in a container use:
-```docker run -it -v LOCAL_DEV_DIR:/epiphany --rm epiphany-dev```
-Where ```LOCAL_DEV_DIR``` should be replaced with the local path to you're epiphany repository. This will then be mapped to ```/epiphany``` inside the container. If everything is ok you will be presentated with a bash terminal from which one can run the Epiphany engine. Note that when filling in your data YAMLs one needs to specify the paths from the containers point of view.
+    ```bash
+    docker run -it -v LOCAL_DEV_DIR:/epiphany --rm epiphany-dev
+    ```
 
+Where ```LOCAL_DEV_DIR``` should be replaced with the local path to your epiphany repository. This will then be mapped to ```/epiphany``` inside the container. If everything is ok you will be presentated with a bash terminal from which one can run the Epiphany engine. Note that when filling in your data YAMLs one needs to specify the paths from the containers point of view.
 
-
-
-
-
-
-
-
-
-
-### Docker image for deployment
+### Run with Docker image for deployment
 
 For people who are only using the Epiphany engine to deploy and maintain clusters there is a Dockerfile for the image with the engine already embedded.
 
 To get it from the registry and run it:
-1. Build an dev image described [here](#docker-image-for-development).
+
+1. Build an dev image described [here](#run-with-docker-image-for-development).
 2. Run the following command to build the deployment image locally:
-```docker build -t epiphany-deploy -f core/core/src/docker/deploy/Dockerfile .```
+    ```bash
+    docker build -t epiphany-deploy -f core/core/src/docker/deploy/Dockerfile .
+    ```
 3. To run the pulled image in a container use:
+    ```bash
+    docker run -it -v LOCAL_DATA_DIR:/epiphany/data \
+                   -v LOCAL_BUILD_DIR:/epiphany/build \
+                   --rm epiphany-deploy
+    ```
 
-
-
-```docker run -it -v LOCAL_DATA_DIR:/epiphany/data \```
-```               -v LOCAL_BUILD_DIR:/epiphany/build \```
-```               --rm epiphany-deploy``` 
 ```LOCAL_DATA_DIR``` should be the host input directy for you're data YAML's and certificates.  ```LOCAL_BUILD_DIR``` should be the host directory where you want the Epiphany engine to write it's build output. If everything is ok you will be presentated with a bash terminal from which one can run the Epiphany engine. Note that when filling in your data YAMLs one needs to specify the paths from the containers point of view.
 
 [`Azure specific`] Ensure that you have already enough resources/quotas accessible in your region/subscription on Azure before you run Epiphany - depending on your configuration it can create large number of resources.
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 ## Import and create of Grafana dashboards
 
-Epiphany use Grafana for monitoring data visualization. Epiphany installation creates Prometheus datasource in Grafana, so the only additional step you have to do is to create your dashboard.
+Epiphany uses Grafana for monitoring data visualization. Epiphany installation creates Prometheus datasource in Grafana, so the only additional step you have to do is to create your dashboard.
 
 ### Creating dashboards
 
@@ -172,9 +145,7 @@ sudo -u postgres -i
 ```
 
 And then configure database server using psql according to your needs and
-PostgreSQL documentation, to which link you can find under address:
-
-https://www.postgresql.org/docs/
+PostgreSQL documentation, to which link you can find at <https://www.postgresql.org/docs/>
 
 ### Components used for monitoring
 
@@ -233,8 +204,7 @@ In order to send messages from Prometheus add monitoring block to your data.yaml
         duration: 1m #1s, 1m, 1h, 1d, 1w, ...
         severity: critical
         message: "Instance down"
- ```
-
+```
 
     monitoring: - this covers whole monitoring section and is needed to define alerts
       alerts: - this covers whole alerts section and is needed to define alerts
@@ -441,6 +411,12 @@ Here we will get a simple app to run using Docker through Kubernetes. We assume 
             image: myregistry.azurecr.io/samples/sample-app:v1
             ports:
             - containerPort: 80
+            resources:
+              requests:
+                cpu: 100m
+                memory: 64Mi
+              limits:
+                memory: 128Mi
           imagePullSecrets:
           - name: myregistry
     ```
@@ -452,6 +428,17 @@ Here we will get a simple app to run using Docker through Kubernetes. We assume 
 17. Run `kubectl get pods -o wide` and check on which node is the app running.
 
 18. Access the app through [AZURE_NODE_VM_IP]:[PORT] from the two previous points - firewall changes might be needed.
+
+## How to set resource requests and limits for Containers
+
+When Kubernetes schedules a Pod, it’s important that the Containers have enough resources to actually run. If you schedule a large application on a node with limited resources, it is possible for the node to run out of memory or CPU resources and for things to stop working! It’s also possible for applications to take up more resources than they should.
+
+When you specify a Pod, it is strongly recommended to specify how much CPU and memory (RAM) each Container needs. Requests are what the Container is guaranteed to get. If a Container requests a resource, Kubernetes will only schedule it on a node that can give it that resource. Limits make sure a Container never goes above a certain value. For more details about the difference between requests and limits, see [Resource QoS](https://git.k8s.io/community/contributors/design-proposals/node/resource-qos.md).
+
+For more information, see the links below:
+
+- [Kubernetes best practices: Resource requests and limits](https://cloud.google.com/blog/products/gcp/kubernetes-best-practices-resource-requests-and-limits)
+- [Managing Compute Resources for Containers](https://kubernetes.io/docs/concepts/configuration/manage-compute-resources-container/#resource-requests-and-limits-of-pod-and-container)
 
 ## How to run CronJobs
 
@@ -857,8 +844,7 @@ You can read more [here](https://www.confluent.io/blog/how-choose-number-topics-
 
 ## RabbitMQ installation and setting
 
-To install RabbitMQ in single mode just add rabbitmq role to your data.yaml for your sever and in general roles section. All configuration on Rabbit MQ - e.g. user other than 
-guest creation should be performed manually.
+To install RabbitMQ in single mode just add rabbitmq role to your data.yaml for your sever and in general roles section. All configuration on RabbitMQ - e.g. user other than guest creation should be performed manually.
 
 ## Data and log retention
 
