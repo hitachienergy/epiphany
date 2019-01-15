@@ -1,7 +1,8 @@
-- name: Install azure-file storage packages
-  package: 
+---
+- name: Install Azure File Storage packages
+  package:
     name: "{{ item }}"
-    update_cache: yes 
+    update_cache: yes
     state: present
   with_items:
     - cifs-utils
@@ -9,28 +10,22 @@
     - samba-common
   when: kubernetes.storage.enable == True
 
-- name: Install redhat family packages
-  yum: 
+- name: Install RedHat family packages
+  yum:
     name:
       - kubelet-{{kubernetes.version}}
       - kubectl-{{kubernetes.version}}
-      - kubeadm-{{kubernetes.version}}    
-    update_cache: yes 
+      - kubeadm-{{kubernetes.version}}
+    update_cache: yes
     state: present
   when: ansible_os_family == "RedHat"
 
-- name: Install debian family packages
-  apt: 
+- name: Install Debian family packages
+  apt:
     name:
       - kubelet={{kubernetes.version}}-00
       - kubectl={{kubernetes.version}}-00
-      - kubeadm={{kubernetes.version}}-00    
-    update_cache: yes 
+      - kubeadm={{kubernetes.version}}-00
+    update_cache: yes
     state: present
   when: ansible_os_family == "Debian"
-
-- name: Start kubelet
-  service:
-    name: kubelet
-    state: started
-    enabled: yes

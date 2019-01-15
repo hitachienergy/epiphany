@@ -78,6 +78,7 @@ mkdir -p $EPIPHANY_DATA_DIR/{cache,inventory}
 
 # Just make sure this is present
 mkdir -p $EPIPHANY_DATA_DIR/roles/common/vars
+mkdir -p $EPIPHANY_DATA_DIR/roles/kubernetes-common/vars
 mkdir -p $EPIPHANY_DATA_DIR/roles/master/vars
 mkdir -p $EPIPHANY_DATA_DIR/roles/worker/vars
 mkdir -p $EPIPHANY_DATA_DIR/roles/jmx-exporter/vars
@@ -99,6 +100,7 @@ mkdir -p $EPIPHANY_DATA_DIR/roles/rabbitmq/vars
 mkdir -p $EPIPHANY_DATA_DIR/roles/reboot/vars
 
 rm -f $EPIPHANY_DATA_DIR/roles/common/vars/*
+rm -f $EPIPHANY_DATA_DIR/roles/kubernetes-common/vars/*
 rm -f $EPIPHANY_DATA_DIR/roles/master/vars/*
 rm -f $EPIPHANY_DATA_DIR/roles/worker/vars/*
 rm -f $EPIPHANY_DATA_DIR/roles/zookeeper/vars/*
@@ -127,6 +129,7 @@ $REPO_ROOT/bin/template_engine -d $EPIPHANY_DATA_DIR/data/manifest.yaml -i $REPO
 
 echo_yellow '====> Creating Ansible default vars...'
 cat $EPIPHANY_DATA_DIR/data/manifest.yaml >> $EPIPHANY_DATA_DIR/roles/common/vars/main.yml
+cat $EPIPHANY_DATA_DIR/data/manifest.yaml >> $EPIPHANY_DATA_DIR/roles/kubernetes-common/vars/main.yml
 cat $EPIPHANY_DATA_DIR/data/manifest.yaml >> $EPIPHANY_DATA_DIR/roles/master/vars/main.yml
 cat $EPIPHANY_DATA_DIR/data/manifest.yaml >> $EPIPHANY_DATA_DIR/roles/worker/vars/main.yml
 cat $EPIPHANY_DATA_DIR/data/manifest.yaml >> $EPIPHANY_DATA_DIR/roles/jmx-exporter/vars/main.yml

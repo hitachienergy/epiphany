@@ -1,9 +1,8 @@
 ---
-## Kubernetes worker tasks
-- include_tasks: "install-packages.yml"
+# Kubernetes worker node specific
 
 - name: Check if node is currently registered with kubernetes cluster
-  shell: kubectl --kubeconfig=/home/{{ admin_user.name }}/.kube/config get nodes | grep -w {{ inventory_hostname }} | grep -wi Ready
+  shell: kubectl --kubeconfig=/home/{{ admin_user.name }}/.kube/config get nodes --no-headers | awk '{print $1}' | grep -w {{ inventory_hostname }}
   register: node_already_in_cluster
   failed_when: node_already_in_cluster.rc == 2 or node_already_in_cluster.stderr # do not fail when grep doesn't match but detect errors in pipeline
   changed_when: false
@@ -43,6 +42,11 @@
   when:
     - not groups['master'][0] == inventory_hostname
     - not node_already_in_cluster.stdout
+
+- name: Configure kubelet
+  include_role:
+    name: kubernetes-common
+    tasks_from: configure-kubelet
 
 - name: Create /home/{{ admin_user.name }}/.kube
   file:
