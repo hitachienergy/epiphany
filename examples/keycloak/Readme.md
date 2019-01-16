@@ -99,7 +99,7 @@ To run the example:
 - Run the following start the app server on <http://localhost:8090> where it can be opened:
 
     ```bash
-    pipenv install run python
+    pipenv run python main.py
     ```
 
 ### Implicit .NET core
@@ -171,7 +171,7 @@ To run the example:
 - Run the following start the app server on <http://localhost:8090> where it can be opened:
 
     ```bash
-    pipenv install run python
+    pipenv run python main.py
     ```
 
 It might be the case that after the import of the `realm-export.json` the secret clientkey of `demo-app-authorization` needs to be reset. This can be done here in the KeyCloak administrator console:
