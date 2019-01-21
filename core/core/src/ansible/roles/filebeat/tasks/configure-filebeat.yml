@@ -1,0 +1,24 @@
+---
+- name: Get Elasticsearch host IP
+  set_fact: elastic_address="{{ hostvars[groups['elasticsearch'][0]]['ansible_default_ipv4']['address'] }}"
+  when: groups['elasticsearch'][0] is defined
+
+- name: Get Kibana host IP
+  set_fact: kibana_address="{{ hostvars[groups['kibana'][0]]['ansible_default_ipv4']['address'] }}"
+  when: groups['kibana'][0] is defined
+
+- name: Copy configuration file
+  template:
+    dest: /etc/filebeat/filebeat.yml
+    src: filebeat.yml.j2
+  notify: Restart Filebeat service
+
+- name: Enable Filebeat service
+  systemd:
+    name: filebeat
+    enabled: yes
+
+- name: Start Filebeat service
+  systemd:
+    name: filebeat
+    state: started
