@@ -21,7 +21,7 @@ This directory contains example applications built on top of keycloak.
 
 ## Introduction
 
-This folder contains examples on how to implement authorization in [KeyCloak](https://www.keycloak.org/) using the OpenID standart in .NET core, python and Java (In progress). The examples cover the implicit and authorization flows and also show how to dail with role based access.
+This folder contains examples on how to implement authorization in [KeyCloak](https://www.keycloak.org/) using the OpenID standart in .NET core, python and Java. The examples cover the implicit and authorization flows and also show how to deal with role based access.
 
 An easy overview of the flows can be found [here](https://medium.com/google-cloud/understanding-oauth2-and-building-a-basic-authorization-server-of-your-own-a-beginners-guide-cf7451a16f66).
 
