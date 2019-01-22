@@ -91,16 +91,18 @@ The Python example is based on a [flask](http://flask.pocoo.org/) and uses [Jose
 To run the example:
 
 - Open a terminal here `examples/keycloak/implicit/python`
-- Run the following to provision the project:
+- Run the following to provision and build the docker image:
 
     ```bash
-    pipenv install
+    docker build -t python-implicit .
     ```
-- Run the following start the app server on <http://localhost:8090> where it can be opened:
+- Run the following to start a new container with the build image where `IP` in the url parameter needs to be replaced with the IP of the KeyCloak server:
 
     ```bash
-    pipenv run python main.py
+    docker run -e realm='master' -e url='http://IP:8080/auth' -e clientid='demo-app-implicit' -p 8090:80 dotnet-python
     ```
+
+The example can then be opened here: <http://localhost:8090>
 
 ### Implicit .NET core
 
