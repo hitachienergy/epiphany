@@ -1,7 +1,5 @@
 # KeyCloak examples readme
 
-This directory contains example applications built on top of keycloak.
-
 ## Contents
 
 - [Introduction](#introduction)
@@ -25,11 +23,11 @@ This folder contains examples on how to implement authorization in [KeyCloak](ht
 
 An easy overview of the flows can be found [here](https://medium.com/google-cloud/understanding-oauth2-and-building-a-basic-authorization-server-of-your-own-a-beginners-guide-cf7451a16f66).
 
-## Security concerns and concidirations 
+## Security concerns and concidirations
 
 While the examples cover implicit flow it`s not recommanded for security concerns and should be avoided. You can read more [here](https://oauth.net/2/grant-types/implicit/).
 
-To deploy the examples securely on a Kubernetes have a look [here](https://kubernetes.io/docs/tasks/inject-data-application/distribute-credentials-secure/#create-a-pod-that-has-access-to-the-secret-data-through-environment-variables).
+To deploy the examples securely on a Kubernetes cluster have a look [here](https://kubernetes.io/docs/tasks/inject-data-application/distribute-credentials-secure/#create-a-pod-that-has-access-to-the-secret-data-through-environment-variables).
 
 ## Prerequisites
 
@@ -75,12 +73,12 @@ Note: Users should be added manually and assigned one of the 2 (`Administrator`,
 The .NET core, python and Java examples all relly on the same ReactJS SPA. This first needs to be build and deployed before any of the examples can be started:
 
 - Open a terminal here `examples/keycloak/implicit/react`
-- Run the folling to provision the project:
+- Run the following to provision the project:
 
     ```bash
     yarn install
     ```
-- Run the folling to build the project and copy the artifacts to the .NET core, python and Java examples:
+- Run the following to build the project and copy the artifacts to the .NET core, python and Java examples:
 
     ```bash
     yarn build
@@ -148,17 +146,21 @@ The example can then be opened here: <http://localhost:8090>
 
 ## Authorization flow examples
 
+ It might be the case that after the import of the `realm-export.json` the secret clientkey of `demo-app-authorization` needs to be reset. This can be done here in the KeyCloak administrator console:
+
+`Clients` > `demo-app-authorization` > `Credentials` > `Regenerate Secret`
+
 ### Authorization ReactJS SPA
 
 The .NET core, python and Java examples all relly on the same ReactJS SPA. This first needs to be build and deployed before any of the examples can be started:
 
 - Open a terminal here `examples/keycloak/authorization/react`
-- Run the folling to provision the project:
+- Run the following to provision the project:
 
     ```bash
     yarn install
     ```
-- Run the folling to build the project and copy the artifacts to the .NET core, python and Java examples:
+- Run the following to build the project and copy the artifacts to the .NET core, python and Java examples:
 
     ```bash
     yarn build
@@ -184,10 +186,6 @@ To run the example:
 
 The example can then be opened here: <http://localhost:8090>
 
-It might be the case that after the import of the `realm-export.json` the secret clientkey of `demo-app-authorization` needs to be reset. This can be done here in the KeyCloak administrator console:
-
-`Clients` > `demo-app-authorization` > `Credentials` > `Regenerate Secret`
-
 ### Authorization .NET core
 
 The .NET core example uses [IdentityServer4](http://docs.identityserver.io/en/latest/) todo the validation.
@@ -208,10 +206,6 @@ To run the example:
 
 The example can then be opened here: <http://localhost:8090>
 
- It might be the case that after the import of the `realm-export.json` the secret clientkey of `demo-app-authorization` needs to be reset. This can be done here in the KeyCloak administrator console:
-
-`Clients` > `demo-app-authorization` > `Credentials` > `Regenerate Secret`
-
 ### Authorization Java
 
 The Java example uses [Spring Boot](http://spring.io/projects/spring-boot) with [WebFlux](https://docs.spring.io/spring/docs/current/spring-framework-reference/web-reactive.html).
@@ -219,23 +213,15 @@ The Java example uses [Spring Boot](http://spring.io/projects/spring-boot) with 
 To run the example:
 
 - Open a terminal here `examples/keycloak/authorization/java`
-- Run the following to provision:
+- Run the following to provision and build the docker image:
 
     ```bash
-    mvnw install
+    docker build -t java-authorization .
     ```
-- Run the following start the app server on <http://localhost:8090> where it can be opened:
+- Run the following to start a new container with the build image where `IP` in the url parameter needs to be replaced with the IP of the KeyCloak server and `SECRET` in the clientsecret parameter needs to be replaced with the clients secret:
 
     ```bash
-    mvnw spring-boot:run
+    docker run -e realm='master' -e url='http://IP:8080/auth' -e clientid='demo-app-authorization' -e clientsecret='SECRET' -p 8090:80 java-authorization
     ```
 
- It might be the case that after the import of the `realm-export.json` the secret clientkey of `demo-app-authorization` needs to be reset. This can be done here in the KeyCloak administrator console:
-
-`Clients` > `demo-app-authorization` > `Credentials` > `Regenerate Secret`
-
-The new secret then needs the be update here:
-
-`examples/keycloak/authorization/java/src/main/resources/application.properties`
-
-At the entry `keycloak.credentials.secret`.
+The example can then be opened here: <http://localhost:8090>
