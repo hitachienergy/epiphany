@@ -7,8 +7,8 @@ verify_ssl = true
 
 [packages]
 flask = "*"
-flask-oidc = "*"
 requests = "*"
+flask-oidc = {git = "https://github.com/puiterwijk/flask-oidc.git",editable = true}
 
 [requires]
 python_version = "2.7"
