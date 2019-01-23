@@ -62,9 +62,9 @@ This part describes the steps to setup a local KeyCloak instance for running the
     - Goto <http://localhost:8080> and login to the administration console with the `admin` account.
     - Goto `Import` and select the `realm-export.json`. Set `If a resource exists` to `Skip`.
 
-The master realm now has 2 clients (`demo-app-authorization`,`demo-app-implicit`) which both contain 2 roles (`Administrator`,`User`) which are used in the examples.
+The master realm now has 2 clients (`demo-app-authorization`, `demo-app-implicit`) which both contain 2 roles (`Administrator`, `User`) which are used in the examples.
 
-Note: Users should be added manually and assigned one of the 2 (`Administrator`,`User`) client roles for testing.
+Note: Users should be added manually and assigned one of the 2 (`Administrator`, `User`) client roles for testing.
 
 ## Implicit flow examples
 
@@ -167,26 +167,22 @@ The Python example is based on a [flask](http://flask.pocoo.org/) and uses [flas
 To run the example:
 
 - Open a terminal here `examples/keycloak/authorization/python`
-- Run the following to provision the project:
+- Run the following to provision and build the docker image:
 
     ```bash
-    pipenv install
+    docker build -t python-authorization .
     ```
-- Run the following start the app server on <http://localhost:8090> where it can be opened:
+- Run the following to start a new container with the build image where `IP` in the url parameter needs to be replaced with the IP of the KeyCloak server and `SECRET` in the clientsecret parameter needs to be replaced with the clients secret:
 
     ```bash
-    pipenv run python main.py
+    docker run -e realm='master' -e url='http://IP:8080/auth' -e clientid='demo-app-authorization' clientsecret='SECRET' -p 8090:80 python-authorization
     ```
+
+The example can then be opened here: <http://localhost:8090>
 
 It might be the case that after the import of the `realm-export.json` the secret clientkey of `demo-app-authorization` needs to be reset. This can be done here in the KeyCloak administrator console:
 
 `Clients` > `demo-app-authorization` > `Credentials` > `Regenerate Secret`
-
-The new secret then needs the be update here:
-
-`examples/keycloak/authorization/python/appsettings.json`
-
-At the entry `client_secret`.
 
 ### Authorization .NET core
 
@@ -195,26 +191,22 @@ The .NET core example uses [IdentityServer4](http://docs.identityserver.io/en/la
 To run the example:
 
 - Open a terminal here `examples/keycloak/authorization/dotnet/KeyCloak`
-- Run the following to provision and build the project:
+- Run the following to provision and build the docker image:
 
     ```bash
-    dotnet build
+    docker build -t dotnet-authorization .
     ```
-- Run the following start the app server on <http://localhost:8090> where it can be opened:
+- Run the following to start a new container with the build image where `IP` in the url parameter needs to be replaced with the IP of the KeyCloak server and `SECRET` in the clientsecret parameter needs to be replaced with the clients secret:
 
     ```bash
-    dotnet run
+    docker run -e realm='master' -e url='http://IP:8080/auth' -e clientid='demo-app-authorization' clientsecret='SECRET' -p 8090:80 dotnet-authorization
     ```
+
+The example can then be opened here: <http://localhost:8090>
 
  It might be the case that after the import of the `realm-export.json` the secret clientkey of `demo-app-authorization` needs to be reset. This can be done here in the KeyCloak administrator console:
 
 `Clients` > `demo-app-authorization` > `Credentials` > `Regenerate Secret`
-
-The new secret then needs the be update here:
-
-`examples/keycloak/authorization/dotnet/KeyCloak/appsettings.json`
-
-At the entry `Jwt:ClientSecret`.
 
 ### Authorization Java
 
