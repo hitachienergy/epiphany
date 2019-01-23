@@ -24,10 +24,6 @@ namespace KeyCloak
            var builder = new ConfigurationBuilder()
                 .AddEnvironmentVariables();
             Configuration = builder.Build();
-            Console.WriteLine(Configuration["realm"]);
-            Console.WriteLine(Configuration["clientid"]);
-            Console.WriteLine(Configuration["clientsecret"]);
-            Console.WriteLine(Configuration["url"]);
         }
 
         public IConfiguration Configuration { get; }

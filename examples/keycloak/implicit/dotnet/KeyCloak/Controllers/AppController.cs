@@ -3,7 +3,6 @@ using Microsoft.Extensions.Configuration;
 
 namespace KeyCloak.Controllers
 {
-    [Route("api/[controller]")]
     public class AppController : Controller
     {
         public IConfiguration Configuration { get; }

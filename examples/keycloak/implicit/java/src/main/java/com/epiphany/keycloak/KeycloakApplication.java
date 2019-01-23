@@ -17,13 +17,11 @@ import static org.springframework.http.MediaType.TEXT_HTML;
 @SpringBootApplication
 public class KeycloakApplication {
 	public static void main(String[] args) {
-        SpringApplication app = new SpringApplication(KeycloakApplication.class);
-
-        Properties properties = new Properties();
-        properties.setProperty("spring.resources.static-locations",
-                          "classpath:/wwwroot/");
-        app.setDefaultProperties(properties);
-        app.run(args);
+                SpringApplication app = new SpringApplication(KeycloakApplication.class);
+                Properties properties = new Properties();
+                properties.setProperty("spring.resources.static-locations", "classpath:/wwwroot/");
+                app.setDefaultProperties(properties);
+                app.run(args);
 	}
 }
  

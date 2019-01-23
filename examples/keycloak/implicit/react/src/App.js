@@ -65,7 +65,7 @@ class App extends Component {
     const t = this;
     let state = {};       
     this.xhr('GET',
-        '/api/App/config',
+        '/config',
         [],
         (response) => {
           if (response.status === 200) {

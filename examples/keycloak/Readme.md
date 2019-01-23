@@ -25,9 +25,11 @@ This folder contains examples on how to implement authorization in [KeyCloak](ht
 
 An easy overview of the flows can be found [here](https://medium.com/google-cloud/understanding-oauth2-and-building-a-basic-authorization-server-of-your-own-a-beginners-guide-cf7451a16f66).
 
-## Security concerns
+## Security concerns and concidirations 
 
 While the examples cover implicit flow it`s not recommanded for security concerns and should be avoided. You can read more [here](https://oauth.net/2/grant-types/implicit/).
+
+To deploy the examples securely on a Kubernetes have a look [here](https://kubernetes.io/docs/tasks/inject-data-application/distribute-credentials-secure/#create-a-pod-that-has-access-to-the-secret-data-through-environment-variables).
 
 ## Prerequisites
 
@@ -131,16 +133,18 @@ The Java example uses [Spring Boot](http://spring.io/projects/spring-boot) with 
 To run the example:
 
 - Open a terminal here `examples/keycloak/implicit/java`
-- Run the following to provision:
+- Run the following to provision and build the docker image:
 
     ```bash
-    mvnw install
+    docker build -t java-implicit .
     ```
-- Run the following start the app server on <http://localhost:8090> where it can be opened:
+- Run the following to start a new container with the build image where `IP` in the url parameter needs to be replaced with the IP of the KeyCloak server:
 
     ```bash
-    mvnw spring-boot:run
+    docker run -e realm='master' -e url='http://IP:8080/auth' -e clientid='demo-app-implicit' -p 8090:8090 java-python
     ```
+
+The example can then be opened here: <http://localhost:8090>
 
 ## Authorization flow examples
 

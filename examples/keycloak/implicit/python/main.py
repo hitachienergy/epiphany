@@ -19,9 +19,6 @@ realm = os.environ['realm']
 clientId = os.environ['clientid']
 url = os.environ['url']
 authority = url + "/realms/" + realm
-print(realm)
-print(clientId)
-print(url)
 
 data = [
   {"id":1,"value":"1"},
@@ -68,7 +65,7 @@ def require_token():
 def root():
   return app.send_static_file('index.html')
 
-@app.route('/api/App/config', methods=['GET'])
+@app.route('/config', methods=['GET'])
 def config():
   return json.dumps({"realm": realm, "clientId": clientId, "url": url})
 
