@@ -11,12 +11,17 @@
     repo: deb http://dl.bintray.com/rabbitmq-erlang/debian bionic erlang-21.x
     state: present
     filename: bintray.erlang.list
+    update_cache: true
 
 - name: Install dependencies for RabbitMQ
   apt: 
+    update_cache: true
     name:
+      - init-system-helpers
       - socat
       - erlang-nox
+      - adduser
+      - logrotate
     state: present
 
 - name: Install RabbitMQ package
@@ -24,7 +29,4 @@
     deb: "https://github.com/rabbitmq/rabbitmq-server/releases/download/v3.7.9/rabbitmq-server_3.7.9-1_all.deb"
     state: present
 
-- name: Disable UFW
-  ufw:
-    state: disabled
 

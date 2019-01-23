@@ -1,5 +1,4 @@
 ---
-# RabbitMQ
 
 - name: Start service RabbitMQ
   service:

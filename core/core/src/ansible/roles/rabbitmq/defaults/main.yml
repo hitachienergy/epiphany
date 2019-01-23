@@ -1,0 +1,34 @@
+
+rabbitmq_user: rabbitmq
+rabbitmq_group: rabbitmq
+
+amqp_port: 5672
+epmd_port: 4369
+node_port: 25672
+
+ulimit_open_files: 65535
+
+erlang_cookie: GDHSHA #todo pass it from data.yaml
+rabbitmq_use_longname: true # todo if using longname (fqdn) change rabbitmq-server to use IPs
+
+rabbitmq_plugins: 
+  - rabbitmq_management
+  - rabbitmq_management_agent
+
+logrotate_period: weekly
+logrotate_number: 10
+
+is_clustered: false
+rabbitmq_policies: 
+  - name: ha-policy2
+    pattern: ".*"
+    definitions:
+      ha-mode: all
+  - name: sec-policy2
+    pattern: "sec"
+    definitions:
+      ha-mode: all
+  
+
+
+#todo add custom configuration from data.yaml

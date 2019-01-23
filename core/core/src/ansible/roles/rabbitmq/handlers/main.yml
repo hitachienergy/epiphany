@@ -1,0 +1,13 @@
+---
+
+- name: Restart rabbitmq service
+  become: yes
+  service: name=rabbitmq-server state=restarted
+
+- name: Start rabbitmq service
+  become: yes
+  service: name=rabbitmq-server state=started
+
+- name: Stop rabbitmq service
+  become: yes
+  service: name=rabbitmq-server state=stopped
