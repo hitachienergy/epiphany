@@ -13,10 +13,6 @@ clientId = os.environ['clientid']
 clientSecret = os.environ['clientsecret']
 url = os.environ['url']
 authority = url + "/realms/" + realm
-print(realm)
-print(clientId)
-print(clientSecret)
-print(url)
 
 app = Flask(__name__, static_url_path='',  static_folder='wwwroot')
 app.config.update({
