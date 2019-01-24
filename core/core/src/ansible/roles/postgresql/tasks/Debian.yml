@@ -29,3 +29,7 @@
     state: restarted
     enabled: yes
 
+- name: Setup replication
+  include_tasks: "replication-Debian.yml"
+  when:
+    - replication is defined and replication == 'enable'
