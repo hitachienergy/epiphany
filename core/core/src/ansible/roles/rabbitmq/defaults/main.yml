@@ -8,7 +8,6 @@ node_port: 25672
 
 ulimit_open_files: 65535
 
-erlang_cookie: GDHSHA #todo pass it from data.yaml
 rabbitmq_use_longname: true # todo if using longname (fqdn) change rabbitmq-server to use IPs
 
 rabbitmq_plugins: 
@@ -18,7 +17,7 @@ rabbitmq_plugins:
 logrotate_period: weekly
 logrotate_number: 10
 
-is_clustered: false
+is_clustered: true
 rabbitmq_policies: 
   - name: ha-policy2
     pattern: ".*"
@@ -28,7 +27,11 @@ rabbitmq_policies:
     pattern: "sec"
     definitions:
       ha-mode: all
-  
+
+# messaging:
+#   rabbitmq:
+#     cluster:
+#       cookie: "nEWcOOKIE"
 
 
 #todo add custom configuration from data.yaml

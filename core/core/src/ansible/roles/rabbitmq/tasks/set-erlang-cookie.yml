@@ -1,27 +1,15 @@
 ---
 # Configure RabbitMQ cluster
 
-- name: backup old erlang cookie
-  shell: cp -a /var/lib/rabbitmq/.erlang.cookie /var/lib/rabbitmq/.erlang.cookie.old
-  changed_when: false
+- include_tasks: "cookie-setup/master.yml"
+  when: 
+    - groups['rabbitmq'][0] == inventory_hostname
 
-- name: update RabbitMQ erlang cookie
-  template:
-    src: erlang-cookie.j2
-    dest: /var/lib/rabbitmq/.erlang.cookie
-    owner: "{{ rabbitmq_user }}"
-    group: "{{ rabbitmq_group }}"
-    mode: 0400
-  register: cookie
+- include_tasks: "cookie-setup/nodes.yml"
+  when: 
+    - groups['rabbitmq'][0] != inventory_hostname
 
-- name: Restart RabbitMQ
-  service: name=rabbitmq-server state=restarted
-  when: cookie.changed
 
-- name: remove backed up erlang cookie
-  file:
-    path: /var/lib/rabbitmq/.erlang.cookie.old
-    state: absent
-  changed_when: false
+
 
 

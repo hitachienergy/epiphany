@@ -7,8 +7,7 @@
     owner: root
     group: root
     mode: 0644
-  notify:
-    Restart rabbitmq service
+  register: config_changed
 
 - name: default settings for RabbitMQ AMQP server
   template:
@@ -17,8 +16,7 @@
     owner: root
     group: root
     mode: 0644
-  notify:
-    Restart rabbitmq service
+  register: env_settings_changed
 
 - name: Symlink RabbitMQ bin to sbin(for install plugins)
   file:
@@ -31,7 +29,9 @@
     names: "{{ item }}"
     prefix: /usr/lib/rabbitmq
     state: enabled
-    new_only: yes
+    new_only: no
   with_items: "{{ rabbitmq_plugins }}"
-  notify:
-    Restart rabbitmq service
+
+- name: Restart RabbitMQ
+  service: name=rabbitmq-server state=restarted
+  when: config_changed.changed or env_settings_changed.changed

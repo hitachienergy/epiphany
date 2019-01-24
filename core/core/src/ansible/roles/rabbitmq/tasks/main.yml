@@ -1,9 +1,11 @@
 ---
 # RabbitMQ
 
+
 - include_tasks: "{{ ansible_os_family }}.yml"
 
 - include_tasks: "set-erlang-cookie.yml"
+  when: is_clustered and groups['rabbitmq'] | length > 1
 
 - include_tasks: "configure-rabbitmq.yml" 
 
