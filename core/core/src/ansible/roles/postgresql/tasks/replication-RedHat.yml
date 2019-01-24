@@ -86,7 +86,7 @@
   when:
     - groups['postgresql'][1] == inventory_hostname
 
-- name: Copy remote postgresql.conf
+- name: Create pgpass file
   template:
     src: pgpass.j2
     dest: /var/lib/pgsql/.pgpass
