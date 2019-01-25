@@ -32,4 +32,4 @@
 - name: Setup replication
   include_tasks: "replication-Debian.yml"
   when:
-    - replication is defined and replication == 'enable'
+    - postgresql.replication.enable is defined and postgresql.replication.enable 

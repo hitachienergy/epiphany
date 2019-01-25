@@ -38,15 +38,20 @@
 - name: Add replication user to postgresql
   become_user: postgres
   postgresql_user:
-    #db: postgres
-    user: replication
-    password: Password
+    user: "{{ postgresql.replication.user }}"
+    password: "{{ postgresql.replication.password }}"
     role_attr_flags: LOGIN,REPLICATION
   when:
     - groups['postgresql'][0] == inventory_hostname
 
 - name: Check if replication user exists in pg_hba.conf
-  shell: grep "^host    replication     replication     10.0.0.0/8              md5" /etc/postgresql/10/main/pg_hba.conf
+  debug:
+    msg: "^host    replication     {{ postgresql.replication.user }}     {{ hostvars[groups['postgresql'][1]]['ansible_default_ipv4']['address'] }}/32              md5"
+  when:
+    - groups['postgresql'][0] == inventory_hostname
+
+- name: Check if replication user exists in pg_hba.conf
+  shell: grep "^host    replication     {{ postgresql.replication.user }}     {{ hostvars[groups['postgresql'][1]]['ansible_default_ipv4']['address'] }}/32              md5" /etc/postgresql/10/main/pg_hba.conf
   register: test_replication 
   failed_when: "test_replication.rc == 2"
   when:
@@ -55,7 +60,7 @@
 - name: Add replication user to pg_hba.conf
   lineinfile:
     path: /etc/postgresql/10/main/pg_hba.conf
-    line: "host    replication     replication     10.0.0.0/8              md5"
+    line: "host    replication     {{ postgresql.replication.user }}     {{ hostvars[groups['postgresql'][1]]['ansible_default_ipv4']['address'] }}/32              md5"
   when:
     - groups['postgresql'][0] == inventory_hostname
     - test_replication.stdout == ""
