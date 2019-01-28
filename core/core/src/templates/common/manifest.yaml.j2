@@ -163,3 +163,13 @@ haproxy:
 monitoring:
   {{ core.monitoring | to_nice_yaml | indent(2,False) }}
 {%- endif %}
+
+{%- if core.postgresql is defined %}
+postgresql:
+  {%- if core.postgresql.replication is defined and core.postgresql.replication.enable %}
+  replication: 
+      enable: yes
+      user: {{ core.postgresql.replication.user }} 
+      password: {{ core.postgresql.replication.password }}
+  {%- endif %}
+{%- endif %}
