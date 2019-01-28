@@ -6,3 +6,12 @@
 
 - name: Include configuration tasks
   include_tasks: configure-filebeat.yml
+
+# Trigger restart if configuration has changed
+- name: Flush handlers
+  meta: flush_handlers
+
+- name: Start Filebeat service
+  systemd:
+    name: filebeat
+    state: started
