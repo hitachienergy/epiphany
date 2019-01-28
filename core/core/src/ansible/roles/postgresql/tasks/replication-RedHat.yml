@@ -118,7 +118,7 @@
 
 - name: Replicate content with pg_basebackup
   become_user: postgres
-  shell: "pg_basebackup -h {{ hostvars[groups['postgresql'][0]]['ansible_default_ipv4']['address'] }} -D /var/opt/rh/rh-postgresql10/lib/pgsql/data/ -P -U replication --wal-method=stream"
+  shell: "pg_basebackup -h {{ hostvars[groups['postgresql'][0]]['ansible_default_ipv4']['address'] }} -D /var/opt/rh/rh-postgresql10/lib/pgsql/data/ -P -U {{ postgresql.replication.user }} --wal-method=stream"
   when:
     - groups['postgresql'][1] == inventory_hostname
 
