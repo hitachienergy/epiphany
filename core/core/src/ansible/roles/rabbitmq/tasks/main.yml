@@ -1,6 +1,6 @@
 ---
 # RabbitMQ
-
+- include_tasks: "set-variables.yml"
 
 - include_tasks: "{{ ansible_os_family }}.yml"
 

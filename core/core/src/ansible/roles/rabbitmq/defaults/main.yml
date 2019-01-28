@@ -1,37 +1,14 @@
-
 rabbitmq_user: rabbitmq
 rabbitmq_group: rabbitmq
 
-amqp_port: 5672
-epmd_port: 4369
-node_port: 25672
-
-ulimit_open_files: 65535
-
-rabbitmq_use_longname: true # todo if using longname (fqdn) change rabbitmq-server to use IPs
-
-rabbitmq_plugins: 
-  - rabbitmq_management
-  - rabbitmq_management_agent
-
 logrotate_period: weekly
 logrotate_number: 10
+ulimit_open_files: 65535
 
-is_clustered: true
-rabbitmq_policies: 
-  - name: ha-policy2
-    pattern: ".*"
-    definitions:
-      ha-mode: all
-  - name: sec-policy2
-    pattern: "sec"
-    definitions:
-      ha-mode: all
-
-# messaging:
-#   rabbitmq:
-#     cluster:
-#       cookie: "nEWcOOKIE"
-
-
-#todo add custom configuration from data.yaml
+# Values that can be overriden from data.yaml
+amqp_port: 5672
+is_clustered: false
+rabbitmq_use_longname: true 
+rabbitmq_policies: [] 
+rabbitmq_plugins: []
+custom_configurations: []

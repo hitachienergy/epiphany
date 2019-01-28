@@ -1,0 +1,61 @@
+---
+
+- name: Define longname usage
+  set_fact:
+    rabbitmq_use_longname: "{{ messaging.rabbitmq.use_longname | default(rabbitmq_use_longname) }}"
+  when: 
+    - messaging is defined
+    - messaging.rabbitmq is defined
+
+- name: Define amqp port
+  set_fact:
+    amqp_port: "{{ messaging.rabbitmq.amqp_port | default(amqp_port) }}"
+  when: 
+    - messaging is defined
+    - messaging.rabbitmq is defined
+
+- name: Define is_clustered
+  set_fact:
+    is_clustered: "{{ messaging.rabbitmq.cluster.is_clustered | default(is_clustered) }}"
+  when: 
+    - messaging is defined
+    - messaging.rabbitmq is defined
+    - messaging.rabbitmq.cluster is defined
+
+- name: Define RabbitMQ plugins
+  set_fact:
+    rabbitmq_plugins: "{{ messaging.rabbitmq.plugins }}"
+  when: 
+    - messaging is defined
+    - messaging.rabbitmq is defined
+    - messaging.rabbitmq.rabbitmq_plugins is defined
+    - messaging.rabbitmq.rabbitmq_plugins | length > 0
+
+- name: Define RabbitMQ policies
+  set_fact:
+    rabbitmq_policies: "{{ messaging.rabbitmq.policies }}"
+  when: 
+    - messaging is defined
+    - messaging.rabbitmq is defined
+    - messaging.rabbitmq.policies is defined
+    - messaging.rabbitmq.policies | length > 0
+
+- name: Define custom configurations RabbitMQ
+  set_fact:
+    custom_configurations: "{{ messaging.rabbitmq.custom_configurations }}"
+  when: 
+    - messaging is defined
+    - messaging.rabbitmq is defined
+    - messaging.rabbitmq.custom_configurations is defined
+    - messaging.rabbitmq.custom_configurations | length > 0
+
+
+# debug todo remove
+- name: Plugins
+  debug:
+    msg: "{{ rabbitmq_plugins }}"
+
+- name: Policies
+  debug:
+    msg: "{{ rabbitmq_policies }}"
+

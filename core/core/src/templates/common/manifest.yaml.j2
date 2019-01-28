@@ -163,3 +163,8 @@ haproxy:
 monitoring:
   {{ core.monitoring | to_nice_yaml | indent(2,False) }}
 {%- endif %}
+
+{%- if core.messaging is defined %}
+messaging:
+  {{ core.messaging | to_nice_yaml | indent(2,False) }}
+{%- endif %}
