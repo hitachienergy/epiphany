@@ -1,0 +1,4 @@
+- name: Clean configs path
+  file:
+    state: absent
+    path: "{{ configuration_temp_directory }}/"

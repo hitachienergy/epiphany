@@ -98,6 +98,7 @@ mkdir -p $EPIPHANY_DATA_DIR/roles/elasticsearch-curator/vars
 mkdir -p $EPIPHANY_DATA_DIR/roles/postgresql/vars
 mkdir -p $EPIPHANY_DATA_DIR/roles/rabbitmq/vars
 mkdir -p $EPIPHANY_DATA_DIR/roles/reboot/vars
+mkdir -p $EPIPHANY_DATA_DIR/roles/deployments/vars
 
 rm -f $EPIPHANY_DATA_DIR/roles/common/vars/*
 rm -f $EPIPHANY_DATA_DIR/roles/kubernetes-common/vars/*
@@ -120,6 +121,7 @@ rm -f $EPIPHANY_DATA_DIR/roles/elasticsearch-curator/vars/*
 rm -f $EPIPHANY_DATA_DIR/roles/postgresql/vars/*
 rm -f $EPIPHANY_DATA_DIR/roles/rabbitmq/vars/*
 rm -f $EPIPHANY_DATA_DIR/roles/reboot/vars/*
+rm -f $EPIPHANY_DATA_DIR/roles/deployments/vars/*
 
 # Copy the whole tree over
 cp -R $REPO_ROOT/$COMMON_ANSIBLE_BASE/* $EPIPHANY_DATA_DIR
@@ -149,6 +151,8 @@ cat $EPIPHANY_DATA_DIR/data/manifest.yaml >> $EPIPHANY_DATA_DIR/roles/elasticsea
 cat $EPIPHANY_DATA_DIR/data/manifest.yaml >> $EPIPHANY_DATA_DIR/roles/postgresql/vars/main.yml
 cat $EPIPHANY_DATA_DIR/data/manifest.yaml >> $EPIPHANY_DATA_DIR/roles/rabbitmq/vars/main.yml
 cat $EPIPHANY_DATA_DIR/data/manifest.yaml >> $EPIPHANY_DATA_DIR/roles/reboot/vars/main.yml
+cat $EPIPHANY_DATA_DIR/data/manifest.yaml >> $EPIPHANY_DATA_DIR/roles/deployments/vars/main.yml
+
 
 echo_yellow '====> Copy certificates to Ansible files for HAProxy...'
 echo_green "Getting certificates directory."
@@ -219,6 +223,7 @@ ansible-playbook -i $EPIPHANY_DATA_DIR/inventory/$ANSIBLE_ENV $EPIPHANY_DATA_DIR
 ansible-playbook -i $EPIPHANY_DATA_DIR/inventory/$ANSIBLE_ENV $EPIPHANY_DATA_DIR/rabbitmq.yml;
 ansible-playbook -i $EPIPHANY_DATA_DIR/inventory/$ANSIBLE_ENV $EPIPHANY_DATA_DIR/kafka-exporter.yml;
 ansible-playbook -i $EPIPHANY_DATA_DIR/inventory/$ANSIBLE_ENV $EPIPHANY_DATA_DIR/reboot.yml;
+ansible-playbook -i $EPIPHANY_DATA_DIR/inventory/$ANSIBLE_ENV $EPIPHANY_DATA_DIR/deployments.yml;
 
 # Make sure Kafka is working
 sleep 15 # Make sure a quorum gets established becase replication factor must be no larger than the number of brokers
