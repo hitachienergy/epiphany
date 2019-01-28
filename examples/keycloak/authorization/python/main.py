@@ -1,3 +1,4 @@
+import os
 import json
 import logging
 from functools import wraps
@@ -7,12 +8,32 @@ from flask_oidc import OpenIDConnect
 
 logging.basicConfig(level=logging.DEBUG)
 
+realm = os.environ['realm']
+clientId = os.environ['clientid']
+clientSecret = os.environ['clientsecret']
+url = os.environ['url']
+authority = url + "/realms/" + realm
+
 app = Flask(__name__, static_url_path='',  static_folder='wwwroot')
 app.config.update({
     'SECRET_KEY': 'SomethingNotEntirelySecret',
     'TESTING': True,
     'DEBUG': True,
-    'OIDC_CLIENT_SECRETS': 'appsettings.json',
+    'OIDC_CLIENT_SECRETS': {
+        "web": {
+            "issuer": authority,
+            "auth_uri": authority + "/protocol/openid-connect/auth",
+            "client_id": clientId,
+            "client_secret": clientSecret,
+            "redirect_uris": [
+                "http://localhost:8090/*"
+            ],
+            "userinfo_uri": authority + "/protocol/openid-connect/userinfo", 
+            "token_uri": authority + "/protocol/openid-connect/token",
+            "token_introspection_uri": authority + "/protocol/openid-connect/token/introspect",
+            "bearer_only": "true"
+        }
+    },
     'OIDC_ID_TOKEN_COOKIE_SECURE': False,
     'OIDC_REQUIRE_VERIFIED_EMAIL': False,
     'OIDC_INTROSPECTION_AUTH_METHOD': 'client_secret_post',
@@ -82,4 +103,4 @@ def values():
      return json.dumps(data)     
 
 if __name__ == '__main__':
-    app.run(port='8090')
+    app.run(host="0.0.0.0", port='8090')
