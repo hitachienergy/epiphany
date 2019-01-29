@@ -40,7 +40,7 @@ terraform:
 
 ## Git Workflow
 
-See [GITWORKFLOW.md](/GITWORKFLOW.md).
+See [GITWORKFLOW.md](GITWORKFLOW.md).
 
 ## Dependencies
 
@@ -62,7 +62,7 @@ As in all community based projects, community participation is very important. W
 
 So, to move faster we need more assistance from anyone willing to contribute. The contributions needed include development, QA, documentation, graphics, evangelism, and whatever else you believe would be good. The point is, Epiphany is open and welcomes all contributions from all divisions and BUs.
 
-If interested then please see the [Contribution Guide](/CONTRIBUTING.md).
+If interested then please see the [Contribution Guide](docs/home/CONTRIBUTING.md).
 
 ## Epiphany Community
 
