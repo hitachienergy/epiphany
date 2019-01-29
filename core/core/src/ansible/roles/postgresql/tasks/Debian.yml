@@ -29,7 +29,7 @@
     state: restarted
     enabled: yes
 
-- name: Setup replication
+- name: Set up replication
   include_tasks: "replication-Debian.yml"
   when:
-    - postgresql.replication.enable is defined and postgresql.replication.enable 
+    - postgresql.replication is defined and postgresql.replication.enable is defined and postgresql.replication.enable 

@@ -1,7 +1,0 @@
----
-postgresql:
-  replication: 
-    enable: yes
-    user: replication
-    password: Password
-

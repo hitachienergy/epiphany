@@ -1,14 +1,14 @@
 ---
 # Master:
 
-- name: Install prerequisites
+- name: Install packages needed for managing Postgresql with Ansible
   yum:
     name: python-psycopg2
     state: present
   when:
     - groups['postgresql'][0] == inventory_hostname
 
-- name: Change postgresql.conf
+- name: Turn on replica
   replace:
     path: /var/opt/rh/rh-postgresql10/lib/pgsql/data/postgresql.conf
     regexp: "#wal_level = replica"
@@ -18,21 +18,19 @@
     - groups['postgresql'][0] == inventory_hostname
 
 
-- name: Change postgresql.conf
+- name: Set max_wal_senders
   replace:
     path: /var/opt/rh/rh-postgresql10/lib/pgsql/data/postgresql.conf
     regexp: "#max_wal_senders = 10"
     replace: "max_wal_senders = 5"
-    backup: yes
   when:
     - groups['postgresql'][0] == inventory_hostname
 
-- name: Change postgresql.conf
+- name: Set wal_keep_segments
   replace:
     path: /var/opt/rh/rh-postgresql10/lib/pgsql/data/postgresql.conf
     regexp: "#wal_keep_segments = 0"
     replace: "wal_keep_segments = 32"
-    backup: yes
   when:
     - groups['postgresql'][0] == inventory_hostname
 
@@ -46,7 +44,7 @@
     - groups['postgresql'][0] == inventory_hostname
 
 - name: Check if replication user exists in pg_hba.conf
-  shell: grep "^host    replication     {{ postgresql.replication.user }}     {{ hostvars[groups['postgresql'][1]]['ansible_default_ipv4']['address'] }}/32              md5" /var/opt/rh/rh-postgresql10/lib/pgsql/data/pg_hba.conf
+  shell: grep "^host\s*replication\s*{{ postgresql.replication.user }}\s*{{ hostvars[groups['postgresql'][1]]['ansible_default_ipv4']['address'] }}/32\s*md5" /var/opt/rh/rh-postgresql10/lib/pgsql/data/pg_hba.conf
   register: test_replication 
   failed_when: "test_replication.rc == 2"
   when:
@@ -56,6 +54,7 @@
   lineinfile:
     path: /var/opt/rh/rh-postgresql10/lib/pgsql/data/pg_hba.conf
     line: "host    replication     {{ postgresql.replication.user }}     {{ hostvars[groups['postgresql'][1]]['ansible_default_ipv4']['address'] }}/32              md5"
+    backup: yes
   when:
     - groups['postgresql'][0] == inventory_hostname
     - test_replication.stdout == ""
@@ -76,12 +75,11 @@
   when:
     - groups['postgresql'][1] == inventory_hostname
 
-- name: Change postgresql.conf
+- name: Turn on hot_standby
   replace:
     path: /var/opt/rh/rh-postgresql10/lib/pgsql/data/postgresql.conf
     regexp: "#hot_standby = on"
     replace: "hot_standby = on"
-    backup: yes
   when:
     - groups['postgresql'][1] == inventory_hostname
 
@@ -95,7 +93,7 @@
   when:
     - groups['postgresql'][1] == inventory_hostname
 
-- name: Copy remote postgresql.conf
+- name: Backup remote postgresql.conf
   copy:
     src: /var/opt/rh/rh-postgresql10/lib/pgsql/data/postgresql.conf
     dest: /tmp/postgresql.conf
@@ -103,7 +101,7 @@
   when:
     - groups['postgresql'][1] == inventory_hostname
 
-- name: Copy remote pg_hba.conf
+- name: Backup remote pg_hba.conf
   copy:
     src: /var/opt/rh/rh-postgresql10/lib/pgsql/data/pg_hba.conf
     dest: /tmp/pg_hba.conf
@@ -122,7 +120,7 @@
   when:
     - groups['postgresql'][1] == inventory_hostname
 
-- name: Copy remote postgresql.conf
+- name: Restore remote postgresql.conf
   copy:
     src: /tmp/postgresql.conf
     dest: /var/opt/rh/rh-postgresql10/lib/pgsql/data/postgresql.conf
@@ -130,7 +128,7 @@
   when:
     - groups['postgresql'][1] == inventory_hostname
 
-- name: Copy remote pg_hba.conf
+- name: Restore remote pg_hba.conf
   copy:
     src: /tmp/pg_hba.conf
     dest: /var/opt/rh/rh-postgresql10/lib/pgsql/data/pg_hba.conf
