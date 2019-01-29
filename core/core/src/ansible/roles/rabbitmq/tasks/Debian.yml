@@ -26,7 +26,7 @@
 
 - name: Install RabbitMQ package
   apt: 
-    deb: "https://github.com/rabbitmq/rabbitmq-server/releases/download/v3.7.9/rabbitmq-server_3.7.9-1_all.deb"
+    deb: "https://github.com/rabbitmq/rabbitmq-server/releases/download/v3.7.10/rabbitmq-server_3.7.10-1_all.deb"
     state: present
 
 

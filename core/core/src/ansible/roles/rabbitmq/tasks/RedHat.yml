@@ -8,11 +8,13 @@
 
 - name: Install dependency for RabbitMQ
   yum: 
-    name: socat
+    name: 
+      - socat
+      - logrotate
     state: present
 
 - name: Install RabbitMQ package
   yum: 
-    name: "https://github.com/rabbitmq/rabbitmq-server/releases/download/v3.7.9/rabbitmq-server-3.7.9-1.el7.noarch.rpm"
+    name: "https://github.com/rabbitmq/rabbitmq-server/releases/download/v3.7.10/rabbitmq-server-3.7.10-1.el7.noarch.rpm"
     state: present
 
