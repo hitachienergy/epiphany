@@ -9,15 +9,14 @@
   set_fact: 
     is_cookie_user_defined: True
   when:
-    - messaging is defined
-    - messaging.rabbitmq is defined
-    - messaging.rabbitmq.cluster is defined 
-    - messaging.rabbitmq.cluster.cookie is defined 
+    - rabbitmq is defined
+    - rabbitmq.cluster is defined 
+    - rabbitmq.cluster.cookie is defined 
   changed_when: false
 
 - name: Set cookie variable if user defined
   set_fact: 
-    erlang_cookie: "{{ messaging.rabbitmq.cluster.cookie }}"
+    erlang_cookie: "{{ rabbitmq.cluster.cookie }}"
   when: is_cookie_user_defined == True
   changed_when: false
 
