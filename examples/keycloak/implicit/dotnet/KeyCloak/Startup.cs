@@ -1,18 +1,21 @@
-﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using System;
 
 namespace KeyCloak
 {
     public class Startup
     {
-        public Startup(IHostingEnvironment env, IConfiguration configuration)
+        public Startup(IHostingEnvironment env)
         {
             Environment = env;
-            Configuration = configuration;
+            var builder = new ConfigurationBuilder()
+                .AddEnvironmentVariables();
+            Configuration = builder.Build();
         }
 
         public IConfiguration Configuration { get; }
@@ -23,6 +26,8 @@ namespace KeyCloak
         {
             services.AddMvc();
 
+            services.AddSingleton<IConfiguration>(Configuration);
+
             services.AddAuthentication(options =>
             {
                 options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -30,10 +35,9 @@ namespace KeyCloak
 
             }).AddJwtBearer(o =>
             {
-                o.Authority = Configuration["Jwt:Authority"];
-                o.Audience = Configuration["Jwt:Audience"];
+                o.Authority = Configuration["url"] + "/realms/" + Configuration["realm"];
+                o.Audience = Configuration["clientid"];
                 o.RequireHttpsMetadata = false;
-
                 o.Events = new JwtBearerEvents()
                 {
                     OnAuthenticationFailed = c =>

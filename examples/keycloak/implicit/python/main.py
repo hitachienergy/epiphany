@@ -1,3 +1,4 @@
+import os
 import json
 import logging
 from jose import jwt
@@ -14,10 +15,10 @@ app.config.update({
     'DEBUG': True  
 })
 
-f = open('appsettings.json', 'r').read()
-if not isinstance(f, str):
-  f = f.decode('utf-8')
-settings = json.loads(f)
+realm = os.environ['realm']
+clientId = os.environ['clientid']
+url = os.environ['url']
+authority = url + "/realms/" + realm
 
 data = [
   {"id":1,"value":"1"},
@@ -35,7 +36,7 @@ def require_keycloak_role(role):
               return abort(403)         
             pre, tkn, post = bearer.split('.')
             access_token = json.loads(b64decode(tkn + "==="))
-            if role in access_token['resource_access'][settings['Jwt:Audience']]['roles']:
+            if role in access_token['resource_access'][clientId]['roles']:
                 return view_func(*args, **kwargs)
             else:
                 return abort(403)
@@ -51,7 +52,7 @@ def require_token():
                 if bearer == None:
                   return abort(401)
                 token = bearer.strip('Bearer').strip(' ')
-                payload = jwt.decode( token, '', options={'verify_signature': False}, audience=settings['Jwt:Audience'], issuer=settings['Jwt:Authority'] )
+                payload = jwt.decode( token, '', options={'verify_signature': False}, audience=clientId, issuer=authority )
                 return view_func(*args, **kwargs)
             except jwt.ExpiredSignatureError:
                 return abort(401)
@@ -63,6 +64,10 @@ def require_token():
 @app.route('/')
 def root():
   return app.send_static_file('index.html')
+
+@app.route('/config', methods=['GET'])
+def config():
+  return json.dumps({"realm": realm, "clientId": clientId, "url": url})
 
 @app.route('/api/Values/<id>', methods=['GET'])
 @require_token()
@@ -76,4 +81,4 @@ def values():
   return json.dumps(data)
 
 if __name__ == '__main__':
-     app.run(port='8090')
+     app.run(host="0.0.0.0", port='8090')
