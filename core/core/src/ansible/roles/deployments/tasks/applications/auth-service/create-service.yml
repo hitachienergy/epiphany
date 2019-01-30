@@ -1,5 +1,7 @@
 - name: Create directory for files
-  file: path={{ configuration_temp_directory }} state=directory
+  file: 
+    path: "{{ configuration_temp_directory }}"
+    state: directory
   become_user: "{{ admin_user.name }}"
 
 - name: Upload auth-service yaml

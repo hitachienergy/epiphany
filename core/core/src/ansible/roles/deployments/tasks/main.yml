@@ -6,7 +6,7 @@
     data: "{{ item }}"
   loop: "{{ kubernetes.deployments }}"
   when:
-      - kubernetes.deployments is defined and kubernetes.deployments | length > 0
+    - kubernetes.deployments is defined and kubernetes.deployments | length > 0
 
 
 
