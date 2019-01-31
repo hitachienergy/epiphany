@@ -23,3 +23,4 @@ platform:
   worker_vms: 3
   kafka_vms: 1
   postgresql_vms: 1
+  rabbitmq_vms: 0

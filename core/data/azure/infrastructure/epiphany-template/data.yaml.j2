@@ -73,6 +73,7 @@ core:
     - haproxy_exporter
     - postgresql
     - rabbitmq
+    - deployments
     - reboot
     # These last two must always be present
     - linux
@@ -458,6 +459,7 @@ core:
           roles:
             - linux
             - master
+            - deployments
             - filebeat
             - node_exporter
             - reboot
@@ -1166,6 +1168,13 @@ core:
 
   kubernetes:
     version: 1.13.0
+    # image_registry_secrets:
+    # - name: regcred
+    #   server_url: your-registry-url 
+    #   username: your-registry-username
+    #   password: your-registry-password
+    #   email: your-registry-email
+    #   namespace: your-secret-namespace
     storage:
       enable: true
       #valid chocies:
@@ -1174,6 +1183,32 @@ core:
       type: azure-file
       tags: *tags
       quota: 50
+#    deployments:
+#      - name: rabbitmq 
+#        image_path: rabbitmq:3.7.10
+#        #image_pull_secret_name: regcred # optional
+#        service:
+#          name: rabbitmq-cluster
+#          port: 30672
+#          replicas: 5
+#          namespace: queue
+#        rabbitmq:
+#          #amqp_port: 5672 #optional - default 5672  
+#          plugins: # optional list of RabbitMQ plugins
+#            - rabbitmq_management
+#            - rabbitmq_management_agent
+#          policies: # optional list of RabbitMQ policies
+#            - name: ha-policy2
+#              pattern: ".*"
+#              definitions:
+#                ha-mode: all
+#          custom_configurations: #optional list of RabbitMQ configurations (new format -> https://www.rabbitmq.com/configure.html)
+#            - name: vm_memory_high_watermark.relative
+#              value: 0.5
+#          cluster:
+#            #is_clustered: true #redundant in in-Kubernetes installation, it will always be clustered
+#            #cookie: "cookieSetFromDataYaml" #optional - default value will be random generated string
+
 
   haproxy:
     stats:
@@ -1248,20 +1283,19 @@ core:
         severity: critical
         message: "Kafka consumers are lagging more than 1000 messages over last 15 minutes." 
 
-  messaging:
-    rabbitmq:
+#  rabbitmq:
 #      amqp_port: 5672 #optional - default 5672  
-#      plugins: # optional list of RabbitMQ plugins
-#        - rabbitmq_management
-#        - rabbitmq_management_agent
-#      policies: # optional list of RabbitMQ policies
-#        - name: ha-policy2
-#          pattern: ".*"
-#          definitions:
-#            ha-mode: all
-#      custom_configurations: #optional list of RabbitMQ configurations (new format -> https://www.rabbitmq.com/configure.html)
-#        - name: vm_memory_high_watermark.relative
-#          value: 0.6
-#      cluster:
-#        is_clustered: true #optional - default false
-#        cookie: "cookieSetFromDataYaml" #optional - default value will be random generated string
+#    plugins: # optional list of RabbitMQ plugins
+#      - rabbitmq_management
+#      - rabbitmq_management_agent
+#    policies: # optional list of RabbitMQ policies
+#      - name: ha-policy2
+#        pattern: ".*"
+#        definitions:
+#          ha-mode: all
+#    custom_configurations: #optional list of RabbitMQ configurations (new format -> https://www.rabbitmq.com/configure.html)
+#      - name: vm_memory_high_watermark.relative
+#        value: 0.6
+#    cluster:
+#      is_clustered: true #optional - default false
+#      cookie: "cookieSetFromDataYaml" #optional - default value will be random generated string
