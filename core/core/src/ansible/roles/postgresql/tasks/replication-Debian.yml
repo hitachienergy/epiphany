@@ -20,16 +20,16 @@
 - name: Set max_wal_senders
   replace:
     path: /etc/postgresql/10/main/postgresql.conf
-    regexp: "#max_wal_senders = 10"
-    replace: "max_wal_senders = 5"
+    regexp: "^[#]?max_wal_senders = [0-9]?[0-9]?[0-9]?"
+    replace: "max_wal_senders = {{ postgresql.replication.max_wal_senders | default('5')  }}"
   when:
     - groups['postgresql'][0] == inventory_hostname
 
 - name: Set wal_keep_segments 
   replace:
     path: /etc/postgresql/10/main/postgresql.conf
-    regexp: "#wal_keep_segments = 0"
-    replace: "wal_keep_segments = 32"
+    regexp: "^[#]?wal_keep_segments = [0-9]?[0-9]?[0-9]?"
+    replace: "wal_keep_segments = {{ postgresql.replication.wal_keep_segments | default('32')  }}"
   when:
     - groups['postgresql'][0] == inventory_hostname
 

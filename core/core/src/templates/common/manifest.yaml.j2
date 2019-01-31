@@ -171,5 +171,11 @@ postgresql:
       enable: yes
       user: {{ core.postgresql.replication.user }} 
       password: {{ core.postgresql.replication.password }}
+      {%- if core.postgresql.replication.max_wal_senders is defined %}
+      max_wal_senders: {{ core.postgresql.replication.max_wal_senders }}
+      {%- endif %}
+      {%- if core.postgresql.replication.wal_keep_segments is defined %}
+      wal_keep_segments: {{ core.postgresql.replication.wal_keep_segments }}
+      {%- endif %}
   {%- endif %}
 {%- endif %}
