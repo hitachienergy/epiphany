@@ -11,3 +11,7 @@
   lineinfile:
     path: /home/{{ admin_user.name }}/.bashrc
     line: source <(kubectl completion bash)
+
+- include_tasks: "registry-secrets.yml"
+  when: 
+      - groups['master'][0] == inventory_hostname

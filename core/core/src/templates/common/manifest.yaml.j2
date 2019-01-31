@@ -97,6 +97,14 @@ kubernetes:
     {% endif %}
     tags: {{ core.kubernetes.storage.tags }}
     quota: {{ core.kubernetes.storage.quota }}
+{%- if core.kubernetes.image_registry_secrets is defined %}
+  image_registry_secrets:
+  {{ core.kubernetes.image_registry_secrets | to_nice_yaml | indent(2,False) }}
+{%- endif %}
+{%- if core.kubernetes.deployments is defined %}
+  deployments:
+  {{ core.kubernetes.deployments | to_nice_yaml | indent(2,False) }}
+{%- endif %}    
 
 {%- if core.haproxy is defined %}
 haproxy:
