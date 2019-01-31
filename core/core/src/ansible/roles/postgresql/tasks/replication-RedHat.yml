@@ -11,7 +11,7 @@
 - name: Turn on replica
   replace:
     path: /var/opt/rh/rh-postgresql10/lib/pgsql/data/postgresql.conf
-    regexp: "#wal_level = replica"
+    regexp: "^#wal_level = replica"
     replace: "wal_level = replica"
     backup: yes
   when:
@@ -20,7 +20,7 @@
 - name: Set max_wal_senders
   replace:
     path: /var/opt/rh/rh-postgresql10/lib/pgsql/data/postgresql.conf
-    regexp: "^[#]?max_wal_senders = [0-9]?[0-9]?[0-9]?"
+    regexp: "^[#]?max_wal_senders\\s*=\\s*[0-9]+"
     replace: "max_wal_senders = {{ postgresql.replication.max_wal_senders | default('5')  }}"
   when:
     - groups['postgresql'][0] == inventory_hostname
@@ -28,7 +28,7 @@
 - name: Set wal_keep_segments
   replace:
     path: /var/opt/rh/rh-postgresql10/lib/pgsql/data/postgresql.conf
-    regexp: "^[#]?wal_keep_segments = [0-9]?[0-9]?[0-9]?"
+    regexp: "^[#]?wal_keep_segments\\s*=\\s*[0-9]+"
     replace: "wal_keep_segments = {{ postgresql.replication.wal_keep_segments | default('32')  }}"
   when:
     - groups['postgresql'][0] == inventory_hostname
