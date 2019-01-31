@@ -4,27 +4,27 @@
     path: /etc/sysconfig/docker
     regexp: '^(OPTIONS=.*?)(?:--log-driver=[\w|-]+\s*|\s+--log-driver=[\w|-]+)(.*)$'
     replace: '\1\2'
-  notify: Restart docker
+  notify: Restart Docker
   when: ansible_os_family == "RedHat"
 
-- name: Copy daemon.json configuration file
+- name: Copy configuration file (daemon.json)
   template:
     src: daemon.json.j2
     dest: /etc/docker/daemon.json
     mode: 0644
-  notify: Restart docker
+  notify: Restart Docker
 
-- name: Restart docker before veryfication # to apply new configuration
+- name: Restart Docker before verification # to apply new configuration
   meta: flush_handlers
 
-- name: Start docker
-  service:
+- name: Start Docker
+  systemd:
     name: docker
     state: started
     enabled: yes
 
 # Get log driver for verification
-- name: Get docker logging driver
+- name: Get Docker logging driver
   shell: docker info | grep -i 'Logging Driver'
   register: docker_log_driver
   changed_when: false
