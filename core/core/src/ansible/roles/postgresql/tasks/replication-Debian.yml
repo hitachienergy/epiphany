@@ -16,12 +16,11 @@
   when:
     - groups['postgresql'][0] == inventory_hostname
 
-
 - name: Set max_wal_senders
   replace:
     path: /etc/postgresql/10/main/postgresql.conf
     regexp: "^[#]?max_wal_senders\\s*=\\s*[0-9]+"
-    replace: "max_wal_senders = {{ postgresql.replication.max_wal_senders | default('5')  }}"
+    replace: "max_wal_senders = {{ postgresql.replication.max_wal_senders | default('5') }}"
   when:
     - groups['postgresql'][0] == inventory_hostname
 
@@ -29,7 +28,7 @@
   replace:
     path: /etc/postgresql/10/main/postgresql.conf
     regexp: "^[#]?wal_keep_segments\\s*=\\s*[0-9]+"
-    replace: "wal_keep_segments = {{ postgresql.replication.wal_keep_segments | default('32')  }}"
+    replace: "wal_keep_segments = {{ postgresql.replication.wal_keep_segments | default('32') }}"
   when:
     - groups['postgresql'][0] == inventory_hostname
 
@@ -82,7 +81,7 @@
 - name: Turn on hot_standby
   replace:
     path: /etc/postgresql/10/main/postgresql.conf
-    regexp: "#hot_standby = on"
+    regexp: "^#hot_standby = on"
     replace: "hot_standby = on"
     backup: yes
   when:
