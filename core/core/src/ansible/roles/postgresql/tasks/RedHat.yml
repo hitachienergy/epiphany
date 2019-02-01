@@ -55,3 +55,8 @@
     name: postgresql
     state: restarted
 
+- name: Set up replication
+  include_tasks: "replication-RedHat.yml"
+  when:
+    -  postgresql.replication is defined and postgresql.replication.enable is defined and postgresql.replication.enable
+
