@@ -1,0 +1,9 @@
+---
+- name: set logrotate config
+  template:
+    src: logrotate-config.j2
+    dest: /etc/logrotate.d/rabbitmq-server
+    owner: root
+    group: root
+    mode: 0644
+  tags: ["rabbitmq", "rabbitmq-logrotate"]

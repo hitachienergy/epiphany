@@ -82,18 +82,41 @@ The following prerequisites are needed when working with the development image:
   - For Windows 7 check [here](https://docs.docker.com/toolbox/toolbox_install_windows)
 - Git <https://git-scm.com>
 
-Now, to build it locally and run it:
+There are 2 ways to get the image, build it localy yourself or pull it from the Epiphany docker registry.
+
+To build it locally and run it:
 
 1. Run the following to build the image locally:
+
     ```bash
-    docker build -t epiphany-dev -f core/core/src/docker/dev/Dockerfile .
+    docker build -t epiphany-dev -f core/src/docker/dev/Dockerfile .
     ```
+
 2. To run the locally build image in a container use:
+
     ```bash
     docker run -it -v LOCAL_DEV_DIR:/epiphany --rm epiphany-dev
     ```
 
 Where ```LOCAL_DEV_DIR``` should be replaced with the local path to your epiphany repository. This will then be mapped to ```/epiphany``` inside the container. If everything is ok you will be presented with a Bash prompt from which one can run the Epiphany engine. Note that when filling in your data YAMLs one needs to specify the paths from the container's point of view.
+=======
+    Where `LOCAL_DEV_DIR` should be replaced with the local path to you're core and data repositories. This will then be mapped to `epiphany` inside the container. If everything is ok you will be presentated with a bash terminal from which one can run the Epiphany engine. Note that when filling in your data YAMLs one needs to specify the paths from the containers point of view.
+
+To get it from the registry and run it:
+
+1. Pull down the image from the registry:
+
+    ```bash
+    docker pull epiphanyplatform/epiphany-dev
+    ```
+
+2. To run the pulled image in a container use:
+
+    ```bash
+    docker run -it -v LOCAL_DEV_DIR:/epiphany --rm epiphanyplatform/epiphany-dev
+    ```
+
+    Where `LOCAL_DEV_DIR` should be replaced with the local path to you're core and data repositories. This will then be mapped to `epiphany` inside the container. If everything is ok you will be presentated with a bash terminal from which one can run the Epiphany engine while editing the core and data sources on the local OS.  Note that when filling in your data YAMLs one needs to specify the paths from the containers point of view.
 
 ### Run with Docker image for deployment
 
