@@ -1,4 +1,4 @@
-FROM epiphany-dev:latest
+FROM epiphanyplatform/epiphany-dev:latest
 
 ADD ./core/ /epiphany/
 
