@@ -15,3 +15,7 @@
   systemd:
     name: filebeat
     state: started
+
+- name: Verify Filebeat is running
+  command: systemctl is-active filebeat
+  changed_when: false
