@@ -1,6 +1,5 @@
 ---
 
-
 - name: set logrotate config
   template:
     src: logrotate-config.j2

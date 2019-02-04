@@ -28,5 +28,3 @@
   apt: 
     deb: "https://github.com/rabbitmq/rabbitmq-server/releases/download/v3.7.10/rabbitmq-server_3.7.10-1_all.deb"
     state: present
-
-

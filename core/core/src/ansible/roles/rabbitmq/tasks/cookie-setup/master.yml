@@ -65,4 +65,3 @@
 - name: Restart RabbitMQ
   service: name=rabbitmq-server state=restarted
   when: cookie.changed or stat_result.stat.exists == False 
-

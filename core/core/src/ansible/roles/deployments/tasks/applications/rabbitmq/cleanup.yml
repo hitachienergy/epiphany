@@ -1,3 +1,5 @@
+---
+
 - name: Clean configs path
   file:
     state: absent

@@ -66,6 +66,3 @@
   shell: kubectl apply --kubeconfig=/home/{{ admin_user.name }}/.kube/config -f {{ configuration_temp_directory }}/{{ cookie_secret_name }}-{{ namespace_name }}.yml
   become_user: "{{ admin_user.name }}"
   when: is_cookie_user_defined == True or cookie_already_exist == False
-
-
-

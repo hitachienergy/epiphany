@@ -8,8 +8,3 @@
 - include_tasks: "cookie-setup/nodes.yml"
   when: 
     - groups['rabbitmq'][0] != inventory_hostname
-
-
-
-
-
