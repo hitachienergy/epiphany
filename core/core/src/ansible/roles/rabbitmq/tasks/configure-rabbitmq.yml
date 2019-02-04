@@ -1,5 +1,4 @@
 ---
-
 - name: rabbitmq default file
   template:
     src: rabbitmq-server.j2

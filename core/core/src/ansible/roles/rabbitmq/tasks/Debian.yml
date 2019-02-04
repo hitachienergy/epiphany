@@ -1,6 +1,4 @@
 ---
-## RabbitMQ Debian
-
 - name: Get APT Key
   apt_key:
     url: https://github.com/rabbitmq/signing-keys/releases/download/2.0/rabbitmq-release-signing-key.asc
@@ -14,7 +12,7 @@
     update_cache: true
 
 - name: Install dependencies for RabbitMQ
-  apt: 
+  apt:
     update_cache: true
     name:
       - init-system-helpers
@@ -25,6 +23,6 @@
     state: present
 
 - name: Install RabbitMQ package
-  apt: 
+  apt:
     deb: "https://github.com/rabbitmq/rabbitmq-server/releases/download/v3.7.10/rabbitmq-server_3.7.10-1_all.deb"
     state: present

@@ -1,5 +1,4 @@
 ---
-
 - name: Upload RabbitMQ service yaml
   become: yes
   template:

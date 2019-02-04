@@ -1,5 +1,4 @@
 ---
-
 - name: Upload namespace yaml definition
   become: yes
   template:

@@ -1,10 +1,8 @@
 ---
-# Configure RabbitMQ cluster
-
 - include_tasks: "cookie-setup/master.yml"
-  when: 
+  when:
     - groups['rabbitmq'][0] == inventory_hostname
 
 - include_tasks: "cookie-setup/nodes.yml"
-  when: 
+  when:
     - groups['rabbitmq'][0] != inventory_hostname

@@ -1,10 +1,9 @@
 ---
-  
 - name: Include variables setup
   include_tasks: "set-variables.yml"
 
 - name: Create temp directory for files
-  file: 
+  file:
     path: "{{ configuration_temp_directory }}"
     state: directory
   become_user: "{{ admin_user.name }}"

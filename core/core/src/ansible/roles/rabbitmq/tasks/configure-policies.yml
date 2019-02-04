@@ -1,5 +1,4 @@
 ---
-
 - name: Add RabbitMQ policies
   rabbitmq_policy:
     name: "{{ item.name }}"

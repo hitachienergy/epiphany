@@ -1,5 +1,4 @@
 ---
-
 - name: Include deployments
   include_tasks: "applications/{{ item.name }}/main.yml"
   vars:

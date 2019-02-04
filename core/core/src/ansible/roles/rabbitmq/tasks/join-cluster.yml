@@ -1,5 +1,4 @@
 ---
-
 - name: Retrieve RabbitMQ master
   set_fact:
     rabbitmq_master: "{{ groups['rabbitmq'][0] }}"

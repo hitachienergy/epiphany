@@ -1,5 +1,4 @@
 ---
-
 - name: Upload rbac yaml definition
   become: yes
   template:
