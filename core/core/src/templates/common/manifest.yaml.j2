@@ -187,3 +187,8 @@ postgresql:
       {%- endif %}
   {%- endif %}
 {%- endif %}
+
+{%- if core.rabbitmq is defined %}
+rabbitmq:
+  {{ core.rabbitmq | to_nice_yaml | indent(2,False) }}
+{%- endif %}

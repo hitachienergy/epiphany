@@ -223,8 +223,10 @@ spec:
         volumeMounts:
         - mountPath: /scripts
           name: scripts
+{% if data.image_pull_secret_name is defined and data.image_pull_secret_name|length %}
       imagePullSecrets:
       - name: {{ data.image_pull_secret_name  }}
+{% endif %}
       dnsPolicy: ClusterFirst
       restartPolicy: Always
       schedulerName: default-scheduler
