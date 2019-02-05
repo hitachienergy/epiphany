@@ -1,0 +1,8 @@
+version: '3.4'
+
+services:
+  epiphany.examples:
+    image: ${DOCKER_REGISTRY}epiphanyexamples
+    build:
+      context: .
+      dockerfile: Epiphany.Examples/Dockerfile
