@@ -128,8 +128,8 @@ To get it from the registry and run it:
     ```
 3. To run the pulled image in a container use:
     ```bash
-    docker run -it -v LOCAL_DATA_DIR:/epiphany/data \
-                   -v LOCAL_BUILD_DIR:/epiphany/build \
+    docker run -it -v LOCAL_DATA_DIR:/epiphany/core/data \
+                   -v LOCAL_BUILD_DIR:/epiphany/core/build \
                    --rm epiphany-deploy
     ```
 
