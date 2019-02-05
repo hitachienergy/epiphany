@@ -139,8 +139,8 @@ To get it from the registry and run it:
 
 ### Note for Windows users
 
-Watch out for the end-of-lines symbols conversion. By default Git for Windows sets "core.autocrlf" to "true". Mounting such files with Docker results in "^M" end-of-line character in the config files.
-Use: [Checkout as-is, commit Unix-style ("core.autocrlf" set to "input") or Checkout as-is, commit as-is ("core.autocrlf" set to "false")](https://stackoverflow.com/questions/10418975/how-to-change-line-ending-settings)
+Watch out for the line endings conversion. By default Git for Windows sets `core.autocrlf` to `true`. Mounting such files with Docker results in `^M` end-of-line character in the config files.
+Use: [Checkout as-is, commit Unix-style](https://stackoverflow.com/questions/10418975/how-to-change-line-ending-settings) (`core.autocrlf=input`) or Checkout as-is, commit as-is (`core.autocrlf=false`)
 
 Remember to allow Docker Desktop to mount drives in Settings -> Shared Drives
 
