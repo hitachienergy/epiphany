@@ -140,17 +140,17 @@ To get it from the registry and run it:
 ### Note for Windows users
 
 Watch out for the line endings conversion. By default Git for Windows sets `core.autocrlf=true`. Mounting such files with Docker results in `^M` end-of-line character in the config files.
-Use: [Checkout as-is, commit Unix-style](https://stackoverflow.com/questions/10418975/how-to-change-line-ending-settings) (`core.autocrlf=input`) or Checkout as-is, commit as-is (`core.autocrlf=false`). Be sure to use editor understanding Unix(LF) line endings (e.g. Notepad++). 
+Use: [Checkout as-is, commit Unix-style](https://stackoverflow.com/questions/10418975/how-to-change-line-ending-settings) (`core.autocrlf=input`) or Checkout as-is, commit as-is (`core.autocrlf=false`). Be sure to use a text editor that can work with Unix line endings (e.g. Notepad++). 
 
 Remember to allow Docker Desktop to mount drives in Settings -> Shared Drives
 
 Escape your paths properly.
 
-1. Powershell example:
+* Powershell example:
 ```bash
 docker run -it -v C:\Users\USERNAME\git\epiphany:/epiphany --rm epiphany-dev
 ```
-2. Git-Bash example:
+* Git-Bash example:
 ```bash
 winpty docker run -it -v C:\\Users\\USERNAME\\git\\epiphany:/epiphany --rm epiphany-dev
 ```
