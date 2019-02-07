@@ -1,4 +1,3 @@
-
 # How-To Guides
 
 ## Contents
@@ -7,6 +6,7 @@
   - [Run directly from OS](#run-directly-from-os)
   - [Run with Docker image for development](#run-with-docker-image-for-development)
   - [Run with Docker image for deployment](#run-with-docker-image-for-deployment)
+  - [Note for Windows users](#note-for-windows-users)
 - Epiphany cluster
   - [How to create an Epiphany cluster on premise](#how-to-create-an-epiphany-cluster-on-premise)
   - [How to create an Epiphany cluster on Azure](#how-to-create-an-epiphany-cluster-on-azure)
@@ -75,7 +75,7 @@ This can both be used for deploying/managing clusters or for development.
 
 ### Run with Docker image for development
 
-To facilitate an easier path for developers to contribute to Epiphany we have a development docker image based on alpine. This image will help to more easily setup a development environment or to develop on systems which do not support bash like Windows 7.
+To facilitate an easier path for developers to contribute to Epiphany we have a development docker image based on alpine. This image will help to more easily setup a development environment or to develop on systems which do not support Bash like Windows 7.
 
 The following prerequisites are needed when working with the development image:
 
@@ -85,7 +85,7 @@ The following prerequisites are needed when working with the development image:
 
 There are 2 ways to get the image, build it localy yourself or pull it from the Epiphany docker registry.
 
-To build it locally and run it:
+#### To build it locally and run it:
 
 1. Run the following to build the image locally:
 
@@ -98,10 +98,10 @@ To build it locally and run it:
     ```bash
     docker run -it -v LOCAL_DEV_DIR:/epiphany --rm epiphany-dev
     ```
+    
+    Where `LOCAL_DEV_DIR` should be replaced with the local path to your core and data repositories. This will then be mapped to `epiphany` inside the container. If everything is ok you will be presented with a Bash prompt from which one can run the Epiphany engine. Note that when filling in your data YAMLs one needs to specify the paths from the container's point of view.
 
-    Where `LOCAL_DEV_DIR` should be replaced with the local path to you're core and data repositories. This will then be mapped to `epiphany` inside the container. If everything is ok you will be presentated with a bash terminal from which one can run the Epiphany engine. Note that when filling in your data YAMLs one needs to specify the paths from the containers point of view.
-
-To get it from the registry and run it:
+#### To get it from the registry and run it:
 
 1. Pull down the image from the registry:
 
@@ -115,7 +115,7 @@ To get it from the registry and run it:
     docker run -it -v LOCAL_DEV_DIR:/epiphany --rm epiphanyplatform/epiphany-dev
     ```
 
-    Where `LOCAL_DEV_DIR` should be replaced with the local path to you're core and data repositories. This will then be mapped to `epiphany` inside the container. If everything is ok you will be presentated with a bash terminal from which one can run the Epiphany engine while editing the core and data sources on the local OS.  Note that when filling in your data YAMLs one needs to specify the paths from the containers point of view.
+    Where `LOCAL_DEV_DIR` should be replaced with the local path to your core and data repositories. This will then be mapped to `epiphany` inside the container. If everything is ok you will be presented with a Bash prompt from which one can run the Epiphany engine while editing the core and data sources on the local OS. Note that when filling in your data YAMLs one needs to specify the paths from the container's point of view.
 
 ### Run with Docker image for deployment
 
@@ -135,9 +135,27 @@ To get it from the registry and run it:
                    --rm epiphany-deploy
     ```
 
-```LOCAL_DATA_DIR``` should be the host input directy for you're data YAML's and certificates.  ```LOCAL_BUILD_DIR``` should be the host directory where you want the Epiphany engine to write it's build output. If everything is ok you will be presentated with a bash terminal from which one can run the Epiphany engine. Note that when filling in your data YAMLs one needs to specify the paths from the containers point of view.
+```LOCAL_DATA_DIR``` should be the host input directy for your data YAMLs and certificates.  ```LOCAL_BUILD_DIR``` should be the host directory where you want the Epiphany engine to write its build output. If everything is ok you will be presented with a Bash prompt from which one can run the Epiphany engine. Note that when filling in your data YAMLs one needs to specify the paths from the container's point of view.
 
 [`Azure specific`] Ensure that you have already enough resources/quotas accessible in your region/subscription on Azure before you run Epiphany - depending on your configuration it can create large number of resources.
+
+### Note for Windows users
+
+Watch out for the line endings conversion. By default Git for Windows sets `core.autocrlf=true`. Mounting such files with Docker results in `^M` end-of-line character in the config files.
+Use: [Checkout as-is, commit Unix-style](https://stackoverflow.com/questions/10418975/how-to-change-line-ending-settings) (`core.autocrlf=input`) or Checkout as-is, commit as-is (`core.autocrlf=false`). Be sure to use a text editor that can work with Unix line endings (e.g. Notepad++). 
+
+Remember to allow Docker Desktop to mount drives in Settings -> Shared Drives
+
+Escape your paths properly.
+
+* Powershell example:
+```bash
+docker run -it -v C:\Users\USERNAME\git\epiphany:/epiphany --rm epiphany-dev
+```
+* Git-Bash example:
+```bash
+winpty docker run -it -v C:\\Users\\USERNAME\\git\\epiphany:/epiphany --rm epiphany-dev
+```
 
 ## Import and create of Grafana dashboards
 
