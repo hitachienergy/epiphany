@@ -6,7 +6,7 @@ using Microsoft.Extensions.Configuration;
 
 namespace Epiphany.Examples.Messaging.ModelGeneration
 {
-    public class MessageGenerator
+    public class MessageGenerator : IMessageGenerator
     {
         private readonly ISerializer _serializer;
         private readonly int _modelsNumber;

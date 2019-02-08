@@ -9,7 +9,6 @@ namespace Epiphany.Examples.Messaging.Models
         {
             Name = name;
         }
-
         public string Name { get; set; }
         public DateTime DateTime { get; set; }
         public IEnumerable<FakeParameter> Parameters { get; set; }

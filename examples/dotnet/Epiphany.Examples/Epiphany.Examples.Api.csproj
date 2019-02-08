@@ -10,10 +10,13 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.App" />
     <PackageReference Include="Microsoft.AspNetCore.Razor.Design" Version="2.2.0" PrivateAssets="All" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="2.2.0" />
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Messaging\Epiphany.Examples.Kafka\Epiphany.Examples.Kafka.csproj" />
     <ProjectReference Include="..\Messaging\Epiphany.Examples.Messaging\Epiphany.Examples.Messaging.csproj" />
+    <ProjectReference Include="..\Messaging\Epiphany.Examples.RabbitMQ\Epiphany.Examples.RabbitMQ.csproj" />
   </ItemGroup>
 
 </Project>
