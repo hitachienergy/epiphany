@@ -102,6 +102,8 @@ kubernetes:
   version: 1.13.0
   storage:
     enable: False
+  # If set to true the kubernetes master node will be Untained so pods can run on it.
+  # This should onlybe used for single machine "clusters"
   allow_pods_on_master: True
 
 monitoring:
