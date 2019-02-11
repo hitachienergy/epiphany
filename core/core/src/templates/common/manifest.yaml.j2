@@ -104,8 +104,7 @@ kubernetes:
 {%- if core.kubernetes.deployments is defined %}
   deployments:
   {{ core.kubernetes.deployments | to_nice_yaml | indent(2,False) }}
-{%- endif %}    
-  allow_pods_on_master: {{ core.kubernetes.allow_pods_on_master }}
+{%- endif %}
 
 {%- if core.haproxy is defined %}
 haproxy:

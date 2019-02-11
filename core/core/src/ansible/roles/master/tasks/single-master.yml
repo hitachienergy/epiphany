@@ -128,11 +128,18 @@
   when:
     - groups['master'][0] == inventory_hostname
 
+- name: Check if single machine cluster
+  set_fact:
+    is_single_machine_cluster: True
+  when:
+    - ansible_play_hosts|length == 1 
+  changed_when: false    
+
 - name: Untaint master
   shell: "kubectl --kubeconfig=/home/{{ admin_user.name }}/.kube/config taint node {{ groups['master'][0] }} node-role.kubernetes.io/master:NoSchedule-"
   become_user: "{{ admin_user.name }}"
   when:
     - groups['master'][0] == inventory_hostname
     - untainted_nodes_list.stdout_lines[0]|int == 0
-    - kubernetes.allow_pods_on_master == True  
+    - is_single_machine_cluster == True
 
