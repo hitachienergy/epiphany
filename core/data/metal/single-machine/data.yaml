@@ -36,8 +36,8 @@ ansible_tags:
 
 # The primary 'operations' user and the ssh key path
 admin_user:
-  name: luuk
-  key_path: /home/certs/id_rsa
+  name: operations
+  key_path: ~/.ssh/epiphany-key/id_rsa
 
 # This is the master set of available roles
 ansible_roles:
