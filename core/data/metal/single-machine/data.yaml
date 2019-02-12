@@ -36,8 +36,8 @@ ansible_tags:
 
 # The primary 'operations' user and the ssh key path
 admin_user:
-  name: operations
-  key_path: ~/.ssh/epiphany-key/id_rsa
+  name: luuk
+  key_path: /home/certs/id_rsa
 
 # This is the master set of available roles
 ansible_roles:
@@ -85,7 +85,7 @@ nodes:
       - node_exporter
       - prometheus
       - grafana
-      #- rabbitmq
+      - rabbitmq
       - reboot
 
     security:
@@ -95,12 +95,12 @@ nodes:
 
     # hosts the individual host names and IPs based on count above
     hosts:
-      - name: singlemachine
+      - name: ubuntuserver
         # May want to address multiple nics and bonding options later
         ips:
           # Only takes the first public ip
-          public: 192.168.1.2
-          private: 192.168.1.2
+          public: 192.168.1.102
+          private: 192.168.1.102
 
 kubernetes:
   version: 1.13.0
@@ -158,4 +158,21 @@ monitoring:
       duration: 15m #1s, 1m, 1h, 1d, 1w, ...
       severity: critical
       message: "Kafka consumers are lagging more than 1000 messages over last 15 minutes." 
+
+rabbitmq:
+  amqp_port: 5672 #optional - default 5672  
+  plugins: # optional list of RabbitMQ plugins
+    - rabbitmq_management
+    - rabbitmq_management_agent
+  policies: # optional list of RabbitMQ policies
+    - name: ha-policy2
+      pattern: ".*"
+      definitions:
+        ha-mode: all
+  custom_configurations: #optional list of RabbitMQ configurations (new format -> https://www.rabbitmq.com/configure.html)
+    - name: vm_memory_high_watermark.relative
+      value: 0.6
+  cluster:
+    is_clustered: false #optional - default false
+    cookie: "cookieSetFromDataYaml" #optional - default value will be random generated string      
         

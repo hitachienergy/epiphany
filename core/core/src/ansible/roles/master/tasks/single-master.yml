@@ -126,20 +126,21 @@
   register: untainted_nodes_list
   failed_when: "untainted_nodes_list.rc == 2"
   when:
-    - groups['master'][0] == inventory_hostname
+    - groups['master'][0] == inventory_hostname   
 
-- name: Check if single machine cluster
+- name: Check if we want/need to untaint master 
   set_fact:
-    is_single_machine_cluster: True
+    untaint_master: True
   when:
-    - ansible_play_hosts|length == 1 
-  changed_when: false    
+    - groups['master'] is defined
+    - groups['worker'] is defined
+    - untainted_nodes_list.stdout_lines[0]|int == 0
+    - (groups['master']|list|length == 1) and (groups['worker']|list|length == 0) or (kubernetes.allow_pods_on_master == True)
+  changed_when: false
 
 - name: Untaint master
   shell: "kubectl --kubeconfig=/home/{{ admin_user.name }}/.kube/config taint node {{ groups['master'][0] }} node-role.kubernetes.io/master:NoSchedule-"
   become_user: "{{ admin_user.name }}"
   when:
     - groups['master'][0] == inventory_hostname
-    - untainted_nodes_list.stdout_lines[0]|int == 0
-    - is_single_machine_cluster == True
-
+    - untaint_master is defined and untaint_master == True
