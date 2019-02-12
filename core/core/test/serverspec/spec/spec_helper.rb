@@ -27,7 +27,7 @@ set :host,        options[:host_name] || host
 set :ssh_options, options
 
 # Disable sudo
-# set :disable_sudo, true
+set :disable_sudo, true
 
 
 # Set environment variables
@@ -35,3 +35,15 @@ set :ssh_options, options
 
 # Set PATH
 # set :path, '/sbin:/usr/local/sbin:$PATH'
+
+  def count_inventory_roles(role)
+    file = File.open(ENV['inventory'], "rb")
+    input = file.read
+    file.close
+      if input.include? "[#{role}]"
+        rows = input.split("[#{role}]\n")[1].split("\n\n")[0]
+        counter = rows.scan(/ansible_host/).count
+      else counter = 0
+      end
+    return counter
+  end
