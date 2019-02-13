@@ -133,9 +133,8 @@
     untaint_master: True
   when:
     - groups['master'] is defined
-    - groups['worker'] is defined
     - untainted_nodes_list.stdout_lines[0]|int == 0
-    - (groups['master']|list|length == 1) and (groups['worker']|list|length == 0) or (kubernetes.allow_pods_on_master == True)
+    - (groups['master']|list|length == 1) and (groups['worker'] is defined and groups['worker']|list|length == 0) or (kubernetes.allow_pods_on_master == True)
   changed_when: false
 
 - name: Untaint master
