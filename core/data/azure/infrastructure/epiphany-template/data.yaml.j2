@@ -9,7 +9,7 @@
 title: Epiphany ({{ azure.image_offer }}) {{ environment_name }}
 
 kind: datafile
-version: 1.0.1
+version: 0.2.0
 
 # NOTE: Any data values that are empty put "" or the value None will be used in the templates for those attributes.
 
@@ -1070,7 +1070,7 @@ core:
 {% endif %}
 
 {% if platform.rabbitmq_vms is defined and platform.rabbitmq_vms > 0 %}
-        - name: {{ azure.vm_name_prefix }}-postgresql
+        - name: {{ azure.vm_name_prefix }}-rabbitmq
           size: Standard_DS1_v2
           os_type: linux
           count: {{ platform.rabbitmq_vms }}
@@ -1183,32 +1183,46 @@ core:
       type: azure-file
       tags: *tags
       quota: 50
-#    deployments:
-#      - name: rabbitmq 
-#        image_path: rabbitmq:3.7.10
-#        #image_pull_secret_name: regcred # optional
-#        service:
-#          name: rabbitmq-cluster
-#          port: 30672
-#          replicas: 5
-#          namespace: queue
-#        rabbitmq:
-#          #amqp_port: 5672 #optional - default 5672  
-#          plugins: # optional list of RabbitMQ plugins
-#            - rabbitmq_management
-#            - rabbitmq_management_agent
-#          policies: # optional list of RabbitMQ policies
-#            - name: ha-policy2
-#              pattern: ".*"
-#              definitions:
-#                ha-mode: all
-#          custom_configurations: #optional list of RabbitMQ configurations (new format -> https://www.rabbitmq.com/configure.html)
-#            - name: vm_memory_high_watermark.relative
-#              value: 0.5
-#          cluster:
-#            #is_clustered: true #redundant in in-Kubernetes installation, it will always be clustered
-#            #cookie: "cookieSetFromDataYaml" #optional - default value will be random generated string
-
+    # deployments:
+    #   - name: rabbitmq 
+    #     image_path: rabbitmq:3.7.10
+    #     #image_pull_secret_name: regcred # optional
+    #     service:
+    #       name: rabbitmq-cluster
+    #       port: 30672
+    #       replicas: 5
+    #       namespace: queue
+    #     rabbitmq:
+    #       #amqp_port: 5672 #optional - default 5672  
+    #       plugins: # optional list of RabbitMQ plugins
+    #         - rabbitmq_management
+    #         - rabbitmq_management_agent
+    #       policies: # optional list of RabbitMQ policies
+    #         - name: ha-policy2
+    #           pattern: ".*"
+    #           definitions:
+    #             ha-mode: all
+    #       custom_configurations: #optional list of RabbitMQ configurations (new format -> https://www.rabbitmq.com/configure.html)
+    #         - name: vm_memory_high_watermark.relative
+    #           value: 0.5
+    #       cluster:
+    #         #is_clustered: true #redundant in in-Kubernetes installation, it will always be clustered
+    #         #cookie: "cookieSetFromDataYaml" #optional - default value will be random generated string
+    #   - name: auth-service # this service require postgresql to be installed in cluster
+    #     image_path: jboss/keycloak:4.8.3.Final
+    #     #image_pull_secret_name: regcred
+    #     service:
+    #       name: as-testauthdb
+    #       port: 30104
+    #       replicas: 2
+    #       namespace: namespace-for-auth
+    #       admin_user: auth-service-username
+    #       admin_password: auth-service-password
+    #     database: 
+    #       name: "auth-database-name"    
+    #       #port: "5432" # leave it when default
+    #       user: "auth-db-user"
+    #       password: "auth-db-password"
 
   haproxy:
     stats:
@@ -1283,19 +1297,19 @@ core:
         severity: critical
         message: "Kafka consumers are lagging more than 1000 messages over last 15 minutes." 
 
-#  rabbitmq:
-#      amqp_port: 5672 #optional - default 5672  
-#    plugins: # optional list of RabbitMQ plugins
-#      - rabbitmq_management
-#      - rabbitmq_management_agent
-#    policies: # optional list of RabbitMQ policies
-#      - name: ha-policy2
-#        pattern: ".*"
-#        definitions:
-#          ha-mode: all
-#    custom_configurations: #optional list of RabbitMQ configurations (new format -> https://www.rabbitmq.com/configure.html)
-#      - name: vm_memory_high_watermark.relative
-#        value: 0.6
-#    cluster:
-#      is_clustered: true #optional - default false
-#      cookie: "cookieSetFromDataYaml" #optional - default value will be random generated string
+  # rabbitmq:
+  #     amqp_port: 5672 #optional - default 5672  
+  #   plugins: # optional list of RabbitMQ plugins
+  #     - rabbitmq_management
+  #     - rabbitmq_management_agent
+  #   policies: # optional list of RabbitMQ policies
+  #     - name: ha-policy2
+  #       pattern: ".*"
+  #       definitions:
+  #         ha-mode: all
+  #   custom_configurations: #optional list of RabbitMQ configurations (new format -> https://www.rabbitmq.com/configure.html)
+  #     - name: vm_memory_high_watermark.relative
+  #       value: 0.6
+  #   cluster:
+  #     is_clustered: true #optional - default false
+  #     cookie: "cookieSetFromDataYaml" #optional - default value will be random generated string
