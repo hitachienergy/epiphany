@@ -39,7 +39,7 @@
 
 - name: Define custom configurations RabbitMQ
   set_fact:
-    custom_configurations: "{{ rabbitmq.custom_configurations }}"
+    custom_configurations: "{{ data.rabbitmq.custom_configurations }}"
   when:
     - data.rabbitmq is defined
     - data.rabbitmq.custom_configurations is defined

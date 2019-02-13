@@ -27,7 +27,7 @@
 - name: Check that the erlang cookie secret exists
   shell: kubectl -n {{ namespace_name }} --kubeconfig=/home/{{ admin_user.name }}/.kube/config get secrets | grep -i  '{{ cookie_secret_name }}'
   register: get_secret_result
-  failed_when: "get_secret_result.rc == 2 or get_secret_result.stderr"
+  failed_when: "get_secret_result.rc == 2"
   changed_when: false
 
 - name: Set default value for existing cookie secret
