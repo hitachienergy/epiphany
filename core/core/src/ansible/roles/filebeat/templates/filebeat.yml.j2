@@ -31,9 +31,6 @@ filebeat.inputs:
     - /var/log/syslog
     - /var/log/zookeeper/version-2/*
 
-    # Defined in 'Customized groups':
-    # - filebeat
-
   # Exclude lines. A list of regular expressions to match. It drops the lines that are
   # matching any regular expression from the list.
   #exclude_lines: ['^DBG']
@@ -67,12 +64,6 @@ filebeat.inputs:
   # that was (not) matched before or after or as long as a pattern is not matched based on negate.
   # Note: After is the equivalent to previous and before is the equivalent to to next in Logstash
   #multiline.match: after
-
-#--- Customized groups ---
-- type: log
-  include_lines: ['ERROR', 'WARN']
-  paths:
-    - /var/log/filebeat/filebeat*
 
 {% if 'master' in group_names or 'worker' in group_names %}
 #--- Kubernetes ---
