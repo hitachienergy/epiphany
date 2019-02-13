@@ -8,7 +8,7 @@
 title: Epiphany Apps Infrastructure...
 
 kind: datafile
-version: 1.0
+version: 0.2.0
 
 # NOTE: Any data values that are empty put "" or the value None will be used in the templates for those attributes.
 
@@ -73,6 +73,7 @@ core:
     - jmx-exporter
     - kafka-exporter
     - postgresql
+    - rabbitmq
     # !Caution!
     # Disable this role if you don't want restart your servers
     - reboot
@@ -445,7 +446,7 @@ core:
 
                   tags: *tags
       
-        - name: vm-k8s-master  #master
+        - name: vm-k8s-master  
           size: Standard_DS2_v2
           os_type: linux
           count: 1
@@ -1030,8 +1031,111 @@ core:
                   sku: Standard
                   tags: *tags
 
+        - name: vm-rabbit 
+          size: Standard_DS1_v2
+          os_type: linux
+          count: 2
+          # One host will need to be a bastian host UNLESS the bastian host is provided in another way
+          bastian_host: false
+          # roles are how you define a grouping of nodes. These values will be used to create an inventory of your cluster
+          # Must be a member of the 'role' in core
+          roles:
+          - node_exporter
+          - filebeat
+          - rabbitmq
+          - linux
+
+          delete_os_disk_on_termination: false
+          delete_data_disks_on_termination: false
+          # NOTE: This must match the interfaces public_ip options. If one interface has enabled public_ip then this MUST be true else false
+          public_ips: true
+          depends_on:
+            # Put the name of the resource. If a VM then only put the 'name:' value. The count portion will be automatically added
+            - '${var.master_depends_on}'
+          tags: *tags
+
+          security:
+            # Each node will have firewalld (redhat) enabled and allowing only given ports, remember that Epiphany needs port 22 for bootstrapping environments
+            firewall:
+              enable: false
+              ports_open:
+                - 22/tcp
+                - 443/tcp
+
+          # NOTE: For Kubernetes builds we should *not* use provisioners to bootstrap any data. The point is to build a common
+          # infrastructure and then collect IPs etc. that are required for K8s automation to build. The ONLY possible
+          # exception is for automated testing in VSTS 
+          bootstrap:
+            # Can use the global values or override them on a per vm type basis
+            ssh: *ssh
+
+            provisioners:
+              file:
+                enable: false
+                # NOTE: Pay close attention to the trailing '/' for 'source'. If you leave '/' off of the end of source then the directory tree will be copied to 'destination'. If you add '/' then the contents of that directory will be copied into the destination directory.
+                source: "../../../../core/src/scripts/kubernetes/linux"
+                destination: "/home/${var.admin_username}"
+
+              remote_exec:
+                enable: false
+                # NOTE: Use Terraform vars if you need to embed variables in the commands.
+                inline: # Example is below and only here to show
+                  - 'chmod +x ${var.file_destination}/linux/make-executable.sh'
+                  - '${var.file_destination}/linux/make-executable.sh'
+                  - 'echo ${var.admin_password} | sudo -S ${var.file_destination}/linux/prepare-system-kubernetes-redhat.sh'
+
+                testing_inline:
+                  - 'echo \"##vso[task.setvariable variable=toPrint]Print Me Please\"'
+
+          interfaces:
+            # A VM can have multiple IP addresses and interfaces. In this case we are
+            # saying there is one public IP per network interface
+            - network_interface:
+                # name has vm name appended to it so only put basic type name here
+                name: nic
+                primary: true
+                tags: *tags
+
+                # This only works with certain size VMs
+                # Accelerated Networking is supported on most general purpose and compute-optimized instance sizes with 2 or more vCPUs.
+                # These supported series are: D/DSv2 and F/Fs. On instances that support hyperthreading, Accelerated Networking is supported
+                # on VM instances with 4 or more vCPUs. Supported series are: D/DSv3, E/ESv3, Fsv2, and Ms/Mms.
+                # https://docs.microsoft.com/en-us/azure/virtual-network/create-vm-accelerated-networking-cli
+                enable_accelerated_networking: false
+
+                ip_configuration:
+                  name: ip-config
+                  # subnet_id is generated so use terraform variable
+                  private_ip:
+                    output:
+                      enable: true
+                      sensitive: false
+                    address_allocation: Dynamic
+                    # address only applies if 'address_allocation' is 'static'
+                    address: 10.0.2.5
+
+                public_ip:
+                  # If you set to false there must be some host set as a bastian host
+                  enable: true
+                  output:
+                    enable: true
+                    sensitive: false
+                  name: pip-epiphany
+                  address_allocation: static
+                  idle_timeout_in_minutes: 30
+                  sku: Standard
+                  tags: *tags
+
+
   kubernetes:
     version: 1.13.0
+    # image_registry_secrets:
+    # - name: regcred
+    #   server_url: your-registry-url 
+    #   username: your-registry-username
+    #   password: your-registry-password
+    #   email: your-registry-email
+    #   namespace: your-secret-namespace
     storage:
       enable: true
       #valid chocies:
@@ -1040,6 +1144,46 @@ core:
       type: azure-file
       tags: *tags
       quota: 50
+    deployments:
+      - name: rabbitmq 
+        image_path: rabbitmq:3.7.10
+        # image_pull_secret_name: regcred # optional
+        service:
+          name: rabbitmq-cluster
+          port: 30672
+          replicas: 5
+          namespace: queue
+        rabbitmq:
+          # amqp_port: 5672 #optional - default 5672  
+          plugins: # optional list of RabbitMQ plugins
+            - rabbitmq_management
+            - rabbitmq_management_agent
+          policies: # optional list of RabbitMQ policies
+            - name: ha-policy2
+              pattern: ".*"
+              definitions:
+                ha-mode: all
+          custom_configurations: #optional list of RabbitMQ configurations (new format -> https://www.rabbitmq.com/configure.html)
+            - name: vm_memory_high_watermark.relative
+              value: 0.5
+          cluster:
+            # is_clustered: true #redundant in in-Kubernetes installation, it will always be clustered
+            # cookie: "cookieSetFromDataYaml" #optional - default value will be random generated string
+      - name: auth-service # this service require postgresql to be installed in cluster
+        image_path: jboss/keycloak:4.8.3.Final
+        # image_pull_secret_name: regcred
+        service:
+          name: auth-service
+          port: 30104
+          replicas: 2
+          namespace: auth-tools
+          admin_user: admin
+          admin_password: admin
+        database: 
+          name: "authDb"    
+          # port: "5432" # leave it when default
+          user: "authDbadmin"
+          password: "authDbpwd"
 
   haproxy:
     stats:
@@ -1064,7 +1208,7 @@ core:
 
   monitoring:
     alerts:
-      enable: False # required value
+      enable: True # required value
       handlers:
         mail:
           enable: False # required value
@@ -1113,4 +1257,20 @@ core:
         duration: 15m #1s, 1m, 1h, 1d, 1w, ...
         severity: critical
         message: "Kafka consumers are lagging more than 1000 messages over last 15 minutes." 
-        
+
+  rabbitmq:
+    # amqp_port: 5672 #optional - default 5672  
+    plugins: # optional list of RabbitMQ plugins
+      - rabbitmq_management
+      - rabbitmq_management_agent
+    policies: # optional list of RabbitMQ policies
+      - name: ha-policy2
+        pattern: ".*"
+        definitions:
+          ha-mode: all
+    custom_configurations: #optional list of RabbitMQ configurations (new format -> https://www.rabbitmq.com/configure.html)
+      - name: vm_memory_high_watermark.relative
+        value: 0.5
+    cluster:
+      is_clustered: true #optional - default false
+      # cookie: "cookieSetFromDataYaml" #optional - default value will be random generated string
