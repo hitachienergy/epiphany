@@ -53,7 +53,7 @@ end
 
 describe 'Check if there are any pods that have status other than Running' do
   describe command('kubectl get pods --all-namespaces --field-selector=status.phase!=Running') do
-    its(:stdout) { should match // }
+    its(:stdout) { should match /^$/ }
     its(:stderr) { should match /No resources found./ }
   end
 end  
