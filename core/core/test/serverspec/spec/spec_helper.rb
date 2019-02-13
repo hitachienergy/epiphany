@@ -41,7 +41,7 @@ set :disable_sudo, true
     input = file.read
     file.close
       if input.include? "[#{role}]"
-        rows = input.split("[#{role}]\n")[1].split("\n\n")[0]
+        rows = input.split("[#{role}]")[1].split("[")[0]
         counter = rows.scan(/ansible_host/).count
       else counter = 0
       end
