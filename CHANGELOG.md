@@ -7,9 +7,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## Current release
 
-- [CHANGELOG-0.1.2.md](./CHANGELOG-0.1.2.md)
+-   [CHANGELOG-0.2.0.md](./CHANGELOG-0.2.0.md)
 
 ## Older releases
 
-- [CHANGELOG-0.1.1.md](./CHANGELOG-0.1.1.md)
-- [CHANGELOG-0.1.0.md](./CHANGELOG-0.1.0.md)
+-   [CHANGELOG-0.1.2.md](./CHANGELOG-0.1.2.md)
+-   [CHANGELOG-0.1.1.md](./CHANGELOG-0.1.1.md)
+-   [CHANGELOG-0.1.0.md](./CHANGELOG-0.1.0.md)
