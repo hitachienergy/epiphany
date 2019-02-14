@@ -1,5 +1,5 @@
 require 'spec_helper'
-require "base64"
+require 'base64'
 
 
 describe 'Check if kubelet service is up' do
@@ -10,7 +10,7 @@ describe 'Check if kubelet service is up' do
 end
 
 describe 'Check if kube-scheduler is up' do
-  describe process("kube-scheduler") do
+  describe process('kube-scheduler') do
     it { should be_enabled }
     it { should be_running }
   end
@@ -24,7 +24,7 @@ describe 'Check if kube-scheduler is up - 2nd test' do
 end
 
 describe 'Check if kube-controller is up' do
-  describe process("kube-controller") do
+  describe process('kube-controller') do
     it { should be_enabled }
     it { should be_running }
   end
@@ -60,13 +60,17 @@ end
 
 describe 'Check if the number of master nodes is the same as indicated in the inventory file' do
   describe command('kubectl get nodes --selector=node-role.kubernetes.io/master --no-headers | wc -l | tr -d "\n"') do
-    its(:stdout) { should eq count_inventory_roles("master").to_s }
+    it "is expected to be equal" do
+      expect(subject.stdout.to_i).to eq count_inventory_roles("master")
+      end
   end
 end
 
 describe 'Check if the number of worker nodes is the same as indicated in the inventory file' do
   describe command('kubectl get nodes --no-headers | grep -v master | wc -l | tr -d "\n"') do
-    its(:stdout) { should eq count_inventory_roles("worker").to_s }
+    it "is expected to be equal" do
+      expect(subject.stdout.to_i).to eq count_inventory_roles("worker")
+      end
   end
 end
 
@@ -101,7 +105,7 @@ describe 'Creating, checking and decoding a secret using kubectl' do
     end
   end
   describe 'Checking if it exists...' do
-    describe command("kubectl get secrets") do
+    describe command('kubectl get secrets') do
       its(:stdout) { should match /#{test_secret}/ }
     end
   end
@@ -131,18 +135,23 @@ describe 'Testing kubernetes dashboard...' do
   end
   describe 'Getting admin token bearer' do
     describe command("kubectl describe secret $(kubectl get secrets --namespace=kube-system | grep admin-user \
-    | awk '{print $1}') --namespace=kube-system | grep -E '^token' | awk '{print $2}' | head -1") do
+    | awk '{print $1}') --namespace=kube-system | awk '/^token/ {print $2}' | head -1") do
       its(:stdout) { should_not match /^$/ }
     end
   end
   describe 'Setting up proxy and starting to serve on localhost' do
-    describe command("kubectl proxy >/dev/null 2>&1 &") do
+    describe command('kubectl proxy >/dev/null 2>&1 &') do
       its(:exit_status) { should eq 0 }
     end
   end
   describe 'Checking the dashboard availability' do
     describe command("curl -I 'http://localhost:8001/api/v1/namespaces/kube-system/services/https:kubernetes-dashboard:/proxy/'") do
       its(:stdout) { should match /HTTP\/1.1 200 OK/ }
+    end
+  end
+  describe 'Terminating kubectl proxy process' do
+    describe command('pkill -f "kubectl proxy"') do
+      its(:exit_status) { should eq 0 }
     end
   end
 end
@@ -155,4 +164,3 @@ describe 'Checking coredns deployment status' do
     its(:exit_status) { should eq 0 }
   end
 end
-
