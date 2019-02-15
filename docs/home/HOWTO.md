@@ -115,7 +115,7 @@ There are 2 ways to get the image, build it localy yourself or pull it from the 
     docker run -it -v LOCAL_DEV_DIR:/epiphany --rm epiphanyplatform/epiphany-dev
     ```
 
-    Where `LOCAL_DEV_DIR` should be replaced with the local path to your core and data repositories. This will then be mapped to `epiphany` inside the container. If everything is ok you will be presented with a Bash prompt from which one can run the Epiphany engine while editing the core and data sources on the local OS. Note that when filling in your data YAMLs one needs to specify the paths from the container's point of view.
+    Where `LOCAL_DEV_DIR` should be replaced with the local path to your local Epiphany repo. This will then be mapped to `epiphany` inside the container. If everything is ok you will be presented with a Bash prompt from which one can run the Epiphany engine while editing the core and data sources on the local OS. Note that when filling in your data YAMLs one needs to specify the paths from the container's point of view.
 
 ### Run with Docker image for deployment
 
@@ -132,10 +132,11 @@ To get it from the registry and run it:
     ```bash
     docker run -it -v LOCAL_DATA_DIR:/epiphany/core/data \
                    -v LOCAL_BUILD_DIR:/epiphany/core/build \
+                   -v LOCAL_SSH_DIR:/epiphany/core/build \
                    --rm epiphany-deploy
     ```
 
-```LOCAL_DATA_DIR``` should be the host input directy for your data YAMLs and certificates.  ```LOCAL_BUILD_DIR``` should be the host directory where you want the Epiphany engine to write its build output. If everything is ok you will be presented with a Bash prompt from which one can run the Epiphany engine. Note that when filling in your data YAMLs one needs to specify the paths from the container's point of view.
+```LOCAL_DATA_DIR``` should be the host input directy for your data YAMLs and certificates.  ```LOCAL_BUILD_DIR``` should be the host directory where you want the Epiphany engine to write its build output. ```LOCAL_SSH_DIR``` should be the host directory where the SSH keys are stored. If everything is ok you will be presented with a Bash prompt from which one can run the Epiphany engine. Note that when filling in your data YAMLs one needs to specify the paths from the container's point of view.
 
 [`Azure specific`] Ensure that you have already enough resources/quotas accessible in your region/subscription on Azure before you run Epiphany - depending on your configuration it can create large number of resources.
 
@@ -162,13 +163,13 @@ Use: [Checkout as-is, commit Unix-style](https://stackoverflow.com/questions/104
 1. Copy the certs on the image:
 
     ```bash
-    cp -R MOUNT_FOLDER_WITH_CERTS /home/
+    mkdir -p ~/.ssh/epiphany-operations/
+    cp /epiphany/core/ssh/id_rsa* ~/.ssh/epiphany-operations/
     ```
 2. Set the propper permission on the certs:
 
     ```bash
-    chmod 400 /home/certs/id_rsa
-    chmod 400 /home/certs/id_rsa.pub
+    chmod 400 ~/.ssh/epiphany-operations/id_rsa*
     ```
 
 ## Import and create of Grafana dashboards
