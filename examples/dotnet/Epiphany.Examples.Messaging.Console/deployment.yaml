@@ -18,7 +18,7 @@ spec:
     spec:
       containers:
       - name: epiphany-messaging-consumer
-        image: epiphanyplatform/epiphany-messaging-console
+        image: epiphanyplatform/examples-queue-console:0.2.0
         imagePullPolicy: Always
         env:
         - name: ASPNETCORE_ENVIRONMENT
@@ -35,7 +35,7 @@ spec:
         - name: USE_QUEUE # Which queue system to use, allowed values: Kafka, RabbitMQ
           value: "RabbitMQ"
         - name: TOPIC_NAME # Name of the topic for publishing/consuming messages
-          value: "test-topic"
+          value: "console-test-topic"
         - name: PRODUCE_INFINITELY # For worker applications (not REST API)
           value: "1"
         # RabbitMQ specific - required if USE_QUEUE == RabbitMQ

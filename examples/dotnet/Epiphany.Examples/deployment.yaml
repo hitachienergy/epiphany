@@ -41,7 +41,7 @@ spec:
     spec:
       containers:
       - name: epiphany-examples-api
-        image: epiphanyplatform/epiphany-examples-api
+        image: epiphanyplatform/examples-queue-api:0.2.0
         imagePullPolicy: Always
         env:
         - name: ASPNETCORE_ENVIRONMENT
