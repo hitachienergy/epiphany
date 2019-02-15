@@ -132,7 +132,7 @@ To get it from the registry and run it:
     ```bash
     docker run -it -v LOCAL_DATA_DIR:/epiphany/core/data \
                    -v LOCAL_BUILD_DIR:/epiphany/core/build \
-                   -v LOCAL_SSH_DIR:/epiphany/core/build \
+                   -v LOCAL_SSH_DIR:/epiphany/core/ssh \
                    --rm epiphany-deploy
     ```
 
