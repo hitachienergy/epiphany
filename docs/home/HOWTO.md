@@ -141,21 +141,35 @@ To get it from the registry and run it:
 
 ### Note for Windows users
 
-Watch out for the line endings conversion. By default Git for Windows sets `core.autocrlf=true`. Mounting such files with Docker results in `^M` end-of-line character in the config files.
+- Watch out for the line endings conversion. By default Git for Windows sets `core.autocrlf=true`. Mounting such files with Docker results in `^M` end-of-line character in the config files.
 Use: [Checkout as-is, commit Unix-style](https://stackoverflow.com/questions/10418975/how-to-change-line-ending-settings) (`core.autocrlf=input`) or Checkout as-is, commit as-is (`core.autocrlf=false`). Be sure to use a text editor that can work with Unix line endings (e.g. Notepad++). 
 
-Remember to allow Docker Desktop to mount drives in Settings -> Shared Drives
+- Remember to allow Docker Desktop to mount drives in Settings -> Shared Drives
 
-Escape your paths properly.
+- Escape your paths properly:
 
-* Powershell example:
-```bash
-docker run -it -v C:\Users\USERNAME\git\epiphany:/epiphany --rm epiphany-dev
-```
-* Git-Bash example:
-```bash
-winpty docker run -it -v C:\\Users\\USERNAME\\git\\epiphany:/epiphany --rm epiphany-dev
-```
+  * Powershell example:
+  ```bash
+  docker run -it -v C:\Users\USERNAME\git\epiphany:/epiphany --rm epiphany-dev
+  ```
+  * Git-Bash example:
+  ```bash
+  winpty docker run -it -v C:\\Users\\USERNAME\\git\\epiphany:/epiphany --rm epiphany-dev
+  ```
+
+- Mounting NTFS disk folders in a linux based image causes permission issues with SSH keys. When running either the development or deploy image:
+
+1. Copy the certs on the image:
+
+    ```bash
+    cp -R MOUNT_FOLDER_WITH_CERTS /home/
+    ```
+2. Set the propper permission on the certs:
+
+    ```bash
+    chmod 400 /home/certs/id_rsa
+    chmod 400 /home/certs/id_rsa.pub
+    ```
 
 ## Import and create of Grafana dashboards
 
