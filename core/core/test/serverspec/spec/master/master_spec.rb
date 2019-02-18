@@ -9,11 +9,7 @@ describe 'Checking if kubelet service is running' do
   end
 end
 
-<<<<<<< HEAD
 describe 'Checking if kube-scheduler is running' do
-=======
-describe 'Check if kube-scheduler is up' do
->>>>>>> 5683acf40758eb6b3cbd65b7bb47dbf8c090a62c
   describe process('kube-scheduler') do
     it { should be_enabled }
     it { should be_running }
@@ -27,11 +23,7 @@ describe 'Checking if kube-scheduler is on process list' do
   end
 end
 
-<<<<<<< HEAD
 describe 'Checking if kube-controller is running' do
-=======
-describe 'Check if kube-controller is up' do
->>>>>>> 5683acf40758eb6b3cbd65b7bb47dbf8c090a62c
   describe process('kube-controller') do
     it { should be_enabled }
     it { should be_running }
@@ -112,11 +104,7 @@ describe 'Checking secret creation using kubectl' do
       its(:stdout) { should match /secret\/#{test_secret} created/ }
     end
   end
-<<<<<<< HEAD
   describe 'Checking if the created secret is present on the list with all secrets' do
-=======
-  describe 'Checking if it exists...' do
->>>>>>> 5683acf40758eb6b3cbd65b7bb47dbf8c090a62c
     describe command('kubectl get secrets') do
       its(:stdout) { should match /#{test_secret}/ }
     end
@@ -145,13 +133,8 @@ describe 'Checking kubernetes dashboard availability' do
       its(:exit_status) { should eq 0 }
     end
   end
-<<<<<<< HEAD
   describe 'Checking if admin token bearer exists' do
     describe command("kubectl describe secret $(kubectl get secrets --namespace=kube-system | grep addmin-user \
-=======
-  describe 'Getting admin token bearer' do
-    describe command("kubectl describe secret $(kubectl get secrets --namespace=kube-system | grep admin-user \
->>>>>>> 5683acf40758eb6b3cbd65b7bb47dbf8c090a62c
     | awk '{print $1}') --namespace=kube-system | awk '/^token/ {print $2}' | head -1") do
       its(:stdout) { should_not match /^$/ }
       its(:exit_status) { should eq 0 }
@@ -182,7 +165,6 @@ describe 'Checking if coredns is deployed' do
     its(:exit_status) { should eq 0 }
   end
 end
-<<<<<<< HEAD
 
 describe 'Checking if kubernetes healthz endpoint is responding' do
   describe command('curl --insecure -I -m 2 https://127.0.0.1:10250/healthz') do
@@ -190,5 +172,3 @@ describe 'Checking if kubernetes healthz endpoint is responding' do
     its(:exit_status) { should eq 0 }
   end
 end
-=======
->>>>>>> 5683acf40758eb6b3cbd65b7bb47dbf8c090a62c
