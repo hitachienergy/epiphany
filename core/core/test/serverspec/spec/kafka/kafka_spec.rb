@@ -16,7 +16,7 @@ end
 
 describe user('kafka') do
   it { should exist }
-  it { should have_login_shell '/sbin/nologin' }
+  it { should have_login_shell '/usr/sbin/nologin' }
   it { should belong_to_group 'kafka' }
   it { should belong_to_group 'jmx-exporter' }
 end
