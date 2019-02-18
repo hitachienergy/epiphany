@@ -25,7 +25,7 @@
         src: extra-dependencies.conf.j2
       register: filebeat_unit_dependencies
       notify: Restart Filebeat service
-  when: inventory_hostname in groups['master'] or inventory_hostname in groups['worker']
+  when: (groups['master'] is defined and inventory_hostname in groups['master']) or (groups['worker'] is defined and inventory_hostname in groups['worker'])
 
 - name: Enable Filebeat service
   systemd:
