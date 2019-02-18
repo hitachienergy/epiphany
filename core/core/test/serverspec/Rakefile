@@ -27,8 +27,8 @@ current_group = nil
 
 File::open(ENV['inventory']) do |f|
   while line = f.gets
-    # Remove comment
-    md = line.match(/^([^#]+)/)
+
+    md = line.match(/^([^#]+)/) # matches lines not starting with a '#' character
     next unless md
     line = md[0]
 
