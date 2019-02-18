@@ -54,11 +54,11 @@ describe 'Checking user configuration' do
 end
 
 describe 'Checking if zookeeper is healthy' do
-  describe command("echo stat | nc localhost 2181") do
+  describe command("echo stat | nc -q 2 localhost 2181") do
     its(:stdout) { should match /Zookeeper version/ }
     its(:exit_status) { should eq 0 }
   end
-  describe command("echo ruok | nc localhost 2181") do
+  describe command("echo ruok | nc -q 2 localhost 2181") do
     its(:stdout) { should match /imok/ }
     its(:exit_status) { should eq 0 }
   end
@@ -72,15 +72,14 @@ describe 'Checking zookeeper status' do
 end  
 
 describe 'Listing down all the active brokers' do
-  describe command('/opt/zookeeper/bin/zkCli.sh -server localhost:2181 <<< "ls /brokers/ids"') do
+  describe command('echo "ls /brokers/ids" | /opt/zookeeper/bin/zkCli.sh -server localhost:2181') do
     its(:stdout) { should match /Welcome to ZooKeeper!/ }
     its(:stdout) { should match /\[(\d+(\,\s)?)+\]/ } # pattern: [0, 1, 2, 3 ...]
     its(:exit_status) { should eq 0 }
-  describe command("echo dump | nc localhost 2181 | grep brokers") do
+  describe command("echo dump | nc -q 2 localhost 2181 | grep brokers") do
     its(:stdout) { should match /\/brokers\/ids\/\d+/ } # pattern: /brokers/ids/0
     its(:exit_status) { should eq 0 }
     end  
   end
 end
-
 

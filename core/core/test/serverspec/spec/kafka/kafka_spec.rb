@@ -27,7 +27,7 @@ describe 'Checking if the ports are open' do
 end  
 
 describe 'Listing down all the active brokers' do
-  describe command('/opt/kafka/bin/zookeeper-shell.sh localhost:2181 <<< "ls /brokers/ids"') do
+  describe command('echo "ls /brokers/ids" | /opt/kafka/bin/zookeeper-shell.sh localhost:2181') do
     its(:stdout) { should match /Welcome to ZooKeeper!/ }
     its(:stdout) { should match /\[(\d+(\,\s)?)+\]/ }  # pattern: [0, 1, 2, 3 ...]
     its(:exit_status) { should eq 0 }
@@ -35,7 +35,7 @@ describe 'Listing down all the active brokers' do
 end
 
 describe 'Checking if the number of kafka brokers is the same as indicated in the inventory file' do
-  describe command('echo dump | nc localhost 2181 | grep -c brokers | tr -d "\n"') do
+  describe command('echo dump | nc -q 2 localhost 2181 | grep -c brokers | tr -d "\n"') do
     it "is expected to be equal" do
     expect(subject.stdout.to_i).to eq count_inventory_roles("kafka")
     end
