@@ -115,7 +115,7 @@ There are 2 ways to get the image, build it localy yourself or pull it from the 
     docker run -it -v LOCAL_DEV_DIR:/epiphany --rm epiphanyplatform/epiphany-dev
     ```
 
-    Where `LOCAL_DEV_DIR` should be replaced with the local path to your core and data repositories. This will then be mapped to `epiphany` inside the container. If everything is ok you will be presented with a Bash prompt from which one can run the Epiphany engine while editing the core and data sources on the local OS. Note that when filling in your data YAMLs one needs to specify the paths from the container's point of view.
+    Where `LOCAL_DEV_DIR` should be replaced with the local path to your local Epiphany repo. This will then be mapped to `epiphany` inside the container. If everything is ok you will be presented with a Bash prompt from which one can run the Epiphany engine while editing the core and data sources on the local OS. Note that when filling in your data YAMLs one needs to specify the paths from the container's point of view.
 
 ### Run with Docker image for deployment
 
@@ -132,30 +132,45 @@ To get it from the registry and run it:
     ```bash
     docker run -it -v LOCAL_DATA_DIR:/epiphany/core/data \
                    -v LOCAL_BUILD_DIR:/epiphany/core/build \
+                   -v LOCAL_SSH_DIR:/epiphany/core/ssh \
                    --rm epiphany-deploy
     ```
 
-```LOCAL_DATA_DIR``` should be the host input directy for your data YAMLs and certificates.  ```LOCAL_BUILD_DIR``` should be the host directory where you want the Epiphany engine to write its build output. If everything is ok you will be presented with a Bash prompt from which one can run the Epiphany engine. Note that when filling in your data YAMLs one needs to specify the paths from the container's point of view.
+```LOCAL_DATA_DIR``` should be the host input directy for your data YAMLs and certificates.  ```LOCAL_BUILD_DIR``` should be the host directory where you want the Epiphany engine to write its build output. ```LOCAL_SSH_DIR``` should be the host directory where the SSH keys are stored. If everything is ok you will be presented with a Bash prompt from which one can run the Epiphany engine. Note that when filling in your data YAMLs one needs to specify the paths from the container's point of view.
 
 [`Azure specific`] Ensure that you have already enough resources/quotas accessible in your region/subscription on Azure before you run Epiphany - depending on your configuration it can create large number of resources.
 
 ### Note for Windows users
 
-Watch out for the line endings conversion. By default Git for Windows sets `core.autocrlf=true`. Mounting such files with Docker results in `^M` end-of-line character in the config files.
+- Watch out for the line endings conversion. By default Git for Windows sets `core.autocrlf=true`. Mounting such files with Docker results in `^M` end-of-line character in the config files.
 Use: [Checkout as-is, commit Unix-style](https://stackoverflow.com/questions/10418975/how-to-change-line-ending-settings) (`core.autocrlf=input`) or Checkout as-is, commit as-is (`core.autocrlf=false`). Be sure to use a text editor that can work with Unix line endings (e.g. Notepad++). 
 
-Remember to allow Docker Desktop to mount drives in Settings -> Shared Drives
+- Remember to allow Docker Desktop to mount drives in Settings -> Shared Drives
 
-Escape your paths properly.
+- Escape your paths properly:
 
-* Powershell example:
-```bash
-docker run -it -v C:\Users\USERNAME\git\epiphany:/epiphany --rm epiphany-dev
-```
-* Git-Bash example:
-```bash
-winpty docker run -it -v C:\\Users\\USERNAME\\git\\epiphany:/epiphany --rm epiphany-dev
-```
+  * Powershell example:
+  ```bash
+  docker run -it -v C:\Users\USERNAME\git\epiphany:/epiphany --rm epiphany-dev
+  ```
+  * Git-Bash example:
+  ```bash
+  winpty docker run -it -v C:\\Users\\USERNAME\\git\\epiphany:/epiphany --rm epiphany-dev
+  ```
+
+- Mounting NTFS disk folders in a linux based image causes permission issues with SSH keys. When running either the development or deploy image:
+
+1. Copy the certs on the image:
+
+    ```bash
+    mkdir -p ~/.ssh/epiphany-operations/
+    cp /epiphany/core/ssh/id_rsa* ~/.ssh/epiphany-operations/
+    ```
+2. Set the propper permission on the certs:
+
+    ```bash
+    chmod 400 ~/.ssh/epiphany-operations/id_rsa*
+    ```
 
 ## Import and create of Grafana dashboards
 
