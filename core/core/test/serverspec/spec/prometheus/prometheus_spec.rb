@@ -10,6 +10,6 @@ end
 
 describe user('prometheus') do
   it { should exist }
-  it { should have_login_shell '/sbin/nologin' }
+  it { should have_login_shell '/usr/sbin/nologin' }
   it { should belong_to_group 'prometheus' }
 end
