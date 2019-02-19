@@ -14,11 +14,16 @@ namespace Epiphany.Examples.RabbitMQ
     {
         private readonly ILogger _logger;
         private readonly RabbitMqConfiguration _defaultConfig;
+        private readonly int _waitTimeMilliseconds;
 
         public RabbitMqProducer(IConfiguration configuration, ILogger<RabbitMqProducer> logger)
         {
             _logger = logger;
             _defaultConfig = new RabbitMqConfiguration(configuration);
+            if (!int.TryParse(configuration["WAIT_TIME"], out _waitTimeMilliseconds))
+            {
+                _waitTimeMilliseconds = 10;
+            }
         }
 
 
@@ -51,6 +56,7 @@ namespace Epiphany.Examples.RabbitMQ
                                 routingKey: _defaultConfig.TopicName,
                                 basicProperties: null,
                                 body: body);
+                            System.Threading.Thread.Sleep(_waitTimeMilliseconds);
                         }
 
                         return Task.FromResult(true);
