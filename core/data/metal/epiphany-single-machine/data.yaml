@@ -87,6 +87,7 @@ nodes:
       - grafana
       - rabbitmq
       - postgresql
+      - deployments
       - reboot
 
     security:

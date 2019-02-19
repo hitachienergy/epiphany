@@ -74,6 +74,7 @@ core:
     - kafka-exporter
     - postgresql
     - rabbitmq
+    - deployments
     # !Caution!
     # Disable this role if you don't want restart your servers
     - reboot
@@ -366,6 +367,7 @@ core:
           - grafana
           - rabbitmq
           - postgresql
+          - deployments
           - reboot
 
           delete_os_disk_on_termination: false
