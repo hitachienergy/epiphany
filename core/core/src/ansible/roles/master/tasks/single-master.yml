@@ -16,7 +16,7 @@
   shell: "kubeadm init --kubernetes-version={{ kubernetes.version }} --pod-network-cidr 10.244.0.0/16"
   when: not kube.stat.exists
 
-- name: Configure kubelet
+- name: Include kubelet configuration tasks
   include_role:
     name: kubernetes-common
     tasks_from: configure-kubelet
