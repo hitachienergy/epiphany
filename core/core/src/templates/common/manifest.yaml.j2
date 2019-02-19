@@ -97,6 +97,15 @@ kubernetes:
     {% endif %}
     tags: {{ core.kubernetes.storage.tags }}
     quota: {{ core.kubernetes.storage.quota }}
+{%- if core.kubernetes.image_registry_secrets is defined %}
+  image_registry_secrets:
+  {{ core.kubernetes.image_registry_secrets | to_nice_yaml | indent(2,False) }}
+{%- endif %}
+{%- if core.kubernetes.deployments is defined %}
+  deployments:
+  {{ core.kubernetes.deployments | to_nice_yaml | indent(2,False) }}
+{%- endif %}
+  allow_pods_on_master: {{ core.kubernetes.allow_pods_on_master }}
 
 {%- if core.haproxy is defined %}
 haproxy:
@@ -162,4 +171,25 @@ haproxy:
 {%- if core.monitoring is defined %}
 monitoring:
   {{ core.monitoring | to_nice_yaml | indent(2,False) }}
+{%- endif %}
+
+{%- if core.postgresql is defined %}
+postgresql:
+  {%- if core.postgresql.replication is defined and core.postgresql.replication.enable %}
+  replication: 
+      enable: yes
+      user: {{ core.postgresql.replication.user }} 
+      password: {{ core.postgresql.replication.password }}
+      {%- if core.postgresql.replication.max_wal_senders is defined %}
+      max_wal_senders: {{ core.postgresql.replication.max_wal_senders }}
+      {%- endif %}
+      {%- if core.postgresql.replication.wal_keep_segments is defined %}
+      wal_keep_segments: {{ core.postgresql.replication.wal_keep_segments }}
+      {%- endif %}
+  {%- endif %}
+{%- endif %}
+
+{%- if core.rabbitmq is defined %}
+rabbitmq:
+  {{ core.rabbitmq | to_nice_yaml | indent(2,False) }}
 {%- endif %}

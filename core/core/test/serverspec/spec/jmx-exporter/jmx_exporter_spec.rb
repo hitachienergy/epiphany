@@ -2,7 +2,7 @@ require 'spec_helper'
 
 describe user('jmx-exporter') do
   it { should exist }
-  it { should have_login_shell '/sbin/nologin' }
+  it { should have_login_shell '/usr/sbin/nologin' }
 end
 
 describe group('jmx-exporter') do

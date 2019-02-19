@@ -6,6 +6,7 @@
     name:
       - postgresql-10
       - postgresql-contrib-10
+      - python-psycopg2 # required for postresql ansible management
     update_cache: yes 
     state: present  
 
@@ -29,3 +30,7 @@
     state: restarted
     enabled: yes
 
+- name: Set up replication
+  include_tasks: "replication-Debian.yml"
+  when:
+    - postgresql.replication is defined and postgresql.replication.enable is defined and postgresql.replication.enable 

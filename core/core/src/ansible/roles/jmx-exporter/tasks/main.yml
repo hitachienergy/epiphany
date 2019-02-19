@@ -9,7 +9,7 @@
   user:
     name: "{{ jmx_exporter_user }}"
     group: "{{ jmx_exporter_group }}"
-    shell: "/sbin/nologin"
+    shell: "/usr/sbin/nologin"
     createhome: false
     system: yes
 

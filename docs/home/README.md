@@ -19,7 +19,7 @@
 
 ## Overview
 
-Epiphany at it's core is full automation of Kubernetes and Docker plus additional builtin services such as Kafka for high speed messaging/events, Prometheus for monitoring and Graphana for dashboards, Elasticsearch and Kibana for centralized logging. Other optional services are being evaluated now.
+Epiphany at its core is a full automation of Kubernetes and Docker plus additional builtin services such as Kafka for high speed messaging/events, Prometheus for monitoring and Graphana for dashboards, Elasticsearch and Kibana for centralized logging. Other optional services are being evaluated now.
 
 Epiphany can run on as few as one node (laptop, desktop, server) but the real value comes from running 3 or more nodes for scale and HA. Nodes can be added or removed at will depending on data in the manifest. Everything is data driven so simply changing the manifest data and running the automation will modify the environment.
 
@@ -40,7 +40,7 @@ terraform:
 
 ## Git Workflow
 
-See [GITWORKFLOW.md](/GITWORKFLOW.md).
+See [GITWORKFLOW.md](GITWORKFLOW.md).
 
 ## Dependencies
 
@@ -62,7 +62,7 @@ As in all community based projects, community participation is very important. W
 
 So, to move faster we need more assistance from anyone willing to contribute. The contributions needed include development, QA, documentation, graphics, evangelism, and whatever else you believe would be good. The point is, Epiphany is open and welcomes all contributions from all divisions and BUs.
 
-If interested then please see the [Contribution Guide](/CONTRIBUTING.md).
+If interested then please see the [Contribution Guide](CONTRIBUTING.md).
 
 ## Epiphany Community
 

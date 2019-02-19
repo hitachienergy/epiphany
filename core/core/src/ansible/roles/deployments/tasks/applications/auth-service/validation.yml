@@ -1,0 +1,4 @@
+- name: Verify storage configuration
+  assert:
+    that: "not ({{ groups['postgresql'] | length }} == 0 and data.database.address is not defined)"
+    msg: "At least one postgresql component or database address has to be defined."

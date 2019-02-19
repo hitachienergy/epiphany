@@ -10,7 +10,8 @@
       - rh-postgresql10-postgresql-server-syspaths
       - rh-postgresql10-postgresql-contrib
       - rh-postgresql10-postgresql-contrib-syspaths
-      - rh-postgresql10-postgresql-libs   
+      - rh-postgresql10-postgresql-libs
+      - python-psycopg2 # required for postresql ansible management
     update_cache: yes
     state: present
 
@@ -53,4 +54,9 @@
   service:
     name: postgresql
     state: restarted
+
+- name: Set up replication
+  include_tasks: "replication-RedHat.yml"
+  when:
+    -  postgresql.replication is defined and postgresql.replication.enable is defined and postgresql.replication.enable
 

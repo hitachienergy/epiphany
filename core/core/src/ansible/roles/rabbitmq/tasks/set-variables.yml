@@ -1,0 +1,43 @@
+---
+- name: Define longname usage
+  set_fact:
+    rabbitmq_use_longname: "{{ rabbitmq.use_longname | default(rabbitmq_use_longname) }}"
+  when:
+    - rabbitmq is defined
+
+- name: Define amqp port
+  set_fact:
+    amqp_port: "{{ rabbitmq.amqp_port | default(amqp_port) }}"
+  when:
+    - rabbitmq is defined
+
+- name: Define is_clustered
+  set_fact:
+    is_clustered: "{{ rabbitmq.cluster.is_clustered | default(is_clustered) }}"
+  when:
+    - rabbitmq is defined
+    - rabbitmq.cluster is defined
+
+- name: Define RabbitMQ plugins
+  set_fact:
+    rabbitmq_plugins: "{{ rabbitmq.plugins }}"
+  when:
+    - rabbitmq is defined
+    - rabbitmq.plugins is defined
+    - rabbitmq.plugins | length > 0
+
+- name: Define RabbitMQ policies
+  set_fact:
+    rabbitmq_policies: "{{ rabbitmq.policies }}"
+  when:
+    - rabbitmq is defined
+    - rabbitmq.policies is defined
+    - rabbitmq.policies | length > 0
+
+- name: Define custom configurations RabbitMQ
+  set_fact:
+    custom_configurations: "{{ rabbitmq.custom_configurations }}"
+  when:
+    - rabbitmq is defined
+    - rabbitmq.custom_configurations is defined
+    - rabbitmq.custom_configurations | length > 0

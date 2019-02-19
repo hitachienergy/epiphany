@@ -1,0 +1,46 @@
+---
+- name: Set temp directory
+  set_fact:
+    configuration_temp_directory: "/home/{{ admin_user.name }}/epiphany-rabbitmq"
+
+- name: Set storage port if not set
+  set_fact:
+    amqp_port: "{{ data.rabbitmq.amqp_port | default(5672) }}"
+
+- name: Set namespace variable
+  set_fact:
+    namespace_name: "{{ data.service.namespace | default(default_namespace) | lower }}" # Kubernetes (as of v1.11) accepts only lowercase namespace names.
+
+- name: Set service name variable if set
+  set_fact:
+    rabbitmq_service_name: "{{ data.service.name | lower }}" # Kubernetes (as of v1.11) accepts only lowercase service names.
+  when: data.service.name is defined
+
+- name: Set service name variable for default
+  set_fact:
+    rabbitmq_service_name: "rabbit-{{ namespace_name }}" # Kubernetes (as of v1.11) accepts only lowercase service names.
+  when: data.service.name is undefined
+
+- name: Define RabbitMQ plugins
+  set_fact:
+    rabbitmq_plugins: "{{ data.rabbitmq.plugins }}"
+  when:
+    - data.rabbitmq is defined
+    - data.rabbitmq.plugins is defined
+    - data.rabbitmq.plugins | length > 0
+
+- name: Define RabbitMQ policies
+  set_fact:
+    rabbitmq_policies: "{{ data.rabbitmq.policies }}"
+  when:
+    - data.rabbitmq is defined
+    - data.rabbitmq.policies is defined
+    - data.rabbitmq.policies | length > 0
+
+- name: Define custom configurations RabbitMQ
+  set_fact:
+    custom_configurations: "{{ data.rabbitmq.custom_configurations }}"
+  when:
+    - data.rabbitmq is defined
+    - data.rabbitmq.custom_configurations is defined
+    - data.rabbitmq.custom_configurations | length > 0

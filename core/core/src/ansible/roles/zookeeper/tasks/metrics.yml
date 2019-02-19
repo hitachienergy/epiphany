@@ -26,7 +26,7 @@
   user:
     name: prometheus
     system: true
-    shell: "/sbin/nologin"
+    shell: "/usr/sbin/nologin"
     group: prometheus
     createhome: false
   delegate_to: "{{ item }}"

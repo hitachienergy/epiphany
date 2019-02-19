@@ -1,0 +1,3 @@
+# {{ ansible_managed }}
+{{ kubelet_config_yaml.content | b64decode | from_yaml |
+   combine(kubelet_custom_config, recursive=True) | to_nice_yaml(indent=2) }}

@@ -2,22 +2,18 @@
 ## RabbitMQ Red Hat
 
 - name: Install Erlang package
-  yum: 
+  yum:
     name: "https://github.com/rabbitmq/erlang-rpm/releases/download/v21.2.2/erlang-21.2.2-1.el7.centos.x86_64.rpm"
     state: present
 
 - name: Install dependency for RabbitMQ
-  yum: 
-    name: socat
+  yum:
+    name:
+      - socat
+      - logrotate
     state: present
 
 - name: Install RabbitMQ package
-  yum: 
-    name: "https://github.com/rabbitmq/rabbitmq-server/releases/download/v3.7.9/rabbitmq-server-3.7.9-1.el7.noarch.rpm"
+  yum:
+    name: "https://github.com/rabbitmq/rabbitmq-server/releases/download/v3.7.10/rabbitmq-server-3.7.10-1.el7.noarch.rpm"
     state: present
-
-- name: Disable and Stop Firewalld
-  service:
-    name: firewalld
-    state: stopped
-    enabled: no
