@@ -1151,7 +1151,8 @@ core:
         service:
           name: rabbitmq-cluster
           port: 30672
-          replicas: 5
+          management_port: 31672
+          replicas: 2
           namespace: queue
         rabbitmq:
           # amqp_port: 5672 #optional - default 5672  

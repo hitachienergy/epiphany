@@ -10,6 +10,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
+using RabbitMQ.Client.MessagePatterns;
 
 namespace Epiphany.Examples.RabbitMQ
 {
@@ -47,27 +48,26 @@ namespace Epiphany.Examples.RabbitMQ
                         arguments: null);
 
                     var messageCounter = 0;
-                    var consumer = new EventingBasicConsumer(channel);
-                    consumer.Received += (model, ea) =>
+
+                    var subscription = new Subscription(channel, _defaultConfig.TopicName, false);
+
+                    var finishAt = DateTime.Now.AddSeconds(timeout);
+                    while ((timeout == 0 || DateTime.Now < finishAt) && !cancellationToken.IsCancellationRequested)
                     {
-                        var body = ea.Body;
-                        var message = Encoding.UTF8.GetString(body);
-                        if (timeout > 0) //count messages only if there is timeout defined
+                        subscription.Next(5000, out var basicDeliveryEventArgs);
+                        if (basicDeliveryEventArgs != null)
                         {
-                            messageCounter++;
+                            string messageContent = Encoding.UTF8.GetString(basicDeliveryEventArgs.Body);
+                            _messageHandler.Handle(_defaultConfig.TopicName, messageContent);
+                            subscription.Ack(basicDeliveryEventArgs);
+                            if (timeout > 0) //count messages only if there is timeout defined
+                            {
+                                messageCounter++;
+                            }
                         }
-                        _messageHandler.Handle(_defaultConfig.TopicName, message);
-                    };
-
-                    channel.BasicConsume(queue: _defaultConfig.TopicName,
-                        autoAck: true,
-                        consumer: consumer);
-
-                    while (timeout == 0 && !cancellationToken.IsCancellationRequested)
-                    {
-                        await Task.Delay(100, cancellationToken);
                     }
-                    await Task.Delay(timeout*1000, cancellationToken);
+
+                    await Task.Delay(timeout * 1000, cancellationToken);
 
                     return await Task.FromResult(messageCounter);
                 }

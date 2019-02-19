@@ -13,7 +13,7 @@ spec:
      protocol: TCP
      port: 15672
      targetPort: 15672
-     nodePort: 31672
+     nodePort: {{ data.service.management_port }}
    - name: {{ rabbitmq_service_name }}-amqp
      protocol: TCP
      port: {{ amqp_port }}

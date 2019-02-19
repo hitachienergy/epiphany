@@ -13,11 +13,16 @@ namespace Epiphany.Examples.Kafka.Producer
     {
         private readonly ILogger _logger;
         private readonly KafkaConfiguration _defaultConfig;
+        private readonly int _waitTimeMilliseconds;
 
         public KafkaProducer(IConfiguration configuration, ILogger<KafkaProducer> logger)
         {
             _logger = logger;
             _defaultConfig = new KafkaConfiguration(configuration);
+            if (!int.TryParse(configuration["WAIT_TIME"], out _waitTimeMilliseconds))
+            {
+                _waitTimeMilliseconds = 10;
+            }
         }
 
         public Task<bool> Produce(IEnumerable<string> models)
@@ -36,6 +41,7 @@ namespace Epiphany.Examples.Kafka.Producer
                     {
                         p.Flush(TimeSpan.FromSeconds(10));
                         counter = 0;
+                        System.Threading.Thread.Sleep(_waitTimeMilliseconds);
                     }
                 }
                 p.Flush(TimeSpan.FromSeconds(10));

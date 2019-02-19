@@ -51,8 +51,8 @@ spec:
           value: "1"
         - name: PARAM_NUMBER # Number of parameters in one model                     
           value: "5"
-        - name: WAIT_TIME # Wait time in ms after receiving message - mimic calculations                     
-          value: "20"
+        - name: WAIT_TIME # Wait time in ms after producing/receiving message - mimic calculations                     
+          value: "10"
         # ---
         - name: USE_QUEUE # Which queue system to use, allowed values: Kafka, RabbitMQ
           value: "Kafka"
