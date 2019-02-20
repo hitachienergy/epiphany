@@ -147,6 +147,7 @@ kubernetes:
 #    service:
 #      name: as-testauthdb
 #      port: 30104
+#      management_port: 31672
 #      replicas: 2
 #      namespace: namespace-for-auth
 #      admin_user: auth-service-username
@@ -173,7 +174,7 @@ kubernetes:
 #          password: "authDbpwd"
 monitoring:
   alerts:
-    enable: False # required value
+    enable: True # required value
     handlers:
       mail:
         enable: False # required value
@@ -233,9 +234,9 @@ rabbitmq:
       pattern: ".*"
       definitions:
         ha-mode: all
-  custom_configurations: #optional list of RabbitMQ configurations (new format -> https://www.rabbitmq.com/configure.html)
-    - name: vm_memory_high_watermark.relative
-      value: 0.6
+#  custom_configurations: #optional list of RabbitMQ configurations (new format -> https://www.rabbitmq.com/configure.html)
+#    - name: vm_memory_high_watermark.relative
+#      value: 0.6
   cluster:
     is_clustered: false #optional - default false
     cookie: "cookieSetFromDataYaml" #optional - default value will be random generated string      

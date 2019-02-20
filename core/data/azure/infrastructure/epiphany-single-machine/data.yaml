@@ -244,7 +244,7 @@ core:
               destination_address_prefix: "*"
 
         virtual_network:
-          name: epiphany-bld-apps-vnet
+          name: epiphany-single-vnet
           address_space:
             - 10.1.0.0/22
 
@@ -317,7 +317,7 @@ core:
         managed: true
         caching: ReadWrite
         create_option: FromImage
-        disk_size_gb: 30
+        disk_size_gb: 100
         managed_disk_type: Premium_LRS
 
       storage_data_disk: &storage_data_disk
@@ -476,6 +476,7 @@ core:
 #        service:
 #          name: rabbitmq-cluster
 #          port: 30672
+#          management_port: 31672
 #          replicas: 5
 #          namespace: queue
 #        rabbitmq:
@@ -593,9 +594,9 @@ rabbitmq:
       pattern: ".*"
       definitions:
         ha-mode: all
-  custom_configurations: #optional list of RabbitMQ configurations (new format -> https://www.rabbitmq.com/configure.html)
-    - name: vm_memory_high_watermark.relative
-      value: 0.6
+#  custom_configurations: #optional list of RabbitMQ configurations (new format -> https://www.rabbitmq.com/configure.html)
+#    - name: vm_memory_high_watermark.relative
+#      value: 0.6
   cluster:
     is_clustered: false #optional - default false
     cookie: "cookieSetFromDataYaml" #optional - default value will be random generated string 
