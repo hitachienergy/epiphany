@@ -4,7 +4,7 @@ Affected version: 0.2.1
 
 ## Goals
 
-Provide simple in use cli that will:
+Provide a simple to use CLI program that will:
 
 1. provide input validation (cmd arguments and data file)
 2. maintain Epiphany cluster state (json file, binary, tbd)
@@ -45,11 +45,11 @@ CLI arguments should override default values which will be provided almost for e
 
 ### Data driven deployments/management usage - Configuration and Infrastructure definition separation
 
-While CLI usage will be good for dev and testing, production environments should be created using data files.
+While CLI usage will be good for ad-hoc operations, production environments should be created using data files.
 
 Data required for creating infrastructure (like network, vm, disk creation) should be separated from configuration (Kubernetes, Kafka, etc.).
 
-Each data file should have following data in header:
+Each data file should include following header:
 
 ```yaml
 kind: configuration/component-name # configuration/kubernetes, configuration/kafka, configuration/monitoring, ...
@@ -79,7 +79,7 @@ specification:
     # ...
 ```
 
-### One to rule them all
+### One format to rule them all
 
 Same as many configurations can be enclosed in one file with `---` separator, configuration and infrastructure `yamls` should also be treated in that way.
 
@@ -102,18 +102,18 @@ kind: infrastructure/server
 
 ### Input
 
-Epiphany engine console application will be able to handle configuration file and/or commands.
+Epiphany engine console application will be able to handle configuration files and/or commands.
 
-Command and data files will be merged with default values defined as a file in application directory, into Model that from now on will be used for configuration. If data file (or command argument) will contain some values, those values should override defaults.
+Commands and data files will be merged with default values into a model that from now on will be used for configuration. If data file (or command argument) will contain some values, those values should override defaults.
 
 ### Infrastructure
 
-Data file, based on which infrastructure will be created should have exactly same structure as input file. It means, user can define all values - and based on that VMs, Networks, Disks, etc. will be created, or he can add just a few required values and rest will be added from defaults to final data file. Some of the values - like machine IPs (and probably some more) have to be determined at runtime.
+Data file based on which the infrastructure will be created. Here user can define VMs, networks, disks, etc. or just specify a few required values and defaults will be used for the rest. Some of the values - like machine IPs (and probably some more) will have to be determined at runtime.
 
 ### Configuration
 
-Managing configuration file should look similar to infrastructure file with difference of There will be values that have to be retrieved from infrastructure data.
+Data file for cluster components (e.g. Kubernetes/Kafka/Prometheus configuration). Some of the values will have to be retrieved from the Infrastructure config.
 
 ### State
 
-State will be result of creating platform (aka build). It should be stored in configured location (storage, vault, directory). State will contain all documents that took part in platform creation.
+The state will be a result of platform creation (aka build). It should be stored in configured location (storage, vault, directory). State will contain all documents that took part in platform creation.
