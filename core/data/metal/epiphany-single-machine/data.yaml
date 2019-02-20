@@ -4,7 +4,7 @@
 
 
 kind: datafile
-version: 1.0.1
+version: 0.2.0
 
 # This will apply to a VPN like environment or an air-gapped like environment
 bastian:
