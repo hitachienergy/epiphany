@@ -65,7 +65,7 @@ Many configuration files will be handled using `---` document separator. Like:
 kind: configuration/kubernetes
 # ...
 ---
-kind: configutaion/kafka
+kind: configuration/kafka
 # ...
 ```
 
@@ -89,7 +89,7 @@ Example:
 kind: configuration/kubernetes
 # ...
 ---
-kind: configutaion/kafka
+kind: configuration/kafka
 # ...
 ---
 kind: infrastructure/server
