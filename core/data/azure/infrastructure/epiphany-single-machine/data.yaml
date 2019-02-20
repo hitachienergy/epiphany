@@ -309,9 +309,9 @@ core:
 
         #publisher: RedHat
         #offer: RHEL
-        #sku: 7.4
+        #sku: 7-RAW
         # Never put latest on anything! Need to always pin the version number but testing we can get away with it
-        #version: "7.4.2018010506"
+        #version: "7.6.2018103108"
 
       storage_os_disk: &storage_os_disk
         managed: true
