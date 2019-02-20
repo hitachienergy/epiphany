@@ -19,6 +19,7 @@
   - [Import and create of Grafana dashboards](#import-and-create-of-grafana-dashboards)
   - [How to configure Kibana](#how-to-configure-kibana)
   - [How to configure Prometheus alerts](#how-to-configure-prometheus-alerts)
+  - [How to configure Prometheus federation](#how-to-configure-prometheus-federation)
   - [How to configure Azure additional monitoring and alerting](#how-to-configure-azure-additional-monitoring-and-alerting)
 - Kubernetes
   - [How to do Kubernetes RBAC](#how-to-do-kubernetes-rbac)
@@ -304,6 +305,37 @@ https://prometheus.io/docs/prometheus/latest/querying/basics/
 https://prometheus.io/docs/prometheus/latest/querying/examples/
 
 Right now we are only supporting email messages, but we are working heavily on introducing integration with Slack and Pager Duty.
+
+## How to configure Prometheus federation
+
+In order to create federation of Prometheus add to your configuration (for example to prometheus.yaml
+file) of previously created Prometheus instance (on which you want to scrape data from other
+Prometheus instances) to `scrape_configs` section:
+
+```yaml
+scrape_configs:
+  - job_name: federate
+    metrics_path: /federate
+    params:
+      'match[]':
+        - '{job=~".+"}'
+    honor_labels: true
+    static_configs:
+    - targets:
+      - your-prometheus-endpoint1:9090
+      - your-prometheus-endpoint2:9090
+      - your-prometheus-endpoint3:9090
+      ...
+      - your-prometheus-endpointn:9090
+```
+
+To check if Prometheus from which you want to scrape data is accessible, you can use a command
+like below (on Prometheus instance where you want to scrape data):
+
+`curl -G --data-urlencode 'match[]={job=~".+"}' your-prometheus-endpoint:9090/federate`  
+
+If everything is configured properly and Prometheus instance from which you want to gather data is up
+and running, this should return the metrics from that instance.  
 
 ## How to configure Azure additional monitoring and alerting
 
