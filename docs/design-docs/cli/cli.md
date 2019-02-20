@@ -1,6 +1,6 @@
 # Epiphany CLI design document
 
-Affected version: 0.2.0
+Affected version: 0.2.1
 
 ## Goals
 
