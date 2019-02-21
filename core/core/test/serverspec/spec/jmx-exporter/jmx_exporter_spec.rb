@@ -38,9 +38,11 @@ describe 'Checking if it is possible to collect the metrics from Kafka' do
   end
 end
 
-describe 'Checking if it is possible to collect the metrics from ZooKeeper' do
-  describe command("curl -s #{jmx_exporter_host}:#{jmx_exporter_port_for_zookeeper} | grep -i zookeeper") do
-    its(:stdout) { should match /zookeeper/ }
-    its(:exit_status) { should eq 0 }
+if count_inventory_roles("kafka") > 1
+  describe 'Checking if it is possible to collect the metrics from ZooKeeper' do
+    describe command("curl -s #{jmx_exporter_host}:#{jmx_exporter_port_for_zookeeper} | grep -i zookeeper") do
+      its(:stdout) { should match /zookeeper/ }
+      its(:exit_status) { should eq 0 }
+    end
   end
 end
