@@ -1,13 +1,18 @@
 require 'spec_helper'
 
-describe 'Checking if kafka service is up' do
+kafka_host = 'localhost'
+kafka_port = 9092
+zookeeper_host = 'localhost'
+zookeeper_client_port = 2181
+
+describe 'Checking if Kafka service is running' do
   describe service('kafka') do
     it { should be_enabled }
     it { should be_running }
   end
 end
 
-describe 'Checking user configuration' do
+describe 'Checking if Kafka user exists' do
   describe group('kafka') do
     it { should exist }
   end
@@ -15,46 +20,43 @@ describe 'Checking user configuration' do
     it { should exist }
     it { should belong_to_group 'kafka' }
     it { should have_home_directory '/home/kafka' }
-    it { should have_login_shell '/sbin/nologin' }
+    it { should have_login_shell '/usr/sbin/nologin' }
   end
 end
 
 describe 'Checking if the ports are open' do
-  describe port(9092) do
+  describe port(kafka_port) do
     let(:disable_sudo) { false }
     it { should be_listening }
   end
 end  
 
 describe 'Listing down all the active brokers' do
-  describe command('echo "ls /brokers/ids" | /opt/kafka/bin/zookeeper-shell.sh localhost:2181') do
+  describe command("echo 'ls /brokers/ids' | /opt/kafka/bin/zookeeper-shell.sh #{zookeeper_host}:#{zookeeper_client_port}") do
     its(:stdout) { should match /Welcome to ZooKeeper!/ }
     its(:stdout) { should match /\[(\d+(\,\s)?)+\]/ }  # pattern: [0, 1, 2, 3 ...]
     its(:exit_status) { should eq 0 }
   end
 end
 
-describe 'Checking if the number of kafka brokers is the same as indicated in the inventory file' do
-  describe command('echo dump | nc -q 2 localhost 2181 | grep -c brokers | tr -d "\n"') do
+describe 'Checking if the number of Kafka brokers is the same as indicated in the inventory file' do
+  describe command("echo 'dump' | curl -s telnet://#{zookeeper_host}:#{zookeeper_client_port} | grep -c brokers") do
     it "is expected to be equal" do
     expect(subject.stdout.to_i).to eq count_inventory_roles("kafka")
     end
   end
 end
 
-
-describe 'Creating topic, producing and consuming messages' do
+describe 'Checking the possibility of creating a topic, producing and consuming messages' do
 
   kafka_brokers_count = count_inventory_roles("kafka")
   timestamp = DateTime.now.to_time.to_i.to_s
   topic_name = 'topic' + timestamp
   partitions = kafka_brokers_count*3
-  message = 'test message 1'
-  message2 = 'test message 2'
-  message3 = 'test message 3'
+  message = 'test message'
 
-  describe 'Creating topic' do
-    describe command("/opt/kafka/bin/kafka-topics.sh --create --zookeeper localhost:2181 --replication-factor #{kafka_brokers_count} \
+  describe 'Checking if the topic was created' do
+    describe command("/opt/kafka/bin/kafka-topics.sh --create --zookeeper #{zookeeper_host}:#{zookeeper_client_port} --replication-factor #{kafka_brokers_count} \
     --partitions #{partitions} --topic #{topic_name}") do
       its(:stdout) { should match /Created topic "#{topic_name}"./ }
       its(:exit_status) { should eq 0 }
@@ -62,59 +64,48 @@ describe 'Creating topic, producing and consuming messages' do
   end
 
   describe 'Starting consumer process' do
-    describe command("/opt/kafka/bin/kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic #{topic_name} >> /tmp/#{topic_name}.txt 2>&1 &") do
+    describe command("/opt/kafka/bin/kafka-console-consumer.sh --bootstrap-server #{kafka_host}:#{kafka_port} --topic #{topic_name} --consumer-property group.id=TESTGROUP \
+    >> /tmp/#{topic_name}.txt 2>&1 &") do
       its(:exit_status) { should eq 0 }
     end
   end
 
-
-  describe 'Waiting 5 sec for consumer process to be started' do 
-    describe command('sleep 5') do
-      its(:exit_status) { should eq 0 }
+  describe 'Checking if consumer process is ready' do 
+    describe command("for i in {1..10}; do if /opt/kafka/bin/kafka-consumer-groups.sh --bootstrap-server #{kafka_host}:#{kafka_port} --group TESTGROUP --describe \
+      | grep #{topic_name}; then echo 'READY'; break; else echo 'WAITING'; sleep 0.5; fi; done;") do
+      its(:stdout) { should match /#{topic_name}/ }
+      its(:stdout) { should match /\bREADY\b/ }
     end
   end
 
-  describe 'Sending message 1 from producer' do 
-    describe command("echo '#{message}' | /opt/kafka/bin/kafka-console-producer.sh --broker-list localhost:9092 --topic #{topic_name}") do
-      its(:exit_status) { should eq 0 }
+  10.times do |i|
+    describe "Sending message #{i+1} from producer" do 
+      describe command("echo '#{message} #{i+1}' | /opt/kafka/bin/kafka-console-producer.sh --broker-list #{kafka_host}:#{kafka_port} --topic #{topic_name}") do
+        its(:exit_status) { should eq 0 }
+      end
+    end
+    describe 'Checking if the consumer output contains the message that was produced' do 
+      describe command("cat /tmp/#{topic_name}.txt") do
+        its(:stdout) { should match /^#{message} #{i+1}$/ }
+      end
     end
   end
 
-  describe 'Sending message 2 from producer' do 
-    describe command("echo '#{message2}' | /opt/kafka/bin/kafka-console-producer.sh --broker-list localhost:9092 --topic #{topic_name}") do
-      its(:exit_status) { should eq 0 }
-    end
-  end
-  
-  describe 'Sending message 3 from producer' do 
-    describe command("echo '#{message3}' | /opt/kafka/bin/kafka-console-producer.sh --broker-list localhost:9092 --topic #{topic_name}") do
-      its(:exit_status) { should eq 0 }
-    end
-  end
-
-  describe 'Verifying consumer output' do 
-    describe command("cat /tmp/#{topic_name}.txt") do
-      its(:stdout) { should match /#{message}/ }
-      its(:stdout) { should match /#{message2}/ }
-      its(:stdout) { should match /#{message3}/ }
-    end
-  end
-
-  describe 'Listing down the topics available in kafka' do
-    describe command('/opt/kafka/bin/kafka-topics.sh --list --zookeeper localhost:2181') do
+  describe 'Checking if the created topic is on the list with all available topics in Kafka' do
+    describe command("/opt/kafka/bin/kafka-topics.sh --list --zookeeper #{zookeeper_host}:#{zookeeper_client_port}") do
       its(:stdout) { should match /#{topic_name}/ }
     end
   end  
 
   describe 'Cleaning up' do
-    describe command("rm /tmp/#{topic_name}.txt") do  # delete temp txt file containing output
+    describe command("rm /tmp/#{topic_name}.txt") do  # deleting temp txt file containing output
       its(:exit_status) { should eq 0 }
     end
     describe file("/tmp/#{topic_name}.txt") do
       it { should_not exist }
     end
-    describe command("kill -9 $(ps aux | grep -i 'kafka.tools.ConsoleConsumer' | grep '#{topic_name}' | grep -v 'grep' | awk '{print $2}')") do  # stop consumer process
-    its(:exit_status) { should eq 0 }
-  end
+    describe command("kill -9 $(ps aux | grep -i 'kafka.tools.ConsoleConsumer' | grep '#{topic_name}' | grep -v 'grep' | awk '{print $2}')") do  # stopping consumer process
+      its(:exit_status) { should eq 0 }
+    end
   end  
 end
