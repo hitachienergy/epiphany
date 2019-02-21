@@ -1,6 +1,7 @@
 require 'spec_helper'
 require 'base64'
 
+kube_apiserver_secure_port = 6443
 
 describe 'Checking if kubelet service is running' do
   describe service('kubelet') do
@@ -11,43 +12,19 @@ end
 
 describe 'Checking if kube-scheduler is running' do
   describe process('kube-scheduler') do
-    it { should be_enabled }
     it { should be_running }
-  end
-end
-
-describe 'Checking if kube-scheduler is on process list' do
-  describe command('ps -C kube-scheduler --no-headers') do
-    its(:stdout) { should match /kube-scheduler/ }
-    its(:exit_status) { should eq 0 }
   end
 end
 
 describe 'Checking if kube-controller is running' do
   describe process('kube-controller') do
-    it { should be_enabled }
     it { should be_running }
-  end
-end
-
-describe 'Checking if kube-controller is on process list' do
-  describe command('ps -C kube-controller --no-headers') do
-    its(:stdout) { should match /kube-controller/ }
-    its(:exit_status) { should eq 0 }
   end
 end
 
 describe 'Checking if kube-apiserver is running' do
   describe process("kube-apiserver") do
-    it { should be_enabled }
     it { should be_running }
-  end
-end
-
-describe 'Checking if kube-apiserver is on process list' do
-  describe command('ps -C kube-apiserver --no-headers') do
-    its(:stdout) { should match /kube-apiserver/ }
-    its(:exit_status) { should eq 0 }
   end
 end
 
@@ -76,15 +53,22 @@ end
 
 describe 'Checking if there are any nodes that have status other than Ready' do
   describe command('kubectl get nodes') do
-    its(:stdout) { should match /Ready/ }
+    its(:stdout) { should match /\bReady\b/ }
     its(:stdout) { should_not match /NotReady/ }
     its(:stdout) { should_not match /Unknown/ }
-    its(:stdout) { should_not match /False/ }
+    its(:stdout) { should_not match /SchedulingDisabled/ }
+  end
+end  
+
+describe 'Checking if the number of all nodes is the same as the number of Ready nodes' do
+  describe command('out1=$(kubectl get nodes --no-headers | wc -l); out2=$(kubectl get nodes --no-headers | grep -wc Ready); if [ "$out1" = "$out2" ]; then echo "EQUAL"; else echo "NOT EQUAL"; fi') do
+    its(:stdout) { should match /\bEQUAL\b/ }
+    its(:stdout) { should_not match /NOT EQUAL/ }
   end
 end  
 
 describe 'Checking the port on which to serve HTTPS with authentication and authorization' do
-  describe port(6443) do
+  describe port(kube_apiserver_secure_port) do
     let(:disable_sudo) { false }
     it { should be_listening }
   end
@@ -114,6 +98,12 @@ describe 'Checking secret creation using kubectl' do
       its(:stdout) { should match /name: #{test_secret}/ }
       its(:stdout) { should match /#{test_user_b64}/ }
       its(:stdout) { should match /#{test_pass_b64}/ }
+    end
+  end
+  describe 'Deleting created secret' do
+    describe command("kubectl delete secret #{test_secret}") do
+      its(:stdout) { should match /secret "#{test_secret}" deleted/ }
+      its(:exit_status) { should eq 0 }
     end
   end
 end  
@@ -146,8 +136,10 @@ describe 'Checking kubernetes dashboard availability' do
     end
   end
   describe 'Checking if the dashboard is available' do
-    describe command("curl -I 'http://localhost:8001/api/v1/namespaces/kube-system/services/https:kubernetes-dashboard:/proxy/'") do
-      its(:stdout) { should match /HTTP\/1.1 200 OK/ }
+    describe command('curl -o /dev/null -s -w "%{http_code}" "http://localhost:8001/api/v1/namespaces/kube-system/services/https:kubernetes-dashboard:/proxy/"') do
+      it "is expected to be equal" do
+        expect(subject.stdout.to_i).to eq 200
+      end
     end
   end
   describe 'Terminating kubectl proxy process' do
@@ -167,8 +159,9 @@ describe 'Checking if coredns is deployed' do
 end
 
 describe 'Checking if kubernetes healthz endpoint is responding' do
-  describe command('curl --insecure -I -m 2 https://127.0.0.1:10250/healthz') do
-    its(:stdout) { should match /HTTP\/2 401/ }
-    its(:exit_status) { should eq 0 }
+  describe command('curl --insecure -o /dev/null -s  -w "%{http_code}" "https://127.0.0.1:10250/healthz"') do
+    it "is expected to be equal" do
+      expect(subject.stdout.to_i).to eq 401
+    end
   end
 end
