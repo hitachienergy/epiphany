@@ -98,13 +98,17 @@ describe 'Checking the possibility of creating a topic, producing and consuming 
   end  
 
   describe 'Cleaning up' do
-    describe command("rm /tmp/#{topic_name}.txt") do  # deleting temp txt file containing output
+    describe command("/opt/kafka/bin/kafka-topics.sh --delete --zookeeper #{zookeeper_host}:#{zookeeper_client_port} --topic #{topic_name}") do
+      its(:stdout) { should match /Topic #{topic_name} is marked for deletion./ }
+      its(:exit_status) { should eq 0 }
+    end
+    describe command("rm /tmp/#{topic_name}.txt") do
       its(:exit_status) { should eq 0 }
     end
     describe file("/tmp/#{topic_name}.txt") do
       it { should_not exist }
     end
-    describe command("kill -9 $(ps aux | grep -i 'kafka.tools.ConsoleConsumer' | grep '#{topic_name}' | grep -v 'grep' | awk '{print $2}')") do  # stopping consumer process
+    describe command("kill -9 $(ps aux | grep -i 'kafka.tools.ConsoleConsumer' | grep '#{topic_name}' | grep -v 'grep' | awk '{print $2}')") do
       its(:exit_status) { should eq 0 }
     end
   end  
