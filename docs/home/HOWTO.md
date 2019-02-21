@@ -19,7 +19,7 @@
   - [Import and create of Grafana dashboards](#import-and-create-of-grafana-dashboards)
   - [How to configure Kibana](#how-to-configure-kibana)
   - [How to configure Prometheus alerts](#how-to-configure-prometheus-alerts)
-  - [How to configure Prometheus federation](#how-to-configure-prometheus-federation)
+  - [How to configure scalable Prometheus setup](#how-to-configure-scalable-prometheus-setup)
   - [How to configure Azure additional monitoring and alerting](#how-to-configure-azure-additional-monitoring-and-alerting)
 - Kubernetes
   - [How to do Kubernetes RBAC](#how-to-do-kubernetes-rbac)
@@ -306,7 +306,10 @@ https://prometheus.io/docs/prometheus/latest/querying/examples/
 
 Right now we are only supporting email messages, but we are working heavily on introducing integration with Slack and Pager Duty.
 
-## How to configure Prometheus federation
+## How to configure scalable Prometheus setup
+
+If you want to create scalable Prometheus setup you can use federation. Federation lets you scrape metrics from different Prometheus
+instances on one Prometheus instance.
 
 In order to create federation of Prometheus add to your configuration (for example to prometheus.yaml
 file) of previously created Prometheus instance (on which you want to scrape data from other
