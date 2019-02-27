@@ -19,6 +19,7 @@
   - [Import and create of Grafana dashboards](#import-and-create-of-grafana-dashboards)
   - [How to configure Kibana](#how-to-configure-kibana)
   - [How to configure Prometheus alerts](#how-to-configure-prometheus-alerts)
+  - [How to configure scalable Prometheus setup](#how-to-configure-scalable-prometheus-setup)
   - [How to configure Azure additional monitoring and alerting](#how-to-configure-azure-additional-monitoring-and-alerting)
 - Kubernetes
   - [How to do Kubernetes RBAC](#how-to-do-kubernetes-rbac)
@@ -115,7 +116,7 @@ There are 2 ways to get the image, build it localy yourself or pull it from the 
     docker run -it -v LOCAL_DEV_DIR:/epiphany --rm epiphanyplatform/epiphany-dev
     ```
 
-    Where `LOCAL_DEV_DIR` should be replaced with the local path to your core and data repositories. This will then be mapped to `epiphany` inside the container. If everything is ok you will be presented with a Bash prompt from which one can run the Epiphany engine while editing the core and data sources on the local OS. Note that when filling in your data YAMLs one needs to specify the paths from the container's point of view.
+    Where `LOCAL_DEV_DIR` should be replaced with the local path to your local Epiphany repo. This will then be mapped to `epiphany` inside the container. If everything is ok you will be presented with a Bash prompt from which one can run the Epiphany engine while editing the core and data sources on the local OS. Note that when filling in your data YAMLs one needs to specify the paths from the container's point of view.
 
 ### Run with Docker image for deployment
 
@@ -132,30 +133,45 @@ To get it from the registry and run it:
     ```bash
     docker run -it -v LOCAL_DATA_DIR:/epiphany/core/data \
                    -v LOCAL_BUILD_DIR:/epiphany/core/build \
+                   -v LOCAL_SSH_DIR:/epiphany/core/ssh \
                    --rm epiphany-deploy
     ```
 
-```LOCAL_DATA_DIR``` should be the host input directy for your data YAMLs and certificates.  ```LOCAL_BUILD_DIR``` should be the host directory where you want the Epiphany engine to write its build output. If everything is ok you will be presented with a Bash prompt from which one can run the Epiphany engine. Note that when filling in your data YAMLs one needs to specify the paths from the container's point of view.
+```LOCAL_DATA_DIR``` should be the host input directy for your data YAMLs and certificates.  ```LOCAL_BUILD_DIR``` should be the host directory where you want the Epiphany engine to write its build output. ```LOCAL_SSH_DIR``` should be the host directory where the SSH keys are stored. If everything is ok you will be presented with a Bash prompt from which one can run the Epiphany engine. Note that when filling in your data YAMLs one needs to specify the paths from the container's point of view.
 
 [`Azure specific`] Ensure that you have already enough resources/quotas accessible in your region/subscription on Azure before you run Epiphany - depending on your configuration it can create large number of resources.
 
 ### Note for Windows users
 
-Watch out for the line endings conversion. By default Git for Windows sets `core.autocrlf=true`. Mounting such files with Docker results in `^M` end-of-line character in the config files.
+- Watch out for the line endings conversion. By default Git for Windows sets `core.autocrlf=true`. Mounting such files with Docker results in `^M` end-of-line character in the config files.
 Use: [Checkout as-is, commit Unix-style](https://stackoverflow.com/questions/10418975/how-to-change-line-ending-settings) (`core.autocrlf=input`) or Checkout as-is, commit as-is (`core.autocrlf=false`). Be sure to use a text editor that can work with Unix line endings (e.g. Notepad++). 
 
-Remember to allow Docker Desktop to mount drives in Settings -> Shared Drives
+- Remember to allow Docker Desktop to mount drives in Settings -> Shared Drives
 
-Escape your paths properly.
+- Escape your paths properly:
 
-* Powershell example:
-```bash
-docker run -it -v C:\Users\USERNAME\git\epiphany:/epiphany --rm epiphany-dev
-```
-* Git-Bash example:
-```bash
-winpty docker run -it -v C:\\Users\\USERNAME\\git\\epiphany:/epiphany --rm epiphany-dev
-```
+  * Powershell example:
+  ```bash
+  docker run -it -v C:\Users\USERNAME\git\epiphany:/epiphany --rm epiphany-dev
+  ```
+  * Git-Bash example:
+  ```bash
+  winpty docker run -it -v C:\\Users\\USERNAME\\git\\epiphany:/epiphany --rm epiphany-dev
+  ```
+
+- Mounting NTFS disk folders in a linux based image causes permission issues with SSH keys. When running either the development or deploy image:
+
+1. Copy the certs on the image:
+
+    ```bash
+    mkdir -p ~/.ssh/epiphany-operations/
+    cp /epiphany/core/ssh/id_rsa* ~/.ssh/epiphany-operations/
+    ```
+2. Set the propper permission on the certs:
+
+    ```bash
+    chmod 400 ~/.ssh/epiphany-operations/id_rsa*
+    ```
 
 ## Import and create of Grafana dashboards
 
@@ -289,6 +305,40 @@ https://prometheus.io/docs/prometheus/latest/querying/basics/
 https://prometheus.io/docs/prometheus/latest/querying/examples/
 
 Right now we are only supporting email messages, but we are working heavily on introducing integration with Slack and Pager Duty.
+
+## How to configure scalable Prometheus setup
+
+If you want to create scalable Prometheus setup you can use federation. Federation lets you scrape metrics from different Prometheus
+instances on one Prometheus instance.
+
+In order to create federation of Prometheus add to your configuration (for example to prometheus.yaml
+file) of previously created Prometheus instance (on which you want to scrape data from other
+Prometheus instances) to `scrape_configs` section:
+
+```yaml
+scrape_configs:
+  - job_name: federate
+    metrics_path: /federate
+    params:
+      'match[]':
+        - '{job=~".+"}'
+    honor_labels: true
+    static_configs:
+    - targets:
+      - your-prometheus-endpoint1:9090
+      - your-prometheus-endpoint2:9090
+      - your-prometheus-endpoint3:9090
+      ...
+      - your-prometheus-endpointn:9090
+```
+
+To check if Prometheus from which you want to scrape data is accessible, you can use a command
+like below (on Prometheus instance where you want to scrape data):
+
+`curl -G --data-urlencode 'match[]={job=~".+"}' your-prometheus-endpoint:9090/federate`  
+
+If everything is configured properly and Prometheus instance from which you want to gather data is up
+and running, this should return the metrics from that instance.  
 
 ## How to configure Azure additional monitoring and alerting
 

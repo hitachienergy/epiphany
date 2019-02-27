@@ -1,0 +1,30 @@
+{
+    "profiles": {
+        "Epiphany.Examples": {
+            "commandName": "Project",
+            "environmentVariables": {
+                "MODE": "CONSUMER", // allowed values:: PRODUCER, CONSUMER
+                "PARAM_NUMBER": "5",
+                "USE_QUEUE": "Kafka", //"RabbitMQ",
+                "RABBITMQ_HOSTNAME": "10.1.1.9",
+                "TOPIC_NAME": "test-topic",
+                "PRODUCE_INFINITELY": "1",
+                "ASPNETCORE_ENVIRONMENT": "Development",
+                "RABBITMQ_DURABLE": "0",
+                "RABBITMQ_PORT": "30672",
+                "RABBITMQ_USER": "your-rabbitmq-user",
+                "RABBITMQ_PASSWORD": "your-rabbitmq-user",
+                "MODELS_NUMBER": "1",
+                //kafka specific
+                "KAFKA_ENDPOINT": "10.1.1.10:9092",
+                "KAFKA_GROUP_ID": "testconsumergroup",
+                "KAFKA_SESSION_TIMEOUT_MS": "30000",
+                "NODE_NAME": "your-computer",
+                "POD_NAME": "localhost",
+                "POD_NAMESPACE": "localhost",
+                "POD_IP": "localhost",
+                "POD_SERVICE_ACCOUNT": "you"
+            }
+        }
+    }
+}

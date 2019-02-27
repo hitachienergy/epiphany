@@ -16,7 +16,7 @@
   shell: "kubeadm init --kubernetes-version={{ kubernetes.version }} --pod-network-cidr 10.244.0.0/16"
   when: not kube.stat.exists
 
-- name: Configure kubelet
+- name: Include kubelet configuration tasks
   include_role:
     name: kubernetes-common
     tasks_from: configure-kubelet
@@ -126,20 +126,20 @@
   register: untainted_nodes_list
   failed_when: "untainted_nodes_list.rc == 2"
   when:
-    - groups['master'][0] == inventory_hostname
+    - groups['master'][0] == inventory_hostname   
 
-- name: Get nodes with noschedule-
-  shell: kubectl --kubeconfig=/home/{{ admin_user.name }}/.kube/conf get nodes -o jsonpath-file=/home/{{ admin_user.name }}/jsonpath.json | grep -v NoSchedule | grep -c -i {{ inventory_hostname }}
+- name: Check if we want/need to untaint master 
+  set_fact:
+    untaint_master: True
+  when:
+    - groups['master'] is defined
+    - untainted_nodes_list.stdout_lines[0]|int == 0
+    - (groups['master']|list|length == 1) and (groups['worker'] is defined and groups['worker']|list|length == 0) or (kubernetes.allow_pods_on_master == True)
+  changed_when: false
+
+- name: Untaint master
+  shell: "kubectl --kubeconfig=/home/{{ admin_user.name }}/.kube/config taint node {{ groups['master'][0] }} node-role.kubernetes.io/master:NoSchedule-"
   become_user: "{{ admin_user.name }}"
-  register: untainted_nodes_list
-  failed_when: "untainted_nodes_list.rc == 2"
   when:
     - groups['master'][0] == inventory_hostname
-
-#- name: Untaint master
-#  shell: "kubectl --kubeconfig=/home/{{ admin_user.name }}/.kube/config taint node {{ groups['master'][0] }} node-role.kubernetes.io/master:NoSchedule-"
-#  become_user: "{{ admin_user.name }}"
-#  when:
-#    - groups['master'][0] == inventory_hostname
-#    - untainted_nodes_list.stdout_lines[0]|int == 0
-
+    - untaint_master is defined and untaint_master == True

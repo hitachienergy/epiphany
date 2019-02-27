@@ -1,0 +1,22 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp2.2</TargetFramework>
+    <AspNetCoreHostingModel>InProcess</AspNetCoreHostingModel>
+    <DockerComposeProjectPath>..\docker-compose.dcproj</DockerComposeProjectPath>
+    <UserSecretsId>0b06c9c7-ef4c-4de5-ae9e-35b334da3032</UserSecretsId>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.App" />
+    <PackageReference Include="Microsoft.AspNetCore.Razor.Design" Version="2.2.0" PrivateAssets="All" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="2.2.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Messaging\Epiphany.Examples.Kafka\Epiphany.Examples.Kafka.csproj" />
+    <ProjectReference Include="..\Messaging\Epiphany.Examples.Messaging\Epiphany.Examples.Messaging.csproj" />
+    <ProjectReference Include="..\Messaging\Epiphany.Examples.RabbitMQ\Epiphany.Examples.RabbitMQ.csproj" />
+  </ItemGroup>
+
+</Project>

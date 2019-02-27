@@ -9,7 +9,7 @@
   user:
     name: kafka_exporter
     system: true
-    shell: "/sbin/nologin"
+    shell: "/usr/sbin/nologin"
     group: kafka_exporter
     createhome: false
 

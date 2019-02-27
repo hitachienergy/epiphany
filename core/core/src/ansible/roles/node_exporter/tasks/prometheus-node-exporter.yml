@@ -9,7 +9,7 @@
   user:
     name: node_exporter
     system: true
-    shell: "/sbin/nologin"
+    shell: "/usr/sbin/nologin"
     group: node_exporter
     createhome: false
 

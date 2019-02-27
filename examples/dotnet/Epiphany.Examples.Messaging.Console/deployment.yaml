@@ -1,0 +1,165 @@
+---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: epiphany-messaging-consumer
+spec:
+  replicas: 5
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
+  minReadySeconds: 5
+  template:
+    metadata:
+      labels:
+        app: epiphany-messaging-consumer
+    spec:
+      containers:
+      - name: epiphany-messaging-consumer
+        image: epiphanyplatform/examples-queue-console:0.2.0
+        imagePullPolicy: Always
+        env:
+        - name: ASPNETCORE_ENVIRONMENT
+          value: "Production"
+        - name: MODE
+          value: "CONSUMER" # This console application can work as PRODUCER or CONSUMER of messages 
+        - name: MODELS_NUMBER # Number of models in on message
+          value: "1"
+        - name: PARAM_NUMBER # Number of parameters in one model                     
+          value: "5"
+        - name: WAIT_TIME # Wait time in ms after producing/receiving message - mimic calculations                     
+          value: "20"
+        # ---
+        - name: USE_QUEUE # Which queue system to use, allowed values: Kafka, RabbitMQ
+          value: "RabbitMQ"
+        - name: TOPIC_NAME # Name of the topic for publishing/consuming messages
+          value: "console-test-topic"
+        - name: PRODUCE_INFINITELY # For worker applications (not REST API)
+          value: "1"
+        # RabbitMQ specific - required if USE_QUEUE == RabbitMQ
+        - name: RABBITMQ_HOSTNAME
+          value: "10.1.1.9"
+        - name: RABBITMQ_DURABLE
+          value: "0"
+        - name: RABBITMQ_PORT 
+          value: "30672"
+        - name: RABBITMQ_USER
+          value: "your-rabbitmq-user"
+        - name: RABBITMQ_PASSWORD
+          value: "your-rabbitmq-password"
+        # ---
+        # Kafka specific - required if USE_QUEUE == Kafka
+        - name: KAFKA_ENDPOINT
+          value: "10.1.1.10:9092"
+        - name: KAFKA_GROUP_ID
+          value: "testconsumergroup"
+        - name: KAFKA_SESSION_TIMEOUT_MS
+          value: "10000"
+        # ---
+        # Kubernetes specific - no need to change
+        - name: NODE_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: spec.nodeName
+        - name: POD_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
+        - name: POD_NAMESPACE
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace
+        - name: POD_IP
+          valueFrom:
+            fieldRef:
+              fieldPath: status.podIP
+        - name: POD_SERVICE_ACCOUNT
+          valueFrom:
+            fieldRef:
+              fieldPath: spec.serviceAccountName
+        # ---
+
+---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: epiphany-messaging-producer
+spec:
+  replicas: 1
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
+  minReadySeconds: 5
+  template:
+    metadata:
+      labels:
+        app: epiphany-messaging-producer
+    spec:
+      containers:
+      - name: epiphany-messaging-producer
+        image: epiphanyplatform/epiphany-messaging-console
+        imagePullPolicy: Always
+        env:
+        - name: ASPNETCORE_ENVIRONMENT
+          value: "Production"
+        - name: MODE
+          value: "PRODUCER" # This console application can work as PRODUCER or CONSUMER of messages 
+        - name: MODELS_NUMBER # Number of models in on message
+          value: "1"
+        - name: PARAM_NUMBER # Number of parameters in one model                     
+          value: "5"
+        - name: WAIT_TIME # Wait time in ms after producing/receiving message - mimic calculations                     
+          value: "20"
+        # ---
+        - name: USE_QUEUE # Which queue system to use, allowed values: Kafka, RabbitMQ
+          value: "RabbitMQ"
+        - name: TOPIC_NAME # Name of the topic for publishing/consuming messages
+          value: "test-topic"
+        - name: PRODUCE_INFINITELY # For worker applications (not REST API)
+          value: "1"
+        # RabbitMQ specific - required if USE_QUEUE == RabbitMQ
+        - name: RABBITMQ_HOSTNAME
+          value: "10.1.1.9"
+        - name: RABBITMQ_DURABLE
+          value: "0"
+        - name: RABBITMQ_PORT 
+          value: "30672"
+        - name: RABBITMQ_USER
+          value: "your-rabbitmq-user"
+        - name: RABBITMQ_PASSWORD
+          value: "your-rabbitmq-password"
+        # ---
+        # Kafka specific - required if USE_QUEUE == Kafka
+        - name: KAFKA_ENDPOINT
+          value: "10.1.1.10:9092" # Put here IP private IP/hostname and port of your Kafka instance
+        - name: KAFKA_GROUP_ID
+          value: "testconsumergroup"
+        - name: KAFKA_SESSION_TIMEOUT_MS
+          value: "10000"
+        # ---
+        # Kubernetes specific - no need to change
+        - name: NODE_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: spec.nodeName
+        - name: POD_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
+        - name: POD_NAMESPACE
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace
+        - name: POD_IP
+          valueFrom:
+            fieldRef:
+              fieldPath: status.podIP
+        - name: POD_SERVICE_ACCOUNT
+          valueFrom:
+            fieldRef:
+              fieldPath: spec.serviceAccountName
+        # ---
