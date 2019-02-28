@@ -12,6 +12,7 @@ Provide AWS support:
 4. Virtual machines should be able to belong to different subnets within the Epiphany cluster. Requirement is to have at least two subnets - one for Load Balancing (internet facing) and one for other components.
 5. Virtual machines should have data disk (when configured to have such)
 6. Components (Kafka, Postgresql, Prometheus, ElasticSearch) should be configured to use data disk space
+7. Cluster should not use any public IP except `Load Balancer`
 
 ## Use cases
 
