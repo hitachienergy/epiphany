@@ -29,6 +29,8 @@ set :ssh_options, options
 # Disable sudo
 set :disable_sudo, true
 
+# Set shell
+set :shell, '/bin/bash'
 
 # Set environment variables
 # set :env, :LANG => 'C', :LC_MESSAGES => 'C'
@@ -47,3 +49,15 @@ set :disable_sudo, true
       end
     return counter
   end
+
+  def hostInGroups?(role)
+    file = File.open(ENV['inventory'], "rb")
+    input = file.read
+    file.close
+      if input.include? "[#{role}]"
+        rows = input.split("[#{role}]")[1].split("[")[0]
+        return rows.include? ENV['TARGET_HOST']
+      else return false
+      end
+  end
+
