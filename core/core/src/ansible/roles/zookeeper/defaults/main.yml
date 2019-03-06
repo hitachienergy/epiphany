@@ -4,8 +4,7 @@ zookeeper_hosts: "{{ groups['zookeeper'] }}"
 
 zookeeper_version: 3.4.12
 zookeeper: zookeeper-{{zookeeper_version}}
-# zookeeper_url: http://apache.uib.no/zookeeper/stable
-zookeeper_url: http://www.us.apache.org/dist/zookeeper
+zookeeper_url: http://archive.apache.org/dist/zookeeper
 
 zookeeper_data_dir: /var/lib/zookeeper
 zookeeper_log_dir: /var/log/zookeeper
