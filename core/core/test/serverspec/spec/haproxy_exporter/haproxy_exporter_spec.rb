@@ -15,7 +15,7 @@ describe 'Checking if HAProxy Exporter user exists' do
   end
   describe file('/opt/haproxy_exporter') do
     it { should exist }
-    it { should be_grouped_into 'hfaproxy_exporter' }
+    it { should be_grouped_into 'haproxy_exporter' }
   end
 end
 
