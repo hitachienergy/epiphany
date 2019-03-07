@@ -36,11 +36,11 @@ describe 'Checking Kibana directories and config files' do
   end
 end
 
-describe 'Checking if Kibana log file exists' do
+describe 'Checking if Kibana log file exists and is not empty' do
   describe file('/var/log/kibana/kibana.log') do
     it { should exist }
     it { should be_a_file }
-    its(:content) { should_not match /^$/ }
+    its(:size) { should > 0 }
   end
   describe file('/etc/logrotate.d/kibana') do
     it { should exist }

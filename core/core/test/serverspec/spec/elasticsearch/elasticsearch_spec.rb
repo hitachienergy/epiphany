@@ -54,7 +54,7 @@ end
 describe 'Checking Elasticsearch health' do
   let(:disable_sudo) { false }
   describe command("curl $(grep 'network.host' /etc/elasticsearch/elasticsearch.yml | awk '{print $2}'):#{elasticsearch_rest_api_port}/_cluster/health?pretty=true") do
-    its(:stdout) { should match /"status" : "yellow"|"status" : "green"/ }
+    its(:stdout_as_json) { should include('status' => /green|yellow/) }
     its(:exit_status) { should eq 0 }
   end
 end
