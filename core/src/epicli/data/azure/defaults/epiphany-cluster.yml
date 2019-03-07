@@ -1,0 +1,36 @@
+kind: epiphany-cluster
+version: 0.3.0
+title: "Epiphany cluster Config"
+provider: azure
+specification:
+  name: "EpiphanyCluster01"
+  vnet_address_pool: 10.1.0.0/22
+  admin_user:
+    name: operations # YOUR-ADMIN-USERNAME
+    key_path: /root/.ssh/epiphany-operations/id_rsa # YOUR-SSH-KEY-PATH
+  cloud:
+    subscription_name: YOUR-SUB-NAME
+    resource_group_name: EpiphanyCluster
+    service_principal: # todo change it to get credentials from vault
+      key: 3124-4124-4124
+      secret: DADFAFHCJHCAUYEAk
+  kubernetes_master:
+    count: 0
+    subnet_address_pool: 10.1.1.0/24
+    machine_selector: default
+    configuration: configuration/kubernetes-master
+  kubernetes_node:
+    count: 0
+    subnet_address_pool: 10.1.2.0/24
+    machine_selector: default
+    configuration: configuration/kubernetes-node
+  kafka:
+    count: 0
+    subnet_address_pool: 10.1.3.0/24
+    machine_selector: default
+    configuration: configuration/kafka
+  postgresql:
+    count: 0
+    subnet_address_pool: 10.1.3.0/24
+    machine_selector: default
+    configuration: configuration/postgresql

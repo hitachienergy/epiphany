@@ -1,0 +1,7 @@
+kind: configuration/kubernetes-master
+version: 0.3.0
+title: "Kubernetes Master Config"
+provider: azure
+specification:
+  selector:
+    name: kubernetes-machine
