@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 #
 # Author: Hans Chris Jones
 # Copyright 2018, LambdaStack
@@ -40,7 +40,7 @@ _SEPARATOR = '=' * 60
 
 # All three file paths must be full paths to each.
 def render_template(data_file, in_file, out_file, json_arg, yaml_arg):
-    template_dict = ""
+    template_dict = {}
 
     logging.basicConfig(level=logging.INFO)
     log = logging.getLogger(__name__)
@@ -50,13 +50,13 @@ def render_template(data_file, in_file, out_file, json_arg, yaml_arg):
         with open(data_file) as data:
             template_dict = yaml.load(data)
         log.info(json.dumps(template_dict, indent=4, sort_keys=True))
-        exit(0)
+        sys.exit(0)
 
     if yaml_arg:
         with open(data_file) as data:
             template_dict = json.load(data)
         log.info(yaml.safe_dump(template_dict, indent=2, allow_unicode=True, default_flow_style=False))
-        exit(0)
+        sys.exit(0)
 
     # Start the template processing
     try:
@@ -90,7 +90,7 @@ def render_template(data_file, in_file, out_file, json_arg, yaml_arg):
         log.error('Debugging Output:')
         log.error(traceback)
         log.error(_SEPARATOR)
-        exit(1)
+        sys.exit(1)
 
 
 # Used to pass a string instead of input file as a template
@@ -131,8 +131,6 @@ if __name__ == '__main__':
             p.print_help()
             sys.exit()
 
-    options_display = ""
-
     logger.info("Running with parameters: ")
     for option in vars(options):
         logger.info(str(option) + ": " + str(getattr(options, option)))
@@ -144,3 +142,4 @@ if __name__ == '__main__':
     render_template(options.data_file, options.input_file, options.output_file, options.j, options.y)
     logger.info("Generating template has finished.")
     logger.info(_SEPARATOR)
+
