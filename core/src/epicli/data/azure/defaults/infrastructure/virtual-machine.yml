@@ -2,12 +2,11 @@ kind: infrastructure/virtual-machine
 version: 0.3.0
 title: "Virtual Machine Infra"
 provider: azure
+name: default
 specification:
-  name: default
   tags:
     - deployment: defaults
     - version: 0.3.0
-  count: 1
   size: Standard_DS1_v2
   os_type: linux
   disks:
@@ -32,3 +31,16 @@ specification:
         ip_configuration:
           - name: private-ip
             allocation: dynamic
+
+---
+kind: infrastructure/virtual-machine
+version: 0.3.0
+title: "Virtual Machine Infra"
+provider: azure
+name: default-external-disk
+specification:
+  disks:
+    additional_disks:
+      - name: secondary
+        size: 120
+        mount_path: ""
