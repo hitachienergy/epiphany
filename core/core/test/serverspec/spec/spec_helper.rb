@@ -1,5 +1,6 @@
 require 'serverspec'
 require 'net/ssh'
+require 'yaml'
 
 set :backend, :ssh
 
@@ -60,4 +61,26 @@ set :shell, '/bin/bash'
       else return false
       end
   end
+
+  def readDataYaml
+   datayaml = YAML.load_file('/path/to/data.yaml')
+   # puts datayaml["core"]["haproxy"]["frontend"][0]["port"]
+   return datayaml
+  end
+
+  def listInventoryHosts(role)
+    file = File.open(ENV['inventory'], "rb")
+    input = file.read
+    file.close
+    list = []
+    if input.include? "[#{role}]"
+      rows = input.split("[#{role}]")[1].split("[")[0]
+      rows.each_line do |line|
+        if line[0] != '#' and line =~ /(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})/
+          list << line.split.first
+        end
+      end
+    end
+    return list
+   end
 
