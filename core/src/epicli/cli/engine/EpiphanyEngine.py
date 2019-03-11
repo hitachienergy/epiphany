@@ -50,18 +50,13 @@ class EpiphanyEngine:
         for component_key, component_value in cluster_model["specification"]["components"].items():
             if component_value["count"] < 1:
                 continue
-            config = self.get_machine_data(component_value, docs, cluster_model)
-            if config is not None:
-                docs.append(config)
+            self.append_infrastructure(docs, component_value, cluster_model)
+            # todo append each VM with name, tags, address pools
+            self.append_component_configuration(docs, component_key, component_value, cluster_model)
 
-        build_directory = os.path.join(self.script_dir, BUILD_FOLDER_PATH, self.context)
-        if not os.path.exists(build_directory):
-            os.makedirs(build_directory)
-
-        self.add_data_if_not_defined(docs, cluster_model[model_constants.PROVIDER], "infrastructure/network") # todo add rest of infra data
-
-        with open(os.path.join(build_directory, OUTPUT_FILE_NAME), 'w') as stream:
-            yaml.dump_all(docs, stream, default_flow_style=False)
+        self.add_data_if_not_defined(docs, cluster_model[model_constants.PROVIDER], "infrastructure/network")
+        # todo add rest of infra data
+        self.dump_epiphany_manifest(docs)
 
         # todo validate
         # todo generate .tf files
@@ -69,23 +64,49 @@ class EpiphanyEngine:
         # todo generate ansible inventory
         # todo run ansible
 
-    def get_machine_data(self, component_value, docs, cluster_model):
+    def dump_epiphany_manifest(self, docs):
+        build_directory = os.path.join(self.script_dir, BUILD_FOLDER_PATH, self.context)
+        if not os.path.exists(build_directory):
+            os.makedirs(build_directory)
+
+        with open(os.path.join(build_directory, OUTPUT_FILE_NAME), 'w') as stream:
+            yaml.dump_all(docs, stream, default_flow_style=False)
+
+    def append_infrastructure(self, docs, component_value, cluster_model):
         machine_selector = component_value["machine"]
-        all_machines = self.select_all(docs, lambda x: x[model_constants.KIND] == "infrastructure/virtual-machine")
-        machine = self.select_first(all_machines, lambda x: x[model_constants.NAME] == machine_selector)
-        if machine is None:
+        infrastructure = self.get_configuration(docs, cluster_model, 'infrastructure/virtual-machine', machine_selector)
+        if infrastructure is not None:
+            docs.append(infrastructure)
+
+    def append_component_configuration(self, docs, component_key, component_value, cluster_model):
+        file_path_with_mapping = os.path.join(self.data_defaults_folder_path,
+                                              cluster_model[model_constants.PROVIDER], 'defaults',
+                                              'configuration/feature-mapping.yml')
+        features_map = self.select_first(docs, lambda x: x[model_constants.KIND] == 'configuration/feature-mapping')
+        if features_map is None:
+            with open(file_path_with_mapping, 'r') as stream:
+                features_map = yaml.safe_load(stream)
+        config_selector = component_value["configuration"]
+        for feature_key in features_map["specification"][component_key]:
+            config = self.get_configuration(docs, cluster_model, 'configuration/' + feature_key, config_selector)
+            if config is not None:
+                docs.append(config)
+
+    def get_configuration(self, docs, cluster_model, feature_kind, config_selector):
+
+        config = self.select_first(docs, lambda x: x[model_constants.KIND] == feature_kind and x[model_constants.NAME] == config_selector)
+        if config is None:
             file_path_with_defaults = os.path.join(self.data_defaults_folder_path,
                                                    cluster_model[model_constants.PROVIDER], 'defaults',
-                                                   'infrastructure/virtual-machine.yml')
+                                                   feature_kind+'.yml')
             with open(file_path_with_defaults, 'r') as stream:
                 files = list(yaml.safe_load_all(stream))
-                machine_spec = self.select_first(files, lambda x: x[model_constants.NAME] == machine_selector) # self.find_document(files, "name", machine_selector)
-
-                if machine_selector != "default":
-                    default_machine = self.select_first(files, lambda x: x[model_constants.NAME] == "default")
-                    merge_dict(default_machine, machine_spec)
-                    return default_machine
-                return machine_spec
+                config_spec = self.select_first(files, lambda x: x[model_constants.NAME] == config_selector)
+                if config_selector != "default":
+                    default_config = self.select_first(files, lambda x: x[model_constants.NAME] == "default")
+                    merge_dict(default_config, config_spec)
+                    return default_config
+                return config_spec
         return None
 
     def add_data_if_not_defined(self, docs, provider, kind):
