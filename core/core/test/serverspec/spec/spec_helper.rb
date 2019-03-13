@@ -63,9 +63,10 @@ set :shell, '/bin/bash'
   end
 
   def readDataYaml
-   datayaml = YAML.load_file('/path/to/data.yaml')
-   # puts datayaml["core"]["haproxy"]["frontend"][0]["port"]
-   return datayaml
+    path = ENV['inventory'].dup
+    path.sub! 'inventory/development' , 'data/manifest.yaml'
+    datayaml = YAML.load_file(path)
+    return datayaml
   end
 
   def listInventoryHosts(role)
