@@ -1,0 +1,28 @@
+kind: infrastructure/virtual-machine
+version: 0.3.0
+title: "Virtual Machine Infra"
+provider: aws
+name: default
+specification:
+  name: TO_BE_SET
+  count: TO_BE_SET
+  subnet: TO_BE_SET
+  tags:
+    - version: 0.3.0
+  size: t2.micro
+  os_type: linux
+  availability_zones:
+    - "us-east-2c" # todo change it
+    - "us-east-2b"
+
+---
+kind: infrastructure/virtual-machine
+version: 0.3.0
+title: "Virtual Machine Infra"
+provider: aws
+name: default-size-t3
+specification:
+  tags:
+    - version: 0.3.0
+  size: t3.micro
+  os_type: linux

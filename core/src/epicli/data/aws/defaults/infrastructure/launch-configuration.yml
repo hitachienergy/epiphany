@@ -1,0 +1,16 @@
+kind: infrastructure/launch-configuration
+version: 0.3.0
+title: Route Table Config"
+provider: aws
+name: default
+specification:
+  name: TO_BE_SET
+  image_id: "ami-087868e91f1a665d1"
+  instance_type: "t2.micro"
+  associate_public_ip_ip: true
+  security_groups:
+    - TO_BE_SET
+  enable_monitoring: true
+
+
+

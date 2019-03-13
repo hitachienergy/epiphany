@@ -1,0 +1,10 @@
+kind: infrastructure/route-table-association
+version: 0.3.0
+title: Route Table Association Config"
+provider: aws
+name: default
+specification:
+  name: TO_BE_SET
+  subnet_name: TO_BE_SET
+  route_table_name: TO_BE_SET
+

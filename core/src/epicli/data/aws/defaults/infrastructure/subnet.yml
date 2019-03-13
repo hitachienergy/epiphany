@@ -1,0 +1,9 @@
+kind: infrastructure/subnet
+version: 0.3.0
+title: "Subnet Config"
+provider: aws
+name: default
+specification:
+  name: TO_BE_SET
+  vpc_name: TO_BE_SET
+  cidr_block: TO_BE_SET

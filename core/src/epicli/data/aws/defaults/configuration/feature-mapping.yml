@@ -1,0 +1,14 @@
+kind: configuration/feature-mapping
+version: 0.3.0
+title: "Kubernetes Master Config"
+provider: aws
+name: default
+specification:
+  kubernetes_master:
+    - kubernetes-master
+  kubernetes_node:
+    - kubernetes-node
+  kafka:
+    - kafka
+    - zookeeper
+
