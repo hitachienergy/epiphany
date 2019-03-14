@@ -1,6 +1,7 @@
 import pytest
 import yaml
-from core.src.epicli.modules.template_generator import TemplateGenerator
+
+from core.src.epicli.cli.modules.template_generator import TemplateGenerator
 
 DOCUMENT_NO_PROVIDER = \
     """kind: infrastructure/virtual-machine
