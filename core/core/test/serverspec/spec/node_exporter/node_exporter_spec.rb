@@ -3,7 +3,7 @@ require 'spec_helper'
 node_exporter_host = 'localhost'
 node_exporter_port = 9100
 
-describe 'Checking if Node exporter user exists' do
+describe 'Checking if Node Exporter user exists' do
   describe group('node_exporter') do
     it { should exist }
   end
@@ -14,7 +14,7 @@ describe 'Checking if Node exporter user exists' do
   end
 end
 
-describe 'Checking Node exporter directories and files' do
+describe 'Checking Node Exporter directories and files' do
   let(:disable_sudo) { false }
   describe file('/opt/node_exporter') do
     it { should exist }
@@ -27,7 +27,7 @@ describe 'Checking Node exporter directories and files' do
   end
 end
 
-describe 'Checking if Node exporter service is running' do
+describe 'Checking if Node Exporter service is running' do
   describe service('prometheus-node-exporter') do
     it { should be_enabled }
     it { should be_running }
@@ -41,7 +41,7 @@ describe 'Checking if the ports are open' do
   end
 end 
 
-describe 'Checking Node exporter HTTP status code' do
+describe 'Checking Node Exporter HTTP status code' do
   describe command("curl -o /dev/null -s -w '%{http_code}' #{node_exporter_host}:#{node_exporter_port}") do
     it "is expected to be equal" do
       expect(subject.stdout.to_i).to eq 200
