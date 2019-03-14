@@ -1,29 +1,10 @@
 kind: infrastructure/security-group
 version: 0.3.0
-title: "Network Config"
+title: "Security Group Config"
 provider: aws
 name: default
 specification:
   vpc_name: TO_BE_SET
-  name: epiphany-sg
-  rules:
-   - name: ssh
-     description: Allow SSH
-     priority: 101
-     direction: Inbound
-     access: Allow
-     protocol: Tcp
-     source_port_range: "*"
-     destination_port_range: "22"
-     source_address_prefix: "*"
-     destination_address_prefix: "*"
-   - name: out
-     description: Allow out
-     priority: 101
-     direction: Egress
-     access: Allow
-     protocol: "all"
-     source_port_range: "*"
-     destination_port_range: "0"
-     source_address_prefix: "*"
-     destination_address_prefix: "*"
+  name: TO_BE_SET
+  cidr_block: TO_BE_SET
+  rules: []

@@ -10,10 +10,33 @@ specification:
   tags:
     - version: 0.3.0
   size: t2.micro
+  image_id: "ami-087868e91f1a665d1"
   os_type: linux
   availability_zones:
     - "us-east-2c" # todo change it
     - "us-east-2b"
+  security:
+    rules:
+     - name: ssh
+       description: Allow SSH
+       priority: 101
+       direction: Inbound
+       access: Allow
+       protocol: Tcp
+       source_port_range: "*"
+       destination_port_range: "22"
+       source_address_prefix: "*"
+       destination_address_prefix: "*"
+     - name: out
+       description: Allow out
+       priority: 101
+       direction: Egress
+       access: Allow
+       protocol: "all"
+       source_port_range: "*"
+       destination_port_range: "0"
+       source_address_prefix: "*"
+       destination_address_prefix: "*"
 
 ---
 kind: infrastructure/virtual-machine

@@ -4,8 +4,9 @@ title: "Virtual Machine Infra"
 provider: azure
 name: default
 specification:
+  count: TO_BE_SET
+  subnet: TO_BE_SET
   tags:
-    - deployment: defaults
     - version: 0.3.0
   size: Standard_DS1_v2
   os_type: linux

@@ -9,5 +9,5 @@ specification:
   route:
     cidr_block: "0.0.0.0/0"
     gateway_name: TO_BE_SET
-  tag: TO_BE_SET
+  tag: []
 
