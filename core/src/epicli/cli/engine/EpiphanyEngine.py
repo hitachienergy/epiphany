@@ -20,9 +20,8 @@ class EpiphanyEngine:
     def run(self):
         docs = self.merge_with_user_input_with_defaults()
         cluster_model = self.find_document(docs, "kind", "epiphany-cluster")
-        builder = self.get_generator_for_provider(cluster_model["provider"])
-
-        infrastructure = builder.build(cluster_model, docs)
+        infrastructure_builder = self.get_infrastructure_builder_for_provider(cluster_model["provider"])
+        infrastructure = infrastructure_builder.build(cluster_model, docs)
 
         for component_key, component_value in cluster_model["specification"]["components"].items():
             if component_value["count"] < 1:
@@ -31,10 +30,13 @@ class EpiphanyEngine:
 
         result = docs + infrastructure
         save_build(result, self.context)
-        # todo merge feature mapping
-        # todo validate
+
         # todo generate .tf files
         # todo run terraform
+
+
+        # todo validate
+
         # todo generate ansible inventory
         # todo adjust ansible to new schema
         # todo run ansible
@@ -70,7 +72,7 @@ class EpiphanyEngine:
         return None
 
     @staticmethod
-    def get_generator_for_provider(provider):
+    def get_infrastructure_builder_for_provider(provider):
         if provider.lower() == "aws":
             return AWSConfigBuilder()
 
