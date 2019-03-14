@@ -1,16 +1,22 @@
 import yaml
 import os
 import cli.models.data_file_consts as model_constants
+import cli.config.template_generator_config as template_generator_config
 from cli.engine.dict_merge import merge_dict
 from cli.helpers.list_helpers import select_first
 from cli.helpers.defaults_loader import load_file_from_defaults, load_all_docs_from_defaults
 from cli.helpers.build_saver import save_build
 from cli.helpers.config_merger import merge_with_defaults
 from cli.engine.aws.AWSConfigBuilder import AWSConfigBuilder
+from cli.modules.template_generator import TemplateGenerator
 
 
 class EpiphanyEngine:
+
     def __init__(self, input_data):
+
+        self.BUILD_FOLDER_PATH = '../../build/'
+
         self.file_path = input_data.file
         self.context = input_data.context
 
@@ -32,8 +38,30 @@ class EpiphanyEngine:
         save_build(result, self.context)
 
         # todo generate .tf files
-        # todo run terraform
+        template_generator = TemplateGenerator.TemplateGenerator()
 
+        for document in result:
+            yaml_document = yaml.load(str(document))
+
+            if yaml_document["kind"] != "epiphany-cluster":
+                content = template_generator.generate_terraform_file_content(document=yaml_document,
+                                                                             templates_paths=
+                                                                             template_generator_config.
+                                                                             templates_paths)
+
+                script_dir = os.path.dirname(__file__)
+                build_directory = os.path.join(script_dir, self.BUILD_FOLDER_PATH, self.context, "terraform")
+
+                if not os.path.exists(build_directory):
+                    os.makedirs(build_directory)
+
+                terraform_output_file_path = os.path.join(build_directory, yaml_document["name"] + ".tf")
+                print(terraform_output_file_path)
+
+                with open(terraform_output_file_path, 'w') as terraform_output_file:
+                    terraform_output_file.write(content)
+
+        # todo run terraform
 
         # todo validate
 
@@ -53,7 +81,8 @@ class EpiphanyEngine:
         state_docs = list()
 
         for user_file_yaml in user_yaml_files:
-            files = load_all_docs_from_defaults(user_file_yaml[model_constants.PROVIDER], user_file_yaml[model_constants.KIND])
+            files = load_all_docs_from_defaults(user_file_yaml[model_constants.PROVIDER],
+                                                user_file_yaml[model_constants.KIND])
             file_with_defaults = select_first(files, lambda x: x[model_constants.NAME] == "default")
             merge_dict(file_with_defaults, user_file_yaml)
             state_docs.append(file_with_defaults)
@@ -81,12 +110,15 @@ class EpiphanyEngine:
 
         features_map = select_first(docs, lambda x: x[model_constants.KIND] == 'configuration/feature-mapping')
         if features_map is None:
-            features_map = load_file_from_defaults(cluster_model[model_constants.PROVIDER], 'configuration/feature-mapping')
+            features_map = load_file_from_defaults(cluster_model[model_constants.PROVIDER],
+                                                   'configuration/feature-mapping')
         config_selector = component_value["configuration"]
         for feature_key in features_map["specification"][component_key]:
-            config = select_first(docs, lambda x: x[model_constants.KIND] == 'configuration/' + feature_key and x[model_constants.NAME] == config_selector)
+            config = select_first(docs, lambda x: x[model_constants.KIND] == 'configuration/' + feature_key and x[
+                model_constants.NAME] == config_selector)
             if config is None:
-                config = merge_with_defaults(cluster_model[model_constants.PROVIDER], 'configuration/' + feature_key, config_selector)
+                config = merge_with_defaults(cluster_model[model_constants.PROVIDER], 'configuration/' + feature_key,
+                                             config_selector)
             docs.append(config)
 
     @staticmethod
@@ -94,4 +126,3 @@ class EpiphanyEngine:
         if not select_first(docs, lambda x: x[model_constants.KIND] == kind):
             files = load_all_docs_from_defaults(provider, kind)
             docs.append(select_first(files, lambda x: x[model_constants.NAME] == "default"))
-
