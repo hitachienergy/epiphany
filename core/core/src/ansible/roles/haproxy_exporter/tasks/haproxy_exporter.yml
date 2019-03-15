@@ -10,7 +10,7 @@
   user:
     name: haproxy_exporter
     system: true
-    shell: "/sbin/nologin"
+    shell: "/usr/sbin/nologin"
     group: haproxy_exporter
     createhome: false
 

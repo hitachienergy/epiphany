@@ -1,17 +1,10 @@
 import React, { Component } from 'react';
 import Keycloak from 'keycloak-js';
 
-const keyCloakConf = {
-  "realm": "master",
-  "clientId": "demo-app-implicit", 
-  "url": "http://localhost:8080/auth"
-}
-
 class App extends Component {
   constructor(props) {
     super(props);
-    const keycloak = Keycloak(keyCloakConf);
-    this.state = { keycloak: keycloak, data1: null, data2: null };
+    this.state = { keycloak: null, data1: null, data2: null };
   }
 
   login() {
@@ -69,11 +62,23 @@ class App extends Component {
   }
 
   componentDidMount() {
-    this.login();
+    const t = this;
+    let state = {};       
+    this.xhr('GET',
+        '/config',
+        [],
+        (response) => {
+          if (response.status === 200) {
+            state.keycloak = Keycloak(JSON.parse(response.responseText));
+            t.setState(state);     
+            this.login();    
+          }
+        }
+    );
   }  
 
   render() {
-    if (this.state.keycloak.authenticated) {
+    if (this.state.keycloak !== null && this.state.keycloak.authenticated) {
       return (
         <div>
           <p><b>Authenticated!</b></p>

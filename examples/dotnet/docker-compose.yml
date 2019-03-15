@@ -1,0 +1,22 @@
+version: '3.4'
+
+services:
+  epiphany.examples:
+    image: epiphanyplatform/epiphany-examples-api
+    build:
+      context: .
+      dockerfile: Epiphany.Examples/Dockerfile
+
+  epiphany.examples.consumer:
+    image: epiphanyplatform/epiphany-messaging-console
+    build:
+      context: .
+      dockerfile: Epiphany.Examples.Messaging.Console/Dockerfile
+
+
+  epiphany.examples.web:
+    image: ${DOCKER_REGISTRY}epiphanyexamplesweb
+    build:
+      context: .
+      dockerfile: Epiphany.Examples.Web/Dockerfile
+

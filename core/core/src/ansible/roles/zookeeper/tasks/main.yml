@@ -16,7 +16,7 @@
     name: "{{ zookeeper_user }}"
     group: "{{ zookeeper_group }}"
     system: yes
-    shell: "/sbin/nologin"
+    shell: "/usr/sbin/nologin"
 
 - name: Check for Zookeeper package
   stat:

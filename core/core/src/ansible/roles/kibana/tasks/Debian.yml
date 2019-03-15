@@ -26,6 +26,8 @@
     - groups['kibana'][0] == inventory_hostname
 
 - include_tasks: setup-logging.yml
+  when:
+    - groups['kibana'][0] == inventory_hostname
 
 - name: Start kibana service
   service:

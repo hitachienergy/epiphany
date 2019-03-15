@@ -1,8 +1,9 @@
-FROM epiphany-dev:latest
+FROM epiphanyplatform/epiphany-dev:latest
 
-ADD . /epiphany/
+RUN mkdir /epiphany/core/ \
+    && mkdir /epiphany/core/data/ \
+    && mkdir /epiphany/core/build/
 
-RUN mkdir /epiphany/data/ \
-    && mkdir /epiphany/build/
+ADD ./core/ /epiphany/core/    
 
-CMD ["/epiphany/core/src/docker/deploy/init.sh"]
+CMD ["/epiphany/core/core/src/docker/deploy/init.sh"]

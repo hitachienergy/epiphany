@@ -3,7 +3,7 @@ require 'spec_helper'
 haproxy_exporter_host = 'localhost'
 haproxy_exporter_port = 9101
 
-describe 'Checking if HAProxy exporter user exists' do
+describe 'Checking if HAProxy Exporter user exists' do
   describe group('haproxy_exporter') do
     it { should exist }
   end
@@ -19,7 +19,7 @@ describe 'Checking if HAProxy exporter user exists' do
   end
 end
 
-describe 'Checking if HAProxy exporter service is running' do
+describe 'Checking if HAProxy Exporter service is running' do
   describe service('prometheus-haproxy-exporter') do
     it { should be_enabled }
     it { should be_running }

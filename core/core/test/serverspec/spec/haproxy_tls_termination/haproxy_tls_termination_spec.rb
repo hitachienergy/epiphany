@@ -22,12 +22,12 @@ describe 'Checking if HAProxy user exists' do
   end
 end
 
-describe 'Checking if HAProxy log file exists' do
+describe 'Checking if HAProxy log file exists and is not empty' do
   describe file('/var/log/haproxy.log') do
     let(:disable_sudo) { false }
     it { should exist }
     it { should be_a_file }
-    its(:content) { should match /haproxy/ }
+    its(:size) { should > 0 }
   end
 end
 

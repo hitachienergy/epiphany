@@ -3,10 +3,10 @@
 <!-- TOC -->
 
 - [Contributing](#contributing)
-    - [Welcome](#welcome)
-    - [Workflow](#workflow)
-    - [Security](#security)
-    - [Group/Project Layouts](#group-project-layouts)
+  - [Welcome](#welcome)
+  - [Workflow](#workflow)
+  - [Security](#security)
+  - [Group/Project Layouts](#group-project-layouts)
 
 <!-- /TOC -->
 
@@ -18,7 +18,7 @@ All contributions are welcomed! Contributions can be anything including adding a
 
 ## Security
 
-Security *must* be built-in from day one on any merge request. Meaning, all changes must be able to pass security checks and that you have made sure not to include any hardcoded values such as keys, IDs, passwords, etc.
+Security *must* be built-in from day one on any merge request. Meaning, all changes must be able to pass security checks and that you have made sure not to include any hardcoded values such as keys, IDs, passwords, etc. By default it establishes perimeter security via firewall rules, IPTables, etc. but it also incorporates cross platform Kubernetes Secrets. Security enhancements will always be addressed. Epiphany will always comply with MCSR.
 
 ## Group/Project Layouts
 

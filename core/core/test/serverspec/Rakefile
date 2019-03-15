@@ -68,29 +68,12 @@ namespace :spec do
       task_name = group + ':' + host
       RSpec::Core::RakeTask.new(task_name) do |t|
         ENV['TARGET_HOST'] = host
-  #     status = ENV['status'] ? ENV['status'] : 'running'
-  #     t.pattern = "spec/#{group}/#{status}/*_spec.rb"
         puts "Testing " + task_name
         t.pattern = "spec/#{group}/*_spec.rb"
         t.fail_on_error = false
         t.rspec_opts = "--format documentation --format html \
-        --out results/" + Time.now.strftime("%Y-%m-%d--%H-%M-%S") + "_#{group}_#{host}.html"
+        --out results/" + Time.now.strftime("%Y-%m-%d_%H-%M-%S") + "_#{group}_#{host}.html"
       end
-    end
-  end
-  
-  # Tasks for hosts without groups
-  hosts += groups.values.flatten
-  hosts.uniq.each do |host|
-    desc "Run tests for host '#{host}'"
-    RSpec::Core::RakeTask.new(host) do |t|
-      ENV['TARGET_HOST'] = host
-#      status = ENV['status'] ? ENV['status'] : 'running'
-#      t.pattern = "spec/hosts/#{host}/#{status}/*_spec.rb"
-      t.pattern = "spec/#{group}/*_spec.rb"
-      t.fail_on_error = false
-      t.rspec_opts = "--format documentation --format html \
-      --out results/" + Time.now.strftime("%Y-%m-%d--%H-%M-%S") + "_#{group}_#{host}.html"
     end
   end
 end

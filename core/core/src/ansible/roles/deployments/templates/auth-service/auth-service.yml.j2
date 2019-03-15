@@ -1,0 +1,244 @@
+---
+
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: {{ namespace_name }}
+
+---
+
+apiVersion: v1
+data:
+  password: "{{ data.database.password | b64encode }}"
+kind: Secret
+metadata:
+  labels:
+    app: {{ auth_service_name }}
+  name: {{ auth_service_name }}-db
+  namespace: {{ namespace_name }}
+type: Opaque
+
+---
+
+apiVersion: v1
+data:
+  password: "{{ data.service.admin_password | b64encode }}"
+kind: Secret
+metadata:
+  labels:
+    app: {{ auth_service_name }}
+  name: {{ auth_service_name }}-http
+  namespace: {{ namespace_name }}
+type: Opaque
+
+---
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  labels:
+    app: {{ auth_service_name }}
+  name: {{ auth_service_name }}
+  namespace: {{ namespace_name }}
+data:
+  keycloak.cli: |
+    embed-server --server-config=standalone-ha.xml --std-out=echo
+    batch
+
+    # Makes node identifier unique getting rid of a warning in the logs
+    /subsystem=transactions:write-attribute(name=node-identifier, value=${jboss.node.name})
+
+    # Allow log level to be configured via environment variable
+    /subsystem=logging/console-handler=CONSOLE:write-attribute(name=level, value=${env.WILDFLY_LOGLEVEL:INFO})
+    /subsystem=logging/root-logger=ROOT:write-attribute(name=level, value=${env.WILDFLY_LOGLEVEL:INFO})
+
+    # Log only to console
+    /subsystem=logging/root-logger=ROOT:write-attribute(name=handlers, value=[CONSOLE])
+
+    /socket-binding-group=standard-sockets/socket-binding=proxy-https:add(port=443)
+    /subsystem=undertow/server=default-server/http-listener=default:write-attribute(name=redirect-socket, value=proxy-https)
+    /subsystem=undertow/server=default-server/http-listener=default:write-attribute(name=proxy-address-forwarding, value=true)
+
+    /subsystem=infinispan/cache-container=keycloak/distributed-cache=sessions:write-attribute(name=owners, value=${env.CACHE_OWNERS:2})
+    /subsystem=infinispan/cache-container=keycloak/distributed-cache=authenticationSessions:write-attribute(name=owners, value=${env.CACHE_OWNERS:2})
+    /subsystem=infinispan/cache-container=keycloak/distributed-cache=offlineSessions:write-attribute(name=owners, value=${env.CACHE_OWNERS:2})
+    /subsystem=infinispan/cache-container=keycloak/distributed-cache=loginFailures:write-attribute(name=owners, value=${env.CACHE_OWNERS:2})
+
+    /subsystem=jgroups/channel=ee:write-attribute(name=stack, value=tcp)
+
+    run-batch
+    stop-embedded-server
+  keycloak.sh: |
+    #!/usr/bin/env bash
+
+    set -eu
+
+    /opt/jboss/keycloak/bin/jboss-cli.sh --file=/scripts/keycloak.cli
+
+    exec /opt/jboss/tools/docker-entrypoint.sh -b 0.0.0.0  -c standalone-ha.xml
+    exit "$?"
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: {{ auth_service_name }}
+  name: {{ auth_service_name }}-http
+  namespace: {{ namespace_name }}
+spec:
+  externalTrafficPolicy: Cluster
+  ports:
+  - name: https
+    port: 8443
+    protocol: TCP
+    targetPort: https
+    nodePort: {{ data.service.port }}
+  selector:
+    app: {{ auth_service_name }}
+  sessionAffinity: None
+  type: NodePort
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: {{ auth_service_name }}
+  name: {{ auth_service_name }}-headless
+  namespace: {{ namespace_name }}
+spec:
+  clusterIP: None
+  ports:
+  - name: http
+    port: 80
+    protocol: TCP
+    targetPort: http
+  selector:
+    app: {{ auth_service_name }}
+  sessionAffinity: None
+  type: ClusterIP
+
+---
+
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  labels:
+    app: {{ auth_service_name }}
+  name: {{ auth_service_name }}
+  namespace: {{ namespace_name }}
+spec:
+  podManagementPolicy: Parallel
+  replicas: {{ data.service.replicas }}
+  revisionHistoryLimit: 10
+  selector:
+    matchLabels:
+      app: {{ auth_service_name }}
+  serviceName: {{ auth_service_name }}-headless
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: {{ auth_service_name }}
+    spec:
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - podAffinityTerm:
+              labelSelector:
+                matchExpressions:
+                - key: role
+                  operator: NotIn
+                  values:
+                  - test
+                matchLabels:
+                  app: {{ auth_service_name }}
+              topologyKey: failure-domain.beta.kubernetes.io/zone
+            weight: 100
+      containers:
+      - command:
+        - /scripts/keycloak.sh
+        env:
+        - name: KEYCLOAK_USER
+          value: {{ data.service.admin_user }}
+        - name: KEYCLOAK_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              key: password
+              name: {{ auth_service_name }}-http
+        - name: JGROUPS_DISCOVERY_PROTOCOL
+          value: dns.DNS_PING
+        - name: JGROUPS_DISCOVERY_PROPERTIES
+          value: dns_query={{ auth_service_name }}-headless.{{ namespace_name }}.svc.cluster.local
+        - name: DB_VENDOR
+          value: postgres
+        - name: DB_ADDR
+          value: {{ auth_service_db_address }}
+        - name: DB_PORT
+          value: "{{ auth_service_db_port }}"
+        - name: DB_DATABASE
+          value: {{ data.database.name }}
+        - name: DB_USER
+          value: {{ data.database.user }}
+        - name: DB_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              key: password
+              name: {{ auth_service_name }}-db
+        - name: X509_CA_BUNDLE
+          value: "/var/run/secrets/kubernetes.io/serviceaccount/service-ca.crt"
+        image: {{ data.image_path }}
+        imagePullPolicy: IfNotPresent
+        name: {{ auth_service_name }}
+        ports:
+        - containerPort: 8080
+          name: http
+          protocol: TCP
+        - containerPort: 8443
+          name: https
+          protocol: TCP
+        readinessProbe:
+          failureThreshold: 3
+          httpGet:
+            path: /auth/
+            port: http
+            scheme: HTTP
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          successThreshold: 1
+          timeoutSeconds: 1
+        livenessProbe:
+          failureThreshold: 3
+          httpGet:
+            path: /auth/
+            port: http
+            scheme: HTTP
+          initialDelaySeconds: 120
+          periodSeconds: 10
+          successThreshold: 1
+          timeoutSeconds: 5
+        volumeMounts:
+        - mountPath: /scripts
+          name: scripts
+{% if data.image_pull_secret_name is defined and data.image_pull_secret_name|length %}
+      imagePullSecrets:
+      - name: {{ data.image_pull_secret_name  }}
+{% endif %}
+      dnsPolicy: ClusterFirst
+      restartPolicy: Always
+      schedulerName: default-scheduler
+      securityContext:
+        fsGroup: 1000
+        runAsNonRoot: true
+        runAsUser: 1000
+      terminationGracePeriodSeconds: 60
+      volumes:
+      - configMap:
+          defaultMode: 365
+          name: {{ auth_service_name }}
+        name: scripts
+  updateStrategy:
+    type: RollingUpdate

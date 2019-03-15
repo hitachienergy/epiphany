@@ -13,6 +13,7 @@ using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Net;
+using System;
 
 namespace KeyCloak
 {
@@ -20,7 +21,9 @@ namespace KeyCloak
     {
         public Startup(IConfiguration configuration)
         {
-            Configuration = configuration;
+           var builder = new ConfigurationBuilder()
+                .AddEnvironmentVariables();
+            Configuration = builder.Build();
         }
 
         public IConfiguration Configuration { get; }
@@ -38,9 +41,9 @@ namespace KeyCloak
             .AddCookie("Cookies")
             .AddOpenIdConnect(o =>
             {
-                o.Authority = Configuration["Jwt:Authority"];
-                o.ClientId = Configuration["Jwt:Audience"];
-                o.ClientSecret = Configuration["Jwt:ClientSecret"];
+                o.Authority = Configuration["url"] + "/realms/" + Configuration["realm"];
+                o.ClientId = Configuration["clientid"];
+                o.ClientSecret = Configuration["clientsecret"];
                 o.SaveTokens = true;
                 o.GetClaimsFromUserInfoEndpoint = true;
                 o.ResponseType = OpenIdConnectResponseType.Code;
@@ -48,8 +51,8 @@ namespace KeyCloak
             })
             .AddJwtBearer(o =>
             {
-                o.Authority = Configuration["Jwt:Authority"];
-                o.Audience = Configuration["Jwt:Audience"];
+                o.Authority = Configuration["url"] + "/realms/" + Configuration["realm"];
+                o.Audience = Configuration["clientid"];
                 o.RequireHttpsMetadata = false;
 
                 o.Events = new JwtBearerEvents()
