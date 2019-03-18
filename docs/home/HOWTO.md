@@ -15,6 +15,7 @@
   - [How to scale Kubernetes and Kafka](#how-to-scale-kubernetes-and-kafka)
   - [Kafka replication and partition setting](#kafka-replication-and-partition-setting)
   - [RabbitMQ installation and setting](#rabbitmq-installation-and-setting)
+  - [Single machine cluster](#single-machine-cluster)
 - Monitoring
   - [Import and create of Grafana dashboards](#import-and-create-of-grafana-dashboards)
   - [How to configure Kibana](#how-to-configure-kibana)
@@ -952,6 +953,35 @@ You can read more [here](https://www.confluent.io/blog/how-choose-number-topics-
 ## RabbitMQ installation and setting
 
 To install RabbitMQ in single mode just add rabbitmq role to your data.yaml for your sever and in general roles section. All configuration on RabbitMQ - e.g. user other than guest creation should be performed manually.
+
+## Single machine cluster
+
+In certain circumstances it might be desired to run an Epiphany cluster on a single machine. There are 2 example data.yamls provided for baremetal and Azure:
+
+- `/core/data/metal/epiphany-single-machine/data.yaml`
+- `/core/data/azure/infrastructure/epiphany-single-machine/data.yaml`
+
+These will install the following minimal set of components on the machine:
+
+- kubernetes master (Untainted so it can run and manage deployments)
+- node_exporter
+- prometheus
+- grafana
+- rabbitmq
+- postgresql (for keycloak)
+- keycloak (2 instances)
+
+This bare installation will consume arround 2.8Gb of memory with the following base memory usage of the different components:
+
+- kubernetes    : 904 MiB
+- node_exporter : 38 MiB
+- prometheus    : 133 MiB
+- grafana       : 54 MiB
+- rabbitmq      : 85 MiB
+- postgresql    : 35 MiB
+- keycloak      : 1 Gb
+
+Additional resource consumption will be highly dependant on how the cluster is utilized and it will be up to the product teams to define there hardware requirements. The absolute bare minimum this cluster was tested on was a quadcore CPU with 8Gb of ram and 60Gb of storage. However a minimum of an 8 core CPU with 16Gb of ram and 100Gb of storage would be recommended.
 
 ## Data and log retention
 
