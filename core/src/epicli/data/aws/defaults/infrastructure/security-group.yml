@@ -1,0 +1,10 @@
+kind: infrastructure/security-group
+version: 0.3.0
+title: "Security Group Config"
+provider: aws
+name: default
+specification:
+  vpc_name: TO_BE_SET
+  name: TO_BE_SET
+  cidr_block: TO_BE_SET
+  rules: []

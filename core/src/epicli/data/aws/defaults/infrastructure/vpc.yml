@@ -1,0 +1,12 @@
+kind: infrastructure/vpc
+version: 0.3.0
+title: "VPC Config"
+provider: aws
+name: default
+specification:
+  name: TO_BE_SET
+  address_pool: TO_BE_SET
+  instance_tenancy: default
+  enable_dns_support: true
+  enable_dns_hostnames: true
+
