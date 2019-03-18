@@ -10,6 +10,8 @@ from cli.helpers.config_merger import merge_with_defaults
 from cli.engine.aws.AWSConfigBuilder import AWSConfigBuilder
 from cli.modules.template_generator import TemplateGenerator
 
+from core.src.epicli.cli.modules.terraform_runner.TerraformRunner import TerraformRunner
+
 
 class EpiphanyEngine:
 
@@ -38,6 +40,12 @@ class EpiphanyEngine:
         save_build(result, self.context)
 
         # todo generate .tf files
+        script_dir = os.path.dirname(__file__)
+        terraform_build_directory = os.path.join(script_dir, self.BUILD_FOLDER_PATH, self.context, "terraform")
+
+        if not os.path.exists(terraform_build_directory):
+            os.makedirs(terraform_build_directory)
+
         template_generator = TemplateGenerator.TemplateGenerator()
 
         for document in result:
@@ -49,19 +57,19 @@ class EpiphanyEngine:
                                                                              template_generator_config.
                                                                              templates_paths)
 
-                script_dir = os.path.dirname(__file__)
-                build_directory = os.path.join(script_dir, self.BUILD_FOLDER_PATH, self.context, "terraform")
-
-                if not os.path.exists(build_directory):
-                    os.makedirs(build_directory)
-
-                terraform_output_file_path = os.path.join(build_directory, yaml_document["name"] + ".tf")
+                terraform_output_file_path = os.path.join(terraform_build_directory, yaml_document["name"] + ".tf")
                 print(terraform_output_file_path)
 
                 with open(terraform_output_file_path, 'w') as terraform_output_file:
                     terraform_output_file.write(content)
 
         # todo run terraform
+        # todo set path to terraform files
+        print(terraform_build_directory)
+        tf = TerraformRunner(terraform_build_directory)
+        tf.init()
+        tf.plan()
+        tf.apply(auto_approve=True)
 
         # todo validate
 
