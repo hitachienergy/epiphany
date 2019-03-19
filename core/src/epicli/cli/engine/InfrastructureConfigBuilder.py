@@ -1,6 +1,5 @@
 from abc import ABC, abstractmethod
 
-
 class InfrastructureConfigBuilder(ABC):
 
     def __init__(self):

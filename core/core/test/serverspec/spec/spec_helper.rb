@@ -27,11 +27,37 @@ set :host,        options[:host_name] || host
 set :ssh_options, options
 
 # Disable sudo
-# set :disable_sudo, true
+set :disable_sudo, true
 
+# Set shell
+set :shell, '/bin/bash'
 
 # Set environment variables
 # set :env, :LANG => 'C', :LC_MESSAGES => 'C'
 
 # Set PATH
 # set :path, '/sbin:/usr/local/sbin:$PATH'
+
+  def count_inventory_roles(role)
+    file = File.open(ENV['inventory'], "rb")
+    input = file.read
+    file.close
+      if input.include? "[#{role}]"
+        rows = input.split("[#{role}]")[1].split("[")[0]
+        counter = rows.scan(/ansible_host/).count
+      else counter = 0
+      end
+    return counter
+  end
+
+  def hostInGroups?(role)
+    file = File.open(ENV['inventory'], "rb")
+    input = file.read
+    file.close
+      if input.include? "[#{role}]"
+        rows = input.split("[#{role}]")[1].split("[")[0]
+        return rows.include? ENV['TARGET_HOST']
+      else return false
+      end
+  end
+
