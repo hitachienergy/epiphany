@@ -1,6 +1,4 @@
 ---
-## RabbitMQ Debian
-
 - name: Get APT Key
   apt_key:
     url: https://github.com/rabbitmq/signing-keys/releases/download/2.0/rabbitmq-release-signing-key.asc
@@ -11,20 +9,20 @@
     repo: deb http://dl.bintray.com/rabbitmq-erlang/debian bionic erlang-21.x
     state: present
     filename: bintray.erlang.list
+    update_cache: true
 
 - name: Install dependencies for RabbitMQ
-  apt: 
+  apt:
+    update_cache: true
     name:
+      - init-system-helpers
       - socat
       - erlang-nox
+      - adduser
+      - logrotate
     state: present
 
 - name: Install RabbitMQ package
-  apt: 
-    deb: "https://github.com/rabbitmq/rabbitmq-server/releases/download/v3.7.9/rabbitmq-server_3.7.9-1_all.deb"
+  apt:
+    deb: "https://github.com/rabbitmq/rabbitmq-server/releases/download/v3.7.10/rabbitmq-server_3.7.10-1_all.deb"
     state: present
-
-- name: Disable UFW
-  ufw:
-    state: disabled
-

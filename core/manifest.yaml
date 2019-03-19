@@ -3,13 +3,13 @@
 # This data is for the core of Epiphany and not the data for a given environment.
 
 name: Epiphany
-version: 0.1.20
+version: 0.2.0
 
 # Set the proxy info up if your environment requires it. This is sometimes the case for on-premise builds/installs
 proxy:
   enable: false
-  http: ''
-  https: ''
+  http: ""
+  https: ""
   # no_proxy is used to specify the hosts/ips that you do not want proxied. The list is comma separated
   # Example: localhost,10.0.0.*
-  no_proxy: ''
+  no_proxy: ""

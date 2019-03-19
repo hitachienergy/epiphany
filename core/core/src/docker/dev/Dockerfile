@@ -49,8 +49,11 @@ RUN set -x && \
     echo "==> Installing Ansible..."  && \
     pip install ansible==${ANSIBLE_VERSION} && \
     \
-    echo "==> installing azure-cli" && \
+    echo "==> installing azure-cli..." && \
     pip install azure-cli && \
+    # Uninstall pyOpenSSL: https://github.com/erjosito/ansible-azure-lab/issues/5
+    echo "==> un-installing pyOpenSSL... " && \
+    pip uninstall -y pyOpenSSL && \    
     \
     echo "==> Cleaning up..."  && \
     apk del build-dependencies && \

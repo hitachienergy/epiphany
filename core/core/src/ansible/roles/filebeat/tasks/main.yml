@@ -1,21 +1,21 @@
 ---
-# Filebeat 
+# Filebeat
 
-- include_tasks: "{{ ansible_os_family }}.yml"
+- name: Include {{ ansible_os_family }} family tasks
+  include_tasks: "{{ ansible_os_family }}.yml"
 
-- set_fact: elastic_address="{{ hostvars[groups['elasticsearch'][0]]['ansible_default_ipv4']['address'] }}"
-  when: groups['elasticsearch'][0] is defined
+- name: Include configuration tasks
+  include_tasks: configure-filebeat.yml
 
-- set_fact: kibana_address="{{ hostvars[groups['kibana'][0]]['ansible_default_ipv4']['address'] }}"
-  when: groups['kibana'][0] is defined
+# Trigger restart if configuration has changed
+- name: Flush handlers
+  meta: flush_handlers
 
-- name: Copy filebeat config
-  template: 
-    dest: /etc/filebeat/filebeat.yml
-    src: filebeat.yml.j2
-
-- name: Start service filebeat
-  service:
+- name: Start Filebeat service
+  systemd:
     name: filebeat
     state: started
-    enabled: yes
+
+- name: Verify Filebeat is running
+  command: systemctl is-active filebeat
+  changed_when: false

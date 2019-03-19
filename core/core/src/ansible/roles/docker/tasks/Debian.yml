@@ -1,5 +1,5 @@
 ---
-- name: Install docker
+- name: Install Docker
   apt:
     name: docker.io
     state: present

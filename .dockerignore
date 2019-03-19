@@ -11,5 +11,5 @@ certs/
 tests/
 Dockerfile
 
-data/
-build/
+core/data/
+core/build/

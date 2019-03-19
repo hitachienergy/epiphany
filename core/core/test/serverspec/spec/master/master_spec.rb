@@ -124,7 +124,7 @@ describe 'Checking kubernetes dashboard availability' do
     end
   end
   describe 'Checking if admin token bearer exists' do
-    describe command("kubectl describe secret $(kubectl get secrets --namespace=kube-system | grep addmin-user \
+    describe command("kubectl describe secret $(kubectl get secrets --namespace=kube-system | grep admin-user \
     | awk '{print $1}') --namespace=kube-system | awk '/^token/ {print $2}' | head -1") do
       its(:stdout) { should_not match /^$/ }
       its(:exit_status) { should eq 0 }

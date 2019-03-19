@@ -1,0 +1,24 @@
+---
+- name: Include variables setup
+  include_tasks: "set-variables.yml"
+
+- name: Create temp directory for files
+  file:
+    path: "{{ configuration_temp_directory }}"
+    state: directory
+  become_user: "{{ admin_user.name }}"
+
+- name: Include namespace creation
+  include_tasks: "create-namespace.yml"
+
+- name: Include rbac creation
+  include_tasks: "create-rbac.yml"
+
+- name: Include erlang cookie handling
+  include_tasks: "set-erlang-cookie.yml"
+
+- name: Include service creation
+  include_tasks: "create-service.yml"
+
+- name: Include cleanup tasks
+  include_tasks: "cleanup.yml"

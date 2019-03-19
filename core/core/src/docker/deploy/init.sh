@@ -8,4 +8,5 @@ git init --quiet
 export GIT_DISCOVERY_ACROSS_FILESYSTEM=1
 
 echo 'Start BASH'
+cd  /epiphany/core
 /bin/bash

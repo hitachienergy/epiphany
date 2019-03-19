@@ -1,0 +1,5 @@
+---
+postgresql:
+  replication: 
+    enable: no
+

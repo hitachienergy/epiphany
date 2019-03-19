@@ -73,14 +73,6 @@
     - disableswap
   notify: restart waagent
 
-- name: Manage {{ admin_user.name }} key
-  copy:
-    src: "{{ admin_user.key_path }}"
-    dest: /home/{{ admin_user.name }}/.ssh/id_rsa
-    mode: 0600
-    owner: "{{ admin_user.name }}"
-    group: "{{ admin_user.name }}"
-
 - name: Disable SELinux at next reboot
   selinux:
     state: disabled
