@@ -1,0 +1,5 @@
+kind: configuration/kafka-exporter
+version: 0.3.0
+title: "Kafka exporter"
+name: default
+specification:

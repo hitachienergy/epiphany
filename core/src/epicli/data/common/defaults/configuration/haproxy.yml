@@ -1,0 +1,5 @@
+kind: configuration/haproxy
+version: 0.3.0
+title: "HAProxy"
+name: default
+specification:

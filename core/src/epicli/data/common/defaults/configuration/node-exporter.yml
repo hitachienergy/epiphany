@@ -1,0 +1,5 @@
+kind: configuration/node-exporter
+version: 0.3.0
+title: "Node exporter"
+name: default
+specification:

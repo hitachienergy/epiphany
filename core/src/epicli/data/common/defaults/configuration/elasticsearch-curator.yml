@@ -1,0 +1,5 @@
+kind: configuration/elasticsearch-curator
+version: 0.3.0
+title: "ElasticSearch curator"
+name: default
+specification:

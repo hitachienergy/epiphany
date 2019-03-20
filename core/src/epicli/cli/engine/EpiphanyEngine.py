@@ -32,13 +32,12 @@ class EpiphanyEngine:
         # todo generate .tf files
         # todo run terraform
 
-
         # todo validate
+
 
         # todo generate ansible inventory
         # todo adjust ansible to new schema
         # todo run ansible
-
     def merge_with_user_input_with_defaults(self):
         if os.path.isabs(self.file_path):
             path_to_load = self.file_path
@@ -78,12 +77,12 @@ class EpiphanyEngine:
 
         features_map = select_first(docs, lambda x: x.kind == 'configuration/feature-mapping')
         if features_map is None:
-            features_map = load_file_from_defaults(cluster_model.provider, 'configuration/feature-mapping')
+            features_map = load_file_from_defaults('common', 'configuration/feature-mapping')
         config_selector = component_value.configuration
         for feature_key in features_map.specification[component_key]:
             config = select_first(docs, lambda x: x.kind == 'configuration/' + feature_key and x.name == config_selector)
             if config is None:
-                config = merge_with_defaults(cluster_model.provider, 'configuration/' + feature_key, config_selector)
+                config = merge_with_defaults('common', 'configuration/' + feature_key, config_selector)
             docs.append(config)
 
     @staticmethod
