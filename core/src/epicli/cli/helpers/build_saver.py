@@ -11,4 +11,4 @@ def save_build(docs, context):
     if not os.path.exists(build_directory):
         os.makedirs(build_directory)
     with open(os.path.join(build_directory, OUTPUT_FILE_NAME), 'w') as stream:
-        dump_all(docs, stream, default_flow_style=False)
+        dump_all(docs, stream)

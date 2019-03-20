@@ -31,7 +31,7 @@ def safe_load(stream):
     return ObjDict(doc)
 
 
-def dump_all(docs, stream, default_flow_style=False):
+def dump_all(docs, stream):
     conv_docs = []
     for doc in docs:
         nested_objdict_to_dict(doc)
