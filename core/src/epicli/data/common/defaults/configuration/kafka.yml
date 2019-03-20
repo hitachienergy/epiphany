@@ -1,0 +1,5 @@
+kind: configuration/kafka
+version: 0.3.0
+title: "Kafka"
+name: default
+specification:
