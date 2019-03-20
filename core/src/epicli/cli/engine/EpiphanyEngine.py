@@ -1,5 +1,5 @@
 import os
-from cli.helpers.objdict_merge import merge_objdict
+from cli.helpers.objdict_helpers import merge_objdict
 from cli.helpers.list_helpers import select_first
 from cli.helpers.defaults_loader import load_file_from_defaults, load_all_docs_from_defaults
 from cli.helpers.build_saver import save_build

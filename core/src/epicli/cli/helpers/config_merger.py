@@ -1,6 +1,6 @@
 from cli.helpers.list_helpers import select_first
 from cli.helpers.defaults_loader import load_all_docs_from_defaults
-from cli.helpers.objdict_merge import merge_objdict
+from cli.helpers.objdict_helpers import merge_objdict
 
 
 def merge_with_defaults(provider, feature_kind, config_selector):
