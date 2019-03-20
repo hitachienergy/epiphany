@@ -25,8 +25,19 @@ class TerraformRunner:
         self.working_directory = working_directory
 
     def apply(self, auto_approve=False):
-        run(command=self.COMMAND, terraform_command=self.APPLY_COMMAND, working_directory=self.working_directory,
-            auto_approve=auto_approve)
+        if auto_approve:
+            status_run = subprocess.run([self.COMMAND, self.APPLY_COMMAND,
+                                         "--auto-approve", "-state=" + self.working_directory + "terraform.tfstate",
+                                         self.working_directory])
+        else:
+            status_run = subprocess.run([self.COMMAND, self.APPLY_COMMAND,
+                                        "-state=" + self.working_directory + "terraform.tfstate",
+                                         self.working_directory])
+
+        if status_run.returncode != 0:
+            print(self.COMMAND + " " + self.APPLY_COMMAND + " run failed")
+        else:
+            print(self.COMMAND + " " + self.APPLY_COMMAND + " run successfully.")
 
     def destroy(self, auto_approve=False):
         run(self.COMMAND, self.DESTROY_COMMAND, working_directory=self.working_directory,

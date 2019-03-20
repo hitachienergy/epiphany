@@ -10,7 +10,7 @@ from cli.helpers.config_merger import merge_with_defaults
 from cli.engine.aws.AWSConfigBuilder import AWSConfigBuilder
 from cli.modules.template_generator import TemplateGenerator
 
-from core.src.epicli.cli.modules.terraform_runner.TerraformRunner import TerraformRunner
+from cli.modules.terraform_runner.TerraformRunner import TerraformRunner
 
 
 class EpiphanyEngine:
