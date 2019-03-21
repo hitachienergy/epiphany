@@ -1,7 +1,0 @@
-kind: configuration/kubernetes-node
-version: 0.3.0
-title: "Kubernetes Node Config"
-provider: aws
-name: default
-specification:
-  version: 1.13.0

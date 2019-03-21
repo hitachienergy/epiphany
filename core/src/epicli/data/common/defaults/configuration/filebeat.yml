@@ -1,0 +1,5 @@
+kind: configuration/filebeat
+version: 0.3.0
+title: "Filebeat"
+name: default
+specification:

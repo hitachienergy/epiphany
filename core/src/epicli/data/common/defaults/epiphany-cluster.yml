@@ -19,7 +19,7 @@ specification:
     kubernetes_master:
       count: 1
       subnet_address_pool: 10.1.1.0/24
-      machine: default-external-disk
+      machine: default
       configuration: default
     kubernetes_node:
       count: 3
@@ -30,11 +30,11 @@ specification:
       count: 1
       subnet_address_pool: 10.1.2.0/24
       machine: default
-      configuration: logs-default
+      configuration: default
     monitoring:
       count: 1
       subnet_address_pool: 10.1.2.0/24
-      machine: default-external-disk
+      machine: default
       configuration: default
     kafka:
       count: 0

@@ -1,7 +1,6 @@
 kind: configuration/kubernetes-master
 version: 0.3.0
 title: "Kubernetes Master Config"
-provider: azure
 name: default
 specification:
   version: 1.13.0

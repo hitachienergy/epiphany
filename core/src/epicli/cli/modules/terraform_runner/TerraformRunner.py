@@ -27,11 +27,11 @@ class TerraformRunner:
     def apply(self, auto_approve=False):
         if auto_approve:
             status_run = subprocess.run([self.COMMAND, self.APPLY_COMMAND,
-                                         "--auto-approve", "-state=" + self.working_directory + "terraform.tfstate",
+                                         "--auto-approve", "-state=" + self.working_directory + "/terraform.tfstate",
                                          self.working_directory])
         else:
             status_run = subprocess.run([self.COMMAND, self.APPLY_COMMAND,
-                                        "-state=" + self.working_directory + "terraform.tfstate",
+                                         "-state=" + self.working_directory + "/terraform.tfstate",
                                          self.working_directory])
 
         if status_run.returncode != 0:

@@ -1,7 +1,0 @@
-kind: configuration/kubernetes-master
-version: 0.3.0
-title: "Kubernetes Master Config"
-provider: aws
-name: default
-specification:
-  version: 1.13.0

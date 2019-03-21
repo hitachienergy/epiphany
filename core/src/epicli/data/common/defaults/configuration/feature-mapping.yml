@@ -1,0 +1,60 @@
+kind: configuration/feature-mapping
+version: 0.3.0
+title: "Feature mapping to roles"
+name: default
+specification:
+  kubernetes_master:
+    - kubernetes-master
+    - deployments
+    - node-exporter
+    - filebeat
+  kubernetes_node:
+    - kubernetes-node
+    - node-exporter
+    - filebeat
+  kafka:
+    - kafka
+    - zookeeper
+    - jmx-exporter
+    - kafka-exporter
+    - node-exporter
+    - filebeat
+  rabbitmq:
+    - rabbitmq
+    - node-exporter
+    - kafka-exporter
+    - filebeat
+  logging:
+    - elasticsearch
+    - elasticsearch-curator
+    - node-exporter
+    - filebeat
+  load_balancer:
+    - haproxy
+    - haproxy-exporter
+    - node-exporter
+    - filebeat
+  monitoring:
+    - prometheus
+    - grafana
+    - node-exporter
+    - filebeat
+  postgresql:
+    - postgresql
+    - node-exporter
+    - filebeat
+  custom:
+    - kubernetes-master
+    - node-exporter
+    - filebeat
+    - rabbitmq
+    - postgresql
+    - prometheus
+    - grafana
+    - node-exporter
+    - filebeat
+    - elasticsearch
+    - elasticsearch-curator
+  single_machine:
+    - kubernetes-master
+    - rabbitmq
