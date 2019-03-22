@@ -1,7 +1,5 @@
 import os
 
-import yaml
-
 from cli.helpers.objdict_helpers import merge_objdict
 from cli.helpers.list_helpers import select_first
 from cli.helpers.defaults_loader import load_file_from_defaults, load_all_docs_from_defaults
@@ -49,6 +47,9 @@ class EpiphanyEngine:
         terraform_file_helper.create_terraform_output_dir(terraform_build_directory)
 
         template_generator = TemplateGenerator.TemplateGenerator()
+
+        terraform_file_helper.generate_terraform_file([cluster_model], template_generator,
+                                                      template_generator_config, terraform_build_directory)
 
         terraform_file_helper.generate_terraform_file(infrastructure, template_generator, template_generator_config,
                                                       terraform_build_directory)
