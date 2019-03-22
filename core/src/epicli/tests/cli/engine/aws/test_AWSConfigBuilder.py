@@ -111,9 +111,9 @@ def get_cluster_model(address_pool="10.22.0.0/22", cluster_name="EpiphanyTestClu
     cluster_model = dict_to_objdict({
         'provider': "aws",
         'specification': {
+            'name': cluster_name,
             'cloud': {
-                'vnet_address_pool': address_pool,
-                'cluster_name': cluster_name
+                'vnet_address_pool': address_pool
             }
         }
     })
