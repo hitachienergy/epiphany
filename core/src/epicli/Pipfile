@@ -10,6 +10,7 @@ pytest = "*"
 pyyaml = "*"
 argparse = "*"
 jinja2 = "*"
+boto3 = "*"
 
 [requires]
 python_version = "3.7"

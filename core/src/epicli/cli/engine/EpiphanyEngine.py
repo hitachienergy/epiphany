@@ -1,17 +1,18 @@
 import os
-
-from cli.helpers.objdict_helpers import merge_objdict
+from cli.helpers.objdict_helpers import merge_objdict, dict_to_objdict
 from cli.helpers.list_helpers import select_first
 from cli.helpers.defaults_loader import load_file_from_defaults, load_all_docs_from_defaults
 from cli.helpers.build_saver import save_build
 from cli.helpers.config_merger import merge_with_defaults
 from cli.engine.aws.AWSConfigBuilder import AWSConfigBuilder
+from cli.engine.aws.AWSAPIProxy import AWSAPIProxy
+from cli.engine.aws.AWSInventoryCreator import AWSInventoryCreator
 from cli.helpers.yaml_helpers import safe_load_all
 from cli.modules.template_generator import TemplateGenerator
 from cli.modules.terraform_runner.TerraformRunner import TerraformRunner
 import cli.config.template_generator_config as template_generator_config
-
 import cli.helpers.terraform_file_helper as terraform_file_helper
+
 
 
 class EpiphanyEngine:
@@ -64,6 +65,12 @@ class EpiphanyEngine:
         # todo validate
 
         # todo generate ansible inventory
+        ansibleBuilder = AWSInventoryCreator()
+        ansibleBuilder.create(result)
+
+        with AWSAPIProxy(dict_to_objdict(cluster_model), result) as aws:
+            aws.get_ips_of_autoscaling_group('kubernetes_master')
+
         # todo adjust ansible to new schema
         # todo run ansible
 
