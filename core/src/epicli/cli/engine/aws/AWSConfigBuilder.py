@@ -3,6 +3,7 @@ from cli.helpers.list_helpers import select_first
 from cli.helpers.defaults_loader import load_file_from_defaults
 from cli.helpers.config_merger import merge_with_defaults
 
+
 class AWSConfigBuilder(InfrastructureConfigBuilder):
     def build(self, cluster_model, user_input):
         result = list()
@@ -14,7 +15,6 @@ class AWSConfigBuilder(InfrastructureConfigBuilder):
         result.append(internet_gateway)
         route_table = self.get_routing_table(cluster_model, user_input, vpc_name, internet_gateway.specification.name)
         result.append(route_table)
-
 
         subnet_index = 0
         for component_key, component_value in cluster_model.specification.components.items():

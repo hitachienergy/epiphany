@@ -1,4 +1,7 @@
 import os
+
+import yaml
+
 from cli.helpers.objdict_helpers import merge_objdict
 from cli.helpers.list_helpers import select_first
 from cli.helpers.defaults_loader import load_file_from_defaults, load_all_docs_from_defaults
@@ -6,9 +9,19 @@ from cli.helpers.build_saver import save_build
 from cli.helpers.config_merger import merge_with_defaults
 from cli.engine.aws.AWSConfigBuilder import AWSConfigBuilder
 from cli.helpers.yaml_helpers import safe_load_all
+from cli.modules.template_generator import TemplateGenerator
+from cli.modules.terraform_runner.TerraformRunner import TerraformRunner
+import cli.config.template_generator_config as template_generator_config
+
+import cli.helpers.terraform_file_helper as terraform_file_helper
+
 
 class EpiphanyEngine:
+
     def __init__(self, input_data):
+
+        self.BUILD_FOLDER_PATH = '../../build/'
+
         self.file_path = input_data.file
         self.context = input_data.context
 
@@ -30,14 +43,29 @@ class EpiphanyEngine:
         save_build(result, self.context)
 
         # todo generate .tf files
+        script_dir = os.path.dirname(__file__)
+        terraform_build_directory = os.path.join(script_dir, self.BUILD_FOLDER_PATH, self.context, "terraform")
+
+        terraform_file_helper.create_terraform_output_dir(terraform_build_directory)
+
+        template_generator = TemplateGenerator.TemplateGenerator()
+
+        terraform_file_helper.generate_terraform_file(infrastructure, template_generator, template_generator_config,
+                                                      terraform_build_directory)
+
         # todo run terraform
+        # todo set path to terraform files
+        tf = TerraformRunner(terraform_build_directory)
+        tf.init()
+        tf.plan()
+        tf.apply(auto_approve=True)
 
         # todo validate
-
 
         # todo generate ansible inventory
         # todo adjust ansible to new schema
         # todo run ansible
+
     def merge_with_user_input_with_defaults(self):
         if os.path.isabs(self.file_path):
             path_to_load = self.file_path
@@ -80,7 +108,8 @@ class EpiphanyEngine:
             features_map = load_file_from_defaults('common', 'configuration/feature-mapping')
         config_selector = component_value.configuration
         for feature_key in features_map.specification[component_key]:
-            config = select_first(docs, lambda x: x.kind == 'configuration/' + feature_key and x.name == config_selector)
+            config = select_first(docs,
+                                  lambda x: x.kind == 'configuration/' + feature_key and x.name == config_selector)
             if config is None:
                 config = merge_with_defaults('common', 'configuration/' + feature_key, config_selector)
             docs.append(config)
