@@ -9,6 +9,7 @@ pytest = "*"
 [packages]
 pyyaml = "*"
 argparse = "*"
+jinja2 = "*"
 boto3 = "*"
 
 [requires]
