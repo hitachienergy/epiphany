@@ -41,6 +41,7 @@ class AWSConfigBuilder(InfrastructureConfigBuilder):
             security_group.specification.rules += autoscaling_group.specification.security.rules
 
             launch_configuration = self.get_launch_configuration(autoscaling_group, cluster_name, component_key, security_group.specification.name, user_input)
+            autoscaling_group.specification.launch_configuration = launch_configuration.specification.name
 
             result.append(autoscaling_group)
             result.append(launch_configuration)
