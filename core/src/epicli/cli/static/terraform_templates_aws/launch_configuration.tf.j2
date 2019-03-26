@@ -1,1 +1,25 @@
-# TODO: Fill template
+#####################################################
+# DO NOT Modify by hand - Manage by Automation
+#####################################################
+#####################################################
+# This file can be used as a base template to build other Terraform files. It attempts to use as much
+# Terraform interprolation as possible by creating Terraform variables instead of changing inline
+# this approach provides an easier way to do creative looping, fetch IDs of created resources etc.
+#####################################################
+#####################################################
+# {{ specification.name }}
+#####################################################
+
+
+resource "aws_launch_configuration" "{{ specification.name }}" {
+  name          = "{{ specification.name }}"
+  image_id      = "{{ specification.image_id }}"
+  instance_type = "{{ specification.size }}"
+  associate_public_ip_address = "{{ specification.associate_public_ip }}"
+
+  # Security group
+  security_groups = [{% for security_group in specification.security_groups %}  "${aws_security_group.{{ security_group }}.id}" {% if not loop.last %}, {% endif %} {% endfor %}]
+  enable_monitoring = "{{ specification.enable_monitoring }}"
+  # TODO: Define key_name in configuration
+  key_name        = "epiphany-global"
+}

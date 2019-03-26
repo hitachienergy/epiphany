@@ -63,7 +63,7 @@ class EpiphanyEngine:
         tf.apply(auto_approve=True)
 
         # todo validate
-
+        print("Running ansible.")
         # todo generate ansible inventory
         ansibleBuilder = AWSInventoryCreator()
         ansibleBuilder.create(result)

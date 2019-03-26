@@ -7,10 +7,10 @@
 # this approach provides an easier way to do creative looping, fetch IDs of created resources etc.
 #####################################################
 #####################################################
-# {{ name }}
+# {{ specification.name }}
 #####################################################
 
-resource "aws_subnet" "{{ specification.name }}-sub" {
+resource "aws_subnet" "{{ specification.name }}" {
 	vpc_id = "${aws_vpc.{{ specification.vpc_name }}.id}"
-	cidr_block = "specification.cidr_block"
+	cidr_block = "{{ specification.cidr_block }}"
 }

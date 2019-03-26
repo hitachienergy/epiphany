@@ -7,7 +7,7 @@ specification:
   name: TO_BE_SET
   image_id: TO_BE_SET
   size: TO_BE_SET
-  associate_public_ip_ip: true
+  associate_public_ip: true
   security_groups: [] # TO_BE_SET
   enable_monitoring: true
 
