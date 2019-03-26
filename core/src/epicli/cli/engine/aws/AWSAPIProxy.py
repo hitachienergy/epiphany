@@ -1,6 +1,7 @@
 import boto3
 from cli.helpers.list_helpers import select_single
 from cli.helpers.objdict_helpers import dict_to_objdict
+from cli.models.AnsibleHostModel import AnsibleHostModel
 
 
 class AWSAPIProxy:
@@ -14,14 +15,16 @@ class AWSAPIProxy:
         return self
 
     def __exit__(self, exc_type, exc_value, traceback):
-        print('close')
+        pass
 
-    def get_ips_of_autoscaling_group(self, feature_key, look_for_public = False):
+
+    # Query AWS API for ec2 instances in state 'running' which are in cluster's VPC
+    # and tagged with feature name (e.g. kubernetes_master) and cluster name
+    def get_ips_for_feature(self, feature_key, look_for_public_ip=False):
         region = self.cluster_model.specification.cloud.region
         cluster_name = self.cluster_model.specification.name.lower()
 
         vpc_id = self.get_vpc_id()
-        print(vpc_id)
 
         ec2 = boto3.resource('ec2', region)
         running_instances = ec2.instances.filter(
@@ -45,10 +48,11 @@ class AWSAPIProxy:
 
         result = list()
         for instance in running_instances:
-            if look_for_public:
-                result.append(instance.public_ip_address)
+            if look_for_public_ip:
+                result.append(AnsibleHostModel(instance.public_dns_name, instance.public_ip_address))
             else:
-                result.append(instance.private_ip_address)
+                result.append(AnsibleHostModel(instance.private_dns_name, instance.private_ip_address))
+        return result
 
     def get_vpc_id(self):
         vpc_config = dict_to_objdict(select_single(self.config_docs, lambda x: x.kind == 'infrastructure/vpc'))

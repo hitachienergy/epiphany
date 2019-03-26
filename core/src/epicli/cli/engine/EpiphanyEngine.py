@@ -5,15 +5,13 @@ from cli.helpers.defaults_loader import load_file_from_defaults, load_all_docs_f
 from cli.helpers.build_saver import save_build
 from cli.helpers.config_merger import merge_with_defaults
 from cli.engine.aws.AWSConfigBuilder import AWSConfigBuilder
-from cli.engine.aws.AWSAPIProxy import AWSAPIProxy
-from cli.engine.aws.AWSInventoryCreator import AWSInventoryCreator
 from cli.helpers.yaml_helpers import safe_load_all
 from cli.modules.template_generator import TemplateGenerator
 from cli.modules.terraform_runner.TerraformRunner import TerraformRunner
 import cli.config.template_generator_config as template_generator_config
 import cli.helpers.terraform_file_helper as terraform_file_helper
 
-
+from cli.engine.AnsibleRunner import AnsibleRunner
 
 class EpiphanyEngine:
 
@@ -39,7 +37,7 @@ class EpiphanyEngine:
             self.append_component_configuration(docs, component_key, component_value, cluster_model)
 
         result = docs + infrastructure
-        save_build(result, self.context)
+        save_build(result, cluster_model.specification.name)
 
         # todo generate .tf files
         script_dir = os.path.dirname(__file__)
@@ -65,11 +63,8 @@ class EpiphanyEngine:
         # todo validate
         print("Running ansible.")
         # todo generate ansible inventory
-        ansibleBuilder = AWSInventoryCreator()
-        ansibleBuilder.create(result)
-
-        with AWSAPIProxy(dict_to_objdict(cluster_model), result) as aws:
-            aws.get_ips_of_autoscaling_group('kubernetes_master')
+        with AnsibleRunner(dict_to_objdict(cluster_model), result) as runner:
+            runner.run()
 
         # todo adjust ansible to new schema
         # todo run ansible
@@ -114,6 +109,7 @@ class EpiphanyEngine:
         features_map = select_first(docs, lambda x: x.kind == 'configuration/feature-mapping')
         if features_map is None:
             features_map = load_file_from_defaults('common', 'configuration/feature-mapping')
+            docs.append(features_map)
         config_selector = component_value.configuration
         for feature_key in features_map.specification[component_key]:
             config = select_first(docs,
