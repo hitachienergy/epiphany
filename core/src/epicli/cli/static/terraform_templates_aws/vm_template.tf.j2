@@ -3,7 +3,7 @@
 #####################################################
 #####################################################
 # This file can be used as a base template to build other Terraform files. It attempts to use as much
-# Terraform interprolation as possible by creating Terraform variables instead of changing inline
+# Terraform interpolation as possible by creating Terraform variables instead of changing inline
 # this approach provides an easier way to do creative looping, fetch IDs of created resources etc.
 #####################################################
 #####################################################
@@ -26,7 +26,7 @@ resource "aws_autoscaling_group" "{{ specification.name }}" {
 
   tag {
     key                 = "Name"
-    value               = "web-asg"
-    propagate_at_launch = "{{ specification.name }}"
+    value               = "{{ specification.name }}"
+    propagate_at_launch = "true"
   }
 }
