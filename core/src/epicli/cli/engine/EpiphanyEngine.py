@@ -47,6 +47,9 @@ class EpiphanyEngine:
 
         template_generator = TemplateGenerator.TemplateGenerator()
 
+        terraform_file_helper.generate_terraform_file([cluster_model], template_generator,
+                                                      template_generator_config, terraform_build_directory)
+
         terraform_file_helper.generate_terraform_file(infrastructure, template_generator, template_generator_config,
                                                       terraform_build_directory)
 
@@ -58,7 +61,7 @@ class EpiphanyEngine:
         tf.apply(auto_approve=True)
 
         # todo validate
-
+        print("Running ansible.")
         # todo generate ansible inventory
         with AnsibleRunner(dict_to_objdict(cluster_model), result) as runner:
             runner.run()

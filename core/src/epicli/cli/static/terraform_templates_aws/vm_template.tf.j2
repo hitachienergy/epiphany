@@ -1,5 +1,32 @@
 #####################################################
-# VMs - {{ name }}
+# DO NOT Modify by hand - Manage by Automation
+#####################################################
+#####################################################
+# This file can be used as a base template to build other Terraform files. It attempts to use as much
+# Terraform interpolation as possible by creating Terraform variables instead of changing inline
+# this approach provides an easier way to do creative looping, fetch IDs of created resources etc.
+#####################################################
+#####################################################
+# {{ specification.name }}
 #####################################################
 
-# TODO: Fill template
+
+resource "aws_autoscaling_group" "{{ specification.name }}" {
+  availability_zones   = [{% for availability_zone in specification.availability_zones %}  "{{ availability_zone }}" {% if not loop.last %}, {% endif %} {% endfor %}]
+  name                 = "{{ specification.name }}"
+  max_size             = "{{ specification.count }}"
+  min_size             = "{{ specification.count }}"
+  desired_capacity     = "{{ specification.count }}"
+  force_delete         = "true"
+  launch_configuration = "${aws_launch_configuration.{{ specification.launch_configuration }}.name}"
+
+  vpc_zone_identifier = [
+    "${aws_subnet.{{ specification.subnet }}.id}",
+  ]
+
+  tag {
+    key                 = "Name"
+    value               = "{{ specification.name }}"
+    propagate_at_launch = "true"
+  }
+}
