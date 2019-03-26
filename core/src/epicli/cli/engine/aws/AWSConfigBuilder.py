@@ -2,6 +2,7 @@ from cli.engine.InfrastructureConfigBuilder import InfrastructureConfigBuilder
 from cli.helpers.list_helpers import select_first
 from cli.helpers.defaults_loader import load_file_from_defaults
 from cli.helpers.config_merger import merge_with_defaults
+from cli.engine.aws.AWSAPIProxy import AWSAPIProxy
 
 
 class AWSConfigBuilder(InfrastructureConfigBuilder):
@@ -41,6 +42,8 @@ class AWSConfigBuilder(InfrastructureConfigBuilder):
             security_group.specification.rules += autoscaling_group.specification.security.rules
 
             launch_configuration = self.get_launch_configuration(autoscaling_group, cluster_name, component_key, security_group.specification.name, user_input)
+
+            self.set_image_id_for_launch_configuration(cluster_model, user_input, launch_configuration, autoscaling_group)
             autoscaling_group.specification.launch_configuration = launch_configuration.specification.name
 
             result.append(autoscaling_group)
@@ -67,7 +70,6 @@ class AWSConfigBuilder(InfrastructureConfigBuilder):
     def get_launch_configuration(self, autoscaling_group, cluster_name, component_key, security_group_name, user_input):
         launch_configuration = self.get_config_or_default(user_input, 'infrastructure/launch-configuration')
         launch_configuration.specification.name = 'aws-launch-config-' + cluster_name.lower() + '-' + component_key.lower()
-        launch_configuration.specification.image_id = autoscaling_group.specification.image_id
         launch_configuration.specification.size = autoscaling_group.specification.size
         launch_configuration.specification.security_groups = [security_group_name]
         return launch_configuration
@@ -105,6 +107,12 @@ class AWSConfigBuilder(InfrastructureConfigBuilder):
         route_table.specification.vpc_name = vpc_name
         route_table.specification.route.gateway_name = internet_gateway_name
         return route_table
+
+    @staticmethod
+    def set_image_id_for_launch_configuration(cluster_model, config_docs, launch_configuration, autoscaling_group):
+        with AWSAPIProxy(cluster_model, config_docs) as proxy:
+            image_id = proxy.get_image_id(autoscaling_group.specification.os_full_name)
+            launch_configuration.specification.image_id = image_id
 
     @staticmethod
     def get_config_or_default(user_input, kind):

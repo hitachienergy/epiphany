@@ -54,6 +54,21 @@ class AWSAPIProxy:
                 result.append(AnsibleHostModel(instance.private_dns_name, instance.private_ip_address))
         return result
 
+    def get_image_id(self, os_full_name):
+        region = self.cluster_model.specification.cloud.region
+
+        ec2 = boto3.resource('ec2', region)
+        filters = [{
+                'Name': 'name',
+                'Values': [os_full_name]
+            }]
+        images = list(ec2.images.filter(Filters=filters))
+
+        if len(images) == 1:
+            return images[0].id
+
+        raise Exception("Expected 1 OS Image matching Name: "+os_full_name+" but received: "+str(len(images)))
+
     def get_vpc_id(self):
         vpc_config = dict_to_objdict(select_single(self.config_docs, lambda x: x.kind == 'infrastructure/vpc'))
         region = self.cluster_model.specification.cloud.region
