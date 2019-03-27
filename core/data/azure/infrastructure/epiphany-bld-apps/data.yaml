@@ -1128,7 +1128,7 @@ core:
 
 
   kubernetes:
-    version: 1.13.0
+    version: 1.13.1
     # image_registry_secrets:
     # - name: regcred
     #   server_url: your-registry-url 

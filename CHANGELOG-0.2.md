@@ -1,5 +1,14 @@
 # Changelog 0.2
 
+## [0.2.2] 2019-03-27
+
+### Changed
+- Kubernetes version 1.13.1 #178
+
+### Fixed
+
+- Fix issue with kubernetes-cni in 0.2.2 #177
+
 ## [0.2.1] 2019-03-07
 
 ### Fixed
