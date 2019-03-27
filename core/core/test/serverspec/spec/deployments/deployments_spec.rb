@@ -44,7 +44,7 @@ if rabbitmq_deployment
 
   if readDataYaml.dig("kubernetes","deployments","#{rabbitmq_deployment_array_index}".to_i,"service","name")
     service_name = readDataYaml.dig("kubernetes","deployments","#{rabbitmq_deployment_array_index}".to_i,"service","name")
-  else service_name = rabbit-service_namespace
+  else service_name = 'rabbit-' + service_namespace
   end
 
   if readDataYaml.dig("kubernetes","deployments","#{rabbitmq_deployment_array_index}".to_i,"rabbitmq","plugins")
@@ -214,7 +214,7 @@ if auth_service_deployment
 
   if readDataYaml.dig("kubernetes","deployments","#{auth_service_array_index}".to_i,"service","name")
     service_name = readDataYaml.dig("kubernetes","deployments","#{auth_service_array_index}".to_i,"service","name")
-  else service_name = as-service_namespace
+  else service_name = 'as-' + service_namespace
   end
 
   describe 'Checking if auth-service is running' do
