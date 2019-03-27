@@ -845,7 +845,7 @@ sudo apt-mark hold kubectl
 
 2. kubectl drain $NODE --ignore-daemonsets
 
-# EXECUTE ON WORKER NODE - $NODE
+# RUN ON WORKER NODE - $NODE
 
 3. sudo kubeadm upgrade node config --kubelet-version v1.13.1
 
@@ -854,6 +854,9 @@ sudo apt-mark hold kubectl
 
 6. sudo systemctl restart kubelet
 7. sudo systemctl status kubelet # should be running
+
+# RUN ON MASTER
+
 8. kubectl uncordon $NODE
 
 9. # go to 1. for next node
@@ -900,7 +903,7 @@ Worker nodes will be upgraded one by one - it will prevent application downtime.
 
 2. kubectl drain $NODE --ignore-daemonsets
 
-# EXECUTE ON WORKER NODE - $NODE
+# RUN ON WORKER NODE - $NODE
 
 3. sudo kubeadm upgrade node config --kubelet-version v1.13.1
 
@@ -908,6 +911,9 @@ Worker nodes will be upgraded one by one - it will prevent application downtime.
 
 5. sudo systemctl restart kubelet
 6. sudo systemctl status kubelet # should be running
+
+# RUN ON MASTER
+
 7. kubectl uncordon $NODE
 
 8. # go to 1. for next node
