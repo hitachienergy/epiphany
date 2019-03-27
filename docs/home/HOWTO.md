@@ -29,7 +29,8 @@
   - [How to run chaos on Epiphany Kubernetes cluster and monitor it with Grafana](#how-to-run-chaos-on-epiphany-kubernetes-cluster-and-monitor-it-with-grafana)
   - [How to tunnel Kubernetes dashboard from remote kubectl to your PC](#how-to-tunnel-kubernetes-dashboard-from-remote-kubectl-to-your-pc)
   - [How to setup Azure VM as docker machine for development](#how-to-setup-azure-vm-as-docker-machine-for-development)
-  - [How to upgrade Kubernetes cluster](#how-to-upgrade-kubernete-cluster)
+  - [How to upgrade Kubernetes cluster](#how-to-upgrade-kubernetes-cluster)
+  - [How to upgrade Kubernetes cluster from 1.13.0 to 1.13.1](#how-to-upgrade-kubernete-cluster-from-1.13.0-to-1.13.1)
   - [How to authenticate to Azure AD app](#how-to-authenticate-to-azure-ad-app)
   - [How to expose service through HA Proxy load balancer](#how-to-expose-service-lb)
 - Security
@@ -793,6 +794,69 @@ Upgrading Kubernetes cluster with running applications shall be done step by ste
 Start cluster upgrade with upgrading master node. Detailed instructions how to upgrade each node, including master, are described in guide linked above. When Kubernetes master is down it does not affect running applications, at this time only control plane is not operating. **Your services will be running but will not be recreated nor scaled when control plane is down.**
 
 Once master upgrade finished successfully, you shall start upgrading nodes - **one by one**. Kubernetes master will notice when worker node is down and it will instatiate services on existing operating node, that is why it is essential to have more than one worker node in cluster to minimize applications downtime.
+
+## How to upgrade Kubernetes cluster from 1.13.0 to 1.13.1
+
+Detailed instruction can be found in [Kubernetes upgrade to 1.13 documentation](https://kubernetes.io/docs/tasks/administer-cluster/kubeadm/kubeadm-upgrade-1-13/)
+
+### Upgrade Master
+
+```bash
+# RUN ON MASTER
+
+1. sudo kubeadm version
+2. sudo kubeadm upgrade plan v1.13.1
+
+3. apt update
+4. apt-cache policy kubeadm
+
+
+5. sudo apt-mark unhold kubeadm && \
+sudo apt-get update && sudo apt-get install -y kubeadm=1.13.1-00 && \
+sudo apt-mark hold kubeadm
+
+6. kubeadm version
+7. sudo kubeadm upgrade plan v1.13.1
+
+8. kubeadm upgrade apply v1.13.1
+
+9. sudo apt-mark unhold kubelet && \
+sudo apt-get update && sudo apt-get install -y kubelet=1.13.1-00 && \
+sudo apt-mark hold kubelet
+```
+
+### Upgrade Worker Node 
+
+Commands below should be run in context of each node in the cluster. Variable `$NODE` represents node name (node names can be retrieved by command `kubectl get nodes` on master)
+
+Worker nodes will be upgraded one by one - it will prevent application downtime.
+
+```bash
+
+# RUN ON WORKER NODE - $NODE
+
+1. sudo apt-mark unhold kubectl && \
+sudo apt-get update && sudo apt-get install -y kubectl=1.13.1-00 && \
+sudo apt-mark hold kubectl
+
+# RUN ON MASTER
+
+2. kubectl drain $NODE --ignore-daemonsets
+
+# EXECUTE ON WORKER NODE - $NODE
+
+3. sudo kubeadm upgrade node config --kubelet-version v1.13.1
+
+4. sudo apt-get update
+5. sudo apt-get install -y kubelet=1.13.1-00 kubeadm=1.13.1-00
+
+6. sudo systemctl restart kubelet
+7. sudo systemctl status kubelet
+8. kubectl uncordon $NODE
+
+9. # go to 1. for next node
+
+```
 
 ## How to upgrade Kafka cluster
 

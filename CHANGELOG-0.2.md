@@ -2,6 +2,10 @@
 
 ## [0.2.2] 2019-03-27
 
+### Added
+
+- Documentation for manual upgrade Kubernetes from 1.13.0 to 1.13.1 [link](./docs/home/HOWTO.md#how-to-upgrade-kubernetes-cluster-from-1.13.0-to-1.13.1)
+
 ### Changed
 - Kubernetes version 1.13.1 #178
 
