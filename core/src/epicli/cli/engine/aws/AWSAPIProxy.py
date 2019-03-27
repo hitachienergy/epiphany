@@ -11,7 +11,10 @@ class AWSAPIProxy:
 
     def __enter__(self):
         credentials = self.cluster_model.specification.cloud.credentials
-        self.client = boto3.client('ec2', aws_access_key_id=credentials.key, aws_secret_access_key=credentials.secret)
+        self.session = boto3.session.Session(aws_access_key_id=credentials.key,
+                                             aws_secret_access_key=credentials.secret,
+                                             region_name=self.cluster_model.specification.cloud.region)
+
         return self
 
     def __exit__(self, exc_type, exc_value, traceback):
@@ -21,12 +24,11 @@ class AWSAPIProxy:
     # Query AWS API for ec2 instances in state 'running' which are in cluster's VPC
     # and tagged with feature name (e.g. kubernetes_master) and cluster name
     def get_ips_for_feature(self, feature_key, look_for_public_ip=False):
-        region = self.cluster_model.specification.cloud.region
         cluster_name = self.cluster_model.specification.name.lower()
 
         vpc_id = self.get_vpc_id()
 
-        ec2 = boto3.resource('ec2', region)
+        ec2 = self.session.resource('ec2')
         running_instances = ec2.instances.filter(
             Filters=[{
                 'Name': 'instance-state-name',
@@ -54,10 +56,22 @@ class AWSAPIProxy:
                 result.append(AnsibleHostModel(instance.private_dns_name, instance.private_ip_address))
         return result
 
+    def get_image_id(self, os_full_name):
+        ec2 = self.session.resource('ec2')
+        filters = [{
+                'Name': 'name',
+                'Values': [os_full_name]
+            }]
+        images = list(ec2.images.filter(Filters=filters))
+
+        if len(images) == 1:
+            return images[0].id
+
+        raise Exception("Expected 1 OS Image matching Name: "+os_full_name+" but received: "+str(len(images)))
+
     def get_vpc_id(self):
         vpc_config = dict_to_objdict(select_single(self.config_docs, lambda x: x.kind == 'infrastructure/vpc'))
-        region = self.cluster_model.specification.cloud.region
-        ec2 = boto3.resource('ec2', region)
+        ec2 = self.session.resource('ec2')
         filters = [{'Name': 'tag:Name', 'Values': [vpc_config.specification.name]}]
         vpcs = list(ec2.vpcs.filter(Filters=filters))
 
