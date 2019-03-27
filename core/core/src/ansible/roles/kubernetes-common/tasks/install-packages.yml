@@ -15,7 +15,7 @@
     name:
       - kubelet-{{kubernetes.version}}
       - kubectl-{{kubernetes.version}}
-      - kubernetes-cni=0.6.0 # todo remove it in future release
+      - kubernetes-cni=0.6.0-0 # todo remove it in future release
       - kubeadm-{{kubernetes.version}}
     update_cache: yes
     state: present
