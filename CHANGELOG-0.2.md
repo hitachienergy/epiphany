@@ -8,10 +8,12 @@
 
 ### Changed
 - Kubernetes version 1.13.1 #178
+- Docker version for RedHat to 18.06
 
 ### Fixed
 
 - Fix issue with kubernetes-cni in 0.2.2 #177
+- Fix Kafka url #183
 
 ## [0.2.1] 2019-03-07
 

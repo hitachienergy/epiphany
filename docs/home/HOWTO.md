@@ -868,6 +868,30 @@ sudo apt-mark hold kubectl
 
 ### RHEL
 
+#### Upgrade Docker version
+
+Upgrading on Kubernetes to 1.13.1 on RHEL requires Docker upgrade. Newer Docker packages exist in docker-ce repository but you can use newer Docker-ee if you need. Verified Docker versions for Kubernetes are: 1.11.1, 1.12.1, 1.13.1, 17.03, 17.06, 17.09, 18.06. [Go to K8s docs](https://github.com/kubernetes/kubernetes/blob/master/CHANGELOG-1.13.md#external-dependencies)
+
+```bash
+
+# Remove previous docker version
+1 sudo yum remove docker \
+                  docker-common \
+                  container-selinux \
+                  docker-selinux \
+                  docker-engine
+2. sudo rm -rf /var/lib/docker
+3. sudo rm -rf /run/docker
+4. sudo rm -rf /var/run/docker
+5. sudo rm -rf /etc/docker
+
+# Add docker-ce repository
+6. sudo yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
+7. sudo yum makecache fast
+8. sudo yum -y install docker-ce-18.06.3.ce-3.el7
+
+```
+
 #### Upgrade Master
 
 ```bash
@@ -905,21 +929,23 @@ Worker nodes will be upgraded one by one - it will prevent application downtime.
 
 # RUN ON WORKER NODE - $NODE
 
-3. sudo kubeadm upgrade node config --kubelet-version v1.13.1
+3. # Upgrade Docker version using instruction from above
 
-4. sudo yum install -y kubelet-1.13.1-0 kubeadm-1.13.1-0 --disableexcludes=kubernetes
+4. sudo kubeadm upgrade node config --kubelet-version v1.13.1
 
-5. sudo systemctl restart kubelet
-6. sudo systemctl status kubelet # should be running
+5. sudo yum install -y kubelet-1.13.1-0 kubeadm-1.13.1-0 --disableexcludes=kubernetes
 
-# RUN ON MASTER
-
-7. kubectl uncordon $NODE
-
-8. # go to 1. for next node
+6. sudo systemctl restart kubelet
+7. sudo systemctl status kubelet # should be running
 
 # RUN ON MASTER
-9. kubectl get nodes # should return nodes in status "Ready" and version 1.13.1
+
+8. kubectl uncordon $NODE
+
+9. # go to 1. for next node
+
+# RUN ON MASTER
+10. kubectl get nodes # should return nodes in status "Ready" and version 1.13.1
 
 ```
 

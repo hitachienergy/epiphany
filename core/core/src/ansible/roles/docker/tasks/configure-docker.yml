@@ -1,12 +1,4 @@
 ---
-- name: Unset log driver if defined in /etc/sysconfig/docker
-  replace: # remove --log-driver=driver-name to configure log-driver in daemon.json
-    path: /etc/sysconfig/docker
-    regexp: '^(OPTIONS=.*?)(?:--log-driver=[\w|-]+\s*|\s+--log-driver=[\w|-]+)(.*)$'
-    replace: '\1\2'
-  notify: Restart Docker
-  when: ansible_os_family == "RedHat"
-
 - name: Copy configuration file (daemon.json)
   template:
     src: daemon.json.j2
