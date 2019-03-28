@@ -1,4 +1,4 @@
-from cli.helpers.list_helpers import select_single
+from cli.helpers.doc_list_helpers import select_single
 from cli.helpers.role_name_helper import adjust_name
 from cli.engine.aws.AWSAPIProxy import AWSAPIProxy
 from cli.models.AnsibleInventoryItem import AnsibleInventoryItem

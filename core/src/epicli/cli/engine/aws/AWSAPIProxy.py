@@ -1,5 +1,5 @@
 import boto3
-from cli.helpers.list_helpers import select_single
+from cli.helpers.doc_list_helpers import select_single
 from cli.helpers.objdict_helpers import dict_to_objdict
 from cli.models.AnsibleHostModel import AnsibleHostModel
 

@@ -1,5 +1,5 @@
 from cli.engine.InfrastructureConfigBuilder import InfrastructureConfigBuilder
-from cli.helpers.list_helpers import select_first
+from cli.helpers.doc_list_helpers import select_first
 from cli.helpers.defaults_loader import load_file_from_defaults
 from cli.helpers.config_merger import merge_with_defaults
 from cli.engine.aws.AWSAPIProxy import AWSAPIProxy
