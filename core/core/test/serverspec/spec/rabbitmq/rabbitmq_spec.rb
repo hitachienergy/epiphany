@@ -121,12 +121,7 @@ end
 
 describe 'Checking if RabbitMQ plugins are enabled' do
   plugins.each do |val|
-    describe command("rabbitmq-plugins list --enabled") do
-      let(:disable_sudo) { false }
-      its(:stdout) { should match /\b#{val}\b/ }
-      its(:exit_status) { should eq 0 }
-    end
-    describe command("cat /etc/rabbitmq/enabled_plugins") do
+    describe command("rabbitmq-plugins list -e") do
       let(:disable_sudo) { false }
       its(:stdout) { should match /\b#{val}\b/ }
       its(:exit_status) { should eq 0 }
