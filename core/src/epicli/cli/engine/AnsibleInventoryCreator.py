@@ -25,7 +25,7 @@ class AnsibleInventoryCreator:
         save_inventory(inventory, self.cluster_model.specification.name)
 
     def get_inventory(self):
-        inventory = list()
+        inventory = []
         for component_key, component_value in self.cluster_model.specification.components.items():
             if component_value.count < 1:
                 continue
@@ -56,7 +56,7 @@ class AnsibleInventoryCreator:
                 if host not in groups[item.role]:
                     groups[item.role].append(host)
 
-        result = list()
+        result = []
         for key, value in groups.items():
             result.append(AnsibleInventoryItem(key, value))
         return result
