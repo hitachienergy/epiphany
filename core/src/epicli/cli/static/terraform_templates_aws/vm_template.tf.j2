@@ -35,7 +35,7 @@ resource "aws_autoscaling_group" "{{ specification.name }}" {
   tag {
     {%- for tag_key, tag_value in tag.items() %}
     key = "{{ tag_key }}"
-    value = "{% if tag_value is defined and tag_value|length %}{{ tag_value }}{% else %}-{% endif %}"
+    value = "{{ tag_value }}"
     {%- endfor %}
     propagate_at_launch = "true"
   }
