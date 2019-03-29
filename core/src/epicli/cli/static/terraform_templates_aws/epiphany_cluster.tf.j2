@@ -11,7 +11,7 @@
 #####################################################
 
 provider "aws" {
-  access_key = "{{ specification.cloud.service_principal.key }}"
-  secret_key = "{{ specification.cloud.service_principal.secret }}"
+  access_key = "{{ specification.cloud.credentials.key }}"
+  secret_key = "{{ specification.cloud.credentials.secret }}"
   region     = "{{ specification.cloud.region }}"
 }
