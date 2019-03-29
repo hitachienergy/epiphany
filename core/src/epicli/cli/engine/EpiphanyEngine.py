@@ -1,6 +1,6 @@
 import os
 from cli.helpers.objdict_helpers import merge_objdict, dict_to_objdict
-from cli.helpers.list_helpers import select_first
+from cli.helpers.doc_list_helpers import select_first, select_single
 from cli.helpers.defaults_loader import load_file_from_defaults, load_all_docs_from_defaults
 from cli.helpers.build_saver import save_build
 from cli.helpers.config_merger import merge_with_defaults
@@ -8,6 +8,7 @@ from cli.engine.aws.AWSConfigBuilder import AWSConfigBuilder
 from cli.helpers.yaml_helpers import safe_load_all
 from cli.modules.template_generator import TemplateGenerator
 from cli.modules.terraform_runner.TerraformRunner import TerraformRunner
+from engine.SchemaValidator import SchemaValidator
 import cli.config.template_generator_config as template_generator_config
 import cli.helpers.terraform_file_helper as terraform_file_helper
 
@@ -27,7 +28,7 @@ class EpiphanyEngine:
 
     def run(self):
         docs = self.merge_with_user_input_with_defaults()
-        cluster_model = self.find_document(docs, "kind", "epiphany-cluster")
+        cluster_model = select_single(docs, lambda x: x.kind == "epiphany-cluster")
         infrastructure_builder = self.get_infrastructure_builder_for_provider(cluster_model.provider)
         infrastructure = infrastructure_builder.build(cluster_model, docs)
 
@@ -38,6 +39,9 @@ class EpiphanyEngine:
 
         result = docs + infrastructure
         save_build(result, cluster_model.specification.name)
+
+        with SchemaValidator(docs) as schema_validator:
+            schema_validator.validate()
 
         # todo generate .tf files
         script_dir = os.path.dirname(__file__)
@@ -91,14 +95,6 @@ class EpiphanyEngine:
         print("close")
 
     @staticmethod
-    def find_document(documents, field_name, value):
-        if documents is not None:
-            matches = list(filter(lambda x: x[field_name] == value, documents))
-            if len(matches) > 0:
-                return matches[0]
-        return None
-
-    @staticmethod
     def get_infrastructure_builder_for_provider(provider):
         if provider.lower() == "aws":
             return AWSConfigBuilder()
@@ -117,9 +113,3 @@ class EpiphanyEngine:
             if config is None:
                 config = merge_with_defaults('common', 'configuration/' + feature_key, config_selector)
             docs.append(config)
-
-    @staticmethod
-    def add_data_if_not_defined(docs, provider, kind):
-        if not select_first(docs, lambda x: x.kind == kind):
-            files = load_all_docs_from_defaults(provider, kind)
-            docs.append(select_first(files, lambda x: x.name == "default"))

@@ -1,4 +1,4 @@
-from cli.helpers.list_helpers import select_first, select_all
+from cli.helpers.doc_list_helpers import select_first, select_all
 from cli.helpers.ObjDict import ObjDict
 
 DATA = [ObjDict({'index': 1, 'name': 'test-name-1'}),

@@ -1,4 +1,4 @@
-from cli.helpers.list_helpers import select_first
+from cli.helpers.doc_list_helpers import select_first
 from cli.helpers.defaults_loader import load_all_docs_from_defaults
 from cli.helpers.objdict_helpers import merge_objdict
 
