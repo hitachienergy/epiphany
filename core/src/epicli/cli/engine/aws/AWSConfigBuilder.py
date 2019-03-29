@@ -7,7 +7,7 @@ from cli.engine.aws.AWSAPIProxy import AWSAPIProxy
 
 class AWSConfigBuilder(InfrastructureConfigBuilder):
     def build(self, cluster_model, user_input):
-        result = list()
+        result = []
         vpc_config = self.get_vpc_config(cluster_model, user_input)
         result.append(vpc_config)
         vpc_name = vpc_config.specification.name

@@ -9,7 +9,7 @@ def select_first(documents, query):
 
 def select_all(documents, query):
     if documents is not None:
-        result = list()
+        result = []
         for x in documents:
             if query(x):
                 result.append(x)

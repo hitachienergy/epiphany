@@ -48,7 +48,7 @@ class AWSAPIProxy:
                 }]
         )
 
-        result = list()
+        result = []
         for instance in running_instances:
             if look_for_public_ip:
                 result.append(AnsibleHostModel(instance.public_dns_name, instance.public_ip_address))

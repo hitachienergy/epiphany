@@ -11,10 +11,10 @@ def generate_terraform_file(infrastructure, template_generator, template_generat
                                                                      template_generator_config.
                                                                      templates_paths)
 
-        if yaml_document.kind != "epiphany-cluster":
-            terraform_file_name = "{:03d}".format(idx + 1) + "_" + yaml_document.specification.name + ".tf"
+        if yaml_document["kind"] != "epiphany-cluster":
+            terraform_file_name = "{:03d}".format(idx + 1) + "_" + yaml_document["specification"]["name"] + ".tf"
         else:
-            terraform_file_name = "000_" + yaml_document.name + ".tf"
+            terraform_file_name = "000_" + yaml_document["specification"]["name"] + ".tf"
 
         terraform_output_file_path = os.path.join(terraform_build_directory, terraform_file_name)
 
