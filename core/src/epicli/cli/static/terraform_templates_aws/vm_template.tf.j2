@@ -12,6 +12,7 @@
 
 
 resource "aws_autoscaling_group" "{{ specification.name }}" {
+  # todo: check availability zones in VPC
   #availability_zones   = [{% for availability_zone in specification.availability_zones %}  "{{ availability_zone }}" {% if not loop.last %}, {% endif %} {% endfor %}]
   name                 = "{{ specification.name }}"
   max_size             = "{{ specification.count }}"
@@ -27,7 +28,7 @@ resource "aws_autoscaling_group" "{{ specification.name }}" {
   tag {
     key = "Name"
     value = "{{ specification.name }}"
-    propagate_at_launch = "false"
+    propagate_at_launch = "true"
   }
 
   {%- for tag in specification.tags %}
@@ -36,7 +37,7 @@ resource "aws_autoscaling_group" "{{ specification.name }}" {
     key = "{{ tag_key }}"
     value = "{% if tag_value is defined and tag_value|length %}{{ tag_value }}{% else %}-{% endif %}"
     {%- endfor %}
-    propagate_at_launch = "false"
+    propagate_at_launch = "true"
   }
   {%- endfor %}
 
