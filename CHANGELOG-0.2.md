@@ -1,18 +1,19 @@
 # Changelog 0.2
 
-## [0.2.2] 2019-03-27
+## [0.2.2] 2019-03-29
 
 ### Added
 
-- Documentation for manual upgrade Kubernetes from 1.13.0 to 1.13.1 [link](./docs/home/HOWTO.md#how-to-upgrade-kubernetes-cluster-from-1.13.0-to-1.13.1)
+- Documentation for manual upgrade Kubernetes from 1.13.0 to 1.13.1 [link](./docs/home/HOWTO.md#how-to-upgrade-kubernetes-cluster-from-1130-to-1131)
 
 ### Changed
+
 - Kubernetes version 1.13.1 #178
 - Docker version for RedHat to 18.06
 
 ### Fixed
 
-- Fix issue with kubernetes-cni in 0.2.2 #177
+- Workaround issue where [Kubelet depends on kubernetes-cni 0.6.0](https://github.com/kubernetes/kubernetes/issues/75683) #177
 - Fix Kafka url #183
 
 ## [0.2.1] 2019-03-07

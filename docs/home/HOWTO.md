@@ -787,7 +787,7 @@ Upgrade procedure might be different for each Kubernetes version. Upgrade shall 
 
 Each version can be upgraded in a bit different way, to find information how to upgrade your version of Kubernetes please use this [guide](https://kubernetes.io/docs/reference/setup-tools/kubeadm/kubeadm-upgrade/#kubeadm-upgrade-guidance).
 
-Epiphany use kubeadm to boostrap a cluster and same tool shall be used to upgrade it.
+Epiphany uses kubeadm to boostrap a cluster and the same tool is also used to upgrade it.
 
 Upgrading Kubernetes cluster with running applications shall be done step by step. To prevent your applications downtime you should use at least **two Kubernetes worker nodes** and at least **two instances of each of your service**.
 
@@ -870,7 +870,7 @@ sudo apt-mark hold kubectl
 
 #### Upgrade Docker version
 
-Upgrading on Kubernetes to 1.13.1 on RHEL requires Docker upgrade. Newer Docker packages exist in docker-ce repository but you can use newer Docker-ee if you need. Verified Docker versions for Kubernetes are: 1.11.1, 1.12.1, 1.13.1, 17.03, 17.06, 17.09, 18.06. [Go to K8s docs](https://github.com/kubernetes/kubernetes/blob/master/CHANGELOG-1.13.md#external-dependencies)
+Upgrading Kubernetes to 1.13.1 on RHEL requires Docker upgrade. Newer Docker packages exist in docker-ce repository but you can use newer Docker-ee if you need. Verified Docker versions for Kubernetes are: 1.11.1, 1.12.1, 1.13.1, 17.03, 17.06, 17.09, 18.06. [Go to K8s docs](https://github.com/kubernetes/kubernetes/blob/master/CHANGELOG-1.13.md#external-dependencies)
 
 ```bash
 
