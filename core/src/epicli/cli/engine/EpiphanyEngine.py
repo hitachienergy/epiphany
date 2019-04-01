@@ -1,7 +1,8 @@
 import os
 from cli.helpers.objdict_helpers import merge_objdict, dict_to_objdict
 from cli.helpers.doc_list_helpers import select_first, select_single
-from cli.helpers.defaults_loader import load_file_from_defaults, load_all_docs_from_defaults
+import cli.helpers.data_types as data_types
+from cli.helpers.data_loader import load_data_file, load_all_data_files
 from cli.helpers.build_saver import save_build
 from cli.helpers.config_merger import merge_with_defaults
 from cli.engine.aws.AWSConfigBuilder import AWSConfigBuilder
@@ -35,13 +36,14 @@ class EpiphanyEngine:
         for component_key, component_value in cluster_model.specification.components.items():
             if component_value.count < 1:
                 continue
-            self.append_component_configuration(docs, component_key, component_value, cluster_model)
+            self.append_component_configuration(docs, component_key, component_value)
 
         result = docs + infrastructure
         save_build(result, cluster_model.specification.name)
 
-        with SchemaValidator(docs) as schema_validator:
-            schema_validator.validate()
+        with SchemaValidator() as schema_validator:
+            schema_validator.validate(result, cluster_model.provider)
+        return
 
         # todo generate .tf files
         script_dir = os.path.dirname(__file__)
@@ -84,8 +86,8 @@ class EpiphanyEngine:
         state_docs = []
 
         for user_file_yaml in user_yaml_files:
-            files = load_all_docs_from_defaults(user_file_yaml.provider, user_file_yaml.kind)
-            file_with_defaults = select_first(files, lambda x: x.name == "default")
+            files = load_all_data_files(data_types.DEFAULT, user_file_yaml.provider, user_file_yaml.kind)
+            file_with_defaults = select_first(files, lambda x: x.name == 'default')
             merge_objdict(file_with_defaults, user_file_yaml)
             state_docs.append(file_with_defaults)
 
@@ -100,11 +102,11 @@ class EpiphanyEngine:
             return AWSConfigBuilder()
 
     @staticmethod
-    def append_component_configuration(docs, component_key, component_value, cluster_model):
+    def append_component_configuration(docs, component_key, component_value):
 
         features_map = select_first(docs, lambda x: x.kind == 'configuration/feature-mapping')
         if features_map is None:
-            features_map = load_file_from_defaults('common', 'configuration/feature-mapping')
+            features_map = load_data_file(data_types.DEFAULT, 'common', 'configuration/feature-mapping')
             docs.append(features_map)
         config_selector = component_value.configuration
         for feature_key in features_map.specification[component_key]:

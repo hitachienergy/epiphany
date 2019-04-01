@@ -1,21 +1,13 @@
 import logging
-from cli.helpers.objdict_helpers import objdict_to_dict
+import cli.helpers.data_types as data_types
 from jsonschema import validate
+from cli.helpers.data_loader import load_all_data_files
+from cli.helpers.objdict_helpers import objdict_to_dict
 
-schema = {
-     "type" : "object",
-     "properties" : {
-         "number" : {"type" : "number"},
-         "string" : {"type" : "string"},
-     },
-}
 
 class SchemaValidator:
 
-    def __init__(self, config_docs):
-        self.config_docs = []
-        for doc in config_docs:
-            self.config_docs.append(objdict_to_dict(doc))
+    def __init__(self):
         logging.basicConfig(level=logging.INFO)
         self.logger = logging.getLogger(__name__)
 
@@ -25,5 +17,16 @@ class SchemaValidator:
     def __exit__(self, exc_type, exc_value, traceback):
         return
 
-    def validate(self):
-        validate(instance={"number": 1, "string": 'string'}, schema=schema)
+    def validate(self, docs, provider):
+        self.logger.info("Running validator")
+        for doc in docs:
+            schemas = load_all_data_files(data_types.VALIDATION, provider, doc.kind)
+
+            if len(schemas) > 0:
+                self.logger.info("Validating: " + doc.kind)
+                validate(instance=objdict_to_dict(doc), schema=objdict_to_dict(schemas[0]))
+            else:
+                self.logger.warning("No validation schema for kind: " + doc.kind)
+
+        self.logger.info("Done validating")
+
