@@ -9,27 +9,41 @@ from cli.engine.aws.AWSConfigBuilder import AWSConfigBuilder
 from cli.helpers.yaml_helpers import safe_load_all
 from cli.modules.template_generator import TemplateGenerator
 from cli.modules.terraform_runner.TerraformRunner import TerraformRunner
+from engine.DocumentMerger import DocumentMerger
 from engine.SchemaValidator import SchemaValidator
 import cli.config.template_generator_config as template_generator_config
 import cli.helpers.terraform_file_helper as terraform_file_helper
-
 from cli.engine.AnsibleRunner import AnsibleRunner
 
+
 class EpiphanyEngine:
-
     def __init__(self, input_data):
-
         self.BUILD_FOLDER_PATH = '../../build/'
-
         self.file_path = input_data.file
         self.context = input_data.context
 
     def __enter__(self):
         return self
 
+    def __exit__(self, exc_type, exc_value, traceback):
+        return self
+
     def run(self):
-        docs = self.merge_with_user_input_with_defaults()
+        # Load the user input YAML docs from the input file
+        if os.path.isabs(self.file_path):
+            path_to_load = self.file_path
+        else:
+            path_to_load = os.path.join(os.getcwd(), self.file_path)
+        user_file_stream = open(path_to_load, 'r')
+        docs = safe_load_all(user_file_stream)
+
+        # Merge the input docs with defaults
+        with DocumentMerger() as doc_merger:
+            docs = doc_merger.merge(docs)
+
         cluster_model = select_single(docs, lambda x: x.kind == "epiphany-cluster")
+
+        # Build the infrastucture docs
         infrastructure_builder = self.get_infrastructure_builder_for_provider(cluster_model.provider)
         infrastructure = infrastructure_builder.build(cluster_model, docs)
 
@@ -75,31 +89,15 @@ class EpiphanyEngine:
         # todo adjust ansible to new schema
         # todo run ansible
 
-    def merge_with_user_input_with_defaults(self):
-        if os.path.isabs(self.file_path):
-            path_to_load = self.file_path
-        else:
-            path_to_load = os.path.join(os.getcwd(), self.file_path)
-
-        user_file_stream = open(path_to_load, 'r')
-        user_yaml_files = safe_load_all(user_file_stream)
-        state_docs = []
-
-        for user_file_yaml in user_yaml_files:
-            files = load_all_data_files(data_types.DEFAULT, user_file_yaml.provider, user_file_yaml.kind)
-            file_with_defaults = select_first(files, lambda x: x.name == 'default')
-            merge_objdict(file_with_defaults, user_file_yaml)
-            state_docs.append(file_with_defaults)
-
-        return state_docs
-
-    def __exit__(self, exc_type, exc_value, traceback):
-        print("close")
-
     @staticmethod
     def get_infrastructure_builder_for_provider(provider):
         if provider.lower() == "aws":
             return AWSConfigBuilder()
+        elif provider.lower() == "azure":
+            return AWSConfigBuilder()
+        else:
+            raise NotImplementedError()
+
 
     @staticmethod
     def append_component_configuration(docs, component_key, component_value):

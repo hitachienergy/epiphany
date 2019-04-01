@@ -6,7 +6,6 @@ from cli.helpers.objdict_helpers import objdict_to_dict
 
 
 class SchemaValidator:
-
     def __init__(self):
         logging.basicConfig(level=logging.INFO)
         self.logger = logging.getLogger(__name__)
@@ -18,7 +17,7 @@ class SchemaValidator:
         return
 
     def validate(self, docs, provider):
-        self.logger.info("Running validator")
+        self.logger.info("Running schema validator")
         for doc in docs:
             schemas = load_all_data_files(data_types.VALIDATION, provider, doc.kind)
 
@@ -28,5 +27,5 @@ class SchemaValidator:
             else:
                 self.logger.warning("No validation schema for kind: " + doc.kind)
 
-        self.logger.info("Done validating")
+        self.logger.info("Done validating\n")
 
