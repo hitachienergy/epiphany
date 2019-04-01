@@ -22,8 +22,8 @@ class AnsibleRunner:
         inventory_path = get_inventory_path(self.cluster_model.specification.name)
 
         for i in range(20):
-            if_inventory_file_have_content = os.path.exists(inventory_path) and os.path.getsize(inventory_path) > 0
-            if if_inventory_file_have_content:
+            if_inventory_exists_and_have_content = os.path.exists(inventory_path) and os.path.getsize(inventory_path) > 0
+            if if_inventory_exists_and_have_content:
                 continue
 
             inventory = self.inventory_creator.create()
