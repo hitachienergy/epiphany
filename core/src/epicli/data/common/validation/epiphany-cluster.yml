@@ -1,0 +1,22 @@
+---
+type: 'object'
+properties:
+  kind:
+    type: 'string'
+  version:
+    type: 'string'
+  title:
+    type: 'string'
+  provider:
+    type: 'string'
+  name:
+    type: 'string'
+  specification:
+    type: 'object'
+required:
+- 'kind'
+- 'version'
+- 'title'
+- 'provider'
+- 'name'
+- 'specification'
