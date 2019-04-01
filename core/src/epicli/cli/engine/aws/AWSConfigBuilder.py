@@ -1,8 +1,9 @@
 from cli.engine.InfrastructureConfigBuilder import InfrastructureConfigBuilder
 from cli.helpers.doc_list_helpers import select_first
-from cli.helpers.defaults_loader import load_file_from_defaults
+from cli.helpers.data_loader import load_data_file
 from cli.helpers.config_merger import merge_with_defaults
 from cli.engine.aws.AWSAPIProxy import AWSAPIProxy
+import cli.helpers.data_types as data_types
 
 
 class AWSConfigBuilder(InfrastructureConfigBuilder):
@@ -118,7 +119,7 @@ class AWSConfigBuilder(InfrastructureConfigBuilder):
     def get_config_or_default(user_input, kind):
         config = select_first(user_input, lambda x: x.kind == kind)
         if config is None:
-            return load_file_from_defaults('aws', kind)
+            return load_data_file(data_types.DEFAULT, 'aws', kind)
         return config
 
     @staticmethod
