@@ -1,50 +1,32 @@
-import os
-import subprocess
-
-
-def run(command, terraform_command, working_directory, auto_approve=False):
-    if auto_approve:
-        status_run = subprocess.run([command, terraform_command, "--auto-approve", working_directory])
-    else:
-        status_run = subprocess.run([command, terraform_command, working_directory])
-
-    if status_run.returncode != 0:
-        print(command + " " + terraform_command + " run failed")
-    else:
-        print(command + " " + terraform_command + " run successfully.")
+from config import template_generator_config
+from helpers import terraform_file_helper
+from modules.template_generator import TemplateGenerator
+from modules.terraform_runner.Terraform import Terraform
 
 
 class TerraformRunner:
 
-    def __init__(self, working_directory=os.path.dirname(__file__)):
-        self.COMMAND = "terraform"
-        self.APPLY_COMMAND = "apply"
-        self.DESTROY_COMMAND = "destroy"
-        self.PLAN_COMMAND = "plan"
-        self.INIT_COMMAND = "init"
-        self.working_directory = working_directory
+    def __init__(self, terraform_build_directory, cluster_model, infrastructure):
+        self.terraform_build_directory = terraform_build_directory
+        self.terraform = Terraform(terraform_build_directory)
+        self.template_generator = TemplateGenerator.TemplateGenerator()
+        self.template_generator_config = template_generator_config
+        self.cluster_model = [cluster_model]
+        self.infrastructure = infrastructure
 
-    def apply(self, auto_approve=False):
-        if auto_approve:
-            status_run = subprocess.run([self.COMMAND, self.APPLY_COMMAND,
-                                         "--auto-approve", "-state=" + self.working_directory + "/terraform.tfstate",
-                                         self.working_directory])
-        else:
-            status_run = subprocess.run([self.COMMAND, self.APPLY_COMMAND,
-                                         "-state=" + self.working_directory + "/terraform.tfstate",
-                                         self.working_directory])
+    def __enter__(self):
+        return self
 
-        if status_run.returncode != 0:
-            print(self.COMMAND + " " + self.APPLY_COMMAND + " run failed")
-        else:
-            print(self.COMMAND + " " + self.APPLY_COMMAND + " run successfully.")
+    def __exit__(self, exc_type, exc_value, traceback):
+        return
 
-    def destroy(self, auto_approve=False):
-        run(self.COMMAND, self.DESTROY_COMMAND, working_directory=self.working_directory,
-            auto_approve=auto_approve)
+    def run(self):
+        terraform_file_helper.create_terraform_output_dir(self.terraform_build_directory)
+        terraform_file_helper.generate_terraform_file(self.cluster_model, self.template_generator,
+                                                      self.template_generator_config, self.terraform_build_directory)
 
-    def plan(self):
-        run(self.COMMAND, self.PLAN_COMMAND, working_directory=self.working_directory)
+        terraform_file_helper.generate_terraform_file(self.infrastructure, self.template_generator,
+                                                      self.template_generator_config, self.terraform_build_directory)
 
-    def init(self):
-        run(self.COMMAND, self.INIT_COMMAND, working_directory=self.working_directory)
+        self.terraform.init()
+        self.terraform.apply(auto_approve=True)

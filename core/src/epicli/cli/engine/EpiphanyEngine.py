@@ -6,13 +6,10 @@ from cli.helpers.build_saver import save_build
 from cli.helpers.config_merger import merge_with_defaults
 from cli.engine.aws.AWSConfigBuilder import AWSConfigBuilder
 from cli.helpers.yaml_helpers import safe_load_all
-from cli.modules.template_generator import TemplateGenerator
-from cli.modules.terraform_runner.TerraformRunner import TerraformRunner
 from engine.SchemaValidator import SchemaValidator
-import cli.config.template_generator_config as template_generator_config
-import cli.helpers.terraform_file_helper as terraform_file_helper
-
 from cli.engine.AnsibleRunner import AnsibleRunner
+from modules.terraform_runner.TerraformRunner import TerraformRunner
+
 
 class EpiphanyEngine:
 
@@ -47,22 +44,10 @@ class EpiphanyEngine:
         script_dir = os.path.dirname(__file__)
         terraform_build_directory = os.path.join(script_dir, self.BUILD_FOLDER_PATH, self.context, "terraform")
 
-        terraform_file_helper.create_terraform_output_dir(terraform_build_directory)
-
-        template_generator = TemplateGenerator.TemplateGenerator()
-
-        terraform_file_helper.generate_terraform_file([cluster_model], template_generator,
-                                                      template_generator_config, terraform_build_directory)
-
-        terraform_file_helper.generate_terraform_file(infrastructure, template_generator, template_generator_config,
-                                                      terraform_build_directory)
-
         # todo run terraform
         # todo set path to terraform files
-        tf = TerraformRunner(terraform_build_directory)
-        tf.init()
-        tf.plan()
-        tf.apply(auto_approve=True)
+        with TerraformRunner(terraform_build_directory, cluster_model, infrastructure) as tf_runner:
+            tf_runner.run()
 
         # todo validate
         print("Running ansible.")
