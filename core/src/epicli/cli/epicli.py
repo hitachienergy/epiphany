@@ -22,7 +22,7 @@ def main(arguments):
     # parser.add_argument('-i', '--infrastructure', action='store_true', help='Example of str arg')
     # args = parser.parse_args(sys.argv[1:2])
     apply_parser(subparsers)
-    parser.print_help()
+    #parser.print_help()
     args = parser.parse_args(arguments)
     args.func(args)
     # todo return different return code if error

@@ -1,4 +1,8 @@
+import os
+import time
+
 from cli.engine.AnsibleInventoryCreator import AnsibleInventoryCreator
+from cli.helpers.build_saver import get_inventory_path
 from cli.engine.Step import Step
 
 
@@ -19,7 +23,16 @@ class AnsibleRunner(Step):
         self.inventory_creator.__exit__(exc_type, exc_value, traceback)
 
     def run(self):
-        inventory = self.inventory_creator.create()
+        inventory_path = get_inventory_path(self.cluster_model.specification.name)
+
+        for i in range(20):
+            if_inventory_exists_and_have_content = os.path.exists(inventory_path) and os.path.getsize(inventory_path) > 0
+            if if_inventory_exists_and_have_content:
+                continue
+
+            inventory = self.inventory_creator.create()
+            time.sleep(10)
+
         # todo run ansible playbooks
 
 
