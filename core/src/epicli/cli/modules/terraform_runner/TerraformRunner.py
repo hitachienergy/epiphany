@@ -18,7 +18,7 @@ class TerraformRunner:
         return self
 
     def __exit__(self, exc_type, exc_value, traceback):
-        return
+        pass
 
     def run(self):
         terraform_file_helper.create_terraform_output_dir(self.terraform_build_directory)

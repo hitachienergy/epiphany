@@ -1,6 +1,5 @@
 import logging
 import sys
-
 import jinja2
 from jinja2 import Template
 
