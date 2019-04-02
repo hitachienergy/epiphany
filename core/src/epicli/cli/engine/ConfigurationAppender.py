@@ -7,7 +7,7 @@ from cli.engine.Step import Step
 
 class ConfigurationAppender(Step):
     def __init__(self, cluster_model, docs):
-        Step.__init__(self, __name__)
+        super().__init__(__name__)
         self.cluster_model = cluster_model
         self.docs = docs
 

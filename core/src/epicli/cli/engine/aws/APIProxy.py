@@ -4,7 +4,7 @@ from cli.helpers.objdict_helpers import dict_to_objdict
 from cli.models.AnsibleHostModel import AnsibleHostModel
 
 
-class AWSAPIProxy:
+class APIProxy:
     def __init__(self, cluster_model, config_docs):
         self.cluster_model = cluster_model
         self.config_docs = config_docs

@@ -4,9 +4,10 @@ from cli.helpers.objdict_helpers import merge_objdict
 from cli.helpers.doc_list_helpers import select_first
 from cli.engine.Step import Step
 
+
 class DefaultMerger(Step):
     def __init__(self, docs):
-        Step.__init__(self, __name__)
+        super().__init__(__name__)
         self.docs = docs
 
     def run(self):

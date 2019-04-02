@@ -1,6 +1,6 @@
 from cli.helpers.doc_list_helpers import select_single
 from cli.helpers.role_name_helper import adjust_name
-from cli.engine.aws.AWSAPIProxy import AWSAPIProxy
+from cli.engine.aws.APIProxy import APIProxy
 from cli.models.AnsibleInventoryItem import AnsibleInventoryItem
 from collections import defaultdict
 from cli.helpers.build_saver import save_inventory
@@ -44,7 +44,7 @@ class AnsibleInventoryCreator:
 
     def get_proxy(self):
         if self.cluster_model.provider == 'aws':
-            return AWSAPIProxy(self.cluster_model, self.config_docs)
+            return APIProxy(self.cluster_model, self.config_docs)
 
         raise NotImplemented('There is no provider: '+self.cluster_model.provider+' support')
 
