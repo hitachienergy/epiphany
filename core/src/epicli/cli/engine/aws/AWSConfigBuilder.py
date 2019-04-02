@@ -7,7 +7,7 @@ from engine.Step import Step
 
 class AWSConfigBuilder(Step):
     def __init__(self):
-        Step.__init__(self, __name__)
+        super().__init__(__name__)
 
     def run(self, cluster_model, user_input):
         result = []

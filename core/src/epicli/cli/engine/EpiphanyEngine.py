@@ -9,7 +9,7 @@ from cli.engine.DefaultMerger import DefaultMerger
 from cli.engine.SchemaValidator import SchemaValidator
 from cli.engine.ConfigurationAppender import ConfigurationAppender
 from cli.engine.AnsibleRunner import AnsibleRunner
-from modules.terraform_runner.TerraformRunner import TerraformRunner
+from cli.engine.TerraformRunner import TerraformRunner
 
 
 class EpiphanyEngine:

@@ -4,7 +4,7 @@ from cli.engine.Step import Step
 
 class AnsibleRunner(Step):
     def __init__(self, cluster_model, config_docs):
-        Step.__init__(self, __name__)
+        super().__init__(__name__)
         self.cluster_model = cluster_model
         self.config_docs = config_docs
         self.inventory_creator = AnsibleInventoryCreator(cluster_model, config_docs)

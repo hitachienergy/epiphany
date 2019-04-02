@@ -7,7 +7,7 @@ from engine.Step import Step
 
 class SchemaValidator(Step):
     def __init__(self, cluster_model, docs):
-        Step.__init__(self, __name__)
+        super().__init__(__name__)
         self.cluster_model = cluster_model
         self.docs = docs
 
