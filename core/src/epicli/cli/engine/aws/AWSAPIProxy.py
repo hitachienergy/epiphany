@@ -20,7 +20,6 @@ class AWSAPIProxy:
     def __exit__(self, exc_type, exc_value, traceback):
         pass
 
-
     # Query AWS API for ec2 instances in state 'running' which are in cluster's VPC
     # and tagged with feature name (e.g. kubernetes_master) and cluster name
     def get_ips_for_feature(self, feature_key, look_for_public_ip=False):

@@ -1,7 +1,10 @@
-from cli.engine.InfrastructureConfigBuilder import InfrastructureConfigBuilder
+from engine.Step import Step
 
 
-class AzureConfigBuilder(InfrastructureConfigBuilder):
-    def build(self, cluster_model, user_input):
+class AzureConfigBuilder(Step):
+    def __init__(self):
+        Step.__init__(self, __name__)
+
+    def run(self):
         raise NotImplementedError()
 

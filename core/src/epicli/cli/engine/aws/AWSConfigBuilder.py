@@ -1,13 +1,15 @@
-from cli.engine.InfrastructureConfigBuilder import InfrastructureConfigBuilder
 from cli.helpers.doc_list_helpers import select_first
 from cli.helpers.data_loader import load_data_file
 from cli.helpers.config_merger import merge_with_defaults
 from cli.engine.aws.AWSAPIProxy import AWSAPIProxy
 import cli.helpers.data_types as data_types
+from engine.Step import Step
 
+class AWSConfigBuilder(Step):
+    def __init__(self):
+        Step.__init__(self, __name__)
 
-class AWSConfigBuilder(InfrastructureConfigBuilder):
-    def build(self, cluster_model, user_input):
+    def run(self, cluster_model, user_input):
         result = []
         vpc_config = self.get_vpc_config(cluster_model, user_input)
         result.append(vpc_config)

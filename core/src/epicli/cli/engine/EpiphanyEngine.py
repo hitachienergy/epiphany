@@ -1,13 +1,13 @@
 import os
-from cli.helpers.objdict_helpers import merge_objdict, dict_to_objdict
-from cli.helpers.doc_list_helpers import select_first, select_single
-import cli.helpers.data_types as data_types
-from cli.helpers.data_loader import load_data_file, load_all_data_files
+from cli.helpers.objdict_helpers import dict_to_objdict
+from cli.helpers.doc_list_helpers import select_single
 from cli.helpers.build_saver import save_build
-from cli.helpers.config_merger import merge_with_defaults
 from cli.engine.aws.AWSConfigBuilder import AWSConfigBuilder
+from cli.engine.azure.AzureConfigBuilder import AzureConfigBuilder
 from cli.helpers.yaml_helpers import safe_load_all
-from engine.SchemaValidator import SchemaValidator
+from cli.engine.DefaultMerger import DefaultMerger
+from cli.engine.SchemaValidator import SchemaValidator
+from cli.engine.ConfigurationAppender import ConfigurationAppender
 from cli.engine.AnsibleRunner import AnsibleRunner
 from modules.terraform_runner.TerraformRunner import TerraformRunner
 
@@ -22,7 +22,7 @@ class EpiphanyEngine:
         return self
 
     def __exit__(self, exc_type, exc_value, traceback):
-        return self
+        pass
 
     def run(self):
         # Load the user input YAML docs from the input file
@@ -34,26 +34,28 @@ class EpiphanyEngine:
         docs = safe_load_all(user_file_stream)
 
         # Merge the input docs with defaults
-        with DocumentMerger() as doc_merger:
-            docs = doc_merger.merge(docs)
+        with DefaultMerger(docs) as doc_merger:
+            docs = doc_merger.run()
 
         cluster_model = select_single(docs, lambda x: x.kind == "epiphany-cluster")
 
-        # Build the infrastucture docs
-        infrastructure_builder = self.get_infrastructure_builder_for_provider(cluster_model.provider)
-        infrastructure = infrastructure_builder.build(cluster_model, docs)
+        # Build the infrastructure docs
+        with self.get_infrastructure_builder_for_provider(cluster_model.provider)() as infrastructure_builder:
+            infrastructure = infrastructure_builder.run(cluster_model, docs)
 
-        for component_key, component_value in cluster_model.specification.components.items():
-            if component_value.count < 1:
-                continue
-            self.append_component_configuration(docs, component_key, component_value)
+        # Append with components and configuration docs
+        with ConfigurationAppender(cluster_model, docs) as config_appender:
+            config_appender.run()
 
-        result = docs + infrastructure
-        save_build(result, cluster_model.specification.name)
+        # Merge component configurations with infrastructure and save to manifest
+        docs = [*docs, *infrastructure]
 
-        with SchemaValidator() as schema_validator:
-            schema_validator.validate(result, cluster_model.provider)
-        return
+        # Save docs to manifest file
+        save_build(docs, cluster_model.specification.name)
+
+        # Validate docs
+        with SchemaValidator(cluster_model, docs) as schema_validator:
+            schema_validator.run()
 
         # todo generate .tf files
         script_dir = os.path.dirname(__file__)
@@ -61,14 +63,12 @@ class EpiphanyEngine:
 
         # todo run terraform
         # todo set path to terraform files
-        with TerraformRunner(terraform_build_directory, cluster_model, infrastructure) as tf_runner:
-            tf_runner.run()
+        #with TerraformRunner(terraform_build_directory, cluster_model, infrastructure) as tf_runner:
+        #    tf_runner.run()
 
-        # todo validate
-        print("Running ansible.")
         # todo generate ansible inventory
-        with AnsibleRunner(dict_to_objdict(cluster_model), result) as runner:
-            runner.run()
+        with AnsibleRunner(dict_to_objdict(cluster_model), docs) as ansible_runner:
+            ansible_runner.run()
 
         # todo adjust ansible to new schema
         # todo run ansible
@@ -76,24 +76,8 @@ class EpiphanyEngine:
     @staticmethod
     def get_infrastructure_builder_for_provider(provider):
         if provider.lower() == "aws":
-            return AWSConfigBuilder()
+            return AWSConfigBuilder
         elif provider.lower() == "azure":
-            return AWSConfigBuilder()
+            return AzureConfigBuilder
         else:
             raise NotImplementedError()
-
-
-    @staticmethod
-    def append_component_configuration(docs, component_key, component_value):
-
-        features_map = select_first(docs, lambda x: x.kind == 'configuration/feature-mapping')
-        if features_map is None:
-            features_map = load_data_file(data_types.DEFAULT, 'common', 'configuration/feature-mapping')
-            docs.append(features_map)
-        config_selector = component_value.configuration
-        for feature_key in features_map.specification[component_key]:
-            config = select_first(docs,
-                                  lambda x: x.kind == 'configuration/' + feature_key and x.name == config_selector)
-            if config is None:
-                config = merge_with_defaults('common', 'configuration/' + feature_key, config_selector)
-            docs.append(config)
