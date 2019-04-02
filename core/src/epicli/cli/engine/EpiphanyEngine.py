@@ -1,4 +1,7 @@
 import os
+
+from cli.engine.DocumentMerger import DocumentMerger
+from cli.engine.SchemaValidator import SchemaValidator
 from cli.helpers.objdict_helpers import merge_objdict, dict_to_objdict
 from cli.helpers.doc_list_helpers import select_first, select_single
 import cli.helpers.data_types as data_types
@@ -7,9 +10,8 @@ from cli.helpers.build_saver import save_build
 from cli.helpers.config_merger import merge_with_defaults
 from cli.engine.aws.AWSConfigBuilder import AWSConfigBuilder
 from cli.helpers.yaml_helpers import safe_load_all
-from engine.SchemaValidator import SchemaValidator
+from cli.modules.terraform_runner.TerraformRunner import TerraformRunner
 from cli.engine.AnsibleRunner import AnsibleRunner
-from modules.terraform_runner.TerraformRunner import TerraformRunner
 
 
 class EpiphanyEngine:
@@ -53,7 +55,6 @@ class EpiphanyEngine:
 
         with SchemaValidator() as schema_validator:
             schema_validator.validate(result, cluster_model.provider)
-        return
 
         # todo generate .tf files
         script_dir = os.path.dirname(__file__)
@@ -61,6 +62,7 @@ class EpiphanyEngine:
 
         # todo run terraform
         # todo set path to terraform files
+        print("Running terraform.")
         with TerraformRunner(terraform_build_directory, cluster_model, infrastructure) as tf_runner:
             tf_runner.run()
 
@@ -81,7 +83,6 @@ class EpiphanyEngine:
             return AWSConfigBuilder()
         else:
             raise NotImplementedError()
-
 
     @staticmethod
     def append_component_configuration(docs, component_key, component_value):
