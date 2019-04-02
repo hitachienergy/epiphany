@@ -63,8 +63,8 @@ class EpiphanyEngine:
 
         # todo run terraform
         # todo set path to terraform files
-        #with TerraformRunner(terraform_build_directory, cluster_model, infrastructure) as tf_runner:
-        #    tf_runner.run()
+        with TerraformRunner(terraform_build_directory, cluster_model, infrastructure) as tf_runner:
+            tf_runner.run()
 
         # todo generate ansible inventory
         with AnsibleRunner(dict_to_objdict(cluster_model), docs) as ansible_runner:
