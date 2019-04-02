@@ -1,7 +1,7 @@
 from engine.Step import Step
 
 
-class AzureConfigBuilder(Step):
+class ConfigBuilder(Step):
     def __init__(self):
         super().__init__(__name__)
 

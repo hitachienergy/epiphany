@@ -1,9 +1,8 @@
 import os
+import importlib
 from cli.helpers.objdict_helpers import dict_to_objdict
 from cli.helpers.doc_list_helpers import select_single
 from cli.helpers.build_saver import save_build
-from cli.engine.aws.AWSConfigBuilder import AWSConfigBuilder
-from cli.engine.azure.AzureConfigBuilder import AzureConfigBuilder
 from cli.helpers.yaml_helpers import safe_load_all
 from cli.engine.DefaultMerger import DefaultMerger
 from cli.engine.SchemaValidator import SchemaValidator
@@ -40,7 +39,7 @@ class EpiphanyEngine:
         cluster_model = select_single(docs, lambda x: x.kind == "epiphany-cluster")
 
         # Build the infrastructure docs
-        with self.get_infrastructure_builder_for_provider(cluster_model.provider)() as infrastructure_builder:
+        with self.get_infrastructure_builder(cluster_model.provider)() as infrastructure_builder:
             infrastructure = infrastructure_builder.run(cluster_model, docs)
 
         # Append with components and configuration docs
@@ -74,10 +73,11 @@ class EpiphanyEngine:
         # todo run ansible
 
     @staticmethod
-    def get_infrastructure_builder_for_provider(provider):
-        if provider.lower() == "aws":
-            return AWSConfigBuilder
-        elif provider.lower() == "azure":
-            return AzureConfigBuilder
-        else:
-            raise NotImplementedError()
+    def get_infrastructure_builder(provider):
+        try:
+            return getattr(importlib.import_module('cli.engine.' + provider.lower() + '.InfrastructureBuilder'), 'InfrastructureBuilder')
+        except:
+            raise Exception('No InfrastructureBuilder for ' + provider)
+
+
+

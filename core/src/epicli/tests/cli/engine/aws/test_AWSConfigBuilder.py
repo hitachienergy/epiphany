@@ -1,10 +1,10 @@
-from cli.engine.aws.AWSConfigBuilder import AWSConfigBuilder
+from cli.engine.aws.InfrastructureBuilder import InfrastructureBuilder
 from cli.helpers.objdict_helpers import dict_to_objdict
 
 
 def test_get_vpc_config_should_set_address_pool_from_cluster_data_model():
     cluster_model = get_cluster_model(address_pool="10.20.0.0/22")
-    builder = AWSConfigBuilder()
+    builder = InfrastructureBuilder()
 
     actual = builder.get_vpc_config(cluster_model, None)
 
@@ -13,7 +13,7 @@ def test_get_vpc_config_should_set_address_pool_from_cluster_data_model():
 
 def test_get_vpc_config_should_set_name_from_cluster_data_model():
     cluster_model = get_cluster_model(cluster_name="TestCluster")
-    builder = AWSConfigBuilder()
+    builder = InfrastructureBuilder()
 
     actual = builder.get_vpc_config(cluster_model, None)
 
@@ -25,7 +25,7 @@ def test_get_subnet_config_should_set_proper_values_to_model():
     component_value = dict_to_objdict({
         'subnet_address_pool': '10.20.0.0/24'
     })
-    builder = AWSConfigBuilder()
+    builder = InfrastructureBuilder()
 
     actual = builder.get_subnet(cluster_model, component_value, 1, None, "my-test-vpc")
 
@@ -41,7 +41,7 @@ def test_get_security_group_should_set_proper_values_to_model():
             'cidr_block': "10.21.0.0/24"
         }
     })
-    builder = AWSConfigBuilder()
+    builder = InfrastructureBuilder()
 
     actual = builder.get_security_group(cluster_model, subnet, 12, None, "my-test-vpc")
 
@@ -56,7 +56,7 @@ def test_get_autoscaling_group_should_set_proper_values_to_model():
         'machine': "default",
         'count': 4
     })
-    builder = AWSConfigBuilder()
+    builder = InfrastructureBuilder()
 
     actual = builder.get_autoscaling_group(cluster_model, "TestComponent", component_value, "my-test-subnet", None)
 
@@ -74,7 +74,7 @@ def test_get_launch_configuration_should_set_proper_values_to_model():
             'size': "t2.micro.test"
         }
     })
-    builder = AWSConfigBuilder()
+    builder = InfrastructureBuilder()
 
     actual = builder.get_launch_configuration(autoscaling_group, cluster_model, "TestComponent", "aws-security-group-test", None)
 
@@ -87,7 +87,7 @@ def test_get_launch_configuration_should_set_proper_values_to_model():
 def test_get_routing_table_should_set_proper_values_to_model():
     cluster_model = get_cluster_model(cluster_name="TestCluster")
 
-    builder = AWSConfigBuilder()
+    builder = InfrastructureBuilder()
 
     actual = builder.get_routing_table(cluster_model, None, "test-vpc-name", "test-internet-gateway")
 
@@ -99,7 +99,7 @@ def test_get_routing_table_should_set_proper_values_to_model():
 def test_get_internet_gateway_should_set_proper_values_to_model():
     cluster_model = get_cluster_model(cluster_name="TestCluster")
 
-    builder = AWSConfigBuilder()
+    builder = InfrastructureBuilder()
 
     actual = builder.get_internet_gateway(cluster_model, None, 'test-vpc-name')
 

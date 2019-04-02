@@ -1,11 +1,12 @@
 from cli.helpers.doc_list_helpers import select_first
 from cli.helpers.data_loader import load_data_file
 from cli.helpers.config_merger import merge_with_defaults
-from cli.engine.aws.AWSAPIProxy import AWSAPIProxy
+from cli.engine.aws.APIProxy import APIProxy
 import cli.helpers.data_types as data_types
 from engine.Step import Step
 
-class AWSConfigBuilder(Step):
+
+class InfrastructureBuilder(Step):
     def __init__(self):
         super().__init__(__name__)
 
@@ -113,7 +114,7 @@ class AWSConfigBuilder(Step):
 
     @staticmethod
     def set_image_id_for_launch_configuration(cluster_model, config_docs, launch_configuration, autoscaling_group):
-        with AWSAPIProxy(cluster_model, config_docs) as proxy:
+        with APIProxy(cluster_model, config_docs) as proxy:
             image_id = proxy.get_image_id(autoscaling_group.specification.os_full_name)
             launch_configuration.specification.image_id = image_id
 
