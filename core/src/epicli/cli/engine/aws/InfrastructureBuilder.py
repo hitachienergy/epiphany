@@ -3,7 +3,7 @@ from cli.helpers.data_loader import load_data_file
 from cli.helpers.config_merger import merge_with_defaults
 from cli.engine.aws.APIProxy import APIProxy
 import cli.helpers.data_types as data_types
-from engine.Step import Step
+from helpers.Step import Step
 
 
 class InfrastructureBuilder(Step):

@@ -2,7 +2,7 @@ from config import template_generator_config
 from helpers import terraform_file_helper
 from cli.engine import TemplateGenerator
 from cli.engine.Terraform import Terraform
-from cli.engine.Step import Step
+from helpers.Step import Step
 
 
 class TerraformRunner(Step):

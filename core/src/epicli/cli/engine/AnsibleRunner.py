@@ -1,5 +1,5 @@
 from cli.engine.AnsibleInventoryCreator import AnsibleInventoryCreator
-from cli.engine.Step import Step
+from helpers.Step import Step
 
 
 class AnsibleRunner(Step):

@@ -1,9 +1,11 @@
 import os
 import importlib
+import logging
 from cli.helpers.objdict_helpers import dict_to_objdict
 from cli.helpers.doc_list_helpers import select_single
 from cli.helpers.build_saver import save_build
 from cli.helpers.yaml_helpers import safe_load_all
+from cli.helpers.Log import Log
 from cli.engine.DefaultMerger import DefaultMerger
 from cli.engine.SchemaValidator import SchemaValidator
 from cli.engine.ConfigurationAppender import ConfigurationAppender
@@ -16,6 +18,8 @@ class EpiphanyEngine:
         self.BUILD_FOLDER_PATH = '../../build/'
         self.file_path = input_data.file
         self.context = input_data.context
+        # todo log level from cmd line
+        Log.setup_logging(logging.INFO)
 
     def __enter__(self):
         return self
