@@ -26,3 +26,8 @@ def save_inventory(inventory, cluster_name):
             for host in item.hosts:
                 file.write(host.name + ' ansible_host=' + host.ip + '\n')
 
+
+def get_inventory_path(cluster_name):
+    script_dir = os.path.dirname(__file__)
+    build_directory = os.path.join(script_dir, BUILD_FOLDER_PATH, cluster_name, INVENTORY_FILE_NAME)
+    return build_directory
