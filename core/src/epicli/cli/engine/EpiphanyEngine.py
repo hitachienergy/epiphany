@@ -1,24 +1,20 @@
 import os
 import logging
-from cli.helpers.objdict_helpers import dict_to_objdict
 from cli.helpers.doc_list_helpers import select_single
-from cli.helpers.build_saver import save_build
+from cli.helpers.build_saver import save_manifest
 from cli.helpers.yaml_helpers import safe_load_all
 from cli.helpers.Log import Log
 from cli.helpers.provider_class_loader import provider_class_loader
 from cli.engine.DefaultMerger import DefaultMerger
 from cli.engine.SchemaValidator import SchemaValidator
 from cli.engine.ConfigurationAppender import ConfigurationAppender
-from cli.engine.AnsibleRunner import AnsibleRunner
+from cli.engine.TemplateGenerator import TemplateGenerator
 from cli.engine.TerraformRunner import TerraformRunner
+from cli.engine.AnsibleRunner import AnsibleRunner
 
 
 class EpiphanyEngine:
     def __init__(self, input_data):
-        # todo se output dir from cmdline
-        self.OUTPUT_FOLDER_PATH = os.path.join( os.path.dirname(__file__), '../../output/')
-        if not os.path.exists(self.OUTPUT_FOLDER_PATH):
-            os.makedirs(self.OUTPUT_FOLDER_PATH)
         self.file_path = input_data.file
         self.context = input_data.context
         # todo set log level from cmdline
@@ -53,19 +49,22 @@ class EpiphanyEngine:
         with ConfigurationAppender(cluster_model, docs) as config_appender:
             config_appender.run()
 
-        # Merge component configurations with infrastructure and save to manifest
+        # Merge component configurations with infrastructure
         docs = [*docs, *infrastructure]
-
-        # Save docs to manifest file
-        save_build(docs, cluster_model.specification.name)
 
         # Validate docs
         with SchemaValidator(cluster_model, docs) as schema_validator:
             schema_validator.run()
 
-        # Run Terraform to provision infrastructure
-        terraform_build_directory = os.path.join(self.OUTPUT_FOLDER_PATH, cluster_model.specification.name, 'terraform')
-        with TerraformRunner(terraform_build_directory, cluster_model, infrastructure) as tf_runner:
+        # Save docs to manifest file
+        save_manifest(docs, cluster_model.specification.name)
+
+        # Generate templates
+        with TemplateGenerator(cluster_model, infrastructure) as template_generator:
+            template_generator.run()
+
+        # Run Terraform to create infrastructure
+        with TerraformRunner(cluster_model, infrastructure) as tf_runner:
             tf_runner.run()
 
         # Run Ansible to provision infrastructure
