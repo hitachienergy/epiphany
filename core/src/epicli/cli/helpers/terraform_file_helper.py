@@ -4,7 +4,7 @@ import yaml
 
 def generate_terraform_file(infrastructure, template_generator, template_generator_config, terraform_build_directory):
     for idx, document in enumerate(infrastructure):
-        yaml_document = yaml.load(str(document))
+        yaml_document = yaml.load(str(document), Loader=yaml.FullLoader)
 
         content = template_generator.generate_terraform_file_content(document=yaml_document,
                                                                      templates_paths=

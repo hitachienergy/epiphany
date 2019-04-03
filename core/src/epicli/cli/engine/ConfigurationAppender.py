@@ -2,7 +2,7 @@ import cli.helpers.data_types as data_types
 from cli.helpers.data_loader import load_data_file
 from cli.helpers.config_merger import merge_with_defaults
 from cli.helpers.doc_list_helpers import select_first
-from cli.engine.Step import Step
+from helpers.Step import Step
 
 
 class ConfigurationAppender(Step):

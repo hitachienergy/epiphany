@@ -3,7 +3,7 @@ import time
 
 from cli.engine.AnsibleInventoryCreator import AnsibleInventoryCreator
 from cli.helpers.build_saver import get_inventory_path
-from cli.engine.Step import Step
+from cli.helpers.Step import Step
 
 
 class AnsibleRunner(Step):

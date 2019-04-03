@@ -2,7 +2,7 @@ import cli.helpers.data_types as data_types
 from cli.helpers.data_loader import load_all_data_files
 from cli.helpers.objdict_helpers import merge_objdict
 from cli.helpers.doc_list_helpers import select_first
-from cli.engine.Step import Step
+from helpers.Step import Step
 
 
 class DefaultMerger(Step):

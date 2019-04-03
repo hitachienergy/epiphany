@@ -2,7 +2,7 @@ import cli.helpers.data_types as data_types
 from jsonschema import validate
 from cli.helpers.data_loader import load_all_data_files
 from cli.helpers.objdict_helpers import objdict_to_dict
-from engine.Step import Step
+from helpers.Step import Step
 
 
 class SchemaValidator(Step):

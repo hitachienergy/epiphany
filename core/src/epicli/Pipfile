@@ -12,6 +12,7 @@ argparse = "*"
 jinja2 = "*"
 boto3 = "*"
 jsonschema = "*"
+python-json-logger = "*"
 
 [requires]
 python_version = "3.7"
