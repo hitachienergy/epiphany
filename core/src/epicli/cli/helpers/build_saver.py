@@ -1,33 +1,54 @@
-from cli.helpers.yaml_helpers import dump_all
 import os
+from cli.helpers.yaml_helpers import dump_all
+
 
 OUTPUT_FOLDER_PATH = '../../output/'
+TERRAFORM_OUTPUT_DIR = 'terraform/'
 MANIFEST_FILE_NAME = 'manifest.yml'
 INVENTORY_FILE_NAME = 'inventory'
 
 
-def save_build(docs, cluster_name):
-    script_dir = os.path.dirname(__file__)
-    build_directory = os.path.join(script_dir, OUTPUT_FOLDER_PATH, cluster_name)
-    if not os.path.exists(build_directory):
-        os.makedirs(build_directory)
-    with open(os.path.join(build_directory, MANIFEST_FILE_NAME), 'w') as stream:
+def save_manifest(docs, cluster_name):
+    build_dir = get_build_path(cluster_name)
+    with open(os.path.join(build_dir, MANIFEST_FILE_NAME), 'w') as stream:
         dump_all(docs, stream)
 
 
 def save_inventory(inventory, cluster_name):
-    script_dir = os.path.dirname(__file__)
-    build_directory = os.path.join(script_dir, OUTPUT_FOLDER_PATH, cluster_name)
-    if not os.path.exists(build_directory):
-        os.makedirs(build_directory)
-    with open(os.path.join(build_directory, INVENTORY_FILE_NAME), 'w') as file:
+    build_dir = get_build_path(cluster_name)
+    with open(os.path.join(build_dir, INVENTORY_FILE_NAME), 'w') as file:
         for item in inventory:
             file.write('[' + item.role + ']\n')
             for host in item.hosts:
                 file.write(host.name + ' ansible_host=' + host.ip + '\n')
 
 
+def save_terraform_file(content, cluster_name, filename):
+    terraform_dir = get_terraform_path(cluster_name)
+    with open(os.path.join(terraform_dir, filename), 'w') as terraform_output_file:
+        terraform_output_file.write(content)
+
+
+def get_output_path():
+    output_dir = os.path.join(os.path.dirname(__file__), OUTPUT_FOLDER_PATH)
+    if not os.path.exists(output_dir):
+        os.makedirs(output_dir)
+    return output_dir;
+
+
+def get_build_path(cluster_name):
+    build_dir = os.path.join(get_output_path(), cluster_name)
+    if not os.path.exists(build_dir):
+        os.makedirs(build_dir)
+    return build_dir
+
+
 def get_inventory_path(cluster_name):
-    script_dir = os.path.dirname(__file__)
-    build_directory = os.path.join(script_dir, OUTPUT_FOLDER_PATH, cluster_name, INVENTORY_FILE_NAME)
-    return build_directory
+    return os.path.join(get_build_path(cluster_name), INVENTORY_FILE_NAME)
+
+
+def get_terraform_path(cluster_name):
+    terraform_dir = os.path.join(get_build_path(cluster_name), TERRAFORM_OUTPUT_DIR)
+    if not os.path.exists(terraform_dir):
+        os.makedirs(terraform_dir)
+    return terraform_dir

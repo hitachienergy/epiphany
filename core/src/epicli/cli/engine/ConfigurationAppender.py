@@ -1,8 +1,8 @@
 import cli.helpers.data_types as data_types
-from cli.helpers.data_loader import load_data_file
+from cli.helpers.data_loader import load_yaml_obj
 from cli.helpers.config_merger import merge_with_defaults
 from cli.helpers.doc_list_helpers import select_first
-from helpers.Step import Step
+from cli.helpers.Step import Step
 
 
 class ConfigurationAppender(Step):
@@ -18,7 +18,7 @@ class ConfigurationAppender(Step):
 
             features_map = select_first(self.docs, lambda x: x.kind == 'configuration/feature-mapping')
             if features_map is None:
-                features_map = load_data_file(data_types.DEFAULT, 'common', 'configuration/feature-mapping')
+                features_map = load_yaml_obj(data_types.DEFAULT, 'common', 'configuration/feature-mapping')
                 self.logger.info("Adding: " + features_map.kind)
                 self.docs.append(features_map)
 

@@ -1,5 +1,5 @@
 from cli.helpers.doc_list_helpers import select_first
-from cli.helpers.data_loader import load_data_file
+from cli.helpers.data_loader import load_yaml_obj
 from cli.helpers.config_merger import merge_with_defaults
 from cli.engine.aws.APIProxy import APIProxy
 import cli.helpers.data_types as data_types
@@ -122,7 +122,7 @@ class InfrastructureBuilder(Step):
     def get_config_or_default(user_input, kind):
         config = select_first(user_input, lambda x: x.kind == kind)
         if config is None:
-            return load_data_file(data_types.DEFAULT, 'aws', kind)
+            return load_yaml_obj(data_types.DEFAULT, 'aws', kind)
         return config
 
     @staticmethod
