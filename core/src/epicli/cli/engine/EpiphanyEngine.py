@@ -64,7 +64,7 @@ class EpiphanyEngine:
             schema_validator.run()
 
         # Run Terraform to provision infrastructure
-        terraform_build_directory = os.path.join(self.OUTPUT_FOLDER_PATH, cluster_model.specification.name, "terraform")
+        terraform_build_directory = os.path.join(self.OUTPUT_FOLDER_PATH, cluster_model.specification.name, 'terraform')
         with TerraformRunner(terraform_build_directory, cluster_model, infrastructure) as tf_runner:
             tf_runner.run()
 
