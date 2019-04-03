@@ -29,5 +29,5 @@ def save_inventory(inventory, cluster_name):
 
 def get_inventory_path(cluster_name):
     script_dir = os.path.dirname(__file__)
-    build_directory = os.path.join(script_dir, BUILD_FOLDER_PATH, cluster_name, INVENTORY_FILE_NAME)
+    build_directory = os.path.join(script_dir, OUTPUT_FOLDER_PATH, cluster_name, INVENTORY_FILE_NAME)
     return build_directory

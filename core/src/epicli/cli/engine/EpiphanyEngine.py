@@ -69,7 +69,7 @@ class EpiphanyEngine:
             tf_runner.run()
 
         # Run Ansible to provision infrastructure
-        with AnsibleRunner(dict_to_objdict(cluster_model), docs) as ansible_runner:
+        with AnsibleRunner(cluster_model, docs) as ansible_runner:
             ansible_runner.run()
 
 
