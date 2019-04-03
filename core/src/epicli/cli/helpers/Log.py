@@ -3,7 +3,7 @@ import os
 from pythonjsonlogger import jsonlogger
 
 # todo make logfile configurable?
-LOG_FILE = os.path.dirname(__file__) + '/../../build/log.json'
+LOG_FILE = os.path.dirname(__file__) + '/../../output/log.json'
 LOG_FORMAT = '%(asctime)s %(levelname)s %(name)s - %(message)s'
 LOG_DATE_FMT = '%H:%M:%S'
 

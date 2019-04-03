@@ -1,11 +1,11 @@
 import os
-import importlib
 import logging
 from cli.helpers.objdict_helpers import dict_to_objdict
 from cli.helpers.doc_list_helpers import select_single
 from cli.helpers.build_saver import save_build
 from cli.helpers.yaml_helpers import safe_load_all
 from cli.helpers.Log import Log
+from cli.helpers.provider_class_loader import provider_class_loader
 from cli.engine.DefaultMerger import DefaultMerger
 from cli.engine.SchemaValidator import SchemaValidator
 from cli.engine.ConfigurationAppender import ConfigurationAppender
@@ -15,10 +15,13 @@ from cli.engine.TerraformRunner import TerraformRunner
 
 class EpiphanyEngine:
     def __init__(self, input_data):
-        self.BUILD_FOLDER_PATH = '../../build/'
+        # todo se output dir from cmdline
+        self.OUTPUT_FOLDER_PATH = os.path.join( os.path.dirname(__file__), '../../output/')
+        if not os.path.exists(self.OUTPUT_FOLDER_PATH):
+            os.makedirs(self.OUTPUT_FOLDER_PATH)
         self.file_path = input_data.file
         self.context = input_data.context
-        # todo log level from cmd line
+        # todo set log level from cmdline
         Log.setup_logging(logging.INFO)
 
     def __enter__(self):
@@ -40,10 +43,10 @@ class EpiphanyEngine:
         with DefaultMerger(docs) as doc_merger:
             docs = doc_merger.run()
 
-        cluster_model = select_single(docs, lambda x: x.kind == "epiphany-cluster")
+        cluster_model = select_single(docs, lambda x: x.kind == 'epiphany-cluster')
 
         # Build the infrastructure docs
-        with self.get_infrastructure_builder(cluster_model.provider)() as infrastructure_builder:
+        with provider_class_loader(cluster_model.provider, 'InfrastructureBuilder')() as infrastructure_builder:
             infrastructure = infrastructure_builder.run(cluster_model, docs)
 
         # Append with components and configuration docs
@@ -60,28 +63,15 @@ class EpiphanyEngine:
         with SchemaValidator(cluster_model, docs) as schema_validator:
             schema_validator.run()
 
-        # todo generate .tf files
-        script_dir = os.path.dirname(__file__)
-        terraform_build_directory = os.path.join(script_dir, self.BUILD_FOLDER_PATH, self.context, "terraform")
-
-        # todo run terraform
-        # todo set path to terraform files
+        # Run Terraform to provision infrastructure
+        terraform_build_directory = os.path.join(self.OUTPUT_FOLDER_PATH, cluster_model.specification.name, "terraform")
         with TerraformRunner(terraform_build_directory, cluster_model, infrastructure) as tf_runner:
             tf_runner.run()
 
-        # todo generate ansible inventory
+        # Run Ansible to provision infrastructure
         with AnsibleRunner(dict_to_objdict(cluster_model), docs) as ansible_runner:
             ansible_runner.run()
 
-        # todo adjust ansible to new schema
-        # todo run ansible
-
-    @staticmethod
-    def get_infrastructure_builder(provider):
-        try:
-            return getattr(importlib.import_module('cli.engine.' + provider.lower() + '.InfrastructureBuilder'), 'InfrastructureBuilder')
-        except:
-            raise Exception('No InfrastructureBuilder for ' + provider)
 
 
 
