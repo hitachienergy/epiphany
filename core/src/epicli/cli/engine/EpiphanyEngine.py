@@ -64,7 +64,7 @@ class EpiphanyEngine:
             template_generator.run()
 
         # Run Terraform to create infrastructure
-        with TerraformRunner(cluster_model, infrastructure) as tf_runner:
+        with TerraformRunner(cluster_model) as tf_runner:
             tf_runner.run()
 
         # Run Ansible to provision infrastructure
