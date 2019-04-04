@@ -1,4 +1,5 @@
 import logging
+import threading
 import os
 from pythonjsonlogger import jsonlogger
 from cli.helpers.build_saver import get_output_path
@@ -24,6 +25,27 @@ class Log:
         logger.addHandler(self.json_handler)
         return logger
 
+
+class LogPipe(threading.Thread):
+
+    def __init__(self, logger_name):
+        threading.Thread.__init__(self)
+        self.logger = Log.get_logger(logger_name);
+        self.daemon = False
+        self.fdRead, self.fdWrite = os.pipe()
+        self.pipeReader = os.fdopen(self.fdRead)
+        self.start()
+
+    def fileno(self):
+        return self.fdWrite
+
+    def run(self):
+        for line in iter(self.pipeReader.readline, ''):
+            self.logger.info(line.strip('\n'));
+        self.pipeReader.close()
+
+    def close(self):
+        os.close(self.fdWrite)
 
 
 

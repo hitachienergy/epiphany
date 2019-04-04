@@ -1,5 +1,7 @@
+
 import os
 import logging
+import sys
 from cli.helpers.doc_list_helpers import select_single
 from cli.helpers.build_saver import save_manifest
 from cli.helpers.yaml_helpers import safe_load_all
@@ -19,6 +21,7 @@ class EpiphanyEngine:
         self.context = input_data.context
         # todo set log level from cmdline
         Log.setup_logging(logging.INFO)
+        self.logger = Log.get_logger(__name__)
 
     def __enter__(self):
         return self
@@ -27,49 +30,53 @@ class EpiphanyEngine:
         pass
 
     def run(self):
-        # Load the user input YAML docs from the input file
-        if os.path.isabs(self.file_path):
-            path_to_load = self.file_path
-        else:
-            path_to_load = os.path.join(os.getcwd(), self.file_path)
-        user_file_stream = open(path_to_load, 'r')
-        docs = safe_load_all(user_file_stream)
+        try:
+            # Load the user input YAML docs from the input file
+            if os.path.isabs(self.file_path):
+                path_to_load = self.file_path
+            else:
+                path_to_load = os.path.join(os.getcwd(), self.file_path)
+            user_file_stream = open(path_to_load, 'r')
+            docs = safe_load_all(user_file_stream)
 
-        # Merge the input docs with defaults
-        with DefaultMerger(docs) as doc_merger:
-            docs = doc_merger.run()
+            # Merge the input docs with defaults
+            with DefaultMerger(docs) as doc_merger:
+                docs = doc_merger.run()
 
-        cluster_model = select_single(docs, lambda x: x.kind == 'epiphany-cluster')
+            cluster_model = select_single(docs, lambda x: x.kind == 'epiphany-cluster')
 
-        # Build the infrastructure docs
-        with provider_class_loader(cluster_model.provider, 'InfrastructureBuilder')() as infrastructure_builder:
-            infrastructure = infrastructure_builder.run(cluster_model, docs)
+            # Build the infrastructure docs
+            with provider_class_loader(cluster_model.provider, 'InfrastructureBuilder')() as infrastructure_builder:
+                infrastructure = infrastructure_builder.run(cluster_model, docs)
 
-        # Append with components and configuration docs
-        with ConfigurationAppender(cluster_model, docs) as config_appender:
-            config_appender.run()
+            # Append with components and configuration docs
+            with ConfigurationAppender(cluster_model, docs) as config_appender:
+                config_appender.run()
 
-        # Merge component configurations with infrastructure
-        docs = [*docs, *infrastructure]
+            # Merge component configurations with infrastructure
+            docs = [*docs, *infrastructure]
 
-        # Validate docs
-        with SchemaValidator(cluster_model, docs) as schema_validator:
-            schema_validator.run()
+            # Validate docs
+            with SchemaValidator(cluster_model, docs) as schema_validator:
+                schema_validator.run()
 
-        # Save docs to manifest file
-        save_manifest(docs, cluster_model.specification.name)
+            # Save docs to manifest file
+            save_manifest(docs, cluster_model.specification.name)
 
-        # Generate templates
-        with TemplateGenerator(cluster_model, infrastructure) as template_generator:
-            template_generator.run()
+            # Generate terraform templates
+            with TemplateGenerator(cluster_model, infrastructure) as template_generator:
+                template_generator.run()
 
-        # Run Terraform to create infrastructure
-        with TerraformRunner(cluster_model) as tf_runner:
-            tf_runner.run()
+            # Run Terraform to create infrastructure
+            with TerraformRunner(cluster_model) as tf_runner:
+                tf_runner.run()
 
-        # Run Ansible to provision infrastructure
-        with AnsibleRunner(cluster_model, docs) as ansible_runner:
-            ansible_runner.run()
+            # Run Ansible to provision infrastructure
+            with AnsibleRunner(cluster_model, docs) as ansible_runner:
+                ansible_runner.run()
+        except Exception as e:
+            self.logger.error(e)
+            sys.exit(1)
 
 
 
