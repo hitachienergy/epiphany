@@ -31,5 +31,3 @@ def load_template_file(type, provider, kind):
     with open(path_to_file, 'r') as stream:
         return Template(stream.read(), undefined=jinja2.StrictUndefined)
 
-
-

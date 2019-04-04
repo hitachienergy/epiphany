@@ -20,9 +20,10 @@ class AnsibleInventoryCreator:
     def __exit__(self, exc_type, exc_value, traceback):
         self.proxy.__exit__(exc_type, exc_value, traceback)
 
+    # todo: add login for ansible
     def create(self):
         inventory = self.get_inventory()
-        save_inventory(inventory, self.cluster_model.specification.name)
+        save_inventory(inventory, self.cluster_model)
 
     def get_inventory(self):
         inventory = []
