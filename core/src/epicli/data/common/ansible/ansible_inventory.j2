@@ -5,28 +5,14 @@
 # Inventory broken down into roles. Note: 'all' is a default group of all Hosts
 # Note: ansible_host can be private IPs. If so then Ansible is going through bastian host or build server where the inventory IPs are routable
 
-{% for item in ansible_roles %}
-[{{ item }}]
-{%- for node in nodes %}
-{%- for role in node.ansible_roles %}
-{%- if item == role %}
-{%- for host in node.hosts %}
-{%- if domain.enable %}
-{{ host.name }}.{{ domain.name }}
-{% else %}
-{%- if host.ips.public %}
-{{ host.name }} ansible_host={{ host.ips.public }}
-{%- else %}
-{{ host.name }} ansible_host={{ host.ips.private }}
-{%- endif %}
-{%- endif %}
-{%- endfor %}
-{%- endif %}
-{%- endfor %}
+{% for item in inventory %}
+[{{ item.role }}]
+{%- for host in item.hosts %}
+{{ host.name }} ansible_host={{ host.ip }}
 {%- endfor %}
 {% endfor %}
 
 # Allowing 'all' since for now only Linux is supported
 [all:vars]
-ansible_user={{ admin_user.name }}
-ansible_ssh_private_key_file={{ admin_user.key_path }}
+ansible_user={{ cluster_model.specification.admin_user.name }}
+ansible_ssh_private_key_file={{ cluster_model.specification.admin_user.key_path }}

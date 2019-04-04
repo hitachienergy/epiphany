@@ -11,7 +11,8 @@ class TerraformRunner(Step):
 
     def __enter__(self):
         super().__enter__();
-        self.terraform.check()
+        # todo: Check if this works after Luuks changes
+        #self.terraform.check()
         return self
 
     def run(self):

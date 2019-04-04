@@ -1,4 +1,6 @@
 import os
+
+from cli.helpers.data_loader import load_template_file
 from cli.helpers.yaml_helpers import dump_all
 
 
@@ -14,13 +16,16 @@ def save_manifest(docs, cluster_name):
         dump_all(docs, stream)
 
 
-def save_inventory(inventory, cluster_name):
+def save_inventory(inventory, cluster_model):
+    cluster_name = cluster_model.specification.name
     build_dir = get_build_path(cluster_name)
+
+    template = load_template_file("ansible", "common", "ansible_inventory")
+
+    content = template.render(inventory=inventory, cluster_model=cluster_model)
+
     with open(os.path.join(build_dir, INVENTORY_FILE_NAME), 'w') as file:
-        for item in inventory:
-            file.write('[' + item.role + ']\n')
-            for host in item.hosts:
-                file.write(host.name + ' ansible_host=' + host.ip + '\n')
+        file.write(content)
 
 
 def save_terraform_file(content, cluster_name, filename):
