@@ -39,8 +39,12 @@ class AnsibleRunner(Step):
         for i in range(30):
             runner = ansible_runner.run(private_data_dir=get_output_path(), host_pattern="all",
                                         inventory=inventory_path,
-                                        module='shell', module_args='whoami')
+                                        module='raw', module_args='sudo apt-get install -y python-simplejson')
             if runner.status == "successful":
                 continue
 
             time.sleep(10)
+
+        ansible_runner.run(private_data_dir=get_output_path(), host_pattern="all",
+                           inventory=inventory_path,
+                           module='shell', module_args='whoami')
