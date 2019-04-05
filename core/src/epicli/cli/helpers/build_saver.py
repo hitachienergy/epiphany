@@ -1,8 +1,10 @@
 import os
-
 from cli.helpers.data_loader import load_template_file
 from cli.helpers.yaml_helpers import dump_all
 
+from cli.helpers import data_types
+from cli.helpers.data_loader import load_template_file
+from cli.helpers.yaml_helpers import dump_all
 
 OUTPUT_FOLDER_PATH = '../../output/'
 TERRAFORM_OUTPUT_DIR = 'terraform/'
@@ -19,19 +21,21 @@ def save_manifest(docs, cluster_name):
 def save_inventory(inventory, cluster_model):
     cluster_name = cluster_model.specification.name
     build_dir = get_build_path(cluster_name)
-
-    template = load_template_file("ansible", "common", "ansible_inventory")
-
+    template = load_template_file(data_types.ANSIBLE, "common", "ansible_inventory")
     content = template.render(inventory=inventory, cluster_model=cluster_model)
-
-    with open(os.path.join(build_dir, INVENTORY_FILE_NAME), 'w') as file:
-        file.write(content)
+    file_path = os.path.join(build_dir, INVENTORY_FILE_NAME)
+    save_to_file(file_path, content)
 
 
 def save_terraform_file(content, cluster_name, filename):
     terraform_dir = get_terraform_path(cluster_name)
-    with open(os.path.join(terraform_dir, filename), 'w') as terraform_output_file:
-        terraform_output_file.write(content)
+    terraform_output_file_path = os.path.join(terraform_dir, filename)
+    save_to_file(terraform_output_file_path, content)
+
+
+def save_to_file(file_path, content):
+    with open(file_path, 'w') as file:
+        file.write(content)
 
 
 def get_output_path():
