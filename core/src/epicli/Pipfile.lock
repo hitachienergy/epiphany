@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "ae3309de3eacf3157f51ba4cec16ad51a49dbb07f1ba6fc83de447e5e5a71dad"
+            "sha256": "84da92930a4efd20a407fc5e1c6440c0a3900db1798efea57f8c1f1e9eee34d8"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -144,6 +144,7 @@
                 "sha256:ec4b4b638b84d42fc48139f9352f6c6587ee1018d55253542ee28db7480cc653",
                 "sha256:fa0a570e0a30b9dd618bffbece590ae15726b47f9f1eaf7518dfb35f4d7dcd21"
             ],
+            "index": "pypi",
             "version": "==5.6.1"
         },
         "ptyprocess": {
@@ -235,14 +236,6 @@
                 "sha256:f0b870f674851ecbfbbbd364d6b5cbdff9dcedbc7f3f5e18a6891057f21fe399"
             ],
             "version": "==19.1.0"
-        },
-        "colorama": {
-            "hashes": [
-                "sha256:05eed71e2e327246ad6b38c540c4a3117230b19679b875190486ddd2d721422d",
-                "sha256:f8ac84de7840f5b9c4e3347b3c1eaa50f7e49c2b07596221daec5edaabbd7c48"
-            ],
-            "markers": "sys_platform == 'win32'",
-            "version": "==0.4.1"
         },
         "more-itertools": {
             "hashes": [

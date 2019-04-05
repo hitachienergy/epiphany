@@ -14,6 +14,7 @@ boto3 = "*"
 jsonschema = "*"
 python-json-logger = "*"
 ansible-runner = "*"
+psutil = "*"
 
 [requires]
 python_version = "3.7"
