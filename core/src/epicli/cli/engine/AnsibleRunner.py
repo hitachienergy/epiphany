@@ -1,9 +1,11 @@
 import os
 import time
 
+import ansible_runner
+
 from cli.engine.AnsibleInventoryCreator import AnsibleInventoryCreator
-from cli.helpers.build_saver import get_inventory_path
 from cli.helpers.Step import Step
+from cli.helpers.build_saver import get_inventory_path, get_output_path
 
 
 class AnsibleRunner(Step):
@@ -11,7 +13,7 @@ class AnsibleRunner(Step):
         super().__init__(__name__)
         self.cluster_model = cluster_model
         self.config_docs = config_docs
-        self.inventory_creator = AnsibleInventoryCreator(cluster_model, config_docs)
+        self.inventory_creator = AnsibleInventoryCreator(cluster_model, config_docs, use_public_ips=True)
 
     def __enter__(self):
         super().__enter__();
@@ -34,6 +36,11 @@ class AnsibleRunner(Step):
             time.sleep(10)
 
         # todo run ansible playbooks
+        for i in range(30):
+            runner = ansible_runner.run(private_data_dir=get_output_path(), host_pattern="all",
+                                        inventory=inventory_path,
+                                        module='shell', module_args='whoami')
+            if runner.status == "successful":
+                continue
 
-
-
+            time.sleep(10)
