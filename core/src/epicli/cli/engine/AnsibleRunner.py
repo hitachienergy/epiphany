@@ -5,10 +5,13 @@ import ansible_runner
 
 from cli.engine.AnsibleInventoryCreator import AnsibleInventoryCreator
 from cli.helpers.Step import Step
-from cli.helpers.build_saver import get_inventory_path, get_output_path
+from cli.helpers.build_saver import get_inventory_path, get_ansible_path, copy_files_recursively
 
 
 class AnsibleRunner(Step):
+
+    ANSIBLE_PLAYBOOKS_PATH = "/../../../../core/src/ansible/"
+
     def __init__(self, cluster_model, config_docs):
         super().__init__(__name__)
         self.cluster_model = cluster_model
@@ -32,20 +35,24 @@ class AnsibleRunner(Step):
             if if_inventory_exists_and_have_content:
                 continue
 
-            inventory = self.inventory_creator.create()
+            self.inventory_creator.create()
             time.sleep(10)
+
+        src = os.path.dirname(__file__) + AnsibleRunner.ANSIBLE_PLAYBOOKS_PATH
+
+        copy_files_recursively(src, get_ansible_path(self.cluster_model.specification.name))
 
         # todo run ansible playbooks
-        for i in range(30):
-            runner = ansible_runner.run(private_data_dir=get_output_path(), host_pattern="all",
+        for i in range(10):
+            runner = ansible_runner.run(private_data_dir=get_ansible_path(self.cluster_model.specification.name), host_pattern="all",
                                         inventory=inventory_path,
                                         module='raw', module_args='sudo apt-get install -y python-simplejson')
-
-            if runner.status == "successful":
-                continue
+            print(runner.status)
+            if runner.status.lower() == "successful":
+                break
 
             time.sleep(10)
-            
-        ansible_runner.run(private_data_dir=get_output_path(), host_pattern="all",
+
+        ansible_runner.run(private_data_dir=get_ansible_path(self.cluster_model.specification.name), host_pattern="all",
                            inventory=inventory_path,
                            module='shell', module_args='whoami')
