@@ -13,6 +13,7 @@ jinja2 = "*"
 boto3 = "*"
 jsonschema = "*"
 python-json-logger = "*"
+ansible-runner = "*"
 
 [requires]
 python_version = "3.7"
