@@ -1,3 +1,4 @@
+import distutils
 import os
 from cli.helpers.data_loader import load_template_file
 from cli.helpers.yaml_helpers import dump_all
@@ -10,6 +11,7 @@ OUTPUT_FOLDER_PATH = '../../output/'
 TERRAFORM_OUTPUT_DIR = 'terraform/'
 MANIFEST_FILE_NAME = 'manifest.yml'
 INVENTORY_FILE_NAME = 'inventory'
+ANSIBLE_OUTPUT_DIR = 'ansible/'
 
 
 def save_manifest(docs, cluster_name):
@@ -61,3 +63,14 @@ def get_terraform_path(cluster_name):
     if not os.path.exists(terraform_dir):
         os.makedirs(terraform_dir)
     return terraform_dir
+
+
+def get_ansible_path(cluster_name):
+    ansible_dir = os.path.join(get_build_path(cluster_name), ANSIBLE_OUTPUT_DIR)
+    if not os.path.exists(ansible_dir):
+        os.makedirs(ansible_dir)
+    return ansible_dir
+
+
+def copy_files_recursively(src, dst):
+    distutils.dir_util.copy_tree(src, dst)
