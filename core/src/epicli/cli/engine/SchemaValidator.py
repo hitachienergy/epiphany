@@ -1,6 +1,5 @@
-import cli.helpers.data_types as data_types
 from jsonschema import validate
-from cli.helpers.data_loader import load_all_yaml_objs
+from cli.helpers.data_loader import load_all_yaml_objs, types
 from cli.helpers.objdict_helpers import objdict_to_dict
 from cli.helpers.Step import Step
 
@@ -13,7 +12,7 @@ class SchemaValidator(Step):
 
     def run(self):
         for doc in self.docs:
-            schemas = load_all_yaml_objs(data_types.VALIDATION, self.cluster_model.provider, doc.kind)
+            schemas = load_all_yaml_objs(types.VALIDATION, self.cluster_model.provider, doc.kind)
 
             if len(schemas) > 0:
                 self.logger.info("Validating: " + doc.kind)

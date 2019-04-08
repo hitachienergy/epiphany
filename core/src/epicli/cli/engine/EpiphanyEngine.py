@@ -75,7 +75,7 @@ class EpiphanyEngine:
             with AnsibleRunner(cluster_model, docs) as ansible_runner:
                 ansible_runner.run()
         except Exception as e:
-            self.logger.error(e)
+            self.logger.error(e, exc_info=True) #TODO extensive debug output might not always be wanted. Make this configurable with input flag?
             sys.exit(1)
 
 

@@ -1,4 +1,3 @@
-
 def select_first(documents, query):
     if documents is not None:
         for x in documents:

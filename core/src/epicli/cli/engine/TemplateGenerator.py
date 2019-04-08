@@ -1,5 +1,4 @@
-import cli.helpers.data_types as data_types
-from cli.helpers.data_loader import load_template_file
+from cli.helpers.data_loader import load_template_file, types
 from cli.helpers.build_saver import save_terraform_file
 from cli.helpers.Step import Step
 
@@ -20,7 +19,7 @@ class TemplateGenerator(Step):
 
             self.logger.info('Generating: ' + doc.kind + ' ---> ' + terraform_file_name)
 
-            template = load_template_file(data_types.TERRAFORM, doc.provider, doc.kind)
+            template = load_template_file(types.TERRAFORM, doc.provider, doc.kind)
             content = template.render(doc)
             save_terraform_file(content, self.cluster_model.specification.name, terraform_file_name)
 

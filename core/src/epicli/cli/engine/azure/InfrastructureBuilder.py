@@ -1,4 +1,4 @@
-from helpers.Step import Step
+from cli.helpers.Step import Step
 
 
 class ConfigBuilder(Step):
