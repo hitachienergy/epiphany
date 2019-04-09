@@ -54,7 +54,9 @@ properties:
     pattern: ^((\d+\.)(\d+\.)(\d))$   
   specification:
     $id: '#/properties/specification'
-    type: object
+    type:
+      - 'object'
+      - 'null'
     title: The Specification Schema  
 
 
