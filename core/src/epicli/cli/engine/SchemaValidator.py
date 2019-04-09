@@ -4,40 +4,6 @@ from cli.helpers.objdict_helpers import objdict_to_dict, dict_to_objdict
 from cli.helpers.Step import Step
 from copy import deepcopy
 
-BASE = {
-  "$schema": "http://json-schema.org/draft-07/schema#",
-  "type": "object",
-  "required": [
-    "provider", # always keep this in first place in the index!
-    "kind",
-    "name",
-    "title",
-    "version",
-    "specification"
-  ],
-  "properties": {
-    "kind": {
-      "$id": "#/properties/kind",
-      "type": "string",
-      "title": "The Kind Schema",
-      "default": "",
-      "pattern": ""
-    },
-    "title": {
-      "$ref": "#/definitions/title"
-    },
-    "name": {
-      "$ref": "#/definitions/name"
-    },
-    "provider": {
-      "$ref": "#/definitions/provider"
-    },
-    "version": {
-      "$ref": "#/definitions/version"
-    }
-  }
-}
-
 
 class SchemaValidator(Step):
     def __init__(self, cluster_model, docs):
@@ -45,12 +11,13 @@ class SchemaValidator(Step):
         self.cluster_model = cluster_model
         self.docs = docs
 
-        definitions = load_yaml_obj(types.VALIDATION, self.cluster_model.provider, 'definitions')
+        base = load_yaml_obj(types.VALIDATION, self.cluster_model.provider, 'core/base')
+        definitions = load_yaml_obj(types.VALIDATION, self.cluster_model.provider, 'core/definitions')
 
-        self.base_schema = dict_to_objdict(deepcopy(BASE))
+        self.base_schema = dict_to_objdict(deepcopy(base))
         self.base_schema['definitions'] = definitions
 
-        self.base_schema_no_provider = dict_to_objdict(deepcopy(BASE))
+        self.base_schema_no_provider = dict_to_objdict(deepcopy(base))
         self.base_schema_no_provider['definitions'] = definitions
         del self.base_schema_no_provider.required[0]
         del self.base_schema_no_provider.properties['provider']
