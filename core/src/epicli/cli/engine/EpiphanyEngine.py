@@ -18,8 +18,9 @@ from cli.engine.AnsibleRunner import AnsibleRunner
 class EpiphanyEngine:
     def __init__(self, input_data):
         self.file_path = input_data.file
-        self.context = input_data.context
-        # todo set log level from cmdline
+        # Todo: set the context from the commandline
+        # self.context = input_data.context
+        # Todo: set log level from cmdline
         Log.setup_logging(logging.INFO)
         self.logger = Log.get_logger(__name__)
 
@@ -43,7 +44,14 @@ class EpiphanyEngine:
             with DefaultMerger(docs) as doc_merger:
                 docs = doc_merger.run()
 
+            # TODO For now we only except input YALMs which provide a epiphany-cluster model kind.
             cluster_model = select_single(docs, lambda x: x.kind == 'epiphany-cluster')
+            if cluster_model is None:
+                raise Exception('No cluster model defined in input YAML file')
+
+            # Validate input documents
+            with SchemaValidator(cluster_model, docs) as schema_validator:
+                schema_validator.run()
 
             # Build the infrastructure docs
             with provider_class_loader(cluster_model.provider, 'InfrastructureBuilder')() as infrastructure_builder:
@@ -56,7 +64,7 @@ class EpiphanyEngine:
             # Merge component configurations with infrastructure
             docs = [*docs, *infrastructure]
 
-            # Validate docs
+            # Validate generated documents.
             with SchemaValidator(cluster_model, docs) as schema_validator:
                 schema_validator.run()
 
@@ -75,7 +83,7 @@ class EpiphanyEngine:
             with AnsibleRunner(cluster_model, docs) as ansible_runner:
                 ansible_runner.run()
         except Exception as e:
-            self.logger.error(e)
+            self.logger.error(e, exc_info=True) #TODO extensive debug output might not always be wanted. Make this configurable with input flag?
             sys.exit(1)
 
 

@@ -1,5 +1,4 @@
-import cli.helpers.data_types as data_types
-from cli.helpers.data_loader import load_all_yaml_objs
+from cli.helpers.data_loader import load_all_yaml_objs, types
 from cli.helpers.objdict_helpers import merge_objdict
 from cli.helpers.doc_list_helpers import select_first
 from cli.helpers.Step import Step
@@ -14,7 +13,7 @@ class DefaultMerger(Step):
         merged_docs = []
 
         for doc in self.docs:
-            files = load_all_yaml_objs(data_types.DEFAULT, doc.provider, doc.kind)
+            files = load_all_yaml_objs(types.DEFAULT, doc.provider, doc.kind)
             file_with_defaults = select_first(files, lambda x: x.name == 'default')
             self.logger.info("Merging: " + doc.kind)
             merge_objdict(file_with_defaults, doc)

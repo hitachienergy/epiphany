@@ -30,7 +30,7 @@ class Terraform:
             # todo add terraform version check?
             output = subprocess.check_output('terraform --version', shell=False)
             self.logger.info(output.decode().split('\n')[0])
-        except:
+        except Exception:
             raise Exception('Terraform does not seem to be installed')
 
     @staticmethod

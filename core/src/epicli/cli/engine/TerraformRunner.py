@@ -1,7 +1,7 @@
-import sys
 from cli.engine.Terraform import Terraform
 from cli.helpers.Step import Step
 from cli.helpers.build_saver import get_terraform_path
+
 
 class TerraformRunner(Step):
 
@@ -10,9 +10,9 @@ class TerraformRunner(Step):
         self.terraform = Terraform(get_terraform_path(cluster_model.specification.name))
 
     def __enter__(self):
-        super().__enter__();
+        super().__enter__()
         # todo: Check if this works after Luuks changes
-        #self.terraform.check()
+        # self.terraform.check()
         return self
 
     def run(self):

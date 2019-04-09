@@ -32,11 +32,10 @@ class APIProxy:
             Filters=[{
                 'Name': 'instance-state-name',
                 'Values': ['running']
-            },
-            {
-                'Name': 'vpc-id',
-                'Values': [vpc_id]
-            },
+                }, {
+                    'Name': 'vpc-id',
+                    'Values': [vpc_id]
+                },
                 {
                     'Name': 'tag:'+feature_key,
                     'Values': ['']
@@ -66,7 +65,7 @@ class APIProxy:
         if len(images) == 1:
             return images[0].id
 
-        raise Exception("Expected 1 OS Image matching Name: "+os_full_name+" but received: "+str(len(images)))
+        raise Exception("Expected 1 OS Image matching Name: " + os_full_name + " but received: " + str(len(images)))
 
     def get_vpc_id(self):
         vpc_config = dict_to_objdict(select_single(self.config_docs, lambda x: x.kind == 'infrastructure/vpc'))
@@ -77,5 +76,5 @@ class APIProxy:
         if len(vpcs) == 1:
             return vpcs[0].id
 
-        raise Exception("Expected 1 VPC matching tag Name: "+vpc_config.specification.name+" but received: "+str(len(vpcs)))
-
+        raise Exception("Expected 1 VPC matching tag Name: " + vpc_config.specification.name +
+                        " but received: " + str(len(vpcs)))

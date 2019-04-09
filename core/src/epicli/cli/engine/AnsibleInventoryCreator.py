@@ -44,8 +44,8 @@ class AnsibleInventoryCreator:
         return features_map.specification[component_key]
 
     def get_proxy(self):
-        APIProxy = provider_class_loader(self.cluster_model.provider, 'APIProxy')
-        return APIProxy(self.cluster_model, self.config_docs)
+        apiproxy = provider_class_loader(self.cluster_model.provider, 'APIProxy')
+        return apiproxy(self.cluster_model, self.config_docs)
 
     @staticmethod
     def group_duplicated(inventory):

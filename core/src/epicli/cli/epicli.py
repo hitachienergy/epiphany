@@ -30,7 +30,7 @@ def main(arguments):
 
 def apply_parser(subparsers):
     sub_parser = subparsers.add_parser('apply', description='Applies configuration from file.')
-    sub_parser.add_argument('-c', '--context', dest='context', type=str, help='Epiphany cluster name that will be updated using this command')
+    # sub_parser.add_argument('-c', '--context', dest='context', type=str, help='Epiphany cluster name that will be updated using this command')
     sub_parser.add_argument('-f', '--file', dest='file', type=str, help='File with infrastructure/configuration definitions to use.')
     sub_parser.set_defaults(func=exec_apply)
 

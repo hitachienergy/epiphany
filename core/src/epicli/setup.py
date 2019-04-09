@@ -18,5 +18,5 @@ setup(
     author_email='',
     url='https://github.com/epiphany-platform/epiphany',
     license=license,
-    packages=find_packages(exclude=('tests', 'docs'), install_requires=['jinja2'])
+    packages=find_packages(exclude=('tests', 'docs'))
 )
