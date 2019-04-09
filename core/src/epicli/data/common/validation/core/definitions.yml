@@ -27,7 +27,7 @@ version:
   examples:
   - 0.3.0
   pattern: ^((\d+\.)(\d+\.)(\d))$
-specification:
+unvalidated_specification:
   type:
     - 'object'
     - 'null'
