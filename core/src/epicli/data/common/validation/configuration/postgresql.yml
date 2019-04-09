@@ -1,19 +1,48 @@
----
-type: 'object'
+definitions: {}
+$schema: http://json-schema.org/draft-07/schema#
+$id: '#/root'
+type: object
+title: The Root Schema
+required:
+- kind
+- name
+- title
+- version
+- specification
 properties:
   kind:
-    type: 'string'
-  version:
-    type: 'string'
-  title:
-    type: 'string'
+    $id: '#/properties/kind'
+    type: string
+    title: The Kind Schema
+    default: 'configuration/postgresql'
+    examples:
+    - configuration/postgresql
+    pattern: ^(configuration/postgresql)$
   name:
-    type: 'string'
+    $id: '#/properties/name'
+    type: string
+    title: The Name Schema
+    default: 'default'
+    examples:
+    - default
+    pattern: ^(.*)$
+  title:
+    $id: '#/properties/title'
+    type: string
+    title: The Title Schema
+    default: 'Postgresql Config'
+    examples:
+    - Postgresql Config
+    pattern: ^(.*)$
+  version:
+    $id: '#/properties/version'
+    type: string
+    title: The Version Schema
+    default: '0.3.0'
+    examples:
+    - 0.3.0
+    pattern: ^((\d+\.)(\d+\.)(\d))$   
   specification:
-    type: 'null'
-required:
-  - 'kind'
-  - 'version'
-  - 'title'
-  - 'name'
-  - 'specification'
+    $id: '#/properties/specification'
+    type: object
+    title: The Specification Schema 

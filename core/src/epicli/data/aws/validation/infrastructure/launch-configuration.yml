@@ -1,22 +1,62 @@
----
+definitions: {}
+$schema: http://json-schema.org/draft-07/schema#
+$id: '#/root'
 type: object
-properties:
-  kind:
-    type: string
-  version:
-    type: string
-  title:
-    type: string
-  provider:
-    type: string
-  name:
-    type: string
-  specification:
-    type: object
+title: The Root Schema
 required:
 - kind
-- version
-- title
-- provider
 - name
+- provider
+- title
+- version
 - specification
+properties:
+  kind:
+    $id: '#/properties/kind'
+    type: string
+    title: The Kind Schema
+    default: 'infrastructure/launch-configuration'
+    examples:
+    - infrastructure/launch-configuration
+    pattern: ^(infrastructure/launch-configuration)$
+  name:
+    $id: '#/properties/name'
+    type: string
+    title: The Name Schema
+    default: 'default'
+    examples:
+    - default
+    pattern: ^(.*)$
+  provider:
+    $id: '#/properties/provider'
+    type: string
+    title: The Provider Schema
+    default: 'aws'
+    examples:
+    - aws
+    - azure
+    pattern: ^(aws|azure)$    
+  title:
+    $id: '#/properties/title'
+    type: string
+    title: The Title Schema
+    default: 'Launch-configuration Config'
+    examples:
+    - Launch-configuration Config
+    pattern: ^(.*)$
+  version:
+    $id: '#/properties/version'
+    type: string
+    title: The Version Schema
+    default: '0.3.0'
+    examples:
+    - 0.3.0
+    pattern: ^((\d+\.)(\d+\.)(\d))$   
+  specification:
+    $id: '#/properties/specification'
+    type: object
+    title: The Specification Schema  
+
+
+
+

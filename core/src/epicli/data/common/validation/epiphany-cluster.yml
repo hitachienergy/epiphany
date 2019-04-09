@@ -1,22 +1,58 @@
----
-type: 'object'
+definitions: {}
+$schema: http://json-schema.org/draft-07/schema#
+$id: '#/root'
+type: object
+title: The Root Schema
+required:
+- kind
+- name
+- provider
+- title
+- version
+- specification
 properties:
   kind:
-    type: 'string'
-  version:
-    type: 'string'
-  title:
-    type: 'string'
-  provider:
-    type: 'string'
+    $id: '#/properties/kind'
+    type: string
+    title: The Kind Schema
+    default: 'epiphany-cluster'
+    examples:
+    - epiphany-cluster
+    pattern: ^(epiphany-cluster)$
   name:
-    type: 'string'
+    $id: '#/properties/name'
+    type: string
+    title: The Name Schema
+    default: 'EpiphanyCluster'
+    examples:
+    - EpiphanyCluster
+    pattern: ^(.*)$
+  provider:
+    $id: '#/properties/provider'
+    type: string
+    title: The Provider Schema
+    default: 'aws'
+    examples:
+    - aws
+    - azure
+    pattern: ^(aws|azure)$
+  title:
+    $id: '#/properties/title'
+    type: string
+    title: The Title Schema
+    default: 'Epiphany cluster Config'
+    examples:
+    - Epiphany cluster Config
+    pattern: ^(.*)$
+  version:
+    $id: '#/properties/version'
+    type: string
+    title: The Version Schema
+    default: ''
+    examples:
+    - 0.3.0
+    pattern: ^((\d+\.)(\d+\.)(\d))$   
   specification:
-    type: 'object'
-required:
-- 'kind'
-- 'version'
-- 'title'
-- 'provider'
-- 'name'
-- 'specification'
+    $id: '#/properties/specification'
+    type: object
+    title: The Specification Schema
