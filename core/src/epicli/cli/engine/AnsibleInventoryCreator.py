@@ -1,9 +1,10 @@
-from cli.helpers.doc_list_helpers import select_single
-from cli.helpers.role_name_helper import adjust_name
-from cli.helpers.provider_class_loader import provider_class_loader
-from cli.models.AnsibleInventoryItem import AnsibleInventoryItem
 from collections import defaultdict
+
 from cli.helpers.build_saver import save_inventory
+from cli.helpers.doc_list_helpers import select_single
+from cli.helpers.provider_class_loader import provider_class_loader
+from cli.helpers.role_name_helper import adjust_name
+from cli.models.AnsibleInventoryItem import AnsibleInventoryItem
 
 
 class AnsibleInventoryCreator:
@@ -44,8 +45,8 @@ class AnsibleInventoryCreator:
         return features_map.specification[component_key]
 
     def get_proxy(self):
-        APIProxy = provider_class_loader(self.cluster_model.provider, 'APIProxy')
-        return APIProxy(self.cluster_model, self.config_docs)
+        apiproxy = provider_class_loader(self.cluster_model.provider, 'APIProxy')
+        return apiproxy(self.cluster_model, self.config_docs)
 
     @staticmethod
     def group_duplicated(inventory):
