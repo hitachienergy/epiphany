@@ -1,0 +1,34 @@
+name:
+  type: string
+  title: The Name Schema
+  default: 'default'
+  examples:
+  - default
+  pattern: ^[^\s]*$
+title:
+  type: string
+  title: The Title Schema
+  default: 'default'
+  examples:
+  - default
+  pattern: ^(.*)$
+provider:
+  type: string
+  title: The Provider Schema
+  default: 'aws'
+  examples:
+  - aws
+  - azure
+  pattern: ^(aws|azure)$
+version:
+  type: string
+  title: The Version Schema
+  default: '0.3.0'
+  examples:
+  - 0.3.0
+  pattern: ^((\d+\.)(\d+\.)(\d))$
+specification:
+  type:
+    - 'object'
+    - 'null'
+  title: The Specification Schema

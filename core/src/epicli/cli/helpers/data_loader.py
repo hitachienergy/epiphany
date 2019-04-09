@@ -16,8 +16,13 @@ types = Types(DEFAULT='defaults',
 def load_yaml_obj(file_type, provider, kind):
     script_dir = os.path.dirname(__file__)
     path_to_file = os.path.join(script_dir, DATA_FOLDER_PATH, provider, file_type, kind+'.yml')
-    with open(path_to_file, 'r') as stream:
-        return safe_load(stream)
+    if os.path.isfile(path_to_file):
+        with open(path_to_file, 'r') as stream:
+            return safe_load(stream)
+    else:
+        path_to_file = os.path.join(script_dir, DATA_FOLDER_PATH, 'common', file_type, kind + '.yml')
+        with open(path_to_file, 'r') as stream:
+            return safe_load(stream)
 
 
 def load_all_yaml_objs(file_type, provider, kind):
