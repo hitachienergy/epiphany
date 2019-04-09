@@ -15,7 +15,6 @@ jsonschema = "*"
 python-json-logger = "*"
 ansible-runner = "*"
 psutil = "*"
-distutils = "*"
 
 [requires]
 python_version = "3.7"
