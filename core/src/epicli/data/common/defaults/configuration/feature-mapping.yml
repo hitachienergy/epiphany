@@ -27,7 +27,7 @@ specification:
   logging:
     - elasticsearch
     - elasticsearch-curator
-    - node-exporter
+    - kibana
     - filebeat
   load_balancer:
     - haproxy
@@ -57,4 +57,4 @@ specification:
     - elasticsearch-curator
   single_machine:
     - kubernetes-master
-    - rabbitmq
+    - rabbitmql
