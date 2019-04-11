@@ -10,6 +10,7 @@ from cli.helpers.role_name_helper import adjust_name
 
 
 class AnsibleRunner(Step):
+
     ANSIBLE_PLAYBOOKS_PATH = "/../../../../core/src/ansible/"
 
     def __init__(self, cluster_model, config_docs):
