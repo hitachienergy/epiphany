@@ -15,6 +15,7 @@
   - [How to scale Kubernetes and Kafka](#how-to-scale-kubernetes-and-kafka)
   - [Kafka replication and partition setting](#kafka-replication-and-partition-setting)
   - [RabbitMQ installation and setting](#rabbitmq-installation-and-setting)
+  - [Single machine cluster](#single-machine-cluster)
 - Monitoring
   - [Import and create of Grafana dashboards](#import-and-create-of-grafana-dashboards)
   - [How to configure Kibana](#how-to-configure-kibana)
@@ -30,7 +31,8 @@
   - [How to run chaos on Epiphany Kubernetes cluster and monitor it with Grafana](#how-to-run-chaos-on-epiphany-kubernetes-cluster-and-monitor-it-with-grafana)
   - [How to tunnel Kubernetes dashboard from remote kubectl to your PC](#how-to-tunnel-kubernetes-dashboard-from-remote-kubectl-to-your-pc)
   - [How to setup Azure VM as docker machine for development](#how-to-setup-azure-vm-as-docker-machine-for-development)
-  - [How to upgrade Kubernetes cluster](#how-to-upgrade-kubernete-cluster)
+  - [How to upgrade Kubernetes cluster](#how-to-upgrade-kubernetes-cluster)
+  - [How to upgrade Kubernetes cluster from 1.13.0 to 1.13.1](#how-to-upgrade-kubernetes-cluster-from-1130-to-1131)
   - [How to authenticate to Azure AD app](#how-to-authenticate-to-azure-ad-app)
   - [How to expose service through HA Proxy load balancer](#how-to-expose-service-lb)
 - Security
@@ -821,13 +823,167 @@ Upgrade procedure might be different for each Kubernetes version. Upgrade shall 
 
 Each version can be upgraded in a bit different way, to find information how to upgrade your version of Kubernetes please use this [guide](https://kubernetes.io/docs/reference/setup-tools/kubeadm/kubeadm-upgrade/#kubeadm-upgrade-guidance).
 
-Epiphany use kubeadm to boostrap a cluster and same tool shall be used to upgrade it.
+Epiphany uses kubeadm to boostrap a cluster and the same tool is also used to upgrade it.
 
 Upgrading Kubernetes cluster with running applications shall be done step by step. To prevent your applications downtime you should use at least **two Kubernetes worker nodes** and at least **two instances of each of your service**.
 
 Start cluster upgrade with upgrading master node. Detailed instructions how to upgrade each node, including master, are described in guide linked above. When Kubernetes master is down it does not affect running applications, at this time only control plane is not operating. **Your services will be running but will not be recreated nor scaled when control plane is down.**
 
 Once master upgrade finished successfully, you shall start upgrading nodes - **one by one**. Kubernetes master will notice when worker node is down and it will instatiate services on existing operating node, that is why it is essential to have more than one worker node in cluster to minimize applications downtime.
+
+## How to upgrade Kubernetes cluster from 1.13.0 to 1.13.1
+
+Detailed instruction can be found in [Kubernetes upgrade to 1.13 documentation](https://kubernetes.io/docs/tasks/administer-cluster/kubeadm/kubeadm-upgrade-1-13/)
+
+### Ubuntu Server
+
+#### Upgrade Master
+
+```bash
+# RUN ON MASTER
+
+1. sudo kubeadm version # should show v1.13.0
+2. sudo kubeadm upgrade plan v1.13.1
+
+3. apt update
+4. apt-cache policy kubeadm
+
+
+5. sudo apt-mark unhold kubeadm && \
+sudo apt-get update && sudo apt-get install -y kubeadm=1.13.1-00 && \
+sudo apt-mark hold kubeadm
+
+6. sudo kubeadm version # should show v1.13.1
+7. sudo kubeadm upgrade plan v1.13.1
+
+8. sudo kubeadm upgrade apply v1.13.1
+
+9. sudo apt-mark unhold kubelet && \
+sudo apt-get update && sudo apt-get install -y kubelet=1.13.1-00 && \
+sudo apt-mark hold kubelet
+```
+
+#### Upgrade Worker Nodes
+
+Commands below should be run in context of each node in the cluster. Variable `$NODE` represents node name (node names can be retrieved by command `kubectl get nodes` on master)
+
+Worker nodes will be upgraded one by one - it will prevent application downtime.
+
+```bash
+
+# RUN ON WORKER NODE - $NODE
+
+1. sudo apt-mark unhold kubectl && \
+sudo apt-get update && sudo apt-get install -y kubectl=1.13.1-00 && \
+sudo apt-mark hold kubectl
+
+# RUN ON MASTER
+
+2. kubectl drain $NODE --ignore-daemonsets
+
+# RUN ON WORKER NODE - $NODE
+
+3. sudo kubeadm upgrade node config --kubelet-version v1.13.1
+
+4. sudo apt-get update
+5. sudo apt-get install -y kubelet=1.13.1-00 kubeadm=1.13.1-00
+
+6. sudo systemctl restart kubelet
+7. sudo systemctl status kubelet # should be running
+
+# RUN ON MASTER
+
+8. kubectl uncordon $NODE
+
+9. # go to 1. for next node
+
+# RUN ON MASTER
+10. kubectl get nodes # should return nodes in status "Ready" and version 1.13.1
+
+```
+
+### RHEL
+
+#### Upgrade Docker version
+
+Upgrading Kubernetes to 1.13.1 on RHEL requires Docker upgrade. Newer Docker packages exist in docker-ce repository but you can use newer Docker-ee if you need. Verified Docker versions for Kubernetes are: 1.11.1, 1.12.1, 1.13.1, 17.03, 17.06, 17.09, 18.06. [Go to K8s docs](https://github.com/kubernetes/kubernetes/blob/master/CHANGELOG-1.13.md#external-dependencies)
+
+```bash
+
+# Remove previous docker version
+1 sudo yum remove docker \
+                  docker-common \
+                  container-selinux \
+                  docker-selinux \
+                  docker-engine
+2. sudo rm -rf /var/lib/docker
+3. sudo rm -rf /run/docker
+4. sudo rm -rf /var/run/docker
+5. sudo rm -rf /etc/docker
+
+# Add docker-ce repository
+6. sudo yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
+7. sudo yum makecache fast
+8. sudo yum -y install docker-ce-18.06.3.ce-3.el7
+
+```
+
+#### Upgrade Master
+
+```bash
+# RUN ON MASTER
+
+1. sudo kubeadm version # should show v1.13.0
+2. sudo kubeadm upgrade plan v1.13.1
+
+3. sudo yum install -y kubeadm-1.13.1-0 --disableexcludes=kubernetes
+
+4. sudo kubeadm version # should show v1.13.1
+5. sudo kubeadm upgrade plan v1.13.1
+
+6. sudo kubeadm upgrade apply v1.13.1
+
+7. sudo yum install -y kubelet-1.13.1-0 --disableexcludes=kubernetes
+
+```
+
+#### Upgrade Worker Nodes
+
+Commands below should be run in context of each node in the cluster. Variable `$NODE` represents node name (node names can be retrieved by command `kubectl get nodes` on master)
+
+Worker nodes will be upgraded one by one - it will prevent application downtime.
+
+```bash
+
+# RUN ON WORKER NODE - $NODE
+
+1. yum install -y kubectl-1.13.1-0 --disableexcludes=kubernetes
+
+# RUN ON MASTER
+
+2. kubectl drain $NODE --ignore-daemonsets
+
+# RUN ON WORKER NODE - $NODE
+
+3. # Upgrade Docker version using instruction from above
+
+4. sudo kubeadm upgrade node config --kubelet-version v1.13.1
+
+5. sudo yum install -y kubelet-1.13.1-0 kubeadm-1.13.1-0 --disableexcludes=kubernetes
+
+6. sudo systemctl restart kubelet
+7. sudo systemctl status kubelet # should be running
+
+# RUN ON MASTER
+
+8. kubectl uncordon $NODE
+
+9. # go to 1. for next node
+
+# RUN ON MASTER
+10. kubectl get nodes # should return nodes in status "Ready" and version 1.13.1
+
+```
 
 ## How to upgrade Kafka cluster
 
@@ -952,6 +1108,35 @@ You can read more [here](https://www.confluent.io/blog/how-choose-number-topics-
 ## RabbitMQ installation and setting
 
 To install RabbitMQ in single mode just add rabbitmq role to your data.yaml for your sever and in general roles section. All configuration on RabbitMQ - e.g. user other than guest creation should be performed manually.
+
+## Single machine cluster
+
+In certain circumstances it might be desired to run an Epiphany cluster on a single machine. There are 2 example data.yamls provided for baremetal and Azure:
+
+- `/core/data/metal/epiphany-single-machine/data.yaml`
+- `/core/data/azure/infrastructure/epiphany-single-machine/data.yaml`
+
+These will install the following minimal set of components on the machine:
+
+- kubernetes master (Untainted so it can run and manage deployments)
+- node_exporter
+- prometheus
+- grafana
+- rabbitmq
+- postgresql (for keycloak)
+- keycloak (2 instances)
+
+This bare installation will consume arround 2.8Gb of memory with the following base memory usage of the different components:
+
+- kubernetes    : 904 MiB
+- node_exporter : 38 MiB
+- prometheus    : 133 MiB
+- grafana       : 54 MiB
+- rabbitmq      : 85 MiB
+- postgresql    : 35 MiB
+- keycloak      : 1 Gb
+
+Additional resource consumption will be highly dependant on how the cluster is utilized and it will be up to the product teams to define there hardware requirements. The absolute bare minimum this cluster was tested on was a quadcore CPU with 8Gb of ram and 60Gb of storage. However a minimum of an 8 core CPU with 16Gb of ram and 100Gb of storage would be recommended.
 
 ## Data and log retention
 

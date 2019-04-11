@@ -9,7 +9,7 @@
 title: Epiphany ({{ azure.image_offer }}) {{ environment_name }}
 
 kind: datafile
-version: 0.2.0
+version: 0.2.2
 
 # NOTE: Any data values that are empty put "" or the value None will be used in the templates for those attributes.
 
@@ -27,7 +27,7 @@ core:
 
   build:
     # IMPORTANT - will be appended to release name and output folder and part of the template names
-    version: &version 0.1.21
+    version: &version 0.2.2
     # Type of build environment
     environment: &env development
     # Name of the given release. Version will be appended
@@ -1167,7 +1167,7 @@ core:
 {% endif %}
 
   kubernetes:
-    version: 1.13.0
+    version: 1.13.1
     # image_registry_secrets:
     # - name: regcred
     #   server_url: your-registry-url 
