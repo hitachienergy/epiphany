@@ -204,15 +204,15 @@ ansible all -i $EPIPHANY_DATA_DIR/inventory/$ANSIBLE_ENV -m setup
 # Bootstrap the nodes with needed packages etc.
 # ansible-playbook -i $EPIPHANY_DATA_DIR/inventory/$ANSIBLE_ENV $EPIPHANY_DATA_DIR/main.yml
 ansible-playbook -i $EPIPHANY_DATA_DIR/inventory/$ANSIBLE_ENV $EPIPHANY_DATA_DIR/common.yml;
-ansible-playbook -i $EPIPHANY_DATA_DIR/inventory/$ANSIBLE_ENV $EPIPHANY_DATA_DIR/master.yml;
-ansible-playbook -i $EPIPHANY_DATA_DIR/inventory/$ANSIBLE_ENV $EPIPHANY_DATA_DIR/worker.yml;
+ansible-playbook -i $EPIPHANY_DATA_DIR/inventory/$ANSIBLE_ENV $EPIPHANY_DATA_DIR/kubernetes_master.yml;
+ansible-playbook -i $EPIPHANY_DATA_DIR/inventory/$ANSIBLE_ENV $EPIPHANY_DATA_DIR/kubernetes_node.yml;
 ansible-playbook -i $EPIPHANY_DATA_DIR/inventory/$ANSIBLE_ENV $EPIPHANY_DATA_DIR/elasticsearch.yml;
-ansible-playbook -i $EPIPHANY_DATA_DIR/inventory/$ANSIBLE_ENV $EPIPHANY_DATA_DIR/elasticsearch-curator.yml;
+ansible-playbook -i $EPIPHANY_DATA_DIR/inventory/$ANSIBLE_ENV $EPIPHANY_DATA_DIR/elasticsearch_curator.yml;
 ansible-playbook -i $EPIPHANY_DATA_DIR/inventory/$ANSIBLE_ENV $EPIPHANY_DATA_DIR/kibana.yml;
 ansible-playbook -i $EPIPHANY_DATA_DIR/inventory/$ANSIBLE_ENV $EPIPHANY_DATA_DIR/filebeat.yml;
 ansible-playbook -i $EPIPHANY_DATA_DIR/inventory/$ANSIBLE_ENV $EPIPHANY_DATA_DIR/prometheus.yml;
 ansible-playbook -i $EPIPHANY_DATA_DIR/inventory/$ANSIBLE_ENV $EPIPHANY_DATA_DIR/grafana.yml;
-ansible-playbook -i $EPIPHANY_DATA_DIR/inventory/$ANSIBLE_ENV $EPIPHANY_DATA_DIR/jmx-exporter.yml;
+ansible-playbook -i $EPIPHANY_DATA_DIR/inventory/$ANSIBLE_ENV $EPIPHANY_DATA_DIR/jmx_exporter.yml;
 ansible-playbook -i $EPIPHANY_DATA_DIR/inventory/$ANSIBLE_ENV $EPIPHANY_DATA_DIR/zookeeper.yml;
 ansible-playbook -i $EPIPHANY_DATA_DIR/inventory/$ANSIBLE_ENV $EPIPHANY_DATA_DIR/kafka.yml;
 ansible-playbook -i $EPIPHANY_DATA_DIR/inventory/$ANSIBLE_ENV $EPIPHANY_DATA_DIR/node_exporter.yml;
@@ -221,7 +221,7 @@ ansible-playbook -i $EPIPHANY_DATA_DIR/inventory/$ANSIBLE_ENV $EPIPHANY_DATA_DIR
 ansible-playbook -i $EPIPHANY_DATA_DIR/inventory/$ANSIBLE_ENV $EPIPHANY_DATA_DIR/haproxy_tls_termination.yml;
 ansible-playbook -i $EPIPHANY_DATA_DIR/inventory/$ANSIBLE_ENV $EPIPHANY_DATA_DIR/postgresql.yml;
 ansible-playbook -i $EPIPHANY_DATA_DIR/inventory/$ANSIBLE_ENV $EPIPHANY_DATA_DIR/rabbitmq.yml;
-ansible-playbook -i $EPIPHANY_DATA_DIR/inventory/$ANSIBLE_ENV $EPIPHANY_DATA_DIR/kafka-exporter.yml;
+ansible-playbook -i $EPIPHANY_DATA_DIR/inventory/$ANSIBLE_ENV $EPIPHANY_DATA_DIR/kafka_exporter.yml;
 ansible-playbook -i $EPIPHANY_DATA_DIR/inventory/$ANSIBLE_ENV $EPIPHANY_DATA_DIR/reboot.yml;
 ansible-playbook -i $EPIPHANY_DATA_DIR/inventory/$ANSIBLE_ENV $EPIPHANY_DATA_DIR/deployments.yml;
 
