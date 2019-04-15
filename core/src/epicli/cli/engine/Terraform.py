@@ -28,9 +28,9 @@ class Terraform:
     def check(self):
         try:
             # todo add terraform version check?
-            output = subprocess.check_output('terraform --version', shell=False)
+            output = subprocess.check_output(['terraform', '-version'])
             self.logger.info(output.decode().split('\n')[0])
-        except Exception:
+        except subprocess.CalledProcessError as e:
             raise Exception('Terraform does not seem to be installed')
 
     @staticmethod
