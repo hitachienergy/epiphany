@@ -3,10 +3,10 @@
   stat:
     path: "/tmp/kafka_{{ kafka_var.scala.version }}-{{ kafka_var.version }}.tgz"
   register: kafka_check
-
+  
 - name: Fetch Kafka binary package
   get_url:
-    url: "http://apache.mirrors.tds.net/kafka/{{ kafka_var.version }}/kafka_{{ kafka_var.scala.version }}-{{ kafka_var.version }}.tgz"
+    url: "https://archive.apache.org/dist/kafka/{{ kafka_var.version }}/kafka_{{ kafka_var.scala.version }}-{{ kafka_var.version }}.tgz"
     dest: "/tmp/kafka_{{ kafka_var.scala.version }}-{{ kafka_var.version }}.tgz"
   when: not kafka_check.stat.exists
 
