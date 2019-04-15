@@ -4,7 +4,7 @@ RUN mkdir /tmp/keys
 
 RUN ssh-keygen -q -t rsa -N '' -f /tmp/keys/id_rsa
 
-RUN apk add --no-cache ruby ruby-rdoc ruby-irb ruby-rake
+RUN apk add --no-cache ruby ruby-rdoc ruby-irb ruby-rake ruby-etc
 
 RUN gem install bundler -v 1.16.3
 
