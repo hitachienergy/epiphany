@@ -15,6 +15,8 @@ jsonschema = "*"
 python-json-logger = "*"
 ansible-runner = "*"
 psutil = "*"
+ansible = "*"
+terraform-binary = "*"
 
 [requires]
 python_version = "3.7"
