@@ -2,7 +2,7 @@ FROM epiphanyregistry.azurecr.io/epiphany-deploy:latest
 
 RUN mkdir /tmp/keys
 
-RUN ssh-keygen -q -t rsa -N '' -f /tmp/keys/id_rsa
+RUN ssh-keygen -q -t rsa -m PEM -N '' -f /tmp/keys/id_rsa
 
 RUN apk add --no-cache ruby ruby-rdoc ruby-irb ruby-rake ruby-etc
 
