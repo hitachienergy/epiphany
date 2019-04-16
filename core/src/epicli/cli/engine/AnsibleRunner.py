@@ -1,8 +1,7 @@
 import os
 import time
 
-import ansible_runner
-
+from cli.engine.AnsibleCommand import AnsibleCommand
 from cli.engine.AnsibleInventoryCreator import AnsibleInventoryCreator
 from cli.helpers.Step import Step
 from cli.helpers.build_saver import get_inventory_path, get_ansible_path, copy_files_recursively
@@ -10,7 +9,6 @@ from cli.helpers.role_name_helper import adjust_name
 
 
 class AnsibleRunner(Step):
-
     ANSIBLE_PLAYBOOKS_PATH = "/../../../../core/src/ansible/"
 
     def __init__(self, cluster_model, config_docs):
@@ -18,6 +16,7 @@ class AnsibleRunner(Step):
         self.cluster_model = cluster_model
         self.config_docs = config_docs
         self.inventory_creator = AnsibleInventoryCreator(cluster_model, config_docs, use_public_ips=True)
+        self.ansible_command = AnsibleCommand()
 
     def __enter__(self):
         super().__enter__()
@@ -44,45 +43,24 @@ class AnsibleRunner(Step):
 
         copy_files_recursively(src, get_ansible_path(self.cluster_model.specification.name))
 
+        self.ansible_command.check()
+
         # todo: install packages to run ansible on Red Hat hosts
-        for i in range(2):
-            runner = ansible_runner.run(private_data_dir=get_ansible_path(self.cluster_model.specification.name),
-                                        host_pattern="all", inventory=inventory_path,
-                                        module='raw', module_args='sudo apt-get install -y python-simplejson')
-            print(runner.status)
+        self.ansible_command.run_task_with_retries(hosts="all", inventory=inventory_path, module="raw",
+                                                   args="sudo apt-get install -y python-simplejson", retries=5)
 
-            if runner.status.lower() == "successful":
-                break
+        self.ansible_command.run_playbook_with_retries(inventory=inventory_path,
+                                                       playbook_path=os.path.join(
+                                                           get_ansible_path(self.cluster_model.specification.name),
+                                                           "common.yml"), retries=5)
 
-            time.sleep(10)
-
-        for i in range(2):
-            runner = ansible_runner.run(private_data_dir=get_ansible_path(self.cluster_model.specification.name),
-                                        host_pattern="all", inventory=inventory_path,
-                                        playbook=os.path.join(get_ansible_path(self.cluster_model.specification.name),
-                                                              "common.yml"))
-            print(runner.status)
-
-            if runner.status.lower() == "successful":
-                break
-
-            time.sleep(10)
-
-        # todo rename ansible playbooks
         for component in self.cluster_model.specification["components"]:
-            print(component)
 
             roles = self.inventory_creator.get_roles_for_feature(component_key=component)
 
             for role in roles:
-                runner = ansible_runner.run(private_data_dir=get_ansible_path(self.cluster_model.specification.name),
-                                            host_pattern="all", inventory=inventory_path,
-                                            playbook=os.path.join(get_ansible_path(self.cluster_model.specification.name),
-                                                              adjust_name(role) + ".yml"))
-
-            print(runner.status)
-
-            if runner.status.lower() == "successful":
-                break
-
-            time.sleep(10)
+                self.ansible_command.run_playbook_with_retries(inventory=inventory_path,
+                                                               playbook_path=os.path.join(
+                                                                   get_ansible_path(
+                                                                       self.cluster_model.specification.name),
+                                                                   adjust_name(role) + ".yml"), retries=5)

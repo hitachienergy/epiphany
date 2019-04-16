@@ -1,5 +1,5 @@
 ---
-# Docker (used by master & worker as dependency)
+# Docker (used by kubernetes_master & kubernetes_node as dependency)
 
 - include_tasks: "{{ ansible_os_family }}.yml"
 
