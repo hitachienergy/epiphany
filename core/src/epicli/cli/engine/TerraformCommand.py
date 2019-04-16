@@ -25,14 +25,6 @@ class TerraformCommand:
     def init(self):
         self.run(self, self.INIT_COMMAND)
 
-    def check(self):
-        try:
-            # todo add terraform version check?
-            output = subprocess.check_output(['terraform', '-version'])
-            self.logger.info(output.decode().split('\n')[0])
-        except subprocess.CalledProcessError as e:
-            raise Exception('Terraform does not seem to be installed')
-
     @staticmethod
     def run(self, command, auto_approve=False):
         cmd = ['terraform', command]

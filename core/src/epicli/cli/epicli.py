@@ -1,3 +1,4 @@
+#!/usr/local/bin -S pipenv run python
 import sys
 import argparse
 
