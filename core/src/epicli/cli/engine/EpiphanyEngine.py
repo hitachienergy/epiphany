@@ -10,7 +10,7 @@ from cli.helpers.provider_class_loader import provider_class_loader
 from cli.engine.DefaultMerger import DefaultMerger
 from cli.engine.SchemaValidator import SchemaValidator
 from cli.engine.ConfigurationAppender import ConfigurationAppender
-from cli.engine.TemplateGenerator import TemplateGenerator
+from cli.engine.TerraformTemplateGenerator import TemplateGenerator
 from cli.engine.TerraformRunner import TerraformRunner
 from cli.engine.AnsibleRunner import AnsibleRunner
 
