@@ -55,7 +55,7 @@ class AnsibleCommand:
 
             except Exception as e:
                 self.logger.error("There was exception running module: " + module + " with parameters: " + args +
-                                  ". Will retry 5 times. Retry: " + str(i))
+                                  ". Will retry 5 times. Retry: " + str(i + 1))
                 self.logger.error(e)
                 time.sleep(timeout)
 
@@ -89,6 +89,6 @@ class AnsibleCommand:
 
             except Exception as e:
                 self.logger.error("There was exception running ansible playbook: " + playbook_path +
-                                  ". Will retry 5 times. Retry: " + str(i))
+                                  ". Will retry 5 times. Retry: " + str(i + 1))
                 self.logger.error(e)
                 time.sleep(timeout)
