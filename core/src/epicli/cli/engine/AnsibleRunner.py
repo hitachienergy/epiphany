@@ -24,7 +24,7 @@ class AnsibleRunner(Step):
         return self
 
     def __exit__(self, exc_type, exc_value, traceback):
-        super().__exit__(exc_type, exc_value, traceback);
+        super().__exit__(exc_type, exc_value, traceback)
         self.inventory_creator.__exit__(exc_type, exc_value, traceback)
 
     def run(self):
@@ -42,8 +42,6 @@ class AnsibleRunner(Step):
         src = os.path.dirname(__file__) + AnsibleRunner.ANSIBLE_PLAYBOOKS_PATH
 
         copy_files_recursively(src, get_ansible_path(self.cluster_model.specification.name))
-
-        self.ansible_command.check()
 
         # todo: install packages to run ansible on Red Hat hosts
         self.ansible_command.run_task_with_retries(hosts="all", inventory=inventory_path, module="raw",
