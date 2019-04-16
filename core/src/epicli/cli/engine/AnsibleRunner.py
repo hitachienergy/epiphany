@@ -1,7 +1,6 @@
 import os
 import time
 
-# import ansible_runner
 from cli.engine.AnsibleCommand import AnsibleCommand
 from cli.engine.AnsibleInventoryCreator import AnsibleInventoryCreator
 from cli.helpers.Step import Step
@@ -47,33 +46,21 @@ class AnsibleRunner(Step):
         self.ansible_command.check()
 
         # todo: install packages to run ansible on Red Hat hosts
-        for i in range(2):
-            self.ansible_command.run_task(hosts="all", inventory=inventory_path, module="raw",
-                                          args="sudo apt-get install -y python-simplejson")
+        self.ansible_command.run_task_with_retries(hosts="all", inventory=inventory_path, module="raw",
+                                                   args="sudo apt-get install -y python-simplejson", retries=5)
 
-            time.sleep(10)
+        self.ansible_command.run_playbook_with_retries(inventory=inventory_path,
+                                                       playbook_path=os.path.join(
+                                                           get_ansible_path(self.cluster_model.specification.name),
+                                                           "common.yml"), retries=5)
 
-        for i in range(2):
+        for component in self.cluster_model.specification["components"]:
 
-            self.ansible_command.run_playbook(inventory=inventory_path,
-                                              playbook_path=os.path.join(
-                                                  get_ansible_path(self.cluster_model.specification.name),
-                                                  "common.yml"))
+            roles = self.inventory_creator.get_roles_for_feature(component_key=component)
 
-            # todo: break loop if successful
-
-            time.sleep(10)
-
-            for component in self.cluster_model.specification["components"]:
-
-                roles = self.inventory_creator.get_roles_for_feature(component_key=component)
-
-                for role in roles:
-                    self.ansible_command.run_playbook(inventory=inventory_path,
-                                                      playbook_path=os.path.join(
-                                                          get_ansible_path(self.cluster_model.specification.name),
-                                                      adjust_name(role) + ".yml"))
-
-                # todo: break loop if successful
-
-                time.sleep(10)
+            for role in roles:
+                self.ansible_command.run_playbook_with_retries(inventory=inventory_path,
+                                                               playbook_path=os.path.join(
+                                                                   get_ansible_path(
+                                                                       self.cluster_model.specification.name),
+                                                                   adjust_name(role) + ".yml"), retries=5)

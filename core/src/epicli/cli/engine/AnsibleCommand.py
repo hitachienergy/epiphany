@@ -1,6 +1,7 @@
 import os
 import subprocess
 from cli.helpers.Log import LogPipe, Log
+import time
 
 
 class AnsibleCommand:
@@ -18,8 +19,7 @@ class AnsibleCommand:
             output = subprocess.check_output(['ansible', '--version'])
             self.logger.info(output.decode().split('\n')[0])
         except subprocess.CalledProcessError as e:
-            raise Exception('Terraform does not seem to be installed')
-
+            raise Exception('Ansible does not seem to be installed')
 
     def run_task(self, hosts, inventory, module, args):
         cmd = ['ansible']
@@ -45,6 +45,19 @@ class AnsibleCommand:
         else:
             self.logger.info('Done running "' + ' '.join(cmd) + '"')
 
+    def run_task_with_retries(self, inventory, module, args, hosts, retries, timeout=10):
+        for i in range(retries):
+
+            try:
+                self.run_task(hosts=hosts, inventory=inventory, module=module,
+                              args=args)
+                break
+
+            except Exception as e:
+                self.logger.error("There was exception running module: " + module + " with parameters: " + args +
+                                  ". Will retry 5 times. Retry: " + str(i))
+                self.logger.error(e)
+                time.sleep(timeout)
 
     def run_playbook(self, inventory, playbook_path):
         cmd = ['ansible-playbook']
@@ -64,3 +77,18 @@ class AnsibleCommand:
             raise Exception('Error running: "' + ' '.join(cmd) + '"')
         else:
             self.logger.info('Done running "' + ' '.join(cmd) + '"')
+
+    def run_playbook_with_retries(self, inventory, playbook_path, retries, timeout=10):
+        for i in range(retries):
+
+            try:
+                self.run_playbook(inventory=inventory,
+                                  playbook_path=playbook_path)
+
+                break
+
+            except Exception as e:
+                self.logger.error("There was exception running ansible playbook: " + playbook_path +
+                                  ". Will retry 5 times. Retry: " + str(i))
+                self.logger.error(e)
+                time.sleep(timeout)
