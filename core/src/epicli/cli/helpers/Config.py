@@ -3,7 +3,7 @@ import os
 class Config:
     class __ConfigBase:
         def __init__(self):
-            self._docker_cli = os.environ.get('DOCKER_CLI', False)
+            self._docker_cli = bool(os.environ.get('DOCKER_CLI', ''))
 
             self._output_dir = os.path.join(os.path.dirname(__file__), '../../output/')
             if self._docker_cli:
