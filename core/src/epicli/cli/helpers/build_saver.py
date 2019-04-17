@@ -2,9 +2,8 @@ import distutils
 import os
 from cli.helpers.data_loader import load_template_file, types
 from cli.helpers.yaml_helpers import dump_all
+from cli.helpers.Config import Config
 
-# TODO Make output path configurable
-OUTPUT_FOLDER_PATH = '../../output/'
 TERRAFORM_OUTPUT_DIR = 'terraform/'
 MANIFEST_FILE_NAME = 'manifest.yml'
 INVENTORY_FILE_NAME = 'inventory'
@@ -38,7 +37,7 @@ def save_to_file(file_path, content):
 
 
 def get_output_path():
-    output_dir = os.path.join(os.path.dirname(__file__), OUTPUT_FOLDER_PATH)
+    output_dir = os.path.join(os.path.dirname(__file__), Config().output_dir)
     if not os.path.exists(output_dir):
         os.makedirs(output_dir)
     return output_dir
