@@ -3,7 +3,7 @@ from cli.helpers.build_saver import save_terraform_file
 from cli.helpers.Step import Step
 
 
-class TemplateGenerator(Step):
+class TerraformTemplateGenerator(Step):
 
     def __init__(self, cluster_model, infrastructure):
         super().__init__(__name__)

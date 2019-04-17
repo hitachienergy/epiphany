@@ -3,6 +3,7 @@ import time
 
 from cli.engine.AnsibleCommand import AnsibleCommand
 from cli.engine.AnsibleInventoryCreator import AnsibleInventoryCreator
+from cli.engine.AnsibleVarsGenerator import AnsibleVarsGenerator
 from cli.helpers.Step import Step
 from cli.helpers.build_saver import get_inventory_path, get_ansible_path, copy_files_recursively
 from cli.helpers.role_name_helper import adjust_name
@@ -17,6 +18,7 @@ class AnsibleRunner(Step):
         self.config_docs = config_docs
         self.inventory_creator = AnsibleInventoryCreator(cluster_model, config_docs, use_public_ips=True)
         self.ansible_command = AnsibleCommand()
+        self.ansible_vars_generator = AnsibleVarsGenerator(cluster_model, config_docs)
 
     def __enter__(self):
         super().__enter__()
@@ -46,6 +48,8 @@ class AnsibleRunner(Step):
         # todo: install packages to run ansible on Red Hat hosts
         self.ansible_command.run_task_with_retries(hosts="all", inventory=inventory_path, module="raw",
                                                    args="sudo apt-get install -y python-simplejson", retries=5)
+
+        self.ansible_vars_generator.run()
 
         self.ansible_command.run_playbook_with_retries(inventory=inventory_path,
                                                        playbook_path=os.path.join(

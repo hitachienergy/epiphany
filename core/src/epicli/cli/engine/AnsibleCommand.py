@@ -69,6 +69,7 @@ class AnsibleCommand:
 
     def run_playbook_with_retries(self, inventory, playbook_path, retries, timeout=10):
         for i in range(retries):
+
             try:
                 self.run_playbook(inventory=inventory,
                                   playbook_path=playbook_path)
