@@ -27,7 +27,7 @@ def main(arguments):
 
     # add some arguments to the general config so we can easily use them throughout the CLI
     args = parser.parse_args(arguments)
-    config.output_dir = args.output_dir
+    config.output_dir = args.output_dir if hasattr(args, 'output_dir') else None
     config.log_file = args.log_name
     dump_config(config)
 

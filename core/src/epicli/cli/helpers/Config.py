@@ -5,10 +5,9 @@ class Config:
         def __init__(self):
             self._docker_cli = os.environ.get('DOCKER_CLI', False)
             self._log_file = 'log.json'
+            self._output_dir = os.path.join(os.path.dirname(__file__), '../../output/')
             if self._docker_cli:
                 self._output_dir = '/shared/'
-            else:
-                self._output_dir = os.path.join(os.path.dirname(__file__), '../../output/')
 
         @property
         def output_dir(self):
