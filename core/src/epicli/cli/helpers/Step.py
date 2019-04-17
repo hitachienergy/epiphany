@@ -5,7 +5,7 @@ from abc import ABCMeta, abstractmethod
 
 class Step(metaclass=ABCMeta):
     def __init__(self, step_name):
-        self.logger = Log.get_logger(step_name)
+        self.logger = Log(step_name)
 
     def __enter__(self):
         self.start = time.time()
