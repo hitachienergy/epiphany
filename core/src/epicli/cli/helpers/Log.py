@@ -4,26 +4,28 @@ import os
 from pythonjsonlogger import jsonlogger
 from cli.helpers.build_saver import get_output_path
 
-# todo make logfile configurable?
 LOG_FILE = 'log.json'
 LOG_FORMAT = '%(asctime)s %(levelname)s %(name)s - %(message)s'
 LOG_DATE_FMT = '%H:%M:%S'
 
 
 class Log:
-    json_handler = None
+    class __LogBase:
+        json_handler = None
 
-    @classmethod
-    def setup_logging(cls, log_level):
-        logging.basicConfig(level=log_level, format=LOG_FORMAT, datefmt=LOG_DATE_FMT)
-        formatter = jsonlogger.JsonFormatter(LOG_FORMAT, datefmt=LOG_DATE_FMT)
-        cls.json_handler = logging.FileHandler(filename=os.path.join(get_output_path(), LOG_FILE))
-        cls.json_handler.setFormatter(formatter)
+        def __init__(self):
+            logging.basicConfig(level=logging.INFO, format=LOG_FORMAT, datefmt=LOG_DATE_FMT)
+            formatter = jsonlogger.JsonFormatter(LOG_FORMAT, datefmt=LOG_DATE_FMT)
+            self.json_handler = logging.FileHandler(filename=os.path.join(get_output_path(), LOG_FILE))
+            self.json_handler.setFormatter(formatter)
 
-    @classmethod
-    def get_logger(cls, logger_name):
+    instance = None
+
+    def __new__(cls, logger_name):
+        if Log.instance is None:
+            Log.instance = Log.__LogBase()
         logger = logging.getLogger(logger_name)
-        logger.addHandler(cls.json_handler)
+        logger.addHandler(Log.instance.json_handler)
         return logger
 
 
@@ -31,7 +33,7 @@ class LogPipe(threading.Thread):
 
     def __init__(self, logger_name):
         threading.Thread.__init__(self)
-        self.logger = Log.get_logger(logger_name)
+        self.logger = Log(logger_name)
         self.daemon = False
         self.fdRead, self.fdWrite = os.pipe()
         self.pipeReader = os.fdopen(self.fdRead)

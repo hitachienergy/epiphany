@@ -6,7 +6,7 @@ from cli.helpers.Log import LogPipe, Log
 class TerraformCommand:
 
     def __init__(self, working_directory=os.path.dirname(__file__)):
-        self.logger = Log.get_logger(__name__)
+        self.logger = Log(__name__)
         self.APPLY_COMMAND = "apply"
         self.DESTROY_COMMAND = "destroy"
         self.PLAN_COMMAND = "plan"

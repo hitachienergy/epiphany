@@ -7,11 +7,11 @@ import time
 class AnsibleCommand:
 
     def __init__(self, working_directory=os.path.dirname(__file__)):
-        self.logger = Log.get_logger(__name__)
+        self.logger = Log(__name__)
         self.working_directory = working_directory
 
     def __init__(self):
-        self.logger = Log.get_logger(__name__)
+        self.logger = Log(__name__)
 
     def run_task(self, hosts, inventory, module, args):
         cmd = ['ansible']
@@ -44,6 +44,7 @@ class AnsibleCommand:
                               args=args)
                 break
             except Exception as e:
+                self.logger.error(e)
                 self.logger.info("Retry running task: " + str(i + 1) + "/" + str(retries))
                 time.sleep(timeout)
 

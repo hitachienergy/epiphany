@@ -20,9 +20,7 @@ class EpiphanyEngine:
         self.file_path = input_data.file
         # Todo: set the context from the commandline
         # self.context = input_data.context
-        # Todo: set log level from cmdline
-        Log.setup_logging(logging.INFO)
-        self.logger = Log.get_logger(__name__)
+        self.logger = Log(__name__)
 
     def __enter__(self):
         return self
@@ -82,9 +80,11 @@ class EpiphanyEngine:
             # Run Ansible to provision infrastructure
             with AnsibleRunner(cluster_model, docs) as ansible_runner:
                 ansible_runner.run()
+
+            return 0
         except Exception as e:
             self.logger.error(e, exc_info=True) #TODO extensive debug output might not always be wanted. Make this configurable with input flag?
-            sys.exit(1)
+            return 1
 
 
 
