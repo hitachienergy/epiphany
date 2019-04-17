@@ -10,7 +10,7 @@ from cli.helpers.provider_class_loader import provider_class_loader
 from cli.engine.DefaultMerger import DefaultMerger
 from cli.engine.SchemaValidator import SchemaValidator
 from cli.engine.ConfigurationAppender import ConfigurationAppender
-from cli.engine.TerraformTemplateGenerator import TemplateGenerator
+from cli.engine.TerraformTemplateGenerator import TerraformTemplateGenerator
 from cli.engine.TerraformRunner import TerraformRunner
 from cli.engine.AnsibleRunner import AnsibleRunner
 
@@ -72,7 +72,7 @@ class EpiphanyEngine:
             save_manifest(docs, cluster_model.specification.name)
 
             # Generate terraform templates
-            with TemplateGenerator(cluster_model, infrastructure) as template_generator:
+            with TerraformTemplateGenerator(cluster_model, infrastructure) as template_generator:
                 template_generator.run()
 
             # Run Terraform to create infrastructure
