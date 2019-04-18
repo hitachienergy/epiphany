@@ -3,8 +3,8 @@ import threading
 import os
 from pythonjsonlogger import jsonlogger
 from cli.helpers.build_saver import get_output_path
+from cli.helpers.Config import Config
 
-LOG_FILE = 'log.json'
 LOG_FORMAT = '%(asctime)s %(levelname)s %(name)s - %(message)s'
 LOG_DATE_FMT = '%H:%M:%S'
 
@@ -14,9 +14,10 @@ class Log:
         json_handler = None
 
         def __init__(self):
+            config = Config()
             logging.basicConfig(level=logging.INFO, format=LOG_FORMAT, datefmt=LOG_DATE_FMT)
             formatter = jsonlogger.JsonFormatter(LOG_FORMAT, datefmt=LOG_DATE_FMT)
-            self.json_handler = logging.FileHandler(filename=os.path.join(get_output_path(), LOG_FILE))
+            self.json_handler = logging.FileHandler(filename=os.path.join(get_output_path(), config.log_file))
             self.json_handler.setFormatter(formatter)
 
     instance = None
