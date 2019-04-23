@@ -1,12 +1,10 @@
 import logging
+import logging.handlers
 import threading
 import os
 from pythonjsonlogger import jsonlogger
 from cli.helpers.build_saver import get_output_path
 from cli.helpers.Config import Config
-
-LOG_FORMAT = '%(asctime)s %(levelname)s %(name)s - %(message)s'
-LOG_DATE_FMT = '%H:%M:%S'
 
 
 class Log:
@@ -15,10 +13,15 @@ class Log:
 
         def __init__(self):
             config = Config()
-            logging.basicConfig(level=logging.INFO, format=LOG_FORMAT, datefmt=LOG_DATE_FMT)
-            formatter = jsonlogger.JsonFormatter(LOG_FORMAT, datefmt=LOG_DATE_FMT)
-            self.json_handler = logging.FileHandler(filename=os.path.join(get_output_path(), config.log_file))
+            log_path = os.path.join(get_output_path(), config.log_file);
+            logging.basicConfig(level=logging.INFO, format=config.log_format, datefmt=config.log_date_format)
+            formatter = jsonlogger.JsonFormatter(config.log_format, datefmt=config.log_date_format)
+            self.json_handler = logging.FileHandler(filename=log_path)
             self.json_handler.setFormatter(formatter)
+            should_roll_over = os.path.isfile(log_path)
+            handler = logging.handlers.RotatingFileHandler(log_path, mode='w', backupCount=config.log_count)
+            if should_roll_over:
+                handler.doRollover()
 
     instance = None
 
