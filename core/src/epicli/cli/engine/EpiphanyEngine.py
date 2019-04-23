@@ -1,7 +1,5 @@
 
 import os
-import logging
-import sys
 from cli.helpers.doc_list_helpers import select_single
 from cli.helpers.build_saver import save_manifest
 from cli.helpers.yaml_helpers import safe_load_all
@@ -18,8 +16,6 @@ from cli.engine.AnsibleRunner import AnsibleRunner
 class EpiphanyEngine:
     def __init__(self, input_data):
         self.file_path = input_data.file
-        # Todo: set the context from the commandline
-        # self.context = input_data.context
         self.logger = Log(__name__)
 
     def __enter__(self):
