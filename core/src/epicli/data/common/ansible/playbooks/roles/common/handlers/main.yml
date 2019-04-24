@@ -1,0 +1,9 @@
+- name: restart ssh
+  systemd:
+    name: sshd
+    state: restarted
+
+- name: restart waagent
+  systemd:
+    name: waagent
+    state: restarted

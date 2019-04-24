@@ -54,6 +54,7 @@ def exec_apply(args):
     with EpiphanyEngine(args) as engine:
         engine.run()
 
+
 def dump_config(config):
     logger = Log('config')
     for attr in config.__dict__:
