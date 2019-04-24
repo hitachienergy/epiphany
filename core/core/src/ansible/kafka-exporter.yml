@@ -1,6 +1,6 @@
 ---
 
-- hosts: kafka_exporter
+- hosts: kafka-exporter
   become: true
   become_method: sudo
   roles:

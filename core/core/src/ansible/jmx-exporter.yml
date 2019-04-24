@@ -1,6 +1,6 @@
 ---
 
-- hosts: jmx_exporter
+- hosts: jmx-exporter
   become: true
   become_method: sudo
   roles:
