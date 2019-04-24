@@ -1,4 +1,4 @@
-#!/usr/local/bin -S pipenv run python
+#!/usr/bin/env py
 import sys
 import argparse
 from cli.helpers.Log import Log
@@ -63,4 +63,5 @@ def dump_config(config):
 
 
 if __name__ == '__main__':
-    sys.exit(main(sys.argv[1:]))
+    args = [] if len(sys.argv) < 2 else sys.argv[1:]
+    sys.exit(main(args))
