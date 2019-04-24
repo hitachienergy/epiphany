@@ -6,7 +6,7 @@ bash core/core/src/docker/test-CI/prepare_sp.sh
 cd  /epiphany/core
 echo
 echo "Epiphany build for resource group $RESOURCE_GROUP started..."
-bash epiphany -a -b -i -f infrastructure/$RESOURCE_GROUP -t /infrastructure/epiphany-qa-template
+bash epiphany -a -b -i -f infrastructure/$RESOURCE_GROUP -t /infrastructure/epiphany-template
 
 status=$?
 
@@ -21,6 +21,7 @@ then
 	echo "Serverspec tests for resource group $RESOURCE_GROUP finished"
 	echo
 else
-  echo "Epiphany build failed!";
-  exit 1;
+  echo
+  echo "Epiphany build for resource group $RESOURCE_GROUP FAILED!"
+  exit 1
 fi
