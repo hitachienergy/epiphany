@@ -21,7 +21,7 @@ then
 	echo "Serverspec tests for resource group $RESOURCE_GROUP finished"
 	echo
 else
-  echo
-  echo "Epiphany build for resource group $RESOURCE_GROUP FAILED!"
-  exit 1
+    echo
+    echo "Epiphany build for resource group $RESOURCE_GROUP FAILED!"
+    exit 1
 fi
