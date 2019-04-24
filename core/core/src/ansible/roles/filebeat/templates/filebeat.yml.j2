@@ -64,7 +64,7 @@ filebeat.inputs:
   # Note: After is the equivalent to previous and before is the equivalent to to next in Logstash
   #multiline.match: after
 
-{% if 'kubernetes_master' in group_names or 'kubernetes_node' in group_names %}
+{% if 'master' in group_names or 'worker' in group_names %}
 #--- Kubernetes ---
 
 # K8s metadata are fetched from Docker labels to not make Filebeat on worker nodes dependent on a master
