@@ -6,7 +6,8 @@ from cli.helpers.Config import Config
 from cli.engine.EpiphanyEngine import EpiphanyEngine
 
 
-def main(arguments):
+def main():
+    arguments = [] if len(sys.argv) < 2 else sys.argv[1:]
     config = Config()
     parser = argparse.ArgumentParser(
         description=__doc__,
@@ -63,5 +64,4 @@ def dump_config(config):
 
 
 if __name__ == '__main__':
-    args = [] if len(sys.argv) < 2 else sys.argv[1:]
-    sys.exit(main(args))
+    sys.exit(main())
