@@ -7,5 +7,5 @@
 
 {% for host in play_hosts %}
 {% set name = host.split('.') %}
-{{ hostvars[host]['ansible_host'] }}  {{ host }} {{ name[0] }}
+{{ hostvars[host]['ansible_default_ipv4']['address'] }}  {{ host }} {{ name[0] }}
 {% endfor %}
