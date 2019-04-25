@@ -13,9 +13,9 @@ specification:
     - node-exporter
     - filebeat
   kafka:
-    - kafka
     - zookeeper
     - jmx-exporter
+    - kafka
     - kafka-exporter
     - node-exporter
     - filebeat
