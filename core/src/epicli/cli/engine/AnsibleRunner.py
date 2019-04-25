@@ -54,16 +54,16 @@ class AnsibleRunner(Step):
         self.ansible_command.run_playbook_with_retries(inventory=inventory_path,
                                                        playbook_path=os.path.join(
                                                            get_ansible_path(self.cluster_model.specification.name),
-                                                           "common.yml"), retries=5)
+                                                           "common.yml"), retries=1)
 
         # todo: run commented playbooks
-        # for component in self.cluster_model.specification["components"]:
-        #
-        #     roles = self.inventory_creator.get_roles_for_feature(component_key=component)
-        #
-        #     for role in roles:
-        #         self.ansible_command.run_playbook_with_retries(inventory=inventory_path,
-        #                                                        playbook_path=os.path.join(
-        #                                                            get_ansible_path(
-        #                                                                self.cluster_model.specification.name),
-        #                                                            adjust_name(role) + ".yml"), retries=5)
+        for component in self.cluster_model.specification["components"]:
+
+            roles = self.inventory_creator.get_roles_for_feature(component_key=component)
+
+            for role in roles:
+                self.ansible_command.run_playbook_with_retries(inventory=inventory_path,
+                                                               playbook_path=os.path.join(
+                                                                   get_ansible_path(
+                                                                       self.cluster_model.specification.name),
+                                                                   adjust_name(role) + ".yml"), retries=1)
