@@ -1,6 +1,5 @@
 import distutils
 import os
-from distutils import dir_util
 from cli.helpers.data_loader import load_template_file, types
 from cli.helpers.yaml_helpers import dump_all
 from cli.helpers.Config import Config

@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from setuptools import setup, find_packages
+from cli.engine.version import VERSION
 import os
 
 with open('README.md') as f:
@@ -14,14 +15,12 @@ with open('requirements.txt') as f:
 del requirements[0]
 
 datadir = os.path.join('data')
-datafiles = [(d, [os.path.join(d,f) for f in files])
+datafiles = [(os.path.join('epicli', d), [os.path.join(d, f) for f in files])
     for d, folders, files in os.walk(datadir)]
-
-print(requirements)
 
 setup(
     name='epicli',
-    version='0.3.0',
+    version=VERSION,
     description='Epiphany cli',
     long_description=readme,
     author='Epiphany Team',

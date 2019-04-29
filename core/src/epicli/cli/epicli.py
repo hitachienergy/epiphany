@@ -4,9 +4,11 @@ import argparse
 from cli.helpers.Log import Log
 from cli.helpers.Config import Config
 from cli.engine.EpiphanyEngine import EpiphanyEngine
+from cli.engine.version import VERSION
 
 
-def main(arguments):
+def main():
+    arguments = [] if len(sys.argv) < 2 else sys.argv[1:]
     config = Config()
     parser = argparse.ArgumentParser(
         description=__doc__,
@@ -14,6 +16,7 @@ def main(arguments):
         formatter_class=argparse.RawDescriptionHelpFormatter)
 
     # setup some root arguments
+    parser.add_argument('--version', action='version', version=VERSION)
     parser.add_argument('-l', '--log_file', dest='log_name', type=str,
                         help='The name of the log file written to the output directory')
     parser.add_argument('-lf', '--log_format', dest='log_format', type=str,
@@ -63,5 +66,4 @@ def dump_config(config):
 
 
 if __name__ == '__main__':
-    args = [] if len(sys.argv) < 2 else sys.argv[1:]
-    sys.exit(main(args))
+    sys.exit(main())

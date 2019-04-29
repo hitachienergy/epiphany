@@ -16,8 +16,6 @@ jinja2 = "*"
 boto3 = "*"
 jsonschema = "*"
 python-json-logger = "*"
-ansible-runner = "*"
-psutil = "*"
 ansible = "*"
 terraform-binary = "*"
 
