@@ -4,6 +4,7 @@ import argparse
 from cli.helpers.Log import Log
 from cli.helpers.Config import Config
 from cli.engine.EpiphanyEngine import EpiphanyEngine
+from cli.engine.version import VERSION
 
 
 def main():
@@ -15,6 +16,7 @@ def main():
         formatter_class=argparse.RawDescriptionHelpFormatter)
 
     # setup some root arguments
+    parser.add_argument('--version', action='version', version=VERSION)
     parser.add_argument('-l', '--log_file', dest='log_name', type=str,
                         help='The name of the log file written to the output directory')
     parser.add_argument('-lf', '--log_format', dest='log_format', type=str,

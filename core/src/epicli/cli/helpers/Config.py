@@ -5,7 +5,8 @@ class Config:
         def __init__(self):
             self._docker_cli = bool(os.environ.get('DOCKER_CLI', ''))
 
-            self._output_dir = os.path.join(os.path.dirname(__file__), '../../output/')
+            home_dir = os.path.expanduser('~')
+            self._output_dir = os.path.join(home_dir, 'epicli/')
             if self._docker_cli:
                 self._output_dir = '/shared/'
 
