@@ -65,7 +65,7 @@
 
 - name: Set Zookeeper server id
   copy:
-    content: "{{ (groups.zookeeper.index(inventory_hostname) + 1) }}"
+    content: "{{ (groups.zookeeper.index(inventory_hostname) + 1) }}\n"
     dest: /var/lib/zookeeper/myid
     owner: "{{ zookeeper_user }}"
     group: "{{ zookeeper_group }}"
