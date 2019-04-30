@@ -1,0 +1,6 @@
+---
+- name: Restart Filebeat service
+  systemd:
+    name: filebeat
+    state: restarted
+    daemon_reload: "{{ filebeat_unit_dependencies.changed }}"
