@@ -1,19 +1,16 @@
-FROM python:3
+FROM python:3.7-alpine
 
-COPY /core/ /epiphany
-WORKDIR /epiphany/src/epicli
+ENV DOCKER_CLI Yes
+ENV EPICLI_VERSION 0.3.0 
+
+COPY /dist/ /epicli
+WORKDIR /epicli
+
+RUN apk -U add gcc make musl-dev libffi-dev openssl-dev bash
+
+RUN pip install epicli-${EPICLI_VERSION}-py3-none-any.whl
 
 RUN mkdir /shared/
-
-RUN pip install pipenv
-
-RUN pipenv install --system --deploy
-
-RUN chmod +x cli/epicli.py
-
-ENV PYTHONPATH "${PYTHONPATH}:/epiphany/src/epicli"
-ENV DOCKER_CLI Yes
-
-WORKDIR /epiphany/src/epicli/cli
+WORKDIR /shared
 
 ENTRYPOINT ["/bin/bash"]
