@@ -7,6 +7,7 @@ from cli.engine.AnsibleVarsGenerator import AnsibleVarsGenerator
 from cli.helpers.Step import Step
 from cli.helpers.build_saver import get_inventory_path, get_ansible_path, copy_files_recursively
 from cli.helpers.role_name_helper import adjust_name
+from cli.helpers.data_loader import load_yaml_obj, types
 
 
 class AnsibleRunner(Step):
@@ -56,14 +57,13 @@ class AnsibleRunner(Step):
                                                            get_ansible_path(self.cluster_model.specification.name),
                                                            "common.yml"), retries=1)
 
-        # todo: run commented playbooks
-        for component in self.cluster_model.specification["components"]:
+        roles = load_yaml_obj(types.ANSIBLE, 'common', 'roles')
 
-            roles = self.inventory_creator.get_roles_for_feature(component_key=component)
+        enabled_roles = [role["name"] for role in roles["ansible_roles"] if role["enabled"]]
 
-            for role in roles:
-                self.ansible_command.run_playbook_with_retries(inventory=inventory_path,
-                                                               playbook_path=os.path.join(
-                                                                   get_ansible_path(
-                                                                       self.cluster_model.specification.name),
-                                                                   adjust_name(role) + ".yml"), retries=1)
+        for role in enabled_roles:
+            self.ansible_command.run_playbook_with_retries(inventory=inventory_path,
+                                                           playbook_path=os.path.join(
+                                                               get_ansible_path(
+                                                                   self.cluster_model.specification.name),
+                                                               adjust_name(role) + ".yml"), retries=1)
