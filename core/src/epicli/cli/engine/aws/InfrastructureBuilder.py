@@ -66,7 +66,7 @@ class InfrastructureBuilder(Step):
     def get_vpc_config(self):
         vpc_config = self.get_config_or_default(self.docs, 'infrastructure/vpc')
         vpc_config.specification.address_pool = self.cluster_model.specification.cloud.vnet_address_pool
-        vpc_config.specification.name = "aws-vpc-" + self.cluster_model.specification.name.lower()
+        vpc_config.specification.name = "aws-vpc-" + self.cluster_name
         return vpc_config
 
     def get_autoscaling_group(self, component_key, component_value, subnet_name):

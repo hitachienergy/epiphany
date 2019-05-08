@@ -18,7 +18,7 @@ class ConfigurationAppender(Step):
             if component_value.count < 1:
                 continue
 
-            features_map = select_first(self.input_docs, lambda x: x.kind == 'configuration/feature-mapping')
+            features_map = select_first(configuration_docs, lambda x: x.kind == 'configuration/feature-mapping')
             if features_map is None:
                 features_map = load_yaml_obj(types.DEFAULT, 'common', 'configuration/feature-mapping')
                 self.logger.info("Adding: " + features_map.kind)
@@ -33,5 +33,4 @@ class ConfigurationAppender(Step):
                 configuration_docs.append(config)
 
         return configuration_docs
-
 

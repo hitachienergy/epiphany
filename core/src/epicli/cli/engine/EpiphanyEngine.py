@@ -79,7 +79,7 @@ class EpiphanyEngine:
 
             self.process_infrastructure_docs()
 
-            save_manifest([*self.input_docs, *self.configuration_docs, *self.infrastructure_docs], self.cluster_model.name)
+            save_manifest([*self.input_docs, *self.configuration_docs, *self.infrastructure_docs], self.cluster_model.specification.name)
 
             return 0
         except Exception as e:
@@ -97,18 +97,18 @@ class EpiphanyEngine:
                 template_generator.run()
 
             # Run Terraform to create infrastructure
-            with TerraformRunner(self.cluster_model.name) as tf_runner:
+            with TerraformRunner(self.cluster_model.specification.name) as tf_runner:
                 tf_runner.run()
 
             self.process_configuration_docs()
 
             # Run Ansible to provision infrastructure
-            with AnsibleRunner(self.cluster_model, self.docs) as ansible_runner:
+            docs = [*self.input_docs, *self.configuration_docs, *self.infrastructure_docs]
+            with AnsibleRunner(self.cluster_model, docs) as ansible_runner:
                 ansible_runner.run()
 
             # Save docs to manifest file
-            save_manifest([*self.input_docs, *self.configuration_docs, *self.infrastructure_docs],
-                          self.cluster_model.name)
+            save_manifest(docs, self.cluster_model.specification.name)
 
             return 0
         except Exception as e:
