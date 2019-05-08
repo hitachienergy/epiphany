@@ -34,8 +34,8 @@ class Log:
         config = Config()
         logger = logging.getLogger(logger_name)
         if config.log_type == 'json':
-            logger.addHandler(Log.instance.json_file_handler)
             logger.addHandler(Log.instance.json_stream_handler)
+        logger.addHandler(Log.instance.json_file_handler)
         return logger
 
 
