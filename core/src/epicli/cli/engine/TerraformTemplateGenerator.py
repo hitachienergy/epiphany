@@ -1,6 +1,8 @@
 from cli.helpers.data_loader import load_template_file, types
 from cli.helpers.build_saver import save_terraform_file
 from cli.helpers.Step import Step
+from cli.helpers.doc_list_helpers import select_single, select_all
+import re
 
 
 class TerraformTemplateGenerator(Step):
@@ -8,7 +10,7 @@ class TerraformTemplateGenerator(Step):
     def __init__(self, cluster_model, infrastructure):
         super().__init__(__name__)
         self.cluster_model = cluster_model
-        self.infrastructure = [cluster_model] + infrastructure
+        self.infrastructure = [self.cluster_model] + infrastructure
 
     def run(self):
         for idx, doc in enumerate(self.infrastructure):

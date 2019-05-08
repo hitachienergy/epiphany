@@ -3,13 +3,14 @@ from cli.helpers.data_loader import load_yaml_obj, types
 from cli.helpers.objdict_helpers import objdict_to_dict, dict_to_objdict
 from cli.helpers.Step import Step
 from copy import deepcopy
+from cli.helpers.doc_list_helpers import select_single
 
 
 class SchemaValidator(Step):
-    def __init__(self, cluster_model, docs):
+    def __init__(self, cluster_model, validation_docs):
         super().__init__(__name__)
         self.cluster_model = cluster_model
-        self.docs = docs
+        self.validation_docs = validation_docs
 
         base = load_yaml_obj(types.VALIDATION, self.cluster_model.provider, 'core/base')
         definitions = load_yaml_obj(types.VALIDATION, self.cluster_model.provider, 'core/definitions')
@@ -32,7 +33,7 @@ class SchemaValidator(Step):
         return schema
 
     def run(self):
-        for doc in self.docs:
+        for doc in self.validation_docs:
             self.logger.info('Validating: ' + doc.kind)
             schema = self.get_base_schema(doc.kind)
             schema['specification'] = load_yaml_obj(types.VALIDATION, self.cluster_model.provider, doc.kind)

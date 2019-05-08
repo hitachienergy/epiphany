@@ -10,10 +10,11 @@ class Config:
             if self._docker_cli:
                 self._output_dir = '/shared/'
 
-            self._log_file = 'log.json'
+            self._log_file = 'log.log'
             self._log_format = '%(asctime)s %(levelname)s %(name)s - %(message)s'
             self._log_date_format = '%H:%M:%S'
             self._log_count = 10
+            self._log_type = 'plain'
 
         @property
         def docker_cli(self):
@@ -64,7 +65,17 @@ class Config:
             if not log_count is None:
                 self._log_count = log_count
 
+        @property
+        def log_type(self):
+            return self._log_type
 
+        @log_type.setter
+        def log_type(self, log_type):
+            if not log_type is None:
+                lt = log_type.lower()
+                if not(lt == 'json' or lt == 'plain'):
+                    raise Exception('Error setting log_type. Only "plain" or "json" supported.')
+                self._log_type = lt
 
     instance = None
 
