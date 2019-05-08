@@ -1,0 +1,7 @@
+---
+
+- hosts: node_exporter
+  become: true
+  become_method: sudo
+  roles:
+    - node_exporter
