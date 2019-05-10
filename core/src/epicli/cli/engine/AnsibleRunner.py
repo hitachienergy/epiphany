@@ -57,9 +57,9 @@ class AnsibleRunner(Step):
                                                            get_ansible_path(self.cluster_model.specification.name),
                                                            "common.yml"), retries=1)
 
-        roles = load_yaml_obj(types.ANSIBLE, 'common', 'roles')
+        roles = self.inventory_creator.get_available_roles()
 
-        enabled_roles = [role["name"] for role in roles["ansible_roles"] if role["enabled"]]
+        enabled_roles = [role["name"] for role in roles if role["enabled"]]
 
         for role in enabled_roles:
             self.ansible_command.run_playbook_with_retries(inventory=inventory_path,

@@ -41,7 +41,11 @@ class AnsibleInventoryCreator:
 
     def get_roles_for_feature(self, component_key):
         features_map = select_single(self.config_docs, lambda x: x.kind == 'configuration/feature-mapping')
-        return features_map.specification[component_key]
+        return features_map.specification.roles_mapping[component_key]
+
+    def get_available_roles(self):
+        features_map = select_single(self.config_docs, lambda x: x.kind == 'configuration/feature-mapping')
+        return features_map.specification.available_roles
 
     def get_proxy(self):
         apiproxy = provider_class_loader(self.cluster_model.provider, 'APIProxy')
