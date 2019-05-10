@@ -3,58 +3,95 @@ version: 0.3.0
 title: "Feature mapping to roles"
 name: default
 specification:
-  kubernetes_master:
-    - kubernetes-master
-    - deployments
-    - node-exporter
-    - filebeat
-  kubernetes_node:
-    - kubernetes-node
-    - node-exporter
-    - filebeat
-  kafka:
-    - zookeeper
-    - jmx-exporter
-    - kafka
-    - kafka-exporter
-    - node-exporter
-    - filebeat
-  rabbitmq:
-    - rabbitmq
-    - node-exporter
-    - kafka-exporter
-    - filebeat
-  logging:
-    - elasticsearch
-    - elasticsearch-curator
-    - kibana
-    - filebeat
-  load_balancer:
-    - haproxy
-    - haproxy-exporter
-    - node-exporter
-    - filebeat
-  monitoring:
-    - prometheus
-    - grafana
-    - node-exporter
-    - filebeat
-  postgresql:
-    - postgresql
-    - node-exporter
-    - filebeat
-  custom:
-    - kubernetes-master
-    - node-exporter
-    - filebeat
-    - rabbitmq
-    - postgresql
-    - prometheus
-    - grafana
-    - node-exporter
-    - filebeat
-    - elasticsearch
-    - elasticsearch-curator
-  single_machine:
-    - kubernetes-master
-    - rabbitmql
+  available_roles:
+    - name: kubernetes-master
+      enabled: no
+    - name: kubernetes-node
+      enabled: no
+    - name: deployments
+      enabled: no
+    - name: elasticsearch
+      enabled: no
+    - name: elasticsearch-curator
+      enabled: no
+    - name: kibana
+      enabled: no
+    - name: filebeat
+      enabled: no
+    - name: prometheus
+      enabled: yes
+    - name: grafana
+      enabled: yes
+    - name: node-exporter
+      enabled: yes
+    - name: zookeeper
+      enabled: yes
+    - name: kafka
+      enabled: yes
+    - name: kafka-exporter
+      enabled: yes
+    - name: jmx-exporter
+      enabled: yes
+    - name: postgresql
+      enabled: no
+    - name: haproxy
+      enabled: no
+    - name: haproxy-exporter
+      enabled: no
+  roles_mapping:
+    kubernetes_master:
+      - kubernetes-master
+      - deployments
+      - node-exporter
+      - filebeat
+    kubernetes_node:
+      - kubernetes-node
+      - node-exporter
+      - filebeat
+    kafka:
+      - zookeeper
+      - jmx-exporter
+      - kafka
+      - kafka-exporter
+      - node-exporter
+      - filebeat
+    rabbitmq:
+      - rabbitmq
+      - node-exporter
+      - kafka-exporter
+      - filebeat
+    logging:
+      - elasticsearch
+      - elasticsearch-curator
+      - kibana
+      - filebeat
+    load_balancer:
+      - haproxy
+      - haproxy-exporter
+      - node-exporter
+      - filebeat
+    monitoring:
+      - prometheus
+      - grafana
+      - node-exporter
+      - filebeat
+    postgresql:
+      - postgresql
+      - node-exporter
+      - filebeat
+    custom:
+      - kubernetes-master
+      - node-exporter
+      - filebeat
+      - rabbitmq
+      - postgresql
+      - prometheus
+      - grafana
+      - node-exporter
+      - filebeat
+      - elasticsearch
+      - elasticsearch-curator
+    single_machine:
+      - kubernetes-master
+      - rabbitmql
+

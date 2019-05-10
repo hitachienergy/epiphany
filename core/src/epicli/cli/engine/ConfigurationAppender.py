@@ -25,7 +25,7 @@ class ConfigurationAppender(Step):
                 configuration_docs.append(features_map)
 
             config_selector = component_value.configuration
-            for feature_key in features_map.specification[component_key]:
+            for feature_key in features_map.specification.roles_mapping[component_key]:
                 config = select_first(self.input_docs, lambda x: x.kind == 'configuration/' + feature_key and x.name == config_selector)
                 if config is None:
                     config = merge_with_defaults('common', 'configuration/' + feature_key, config_selector)
