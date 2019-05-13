@@ -1,0 +1,109 @@
+---
+# Zookeeper tasks - resides on masters
+
+- name: Check if jmx exporter is available
+  stat:
+    path: "{{ prometheus_jmx_path }}"
+  register: exporter
+
+- name: Create Zookeeper group
+  group:
+    name: "{{ zookeeper_group }}"
+    system: yes
+
+- name: Create Zookeeper user
+  user:
+    name: "{{ zookeeper_user }}"
+    group: "{{ zookeeper_group }}"
+    system: yes
+    shell: "/usr/sbin/nologin"
+
+- name: Check for Zookeeper package
+  stat:
+    path: /tmp/{{ zookeeper }}.tar.gz
+  register: zoo
+
+- name: Fetch Zookeeper binary package
+  get_url:
+    url: "{{ zookeeper_url }}/{{ zookeeper }}/{{ zookeeper }}.tar.gz"
+    dest: /tmp/{{ zookeeper }}.tar.gz
+  when: not zoo.stat.exists
+
+- name: Uncompress the Zookeeper tar
+  unarchive:
+    copy: no
+    creates: "{{ zookeeper_dir }}"
+    src: /tmp/{{ zookeeper }}.tar.gz
+    dest: /opt
+
+- name: Change ownership on zookeeper directory.
+  file:
+    path: "{{ zookeeper_dir }}"
+    state: directory
+    owner: "{{ zookeeper_user }}"
+    group: "{{ zookeeper_group }}"
+
+- name: "Create zookeeper {{item}} directory."
+  file:
+    path: "{{ item }}"
+    state: directory
+    owner: "{{ zookeeper_user }}"
+    group: "{{ zookeeper_group }}"
+  with_items:
+    - "{{ zookeeper_data_dir }}"
+    - "{{ zookeeper_log_dir }}"
+    - "/etc/zookeeper/conf"
+
+- name: Systemd script.
+  template:
+    src: zookeeper.service.j2
+    dest: /lib/systemd/system/zookeeper.service
+  when: ansible_service_mgr == 'systemd'
+  notify:
+    - Reload systemctl daemon
+    - Restart zookeeper
+
+- name: Set Zookeeper server id
+  copy:
+    content: "{{ (groups.zookeeper.index(inventory_hostname) + 1) }}\n"
+    dest: /var/lib/zookeeper/myid
+    owner: "{{ zookeeper_user }}"
+    group: "{{ zookeeper_group }}"
+  notify: Restart zookeeper
+
+- name: Configure Zookeeper
+  template:
+    src: zoo.j2
+    dest: /opt/{{zookeeper}}/conf/zoo.cfg
+    owner: "{{ zookeeper_user }}"
+    group: "{{ zookeeper_group }}"
+  notify: Restart zookeeper
+
+- name: Link /opt/zookeeper to the right version
+  file: path=/opt/zookeeper state=link src="/opt/{{zookeeper}}"
+
+# - name: Link /etc/zookeeper/conf to /opt/zookeeper/config
+#   file: path=/etc/zookeeper/conf state=link src=/opt/zookeeper/conf
+
+- name: Add Zookeeper's bin dir to the PATH
+  copy:
+    content: "export PATH=$PATH:/opt/zookeeper/bin"
+    dest: "/etc/profile.d/zookeeper_path.sh"
+    mode: 0755
+
+- name: Update the log4j config with saner production values
+  template:
+    src: log4j.properties.j2
+    dest: "{{ zookeeper_dir }}/conf/log4j.properties"
+  notify:
+    - Restart zookeeper
+
+- name: Start Zookeeper
+  service:
+    name: zookeeper
+    state: started
+    enabled: yes
+
+- include_tasks: metrics.yml
+  when: exporter.stat.exists
+

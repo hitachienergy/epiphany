@@ -1,0 +1,30 @@
+---
+
+zookeeper_hosts: "{{ groups['zookeeper'] }}"
+
+zookeeper_version: 3.4.12
+zookeeper: zookeeper-{{zookeeper_version}}
+zookeeper_url: http://archive.apache.org/dist/zookeeper
+
+zookeeper_data_dir: /var/lib/zookeeper
+zookeeper_log_dir: /var/log/zookeeper
+zookeeper_dir: /opt/{{zookeeper}}
+
+zookeeper_rolling_log_file_max_size: 10MB
+zookeeper_max_rolling_log_file_count: 10
+
+zookeeper_user: zookeeper
+zookeeper_group: zookeeper
+
+prometheus_jmx_version: 0.3.1
+prometheus_jmx_sha256: 2a25e74e7af7f4e63c227bf5d0d0a4da9b6b146ce521eca58fcde3bf803f1974
+prometheus_jmx_path: /opt/jmx-exporter/jmx_prometheus_javaagent.jar
+prometheus_jmx_exporter_web_listen_port: 7072
+prometheus_jmx_config: /opt/zookeeper/conf/jmx-zookeeper-config.yml
+prometheus_config_dir: /etc/prometheus
+prometheus_kafka_jmx_file_sd_labels:
+  "job": "jmx-zookeeper"
+
+
+jmx_exporter_user: jmx-exporter
+jmx_exporter_group: jmx-exporter 

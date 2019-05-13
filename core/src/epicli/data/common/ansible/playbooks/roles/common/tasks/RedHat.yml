@@ -1,0 +1,58 @@
+---
+# Common Redhat family of specific tasks
+
+# Install RedHat extras if on redhat family. This needs to be done first
+- name: Install Extras packages
+  yum:
+    name: https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
+    state: latest
+
+# Subscriptions with certs: subscription-manager repos --enable "rhel-*-optional-rpms" --enable "rhel-*-extras-rpms"
+# w/o subscription https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
+
+- name: Add kubernetes repository
+  yum_repository:
+    name: kubernetes
+    description: Kubernetes
+    file: kubernetes
+    baseurl: https://packages.cloud.google.com/yum/repos/kubernetes-el7-x86_64
+    gpgcheck: yes
+    gpgkey: https://packages.cloud.google.com/yum/doc/yum-key.gpg https://packages.cloud.google.com/yum/doc/rpm-package-key.gpg
+
+- name: Install RedHat family packages
+  yum:
+    name: 
+      - libselinux-python
+      - libsemanage-python
+      - firewalld
+      - bash-completion
+      - ca-certificates
+      - net-tools
+      - tar
+      - nc
+      - curl
+      - tmux
+      - fping
+      - iftop
+      - htop
+      - vim
+      - sysstat
+      - python-setuptools
+      - openssl
+      - yum-versionlock
+      - logrotate
+      - java-1.8.0-openjdk
+      - ebtables
+      - ethtool
+      - telnet
+    update_cache: yes 
+    state: present
+  register: result
+  retries: 3
+  delay: 1
+  until: result is succeeded
+
+- name: Append prompt to .bash_profile
+  lineinfile:
+    path: /home/{{ admin_user.name }}/.bash_profile
+    line: source /etc/profile.d/operations.sh

@@ -1,0 +1,11 @@
+---
+# Ansible playbook that installs and configures Filebeat
+
+- hosts: elasticsearch:kibana # To gather facts
+  tasks: [ ]
+
+- hosts: filebeat
+  become: true
+  become_method: sudo
+  roles:
+    - filebeat

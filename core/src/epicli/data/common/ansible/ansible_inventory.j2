@@ -1,0 +1,20 @@
+#
+# Ansible Inventory File - Automated so do not modify
+#
+
+# Inventory broken down into roles. Note: 'all' is a default group of all Hosts
+# Note: ansible_host can be private IPs. If so then Ansible is going through bastian host or build server where the inventory IPs are routable
+
+{% for item in inventory %}
+[{{ item.role }}]
+{%- for host in item.hosts %}
+{{ host.name }} ansible_host={{ host.ip }}
+{%- endfor %}
+{% endfor %}
+
+# Allowing 'all' since for now only Linux is supported
+[all:vars]
+ansible_user={{ cluster_model.specification.admin_user.name }}
+ansible_ssh_private_key_file={{ cluster_model.specification.admin_user.key_path }}
+# todo: settings of StrictHostKeyChecking from epiphany configuration
+ansible_ssh_common_args='-o StrictHostKeyChecking=no'

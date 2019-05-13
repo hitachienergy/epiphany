@@ -5,12 +5,19 @@ verify_ssl = true
 
 [dev-packages]
 pytest = "*"
+wheel = "*"
+setuptools = "*"
+twine = "*"
 
 [packages]
 pyyaml = "*"
 argparse = "*"
 jinja2 = "*"
 boto3 = "*"
+jsonschema = "*"
+python-json-logger = "*"
+ansible = "*"
+terraform-binary = "*"
 
 [requires]
 python_version = "3.7"

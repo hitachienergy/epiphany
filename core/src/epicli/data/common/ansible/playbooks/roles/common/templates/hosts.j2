@@ -1,0 +1,11 @@
+#
+# If unable to modify DNS then a hosts file can be used. However, DNS is always the preferred way.
+#
+
+127.0.0.1   localhost localhost.localdomain localhost4 localhost4.localdomain4
+::1         localhost localhost.localdomain localhost6 localhost6.localdomain6
+
+{% for host in play_hosts %}
+{% set name = host.split('.') %}
+{{ hostvars[host]['ansible_default_ipv4']['address'] }}  {{ host }} {{ name[0] }}
+{% endfor %}

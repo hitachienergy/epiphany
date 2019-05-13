@@ -1,0 +1,4 @@
+---
+
+- name: Stop Kafka
+  service: name=kafka state=stopped

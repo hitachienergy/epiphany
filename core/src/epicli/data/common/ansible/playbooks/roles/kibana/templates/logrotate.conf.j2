@@ -1,0 +1,8 @@
+{{ kibana_log_dir }}/*.log {
+  rotate 5
+  daily
+  compress
+  missingok
+  notifempty
+  delaycompress
+}
