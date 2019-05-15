@@ -6,7 +6,7 @@ bash core/core/src/docker/test-CI/prepare_sp.sh
 cd  /epiphany/core
 echo
 echo "Epiphany build for resource group $RESOURCE_GROUP started..."
-bash epiphany -a -b -i -f infrastructure/$RESOURCE_GROUP -t /infrastructure/epiphany-template
+bash epiphany -a -b -i -f infrastructure/$RESOURCE_GROUP -t infrastructure/epiphany-qa-template
 
 status=$?
 
