@@ -4,7 +4,7 @@ from cli.helpers.config_merger import merge_with_defaults
 from cli.engine.aws.APIProxy import APIProxy
 from cli.helpers.Step import Step
 from cli.helpers.doc_list_helpers import select_single
-
+import os
 
 class InfrastructureBuilder(Step):
     def __init__(self, docs):
@@ -54,12 +54,19 @@ class InfrastructureBuilder(Step):
             launch_configuration = self.get_launch_configuration(autoscaling_group, component_key,
                                                                  security_group.specification.name)
 
+            public_key_config = self.get_public_key()
+            infrastructure.append(public_key_config)
+
+            launch_configuration.specification.key_name = public_key_config.specification.name
+
             self.set_image_id_for_launch_configuration(self.cluster_model, self.docs, launch_configuration,
                                                        autoscaling_group)
             autoscaling_group.specification.launch_configuration = launch_configuration.specification.name
 
             infrastructure.append(autoscaling_group)
             infrastructure.append(launch_configuration)
+
+
 
         return infrastructure
 
@@ -119,6 +126,15 @@ class InfrastructureBuilder(Step):
         route_table.specification.vpc_name = vpc_name
         route_table.specification.route.gateway_name = internet_gateway_name
         return route_table
+
+    def get_public_key(self):
+        public_key_config = self.get_config_or_default(self.docs, 'infrastructure/public-key')
+        public_key_config.specification.name = self.cluster_model.specification.admin_user.name
+
+        with open(self.cluster_model.specification.admin_user.key_path+'.pub', 'r') as stream:
+            public_key_config.specification.public_key = stream.read().rstrip()
+
+        return public_key_config
 
     @staticmethod
     def set_image_id_for_launch_configuration(cluster_model, docs, launch_configuration, autoscaling_group):

@@ -11,14 +11,7 @@
 #####################################################
 
 
-resource "aws_launch_configuration" "{{ specification.name }}" {
-  name          = "{{ specification.name }}"
-  image_id      = "{{ specification.image_id }}"
-  instance_type = "{{ specification.size }}"
-  associate_public_ip_address = "{{ specification.associate_public_ip }}"
-
-  # Security group
-  security_groups = [{% for security_group in specification.security_groups %}  "${aws_security_group.{{ security_group }}.id}" {% if not loop.last %}, {% endif %} {% endfor %}]
-  enable_monitoring = "{{ specification.enable_monitoring }}"
-  key_name        = "{{ specification.key_name }}"
+resource "aws_key_pair" "{{ specification.name }}" {
+  key_name   = "{{ specification.name }}"
+  public_key = "{{ specification.public_key }}"
 }
