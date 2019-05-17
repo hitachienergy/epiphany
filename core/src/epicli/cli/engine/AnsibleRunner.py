@@ -46,16 +46,20 @@ class AnsibleRunner(Step):
 
         self.ansible_vars_generator.run()
 
-        self.ansible_command.run_playbook_with_retries(inventory=inventory_path,
+        common_play_result = self.ansible_command.run_playbook_with_retries(inventory=inventory_path,
                                                        playbook_path=os.path.join(
                                                            get_ansible_path(self.cluster_model.specification.name),
                                                            "common.yml"), retries=1)
+        if common_play_result != 0:
+            return
 
         enabled_roles = self.inventory_creator.get_enabled_roles()
 
         for role in enabled_roles:
-            self.ansible_command.run_playbook_with_retries(inventory=inventory_path,
+            play_result = self.ansible_command.run_playbook_with_retries(inventory=inventory_path,
                                                            playbook_path=os.path.join(
                                                                get_ansible_path(
                                                                    self.cluster_model.specification.name),
                                                                to_role_name(role) + ".yml"), retries=1)
+            if play_result != 0:
+                break

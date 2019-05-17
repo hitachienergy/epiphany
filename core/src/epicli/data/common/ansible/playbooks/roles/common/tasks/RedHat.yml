@@ -54,5 +54,5 @@
 
 - name: Append prompt to .bash_profile
   lineinfile:
-    path: /home/{{ admin_user.name }}/.bash_profile
+    path: /home/{{ specification.admin_user.name }}/.bash_profile
     line: source /etc/profile.d/operations.sh

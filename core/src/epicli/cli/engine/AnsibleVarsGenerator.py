@@ -1,15 +1,13 @@
 import os
-import glob
-import shutil
-import copy
 
 from cli.helpers.Step import Step
-from cli.helpers.build_saver import save_to_file, get_ansible_path
-from cli.helpers.data_loader import load_template_file, types
-from cli.helpers.doc_list_helpers import select_first, select_single
+from cli.helpers.build_saver import get_ansible_path
+from cli.helpers.doc_list_helpers import select_first
 from cli.helpers.role_name_helper import to_feature_name, to_role_name
 from cli.helpers.ObjDict import ObjDict
 from cli.helpers.yaml_helpers import dump
+import copy
+
 
 class AnsibleVarsGenerator(Step):
 
@@ -24,36 +22,36 @@ class AnsibleVarsGenerator(Step):
 
         ansible_dir = get_ansible_path(self.cluster_model.specification.name)
 
-        cluster_config_file_path = os.path.join(ansible_dir, "epiphany-cluster.yml")
+        cluster_config_file_path = os.path.join(ansible_dir, 'roles', 'common', 'vars', 'main.yml')
         clean_cluster_model = self.get_clean_cluster_model()
         with open(cluster_config_file_path, 'w') as stream:
             dump(clean_cluster_model, stream)
 
         for role in enabled_roles:
             document = select_first(self.config_docs, lambda x: x.kind == 'configuration/'+to_feature_name(role))
+
             if document is None:
                 self.logger.warn('No config document for enabled role: ' + role)
                 continue
 
+            document = self.add_admin_user_name(document)
             vars_dir = os.path.join(ansible_dir, 'roles', to_role_name(role), 'vars')
             if not os.path.exists(vars_dir):
                 os.makedirs(vars_dir)
 
-            vars_file_name = to_feature_name(role)+'.yml'
+            vars_file_name = 'main.yml'
             vars_file_path = os.path.join(vars_dir, vars_file_name)
 
             with open(vars_file_path, 'w') as stream:
                 dump(document, stream)
 
-            shutil.copy(cluster_config_file_path, vars_dir)
+    def add_admin_user_name(self, document):
+        print(document.title)
+        if document.specification is None:
+            raise Exception('Config specification is empty for: '+document.title)
 
-            vars_files = ['epiphany-cluster.yml', vars_file_name]
-
-            main_vars_template = load_template_file(types.ANSIBLE, "common", "main.yml")
-            content = main_vars_template.render(vars_files=vars_files)
-
-            vars_main_file_path = os.path.join(vars_dir, 'main.yml')
-            save_to_file(vars_main_file_path, content)
+        document.specification['admin_user'] = self.cluster_model.specification.admin_user
+        return document
 
     def get_clean_cluster_model(self):
         cluster_model = copy.copy(self.cluster_model)
@@ -67,22 +65,3 @@ class AnsibleVarsGenerator(Step):
                 continue
             if isinstance(obj_to_clean[key], ObjDict):
                 self.clear_object(obj_to_clean[key], key_to_clean)
-
-
-#todo dodaj generowanie z templatki inclide dla docukemtnu epiphany-cluster
-
-        # ansible_main_file_path = os.path.join(ansible_dir, "main.yml")
-
-        # template = load_template_file(types.ANSIBLE, "common", "main.yml")
-        # content = template.render(cluster_model=self.cluster_model)
-        # self.logger.info(str(content))
-
-        # save_to_file(ansible_main_file_path, content)
-
-        # for filename in glob.iglob(os.path.join(ansible_dir, "roles", "*")):
-        #     vars_dir = os.path.join(filename, "vars")
-        #     if not os.path.exists(vars_dir):
-        #         os.makedirs(vars_dir)
-        #
-        #     shutil.copy(ansible_main_file_path, vars_dir)
-
