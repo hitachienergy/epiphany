@@ -5,9 +5,9 @@ name: default
 specification:
   available_roles:
     - name: kubernetes-master
-      enabled: no
+      enabled: yes
     - name: kubernetes-node
-      enabled: no
+      enabled: yes
     - name: deployments
       enabled: no
     - name: elasticsearch

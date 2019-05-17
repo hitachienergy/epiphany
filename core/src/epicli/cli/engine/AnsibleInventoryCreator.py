@@ -1,5 +1,5 @@
 from cli.helpers.doc_list_helpers import select_single
-from cli.helpers.role_name_helper import adjust_name
+from cli.helpers.role_name_helper import to_role_name
 from cli.helpers.provider_class_loader import provider_class_loader
 from cli.models.AnsibleInventoryItem import AnsibleInventoryItem
 from collections import defaultdict
@@ -34,8 +34,8 @@ class AnsibleInventoryCreator:
             if len(ips) > 0:
                 roles = self.get_roles_for_feature(component_key)
                 for role in roles:
-                    ansible_role_name = adjust_name(role)
-                    inventory.append(AnsibleInventoryItem(adjust_name(ansible_role_name), ips))
+                    ansible_role_name = to_role_name(role)
+                    inventory.append(AnsibleInventoryItem(to_role_name(ansible_role_name), ips))
 
         return self.group_duplicated(inventory)
 
@@ -46,6 +46,10 @@ class AnsibleInventoryCreator:
     def get_available_roles(self):
         features_map = select_single(self.config_docs, lambda x: x.kind == 'configuration/feature-mapping')
         return features_map.specification.available_roles
+
+    def get_enabled_roles(self):
+        roles = self.get_available_roles()
+        return [role["name"] for role in roles if role["enabled"]]
 
     def get_proxy(self):
         apiproxy = provider_class_loader(self.cluster_model.provider, 'APIProxy')

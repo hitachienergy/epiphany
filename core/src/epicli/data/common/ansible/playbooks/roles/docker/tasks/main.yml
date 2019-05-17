@@ -1,0 +1,6 @@
+---
+# Docker (used by master & worker as dependency)
+
+- include_tasks: "{{ ansible_os_family }}.yml"
+
+- include_tasks: configure-docker.yml

@@ -15,6 +15,10 @@ class InfrastructureBuilder(Step):
 
     def run(self):
         infrastructure = []
+
+        public_key_config = self.get_public_key()
+        infrastructure.append(public_key_config)
+
         vpc_config = self.get_vpc_config()
         infrastructure.append(vpc_config)
         vpc_name = vpc_config.specification.name
@@ -25,6 +29,7 @@ class InfrastructureBuilder(Step):
         infrastructure.append(route_table)
 
         subnet_index = 0
+
         for component_key, component_value in self.cluster_model.specification.components.items():
             if component_value['count'] < 1:
                 continue
@@ -54,9 +59,6 @@ class InfrastructureBuilder(Step):
             launch_configuration = self.get_launch_configuration(autoscaling_group, component_key,
                                                                  security_group.specification.name)
 
-            public_key_config = self.get_public_key()
-            infrastructure.append(public_key_config)
-
             launch_configuration.specification.key_name = public_key_config.specification.name
 
             self.set_image_id_for_launch_configuration(self.cluster_model, self.docs, launch_configuration,
@@ -65,8 +67,6 @@ class InfrastructureBuilder(Step):
 
             infrastructure.append(autoscaling_group)
             infrastructure.append(launch_configuration)
-
-
 
         return infrastructure
 

@@ -1,8 +1,6 @@
-from cli.helpers.data_loader import load_template_file, types
-from cli.helpers.build_saver import save_terraform_file
 from cli.helpers.Step import Step
-from cli.helpers.doc_list_helpers import select_single, select_all
-import re
+from cli.helpers.build_saver import save_terraform_file, clear_terraform_templates
+from cli.helpers.data_loader import load_template_file, types
 
 
 class TerraformTemplateGenerator(Step):
@@ -13,6 +11,7 @@ class TerraformTemplateGenerator(Step):
         self.infrastructure = [self.cluster_model] + infrastructure
 
     def run(self):
+        clear_terraform_templates(self.cluster_model.specification.name)
         for idx, doc in enumerate(self.infrastructure):
             if doc.kind != 'epiphany-cluster':
                 terraform_file_name = '{:03d}'.format(idx) + '_' + doc.specification.name + ".tf"

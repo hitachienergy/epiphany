@@ -1,0 +1,20 @@
+---
+- debug:
+    msg: User: {{ specification.admin_user.name }}
+
+# Master node specific
+
+- include_tasks: single-master.yml
+  when: groups['master'][0] == inventory_hostname
+
+- include_tasks: kubernetes-storage.yml
+  when: kubernetes.storage.enable == True
+
+- name: Append kubectl bash-completion
+  lineinfile:
+    path: /home/{{ admin_user.name }}/.bashrc
+    line: source <(kubectl completion bash)
+
+- include_tasks: "registry-secrets.yml"
+  when: 
+      - groups['master'][0] == inventory_hostname
