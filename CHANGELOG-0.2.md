@@ -1,5 +1,12 @@
 # Changelog 0.2
 
+## [0.2.2] 2019-05-20
+
+### Fixed
+
+- Fixed vulnerability in Docker development image
+- Upgraded Keycloak Python examples to python 3.7.2
+
 ## [0.2.1] 2019-03-07
 
 ### Fixed

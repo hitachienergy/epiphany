@@ -99,7 +99,7 @@ To run the example:
 - Run the following to start a new container with the build image where `IP` in the url parameter needs to be replaced with the IP of the KeyCloak server:
 
     ```bash
-    docker run -e realm="master" -e url="http://IP:8080/auth" -e clientid="demo-app-implicit" -p 8090:80 python-implicit
+    docker run -e realm="master" -e url="http://IP:8080/auth" -e clientid="demo-app-implicit" -p 8090:8090 python-implicit
     ```
 
 The example can then be opened here: <http://localhost:8090>
@@ -181,7 +181,7 @@ To run the example:
 - Run the following to start a new container with the build image where `IP` in the url parameter needs to be replaced with the IP of the KeyCloak server and `SECRET` in the clientsecret parameter needs to be replaced with the clients secret:
 
     ```bash
-    docker run -e realm="master" -e url="http://IP:8080/auth" -e clientid="demo-app-authorization" -e clientsecret="SECRET" -p 8090:80 python-authorization
+    docker run -e realm="master" -e url="http://IP:8080/auth" -e clientid="demo-app-authorization" -e clientsecret="SECRET" -p 8090:8090 python-authorization
     ```
 
 The example can then be opened here: <http://localhost:8090>
