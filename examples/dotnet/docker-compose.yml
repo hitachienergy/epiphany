@@ -20,3 +20,10 @@ services:
       context: .
       dockerfile: Epiphany.Examples.Web/Dockerfile
 
+
+  epiphany.examples.iothub.connector.console:
+    image: ${DOCKER_REGISTRY}epiphanyexamplesiothubconnectorconsole
+    build:
+      context: .
+      dockerfile: Epiphany.Examples.IoTHub.Connector.Console/Dockerfile
+

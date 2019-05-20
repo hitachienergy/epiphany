@@ -71,9 +71,9 @@ namespace :spec do
         puts "Testing " + task_name
         t.pattern = "spec/#{group}/*_spec.rb"
         t.fail_on_error = false
-        t.rspec_opts = "--format documentation --format html \
-        --out results/" + Time.now.strftime("%Y-%m-%d_%H-%M-%S") + "_#{group}_#{host}.html"
-      end
+        t.rspec_opts = "--format documentation --format RspecJunitFormatter  \
+        --out results/" + Time.now.strftime("%Y-%m-%d_%H-%M-%S") + "_#{group}_#{host}.xml"
+       end
     end
   end
 end
