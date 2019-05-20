@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## Current release
 
-- [CHANGELOG-0.2.3](./CHANGELOG-0.2.md#022-2019-05-20)
+- [CHANGELOG-0.2.3](./CHANGELOG-0.2.md#023-2019-05-20)
 - [CHANGELOG-0.2.2](./CHANGELOG-0.2.md#022-2019-03-29)
 - [CHANGELOG-0.2.1](./CHANGELOG-0.2.md#021-2019-03-07)
 - [CHANGELOG-0.2.0](./CHANGELOG-0.2.md#020-2019-02-19)
