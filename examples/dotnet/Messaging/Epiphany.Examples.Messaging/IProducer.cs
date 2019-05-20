@@ -10,6 +10,6 @@ namespace Epiphany.Examples.Messaging
         /// </summary>
         /// <param name="models">List of string values.</param>
         /// <returns></returns>
-        Task<bool> Produce(IEnumerable<string> models);
+        Task<bool> Produce(IEnumerable<string> models, string topicName = null);
     }
 }

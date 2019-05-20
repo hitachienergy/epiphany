@@ -10,9 +10,10 @@
     - samba-common
   when: kubernetes.storage.enable == True
 
-- name: Install RedHat family packages
+- name: Install Kubernetes packages for RedHat family
   yum:
     name:
+      - kubernetes-cni-0.6.0-0 # todo remove it in future release
       - kubelet-{{kubernetes.version}}
       - kubectl-{{kubernetes.version}}
       - kubeadm-{{kubernetes.version}}
@@ -20,9 +21,10 @@
     state: present
   when: ansible_os_family == "RedHat"
 
-- name: Install Debian family packages
+- name: Install Kubernetes packages for Debian family
   apt:
     name:
+      - kubernetes-cni=0.6.0-00 # todo remove it in future release
       - kubelet={{kubernetes.version}}-00
       - kubectl={{kubernetes.version}}-00
       - kubeadm={{kubernetes.version}}-00

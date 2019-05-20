@@ -27,7 +27,7 @@ namespace Epiphany.Examples.RabbitMQ
         }
 
 
-        public Task<bool> Produce(IEnumerable<string> models)
+        public Task<bool> Produce(IEnumerable<string> models, string topicName = null)
         {
             var factory = new ConnectionFactory
             {
