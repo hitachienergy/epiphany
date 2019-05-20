@@ -3,7 +3,7 @@ version: 0.3.0
 title: "Kubernetes Master Config"
 name: default
 specification:
-  version: 1.13.0
+  version: 1.13.1
   allow_pods_on_master: False
   storage:
     enable: False
