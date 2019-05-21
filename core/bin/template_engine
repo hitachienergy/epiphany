@@ -60,7 +60,7 @@ def render_template(data_file, in_file, out_file, json_arg, yaml_arg):
         env.filters['jsonify'] = json.dumps
 
         with open(data_file) as data:
-            dict =  yaml.load(data)
+            dict =  yaml.load(data, Loader=yaml.FullLoader)
 
         # Render template and print generated config to console
         template = env.get_template(in_file)

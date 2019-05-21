@@ -1,0 +1,243 @@
+# Primary manifest data file used to build out the given cluster.
+# In on-premise, these values are given to us and we create this file.
+# Any platform specific items that may be needed will be added to this common manifest
+
+
+kind: datafile
+version: 0.2.0
+
+# This will apply to a VPN like environment or an air-gapped like environment
+bastian:
+  enable: False
+  # This host will be set ONLY for environments where a bastian host is supplied to us
+  host: 
+
+build:
+  version: &version 1.0.0
+  # Type of build environment
+  environment: &env development
+  # Name of the given release. Version will be appended
+  release: &release epiphany-single-machine
+  # If repo_root is true then add that as a prefix for the output
+  repo_root: True
+  # Should only be on of these: azure, aws, metal, vbox, vmware
+  platform: metal
+  output: /build/$PLATFORM/infrastructure/epiphany
+
+ansible_tags:
+  - key: environment
+    value: development
+  - key: version
+    value: 1.0.0
+  - key: release
+    value: epiphany-single-machine
+  - key: resourceType
+    value: epiphany-single-machine-builds
+
+# The primary 'operations' user and the ssh key path
+admin_user:
+  name: operations
+  key_path: ~/.ssh/epiphany-key/id_rsa
+
+# This is the master set of available roles
+ansible_roles:
+  - master
+  - worker
+  - kafka
+  - zookeeper
+  - grafana    
+  - node_exporter
+  - prometheus
+  - elasticsearch
+  - elasticsearch-curator
+  - kibana
+  - filebeat
+  - jmx-exporter
+  - kafka-exporter
+  - haproxy_tls_termination
+  - haproxy_exporter
+  - postgresql
+  - rabbitmq
+  - deployments
+  - reboot
+  # These last two must always be present
+  - linux
+  # - windows
+
+domain:
+  enable: False
+  name: example.com
+
+# Nodes in the cluster along with metadata and the groups they belong to
+nodes:
+  - name: master
+    # Mainly used for Azure because Terraform is being used and has the ability to use count!
+    count: 1
+    # If enabled then the first host in a 'count' pattern will be used which will end with '-001'
+    bastian_host: False
+    # Represents if there are public IPs. If not then a VPN connection is assumed.
+    # `public` could also mean exposed to a larger network in the case of on-premise with metal or vmware
+    public_ips: True
+    # The roles that this given node belongs to
+    ansible_roles:
+      - linux
+      - master
+      - node_exporter
+      - prometheus
+      - grafana
+      - rabbitmq
+      - postgresql
+      - deployments
+      - reboot
+
+    security:
+      firewall:
+        enable: false
+        ports:
+
+    # hosts the individual host names and IPs based on count above
+    hosts:
+      - name: singlemachine
+        # May want to address multiple nics and bonding options later
+        ips:
+          # Only takes the first public ip
+          public: 192.168.1.2
+          private: 192.168.1.2
+
+kubernetes:
+  version: 1.13.1
+  #image_registry_secrets:
+  #  - name: regcred
+  #    server_url: your-registry-url
+  #    username: your-registry-username
+  #    password: your-registry-password
+  #    email: your-registry-email
+  #    namespace: your-secret-namespace 
+  #allow_pods_on_master: false # Use this to force untainted master on multi-machine cluster.
+  storage:
+    enable: False
+#deployments:
+#  - name: rabbitmq
+#    image_path: rabbitmq:3.7.10
+#    #image_pull_secret_name: regcred # optional
+#    service:
+#      name: rabbitmq-cluster
+#      port: 30672
+#      replicas: 5
+#      namespace: queue
+#    rabbitmq:
+#      #amqp_port: 5672 #optional - default 5672
+#      plugins: # optional list of RabbitMQ plugins
+#        - rabbitmq_management
+#        - rabbitmq_management_agent
+#      policies: # optional list of RabbitMQ policies
+#        - name: ha-policy2
+#          pattern: ".*"
+#          definitions:
+#            ha-mode: all
+#      custom_configurations: #optional list of RabbitMQ configurations (new format -> https://www.rabbitmq.com/configure.html)
+#        - name: vm_memory_high_watermark.relative
+#          value: 0.5
+#      cluster:
+#        #is_clustered: true #redundant in in-Kubernetes installation, it will always be clustered
+#        #cookie: "cookieSetFromDataYaml" #optional - default value will be random generated string
+#  - name: auth-service # this service require postgresql to be installed in cluster
+#    image_path: jboss/keycloak:4.8.3.Final
+#    #image_pull_secret_name: regcred
+#    service:
+#      name: as-testauthdb
+#      port: 30104
+#      management_port: 31672
+#      replicas: 2
+#      namespace: namespace-for-auth
+#      admin_user: auth-service-username
+#      admin_password: auth-service-password
+#    database:
+#      name: "auth-database-name"
+#      #port: "5432" # leave it when default
+#      user: "auth-db-user"
+#      password: "auth-db-password"
+#      - name: auth-service # this service require postgresql to be installed in cluster
+#        image_path: jboss/keycloak:4.8.3.Final
+#        # image_pull_secret_name: regcred
+#        service:
+#          name: auth-service
+#          port: 30104
+#          replicas: 2
+#          namespace: auth-tools
+#          admin_user: admin
+#          admin_password: admin
+#        database: 
+#          name: "authDb"    
+#          # port: "5432" # leave it when default
+#          user: "authDbadmin"
+#          password: "authDbpwd"
+monitoring:
+  alerts:
+    enable: True # required value
+    handlers:
+      mail:
+        enable: False # required value
+        smtp_from: "alert@test.com"
+        smtp_host: "smtp-url:smtp-port"
+        smtp_auth_username: "your-smtp-user@domain.com"
+        smtp_auth_password: "your-smtp-password"
+        smtp_require_tls: True
+        recipients: 
+        - recipient1@domain.com
+        - recipient2@domain.com
+      slack:
+        enable: False # required value
+        api_url: url-to-slack-workspace-api.slack.com
+      pagerduty:
+        enable: False # required value
+        service_key: your-service-key 
+    rules:
+    - name: "UpDown"
+      expression: up == 0
+      duration: 1m #1s, 1m, 1h, 1d, 1w, ...
+      severity: critical
+      message: "Node is down." 
+    - name: "DiskSpace"
+      expression: ((node_filesystem_avail_bytes* 100) / node_filesystem_size_bytes) < 20 # 100 - 80
+      duration: 1m #1s, 1m, 1h, 1d, 1w, ...
+      severity: critical
+      message: "Disk usage is above 80%" 
+    - name: "DiskSpacePrediction"
+      expression: predict_linear(node_filesystem_free_bytes{job="node"}[1h], 48 * 3600) < 0
+      duration: 1m #1s, 1m, 1h, 1d, 1w, ...
+      severity: warning
+      message: "Disk will run out of space in less than 48h" 
+    - name: "MemoryUsage"
+      expression: (sum by (instance) (node_memory_MemTotal_bytes) - sum by (instance)(node_memory_MemFree_bytes + node_memory_Buffers_bytes + node_memory_Cached_bytes) ) / sum by (instance)(node_memory_MemTotal_bytes) * 100 > 80
+      duration: 15m #1s, 1m, 1h, 1d, 1w, ...
+      severity: warning
+      message: "Server memory has been used in more than 80% during last 15 minutes." 
+    - name: "CpuLoad"
+      expression: 100 - (avg by (instance) (irate(node_cpu_seconds_total{job="node",mode="idle"}[5m])) * 100) > 80
+      duration: 15m #1s, 1m, 1h, 1d, 1w, ...
+      severity: critical
+      message: "CPU utilization has exceeded 80% over last 15 minutes." 
+    - name: "KafkaConsumerLag"
+      expression: sum by(consumergroup) (kafka_consumergroup_lag) > 1000
+      duration: 15m #1s, 1m, 1h, 1d, 1w, ...
+      severity: critical
+      message: "Kafka consumers are lagging more than 1000 messages over last 15 minutes." 
+
+rabbitmq:
+  amqp_port: 5672 #optional - default 5672  
+  plugins: # optional list of RabbitMQ plugins
+    - rabbitmq_management
+    - rabbitmq_management_agent
+  policies: # optional list of RabbitMQ policies
+    - name: ha-policy2
+      pattern: ".*"
+      definitions:
+        ha-mode: all
+#  custom_configurations: #optional list of RabbitMQ configurations (new format -> https://www.rabbitmq.com/configure.html)
+#    - name: vm_memory_high_watermark.relative
+#      value: 0.6
+  cluster:
+    is_clustered: false #optional - default false
+    cookie: "cookieSetFromDataYaml" #optional - default value will be random generated string      
+        

@@ -27,23 +27,31 @@ current_group = nil
 
 File::open(ENV['inventory']) do |f|
   while line = f.gets
-    # Remove comment
-    md = line.match(/^([^;]+)/)
+
+    md = line.match(/^([^#]+)/) # matches lines not starting with a '#' character
     next unless md
     line = md[0]
 
     if line =~ /^\[([^\]]+)\]/
       current_group = $1
-    elsif line =~ /^(\S+)/
+    elsif line =~ /(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})/ # regex for IP address
       if current_group
-        groups[current_group] ||= []
-        groups[current_group] << $1
+        groups[current_group] ||= {}
+        groups[current_group][$1] = line.split.first
       else
         hosts << $1
       end
     end
   end
 end
+
+groups.keys.each do |group|
+  if !File.directory?("spec/#{group}") || Dir.empty?("spec/#{group}")
+    groups.delete(group)
+  end
+end
+
+puts groups
 
 task :spec    => 'spec:all'
 task :default => :spec
@@ -54,29 +62,19 @@ namespace :spec do
 
   # Tasks for groups
   groups.keys.each do |group|
-    task group.to_sym => groups[group].map {|host| 'spec:' + group + ':' + host }
-
-    groups[group].each do |host|
+    task group.to_sym => groups[group].keys.map {|host| 'spec:' + group + ':' + host }
+    groups[group].keys.each do |host|
       desc "Run tests for group '#{group}'"
       task_name = group + ':' + host
       RSpec::Core::RakeTask.new(task_name) do |t|
         ENV['TARGET_HOST'] = host
-#        status = ENV['status'] ? ENV['status'] : 'running'
-#        t.pattern = "spec/#{group}/#{status}/*_spec.rb"
+		ENV['TEST_ENV_NUMBER'] = "-" + groups[group][host]
+        puts "Testing " + task_name
         t.pattern = "spec/#{group}/*_spec.rb"
-      end
-    end
-  end
-
-  # Tasks for hosts without groups
-  hosts += groups.values.flatten
-  hosts.uniq.each do |host|
-    desc "Run tests for host '#{host}'"
-    RSpec::Core::RakeTask.new(host) do |t|
-      ENV['TARGET_HOST'] = host
-#      status = ENV['status'] ? ENV['status'] : 'running'
-#      t.pattern = "spec/hosts/#{host}/#{status}/*_spec.rb"
-      t.pattern = "spec/#{group}/*_spec.rb"
+        t.fail_on_error = false
+        t.rspec_opts = "--format documentation --format RspecJunitFormatter  \
+        --out results/" + Time.now.strftime("%Y-%m-%d_%H-%M-%S") + "_#{group}_#{groups[group][host]}.xml"
+       end
     end
   end
 end

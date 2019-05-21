@@ -15,10 +15,12 @@
   - [How to scale Kubernetes and Kafka](#how-to-scale-kubernetes-and-kafka)
   - [Kafka replication and partition setting](#kafka-replication-and-partition-setting)
   - [RabbitMQ installation and setting](#rabbitmq-installation-and-setting)
+  - [Single machine cluster](#single-machine-cluster)
 - Monitoring
   - [Import and create of Grafana dashboards](#import-and-create-of-grafana-dashboards)
   - [How to configure Kibana](#how-to-configure-kibana)
   - [How to configure Prometheus alerts](#how-to-configure-prometheus-alerts)
+  - [How to configure scalable Prometheus setup](#how-to-configure-scalable-prometheus-setup)
   - [How to configure Azure additional monitoring and alerting](#how-to-configure-azure-additional-monitoring-and-alerting)
 - Kubernetes
   - [How to do Kubernetes RBAC](#how-to-do-kubernetes-rbac)
@@ -305,6 +307,40 @@ https://prometheus.io/docs/prometheus/latest/querying/basics/
 https://prometheus.io/docs/prometheus/latest/querying/examples/
 
 Right now we are only supporting email messages, but we are working heavily on introducing integration with Slack and Pager Duty.
+
+## How to configure scalable Prometheus setup
+
+If you want to create scalable Prometheus setup you can use federation. Federation lets you scrape metrics from different Prometheus
+instances on one Prometheus instance.
+
+In order to create federation of Prometheus add to your configuration (for example to prometheus.yaml
+file) of previously created Prometheus instance (on which you want to scrape data from other
+Prometheus instances) to `scrape_configs` section:
+
+```yaml
+scrape_configs:
+  - job_name: federate
+    metrics_path: /federate
+    params:
+      'match[]':
+        - '{job=~".+"}'
+    honor_labels: true
+    static_configs:
+    - targets:
+      - your-prometheus-endpoint1:9090
+      - your-prometheus-endpoint2:9090
+      - your-prometheus-endpoint3:9090
+      ...
+      - your-prometheus-endpointn:9090
+```
+
+To check if Prometheus from which you want to scrape data is accessible, you can use a command
+like below (on Prometheus instance where you want to scrape data):
+
+`curl -G --data-urlencode 'match[]={job=~".+"}' your-prometheus-endpoint:9090/federate`  
+
+If everything is configured properly and Prometheus instance from which you want to gather data is up
+and running, this should return the metrics from that instance.  
 
 ## How to configure Azure additional monitoring and alerting
 
@@ -1072,6 +1108,35 @@ You can read more [here](https://www.confluent.io/blog/how-choose-number-topics-
 ## RabbitMQ installation and setting
 
 To install RabbitMQ in single mode just add rabbitmq role to your data.yaml for your sever and in general roles section. All configuration on RabbitMQ - e.g. user other than guest creation should be performed manually.
+
+## Single machine cluster
+
+In certain circumstances it might be desired to run an Epiphany cluster on a single machine. There are 2 example data.yamls provided for baremetal and Azure:
+
+- `/core/data/metal/epiphany-single-machine/data.yaml`
+- `/core/data/azure/infrastructure/epiphany-single-machine/data.yaml`
+
+These will install the following minimal set of components on the machine:
+
+- kubernetes master (Untainted so it can run and manage deployments)
+- node_exporter
+- prometheus
+- grafana
+- rabbitmq
+- postgresql (for keycloak)
+- keycloak (2 instances)
+
+This bare installation will consume arround 2.8Gb of memory with the following base memory usage of the different components:
+
+- kubernetes    : 904 MiB
+- node_exporter : 38 MiB
+- prometheus    : 133 MiB
+- grafana       : 54 MiB
+- rabbitmq      : 85 MiB
+- postgresql    : 35 MiB
+- keycloak      : 1 Gb
+
+Additional resource consumption will be highly dependant on how the cluster is utilized and it will be up to the product teams to define there hardware requirements. The absolute bare minimum this cluster was tested on was a quadcore CPU with 8Gb of ram and 60Gb of storage. However a minimum of an 8 core CPU with 16Gb of ram and 100Gb of storage would be recommended.
 
 ## Data and log retention
 

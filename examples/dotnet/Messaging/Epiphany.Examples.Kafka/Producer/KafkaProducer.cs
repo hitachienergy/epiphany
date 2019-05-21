@@ -25,17 +25,17 @@ namespace Epiphany.Examples.Kafka.Producer
             }
         }
 
-        public Task<bool> Produce(IEnumerable<string> models)
+        public Task<bool> Produce(IEnumerable<string> models, string topicName = null)
         {
             void Handler(DeliveryReportResult<Null, string> r) => LogDeliveryResult(r);
 
             using (var p = new Producer<Null, string>(_defaultConfig.ToKafkaProducerConfig()))
             {
+                var topic = topicName ?? _defaultConfig.TopicName;
                 var counter = 0;
                 foreach (var model in models)
                 {
-
-                    p.BeginProduce(_defaultConfig.TopicName, new Message<Null, string> { Value = model }, Handler);
+                    p.BeginProduce(topic, new Message<Null, string> { Value = model }, Handler);
                     counter++;
                     if (counter > 10) // Flush messages every 10 message
                     {
