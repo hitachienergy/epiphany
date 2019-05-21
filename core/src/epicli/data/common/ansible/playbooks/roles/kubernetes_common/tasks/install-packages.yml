@@ -1,0 +1,34 @@
+---
+#- name: Install Azure File Storage packages
+#  package:
+#    name: "{{ item }}"
+#    update_cache: yes
+#    state: present
+#  with_items:
+#    - cifs-utils
+#    - samba-client
+#    - samba-common
+#  when: kubernetes.storage.enable == True
+# todo add K8s storage packages that are provider agnostic
+
+- name: Install Kubernetes packages for RedHat family
+  yum:
+    name:
+      - kubernetes-cni-0.6.0-0 # todo remove it in future release
+      - kubelet-{{specification.version}}
+      - kubectl-{{specification.version}}
+      - kubeadm-{{specification.version}}
+    update_cache: yes
+    state: present
+  when: ansible_os_family == "RedHat"
+
+- name: Install Kubernetes packages for Debian family
+  apt:
+    name:
+      - kubernetes-cni=0.6.0-00 # todo remove it in future release
+      - kubelet={{specification.version}}-00
+      - kubectl={{specification.version}}-00
+      - kubeadm={{specification.version}}-00
+    update_cache: yes
+    state: present
+  when: ansible_os_family == "Debian"

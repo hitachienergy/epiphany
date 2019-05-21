@@ -5,9 +5,9 @@ name: default
 specification:
   available_roles:
     - name: kubernetes-master
-      enabled: no
+      enabled: yes
     - name: kubernetes-node
-      enabled: no
+      enabled: yes
     - name: deployments
       enabled: no
     - name: elasticsearch
@@ -29,9 +29,9 @@ specification:
     - name: kafka
       enabled: yes
     - name: kafka-exporter
-      enabled: yes
+      enabled: no
     - name: jmx-exporter
-      enabled: yes
+      enabled: no
     - name: postgresql
       enabled: no
     - name: haproxy

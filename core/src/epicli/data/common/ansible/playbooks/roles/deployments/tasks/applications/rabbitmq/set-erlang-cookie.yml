@@ -1,0 +1,67 @@
+---
+- name: Set default value for user defined cookie variable
+  set_fact:
+    is_cookie_user_defined: False
+  changed_when: false
+
+- name: Set cookie secret name
+  set_fact:
+    cookie_secret_name: "{{ rabbitmq_service_name }}-cookie"
+  changed_when: false
+
+- name: Check if cookie is user defined
+  set_fact:
+    is_cookie_user_defined: True
+  when:
+    - data.rabbitmq is defined
+    - data.rabbitmq.cluster is defined
+    - data.rabbitmq.cluster.cookie is defined
+  changed_when: false
+
+- name: Set cookie variable if user defined
+  set_fact:
+    erlang_cookie: "{{ data.rabbitmq.cluster.cookie }}"
+  when: is_cookie_user_defined == True
+  changed_when: false
+
+- name: Check that the erlang cookie secret exists
+  shell: kubectl -n {{ namespace_name }} --kubeconfig=/home/{{ admin_user.name }}/.kube/config get secrets | grep -i  '{{ cookie_secret_name }}'
+  register: get_secret_result
+  failed_when: "get_secret_result.rc == 2"
+  changed_when: false
+
+- name: Set default value for existing cookie secret
+  set_fact:
+    cookie_already_exist: False
+  changed_when: false
+
+- name: Check kubectl response if secret already exists
+  set_fact:
+    cookie_already_exist: True
+  when:
+    - get_secret_result.stdout is defined
+    - "cookie_secret_name in get_secret_result.stdout"
+  changed_when: false
+
+- name: Generate cookie if not user defined and secret not exists
+  set_fact:
+    erlang_cookie: "{{ lookup('password', '/dev/null length=15 chars=ascii_letters') }}"
+  when:
+    - is_cookie_user_defined == False
+    - cookie_already_exist == False
+
+# Apply cookie secret if cookie does not exist or is set by user
+- name: Upload secret yaml definition
+  become: yes
+  template:
+    dest: "{{ configuration_temp_directory }}/{{ cookie_secret_name }}-{{ namespace_name }}.yml"
+    src: rabbitmq/rabbitmq-secret.yml.j2
+    owner: "{{ admin_user.name }}"
+    group: "{{ admin_user.name }}"
+    mode: 0644
+  when: is_cookie_user_defined == True or cookie_already_exist == False
+
+- name: Apply secret with erlang cookie
+  shell: kubectl apply --kubeconfig=/home/{{ admin_user.name }}/.kube/config -f {{ configuration_temp_directory }}/{{ cookie_secret_name }}-{{ namespace_name }}.yml
+  become_user: "{{ admin_user.name }}"
+  when: is_cookie_user_defined == True or cookie_already_exist == False

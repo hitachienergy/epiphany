@@ -3,4 +3,14 @@ version: 0.3.0
 title: "Kubernetes Master Config"
 name: default
 specification:
-  version: 1.13.0
+  version: 1.13.1
+  allow_pods_on_master: False
+  storage:
+    enable: False
+#  image_registry_secrets:
+#  - email: emaul@domain.com
+#    name: secretname
+#    namespace: default
+#    password: docker-registry-pwd
+#    server_url: docker-registry-url
+#    username: docker-registry-user

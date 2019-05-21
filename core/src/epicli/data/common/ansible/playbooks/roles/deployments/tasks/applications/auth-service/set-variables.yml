@@ -1,0 +1,21 @@
+- name: Set storage address if not set
+  set_fact:
+    auth_service_db_address: "{{ data.database.address | default(hostvars[groups['postgresql'][0]]['ansible_default_ipv4']['address']) }}"
+
+- name: Set storage port if not set
+  set_fact:
+    auth_service_db_port: "{{ data.database.port | default(postgresql_database_port) }}"
+
+- name: Set namespace variable
+  set_fact:
+    namespace_name: "{{ data.service.namespace | default(default_namespace) | lower }}" # Kubernetes (as of v1.11) accepts only lowercase namespace names. 
+
+- name: Set service name variable if set
+  set_fact:
+    auth_service_name: "{{ data.service.name | lower }}" # Kubernetes (as of v1.11) accepts only lowercase service names. 
+  when: data.service.name is defined 
+  
+- name: Set service name variable for default
+  set_fact:
+    auth_service_name: "as-{{ namespace_name }}" # Kubernetes (as of v1.11) accepts only lowercase service names. 
+  when: data.service.name is undefined 
