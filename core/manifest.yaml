@@ -3,7 +3,7 @@
 # This data is for the core of Epiphany and not the data for a given environment.
 
 name: Epiphany
-version: 0.2.0
+version: 0.2.2
 
 # Set the proxy info up if your environment requires it. This is sometimes the case for on-premise builds/installs
 proxy:
