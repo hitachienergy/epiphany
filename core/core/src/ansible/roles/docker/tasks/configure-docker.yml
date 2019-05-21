@@ -1,4 +1,9 @@
 ---
+- name: Ensure directory exists
+  file:
+    path: /etc/docker
+    state: directory
+    
 - name: Copy configuration file (daemon.json)
   template:
     src: daemon.json.j2
