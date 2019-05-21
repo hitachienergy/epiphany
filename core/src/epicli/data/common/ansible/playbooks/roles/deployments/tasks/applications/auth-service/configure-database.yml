@@ -1,0 +1,15 @@
+- name: Create database for Epiphany Auth Service
+  delegate_to: "{{ groups['postgresql'] | first }}"
+  become_user: postgres
+  postgresql_db:
+    name: "{{ data.database.name }}"
+
+- name: Add postresql user
+  delegate_to: "{{ groups['postgresql'] | first }}"
+  become_user: postgres
+  postgresql_user:
+    db: "{{ data.database.name }}"
+    name: "{{ data.database.user }}"
+    password: "{{ data.database.password }}"
+    role_attr_flags: CREATEDB,NOSUPERUSER
+    expires: infinity

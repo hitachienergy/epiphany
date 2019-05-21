@@ -1,0 +1,18 @@
+---
+# The default values below were chosen as a compromise between node stability when available resources are low
+# and utilization (costs) to support even SMALL size VMs and may need to be adjusted depending on your environment.
+# Typically 5-10% of node resources should be reserved to protect nodes, higher is safer. The values depend on various
+# environment specific factors like workload density so there's no simple way to determine safe numbers automatically.
+# Tuning these values may be an iterative process.
+kubelet_custom_config:
+# Hard eviction threshold
+  evictionHard:
+    memory.available: 200Mi
+# Reserve resources for Kubernetes system daemons that are not run as pods (kubelet.service + docker.service cgroups)
+  kubeReserved:
+    cpu: 50m
+    memory: 256Mi
+# Reserve resources for other non-pod processes (like OS daemons and user login sessions)
+  systemReserved:
+    cpu: 50m
+    memory: 768Mi # based on RedHat 7.5 on Standard_DS1_v2 Azure VM with =~ 30 pods

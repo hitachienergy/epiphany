@@ -14,7 +14,7 @@ prometheus_kafka_jmx_file_sd_labels:
 # Have to use odd name to support valid yaml due to ansible getting confused over playbook names and variables etc.
 kafka_var:
   enable: True
-  admin: "{{ admin_user.name }}"
+  admin: "{{ specification.admin_user.name }}"
   admin_pwd: epiphany
   # users:
 

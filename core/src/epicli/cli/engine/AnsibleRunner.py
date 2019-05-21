@@ -6,7 +6,7 @@ from cli.engine.AnsibleInventoryCreator import AnsibleInventoryCreator
 from cli.engine.AnsibleVarsGenerator import AnsibleVarsGenerator
 from cli.helpers.Step import Step
 from cli.helpers.build_saver import get_inventory_path, get_ansible_path, copy_files_recursively
-from cli.helpers.role_name_helper import adjust_name
+from cli.helpers.role_name_helper import to_role_name
 
 
 class AnsibleRunner(Step):
@@ -18,7 +18,7 @@ class AnsibleRunner(Step):
         self.config_docs = config_docs
         self.inventory_creator = AnsibleInventoryCreator(cluster_model, config_docs, use_public_ips=True)
         self.ansible_command = AnsibleCommand()
-        self.ansible_vars_generator = AnsibleVarsGenerator(cluster_model, config_docs)
+        self.ansible_vars_generator = AnsibleVarsGenerator(cluster_model, config_docs, self.inventory_creator)
 
     def __enter__(self):
         super().__enter__()
@@ -32,14 +32,9 @@ class AnsibleRunner(Step):
     def run(self):
         inventory_path = get_inventory_path(self.cluster_model.specification.name)
 
-        for i in range(20):
-            if_inventory_exists_and_have_content = os.path.exists(inventory_path) and os.path.getsize(
-                inventory_path) > 0
-            if if_inventory_exists_and_have_content:
-                break
-
-            self.inventory_creator.create()
-            time.sleep(10)
+        # create inventory on every run
+        self.inventory_creator.create()
+        time.sleep(10)
 
         src = os.path.dirname(__file__) + AnsibleRunner.ANSIBLE_PLAYBOOKS_PATH
 
@@ -51,18 +46,20 @@ class AnsibleRunner(Step):
 
         self.ansible_vars_generator.run()
 
-        self.ansible_command.run_playbook_with_retries(inventory=inventory_path,
+        common_play_result = self.ansible_command.run_playbook_with_retries(inventory=inventory_path,
                                                        playbook_path=os.path.join(
                                                            get_ansible_path(self.cluster_model.specification.name),
                                                            "common.yml"), retries=1)
+        if common_play_result != 0:
+            return
 
-        roles = self.inventory_creator.get_available_roles()
-
-        enabled_roles = [role["name"] for role in roles if role["enabled"]]
+        enabled_roles = self.inventory_creator.get_enabled_roles()
 
         for role in enabled_roles:
-            self.ansible_command.run_playbook_with_retries(inventory=inventory_path,
+            play_result = self.ansible_command.run_playbook_with_retries(inventory=inventory_path,
                                                            playbook_path=os.path.join(
                                                                get_ansible_path(
                                                                    self.cluster_model.specification.name),
-                                                               adjust_name(role) + ".yml"), retries=1)
+                                                               to_role_name(role) + ".yml"), retries=1)
+            if play_result != 0:
+                break

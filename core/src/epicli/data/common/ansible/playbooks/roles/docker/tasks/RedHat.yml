@@ -1,0 +1,14 @@
+---
+- name: Add Docker-CE stable repo
+  yum_repository:
+    name: docker-ce-stable
+    description: Docker CE Stable Repo
+    baseurl: https://download.docker.com/linux/centos/7/$basearch/stable
+    gpgkey: https://download.docker.com/linux/centos/gpg
+    gpgcheck: yes
+
+- name: Install Docker
+  yum:
+    name: docker-ce-18.06.3.ce-3.el7
+    state: present
+    update_cache: yes

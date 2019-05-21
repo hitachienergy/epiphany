@@ -1,0 +1,32 @@
+---
+- name: Ensure directory exists
+  file:
+    path: /etc/docker
+    state: directory
+
+- name: Copy configuration file (daemon.json)
+  template:
+    src: daemon.json.j2
+    dest: /etc/docker/daemon.json
+    mode: 0644
+  notify: Restart Docker
+
+- name: Restart Docker before verification # to apply new configuration
+  meta: flush_handlers
+
+- name: Start Docker
+  systemd:
+    name: docker
+    state: started
+    enabled: yes
+
+# Get log driver for verification
+- name: Get Docker logging driver
+  shell: docker info | grep -i 'Logging Driver'
+  register: docker_log_driver
+  changed_when: false
+
+- name: Verify logging driver # 'json-file' is needed for K8s metadata in Filebeat and log rotation
+  assert:
+    that: "'json-file' in docker_log_driver.stdout"
+    msg: "Unexpected logging driver, docker_log_driver.stdout: '{{ docker_log_driver.stdout }}'"
