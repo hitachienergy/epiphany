@@ -9,6 +9,6 @@
 
 - name: Install Docker
   yum:
-    name: docker-ce-18.06.3.ce-3.el7
+    name: docker-ce-18.09.6-3.el7
     state: present
     update_cache: yes
