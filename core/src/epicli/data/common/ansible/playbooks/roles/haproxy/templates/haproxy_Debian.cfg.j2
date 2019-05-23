@@ -1,3 +1,7 @@
+#jinja2: trim_blocks:False
+
+# {{ ansible_managed }}
+
 global
    log /dev/log local0
    log /dev/log local1 notice
@@ -15,14 +19,65 @@ defaults
    timeout connect 5000
    timeout client 50000
    timeout server 50000
- 
-frontend http_front
-   bind *:80
-   stats uri /haproxy?stats
-   default_backend http_back
- 
-backend http_back
-   balance roundrobin
-{% for worker in groups['worker'] %}
-   server {{ worker }} {{ hostvars[worker]['ansible_default_ipv4']['address'] }}:{{ service_port }} check
-{% endfor %}
+{%- if haproxy is defined and haproxy.http_request_timeout is defined %}
+   timeout http-request {{ haproxy.http_request_timeout }}
+{%- endif %}
+
+
+{%- for front in haproxy.frontend %}
+frontend {{ front.name }}
+    {%- if front.https == True %}
+    bind *:{{ front.port }} ssl {% for cert_name in haproxy_certs_names.files %}crt {{ cert_name.path }} {% endfor %}
+    {%- endif %}
+    {%- if front.https == False %}
+    bind *:{{ front.port }}
+    {%- endif %}
+    
+    {%- if haproxy.stats is defined %}
+    {%- if haproxy.stats.enable %}
+    stats uri /haproxy?stats
+    stats auth {{ haproxy.stats.user }}:{{ haproxy.stats.password }}
+    {%- endif %}
+    {%- endif %}
+
+    {%- if (front.domain_backend_mapping is defined) and (front.domain_backend_mapping > 0) %}
+    {%- if front.https == True %}
+    {%- for mapping in front.domain_backend_mapping %}
+    acl {{ mapping.backend }} ssl_fc_sni {{ mapping.domain }}
+    {%- endfor %}
+    {%- endif %}
+    {%- if front.https == False %}     
+    {%- for mapping in front.domain_backend_mapping %}     
+    acl {{ mapping.backend }} hdr_dom(host) -i {{ mapping.domain }}     
+    {%- endfor %}     
+    {%- endif %}
+    {%- endif %}
+
+    {%- if front.backend | length == 1 %}
+    default_backend {{ front.backend | first }}
+    {%- endif %}
+    {%- if front.backend | length > 1 %}
+    {%- for back in front.backend %}
+    use_backend {{ back }} if {{ back }}
+    {%- endfor %}
+    {%- endif %}
+    
+{%- endfor %}
+
+{%- for back in haproxy.backend %}
+backend {{ back.name }}
+  balance roundrobin
+  {%- if back.server_groups is defined %}
+  {%- for server_group in back.server_groups %}
+  {%- for server in groups[server_group] %}
+   server {{ server }} {{ hostvars[server]['ansible_default_ipv4']['address'] }}:{{ back.port }} check
+  {%- endfor %}
+  {%- endfor %}
+  {%- endif %}
+  
+  {%- if back.servers is defined %}
+  {%- for server in back.servers %}
+    server {{ server.name }} {{ server.address }}:{{ back.port }} check
+  {%- endfor %}
+  {%- endif %}
+{%- endfor %}

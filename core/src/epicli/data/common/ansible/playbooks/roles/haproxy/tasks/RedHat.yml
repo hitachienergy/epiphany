@@ -1,35 +1,6 @@
 ---
 # HaProxy Red Hat family of specific tasks
 
-- name: Install haproxy family packages
-  yum:
-    name: 
-      - rh-haproxy18
-      - rh-haproxy18-haproxy-syspaths
-    update_cache: yes
-    state: present
-
-- name: Copy haproxy config
-  template: 
-    dest: /etc/opt/rh/rh-haproxy18/haproxy/haproxy.cfg
-    src: "haproxy_{{ ansible_os_family }}.cfg.j2"
-
-- name: Restart haproxy service
-  service:
-    name: haproxy
-    state: restarted
-
-- name: Enable haproxy service
-  service:
-    name: haproxy
-    enabled: yes
-
-- name: Stop services
-  service:
-    name: firewalld
-    state: stopped
-    enabled: no
-
 - name: Disable SELinux at next reboot
   selinux:
     state: disabled
@@ -39,6 +10,84 @@
   command: setenforce 0
   ignore_errors: true
   changed_when: false
+
+- name: Install haproxy family packages
+  yum:
+    name: 
+      - rh-haproxy18
+      - rh-haproxy18-haproxy-syspaths   
+    update_cache: yes
+    state: present
+
+- name: Stop haproxy service
+  service:
+    name: haproxy
+    state: stopped
+
+- name: Find certificate file in role directory
+  local_action: find paths="{{ role_path }}/files/" patterns="*.pem" 
+  become: no
+  register: certificates_names
+
+- name: Check if any certificate exist in role directory
+  set_fact:
+    certificates_exist: "{{ certificates_names is defined and (certificates_names.files | length >0) }}"
+
+- name: Write file name
+  debug:
+    msg: "{{ item.path }}"
+  with_items: "{{ certificates_names.files }}"
+  when: certificates_exist
+
+- name: Write file name
+  debug:
+    msg: "{{ certificates_names.files | length }}"
+  when: certificates_exist
+
+- name: Display if certificate file in role directory exists
+  debug:
+    msg: "Certificate exists"
+  when: certificates_exist
+
+- name: Create directory in /etc/ssl if it doesn't exist
+  file:
+    path: /etc/ssl/haproxy
+    state: directory
+
+- name: Copy certificate remotely if certificate file in role directory exists
+  copy:
+    src: "{{ item.path }}"
+    dest: /etc/ssl/haproxy/
+  with_items: "{{ certificates_names.files }}"
+  when: certificates_exist
+
+- name: Generate self signed certificate
+  include_tasks: certificate_generate.yml
+  when: not certificates_exist
+
+- name: Copy self signed certificate to /etc/ssl/haproxy/
+  copy:
+    src: /tmp/{{ self_signed_concatenated_cert_name }}
+    dest: /etc/ssl/haproxy/
+    remote_src: yes
+  when: not certificates_exist
+
+- name: Find certificate file in haproxy directory
+  find:
+    paths="/etc/ssl/haproxy/" patterns="*.pem"
+  register: haproxy_certs_names
+
+- name: Write certs in haproxy
+  debug:
+    msg: "{{ item.path }}"
+  with_items: "{{ haproxy_certs_names.files }}"
+  when: certificates_exist
+
+- name: Copy haproxy config
+  template:
+    dest: /etc/opt/rh/rh-haproxy18/haproxy/haproxy.cfg
+    src: "haproxy_{{ ansible_os_family }}.cfg.j2"
+
 
 - name: Uncomment modules loading
   replace:
@@ -61,3 +110,10 @@
   service:
     name: rsyslog
     state: restarted
+
+- name: Start haproxy service
+  service:
+    name: haproxy
+    state: started
+    enabled: yes
+
