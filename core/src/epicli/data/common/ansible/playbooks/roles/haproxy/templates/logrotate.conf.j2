@@ -1,6 +1,6 @@
 # {{ ansible_managed }}
 
-{{ haproxy_log_path }} {
+{{ specification.haproxy_log_path }} {
   missingok
   copytruncate
   notifempty
@@ -10,5 +10,5 @@
   dateext
   compress
   delaycompress
-  maxage {{ logs_max_days }}
+  maxage {{ specification.logs_max_days }}
 }
