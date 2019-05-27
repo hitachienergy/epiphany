@@ -4,7 +4,9 @@ from cli.helpers.config_merger import merge_with_defaults
 from cli.engine.aws.APIProxy import APIProxy
 from cli.helpers.Step import Step
 from cli.helpers.doc_list_helpers import select_single
+from cli.helpers.build_saver import get_terraform_path
 import os
+import uuid
 
 class InfrastructureBuilder(Step):
     def __init__(self, docs):
@@ -59,7 +61,7 @@ class InfrastructureBuilder(Step):
             launch_configuration = self.get_launch_configuration(autoscaling_group, component_key,
                                                                  security_group.specification.name)
 
-            launch_configuration.specification.key_name = public_key_config.specification.name
+            launch_configuration.specification.key_name = public_key_config.specification.key_name
 
             self.set_image_id_for_launch_configuration(self.cluster_model, self.docs, launch_configuration,
                                                        autoscaling_group)
@@ -130,6 +132,19 @@ class InfrastructureBuilder(Step):
     def get_public_key(self):
         public_key_config = self.get_config_or_default(self.docs, 'infrastructure/public-key')
         public_key_config.specification.name = self.cluster_model.specification.admin_user.name
+
+        # To avoid key-pair collisions on AWS we generate a randomized key to store it. In order to successfully
+        # re-run TF we store this key in a key pair state (kps) file for re-use in subsequent runs.
+        keypair_path = get_terraform_path(self.cluster_model.specification.name) \
+                       + self.cluster_model.specification.admin_user.name + '.kps'
+        if os.path.isfile(keypair_path):
+            with open(keypair_path, 'r') as stream:
+                public_key_config.specification.key_name = stream.read().rstrip()
+        else:
+            public_key_config.specification.key_name = self.cluster_model.specification.admin_user.name + '-' \
+                                                       + str(uuid.uuid4())
+            with open(keypair_path, 'w') as stream:
+                stream.write(public_key_config.specification.key_name)
 
         with open(self.cluster_model.specification.admin_user.key_path+'.pub', 'r') as stream:
             public_key_config.specification.public_key = stream.read().rstrip()
