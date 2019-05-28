@@ -42,14 +42,16 @@ class AnsibleRunner(Step):
 
         # todo: install packages to run ansible on Red Hat hosts
         self.ansible_command.run_task_with_retries(hosts="all", inventory=inventory_path, module="raw",
-                                                   args="sudo apt-get install -y python-simplejson", retries=5)
+                                                   args="cat /etc/lsb-release | grep -i DISTRIB_ID | grep -i ubuntu && "
+                                                        "sudo apt-get install -y python-simplejson", retries=5)
 
         self.ansible_vars_generator.run()
 
         common_play_result = self.ansible_command.run_playbook_with_retries(inventory=inventory_path,
-                                                       playbook_path=os.path.join(
-                                                           get_ansible_path(self.cluster_model.specification.name),
-                                                           "common.yml"), retries=1)
+                                                                            playbook_path=os.path.join(
+                                                                                get_ansible_path(
+                                                                                    self.cluster_model.specification.name),
+                                                                                "common.yml"), retries=5)
         if common_play_result != 0:
             return
 
@@ -57,9 +59,9 @@ class AnsibleRunner(Step):
 
         for role in enabled_roles:
             play_result = self.ansible_command.run_playbook_with_retries(inventory=inventory_path,
-                                                           playbook_path=os.path.join(
-                                                               get_ansible_path(
-                                                                   self.cluster_model.specification.name),
-                                                               to_role_name(role) + ".yml"), retries=1)
+                                                                         playbook_path=os.path.join(
+                                                                             get_ansible_path(
+                                                                                 self.cluster_model.specification.name),
+                                                                             to_role_name(role) + ".yml"), retries=1)
             if play_result != 0:
                 break
