@@ -8,6 +8,7 @@ specification:
   count: TO_BE_SET
   subnet: TO_BE_SET
   launch_configuration: TO_BE_SET
+  cluster_name: TO_BE_SET
   tags:
     - version: 0.3.0
   size: t2.micro

@@ -20,5 +20,7 @@ resource "aws_route_table" "{{ specification.name }}" {
 
     tags {
         Name = "web-table"
+        cluster_name = "{{ specification.cluster_name }}"
+        cluster_version = "{{ version }}"
     }
 }

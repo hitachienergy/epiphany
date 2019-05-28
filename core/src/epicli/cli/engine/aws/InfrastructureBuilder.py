@@ -26,6 +26,9 @@ class InfrastructureBuilder(Step):
         infrastructure.append(vpc_config)
         vpc_name = vpc_config.specification.name
 
+        resource_group = self.get_resource_group()
+        infrastructure.append(resource_group)
+
         internet_gateway = self.get_internet_gateway(vpc_config.specification.name)
         infrastructure.append(internet_gateway)
         route_table = self.get_routing_table(vpc_name, internet_gateway.specification.name)
@@ -73,19 +76,27 @@ class InfrastructureBuilder(Step):
 
         return infrastructure
 
+    def get_resource_group(self):
+        resource_group = self.get_config_or_default(self.docs, 'infrastructure/resource-group')
+        resource_group.specification.name = self.cluster_name
+        resource_group.specification.cluster_name = self.cluster_name
+        return resource_group
+
     def get_vpc_config(self):
         vpc_config = self.get_config_or_default(self.docs, 'infrastructure/vpc')
         vpc_config.specification.address_pool = self.cluster_model.specification.cloud.vnet_address_pool
         vpc_config.specification.name = "aws-vpc-" + self.cluster_name
+        vpc_config.specification.cluster_name = self.cluster_name
         return vpc_config
 
     def get_autoscaling_group(self, component_key, component_value, subnet_name):
         autoscaling_group = self.get_virtual_machine(component_value, self.cluster_model, self.docs)
+        autoscaling_group.specification.cluster_name = self.cluster_name
         autoscaling_group.specification.name = 'aws-asg-' + self.cluster_name + '-' + component_key.lower()
         autoscaling_group.specification.count = component_value.count
         autoscaling_group.specification.subnet = subnet_name
         autoscaling_group.specification.tags.append({component_key: ''})
-        autoscaling_group.specification.tags.append({'cluster_name': self.cluster_name})
+        autoscaling_group.specification.cluster_name = self.cluster_name
         return autoscaling_group
 
     def get_launch_configuration(self, autoscaling_group, component_key, security_group_name):
@@ -101,6 +112,7 @@ class InfrastructureBuilder(Step):
         subnet.specification.vpc_name = vpc_name
         subnet.specification.cidr_block = component_value.subnet_address_pool
         subnet.specification.name = 'aws-subnet-' + self.cluster_name + '-' + str(subnet_index)
+        subnet.specification.cluster_name = self.cluster_name
         return subnet
 
     def get_security_group(self, subnet, subnet_index, vpc_name):
@@ -108,6 +120,7 @@ class InfrastructureBuilder(Step):
         security_group.specification.name = 'aws-security-group-' + self.cluster_name + '-' + str(subnet_index)
         security_group.specification.vpc_name = vpc_name
         security_group.specification.cidr_block = subnet.specification.cidr_block
+        security_group.specification.cluster_name = self.cluster_name
         return security_group
 
     def get_route_table_association(self, route_table_name, subnet_name, subnet_index):
@@ -121,6 +134,7 @@ class InfrastructureBuilder(Step):
         internet_gateway = self.get_config_or_default(self.docs, 'infrastructure/internet-gateway')
         internet_gateway.specification.name = 'aws-internet-gateway-' + self.cluster_name
         internet_gateway.specification.vpc_name = vpc_name
+        internet_gateway.specification.cluster_name = self.cluster_name
         return internet_gateway
 
     def get_routing_table(self, vpc_name, internet_gateway_name):
@@ -128,6 +142,7 @@ class InfrastructureBuilder(Step):
         route_table.specification.name = 'aws-route-table-' + self.cluster_name
         route_table.specification.vpc_name = vpc_name
         route_table.specification.route.gateway_name = internet_gateway_name
+        route_table.specification.cluster_name = self.cluster_name
         return route_table
 
     def get_public_key(self):

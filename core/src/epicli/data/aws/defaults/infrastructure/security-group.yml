@@ -8,3 +8,4 @@ specification:
   name: TO_BE_SET
   cidr_block: TO_BE_SET
   rules: []
+  cluster_name: TO_BE_SET
