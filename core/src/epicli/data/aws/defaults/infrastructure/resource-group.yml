@@ -1,10 +1,8 @@
-kind: infrastructure/subnet
+kind: infrastructure/resource-group
 version: 0.3.0
-title: "Subnet Config"
+title: "Resource Group"
 provider: aws
 name: default
 specification:
   name: TO_BE_SET
-  vpc_name: TO_BE_SET
-  cidr_block: TO_BE_SET
   cluster_name: TO_BE_SET
