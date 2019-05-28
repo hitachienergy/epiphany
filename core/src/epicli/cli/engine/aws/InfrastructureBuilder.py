@@ -28,6 +28,7 @@ class InfrastructureBuilder(Step):
         route_table = self.get_routing_table(vpc_name, internet_gateway.specification.name)
         infrastructure.append(route_table)
 
+        efs_config = self.get_efs_config()
         subnet_index = 0
 
         for component_key, component_value in self.cluster_model.specification.components.items():
@@ -65,8 +66,14 @@ class InfrastructureBuilder(Step):
                                                        autoscaling_group)
             autoscaling_group.specification.launch_configuration = launch_configuration.specification.name
 
+            if autoscaling_group.specification.authorized_to_efs:
+                self.efs_add_mount_target_config(efs_config, subnet.specification.name)
+
             infrastructure.append(autoscaling_group)
             infrastructure.append(launch_configuration)
+
+        if self.has_efs_any_mounts(efs_config):
+            infrastructure.append(efs_config)
 
         return infrastructure
 
@@ -75,6 +82,12 @@ class InfrastructureBuilder(Step):
         vpc_config.specification.address_pool = self.cluster_model.specification.cloud.vnet_address_pool
         vpc_config.specification.name = "aws-vpc-" + self.cluster_name
         return vpc_config
+
+    def get_efs_config(self):
+        efs_config = self.get_config_or_default(self.docs, 'infrastructure/efs-storage')
+        efs_config.specification.token = "aws-efs-token-" + self.cluster_name
+        efs_config.specification.name = "aws-efs-" + self.cluster_name
+        return efs_config
 
     def get_autoscaling_group(self, component_key, component_value, subnet_name):
         autoscaling_group = self.get_virtual_machine(component_value, self.cluster_model, self.docs)
@@ -135,6 +148,18 @@ class InfrastructureBuilder(Step):
             public_key_config.specification.public_key = stream.read().rstrip()
 
         return public_key_config
+
+    @staticmethod
+    def efs_add_mount_target_config(self, efs_config, subnet_name):
+        target = select_first(efs_config.specification.mount_targets, lambda item: item.subnet_name == subnet_name)
+        if target is None:
+            efs_config.specification.mount_targets.append({'name': 'efs-'+subnet_name+'-mount', 'subnet_name': subnet_name})
+
+    @staticmethod
+    def has_efs_any_mounts(self, efs_config):
+        if len(efs_config.specification.mount_targets) > 0:
+            return True
+        return False
 
     @staticmethod
     def set_image_id_for_launch_configuration(cluster_model, docs, launch_configuration, autoscaling_group):

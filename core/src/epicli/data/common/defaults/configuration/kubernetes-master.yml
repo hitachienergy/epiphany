@@ -6,7 +6,8 @@ specification:
   version: 1.13.1
   allow_pods_on_master: False
   storage:
-    enable: False
+    enable: True
+    data: {} #AUTOMATED - data specific to cloud provider
 #  image_registry_secrets:
 #  - email: emaul@domain.com
 #    name: secretname

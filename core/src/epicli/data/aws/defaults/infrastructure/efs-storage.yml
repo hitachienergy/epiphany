@@ -1,0 +1,13 @@
+kind: infrastructure/efs-storage
+version: 0.3.0
+title: "Elastic File System Config"
+provider: aws
+name: default
+specification:
+  name: TO_BE_SET
+  token: TO_BE_SET
+  mount_targets: [] #TO_BET_SET
+#    - name: mount-name
+#      subnet_name: source_subnet_name
+
+
