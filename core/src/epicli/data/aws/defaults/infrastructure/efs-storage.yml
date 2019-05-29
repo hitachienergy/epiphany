@@ -6,6 +6,10 @@ name: default
 specification:
   name: TO_BE_SET
   token: TO_BE_SET
+  encrypted: True
+  performance_mode: "generalPurpose"
+  throughput_mode: "bursting"
+  #provisioned_throughput_in_mibps:  # The throughput, measured in MiB/s, that you want to provision for the file system. Only applicable when throughput_mode set to provisioned
   mount_targets: [] #TO_BET_SET
 #    - name: mount-name
 #      subnet_name: source_subnet_name

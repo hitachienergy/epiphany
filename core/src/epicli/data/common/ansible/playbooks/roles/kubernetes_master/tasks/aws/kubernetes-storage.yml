@@ -1,0 +1,16 @@
+- name: upload k8s persistent volume yaml
+  become: yes
+  template:
+    dest: "/home/{{ specification.admin_user.name }}/k8s-persistent-volume.yml"
+    src: aws/k8s-persistent-volume.yml.j2
+    owner: "{{ specification.admin_user.name }}"
+    group: "{{ specification.admin_user.name }}"
+    mode: 0644
+
+- name: apply storage yml
+  become_user: "{{ specification.admin_user.name }}"
+  environment:
+    KUBECONFIG: "/home/{{ specification.admin_user.name }}/.kube/config"
+  shell: "kubectl apply -f /home/{{ specification.admin_user.name }}/k8s-persistent-volume.yml"
+  when:
+    - groups['kubernetes_master'][0] == inventory_hostname

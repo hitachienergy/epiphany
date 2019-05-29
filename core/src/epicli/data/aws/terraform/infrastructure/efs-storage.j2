@@ -12,6 +12,14 @@
 
 resource "aws_efs_file_system" "{{ specification.name }}" {
   creation_token = "{{ specification.token }}"
+  encrypted = "{{ specification.encrypted }}"
+  performance_mode = "{{ specification.performance_mode }}"
+  throughput_mode = "{{ specification.throughput_mode }}"
+
+
+{% if specification.provisioned_throughput_in_mibps is defined %}
+      provisioned_throughput_in_mibps = "{{ specification.provisioned_throughput_in_mibps }}"
+{% endif %}
 
   tags = {
     Name = "{{ specification.name }}"

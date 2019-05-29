@@ -6,7 +6,10 @@ specification:
   version: 1.13.1
   allow_pods_on_master: False
   storage:
+    name: epiphany-cluster-volume # name of the Kubernetes resource
+    path: / # directory path in mounted storage
     enable: True
+    capacity: 50 # GB
     data: {} #AUTOMATED - data specific to cloud provider
 #  image_registry_secrets:
 #  - email: emaul@domain.com

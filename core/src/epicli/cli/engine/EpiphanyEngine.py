@@ -71,6 +71,11 @@ class EpiphanyEngine:
         with SchemaValidator(self.cluster_model, self.configuration_docs) as schema_validator:
             schema_validator.run()
 
+    def collect_infrastructure_config(self):
+        with provider_class_loader(self.cluster_model.provider, 'InfrastructureConfigCollector')(
+                [*self.input_docs, *self.configuration_docs, *self.infrastructure_docs]) as config_collector:
+            config_collector.run()
+
     def verify(self):
         try:
             self.process_input_docs()
@@ -101,6 +106,8 @@ class EpiphanyEngine:
                 tf_runner.run()
 
             self.process_configuration_docs()
+
+            self.collect_infrastructure_config()
 
             # Run Ansible to provision infrastructure
             docs = [*self.input_docs, *self.configuration_docs, *self.infrastructure_docs]

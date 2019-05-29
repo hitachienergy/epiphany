@@ -150,13 +150,13 @@ class InfrastructureBuilder(Step):
         return public_key_config
 
     @staticmethod
-    def efs_add_mount_target_config(self, efs_config, subnet_name):
-        target = select_first(efs_config.specification.mount_targets, lambda item: item.subnet_name == subnet_name)
+    def efs_add_mount_target_config(efs_config, subnet_name):
+        target = select_first(efs_config.specification.mount_targets, lambda item: item['subnet_name'] == subnet_name)
         if target is None:
             efs_config.specification.mount_targets.append({'name': 'efs-'+subnet_name+'-mount', 'subnet_name': subnet_name})
 
     @staticmethod
-    def has_efs_any_mounts(self, efs_config):
+    def has_efs_any_mounts(efs_config):
         if len(efs_config.specification.mount_targets) > 0:
             return True
         return False
