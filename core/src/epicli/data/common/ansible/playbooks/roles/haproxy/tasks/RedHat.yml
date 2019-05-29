@@ -11,6 +11,25 @@
   ignore_errors: true
   changed_when: false
 
+- name: Check if repository file exists
+  stat:
+    path: /etc/yum.repos.d/redhat-rhui.repo
+  register: rhui_exist
+
+- name: Check if Software Collections repository on EC2 exists
+  shell: grep -c -i rhui-REGION-rhel-server-rhscl /etc/yum.repos.d/redhat-rhui.repo
+  register: sc_repo_count
+  failed_when: "sc_repo_count.rc == 2"
+  when: rhui_exist
+
+- name: Enable Software Collections on EC2
+  ini_file:
+    dest: /etc/yum.repos.d/redhat-rhui.repo
+    section: rhui-REGION-rhel-server-rhscl
+    option: enabled
+    value: 1
+  when: sc_repo_count.stdout|int == 1
+
 - name: Install haproxy family packages
   yum:
     name: 
@@ -67,7 +86,7 @@
 
 - name: Copy self signed certificate to /etc/ssl/haproxy/
   copy:
-    src: /tmp/{{ self_signed_concatenated_cert_name }}
+    src: /tmp/{{ specification.self_signed_concatenated_cert_name }}
     dest: /etc/ssl/haproxy/
     remote_src: yes
   when: not certificates_exist
@@ -116,4 +135,3 @@
     name: haproxy
     state: started
     enabled: yes
-
