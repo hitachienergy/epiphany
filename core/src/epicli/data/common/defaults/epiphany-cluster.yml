@@ -51,3 +51,8 @@ specification:
       subnet_address_pool: 10.1.10.0/24
       machine: default
       configuration: default
+    haproxy:
+      count: 0
+      subnet_address_pool: 10.1.10.0/24
+      machine: default
+      configuration: default

@@ -1,0 +1,5 @@
+# Logging
+docker_logging:
+  log_opts:
+    max_file_size: 10m # The maximum size of the log before it is rolled. A positive integer plus a modifier representing the unit of measure (k, m, or g)
+    max_files: 2       # The maximum number of log files that can be present

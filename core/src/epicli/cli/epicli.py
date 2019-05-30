@@ -30,9 +30,10 @@ def main():
         parser.add_argument('-o', '--output', dest='output_dir', type=str,
                             help='Directory where the CLI should write it`s output.')
 
-    # setup apply parser
+    # setup subparsers
     subparsers = parser.add_subparsers()
     apply_parser(subparsers)
+    validate_parser(subparsers)
 
     # add some arguments to the general config so we can easily use them throughout the CLI
     args = parser.parse_args(arguments)
@@ -50,12 +51,26 @@ def apply_parser(subparsers):
     sub_parser = subparsers.add_parser('apply', description='Applies configuration from file.')
     sub_parser.add_argument('-f', '--file', dest='file', type=str,
                             help='File with infrastructure/configuration definitions to use.')
-    sub_parser.set_defaults(func=exec_apply)
+    sub_parser.set_defaults(func=run_apply)
 
 
-def exec_apply(args):
+def validate_parser(subparsers):
+    sub_parser = subparsers.add_parser('verify', description='Validates the configuration from file by executing a dry '
+                                                             'run without changing the physical '
+                                                             'infrastructure/configuration')
+    sub_parser.add_argument('-f', '--file', dest='file', type=str,
+                            help='File with infrastructure/configuration definitions to use.')
+    sub_parser.set_defaults(func=run_validate)
+
+
+def run_apply(args):
     with EpiphanyEngine(args) as engine:
-        engine.run()
+        engine.apply()
+
+
+def run_validate(args):
+    with EpiphanyEngine(args) as engine:
+        engine.verify()
 
 
 def dump_config(config):

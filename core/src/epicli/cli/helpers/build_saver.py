@@ -26,6 +26,15 @@ def save_inventory(inventory, cluster_model):
     save_to_file(file_path, content)
 
 
+# method cleans generated .tf files (not tfstate)
+def clear_terraform_templates(cluster_name):
+    terraform_dir = get_terraform_path(cluster_name)
+    files = os.listdir(terraform_dir)
+    for file in files:
+        if file.endswith(".tf"):
+            os.remove(os.path.join(terraform_dir, file))
+
+
 def save_terraform_file(content, cluster_name, filename):
     terraform_dir = get_terraform_path(cluster_name)
     terraform_output_file_path = os.path.join(terraform_dir, filename)

@@ -20,6 +20,5 @@ resource "aws_launch_configuration" "{{ specification.name }}" {
   # Security group
   security_groups = [{% for security_group in specification.security_groups %}  "${aws_security_group.{{ security_group }}.id}" {% if not loop.last %}, {% endif %} {% endfor %}]
   enable_monitoring = "{{ specification.enable_monitoring }}"
-  # TODO: Define key_name in configuration
-  key_name        = "epiphany-global"
+  key_name        = "{{ specification.key_name }}"
 }

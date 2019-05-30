@@ -1,0 +1,1 @@
+{range .items[*]}{.metadata.name} {.spec.taints[?(@.effect=='NoSchedule')].effect}{"\n"}{end}

@@ -15,5 +15,7 @@ resource "aws_internet_gateway" "{{ specification.name }}" {
 
     tags {
         Name = "{{ specification.name }}"
+        cluster_name = "{{ specification.cluster_name }}"
+        cluster_version = "{{ version }}"
     }
 }

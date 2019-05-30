@@ -21,3 +21,8 @@ def dump_all(docs, stream):
     for doc in doc2:
         conv_docs.append(objdict_to_dict(doc))
     yaml.dump_all(conv_docs, stream, default_flow_style=False)
+
+
+def dump(doc, stream):
+    yaml.dump(objdict_to_dict(doc), stream, default_flow_style=False)
+

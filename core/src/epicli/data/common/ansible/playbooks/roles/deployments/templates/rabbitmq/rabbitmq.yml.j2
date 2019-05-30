@@ -1,0 +1,137 @@
+---
+kind: Service
+apiVersion: v1
+metadata:
+  namespace: {{ namespace_name }}
+  name: {{ rabbitmq_service_name }}
+  labels:
+    app: {{ rabbitmq_service_name }}
+spec:
+  type: NodePort
+  ports:
+   - name: {{ rabbitmq_service_name }}-http
+     protocol: TCP
+     port: 15672
+     targetPort: 15672
+     nodePort: {{ data.service.management_port }}
+   - name: {{ rabbitmq_service_name }}-amqp
+     protocol: TCP
+     port: {{ amqp_port }}
+     targetPort: {{ amqp_port }}
+     nodePort: {{ data.service.port }}
+  selector:
+    app: {{ rabbitmq_service_name }}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: rabbitmq-config
+  namespace: {{ namespace_name }}
+data:
+  enabled_plugins: |
+      [rabbitmq_management,rabbitmq_peer_discovery_k8s].
+  rabbitmq.conf: |
+      listeners.tcp.default = {{ amqp_port }}
+      # To allow custom configs like vm_memory_high_watermark define it via custom_configurations in data.yaml 
+      {% if custom_configurations is defined %}
+      {% for item in custom_configurations %}
+      {{ item.name }}                  = {{ item.value }} 
+      {% endfor %}
+      {% endif %}
+      ## Cluster formation. See http://www.rabbitmq.com/cluster-formation.html to learn more.
+      cluster_formation.peer_discovery_backend  = rabbit_peer_discovery_k8s
+      cluster_formation.k8s.host = kubernetes.default.svc.cluster.local
+      ## Should RabbitMQ node name be computed from the pod's hostname or IP address?
+      ## IP addresses are not stable, so using [stable] hostnames is recommended when possible.
+      ## Set to "hostname" to use pod hostnames.
+      ## When this value is changed, so should the variable used to set the RABBITMQ_NODENAME
+      ## environment variable.
+      cluster_formation.k8s.address_type = ip
+      ## How often should node cleanup checks run?
+      cluster_formation.node_cleanup.interval = 30
+      ## Set to false if automatic removal of unknown/absent nodes
+      ## is desired. This can be dangerous, see
+      ##  * http://www.rabbitmq.com/cluster-formation.html#node-health-checks-and-cleanup
+      ##  * https://groups.google.com/forum/#!msg/rabbitmq-users/wuOfzEywHXo/k8z_HWIkBgAJ
+      cluster_formation.node_cleanup.only_log_warning = true
+      cluster_partition_handling = autoheal
+      ## See http://www.rabbitmq.com/ha.html#master-migration-data-locality
+      queue_master_locator=min-masters
+      ## See http://www.rabbitmq.com/access-control.html#loopback-users
+      loopback_users.guest = false
+   
+---
+apiVersion: apps/v1beta1
+kind: StatefulSet
+metadata:
+  name: {{ rabbitmq_service_name }}
+  namespace: {{ namespace_name }}
+spec:
+  serviceName: {{ rabbitmq_service_name }}
+  replicas: {{ data.service.replicas }}
+  updateStrategy:
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app: {{ rabbitmq_service_name }}
+    spec:
+      serviceAccountName: {{ rabbitmq_service_name }}
+      terminationGracePeriodSeconds: 10
+      containers:        
+      - name: {{ rabbitmq_service_name }}
+        image: {{ data.image_path }}
+        volumeMounts:
+          - name: config-volume
+            mountPath: /etc/rabbitmq
+        ports:
+          - name: http
+            protocol: TCP
+            containerPort: 15672
+          - name: amqp
+            protocol: TCP
+            containerPort: {{ amqp_port }}
+        livenessProbe:
+          exec:
+            command: ["rabbitmqctl", "status"]
+          initialDelaySeconds: 60
+          # See https://www.rabbitmq.com/monitoring.html for monitoring frequency recommendations.
+          periodSeconds: 60
+          timeoutSeconds: 15
+        readinessProbe:
+          exec:
+            command: ["rabbitmqctl", "status"]
+          initialDelaySeconds: 20
+          periodSeconds: 60
+          timeoutSeconds: 10
+        imagePullPolicy: Always
+        env:
+          - name: MY_POD_IP
+            valueFrom:
+              fieldRef:
+                fieldPath: status.podIP
+          - name: RABBITMQ_USE_LONGNAME
+            value: "true"
+          # See a note on cluster_formation.k8s.address_type in the config file section
+          - name: RABBITMQ_NODENAME
+            value: "rabbit@$(MY_POD_IP)"
+          - name: K8S_SERVICE_NAME
+            value: "{{ rabbitmq_service_name }}"
+          - name: RABBITMQ_ERLANG_COOKIE
+            valueFrom:
+              secretKeyRef:
+                key: cookie
+                name: {{ rabbitmq_service_name }}-cookie
+{% if data.image_pull_secret_name is defined and data.image_pull_secret_name|length %}
+      imagePullSecrets:
+      - name: {{ data.image_pull_secret_name  }}
+{% endif %}
+      volumes:
+        - name: config-volume
+          configMap:
+            name: rabbitmq-config
+            items:
+            - key: rabbitmq.conf
+              path: rabbitmq.conf
+            - key: enabled_plugins
+              path: enabled_plugins

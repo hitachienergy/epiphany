@@ -3,3 +3,4 @@ version: 0.3.0
 title: "Node exporter"
 name: default
 specification:
+  version: 0.16.0

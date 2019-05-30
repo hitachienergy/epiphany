@@ -3,3 +3,4 @@ version: 0.3.0
 title: "Zookeeper"
 name: default
 specification:
+  version: 3.4.12

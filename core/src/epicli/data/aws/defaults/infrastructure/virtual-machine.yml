@@ -8,6 +8,7 @@ specification:
   count: TO_BE_SET
   subnet: TO_BE_SET
   launch_configuration: TO_BE_SET
+  cluster_name: TO_BE_SET
   tags:
     - version: 0.3.0
   size: t2.micro
@@ -26,7 +27,7 @@ specification:
        protocol: Tcp
        source_port_range: "*"
        destination_port_range: "22"
-       source_address_prefix: "*"
+       source_address_prefix: "0.0.0.0/0"
        destination_address_prefix: "*"
      - name: out
        description: Allow out
@@ -36,7 +37,7 @@ specification:
        protocol: "all"
        source_port_range: "*"
        destination_port_range: "0"
-       source_address_prefix: "*"
+       source_address_prefix: "0.0.0.0/0"
        destination_address_prefix: "*"
 
 ---

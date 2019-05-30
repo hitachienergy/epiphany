@@ -15,6 +15,12 @@ resource "aws_security_group" "{{ specification.name }}" {
   name        = "{{ specification.name }}"
   vpc_id      = "${aws_vpc.{{ specification.vpc_name }}.id}"
 
+
+  tags {
+      cluster_name = "{{ specification.cluster_name }}"
+      cluster_version = "{{ version }}"
+  }   
+
 {% for rule in specification.rules %}
 
 {%- if rule.direction | lower in ["inbound", "ingress"] %}
@@ -29,7 +35,12 @@ resource "aws_security_group" "{{ specification.name }}" {
    {%- endif %}
     from_port   = {{ rule.destination_port_range }}
     to_port     = {{ rule.destination_port_range }}
-    cidr_blocks = ["0.0.0.0/0"]
+{%- if rule.direction | lower in ["inbound", "ingress"] %}
+ cidr_blocks = ["{{ rule.source_address_prefix }}"]
+{%- else %}
+ cidr_blocks = ["{{ rule.destination_address_prefix }}"]
+{%- endif %}
+
 }
 {%- endfor %}
 
