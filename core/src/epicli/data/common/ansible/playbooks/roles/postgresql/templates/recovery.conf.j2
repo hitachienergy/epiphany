@@ -1,0 +1,3 @@
+standby_mode          = 'on'
+primary_conninfo      = 'host={{ hostvars[groups['postgresql'][0]]['ansible_default_ipv4']['address'] }} port=5432 user={{ specification.replication.user }} password={{ specification.replication.password }}'
+trigger_file = '/tmp/postgresql_trigger'
