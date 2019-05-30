@@ -33,7 +33,7 @@ specification:
     - name: jmx-exporter
       enabled: no
     - name: postgresql
-      enabled: no
+      enabled: yes
     - name: haproxy
       enabled: yes
     - name: haproxy-exporter

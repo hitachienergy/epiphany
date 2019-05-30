@@ -1,0 +1,36 @@
+---
+# Postgresql Debian family of specific tasks
+
+- name: Install postgresql packages
+  apt: 
+    name:
+      - postgresql-10
+      - postgresql-contrib-10
+      - python-psycopg2 # required for postresql ansible management
+    update_cache: yes 
+    state: present  
+
+- name: Changing pg_hba.conf
+  replace:
+    path: /etc/postgresql/10/main/pg_hba.conf
+    regexp: '^host.*?all.*?all.*?127\.0\.0\.1\/32.*?md5$'
+    replace: 'host    all             all   0.0.0.0/0            md5'
+    backup: yes
+
+- name: Changing postgresql.conf
+  replace:
+    path: /etc/postgresql/10/main/postgresql.conf
+    regexp: "#listen_addresses = 'localhost'"
+    replace: "listen_addresses = '*'"
+    backup: yes
+
+- name: Restart postgresql service
+  service:
+    name: postgresql
+    state: restarted
+    enabled: yes
+
+- name: Set up replication
+  include_tasks: "replication-Debian.yml"
+  when:
+    - specification.replication is defined and specification.replication.enable is defined and specification.replication.enable

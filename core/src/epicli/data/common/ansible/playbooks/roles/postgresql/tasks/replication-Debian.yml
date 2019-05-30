@@ -1,0 +1,126 @@
+---
+# Master:
+
+- name: Install packages needed for managing Postgresql with Ansible
+  apt:
+    name: python-psycopg2
+    update_cache: yes
+    state: present
+
+- name: Turn on replica
+  replace:
+    path: /etc/postgresql/10/main/postgresql.conf
+    regexp: "^#wal_level = replica"
+    replace: "wal_level = replica"
+    backup: yes
+  when:
+    - groups['postgresql'][0] == inventory_hostname
+
+- name: Set max_wal_senders
+  replace:
+    path: /etc/postgresql/10/main/postgresql.conf
+    regexp: "^[#]?max_wal_senders\\s*=\\s*[0-9]+"
+    replace: "max_wal_senders = {{ specification.replication.max_wal_senders | default('5') }}"
+  when:
+    - groups['postgresql'][0] == inventory_hostname
+
+- name: Set wal_keep_segments 
+  replace:
+    path: /etc/postgresql/10/main/postgresql.conf
+    regexp: "^[#]?wal_keep_segments\\s*=\\s*[0-9]+"
+    replace: "wal_keep_segments = {{ specification.replication.wal_keep_segments | default('32') }}"
+  when:
+    - groups['postgresql'][0] == inventory_hostname
+
+- name: Add replication user to postgresql
+  become_user: postgres
+  postgresql_user:
+    user: "{{ specification.replication.user }}"
+    password: "{{ specification.replication.password }}"
+    role_attr_flags: LOGIN,REPLICATION
+  when:
+    - groups['postgresql'][0] == inventory_hostname
+
+- name: Check if replication user exists in pg_hba.conf
+  shell: grep "^host\s*replication\s*{{ specification.replication.user }}\s*{{ hostvars[groups['postgresql'][1]]['ansible_default_ipv4']['address'] }}/32\s*md5" /etc/postgresql/10/main/pg_hba.conf
+  register: test_replication 
+  failed_when: "test_replication.rc == 2"
+  when:
+    - groups['postgresql'][0] == inventory_hostname
+
+- name: Add replication user to pg_hba.conf
+  lineinfile:
+    path: /etc/postgresql/10/main/pg_hba.conf
+    line: "host    replication     {{ specification.replication.user }}     {{ hostvars[groups['postgresql'][1]]['ansible_default_ipv4']['address'] }}/32              md5"
+  when:
+    - groups['postgresql'][0] == inventory_hostname
+    - test_replication.stdout == ""
+
+- name: Restart postgresql service
+  service:
+    name: postgresql
+    state: restarted
+  when:
+    - groups['postgresql'][0] == inventory_hostname
+
+- name: Disable ufw
+  ufw:
+    state: disabled
+  when:
+    - groups['postgresql'][0] == inventory_hostname
+
+# Slave:
+
+- name: Stop postgresql service
+  service:
+    name: postgresql
+    state: stopped
+  when:
+    - groups['postgresql'][1] == inventory_hostname
+
+- name: Turn on hot_standby
+  replace:
+    path: /etc/postgresql/10/main/postgresql.conf
+    regexp: "^#hot_standby = on"
+    replace: "hot_standby = on"
+    backup: yes
+  when:
+    - groups['postgresql'][1] == inventory_hostname
+
+- name: Create pgpass file
+  template:
+    src: pgpass.j2
+    dest: /var/lib/postgresql/.pgpass
+    owner: postgres
+    group: postgres
+    mode: 0600
+  when:
+    - groups['postgresql'][1] == inventory_hostname
+
+- name: Clean data directory
+  shell: "rm -rf /var/lib/postgresql/10/main/*"
+  when:
+    - groups['postgresql'][1] == inventory_hostname
+
+- name: Replicate content with pg_basebackup
+  become_user: postgres
+  shell: "pg_basebackup -h {{ hostvars[groups['postgresql'][0]]['ansible_default_ipv4']['address'] }} -D /var/lib/postgresql/10/main/ -P -U {{ specification.replication.user }} --wal-method=stream"
+  when:
+    - groups['postgresql'][1] == inventory_hostname
+
+- name: Create recovery.conf file
+  template:
+    src: recovery.conf.j2
+    dest: /var/lib/postgresql/10/main/recovery.conf
+    owner: postgres
+    group: postgres
+  when:
+    - groups['postgresql'][1] == inventory_hostname
+
+- name: Start postgresql service
+  service:
+    name: postgresql
+    state: started
+  when:
+    - groups['postgresql'][1] == inventory_hostname
+
