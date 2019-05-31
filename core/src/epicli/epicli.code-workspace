@@ -1,0 +1,23 @@
+{
+	"folders": [
+		{
+			"path": "."
+		}
+	],
+	"launch": {
+		"version": "0.2.0",
+		"configurations": [
+			{
+				"name": "Python: epicli.py",
+				"type": "python",
+				"request": "launch",
+				"program": "${workspaceFolder}/cli/epicli.py",
+				"cwd": "${workspaceFolder}",      
+				"pythonPath": "${config:python.pythonPath}",
+				"env": { "PYTHONPATH": "${workspaceFolder}" },
+				"console": "integratedTerminal",
+				"args": ["apply",  "-f",  "data_yaml_path"]
+			}
+		]		
+	}
+}
