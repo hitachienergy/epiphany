@@ -1,6 +1,25 @@
 ---
 # Postgresql Red Hat family of specific tasks
 
+- name: Check if repository file exists
+  stat:
+    path: /etc/yum.repos.d/redhat-rhui.repo
+  register: rhui_exist
+
+- name: Check if Software Collections repository on EC2 exists
+  shell: grep -c -i rhui-REGION-rhel-server-rhscl /etc/yum.repos.d/redhat-rhui.repo
+  register: sc_repo_count
+  failed_when: "sc_repo_count.rc == 2"
+  when: rhui_exist
+
+- name: Enable Software Collections on EC2
+  ini_file:
+    dest: /etc/yum.repos.d/redhat-rhui.repo
+    section: rhui-REGION-rhel-server-rhscl
+    option: enabled
+    value: 1
+  when: sc_repo_count.stdout|int == 1
+
 - name: Install postgresql family packages
   yum:
     name:
