@@ -20,8 +20,8 @@ class Producer(threading.Thread):
         producer = KafkaProducer(bootstrap_servers='{{ kafka_hosts }}')
 
         while not self.stop_event.is_set():
-            {% for msg in kafka_var.tests.epiphany_topic_test_msgs %}
-            producer.send('{{ kafka_var.tests.epiphany_topic_test }}', b"{{ msg }}")
+            {% for msg in specification.kafka_var.tests.epiphany_topic_test_msgs %}
+            producer.send('{{ specification.kafka_var.tests.epiphany_topic_test }}', b"{{ msg }}")
             {% endfor %}
             time.sleep(1)
 
@@ -40,7 +40,7 @@ class Consumer(multiprocessing.Process):
         consumer = KafkaConsumer(bootstrap_servers='{{ kafka_hosts }}',
                                  auto_offset_reset='earliest',
                                  consumer_timeout_ms=1000)
-        consumer.subscribe(['{{ kafka_var.tests.epiphany_topic_test }}'])
+        consumer.subscribe(['{{ specification.kafka_var.tests.epiphany_topic_test }}'])
 
         while not self.stop_event.is_set():
             for message in consumer:
