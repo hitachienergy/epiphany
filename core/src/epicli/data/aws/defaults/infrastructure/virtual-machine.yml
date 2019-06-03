@@ -10,6 +10,7 @@ specification:
   launch_configuration: TO_BE_SET
   cluster_name: TO_BE_SET
   authorized_to_efs: False
+  mount_efs: False
   tags:
     - version: 0.3.0
   size: t2.micro
@@ -52,3 +53,70 @@ specification:
     - version: 0.3.0
   size: t3.micro
   os_type: linux
+---
+kind: infrastructure/virtual-machine
+version: 0.3.0
+title: "Virtual Machine Infra"
+provider: aws
+name: kubernetes-master-machine
+specification:
+  size: t3.small
+  authorized_to_efs: False
+  security:
+    rules:
+     - name: ssh
+       description: Allow ssh traffic
+       priority: 101
+       direction: Inbound
+       access: Allow
+       protocol: Tcp
+       source_port_range: "*"
+       destination_port_range: "22"
+       source_address_prefix: "0.0.0.0/0"
+       destination_address_prefix: "*"
+     - name: subnet-traffic
+       description: Allow subnet traffic
+       priority: 102
+       direction: Inbound
+       access: Allow
+       protocol: ALL
+       source_port_range: "*"
+       destination_from_port: 0
+       destination_to_port: 65536
+       destination_port_range: "0"
+       source_address_prefix: "10.1.1.0/24"
+       destination_address_prefix: "*"
+     - name: node-subnet-traffic
+       description: Allow node subnet traffic
+       priority: 102
+       direction: Inbound
+       access: Allow
+       protocol: ALL
+       source_port_range: "*"
+       destination_from_port: 0
+       destination_to_port: 65536
+       destination_port_range: "0"
+       source_address_prefix: "10.1.2.0/24"
+       destination_address_prefix: "*"
+     - name: node2-subnet-traffic
+       description: Allow node subnet traffic
+       priority: 102
+       direction: Inbound
+       access: Allow
+       protocol: ALL
+       source_port_range: "*"
+       destination_from_port: 0
+       destination_to_port: 65536
+       destination_port_range: "0"
+       source_address_prefix: "10.1.4.0/24"
+       destination_address_prefix: "*"
+     - name: out
+       description: Allow out
+       priority: 101
+       direction: Egress
+       access: Allow
+       protocol: "all"
+       source_port_range: "*"
+       destination_port_range: "0"
+       source_address_prefix: "0.0.0.0/0"
+       destination_address_prefix: "0.0.0.0/0"

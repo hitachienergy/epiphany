@@ -5,7 +5,7 @@ metadata:
   labels:
     name: {{ specification.storage.name }}
 spec:
-  storageClassName: filesystem
+  storageClassName: defaultfs
   capacity:
     storage: {{ specification.storage.capacity }}Gi # EFS does not enforce it
   volumeMode: Filesystem
