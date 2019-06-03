@@ -15,4 +15,4 @@ pre-start script
 end script
 
 # Rather than using setuid/setgid sudo is used because the pre-start task must run as root
-exec sudo -Hu kafka -g kafka KAFKA_HEAP_OPTS="{{ kafka_heap_opts }}" /opt/kafka/bin/kafka-server-start.sh /opt/kafka/config/server.properties
+exec sudo -Hu kafka -g kafka KAFKA_HEAP_OPTS="{{ specification.kafka_heap_opts }}" /opt/kafka/bin/kafka-server-start.sh /opt/kafka/config/server.properties
