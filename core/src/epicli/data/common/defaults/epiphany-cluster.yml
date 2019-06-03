@@ -41,6 +41,11 @@ specification:
       subnet_address_pool: 10.1.2.0/24
       machine: default
       configuration: default
+    rabbitmq:
+      count: 0
+      subnet_address_pool: 10.1.2.0/24
+      machine: default
+      configuration: default
     postgresql:
       count: 0
       subnet_address_pool: 10.1.3.0/24

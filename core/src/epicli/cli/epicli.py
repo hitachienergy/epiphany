@@ -81,4 +81,4 @@ def dump_config(config):
 
 
 if __name__ == '__main__':
-    sys.exit(main())
+    exit(main())

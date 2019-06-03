@@ -1,0 +1,14 @@
+rabbitmq_user: rabbitmq
+rabbitmq_group: rabbitmq
+
+logrotate_period: weekly
+logrotate_number: 10
+ulimit_open_files: 65535
+
+# Values that can be overriden from data.yaml
+amqp_port: 5672
+is_clustered: false
+rabbitmq_use_longname: true
+rabbitmq_policies: []
+rabbitmq_plugins: []
+custom_configurations: []

@@ -1,0 +1,8 @@
+---
+# Ansible playbook that makes sure RabbitMQ is installed
+
+- hosts: rabbitmq
+  become: true
+  become_method: sudo
+  roles:
+    - rabbitmq

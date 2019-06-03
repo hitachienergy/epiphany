@@ -28,6 +28,8 @@ specification:
       enabled: yes
     - name: kafka
       enabled: yes
+    - name: rabbitmq
+      enabled: yes
     - name: kafka-exporter
       enabled: no
     - name: jmx-exporter
