@@ -7,7 +7,7 @@ specification:
   # Have to use odd name to support valid yaml due to ansible getting confused over playbook names and variables etc.
   kafka_var:
     enable: True
-    admin: "{{ specification.admin_user.name }}"
+    admin: kafka
     admin_pwd: epiphany
     # users:
 
