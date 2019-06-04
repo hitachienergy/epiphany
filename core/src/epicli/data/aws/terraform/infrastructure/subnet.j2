@@ -13,6 +13,7 @@
 resource "aws_subnet" "{{ specification.name }}" {
 	vpc_id = "${aws_vpc.{{ specification.vpc_name }}.id}"
 	cidr_block = "{{ specification.cidr_block }}"
+	availability_zone = "{{ specification.availability_zone }}"
 
 	  tags = {
         Name = "{{ specification.name }}"
