@@ -7,6 +7,8 @@
     gpgkey: https://download.docker.com/linux/centos/gpg
     gpgcheck: yes
 
+# Workaround for problems with container selinux. 
+# Todo: Investigate problems with container selinux on Azure.
 - name: Install container packages
   yum:
     name: http://mirror.centos.org/centos/7/extras/x86_64/Packages/container-selinux-2.95-2.el7_6.noarch.rpm
