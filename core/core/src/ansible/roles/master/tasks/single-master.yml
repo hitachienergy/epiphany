@@ -86,6 +86,12 @@
 - name: Apply kube-flannel.yml
   shell: kubectl apply --kubeconfig=/home/{{ admin_user.name }}/.kube/config -f /home/{{ admin_user.name }}/kube-flannel.yml
   become_user: "{{ admin_user.name }}"
+  when: kubernetes_specification.cni_plugin == "flannel"
+
+- name: Apply calico
+  shell: kubectl apply --kubeconfig=/home/{{ admin_user.name }}/.kube/config -f https://docs.projectcalico.org/v3.7/manifests/calico.yaml
+  become_user: "{{ admin_user.name }}"
+  when: kubernetes_specification.cni_plugin == "calico"
 
 - name: Check if kubernetes-dashboard is already deployed
   shell: kubectl --kubeconfig=/home/{{ admin_user.name }}/.kube/config get pods --all-namespaces | grep -c -i dashboard
