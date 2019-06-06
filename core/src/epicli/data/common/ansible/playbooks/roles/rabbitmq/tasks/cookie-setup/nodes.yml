@@ -17,8 +17,8 @@
   template:
     src: erlang-cookie.j2
     dest: /var/lib/rabbitmq/.erlang.cookie
-    owner: "{{ rabbitmq_user }}"
-    group: "{{ rabbitmq_group }}"
+    owner: "{{ specification.rabbitmq_user }}"
+    group: "{{ specification.rabbitmq_group }}"
     mode: 0400
   register: cookie
 

@@ -9,14 +9,14 @@
   set_fact: 
     is_cookie_user_defined: True
   when:
-    - rabbitmq is defined
-    - rabbitmq.cluster is defined 
-    - rabbitmq.cluster.cookie is defined 
+    - specification is defined
+    - specification.cluster is defined
+    - specification.cluster.cookie is defined
   changed_when: false
 
 - name: Set cookie variable if user defined
   set_fact: 
-    erlang_cookie: "{{ rabbitmq.cluster.cookie }}"
+    erlang_cookie: "{{ specification.cluster.cookie }}"
   when: is_cookie_user_defined == True
   changed_when: false
 
@@ -57,8 +57,8 @@
   template:
     src: erlang-cookie.j2
     dest: /var/lib/rabbitmq/.erlang.cookie
-    owner: "{{ rabbitmq_user }}"
-    group: "{{ rabbitmq_group }}"
+    owner: "{{ specification.rabbitmq_user }}"
+    group: "{{ specification.rabbitmq_group }}"
     mode: 0400
   register: cookie
 

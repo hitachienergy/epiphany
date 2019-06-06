@@ -29,7 +29,7 @@
     prefix: /usr/lib/rabbitmq
     state: enabled
     new_only: no
-  with_items: "{{ rabbitmq_plugins }}"
+  with_items: "{{ specification.rabbitmq_plugins }}"
 
 - name: Restart RabbitMQ
   service: name=rabbitmq-server state=restarted
