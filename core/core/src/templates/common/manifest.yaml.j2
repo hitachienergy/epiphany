@@ -107,6 +107,11 @@ kubernetes:
 {%- endif %}
   allow_pods_on_master: {{ core.kubernetes.allow_pods_on_master }}
 
+{%- if core.kubernetes.cni_plugin is defined %}
+kubernetes_specification:
+  cni_plugin: {{ core.kubernetes.cni_plugin }}
+{%- endif %}
+
 {%- if core.haproxy is defined %}
 haproxy:
   {% if core.haproxy.http_request_timeout is defined and core.haproxy.http_request_timeout is not none %}
