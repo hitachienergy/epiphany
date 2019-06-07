@@ -127,7 +127,8 @@ class InfrastructureBuilder(Step):
         autoscaling_group.specification.count = component_value.count
         autoscaling_group.specification.subnet_names = [s.specification.name for s in subnets_to_create]
         autoscaling_group.specification.availability_zones = list(set([s.specification.availability_zone for s in subnets_to_create]))
-        autoscaling_group.specification.tags.append({'cluster_name': self.cluster_name},{component_key: ''})
+        autoscaling_group.specification.tags.append({'cluster_name': self.cluster_name})
+        autoscaling_group.specification.tags.append({component_key: ''})
         return autoscaling_group
 
     def get_launch_configuration(self, autoscaling_group, component_key, security_groups_to_create):
