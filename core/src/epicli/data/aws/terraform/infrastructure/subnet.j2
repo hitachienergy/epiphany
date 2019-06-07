@@ -16,6 +16,8 @@ resource "aws_subnet" "{{ specification.name }}" {
 	availability_zone = "{{ specification.availability_zone }}"
 
 	  tags = {
+	  	cluster_name = "{{ specification.cluster_name }}"
+		cluster_version = "{{ version }}"
         Name = "{{ specification.name }}"
       }
 }

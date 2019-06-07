@@ -3,6 +3,8 @@ import sys
 from cli.helpers.yaml_helpers import safe_load_all, safe_load
 from collections import namedtuple
 import jinja2
+import json
+from cli.helpers.objdict_helpers import dict_to_objdict
 from jinja2 import Template
 
 BASE_DIR = os.path.dirname(__file__)
@@ -51,4 +53,10 @@ def load_template_file(file_type, provider, kind):
     path_to_file = os.path.join(script_dir, DATA_FOLDER_PATH, provider, file_type, kind + '.j2')
     with open(path_to_file, 'r') as stream:
         return Template(stream.read(), undefined=jinja2.StrictUndefined)
+
+
+def load_json_obj(path_to_file):
+    with open(path_to_file, 'r') as stream:
+        obj = json.load(stream)
+        return dict_to_objdict(obj)
 

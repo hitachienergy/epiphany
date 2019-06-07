@@ -1,8 +1,8 @@
 KafkaServer {
    org.apache.kafka.common.security.plain.PlainLoginModule required
-   username="{{ kafka_var.admin }}"
-   password="{{ kafka_var.admin_pwd }}"
-   user_admin="{{ kafka_var.admin_pwd }}"
+   username="{{ specification.kafka_var.admin }}"
+   password="{{ specification.kafka_var.admin_pwd }}"
+   user_admin="{{ specification.kafka_var.admin_pwd }}"
    {%- for host in kafka_hosts %}
    user_{{host}}="kafkabroker1-secret";
    {%- endfor %}

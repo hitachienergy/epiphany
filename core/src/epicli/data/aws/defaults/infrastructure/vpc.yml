@@ -9,4 +9,4 @@ specification:
   instance_tenancy: default
   enable_dns_support: true
   enable_dns_hostnames: true
-
+  cluster_name: TO_BE_SET

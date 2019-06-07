@@ -1,13 +1,13 @@
 ---
 - name: Check for Kafka package
   stat:
-    path: "/tmp/kafka_{{ kafka_var.scala.version }}-{{ kafka_var.version }}.tgz"
+    path: "/tmp/kafka_{{ specification.kafka_var.scala.version }}-{{ specification.kafka_var.version }}.tgz"
   register: kafka_check
   
 - name: Fetch Kafka binary package
   get_url:
-    url: "https://archive.apache.org/dist/kafka/{{ kafka_var.version }}/kafka_{{ kafka_var.scala.version }}-{{ kafka_var.version }}.tgz"
-    dest: "/tmp/kafka_{{ kafka_var.scala.version }}-{{ kafka_var.version }}.tgz"
+    url: "https://archive.apache.org/dist/kafka/{{ specification.kafka_var.version }}/kafka_{{ specification.kafka_var.scala.version }}-{{ specification.kafka_var.version }}.tgz"
+    dest: "/tmp/kafka_{{ specification.kafka_var.scala.version }}-{{ specification.kafka_var.version }}.tgz"
   when: not kafka_check.stat.exists
 
 - name: Add Kafka's bin dir to the PATH
@@ -18,32 +18,32 @@
 
 - name: Setup group
   group:
-    name: "{{ kafka_var.group }}"
+    name: "{{ specification.kafka_var.group }}"
     system: yes
 
 - name: Setup user
   user:
-    name: "{{ kafka_var.user }}"
+    name: "{{ specification.kafka_var.user }}"
     system: yes
-    group: "{{ kafka_var.group }}"
+    group: "{{ specification.kafka_var.group }}"
     shell: "/usr/sbin/nologin"
 
 - name: Check for Kafka package
   stat:
-    path: /opt/kafka_{{ kafka_var.scala.version }}-{{ kafka_var.version }}/bin/kafka-server-start.sh
+    path: /opt/kafka_{{ specification.kafka_var.scala.version }}-{{ specification.kafka_var.version }}/bin/kafka-server-start.sh
   register: kafka_package
 
 - name: Uncompress the Kafka tar
   unarchive:
     copy: no
-    creates: /opt/kafka_{{ kafka_var.scala.version }}-{{ kafka_var.version }}
-    src: /tmp/kafka_{{ kafka_var.scala.version }}-{{ kafka_var.version }}.tgz
+    creates: /opt/kafka_{{ specification.kafka_var.scala.version }}-{{ specification.kafka_var.version }}
+    src: /tmp/kafka_{{ specification.kafka_var.scala.version }}-{{ specification.kafka_var.version }}.tgz
     dest: /opt
   when: not kafka_package.stat.exists
 
 - name: Change ownership on kafka directory.
   file:
-    path: /opt/kafka_{{ kafka_var.scala.version }}-{{ kafka_var.version }}
+    path: /opt/kafka_{{ specification.kafka_var.scala.version }}-{{ specification.kafka_var.version }}
     state: directory
     owner: kafka
     group: kafka
@@ -52,7 +52,7 @@
   file:
     dest: /opt/kafka
     state: link
-    src: /opt/kafka_{{ kafka_var.scala.version }}-{{ kafka_var.version }}
+    src: /opt/kafka_{{ specification.kafka_var.scala.version }}-{{ specification.kafka_var.version }}
 
 - name: Create systemd config
   template:
@@ -69,31 +69,31 @@
 
 - name: Create data_dir
   file:
-    path: "{{ kafka_var.data_dir }}"
+    path: "{{ specification.kafka_var.data_dir }}"
     state: directory
-    owner: "{{ kafka_var.user }}"
-    group: "{{ kafka_var.group }}"
+    owner: "{{ specification.kafka_var.user }}"
+    group: "{{ specification.kafka_var.group }}"
     mode: 0755
 
 - name: Remove lost+found in the datadir
   file:
-    path: "{{ kafka_var.data_dir }}/lost+found"
+    path: "{{ specification.kafka_var.data_dir }}/lost+found"
     state: absent
 
 - name: Create log_dir
   file:
-    path: "{{ kafka_var.log_dir }}"
+    path: "{{ specification.kafka_var.log_dir }}"
     state: directory
-    owner: "{{ kafka_var.user }}"
-    group: "{{ kafka_var.group }}"
+    owner: "{{ specification.kafka_var.user }}"
+    group: "{{ specification.kafka_var.group }}"
     mode: 0755
 
 - name: Create /etc/kafka directory
   file:
     path: /etc/kafka
     state: directory
-    owner: "{{ kafka_var.user }}"
-    group: "{{ kafka_var.group }}"
+    owner: "{{ specification.kafka_var.user }}"
+    group: "{{ specification.kafka_var.group }}"
 
 # - name: link conf_dir to /opt/kafka/config
 #   file: dest=/etc/kafka owner=kafka group=kafka state=link src=/opt/kafka/config
@@ -101,9 +101,9 @@
 # Setup log4j.properties
 - name: Create log4j.properties
   file:
-    dest: "{{ kafka_var.conf_dir }}/log4j.properties"
-    owner: "{{ kafka_var.user }}"
-    group: "{{ kafka_var.group }}"
+    dest: "{{ specification.kafka_var.conf_dir }}/log4j.properties"
+    owner: "{{ specification.kafka_var.user }}"
+    group: "{{ specification.kafka_var.group }}"
     mode: 0644
     src: log4j.properties
   notify:
@@ -112,9 +112,9 @@
 # Setup server.properties
 - name: Create server.properties
   template:
-    dest: "{{ kafka_var.conf_dir }}/server.properties"
-    owner: "{{ kafka_var.user }}"
-    group: "{{ kafka_var.group }}"
+    dest: "{{ specification.kafka_var.conf_dir }}/server.properties"
+    owner: "{{ specification.kafka_var.user }}"
+    group: "{{ specification.kafka_var.group }}"
     # Was 0640
     mode: 0644
     src: server.properties.j2
@@ -131,7 +131,7 @@
 
 - name: configure system settings, file descriptors and number of threads for kafka
   pam_limits:
-    domain: "{{ kafka_var.user }}"
+    domain: "{{ specification.kafka_var.user }}"
     limit_type: "{{item.limit_type}}"
     limit_item: "{{item.limit_item}}"
     value: "{{item.value}}"

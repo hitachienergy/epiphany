@@ -28,14 +28,16 @@ specification:
       enabled: yes
     - name: kafka
       enabled: yes
+    - name: rabbitmq
+      enabled: yes
     - name: kafka-exporter
       enabled: no
     - name: jmx-exporter
       enabled: no
     - name: postgresql
-      enabled: no
+      enabled: yes
     - name: haproxy
-      enabled: no
+      enabled: yes
     - name: haproxy-exporter
       enabled: no
   roles_mapping:
@@ -98,4 +100,7 @@ specification:
     single_machine:
       - kubernetes-master
       - rabbitmql
+    haproxy:
+      - haproxy
+      - filebeat
 

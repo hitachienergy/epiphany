@@ -4,7 +4,10 @@ from cli.helpers.config_merger import merge_with_defaults
 from cli.engine.aws.APIProxy import APIProxy
 from cli.helpers.Step import Step
 from cli.helpers.doc_list_helpers import select_single, select_all
-
+from cli.helpers.build_saver import get_terraform_path
+from cli.helpers.data_loader import load_json_obj
+import os
+import uuid
 
 class InfrastructureBuilder(Step):
     def __init__(self, docs):
@@ -26,6 +29,9 @@ class InfrastructureBuilder(Step):
         infrastructure.append(default_security_group)
 
         vpc_name = vpc_config.specification.name
+
+        resource_group = self.get_resource_group()
+        infrastructure.append(resource_group)
 
         internet_gateway = self.get_internet_gateway(vpc_config.specification.name)
         infrastructure.append(internet_gateway)
@@ -71,7 +77,7 @@ class InfrastructureBuilder(Step):
             launch_configuration = self.get_launch_configuration(autoscaling_group, component_key,
                                                                  security_groups_to_create)
 
-            launch_configuration.specification.key_name = public_key_config.specification.name
+            launch_configuration.specification.key_name = public_key_config.specification.key_name
 
             self.set_image_id_for_launch_configuration(self.cluster_model, self.docs, launch_configuration,
                                                        autoscaling_group)
@@ -90,10 +96,17 @@ class InfrastructureBuilder(Step):
 
         return infrastructure
 
+    def get_resource_group(self):
+        resource_group = self.get_config_or_default(self.docs, 'infrastructure/resource-group')
+        resource_group.specification.name = self.cluster_name
+        resource_group.specification.cluster_name = self.cluster_name
+        return resource_group
+
     def get_vpc_config(self):
         vpc_config = self.get_config_or_default(self.docs, 'infrastructure/vpc')
         vpc_config.specification.address_pool = self.cluster_model.specification.cloud.vnet_address_pool
         vpc_config.specification.name = "aws-vpc-" + self.cluster_name
+        vpc_config.specification.cluster_name = self.cluster_name
         return vpc_config
 
     def get_default_security_group_config(self, vpc_config):
@@ -109,12 +122,12 @@ class InfrastructureBuilder(Step):
 
     def get_autoscaling_group(self, component_key, component_value, subnets_to_create):
         autoscaling_group = self.get_virtual_machine(component_value, self.cluster_model, self.docs)
+        autoscaling_group.specification.cluster_name = self.cluster_name
         autoscaling_group.specification.name = 'aws-asg-' + self.cluster_name + '-' + component_key.lower()
         autoscaling_group.specification.count = component_value.count
         autoscaling_group.specification.subnet_names = [s.specification.name for s in subnets_to_create]
         autoscaling_group.specification.availability_zones = list(set([s.specification.availability_zone for s in subnets_to_create]))
-        autoscaling_group.specification.tags.append({component_key: ''})
-        autoscaling_group.specification.tags.append({'cluster_name': self.cluster_name})
+        autoscaling_group.specification.tags.append({'cluster_name': self.cluster_name},{component_key: ''})
         return autoscaling_group
 
     def get_launch_configuration(self, autoscaling_group, component_key, security_groups_to_create):
@@ -131,6 +144,7 @@ class InfrastructureBuilder(Step):
         subnet.specification.cidr_block = subnet_definition['address_pool']
         subnet.specification.availability_zone = subnet_definition['availability_zone']
         subnet.specification.name = 'aws-subnet-' + self.cluster_name + '-' + component_key+'-' + str(index)
+        subnet.specification.cluster_name = self.cluster_name
         return subnet
 
     def get_security_group(self, subnet, component_key, vpc_name, index):
@@ -138,6 +152,7 @@ class InfrastructureBuilder(Step):
         security_group.specification.name = 'aws-security-group-' + self.cluster_name + '-' + component_key + '-' + str(index)
         security_group.specification.vpc_name = vpc_name
         security_group.specification.cidr_block = subnet.specification.cidr_block
+        security_group.specification.cluster_name = self.cluster_name
         return security_group
 
     def get_route_table_association(self, route_table_name, component_key, subnet_name, subnet_index):
@@ -152,6 +167,7 @@ class InfrastructureBuilder(Step):
         internet_gateway = self.get_config_or_default(self.docs, 'infrastructure/internet-gateway')
         internet_gateway.specification.name = 'aws-internet-gateway-' + self.cluster_name
         internet_gateway.specification.vpc_name = vpc_name
+        internet_gateway.specification.cluster_name = self.cluster_name
         return internet_gateway
 
     def get_routing_table(self, vpc_name, internet_gateway_name):
@@ -159,11 +175,24 @@ class InfrastructureBuilder(Step):
         route_table.specification.name = 'aws-route-table-' + self.cluster_name
         route_table.specification.vpc_name = vpc_name
         route_table.specification.route.gateway_name = internet_gateway_name
+        route_table.specification.cluster_name = self.cluster_name
         return route_table
 
     def get_public_key(self):
         public_key_config = self.get_config_or_default(self.docs, 'infrastructure/public-key')
         public_key_config.specification.name = self.cluster_model.specification.admin_user.name
+
+        # To avoid key-pair collisions on AWS we generate a randomized key to store it. In order to successfully
+        # re-run TF we need to re-use the randomized key which we extract from the terraform.tfstate from the previous
+        # run.
+        tfstate_path = get_terraform_path(self.cluster_model.specification.name) + '/terraform.tfstate'
+        if os.path.isfile(tfstate_path):
+            tfstate = load_json_obj(tfstate_path)
+            public_key_config.specification.key_name = \
+                tfstate['modules'][0]['resources']['aws_key_pair.' + public_key_config.specification.name]['primary']['id']
+        else:
+            public_key_config.specification.key_name = self.cluster_model.specification.admin_user.name + '-' \
+                                                       + str(uuid.uuid4())
 
         with open(self.cluster_model.specification.admin_user.key_path+'.pub', 'r') as stream:
             public_key_config.specification.public_key = stream.read().rstrip()

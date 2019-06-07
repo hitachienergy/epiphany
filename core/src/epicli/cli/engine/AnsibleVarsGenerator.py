@@ -48,7 +48,7 @@ class AnsibleVarsGenerator(Step):
 
     def add_admin_user_name(self, document):
         if document.specification is None:
-            raise Exception('Config specification is empty for: '+document.title)
+            raise Exception('Config specification is empty for: ' + document.title)
 
         document.specification['admin_user'] = self.cluster_model.specification.admin_user
         return document

@@ -27,6 +27,18 @@ resource "aws_autoscaling_group" "{{ specification.name }}" {
   ]
 
   tag {
+    key = "cluster_name"
+    value = "{{ specification.cluster_name }}"
+    propagate_at_launch = "true"
+  }
+
+  tag {
+    key = "cluster_version"
+    value = "{{ version }}"
+    propagate_at_launch = "true"
+  }
+
+  tag {
     key = "Name"
     value = "{{ specification.name }}"
     propagate_at_launch = "true"

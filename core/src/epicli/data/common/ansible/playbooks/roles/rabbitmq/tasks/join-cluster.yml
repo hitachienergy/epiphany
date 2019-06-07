@@ -1,0 +1,30 @@
+---
+- name: Retrieve RabbitMQ master
+  set_fact:
+    rabbitmq_master: "{{ groups['rabbitmq'][0] }}"
+
+- name: Retrieve RabbitMQ master host
+  set_fact:
+    rabbitmq_master_host: "{{ groups['rabbitmq'][0] }}"
+  when:
+    - provider != "aws"
+
+- name: Retrieve RabbitMQ master host for AWS
+  set_fact:
+    rabbitmq_master_host: "ip-{{ hostvars[groups['rabbitmq'][0]]['ansible_default_ipv4']['address'] | replace('.','-') }}"
+  when:
+    - provider == "aws"
+
+- name: Stop rabbitmq
+  become: yes
+  command: rabbitmqctl stop_app
+  when: rabbitmq_master != inventory_hostname
+
+- name: Add node to cluster
+  become: yes
+  command: rabbitmqctl join_cluster rabbit@{{ rabbitmq_master_host }}
+  when: rabbitmq_master != inventory_hostname
+
+- name: Start rabbitmq
+  become: yes
+  command: rabbitmqctl start_app

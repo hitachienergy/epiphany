@@ -10,4 +10,5 @@ specification:
     cidr_block: "0.0.0.0/0"
     gateway_name: TO_BE_SET
   tag: []
+  cluster_name: TO_BE_SET
 

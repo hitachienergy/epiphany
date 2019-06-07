@@ -1,0 +1,67 @@
+---
+
+- name: Set default value for user defined cookie variable
+  set_fact: 
+    is_cookie_user_defined: False
+  changed_when: false
+
+- name: Check if cookie is user defined
+  set_fact: 
+    is_cookie_user_defined: True
+  when:
+    - specification is defined
+    - specification.cluster is defined
+    - specification.cluster.cookie is defined
+  changed_when: false
+
+- name: Set cookie variable if user defined
+  set_fact: 
+    erlang_cookie: "{{ specification.cluster.cookie }}"
+  when: is_cookie_user_defined == True
+  changed_when: false
+
+- name: Check that the .erlang.cookie file exists on master
+  stat:
+    path: /var/lib/rabbitmq/.erlang.cookie
+  register: stat_result
+  changed_when: false
+
+- name: Read cookie file if exists 
+  shell: cat /var/lib/rabbitmq/.erlang.cookie
+  become: yes
+  register: cookie_file_content
+  changed_when: false
+  when:
+    - is_cookie_user_defined == False
+    - stat_result.stat.exists == True 
+
+- name: Set erlang_cookie variable
+  set_fact: 
+    erlang_cookie: "{{ cookie_file_content.stdout }}"
+  changed_when: false
+  when: 
+    - is_cookie_user_defined == False
+    - stat_result.stat.exists == True 
+    - cookie_file_content is defined
+
+- name: Generate cookie on RabbitMQ master if not user defined and not exist 
+  set_fact: 
+    erlang_cookie: "{{ lookup('password', '/dev/null length=15 chars=ascii_letters') }}"
+  changed_when: false
+  when: 
+    - is_cookie_user_defined == False
+    - groups['rabbitmq'][0] == inventory_hostname
+    - stat_result.stat.exists == False 
+
+- name: Update RabbitMQ erlang cookie
+  template:
+    src: erlang-cookie.j2
+    dest: /var/lib/rabbitmq/.erlang.cookie
+    owner: "{{ specification.rabbitmq_user }}"
+    group: "{{ specification.rabbitmq_group }}"
+    mode: 0400
+  register: cookie
+
+- name: Restart RabbitMQ
+  service: name=rabbitmq-server state=restarted
+  when: cookie.changed or stat_result.stat.exists == False 
