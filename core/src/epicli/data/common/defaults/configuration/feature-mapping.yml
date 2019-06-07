@@ -50,6 +50,10 @@ specification:
       - kubernetes-node
       - node-exporter
       - filebeat
+    kubernetes_node_ha:
+      - kubernetes-node
+      - node-exporter
+      - filebeat
     kafka:
       - zookeeper
       - jmx-exporter

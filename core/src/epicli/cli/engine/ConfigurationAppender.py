@@ -18,7 +18,10 @@ class ConfigurationAppender(Step):
             if component_value.count < 1:
                 continue
 
-            features_map = select_first(configuration_docs, lambda x: x.kind == 'configuration/feature-mapping')
+            features_map = select_first(self.input_docs, lambda x: x.kind == 'configuration/feature-mapping')
+            if features_map is None:
+                features_map = select_first(configuration_docs, lambda x: x.kind == 'configuration/feature-mapping')
+
             if features_map is None:
                 features_map = load_yaml_obj(types.DEFAULT, 'common', 'configuration/feature-mapping')
                 self.logger.info("Adding: " + features_map.kind)
@@ -28,9 +31,12 @@ class ConfigurationAppender(Step):
             for feature_key in features_map.specification.roles_mapping[component_key]:
                 config = select_first(self.input_docs, lambda x: x.kind == 'configuration/' + feature_key and x.name == config_selector)
                 if config is None:
+                    config = select_first(configuration_docs, lambda
+                        x: x.kind == 'configuration/' + feature_key and x.name == config_selector)
+                if config is None:
                     config = merge_with_defaults('common', 'configuration/' + feature_key, config_selector)
                     self.logger.info("Adding: " + config.kind)
-                configuration_docs.append(config)
+                    configuration_docs.append(config)
 
         return configuration_docs
 

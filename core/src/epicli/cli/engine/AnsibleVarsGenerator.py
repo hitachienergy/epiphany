@@ -35,6 +35,7 @@ class AnsibleVarsGenerator(Step):
                 continue
 
             document = self.add_admin_user_name(document)
+            document = self.add_provider_info(document)
             vars_dir = os.path.join(ansible_dir, 'roles', to_role_name(role), 'vars')
             if not os.path.exists(vars_dir):
                 os.makedirs(vars_dir)
@@ -50,6 +51,10 @@ class AnsibleVarsGenerator(Step):
             raise Exception('Config specification is empty for: ' + document.title)
 
         document.specification['admin_user'] = self.cluster_model.specification.admin_user
+        return document
+
+    def add_provider_info(self, document):
+        document.specification['provider'] = self.cluster_model.provider
         return document
 
     def get_clean_cluster_model(self):

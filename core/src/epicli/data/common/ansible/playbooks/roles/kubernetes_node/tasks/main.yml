@@ -3,8 +3,8 @@
 
 - name: Check if node is registered with Kubernetes cluster
   shell: >-
-    kubectl --kubeconfig=/home/{{ specification.admin_user.name }}/.kube/config get nodes --no-headers -o=custom-columns=NAME:.metadata.name |
-    grep -w {{ inventory_hostname }}
+    kubectl --kubeconfig=/home/{{ specification.admin_user.name }}/.kube/config get nodes --no-headers -o=custom-columns=INTERNAL-IP:.status.addresses[*].address |
+    grep -w {{ hostvars[inventory_hostname]['ansible_default_ipv4']['address'] }}
   register: hostname_in_cluster
   failed_when: hostname_in_cluster.rc == 2 or hostname_in_cluster.stderr # do not fail when grep doesn't match but detect errors in pipeline
   changed_when: false

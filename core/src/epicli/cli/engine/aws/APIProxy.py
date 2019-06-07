@@ -78,3 +78,11 @@ class APIProxy:
 
         raise Exception("Expected 1 VPC matching tag Name: " + vpc_config.specification.name +
                         " but received: " + str(len(vpcs)))
+
+    def get_efs_id_for_given_token(self, token):
+        client = self.session.client('efs')
+        response = client.describe_file_systems(CreationToken=token)
+        if response['ResponseMetadata']['HTTPStatusCode'] == 200 and len(response['FileSystems']) > 0:
+            return response['FileSystems'][0]['FileSystemId']
+        raise Exception('Error requesting AWS cli: status: '+response['ResponseMetadata']['HTTPStatusCode']
+                        + ' found efs:'+len(response['FileSystems']))

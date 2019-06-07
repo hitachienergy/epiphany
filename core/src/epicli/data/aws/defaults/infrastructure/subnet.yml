@@ -8,3 +8,4 @@ specification:
   vpc_name: TO_BE_SET
   cidr_block: TO_BE_SET
   cluster_name: TO_BE_SET
+  availability_zone: TO_BE_SET
