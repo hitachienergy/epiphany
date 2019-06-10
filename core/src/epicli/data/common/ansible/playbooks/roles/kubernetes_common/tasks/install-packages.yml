@@ -1,15 +1,29 @@
 ---
-#- name: Install Azure File Storage packages
-#  package:
-#    name: "{{ item }}"
-#    update_cache: yes
-#    state: present
-#  with_items:
-#    - cifs-utils
-#    - samba-client
-#    - samba-common
-#  when: kubernetes.storage.enable == True
-# todo add K8s storage packages that are provider agnostic
+- name: Install Storage packages
+  package:
+    name: "{{ item }}"
+    update_cache: yes
+    state: present
+  with_items:
+    - cifs-utils
+    - samba-client
+    - samba-common
+
+- name: Install NFS package for RedHat family
+  yum:
+    name:
+      - nfs-utils
+    update_cache: yes
+    state: present
+  when: ansible_os_family == "RedHat"
+
+- name: Install NFS package for Debian family
+  apt:
+    name:
+      - nfs-common
+    update_cache: yes
+    state: present
+  when: ansible_os_family == "Debian"
 
 - name: Install Kubernetes packages for RedHat family
   yum:

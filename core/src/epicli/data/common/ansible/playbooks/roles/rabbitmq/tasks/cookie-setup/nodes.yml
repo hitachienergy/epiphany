@@ -1,0 +1,27 @@
+---
+
+- name: Read cookie from RabbitMQ master
+  shell: cat /var/lib/rabbitmq/.erlang.cookie
+  become: yes
+  register: cookie_file_content
+  delegate_to: "{{ groups['rabbitmq'][0] }}"
+  changed_when: false
+
+- name: Set erlang_cookie variable
+  set_fact: 
+    erlang_cookie: "{{ cookie_file_content.stdout }}"
+  when: cookie_file_content is defined
+  changed_when: false
+
+- name: update RabbitMQ erlang cookie
+  template:
+    src: erlang-cookie.j2
+    dest: /var/lib/rabbitmq/.erlang.cookie
+    owner: "{{ specification.rabbitmq_user }}"
+    group: "{{ specification.rabbitmq_group }}"
+    mode: 0400
+  register: cookie
+
+- name: Restart RabbitMQ
+  service: name=rabbitmq-server state=restarted
+  when: cookie.changed

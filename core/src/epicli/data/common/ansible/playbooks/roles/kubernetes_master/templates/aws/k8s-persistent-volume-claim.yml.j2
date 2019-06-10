@@ -1,0 +1,14 @@
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: {{ specification.storage.name }}-claim
+spec:
+  storageClassName: defaultfs
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: {{ specification.storage.capacity }}Gi
+  selector:
+    matchLabels:
+      name: {{ specification.storage.name }}

@@ -2,7 +2,7 @@
   become: yes
   template:
     dest: "/home/{{ specification.admin_user.name }}/k8s-storage-secret.yml"
-    src: k8s-storage-secret.yml.j2
+    src: azure/k8s-storage-secret.yml.j2
     owner: "{{ specification.admin_user.name }}"
     group: "{{ specification.admin_user.name }}"
     mode: 0644
@@ -11,7 +11,7 @@
   become: yes
   template:
     dest: "/home/{{ specification.admin_user.name }}/k8s-persistent-volume.yml"
-    src: k8s-persistent-volume.yml.j2
+    src: azure/k8s-persistent-volume.yml.j2
     owner: "{{ specification.admin_user.name }}"
     group: "{{ specification.admin_user.name }}"
     mode: 0644

@@ -12,8 +12,7 @@
 
 
 resource "aws_autoscaling_group" "{{ specification.name }}" {
-  # todo: check availability zones in VPC
-  #availability_zones   = [{% for availability_zone in specification.availability_zones %}  "{{ availability_zone }}" {% if not loop.last %}, {% endif %} {% endfor %}]
+  availability_zones   = [{% for availability_zone in specification.availability_zones %}  "{{ availability_zone }}" {% if not loop.last %}, {% endif %} {% endfor %}]
   name                 = "{{ specification.name }}"
   max_size             = "{{ specification.count }}"
   min_size             = "{{ specification.count }}"
@@ -22,7 +21,9 @@ resource "aws_autoscaling_group" "{{ specification.name }}" {
   launch_configuration = "${aws_launch_configuration.{{ specification.launch_configuration }}.name}"
 
   vpc_zone_identifier = [
-    "${aws_subnet.{{ specification.subnet }}.id}",
+  {%- for name in specification.subnet_names %}
+    "${aws_subnet.{{ name }}.id}",
+  {%- endfor %}
   ]
 
   tag {

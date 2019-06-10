@@ -10,14 +10,14 @@
 # {{ specification.name }}
 #####################################################
 
-resource "aws_subnet" "{{ specification.name }}" {
-	vpc_id = "${aws_vpc.{{ specification.vpc_name }}.id}"
-	cidr_block = "{{ specification.cidr_block }}"
-	availability_zone = "{{ specification.availability_zone }}"
+resource "aws_security_group_rule" "{{ specification.name }}" {
+  type            = "{{ specification.type }}"
+  from_port       = {{ specification.from_port }}
+  to_port         = {{ specification.to_port }}
+  protocol        = "{{ specification.protocol }}"
 
-	  tags = {
-	  	cluster_name = "{{ specification.cluster_name }}"
-		cluster_version = "{{ version }}"
-        Name = "{{ specification.name }}"
-      }
+  # Opening to 0.0.0.0/0 can lead to security vulnerabilities.
+  cidr_blocks = ["{{ specification.cidr_blocks }}"]
+
+  security_group_id = "${ {{ specification.security_group_name }}.id}"
 }
