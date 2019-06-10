@@ -12,7 +12,6 @@
 
 
 resource "aws_autoscaling_group" "{{ specification.name }}" {
-  availability_zones   = [{% for availability_zone in specification.availability_zones %}  "{{ availability_zone }}" {% if not loop.last %}, {% endif %} {% endfor %}]
   name                 = "{{ specification.name }}"
   max_size             = "{{ specification.count }}"
   min_size             = "{{ specification.count }}"
