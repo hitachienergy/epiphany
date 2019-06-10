@@ -29,7 +29,7 @@ specification:
        source_port_range: "*"
        destination_port_range: "22"
        source_address_prefix: "0.0.0.0/0"
-       destination_address_prefix: "*"
+       destination_address_prefix: "0.0.0.0/0"
      - name: out
        description: Allow out
        priority: 101
@@ -39,7 +39,7 @@ specification:
        source_port_range: "*"
        destination_port_range: "0"
        source_address_prefix: "0.0.0.0/0"
-       destination_address_prefix: "*"
+       destination_address_prefix: "0.0.0.0/0"
 
 ---
 kind: infrastructure/virtual-machine
@@ -73,7 +73,7 @@ specification:
        source_port_range: "*"
        destination_port_range: "22"
        source_address_prefix: "0.0.0.0/0"
-       destination_address_prefix: "*"
+       destination_address_prefix: "0.0.0.0/0"
      - name: subnet-traffic
        description: Allow subnet traffic
        priority: 102
@@ -85,7 +85,7 @@ specification:
        destination_to_port: 65536
        destination_port_range: "0"
        source_address_prefix: "10.1.1.0/24"
-       destination_address_prefix: "*"
+       destination_address_prefix: "0.0.0.0/0"
      - name: node-subnet-traffic
        description: Allow node subnet traffic
        priority: 102
@@ -97,7 +97,7 @@ specification:
        destination_to_port: 65536
        destination_port_range: "0"
        source_address_prefix: "10.1.2.0/24"
-       destination_address_prefix: "*"
+       destination_address_prefix: "0.0.0.0/0"
      - name: node2-subnet-traffic
        description: Allow node subnet traffic
        priority: 102
@@ -109,7 +109,7 @@ specification:
        destination_to_port: 65536
        destination_port_range: "0"
        source_address_prefix: "10.1.4.0/24"
-       destination_address_prefix: "*"
+       destination_address_prefix: "0.0.0.0/0"
      - name: out
        description: Allow out
        priority: 101
