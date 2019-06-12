@@ -22,7 +22,7 @@
     mode: 0644
   when: not kube.stat.exists
 
-- name: kubeadm init with cidr 10.244.0.0/16
+- name: kubeadm init with config file
   shell: "kubeadm init --config=/tmp/kubeadm-config.yml"
   when: not kube.stat.exists
 
