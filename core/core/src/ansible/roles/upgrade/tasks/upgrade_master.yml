@@ -6,21 +6,15 @@
   environment:
     KUBECONFIG: "/home/{{ admin_user.name }}/.kube/config"
   shell: kubectl drain {{ inventory_hostname }} --ignore-daemonsets --delete-local-data
-  register: output
-
-
-- debug: var=output.stdout_lines
 
 - name: Wait for the cluster's readiness
   include_tasks: "wait.yml"
 
-- name: Get the package facts
+- name: Get information about installed packages as facts
   package_facts:
     manager: "auto"
 
-- debug: var=ansible_facts.packages
-
-- name: Remove newer Debian packages installed as dependencies if exist # (no allow_downgrade parameter in ansible apt module)
+- name: Remove newer Debian packages installed as dependencies if they exist # as there is no allow_downgrade parameter in ansible apt module
   apt:
     name:
       - kubernetes-cni
@@ -34,9 +28,6 @@
       (ansible_facts.packages['kubelet'][0].version is version (version + '-00', '>')) or
       (ansible_facts.packages['kubectl'][0].version is version (version + '-00', '>')) or
       (ansible_facts.packages['kubeadm'][0].version is version (version + '-00', '>'))
-  register: output
-
-- debug: var=output.stdout_lines
 
 - name: Install kubernetes-cni {{ cni_version }}, kubelet {{ version }}, kubectl {{ version }} and kubeadm {{ version }} packages for RedHat family
   yum:
@@ -50,7 +41,6 @@
     state: present
   when: ansible_os_family == "RedHat"
 
-
 - name: Install kubernetes-cni {{ cni_version }}, kubelet {{ version }}, kubectl {{ version }} and kubeadm {{ version }} packages for Debian family
   apt:
     name:
@@ -62,47 +52,30 @@
     state: present
   when: ansible_os_family == "Debian"
 
-
 - name: Wait for the cluster's readiness
   include_tasks: "wait.yml"
 
 - name: Validate whether current cluster is upgradeable
   shell: kubeadm upgrade plan v{{ version }}
-  register: output
 
-- debug: var=output.stdout_lines
-
-- name: Upgrade Kubernetes cluster to the specified version
+- name: Upgrade Kubernetes cluster to the specified version v{{ version }}
   shell: kubeadm upgrade apply -y v{{ version }}
   retries: 5
   delay: 5
   register: output
   until: output is succeeded
 
-- debug: var=output.stdout_lines
-
-
 - name: Wait for the cluster's readiness
   include_tasks: "wait.yml"
 
-
 - name: Reload daemon
   shell: systemctl daemon-reload
-  register: output
-
-- debug: var=output.stdout_lines
 
 - name: Restart kubelet
   shell: systemctl restart kubelet
-  register: output
-
-- debug: var=output.stdout_lines
 
 - name: Check kubelet status
   shell: systemctl status kubelet
-  register: output
-
-- debug: var=output.stdout_lines
 
 - name: Wait for the cluster's readiness
   environment:
@@ -113,17 +86,10 @@
   register: output
   until: output is succeeded
 
-- debug: var=output.stdout_lines
-
-
 - name: Uncordon master - mark master as schedulable
   environment:
     KUBECONFIG: "/home/{{ admin_user.name }}/.kube/config"
   shell: kubectl uncordon {{ inventory_hostname }}
-  register: output
-
-- debug: var=output.stdout_lines
 
 - name: Verify cluster version
   include_tasks: "verify.yml"
-

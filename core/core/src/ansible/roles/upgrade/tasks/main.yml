@@ -5,16 +5,11 @@
   shell: kubectl version --short | grep -i server
   register: cluster_version
 
-- debug: var=cluster_version.stdout_lines
-
 - name: Check kubelet version 
   environment:
     KUBECONFIG: "/home/{{ admin_user.name }}/.kube/config"
   shell: kubectl get node {{ inventory_hostname }} -o custom-columns=VERSION:.status.nodeInfo.kubeletVersion
   register: kubelet_version
-
-- debug: var=kubelet_version.stdout_lines
-
 
 - name: Upgrade master to {{ version }}
   include_tasks: "upgrade_master.yml"
@@ -37,4 +32,3 @@
     - (version == "1.12.9" and "1.11" in kubelet_version.stdout and kubelet_version.stdout != cluster_version.stdout) or
       (version == "1.13.7" and "1.12" in kubelet_version.stdout and kubelet_version.stdout != cluster_version.stdout) or
       (version == "1.14.3" and "1.13" in kubelet_version.stdout and kubelet_version.stdout != cluster_version.stdout )
-

@@ -1,21 +1,21 @@
 ---
 # Ansible playbook for upgrading Kubernetes cluster 
 
-- hosts: upgrade
+- hosts: master:worker
   serial: 1
   become: true
   become_method: sudo
   roles:
     - { role: upgrade, ver: "1.12.9", cni_ver: "0.7.5" }
 
-- hosts: upgrade
+- hosts: master:worker
   serial: 1
   become: true
   become_method: sudo
   roles:
     - { role: upgrade, ver: "1.13.7", cni_ver: "0.7.5" }
 
-- hosts: upgrade
+- hosts: master:worker
   serial: 1
   become: true
   become_method: sudo
@@ -23,20 +23,9 @@
     - { role: upgrade, ver: "1.14.3", cni_ver: "0.7.5" }
 
 
-
-
 # latest patch versions:
 # 1.11.10
 # 1.12.9
 # 1.13.7
 # 1.14.3
-
-
-
-# - hosts: upgrade
-#   serial: 1
-#   become: true
-#   become_method: sudo
-#   roles:
-#     - upgrade
 
