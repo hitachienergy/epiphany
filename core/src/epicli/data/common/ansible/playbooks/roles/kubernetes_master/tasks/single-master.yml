@@ -12,10 +12,18 @@
   shell: "kubeadm config images pull --kubernetes-version={{ specification.version }}"
   # when: not kube.stat.exists
 
+- name: Creates directory
+  file:
+    path: /etc/kubeadm
+    state: directory
+    owner: root
+    group: root
+    mode: 0644
+
 - name: Create kubeadm config
   become: yes
   template:
-    dest: "/tmp/kubeadm-config.yml"
+    dest: "/etc/kubeadm/kubeadm-config.yml"
     src: kubeadm-config.yml.j2
     owner: root
     group: root
@@ -23,7 +31,7 @@
   when: not kube.stat.exists
 
 - name: kubeadm init with config file
-  shell: "kubeadm init --config=/tmp/kubeadm-config.yml"
+  shell: "kubeadm init --config=/etc/kubeadm/kubeadm-config.yml"
   when: not kube.stat.exists
 
 - name: Include kubelet configuration tasks

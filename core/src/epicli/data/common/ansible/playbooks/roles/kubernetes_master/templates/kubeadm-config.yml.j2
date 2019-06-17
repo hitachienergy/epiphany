@@ -2,8 +2,7 @@ apiVersion: kubeadm.k8s.io/v1beta1
 kind: ClusterConfiguration
 kubernetesVersion: v{{ specification.version }}
 apiServer:
-  extraArgs: #
-
+  extraArgs: # https://kubernetes.io/docs/reference/command-line-tools-reference/kube-apiserver/
 {% for key, value in specification.advanced.api_server_args.items() %}
     {{ key }}: "{{ value }}"
 {% endfor %}
