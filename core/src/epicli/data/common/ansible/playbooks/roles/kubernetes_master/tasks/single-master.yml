@@ -12,8 +12,26 @@
   shell: "kubeadm config images pull --kubernetes-version={{ specification.version }}"
   # when: not kube.stat.exists
 
-- name: kubeadm init with cidr 10.244.0.0/16
-  shell: "kubeadm init --kubernetes-version={{ specification.version }} --pod-network-cidr 10.244.0.0/16"
+- name: Creates directory
+  file:
+    path: /etc/kubeadm
+    state: directory
+    owner: root
+    group: root
+    mode: 0644
+
+- name: Create kubeadm config
+  become: yes
+  template:
+    dest: "/etc/kubeadm/kubeadm-config.yml"
+    src: kubeadm-config.yml.j2
+    owner: root
+    group: root
+    mode: 0644
+  when: not kube.stat.exists
+
+- name: kubeadm init with config file
+  shell: "kubeadm init --config=/etc/kubeadm/kubeadm-config.yml"
   when: not kube.stat.exists
 
 - name: Include kubelet configuration tasks

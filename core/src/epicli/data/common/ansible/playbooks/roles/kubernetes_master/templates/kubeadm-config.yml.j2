@@ -1,0 +1,24 @@
+apiVersion: kubeadm.k8s.io/v1beta1
+kind: ClusterConfiguration
+kubernetesVersion: v{{ specification.version }}
+apiServer:
+  extraArgs: # https://kubernetes.io/docs/reference/command-line-tools-reference/kube-apiserver/
+{% for key, value in specification.advanced.api_server_args.items() %}
+    {{ key }}: "{{ value }}"
+{% endfor %}
+controllerManager:
+  extraArgs: # https://kubernetes.io/docs/reference/command-line-tools-reference/kube-controller-manager/
+{% for key, value in specification.advanced.controller_manager_args.items() %}
+    {{ key }}: "{{ value }}"
+{% endfor %}
+scheduler:
+  extraArgs: # https://kubernetes.io/docs/reference/command-line-tools-reference/kube-scheduler/
+{% for key, value in specification.advanced.scheduler_args.items() %}
+    {{ key }}: "{{ value }}"
+{% endfor %}
+networking:
+  dnsDomain: {{ specification.advanced.networking.dnsDomain }}
+  podSubnet: {{ specification.advanced.networking.podSubnet }}
+  serviceSubnet: {{ specification.advanced.networking.serviceSubnet }}
+imageRepository: {{ specification.advanced.imageRepository }}
+certificatesDir: {{ specification.advanced.certificatesDir }}
