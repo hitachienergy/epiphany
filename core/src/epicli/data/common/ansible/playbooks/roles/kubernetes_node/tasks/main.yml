@@ -49,15 +49,56 @@
   delegate_to: "{{ groups['kubernetes_master'][0] }}"
   when: not node_already_joined
 
-- name: Join kubernetes
-  shell: >-
-    kubeadm join {{ hostvars[groups['kubernetes_master'][0]]['ansible_default_ipv4']['address'] }}:6443 --token {{ kubeadm_token }}
-    --discovery-token-ca-cert-hash sha256:{{ kubeadm_cert_hash.stdout }}
+- name: Creates directory
+  file:
+    path: /etc/kubeadm
+    state: directory
+    owner: root
+    group: root
+    mode: 0644
+
+- name: Join Kubernetes cluster if not already in
   vars:
     kubeadm_token: "{{ kubeadm_valid_token.stdout if kubeadm_valid_token.stdout else kubeadm_new_token.stdout_lines[-1] }}"
+    api_server_url: "{{ hostvars[groups['kubernetes_master'][0]]['ansible_default_ipv4']['address'] }}:6443"
   when:
     - not node_already_joined
     - not groups['kubernetes_master'][0] == inventory_hostname
+  block:
+    - name: Create kubeadm JoinConfiguration
+      become: yes
+      template:
+        dest: "/etc/kubeadm/kubeadm-join.yml"
+        src: kubeadm-join.yml.j2
+        owner: root
+        group: root
+        mode: 0644
+
+    - name: Join to Kubernetes cluster
+      shell: >-
+        kubeadm join --config=/etc/kubeadm/kubeadm-join.yml
+      register: kubeadm_join_result
+      async: 120
+      poll: 15
+
+  rescue:
+
+    - name: Join to cluster with ignores
+      shell: >-
+        kubeadm join --config=/etc/kubeadm/kubeadm-join.yml
+        --ignore-preflight-errors=all
+      register: kubeadm_join_result
+      async: 180
+      poll: 15
+
+  always:
+
+    - name: Display kubeadm join stderr if any
+      when: kubeadm_join_result is failed
+      debug:
+        msg: |
+          Joined with warnings
+          {{ kubeadm_join_result.stderr_lines }}
 
 - name: Include kubelet configuration tasks
   include_role:
