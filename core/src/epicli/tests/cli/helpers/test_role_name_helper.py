@@ -1,4 +1,4 @@
-from cli.helpers.role_name_helper import to_role_name
+from cli.helpers.naming_helpers import to_role_name
 
 
 def test_replaces_all_hyphens_in_variable():

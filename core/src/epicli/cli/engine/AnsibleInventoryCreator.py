@@ -1,5 +1,5 @@
 from cli.helpers.doc_list_helpers import select_single
-from cli.helpers.role_name_helper import to_role_name
+from cli.helpers.naming_helpers import to_role_name
 from cli.helpers.provider_class_loader import provider_class_loader
 from cli.models.AnsibleInventoryItem import AnsibleInventoryItem
 from collections import defaultdict
