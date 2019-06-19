@@ -1,0 +1,49 @@
+---
+- name: Create directory
+  file:
+    path: "{{ backup_dir }}"
+    state: directory
+
+- name: Backup certificates
+  copy:
+    src: /etc/kubernetes/pki
+    dest: "{{ backup_dir }}/tmp"
+    remote_src: yes
+  register: output
+
+- name: Get etcd image name
+  environment:
+    KUBECONFIG: "/home/{{ admin_user.name }}/.kube/config"
+  shell: kubectl get pods --all-namespaces -o=jsonpath="{.items[*].spec.containers[?(@.name=='etcd')].image}"
+  register: etcd_image_name
+
+- debug:
+    var: etcd_image_name
+
+- name: Create etcd snapshot
+  shell: >
+    docker run -v "{{ backup_dir }}/tmp":/backup  \
+    --network host \
+    --env ETCDCTL_API=3 \
+    --rm {{ etcd_image_name.stdout }} \
+    etcdctl --endpoints=https://127.0.0.1:2379 \
+    --cacert=/backup/pki/etcd/ca.crt \
+    --cert=/backup/pki/etcd/healthcheck-client.crt \
+    --key=/backup/pki/etcd/healthcheck-client.key \
+    snapshot save /backup/etcd-snapshot.db
+  register: output
+
+- debug:
+    var: output
+
+- name: Create a zip archive
+  archive:
+    path: "{{ backup_dir }}/tmp/"
+    dest: "{{ backup_dir }}/k8s_backup.zip"
+    format: zip
+
+- name: Clean tmp directory
+  file:
+    state: absent
+    path: "{{ backup_dir }}/tmp/"
+
