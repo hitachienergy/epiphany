@@ -1,0 +1,11 @@
+kind: EncryptionConfiguration
+apiVersion: apiserver.config.k8s.io/v1
+resources:
+  - resources:
+    - secrets
+    providers:
+    - aescbc:
+        keys:
+        - name: default_key
+          secret: {{ random_secret.stdout }}
+    - identity: {}
