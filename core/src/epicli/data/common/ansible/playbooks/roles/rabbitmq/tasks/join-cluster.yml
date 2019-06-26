@@ -10,7 +10,7 @@
 
 - name: Add node to cluster
   become: yes
-  command: rabbitmqctl join_cluster rabbit@{{ rabbitmq_master }}
+  command: rabbitmqctl join_cluster rabbit@{{ rabbitmq_master.split('.')[0] }}
   when: rabbitmq_master != inventory_hostname
 
 - name: Start rabbitmq
