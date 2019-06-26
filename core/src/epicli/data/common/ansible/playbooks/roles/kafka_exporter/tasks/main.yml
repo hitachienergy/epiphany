@@ -85,7 +85,7 @@
 
 - name: Copy file_sd_config to prometheus hosts
   template:
-    dest: "{{ prometheus_config_dir }}/file_sd/kafka-exporter-{{ inventory_hostname }}.yml"
+    dest: "{{ specification.config_for_prometheus.prometheus_config_dir }}/file_sd/kafka-exporter-{{ inventory_hostname }}.yml"
     src: file_sd_config.yml.j2
     owner: root
     group: root
