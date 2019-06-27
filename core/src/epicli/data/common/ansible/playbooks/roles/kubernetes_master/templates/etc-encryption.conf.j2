@@ -6,6 +6,6 @@ resources:
     providers:
     - aescbc:
         keys:
-        - name: default_key
-          secret: {{ random_secret.stdout }}
+        - name: key1
+          secret: "{{ random_secret.stdout | b64encode }}"
     - identity: {}
