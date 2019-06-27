@@ -1,31 +1,19 @@
 ---
-go_arch_map:
-  i386: '386'
-  x86_64: 'amd64'
-  aarch64: 'arm64'
-  armv7l: 'armv7'
-  armv6l: 'armv6'
+prometheus_external_labels:
+  environment: "{{ ansible_fqdn }}"
 
-admin_user:
-  name: operations
+prometheus_remote_write: []
+# prometheus_remote_write:
+#   - url: https://dev.kausal.co/prom/push
+#     basic_auth:
+#       password: FOO
 
-#api_server: "{{ master_hostname }}:6443"
-#bearer_token: "{{ kube_token.stdout }}"
-#master_hostname: "{{ groups['kubernetes_master'] | first }}"
-prometheus_version: 2.3.0
+prometheus_remote_read: []
+# prometheus_remote_read:
+#   - url: https://demo.cloudalchemy.org:9201/read
+#     basic_auth:
+#       password: FOO
 
-prometheus_config_dir: /etc/prometheus
-prometheus_db_dir: /var/lib/prometheus
-
-prometheus_web_listen_address: "0.0.0.0:9090"
-prometheus_web_external_url: ''
-
-prometheus_storage_retention: "30d"
-
-prometheus_config_flags_extra: {}
-# prometheus_config_flags_extra:
-#   storage.tsdb.retention: 15d
-#   alertmanager.timeout: 10s
 
 prometheus_alertmanager_config: []
 # prometheus_alertmanager_config:
@@ -43,20 +31,7 @@ prometheus_global:
   scrape_timeout: 10s
   evaluation_interval: 15s
 
-prometheus_remote_write: []
-# prometheus_remote_write:
-#   - url: https://dev.kausal.co/prom/push
-#     basic_auth:
-#       password: FOO
 
-prometheus_remote_read: []
-# prometheus_remote_read:
-#   - url: https://demo.cloudalchemy.org:9201/read
-#     basic_auth:
-#       password: FOO
-
-prometheus_external_labels:
-  environment: "{{ ansible_fqdn }}"
 
 prometheus_targets: {}
 #  node:

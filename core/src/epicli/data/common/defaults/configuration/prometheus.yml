@@ -3,3 +3,24 @@ version: 0.3.0
 title: "Prometheus"
 name: default
 specification:
+  download_urls:
+    i386: "https://github.com/prometheus/prometheus/releases/download/v2.10.0/prometheus-2.10.0.linux-386.tar.gz"
+    x86_64: "https://github.com/prometheus/prometheus/releases/download/v2.10.0/prometheus-2.10.0.linux-amd64.tar.gz"
+    aarch64: "https://github.com/prometheus/prometheus/releases/download/v2.10.0/prometheus-2.10.0.linux-arm64.tar.gz"
+  download_directory: "/tmp"
+  config_directory: "/etc/prometheus"
+  storage:
+    data_directory: "/var/lib/prometheus"
+  config_flags:                                                                   # Parameters that Prometheus service will be started with.
+    - "--config.file=/etc/prometheus/prometheus.yml"                              # Directory should be the same as "config_directory"
+    - "--storage.tsdb.path=/var/lib/prometheus"                                   # Directory should be the same as "storage.data_directory"
+    - "--storage.tsdb.retention.time=180d"                                        # Data retention time for metrics
+    - "--storage.tsdb.retention.size=20GB"                                        # Data retention size for metrics
+    - "--web.console.libraries=/etc/prometheus/console_libraries"                 # Directory should be the same as "config_directory"
+    - "--web.console.templates=/etc/prometheus/consoles"                          # Directory should be the same as "config_directory"
+    - "--web.listen-address=0.0.0.0:9090"                                         # Address that Prometheus console will be available
+
+  metrics_path: "/metrics"
+  scrape_interval : "15s"
+  scrape_timeout: "10s"
+  evaluation_interval: "10s"

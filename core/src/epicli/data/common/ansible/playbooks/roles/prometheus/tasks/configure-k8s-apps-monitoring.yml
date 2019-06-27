@@ -1,0 +1,34 @@
+---
+- name: Set master hostname variable
+  set_fact:
+    master_hostname: "groups['kubernetes_master'] | first"
+
+- name: Set api server address variable
+  set_fact:
+    api_server_address: "{{ master_hostname }}:6443"
+
+
+- name: Deploy rolebinding file to server for prometheus
+  copy:
+    src: k8s-rolebinding.yml
+    dest: "/home/{{ specification.admin_user.name }}/k8s-rolebinding.yml"
+  delegate_to: "{{ master_hostname }}"
+
+- name: apply rolebinding to k8s for prometheus
+  become: yes
+  become_user: "{{ specification.admin_user.name }}"
+  shell: "kubectl apply --kubeconfig=/home/{{ specification.admin_user.name }}/.kube/config -f /home/{{ admin_user.name }}/k8s-rolebinding.yml"
+  run_once: true
+  delegate_to: "{{ master_hostname }}"
+
+- name: Get kubernetes bearer token for prometheus
+  become: yes
+  become_user: "{{ specification.admin_user.name }}"
+  shell: "kubectl --kubeconfig=/home/{{ specification.admin_user.name }}/.kube/config describe secret $(kubectl get secrets --namespace=default | grep prometheus | awk '{print $1}') --namespace=default | grep -E '^token' | awk '{print $2}' | head -1"
+  register: kube_token
+  delegate_to: "{{ master_hostname }}"
+  run_once: true
+
+- name: Set bearer token variable
+  set_fact:
+    bearer_token: "{{ kube_token.stdout }}"

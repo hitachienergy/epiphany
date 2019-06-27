@@ -1,11 +1,11 @@
 ---
-- name: create prometheus system group
+- name: Create Prometheus system group
   group:
     name: prometheus
     system: true
     state: present
 
-- name: create prometheus system user
+- name: Create Prometheus system user
   user:
     name: prometheus
     system: true
@@ -13,9 +13,9 @@
     group: prometheus
     createhome: false
 
-- name: create prometheus data directory
+- name: Create Prometheus data directory
   file:
-    path: "{{ prometheus_db_dir }}"
+    path: "{{ specification.storage.data_directory }}"
     state: directory
     owner: prometheus
     group: prometheus
@@ -29,42 +29,46 @@
     group: prometheus
     mode: 0750
   with_items:
-    - "{{ prometheus_config_dir }}"
-    - "{{ prometheus_config_dir }}/conf.d"
-    - "{{ prometheus_config_dir }}/rules"
-    - "{{ prometheus_config_dir }}/file_sd"
+    - "{{ specification.config_directory }}"
+    - "{{ specification.config_directory }}/conf.d"
+    - "{{ specification.config_directory }}/rules"
+    - "{{ specification.config_directory }}/file_sd"
 
-- name: download prometheus binary to temporary folder
+- name: Ensure download directory exists
+  become: false
+  file:
+    path: "{{ specification.download_directory }}/prometheus_binaries"
+    state: directory
+  delegate_to: localhost
+
+- name: Download Prometheus binary to local folder
   become: false
   get_url:
-    url: "https://github.com/prometheus/prometheus/releases/download/v{{ prometheus_version }}/prometheus-{{ prometheus_version }}.linux-{{ go_arch_map[ansible_architecture] | default(ansible_architecture) }}.tar.gz"
-    dest: "/home/{{ admin_user.name }}/prometheus-{{ prometheus_version }}.linux-{{ go_arch_map[ansible_architecture] | default(ansible_architecture) }}.tar.gz"
-    #checksum: "sha256:{{ prometheus_checksum }}" #checksum is not available due to commenting out delegation to localhost when running tasks
+    url: "{{ specification.download_urls[ansible_architecture] }}"
+    dest: "{{ specification.download_directory }}/prometheus.tar.gz"
   register: _download_archive
   until: _download_archive is succeeded
   retries: 5
   delay: 2
-  # run_once: true # <-- this canfalset be set due to multi-arch support
-  #delegate_to: localhost # commented out due to issues when ran on  macOS
+  delegate_to: localhost
 
-- name: unpack prometheus binaries
+- name: Unpack Prometheus binary
   become: false
   unarchive:
-    remote_src: yes
-    src: "/home/{{ admin_user.name }}/prometheus-{{ prometheus_version }}.linux-{{ go_arch_map[ansible_architecture] | default(ansible_architecture) }}.tar.gz"
-    dest: "/home/{{ admin_user.name }}"
-    creates: "/home/{{ admin_user.name }}/prometheus-{{ prometheus_version }}.linux-{{ go_arch_map[ansible_architecture] | default(ansible_architecture) }}/prometheus"
-  #delegate_to: localhost # commented out due to issues when ran on macOS
+    src: "{{ specification.download_directory }}/prometheus.tar.gz"
+    dest: "{{ specification.download_directory }}/prometheus_binaries"
+    creates: "{{ specification.download_directory }}/prometheus_binaries/prometheus"
+    extra_opts: [--strip-components=1]
+  delegate_to: localhost
   check_mode: false
 
-- name: propagate prometheus and promtool binaries
+- name: Propagate Prometheus and promtool binaries
   copy:
-    remote_src: yes
-    src: "/home/{{ admin_user.name }}/prometheus-{{ prometheus_version }}.linux-{{ go_arch_map[ansible_architecture] | default(ansible_architecture) }}/{{ item }}"
+    src: "{{ specification.download_directory }}/prometheus_binaries/{{ item }}"
     dest: "/usr/local/bin/{{ item }}"
     mode: 0755
     owner: root
-    group: root
+    group: prometheus
   with_items:
     - prometheus
     - promtool
@@ -72,8 +76,11 @@
   notify:
     - restart prometheus
 
-- name: propagate console libraries templates
-  command: "cp -r /home/{{ admin_user.name }}/prometheus-{{ prometheus_version }}.linux-{{ go_arch_map[ansible_architecture] | default(ansible_architecture) }}/{{ item }}/ {{ prometheus_config_dir }}/{{ item }}/"
+- name: Propagate console libraries templates
+  copy:
+    src: "{{ specification.download_directory }}/prometheus_binaries/{{ item }}"
+    dest: "{{ specification.config_directory }}/{{ item }}/"
+    mode: 0755
   with_items:
      - console_libraries
      - consoles
@@ -81,7 +88,7 @@
   notify:
     - restart prometheus
 
-- name: remove prometheus binaries from old location
+- name: Remove prometheus binaries from old location
   file:
     path: "{{ item }}"
     state: absent
@@ -90,7 +97,7 @@
     - /opt/prometheus/promtool
     - /opt/prometheus
 
-- name: create systemd service unit
+- name: Create systemd service unit
   template:
     src: prometheus.service.j2
     dest: /etc/systemd/system/prometheus.service

@@ -9,24 +9,16 @@ Environment="GOMAXPROCS={{ ansible_processor_vcpus|default(ansible_processor_cou
 User=prometheus
 Group=prometheus
 ExecReload=/bin/kill -HUP $MAINPID
-ExecStart=/usr/local/bin/prometheus \
-  --config.file={{ prometheus_config_dir }}/prometheus.yml \
-  --storage.tsdb.path={{ prometheus_db_dir }} \
-  --storage.tsdb.retention={{ prometheus_storage_retention }} \
-  --web.console.libraries={{ prometheus_config_dir }}/console_libraries \
-  --web.console.templates={{ prometheus_config_dir }}/consoles \
-  --web.listen-address={{ prometheus_web_listen_address }} \
-  --web.external-url={{ prometheus_web_external_url }}{% for flag, flag_value in prometheus_config_flags_extra.items() %}\
-  --{{ flag }}={{ flag_value }} {% endfor %}
+ExecStart=/usr/local/bin/prometheus {% for flag in specification.config_flags %} {{ flag }} {% endfor %}
 
 PrivateTmp=true
 PrivateDevices=true
 ProtectHome=true
 NoNewPrivileges=true
 {% if prometheus_systemd_version.stdout | int >= 231 %}
-ReadWritePaths={{ prometheus_db_dir }}
+ReadWritePaths={{ specification.storage.data_directory }}
 {% else %}
-ReadWriteDirectories={{ prometheus_db_dir }}
+ReadWriteDirectories={{ specification.storage.data_directory }}
 {% endif %}
 {% if prometheus_systemd_version.stdout | int >= 232 %}
 ProtectSystem=strict

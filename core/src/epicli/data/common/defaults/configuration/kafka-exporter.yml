@@ -33,4 +33,5 @@ specification:
     exporter_listen_port: "9308"
     prometheus_config_dir: /etc/prometheus
     file_sd_labels:
-      "job": "kafka-exporter"
+      - label: "job"
+        value: "kafka-exporter"

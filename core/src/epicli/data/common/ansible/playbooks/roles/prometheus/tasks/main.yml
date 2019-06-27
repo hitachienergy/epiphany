@@ -1,4 +1,22 @@
 ---
+
+- name: Get systemd version
+  shell: systemctl --version | awk '$1 == "systemd" {print $2}'
+  changed_when: false
+  register: prometheus_systemd_version
+  tags:
+    - skip_ansible_lint
+
+- name: Set master exists flag
+  set_fact:
+    does_k8s_exists: "(groups['kubernetes_master'] | default([])) | length > 0"
+
+- include: configure.yml
+  become: true
+  tags:
+    - kubernetes
+  when: does_k8s_exists
+
 - name: Gather variables for each operating system
   include_vars: "{{ item }}"
   with_first_found:
@@ -7,9 +25,9 @@
   tags:
     - always
 
-- include: preflight.yml
-  tags:
-    - always
+#- include: preflight.yml
+#  tags:
+#    - always
 
 - include: install.yml
   become: true
