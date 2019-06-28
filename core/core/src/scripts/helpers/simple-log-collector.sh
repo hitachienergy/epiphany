@@ -26,7 +26,7 @@ printf "[CREATED]: Directory %s\n" "$OUTPUT_LOCATION/$HOSTNAME"
 for ix in ${!log_locations[*]}
 do
     
-    if [ -f ${log_locations[$ix]} ]
+    if [[ -f ${log_locations[$ix]} ]]
     then
         file_name="$(basename ${log_locations[$ix]})"
         output_file_path="$OUTPUT_LOCATION/$HOSTNAME/$file_name"
@@ -38,8 +38,8 @@ do
 done
 echo
 
-if [ -x "$(command -v docker)" ]; then
-  containers=$(sudo docker ps -a | awk '{if(NR>1) print $NF}')
+if [[ -x "$(command -v docker)" ]]; then
+  containers=$(sudo docker ps -a --format '{{.Names}}')
   for container in $containers
   do
     docker_logs_path="$OUTPUT_LOCATION/$HOSTNAME/$container"
