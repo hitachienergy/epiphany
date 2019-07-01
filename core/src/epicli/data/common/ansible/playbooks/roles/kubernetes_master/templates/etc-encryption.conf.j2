@@ -7,5 +7,5 @@ resources:
     - aescbc:
         keys:
         - name: key1
-          secret: "{{ random_secret.stdout | b64encode }}"
+          secret: "{{ random_secret.stdout }}"
     - identity: {}
