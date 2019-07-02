@@ -11,3 +11,11 @@
   systemd:
     name: prometheus
     state: reloaded
+
+- name: restart alertmanager
+  become: true
+  systemd:
+    daemon_reload: true
+    name: alertmanager
+    state: restarted
+
