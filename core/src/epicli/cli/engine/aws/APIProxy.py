@@ -22,9 +22,9 @@ class APIProxy:
 
     # Query AWS API for ec2 instances in state 'running' which are in cluster's VPC
     # and tagged with feature name (e.g. kubernetes_master) and cluster name
-    def get_ips_for_feature(self, feature_key, look_for_public_ip=False):
+    def get_ips_for_feature(self, feature_key):
         cluster_name = self.cluster_model.specification.name.lower()
-
+        look_for_public_ip = self.cluster_model.specification.cloud.use_public_ips
         vpc_id = self.get_vpc_id()
 
         ec2 = self.session.resource('ec2')

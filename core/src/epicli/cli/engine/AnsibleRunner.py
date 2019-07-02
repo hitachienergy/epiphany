@@ -16,7 +16,7 @@ class AnsibleRunner(Step):
         super().__init__(__name__)
         self.cluster_model = cluster_model
         self.config_docs = config_docs
-        self.inventory_creator = AnsibleInventoryCreator(cluster_model, config_docs, use_public_ips=True) #Todo take this value from cluster_config
+        self.inventory_creator = AnsibleInventoryCreator(cluster_model, config_docs)
         self.ansible_command = AnsibleCommand()
         self.ansible_vars_generator = AnsibleVarsGenerator(cluster_model, config_docs, self.inventory_creator)
 
