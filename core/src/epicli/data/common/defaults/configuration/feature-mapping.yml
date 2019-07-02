@@ -9,15 +9,15 @@ specification:
     - name: kubernetes-node
       enabled: yes
     - name: deployments
-      enabled: no
+      enabled: yes
     - name: elasticsearch
-      enabled: no
+      enabled: yes
     - name: elasticsearch-curator
-      enabled: no
+      enabled: yes
     - name: kibana
-      enabled: no
+      enabled: yes
     - name: filebeat
-      enabled: no
+      enabled: yes
     - name: prometheus
       enabled: yes
     - name: grafana
@@ -31,15 +31,15 @@ specification:
     - name: rabbitmq
       enabled: yes
     - name: kafka-exporter
-      enabled: no
+      enabled: yes
     - name: jmx-exporter
-      enabled: no
+      enabled: no # Need work, disabled for now
     - name: postgresql
       enabled: yes
     - name: haproxy
       enabled: yes
     - name: haproxy-exporter
-      enabled: no
+      enabled: yes
   roles_mapping:
     kubernetes_master:
       - kubernetes-master

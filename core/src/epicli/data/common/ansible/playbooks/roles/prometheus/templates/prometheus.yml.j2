@@ -3,32 +3,106 @@
 # http://prometheus.io/docs/operating/configuration/
 
 global:
-  {{ prometheus_global | to_nice_yaml(indent=2) | indent(2, False) }}
+  scrape_interval: {{ specification.scrape_interval }} #15s
+  scrape_timeout: {{ specification.scrape_timeout }} #10s
+  evaluation_interval: {{ specification.evaluation_interval }}
   external_labels:
     {{ prometheus_external_labels | to_nice_yaml(indent=2) | indent(4, False) }}
 
-{% if prometheus_remote_write != [] %}
+{% if specification.remote_write != [] %}
 remote_write:
-  {{ prometheus_remote_write | to_nice_yaml(indent=2) | indent(2, False) }}
+  {{ specification.remote_write  }}
 {% endif %}
 
-{% if prometheus_remote_read != [] %}
+{% if specification.remote_read != [] %}
 remote_read:
-  {{ prometheus_remote_read | to_nice_yaml(indent=2) | indent(2, False) }}
+  {{ specification.remote_read  }}
 {% endif %}
 
 rule_files:
-  - {{ prometheus_config_dir }}/rules/*.rules
+  - {{ specification.config_directory }}/rules/*.rules
 
-{% if monitoring is defined %}
-{% if monitoring.alerts.enable is defined and monitoring.alerts.enable == True %}
+{% if is_alertmanager_enabled == True %}
 alerting:
   alertmanagers:
   - static_configs:
     - targets:
       - '127.0.0.1:9093'
 {% endif %}
-{% endif %}
 
-#scrape_configs:
-#  {{ prometheus_scrape_configs | to_nice_yaml(indent=2) | indent(2,False) }}
+scrape_configs:
+  - job_name: "prometheus"
+    metrics_path: "{{ specification.metrics_path }}"
+    static_configs:
+      - targets:
+          - "{{ ansible_fqdn | default(ansible_host) | default('localhost') }}:9090"
+  - job_name: "file_service_discovery"
+    file_sd_configs:
+      - files:
+          - "{{ specification.config_directory }}/file_sd/*.yml"
+
+{% if bearer_token is defined %}
+
+  - job_name: 'kubernetes-apiservers'
+    scheme: https
+    tls_config:
+        insecure_skip_verify: true
+    bearer_token:  "{{ bearer_token }}"
+    kubernetes_sd_configs:
+    - api_server: "{{ api_server_address }}"
+      role: endpoints
+      bearer_token: "{{ bearer_token }}"
+      tls_config:
+        insecure_skip_verify: true
+    relabel_configs:
+    - source_labels: [__meta_kubernetes_namespace, __meta_kubernetes_service_name, __meta_kubernetes_endpoint_port_name]
+      action: keep
+      regex: default;kubernetes;https
+
+# Scrape config for nodes (kubelet).
+
+  - job_name: 'kubernetes-nodes'
+    scheme: https
+    tls_config:
+        insecure_skip_verify: true
+    bearer_token:  "{{ bearer_token }}"
+    kubernetes_sd_configs:
+    - api_server: "{{ api_server_address }}"
+      role: node
+      tls_config:
+        insecure_skip_verify: true
+      bearer_token: "{{ bearer_token }}"
+    relabel_configs:
+    - action: labelmap
+      regex: __meta_kubernetes_node_label_(.+)
+    - target_label: __address__
+      replacement: "{{ api_server_address }}"
+    - source_labels: [__meta_kubernetes_node_name]
+      regex: (.+)
+      target_label: __metrics_path__
+      replacement: /api/v1/nodes/${1}/proxy/metrics
+
+# Scrape config for Kubelet cAdvisor.
+
+  - job_name: 'kubernetes-cadvisor'
+    scheme: https
+    tls_config:
+        insecure_skip_verify: true
+    bearer_token: "{{ bearer_token }}"
+    kubernetes_sd_configs:
+    - api_server: "{{ api_server_address }}"
+      role: node
+      tls_config:
+        insecure_skip_verify: true
+      bearer_token: "{{ bearer_token }}"
+    relabel_configs:
+    - action: labelmap
+      regex: __meta_kubernetes_node_label_(.+)
+    - target_label: __address__
+      replacement: "{{ api_server_address }}"
+    - source_labels: [__meta_kubernetes_node_name]
+      regex: (.+)
+      target_label: __metrics_path__
+      replacement: /api/v1/nodes/${1}/proxy/metrics/cadvisor
+
+{% endif %}

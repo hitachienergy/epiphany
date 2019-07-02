@@ -1,0 +1,11 @@
+---
+# Ansible playbook that makes sure the base items for all nodes are installed
+
+- hosts: all
+  tasks: [ ]  
+
+- hosts: haproxy_exporter
+  become: true
+  become_method: sudo
+  roles:
+    - haproxy_exporter

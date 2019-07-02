@@ -1,0 +1,13 @@
+#jinja2: trim_blocks:False
+[Unit]
+Description={{ specification.description }}
+ 
+[Service]
+User=kafka_exporter
+Group=kafka_exporter
+ExecStart=/opt/kafka_exporter/kafka_exporter {{ kafka_instances }} {% for flag in specification.config_flags %} {{ flag }} {% endfor %}
+SyslogIdentifier=kafka_exporter 
+Restart=always 
+ 
+[Install]
+WantedBy=multi-user.target

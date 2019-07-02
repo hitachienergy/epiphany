@@ -1,33 +1,39 @@
 ---
-- name: Download alertmanager package
+- name: Ensure download directory exists
+  become: false
+  file:
+    path: "{{ specification.download_directory }}/alert_manager_libraries"
+    state: directory
+  delegate_to: localhost
+
+- name: Download Alertmanager binary to local folder
   become: false
   get_url:
-    url: "https://github.com/prometheus/alertmanager/releases/download/v{{ alertmanager_version }}/alertmanager-{{ alertmanager_version }}.linux-{{ go_arch_map[ansible_architecture] | default(ansible_architecture) }}.tar.gz"
-    dest: "/tmp/alertmanager-{{ alertmanager_version }}.linux-{{ go_arch_map[ansible_architecture] | default(ansible_architecture) }}.tar.gz"
-    #checksum: "sha256:{{ prometheus_checksum }}" #checksum is not available due to commenting out delegation to localhost when running tasks
+    url: "{{ specification.alerts.alertmanager.download_urls[ansible_architecture] }}"
+    dest: "{{ specification.download_directory }}/alertmanager.tar.gz"
   register: _download_archive
   until: _download_archive is succeeded
   retries: 5
   delay: 2
-  # run_once: true # <-- this canfalset be set due to multi-arch support
+  delegate_to: localhost
 
-- name: Unpack alertmanager package 
+- name: Unpack Prometheus binary
   become: false
   unarchive:
-    remote_src: yes
-    src: "/tmp/alertmanager-{{ alertmanager_version }}.linux-{{ go_arch_map[ansible_architecture] | default(ansible_architecture) }}.tar.gz"
-    dest: "/tmp/"
-    creates: "/tmp/alertmanager-{{ alertmanager_version }}.linux-{{ go_arch_map[ansible_architecture] | default(ansible_architecture) }}/alertmanager"
+    src: "{{ specification.download_directory }}/alertmanager.tar.gz"
+    dest: "{{ specification.download_directory }}/alert_manager_libraries"
+    creates: "{{ specification.download_directory }}/alert_manager_libraries/alertmanager"
+    extra_opts: [--strip-components=1]
+  delegate_to: localhost
   check_mode: false
 
-- name: Propagate alertmanager binaries 
+- name: Propagate Prometheus and promtool binaries
   copy:
-    remote_src: yes
-    src: "/tmp/alertmanager-{{ alertmanager_version }}.linux-{{ go_arch_map[ansible_architecture] | default(ansible_architecture) }}/alertmanager"
+    src: "{{ specification.download_directory }}/alert_manager_libraries/alertmanager"
     dest: "/usr/local/bin/alertmanager"
     mode: 0755
     owner: root
-    group: root
+    group: prometheus
   check_mode: false
   notify:
     - restart prometheus

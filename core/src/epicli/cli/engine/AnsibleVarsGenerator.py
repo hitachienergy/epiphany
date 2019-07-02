@@ -3,7 +3,7 @@ import os
 from cli.helpers.Step import Step
 from cli.helpers.build_saver import get_ansible_path
 from cli.helpers.doc_list_helpers import select_first
-from cli.helpers.role_name_helper import to_feature_name, to_role_name
+from cli.helpers.naming_helpers import to_feature_name, to_role_name
 from cli.helpers.ObjDict import ObjDict
 from cli.helpers.yaml_helpers import dump
 import copy

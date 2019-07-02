@@ -130,6 +130,10 @@
   tags:
     - security
 
+- include_tasks: aws-hostname.yml
+  when:
+    - provider == "aws"  
+
 
 
 

@@ -32,13 +32,6 @@ frontend {{ front.name }}
     {%- if front.https == False %}
     bind *:{{ front.port }}
     {%- endif %}
-    
-    {%- if specification.stats is defined %}
-    {%- if specification.stats.enable %}
-    stats uri /haproxy?stats
-    stats auth {{ specification.stats.user }}:{{ specification.stats.password }}
-    {%- endif %}
-    {%- endif %}
 
     {%- if (front.domain_backend_mapping is defined) and (front.domain_backend_mapping > 0) %}
     {%- if front.https == True %}
@@ -82,3 +75,16 @@ backend {{ back.name }}
   {%- endfor %}
   {%- endif %}
 {%- endfor %}
+
+    {%- if specification.stats is defined %}
+    {%- if specification.stats.enable %}
+frontend stats
+    bind  {{ specification.stats.bind_address }}
+    stats enable
+    stats refresh 10s
+    stats admin if { src 127.0.0.1 }
+    stats hide-version  # Hide HAProxy version
+    stats uri {{ specification.stats.uri }}
+    stats auth {{ specification.stats.user }}:{{ specification.stats.password }}
+    {%- endif %}
+    {%- endif %}

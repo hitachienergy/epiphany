@@ -6,6 +6,7 @@ from cli.helpers.Step import Step
 from cli.helpers.doc_list_helpers import select_single, select_all
 from cli.helpers.build_saver import get_terraform_path
 from cli.helpers.data_loader import load_json_obj
+from cli.helpers.naming_helpers import resource_name
 import os
 import uuid
 
@@ -14,6 +15,7 @@ class InfrastructureBuilder(Step):
         super().__init__(__name__)
         self.cluster_model = select_single(docs, lambda x: x.kind == 'epiphany-cluster')
         self.cluster_name = self.cluster_model.specification.name.lower()
+        self.cluster_prefix = self.cluster_model.specification.prefix.lower()
         self.docs = docs
 
     def run(self):
@@ -105,7 +107,7 @@ class InfrastructureBuilder(Step):
     def get_vpc_config(self):
         vpc_config = self.get_config_or_default(self.docs, 'infrastructure/vpc')
         vpc_config.specification.address_pool = self.cluster_model.specification.cloud.vnet_address_pool
-        vpc_config.specification.name = "aws-vpc-" + self.cluster_name
+        vpc_config.specification.name = resource_name(self.cluster_prefix, self.cluster_name, 'vpc')
         vpc_config.specification.cluster_name = self.cluster_name
         return vpc_config
 
@@ -117,13 +119,13 @@ class InfrastructureBuilder(Step):
     def get_efs_config(self):
         efs_config = self.get_config_or_default(self.docs, 'infrastructure/efs-storage')
         efs_config.specification.token = "aws-efs-token-" + self.cluster_name
-        efs_config.specification.name = "aws-efs-" + self.cluster_name
+        efs_config.specification.name = resource_name(self.cluster_prefix, self.cluster_name, 'efs')
         return efs_config
 
     def get_autoscaling_group(self, component_key, component_value, subnets_to_create):
         autoscaling_group = self.get_virtual_machine(component_value, self.cluster_model, self.docs)
         autoscaling_group.specification.cluster_name = self.cluster_name
-        autoscaling_group.specification.name = 'aws-asg-' + self.cluster_name + '-' + component_key.lower()
+        autoscaling_group.specification.name = resource_name(self.cluster_prefix, self.cluster_name, 'asg', component_key)
         autoscaling_group.specification.count = component_value.count
         autoscaling_group.specification.subnet_names = [s.specification.name for s in subnets_to_create]
         autoscaling_group.specification.availability_zones = list(set([s.specification.availability_zone for s in subnets_to_create]))
@@ -133,8 +135,7 @@ class InfrastructureBuilder(Step):
 
     def get_launch_configuration(self, autoscaling_group, component_key, security_groups_to_create):
         launch_configuration = self.get_config_or_default(self.docs, 'infrastructure/launch-configuration')
-        launch_configuration.specification.name = 'aws-launch-config-' + self.cluster_name + '-' \
-                                                  + component_key.lower()
+        launch_configuration.specification.name = resource_name(self.cluster_prefix, self.cluster_name, 'launch-config', component_key)
         launch_configuration.specification.size = autoscaling_group.specification.size
         launch_configuration.specification.security_groups = [s.specification.name for s in security_groups_to_create]
         return launch_configuration
@@ -144,13 +145,13 @@ class InfrastructureBuilder(Step):
         subnet.specification.vpc_name = vpc_name
         subnet.specification.cidr_block = subnet_definition['address_pool']
         subnet.specification.availability_zone = subnet_definition['availability_zone']
-        subnet.specification.name = 'aws-subnet-' + self.cluster_name + '-' + component_key+'-' + str(index)
+        subnet.specification.name = resource_name(self.cluster_prefix, self.cluster_name, 'subnet' + '-' + str(index), component_key)
         subnet.specification.cluster_name = self.cluster_name
         return subnet
 
     def get_security_group(self, subnet, component_key, vpc_name, index):
         security_group = self.get_config_or_default(self.docs, 'infrastructure/security-group')
-        security_group.specification.name = 'aws-security-group-' + self.cluster_name + '-' + component_key + '-' + str(index)
+        security_group.specification.name = resource_name(self.cluster_prefix, self.cluster_name, 'security-group' + '-' + str(index), component_key)
         security_group.specification.vpc_name = vpc_name
         security_group.specification.cidr_block = subnet.specification.cidr_block
         security_group.specification.cluster_name = self.cluster_name
@@ -158,22 +159,21 @@ class InfrastructureBuilder(Step):
 
     def get_route_table_association(self, route_table_name, component_key, subnet_name, subnet_index):
         route_table_association = self.get_config_or_default(self.docs, 'infrastructure/route-table-association')
-        route_table_association.specification.name = 'aws-route-association-' + self.cluster_name + '-' + \
-                                                     component_key + '-' + str(subnet_index)
+        route_table_association.specification.name = resource_name(self.cluster_prefix, self.cluster_name, 'route-association', component_key + '-' + str(subnet_index))
         route_table_association.specification.subnet_name = subnet_name
         route_table_association.specification.route_table_name = route_table_name
         return route_table_association
 
     def get_internet_gateway(self, vpc_name):
         internet_gateway = self.get_config_or_default(self.docs, 'infrastructure/internet-gateway')
-        internet_gateway.specification.name = 'aws-internet-gateway-' + self.cluster_name
+        internet_gateway.specification.name = resource_name(self.cluster_prefix, self.cluster_name, 'internet-gateway')
         internet_gateway.specification.vpc_name = vpc_name
         internet_gateway.specification.cluster_name = self.cluster_name
         return internet_gateway
 
     def get_routing_table(self, vpc_name, internet_gateway_name):
         route_table = self.get_config_or_default(self.docs, 'infrastructure/route-table')
-        route_table.specification.name = 'aws-route-table-' + self.cluster_name
+        route_table.specification.name = resource_name(self.cluster_prefix, self.cluster_name, 'route-table')
         route_table.specification.vpc_name = vpc_name
         route_table.specification.route.gateway_name = internet_gateway_name
         route_table.specification.cluster_name = self.cluster_name
