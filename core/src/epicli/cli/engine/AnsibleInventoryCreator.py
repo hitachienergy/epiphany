@@ -7,10 +7,9 @@ from cli.helpers.build_saver import save_inventory
 
 
 class AnsibleInventoryCreator:
-    def __init__(self, cluster_model, config_docs, use_public_ips=False):
+    def __init__(self, cluster_model, config_docs):
         self.cluster_model = cluster_model
         self.config_docs = config_docs
-        self.use_public_ips = use_public_ips
         self.proxy = self.get_proxy()
 
     def __enter__(self):
@@ -30,7 +29,7 @@ class AnsibleInventoryCreator:
         for component_key, component_value in self.cluster_model.specification.components.items():
             if component_value.count < 1:
                 continue
-            ips = self.proxy.get_ips_for_feature(component_key, self.use_public_ips)
+            ips = self.proxy.get_ips_for_feature(component_key)
             if len(ips) > 0:
                 roles = self.get_roles_for_feature(component_key)
                 for role in roles:

@@ -11,6 +11,7 @@ specification:
   cloud:
     subscription_name: YOUR-SUB-NAME
     vnet_address_pool: 10.1.0.0/20
+    use_public_ips: False # When not using public IPs you have to provide connectivity via private IPs (VPN)
     region: eu-west-2
     credentials: # todo change it to get credentials from vault
       key: 3124-4124-4124
