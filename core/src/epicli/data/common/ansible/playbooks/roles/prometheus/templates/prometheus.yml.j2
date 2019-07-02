@@ -9,27 +9,25 @@ global:
   external_labels:
     {{ prometheus_external_labels | to_nice_yaml(indent=2) | indent(4, False) }}
 
-{% if prometheus_remote_write != [] %}
+{% if specification.remote_write != [] %}
 remote_write:
-  {{ prometheus_remote_write | to_nice_yaml(indent=2) | indent(2, False) }}
+  {{ specification.remote_write  }}
 {% endif %}
 
-{% if prometheus_remote_read != [] %}
+{% if specification.remote_read != [] %}
 remote_read:
-  {{ prometheus_remote_read | to_nice_yaml(indent=2) | indent(2, False) }}
+  {{ specification.remote_read  }}
 {% endif %}
 
 rule_files:
   - {{ specification.config_directory }}/rules/*.rules
 
-{% if monitoring is defined %}
-{% if monitoring.alerts.enable is defined and monitoring.alerts.enable == True %}
+{% if is_alertmanager_enabled == True %}
 alerting:
   alertmanagers:
   - static_configs:
     - targets:
       - '127.0.0.1:9093'
-{% endif %}
 {% endif %}
 
 scrape_configs:
@@ -43,7 +41,7 @@ scrape_configs:
       - files:
           - "{{ specification.config_directory }}/file_sd/*.yml"
 
-{% if does_k8s_exists == True and bearer_token is defined %}
+{% if bearer_token is defined %}
 
   - job_name: 'kubernetes-apiservers'
     scheme: https

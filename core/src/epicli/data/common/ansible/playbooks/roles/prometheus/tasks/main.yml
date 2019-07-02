@@ -11,7 +11,7 @@
   set_fact:
     does_k8s_exists: "(groups['kubernetes_master'] | default([])) | length > 0"
 
-- include: configure.yml
+- include: configure-k8s-apps-monitoring.yml
   become: true
   tags:
     - kubernetes
@@ -25,9 +25,9 @@
   tags:
     - always
 
-#- include: preflight.yml
-#  tags:
-#    - always
+- name: "Check if Alertmanager is enabled"
+  set_fact:
+    is_alertmanager_enabled: "{{ specification.alerts.alertmanager.enable == True and (specification.alerts.alertmanager.config.receivers | length>0 ) }}"
 
 - include: install.yml
   become: true
@@ -42,18 +42,18 @@
 - include: install-alertmanager.yml
   become: true
   when:
-    - monitoring is defined
-    - monitoring.alerts.enable is defined and monitoring.alerts.enable == True
+    - is_alertmanager_enabled
   tags:
     - install
 
 - include: configure-alertmanager.yml
   become: true
-  when:
-    - monitoring is defined
-    - monitoring.alerts.enable is defined and monitoring.alerts.enable == True
   tags:
     - configure
+  when:
+    - is_alertmanager_enabled
+  notify:
+    - restart alertmanager
 
 - name: ensure prometheus service is started and enabled
   become: true
@@ -71,7 +71,6 @@
     state: started
     enabled: true
   when:
-    - monitoring is defined
-    - monitoring.alerts.enable is defined and monitoring.alerts.enable == True
+    - is_alertmanager_enabled
   tags:
     - run
