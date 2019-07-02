@@ -6,7 +6,7 @@ from cli.engine.AnsibleInventoryCreator import AnsibleInventoryCreator
 from cli.engine.AnsibleVarsGenerator import AnsibleVarsGenerator
 from cli.helpers.Step import Step
 from cli.helpers.build_saver import get_inventory_path, get_ansible_path, copy_files_recursively
-from cli.helpers.role_name_helper import to_role_name
+from cli.helpers.naming_helpers import to_role_name
 
 
 class AnsibleRunner(Step):
