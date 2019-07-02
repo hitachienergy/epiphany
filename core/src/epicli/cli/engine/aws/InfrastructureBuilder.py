@@ -138,6 +138,8 @@ class InfrastructureBuilder(Step):
         launch_configuration.specification.name = resource_name(self.cluster_prefix, self.cluster_name, 'launch-config', component_key)
         launch_configuration.specification.size = autoscaling_group.specification.size
         launch_configuration.specification.security_groups = [s.specification.name for s in security_groups_to_create]
+        launch_configuration.specification.disks = autoscaling_group.specification.disks
+        launch_configuration.specification.ebs_optimized = autoscaling_group.specification.ebs_optimized
         return launch_configuration
 
     def get_subnet(self, subnet_definition, component_key, vpc_name, index):
