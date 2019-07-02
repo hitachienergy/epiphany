@@ -42,16 +42,12 @@
   when:
     - groups['kubernetes_master'][0] == inventory_hostname
 
-# - name: Wait for kube-api reset
-#   pause:
-#     minutes: 1
-
-# - name: Run secrets encryption
-#   shell: kubectl --kubeconfig=/home/{{ specification.admin_user.name }}/.kube/config get secrets --all-namespaces -o json | kubectl replace -f -
-#   become_user: "{{ specification.admin_user.name }}"
-#   retries: 3
-#   delay: 10
-#   register: result
-#   until: result.rc == 0
-#   when:
-#     - groups['kubernetes_master'][0] == inventory_hostname
+- name: Run secrets encryption
+  shell: kubectl --kubeconfig=/home/{{ specification.admin_user.name }}/.kube/config get secrets --all-namespaces -o json | kubectl replace -f -
+  become_user: "{{ specification.admin_user.name }}"
+  retries: 5
+  delay: 10
+  register: result
+  until: result.rc == 0
+  when:
+    - groups['kubernetes_master'][0] == inventory_hostname
