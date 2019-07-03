@@ -21,4 +21,24 @@ resource "aws_launch_configuration" "{{ specification.name }}" {
   security_groups = [{% for security_group in specification.security_groups %}  "${aws_security_group.{{ security_group }}.id}" {% if not loop.last %}, {% endif %} {% endfor %}]
   enable_monitoring = "{{ specification.enable_monitoring }}"
   key_name        = "{{ specification.key_name }}"
+
+  ebs_optimized   = "{{ specification.ebs_optimized }}"
+  root_block_device {
+    volume_type           = "{{ specification.disks.root.volume_type }}"
+    volume_size           = "{{ specification.disks.root.volume_size }}"
+    delete_on_termination = "{{ specification.disks.root.delete_on_termination }}"
+  }
+
+{% for disk in specification.disks.additional_disks %}
+
+  ebs_block_device {
+    device_name                 = "{{ disk.device_name }}"
+    volume_type                 = "{{ disk.volume_type }}"
+    volume_size                 = "{{ disk.volume_size }}"
+    encrypted                   = "{{ disk.encrypted }}"
+    delete_on_termination       = "{{ disk.delete_on_termination }}"
+  }
+
+{%- endfor %}
+
 }

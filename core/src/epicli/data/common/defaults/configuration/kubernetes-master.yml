@@ -30,6 +30,8 @@ specification:
       plugin: calico # valid options: calico, flannel
     imageRepository: k8s.gcr.io
     certificatesDir: /etc/kubernetes/pki
+    etcd_args:
+      encrypted: yes
 
 #  image_registry_secrets:
 #  - email: emaul@domain.com

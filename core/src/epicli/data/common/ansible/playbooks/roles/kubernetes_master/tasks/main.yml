@@ -12,6 +12,11 @@
     path: /home/{{ specification.admin_user.name }}/.bashrc
     line: source <(kubectl completion bash)
 
+- include_tasks: etcd-encryption.yml
+  when:
+    - groups['kubernetes_master'][0] == inventory_hostname
+    - specification.advanced.etcd_args.encrypted == True
+
 - include_tasks: "registry-secrets.yml"
   when: 
       - groups['kubernetes_master'][0] == inventory_hostname

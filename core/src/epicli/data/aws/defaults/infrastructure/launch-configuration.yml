@@ -8,6 +8,8 @@ specification:
   image_id: TO_BE_SET
   size: TO_BE_SET
   key_name: TO_BE_SET
+  disks: TO_BE_SET
+  ebs_optimized: TO_BE_SET
   associate_public_ip: true
   security_groups: [] # TO_BE_SET
   enable_monitoring: true
