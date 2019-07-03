@@ -55,13 +55,6 @@
     owner: "{{ specification.admin_user.name }}"
     group: "{{ specification.admin_user.name }}"
 
-- name: Copy flannel config
-  copy:
-    src: kube-flannel.yml
-    dest: /home/{{ specification.admin_user.name }}/
-    owner: "{{ specification.admin_user.name }}"
-    group: "{{ specification.admin_user.name }}"
-
 - name: Copy dashboard yaml
   copy:
     src: kubernetes-dashboard.yml
@@ -101,9 +94,8 @@
   shell: kubectl apply --kubeconfig=/home/{{ specification.admin_user.name }}/.kube/config -f /home/{{ specification.admin_user.name }}/coredns-config.yml
   become_user: "{{ specification.admin_user.name }}"
 
-- name: Apply kube-flannel.yml
-  shell: kubectl apply --kubeconfig=/home/{{ specification.admin_user.name }}/.kube/config -f /home/{{ specification.admin_user.name }}/kube-flannel.yml
-  become_user: "{{ specification.admin_user.name }}"
+# Apply network plugin configured by user
+- include_tasks: "./cni-plugins/{{ specification.advanced.networking.plugin }}.yml"
 
 - name: Check if kubernetes-dashboard is already deployed
   shell: kubectl --kubeconfig=/home/{{ specification.admin_user.name }}/.kube/config get pods --all-namespaces | grep -c -i dashboard
