@@ -9,7 +9,7 @@
 
 - name: Install the latest version of Kibana
   yum:
-    name: "https://artifacts.elastic.co/downloads/kibana/kibana-oss-{{ kibana_version }}-x86_64.rpm"
+    name: "https://artifacts.elastic.co/downloads/kibana/kibana-oss-{{ specification.kibana_version }}-x86_64.rpm"
   when:
     - groups['kibana'][0] == inventory_hostname
 

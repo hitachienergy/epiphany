@@ -3,7 +3,7 @@
 
 - name: Install Elasticsearch Package
   yum:
-    name: "https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-oss-{{ elasticsearch_version }}.rpm"
+    name: "https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-oss-{{ speficication.elasticsearch_version }}.rpm"
   when:
     - groups['elasticsearch'][0] == inventory_hostname
 

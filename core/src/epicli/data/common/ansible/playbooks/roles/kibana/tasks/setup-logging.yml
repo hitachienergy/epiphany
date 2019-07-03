@@ -1,9 +1,9 @@
 - name: Create log directory for Kibana
-  file: path={{kibana_log_dir}} state=directory
+  file: path={{specification.kibana_log_dir}} state=directory
 
 - name: Create logfile for Kibana
   copy:
-    dest: "{{ kibana_log_dir }}/kibana.log"
+    dest: "{{ specification.kibana_log_dir }}/kibana.log"
     owner: kibana
     group: kibana
     mode: 0644
@@ -12,7 +12,7 @@
 
 - name: Set permissions on logfile for Kibana
   file:
-    path: "{{ kibana_log_dir }}/kibana.log"
+    path: "{{ specification.kibana_log_dir }}/kibana.log"
     owner: kibana
     group: kibana
     mode: 0644
@@ -21,7 +21,7 @@
   replace:
     path: /etc/kibana/kibana.yml
     regexp: '^#logging.dest: stdout$'
-    replace: "logging.dest: \"{{ kibana_log_dir }}/kibana.log\""
+    replace: "logging.dest: \"{{ specification.kibana_log_dir }}/kibana.log\""
     backup: no
 
 - name: Copy logrotate config

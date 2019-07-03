@@ -3,7 +3,7 @@
 
 - name: Install Elasticsearch Package
   apt:
-    deb: "https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-oss-{{ elasticsearch_version }}.deb"
+    deb: "https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-oss-{{ specification.elasticsearch_version }}.deb"
   when:
     - groups['elasticsearch'][0] == inventory_hostname
 
