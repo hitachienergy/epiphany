@@ -8,7 +8,7 @@ specification:
       enabled: yes
     - name: kubernetes-node
       enabled: yes
-    - name: deployments
+    - name: applications
       enabled: yes
     - name: elasticsearch
       enabled: yes
@@ -43,7 +43,7 @@ specification:
   roles_mapping:
     kubernetes_master:
       - kubernetes-master
-      - deployments
+      - applications
       - node-exporter
       - filebeat
     kubernetes_node:

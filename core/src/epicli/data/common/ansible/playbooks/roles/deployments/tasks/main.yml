@@ -1,8 +1,0 @@
----
-- name: Include deployments
-  include_tasks: "applications/{{ item.name }}/main.yml"
-  vars:
-    data: "{{ item }}"
-  loop: "{{ kubernetes.deployments }}"
-  when:
-    - kubernetes.deployments is defined and kubernetes.deployments | length > 0

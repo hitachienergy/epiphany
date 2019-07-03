@@ -1,0 +1,8 @@
+---
+- name: Include applications
+  include_tasks: "applications/{{ item.name }}/main.yml"
+  vars:
+    data: "{{ item }}"
+  loop: "{{ specification.applications }}"
+  when:
+    - specification.applications is defined and specification.applications | length > 0
