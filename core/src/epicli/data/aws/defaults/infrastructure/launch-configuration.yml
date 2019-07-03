@@ -10,7 +10,7 @@ specification:
   key_name: TO_BE_SET
   disks: TO_BE_SET
   ebs_optimized: TO_BE_SET
-  associate_public_ip: true
+  associate_public_ip: TO_BE_SET
   security_groups: [] # TO_BE_SET
   enable_monitoring: true
 

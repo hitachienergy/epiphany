@@ -11,10 +11,12 @@ INVENTORY_FILE_NAME = 'inventory'
 ANSIBLE_OUTPUT_DIR = 'ansible/'
 
 
-def save_manifest(docs, cluster_name):
+def save_manifest(docs, cluster_name, manifest_name=MANIFEST_FILE_NAME):
     build_dir = get_build_path(cluster_name)
-    with open(os.path.join(build_dir, MANIFEST_FILE_NAME), 'w') as stream:
+    path = os.path.join(build_dir, manifest_name)
+    with open(path, 'w') as stream:
         dump_all(docs, stream)
+    return path
 
 
 def save_inventory(inventory, cluster_model):

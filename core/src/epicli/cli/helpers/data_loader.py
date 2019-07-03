@@ -6,6 +6,7 @@ import jinja2
 import json
 from cli.helpers.objdict_helpers import dict_to_objdict
 from jinja2 import Template
+import glob
 
 BASE_DIR = os.path.dirname(__file__)
 #TODO: Look at this in depth since by default sys.prefix should return /urs/local
@@ -39,6 +40,10 @@ def load_yaml_obj(file_type, provider, kind):
 def load_all_yaml_objs(file_type, provider, kind):
     script_dir = os.path.dirname(__file__)
     path_to_file = os.path.join(script_dir, DATA_FOLDER_PATH, provider, file_type, kind+'.yml')
+    return load_file_from_path(script_dir, path_to_file, file_type, kind)
+
+
+def load_file_from_path(script_dir, path_to_file, file_type, kind):
     if os.path.isfile(path_to_file):
         with open(path_to_file, 'r') as stream:
             return safe_load_all(stream)
@@ -60,3 +65,13 @@ def load_json_obj(path_to_file):
         obj = json.load(stream)
         return dict_to_objdict(obj)
 
+
+# currently valid options for directory param are 'defaults/infrastructure'|'defaults/configuration'
+def load_all_documents_from_folder(provider, directory):
+    script_dir = os.path.dirname(__file__)
+    directory_path = os.path.join(script_dir, DATA_FOLDER_PATH, provider, directory)
+    docs = []
+    for filename in glob.glob(os.path.join(directory_path, '*.yml')):
+        documents = load_file_from_path(script_dir, filename, None, None)
+        docs += documents
+    return docs

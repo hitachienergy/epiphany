@@ -1,6 +1,8 @@
 #!/usr/bin/env py
 import sys
 import argparse
+
+from cli.engine.UserConfigInitializer import UserConfigInitializer
 from cli.helpers.Log import Log
 from cli.helpers.Config import Config
 from cli.engine.EpiphanyEngine import EpiphanyEngine
@@ -34,6 +36,7 @@ def main():
     subparsers = parser.add_subparsers()
     apply_parser(subparsers)
     validate_parser(subparsers)
+    init_parser(subparsers)
 
     # add some arguments to the general config so we can easily use them throughout the CLI
     args = parser.parse_args(arguments)
@@ -63,6 +66,18 @@ def validate_parser(subparsers):
     sub_parser.set_defaults(func=run_validate)
 
 
+def init_parser(subparsers):
+    sub_parser = subparsers.add_parser('init', description='Creates configuration file in working directory.')
+    sub_parser.add_argument('-p', '--provider', dest='provider', type=str, default='aws', required=True,
+                            help='One of the supported providers: azure|aws|any')
+    sub_parser.add_argument('-n', '--name', dest='name', type=str, required=True,
+                            help='Name of the cluster.')
+
+    sub_parser.add_argument('-fc', '--full', dest='full_config', action="store_true",
+                            help='Use this flag if you want to create verbose configuration file.')
+    sub_parser.set_defaults(func=run_init)
+
+
 def run_apply(args):
     with EpiphanyEngine(args) as engine:
         engine.apply()
@@ -71,6 +86,11 @@ def run_apply(args):
 def run_validate(args):
     with EpiphanyEngine(args) as engine:
         engine.verify()
+
+
+def run_init(args):
+    with UserConfigInitializer(args) as initializer:
+        initializer.run()
 
 
 def dump_config(config):
