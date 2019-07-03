@@ -1,0 +1,11 @@
+---
+- name: Copy calico config
+  copy:
+    src: calico.yml
+    dest: /home/{{ specification.admin_user.name }}/
+    owner: "{{ specification.admin_user.name }}"
+    group: "{{ specification.admin_user.name }}"
+
+- name: Apply calico definition
+  shell: kubectl apply --kubeconfig=/home/{{ specification.admin_user.name }}/.kube/config -f /home/{{ specification.admin_user.name }}/calico.yml
+  become_user: "{{ specification.admin_user.name }}"
