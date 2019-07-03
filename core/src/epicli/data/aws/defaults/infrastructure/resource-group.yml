@@ -4,5 +4,5 @@ title: "Resource Group"
 provider: aws
 name: default
 specification:
-  name: TO_BE_SET
-  cluster_name: TO_BE_SET
+  name: SET_BY_AUTOMATION
+  cluster_name: SET_BY_AUTOMATION

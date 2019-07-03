@@ -5,7 +5,7 @@ provider: aws
 name: default-security-group
 specification:
   name: default-security-group
-  vpc_name: TO_BE_SET
+  vpc_name: SET_BY_AUTOMATION
   rules: []
 #    - name: ssh
 #      description: Allow SSH

@@ -51,7 +51,7 @@ specification:
         - availability_zone: eu-west-2a
           address_pool: 10.1.4.0/24
     kafka:
-      count: 0
+      count: 2
       machine: default
       configuration: default
       subnets:
@@ -66,7 +66,7 @@ specification:
           address_pool: 10.1.6.0/24
 
     load_balancer:
-      count: 0
+      count: 1
       machine: default
       configuration: default
       subnets:
@@ -79,10 +79,3 @@ specification:
       subnets:
         - availability_zone: eu-west-2a
           address_pool: 10.1.8.0/24
-    haproxy:
-      count: 0
-      machine: default
-      configuration: default
-      subnets:
-        - availability_zone: eu-west-2a
-          address_pool: 10.1.9.0/24
