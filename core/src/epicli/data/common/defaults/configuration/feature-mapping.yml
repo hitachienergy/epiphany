@@ -100,7 +100,5 @@ specification:
     single_machine:
       - kubernetes-master
       - rabbitmql
-    haproxy:
-      - haproxy
-      - filebeat
+      - postgresql
 

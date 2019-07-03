@@ -122,6 +122,11 @@ class EpiphanyEngine:
             self.logger.error(e, exc_info=True)  # TODO extensive debug output might not always be wanted. Make this configurable with input flag?
             return 1
 
+    def dry_run(self):
 
+        self.process_input_docs()
 
+        self.process_configuration_docs()
+
+        return [*self.input_docs, *self.configuration_docs]
 

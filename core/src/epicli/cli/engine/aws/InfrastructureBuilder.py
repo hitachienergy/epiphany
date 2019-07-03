@@ -140,6 +140,7 @@ class InfrastructureBuilder(Step):
         launch_configuration.specification.security_groups = [s.specification.name for s in security_groups_to_create]
         launch_configuration.specification.disks = autoscaling_group.specification.disks
         launch_configuration.specification.ebs_optimized = autoscaling_group.specification.ebs_optimized
+        launch_configuration.specification.associate_public_ip = self.cluster_model.specification.cloud.use_public_ips
         return launch_configuration
 
     def get_subnet(self, subnet_definition, component_key, vpc_name, index):
@@ -196,9 +197,13 @@ class InfrastructureBuilder(Step):
         else:
             public_key_config.specification.key_name = self.cluster_model.specification.admin_user.name + '-' \
                                                        + str(uuid.uuid4())
-
-        with open(self.cluster_model.specification.admin_user.key_path+'.pub', 'r') as stream:
-            public_key_config.specification.public_key = stream.read().rstrip()
+        if os.path.isfile(self.cluster_model.specification.admin_user.key_path + '.pub'):
+            with open(self.cluster_model.specification.admin_user.key_path + '.pub', 'r') as stream:
+                public_key_config.specification.public_key = stream.read().rstrip()
+        else:
+            self.logger.error(
+                'SSH key path "' + self.cluster_model.specification.admin_user.key_path + '.pub' +
+                '" is not valid. Ansible run will fail.')
 
         return public_key_config
 
