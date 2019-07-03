@@ -4,8 +4,8 @@ title: "Subnet Config"
 provider: aws
 name: default
 specification:
-  name: TO_BE_SET
-  vpc_name: TO_BE_SET
-  cidr_block: TO_BE_SET
-  cluster_name: TO_BE_SET
-  availability_zone: TO_BE_SET
+  name: SET_BY_AUTOMATION
+  vpc_name: SET_BY_AUTOMATION
+  cidr_block: SET_BY_AUTOMATION
+  cluster_name: SET_BY_AUTOMATION
+  availability_zone: SET_BY_AUTOMATION

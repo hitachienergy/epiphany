@@ -4,9 +4,9 @@ title: "VPC Config"
 provider: aws
 name: default
 specification:
-  name: TO_BE_SET
-  address_pool: TO_BE_SET
+  name: SET_BY_AUTOMATION
+  address_pool: SET_BY_AUTOMATION
   instance_tenancy: default
   enable_dns_support: true
   enable_dns_hostnames: true
-  cluster_name: TO_BE_SET
+  cluster_name: SET_BY_AUTOMATION
