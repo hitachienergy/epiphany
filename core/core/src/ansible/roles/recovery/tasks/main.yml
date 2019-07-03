@@ -1,63 +1,69 @@
 ---
+- name: Reset kubeadm
+  shell: kubeadm reset -f
 
-- name: Create directory
+- name: Create directory for certificates
   file:
     path: /etc/kubernetes/pki
     state: directory
 
-- name: Create tmp directory
+- name: Create temporary directory
   file:
     path: "{{ backup_dir }}/tmp"
     state: directory
 
-- name: Unarchive a zip archive
+- name: Get files in a backup directory
+  find:
+    paths: "{{ backup_dir }}"
+    patterns: "k8s_backup_*.tar.gz"
+  register: found_files
+
+- name: Get latest file
+  set_fact:
+    latest_file: "{{ found_files.files | sort(attribute='mtime',reverse=true) | first }}"
+
+- name: Unarchive a tar gz archive
   unarchive:
-    src: "{{ backup_dir }}/k8s_backup.zip"
+    src: "{{ latest_file.path }}"
     dest: "{{ backup_dir }}/tmp"
     remote_src: yes
 
+# Ansible 2.8
+# - name: Restore certificates
+#   copy:
+#     src: "{{ backup_dir }}/tmp/pki/"
+#     dest: /etc/kubernetes/pki
+#     remote_src: yes
+
+# Ansible 2.7
 - name: Restore certificates
-  copy:
+  synchronize:
     src: "{{ backup_dir }}/tmp/pki/"
     dest: /etc/kubernetes/pki
-    remote_src: yes
-  register: output
+    recursive: yes
+  delegate_to: "{{ inventory_hostname }}"
 
-- debug:
-    var: output
-
-- name: Create directory
+- name: Create data directory for etcd
   file:
     path: /var/lib/etcd
     state: directory
 
 - name: Get etcd image name
-  shell: docker images | awk '/etcd/ {print $1":"$2}' | awk 'NR==1'
+  shell: cat "{{ backup_dir }}/tmp/etcd_ver.txt" 
   register: etcd_image_name
-
-- debug:
-    var: etcd_image_name
 
 - name: Restore etcd backup
   shell: >
     docker run -v "{{ backup_dir }}/tmp":/backup  \
     -v /var/lib/etcd:/var/lib/etcd \
     --env ETCDCTL_API=3 \
-    --rm {{ etcd_image_name.stdout }} \
-    /bin/sh -c "etcdctl snapshot restore '/backup/etcd-snapshot.db'; cp -r /default.etcd/member/ /var/lib/etcd/"
-  register: output
-
-- debug:
-    var: output
+    --rm "{{ etcd_image_name.stdout }}" \
+    /bin/sh -c "etcdctl snapshot restore '/backup/etcd-snapshot.db'; mv /default.etcd/member/ /var/lib/etcd/"
 
 - name: Initialize the master with backup
   shell: kubeadm init --ignore-preflight-errors=DirAvailable--var-lib-etcd 
-  register: output
-
-- debug:
-    var: output
   
-- name: Clean tmp directory
+- name: Clean temporary directory
   file:
     state: absent
     path: "{{ backup_dir }}/tmp/"
