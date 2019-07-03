@@ -1,4 +1,2 @@
-admin_user:
-  name: operations
-  
-backup_dir: /home/operations/backupdir
+---
+backup_dir: /home/{{ admin_user.name }}/backupdir
