@@ -68,7 +68,7 @@ def validate_parser(subparsers):
 
 def init_parser(subparsers):
     sub_parser = subparsers.add_parser('init', description='Creates configuration file in working directory.')
-    sub_parser.add_argument('-p', '--provider', dest='provider', type=str, default='aws', required=True,
+    sub_parser.add_argument('-p', '--provider', dest='provider', type=str, required=True,
                             help='One of the supported providers: azure|aws|any')
     sub_parser.add_argument('-n', '--name', dest='name', type=str, required=True,
                             help='Name of the cluster.')
