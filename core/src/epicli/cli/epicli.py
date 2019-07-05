@@ -1,13 +1,14 @@
 #!/usr/bin/env py
 import sys
 import argparse
+import json
 
 from cli.engine.UserConfigInitializer import UserConfigInitializer
 from cli.helpers.Log import Log
 from cli.helpers.Config import Config
 from cli.engine.EpiphanyEngine import EpiphanyEngine
-from cli.engine.version import VERSION
-
+from cli.version import VERSION
+from cli.licenses import LICENSES
 
 def main():
     arguments = [] if len(sys.argv) < 2 else sys.argv[1:]
@@ -18,7 +19,10 @@ def main():
         formatter_class=argparse.RawDescriptionHelpFormatter)
 
     # setup some root arguments
-    parser.add_argument('--version', action='version', version=VERSION)
+    parser.add_argument('--version', action='version', help='Shows the CLI version', version=VERSION)
+    parser.add_argument('--licenses', action='version',
+                        help='Shows the third party packages and their licenses the CLI is using.',
+                        version=json.dumps(LICENSES, indent=4))
     parser.add_argument('-l', '--log_file', dest='log_name', type=str,
                         help='The name of the log file written to the output directory')
     parser.add_argument('-lf', '--log_format', dest='log_format', type=str,
