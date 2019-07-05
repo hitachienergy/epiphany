@@ -1,0 +1,116 @@
+kind: epiphany-cluster
+version: 0.3.0
+title: "Epiphany cluster Config"
+provider: any
+name: "default"
+specification:
+  name: YOUR_CLUSTER_NAME
+  admin_user:
+    name: operations # YOUR-ADMIN-USERNAME
+    key_path: /user/.ssh/epiphany-operations/id_rsa # YOUR-SSH-KEY-PATH
+  components:
+    kubernetes_master:
+      count: 1
+      machines:
+        - default-k8s-master
+    kubernetes_node:
+      count: 2
+      machines:
+        - default-k8s-node1
+        - default-k8s-node2
+    logging:
+      count: 1
+      machines:
+        - default-logging
+    monitoring:
+      count: 1
+      machines:
+        - default-monitoring
+    kafka:
+      count: 2
+      machines:
+        - default-kafka1
+        - default-kafka2
+    postgresql:
+      count: 0
+      machines:
+        - default-postgresql
+    load_balancer:
+      count: 1
+      machines:
+        - default-loadbalancer
+    rabbitmq:
+      count: 0
+      machines:
+        - default-rabbitmq
+
+---
+kind: infrastructure/machine
+provider: any
+name: default-k8s-master
+specification:
+  hostname: master    # YOUR-MACHINE-HOSTNAME
+  ip: 192.168.100.101 # YOUR-MACHINE-IP
+---
+kind: infrastructure/machine
+provider: any
+name: default-k8s-node1
+specification:
+  hostname: node1 # YOUR-MACHINE-HOSTNAME
+  ip: 192.168.100.102 # YOUR-MACHINE-IP
+---
+kind: infrastructure/machine
+provider: any
+name: default-k8s-node2
+specification:
+  hostname: node2 # YOUR-MACHINE-HOSTNAME
+  ip: 192.168.100.103 # YOUR-MACHINE-IP
+---
+kind: infrastructure/machine
+provider: any
+name: default-logging
+specification:
+  hostname: elk # YOUR-MACHINE-HOSTNAME
+  ip: 192.168.100.105 # YOUR-MACHINE-IP
+---
+kind: infrastructure/machine
+provider: any
+name: default-monitoring
+specification:
+  hostname: prometheus # YOUR-MACHINE-HOSTNAME
+  ip: 192.168.100.106 # YOUR-MACHINE-IP
+---
+kind: infrastructure/machine
+provider: any
+name: default-kafka1
+specification:
+  hostname: kafka1 # YOUR-MACHINE-HOSTNAME
+  ip: 192.168.100.107 # YOUR-MACHINE-IP
+---
+kind: infrastructure/machine
+provider: any
+name: default-kafka2
+specification:
+  hostname: kafka2 # YOUR-MACHINE-HOSTNAME
+  ip: 192.168.100.108 # YOUR-MACHINE-IP
+---
+kind: infrastructure/machine
+provider: any
+name: default-postgresql
+specification:
+  hostname: postgresql # YOUR-MACHINE-HOSTNAME
+  ip: 192.168.100.109 # YOUR-MACHINE-IP
+---
+kind: infrastructure/machine
+provider: any
+name: default-loadbalancer
+specification:
+  hostname: loadbalancer # YOUR-MACHINE-HOSTNAME
+  ip: 192.168.100.110 # YOUR-MACHINE-IP
+---
+kind: infrastructure/machine
+provider: any
+name: default-rabbitmq
+specification:
+  hostname: rabbitmq # YOUR-MACHINE-HOSTNAME
+  ip: 192.168.100.111 # YOUR-MACHINE-IP
