@@ -4,8 +4,8 @@ title: "Elastic File System Config"
 provider: aws
 name: default
 specification:
-  name: TO_BE_SET
-  token: TO_BE_SET
+  name: SET_BY_AUTOMATION
+  token: SET_BY_AUTOMATION
   encrypted: True
   performance_mode: "generalPurpose"
   throughput_mode: "bursting"

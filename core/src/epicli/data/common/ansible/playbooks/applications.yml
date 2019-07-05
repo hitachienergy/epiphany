@@ -4,8 +4,8 @@
 - hosts: all
   tasks: [ ]  
 
-- hosts: deployments
+- hosts: applications
   become: true
   become_method: sudo
   roles:
-    - deployments
+    - applications

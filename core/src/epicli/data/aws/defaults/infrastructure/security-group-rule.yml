@@ -4,13 +4,13 @@ title: "Default Group Rule"
 provider: aws
 name: default
 specification:
-  name: TO_BE_SET
-  protocol: TO_BE_SET
-  description: TO_BE_SET
-  access: TO_BE_SET
-  priority: TO_BE_SET
-  direction: TO_BE_SET
-  source_port_range: TO_BE_SET
-  destination_port_range: TO_BE_SET
-  source_address_prefix: TO_BE_SET
-  destination_address_prefix: TO_BE_SET
+  name: SET_BY_AUTOMATION
+  protocol: SET_BY_AUTOMATION
+  description: SET_BY_AUTOMATION
+  access: SET_BY_AUTOMATION
+  priority: SET_BY_AUTOMATION
+  direction: SET_BY_AUTOMATION
+  source_port_range: SET_BY_AUTOMATION
+  destination_port_range: SET_BY_AUTOMATION
+  source_address_prefix: SET_BY_AUTOMATION
+  destination_address_prefix: SET_BY_AUTOMATION

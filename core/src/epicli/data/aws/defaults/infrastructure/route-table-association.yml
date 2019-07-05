@@ -4,6 +4,6 @@ title: Route Table Association Config"
 provider: aws
 name: default
 specification:
-  name: TO_BE_SET
-  subnet_name: TO_BE_SET
-  route_table_name: TO_BE_SET
+  name: SET_BY_AUTOMATION
+  subnet_name: SET_BY_AUTOMATION
+  route_table_name: SET_BY_AUTOMATION

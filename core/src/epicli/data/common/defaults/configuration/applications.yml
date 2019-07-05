@@ -1,0 +1,53 @@
+kind: configuration/applications
+version: 0.3.0
+title: "Kubernetes Applications Config"
+name: default
+specification:
+  applications: []
+
+# Abstract these configs to seperate default files and add 
+# the ability to add custom application roles.
+
+# - name: rabbitmq 
+#   image_path: rabbitmq:3.7.10
+#   #image_pull_secret_name: regcred # optional
+#   service:
+#     name: rabbitmq-cluster
+#     port: 30672
+#     management_port: 31672
+#     replicas: 2
+#     namespace: queue
+#   rabbitmq:
+#     #amqp_port: 5672 #optional - default 5672  
+#     plugins: # optional list of RabbitMQ plugins
+#       - rabbitmq_management
+#       - rabbitmq_management_agent
+#     policies: # optional list of RabbitMQ policies
+#       - name: ha-policy2
+#         pattern: ".*"
+#         definitions:
+#           ha-mode: all
+#     custom_configurations: #optional list of RabbitMQ configurations (new format -> https://www.rabbitmq.com/configure.html)
+#       - name: vm_memory_high_watermark.relative
+#         value: 0.5
+#     cluster:
+#       #is_clustered: true #redundant in in-Kubernetes installation, it will always be clustered
+#       #cookie: "cookieSetFromDataYaml" #optional - default value will be random generated string
+
+
+# - name: auth-service # this service require postgresql to be installed in cluster
+#   image_path: jboss/keycloak:4.8.3.Final
+#   #image_pull_secret_name: regcred
+#   service:
+#     name: as-testauthdb
+#     port: 30104
+#     replicas: 2
+#     namespace: namespace-for-auth
+#     admin_user: auth-service-username
+#     admin_password: auth-service-password
+#   database: 
+#     name: "auth-database-name"    
+#     #port: "5432" # leave it when default
+#     user: "auth-db-user"
+#     password: "auth-db-password"
+

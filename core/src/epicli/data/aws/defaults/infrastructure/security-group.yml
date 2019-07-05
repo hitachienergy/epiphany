@@ -4,8 +4,8 @@ title: "Security Group Config"
 provider: aws
 name: default
 specification:
-  vpc_name: TO_BE_SET
-  name: TO_BE_SET
-  cidr_block: TO_BE_SET
+  vpc_name: SET_BY_AUTOMATION
+  name: SET_BY_AUTOMATION
+  cidr_block: SET_BY_AUTOMATION
   rules: []
-  cluster_name: TO_BE_SET
+  cluster_name: SET_BY_AUTOMATION
