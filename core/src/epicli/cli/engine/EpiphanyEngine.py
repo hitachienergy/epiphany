@@ -16,6 +16,7 @@ from cli.engine.AnsibleRunner import AnsibleRunner
 class EpiphanyEngine:
     def __init__(self, input_data):
         self.file = input_data.file
+        self.skip_infrastructure = input_data.no_infra
         self.logger = Log(__name__)
 
         self.cluster_model = None;
@@ -97,13 +98,14 @@ class EpiphanyEngine:
 
             self.process_infrastructure_docs()
 
-            # Generate terraform templates
-            with TerraformTemplateGenerator(self.cluster_model, self.infrastructure_docs) as template_generator:
-                template_generator.run()
+            if not self.skip_infrastructure:
+                # Generate terraform templates
+                with TerraformTemplateGenerator(self.cluster_model, self.infrastructure_docs) as template_generator:
+                    template_generator.run()
 
-            # Run Terraform to create infrastructure
-            with TerraformRunner(self.cluster_model.specification.name) as tf_runner:
-                tf_runner.run()
+                # Run Terraform to create infrastructure
+                with TerraformRunner(self.cluster_model.specification.name) as tf_runner:
+                    tf_runner.run()
 
             self.process_configuration_docs()
 
