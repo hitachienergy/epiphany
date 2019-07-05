@@ -54,7 +54,7 @@ def apply_parser(subparsers):
     sub_parser = subparsers.add_parser('apply', description='Applies configuration from file.')
     sub_parser.add_argument('-f', '--file', dest='file', type=str,
                             help='File with infrastructure/configuration definitions to use.')
-    sub_parser.add_argument('-ni', '--no-infra', dest='no_infra', action="store_true",
+    sub_parser.add_argument('--no-infra', dest='no_infra', action="store_true",
                             help='Skip infrastructure provisioning.')
 
     sub_parser.set_defaults(func=run_apply)
