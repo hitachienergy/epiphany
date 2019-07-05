@@ -3,7 +3,7 @@
 
 - name: Package install
   apt:
-    deb: "https://artifacts.elastic.co/downloads/kibana/kibana-oss-{{ kibana_version }}-amd64.deb"
+    deb: "https://artifacts.elastic.co/downloads/kibana/kibana-oss-{{ specification.kibana_version }}-amd64.deb"
   when:
     - groups['kibana'][0] == inventory_hostname
 
