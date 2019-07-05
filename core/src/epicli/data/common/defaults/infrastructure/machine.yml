@@ -1,7 +1,7 @@
 kind: infrastructure/virtual-machine
 version: 0.3.0
 title: "Virtual Machine Infra"
-provider: azure
+provider: any
 name: default
 specification:
   ip: TO_BE_SET
