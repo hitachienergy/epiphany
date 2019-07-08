@@ -2,13 +2,13 @@
 
 - name: Create jmx-exporter group
   group:
-    name: "{{ jmx_exporter_group }}"
+    name: "{{ specification.jmx_exporter_group }}"
     system: yes
 
 - name: Create jmx-exporter user
   user:
-    name: "{{ jmx_exporter_user }}"
-    group: "{{ jmx_exporter_group }}"
+    name: "{{ specification.jmx_exporter_user }}"
+    group: "{{ specification.jmx_exporter_group }}"
     shell: "/usr/sbin/nologin"
     createhome: false
     system: yes
@@ -19,11 +19,11 @@
     path: "{{ item }}"
     recurse: yes
     owner: root
-    group: "{{ jmx_exporter_group }}"
+    group: "{{ specification.jmx_exporter_group }}"
     mode: 0750
     state: directory
   with_items:
-  - /opt/jmx-exporter/jars
+  - "{{ specification.jmx_jars_directory }}"
 
 - name: Prometheus jmx | download jar
   become: yes
@@ -32,13 +32,13 @@
     checksum: "sha256:{{ specification.download_sha }}"
     dest: "/opt/jmx-exporter/jmx_prometheus_javaagent-{{ specification.jmx_exporter_version }}.jar"
     force: no
-    owner: "{{ jmx_exporter_user }}"
-    group: "{{ jmx_exporter_group }}"
+    owner: "{{ specification.jmx_exporter_user }}"
+    group: "{{ specification.jmx_exporter_group }}"
 
 - name: Prometheus jmx | symlink jar
   become: yes
   file:
     src: "/opt/jmx-exporter/jmx_prometheus_javaagent-{{ specification.jmx_exporter_version }}.jar"
-    path: "{{ prometheus_jmx_path }}"
+    path: "{{ specification.jmx_path }}"
     force: yes
     state: link
