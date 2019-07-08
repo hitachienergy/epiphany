@@ -24,6 +24,8 @@ specification:
       enabled: yes
     - name: node-exporter
       enabled: yes
+    - name: jmx-exporter
+      enabled: yes
     - name: zookeeper
       enabled: yes
     - name: kafka
@@ -32,8 +34,6 @@ specification:
       enabled: yes
     - name: kafka-exporter
       enabled: yes
-    - name: jmx-exporter
-      enabled: no # Need work, disabled for now
     - name: postgresql
       enabled: yes
     - name: haproxy
