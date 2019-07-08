@@ -97,6 +97,18 @@ specification:
        destination_port_range: "0"
        source_address_prefix: "10.1.1.0/24"
        destination_address_prefix: "0.0.0.0/0"
+     - name: monitoring-traffic
+       description: Allow monitoring subnet traffic
+       priority: 102
+       direction: Inbound
+       access: Allow
+       protocol: ALL
+       source_port_range: "*"
+       destination_from_port: 0
+       destination_to_port: 65536
+       destination_port_range: "0"
+       source_address_prefix: "10.1.4.0/24"
+       destination_address_prefix: "*"
      - name: node-subnet-traffic
        description: Allow node subnet traffic
        priority: 102
@@ -121,6 +133,210 @@ specification:
        destination_port_range: "0"
        source_address_prefix: "10.1.4.0/24"
        destination_address_prefix: "0.0.0.0/0"
+     - name: out
+       description: Allow out
+       priority: 101
+       direction: Egress
+       access: Allow
+       protocol: "all"
+       source_port_range: "*"
+       destination_port_range: "0"
+       source_address_prefix: "0.0.0.0/0"
+       destination_address_prefix: "0.0.0.0/0"
+---
+kind: infrastructure/virtual-machine
+version: 0.3.0
+title: "Virtual Machine Infra"
+provider: aws
+name: kubernetes-node-machine
+specification:
+  size: t3.small
+  authorized_to_efs: True
+  mount_efs: True
+  security:
+    rules:
+     - name: ssh
+       description: Allow ssh traffic
+       priority: 101
+       direction: Inbound
+       access: Allow
+       protocol: Tcp
+       source_port_range: "*"
+       destination_port_range: "22"
+       source_address_prefix: "0.0.0.0/0"
+       destination_address_prefix: "*"
+     - name: subnet-traffic
+       description: Allow master subnet traffic
+       priority: 102
+       direction: Inbound
+       access: Allow
+       protocol: ALL
+       source_port_range: "*"
+       destination_from_port: 0
+       destination_to_port: 65536
+       destination_port_range: "0"
+       source_address_prefix: "10.1.1.0/24"
+       destination_address_prefix: "*"
+     - name: monitoring-traffic
+       description: Allow monitoring subnet traffic
+       priority: 102
+       direction: Inbound
+       access: Allow
+       protocol: ALL
+       source_port_range: "*"
+       destination_from_port: 0
+       destination_to_port: 65536
+       destination_port_range: "0"
+       source_address_prefix: "10.1.4.0/24"
+       destination_address_prefix: "*"
+     - name: node-subnet-traffic
+       description: Allow node subnet traffic
+       priority: 102
+       direction: Inbound
+       access: Allow
+       protocol: ALL
+       source_port_range: "*"
+       destination_from_port: 0
+       destination_to_port: 65536
+       destination_port_range: "0"
+       source_address_prefix: "10.1.2.0/24"
+       destination_address_prefix: "*"
+     - name: out
+       description: Allow out
+       priority: 101
+       direction: Egress
+       access: Allow
+       protocol: "all"
+       source_port_range: "*"
+       destination_port_range: "0"
+       source_address_prefix: "0.0.0.0/0"
+       destination_address_prefix: "0.0.0.0/0"
+---
+kind: infrastructure/virtual-machine
+version: 0.3.0
+title: "Virtual Machine Infra"
+provider: aws
+name: kafka-machine
+specification:
+  size: t3.medium
+  security:
+    rules:
+     - name: ssh
+       description: Allow SSH
+       priority: 101
+       direction: Inbound
+       access: Allow
+       protocol: Tcp
+       source_port_range: "*"
+       destination_port_range: "22"
+       source_address_prefix: "0.0.0.0/0"
+       destination_address_prefix: "*"
+     - name: zookeeper1
+       description: Allow Zookeeper 1
+       priority: 102
+       direction: Inbound
+       access: Allow
+       protocol: "Tcp"
+       source_port_range: "*"
+       destination_port_range: "3888"
+       source_address_prefix: "0.0.0.0/0"
+       destination_address_prefix: "*"
+     - name: zookeeper2
+       description: Allow Zookeeper 2
+       priority: 103
+       direction: Inbound
+       access: Allow
+       protocol: "Tcp"
+       source_port_range: "*"
+       destination_port_range: "2888"
+       source_address_prefix: "0.0.0.0/0"
+       destination_address_prefix: "*"
+     - name: zookeeper_client
+       description: Allow Zookeeper Client
+       priority: 104
+       direction: Inbound
+       access: Allow
+       protocol: "Tcp"
+       source_port_range: "*"
+       destination_port_range: "2181"
+       source_address_prefix: "0.0.0.0/0"
+       destination_address_prefix: "*"
+     - name: zookeeper_client
+       description: Allow Zookeeper Client
+       priority: 105
+       direction: Inbound
+       access: Allow
+       protocol: "Tcp"
+       source_port_range: "*"
+       destination_port_range: "9092"
+       source_address_prefix: "0.0.0.0/0"
+       destination_address_prefix: "*"
+     - name: monitoring-traffic
+       description: Allow monitoring subnet traffic
+       priority: 102
+       direction: Inbound
+       access: Allow
+       protocol: ALL
+       source_port_range: "*"
+       destination_from_port: 0
+       destination_to_port: 65536
+       destination_port_range: "0"
+       source_address_prefix: "10.1.4.0/24"
+       destination_address_prefix: "*"
+     - name: kubernetes-traffic
+       description: Allow Kubernetes subnet traffic
+       priority: 102
+       direction: Inbound
+       access: Allow
+       protocol: ALL
+       source_port_range: "*"
+       destination_from_port: 0
+       destination_to_port: 65536
+       destination_port_range: "0"
+       source_address_prefix: "10.1.1.0/24"
+       destination_address_prefix: "*"
+     - name: kubernetes-traffic2
+       description: Allow Kubernetes subnet traffic
+       priority: 102
+       direction: Inbound
+       access: Allow
+       protocol: ALL
+       source_port_range: "*"
+       destination_from_port: 0
+       destination_to_port: 65536
+       destination_port_range: "0"
+       source_address_prefix: "10.1.2.0/24"
+       destination_address_prefix: "*"
+     - name: out
+       description: Allow out
+       priority: 101
+       direction: Egress
+       access: Allow
+       protocol: "all"
+       source_port_range: "*"
+       destination_port_range: "0"
+       source_address_prefix: "0.0.0.0/0"
+       destination_address_prefix: "0.0.0.0/0"
+---
+kind: infrastructure/virtual-machine
+version: 0.3.0
+title: "Virtual Machine Infra"
+provider: aws
+name: monitoring-machine
+specification:
+  size: t3.medium
+  security:
+    rules:
+     - name: ssh
+       description: Allow SSH
+       priority: 101
+       direction: Inbound
+       access: Allow
+       protocol: Tcp
+       source_port_range: "*"
+       destination_port_range: "22"
+       source_address_prefix: "0.0.0.0/0"
+       destination_address_prefix: "*"
      - name: out
        description: Allow out
        priority: 101
