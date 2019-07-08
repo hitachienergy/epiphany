@@ -5,8 +5,7 @@ class Config:
         def __init__(self):
             self._docker_cli = bool(os.environ.get('DOCKER_CLI', ''))
 
-            home_dir = os.path.expanduser('~')
-            self._output_dir = os.path.join(home_dir, 'epicli/')
+            self._output_dir = None
             if self._docker_cli:
                 self._output_dir = '/shared/'
 
@@ -26,7 +25,7 @@ class Config:
 
         @output_dir.setter
         def output_dir(self, output_dir):
-            if not self._docker_cli and not output_dir is None:
+            if not self._docker_cli and output_dir is not None:
                 self._output_dir = output_dir
 
         @property
