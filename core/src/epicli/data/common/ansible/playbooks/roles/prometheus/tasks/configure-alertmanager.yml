@@ -1,14 +1,4 @@
 ---
-- name: Create alerting rule files from template
-  template:
-    src: "alert.rules.j2"
-    dest: "{{ specification.config_directory }}/rules/{{ item.name }}.rules"
-    owner: root
-    group: prometheus
-    mode: 0640
-    validate: "/usr/local/bin/promtool check rules %s"
-  with_items:
-    - "{{ specification.alerts.rules }}"
 
 - name: Configure alertmanager
   template:

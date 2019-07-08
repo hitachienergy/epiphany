@@ -2,13 +2,14 @@
 import sys
 import argparse
 import json
-
+import os
 from cli.engine.UserConfigInitializer import UserConfigInitializer
 from cli.helpers.Log import Log
 from cli.helpers.Config import Config
 from cli.engine.EpiphanyEngine import EpiphanyEngine
 from cli.version import VERSION
 from cli.licenses import LICENSES
+
 
 def main():
     arguments = [] if len(sys.argv) < 2 else sys.argv[1:]
@@ -49,7 +50,6 @@ def main():
     config.log_format = args.log_format
     config.log_date_format = args.log_date_format
     config.log_count = args.log_count
-    dump_config(config)
 
     return args.func(args)
 
@@ -86,25 +86,46 @@ def init_parser(subparsers):
 
 
 def run_apply(args):
+    adjust_paths(args)
     with EpiphanyEngine(args) as engine:
         engine.apply()
 
 
 def run_validate(args):
+    adjust_paths(args)
     with EpiphanyEngine(args) as engine:
         engine.verify()
 
 
 def run_init(args):
+    adjust_paths(args)
     with UserConfigInitializer(args) as initializer:
         initializer.run()
+
+
+def adjust_paths(args):
+    args.file = get_config_file_path(args.file)
+    adjust_output_dir(args.file)
+    dump_config(Config())
+
+
+def get_config_file_path(config_file_path):
+    if os.path.isabs(config_file_path):
+        return config_file_path
+    return os.path.join(os.getcwd(), config_file_path)
+
+
+def adjust_output_dir(config_file_path):
+    if Config().output_dir is None:
+        config_directory = os.path.dirname(config_file_path)
+        Config().output_dir = os.path.join(config_directory, 'build')
 
 
 def dump_config(config):
     logger = Log('config')
     for attr in config.__dict__:
         if attr.startswith('_'):
-             logger.debug('%s = %r' % (attr[1:], getattr(config, attr)))
+            logger.debug('%s = %r' % (attr[1:], getattr(config, attr)))
 
 
 if __name__ == '__main__':
