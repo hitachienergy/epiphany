@@ -5,4 +5,4 @@ provider: aws
 name: default
 specification:
   name: "operations"
-  public_key: TO_BE_SET
+  public_key: SET_BY_AUTOMATION

@@ -4,12 +4,12 @@ title: "Virtual Machine Infra"
 provider: aws
 name: default
 specification:
-  name: TO_BE_SET
-  count: TO_BE_SET
+  name: SET_BY_AUTOMATION
+  count: SET_BY_AUTOMATION
   subnet_names: []
   availability_zones: [] # specified automatically - based on subnet az's
-  launch_configuration: TO_BE_SET
-  cluster_name: TO_BE_SET
+  launch_configuration: SET_BY_AUTOMATION
+  cluster_name: SET_BY_AUTOMATION
   authorized_to_efs: False
   mount_efs: False
   tags:

@@ -19,7 +19,8 @@ provider:
   examples:
   - aws
   - azure
-  pattern: ^(aws|azure)$
+  - any
+  pattern: ^(aws|azure|any)$
 version:
   type: string
   title: The Version Schema
