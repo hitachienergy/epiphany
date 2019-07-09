@@ -60,8 +60,31 @@
     --rm "{{ etcd_image_name.stdout }}" \
     /bin/sh -c "etcdctl snapshot restore '/backup/etcd-snapshot.db'; mv /default.etcd/member/ /var/lib/etcd/"
 
+- name: Check if kubeadm configuration file exists
+  stat:
+    path: "{{ backup_dir }}/tmp/kubeadm-config.yml"
+  register: stat_result
+
+- name: Create directory for kubeadm configuration file
+  file:
+    path: /etc/kubeadm
+    state: directory
+  when: stat_result.stat.exists
+
+- name: Restore kubeadm configuration file
+  copy:
+    src: "{{ backup_dir }}/tmp/kubeadm-config.yml"
+    dest: "/etc/kubeadm/kubeadm-config.yml"
+    remote_src: yes
+  when: stat_result.stat.exists
+
+- name: Initialize the master with backup including kubeadm configuration file
+  shell: kubeadm init --ignore-preflight-errors=DirAvailable--var-lib-etcd,NumCPU --config /etc/kubeadm/kubeadm-config.yml
+  when: stat_result.stat.exists
+
 - name: Initialize the master with backup
   shell: kubeadm init --ignore-preflight-errors=DirAvailable--var-lib-etcd,NumCPU
+  when: not stat_result.stat.exists
 
 - name: Wait for all nodes to be ready
   environment:
