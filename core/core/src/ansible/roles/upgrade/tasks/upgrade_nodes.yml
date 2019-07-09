@@ -66,18 +66,16 @@
   shell: systemctl status kubelet
 
 - name: Wait for the cluster's readiness
-  environment:
-    KUBECONFIG: "/home/{{ admin_user.name }}/.kube/config"
-  shell: kubectl cluster-info
-  retries: 10
-  delay: 10
-  register: output
-  until: output is succeeded
+  include_tasks: "wait.yml"
 
 - name: Uncordon node - mark node as schedulable
   environment:
     KUBECONFIG: "/home/{{ admin_user.name }}/.kube/config"
   shell: kubectl uncordon {{ inventory_hostname }}
+  retries: 5
+  delay: 5
+  register: output
+  until: output is succeeded
   delegate_to: "{{ groups['master'][0] }}"
 
 - name: Verify cluster version

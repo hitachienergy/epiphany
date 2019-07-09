@@ -55,6 +55,31 @@
 - name: Wait for the cluster's readiness
   include_tasks: "wait.yml"
 
+# https://github.com/kubernetes/kubeadm/issues/1471 Upgrading a 1.12 cluster thru 1.13 to 1.14 fails
+
+- name: Validate whether current cluster is upgradeable (from ver. 1.13)
+
+  block:
+  - name: Show upgrade plan
+    shell: kubeadm upgrade plan v{{ version }}
+  when: '"1.13" in cluster_version.stdout'
+  
+  rescue:
+  - name: Find the existing etcd server certificates
+    find:
+      paths: /etc/kubernetes/pki/etcd
+      patterns: "*server.*"
+    register: files_to_delete
+
+  - name: Remove the existing etcd server certificates
+    file:
+      path: "{{ item.path }}"
+      state: absent
+    with_items: "{{ files_to_delete.files }}"
+
+  - name: Regenerate the etcd server certificates
+    shell: kubeadm init phase certs etcd-server
+
 - name: Validate whether current cluster is upgradeable
   shell: kubeadm upgrade plan v{{ version }}
 
@@ -78,18 +103,16 @@
   shell: systemctl status kubelet
 
 - name: Wait for the cluster's readiness
-  environment:
-    KUBECONFIG: "/home/{{ admin_user.name }}/.kube/config"
-  shell: kubectl cluster-info
-  retries: 10
-  delay: 10
-  register: output
-  until: output is succeeded
+  include_tasks: "wait.yml"
 
 - name: Uncordon master - mark master as schedulable
   environment:
     KUBECONFIG: "/home/{{ admin_user.name }}/.kube/config"
   shell: kubectl uncordon {{ inventory_hostname }}
+  retries: 5
+  delay: 5
+  register: output
+  until: output is succeeded
 
 - name: Verify cluster version
   include_tasks: "verify.yml"

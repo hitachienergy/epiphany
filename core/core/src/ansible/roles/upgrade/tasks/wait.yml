@@ -1,4 +1,13 @@
 ---
+- name: Wait for kubectl to find and access a Kubernetes cluster
+  environment:
+    KUBECONFIG: "/home/{{ admin_user.name }}/.kube/config"
+  shell: kubectl cluster-info
+  retries: 10
+  delay: 10
+  register: output
+  until: output is succeeded and "running" in output.stdout
+  
 - name: Wait for all nodes to be ready
   environment:
     KUBECONFIG: "/home/{{ admin_user.name }}/.kube/config"

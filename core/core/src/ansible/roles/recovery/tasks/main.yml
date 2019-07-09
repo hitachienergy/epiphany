@@ -61,11 +61,49 @@
     /bin/sh -c "etcdctl snapshot restore '/backup/etcd-snapshot.db'; mv /default.etcd/member/ /var/lib/etcd/"
 
 - name: Initialize the master with backup
-  shell: kubeadm init --ignore-preflight-errors=DirAvailable--var-lib-etcd 
+  shell: kubeadm init --ignore-preflight-errors=DirAvailable--var-lib-etcd,NumCPU
+
+- name: Wait for all nodes to be ready
+  environment:
+    KUBECONFIG: "/home/{{ admin_user.name }}/.kube/config"
+  shell: kubectl get nodes -o json
+  register: output
+  until: output.stdout|from_json|json_query("items[*].status.conditions[?(@.type=='Ready')].status[]")|unique == ["True"]
+  retries: 120
+  delay: 10
+
+- name: Check cluster version 
+  environment:
+    KUBECONFIG: "/home/{{ admin_user.name }}/.kube/config"
+  shell: kubectl version --short | grep -i server
+  register: cluster_version
+
+# https://github.com/kubernetes/kubeadm/issues/1471 Upgrading a 1.12 cluster thru 1.13 to 1.14 fails
+
+- name: Validate whether current cluster is upgradeable (from ver. 1.13)
+
+  block:
+  - name: Show upgrade plan
+    shell: kubeadm upgrade plan
+  when: '"1.13" in cluster_version.stdout'
   
+  rescue:
+  - name: Find the existing etcd server certificates
+    find:
+      paths: /etc/kubernetes/pki/etcd
+      patterns: "*server.*"
+    register: files_to_delete
+
+  - name: Remove the existing etcd server certificates
+    file:
+      path: "{{ item.path }}"
+      state: absent
+    with_items: "{{ files_to_delete.files }}"
+
+  - name: Regenerate the etcd server certificates
+    shell: kubeadm init phase certs etcd-server
+   
 - name: Clean temporary directory
   file:
     state: absent
     path: "{{ backup_dir }}/tmp/"
-
-
