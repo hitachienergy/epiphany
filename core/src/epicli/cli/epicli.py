@@ -98,7 +98,7 @@ def run_validate(args):
 
 
 def run_init(args):
-    adjust_paths(args)
+    Config().output_dir = os.getcwd()
     with UserConfigInitializer(args) as initializer:
         initializer.run()
 

@@ -16,10 +16,10 @@ from cli.engine.AnsibleRunner import AnsibleRunner
 class EpiphanyEngine:
     def __init__(self, input_data):
         self.file = input_data.file
-        self.skip_infrastructure = input_data.no_infra
+        self.skip_infrastructure = input_data.no_infra if hasattr(input_data, 'no_infra') else False
         self.logger = Log(__name__)
 
-        self.cluster_model = None;
+        self.cluster_model = None
         self.input_docs = []
         self.configuration_docs = []
         self.infrastructure_docs = []
