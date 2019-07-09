@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from setuptools import setup, find_packages
-from cli.engine.version import VERSION
+from cli.version import VERSION
 import os
 
 with open('README.md') as f:
