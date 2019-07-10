@@ -7,10 +7,11 @@ from cli.engine.AnsibleVarsGenerator import AnsibleVarsGenerator
 from cli.helpers.Step import Step
 from cli.helpers.build_saver import get_inventory_path, get_ansible_path, copy_files_recursively
 from cli.helpers.naming_helpers import to_role_name
+from cli.helpers.data_loader import DATA_FOLDER_PATH
 
 
 class AnsibleRunner(Step):
-    ANSIBLE_PLAYBOOKS_PATH = "/../../data/common/ansible/playbooks/"
+    ANSIBLE_PLAYBOOKS_PATH = DATA_FOLDER_PATH + "/common/ansible/playbooks/"
 
     def __init__(self, cluster_model, config_docs):
         super().__init__(__name__)
@@ -36,9 +37,7 @@ class AnsibleRunner(Step):
         self.inventory_creator.create()
         time.sleep(10)
 
-        src = os.path.dirname(__file__) + AnsibleRunner.ANSIBLE_PLAYBOOKS_PATH
-
-        copy_files_recursively(src, get_ansible_path(self.cluster_model.specification.name))
+        copy_files_recursively(AnsibleRunner.ANSIBLE_PLAYBOOKS_PATH, get_ansible_path(self.cluster_model.specification.name))
 
         # todo: install packages to run ansible on Red Hat hosts
         self.ansible_command.run_task_with_retries(hosts="all", inventory=inventory_path, module="raw",
