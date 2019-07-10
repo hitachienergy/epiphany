@@ -4,12 +4,6 @@ title: "Feature mapping to roles"
 name: default
 specification:
   available_roles:
-    - name: kubernetes-master
-      enabled: yes
-    - name: kubernetes-node
-      enabled: yes
-    - name: applications
-      enabled: yes
     - name: elasticsearch
       enabled: yes
     - name: elasticsearch-curator
@@ -40,20 +34,13 @@ specification:
       enabled: yes
     - name: haproxy-exporter
       enabled: yes
+    - name: kubernetes-master
+      enabled: yes
+    - name: kubernetes-node
+      enabled: yes
+    - name: applications
+      enabled: yes
   roles_mapping:
-    kubernetes_master:
-      - kubernetes-master
-      - applications
-      - node-exporter
-      - filebeat
-    kubernetes_node:
-      - kubernetes-node
-      - node-exporter
-      - filebeat
-    kubernetes_node_ha:
-      - kubernetes-node
-      - node-exporter
-      - filebeat
     kafka:
       - zookeeper
       - jmx-exporter
@@ -101,4 +88,17 @@ specification:
       - kubernetes-master
       - rabbitmql
       - postgresql
+    kubernetes_master:
+      - kubernetes-master
+      - applications
+      - node-exporter
+      - filebeat
+    kubernetes_node:
+      - kubernetes-node
+      - node-exporter
+      - filebeat
+    kubernetes_node_ha:
+      - kubernetes-node
+      - node-exporter
+      - filebeat
 
