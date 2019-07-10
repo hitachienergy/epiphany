@@ -1,4 +1,5 @@
 import distutils
+import shutil
 from distutils import dir_util
 import os
 from cli.helpers.data_loader import load_template_file, types
@@ -66,6 +67,10 @@ def get_inventory_path(cluster_name):
     return os.path.join(get_build_path(cluster_name), INVENTORY_FILE_NAME)
 
 
+def get_inventory_path_for_build(build_directory):
+    return os.path.join(build_directory, INVENTORY_FILE_NAME)
+
+
 def get_terraform_path(cluster_name):
     terraform_dir = os.path.join(get_build_path(cluster_name), TERRAFORM_OUTPUT_DIR)
     if not os.path.exists(terraform_dir):
@@ -82,3 +87,8 @@ def get_ansible_path(cluster_name):
 
 def copy_files_recursively(src, dst):
     distutils.dir_util.copy_tree(src, dst)
+
+
+def copy_file(src, dst):
+    shutil.copy2(src, dst)
+

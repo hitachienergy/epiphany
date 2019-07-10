@@ -3,7 +3,7 @@
 
 - name: Check if node is registered with Kubernetes cluster
   shell: >-
-    kubectl --kubeconfig=/home/{{ specification.admin_user.name }}/.kube/config get nodes --no-headers -o=custom-columns=INTERNAL-IP:.status.addresses[*].address |
+    kubectl --kubeconfig=/home/{{ admin_user.name }}/.kube/config get nodes --no-headers -o=custom-columns=INTERNAL-IP:.status.addresses[*].address |
     grep -w {{ hostvars[inventory_hostname]['ansible_default_ipv4']['address'] }}
   register: hostname_in_cluster
   failed_when: hostname_in_cluster.rc == 2 or hostname_in_cluster.stderr # do not fail when grep doesn't match but detect errors in pipeline
@@ -105,18 +105,18 @@
     name: kubernetes_common
     tasks_from: configure-kubelet
 
-- name: Create /home/{{ specification.admin_user.name }}/.kube
+- name: Create /home/{{ admin_user.name }}/.kube
   file:
     state: directory
-    path: /home/{{ specification.admin_user.name }}/.kube
-    owner: "{{ specification.admin_user.name }}"
-    group: "{{ specification.admin_user.name }}"
+    path: /home/{{ admin_user.name }}/.kube
+    owner: "{{ admin_user.name }}"
+    group: "{{ admin_user.name }}"
 
-- name: Copy kubelet.conf as /home/{{ specification.admin_user.name }}/.kube/config
+- name: Copy kubelet.conf as /home/{{ admin_user.name }}/.kube/config
   copy:
     src: /etc/kubernetes/kubelet.conf
-    dest: /home/{{ specification.admin_user.name }}/.kube/config
+    dest: /home/{{ admin_user.name }}/.kube/config
     remote_src: yes
-    owner: "{{ specification.admin_user.name }}"
-    group: "{{ specification.admin_user.name }}"
+    owner: "{{ admin_user.name }}"
+    group: "{{ admin_user.name }}"
   when: not groups['kubernetes_master'][0] == inventory_hostname
