@@ -1,0 +1,132 @@
+---
+- name: Reset kubeadm
+  shell: kubeadm reset -f
+
+- name: Create directory for certificates
+  file:
+    path: /etc/kubernetes/pki
+    state: directory
+
+- name: Create temporary directory
+  file:
+    path: "{{ backup_dir }}/tmp"
+    state: directory
+
+- name: Get files in a backup directory
+  find:
+    paths: "{{ backup_dir }}"
+    patterns: "k8s_backup_*.tar.gz"
+  register: found_files
+
+- name: Get latest file
+  set_fact:
+    latest_file: "{{ found_files.files | sort(attribute='mtime',reverse=true) | first }}"
+
+- name: Unarchive a tar gz archive
+  unarchive:
+    src: "{{ latest_file.path }}"
+    dest: "{{ backup_dir }}/tmp"
+    remote_src: yes
+
+# Ansible 2.8
+# - name: Restore certificates
+#   copy:
+#     src: "{{ backup_dir }}/tmp/pki/"
+#     dest: /etc/kubernetes/pki
+#     remote_src: yes
+
+# Ansible 2.7
+- name: Restore certificates
+  synchronize:
+    src: "{{ backup_dir }}/tmp/pki/"
+    dest: /etc/kubernetes/pki
+    recursive: yes
+  delegate_to: "{{ inventory_hostname }}"
+
+- name: Create data directory for etcd
+  file:
+    path: /var/lib/etcd
+    state: directory
+
+- name: Get etcd image name
+  shell: cat "{{ backup_dir }}/tmp/etcd_ver.txt" 
+  register: etcd_image_name
+
+- name: Restore etcd backup
+  shell: >
+    docker run -v "{{ backup_dir }}/tmp":/backup  \
+    -v /var/lib/etcd:/var/lib/etcd \
+    --env ETCDCTL_API=3 \
+    --rm "{{ etcd_image_name.stdout }}" \
+    /bin/sh -c "etcdctl snapshot restore '/backup/etcd-snapshot.db'; mv /default.etcd/member/ /var/lib/etcd/"
+
+- name: Check if kubeadm configuration file exists
+  stat:
+    path: "{{ backup_dir }}/tmp/kubeadm-config.yml"
+  register: stat_result
+
+- name: Create directory for kubeadm configuration file
+  file:
+    path: /etc/kubeadm
+    state: directory
+  when: stat_result.stat.exists
+
+- name: Restore kubeadm configuration file
+  copy:
+    src: "{{ backup_dir }}/tmp/kubeadm-config.yml"
+    dest: "/etc/kubeadm/kubeadm-config.yml"
+    remote_src: yes
+  when: stat_result.stat.exists
+
+- name: Initialize the master with backup including kubeadm configuration file
+  shell: kubeadm init --ignore-preflight-errors=DirAvailable--var-lib-etcd,NumCPU --config /etc/kubeadm/kubeadm-config.yml
+  when: stat_result.stat.exists
+
+- name: Initialize the master with backup
+  shell: kubeadm init --ignore-preflight-errors=DirAvailable--var-lib-etcd,NumCPU
+  when: not stat_result.stat.exists
+
+- name: Wait for all nodes to be ready
+  environment:
+    KUBECONFIG: "/home/{{ admin_user.name }}/.kube/config"
+  shell: kubectl get nodes -o json
+  register: output
+  until: output.stdout|from_json|json_query("items[*].status.conditions[?(@.type=='Ready')].status[]")|unique == ["True"]
+  retries: 120
+  delay: 10
+
+- name: Check cluster version 
+  environment:
+    KUBECONFIG: "/home/{{ admin_user.name }}/.kube/config"
+  shell: kubectl version --short | grep -i server
+  register: cluster_version
+
+# https://github.com/kubernetes/kubeadm/issues/1471 Upgrading a 1.12 cluster thru 1.13 to 1.14 fails
+
+- name: Validate whether current cluster is upgradeable (from ver. 1.13)
+
+  block:
+  - name: Show upgrade plan
+    shell: kubeadm upgrade plan
+  when: '"1.13" in cluster_version.stdout'
+  
+  rescue:
+  - name: Find the existing etcd server certificates
+    find:
+      paths: /etc/kubernetes/pki/etcd
+      patterns: "*server.*"
+    register: files_to_delete
+
+  - name: Remove the existing etcd server certificates
+    file:
+      path: "{{ item.path }}"
+      state: absent
+    with_items: "{{ files_to_delete.files }}"
+
+  - name: Regenerate the etcd server certificates
+    shell: kubeadm init phase certs etcd-server
+   
+- name: Clean temporary directory
+  file:
+    state: absent
+    path: "{{ backup_dir }}/tmp/"

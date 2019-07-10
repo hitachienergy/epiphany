@@ -3,6 +3,8 @@ import sys
 import argparse
 import json
 import os
+
+from cli.engine.PatchEngine import PatchEngine
 from cli.engine.UserConfigInitializer import UserConfigInitializer
 from cli.helpers.Log import Log
 from cli.helpers.Config import Config
@@ -42,6 +44,9 @@ def main():
     apply_parser(subparsers)
     validate_parser(subparsers)
     init_parser(subparsers)
+    upgrade_parser(subparsers)
+    backup_parser(subparsers)
+    recovery_parser(subparsers)
 
     # add some arguments to the general config so we can easily use them throughout the CLI
     args = parser.parse_args(arguments)
@@ -85,6 +90,27 @@ def init_parser(subparsers):
     sub_parser.set_defaults(func=run_init)
 
 
+def upgrade_parser(subparsers):
+    sub_parser = subparsers.add_parser('upgrade', description='[Experimental]: Upgrades existing Epiphany Platform to latest version.')
+    sub_parser.add_argument('-b', '--build', dest='build_directory', type=str, required=True,
+                            help='Absolute path to directory with build artifacts.')
+    sub_parser.set_defaults(func=run_upgrade)
+
+
+def backup_parser(subparsers):
+    sub_parser = subparsers.add_parser('backup', description='[Experimental]: Backups existing Epiphany Platform components.')
+    sub_parser.add_argument('-b', '--build', dest='build_directory', type=str, required=True,
+                            help='Absolute path to directory with build artifacts.')
+    sub_parser.set_defaults(func=run_backup)
+
+
+def recovery_parser(subparsers):
+    sub_parser = subparsers.add_parser('recovery', description='[Experimental]: Recover from existing backup.')
+    sub_parser.add_argument('-b', '--build', dest='build_directory', type=str, required=True,
+                            help='Absolute path to directory with build artifacts.')
+    sub_parser.set_defaults(func=run_recovery)
+
+
 def run_apply(args):
     adjust_paths(args)
     with EpiphanyEngine(args) as engine:
@@ -101,6 +127,24 @@ def run_init(args):
     Config().output_dir = os.getcwd()
     with UserConfigInitializer(args) as initializer:
         initializer.run()
+
+
+def run_upgrade(args):
+    Config().output_dir = args.build_directory
+    with PatchEngine() as engine:
+        engine.run_upgrade()
+
+
+def run_backup(args):
+    Config().output_dir = args.build_directory
+    with PatchEngine() as engine:
+        engine.run_backup()
+
+
+def run_recovery(args):
+    Config().output_dir = args.build_directory
+    with PatchEngine() as engine:
+        engine.run_recovery()
 
 
 def adjust_paths(args):

@@ -1,27 +1,27 @@
-- name: ensure group {{ specification.admin_user.name }} exists
+- name: ensure group {{ admin_user.name }} exists
   group: 
-    name: "{{ specification.admin_user.name }}"
+    name: "{{ admin_user.name }}"
     state: present
 
 - name: Ensure user {{ admin_user.name }} exists, has correct shell, and groups, and no password
   user: 
-    name: "{{ specification.admin_user.name }}"
+    name: "{{ admin_user.name }}"
     shell: /bin/bash
-    groups: "{{ specification.admin_user.name }},wheel"
+    groups: "{{ admin_user.name }},wheel"
     append: yes
   when: ansible_os_family == "RedHat"
 
 - name: Ensure user {{ admin_user.name }} exists, has correct shell, and groups, and no password
   user: 
-    name: "{{ specification.admin_user.name }}"
+    name: "{{ admin_user.name }}"
     shell: /bin/bash
-    groups: "{{ specification.admin_user.name }},sudo"
+    groups: "{{ admin_user.name }},sudo"
     append: yes
   when: ansible_os_family == "Debian"
 
-- name: Put {{ specification.admin_user.name }} user authorized key on servers
+- name: Put {{ admin_user.name }} user authorized key on servers
   authorized_key:
-    user: "{{ specification.admin_user.name }}"
+    user: "{{ admin_user.name }}"
     state: present
     key: "{{ item }}"
   with_file:

@@ -1,4 +1,9 @@
 ---
+
+- name: Write certs in haproxy
+  debug:
+    msg: "{{ admin_user.name }}"
+
 # Common main as the entry point
 
 - include_tasks: "{{ ansible_os_family }}.yml"
