@@ -55,18 +55,24 @@
 - name: Wait for the cluster's readiness
   include_tasks: "wait.yml"
 
-
-# todo add /etc/kubeadm/kubeadm-config.yml  in kubeadm upgrade plan --config
-# todo add /etc/kubeadm/kubeadm-config.yml  in kubeadm upgrade apply --config
+- name: Check if kubeadm configuration file exists
+  stat:
+    path: /etc/kubeadm/kubeadm-config.yml
+  register: stat_result
 
 # https://github.com/kubernetes/kubeadm/issues/1471 Upgrading a 1.12 cluster thru 1.13 to 1.14 fails
 - name: Validate whether current cluster is upgradeable (from ver. 1.13)
 
   block:
+  - name: Show upgrade plan (using kubeadm configuration file)
+    shell: kubeadm upgrade plan v{{ version }} --config /etc/kubeadm/kubeadm-config.yml
+    when: stat_result.stat.exists
+
   - name: Show upgrade plan
     shell: kubeadm upgrade plan v{{ version }}
+    when: not stat_result.stat.exists
   when: '"1.13" in cluster_version.stdout'
-  
+      
   rescue:
   - name: Find the existing etcd server certificates
     find:
@@ -83,15 +89,29 @@
   - name: Regenerate the etcd server certificates
     shell: kubeadm init phase certs etcd-server
 
+- name: Validate whether current cluster is upgradeable (using kubeadm configuration file)
+  shell: kubeadm upgrade plan v{{ version }} --config /etc/kubeadm/kubeadm-config.yml
+  when: stat_result.stat.exists
+  
 - name: Validate whether current cluster is upgradeable
   shell: kubeadm upgrade plan v{{ version }}
-
+  when: not stat_result.stat.exists
+  
+- name: Upgrade Kubernetes cluster to the specified version v{{ version }} (using kubeadm configuration file)
+  shell: kubeadm upgrade apply -y v{{ version }} --config /etc/kubeadm/kubeadm-config.yml
+  retries: 5
+  delay: 5
+  register: output
+  until: output is succeeded
+  when: stat_result.stat.exists
+  
 - name: Upgrade Kubernetes cluster to the specified version v{{ version }}
   shell: kubeadm upgrade apply -y v{{ version }}
   retries: 5
   delay: 5
   register: output
   until: output is succeeded
+  when: not stat_result.stat.exists
 
 - name: Wait for the cluster's readiness
   include_tasks: "wait.yml"
