@@ -2,8 +2,9 @@ import os
 
 from cli.engine.AnsibleCommand import AnsibleCommand
 from cli.engine.AnsibleRunner import AnsibleRunner
+from cli.helpers.Config import Config
 from cli.helpers.Step import Step
-from cli.helpers.build_saver import get_inventory_path, copy_files_recursively, copy_file
+from cli.helpers.build_saver import copy_files_recursively, copy_file, get_inventory_path_for_build
 
 
 class PatchEngine(Step):
@@ -22,7 +23,8 @@ class PatchEngine(Step):
     def run(self):
         pass
 
-    def run_upgrade(self, build_directory):
+    def run_upgrade(self):
+        build_directory = Config().output_dir
         build_roles_directory = os.path.join(build_directory, 'ansible/roles')
 
         upgrade_playbook_path = os.path.join(build_roles_directory, 'upgrade')
@@ -44,19 +46,17 @@ class PatchEngine(Step):
         copy_files_recursively(restore_role_source_path, recovery_playbook_path)
         copy_file(playbook_source_path, upgrade_role_path)
 
-        inventory_path = get_inventory_path(build_directory)
+        inventory_path = get_inventory_path_for_build(build_directory)
         self.ansible_command.run_playbook(inventory=inventory_path, playbook_path=upgrade_role_path)
 
-    def run_backup(self, build_directory):
+    def run_backup(self):
+        build_directory = Config().output_dir
         backup_role_path = os.path.join(build_directory, 'ansible', 'backup.yml')
-        inventory_path = get_inventory_path(build_directory)
+        inventory_path = get_inventory_path_for_build(build_directory)
         self.ansible_command.run_playbook(inventory=inventory_path, playbook_path=backup_role_path)
 
-    def run_recovery(self, build_directory):
+    def run_recovery(self):
+        build_directory = Config().output_dir
         backup_role_path = os.path.join(build_directory, 'ansible', 'recovery.yml')
-        inventory_path = get_inventory_path(build_directory)
+        inventory_path = get_inventory_path_for_build(build_directory)
         self.ansible_command.run_playbook(inventory=inventory_path, playbook_path=backup_role_path)
-
-    @staticmethod
-    def get_inventory_path(build_directory):
-        return os.path.join(build_directory, 'inventory')

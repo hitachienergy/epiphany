@@ -132,19 +132,19 @@ def run_init(args):
 def run_upgrade(args):
     Config().output_dir = args.build_directory
     with PatchEngine() as engine:
-        engine.run_upgrade(Config().output_dir)
+        engine.run_upgrade()
 
 
 def run_backup(args):
     Config().output_dir = args.build_directory
     with PatchEngine() as engine:
-        engine.run_backup(Config().output_dir)
+        engine.run_backup()
 
 
 def run_recovery(args):
     Config().output_dir = args.build_directory
     with PatchEngine() as engine:
-        engine.run_recovery(Config().output_dir)
+        engine.run_recovery()
 
 
 def adjust_paths(args):

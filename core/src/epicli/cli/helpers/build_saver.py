@@ -67,6 +67,10 @@ def get_inventory_path(cluster_name):
     return os.path.join(get_build_path(cluster_name), INVENTORY_FILE_NAME)
 
 
+def get_inventory_path_for_build(build_directory):
+    return os.path.join(build_directory, INVENTORY_FILE_NAME)
+
+
 def get_terraform_path(cluster_name):
     terraform_dir = os.path.join(get_build_path(cluster_name), TERRAFORM_OUTPUT_DIR)
     if not os.path.exists(terraform_dir):
