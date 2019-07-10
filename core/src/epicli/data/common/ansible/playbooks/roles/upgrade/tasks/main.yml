@@ -18,9 +18,9 @@
     cni_version: "{{ cni_ver }}"
   when: 
     - groups['kubernetes_master'][0] == inventory_hostname
-    - (version == "1.12.9" and "1.11" in cluster_version.stdout) or
-      (version == "1.13.7" and "1.12" in cluster_version.stdout) or
-      (version == "1.14.3" and "1.13" in cluster_version.stdout)
+    - (version == "1.12.10" and "1.11" in cluster_version.stdout) or
+      (version == "1.13.8" and "1.12" in cluster_version.stdout) or
+      (version == "1.14.4" and "1.13" in cluster_version.stdout)
 
 - name: Upgrade nodes to {{ version }}
   include_tasks: "upgrade_nodes.yml"
@@ -29,6 +29,6 @@
     cni_version: "{{ cni_ver }}"    
   when:
     - inventory_hostname in groups['kubernetes_node']
-    - (version == "1.12.9" and "1.11" in kubelet_version.stdout and kubelet_version.stdout != cluster_version.stdout) or
-      (version == "1.13.7" and "1.12" in kubelet_version.stdout and kubelet_version.stdout != cluster_version.stdout) or
-      (version == "1.14.3" and "1.13" in kubelet_version.stdout and kubelet_version.stdout != cluster_version.stdout )
+    - (version == "1.12.10" and "1.11" in kubelet_version.stdout and kubelet_version.stdout != cluster_version.stdout) or
+      (version == "1.13.8" and "1.12" in kubelet_version.stdout and kubelet_version.stdout != cluster_version.stdout) or
+      (version == "1.14.4" and "1.13" in kubelet_version.stdout and kubelet_version.stdout != cluster_version.stdout )
