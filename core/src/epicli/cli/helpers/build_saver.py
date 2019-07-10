@@ -1,4 +1,5 @@
 import distutils
+import shutil
 from distutils import dir_util
 import os
 from cli.helpers.data_loader import load_template_file, types
@@ -82,3 +83,8 @@ def get_ansible_path(cluster_name):
 
 def copy_files_recursively(src, dst):
     distutils.dir_util.copy_tree(src, dst)
+
+
+def copy_file(src, dst):
+    shutil.copy2(src, dst)
+

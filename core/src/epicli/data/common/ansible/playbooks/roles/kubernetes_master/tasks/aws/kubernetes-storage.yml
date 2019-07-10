@@ -1,33 +1,33 @@
 - name: Upload k8s persistent volume yaml
   become: yes
   template:
-    dest: "/home/{{ specification.admin_user.name }}/k8s-persistent-volume.yml"
+    dest: "/home/{{ admin_user.name }}/k8s-persistent-volume.yml"
     src: aws/k8s-persistent-volume.yml.j2
-    owner: "{{ specification.admin_user.name }}"
-    group: "{{ specification.admin_user.name }}"
+    owner: "{{ admin_user.name }}"
+    group: "{{ admin_user.name }}"
     mode: 0644
 
 - name: Apply storage yml
-  become_user: "{{ specification.admin_user.name }}"
+  become_user: "{{ admin_user.name }}"
   environment:
-    KUBECONFIG: "/home/{{ specification.admin_user.name }}/.kube/config"
-  shell: "kubectl apply -f /home/{{ specification.admin_user.name }}/k8s-persistent-volume.yml"
+    KUBECONFIG: "/home/{{ admin_user.name }}/.kube/config"
+  shell: "kubectl apply -f /home/{{ admin_user.name }}/k8s-persistent-volume.yml"
   when:
     - groups['kubernetes_master'][0] == inventory_hostname
     -
 - name: Upload k8s persistent volume claim yaml
   become: yes
   template:
-    dest: "/home/{{ specification.admin_user.name }}/k8s-persistent-volume-claim.yml"
+    dest: "/home/{{ admin_user.name }}/k8s-persistent-volume-claim.yml"
     src: aws/k8s-persistent-volume-claim.yml.j2
-    owner: "{{ specification.admin_user.name }}"
-    group: "{{ specification.admin_user.name }}"
+    owner: "{{ admin_user.name }}"
+    group: "{{ admin_user.name }}"
     mode: 0644
 
 - name: Apply storage claim yml
-  become_user: "{{ specification.admin_user.name }}"
+  become_user: "{{ admin_user.name }}"
   environment:
-    KUBECONFIG: "/home/{{ specification.admin_user.name }}/.kube/config"
-  shell: "kubectl apply -f /home/{{ specification.admin_user.name }}/k8s-persistent-volume-claim.yml"
+    KUBECONFIG: "/home/{{ admin_user.name }}/.kube/config"
+  shell: "kubectl apply -f /home/{{ admin_user.name }}/k8s-persistent-volume-claim.yml"
   when:
     - groups['kubernetes_master'][0] == inventory_hostname

@@ -1,0 +1,121 @@
+---
+- name: Wait for the cluster's readiness
+  include_tasks: "wait.yml"
+
+- name: Drain master in preparation for maintenance
+  environment:
+    KUBECONFIG: "/home/{{ admin_user.name }}/.kube/config"
+  shell: kubectl drain {{ inventory_hostname }} --ignore-daemonsets --delete-local-data
+
+- name: Wait for the cluster's readiness
+  include_tasks: "wait.yml"
+
+- name: Get information about installed packages as facts
+  package_facts:
+    manager: "auto"
+
+- name: Remove newer Debian packages installed as dependencies if they exist # as there is no allow_downgrade parameter in ansible apt module
+  apt:
+    name:
+      - kubernetes-cni
+      - kubelet
+      - kubectl
+      - kubeadm
+    state: absent
+  when: 
+    - ansible_os_family == "Debian"
+    - (ansible_facts.packages['kubernetes-cni'][0].version is version (cni_version + '-00', '>')) or
+      (ansible_facts.packages['kubelet'][0].version is version (version + '-00', '>')) or
+      (ansible_facts.packages['kubectl'][0].version is version (version + '-00', '>')) or
+      (ansible_facts.packages['kubeadm'][0].version is version (version + '-00', '>'))
+
+- name: Install kubernetes-cni {{ cni_version }}, kubelet {{ version }}, kubectl {{ version }} and kubeadm {{ version }} packages for RedHat family
+  yum:
+    name:
+      - kubernetes-cni-{{ cni_version }}
+      - kubelet-{{ version }}
+      - kubectl-{{ version }}
+      - kubeadm-{{ version }}          
+    update_cache: yes
+    allow_downgrade: yes
+    state: present
+  when: ansible_os_family == "RedHat"
+
+- name: Install kubernetes-cni {{ cni_version }}, kubelet {{ version }}, kubectl {{ version }} and kubeadm {{ version }} packages for Debian family
+  apt:
+    name:
+      - kubernetes-cni={{ cni_version }}-00
+      - kubelet={{ version }}-00
+      - kubectl={{ version }}-00
+      - kubeadm={{ version }}-00
+    update_cache: yes
+    state: present
+  when: ansible_os_family == "Debian"
+
+- name: Wait for the cluster's readiness
+  include_tasks: "wait.yml"
+
+
+# todo add /etc/kubeadm/kubeadm-config.yml  in kubeadm upgrade plan --config
+# todo add /etc/kubeadm/kubeadm-config.yml  in kubeadm upgrade apply --config
+
+# https://github.com/kubernetes/kubeadm/issues/1471 Upgrading a 1.12 cluster thru 1.13 to 1.14 fails
+- name: Validate whether current cluster is upgradeable (from ver. 1.13)
+
+  block:
+  - name: Show upgrade plan
+    shell: kubeadm upgrade plan v{{ version }}
+  when: '"1.13" in cluster_version.stdout'
+  
+  rescue:
+  - name: Find the existing etcd server certificates
+    find:
+      paths: /etc/kubernetes/pki/etcd
+      patterns: "*server.*"
+    register: files_to_delete
+
+  - name: Remove the existing etcd server certificates
+    file:
+      path: "{{ item.path }}"
+      state: absent
+    with_items: "{{ files_to_delete.files }}"
+
+  - name: Regenerate the etcd server certificates
+    shell: kubeadm init phase certs etcd-server
+
+- name: Validate whether current cluster is upgradeable
+  shell: kubeadm upgrade plan v{{ version }}
+
+- name: Upgrade Kubernetes cluster to the specified version v{{ version }}
+  shell: kubeadm upgrade apply -y v{{ version }}
+  retries: 5
+  delay: 5
+  register: output
+  until: output is succeeded
+
+- name: Wait for the cluster's readiness
+  include_tasks: "wait.yml"
+
+- name: Reload daemon
+  shell: systemctl daemon-reload
+
+- name: Restart kubelet
+  shell: systemctl restart kubelet
+
+- name: Check kubelet status
+  shell: systemctl status kubelet
+
+- name: Wait for the cluster's readiness
+  include_tasks: "wait.yml"
+
+- name: Uncordon master - mark master as schedulable
+  environment:
+    KUBECONFIG: "/home/{{ admin_user.name }}/.kube/config"
+  shell: kubectl uncordon {{ inventory_hostname }}
+  retries: 5
+  delay: 5
+  register: output
+  until: output is succeeded
+
+- name: Verify cluster version
+  include_tasks: "verify.yml"
