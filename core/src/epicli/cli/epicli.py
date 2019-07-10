@@ -11,6 +11,7 @@ from cli.helpers.Config import Config
 from cli.engine.EpiphanyEngine import EpiphanyEngine
 from cli.version import VERSION
 from cli.licenses import LICENSES
+from cli.helpers.query_yes_no import query_yes_no
 
 
 def main():
@@ -114,37 +115,43 @@ def recovery_parser(subparsers):
 def run_apply(args):
     adjust_paths(args)
     with EpiphanyEngine(args) as engine:
-        engine.apply()
+        return engine.apply()
 
 
 def run_validate(args):
     adjust_paths(args)
     with EpiphanyEngine(args) as engine:
-        engine.verify()
+        return engine.verify()
 
 
 def run_init(args):
     Config().output_dir = os.getcwd()
     with UserConfigInitializer(args) as initializer:
-        initializer.run()
+        return initializer.run()
 
 
 def run_upgrade(args):
+    if not query_yes_no('This is an experimental feature and could change at any time. Do you want to continue?'):
+        return 0
     Config().output_dir = args.build_directory
     with PatchEngine() as engine:
-        engine.run_upgrade()
+        return engine.run_upgrade()
 
 
 def run_backup(args):
+    if not query_yes_no('This is an experimental feature and could change at any time. Do you want to continue?'):
+        return 0
     Config().output_dir = args.build_directory
     with PatchEngine() as engine:
-        engine.run_backup()
+        return engine.run_backup()
 
 
 def run_recovery(args):
+    if not query_yes_no('This is an experimental feature and could change at any time. Do you want to continue?'):
+        return 0
     Config().output_dir = args.build_directory
     with PatchEngine() as engine:
-        engine.run_recovery()
+        return engine.run_recovery()
 
 
 def adjust_paths(args):
@@ -169,7 +176,7 @@ def dump_config(config):
     logger = Log('config')
     for attr in config.__dict__:
         if attr.startswith('_'):
-            logger.debug('%s = %r' % (attr[1:], getattr(config, attr)))
+            logger.info ('%s = %r' % (attr[1:], getattr(config, attr)))
 
 
 if __name__ == '__main__':
