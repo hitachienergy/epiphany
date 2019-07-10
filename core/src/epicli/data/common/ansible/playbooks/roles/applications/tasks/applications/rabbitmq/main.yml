@@ -6,7 +6,7 @@
   file:
     path: "{{ configuration_temp_directory }}"
     state: directory
-  become_user: "{{ specification.admin_user.name }}"
+  become_user: "{{ admin_user.name }}"
 
 - name: Include namespace creation
   include_tasks: "create-namespace.yml"

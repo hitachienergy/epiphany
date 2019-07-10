@@ -3,12 +3,15 @@ import sys
 import argparse
 import json
 import os
+
+from cli.engine.PatchEngine import PatchEngine
 from cli.engine.UserConfigInitializer import UserConfigInitializer
 from cli.helpers.Log import Log
 from cli.helpers.Config import Config
 from cli.engine.EpiphanyEngine import EpiphanyEngine
 from cli.version import VERSION
 from cli.licenses import LICENSES
+from cli.helpers.query_yes_no import query_yes_no
 
 
 def main():
@@ -26,11 +29,11 @@ def main():
                         version=json.dumps(LICENSES, indent=4))
     parser.add_argument('-l', '--log_file', dest='log_name', type=str,
                         help='The name of the log file written to the output directory')
-    parser.add_argument('-lf', '--log_format', dest='log_format', type=str,
+    parser.add_argument('--log_format', dest='log_format', type=str,
                         help='Format for the logging string.')
-    parser.add_argument('-ldf', '--log_date_format', dest='log_date_format', type=str,
+    parser.add_argument('--log_date_format', dest='log_date_format', type=str,
                         help='Format for the logging date.')
-    parser.add_argument('-lc', '--log_count', dest='log_count', type=str,
+    parser.add_argument('--log_count', dest='log_count', type=str,
                         help='Roleover count where each CLI run will generate a new log.')
     # some arguments we don't want available when running from the docker image.
     if not config.docker_cli:
@@ -42,6 +45,9 @@ def main():
     apply_parser(subparsers)
     validate_parser(subparsers)
     init_parser(subparsers)
+    upgrade_parser(subparsers)
+    backup_parser(subparsers)
+    recovery_parser(subparsers)
 
     # add some arguments to the general config so we can easily use them throughout the CLI
     args = parser.parse_args(arguments)
@@ -80,27 +86,72 @@ def init_parser(subparsers):
     sub_parser.add_argument('-n', '--name', dest='name', type=str, required=True,
                             help='Name of the cluster.')
 
-    sub_parser.add_argument('-fc', '--full', dest='full_config', action="store_true",
+    sub_parser.add_argument('--full', dest='full_config', action="store_true",
                             help='Use this flag if you want to create verbose configuration file.')
     sub_parser.set_defaults(func=run_init)
+
+
+def upgrade_parser(subparsers):
+    sub_parser = subparsers.add_parser('upgrade', description='[Experimental]: Upgrades existing Epiphany Platform to latest version.')
+    sub_parser.add_argument('-b', '--build', dest='build_directory', type=str, required=True,
+                            help='Absolute path to directory with build artifacts.')
+    sub_parser.set_defaults(func=run_upgrade)
+
+
+def backup_parser(subparsers):
+    sub_parser = subparsers.add_parser('backup', description='[Experimental]: Backups existing Epiphany Platform components.')
+    sub_parser.add_argument('-b', '--build', dest='build_directory', type=str, required=True,
+                            help='Absolute path to directory with build artifacts.')
+    sub_parser.set_defaults(func=run_backup)
+
+
+def recovery_parser(subparsers):
+    sub_parser = subparsers.add_parser('recovery', description='[Experimental]: Recover from existing backup.')
+    sub_parser.add_argument('-b', '--build', dest='build_directory', type=str, required=True,
+                            help='Absolute path to directory with build artifacts.')
+    sub_parser.set_defaults(func=run_recovery)
 
 
 def run_apply(args):
     adjust_paths(args)
     with EpiphanyEngine(args) as engine:
-        engine.apply()
+        return engine.apply()
 
 
 def run_validate(args):
     adjust_paths(args)
     with EpiphanyEngine(args) as engine:
-        engine.verify()
+        return engine.verify()
 
 
 def run_init(args):
     Config().output_dir = os.getcwd()
     with UserConfigInitializer(args) as initializer:
-        initializer.run()
+        return initializer.run()
+
+
+def run_upgrade(args):
+    if not query_yes_no('This is an experimental feature and could change at any time. Do you want to continue?'):
+        return 0
+    Config().output_dir = args.build_directory
+    with PatchEngine() as engine:
+        return engine.run_upgrade()
+
+
+def run_backup(args):
+    if not query_yes_no('This is an experimental feature and could change at any time. Do you want to continue?'):
+        return 0
+    Config().output_dir = args.build_directory
+    with PatchEngine() as engine:
+        return engine.run_backup()
+
+
+def run_recovery(args):
+    if not query_yes_no('This is an experimental feature and could change at any time. Do you want to continue?'):
+        return 0
+    Config().output_dir = args.build_directory
+    with PatchEngine() as engine:
+        return engine.run_recovery()
 
 
 def adjust_paths(args):
@@ -125,7 +176,7 @@ def dump_config(config):
     logger = Log('config')
     for attr in config.__dict__:
         if attr.startswith('_'):
-            logger.debug('%s = %r' % (attr[1:], getattr(config, attr)))
+            logger.info ('%s = %r' % (attr[1:], getattr(config, attr)))
 
 
 if __name__ == '__main__':

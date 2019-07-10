@@ -7,8 +7,8 @@
 
 - name: Create kafka_producer_consumer.py
   template:
-    dest: "/home/{{ specification.admin_user.name }}/kafka_producer_consumer.py"
-    owner: "{{ specification.admin_user.name }}"
-    group: "{{ specification.admin_user.name }}"
+    dest: "/home/{{ admin_user.name }}/kafka_producer_consumer.py"
+    owner: "{{ admin_user.name }}"
+    group: "{{ admin_user.name }}"
     mode: 0755
     src: kafka_producer_consumer.py.j2

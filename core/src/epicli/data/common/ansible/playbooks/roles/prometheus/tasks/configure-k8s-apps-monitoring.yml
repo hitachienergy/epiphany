@@ -10,20 +10,20 @@
 - name: Deploy rolebinding file to server for prometheus
   copy:
     src: k8s-rolebinding.yml
-    dest: "/home/{{ specification.admin_user.name }}/k8s-rolebinding.yml"
+    dest: "/home/{{ admin_user.name }}/k8s-rolebinding.yml"
   delegate_to: "{{ master_hostname }}"
 
 - name: apply rolebinding to k8s for prometheus
   become: yes
-  become_user: "{{ specification.admin_user.name }}"
-  shell: "kubectl apply --kubeconfig=/home/{{ specification.admin_user.name }}/.kube/config -f /home/{{ specification.admin_user.name }}/k8s-rolebinding.yml"
+  become_user: "{{ admin_user.name }}"
+  shell: "kubectl apply --kubeconfig=/home/{{ admin_user.name }}/.kube/config -f /home/{{ admin_user.name }}/k8s-rolebinding.yml"
   run_once: true
   delegate_to: "{{ master_hostname }}"
 
 - name: Get kubernetes bearer token for prometheus
   become: yes
-  become_user: "{{ specification.admin_user.name }}"
-  shell: "kubectl --kubeconfig=/home/{{ specification.admin_user.name }}/.kube/config describe secret $(kubectl get secrets --namespace=kube-system | grep prometheus | awk '{print $1}') --namespace=kube-system | grep -E '^token' | awk '{print $2}' | head -1"
+  become_user: "{{ admin_user.name }}"
+  shell: "kubectl --kubeconfig=/home/{{ admin_user.name }}/.kube/config describe secret $(kubectl get secrets --namespace=kube-system | grep prometheus | awk '{print $1}') --namespace=kube-system | grep -E '^token' | awk '{print $2}' | head -1"
   register: kube_token
   delegate_to: "{{ master_hostname }}"
   run_once: true

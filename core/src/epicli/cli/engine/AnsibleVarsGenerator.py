@@ -24,6 +24,7 @@ class AnsibleVarsGenerator(Step):
 
         cluster_config_file_path = os.path.join(ansible_dir, 'roles', 'common', 'vars', 'main.yml')
         clean_cluster_model = self.get_clean_cluster_model()
+        self.populate_group_vars(ansible_dir)
         with open(cluster_config_file_path, 'w') as stream:
             dump(clean_cluster_model, stream)
 
@@ -34,7 +35,6 @@ class AnsibleVarsGenerator(Step):
                 self.logger.warn('No config document for enabled role: ' + role)
                 continue
 
-            document = self.add_admin_user_name(document)
             document = self.add_provider_info(document)
             vars_dir = os.path.join(ansible_dir, 'roles', to_role_name(role), 'vars')
             if not os.path.exists(vars_dir):
@@ -46,11 +46,25 @@ class AnsibleVarsGenerator(Step):
             with open(vars_file_path, 'w') as stream:
                 dump(document, stream)
 
-    def add_admin_user_name(self, document):
-        if document.specification is None:
-            raise Exception('Config specification is empty for: ' + document.title)
+    def populate_group_vars(self, ansible_dir):
+        main_vars = ObjDict()
+        main_vars = self.add_admin_user_name(main_vars)
 
-        document.specification['admin_user'] = self.cluster_model.specification.admin_user
+        vars_dir = os.path.join(ansible_dir, 'group_vars')
+        if not os.path.exists(vars_dir):
+            os.makedirs(vars_dir)
+
+        vars_file_name = 'all.yml'
+        vars_file_path = os.path.join(vars_dir, vars_file_name)
+
+        with open(vars_file_path, 'w') as stream:
+            dump(main_vars, stream)
+
+    def add_admin_user_name(self, document):
+        if document is None:
+            raise Exception('Config is empty for: ' + 'group_vars/all.yml')
+
+        document['admin_user'] = self.cluster_model.specification.admin_user
         return document
 
     def add_provider_info(self, document):
