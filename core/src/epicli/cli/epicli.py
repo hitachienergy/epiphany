@@ -28,11 +28,11 @@ def main():
                         version=json.dumps(LICENSES, indent=4))
     parser.add_argument('-l', '--log_file', dest='log_name', type=str,
                         help='The name of the log file written to the output directory')
-    parser.add_argument('-lf', '--log_format', dest='log_format', type=str,
+    parser.add_argument('--log_format', dest='log_format', type=str,
                         help='Format for the logging string.')
-    parser.add_argument('-ldf', '--log_date_format', dest='log_date_format', type=str,
+    parser.add_argument('--log_date_format', dest='log_date_format', type=str,
                         help='Format for the logging date.')
-    parser.add_argument('-lc', '--log_count', dest='log_count', type=str,
+    parser.add_argument('--log_count', dest='log_count', type=str,
                         help='Roleover count where each CLI run will generate a new log.')
     # some arguments we don't want available when running from the docker image.
     if not config.docker_cli:
@@ -85,7 +85,7 @@ def init_parser(subparsers):
     sub_parser.add_argument('-n', '--name', dest='name', type=str, required=True,
                             help='Name of the cluster.')
 
-    sub_parser.add_argument('-fc', '--full', dest='full_config', action="store_true",
+    sub_parser.add_argument('--full', dest='full_config', action="store_true",
                             help='Use this flag if you want to create verbose configuration file.')
     sub_parser.set_defaults(func=run_init)
 
