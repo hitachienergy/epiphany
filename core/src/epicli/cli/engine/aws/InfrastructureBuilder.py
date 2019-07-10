@@ -201,9 +201,10 @@ class InfrastructureBuilder(Step):
             with open(self.cluster_model.specification.admin_user.key_path + '.pub', 'r') as stream:
                 public_key_config.specification.public_key = stream.read().rstrip()
         else:
-            self.logger.error(
+            raise Exception(
                 'SSH key path "' + self.cluster_model.specification.admin_user.key_path + '.pub' +
                 '" is not valid. Ansible run will fail.')
+            
 
         return public_key_config
 
