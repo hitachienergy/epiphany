@@ -42,6 +42,18 @@
     --key=/backup/pki/etcd/healthcheck-client.key \
     snapshot save /backup/etcd-snapshot.db
 
+- name: Check if kubeadm configuration file exists
+  stat:
+    path: /etc/kubeadm/kubeadm-config.yml
+  register: stat_result
+
+- name: Backup kubeadm configuration file
+  copy:
+    src: /etc/kubeadm/kubeadm-config.yml
+    dest: "{{ backup_dir }}/tmp"
+    remote_src: yes
+  when: stat_result.stat.exists
+
 - name: Set variable with current timestamp
   set_fact: timestamp="{{ lookup('pipe', 'date +%Y%m%d%H%M%S') }}"
 
