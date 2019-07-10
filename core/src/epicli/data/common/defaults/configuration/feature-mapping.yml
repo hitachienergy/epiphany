@@ -93,11 +93,11 @@ specification:
       - applications
       - node-exporter
       - filebeat
-    kubernetes_node:
+    kubernetes_node_ha:
       - kubernetes-node
       - node-exporter
       - filebeat
-    kubernetes_node_ha:
+    kubernetes_node:
       - kubernetes-node
       - node-exporter
       - filebeat
