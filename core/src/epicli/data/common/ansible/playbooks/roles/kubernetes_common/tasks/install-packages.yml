@@ -39,7 +39,7 @@
 - name: Install Kubernetes packages for Debian family
   apt:
     name:
-      - kubernetes-cni-0.7.5-00
+      - kubernetes-cni=0.7.5-00
       - kubelet={{specification.version}}-00
       - kubectl={{specification.version}}-00
       - kubeadm={{specification.version}}-00
