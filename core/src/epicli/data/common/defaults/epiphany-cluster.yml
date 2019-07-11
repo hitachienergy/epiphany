@@ -59,7 +59,7 @@ specification:
           address_pool: 10.1.5.0/24
     postgresql:
       count: 0
-      machine: default
+      machine: postgresql-machine
       configuration: default
       subnets:
         - availability_zone: eu-west-2a
