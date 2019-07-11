@@ -55,10 +55,7 @@
   when:
     - not certificates_exist
 
-- name: Copy self signed certificate to /etc/ssl/haproxy/- name: Write certs in haproxy
-  debug:
-    msg: "{{ item.path }}"
-  with_items: "{{ haproxy_certs_na
+- name: Copy self signed certificate to /etc/ssl/haproxy/
   copy:
     src: /tmp/{{ specification.self_signed_concatenated_cert_name }}
     dest: /etc/ssl/haproxy/
