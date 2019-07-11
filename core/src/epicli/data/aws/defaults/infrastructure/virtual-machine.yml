@@ -70,7 +70,7 @@ title: "Virtual Machine Infra"
 provider: aws
 name: kubernetes-master-machine
 specification:
-  size: t3.small
+  size: t3.medium
   authorized_to_efs: True
   mount_efs: True
   security:
@@ -150,7 +150,7 @@ title: "Virtual Machine Infra"
 provider: aws
 name: kubernetes-node-machine
 specification:
-  size: t3.small
+  size: t3.medium
   authorized_to_efs: True
   mount_efs: True
   security:
@@ -347,3 +347,57 @@ specification:
        destination_port_range: "0"
        source_address_prefix: "0.0.0.0/0"
        destination_address_prefix: "0.0.0.0/0"
+---
+kind: infrastructure/virtual-machine
+version: 0.3.0
+title: "Virtual Machine Infra"
+provider: aws
+name: postgresql-machine
+specification:
+  size: t3.medium
+  security:
+    rules:
+     - name: ssh
+       description: Allow SSH
+       priority: 101
+       direction: Inbound
+       access: Allow
+       protocol: Tcp
+       source_port_range: "*"
+       destination_port_range: "22"
+       source_address_prefix: "0.0.0.0/0"
+       destination_address_prefix: "*"
+     - name: out
+       description: Allow out
+       priority: 101
+       direction: Egress
+       access: Allow
+       protocol: "all"
+       source_port_range: "*"
+       destination_port_range: "0"
+       source_address_prefix: "0.0.0.0/0"
+       destination_address_prefix: "0.0.0.0/0"
+     - name: kubernetes-traffic
+       description: Allow Kubernetes subnet traffic
+       priority: 102
+       direction: Inbound
+       access: Allow
+       protocol: ALL
+       source_port_range: "*"
+       destination_from_port: 0
+       destination_to_port: 65536
+       destination_port_range: "0"
+       source_address_prefix: "10.1.1.0/24"
+       destination_address_prefix: "*"
+     - name: kubernetes-traffic2
+       description: Allow Kubernetes subnet traffic
+       priority: 102
+       direction: Inbound
+       access: Allow
+       protocol: ALL
+       source_port_range: "*"
+       destination_from_port: 0
+       destination_to_port: 65536
+       destination_port_range: "0"
+       source_address_prefix: "10.1.2.0/24"
+       destination_address_prefix: "*"

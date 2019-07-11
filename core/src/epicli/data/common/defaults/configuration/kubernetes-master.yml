@@ -3,7 +3,7 @@ version: 0.3.0
 title: "Kubernetes Master Config"
 name: default
 specification:
-  version: 1.13.3
+  version: 1.14.4
   allow_pods_on_master: False
   storage:
     name: epiphany-cluster-volume # name of the Kubernetes resource
