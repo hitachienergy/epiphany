@@ -116,6 +116,10 @@ spec:
     port: 80
     protocol: TCP
     targetPort: http
+  - name: jgroups
+    port: 7600
+    targetPort: jgroups
+    protocol: TCP
   selector:
     app: {{ auth_service_name }}
   sessionAffinity: None
@@ -172,7 +176,7 @@ spec:
         - name: JGROUPS_DISCOVERY_PROTOCOL
           value: dns.DNS_PING
         - name: JGROUPS_DISCOVERY_PROPERTIES
-          value: dns_query={{ auth_service_name }}-headless.{{ namespace_name }}.svc.cluster.local
+          value: dns_query={{ auth_service_name }}-headless.{{ namespace_name }}.svc.cluster.local # todo allow to pass cluster domain in vars (could be different than 'cluster.local'
         - name: DB_VENDOR
           value: postgres
         - name: DB_ADDR
@@ -189,13 +193,16 @@ spec:
               key: password
               name: {{ auth_service_name }}-db
         - name: X509_CA_BUNDLE
-          value: "/var/run/secrets/kubernetes.io/serviceaccount/service-ca.crt"
+          value: "/var/run/secrets/kubernetes.io/serviceaccount/ca.crt"
         image: {{ data.image_path }}
         imagePullPolicy: IfNotPresent
         name: {{ auth_service_name }}
         ports:
         - containerPort: 8080
           name: http
+          protocol: TCP
+        - name: jgroups
+          containerPort: 7600
           protocol: TCP
         - containerPort: 8443
           name: https

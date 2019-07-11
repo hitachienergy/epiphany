@@ -28,7 +28,7 @@
 - name: Install Kubernetes packages for RedHat family
   yum:
     name:
-      - kubernetes-cni-0.6.0-0 # todo remove it in future release
+      - kubernetes-cni-0.7.5-0
       - kubelet-{{specification.version}}
       - kubectl-{{specification.version}}
       - kubeadm-{{specification.version}}
@@ -39,7 +39,7 @@
 - name: Install Kubernetes packages for Debian family
   apt:
     name:
-      - kubernetes-cni=0.6.0-00 # todo remove it in future release
+      - kubernetes-cni-0.7.5-00
       - kubelet={{specification.version}}-00
       - kubectl={{specification.version}}-00
       - kubeadm={{specification.version}}-00
