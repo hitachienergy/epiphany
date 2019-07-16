@@ -6,7 +6,7 @@ ENV EPICLI_VERSION 0.3.0
 COPY /dist/ /epicli
 WORKDIR /epicli
 
-RUN apk -U add gcc make musl-dev libffi-dev openssl-dev bash openssh
+RUN apk -U add gcc make musl-dev libffi-dev openssl-dev bash openssh tar unzip
 
 RUN pip install epicli-${EPICLI_VERSION}-py3-none-any.whl
 

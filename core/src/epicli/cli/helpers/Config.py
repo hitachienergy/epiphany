@@ -15,6 +15,8 @@ class Config:
             self._log_count = 10
             self._log_type = 'plain'
 
+            self._validate_certs = True
+
         @property
         def docker_cli(self):
             return self._docker_cli
@@ -71,10 +73,16 @@ class Config:
         @log_type.setter
         def log_type(self, log_type):
             if not log_type is None:
-                lt = log_type.lower()
-                if not(lt == 'json' or lt == 'plain'):
-                    raise Exception('Error setting log_type. Only "plain" or "json" supported.')
-                self._log_type = lt
+                self._log_type = log_type
+
+        @property
+        def validate_certs(self):
+            return self._validate_certs
+
+        @validate_certs.setter
+        def validate_certs(self, validate_certs):
+            if not validate_certs is None:
+                self._validate_certs = validate_certs
 
     instance = None
 

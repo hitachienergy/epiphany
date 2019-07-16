@@ -8,6 +8,7 @@
   get_url:
     url: "https://archive.apache.org/dist/kafka/{{ specification.kafka_var.version }}/kafka_{{ specification.kafka_var.scala.version }}-{{ specification.kafka_var.version }}.tgz"
     dest: "/tmp/kafka_{{ specification.kafka_var.scala.version }}-{{ specification.kafka_var.version }}.tgz"
+    validate_certs: "{{ validate_certs | bool }}"
   when: not kafka_check.stat.exists
 
 - name: Add Kafka's bin dir to the PATH

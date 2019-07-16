@@ -1,4 +1,5 @@
 import os
+import copy
 
 from cli.helpers.Step import Step
 from cli.helpers.build_saver import get_ansible_path
@@ -6,7 +7,7 @@ from cli.helpers.doc_list_helpers import select_first
 from cli.helpers.naming_helpers import to_feature_name, to_role_name
 from cli.helpers.ObjDict import ObjDict
 from cli.helpers.yaml_helpers import dump
-import copy
+from cli.helpers.Config import Config
 
 
 class AnsibleVarsGenerator(Step):
@@ -49,6 +50,7 @@ class AnsibleVarsGenerator(Step):
     def populate_group_vars(self, ansible_dir):
         main_vars = ObjDict()
         main_vars = self.add_admin_user_name(main_vars)
+        main_vars = self.add_validate_certs(main_vars)
 
         vars_dir = os.path.join(ansible_dir, 'group_vars')
         if not os.path.exists(vars_dir):
@@ -65,6 +67,14 @@ class AnsibleVarsGenerator(Step):
             raise Exception('Config is empty for: ' + 'group_vars/all.yml')
 
         document['admin_user'] = self.cluster_model.specification.admin_user
+        return document
+
+    def add_validate_certs(self, document):
+        if document is None:
+            raise Exception('Config is empty for: ' + 'group_vars/all.yml')
+
+        document['validate_certs'] = Config().validate_certs
+
         return document
 
     def add_provider_info(self, document):

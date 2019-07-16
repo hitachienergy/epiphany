@@ -34,6 +34,7 @@
     force: no
     owner: "{{ specification.jmx_exporter_user }}"
     group: "{{ specification.jmx_exporter_group }}"
+    validate_certs: "{{ validate_certs | bool }}"
 
 - name: Prometheus jmx | symlink jar
   become: yes
