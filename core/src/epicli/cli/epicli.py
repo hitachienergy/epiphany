@@ -15,7 +15,7 @@ from cli.helpers.query_yes_no import query_yes_no
 
 
 def main():
-    arguments = [] if len(sys.argv) < 2 else sys.argv[1:]
+
     config = Config()
     parser = argparse.ArgumentParser(
         description=__doc__,
@@ -55,8 +55,16 @@ def main():
     backup_parser(subparsers)
     recovery_parser(subparsers)
 
+    # check if there were any variables and display full help
+    if len(sys.argv) < 2:
+        parser.print_help()
+        sys.exit(1)
+
+    arguments = sys.argv[1:]
+
     # add some arguments to the general config so we can easily use them throughout the CLI
     args = parser.parse_args(arguments)
+
     config.output_dir = args.output_dir if hasattr(args, 'output_dir') else None
     config.log_file = args.log_name
     config.log_format = args.log_format
