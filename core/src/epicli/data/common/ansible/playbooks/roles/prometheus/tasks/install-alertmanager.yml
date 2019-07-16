@@ -11,6 +11,7 @@
   get_url:
     url: "{{ specification.alerts.alertmanager.download_urls[ansible_architecture] }}"
     dest: "{{ specification.download_directory }}/alertmanager.tar.gz"
+    validate_certs: "{{ validate_certs | bool}}"
   register: _download_archive
   until: _download_archive is succeeded
   retries: 5

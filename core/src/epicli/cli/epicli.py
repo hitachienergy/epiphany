@@ -35,6 +35,12 @@ def main():
                         help='Format for the logging date.')
     parser.add_argument('--log_count', dest='log_count', type=str,
                         help='Roleover count where each CLI run will generate a new log.')
+    parser.add_argument('--log_type', choices=['plain', 'json'], default='plain',
+                        dest='log_type', action='store', help='Type of logs.')
+    parser.add_argument('--validate_certs', choices=['true', 'false'], default='true', action='store', dest='validate_certs',
+                        help='''[Experimental]: Disables certificate checks for certain Ansible operations
+                         which might have issues behind proxies (https://github.com/ansible/ansible/issues/32750). 
+                         Should NOT be used in production for security reasons.''')
     # some arguments we don't want available when running from the docker image.
     if not config.docker_cli:
         parser.add_argument('-o', '--output', dest='output_dir', type=str,
@@ -55,7 +61,9 @@ def main():
     config.log_file = args.log_name
     config.log_format = args.log_format
     config.log_date_format = args.log_date_format
+    config.log_type = args.log_type
     config.log_count = args.log_count
+    config.validate_certs = True if args.validate_certs == 'true' else False
 
     return args.func(args)
 

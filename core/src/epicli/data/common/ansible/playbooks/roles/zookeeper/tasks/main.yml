@@ -27,6 +27,7 @@
   get_url:
     url: "{{ zookeeper_url }}/{{ zookeeper }}/{{ zookeeper }}.tar.gz"
     dest: /tmp/{{ zookeeper }}.tar.gz
+    validate_certs: "{{ validate_certs | bool }}"
   when: not zoo.stat.exists
 
 - name: Uncompress the Zookeeper tar

@@ -25,6 +25,7 @@
     url: https://github.com/stedolan/jq/releases/download/jq-1.5/jq-linux64
     dest: /usr/local/bin/jq
     mode: 0755
+    validate_certs: "{{ validate_certs | bool}}"
 
 - name: Adjust swappiness parameter
   sysctl:
