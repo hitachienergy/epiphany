@@ -21,18 +21,19 @@
     state: directory
   delegate_to: localhost
 
-- name: Download node_exporter binary to local folder
+- name: Download haproxy_exporter binary to local folder
   become: false
   get_url:
     url: "{{ specification.download_urls[ansible_architecture] }}"
     dest: "{{ specification.download_directory }}/haproxy_exporter.tar.gz"
+    validate_certs: "{{ validate_certs | bool}}"
   register: _download_archive
   until: _download_archive is succeeded
   retries: 5
   delay: 2
   delegate_to: localhost
 
-- name: Unpack node_exporter binary
+- name: Unpack haproxy_exporter binary
   become: false
   unarchive:
     src: "{{ specification.download_directory }}/haproxy_exporter.tar.gz"

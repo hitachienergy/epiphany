@@ -18,6 +18,7 @@
   get_url:
     url: "{{ specification.download_urls[ansible_architecture] }}"
     dest: "{{ specification.download_directory }}/kafka_exporter.tar.gz"
+    validate_certs: "{{ validate_certs | bool }}"
   register: _download_archive
   until: _download_archive is succeeded
   retries: 5
