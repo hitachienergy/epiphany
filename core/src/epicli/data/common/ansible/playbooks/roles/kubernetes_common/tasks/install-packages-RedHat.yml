@@ -15,7 +15,6 @@
       - nfs-utils
     update_cache: yes
     state: present
-  when: ansible_os_family == "RedHat"
 
 - name: Install Kubernetes packages for RedHat family
   yum:
@@ -26,4 +25,3 @@
       - kubeadm-{{specification.version}}
     update_cache: yes
     state: present
-  when: ansible_os_family == "RedHat"
