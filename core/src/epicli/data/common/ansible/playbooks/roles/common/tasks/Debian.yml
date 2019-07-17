@@ -1,10 +1,7 @@
 ---
 # Common Debian family of specific tasks
 
-- name: APT Key
-  apt_key:
-    url: https://packages.cloud.google.com/apt/doc/apt-key.gpg
-    state: present
+
 
 - name: Install selinux packages as prerequisite for SELinux module
   apt:
@@ -15,11 +12,7 @@
     state: present    
 
 
-- name: Add kubernetes repository
-  apt_repository:
-    repo: deb http://apt.kubernetes.io/ kubernetes-xenial main
-    state: present
-    filename: kubernetes
+
 
 - name: Install debian family packages
   apt:

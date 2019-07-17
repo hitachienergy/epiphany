@@ -1,4 +1,5 @@
 ---
+
 - name: Install Storage packages
   package:
     name: "{{ item }}"
@@ -9,40 +10,4 @@
     - samba-client
     - samba-common
 
-- name: Install NFS package for RedHat family
-  yum:
-    name:
-      - nfs-utils
-    update_cache: yes
-    state: present
-  when: ansible_os_family == "RedHat"
-
-- name: Install NFS package for Debian family
-  apt:
-    name:
-      - nfs-common
-    update_cache: yes
-    state: present
-  when: ansible_os_family == "Debian"
-
-- name: Install Kubernetes packages for RedHat family
-  yum:
-    name:
-      - kubernetes-cni-0.7.5-0
-      - kubelet-{{specification.version}}
-      - kubectl-{{specification.version}}
-      - kubeadm-{{specification.version}}
-    update_cache: yes
-    state: present
-  when: ansible_os_family == "RedHat"
-
-- name: Install Kubernetes packages for Debian family
-  apt:
-    name:
-      - kubernetes-cni=0.7.5-00
-      - kubelet={{specification.version}}-00
-      - kubectl={{specification.version}}-00
-      - kubeadm={{specification.version}}-00
-    update_cache: yes
-    state: present
-  when: ansible_os_family == "Debian"
+- include_tasks: "install-packages-{{ ansible_os_family }}.yml"
