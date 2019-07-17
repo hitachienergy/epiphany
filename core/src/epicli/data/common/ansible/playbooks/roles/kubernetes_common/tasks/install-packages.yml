@@ -1,4 +1,5 @@
 ---
+
 - name: Install Storage packages
   package:
     name: "{{ item }}"
@@ -9,6 +10,8 @@
     - samba-client
     - samba-common
 
+- include_tasks: "install-packages-{{ ansible_os_family }}.yml"
+
 - name: Install NFS package for RedHat family
   yum:
     name:
@@ -16,14 +19,6 @@
     update_cache: yes
     state: present
   when: ansible_os_family == "RedHat"
-
-- name: Install NFS package for Debian family
-  apt:
-    name:
-      - nfs-common
-    update_cache: yes
-    state: present
-  when: ansible_os_family == "Debian"
 
 - name: Install Kubernetes packages for RedHat family
   yum:
