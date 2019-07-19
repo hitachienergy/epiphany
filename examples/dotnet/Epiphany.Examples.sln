@@ -19,6 +19,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Epiphany.Examples.Messaging
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Epiphany.Examples.Web", "Epiphany.Examples.Web\Epiphany.Examples.Web.csproj", "{6630B024-9F0D-436C-9EA9-8E0DBAB5A010}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Epiphany.Examples.IoTHub.Connector.Console", "Epiphany.Examples.IoTHub.Connector.Console\Epiphany.Examples.IoTHub.Connector.Console.csproj", "{94749A18-91B8-4A58-B80F-6AAC36FD9379}"
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Epiphany.Examples.IoTHub.Connector.Console", "Epiphany.Examples.IoTHub.Connector.Console\Epiphany.Examples.IoTHub.Connector.Console.csproj", "{94749A18-91B8-4A58-B80F-6AAC36FD9379}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Epiphany.Examples.IoTHub.Metrics.Collector", "Epiphany.Examples.IoTHub.Metrics.Collector\Epiphany.Examples.IoTHub.Metrics.Collector.csproj", "{3A6D3ED5-036F-4B08-8FF0-9332129115C2}"

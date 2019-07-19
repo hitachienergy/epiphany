@@ -1,0 +1,9 @@
+---
+# Ansible playbook for backing up Kubernetes cluster 
+
+- hosts: master
+  serial: 1
+  become: true
+  become_method: sudo
+  roles:
+    - backup
