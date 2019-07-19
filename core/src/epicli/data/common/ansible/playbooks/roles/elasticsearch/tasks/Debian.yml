@@ -1,6 +1,13 @@
 ---
 ## Elasticsearch master
 
+- name: Install debian family packages
+  apt:
+    name:
+      - openjdk-8-jre
+    update_cache: yes
+    state: present
+
 - name: Install Elasticsearch Package
   apt:
     deb: "https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-oss-{{ specification.elasticsearch_version }}.deb"
