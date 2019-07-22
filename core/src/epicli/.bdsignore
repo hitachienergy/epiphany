@@ -121,8 +121,5 @@ dmypy.json
 # pycharm settings
 .idea/
 
-# external packages for BDS scan
-external/
-
 # test results
 tests_result/
