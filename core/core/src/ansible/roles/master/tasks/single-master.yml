@@ -44,6 +44,13 @@
     owner: "{{ admin_user.name }}"
     group: "{{ admin_user.name }}"
 
+- name: Copy calico config
+  copy:
+    src: calico.yml
+    dest: /home/{{ admin_user.name }}/
+    owner: "{{ admin_user.name }}"
+    group: "{{ admin_user.name }}"
+
 - name: Copy dashboard yaml
   copy:
     src: kubernetes-dashboard.yml
@@ -89,7 +96,7 @@
   when: kubernetes_specification.cni_plugin == "flannel"
 
 - name: Apply calico
-  shell: kubectl apply --kubeconfig=/home/{{ admin_user.name }}/.kube/config -f https://docs.projectcalico.org/v3.7/manifests/calico.yaml
+  shell: kubectl apply --kubeconfig=/home/{{ admin_user.name }}/.kube/config -f /home/{{ admin_user.name }}/calico.yml
   become_user: "{{ admin_user.name }}"
   when: kubernetes_specification.cni_plugin == "calico"
 
