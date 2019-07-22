@@ -1,4 +1,26 @@
 ---
+
+- name: Install debian family packages
+  apt:
+    name:
+      - openjdk-8-jre
+    update_cache: yes
+    state: present
+  when: ansible_os_family == "Debian"
+
+
+- name: Install RedHat family packages
+  yum:
+    name:
+      - java-1.8.0-openjdk
+    update_cache: yes
+    state: present
+  register: result
+  retries: 3
+  delay: 1
+  until: result is succeeded
+  when: ansible_os_family == "RedHat"
+
 - name: Check for Kafka package
   stat:
     path: "/tmp/kafka_{{ specification.kafka_var.scala.version }}-{{ specification.kafka_var.version }}.tgz"
