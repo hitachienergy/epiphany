@@ -27,17 +27,3 @@ services:
       context: .
       dockerfile: Epiphany.Examples.IoTHub.Connector.Console/Dockerfile
 
-
-  epiphany.examples.iothub.metrics.collector:
-    image: ${DOCKER_REGISTRY}epiphanyexamplesiothubmetricscollector
-    build:
-      context: .
-      dockerfile: Epiphany.Examples.IoTHub.Metrics.Collector/Dockerfile
-
-
-  epiphany.examples.iothub.metrics:
-    image: ${DOCKER_REGISTRY}epiphanyexamplesiothubmetrics
-    build:
-      context: .
-      dockerfile: ../Epiphany.Examples.IoTHub.Metrics/Dockerfile
-

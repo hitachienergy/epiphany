@@ -20,11 +20,6 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Epiphany.Examples.Web", "Epiphany.Examples.Web\Epiphany.Examples.Web.csproj", "{6630B024-9F0D-436C-9EA9-8E0DBAB5A010}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Epiphany.Examples.IoTHub.Connector.Console", "Epiphany.Examples.IoTHub.Connector.Console\Epiphany.Examples.IoTHub.Connector.Console.csproj", "{94749A18-91B8-4A58-B80F-6AAC36FD9379}"
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Epiphany.Examples.IoTHub.Connector.Console", "Epiphany.Examples.IoTHub.Connector.Console\Epiphany.Examples.IoTHub.Connector.Console.csproj", "{94749A18-91B8-4A58-B80F-6AAC36FD9379}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Epiphany.Examples.IoTHub.Metrics.Collector", "Epiphany.Examples.IoTHub.Metrics.Collector\Epiphany.Examples.IoTHub.Metrics.Collector.csproj", "{3A6D3ED5-036F-4B08-8FF0-9332129115C2}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Epiphany.Examples.IoTHub.Metrics", "Epiphany.Examples.IoTHub.Metrics\Epiphany.Examples.IoTHub.Metrics.csproj", "{D728E705-30F9-4789-9F5B-BA319CE79335}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -64,14 +59,6 @@ Global
 		{94749A18-91B8-4A58-B80F-6AAC36FD9379}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{94749A18-91B8-4A58-B80F-6AAC36FD9379}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{94749A18-91B8-4A58-B80F-6AAC36FD9379}.Release|Any CPU.Build.0 = Release|Any CPU
-		{3A6D3ED5-036F-4B08-8FF0-9332129115C2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{3A6D3ED5-036F-4B08-8FF0-9332129115C2}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{3A6D3ED5-036F-4B08-8FF0-9332129115C2}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{3A6D3ED5-036F-4B08-8FF0-9332129115C2}.Release|Any CPU.Build.0 = Release|Any CPU
-		{D728E705-30F9-4789-9F5B-BA319CE79335}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{D728E705-30F9-4789-9F5B-BA319CE79335}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{D728E705-30F9-4789-9F5B-BA319CE79335}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{D728E705-30F9-4789-9F5B-BA319CE79335}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
