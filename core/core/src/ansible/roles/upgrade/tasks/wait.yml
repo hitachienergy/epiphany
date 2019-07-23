@@ -1,0 +1,37 @@
+---
+- name: Wait for kubectl to find and access a Kubernetes cluster
+  environment:
+    KUBECONFIG: "/home/{{ admin_user.name }}/.kube/config"
+  shell: kubectl cluster-info
+  retries: 10
+  delay: 10
+  register: output
+  until: output is succeeded and "running" in output.stdout
+  
+- name: Wait for all nodes to be ready
+  environment:
+    KUBECONFIG: "/home/{{ admin_user.name }}/.kube/config"
+  shell: kubectl get nodes -o json
+  register: output
+  until: output.stdout|from_json|json_query("items[*].status.conditions[?(@.type=='Ready')].status[]")|unique == ["True"]
+  retries: 120
+  delay: 10
+
+- name: Wait for all pods to be running
+  environment:
+    KUBECONFIG: "/home/{{ admin_user.name }}/.kube/config"
+  shell: kubectl get pods --all-namespaces -o json
+  register: output
+  until: output.stdout|from_json|json_query('items[*].status.phase')|unique == ["Running"]
+  retries: 120
+  delay: 10
+
+- name: Wait for all pods to be ready
+  environment:
+    KUBECONFIG: "/home/{{ admin_user.name }}/.kube/config"
+  shell: kubectl get pods --all-namespaces -o json
+  register: output
+  until: output.stdout|from_json|json_query('items[*].status.conditions[].status')|unique == ["True"]
+  retries: 120
+  delay: 10
+

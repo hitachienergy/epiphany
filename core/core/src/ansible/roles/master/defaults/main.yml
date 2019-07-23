@@ -16,3 +16,6 @@ kubelet_custom_config:
   systemReserved:
     cpu: 50m
     memory: 768Mi # based on RedHat 7.5 on Standard_DS1_v2 Azure VM with =~ 30 pods
+
+kubernetes_specification:
+  cni_plugin: flannel

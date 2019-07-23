@@ -1,0 +1,9 @@
+---
+# Ansible playbook for recovering Kubernetes cluster 
+
+- hosts: master
+  serial: 1
+  become: true
+  become_method: sudo
+  roles:
+    - recovery
