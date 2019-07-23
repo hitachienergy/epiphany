@@ -1,0 +1,11 @@
+kind: infrastructure/internet-gateway
+version: 0.3.0
+title: "Internet Gateway Config"
+provider: aws
+name: default
+specification:
+  name: SET_BY_AUTOMATION
+  vpc_name: SET_BY_AUTOMATION
+  cluster_name: SET_BY_AUTOMATION
+  tag: []
+

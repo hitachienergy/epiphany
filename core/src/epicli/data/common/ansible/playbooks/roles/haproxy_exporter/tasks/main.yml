@@ -1,0 +1,130 @@
+---
+
+- name: Create haproxy_exporter system group
+  group:
+    name: haproxy_exporter
+    system: true
+    state: present
+
+- name: Create haproxy_exporter system user
+  user:
+    name: haproxy_exporter
+    system: true
+    shell: "/usr/sbin/nologin"
+    group: haproxy_exporter
+    createhome: false
+
+- name: Ensure download directory exists
+  become: false
+  file:
+    path: "{{ specification.download_directory }}/haproxy_exporter"
+    state: directory
+  delegate_to: localhost
+
+- name: Download haproxy_exporter binary to local folder
+  become: false
+  get_url:
+    url: "{{ specification.download_urls[ansible_architecture] }}"
+    dest: "{{ specification.download_directory }}/haproxy_exporter.tar.gz"
+    validate_certs: "{{ validate_certs | bool}}"
+  register: _download_archive
+  until: _download_archive is succeeded
+  retries: 5
+  delay: 2
+  delegate_to: localhost
+
+- name: Unpack haproxy_exporter binary
+  become: false
+  unarchive:
+    src: "{{ specification.download_directory }}/haproxy_exporter.tar.gz"
+    dest: "{{ specification.download_directory }}/haproxy_exporter"
+    creates: "{{ specification.download_directory }}/haproxy_exporter/haproxy_exporter"
+    extra_opts: [--strip-components=1]
+  delegate_to: localhost
+  check_mode: false
+
+- name: Create /opt/haproxy_exporter directories
+  become: yes
+  file:
+    path: "{{ item }}"
+    recurse: yes
+    owner: root
+    group: haproxy_exporter
+    mode: 0750
+    state: directory
+  with_items:
+  - /opt/haproxy_exporter
+
+- name: Copy haproxy_exporter binary
+  copy:
+    src: "{{ specification.download_directory }}/haproxy_exporter/haproxy_exporter"
+    dest: "/opt/haproxy_exporter/haproxy_exporter"
+    owner: root
+    group: haproxy_exporter
+    mode: 0755
+
+- name: Load stats credentials from HAProxy
+  shell: >-
+    awk '/stats auth/ {print $3}' /etc/haproxy/haproxy.cfg
+  register: stats_credentials_cmd
+  failed_when: stats_credentials_cmd.stderr
+  changed_when: false
+  delegate_to: "{{ groups['haproxy'] | first }}"
+
+- name: Set credentials variable
+  set_fact:
+    stats_credentials: "{{ stats_credentials_cmd.stdout }}"
+  changed_when: false
+
+- name: Load stats uri from HAProxy
+  shell: >-
+    awk '/stats uri/ {print $3}' /etc/haproxy/haproxy.cfg
+  register: stats_uri_cmd
+  failed_when: stats_uri_cmd.stderr
+  changed_when: false
+  delegate_to: "{{ groups['haproxy'] | first }}"
+
+- name: Set uri variable
+  set_fact:
+    stats_uri: "{{ stats_uri_cmd.stdout }}"
+  changed_when: false
+
+- name: Load stats bind address from HAProxy
+  shell: >-
+    grep -A4 'frontend stats' /etc/haproxy/haproxy.cfg |
+    awk '/bind/ {print $2}'
+  register: stats_bind_cmd
+  failed_when: stats_bind_cmd.stderr
+  changed_when: false
+  delegate_to: "{{ groups['haproxy'] | first }}"
+
+- name: Set bind address variable
+  set_fact:
+    stats_bind_address: "{{ stats_bind_cmd.stdout }}"
+  changed_when: false
+
+- name: Install haproxy_exporter service to systemd
+  template:
+    src: prometheus-haproxy-exporter.service.j2
+    dest: /etc/systemd/system/prometheus-haproxy-exporter.service
+    owner: root
+    group: root
+    mode: 0644
+
+- name: Configure systemd to use prometheus-haproxy-exporter service
+  systemd:
+    enabled: yes
+    state: started
+    name: prometheus-haproxy-exporter
+    daemon_reload: yes
+
+- name: Copy file_sd_haproxy_config to prometheus hosts
+  template:
+    dest: "{{ specification.config_for_prometheus.prometheus_config_dir }}/file_sd/haproxy-exporter-{{ inventory_hostname }}.yml"
+    src: file_sd_haproxy_config.yml.j2
+    owner: root
+    group: root
+    mode: 0644
+  delegate_to: "{{ item }}"
+  with_inventory_hostnames:
+    - prometheus

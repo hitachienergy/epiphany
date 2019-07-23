@@ -1,0 +1,8 @@
+kind: infrastructure/resource-group
+version: 0.3.0
+title: "Resource Group"
+provider: aws
+name: default
+specification:
+  name: SET_BY_AUTOMATION
+  cluster_name: SET_BY_AUTOMATION

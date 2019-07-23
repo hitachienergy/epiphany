@@ -1,0 +1,47 @@
+kind: infrastructure/virtual-machine
+version: 0.3.0
+title: "Virtual Machine Infra"
+provider: azure
+name: default
+specification:
+  count: SET_BY_AUTOMATION
+  subnet: SET_BY_AUTOMATION
+  tags:
+    - version: 0.3.0
+  size: Standard_DS1_v2
+  os_type: linux
+  disks:
+    osDisk:
+      name: os-disk
+      # size: 40 # not supported by Azure
+    additional_disks:
+      - name: secondary
+        size: 60
+        mount_path: ""
+  network:
+    subnet: my-subnet-name
+    network_interfaces:
+      - name: "nic"
+        is_primary: true
+        # This only works with certain size VMs
+        # Accelerated Networking is supported on most general purpose and compute-optimized instance sizes with 2 or more vCPUs.
+        # These supported series are: D/DSv2 and F/Fs. On instances that support hyperthreading, Accelerated Networking is supported
+        # on VM instances with 4 or more vCPUs. Supported series are: D/DSv3, E/ESv3, Fsv2, and Ms/Mms.
+        # https://docs.microsoft.com/en-us/azure/virtual-network/create-vm-accelerated-networking-cli
+        enable_accelerated_networking: false
+        ip_configuration:
+          - name: private-ip
+            allocation: dynamic
+
+---
+kind: infrastructure/virtual-machine
+version: 0.3.0
+title: "Virtual Machine Infra"
+provider: azure
+name: default-external-disk
+specification:
+  disks:
+    additional_disks:
+      - name: secondary
+        size: 120
+        mount_path: ""

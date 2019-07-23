@@ -1,0 +1,89 @@
+kind: configuration/kafka
+version: 0.3.0
+title: "Kafka"
+name: default
+specification:
+
+  # Have to use odd name to support valid yaml due to ansible getting confused over playbook names and variables etc.
+  kafka_var:
+    enable: True
+    admin: kafka
+    admin_pwd: epiphany
+    # users:
+
+    security:
+      # Verify if security is working: `openssl s_client -debug -connect localhost:9093 -tls1`
+      ssl:
+        enable: False
+        port: 9093
+        server:
+          keystore_location: /var/private/ssl/kafka.server.keystore.jks
+          truststore_location: /var/private/ssl/kafka.server.truststore.jks
+          passwords:
+            keystore: epiphany
+            truststore: epiphany
+            key: epiphany
+        # One for now but may want list of clients later...
+        client:
+          keystore_location: /var/private/ssl/kafka.client.keystore.jks
+          truststore_location: /var/private/ssl/kafka.client.truststore.jks
+          passwords:
+            keystore: epiphany
+            truststore: epiphany
+            key: epiphany
+
+        endpoint_identification_algorithm: HTTPS
+        client_auth: required
+      encrypt_at_rest: True
+      inter_broker_protocol: SSL #PLAINTEXT #SSL  version: 1.1.0
+
+    authorization:
+      authorizer_class_name: kafka.security.auth.SimpleAclAuthorizer
+      allow_everyone_if_no_acl_found: false # Change to True if ACL and PLAINTEXT
+
+    authentication:
+      sasl:
+        enable: false
+        mechanism_inter_broker_protocol:
+        enabled_mechanisms: PLAIN
+
+    version: 2.0.0
+    scala:
+      version: 2.12
+    port: 9092
+    replicas: 1 # Default to at least 1 (1 broker)
+    partitions: 8 # 100 x brokers x replicas for reasonable size cluster. Small clusters can be less
+    log_retention_hours: 168 # The minimum age of a log file to be eligible for deletion due to age
+    offset_retention_minutes: 10080 # Offsets older than this retention period will be discarded
+    heap_opts: "-Xmx2G -Xms2G"
+    opts: "-Djavax.net.debug=all"
+    jmx_opts:
+
+    group: kafka
+    user: kafka
+
+    super_users:
+
+    conf_dir: /opt/kafka/config
+    data_dir: /var/lib/kafka
+    log_dir: /var/log/kafka
+
+    tests:
+      enable: True
+      epiphany_topic_test: epiphanytest
+      epiphany_topic_test_msgs:
+        - First message
+        - Hello, World
+
+  zookeeper_set_acl: false
+  zookeeper_hosts: "{{ groups['zookeeper']|join(':2181,') }}:2181"
+
+  jmx_exporter_user: jmx-exporter
+  jmx_exporter_group: jmx-exporter
+
+  prometheus_jmx_path: /opt/jmx-exporter/jmx_prometheus_javaagent.jar
+  prometheus_jmx_exporter_web_listen_port: 7071
+  prometheus_jmx_config: /opt/kafka/config/jmx-kafka.config.yml
+  prometheus_config_dir: /etc/prometheus
+  prometheus_kafka_jmx_file_sd_labels:
+    "job": "jmx-kafka"

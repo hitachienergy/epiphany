@@ -1,0 +1,7 @@
+---
+## Filebeat Red Hat
+
+- name: Install Filebeat package
+  yum:
+    name: "https://artifacts.elastic.co/downloads/beats/filebeat/filebeat-oss-{{ specification.filebeat_version }}-x86_64.rpm"
+    state: present

@@ -1,0 +1,57 @@
+---
+- name: Ensure download directory exists
+  become: false
+  file:
+    path: "{{ specification.download_directory }}/alert_manager_libraries"
+    state: directory
+  delegate_to: localhost
+
+- name: Download Alertmanager binary to local folder
+  become: false
+  get_url:
+    url: "{{ specification.alerts.alertmanager.download_urls[ansible_architecture] }}"
+    dest: "{{ specification.download_directory }}/alertmanager.tar.gz"
+    validate_certs: "{{ validate_certs | bool}}"
+  register: _download_archive
+  until: _download_archive is succeeded
+  retries: 5
+  delay: 2
+  delegate_to: localhost
+
+- name: Unpack Prometheus binary
+  become: false
+  unarchive:
+    src: "{{ specification.download_directory }}/alertmanager.tar.gz"
+    dest: "{{ specification.download_directory }}/alert_manager_libraries"
+    creates: "{{ specification.download_directory }}/alert_manager_libraries/alertmanager"
+    extra_opts: [--strip-components=1]
+  delegate_to: localhost
+  check_mode: false
+
+- name: Propagate Prometheus and promtool binaries
+  copy:
+    src: "{{ specification.download_directory }}/alert_manager_libraries/alertmanager"
+    dest: "/usr/local/bin/alertmanager"
+    mode: 0755
+    owner: root
+    group: prometheus
+  check_mode: false
+  notify:
+    - restart prometheus
+
+- name: Create alertmanager data directory
+  file:
+    path: /var/lib/prometheus/alertmanager
+    state: directory
+    owner: prometheus
+    group: prometheus
+
+- name: Create alertmanager systemd service unit
+  template:
+    src: alertmanager.service.j2
+    dest: /etc/systemd/system/alertmanager.service
+    owner: root
+    group: root
+    mode: 0644
+  notify:
+    - restart prometheus

@@ -1,0 +1,4 @@
+---
+dependencies:
+  - role: kubernetes_master
+  - role: kubernetes_common

@@ -1,0 +1,54 @@
+---
+# Disable firewall and stop ufw service
+#- block:
+#  - name: Disable firewall
+#    ufw:
+#      state: disabled
+#  - name: Stop & disable ufw service
+#    service:
+#      name: ufw
+#      state: stopped
+#      enabled: no
+#  when: not has_firewall_enabled
+#  tags: firewall
+#
+#- name: Start & enable ufw service # This doesn't enable firewall rules
+#  service:
+#    name: ufw
+#    state: started
+#    enabled: yes
+#  when: has_firewall_enabled
+#  tags: firewall
+#
+## Apply firewall rules
+#- block:
+#  # Built-in
+#  - name: Apply firewall rules (allow OpenSSH)
+#    ufw:
+#      rule: allow
+#      name: OpenSSH
+#  # From configuration
+#  - name: Apply firewall rules (allow ports from configuration)
+#    ufw:
+#      port: "{{ (item|string).split('/')[0] | replace('-', ':') }}" # Convert from firewalld syntax
+#      proto: "{{ (item|string).split('/')[1] if '/' in item|string else 'tcp' if '-' in item|string else 'any' }}" # Must specify 'tcp' or 'udp' for port ranges
+#      rule: allow
+#    loop: "{{ firewall_ports_to_open }}"
+#  when: has_firewall_enabled
+#  tags: firewall
+#
+#- name: Enable firewall
+#  ufw:
+#    state: enabled
+#  when: has_firewall_enabled
+#  tags: firewall
+- block:
+  - name: Disable firewall
+    ufw:
+      state: disabled
+  - name: Stop & disable ufw service
+    service:
+      name: ufw
+      state: stopped
+      enabled: no
+  tags: firewall

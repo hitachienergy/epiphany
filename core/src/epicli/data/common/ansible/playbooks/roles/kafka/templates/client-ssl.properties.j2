@@ -1,0 +1,4 @@
+bootstrap.servers={{ kafka_hosts }}:{{ specification.kafka_var.security.ssl.port }}
+security.protocol=SSL
+ssl.truststore.location=/var/private/ssl/kafka.client.truststore.jks
+ssl.truststore.password={{ specification.kafka_var.security.ssl.client.passwords.truststore }}

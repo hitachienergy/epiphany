@@ -1,0 +1,13 @@
+---
+# Ansible playbook that makes sure the base items for all nodes are installed
+
+- hosts: all
+  gather_facts: yes
+  tasks: [ ]  
+
+- hosts: all
+  gather_facts: yes
+  become: true
+  become_method: sudo
+  roles:
+    - common

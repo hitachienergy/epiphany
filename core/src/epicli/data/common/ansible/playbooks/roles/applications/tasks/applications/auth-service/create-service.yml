@@ -1,0 +1,18 @@
+- name: Create directory for files
+  file: 
+    path: "{{ configuration_temp_directory }}"
+    state: directory
+  become_user: "{{ admin_user.name }}"
+
+- name: Upload auth-service yaml
+  become: yes
+  template:
+    dest: "{{ configuration_temp_directory }}/{{ auth_service_name }}-{{ namespace_name }}.yml"
+    src: auth-service/auth-service.yml.j2
+    owner: "{{ admin_user.name }}"
+    group: "{{ admin_user.name }}"
+    mode: 0644
+
+- name: Apply Epiphany Auth Service deployment
+  shell: kubectl apply --kubeconfig=/home/{{ admin_user.name }}/.kube/config -f {{ configuration_temp_directory }}/{{ auth_service_name }}-{{ namespace_name }}.yml
+  become_user: "{{ admin_user.name }}"

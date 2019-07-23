@@ -1,0 +1,97 @@
+---
+- name: Create node_exporter system group
+  group:
+    name: node_exporter
+    system: true
+    state: present
+
+- name: Create node_exporter system user
+  user:
+    name: node_exporter
+    system: true
+    shell: "/usr/sbin/nologin"
+    group: node_exporter
+    createhome: false
+
+- name: Ensure download directory exists
+  become: false
+  file:
+    path: "{{ specification.download_directory }}/node_exporter"
+    state: directory
+  delegate_to: localhost
+
+- name: Download node_exporter binary to local folder
+  become: false
+  get_url:
+    url: "{{ specification.download_urls[ansible_architecture] }}"
+    dest: "{{ specification.download_directory }}/node_exporter.tar.gz"
+    validate_certs: "{{ validate_certs | bool}}"
+  register: _download_archive
+  until: _download_archive is succeeded
+  retries: 5
+  delay: 2
+  delegate_to: localhost
+
+- name: Unpack node_exporter binary
+  become: false
+  unarchive:
+    src: "{{ specification.download_directory }}/node_exporter.tar.gz"
+    dest: "{{ specification.download_directory }}/node_exporter"
+    creates: "{{ specification.download_directory }}/node_exporter/node_exporter"
+    extra_opts: [--strip-components=1]
+  delegate_to: localhost
+  check_mode: false
+
+- name: Create /opt/node_exporter directories
+  become: yes
+  file:
+    path: "{{ item }}"
+    recurse: yes
+    owner: root
+    group: "node_exporter"
+    mode: 0750
+    state: directory
+  with_items:
+  - /opt/node_exporter
+
+- name: Propagate node_exporter binaries
+  copy:
+    src: "{{ specification.download_directory }}/node_exporter/node_exporter"
+    dest: "/opt/node_exporter/node_exporter"
+    mode: 0755
+    owner: root
+    group: node_exporter
+  check_mode: false
+  notify:
+    - restart prometheus-node-exporter
+
+- name: Install node_exporter service to systemd
+  template:
+    src: prometheus-node-exporter.service.j2
+    dest: /etc/systemd/system/prometheus-node-exporter.service
+    owner: root
+    group: root
+    mode: 0644
+
+- name: Configure systemd to use node_exporter service
+  systemd:
+    daemon_reload: yes
+    enabled: yes
+    name: prometheus-node-exporter.service
+
+- name: Start exporter
+  service:
+    name: prometheus-node-exporter
+    state: started
+
+- name: Copy file_sd_config to prometheus hosts
+  template:
+    dest: "{{ specification.config_for_prometheus.prometheus_config_dir }}/file_sd/node-{{ inventory_hostname }}.yml"
+    src: file_sd_config.yml.j2
+    owner: root
+    group: root
+    mode: 0644
+  delegate_to: "{{ item }}"
+  with_inventory_hostnames:
+    - prometheus
+  notify: restart prometheus on remote servers

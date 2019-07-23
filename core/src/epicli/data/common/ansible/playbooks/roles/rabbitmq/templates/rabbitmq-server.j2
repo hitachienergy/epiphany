@@ -1,0 +1,8 @@
+listeners.tcp.default = {{ specification.amqp_port }}
+
+# To allow custom configs like vm_memory_high_watermark define it via custom_configurations in data.yaml 
+{% if specification.custom_configurations is defined %}
+{% for item in specification.custom_configurations %}
+{{ item.name }}                  = {{ item.value }} 
+{% endfor %}
+{% endif %}

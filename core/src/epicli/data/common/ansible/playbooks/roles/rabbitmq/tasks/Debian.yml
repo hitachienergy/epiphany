@@ -1,0 +1,28 @@
+---
+- name: Get APT Key
+  apt_key:
+    url: https://github.com/rabbitmq/signing-keys/releases/download/2.0/rabbitmq-release-signing-key.asc
+    state: present
+
+- name: Add Erlang repository
+  apt_repository:
+    repo: deb http://dl.bintray.com/rabbitmq-erlang/debian bionic erlang-21.x
+    state: present
+    filename: bintray.erlang.list
+    update_cache: true
+
+- name: Install dependencies for RabbitMQ
+  apt:
+    update_cache: true
+    name:
+      - init-system-helpers
+      - socat
+      - erlang-nox
+      - adduser
+      - logrotate
+    state: present
+
+- name: Install RabbitMQ package
+  apt:
+    deb: "https://github.com/rabbitmq/rabbitmq-server/releases/download/v{{ specification.version }}/rabbitmq-server_{{ specification.version }}-1_all.deb"
+    state: present

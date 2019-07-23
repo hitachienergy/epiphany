@@ -1,0 +1,18 @@
+kind: infrastructure/efs-storage
+version: 0.3.0
+title: "Elastic File System Config"
+provider: aws
+name: default
+specification:
+  name: SET_BY_AUTOMATION
+  token: SET_BY_AUTOMATION
+  encrypted: True
+  performance_mode: "generalPurpose"
+  throughput_mode: "bursting"
+  #provisioned_throughput_in_mibps:  # The throughput, measured in MiB/s, that you want to provision for the file system. Only applicable when throughput_mode set to provisioned
+  mount_targets: [] #TO_BET_SET
+#    - name: mount-name
+#      subnet_name: source_subnet_name
+  security:
+    populate_sg_rules: True # when set to true, security group for EFS will allow traffic from other clusters, groups
+

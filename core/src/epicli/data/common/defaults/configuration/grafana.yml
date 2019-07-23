@@ -1,0 +1,237 @@
+kind: configuration/grafana
+version: 0.3.0
+title: "Grafana"
+name: default
+specification:
+  version: 6.2.5
+  grafana_logs_dir: "/var/log/grafana"
+  grafana_data_dir: "/var/lib/grafana"
+  grafana_address: "0.0.0.0"
+  grafana_port: 3000
+
+  # Should we use the provisioning capability when possible (provisioning require grafana >= 5.0)
+  grafana_use_provisioning: true
+  # Should the provisioning be kept synced. If true, previous provisioned objects will be removed if not referenced anymore.
+  grafana_provisioning_synced: false
+  # External Grafana address. Variable maps to "root_url" in grafana server section
+  grafana_url: "https://0.0.0.0:3000"
+
+  # Additional options for grafana "server" section
+  # This section WILL omit options for: http_addr, http_port, domain, and root_url, as those settings are set by variables listed before
+  grafana_server:
+    protocol: https
+    enforce_domain: false
+    socket: ""
+    cert_key: "/etc/grafana/ssl/grafana_key.key"
+    cert_file: "/etc/grafana/ssl/grafana_cert.pem"
+    enable_gzip: false
+    static_root_path: public
+    router_logging: false
+
+  # Variables correspond to ones in grafana.ini configuration file
+  # Security
+  grafana_security:
+    admin_user: admin
+    admin_password: "admin"
+  #  secret_key: ""
+  #  login_remember_days: 7
+  #  cookie_username: grafana_user
+  #  cookie_remember_name: grafana_remember
+  #  disable_gravatar: true
+  #  data_source_proxy_whitelist:
+
+  # Database setup
+  grafana_database:
+    type: sqlite3
+  #  host: 127.0.0.1:3306
+  #  name: grafana
+  #  user: root
+  #  password: ""
+  #  url: ""
+  #  ssl_mode: disable
+  #  path: grafana.db
+  #  max_idle_conn: 2
+  #  max_open_conn: ""
+  #  log_queries: ""
+
+  # Dashboards from https://grafana.com/dashboards
+  grafana_dashboards: []
+  #  - dashboard_id: '4271'
+  #    revision_id: '3'
+  #    datasource: 'Prometheus'
+  #  - dashboard_id: '1860'
+  #    revision_id: '4'
+  #    datasource: 'Prometheus'
+  #  - dashboard_id: '358'
+  #    revision_id: '1'
+  #    datasource: 'Prometheus'
+
+  # Deployer local folder with dashboard definitions in .json format
+  grafana_dashboards_dir: "dashboards" # Replace with your dashboard directory if you have dashboards to include
+
+  # User management and registration
+  grafana_welcome_email_on_sign_up: false
+  grafana_users:
+    allow_sign_up: false
+    # allow_org_create: true
+    # auto_assign_org: true
+    auto_assign_org_role: Viewer
+    # login_hint: "email or username"
+    default_theme: dark
+    # external_manage_link_url: ""
+    # external_manage_link_name: ""
+    # external_manage_info: ""
+
+  # grafana authentication mechanisms
+  grafana_auth: {}
+  #  disable_login_form: false
+  #  disable_signout_menu: false
+  #  anonymous:
+  #    org_name: "Main Organization"
+  #    org_role: Viewer
+  #  ldap:
+  #    config_file: "/etc/grafana/ldap.toml"
+  #    allow_sign_up: false
+  #  basic:
+  #    enabled: true
+
+  grafana_ldap: {}
+  #  verbose_logging: false
+  #  servers:
+  #    host: 127.0.0.1
+  #    port: 389 # 636 for SSL
+  #    use_ssl: false
+  #    start_tls: false
+  #    ssl_skip_verify: false
+  #    root_ca_cert: /path/to/certificate.crt
+  #    bind_dn: "cn=admin,dc=grafana,dc=org"
+  #    bind_password: grafana
+  #    search_filter: "(cn=%s)" # "(sAMAccountName=%s)" on AD
+  #    search_base_dns:
+  #      - "dc=grafana,dc=org"
+  #    group_search_filter: "(&(objectClass=posixGroup)(memberUid=%s))"
+  #    group_search_base_dns:
+  #      - "ou=groups,dc=grafana,dc=org"
+  #    attributes:
+  #      name: givenName
+  #      surname: sn
+  #      username: sAMAccountName
+  #      member_of: memberOf
+  #      email: mail
+  #  group_mappings:
+  #    - name: Main Org.
+  #      id: 1
+  #      groups:
+  #        - group_dn: "cn=admins,ou=groups,dc=grafana,dc=org"
+  #          org_role: Admin
+  #        - group_dn: "cn=editors,ou=groups,dc=grafana,dc=org"
+  #          org_role: Editor
+  #        - group_dn: "*"
+  #          org_role: Viewer
+  #    - name: Alternative Org
+  #      id: 2
+  #      groups:
+  #        - group_dn: "cn=alternative_admins,ou=groups,dc=grafana,dc=org"
+  #          org_role: Admin
+
+  grafana_session: {}
+  #  provider: file
+  #  provider_config: "sessions"
+
+  grafana_analytics: {}
+  #  reporting_enabled: true
+  #  google_analytics_ua_id: ""
+
+  # Set this for mail notifications
+  grafana_smtp: {}
+  #  host:
+  #  user:
+  #  password:
+  #  from_address:
+
+  # Enable grafana alerting mechanism
+  grafana_alerting:
+    execute_alerts: true
+  #  error_or_timeout: 'alerting'
+  #  nodata_or_nullvalues: 'no_data'
+  #  concurrent_render_limit: 5
+
+  # Grafana logging configuration
+  grafana_log:
+  # mode: 'console file'
+  # level: info
+
+  # Internal grafana metrics system
+  grafana_metrics: {}
+  #  interval_seconds: 10
+  #  graphite:
+  #    address: "localhost:2003"
+  #    prefix: "prod.grafana.%(instance_name)s"
+
+  # Distributed tracing options
+  grafana_tracing: {}
+  #  address: "localhost:6831"
+  #  always_included_tag: "tag1:value1,tag2:value2"
+  #  sampler_type: const
+  #  sampler_param: 1
+
+  grafana_snapshots: {}
+  #  external_enabled: true
+  #  external_snapshot_url: "https://snapshots-origin.raintank.io"
+  #  external_snapshot_name: "Publish to snapshot.raintank.io"
+  #  snapshot_remove_expired: true
+  #  snapshot_TTL_days: 90
+
+  # External image store
+  grafana_image_storage: {}
+  #  provider: gcs
+  #  key_file:
+  #  bucket:
+  #  path:
+
+
+  #######
+  # Plugins from https://grafana.com/plugins
+  grafana_plugins: []
+  #  - raintank-worldping-app
+  #
+
+
+  # Alert notification channels to configure
+  grafana_alert_notifications: []
+  #   - name: "Email Alert"
+  #     type: "email"
+  #     isDefault: true
+  #     settings:
+  #       addresses: "example@example.com"
+
+  # Datasources to configure
+  grafana_datasources:
+    - name: "Prometheus"
+      type: "prometheus"
+      access: "proxy"
+      url: "http://localhost:9090"
+      basicAuth: false
+      basicAuthUser: ""
+      basicAuthPassword: ""
+      isDefault: true
+      editable: true
+      jsonData:
+        tlsAuth: false
+        tlsAuthWithCACert: false
+        tlsSkipVerify: true
+
+  # API keys to configure
+  grafana_api_keys: []
+  #  - name: "admin"
+  #    role: "Admin"
+  #  - name: "viewer"
+  #    role: "Viewer"
+  #  - name: "editor"
+  #    role: "Editor"
+
+  # Logging options to configure
+  grafana_logging:
+    log_rotate: true
+    daily_rotate: true
+    max_days: 7

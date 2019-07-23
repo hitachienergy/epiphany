@@ -1,0 +1,11 @@
+kind: infrastructure/security-group
+version: 0.3.0
+title: "Security Group Config"
+provider: aws
+name: default
+specification:
+  vpc_name: SET_BY_AUTOMATION
+  name: SET_BY_AUTOMATION
+  cidr_block: SET_BY_AUTOMATION
+  rules: []
+  cluster_name: SET_BY_AUTOMATION

@@ -1,0 +1,97 @@
+---
+- name: Create kafka_exporter system group
+  group:
+    name: kafka_exporter
+    system: true
+    state: present
+
+- name: Create kafka_exporter system user
+  user:
+    name: kafka_exporter
+    system: true
+    shell: "/usr/sbin/nologin"
+    group: kafka_exporter
+    createhome: false
+
+- name: Download kafka_exporter binary to local folder
+  become: false
+  get_url:
+    url: "{{ specification.download_urls[ansible_architecture] }}"
+    dest: "{{ specification.download_directory }}/kafka_exporter.tar.gz"
+    validate_certs: "{{ validate_certs | bool }}"
+  register: _download_archive
+  until: _download_archive is succeeded
+  retries: 5
+  delay: 2
+  delegate_to: localhost
+
+- name: Ensure download directory exists
+  become: false
+  file:
+    path: "{{ specification.download_directory }}/kafka_exporter"
+    state: directory
+  delegate_to: localhost
+
+- name: Unpack kafka_exporter binary
+  become: false
+  unarchive:
+    src: "{{ specification.download_directory }}/kafka_exporter.tar.gz"
+    dest: "{{ specification.download_directory }}/kafka_exporter"
+    creates: "{{ specification.download_directory }}/kafka_exporter/kafka_exporter"
+    extra_opts: [--strip-components=1]
+  delegate_to: localhost
+  check_mode: false
+
+- name: Create /opt/kafka_exporter directories
+  become: yes
+  file:
+    path: "{{ item }}"
+    recurse: yes
+    owner: root
+    group: "kafka_exporter"
+    mode: 0750
+    state: directory
+  with_items:
+  - /opt/kafka_exporter
+
+- name: Propagate kafka_exporter binaries
+  copy:
+    src: "{{ specification.download_directory }}/kafka_exporter/kafka_exporter"
+    dest: "/opt/kafka_exporter/kafka_exporter"
+    mode: 0755
+    owner: root
+    group: kafka_exporter
+  check_mode: false
+  notify:
+    - restart kafka-exporter
+
+- name: Install kafka_exporter service to systemd
+  template:
+    src: kafka-exporter.service.j2
+    dest: /etc/systemd/system/kafka-exporter.service
+    owner: root
+    group: root
+    mode: 0644
+
+- name: Configure systemd to use kafka-exporter service
+  systemd:
+    daemon_reload: yes
+    enabled: yes
+    name: kafka-exporter.service
+
+- name: Start Kafka exporter
+  service:
+    name: kafka-exporter
+    state: started
+
+- name: Copy file_sd_config to prometheus hosts
+  template:
+    dest: "{{ specification.config_for_prometheus.prometheus_config_dir }}/file_sd/kafka-exporter-{{ inventory_hostname }}.yml"
+    src: file_sd_config.yml.j2
+    owner: root
+    group: root
+    mode: 0644
+  delegate_to: "{{ item }}"
+  with_inventory_hostnames:
+    - prometheus
+  notify: restart prometheus on remote servers

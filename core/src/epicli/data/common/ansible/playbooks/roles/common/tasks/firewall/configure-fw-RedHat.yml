@@ -1,0 +1,33 @@
+---
+#- name: Start firewalld
+#  service:
+#    name: firewalld
+#    state: started
+#    enabled: yes
+#  when: has_firewall_enabled
+#  tags: firewall
+#
+#- name: Stop firewalld
+#  service:
+#    name: firewalld
+#    state: stopped
+#    enabled: no
+#  when: not has_firewall_enabled
+#  tags: firewall
+#
+#- name: "Apply firewall rules if enabled"
+#  firewalld:
+#    port: "{{ item }}"
+#    permanent: true
+#    state: enabled
+#    immediate: true
+#  loop: "{{ firewall_ports_to_open }}"
+#  when: has_firewall_enabled
+#  tags: firewall
+
+- name: Stop firewalld
+  service:
+    name: firewalld
+    state: stopped
+    enabled: no
+  tags: firewall

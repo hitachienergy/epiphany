@@ -1,0 +1,89 @@
+---
+
+- name: Get systemd version
+  shell: systemctl --version | awk '$1 == "systemd" {print $2}'
+  changed_when: false
+  register: prometheus_systemd_version
+  tags:
+    - skip_ansible_lint
+
+- name: Set master exists flag
+  set_fact:
+    does_k8s_exists: "(groups['kubernetes_master'] | default([])) | length > 0"
+
+- include: configure-k8s-apps-monitoring.yml
+  become: true
+  tags:
+    - kubernetes
+  when: does_k8s_exists
+
+- name: Gather variables for each operating system
+  include_vars: "{{ item }}"
+  with_first_found:
+    - "{{ ansible_distribution | lower }}.yml"
+    - "{{ ansible_os_family | lower }}.yml"
+  tags:
+    - always
+
+- name: "Check if Alertmanager is enabled"
+  set_fact:
+    is_alertmanager_enabled: "{{ specification.alerts.alertmanager.enable == True and (specification.alerts.alertmanager.config.receivers | length>0 ) }}"
+
+- include: install.yml
+  become: true
+  tags:
+    - install
+
+- include: configure.yml
+  become: true
+  tags:
+    - configure
+
+- name: Create alerting rules
+  template:
+    src: "alert.rules.j2"
+    dest: "{{ specification.config_directory }}/rules/{{ item.name }}.rules"
+    owner: root
+    group: prometheus
+    mode: 0640
+    validate: "/usr/local/bin/promtool check rules %s"
+  with_items:
+    - "{{ specification.alerts.rules }}"
+  notify:
+    - restart prometheus
+
+- include: install-alertmanager.yml
+  become: true
+  when:
+    - is_alertmanager_enabled
+  tags:
+    - install
+
+- include: configure-alertmanager.yml
+  become: true
+  tags:
+    - configure
+  when:
+    - is_alertmanager_enabled
+  notify:
+    - restart alertmanager
+
+- name: ensure prometheus service is started and enabled
+  become: true
+  systemd:
+    name: prometheus
+    state: started
+    enabled: true
+  tags:
+    - run
+
+- name: ensure alertmanager service is started and enabled
+  become: true
+  systemd:
+    name: alertmanager
+    state: started
+    enabled: true
+  when:
+    - is_alertmanager_enabled
+  tags:
+    - run

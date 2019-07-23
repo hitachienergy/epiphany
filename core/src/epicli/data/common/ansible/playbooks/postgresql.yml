@@ -1,0 +1,8 @@
+---
+# Ansible playbook that installs and performs basic configuration of postgresql
+
+- hosts: postgresql
+  become: true
+  become_method: sudo
+  roles:
+    - postgresql

@@ -1,0 +1,21 @@
+---
+# Filebeat
+
+- name: Include {{ ansible_os_family }} family tasks
+  include_tasks: "{{ ansible_os_family }}.yml"
+
+- name: Include configuration tasks
+  include_tasks: configure-filebeat.yml
+
+# Trigger restart if configuration has changed
+- name: Flush handlers
+  meta: flush_handlers
+
+- name: Start Filebeat service
+  systemd:
+    name: filebeat
+    state: started
+
+- name: Verify Filebeat is running
+  command: systemctl is-active filebeat
+  changed_when: false

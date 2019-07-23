@@ -1,0 +1,109 @@
+---
+- name: Create Prometheus system group
+  group:
+    name: prometheus
+    system: true
+    state: present
+
+- name: Create Prometheus system user
+  user:
+    name: prometheus
+    system: true
+    shell: "/usr/sbin/nologin"
+    group: prometheus
+    createhome: false
+
+- name: Create Prometheus data directory
+  file:
+    path: "{{ specification.storage.data_directory }}"
+    state: directory
+    owner: prometheus
+    group: prometheus
+    mode: 0755
+
+- name: create prometheus configuration directories
+  file:
+    path: "{{ item }}"
+    state: directory
+    owner: root
+    group: prometheus
+    mode: 0750
+  with_items:
+    - "{{ specification.config_directory }}"
+    - "{{ specification.config_directory }}/conf.d"
+    - "{{ specification.config_directory }}/rules"
+    - "{{ specification.config_directory }}/file_sd"
+
+- name: Ensure download directory exists
+  become: false
+  file:
+    path: "{{ specification.download_directory }}/prometheus_binaries"
+    state: directory
+  delegate_to: localhost
+
+- name: Download Prometheus binary to local folder
+  become: false
+  get_url:
+    url: "{{ specification.download_urls[ansible_architecture] }}"
+    dest: "{{ specification.download_directory }}/prometheus.tar.gz"
+    validate_certs: "{{ validate_certs | bool}}"
+  register: _download_archive
+  until: _download_archive is succeeded
+  retries: 5
+  delay: 2
+  delegate_to: localhost
+
+- name: Unpack Prometheus binary
+  become: false
+  unarchive:
+    src: "{{ specification.download_directory }}/prometheus.tar.gz"
+    dest: "{{ specification.download_directory }}/prometheus_binaries"
+    creates: "{{ specification.download_directory }}/prometheus_binaries/prometheus"
+    extra_opts: [--strip-components=1]
+  delegate_to: localhost
+  check_mode: false
+
+- name: Propagate Prometheus and promtool binaries
+  copy:
+    src: "{{ specification.download_directory }}/prometheus_binaries/{{ item }}"
+    dest: "/usr/local/bin/{{ item }}"
+    mode: 0755
+    owner: root
+    group: prometheus
+  with_items:
+    - prometheus
+    - promtool
+  check_mode: false
+  notify:
+    - restart prometheus
+
+- name: Propagate console libraries templates
+  copy:
+    src: "{{ specification.download_directory }}/prometheus_binaries/{{ item }}"
+    dest: "{{ specification.config_directory }}/{{ item }}/"
+    mode: 0755
+  with_items:
+     - console_libraries
+     - consoles
+  check_mode: false
+  notify:
+    - restart prometheus
+
+- name: Remove prometheus binaries from old location
+  file:
+    path: "{{ item }}"
+    state: absent
+  with_items:
+    - /opt/prometheus/prometheus
+    - /opt/prometheus/promtool
+    - /opt/prometheus
+
+- name: Create systemd service unit
+  template:
+    src: prometheus.service.j2
+    dest: /etc/systemd/system/prometheus.service
+    owner: root
+    group: root
+    mode: 0644
+  notify:
+    - restart prometheus

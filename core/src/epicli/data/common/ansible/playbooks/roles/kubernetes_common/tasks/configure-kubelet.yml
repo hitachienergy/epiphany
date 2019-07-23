@@ -1,0 +1,48 @@
+---
+# These tasks are run from master and worker roles
+
+- name: Ensure Kubelet Drop-In directory exists
+  become: true
+  file:
+    path: "/etc/systemd/system/kubelet.service.d"
+    state: directory
+
+- name: Copy kubelet configuration file (11-cgroup.conf)
+  template:
+    src: 11-cgroup.conf.j2
+    dest: /etc/systemd/system/kubelet.service.d/11-cgroup.conf
+    owner: root
+    group: root
+  register: kubelet_cgroup_conf
+
+# Requires kubeadm init/join
+- name: Load configuration from '/var/lib/kubelet/config.yaml'
+  slurp:
+    src: /var/lib/kubelet/config.yaml
+  register: kubelet_config_yaml
+  when: kubelet_custom_config
+
+- name: Apply configuration to '/var/lib/kubelet/config.yaml'
+  template:
+    src: config.yaml.j2
+    dest: /var/lib/kubelet/config.yaml
+    backup: true
+  register: apply_kubelet_custom_config
+  when: kubelet_custom_config
+
+- name: Restart kubelet service
+  systemd:
+    name: kubelet
+    state: restarted
+    daemon_reload: "{{ kubelet_cgroup_conf.changed }}"
+  when: kubelet_cgroup_conf.changed or apply_kubelet_custom_config.changed
+
+- name: Enable kubelet service
+  systemd:
+    name: kubelet
+    enabled: yes
+
+- name: Start kubelet service
+  systemd:
+    name: kubelet
+    state: started

@@ -1,0 +1,49 @@
+kind: configuration/node-exporter
+version: 0.3.0
+title: "Node exporter"
+name: default
+specification:
+  description: "Service that runs Prometheus Node Exporter"
+  download_urls:
+    i386: 'https://github.com/prometheus/node_exporter/releases/download/v0.16.0/node_exporter-0.16.0.linux-386.tar.gz'
+    x86_64: "https://github.com/prometheus/node_exporter/releases/download/v0.16.0/node_exporter-0.16.0.linux-amd64.tar.gz"
+    aarch64: 'https://github.com/prometheus/node_exporter/releases/download/v0.16.0/node_exporter-0.16.0.linux-arm64.tar.gz'
+
+  download_directory: "/tmp"
+  enabled_collectors:
+    - conntrack
+    - diskstats
+    - entropy
+    - filefd
+    - filesystem
+    - loadavg
+    - mdadm
+    - meminfo
+    - netdev
+    - netstat
+    - sockstat
+    - stat
+    - textfile
+    - time
+    - uname
+    - vmstat
+    - systemd
+
+  web_listen_port: "9100"
+  web_listen_address: ""
+  collector_netdev_ignored_devices: "^$"
+  config_flags:
+    - "--web.listen-address=:9100"
+    - '--log.level=info'
+    - '--collector.diskstats.ignored-devices=^(ram|loop|fd)\d+$'
+    - '--collector.filesystem.ignored-mount-points=^/(sys|proc|dev|run)($|/)'
+    - '--collector.netdev.ignored-devices="^$"'
+    - '--collector.textfile.directory="/var/lib/prometheus/node-exporter"'
+    - '--collector.systemd.unit-whitelist="(kafka\.service|zookeeper\.service)"'
+
+  config_for_prometheus: # configuration that will be written to Prometheus to allow scraping metrics from this exporter
+    exporter_listen_port: "9100"
+    prometheus_config_dir: /etc/prometheus
+    file_sd_labels:
+      - label: "job"
+        value: "node"

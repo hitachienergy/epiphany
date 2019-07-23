@@ -1,0 +1,14 @@
+kind: infrastructure/route-table
+version: 0.3.0
+title: "Route Table Config"
+provider: aws
+name: default
+specification:
+  name: SET_BY_AUTOMATION
+  vpc_name: SET_BY_AUTOMATION
+  route:
+    cidr_block: "0.0.0.0/0"
+    gateway_name: SET_BY_AUTOMATION
+  tag: []
+  cluster_name: SET_BY_AUTOMATION
+

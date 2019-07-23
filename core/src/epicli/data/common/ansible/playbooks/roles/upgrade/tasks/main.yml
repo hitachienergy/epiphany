@@ -1,0 +1,34 @@
+---
+- name: Check cluster version 
+  environment:
+    KUBECONFIG: "/home/{{ admin_user.name }}/.kube/config"
+  shell: kubectl version --short | grep -i server
+  register: cluster_version
+
+- name: Check kubelet version 
+  environment:
+    KUBECONFIG: "/home/{{ admin_user.name }}/.kube/config"
+  shell: kubectl get node {{ inventory_hostname }} -o custom-columns=VERSION:.status.nodeInfo.kubeletVersion
+  register: kubelet_version
+
+- name: Upgrade master to {{ version }}
+  include_tasks: "upgrade_master.yml"
+  vars:
+    version: "{{ ver }}"
+    cni_version: "{{ cni_ver }}"
+  when: 
+    - groups['kubernetes_master'][0] == inventory_hostname
+    - (version == "1.12.10" and "1.11" in cluster_version.stdout) or
+      (version == "1.13.8" and "1.12" in cluster_version.stdout) or
+      (version == "1.14.4" and "1.13" in cluster_version.stdout)
+
+- name: Upgrade nodes to {{ version }}
+  include_tasks: "upgrade_nodes.yml"
+  vars:
+    version: "{{ ver }}"
+    cni_version: "{{ cni_ver }}"    
+  when:
+    - inventory_hostname in groups['kubernetes_node']
+    - (version == "1.12.10" and "1.11" in kubelet_version.stdout and kubelet_version.stdout != cluster_version.stdout) or
+      (version == "1.13.8" and "1.12" in kubelet_version.stdout and kubelet_version.stdout != cluster_version.stdout) or
+      (version == "1.14.4" and "1.13" in kubelet_version.stdout and kubelet_version.stdout != cluster_version.stdout )

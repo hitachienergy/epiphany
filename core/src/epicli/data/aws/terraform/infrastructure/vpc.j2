@@ -1,0 +1,24 @@
+#####################################################
+# DO NOT Modify by hand - Manage by Automation
+#####################################################
+#####################################################
+# This file can be used as a base template to build other Terraform files. It attempts to use as much
+# Terraform interprolation as possible by creating Terraform variables instead of changing inline
+# this approach provides an easier way to do creative looping, fetch IDs of created resources etc.
+#####################################################
+#####################################################
+# {{ specification.name }}
+#####################################################
+
+resource "aws_vpc" "{{ specification.name }}" {
+  cidr_block = "{{ specification.address_pool }}"
+  instance_tenancy = "default"
+  enable_dns_support = "true"
+  enable_dns_hostnames = "true"
+
+  tags {
+      Name = "{{ specification.name }}"
+      cluster_name = "{{ specification.cluster_name }}"
+      cluster_version = "{{ version }}"
+  }
+}

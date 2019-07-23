@@ -1,0 +1,83 @@
+---
+- name: Wait for the cluster's readiness
+  include_tasks: "wait.yml"
+
+- name: Drain node in preparation for maintenance
+  environment:
+    KUBECONFIG: "/home/{{ admin_user.name }}/.kube/config"
+  shell: kubectl drain {{ inventory_hostname }} --ignore-daemonsets --delete-local-data
+  delegate_to: "{{ groups['kubernetes_master'][0] }}"
+
+- name: Wait for the cluster's readiness
+  include_tasks: "wait.yml"
+
+- name: Get information about installed packages as facts
+  package_facts:
+    manager: "auto"
+
+- name: Remove newer Debian packages installed as dependencies if they exist # as there is no allow_downgrade parameter in ansible apt module
+  apt:
+    name:
+      - kubernetes-cni
+      - kubelet
+      - kubectl
+      - kubeadm
+    state: absent
+  when: 
+    - ansible_os_family == "Debian"
+    - (ansible_facts.packages['kubernetes-cni'][0].version is version (cni_version + '-00', '>')) or
+      (ansible_facts.packages['kubelet'][0].version is version (version + '-00', '>')) or
+      (ansible_facts.packages['kubectl'][0].version is version (version + '-00', '>')) or
+      (ansible_facts.packages['kubeadm'][0].version is version (version + '-00', '>'))
+
+- name: Install kubernetes-cni {{ cni_version }}, kubelet {{ version }}, kubectl {{ version }} and kubeadm {{ version }} packages for RedHat family
+  yum:
+    name:
+      - kubernetes-cni-{{ cni_version }}
+      - kubelet-{{ version }}
+      - kubectl-{{ version }}
+      - kubeadm-{{ version }}
+    update_cache: yes
+    allow_downgrade: yes
+    state: present
+  when: ansible_os_family == "RedHat"
+
+- name: Install kubernetes-cni {{ cni_version }}, kubelet {{ version }}, kubectl {{ version }} and kubeadm {{ version }} packages for Debian family
+  apt:
+    name:
+      - kubernetes-cni={{ cni_version }}-00
+      - kubelet={{ version }}-00
+      - kubectl={{ version }}-00
+      - kubeadm={{ version }}-00
+    update_cache: yes
+    state: present
+  when: ansible_os_family == "Debian"
+
+- name: Upgrade node config
+  shell: kubeadm upgrade node config --kubelet-version v{{ version }}
+
+- name: Reload daemon
+  shell: systemctl daemon-reload
+
+- name: Restart kubelet
+  shell: systemctl restart kubelet
+
+- name: Check kubelet status
+  shell: systemctl status kubelet
+
+- name: Wait for the cluster's readiness
+  include_tasks: "wait.yml"
+
+- name: Uncordon node - mark node as schedulable
+  environment:
+    KUBECONFIG: "/home/{{ admin_user.name }}/.kube/config"
+  shell: kubectl uncordon {{ inventory_hostname }}
+  retries: 5
+  delay: 5
+  register: output
+  until: output is succeeded
+  delegate_to: "{{ groups['kubernetes_master'][0] }}"
+
+- name: Verify cluster version
+  include_tasks: "verify.yml"
+

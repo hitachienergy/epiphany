@@ -1,0 +1,53 @@
+---
+# Master node specific
+
+# Setup etcd encryption
+
+- name: Check if etcd encryption configuration exists
+  stat:
+    path: /etc/kubernetes/pki/etcd/etc-encryption.conf
+  register: etcd_conf_file
+
+- name: Generate encryption secret
+  shell: head -c 32 /dev/urandom | base64 -i -
+  register: random_secret
+  when:
+    - groups['kubernetes_master'][0] == inventory_hostname
+    - not etcd_conf_file.stat.exists
+
+- name: Stdout
+  debug:
+    msg: "*{{ random_secret.stdout }}*"
+  when:
+    - groups['kubernetes_master'][0] == inventory_hostname
+    - not etcd_conf_file.stat.exists
+
+- name: Create etcd encryption config
+  become: yes
+  template:
+    dest: "/etc/kubernetes/pki/etcd/etc-encryption.conf"
+    src: etc-encryption.conf.j2
+    owner: root
+    group: root
+    mode: 0644
+  when:
+    - groups['kubernetes_master'][0] == inventory_hostname
+    - not etcd_conf_file.stat.exists
+
+- name: Change kube apiserver configuration for etcd
+  lineinfile:
+    path: /etc/kubernetes/manifests/kube-apiserver.yaml
+    insertafter: '^    - kube-apiserver$'
+    line: '    - --encryption-provider-config=/etc/kubernetes/pki/etcd/etc-encryption.conf'
+  when:
+    - groups['kubernetes_master'][0] == inventory_hostname
+
+- name: Run secrets encryption
+  shell: kubectl --kubeconfig=/home/{{ admin_user.name }}/.kube/config get secrets --all-namespaces -o json | kubectl replace -f -
+  become_user: "{{ admin_user.name }}"
+  retries: 5
+  delay: 10
+  register: result
+  until: result.rc == 0
+  when:
+    - groups['kubernetes_master'][0] == inventory_hostname

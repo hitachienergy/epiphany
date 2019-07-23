@@ -1,0 +1,42 @@
+kind: configuration/kubernetes-master
+version: 0.3.0
+title: "Kubernetes Master Config"
+name: default
+specification:
+  version: 1.14.4
+  allow_pods_on_master: False
+  storage:
+    name: epiphany-cluster-volume # name of the Kubernetes resource
+    path: / # directory path in mounted storage
+    enable: True
+    capacity: 50 # GB
+    data: {} #AUTOMATED - data specific to cloud provider
+  advanced: # modify only if you are sure what value means
+    api_server_args: # https://kubernetes.io/docs/reference/command-line-tools-reference/kube-apiserver/
+      profiling: false
+      enable-admission-plugins: "AlwaysPullImages,DenyEscalatingExec,NamespaceLifecycle,ServiceAccount,NodeRestriction"
+      audit-log-path: "/var/log/apiserver/audit.log"
+      audit-log-maxbackup: 10
+      audit-log-maxsize: 200
+    controller_manager_args: # https://kubernetes.io/docs/reference/command-line-tools-reference/kube-controller-manager/
+      profiling: false
+      terminated-pod-gc-threshold: 200
+    scheduler_args:  # https://kubernetes.io/docs/reference/command-line-tools-reference/kube-scheduler/
+      profiling: false
+    networking:
+      dnsDomain: cluster.local
+      podSubnet: 10.244.0.0/16
+      serviceSubnet: 10.96.0.0/12
+      plugin: calico # valid options: calico, flannel
+    imageRepository: k8s.gcr.io
+    certificatesDir: /etc/kubernetes/pki
+    etcd_args:
+      encrypted: yes
+
+#  image_registry_secrets:
+#  - email: emaul@domain.com
+#    name: secretname
+#    namespace: default
+#    password: docker-registry-pwd
+#    server_url: docker-registry-url
+#    username: docker-registry-user

@@ -1,0 +1,10 @@
+---
+elasticsearch_ip: "{{ hostvars[groups['elasticsearch'][0]]['ansible_default_ipv4']['address'] }}"
+
+elasticsearch_curator_cron_jobs:
+- hour: 1
+  job: curator_cli --host '{{ elasticsearch_ip }}' delete_indices --filter_list
+    '[{"filtertype":"age","source":"creation_date","direction":"older","unit":"days","unit_count":{{
+    specification.indices_retention_days }}}]'
+  minute: 0
+  name: Delete old elasticsearch indices.

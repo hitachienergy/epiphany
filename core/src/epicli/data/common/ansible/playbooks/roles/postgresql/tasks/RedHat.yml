@@ -1,0 +1,81 @@
+---
+# Postgresql Red Hat family of specific tasks
+
+- name: Check if repository file exists
+  stat:
+    path: /etc/yum.repos.d/redhat-rhui.repo
+  register: rhui_exist
+
+- name: Check if Software Collections repository on EC2 exists
+  shell: grep -c -i rhui-REGION-rhel-server-rhscl /etc/yum.repos.d/redhat-rhui.repo
+  register: sc_repo_count
+  failed_when: "sc_repo_count.rc == 2"
+  when: rhui_exist
+
+- name: Enable Software Collections on EC2
+  ini_file:
+    dest: /etc/yum.repos.d/redhat-rhui.repo
+    section: rhui-REGION-rhel-server-rhscl
+    option: enabled
+    value: 1
+  when: sc_repo_count.stdout|int == 1
+
+- name: Install postgresql family packages
+  yum:
+    name:
+      - rh-postgresql10-postgresql
+      - rh-postgresql10-postgresql-syspaths
+      - rh-postgresql10-postgresql-server
+      - rh-postgresql10-postgresql-server-syspaths
+      - rh-postgresql10-postgresql-contrib
+      - rh-postgresql10-postgresql-contrib-syspaths
+      - rh-postgresql10-postgresql-libs
+      - python-psycopg2 # required for postresql ansible management
+    update_cache: yes
+    state: present
+
+- name: Check postgresql init
+  stat:
+    path: /var/opt/rh/rh-postgresql10/lib/pgsql/data/pg_hba.conf
+  register: pg_hba_conf
+
+- name: Init postgresql database
+  shell: /opt/rh/rh-postgresql10/root/usr/bin/postgresql-setup --initdb
+  when:
+    - not pg_hba_conf.stat.exists
+
+- name: Enable postgresql service
+  service:
+    name: postgresql
+    enabled: yes
+
+- name: Stop firewalld
+  service:
+    name: firewalld
+    state: stopped
+    enabled: no
+
+- name: Change pg_hba.conf
+  replace:
+    path: /var/opt/rh/rh-postgresql10/lib/pgsql/data/pg_hba.conf
+    regexp: '^host.*?all.*?all.*?127\.0\.0\.1\/32.*?ident$'
+    replace: 'host    all             all       0.0.0.0/0          md5'
+    backup: yes
+
+- name: Change postgresql.conf
+  replace:
+    path: /var/opt/rh/rh-postgresql10/lib/pgsql/data/postgresql.conf
+    regexp: "#listen_addresses = 'localhost'"
+    replace: "listen_addresses = '*'"
+    backup: yes
+
+- name: Restart postgresql service
+  service:
+    name: postgresql
+    state: restarted
+
+- name: Set up replication
+  include_tasks: "replication-RedHat.yml"
+  when:
+    - specification.replication is defined and specification.replication.enable is defined and specification.replication.enable
+

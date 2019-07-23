@@ -1,0 +1,155 @@
+---
+# Master node specific
+
+# Could include os_family include here
+
+- name: check kubeadm init
+  stat:
+    path: /etc/kubernetes/manifests/kube-apiserver.yaml
+  register: kube
+
+- name: kubeadm config images pull --kubernetes-version={{ specification.version }}
+  shell: "kubeadm config images pull --kubernetes-version={{ specification.version }}"
+  # when: not kube.stat.exists
+
+- name: Creates directory
+  file:
+    path: /etc/kubeadm
+    state: directory
+    owner: root
+    group: root
+    mode: 0644
+
+- name: Create kubeadm config
+  become: yes
+  template:
+    dest: "/etc/kubeadm/kubeadm-config.yml"
+    src: kubeadm-config.yml.j2
+    owner: root
+    group: root
+    mode: 0644
+  when: not kube.stat.exists
+
+- name: kubeadm init with config file
+  shell: "kubeadm init --config=/etc/kubeadm/kubeadm-config.yml"
+  when: not kube.stat.exists
+
+- name: Include kubelet configuration tasks
+  include_role:
+    name: kubernetes_common
+    tasks_from: configure-kubelet
+
+- name: Create .kube
+  file:
+    path: /home/{{ admin_user.name }}/.kube
+    state: directory
+    owner: "{{ admin_user.name }}"
+    group: "{{ admin_user.name }}"
+  # become_user: "{{ admin_user.name }}"
+
+- name: Create .kube/config
+  copy:
+    src: /etc/kubernetes/admin.conf
+    dest: /home/{{ admin_user.name }}/.kube/config
+    remote_src: yes
+    owner: "{{ admin_user.name }}"
+    group: "{{ admin_user.name }}"
+
+- name: Copy dashboard yaml
+  copy:
+    src: kubernetes-dashboard.yml
+    dest: /home/{{ admin_user.name }}/
+    owner: "{{ admin_user.name }}"
+    group: "{{ admin_user.name }}"
+
+- name: Copy sample-role.yml
+  copy:
+    src: sample-role.yml
+    dest: /home/{{ admin_user.name }}/
+    owner: "{{ admin_user.name }}"
+    group: "{{ admin_user.name }}"
+
+- name: Copy role-binding.yml
+  copy:
+    src: role-binding.yml
+    dest: /home/{{ admin_user.name }}/
+    owner: "{{ admin_user.name }}"
+    group: "{{ admin_user.name }}"
+
+- name: Copy jsonpath.json
+  copy:
+    src: jsonpath.json
+    dest: /home/{{ admin_user.name }}/
+    owner: "{{ admin_user.name }}"
+    group: "{{ admin_user.name }}"
+
+- name: Copy coredns-config.yml
+  copy:
+    src: coredns-config.yml
+    dest: /home/{{ admin_user.name }}/
+    owner: "{{ admin_user.name }}"
+    group: "{{ admin_user.name }}"
+
+- name: Apply coredns-config.yml
+  shell: kubectl apply --kubeconfig=/home/{{ admin_user.name }}/.kube/config -f /home/{{ admin_user.name }}/coredns-config.yml
+  become_user: "{{ admin_user.name }}"
+
+# Apply network plugin configured by user
+- include_tasks: "./cni-plugins/{{ specification.advanced.networking.plugin }}.yml"
+
+- name: Check if kubernetes-dashboard is already deployed
+  shell: kubectl --kubeconfig=/home/{{ admin_user.name }}/.kube/config get pods --all-namespaces | grep -c -i dashboard
+  become_user: "{{ admin_user.name }}"
+  register: dashboard_count
+  failed_when: "dashboard_count.rc == 2"
+  when:
+    - groups['kubernetes_master'][0] == inventory_hostname
+
+- name: Dashboard count
+  debug:
+    msg: "Dashboards: {{ dashboard_count }}"
+
+- name: Apply kubernetes-dashboard.yml
+  shell: kubectl apply --kubeconfig=/home/{{ admin_user.name }}/.kube/config -f /home/{{ admin_user.name }}/kubernetes-dashboard.yml
+  become_user: "{{ admin_user.name }}"
+  when:
+    - groups['kubernetes_master'][0] == inventory_hostname
+    - dashboard_count.stdout_lines[0]|int == 0
+
+- name: Apply sample-role.yml
+  shell: kubectl apply --kubeconfig=/home/{{ admin_user.name }}/.kube/config -f /home/{{ admin_user.name }}/sample-role.yml
+  become_user: "{{ admin_user.name }}"
+  when:
+    - groups['kubernetes_master'][0] == inventory_hostname
+    - dashboard_count.stdout_lines[0]|int == 0
+
+- name: Apply role-binding.yml
+  shell: kubectl apply --kubeconfig=/home/{{ admin_user.name }}/.kube/config -f /home/{{ admin_user.name }}/role-binding.yml
+  become_user: "{{ admin_user.name }}"
+  when:
+    - groups['kubernetes_master'][0] == inventory_hostname
+    - dashboard_count.stdout_lines[0]|int == 0
+
+- name: Get nodes with noschedule-
+  shell: kubectl --kubeconfig=/home/{{ admin_user.name }}/.kube/config get nodes -o jsonpath-file=/home/{{ admin_user.name }}/jsonpath.json | grep -v NoSchedule | grep -c -i {{ inventory_hostname }}
+  become_user: "{{ admin_user.name }}"
+  register: untainted_nodes_list
+  failed_when: "untainted_nodes_list.rc == 2"
+  when:
+    - groups['kubernetes_master'][0] == inventory_hostname   
+
+- name: Check if we want/need to untaint master 
+  set_fact:
+    untaint_master: True
+  when:
+    - groups['kubernetes_master'] is defined
+    - untainted_nodes_list.stdout_lines[0]|int == 0
+    - (groups['kubernetes_master']|list|length == 1) and (groups['kubernetes_node'] is defined and groups['kubernetes_node']|list|length == 0) or (specification.allow_pods_on_master == True)
+  changed_when: false
+
+- name: Untaint master
+  shell: "kubectl --kubeconfig=/home/{{ admin_user.name }}/.kube/config taint node {{ groups['kubernetes_master'][0] }} node-role.kubernetes.io/master:NoSchedule-"
+  become_user: "{{ admin_user.name }}"
+  when:
+    - groups['kubernetes_master'][0] == inventory_hostname
+    - untaint_master is defined and untaint_master == True

@@ -1,0 +1,8 @@
+---
+- include_tasks: "cookie-setup/master.yml"
+  when:
+    - groups['rabbitmq'][0] == inventory_hostname
+
+- include_tasks: "cookie-setup/nodes.yml"
+  when:
+    - groups['rabbitmq'][0] != inventory_hostname

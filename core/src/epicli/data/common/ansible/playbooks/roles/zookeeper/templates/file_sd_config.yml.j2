@@ -1,0 +1,7 @@
+# {{ ansible_managed }}
+
+- targets: ['{{ inventory_hostname }}:{{ prometheus_jmx_exporter_web_listen_port }}']
+  labels:
+{% for label, value in prometheus_kafka_jmx_file_sd_labels.items() %}
+    "{{ label }}": "{{ value }}"
+{% endfor %}

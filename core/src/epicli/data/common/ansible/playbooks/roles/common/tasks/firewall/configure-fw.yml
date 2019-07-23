@@ -1,0 +1,18 @@
+---
+#- name: "Check if has firewall enabled"
+#  set_fact:
+#    has_firewall_enabled: "{{ nodes | json_query(qry) | first }}"
+#  vars:
+#    qry: '[?hosts[?name == `{{ inventory_hostname }}`]].security.firewall.enable'
+#  tags: firewall
+#
+#- name: "Get firewall ports"
+#  set_fact:
+#    firewall_ports_to_open: "{{ nodes | json_query(qry) | first }}"
+#  vars:
+#    qry: '[?hosts[?name == `{{ inventory_hostname }}`]].security.firewall.ports'
+#  when: has_firewall_enabled
+#  tags: firewall
+
+- include_tasks: configure-fw-{{ ansible_os_family }}.yml
+  tags: firewall

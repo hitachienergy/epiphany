@@ -1,0 +1,36 @@
+---
+- name: rabbitmq default file
+  template:
+    src: rabbitmq-server.j2
+    dest: /etc/rabbitmq/rabbitmq.conf
+    owner: root
+    group: root
+    mode: 0644
+  register: config_changed
+
+- name: default settings for RabbitMQ AMQP server
+  template:
+    src: rabbitmq-env.conf.j2
+    dest: /etc/rabbitmq/rabbitmq-env.conf
+    owner: root
+    group: root
+    mode: 0644
+  register: env_settings_changed
+
+- name: Symlink RabbitMQ bin to sbin(for install plugins)
+  file:
+    src: /usr/lib/rabbitmq/bin
+    dest: /usr/lib/rabbitmq/sbin
+    state: link
+
+- name: Enable plugins that were installed
+  rabbitmq_plugin:
+    names: "{{ item }}"
+    prefix: /usr/lib/rabbitmq
+    state: enabled
+    new_only: no
+  with_items: "{{ specification.rabbitmq_plugins }}"
+
+- name: Restart RabbitMQ
+  service: name=rabbitmq-server state=restarted
+  when: config_changed.changed or env_settings_changed.changed

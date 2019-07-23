@@ -1,0 +1,12 @@
+[Unit]
+Description={{ specification.description }}
+
+[Service]
+User=haproxy_exporter
+Group=haproxy_exporter
+ExecStart=/opt/haproxy_exporter/haproxy_exporter "--haproxy.scrape-uri=http://{{ stats_credentials }}@{{ stats_bind_address }}{{ stats_uri }}"
+SyslogIdentifier=prometheus_haproxy_exporter
+Restart=always
+
+[Install]
+WantedBy=multi-user.target

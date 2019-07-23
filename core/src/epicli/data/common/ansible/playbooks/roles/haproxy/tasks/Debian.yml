@@ -1,0 +1,109 @@
+---
+# HAProxy Debian family of specific tasks
+
+- name: Install haproxy package
+  apt: name=haproxy update_cache=yes state=present
+
+- name: Restart haproxy service
+  service:
+    name: haproxy
+    state: stopped
+
+- name: Find certificate file in role directory
+  local_action: find paths="{{ role_path }}/files/" patterns="*.pem" 
+  become: no
+  register: certificates_names
+
+- name: Check if any certificate exist in role directory
+  set_fact:
+    certificates_exist: "{{ certificates_names is defined and (certificates_names.files | length >0) }}"
+
+- name: Write file name
+  debug:
+    msg: "{{ item.path }}"
+  with_items: "{{ certificates_names.files }}"
+  when:
+    - certificates_exist
+
+- name: Write file name
+  debug:
+    msg: "{{ certificates_names.files | length }}"
+  when:
+    - certificates_exist
+
+- name: Display if certificate file in role directory exists
+  debug:
+    msg: "Certificate exists"
+  when:
+    - certificates_exist
+
+- name: Create directory in /etc/ssl if it doesn't exist
+  file:
+    path: /etc/ssl/haproxy
+    state: directory
+
+- name: Copy certificate remotely if certificate file in role directory exists
+  copy:
+    src: "{{ item.path }}"
+    dest: /etc/ssl/haproxy/
+  with_items: "{{ certificates_names.files }}"
+  when:
+    - certificates_exist
+
+- name: Generate self signed certificate
+  include_tasks: certificate_generate.yml
+  when:
+    - not certificates_exist
+
+- name: Copy self signed certificate to /etc/ssl/haproxy/
+  copy:
+    src: /tmp/{{ specification.self_signed_concatenated_cert_name }}
+    dest: /etc/ssl/haproxy/
+    remote_src: yes
+  when:
+    - not certificates_exist
+
+- name: Find certificate file in haproxy directory
+  find:
+    paths="/etc/ssl/haproxy/" patterns="*.pem"
+  register: haproxy_certs_names
+
+- name: Write certs in haproxy
+  debug:
+    msg: "{{ item.path }}"
+  with_items: "{{ haproxy_certs_names.files }}"
+  when:
+    - certificates_exist
+
+- name: Copy haproxy config
+  template: 
+    dest: /etc/haproxy/haproxy.cfg
+    src: haproxy_{{ ansible_os_family }}.cfg.j2
+
+- name: Copy haproxy rsyslog config
+  copy: 
+    dest: /etc/rsyslog.d/haproxy.conf
+    src: "haproxy_rsyslog_{{ ansible_os_family }}.conf"
+
+- name: Uncomment modules loading
+  replace: 
+    path: /etc/rsyslog.conf 
+    regexp: '#module(load="imudp")'
+    replace: 'module(load="imudp")'
+
+- name: Uncomment modules loading
+  replace: 
+    path: /etc/rsyslog.conf 
+    regexp: '#input(type="imudp" port="514")'
+    replace: 'input(type="imudp" port="514")'
+
+- name: Restart rsyslog service
+  service:
+    name: rsyslog
+    state: restarted
+
+- name: Enable haproxy service
+  service:
+    name: haproxy
+    state: started
+    enabled: yes

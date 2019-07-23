@@ -1,0 +1,19 @@
+# {{ ansible_managed }}
+[Unit]
+Description=Alertmanager
+After=network.target
+
+[Service]
+Type=simple
+PIDFile=/var/run/prometheus-alertmanager.pid
+User=prometheus
+Group=prometheus
+ExecReload=/bin/kill -HUP $MAINPID
+ExecStart=/usr/local/bin/alertmanager \
+--config.file={{ specification.config_directory }}/alertmanager.yml \
+--storage.path={{ specification.storage.data_directory }}/alertmanager
+SyslogIdentifier=alertmanager
+Restart=always
+
+[Install]
+WantedBy=multi-user.target

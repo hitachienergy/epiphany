@@ -1,0 +1,81 @@
+kind: epiphany-cluster
+version: 0.3.0
+title: "Epiphany cluster Config"
+provider: aws
+name: "default"
+specification:
+  name: EpiphanyCluster
+  prefix: default
+  admin_user:
+    name: operations # YOUR-ADMIN-USERNAME
+    key_path: /root/.ssh/epiphany-operations/id_rsa # YOUR-SSH-KEY-PATH
+  cloud:
+    subscription_name: YOUR-SUB-NAME
+    vnet_address_pool: 10.1.0.0/20
+    use_public_ips: False # When not using public IPs you have to provide connectivity via private IPs (VPN)
+    region: eu-west-2
+    credentials: # todo change it to get credentials from vault
+      key: 3124-4124-4124
+      secret: DADFAFHCJHCAUYEAk
+  components:
+    kubernetes_master:
+      count: 1
+      machine: kubernetes-master-machine
+      configuration: default
+      subnets:
+        - availability_zone: eu-west-2a
+          address_pool: 10.1.1.0/24
+        - availability_zone: eu-west-2b
+          address_pool: 10.1.2.0/24
+    kubernetes_node:
+      count: 2
+      machine: kubernetes-node-machine
+      configuration: default
+      subnets:
+        - availability_zone: eu-west-2a
+          address_pool: 10.1.1.0/24
+        - availability_zone: eu-west-2b
+          address_pool: 10.1.2.0/24
+    logging:
+      count: 1
+      machine: default
+      configuration: default
+      subnets:
+        - availability_zone: eu-west-2a
+          address_pool: 10.1.3.0/24
+    monitoring:
+      count: 1
+      machine: monitoring-machine
+      configuration: default
+      subnets:
+        - availability_zone: eu-west-2a
+          address_pool: 10.1.4.0/24
+    kafka:
+      count: 2
+      machine: kafka-machine
+      configuration: default
+      subnets:
+        - availability_zone: eu-west-2a
+          address_pool: 10.1.5.0/24
+    postgresql:
+      count: 0
+      machine: postgresql-machine
+      configuration: default
+      subnets:
+        - availability_zone: eu-west-2a
+          address_pool: 10.1.6.0/24
+
+    load_balancer:
+      count: 1
+      machine: default
+      configuration: default
+      subnets:
+        - availability_zone: eu-west-2a
+          address_pool: 10.1.7.0/24
+    rabbitmq:
+      count: 0
+      machine: default
+      configuration: default
+      subnets:
+        - availability_zone: eu-west-2a
+          address_pool: 10.1.8.0/24

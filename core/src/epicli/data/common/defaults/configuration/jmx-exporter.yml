@@ -1,0 +1,13 @@
+kind: configuration/jmx-exporter
+version: 0.3.0
+title: "JMX exporter"
+name: default
+specification:
+  jmx_exporter_version: "0.12.0"
+  download_url: "https://repo1.maven.org/maven2/io/prometheus/jmx/jmx_prometheus_javaagent/0.12.0/jmx_prometheus_javaagent-0.12.0.jar"
+  download_sha: "6c7d195cb67a09517ec1469c214b3d8ab0030bdbaa9e2ee06a9995d7b03c707c"
+
+  jmx_path: /opt/jmx-exporter/jmx_prometheus_javaagent.jar # Changing it requires also change for same variable in Kafka and Zookeeper configs.  # Todo Zookeeper and Kafka to use this variable
+  jmx_jars_directory: /opt/jmx-exporter/jars
+  jmx_exporter_user: jmx-exporter
+  jmx_exporter_group: jmx-exporter

@@ -1,0 +1,90 @@
+#jinja2: trim_blocks:False
+
+# {{ ansible_managed }}
+
+global
+   log /dev/log local0
+   log /dev/log local1 notice
+   chroot /var/lib/haproxy
+   stats timeout 30s
+   user haproxy
+   group haproxy
+   daemon
+ 
+defaults
+   log global
+   mode http
+   option httplog
+   option dontlognull
+   timeout connect 5000
+   timeout client 50000
+   timeout server 50000
+{%- if specification is defined and specification.http_request_timeout is defined %}
+   timeout http-request {{ specification.http_request_timeout }}
+{%- endif %}
+
+
+{%- for front in specification.frontend %}
+frontend {{ front.name }}
+    {%- if front.https == True %}
+    bind *:{{ front.port }} ssl {% for cert_name in haproxy_certs_names.files %}crt {{ cert_name.path }} {% endfor %}
+    {%- endif %}
+    {%- if front.https == False %}
+    bind *:{{ front.port }}
+    {%- endif %}
+
+    {%- if (front.domain_backend_mapping is defined) and (front.domain_backend_mapping > 0) %}
+    {%- if front.https == True %}
+    {%- for mapping in front.domain_backend_mapping %}
+    acl {{ mapping.backend }} ssl_fc_sni {{ mapping.domain }}
+    {%- endfor %}
+    {%- endif %}
+    {%- if front.https == False %}     
+    {%- for mapping in front.domain_backend_mapping %}     
+    acl {{ mapping.backend }} hdr_dom(host) -i {{ mapping.domain }}     
+    {%- endfor %}     
+    {%- endif %}
+    {%- endif %}
+
+    {%- if front.backend | length == 1 %}
+    default_backend {{ front.backend | first }}
+    {%- endif %}
+    {%- if front.backend | length > 1 %}
+    {%- for back in front.backend %}
+    use_backend {{ back }} if {{ back }}
+    {%- endfor %}
+    {%- endif %}
+    
+{%- endfor %}
+
+
+{%- for back in specification.backend %}
+backend {{ back.name }}
+  balance roundrobin
+  {%- if back.server_groups is defined %}
+  {%- for server_group in back.server_groups %}
+  {%- for server in groups[server_group] %}
+   server {{ server }} {{ hostvars[server]['ansible_default_ipv4']['address'] }}:{{ back.port }} check
+  {%- endfor %}
+  {%- endfor %}
+  {%- endif %}
+  
+  {%- if back.servers is defined %}
+  {%- for server in back.servers %}
+    server {{ server.name }} {{ server.address }}:{{ back.port }} check
+  {%- endfor %}
+  {%- endif %}
+{%- endfor %}
+
+    {%- if specification.stats is defined %}
+    {%- if specification.stats.enable %}
+frontend stats
+    bind  {{ specification.stats.bind_address }}
+    stats enable
+    stats refresh 10s
+    stats admin if { src 127.0.0.1 }
+    stats hide-version  # Hide HAProxy version
+    stats uri {{ specification.stats.uri }}
+    stats auth {{ specification.stats.user }}:{{ specification.stats.password }}
+    {%- endif %}
+    {%- endif %}

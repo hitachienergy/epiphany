@@ -1,0 +1,11 @@
+---
+- name: Copy flannel config
+  copy:
+    src: kube-flannel.yml
+    dest: /home/{{ admin_user.name }}/
+    owner: "{{ admin_user.name }}"
+    group: "{{ admin_user.name }}"
+
+- name: Apply flannel definition
+  shell: kubectl apply --kubeconfig=/home/{{ admin_user.name }}/.kube/config -f /home/{{ admin_user.name }}/kube-flannel.yml
+  become_user: "{{ admin_user.name }}"

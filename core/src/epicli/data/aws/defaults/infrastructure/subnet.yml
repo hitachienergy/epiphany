@@ -1,0 +1,11 @@
+kind: infrastructure/subnet
+version: 0.3.0
+title: "Subnet Config"
+provider: aws
+name: default
+specification:
+  name: SET_BY_AUTOMATION
+  vpc_name: SET_BY_AUTOMATION
+  cidr_block: SET_BY_AUTOMATION
+  cluster_name: SET_BY_AUTOMATION
+  availability_zone: SET_BY_AUTOMATION
