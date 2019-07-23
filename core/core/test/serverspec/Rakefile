@@ -36,8 +36,8 @@ File::open(ENV['inventory']) do |f|
       current_group = $1
     elsif line =~ /(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})/ # regex for IP address
       if current_group
-        groups[current_group] ||= []
-        groups[current_group] << $1
+        groups[current_group] ||= {}
+        groups[current_group][$1] = line.split.first
       else
         hosts << $1
       end
@@ -62,18 +62,19 @@ namespace :spec do
 
   # Tasks for groups
   groups.keys.each do |group|
-    task group.to_sym => groups[group].map {|host| 'spec:' + group + ':' + host }
-    groups[group].each do |host|
+    task group.to_sym => groups[group].keys.map {|host| 'spec:' + group + ':' + host }
+    groups[group].keys.each do |host|
       desc "Run tests for group '#{group}'"
       task_name = group + ':' + host
       RSpec::Core::RakeTask.new(task_name) do |t|
         ENV['TARGET_HOST'] = host
+		ENV['TEST_ENV_NUMBER'] = "-" + groups[group][host]
         puts "Testing " + task_name
         t.pattern = "spec/#{group}/*_spec.rb"
         t.fail_on_error = false
-        t.rspec_opts = "--format documentation --format html \
-        --out results/" + Time.now.strftime("%Y-%m-%d_%H-%M-%S") + "_#{group}_#{host}.html"
-      end
+        t.rspec_opts = "--format documentation --format RspecJunitFormatter  \
+        --out results/" + Time.now.strftime("%Y-%m-%d_%H-%M-%S") + "_#{group}_#{groups[group][host]}.xml"
+       end
     end
   end
 end

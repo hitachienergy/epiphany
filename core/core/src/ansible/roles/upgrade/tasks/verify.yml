@@ -1,0 +1,42 @@
+---
+- name: Get cluster version 
+  environment:
+    KUBECONFIG: "/home/{{ admin_user.name }}/.kube/config"
+  shell: kubectl version --short | grep -i server
+  register: kubectl_cluster_version
+
+- name: Get kubectl version 
+  environment:
+    KUBECONFIG: "/home/{{ admin_user.name }}/.kube/config"
+  shell: kubectl version --client --short | awk '{print $3}'
+  register: kubectl_client_version
+
+- name: Get kubeadm version 
+  environment:
+    KUBECONFIG: "/home/{{ admin_user.name }}/.kube/config"
+  shell: kubeadm version -o short
+  register: kubeadm_version
+
+- name: Get node version
+  environment:
+    KUBECONFIG: "/home/{{ admin_user.name }}/.kube/config"
+  shell: kubectl get nodes {{ inventory_hostname }} -o wide | awk '{print $2" "$5}'
+  register: get_node_status
+
+- name: Verify cluster version
+  assert:
+    that: "'{{ version }}' in kubectl_cluster_version.stdout"
+
+- name: Verify kubectl version
+  assert:
+    that: "'{{ version }}' in kubectl_client_version.stdout"
+
+- name: Verify kubeadm version
+  assert:
+    that: "'{{ version }}' in kubeadm_version.stdout"
+ 
+- name: Verify node version and status
+  assert:
+    that:
+      - "'{{ version }}' in get_node_status.stdout"
+      - "'Ready' in get_node_status.stdout"  

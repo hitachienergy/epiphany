@@ -1,0 +1,69 @@
+---
+- name: Create a backup directory
+  file:
+    path: "{{ backup_dir }}"
+    state: directory
+
+# Ansible 2.8
+# - name: Backup certificates
+#   copy:
+#     src: /etc/kubernetes/pki
+#     dest: "{{ backup_dir }}/tmp"
+#     remote_src: yes
+
+# Ansible 2.7
+- name: Backup certificates
+  synchronize:
+    src: /etc/kubernetes/pki
+    dest: "{{ backup_dir }}/tmp"
+    recursive: yes
+  delegate_to: "{{ inventory_hostname }}"
+
+- name: Get etcd image name
+  environment:
+    KUBECONFIG: "/home/{{ admin_user.name }}/.kube/config"
+  shell: kubectl get pods --all-namespaces -o=jsonpath="{.items[*].spec.containers[?(@.name=='etcd')].image}"
+  register: etcd_image_name
+
+- name: Save etcd image name to file
+  copy:
+    content:  "{{ etcd_image_name.stdout }}"
+    dest: "{{ backup_dir }}/tmp/etcd_ver.txt"
+
+- name: Create etcd snapshot
+  shell: >
+    docker run -v "{{ backup_dir }}/tmp":/backup  \
+    --network host \
+    --env ETCDCTL_API=3 \
+    --rm {{ etcd_image_name.stdout }} \
+    etcdctl --endpoints=https://127.0.0.1:2379 \
+    --cacert=/backup/pki/etcd/ca.crt \
+    --cert=/backup/pki/etcd/healthcheck-client.crt \
+    --key=/backup/pki/etcd/healthcheck-client.key \
+    snapshot save /backup/etcd-snapshot.db
+
+- name: Check if kubeadm configuration file exists
+  stat:
+    path: /etc/kubeadm/kubeadm-config.yml
+  register: stat_result
+
+- name: Backup kubeadm configuration file
+  copy:
+    src: /etc/kubeadm/kubeadm-config.yml
+    dest: "{{ backup_dir }}/tmp"
+    remote_src: yes
+  when: stat_result.stat.exists
+
+- name: Set variable with current timestamp
+  set_fact: timestamp="{{ lookup('pipe', 'date +%Y%m%d%H%M%S') }}"
+
+- name: Create a tar gz archive
+  archive:
+    path: "{{ backup_dir }}/tmp/"
+    dest: "{{ backup_dir }}/k8s_backup_{{ timestamp }}.tar.gz"
+    format: gz
+
+- name: Clean temporary directory
+  file:
+    state: absent
+    path: "{{ backup_dir }}/tmp/"
