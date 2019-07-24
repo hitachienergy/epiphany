@@ -15,12 +15,6 @@
 # limitations under the License.
 #
 
-# gen_docs.sh creates the doc subdirectory trees and then copies the required *.md files to the given folder overridding
-# whatever is those doc directories. The VSTS Wiki allow for documentation from *.md files so restricting to only /docs
-# folder allows for a more controlled environment.
-
-# NOTE: There needs to be templates created and data entered for the docs just like the other areas of Epiphany.
-
 # Exit immediately if something goes wrong.
 set -eu
 

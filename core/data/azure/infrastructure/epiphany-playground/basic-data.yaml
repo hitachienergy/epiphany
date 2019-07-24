@@ -2,7 +2,7 @@
 # Simplified datafile that you can use together with template (see README.md in this folder).
 # Change values according to your needs, start with generating ssh keys and placing them in the directory "keys_directory". Do not forget to update "keys_directory" as well.
 kind: simplified-datafile
-version: 0.2.2
+version: 0.3.0
 environment_name: Playground
 azure:
   subscription_name: YOUR-SUBSCRIPTION-NAME

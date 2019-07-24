@@ -1,6 +1,24 @@
 # Changelog 0.1
 
-## [0.1.0] - 2018-10-19
+## [0.1.2] 2018-12-05
+
+### Changed
+
+-   Kubernetes v1.11.5 installation
+
+## [0.1.1] 2018-11-21
+
+### Added
+
+- Alerts (AlertManager) installation and configuration
+- HA Proxy - TLS Termination with multiple addresses and certificates
+- PostgreSQL installation and configuration
+
+### Changed
+
+- Automatic restart of RedHat/Debian cluster
+
+## [0.1.0] 2018-10-19
 
 ### Added
 
@@ -21,3 +39,4 @@
 - Log rotation for: Kibana, Kubernetes, Elasticsearch, HAProxy, Kafka
 - Automation for firewall rules on RedHat
 - Create VPN network on Azure using Epiphany
+
