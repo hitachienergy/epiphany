@@ -1,10 +1,10 @@
 ---
 # These tasks are run from master and worker roles
 
-- name: Ensure Kubelet Drop-In directory exists
+- name: Ensure kubelet drop-in directory exists
   become: true
   file:
-    path: "/etc/systemd/system/kubelet.service.d"
+    path: /etc/systemd/system/kubelet.service.d
     state: directory
 
 - name: Copy kubelet configuration file (11-cgroup.conf)
