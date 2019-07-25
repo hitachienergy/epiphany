@@ -24,7 +24,6 @@ class EpiphanyEngine:
         self.configuration_docs = []
         self.infrastructure_docs = []
 
-
     def __enter__(self):
         return self
 

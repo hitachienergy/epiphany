@@ -26,10 +26,10 @@ defaults
 
 {%- for front in specification.frontend %}
 frontend {{ front.name }}
-    {%- if front.https == True %}
+    {%- if front.https is defined and front.https == True %}
+    mode tcp
     bind *:{{ front.port }} ssl {% for cert_name in haproxy_certs_names.files %}crt {{ cert_name.path }} {% endfor %}
-    {%- endif %}
-    {%- if front.https == False %}
+    {%- else %}
     bind *:{{ front.port }}
     {%- endif %}
 
@@ -61,25 +61,37 @@ frontend {{ front.name }}
 {%- for back in specification.backend %}
 backend {{ back.name }}
   balance roundrobin
+  {%- if back.https is defined and back.https == True %}
+  option tcp-check
+  mode tcp
+  {%- endif %}
   {%- if back.server_groups is defined %}
   {%- for server_group in back.server_groups %}
   {%- for server in groups[server_group] %}
+  {%- if back.https is defined and back.https == True %}
+   server {{ server }} {{ hostvars[server]['ansible_default_ipv4']['address'] }}:{{ back.port }} check ssl verify none
+  {%- else %}
    server {{ server }} {{ hostvars[server]['ansible_default_ipv4']['address'] }}:{{ back.port }} check
+  {%- endif %}
   {%- endfor %}
   {%- endfor %}
   {%- endif %}
 
   {%- if back.servers is defined %}
   {%- for server in back.servers %}
-    server {{ server.name }} {{ server.address }}:{{ back.port }} check
+  {%- if back.https is defined and back.https == True %}
+   server {{ server.name }} {{ server.address }}:{{ back.port }} check ssl verify none
+  {%- else %}
+   server {{ server.name }} {{ server.address }}:{{ back.port }} check
+  {%- endif %}
   {%- endfor %}
   {%- endif %}
 {%- endfor %}
 
-    {%- if specification.stats is defined %}
+{%- if specification.stats is defined %}
     {%- if specification.stats.enable %}
 frontend stats
-    mode https
+    mode http
     bind :9000
     stats enable
     stats refresh 10s
@@ -89,4 +101,4 @@ frontend stats
     stats uri /haproxy?stats
     stats auth {{ specification.stats.user }}:{{ specification.stats.password }}
     {%- endif %}
-    {%- endif %}
+{%- endif %}
