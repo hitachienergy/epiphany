@@ -50,6 +50,22 @@
     validate_certs: "{{ validate_certs | bool }}"
   when: not zoo.stat.exists
 
+- name: Get sha512 sum of archive
+  stat:
+    path: "/tmp/{{ zookeeper }}.tar.gz"
+    checksum_algorithm: sha512
+    get_checksum: yes
+  register: zookeeper_download_stat
+
+- name: Display sha of archive
+  debug:
+    msg: "Zookeeper SHA512: {{ zookeeper_download_stat.stat.checksum }}"
+
+- name: Verify sha512 of archive before installation.
+  fail:
+    msg: "File checksum is not correct."
+  when: zookeeper_download_stat.stat.checksum != specification.sha
+
 - name: Uncompress the Zookeeper tar
   unarchive:
     copy: no

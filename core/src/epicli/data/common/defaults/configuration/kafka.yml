@@ -48,6 +48,7 @@ specification:
         enabled_mechanisms: PLAIN
 
     version: 2.0.0
+    sha: "b28e81705e30528f1abb6766e22dfe9dae50b1e1e93330c880928ff7a08e6b38ee71cbfc96ec14369b2dfd24293938702cab422173c8e01955a9d1746ae43f98"
     scala:
       version: 2.12
     port: 9092
