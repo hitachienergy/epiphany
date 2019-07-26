@@ -18,7 +18,7 @@ describe 'Checking if HAProxy user exists' do
     it { should exist }
     it { should belong_to_group 'haproxy' }
     it { should have_home_directory '/var/lib/haproxy' }
-    it { should have_login_shell '/usr/sbin/nologin' }
+    it { should have_login_shell('/usr/sbin/nologin').or have_login_shell('/sbin/nologin') } # HAProxy user shell is located in /sbin/nologin on RedHat
   end
 end
 
