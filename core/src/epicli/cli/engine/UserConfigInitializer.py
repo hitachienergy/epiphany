@@ -44,4 +44,16 @@ class UserConfigInitializer(Step):
             config_docs = engine.dry_run()
 
         infra_docs = load_all_documents_from_folder(self.provider, 'defaults/infrastructure')
-        return [*config_docs, *infra_docs]
+        merged_docs = [*config_docs, *infra_docs]
+
+        # set the provider for all docs
+        for doc in merged_docs:
+            if 'provider' not in doc.keys():
+                doc['provider'] = self.provider
+
+        return merged_docs
+
+
+
+
+
