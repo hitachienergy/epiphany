@@ -12,7 +12,7 @@ RUN bundle config --global silence_root_warning 1
 
 RUN mkdir /serverspec
 
-ADD ./core/core/test/serverspec /serverspec
+ADD core/test/serverspec/ /serverspec
 
 WORKDIR /serverspec
 
