@@ -33,6 +33,22 @@
     validate_certs: "{{ validate_certs | bool }}"
   when: not kafka_check.stat.exists
 
+- name: Get sha512 sum of archive
+  stat:
+    path: "/tmp/kafka_{{ specification.kafka_var.scala.version }}-{{ specification.kafka_var.version }}.tgz"
+    checksum_algorithm: sha512
+    get_checksum: yes
+  register: kafka_download_stat
+
+- name: Display sha of archive
+  debug:
+    msg: "Kafka SHA512: {{ kafka_download_stat.stat.checksum }}"
+
+- name: Verify sha512 of archive before installation
+  fail:
+    msg: "File checksum is not correct."
+  when: kafka_download_stat.stat.checksum != specification.kafka_var.sha
+
 - name: Add Kafka's bin dir to the PATH
   copy:
     content: "export PATH=$PATH:/opt/kafka/bin"

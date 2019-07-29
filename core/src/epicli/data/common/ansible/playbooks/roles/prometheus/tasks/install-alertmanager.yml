@@ -6,6 +6,7 @@
     state: directory
   delegate_to: localhost
 
+# TODO: Checking alertmanager
 - name: Download Alertmanager binary to local folder
   become: false
   get_url:

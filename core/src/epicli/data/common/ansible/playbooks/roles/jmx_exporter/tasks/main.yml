@@ -25,6 +25,7 @@
   with_items:
   - "{{ specification.jmx_jars_directory }}"
 
+# TODO: Checking sha512
 - name: Prometheus jmx | download jar
   become: yes
   get_url:

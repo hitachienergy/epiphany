@@ -41,6 +41,7 @@
     state: directory
   delegate_to: localhost
 
+# TODO: Checking prometheus
 - name: Download Prometheus binary to local folder
   become: false
   get_url:

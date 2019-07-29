@@ -20,6 +20,7 @@
 - name: Print environment variables
   debug: msg={{ env_output.stdout_lines }}
 
+# TODO: Checking sha512 of jq
 - name: Gather prereqs
   get_url:
     url: https://github.com/stedolan/jq/releases/download/jq-1.5/jq-linux64
