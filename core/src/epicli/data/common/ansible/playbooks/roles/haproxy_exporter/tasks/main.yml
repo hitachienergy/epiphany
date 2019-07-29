@@ -109,7 +109,7 @@
 
 - name: Load stats bind address from HAProxy
   shell: >-
-    grep -A4 'frontend stats' /etc/haproxy/haproxy.cfg |
+    grep -A4 'listen stats' /etc/haproxy/haproxy.cfg |
     awk '/bind/ {print $2}'
   register: stats_bind_cmd
   failed_when: stats_bind_cmd.stderr
@@ -146,3 +146,9 @@
   delegate_to: "{{ item }}"
   with_inventory_hostnames:
     - prometheus
+
+- name: Restart systemd prometheus-haproxy-exporter service
+  systemd:
+    state: restarted
+    name: prometheus-haproxy-exporter
+    daemon_reload: yes
