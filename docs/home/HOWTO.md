@@ -3,9 +3,14 @@
 ## Contents
 
 - [Prerequisites for Epiphany engine](#prerequisites-to-run-epiphany-engine)
-  - [Run directly from OS](#run-directly-from-os)
-  - [Run with Docker image for development](#run-with-docker-image-for-development)
-  - [Run with Docker image for deployment](#run-with-docker-image-for-deployment)
+  - [Epicli](#epicli)
+    - [Run Epicli directly from OS](#run-epicli-directly-from-os)
+    - [Run Epicli from Docker image](#run-epicli-from-docker-image)
+    - [Epicli development](#epicli-development)
+  - [Legacy](#legacy)
+    - [Run directly from OS](#run-directly-from-os)
+    - [Run Docker image for development](#run-with-image-for-development)
+    - [Run Docker image for deployment](#run-with-image-for-deployment)
   - [Note for Windows users](#note-for-windows-users)
 - Epiphany cluster
   - [How to create an Epiphany cluster on premise](#how-to-create-an-epiphany-cluster-on-premise)
@@ -52,10 +57,123 @@
   - [How to configure PostgreSQL](#how-to-configure-postgresql)
   - [How to configure PostgreSQL replication](#how-to-configure-postgresql-replication)
 
-
 ## Prerequisites to run Epiphany engine
 
-### Run directly from OS
+### Epicli
+
+#### Run Epicli directly from OS
+
+1. To be able to run the Epicli from your local OS you have to install:
+
+    - Python 3.7
+    - PIP
+    - Pipenv
+
+2. Open a terminal in `/core/src/epicli` and run:
+
+    ```bash
+    pipenv install
+    ```
+
+    This will create a virtual Python 3.7 environment and install all needed dependencies.
+
+3. Build the Epicli wheel:
+
+    ```bash
+    ./build-wheel.sh
+    ```
+
+4. Enter the virtual Python enviroment:
+
+    ```bash
+    pipenv shell
+    ```
+
+5. Install the Epicli wheel inside the virtual enviroment:
+
+    ```bash
+    pip install dist/epicli-VERSION-py3-none-any.whl
+    ```
+
+6. Verify the Epicli installation:
+
+    ```bash
+    epicli --version
+    ```
+
+    This should return the version of the CLI deployed.
+
+Now you can use Epicli inside the created virtual environment.
+
+#### Run Epicli from Docker image
+
+There are 2 ways to get the image, build it locally yourself or pull it from the Epiphany docker registry.
+
+##### Build Epicli image locally
+
+1. Install the following dependencies:
+
+    - Python 3.7
+    - PIP
+    - Pipenv
+    - Docker
+
+2. Open a terminal in `/core/src/epicli` and run:
+
+    On Linux:
+
+    ```bash
+    ./build-docker.sh
+    ```
+
+    On windows:
+
+    ```bash
+    ./build-docker.bat
+    ```
+  
+##### Pull Epicli image from the registry
+
+```bash
+docker pull epiphanyplatform/epicli
+```
+
+##### Running the Epicli image
+
+To run the image:
+
+Locally build:
+
+```bash
+docker run -it -v LOCAL_DIR:/shared --rm epicli
+```
+
+Pulled:
+
+```bash
+docker run -it -v LOCAL_DIR:/shared --rm epiphanyplatform/epicli
+```
+
+Where `LOCAL_DIR` should be replaced with the local path to the directory for Epicli input (SSH keys, data yamls) and output (logs, build states).
+
+#### Epicli development
+
+To setup a development environment to debug or contribute to Epicli follow the following steps.
+
+1. Install the following dependencies:
+
+    - Python 3.7
+    - PIP
+    - Pipenv
+    - PyCharm CE
+
+2. Open PyCharm CE and open the Epicli project root directory `/core/src/epicli`. PyCharm will detect the Pipenv virtual workspace and configure it appropriately.
+
+Then you can code and debug as desired:)
+
+### Legacy
+
+#### Run directly from OS
 
 To be able to run the Epiphany engine from your local OS you have to install:
 
@@ -76,7 +194,7 @@ To be able to run the Epiphany engine from your local OS you have to install:
 
 This can both be used for deploying/managing clusters or for development.
 
-### Run with Docker image for development
+#### Run Docker image for development
 
 To facilitate an easier path for developers to contribute to Epiphany we have a development docker image based on alpine. This image will help to more easily setup a development environment or to develop on systems which do not support Bash like Windows 7.
 
@@ -86,58 +204,77 @@ The following prerequisites are needed when working with the development image:
   - For Windows 7 check [here](https://docs.docker.com/toolbox/toolbox_install_windows)
 - Git <https://git-scm.com>
 
-There are 2 ways to get the image, build it localy yourself or pull it from the Epiphany docker registry.
+There are 2 ways to get the image, build it locally yourself or pull it from the Epiphany docker registry.
 
-#### To build it locally and run it:
+##### Build dev image locally
 
-1. Run the following to build the image locally:
+```bash
+docker build -t epiphany-dev -f core/src/docker/dev/Dockerfile .
+```
 
-    ```bash
-    docker build -t epiphany-dev -f core/src/docker/dev/Dockerfile .
-    ```
+##### Pull dev image from the registry
 
-2. To run the locally build image in a container use:
+```bash
+docker pull epiphanyplatform/epiphany-dev
+```
 
-    ```bash
-    docker run -it -v LOCAL_DEV_DIR:/epiphany --rm epiphany-dev
-    ```
-    
-    Where `LOCAL_DEV_DIR` should be replaced with the local path to your core and data repositories. This will then be mapped to `epiphany` inside the container. If everything is ok you will be presented with a Bash prompt from which one can run the Epiphany engine. Note that when filling in your data YAMLs one needs to specify the paths from the container's point of view.
+##### Running the dev image
 
-#### To get it from the registry and run it:
+To run the image:
 
-1. Pull down the image from the registry:
+Locally build:
 
-    ```bash
-    docker pull epiphanyplatform/epiphany-dev
-    ```
+```bash
+docker run -it -v LOCAL_DEV_DIR:/epiphany --rm epiphany-dev
+```
 
-2. To run the pulled image in a container use:
+Pulled:
 
-    ```bash
-    docker run -it -v LOCAL_DEV_DIR:/epiphany --rm epiphanyplatform/epiphany-dev
-    ```
+```bash
+docker run -it -v LOCAL_DEV_DIR:/epiphany --rm epiphanyplatform/epiphany-dev
+```
 
-    Where `LOCAL_DEV_DIR` should be replaced with the local path to your local Epiphany repo. This will then be mapped to `epiphany` inside the container. If everything is ok you will be presented with a Bash prompt from which one can run the Epiphany engine while editing the core and data sources on the local OS. Note that when filling in your data YAMLs one needs to specify the paths from the container's point of view.
+Where `LOCAL_DEV_DIR` should be replaced with the local path to your local Epiphany repo. This will then be mapped to `epiphany` inside the container. If everything is ok you will be presented with a Bash prompt from which one can run the Epiphany engine while editing the core and data sources on the local OS. Note that when filling in your data YAMLs one needs to specify the paths from the container's point of view.
 
-### Run with Docker image for deployment
+#### Run Docker image for deployment
 
 For people who are only using the Epiphany engine to deploy and maintain clusters there is a Dockerfile for the image with the engine already embedded.
 
-To get it from the registry and run it:
+There are 2 ways to get the image, build it locally yourself or pull it from the Epiphany docker registry.
 
-1. Build an dev image described [here](#run-with-docker-image-for-development).
-2. Run the following command to build the deployment image locally:
-    ```bash
-    docker build -t epiphany-deploy -f core/core/src/docker/deploy/Dockerfile .
-    ```
-3. To run the pulled image in a container use:
-    ```bash
-    docker run -it -v LOCAL_DATA_DIR:/epiphany/core/data \
-                   -v LOCAL_BUILD_DIR:/epiphany/core/build \
-                   -v LOCAL_SSH_DIR:/epiphany/core/ssh \
-                   --rm epiphany-deploy
-    ```
+##### Build deployment image locally
+
+```bash
+docker build -t epiphany-dev -f core/src/docker/deploy/Dockerfile .
+```
+
+##### Pull deployment image from the registry
+
+```bash
+docker pull epiphanyplatform/epiphany-deploy
+```
+
+##### Running the deployment image
+
+To run the image:
+
+Locally build:
+
+```bash
+docker run -it -v LOCAL_DATA_DIR:/epiphany/core/data \
+                -v LOCAL_BUILD_DIR:/epiphany/core/build \
+                -v LOCAL_SSH_DIR:/epiphany/core/ssh \
+                --rm epiphany-deploy
+```
+
+Pulled:
+
+```bash
+docker run -it -v LOCAL_DATA_DIR:/epiphany/core/data \
+                -v LOCAL_BUILD_DIR:/epiphany/core/build \
+                -v LOCAL_SSH_DIR:/epiphany/core/ssh \
+                --rm epiphanyplatform/epiphany-deploy
+```
 
 ```LOCAL_DATA_DIR``` should be the host input directy for your data YAMLs and certificates.  ```LOCAL_BUILD_DIR``` should be the host directory where you want the Epiphany engine to write its build output. ```LOCAL_SSH_DIR``` should be the host directory where the SSH keys are stored. If everything is ok you will be presented with a Bash prompt from which one can run the Epiphany engine. Note that when filling in your data YAMLs one needs to specify the paths from the container's point of view.
 
@@ -174,6 +311,25 @@ Use: [Checkout as-is, commit Unix-style](https://stackoverflow.com/questions/104
     ```bash
     chmod 400 ~/.ssh/epiphany-operations/id_rsa*
     ```
+
+### Note about proxies
+
+To run the legacy Epiphany or the new Epicli from behind a proxy, enviroment variables need to be set.
+
+When running directly from OS (upper and lowercase are neede because of an issue with the Ansible dependency):
+
+  ```bash
+  export http_proxy="http://PROXY_SERVER:PORT"
+  export https_proxy="https://PROXY_SERVER:PORT"
+  export HTTP_PROXY="http://PROXY_SERVER:PORT"
+  export HTTPS_PROXY="https://PROXY_SERVER:PORT"
+  ```
+
+Or when running from a Docker image (upper and lowercase are neede because of an issue with the Ansible dependency):
+
+  ```bash
+  docker run -it -v POSSIBLE_MOUNTS... -e HTTP_PROXY=http://PROXY_SERVER:PORT -e HTTPS_PROXY=http://PROXY_SERVER:PORT http_proxy=http://PROXY_SERVER:PORT -e https_proxy=http://PROXY_SERVER:PORT --rm IMAGE_NAME
+  ```
 
 ## Import and create of Grafana dashboards
 
