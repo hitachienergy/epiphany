@@ -33,6 +33,24 @@
   delay: 2
   delegate_to: localhost
 
+- name: Get sha512 sum of archive
+  become: false
+  stat:
+    path: "{{ specification.download_directory }}/haproxy_exporter.tar.gz"
+    checksum_algorithm: sha512
+    get_checksum: yes
+  register: haproxy_exporter_stat
+  delegate_to: localhost
+
+- name: Display sha of archive
+  debug:
+    msg: "Haproxy Exporter SHA512: {{ haproxy_exporter_stat.stat.checksum }}"
+
+- name: Verify sha512 of archive before installation.
+  fail:
+    msg: "File checksum is not correct."
+  when: haproxy_exporter_stat.stat.checksum not in specification.download_shas
+
 - name: Unpack haproxy_exporter binary
   become: false
   unarchive:
