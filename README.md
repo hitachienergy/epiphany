@@ -41,7 +41,7 @@ Find more information using table of contents below - especially the [How-to gui
   - [How-to contribute](docs/home/CONTRIBUTING.md)
   - [Workflow to follow](docs/home/GITWORKFLOW.md)
   - [Governance model](docs/home/GOVERNANCE.md)
-  - [Notices](docs/home/NOTICES.md)
+  - [Licenses](docs/home/LICENSES.md)
   - [Changelog](CHANGELOG.md)
 
 <!-- TOC -->
