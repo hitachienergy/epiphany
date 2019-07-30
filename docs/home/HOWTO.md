@@ -45,6 +45,7 @@
   - [How to use Kubernetes Secrets](#how-to-use-kubernetes-secrets)
   - [How to enable or disable network traffic - firewall](#how-to-enable-or-disable-network-traffic)
   - [Client certificate for Azure VPN connection](#client-certificate-for-azure-vpn-connection)
+  - [How to enable AWS disk encryption](#how-to-enable-AWS-disk-encryption)
 - [Data and log retention](#data-and-log-retention)
   - [Elasticsearch](#elasticsearch)
   - [Grafana](#grafana)
@@ -1188,6 +1189,33 @@ root_certificate:
 ```
 
 Configuration requires to have revoked certificate filled in (for now).
+
+## How to enable AWS disk encryption
+
+### EC2 Root volumes
+
+Since [May 2019](https://aws.amazon.com/about-aws/whats-new/2019/05/launch-encrypted-ebs-backed-ec2-instances-from-unencrypted-amis-in-a-single-step/) AWS supports the creation of instances from unencrypted AMIs. At this point Terraform does not [support](https://github.com/terraform-providers/terraform-provider-aws/issues/8624) this jet. If you need encrypted root volumes for now you need to supply your own pre-encryped AMIs as specified in the guide [here](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/AMIEncryption.html).
+
+We will add this as the functionality becomes available in Terraform. The issue is beeing tracked [here](https://github.com/epiphany-platform/epiphany/issues/381).
+
+### Additional EC2 storage
+
+When defining extra storage inside the `infrastructure/virtual-machine` document one can set the `encryption` flag:
+
+```yaml
+...
+additional_disks:
+  - device_name: "/dev/sdb"
+    volume_type: gp2
+    volume_size: 60
+    delete_on_termination: true
+    encrypted: true
+...
+```
+
+### EFS storage
+
+EFS storage is encrypted by default.
 
 ## Build artifacts
 
