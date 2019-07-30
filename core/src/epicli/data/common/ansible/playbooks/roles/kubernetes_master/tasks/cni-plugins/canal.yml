@@ -1,0 +1,11 @@
+---
+- name: Create canal deployment
+  template:
+    dest: "/home/{{ admin_user.name }}/canal-deployment.yml"
+    src: canal-deployment.yml.j2
+    owner: "{{ admin_user.name }}"
+    group: "{{ admin_user.name }}"
+
+- name: Apply canal deployment
+  shell: kubectl apply --kubeconfig=/home/{{ admin_user.name }}/.kube/config -f /home/{{ admin_user.name }}/canal-deployment.yml
+  become_user: "{{ admin_user.name }}"
