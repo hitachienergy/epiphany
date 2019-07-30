@@ -1,3 +1,5 @@
+#!/bin/bash
+
 function destroyEnvironment {
 	cd /shared/$CLUSTER_NAME/terraform
 	terraform init
