@@ -8,7 +8,41 @@ Epiphany can run on as few as one node (laptop, desktop, server) but the real va
 
 We currently use Terraform and Ansible for our automation orchestration. All automation is idempotent so you can run it as many times as you wish and it will maintain the same state unless you change the data. If someone makes a "snow flake" change to the environment (you should never do this) then simply running the automation again will put the environment back to the desired state.
 
+## Legacy note
+
+In Epiphany 0.3 a new CLI tool was introduced (epicli) for deploying and managing clusters and currently supports AWS and bare metal deployment. Azure support will be added soon in a subsequent release but for now if you are in need for deploying a cluster on Azure use the older Legacy engine.
+
 ## Quickstart
+
+### Epicli
+
+Use the following command to see a full run-down of all commands and flags:
+
+```shell
+epicli --help
+```
+
+Generate a new minimum cluster definition:
+
+```shell
+epicli init -p aws -n demo
+```
+
+This minimum file definition is fine to start with, if you need more control over the infrastructure created you can also create a full definition:
+
+```shell
+epicli init -p aws -n demo --full
+```
+
+You will need to modify a few values (like you AWS secrets, directory path for ssh keys). Once you are done done with `demo.yaml` you can start cluster deployment by executing with:
+
+```shell
+epicli apply -f demo.yaml
+```
+
+Find more information using table of contents below - especially the [How-to guides](docs/home/HOWTO.md).
+
+### Legacy
 
 Fork the `epiphany` repository and modify the yaml's under `core/data/` directory. For example in `data/azure/infrastructure/epiphany-playground/basic-data.yaml` file you will need to modify a few values (like you Azure subscription name, directory path for ssh keys). Once you are done done with `basic-data.yaml` you can execute Epiphany with the command:
 
