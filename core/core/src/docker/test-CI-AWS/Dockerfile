@@ -18,5 +18,10 @@ WORKDIR /serverspec
 
 RUN bundle install
 
-ENTRYPOINT ["/bin/bash"]
+WORKDIR /shared
 
+ADD core/src/docker/test-CI-AWS/run.sh /shared
+
+RUN chmod a+x /shared/run.sh
+
+CMD ["/shared/run.sh"]
