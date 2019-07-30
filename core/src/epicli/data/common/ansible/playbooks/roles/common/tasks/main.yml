@@ -28,6 +28,22 @@
     mode: 0755
     validate_certs: "{{ validate_certs | bool}}"
 
+- name: Get sha512 sum of archive
+  stat:
+    path: "/usr/local/bin/jq"
+    checksum_algorithm: sha512
+    get_checksum: yes
+  register: jq_download_stat
+
+- name: Display sha of archive
+  debug:
+    msg: "Jq SHA512: {{ jq_download_stat.stat.checksum }}"
+
+- name: Verify sha512 of archive before installation.
+  fail:
+    msg: "File checksum is not correct."
+  when: jq_download_stat.stat.checksum != "aaa016d57ab8351360d02186809ade9cdecd3eb20df7a8cf05cd5d1037c4d36efae9e1bb0102d175c91b530b0309f24b48d579544249da7cbd50f721332617b9"
+
 - name: Adjust swappiness parameter
   sysctl:
     name: vm.swappiness

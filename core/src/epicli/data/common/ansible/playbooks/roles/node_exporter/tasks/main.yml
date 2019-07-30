@@ -33,6 +33,24 @@
   delay: 2
   delegate_to: localhost
 
+- name: Get sha512 sum of archive
+  become: false
+  stat:
+    path: "{{ specification.download_directory }}/node_exporter.tar.gz"
+    checksum_algorithm: sha512
+    get_checksum: yes
+  register: node_exporter_stat
+  delegate_to: localhost
+
+- name: Display sha of archive
+  debug:
+    msg: "Node Exporter SHA512: {{ node_exporter_stat.stat.checksum }}"
+
+- name: Verify sha512 of archive before installation.
+  fail:
+    msg: "File checksum is not correct."
+  when: node_exporter_stat.stat.checksum not in specification.download_shas
+
 - name: Unpack node_exporter binary
   become: false
   unarchive:

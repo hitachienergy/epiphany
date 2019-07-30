@@ -30,12 +30,27 @@
   become: yes
   get_url:
     url: "{{ specification.download_url }}"
-    checksum: "sha256:{{ specification.download_sha }}"
     dest: "/opt/jmx-exporter/jmx_prometheus_javaagent-{{ specification.jmx_exporter_version }}.jar"
     force: no
     owner: "{{ specification.jmx_exporter_user }}"
     group: "{{ specification.jmx_exporter_group }}"
     validate_certs: "{{ validate_certs | bool }}"
+
+- name: Get sha512 sum of archive
+  stat:
+    path: "/opt/jmx-exporter/jmx_prometheus_javaagent-{{ specification.jmx_exporter_version }}.jar"
+    checksum_algorithm: sha512
+    get_checksum: yes
+  register: jmx_prometheus_download_stat
+
+- name: Display sha of archive
+  debug:
+    msg: "Alertmanager SHA512: {{ jmx_prometheus_download_stat.stat.checksum }}"
+
+- name: Verify sha512 of archive before installation.
+  fail:
+    msg: "File checksum is not correct."
+  when: jmx_prometheus_download_stat.stat.checksum != specification.download_sha
 
 - name: Prometheus jmx | symlink jar
   become: yes
