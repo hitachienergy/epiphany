@@ -38,7 +38,7 @@ specification:
           address_pool: 10.1.2.0/24
     logging:
       count: 1
-      machine: default
+      machine: logging-machine
       configuration: default
       subnets:
         - availability_zone: eu-west-2a

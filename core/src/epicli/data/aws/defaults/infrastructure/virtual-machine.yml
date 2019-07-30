@@ -108,7 +108,7 @@ specification:
        destination_to_port: 65536
        destination_port_range: "0"
        source_address_prefix: "10.1.4.0/24"
-       destination_address_prefix: "*"
+       destination_address_prefix: "0.0.0.0/0"
      - name: node-subnet-traffic
        description: Allow node subnet traffic
        priority: 102
@@ -164,7 +164,7 @@ specification:
        source_port_range: "*"
        destination_port_range: "22"
        source_address_prefix: "0.0.0.0/0"
-       destination_address_prefix: "*"
+       destination_address_prefix: "0.0.0.0/0"
      - name: subnet-traffic
        description: Allow master subnet traffic
        priority: 102
@@ -176,7 +176,7 @@ specification:
        destination_to_port: 65536
        destination_port_range: "0"
        source_address_prefix: "10.1.1.0/24"
-       destination_address_prefix: "*"
+       destination_address_prefix: "0.0.0.0/0"
      - name: monitoring-traffic
        description: Allow monitoring subnet traffic
        priority: 102
@@ -188,7 +188,7 @@ specification:
        destination_to_port: 65536
        destination_port_range: "0"
        source_address_prefix: "10.1.4.0/24"
-       destination_address_prefix: "*"
+       destination_address_prefix: "0.0.0.0/0"
      - name: node-subnet-traffic
        description: Allow node subnet traffic
        priority: 102
@@ -200,7 +200,7 @@ specification:
        destination_to_port: 65536
        destination_port_range: "0"
        source_address_prefix: "10.1.2.0/24"
-       destination_address_prefix: "*"
+       destination_address_prefix: "0.0.0.0/0"
      - name: out
        description: Allow out
        priority: 101
@@ -230,7 +230,7 @@ specification:
        source_port_range: "*"
        destination_port_range: "22"
        source_address_prefix: "0.0.0.0/0"
-       destination_address_prefix: "*"
+       destination_address_prefix: "0.0.0.0/0"
      - name: zookeeper1
        description: Allow Zookeeper 1
        priority: 102
@@ -239,8 +239,8 @@ specification:
        protocol: "Tcp"
        source_port_range: "*"
        destination_port_range: "3888"
-       source_address_prefix: "0.0.0.0/0"
-       destination_address_prefix: "*"
+       source_address_prefix: "10.1.0.0/20"
+       destination_address_prefix: "0.0.0.0/0"
      - name: zookeeper2
        description: Allow Zookeeper 2
        priority: 103
@@ -249,8 +249,8 @@ specification:
        protocol: "Tcp"
        source_port_range: "*"
        destination_port_range: "2888"
-       source_address_prefix: "0.0.0.0/0"
-       destination_address_prefix: "*"
+       source_address_prefix: "10.1.0.0/20"
+       destination_address_prefix: "0.0.0.0/0"
      - name: zookeeper_client
        description: Allow Zookeeper Client
        priority: 104
@@ -259,8 +259,8 @@ specification:
        protocol: "Tcp"
        source_port_range: "*"
        destination_port_range: "2181"
-       source_address_prefix: "0.0.0.0/0"
-       destination_address_prefix: "*"
+       source_address_prefix: "10.1.0.0/20"
+       destination_address_prefix: "0.0.0.0/0"
      - name: zookeeper_client
        description: Allow Zookeeper Client
        priority: 105
@@ -269,8 +269,8 @@ specification:
        protocol: "Tcp"
        source_port_range: "*"
        destination_port_range: "9092"
-       source_address_prefix: "0.0.0.0/0"
-       destination_address_prefix: "*"
+       source_address_prefix: "10.1.0.0/20"
+       destination_address_prefix: "0.0.0.0/0"
      - name: monitoring-traffic
        description: Allow monitoring subnet traffic
        priority: 102
@@ -282,7 +282,7 @@ specification:
        destination_to_port: 65536
        destination_port_range: "0"
        source_address_prefix: "10.1.4.0/24"
-       destination_address_prefix: "*"
+       destination_address_prefix: "0.0.0.0/0"
      - name: kubernetes-traffic
        description: Allow Kubernetes subnet traffic
        priority: 102
@@ -294,7 +294,7 @@ specification:
        destination_to_port: 65536
        destination_port_range: "0"
        source_address_prefix: "10.1.1.0/24"
-       destination_address_prefix: "*"
+       destination_address_prefix: "0.0.0.0/0"
      - name: kubernetes-traffic2
        description: Allow Kubernetes subnet traffic
        priority: 102
@@ -306,7 +306,7 @@ specification:
        destination_to_port: 65536
        destination_port_range: "0"
        source_address_prefix: "10.1.2.0/24"
-       destination_address_prefix: "*"
+       destination_address_prefix: "0.0.0.0/0"
      - name: out
        description: Allow out
        priority: 101
@@ -336,7 +336,7 @@ specification:
        source_port_range: "*"
        destination_port_range: "22"
        source_address_prefix: "0.0.0.0/0"
-       destination_address_prefix: "*"
+       destination_address_prefix: "0.0.0.0/0"
      - name: out
        description: Allow out
        priority: 101
@@ -366,7 +366,7 @@ specification:
        source_port_range: "*"
        destination_port_range: "22"
        source_address_prefix: "0.0.0.0/0"
-       destination_address_prefix: "*"
+       destination_address_prefix: "0.0.0.0/0"
      - name: out
        description: Allow out
        priority: 101
@@ -388,7 +388,7 @@ specification:
        destination_to_port: 65536
        destination_port_range: "0"
        source_address_prefix: "10.1.1.0/24"
-       destination_address_prefix: "*"
+       destination_address_prefix: "0.0.0.0/0"
      - name: kubernetes-traffic2
        description: Allow Kubernetes subnet traffic
        priority: 102
@@ -400,4 +400,64 @@ specification:
        destination_to_port: 65536
        destination_port_range: "0"
        source_address_prefix: "10.1.2.0/24"
-       destination_address_prefix: "*"
+       destination_address_prefix: "0.0.0.0/0"
+---
+kind: infrastructure/virtual-machine
+version: 0.3.0
+title: "Virtual Machine Infra"
+provider: aws
+name: logging-machine
+specification:
+  size: t3.medium
+  security:
+    rules:
+     - name: ssh
+       description: Allow SSH
+       priority: 101
+       direction: Inbound
+       access: Allow
+       protocol: Tcp
+       source_port_range: "*"
+       destination_port_range: "22"
+       source_address_prefix: "0.0.0.0/0"
+       destination_address_prefix: "0.0.0.0/0"
+     - name: Elastic
+       description: Allow Elastic
+       priority: 105
+       direction: Inbound
+       access: Allow
+       protocol: "Tcp"
+       source_port_range: "*"
+       destination_port_range: "9200"
+       source_address_prefix: "10.1.0.0/20"
+       destination_address_prefix: "0.0.0.0/0"
+     - name: Elastic2
+       description: Allow Elastic
+       priority: 105
+       direction: Inbound
+       access: Allow
+       protocol: "Tcp"
+       source_port_range: "*"
+       destination_port_range: "9300"
+       source_address_prefix: "10.1.0.0/20"
+       destination_address_prefix: "0.0.0.0/0"
+     - name: Kibana
+       description: Allow Kibana
+       priority: 105
+       direction: Inbound
+       access: Allow
+       protocol: "Tcp"
+       source_port_range: "*"
+       destination_port_range: "5601"
+       source_address_prefix: "10.1.0.0/20"
+       destination_address_prefix: "0.0.0.0/0"
+     - name: out
+       description: Allow out
+       priority: 101
+       direction: Egress
+       access: Allow
+       protocol: "all"
+       source_port_range: "*"
+       destination_port_range: "0"
+       source_address_prefix: "0.0.0.0/0"
+       destination_address_prefix: "0.0.0.0/0"
