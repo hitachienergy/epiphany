@@ -7,6 +7,10 @@ specification:
     i386: "https://github.com/prometheus/prometheus/releases/download/v2.10.0/prometheus-2.10.0.linux-386.tar.gz"
     x86_64: "https://github.com/prometheus/prometheus/releases/download/v2.10.0/prometheus-2.10.0.linux-amd64.tar.gz"
     aarch64: "https://github.com/prometheus/prometheus/releases/download/v2.10.0/prometheus-2.10.0.linux-arm64.tar.gz"
+  download_shas:
+    - "eb9ebfd88d25e7ec22a19a035b535dd750e7938df01d907c7a74d327a689609ba9600963d9c938133057b8dab0d04d1d102c7c12262ff573cc84d0a7a584e4d1"
+    - "6f499c6df38922e52d76c45b9659c4cae8ee1cc8307e8b933f461434024cdb9a6b1faabb6953ece2b25a948879d8fa885807d0577132f179a4de5fdf2459ca8c"
+    - "3aad1d46bd31f1c1083ca313e61941d851d379370da715a9f23b336e679952e4c16f83a6180f4f6177fdf036fca56b84e3f6adf7fef8224c07a06cd411afd36f"
   download_directory: "/tmp"
   config_directory: "/etc/prometheus"
   storage:
