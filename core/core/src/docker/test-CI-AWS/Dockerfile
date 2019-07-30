@@ -18,10 +18,8 @@ WORKDIR /serverspec
 
 RUN bundle install
 
-WORKDIR /shared
+ADD core/src/docker/test-CI-AWS/run.sh /tmp
 
-ADD core/src/docker/test-CI-AWS/run.sh /shared
+RUN chmod a+x /tmp/run.sh
 
-RUN chmod a+x /shared/run.sh
-
-CMD ["/shared/run.sh"]
+CMD ["/tmp/run.sh"]
