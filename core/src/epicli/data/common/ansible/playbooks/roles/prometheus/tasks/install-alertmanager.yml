@@ -6,7 +6,6 @@
     state: directory
   delegate_to: localhost
 
-# TODO: Checking alertmanager
 - name: Download Alertmanager binary to local folder
   become: false
   get_url:
@@ -19,7 +18,25 @@
   delay: 2
   delegate_to: localhost
 
-- name: Unpack Prometheus binary
+- name: Get sha512 sum of archive
+  become: false
+  stat:
+    path: "{{ specification.download_directory }}/alertmanager.tar.gz"
+    checksum_algorithm: sha512
+    get_checksum: yes
+  register: alertmanager_download_stat
+  delegate_to: localhost
+
+- name: Display sha of archive
+  debug:
+    msg: "Alertmanager SHA512: {{ alertmanager_download_stat.stat.checksum }}"
+
+- name: Verify sha512 of archive before installation.
+  fail:
+    msg: "File checksum is not correct."
+  when: alertmanager_download_stat.stat.checksum not in specification.alerts.alertmanager.download_shas
+
+- name: Unpack Alertmanager binary
   become: false
   unarchive:
     src: "{{ specification.download_directory }}/alertmanager.tar.gz"
@@ -29,7 +46,7 @@
   delegate_to: localhost
   check_mode: false
 
-- name: Propagate Prometheus and promtool binaries
+- name: Propagate Alertmanager
   copy:
     src: "{{ specification.download_directory }}/alert_manager_libraries/alertmanager"
     dest: "/usr/local/bin/alertmanager"
