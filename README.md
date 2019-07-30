@@ -16,6 +16,12 @@ In Epiphany 0.3 a new CLI tool was introduced (epicli) for deploying and managin
 
 ### Epicli
 
+Use the following command to see a full run-down of all commands and flags:
+
+```shell
+epicli --help
+```
+
 Generate a new minimum cluster definition:
 
 ```shell
