@@ -9,8 +9,8 @@
     - [Epicli development](#epicli-development)
   - [Legacy](#legacy)
     - [Run directly from OS](#run-directly-from-os)
-    - [Run Docker image for development](#run-with-image-for-development)
-    - [Run Docker image for deployment](#run-with-image-for-deployment)
+    - [Run Docker image for development](#run-docker-image-for-development)
+    - [Run Docker image for deployment](#run-docker-image-for-deployment)
   - [Note for Windows users](#note-for-windows-users)
 - Epiphany cluster
   - [How to create an Epiphany cluster on premise](#how-to-create-an-epiphany-cluster-on-premise)
