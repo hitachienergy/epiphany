@@ -1,0 +1,5 @@
+source 'https://rubygems.org'
+
+gem 'serverspec'
+gem 'inventoryfile'
+gem 'rspec_junit_formatter'

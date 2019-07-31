@@ -1,0 +1,80 @@
+require 'rake'
+require 'rspec/core/rake_task'
+
+unless ENV['inventory']
+  print "ERROR: Inventory file must be specified by 'inventory' environment variable\n"
+  print "  e.g.) bundle exec rake inventory=./hosts spec:all\n"
+  exit
+end
+
+unless ENV['user']
+  print "ERROR: Service user must be specified by 'user' environment variable\n"
+  print "  e.g.) bundle exec rake inventory=./hosts user=operations spec:all\n"
+  exit
+end
+
+unless ENV['keypath']
+  print "ERROR: Private key path must be specified by 'keypath' environment variable\n"
+  print "  e.g.) bundle exec rake inventory=./hosts user=operations keypath=./id_rsa spec:all\n"
+  exit
+end
+
+
+
+groups = {}
+hosts  = []
+current_group = nil
+
+File::open(ENV['inventory']) do |f|
+  while line = f.gets
+
+    md = line.match(/^([^#]+)/) # matches lines not starting with a '#' character
+    next unless md
+    line = md[0]
+
+    if line =~ /^\[([^\]]+)\]/
+      current_group = $1
+    elsif line =~ /(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})/ # regex for IP address
+      if current_group
+        groups[current_group] ||= {}
+        groups[current_group][$1] = line.split.first
+      else
+        hosts << $1
+      end
+    end
+  end
+end
+
+groups.keys.each do |group|
+  if !File.directory?("spec/#{group}") || Dir.empty?("spec/#{group}")
+    groups.delete(group)
+  end
+end
+
+puts groups
+
+task :spec    => 'spec:all'
+task :default => :spec
+
+namespace :spec do
+  task :all     => groups.keys.map {|group| 'spec:' + group }
+  task :default => :all
+
+  # Tasks for groups
+  groups.keys.each do |group|
+    task group.to_sym => groups[group].keys.map {|host| 'spec:' + group + ':' + host }
+    groups[group].keys.each do |host|
+      desc "Run tests for group '#{group}'"
+      task_name = group + ':' + host
+      RSpec::Core::RakeTask.new(task_name) do |t|
+        ENV['TARGET_HOST'] = host
+		ENV['TEST_ENV_NUMBER'] = "-" + groups[group][host]
+        puts "Testing " + task_name
+        t.pattern = "spec/#{group}/*_spec.rb"
+        t.fail_on_error = false
+        t.rspec_opts = "--format documentation --format RspecJunitFormatter  \
+        --out results/" + Time.now.strftime("%Y-%m-%d_%H-%M-%S") + "_#{group}_#{groups[group][host]}.xml"
+       end
+    end
+  end
+end
