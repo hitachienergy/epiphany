@@ -317,7 +317,7 @@ Use: [Checkout as-is, commit Unix-style](https://stackoverflow.com/questions/104
 
 To run the legacy Epiphany or the new Epicli from behind a proxy, enviroment variables need to be set.
 
-When running directly from OS (upper and lowercase are neede because of an issue with the Ansible dependency):
+When running directly from OS (upper and lowercase are needed because of an issue with the Ansible dependency):
 
   ```bash
   export http_proxy="http://PROXY_SERVER:PORT"
@@ -326,7 +326,7 @@ When running directly from OS (upper and lowercase are neede because of an issue
   export HTTPS_PROXY="https://PROXY_SERVER:PORT"
   ```
 
-Or when running from a Docker image (upper and lowercase are neede because of an issue with the Ansible dependency):
+Or when running from a Docker image (upper and lowercase are needed because of an issue with the Ansible dependency):
 
   ```bash
   docker run -it -v POSSIBLE_MOUNTS... -e HTTP_PROXY=http://PROXY_SERVER:PORT -e HTTPS_PROXY=http://PROXY_SERVER:PORT http_proxy=http://PROXY_SERVER:PORT -e https_proxy=http://PROXY_SERVER:PORT --rm IMAGE_NAME
