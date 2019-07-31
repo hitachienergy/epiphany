@@ -30,3 +30,4 @@ config:
   rabbitmq_deployment: {{ rabbitmq_deployment }}
   auth_service_deployment: {{ auth_service_deployment }}
   alerts_for_monitoring: {{ alerts_for_monitoring }}
+  cni_plugin: {{ cni_plugin }}
