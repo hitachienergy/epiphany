@@ -39,7 +39,7 @@
   - [How to upgrade Kubernetes cluster](#how-to-upgrade-kubernetes-cluster)
   - [How to upgrade Kubernetes cluster from 1.13.0 to 1.13.1](#how-to-upgrade-kubernetes-cluster-from-1130-to-1131)
   - [How to authenticate to Azure AD app](#how-to-authenticate-to-azure-ad-app)
-  - [How to expose service through HA Proxy load balancer](#how-to-expose-service-lb)
+  - [How to expose service through HA Proxy load balancer](#how-to-expose-service-through-ha-proxy-load-balancer)
 - Security
   - [How to use TLS/SSL certificate with HA Proxy](#how-to-use-tls/ssl-certificate-with-ha-proxy)
   - [How to use Kubernetes Secrets](#how-to-use-kubernetes-secrets)
@@ -284,17 +284,17 @@ docker run -it -v LOCAL_DATA_DIR:/epiphany/core/data \
 ### Note for Windows users
 
 - Watch out for the line endings conversion. By default Git for Windows sets `core.autocrlf=true`. Mounting such files with Docker results in `^M` end-of-line character in the config files.
-Use: [Checkout as-is, commit Unix-style](https://stackoverflow.com/questions/10418975/how-to-change-line-ending-settings) (`core.autocrlf=input`) or Checkout as-is, commit as-is (`core.autocrlf=false`). Be sure to use a text editor that can work with Unix line endings (e.g. Notepad++). 
+Use: [Checkout as-is, commit Unix-style](https://stackoverflow.com/questions/10418975/how-to-change-line-ending-settings) (`core.autocrlf=input`) or Checkout as-is, commit as-is (`core.autocrlf=false`). Be sure to use a text editor that can work with Unix line endings (e.g. Notepad++).
 
 - Remember to allow Docker Desktop to mount drives in Settings -> Shared Drives
 
 - Escape your paths properly:
 
-  * Powershell example:
+  - Powershell example:
   ```bash
   docker run -it -v C:\Users\USERNAME\git\epiphany:/epiphany --rm epiphany-dev
   ```
-  * Git-Bash example:
+  - Git-Bash example:
   ```bash
   winpty docker run -it -v C:\\Users\\USERNAME\\git\\epiphany:/epiphany --rm epiphany-dev
   ```
@@ -811,7 +811,7 @@ Prerequisites: Epiphany cluster on Azure with at least a single VM with `elastic
 Now your docker containers are running on a separate system without you having to worry about overhead.  
 Source: <https://docs.docker.com/machine/drivers/azure/#options>
 
-# How to use Kubernetes Secrets
+## How to use Kubernetes Secrets
 
 Prerequisites: Epiphany Kubernetes cluster
 
