@@ -4,7 +4,7 @@
 
 ### Added
 
-- Support for AWS cloud (or AWS platform or AWS cloud platform)
+- Support for AWS cloud platform
 - New Python based CLI - epicli. Currently supports AWS and baremetal deployments only
 - Kubernetes automatic upgrade (experimental)
 - Server spec tests for cluster components
