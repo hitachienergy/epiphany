@@ -12,13 +12,13 @@ RUN bundle config --global silence_root_warning 1
 
 RUN mkdir /serverspec
 
-ADD core/test/serverspec-aws/ /serverspec
+ADD src/epicli/tests/serverspec-cli/ /serverspec
 
 WORKDIR /serverspec
 
 RUN bundle install
 
-ADD core/src/docker/test-CI-AWS/run.sh /tmp
+ADD src/epicli/tests/docker/test-ci-epicli/run.sh /tmp
 
 RUN chmod a+x /tmp/run.sh
 
