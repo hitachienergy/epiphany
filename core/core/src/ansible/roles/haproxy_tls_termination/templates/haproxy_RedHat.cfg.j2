@@ -3,7 +3,7 @@
 # {{ ansible_managed }}
 
 global
-   log 127.0.0.1 local1
+   log /dev/log local0
    log /dev/log local1 notice
    chroot /var/lib/haproxy
    stats timeout 30s
@@ -85,15 +85,15 @@ backend {{ back.name }}
 
 {%- endfor %}
 
-{%- if haproxy.stats is defined is defined %}
+{%- if haproxy.stats is defined %}
     {%- if haproxy.stats.enable %}
 listen stats
-    bind  127.0.0.1:9000
+    bind  *:9000
     stats enable
     stats refresh 10s
     stats admin if { src 127.0.0.1 }
     stats hide-version  # Hide HAProxy version
-    stats uri {{ specification.stats.uri }}
+    stats uri /haproxy?stats
     stats auth {{ haproxy.stats.user }}:{{ haproxy.stats.password }}
     {%- endif %}
 {%- endif %}
