@@ -28,8 +28,7 @@ defaults
 {%- if haproxy is defined and haproxy.http_request_timeout is defined %}
    timeout http-request {{ haproxy.http_request_timeout }}
 {%- endif %}
-
-
+ 
 {%- for front in haproxy.frontend %}
 frontend {{ front.name }}
     {%- if front.https == True %}
@@ -45,10 +44,10 @@ frontend {{ front.name }}
     acl {{ mapping.backend }} ssl_fc_sni {{ mapping.domain }}
     {%- endfor %}
     {%- endif %}
-    {%- if front.https == False %}     
-    {%- for mapping in front.domain_backend_mapping %}     
-    acl {{ mapping.backend }} hdr_dom(host) -i {{ mapping.domain }}     
-    {%- endfor %}     
+    {%- if front.https == False %}
+    {%- for mapping in front.domain_backend_mapping %}
+    acl {{ mapping.backend }} hdr_dom(host) -i {{ mapping.domain }}
+    {%- endfor %}
     {%- endif %}
     {%- endif %}
 
@@ -69,7 +68,7 @@ backend {{ back.name }}
   {%- if back.server_groups is defined %}
   {%- for server_group in back.server_groups %}
   {%- for server in groups[server_group] %}
-   server {{ server }} {{ hostvars[server]['ansible_default_ipv4']['address'] }}:{{ back.port }} check
+   server {{ server }} {{  hostvars[server]['ansible_default_ipv4']['address'] }}:{{ back.port }} check
   {%- endfor %}
   {%- endfor %}
   {%- endif %}
@@ -81,7 +80,7 @@ backend {{ back.name }}
   {%- endif %}
 {%- endfor %}
 
-{%- if haproxy.stats is defined is defined %}
+{%- if haproxy.stats is defined %}
     {%- if haproxy.stats.enable %}
 listen stats
     bind  127.0.0.1:9000
@@ -89,7 +88,7 @@ listen stats
     stats refresh 10s
     stats admin if { src 127.0.0.1 }
     stats hide-version  # Hide HAProxy version
-    stats uri {{ specification.stats.uri }}
+    stats uri /haproxy?stats
     stats auth {{ haproxy.stats.user }}:{{ haproxy.stats.password }}
     {%- endif %}
 {%- endif %}
