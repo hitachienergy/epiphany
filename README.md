@@ -2,7 +2,14 @@
 
 ## Overview
 
-Epiphany at its core is a full automation of Kubernetes and Docker plus additional builtin services such as Kafka for high speed messaging/events, Prometheus for monitoring and Graphana for dashboards, Elasticsearch and Kibana for centralized logging. Other optional services are being evaluated now.
+Epiphany at its core is a full automation of Kubernetes and Docker plus additional builtin services/components like:
+
+- Kafka or RabbitMQ for high speed messaging/events
+- Prometheus and Alertmanager for monitoring with Graphana for visualization
+- Elasticsearch and Kibana for centralized logging
+- HAProxy for loadbalancing
+- Postgress for storage
+- KeyCloak for authentication
 
 Epiphany can run on as few as one node (laptop, desktop, server) but the real value comes from running 3 or more nodes for scale and HA. Nodes can be added or removed at will depending on data in the manifest. Everything is data driven so simply changing the manifest data and running the automation will modify the environment.
 
@@ -75,7 +82,7 @@ Find more information using table of contents below - especially the [How-to gui
   - [How-to contribute](docs/home/CONTRIBUTING.md)
   - [Workflow to follow](docs/home/GITWORKFLOW.md)
   - [Governance model](docs/home/GOVERNANCE.md)
-  - [Licenses](docs/home/LICENSES.md)
+  - [Components](docs/home/COMPONENTS.md)
   - [Changelog](CHANGELOG.md)
 
 <!-- TOC -->

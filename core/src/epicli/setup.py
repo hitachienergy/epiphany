@@ -4,10 +4,10 @@ from setuptools import setup, find_packages
 from cli.version import VERSION
 import os
 
-with open('README.md') as f:
+with open('../../../README.md') as f:
     readme = f.read()
 
-with open('LICENSE') as f:
+with open('../../../LICENSE') as f:
     license = f.read()
 
 with open('requirements.txt') as f:
