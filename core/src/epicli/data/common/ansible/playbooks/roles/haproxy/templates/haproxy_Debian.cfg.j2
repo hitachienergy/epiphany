@@ -94,7 +94,7 @@ backend {{ back.name }}
   {%- endif %}
 {%- endfor %}
 
-    {%- if specification.stats is defined %}
+{%- if specification.stats is defined %}
     {%- if specification.stats.enable %}
 listen stats
     bind  {{ specification.stats.bind_address }}
@@ -105,4 +105,4 @@ listen stats
     stats uri {{ specification.stats.uri }}
     stats auth {{ specification.stats.user }}:{{ specification.stats.password }}
     {%- endif %}
-    {%- endif %}
+{%- endif %}
