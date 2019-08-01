@@ -4,7 +4,7 @@ Description=Service that runs Prometheus Node Exporter
 [Service]
 User=haproxy_exporter
 Group=haproxy_exporter
-ExecStart=/opt/haproxy_exporter/haproxy_exporter "--haproxy.scrape-uri=https://{{ haproxy.stats.user }}:{{ haproxy.stats.password }}@{{ ansible_default_ipv4.address }}/haproxy?stats"
+ExecStart=/opt/haproxy_exporter/haproxy_exporter "--haproxy.scrape-uri=http://{{ haproxy.stats.user }}:{{ haproxy.stats.password }}@127.0.0.1:9000/haproxy?stats"
 SyslogIdentifier=prometheus_haproxy_exporter
 Restart=always
 
