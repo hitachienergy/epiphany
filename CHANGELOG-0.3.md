@@ -19,3 +19,7 @@
 ### Fixed
 
 - Fixed vulnerabilities for KeyCloak examples
+
+### Known issues
+
+- Deployment/Application role failes because Kubernetes cluster is not ready after reboot. More info [here](https://github.com/epiphany-platform/epiphany/issues/407)
