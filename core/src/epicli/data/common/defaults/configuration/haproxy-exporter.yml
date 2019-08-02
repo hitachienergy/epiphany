@@ -1,0 +1,26 @@
+kind: configuration/haproxy-exporter
+version: 0.3.0
+title: "HAProxy exporter"
+name: default
+specification:
+  description: "Service that runs HAProxy Exporter"
+  download_urls:
+    i386: "https://github.com/prometheus/haproxy_exporter/releases/download/v0.10.0/haproxy_exporter-0.10.0.linux-386.tar.gz"
+    x86_64: "https://github.com/prometheus/haproxy_exporter/releases/download/v0.10.0/haproxy_exporter-0.10.0.linux-amd64.tar.gz"
+    aarch64: "https://github.com/prometheus/haproxy_exporter/releases/download/v0.10.0/haproxy_exporter-0.10.0.linux-arm64.tar.gz"
+
+  download_shas:
+    - "c0db7fe6eee35c445c4d44eafc3f0d6f68bf7944cd6eef052a3180d6cee08e51c77590069d1d7848ee449f5d052fea7597c40d6bc798ccaab19f42eaa63ad726"
+    - "790290106533518b9ecb0dc1dcd478a2ea0f4bb1fc8ef2a9e20381dccd6c0d0c1425450123f3ab7ba5426f55deab78ec0498f7b5d19c03f2e65ed0791c05d82e"
+    - "b96cbe2e3babc318f8b86965a69e23ad4062a3f755fa33af4a88ab73c2d4c0d65e808a11e43e9b5fb57d5fa2021b327203443f82060c46feda6bef519a21e12f"
+
+  download_directory: "/tmp"
+
+  web_listen_port: "9101"
+
+  config_for_prometheus: # configuration that will be written to Prometheus to allow scraping metrics from this exporter
+    exporter_listen_port: "9101"
+    prometheus_config_dir: /etc/prometheus
+    file_sd_labels:
+      - label: "job"
+        value: "haproxy-exporter"

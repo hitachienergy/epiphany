@@ -1,0 +1,33 @@
+kind: epiphany-cluster
+version: 0.3.0
+title: "Epiphany cluster Config"
+provider: aws
+name: "default"
+specification:
+  name: YOUR_CLUSTER_NAME
+  prefix: ''
+  admin_user:
+    name: operations # YOUR-ADMIN-USERNAME
+    key_path: /user/.ssh/epiphany-operations/id_rsa # YOUR-SSH-KEY-PATH
+  cloud:
+    use_public_ips: False # When not using public IPs you have to provide connectivity via private IPs (VPN)
+    credentials:
+      key: XXXX-XXXX-XXXX
+      secret: XXXXXXXXXXXXXXXX
+  components:
+    kubernetes_master:
+      count: 1
+    kubernetes_node:
+      count: 3
+    logging:
+      count: 1
+    monitoring:
+      count: 1
+    kafka:
+      count: 2
+    postgresql:
+      count: 1
+    load_balancer:
+      count: 1
+    rabbitmq:
+      count: 1

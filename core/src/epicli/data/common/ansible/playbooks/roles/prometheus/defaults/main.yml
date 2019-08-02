@@ -1,0 +1,6 @@
+---
+prometheus_external_labels:
+  environment: "{{ ansible_fqdn }}"
+
+
+

@@ -1,0 +1,7 @@
+kind: infrastructure/network
+version: 0.3.0
+title: "Network Config"
+provider: azure
+name: default
+specification:
+  some_setting: "setting"

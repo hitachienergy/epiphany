@@ -1,0 +1,96 @@
+---
+grafana_version: "{{ specification.version }}"
+
+# Should we use the provisioning capability when possible (provisioning require grafana >= 5.0)
+grafana_use_provisioning: "{{ specification.grafana_use_provisioning }}"
+
+# Should the provisioning be kept synced. If true, previous provisioned objects will be removed if not referenced anymore.
+grafana_provisioning_synced: "{{ specification.grafana_provisioning_synced }}"
+
+grafana_instance: "{{ ansible_fqdn | default(ansible_host) | default(inventory_hostname) }}"
+
+grafana_logs_dir: "{{ specification.grafana_logs_dir }}"
+grafana_data_dir: "{{ specification.grafana_data_dir }}"
+
+grafana_address: "{{ specification.grafana_address }}"
+grafana_port: "{{ specification.grafana_port | int }}"
+
+# To enable the use of ports below 1024 for unprivileged processes linux needs to set CAP_NET_BIND_SERVICE.
+# This has some security implications, and should be a conscious choice.
+# Get informed by reading: http://man7.org/linux/man-pages/man7/capabilities.7.html
+grafana_cap_net_bind_service: false
+
+# External Grafana address. Variable maps to "root_url" in grafana server section
+grafana_url: "{{ specification.grafana_url }}"
+grafana_api_url: "{{ grafana_url }}"
+grafana_domain: "{{ ansible_fqdn | default(ansible_host) | default('localhost') }}"
+
+# Additional options for grafana "server" section
+# This section WILL omit options for: http_addr, http_port, domain, and root_url, as those settings are set by variables listed before
+grafana_server: "{{ specification.grafana_server }}"
+
+# Variables correspond to ones in grafana.ini configuration file
+# Security
+grafana_security: "{{ specification.grafana_security }}"
+
+# Database setup
+grafana_database: "{{ specification.grafana_database }}"
+
+# User management and registration
+grafana_welcome_email_on_sign_up: "{{ specification.grafana_welcome_email_on_sign_up }}"
+grafana_users: "{{ specification.grafana_users }}"
+
+# grafana authentication mechanisms
+grafana_auth: "{{ specification.grafana_auth }}"
+
+grafana_ldap: "{{ specification.grafana_ldap }}"
+
+grafana_session: "{{ specification.grafana_session }}"
+
+grafana_analytics: "{{ specification.grafana_analytics }}"
+
+# Set this for mail notifications
+grafana_smtp: "{{ specification.grafana_smtp }}"
+
+# Enable grafana alerting mechanism
+grafana_alerting: "{{ specification.grafana_alerting }}"
+
+# Grafana logging configuration
+grafana_log: "{{ specification.grafana_log }}"
+grafana_logging: "{{ specification.grafana_logging }}"
+
+# Internal grafana metrics system
+grafana_metrics: "{{ specification.grafana_metrics }}"
+
+# Distributed tracing options
+grafana_tracing: "{{ specification.grafana_tracing }}"
+
+grafana_snapshots: "{{ specification.grafana_snapshots }}"
+
+# External image store
+grafana_image_storage: "{{ specification.grafana_image_storage }}"
+
+
+#######
+# Plugins from https://grafana.com/plugins
+grafana_plugins: "{{ specification.grafana_plugins }}"
+
+# Dashboards from https://grafana.com/dashboards
+grafana_dashboards: "{{ specification.grafana_dashboards }}"
+
+grafana_dashboards_dir: "{{ specification.grafana_dashboards_dir }}"
+
+# Alert notification channels to configure
+grafana_alert_notifications: "{{ specification.grafana_alert_notifications }}"
+
+# Datasources to configure
+grafana_datasources: "{{ specification.grafana_datasources }}"
+
+# API keys to configure
+grafana_api_keys: "{{ specification.grafana_api_keys }}"
+
+# The location where the keys should be stored.
+grafana_api_keys_dir: "{{ lookup('env', 'HOME') }}/grafana/keys"
+
+grafana_environment: {}
+

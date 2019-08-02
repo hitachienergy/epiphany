@@ -1,0 +1,104 @@
+kind: configuration/feature-mapping
+version: 0.3.0
+title: "Feature mapping to roles"
+name: default
+specification:
+  available_roles:
+    - name: kubernetes-master
+      enabled: yes
+    - name: kubernetes-node
+      enabled: yes
+    - name: elasticsearch
+      enabled: yes
+    - name: elasticsearch-curator
+      enabled: yes
+    - name: kibana
+      enabled: yes
+    - name: filebeat
+      enabled: yes
+    - name: prometheus
+      enabled: yes
+    - name: grafana
+      enabled: yes
+    - name: node-exporter
+      enabled: yes
+    - name: jmx-exporter
+      enabled: yes
+    - name: zookeeper
+      enabled: yes
+    - name: kafka
+      enabled: yes
+    - name: rabbitmq
+      enabled: yes
+    - name: kafka-exporter
+      enabled: yes
+    - name: postgresql
+      enabled: yes
+    - name: haproxy
+      enabled: yes
+    - name: haproxy-exporter
+      enabled: yes
+    - name: applications
+      enabled: yes
+  roles_mapping:
+    kafka:
+      - zookeeper
+      - jmx-exporter
+      - kafka
+      - kafka-exporter
+      - node-exporter
+      - filebeat
+    rabbitmq:
+      - rabbitmq
+      - node-exporter
+      - kafka-exporter
+      - filebeat
+    logging:
+      - elasticsearch
+      - elasticsearch-curator
+      - kibana
+      - filebeat
+    load_balancer:
+      - haproxy
+      - haproxy-exporter
+      - node-exporter
+      - filebeat
+    monitoring:
+      - prometheus
+      - grafana
+      - node-exporter
+      - filebeat
+    postgresql:
+      - postgresql
+      - node-exporter
+      - filebeat
+    custom:
+      - kubernetes-master
+      - node-exporter
+      - filebeat
+      - rabbitmq
+      - postgresql
+      - prometheus
+      - grafana
+      - node-exporter
+      - filebeat
+      - elasticsearch
+      - elasticsearch-curator
+    single_machine:
+      - kubernetes-master
+      - rabbitmql
+      - postgresql
+    kubernetes_master:
+      - kubernetes-master
+      - applications
+      - node-exporter
+      - filebeat
+    kubernetes_node_ha:
+      - kubernetes-node
+      - node-exporter
+      - filebeat
+    kubernetes_node:
+      - kubernetes-node
+      - node-exporter
+      - filebeat
+

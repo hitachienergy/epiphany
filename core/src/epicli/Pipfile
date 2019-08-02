@@ -1,0 +1,22 @@
+[[source]]
+name = "pypi"
+url = "https://pypi.org/simple"
+verify_ssl = true
+
+[dev-packages]
+pytest = "*"
+wheel = "*"
+setuptools = "*"
+twine = "*"
+
+[packages]
+pyyaml = "*"
+jinja2 = "*"
+boto3 = "*"
+jsonschema = "*"
+python-json-logger = "*"
+ansible = "*"
+terraform-binary = "*"
+
+[requires]
+python_version = "3.7"

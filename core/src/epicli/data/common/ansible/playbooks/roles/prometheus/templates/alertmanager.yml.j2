@@ -1,0 +1,5 @@
+#jinja2: trim_blocks: True, lstrip_blocks: True
+# {{ ansible_managed }}
+# 
+
+{{ specification.alerts.alertmanager.config | to_nice_yaml(indent=2) }}

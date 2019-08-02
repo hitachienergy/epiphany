@@ -1,0 +1,28 @@
+---
+- name: Add Docker-CE stable repo
+  yum_repository:
+    name: docker-ce-stable
+    description: Docker CE Stable Repo
+    baseurl: https://download.docker.com/linux/centos/7/$basearch/stable
+    gpgkey: https://download.docker.com/linux/centos/gpg
+    gpgcheck: yes
+
+- name: Install container-selinux for RHEL 7.6 and later
+  yum:
+    name: http://mirror.centos.org/centos/7/extras/x86_64/Packages/container-selinux-2.99-1.el7_6.noarch.rpm
+    state: present
+    update_cache: yes
+  when: ansible_distribution_version is version('7.6', '>=')
+
+- name: Install container-selinux for 7.5 and older
+  yum:
+    name: http://mirror.centos.org/centos/7/extras/x86_64/Packages/container-selinux-2.74-1.el7.noarch.rpm
+    state: present
+    update_cache: yes
+  when: ansible_distribution_version is version('7.5', '<=')
+
+- name: Install Docker
+  yum:
+    name: docker-ce-18.09.6-3.el7
+    state: present
+    update_cache: yes

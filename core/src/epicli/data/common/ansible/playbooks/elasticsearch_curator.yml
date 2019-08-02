@@ -1,0 +1,8 @@
+---
+# Ansible playbook that makes sure elasticsearch-curator will be installed
+
+- hosts: elasticsearch_curator
+  become: true
+  become_method: sudo
+  roles:
+    - elasticsearch_curator

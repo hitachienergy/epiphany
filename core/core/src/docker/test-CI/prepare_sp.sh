@@ -3,8 +3,8 @@ mkdir -p core/build/azure/infrastructure/$RESOURCE_GROUP
 
 echo '{
   "appId": "{{ sp_client_id }}",
-  "displayName": "epiphany-vsts",
-  "name": "http://epiphany-vsts",
+  "displayName": "{{ sp_app_name }}",
+  "name": "http://{{ sp_app_name }}",
   "password": "{{ sp_client_secret }}",
   "tenant": "{{ sp_tenant_id }}"
 }
@@ -46,13 +46,13 @@ core:
         enable: False
 
 subscription_id: {{ sp_subscription_id }}
-app_name: epiphany-vsts
+app_name: {{ sp_app_name }}
 app_id: {{ sp_client_id }}
 tenant_id: {{ sp_tenant_id }}
 role: Contributor
 auth: {{ sp_client_secret }}
 auth_type: pwd
 " >> tmp/sp/security.yaml
-sed -i "s/{{ sp_subscription_id }}/$SP_SUBSCRIPTION_ID/g; s/{{ sp_client_id }}/$SP_CLIENT_ID/g; s/{{ sp_tenant_id }}/$SP_TENANT_ID/g; s/{{ sp_client_secret }}/$SP_CLIENT_SECRET/g" tmp/sp/*
+sed -i "s/{{ sp_subscription_id }}/$SP_SUBSCRIPTION_ID/g; s/{{ sp_client_id }}/$SP_CLIENT_ID/g; s/{{ sp_tenant_id }}/$SP_TENANT_ID/g; s/{{ sp_client_secret }}/$SP_CLIENT_SECRET/g; s/{{ sp_app_name }}/$SP_APP_NAME/g" tmp/sp/*
 cp tmp/sp/* core/build/azure/infrastructure/$RESOURCE_GROUP
 rm -rf tmp

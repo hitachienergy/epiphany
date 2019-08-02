@@ -1,0 +1,23 @@
+---
+- name: Configure prometheus
+  template:
+    src: "prometheus.yml.j2"
+    dest: "{{ specification.config_directory  }}/prometheus.yml"
+    force: true
+    owner: root
+    group: prometheus
+    mode: 0640
+    validate: "/usr/local/bin/promtool check config %s"
+  notify:
+    - reload prometheus
+
+- name: Copy prometheus custom static targets
+  copy:
+    src: "{{ item }}"
+    dest: "{{ specification.config_directory }}/file_sd/{{ item | splitext | difference(['.yml']) | join('') }}.yml"
+    force: true
+    owner: root
+    group: prometheus
+    mode: 0640
+  with_fileglob:
+    - prometheus/targets/*

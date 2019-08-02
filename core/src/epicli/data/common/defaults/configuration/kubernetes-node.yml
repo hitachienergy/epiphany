@@ -1,0 +1,7 @@
+kind: configuration/kubernetes-node
+version: 0.3.0
+title: "Kubernetes Node Config"
+name: default
+specification:
+  version: 1.14.4
+  node_labels: "node-type=epiphany"

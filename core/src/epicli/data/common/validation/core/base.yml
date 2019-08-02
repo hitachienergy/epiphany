@@ -1,0 +1,33 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "required": [
+    "provider", # always keep this in first place in the index!
+    "kind",
+    "name",
+    "title",
+    "version",
+    "specification"
+  ],
+  "properties": {
+    "kind": {
+      "$id": "#/properties/kind",
+      "type": "string",
+      "title": "The Kind Schema",
+      "default": "",
+      "pattern": ""
+    },
+    "title": {
+      "$ref": "#/definitions/title"
+    },
+    "name": {
+      "$ref": "#/definitions/name"
+    },
+    "provider": {
+      "$ref": "#/definitions/provider"
+    },
+    "version": {
+      "$ref": "#/definitions/version"
+    }
+  }
+}

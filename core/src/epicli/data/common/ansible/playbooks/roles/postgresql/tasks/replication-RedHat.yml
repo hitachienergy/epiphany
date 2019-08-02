@@ -1,0 +1,153 @@
+---
+# Master:
+
+- name: Install packages needed for managing Postgresql with Ansible
+  yum:
+    name: python-psycopg2
+    state: present
+  when:
+    - groups['postgresql'][0] == inventory_hostname
+
+- name: Turn on replica
+  replace:
+    path: /var/opt/rh/rh-postgresql10/lib/pgsql/data/postgresql.conf
+    regexp: "^#wal_level = replica"
+    replace: "wal_level = replica"
+    backup: yes
+  when:
+    - groups['postgresql'][0] == inventory_hostname
+
+- name: Set max_wal_senders
+  replace:
+    path: /var/opt/rh/rh-postgresql10/lib/pgsql/data/postgresql.conf
+    regexp: "^[#]?max_wal_senders\\s*=\\s*[0-9]+"
+    replace: "max_wal_senders = {{ specification.replication.max_wal_senders | default('5') }}"
+  when:
+    - groups['postgresql'][0] == inventory_hostname
+
+- name: Set wal_keep_segments
+  replace:
+    path: /var/opt/rh/rh-postgresql10/lib/pgsql/data/postgresql.conf
+    regexp: "^[#]?wal_keep_segments\\s*=\\s*[0-9]+"
+    replace: "wal_keep_segments = {{ specification.replication.wal_keep_segments | default('32') }}"
+  when:
+    - groups['postgresql'][0] == inventory_hostname
+
+- name: Add replication user to postgresql
+  become_user: postgres
+  postgresql_user:
+    user: "{{ specification.replication.user }}"
+    password: "{{ specification.replication.password }}"
+    role_attr_flags: LOGIN,REPLICATION
+  when:
+    - groups['postgresql'][0] == inventory_hostname
+
+- name: Check if replication user exists in pg_hba.conf
+  shell: grep "^host\s*replication\s*{{ specification.replication.user }}\s*{{ hostvars[groups['postgresql'][1]]['ansible_default_ipv4']['address'] }}/32\s*md5" /var/opt/rh/rh-postgresql10/lib/pgsql/data/pg_hba.conf
+  register: test_replication 
+  failed_when: "test_replication.rc == 2"
+  when:
+    - groups['postgresql'][0] == inventory_hostname
+
+- name: Add replication user to pg_hba.conf
+  lineinfile:
+    path: /var/opt/rh/rh-postgresql10/lib/pgsql/data/pg_hba.conf
+    line: "host    replication     {{ specification.replication.user }}     {{ hostvars[groups['postgresql'][1]]['ansible_default_ipv4']['address'] }}/32              md5"
+    backup: yes
+  when:
+    - groups['postgresql'][0] == inventory_hostname
+    - test_replication.stdout == ""
+
+- name: Restart postgresql service
+  service:
+    name: postgresql
+    state: restarted
+  when:
+    - groups['postgresql'][0] == inventory_hostname
+
+# Slave:
+
+- name: Stop postgresql service
+  service:
+    name: postgresql
+    state: stopped
+  when:
+    - groups['postgresql'][1] == inventory_hostname
+
+- name: Turn on hot_standby
+  replace:
+    path: /var/opt/rh/rh-postgresql10/lib/pgsql/data/postgresql.conf
+    regexp: "^#hot_standby = on"
+    replace: "hot_standby = on"
+  when:
+    - groups['postgresql'][1] == inventory_hostname
+
+- name: Create pgpass file
+  template:
+    src: pgpass.j2
+    dest: /var/lib/pgsql/.pgpass
+    owner: postgres
+    group: postgres
+    mode: 0600
+  when:
+    - groups['postgresql'][1] == inventory_hostname
+
+- name: Backup remote postgresql.conf
+  copy:
+    src: /var/opt/rh/rh-postgresql10/lib/pgsql/data/postgresql.conf
+    dest: /tmp/postgresql.conf
+    remote_src: yes
+  when:
+    - groups['postgresql'][1] == inventory_hostname
+
+- name: Backup remote pg_hba.conf
+  copy:
+    src: /var/opt/rh/rh-postgresql10/lib/pgsql/data/pg_hba.conf
+    dest: /tmp/pg_hba.conf
+    remote_src: yes
+  when:
+    - groups['postgresql'][1] == inventory_hostname
+
+- name: Clean data directory
+  shell: "rm -rf /var/opt/rh/rh-postgresql10/lib/pgsql/data/*"
+  when:
+    - groups['postgresql'][1] == inventory_hostname
+
+- name: Replicate content with pg_basebackup
+  become_user: postgres
+  shell: "pg_basebackup -h {{ hostvars[groups['postgresql'][0]]['ansible_default_ipv4']['address'] }} -D /var/opt/rh/rh-postgresql10/lib/pgsql/data/ -P -U {{ specification.replication.user }} --wal-method=stream"
+  when:
+    - groups['postgresql'][1] == inventory_hostname
+
+- name: Restore remote postgresql.conf
+  copy:
+    src: /tmp/postgresql.conf
+    dest: /var/opt/rh/rh-postgresql10/lib/pgsql/data/postgresql.conf
+    remote_src: yes
+  when:
+    - groups['postgresql'][1] == inventory_hostname
+
+- name: Restore remote pg_hba.conf
+  copy:
+    src: /tmp/pg_hba.conf
+    dest: /var/opt/rh/rh-postgresql10/lib/pgsql/data/pg_hba.conf
+    remote_src: yes
+  when:
+    - groups['postgresql'][1] == inventory_hostname
+
+- name: Create recovery.conf file
+  template:
+    src: recovery.conf.j2
+    dest: /var/opt/rh/rh-postgresql10/lib/pgsql/data/recovery.conf
+    owner: postgres
+    group: postgres
+  when:
+    - groups['postgresql'][1] == inventory_hostname
+
+- name: Start postgresql service
+  service:
+    name: postgresql
+    state: started
+  when:
+    - groups['postgresql'][1] == inventory_hostname
+

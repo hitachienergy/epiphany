@@ -1,3 +1,0 @@
-# Architecture Index
-
-Documentation index.

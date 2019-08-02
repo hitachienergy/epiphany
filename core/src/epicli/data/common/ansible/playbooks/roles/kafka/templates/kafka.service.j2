@@ -1,0 +1,22 @@
+[Unit]
+Description=Kafka Daemon
+After=zookeeper.service
+
+[Service]
+Type=simple
+User=kafka
+Group=kafka
+LimitNOFILE=32768
+Restart=on-failure
+Environment="KAFKA_HEAP_OPTS={{ specification.kafka_var.heap_opts }}"
+Environment="LOG_DIR={{ specification.kafka_var.log_dir }}"
+{% if exporter.stat.exists %}
+Environment="KAFKA_OPTS=-Djavax.net.debug=all -javaagent:{{ specification.prometheus_jmx_path }}={{ specification.prometheus_jmx_exporter_web_listen_port }}:{{ specification.prometheus_jmx_config }}"
+{% else %}
+Environment="KAFKA_OPTS=-Djavax.net.debug=all"
+{% endif %}
+Environment="KAFKA_JMX_OPTS={{ specification.kafka_var.jmx_opts }}"
+ExecStart=/opt/kafka/bin/kafka-server-start.sh /opt/kafka/config/server.properties
+
+[Install]
+WantedBy=multi-user.target

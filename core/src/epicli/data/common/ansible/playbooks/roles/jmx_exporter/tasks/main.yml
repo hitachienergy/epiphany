@@ -1,0 +1,61 @@
+---
+
+- name: Create jmx-exporter group
+  group:
+    name: "{{ specification.jmx_exporter_group }}"
+    system: yes
+
+- name: Create jmx-exporter user
+  user:
+    name: "{{ specification.jmx_exporter_user }}"
+    group: "{{ specification.jmx_exporter_group }}"
+    shell: "/usr/sbin/nologin"
+    createhome: false
+    system: yes
+
+- name: jmx-exporter | create directories
+  become: yes
+  file:
+    path: "{{ item }}"
+    recurse: yes
+    owner: root
+    group: "{{ specification.jmx_exporter_group }}"
+    mode: 0750
+    state: directory
+  with_items:
+  - "{{ specification.jmx_jars_directory }}"
+
+# TODO: Checking sha512
+- name: Prometheus jmx | download jar
+  become: yes
+  get_url:
+    url: "{{ specification.download_url }}"
+    dest: "/opt/jmx-exporter/jmx_prometheus_javaagent-{{ specification.jmx_exporter_version }}.jar"
+    force: no
+    owner: "{{ specification.jmx_exporter_user }}"
+    group: "{{ specification.jmx_exporter_group }}"
+    validate_certs: "{{ validate_certs | bool }}"
+
+- name: Get sha512 sum of archive
+  stat:
+    path: "/opt/jmx-exporter/jmx_prometheus_javaagent-{{ specification.jmx_exporter_version }}.jar"
+    checksum_algorithm: sha512
+    get_checksum: yes
+  register: jmx_prometheus_download_stat
+
+- name: Display sha of archive
+  debug:
+    msg: "Alertmanager SHA512: {{ jmx_prometheus_download_stat.stat.checksum }}"
+
+- name: Verify sha512 of archive before installation.
+  fail:
+    msg: "File checksum is not correct."
+  when: jmx_prometheus_download_stat.stat.checksum != specification.download_sha
+
+- name: Prometheus jmx | symlink jar
+  become: yes
+  file:
+    src: "/opt/jmx-exporter/jmx_prometheus_javaagent-{{ specification.jmx_exporter_version }}.jar"
+    path: "{{ specification.jmx_path }}"
+    force: yes
+    state: link

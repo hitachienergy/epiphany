@@ -144,7 +144,7 @@ describe 'Checking kubernetes dashboard availability' do
     end
   end
   describe 'Checking if the dashboard is available' do
-    describe command('for i in {1..60}; do if [ $(curl -o /dev/null -s -w "%{http_code}" "http://localhost:8001/api/v1/namespaces/kube-system/services/https:kubernetes-dashboard:/proxy/") -eq 200 ]; \
+    describe command('for i in {1..60}; do if [ $(curl -o /dev/null -s -w "%{http_code}" "http://localhost:8001/api/v1/namespaces/$(kubectl get deployments --all-namespaces --field-selector metadata.name=kubernetes-dashboard --no-headers | awk \'{print $1}\')/services/https:kubernetes-dashboard:/proxy/") -eq 200 ]; \
     then echo -n "200"; break; else sleep 1; fi; done') do
       it "is expected to be equal" do
         expect(subject.stdout.to_i).to eq 200

@@ -1,0 +1,20 @@
+kind: configuration/rabbitmq
+version: 0.3.0
+title: "RabbitMQ"
+name: default
+specification:
+  version: 3.7.10
+  rabbitmq_user: rabbitmq
+  rabbitmq_group: rabbitmq
+
+  logrotate_period: weekly
+  logrotate_number: 10
+  ulimit_open_files: 65535
+
+  amqp_port: 5672
+  rabbitmq_use_longname: true
+  rabbitmq_policies: []
+  rabbitmq_plugins: []
+  custom_configurations: []
+  cluster:
+    is_clustered: false

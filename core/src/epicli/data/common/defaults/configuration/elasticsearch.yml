@@ -1,0 +1,6 @@
+kind: configuration/elasticsearch
+version: 0.3.0
+title: "ElasticSearch Config"
+name: default
+specification:
+  elasticsearch_version: "6.4.0"

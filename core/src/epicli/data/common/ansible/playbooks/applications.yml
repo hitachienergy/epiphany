@@ -1,0 +1,11 @@
+---
+# Ansible playbook that deploys applications on Kubernetes after cluster creation
+
+- hosts: all
+  tasks: [ ]  
+
+- hosts: applications
+  become: true
+  become_method: sudo
+  roles:
+    - applications

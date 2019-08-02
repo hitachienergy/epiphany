@@ -1,0 +1,8 @@
+kind: configuration/elasticsearch-curator
+version: 0.3.0
+title: "ElasticSearch curator"
+name: default
+specification:
+  indices_retention_days: 30
+  debian_curator_version: "5.5.4_amd64"
+  redhat_curator_version: "5.5.4-1.x86_64"

@@ -1,0 +1,8 @@
+---
+# Ansible playbook that makes sure the base items for all nodes are installed
+
+- hosts: kibana
+  become: true
+  become_method: sudo
+  roles:
+    - kibana

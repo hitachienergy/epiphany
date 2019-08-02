@@ -1,0 +1,8 @@
+kind: infrastructure/public-key
+version: 0.3.0
+title: "Public Key"
+provider: aws
+name: default
+specification:
+  name: "operations"
+  public_key: SET_BY_AUTOMATION

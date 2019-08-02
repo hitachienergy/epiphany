@@ -1,0 +1,33 @@
+---
+- name: Get Elasticsearch host IP
+  set_fact: elastic_address="{{ hostvars[groups['elasticsearch'][0]]['ansible_default_ipv4']['address'] }}"
+  when: groups['elasticsearch'][0] is defined
+
+- name: Get Kibana host IP
+  set_fact: kibana_address="{{ hostvars[groups['kibana'][0]]['ansible_default_ipv4']['address'] }}"
+  when: groups['kibana'][0] is defined
+
+- name: Copy configuration file (filebeat.yml)
+  template:
+    dest: /etc/filebeat/filebeat.yml
+    src: filebeat.yml.j2
+  notify: Restart Filebeat service
+
+- name: Set Filebeat to be started after Docker
+  block:
+    - name: Create directory (filebeat.service.d)
+      file:
+        path: /etc/systemd/system/filebeat.service.d
+        state: directory
+    - name: Copy drop-in configuration file (extra-dependencies.conf)
+      template:
+        dest: /etc/systemd/system/filebeat.service.d/extra-dependencies.conf
+        src: extra-dependencies.conf.j2
+      register: filebeat_unit_dependencies
+      notify: Restart Filebeat service
+  when: (groups['kubernetes_master'] is defined and inventory_hostname in groups['kubernetes_master']) or (groups['kubernetes_node'] is defined and inventory_hostname in groups['kubernetes_node'])
+
+- name: Enable Filebeat service
+  systemd:
+    name: filebeat
+    enabled: yes

@@ -43,6 +43,23 @@
     dest: /home/{{ admin_user.name }}/
     owner: "{{ admin_user.name }}"
     group: "{{ admin_user.name }}"
+  when: kubernetes_specification.cni_plugin == "flannel"
+
+- name: Copy calico config
+  copy:
+    src: calico.yml
+    dest: /home/{{ admin_user.name }}/
+    owner: "{{ admin_user.name }}"
+    group: "{{ admin_user.name }}"
+  when: kubernetes_specification.cni_plugin == "calico"
+
+- name: Copy canal config
+  copy:
+    src: canal.yml
+    dest: /home/{{ admin_user.name }}/
+    owner: "{{ admin_user.name }}"
+    group: "{{ admin_user.name }}"
+  when: kubernetes_specification.cni_plugin == "canal"
 
 - name: Copy dashboard yaml
   copy:
@@ -86,6 +103,17 @@
 - name: Apply kube-flannel.yml
   shell: kubectl apply --kubeconfig=/home/{{ admin_user.name }}/.kube/config -f /home/{{ admin_user.name }}/kube-flannel.yml
   become_user: "{{ admin_user.name }}"
+  when: kubernetes_specification.cni_plugin == "flannel"
+
+- name: Apply calico
+  shell: kubectl apply --kubeconfig=/home/{{ admin_user.name }}/.kube/config -f /home/{{ admin_user.name }}/calico.yml
+  become_user: "{{ admin_user.name }}"
+  when: kubernetes_specification.cni_plugin == "calico"
+
+- name: Apply canal
+  shell: kubectl apply --kubeconfig=/home/{{ admin_user.name }}/.kube/config -f /home/{{ admin_user.name }}/canal.yml
+  become_user: "{{ admin_user.name }}"
+  when: kubernetes_specification.cni_plugin == "canal"
 
 - name: Check if kubernetes-dashboard is already deployed
   shell: kubectl --kubeconfig=/home/{{ admin_user.name }}/.kube/config get pods --all-namespaces | grep -c -i dashboard

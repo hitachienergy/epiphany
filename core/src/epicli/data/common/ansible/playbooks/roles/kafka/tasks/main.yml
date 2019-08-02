@@ -1,0 +1,17 @@
+---
+# Kafka tasks - reside on masters
+
+- name: Check if jmx exporter is available
+  stat:
+    path: "{{ specification.prometheus_jmx_path }}"
+  register: exporter
+
+- include_tasks: setup-kafka.yml
+
+- include_tasks: verify-kafka.yml
+
+- include_tasks: metrics.yml
+  when: exporter.stat.exists
+
+- include_tasks: start.yml
+

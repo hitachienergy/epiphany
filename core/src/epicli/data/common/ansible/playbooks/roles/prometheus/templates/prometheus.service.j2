@@ -1,0 +1,40 @@
+# {{ ansible_managed }}
+[Unit]
+Description=Prometheus
+After=network.target
+
+[Service]
+Type=simple
+Environment="GOMAXPROCS={{ ansible_processor_vcpus|default(ansible_processor_count) }}"
+User=prometheus
+Group=prometheus
+ExecReload=/bin/kill -HUP $MAINPID
+ExecStart=/usr/local/bin/prometheus {% for flag in specification.config_flags %} {{ flag }} {% endfor %}
+
+PrivateTmp=true
+PrivateDevices=true
+ProtectHome=true
+NoNewPrivileges=true
+{% if prometheus_systemd_version.stdout | int >= 231 %}
+ReadWritePaths={{ specification.storage.data_directory }}
+{% else %}
+ReadWriteDirectories={{ specification.storage.data_directory }}
+{% endif %}
+{% if prometheus_systemd_version.stdout | int >= 232 %}
+ProtectSystem=strict
+ProtectControlGroups=true
+ProtectKernelModules=true
+ProtectKernelTunables=true
+{% else %}
+ProtectSystem=full
+{% endif %}
+
+{% if http_proxy is defined %}
+Environment="HTTP_PROXY={{ http_proxy }}"{% if https_proxy is defined %} "HTTPS_PROXY={{ https_proxy }}{% endif %}"
+{% endif %}
+
+SyslogIdentifier=prometheus
+Restart=always
+
+[Install]
+WantedBy=multi-user.target

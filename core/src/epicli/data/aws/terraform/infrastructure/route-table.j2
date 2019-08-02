@@ -1,0 +1,26 @@
+#####################################################
+# DO NOT Modify by hand - Manage by Automation
+#####################################################
+#####################################################
+# This file can be used as a base template to build other Terraform files. It attempts to use as much
+# Terraform interprolation as possible by creating Terraform variables instead of changing inline
+# this approach provides an easier way to do creative looping, fetch IDs of created resources etc.
+#####################################################
+#####################################################
+# {{ specification.name }}
+#####################################################
+
+
+resource "aws_route_table" "{{ specification.name }}" {
+    vpc_id = "${aws_vpc.{{ specification.vpc_name }}.id}"
+    route {
+        cidr_block = "{{ specification.route.cidr_block }}"
+        gateway_id = "${ aws_internet_gateway.{{ specification.route.gateway_name }}.id}"
+    }
+
+    tags {
+        Name = "web-table"
+        cluster_name = "{{ specification.cluster_name }}"
+        cluster_version = "{{ version }}"
+    }
+}

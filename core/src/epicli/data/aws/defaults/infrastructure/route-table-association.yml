@@ -1,0 +1,9 @@
+kind: infrastructure/route-table-association
+version: 0.3.0
+title: Route Table Association Config"
+provider: aws
+name: default
+specification:
+  name: SET_BY_AUTOMATION
+  subnet_name: SET_BY_AUTOMATION
+  route_table_name: SET_BY_AUTOMATION

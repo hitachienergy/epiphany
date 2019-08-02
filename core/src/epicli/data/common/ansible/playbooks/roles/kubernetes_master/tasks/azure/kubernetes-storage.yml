@@ -1,0 +1,33 @@
+- name: upload k8s storage secret yaml
+  become: yes
+  template:
+    dest: "/home/{{ admin_user.name }}/k8s-storage-secret.yml"
+    src: azure/k8s-storage-secret.yml.j2
+    owner: "{{ admin_user.name }}"
+    group: "{{ admin_user.name }}"
+    mode: 0644
+
+- name: upload k8s persistent volume yaml
+  become: yes
+  template:
+    dest: "/home/{{ admin_user.name }}/k8s-persistent-volume.yml"
+    src: azure/k8s-persistent-volume.yml.j2
+    owner: "{{ admin_user.name }}"
+    group: "{{ admin_user.name }}"
+    mode: 0644
+
+- name: apply secret yml
+  become_user: "{{ admin_user.name }}"
+  environment:
+    KUBECONFIG: "/home/{{ admin_user.name }}/.kube/config"
+  shell: "kubectl apply -f /home/{{ admin_user.name }}/k8s-storage-secret.yml"
+  when:
+    - groups['kubernetes_master'][0] == inventory_hostname
+
+- name: apply storage yml
+  become_user: "{{ admin_user.name }}"
+  environment:
+    KUBECONFIG: "/home/{{ admin_user.name }}/.kube/config"
+  shell: "kubectl apply -f /home/{{ admin_user.name }}/k8s-persistent-volume.yml"
+  when:
+    - groups['kubernetes_master'][0] == inventory_hostname

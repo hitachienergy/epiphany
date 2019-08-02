@@ -1,7 +1,7 @@
 ---
 # Simplified datafile that you can use together with QA template.
 kind: simplified-datafile
-version: 0.2.2
+version: 0.3.0
 environment_name: {{ resource_group }}
 azure:
   subscription_name: {{ sp_subscription_name }}
@@ -30,3 +30,4 @@ config:
   rabbitmq_deployment: {{ rabbitmq_deployment }}
   auth_service_deployment: {{ auth_service_deployment }}
   alerts_for_monitoring: {{ alerts_for_monitoring }}
+  cni_plugin: {{ cni_plugin }}

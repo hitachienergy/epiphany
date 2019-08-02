@@ -1,0 +1,13 @@
+#jinja2: trim_blocks:False
+[Unit]
+Description={{ specification.description }}
+ 
+[Service]
+User=node_exporter
+Group=node_exporter
+ExecStart=/opt/node_exporter/node_exporter {% for prometheus_node_exporter_collector in specification.enabled_collectors %}--collector.{{ prometheus_node_exporter_collector }} {% endfor %} {% for flag in specification.config_flags %} {{ flag }} {% endfor %}
+SyslogIdentifier=prometheus-node-exporter
+Restart=always 
+ 
+[Install]
+WantedBy=multi-user.target

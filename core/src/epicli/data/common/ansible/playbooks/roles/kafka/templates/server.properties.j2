@@ -1,0 +1,171 @@
+############################# Server Basics #############################
+
+# The id of the broker. This must be set to a unique integer for each broker.
+{% for url in kafka_hosts.split(',') %}
+  {%- set url_host = url.split(':')[0] -%}
+  {%- if url_host == ansible_fqdn or url_host in ansible_all_ipv4_addresses
+         or url_host == ansible_ssh_host -%}
+broker.id={{ loop.index0 }}
+
+auto.create.topics.enable=true
+delete.topic.enable=true
+
+#default replication factors for automatically created topics
+default.replication.factor={{ specification.kafka_var.replicas }}
+
+#The replication factor for the offsets topic (set higher to ensure availability). Internal topic creation will fail until the cluster size meets this replication factor requirement.
+offsets.topic.replication.factor={{ specification.kafka_var.replicas }}
+
+#Offsets older than this retention period will be discarded
+offsets.retention.minutes={{ specification.kafka_var.offset_retention_minutes }}
+
+############################# Socket Server Settings #############################
+  {%- endif %}
+{%- endfor %}
+
+# The address the socket server listens on. It will get the value returned from
+# java.net.InetAddress.getCanonicalHostName() if not configured.
+#   FORMAT:
+#     listeners = listener_name://host_name:port
+#   EXAMPLE:
+#     listeners = PLAINTEXT://your.host.name:9092
+{%- if specification.kafka_var.security.ssl.enable %}
+#listeners=PLAINTEXT://0.0.0.0:9092,SSL://0.0.0.0:9093
+listeners=SSL://{{ ansible_default_ipv4.address }}:{{ specification.kafka_var.security.ssl.port }}
+{% else %}
+listeners=PLAINTEXT://{{ ansible_default_ipv4.address }}:{{ specification.kafka_var.port }}
+
+# Hostname and port the broker will advertise to producers and consumers. If not set,
+# it uses the value for "listeners" if configured.  Otherwise, it will use the value
+# returned from java.net.InetAddress.getCanonicalHostName().
+#advertised.listeners=PLAINTEXT://0.0.0.0:9092,SSL://0.0.0.0:9093
+{%- endif %}
+
+# Maps listener names to security protocols, the default is for them to be the same. See the config documentation for more details
+#listener.security.protocol.map=PLAINTEXT:PLAINTEXT,SSL:SSL,SASL_PLAINTEXT:SASL_PLAINTEXT,SASL_SSL:SASL_SSL
+
+# The number of threads handling network requests
+num.network.threads=3
+
+# The number of threads doing disk I/O
+num.io.threads=8
+
+# The send buffer (SO_SNDBUF) used by the socket server
+socket.send.buffer.bytes=102400
+
+# The receive buffer (SO_RCVBUF) used by the socket server
+socket.receive.buffer.bytes=102400
+
+# The maximum size of a request that the socket server will accept (protection against OOM)
+socket.request.max.bytes=104857600
+
+############################# Security #########################################
+
+# Security protocol used to communicate between brokers
+
+{% if specification.kafka_var.security.ssl.enable %}
+# If not enabled it should default to PLAINTEXT
+security.inter.broker.protocol={{ specification.kafka_var.security.inter_broker_protocol }}
+
+#### Encryption Settings ####
+ssl.endpoint.identification.algorithm={{ specification.kafka_var.security.ssl.endpoint_identification_algorithm }}
+
+ssl.keystore.location={{ specification.kafka_var.security.ssl.server.keystore_location }}
+ssl.keystore.password={{ specification.kafka_var.security.ssl.server.passwords.keystore }}
+ssl.truststore.location={{ specification.kafka_var.security.ssl.server.truststore_location }}
+ssl.truststore.password={{ specification.kafka_var.security.ssl.server.passwords.truststore }}
+ssl.key.password={{ specification.kafka_var.security.ssl.server.passwords.key }}
+
+ssl.client.auth={{ specification.kafka_var.security.ssl.client_auth }}
+{% endif %}
+
+{% if specification.kafka_var.authentication.sasl.enable %}
+#### Authentication Settings ####
+# SASL mechanism used for inter-broker communication.
+sasl.mechanism.inter.broker.protocol={{ specification.kafka_var.authentication.sasl.mechanism_inter_broker_protocol }}
+
+# The list of SASL mechanisms enabled in the Kafka server. The list may contain any mechanism
+# for which a security provider is available. Only GSSAPI is enabled by default.
+sasl.enabled.mechanisms={{ specification.kafka_var.authentication.sasl.enabled_mechanisms }}
+
+############################# ACLs #############################################
+
+# The authorizer class that should be used for authorization
+authorizer.class.name={{ specification.kafka_var.authorization.authorizer_class_name }}
+
+# If a Resource R has no associated ACLs, no one other than super users is allowed to access R. If you want to change that behavior, set this property to true
+allow.everyone.if.no.acl.found={{ specification.kafka_var.authorization.allow_everyone_if_no_acl_found }}
+
+{% if specification.kafka_var.super_users is defined %}
+super.users={{ specification.kafka_var.super_users }}
+{% endif %}
+{% endif %}
+
+############################# Log Basics #############################
+
+# A comma seperated list of directories under which to store log files
+log.dirs={{ specification.kafka_var.data_dir }}
+
+# The default number of log partitions per topic. More partitions allow greater
+# parallelism for consumption, but this will also result in more files across
+# the brokers.
+num.partitions={{ specification.kafka_var.partitions }}
+
+# The number of threads per data directory to be used for log recovery at startup and flushing at shutdown.
+# This value is recommended to be increased for installations with data dirs located in RAID array.
+num.recovery.threads.per.data.dir=1
+
+min.insync.replicas={{ specification.kafka_var.replicas }}
+
+############################# Log Flush Policy #############################
+
+# Messages are immediately written to the filesystem but by default we only fsync() to sync
+# the OS cache lazily. The following configurations control the flush of data to disk.
+# There are a few important trade-offs here:
+#    1. Durability: Unflushed data may be lost if you are not using replication.
+#    2. Latency: Very large flush intervals may lead to latency spikes when the flush does occur as there will be a lot of data to flush.
+#    3. Throughput: The flush is generally the most expensive operation, and a small flush interval may lead to exceessive seeks.
+# The settings below allow one to configure the flush policy to flush data after a period of time or
+# every N messages (or both). This can be done globally and overridden on a per-topic basis.
+
+# The number of messages to accept before forcing a flush of data to disk
+#log.flush.interval.messages=10000
+
+# The maximum amount of time a message can sit in a log before we force a flush
+#log.flush.interval.ms=1000
+
+############################# Log Retention Policy #############################
+
+# The following configurations control the disposal of log segments. The policy can
+# be set to delete segments after a period of time, or after a given size has accumulated.
+# A segment will be deleted whenever *either* of these criteria are met. Deletion always happens
+# from the end of the log.
+
+# The minimum age of a log file to be eligible for deletion due to age
+log.retention.hours={{ specification.kafka_var.log_retention_hours }}
+
+
+# A size-based retention policy for logs. Segments are pruned from the log as long as the remaining
+# segments don't drop below log.retention.bytes. Functions independently of log.retention.hours.
+#log.retention.bytes=1073741824
+
+# The maximum size of a log segment file. When this size is reached a new log segment will be created.
+log.segment.bytes=1073741824
+
+# The interval at which log segments are checked to see if they can be deleted according
+# to the retention policies
+log.retention.check.interval.ms=300000
+
+############################# Zookeeper #############################
+
+# Zookeeper connection string (see zookeeper docs for details).
+# This is a comma separated host:port pairs, each corresponding to a zk
+# server. e.g. "127.0.0.1:3000,127.0.0.1:3001,127.0.0.1:3002".
+# You can also append an optional chroot string to the urls to specify the
+# root directory for all kafka znodes.
+zookeeper.connect={{ specification.zookeeper_hosts }}
+
+# Timeout in ms for connecting to zookeeper
+zookeeper.connection.timeout.ms=6000
+
+zookeeper.set.acl={{ specification.zookeeper_set_acl }}

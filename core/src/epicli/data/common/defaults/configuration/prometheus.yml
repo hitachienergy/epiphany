@@ -1,0 +1,124 @@
+kind: configuration/prometheus
+version: 0.3.0
+title: "Prometheus"
+name: default
+specification:
+  download_urls:
+    i386: "https://github.com/prometheus/prometheus/releases/download/v2.10.0/prometheus-2.10.0.linux-386.tar.gz"
+    x86_64: "https://github.com/prometheus/prometheus/releases/download/v2.10.0/prometheus-2.10.0.linux-amd64.tar.gz"
+    aarch64: "https://github.com/prometheus/prometheus/releases/download/v2.10.0/prometheus-2.10.0.linux-arm64.tar.gz"
+  download_shas:
+    - "eb9ebfd88d25e7ec22a19a035b535dd750e7938df01d907c7a74d327a689609ba9600963d9c938133057b8dab0d04d1d102c7c12262ff573cc84d0a7a584e4d1"
+    - "6f499c6df38922e52d76c45b9659c4cae8ee1cc8307e8b933f461434024cdb9a6b1faabb6953ece2b25a948879d8fa885807d0577132f179a4de5fdf2459ca8c"
+    - "3aad1d46bd31f1c1083ca313e61941d851d379370da715a9f23b336e679952e4c16f83a6180f4f6177fdf036fca56b84e3f6adf7fef8224c07a06cd411afd36f"
+  download_directory: "/tmp"
+  config_directory: "/etc/prometheus"
+  storage:
+    data_directory: "/var/lib/prometheus"
+  config_flags:                                                                   # Parameters that Prometheus service will be started with.
+    - "--config.file=/etc/prometheus/prometheus.yml"                              # Directory should be the same as "config_directory"
+    - "--storage.tsdb.path=/var/lib/prometheus"                                   # Directory should be the same as "storage.data_directory"
+    - "--storage.tsdb.retention.time=180d"                                        # Data retention time for metrics
+    - "--storage.tsdb.retention.size=20GB"                                        # Data retention size for metrics
+    - "--web.console.libraries=/etc/prometheus/console_libraries"                 # Directory should be the same as "config_directory"
+    - "--web.console.templates=/etc/prometheus/consoles"                          # Directory should be the same as "config_directory"
+    - "--web.listen-address=0.0.0.0:9090"                                         # Address that Prometheus console will be available
+
+  metrics_path: "/metrics"
+  scrape_interval : "15s"
+  scrape_timeout: "10s"
+  evaluation_interval: "10s"
+  remote_write: []
+  remote_read: []
+  alerts: # Alert rules are enabled by default, to enable Alertmanager (notifications sender) go to config below
+    rules: # Predefined rules, feel free to add more
+      - name: "UpDown"
+        expression: up == 0
+        duration: 1m #1s, 1m, 1h, 1d, 1w, ...
+        severity: critical
+        message: "Node is down."
+      - name: "DiskSpace"
+        expression: ((node_filesystem_avail_bytes* 100) / node_filesystem_size_bytes) < 20 # 100 - 80
+        duration: 1m #1s, 1m, 1h, 1d, 1w, ...
+        severity: critical
+        message: "Disk usage is above 80%"
+      - name: "DiskSpacePrediction"
+        expression: predict_linear(node_filesystem_free_bytes{job="node"}[1h], 48 * 3600) < 0
+        duration: 1m #1s, 1m, 1h, 1d, 1w, ...
+        severity: warning
+        message: "Disk will run out of space in less than 48h"
+      - name: "MemoryUsage"
+        expression: (sum by (instance) (node_memory_MemTotal_bytes) - sum by (instance)(node_memory_MemFree_bytes + node_memory_Buffers_bytes + node_memory_Cached_bytes) ) / sum by (instance)(node_memory_MemTotal_bytes) * 100 > 80
+        duration: 15m #1s, 1m, 1h, 1d, 1w, ...
+        severity: warning
+        message: "Server memory has been used in more than 80% during last 15 minutes."
+      - name: "CpuLoad"
+        expression: 100 - (avg by (instance) (irate(node_cpu_seconds_total{job="node",mode="idle"}[5m])) * 100) > 80
+        duration: 15m #1s, 1m, 1h, 1d, 1w, ...
+        severity: critical
+        message: "CPU utilization has exceeded 80% over last 15 minutes."
+      - name: "KafkaConsumerLag"
+        expression: sum by(consumergroup) (kafka_consumergroup_lag) > 1000
+        duration: 15m #1s, 1m, 1h, 1d, 1w, ...
+        severity: critical
+        message: "Kafka consumers are lagging more than 1000 messages over last 15 minutes."
+
+    alertmanager:
+      enable: False # To make Alertmanager working, you have to enable it and define receivers and routes
+      download_shas:
+        - "04c8a0b2e537403892c6d427fc1ec3c71a780f05567dc4f23019c5d48bd672fe8d9989ea58cfdcc243778e64798526136f382d36bd9addc24100e6e88253a3a3"
+        - "e0af9867044bc702460a4fc76f712ac6f37c86d9ea94c7a3ed2b209fef9744ba1e0b91b7c4fd294d48b90d30974feba984a9265b161c15cbfbbd246d3a890270"
+        - "8a99f5dac9d57b48f3b7b3e7c58350542ae0767cfa1382328648002459f0bcff8bc58ca84b5c3ba42bc5ae2fedb5db78e664f70efb4aacb3dc50643319691449"
+      download_urls: # Download URLs for AlertManager
+        i386: "https://github.com/prometheus/alertmanager/releases/download/v0.17.0/alertmanager-0.17.0.linux-386.tar.gz"
+        x86_64: "https://github.com/prometheus/alertmanager/releases/download/v0.17.0/alertmanager-0.17.0.linux-amd64.tar.gz"
+        aarch64: "https://github.com/prometheus/alertmanager/releases/download/v0.17.0/alertmanager-0.17.0.linux-arm64.tar.gz"
+      config: # Configuration for Alertmanager, it will be passed to Alertmanager service.
+
+        # Full list of configuration fields https://prometheus.io/docs/alerting/configuration/
+        global:
+          resolve_timeout: 5m
+#          smtp_from: "alert@test.com"
+#          smtp_smarthost: "smtp-url:smtp-port"
+#          smtp_auth_username: "your-smtp-user@domain.com"
+#          smtp_auth_password: "your-smtp-password"
+#          smtp_require_tls: True
+        route:
+          group_by: ['alertname']
+          group_wait: 10s
+          group_interval: 10s
+          repeat_interval: 1h
+#          receiver: 'email' # Default receiver, change if another is set to default
+          routes:
+#            Example routes, names need to match 'name' field of receiver
+#            - match_re:
+#                severity: critical
+#              receiver: opsgenie
+#              continue: true
+#            - match_re:
+#                severity: critical
+#              receiver: pagerduty
+#              continue: true
+#            - match_re:
+#                severity: info|warning|critical
+#              receiver: slack
+#              continue: true
+#            - match_re:
+#                severity: warning|critical
+#              receiver: email
+
+        receivers: # example configuration for receivers # api_url: https://prometheus.io/docs/alerting/configuration/#receiver
+#          - name: 'email'
+#            email_configs:
+#              - to: "test@domain.com"
+    #      - name: 'slack'
+    #        slack_configs:
+    #          - api_url: "your-slack-integration-url"
+    #      - name: 'pagerduty'
+    #        pagerduty_configs:
+    #          - service_key: "your-pagerduty-service-key"
+    #      - name: 'opsgenie'
+    #        opsgenie_config:
+    #          api_key: <secret> | default = global.opsgenie_api_key
+    #          api_url: <string> | default = global.opsgenie_api_url
+

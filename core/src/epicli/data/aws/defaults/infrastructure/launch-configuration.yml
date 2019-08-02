@@ -1,0 +1,18 @@
+kind: infrastructure/launch-configuration
+version: 0.3.0
+title: "Launch configuration"
+provider: aws
+name: default
+specification:
+  name: SET_BY_AUTOMATION
+  image_id: SET_BY_AUTOMATION
+  size: SET_BY_AUTOMATION
+  key_name: SET_BY_AUTOMATION
+  disks: SET_BY_AUTOMATION
+  ebs_optimized: SET_BY_AUTOMATION
+  associate_public_ip: SET_BY_AUTOMATION
+  security_groups: [] # SET_BY_AUTOMATION
+  enable_monitoring: true
+
+
+

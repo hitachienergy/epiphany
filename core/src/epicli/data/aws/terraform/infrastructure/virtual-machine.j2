@@ -1,0 +1,56 @@
+#####################################################
+# DO NOT Modify by hand - Manage by Automation
+#####################################################
+#####################################################
+# This file can be used as a base template to build other Terraform files. It attempts to use as much
+# Terraform interpolation as possible by creating Terraform variables instead of changing inline
+# this approach provides an easier way to do creative looping, fetch IDs of created resources etc.
+#####################################################
+#####################################################
+# {{ specification.name }}
+#####################################################
+
+
+resource "aws_autoscaling_group" "{{ specification.name }}" {
+  name                 = "{{ specification.name }}"
+  max_size             = "{{ specification.count }}"
+  min_size             = "{{ specification.count }}"
+  desired_capacity     = "{{ specification.count }}"
+  force_delete         = "true"
+  launch_configuration = "${aws_launch_configuration.{{ specification.launch_configuration }}.name}"
+
+  vpc_zone_identifier = [
+  {%- for name in specification.subnet_names %}
+    "${aws_subnet.{{ name }}.id}",
+  {%- endfor %}
+  ]
+
+  tag {
+    key = "cluster_name"
+    value = "{{ specification.cluster_name }}"
+    propagate_at_launch = "true"
+  }
+
+  tag {
+    key = "cluster_version"
+    value = "{{ version }}"
+    propagate_at_launch = "true"
+  }
+
+  tag {
+    key = "Name"
+    value = "{{ specification.name }}"
+    propagate_at_launch = "true"
+  }
+
+  {%- for tag in specification.tags %}
+  tag {
+    {%- for tag_key, tag_value in tag.items() %}
+    key = "{{ tag_key }}"
+    value = "{{ tag_value }}"
+    {%- endfor %}
+    propagate_at_launch = "true"
+  }
+  {%- endfor %}
+
+}

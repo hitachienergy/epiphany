@@ -1,0 +1,23 @@
+#####################################################
+# DO NOT Modify by hand - Manage by Automation
+#####################################################
+#####################################################
+# This file can be used as a base template to build other Terraform files. It attempts to use as much
+# Terraform interprolation as possible by creating Terraform variables instead of changing inline
+# this approach provides an easier way to do creative looping, fetch IDs of created resources etc.
+#####################################################
+#####################################################
+# {{ specification.name }}
+#####################################################
+
+resource "aws_security_group_rule" "{{ specification.name }}" {
+  type            = "{{ specification.type }}"
+  from_port       = {{ specification.from_port }}
+  to_port         = {{ specification.to_port }}
+  protocol        = "{{ specification.protocol }}"
+
+  # Opening to 0.0.0.0/0 can lead to security vulnerabilities.
+  cidr_blocks = ["{{ specification.cidr_blocks }}"]
+
+  security_group_id = "${ {{ specification.security_group_name }}.id}"
+}

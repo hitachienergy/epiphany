@@ -1,0 +1,44 @@
+---
+## Kibana master
+
+- name: Run echo
+  shell: "echo 'I am kibana on RedHat'"
+  register: output
+  when:
+    - groups['kibana'][0] == inventory_hostname
+
+- name: Install the latest version of Kibana
+  yum:
+    name: "https://artifacts.elastic.co/downloads/kibana/kibana-oss-{{ specification.kibana_version }}-x86_64.rpm"
+  when:
+    - groups['kibana'][0] == inventory_hostname
+
+- name: Replace with interface
+  replace:
+    path: /etc/kibana/kibana.yml
+    regexp: '^#elasticsearch.url: "http://localhost:9200"$'
+    replace: "elasticsearch.url: \"http://{{ hostvars[groups['kibana'][0]]['ansible_default_ipv4']['address'] }}:9200\""
+    backup: no
+  when:
+    - groups['kibana'][0] == inventory_hostname
+
+- name: Replace with interface
+  replace:
+    path: /etc/kibana/kibana.yml
+    regexp: '^#server.host: "localhost"$'
+    replace: "server.host: \"{{ hostvars[groups['kibana'][0]]['ansible_default_ipv4']['address'] }}\""
+    backup: no
+  when:
+    - groups['kibana'][0] == inventory_hostname
+
+- include_tasks: setup-logging.yml
+  when:
+    - groups['kibana'][0] == inventory_hostname
+
+- name: Start kibana service
+  service:
+    name: kibana
+    state: started
+    enabled: yes
+  when:
+    - groups['kibana'][0] == inventory_hostname
