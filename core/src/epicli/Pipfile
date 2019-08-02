@@ -16,7 +16,7 @@ boto3 = "*"
 jsonschema = "*"
 python-json-logger = "*"
 ansible = "*"
-terraform-binary = "*"
+terraform-bin = "*"
 
 [requires]
 python_version = "3.7"

@@ -12,7 +12,7 @@
 
 resource "aws_efs_file_system" "{{ specification.name }}" {
   creation_token = "{{ specification.token }}"
-  encrypted = "{{ specification.encrypted }}"
+  encrypted = "{{ specification.encrypted | lower }}"
   performance_mode = "{{ specification.performance_mode }}"
   throughput_mode = "{{ specification.throughput_mode }}"
 

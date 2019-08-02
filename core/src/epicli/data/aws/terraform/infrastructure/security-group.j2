@@ -16,7 +16,7 @@ resource "aws_security_group" "{{ specification.name }}" {
   vpc_id      = "${aws_vpc.{{ specification.vpc_name }}.id}"
 
 
-  tags {
+  tags = {
       cluster_name = "{{ specification.cluster_name }}"
       cluster_version = "{{ version }}"
   }   
