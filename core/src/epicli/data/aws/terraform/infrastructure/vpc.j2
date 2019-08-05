@@ -16,7 +16,7 @@ resource "aws_vpc" "{{ specification.name }}" {
   enable_dns_support = "true"
   enable_dns_hostnames = "true"
 
-  tags {
+  tags = {
       Name = "{{ specification.name }}"
       cluster_name = "{{ specification.cluster_name }}"
       cluster_version = "{{ version }}"

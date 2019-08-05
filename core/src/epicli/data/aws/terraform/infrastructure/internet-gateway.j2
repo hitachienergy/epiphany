@@ -13,7 +13,7 @@
 resource "aws_internet_gateway" "{{ specification.name }}" {
     vpc_id = "${aws_vpc.{{ specification.vpc_name }}.id}"
 
-    tags {
+    tags = {
         Name = "{{ specification.name }}"
         cluster_name = "{{ specification.cluster_name }}"
         cluster_version = "{{ version }}"

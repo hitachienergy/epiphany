@@ -6,7 +6,7 @@ name: default
 specification:
   name: SET_BY_AUTOMATION
   token: SET_BY_AUTOMATION
-  encrypted: True
+  encrypted: true
   performance_mode: "generalPurpose"
   throughput_mode: "bursting"
   #provisioned_throughput_in_mibps:  # The throughput, measured in MiB/s, that you want to provision for the file system. Only applicable when throughput_mode set to provisioned
@@ -14,5 +14,5 @@ specification:
 #    - name: mount-name
 #      subnet_name: source_subnet_name
   security:
-    populate_sg_rules: True # when set to true, security group for EFS will allow traffic from other clusters, groups
+    populate_sg_rules: true # when set to true, security group for EFS will allow traffic from other clusters, groups
 
