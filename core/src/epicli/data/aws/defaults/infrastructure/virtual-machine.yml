@@ -10,8 +10,8 @@ specification:
   availability_zones: [] # specified automatically - based on subnet az's
   launch_configuration: SET_BY_AUTOMATION
   cluster_name: SET_BY_AUTOMATION
-  authorized_to_efs: False
-  mount_efs: False
+  authorized_to_efs: false
+  mount_efs: false
   tags:
     - version: 0.3.0
   size: t2.micro
@@ -71,8 +71,8 @@ provider: aws
 name: kubernetes-master-machine
 specification:
   size: t3.medium
-  authorized_to_efs: True
-  mount_efs: True
+  authorized_to_efs: true
+  mount_efs: true
   security:
     rules:
      - name: ssh
@@ -151,8 +151,8 @@ provider: aws
 name: kubernetes-node-machine
 specification:
   size: t3.medium
-  authorized_to_efs: True
-  mount_efs: True
+  authorized_to_efs: true
+  mount_efs: true
   security:
     rules:
      - name: ssh
