@@ -18,7 +18,7 @@ resource "aws_route_table" "{{ specification.name }}" {
         gateway_id = "${ aws_internet_gateway.{{ specification.route.gateway_name }}.id}"
     }
 
-    tags {
+    tags = {
         Name = "web-table"
         cluster_name = "{{ specification.cluster_name }}"
         cluster_version = "{{ version }}"

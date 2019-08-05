@@ -15,18 +15,18 @@ resource "aws_launch_configuration" "{{ specification.name }}" {
   name          = "{{ specification.name }}"
   image_id      = "{{ specification.image_id }}"
   instance_type = "{{ specification.size }}"
-  associate_public_ip_address = "{{ specification.associate_public_ip }}"
+  associate_public_ip_address = "{{ specification.associate_public_ip | lower  }}"
 
   # Security group
   security_groups = [{% for security_group in specification.security_groups %}  "${aws_security_group.{{ security_group }}.id}" {% if not loop.last %}, {% endif %} {% endfor %}]
-  enable_monitoring = "{{ specification.enable_monitoring }}"
+  enable_monitoring = "{{ specification.enable_monitoring | lower }}"
   key_name        = "{{ specification.key_name }}"
 
-  ebs_optimized   = "{{ specification.ebs_optimized }}"
+  ebs_optimized   = "{{ specification.ebs_optimized | lower }}"
   root_block_device {
     volume_type           = "{{ specification.disks.root.volume_type }}"
     volume_size           = "{{ specification.disks.root.volume_size }}"
-    delete_on_termination = "{{ specification.disks.root.delete_on_termination }}"
+    delete_on_termination = "{{ specification.disks.root.delete_on_termination | lower }}"
   }
 
 {% for disk in specification.disks.additional_disks %}
@@ -35,8 +35,8 @@ resource "aws_launch_configuration" "{{ specification.name }}" {
     device_name                 = "{{ disk.device_name }}"
     volume_type                 = "{{ disk.volume_type }}"
     volume_size                 = "{{ disk.volume_size }}"
-    encrypted                   = "{{ disk.encrypted }}"
-    delete_on_termination       = "{{ disk.delete_on_termination }}"
+    encrypted                   = "{{ disk.encrypted | lower }}"
+    delete_on_termination       = "{{ disk.delete_on_termination | lower }}"
   }
 
 {%- endfor %}

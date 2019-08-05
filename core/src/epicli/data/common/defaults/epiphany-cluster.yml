@@ -67,7 +67,7 @@ specification:
 
     load_balancer:
       count: 1
-      machine: default
+      machine: load-balancer-machine
       configuration: default
       subnets:
         - availability_zone: eu-west-2a
