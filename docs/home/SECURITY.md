@@ -80,9 +80,9 @@ Below you can find list of ports used in Epiphany on per component basis:
 
 12. Kubernetes:
 
-    - 4149/TCP	kubelet
-    - 6443/TCP	kube-apiserver
-    - 9099/TCP	calico-felix
-    - 10250/TCP	kubelet
-    - 10255/TCP	kubelet
-    - 10256/TCP	kube-proxy
+    - 4149 - kubelet
+    - 6443 - kube-apiserver
+    - 9099 - calico-felix
+    - 10250 - kubelet
+    - 10255 - kubelet
+    - 10256 - kube-proxy
