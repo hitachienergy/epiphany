@@ -27,7 +27,8 @@ Other accounts created by each component you can find in these components docume
 
 ### Ports used by components in Epiphany
 
-Below you can find list of ports used in Epiphany on per component basis:
+Below you can find list of ports used by default in Epiphany on per component basis. Some of them can be changed to 
+different values.
 
 1. OS services:
  
