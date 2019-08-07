@@ -20,24 +20,26 @@ class TerraformRunner(Step):
 
     def run(self):
         new_env = os.environ.copy()
+        self.terraform.init(env=new_env)
 
         #if the provider is Azure we need to login and setup service principle.
         if self.cluster_model.provider == 'azure':
-            subscription_id = self.azure_cli.login(self.cluster_model.specification.cloud.subscription_name)
-            sp_file = os.path.join(get_terraform_path(self.cluster_model.specification.name), SP_FILE_NAME)
-            if not os.path.exists(sp_file):
-                self.logger.info('Creating service principle')
-                sp = self.azure_cli.create_sp(self.cluster_model.specification.cloud.resource_group_name, subscription_id)
-                save_sp(sp, self.cluster_model.specification.name)
-            else:
-                self.logger.info('Using service principle from file')
-                sp = load_yaml_file(sp_file)
+            subscription = self.azure_cli.login(self.cluster_model.specification.cloud.subscription_name)
 
-            #Setup environment variables for Terraform when working with Azure.
-            new_env['ARM_SUBSCRIPTION_ID'] = subscription_id
-            new_env['ARM_CLIENT_ID'] = sp['appId']
-            new_env['ARM_CLIENT_SECRET'] = sp['password']
-            new_env['ARM_TENANT_ID'] = sp['tenant']
+            if self.cluster_model.specification.cloud.use_service_principle:
+                sp_file = os.path.join(get_terraform_path(self.cluster_model.specification.name), SP_FILE_NAME)
+                if not os.path.exists(sp_file):
+                    self.logger.info('Creating service principle')
+                    sp = self.azure_cli.create_sp(self.cluster_model.specification.cloud.resource_group_name, subscription['id'])
+                    save_sp(sp, self.cluster_model.specification.name)
+                else:
+                    self.logger.info('Using service principle from file')
+                    sp = load_yaml_file(sp_file)
 
-        self.terraform.init(env=new_env)
+                #Setup environment variables for Terraform when working with Azure.
+                new_env['ARM_SUBSCRIPTION_ID'] = subscription['id']
+                new_env['ARM_TENANT_ID'] = sp['tenant']
+                new_env['ARM_CLIENT_ID'] = sp['appId']
+                new_env['ARM_CLIENT_SECRET'] = sp['password']
+
         self.terraform.apply(auto_approve=True, env=new_env)

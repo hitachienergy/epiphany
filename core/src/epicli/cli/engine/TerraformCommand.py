@@ -39,11 +39,13 @@ class TerraformCommand:
 
         self.logger.info('Running: "' + ' '.join(cmd) + '"')
 
+        cmd = ' '.join(cmd)
+
         logpipe = LogPipe(__name__)
-        with subprocess.Popen(cmd, stdout=logpipe, stderr=logpipe, env=env) as sp:
+        with subprocess.Popen(cmd, stdout=logpipe, stderr=logpipe, env=env,  shell=True) as sp:
             logpipe.close()
 
         if sp.returncode != 0:
-            raise Exception('Error running: "' + ' '.join(cmd) + '"')
+            raise Exception('Error running: "' + cmd + '"')
         else:
-            self.logger.info('Done running "' + ' '.join(cmd) + '"')
+            self.logger.info('Done running "' + cmd + '"')

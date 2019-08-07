@@ -16,7 +16,7 @@ class AzureCommand:
         if subscription is None:
             raise Exception(f'User does not have access to subscription: "{subscription_name}"')
         self.run(self, f'az account set --subscription {subscription["id"]}')
-        return subscription['id']
+        return subscription
 
     def create_sp(self, app_name, subscription_id):
         #TODO: make role configurable?
@@ -35,7 +35,7 @@ class AzureCommand:
         with Popen(cmd, stdout=PIPE, stderr=logpipe, shell=True) as sp:
             logpipe.close()
             try:
-                data = sp.stdout.read().decode("utf-8")
+                data = sp.stdout.read().decode('utf-8')
                 data = re.sub(r'\s+', '', data)
                 data = re.sub(r'(\x9B|\x1B\[)[0-?]*[ -\/]*[@-~]', '', data)
                 output = json.loads(data)
