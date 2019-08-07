@@ -1,4 +1,6 @@
-FROM epiphanyregistry.azurecr.io/epicli:$(Build.BuildId)
+ARG BUILD_ID
+
+FROM epiphanyregistry.azurecr.io/epicli:$BUILD_ID
 
 RUN mkdir /tmp/keys
 
