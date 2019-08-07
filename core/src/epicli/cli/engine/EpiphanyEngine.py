@@ -97,7 +97,7 @@ class EpiphanyEngine:
 
             self.process_infrastructure_docs()
 
-            if not self.skip_infrastructure:
+            if not (self.skip_infrastructure or self.is_provider_any(self.cluster_model)):
                 # Generate terraform templates
                 with TerraformTemplateGenerator(self.cluster_model, self.infrastructure_docs) as template_generator:
                     template_generator.run()
@@ -131,3 +131,6 @@ class EpiphanyEngine:
 
         return [*self.input_docs, *self.configuration_docs]
 
+    @staticmethod
+    def is_provider_any(cluster_model):
+        return cluster_model["provider"] == "any"
