@@ -13,20 +13,20 @@ class TerraformCommand:
         self.INIT_COMMAND = "init"
         self.working_directory = working_directory
 
-    def apply(self, auto_approve=False):
-        self.run(self, self.APPLY_COMMAND, auto_approve=auto_approve)
+    def apply(self, auto_approve=False, env=os.environ.copy()):
+        self.run(self, self.APPLY_COMMAND, auto_approve=auto_approve, env=env)
 
-    def destroy(self, auto_approve=False):
-        self.run(self, self.DESTROY_COMMAND, auto_approve=auto_approve)
+    def destroy(self, auto_approve=False, env=os.environ.copy()):
+        self.run(self, self.DESTROY_COMMAND, auto_approve=auto_approve, env=env)
 
-    def plan(self):
-        self.run(self, self.PLAN_COMMAND)
+    def plan(self, env=os.environ.copy()):
+        self.run(self, self.PLAN_COMMAND, env=env)
 
-    def init(self):
-        self.run(self, self.INIT_COMMAND)
+    def init(self, env=os.environ.copy()):
+        self.run(self, self.INIT_COMMAND, env=env)
 
     @staticmethod
-    def run(self, command, auto_approve=False):
+    def run(self, command, env, auto_approve=False):
         cmd = ['terraform', command]
 
         if auto_approve:
@@ -40,7 +40,7 @@ class TerraformCommand:
         self.logger.info('Running: "' + ' '.join(cmd) + '"')
 
         logpipe = LogPipe(__name__)
-        with subprocess.Popen(cmd, stdout=logpipe, stderr=logpipe) as sp:
+        with subprocess.Popen(cmd, stdout=logpipe, stderr=logpipe, env=env) as sp:
             logpipe.close()
 
         if sp.returncode != 0:
