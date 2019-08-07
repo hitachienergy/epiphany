@@ -43,7 +43,7 @@ class AzureCommand:
                 output = {}
 
         if sp.returncode != 0:
-            raise Exception('Error running: "' + cmd + '"')
+            raise Exception(f'Error running: "{cmd}"')
         else:
-            self.logger.info('Done running "' + cmd + '"')
+            self.logger.info(f'Done running "{cmd}"')
             return output

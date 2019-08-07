@@ -33,7 +33,7 @@ class TerraformCommand:
             cmd.append('--auto-approve')
 
         if command == self.APPLY_COMMAND:
-            cmd.append('-state=' + self.working_directory + '/terraform.tfstate')
+            cmd.append(f'-state={self.working_directory}/terraform.tfstate')
 
         cmd.append(self.working_directory)
 
@@ -46,6 +46,6 @@ class TerraformCommand:
             logpipe.close()
 
         if sp.returncode != 0:
-            raise Exception('Error running: "' + cmd + '"')
+            raise Exception(f'Error running: "{cmd}"')
         else:
-            self.logger.info('Done running "' + cmd + '"')
+            self.logger.info(f'Done running "{cmd}"')
