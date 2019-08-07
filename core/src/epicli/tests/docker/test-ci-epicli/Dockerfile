@@ -1,4 +1,4 @@
-FROM epiphanyregistry.azurecr.io/epicli:latest
+FROM epiphanyregistry.azurecr.io/epicli:$(Build.BuildId)
 
 RUN mkdir /tmp/keys
 
