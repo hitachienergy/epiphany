@@ -1,4 +1,6 @@
-FROM epiphanyregistry.azurecr.io/epiphany-deploy:latest
+ARG BUILD_ID
+
+FROM epiphanyregistry.azurecr.io/epiphany-deploy:$BUILD_ID
 
 RUN mkdir /tmp/keys
 
