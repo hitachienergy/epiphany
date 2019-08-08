@@ -26,7 +26,7 @@ class TerraformRunner(Step):
         if self.cluster_model.provider == 'azure':
             subscription = self.azure_cli.login(self.cluster_model.specification.cloud.subscription_name)
 
-            if self.cluster_model.specification.cloud.use_service_principle:
+            if self.cluster_model.specification.cloud.use_service_principal:
                 sp_file = os.path.join(get_terraform_path(self.cluster_model.specification.name), SP_FILE_NAME)
                 if not os.path.exists(sp_file):
                     self.logger.info('Creating service principle')
