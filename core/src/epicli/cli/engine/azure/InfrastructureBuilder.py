@@ -1,10 +1,13 @@
 from cli.helpers.Step import Step
 
 
-class ConfigBuilder(Step):
-    def __init__(self):
+class InfrastructureBuilder(Step):
+    def __init__(self, docs):
         super().__init__(__name__)
+        self.docs = docs
 
     def run(self):
-        raise NotImplementedError()
+        infrastructure = []
+
+        return infrastructure
 

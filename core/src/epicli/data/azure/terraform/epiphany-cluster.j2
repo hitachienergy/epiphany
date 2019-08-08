@@ -1,1 +1,19 @@
-# TODO: Fill template
+#####################################################
+# DO NOT Modify by hand - Manage by Automation
+#####################################################
+#####################################################
+# This file can be used as a base template to build other Terraform files. It attempts to use as much
+# Terraform interprolation as possible by creating Terraform variables instead of changing inline
+# this approach provides an easier way to do creative looping, fetch IDs of created resources etc.
+#####################################################
+#####################################################
+# {{ specification.name }}
+#####################################################
+
+provider "azurerm" {
+}
+
+resource "azurerm_resource_group" "rg" {
+    name = "{{ specification.cloud.resource_group_name }}"
+    location = "{{ specification.cloud.region }}"
+}
