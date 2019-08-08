@@ -192,8 +192,8 @@ class InfrastructureBuilder(Step):
         tfstate_path = get_terraform_path(self.cluster_model.specification.name) + '/terraform.tfstate'
         if os.path.isfile(tfstate_path):
             tfstate = load_json_obj(tfstate_path)
-            public_key_config.specification.key_name = \
-                tfstate['modules'][0]['resources']['aws_key_pair.' + public_key_config.specification.name]['primary']['id']
+            key_pair = select_first(tfstate['resources'], lambda x: x['type'] == 'aws_key_pair')
+            public_key_config.specification.key_name = key_pair['instances'][0]['attributes']['id']
         else:
             public_key_config.specification.key_name = self.cluster_model.specification.admin_user.name + '-' \
                                                        + str(uuid.uuid4())
