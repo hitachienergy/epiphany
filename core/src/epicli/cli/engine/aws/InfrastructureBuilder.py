@@ -1,3 +1,6 @@
+import os
+import uuid
+
 from cli.helpers.doc_list_helpers import select_first
 from cli.helpers.data_loader import load_yaml_obj, types
 from cli.helpers.config_merger import merge_with_defaults
@@ -7,8 +10,8 @@ from cli.helpers.doc_list_helpers import select_single, select_all
 from cli.helpers.build_saver import get_terraform_path
 from cli.helpers.data_loader import load_json_obj
 from cli.helpers.naming_helpers import resource_name
-import os
-import uuid
+from cli.helpers.objdict_helpers import objdict_to_dict
+
 
 class InfrastructureBuilder(Step):
     def __init__(self, docs):
@@ -233,6 +236,11 @@ class InfrastructureBuilder(Step):
                     rule.specification.source_address_prefix = subnet.specification.cidr_block
                     rule.specification.destination_address_prefix = '*'
                     security_group.specification.rules.append(rule.specification)
+
+        rules = []
+        for rule in security_group.specification.rules:
+            rules.append(objdict_to_dict(rule))
+        security_group.specification.rules = rules
 
     @staticmethod
     def efs_add_mount_target_config(efs_config, subnet):
