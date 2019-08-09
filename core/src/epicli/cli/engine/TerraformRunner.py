@@ -19,32 +19,42 @@ class TerraformRunner(Step):
         return self
 
     def run(self):
+        pass
+
+    def build(self):
         new_env = os.environ.copy()
         self.terraform.init(env=new_env)
+        if self.cluster_model.provider == 'azure':
+            self.azure_login()
+        self.terraform.apply(auto_approve=True, env=new_env)
 
+    def delete(self):
+        new_env = os.environ.copy()
+        if self.cluster_model.provider == 'azure':
+            self.azure_login()
+        self.terraform.destroy(auto_approve=True, env=new_env)
+        
+    def azure_login(self):
         # From the 4 methods terraform provides to login to 
         # Azure we support (https://www.terraform.io/docs/providers/azurerm/auth/azure_cli.html):
         # - Authenticating to Azure using the Azure CLI
         # - Authenticating to Azure using a Service Principal and a Client Secret
-        if self.cluster_model.provider == 'azure':
-            apiproxy = APIProxy(self.cluster_model, self.config_docs)
-            subscription = apiproxy.login()
-            apiproxy.set_active_subscribtion(subscription['id'])
+        apiproxy = APIProxy(self.cluster_model, self.config_docs)
+        subscription = apiproxy.login()
+        apiproxy.set_active_subscribtion(subscription['id'])
 
-            if self.cluster_model.specification.cloud.use_service_principal:
-                sp_file = os.path.join(get_terraform_path(self.cluster_model.specification.name), SP_FILE_NAME)
-                if not os.path.exists(sp_file):
-                    self.logger.info('Creating service principal')
-                    sp = apiproxy.create_sp(self.cluster_model.specification.cloud.resource_group_name, subscription['id'])
-                    save_sp(sp, self.cluster_model.specification.name)
-                else:
-                    self.logger.info('Using service principal from file')
-                    sp = load_yaml_file(sp_file)
+        if self.cluster_model.specification.cloud.use_service_principal:
+            sp_file = os.path.join(get_terraform_path(self.cluster_model.specification.name), SP_FILE_NAME)
+            if not os.path.exists(sp_file):
+                self.logger.info('Creating service principal')
+                sp = apiproxy.create_sp(self.cluster_model.specification.cloud.resource_group_name, subscription['id'])
+                save_sp(sp, self.cluster_model.specification.name)
+            else:
+                self.logger.info('Using service principal from file')
+                sp = load_yaml_file(sp_file)
 
-                #Setup environment variables for Terraform when working with Azure and service principal.
-                new_env['ARM_SUBSCRIPTION_ID'] = subscription['id']
-                new_env['ARM_TENANT_ID'] = sp['tenant']
-                new_env['ARM_CLIENT_ID'] = sp['appId']
-                new_env['ARM_CLIENT_SECRET'] = sp['password']
-
-        self.terraform.apply(auto_approve=True, env=new_env)
+            #Setup environment variables for Terraform when working with Azure and service principal.
+            new_env['ARM_SUBSCRIPTION_ID'] = subscription['id']
+            new_env['ARM_TENANT_ID'] = sp['tenant']
+            new_env['ARM_CLIENT_ID'] = sp['appId']
+            new_env['ARM_CLIENT_SECRET'] = sp['password']

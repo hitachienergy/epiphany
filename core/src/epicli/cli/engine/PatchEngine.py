@@ -20,10 +20,7 @@ class PatchEngine(Step):
     def __exit__(self, exc_type, exc_value, traceback):
         super().__exit__(exc_type, exc_value, traceback)
 
-    def run(self):
-        pass
-
-    def run_upgrade(self):
+    def upgrade(self):
         try:
             build_directory = Config().output_dir
             build_roles_directory = os.path.join(build_directory, 'ansible/roles')
@@ -54,7 +51,7 @@ class PatchEngine(Step):
             self.logger.error(e, exc_info=True)  # TODO extensive debug output might not always be wanted. Make this configurable with input flag?
             return 1
 
-    def run_backup(self):
+    def backup(self):
         try:
             build_directory = Config().output_dir
             backup_role_path = os.path.join(build_directory, 'ansible', 'backup.yml')
@@ -66,7 +63,7 @@ class PatchEngine(Step):
             self.logger.error(e, exc_info=True)  # TODO extensive debug output might not always be wanted. Make this configurable with input flag?
             return 1
 
-    def run_recovery(self):
+    def recovery(self):
         try:
             build_directory = Config().output_dir
             backup_role_path = os.path.join(build_directory, 'ansible', 'recovery.yml')

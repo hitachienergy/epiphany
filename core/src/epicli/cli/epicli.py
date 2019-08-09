@@ -4,11 +4,12 @@ import argparse
 import json
 import os
 
+from cli.engine.BuildEngine import BuildEngine
 from cli.engine.PatchEngine import PatchEngine
-from cli.engine.UserConfigInitializer import UserConfigInitializer
+from cli.engine.DeleteEngine import DeleteEngine
+from cli.engine.InitEngine import InitEngine
 from cli.helpers.Log import Log
 from cli.helpers.Config import Config
-from cli.engine.EpiphanyEngine import EpiphanyEngine
 from cli.version import VERSION
 from cli.licenses import LICENSES
 from cli.helpers.query_yes_no import query_yes_no
@@ -54,6 +55,7 @@ def main():
     upgrade_parser(subparsers)
     backup_parser(subparsers)
     recovery_parser(subparsers)
+    delete_parser(subparsers)
 
     # check if there were any variables and display full help
     if len(sys.argv) < 2:
@@ -121,29 +123,36 @@ def backup_parser(subparsers):
     sub_parser.set_defaults(func=run_backup)
 
 
-def recovery_parser(subparsers):
+def delete_parser(subparsers):
     sub_parser = subparsers.add_parser('recovery', description='[Experimental]: Recover from existing backup.')
     sub_parser.add_argument('-b', '--build', dest='build_directory', type=str, required=True,
                             help='Absolute path to directory with build artifacts.')
     sub_parser.set_defaults(func=run_recovery)
 
 
+def recovery_parser(subparsers):
+    sub_parser = subparsers.add_parser('delete', description='[Experimental]: Delete a cluster from build artifacts.')
+    sub_parser.add_argument('-b', '--build', dest='build_directory', type=str, required=True,
+                            help='Absolute path to directory with build artifacts.')
+    sub_parser.set_defaults(func=run_delete)
+
+
 def run_apply(args):
     adjust_paths(args)
-    with EpiphanyEngine(args) as engine:
+    with BuildEngine(args) as engine:
         return engine.apply()
 
 
 def run_validate(args):
     adjust_paths(args)
-    with EpiphanyEngine(args) as engine:
+    with BuildEngine(args) as engine:
         return engine.verify()
 
 
 def run_init(args):
     Config().output_dir = os.getcwd()
-    with UserConfigInitializer(args) as initializer:
-        return initializer.run()
+    with InitEngine(args) as engine:
+        return engine.init()
 
 
 def run_upgrade(args):
@@ -151,7 +160,7 @@ def run_upgrade(args):
         return 0
     Config().output_dir = args.build_directory
     with PatchEngine() as engine:
-        return engine.run_upgrade()
+        return engine.upgrade()
 
 
 def run_backup(args):
@@ -159,7 +168,7 @@ def run_backup(args):
         return 0
     Config().output_dir = args.build_directory
     with PatchEngine() as engine:
-        return engine.run_backup()
+        return engine.backup()
 
 
 def run_recovery(args):
@@ -167,7 +176,18 @@ def run_recovery(args):
         return 0
     Config().output_dir = args.build_directory
     with PatchEngine() as engine:
-        return engine.run_recovery()
+        return engine.recovery()
+
+
+def run_delete(args):
+    if not query_yes_no('This is an experimental feature and could change at any time. Do you want to continue?'):
+        return 0
+    if not query_yes_no('Do you really want to delete your cluster?'):
+        return 0       
+    #TODO: test and refactor
+    Config().output_dir = os.path.split(os.path.split(args.build_directory)[0])[0]
+    with DeleteEngine(args) as engine:
+        return engine.run()        
 
 
 def adjust_paths(args):

@@ -1,5 +1,5 @@
-
 import os
+
 from cli.helpers.doc_list_helpers import select_single
 from cli.helpers.build_saver import save_manifest
 from cli.helpers.yaml_helpers import safe_load_all
@@ -13,7 +13,7 @@ from cli.engine.TerraformRunner import TerraformRunner
 from cli.engine.AnsibleRunner import AnsibleRunner
 
 
-class EpiphanyEngine:
+class BuildEngine:
     def __init__(self, input_data):
         self.file = input_data.file
         self.skip_infrastructure = input_data.no_infra if hasattr(input_data, 'no_infra') else False
@@ -104,19 +104,21 @@ class EpiphanyEngine:
 
                 # Run Terraform to create infrastructure
                 with TerraformRunner(self.cluster_model, self.configuration_docs) as tf_runner:
-                    tf_runner.run()
+                    tf_runner.build()
 
             self.process_configuration_docs()
 
             self.collect_infrastructure_config()
 
-            # Run Ansible to provision infrastructure
+            # Merge all the docs
             docs = [*self.input_docs, *self.configuration_docs, *self.infrastructure_docs]
-            with AnsibleRunner(self.cluster_model, docs) as ansible_runner:
-                ansible_runner.run()
 
             # Save docs to manifest file
-            save_manifest(docs, self.cluster_model.specification.name)
+            save_manifest(docs, self.cluster_model.specification.name)   
+
+            # Run Ansible to provision infrastructure
+            with AnsibleRunner(self.cluster_model, docs) as ansible_runner:
+                ansible_runner.run()
 
             return 0
         except Exception as e:
