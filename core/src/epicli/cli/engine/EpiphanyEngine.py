@@ -103,7 +103,7 @@ class EpiphanyEngine:
                     template_generator.run()
 
                 # Run Terraform to create infrastructure
-                with TerraformRunner(self.cluster_model) as tf_runner:
+                with TerraformRunner(self.cluster_model, self.configuration_docs) as tf_runner:
                     tf_runner.run()
 
             self.process_configuration_docs()

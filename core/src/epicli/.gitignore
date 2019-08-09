@@ -126,3 +126,5 @@ external/
 tests_result/
 .terraform
 clusters
+.vscode
+.devcontainer
