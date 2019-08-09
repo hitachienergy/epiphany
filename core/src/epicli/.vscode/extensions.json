@@ -1,0 +1,9 @@
+{
+    "recommendations": [
+        "ms-python.python",
+        "vscoss.vscode-ansible",
+        "wholroyd.jinja",
+        "redhat.vscode-yaml",
+        "ms-vscode-remote.remote-containers"
+    ]
+}
