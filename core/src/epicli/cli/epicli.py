@@ -138,13 +138,13 @@ def recovery_parser(subparsers):
 
 
 def run_apply(args):
-    adjust_paths(args)
+    adjust_paths_from_file(args)
     with BuildEngine(args) as engine:
         return engine.apply()
 
 
 def run_validate(args):
-    adjust_paths(args)
+    adjust_paths_from_file(args)
     with BuildEngine(args) as engine:
         return engine.verify()
 
@@ -183,29 +183,32 @@ def run_delete(args):
     if not query_yes_no('This is an experimental feature and could change at any time. Do you want to continue?'):
         return 0
     if not query_yes_no('Do you really want to delete your cluster?'):
-        return 0       
-    #TODO: test and refactor
-    Config().output_dir = os.path.split(os.path.split(args.build_directory)[0])[0]
+        return 0
+    adjust_paths_from_build(args)
     with DeleteEngine(args) as engine:
         return engine.run()        
 
 
-def adjust_paths(args):
-    args.file = get_config_file_path(args.file)
-    adjust_output_dir(args.file)
+def adjust_paths_from_file(args):
+    if not os.path.isabs(args.file):
+        args.file = os.path.join(os.getcwd(), args.file)
+    if not os.path.isfile(args.file):
+        raise Exception(f'File "{args.file}" does not excist')        
+    if Config().output_dir is None:
+        Config().output_dir = os.path.join(os.path.dirname(args.file), 'build')
     dump_config(Config())
 
 
-def get_config_file_path(config_file_path):
-    if os.path.isabs(config_file_path):
-        return config_file_path
-    return os.path.join(os.getcwd(), config_file_path)
-
-
-def adjust_output_dir(config_file_path):
+def adjust_paths_from_build(args):
+    if not os.path.isabs(args.build_directory):
+        args.build_directory = os.path.join(os.getcwd(), args.build_directory)
+    if not os.path.exists(args.build_directory):
+        raise Exception(f'Build directory "{args.build_directory}" does not excist')  
+    if args.build_directory[-1:] == '/':    
+        args.build_directory = args.build_directory.rstrip('/')
     if Config().output_dir is None:
-        config_directory = os.path.dirname(config_file_path)
-        Config().output_dir = os.path.join(config_directory, 'build')
+        Config().output_dir = os.path.split(args.build_directory)[0]
+    dump_config(Config())
 
 
 def dump_config(config):

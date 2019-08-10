@@ -36,7 +36,7 @@ class DeleteEngine(Step):
             with TerraformRunner(cluster_model, docs) as tf_runner:
                 tf_runner.delete()     
                 
-            #shutil.rmtree(self.build_directory, ignore_errors=True)     
+            shutil.rmtree(self.build_directory, ignore_errors=True)     
 
             return 0
         except Exception as e:

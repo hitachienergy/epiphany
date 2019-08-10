@@ -7,7 +7,7 @@ class Config:
 
             self._output_dir = None
             if self._docker_cli:
-                self._output_dir = '/shared/'
+                self._output_dir = '/shared/build/'
 
             self._log_file = 'log.log'
             self._log_format = '%(asctime)s %(levelname)s %(name)s - %(message)s'
