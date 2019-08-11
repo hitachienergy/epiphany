@@ -78,12 +78,35 @@ def main():
     return args.func(args)
 
 
+def init_parser(subparsers):
+    sub_parser = subparsers.add_parser('init', description='Creates configuration file in working directory.')
+    sub_parser.add_argument('-p', '--provider', dest='provider', choices=['aws', 'azure', 'any'], default='any', type=str,
+                            required=True, help='One of the supported providers: azure|aws|any')
+    sub_parser.add_argument('-n', '--name', dest='name', type=str, required=True,
+                            help='Name of the cluster.')
+
+    sub_parser.add_argument('--full', dest='full_config', action="store_true",
+                            help='Use this flag if you want to create verbose configuration file.')
+
+    def run_init(args):
+        Config().output_dir = os.getcwd()
+        with InitEngine(args) as engine:
+            return engine.init()
+
+    sub_parser.set_defaults(func=run_init)    
+
+
 def apply_parser(subparsers):
     sub_parser = subparsers.add_parser('apply', description='Applies configuration from file.')
     sub_parser.add_argument('-f', '--file', dest='file', type=str,
                             help='File with infrastructure/configuration definitions to use.')
     sub_parser.add_argument('--no-infra', dest='no_infra', action="store_true",
                             help='Skip infrastructure provisioning.')
+
+    def run_apply(args):
+        adjust_paths_from_file(args)
+        with BuildEngine(args) as engine:
+            return engine.apply()                            
 
     sub_parser.set_defaults(func=run_apply)
 
@@ -94,25 +117,42 @@ def validate_parser(subparsers):
                                                              'infrastructure/configuration')
     sub_parser.add_argument('-f', '--file', dest='file', type=str,
                             help='File with infrastructure/configuration definitions to use.')
+
+    def run_validate(args):
+        adjust_paths_from_file(args)
+        with BuildEngine(args) as engine:
+            return engine.validate()
+
     sub_parser.set_defaults(func=run_validate)
 
 
-def init_parser(subparsers):
-    sub_parser = subparsers.add_parser('init', description='Creates configuration file in working directory.')
-    sub_parser.add_argument('-p', '--provider', dest='provider', choices=['aws', 'azure', 'any'], default='any', type=str,
-                            required=True, help='One of the supported providers: azure|aws|any')
-    sub_parser.add_argument('-n', '--name', dest='name', type=str, required=True,
-                            help='Name of the cluster.')
+def delete_parser(subparsers):
+    sub_parser = subparsers.add_parser('delete', description='[Experimental]: Delete a cluster from build artifacts.')
+    sub_parser.add_argument('-b', '--build', dest='build_directory', type=str, required=True,
+                            help='Absolute path to directory with build artifacts.')
 
-    sub_parser.add_argument('--full', dest='full_config', action="store_true",
-                            help='Use this flag if you want to create verbose configuration file.')
-    sub_parser.set_defaults(func=run_init)
+    def run_delete(args):
+        experimental_query()
+        if not query_yes_no('Do you really want to delete your cluster?'):
+            return 0
+        adjust_paths_from_build(args)
+        with DeleteEngine(args) as engine:
+            return engine.run()     
+
+    sub_parser.set_defaults(func=run_delete)    
 
 
 def upgrade_parser(subparsers):
     sub_parser = subparsers.add_parser('upgrade', description='[Experimental]: Upgrades existing Epiphany Platform to latest version.')
     sub_parser.add_argument('-b', '--build', dest='build_directory', type=str, required=True,
                             help='Absolute path to directory with build artifacts.')
+
+    def run_upgrade(args):
+        experimental_query()
+        adjust_paths_from_build(args)
+        with PatchEngine(args) as engine:
+            return engine.upgrade()
+
     sub_parser.set_defaults(func=run_upgrade)
 
 
@@ -120,73 +160,33 @@ def backup_parser(subparsers):
     sub_parser = subparsers.add_parser('backup', description='[Experimental]: Backups existing Epiphany Platform components.')
     sub_parser.add_argument('-b', '--build', dest='build_directory', type=str, required=True,
                             help='Absolute path to directory with build artifacts.')
+
+    def run_backup(args):
+        experimental_query()
+        adjust_paths_from_build(args)
+        with PatchEngine(args) as engine:
+            return engine.backup()
+
     sub_parser.set_defaults(func=run_backup)
 
 
-def delete_parser(subparsers):
+def recovery_parser(subparsers):
     sub_parser = subparsers.add_parser('recovery', description='[Experimental]: Recover from existing backup.')
     sub_parser.add_argument('-b', '--build', dest='build_directory', type=str, required=True,
                             help='Absolute path to directory with build artifacts.')
+
+    def run_recovery(args):
+        experimental_query()
+        adjust_paths_from_build(args)
+        with PatchEngine(args) as engine:
+            return engine.recovery()
+
     sub_parser.set_defaults(func=run_recovery)
 
 
-def recovery_parser(subparsers):
-    sub_parser = subparsers.add_parser('delete', description='[Experimental]: Delete a cluster from build artifacts.')
-    sub_parser.add_argument('-b', '--build', dest='build_directory', type=str, required=True,
-                            help='Absolute path to directory with build artifacts.')
-    sub_parser.set_defaults(func=run_delete)
-
-
-def run_apply(args):
-    adjust_paths_from_file(args)
-    with BuildEngine(args) as engine:
-        return engine.apply()
-
-
-def run_validate(args):
-    adjust_paths_from_file(args)
-    with BuildEngine(args) as engine:
-        return engine.verify()
-
-
-def run_init(args):
-    Config().output_dir = os.getcwd()
-    with InitEngine(args) as engine:
-        return engine.init()
-
-
-def run_upgrade(args):
+def experimental_query():
     if not query_yes_no('This is an experimental feature and could change at any time. Do you want to continue?'):
-        return 0
-    Config().output_dir = args.build_directory
-    with PatchEngine() as engine:
-        return engine.upgrade()
-
-
-def run_backup(args):
-    if not query_yes_no('This is an experimental feature and could change at any time. Do you want to continue?'):
-        return 0
-    Config().output_dir = args.build_directory
-    with PatchEngine() as engine:
-        return engine.backup()
-
-
-def run_recovery(args):
-    if not query_yes_no('This is an experimental feature and could change at any time. Do you want to continue?'):
-        return 0
-    Config().output_dir = args.build_directory
-    with PatchEngine() as engine:
-        return engine.recovery()
-
-
-def run_delete(args):
-    if not query_yes_no('This is an experimental feature and could change at any time. Do you want to continue?'):
-        return 0
-    if not query_yes_no('Do you really want to delete your cluster?'):
-        return 0
-    adjust_paths_from_build(args)
-    with DeleteEngine(args) as engine:
-        return engine.run()        
+        sys.exit(0)    
 
 
 def adjust_paths_from_file(args):

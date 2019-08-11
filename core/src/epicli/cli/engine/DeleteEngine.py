@@ -1,15 +1,14 @@
 import os
 import shutil
 
-from cli.helpers.Config import Config
 from cli.helpers.Step import Step
+from cli.helpers.Config import Config
 from cli.helpers.build_saver import MANIFEST_FILE_NAME, TERRAFORM_OUTPUT_DIR
 from cli.helpers.data_loader import load_yamls_file
 from cli.helpers.doc_list_helpers import select_single
 from cli.engine.TerraformRunner import TerraformRunner
 
 class DeleteEngine(Step):
-
     def __init__(self, input_data):
         super().__init__(__name__)
         self.build_directory = input_data.build_directory
@@ -21,7 +20,7 @@ class DeleteEngine(Step):
     def __exit__(self, exc_type, exc_value, traceback):
         super().__exit__(exc_type, exc_value, traceback)
 
-    def run(self):
+    def delete(self):
         try:
             path_to_manifest = os.path.join(self.build_directory, MANIFEST_FILE_NAME)
             if not os.path.isfile(path_to_manifest):

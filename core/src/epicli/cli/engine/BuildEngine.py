@@ -1,5 +1,6 @@
 import os
 
+from cli.helpers.Step import Step
 from cli.helpers.doc_list_helpers import select_single
 from cli.helpers.build_saver import save_manifest
 from cli.helpers.yaml_helpers import safe_load_all
@@ -13,7 +14,7 @@ from cli.engine.TerraformRunner import TerraformRunner
 from cli.engine.AnsibleRunner import AnsibleRunner
 
 
-class BuildEngine:
+class BuildEngine(Step):
     def __init__(self, input_data):
         self.file = input_data.file
         self.skip_infrastructure = input_data.no_infra if hasattr(input_data, 'no_infra') else False
@@ -76,7 +77,7 @@ class BuildEngine:
                 [*self.input_docs, *self.configuration_docs, *self.infrastructure_docs]) as config_collector:
             config_collector.run()
 
-    def verify(self):
+    def validate(self):
         try:
             self.process_input_docs()
 

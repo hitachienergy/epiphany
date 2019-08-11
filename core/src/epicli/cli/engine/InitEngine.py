@@ -1,5 +1,6 @@
 
 import os
+
 from cli.helpers.Step import Step
 from cli.helpers.build_saver import save_manifest, get_build_path
 from cli.helpers.data_loader import load_all_yaml_objs, types, load_all_documents_from_folder
@@ -19,10 +20,7 @@ class InitEngine(Step):
         return self
 
     def __exit__(self, exc_type, exc_value, traceback):
-        super().__exit__(exc_type, exc_value, traceback)
-
-    def run(self):
-        pass       
+        super().__exit__(exc_type, exc_value, traceback)  
 
     def init(self):
         try:

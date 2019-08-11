@@ -1,16 +1,16 @@
 import os
 
+from cli.helpers.Step import Step
 from cli.engine.AnsibleCommand import AnsibleCommand
 from cli.engine.AnsibleRunner import AnsibleRunner
 from cli.helpers.Config import Config
-from cli.helpers.Step import Step
 from cli.helpers.build_saver import copy_files_recursively, copy_file, get_inventory_path_for_build
 
 
 class PatchEngine(Step):
-
-    def __init__(self):
+    def __init__(self, input_data):
         super().__init__(__name__)
+        self.build_directory = input_data.build_directory
         self.ansible_command = AnsibleCommand()
 
     def __enter__(self):
@@ -22,30 +22,7 @@ class PatchEngine(Step):
 
     def upgrade(self):
         try:
-            build_directory = Config().output_dir
-            build_roles_directory = os.path.join(build_directory, 'ansible/roles')
-
-            upgrade_playbook_path = os.path.join(build_roles_directory, 'upgrade')
-            backup_playbook_path = os.path.join(build_roles_directory, 'backup')
-            recovery_playbook_path = os.path.join(build_roles_directory, 'recovery')
-
-            upgrade_role_path = os.path.join(build_directory, 'ansible', 'upgrade.yml')
-
-            epiphany_playbooks_path = os.path.dirname(__file__) + AnsibleRunner.ANSIBLE_PLAYBOOKS_PATH
-            epiphany_roles_path = os.path.join(epiphany_playbooks_path, 'roles')
-
-            upgrade_role_source_path = os.path.join(epiphany_roles_path, 'upgrade')
-            backup_role_source_path = os.path.join(epiphany_roles_path, 'backup')
-            restore_role_source_path = os.path.join(epiphany_roles_path, 'recovery')
-            playbook_source_path = os.path.join(epiphany_playbooks_path, 'upgrade.yml')
-
-            copy_files_recursively(upgrade_role_source_path, upgrade_playbook_path)
-            copy_files_recursively(backup_role_source_path, backup_playbook_path)
-            copy_files_recursively(restore_role_source_path, recovery_playbook_path)
-            copy_file(playbook_source_path, upgrade_role_path)
-
-            inventory_path = get_inventory_path_for_build(build_directory)
-            self.ansible_command.run_playbook(inventory=inventory_path, playbook_path=upgrade_role_path)
+            self.upgrade_patch_files_and_run('upgrade')
             return 0
         except Exception as e:
             self.logger.error(e, exc_info=True)  # TODO extensive debug output might not always be wanted. Make this configurable with input flag?
@@ -53,11 +30,7 @@ class PatchEngine(Step):
 
     def backup(self):
         try:
-            build_directory = Config().output_dir
-            backup_role_path = os.path.join(build_directory, 'ansible', 'backup.yml')
-            inventory_path = get_inventory_path_for_build(build_directory)
-            self.ansible_command.run_playbook(inventory=inventory_path, playbook_path=backup_role_path)
-
+            self.upgrade_patch_files_and_run('backup')
             return 0
         except Exception as e:
             self.logger.error(e, exc_info=True)  # TODO extensive debug output might not always be wanted. Make this configurable with input flag?
@@ -65,12 +38,25 @@ class PatchEngine(Step):
 
     def recovery(self):
         try:
-            build_directory = Config().output_dir
-            backup_role_path = os.path.join(build_directory, 'ansible', 'recovery.yml')
-            inventory_path = get_inventory_path_for_build(build_directory)
-            self.ansible_command.run_playbook(inventory=inventory_path, playbook_path=backup_role_path)
-
+            self.upgrade_patch_files_and_run('recovery')
             return 0
         except Exception as e:
             self.logger.error(e, exc_info=True)  # TODO extensive debug output might not always be wanted. Make this configurable with input flag?
             return 1
+
+    def upgrade_patch_files_and_run(self, action):
+        self.logger.info(f'Running {action}...')
+
+        #copy role files
+        roles_build_path = os.path.join(self.build_directory, 'ansible/roles', action)
+        roles_source_path = os.path.join(AnsibleRunner.ANSIBLE_PLAYBOOKS_PATH, 'roles', action)
+        copy_files_recursively(roles_source_path, roles_build_path)
+
+        #copy playbook file
+        playbook_build_path = os.path.join(self.build_directory, 'ansible/') + action + '.yml'
+        playbook_source_path = os.path.join(AnsibleRunner.ANSIBLE_PLAYBOOKS_PATH) + action + '.yml' 
+        copy_file(playbook_source_path, playbook_build_path)  
+        
+        #run the playbook
+        inventory_path = get_inventory_path_for_build(self.build_directory)
+        self.ansible_command.run_playbook(inventory=inventory_path, playbook_path=playbook_build_path)        
