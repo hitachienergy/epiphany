@@ -5,13 +5,13 @@ from cli.helpers.doc_list_helpers import select_single
 from cli.helpers.build_saver import save_manifest
 from cli.helpers.yaml_helpers import safe_load_all
 from cli.helpers.Log import Log
-from cli.helpers.provider_class_loader import provider_class_loader
+from cli.engine.providers.provider_class_loader import provider_class_loader
 from cli.engine.DefaultMerger import DefaultMerger
 from cli.engine.SchemaValidator import SchemaValidator
 from cli.engine.ConfigurationAppender import ConfigurationAppender
-from cli.engine.TerraformTemplateGenerator import TerraformTemplateGenerator
-from cli.engine.TerraformRunner import TerraformRunner
-from cli.engine.AnsibleRunner import AnsibleRunner
+from cli.engine.terraform.TerraformTemplateGenerator import TerraformTemplateGenerator
+from cli.engine.terraform.TerraformRunner import TerraformRunner
+from cli.engine.ansible.AnsibleRunner import AnsibleRunner
 
 
 class BuildEngine(Step):

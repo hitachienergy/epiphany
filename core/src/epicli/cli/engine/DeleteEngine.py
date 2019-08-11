@@ -6,7 +6,7 @@ from cli.helpers.Config import Config
 from cli.helpers.build_saver import MANIFEST_FILE_NAME, TERRAFORM_OUTPUT_DIR
 from cli.helpers.data_loader import load_yamls_file
 from cli.helpers.doc_list_helpers import select_single
-from cli.engine.TerraformRunner import TerraformRunner
+from cli.engine.terraform.TerraformRunner import TerraformRunner
 
 class DeleteEngine(Step):
     def __init__(self, input_data):

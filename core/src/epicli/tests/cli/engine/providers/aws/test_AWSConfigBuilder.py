@@ -1,4 +1,4 @@
-from cli.engine.aws.InfrastructureBuilder import InfrastructureBuilder
+from cli.engine.providers.aws.InfrastructureBuilder import InfrastructureBuilder
 from cli.helpers.objdict_helpers import dict_to_objdict
 import pytest
 

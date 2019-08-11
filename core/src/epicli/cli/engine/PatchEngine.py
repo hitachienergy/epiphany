@@ -1,8 +1,8 @@
 import os
 
 from cli.helpers.Step import Step
-from cli.engine.AnsibleCommand import AnsibleCommand
-from cli.engine.AnsibleRunner import AnsibleRunner
+from cli.engine.ansible.AnsibleCommand import AnsibleCommand
+from cli.engine.ansible.AnsibleRunner import AnsibleRunner
 from cli.helpers.Config import Config
 from cli.helpers.build_saver import copy_files_recursively, copy_file, get_inventory_path_for_build
 

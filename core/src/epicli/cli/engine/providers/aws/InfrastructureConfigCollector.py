@@ -1,5 +1,5 @@
 from cli.helpers.Step import Step
-from cli.engine.aws.APIProxy import APIProxy
+from cli.engine.providers.aws.APIProxy import APIProxy
 from cli.helpers.doc_list_helpers import select_single, select_first
 
 

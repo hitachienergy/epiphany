@@ -137,7 +137,7 @@ def delete_parser(subparsers):
             return 0
         adjust_paths_from_build(args)
         with DeleteEngine(args) as engine:
-            return engine.run()     
+            return engine.delete()     
 
     sub_parser.set_defaults(func=run_delete)    
 
