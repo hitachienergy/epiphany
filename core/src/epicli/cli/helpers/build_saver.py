@@ -59,10 +59,9 @@ def save_to_file(file_path, content):
 
 
 def get_output_path():
-    output_dir = os.path.join(os.path.dirname(__file__), Config().output_dir)
-    if not os.path.exists(output_dir):
-        os.makedirs(output_dir)
-    return output_dir
+    if not os.path.exists(Config().output_dir):
+        os.makedirs(Config().output_dir)
+    return Config().output_dir
 
 
 def get_build_path(cluster_name):

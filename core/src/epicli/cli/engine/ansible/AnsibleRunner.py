@@ -1,9 +1,9 @@
 import os
 import time
 
-from cli.engine.AnsibleCommand import AnsibleCommand
-from cli.engine.AnsibleInventoryCreator import AnsibleInventoryCreator
-from cli.engine.AnsibleVarsGenerator import AnsibleVarsGenerator
+from cli.engine.ansible.AnsibleCommand import AnsibleCommand
+from cli.engine.ansible.AnsibleInventoryCreator import AnsibleInventoryCreator
+from cli.engine.ansible.AnsibleVarsGenerator import AnsibleVarsGenerator
 from cli.helpers.Step import Step
 from cli.helpers.build_saver import get_inventory_path, get_ansible_path, copy_files_recursively
 from cli.helpers.naming_helpers import to_role_name
