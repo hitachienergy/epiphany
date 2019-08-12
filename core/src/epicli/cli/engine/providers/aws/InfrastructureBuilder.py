@@ -103,7 +103,7 @@ class InfrastructureBuilder(Step):
 
     def get_resource_group(self):
         resource_group = self.get_config_or_default(self.docs, 'infrastructure/resource-group')
-        resource_group.specification.name = self.cluster_name
+        resource_group.specification.name = resource_name(self.cluster_prefix, self.cluster_name, 'rg')
         resource_group.specification.cluster_name = self.cluster_name
         return resource_group
 
