@@ -32,14 +32,13 @@ class TerraformCommand:
         if auto_approve:
             cmd.append('--auto-approve')
 
-        if command == self.APPLY_COMMAND:
+        if command == self.APPLY_COMMAND or command == self.DESTROY_COMMAND:
             cmd.append(f'-state={self.working_directory}/terraform.tfstate')
 
         cmd.append(self.working_directory)
 
-        self.logger.info('Running: "' + ' '.join(cmd) + '"')
-
         cmd = ' '.join(cmd)
+        self.logger.info(f'Running: "{cmd}"')
 
         logpipe = LogPipe(__name__)
         with subprocess.Popen(cmd, stdout=logpipe, stderr=logpipe, env=env,  shell=True) as sp:

@@ -1,19 +1,20 @@
-
 import os
+
+from cli.helpers.Step import Step
 from cli.helpers.doc_list_helpers import select_single
 from cli.helpers.build_saver import save_manifest
 from cli.helpers.yaml_helpers import safe_load_all
 from cli.helpers.Log import Log
-from cli.helpers.provider_class_loader import provider_class_loader
+from cli.engine.providers.provider_class_loader import provider_class_loader
 from cli.engine.DefaultMerger import DefaultMerger
 from cli.engine.SchemaValidator import SchemaValidator
 from cli.engine.ConfigurationAppender import ConfigurationAppender
-from cli.engine.TerraformTemplateGenerator import TerraformTemplateGenerator
-from cli.engine.TerraformRunner import TerraformRunner
-from cli.engine.AnsibleRunner import AnsibleRunner
+from cli.engine.terraform.TerraformTemplateGenerator import TerraformTemplateGenerator
+from cli.engine.terraform.TerraformRunner import TerraformRunner
+from cli.engine.ansible.AnsibleRunner import AnsibleRunner
 
 
-class EpiphanyEngine:
+class BuildEngine(Step):
     def __init__(self, input_data):
         self.file = input_data.file
         self.skip_infrastructure = input_data.no_infra if hasattr(input_data, 'no_infra') else False
@@ -76,7 +77,7 @@ class EpiphanyEngine:
                 [*self.input_docs, *self.configuration_docs, *self.infrastructure_docs]) as config_collector:
             config_collector.run()
 
-    def verify(self):
+    def validate(self):
         try:
             self.process_input_docs()
 
@@ -104,19 +105,21 @@ class EpiphanyEngine:
 
                 # Run Terraform to create infrastructure
                 with TerraformRunner(self.cluster_model, self.configuration_docs) as tf_runner:
-                    tf_runner.run()
+                    tf_runner.build()
 
             self.process_configuration_docs()
 
             self.collect_infrastructure_config()
 
-            # Run Ansible to provision infrastructure
+            # Merge all the docs
             docs = [*self.input_docs, *self.configuration_docs, *self.infrastructure_docs]
-            with AnsibleRunner(self.cluster_model, docs) as ansible_runner:
-                ansible_runner.run()
 
             # Save docs to manifest file
-            save_manifest(docs, self.cluster_model.specification.name)
+            save_manifest(docs, self.cluster_model.specification.name)   
+
+            # Run Ansible to provision infrastructure
+            with AnsibleRunner(self.cluster_model, docs) as ansible_runner:
+                ansible_runner.run()
 
             return 0
         except Exception as e:
