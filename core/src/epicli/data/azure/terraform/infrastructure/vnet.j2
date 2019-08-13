@@ -10,14 +10,9 @@
 # {{ specification.name }}
 #####################################################
 
-resource "aws_subnet" "{{ specification.name }}" {
-	vpc_id = "${aws_vpc.{{ specification.vpc_name }}.id}"
-	cidr_block = "{{ specification.cidr_block }}"
-	availability_zone = "{{ specification.availability_zone }}"
-
-	  tags = {
-	  	cluster_name = "{{ specification.cluster_name }}"
-		cluster_version = "{{ version }}"
-        Name = "{{ specification.name }}"
-      }
+resource "azurerm_virtual_network" "vnet" {
+  name                = "{{ specification.name }}"
+  address_space       = ["{{ specification.address_space }}"]
+  location            = "{{ specification.location }}"
+  resource_group_name = "{{ specification.resource_group_name }}"
 }
