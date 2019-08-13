@@ -10,6 +10,8 @@ class InfrastructureBuilder(Step):
         self.cluster_model = select_single(docs, lambda x: x.kind == 'epiphany-cluster')
         self.cluster_name = self.cluster_model.specification.name.lower()
         self.cluster_prefix = self.cluster_model.specification.prefix.lower()
+        self.resource_group_name = resource_name(self.cluster_prefix, self.cluster_name, 'rg')
+        self.region = self.cluster_model.specification.cloud.region
         self.docs = docs
 
     def run(self):
@@ -18,13 +20,24 @@ class InfrastructureBuilder(Step):
         resource_group = self.get_resource_group()
         infrastructure.append(resource_group)        
 
+        vnet = self.get_virtual_network()
+        infrastructure.append(vnet)
+
         return infrastructure
 
     def get_resource_group(self):
         resource_group = self.get_config_or_default(self.docs, 'infrastructure/resource-group')
-        resource_group.specification.name = resource_name(self.cluster_prefix, self.cluster_name, 'rg')
+        resource_group.specification.name = self.resource_group_name
         resource_group.specification.region = self.cluster_model.specification.cloud.region
         return resource_group    
+
+    def get_virtual_network(self):
+        vnet = self.get_config_or_default(self.docs, 'infrastructure/vnet')
+        vnet.specification.name = resource_name(self.cluster_prefix, self.cluster_name, 'vnet')
+        vnet.specification.address_space = self.cluster_model.specification.cloud.vnet_address_pool
+        vnet.specification.resource_group_name = self.resource_group_name
+        vnet.specification.location = self.cluster_model.specification.cloud.region
+        return vnet            
     
     @staticmethod
     def get_config_or_default(docs, kind):
