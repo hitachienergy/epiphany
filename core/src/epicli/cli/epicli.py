@@ -45,7 +45,7 @@ def main():
     parser.add_argument('--debug', dest='debug', action="store_true",
                          help='Set this to output extensive debug information. Carries over to Ansible and Terraform.')
     parser.add_argument('--auto-approve', dest='auto_approve', action="store_true",
-                         help='Set this to output extensive debug information. Carries over to Ansible and Terraform.')                         
+                         help='Auto approve any user input queries asked by Epicli')                         
     # some arguments we don't want available when running from the docker image.
     if not config.docker_cli:
         parser.add_argument('-o', '--output', dest='output_dir', type=str,
