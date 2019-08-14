@@ -11,7 +11,6 @@ specification:
     key_path: /root/.ssh/epiphany-operations/id_rsa # YOUR-SSH-KEY-PATH
   cloud:
     subscription_name: YOUR-SUB-NAME
-    resource_group_name: YOUR-RESOURCE-GROUP-NAME
     vnet_address_pool: 10.1.0.0/20
     use_public_ips: False # When not using public IPs you have to provide connectivity via private IPs (VPN)
     use_service_principal: False
