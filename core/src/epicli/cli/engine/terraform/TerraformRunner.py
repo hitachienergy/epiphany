@@ -6,7 +6,6 @@ from cli.helpers.build_saver import get_terraform_path, save_sp, SP_FILE_NAME
 from cli.helpers.data_loader import load_yaml_file
 from cli.helpers.naming_helpers import resource_name
 
-
 class TerraformRunner(Step):
 
     def __init__(self, cluster_model, config_docs):

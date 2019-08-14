@@ -6,9 +6,9 @@ from cli.helpers.build_saver import save_manifest
 from cli.helpers.yaml_helpers import safe_load_all
 from cli.helpers.Log import Log
 from cli.engine.providers.provider_class_loader import provider_class_loader
-from cli.engine.DefaultMerger import DefaultMerger
-from cli.engine.SchemaValidator import SchemaValidator
-from cli.engine.ConfigurationAppender import ConfigurationAppender
+from cli.engine.schema.DefaultMerger import DefaultMerger
+from cli.engine.schema.SchemaValidator import SchemaValidator
+from cli.engine.schema.ConfigurationAppender import ConfigurationAppender
 from cli.engine.terraform.TerraformTemplateGenerator import TerraformTemplateGenerator
 from cli.engine.terraform.TerraformRunner import TerraformRunner
 from cli.engine.ansible.AnsibleRunner import AnsibleRunner
@@ -78,53 +78,45 @@ class BuildEngine(Step):
             config_collector.run()
 
     def validate(self):
-        try:
-            self.process_input_docs()
+        self.process_input_docs()
 
-            self.process_configuration_docs()
+        self.process_configuration_docs()
 
-            self.process_infrastructure_docs()
+        self.process_infrastructure_docs()
 
-            save_manifest([*self.input_docs, *self.configuration_docs, *self.infrastructure_docs], self.cluster_model.specification.name)
+        save_manifest([*self.input_docs, *self.configuration_docs, *self.infrastructure_docs], self.cluster_model.specification.name)
 
-            return 0
-        except Exception as e:
-            self.logger.error(e, exc_info=True) #TODO extensive debug output might not always be wanted. Make this configurable with input flag?
-            return 1
+        return 0
 
     def apply(self):
-        try:
-            self.process_input_docs()
+        self.process_input_docs()
 
-            self.process_infrastructure_docs()
+        self.process_infrastructure_docs()
 
-            if not (self.skip_infrastructure or self.is_provider_any(self.cluster_model)):
-                # Generate terraform templates
-                with TerraformTemplateGenerator(self.cluster_model, self.infrastructure_docs) as template_generator:
-                    template_generator.run()
+        if not (self.skip_infrastructure or self.is_provider_any(self.cluster_model)):
+            # Generate terraform templates
+            with TerraformTemplateGenerator(self.cluster_model, self.infrastructure_docs) as template_generator:
+                template_generator.run()
 
-                # Run Terraform to create infrastructure
-                with TerraformRunner(self.cluster_model, self.configuration_docs) as tf_runner:
-                    tf_runner.build()
+            # Run Terraform to create infrastructure
+            with TerraformRunner(self.cluster_model, self.configuration_docs) as tf_runner:
+                tf_runner.build()
 
-            self.process_configuration_docs()
+        self.process_configuration_docs()
 
-            self.collect_infrastructure_config()
+        self.collect_infrastructure_config()
 
-            # Merge all the docs
-            docs = [*self.input_docs, *self.configuration_docs, *self.infrastructure_docs]
+        # Merge all the docs
+        docs = [*self.input_docs, *self.configuration_docs, *self.infrastructure_docs]
 
-            # Save docs to manifest file
-            save_manifest(docs, self.cluster_model.specification.name)   
+        # Save docs to manifest file
+        save_manifest(docs, self.cluster_model.specification.name)   
 
-            # Run Ansible to provision infrastructure
-            with AnsibleRunner(self.cluster_model, docs) as ansible_runner:
-                ansible_runner.run()
+        # Run Ansible to provision infrastructure
+        with AnsibleRunner(self.cluster_model, docs) as ansible_runner:
+            ansible_runner.run()
 
-            return 0
-        except Exception as e:
-            self.logger.error(e, exc_info=True)  # TODO extensive debug output might not always be wanted. Make this configurable with input flag?
-            return 1
+        return 0
 
     def dry_run(self):
 

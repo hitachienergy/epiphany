@@ -1,7 +1,12 @@
 import sys
 
+from cli.helpers.Config import Config
+
 
 def query_yes_no(question, default="yes"):
+    if Config().auto_approve:
+        return True
+
     valid = {"yes": True, "y": True, "ye": True,
              "no": False, "n": False}
     if default is None:
