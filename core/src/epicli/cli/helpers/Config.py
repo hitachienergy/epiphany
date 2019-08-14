@@ -16,6 +16,8 @@ class Config:
             self._log_type = 'plain'
 
             self._validate_certs = True
+            self._debug = False
+            self._auto_approve = False
 
         @property
         def docker_cli(self):
@@ -84,6 +86,24 @@ class Config:
             if not validate_certs is None:
                 self._validate_certs = validate_certs
 
+        @property
+        def debug(self):
+            return self._debug
+
+        @debug.setter
+        def debug(self, debug):
+            if not debug is None:
+                self._debug = debug      
+                
+        @property
+        def auto_approve(self):
+            return self._auto_approve
+
+        @auto_approve.setter
+        def auto_approve(self, auto_approve):
+            if not auto_approve is None:
+                self._auto_approve = auto_approve   
+                
     instance = None
 
     def __new__(cls):

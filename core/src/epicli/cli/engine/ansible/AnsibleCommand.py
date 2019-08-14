@@ -1,6 +1,7 @@
 import os
 import subprocess
 from cli.helpers.Log import LogPipe, Log
+from cli.helpers.Config import Config
 import time
 
 
@@ -55,6 +56,9 @@ class AnsibleCommand:
             cmd.extend(["-i", inventory])
 
         cmd.append(playbook_path)
+
+        if Config().debug:
+            cmd.append('-vvv')        
 
         self.logger.info('Running: "' + ' '.join(cmd) + '"')
 

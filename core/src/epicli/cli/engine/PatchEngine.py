@@ -21,28 +21,16 @@ class PatchEngine(Step):
         super().__exit__(exc_type, exc_value, traceback)
 
     def upgrade(self):
-        try:
-            self.upgrade_patch_files_and_run('upgrade')
-            return 0
-        except Exception as e:
-            self.logger.error(e, exc_info=True)  # TODO extensive debug output might not always be wanted. Make this configurable with input flag?
-            return 1
+        self.upgrade_patch_files_and_run('upgrade')
+        return 0
 
     def backup(self):
-        try:
-            self.upgrade_patch_files_and_run('backup')
-            return 0
-        except Exception as e:
-            self.logger.error(e, exc_info=True)  # TODO extensive debug output might not always be wanted. Make this configurable with input flag?
-            return 1
+        self.upgrade_patch_files_and_run('backup')
+        return 0
 
     def recovery(self):
-        try:
-            self.upgrade_patch_files_and_run('recovery')
-            return 0
-        except Exception as e:
-            self.logger.error(e, exc_info=True)  # TODO extensive debug output might not always be wanted. Make this configurable with input flag?
-            return 1
+        self.upgrade_patch_files_and_run('recovery')
+        return 0
 
     def upgrade_patch_files_and_run(self, action):
         self.logger.info(f'Running {action}...')
