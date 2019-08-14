@@ -28,20 +28,24 @@ def main():
     parser.add_argument('--licenses', action='version',
                         help='Shows the third party packages and their licenses the CLI is using.',
                         version=json.dumps(LICENSES, indent=4))
-    parser.add_argument('-l', '--log_file', dest='log_name', type=str,
+    parser.add_argument('-l', '--log-file', dest='log_name', type=str,
                         help='The name of the log file written to the output directory')
-    parser.add_argument('--log_format', dest='log_format', type=str,
+    parser.add_argument('--log-format', dest='log_format', type=str,
                         help='Format for the logging string.')
-    parser.add_argument('--log_date_format', dest='log_date_format', type=str,
+    parser.add_argument('--log-date-format', dest='log_date_format', type=str,
                         help='Format for the logging date.')
-    parser.add_argument('--log_count', dest='log_count', type=str,
+    parser.add_argument('--log-count', dest='log_count', type=str,
                         help='Roleover count where each CLI run will generate a new log.')
-    parser.add_argument('--log_type', choices=['plain', 'json'], default='plain',
+    parser.add_argument('--log-type', choices=['plain', 'json'], default='plain',
                         dest='log_type', action='store', help='Type of logs.')
-    parser.add_argument('--validate_certs', choices=['true', 'false'], default='true', action='store', dest='validate_certs',
+    parser.add_argument('--validate-certs', choices=['true', 'false'], default='true', action='store', dest='validate_certs',
                         help='''[Experimental]: Disables certificate checks for certain Ansible operations
                          which might have issues behind proxies (https://github.com/ansible/ansible/issues/32750). 
                          Should NOT be used in production for security reasons.''')
+    parser.add_argument('--debug', dest='debug', action="store_true",
+                         help='Set this to output extensive debug information. Carries over to Ansible and Terraform.')
+    parser.add_argument('--auto-approve', dest='auto_approve', action="store_true",
+                         help='Auto approve any user input queries asked by Epicli')                         
     # some arguments we don't want available when running from the docker image.
     if not config.docker_cli:
         parser.add_argument('-o', '--output', dest='output_dir', type=str,
@@ -74,9 +78,15 @@ def main():
     config.log_type = args.log_type
     config.log_count = args.log_count
     config.validate_certs = True if args.validate_certs == 'true' else False
+    config.debug = args.debug
+    config.auto_approve = args.auto_approve
 
-    return args.func(args)
-
+    try:
+        return args.func(args)
+    except Exception as e:
+        logger = Log('epicli')
+        logger.error(e, exc_info=config.debug)
+        return 1
 
 def init_parser(subparsers):
     sub_parser = subparsers.add_parser('init', description='Creates configuration file in working directory.')
@@ -84,12 +94,12 @@ def init_parser(subparsers):
                             required=True, help='One of the supported providers: azure|aws|any')
     sub_parser.add_argument('-n', '--name', dest='name', type=str, required=True,
                             help='Name of the cluster.')
-
     sub_parser.add_argument('--full', dest='full_config', action="store_true",
                             help='Use this flag if you want to create verbose configuration file.')
 
     def run_init(args):
         Config().output_dir = os.getcwd()
+        dump_config(Config())
         with InitEngine(args) as engine:
             return engine.init()
 
@@ -193,6 +203,7 @@ def adjust_paths_from_file(args):
     if not os.path.isabs(args.file):
         args.file = os.path.join(os.getcwd(), args.file)
     if not os.path.isfile(args.file):
+        Config().output_dir = os.getcwd() # Default to working dir so we can at least write logs.
         raise Exception(f'File "{args.file}" does not excist')        
     if Config().output_dir is None:
         Config().output_dir = os.path.join(os.path.dirname(args.file), 'build')
@@ -203,6 +214,7 @@ def adjust_paths_from_build(args):
     if not os.path.isabs(args.build_directory):
         args.build_directory = os.path.join(os.getcwd(), args.build_directory)
     if not os.path.exists(args.build_directory):
+        Config().output_dir = os.getcwd() # Default to working dir so we can at least write logs.
         raise Exception(f'Build directory "{args.build_directory}" does not excist')  
     if args.build_directory[-1:] == '/':    
         args.build_directory = args.build_directory.rstrip('/')

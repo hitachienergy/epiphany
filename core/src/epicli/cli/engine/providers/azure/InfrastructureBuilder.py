@@ -35,8 +35,6 @@ class InfrastructureBuilder(Step):
         vnet = self.get_config_or_default(self.docs, 'infrastructure/vnet')
         vnet.specification.name = resource_name(self.cluster_prefix, self.cluster_name, 'vnet')
         vnet.specification.address_space = self.cluster_model.specification.cloud.vnet_address_pool
-        vnet.specification.resource_group_name = self.resource_group_name
-        vnet.specification.location = self.cluster_model.specification.cloud.region
         return vnet            
     
     @staticmethod
