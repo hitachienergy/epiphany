@@ -2,24 +2,14 @@ from cli.engine.providers.aws.InfrastructureBuilder import InfrastructureBuilder
 from cli.helpers.objdict_helpers import dict_to_objdict
 import pytest
 
-
-def test_get_vpc_config_should_set_address_pool_from_cluster_data_model():
-    cluster_model = get_cluster_model(address_pool='10.20.0.0/22')
-    builder = InfrastructureBuilder([cluster_model])
-
-    actual = builder.get_vpc_config()
-
-    assert actual.specification.address_pool == '10.20.0.0/22'
-
-
-def test_get_vpc_config_should_set_name_from_cluster_data_model():
-    cluster_model = get_cluster_model(cluster_name='TestCluster')
+def test_get_vpc_config_should_set_proper_values_to_model():
+    cluster_model = get_cluster_model(cluster_name='TestCluster', address_pool='10.20.0.0/22')
     builder = InfrastructureBuilder([cluster_model])
 
     actual = builder.get_vpc_config()
 
     assert actual.specification.name == 'prefix-testcluster-vpc'
-
+    assert actual.specification.address_pool == '10.20.0.0/22'
 
 def test_get_subnet_config_should_set_proper_values_to_model():
     cluster_model = get_cluster_model(cluster_name='TestCluster')
