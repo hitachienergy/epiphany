@@ -6,9 +6,9 @@
 - [Prerequisites](#prerequisites)
 - [Preparing the environment](#preparing-the-environment)
 - [Supplying data to the devcontainer](#supplying-data-to-the-devcontainer)
-- [Note for Windows users](note-for-Windows-users)
+- [Note for Windows users](#note-for-Windows-users)
 - [Running and debugging](#running-and-debugging)  
-- [Running unit tests](#running-unit-testsugging)
+- [Running unit tests](#running-unit-tests)
 
 <!-- /TOC -->
 
@@ -36,17 +36,17 @@ Note: VSCode devcontainers are not properly supported using Docker Toolbox on Wi
 
 2. VSCode will tell you that the workspace has recommanded extensions:
 
-    ![Logical view architecture diagram](../assets/images/development/extensions.png)
+    ![extensions](../assets/images/development/extensions.png)
 
     Press ```Install all``` and wait until they are all installed and then restart. During the extension installations the following popup might show up:
 
-    ![Logical view architecture diagram](../assets/images/development/devcontainer.png)
+    ![devcontainer](../assets/images/development/devcontainer.png)
 
     Do **NOT** do that at this point. First you must restart VSCode to activate all extensions which where installed.
 
 3. After restarting VSCode the popup to re-open the folder in a devcontainer will show again. Press ```Reopen in Container``` to start the build of the devcontainer. You should get the following message:
 
-    ![Logical view architecture diagram](../assets/images/development/building.png)
+    ![building](../assets/images/development/building.png)
 
     You can click ```detail``` to show the build process.
 
@@ -73,13 +73,13 @@ Use: [Checkout as-is, commit Unix-style](https://stackoverflow.com/questions/104
 
 This needs to be executed from the devcontainer bash terminal:
 
-![Logical view architecture diagram](../assets/images/development/terminal.png)
+![terminal](../assets/images/development/terminal.png)
 
 ## Running and debugging
 
 For debugging open the VSCode debug tab:
 
-![Logical view architecture diagram](../assets/images/development/debug.png)
+![debug](../assets/images/development/debug.png)
 
 Per default there is one launch configuration present called ```epicli```. This launch configuration can be found in ```/epiphany/core/src/epicli/.vscode/``` and looks like this:
 
@@ -132,14 +132,14 @@ In the ```args``` field you can pass an array of the arguments that you want epi
 
 To run a configuration select it and press the run button:
 
-![Logical view architecture diagram](../assets/images/development/reundebug.png)
+![rundebug](../assets/images/development/rundebug.png)
 
 For more information about debugging in VSCode go [here](https://code.visualstudio.com/docs/editor/debugging).
 
 ## Running unit tests
 
-To run the unit test open the test tab in VSCode:
+The standart python test runner fails to discover the tests so we use the ```Python Test Explorer``` extension. To run the unit test open the test tab in VSCode and select the run button:
 
+![unittests](../assets/images/development/unittests.png)
 
-
-The [Python Test Explorer](https://marketplace.visualstudio.com/items?itemName=LittleFoxTeam.vscode-python-test-adapter) extension will detect the tests properly and let you run and debug them.
+See the [Python Test Explorer](https://marketplace.visualstudio.com/items?itemName=LittleFoxTeam.vscode-python-test-adapter) extension page on how to debug and run individual tests.
