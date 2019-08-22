@@ -41,7 +41,7 @@ This minimum file definition is fine to start with, if you need more control ove
 epicli init -p aws -n demo --full
 ```
 
-You will need to modify a few values (like you AWS secrets, directory path for ssh keys). Once you are done done with `demo.yaml` you can start cluster deployment by executing with:
+You will need to modify a few values (like you're AWS secrets, directory path for ssh keys). Once you are done done with `demo.yaml` you can start cluster deployment by executing with:
 
 ```shell
 epicli apply -f demo.yaml
@@ -73,16 +73,17 @@ Find more information using table of contents below - especially the [How-to gui
 - Platform
   - [Resources](docs/home/RESOURCES.md)
   - [How-to guides](docs/home/HOWTO.md)
-  - [Troubleshooting](docs/home/TROUBLESHOOTING.md)
+  - [Components](docs/home/COMPONENTS.md)
+  - [Security](docs/home/SECURITY.md)
+  - [Troubleshooting](docs/home/TROUBLESHOOTING.md)  
+  - [Changelog](CHANGELOG.md)  
 - Architecture
   - [Logical View](docs/architecture/logical-view.md)
   - [Process View](docs/architecture/process-view.md)
   - [Physical View](docs/architecture/physical-view.md)
-- Project
-  - [How-to contribute](docs/home/CONTRIBUTING.md)
-  - [Workflow to follow](docs/home/GITWORKFLOW.md)
+- Contributing
   - [Governance model](docs/home/GOVERNANCE.md)
-  - [Components](docs/home/COMPONENTS.md)
-  - [Changelog](CHANGELOG.md)
-
+  - [Development enviroment](docs/home/DEVELOPMENT.md)
+  - [GIT Workflow](docs/home/GITWORKFLOW.md)
+  
 <!-- TOC -->
