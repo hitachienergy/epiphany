@@ -18,7 +18,7 @@ This document will explain how to setup the prefered [VSCode](https://code.visua
 
 1. Epiphany is developed using many different technologies (Python, Ansible, Terraform, Docker, Jinja, YAML...) and VSCode has good tooling and extensions available to support everything in one IDE.
 
-2. VSCode`s [devcontainers](https://code.visualstudio.com/docs/remote/containers) allow us to quickly setup a dockerized development environment which is the same  for every developer regardless of development platform (Linux, MacOS, Windows).
+2. VSCode's [devcontainers](https://code.visualstudio.com/docs/remote/containers) allow us to quickly setup a dockerized development environment which is the same  for every developer regardless of development platform (Linux, MacOS, Windows).
 
 ## Prerequisites
 
@@ -42,7 +42,7 @@ Note: VSCode devcontainers are not properly supported using Docker Toolbox on Wi
 
     ![devcontainer](../assets/images/development/devcontainer.png)
 
-    Do **NOT** do that at this point. First you must restart VSCode to activate all extensions which where installed.
+    Do **NOT** do that at this point. First you must restart VSCode to activate all extensions which were installed.
 
 3. After restarting VSCode the popup to re-open the folder in a devcontainer will show again. Press ```Reopen in Container``` to start the build of the devcontainer. You should get the following message:
 
@@ -56,7 +56,7 @@ Now you have a fully working Epiphany development environment!
 
 ## Supplying data to the devcontainer
 
-The entire working directory (```/epiphany/core/src/epicli/```)is mounted inside the container. We recommand to create an aditional directory called ```cluster``` there in which you house your data YAMLs and SSH keys. This directory is already added to the .gitignore. When executing epicli commands from that directory this is also where any build output and logs will be written to.
+The entire working directory (```/epiphany/core/src/epicli/```) is mounted inside the container. We recommand to create an aditional directory called ```clusters``` there in which you house your data YAMLs and SSH keys. This directory is already added to the .gitignore. When executing epicli commands from that directory this is also where any build output and logs will be written to.
 
 ## Note for Windows users
 

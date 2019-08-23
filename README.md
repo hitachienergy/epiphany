@@ -41,7 +41,7 @@ This minimum file definition is fine to start with, if you need more control ove
 epicli init -p aws -n demo --full
 ```
 
-You will need to modify a few values (like you're AWS secrets, directory path for ssh keys). Once you are done done with `demo.yaml` you can start cluster deployment by executing with:
+You will need to modify a few values (like your AWS secrets, directory path for SSH keys). Once you are done with `demo.yaml` you can start cluster deployment by executing:
 
 ```shell
 epicli apply -f demo.yaml
