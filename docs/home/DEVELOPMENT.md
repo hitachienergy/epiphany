@@ -63,7 +63,7 @@ The entire working directory (```/epiphany/core/src/epicli/```) is mounted insid
 - Watch out for line endings conversion. By default GIT for Windows sets `core.autocrlf=true`. Mounting such files with Docker results in `^M` end-of-line character in the config files.
 Use: [Checkout as-is, commit Unix-style](https://stackoverflow.com/questions/10418975/how-to-change-line-ending-settings) (`core.autocrlf=input`) or Checkout as-is, commit as-is (`core.autocrlf=false`).
 
-- Mounting NTFS disk folders in a linux based image causes permission issues with SSH keys. You can copy them inside the container and set the propper permissions using:
+- Mounting NTFS disk folders in a Linux based image causes permission issues with SSH keys. You can copy them inside the container and set the proper permissions using:
 
     ```shell
     mkdir -p /home/vscode/.ssh/
