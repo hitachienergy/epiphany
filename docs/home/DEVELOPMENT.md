@@ -34,7 +34,7 @@ Note: VSCode devcontainers are not properly supported using Docker Toolbox on Wi
 
 1. Open the epicli project folder ```/epiphany/core/src/epicli/``` with VSCode.
 
-2. VSCode will tell you that the workspace has recommanded extensions:
+2. VSCode will tell you that the workspace has recommended extensions:
 
     ![extensions](../assets/images/development/extensions.png)
 
