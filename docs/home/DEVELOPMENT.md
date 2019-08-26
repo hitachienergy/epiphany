@@ -81,7 +81,7 @@ For debugging, open the VSCode's Debug tab:
 
 ![debug](../assets/images/development/debug.png)
 
-Per default there is one launch configuration present called ```epicli```. This launch configuration can be found in ```/epiphany/core/src/epicli/.vscode/``` and looks like this:
+By default there is one launch configuration called ```epicli```. This launch configuration can be found in ```/epiphany/core/src/epicli/.vscode/``` and looks like this:
 
   ```json
     "configurations": [
