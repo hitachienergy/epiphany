@@ -14,7 +14,7 @@
 
 ## Introduction
 
-This document will explain how to setup the prefered [VSCode](https://code.visualstudio.com/) development environment. While there are other options to develop Epiphany like [PyCharm](https://www.jetbrains.com/pycharm/) VSCode has the following advantages:
+This document explains how to set up the preferred [VSCode](https://code.visualstudio.com/) development environment. While there are other options to develop Epiphany like [PyCharm](https://www.jetbrains.com/pycharm/), VSCode has the following advantages:
 
 1. Epiphany is developed using many different technologies (Python, Ansible, Terraform, Docker, Jinja, YAML...) and VSCode has good tooling and extensions available to support everything in one IDE.
 
