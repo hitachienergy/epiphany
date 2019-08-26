@@ -77,7 +77,7 @@ This needs to be executed from the devcontainer bash terminal:
 
 ## Running and debugging
 
-For debugging open the VSCode debug tab:
+For debugging, open the VSCode's Debug tab:
 
 ![debug](../assets/images/development/debug.png)
 
