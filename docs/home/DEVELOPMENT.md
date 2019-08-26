@@ -68,7 +68,7 @@ Use: [Checkout as-is, commit Unix-style](https://stackoverflow.com/questions/104
     ```shell
     mkdir -p /home/vscode/.ssh
     cp ./clusters/ssh/id_rsa* /home/vscode/.ssh/
-    chmod 400 /home/vscode/ssh/id_rsa*
+    chmod 700 /home/vscode/.ssh && chmod 644 /home/vscode/.ssh/id_rsa.pub && chmod 600 /home/vscode/.ssh/id_rsa
     ```
 
 This needs to be executed from the devcontainer bash terminal:
