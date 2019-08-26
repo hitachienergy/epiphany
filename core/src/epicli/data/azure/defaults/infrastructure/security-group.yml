@@ -1,0 +1,7 @@
+kind: infrastructure/security-group
+version: 0.3.0
+title: "Security Group Config"
+provider: azure
+name: default
+specification:
+  name: SET_BY_AUTOMATION
