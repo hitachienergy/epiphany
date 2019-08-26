@@ -38,7 +38,7 @@ Note: VSCode devcontainers are not properly supported using Docker Toolbox on Wi
 
     ![extensions](../assets/images/development/extensions.png)
 
-    Press ```Install all``` and wait until they are all installed and then restart. During the extension installations the following popup might show up:
+    Press ```Install All``` and wait until they are all installed and then restart. During the extension installations the following popup might show up:
 
     ![devcontainer](../assets/images/development/devcontainer.png)
 
