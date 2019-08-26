@@ -56,7 +56,7 @@ Now you have a fully working Epiphany development environment!
 
 ## Supplying data to the devcontainer
 
-The entire working directory (```/epiphany/core/src/epicli/```) is mounted inside the container. We recommand to create an aditional directory called ```clusters``` there in which you house your data YAMLs and SSH keys. This directory is already added to the .gitignore. When executing epicli commands from that directory this is also where any build output and logs will be written to.
+The entire working directory (```/epiphany/core/src/epicli/```) is mounted inside the container. We recommend to create an additional directory called ```clusters``` there, in which you house your data YAMLs and SSH keys. This directory is already added to the .gitignore. When executing epicli commands from that directory this is also where any build output and logs are written to.
 
 ## Note for Windows users
 
