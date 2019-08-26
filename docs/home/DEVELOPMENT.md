@@ -130,7 +130,7 @@ You can copy this configuration and change values (like below) to create differe
 
 In the ```args``` field you can pass an array of the arguments that you want epicli to run with.
 
-To run a configuration select it and press the run button:
+To run a configuration, select it and press the run button:
 
 ![rundebug](../assets/images/development/rundebug.png)
 
