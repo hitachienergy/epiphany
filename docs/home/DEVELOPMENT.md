@@ -99,7 +99,7 @@ Per default there is one launch configuration present called ```epicli```. This 
     ]
   ```
 
-You can copy this configuration and change the names like to create different ones to suite your needs:
+You can copy this configuration and change values (like below) to create different ones to suite your needs:
 
   ```json
     "configurations": [
