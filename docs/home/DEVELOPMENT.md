@@ -18,7 +18,7 @@ This document explains how to set up the preferred [VSCode](https://code.visuals
 
 1. Epiphany is developed using many different technologies (Python, Ansible, Terraform, Docker, Jinja, YAML...) and VSCode has good tooling and extensions available to support everything in one IDE.
 
-2. VSCode's [devcontainers](https://code.visualstudio.com/docs/remote/containers) allow us to quickly setup a dockerized development environment which is the same  for every developer regardless of development platform (Linux, MacOS, Windows).
+2. VSCode's [devcontainers](https://code.visualstudio.com/docs/remote/containers) allow us to quickly set up a dockerized development environment, which is the same for every developer regardless of development platform (Linux, MacOS, Windows).
 
 ## Prerequisites
 
