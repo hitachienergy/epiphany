@@ -66,7 +66,7 @@ Use: [Checkout as-is, commit Unix-style](https://stackoverflow.com/questions/104
 - Mounting NTFS disk folders in a Linux based image causes permission issues with SSH keys. You can copy them inside the container and set the proper permissions using:
 
     ```shell
-    mkdir -p /home/vscode/.ssh/
+    mkdir -p /home/vscode/.ssh
     cp ./cluster/ssh/id_rsa* /home/vscode/.ssh/
     chmod 400 /home/vscode/ssh/id_rsa*
     ```
