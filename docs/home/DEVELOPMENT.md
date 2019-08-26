@@ -48,7 +48,7 @@ Note: VSCode devcontainers are not properly supported using Docker Toolbox on Wi
 
     ![building](../assets/images/development/building.png)
 
-    You can click ```detail``` to show the build process.
+    You can click ```details``` to show the build process.
 
 4. After the devcontainer is done building and started VSCode will give you the message again that this workspace has recommanded extensions. This time it is for the devcontainer. Again press ```Install all``` to install the available extensions inside the devcontainer.
 
