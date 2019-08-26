@@ -6,7 +6,6 @@
   - [Epicli](#epicli)
     - [Run Epicli directly from OS](#run-epicli-directly-from-os)
     - [Run Epicli from Docker image](#run-epicli-from-docker-image)
-    - [Epicli development](#epicli-development)
   - [Legacy](#legacy)
     - [Run directly from OS](#run-directly-from-os)
     - [Run Docker image for development](#run-docker-image-for-development)
@@ -156,21 +155,6 @@ docker run -it -v LOCAL_DIR:/shared --rm epiphanyplatform/epicli
 ```
 
 Where `LOCAL_DIR` should be replaced with the local path to the directory for Epicli input (SSH keys, data yamls) and output (logs, build states).
-
-#### Epicli development
-
-To setup a development environment to debug or contribute to Epicli follow the following steps.
-
-1. Install the following dependencies:
-
-    - Python 3.7
-    - PIP
-    - Pipenv
-    - PyCharm CE
-
-2. Open PyCharm CE and open the Epicli project root directory `/core/src/epicli`. PyCharm will detect the Pipenv virtual workspace and configure it appropriately.
-
-Then you can code and debug as desired:)
 
 ### Legacy
 
