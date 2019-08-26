@@ -83,7 +83,7 @@ Find more information using table of contents below - especially the [How-to gui
   - [Physical View](docs/architecture/physical-view.md)
 - Contributing
   - [Governance model](docs/home/GOVERNANCE.md)
-  - [Development enviroment](docs/home/DEVELOPMENT.md)
+  - [Development environment](docs/home/DEVELOPMENT.md)
   - [GIT Workflow](docs/home/GITWORKFLOW.md)
   
 <!-- TOC -->
