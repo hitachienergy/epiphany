@@ -138,7 +138,7 @@ For more information about debugging in VSCode go [here](https://code.visualstud
 
 ## Running unit tests
 
-The standart python test runner fails to discover the tests so we use the ```Python Test Explorer``` extension. To run the unit test open the test tab in VSCode and select the run button:
+The standard Python test runner fails to discover the tests so we use the ```Python Test Explorer``` extension. To run the unit tests, open the VSCode's Test tab and press the run button:
 
 ![unittests](../assets/images/development/unittests.png)
 
