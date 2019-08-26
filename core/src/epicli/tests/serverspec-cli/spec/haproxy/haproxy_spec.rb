@@ -2,6 +2,16 @@ require 'spec_helper'
 
 haproxy_host = 'localhost'
 haproxy_front_port = 443
+haproxy_stats_port = 9000
+
+# Running systemctl status command as "is-active" returns "unknown" in result 
+# https://bugzilla.redhat.com/show_bug.cgi?id=1073481
+
+describe 'Checking HAProxy service status' do
+  describe command("systemctl status haproxy") do
+    its(:exit_status) { should eq 0 }
+  end
+end
 
 describe 'Checking if HAProxy service is running' do
   describe service('haproxy') do
@@ -32,8 +42,11 @@ describe 'Checking if HAProxy log file exists and is not empty' do
 end
 
 describe 'Checking if the ports are open' do
+  let(:disable_sudo) { false }
   describe port(haproxy_front_port) do
-    let(:disable_sudo) { false }
+    it { should be_listening }
+  end
+  describe port(haproxy_stats_port) do
     it { should be_listening }
   end
 end 
@@ -71,14 +84,14 @@ describe 'Checking HAProxy config files' do
 end
 
 describe 'Checking HAProxy HTTP status code for stats page' do
-  describe command("curl -k --user $(cat /etc/haproxy/haproxy.cfg | grep 'stats auth' | awk '{print $3}') -o /dev/null -s -w '%{http_code}' \
-  https://#{haproxy_host}:#{haproxy_front_port}$(cat /etc/haproxy/haproxy.cfg | grep 'stats uri' | awk '{print $3}')") do
+  describe command("curl -k --user $(awk '/stats auth/ {print $3}' /etc/haproxy/haproxy.cfg) -o /dev/null -s -w '%{http_code}' \
+  http://#{haproxy_host}:#{haproxy_stats_port}$(awk '/stats uri/ {print $3}' /etc/haproxy/haproxy.cfg)") do
     it "is expected to be equal" do
       expect(subject.stdout.to_i).to eq 200
     end
   end
-  describe command("curl -k --user $(cat /etc/haproxy/haproxy.cfg | grep 'stats auth' | awk '{print $3}') \
-  https://#{haproxy_host}:#{haproxy_front_port}$(cat /etc/haproxy/haproxy.cfg | grep 'stats uri' | awk '{print $3}')") do
+  describe command("curl -k --user $(awk '/stats auth/ {print $3}' /etc/haproxy/haproxy.cfg) \
+  http://#{haproxy_host}:#{haproxy_stats_port}$(awk '/stats uri/ {print $3}' /etc/haproxy/haproxy.cfg)") do
     its(:stdout) { should match /Statistics Report for HAProxy/ }
   end
 end
