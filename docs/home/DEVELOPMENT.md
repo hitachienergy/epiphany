@@ -134,7 +134,7 @@ To run a configuration select it and press the run button:
 
 ![rundebug](../assets/images/development/rundebug.png)
 
-For more information about debugging in VSCode go [here](https://code.visualstudio.com/docs/editor/debugging).
+For more information about debugging in VSCode, go [here](https://code.visualstudio.com/docs/editor/debugging).
 
 ## Running unit tests
 
