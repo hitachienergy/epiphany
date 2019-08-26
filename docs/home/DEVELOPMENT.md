@@ -67,7 +67,7 @@ Use: [Checkout as-is, commit Unix-style](https://stackoverflow.com/questions/104
 
     ```shell
     mkdir -p /home/vscode/.ssh
-    cp ./cluster/ssh/id_rsa* /home/vscode/.ssh/
+    cp ./clusters/ssh/id_rsa* /home/vscode/.ssh/
     chmod 400 /home/vscode/ssh/id_rsa*
     ```
 
