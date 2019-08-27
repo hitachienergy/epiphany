@@ -121,8 +121,10 @@ dmypy.json
 # pycharm settings
 .idea/
 
-# external packages for BDS scan
+# epicli specific
 external/
-
-# test results
 tests_result/
+.terraform
+clusters
+.vscode
+.devcontainer

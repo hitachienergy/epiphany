@@ -31,7 +31,7 @@ describe 'Checking Grafana directories and files' do
     it { should exist }
     it { should be_a_directory }
     it { should be_owned_by 'root' }
-    it { should be_grouped_into 'root' }
+    it { should be_grouped_into 'grafana' }
   end
   describe file("/etc/grafana/grafana.ini") do
     it { should exist }
