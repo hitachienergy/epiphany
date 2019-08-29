@@ -42,7 +42,7 @@ class AnsibleRunner(Step):
         # todo: install packages to run ansible on Red Hat hosts
         self.ansible_command.run_task_with_retries(hosts="all", inventory=inventory_path, module="raw",
                                                    args="cat /etc/lsb-release | grep -i DISTRIB_ID | grep -i ubuntu && "
-                                                        "sudo apt-get install -y python-simplejson "
+                                                        "sudo apt-get update && sudo apt-get install -y python-simplejson "
                                                         "|| echo 'Cannot find information about Ubuntu distribution'", retries=5)
 
         self.ansible_vars_generator.run()
