@@ -1,7 +1,7 @@
 kind: epiphany-cluster
 version: 0.3.0
 title: "Epiphany cluster Config"
-provider: aws
+provider: azure
 name: "default"
 specification:
   name: YOUR_CLUSTER_NAME
@@ -11,9 +11,6 @@ specification:
     key_path: /user/.ssh/epiphany-operations/id_rsa # YOUR-SSH-KEY-PATH
   cloud:
     use_public_ips: False # When not using public IPs you have to provide connectivity via private IPs (VPN)
-    credentials:
-      key: XXXX-XXXX-XXXX
-      secret: XXXXXXXXXXXXXXXX
   components:
     kubernetes_master:
       count: 1

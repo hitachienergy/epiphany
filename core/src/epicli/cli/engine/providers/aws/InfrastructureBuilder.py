@@ -200,15 +200,12 @@ class InfrastructureBuilder(Step):
         else:
             public_key_config.specification.key_name = self.cluster_model.specification.admin_user.name + '-' \
                                                        + str(uuid.uuid4())
-        if os.path.isfile(self.cluster_model.specification.admin_user.key_path + '.pub'):
-            with open(self.cluster_model.specification.admin_user.key_path + '.pub', 'r') as stream:
-                public_key_config.specification.public_key = stream.read().rstrip()
+        pub_key_path = self.cluster_model.specification.admin_user.key_path + '.pub'
+        if os.path.isfile(pub_key_path):
+            with open(pub_key_path, 'r') as stream:
+                public_key_config.specification.public_key = stream.read().rstrip()            
         else:
-            raise Exception(
-                'SSH key path "' + self.cluster_model.specification.admin_user.key_path + '.pub' +
-                '" is not valid. Ansible run will fail.')
-            
-
+            raise Exception(f'SSH key path "{pub_key_path}" is not valid. Ansible run will fail.')
         return public_key_config
 
     def add_security_rules_inbound_efs(self, infrastructure, security_group):
