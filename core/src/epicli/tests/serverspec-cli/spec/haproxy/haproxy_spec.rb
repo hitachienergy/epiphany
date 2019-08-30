@@ -8,7 +8,7 @@ haproxy_stats_port = 9000
 # https://bugzilla.redhat.com/show_bug.cgi?id=1073481
 
 describe 'Checking HAProxy service status' do
-  describe command("systemctl status haproxy") do
+  describe command("systemctl status haproxy > /dev/null") do
     its(:exit_status) { should eq 0 }
   end
 end
