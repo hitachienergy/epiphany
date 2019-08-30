@@ -5,7 +5,7 @@ provider: aws
 name: "default"
 specification:
   name: YOUR_CLUSTER_NAME
-  prefix: ''
+  prefix: YOUR_CLUSTER_RESOURCES_PREFIX
   admin_user:
     name: operations # YOUR-ADMIN-USERNAME
     key_path: /user/.ssh/epiphany-operations/id_rsa # YOUR-SSH-KEY-PATH

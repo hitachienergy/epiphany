@@ -11,7 +11,6 @@
     - [Support](#support)
     - [Contribution Process](#contribution-process)
     - [Decision-Making Process](#decision-making-process)
-    - [Git Workflow and Contributing](#git-workflow-and-contributing)
 
 <!-- /TOC -->
 
@@ -77,10 +76,3 @@ The developer mailing list is the most appropriate place for a contributor to as
 ## Decision-Making Process
 
 The project leadership model does not need a formal conflict resolution process, since the project lead’s word is final. If the community chooses to question the wisdom of the actions of a committer, the project lead can review their decisions by checking the email archives, and either uphold or reverse them.
-
-## Git Workflow and Contributing
-
-These two documents go into detail on how to contribute and work within the branching strategy used by Epiphany:
-
-* [Gitworkflow.md](/GITWORKFLOW.md)
-* [Contributing.md](/CONTRIBUTING.md)

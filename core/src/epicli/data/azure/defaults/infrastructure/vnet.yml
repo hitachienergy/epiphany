@@ -1,0 +1,8 @@
+kind: infrastructure/vnet
+version: 0.3.0
+title: "VNET Config"
+provider: azure
+name: default
+specification:
+  name: SET_BY_AUTOMATION
+  address_space: SET_BY_AUTOMATION

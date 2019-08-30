@@ -29,12 +29,10 @@ def load_yaml_obj(file_type, provider, kind):
     script_dir = os.path.dirname(__file__)
     path_to_file = os.path.join(script_dir, DATA_FOLDER_PATH, provider, file_type, kind+'.yml')
     if os.path.isfile(path_to_file):
-        with open(path_to_file, 'r') as stream:
-            return safe_load(stream)
+        return load_yaml_file(path_to_file)
     else:
         path_to_file = os.path.join(script_dir, DATA_FOLDER_PATH, 'common', file_type, kind + '.yml')
-        with open(path_to_file, 'r') as stream:
-            return safe_load(stream)
+        return load_yaml_file(path_to_file)
 
 
 def load_all_yaml_objs(file_type, provider, kind):
@@ -45,12 +43,20 @@ def load_all_yaml_objs(file_type, provider, kind):
 
 def load_file_from_path(script_dir, path_to_file, file_type, kind):
     if os.path.isfile(path_to_file):
-        with open(path_to_file, 'r') as stream:
-            return safe_load_all(stream)
+        return load_yamls_file(path_to_file)
     else:
         path_to_file = os.path.join(script_dir, DATA_FOLDER_PATH, 'common', file_type, kind + '.yml')
-        with open(path_to_file, 'r') as stream:
-            return safe_load_all(stream)
+        return load_yamls_file(path_to_file)
+
+
+def load_yaml_file(path_to_file):
+    with open(path_to_file, 'r') as stream:
+        return safe_load(stream)
+
+
+def load_yamls_file(path_to_file):
+    with open(path_to_file, 'r') as stream:
+        return safe_load_all(stream)         
 
 
 def load_template_file(file_type, provider, kind):
