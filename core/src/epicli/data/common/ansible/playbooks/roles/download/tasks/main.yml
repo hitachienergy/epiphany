@@ -1,0 +1,3 @@
+---
+- name: Download all files to cache
+  include_tasks: download_all_files_to_cache.yml
