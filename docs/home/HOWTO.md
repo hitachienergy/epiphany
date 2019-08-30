@@ -37,7 +37,7 @@
   - [How to setup Azure VM as docker machine for development](#how-to-setup-azure-vm-as-docker-machine-for-development)
   - [How to upgrade Kubernetes cluster](#how-to-upgrade-kubernetes-cluster)
   - [How to upgrade Kubernetes cluster from 1.13.0 to 1.13.1](#how-to-upgrade-kubernetes-cluster-from-1130-to-1131)
-  - [How to upgrade Kubernetes cluster from 1.13.1 to 1.13.10 / latest patch](#how-to-upgrade-kubernetes-cluster-from-1131-to-11310-/-latest-patch)
+  - [How to upgrade Kubernetes cluster from 1.13.1 to 1.13.10 / latest patch](#how-to-upgrade-kubernetes-cluster-from-1131-to-11310--latest-patch)
   - [How to authenticate to Azure AD app](#how-to-authenticate-to-azure-ad-app)
   - [How to expose service through HA Proxy load balancer](#how-to-expose-service-through-ha-proxy-load-balancer)
 - Security
