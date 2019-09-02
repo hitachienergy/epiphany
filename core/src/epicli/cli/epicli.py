@@ -16,7 +16,6 @@ from cli.helpers.query_yes_no import query_yes_no
 
 
 def main():
-
     config = Config()
     parser = argparse.ArgumentParser(
         description=__doc__,
@@ -38,14 +37,15 @@ def main():
                         help='Roleover count where each CLI run will generate a new log.')
     parser.add_argument('--log-type', choices=['plain', 'json'], default='plain',
                         dest='log_type', action='store', help='Type of logs.')
-    parser.add_argument('--validate-certs', choices=['true', 'false'], default='true', action='store', dest='validate_certs',
+    parser.add_argument('--validate-certs', choices=['true', 'false'], default='true', action='store',
+                        dest='validate_certs',
                         help='''[Experimental]: Disables certificate checks for certain Ansible operations
                          which might have issues behind proxies (https://github.com/ansible/ansible/issues/32750). 
                          Should NOT be used in production for security reasons.''')
     parser.add_argument('--debug', dest='debug', action="store_true",
-                         help='Set this to output extensive debug information. Carries over to Ansible and Terraform.')
+                        help='Set this to output extensive debug information. Carries over to Ansible and Terraform.')
     parser.add_argument('--auto-approve', dest='auto_approve', action="store_true",
-                         help='Auto approve any user input queries asked by Epicli')                         
+                        help='Auto approve any user input queries asked by Epicli')
     # some arguments we don't want available when running from the docker image.
     if not config.docker_cli:
         parser.add_argument('-o', '--output', dest='output_dir', type=str,
@@ -88,9 +88,11 @@ def main():
         logger.error(e, exc_info=config.debug)
         return 1
 
+
 def init_parser(subparsers):
     sub_parser = subparsers.add_parser('init', description='Creates configuration file in working directory.')
-    sub_parser.add_argument('-p', '--provider', dest='provider', choices=['aws', 'azure', 'any'], default='any', type=str,
+    sub_parser.add_argument('-p', '--provider', dest='provider', choices=['aws', 'azure', 'any'], default='any',
+                            type=str,
                             required=True, help='One of the supported providers: azure|aws|any')
     sub_parser.add_argument('-n', '--name', dest='name', type=str, required=True,
                             help='Name of the cluster.')
@@ -103,7 +105,7 @@ def init_parser(subparsers):
         with InitEngine(args) as engine:
             return engine.init()
 
-    sub_parser.set_defaults(func=run_init)    
+    sub_parser.set_defaults(func=run_init)
 
 
 def apply_parser(subparsers):
@@ -116,7 +118,7 @@ def apply_parser(subparsers):
     def run_apply(args):
         adjust_paths_from_file(args)
         with BuildEngine(args) as engine:
-            return engine.apply()                            
+            return engine.apply()
 
     sub_parser.set_defaults(func=run_apply)
 
@@ -147,13 +149,14 @@ def delete_parser(subparsers):
             return 0
         adjust_paths_from_build(args)
         with DeleteEngine(args) as engine:
-            return engine.delete()     
+            return engine.delete()
 
-    sub_parser.set_defaults(func=run_delete)    
+    sub_parser.set_defaults(func=run_delete)
 
 
 def upgrade_parser(subparsers):
-    sub_parser = subparsers.add_parser('upgrade', description='[Experimental]: Upgrades existing Epiphany Platform to latest version.')
+    sub_parser = subparsers.add_parser('upgrade',
+                                       description='[Experimental]: Upgrades existing Epiphany Platform to latest version.')
     sub_parser.add_argument('-b', '--build', dest='build_directory', type=str, required=True,
                             help='Absolute path to directory with build artifacts.')
 
@@ -167,7 +170,8 @@ def upgrade_parser(subparsers):
 
 
 def backup_parser(subparsers):
-    sub_parser = subparsers.add_parser('backup', description='[Experimental]: Backups existing Epiphany Platform components.')
+    sub_parser = subparsers.add_parser('backup',
+                                       description='[Experimental]: Backups existing Epiphany Platform components.')
     sub_parser.add_argument('-b', '--build', dest='build_directory', type=str, required=True,
                             help='Absolute path to directory with build artifacts.')
 
@@ -196,15 +200,15 @@ def recovery_parser(subparsers):
 
 def experimental_query():
     if not query_yes_no('This is an experimental feature and could change at any time. Do you want to continue?'):
-        sys.exit(0)    
+        sys.exit(0)
 
 
 def adjust_paths_from_file(args):
     if not os.path.isabs(args.file):
         args.file = os.path.join(os.getcwd(), args.file)
     if not os.path.isfile(args.file):
-        Config().output_dir = os.getcwd() # Default to working dir so we can at least write logs.
-        raise Exception(f'File "{args.file}" does not excist')        
+        Config().output_dir = os.getcwd()  # Default to working dir so we can at least write logs.
+        raise Exception(f'File "{args.file}" does not excist')
     if Config().output_dir is None:
         Config().output_dir = os.path.join(os.path.dirname(args.file), 'build')
     dump_config(Config())
@@ -214,9 +218,9 @@ def adjust_paths_from_build(args):
     if not os.path.isabs(args.build_directory):
         args.build_directory = os.path.join(os.getcwd(), args.build_directory)
     if not os.path.exists(args.build_directory):
-        Config().output_dir = os.getcwd() # Default to working dir so we can at least write logs.
-        raise Exception(f'Build directory "{args.build_directory}" does not excist')  
-    if args.build_directory[-1:] == '/':    
+        Config().output_dir = os.getcwd()  # Default to working dir so we can at least write logs.
+        raise Exception(f'Build directory "{args.build_directory}" does not excist')
+    if args.build_directory[-1:] == '/':
         args.build_directory = args.build_directory.rstrip('/')
     if Config().output_dir is None:
         Config().output_dir = os.path.split(args.build_directory)[0]
@@ -227,7 +231,7 @@ def dump_config(config):
     logger = Log('config')
     for attr in config.__dict__:
         if attr.startswith('_'):
-            logger.info ('%s = %r' % (attr[1:], getattr(config, attr)))
+            logger.info('%s = %r' % (attr[1:], getattr(config, attr)))
 
 
 if __name__ == '__main__':
