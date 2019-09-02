@@ -37,6 +37,7 @@
   - [How to setup Azure VM as docker machine for development](#how-to-setup-azure-vm-as-docker-machine-for-development)
   - [How to upgrade Kubernetes cluster](#how-to-upgrade-kubernetes-cluster)
   - [How to upgrade Kubernetes cluster from 1.13.0 to 1.13.1](#how-to-upgrade-kubernetes-cluster-from-1130-to-1131)
+  - [How to upgrade Kubernetes cluster from 1.13.1 to 1.13.10 / latest patch](#how-to-upgrade-kubernetes-cluster-from-1131-to-11310--latest-patch)
   - [How to authenticate to Azure AD app](#how-to-authenticate-to-azure-ad-app)
   - [How to expose service through HA Proxy load balancer](#how-to-expose-service-through-ha-proxy-load-balancer)
 - Security
@@ -1125,6 +1126,139 @@ Worker nodes will be upgraded one by one - it will prevent application downtime.
 10. kubectl get nodes # should return nodes in status "Ready" and version 1.13.1
 
 ```
+
+## How to upgrade Kubernetes cluster from 1.13.1 to 1.13.10 / latest patch
+
+### RHEL
+
+#### Upgrade Master
+
+Variable `$MASTER` represents master node name (node names can be retrieved by command `kubectl get nodes` on master)
+
+##### > RUN ON MASTER
+
+1. Check kubeadm version
+```bash
+kubeadm version
+# should show v1.13.1
+```
+2. Find the latest stable 1.13 version
+```bash
+yum list --showduplicates kubeadm --disableexcludes=kubernetes 
+# 1.13.10-0
+```
+3. Drain master in preparation for maintenance
+```bash
+kubectl drain $MASTER # [--ignore-daemonsets] [--delete-local-data]
+# $MASTER should be marked as Ready,SchedulingDisabled
+```
+may need to use flags:
+```bash
+--ignore-daemonsets: # to ignore DaemonSet-managed pods
+
+--delete-local-data: # to continue even if there are pods using emptyDir (local data that will be deleted when the node is drained)
+# BE CAREFUL!
+```
+4. Wait for all pods to be running and ready
+
+5. Install packages
+```bash
+sudo yum install kubernetes-cni-0.7.5-0 kubelet-1.13.10-0 kubectl-1.13.10-0 kubeadm-1.13.10-0 --disableexcludes=kubernetes
+```
+6. Validate whether current cluster is upgradeable 
+```bash
+sudo kubeadm upgrade plan v1.13.10 # [--config /path/to/kubeadm-config.yml]
+```
+7. Upgrade Kubernetes cluster to the specified version
+```bash
+sudo kubeadm upgrade apply v1.13.10 # [--config /path/to/kubeadm-config.yml]
+```
+8. Wait for all pods to be running and ready
+
+9. Reload daemon
+```bash
+sudo systemctl daemon-reload
+```
+10. Restart kubelet
+```bash
+sudo systemctl restart kubelet
+```
+11. Check kubelet status
+```bash
+sudo systemctl status kubelet
+# should be active (running)
+```
+12. Wait for cluster to be ready, e.g. check:
+```bash
+kubectl cluster-info
+```
+13. Uncordon master - mark as schedulable
+```bash
+kubectl uncordon $MASTER
+```
+14. List all nodes
+```bash
+kubectl get nodes
+# should return $MASTER in status "Ready" and version 1.13.10
+```
+
+#### Upgrade Worker Nodes
+
+Commands below should be run in context of each node in the cluster. Variable `$NODE` represents node name (node names can be retrieved by command `kubectl get nodes` on master)
+
+Important: Worker nodes should be upgraded one by one - this will prevent application downtime.
+
+##### > RUN ON MASTER
+
+1. Drain node in preparation for maintenance
+```bash
+kubectl drain $NODE # [--ignore-daemonsets] [--delete-local-data]
+# $NODE should be marked as Ready,SchedulingDisabled
+```
+may need to use flags:
+```bash
+--ignore-daemonsets: # to ignore DaemonSet-managed pods
+
+--delete-local-data: # to continue even if there are pods using emptyDir (local data that will be deleted when the node is drained)
+# BE CAREFUL!
+```
+2. Wait for all pods to be running and ready
+
+##### > RUN ON NODE
+
+3. Install packages
+```bash
+sudo yum install kubernetes-cni-0.7.5-0 kubelet-1.13.10-0 kubectl-1.13.10-0 kubeadm-1.13.10-0 --disableexcludes=kubernetes
+```
+4. Upgrade node config
+```bash
+sudo kubeadm upgrade node config --kubelet-version v1.13.10
+```
+5. Reload daemon
+```bash
+sudo systemctl daemon-reload
+```
+6. Restart kubelet
+```bash
+sudo systemctl restart kubelet
+```
+7. Check kubelet status
+```bash
+sudo systemctl status kubelet
+# should be active (running)
+```
+##### > RUN ON MASTER
+
+8. Uncordon node - mark as schedulable
+```bash
+kubectl uncordon $NODE
+```
+9. List all nodes
+```bash
+kubectl get nodes
+# should return $NODE in status "Ready" and version 1.13.10
+```
+10. Go back to the point 1 with the next node
 
 ## How to upgrade Kafka cluster
 

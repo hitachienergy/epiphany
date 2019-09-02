@@ -65,7 +65,6 @@ specification:
       subnets:
         - availability_zone: eu-west-2a
           address_pool: 10.1.6.0/24
-
     load_balancer:
       count: 1
       machine: load-balancer-machine
@@ -75,7 +74,7 @@ specification:
           address_pool: 10.1.7.0/24
     rabbitmq:
       count: 0
-      machine: default
+      machine: rabbitmq-machine
       configuration: default
       subnets:
         - availability_zone: eu-west-2a
