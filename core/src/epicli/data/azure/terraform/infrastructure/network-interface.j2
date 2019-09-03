@@ -1,0 +1,43 @@
+#####################################################
+# DO NOT Modify by hand - Managed by Automation
+#####################################################
+#####################################################
+# This file can be used as a base template to build other Terraform files. It attempts to use as much
+# Terraform interprolation as possible by creating Terraform variables instead of changing inline
+# this approach provides an easier way to do creative looping, fetch IDs of created resources etc.
+#####################################################
+#####################################################
+# {{ specification.name }}
+#####################################################
+
+resource "azurerm_network_interface" "network_interface_{{ vm.name }}" {
+  name                      = "{{ vm_interface.network_interface.name }}-{{ vm.name }}-${format("%03d", count.index + 1)}"
+  location                  = "${azurerm_resource_group.rg.location}"
+  resource_group_name       = "${azurerm_resource_group.rg.name}"
+  {%- if core.azure.standard.security.network_security_group.enable %}
+  network_security_group_id = "${azurerm_network_security_group.nsg.id}"
+  {%- endif %}
+  {%- if vm_interface.network_interface.enable_accelerated_networking %}
+  enable_accelerated_networking = "true"
+  {%- endif %}
+  count                     = "{{ vm.count }}"
+
+  # The ip_configuration blocks can be more than one. The first one is the primary.
+  ip_configuration {
+    {%- if vm_interface.network_interface.public_ip.enable %}
+    name                          = "${element(azurerm_public_ip.public_ip_{{ vm.name }}.*.name, count.index)}"
+    {% else %}
+    name                          = "{{ vm_interface.network_interface.name }}-{{ vm.name }}-${format("%03d", count.index + 1)}"
+    {%- endif %}
+    subnet_id                     = "${azurerm_subnet.snet.id}"
+    private_ip_address_allocation = "{{ vm_interface.network_interface.ip_configuration.private_ip.address_allocation }}"
+    {%- if vm_interface.network_interface.ip_configuration.private_ip.address_allocation == "static" %}
+    private_ip_address            = "{{ vm_interface.network_interface.ip_configuration.private_ip.address }}"
+    {%- endif %}
+    {%- if vm_interface.network_interface.public_ip.enable %}
+    public_ip_address_id          = "${element(azurerm_public_ip.public_ip_{{ vm.name }}.*.id, count.index)}"
+    {%- endif %}
+  }
+}
+
+

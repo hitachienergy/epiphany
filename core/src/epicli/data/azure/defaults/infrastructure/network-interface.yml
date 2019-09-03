@@ -1,0 +1,6 @@
+kind: infrastructure/network-interface
+version: 0.3.0
+title: "Network Interface Config"
+provider: azure
+name: default
+specification:

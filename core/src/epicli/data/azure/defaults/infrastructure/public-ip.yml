@@ -1,0 +1,6 @@
+kind: infrastructure/public-ip
+version: 0.3.0
+title: "Public IP Config"
+provider: azure
+name: default
+specification:
