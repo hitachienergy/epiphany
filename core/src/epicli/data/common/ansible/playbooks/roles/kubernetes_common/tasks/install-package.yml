@@ -1,0 +1,20 @@
+---
+
+# # TODO add following packages to dependencies
+#     - cifs-utils
+#     - samba-client
+#     - samba-common
+
+- name: Download file
+  include_role:
+    name: download
+    tasks_from: download_file
+  vars:
+    file_arg: "{{ package }}"
+
+# file is returned from downlaod role
+- name: Include install-package.yml
+  include_tasks:  "install-package-{{ ansible_os_family }}.yml"
+  vars:
+    package_to_install: "{{ file }}"
+

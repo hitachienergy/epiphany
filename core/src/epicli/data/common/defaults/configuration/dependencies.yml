@@ -1,0 +1,44 @@
+kind: configuration/dependencies
+version: 0.3.0
+title: "List of dependencies for Epiphany Platform"
+name: default
+specification:
+  kubernetes:
+    1.14.4:
+      packages:
+        - id: socat
+          version: 1.7.3.2
+        - id: libnetfilter_queue
+          version: 1.0.2
+        - id: libnetfilter_cttimeout
+          version: 1.0.0
+        - id: libnetfilter_cthelper
+          version: 1.0.0
+        - id: conntrack-tools
+          version: 1.4.4
+        - id: nfs-utils
+          version: 1.3.0
+        - id: kubelet
+          version: 1.14.4
+        - id: kubernetes-cni
+          version: 0.7.5
+        - id: kubectl
+          version: 1.14.4
+        - id: cri-tools
+          version: 1.13.0
+        - id: kubeadm
+          version: 1.14.4
+      images:
+        - k8s.gcr.io/kube-apiserver:v1.14.4
+        - k8s.gcr.io/kube-controller-manager:v1.14.4
+        - k8s.gcr.io/kube-scheduler:v1.14.4
+        - k8s.gcr.io/kube-proxy:v1.14.4
+        - k8s.gcr.io/pause:3.1
+        - k8s.gcr.io/etcd:3.3.10
+        - k8s.gcr.io/coredns:1.5.0
+        - quay.io/coreos/flannel:v0.11.0-amd64
+        - calico/kube-controllers:v3.8.0
+        - calico/node:v3.8.0
+        - kubernetesui/dashboard:v2.0.0-beta1
+        - kubernetesui/metrics-scraper:v1.0.0
+        - calico/cni:v3.8.1

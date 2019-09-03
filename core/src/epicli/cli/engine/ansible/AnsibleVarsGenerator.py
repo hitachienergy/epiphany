@@ -51,6 +51,7 @@ class AnsibleVarsGenerator(Step):
         main_vars = ObjDict()
         main_vars = self.add_admin_user_name(main_vars)
         main_vars = self.add_validate_certs(main_vars)
+        main_vars = self.add_dependencies_info(main_vars)
 
         vars_dir = os.path.join(ansible_dir, 'group_vars')
         if not os.path.exists(vars_dir):
@@ -74,6 +75,14 @@ class AnsibleVarsGenerator(Step):
             raise Exception('Config is empty for: ' + 'group_vars/all.yml')
 
         document['validate_certs'] = Config().validate_certs
+
+        return document
+
+    def add_dependencies_info(self, document):
+        if document is None:
+            raise Exception('Config is empty for: ' + 'group_vars/all.yml')
+        dependencies = select_first(self.config_docs, lambda x: x.kind == 'configuration/dependencies')
+        document['dependencies'] = dependencies.specification
 
         return document
 

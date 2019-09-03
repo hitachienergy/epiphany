@@ -1,2 +1,15 @@
 ---
-- include_tasks: install-packages.yml
+
+- name: Print images
+  debug: msg={{ dependencies.kubernetes[specification.version].images }}
+
+- name: Print packages
+  debug: msg={{ dependencies.kubernetes[specification.version].packages }}
+
+- name: Include install-package.yml
+  include_tasks: "install-package.yml"
+  vars:
+    package: "{{ item }}"
+  loop: "{{ dependencies.kubernetes[specification.version].packages }}"
+
+
