@@ -23,7 +23,25 @@ specification:
     create_option: FromImage
     disk_size_gb: 30
     managed_disk_type: Premium_LRS
-  security: []
+  network_interface:
+    enable_accelerated_networking: false
+    private_ip:
+    public_ip:
+      public_ip_address_allocation: static
+      idle_timeout_in_minutes: 30
+      sku: Standard 
+  security:
+    rules:            
+      - name: ssh
+        description: Allow SSH
+        priority: 102
+        direction: Inbound
+        access: Allow
+        protocol: Tcp
+        source_port_range: "*"
+        destination_port_range: "22"
+        source_address_prefix: "*"
+        destination_address_prefix: "*"    
 ---
 kind: infrastructure/virtual-machine
 version: 0.3.0
@@ -32,6 +50,18 @@ provider: azure
 name: load-balancer-machine
 specification:
   size: Standard_DS1_v2
+security:
+  rules:            
+    - name: ssh
+      description: Allow SSH
+      priority: 102
+      direction: Inbound
+      access: Allow
+      protocol: Tcp
+      source_port_range: "*"
+      destination_port_range: "22"
+      source_address_prefix: "*"
+      destination_address_prefix: "*"     
 ---
 kind: infrastructure/virtual-machine
 version: 0.3.0
@@ -39,7 +69,19 @@ title: "Virtual Machine Infra"
 provider: azure
 name: kubernetes-master-machine
 specification:
-  size: Standard_DS2_v2
+  size: Standard_DS2_v2  
+security:
+  rules:            
+    - name: ssh
+      description: Allow SSH
+      priority: 102
+      direction: Inbound
+      access: Allow
+      protocol: Tcp
+      source_port_range: "*"
+      destination_port_range: "22"
+      source_address_prefix: "*"
+      destination_address_prefix: "*" 
 ---
 kind: infrastructure/virtual-machine
 version: 0.3.0
@@ -48,6 +90,18 @@ provider: azure
 name: kubernetes-node-machine
 specification:
   size: Standard_DS1_v2
+security:
+  rules:            
+    - name: ssh
+      description: Allow SSH
+      priority: 102
+      direction: Inbound
+      access: Allow
+      protocol: Tcp
+      source_port_range: "*"
+      destination_port_range: "22"
+      source_address_prefix: "*"
+      destination_address_prefix: "*" 
 ---
 kind: infrastructure/virtual-machine
 version: 0.3.0
@@ -56,6 +110,38 @@ provider: azure
 name: kafka-machine
 specification:
   size: Standard_DS2_v2
+security:
+  rules:            
+    - name: ssh
+      description: Allow SSH
+      priority: 102
+      direction: Inbound
+      access: Allow
+      protocol: Tcp
+      source_port_range: "*"
+      destination_port_range: "22"
+      source_address_prefix: "*"
+      destination_address_prefix: "*" 
+---
+kind: infrastructure/virtual-machine
+version: 0.3.0
+title: "Virtual Machine Infra"
+provider: azure
+name: rabbit-machine
+specification:
+  size: Standard_DS2_v2
+security:
+  rules:            
+    - name: ssh
+      description: Allow SSH
+      priority: 102
+      direction: Inbound
+      access: Allow
+      protocol: Tcp
+      source_port_range: "*"
+      destination_port_range: "22"
+      source_address_prefix: "*"
+      destination_address_prefix: "*"       
 ---
 kind: infrastructure/virtual-machine
 version: 0.3.0
@@ -64,6 +150,18 @@ provider: azure
 name: monitoring-machine
 specification:
   size: Standard_DS1_v2
+security:
+  rules:            
+    - name: ssh
+      description: Allow SSH
+      priority: 102
+      direction: Inbound
+      access: Allow
+      protocol: Tcp
+      source_port_range: "*"
+      destination_port_range: "22"
+      source_address_prefix: "*"
+      destination_address_prefix: "*" 
 ---
 kind: infrastructure/virtual-machine
 version: 0.3.0
@@ -72,6 +170,18 @@ provider: azure
 name: logging-machine
 specification:
   size: Standard_DS1_v2
+security:
+  rules:            
+    - name: ssh
+      description: Allow SSH
+      priority: 102
+      direction: Inbound
+      access: Allow
+      protocol: Tcp
+      source_port_range: "*"
+      destination_port_range: "22"
+      source_address_prefix: "*"
+      destination_address_prefix: "*" 
 ---
 kind: infrastructure/virtual-machine
 version: 0.3.0
@@ -80,3 +190,15 @@ provider: azure
 name: postgresql-machine
 specification:
   size: Standard_DS1_v2  
+security:
+  rules:            
+    - name: ssh
+      description: Allow SSH
+      priority: 102
+      direction: Inbound
+      access: Allow
+      protocol: Tcp
+      source_port_range: "*"
+      destination_port_range: "22"
+      source_address_prefix: "*"
+      destination_address_prefix: "*" 

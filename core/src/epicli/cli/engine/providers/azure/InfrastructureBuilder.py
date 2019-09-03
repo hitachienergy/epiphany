@@ -58,15 +58,18 @@ class InfrastructureBuilder(Step):
             for index in range(vm_count):
                 public_ip_name = ''
                 if self.cluster_model.specification.cloud.use_public_ips:
-                    public_ip = self.get_public_ip(component_key, index)
+                    public_ip = self.get_public_ip(component_key, 
+                                                   component_value, 
+                                                   index)
                     infrastructure.append(public_ip)
                     public_ip_name = public_ip.specification.name
 
                 network_interface = self.get_network_interface(component_key, 
-                                                          subnet.specification.name, 
-                                                          security_group.specification.name,
-                                                          public_ip_name,
-                                                          index)
+                                                               component_value, 
+                                                               subnet.specification.name, 
+                                                               security_group.specification.name,
+                                                               public_ip_name,
+                                                               index)
                 infrastructure.append(network_interface)
 
                 vm = self.get_vm(component_key, component_value, network_interface.specification.name, index)
@@ -88,7 +91,7 @@ class InfrastructureBuilder(Step):
 
     def get_security_group(self, component_key, index):
         security_group = self.get_config_or_default(self.docs, 'infrastructure/security-group')
-        security_group.specification.name = resource_name(self.cluster_prefix, self.cluster_name, 'security-group' + '-' + str(index), component_key)
+        security_group.specification.name = resource_name(self.cluster_prefix, self.cluster_name, 'sg' + '-' + str(index), component_key)
         return security_group       
 
     def get_subnet(self, subnet_definition, component_key, index):
@@ -100,24 +103,30 @@ class InfrastructureBuilder(Step):
 
     def get_subnet_network_security_group_association(self, component_key, subnet_name, security_group_name, index):
         ssg_association = self.get_config_or_default(self.docs, 'infrastructure/subnet-network-security-group-association')
-        ssg_association.specification.name = resource_name(self.cluster_prefix, self.cluster_name, 'ssg-association' + '-' + str(index), component_key)
+        ssg_association.specification.name = resource_name(self.cluster_prefix, self.cluster_name, 'ssga' + '-' + str(index), component_key)
         ssg_association.specification.subnet_name = subnet_name
         ssg_association.specification.security_group_name = security_group_name
         return ssg_association
 
-    def get_network_interface(self, component_key, subnet_name, security_group_name, public_ip_name, index):
+    def get_network_interface(self, component_key, component_value, subnet_name, security_group_name, public_ip_name, index):
+        vm = self.get_virtual_machine(component_value, self.cluster_model, self.docs)
         network_interface = self.get_config_or_default(self.docs, 'infrastructure/network-interface')
-        network_interface.specification.name = resource_name(self.cluster_prefix, self.cluster_name, 'network-interface' + '-' + str(index), component_key)
+        network_interface.specification.name = resource_name(self.cluster_prefix, self.cluster_name, 'nic' + '-' + str(index), component_key)
         network_interface.specification.security_group_name = security_group_name
-        network_interface.specification.ip_configuration_name = resource_name(self.cluster_prefix, self.cluster_name, 'ip-config' + '-' + str(index), component_key)
+        network_interface.specification.ip_configuration_name = resource_name(self.cluster_prefix, self.cluster_name, 'ipconf' + '-' + str(index), component_key)
         network_interface.specification.subnet_name = subnet_name
         network_interface.specification.use_public_ip = self.cluster_model.specification.cloud.use_public_ips
         network_interface.specification.public_ip_name = public_ip_name
+        network_interface.specification.enable_accelerated_networking = vm.specification.network_interface.enable_accelerated_networking
         return network_interface
 
-    def get_public_ip(self, component_key, index):
+    def get_public_ip(self, component_key, component_value, index):
+        vm = self.get_virtual_machine(component_value, self.cluster_model, self.docs)
         public_ip = self.get_config_or_default(self.docs, 'infrastructure/public-ip')
-        public_ip.specification.name = resource_name(self.cluster_prefix, self.cluster_name, 'public-ip' + '-' + str(index), component_key)
+        public_ip.specification.name = resource_name(self.cluster_prefix, self.cluster_name, 'pubip' + '-' + str(index), component_key)
+        public_ip.public_ip_address_allocation = vm.specification.network_interface.public_ip.public_ip_address_allocation
+        public_ip.idle_timeout_in_minutes = vm.specification.network_interface.public_ip.idle_timeout_in_minutes
+        public_ip.sku = vm.specification.network_interface.public_ip.sku
         return public_ip        
 
     def get_vm(self, component_key, component_value, network_interface_name, index):

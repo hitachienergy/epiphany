@@ -15,13 +15,12 @@ resource "azurerm_network_interface" "{{ specification.name }}" {
   location                  = "${azurerm_resource_group.rg.location}"
   resource_group_name       = "${azurerm_resource_group.rg.name}"
   network_security_group_id = "${azurerm_network_security_group.{{ specification.security_group_name }}.id}"
-  enable_accelerated_networking = "false" #TODO: Check how to enable this again properly
+  enable_accelerated_networking = "{{ specification.enable_accelerated_networking | lower }}"
 
   ip_configuration {
     name                          = "{{ specification.ip_configuration_name }}"
     subnet_id                     = "${azurerm_subnet.{{ specification.subnet_name }}.id}"
-    private_ip_address_allocation = "Dynamic" #TODO: Check if we need this configurable again.
-    #private_ip_address            = "" #TODO: Check if we need this configurable again.
+    private_ip_address_allocation = "Dynamic" #TODO: Check if we need this configurable again and set the private_ip_address field.
     {%- if specification.use_public_ip %}
     public_ip_address_id  = "${azurerm_public_ip.{{ specification.public_ip_name }}.id}"
     {%- endif %}

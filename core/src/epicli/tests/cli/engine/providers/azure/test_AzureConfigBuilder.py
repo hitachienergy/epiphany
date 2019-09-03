@@ -29,7 +29,7 @@ def test_get_security_group_should_set_proper_values_to_model():
 
     actual = builder.get_security_group('component', 1)
 
-    assert actual.specification.name == 'prefix-testcluster-component-security-group-1'
+    assert actual.specification.name == 'prefix-testcluster-component-sg-1'
 
 
 def test_get_subnet_should_set_proper_values_to_model():
@@ -54,12 +54,52 @@ def test_get_subnet_network_security_group_association_should_set_proper_values_
     actual = builder.get_subnet_network_security_group_association(
                                 'component',
                                 'prefix-testcluster-component-subnet-1', 
-                                'prefix-testcluster-component-security-group-1',
+                                'prefix-testcluster-component-sg-1',
                                 1)
 
-    assert actual.specification.name == 'prefix-testcluster-component-ssg-association-1'
+    assert actual.specification.name == 'prefix-testcluster-component-ssga-1'
     assert actual.specification.subnet_name == 'prefix-testcluster-component-subnet-1'   
-    assert actual.specification.security_group_name == 'prefix-testcluster-component-security-group-1'
+    assert actual.specification.security_group_name == 'prefix-testcluster-component-sg-1'
+
+
+
+def test_get_public_ip_should_set_proper_values_to_model():
+    cluster_model = get_cluster_model(cluster_name='TestCluster')
+    builder = InfrastructureBuilder([cluster_model])
+    component_value = dict_to_objdict({
+        'machine': 'kubernetes-master-machine'
+    })
+
+    actual = builder.get_public_ip('kubernetes_master', component_value, 1)
+
+    assert actual.specification.name == 'prefix-testcluster-kubernetes-master-pubip-1'
+    assert actual.public_ip_address_allocation == 'static'
+    assert actual.idle_timeout_in_minutes == 30
+    assert actual.sku == 'Standard'
+
+
+def test_get_network_interface_should_set_proper_values_to_model():
+    cluster_model = get_cluster_model(cluster_name='TestCluster')
+    builder = InfrastructureBuilder([cluster_model])
+    component_value = dict_to_objdict({
+        'machine': 'kubernetes-master-machine'
+    })
+
+    actual = builder.get_network_interface(
+                                'kubernetes_master',
+                                component_value,
+                                'prefix-testcluster-component-subnet-1', 
+                                'prefix-testcluster-component-sg-1',
+                                'prefix-testcluster-kubernetes-master-pubip-1',
+                                1)          
+
+    assert actual.specification.name == 'prefix-testcluster-kubernetes-master-nic-1'
+    assert actual.specification.security_group_name == 'prefix-testcluster-component-sg-1'
+    assert actual.specification.ip_configuration_name == 'prefix-testcluster-kubernetes-master-ipconf-1'
+    assert actual.specification.subnet_name == 'prefix-testcluster-component-subnet-1'
+    assert actual.specification.use_public_ip == True
+    assert actual.specification.public_ip_name == 'prefix-testcluster-kubernetes-master-pubip-1'
+    assert actual.specification.enable_accelerated_networking == False
 
 
 def get_cluster_model(address_pool='10.22.0.0/22', cluster_name='EpiphanyTestCluster'):
