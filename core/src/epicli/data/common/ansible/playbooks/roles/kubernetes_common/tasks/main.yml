@@ -12,4 +12,9 @@
     package: "{{ item }}"
   loop: "{{ dependencies.kubernetes[specification.version].packages }}"
 
+- name: Include load-image.yml
+  include_tasks: "load-image.yml"
+  vars:
+    image_name: "{{ item }}"
+  loop: "{{ dependencies.kubernetes[specification.version].images }}"
 

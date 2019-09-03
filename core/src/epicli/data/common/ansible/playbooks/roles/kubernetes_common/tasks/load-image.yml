@@ -1,0 +1,15 @@
+---
+
+- name: Download file
+  include_role:
+    name: download
+    tasks_from: download_image
+  vars:
+    image_name: "{{ image_name }}"
+
+- name: Load image from archive and push to a private registry
+  docker_image:
+    name: "{{ image_name }}"
+    load_path: "{{ file.dest_dir }}"
+    source: load
+    state: present
