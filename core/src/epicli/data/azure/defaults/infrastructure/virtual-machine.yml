@@ -8,6 +8,7 @@ specification:
   admin_username: SET_BY_AUTOMATION
   admin_password: SET_BY_AUTOMATION 
   public_key: SET_BY_AUTOMATION
+  network_interface_name: SET_BY_AUTOMATION
   os_type: linux
   size: Standard_DS1_v2 
   storage_image_reference:
@@ -54,7 +55,7 @@ title: "Virtual Machine Infra"
 provider: azure
 name: kafka-machine
 specification:
-  size: Standard_DS2_v
+  size: Standard_DS2_v2
 ---
 kind: infrastructure/virtual-machine
 version: 0.3.0

@@ -15,7 +15,7 @@ resource "azurerm_virtual_machine" "{{ specification.name  }}" {
   location              = "${azurerm_resource_group.rg.location}"
   resource_group_name   = "${azurerm_resource_group.rg.name}"
   vm_size               = "{{ specification.size }}"
-  network_interface_ids = [] #TODO
+  network_interface_ids = ["${azurerm_network_interface.{{ specification.network_interface_name }}.id}"]
 
   storage_image_reference {
     publisher = "{{ specification.storage_image_reference.publisher }}"
@@ -63,7 +63,6 @@ resource "azurerm_virtual_machine" "{{ specification.name  }}" {
 
   #TODO:
   # availability_set_id
-  # network_interface_ids
   # storage_data_disk
   # provisioners
 }

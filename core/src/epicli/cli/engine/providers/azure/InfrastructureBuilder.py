@@ -31,44 +31,46 @@ class InfrastructureBuilder(Step):
             if vm_count < 1:
                 continue
 
-            subnets_to_create = []
-            security_groups_to_create = []
-            subnet_index = 0
+            # For now only one subnet per component.
+            if (len(component_value.subnets) > 1):
+                self.logger.warning(f'On Azure only one subnet per component is supported for now. Taking first and ignoring others.')    
 
-            #TODO: We support several subnets per component but still need to research subnets spread over seperate AAZ`s.
-            for subnet_definition in component_value.subnets:
-                subnet = select_first(infrastructure, lambda item: item.kind == 'infrastructure/subnet' and
-                                      item.specification.address_prefix == subnet_definition['address_pool'])
-                security_group = select_first(infrastructure, lambda item: item.kind == 'infrastructure/security-group' and
-                                              item.specification.address_prefix == subnet_definition['address_pool'])
+            subnet_definition = component_value.subnets[0]
+            subnet = select_first(infrastructure, lambda item: item.kind == 'infrastructure/subnet' and
+                                    item.specification.address_prefix == subnet_definition['address_pool'])
 
-                if subnet is None:
-                    security_group = self.get_security_group(subnet_definition, component_key, subnet_index)
-                    infrastructure.append(security_group)
-                
-                    subnet = self.get_subnet(subnet_definition, component_key, subnet_index)
-                    infrastructure.append(subnet)
+            if subnet is None:
+                security_group = self.get_security_group(component_key, 0)
+                infrastructure.append(security_group)
+            
+                subnet = self.get_subnet(subnet_definition, component_key, 0)
+                infrastructure.append(subnet)
 
-                    ssg_association = self.get_subnet_network_security_group_association(component_key, 
-                                                                                         subnet.specification.name, 
-                                                                                         security_group.specification.name,
-                                                                                         subnet_index)
-                    infrastructure.append(ssg_association)
-
-                    subnet_index += 1
-
-                subnets_to_create.append(subnet)
-                security_groups_to_create.append(security_group)    
+                ssg_association = self.get_subnet_network_security_group_association(component_key, 
+                                                                                     subnet.specification.name, 
+                                                                                     security_group.specification.name,
+                                                                                     0)
+                infrastructure.append(ssg_association) 
 
             #TODO: For now we create the VM infrastructure compatible with the Epiphany 2.x 
             #      code line but later we might want to look at scale sets to achieve the same result:
             #      https://www.terraform.io/docs/providers/azurerm/r/virtual_machine_scale_set.html
-            #for index in range(vm_count):
-            #
-            #    if self.cluster_model.specification.cloud.use_public_ips:
-            #        #TODO add public ip
+            for index in range(vm_count):
+                public_ip_name = ''
+                if self.cluster_model.specification.cloud.use_public_ips:
+                    public_ip = self.get_public_ip(component_key, index)
+                    infrastructure.append(public_ip)
+                    public_ip_name = public_ip.specification.name
 
-            #    infrastructure.append(self.get_vm(component_key, component_value, index))                               
+                network_interface = self.get_network_interface(component_key, 
+                                                          subnet.specification.name, 
+                                                          security_group.specification.name,
+                                                          public_ip_name,
+                                                          index)
+                infrastructure.append(network_interface)
+
+                vm = self.get_vm(component_key, component_value, network_interface.specification.name, index)
+                infrastructure.append(vm)                               
 
         return infrastructure
 
@@ -84,10 +86,9 @@ class InfrastructureBuilder(Step):
         vnet.specification.address_space = self.cluster_model.specification.cloud.vnet_address_pool
         return vnet
 
-    def get_security_group(self, subnet_definition, component_key, index):
+    def get_security_group(self, component_key, index):
         security_group = self.get_config_or_default(self.docs, 'infrastructure/security-group')
         security_group.specification.name = resource_name(self.cluster_prefix, self.cluster_name, 'security-group' + '-' + str(index), component_key)
-        security_group.specification.address_prefix = subnet_definition['address_pool']
         return security_group       
 
     def get_subnet(self, subnet_definition, component_key, index):
@@ -104,10 +105,26 @@ class InfrastructureBuilder(Step):
         ssg_association.specification.security_group_name = security_group_name
         return ssg_association
 
-    def get_vm(self, component_key, component_value, index):
+    def get_network_interface(self, component_key, subnet_name, security_group_name, public_ip_name, index):
+        network_interface = self.get_config_or_default(self.docs, 'infrastructure/network-interface')
+        network_interface.specification.name = resource_name(self.cluster_prefix, self.cluster_name, 'network-interface' + '-' + str(index), component_key)
+        network_interface.specification.security_group_name = security_group_name
+        network_interface.specification.ip_configuration_name = resource_name(self.cluster_prefix, self.cluster_name, 'ip-config' + '-' + str(index), component_key)
+        network_interface.specification.subnet_name = subnet_name
+        network_interface.specification.use_public_ip = self.cluster_model.specification.cloud.use_public_ips
+        network_interface.specification.public_ip_name = public_ip_name
+        return network_interface
+
+    def get_public_ip(self, component_key, index):
+        public_ip = self.get_config_or_default(self.docs, 'infrastructure/public-ip')
+        public_ip.specification.name = resource_name(self.cluster_prefix, self.cluster_name, 'public-ip' + '-' + str(index), component_key)
+        return public_ip        
+
+    def get_vm(self, component_key, component_value, network_interface_name, index):
         vm = self.get_virtual_machine(component_value, self.cluster_model, self.docs)
         vm.specification.name = resource_name(self.cluster_prefix, self.cluster_name, 'vm' + '-' + str(index), component_key)
         vm.specification.admin_username = self.cluster_model.specification.admin_user.name
+        vm.specification.network_interface_name = network_interface_name
         if vm.specification.os_type == 'linux':
             # For linux we dont need a PW since we only support SSH so just add something random.
             vm.specification.admin_password = "NeverGonnaNeed!"

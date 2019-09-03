@@ -5,4 +5,3 @@ provider: azure
 name: default
 specification:
   name: SET_BY_AUTOMATION
-  address_prefix: SET_BY_AUTOMATION  

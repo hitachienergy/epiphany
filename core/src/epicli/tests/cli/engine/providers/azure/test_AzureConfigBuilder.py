@@ -25,16 +25,11 @@ def test_get_virtual_network_should_set_proper_values_to_model():
 
 def test_get_security_group_should_set_proper_values_to_model():
     cluster_model = get_cluster_model(cluster_name='TestCluster')
-    subnet_definition = dict_to_objdict({
-        'address_pool': '10.20.0.0/24',
-        'availability_zone': 'eu-west-2a'
-    })     
     builder = InfrastructureBuilder([cluster_model])
 
-    actual = builder.get_security_group(subnet_definition, 'component', 1)
+    actual = builder.get_security_group('component', 1)
 
     assert actual.specification.name == 'prefix-testcluster-component-security-group-1'
-    assert actual.specification.address_prefix == '10.20.0.0/24'
 
 
 def test_get_subnet_should_set_proper_values_to_model():
@@ -64,7 +59,7 @@ def test_get_subnet_network_security_group_association_should_set_proper_values_
 
     assert actual.specification.name == 'prefix-testcluster-component-ssg-association-1'
     assert actual.specification.subnet_name == 'prefix-testcluster-component-subnet-1'   
-    assert actual.specification.security_group_name == 'prefix-testcluster-component-security-group-1'    
+    assert actual.specification.security_group_name == 'prefix-testcluster-component-security-group-1'
 
 
 def get_cluster_model(address_pool='10.22.0.0/22', cluster_name='EpiphanyTestCluster'):
@@ -76,7 +71,8 @@ def get_cluster_model(address_pool='10.22.0.0/22', cluster_name='EpiphanyTestClu
             'prefix': 'prefix',
             'cloud': {
                 'region': 'West Europe',
-                'vnet_address_pool': address_pool
+                'vnet_address_pool': address_pool,
+                'use_public_ips': True
             }
         }
     })
