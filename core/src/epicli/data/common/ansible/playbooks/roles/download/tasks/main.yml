@@ -1,3 +1,13 @@
 ---
 - name: Download all files to cache
   include_tasks: download_all_files_to_cache.yml
+
+- name: Test download file
+  include_role:
+    name: download
+    tasks_from: download_file
+  vars:
+    file_arg: "{{ item }}"
+  loop:
+    - { id: 'cni-plugins' }
+    - { id: 'kubeadm', version: 1.13.8, dest_path: '/home/ubuntu/1.13.8/kubeadm' }

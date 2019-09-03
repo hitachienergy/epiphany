@@ -53,7 +53,7 @@
     url: "{{ download.url }}"
     dest: "{{ cached_file_path }}"
     checksum: "{{ 'sha512:' + download.sha512 }}"
-    validate_certs: "{{ specification.validate_certs }}"
+    validate_certs: "{{ validate_certs }}"
   register: get_url_result
   until: "'OK' in get_url_result.msg or 'file already exists' in get_url_result.msg"
   retries: "{{ specification.download_retries }}"
