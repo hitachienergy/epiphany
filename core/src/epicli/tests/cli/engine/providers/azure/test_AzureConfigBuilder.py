@@ -73,9 +73,9 @@ def test_get_public_ip_should_set_proper_values_to_model():
     actual = builder.get_public_ip('kubernetes_master', component_value, 1)
 
     assert actual.specification.name == 'prefix-testcluster-kubernetes-master-pubip-1'
-    assert actual.public_ip_address_allocation == 'static'
-    assert actual.idle_timeout_in_minutes == 30
-    assert actual.sku == 'Standard'
+    assert actual.specification.public_ip_address_allocation == 'static'
+    assert actual.specification.idle_timeout_in_minutes == 30
+    assert actual.specification.sku == 'Standard'
 
 
 def test_get_network_interface_should_set_proper_values_to_model():

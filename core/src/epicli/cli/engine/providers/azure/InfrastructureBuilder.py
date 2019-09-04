@@ -124,9 +124,9 @@ class InfrastructureBuilder(Step):
         vm = self.get_virtual_machine(component_value, self.cluster_model, self.docs)
         public_ip = self.get_config_or_default(self.docs, 'infrastructure/public-ip')
         public_ip.specification.name = resource_name(self.cluster_prefix, self.cluster_name, 'pubip' + '-' + str(index), component_key)
-        public_ip.public_ip_address_allocation = vm.specification.network_interface.public_ip.public_ip_address_allocation
-        public_ip.idle_timeout_in_minutes = vm.specification.network_interface.public_ip.idle_timeout_in_minutes
-        public_ip.sku = vm.specification.network_interface.public_ip.sku
+        public_ip.specification.public_ip_address_allocation = vm.specification.network_interface.public_ip.public_ip_address_allocation
+        public_ip.specification.idle_timeout_in_minutes = vm.specification.network_interface.public_ip.idle_timeout_in_minutes
+        public_ip.specification.sku = vm.specification.network_interface.public_ip.sku
         return public_ip        
 
     def get_vm(self, component_key, component_value, network_interface_name, index):
