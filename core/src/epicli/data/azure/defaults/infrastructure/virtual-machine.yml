@@ -27,7 +27,7 @@ specification:
     enable_accelerated_networking: false
     private_ip:
     public_ip:
-      public_ip_address_allocation: static
+      allocation_method: Static
       idle_timeout_in_minutes: 30
       sku: Standard 
   security:

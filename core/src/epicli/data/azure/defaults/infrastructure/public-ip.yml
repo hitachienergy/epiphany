@@ -5,6 +5,6 @@ provider: azure
 name: default
 specification:
   name: SET_BY_AUTOMATION
-  public_ip_address_allocation: SET_BY_AUTOMATION
+  allocation_method: SET_BY_AUTOMATION
   idle_timeout_in_minutes: SET_BY_AUTOMATION
   sku: SET_BY_AUTOMATION   
