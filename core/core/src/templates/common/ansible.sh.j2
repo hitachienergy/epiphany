@@ -186,7 +186,7 @@ $REPO_ROOT/bin/template_engine -d $EPIPHANY_DATA_DIR/data/manifest.yaml -i $REPO
 
 echo_yellow '====> Verifying Ansible access to nodes...'
 
-ansible all -i $EPIPHANY_DATA_DIR/inventory/$ANSIBLE_ENV -m ping
+ansible all -i $EPIPHANY_DATA_DIR/inventory/$ANSIBLE_ENV -m ping --timeout=60
 
 if [[ $? -ne 0 ]]; then
     echo_red "ERROR: Unable to reach all of the hosts in the cluster. Verify 'manifest.yaml' is correct and run this again."
