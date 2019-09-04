@@ -46,17 +46,19 @@ class InfrastructureBuilder(Step):
                                     item.specification.address_prefix == subnet_definition['address_pool'])
 
             if subnet is None:
-                security_group = self.get_security_group(component_key, 0)
-                infrastructure.append(security_group)
-            
                 subnet = self.get_subnet(subnet_definition, component_key, 0)
-                infrastructure.append(subnet)
+                infrastructure.append(subnet) 
+
+                nsg = self.get_network_security_group(component_key, 
+                                                         vm_config.specification.security.rules,
+                                                         0)
+                infrastructure.append(nsg)
 
                 ssg_association = self.get_subnet_network_security_group_association(component_key, 
                                                                                      subnet.specification.name, 
-                                                                                     security_group.specification.name,
+                                                                                     nsg.specification.name,
                                                                                      0)
-                infrastructure.append(ssg_association) 
+                infrastructure.append(ssg_association)
 
             #TODO: For now we create the VM infrastructure compatible with the Epiphany 2.x 
             #      code line but later we might want to look at scale sets to achieve the same result:
@@ -75,7 +77,7 @@ class InfrastructureBuilder(Step):
                                                                component_value, 
                                                                vm_config,
                                                                subnet.specification.name, 
-                                                               security_group.specification.name,
+                                                               nsg.specification.name,
                                                                public_ip_name,
                                                                index)
                 infrastructure.append(network_interface)
@@ -97,9 +99,10 @@ class InfrastructureBuilder(Step):
         vnet.specification.address_space = self.cluster_model.specification.cloud.vnet_address_pool
         return vnet
 
-    def get_security_group(self, component_key, index):
-        security_group = self.get_config_or_default(self.docs, 'infrastructure/security-group')
-        security_group.specification.name = resource_name(self.cluster_prefix, self.cluster_name, 'sg' + '-' + str(index), component_key)
+    def get_network_security_group(self, component_key, security_rules,  index):
+        security_group = self.get_config_or_default(self.docs, 'infrastructure/network-security-group')
+        security_group.specification.name = resource_name(self.cluster_prefix, self.cluster_name, 'nsg' + '-' + str(index), component_key)
+        security_group.specification.rules = security_rules
         return security_group       
 
     def get_subnet(self, subnet_definition, component_key, index):
@@ -110,11 +113,11 @@ class InfrastructureBuilder(Step):
         return subnet     
 
     def get_subnet_network_security_group_association(self, component_key, subnet_name, security_group_name, index):
-        ssg_association = self.get_config_or_default(self.docs, 'infrastructure/subnet-network-security-group-association')
-        ssg_association.specification.name = resource_name(self.cluster_prefix, self.cluster_name, 'ssga' + '-' + str(index), component_key)
-        ssg_association.specification.subnet_name = subnet_name
-        ssg_association.specification.security_group_name = security_group_name
-        return ssg_association
+        ssga = self.get_config_or_default(self.docs, 'infrastructure/subnet-network-security-group-association')
+        ssga.specification.name = resource_name(self.cluster_prefix, self.cluster_name, 'ssga' + '-' + str(index), component_key)
+        ssga.specification.subnet_name = subnet_name
+        ssga.specification.security_group_name = security_group_name
+        return ssga
 
     def get_network_interface(self, component_key, component_value, vm_config, subnet_name, security_group_name, public_ip_name, index):
         network_interface = self.get_config_or_default(self.docs, 'infrastructure/network-interface')

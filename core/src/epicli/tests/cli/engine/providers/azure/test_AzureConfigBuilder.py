@@ -27,9 +27,9 @@ def test_get_security_group_should_set_proper_values_to_model():
     cluster_model = get_cluster_model(cluster_name='TestCluster')
     builder = InfrastructureBuilder([cluster_model])
 
-    actual = builder.get_security_group('component', 1)
+    actual = builder.get_network_security_group('component', [], 1)
 
-    assert actual.specification.name == 'prefix-testcluster-component-sg-1'
+    assert actual.specification.name == 'prefix-testcluster-component-nsg-1'
 
 
 def test_get_subnet_should_set_proper_values_to_model():
