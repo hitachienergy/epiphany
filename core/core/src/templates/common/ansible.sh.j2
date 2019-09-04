@@ -99,9 +99,6 @@ mkdir -p $EPIPHANY_DATA_DIR/roles/postgresql/vars
 mkdir -p $EPIPHANY_DATA_DIR/roles/rabbitmq/vars
 mkdir -p $EPIPHANY_DATA_DIR/roles/reboot/vars
 mkdir -p $EPIPHANY_DATA_DIR/roles/deployments/vars
-mkdir -p $EPIPHANY_DATA_DIR/roles/backup/vars
-mkdir -p $EPIPHANY_DATA_DIR/roles/upgrade/vars
-mkdir -p $EPIPHANY_DATA_DIR/roles/recovery/vars
 
 rm -f $EPIPHANY_DATA_DIR/roles/common/vars/*
 rm -f $EPIPHANY_DATA_DIR/roles/kubernetes-common/vars/*
@@ -125,9 +122,6 @@ rm -f $EPIPHANY_DATA_DIR/roles/postgresql/vars/*
 rm -f $EPIPHANY_DATA_DIR/roles/rabbitmq/vars/*
 rm -f $EPIPHANY_DATA_DIR/roles/reboot/vars/*
 rm -f $EPIPHANY_DATA_DIR/roles/deployments/vars/*
-rm -f $EPIPHANY_DATA_DIR/roles/backup/vars/*
-rm -f $EPIPHANY_DATA_DIR/roles/upgrade/vars/*
-rm -f $EPIPHANY_DATA_DIR/roles/recovery/vars/*
 
 # Copy the whole tree over
 cp -R $REPO_ROOT/$COMMON_ANSIBLE_BASE/* $EPIPHANY_DATA_DIR
@@ -158,9 +152,6 @@ cat $EPIPHANY_DATA_DIR/data/manifest.yaml >> $EPIPHANY_DATA_DIR/roles/postgresql
 cat $EPIPHANY_DATA_DIR/data/manifest.yaml >> $EPIPHANY_DATA_DIR/roles/rabbitmq/vars/main.yml
 cat $EPIPHANY_DATA_DIR/data/manifest.yaml >> $EPIPHANY_DATA_DIR/roles/reboot/vars/main.yml
 cat $EPIPHANY_DATA_DIR/data/manifest.yaml >> $EPIPHANY_DATA_DIR/roles/deployments/vars/main.yml
-cat $EPIPHANY_DATA_DIR/data/manifest.yaml >> $EPIPHANY_DATA_DIR/roles/backup/vars/main.yml
-cat $EPIPHANY_DATA_DIR/data/manifest.yaml >> $EPIPHANY_DATA_DIR/roles/upgrade/vars/main.yml
-cat $EPIPHANY_DATA_DIR/data/manifest.yaml >> $EPIPHANY_DATA_DIR/roles/recovery/vars/main.yml
 
 
 echo_yellow '====> Copy certificates to Ansible files for HAProxy...'
