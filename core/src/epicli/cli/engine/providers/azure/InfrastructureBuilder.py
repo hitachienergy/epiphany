@@ -1,4 +1,5 @@
 import os
+from copy import deepcopy
 
 from cli.helpers.Step import Step
 from cli.helpers.naming_helpers import resource_name
@@ -6,6 +7,7 @@ from cli.helpers.doc_list_helpers import select_single, select_all
 from cli.helpers.doc_list_helpers import select_first
 from cli.helpers.data_loader import load_yaml_obj, types
 from cli.helpers.config_merger import merge_with_defaults
+from cli.helpers.objdict_helpers import objdict_to_dict, dict_to_objdict
 
 class InfrastructureBuilder(Step):
     def __init__(self, docs):
@@ -30,6 +32,10 @@ class InfrastructureBuilder(Step):
             vm_count = component_value['count']
             if vm_count < 1:
                 continue
+
+            # The vm config also contains some other stuff we use for network and security config. 
+            # So get it here and pass it allong.
+            vm_config = self.get_virtual_machine(component_value, self.cluster_model, self.docs)
 
             # For now only one subnet per component.
             if (len(component_value.subnets) > 1):
@@ -60,19 +66,21 @@ class InfrastructureBuilder(Step):
                 if self.cluster_model.specification.cloud.use_public_ips:
                     public_ip = self.get_public_ip(component_key, 
                                                    component_value, 
+                                                   vm_config,
                                                    index)
                     infrastructure.append(public_ip)
                     public_ip_name = public_ip.specification.name
 
                 network_interface = self.get_network_interface(component_key, 
                                                                component_value, 
+                                                               vm_config,
                                                                subnet.specification.name, 
                                                                security_group.specification.name,
                                                                public_ip_name,
                                                                index)
                 infrastructure.append(network_interface)
 
-                vm = self.get_vm(component_key, component_value, network_interface.specification.name, index)
+                vm = self.get_vm(component_key, component_value, vm_config, network_interface.specification.name, index)
                 infrastructure.append(vm)                               
 
         return infrastructure
@@ -108,8 +116,7 @@ class InfrastructureBuilder(Step):
         ssg_association.specification.security_group_name = security_group_name
         return ssg_association
 
-    def get_network_interface(self, component_key, component_value, subnet_name, security_group_name, public_ip_name, index):
-        vm = self.get_virtual_machine(component_value, self.cluster_model, self.docs)
+    def get_network_interface(self, component_key, component_value, vm_config, subnet_name, security_group_name, public_ip_name, index):
         network_interface = self.get_config_or_default(self.docs, 'infrastructure/network-interface')
         network_interface.specification.name = resource_name(self.cluster_prefix, self.cluster_name, 'nic' + '-' + str(index), component_key)
         network_interface.specification.security_group_name = security_group_name
@@ -117,27 +124,26 @@ class InfrastructureBuilder(Step):
         network_interface.specification.subnet_name = subnet_name
         network_interface.specification.use_public_ip = self.cluster_model.specification.cloud.use_public_ips
         network_interface.specification.public_ip_name = public_ip_name
-        network_interface.specification.enable_accelerated_networking = vm.specification.network_interface.enable_accelerated_networking
+        network_interface.specification.enable_accelerated_networking = vm_config.specification.network_interface.enable_accelerated_networking
         return network_interface
 
-    def get_public_ip(self, component_key, component_value, index):
-        vm = self.get_virtual_machine(component_value, self.cluster_model, self.docs)
+    def get_public_ip(self, component_key, component_value, vm_config, index):
         public_ip = self.get_config_or_default(self.docs, 'infrastructure/public-ip')
         public_ip.specification.name = resource_name(self.cluster_prefix, self.cluster_name, 'pubip' + '-' + str(index), component_key)
-        public_ip.specification.public_ip_address_allocation = vm.specification.network_interface.public_ip.public_ip_address_allocation
-        public_ip.specification.idle_timeout_in_minutes = vm.specification.network_interface.public_ip.idle_timeout_in_minutes
-        public_ip.specification.sku = vm.specification.network_interface.public_ip.sku
+        public_ip.specification.public_ip_address_allocation = vm_config.specification.network_interface.public_ip.public_ip_address_allocation
+        public_ip.specification.idle_timeout_in_minutes = vm_config.specification.network_interface.public_ip.idle_timeout_in_minutes
+        public_ip.specification.sku = vm_config.specification.network_interface.public_ip.sku
         return public_ip        
 
-    def get_vm(self, component_key, component_value, network_interface_name, index):
-        vm = self.get_virtual_machine(component_value, self.cluster_model, self.docs)
+    def get_vm(self, component_key, component_value, vm_config, network_interface_name, index):
+        vm = dict_to_objdict(deepcopy(vm_config))
         vm.specification.name = resource_name(self.cluster_prefix, self.cluster_name, 'vm' + '-' + str(index), component_key)
         vm.specification.admin_username = self.cluster_model.specification.admin_user.name
         vm.specification.network_interface_name = network_interface_name
         if vm.specification.os_type == 'linux':
             # For linux we dont need a PW since we only support SSH so just add something random.
             vm.specification.admin_password = "NeverGonnaNeed!"
-        if vm.specification.os_type == 'windows':
+        if vm_config.specification.os_type == 'windows':
             #TODO: We need PW or can we support SSH or something different on Windows?
             vm.specification.admin_password = 'TODO' 
         pub_key_path = self.cluster_model.specification.admin_user.key_path + '.pub'
