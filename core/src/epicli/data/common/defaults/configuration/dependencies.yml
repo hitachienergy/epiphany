@@ -3,9 +3,28 @@ version: 0.3.0
 title: "List of dependencies for Epiphany Platform"
 name: default
 specification:
+  docker:
+    18.09.6:
+      packages:
+        - id: apt-transport-https # Ubuntu specific
+          version: 1.6.11
+        - id: ca-certificates  # Ubuntu specific
+          version: 20180409
+        - id: container-selinux
+          version: 2.74 # just for RedHat family <= 7.5, if modified: please update ansible role
+        - id: container-selinux
+          version: 2.99 # just for RedHat family >= 7.6, if modified: please update ansible role 
+        - id: docker-ce
+          version: 18.09.6
   kubernetes:
     1.14.4:
       packages:
+        - id: cifs-utils
+          version: 6.2
+        - id: samba-client
+          version: 4.8.3
+        - id: samba-common
+          version: 4.8.3
         - id: socat
           version: 1.7.3.2
         - id: libnetfilter_queue

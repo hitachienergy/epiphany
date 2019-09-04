@@ -1,0 +1,15 @@
+---
+
+- name: Download {{ package_name }} for docker v{{ docker_version }}
+  include_role:
+    name: download
+    tasks_from: download_package
+  vars:
+    package_arg: "{{ dependencies.docker[docker_version].packages | selectattr('id', 'equalto', package_name) | list | first }}"
+
+- name: Install {{ package_name }} from {{ file.dest_path }}
+  yum:
+    name: "{{ file.dest_path }}"
+    state: present
+    update_cache: yes
+
