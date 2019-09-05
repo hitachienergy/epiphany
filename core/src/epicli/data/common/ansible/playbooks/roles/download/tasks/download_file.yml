@@ -17,7 +17,7 @@
     relative_dest_path: >-
       {{ 'files/' + file.id + '/' + file.version + '/' + file.arch + '/' + (file.url | basename) }}
 
-- name: download_file | Download {{ file.id }}
+- name: download_file | Download '{{ file.id }}' v{{ file.version }}
   include_tasks: download_file_worker.yml
   vars:
     file_arg: "{{ file }}"
