@@ -1,0 +1,24 @@
+---
+- name: download_file | Set properties from specification
+  set_fact:
+    file: >-
+      {{ specification.downloads.files[file_arg.id][arch_map[ansible_architecture]]
+      | selectattr('version', 'match', '.*' if (file_arg.version is not defined) else file_arg.version)
+      | list | first | combine(file_arg) | combine({ 'arch': arch_map[ansible_architecture] }) }}
+
+- name: download_file | Set dynamic properties
+  set_fact:
+    file: >-
+      {{ file
+           | combine({ 'dest_path': specification.remote_downloads_dir + '/' + relative_dest_path })
+           | combine({ 'cached_file_path': specification.local_downloads_dir + '/' + relative_dest_path })
+           | combine({ 'checksum_algorithm': 'sha256' if (file.sha256 is defined) else 'sha512' }) }}
+  vars:
+    relative_dest_path: >-
+      {{ 'files/' + file.id + '/' + file.version + '/' + file.arch + '/' + (file.url | basename) }}
+
+- name: download_file | Download {{ file.id }}
+  include_tasks: download_file_worker.yml
+  vars:
+    file_arg: "{{ file }}"
+
