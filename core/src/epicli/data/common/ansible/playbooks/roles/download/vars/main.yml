@@ -35,28 +35,36 @@ specification:
     packages:
       socat:
         amd64:
-          CentOS-7:
-            - version: 1.7.3.2
-              url: "http://download-ib01.fedoraproject.org/pub/epel/7/x86_64/Packages/n/ncdu-1.14-1.el7.x86_64.rpm"
-              sha512: 5a98254e9b2d83e729add7c7a812d00e27019b72524b37ca8db2bfd491390d6acd6eb877043c7577c739cc129482a5b1fb9f9d715f4c3a604241afbca88c87d6
+          - distros:
+              - CentOS
+              - RedHat
+            distro_version: 7
+            version: 1.7.3.2
+            url: "http://download-ib01.fedoraproject.org/pub/epel/7/x86_64/Packages/n/ncdu-1.14-1.el7.x86_64.rpm"
+            sha512: 5a98254e9b2d83e729add7c7a812d00e27019b72524b37ca8db2bfd491390d6acd6eb877043c7577c739cc129482a5b1fb9f9d715f4c3a604241afbca88c87d6
       jq:
         amd64:
-          Ubuntu-18.04:
-            - version: '1.5'
-              url: "http://cz.archive.ubuntu.com/ubuntu/pool/universe/j/jq/jq_1.5+dfsg-2_amd64.deb"
-              sha256: 7da6b3fe4de02f50169923134b1e6c4cbf4ee693afa963d02d1eb8a0e3adb472
-            - version: '1.6'
-              url: "http://cz.archive.ubuntu.com/ubuntu/pool/universe/j/jq/jq_1.5+dfsg-2build1_amd64.deb"
-              sha256: 2c53b773084ae89de03109b03ca8bde557c07318598e71f1825729548af1134b
+          - distros: Ubuntu
+            distro_version: 18.04
+            version: 1.5
+            url: "http://cz.archive.ubuntu.com/ubuntu/pool/universe/j/jq/jq_1.5+dfsg-2_amd64.deb"
+            sha256: 7da6b3fe4de02f50169923134b1e6c4cbf4ee693afa963d02d1eb8a0e3adb472
+          - distros: Ubuntu
+            distro_version: 18.04
+            version: 1.6
+            url: "http://cz.archive.ubuntu.com/ubuntu/pool/universe/j/jq/jq_1.5+dfsg-2build1_amd64.deb"
+            sha256: 2c53b773084ae89de03109b03ca8bde557c07318598e71f1825729548af1134b
       tree:
         amd64:
-          Ubuntu-18.04:
-            - version: 1.7.0
-              url: "http://cz.archive.ubuntu.com/ubuntu/pool/universe/t/tree/tree_1.7.0-5_amd64.deb"
-              sha256: e2008deb77a666372bee79056f8d0d6423373f5c7138dff5c91dcdf5d43d12cd
+          - distros: Ubuntu
+            distro_version: 18.04
+            version: 1.7.0
+            url: "http://cz.archive.ubuntu.com/ubuntu/pool/universe/t/tree/tree_1.7.0-5_amd64.deb"
+            sha256: e2008deb77a666372bee79056f8d0d6423373f5c7138dff5c91dcdf5d43d12cd
       tree-file:
         amd64:
-          Ubuntu-18.04:
-            - version: 1.7.0
-              file_name: "tree_1.7.0-5_amd64.deb"
-              sha256: e2008deb77a666372bee79056f8d0d6423373f5c7138dff5c91dcdf5d43d12cd
+          - distros: Ubuntu
+            distro_version: 18.04
+            version: 1.7.0
+            file_name: "tree_1.7.0-5_amd64.deb"
+            sha256: e2008deb77a666372bee79056f8d0d6423373f5c7138dff5c91dcdf5d43d12cd
