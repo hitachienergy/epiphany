@@ -54,11 +54,13 @@ class InfrastructureBuilder(Step):
                 subnet = self.get_subnet(subnet_definition, component_key, nsg.specification.name, 0)
                 infrastructure.append(subnet) 
 
-                ssg_association = self.get_subnet_network_security_group_association(component_key, 
-                                                                                     subnet.specification.name, 
-                                                                                     nsg.specification.name,
-                                                                                     0)
-                infrastructure.append(ssg_association)
+                #TODO: This gives issues for now when creating more then 3 subnets. Re-test when
+                #      upgrading from azurerm 1.27 to 2.0 and for now stick to azurerm_subnet.network_security_group_id
+                #ssga = self.get_subnet_network_security_group_association(component_key, 
+                #                                                                     subnet.specification.name, 
+                #                                                                     nsg.specification.name,
+                #                                                                     0)
+                #infrastructure.append(ssga)
 
             #TODO: For now we create the VM infrastructure compatible with the Epiphany 2.x 
             #      code line but later we might want to look at scale sets to achieve the same result:
