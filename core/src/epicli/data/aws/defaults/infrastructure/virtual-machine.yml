@@ -41,6 +41,16 @@ specification:
        destination_port_range: "22"
        source_address_prefix: "0.0.0.0/0"
        destination_address_prefix: "0.0.0.0/0"
+     - name: node_exporter
+       description: Allow node_exporter traffic
+       priority: 302
+       direction: Inbound
+       access: Allow
+       protocol: Tcp
+       source_port_range: "*"
+       destination_port_range: "9100"
+       source_address_prefix: "10.1.0.0/20"
+       destination_address_prefix: "0.0.0.0/0"
      - name: out
        description: Allow out
        priority: 101
@@ -65,6 +75,16 @@ specification:
   os_type: linux
   security:
     rules:
+     - name: ssh
+       description: Allow SSH
+       priority: 101
+       direction: Inbound
+       access: Allow
+       protocol: Tcp
+       source_port_range: "*"
+       destination_port_range: "22"
+       source_address_prefix: "0.0.0.0/0"
+       destination_address_prefix: "0.0.0.0/0"
      - name: node_exporter
        description: Allow node_exporter traffic
        priority: 302
@@ -75,6 +95,59 @@ specification:
        destination_port_range: "9100"
        source_address_prefix: "10.1.0.0/20"
        destination_address_prefix: "0.0.0.0/0"
+---
+kind: infrastructure/virtual-machine
+version: 0.3.0
+title: "Virtual Machine Infra"
+provider: aws
+name: rabbitmq-machine
+specification:
+  tags:
+    - version: 0.3.0
+  size: t3.micro
+  os_type: linux
+  security:
+    rules:
+     - name: ssh
+       description: Allow SSH
+       priority: 101
+       direction: Inbound
+       access: Allow
+       protocol: Tcp
+       source_port_range: "*"
+       destination_port_range: "22"
+       source_address_prefix: "0.0.0.0/0"
+       destination_address_prefix: "0.0.0.0/0"
+     - name: node_exporter
+       description: Allow node_exporter traffic
+       priority: 302
+       direction: Inbound
+       access: Allow
+       protocol: Tcp
+       source_port_range: "*"
+       destination_port_range: "9100"
+       source_address_prefix: "10.1.0.0/20"
+       destination_address_prefix: "0.0.0.0/0"
+     - name: rabbitmq
+       description: Allow rabbitmq traffic
+       priority: 303
+       direction: Inbound
+       access: Allow
+       protocol: Tcp
+       source_port_range: "*"
+       destination_port_range: "5672"
+       source_address_prefix: "10.1.0.0/20"
+       destination_address_prefix: "0.0.0.0/0"
+     - name: out
+       description: Allow out
+       priority: 101
+       direction: Egress
+       access: Allow
+       protocol: "all"
+       source_port_range: "*"
+       destination_port_range: "0"
+       source_address_prefix: "0.0.0.0/0"
+       destination_address_prefix: "0.0.0.0/0"       
 ---
 kind: infrastructure/virtual-machine
 version: 0.3.0
