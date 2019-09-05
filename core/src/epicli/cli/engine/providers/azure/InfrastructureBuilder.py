@@ -146,6 +146,8 @@ class InfrastructureBuilder(Step):
         vm.specification.name = resource_name(self.cluster_prefix, self.cluster_name, 'vm' + '-' + str(index), component_key)
         vm.specification.admin_username = self.cluster_model.specification.admin_user.name
         vm.specification.network_interface_name = network_interface_name
+        vm.specification.tags.append({'cluster': f'{self.cluster_prefix}-{self.cluster_name}'})
+        vm.specification.tags.append({component_key: ''})        
         if vm.specification.os_type == 'linux':
             # For linux we dont need a PW since we only support SSH so just add something random.
             vm.specification.admin_password = "NeverGonnaNeed!"

@@ -61,6 +61,14 @@ resource "azurerm_virtual_machine" "{{ specification.name  }}" {
     {%- endif %}
   }
 
+  tags = {
+  {%- for tag in specification.tags %}
+    {%- for tag_key, tag_value in tag.items() %}
+    {{ tag_key }} = "{{ tag_value }}"
+    {%- endfor %}
+  {%- endfor %}
+  }
+
   #TODO:
   # availability_set_id
   # storage_data_disk

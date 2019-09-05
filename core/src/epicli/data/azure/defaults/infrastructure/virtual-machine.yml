@@ -9,6 +9,7 @@ specification:
   admin_password: SET_BY_AUTOMATION 
   public_key: SET_BY_AUTOMATION
   network_interface_name: SET_BY_AUTOMATION
+  tags: []
   os_type: linux
   size: Standard_DS1_v2 
   storage_image_reference:
