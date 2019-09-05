@@ -46,13 +46,13 @@ class InfrastructureBuilder(Step):
                                     item.specification.address_prefix == subnet_definition['address_pool'])
 
             if subnet is None:
-                subnet = self.get_subnet(subnet_definition, component_key, 0)
-                infrastructure.append(subnet) 
-
                 nsg = self.get_network_security_group(component_key, 
                                                          vm_config.specification.security.rules,
                                                          0)
                 infrastructure.append(nsg)
+
+                subnet = self.get_subnet(subnet_definition, component_key, nsg.specification.name, 0)
+                infrastructure.append(subnet) 
 
                 ssg_association = self.get_subnet_network_security_group_association(component_key, 
                                                                                      subnet.specification.name, 
@@ -105,10 +105,11 @@ class InfrastructureBuilder(Step):
         security_group.specification.rules = security_rules
         return security_group       
 
-    def get_subnet(self, subnet_definition, component_key, index):
+    def get_subnet(self, subnet_definition, component_key, security_group_name, index):
         subnet = self.get_config_or_default(self.docs, 'infrastructure/subnet')
         subnet.specification.name = resource_name(self.cluster_prefix, self.cluster_name, 'subnet' + '-' + str(index), component_key)
         subnet.specification.address_prefix = subnet_definition['address_pool']
+        subnet.specification.security_group_name = security_group_name
         subnet.specification.cluster_name = self.cluster_name
         return subnet     
 
