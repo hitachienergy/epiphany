@@ -1,8 +1,9 @@
 ---
+# Under development!
 - name: "download_all_files_to_cache | Prepare list of all URLs with checksums"
   set_fact:
     urls: "{{ urls | default([]) + [ item ] }}"
-  loop: "{{ specification.files | json_query('*.values(@) | [].values(@) | []') }}"
+  loop: "{{ specification.files | json_query('*.versions.values(@) | [].values(@) | []') }}"
 
 - name: download_all_files_to_cache | Download files
   include_tasks: download_file_to_cache.yml

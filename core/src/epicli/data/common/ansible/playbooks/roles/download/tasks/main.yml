@@ -1,6 +1,15 @@
 ---
-- name: Download all files to cache
-  include_tasks: download_all_files_to_cache.yml
+# Under development! Here are just examples of calling from other roles
+
+- name: Test download package
+  include_role:
+    name: download
+    tasks_from: download_package
+  vars:
+    package_arg: "{{ item }}"
+  loop:
+  - { id: 'tree' }
+  - { id: 'jq', version: '1.6' }
 
 - name: Test download file
   include_role:
@@ -10,4 +19,22 @@
     file_arg: "{{ item }}"
   loop:
     - { id: 'cni-plugins' }
-    - { id: 'kubeadm', version: 1.13.8, dest_path: '/home/ubuntu/1.13.8/kubeadm' }
+    - { id: 'kubeadm', version: 1.13.8 }
+
+# - name: Download all files to cache
+#   include_tasks: download_all_files_to_cache.yml
+
+# - name: Test download file
+#   include_tasks: download_file.yml
+#   vars:
+#     file: "{{ item }}"
+#   loop:
+#   - { id: 'cni-plugins', dest_dir: '/home/ubuntu' }
+#   - { id: 'kubeadm', version: 1.13.8, dest_dir: '/var/cache' }
+
+# - name: Test
+  # debug:
+    # msg: "{{ specification.files['kubeadm'] | selectattr('version', 'equalto', '1.13.8') | selectattr('arch', 'equalto', 'amd64') }}"
+    # msg: "{{ specification.files | json_query('kubeadm[?version==`1.13.8`&&arch==`amd64`]') }}"
+    # msg: "{{ specification.files.kubeadm['1.13.8'].amd64 }}"
+    # msg: "{{ specification.files.kubeadm.versions['1.13.8'].amd64 }}"

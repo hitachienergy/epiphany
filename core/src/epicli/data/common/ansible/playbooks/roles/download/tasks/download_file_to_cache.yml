@@ -1,62 +1,45 @@
 ---
-- name: download_file_to_cache | Split URL
-  set_fact:
-    splitted_url: "{{ download.url | urlsplit }}"
-
-- name: download_file_to_cache | Set destination path
-  set_fact:
-    cached_file_path: "{{ specification.download_cache_dir }}/files/{{ splitted_url.hostname }}{{ splitted_url.path }}"
-
-- name: download_file_to_cache | Starting download
+- name: download_file_to_cache | Print info
   debug:
     msg:
-      - "From: {{ download.url }}"
-      - "To: {{ cached_file_path }}"
+      - "From: {{ file_arg.url }}"
+      - "To: {{ file_arg.cached_file_path }}"
 
-# Checking whether file already exists in cache could be handled by 'get_url' module, but 'stat' + when is faster
-- name: download_file_to_cache | Check if file is already in cache
-  stat:
-    path: "{{ cached_file_path }}"
-    checksum_algorithm: sha512
-  register: check_file_in_cache
+- name: download_file_to_cache | Check if file is available in cache
+  include_tasks: check_file_in_cache.yml
 
-- name: download_file_to_cache | Set fact (is_file_in_cache)
-  set_fact:
-    is_file_in_cache: "{{ check_file_in_cache.stat.exists and check_file_in_cache.stat.checksum == download.sha512 }}"
-
-- name: download_file_to_cache | Get user
+- name: download_file_to_cache | Prepare download
+  block:
+    - name: download_file_to_cache | Get local user and his group
+      set_fact:
+        local_ansible_user: "{{ lookup('pipe','id -u -n') }}"
+        local_ansible_user_group: "{{ lookup('pipe','id -g -n') }}"
+      when:
+        - local_ansible_user is not defined or local_ansible_user_group is not defined
+    - name: download_file_to_cache | Create directory {{ file_arg.cached_file_path | dirname }}
+      file:
+        path: "{{ file_arg.cached_file_path | dirname }}"
+        state: directory
+        owner: "{{ local_ansible_user }}"
+        group: "{{ local_ansible_user_group }}"
+  delegate_facts: no
+  delegate_to: localhost
   become: false
-  set_fact:
-    my_ansible_user: "{{ lookup('pipe','id -u -n') }}"
-  when:
-    - my_ansible_user is not defined
-
-- name: download_file_to_cache | Get group
-  become: false
-  set_fact:
-    my_ansible_group: "{{ lookup('pipe','id -g -n') }}"
-  when:
-    - my_ansible_group is not defined
-
-- name: download_file_to_cache | Create directory
-  file:
-    path: "{{ cached_file_path | dirname }}"
-    state: directory
-    owner: "{{ my_ansible_user }}"
-    group: "{{ my_ansible_group }}"
-  become: true
   when:
     - not is_file_in_cache
 
 - name: download_file_to_cache | Download file
   get_url:
-    url: "{{ download.url }}"
-    dest: "{{ cached_file_path }}"
-    checksum: "{{ 'sha512:' + download.sha512 }}"
+    url: "{{ file_arg.url }}"
+    dest: "{{ file_arg.cached_file_path }}"
+    checksum: "{{ file_arg.checksum_algorithm + ':' + file_arg[file_arg.checksum_algorithm] }}"
     validate_certs: "{{ validate_certs }}"
   register: get_url_result
   until: "'OK' in get_url_result.msg or 'file already exists' in get_url_result.msg"
   retries: "{{ specification.download_retries }}"
   delay: "{{ specification.download_retry_delay }}"
+  delegate_facts: no
+  delegate_to: localhost
+  become: false
   when:
     - not is_file_in_cache

@@ -4,55 +4,21 @@
     file: >-
       {{ specification.downloads.files[file_arg.id][arch_map[ansible_architecture]]
       | selectattr('version', 'match', '.*' if (file_arg.version is not defined) else file_arg.version)
-      | list | first | combine(file_arg) }}
+      | list | first | combine(file_arg) | combine({ 'arch': arch_map[ansible_architecture] }) }}
 
 - name: download_file | Set dynamic properties
   set_fact:
     file: >-
       {{ file
-           | combine({ 'dest_path': file_arg.dest_dir | default(specification.remote_dest_dir + '/files')
-               + '/' + file_arg.file_name | default(splitted_url.path | basename) })
-           | combine({ 'checksum_algorithm': 'sha256' if (file.sha256 is defined) else 'sha512' })
-           | combine({ 'cached_file_path': specification.local_cache_dir + '/files/'
-               + splitted_url.hostname + splitted_url.path }) }}
+           | combine({ 'dest_path': specification.remote_downloads_dir + '/' + relative_dest_path })
+           | combine({ 'cached_file_path': specification.local_downloads_dir + '/' + relative_dest_path })
+           | combine({ 'checksum_algorithm': 'sha256' if (file.sha256 is defined) else 'sha512' }) }}
   vars:
-    splitted_url: "{{ file.url | urlsplit }}"
+    relative_dest_path: >-
+      {{ 'files/' + file.id + '/' + file.version + '/' + file.arch + '/' + (file.url | basename) }}
 
-- name: Debug
-  debug:
-    var: file
+- name: download_file | Download {{ file.id }}
+  include_tasks: download_file_worker.yml
+  vars:
+    file_arg: "{{ file }}"
 
-- name: download_file | Check if file is available in cache
-  stat:
-    path: "{{ file.cached_file_path }}"
-  register: check_file_in_cache
-  run_once: true
-  changed_when: false
-  delegate_to: localhost
-  delegate_facts: no
-  become: false
-  when:
-    - not specification.direct_download
-
-- name: download_file | Set fact based on previous task
-  set_fact:
-    is_file_in_cache: "{{ check_file_in_cache.stat.exists and check_file_in_cache.stat.checksum == file[checksum_algorithm] }}"
-  when:
-    - not specification.direct_download
-
-- name: download_file | Copy file from local cache if available
-  synchronize:
-    src: "{{ file.cached_file_path }}"
-    dest: "{{ file.dest_path }}"
-    mode: push
-  register: get_task
-  until: get_task is succeeded
-  retries: "{{ specification.download_retries }}"
-  delay: "{{ specification.download_retry_delay }}"
-  when:
-  - is_file_in_cache is defined and is_file_in_cache
-  - not specification.direct_download
-
-# TODO:
-# call task download_file_to_cache
-# create/include download task for direct_download mode
