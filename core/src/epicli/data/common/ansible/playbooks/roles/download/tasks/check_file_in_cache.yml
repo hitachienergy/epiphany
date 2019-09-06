@@ -8,7 +8,6 @@
   changed_when: false
   delegate_facts: no
   delegate_to: localhost
-  become: false
 
 - name: check_file_in_cache | Set fact based on previous task
   set_fact:
