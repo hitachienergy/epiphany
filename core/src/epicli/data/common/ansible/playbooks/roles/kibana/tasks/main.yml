@@ -1,4 +1,45 @@
 ---
 ## Elasticsearch master
 
-- include_tasks: "{{ ansible_os_family }}.yml"
+- name: Download Kibana v{{ specification.kibana_version  }}
+  include_role:
+    name: download
+    tasks_from: download_package
+  vars:
+    package_arg: "{{ dependencies.kibana[specification.kibana_version].packages | selectattr('id', 'equalto', 'kibana-oss') | list | first }}"
+
+- name: Install Kibana from {{ file.dest_path }}
+  package:
+    name: "{{ file.dest_path }}"
+    state: present
+
+- name: Replace with interface
+  replace:
+    path: /etc/kibana/kibana.yml
+    regexp: '^#elasticsearch.url: "http://localhost:9200"$'
+    replace: "elasticsearch.url: \"http://{{ hostvars[groups['kibana'][0]]['ansible_default_ipv4']['address'] }}:9200\""
+    backup: no
+  when:
+    - groups['kibana'][0] == inventory_hostname
+
+- name: Replace with interface
+  replace:
+    path: /etc/kibana/kibana.yml
+    regexp: '^#server.host: "localhost"$'
+    replace: "server.host: \"{{ hostvars[groups['kibana'][0]]['ansible_default_ipv4']['address'] }}\""
+    backup: no
+  when:
+    - groups['kibana'][0] == inventory_hostname
+
+- include_tasks: setup-logging.yml
+  when:
+    - groups['kibana'][0] == inventory_hostname
+
+- name: Start kibana service
+  service:
+    name: kibana
+    state: started
+    enabled: yes
+  when:
+    - groups['kibana'][0] == inventory_hostname
+

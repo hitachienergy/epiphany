@@ -1,7 +1,13 @@
 ---
 
-- name: Install Elasticsearch-Curator Package
-  apt:
-    deb: "https://packages.elastic.co/curator/5/debian9/pool/main/e/elasticsearch-curator/elasticsearch-curator_{{ specification.debian_curator_version }}.deb"
+- name: Download Elasticsearch-Curator v{{ specification.debian_curator_version }}
+  include_role:
+    name: download
+    tasks_from: download_package
+  vars:
+    package_arg: "{{ dependencies.elasticsearch_curator[specification.debian_curator_version].packages | selectattr('id', 'equalto', elasticsearch-curator) | list | first }}"
 
-
+- name: Install Elasticsearch-Curator from {{ file.dest_path }}
+  package:
+    name: "{{ file.dest_path }}"
+    state: present

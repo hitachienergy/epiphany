@@ -11,4 +11,3 @@
   apt:
     name: "{{ package_to_install.dest_path }}"
     state: present
-    update_cache: yes

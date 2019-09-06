@@ -1,8 +1,17 @@
 ---
 # Filebeat
 
-- name: Include {{ ansible_os_family }} family tasks
-  include_tasks: "{{ ansible_os_family }}.yml"
+- name: Download Filebeat v{{ specification.filebeat_version }}
+  include_role:
+    name: download
+    tasks_from: download_package
+  vars:
+    package_arg: "{{ dependencies.filebeat[specification.filebeat_version].packages | selectattr('id', 'equalto', filebeat-oss) | list | first }}"
+
+- name: Install {{ package_name }} from {{ file.dest_path }}
+  package:
+    name: "{{ file.dest_path }}"
+    state: present
 
 - name: Include configuration tasks
   include_tasks: configure-filebeat.yml

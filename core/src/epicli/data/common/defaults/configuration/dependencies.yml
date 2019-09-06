@@ -3,8 +3,66 @@ version: 0.3.0
 title: "List of dependencies for Epiphany Platform"
 name: default
 specification:
-  common:
-    
+  postgresql:
+    10:
+      packages:
+        - id: rh-postgresql10-postgresql # RedHat
+          version: # TODO
+        - id: rh-postgresql10-postgresql-syspaths # RedHat
+          version: # TODO
+        - id: rh-postgresql10-postgresql-server # RedHat
+          version: # TODO
+        - id: rh-postgresql10-postgresql-server-syspaths # RedHat
+          version: # TODO
+        - id: rh-postgresql10-postgresql-contrib # RedHat
+          version: # TODO
+        - id: rh-postgresql10-postgresql-contrib-syspaths # RedHat
+          version: # TODO
+        - id: rh-postgresql10-postgresql-libs # RedHat
+          version: # TODO
+        - id: python-psycopg2 # RedHat, Debian
+          version: # TODO
+        - id: postgresql-10 # Debian
+          version: # TODO
+        - id: postgresql-contrib-10 # Debian
+          version: # TODO
+  kibana:
+    6.4.0:
+      packages:
+        - id: kibana-oss
+          version: 6.4.0
+  haproxy:
+    1.8:
+      packages:
+        - id: haproxy
+          version: 1.8.8 # Debian
+        - id: rh-haproxy18
+          version: 1.8.17 # RedHat
+        - id: rh-haproxy18-haproxy-syspaths
+          version: 1.8.17 # RedHat
+  filebeat:
+    6.5.4:
+      packages:
+        - id: filebeat-oss
+          version: 6.5.4
+  elasticsearch_curator:
+    5.5.4_amd64:
+      packages:
+        - id: elasticsearch-curator
+          version: 5.5.4_amd64
+    5.5.4-1.x86_64:
+      packages:
+        - id: elasticsearch-curator
+          version: 5.5.4-1.x86_64
+  elasticsearch:
+    6.4.0:
+      packages:
+        - id: openjdk-8-jre
+          version: 8u222-b10-1ubuntu1
+        - id: java-1.8.0-openjdk
+          version: 1.8.0
+        - id: elasticsearch-oss
+          version: 6.4.0     
   grafana:
     6.2.5:
       packages:
