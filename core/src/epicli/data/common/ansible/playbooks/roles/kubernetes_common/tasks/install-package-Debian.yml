@@ -1,0 +1,13 @@
+---
+
+# - name: Install NFS package for Debian family
+#   apt:
+#     name:
+#       - nfs-common
+#     update_cache: yes
+#     state: present
+
+- name: Install {{ package.id }} v{{ package.version }} from {{ package_to_install.dest_path }}
+  apt:
+    name: "{{ package_to_install.dest_path }}"
+    state: present

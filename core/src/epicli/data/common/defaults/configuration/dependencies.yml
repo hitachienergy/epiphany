@@ -1,0 +1,138 @@
+kind: configuration/dependencies
+version: 0.3.0
+title: "List of dependencies for Epiphany Platform"
+name: default
+specification:
+  postgresql:
+    10:
+      packages:
+        - id: rh-postgresql10-postgresql # RedHat
+          version: # TODO
+        - id: rh-postgresql10-postgresql-syspaths # RedHat
+          version: # TODO
+        - id: rh-postgresql10-postgresql-server # RedHat
+          version: # TODO
+        - id: rh-postgresql10-postgresql-server-syspaths # RedHat
+          version: # TODO
+        - id: rh-postgresql10-postgresql-contrib # RedHat
+          version: # TODO
+        - id: rh-postgresql10-postgresql-contrib-syspaths # RedHat
+          version: # TODO
+        - id: rh-postgresql10-postgresql-libs # RedHat
+          version: # TODO
+        - id: python-psycopg2 # RedHat, Debian
+          version: # TODO
+        - id: postgresql-10 # Debian
+          version: # TODO
+        - id: postgresql-contrib-10 # Debian
+          version: # TODO
+  kibana:
+    6.4.0:
+      packages:
+        - id: kibana-oss
+          version: 6.4.0
+  haproxy:
+    1.8:
+      packages:
+        - id: haproxy
+          version: 1.8.8 # Debian
+        - id: rh-haproxy18
+          version: 1.8.17 # RedHat
+        - id: rh-haproxy18-haproxy-syspaths
+          version: 1.8.17 # RedHat
+  filebeat:
+    6.5.4:
+      packages:
+        - id: filebeat-oss
+          version: 6.5.4
+  elasticsearch_curator:
+    5.5.4_amd64:
+      packages:
+        - id: elasticsearch-curator
+          version: 5.5.4_amd64
+    5.5.4-1.x86_64:
+      packages:
+        - id: elasticsearch-curator
+          version: 5.5.4-1.x86_64
+  elasticsearch:
+    6.4.0:
+      packages:
+        - id: openjdk-8-jre
+          version: 8u222-b10-1ubuntu1
+        - id: java-1.8.0-openjdk
+          version: 1.8.0
+        - id: elasticsearch-oss
+          version: 6.4.0     
+  grafana:
+    6.2.5:
+      packages:
+        - id: apt-transport-https # Ubuntu specific
+          version: 1.6.11
+        - id: ca-certificates  # Ubuntu specific
+          version: 20180409
+        - id: adduser  # Ubuntu specific
+          version: 3.116ubuntu1
+        - id: libfontconfig1  # Ubuntu specific
+          version: 2.12.6-0ubuntu2
+        - id: gnupg2 # Ubuntu specific
+          version: 2.2.4-1ubuntu1.2
+        - id: grafana
+          version: 6.2.5        
+  docker:
+    18.09.6:
+      packages:
+        - id: apt-transport-https # Ubuntu specific
+          version: 1.6.11
+        - id: ca-certificates  # Ubuntu specific
+          version: 20180409
+        - id: container-selinux
+          version: 2.74 # just for RedHat family <= 7.5, if modified: please update ansible role
+        - id: container-selinux
+          version: 2.99 # just for RedHat family >= 7.6, if modified: please update ansible role 
+        - id: docker-ce
+          version: 18.09.6
+  kubernetes:
+    1.14.4:
+      packages:
+        - id: cifs-utils
+          version: 6.2
+        - id: samba-client
+          version: 4.8.3
+        - id: samba-common
+          version: 4.8.3
+        - id: socat
+          version: 1.7.3.2
+        - id: libnetfilter_queue
+          version: 1.0.2
+        - id: libnetfilter_cttimeout
+          version: 1.0.0
+        - id: libnetfilter_cthelper
+          version: 1.0.0
+        - id: conntrack-tools
+          version: 1.4.4
+        - id: nfs-utils
+          version: 1.3.0
+        - id: kubelet
+          version: 1.14.4
+        - id: kubernetes-cni
+          version: 0.7.5
+        - id: kubectl
+          version: 1.14.4
+        - id: cri-tools
+          version: 1.13.0
+        - id: kubeadm
+          version: 1.14.4
+      images:
+        - k8s.gcr.io/kube-apiserver:v1.14.4
+        - k8s.gcr.io/kube-controller-manager:v1.14.4
+        - k8s.gcr.io/kube-scheduler:v1.14.4
+        - k8s.gcr.io/kube-proxy:v1.14.4
+        - k8s.gcr.io/pause:3.1
+        - k8s.gcr.io/etcd:3.3.10
+        - k8s.gcr.io/coredns:1.5.0
+        - quay.io/coreos/flannel:v0.11.0-amd64
+        - calico/kube-controllers:v3.8.0
+        - calico/node:v3.8.0
+        - kubernetesui/dashboard:v2.0.0-beta1
+        - kubernetesui/metrics-scraper:v1.0.0
+        - calico/cni:v3.8.1

@@ -1,0 +1,8 @@
+---
+ 
+# todo check if installed, if yes: compare versions and raise UPGRADE first exception
+
+- name: Install {{ package.id }} v{{ package.version }} from {{ package_to_install.dest_path }}
+  yum:
+    name: "{{ package_to_install.dest_path }}"
+    state: present

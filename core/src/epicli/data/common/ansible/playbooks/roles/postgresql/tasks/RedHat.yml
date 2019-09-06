@@ -1,28 +1,44 @@
 ---
 # Postgresql Red Hat family of specific tasks
 
-- name: Check if repository file exists
-  stat:
-    path: /etc/yum.repos.d/redhat-rhui.repo
-  register: rhui_exist
+# - name: Check if repository file exists
+#   stat:
+#     path: /etc/yum.repos.d/redhat-rhui.repo
+#   register: rhui_exist
 
-- name: Check if Software Collections repository on EC2 exists
-  shell: grep -c -i rhui-REGION-rhel-server-rhscl /etc/yum.repos.d/redhat-rhui.repo
-  register: sc_repo_count
-  failed_when: "sc_repo_count.rc == 2"
-  when: rhui_exist
+# - name: Check if Software Collections repository on EC2 exists
+#   shell: grep -c -i rhui-REGION-rhel-server-rhscl /etc/yum.repos.d/redhat-rhui.repo
+#   register: sc_repo_count
+#   failed_when: "sc_repo_count.rc == 2"
+#   when: rhui_exist
 
-- name: Enable Software Collections on EC2
-  ini_file:
-    dest: /etc/yum.repos.d/redhat-rhui.repo
-    section: rhui-REGION-rhel-server-rhscl
-    option: enabled
-    value: 1
-  when: sc_repo_count.stdout|int == 1
+# - name: Enable Software Collections on EC2
+#   ini_file:
+#     dest: /etc/yum.repos.d/redhat-rhui.repo
+#     section: rhui-REGION-rhel-server-rhscl
+#     option: enabled
+#     value: 1
+#   when: sc_repo_count.stdout|int == 1
 
-- name: Install postgresql family packages
-  yum:
-    name:
+# - name: Install postgresql family packages
+#   yum:
+#     name:
+#       - rh-postgresql10-postgresql
+#       - rh-postgresql10-postgresql-syspaths
+#       - rh-postgresql10-postgresql-server
+#       - rh-postgresql10-postgresql-server-syspaths
+#       - rh-postgresql10-postgresql-contrib
+#       - rh-postgresql10-postgresql-contrib-syspaths
+#       - rh-postgresql10-postgresql-libs
+#       - python-psycopg2 # required for postresql ansible management
+#     update_cache: yes
+#     state: present
+
+- name: Install packages for RedHat family
+  include_tasks: "install-package.yml"
+  vars:
+    package_name: "{{ item }}"
+  loop:
       - rh-postgresql10-postgresql
       - rh-postgresql10-postgresql-syspaths
       - rh-postgresql10-postgresql-server
@@ -31,8 +47,6 @@
       - rh-postgresql10-postgresql-contrib-syspaths
       - rh-postgresql10-postgresql-libs
       - python-psycopg2 # required for postresql ansible management
-    update_cache: yes
-    state: present
 
 - name: Check postgresql init
   stat:

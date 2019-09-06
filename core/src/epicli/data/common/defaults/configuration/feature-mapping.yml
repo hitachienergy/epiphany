@@ -40,6 +40,8 @@ specification:
       enabled: yes
     - name: applications
       enabled: yes
+    - name: download
+      enabled: yes
   roles_mapping:
     kafka:
       - zookeeper

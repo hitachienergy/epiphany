@@ -1,0 +1,61 @@
+kind: configuration/download
+version: 0.3.0
+title: "Download settings and inventory"
+name: default
+specification:
+  local_cache_dir: /shared/epiphany
+  remote_dest_dir: /tmp/epiphany
+  # If true, download directly from Internet (on remote hosts) without using local cache
+  direct_download: false
+  # If true, disable SSL validation of get_url module. Checksum validation will still be performed.
+  validate_certs: true
+  download_retries: 3
+  download_retry_delay: 5
+
+  downloads:
+    files:
+      cni-plugins:
+        amd64:
+          - version: 0.7.5
+            url: "https://github.com/containernetworking/plugins/releases/download/v0.7.5/cni-plugins-amd64-v0.7.5.tgz"
+            sha512: 1abfb567c13f87aab94efd6f2c6bb17f3581cbcce87bf8c6216510a92486cb44e6b8701fd3a6cb85273a97981feecbd0c4eb624eab0eca5a005fd85a7d95c284
+
+      kubeadm:
+        amd64:
+          - version: 1.14.4
+            url: "https://storage.googleapis.com/kubernetes-release/release/v1.14.4/bin/linux/amd64/kubeadm"
+            sha512: 500ab172e7399917c55d9f83a1b7be28f0e85bf165cb606a8db589231b5bc55a5e4d7c8193270aac90ed1e89d8c30eba97876cd1a3f16ad527c911a9f25e1b75
+          - version: 1.13.8
+            url: "https://storage.googleapis.com/kubernetes-release/release/v1.13.8/bin/linux/amd64/kubeadm"
+            sha512: e4d876e3ff1f8da2ea434362c8c084d3280d3bdf552cfc18f631a317fa2a989313fb729eceafdadf76c85c9cfa3589a3c9b827e6c3154383ea64a1c3219f63bd
+          - version: 1.12.10
+            url: "https://storage.googleapis.com/kubernetes-release/release/v1.12.10/bin/linux/amd64/kubeadm"
+            sha512: dcb6b06195a093a87f952cbb3f471dd690da9baea4a8b09520900301b0e9cee3bfdb50cb28eb10dfdc5b73bbf6bcd08d5c49711f91cea14679ebb1690a9368d9
+
+    packages:
+      socat:
+        amd64:
+          - version: 1.7.3.2
+            distribution: CentOS
+            distribution_version: 7
+            url: "http://download-ib01.fedoraproject.org/pub/epel/7/x86_64/Packages/n/ncdu-1.14-1.el7.x86_64.rpm"
+            sha512: 5a98254e9b2d83e729add7c7a812d00e27019b72524b37ca8db2bfd491390d6acd6eb877043c7577c739cc129482a5b1fb9f9d715f4c3a604241afbca88c87d6
+      jq:
+        amd64:
+          - version: 1.5
+            distribution: Ubuntu
+            distribution_version: 18.04
+            url: "http://cz.archive.ubuntu.com/ubuntu/pool/universe/j/jq/jq_1.5+dfsg-2_amd64.deb"
+            sha256: 7da6b3fe4de02f50169923134b1e6c4cbf4ee693afa963d02d1eb8a0e3adb472
+          - version: 1.6
+            distribution: Ubuntu
+            distribution_version: 18.04
+            url: "http://cz.archive.ubuntu.com/ubuntu/pool/universe/j/jq/jq_1.5+dfsg-2build1_amd64.deb"
+            sha256: 2c53b773084ae89de03109b03ca8bde557c07318598e71f1825729548af1134b
+      tree:
+        amd64:
+          - version: 1.7.0
+            distribution: Ubuntu
+            distribution_version: 18.04
+            url: "http://cz.archive.ubuntu.com/ubuntu/pool/universe/t/tree/tree_1.7.0-5_amd64.deb"
+            sha256: e2008deb77a666372bee79056f8d0d6423373f5c7138dff5c91dcdf5d43d12cd

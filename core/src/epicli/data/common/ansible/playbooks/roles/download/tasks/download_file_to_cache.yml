@@ -1,0 +1,56 @@
+---
+- name: download_file_to_cache | Print info
+  debug:
+    msg:
+      - "Download from: {{ file_arg.url }}"
+      - "To: {{ file_arg.cached_file_path }}"
+
+- name: download_file_to_cache | Check if file is already in cache
+  include_tasks: check_file_in_cache.yml
+
+- name: Prepare download
+  block:
+    - name: download_file_to_cache | Get local user and his group
+      set_fact:
+        local_ansible_user: "{{ lookup('pipe','id -u -n') }}"
+        local_ansible_user_group: "{{ lookup('pipe','id -g -n') }}"
+      become: false
+      when:
+        - local_ansible_user is not defined or local_ansible_user_group is not defined
+    - name: Create directory
+      block:
+        - name: download_file_to_cache | Create directory '{{ file_arg.cached_file_path | dirname }}' as root
+          file:
+            path: "{{ file_arg.cached_file_path | dirname }}"
+            state: directory
+            owner: "{{ local_ansible_user }}"
+            group: "{{ local_ansible_user_group }}"
+          become: true
+      rescue:
+        - name: download_file_to_cache | Create directory '{{ file_arg.cached_file_path | dirname }}'
+          file:
+            path: "{{ file_arg.cached_file_path | dirname }}"
+            state: directory
+            owner: "{{ local_ansible_user }}"
+            group: "{{ local_ansible_user_group }}"
+          become: false
+  delegate_facts: no
+  delegate_to: localhost
+  when:
+    - not is_file_in_cache
+
+- name: download_file_to_cache | Download '{{ file_arg.id }}' v{{ file_arg.version }}
+  get_url:
+    url: "{{ file_arg.url }}"
+    dest: "{{ file_arg.cached_file_path }}"
+    checksum: "{{ file_arg.checksum_algorithm + ':' + file_arg[file_arg.checksum_algorithm] }}"
+    validate_certs: "{{ validate_certs }}"
+  register: get_url_result
+  until: "'OK' in get_url_result.msg or 'file already exists' in get_url_result.msg"
+  retries: "{{ specification.download_retries }}"
+  delay: "{{ specification.download_retry_delay }}"
+  delegate_facts: no
+  delegate_to: localhost
+  become: false
+  when:
+    - not is_file_in_cache

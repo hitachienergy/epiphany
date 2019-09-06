@@ -1,0 +1,101 @@
+---
+# Common tasks for download_file and download_package tasks
+
+- name: Check if file is already in destination
+  block: 
+  - name: download_file_worker | Check if file is already in destination
+    stat:
+      path: "{{ file_arg.dest_path }}"
+      get_checksum: yes
+      checksum_algorithm: "{{ file_arg.checksum_algorithm }}"
+    register: check_file_in_dest
+    changed_when: false
+  - name: download_file_worker | Set fact based on previous task
+    set_fact:
+      is_file_already_in_dest: >-
+        {{ check_file_in_dest.stat.exists
+          and check_file_in_dest.stat.checksum == file_arg[file_arg.checksum_algorithm] }}
+
+- name: download_file_worker | Check if file is available in cache
+  include_tasks: check_file_in_cache.yml
+  when:
+    - not is_file_already_in_dest
+    - not specification.direct_download
+
+- name: download_file_worker | Download file to cache on Ansible host
+  include_tasks: download_file_to_cache.yml
+  when:
+    - not is_file_already_in_dest
+    - not specification.direct_download
+    - not is_file_in_cache
+    - file_arg.url is defined
+
+- name: Get admin user and his group
+  block:
+    - name: download_file_worker | Get admin user
+      set_fact:
+        admin_user: "{{ admin_user.name | default(ansible_user) }}"
+    - name: download_file_worker | Get admin user's group
+      command: "id -g -n {{ admin_user }}"
+      register: result
+      changed_when: false
+    - name: download_file_worker | Set admin user's group
+      set_fact:
+        admin_group: "{{ result.stdout }}"
+  become: false
+  when:
+    - not is_file_already_in_dest
+    - admin_user is not defined or admin_group is not defined
+
+- name: download_file_worker | Create directory '{{ file_arg.dest_path | dirname }}'
+  file:
+    path: "{{ file_arg.dest_path | dirname }}"
+    state: directory
+    owner: "{{ admin_user }}"
+    group: "{{ admin_group }}"
+  become: true
+  when:
+    - not is_file_already_in_dest
+
+- name: Copy file from cache on Ansible host
+  block:
+    - name: download_file_worker | Print info
+      debug:
+        msg:
+          - "Copy from: {{ file_arg.cached_file_path }}"
+          - "To: {{ file_arg.dest_path }}"
+    - name: download_file_worker | Copy '{{ file_arg.id }}' v{{ file_arg.version }} from cache on Ansible host
+      copy:
+        src: "{{ file_arg.cached_file_path }}"
+        dest: "{{ file_arg.dest_path }}"
+        force: true # replace remote file when contents are different
+      register: copy_task
+      until: copy_task is succeeded
+      retries: "{{ specification.download_retries }}"
+      delay: "{{ specification.download_retry_delay }}"
+      become: false
+  when:
+    - not is_file_already_in_dest
+    - not specification.direct_download
+
+- name: Download file from direct source
+  block:
+    - name: download_file_worker | Print info
+      debug:
+        msg:
+          - "Download from: {{ file_arg.url }}"
+          - "To: {{ file_arg.dest_path }}"
+    - name: download_file_worker | Download '{{ file_arg.id }}' v{{ file_arg.version }} from direct source
+      get_url:
+        url: "{{ file_arg.url }}"
+        dest: "{{ file_arg.dest_path }}"
+        checksum: "{{ file_arg.checksum_algorithm + ':' + file_arg[file_arg.checksum_algorithm] }}"
+        validate_certs: "{{ validate_certs }}"
+      register: get_url_result
+      until: "'OK' in get_url_result.msg or 'file already exists' in get_url_result.msg"
+      retries: "{{ specification.download_retries }}"
+      delay: "{{ specification.download_retry_delay }}"
+      become: false
+  when:
+    - not is_file_already_in_dest
+    - specification.direct_download
