@@ -1,7 +1,8 @@
 ---
+
 - name: download_package | Set architecture and OS properties
   set_fact:
-    arch: "{{ arch_map[ansible_architecture] }}"
+    arch: "{{ shared.architecture_map[ansible_architecture] }}"
     os_distribution: >-
       {{ (ansible_distribution == "Oracle Linux") | ternary('RedHat', ansible_distribution) }}
     os_distribution_version: >-

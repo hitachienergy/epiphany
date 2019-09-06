@@ -52,6 +52,7 @@ class AnsibleVarsGenerator(Step):
         main_vars = self.add_admin_user_name(main_vars)
         main_vars = self.add_validate_certs(main_vars)
         main_vars = self.add_dependencies_info(main_vars)
+        main_vars = self.add_shared_config(main_vars)
 
         vars_dir = os.path.join(ansible_dir, 'group_vars')
         if not os.path.exists(vars_dir):
@@ -83,6 +84,14 @@ class AnsibleVarsGenerator(Step):
             raise Exception('Config is empty for: ' + 'group_vars/all.yml')
         dependencies = select_first(self.config_docs, lambda x: x.kind == 'configuration/dependencies')
         document['dependencies'] = dependencies.specification
+
+        return document
+
+    def add_shared_config(self, document):
+        if document is None:
+            raise Exception('Config is empty for: ' + 'group_vars/all.yml')
+        shared_config_doc = select_first(self.config_docs, lambda x: x.kind == 'configuration/shared-config')
+        document['shared'] = shared_config_doc.specification
 
         return document
 

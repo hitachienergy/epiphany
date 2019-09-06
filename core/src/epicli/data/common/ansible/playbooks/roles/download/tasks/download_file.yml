@@ -2,9 +2,9 @@
 - name: download_file | Set properties from specification
   set_fact:
     file: >-
-      {{ specification.downloads.files[file_arg.id][arch_map[ansible_architecture]]
+      {{ specification.downloads.files[file_arg.id][shared.architecture_map[ansible_architecture]]
       | selectattr('version', 'match', '.*' if (file_arg.version is not defined) else file_arg.version)
-      | list | first | combine(file_arg) | combine({ 'arch': arch_map[ansible_architecture] }) }}
+      | list | first | combine(file_arg) | combine({ 'arch': shared.architecture_map[ansible_architecture] }) }}
 
 - name: download_file | Set dynamic properties
   set_fact:

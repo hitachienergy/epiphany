@@ -1,11 +1,8 @@
 ---
-
-# todo add group vars with local download location 
+ 
 # todo check if installed, if yes: compare versions and raise UPGRADE first exception
-# todo - load packages from download cache
 
 - name: Install {{ package.id }} v{{ package.version }} from {{ package_to_install.dest_path }}
   yum:
     name: "{{ package_to_install.dest_path }}"
     state: present
-    update_cache: yes

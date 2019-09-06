@@ -9,9 +9,6 @@
   register: kube
 
 # TODO ensure there are images in repo - if not, fail
-- name: kubeadm config images pull --kubernetes-version={{ specification.version }}
-  shell: "kubeadm config images pull --kubernetes-version={{ specification.version }}"
-  # when: not kube.stat.exists
 
 - name: Creates directory
   file:
