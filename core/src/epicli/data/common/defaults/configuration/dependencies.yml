@@ -3,6 +3,11 @@ version: 0.3.0
 title: "List of dependencies for Epiphany Platform"
 name: default
 specification:
+  haproxy_exporter:
+    0.10.0:
+      files:
+        - id: haproxy_exporter
+          version: 0.10.0
   rabbitmq:
     3.7.10:
       packages:
