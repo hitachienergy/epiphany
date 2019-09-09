@@ -20,7 +20,7 @@
   - [Kafka replication and partition setting](#kafka-replication-and-partition-setting)
   - [RabbitMQ installation and setting](#rabbitmq-installation-and-setting)
   - [Single machine cluster](#single-machine-cluster)
-  - [Single machine cluster using epicli](#single-machine-cluster-epicli)
+  - [Single machine cluster using epicli](#single-machine-cluster-using-epicli)
 - Monitoring
   - [Import and create of Grafana dashboards](#import-and-create-of-grafana-dashboards)
   - [How to configure Kibana](#how-to-configure-kibana)
