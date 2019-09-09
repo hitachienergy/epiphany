@@ -107,7 +107,7 @@
 
 Now you can use Epicli inside the created virtual environment.
 
-###single
+### Run epicli from Docker image
 
 There are 2 ways to get the image, build it locally yourself or pull it from the Epiphany docker registry.
 
