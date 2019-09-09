@@ -1586,7 +1586,7 @@ The first step is to create a simple baremetal epicli configuration:
 
 ```epicli init -p any -n <your config name>```
 
-This will create a subdirectory called build/<your config name>. In that directory you will find a configuration file called <your config name>.yml. This configuration is set up to install a number of software components running across various machines, as defined in the "components" section underneath "specification". Specifically, each component definition has a "machines" property that defines the machines that the component will run on. If you want to run everything on the Kubernetes master node, all machine names should be the same as for the "kubernetes_master" component configuration i.e. using a machine called "default-k8s-master".
+This will create a subdirectory called build/your config name. In that directory you will find a configuration file called your config name.yml. This configuration is set up to install a number of software components running across various machines, as defined in the "components" section underneath "specification". Specifically, each component definition has a "machines" property that defines the machines that the component will run on. If you want to run everything on the Kubernetes master node, all machine names should be the same as for the "kubernetes_master" component configuration i.e. using a machine called "default-k8s-master".
 ```
 kubernetes_master:
       count: 1
