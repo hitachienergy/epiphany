@@ -3,6 +3,25 @@ version: 0.3.0
 title: "List of dependencies for Epiphany Platform"
 name: default
 specification:
+  rabbitmq:
+    3.7.10:
+      packages:
+        - id: socat
+          version: 1.7.3.2
+        - id: erlang # RedHat
+          version: 21.2.2
+        - id: socat # Debian, Redhat
+          version: 1.7.3.2
+        - id: init-system-helpers # Debian
+          version: 1.51
+        - id: adduser # Debian
+          version: 3.116ubuntu1
+        - id: logrotate # Debian, Redhat
+          version: 3.11.0
+        - id: erlang-nox # Debian
+          version: 21.3.8.6 
+        - id: ubuntu-server # Debian, RedHat
+          version: 3.7.10
   postgresql:
     10:
       packages:

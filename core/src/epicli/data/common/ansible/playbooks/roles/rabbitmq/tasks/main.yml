@@ -1,7 +1,29 @@
 ---
 - include_tasks: "set-variables.yml"
 
-- include_tasks: "{{ ansible_os_family }}.yml"
+- name: Install packages for RedHat family
+  include_tasks: "install-package.yml"
+  vars:
+    package_name: "{{ item }}"
+  loop:
+      - erlang
+      - socat
+      - logrotate
+      - rabbitmq-server
+  when: ansible_os_family == "RedHat"
+
+- name: Install packages for Debian family
+  include_tasks: "install-package.yml"
+  vars:
+    package_name: "{{ item }}"
+  loop:
+      - init-system-helpers
+      - socat
+      - erlang-nox
+      - adduser
+      - logrotate
+      - rabbitmq-server
+  when: ansible_os_family == "Debian"
 
 - include_tasks: "set-erlang-cookie.yml"
   when: is_clustered and groups['rabbitmq'] | length > 1
