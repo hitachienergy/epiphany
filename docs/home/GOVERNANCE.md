@@ -82,5 +82,5 @@ The project leadership model does not need a formal conflict resolution process,
 
 These two documents go into detail on how to contribute and work within the branching strategy used by Epiphany:
 
-* [Gitworkflow.md](home/GITWORKFLOW.md)
-* [Contributing.md](home/CONTRIBUTING.md)
+* [Gitworkflow.md](/GITWORKFLOW.md)
+* [Contributing.md](/CONTRIBUTING.md)
