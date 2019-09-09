@@ -1,13 +1,17 @@
-
 # How-To Guides
 
 ## Contents
 
 - [Prerequisites for Epiphany engine](#prerequisites-to-run-epiphany-engine)
-  - [System](#prerequisites-to-run-epiphany-engine-locally)
-  - [Docker image for development](#prerequisites-to-run-epiphany-engine-docker-development)
-  - [Docker image for deployment](#prerequisites-to-run-epiphany-engine-deploy)
-- [Epiphany cluster:](#)
+  - [Epicli](#epicli)
+    - [Run Epicli directly from OS](#run-epicli-directly-from-os)
+    - [Run Epicli from Docker image](#run-epicli-from-docker-image)
+  - [Legacy](#legacy)
+    - [Run directly from OS](#run-directly-from-os)
+    - [Run Docker image for development](#run-docker-image-for-development)
+    - [Run Docker image for deployment](#run-docker-image-for-deployment)
+  - [Note for Windows users](#note-for-windows-users)
+- Epiphany cluster
   - [How to create an Epiphany cluster on premise](#how-to-create-an-epiphany-cluster-on-premise)
   - [How to create an Epiphany cluster on Azure](#how-to-create-an-epiphany-cluster-on-azure)
   - [How to create production environment on Azure](#how-to-create-production-environment-on-azure)
@@ -15,27 +19,34 @@
   - [How to scale Kubernetes and Kafka](#how-to-scale-kubernetes-and-kafka)
   - [Kafka replication and partition setting](#kafka-replication-and-partition-setting)
   - [RabbitMQ installation and setting](#rabbitmq-installation-and-setting)
+  - [Single machine cluster](#single-machine-cluster)
+  - [Single machine cluster using epicli](#single-machine-cluster-epicli)
 - Monitoring
   - [Import and create of Grafana dashboards](#import-and-create-of-grafana-dashboards)
   - [How to configure Kibana](#how-to-configure-kibana)
   - [How to configure Prometheus alerts](#how-to-configure-prometheus-alerts)
+  - [How to configure scalable Prometheus setup](#how-to-configure-scalable-prometheus-setup)
   - [How to configure Azure additional monitoring and alerting](#how-to-configure-azure-additional-monitoring-and-alerting)
 - Kubernetes
   - [How to do Kubernetes RBAC](#how-to-do-kubernetes-rbac)
   - [How to run an example app](#how-to-run-an-example-app)
+  - [How to set resource requests and limits for Containers](#how-to-set-resource-requests-and-limits-for-containers)
   - [How to run CronJobs](#how-to-run-cronjobs)
   - [How to test the monitoring features](#how-to-test-the-monitoring-features)
   - [How to run chaos on Epiphany Kubernetes cluster and monitor it with Grafana](#how-to-run-chaos-on-epiphany-kubernetes-cluster-and-monitor-it-with-grafana)
   - [How to tunnel Kubernetes dashboard from remote kubectl to your PC](#how-to-tunnel-kubernetes-dashboard-from-remote-kubectl-to-your-pc)
   - [How to setup Azure VM as docker machine for development](#how-to-setup-azure-vm-as-docker-machine-for-development)
-  - [How to upgrade Kubernetes cluster](#how-to-upgrade-kubernete-cluster)
+  - [How to upgrade Kubernetes cluster](#how-to-upgrade-kubernetes-cluster)
+  - [How to upgrade Kubernetes cluster from 1.13.0 to 1.13.1](#how-to-upgrade-kubernetes-cluster-from-1130-to-1131)
+  - [How to upgrade Kubernetes cluster from 1.13.1 to 1.13.10 / latest patch](#how-to-upgrade-kubernetes-cluster-from-1131-to-11310--latest-patch)
   - [How to authenticate to Azure AD app](#how-to-authenticate-to-azure-ad-app)
-  - [How to expose service through HA Proxy load balancer](#how-to-expose-service-lb)
+  - [How to expose service through HA Proxy load balancer](#how-to-expose-service-through-ha-proxy-load-balancer)
 - Security
   - [How to use TLS/SSL certificate with HA Proxy](#how-to-use-tls/ssl-certificate-with-ha-proxy)
   - [How to use Kubernetes Secrets](#how-to-use-kubernetes-secrets)
   - [How to enable or disable network traffic - firewall](#how-to-enable-or-disable-network-traffic)
   - [Client certificate for Azure VPN connection](#client-certificate-for-azure-vpn-connection)
+  - [How to enable AWS disk encryption](#how-to-enable-AWS-disk-encryption)
 - [Data and log retention](#data-and-log-retention)
   - [Elasticsearch](#elasticsearch)
   - [Grafana](#grafana)
@@ -46,14 +57,114 @@
   - [Zookeeper](#zookeeper)
 - Databases
   - [How to configure PostgreSQL](#how-to-configure-postgresql)
+  - [How to configure PostgreSQL replication](#how-to-configure-postgresql-replication)
 
 ## Prerequisites to run Epiphany engine
 
-### System
+### Epicli
+
+#### Run Epicli directly from OS
+
+1. To be able to run the Epicli from your local OS you have to install:
+
+    - Python 3.7
+    - PIP
+    - Pipenv
+
+2. Open a terminal in `/core/src/epicli` and run:
+
+    ```bash
+    pipenv install
+    ```
+
+    This will create a virtual Python 3.7 environment and install all needed dependencies.
+
+3. Build the Epicli wheel:
+
+    ```bash
+    ./build-wheel.sh
+    ```
+
+4. Enter the virtual Python enviroment:
+
+    ```bash
+    pipenv shell
+    ```
+
+5. Install the Epicli wheel inside the virtual enviroment:
+
+    ```bash
+    pip install dist/epicli-VERSION-py3-none-any.whl
+    ```
+
+6. Verify the Epicli installation:
+
+    ```bash
+    epicli --version
+    ```
+
+    This should return the version of the CLI deployed.
+
+Now you can use Epicli inside the created virtual environment.
+
+###single
+
+There are 2 ways to get the image, build it locally yourself or pull it from the Epiphany docker registry.
+
+##### Build Epicli image locally
+
+1. Install the following dependencies:
+
+    - Python 3.7
+    - PIP
+    - Pipenv
+    - Docker
+
+2. Open a terminal in `/core/src/epicli` and run:
+
+    On Linux:
+
+    ```bash
+    ./build-docker.sh
+    ```
+
+    On windows:
+
+    ```bash
+    ./build-docker.bat
+    ```
+
+##### Pull Epicli image from the registry
+
+```bash
+docker pull epiphanyplatform/epicli
+```
+
+##### Running the Epicli image
+
+To run the image:
+
+Locally build:
+
+```bash
+docker run -it -v LOCAL_DIR:/shared --rm epicli
+```
+
+Pulled:
+
+```bash
+docker run -it -v LOCAL_DIR:/shared --rm epiphanyplatform/epicli
+```
+
+Where `LOCAL_DIR` should be replaced with the local path to the directory for Epicli input (SSH keys, data yamls) and output (logs, build states).
+
+### Legacy
+
+#### Run directly from OS
 
 To be able to run the Epiphany engine from your local OS you have to install:
 
-- Bash 4.4+ 
+- Bash 4.4+
   - Should be natively installed on Linux distributions.
   - MacOS version of bash most likely needs upgrading.
   - For Windows 10 you can install Ubuntu subsystem.
@@ -70,82 +181,146 @@ To be able to run the Epiphany engine from your local OS you have to install:
 
 This can both be used for deploying/managing clusters or for development.
 
-### Docker image for development
+#### Run Docker image for development
 
-To facilitate an easier path for developers to contribute to Epiphany we have a development docker image based on alpine. This image will help to more easily setup a development environment or to develop on systems which do not support bash like Windows 7.
+To facilitate an easier path for developers to contribute to Epiphany we have a development docker image based on alpine. This image will help to more easily setup a development environment or to develop on systems which do not support Bash like Windows 7.
 
 The following prerequisites are needed when working with the development image:
-    - Docker[https://www.docker.com/]
-        - For Windows 7 check here[https://docs.docker.com/toolbox/toolbox_install_windows/]
-    - Git[https://git-scm.com/]
 
-Now, to build it locally and run it:
+- Docker <https://www.docker.com>
+  - For Windows 7 check [here](https://docs.docker.com/toolbox/toolbox_install_windows)
+- Git <https://git-scm.com>
 
+There are 2 ways to get the image, build it locally yourself or pull it from the Epiphany docker registry.
 
-1. Run the following to build the image locally:
-```docker build -t epiphany-dev -f core/src/docker/dev/Dockerfile .```
-2. To run the locally build image in a container use:
-```docker run -it -v LOCAL_DEV_DIR:/epiphany --rm epiphany-dev```
-Where ```LOCAL_DEV_DIR``` should be replaced with the local path to you're core and data repositories. This will then be mapped to ```/epiphany``` inside the container. If everything is ok you will be presentated with a bash terminal from which one can run the Epiphany engine. Note that when filling in your data YAMLs one needs to specify the paths from the containers point of view.
+##### Build dev image locally
 
+```bash
+docker build -t epiphany-dev -f core/src/docker/dev/Dockerfile .
+```
 
+##### Pull dev image from the registry
 
+```bash
+docker pull epiphanyplatform/epiphany-dev
+```
 
+##### Running the dev image
 
+To run the image:
 
+Locally build:
 
+```bash
+docker run -it -v LOCAL_DEV_DIR:/epiphany --rm epiphany-dev
+```
 
+Pulled:
 
+```bash
+docker run -it -v LOCAL_DEV_DIR:/epiphany --rm epiphanyplatform/epiphany-dev
+```
 
+Where `LOCAL_DEV_DIR` should be replaced with the local path to your local Epiphany repo. This will then be mapped to `epiphany` inside the container. If everything is ok you will be presented with a Bash prompt from which one can run the Epiphany engine while editing the core and data sources on the local OS. Note that when filling in your data YAMLs one needs to specify the paths from the container's point of view.
 
-### Docker image for deployment
+#### Run Docker image for deployment
 
 For people who are only using the Epiphany engine to deploy and maintain clusters there is a Dockerfile for the image with the engine already embedded.
 
-To get it from the registry and run it:
-1. Build an dev image described [here](#docker-image-for-development).
-2. Run the following command to build the deployment image locally:
-```docker build -t epiphany-deploy -f core/src/docker/deploy/Dockerfile .```
-3. To run the pulled image in a container use:
+There are 2 ways to get the image, build it locally yourself or pull it from the Epiphany docker registry.
 
+##### Build deployment image locally
 
+```bash
+docker build -t epiphany-dev -f core/src/docker/deploy/Dockerfile .
+```
 
-```docker run -it -v LOCAL_DATA_DIR:/epiphany/data \```
-```               -v LOCAL_BUILD_DIR:/epiphany/build \```
-```               --rm epiphany-deploy``` 
-```LOCAL_DATA_DIR``` should be the host input directy for you're data YAML's and certificates.  ```LOCAL_BUILD_DIR``` should be the host directory where you want the Epiphany engine to write it's build output. If everything is ok you will be presentated with a bash terminal from which one can run the Epiphany engine. Note that when filling in your data YAMLs one needs to specify the paths from the containers point of view.
+##### Pull deployment image from the registry
+
+```bash
+docker pull epiphanyplatform/epiphany-deploy
+```
+
+##### Running the deployment image
+
+To run the image:
+
+Locally build:
+
+```bash
+docker run -it -v LOCAL_DATA_DIR:/epiphany/core/data \
+                -v LOCAL_BUILD_DIR:/epiphany/core/build \
+                -v LOCAL_SSH_DIR:/epiphany/core/ssh \
+                --rm epiphany-deploy
+```
+
+Pulled:
+
+```bash
+docker run -it -v LOCAL_DATA_DIR:/epiphany/core/data \
+                -v LOCAL_BUILD_DIR:/epiphany/core/build \
+                -v LOCAL_SSH_DIR:/epiphany/core/ssh \
+                --rm epiphanyplatform/epiphany-deploy
+```
+
+```LOCAL_DATA_DIR``` should be the host input directy for your data YAMLs and certificates.  ```LOCAL_BUILD_DIR``` should be the host directory where you want the Epiphany engine to write its build output. ```LOCAL_SSH_DIR``` should be the host directory where the SSH keys are stored. If everything is ok you will be presented with a Bash prompt from which one can run the Epiphany engine. Note that when filling in your data YAMLs one needs to specify the paths from the container's point of view.
 
 [`Azure specific`] Ensure that you have already enough resources/quotas accessible in your region/subscription on Azure before you run Epiphany - depending on your configuration it can create large number of resources.
 
+### Note for Windows users
 
+- Watch out for the line endings conversion. By default Git for Windows sets `core.autocrlf=true`. Mounting such files with Docker results in `^M` end-of-line character in the config files.
+Use: [Checkout as-is, commit Unix-style](https://stackoverflow.com/questions/10418975/how-to-change-line-ending-settings) (`core.autocrlf=input`) or Checkout as-is, commit as-is (`core.autocrlf=false`). Be sure to use a text editor that can work with Unix line endings (e.g. Notepad++).
 
+- Remember to allow Docker Desktop to mount drives in Settings -> Shared Drives
 
+- Escape your paths properly:
 
+  - Powershell example:
+  ```bash
+  docker run -it -v C:\Users\USERNAME\git\epiphany:/epiphany --rm epiphany-dev
+  ```
+  - Git-Bash example:
+  ```bash
+  winpty docker run -it -v C:\\Users\\USERNAME\\git\\epiphany:/epiphany --rm epiphany-dev
+  ```
 
+- Mounting NTFS disk folders in a linux based image causes permission issues with SSH keys. When running either the development or deploy image:
 
+1. Copy the certs on the image:
 
+    ```bash
+    mkdir -p ~/.ssh/epiphany-operations/
+    cp /epiphany/core/ssh/id_rsa* ~/.ssh/epiphany-operations/
+    ```
+2. Set the propper permission on the certs:
 
+    ```bash
+    chmod 400 ~/.ssh/epiphany-operations/id_rsa*
+    ```
 
+### Note about proxies
 
+To run the legacy Epiphany or the new Epicli from behind a proxy, enviroment variables need to be set.
 
+When running directly from OS (upper and lowercase are needed because of an issue with the Ansible dependency):
 
+  ```bash
+  export http_proxy="http://PROXY_SERVER:PORT"
+  export https_proxy="https://PROXY_SERVER:PORT"
+  export HTTP_PROXY="http://PROXY_SERVER:PORT"
+  export HTTPS_PROXY="https://PROXY_SERVER:PORT"
+  ```
 
+Or when running from a Docker image (upper and lowercase are needed because of an issue with the Ansible dependency):
 
-
-
-
-
-
-
-
-
-
-
-
+  ```bash
+  docker run -it -v POSSIBLE_MOUNTS... -e HTTP_PROXY=http://PROXY_SERVER:PORT -e HTTPS_PROXY=http://PROXY_SERVER:PORT http_proxy=http://PROXY_SERVER:PORT -e https_proxy=http://PROXY_SERVER:PORT --rm IMAGE_NAME
+  ```
 
 ## Import and create of Grafana dashboards
 
-Epiphany use Grafana for monitoring data visualization. Epiphany installation creates Prometheus datasource in Grafana, so the only additional step you have to do is to create your dashboard.
+Epiphany uses Grafana for monitoring data visualization. Epiphany installation creates Prometheus datasource in Grafana, so the only additional step you have to do is to create your dashboard.
 
 ### Creating dashboards
 
@@ -172,9 +347,23 @@ sudo -u postgres -i
 ```
 
 And then configure database server using psql according to your needs and
-PostgreSQL documentation, to which link you can find under address:
+PostgreSQL documentation, to which link you can find at <https://www.postgresql.org/docs/>
 
-https://www.postgresql.org/docs/
+### How to configure PostgreSQL replication
+
+In order to configure PostgreSQL replication add to your data.yaml a block similar to the one below to core section:
+
+```yaml
+  postgresql:
+    replication:
+      enable: yes
+      user: your-postgresql-replication-user
+      password: your-postgresql-replication-password
+      max_wal_senders: 10 # (optional) - default value 5
+      wal_keep_segments: 34 # (optional) - default value 32
+```
+If enable is set to yes in replication then Epiphany will automatically create cluster of master and slave server with replication user with name and password
+specified in data.yaml.
 
 ### Components used for monitoring
 
@@ -233,8 +422,7 @@ In order to send messages from Prometheus add monitoring block to your data.yaml
         duration: 1m #1s, 1m, 1h, 1d, 1w, ...
         severity: critical
         message: "Instance down"
- ```
-
+```
 
     monitoring: - this covers whole monitoring section and is needed to define alerts
       alerts: - this covers whole alerts section and is needed to define alerts
@@ -262,6 +450,40 @@ https://prometheus.io/docs/prometheus/latest/querying/basics/
 https://prometheus.io/docs/prometheus/latest/querying/examples/
 
 Right now we are only supporting email messages, but we are working heavily on introducing integration with Slack and Pager Duty.
+
+## How to configure scalable Prometheus setup
+
+If you want to create scalable Prometheus setup you can use federation. Federation lets you scrape metrics from different Prometheus
+instances on one Prometheus instance.
+
+In order to create federation of Prometheus add to your configuration (for example to prometheus.yaml
+file) of previously created Prometheus instance (on which you want to scrape data from other
+Prometheus instances) to `scrape_configs` section:
+
+```yaml
+scrape_configs:
+  - job_name: federate
+    metrics_path: /federate
+    params:
+      'match[]':
+        - '{job=~".+"}'
+    honor_labels: true
+    static_configs:
+    - targets:
+      - your-prometheus-endpoint1:9090
+      - your-prometheus-endpoint2:9090
+      - your-prometheus-endpoint3:9090
+      ...
+      - your-prometheus-endpointn:9090
+```
+
+To check if Prometheus from which you want to scrape data is accessible, you can use a command
+like below (on Prometheus instance where you want to scrape data):
+
+`curl -G --data-urlencode 'match[]={job=~".+"}' your-prometheus-endpoint:9090/federate`  
+
+If everything is configured properly and Prometheus instance from which you want to gather data is up
+and running, this should return the metrics from that instance.  
 
 ## How to configure Azure additional monitoring and alerting
 
@@ -441,6 +663,12 @@ Here we will get a simple app to run using Docker through Kubernetes. We assume 
             image: myregistry.azurecr.io/samples/sample-app:v1
             ports:
             - containerPort: 80
+            resources:
+              requests:
+                cpu: 100m
+                memory: 64Mi
+              limits:
+                memory: 128Mi
           imagePullSecrets:
           - name: myregistry
     ```
@@ -452,6 +680,17 @@ Here we will get a simple app to run using Docker through Kubernetes. We assume 
 17. Run `kubectl get pods -o wide` and check on which node is the app running.
 
 18. Access the app through [AZURE_NODE_VM_IP]:[PORT] from the two previous points - firewall changes might be needed.
+
+## How to set resource requests and limits for Containers
+
+When Kubernetes schedules a Pod, it’s important that the Containers have enough resources to actually run. If you schedule a large application on a node with limited resources, it is possible for the node to run out of memory or CPU resources and for things to stop working! It’s also possible for applications to take up more resources than they should.
+
+When you specify a Pod, it is strongly recommended to specify how much CPU and memory (RAM) each Container needs. Requests are what the Container is guaranteed to get. If a Container requests a resource, Kubernetes will only schedule it on a node that can give it that resource. Limits make sure a Container never goes above a certain value. For more details about the difference between requests and limits, see [Resource QoS](https://git.k8s.io/community/contributors/design-proposals/node/resource-qos.md).
+
+For more information, see the links below:
+
+- [Kubernetes best practices: Resource requests and limits](https://cloud.google.com/blog/products/gcp/kubernetes-best-practices-resource-requests-and-limits)
+- [Managing Compute Resources for Containers](https://kubernetes.io/docs/concepts/configuration/manage-compute-resources-container/#resource-requests-and-limits-of-pod-and-container)
 
 ## How to run CronJobs
 
@@ -558,7 +797,7 @@ Prerequisites: Epiphany cluster on Azure with at least a single VM with `elastic
 Now your docker containers are running on a separate system without you having to worry about overhead.  
 Source: <https://docs.docker.com/machine/drivers/azure/#options>
 
-# How to use Kubernetes Secrets
+## How to use Kubernetes Secrets
 
 Prerequisites: Epiphany Kubernetes cluster
 
@@ -727,13 +966,437 @@ Upgrade procedure might be different for each Kubernetes version. Upgrade shall 
 
 Each version can be upgraded in a bit different way, to find information how to upgrade your version of Kubernetes please use this [guide](https://kubernetes.io/docs/reference/setup-tools/kubeadm/kubeadm-upgrade/#kubeadm-upgrade-guidance).
 
-Epiphany use kubeadm to boostrap a cluster and same tool shall be used to upgrade it.
+Epiphany uses kubeadm to boostrap a cluster and the same tool is also used to upgrade it.
 
 Upgrading Kubernetes cluster with running applications shall be done step by step. To prevent your applications downtime you should use at least **two Kubernetes worker nodes** and at least **two instances of each of your service**.
 
 Start cluster upgrade with upgrading master node. Detailed instructions how to upgrade each node, including master, are described in guide linked above. When Kubernetes master is down it does not affect running applications, at this time only control plane is not operating. **Your services will be running but will not be recreated nor scaled when control plane is down.**
 
 Once master upgrade finished successfully, you shall start upgrading nodes - **one by one**. Kubernetes master will notice when worker node is down and it will instatiate services on existing operating node, that is why it is essential to have more than one worker node in cluster to minimize applications downtime.
+
+## How to upgrade Kubernetes cluster from 1.13.0 to 1.13.1
+
+Detailed instruction can be found in [Kubernetes upgrade to 1.13 documentation](https://kubernetes.io/docs/tasks/administer-cluster/kubeadm/kubeadm-upgrade-1-13/)
+
+### Ubuntu Server
+
+#### Upgrade Master
+
+```bash
+# RUN ON MASTER
+
+1. sudo kubeadm version # should show v1.13.0
+2. sudo kubeadm upgrade plan v1.13.1
+
+3. apt update
+4. apt-cache policy kubeadm
+
+
+5. sudo apt-mark unhold kubeadm && \
+sudo apt-get update && sudo apt-get install -y kubeadm=1.13.1-00 && \
+sudo apt-mark hold kubeadm
+
+6. sudo kubeadm version # should show v1.13.1
+7. sudo kubeadm upgrade plan v1.13.1
+
+8. sudo kubeadm upgrade apply v1.13.1
+
+9. sudo apt-mark unhold kubelet && \
+sudo apt-get update && sudo apt-get install -y kubelet=1.13.1-00 && \
+sudo apt-mark hold kubelet
+```
+
+#### Upgrade Worker Nodes
+
+Commands below should be run in context of each node in the cluster. Variable `$NODE` represents node name (node names can be retrieved by command `kubectl get nodes` on master)
+
+Worker nodes will be upgraded one by one - it will prevent application downtime.
+
+```bash
+
+# RUN ON WORKER NODE - $NODE
+
+1. sudo apt-mark unhold kubectl && \
+sudo apt-get update && sudo apt-get install -y kubectl=1.13.1-00 && \
+sudo apt-mark hold kubectl
+
+# RUN ON MASTER
+
+2. kubectl drain $NODE --ignore-daemonsets
+
+# RUN ON WORKER NODE - $NODE
+
+3. sudo kubeadm upgrade node config --kubelet-version v1.13.1
+
+4. sudo apt-get update
+5. sudo apt-get install -y kubelet=1.13.1-00 kubeadm=1.13.1-00
+
+6. sudo systemctl restart kubelet
+7. sudo systemctl status kubelet # should be running
+
+# RUN ON MASTER
+
+8. kubectl uncordon $NODE
+
+9. # go to 1. for next node
+
+# RUN ON MASTER
+10. kubectl get nodes # should return nodes in status "Ready" and version 1.13.1
+
+```
+
+### RHEL
+
+#### Upgrade Docker version
+
+Upgrading Kubernetes to 1.13.1 on RHEL requires Docker upgrade. Newer Docker packages exist in docker-ce repository but you can use newer Docker-ee if you need. Verified Docker versions for Kubernetes are: 1.11.1, 1.12.1, 1.13.1, 17.03, 17.06, 17.09, 18.06. [Go to K8s docs](https://github.com/kubernetes/kubernetes/blob/master/CHANGELOG-1.13.md#external-dependencies)
+
+```bash
+
+# Remove previous docker version
+1 sudo yum remove docker \
+                  docker-common \
+                  container-selinux \
+                  docker-selinux \
+                  docker-engine
+2. sudo rm -rf /var/lib/docker
+3. sudo rm -rf /run/docker
+4. sudo rm -rf /var/run/docker
+5. sudo rm -rf /etc/docker
+
+# Add docker-ce repository
+6. sudo yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
+7. sudo yum makecache fast
+8. sudo yum -y install docker-ce-18.06.3.ce-3.el7
+
+```
+
+#### Upgrade Master
+
+```bash
+# RUN ON MASTER
+
+1. sudo kubeadm version # should show v1.13.0
+2. sudo kubeadm upgrade plan v1.13.1
+
+3. sudo yum install -y kubeadm-1.13.1-0 --disableexcludes=kubernetes
+
+4. sudo kubeadm version # should show v1.13.1
+5. sudo kubeadm upgrade plan v1.13.1
+
+6. sudo kubeadm upgrade apply v1.13.1
+
+7. sudo yum install -y kubelet-1.13.1-0 --disableexcludes=kubernetes
+
+```
+
+#### Upgrade Worker Nodes
+
+Commands below should be run in context of each node in the cluster. Variable `$NODE` represents node name (node names can be retrieved by command `kubectl get nodes` on master)
+
+Worker nodes will be upgraded one by one - it will prevent application downtime.
+
+```bash
+
+# RUN ON WORKER NODE - $NODE
+
+1. yum install -y kubectl-1.13.1-0 --disableexcludes=kubernetes
+
+# RUN ON MASTER
+
+2. kubectl drain $NODE --ignore-daemonsets
+
+# RUN ON WORKER NODE - $NODE
+
+3. # Upgrade Docker version using instruction from above
+
+4. sudo kubeadm upgrade node config --kubelet-version v1.13.1
+
+5. sudo yum install -y kubelet-1.13.1-0 kubeadm-1.13.1-0 --disableexcludes=kubernetes
+
+6. sudo systemctl restart kubelet
+7. sudo systemctl status kubelet # should be running
+
+# RUN ON MASTER
+
+8. kubectl uncordon $NODE
+
+9. # go to 1. for next node
+
+# RUN ON MASTER
+10. kubectl get nodes # should return nodes in status "Ready" and version 1.13.1
+
+```
+
+## How to upgrade Kubernetes cluster from 1.13.1 to 1.13.10 / latest patch
+
+### Ubuntu Server
+
+#### Upgrade Master
+
+Variable `$MASTER` represents master node name (node names can be retrieved by command `kubectl get nodes` on master)
+
+##### > RUN ON MASTER
+
+1. Check kubeadm version
+```bash
+kubeadm version
+# should show v1.13.1
+```
+2. Find the latest stable 1.13 version
+```bash
+sudo apt update
+apt-cache policy kubeadm
+# 1.13.10-0
+```
+3. Drain master in preparation for maintenance
+```bash
+kubectl drain $MASTER # [--ignore-daemonsets] [--delete-local-data]
+# $MASTER should be marked as Ready,SchedulingDisabled
+```
+may need to use flags:
+```bash
+--ignore-daemonsets: # to ignore DaemonSet-managed pods
+
+--delete-local-data: # to continue even if there are pods using emptyDir (local data that will be deleted when the node is drained)
+# BE CAREFUL!
+```
+4. Wait for all pods to be running and ready
+
+5. Install packages
+```bash
+sudo apt-mark unhold kubernetes-cni kubelet kubectl kubeadm && \
+sudo apt-get update && sudo apt-get install kubernetes-cni=0.7.5-00 kubelet=1.13.10-00 kubectl=1.13.10-00 kubeadm=1.13.10-00 && \
+sudo apt-mark hold kubernetes-cni kubelet kubectl kubeadm
+```
+6. Validate whether current cluster is upgradeable
+```bash
+sudo kubeadm upgrade plan v1.13.10 # [--config /path/to/kubeadm-config.yml]
+```
+7. Upgrade Kubernetes cluster to the specified version
+```bash
+sudo kubeadm upgrade apply v1.13.10 # [--config /path/to/kubeadm-config.yml]
+```
+8. Wait for all pods to be running and ready
+
+9. Reload daemon
+```bash
+sudo systemctl daemon-reload
+```
+10. Restart kubelet
+```bash
+sudo systemctl restart kubelet
+```
+11. Check kubelet status
+```bash
+sudo systemctl status kubelet
+# should be active (running)
+```
+12. Wait for cluster to be ready, e.g. check:
+```bash
+kubectl cluster-info
+```
+13. Uncordon master - mark as schedulable
+```bash
+kubectl uncordon $MASTER
+```
+14. List all nodes
+```bash
+kubectl get nodes
+# should return $MASTER in status "Ready" and version 1.13.10
+```
+
+#### Upgrade Worker Nodes
+
+Commands below should be run in context of each node in the cluster. Variable `$NODE` represents node name (node names can be retrieved by command `kubectl get nodes` on master)
+
+Important: Worker nodes should be upgraded one by one - this will prevent application downtime.
+
+##### > RUN ON MASTER
+
+1. Drain node in preparation for maintenance
+```bash
+kubectl drain $NODE # [--ignore-daemonsets] [--delete-local-data]
+# $NODE should be marked as Ready,SchedulingDisabled
+```
+may need to use flags:
+```bash
+--ignore-daemonsets: # to ignore DaemonSet-managed pods
+
+--delete-local-data: # to continue even if there are pods using emptyDir (local data that will be deleted when the node is drained)
+# BE CAREFUL!
+```
+2. Wait for all pods to be running and ready
+
+##### > RUN ON NODE
+
+3. Install packages
+```bash
+sudo apt-mark unhold kubernetes-cni kubelet kubectl kubeadm && \
+sudo apt-get update && sudo apt-get install kubernetes-cni=0.7.5-00 kubelet=1.13.10-00 kubectl=1.13.10-00 kubeadm=1.13.10-00 && \
+sudo apt-mark hold kubernetes-cni kubelet kubectl kubeadm
+```
+4. Upgrade node config
+```bash
+sudo kubeadm upgrade node config --kubelet-version v1.13.10
+```
+5. Reload daemon
+```bash
+sudo systemctl daemon-reload
+```
+6. Restart kubelet
+```bash
+sudo systemctl restart kubelet
+```
+7. Check kubelet status
+```bash
+sudo systemctl status kubelet
+# should be active (running)
+```
+##### > RUN ON MASTER
+
+8. Uncordon node - mark as schedulable
+```bash
+kubectl uncordon $NODE
+```
+9. List all nodes
+```bash
+kubectl get nodes
+# should return $NODE in status "Ready" and version 1.13.10
+```
+10. Go back to the point 1 with the next node
+
+
+### RHEL
+
+#### Upgrade Master
+
+Variable `$MASTER` represents master node name (node names can be retrieved by command `kubectl get nodes` on master)
+
+##### > RUN ON MASTER
+
+1. Check kubeadm version
+```bash
+kubeadm version
+# should show v1.13.1
+```
+2. Find the latest stable 1.13 version
+```bash
+yum list --showduplicates kubeadm --disableexcludes=kubernetes
+# 1.13.10-0
+```
+3. Drain master in preparation for maintenance
+```bash
+kubectl drain $MASTER # [--ignore-daemonsets] [--delete-local-data]
+# $MASTER should be marked as Ready,SchedulingDisabled
+```
+may need to use flags:
+```bash
+--ignore-daemonsets: # to ignore DaemonSet-managed pods
+
+--delete-local-data: # to continue even if there are pods using emptyDir (local data that will be deleted when the node is drained)
+# BE CAREFUL!
+```
+4. Wait for all pods to be running and ready
+
+5. Install packages
+```bash
+sudo yum install kubernetes-cni-0.7.5-0 kubelet-1.13.10-0 kubectl-1.13.10-0 kubeadm-1.13.10-0 --disableexcludes=kubernetes
+```
+6. Validate whether current cluster is upgradeable
+```bash
+sudo kubeadm upgrade plan v1.13.10 # [--config /path/to/kubeadm-config.yml]
+```
+7. Upgrade Kubernetes cluster to the specified version
+```bash
+sudo kubeadm upgrade apply v1.13.10 # [--config /path/to/kubeadm-config.yml]
+```
+8. Wait for all pods to be running and ready
+
+9. Reload daemon
+```bash
+sudo systemctl daemon-reload
+```
+10. Restart kubelet
+```bash
+sudo systemctl restart kubelet
+```
+11. Check kubelet status
+```bash
+sudo systemctl status kubelet
+# should be active (running)
+```
+12. Wait for cluster to be ready, e.g. check:
+```bash
+kubectl cluster-info
+```
+13. Uncordon master - mark as schedulable
+```bash
+kubectl uncordon $MASTER
+```
+14. List all nodes
+```bash
+kubectl get nodes
+# should return $MASTER in status "Ready" and version 1.13.10
+```
+
+#### Upgrade Worker Nodes
+
+Commands below should be run in context of each node in the cluster. Variable `$NODE` represents node name (node names can be retrieved by command `kubectl get nodes` on master)
+
+Important: Worker nodes should be upgraded one by one - this will prevent application downtime.
+
+##### > RUN ON MASTER
+
+1. Drain node in preparation for maintenance
+```bash
+kubectl drain $NODE # [--ignore-daemonsets] [--delete-local-data]
+# $NODE should be marked as Ready,SchedulingDisabled
+```
+may need to use flags:
+```bash
+--ignore-daemonsets: # to ignore DaemonSet-managed pods
+
+--delete-local-data: # to continue even if there are pods using emptyDir (local data that will be deleted when the node is drained)
+# BE CAREFUL!
+```
+2. Wait for all pods to be running and ready
+
+##### > RUN ON NODE
+
+3. Install packages
+```bash
+sudo yum install kubernetes-cni-0.7.5-0 kubelet-1.13.10-0 kubectl-1.13.10-0 kubeadm-1.13.10-0 --disableexcludes=kubernetes
+```
+4. Upgrade node config
+```bash
+sudo kubeadm upgrade node config --kubelet-version v1.13.10
+```
+5. Reload daemon
+```bash
+sudo systemctl daemon-reload
+```
+6. Restart kubelet
+```bash
+sudo systemctl restart kubelet
+```
+7. Check kubelet status
+```bash
+sudo systemctl status kubelet
+# should be active (running)
+```
+##### > RUN ON MASTER
+
+8. Uncordon node - mark as schedulable
+```bash
+kubectl uncordon $NODE
+```
+9. List all nodes
+```bash
+kubectl get nodes
+# should return $NODE in status "Ready" and version 1.13.10
+```
+10. Go back to the point 1 with the next node
 
 ## How to upgrade Kafka cluster
 
@@ -782,6 +1445,33 @@ root_certificate:
 ```
 
 Configuration requires to have revoked certificate filled in (for now).
+
+## How to enable AWS disk encryption
+
+### EC2 Root volumes
+
+Since [May 2019](https://aws.amazon.com/about-aws/whats-new/2019/05/launch-encrypted-ebs-backed-ec2-instances-from-unencrypted-amis-in-a-single-step/) AWS supports the creation of instances from unencrypted AMIs. At this point Terraform does not [support](https://github.com/terraform-providers/terraform-provider-aws/issues/8624) this jet. If you need encrypted root volumes for now you need to supply your own pre-encryped AMIs as specified in the guide [here](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/AMIEncryption.html).
+
+We will add this as the functionality becomes available in Terraform. The issue is beeing tracked [here](https://github.com/epiphany-platform/epiphany/issues/381).
+
+### Additional EC2 storage
+
+When defining extra storage inside the `infrastructure/virtual-machine` document one can set the `encryption` flag:
+
+```yaml
+...
+additional_disks:
+  - device_name: "/dev/sdb"
+    volume_type: gp2
+    volume_size: 60
+    delete_on_termination: true
+    encrypted: true
+...
+```
+
+### EFS storage
+
+EFS storage is encrypted by default.
 
 ## Build artifacts
 
@@ -857,9 +1547,80 @@ You can read more [here](https://www.confluent.io/blog/how-choose-number-topics-
 
 ## RabbitMQ installation and setting
 
-To install RabbitMQ in single mode just add rabbitmq role to your data.yaml for your sever and in general roles section. All configuration on Rabbit MQ - e.g. user other than 
-guest creation should be performed manually.
+To install RabbitMQ in single mode just add rabbitmq role to your data.yaml for your sever and in general roles section. All configuration on RabbitMQ - e.g. user other than guest creation should be performed manually.
 
+## Single machine cluster
+
+In certain circumstances it might be desired to run an Epiphany cluster on a single machine. There are 2 example data.yamls provided for baremetal and Azure:
+
+- `/core/data/metal/epiphany-single-machine/data.yaml`
+- `/core/data/azure/infrastructure/epiphany-single-machine/data.yaml`
+
+These will install the following minimal set of components on the machine:
+
+- kubernetes master (Untainted so it can run and manage deployments)
+- node_exporter
+- prometheus
+- grafana
+- rabbitmq
+- postgresql (for keycloak)
+- keycloak (2 instances)
+
+This bare installation will consume arround 2.8Gb of memory with the following base memory usage of the different components:
+
+- kubernetes    : 904 MiB
+- node_exporter : 38 MiB
+- prometheus    : 133 MiB
+- grafana       : 54 MiB
+- rabbitmq      : 85 MiB
+- postgresql    : 35 MiB
+- keycloak      : 1 Gb
+
+Additional resource consumption will be highly dependant on how the cluster is utilized and it will be up to the product teams to define there hardware requirements. The absolute bare minimum this cluster was tested on was a quadcore CPU with 8Gb of ram and 60Gb of storage. However a minimum of an 8 core CPU with 16Gb of ram and 100Gb of storage would be recommended.
+
+## Single Machine cluster using epicli
+
+This example shows how to create a singlemachine cluster on a baremetal machine. Refer to [Run Epicli from Docker image](#run-epicli-from-docker-image) for details on running epicli.
+
+The first step is to create a simple baremetal epicli configuration:
+
+```epicli init -p any -n <your config name>```
+
+This will create a subdirectory called build/<your config name>. In that directory you will find a configuration file called <your config name>.yml. This configuration is set up to install a number of software components running across various machines, as defined in the "components" section underneath "specification". Specifically, each component definition has a "machines" property that defines the machines that the component will run on. If you want to run everything on the Kubernetes master node, all machine names should be the same as for the "kubernetes_master" component configuration i.e. using a machine called "default-k8s-master".
+```
+kubernetes_master:
+      count: 1
+      machines:
+      - default-k8s-master
+```
+The reference "default-k8s-master" refers to a machine configuration in the same file which may look something like this:
+```
+---
+kind: infrastructure/machine
+name: default-k8s-master
+provider: any
+specification:
+  hostname: master
+  ip: 192.168.100.101
+```
+You should change this to reflect the actual hostname and IP address of the master node. You will see other machine configurations in the file which are redundant if you are running on a single machine and should be removed.
+To change the other configurations to use the master node machine you need to edit those component definitions. For example, to run Postgres on the same node you'd edit the configuration for that component to something like:
+```
+postgresql:
+      count: 1
+      machines:
+      - default-k8s-master
+```
+And so on for the other components.
+Note that by default epicli sets up the Kubernetes cluster so that pods cannot run on the master node. To switch this behaviour off add the following to your configuration:
+```
+---
+kind: configuration/kubernetes-master
+name: default
+provider: any
+specification:
+  allow_pods_on_master: true
+ ```
 ## Data and log retention
 
 An Epiphany cluster has a number of components which log, collect and retain data. To make sure that these do not exceed the usable storage of the machines there running on the following configurations are available.
