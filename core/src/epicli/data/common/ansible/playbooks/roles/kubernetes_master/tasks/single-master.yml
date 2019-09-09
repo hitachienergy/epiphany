@@ -8,9 +8,7 @@
     path: /etc/kubernetes/manifests/kube-apiserver.yaml
   register: kube
 
-- name: kubeadm config images pull --kubernetes-version={{ specification.version }}
-  shell: "kubeadm config images pull --kubernetes-version={{ specification.version }}"
-  # when: not kube.stat.exists
+# TODO ensure there are images in repo - if not, fail
 
 - name: Creates directory
   file:

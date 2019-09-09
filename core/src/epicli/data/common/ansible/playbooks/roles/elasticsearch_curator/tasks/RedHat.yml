@@ -1,6 +1,14 @@
 ---
 
-- name: Install Elasticsearch-Curator Package
-  yum:
-    name: "https://packages.elastic.co/curator/5/centos/7/Packages/elasticsearch-curator-{{ specification.redhat_curator_version }}.rpm"
+- name: Download Elasticsearch-Curator v{{ specification.redhat_curator_version }}
+  include_role:
+    name: download
+    tasks_from: download_package
+  vars:
+    package_arg: "{{ dependencies.elasticsearch_curator[specification.redhat_curator_version].packages | selectattr('id', 'equalto', elasticsearch-curator) | list | first }}"
+
+- name: Install Elasticsearch-Curator from {{ file.dest_path }}
+  package:
+    name: "{{ file.dest_path }}"
+    state: present
 

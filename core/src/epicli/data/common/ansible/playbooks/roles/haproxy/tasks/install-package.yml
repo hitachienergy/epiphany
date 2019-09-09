@@ -1,0 +1,13 @@
+---
+
+- name: Download {{ package_name }} for HAProxy v{{ specification.version }}
+  include_role:
+    name: download
+    tasks_from: download_package
+  vars:
+    package_arg: "{{ dependencies.haproxy[specification.version].packages | selectattr('id', 'equalto', package_name) | list | first }}"
+
+- name: Install {{ package_name }} from {{ file.dest_path }}
+  package:
+    name: "{{ file.dest_path }}"
+    state: present

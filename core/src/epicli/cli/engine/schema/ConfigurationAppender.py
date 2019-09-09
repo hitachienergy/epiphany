@@ -6,6 +6,8 @@ from cli.helpers.doc_list_helpers import select_single
 
 
 class ConfigurationAppender(Step):
+    REQUIRED_DOCS = ['configuration/feature-mapping', 'configuration/dependencies', 'configuration/download', 'configuration/shared-config']
+
     def __init__(self, input_docs):
         super().__init__(__name__)
         self.cluster_model = select_single(input_docs, lambda x: x.kind == 'epiphany-cluster')
@@ -14,19 +16,20 @@ class ConfigurationAppender(Step):
     def run(self):
         configuration_docs = []
 
+        for document_kind in ConfigurationAppender.REQUIRED_DOCS:
+            doc = select_first(self.input_docs, lambda x: x.kind == document_kind)
+            if doc is None:
+                doc = load_yaml_obj(types.DEFAULT, 'common', document_kind)
+                self.logger.info("Adding: " + doc.kind)
+                configuration_docs.append(doc)
+            else:
+                configuration_docs.append(doc)
+
         for component_key, component_value in self.cluster_model.specification.components.items():
             if component_value.count < 1:
                 continue
 
-            features_map = select_first(self.input_docs, lambda x: x.kind == 'configuration/feature-mapping')
-            if features_map is None:
-                features_map = select_first(configuration_docs, lambda x: x.kind == 'configuration/feature-mapping')
-
-            if features_map is None:
-                features_map = load_yaml_obj(types.DEFAULT, 'common', 'configuration/feature-mapping')
-                self.logger.info("Adding: " + features_map.kind)
-                configuration_docs.append(features_map)
-
+            features_map = select_first(configuration_docs, lambda x: x.kind == 'configuration/feature-mapping')
             config_selector = component_value.configuration
             for feature_key in features_map.specification.roles_mapping[component_key]:
                 config = select_first(self.input_docs, lambda x: x.kind == 'configuration/' + feature_key and x.name == config_selector)
