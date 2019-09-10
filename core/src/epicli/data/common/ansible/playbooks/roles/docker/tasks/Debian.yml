@@ -4,6 +4,8 @@
   vars:
     package_name: "{{ item }}"
   loop:
-    - 'apt-transport-https'
-    - 'ca-certificates'
-    - 'docker-ce'
+    - apt-transport-https
+    - ca-certificates
+    - containerd.io
+    - docker-ce-cli
+    - docker-ce

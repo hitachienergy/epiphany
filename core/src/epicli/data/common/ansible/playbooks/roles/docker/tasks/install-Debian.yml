@@ -5,10 +5,10 @@
     name: download
     tasks_from: download_package
   vars:
-    package_arg: "{{ dependencies.docker[docker_version].packages | selectattr('id', 'equalto', package_name) | list | first }}"
+    package_arg: "{{ dependencies.docker[docker_version].packages | selectattr('id', 'equalto', package_name) | first }}"
 
 - name: Install {{ package_name }} from {{ file.dest_path }}
   apt:
-    name: "{{ file.dest_path }}"
+    deb: "{{ file.dest_path }}"
     state: present
 

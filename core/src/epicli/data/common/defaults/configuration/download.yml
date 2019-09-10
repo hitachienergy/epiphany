@@ -221,6 +221,13 @@ specification:
             version: 2.99
             url: "http://mirror.centos.org/centos/7/extras/x86_64/Packages/container-selinux-2.99-1.el7_6.noarch.rpm"
             sha512: 4739D696AE1E9EF10D5CF89238AFFD4E4AAFB35591F0B624B64A256F82ED9D7D7A13B3EF77EBA5DFC297CF720D9EA9FB7053F9D3FBB0DA9B97801C8631A97F73           
+      containerd.io:
+        amd64:
+          - distros: Ubuntu
+            distro_version: 18.04
+            version: 1.2.6
+            url: "https://download.docker.com/linux/ubuntu/dists/bionic/pool/stable/amd64/containerd.io_1.2.6-3_amd64.deb"
+            sha512: 5ca552dd313f110801a2be76b09b76565a7d0b919f47dc7087cf3f4a1c10a1e72473e519a3a4ad0ef2230836ccfaa33d5986428b62b9b9bfd9f97accff5b80a9
       docker-ce:
         amd64:
           - distros: Ubuntu
@@ -235,6 +242,13 @@ specification:
             version: 18.09.6
             url: "https://download.docker.com/linux/centos/7/x86_64/stable/Packages/docker-ce-18.09.6-3.el7.x86_64.rpm"
             sha512: 239043AE66548CD2C38ABA14F426631417CC231092C97F1A70272F69D60A546EA6FC4C6817AAABAFDBB7C5DD89F10229AE57C789BE6A181143EE1D1F71705231
+      docker-ce-cli:
+        amd64:
+          - distros: Ubuntu
+            distro_version: 18.04
+            version: 18.09.6
+            url: "https://download.docker.com/linux/ubuntu/dists/bionic/pool/stable/amd64/docker-ce-cli_18.09.6~3-0~ubuntu-bionic_amd64.deb"
+            sha512: 8073eb0a977d84a9ce53a9257d9121c4f0955f615763316bf92d75ec0d45ab0ab6530615896ac4d1f764ecf9a276201fa4e62a74cfd89f2037bb459af194d327
       init-system-helpers:
         amd64:
           - distros: Ubuntu
@@ -279,4 +293,3 @@ specification:
             version: 21.2.2
             url: "https://github.com/rabbitmq/rabbitmq-server/releases/download/v3.7.10/rabbitmq-server-3.7.10-1.el7.noarch.rpm"
             sha512: 0193E61888C2982F4DDAD1C267827AAAB26187174FF09CA1BBEEDF1C77EEC6EA7EDBBE4F77E4164C668388B09623ADFF0371EBD2011FAE768F3A760E1CC912BA
-            
