@@ -27,9 +27,9 @@ def test_get_security_group_should_set_proper_values_to_model():
     cluster_model = get_cluster_model(cluster_name='TestCluster')
     builder = InfrastructureBuilder([cluster_model])
 
-    actual = builder.get_security_group('component', 1)
+    actual = builder.get_network_security_group('component', [], 1)
 
-    assert actual.specification.name == 'prefix-testcluster-component-security-group-1'
+    assert actual.specification.name == 'prefix-testcluster-component-nsg-1'
 
 
 def test_get_subnet_should_set_proper_values_to_model():
@@ -40,12 +40,69 @@ def test_get_subnet_should_set_proper_values_to_model():
     })    
     builder = InfrastructureBuilder([cluster_model])
 
-    actual = builder.get_subnet(subnet_definition, 'component', 'prefix-testcluster-component-security-group-1', 1)
+    actual = builder.get_subnet(subnet_definition, 'component', 1)
 
     assert actual.specification.name == 'prefix-testcluster-component-subnet-1'
     assert actual.specification.address_prefix == subnet_definition['address_pool']
-    assert actual.specification.security_group_name == 'prefix-testcluster-component-security-group-1'
     assert actual.specification.cluster_name == 'testcluster'
+
+
+def test_get_subnet_network_security_group_association_should_set_proper_values_to_model():
+    cluster_model = get_cluster_model(cluster_name='TestCluster')
+    builder = InfrastructureBuilder([cluster_model])
+
+    actual = builder.get_subnet_network_security_group_association(
+                                'component',
+                                'prefix-testcluster-component-subnet-1', 
+                                'prefix-testcluster-component-sg-1',
+                                1)
+
+    assert actual.specification.name == 'prefix-testcluster-component-ssga-1'
+    assert actual.specification.subnet_name == 'prefix-testcluster-component-subnet-1'   
+    assert actual.specification.security_group_name == 'prefix-testcluster-component-sg-1'
+
+
+
+def test_get_public_ip_should_set_proper_values_to_model():
+    cluster_model = get_cluster_model(cluster_name='TestCluster')
+    builder = InfrastructureBuilder([cluster_model])
+    component_value = dict_to_objdict({
+        'machine': 'kubernetes-master-machine'
+    })
+    vm_config = builder.get_virtual_machine(component_value, cluster_model, [])
+
+    actual = builder.get_public_ip('kubernetes_master', component_value, vm_config, 1)
+
+    assert actual.specification.name == 'prefix-testcluster-kubernetes-master-pubip-1'
+    assert actual.specification.allocation_method == 'Static'
+    assert actual.specification.idle_timeout_in_minutes == 30
+    assert actual.specification.sku == 'Standard'
+
+
+def test_get_network_interface_should_set_proper_values_to_model():
+    cluster_model = get_cluster_model(cluster_name='TestCluster')
+    builder = InfrastructureBuilder([cluster_model])
+    component_value = dict_to_objdict({
+        'machine': 'kubernetes-master-machine'
+    })
+    vm_config = builder.get_virtual_machine(component_value, cluster_model, [])
+
+    actual = builder.get_network_interface(
+                                'kubernetes_master',
+                                component_value,
+                                vm_config,
+                                'prefix-testcluster-component-subnet-1', 
+                                'prefix-testcluster-component-sg-1',
+                                'prefix-testcluster-kubernetes-master-pubip-1',
+                                1)          
+
+    assert actual.specification.name == 'prefix-testcluster-kubernetes-master-nic-1'
+    assert actual.specification.security_group_name == 'prefix-testcluster-component-sg-1'
+    assert actual.specification.ip_configuration_name == 'prefix-testcluster-kubernetes-master-ipconf-1'
+    assert actual.specification.subnet_name == 'prefix-testcluster-component-subnet-1'
+    assert actual.specification.use_public_ip == True
+    assert actual.specification.public_ip_name == 'prefix-testcluster-kubernetes-master-pubip-1'
+    assert actual.specification.enable_accelerated_networking == False
 
 
 def get_cluster_model(address_pool='10.22.0.0/22', cluster_name='EpiphanyTestCluster'):
@@ -57,7 +114,8 @@ def get_cluster_model(address_pool='10.22.0.0/22', cluster_name='EpiphanyTestClu
             'prefix': 'prefix',
             'cloud': {
                 'region': 'West Europe',
-                'vnet_address_pool': address_pool
+                'vnet_address_pool': address_pool,
+                'use_public_ips': True
             }
         }
     })
