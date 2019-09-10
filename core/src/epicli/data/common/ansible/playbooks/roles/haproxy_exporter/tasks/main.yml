@@ -58,6 +58,7 @@
   vars:
     file_arg: "{{ dependencies.haproxy_exporter[specification.version].files | selectattr('id', 'equalto', 'haproxy_exporter') | list | first }}"
 
+
 - name: Create /opt/haproxy_exporter directories
   become: yes
   file:

@@ -19,7 +19,6 @@ specification:
           - version: 0.7.5
             url: "https://github.com/containernetworking/plugins/releases/download/v0.7.5/cni-plugins-amd64-v0.7.5.tgz"
             sha512: 1abfb567c13f87aab94efd6f2c6bb17f3581cbcce87bf8c6216510a92486cb44e6b8701fd3a6cb85273a97981feecbd0c4eb624eab0eca5a005fd85a7d95c284
-
       kubeadm:
         amd64:
           - version: 1.14.4
@@ -30,16 +29,25 @@ specification:
             sha512: e4d876e3ff1f8da2ea434362c8c084d3280d3bdf552cfc18f631a317fa2a989313fb729eceafdadf76c85c9cfa3589a3c9b827e6c3154383ea64a1c3219f63bd
           - version: 1.12.10
             url: "https://storage.googleapis.com/kubernetes-release/release/v1.12.10/bin/linux/amd64/kubeadm"
-            sha512: dcb6b06195a093a87f952cbb3f471dd690da9baea4a8b09520900301b0e9cee3bfdb50cb28eb10dfdc5b73bbf6bcd08d5c49711f91cea14679ebb1690a9368d9
-
+            sha512: dcb6b06195a093a87f952cbb3f471dd690da9baea4a8b09520900301b0e9cee3bfdb50cb28eb10dfdc5b73bbf6bcd08d5c49711f91cea14679ebb1690a9368d9 
+      haproxy_exporter:
+        amd64:
+          - version: 0.10.0
+            url: "https://github.com/prometheus/haproxy_exporter/releases/download/v0.10.0/haproxy_exporter-0.10.0.linux-amd64.tar.gz"
+            sha512: C0DB7FE6EEE35C445C4D44EAFC3F0D6F68BF7944CD6EEF052A3180D6CEE08E51C77590069D1D7848EE449F5D052FEA7597C40D6BC798CCAAB19F42EAA63AD726
     packages:
       socat:
         amd64:
-          - version: 1.7.3.2
-            distribution: CentOS
-            distribution_version: 7
-            url: "http://download-ib01.fedoraproject.org/pub/epel/7/x86_64/Packages/n/ncdu-1.14-1.el7.x86_64.rpm"
-            sha512: 5a98254e9b2d83e729add7c7a812d00e27019b72524b37ca8db2bfd491390d6acd6eb877043c7577c739cc129482a5b1fb9f9d715f4c3a604241afbca88c87d6
+          - distros: CentOS
+            distro_version: 7
+            version: 1.7.3.2
+            url: "http://mirror.centos.org/centos/7/os/x86_64/Packages/socat-1.7.3.2-2.el7.x86_64.rpm"
+            sha512: 840EC2CF40D89E6D97349682035B9239CBD9E312F8E308294668857230A8191EA9C39B7834BE0D876483A8376A72EE62894D9326CAD0B2730DF95A30CEA152AA
+          - distros: Ubuntu
+            distro_version: 18.04
+            version: 1.7.3.2
+            url: "http://archive.ubuntu.com/ubuntu/pool/main/s/socat/socat_1.7.3.2-2ubuntu2_amd64.deb"
+            sha512: CE411FB065E97AA7375C12683016CBE93DC9F8260A351B3321B1660F74DCF9426BD6769CE8217B260C1511B136920933B1025E62595DE5B42AD594C3CE105A36
       jq:
         amd64:
           - version: 1.5
@@ -59,3 +67,218 @@ specification:
             distribution_version: 18.04
             url: "http://cz.archive.ubuntu.com/ubuntu/pool/universe/t/tree/tree_1.7.0-5_amd64.deb"
             sha256: e2008deb77a666372bee79056f8d0d6423373f5c7138dff5c91dcdf5d43d12cd
+      kibana-oss:
+        amd64:
+          - distros: Ubuntu
+            distro_version: 18.04
+            version: 6.4.0
+            url: "https://artifacts.elastic.co/downloads/kibana/kibana-oss-6.4.0-amd64.deb"
+            sha512: 856c2b90a368a24826bec260bbd809b015d46a3824d867ba8042518ed3ae5a0e007a8fd0e0b0d4cf40e4af67c3c8d3398cb7b69232c28ec734a7eacc4c563588
+          - distros:
+              - CentOS
+              - RedHat
+            distro_version: 7
+            version: 6.4.0
+            url: "https://artifacts.elastic.co/downloads/kibana/kibana-oss-6.4.0-x86_64.rpm"
+            sha512: 7adc107b6abd61399ce2f1d38d640a196f5ed5a422d58584f6241ca120512989ed9c71d647db65147006d3e8e4a11814ae27c1aca2bdb1cc4027de38d7033a20
+      haproxy:
+        amd64:
+          - distros: Ubuntu
+            distro_version: 18.04
+            version: 1.8.8
+            url: "http://archive.ubuntu.com/ubuntu/pool/main/h/haproxy/haproxy_1.8.8-1ubuntu0.4_amd64.deb"
+            sha512: 625400C923A961076EEB14B43FFDAF722BEF8EEAA31A9570578EA3AD7C2BC7A44053467ABA8A26D0365E156DC0C4B7FA3B097C3F63C63EE8730DD636D509C2AA
+      rh-haproxy18:
+        amd64:
+          - distros: CentOS
+            distro_version: 7
+            version: 1.8.17
+            url: "http://mirror.centos.org/centos/7/sclo/x86_64/rh/rh-haproxy18/rh-haproxy18-haproxy-1.8.17-1.el7.x86_64.rpm"
+            sha512: DF56D8EA503DAE9ADCDD55E3D06F3E077E3B356E549D42D818437EB9D637E7FC335A9A59F2A8AD49CF9B37204CC747C36417C8C93837203DAD7889808C540F36
+      rh-haproxy18-haproxy-syspaths:
+        amd64:
+          - distros: CentOS
+            distro_version: 7
+            version: 1.8.17
+            url: "http://mirror.centos.org/centos/7/sclo/x86_64/rh/rh-haproxy18/rh-haproxy18-haproxy-syspaths-1.8.17-1.el7.x86_64.rpm"
+            sha512: C325089D8CD2173166FBC7ED43BB0D81FE488A85D9E77093456918F3F378C1E779A6C523FD34796C974227582F63D076F641150CAF9329E01F25D19380D6856C
+      filebeat-oss:
+        amd64:
+          - distros: Ubuntu
+            distro_version: 18.04
+            version: 6.5.4
+            url: "https://artifacts.elastic.co/downloads/beats/filebeat/filebeat-oss-6.5.4-amd64.deb"
+            sha512: f53bb2173eb7b6bcb25d673c18abb5ae842fee6ea310f028a393608f82908da53225a21b53c8032fa374123aabf7673d9fd54493c3e705863065ecfefadbea55
+          - distros:
+              - CentOS
+              - RedHat
+            distro_version: 7
+            version: 6.5.4
+            url: "https://artifacts.elastic.co/downloads/beats/filebeat/filebeat-oss-6.5.4-x86_64.rpm"
+            sha512: ceba59d697334bd0025172a749fbf947ee960c991d03d633110defd56f466522e8ea0a76cea6a6b9e3a49bc2e762b8da8878bf65ceab4aa9aafd517a0150e279
+      elasticsearch-curator:
+        amd64:
+          - distros: Ubuntu
+            distro_version: 18.04
+            version: 5.5.4_amd64
+            url: "https://packages.elastic.co/curator/5/debian9/pool/main/e/elasticsearch-curator/elasticsearch-curator_5.5.4_amd64.deb"
+            sha512: 201BE6B0CA3F36BEF6F9391F964911ED90DD9A3192427D950943F526B871B385FDF87AE72777FFAB52F48439B63E04149B6A94D6A6D045C1C42CD68756F8963B
+          - distros:
+              - CentOS
+              - RedHat
+            distro_version: 7
+            version: 5.5.4-1.x86_64
+            url: "https://packages.elastic.co/curator/5/centos/7/Packages/elasticsearch-curator-5.5.4-1.x86_64.rpm"
+            sha512: F32C238A5C31B1F8A4CEBBFF8E35DFC0C7C273BB006CB116D91FDEE46B0B1697773F8AD1587D6C8D57B4C70321ADE9E7D4C5623148A558A006D609B07E43D3F3
+      openjdk-8-jre:
+        amd64:
+          - distros: Ubuntu
+            distro_version: 18.04
+            version: 8u222-b10-1ubuntu1
+            url: "http://archive.ubuntu.com/ubuntu/pool/universe/o/openjdk-8/openjdk-8-jre_8u222-b10-1ubuntu1~18.04.1_amd64.deb"
+            sha512: 0FAE2840BAACF685B3E350718DC38F80B0579C2CE33FBB43E325A47CE7280C150F8BCC2F47E7BF2F4FDC13164E52889F3A840C20E29F1EA1DAD3E6BC1B92E839
+      java-1.8.0-openjdk:
+        amd64:
+          - distros: CentOS
+            distro_version: 7
+            version: 1.8.0
+            url: "http://mirror.centos.org/centos/7/updates/x86_64/Packages/java-1.8.0-openjdk-1.8.0.222.b10-0.el7_6.x86_64.rpm"
+            sha512: F7A2F696BC8F30EF77D25D264CF1BD60762FC60EA46DF2407F3EA9479DEB7132B7314831BFE4E2B21F3ABC4ECDD36963703174F490DE8FD5F98064A164587D30
+      elasticsearch-oss:
+        amd64:
+          - distros: Ubuntu
+            distro_version: 18.04
+            version: 6.4.0
+            url: "https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-oss-6.4.0.deb"
+            sha512: fd5809e562a09ce031f9be75f50a44739ce066eab23a740b8dee8e6251ca62f2ce65e38f1a384140c0285b6223f6975323788208863f69376b95f33d1e7cee70
+          - distros:
+              - CentOS
+              - RedHat
+            distro_version: 7
+            version: 6.4.0
+            url: "https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-oss-6.4.0.rpm"
+            sha512: f6d9e1f9941773bc4eef2e314dec7e44c6f9c78bf1d5e8b3e6c7862ebc09a9ef6deac8573b8c490d092d2643223d38fee853886d7a6d5f0fe17b9acb4f09119d
+      apt-transport-https:
+        amd64:
+          - distros: Ubuntu
+            distro_version: 18.04
+            version: 1.6.11
+            url: "http://archive.ubuntu.com/ubuntu/pool/universe/a/apt/apt-transport-https_1.6.11_all.deb"
+            sha512: 5686ED3FCEDDD8D8816C3E8F74B0B5BA3DF3A1CA010EED0B70DC6EE711B75916BBB8D99A19F382DF9041B7781705907C45CFB8935554F9B893FAD78F488B4947
+      ca-certificates:
+        amd64:
+          - distros: Ubuntu
+            distro_version: 18.04
+            version: 20180409
+            url: "http://archive.ubuntu.com/ubuntu/pool/main/c/ca-certificates/ca-certificates_20180409_all.deb"
+            sha512: FA8670CAE58A09A763FF27522BBCC666DF63C2A717687EFEB8475C4D566DA1D338F7D52BC6377EE3855ACE443C053F6FE3E1D06D509210B56AC1EB49CC711B43
+      adduser:
+        amd64:
+          - distros: Ubuntu
+            distro_version: 18.04
+            version: 3.116ubuntu1
+            url: "http://archive.ubuntu.com/ubuntu/pool/main/a/adduser/adduser_3.116ubuntu1_all.deb"
+            sha512: CC73B79922AA4D0371C3776EA655516DA4D65029B02C3AF14012958C5C25093AC9277E959FD322888391B2EB6E1ABDE97A946EB98B1EF67D3B003BD69342A71A
+      libfontconfig1:
+        amd64:
+          - distros: Ubuntu
+            distro_version: 18.04
+            version: 2.12.6-0ubuntu2
+            url: "http://archive.ubuntu.com/ubuntu/pool/main/f/fontconfig/libfontconfig1_2.12.6-0ubuntu2_amd64.deb"
+            sha512: 8B329D91B3FAE44E8E0AD7D53D8128FFD220F0C2CF389EB0D2137AB0785FAD658A318EBB36F49987DBC664685F0D223039AEE55721064A964DBF5644A7BA3F9E
+      gnupg2:
+        amd64:
+          - distros: Ubuntu
+            distro_version: 18.04
+            version: 2.2.4-1ubuntu1.2
+            url: "http://archive.ubuntu.com/ubuntu/pool/universe/g/gnupg2/gnupg2_2.2.4-1ubuntu1.2_all.deb"
+            sha512: 4A2200B89214018923B9C76652769C461AC282EDC7182DD7326B09E84B59177AD380249BC87A6313C57C0F80DE7CEA3E084804024899B2C43EB7CA3D1878F907
+      grafana:
+        amd64:
+          - distros: Ubuntu
+            distro_version: 18.04
+            version: 6.2.5
+            url: "https://dl.grafana.com/oss/release/grafana_6.2.5_amd64.deb"
+            sha512: DBF63EAFBE255C961200095B5359CA34126DD9813ABF4F9E2530C0D3D3C65311C485C10BD8799D3EE9104E2BEC3509C0EF2CE0C828E874C341D65BB4437DFAFE
+          - distros:
+              - CentOS
+              - RedHat
+            distro_version: 7
+            version: 6.2.5
+            url: "https://dl.grafana.com/oss/release/grafana-6.2.5-1.x86_64.rpm"
+            sha512: C70BBB9AF6B6164207376F0C1C696FD362B20608371F6A99267CBAAE8AB16074AC9A17E2F4B6D2112DD0F0A8FEB4B6D80EB7B6959F8E781F692B862F70B15A24
+      container-selinux:
+        amd64:
+          - distros:
+              - CentOS
+              - RedHat
+            distro_version: 7
+            version: 2.74
+            url: "http://mirror.centos.org/centos/7/extras/x86_64/Packages/container-selinux-2.74-1.el7.noarch.rpm"
+            sha512: 5807EB28F408E2E584622CB085013EAE1864F77180A636FFA08613644AA07F87DD826A1F7A10D0EC9115FDFAD6FFB8883AFB91B03283585A3B98BDA01BD0C059 
+          - distros:
+              - CentOS
+              - RedHat
+            distro_version: 7
+            version: 2.99
+            url: "http://mirror.centos.org/centos/7/extras/x86_64/Packages/container-selinux-2.99-1.el7_6.noarch.rpm"
+            sha512: 4739D696AE1E9EF10D5CF89238AFFD4E4AAFB35591F0B624B64A256F82ED9D7D7A13B3EF77EBA5DFC297CF720D9EA9FB7053F9D3FBB0DA9B97801C8631A97F73           
+      docker-ce:
+        amd64:
+          - distros: Ubuntu
+            distro_version: 18.04
+            version: 18.09.6
+            url: "https://download.docker.com/linux/ubuntu/dists/bionic/pool/stable/amd64/docker-ce_18.09.6~3-0~ubuntu-bionic_amd64.deb"
+            sha512: 67E5F9C16FE6F35130F764E37E537B55E828930322E8B13C5103A3C4B06B21061A960579D1CAB45CB0C1014E42C39460CCBAA4D3CCAEB9F69482E7AA8C93871B 
+          - distros:
+              - CentOS
+              - RedHat
+            distro_version: 7
+            version: 18.09.6
+            url: "https://download.docker.com/linux/centos/7/x86_64/stable/Packages/docker-ce-18.09.6-3.el7.x86_64.rpm"
+            sha512: 239043AE66548CD2C38ABA14F426631417CC231092C97F1A70272F69D60A546EA6FC4C6817AAABAFDBB7C5DD89F10229AE57C789BE6A181143EE1D1F71705231
+      init-system-helpers:
+        amd64:
+          - distros: Ubuntu
+            distro_version: 18.04
+            version: 1.51
+            url: "http://archive.ubuntu.com/ubuntu/pool/main/i/init-system-helpers/init-system-helpers_1.51_all.deb"
+            sha512: 60E62A299A4430427DC49D16CC6B5F618B6B85463C5FBE287334639324A269BBC0F91BACFD08F9884F1033EE8EE4E172DB7A0EF4DA727BC6582EAC645E3068F9
+      logrotate:
+        amd64:
+          - distros: Ubuntu
+            distro_version: 18.04
+            version: 3.11.0
+            url: "http://archive.ubuntu.com/ubuntu/pool/main/l/logrotate/logrotate_3.11.0-0.1ubuntu1_amd64.deb"
+            sha512: 726A8B1241AB5F581D4E032F31E158666CB0454A484F8F5C2A02B69BEB5E68BFB6E41E6566C32C554909B6556FE5EB711279970D538FA7B6217A911EB6CA28C7
+      erlang:
+        amd64:
+          - distros:
+              - CentOS
+              - RedHat
+            distro_version: 7
+            version: 21.2.2
+            url: "https://github.com/rabbitmq/erlang-rpm/releases/download/v21.2.2/erlang-21.2.2-1.el7.centos.x86_64.rpm"
+            sha512: 27FD68B82A26C14FB8E1F7492F0BB46C927E86AD133BDDEDE01DC6B18AB9FFEBBDD02ABD8045E0718BA9B4DC9459FD808439641142D3ABF3729CE78AFEEB6635
+      erlang-nox:
+        amd64:
+          - distros: Ubuntu
+            distro_version: 18.04
+            version: 21.3.8.6
+            url: "http://dl.bintray.com/rabbitmq-erlang/debian/pool/erlang/21.3.8.6-1/ubuntu/bionic/erlang-nox_21.3.8.6-1_all.deb"
+            sha512: FF9257B701221CA0548FCC34E3B3A7ADF4C601ECCA8212A65658523D68D9F7611CEFC23EBFEE91E6763CFE72B64151FF357FEA129F7E65156CA0DE0FB86DB45D
+      rabbitmq-server:
+        amd64:
+          - distros: Ubuntu
+            distro_version: 18.04
+            version: 3.7.10
+            url: "https://github.com/rabbitmq/rabbitmq-server/releases/download/v3.7.10/rabbitmq-server_3.7.10-1_all.deb"
+            sha512: 7455D5B0286BF29CEC856AED0CA623FB707637BD7B6AD57A0968C59DC42E88A47011F3C9831F6F9AC0AC362A3479DA06FD770E31778706801A9FD3A7F56E1BF3
+          - distros:
+              - CentOS
+              - RedHat
+            distro_version: 7
+            version: 21.2.2
+            url: "https://github.com/rabbitmq/rabbitmq-server/releases/download/v3.7.10/rabbitmq-server-3.7.10-1.el7.noarch.rpm"
+            sha512: 0193E61888C2982F4DDAD1C267827AAAB26187174FF09CA1BBEEDF1C77EEC6EA7EDBBE4F77E4164C668388B09623ADFF0371EBD2011FAE768F3A760E1CC912BA
+            

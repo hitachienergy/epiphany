@@ -40,8 +40,6 @@ specification:
           version: 1.7.3.2
         - id: erlang # RedHat
           version: 21.2.2
-        - id: socat # Debian, Redhat
-          version: 1.7.3.2
         - id: init-system-helpers # Debian
           version: 1.51
         - id: adduser # Debian
@@ -50,7 +48,7 @@ specification:
           version: 3.11.0
         - id: erlang-nox # Debian
           version: 21.3.8.6 
-        - id: ubuntu-server # Debian, RedHat
+        - id: rabbitmq-server # Debian, RedHat
           version: 3.7.10
   postgresql:
     10:
@@ -106,9 +104,9 @@ specification:
   elasticsearch:
     6.4.0:
       packages:
-        - id: openjdk-8-jre
+        - id: openjdk-8-jre # Debian
           version: 8u222-b10-1ubuntu1
-        - id: java-1.8.0-openjdk
+        - id: java-1.8.0-openjdk # RedHat
           version: 1.8.0
         - id: elasticsearch-oss
           version: 6.4.0     
