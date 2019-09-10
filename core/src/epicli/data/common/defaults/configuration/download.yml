@@ -3,12 +3,10 @@ version: 0.3.0
 title: "Download settings and inventory"
 name: default
 specification:
-  local_cache_dir: /shared/epiphany
-  remote_dest_dir: /tmp/epiphany
+  local_downloads_dir: /shared/epiphany
+  remote_downloads_dir: /tmp/epiphany
   # If true, download directly from Internet (on remote hosts) without using local cache
   direct_download: false
-  # If true, disable SSL validation of get_url module. Checksum validation will still be performed.
-  validate_certs: true
   download_retries: 3
   download_retry_delay: 5
 
