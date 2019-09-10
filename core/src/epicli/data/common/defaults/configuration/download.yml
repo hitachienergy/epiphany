@@ -256,7 +256,7 @@ specification:
           - distros:
               - CentOS
               - RedHat
-            distro_version: 18.04
+            distro_version: 7
             version: 21.2.2
             url: "https://github.com/rabbitmq/erlang-rpm/releases/download/v21.2.2/erlang-21.2.2-1.el7.centos.x86_64.rpm"
             sha512: 27FD68B82A26C14FB8E1F7492F0BB46C927E86AD133BDDEDE01DC6B18AB9FFEBBDD02ABD8045E0718BA9B4DC9459FD808439641142D3ABF3729CE78AFEEB6635
@@ -277,7 +277,7 @@ specification:
           - distros:
               - CentOS
               - RedHat
-            distro_version: 18.04
+            distro_version: 7
             version: 21.2.2
             url: "https://github.com/rabbitmq/rabbitmq-server/releases/download/v3.7.10/rabbitmq-server-3.7.10-1.el7.noarch.rpm"
             sha512: 0193E61888C2982F4DDAD1C267827AAAB26187174FF09CA1BBEEDF1C77EEC6EA7EDBBE4F77E4164C668388B09623ADFF0371EBD2011FAE768F3A760E1CC912BA
