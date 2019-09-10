@@ -18,6 +18,7 @@ python-json-logger = "*"
 ansible = "*"
 terraform-bin = "*"
 azure-cli = "==2.0.67"
+skopeo-bin = "*"
 
 [requires]
 python_version = "3.7"
