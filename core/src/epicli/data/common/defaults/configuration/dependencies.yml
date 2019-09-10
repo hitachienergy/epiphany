@@ -16,7 +16,7 @@ specification:
         - id: socat # Debian, Redhat
           version: 1.7.3.2
         - id: init-system-helpers # Debian
-          version: 1.51
+          version: '1.51'
         - id: adduser # Debian
           version: 3.116ubuntu1
         - id: logrotate # Debian, Redhat
@@ -84,14 +84,14 @@ specification:
         - id: java-1.8.0-openjdk # RedHat
           version: 1.8.0
         - id: elasticsearch-oss
-          version: 6.4.0     
+          version: 6.4.0
   grafana:
     6.2.5:
       packages:
         - id: apt-transport-https # Ubuntu specific
           version: 1.6.11
         - id: ca-certificates  # Ubuntu specific
-          version: 20180409
+          version: '20180409'
         - id: adduser  # Ubuntu specific
           version: 3.116ubuntu1
         - id: libfontconfig1  # Ubuntu specific
@@ -99,25 +99,29 @@ specification:
         - id: gnupg2 # Ubuntu specific
           version: 2.2.4-1ubuntu1.2
         - id: grafana
-          version: 6.2.5        
+          version: 6.2.5
   docker:
     18.09.6:
       packages:
         - id: apt-transport-https # Ubuntu specific
           version: 1.6.11
         - id: ca-certificates  # Ubuntu specific
-          version: 20180409
+          version: '20180409'
         - id: container-selinux
-          version: 2.74 # just for RedHat family <= 7.5, if modified: please update ansible role
+          version: '2.74' # just for RedHat family <= 7.5, if modified: please update ansible role
         - id: container-selinux
-          version: 2.99 # just for RedHat family >= 7.6, if modified: please update ansible role 
+          version: '2.99' # just for RedHat family >= 7.6, if modified: please update ansible role
+        - id: containerd.io
+          version: 1.2.6
+        - id: docker-ce-cli
+          version: 18.09.6
         - id: docker-ce
           version: 18.09.6
   kubernetes:
     1.14.4:
       packages:
         - id: cifs-utils
-          version: 6.2
+          version: '6.2'
         - id: samba-client
           version: 4.8.3
         - id: samba-common
