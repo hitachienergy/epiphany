@@ -1,60 +1,5 @@
 ---
 
-- name: Install debian family packages
-  apt:
-    name:
-      - openjdk-8-jre
-    update_cache: yes
-    state: present
-  when: ansible_os_family == "Debian"
-
-
-- name: Install RedHat family packages
-  yum:
-    name:
-      - java-1.8.0-openjdk
-    update_cache: yes
-    state: present
-  register: result
-  retries: 3
-  delay: 1
-  until: result is succeeded
-  when: ansible_os_family == "RedHat"
-
-- name: Check for Kafka package
-  stat:
-    path: "/tmp/kafka_{{ specification.kafka_var.scala.version }}-{{ specification.kafka_var.version }}.tgz"
-  register: kafka_check
-  
-- name: Fetch Kafka binary package
-  get_url:
-    url: "https://archive.apache.org/dist/kafka/{{ specification.kafka_var.version }}/kafka_{{ specification.kafka_var.scala.version }}-{{ specification.kafka_var.version }}.tgz"
-    dest: "/tmp/kafka_{{ specification.kafka_var.scala.version }}-{{ specification.kafka_var.version }}.tgz"
-    validate_certs: "{{ validate_certs | bool }}"
-  when: not kafka_check.stat.exists
-
-- name: Get sha512 sum of archive
-  stat:
-    path: "/tmp/kafka_{{ specification.kafka_var.scala.version }}-{{ specification.kafka_var.version }}.tgz"
-    checksum_algorithm: sha512
-    get_checksum: yes
-  register: kafka_download_stat
-
-- name: Display sha of archive
-  debug:
-    msg: "Kafka SHA512: {{ kafka_download_stat.stat.checksum }}"
-
-- name: Verify sha512 of archive before installation
-  fail:
-    msg: "File checksum is not correct."
-  when: kafka_download_stat.stat.checksum != specification.kafka_var.sha
-
-- name: Add Kafka's bin dir to the PATH
-  copy:
-    content: "export PATH=$PATH:/opt/kafka/bin"
-    dest: "/etc/profile.d/kafka_path.sh"
-    mode: 0755
-
 - name: Setup group
   group:
     name: "{{ specification.kafka_var.group }}"
@@ -67,6 +12,93 @@
     group: "{{ specification.kafka_var.group }}"
     shell: "/usr/sbin/nologin"
 
+#### TODO
+# - name: Install debian family packages
+#   apt:
+#     name:
+#       - openjdk-8-jre
+#     update_cache: yes
+#     state: present
+#   when: ansible_os_family == "Debian"
+# - name: Install RedHat family packages
+#   yum:
+#     name:
+#       - java-1.8.0-openjdk
+#     update_cache: yes
+#     state: present
+#   register: result
+#   retries: 3
+#   delay: 1
+#   until: result is succeeded
+#   when: ansible_os_family == "RedHat"
+
+- name: Download {{ ansible_os_family }} 'openjdk-8-jre' for Kafka v{{ specification.kafka_var.version }}
+  include_role:
+    name: download
+    tasks_from: download_package
+  vars:
+    package_arg: "{{ dependencies.kafka[specification.kafka_var.version].packages | selectattr('id', 'equalto', 'openjdk-8-jre') | list | first }}"
+  when: ansible_os_family == "Debian"
+
+- name: Download {{ ansible_os_family }} 'java-1.8.0-openjdk' for Kafka v{{ specification.kafka_var.version }}
+  include_role:
+    name: download
+    tasks_from: download_package
+  vars:
+    package_arg: "{{ dependencies.kafka[specification.kafka_var.version].packages | selectattr('id', 'equalto', 'java-1.8.0-openjdk') | list | first }}"
+  when: ansible_os_family == "RedHat"
+
+- name: Install {{ ansible_os_family }} package from {{ file.dest_path }}
+  package:
+    name: "{{ file.dest_path }}"
+    state: present
+
+# - name: Check for Kafka package
+#   stat:
+#     path: "/tmp/kafka_{{ specification.kafka_var.scala.version }}-{{ specification.kafka_var.version }}.tgz"
+#   register: kafka_check
+  
+# - name: Fetch Kafka binary package
+#   get_url:
+#     url: "https://archive.apache.org/dist/kafka/{{ specification.kafka_var.version }}/kafka_{{ specification.kafka_var.scala.version }}-{{ specification.kafka_var.version }}.tgz"
+#     dest: "/tmp/kafka_{{ specification.kafka_var.scala.version }}-{{ specification.kafka_var.version }}.tgz"
+#     validate_certs: "{{ validate_certs | bool }}"
+#   when: not kafka_check.stat.exists
+
+# - name: Get sha512 sum of archive
+#   stat:
+#     path: "/tmp/kafka_{{ specification.kafka_var.scala.version }}-{{ specification.kafka_var.version }}.tgz"
+#     checksum_algorithm: sha512
+#     get_checksum: yes
+#   register: kafka_download_stat
+
+# - name: Display sha of archive
+#   debug:
+#     msg: "Kafka SHA512: {{ kafka_download_stat.stat.checksum }}"
+
+# - name: Verify sha512 of archive before installation
+#   fail:
+#     msg: "File checksum is not correct."
+#   when: kafka_download_stat.stat.checksum != specification.kafka_var.sha
+
+- name: Set Kafka binary name variable
+  set_fact:
+    kafka_binary_name: "kafka_{{ specification.kafka_var.scala.version }}-{{ specification.kafka_var.version }}"
+  changed_when: false
+
+- name: Download Kafka binaries ({{ kafka_binary_name }})
+  include_role:
+    name: download
+    tasks_from: download_file
+  vars:
+    file_arg: "{{ dependencies.kafka[specification.kafka_var.version].files | selectattr('id', 'equalto', kafka_binary_name) | list | first }}"
+
+- name: Add Kafka's bin dir to the PATH
+  copy:
+    content: "export PATH=$PATH:/opt/kafka/bin"
+    dest: "/etc/profile.d/kafka_path.sh"
+    mode: 0755
+
 - name: Check for Kafka package
   stat:
     path: /opt/kafka_{{ specification.kafka_var.scala.version }}-{{ specification.kafka_var.version }}/bin/kafka-server-start.sh
@@ -76,7 +108,7 @@
   unarchive:
     copy: no
     creates: /opt/kafka_{{ specification.kafka_var.scala.version }}-{{ specification.kafka_var.version }}
-    src: /tmp/kafka_{{ specification.kafka_var.scala.version }}-{{ specification.kafka_var.version }}.tgz
+    src: "{{ file.dest_path }}"
     dest: /opt
   when: not kafka_package.stat.exists
 
