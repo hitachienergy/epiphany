@@ -19,7 +19,6 @@ specification:
           - version: 0.7.5
             url: "https://github.com/containernetworking/plugins/releases/download/v0.7.5/cni-plugins-amd64-v0.7.5.tgz"
             sha512: 1abfb567c13f87aab94efd6f2c6bb17f3581cbcce87bf8c6216510a92486cb44e6b8701fd3a6cb85273a97981feecbd0c4eb624eab0eca5a005fd85a7d95c284
-
       kubeadm:
         amd64:
           - version: 1.14.4
@@ -30,16 +29,25 @@ specification:
             sha512: e4d876e3ff1f8da2ea434362c8c084d3280d3bdf552cfc18f631a317fa2a989313fb729eceafdadf76c85c9cfa3589a3c9b827e6c3154383ea64a1c3219f63bd
           - version: 1.12.10
             url: "https://storage.googleapis.com/kubernetes-release/release/v1.12.10/bin/linux/amd64/kubeadm"
-            sha512: dcb6b06195a093a87f952cbb3f471dd690da9baea4a8b09520900301b0e9cee3bfdb50cb28eb10dfdc5b73bbf6bcd08d5c49711f91cea14679ebb1690a9368d9
-
+            sha512: dcb6b06195a093a87f952cbb3f471dd690da9baea4a8b09520900301b0e9cee3bfdb50cb28eb10dfdc5b73bbf6bcd08d5c49711f91cea14679ebb1690a9368d9 
+      haproxy_exporter:
+        amd64:
+          - version: 0.10.0
+            url: "https://github.com/prometheus/haproxy_exporter/releases/download/v0.10.0/haproxy_exporter-0.10.0.linux-amd64.tar.gz"
+            sha512: C0DB7FE6EEE35C445C4D44EAFC3F0D6F68BF7944CD6EEF052A3180D6CEE08E51C77590069D1D7848EE449F5D052FEA7597C40D6BC798CCAAB19F42EAA63AD726
     packages:
       socat:
         amd64:
-          - version: 1.7.3.2
-            distribution: CentOS
-            distribution_version: 7
-            url: "http://download-ib01.fedoraproject.org/pub/epel/7/x86_64/Packages/n/ncdu-1.14-1.el7.x86_64.rpm"
-            sha512: 5a98254e9b2d83e729add7c7a812d00e27019b72524b37ca8db2bfd491390d6acd6eb877043c7577c739cc129482a5b1fb9f9d715f4c3a604241afbca88c87d6
+          - distros: CentOS
+            distro_version: 7
+            version: 1.7.3.2
+            url: "http://mirror.centos.org/centos/7/os/x86_64/Packages/socat-1.7.3.2-2.el7.x86_64.rpm"
+            sha512: 840EC2CF40D89E6D97349682035B9239CBD9E312F8E308294668857230A8191EA9C39B7834BE0D876483A8376A72EE62894D9326CAD0B2730DF95A30CEA152AA
+          - distros: Ubuntu
+            distro_version: 18.04
+            version: 1.7.3.2
+            url: "http://archive.ubuntu.com/ubuntu/pool/main/s/socat/socat_1.7.3.2-2ubuntu2_amd64.deb"
+            sha512: CE411FB065E97AA7375C12683016CBE93DC9F8260A351B3321B1660F74DCF9426BD6769CE8217B260C1511B136920933B1025E62595DE5B42AD594C3CE105A36
       jq:
         amd64:
           - version: 1.5
@@ -82,18 +90,14 @@ specification:
             sha512: 625400C923A961076EEB14B43FFDAF722BEF8EEAA31A9570578EA3AD7C2BC7A44053467ABA8A26D0365E156DC0C4B7FA3B097C3F63C63EE8730DD636D509C2AA
       rh-haproxy18:
         amd64:
-          - distros:
-              - CentOS
-              - RedHat
+          - distros: CentOS
             distro_version: 7
             version: 1.8.17
             url: "http://mirror.centos.org/centos/7/sclo/x86_64/rh/rh-haproxy18/rh-haproxy18-haproxy-1.8.17-1.el7.x86_64.rpm"
             sha512: DF56D8EA503DAE9ADCDD55E3D06F3E077E3B356E549D42D818437EB9D637E7FC335A9A59F2A8AD49CF9B37204CC747C36417C8C93837203DAD7889808C540F36
       rh-haproxy18-haproxy-syspaths:
         amd64:
-          - distros:
-              - CentOS
-              - RedHat
+          - distros: CentOS
             distro_version: 7
             version: 1.8.17
             url: "http://mirror.centos.org/centos/7/sclo/x86_64/rh/rh-haproxy18/rh-haproxy18-haproxy-syspaths-1.8.17-1.el7.x86_64.rpm"
@@ -233,4 +237,48 @@ specification:
             version: 18.09.6
             url: "https://download.docker.com/linux/centos/7/x86_64/stable/Packages/docker-ce-18.09.6-3.el7.x86_64.rpm"
             sha512: 239043AE66548CD2C38ABA14F426631417CC231092C97F1A70272F69D60A546EA6FC4C6817AAABAFDBB7C5DD89F10229AE57C789BE6A181143EE1D1F71705231
-
+      init-system-helpers:
+        amd64:
+          - distros: Ubuntu
+            distro_version: 18.04
+            version: 1.51
+            url: "http://archive.ubuntu.com/ubuntu/pool/main/i/init-system-helpers/init-system-helpers_1.51_all.deb"
+            sha512: 60E62A299A4430427DC49D16CC6B5F618B6B85463C5FBE287334639324A269BBC0F91BACFD08F9884F1033EE8EE4E172DB7A0EF4DA727BC6582EAC645E3068F9
+      logrotate:
+        amd64:
+          - distros: Ubuntu
+            distro_version: 18.04
+            version: 3.11.0
+            url: "http://archive.ubuntu.com/ubuntu/pool/main/l/logrotate/logrotate_3.11.0-0.1ubuntu1_amd64.deb"
+            sha512: 726A8B1241AB5F581D4E032F31E158666CB0454A484F8F5C2A02B69BEB5E68BFB6E41E6566C32C554909B6556FE5EB711279970D538FA7B6217A911EB6CA28C7
+      erlang:
+        amd64:
+          - distros:
+              - CentOS
+              - RedHat
+            distro_version: 7
+            version: 21.2.2
+            url: "https://github.com/rabbitmq/erlang-rpm/releases/download/v21.2.2/erlang-21.2.2-1.el7.centos.x86_64.rpm"
+            sha512: 27FD68B82A26C14FB8E1F7492F0BB46C927E86AD133BDDEDE01DC6B18AB9FFEBBDD02ABD8045E0718BA9B4DC9459FD808439641142D3ABF3729CE78AFEEB6635
+      erlang-nox:
+        amd64:
+          - distros: Ubuntu
+            distro_version: 18.04
+            version: 21.3.8.6
+            url: "http://dl.bintray.com/rabbitmq-erlang/debian/pool/erlang/21.3.8.6-1/ubuntu/bionic/erlang-nox_21.3.8.6-1_all.deb"
+            sha512: FF9257B701221CA0548FCC34E3B3A7ADF4C601ECCA8212A65658523D68D9F7611CEFC23EBFEE91E6763CFE72B64151FF357FEA129F7E65156CA0DE0FB86DB45D
+      rabbitmq-server:
+        amd64:
+          - distros: Ubuntu
+            distro_version: 18.04
+            version: 3.7.10
+            url: "https://github.com/rabbitmq/rabbitmq-server/releases/download/v3.7.10/rabbitmq-server_3.7.10-1_all.deb"
+            sha512: 7455D5B0286BF29CEC856AED0CA623FB707637BD7B6AD57A0968C59DC42E88A47011F3C9831F6F9AC0AC362A3479DA06FD770E31778706801A9FD3A7F56E1BF3
+          - distros:
+              - CentOS
+              - RedHat
+            distro_version: 7
+            version: 21.2.2
+            url: "https://github.com/rabbitmq/rabbitmq-server/releases/download/v3.7.10/rabbitmq-server-3.7.10-1.el7.noarch.rpm"
+            sha512: 0193E61888C2982F4DDAD1C267827AAAB26187174FF09CA1BBEEDF1C77EEC6EA7EDBBE4F77E4164C668388B09623ADFF0371EBD2011FAE768F3A760E1CC912BA
+            
