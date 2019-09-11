@@ -33,6 +33,41 @@ specification:
           - version: 0.10.0
             url: "https://github.com/prometheus/haproxy_exporter/releases/download/v0.10.0/haproxy_exporter-0.10.0.linux-amd64.tar.gz"
             sha512: C0DB7FE6EEE35C445C4D44EAFC3F0D6F68BF7944CD6EEF052A3180D6CEE08E51C77590069D1D7848EE449F5D052FEA7597C40D6BC798CCAAB19F42EAA63AD726
+      zookeeper:
+        amd64:
+          - version: 3.4.12
+            url: "https://archive.apache.org/dist/zookeeper/zookeeper-3.4.12/zookeeper-3.4.12.tar.gz"
+            sha512: 026C7FEB4A660BF8D99B1B719FEC2B7E4603C3C46F2B77BAC372DF15ED0CEB4D971AA9C954082D61D73929EF8DC38C31693604AE75244F746CAFB4EB6E67320C
+      prometheus:
+        amd64:
+          - version: 2.10.0
+            url: "https://github.com/prometheus/prometheus/releases/download/v2.10.0/prometheus-2.10.0.linux-amd64.tar.gz"
+            sha512: EB9EBFD88D25E7EC22A19A035B535DD750E7938DF01D907C7A74D327A689609BA9600963D9C938133057B8DAB0D04D1D102C7C12262FF573CC84D0A7A584E4D1
+      alertmanager:
+        amd64:
+          - version: 0.17.0
+            url: "https://github.com/prometheus/alertmanager/releases/download/v0.17.0/alertmanager-0.17.0.linux-amd64.tar.gz"
+            sha512: 04C8A0B2E537403892C6D427FC1EC3C71A780F05567DC4F23019C5D48BD672FE8D9989EA58CFDCC243778E64798526136F382D36BD9ADDC24100E6E88253A3A3
+      node_exporter:
+        amd64:
+          - version: 0.16.0
+            url: "https://github.com/prometheus/node_exporter/releases/download/v0.16.0/node_exporter-0.16.0.linux-amd64.tar.gz"
+            sha512: A94882B89546C727806ACEC677D76791285F2C3EC291D9B3B89DB97D47E01A3CD7EE4B76A5BCED7478B671DF4043CF3A054107CB1502B002A51232FF0CFF2289
+      kafka_exporter:
+        amd64:
+          - version: 1.2.0
+            url: "https://github.com/danielqsj/kafka_exporter/releases/download/v1.2.0/kafka_exporter-1.2.0.linux-amd64.tar.gz"
+            sha512: 7AFA40365DDF0CB0A88457684BD64D565E250C7E5A4536BA7F9D37D02D2808C3B07766F94E0B1338BEB296573ADE29DB630948C931BE44BDE416C0410B5D783B
+      kafka_2.12-2.0.0:
+        amd64:
+          - version: 2.0.0
+            url: "https://archive.apache.org/dist/kafka/2.0.0/kafka_2.12-2.0.0.tgz"
+            sha512: B28E81705E30528F1ABB6766E22DFE9DAE50B1E1E93330C880928FF7A08E6B38EE71CBFC96EC14369B2DFD24293938702CAB422173C8E01955A9D1746AE43F98
+      jmx_prometheus_javaagent:
+        amd64:
+          - version: 0.12.0
+            url: "https://repo1.maven.org/maven2/io/prometheus/jmx/jmx_prometheus_javaagent/0.12.0/jmx_prometheus_javaagent-0.12.0.jar"
+            sha512: 17D275CCA87EB5D593CC31FFA704587C0E867C8AE6E1EAB0A5A54598BBB84B79BA3F7FAD26EF6B3F2FA2F05FFEE61C2D733DFB9536D2B067ECD37F485330B5E8
     packages:
       socat:
         amd64:
@@ -248,6 +283,13 @@ specification:
             version: 1.2.6
             url: "https://download.docker.com/linux/ubuntu/dists/bionic/pool/stable/amd64/containerd.io_1.2.6-3_amd64.deb"
             sha512: 5ca552dd313f110801a2be76b09b76565a7d0b919f47dc7087cf3f4a1c10a1e72473e519a3a4ad0ef2230836ccfaa33d5986428b62b9b9bfd9f97accff5b80a9
+          - distros:
+              - CentOS
+              - RedHat
+            distro_version: 7
+            version: 1.2.6
+            url: "https://download.docker.com/linux/centos/7/x86_64/stable/Packages/containerd.io-1.2.6-3.3.el7.x86_64.rpm"
+            sha512: D4CB3DF5FAB321773D1ABE4399CD45A572CAC48445F59C141BAF545867CB1DCB9F39BE7A6846F8CC6FAD19E06031EFCC9FDEFCB5716EF4EB3D752AC9DDA4682E          
       docker-ce:
         amd64:
           - distros: Ubuntu
@@ -269,6 +311,13 @@ specification:
             version: 18.09.6
             url: "https://download.docker.com/linux/ubuntu/dists/bionic/pool/stable/amd64/docker-ce-cli_18.09.6~3-0~ubuntu-bionic_amd64.deb"
             sha512: 8073eb0a977d84a9ce53a9257d9121c4f0955f615763316bf92d75ec0d45ab0ab6530615896ac4d1f764ecf9a276201fa4e62a74cfd89f2037bb459af194d327
+          - distros:
+              - CentOS
+              - RedHat
+            distro_version: 7
+            version: 18.09.6
+            url: "https://download.docker.com/linux/centos/7/x86_64/stable/Packages/docker-ce-cli-18.09.6-3.el7.x86_64.rpm"
+            sha512: 770027BCB6422E62A1FF9DAFABCA96EC2294698976860D3F14CF04F476976DA8B95ADE46753C878C02BB68B0C61AFBA831BE000D5F29502737E5B1D72F81C1B1
       init-system-helpers:
         amd64:
           - distros: Ubuntu
