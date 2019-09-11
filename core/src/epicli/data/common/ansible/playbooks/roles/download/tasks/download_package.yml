@@ -1,5 +1,4 @@
 ---
-
 - name: download_package | Set architecture and OS properties
   set_fact:
     arch: "{{ shared.architecture_map[ansible_architecture] }}"
@@ -28,27 +27,33 @@
       loop_control:
         loop_var: package_item
 
-- name: download_package | Set properties from configuration
+- name: download_package | Set properties from specification
   set_fact:
     file: >-
-      {{ package_items | selectattr('version', 'match', '.*' if (package_arg.version is not defined)
-                                                             else package_arg.version | string)
+      {{ package_items | selectattr('version', 'match', version_to_select)
                        | selectattr('distros', 'contains', os_distribution)
                        | selectattr('distro_version', 'equalto', os_distribution_version)
-         | first | combine({ 'arch': arch, 'id': file_arg.id, 'os_distribution': os_distribution,
-                             'os_distribution_version': os_distribution_version }) }}
+                       | first }}
+  vars:
+    version_to_select: >-
+      {{ '.*' if (package_arg.version is not defined) else '^' + (package_arg.version | string) + '$' }}
 
 - name: download_package | Set dynamic properties and filter out unneeded
   set_fact:
     file: >-
       {{ file | combine({ 'distros': null }) | combine({ 'distro_version': null })
               | dict2items | selectattr('value', 'defined') | list | items2dict
-              | combine({ 'dest_path': specification.remote_downloads_dir + '/' + relative_dest_path })
-              | combine({ 'cached_file_path': specification.local_downloads_dir + '/' + relative_dest_path })
-              | combine({ 'checksum_algorithm': 'sha256' if (file.sha256 is defined) else 'sha512' }) }}
+              | combine(package_arg)
+              | combine({ 'arch': arch,
+                          'cached_file_path': specification.local_downloads_dir + '/' + relative_dest_path,
+                          'checksum_algorithm': 'sha256' if (file.sha256 is defined) else 'sha512',
+                          'dest_path': specification.remote_downloads_dir + '/' + relative_dest_path,
+                          'os_distribution': os_distribution,
+                          'os_distribution_version': os_distribution_version,
+                          'version': file.version | string }) }}
   vars:
     relative_dest_path: >-
-      {{ 'packages/' + file.arch + '/' + file.os_distribution + '/' + file.os_distribution_version + '/'
+      {{ 'packages/' + arch + '/' + os_distribution + '/' + os_distribution_version + '/'
          + (file.url | basename) if file.url is defined else file.file_name }}
 
 - name: download_package | Download '{{ file.id }}' v{{ file.version }}
