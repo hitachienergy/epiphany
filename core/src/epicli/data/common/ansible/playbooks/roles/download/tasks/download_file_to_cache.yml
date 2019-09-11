@@ -19,7 +19,7 @@
         - local_ansible_user is not defined or local_ansible_user_group is not defined
     - name: Create directory
       block:
-        - name: download_file_to_cache | Create directory '{{ file_arg.cached_file_path | dirname }}' as root
+        - name: download_file_to_cache | Create directory '{{ file_arg.cached_file_path | dirname }}' as super user
           file:
             path: "{{ file_arg.cached_file_path | dirname }}"
             state: directory
