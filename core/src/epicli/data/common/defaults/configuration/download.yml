@@ -33,6 +33,41 @@ specification:
           - version: 0.10.0
             url: "https://github.com/prometheus/haproxy_exporter/releases/download/v0.10.0/haproxy_exporter-0.10.0.linux-amd64.tar.gz"
             sha512: C0DB7FE6EEE35C445C4D44EAFC3F0D6F68BF7944CD6EEF052A3180D6CEE08E51C77590069D1D7848EE449F5D052FEA7597C40D6BC798CCAAB19F42EAA63AD726
+      zookeeper:
+        amd64:
+          - version: 3.4.12
+            url: "https://archive.apache.org/dist/zookeeper/zookeeper-3.4.12/zookeeper-3.4.12.tar.gz"
+            sha512: 026C7FEB4A660BF8D99B1B719FEC2B7E4603C3C46F2B77BAC372DF15ED0CEB4D971AA9C954082D61D73929EF8DC38C31693604AE75244F746CAFB4EB6E67320C
+      prometheus:
+        amd64:
+          - version: 2.10.0
+            url: "https://github.com/prometheus/prometheus/releases/download/v2.10.0/prometheus-2.10.0.linux-amd64.tar.gz"
+            sha512: EB9EBFD88D25E7EC22A19A035B535DD750E7938DF01D907C7A74D327A689609BA9600963D9C938133057B8DAB0D04D1D102C7C12262FF573CC84D0A7A584E4D1
+      alertmanager:
+        amd64:
+          - version: 0.17.0
+            url: "https://github.com/prometheus/alertmanager/releases/download/v0.17.0/alertmanager-0.17.0.linux-amd64.tar.gz"
+            sha512: 04C8A0B2E537403892C6D427FC1EC3C71A780F05567DC4F23019C5D48BD672FE8D9989EA58CFDCC243778E64798526136F382D36BD9ADDC24100E6E88253A3A3
+      node_exporter:
+        amd64:
+          - version: 0.16.0
+            url: "https://github.com/prometheus/node_exporter/releases/download/v0.16.0/node_exporter-0.16.0.linux-amd64.tar.gz"
+            sha512: A94882B89546C727806ACEC677D76791285F2C3EC291D9B3B89DB97D47E01A3CD7EE4B76A5BCED7478B671DF4043CF3A054107CB1502B002A51232FF0CFF2289
+      kafka_exporter:
+        amd64:
+          - version: 1.2.0
+            url: "https://github.com/danielqsj/kafka_exporter/releases/download/v1.2.0/kafka_exporter-1.2.0.linux-amd64.tar.gz"
+            sha512: 7AFA40365DDF0CB0A88457684BD64D565E250C7E5A4536BA7F9D37D02D2808C3B07766F94E0B1338BEB296573ADE29DB630948C931BE44BDE416C0410B5D783B
+      kafka_2.12-2.0.0:
+        amd64:
+          - version: 2.0.0
+            url: "https://archive.apache.org/dist/kafka/2.0.0/kafka_2.12-2.0.0.tgz"
+            sha512: B28E81705E30528F1ABB6766E22DFE9DAE50B1E1E93330C880928FF7A08E6B38EE71CBFC96EC14369B2DFD24293938702CAB422173C8E01955A9D1746AE43F98
+      jmx_prometheus_javaagent:
+        amd64:
+          - version: 0.12.0
+            url: "https://repo1.maven.org/maven2/io/prometheus/jmx/jmx_prometheus_javaagent/0.12.0/jmx_prometheus_javaagent-0.12.0.jar"
+            sha512: 17D275CCA87EB5D593CC31FFA704587C0E867C8AE6E1EAB0A5A54598BBB84B79BA3F7FAD26EF6B3F2FA2F05FFEE61C2D733DFB9536D2B067ECD37F485330B5E8
     packages:
       socat:
         amd64:
@@ -46,6 +81,11 @@ specification:
             version: 1.7.3.2
             url: "http://archive.ubuntu.com/ubuntu/pool/main/s/socat/socat_1.7.3.2-2ubuntu2_amd64.deb"
             sha512: CE411FB065E97AA7375C12683016CBE93DC9F8260A351B3321B1660F74DCF9426BD6769CE8217B260C1511B136920933B1025E62595DE5B42AD594C3CE105A36
+          - distros: RedHat
+            distro_version: 7
+            version: 1.7.3.2
+            file_name: "socat-1.7.3.2-2.el7.x86_64.rpm"
+            sha512: 7b7e69af9f29037309a0b90b32ec69028ead8b5ba69027452c4740ef024a177e10a4b4326f0ce328b9699b033634a92fd68d0dee520b84e226be9b0f43ce31f5            
       jq:
         amd64:
           - version: 1.5
@@ -90,9 +130,14 @@ specification:
         amd64:
           - distros: CentOS
             distro_version: 7
-            version: 1.8.17
-            url: "http://mirror.centos.org/centos/7/sclo/x86_64/rh/rh-haproxy18/rh-haproxy18-haproxy-1.8.17-1.el7.x86_64.rpm"
-            sha512: DF56D8EA503DAE9ADCDD55E3D06F3E077E3B356E549D42D818437EB9D637E7FC335A9A59F2A8AD49CF9B37204CC747C36417C8C93837203DAD7889808C540F36
+            version: 3.1
+            url: "http://mirror.centos.org/centos/7/sclo/x86_64/rh/rh-haproxy18/rh-haproxy18-3.1-2.el7.x86_64.rpm"
+            sha512: 0FE504F005E0D675EA7BA24E726CE28F18358BFD1D0521BD1329E6F3785610E699FF4E3838EECA39EBCAC90047997706CCC9BEE0EB2D7109D44D041D3D9F49ED
+          - distros: RedHat
+            distro_version: 7
+            version: 3.1
+            file_name: "rh-haproxy18-3.1-2.el7.x86_64.rpm"
+            sha512: 0411f68489e57eac579bc9737ef71f2a32ffe28d39facf0cb0d5b16d5d11df81798243c6fa609e674cadecd806c3b17b6055d653d503253eb4f6296df8fa7ae0         
       rh-haproxy18-haproxy-syspaths:
         amd64:
           - distros: CentOS
@@ -100,6 +145,11 @@ specification:
             version: 1.8.17
             url: "http://mirror.centos.org/centos/7/sclo/x86_64/rh/rh-haproxy18/rh-haproxy18-haproxy-syspaths-1.8.17-1.el7.x86_64.rpm"
             sha512: C325089D8CD2173166FBC7ED43BB0D81FE488A85D9E77093456918F3F378C1E779A6C523FD34796C974227582F63D076F641150CAF9329E01F25D19380D6856C
+          - distros: RedHat
+            distro_version: 7
+            version: 1.8.17
+            file_name: "rh-haproxy18-haproxy-syspaths-1.8.17-1.el7.x86_64.rpm"
+            sha512: c83abd2479955c0eaf5d50a4cdf59eb0fba01f5c7037320f5f1cedbb13eab016cf5ccf2e2e0faaf2c01b279140e392edb5e44712a82e832f510033766517ff2c           
       filebeat-oss:
         amd64:
           - distros: Ubuntu
@@ -142,6 +192,11 @@ specification:
             version: 1.8.0
             url: "http://mirror.centos.org/centos/7/updates/x86_64/Packages/java-1.8.0-openjdk-1.8.0.222.b10-0.el7_6.x86_64.rpm"
             sha512: F7A2F696BC8F30EF77D25D264CF1BD60762FC60EA46DF2407F3EA9479DEB7132B7314831BFE4E2B21F3ABC4ECDD36963703174F490DE8FD5F98064A164587D30
+          - distros: RedHat
+            distro_version: 7
+            version: 1.8.0
+            file_name: "java-1.8.0-openjdk-1.8.0.222.b10-1.el7_7.x86_64.rpm"
+            sha512: 37b5258113518d90acfd1d4d2a479a7fdf53fd3b83b23cab80878a787488b61af81f5c3f9db4b6c0bfafe3d592b371c1812da98c03e46194ddaa55e4377ed3a9    
       elasticsearch-oss:
         amd64:
           - distros: Ubuntu
@@ -228,6 +283,13 @@ specification:
             version: 1.2.6
             url: "https://download.docker.com/linux/ubuntu/dists/bionic/pool/stable/amd64/containerd.io_1.2.6-3_amd64.deb"
             sha512: 5ca552dd313f110801a2be76b09b76565a7d0b919f47dc7087cf3f4a1c10a1e72473e519a3a4ad0ef2230836ccfaa33d5986428b62b9b9bfd9f97accff5b80a9
+          - distros:
+              - CentOS
+              - RedHat
+            distro_version: 7
+            version: 1.2.6
+            url: "https://download.docker.com/linux/centos/7/x86_64/stable/Packages/containerd.io-1.2.6-3.3.el7.x86_64.rpm"
+            sha512: D4CB3DF5FAB321773D1ABE4399CD45A572CAC48445F59C141BAF545867CB1DCB9F39BE7A6846F8CC6FAD19E06031EFCC9FDEFCB5716EF4EB3D752AC9DDA4682E          
       docker-ce:
         amd64:
           - distros: Ubuntu
@@ -249,6 +311,13 @@ specification:
             version: 18.09.6
             url: "https://download.docker.com/linux/ubuntu/dists/bionic/pool/stable/amd64/docker-ce-cli_18.09.6~3-0~ubuntu-bionic_amd64.deb"
             sha512: 8073eb0a977d84a9ce53a9257d9121c4f0955f615763316bf92d75ec0d45ab0ab6530615896ac4d1f764ecf9a276201fa4e62a74cfd89f2037bb459af194d327
+          - distros:
+              - CentOS
+              - RedHat
+            distro_version: 7
+            version: 18.09.6
+            url: "https://download.docker.com/linux/centos/7/x86_64/stable/Packages/docker-ce-cli-18.09.6-3.el7.x86_64.rpm"
+            sha512: 770027BCB6422E62A1FF9DAFABCA96EC2294698976860D3F14CF04F476976DA8B95ADE46753C878C02BB68B0C61AFBA831BE000D5F29502737E5B1D72F81C1B1
       init-system-helpers:
         amd64:
           - distros: Ubuntu
@@ -263,6 +332,16 @@ specification:
             version: 3.11.0
             url: "http://archive.ubuntu.com/ubuntu/pool/main/l/logrotate/logrotate_3.11.0-0.1ubuntu1_amd64.deb"
             sha512: 726A8B1241AB5F581D4E032F31E158666CB0454A484F8F5C2A02B69BEB5E68BFB6E41E6566C32C554909B6556FE5EB711279970D538FA7B6217A911EB6CA28C7
+          - distros: CentOS
+            distro_version: 7
+            version: 3.8.6
+            url: "http://mirror.centos.org/centos/7/os/x86_64/Packages/logrotate-3.8.6-17.el7.x86_64.rpm"
+            sha512: 0E9B9311F14D565FEE5F5D69673B9C82D6BDC8A539FBFF9FE47D188BBE489E480E8502ED5324F0134957B62BA7F8A8625D3489FB5D4B79302E96E1FCD7201395
+          - distros: RedHat
+            distro_version: 7
+            version: 3.8.6
+            file_name: "logrotate-3.8.6-17.el7.x86_64.rpm"
+            sha512: 49e0211f4f7180f7ab1badd1c7503c85f30ffac3daf9538ba7a9bcfa79a2b8c9f7e9b47d0386dacc05352b3c537a92b4835f54031dcd97a8eaa0ef61464e79d8                 
       erlang:
         amd64:
           - distros:
@@ -290,6 +369,114 @@ specification:
               - CentOS
               - RedHat
             distro_version: 7
-            version: 21.2.2
+            version: 3.7.10
             url: "https://github.com/rabbitmq/rabbitmq-server/releases/download/v3.7.10/rabbitmq-server-3.7.10-1.el7.noarch.rpm"
             sha512: 0193E61888C2982F4DDAD1C267827AAAB26187174FF09CA1BBEEDF1C77EEC6EA7EDBBE4F77E4164C668388B09623ADFF0371EBD2011FAE768F3A760E1CC912BA
+      postgresql-10:
+        amd64:
+          - distros: Ubuntu
+            distro_version: 18.04
+            version: 10.10
+            url: "http://archive.ubuntu.com/ubuntu/pool/main/p/postgresql-10/postgresql-10_10.10-0ubuntu0.18.04.1_amd64.deb"
+            sha512: B541226E086E72F3F651127F66BC743F9A081BFC4E5759AEF136EEA4BED3C8BF46D32F5925288976D4B3E6941C15A942FF5E79864BA8AB02404E99A42FAAE848
+      python-psycopg2:
+        amd64:
+          - distros: Ubuntu
+            distro_version: 18.04
+            version: 2.7.4
+            url: "http://archive.ubuntu.com/ubuntu/pool/main/p/psycopg2/python-psycopg2_2.7.4-1_amd64.deb"
+            sha512: B972099F29E092FAFEC9A7A39555BF10DA67C5D2ABD9C54F3A60F399EDA5DA651E14F68A88A84BCB1E4991DF952FA1C014947A6FEE11A3AF8AC38673A44B4B20
+          - distros: CentOS
+            distro_version: 7
+            version: 2.5.1
+            url: "http://mirror.centos.org/centos/7/os/x86_64/Packages/python-psycopg2-2.5.1-3.el7.x86_64.rpm"
+            sha512: 45E504C88D245277E00D2D8BC555CFA7E15079A9A2F5CE5877CB2C32093D323BAC669F47C49F9F98CF6FDB3B52A50F525219A0482082D7429B1E3FABCF6892FC
+          - distros: RedHat
+            distro_version: 7
+            version: 2.5.1
+            file_name: "python-psycopg2-2.5.1-4.el7.x86_64.rpm"
+            sha512: b3827b9e86bb3846b11821a7b63869c1500e7c22e3fb491b778224eafda21d659de7ff04c280cba30928289c4f249e9b5905b68bd29e0ebd28e1ee118ca40509
+      rh-postgresql10-postgresql:
+        amd64:
+          - distros: CentOS
+            distro_version: 7
+            version: 10.6
+            url: "http://mirror.centos.org/centos/7/sclo/x86_64/rh/rh-postgresql10/rh-postgresql10-postgresql-10.6-1.el7.x86_64.rpm"
+            sha512: 7BD070780C2A569E6CE641051D291E1CAEC9F70D0F9B0E2B44AD7C8F4A5A7C07D09F429EBBE2F11E3784DA94AAD360C41EAFDF3ED92D5F431AE87587D0AF6B3D
+          - distros: RedHat
+            distro_version: 7
+            version: 10.6
+            file_name: "rh-postgresql10-postgresql-10.6-1.el7.x86_64.rpm"
+            sha512: 559ff51c7481b887a5c9a196968b81fdaba3240091282d3364906b7dfcf9ce72fb47313df48cae7287252090cd36ed7bc8ff5bcb0009298ead6bf82ee7253ea7            
+      rh-postgresql10-postgresql-syspaths:
+        amd64:
+          - distros: CentOS
+            distro_version: 7
+            version: 10.6
+            url: "http://mirror.centos.org/centos/7/sclo/x86_64/rh/rh-postgresql10/rh-postgresql10-postgresql-syspaths-10.6-1.el7.x86_64.rpm"
+            sha512: 63E3826C43B405A3219699D6304D603627F3F07826104D3AA2FB8E4A39D947CBCD33F1D3E59400D5A59C6ECF575A73C5648B06D0DDD4313B88D121A32F39F8BA
+          - distros: RedHat
+            distro_version: 7
+            version: 10.6
+            file_name: "rh-postgresql10-postgresql-syspaths-10.6-1.el7.x86_64.rpm"
+            sha512: e2a1fc7a0abc6b2417e680d3e4ccb401145e0c8afb638b064f3034eb4f3ec318a73f39b948ebfc4ef877aa6f3992aafc479ac8c4376651ea39e1a88d96ab8b49            
+      rh-postgresql10-postgresql-server:
+        amd64:
+          - distros: CentOS
+            distro_version: 7
+            version: 10.6
+            url: "http://mirror.centos.org/centos/7/sclo/x86_64/rh/rh-postgresql10/rh-postgresql10-postgresql-server-10.6-1.el7.x86_64.rpm"
+            sha512: 07EA94A9EFFFC7ECC3222BFB89DF7AFADF1971AD5FDD2752F2C908BD1109828F2D2EC546B5AACF0FDBFE9831DE3E22F855B110EF4392DF1976D700EFD23E30EF
+          - distros: RedHat
+            distro_version: 7
+            version: 10.6
+            file_name: "rh-postgresql10-postgresql-server-10.6-1.el7.x86_64.rpm"
+            sha512: 52742ac53929cd47333ef4c231f66f7e7a7ee6a8bde0f456326fdcaf5fe7ef72bb1798acb68c12d7310965d81fe03cf760bcaa6c5a738ec9e986fd67ccbf1c94            
+      rh-postgresql10-postgresql-server-syspaths:
+        amd64:
+          - distros: CentOS
+            distro_version: 7
+            version: 10.6
+            url: "http://mirror.centos.org/centos/7/sclo/x86_64/rh/rh-postgresql10/rh-postgresql10-postgresql-server-syspaths-10.6-1.el7.x86_64.rpm"
+            sha512: 34CEA0F66F4BBC0DBB5555D634F30131BFF852A6ED8E00FFE98E85519045AE58D604E14156D2BC159254230818DF7F2797AB4D56A115E5BE03BF8E0E3E2F0DA8
+          - distros: RedHat
+            distro_version: 7
+            version: 10.6
+            file_name: "rh-postgresql10-postgresql-server-syspaths-10.6-1.el7.x86_64.rpm"
+            sha512: cc75aeacc657c1483e8146e3e33f935b95fd6ad2b073ee487597a13d52da39e9a4cf8ac4c8c7521a541b54cc3eaa7a52f4220ff364cf34fdf431e87eadc76c49            
+      rh-postgresql10-postgresql-contrib:
+        amd64:
+          - distros: CentOS
+            distro_version: 7
+            version: 10.6
+            url: "http://mirror.centos.org/centos/7/sclo/x86_64/rh/rh-postgresql10/rh-postgresql10-postgresql-contrib-10.6-1.el7.x86_64.rpm"
+            sha512: 802CC11A59DAF0A276C2AFB20574B9CF52C7BF22147FC3D7ECE407A07DF57C4EBC570DDBEA109773DD7AAC23FB1C0AAFA8DDA63E60913FB0BFDD0D61FAA3BAD8
+          - distros: RedHat
+            distro_version: 7
+            version: 10.6
+            file_name: "rh-postgresql10-postgresql-contrib-10.6-1.el7.x86_64.rpm"
+            sha512: 39cf30b3823a1e064118cd840fa89903ac09f3082380f50e65b76b4e2640567494696e2908cf1b82e68f39b12a2df8d0529f08da73d28fb73841ff8e74ddcc4e            
+      rh-postgresql10-postgresql-contrib-syspaths:
+        amd64:
+          - distros: CentOS
+            distro_version: 7
+            version: 10.6
+            url: "http://mirror.centos.org/centos/7/sclo/x86_64/rh/rh-postgresql10/rh-postgresql10-postgresql-contrib-syspaths-10.6-1.el7.x86_64.rpm"
+            sha512: 1CEDEFCD5466E47557110A82E4FB3C3D9155721DFA7506470BF98A5557150D53D6738E216E90267CA633BB2FC4EC18D583C044E016C9ABC1CF69C9DFA0FE8694
+          - distros: RedHat
+            distro_version: 7
+            version: 10.6
+            file_name: "rh-postgresql10-postgresql-contrib-syspaths-10.6-1.el7.x86_64.rpm"
+            sha512: 45055e01bd202584108e7dec7d585df89b7f5c27d19e428416b99fb7791062f22f664fc49c767f6e5c3d4e7dfaf05ab2c7d7923b12238dd434dfd571df723177            
+      rh-postgresql10-postgresql-libs:
+        amd64:
+          - distros: CentOS
+            distro_version: 7
+            version: 10.6
+            url: "http://mirror.centos.org/centos/7/sclo/x86_64/rh/rh-postgresql10/rh-postgresql10-postgresql-libs-10.6-1.el7.x86_64.rpm"
+            sha512: 6E881E1F3C8A13D1EEBCC1A3AE67A37EEABCE745F4B4A775821C9B14D0C4633AA0236FDE9203296663B3C3B1F83938E087F8453D0A3F72FDCA3C4C825F6E1957
+          - distros: RedHat
+            distro_version: 7
+            version: 10.6
+            file_name: "rh-postgresql10-postgresql-libs-10.6-1.el7.x86_64.rpm"
+            sha512: e39f16adb524bb5866265f52854004c7a4c38973d6e3345f748912957ca7fbc880bfba2275aba16b33a8f16078e41e314d58df4ddbaf0c47d0e9a6c4e57a43ad
