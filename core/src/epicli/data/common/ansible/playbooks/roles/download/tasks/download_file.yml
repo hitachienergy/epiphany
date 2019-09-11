@@ -27,11 +27,12 @@
   set_fact:
     file: >-
       {{ file
-           | combine(file_arg) | combine({ 'version': file.version | string })
-           | combine({ 'arch': arch })
-           | combine({ 'dest_path': specification.remote_downloads_dir + '/' + relative_dest_path })
-           | combine({ 'cached_file_path': specification.local_downloads_dir + '/' + relative_dest_path })
-           | combine({ 'checksum_algorithm': 'sha256' if (file.sha256 is defined) else 'sha512' }) }}
+           | combine(file_arg)
+           | combine({ 'arch': arch,
+                       'cached_file_path': specification.local_downloads_dir + '/' + relative_dest_path,
+                       'checksum_algorithm': 'sha256' if (file.sha256 is defined) else 'sha512',
+                       'dest_path': specification.remote_downloads_dir + '/' + relative_dest_path,
+                       'version': file.version | string }) }}
   vars:
     arch: "{{ shared.architecture_map[ansible_architecture] }}"
     relative_dest_path: >-
