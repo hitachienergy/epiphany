@@ -9,30 +9,34 @@
       {{ ansible_distribution_major_version if (ansible_os_family == "RedHat")
                                             else ansible_distribution_version }}
 
-- name: download_package | Normalize properties from configuration
-  set_fact:
-    package_items: >-
-      {{ package_items | default([]) + [ normalized_package_item ] }}
-  vars:
-    normalized_package_item: >-
-      {{ package_item | combine({ 'distro_version': package_item.distro_version | string })
-                      | combine({ 'version': package_item.version | string })
-                      | combine({ 'distros': [ package_item.distros ] if (package_item.distros is string)
-                                                                      else package_item.distros }) }}
-  loop: "{{ specification.downloads.packages[package_arg.id][arch] }}"
-  loop_control:
-    loop_var: package_item
+- name: Normalize properties from configuration
+  block:
+    - name: download_package | Clear list
+      set_fact:
+        package_items: []
+    - name: download_package | Normalize properties from configuration
+      set_fact:
+        package_items: >-
+          {{ package_items + [ normalized_package_item ] }}
+      vars:
+        normalized_package_item: >-
+          {{ package_item | combine({ 'distro_version': package_item.distro_version | string })
+                          | combine({ 'version': package_item.version | string })
+                          | combine({ 'distros': [ package_item.distros ] if (package_item.distros is string)
+                                                                          else package_item.distros }) }}
+      loop: "{{ specification.downloads.packages[package_arg.id][arch] }}"
+      loop_control:
+        loop_var: package_item
 
 - name: download_package | Set properties from configuration
   set_fact:
     file: >-
       {{ package_items | selectattr('version', 'match', '.*' if (package_arg.version is not defined)
-                                                             else package_arg.version)
+                                                             else package_arg.version | string)
                        | selectattr('distros', 'contains', os_distribution)
                        | selectattr('distro_version', 'equalto', os_distribution_version)
-         | first | combine(package_arg) | combine({ 'arch': arch,
-                                                    'os_distribution': os_distribution,
-                                                    'os_distribution_version': os_distribution_version }) }}
+         | first | combine({ 'arch': arch, 'id': file_arg.id, 'os_distribution': os_distribution,
+                             'os_distribution_version': os_distribution_version }) }}
 
 - name: download_package | Set dynamic properties and filter out unneeded
   set_fact:
@@ -44,8 +48,7 @@
               | combine({ 'checksum_algorithm': 'sha256' if (file.sha256 is defined) else 'sha512' }) }}
   vars:
     relative_dest_path: >-
-      {{ 'packages/' + file.id + '/' + file.version + '/' + file.arch + '/'
-         + file.os_distribution + '/' + file.os_distribution_version + '/'
+      {{ 'packages/' + file.arch + '/' + file.os_distribution + '/' + file.os_distribution_version + '/'
          + (file.url | basename) if file.url is defined else file.file_name }}
 
 - name: download_package | Download '{{ file.id }}' v{{ file.version }}

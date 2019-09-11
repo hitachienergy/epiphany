@@ -1,12 +1,32 @@
 ---
-# Under development!
-- name: "download_all_files_to_cache | Prepare list of all URLs with checksums"
-  set_fact:
-    urls: "{{ urls | default([]) + [ item ] }}"
-  loop: "{{ specification.files | json_query('*.versions.values(@) | [].values(@) | []') }}"
+- name: Prepare list of files to download
+  block:
+    - name: download_all_files_to_cache | Clear list
+      set_fact:
+        files: []
+    - name: download_all_files_to_cache | Prepare list of files
+      set_fact:
+        files: >-
+          {{ files + [ item | combine(specification.downloads.files[item.id][item.arch])
+                            | combine({ 'cached_file_path': specification.local_downloads_dir
+                                        + '/' + relative_dest_path })
+                            | combine({ 'checksum_algorithm': 'sha256' if (item.sha256 is defined)
+                                                                       else 'sha512' }) ] }}
+      vars:
+        relative_dest_path: >-
+          {{ 'files/' + item.arch + '/' + item.id + '/' + item.version + '/' + (item.url | basename) }}
+      loop: >-
+        [ {% for file_id in specification.downloads.files.keys() %}
+            {% for arch in specification.downloads.files[file_id].keys() %}
+              {% for file_item in specification.downloads.files[file_id][arch] %}
+                { 'id': '{{ file_id }}', 'arch': '{{ arch }}',
+                  'version': '{{ file_item.version }}', 'url': '{{ file_item.url }}' },
+              {% endfor %}
+            {% endfor %}
+          {% endfor %} ]
 
 - name: download_all_files_to_cache | Download files
   include_tasks: download_file_to_cache.yml
   vars:
-    download: "{{ item }}"
-  loop: "{{ urls }}"
+    file_arg: "{{ item }}"
+  loop: "{{ files }}"

@@ -1,24 +1,32 @@
 ---
 # Zookeeper tasks - resides on masters
 
-- name: Install debian family packages
+- name: Download {{ ansible_os_family }} 'openjdk-8-jre' for Zookeeper v{{ specification.version }}
+  include_role:
+    name: download
+    tasks_from: download_package
+  vars:
+    package_arg: "{{ dependencies.zookeeper[specification.version].packages | selectattr('id', 'equalto', 'openjdk-8-jre') | list | first }}"
+  when: ansible_os_family == "Debian"
+
+- name: Install {{ ansible_os_family }} package from {{ file.dest_path }}
   apt:
-    name:
-      - openjdk-8-jre
-    update_cache: yes
+    deb: "{{ file.dest_path }}"
     state: present
   when: ansible_os_family == "Debian"
 
-- name: Install RedHat family packages
+- name: Download {{ ansible_os_family }} 'java-1.8.0-openjdk' for Zookeeper v{{ specification.version }}
+  include_role:
+    name: download
+    tasks_from: download_package
+  vars:
+    package_arg: "{{ dependencies.zookeeper[specification.version].packages | selectattr('id', 'equalto', 'java-1.8.0-openjdk') | list | first }}"
+  when: ansible_os_family == "RedHat"
+
+- name: Install {{ ansible_os_family }} package from {{ file.dest_path }}
   yum:
-    name:
-      - java-1.8.0-openjdk
-    update_cache: yes
+    name: "{{ file.dest_path }}"
     state: present
-  register: result
-  retries: 3
-  delay: 1
-  until: result is succeeded
   when: ansible_os_family == "RedHat"
 
 - name: Check if jmx exporter is available
@@ -38,47 +46,82 @@
     system: yes
     shell: "/usr/sbin/nologin"
 
-- name: Check for Zookeeper package
-  stat:
-    path: /tmp/{{ zookeeper }}.tar.gz
-  register: zoo
+# - name: Check for Zookeeper package
+#   stat:
+#     path: /tmp/{{ zookeeper }}.tar.gz
+#   register: zoo
 
-- name: Fetch Zookeeper binary package
-  get_url:
-    url: "{{ zookeeper_url }}/{{ zookeeper }}/{{ zookeeper }}.tar.gz"
-    dest: /tmp/{{ zookeeper }}.tar.gz
-    validate_certs: "{{ validate_certs | bool }}"
-  when: not zoo.stat.exists
+# - name: Fetch Zookeeper binary package
+#   get_url:
+#     url: "{{ zookeeper_url }}/{{ zookeeper }}/{{ zookeeper }}.tar.gz"
+#     dest: /tmp/{{ zookeeper }}.tar.gz
+#     validate_certs: "{{ validate_certs | bool }}"
+#   when: not zoo.stat.exists
 
-- name: Get sha512 sum of archive
-  stat:
-    path: "/tmp/{{ zookeeper }}.tar.gz"
-    checksum_algorithm: sha512
-    get_checksum: yes
-  register: zookeeper_download_stat
+# - name: Get sha512 sum of archive
+#   stat:
+#     path: "/tmp/{{ zookeeper }}.tar.gz"
+#     checksum_algorithm: sha512
+#     get_checksum: yes
+#   register: zookeeper_download_stat
 
-- name: Display sha of archive
-  debug:
-    msg: "Zookeeper SHA512: {{ zookeeper_download_stat.stat.checksum }}"
+# - name: Display sha of archive
+#   debug:
+#     msg: "Zookeeper SHA512: {{ zookeeper_download_stat.stat.checksum }}"
 
-- name: Verify sha512 of archive before installation.
-  fail:
-    msg: "File checksum is not correct."
-  when: zookeeper_download_stat.stat.checksum != specification.sha
+# - name: Verify sha512 of archive before installation.
+#   fail:
+#     msg: "File checksum is not correct."
+#   when: zookeeper_download_stat.stat.checksum != specification.sha
 
-- name: Uncompress the Zookeeper tar
-  unarchive:
-    copy: no
-    creates: "{{ zookeeper_dir }}"
-    src: /tmp/{{ zookeeper }}.tar.gz
-    dest: /opt
+# - name: Uncompress the Zookeeper tar
+#   unarchive:
+#     copy: no
+#     creates: "{{ zookeeper_dir }}"
+#     src: /tmp/{{ zookeeper }}.tar.gz
+#     dest: /opt
 
-- name: Change ownership on zookeeper directory.
+- name: Set zookeeper variable with version name
+  set_fact:
+    zookeeper_name: "zookeeper-{{ specification.version }}"
+  changed_when: false
+
+- name: Set zookeeper install dir for {{ zookeeper_name }}
+  set_fact:
+    zookeeper_install_dir: "/opt/{{ zookeeper_name }}"
+  changed_when: false
+
+- name: Download Zookeeper binaries
+  include_role:
+    name: download
+    tasks_from: download_file
+  vars:
+    file_arg: "{{ dependencies.zookeeper[specification.version].files | selectattr('id', 'equalto', 'zookeeper') | list | first }}"
+
+- name: Create {{ zookeeper_install_dir }} directories
+  become: yes
   file:
-    path: "{{ zookeeper_dir }}"
-    state: directory
+    path: "{{ item }}"
+    recurse: yes
     owner: "{{ zookeeper_user }}"
     group: "{{ zookeeper_group }}"
+    mode: 0750
+    state: directory
+  with_items:
+  - "{{ zookeeper_install_dir }}"
+
+- name: Unpack {{ zookeeper_name }} binary
+  become: false
+  remote_src: yes
+  unarchive:
+    src: "{{ file.dest_path }}"
+    dest: "/opt/"
+    creates: "{{ zookeeper_install_dir }}"
+    extra_opts: [--strip-components=1]
+    mode: 0755
+    owner: "{{ zookeeper_user }}"
+    group: "{{ zookeeper_group }}"
+  check_mode: false
 
 - name: "Create zookeeper {{item}} directory."
   file:
@@ -111,13 +154,13 @@
 - name: Configure Zookeeper
   template:
     src: zoo.j2
-    dest: /opt/{{zookeeper}}/conf/zoo.cfg
+    dest: "{{ zookeeper_install_dir }}/conf/zoo.cfg"
     owner: "{{ zookeeper_user }}"
     group: "{{ zookeeper_group }}"
   notify: Restart zookeeper
 
 - name: Link /opt/zookeeper to the right version
-  file: path=/opt/zookeeper state=link src="/opt/{{zookeeper}}"
+  file: path=/opt/zookeeper state=link src="{{ zookeeper_install_dir }}"
 
 # - name: Link /etc/zookeeper/conf to /opt/zookeeper/config
 #   file: path=/etc/zookeeper/conf state=link src=/opt/zookeeper/conf
@@ -131,7 +174,7 @@
 - name: Update the log4j config with saner production values
   template:
     src: log4j.properties.j2
-    dest: "{{ zookeeper_dir }}/conf/log4j.properties"
+    dest: "{{ zookeeper_install_dir }}/conf/log4j.properties"
   notify:
     - Restart zookeeper
 

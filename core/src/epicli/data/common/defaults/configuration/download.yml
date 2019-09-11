@@ -3,12 +3,10 @@ version: 0.3.0
 title: "Download settings and inventory"
 name: default
 specification:
-  local_cache_dir: /shared/epiphany
-  remote_dest_dir: /tmp/epiphany
+  local_downloads_dir: /shared/epiphany
+  remote_downloads_dir: /tmp/epiphany
   # If true, download directly from Internet (on remote hosts) without using local cache
   direct_download: false
-  # If true, disable SSL validation of get_url module. Checksum validation will still be performed.
-  validate_certs: true
   download_retries: 3
   download_retry_delay: 5
 
@@ -243,6 +241,13 @@ specification:
             version: 2.99
             url: "http://mirror.centos.org/centos/7/extras/x86_64/Packages/container-selinux-2.99-1.el7_6.noarch.rpm"
             sha512: 4739D696AE1E9EF10D5CF89238AFFD4E4AAFB35591F0B624B64A256F82ED9D7D7A13B3EF77EBA5DFC297CF720D9EA9FB7053F9D3FBB0DA9B97801C8631A97F73           
+      containerd.io:
+        amd64:
+          - distros: Ubuntu
+            distro_version: 18.04
+            version: 1.2.6
+            url: "https://download.docker.com/linux/ubuntu/dists/bionic/pool/stable/amd64/containerd.io_1.2.6-3_amd64.deb"
+            sha512: 5ca552dd313f110801a2be76b09b76565a7d0b919f47dc7087cf3f4a1c10a1e72473e519a3a4ad0ef2230836ccfaa33d5986428b62b9b9bfd9f97accff5b80a9
       docker-ce:
         amd64:
           - distros: Ubuntu
@@ -257,6 +262,13 @@ specification:
             version: 18.09.6
             url: "https://download.docker.com/linux/centos/7/x86_64/stable/Packages/docker-ce-18.09.6-3.el7.x86_64.rpm"
             sha512: 239043AE66548CD2C38ABA14F426631417CC231092C97F1A70272F69D60A546EA6FC4C6817AAABAFDBB7C5DD89F10229AE57C789BE6A181143EE1D1F71705231
+      docker-ce-cli:
+        amd64:
+          - distros: Ubuntu
+            distro_version: 18.04
+            version: 18.09.6
+            url: "https://download.docker.com/linux/ubuntu/dists/bionic/pool/stable/amd64/docker-ce-cli_18.09.6~3-0~ubuntu-bionic_amd64.deb"
+            sha512: 8073eb0a977d84a9ce53a9257d9121c4f0955f615763316bf92d75ec0d45ab0ab6530615896ac4d1f764ecf9a276201fa4e62a74cfd89f2037bb459af194d327
       init-system-helpers:
         amd64:
           - distros: Ubuntu
@@ -419,4 +431,3 @@ specification:
             version: 10.6
             file_name: "rh-postgresql10-postgresql-libs-10.6-1.el7.x86_64.rpm"
             sha512: e39f16adb524bb5866265f52854004c7a4c38973d6e3345f748912957ca7fbc880bfba2275aba16b33a8f16078e41e314d58df4ddbaf0c47d0e9a6c4e57a43ad
-            

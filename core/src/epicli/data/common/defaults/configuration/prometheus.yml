@@ -3,15 +3,7 @@ version: 0.3.0
 title: "Prometheus"
 name: default
 specification:
-  download_urls:
-    i386: "https://github.com/prometheus/prometheus/releases/download/v2.10.0/prometheus-2.10.0.linux-386.tar.gz"
-    x86_64: "https://github.com/prometheus/prometheus/releases/download/v2.10.0/prometheus-2.10.0.linux-amd64.tar.gz"
-    aarch64: "https://github.com/prometheus/prometheus/releases/download/v2.10.0/prometheus-2.10.0.linux-arm64.tar.gz"
-  download_shas:
-    - "eb9ebfd88d25e7ec22a19a035b535dd750e7938df01d907c7a74d327a689609ba9600963d9c938133057b8dab0d04d1d102c7c12262ff573cc84d0a7a584e4d1"
-    - "6f499c6df38922e52d76c45b9659c4cae8ee1cc8307e8b933f461434024cdb9a6b1faabb6953ece2b25a948879d8fa885807d0577132f179a4de5fdf2459ca8c"
-    - "3aad1d46bd31f1c1083ca313e61941d851d379370da715a9f23b336e679952e4c16f83a6180f4f6177fdf036fca56b84e3f6adf7fef8224c07a06cd411afd36f"
-  download_directory: "/tmp"
+  version: 2.10.0
   config_directory: "/etc/prometheus"
   storage:
     data_directory: "/var/lib/prometheus"
@@ -65,14 +57,7 @@ specification:
 
     alertmanager:
       enable: False # To make Alertmanager working, you have to enable it and define receivers and routes
-      download_shas:
-        - "04c8a0b2e537403892c6d427fc1ec3c71a780f05567dc4f23019c5d48bd672fe8d9989ea58cfdcc243778e64798526136f382d36bd9addc24100e6e88253a3a3"
-        - "e0af9867044bc702460a4fc76f712ac6f37c86d9ea94c7a3ed2b209fef9744ba1e0b91b7c4fd294d48b90d30974feba984a9265b161c15cbfbbd246d3a890270"
-        - "8a99f5dac9d57b48f3b7b3e7c58350542ae0767cfa1382328648002459f0bcff8bc58ca84b5c3ba42bc5ae2fedb5db78e664f70efb4aacb3dc50643319691449"
-      download_urls: # Download URLs for AlertManager
-        i386: "https://github.com/prometheus/alertmanager/releases/download/v0.17.0/alertmanager-0.17.0.linux-386.tar.gz"
-        x86_64: "https://github.com/prometheus/alertmanager/releases/download/v0.17.0/alertmanager-0.17.0.linux-amd64.tar.gz"
-        aarch64: "https://github.com/prometheus/alertmanager/releases/download/v0.17.0/alertmanager-0.17.0.linux-arm64.tar.gz"
+      version: 0.17.0
       config: # Configuration for Alertmanager, it will be passed to Alertmanager service.
 
         # Full list of configuration fields https://prometheus.io/docs/alerting/configuration/

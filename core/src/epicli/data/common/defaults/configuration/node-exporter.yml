@@ -4,6 +4,7 @@ title: "Node exporter"
 name: default
 specification:
   description: "Service that runs Prometheus Node Exporter"
+  version: 0.16.0
   download_urls:
     i386: 'https://github.com/prometheus/node_exporter/releases/download/v0.16.0/node_exporter-0.16.0.linux-386.tar.gz'
     x86_64: "https://github.com/prometheus/node_exporter/releases/download/v0.16.0/node_exporter-0.16.0.linux-amd64.tar.gz"
