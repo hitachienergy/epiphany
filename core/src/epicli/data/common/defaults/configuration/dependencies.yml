@@ -57,7 +57,7 @@ specification:
     3.7.10:
       packages:
         - id: socat
-          version: 1.7.3.2      
+          version: 1.7.3.2
         - id: erlang # RedHat
           version: 21.2.2
         - id: init-system-helpers # Debian
