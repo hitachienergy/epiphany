@@ -18,20 +18,24 @@
 - name: download_file | Set properties from specification
   set_fact:
     file: >-
-      {{ file_items | selectattr('version', 'match', '.*' if (file_arg.version is not defined)
-                                                          else file_arg.version | string)
-         | first | combine({ 'arch': shared.architecture_map[ansible_architecture], 'id': file_arg.id }) }}
+      {{ file_items | selectattr('version', 'match', version_to_select) | first }}
+  vars:
+    version_to_select: >-
+      {{ '.*' if (file_arg.version is not defined) else '^' + (file_arg.version | string) + '$' }}
 
 - name: download_file | Set dynamic properties
   set_fact:
     file: >-
       {{ file
+           | combine(file_arg) | combine({ 'version': file.version | string })
+           | combine({ 'arch': arch })
            | combine({ 'dest_path': specification.remote_downloads_dir + '/' + relative_dest_path })
            | combine({ 'cached_file_path': specification.local_downloads_dir + '/' + relative_dest_path })
            | combine({ 'checksum_algorithm': 'sha256' if (file.sha256 is defined) else 'sha512' }) }}
   vars:
+    arch: "{{ shared.architecture_map[ansible_architecture] }}"
     relative_dest_path: >-
-      {{ 'files/' + file.arch + '/' + file.id + '/' + file.version + '/' + (file.url | basename) }}
+      {{ 'files/' + arch + '/' + file_arg.id + '/' + file.version + '/' + (file.url | basename) }}
 
 - name: download_file | Download '{{ file.id }}' v{{ file.version }}
   include_tasks: download_file_worker.yml
