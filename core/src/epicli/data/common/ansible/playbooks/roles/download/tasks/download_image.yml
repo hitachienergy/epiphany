@@ -1,0 +1,29 @@
+---
+- name: lukur | debug download_image.yml file vars 12:30
+  debug:
+    msg: "{{ specification.downloads.images }}"
+
+- name: download_image | Set properties from specification
+  set_fact:
+    file: >-
+      {{ specification.downloads.images[file_arg.id][arch_map[ansible_architecture]]
+      | selectattr('version', 'match', '.*' if (file_arg.version is not defined) else file_arg.version)
+      | list | first | combine(file_arg) | combine({ 'arch': arch_map[ansible_architecture] }) }}
+
+- name: download_image | Set dynamic properties
+  set_fact:
+    file: >-
+      {{ file
+           | combine({ 'dest_path': specification.remote_downloads_dir + '/' + relative_dest_path + '.tar'})
+           | combine({ 'cached_file_path': specification.local_downloads_dir + '/' + relative_dest_path + '.tar' })
+           | combine({ 'checksum_algorithm': 'sha256' if (file.sha256 is defined) else 'sha512' })
+           | combine({ 'is_image': 'true' }) }}
+  vars:
+    relative_dest_path: >-
+      {{ 'files/' + file.id + '/' + file.version + '/' + file.arch + '/' + (file.url | basename) }}
+
+- name: download_image | Download '{{ file.id }}' v{{ file.version }}
+  include_tasks: download_file_worker.yml
+  vars:
+    file_arg: "{{ file }}"
+
