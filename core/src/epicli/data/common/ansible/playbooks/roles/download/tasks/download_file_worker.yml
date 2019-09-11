@@ -34,7 +34,7 @@
   block:
     - name: download_file_worker | Get admin user
       set_fact:
-        admin_user: "{{ admin_user.name | default(ansible_user) }}"
+        admin_user: "{{ admin_user.name }}"
     - name: download_file_worker | Get admin user's group
       command: "id -g -n {{ admin_user }}"
       register: result
