@@ -19,8 +19,10 @@ specification:
           version: 1.51
         - id: adduser # Debian
           version: 3.116ubuntu1
-        - id: logrotate # Debian, Redhat
+        - id: logrotate # Debian
           version: 3.11.0
+        - id: logrotate # Redhat
+          version: 3.8.6         
         - id: erlang-nox # Debian
           version: 21.3.8.6 
         - id: rabbitmq-server # Debian, RedHat
@@ -29,25 +31,26 @@ specification:
     10:
       packages:
         - id: rh-postgresql10-postgresql # RedHat
-          version: # TODO
+          version: 10.6
         - id: rh-postgresql10-postgresql-syspaths # RedHat
-          version: # TODO
+          version: 10.6
         - id: rh-postgresql10-postgresql-server # RedHat
-          version: # TODO
+          version: 10.6
         - id: rh-postgresql10-postgresql-server-syspaths # RedHat
-          version: # TODO
+          version: 10.6
         - id: rh-postgresql10-postgresql-contrib # RedHat
-          version: # TODO
+          version: 10.6
         - id: rh-postgresql10-postgresql-contrib-syspaths # RedHat
-          version: # TODO
+          version: 10.6
         - id: rh-postgresql10-postgresql-libs # RedHat
-          version: # TODO
-        - id: python-psycopg2 # RedHat, Debian
-          version: # TODO
+          version: 10.6
+        - id: python-psycopg2 # RedHat
+          version: 2.5.1
+        - id: python-psycopg2 # Debian
+          version: 2.7.4
         - id: postgresql-10 # Debian
-          version: # TODO
-        - id: postgresql-contrib-10 # Debian
-          version: # TODO
+          version: 10.10
+
   kibana:
     6.4.0:
       packages:
@@ -59,7 +62,7 @@ specification:
         - id: haproxy
           version: 1.8.8 # Debian
         - id: rh-haproxy18
-          version: 1.8.17 # RedHat
+          version: 3.1 # RedHat
         - id: rh-haproxy18-haproxy-syspaths
           version: 1.8.17 # RedHat
   filebeat:
