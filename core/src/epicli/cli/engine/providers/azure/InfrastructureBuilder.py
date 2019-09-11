@@ -1,4 +1,5 @@
 import os
+import uuid
 from copy import deepcopy
 
 from cli.helpers.Step import Step
@@ -27,6 +28,9 @@ class InfrastructureBuilder(Step):
 
         vnet = self.get_virtual_network()
         infrastructure.append(vnet)
+
+        shared_storage = self.get_storage_share_config()
+        infrastructure.append(shared_storage)
 
         for component_key, component_value in self.cluster_model.specification.components.items():
             vm_count = component_value['count']
@@ -139,7 +143,13 @@ class InfrastructureBuilder(Step):
         public_ip.specification.allocation_method = vm_config.specification.network_interface.public_ip.allocation_method
         public_ip.specification.idle_timeout_in_minutes = vm_config.specification.network_interface.public_ip.idle_timeout_in_minutes
         public_ip.specification.sku = vm_config.specification.network_interface.public_ip.sku
-        return public_ip        
+        return public_ip     
+
+    def get_storage_share_config(self):
+        storage_share = self.get_config_or_default(self.docs, 'infrastructure/storage-share')
+        storage_share.specification.name = resource_name(self.cluster_prefix, self.cluster_name, 'k8s-ss')
+        storage_share.specification.storage_account_name = self.cluster_prefix + self.cluster_name + 'k8s'
+        return storage_share           
 
     def get_vm(self, component_key, component_value, vm_config, network_interface_name, index):
         vm = dict_to_objdict(deepcopy(vm_config))
@@ -149,11 +159,11 @@ class InfrastructureBuilder(Step):
         vm.specification.tags.append({'cluster': f'{self.cluster_prefix}-{self.cluster_name}'})
         vm.specification.tags.append({component_key: ''})        
         if vm.specification.os_type == 'linux':
-            # For linux we dont need a PW since we only support SSH so just add something random.
-            vm.specification.admin_password = "NeverGonnaNeed!"
+            # For linux we dont need a PW since we only support SSH. We add something random for Terraform 
+            # to run and later disable password access in Ansible.
+            vm.specification.admin_password = str(uuid.uuid4())
         if vm_config.specification.os_type == 'windows':
-            #TODO: We need PW or can we support SSH or something different on Windows?
-            vm.specification.admin_password = 'TODO' 
+            raise NotImplementedError('Windows VMs not supported jet.')
         pub_key_path = self.cluster_model.specification.admin_user.key_path + '.pub'
         if os.path.isfile(pub_key_path):
             vm.specification.public_key = pub_key_path
