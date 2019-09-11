@@ -11,7 +11,7 @@
 
 - name: Normalize properties from configuration
   block:
-    - name: download_package | Prepare list
+    - name: download_package | Clear list
       set_fact:
         package_items: []
     - name: download_package | Normalize properties from configuration
@@ -32,12 +32,11 @@
   set_fact:
     file: >-
       {{ package_items | selectattr('version', 'match', '.*' if (package_arg.version is not defined)
-                                                             else package_arg.version)
+                                                             else package_arg.version | string)
                        | selectattr('distros', 'contains', os_distribution)
                        | selectattr('distro_version', 'equalto', os_distribution_version)
-         | first | combine(package_arg) | combine({ 'arch': arch,
-                                                    'os_distribution': os_distribution,
-                                                    'os_distribution_version': os_distribution_version }) }}
+         | first | combine({ 'arch': arch, 'id': file_arg.id, 'os_distribution': os_distribution,
+                             'os_distribution_version': os_distribution_version }) }}
 
 - name: download_package | Set dynamic properties and filter out unneeded
   set_fact:
@@ -49,8 +48,7 @@
               | combine({ 'checksum_algorithm': 'sha256' if (file.sha256 is defined) else 'sha512' }) }}
   vars:
     relative_dest_path: >-
-      {{ 'packages/' + file.id + '/' + file.version + '/' + file.arch + '/'
-         + file.os_distribution + '/' + file.os_distribution_version + '/'
+      {{ 'packages/' + file.arch + '/' + file.os_distribution + '/' + file.os_distribution_version + '/'
          + (file.url | basename) if file.url is defined else file.file_name }}
 
 - name: download_package | Download '{{ file.id }}' v{{ file.version }}
