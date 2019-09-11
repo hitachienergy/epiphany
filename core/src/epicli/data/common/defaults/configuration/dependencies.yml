@@ -3,6 +3,26 @@ version: 0.3.0
 title: "List of dependencies for Epiphany Platform"
 name: default
 specification:
+  zookeeper:
+    "3.4.12":
+      files:
+        - id: zookeeper
+          version: "3.4.12"
+      packages:
+        - id: openjdk-8-jre
+          version: 8u222-b10-1ubuntu1
+        - id: java-1.8.0-openjdk
+          version: "1.8.0"
+  prometheus:
+    "2.10.0":
+      files:
+        - id: prometheus
+          version: "2.10.0"
+  alertmanager:
+    "0.17.0":
+      files:
+        - id: alertmanager
+          version: "0.17.0"
   node_exporter:
     "0.16.0":
       files:
