@@ -5,7 +5,7 @@
     name: download
     tasks_from: download_package
   vars:
-    package_arg: "{{ dependencies.elasticsearch_curator[specification.debian_curator_version].packages | selectattr('id', 'equalto', elasticsearch-curator) | list | first }}"
+    package_arg: "{{ dependencies.elasticsearch_curator[specification.debian_curator_version].packages | selectattr('id', 'equalto', 'elasticsearch-curator') | list | first }}"
 
 - name: Install Elasticsearch-Curator from {{ file.dest_path }}
   package:

@@ -4,6 +4,7 @@ title: "Kafka exporter"
 name: default
 specification:
   description: "Service that runs Kafka Exporter"
+  version: 1.2.0
   download_urls:
     i386: "https://github.com/danielqsj/kafka_exporter/releases/download/v1.2.0/kafka_exporter-1.2.0.linux-386.tar.gz"
     x86_64: "https://github.com/danielqsj/kafka_exporter/releases/download/v1.2.0/kafka_exporter-1.2.0.linux-amd64.tar.gz"

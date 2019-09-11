@@ -56,8 +56,7 @@
     name: download
     tasks_from: download_file
   vars:
-    file_arg: "{{ item }}"
-  loop: "{{ dependencies.haproxy_exporter[specification.version].packages | list  }}"
+    file_arg: "{{ dependencies.haproxy_exporter[specification.version].files | selectattr('id', 'equalto', 'haproxy_exporter') | list | first }}"
 
 - name: Create /opt/haproxy_exporter directories
   become: yes
