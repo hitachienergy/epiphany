@@ -54,14 +54,14 @@
   become: false
   when:
     - not is_file_in_cache
-    - not file_arg.is_image
+    - file_arg.is_image is not defined or not file_arg.is_image
 
 - name: download_image_to_cache | Download '{{ file_arg.id }}' v{{ file_arg.version }}
-  # requires skopeo on ansible host, docker-archive:image:version:image_tag:version_tag (those tags are what you'll see when running "docker images" in columns REPOSITORY and TAG)
-  # skopeo refuses to overwrite images on its own, this task is executed only if checksum doesn't match so 'rm' here removes only invalid files
-  shell: rm -f "{{ file_arg.cached_file_path }}" && skopeo copy docker://"{{ file_arg.url }}:{{ file_arg.version }}" docker-archive:"{{ file_arg.cached_file_path }}:{{ file_arg.url }}:{{ file_arg.version }}"
-  register: get_url_result
-  until: "get_url_result.rc == 0"
+  # requires skopeo on ansible host, skopeo refuses to overwrite images on its own...
+  # ... this task is executed only if checksum doesn't match so 'rm' here removes only invalid files
+  shell: rm -f "{{ file_arg.cached_file_path }}" && skopeo copy docker://"{{ file_arg.url }}:{{ file_arg.version }}" docker-archive:"{{ file_arg.cached_file_path }}:{{ file_arg.repository }}:{{ file_arg.version }}"
+  register: get_skopeo_result
+  until: "get_skopeo_result.rc == 0"
   retries: "{{ specification.download_retries }}"
   delay: "{{ specification.download_retry_delay }}"
   delegate_facts: no
@@ -69,4 +69,4 @@
   become: false
   when:
     - not is_file_in_cache
-    - file_arg.is_image
+    - file_arg.is_image | default('', false)
