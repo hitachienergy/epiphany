@@ -117,15 +117,19 @@
 #     - /opt/prometheus/promtool
 #     - /opt/prometheus
 
+- name: Set binary version to install
+  set_fact:
+    binary_version: "{{ specification.version }}"
+
 - name: Download Prometheus and Promtool binaries
   include_role:
     name: download
     tasks_from: download_file
   vars:
-    file_arg: "{{ dependencies.prometheus[specification.version].files | selectattr('id', 'equalto', 'prometheus') | list | first }}"
+    file_arg: "{{ dependencies.prometheus[binary_version].files | selectattr('id', 'equalto', 'prometheus') | list | first }}"
 
-- name: Unpack AlertManager binary
-  become: false
+- name: Unpack Prometheus binary
+  become: true
   unarchive:
     src: "{{ file.dest_path }}"
     remote_src: yes

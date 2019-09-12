@@ -60,12 +60,16 @@
 #   delegate_to: localhost
 #   check_mode: false
 
+- name: Set binary version to install
+  set_fact:
+    binary_version: "{{ specification.version }}"
+
 - name: Download Node Exporter binaries
   include_role:
     name: download
     tasks_from: download_file
   vars:
-    file_arg: "{{ dependencies.node_exporter[specification.version].files | selectattr('id', 'equalto', 'node_exporter') | list | first }}"
+    file_arg: "{{ dependencies.node_exporter[binary_version].files | selectattr('id', 'equalto', 'node_exporter') | list | first }}"
 
 - name: Create /opt/node_exporter directories
   become: yes
@@ -79,8 +83,8 @@
   with_items:
   - /opt/node_exporter
 
-- name: Unpack kafka_exporter binary
-  become: false
+- name: Unpack node_exporter binary
+  become: true
   unarchive:
     remote_src: yes
     src: "{{ file.dest_path }}"
