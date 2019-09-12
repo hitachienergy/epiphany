@@ -30,13 +30,10 @@
     - not is_file_in_cache
     - file_arg.url is defined
 
-- name: Get admin user and his group
+- name: Set admin user's group
   block:
-    - name: download_file_worker | Get admin user
-      set_fact:
-        admin_user: "{{ admin_user.name }}"
     - name: download_file_worker | Get admin user's group
-      command: "id -g -n {{ admin_user }}"
+      command: "id -g -n {{ admin_user.name }}"
       register: result
       changed_when: false
     - name: download_file_worker | Set admin user's group
@@ -45,13 +42,13 @@
   become: false
   when:
     - not is_file_already_in_dest
-    - admin_user is not defined or admin_group is not defined
+    - admin_group is not defined
 
 - name: download_file_worker | Create directory '{{ file_arg.dest_path | dirname }}'
   file:
     path: "{{ file_arg.dest_path | dirname }}"
     state: directory
-    owner: "{{ admin_user }}"
+    owner: "{{ admin_user.name }}"
     group: "{{ admin_group }}"
   become: true
   when:
@@ -64,7 +61,7 @@
         msg:
           - "Copy from: {{ file_arg.cached_file_path }}"
           - "To: {{ file_arg.dest_path }}"
-    - name: download_file_worker | Copy '{{ file_arg.id }}' v{{ file_arg.version }} from cache on Ansible host
+    - name: download_file_worker | Copy '{{ file_arg.id }}' in version '{{ file_arg.version }}' from cache on Ansible host
       copy:
         src: "{{ file_arg.cached_file_path }}"
         dest: "{{ file_arg.dest_path }}"
@@ -85,7 +82,7 @@
         msg:
           - "Download from: {{ file_arg.url }}"
           - "To: {{ file_arg.dest_path }}"
-    - name: download_file_worker | Download '{{ file_arg.id }}' v{{ file_arg.version }} from direct source
+    - name: download_file_worker | Download '{{ file_arg.id }}' in version '{{ file_arg.version }}' from direct source
       get_url:
         url: "{{ file_arg.url }}"
         dest: "{{ file_arg.dest_path }}"

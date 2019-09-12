@@ -5,7 +5,7 @@
     os_distribution: >-
       {{ (ansible_distribution == "Oracle Linux") | ternary('RedHat', ansible_distribution) }}
     os_distribution_version: >-
-      {{ ansible_distribution_major_version if (ansible_os_family == "RedHat")
+      {{ ansible_distribution_major_version if ansible_os_family == "RedHat"
                                             else ansible_distribution_version }}
 
 - name: Normalize properties from configuration
@@ -21,7 +21,7 @@
         normalized_package_item: >-
           {{ package_item | combine({ 'distro_version': package_item.distro_version | string })
                           | combine({ 'version': package_item.version | string })
-                          | combine({ 'distros': [ package_item.distros ] if (package_item.distros is string)
+                          | combine({ 'distros': [ package_item.distros ] if package_item.distros is string
                                                                           else package_item.distros }) }}
       loop: "{{ specification.downloads.packages[package_arg.id][arch] }}"
       loop_control:
@@ -36,7 +36,8 @@
                        | first }}
   vars:
     version_to_select: >-
-      {{ '.*' if (package_arg.version is not defined) else '^' + (package_arg.version | string) + '$' }}
+      {{ '.*' if package_arg.version is not defined
+              else '^' + (package_arg.version | string) + '$' }}
 
 - name: download_package | Set dynamic properties and filter out unneeded
   set_fact:
@@ -46,7 +47,8 @@
               | combine(package_arg)
               | combine({ 'arch': arch,
                           'cached_file_path': specification.local_downloads_dir + '/' + relative_dest_path,
-                          'checksum_algorithm': 'sha256' if (file.sha256 is defined) else 'sha512',
+                          'checksum_algorithm': 'sha256' if file.sha256 is defined
+                                                         else 'sha512',
                           'dest_path': specification.remote_downloads_dir + '/' + relative_dest_path,
                           'os_distribution': os_distribution,
                           'os_distribution_version': os_distribution_version,
@@ -54,7 +56,8 @@
   vars:
     relative_dest_path: >-
       {{ 'packages/' + arch + '/' + os_distribution + '/' + os_distribution_version + '/'
-         + (file.url | basename) if file.url is defined else file.file_name }}
+         + (file.url | basename) if file.url is defined
+                                 else file.file_name }}
 
 - name: download_package | Download '{{ file.id }}' v{{ file.version }}
   include_tasks: download_file_worker.yml
