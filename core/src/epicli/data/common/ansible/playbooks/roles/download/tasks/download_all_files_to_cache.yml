@@ -19,8 +19,8 @@
         [ {% for file_id in specification.downloads.files.keys() %}
             {% for arch in specification.downloads.files[file_id].keys() %}
               {% for file_item in specification.downloads.files[file_id][arch] %}
-                { 'id': '{{ file_id }}', 'arch': '{{ arch }}',
-                  'version': '{{ file_item.version }}', 'url': '{{ file_item.url }}' },
+                { 'arch': '{{ arch }}', 'id': '{{ file_id }}',
+                  'url': '{{ file_item.url }}', 'version': '{{ file_item.version }}' },
               {% endfor %}
             {% endfor %}
           {% endfor %} ]
