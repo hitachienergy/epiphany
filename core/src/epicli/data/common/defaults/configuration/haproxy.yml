@@ -3,7 +3,7 @@ version: 0.3.0
 title: "HAProxy"
 name: default
 specification:
-  version: 1.8
+  version: '1.8'
   service_port: 30001
   logs_max_days: 60
   self_signed_certificate_name: self-signed-fullchain.pem

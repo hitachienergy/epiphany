@@ -93,8 +93,8 @@
 
 - name: Unpack kafka_exporter binary
   become: false
-  remote_src: yes
   unarchive:
+    remote_src: yes
     src: "{{ file.dest_path }}"
     dest: "/opt/kafka_exporter"
     creates: "/opt/kafka_exporter/kafka_exporter"

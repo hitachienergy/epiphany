@@ -126,9 +126,9 @@
 
 - name: Unpack AlertManager binary
   become: false
-  remote_src: yes
   unarchive:
     src: "{{ file.dest_path }}"
+    remote_src: yes
     dest: "/usr/local/bin"
     creates: "/usr/local/bin/prometheus"
     extra_opts: [--strip-components=1]

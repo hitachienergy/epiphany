@@ -99,7 +99,7 @@ specification:
         - id: kibana-oss
           version: 6.4.0
   haproxy:
-    1.8:
+    '1.8':
       packages:
         - id: haproxy
           version: 1.8.8 # Debian

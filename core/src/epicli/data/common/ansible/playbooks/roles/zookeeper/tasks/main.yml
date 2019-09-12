@@ -112,8 +112,8 @@
 
 - name: Unpack {{ zookeeper_name }} binary
   become: false
-  remote_src: yes
   unarchive:
+    remote_src: yes
     src: "{{ file.dest_path }}"
     dest: "/opt/"
     creates: "{{ zookeeper_install_dir }}"
