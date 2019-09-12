@@ -654,8 +654,8 @@ specification:
           - distros: RedHat
             distro_version: 7
             version: 6.2
-            file_name: "64b4c592a83fe868990717d07f14195e3440024a8de7b0c1ee7051f6a8a4cee0238bd0cb92ef40a60775e02e44e7796c8af8a92d51e290c8b231523e2da6958a"
-            sha512: cifs-utils-6.2-10.el7.x86_64.rpm
+            file_name: "cifs-utils-6.2-10.el7.x86_64.rpm"
+            sha512: 64b4c592a83fe868990717d07f14195e3440024a8de7b0c1ee7051f6a8a4cee0238bd0cb92ef40a60775e02e44e7796c8af8a92d51e290c8b231523e2da6958a
       nfs-common:
         amd64:
           - distros: Ubuntu
