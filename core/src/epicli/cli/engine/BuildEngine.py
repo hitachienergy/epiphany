@@ -74,7 +74,7 @@ class BuildEngine(Step):
 
     def collect_infrastructure_config(self):
         with provider_class_loader(self.cluster_model.provider, 'InfrastructureConfigCollector')(
-                [*self.input_docs, *self.configuration_docs, *self.infrastructure_docs]) as config_collector:
+                [*self.configuration_docs, *self.infrastructure_docs]) as config_collector:
             config_collector.run()
 
     def validate(self):
@@ -107,7 +107,7 @@ class BuildEngine(Step):
         self.collect_infrastructure_config()
 
         # Merge all the docs
-        docs = [*self.input_docs, *self.configuration_docs, *self.infrastructure_docs]
+        docs = [*self.configuration_docs, *self.infrastructure_docs]
 
         # Save docs to manifest file
         save_manifest(docs, self.cluster_model.specification.name)   
