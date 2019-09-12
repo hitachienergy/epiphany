@@ -8,9 +8,9 @@
       set_fact:
         files: >-
           {{ files + [ item | combine(specification.downloads.files[item.id][item.arch])
-                            | combine({ 'cached_file_path': specification.local_downloads_dir
-                                        + '/' + relative_dest_path })
-                            | combine({ 'checksum_algorithm': 'sha256' if (item.sha256 is defined)
+                            | combine({ 'cached_file_path': specification.local_downloads_dir + '/'
+                                                            + relative_dest_path,
+                                        'checksum_algorithm': 'sha256' if (item.sha256 is defined)
                                                                        else 'sha512' }) ] }}
       vars:
         relative_dest_path: >-

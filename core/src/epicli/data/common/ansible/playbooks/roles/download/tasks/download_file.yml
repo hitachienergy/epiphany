@@ -21,7 +21,8 @@
       {{ file_items | selectattr('version', 'match', version_to_select) | first }}
   vars:
     version_to_select: >-
-      {{ '.*' if (file_arg.version is not defined) else '^' + (file_arg.version | string) + '$' }}
+      {{ '.*' if file_arg.version is not defined
+              else '^' + (file_arg.version | string) + '$' }}
 
 - name: download_file | Set dynamic properties
   set_fact:
@@ -30,7 +31,8 @@
            | combine(file_arg)
            | combine({ 'arch': arch,
                        'cached_file_path': specification.local_downloads_dir + '/' + relative_dest_path,
-                       'checksum_algorithm': 'sha256' if (file.sha256 is defined) else 'sha512',
+                       'checksum_algorithm': 'sha256' if file.sha256 is defined
+                                                      else 'sha512',
                        'dest_path': specification.remote_downloads_dir + '/' + relative_dest_path,
                        'version': file.version | string }) }}
   vars:
