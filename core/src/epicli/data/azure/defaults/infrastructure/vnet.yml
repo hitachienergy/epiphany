@@ -1,5 +1,5 @@
 kind: infrastructure/vnet
-version: 0.3.0
+version: 0.4.0
 title: "VNET Config"
 provider: azure
 name: default
