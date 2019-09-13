@@ -480,3 +480,26 @@ specification:
             version: 10.6
             file_name: "rh-postgresql10-postgresql-libs-10.6-1.el7.x86_64.rpm"
             sha512: e39f16adb524bb5866265f52854004c7a4c38973d6e3345f748912957ca7fbc880bfba2275aba16b33a8f16078e41e314d58df4ddbaf0c47d0e9a6c4e57a43ad
+    images:
+      kube-apiserver:
+        amd64:
+          # version has to be exact tag including 'v' letter if needed
+          - version: "v1.14.4"
+            repository: "k8s.gcr.io/kube-apiserver"
+            url: "k8s.gcr.io/kube-apiserver-amd64:v1.14.4"
+            sha512: df53ad82328a649842c2ea9b8aebcf0ff0b5969ab245cab58d1e38cadc7da8bb23885392da4b6e5d4d028bfec06ccefdcb210c6b26e6a3a581b8cabf81f68815
+          - version: "v1.13.3"
+            repository: "k8s.gcr.io/kube-apiserver"
+            url: "k8s.gcr.io/kube-apiserver-amd64:v1.13.3"
+            sha512: d05ac88e4a17366db98fec03815a9f52fa94cf43dd937436e14d9db2d2a01146aacf24245834db5bd0ae2739159c7233deae02026ee21b9199b65fc56242e029
+      calico:
+        amd64:
+          - version: "v3.9.0"
+            repository: "calico/cni"
+            url: "docker.io/calico/cni:release-v3.9-amd64"
+            sha512: 42ce0aee7907de2451a47af3be6cc32f53a24207064a982586037ab1910ff1fa7322a40237b6816bc60d1cddb1f6cc7d6deef948cc03a91fa439e2f19d14e6e5
+        arm64:
+          - version: "v3.9.0"
+            repository: "calico/cni"
+            url: "docker.io/calico/cni:release-v3.9-arm64"
+            sha512: 63422d649a334ed97ce3864c3c1e9def9b299ae32b10a649760bae2d484b59a315a10eeeb22ecd7b4741c3d53504c3f2aa5d5e6b011755733ec3c12a05d510fe
