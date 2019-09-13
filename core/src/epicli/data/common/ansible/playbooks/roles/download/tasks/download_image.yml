@@ -37,8 +37,8 @@
   vars:
     arch: "{{ shared.architecture_map[ansible_architecture] }}"
     relative_dest_path: >-
-       {{ 'images/' + arch + '/' + file_arg.id + '-' + file.version + '.tar'}}
-  
+      {{ 'images/' + arch + '/' + file_arg.id + '-' + file.version + '.tar'}}
+
 - name: download_image | Download '{{ file.id }}' in version '{{ file.version }}'
   include_tasks: download_file_worker.yml
   vars:

@@ -56,10 +56,12 @@
     - not is_file_in_cache
     - file_arg.is_image is not defined or not file_arg.is_image
 
-- name: download_image_to_cache | Download '{{ file_arg.id }}' v{{ file_arg.version }}
+- name: download_image_to_cache | Download '{{ file_arg.id }}' in version '{{ file_arg.version }}'
   # requires skopeo on ansible host, skopeo refuses to overwrite images on its own...
   # ... this task is executed only if checksum doesn't match so 'rm' here removes only invalid files
-  shell: rm -f "{{ file_arg.cached_file_path }}" && skopeo copy docker://"{{ file_arg.url }}:{{ file_arg.version }}" docker-archive:"{{ file_arg.cached_file_path }}:{{ file_arg.repository }}:{{ file_arg.version }}"
+  shell: rm -f {{ file_arg.cached_file_path }} && skopeo copy docker://{{ file_arg.url }} docker-archive:{{ file_arg.cached_file_path }}:{{ file_arg.repository }}:{{ file_arg.version }}
+  args:
+    warn: false
   register: get_skopeo_result
   until: "get_skopeo_result.rc == 0"
   retries: "{{ specification.download_retries }}"
