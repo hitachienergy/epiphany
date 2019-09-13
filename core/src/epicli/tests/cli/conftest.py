@@ -7,7 +7,7 @@ def pytest_configure(config):
     This hook is called for every plugin and initial conftest
     file after command line options have been parsed.
     """
-    Config().output_dir = os.path.join(os.path.dirname(os.path.realpath(__file__)), '../tests_result/')
+    Config().output_dir = os.path.join(os.path.dirname(os.path.realpath(__file__)), '/results/')
 
 
 def pytest_sessionstart(session):
