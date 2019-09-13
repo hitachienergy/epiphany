@@ -12,22 +12,6 @@ specification:
 
   downloads:
     files:
-      cni-plugins:
-        amd64:
-          - version: 0.7.5
-            url: "https://github.com/containernetworking/plugins/releases/download/v0.7.5/cni-plugins-amd64-v0.7.5.tgz"
-            sha512: 1abfb567c13f87aab94efd6f2c6bb17f3581cbcce87bf8c6216510a92486cb44e6b8701fd3a6cb85273a97981feecbd0c4eb624eab0eca5a005fd85a7d95c284
-      kubeadm:
-        amd64:
-          - version: 1.14.4
-            url: "https://storage.googleapis.com/kubernetes-release/release/v1.14.4/bin/linux/amd64/kubeadm"
-            sha512: 500ab172e7399917c55d9f83a1b7be28f0e85bf165cb606a8db589231b5bc55a5e4d7c8193270aac90ed1e89d8c30eba97876cd1a3f16ad527c911a9f25e1b75
-          - version: 1.13.8
-            url: "https://storage.googleapis.com/kubernetes-release/release/v1.13.8/bin/linux/amd64/kubeadm"
-            sha512: e4d876e3ff1f8da2ea434362c8c084d3280d3bdf552cfc18f631a317fa2a989313fb729eceafdadf76c85c9cfa3589a3c9b827e6c3154383ea64a1c3219f63bd
-          - version: 1.12.10
-            url: "https://storage.googleapis.com/kubernetes-release/release/v1.12.10/bin/linux/amd64/kubeadm"
-            sha512: dcb6b06195a093a87f952cbb3f471dd690da9baea4a8b09520900301b0e9cee3bfdb50cb28eb10dfdc5b73bbf6bcd08d5c49711f91cea14679ebb1690a9368d9 
       haproxy_exporter:
         amd64:
           - version: 0.10.0
@@ -85,26 +69,7 @@ specification:
             distro_version: 7
             version: 1.7.3.2
             file_name: "socat-1.7.3.2-2.el7.x86_64.rpm"
-            sha512: 7b7e69af9f29037309a0b90b32ec69028ead8b5ba69027452c4740ef024a177e10a4b4326f0ce328b9699b033634a92fd68d0dee520b84e226be9b0f43ce31f5            
-      jq:
-        amd64:
-          - version: 1.5
-            distribution: Ubuntu
-            distribution_version: 18.04
-            url: "http://cz.archive.ubuntu.com/ubuntu/pool/universe/j/jq/jq_1.5+dfsg-2_amd64.deb"
-            sha256: 7da6b3fe4de02f50169923134b1e6c4cbf4ee693afa963d02d1eb8a0e3adb472
-          - version: 1.6
-            distribution: Ubuntu
-            distribution_version: 18.04
-            url: "http://cz.archive.ubuntu.com/ubuntu/pool/universe/j/jq/jq_1.5+dfsg-2build1_amd64.deb"
-            sha256: 2c53b773084ae89de03109b03ca8bde557c07318598e71f1825729548af1134b
-      tree:
-        amd64:
-          - version: 1.7.0
-            distribution: Ubuntu
-            distribution_version: 18.04
-            url: "http://cz.archive.ubuntu.com/ubuntu/pool/universe/t/tree/tree_1.7.0-5_amd64.deb"
-            sha256: e2008deb77a666372bee79056f8d0d6423373f5c7138dff5c91dcdf5d43d12cd
+            sha512: 7b7e69af9f29037309a0b90b32ec69028ead8b5ba69027452c4740ef024a177e10a4b4326f0ce328b9699b033634a92fd68d0dee520b84e226be9b0f43ce31f5
       kibana-oss:
         amd64:
           - distros: Ubuntu
@@ -480,6 +445,196 @@ specification:
             version: 10.6
             file_name: "rh-postgresql10-postgresql-libs-10.6-1.el7.x86_64.rpm"
             sha512: e39f16adb524bb5866265f52854004c7a4c38973d6e3345f748912957ca7fbc880bfba2275aba16b33a8f16078e41e314d58df4ddbaf0c47d0e9a6c4e57a43ad
+      kubeadm:
+        amd64:
+          - distros: Ubuntu
+            distro_version: 18.04
+            version: 1.14.4
+            url: "https://packages.cloud.google.com/apt/pool/kubeadm_1.14.4-00_amd64_364296f65fb4adc59cd310d14de3f59bd5c0792395643bc9a4ac444466e26196.deb"
+            sha512: C5AB03B8ACDE73F8841BAEA0428F51009DF77ED31CE7E23E5520EF11FAEEEBD10572265022F60047F5EE22EC5DA42D523122CE294D867B4B588F0C553ECC1713
+          - distros:
+              - CentOS
+              - RedHat
+            distro_version: 7
+            version: 1.14.4
+            url: "https://packages.cloud.google.com/yum/pool/18fecdcafd7a4ab490285c4c96e69ebbce1a627a6e1928d6d1d3a691c3640e64-kubeadm-1.14.4-0.x86_64.rpm"
+            sha512: 3D535F21989488CA354D1E015993FB651F091435053264E2CD045BE646966B8E528623B737B0C3B699EBF88B7A9FA8EC86373683FF975124BF7DD98AA22BA539
+      kubectl:
+        amd64:
+          - distros: Ubuntu
+            distro_version: 18.04
+            version: 1.14.4
+            url: "https://packages.cloud.google.com/apt/pool/kubectl_1.14.4-00_amd64_caed738cd96163a28b9f9d685d7c9eabebcc9843037d3e7638c23cb347621dbf.deb"
+            sha512: F49C61F78C44367EC94E07D103D51E6ED8C2B39C4453C1314BC4ACD88C7A638C65CA4E17C55C5D71D341B9618AD8A700FA823B6E4C4380E9A382581F38697101
+          - distros:
+              - CentOS
+              - RedHat
+            distro_version: 7
+            version: 1.14.4
+            url: "https://packages.cloud.google.com/yum/pool/9cebc278102d9801308e0145ca44be1d5f74ec01db653c937f0d259ac714c081-kubectl-1.14.4-0.x86_64.rpm"
+            sha512: 1C48BE2F7639326C26E26C5D821B4F4141133B6FD6097ACD44390C20305ED9812272C2EBAFDFCF435E9137D435778B49363D8BBCD3EF17FC089CB9EAB340A053
+      kubelet:
+        amd64:
+          - distros: Ubuntu
+            distro_version: 18.04
+            version: 1.14.4
+            url: "https://packages.cloud.google.com/apt/pool/kubelet_1.14.4-00_amd64_ad981158d637a54a56dbc567a5d7bed9de2237e778b97918b9e92bb7430715da.deb"
+            sha512: 38330CDC5FBB51B6CA84668B35115170ADC320D31080B6734235212A8852C7807DD5F9B599E8A3669123B8E82D4A0337749C9443EF0A7F6CE535CAC64C897EFD
+          - distros:
+              - CentOS
+              - RedHat
+            distro_version: 7
+            version: 1.14.4
+            url: "https://packages.cloud.google.com/yum/pool/219048ddb1cad26549ab59ec9e89b91fc670dce5895a2299714e23d217346c75-kubelet-1.14.4-0.x86_64.rpm"
+            sha512: 3EAC00EB5C5888B3B9A3959707844267917C8E2695BCC3FB472DBC8E7582735A3F46E6173CA39931624BDF35C56753185253A0AB56381E4121C9BDB7DD374642
+      kubernetes-cni:
+        amd64:
+          - distros: Ubuntu
+            distro_version: 18.04
+            version: 0.7.5
+            url: "https://packages.cloud.google.com/apt/pool/kubernetes-cni_0.7.5-00_amd64_b38a324bb34f923d353203adf0e048f3b911f49fa32f1d82051a71ecfe2cd184.deb"
+            sha512: 9C25856283F94AEB3B98E23F58453D2A4D8AADA675945F7BA91681392C538F3B304273757E0B711F43AD21855E04E874B2546CC37612CA65B1F6AF621AD59C4C
+          - distros:
+              - CentOS
+              - RedHat
+            distro_version: 7
+            version: 0.7.5
+            url: "https://packages.cloud.google.com/yum/pool/548a0dcd865c16a50980420ddfa5fbccb8b59621179798e6dc905c9bf8af3b34-kubernetes-cni-0.7.5-0.x86_64.rpm"
+            sha512: 975843FFA69DC6D1A1C5D029ADD54297651C164FB48757EDDB03066DAEF602BA5CDEB924CCF33630FFB933AD290F971B62BDB9900B8DE83CBF6C5B3973986C0B
+      cri-tools:
+        amd64:
+          - distros: Ubuntu
+            distro_version: 18.04
+            version: 1.13.0
+            url: "https://packages.cloud.google.com/apt/pool/cri-tools_1.13.0-00_amd64_6930e446a683884314deef354fbd8a7c5fc2be5c69c58903ad83b69b42529da4.deb"
+            sha512: 24AD0D0CDF39389AAE6582D506ED537F6CADED26FA8276C3F9A0F8D00AF92472E964E7AFA9521899A2679608BF5253ED745E5A076169BC3074ED517C3D5FD21D
+          - distros:
+              - CentOS
+              - RedHat
+            distro_version: 7
+            version: 1.13.0
+            url: "https://packages.cloud.google.com/yum/pool/14bfe6e75a9efc8eca3f638eb22c7e2ce759c67f95b43b16fae4ebabde1549f3-cri-tools-1.13.0-0.x86_64.rpm"
+            sha512: 6C66CD768F56097BD9B686C6246E158FD6232E7FFE0C28894DF28F7DF1BE06F6B8EB230B0E81A7B574672CB38DB3D57AC4D94EAEDEF1306832243F30DE1DE37E
+      nfs-utils:
+        amd64:
+          - distros: CentOS
+            distro_version: 7
+            version: 1.3.0
+            url: "http://mirror.centos.org/centos/7/os/x86_64/Packages/nfs-utils-1.3.0-0.61.el7.x86_64.rpm"
+            sha512: BE2609AE81BDA25EEBAF2643D6D8EE64FE6389D9A808F3D290848C8D47B8999D430F70C28366F51D203665EE017D9D00D8B439027FADFE053A3CCB0F12F1D759
+          - distros: RedHat
+            distro_version: 7
+            version: 1.3.0
+            file_name: "nfs-utils-1.3.0-0.65.el7.x86_64.rpm"
+            sha512: 46a36df383ce5afaa23467a23e9942d801f69a46e03ec26114d32dfb5bfab136086f283352ebaab76d3f9e5d50f2694242149722d97fddc64af79ac297beb1a7
+      conntrack-tools:
+        amd64:
+          - distros: CentOS
+            distro_version: 7
+            version: 1.4.4
+            url: "http://mirror.centos.org/centos/7/os/x86_64/Packages/conntrack-tools-1.4.4-4.el7.x86_64.rpm"
+            sha512: 19CAAA615048A7453A79317437CBB91ABD3D27A5DD3647EEE9CCD8D462F702A93933BB55E989B4BF3B0D26FFA86A44175F28B41726A25391AA58DA363DEEA8C2
+          - distros: RedHat
+            distro_version: 7
+            version: 1.4.4
+            file_name: "conntrack-tools-1.4.4-5.el7.x86_64.rpm"
+            sha512: 11e456fd94beca40b5da961d206b4998005f18182d19698a2aaa4b990b45ee27e80c4600beffb220b8b03ad68f18cdc93393af25939ebd94943a8f61f309d449
+      libnetfilter_cthelper:
+        amd64:
+          - distros: CentOS
+            distro_version: 7
+            version: 1.0.0
+            url: "http://mirror.centos.org/centos/7/os/x86_64/Packages/libnetfilter_cthelper-1.0.0-9.el7.x86_64.rpm"
+            sha512: 184748399D827D97F7CB8760EB5A37F3903ABA3C74987A086DE03AE02515D9DFC759CA1827CDD8968A6DF731C97F2301FA6483C79F39C7BC25AAE1CA356EA469
+          - distros: RedHat
+            distro_version: 7
+            version: 1.0.0
+            file_name: "libnetfilter_cthelper-1.0.0-10.el7.x86_64.rpm"
+            sha512: 58e97cf682b9c5c4eb5fa333b57dbf940ea3066a7d898ef5a92acb1e1293f414966ca06eeaa5c8fec75952d466b8cafa77ca4435c496710bdaa0442e488c3a2c
+      libnetfilter_cttimeout:
+        amd64:
+          - distros: CentOS
+            distro_version: 7
+            version: 1.0.0
+            url: "http://mirror.centos.org/centos/7/os/x86_64/Packages/libnetfilter_cttimeout-1.0.0-6.el7.x86_64.rpm"
+            sha512: C9A8B9E23647EAFBBD2EF315BFDB113D22D568CA0CE0FE0861D4B0847D51338D9DC531D68FF8212BDF58D58785FDE1829436CD8D02DD7D79B34FBF7742395D31
+          - distros: RedHat
+            distro_version: 7
+            version: 1.0.0
+            file_name: "libnetfilter_cttimeout-1.0.0-6.el7.x86_64.rpm"
+            sha512: b7f873b2981bd60c63428a92193ba638f040bb23fd19062bde3a5e01cb9ac7b22223a23ed01a1f778c1594e714826be0c8d0094827dcdc303ea476f35663aa46
+      libnetfilter_queue:
+        amd64:
+          - distros: CentOS
+            distro_version: 7
+            version: 1.0.2
+            url: "http://mirror.centos.org/centos/7/os/x86_64/Packages/libnetfilter_queue-1.0.2-2.el7_2.x86_64.rpm"
+            sha512: 562D3FF08D3F27F0D20C80569160EBB9BB768679F900636B536FA3C7D97ED1BE6FD5C481341F0A6ECEA4B9A9CABBABA520A287CA31DBF663D68238E3288FB8C0
+          - distros: RedHat
+            distro_version: 7
+            version: 1.0.2
+            file_name: "libnetfilter_queue-1.0.2-2.el7_2.x86_64.rpm"
+            sha512: b5ed90d8eb28ed051baf26269417a6bfc134f6dae168a9e21809425456b590c6955f1c1e41ef274e39401d94781f3bcbfe25be2b4ee80c8ef87e9b6cd27029c6
+      samba-common:
+        amd64:
+          - distros: Ubuntu
+            distro_version: 18.04
+            version: 4.7.6
+            url: "http://archive.ubuntu.com/ubuntu/pool/main/s/samba/samba-common_4.7.6+dfsg~ubuntu-0ubuntu2.11_all.deb"
+            sha512: 5D1BB8CC498E02E7F89FEFF52EFF4BE3D44A729B3C3C91B228A7676045EC0A8E7B3B684DFD22EAF088AEE812FDBC8E250A3D40D264B75E919D3FA5A4220F6915
+          - distros: CentOS
+            distro_version: 7
+            version: 4.8.3
+            url: "http://mirror.centos.org/centos/7/os/x86_64/Packages/samba-common-4.8.3-4.el7.noarch.rpm"
+            sha512: 4BA006425661E79DFC65A7FADC64DB79F1B49DD57B6401C6CD33EC694E6B49272CF607E3F1A99A5A148DD7675FF84752AC79189148CE73013599C7BF4736C98F
+          - distros: RedHat
+            distro_version: 7
+            version: 4.8.3
+            file_name: "samba-common-4.8.3-6.el7_6.noarch.rpm"
+            sha512: c725d6053f3651ac8f3519f2d095187fbdd91107a8a5c0c1120a21d123ab8fe5b31a4897b3189301954264fd3b8870b3610dccff372e37ed01ff81f4ae8bd61c
+      samba-client:
+        amd64:
+          - distros: CentOS
+            distro_version: 7
+            version: 4.8.3
+            url: "http://mirror.centos.org/centos/7/os/x86_64/Packages/samba-client-4.8.3-4.el7.x86_64.rpm"
+            sha512: 7E8949A7CCD65D38993DD028ACC692AB89A2897A5E41016FF1CB9CA966892FF0E6C1D6D6E4CCB012ABB87D9C5EF8DE0D4A85A4B6A945801C5DE595C7A005D124
+          - distros: RedHat
+            distro_version: 7
+            version: 4.8.3
+            file_name: "samba-client-4.8.3-6.el7_6.x86_64.rpm"
+            sha512: 42066983f3affd8865d09931a49aedce023856a31b5e7b928e62e495fecf694e842cbac60b69eca82f38fc6f983c33b0266325d32c6a733d389066c994fdc09e
+      cifs-utils:
+        amd64:
+          - distros: Ubuntu
+            distro_version: 18.04
+            version: 6.8
+            url: "http://archive.ubuntu.com/ubuntu/pool/main/c/cifs-utils/cifs-utils_6.8-1_amd64.deb"
+            sha512: D71CCE5DE36F16B9ED06F5B6FDCD0C535309D9A9AFDBCDEE185C6EE0657F4CB32F54D10F48A9D273B6FE522A85E12CA2E217B6EF2FC690DBA40B5AD6C8124153
+          - distros: CentOS
+            distro_version: 7
+            version: 6.2
+            url: "http://mirror.centos.org/centos/7/os/x86_64/Packages/cifs-utils-6.2-10.el7.x86_64.rpm"
+            sha512: 136CE3873E14164E08738503110C1A5E49483F0ED69ADCB0CD0C007F9FBB37CF89BE5C651D82EDCF2901321BE8915EC723A4A1B080890208A78A778D0087A0EE
+          - distros: RedHat
+            distro_version: 7
+            version: 6.2
+            file_name: "cifs-utils-6.2-10.el7.x86_64.rpm"
+            sha512: 64b4c592a83fe868990717d07f14195e3440024a8de7b0c1ee7051f6a8a4cee0238bd0cb92ef40a60775e02e44e7796c8af8a92d51e290c8b231523e2da6958a
+      nfs-common:
+        amd64:
+          - distros: Ubuntu
+            distro_version: 18.04
+            version: 1.3.4
+            url: "http://archive.ubuntu.com/ubuntu/pool/main/n/nfs-utils/nfs-common_1.3.4-2.1ubuntu5_amd64.deb"
+            sha512: D805ADAB39750378DB38ADF4F5525F17F640F9F1CF5AB8E9EE7F029334E8ED4CCF30A2C143CA0C2686971A8927BDC4EF92D21FD8D66ABEC6BE3275BB1D7EB211
+      smbclient:
+        amd64:
+          - distros: Ubuntu
+            distro_version: 18.04
+            version: 4.7.6
+            url: "http://archive.ubuntu.com/ubuntu/pool/main/s/samba/smbclient_4.7.6+dfsg~ubuntu-0ubuntu2.11_amd64.deb"
+            sha512: 825EB083A4D10EBB272A5C47C065FBBFCDAAC6D49DC188BE2D6001462027BD927D7CFB2891E4DD4F158790274CB0A2A6C706E44BEE136A8B4D54DFDA48AD06CF
     images:
       kube-apiserver:
         amd64:

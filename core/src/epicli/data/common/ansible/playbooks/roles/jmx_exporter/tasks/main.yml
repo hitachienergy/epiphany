@@ -51,12 +51,16 @@
 #     msg: "File checksum is not correct."
 #   when: jmx_prometheus_download_stat.stat.checksum != specification.download_sha
 
+- name: Set binary version to install
+  set_fact:
+    binary_version: "{{ specification.jmx_exporter_version }}"
+
 - name: Download JMX Exporter binaries
   include_role:
     name: download
     tasks_from: download_file
   vars:
-    file_arg: "{{ dependencies.jmx_exporter[specification.version].files | selectattr('id', 'equalto', 'jmx_prometheus_javaagent') | list | first }}"
+    file_arg: "{{ dependencies.jmx_exporter[binary_version].files | selectattr('id', 'equalto', 'jmx_prometheus_javaagent') | list | first }}"
 
 - name: Copy JMX Exporter binaries
   copy:

@@ -71,13 +71,16 @@
 #     state: directory
 #   with_items:
 #   - /opt/kafka_exporter
+- name: Set package version to install
+  set_fact:
+    binary_version: "{{ specification.version }}"
 
 - name: Download Kafka Exporter binaries
   include_role:
     name: download
     tasks_from: download_file
   vars:
-    file_arg: "{{ dependencies.kafka_exporter[specification.version].files | selectattr('id', 'equalto', 'kafka_exporter') | list | first }}"
+    file_arg: "{{ dependencies.kafka_exporter[binary_version].files | selectattr('id', 'equalto', 'kafka_exporter') | list | first }}"
 
 - name: Create /opt/kafka_exporter directory
   become: yes
@@ -93,8 +96,8 @@
 
 - name: Unpack kafka_exporter binary
   become: false
-  remote_src: yes
   unarchive:
+    remote_src: yes
     src: "{{ file.dest_path }}"
     dest: "/opt/kafka_exporter"
     creates: "/opt/kafka_exporter/kafka_exporter"

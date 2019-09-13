@@ -51,12 +51,16 @@
 #     msg: "File checksum is not correct."
 #   when: haproxy_exporter_stat.stat.checksum not in specification.download_shas
 
+- name: Set package version to install
+  set_fact:
+    package_version: "{{ specification.version }}"
+
 - name: Download Haproxy Exporter binaries
   include_role:
     name: download
     tasks_from: download_file
   vars:
-    file_arg: "{{ dependencies.haproxy_exporter[specification.version].files | selectattr('id', 'equalto', 'haproxy_exporter') | list | first }}"
+    file_arg: "{{ dependencies.haproxy_exporter[package_version].files | selectattr('id', 'equalto', 'haproxy_exporter') | list | first }}"
 
 - name: Create /opt/haproxy_exporter directories
   become: yes
@@ -71,14 +75,15 @@
   - /opt/haproxy_exporter
 
 - name: Unpack haproxy_exporter binary
-  become: false
-  remote_src: yes
+  become: yes
   unarchive:
+    remote_src: yes
     src: "{{ file.dest_path }}"
     dest: "/opt/haproxy_exporter"
     creates: "/opt/haproxy_exporter/haproxy_exporter"
     extra_opts: [--strip-components=1]
     owner: root
+    group: haproxy_exporter
     mode: 0750
   check_mode: false
 

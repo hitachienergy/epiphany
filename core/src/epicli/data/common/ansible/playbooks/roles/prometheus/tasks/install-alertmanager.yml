@@ -47,17 +47,21 @@
 #   delegate_to: localhost
 #   check_mode: false
 
+- name: Set binary version to install
+  set_fact:
+    binary_version: "{{ specification.alerts.alertmanager.version }}"
+
 - name: Download AlertManager binaries
   include_role:
     name: download
     tasks_from: download_file
   vars:
-    file_arg: "{{ dependencies.alertmanager[specification.alerts.alertmanager.version].files | selectattr('id', 'equalto', 'alertmanager') | list | first }}"
+    file_arg: "{{ dependencies.alertmanager[binary_version].files | selectattr('id', 'equalto', 'alertmanager') | list | first }}"
 
 - name: Unpack AlertManager binary
-  become: false
-  remote_src: yes
+  become: true
   unarchive:
+    remote_src: yes
     src: "{{ file.dest_path }}"
     dest: "/usr/local/bin"
     creates: "/usr/local/bin/alertmanager"

@@ -59,7 +59,7 @@
          + (file.url | basename) if file.url is defined
                                  else file.file_name }}
 
-- name: download_package | Download '{{ file.id }}' v{{ file.version }}
+- name: download_package | Download '{{ file.id }}' in version '{{ file.version }}'
   include_tasks: download_file_worker.yml
   vars:
     file_arg: "{{ file }}"

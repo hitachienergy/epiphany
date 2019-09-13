@@ -1,13 +1,17 @@
 ---
 
-- name: Download Elasticsearch-Curator v{{ specification.debian_curator_version }}
+- name: Set package version to install
+  set_fact:
+    package_version: "{{ specification.debian_curator_version }}"
+
+- name: Download Elasticsearch-Curator v{{ package_version }}
   include_role:
     name: download
     tasks_from: download_package
   vars:
-    package_arg: "{{ dependencies.elasticsearch_curator[specification.debian_curator_version].packages | selectattr('id', 'equalto', 'elasticsearch-curator') | list | first }}"
+    package_arg: "{{ dependencies.elasticsearch_curator[package_version].packages | selectattr('id', 'equalto', 'elasticsearch-curator') | list | first }}"
 
-- name: Install Elasticsearch-Curator from {{ file.dest_path }}
-  package:
-    name: "{{ file.dest_path }}"
+- name: Install {{ package_name }} {{ ansible_os_family }} package from {{ file.dest_path }}
+  apt:
+    deb: "{{ file.dest_path }}"
     state: present
