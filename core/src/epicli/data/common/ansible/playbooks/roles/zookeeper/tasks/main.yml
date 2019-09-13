@@ -1,12 +1,16 @@
 ---
 # Zookeeper tasks - resides on masters
 
-- name: Download {{ ansible_os_family }} 'openjdk-8-jre' for Zookeeper v{{ specification.version }}
+- name: Set binary version to install
+  set_fact:
+    zookeeper_version: "{{ specification.version }}"
+
+- name: Download {{ ansible_os_family }} 'openjdk-8-jre' for Zookeeper v{{ zookeeper_version }}
   include_role:
     name: download
     tasks_from: download_package
   vars:
-    package_arg: "{{ dependencies.zookeeper[specification.version].packages | selectattr('id', 'equalto', 'openjdk-8-jre') | list | first }}"
+    package_arg: "{{ dependencies.zookeeper[zookeeper_version].packages | selectattr('id', 'equalto', 'openjdk-8-jre') | list | first }}"
   when: ansible_os_family == "Debian"
 
 - name: Install {{ ansible_os_family }} package from {{ file.dest_path }}
@@ -15,12 +19,12 @@
     state: present
   when: ansible_os_family == "Debian"
 
-- name: Download {{ ansible_os_family }} 'java-1.8.0-openjdk' for Zookeeper v{{ specification.version }}
+- name: Download {{ ansible_os_family }} 'java-1.8.0-openjdk' for Zookeeper v{{ zookeeper_version }}
   include_role:
     name: download
     tasks_from: download_package
   vars:
-    package_arg: "{{ dependencies.zookeeper[specification.version].packages | selectattr('id', 'equalto', 'java-1.8.0-openjdk') | list | first }}"
+    package_arg: "{{ dependencies.zookeeper[zookeeper_version].packages | selectattr('id', 'equalto', 'java-1.8.0-openjdk') | list | first }}"
   when: ansible_os_family == "RedHat"
 
 - name: Install {{ ansible_os_family }} package from {{ file.dest_path }}
@@ -96,7 +100,7 @@
     name: download
     tasks_from: download_file
   vars:
-    file_arg: "{{ dependencies.zookeeper[specification.version].files | selectattr('id', 'equalto', 'zookeeper') | list | first }}"
+    file_arg: "{{ dependencies.zookeeper[zookeeper_version].files | selectattr('id', 'equalto', 'zookeeper') | list | first }}"
 
 - name: Create {{ zookeeper_install_dir }} directories
   become: yes
@@ -111,12 +115,12 @@
   - "{{ zookeeper_install_dir }}"
 
 - name: Unpack {{ zookeeper_name }} binary
-  become: false
-  remote_src: yes
+  become: true
   unarchive:
+    remote_src: yes
     src: "{{ file.dest_path }}"
-    dest: "/opt/"
-    creates: "{{ zookeeper_install_dir }}"
+    dest: "{{ zookeeper_install_dir }}"
+    creates: "{{ zookeeper_install_dir }}/bin"
     extra_opts: [--strip-components=1]
     mode: 0755
     owner: "{{ zookeeper_user }}"
@@ -132,6 +136,7 @@
   with_items:
     - "{{ zookeeper_data_dir }}"
     - "{{ zookeeper_log_dir }}"
+    - "{{ zookeeper_install_dir }}/conf"
     - "/etc/zookeeper/conf"
 
 - name: Systemd script.

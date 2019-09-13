@@ -6,8 +6,6 @@
     package_arg: "{{ package }}"
 
 - name: Install {{ package.id }} from {{ file.dest_path }}
-  yum:
-    name: "{{ file.dest_path }}"
+  apt:
+    deb: "{{ file.dest_path }}"
     state: present
-    update_cache: yes
-

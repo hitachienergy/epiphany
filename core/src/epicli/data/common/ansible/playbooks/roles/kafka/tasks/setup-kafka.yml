@@ -32,26 +32,37 @@
 #   until: result is succeeded
 #   when: ansible_os_family == "RedHat"
 
+- name: Set binary version to install
+  set_fact:
+    binary_version: "{{ specification.kafka_var.version }}"
+
 - name: Download {{ ansible_os_family }} 'openjdk-8-jre' for Kafka v{{ specification.kafka_var.version }}
   include_role:
     name: download
     tasks_from: download_package
   vars:
-    package_arg: "{{ dependencies.kafka[specification.kafka_var.version].packages | selectattr('id', 'equalto', 'openjdk-8-jre') | list | first }}"
+    package_arg: "{{ dependencies.kafka[binary_version].packages | selectattr('id', 'equalto', 'openjdk-8-jre') | list | first }}"
   when: ansible_os_family == "Debian"
 
-- name: Download {{ ansible_os_family }} 'java-1.8.0-openjdk' for Kafka v{{ specification.kafka_var.version }}
+- name: Install {{ ansible_os_family }} package from {{ file.dest_path }}
+  apt:
+    deb: "{{ file.dest_path }}"
+    state: present
+  when: ansible_os_family == "Debian"
+
+- name: Download {{ ansible_os_family }} 'java-1.8.0-openjdk' for Kafka v{{ binary_version }}
   include_role:
     name: download
     tasks_from: download_package
   vars:
-    package_arg: "{{ dependencies.kafka[specification.kafka_var.version].packages | selectattr('id', 'equalto', 'java-1.8.0-openjdk') | list | first }}"
+    package_arg: "{{ dependencies.kafka[binary_version].packages | selectattr('id', 'equalto', 'java-1.8.0-openjdk') | list | first }}"
   when: ansible_os_family == "RedHat"
 
 - name: Install {{ ansible_os_family }} package from {{ file.dest_path }}
-  package:
+  yum:
     name: "{{ file.dest_path }}"
     state: present
+  when: ansible_os_family == "RedHat"
 
 # - name: Check for Kafka package
 #   stat:
@@ -91,7 +102,7 @@
     name: download
     tasks_from: download_file
   vars:
-    file_arg: "{{ dependencies.kafka[specification.kafka_var.version].files | selectattr('id', 'equalto', kafka_binary_name) | list | first }}"
+    file_arg: "{{ dependencies.kafka[binary_version].files | selectattr('id', 'equalto', kafka_binary_name) | list | first }}"
 
 - name: Add Kafka's bin dir to the PATH
   copy:

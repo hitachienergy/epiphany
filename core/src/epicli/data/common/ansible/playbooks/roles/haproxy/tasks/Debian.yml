@@ -1,7 +1,7 @@
 ---
 # HAProxy Debian family of specific tasks
 
-- name: Install packages for RedHat family
+- name: Install packages for Debian family
   include_tasks: "install-package.yml"
   vars:
     package_name: "{{ item }}"
