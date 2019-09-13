@@ -27,7 +27,7 @@ specification:
       dnsDomain: cluster.local
       podSubnet: 10.244.0.0/16
       serviceSubnet: 10.96.0.0/12
-      plugin: calico # valid options: calico, flannel, canal (due to lack of support for calico on Azure - use canal)
+      plugin: flannel # valid options: calico, flannel, canal (due to lack of support for calico on Azure - use canal)
     imageRepository: k8s.gcr.io
     certificatesDir: /etc/kubernetes/pki
     etcd_args:

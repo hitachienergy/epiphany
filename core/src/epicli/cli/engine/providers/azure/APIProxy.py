@@ -10,6 +10,9 @@ from cli.models.AnsibleHostModel import AnsibleHostModel
 class APIProxy:
     def __init__(self, cluster_model, config_docs):
         self.cluster_model = cluster_model
+        self.cluster_name = self.cluster_model.specification.name.lower()
+        self.cluster_prefix = self.cluster_model.specification.prefix.lower()
+        self.resource_group_name = resource_name(self.cluster_prefix, self.cluster_name, 'rg')        
         self.config_docs = config_docs
         self.logger = Log(__name__)
 
@@ -43,7 +46,7 @@ class APIProxy:
 
     def get_ips_for_feature(self, component_key):
         look_for_public_ip = self.cluster_model.specification.cloud.use_public_ips
-        cluster = f'{self.cluster_model.specification.prefix.lower()}-{self.cluster_model.specification.name.lower()}'      
+        cluster = f'{self.cluster_prefix}-{self.cluster_name}'      
         running_instances = self.run(self, f'az vm list-ip-addresses --ids $(az resource list --query "[?type==\'Microsoft.Compute/virtualMachines\' && tags.{component_key} == \'\' && tags.cluster == \'{cluster}\'].id" --output tsv)')
         result = []
         for instance in running_instances:
@@ -56,6 +59,10 @@ class APIProxy:
                 ip = instance['virtualMachine']['network']['privateIpAddresses'][0]
             result.append(AnsibleHostModel(name, ip))
         return result
+
+    def get_storage_account_primary_key(self, storage_account_name):
+        keys = self.run(self, f'az storage account keys list -g {self.resource_group_name} -n {storage_account_name}')
+        return keys[0]['value']
 
     @staticmethod
     def wait(self, seconds):        

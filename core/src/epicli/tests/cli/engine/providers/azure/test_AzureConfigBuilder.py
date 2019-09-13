@@ -40,10 +40,11 @@ def test_get_subnet_should_set_proper_values_to_model():
     })    
     builder = InfrastructureBuilder([cluster_model])
 
-    actual = builder.get_subnet(subnet_definition, 'component', 1)
+    actual = builder.get_subnet(subnet_definition, 'component', 'prefix-testcluster-component-sg-1', 1)
 
     assert actual.specification.name == 'prefix-testcluster-component-subnet-1'
     assert actual.specification.address_prefix == subnet_definition['address_pool']
+    assert actual.specification.security_group_name == 'prefix-testcluster-component-sg-1'
     assert actual.specification.cluster_name == 'testcluster'
 
 
@@ -103,6 +104,17 @@ def test_get_network_interface_should_set_proper_values_to_model():
     assert actual.specification.use_public_ip == True
     assert actual.specification.public_ip_name == 'prefix-testcluster-kubernetes-master-pubip-1'
     assert actual.specification.enable_accelerated_networking == False
+
+
+def test_get_storage_share_config_should_set_proper_values_to_model():
+    cluster_model = get_cluster_model(cluster_name='TestCluster')
+    builder = InfrastructureBuilder([cluster_model])
+
+    actual = builder.get_storage_share_config()
+
+    assert actual.specification.name == 'prefix-testcluster-k8s-ss'   
+    assert actual.specification.storage_account_name == 'prefixtestclusterk8s'  
+    assert actual.specification.quota == 50
 
 
 def get_cluster_model(address_pool='10.22.0.0/22', cluster_name='EpiphanyTestCluster'):
