@@ -168,24 +168,32 @@ specification:
   kubernetes:
     1.14.4:
       packages:
-        - id: cifs-utils
+        - id: cifs-utils # RedHat
           version: '6.2'
-        - id: samba-client
+        - id: cifs-utils # Ubuntu
+          version: '6.8'
+        - id: smbclient # Ubuntu
+          version: 4.7.6
+        - id: samba-client # RedHat
           version: 4.8.3
-        - id: samba-common
+        - id: samba-common # Ubuntu
+          version: 4.7.6
+        - id: samba-common # RedHat
           version: 4.8.3
         - id: socat
           version: 1.7.3.2
-        - id: libnetfilter_queue
+        - id: libnetfilter_queue # RedHat
           version: 1.0.2
-        - id: libnetfilter_cttimeout
+        - id: libnetfilter_cttimeout # RedHat
           version: 1.0.0
-        - id: libnetfilter_cthelper
+        - id: libnetfilter_cthelper # RedHat
           version: 1.0.0
-        - id: conntrack-tools
+        - id: conntrack-tools # RedHat
           version: 1.4.4
-        - id: nfs-utils
+        - id: nfs-utils # RedHat
           version: 1.3.0
+        - id: nfs-common # Ubuntu
+          version: 1.3.4 
         - id: kubelet
           version: 1.14.4
         - id: kubernetes-cni

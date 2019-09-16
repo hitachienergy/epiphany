@@ -1,46 +1,46 @@
 ---
 - name: Normalize type of version property to string
   block:
-    - name: download_file | Clear list
+    - name: download_image | Clear list
       set_fact:
         file_items: []
-    - name: download_file | Normalize version to string
+    - name: download_image | Normalize version to string
       set_fact:
         file_items: >-
           {{ file_items + [ normalized_file_item ] }}
       vars:
         normalized_file_item: >-
           {{ file_item | combine({ 'version': file_item.version | string }) }}
-      loop: "{{ specification.downloads.files[file_arg.id][shared.architecture_map[ansible_architecture]] }}"
+      loop: "{{ specification.downloads.images[file_arg.id][shared.architecture_map[ansible_architecture]] }}"
       loop_control:
         loop_var: file_item
 
-- name: download_file | Set properties from specification
+- name: download_image | Set properties from specification
   set_fact:
     file: >-
       {{ file_items | selectattr('version', 'match', version_to_select) | first }}
   vars:
     version_to_select: >-
-      {{ '.*' if file_arg.version is not defined
-              else '^' + (file_arg.version | string) + '$' }}
+      {{ '.*' if (file_arg.version is not defined) else '^' + (file_arg.version | string) + '$' }}
 
-- name: download_file | Set dynamic properties
+- name: download_image | Set dynamic properties
   set_fact:
     file: >-
       {{ file
            | combine(file_arg)
            | combine({ 'arch': arch,
                        'cached_file_path': specification.local_downloads_dir + '/' + relative_dest_path,
-                       'checksum_algorithm': 'sha256' if file.sha256 is defined
-                                                      else 'sha512',
+                       'checksum_algorithm': 'sha256' if (file.sha256 is defined) else 'sha512',
                        'dest_path': specification.remote_downloads_dir + '/' + relative_dest_path,
-                       'version': file.version | string }) }}
+                       'version': file.version | string,
+                       'is_image': 'yes' }) }}
   vars:
     arch: "{{ shared.architecture_map[ansible_architecture] }}"
     relative_dest_path: >-
-      {{ 'files/' + arch + '/' + file_arg.id + '/' + file.version + '/' + (file.url | basename) }}
+      {{ 'images/' + arch + '/' + file_arg.id + '-' + file.version + '.tar'}}
 
-- name: download_file | Download '{{ file.id }}' v{{ file.version }}
+- name: download_image | Download '{{ file.id }}' in version '{{ file.version }}'
   include_tasks: download_file_worker.yml
   vars:
     file_arg: "{{ file }}"
+
