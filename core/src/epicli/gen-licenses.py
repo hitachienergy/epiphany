@@ -1,3 +1,4 @@
+import sys
 import subprocess
 import json
 import os
@@ -39,12 +40,20 @@ def _get_recursive_dependencies_for(direct_dependencies: Set[str]) -> Set[str]:
         res = res | deps
     return {dependencies_dict[r]['package']['package_name'] for r in res}
 
+def makeRequest(url, token):
+    request = urllib.request.Request(url)
+    request.add_header('Authorization', 'token %s' % token)
+    return urllib.request.urlopen(request)
 
-def get_pkg_data(pkgname: str) -> str:
-    pkgs = pkg_resources.require(pkgname)
+def get_pkg_data(pkgname: str, pat:str) -> str:
+    print('Processing package: ', pkgname)
+    try:
+        pkgs = pkg_resources.require(pkgname)
+    except:
+        logging.warning('Failed to get license information for package: ' + pkgname)
+        return None
     pkg = pkgs[0]
     pkg_data = {}
-    print('Processing package: ', pkgname)
     for line in pkg.get_metadata_lines('METADATA'):
         try:
             (key, value) = line.split(': ', 1)
@@ -64,28 +73,36 @@ def get_pkg_data(pkgname: str) -> str:
             pkg_data['License'] = value
 
     home = pkg_data['Home-page'].lower().rstrip('/')
+    
     if 'github' in home:
         try:
             split = home.split('/')
             repo = split[len(split)-1]
             user = split[len(split)-2]
-            license_data = json.loads(urllib.request.urlopen('https://api.github.com/repos/' + user + '/' + repo + '/license' ).read().decode())
+            license_data = json.loads(makeRequest('https://api.github.com/repos/' + user + '/' + repo + '/license', pat).read().decode())
             pkg_data['License'] = license_data['license']['name']
-            pkg_data['License repo'] = urllib.request.urlopen(license_data['download_url']).read().decode()
+            pkg_data['License repo'] = makeRequest(license_data['download_url'], pat).read().decode()
             if license_data['license']['key'] != 'other':
-                license_text = json.loads(urllib.request.urlopen(license_data['license']['url']).read().decode())
+                license_text =  json.loads(makeRequest(license_data['license']['url'], pat).read().decode())
                 pkg_data['License text'] = license_text['body']
         except:
-            logging.warning('Failed to pull in Github license information for package: ', pkgname)
+            logging.warning('Failed to pull in Github license information for package: ' + pkgname)
+
     return pkg_data
 
 
 def _main() -> None:
+    pat = sys.argv[1]
+    if pat == None:
+        logging.critical('No Github personal access tokens passed as argument.' )
+        return
     direct_dependencies = _get_dependencies_from_pipfile()
     all_deps = _get_recursive_dependencies_for(direct_dependencies)
     all_deps_data = []
     for dep in all_deps:
-        all_deps_data.append(get_pkg_data(dep))
+        data = get_pkg_data(dep, pat)
+        if data != None:
+            all_deps_data.append(data)
 
     licenses_content = """
 # This is a generated file so don`t change this manually. 

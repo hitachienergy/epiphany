@@ -14,13 +14,13 @@
 ## Welcome
 
 This documentation describe approach in testing for open-source project 'epiphany-platform'.
-In this section you can find test strategy, tools used for test management and terminology. 
+In this section you can find test strategy, tools used for test management and terminology.
 
 ## Tool
 
 For test management we are using  TestQuality, which extends Github to provide modern, powerful, test plan management.
 All test activities are reported under dedicated project:
- 
+
 **https://epiphany-platform.testquality.com**
 
 On-line help documentation is located: https://epiphany-platform.testquality.com/help/what
@@ -55,6 +55,4 @@ f.e _Automatic Deployment Smoke Test Friday 5th of April 2019 08:07:15 AM_
 ## Administrators of testquality
 [Pawel](mailto:erzetpe@gmail.com)  
 [Marek](mailto:marek.peszt@pl.abb.com)  
-[Przemek](mailto:przemyslaw.dyrda@pl.abb.com)  
-
-```
+[Przemek](mailto:przemyslaw.dyrda@pl.abb.com
