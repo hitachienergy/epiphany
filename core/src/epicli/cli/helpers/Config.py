@@ -1,5 +1,6 @@
 import os
 
+
 class Config:
     class __ConfigBase:
         def __init__(self):
@@ -18,6 +19,7 @@ class Config:
             self._validate_certs = True
             self._debug = False
             self._auto_approve = False
+            self._offline_mode = False
 
         @property
         def docker_cli(self):
@@ -93,8 +95,8 @@ class Config:
         @debug.setter
         def debug(self, debug):
             if not debug is None:
-                self._debug = debug      
-                
+                self._debug = debug
+
         @property
         def auto_approve(self):
             return self._auto_approve
@@ -102,8 +104,17 @@ class Config:
         @auto_approve.setter
         def auto_approve(self, auto_approve):
             if not auto_approve is None:
-                self._auto_approve = auto_approve   
-                
+                self._auto_approve = auto_approve
+
+        @property
+        def offline_mode(self):
+            return self._offline_mode
+
+        @offline_mode.setter
+        def offline_mode(self, offline_mode):
+            if not offline_mode is None:
+                self._offline_mode = offline_mode
+
     instance = None
 
     def __new__(cls):
