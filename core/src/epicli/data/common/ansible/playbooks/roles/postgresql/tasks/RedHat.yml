@@ -5,12 +5,16 @@
   stat:
     path: /etc/yum.repos.d/redhat-rhui.repo
   register: rhui_exist
+  when:
+    - specification.provider == "aws"
 
 - name: Check if Software Collections repository on EC2 exists
   shell: grep -c -i rhui-REGION-rhel-server-rhscl /etc/yum.repos.d/redhat-rhui.repo
   register: sc_repo_count
   failed_when: "sc_repo_count.rc == 2"
-  when: rhui_exist
+  when: 
+    - specification.provider == "aws"
+    - rhui_exist
 
 - name: Enable Software Collections on EC2
   ini_file:
@@ -18,7 +22,9 @@
     section: rhui-REGION-rhel-server-rhscl
     option: enabled
     value: 1
-  when: sc_repo_count.stdout|int == 1
+  when: 
+    - specification.provider == "aws"
+    - sc_repo_count.stdout|int == 1
 
 - name: Install postgresql family packages
   yum:
