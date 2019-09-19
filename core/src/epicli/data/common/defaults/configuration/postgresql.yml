@@ -3,6 +3,6 @@ version: 0.3.0
 title: "Postgresql"
 name: default
 specification:
-  version: 10
+  version: '10'
   replication:
     enable: no

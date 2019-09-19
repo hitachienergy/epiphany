@@ -316,13 +316,11 @@ specification:
             version: 21.2.2
             url: "https://github.com/rabbitmq/erlang-rpm/releases/download/v21.2.2/erlang-21.2.2-1.el7.centos.x86_64.rpm"
             sha512: 27FD68B82A26C14FB8E1F7492F0BB46C927E86AD133BDDEDE01DC6B18AB9FFEBBDD02ABD8045E0718BA9B4DC9459FD808439641142D3ABF3729CE78AFEEB6635
-      erlang-nox:
-        amd64:
           - distros: Ubuntu
             distro_version: 18.04
             version: 21.3.8.6
-            url: "http://dl.bintray.com/rabbitmq-erlang/debian/pool/erlang/21.3.8.6-1/ubuntu/bionic/erlang-nox_21.3.8.6-1_all.deb"
-            sha512: FF9257B701221CA0548FCC34E3B3A7ADF4C601ECCA8212A65658523D68D9F7611CEFC23EBFEE91E6763CFE72B64151FF357FEA129F7E65156CA0DE0FB86DB45D
+            url: "http://dl.bintray.com/rabbitmq-erlang/debian/pool/erlang/21.3.8.6-1/ubuntu/bionic/erlang_21.3.8.6-1_all.deb"
+            sha512: 84d868b4b45d2e6009727e70604e363888bc41c86dc43884b4cee31531564c152d2e464415fdf700f919165c240b219b42a2d38512b0b48eb410b698e3d0403b
       rabbitmq-server:
         amd64:
           - distros: Ubuntu
@@ -341,7 +339,7 @@ specification:
         amd64:
           - distros: Ubuntu
             distro_version: 18.04
-            version: 10.10
+            version: '10.10'
             url: "http://archive.ubuntu.com/ubuntu/pool/main/p/postgresql-10/postgresql-10_10.10-0ubuntu0.18.04.1_amd64.deb"
             sha512: B541226E086E72F3F651127F66BC743F9A081BFC4E5759AEF136EEA4BED3C8BF46D32F5925288976D4B3E6941C15A942FF5E79864BA8AB02404E99A42FAAE848
       python-psycopg2:
@@ -365,84 +363,84 @@ specification:
         amd64:
           - distros: CentOS
             distro_version: 7
-            version: 10.6
+            version: '10.6'
             url: "http://mirror.centos.org/centos/7/sclo/x86_64/rh/rh-postgresql10/rh-postgresql10-postgresql-10.6-1.el7.x86_64.rpm"
             sha512: 7BD070780C2A569E6CE641051D291E1CAEC9F70D0F9B0E2B44AD7C8F4A5A7C07D09F429EBBE2F11E3784DA94AAD360C41EAFDF3ED92D5F431AE87587D0AF6B3D
           - distros: RedHat
             distro_version: 7
-            version: 10.6
+            version: '10.6'
             file_name: "rh-postgresql10-postgresql-10.6-1.el7.x86_64.rpm"
             sha512: 559ff51c7481b887a5c9a196968b81fdaba3240091282d3364906b7dfcf9ce72fb47313df48cae7287252090cd36ed7bc8ff5bcb0009298ead6bf82ee7253ea7            
       rh-postgresql10-postgresql-syspaths:
         amd64:
           - distros: CentOS
             distro_version: 7
-            version: 10.6
+            version: '10.6'
             url: "http://mirror.centos.org/centos/7/sclo/x86_64/rh/rh-postgresql10/rh-postgresql10-postgresql-syspaths-10.6-1.el7.x86_64.rpm"
             sha512: 63E3826C43B405A3219699D6304D603627F3F07826104D3AA2FB8E4A39D947CBCD33F1D3E59400D5A59C6ECF575A73C5648B06D0DDD4313B88D121A32F39F8BA
           - distros: RedHat
             distro_version: 7
-            version: 10.6
+            version: '10.6'
             file_name: "rh-postgresql10-postgresql-syspaths-10.6-1.el7.x86_64.rpm"
             sha512: e2a1fc7a0abc6b2417e680d3e4ccb401145e0c8afb638b064f3034eb4f3ec318a73f39b948ebfc4ef877aa6f3992aafc479ac8c4376651ea39e1a88d96ab8b49            
       rh-postgresql10-postgresql-server:
         amd64:
           - distros: CentOS
             distro_version: 7
-            version: 10.6
+            version: '10.6'
             url: "http://mirror.centos.org/centos/7/sclo/x86_64/rh/rh-postgresql10/rh-postgresql10-postgresql-server-10.6-1.el7.x86_64.rpm"
             sha512: 07EA94A9EFFFC7ECC3222BFB89DF7AFADF1971AD5FDD2752F2C908BD1109828F2D2EC546B5AACF0FDBFE9831DE3E22F855B110EF4392DF1976D700EFD23E30EF
           - distros: RedHat
             distro_version: 7
-            version: 10.6
+            version: '10.6'
             file_name: "rh-postgresql10-postgresql-server-10.6-1.el7.x86_64.rpm"
             sha512: 52742ac53929cd47333ef4c231f66f7e7a7ee6a8bde0f456326fdcaf5fe7ef72bb1798acb68c12d7310965d81fe03cf760bcaa6c5a738ec9e986fd67ccbf1c94            
       rh-postgresql10-postgresql-server-syspaths:
         amd64:
           - distros: CentOS
             distro_version: 7
-            version: 10.6
+            version: '10.6'
             url: "http://mirror.centos.org/centos/7/sclo/x86_64/rh/rh-postgresql10/rh-postgresql10-postgresql-server-syspaths-10.6-1.el7.x86_64.rpm"
             sha512: 34CEA0F66F4BBC0DBB5555D634F30131BFF852A6ED8E00FFE98E85519045AE58D604E14156D2BC159254230818DF7F2797AB4D56A115E5BE03BF8E0E3E2F0DA8
           - distros: RedHat
             distro_version: 7
-            version: 10.6
+            version: '10.6'
             file_name: "rh-postgresql10-postgresql-server-syspaths-10.6-1.el7.x86_64.rpm"
             sha512: cc75aeacc657c1483e8146e3e33f935b95fd6ad2b073ee487597a13d52da39e9a4cf8ac4c8c7521a541b54cc3eaa7a52f4220ff364cf34fdf431e87eadc76c49            
       rh-postgresql10-postgresql-contrib:
         amd64:
           - distros: CentOS
             distro_version: 7
-            version: 10.6
+            version: '10.6'
             url: "http://mirror.centos.org/centos/7/sclo/x86_64/rh/rh-postgresql10/rh-postgresql10-postgresql-contrib-10.6-1.el7.x86_64.rpm"
             sha512: 802CC11A59DAF0A276C2AFB20574B9CF52C7BF22147FC3D7ECE407A07DF57C4EBC570DDBEA109773DD7AAC23FB1C0AAFA8DDA63E60913FB0BFDD0D61FAA3BAD8
           - distros: RedHat
             distro_version: 7
-            version: 10.6
+            version: '10.6'
             file_name: "rh-postgresql10-postgresql-contrib-10.6-1.el7.x86_64.rpm"
             sha512: 39cf30b3823a1e064118cd840fa89903ac09f3082380f50e65b76b4e2640567494696e2908cf1b82e68f39b12a2df8d0529f08da73d28fb73841ff8e74ddcc4e            
       rh-postgresql10-postgresql-contrib-syspaths:
         amd64:
           - distros: CentOS
             distro_version: 7
-            version: 10.6
+            version: '10.6'
             url: "http://mirror.centos.org/centos/7/sclo/x86_64/rh/rh-postgresql10/rh-postgresql10-postgresql-contrib-syspaths-10.6-1.el7.x86_64.rpm"
             sha512: 1CEDEFCD5466E47557110A82E4FB3C3D9155721DFA7506470BF98A5557150D53D6738E216E90267CA633BB2FC4EC18D583C044E016C9ABC1CF69C9DFA0FE8694
           - distros: RedHat
             distro_version: 7
-            version: 10.6
+            version: '10.6'
             file_name: "rh-postgresql10-postgresql-contrib-syspaths-10.6-1.el7.x86_64.rpm"
             sha512: 45055e01bd202584108e7dec7d585df89b7f5c27d19e428416b99fb7791062f22f664fc49c767f6e5c3d4e7dfaf05ab2c7d7923b12238dd434dfd571df723177            
       rh-postgresql10-postgresql-libs:
         amd64:
           - distros: CentOS
             distro_version: 7
-            version: 10.6
+            version: '10.6'
             url: "http://mirror.centos.org/centos/7/sclo/x86_64/rh/rh-postgresql10/rh-postgresql10-postgresql-libs-10.6-1.el7.x86_64.rpm"
             sha512: 6E881E1F3C8A13D1EEBCC1A3AE67A37EEABCE745F4B4A775821C9B14D0C4633AA0236FDE9203296663B3C3B1F83938E087F8453D0A3F72FDCA3C4C825F6E1957
           - distros: RedHat
             distro_version: 7
-            version: 10.6
+            version: '10.6'
             file_name: "rh-postgresql10-postgresql-libs-10.6-1.el7.x86_64.rpm"
             sha512: e39f16adb524bb5866265f52854004c7a4c38973d6e3345f748912957ca7fbc880bfba2275aba16b33a8f16078e41e314d58df4ddbaf0c47d0e9a6c4e57a43ad
       kubeadm:

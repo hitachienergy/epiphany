@@ -1,5 +1,16 @@
 ---
 # Common main as the entry point
 
+- name: prepare list of packages for PostgreSQL v{{ specification.version }}
+  set_fact:
+    packages_to_install: "{{ dependencies.postgresql[specification.version].packages | list }}"
+
+- name: Install PostgreSQL v{{ specification.version }}
+  include_role:
+    name: install
+    tasks_from: install_packages
+  vars:
+    packages_list: "{{ packages_to_install }}"
+
 - include_tasks: "{{ ansible_os_family }}.yml"
 

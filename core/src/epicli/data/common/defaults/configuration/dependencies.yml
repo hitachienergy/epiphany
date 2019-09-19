@@ -58,43 +58,64 @@ specification:
       packages:
         - id: socat
           version: 1.7.3.2
+          os_family: RedHat
+        - id: socat
+          version: 1.7.3.2
+          os_family: Debian
         - id: erlang # RedHat
           version: 21.2.2
+          os_family: RedHat
         - id: init-system-helpers # Debian
           version: '1.51'
+          os_family: Debian
         - id: adduser # Debian
           version: 3.116ubuntu1
+          os_family: Debian
         - id: logrotate # Debian
           version: 3.11.0
+          os_family: Debian
         - id: logrotate # Redhat
-          version: 3.8.6         
-        - id: erlang-nox # Debian
-          version: 21.3.8.6 
-        - id: rabbitmq-server # Debian, RedHat
+          version: 3.8.6       
+          os_family: RedHat  
+        - id: rabbitmq-server
           version: 3.7.10
+          os_family: Debian
+        - id: rabbitmq-server
+          version: 3.7.10
+          os_family: RedHat
   postgresql:
-    10:
+    '10':
       packages:
-        - id: rh-postgresql10-postgresql # RedHat
-          version: 10.6
-        - id: rh-postgresql10-postgresql-syspaths # RedHat
-          version: 10.6
-        - id: rh-postgresql10-postgresql-server # RedHat
-          version: 10.6
-        - id: rh-postgresql10-postgresql-server-syspaths # RedHat
-          version: 10.6
-        - id: rh-postgresql10-postgresql-contrib # RedHat
-          version: 10.6
-        - id: rh-postgresql10-postgresql-contrib-syspaths # RedHat
-          version: 10.6
-        - id: rh-postgresql10-postgresql-libs # RedHat
-          version: 10.6
-        - id: python-psycopg2 # RedHat
-          version: 2.5.1
-        - id: python-psycopg2 # Debian
-          version: 2.7.4
-        - id: postgresql-10 # Debian
-          version: 10.10
+        - id: rh-postgresql10-postgresql
+          version: '10.6'
+          os_family: RedHat
+        - id: rh-postgresql10-postgresql-syspaths 
+          version: '10.6'
+          os_family: RedHat
+        - id: rh-postgresql10-postgresql-server
+          version: '10.6'
+          os_family: RedHat
+        - id: rh-postgresql10-postgresql-server-syspaths
+          version: '10.6'
+          os_family: RedHat
+        - id: rh-postgresql10-postgresql-contrib 
+          version: '10.6'
+          os_family: RedHat
+        - id: rh-postgresql10-postgresql-contrib-syspaths
+          version: '10.6'
+          os_family: RedHat
+        - id: rh-postgresql10-postgresql-libs 
+          version: '10.6'
+          os_family: RedHat
+        - id: python-psycopg2 
+          version: '2.5.1'
+          os_family: RedHat
+        - id: python-psycopg2 
+          version: '2.7.4'
+          os_family: Ubuntu 
+        - id: postgresql-10 
+          version: '10.10'
+          os_family: Ubuntu
 
   kibana:
     6.4.0:
