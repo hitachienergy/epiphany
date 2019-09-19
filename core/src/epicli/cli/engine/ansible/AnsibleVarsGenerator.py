@@ -61,7 +61,7 @@ class AnsibleVarsGenerator(Step):
         vars_file_name = 'all.yml'
         vars_file_path = os.path.join(vars_dir, vars_file_name)
 
-        with open(vars_file_path, 'w') as stream:
+        with open(vars_file_path, 'a') as stream:
             dump(main_vars, stream)
 
     def add_admin_user_name(self, document):
@@ -91,7 +91,7 @@ class AnsibleVarsGenerator(Step):
         if document is None:
             raise Exception('Config is empty for: ' + 'group_vars/all.yml')
         shared_config_doc = select_first(self.config_docs, lambda x: x.kind == 'configuration/shared-config')
-        document['shared'] = shared_config_doc.specification
+        document.update(shared_config_doc.specification)
 
         return document
 

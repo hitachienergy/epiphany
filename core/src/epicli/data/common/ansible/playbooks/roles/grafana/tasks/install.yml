@@ -6,13 +6,19 @@
     state: absent
   register: _old_grafana_pkgs
 
-- name: Include install-Debian.yml
-  include_tasks: "install-Debian.yml"
-  vars:
-    package: "{{ item }}"
-  loop: "{{ dependencies.grafana[grafana_version].packages }}"
+- name: Install dependencies for Debian family
+  package:
+    name: "{{ item }}"
+    state: present
+  loop:
+    - apt-transport-https
+    - adduser
+    - ca-certificates
+    - libfontconfig
+    - gnupg2
   when: ansible_os_family == "Debian"
 
-- name: Include install-RedHat.yml
-  include_tasks: "install-RedHat.yml"
-  when: ansible_os_family == "RedHat"
+- name: Install Grafana
+  package:
+    name: "grafana-{{ grafana_version }}"
+    state: present
