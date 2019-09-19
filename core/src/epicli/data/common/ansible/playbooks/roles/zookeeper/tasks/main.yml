@@ -1,43 +1,6 @@
 ---
 # Zookeeper tasks - resides on masters
 
-- name: Set binary version to install
-  set_fact:
-    zookeeper_version: "{{ specification.version }}"
-
-- name: Download {{ ansible_os_family }} 'openjdk-8-jre' for Zookeeper v{{ zookeeper_version }}
-  include_role:
-    name: download
-    tasks_from: download_package
-  vars:
-    package_arg: "{{ dependencies.zookeeper[zookeeper_version].packages | selectattr('id', 'equalto', 'openjdk-8-jre') | list | first }}"
-  when: ansible_os_family == "Debian"
-
-- name: Install {{ ansible_os_family }} package from {{ file.dest_path }}
-  apt:
-    deb: "{{ file.dest_path }}"
-    state: present
-  when: ansible_os_family == "Debian"
-
-- name: Download {{ ansible_os_family }} 'java-1.8.0-openjdk' for Zookeeper v{{ zookeeper_version }}
-  include_role:
-    name: download
-    tasks_from: download_package
-  vars:
-    package_arg: "{{ dependencies.zookeeper[zookeeper_version].packages | selectattr('id', 'equalto', 'java-1.8.0-openjdk') | list | first }}"
-  when: ansible_os_family == "RedHat"
-
-- name: Install {{ ansible_os_family }} package from {{ file.dest_path }}
-  yum:
-    name: "{{ file.dest_path }}"
-    state: present
-  when: ansible_os_family == "RedHat"
-
-- name: Check if jmx exporter is available
-  stat:
-    path: "{{ prometheus_jmx_path }}"
-  register: exporter
-
 - name: Create Zookeeper group
   group:
     name: "{{ zookeeper_group }}"
@@ -50,40 +13,22 @@
     system: yes
     shell: "/usr/sbin/nologin"
 
-# - name: Check for Zookeeper package
-#   stat:
-#     path: /tmp/{{ zookeeper }}.tar.gz
-#   register: zoo
+- name: Install Java package
+  package:
+    name: "java-1.8.0-openjdk"
+    state: present
+  when: ansible_os_family == "RedHat"
 
-# - name: Fetch Zookeeper binary package
-#   get_url:
-#     url: "{{ zookeeper_url }}/{{ zookeeper }}/{{ zookeeper }}.tar.gz"
-#     dest: /tmp/{{ zookeeper }}.tar.gz
-#     validate_certs: "{{ validate_certs | bool }}"
-#   when: not zoo.stat.exists
+- name: Install Java package
+  package:
+    name: "openjdk-8-jre"
+    state: present
+  when: ansible_os_family == "Debian"
 
-# - name: Get sha512 sum of archive
-#   stat:
-#     path: "/tmp/{{ zookeeper }}.tar.gz"
-#     checksum_algorithm: sha512
-#     get_checksum: yes
-#   register: zookeeper_download_stat
-
-# - name: Display sha of archive
-#   debug:
-#     msg: "Zookeeper SHA512: {{ zookeeper_download_stat.stat.checksum }}"
-
-# - name: Verify sha512 of archive before installation.
-#   fail:
-#     msg: "File checksum is not correct."
-#   when: zookeeper_download_stat.stat.checksum != specification.sha
-
-# - name: Uncompress the Zookeeper tar
-#   unarchive:
-#     copy: no
-#     creates: "{{ zookeeper_dir }}"
-#     src: /tmp/{{ zookeeper }}.tar.gz
-#     dest: /opt
+- name: Check if jmx exporter is available
+  stat:
+    path: "{{ prometheus_jmx_path }}"
+  register: exporter
 
 - name: Set zookeeper variable with version name
   set_fact:
@@ -95,12 +40,16 @@
     zookeeper_install_dir: "/opt/{{ zookeeper_name }}"
   changed_when: false
 
+- name: Set Zookeeper file name to install
+  set_fact:
+    zookeeper_file_name: "{{ specification.file_name }}"
+
 - name: Download Zookeeper binaries
   include_role:
     name: download
     tasks_from: download_file
   vars:
-    file_arg: "{{ dependencies.zookeeper[zookeeper_version].files | selectattr('id', 'equalto', 'zookeeper') | list | first }}"
+    file_name: "{{ zookeeper_file_name }}"
 
 - name: Create {{ zookeeper_install_dir }} directories
   become: yes
@@ -118,7 +67,7 @@
   become: true
   unarchive:
     remote_src: yes
-    src: "{{ file.dest_path }}"
+    src: "{{ download_directory }}/{{ zookeeper_file_name }}"
     dest: "{{ zookeeper_install_dir }}"
     creates: "{{ zookeeper_install_dir }}/bin"
     extra_opts: [--strip-components=1]
@@ -182,6 +131,11 @@
     dest: "{{ zookeeper_install_dir }}/conf/log4j.properties"
   notify:
     - Restart zookeeper
+
+- name: Enable Zookeeper service
+  service:
+    name: zookeeper
+    enabled: yes
 
 - name: Start Zookeeper
   service:

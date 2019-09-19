@@ -4,6 +4,7 @@ title: "Prometheus"
 name: default
 specification:
   version: 2.10.0
+  file_name: "prometheus-2.10.0.linux-amd64.tar.gz"
   config_directory: "/etc/prometheus"
   storage:
     data_directory: "/var/lib/prometheus"
@@ -57,6 +58,7 @@ specification:
 
     alertmanager:
       enable: False # To make Alertmanager working, you have to enable it and define receivers and routes
+      file_name: "alertmanager-0.17.0.linux-amd64.tar.gz"
       version: 0.17.0
       config: # Configuration for Alertmanager, it will be passed to Alertmanager service.
 

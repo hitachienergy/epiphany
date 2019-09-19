@@ -1,6 +1,6 @@
 ---
 
-- name: Download file {{ file_name }}
+- name: "Download file {{ file_name }}"
   get_url:
     url: "{{ repository_url }}/files/{{ file_name }}"
     dest: "{{ download_directory }}"

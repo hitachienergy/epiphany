@@ -47,22 +47,22 @@
 #   delegate_to: localhost
 #   check_mode: false
 
-- name: Set binary version to install
+- name: Set Prometheus file name to install
   set_fact:
-    binary_version: "{{ specification.alerts.alertmanager.version }}"
+    binary_file_name: "{{ specification.alerts.alertmanager.file_name }}"
 
-- name: Download AlertManager binaries
+- name: Download Prometheus binaries
   include_role:
     name: download
     tasks_from: download_file
   vars:
-    file_arg: "{{ dependencies.alertmanager[binary_version].files | selectattr('id', 'equalto', 'alertmanager') | list | first }}"
+    file_name: "{{ binary_file_name }}"
 
 - name: Unpack AlertManager binary
   become: true
   unarchive:
     remote_src: yes
-    src: "{{ file.dest_path }}"
+    src: "{{ download_directory }}/{{ binary_file_name }}"
     dest: "/usr/local/bin"
     creates: "/usr/local/bin/alertmanager"
     extra_opts: [--strip-components=1]
