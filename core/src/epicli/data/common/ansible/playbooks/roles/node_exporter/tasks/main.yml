@@ -60,16 +60,16 @@
 #   delegate_to: localhost
 #   check_mode: false
 
-- name: Set binary version to install
+- name: Set Node Exporter file name to install
   set_fact:
-    binary_version: "{{ specification.version }}"
+    exporter_file_name: "{{ specification.file_name }}"
 
 - name: Download Node Exporter binaries
   include_role:
     name: download
     tasks_from: download_file
   vars:
-    file_arg: "{{ dependencies.node_exporter[binary_version].files | selectattr('id', 'equalto', 'node_exporter') | list | first }}"
+    file_name: "{{ exporter_file_name }}"
 
 - name: Create /opt/node_exporter directories
   become: yes
@@ -87,7 +87,7 @@
   become: true
   unarchive:
     remote_src: yes
-    src: "{{ file.dest_path }}"
+    src: "{{ download_directory }}/{{ exporter_file_name }}"
     dest: "/opt/node_exporter"
     creates: "/opt/node_exporter/node_exporter"
     extra_opts: [--strip-components=1]

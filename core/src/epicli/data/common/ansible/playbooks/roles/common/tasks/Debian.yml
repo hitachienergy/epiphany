@@ -1,8 +1,6 @@
 ---
 # Common Debian family of specific tasks
 
-
-
 - name: Install selinux packages as prerequisite for SELinux module
   apt:
     name:
@@ -10,9 +8,6 @@
       - python-selinux
     update_cache: yes 
     state: present    
-
-
-
 
 - name: Install debian family packages
   apt:
