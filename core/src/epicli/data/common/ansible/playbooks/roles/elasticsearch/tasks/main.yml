@@ -2,23 +2,7 @@
 
 - include_tasks: "set-pam-limits.yml"
 
-- name: Install dependencies for Debian family
-  package:
-    name: "{{ item }}"
-    state: present
-  loop:
-    - openjdk-8-jre
-    - elasticsearch-oss
-  when: ansible_os_family == "Debian"
-
-- name: Install dependencies for Debian family
-  package:
-    name: "{{ item }}"
-    state: present
-  loop:
-    - java-1.8.0-openjdk
-    - elasticsearch-oss
-  when: ansible_os_family == "RedHat"
+- include_tasks: "{{ ansible_os_family }}.yml"  
 
 - name: Replace with interface
   replace:

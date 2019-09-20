@@ -1,26 +1,5 @@
 ---
-- name: Set package version to install
-  set_fact:
-    package_version: "{{ specification.kibana_version }}"
-
-- name: Download Kibana v{{ specification.kibana_version  }}
-  include_role:
-    name: download
-    tasks_from: download_package
-  vars:
-    package_arg: "{{ dependencies.kibana[package_version].packages | selectattr('id', 'equalto', 'kibana-oss') | list | first }}"
-
-- name: Install {{ package_name }} {{ ansible_os_family }} package from {{ file.dest_path }}
-  apt:
-    deb: "{{ file.dest_path }}"
-    state: present
-  when: ansible_os_family == "Debian"
-
-- name: Install {{ package_name }} {{ ansible_os_family }} package from {{ file.dest_path }}
-  yum:
-    name: "{{ file.dest_path }}"
-    state: present
-  when: ansible_os_family == "RedHat"
+- include_tasks: "{{ ansible_os_family }}.yml"
 
 - name: Replace with interface
   replace:
