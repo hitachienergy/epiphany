@@ -26,12 +26,7 @@
   when: 
       - not groups['repository'][0] == inventory_hostname
 
-- name: Setup client repos
-  shell: /tmp/{{ ansible_os_family }}/setup-repo-client-rh.sh {{ groups['repository'][0] }}
+- name: Setup epirepo on clients
+  shell: /tmp/{{ ansible_os_family }}/setup-epirepo-client-rh.sh {{ groups['repository'][0] }}
   when: 
       - not groups['repository'][0] == inventory_hostname
-
-#- name: Enable active system repositories
-#  shell: /tmp/{{ ansible_os_family }}/enable-system-repos.sh
-#  when: 
-#      - not groups['repository'][0] == inventory_hostname

@@ -20,4 +20,3 @@ logrotate
 ebtables
 ethtool
 telnet
-httpd

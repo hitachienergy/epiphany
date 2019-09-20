@@ -2,7 +2,11 @@
 # Ansible playbook for disabling/enabling repositories before/after Epiphany installation
 
 - hosts: all
+  pre_tasks:
+    - name: Set mode to teardown
+      set_fact:
+        repository_mode: teardown
   become: true
   become_method: sudo
   roles:
-    - repositories
+    - repository
