@@ -1,0 +1,6 @@
+- name: Install Filbeat package
+  yum: 
+    name:
+      - filebeat
+    update_cache: yes 
+    state: present

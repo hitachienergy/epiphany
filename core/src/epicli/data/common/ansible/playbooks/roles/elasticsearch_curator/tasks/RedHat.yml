@@ -1,0 +1,6 @@
+- name: Install Elasticsearch-Curator package
+  yum:
+    name:
+      - elasticsearch-curator
+    update_cache: yes
+    state: present

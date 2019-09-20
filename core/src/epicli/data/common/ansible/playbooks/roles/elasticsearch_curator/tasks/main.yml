@@ -1,9 +1,6 @@
 ---
 
-- name: Install Elasticsearch package
-  package:
-    name: "elasticsearch-curator" #todo add version to the package
-    state: present
+- include_tasks: "{{ ansible_os_family }}.yml"  
 
 - name: Configure cron jobs for Elasticsearch Curator
   cron:
