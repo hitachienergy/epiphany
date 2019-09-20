@@ -1,5 +1,18 @@
 ---
 # Postgresql Red Hat family of specific tasks
+- name: Install postgresql family packages
+  yum:
+    name:
+      - rh-postgresql10-postgresql
+      - rh-postgresql10-postgresql-syspaths
+      - rh-postgresql10-postgresql-server
+      - rh-postgresql10-postgresql-server-syspaths
+      - rh-postgresql10-postgresql-contrib
+      - rh-postgresql10-postgresql-contrib-syspaths
+      - rh-postgresql10-postgresql-libs
+      - python-psycopg2 # required for postresql ansible management
+    update_cache: yes
+    state: present
 
 - name: Check postgresql init
   stat:

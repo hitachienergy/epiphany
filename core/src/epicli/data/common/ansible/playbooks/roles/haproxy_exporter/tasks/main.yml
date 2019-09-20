@@ -14,53 +14,16 @@
     group: haproxy_exporter
     createhome: false
 
-# - name: Ensure temp directory exists
-#   become: false
-#   file:
-#     path: "{{ specification.temp_directory }}/haproxy_exporter"
-#     state: directory
-#   delegate_to: localhost
-
-# - name: Download haproxy_exporter binary to local folder
-#   become: false
-#   get_url:
-#     url: "{{ specification.download_urls[ansible_architecture] }}"
-#     dest: "{{ specification.download_directory }}/haproxy_exporter.tar.gz"
-#     validate_certs: "{{ validate_certs | bool}}"
-#   register: _download_archive
-#   until: _download_archive is succeeded
-#   retries: 5
-#   delay: 2
-#   delegate_to: localhost
-
-# - name: Get sha512 sum of archive
-#   become: false
-#   stat:
-#     path: "{{ specification.download_directory }}/haproxy_exporter.tar.gz"
-#     checksum_algorithm: sha512
-#     get_checksum: yes
-#   register: haproxy_exporter_stat
-#   delegate_to: localhost
-
-# - name: Display sha of archive
-#   debug:
-#     msg: "Haproxy Exporter SHA512: {{ haproxy_exporter_stat.stat.checksum }}"
-
-# - name: Verify sha512 of archive before installation.
-#   fail:
-#     msg: "File checksum is not correct."
-#   when: haproxy_exporter_stat.stat.checksum not in specification.download_shas
-
-- name: Set package version to install
+- name: Set HAProxy Exporter file name to install
   set_fact:
-    package_version: "{{ specification.version }}"
+    exporter_file_name: "{{ specification.file_name }}"    
 
-- name: Download Haproxy Exporter binaries
+- name: Download HAProxy Exporter binaries
   include_role:
     name: download
     tasks_from: download_file
   vars:
-    file_arg: "{{ dependencies.haproxy_exporter[package_version].files | selectattr('id', 'equalto', 'haproxy_exporter') | list | first }}"
+    file_name: "{{ exporter_file_name }}"
 
 - name: Create /opt/haproxy_exporter directories
   become: yes
@@ -78,7 +41,7 @@
   become: yes
   unarchive:
     remote_src: yes
-    src: "{{ file.dest_path }}"
+    src: "{{ download_directory }}/{{ exporter_file_name }}"
     dest: "/opt/haproxy_exporter"
     creates: "/opt/haproxy_exporter/haproxy_exporter"
     extra_opts: [--strip-components=1]

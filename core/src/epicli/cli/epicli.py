@@ -78,6 +78,7 @@ def main():
     config.log_type = args.log_type
     config.log_count = args.log_count
     config.validate_certs = True if args.validate_certs == 'true' else False
+    config.offline_mode = args.offline_mode
     config.debug = args.debug
     config.auto_approve = args.auto_approve
 
@@ -114,6 +115,8 @@ def apply_parser(subparsers):
                             help='File with infrastructure/configuration definitions to use.')
     sub_parser.add_argument('--no-infra', dest='no_infra', action="store_true",
                             help='Skip infrastructure provisioning.')
+    sub_parser.add_argument('--offline-mode', dest='offline_mode', action="store_true",
+                            help='Should Epiphany run with offline packages.')
 
     def run_apply(args):
         adjust_paths_from_file(args)
