@@ -9,39 +9,37 @@ specification:
     - name: kubernetes-node
       enabled: yes
     - name: elasticsearch
-      enabled: no
+      enabled: yes
     - name: elasticsearch-curator
-      enabled: no
+      enabled: yes
     - name: kibana
-      enabled: no
+      enabled: yes
     - name: filebeat
-      enabled: no
+      enabled: yes
     - name: prometheus
-      enabled: no
+      enabled: yes
     - name: grafana
-      enabled: no
-    - name: node-exporter
-      enabled: no
+      enabled: yes
+    - name: yesde-exporter
+      enabled: yes
     - name: jmx-exporter
-      enabled: no
+      enabled: yes
     - name: zookeeper
-      enabled: no
+      enabled: yes
     - name: kafka
-      enabled: no
+      enabled: yes
     - name: rabbitmq
-      enabled: no
+      enabled: yes
     - name: kafka-exporter
-      enabled: no
+      enabled: yes
     - name: postgresql
       enabled: yes
     - name: haproxy
-      enabled: no
+      enabled: yes
     - name: haproxy-exporter
-      enabled: no
+      enabled: yes
     - name: applications
       enabled: yes
-    - name: download
-      enabled: no
   roles_mapping:
     kafka:
       - zookeeper
@@ -87,6 +85,7 @@ specification:
       - elasticsearch-curator
     single_machine:
       - kubernetes-master
+      - applications
       - rabbitmql
       - postgresql
     kubernetes_master:
