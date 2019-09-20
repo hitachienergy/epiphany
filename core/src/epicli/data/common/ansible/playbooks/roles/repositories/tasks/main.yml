@@ -1,0 +1,37 @@
+---
+
+- name: Copy data files
+  copy:
+    src: "{{ ansible_os_family }}/"
+    dest: "/tmp/{{ ansible_os_family }}"
+
+- name: Copy repository configuration scripts
+  copy:
+    src: "{{ ansible_os_family }}/scripts/"
+    dest: "/tmp/{{ ansible_os_family }}"
+    mode: a+x
+
+- name: Download packages and create repository
+  shell: /tmp/{{ ansible_os_family }}/create-repository-rh.sh /tmp/{{ ansible_os_family }}/rh-package-list.txt
+  when: 
+      - groups['repository'][0] == inventory_hostname
+
+- name: Create active repositories list
+  shell: /tmp/{{ ansible_os_family }}/generate-enabled-system-repository-list.sh
+  when: 
+      - not groups['repository'][0] == inventory_hostname
+
+- name: Disable active system repositories
+  shell: /tmp/{{ ansible_os_family }}/disable-system-repos.sh
+  when: 
+      - not groups['repository'][0] == inventory_hostname
+
+- name: Setup client repos
+  shell: /tmp/{{ ansible_os_family }}/setup-repo-client-rh.sh {{ groups['repository'][0] }}
+  when: 
+      - not groups['repository'][0] == inventory_hostname
+
+#- name: Enable active system repositories
+#  shell: /tmp/{{ ansible_os_family }}/enable-system-repos.sh
+#  when: 
+#      - not groups['repository'][0] == inventory_hostname
