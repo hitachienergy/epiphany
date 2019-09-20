@@ -20,7 +20,7 @@ specification:
       enabled: yes
     - name: grafana
       enabled: yes
-    - name: node-exporter
+    - name: yesde-exporter
       enabled: yes
     - name: jmx-exporter
       enabled: yes
@@ -39,8 +39,6 @@ specification:
     - name: haproxy-exporter
       enabled: yes
     - name: applications
-      enabled: yes
-    - name: download
       enabled: yes
   roles_mapping:
     kafka:
@@ -87,6 +85,7 @@ specification:
       - elasticsearch-curator
     single_machine:
       - kubernetes-master
+      - applications
       - rabbitmql
       - postgresql
     kubernetes_master:

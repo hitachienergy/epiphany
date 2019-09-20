@@ -4,9 +4,6 @@
 # Subscriptions with certs: subscription-manager repos --enable "rhel-*-optional-rpms" --enable "rhel-*-extras-rpms"
 # w/o subscription https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
 
-- name: Print repository url
-  debug: msg={{ repository_url }}
-
 - name: Install RedHat family packages
   yum:
     name: 

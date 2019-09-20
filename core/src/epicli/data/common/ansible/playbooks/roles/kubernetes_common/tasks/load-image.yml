@@ -1,12 +1,21 @@
 ---
 
-- name: Download file
-  include_role:
-    name: download
-    tasks_from: download_image
-  vars:
-    file_name: "{{ image_name }}"
+- name: check if image is already loaded
+  shell: "docker images {{ docker_image.name }} --format {{ '{{' }}.ID{{ '}}' }}"
+  register: image_check
+  ignore_errors: true
+  changed_when: false
 
-- name: Load image {{ image_name }}
-  become: yes
-  shell: "docker load --input {{ download_directory }}/{{ image_name }}"
+- name: Load image if does not exists
+  block:
+  - name: Download file
+    include_role:
+      name: download
+      tasks_from: download_image
+    vars:
+      file_name: "{{ docker_image.file_name }}"
+
+  - name: Load image {{ docker_image.name }}
+    become: yes
+    shell: "docker load --input {{ download_directory }}/{{ docker_image.file_name }}"
+  when: image_check.stdout | length == 0

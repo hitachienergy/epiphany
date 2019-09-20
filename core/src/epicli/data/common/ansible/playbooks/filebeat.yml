@@ -1,6 +1,10 @@
 ---
 # Ansible playbook that installs and configures Filebeat
 
+- hosts: all
+  gather_facts: yes
+  tasks: [ ]
+
 - hosts: elasticsearch:kibana # To gather facts
   tasks: [ ]
 
