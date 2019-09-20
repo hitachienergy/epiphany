@@ -13,20 +13,20 @@
 
 - name: Download packages and create repository
   shell: /tmp/{{ ansible_os_family }}/create-repository-rh.sh /tmp/{{ ansible_os_family }}/rh-package-list.txt
-  when: 
-      - groups['repository'][0] == inventory_hostname
+  when:
+      - groups['kubernetes_master'][0] == inventory_hostname
 
 - name: Create active repositories list
   shell: /tmp/{{ ansible_os_family }}/generate-enabled-system-repository-list.sh
-  when: 
-      - not groups['repository'][0] == inventory_hostname
+  when:
+      - not groups['kubernetes_master'][0] == inventory_hostname
 
 - name: Disable active system repositories
   shell: /tmp/{{ ansible_os_family }}/disable-system-repos.sh
-  when: 
-      - not groups['repository'][0] == inventory_hostname
+  when:
+      - not groups['kubernetes_master'][0] == inventory_hostname
 
 - name: Setup epirepo on clients
-  shell: /tmp/{{ ansible_os_family }}/setup-epirepo-client-rh.sh {{ groups['repository'][0] }}
-  when: 
-      - not groups['repository'][0] == inventory_hostname
+  shell: /tmp/{{ ansible_os_family }}/setup-epirepo-client-rh.sh {{ groups['kubernetes_master'][0] }}
+  when:
+      - not groups['kubernetes_master'][0] == inventory_hostname

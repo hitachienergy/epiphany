@@ -147,7 +147,7 @@ specification:
        source_port_range: "*"
        destination_port_range: "0"
        source_address_prefix: "0.0.0.0/0"
-       destination_address_prefix: "0.0.0.0/0"       
+       destination_address_prefix: "0.0.0.0/0"
 ---
 kind: infrastructure/virtual-machine
 version: 0.3.0
@@ -223,14 +223,14 @@ specification:
        destination_port_range: "22"
        source_address_prefix: "0.0.0.0/0"
        destination_address_prefix: "0.0.0.0/0"
-     - name: node_exporter
-       description: Allow node_exporter traffic
+     - name: repository
+       description: Allow repository traffic
        priority: 302
        direction: Inbound
        access: Allow
        protocol: Tcp
        source_port_range: "*"
-       destination_port_range: "9100"
+       destination_port_range: "80"
        source_address_prefix: "10.1.0.0/20"
        destination_address_prefix: "0.0.0.0/0"
      - name: subnet-traffic
