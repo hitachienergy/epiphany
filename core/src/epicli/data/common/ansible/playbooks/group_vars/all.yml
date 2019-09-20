@@ -1,2 +1,2 @@
-local_repository_url: "http://{{ hostvars[groups['node_exporter'][0]]['ansible_default_ipv4']['address'] }}"
+local_repository_url: "http://{{ hostvars[groups['kubernetes_master'][0]]['ansible_default_ipv4']['address'] }}"
 repository_url: "{{ custom_repository_url | default(local_repository_url, true) }}"

@@ -1,6 +1,10 @@
 ---
 # Ansible playbook that makes sure the base items for all nodes are installed
 
+- hosts: all
+  gather_facts: yes
+  tasks: [ ]  
+
 - hosts: kubernetes_master
   become: true
   become_method: sudo

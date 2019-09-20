@@ -117,21 +117,30 @@
 #     - /opt/prometheus/promtool
 #     - /opt/prometheus
 
-- name: Set binary version to install
+- name: Set Prometheus file name to install
   set_fact:
-    binary_version: "{{ specification.version }}"
+    binary_file_name: "{{ specification.file_name }}"
 
-- name: Download Prometheus and Promtool binaries
+- name: Package
+  debug: msg="{{ binary_file_name }}"
+
+- name: Repo
+  debug: msg="{{ repository_url }}"
+
+- name: Path
+  debug: msg="{{ repository_url }}/files/{{ binary_file_name }}"
+
+- name: Download Prometheus binaries
   include_role:
     name: download
     tasks_from: download_file
   vars:
-    file_arg: "{{ dependencies.prometheus[binary_version].files | selectattr('id', 'equalto', 'prometheus') | list | first }}"
+    file_name: "{{ binary_file_name }}"
 
 - name: Unpack Prometheus binary
   become: true
   unarchive:
-    src: "{{ file.dest_path }}"
+    src: "{{ download_directory }}/{{ binary_file_name }}"
     remote_src: yes
     dest: "/usr/local/bin"
     creates: "/usr/local/bin/prometheus"
