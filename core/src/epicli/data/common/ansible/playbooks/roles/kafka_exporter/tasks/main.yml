@@ -13,74 +13,16 @@
     group: kafka_exporter
     createhome: false
 
-# - name: Download kafka_exporter binary to local folder
-#   become: false
-#   get_url:
-#     url: "{{ specification.download_urls[ansible_architecture] }}"
-#     dest: "{{ specification.download_directory }}/kafka_exporter.tar.gz"
-#     validate_certs: "{{ validate_certs | bool }}"
-#   register: _download_archive
-#   until: _download_archive is succeeded
-#   retries: 5
-#   delay: 2
-#   delegate_to: localhost
-
-# - name: Get sha512 sum of archive
-#   become: false
-#   stat:
-#     path: "{{ specification.download_directory }}/kafka_exporter.tar.gz"
-#     checksum_algorithm: sha512
-#     get_checksum: yes
-#   register: kafka_exporter_download_stat
-#   delegate_to: localhost
-
-# - name: Display sha of archive
-#   debug:
-#     msg: "Kafka Exporter SHA512: {{ kafka_exporter_download_stat.stat.checksum }}"
-
-# - name: Verify sha512 of archive before installation.
-#   fail:
-#     msg: "File checksum is not correct."
-#   when: kafka_exporter_download_stat.stat.checksum not in specification.download_shas
-
-# - name: Ensure download directory exists
-#   become: false
-#   file:
-#     path: "{{ specification.download_directory }}/kafka_exporter"
-#     state: directory
-#   delegate_to: localhost
-
-# - name: Unpack kafka_exporter binary
-#   become: false
-#   unarchive:
-#     src: "{{ specification.download_directory }}/kafka_exporter.tar.gz"
-#     dest: "{{ specification.download_directory }}/kafka_exporter"
-#     creates: "{{ specification.download_directory }}/kafka_exporter/kafka_exporter"
-#     extra_opts: [--strip-components=1]
-#   delegate_to: localhost
-#   check_mode: false
-
-# - name: Create /opt/kafka_exporter directories
-#   become: yes
-#   file:
-#     path: "{{ item }}"
-#     recurse: yes
-#     owner: root
-#     group: "kafka_exporter"
-#     mode: 0750
-#     state: directory
-#   with_items:
-#   - /opt/kafka_exporter
-- name: Set package version to install
+- name: Set Kafka Exporter file name to install
   set_fact:
-    binary_version: "{{ specification.version }}"
+    exporter_file_name: "{{ specification.file_name }}"
 
 - name: Download Kafka Exporter binaries
   include_role:
     name: download
     tasks_from: download_file
   vars:
-    file_arg: "{{ dependencies.kafka_exporter[binary_version].files | selectattr('id', 'equalto', 'kafka_exporter') | list | first }}"
+    file_name: "{{ exporter_file_name }}"
 
 - name: Create /opt/kafka_exporter directory
   become: yes
@@ -98,7 +40,7 @@
   become: true
   unarchive:
     remote_src: yes
-    src: "{{ file.dest_path }}"
+    src: "{{ download_directory }}/{{ exporter_file_name }}"
     dest: "/opt/kafka_exporter"
     creates: "/opt/kafka_exporter/kafka_exporter"
     extra_opts: [--strip-components=1]

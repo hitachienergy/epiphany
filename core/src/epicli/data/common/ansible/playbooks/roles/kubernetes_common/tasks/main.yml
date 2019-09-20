@@ -5,6 +5,6 @@
 - name: Include load-image.yml
   include_tasks: "load-image.yml"
   vars:
-    image_name: "{{ item }}"
+    docker_image: "{{ item }}"
   loop: "{{ specification.images_to_load }}"
 

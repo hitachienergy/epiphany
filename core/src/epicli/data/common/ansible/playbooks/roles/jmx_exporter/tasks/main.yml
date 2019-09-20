@@ -25,47 +25,21 @@
   with_items:
   - "{{ specification.jmx_jars_directory }}"
 
-# - name: Prometheus jmx | download jar
-#   become: yes
-#   get_url:
-#     url: "{{ specification.download_url }}"
-#     dest: "/opt/jmx-exporter/jmx_prometheus_javaagent-{{ specification.jmx_exporter_version }}.jar"
-#     force: no
-#     owner: "{{ specification.jmx_exporter_user }}"
-#     group: "{{ specification.jmx_exporter_group }}"
-#     validate_certs: "{{ validate_certs | bool }}"
-
-# - name: Get sha512 sum of archive
-#   stat:
-#     path: "/opt/jmx-exporter/jmx_prometheus_javaagent-{{ specification.jmx_exporter_version }}.jar"
-#     checksum_algorithm: sha512
-#     get_checksum: yes
-#   register: jmx_prometheus_download_stat
-
-# - name: Display sha of archive
-#   debug:
-#     msg: "Alertmanager SHA512: {{ jmx_prometheus_download_stat.stat.checksum }}"
-
-# - name: Verify sha512 of archive before installation.
-#   fail:
-#     msg: "File checksum is not correct."
-#   when: jmx_prometheus_download_stat.stat.checksum != specification.download_sha
-
-- name: Set binary version to install
+- name: Set JMX Exporter file name to install
   set_fact:
-    binary_version: "{{ specification.jmx_exporter_version }}"
+    exporter_file_name: "{{ specification.file_name }}"
 
 - name: Download JMX Exporter binaries
   include_role:
     name: download
     tasks_from: download_file
   vars:
-    file_arg: "{{ dependencies.jmx_exporter[binary_version].files | selectattr('id', 'equalto', 'jmx_prometheus_javaagent') | list | first }}"
+    file_name: "{{ exporter_file_name }}"
 
 - name: Copy JMX Exporter binaries
   copy:
-    src: "{{ file.dest_path }}"
-    dest: "/opt/jmx-exporter/jmx_prometheus_javaagent-{{ specification.jmx_exporter_version }}.jar"
+    src: "{{ download_directory }}/{{ exporter_file_name }}"
+    dest: "/opt/jmx-exporter/{{ exporter_file_name }}"
     owner: "{{ specification.jmx_exporter_user }}"
     group: "{{ specification.jmx_exporter_group }}"
     remote_src: yes
@@ -73,7 +47,7 @@
 - name: Prometheus jmx | symlink jar
   become: yes
   file:
-    src: "/opt/jmx-exporter/jmx_prometheus_javaagent-{{ specification.jmx_exporter_version }}.jar"
+    src: "/opt/jmx-exporter/{{ exporter_file_name }}"
     path: "{{ specification.jmx_path }}"
     force: yes
     state: link

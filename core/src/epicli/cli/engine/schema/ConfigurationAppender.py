@@ -33,6 +33,8 @@ class ConfigurationAppender(Step):
             config_selector = component_value.configuration
             for feature_key in features_map.specification.roles_mapping[component_key]:
                 config = select_first(self.input_docs, lambda x: x.kind == 'configuration/' + feature_key and x.name == config_selector)
+                if config is not None:
+                    configuration_docs.append(config)
                 if config is None:
                     config = select_first(configuration_docs, lambda
                         x: x.kind == 'configuration/' + feature_key and x.name == config_selector)

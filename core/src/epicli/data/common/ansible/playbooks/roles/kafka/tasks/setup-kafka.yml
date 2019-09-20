@@ -12,57 +12,29 @@
     group: "{{ specification.kafka_var.group }}"
     shell: "/usr/sbin/nologin"
 
-#### TODO
-# - name: Install debian family packages
-#   apt:
-#     name:
-#       - openjdk-8-jre
-#     update_cache: yes
-#     state: present
-#   when: ansible_os_family == "Debian"
-# - name: Install RedHat family packages
-#   yum:
-#     name:
-#       - java-1.8.0-openjdk
-#     update_cache: yes
-#     state: present
-#   register: result
-#   retries: 3
-#   delay: 1
-#   until: result is succeeded
-#   when: ansible_os_family == "RedHat"
 
-- name: Set binary version to install
+- name: Install Java package
+  package:
+    name: "java-1.8.0-openjdk"
+    state: present
+  when: ansible_os_family == "RedHat"
+
+- name: Install Java package
+  package:
+    name: "openjdk-8-jre"
+    state: present
+  when: ansible_os_family == "Debian"
+
+- name: Set Kafka file name to install
   set_fact:
-    binary_version: "{{ specification.kafka_var.version }}"
+    kafka_file_name: "{{ specification.kafka_var.file_name }}"
 
-- name: Download {{ ansible_os_family }} 'openjdk-8-jre' for Kafka v{{ specification.kafka_var.version }}
+- name: Download Kafka binaries
   include_role:
     name: download
-    tasks_from: download_package
+    tasks_from: download_file
   vars:
-    package_arg: "{{ dependencies.kafka[binary_version].packages | selectattr('id', 'equalto', 'openjdk-8-jre') | list | first }}"
-  when: ansible_os_family == "Debian"
-
-- name: Install {{ ansible_os_family }} package from {{ file.dest_path }}
-  apt:
-    deb: "{{ file.dest_path }}"
-    state: present
-  when: ansible_os_family == "Debian"
-
-- name: Download {{ ansible_os_family }} 'java-1.8.0-openjdk' for Kafka v{{ binary_version }}
-  include_role:
-    name: download
-    tasks_from: download_package
-  vars:
-    package_arg: "{{ dependencies.kafka[binary_version].packages | selectattr('id', 'equalto', 'java-1.8.0-openjdk') | list | first }}"
-  when: ansible_os_family == "RedHat"
-
-- name: Install {{ ansible_os_family }} package from {{ file.dest_path }}
-  yum:
-    name: "{{ file.dest_path }}"
-    state: present
-  when: ansible_os_family == "RedHat"
+    file_name: "{{ kafka_file_name }}"
 
 # - name: Check for Kafka package
 #   stat:
@@ -92,18 +64,6 @@
 #     msg: "File checksum is not correct."
 #   when: kafka_download_stat.stat.checksum != specification.kafka_var.sha
 
-- name: Set Kafka binary name variable
-  set_fact:
-    kafka_binary_name: "kafka_{{ specification.kafka_var.scala.version }}-{{ specification.kafka_var.version }}"
-  changed_when: false
-
-- name: Download Kafka binaries ({{ kafka_binary_name }})
-  include_role:
-    name: download
-    tasks_from: download_file
-  vars:
-    file_arg: "{{ dependencies.kafka[binary_version].files | selectattr('id', 'equalto', kafka_binary_name) | list | first }}"
-
 - name: Add Kafka's bin dir to the PATH
   copy:
     content: "export PATH=$PATH:/opt/kafka/bin"
@@ -117,9 +77,9 @@
 
 - name: Uncompress the Kafka tar
   unarchive:
-    copy: no
+    remote_src: yes
     creates: /opt/kafka_{{ specification.kafka_var.scala.version }}-{{ specification.kafka_var.version }}
-    src: "{{ file.dest_path }}"
+    src: "{{ download_directory }}/{{ kafka_file_name }}"
     dest: /opt
   when: not kafka_package.stat.exists
 
