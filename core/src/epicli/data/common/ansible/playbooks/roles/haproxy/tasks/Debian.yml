@@ -1,12 +1,8 @@
 ---
 # HAProxy Debian family of specific tasks
 
-- name: Install packages for Debian family
-  include_tasks: "install-package.yml"
-  vars:
-    package_name: "{{ item }}"
-  loop:
-    - 'haproxy'
+- name: Install haproxy package
+  apt: name=haproxy update_cache=yes state=present
 
 - name: Restart haproxy service
   service:

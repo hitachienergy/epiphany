@@ -1,0 +1,13 @@
+---
+
+- name: Download {{ file_name }}
+  get_url:
+    url: "{{ repository_url }}"
+    dest: "{{ file_arg.dest_path }}"
+    checksum: "{{ file_arg.checksum_algorithm + ':' + file_arg[file_arg.checksum_algorithm] }}"
+    validate_certs: "{{ validate_certs }}"
+  register: get_url_result
+  until: "'OK' in get_url_result.msg or 'file already exists' in get_url_result.msg"
+  retries: "{{ specification.download_retries }}"
+  delay: "{{ specification.download_retry_delay }}"
+  become: false

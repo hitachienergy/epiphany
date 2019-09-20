@@ -1,22 +1,14 @@
 ---
 # Postgresql Debian family of specific tasks
 
-# - name: Install postgresql packages
-#   apt: 
-#     name:
-#       - postgresql-10
-#       - postgresql-contrib-10
-#       - python-psycopg2 # required for postresql ansible management
-#     update_cache: yes 
-#     state: present  
-
-- name: Install packages for Debian family
-  include_tasks: "install-package.yml"
-  vars:
-    package_name: "{{ item }}"
-  loop:
+- name: Install postgresql packages
+  apt: 
+    name:
       - postgresql-10
+      - postgresql-contrib-10
       - python-psycopg2 # required for postresql ansible management
+    update_cache: yes 
+    state: present
 
 - name: Changing pg_hba.conf
   replace:
