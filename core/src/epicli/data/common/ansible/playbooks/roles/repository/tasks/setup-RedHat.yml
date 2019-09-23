@@ -1,0 +1,32 @@
+---
+
+- name: Copy data files
+  copy:
+    src: "{{ ansible_os_family }}/"
+    dest: "/tmp/{{ ansible_os_family }}"
+
+- name: Copy repository configuration scripts
+  copy:
+    src: "{{ ansible_os_family }}/scripts/"
+    dest: "/tmp/{{ ansible_os_family }}"
+    mode: a+x
+
+- name: Download packages and create repository
+  shell: /tmp/{{ ansible_os_family }}/create-repository-rh.sh /tmp/{{ ansible_os_family }}/rh-package-list.txt
+  when:
+      - groups['kubernetes_master'][0] == inventory_hostname
+
+- name: Create active repositories list
+  shell: /tmp/{{ ansible_os_family }}/generate-enabled-system-repository-list.sh
+  when:
+      - not groups['kubernetes_master'][0] == inventory_hostname
+
+- name: Disable active system repositories
+  shell: /tmp/{{ ansible_os_family }}/disable-system-repos.sh
+  when:
+      - not groups['kubernetes_master'][0] == inventory_hostname
+
+- name: Setup epirepo on clients
+  shell: /tmp/{{ ansible_os_family }}/setup-epirepo-client-rh.sh {{ groups['kubernetes_master'][0] }}
+  when:
+      - not groups['kubernetes_master'][0] == inventory_hostname

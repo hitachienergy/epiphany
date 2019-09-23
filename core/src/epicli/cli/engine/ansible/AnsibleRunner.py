@@ -47,11 +47,20 @@ class AnsibleRunner(Step):
 
         self.ansible_vars_generator.run()
 
+        repository_setup_play_result = self.ansible_command.run_playbook_with_retries(inventory=inventory_path,
+                                                                            playbook_path=os.path.join(
+                                                                                get_ansible_path(
+                                                                                    self.cluster_model.specification.name),
+                                                                                "repository-setup.yml"), retries=5)
+
+        if repository_setup_play_result != 0:
+            return
+
         common_play_result = self.ansible_command.run_playbook_with_retries(inventory=inventory_path,
                                                                             playbook_path=os.path.join(
                                                                                 get_ansible_path(
                                                                                     self.cluster_model.specification.name),
-                                                                                "common.yml"), retries=5)
+                                                                                "common.yml"), retries=1)
         if common_play_result != 0:
             return
 
@@ -65,3 +74,12 @@ class AnsibleRunner(Step):
                                                                              to_role_name(role) + ".yml"), retries=1)
             if play_result != 0:
                 break
+
+        repository_teardown_play_result = self.ansible_command.run_playbook_with_retries(inventory=inventory_path,
+                                                                            playbook_path=os.path.join(
+                                                                                get_ansible_path(
+                                                                                    self.cluster_model.specification.name),
+                                                                                "repository-teardown.yml"), retries=1)
+
+        if repository_teardown_play_result != 0:
+            return

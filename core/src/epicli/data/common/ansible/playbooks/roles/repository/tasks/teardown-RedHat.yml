@@ -1,0 +1,11 @@
+---
+
+- name: Enable system repositories
+  shell: /tmp/{{ ansible_os_family }}/enable-system-repos.sh
+  when:
+      - not groups['kubernetes_master'][0] == inventory_hostname
+
+- name: Disable epirepo on clients
+  shell: /tmp/{{ ansible_os_family }}/disable-epirepo-client-rh.sh
+  when:
+      - not groups['kubernetes_master'][0] == inventory_hostname
