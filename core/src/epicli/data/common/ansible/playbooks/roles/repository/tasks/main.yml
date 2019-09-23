@@ -1,0 +1,15 @@
+---
+
+- name: Copy data files
+  copy:
+    src: "{{ ansible_os_family }}/"
+    dest: "/tmp/{{ ansible_os_family }}"
+
+- name: Copy repository configuration scripts
+  copy:
+    src: "{{ ansible_os_family }}/scripts/"
+    dest: "/tmp/{{ ansible_os_family }}"
+    mode: a+x
+
+- name: Configure repository and clients RedHat
+  include_tasks: "{{ repository_mode }}-{{ ansible_os_family }}.yml"
