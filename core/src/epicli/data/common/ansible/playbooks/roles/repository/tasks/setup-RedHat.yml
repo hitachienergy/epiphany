@@ -49,7 +49,7 @@
     - name: Disable active system repositories
       shell: /tmp/{{ ansible_os_family }}/disable-system-repos.sh
     - name: Setup epirepo on clients
-      shell: /tmp/{{ ansible_os_family }}/setup-epirepo-client-rh.sh {{ groups['kubernetes_master'][0] }}
+      shell: /tmp/{{ ansible_os_family }}/setup-epirepo-client-rh.sh {{ hostvars[groups['kubernetes_master'][0]]['ansible_default_ipv4']['address'] }}"
   when:
     - offline_mode == true
 
