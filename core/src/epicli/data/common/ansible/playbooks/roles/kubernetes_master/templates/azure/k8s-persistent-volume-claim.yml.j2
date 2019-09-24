@@ -1,0 +1,12 @@
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: {{ specification.storage.name }}-claim
+spec:
+  storageClassName: azurefile
+  volumeName: {{ specification.storage.name }}
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: {{ specification.storage.capacity }}Gi

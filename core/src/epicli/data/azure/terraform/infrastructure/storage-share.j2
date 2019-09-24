@@ -1,0 +1,27 @@
+#####################################################
+# DO NOT Modify by hand - Managed by Automation
+#####################################################
+#####################################################
+# This file can be used as a base template to build other Terraform files. It attempts to use as much
+# Terraform interprolation as possible by creating Terraform variables instead of changing inline
+# this approach provides an easier way to do creative looping, fetch IDs of created resources etc.
+#####################################################
+#####################################################
+# {{ specification.name }}
+#####################################################
+#####################################################
+
+resource "azurerm_storage_account" "{{ specification.storage_account_name }}" {
+  name     = "{{ specification.storage_account_name }}"
+  resource_group_name      = "${azurerm_resource_group.rg.name}"
+  location                 = "${azurerm_resource_group.rg.location}"
+  account_tier             = "Standard"
+  account_replication_type = "LRS"
+}
+
+resource "azurerm_storage_share" "{{ specification.name }}" {
+  name = "k8s"
+  resource_group_name  = "${azurerm_resource_group.rg.name}"
+  storage_account_name = "${azurerm_storage_account.{{ specification.storage_account_name }}.name}"
+  quota = "{{ specification.quota }}"
+}

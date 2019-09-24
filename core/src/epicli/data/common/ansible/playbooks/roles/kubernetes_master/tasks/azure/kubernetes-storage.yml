@@ -16,6 +16,15 @@
     group: "{{ admin_user.name }}"
     mode: 0644
 
+- name: Upload k8s persistent volume claim yaml
+  become: yes
+  template:
+    dest: "/home/{{ admin_user.name }}/k8s-persistent-volume-claim.yml"
+    src: azure/k8s-persistent-volume-claim.yml.j2
+    owner: "{{ admin_user.name }}"
+    group: "{{ admin_user.name }}"
+    mode: 0644   
+
 - name: apply secret yml
   become_user: "{{ admin_user.name }}"
   environment:
@@ -31,3 +40,11 @@
   shell: "kubectl apply -f /home/{{ admin_user.name }}/k8s-persistent-volume.yml"
   when:
     - groups['kubernetes_master'][0] == inventory_hostname
+
+- name: Apply storage claim yml
+  become_user: "{{ admin_user.name }}"
+  environment:
+    KUBECONFIG: "/home/{{ admin_user.name }}/.kube/config"
+  shell: "kubectl apply -f /home/{{ admin_user.name }}/k8s-persistent-volume-claim.yml"
+  when:
+    - groups['kubernetes_master'][0] == inventory_hostname    
