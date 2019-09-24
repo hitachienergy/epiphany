@@ -1,0 +1,9 @@
+- name: Install Rabitmq packages
+  yum:
+    name:
+      - socat
+      - logrotate
+      - erlang
+      - rabbitmq-server
+    update_cache: yes
+    state: present
