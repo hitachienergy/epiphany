@@ -8,6 +8,7 @@ from cli.engine.BuildEngine import BuildEngine
 from cli.engine.PatchEngine import PatchEngine
 from cli.engine.DeleteEngine import DeleteEngine
 from cli.engine.InitEngine import InitEngine
+from cli.engine.PrepareEngine import PrepareEngine
 from cli.helpers.Log import Log
 from cli.helpers.Config import Config
 from cli.version import VERSION
@@ -60,6 +61,7 @@ def main():
     backup_parser(subparsers)
     recovery_parser(subparsers)
     delete_parser(subparsers)
+    prepare_parser(subparsers)
 
     # check if there were any variables and display full help
     if len(sys.argv) < 2:
@@ -78,7 +80,8 @@ def main():
     config.log_type = args.log_type
     config.log_count = args.log_count
     config.validate_certs = True if args.validate_certs == 'true' else False
-    config.offline_mode = args.offline_mode
+    if 'offline_mode' in args:
+        config.offline_mode = args.offline_mode
     config.debug = args.debug
     config.auto_approve = args.auto_approve
 
@@ -201,9 +204,28 @@ def recovery_parser(subparsers):
     sub_parser.set_defaults(func=run_recovery)
 
 
+def prepare_parser(subparsers):
+    sub_parser = subparsers.add_parser('prepare', description='Creates a folder with all prerequisites to setup an Epiphany offline repository for a given OS.')
+    sub_parser.add_argument('--os', type=str, required=True, dest='os',
+                            help='The OS to prepare the offline repository for.')
+
+    def run_offline(args):
+        adjust_paths_from_output_dir()
+        with PrepareEngine(args) as engine:
+            return engine.prepare()
+
+    sub_parser.set_defaults(func=run_offline)   
+
+
 def experimental_query():
     if not query_yes_no('This is an experimental feature and could change at any time. Do you want to continue?'):
         sys.exit(0)
+
+
+def adjust_paths_from_output_dir():
+    if not os.path.exists(Config().output_dir):
+        Config().output_dir = os.getcwd()  # Default to working dir so we can at least write logs.
+    dump_config(Config())
 
 
 def adjust_paths_from_file(args):
