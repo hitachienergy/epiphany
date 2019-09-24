@@ -11,6 +11,7 @@ from cli.helpers.Step import Step
 from cli.helpers.build_saver import get_inventory_path, get_ansible_path, copy_files_recursively
 from cli.helpers.naming_helpers import to_role_name
 from cli.helpers.data_loader import DATA_FOLDER_PATH
+from cli.helpers.Config import Config
 
 
 class AnsibleRunner(Step):
@@ -42,7 +43,8 @@ class AnsibleRunner(Step):
 
         copy_files_recursively(AnsibleRunner.ANSIBLE_PLAYBOOKS_PATH, get_ansible_path(self.cluster_model.specification.name))
 
-        shutil.copy(os.path.join(dirname(dirname(inspect.getfile(os))), 'skopeo_linux'), "/tmp/epiphany_install")
+        if not Config().offline_mode:
+            shutil.copy(os.path.join(dirname(dirname(inspect.getfile(os))), 'skopeo_linux'), "/tmp/epiphany_install")
 
         # todo: install packages to run ansible on Red Hat hosts
         self.ansible_command.run_task_with_retries(hosts="all", inventory=inventory_path, module="raw",
