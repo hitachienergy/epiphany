@@ -10,24 +10,30 @@
     - groups['kubernetes_master'][0] == inventory_hostname
 
 - name: Set script path to Centos
-  set_fact:
+  set_fact: script_path="centos-7"
   when:
-    -
+    - ansible_distribution == 'CentOS'
 
 - name: Set script path to Red Hat
-  set_fact:
+  set_fact: script_path="redhat-7"
+  when:
+    - ansible_distribution == 'Red Hat Enterprise Linux'
 
 - name: Set script path to Ubuntu
-  set_fact:
+  set_fact: script_path="ubuntu-18.04"
+  when:
+    - ansible_distribution == 'Ubuntu' and "{{ ansible_distribution_version}}" == "18.04"
 
 - name: Copy data files
   copy:
-    src: "{{ ansible_os_family }}/"
+    src: "prepare/{{ script_path }}"
     dest: "/tmp/{{ ansible_os_family }}"
+  when:
+    - offline_mode == false
 
 - name: Copy repository configuration scripts
   copy:
-    src: "{{ ansible_os_family }}/scripts/"
+    src: "repository/{{ script_path }}"
     dest: "/tmp/{{ ansible_os_family }}"
     mode: a+x
 
