@@ -1,13 +1,14 @@
 import os
 import stat
 import inspect
-import shutil 
-from  os.path import dirname 
+import shutil
+from  os.path import dirname
 
 from cli.helpers.Step import Step
 from cli.helpers.data_loader import DATA_FOLDER_PATH
 from cli.helpers.Config import Config
 from cli.helpers.build_saver import copy_files_recursively
+
 
 class PrepareEngine(Step):
     PREPARE_PATH = DATA_FOLDER_PATH + '/common/ansible/playbooks/roles/repository/files/prepare'
@@ -33,7 +34,7 @@ class PrepareEngine(Step):
             raise Exception(f'Unsupported OS: {self.os}. Currently supported: {supported_os}')
 
         if not os.path.exists(skopeo_src):
-            raise Exception('Skopeo dependency not found')       
+            raise Exception('Skopeo dependency not found')
 
         # copy files to output dir
         copy_files_recursively(prepare_src, prepare_dst)
@@ -50,5 +51,3 @@ class PrepareEngine(Step):
     def make_file_executable(file):
         executable_stat = os.stat(file)
         os.chmod(file, executable_stat.st_mode | stat.S_IEXEC)
-
-    
