@@ -1,5 +1,8 @@
+import inspect
 import os
 import time
+import shutil
+from os.path import dirname
 
 from cli.engine.ansible.AnsibleCommand import AnsibleCommand
 from cli.engine.ansible.AnsibleInventoryCreator import AnsibleInventoryCreator
@@ -38,6 +41,8 @@ class AnsibleRunner(Step):
         time.sleep(10)
 
         copy_files_recursively(AnsibleRunner.ANSIBLE_PLAYBOOKS_PATH, get_ansible_path(self.cluster_model.specification.name))
+
+        shutil.copy(os.path.join(dirname(dirname(inspect.getfile(os))), 'skopeo_linux'), "/tmp/epiphany_install")
 
         # todo: install packages to run ansible on Red Hat hosts
         self.ansible_command.run_task_with_retries(hosts="all", inventory=inventory_path, module="raw",

@@ -1,0 +1,49 @@
+---
+
+- name: Copy local packages
+  copy:
+    src: /tmp/epiphany_install
+    dest: /tmp/
+    directory_mode: yes
+  when:
+    - offline_mode == true
+    - groups['kubernetes_master'][0] == inventory_hostname
+
+- name: Copy data files
+  copy:
+    src: "{{ ansible_os_family }}/"
+    dest: "/tmp/{{ ansible_os_family }}"
+
+- name: Copy repository configuration scripts
+  copy:
+    src: "{{ ansible_os_family }}/scripts/"
+    dest: "/tmp/{{ ansible_os_family }}"
+    mode: a+x
+
+- name: Create epirepo repository
+  shell: /tmp/{{ ansible_os_family }}/create-repository-rh.sh /tmp/epiphany_install {{ offline_mode }}
+  when:
+      - groups['kubernetes_master'][0] == inventory_hostname
+
+- name: Disable system repositories and setup epirepo for offline mode
+  block:
+    - name: Create active repositories list
+      shell: /tmp/{{ ansible_os_family }}/generate-enabled-system-repository-list.sh
+    - name: Disable active system repositories
+      shell: /tmp/{{ ansible_os_family }}/disable-system-repos.sh
+    - name: Setup epirepo on clients
+      shell: /tmp/{{ ansible_os_family }}/setup-epirepo-client-rh.sh {{ groups['kubernetes_master'][0] }}
+  when:
+    - offline_mode == true
+
+- name: Disable system repositories and setup epirepo for online mode
+  block:
+    - name: Create active repositories list
+      shell: /tmp/{{ ansible_os_family }}/generate-enabled-system-repository-list.sh
+    - name: Disable active system repositories
+      shell: /tmp/{{ ansible_os_family }}/disable-system-repos.sh
+    - name: Setup epirepo on clients
+      shell: /tmp/{{ ansible_os_family }}/setup-epirepo-client-rh.sh {{ groups['kubernetes_master'][0] }}
+  when:
+    - not groups['kubernetes_master'][0] == inventory_hostname
+    - offline_mode == false
