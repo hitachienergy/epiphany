@@ -2,12 +2,23 @@
 
 - name: Copy local packages
   copy:
-    src: /tmp/epiphany_install
+    src: /shared/requirements
     dest: /tmp/
     directory_mode: yes
   when:
     - offline_mode == true
     - groups['kubernetes_master'][0] == inventory_hostname
+
+- name: Set script path to Centos
+  set_fact:
+  when:
+    -
+
+- name: Set script path to Red Hat
+  set_fact:
+
+- name: Set script path to Ubuntu
+  set_fact:
 
 - name: Copy data files
   copy:
@@ -21,7 +32,7 @@
     mode: a+x
 
 - name: Create epirepo repository
-  shell: /tmp/{{ ansible_os_family }}/create-repository-rh.sh /tmp/epiphany_install {{ offline_mode }}
+  shell: /tmp/{{ ansible_os_family }}/create-repository-rh.sh /shared/requirements {{ offline_mode }}
   when:
       - groups['kubernetes_master'][0] == inventory_hostname
 

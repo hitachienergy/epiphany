@@ -242,20 +242,22 @@ remove_file() {
 }
 
 usage() {
-	echo "usage: ./$(basename $0) <download_dir>"
+	echo "usage: ./$(basename $0) <downloads_dir>"
 	echo "       ./$(basename $0) /tmp/downloads"
 	[ -z "$1" ] || exit "$1"
 }
 
 # === Start ===
 
+[ $# -gt 0 ] || usage 1 >&2
+
 # --- Global variables ---
 
 # dirs
-readonly DOWNLOAD_DIR="$1" # root directory for downloads
-readonly FILES_DIR=$DOWNLOAD_DIR/files
-readonly PACKAGES_DIR=$DOWNLOAD_DIR/packages
-readonly IMAGES_DIR=$DOWNLOAD_DIR/images
+readonly DOWNLOADS_DIR="$1" # root directory for downloads
+readonly FILES_DIR=$DOWNLOADS_DIR/files
+readonly PACKAGES_DIR=$DOWNLOADS_DIR/packages
+readonly IMAGES_DIR=$DOWNLOADS_DIR/images
 readonly OFFLINE_PREREQ_PACKAGES_DIR=$PACKAGES_DIR/offline-prereqs
 
 # files
@@ -269,8 +271,6 @@ ADDED_REPOSITORIES=()
 INSTALLED_PACKAGES=()
 
 # --- Checks ---
-
-[ $# -gt 0 ] || usage 1 >&2
 
 [ $EUID -eq 0 ] || { echo "You have to run as super user" && exit 1; }
 
