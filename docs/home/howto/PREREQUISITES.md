@@ -57,7 +57,7 @@ Where `LOCAL_DIR` should be replaced with the local path to the directory for Ep
 
 ### Run Epicli directly from OS
 
-**Note: Epicli will only run on Lixux or MacOS and not on Windows. This is because Ansible at this point in time does not work on Windows.**
+*Note: Epicli will only run on Lixux or MacOS and not on Windows. This is because Ansible at this point in time does not work on Windows.*
 
 1. To be able to run the Epicli from your local OS you have to install:
 
