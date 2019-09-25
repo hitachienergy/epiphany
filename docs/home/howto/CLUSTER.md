@@ -49,11 +49,9 @@ To setup the cluster do the following steps from the provisioning machine:
       - default-k8s-master
     ```
 
-    The `count` specifies how much machines you want to provision with this component. The `machines` tag is the array of machine names you want to install this component on. Note that the `count` and the number of `machines` defined must match. If you don't want to use a component you can set the `count` to 0 and remove the `machines` tag. FInally a machine can be used by multiple component.
+    The `count` specifies how much machines you want to provision with this component. The `machines` tag is the array of machine names you want to install this component on. Note that the `count` and the number of `machines` defined must match. If you don't want to use a component you can set the `count` to 0 and remove the `machines` tag. Finally a machine can be used by multiple component since multiple components can be installed on one machine of desired.
 
-4. Match your defined machines to machine configurations:
-
-    In the minimal configurations you will also find a bunch of `infrastructure/machine` like so:
+    You will also find a bunch of `infrastructure/machine`  definitions like below:
 
     ```yaml
     kind: infrastructure/machine
@@ -64,15 +62,15 @@ To setup the cluster do the following steps from the provisioning machine:
       ip: 192.168.100.101
     ```
 
-    Each machine name used when setting up the component layout in the point 3 must have such a configuration where the `name` tag must match with the defined one in the component. The `hostname` and `ip` fields must be filled to match the actual cluster machines you provide.
+    Each machine name used when setting up the component layout earlier must have such a configuration where the `name` tag matches with the defined one in the components. The `hostname` and `ip` fields must be filled to match the actual cluster machines you provide. Ansible will use this to match the machine to a component which in turn will determin which roles to install on the machine.
 
-5. Finally start the deployment with:
+4. Finally start the deployment with:
 
     ```shell
     epicli apply -f newcluster.yml --no-infra
     ```
 
-    This will create the inventory for Ansible based on the component/machine definitions made inside the `newcluster.yml` and let Absible deploy it. Not that the `--no-infra` is importent since it tells Epicli to skip the Terraform part since you provide the infrastructure youself.
+    This will create the inventory for Ansible based on the component/machine definitions made inside the `newcluster.yml` and let Absible deploy it. Note that the `--no-infra` is important since it tells Epicli to skip the Terraform part.
 
 ### How to create an Epiphany cluster on a cloud provider
 
