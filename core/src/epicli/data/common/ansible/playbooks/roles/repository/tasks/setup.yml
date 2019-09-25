@@ -1,36 +1,42 @@
-# TODO: selecting this script_path should be configurable later on.
-- name: Set directory name for download script
-  set_fact:
-    download_script_subdir: >-
-      {{ 'centos-7' if (ansible_distribution == 'CentOS' and ansible_distribution_major_version == '7') else
-         'redhat-7' if (ansible_distribution == 'RedHat' and ansible_distribution_major_version == '7') else
-         'ubuntu-18.04' if (ansible_distribution == 'Ubuntu' and ansible_distribution_version == '18.04') else None }}
+---
+- name: Copy files needed for downloading requirements to repository host # online mode
+  block:
+    - name: Set directory name for download script
+      set_fact:
+        download_script_subdir: >-
+          {{ 'centos-7' if (ansible_distribution == 'CentOS' and ansible_distribution_major_version == '7') else
+             'redhat-7' if (ansible_distribution == 'RedHat' and ansible_distribution_major_version == '7') else
+             'ubuntu-18.04' if (ansible_distribution == 'Ubuntu' and ansible_distribution_version == '18.04') else None }}
 
-- name: Check if OS distribution is supported
-  assert:
-    that:
-      - download_script_subdir | length > 0
-    fail_msg: "Your OS distribution is not supported"
+    - name: Check if OS distribution is supported
+      assert:
+        that:
+          - download_script_subdir | length > 0
+        fail_msg: "Your OS distribution is not supported"
 
-- name: Copy files for downloading requirements to repository host
-  copy:
-    src: "prepare/{{ download_script_subdir }}"
-    dest: "/tmp/epi-download-requirements"
+    - name: Copy files for downloading requirements to repository host
+      copy:
+        src: "prepare/{{ download_script_subdir }}/"
+        dest: "/tmp/epi-download-requirements"
+
+    - name: Make download script executable
+      file:
+        dest: /tmp/epi-download-requirements/download-requirements.sh
+        mode: a+x
   when:
     - offline_mode == false
-    - groups['kubernetes_master'][0] == inventory_hostname #TODO: dedicated host for repository in inventory
+    - groups['kubernetes_master'][0] == inventory_hostname #TODO: dedicated host for repository in Ansible inventory
 
 - name: Copy repository configuration scripts
   copy:
-    src: "repository/{{ ansible_os_family }}"
-    dest: "/tmp/prepare"
+    src: "repository/{{ ansible_os_family }}/"
+    dest: "/tmp/epi-repository-setup-scripts"
     mode: a+x
 
 - name: Copy local packages for offline installation
   copy:
     src: /shared/requirements #TODO: This needs to be configurable.
     dest: /tmp/
-    directory_mode: yes
   when:
     - offline_mode == true
     - groups['kubernetes_master'][0] == inventory_hostname
