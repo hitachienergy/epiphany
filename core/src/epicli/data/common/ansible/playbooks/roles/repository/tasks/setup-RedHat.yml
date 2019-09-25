@@ -2,26 +2,43 @@
 
 - name: Copy local packages
   copy:
-    src: /tmp/epiphany_install
+    src: /shared/requirements
     dest: /tmp/
     directory_mode: yes
   when:
     - offline_mode == true
     - groups['kubernetes_master'][0] == inventory_hostname
 
+- name: Set script path to Centos
+  set_fact: script_path="centos-7"
+  when:
+    - ansible_distribution == 'CentOS'
+
+- name: Set script path to Red Hat
+  set_fact: script_path="redhat-7"
+  when:
+    - ansible_distribution == 'Red Hat Enterprise Linux'
+
+- name: Set script path to Ubuntu
+  set_fact: script_path="ubuntu-18.04"
+  when:
+    - ansible_distribution == 'Ubuntu' and "{{ ansible_distribution_version}}" == "18.04"
+
 - name: Copy data files
   copy:
-    src: "{{ ansible_os_family }}/"
+    src: "prepare/{{ script_path }}"
     dest: "/tmp/{{ ansible_os_family }}"
+  when:
+    - offline_mode == false
 
 - name: Copy repository configuration scripts
   copy:
-    src: "{{ ansible_os_family }}/scripts/"
+    src: "repository/{{ script_path }}"
     dest: "/tmp/{{ ansible_os_family }}"
     mode: a+x
 
 - name: Create epirepo repository
-  shell: /tmp/{{ ansible_os_family }}/create-repository-rh.sh /tmp/epiphany_install {{ offline_mode }}
+  shell: /tmp/{{ ansible_os_family }}/create-repository-rh.sh /shared/requirements {{ offline_mode }}
   when:
       - groups['kubernetes_master'][0] == inventory_hostname
 
@@ -32,7 +49,7 @@
     - name: Disable active system repositories
       shell: /tmp/{{ ansible_os_family }}/disable-system-repos.sh
     - name: Setup epirepo on clients
-      shell: /tmp/{{ ansible_os_family }}/setup-epirepo-client-rh.sh {{ groups['kubernetes_master'][0] }}
+      shell: /tmp/{{ ansible_os_family }}/setup-epirepo-client-rh.sh {{ hostvars[groups['kubernetes_master'][0]]['ansible_default_ipv4']['address'] }}"
   when:
     - offline_mode == true
 

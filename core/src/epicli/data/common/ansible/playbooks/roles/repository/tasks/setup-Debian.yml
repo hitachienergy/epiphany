@@ -2,7 +2,7 @@
 
 - name: Copy local packages
   copy:
-    src: /tmp/epiphany_install
+    src: /shared/requirements
     dest: /tmp/
     directory_mode: yes
   when:
@@ -21,7 +21,7 @@
     mode: a+x
 
 - name: Create epirepo repository
-  shell: /tmp/{{ ansible_os_family }}/create-repository-rh.sh /tmp/epiphany_install {{ offline_mode }}
+  shell: /tmp/{{ ansible_os_family }}/create-repository-rh.sh /shared/requirements {{ offline_mode }}
   when:
       - groups['kubernetes_master'][0] == inventory_hostname
 
