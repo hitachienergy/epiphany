@@ -1,34 +1,30 @@
 # TODO: selecting this script_path should be configurable later on.
-- name: Set script prepare path to Centos 
-  set_fact: 
-    script_path: "centos-7"
-  when:
-    - ansible_distribution == 'CentOS'
+- name: Set directory name for download script
+  set_fact:
+    download_script_subdir: >-
+      {{ 'centos-7' if (ansible_distribution == 'CentOS' and ansible_distribution_major_version == '7') else
+         'redhat-7' if (ansible_distribution == 'RedHat' and ansible_distribution_major_version == '7') else
+         'ubuntu-18.04' if (ansible_distribution == 'Ubuntu' and ansible_distribution_version == '18.04') else None }}
 
-- name: Set script prepare path to Red Hat
-  set_fact: 
-    script_path: "redhat-7"
-  when:
-    - ansible_distribution == 'Red Hat Enterprise Linux'
+- name: Check if OS distribution is supported
+  assert:
+    that:
+      - download_script_subdir | length > 0
+    fail_msg: "Your OS distribution is not supported"
 
-- name: Set script prepare path to Ubuntu
-  set_fact: 
-    script_path: "ubuntu-18.04"
-  when:
-    - ansible_distribution == 'Ubuntu' and "{{ ansible_distribution_version }}" == "18.04"
-
-- name: Copy repository prepare scripts
+- name: Copy files for downloading requirements to repository host
   copy:
-    src: "prepare/{{ script_path }}"
-    dest: "/tmp/prepare"
+    src: "prepare/{{ download_script_subdir }}"
+    dest: "/tmp/epi-download-requirements"
   when:
     - offline_mode == false
+    - groups['kubernetes_master'][0] == inventory_hostname #TODO: dedicated host for repository in inventory
 
 - name: Copy repository configuration scripts
   copy:
     src: "repository/{{ ansible_os_family }}"
     dest: "/tmp/prepare"
-    mode: a+x    
+    mode: a+x
 
 - name: Copy local packages for offline installation
   copy:
@@ -40,4 +36,4 @@
     - groups['kubernetes_master'][0] == inventory_hostname
 
 - name: Configure repository and clients
-  include_tasks: "{{ repository_mode }}-{{ ansible_os_family }}.yml"
+  include_tasks: "setup-{{ ansible_os_family }}.yml"

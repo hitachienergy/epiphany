@@ -2,11 +2,9 @@
 # Ansible playbook for disabling/enabling repositories before/after Epiphany installation
 
 - hosts: all
-  pre_tasks:
-    - name: Set mode to setup
-      set_fact:
-        repository_mode: setup
   become: true
   become_method: sudo
-  roles:
-    - repository
+  tasks:
+    - import_role:
+        name: repository
+        tasks_from: setup
