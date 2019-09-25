@@ -1,0 +1,43 @@
+# TODO: selecting this script_path should be configurable later on.
+- name: Set script prepare path to Centos 
+  set_fact: 
+    script_path: "centos-7"
+  when:
+    - ansible_distribution == 'CentOS'
+
+- name: Set script prepare path to Red Hat
+  set_fact: 
+    script_path: "redhat-7"
+  when:
+    - ansible_distribution == 'Red Hat Enterprise Linux'
+
+- name: Set script prepare path to Ubuntu
+  set_fact: 
+    script_path: "ubuntu-18.04"
+  when:
+    - ansible_distribution == 'Ubuntu' and "{{ ansible_distribution_version }}" == "18.04"
+
+- name: Copy repository prepare scripts
+  copy:
+    src: "prepare/{{ script_path }}"
+    dest: "/tmp/prepare"
+  when:
+    - offline_mode == false
+
+- name: Copy repository configuration scripts
+  copy:
+    src: "repository/{{ ansible_os_family }}"
+    dest: "/tmp/prepare"
+    mode: a+x    
+
+- name: Copy local packages for offline installation
+  copy:
+    src: /shared/requirements #TODO: This needs to be configurable.
+    dest: /tmp/
+    directory_mode: yes
+  when:
+    - offline_mode == true
+    - groups['kubernetes_master'][0] == inventory_hostname
+
+- name: Configure repository and clients
+  include_tasks: "{{ repository_mode }}-{{ ansible_os_family }}.yml"

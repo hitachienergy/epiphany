@@ -15,7 +15,7 @@ from cli.helpers.Config import Config
 
 
 class AnsibleRunner(Step):
-    ANSIBLE_PLAYBOOKS_PATH = DATA_FOLDER_PATH + "/common/ansible/playbooks/"
+    ANSIBLE_PLAYBOOKS_PATH = DATA_FOLDER_PATH + '/common/ansible/playbooks/'
 
     def __init__(self, cluster_model, config_docs):
         super().__init__(__name__)
@@ -34,6 +34,9 @@ class AnsibleRunner(Step):
         super().__exit__(exc_type, exc_value, traceback)
         self.inventory_creator.__exit__(exc_type, exc_value, traceback)
 
+    def playbook_path(self, name):
+        return os.path.join(get_ansible_path(self.cluster_model.specification.name), f'{name}.yml')       
+
     def run(self):
         inventory_path = get_inventory_path(self.cluster_model.specification.name)
 
@@ -44,30 +47,27 @@ class AnsibleRunner(Step):
         copy_files_recursively(AnsibleRunner.ANSIBLE_PLAYBOOKS_PATH, get_ansible_path(self.cluster_model.specification.name))
 
         if not Config().offline_mode:
-            shutil.copy(os.path.join(dirname(dirname(inspect.getfile(os))), 'skopeo_linux'), "/tmp/epiphany_install")
+            shutil.copy(os.path.join(dirname(dirname(inspect.getfile(os))), 'skopeo_linux'), '/tmp/epiphany_install')
 
         # todo: install packages to run ansible on Red Hat hosts
-        self.ansible_command.run_task_with_retries(hosts="all", inventory=inventory_path, module="raw",
-                                                   args="cat /etc/lsb-release | grep -i DISTRIB_ID | grep -i ubuntu && "
-                                                        "sudo apt-get update && sudo apt-get install -y python-simplejson "
-                                                        "|| echo 'Cannot find information about Ubuntu distribution'", retries=5)
+        self.ansible_command.run_task_with_retries(hosts='all', inventory=inventory_path, module='raw',
+                                                   args='cat /etc/lsb-release | grep -i DISTRIB_ID | grep -i ubuntu && '
+                                                        'sudo apt-get update && sudo apt-get install -y python-simplejson '
+                                                        '|| echo \'Cannot find information about Ubuntu distribution\'', retries=5)
 
         self.ansible_vars_generator.run()
 
-        repository_setup_play_result = self.ansible_command.run_playbook_with_retries(inventory=inventory_path,
-                                                                            playbook_path=os.path.join(
-                                                                                get_ansible_path(
-                                                                                    self.cluster_model.specification.name),
-                                                                                "repository-setup.yml"), retries=5)
+        repository_setup_play_result = self.ansible_command.run_playbook_with_retries(
+                                                                            inventory=inventory_path,
+                                                                            playbook_path=self.playbook_path('repository-setup'),
+                                                                            retries=5)
 
         if repository_setup_play_result != 0:
             return
 
         common_play_result = self.ansible_command.run_playbook_with_retries(inventory=inventory_path,
-                                                                            playbook_path=os.path.join(
-                                                                                get_ansible_path(
-                                                                                    self.cluster_model.specification.name),
-                                                                                "common.yml"), retries=1)
+                                                                            playbook_path=self.playbook_path('common'),
+                                                                            retries=1)
         if common_play_result != 0:
             return
 
@@ -75,18 +75,15 @@ class AnsibleRunner(Step):
 
         for role in enabled_roles:
             play_result = self.ansible_command.run_playbook_with_retries(inventory=inventory_path,
-                                                                         playbook_path=os.path.join(
-                                                                             get_ansible_path(
-                                                                                 self.cluster_model.specification.name),
-                                                                             to_role_name(role) + ".yml"), retries=1)
+                                                                         playbook_path=self.playbook_path(to_role_name(role)),
+                                                                         retries=1)
             if play_result != 0:
                 break
 
-        repository_teardown_play_result = self.ansible_command.run_playbook_with_retries(inventory=inventory_path,
-                                                                            playbook_path=os.path.join(
-                                                                                get_ansible_path(
-                                                                                    self.cluster_model.specification.name),
-                                                                                "repository-teardown.yml"), retries=1)
+        repository_teardown_play_result = self.ansible_command.run_playbook_with_retries(
+                                                                            inventory=inventory_path,
+                                                                            playbook_path=self.playbook_path('repository-teardown'),
+                                                                            retries=1)
 
         if repository_teardown_play_result != 0:
             return
