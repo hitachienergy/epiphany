@@ -16,6 +16,7 @@
   - Epicli
     - [How to create an Epiphany cluster on existing infrastructure](./howto/CLUSTER.md#how-to-create-an-epiphany-cluster-on-existing-infrastructure)
     - [How to create an Epiphany cluster on a cloud provider](./howto/CLUSTER.md#how-to-create-an-epiphany-on-a-cloud-provider)
+    - [How to delete an Epiphany cluster on a cloud provider](./howto/CLUSTER.md#how-to-delete-an-epiphany-cluster-on-a-cloud-provider)
     - [How to create an offline installation of for Epiphany cluster](./howto/CLUSTER.md#how-to-create-an-offline-installation-for-an-Epiphany-cluster)
     - [Single machine cluster](./howto/CLUSTER.md#single-machine-cluster)
     - [How to scale components](./howto/CLUSTER.md#how-to-scale-components)

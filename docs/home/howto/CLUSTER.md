@@ -76,7 +76,65 @@ To setup the cluster do the following steps from the provisioning machine:
 
 ### How to create an Epiphany cluster on a cloud provider
 
-TODO
+Epicli has the ability to setup a cluster on one of the following cloud providers from scratch:
+
+- Azure
+- AWS
+
+Under the hood it uses [Terraform](https://www.terraform.io/) to create the virtual infrastructure before it applies our [Anisble](https://www.ansible.com/) playbooks to provision the machines.
+
+Before you can do this you need the following prerequisites:
+
+1. Access to one of the supported cloud providers.
+2. A set of SSH keys you provide.
+3. A provisioning machine that:
+    - Has access to the SSH keys
+    - Has Epicli running.
+      *Note. To run Epicli check the [Prerequisites](./PREREQUISITES.md)*
+
+To setup the cluster do the following steps from the provisioning machine:
+
+1. First generate a minimal data yaml file we will use to configure the cluster:
+
+    ```shell
+    epicli init -p aws/azure -n newcluster
+    ```
+
+    The `provider` flag should be either `aws` or `azure` and will tell Epicli to create a data config which contains the specific confituration for that cloud provider. If you want full control you can also add the `--full` flag which will give you a configuration with all parts of a cluster that can be configured.
+
+2. Open the configuration file and setup the  `admin_user` data:
+
+    ```yaml
+    admin_user:
+      key_path: /user/.ssh/epiphany-operations/id_rsa
+      name: operations
+    ```
+    Here you should specify the access to your SSH key and the admin user name which will be used by Anisble to provision the cluster machines.
+
+    On `Azure` the name you specify will be configured as the admin name on the VM's.
+
+    For `AWS` the admin name is already specified and is dependant on the Linux distro image you are using for the VM's:
+
+    - Username for Ubuntu Server: `ubuntu`
+    - Username for For Redhat: `ec2-user`
+
+3. Setup the cloud cloud specific parameters:
+
+    To let Terraform access the cloud provider for both `aws` or `azure` you need to setup some additional cloud configuration.
+
+    Azure:
+
+    AWS:
+
+### How to delete an Epiphany cluster on a cloud provider
+
+Epicli has a delete command to remove a cluster from a cloud provider (AWS, Azure). With Epicli run the following:
+
+  ```shell
+  epicli apply -b /path/to/cluster/build/folder
+  ```
+
+From the defined cluster build folder it will take the information needed to remove the cluster from the cloud provider.
 
 ### How to create an offline installation for an Epiphany cluster
 
