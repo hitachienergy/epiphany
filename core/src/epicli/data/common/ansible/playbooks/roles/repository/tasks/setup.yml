@@ -10,8 +10,7 @@
 
     - name: Check if OS distribution is supported
       assert:
-        that:
-          - download_script_subdir | length > 0
+        that: download_script_subdir | length > 0
         fail_msg: "Your OS distribution is not supported"
 
     - name: Copy files for downloading requirements to repository host
