@@ -358,7 +358,7 @@ kind: infrastructure/virtual-machine
 version: 0.4.0
 title: "Virtual Machine Infra"
 provider: azure
-name: rabbit-machine
+name: rabbitmq-machine
 specification:
   size: Standard_DS2_v2
   security:
