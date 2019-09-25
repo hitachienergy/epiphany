@@ -2,6 +2,8 @@
 
 # Note: Run this script as super user (sudo) and being in the same directory as the script
 
+# VERSION 1.0.0
+
 set -euo pipefail
 
 # === Functions (in alphabetical order) ===
@@ -110,23 +112,6 @@ exit_with_error() {
 	exit 1
 }
 
-# params: <result_var> <rhel_on_prem_repo_id> <extended_regexp>
-# desc: find repo id (set $1) based on given pattern
-find_rhel_repo_id() {
-	# $1 reserved for result
-	local rhel_on_prem_repo_id="$2"
-	local pattern="$3"
-	local repo_id
-
-	if yum repolist all | egrep --quiet "$pattern"; then
-		repo_id=$(yum repolist all | egrep --only-matching "$pattern")
-	else
-		exit_with_error "RHEL yum repository not found, pattern was: $pattern"
-	fi
-
-	eval $1='$repo_id'
-}
-
 # params: <result_var> <package>
 get_package_dependencies() {
 	# $1 reserved for result
@@ -178,15 +163,18 @@ get_requirements_from_group() {
 	eval $1='$requirements_from_group'
 }
 
-# params: <package_name_or_url>
+# params: <package_name_or_url> [package_name]
 install_package() {
-	local package="$1"
+	local package_name_or_url="$1"
+	local package_name="$1"
 
-	echol "Installing package: $package"
-	if yum install -y "$package"; then
-		INSTALLED_PACKAGES+=("$package")
+	[ $# -gt 1 ] && package_name="$2"
+
+	echol "Installing package: $package_name"
+	if yum install -y "$package_name_or_url"; then
+		INSTALLED_PACKAGES+=("$package_name")
 	else
-		exit_with_error "Command failed: yum install -y \"$package\""
+		exit_with_error "Command failed: yum install -y \"$package_name_or_url\""
 	fi
 }
 
@@ -311,23 +299,10 @@ for package in 'yum-utils' 'wget'; do
 	fi
 done
 
-# --- Enable RHEL repos ---
+# --- Enable OS repos ---
 
-# -> rhel-7-server-extras-rpms # for container-selinux package, this repo has different id names on clouds
-# About rhel-7-server-extras-rpms: https://access.redhat.com/solutions/3418891
-
-ON_PREM_REPO_ID='rhel-7-server-extras-rpms'
-REPO_ID_PATTERN="$ON_PREM_REPO_ID|rhui-REGION-rhel-server-extras|rhui-rhel-7-server-rhui-extras-rpms" # on-prem|AWS|Azure
-find_rhel_repo_id 'REPO_ID' "$ON_PREM_REPO_ID" "$REPO_ID_PATTERN"
-enable_repo "$REPO_ID"
-
-# -> rhel-server-rhscl-7-rpms # for Red Hat Software Collections (RHSCL), this repo has different id names on clouds
-# About rhel-server-rhscl-7-rpms: https://access.redhat.com/solutions/472793
-
-ON_PREM_REPO_ID='rhel-server-rhscl-7-rpms'
-REPO_ID_PATTERN="$ON_PREM_REPO_ID|rhui-REGION-rhel-server-rhscl|rhui-rhel-server-rhui-rhscl-7-rpms" # on-prem|AWS|Azure
-find_rhel_repo_id 'REPO_ID' "$ON_PREM_REPO_ID" "$REPO_ID_PATTERN"
-enable_repo "$REPO_ID"
+# -> CentOS-7 - Extras # for container-selinux and centos-release-scl packages
+enable_repo "extras"
 
 # --- Add repos ---
 
@@ -407,9 +382,16 @@ add_repo_as_file 'kubernetes' "$KUBERNETES_REPO_CONF"
 add_repo_as_file 'rabbitmq_erlang' "$RABBITMQ_ERLANG_REPO_CONF"
 add_repo_as_file 'rabbitmq_rabbitmq-server' "$RABBITMQ_SERVER_REPO_CONF"
 
+# -> Software Collections (SCL) https://wiki.centos.org/AdditionalResources/Repositories/SCL
+if ! is_package_installed 'centos-release-scl'; then
+	# from extras repo
+	install_package 'centos-release-scl-rh'
+	install_package 'centos-release-scl'
+fi
+
 # fping package is a part of EPEL repo
 if ! is_package_installed 'epel-release'; then
-	install_package 'https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm'
+	install_package 'https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm' 'epel-release'
 fi
 
 echol "Executing: yum -y makecache fast" && yum -y makecache fast
@@ -456,7 +438,6 @@ if [ -f $YUM_CONFIG_BACKUP_FILE_PATH ]; then
 		exit_with_error "Extracting tar failed"
 	fi
 fi
-
 
 # === Files ===
 
