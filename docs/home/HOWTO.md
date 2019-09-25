@@ -14,11 +14,11 @@
 
 - [Epiphany cluster](./howto/CLUSTER.md)
   - Epicli
-    - [How to create an Epiphany cluster on premise](./howto/CLUSTER.md#how-to-create-an-epiphany-cluster-on-premise)
-    - [How to create an offline installation of for Epiphany cluster](./howto/CLUSTER.md#how-to-create-an-offline-installation-for-an-Epiphany-cluster)
+    - [How to create an Epiphany cluster on existing infrastructure](./howto/CLUSTER.md#how-to-create-an-epiphany-cluster-on-existing-infrastructure)
     - [How to create an Epiphany cluster on a cloud provider](./howto/CLUSTER.md#how-to-create-an-epiphany-on-a-cloud-provider)
+    - [How to create an offline installation of for Epiphany cluster](./howto/CLUSTER.md#how-to-create-an-offline-installation-for-an-Epiphany-cluster)
     - [Single machine cluster](./howto/CLUSTER.md#single-machine-cluster)
-    - [How to scale Kubernetes, Kafka and RabbitMQ](./howto/CLUSTER.md#how-to-scale-kubernetes-kafka-and-rabbitmq)
+    - [How to scale components](./howto/CLUSTER.md#how-to-scale-components)
   - Legacy
     - [How to create an Epiphany legacy cluster on premise](./howto/CLUSTER.md#how-to-create-an-epiphany-legacy-cluster-on-premise)
     - [How to create an Epiphany legacy cluster on Azure](./howto/CLUSTER.md#how-to-create-an-epiphany-legacy-cluster-on-azure)

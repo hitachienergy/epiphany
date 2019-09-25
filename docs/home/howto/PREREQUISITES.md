@@ -30,8 +30,10 @@ There are 2 ways to get the image, build it locally yourself or pull it from the
 #### Pull Epicli image from the registry
 
 ```bash
-docker pull epiphanyplatform/epicli
+docker pull epiphanyplatform/epicli:TAG
 ```
+
+*Check [here](https://cloud.docker.com/u/epiphanyplatform/repository/docker/epiphanyplatform/epicli) for the available tags.*
 
 #### Running the Epicli image
 
@@ -46,8 +48,10 @@ docker run -it -v LOCAL_DIR:/shared --rm epicli
 Pulled:
 
 ```bash
-docker run -it -v LOCAL_DIR:/shared --rm epiphanyplatform/epicli
+docker run -it -v LOCAL_DIR:/shared --rm epiphanyplatform/epicli:TAG
 ```
+
+*Check [here](https://cloud.docker.com/u/epiphanyplatform/repository/docker/epiphanyplatform/epicli) for the available tags.*
 
 Where `LOCAL_DIR` should be replaced with the local path to the directory for Epicli input (SSH keys, data yamls) and output (logs, build states).
 
@@ -118,8 +122,10 @@ docker build -t epiphany-dev -f core/src/docker/deploy/Dockerfile .
 #### Pull deployment image from the registry
 
 ```bash
-docker pull epiphanyplatform/epiphany-deploy
+docker pull epiphanyplatform/epiphany-deploy:TAG
 ```
+
+*Check [here](https://cloud.docker.com/u/epiphanyplatform/repository/docker/epiphanyplatform/epiphany-deploy) for the available tags.*
 
 #### Running the deployment image
 
@@ -140,8 +146,10 @@ Pulled:
 docker run -it -v LOCAL_DATA_DIR:/epiphany/core/data \
                 -v LOCAL_BUILD_DIR:/epiphany/core/build \
                 -v LOCAL_SSH_DIR:/epiphany/core/ssh \
-                --rm epiphanyplatform/epiphany-deploy
+                --rm epiphanyplatform/epiphany-deploy:TAG
 ```
+
+*Check [here](https://cloud.docker.com/u/epiphanyplatform/repository/docker/epiphanyplatform/epiphany-deploy) for the available tags.*
 
 ```LOCAL_DATA_DIR``` should be the host input directy for your data YAMLs and certificates.  ```LOCAL_BUILD_DIR``` should be the host directory where you want the Epiphany engine to write its build output. ```LOCAL_SSH_DIR``` should be the host directory where the SSH keys are stored. If everything is ok you will be presented with a Bash prompt from which one can run the Epiphany engine. Note that when filling in your data YAMLs one needs to specify the paths from the container's point of view.
 
@@ -189,8 +197,10 @@ docker build -t epiphany-dev -f core/src/docker/dev/Dockerfile .
 #### Pull dev image from the registry
 
 ```bash
-docker pull epiphanyplatform/epiphany-dev
+docker pull epiphanyplatform/epiphany-dev:TAG
 ```
+
+*Check [here](https://cloud.docker.com/u/epiphanyplatform/repository/docker/epiphanyplatform/epicli) for the available tags.*
 
 #### Running the dev image
 
@@ -205,8 +215,10 @@ docker run -it -v LOCAL_DEV_DIR:/epiphany --rm epiphany-dev
 Pulled:
 
 ```bash
-docker run -it -v LOCAL_DEV_DIR:/epiphany --rm epiphanyplatform/epiphany-dev
+docker run -it -v LOCAL_DEV_DIR:/epiphany --rm epiphanyplatform/epiphany-dev:TAG
 ```
+
+*Check [here](https://cloud.docker.com/u/epiphanyplatform/repository/docker/epiphanyplatform/epicli) for the available tags.*
 
 Where `LOCAL_DEV_DIR` should be replaced with the local path to your local Epiphany repo. This will then be mapped to `epiphany` inside the container. If everything is ok you will be presented with a Bash prompt from which one can run the Epiphany engine while editing the core and data sources on the local OS. Note that when filling in your data YAMLs one needs to specify the paths from the container's point of view.
 

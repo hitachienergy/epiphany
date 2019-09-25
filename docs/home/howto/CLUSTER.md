@@ -1,6 +1,80 @@
 ## Epicli
 
-### How to create an Epiphany cluster on premise
+### How to create an Epiphany cluster on existing infrastructure
+
+Epicli has the ability to setup a cluster on infrastructure provided by you. These can be either bare metal machines or VM's and should meet the following requirements:
+
+*Note. Hardware requirements are not listed since this dependends on use-case, component configuration etc.*
+
+1. All the machines are connected by a network or virtual network of some sorts and can communicate which each other.
+2. Running one of the following Linux distributions:
+    - Redhat 7.4+
+    - CentOS 7.4+
+    - Ubuntu 18.04
+   Other distributions/version might work but are un-tested.
+3. All machines should be accessible through SSH with a set of SSH keys you provide and configure on each machine yourself.
+4. A provisioning machine that:
+    - Has access to the SSH keys
+    - Is on the same network as your cluster machines
+    - Has Epicli running.
+      *Note. To run Epicli check the [Prerequisites](./PREREQUISITES.md)*
+
+To setup the cluster do the following steps from the provisioning machine:
+
+1. First generate a minimal data yaml file we will use to configure the cluster:
+
+    ```shell
+    epicli init -p any -n newcluster
+    ```
+
+    The `any` provider will tell Epicli to create a minimal data config which does not contain any cloud provider related information. If you want full control you can add the `--full` flag which will give you a configuration with all parts of a cluster that can be configured.
+
+2. Open the configuration file and setup the  `admin_user` data:
+
+    ```yaml
+    admin_user:
+      key_path: /user/.ssh/epiphany-operations/id_rsa
+      name: operations
+    ```
+    Here you should specify the access to your SSH key and the admin user name which will be used by Anisble to provision the cluster machines.
+
+3. Define the components you want to install and link them to the machines you want to install them on:
+
+    Under the  `components` tag you will find a bunch of definitions like this one:
+
+    ```yaml
+    kubernetes_master:
+      count: 1
+      machines:
+      - default-k8s-master
+    ```
+
+    The `count` specifies how much machines you want to provision with this component. The `machines` tag is the array of machine names you want to install this component on. Note that the `count` and the number of `machines` defined must match. If you don't want to use a component you can set the `count` to 0 and remove the `machines` tag. FInally a machine can be used by multiple component.
+
+4. Match your defined machines to machine configurations:
+
+    In the minimal configurations you will also find a bunch of `infrastructure/machine` like so:
+
+    ```yaml
+    kind: infrastructure/machine
+    name: default-k8s-master
+    provider: any
+    specification:
+      hostname: master
+      ip: 192.168.100.101
+    ```
+
+    Each machine name used when setting up the component layout in the point 3 must have such a configuration where the `name` tag must match with the defined one in the component. The `hostname` and `ip` fields must be filled to match the actual cluster machines you provide.
+
+5. Finally start the deployment with:
+
+    ```shell
+    epicli apply -f newcluster.yml --no-infra
+    ```
+
+    This will create the inventory for Ansible based on the component/machine definitions made inside the `newcluster.yml` and let Absible deploy it. Not that the `--no-infra` is importent since it tells Epicli to skip the Terraform part since you provide the infrastructure youself.
+
+### How to create an Epiphany cluster on a cloud provider
 
 TODO
 
@@ -8,15 +82,11 @@ TODO
 
 TODO
 
-### How to create an Epiphany cluster on a cloud provider
-
-TODO
-
 ### Single machine cluster
 
 TODO
 
-### How to scale Kubernetes, Kafka and RabbitMQ
+### How to scale components
 
 TODO
 
@@ -27,7 +97,7 @@ TODO
 0. Pull `core` repository and if needed `data` repository (contains data.yaml files that can be used as example or base for creating your own data.yaml).
 
 1. Prepare your VM/Metal servers:
-    1. Install one of supported OS: RedHat 7.4+, Ubuntu 16.04+
+    1. Install one of supported OS: RedHat 7.4+, Ubuntu 18.04+
     2. Create user account with sudo privileges and nopasswd that will use rsa key for login.
     3. Assign static IP addresses for each of the machines - those addresses should not change after cluster creation.
     4. Assign hostnames for machines.
@@ -200,7 +270,7 @@ Scaling Kafka looks exactly the same like scaling Kubernetes. Once changed `coun
 
 To add new Kafka broker to non-Azure deployment looks the same as adding new Kubernetes node.
 
-### Build artifacts
+## Build artifacts
 
 Epiphany engine produce build artifacts during each deployment. Those artifacts contains:
 
@@ -214,7 +284,7 @@ Artifacts contains sensitive data so it is important to keep it in safe place li
 
 Epiphany creates (or use if you don't specified it to create) service principal account which can manage all resources in subscription, please store build artifacts securely.
 
-### Kafka replication and partition setting
+## Kafka replication and partition setting
 
 When planning Kafka installation you have to think about number of partitions and replicas since it is strongly related to throughput of Kafka and its reliability. By default Kafka's `replicas` number is set to 1 - you should change it in `core/src/ansible/roles/kafka/defaults` in order to have partitions replicated to many virtual machines.  
 
@@ -227,6 +297,6 @@ When planning Kafka installation you have to think about number of partitions an
 
 You can read more [here](https://www.confluent.io/blog/how-choose-number-topics-partitions-kafka-cluster) about planning number of partitions.
 
-### RabbitMQ installation and setting
+## RabbitMQ installation and setting
 
 To install RabbitMQ in single mode just add rabbitmq role to your data.yaml for your server and in general roles section. All configuration on RabbitMQ - e.g. user other than guest creation should be performed manually.
