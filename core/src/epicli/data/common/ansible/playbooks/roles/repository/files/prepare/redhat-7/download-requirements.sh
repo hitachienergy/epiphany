@@ -2,6 +2,8 @@
 
 # Note: Run this script as super user (sudo) and being in the same directory as the script
 
+# VERSION 1.0.0
+
 set -euo pipefail
 
 # === Functions (in alphabetical order) ===
@@ -178,15 +180,18 @@ get_requirements_from_group() {
 	eval $1='$requirements_from_group'
 }
 
-# params: <package_name_or_url>
+# params: <package_name_or_url> [package_name]
 install_package() {
-	local package="$1"
+	local package_name_or_url="$1"
+	local package_name="$1"
 
-	echol "Installing package: $package"
-	if yum install -y "$package"; then
-		INSTALLED_PACKAGES+=("$package")
+	[ $# -gt 1 ] && package_name="$2"
+
+	echol "Installing package: $package_name"
+	if yum install -y "$package_name_or_url"; then
+		INSTALLED_PACKAGES+=("$package_name")
 	else
-		exit_with_error "Command failed: yum install -y \"$package\""
+		exit_with_error "Command failed: yum install -y \"$package_name_or_url\""
 	fi
 }
 
@@ -409,7 +414,7 @@ add_repo_as_file 'rabbitmq_rabbitmq-server' "$RABBITMQ_SERVER_REPO_CONF"
 
 # fping package is a part of EPEL repo
 if ! is_package_installed 'epel-release'; then
-	install_package 'https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm'
+	install_package 'https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm' 'epel-release'
 fi
 
 echol "Executing: yum -y makecache fast" && yum -y makecache fast
@@ -456,7 +461,6 @@ if [ -f $YUM_CONFIG_BACKUP_FILE_PATH ]; then
 		exit_with_error "Extracting tar failed"
 	fi
 fi
-
 
 # === Files ===
 
