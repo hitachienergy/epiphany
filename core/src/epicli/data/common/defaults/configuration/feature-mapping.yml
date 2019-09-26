@@ -20,7 +20,7 @@ specification:
       enabled: yes
     - name: grafana
       enabled: yes
-    - name: yesde-exporter
+    - name: node-exporter
       enabled: yes
     - name: jmx-exporter
       enabled: yes
