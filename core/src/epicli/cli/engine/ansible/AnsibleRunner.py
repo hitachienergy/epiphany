@@ -47,7 +47,7 @@ class AnsibleRunner(Step):
         copy_files_recursively(AnsibleRunner.ANSIBLE_PLAYBOOKS_PATH, get_ansible_path(self.cluster_model.specification.name))
 
         # copy skopeo so Ansible can move it to the repositry machine
-        if not Config().offline_mode:
+        if not Config().offline_requirements:
             shutil.copy(os.path.join(dirname(dirname(inspect.getfile(os))), 'skopeo_linux'), '/tmp')
 
         # todo: install packages to run ansible on Red Hat hosts

@@ -44,7 +44,7 @@ class PrepareEngine(Step):
         self.make_file_executable(os.path.join(prepare_dst, 'skopeo_linux'))
         self.make_file_executable(os.path.join(prepare_dst, 'download-requirements.sh'))
 
-        self.logger.info(f'Prepared scripts for generating the offline repository in: {prepare_dst}')
+        self.logger.info(f'Prepared scripts for generating the offline requirements in: {prepare_dst}')
         return 0
 
     @staticmethod

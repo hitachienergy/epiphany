@@ -80,8 +80,8 @@ def main():
     config.log_type = args.log_type
     config.log_count = args.log_count
     config.validate_certs = True if args.validate_certs == 'true' else False
-    if 'offline_mode' in args:
-        config.offline_mode = args.offline_mode
+    if not args.offline_requirements is None:
+        config.offline_requirements = args.offline_requirements
     config.debug = args.debug
     config.auto_approve = args.auto_approve
 
@@ -118,8 +118,8 @@ def apply_parser(subparsers):
                             help='File with infrastructure/configuration definitions to use.')
     sub_parser.add_argument('--no-infra', dest='no_infra', action="store_true",
                             help='Skip infrastructure provisioning.')
-    sub_parser.add_argument('--offline-mode', dest='offline_mode', action="store_true",
-                            help='Should Epiphany run with offline packages.')
+    sub_parser.add_argument('--offline-requirements', dest='offline_requirements', type=str,
+                            help='Path to the folder with pre-prepared offline requirements.')
 
     def run_apply(args):
         adjust_paths_from_file(args)
@@ -205,16 +205,16 @@ def recovery_parser(subparsers):
 
 
 def prepare_parser(subparsers):
-    sub_parser = subparsers.add_parser('prepare', description='Creates a folder with all prerequisites to setup an Epiphany offline repository for a given OS.')
+    sub_parser = subparsers.add_parser('prepare', description='Creates a folder with all prerequisites to setup the offline requirements to install a cluster offline.')
     sub_parser.add_argument('--os', type=str, required=True, dest='os',
-                            help='The OS to prepare the offline repository for.')
+                            help='The OS to prepare the offline requirements for.')
 
-    def run_offline(args):
+    def run_prepare(args):
         adjust_paths_from_output_dir()
         with PrepareEngine(args) as engine:
             return engine.prepare()
 
-    sub_parser.set_defaults(func=run_offline)   
+    sub_parser.set_defaults(func=run_prepare)   
 
 
 def experimental_query():
