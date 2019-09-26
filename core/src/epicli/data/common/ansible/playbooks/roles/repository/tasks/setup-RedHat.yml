@@ -1,28 +1,19 @@
 ---
 - name: Create epirepo repository
-  shell: /tmp/{{ ansible_os_family }}/create-repository-rh.sh /shared/requirements {{ offline_mode }}
+  shell: >-
+    /tmp/epi-repository-setup-scripts/create-repository.sh /var/www/html/epirepo {{ offline_mode }} |
+    tee /tmp/epi-repository-setup-scripts/create-repository.log
   when:
-      - groups['kubernetes_master'][0] == inventory_hostname
+    - groups['kubernetes_master'][0] == inventory_hostname
+    - not custom_repository_url
 
-- name: Disable system repositories and setup epirepo for offline mode
+- name: Disable system repositories and setup epirepo
   block:
     - name: Create active repositories list
-      shell: /tmp/{{ ansible_os_family }}/generate-enabled-system-repository-list.sh
+      shell: /tmp/epi-repository-setup-scripts/create-enabled-system-repositories-list.sh
     - name: Disable active system repositories
-      shell: /tmp/{{ ansible_os_family }}/disable-system-repos.sh
+      shell: /tmp/epi-repository-setup-scripts/disable-system-repos.sh
     - name: Setup epirepo on clients
-      shell: /tmp/{{ ansible_os_family }}/setup-epirepo-client-rh.sh {{ hostvars[groups['kubernetes_master'][0]]['ansible_default_ipv4']['address'] }}"
-  when:
-    - offline_mode == true
-
-- name: Disable system repositories and setup epirepo for online mode
-  block:
-    - name: Create active repositories list
-      shell: /tmp/{{ ansible_os_family }}/generate-enabled-system-repository-list.sh
-    - name: Disable active system repositories
-      shell: /tmp/{{ ansible_os_family }}/disable-system-repos.sh
-    - name: Setup epirepo on clients
-      shell: /tmp/{{ ansible_os_family }}/setup-epirepo-client-rh.sh {{ groups['kubernetes_master'][0] }}
-  when:
-    - not groups['kubernetes_master'][0] == inventory_hostname
-    - offline_mode == false
+      shell: >-
+        /tmp/epi-repository-setup-scripts/setup-epirepo-client.sh {{ repository_url }} |
+        tee /tmp/epi-repository-setup-scripts/setup-epirepo-client.log
