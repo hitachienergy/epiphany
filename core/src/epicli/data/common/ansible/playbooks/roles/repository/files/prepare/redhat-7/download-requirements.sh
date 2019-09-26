@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-# VERSION 1.0.0
+# VERSION 1.0.1
 
 set -euo pipefail
 
@@ -90,7 +90,7 @@ download_packages() {
 }
 
 echol() {
-	echo -e "$1" | tee --append $LOG_FILE_PATH
+	echo -e "$1" |& tee --append $LOG_FILE_PATH
 }
 
 # params: <repo_id>
