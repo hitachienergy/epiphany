@@ -51,9 +51,8 @@ class AnsibleVarsGenerator(Step):
         main_vars = ObjDict()
         main_vars = self.add_admin_user_name(main_vars)
         main_vars = self.add_validate_certs(main_vars)
-        main_vars = self.add_dependencies_info(main_vars)
         main_vars = self.add_shared_config(main_vars)
-        main_vars = self.add_offline_mode(main_vars)
+        main_vars = self.add_offline_requirements(main_vars)
 
         vars_dir = os.path.join(ansible_dir, 'group_vars')
         if not os.path.exists(vars_dir):
@@ -66,42 +65,20 @@ class AnsibleVarsGenerator(Step):
             dump(main_vars, stream)
 
     def add_admin_user_name(self, document):
-        if document is None:
-            raise Exception('Config is empty for: ' + 'group_vars/all.yml')
-
         document['admin_user'] = self.cluster_model.specification.admin_user
         return document
 
     def add_validate_certs(self, document):
-        if document is None:
-            raise Exception('Config is empty for: ' + 'group_vars/all.yml')
-
         document['validate_certs'] = Config().validate_certs
-
         return document
 
-    def add_offline_mode(self, document):
-        if document is None:
-            raise Exception('Config is empty for: ' + 'group_vars/all.yml')
-
-        document['offline_mode'] = Config().offline_mode
-
-        return document
-
-    def add_dependencies_info(self, document):
-        if document is None:
-            raise Exception('Config is empty for: ' + 'group_vars/all.yml')
-        dependencies = select_first(self.config_docs, lambda x: x.kind == 'configuration/dependencies')
-        document['dependencies'] = dependencies.specification
-
+    def add_offline_requirements(self, document):
+        document['offline_requirements'] = Config().offline_requirements
         return document
 
     def add_shared_config(self, document):
-        if document is None:
-            raise Exception('Config is empty for: ' + 'group_vars/all.yml')
         shared_config_doc = select_first(self.config_docs, lambda x: x.kind == 'configuration/shared-config')
         document.update(shared_config_doc.specification)
-
         return document
 
     def add_provider_info(self, document):

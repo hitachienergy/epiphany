@@ -19,7 +19,7 @@ class Config:
             self._validate_certs = True
             self._debug = False
             self._auto_approve = False
-            self._offline_mode = False
+            self._offline_requirements = ''
 
         @property
         def docker_cli(self):
@@ -107,13 +107,16 @@ class Config:
                 self._auto_approve = auto_approve
 
         @property
-        def offline_mode(self):
-            return self._offline_mode
+        def offline_requirements(self):
+            return self._offline_requirements
 
-        @offline_mode.setter
-        def offline_mode(self, offline_mode):
-            if not offline_mode is None:
-                self._offline_mode = offline_mode
+        @offline_requirements.setter
+        def offline_requirements(self, offline_requirements):
+            if not offline_requirements is None:
+                # To make sure Ansible copies the content of the folder the the repository host.
+                if not offline_requirements.endswith('/'):
+                    offline_requirements =  f'{offline_requirements}/'
+                self._offline_requirements = offline_requirements
 
     instance = None
 
