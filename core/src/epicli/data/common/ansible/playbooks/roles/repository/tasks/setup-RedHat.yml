@@ -1,7 +1,7 @@
 ---
 - name: Create epirepo repository
   shell: >-
-    /tmp/epi-repository-setup-scripts/create-repository.sh /var/www/html/epirepo {{ offline_mode }} |
+    /tmp/epi-repository-setup-scripts/create-repository.sh /var/www/html/epirepo {{ offline_mode }} |&
     tee /tmp/epi-repository-setup-scripts/create-repository.log
   when:
     - groups['kubernetes_master'][0] == inventory_hostname
@@ -15,5 +15,5 @@
       shell: /tmp/epi-repository-setup-scripts/disable-system-repos.sh
     - name: Setup epirepo on clients
       shell: >-
-        /tmp/epi-repository-setup-scripts/setup-epirepo-client.sh {{ repository_url }} |
+        /tmp/epi-repository-setup-scripts/setup-epirepo-client.sh {{ repository_url }} |&
         tee /tmp/epi-repository-setup-scripts/setup-epirepo-client.log
