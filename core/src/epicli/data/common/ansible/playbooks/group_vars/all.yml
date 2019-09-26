@@ -1,2 +1,2 @@
-local_repository_url: "http://{{ hostvars[groups['kubernetes_master'][0]]['ansible_default_ipv4']['address'] }}"
+local_repository_url: "http://{{ hostvars[groups['kubernetes_master'][0]]['ansible_default_ipv4']['address'] }}/epirepo"
 repository_url: "{{ custom_repository_url | default(local_repository_url, true) }}"
