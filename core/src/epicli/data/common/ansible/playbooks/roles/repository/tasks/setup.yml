@@ -1,4 +1,12 @@
 ---
+- name: Set mode
+  set_fact:
+    offline_mode: "{{ offline_requirements | length | bool }}"
+
+- name: Print mode
+  debug:
+    var: offline_mode
+
 - name: Copy files needed for downloading requirements to repository host # online mode
   block:
     - name: Set directory name for download script
@@ -16,15 +24,26 @@
     - name: Copy files for downloading requirements to repository host
       copy:
         src: "prepare/{{ download_script_subdir }}/"
-        dest: "/tmp/epi-download-requirements"
+        dest: /tmp/epi-download-requirements
+
+    - name: Copy skopeo binary to repository host
+      copy:
+        src: /tmp/skopeo_linux
+        dest: /tmp/epi-download-requirements
+        mode: a+x
 
     - name: Make download script executable
       file:
         dest: /tmp/epi-download-requirements/download-requirements.sh
         mode: a+x
+
+    - name: Download Epiphany requirements
+      include_tasks: download-requirements.yml
+
   when:
-    - offline_mode == false
+    - not offline_mode
     - groups['kubernetes_master'][0] == inventory_hostname #TODO: dedicated host for repository in Ansible inventory
+    - not custom_repository_url
 
 - name: Copy repository configuration scripts
   copy:
@@ -32,13 +51,14 @@
     dest: "/tmp/epi-repository-setup-scripts"
     mode: a+x
 
-- name: Copy local packages for offline installation
+- name: Copy requirements for offline installation (epi-repo) to repository host
   copy:
-    src: /shared/requirements #TODO: This needs to be configurable.
-    dest: /tmp/
+    src: /shared/epi-repo/ #TODO: This needs to be configurable
+    dest: /var/www/html/epi-repo
   when:
-    - offline_mode == true
+    - offline_mode
     - groups['kubernetes_master'][0] == inventory_hostname
+    - not custom_repository_url
 
 - name: Configure repository and clients
   include_tasks: "setup-{{ ansible_os_family }}.yml"
