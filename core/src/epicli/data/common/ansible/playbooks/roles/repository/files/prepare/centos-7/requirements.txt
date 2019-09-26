@@ -1,4 +1,3 @@
-# VERSION 0.0.8
 # Put this file in the same directory as download script
 
 [packages-offline-prereqs]

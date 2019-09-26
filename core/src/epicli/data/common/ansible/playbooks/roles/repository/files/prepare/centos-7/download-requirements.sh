@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-# Note: Run this script as super user (sudo) and being in the same directory as the script
+# VERSION 1.0.0
 
 set -euo pipefail
 
@@ -75,8 +75,8 @@ download_image() {
 	[[ ! -f $dest_path ]] || remove_file "$dest_path"
 
 	echol "Downloading image: $image"
-	./skopeo_linux --insecure-policy copy docker://$image_name docker-archive:$dest_path:$repository:$tag ||
-		exit_with_error "skopeo failed, command was: ./skopeo_linux --insecure-policy copy docker://$image_name docker-archive:$dest_path:$repository:$tag"
+	$SKOPEO_BIN --insecure-policy copy docker://$image_name docker-archive:$dest_path:$repository:$tag ||
+		exit_with_error "skopeo failed, command was: $SKOPEO_BIN --insecure-policy copy docker://$image_name docker-archive:$dest_path:$repository:$tag"
 }
 
 # params: <dest_dir> <package_1> ... [package_N]
@@ -91,7 +91,7 @@ download_packages() {
 }
 
 echol() {
-	echo -e "$1" | tee --append $LOG_FILE_NAME
+	echo -e "$1" | tee --append $LOG_FILE_PATH
 }
 
 # params: <repo_id>
@@ -108,23 +108,6 @@ enable_repo() {
 exit_with_error() {
 	echol "ERROR: $1"
 	exit 1
-}
-
-# params: <result_var> <rhel_on_prem_repo_id> <extended_regexp>
-# desc: find repo id (set $1) based on given pattern
-find_rhel_repo_id() {
-	# $1 reserved for result
-	local rhel_on_prem_repo_id="$2"
-	local pattern="$3"
-	local repo_id
-
-	if yum repolist all | egrep --quiet "$pattern"; then
-		repo_id=$(yum repolist all | egrep --only-matching "$pattern")
-	else
-		exit_with_error "RHEL yum repository not found, pattern was: $pattern"
-	fi
-
-	eval $1='$repo_id'
 }
 
 # params: <result_var> <package>
@@ -163,13 +146,13 @@ get_package_with_version() {
 	eval $1='$query_output'
 }
 
-# params: <result_var> <group_name> <requirements_file_name>
+# params: <result_var> <group_name> <requirements_file_path>
 get_requirements_from_group() {
 	# $1 reserved for result
 	local group_name="$2"
-	local requirements_file_name="$3"
+	local requirements_file_path="$3"
 
-	local all_requirements=$(grep --invert-match '^#' "$requirements_file_name")
+	local all_requirements=$(grep --invert-match '^#' "$requirements_file_path")
 	local requirements_from_group=$(awk "/^$/ {next}; /\[${group_name}\]/ {f=1; next}; /^\[/ {f=0}; f {print \$0}" <<< "$all_requirements") ||
 		exit_with_error "Function get_requirements_from_group failed for group: $group_name"
 
@@ -178,15 +161,18 @@ get_requirements_from_group() {
 	eval $1='$requirements_from_group'
 }
 
-# params: <package_name_or_url>
+# params: <package_name_or_url> [package_name]
 install_package() {
-	local package="$1"
+	local package_name_or_url="$1"
+	local package_name="$1"
 
-	echol "Installing package: $package"
-	if yum install -y "$package"; then
-		INSTALLED_PACKAGES+=("$package")
+	[ $# -gt 1 ] && package_name="$2"
+
+	echol "Installing package: $package_name"
+	if yum install -y "$package_name_or_url"; then
+		INSTALLED_PACKAGES+=("$package_name")
 	else
-		exit_with_error "Command failed: yum install -y \"$package\""
+		exit_with_error "Command failed: yum install -y \"$package_name_or_url\""
 	fi
 }
 
@@ -259,12 +245,15 @@ readonly FILES_DIR=$DOWNLOADS_DIR/files
 readonly PACKAGES_DIR=$DOWNLOADS_DIR/packages
 readonly IMAGES_DIR=$DOWNLOADS_DIR/images
 readonly OFFLINE_PREREQ_PACKAGES_DIR=$PACKAGES_DIR/offline-prereqs
+readonly SCRIPT_DIR=$(dirname $(readlink -f $0)) # want absolute path
 
 # files
-readonly REQUIREMENTS_FILE_NAME=requirements.txt
-LOG_FILE_NAME=$(basename $0); readonly LOG_FILE_NAME=${LOG_FILE_NAME/sh/log}
-YUM_CONFIG_BACKUP_FILE_PATH=./yum-config-backup.tar
-readonly YUM_CONFIG_BACKUP_FILE_PATH=$(readlink -f "$YUM_CONFIG_BACKUP_FILE_PATH") # convert to absolute path
+readonly REQUIREMENTS_FILE_PATH=$SCRIPT_DIR/requirements.txt
+readonly SCRIPT_FILE_NAME=$(basename $0)
+readonly LOG_FILE_NAME=${SCRIPT_FILE_NAME/sh/log}
+readonly LOG_FILE_PATH=$SCRIPT_DIR/$LOG_FILE_NAME
+readonly YUM_CONFIG_BACKUP_FILE_PATH=$SCRIPT_DIR/yum-config-backup.tar
+readonly SKOPEO_BIN=$SCRIPT_DIR/skopeo_linux
 
 # others
 ADDED_REPOSITORIES=()
@@ -274,16 +263,17 @@ INSTALLED_PACKAGES=()
 
 [ $EUID -eq 0 ] || { echo "You have to run as super user" && exit 1; }
 
-# Check if requirements file exists
-[[ -f ./$REQUIREMENTS_FILE_NAME ]] || exit_with_error "File not found in the current directory: $REQUIREMENTS_FILE_NAME"
+[[ -f $REQUIREMENTS_FILE_PATH ]] || exit_with_error "File not found: $REQUIREMENTS_FILE_PATH"
+[[ -f $SKOPEO_BIN ]] || exit_with_error "File not found: $SKOPEO_BIN"
+[[ -x $SKOPEO_BIN ]] || exit_with_error "$SKOPEO_BIN have to be executable"
 
 # --- Parse requirements file ---
 
 # Requirements are grouped using sections: [packages-offline-prereqs], [packages], [files], [images]
-get_requirements_from_group 'OFFLINE_PREREQ_PACKAGES' 'packages-offline-prereqs' "$REQUIREMENTS_FILE_NAME"
-get_requirements_from_group 'PACKAGES'                'packages'                 "$REQUIREMENTS_FILE_NAME"
-get_requirements_from_group 'FILES'                   'files'                    "$REQUIREMENTS_FILE_NAME"
-get_requirements_from_group 'IMAGES'                  'images'                   "$REQUIREMENTS_FILE_NAME"
+get_requirements_from_group 'OFFLINE_PREREQ_PACKAGES' 'packages-offline-prereqs' "$REQUIREMENTS_FILE_PATH"
+get_requirements_from_group 'PACKAGES'                'packages'                 "$REQUIREMENTS_FILE_PATH"
+get_requirements_from_group 'FILES'                   'files'                    "$REQUIREMENTS_FILE_PATH"
+get_requirements_from_group 'IMAGES'                  'images'                   "$REQUIREMENTS_FILE_PATH"
 
 # === Packages ===
 
@@ -311,23 +301,10 @@ for package in 'yum-utils' 'wget'; do
 	fi
 done
 
-# --- Enable RHEL repos ---
+# --- Enable OS repos ---
 
-# -> rhel-7-server-extras-rpms # for container-selinux package, this repo has different id names on clouds
-# About rhel-7-server-extras-rpms: https://access.redhat.com/solutions/3418891
-
-ON_PREM_REPO_ID='rhel-7-server-extras-rpms'
-REPO_ID_PATTERN="$ON_PREM_REPO_ID|rhui-REGION-rhel-server-extras|rhui-rhel-7-server-rhui-extras-rpms" # on-prem|AWS|Azure
-find_rhel_repo_id 'REPO_ID' "$ON_PREM_REPO_ID" "$REPO_ID_PATTERN"
-enable_repo "$REPO_ID"
-
-# -> rhel-server-rhscl-7-rpms # for Red Hat Software Collections (RHSCL), this repo has different id names on clouds
-# About rhel-server-rhscl-7-rpms: https://access.redhat.com/solutions/472793
-
-ON_PREM_REPO_ID='rhel-server-rhscl-7-rpms'
-REPO_ID_PATTERN="$ON_PREM_REPO_ID|rhui-REGION-rhel-server-rhscl|rhui-rhel-server-rhui-rhscl-7-rpms" # on-prem|AWS|Azure
-find_rhel_repo_id 'REPO_ID' "$ON_PREM_REPO_ID" "$REPO_ID_PATTERN"
-enable_repo "$REPO_ID"
+# -> CentOS-7 - Extras # for container-selinux and centos-release-scl packages
+enable_repo 'extras'
 
 # --- Add repos ---
 
@@ -407,9 +384,16 @@ add_repo_as_file 'kubernetes' "$KUBERNETES_REPO_CONF"
 add_repo_as_file 'rabbitmq_erlang' "$RABBITMQ_ERLANG_REPO_CONF"
 add_repo_as_file 'rabbitmq_rabbitmq-server' "$RABBITMQ_SERVER_REPO_CONF"
 
+# -> Software Collections (SCL) https://wiki.centos.org/AdditionalResources/Repositories/SCL
+if ! is_package_installed 'centos-release-scl'; then
+	# from extras repo
+	install_package 'centos-release-scl-rh'
+	install_package 'centos-release-scl'
+fi
+
 # fping package is a part of EPEL repo
 if ! is_package_installed 'epel-release'; then
-	install_package 'https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm'
+	install_package 'https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm' 'epel-release'
 fi
 
 echol "Executing: yum -y makecache fast" && yum -y makecache fast
@@ -439,7 +423,7 @@ done
 
 # --- Clean up yum repos ---
 
-if [ ${#ADDED_REPOSITORIES[@]} -gt 0 ]; then
+if [[ ${#ADDED_REPOSITORIES[@]} -gt 0 ]]; then
 	remove_added_repos "${ADDED_REPOSITORIES[@]}"
 fi
 
@@ -456,7 +440,6 @@ if [ -f $YUM_CONFIG_BACKUP_FILE_PATH ]; then
 		exit_with_error "Extracting tar failed"
 	fi
 fi
-
 
 # === Files ===
 
@@ -478,7 +461,7 @@ for image in $IMAGES; do
 done
 
 # --- Clean up ---
-if [ ${#INSTALLED_PACKAGES[@]} -gt 0 ]; then
+if [[ ${#INSTALLED_PACKAGES[@]} -gt 0 ]]; then
 	for package in "${INSTALLED_PACKAGES[@]}"; do
 		remove_package "$package"
 	done
