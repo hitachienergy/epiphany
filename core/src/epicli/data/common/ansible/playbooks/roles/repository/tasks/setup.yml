@@ -7,7 +7,7 @@
   debug:
     var: offline_mode
 
-- name: Copy files needed for downloading requirements to repository host # online mode
+- name: Download Epiphany requirements on repository host # online mode
   block:
     - name: Set directory name for download script
       set_fact:

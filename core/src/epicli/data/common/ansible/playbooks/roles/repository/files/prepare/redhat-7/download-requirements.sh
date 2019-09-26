@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-# VERSION 1.0.0
+# VERSION 1.0.3
 
 set -euo pipefail
 
@@ -60,6 +60,24 @@ create_directory() {
 	fi
 }
 
+# params: <file_url> <dest_dir>
+download_file() {
+	local file_url="$1"
+	local dest_dir="$2"
+
+	local file_name=$(basename "$file_url")
+	local dest_path="$dest_dir/$file_name"
+
+	# wget with --timestamping sometimes failes on AWS with ERROR 403: Forbidden
+	# so we remove existing file to overwrite it
+	[[ ! -f $dest_path ]] || remove_file "$dest_path"
+
+	echol "Downloading file: $file"
+	
+	wget --no-verbose --directory-prefix="$dest_dir" "$file_url" ||
+		exit_with_error "Command failed: wget --no-verbose --directory-prefix=\"$dest_dir\" \"$file_url\""
+}
+
 # params: <image_name> <dest_dir>
 download_image() {
 	local image_name="$1"
@@ -90,7 +108,7 @@ download_packages() {
 }
 
 echol() {
-	echo -e "$1" | tee --append $LOG_FILE_PATH
+	echo -e "$1" |& tee --append $LOG_FILE_PATH
 }
 
 # params: <repo_id>
@@ -136,7 +154,7 @@ get_package_dependencies() {
 
 	if [[ -z $query_output ]]; then
 		echol "No dependencies found for package: $package"
-	elif grep -i 'error' <<< "$query_output"; then
+	elif grep --ignore-case --perl-regexp '\b(?<!-)error(?!-)\b' <<< "$query_output"; then
 		exit_with_error "repoquery failed for dependencies of package: $package, output was: $query_output"
 	fi
 
@@ -153,7 +171,7 @@ get_package_with_version() {
 
 	# yumdownloader doesn't handle error codes properly if repoquery gets empty output
 	[[ -n $query_output ]] || exit_with_error "repoquery failed: package $package not found"
-	if grep -i 'error' <<< "$query_output"; then
+	if grep --ignore-case --perl-regexp '\b(?<!-)error(?!-)\b' <<< "$query_output"; then
 		exit_with_error "repoquery failed for package: $package, output was: $query_output"
 	else
 		echol "Found: $query_output"
@@ -168,7 +186,7 @@ get_requirements_from_group() {
 	local group_name="$2"
 	local requirements_file_path="$3"
 
-	local all_requirements=$(grep --invert-match '^#' "$requirements_file_path")
+	local all_requirements=$(grep --only-matching '^[^#]*' "$requirements_file_path")
 	local requirements_from_group=$(awk "/^$/ {next}; /\[${group_name}\]/ {f=1; next}; /^\[/ {f=0}; f {print \$0}" <<< "$all_requirements") ||
 		exit_with_error "Function get_requirements_from_group failed for group: $group_name"
 
@@ -480,9 +498,7 @@ fi
 create_directory "$FILES_DIR"
 
 for file in $FILES; do
-	echol "Downloading file: $file"
-	wget --timestamping --no-verbose  --directory-prefix="$FILES_DIR" "$file" ||
-		exit_with_error "Command failed: wget --recursive --no-verbose --directory-prefix=\"$FILES_DIR\" \"$file\""
+	download_file "$file" "$FILES_DIR"
 done
 
 # === Images ===
