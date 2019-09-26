@@ -46,8 +46,9 @@ class AnsibleRunner(Step):
 
         copy_files_recursively(AnsibleRunner.ANSIBLE_PLAYBOOKS_PATH, get_ansible_path(self.cluster_model.specification.name))
 
+        # copy skopeo so Ansible can move it to the repositry machine
         if not Config().offline_mode:
-            shutil.copy(os.path.join(dirname(dirname(inspect.getfile(os))), 'skopeo_linux'), '/tmp/epiphany_install')
+            shutil.copy(os.path.join(dirname(dirname(inspect.getfile(os))), 'skopeo_linux'), '/tmp')
 
         # todo: install packages to run ansible on Red Hat hosts
         self.ansible_command.run_task_with_retries(hosts='all', inventory=inventory_path, module='raw',
@@ -57,6 +58,7 @@ class AnsibleRunner(Step):
 
         self.ansible_vars_generator.run()
 
+        self.logger.info('Setting up repository for cluster provisioning. This will take a while...')
         repository_setup_play_result = self.ansible_command.run_playbook_with_retries(
                                                                             inventory=inventory_path,
                                                                             playbook_path=self.playbook_path('repository-setup'),
