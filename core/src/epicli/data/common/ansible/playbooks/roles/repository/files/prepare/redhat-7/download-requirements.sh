@@ -15,7 +15,7 @@ add_repo() {
 		echol "Adding repository: $repo_id"
 		yum-config-manager --add-repo "$repo_url" ||
 			exit_with_error "Command failed: yum-config-manager --add-repo \"$repo_url\""
-		ADDED_REPOSITORIES+=("$repo_id.repo")
+		echo "$repo_id.repo" >> "$ADDED_REPOSITORIES_FILE_PATH"
 		# to accept import of GPG keys
 		yum -y repolist > /dev/null ||
 			exit_with_error "Command failed: yum -y repolist"
@@ -32,7 +32,7 @@ add_repo_as_file() {
 		echol "Adding repository: $repo_id"
 		cat <<< "$config_file_contents" > "/etc/yum.repos.d/$config_file_name" ||
 			exit_with_error "Function add_repo_as_file failed for repo: $repo_id"
-		ADDED_REPOSITORIES+=("$config_file_name")
+		echo "$config_file_name" >> "$ADDED_REPOSITORIES_FILE_PATH"
 		# to accept import of GPG keys
 		yum -y repolist > /dev/null || exit_with_error "Command failed: yum -y repolist"
 	fi
@@ -44,9 +44,8 @@ backup_files() {
 	shift
 	local paths_to_backup="$@"
 
-	backup_file_path=$(readlink -f "$backup_file_path") # make sure it's absolute path
-	# cd / is for tar --verify
-	(cd / && tar --create --verbose --verify --file="$backup_file_path" $paths_to_backup) || return 1
+	# --directory='/' is for tar --verify
+	tar --create --verbose --verify --directory="/" --file="$backup_file_path" $paths_to_backup
 }
 
 # params: <dir_path>
@@ -70,7 +69,7 @@ download_image() {
 	local repository=${splited_image[0]}
 	local tag=${splited_image[1]}
 	local repo_basename=$(basename -- "$repository")
-	local dest_path="${dest_dir}/${repo_basename}-${tag}"
+	local dest_path="${dest_dir}/${repo_basename}-${tag}.tar"
 
 	[[ ! -f $dest_path ]] || remove_file "$dest_path"
 
@@ -187,7 +186,7 @@ install_package() {
 
 	echol "Installing package: $package_name"
 	if yum install -y "$package_name_or_url"; then
-		INSTALLED_PACKAGES+=("$package_name")
+		echo "$package_name" >> "$INSTALLED_PACKAGES_FILE_PATH"
 	else
 		exit_with_error "Command failed: yum install -y \"$package_name_or_url\""
 	fi
@@ -227,13 +226,16 @@ remove_package() {
 	fi
 }
 
-# params: <array_with_repo_file_names>
+# params: <added_repos_list_file_path>
 remove_added_repos() {
-	local added_repos_arr=("$@")
+	local added_repos_list_file="$1"
 
-	for repo_config_file in "${added_repos_arr[@]}"; do
-		remove_file "/etc/yum.repos.d/$repo_config_file"
-	done
+	if [ -f "$added_repos_list_file" ]; then
+		for repo_config_file in $(cat $added_repos_list_file | uniq); do
+			remove_file "/etc/yum.repos.d/$repo_config_file"
+		done
+		remove_file "$added_repos_list_file"
+	fi
 }
 
 # params: <file_path>
@@ -242,6 +244,18 @@ remove_file() {
 
 	echol "Removing file: $file_path"
 	rm -f "$file_path" || exit_with_error "Command failed: rm -f \"$file_path\""
+}
+
+# params: <installed_packages_list_file_path>
+remove_installed_packages() {
+	local installed_packages_list_file="$1"
+
+	if [ -f "$installed_packages_list_file" ]; then
+		for package in $(cat $installed_packages_list_file | uniq); do
+			remove_package "$package"
+		done
+		remove_file "$installed_packages_list_file"
+	fi
 }
 
 usage() {
@@ -258,23 +272,21 @@ usage() {
 
 # dirs
 readonly DOWNLOADS_DIR="$1" # root directory for downloads
-readonly FILES_DIR=$DOWNLOADS_DIR/files
-readonly PACKAGES_DIR=$DOWNLOADS_DIR/packages
-readonly IMAGES_DIR=$DOWNLOADS_DIR/images
-readonly OFFLINE_PREREQ_PACKAGES_DIR=$PACKAGES_DIR/offline-prereqs
-readonly SCRIPT_DIR=$(dirname $(readlink -f $0)) # want absolute path
+readonly FILES_DIR="$DOWNLOADS_DIR/files"
+readonly PACKAGES_DIR="$DOWNLOADS_DIR/packages"
+readonly IMAGES_DIR="$DOWNLOADS_DIR/images"
+readonly OFFLINE_PREREQ_PACKAGES_DIR="$PACKAGES_DIR/offline-prereqs"
+readonly SCRIPT_DIR="$(dirname $(readlink -f $0))" # want absolute path
 
 # files
-readonly REQUIREMENTS_FILE_PATH=$SCRIPT_DIR/requirements.txt
+readonly REQUIREMENTS_FILE_PATH="$SCRIPT_DIR/requirements.txt"
 readonly SCRIPT_FILE_NAME=$(basename $0)
 readonly LOG_FILE_NAME=${SCRIPT_FILE_NAME/sh/log}
-readonly LOG_FILE_PATH=$SCRIPT_DIR/$LOG_FILE_NAME
-readonly YUM_CONFIG_BACKUP_FILE_PATH=$SCRIPT_DIR/yum-config-backup.tar
-readonly SKOPEO_BIN=$SCRIPT_DIR/skopeo_linux
-
-# others
-ADDED_REPOSITORIES=()
-INSTALLED_PACKAGES=()
+readonly LOG_FILE_PATH="$SCRIPT_DIR/$LOG_FILE_NAME"
+readonly YUM_CONFIG_BACKUP_FILE_PATH="$SCRIPT_DIR/${SCRIPT_FILE_NAME}-yum-repos-backup-tmp-do-not-remove.tar"
+readonly SKOPEO_BIN="$SCRIPT_DIR/skopeo_linux"
+readonly ADDED_REPOSITORIES_FILE_PATH="$SCRIPT_DIR/${SCRIPT_FILE_NAME}-added-repositories-list-do-not-remove.tmp"
+readonly INSTALLED_PACKAGES_FILE_PATH="$SCRIPT_DIR/${SCRIPT_FILE_NAME}-installed-packages-list-do-not-remove.tmp"
 
 # --- Checks ---
 
@@ -294,18 +306,19 @@ get_requirements_from_group 'IMAGES'                  'images'                  
 
 # === Packages ===
 
-# --- Backup of repos and yum config ---
+# --- Backup yum repositories ---
 
 if [ -f $YUM_CONFIG_BACKUP_FILE_PATH ]; then
 	echol "Backup aleady exists: $YUM_CONFIG_BACKUP_FILE_PATH"
 else
-	echol "Backuping /etc/yum.repos.d/ and /etc/yum/ to $YUM_CONFIG_BACKUP_FILE_PATH"
-	if backup_files $YUM_CONFIG_BACKUP_FILE_PATH '/etc/yum.repos.d/' '/etc/yum/'; then
+	echol "Backuping /etc/yum.repos.d/ to $YUM_CONFIG_BACKUP_FILE_PATH"
+	if backup_files $YUM_CONFIG_BACKUP_FILE_PATH '/etc/yum.repos.d/'; then
 		echol "Backup done"
 	else
-		[ ! -f $YUM_CONFIG_BACKUP_FILE_PATH ] ||
-			{ echol "Executing: rm -f $YUM_CONFIG_BACKUP_FILE_PATH" && rm -f $YUM_CONFIG_BACKUP_FILE_PATH; }
-		exit_with_error "Backup of yum config failed"
+		if [ -f $YUM_CONFIG_BACKUP_FILE_PATH ]; then
+			remove_file $YUM_CONFIG_BACKUP_FILE_PATH
+		fi
+		exit_with_error "Backup of yum repositories failed"
 	fi
 fi
 
@@ -446,9 +459,7 @@ done
 
 # --- Clean up yum repos ---
 
-if [[ ${#ADDED_REPOSITORIES[@]} -gt 0 ]]; then
-	remove_added_repos "${ADDED_REPOSITORIES[@]}"
-fi
+remove_added_repos "$ADDED_REPOSITORIES_FILE_PATH"
 
 # --- Restore yum repos ---
 
@@ -460,7 +471,7 @@ if [ -f $YUM_CONFIG_BACKUP_FILE_PATH ]; then
 		echol "Restored: yum repositories"
 		remove_file $YUM_CONFIG_BACKUP_FILE_PATH
 	else
-		exit_with_error "Extracting tar failed"
+		exit_with_error "Extracting tar failed: $YUM_CONFIG_BACKUP_FILE_PATH"
 	fi
 fi
 
@@ -470,8 +481,7 @@ create_directory "$FILES_DIR"
 
 for file in $FILES; do
 	echol "Downloading file: $file"
-	# on AWS --timestamping gives 'ERROR 403: Forbidden', so --recursive is used to force overwriting
-	wget --recursive --no-verbose  --directory-prefix="$FILES_DIR" "$file" ||
+	wget --timestamping --no-verbose  --directory-prefix="$FILES_DIR" "$file" ||
 		exit_with_error "Command failed: wget --recursive --no-verbose --directory-prefix=\"$FILES_DIR\" \"$file\""
 done
 
@@ -483,11 +493,7 @@ for image in $IMAGES; do
 	download_image "$image" "$IMAGES_DIR"
 done
 
-# --- Clean up ---
-if [[ ${#INSTALLED_PACKAGES[@]} -gt 0 ]]; then
-	for package in "${INSTALLED_PACKAGES[@]}"; do
-		remove_package "$package"
-	done
-fi
+# --- Clean up packages ---
+remove_installed_packages "$INSTALLED_PACKAGES_FILE_PATH"
 
 echol "$(basename $0) finished"

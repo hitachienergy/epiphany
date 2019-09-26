@@ -1,2 +1,0 @@
-- name: Configure repository and clients
-  include_tasks: "{{ repository_mode }}.yml"
