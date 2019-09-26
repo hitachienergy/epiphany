@@ -136,7 +136,7 @@ get_package_dependencies() {
 
 	if [[ -z $query_output ]]; then
 		echol "No dependencies found for package: $package"
-	elif grep -i 'error' <<< "$query_output"; then
+	elif grep --ignore-case --perl-regexp '\b(?<!-)error(?!-)\b' <<< "$query_output"; then
 		exit_with_error "repoquery failed for dependencies of package: $package, output was: $query_output"
 	fi
 
@@ -153,7 +153,7 @@ get_package_with_version() {
 
 	# yumdownloader doesn't handle error codes properly if repoquery gets empty output
 	[[ -n $query_output ]] || exit_with_error "repoquery failed: package $package not found"
-	if grep -i 'error' <<< "$query_output"; then
+	if grep --ignore-case --perl-regexp '\b(?<!-)error(?!-)\b' <<< "$query_output"; then
 		exit_with_error "repoquery failed for package: $package, output was: $query_output"
 	else
 		echol "Found: $query_output"
