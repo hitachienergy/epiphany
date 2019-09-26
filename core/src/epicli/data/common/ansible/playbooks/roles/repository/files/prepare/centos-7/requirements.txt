@@ -47,6 +47,7 @@ net-tools
 nfs-utils
 openssl
 perl # for vim
+perl-libs # for vim
 python-firewall # for firewalld
 python-psycopg2
 python-setuptools
@@ -67,6 +68,7 @@ sysstat
 tar
 telnet
 tmux
+vim-common # for vim
 vim-enhanced
 yum-plugin-versionlock
 
