@@ -47,7 +47,10 @@ net-tools
 nfs-utils
 openssl
 perl # for vim
+perl-Getopt-Long # for vim
 perl-libs # for vim
+perl-Pod-Simple # for vim
+perl-Pod-Usage # for vim
 python-firewall # for firewalld
 python-psycopg2
 python-setuptools
