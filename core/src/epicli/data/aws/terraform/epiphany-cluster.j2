@@ -11,6 +11,7 @@
 #####################################################
 
 provider "aws" {
+  version = "=2.26"
   access_key = "{{ specification.cloud.credentials.key }}"
   secret_key = "{{ specification.cloud.credentials.secret }}"
   region     = "{{ specification.cloud.region }}"

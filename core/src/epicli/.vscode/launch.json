@@ -14,6 +14,28 @@
             "env": { "PYTHONPATH": "${workspaceFolder}" },
             "console": "integratedTerminal",
             "args": ["apply",  "-f",  "${workspaceFolder}/PATH_TO_YOUR_DATA_YAML"]
+        },
+        {
+            "name": "python unit tests",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}/run-tests.py",
+            "cwd": "${workspaceFolder}",      
+            "pythonPath": "${config:python.pythonPath}",
+            "env": { "PYTHONPATH": "${workspaceFolder}" },
+            "console": "integratedTerminal",
+            "args": ["python"]
+        },
+        {
+            "name": "server spec tests",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}/run-tests.py",
+            "cwd": "${workspaceFolder}",      
+            "pythonPath": "${config:python.pythonPath}",
+            "env": { "PYTHONPATH": "${workspaceFolder}" },
+            "console": "integratedTerminal",
+            "args": ["spec", "-i", "${workspaceFolder}/PATH_TO_CLUSTER_INVENTORY", "-u", "ADMIN_USER", "-k", "${workspaceFolder}/PATH_TO_SSH_KEY"]
         }
     ]	
 }
