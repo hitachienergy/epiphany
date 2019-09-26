@@ -21,7 +21,7 @@ Epicli has the ability to setup a cluster on infrastructure provided by you. The
 
 To setup the cluster do the following steps from the provisioning machine:
 
-1. First generate a minimal data yaml file we will use to configure the cluster:
+1. First generate a minimal data yaml file:
 
     ```shell
     epicli init -p any -n newcluster
@@ -33,10 +33,10 @@ To setup the cluster do the following steps from the provisioning machine:
 
     ```yaml
     admin_user:
-      key_path: /user/.ssh/epiphany-operations/id_rsa
-      name: operations
+      key_path: /path/to/your/ssh/keys
+      name: user_name
     ```
-    Here you should specify the access to your SSH key and the admin user name which will be used by Anisble to provision the cluster machines.
+    Here you should specify the path to the SSH keys and the admin user name which will be used by Anisble to provision the cluster machines.
 
 3. Define the components you want to install and link them to the machines you want to install them on:
 
@@ -74,55 +74,110 @@ To setup the cluster do the following steps from the provisioning machine:
 
 ### How to create an Epiphany cluster on a cloud provider
 
-Epicli has the ability to setup a cluster on one of the following cloud providers from scratch:
+Epicli has the ability to setup a cluster on one of the following cloud providers:
 
 - Azure
 - AWS
 
-Under the hood it uses [Terraform](https://www.terraform.io/) to create the virtual infrastructure before it applies our [Anisble](https://www.ansible.com/) playbooks to provision the machines.
+Under the hood it uses [Terraform](https://www.terraform.io/) to create the virtual infrastructure before it applies our [Anisble](https://www.ansible.com/) playbooks to provision the VM's.
 
-Before you can do this you need the following prerequisites:
+You need the following prerequisites:
 
-1. Access to one of the supported cloud providers.
-2. A set of SSH keys you provide.
-3. A provisioning machine that:
+1. Access to one of the supported cloud providers, `aws` or `azure`.
+2. Adequate resources to deploy a cluster on the cloud provider.
+3. A set of SSH keys you provide.
+4. A provisioning machine that:
     - Has access to the SSH keys
     - Has Epicli running.
       *Note. To run Epicli check the [Prerequisites](./PREREQUISITES.md)*
 
 To setup the cluster do the following steps from the provisioning machine:
 
-1. First generate a minimal data yaml file we will use to configure the cluster:
+1. First generate a minimal data yaml file:
 
     ```shell
     epicli init -p aws/azure -n newcluster
     ```
 
-    The `provider` flag should be either `aws` or `azure` and will tell Epicli to create a data config which contains the specific confituration for that cloud provider. If you want full control you can also add the `--full` flag which will give you a configuration with all parts of a cluster that can be configured.
+    The `provider` flag should be either `aws` or `azure` and will tell Epicli to create a data config which contains the specifics for that cloud provider. If you want full control you can add the `--full` flag which will give you a config with all parts of a cluster that can be configured.
 
-2. Open the configuration file and setup the  `admin_user` data:
+2. Open the configuration file and setup the `admin_user` data:
 
     ```yaml
     admin_user:
-      key_path: /user/.ssh/epiphany-operations/id_rsa
-      name: operations
+    admin_user:
+      key_path: /path/to/your/ssh/keys
+      name: user_name
     ```
-    Here you should specify the access to your SSH key and the admin user name which will be used by Anisble to provision the cluster machines.
+    Here you should specify the path to the SSH keys and the admin user name which will be used by Anisble to provision the cluster machines.
 
     On `Azure` the name you specify will be configured as the admin name on the VM's.
 
-    For `AWS` the admin name is already specified and is dependant on the Linux distro image you are using for the VM's:
+    For `AWS` the admin name is already specified and is dependent on the Linux distro image you are using for the VM's:
 
     - Username for Ubuntu Server: `ubuntu`
     - Username for For Redhat: `ec2-user`
 
-3. Setup the cloud cloud specific parameters:
+3. Setup the cloud specific data:
 
-    To let Terraform access the cloud provider for both `aws` or `azure` you need to setup some additional cloud configuration.
+    To let Terraform access the cloud providers you need to setup some additional cloud configuration.
+
+    AWS:
+
+    ```yaml
+    cloud:
+      region: eu-west-2
+      credentials:
+        key: aws_key
+        secret: aws_secret
+      use_public_ips: false
+    ```
+
+    The [region](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Concepts.RegionsAndAvailabilityZones.html) lets you chose the most optimal place to deploy your cluster. The `key` and `secret` are needed by Terraform and can be generated in the AWS console. More information about that [here](https://docs.aws.amazon.com/general/latest/gr/aws-sec-cred-types.html#access-keys-and-secret-access-keys)
 
     Azure:
 
-    AWS:
+    ```yaml
+    cloud:
+      region: West Europe
+      subscription_name: Subscribtion_name
+      use_service_principal: false
+      use_public_ips: false
+    ```
+
+    The [region](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Concepts.RegionsAndAvailabilityZones.html) lets you chose the most optimal place to deploy your cluster. The `subscription_name` is the Azure subscribtion under which you want to deploy the cluster.
+
+    Terraform will ask you to sign in to your Microsoft Azure subscibtion when it prepares to build/modify/destroy the infrastructure on `azure`. In case you need to share cluster managment with other people you can set the `use_service_principal` tag to true. This will create a service principle and uses it to manage the resources.
+
+    For both `aws`and `azure` there is a `use_public_ips` tag. When this is true the VM's will also have a direct inferface to the internet. While this is easy for setting up a cluster for testing it should not be used in production. A VPN setup should be used which we will document in a different section (TODO).
+
+4. Define the components you want to install:
+
+    Under the  `components` tag you will find a bunch of definitions like this one:
+
+    ```yaml
+    kubernetes_master:
+      count: 1
+    ```
+
+    The `count` specifies how much VM's you want to provision with this component. If you don't want to use a component you can set the `count` to 0.
+
+    Note that for each cloud provider Epicli already has a default VM configuration for each component. If you need more control over the VM's, generate a config with the `--full` flag. Then each component will have an additional machine tag:
+
+    ```yaml
+    kubernetes_master:
+      count: 1
+      machine: kubernetes-master-machine
+      ...
+    ```
+
+    This links to a `infrastructure/virtual-machine` document which can be found inside the same configuration file. It gives you full control over the VM config (size, storage, provision image, security etc.). More details on this will be documented in a different section (TODO).
+
+5. Finally start the deployment with:
+
+    ```shell
+    epicli apply -f newcluster.yml
+    ```
 
 ### How to delete an Epiphany cluster on a cloud provider
 
@@ -132,7 +187,7 @@ Epicli has a delete command to remove a cluster from a cloud provider (AWS, Azur
   epicli apply -b /path/to/cluster/build/folder
   ```
 
-From the defined cluster build folder it will take the information needed to remove the cluster from the cloud provider.
+From the defined cluster build folder it will take the information needed to remove the resources from the cloud provider.
 
 ### How to create an offline installation for an Epiphany cluster
 
