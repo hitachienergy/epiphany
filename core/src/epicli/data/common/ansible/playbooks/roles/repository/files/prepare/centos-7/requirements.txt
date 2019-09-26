@@ -47,6 +47,7 @@ net-tools
 nfs-utils
 openssl
 perl # for vim
+python-firewall # for firewalld
 python-psycopg2
 python-setuptools
 rabbitmq-server-3.7.10
