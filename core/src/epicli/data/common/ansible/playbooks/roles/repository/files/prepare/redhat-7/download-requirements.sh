@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-# VERSION 1.0.1
+# VERSION 1.0.2
 
 set -euo pipefail
 
@@ -168,7 +168,7 @@ get_requirements_from_group() {
 	local group_name="$2"
 	local requirements_file_path="$3"
 
-	local all_requirements=$(grep --invert-match '^#' "$requirements_file_path")
+	local all_requirements=$(grep --only-matching '^[^#]*' "$requirements_file_path")
 	local requirements_from_group=$(awk "/^$/ {next}; /\[${group_name}\]/ {f=1; next}; /^\[/ {f=0}; f {print \$0}" <<< "$all_requirements") ||
 		exit_with_error "Function get_requirements_from_group failed for group: $group_name"
 

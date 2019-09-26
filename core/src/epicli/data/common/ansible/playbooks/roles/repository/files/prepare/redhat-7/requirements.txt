@@ -23,8 +23,7 @@ elasticsearch-oss-6.4.0
 epel-release
 ethtool
 erlang-21.3.8.7
-# actually it's filebeat-oss-6.5.4
-filebeat-6.5.4
+filebeat-6.5.4 # actually it's filebeat-oss
 firewalld
 fping
 grafana-6.2.5
@@ -47,6 +46,7 @@ nmap-ncat
 net-tools
 nfs-utils
 openssl
+perl # for vim
 python-psycopg2
 python-setuptools
 rabbitmq-server-3.7.10
