@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-# VERSION 1.0.2
+# VERSION 1.0.3
 
 set -euo pipefail
 
@@ -58,6 +58,24 @@ create_directory() {
 		echol "Creating directory: $dir_path"
 		mkdir -p "$dir_path" || exit_with_error "Command failed: mkdir -p \"$dir_path\""
 	fi
+}
+
+# params: <file_url> <dest_dir>
+download_file() {
+	local file_url="$1"
+	local dest_dir="$2"
+
+	local file_name=$(basename "$file_url")
+	local dest_path="$dest_dir/$file_name"
+
+	# wget with --timestamping sometimes failes on AWS with ERROR 403: Forbidden
+	# so we remove existing file to overwrite it
+	[[ ! -f $dest_path ]] || remove_file "$dest_path"
+
+	echol "Downloading file: $file"
+	
+	wget --no-verbose --directory-prefix="$dest_dir" "$file_url" ||
+		exit_with_error "Command failed: wget --no-verbose --directory-prefix=\"$dest_dir\" \"$file_url\""
 }
 
 # params: <image_name> <dest_dir>
@@ -480,9 +498,7 @@ fi
 create_directory "$FILES_DIR"
 
 for file in $FILES; do
-	echol "Downloading file: $file"
-	wget --timestamping --no-verbose  --directory-prefix="$FILES_DIR" "$file" ||
-		exit_with_error "Command failed: wget --recursive --no-verbose --directory-prefix=\"$FILES_DIR\" \"$file\""
+	download_file "$file" "$FILES_DIR"
 done
 
 # === Images ===
