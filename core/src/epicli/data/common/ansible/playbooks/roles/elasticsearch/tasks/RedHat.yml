@@ -1,0 +1,7 @@
+- name: Install Elasticsearch package
+  yum:
+    name:
+      - java-1.8.0-openjdk
+      - elasticsearch-oss
+    update_cache: yes
+    state: present

@@ -1,0 +1,6 @@
+- name: Install Kibana package
+  apt: 
+    name:
+      - kibana-oss
+    update_cache: yes 
+    state: present

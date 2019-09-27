@@ -124,12 +124,6 @@
 - name: Package
   debug: msg="{{ binary_file_name }}"
 
-- name: Repo
-  debug: msg="{{ repository_url }}"
-
-- name: Path
-  debug: msg="{{ repository_url }}/files/{{ binary_file_name }}"
-
 - name: Download Prometheus binaries
   include_role:
     name: download

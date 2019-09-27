@@ -1,0 +1,19 @@
+---
+- name: Create epirepo repository
+  shell: >-
+    /tmp/epi-repository-setup-scripts/create-repository.sh /var/www/html/epirepo {{ offline_mode }} |&
+    tee /tmp/epi-repository-setup-scripts/create-repository.log
+  when:
+    - groups['kubernetes_master'][0] == inventory_hostname
+    - not custom_repository_url
+
+- name: Disable system repositories and setup epirepo
+  block:
+    - name: Create active repositories list
+      shell: /tmp/epi-repository-setup-scripts/create-enabled-system-repositories-list.sh
+    - name: Disable active system repositories
+      shell: /tmp/epi-repository-setup-scripts/disable-system-repos.sh
+    - name: Setup epirepo on clients
+      shell: >-
+        /tmp/epi-repository-setup-scripts/setup-epirepo-client.sh {{ repository_url }} |&
+        tee /tmp/epi-repository-setup-scripts/setup-epirepo-client.log
