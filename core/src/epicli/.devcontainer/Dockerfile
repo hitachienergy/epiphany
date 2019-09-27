@@ -11,6 +11,10 @@ RUN apt-get update \
 
     && apt-get -y install git procps lsb-release gcc make musl-dev libffi-dev tar unzip \
 
+    && apt-get -y install ruby-full \
+
+    && gem install serverspec rake rspec_junit_formatter \
+
     && pip --disable-pip-version-check --no-cache-dir install pylint \
 
     && pip --disable-pip-version-check --no-cache-dir install pipenv \

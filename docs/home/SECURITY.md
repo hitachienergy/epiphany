@@ -5,7 +5,6 @@
 - [Users and roles created by Epiphany](#users-and-roles-created-by-epiphany)
 - [Ports used by components in Epiphany](#ports-used-by-components-in-epiphany)
 
-
 ### Users and roles created by epiphany
 
 By default Epiphany is creating user operations that is used to connect to machines with admin rights. This setting can 
@@ -24,14 +23,12 @@ Additional to users created by each component Epiphany creates also users and gr
   
 Other accounts created by each component you can find in these components documentation.
 
-
 ### Ports used by components in Epiphany
 
-Below you can find list of ports used by default in Epiphany on per component basis. Some of them can be changed to 
-different values.
+Below you can find list of ports used by default in Epiphany on per component basis. Some of them can be changed to different values.
 
 1. OS services:
- 
+
     - 22 - ssh
 
 2. Prometheus exporters:

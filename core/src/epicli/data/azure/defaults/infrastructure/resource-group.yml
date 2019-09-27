@@ -1,5 +1,5 @@
 kind: infrastructure/resource-group
-version: 0.3.0
+version: 0.4.0
 title: "Resource Group"
 provider: azure
 name: default

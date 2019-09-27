@@ -1,0 +1,9 @@
+kind: infrastructure/storage-share
+version: 0.4.0
+title: "Azure shared storage"
+provider: azure
+name: default
+specification:
+  name: SET_BY_AUTOMATION
+  storage_account_name: SET_BY_AUTOMATION
+  quota: 50

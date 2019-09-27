@@ -80,7 +80,7 @@ def main():
     config.log_type = args.log_type
     config.log_count = args.log_count
     config.validate_certs = True if args.validate_certs == 'true' else False
-    if not args.offline_requirements is None:
+    if 'offline_requirements' in args and not args.offline_requirements is None:
         config.offline_requirements = args.offline_requirements
     config.debug = args.debug
     config.auto_approve = args.auto_approve

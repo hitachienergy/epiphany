@@ -9,6 +9,7 @@
 - [Note for Windows users](#note-for-Windows-users)
 - [Running and debugging](#running-and-debugging)  
 - [Running unit tests](#running-unit-tests)
+- [Running serverspec tests](#running-serverspec-tests)
 
 <!-- /TOC -->
 
@@ -84,48 +85,52 @@ For debugging, open the VSCode's Debug tab:
 By default there is one launch configuration called ```epicli```. This launch configuration can be found in ```/epiphany/core/src/epicli/.vscode/``` and looks like this:
 
   ```json
-    "configurations": [
-        {
-            "name": "epicli",
-            "type": "python",
-            "request": "launch",
-            "program": "${workspaceFolder}/cli/epicli.py",
-            "cwd": "${workspaceFolder}",
-            "pythonPath": "${config:python.pythonPath}",
-            "env": { "PYTHONPATH": "${workspaceFolder}" },
-            "console": "integratedTerminal",
-            "args": ["apply",  "-f",  "${workspaceFolder}/PATH_TO_YOUR_DATA_YAML"]
-        }
-    ]
+    ...
+
+    {
+        "name": "epicli",
+        "type": "python",
+        "request": "launch",
+        "program": "${workspaceFolder}/cli/epicli.py",
+        "cwd": "${workspaceFolder}",
+        "pythonPath": "${config:python.pythonPath}",
+        "env": { "PYTHONPATH": "${workspaceFolder}" },
+        "console": "integratedTerminal",
+        "args": ["apply",  "-f",  "${workspaceFolder}/PATH_TO_YOUR_DATA_YAML"]
+    }
+
+    ...
   ```
 
 You can copy this configuration and change values (like below) to create different ones to suite your needs:
 
   ```json
-    "configurations": [
-        {
-            "name": "epicli",
-            "type": "python",
-            "request": "launch",
-            "program": "${workspaceFolder}/cli/epicli.py",
-            "cwd": "${workspaceFolder}",
-            "pythonPath": "${config:python.pythonPath}",
-            "env": { "PYTHONPATH": "${workspaceFolder}" },
-            "console": "integratedTerminal",
-            "args": ["apply",  "-f",  "${workspaceFolder}/PATH_TO_YOUR_DATA_YAML"]
-        },
-        {
-            "name": "epicli show version",
-            "type": "python",
-            "request": "launch",
-            "program": "${workspaceFolder}/cli/epicli.py",
-            "cwd": "${workspaceFolder}",
-            "pythonPath": "${config:python.pythonPath}",
-            "env": { "PYTHONPATH": "${workspaceFolder}" },
-            "console": "integratedTerminal",
-            "args": ["--version"]
-        }
-    ]
+    ...
+
+    {
+        "name": "epicli",
+        "type": "python",
+        "request": "launch",
+        "program": "${workspaceFolder}/cli/epicli.py",
+        "cwd": "${workspaceFolder}",
+        "pythonPath": "${config:python.pythonPath}",
+        "env": { "PYTHONPATH": "${workspaceFolder}" },
+        "console": "integratedTerminal",
+        "args": ["apply",  "-f",  "${workspaceFolder}/PATH_TO_YOUR_DATA_YAML"]
+    },
+    {
+        "name": "epicli show version",
+        "type": "python",
+        "request": "launch",
+        "program": "${workspaceFolder}/cli/epicli.py",
+        "cwd": "${workspaceFolder}",
+        "pythonPath": "${config:python.pythonPath}",
+        "env": { "PYTHONPATH": "${workspaceFolder}" },
+        "console": "integratedTerminal",
+        "args": ["--version"]
+    }
+
+    ...
   ```
 
 In the ```args``` field you can pass an array of the arguments that you want epicli to run with.
@@ -136,10 +141,42 @@ To run a configuration, select it and press the run button:
 
 For more information about debugging in VSCode, go [here](https://code.visualstudio.com/docs/editor/debugging).
 
-## Running unit tests
+## Running Python unit tests
 
 The standard Python test runner fails to discover the tests so we use the ```Python Test Explorer``` extension. To run the unit tests, open the VSCode's Test tab and press the run button:
 
 ![unittests](../assets/images/development/unittests.png)
 
 See the [Python Test Explorer](https://marketplace.visualstudio.com/items?itemName=LittleFoxTeam.vscode-python-test-adapter) extension page on how to debug and run individual tests.
+
+You can also run the Python unit tests from a launch configuration called ```epicli```
+
+![rununittests](../assets/images/development/rununittests.png)
+
+## Running serverspec tests
+
+We maintain a set of serverspec tests that can be run to verify if a cluster is functioning properly. While it might not cover all cases at this point it is a good place to start.
+
+There is one launch configuration called ```server spec tests```. This launch configuration can be found in ```/epiphany/core/src/epicli/.vscode/``` and looks like this:
+
+  ```json
+    ...
+
+    {
+        "name": "server spec tests",
+        "type": "python",
+        "request": "launch",
+        "program": "${workspaceFolder}/run-tests.py",
+        "cwd": "${workspaceFolder}",      
+        "pythonPath": "${config:python.pythonPath}",
+        "env": { "PYTHONPATH": "${workspaceFolder}" },
+        "console": "integratedTerminal",
+        "args": ["spec", "-i", "${workspaceFolder}/PATH_TO_CLUSTER_INVENTORY", "-u", "ADMIN_USER", "-k", "${workspaceFolder}/PATH_TO_SSH_KEY"]
+    }
+
+    ...
+  ```
+
+To run the serverspec tests against a given cluster change the ```args``` field to point to the cluster inventory, admin username and the propper SSH key. Then the run from the run tab:
+
+![runserverspectests](../assets/images/development/runserverspectests.png)

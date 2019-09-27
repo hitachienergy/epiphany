@@ -1,5 +1,5 @@
 kind: configuration/feature-mapping
-version: 0.3.0
+version: 0.4.0
 title: "Feature mapping to roles"
 name: default
 specification:
@@ -20,7 +20,7 @@ specification:
       enabled: yes
     - name: grafana
       enabled: yes
-    - name: yesde-exporter
+    - name: node-exporter
       enabled: yes
     - name: jmx-exporter
       enabled: yes
