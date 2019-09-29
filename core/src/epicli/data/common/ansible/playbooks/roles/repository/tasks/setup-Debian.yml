@@ -4,10 +4,9 @@
   copy:
     src: /shared/requirements
     dest: /tmp/
-    directory_mode: yes
   when:
     - offline_mode == true
-    - groups['kubernetes_master'][0] == inventory_hostname
+    - groups['repository'][0] == inventory_hostname
 
 - name: Copy data files
   copy:

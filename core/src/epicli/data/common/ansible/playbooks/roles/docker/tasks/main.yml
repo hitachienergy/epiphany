@@ -10,7 +10,7 @@
     - ca-certificates
     - containerd.io
     - docker-ce-cli
-    - docker-ce=5:18.09.6 
+    - docker-ce
   when: ansible_os_family == "Debian"
 
 - name: Install Docker for RedHat family

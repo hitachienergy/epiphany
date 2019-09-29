@@ -6,4 +6,4 @@ echo "deb [trusted=yes] http://$SERVER_IP/epirepo/ packages/" > /etc/apt/sources
 
 apt-cache policy;
 
-apt update; 
+apt update;
