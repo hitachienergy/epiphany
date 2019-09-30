@@ -78,7 +78,7 @@ class AnsibleCommand:
             try:
                 self.run_playbook(inventory=inventory,
                                   playbook_path=playbook_path)
-                return 0
+                break
             except Exception as e:
                 self.logger.error(e)
                 self.logger.info('Retry running playbook: ' + str(i + 1) + '/' + str(retries))
