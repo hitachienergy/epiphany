@@ -3,5 +3,4 @@
     name:
       - openjdk-8-jre
       - elasticsearch-oss
-    update_cache: yes 
     state: present
