@@ -22,13 +22,16 @@ class APIProxy:
     def __exit__(self, exc_type, exc_value, traceback):
         pass
 
-    def login(self):
+    def login_account(self):
         subscription_name = self.cluster_model.specification.cloud.subscription_name
         all_subscription = self.run(self, 'az login')
         subscription = select_first(all_subscription, lambda x: x['name'] == subscription_name)
         if subscription is None:
             raise Exception(f'User does not have access to subscription: "{subscription_name}"')
         return subscription
+
+    def login_sp(self, sp_data):
+        return self.run(self, f'az login --service-principal -u {sp_data.name} -p {sp_data.password} --tenant {sp_data.tenant}')      
 
     def set_active_subscribtion(self, subscription_id):
         self.run(self, f'az account set --subscription {subscription_id}')  
