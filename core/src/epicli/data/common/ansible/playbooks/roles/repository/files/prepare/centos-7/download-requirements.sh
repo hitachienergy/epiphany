@@ -133,7 +133,7 @@ get_package_dependencies() {
 	local package="$2"
 
 	local query_output=$(repoquery --requires --resolve --all --queryformat '%{ui_nevra}' --archlist=x86_64,noarch "$package" 2>&1) ||
-		exit_with_error "repoquery failed for dependencies of package: $package"
+		exit_with_error "repoquery failed for dependencies of package: $package with exit code: $?, output was: $query_output"
 
 	if [[ -z $query_output ]]; then
 		echol "No dependencies found for package: $package"
@@ -150,7 +150,7 @@ get_package_with_version() {
 	local package="$2"
 
 	local query_output=$(repoquery --all --queryformat '%{ui_nevra}' --archlist=x86_64,noarch "$package" 2>&1) ||
-		exit_with_error "repoquery failed for package: $package"
+		exit_with_error "repoquery failed for package: $package with exit code: $?, output was: $query_output"
 
 	# yumdownloader doesn't handle error codes properly if repoquery gets empty output
 	[[ -n $query_output ]] || exit_with_error "repoquery failed: package $package not found"
@@ -232,7 +232,7 @@ remove_added_repos() {
 	local added_repos_list_file="$1"
 
 	if [ -f "$added_repos_list_file" ]; then
-		for repo_config_file in $(cat $added_repos_list_file | uniq); do
+		for repo_config_file in $(cat $added_repos_list_file | sort --unique); do
 			remove_file "/etc/yum.repos.d/$repo_config_file"
 		done
 		remove_file "$added_repos_list_file"
@@ -252,7 +252,7 @@ remove_installed_packages() {
 	local installed_packages_list_file="$1"
 
 	if [ -f "$installed_packages_list_file" ]; then
-		for package in $(cat $installed_packages_list_file | uniq); do
+		for package in $(cat $installed_packages_list_file | sort --unique); do
 			remove_package "$package"
 		done
 		remove_file "$installed_packages_list_file"
