@@ -58,14 +58,14 @@ class AnsibleRunner(Step):
 
         self.ansible_vars_generator.run()
 
-        # self.logger.info('Setting up repository for cluster provisioning. This will take a while...')
-        # repository_setup_play_result = self.ansible_command.run_playbook_with_retries(
-        #                                                                     inventory=inventory_path,
-        #                                                                     playbook_path=self.playbook_path('repository-setup'),
-        #                                                                     retries=5)
+        self.logger.info('Setting up repository for cluster provisioning. This will take a while...')
+        repository_setup_play_result = self.ansible_command.run_playbook_with_retries(
+                                                                            inventory=inventory_path,
+                                                                            playbook_path=self.playbook_path('repository-setup'),
+                                                                            retries=5)
 
-        # if repository_setup_play_result != 0:
-        #     return
+        if repository_setup_play_result != 0:
+            return
 
         common_play_result = self.ansible_command.run_playbook_with_retries(inventory=inventory_path,
                                                                             playbook_path=self.playbook_path('common'),
@@ -82,10 +82,10 @@ class AnsibleRunner(Step):
             if play_result != 0:
                 break
 
-        # repository_teardown_play_result = self.ansible_command.run_playbook_with_retries(
-        #                                                                     inventory=inventory_path,
-        #                                                                     playbook_path=self.playbook_path('repository-teardown'),
-        #                                                                     retries=1)
+        repository_teardown_play_result = self.ansible_command.run_playbook_with_retries(
+                                                                            inventory=inventory_path,
+                                                                            playbook_path=self.playbook_path('repository-teardown'),
+                                                                            retries=1)
 
-        # if repository_teardown_play_result != 0:
-        #     return
+        if repository_teardown_play_result != 0:
+            return
