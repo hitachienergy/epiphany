@@ -1,3 +1,5 @@
+#!/bin/bash
+
 # before execute install apache2
 
 mkdir -p /var/www/html/epirepo/packages
