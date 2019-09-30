@@ -13,7 +13,7 @@
             "pythonPath": "${config:python.pythonPath}",
             "env": { "PYTHONPATH": "${workspaceFolder}" },
             "console": "integratedTerminal",
-            "args": ["apply",  "-f",  "${workspaceFolder}/PATH_TO_YOUR_DATA_YAML"]
+            "args": ["apply",  "-f",  "${workspaceFolder}/clusters/azure-ubu.yml"]
         },
         {
             "name": "python unit tests",
