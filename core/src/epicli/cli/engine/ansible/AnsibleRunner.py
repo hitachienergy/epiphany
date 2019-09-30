@@ -30,6 +30,9 @@ class AnsibleRunner(Step):
         super().__exit__(exc_type, exc_value, traceback)
         self.inventory_creator.__exit__(exc_type, exc_value, traceback)
 
+    def playbook_path(self, name):
+        return os.path.join(get_ansible_path(self.cluster_model.specification.name), f'{name}.yml')        
+
     def run(self):
         inventory_path = get_inventory_path(self.cluster_model.specification.name)
 
@@ -47,21 +50,13 @@ class AnsibleRunner(Step):
 
         self.ansible_vars_generator.run()
 
-        common_play_result = self.ansible_command.run_playbook_with_retries(inventory=inventory_path,
-                                                                            playbook_path=os.path.join(
-                                                                                get_ansible_path(
-                                                                                    self.cluster_model.specification.name),
-                                                                                "common.yml"), retries=5)
-        if common_play_result != 0:
-            return
+
+        self.ansible_command.run_playbook_with_retries(inventory=inventory_path,
+                                                       playbook_path=self.playbook_path('common'),
+                                                       retries=5)
 
         enabled_roles = self.inventory_creator.get_enabled_roles()
 
         for role in enabled_roles:
-            play_result = self.ansible_command.run_playbook_with_retries(inventory=inventory_path,
-                                                                         playbook_path=os.path.join(
-                                                                             get_ansible_path(
-                                                                                 self.cluster_model.specification.name),
-                                                                             to_role_name(role) + ".yml"), retries=1)
-            if play_result != 0:
-                break
+            self.ansible_command.run_playbook(inventory=inventory_path,
+                                              playbook_path=self.playbook_path(to_role_name(role)))
