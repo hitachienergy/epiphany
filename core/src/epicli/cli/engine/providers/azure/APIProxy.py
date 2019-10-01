@@ -47,7 +47,7 @@ class APIProxy:
         #TODO: make role configurable?
         sp = self.run(self, f'az ad sp create-for-rbac -n "{app_name}" --role="Contributor" --scopes="/subscriptions/{subscription_id}"')
         # Sleep for a while. Sometimes the call returns before the rights of the SP are finished creating.
-        self.wait(self, 20)
+        self.wait(self, 60)
         return sp  
 
     def get_ips_for_feature(self, component_key):
