@@ -86,9 +86,9 @@ set :shell, '/bin/bash'
       end
     end
     return list
-   end
+  end
 
-   def listInventoryIPs(role)
+  def listInventoryIPs(role)
     file = File.open(ENV['inventory'], "rb")
     input = file.read
     file.close
@@ -102,4 +102,4 @@ set :shell, '/bin/bash'
       end
     end
     return list
-    end
+  end

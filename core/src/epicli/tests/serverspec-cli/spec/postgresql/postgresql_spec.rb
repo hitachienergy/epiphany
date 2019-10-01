@@ -12,7 +12,7 @@ wal_keep_segments = readDataYaml("configuration/postgresql")["specification"]["r
 def queryForCreating
   describe 'Checking if it is possible to create a test schema' do
     let(:disable_sudo) { false }
-    describe command("su - postgres -c \"psql -t -c 'CREATE SCHEMA test;'\"") do
+    describe command("su - postgres -c \"psql -t -c 'CREATE SCHEMA serverspec_test;'\"") do
       its(:stdout) { should match /^CREATE SCHEMA$/ }
       its(:exit_status) { should eq 0 }
     end
@@ -20,7 +20,7 @@ def queryForCreating
 
   describe 'Checking if it is possible to create a test table' do
     let(:disable_sudo) { false }
-    describe command("su - postgres -c \"psql -t -c 'CREATE TABLE test.test (col varchar(20));'\"") do
+    describe command("su - postgres -c \"psql -t -c 'CREATE TABLE serverspec_test.test (col varchar(20));'\"") do
       its(:stdout) { should match /^CREATE TABLE$/ }
       its(:exit_status) { should eq 0 }
     end
@@ -28,7 +28,7 @@ def queryForCreating
 
   describe 'Checking if it is possible to insert values into the test table' do
     let(:disable_sudo) { false }
-    describe command("su - postgres -c \"psql -t -c \\\"INSERT INTO test.test (col) values ('SUCCESS');\\\"\"") do
+    describe command("su - postgres -c \"psql -t -c \\\"INSERT INTO serverspec_test.test (col) values ('SUCCESS');\\\"\"") do
       its(:stdout) { should match /^INSERT 0 1$/ }
       its(:exit_status) { should eq 0 }
     end
@@ -38,7 +38,7 @@ end
 def queryForSelecting
   describe 'Checking if it is possible to select values from the test table' do
     let(:disable_sudo) { false }
-    describe command("su - postgres -c \"psql -t -c 'SELECT * from test.test;'\"") do
+    describe command("su - postgres -c \"psql -t -c 'SELECT * from serverspec_test.test;'\"") do
       its(:stdout) { should match /\bSUCCESS\b/ }
       its(:exit_status) { should eq 0 }
     end
@@ -48,7 +48,7 @@ end
 def queryForDropping
   describe 'Checking if it is possible to drop the test table' do
     let(:disable_sudo) { false }
-    describe command("su - postgres -c \"psql -t -c 'DROP TABLE IF EXISTS test.test;'\"") do
+    describe command("su - postgres -c \"psql -t -c 'DROP TABLE serverspec_test.test;'\"") do
       its(:stdout) { should match /^DROP TABLE$/ }
       its(:exit_status) { should eq 0 }
     end
@@ -56,7 +56,7 @@ def queryForDropping
   
   describe 'Checking if it is possible to drop the test schema' do
     let(:disable_sudo) { false }
-    describe command("su - postgres -c \"psql -t -c 'DROP SCHEMA IF EXISTS test;'\"") do
+    describe command("su - postgres -c \"psql -t -c 'DROP SCHEMA serverspec_test;'\"") do
       its(:stdout) { should match /^DROP SCHEMA$/ }
       its(:exit_status) { should eq 0 }
     end
@@ -130,7 +130,6 @@ describe 'Checking if it is possible to connect to PostgreSQL database' do
   end
 end
 
-
 if !replicated
   queryForCreating
   queryForSelecting
@@ -140,6 +139,7 @@ end
 if replicated
   nodes =  listInventoryHosts("postgresql")
   master = nodes[0]
+  master_ip = listInventoryIPs("postgresql")[0]
   slave = nodes[1]
  
   if master.include? host_inventory['hostname']
@@ -206,7 +206,6 @@ if replicated
       end
     end
 
-    #queryForDropping 
     queryForCreating
     queryForSelecting
     
@@ -249,62 +248,21 @@ if replicated
     end
 
     queryForSelecting
-    #queryForDropping  
+
+    describe 'Clean up' do
+      it "Delegate drop table query to master" do
+        Net::SSH.start(master_ip, ENV['user'], keys: [ENV['keypath']], :keys_only => TRUE) do|ssh|
+          result = ssh.exec!("sudo su - postgres -c \"psql -t -c 'DROP TABLE serverspec_test.test;'\"")
+          expect(result).to match 'DROP TABLE'
+        end
+      end
+      it "Delegate drop schema query to master" do
+        Net::SSH.start(master_ip, ENV['user'], keys: [ENV['keypath']], :keys_only => TRUE) do|ssh|
+          result = ssh.exec!("sudo su - postgres -c \"psql -t -c 'DROP SCHEMA serverspec_test;'\"")
+          expect(result).to match 'DROP SCHEMA'
+        end
+      end          
+    end
+    
   end
 end
-
-nodes =  listInventoryHosts("postgresql")
-master = nodes[0]
-slave = nodes[1]
-puts master
-
-# HOST = '40.74.7.249'
-HOST = listInventoryIPs("postgresql")[0]
-
-puts HOST
-
-# Net::SSH.start( HOST, USER, keys: ['/workspaces/epiphany/core/src/epicli/clusters/ssh/id_rsa'], :keys_only => TRUE) do|ssh|
-#     result = ssh.exec!("sudo su - postgres -c \"psql -t -c 'DROP TABLE IF EXISTS test.test;'\"")
-#     puts result
-#     end
-
-if slave.include? host_inventory['hostname']
-    describe 'Drop table and schema on master' do
-        it "uuuu" do
-            Net::SSH.start( HOST, ENV['user'], keys: [ENV['keypath']], :keys_only => TRUE) do|ssh|
-            result = ssh.exec!("sudo su - postgres -c \"psql -t -c 'DROP TABLE IF EXISTS test.test;'\"")
-            puts result
-            expect(result).to match 'DROP TABLE'
-            result = ssh.exec!("sudo su - postgres -c \"psql -t -c 'DROP SCHEMA IF EXISTS test;'\"")
-            puts result
-            expect(result).to match 'DROP SCHEMA'
-            end
-        end
-    end
-end
-
-    # Net::SSH.start( HOST, USER, keys: ['/workspaces/epiphany/core/src/epicli/clusters/ssh/id_rsa'], :keys_only => TRUE) do|ssh|
-    # result = ssh.exec!('pwd')
-    # puts result
-    # end
-
-
-
-
-
-#   describe 'Checking if it is possible to drop the test table' do
-#     let(:disable_sudo) { false }
-#     describe command("su - postgres -c \"psql -t -c 'DROP TABLE IF EXISTS test.test;'\"") do
-#       its(:stdout) { should match /^DROP TABLE$/ }
-#       its(:exit_status) { should eq 0 }
-#     end
-
-  
-#   describe 'Checking if it is possible to drop the test schema' do
-#     let(:disable_sudo) { false }
-#     describe command("su - postgres -c \"psql -t -c 'DROP SCHEMA IF EXISTS test;'\"") do
-#       its(:stdout) { should match /^DROP SCHEMA$/ }
-#       its(:exit_status) { should eq 0 }
-#     end
-#   end
-# end
