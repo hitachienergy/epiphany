@@ -10,50 +10,62 @@ yum-utils
 bash-completion
 ca-certificates
 cifs-utils
-conntrack-tools
+conntrack-tools # for kubelet
 containerd.io
 container-selinux
 cri-tools-1.13.0
 curl
+dejavu-sans-fonts # for grafana
 docker-ce-18.09.9
 docker-ce-cli-18.09.9
 ebtables
 elasticsearch-curator-5.5.4
 elasticsearch-oss-6.4.0
 epel-release
-ethtool
 erlang-21.3.8.7
+ethtool
 filebeat-6.5.4 # actually it's filebeat-oss
 firewalld
+fontconfig # for grafana
 fping
 grafana-6.2.5
+gssproxy # for nfs-utils
 htop
 iftop
-java-1.8.0-openjdk
+ipset # for firewalld
+java-1.8.0-openjdk-headless
+javapackages-tools # for java-1.8.0-openjdk-headless
 jq
 kibana-oss-6.4.0
 kubeadm-1.14.6
 kubectl-1.14.6
 kubelet-1.14.6
 kubernetes-cni-0.7.5
-libnetfilter_cthelper
-libnetfilter_cttimeout
-libnetfilter_queue
+libini_config # for nfs-utils
 libselinux-python
 libsemanage-python
+libX11 # for grafana
+libxcb # for grafana
+libXcursor # for grafana
+libXt # for grafana
 logrotate
-nmap-ncat
 net-tools
 nfs-utils
+nmap-ncat
 openssl
 perl # for vim
 perl-Getopt-Long # for vim
 perl-libs # for vim
+perl-Pod-Perldoc # for vim
 perl-Pod-Simple # for vim
 perl-Pod-Usage # for vim
+policycoreutils-python # for container-selinux
 python-firewall # for firewalld
+python-kitchen # for yum-utils
+python-lxml # for java-1.8.0-openjdk-headless
 python-psycopg2
 python-setuptools
+quota # for nfs-utils
 rabbitmq-server-3.7.10
 rh-haproxy18
 rh-haproxy18-haproxy-syspaths
@@ -65,14 +77,18 @@ rh-postgresql10-postgresql-server
 rh-postgresql10-postgresql-server-syspaths
 rh-postgresql10-postgresql-syspaths
 samba-client
+samba-client-libs # for samba-client
 samba-common
 socat
 sysstat
 tar
 telnet
 tmux
+urw-base35-fonts # for grafana
 vim-common # for vim
 vim-enhanced
+xorg-x11-font-utils # for grafana
+xorg-x11-server-utils # for grafana
 yum-plugin-versionlock
 
 [files]
