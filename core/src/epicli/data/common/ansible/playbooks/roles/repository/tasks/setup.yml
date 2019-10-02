@@ -71,4 +71,4 @@
     - inventory_hostname in groups['repository']
 
 - name: Set up repositories
-  include_tasks: "setup-{{ ansible_os_family }}.yml"
+  include_tasks: "{{ ansible_os_family }}/setup.yml"
