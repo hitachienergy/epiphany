@@ -8,7 +8,7 @@ def to_feature_name(role_name):
 
 def resource_name(prefix, cluster_name, resource_type, component=None):
     name = ''
-    if prefix == 'default':
+    if (not prefix) or (prefix == 'default'):
         if component is None:
             name = '%s-%s' % (cluster_name.lower(), resource_type.lower())
         else:
