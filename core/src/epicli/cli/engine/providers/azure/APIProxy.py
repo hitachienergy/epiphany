@@ -31,7 +31,10 @@ class APIProxy:
         return subscription
 
     def login_sp(self, sp_data):
-        return self.run(self, f'az login --service-principal -u {sp_data.name} -p {sp_data.password} --tenant {sp_data.tenant}')      
+        name = sp_data['name']
+        password = sp_data['password']
+        tenant = sp_data['tenant']
+        return self.run(self, f'az login --service-principal -u {name} -p {password} --tenant {tenant}')      
 
     def set_active_subscribtion(self, subscription_id):
         self.run(self, f'az account set --subscription {subscription_id}')  
@@ -44,7 +47,7 @@ class APIProxy:
         #TODO: make role configurable?
         sp = self.run(self, f'az ad sp create-for-rbac -n "{app_name}" --role="Contributor" --scopes="/subscriptions/{subscription_id}"')
         # Sleep for a while. Sometimes the call returns before the rights of the SP are finished creating.
-        self.wait(self, 20)
+        self.wait(self, 60)
         return sp  
 
     def get_ips_for_feature(self, component_key):
