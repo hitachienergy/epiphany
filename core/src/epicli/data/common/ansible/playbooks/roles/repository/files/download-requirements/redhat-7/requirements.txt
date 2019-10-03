@@ -65,6 +65,7 @@ python-kitchen # for yum-utils
 python-lxml # for java-1.8.0-openjdk-headless
 python-psycopg2
 python-setuptools
+python-slip-dbus # for firewalld
 quota # for nfs-utils
 rabbitmq-server-3.7.10
 rh-haproxy18
