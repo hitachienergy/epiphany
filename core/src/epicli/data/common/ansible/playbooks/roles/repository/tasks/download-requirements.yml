@@ -13,7 +13,7 @@
     state: absent
   when:
     - stat_result.stat.exists
-    - (ansible_date_time.epoch|int - stat_results.stat.mtime) > 3600 # older than 1h
+    - (ansible_date_time.epoch|int - stat_result.stat.mtime) > 3600 # older than 1h
 
 - name: Check whether to run download script
   stat:
