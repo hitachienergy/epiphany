@@ -11,7 +11,7 @@ from cli.helpers.build_saver import copy_files_recursively
 
 
 class PrepareEngine(Step):
-    PREPARE_PATH = DATA_FOLDER_PATH + '/common/ansible/playbooks/roles/repository/files/prepare'
+    PREPARE_PATH = DATA_FOLDER_PATH + '/common/ansible/playbooks/roles/repository/files/download-requirements'
 
     def __init__(self, input_data):
         super().__init__(__name__)

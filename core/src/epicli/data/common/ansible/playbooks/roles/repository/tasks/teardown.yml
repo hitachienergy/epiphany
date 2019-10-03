@@ -1,2 +1,2 @@
-- name: Configure repository and clients
-  include_tasks: "teardown-{{ ansible_os_family }}.yml"
+- name: Re-enable system repositories and disable epirepo
+  include_tasks: "{{ ansible_os_family }}/teardown.yml"
