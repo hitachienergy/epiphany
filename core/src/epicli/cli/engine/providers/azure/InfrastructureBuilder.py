@@ -3,7 +3,7 @@ import uuid
 from copy import deepcopy
 
 from cli.helpers.Step import Step
-from cli.helpers.naming_helpers import resource_name
+from cli.helpers.naming_helpers import resource_name, cluster_tag, storage_account_name
 from cli.helpers.doc_list_helpers import select_single, select_all
 from cli.helpers.doc_list_helpers import select_first
 from cli.helpers.data_loader import load_yaml_obj, types
@@ -148,7 +148,7 @@ class InfrastructureBuilder(Step):
     def get_storage_share_config(self):
         storage_share = self.get_config_or_default(self.docs, 'infrastructure/storage-share')
         storage_share.specification.name = resource_name(self.cluster_prefix, self.cluster_name, 'k8s-ss')
-        storage_share.specification.storage_account_name = self.cluster_prefix + self.cluster_name + 'k8s'
+        storage_share.specification.storage_account_name = storage_account_name(self.cluster_name, 'k8s')
         return storage_share           
 
     def get_vm(self, component_key, component_value, vm_config, network_interface_name, index):
@@ -156,7 +156,7 @@ class InfrastructureBuilder(Step):
         vm.specification.name = resource_name(self.cluster_prefix, self.cluster_name, 'vm' + '-' + str(index), component_key)
         vm.specification.admin_username = self.cluster_model.specification.admin_user.name
         vm.specification.network_interface_name = network_interface_name
-        vm.specification.tags.append({'cluster': f'{self.cluster_prefix}-{self.cluster_name}'})
+        vm.specification.tags.append({'cluster': cluster_tag(self.cluster_prefix, self.cluster_name)})
         vm.specification.tags.append({component_key: ''})        
         if vm.specification.os_type == 'linux':
             # For linux we dont need a PW since we only support SSH. We add something random for Terraform 

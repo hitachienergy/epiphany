@@ -4,7 +4,7 @@ import time
 from subprocess import Popen, PIPE
 from cli.helpers.Log import LogPipe, Log
 from cli.helpers.doc_list_helpers import select_first
-from cli.helpers.naming_helpers import resource_name
+from cli.helpers.naming_helpers import resource_name, cluster_tag
 from cli.models.AnsibleHostModel import AnsibleHostModel
 
 class APIProxy:
@@ -52,7 +52,7 @@ class APIProxy:
 
     def get_ips_for_feature(self, component_key):
         look_for_public_ip = self.cluster_model.specification.cloud.use_public_ips
-        cluster = f'{self.cluster_prefix}-{self.cluster_name}'      
+        cluster = cluster_tag(self.cluster_prefix, self.cluster_name)
         running_instances = self.run(self, f'az vm list-ip-addresses --ids $(az resource list --query "[?type==\'Microsoft.Compute/virtualMachines\' && tags.{component_key} == \'\' && tags.cluster == \'{cluster}\'].id" --output tsv)')
         result = []
         for instance in running_instances:
