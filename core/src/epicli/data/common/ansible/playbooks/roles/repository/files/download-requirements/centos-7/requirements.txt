@@ -87,6 +87,7 @@ tmux
 urw-base35-fonts # for grafana
 vim-common # for vim
 vim-enhanced
+wget
 xorg-x11-font-utils # for grafana
 xorg-x11-server-utils # for grafana
 yum-plugin-versionlock
