@@ -8,28 +8,49 @@ Provide backup functionality for Epiphany Platform - cluster created using epicl
 
 Backup will cover following areas:
 
-1. Kubernetes cluster backup
-1.1 etcd database
-1.2 kubeadm config
-1.3 certificates
-1.4 persistent volumes
-1.5 applications deployed on the cluster
-2. Kafka backup
-2.1 Kafka topic data
-2.2 Kafka index
-2.3 Zookeeper settings and data
-3. Elastic stack backup
-3.1 Elasticsearch data
-3.2 Kibana settings
-4. Monitoring backup
-4.1 Prometheus data
-4.2 Prometheus settings (properties, targets)
-4.3 Alertmanager settings
-4.4 Grafana settings (datasources, dashboards)
-5. PostgreSQL
-5.1 All databases from DB
-6. RabbitMQ settings and user data
-7. HAProxy settings backup
+1. [Kubernetes cluster backup](#1.-Kubernetes-cluster-backup)
+
+    1.1 etcd database
+
+    1.2 kubeadm config
+
+    1.3 certificates
+
+    1.4 persistent volumes
+
+    1.5 applications deployed on the cluster
+
+2. [Kafka backup](#2.-Kafka-backup)
+
+    2.1 Kafka topic data
+
+    2.2 Kafka index
+
+    2.3 Zookeeper settings and data
+
+3. [Elastic stack backup](#3.-Elastic-stack-backup)
+
+    3.1 Elasticsearch data
+
+    3.2 Kibana settings
+
+4. [Monitoring backup](#4.-Monitoring-backup)
+
+    4.1 Prometheus data
+
+    4.2 Prometheus settings (properties, targets)
+
+    4.3 Alertmanager settings
+
+    4.4 Grafana settings (datasources, dashboards)
+
+5. [PostgreSQL backup](#5.-PostgreSQL-backup)
+
+    5.1 All databases from DB
+
+6. [RabbitMQ settings and user data](#6.-RabbitMQ-settings-and-user-data)
+
+7. [HAProxy settings backup](#7.-HAProxy-settings-backup)
 
 ## Use cases
 
