@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-# VERSION 1.0.3
+# VERSION 1.1.3
 
 set -euo pipefail
 
@@ -108,7 +108,13 @@ download_packages() {
 }
 
 echol() {
-	echo -e "$1" |& tee --append $LOG_FILE_PATH
+	echo -e "$@"
+	if [[ $LOG_TO_JOURNAL = "YES" ]]; then
+		echo -e "$@" | systemd-cat --identifier=$SCRIPT_FILE_NAME
+	else # log to $LOG_FILE_PATH
+		local timestamp=$(date +"%b %e %H:%M:%S")
+		echo -e "${timestamp}: $@" >> "$LOG_FILE_PATH"
+	fi
 }
 
 # params: <repo_id>
@@ -285,6 +291,24 @@ usage() {
 # === Start ===
 
 [ $# -gt 0 ] || usage 1 >&2
+
+# --- Parse arguments ---
+
+POSITIONAL_ARGS=()
+LOG_TO_JOURNAL="NO"
+while [[ $# -gt 0 ]]; do
+case $1 in
+	--log-to-journal)
+	LOG_TO_JOURNAL="YES"
+	shift # past argument
+	;;
+	*) # unknown option
+	POSITIONAL_ARGS+=("$1") # save it in an array for later
+	shift
+	;;
+esac
+done
+set -- "${POSITIONAL_ARGS[@]}" # restore positional arguments
 
 # --- Global variables ---
 
