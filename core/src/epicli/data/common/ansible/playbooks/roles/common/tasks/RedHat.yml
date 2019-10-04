@@ -6,8 +6,7 @@
 
 - name: Install RedHat family packages
   yum:
-    name: 
-      - epel-release
+    name:
       - libselinux-python
       - libsemanage-python
       - firewalld
@@ -18,9 +17,9 @@
       - nc
       - curl
       - tmux
-      # - fping
-      # - iftop
-      # - htop
+      - fping
+      - iftop
+      - htop
       - vim
       - sysstat
       - python-setuptools
@@ -30,7 +29,7 @@
       - ebtables
       - ethtool
       - telnet
-    update_cache: yes 
+    update_cache: yes
     state: present
   register: result
   retries: 3

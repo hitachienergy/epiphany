@@ -446,7 +446,7 @@ if ! is_package_installed 'centos-release-scl'; then
 	install_package 'centos-release-scl'
 fi
 
-# fping package is a part of EPEL repo
+# some packages are from EPEL repo
 if ! is_package_installed 'epel-release'; then
 	install_package 'https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm' 'epel-release'
 fi
