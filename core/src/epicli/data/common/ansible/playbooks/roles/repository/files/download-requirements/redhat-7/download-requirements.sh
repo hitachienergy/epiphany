@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-# VERSION 1.1.3
+# VERSION 1.1.0
 
 set -euo pipefail
 
@@ -474,7 +474,7 @@ if ! is_package_installed 'epel-release'; then
 	install_package 'https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm' 'epel-release'
 fi
 
-echol "Executing: yum -y makecache fast" && yum -y makecache fast
+echol "Executing: yum -y makecache" && yum -y makecache
 
 # --- Download packages ---
 
