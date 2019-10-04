@@ -42,6 +42,7 @@ kubectl-1.14.6
 kubelet-1.14.6
 kubernetes-cni-0.7.5
 libini_config # for nfs-utils
+libldb # for samba-client
 libselinux-python
 libsemanage-python
 libtevent # for cifs-utils
