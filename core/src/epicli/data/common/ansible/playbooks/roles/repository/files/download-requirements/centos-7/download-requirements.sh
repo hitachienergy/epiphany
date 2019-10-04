@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-# VERSION 1.1.0
+# VERSION 1.2.0
 
 set -euo pipefail
 
@@ -134,11 +134,11 @@ exit_with_error() {
 }
 
 # params: <result_var> <package>
-get_package_dependencies() {
+get_package_dependencies_names() {
 	# $1 reserved for result
 	local package="$2"
 
-	local query_output=$(repoquery --requires --resolve --all --queryformat '%{ui_nevra}' --archlist=x86_64,noarch "$package" 2>&1) ||
+	local query_output=$(repoquery --requires --resolve --queryformat '%{name}' --archlist=x86_64,noarch "$package" 2>&1) ||
 		exit_with_error "repoquery failed for dependencies of package: $package with exit code: $?, output was: $query_output"
 
 	if [[ -z $query_output ]]; then
@@ -155,7 +155,7 @@ get_package_with_version() {
 	# $1 reserved for result
 	local package="$2"
 
-	local query_output=$(repoquery --all --queryformat '%{ui_nevra}' --archlist=x86_64,noarch "$package" 2>&1) ||
+	local query_output=$(repoquery --queryformat '%{ui_nevra}' --archlist=x86_64,noarch "$package" 2>&1) ||
 		exit_with_error "repoquery failed for package: $package with exit code: $?, output was: $query_output"
 
 	# yumdownloader doesn't handle error codes properly if repoquery gets empty output
@@ -167,6 +167,24 @@ get_package_with_version() {
 	fi
 
 	eval $1='$query_output'
+}
+
+# params: <result_var> <array_with_dependencies_names>
+get_packages_dependencies_with_versions() {
+	result_var_name="$1"
+	shift
+	local dependencies_names_arr=("$@")
+	local dependencies_with_versions=()
+
+	# filter out duplicates
+	dependencies_names_arr=($(echo "${dependencies_names_arr[@]}" | tr ' ' '\n' | sort -u | tr '\n' ' '))
+
+	for package in "${dependencies_names_arr[@]}"; do
+		get_package_with_version 'QUERY_OUTPUT' "$package" # full package name with version and architecture
+		dependencies_with_versions+=("$QUERY_OUTPUT")
+	done
+
+	eval $result_var_name='"${dependencies_with_versions[@]}"'
 }
 
 # params: <result_var> <group_name> <requirements_file_path>
@@ -455,26 +473,45 @@ echol "Executing: yum -y makecache" && yum -y makecache
 
 # --- Download packages ---
 
-create_directory "$OFFLINE_PREREQ_PACKAGES_DIR"
-create_directory "$PACKAGES_DIR"
+# 1) packages required to create repository
 
+create_directory "$OFFLINE_PREREQ_PACKAGES_DIR"
+
+DEPENDENCIES_OF_ALL_PREREQ_PACKAGES=()
 for package in $OFFLINE_PREREQ_PACKAGES; do
 	echol "Processing package: $package"
 	get_package_with_version 'QUERY_OUTPUT' "$package"
 	download_packages "$OFFLINE_PREREQ_PACKAGES_DIR" $QUERY_OUTPUT
-	# download package dependencies if exist
-	get_package_dependencies 'QUERY_OUTPUT' "$package"
-	download_packages "$OFFLINE_PREREQ_PACKAGES_DIR" $QUERY_OUTPUT
+	get_package_dependencies_names 'QUERY_OUTPUT' "$package"
+	for depenency_name in $QUERY_OUTPUT; do
+		DEPENDENCIES_OF_ALL_PREREQ_PACKAGES+=("$depenency_name")
+	done
 done
 
+# download dependencies (latest versions)
+get_packages_dependencies_with_versions 'DEPENDENCIES' "${DEPENDENCIES_OF_ALL_PREREQ_PACKAGES[@]}"
+echol "Downloading dependencies of prerequisite packages (${#DEPENDENCIES_OF_ALL_PREREQ_PACKAGES[@]})..."
+download_packages "$OFFLINE_PREREQ_PACKAGES_DIR" $DEPENDENCIES
+
+# 2) non-prerequisite packages
+
+create_directory "$PACKAGES_DIR"
+
+DEPENDENCIES_OF_ALL_NON_PREREQ_PACKAGES=()
 for package in $PACKAGES; do
 	echol "Processing package: $package"
 	get_package_with_version 'QUERY_OUTPUT' "$package"
 	download_packages "$PACKAGES_DIR" $QUERY_OUTPUT
-	# download package dependencies if exist
-	get_package_dependencies 'QUERY_OUTPUT' "$package"
-	download_packages "$PACKAGES_DIR" $QUERY_OUTPUT
+	get_package_dependencies_names 'QUERY_OUTPUT' "$package"
+	for depenency_name in $QUERY_OUTPUT; do
+		DEPENDENCIES_OF_ALL_NON_PREREQ_PACKAGES+=("$depenency_name")
+	done
 done
+
+# download dependencies (latest versions)
+get_packages_dependencies_with_versions 'DEPENDENCIES' "${DEPENDENCIES_OF_ALL_NON_PREREQ_PACKAGES[@]}"
+echol "Downloading dependencies of all non-prerequisite packages (${#DEPENDENCIES_OF_ALL_NON_PREREQ_PACKAGES[@]})..."
+download_packages "$PACKAGES_DIR" $DEPENDENCIES
 
 # --- Clean up yum repos ---
 

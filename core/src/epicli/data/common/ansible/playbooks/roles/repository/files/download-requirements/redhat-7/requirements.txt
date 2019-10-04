@@ -21,7 +21,6 @@ docker-ce-cli-18.09.9
 ebtables
 elasticsearch-curator-5.5.4
 elasticsearch-oss-6.4.0
-epel-release
 erlang-21.3.8.7
 ethtool
 filebeat-6.5.4 # actually it's filebeat-oss
@@ -42,12 +41,8 @@ kubectl-1.14.6
 kubelet-1.14.6
 kubernetes-cni-0.7.5
 libini_config # for nfs-utils
-libldb # for samba-client
-libtdb # for samba-client
 libselinux-python
 libsemanage-python
-libsmbclient # for samba-client
-libtevent # for cifs-utils
 libX11 # for grafana
 libxcb # for grafana
 libXcursor # for grafana
@@ -84,7 +79,6 @@ rh-postgresql10-postgresql-syspaths
 samba-client
 samba-client-libs # for samba-client
 samba-common
-samba-common-libs # for cifs-utils
 socat
 sysstat
 tar
