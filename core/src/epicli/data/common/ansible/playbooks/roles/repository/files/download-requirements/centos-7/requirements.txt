@@ -80,6 +80,7 @@ rh-postgresql10-postgresql-syspaths
 samba-client
 samba-client-libs # for samba-client
 samba-common
+samba-common-libs # for cifs-utils
 socat
 sysstat
 tar
