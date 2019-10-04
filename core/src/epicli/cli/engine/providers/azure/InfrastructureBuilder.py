@@ -148,7 +148,7 @@ class InfrastructureBuilder(Step):
     def get_storage_share_config(self):
         storage_share = self.get_config_or_default(self.docs, 'infrastructure/storage-share')
         storage_share.specification.name = resource_name(self.cluster_prefix, self.cluster_name, 'k8s-ss')
-        storage_share.specification.storage_account_name = storage_account_name(self.cluster_name, 'k8s')
+        storage_share.specification.storage_account_name = storage_account_name(self.cluster_prefix, self.cluster_name, 'k8s')
         return storage_share           
 
     def get_vm(self, component_key, component_value, vm_config, network_interface_name, index):
