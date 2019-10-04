@@ -46,6 +46,7 @@ libldb # for samba-client
 libtdb # for samba-client
 libselinux-python
 libsemanage-python
+libsmbclient # for samba-client
 libtevent # for cifs-utils
 libX11 # for grafana
 libxcb # for grafana
