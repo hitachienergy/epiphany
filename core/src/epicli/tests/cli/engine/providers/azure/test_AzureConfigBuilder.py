@@ -113,7 +113,7 @@ def test_get_storage_share_config_should_set_proper_values_to_model():
     actual = builder.get_storage_share_config()
 
     assert actual.specification.name == 'prefix-testcluster-k8s-ss'   
-    assert actual.specification.storage_account_name == 'prefixtestclusterk8s'  
+    assert actual.specification.storage_account_name == 'prefixtestclusterk8s'
     assert actual.specification.quota == 50
 
 
