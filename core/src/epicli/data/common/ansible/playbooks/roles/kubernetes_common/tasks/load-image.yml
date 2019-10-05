@@ -1,6 +1,6 @@
 ---
 
-- name: check if image is already loaded
+- name: Check if image is already loaded
   shell: "docker images {{ docker_image.name }} --format {{ '{{' }}.ID{{ '}}' }}"
   register: image_check
   ignore_errors: true
