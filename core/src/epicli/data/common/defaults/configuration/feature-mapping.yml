@@ -5,7 +5,7 @@ name: default
 specification:
   available_roles:
     - name: repository
-      enabled: yes
+      enabled: no # disabled by purpose, there is no ansible/repository.yml
     - name: kubernetes-master
       enabled: yes
     - name: kubernetes-node

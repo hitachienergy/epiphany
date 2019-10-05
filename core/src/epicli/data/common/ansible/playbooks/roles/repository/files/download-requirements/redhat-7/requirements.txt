@@ -1,6 +1,6 @@
 # Put this file in the same directory as download script
 
-[packages-offline-prereqs]
+[packages-repo-prereqs]
 createrepo
 httpd
 mod_ssl
@@ -21,7 +21,6 @@ docker-ce-cli-18.09.9
 ebtables
 elasticsearch-curator-5.5.4
 elasticsearch-oss-6.4.0
-epel-release
 erlang-21.3.8.7
 ethtool
 filebeat-6.5.4 # actually it's filebeat-oss
@@ -65,6 +64,7 @@ python-kitchen # for yum-utils
 python-lxml # for java-1.8.0-openjdk-headless
 python-psycopg2
 python-setuptools
+python-slip-dbus # for firewalld
 quota # for nfs-utils
 rabbitmq-server-3.7.10
 rh-haproxy18
