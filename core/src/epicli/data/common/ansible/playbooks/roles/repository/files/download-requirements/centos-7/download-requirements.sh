@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-# VERSION 1.2.0
+# VERSION 1.2.1
 
 set -euo pipefail
 
@@ -69,7 +69,7 @@ download_file() {
 	local dest_path="$dest_dir/$file_name"
 
 	# wget with --timestamping sometimes failes on AWS with ERROR 403: Forbidden
-	# so we remove existing file to overwrite it
+	# so we remove existing file to overwrite it, to be optimized
 	[[ ! -f $dest_path ]] || remove_file "$dest_path"
 
 	echol "Downloading file: $file"
@@ -103,13 +103,15 @@ download_packages() {
 	local packages="$@"
 
 	if [[ -n $packages ]]; then
-		yumdownloader --quiet --destdir "$dest_dir" $packages || exit_with_error "yumdownloader failed for: $packages"
+		# when using --archlist=x86_64 yumdownloader (yum-utils-1.1.31-52) also downloads i686 packages
+		yumdownloader --quiet --archlist=x86_64 --exclude='*i686' --destdir="$dest_dir" $packages ||
+			exit_with_error "yumdownloader failed for: $packages"
 	fi
 }
 
 echol() {
 	echo -e "$@"
-	if [[ $LOG_TO_JOURNAL = "YES" ]]; then
+	if [[ $LOG_TO_JOURNAL == 'YES' ]]; then
 		echo -e "$@" | systemd-cat --identifier=$SCRIPT_FILE_NAME
 	else # log to $LOG_FILE_PATH
 		local timestamp=$(date +"%b %e %H:%M:%S")
@@ -134,11 +136,11 @@ exit_with_error() {
 }
 
 # params: <result_var> <package>
-get_package_dependencies_names() {
+get_package_dependencies_with_arch() {
 	# $1 reserved for result
 	local package="$2"
 
-	local query_output=$(repoquery --requires --resolve --queryformat '%{name}' --archlist=x86_64,noarch "$package" 2>&1) ||
+	local query_output=$(repoquery --requires --resolve --queryformat '%{name}.%{arch}' --archlist=x86_64,noarch "$package" 2>&1) ||
 		exit_with_error "repoquery failed for dependencies of package: $package with exit code: $?, output was: $query_output"
 
 	if [[ -z $query_output ]]; then
@@ -147,18 +149,19 @@ get_package_dependencies_names() {
 		exit_with_error "repoquery failed for dependencies of package: $package, output was: $query_output"
 	fi
 
-	eval $1='$query_output'
+	eval $1='($query_output)'
 }
 
+# desc: get full package name with version and architecture
 # params: <result_var> <package>
-get_package_with_version() {
+get_package_with_version_arch() {
 	# $1 reserved for result
 	local package="$2"
 
 	local query_output=$(repoquery --queryformat '%{ui_nevra}' --archlist=x86_64,noarch "$package" 2>&1) ||
 		exit_with_error "repoquery failed for package: $package with exit code: $?, output was: $query_output"
 
-	# yumdownloader doesn't handle error codes properly if repoquery gets empty output
+	# yumdownloader doesn't set error code if repoquery returns empty output
 	[[ -n $query_output ]] || exit_with_error "repoquery failed: package $package not found"
 	if grep --ignore-case --perl-regexp '\b(?<!-)error(?!-)\b' <<< "$query_output"; then
 		exit_with_error "repoquery failed for package: $package, output was: $query_output"
@@ -169,22 +172,19 @@ get_package_with_version() {
 	eval $1='$query_output'
 }
 
-# params: <result_var> <array_with_dependencies_names>
-get_packages_dependencies_with_versions() {
-	result_var_name="$1"
+# params: <result_var> <packages_array>
+get_packages_with_version_arch() {
+	local result_var_name="$1"
 	shift
-	local dependencies_names_arr=("$@")
-	local dependencies_with_versions=()
+	local packages=("$@")
+	local packages_with_version_arch=()
 
-	# filter out duplicates
-	dependencies_names_arr=($(echo "${dependencies_names_arr[@]}" | tr ' ' '\n' | sort -u | tr '\n' ' '))
-
-	for package in "${dependencies_names_arr[@]}"; do
-		get_package_with_version 'QUERY_OUTPUT' "$package" # full package name with version and architecture
-		dependencies_with_versions+=("$QUERY_OUTPUT")
+	for package in "${packages[@]}"; do
+		get_package_with_version_arch 'QUERY_OUTPUT' "$package"
+		packages_with_version_arch+=("$QUERY_OUTPUT")
 	done
 
-	eval $result_var_name='"${dependencies_with_versions[@]}"'
+	eval $result_var_name='("${packages_with_version_arch[@]}")'
 }
 
 # params: <result_var> <group_name> <requirements_file_path>
@@ -200,6 +200,18 @@ get_requirements_from_group() {
 	[[ -n $requirements_from_group ]] || echol "No requirements found for group: $group_name"
 
 	eval $1='$requirements_from_group'
+}
+
+# params: <result_var> <array>
+get_unique_array() {
+	local result_var_name="$1"
+	shift
+	local array=("$@")
+
+	# filter out duplicates
+	array=($(echo "${array[@]}" | tr ' ' '\n' | sort -u | tr '\n' ' '))
+
+	eval $result_var_name='("${array[@]}")'
 }
 
 # params: <package_name_or_url> [package_name]
@@ -296,11 +308,11 @@ usage() {
 # --- Parse arguments ---
 
 POSITIONAL_ARGS=()
-LOG_TO_JOURNAL="NO"
+LOG_TO_JOURNAL='NO'
 while [[ $# -gt 0 ]]; do
 case $1 in
 	--log-to-journal)
-	LOG_TO_JOURNAL="YES"
+	LOG_TO_JOURNAL='YES'
 	shift # past argument
 	;;
 	*) # unknown option
@@ -318,7 +330,7 @@ readonly DOWNLOADS_DIR="$1" # root directory for downloads
 readonly FILES_DIR="$DOWNLOADS_DIR/files"
 readonly PACKAGES_DIR="$DOWNLOADS_DIR/packages"
 readonly IMAGES_DIR="$DOWNLOADS_DIR/images"
-readonly OFFLINE_PREREQ_PACKAGES_DIR="$PACKAGES_DIR/offline-prereqs"
+readonly REPO_PREREQ_PACKAGES_DIR="$PACKAGES_DIR/repo-prereqs"
 readonly SCRIPT_DIR="$(dirname $(readlink -f $0))" # want absolute path
 
 # files
@@ -341,11 +353,11 @@ readonly INSTALLED_PACKAGES_FILE_PATH="$SCRIPT_DIR/${SCRIPT_FILE_NAME}-installed
 
 # --- Parse requirements file ---
 
-# Requirements are grouped using sections: [packages-offline-prereqs], [packages], [files], [images]
-get_requirements_from_group 'OFFLINE_PREREQ_PACKAGES' 'packages-offline-prereqs' "$REQUIREMENTS_FILE_PATH"
-get_requirements_from_group 'PACKAGES'                'packages'                 "$REQUIREMENTS_FILE_PATH"
-get_requirements_from_group 'FILES'                   'files'                    "$REQUIREMENTS_FILE_PATH"
-get_requirements_from_group 'IMAGES'                  'images'                   "$REQUIREMENTS_FILE_PATH"
+# Requirements are grouped using sections: [packages-repo-prereqs], [packages], [files], [images]
+get_requirements_from_group 'REPO_PREREQ_PACKAGES' 'packages-repo-prereqs' "$REQUIREMENTS_FILE_PATH"
+get_requirements_from_group 'PACKAGES'             'packages'              "$REQUIREMENTS_FILE_PATH"
+get_requirements_from_group 'FILES'                'files'                 "$REQUIREMENTS_FILE_PATH"
+get_requirements_from_group 'IMAGES'               'images'                "$REQUIREMENTS_FILE_PATH"
 
 # === Packages ===
 
@@ -475,43 +487,59 @@ echol "Executing: yum -y makecache" && yum -y makecache
 
 # 1) packages required to create repository
 
-create_directory "$OFFLINE_PREREQ_PACKAGES_DIR"
+create_directory "$REPO_PREREQ_PACKAGES_DIR"
 
-DEPENDENCIES_OF_ALL_PREREQ_PACKAGES=()
-for package in $OFFLINE_PREREQ_PACKAGES; do
+# prepare lists
+PREREQ_PACKAGES=()
+DEPENDENCIES_OF_PREREQ_PACKAGES=()
+for package in $REPO_PREREQ_PACKAGES; do
 	echol "Processing package: $package"
-	get_package_with_version 'QUERY_OUTPUT' "$package"
-	download_packages "$OFFLINE_PREREQ_PACKAGES_DIR" $QUERY_OUTPUT
-	get_package_dependencies_names 'QUERY_OUTPUT' "$package"
-	for depenency_name in $QUERY_OUTPUT; do
-		DEPENDENCIES_OF_ALL_PREREQ_PACKAGES+=("$depenency_name")
-	done
+	get_package_with_version_arch 'QUERY_OUTPUT' "$package"
+	PREREQ_PACKAGES+=("$QUERY_OUTPUT")
+	get_package_dependencies_with_arch 'DEPENDENCIES' "$package"
+	if [[ ${#DEPENDENCIES[@]} -gt 0 ]]; then
+		for dependency in "${DEPENDENCIES[@]}"; do
+			DEPENDENCIES_OF_PREREQ_PACKAGES+=("$dependency")
+		done
+	fi
 done
 
+# download requirements (fixed versions)
+echol "Downloading repository prerequisite packages (${#PREREQ_PACKAGES[@]})..."
+download_packages "$REPO_PREREQ_PACKAGES_DIR" "${PREREQ_PACKAGES[@]}"
 # download dependencies (latest versions)
-get_packages_dependencies_with_versions 'DEPENDENCIES' "${DEPENDENCIES_OF_ALL_PREREQ_PACKAGES[@]}"
-echol "Downloading dependencies of prerequisite packages (${#DEPENDENCIES_OF_ALL_PREREQ_PACKAGES[@]})..."
-download_packages "$OFFLINE_PREREQ_PACKAGES_DIR" $DEPENDENCIES
+get_unique_array 'DEPENDENCIES' "${DEPENDENCIES_OF_PREREQ_PACKAGES[@]}"
+get_packages_with_version_arch 'DEPENDENCIES' "${DEPENDENCIES[@]}"
+echol "Downloading dependencies of repository prerequisite packages (${#DEPENDENCIES[@]})..."
+download_packages "$REPO_PREREQ_PACKAGES_DIR" "${DEPENDENCIES[@]}"
 
 # 2) non-prerequisite packages
 
 create_directory "$PACKAGES_DIR"
 
-DEPENDENCIES_OF_ALL_NON_PREREQ_PACKAGES=()
+# prepare lists
+NON_PREREQ_PACKAGES=()
+DEPENDENCIES_OF_NON_PREREQ_PACKAGES=()
 for package in $PACKAGES; do
 	echol "Processing package: $package"
-	get_package_with_version 'QUERY_OUTPUT' "$package"
-	download_packages "$PACKAGES_DIR" $QUERY_OUTPUT
-	get_package_dependencies_names 'QUERY_OUTPUT' "$package"
-	for depenency_name in $QUERY_OUTPUT; do
-		DEPENDENCIES_OF_ALL_NON_PREREQ_PACKAGES+=("$depenency_name")
-	done
+	get_package_with_version_arch 'QUERY_OUTPUT' "$package"
+	NON_PREREQ_PACKAGES+=("$QUERY_OUTPUT")
+	get_package_dependencies_with_arch 'DEPENDENCIES' "$package"
+	if [[ ${#DEPENDENCIES[@]} -gt 0 ]]; then
+		for dependency in "${DEPENDENCIES[@]}"; do
+			DEPENDENCIES_OF_NON_PREREQ_PACKAGES+=("$dependency")
+		done
+	fi
 done
 
+# download requirements (fixed versions)
+echol "Downloading packages (${#NON_PREREQ_PACKAGES[@]})..."
+download_packages "$PACKAGES_DIR" "${NON_PREREQ_PACKAGES[@]}"
 # download dependencies (latest versions)
-get_packages_dependencies_with_versions 'DEPENDENCIES' "${DEPENDENCIES_OF_ALL_NON_PREREQ_PACKAGES[@]}"
-echol "Downloading dependencies of all non-prerequisite packages (${#DEPENDENCIES_OF_ALL_NON_PREREQ_PACKAGES[@]})..."
-download_packages "$PACKAGES_DIR" $DEPENDENCIES
+get_unique_array 'DEPENDENCIES' "${DEPENDENCIES_OF_NON_PREREQ_PACKAGES[@]}"
+get_packages_with_version_arch 'DEPENDENCIES' "${DEPENDENCIES[@]}"
+echol "Downloading dependencies of packages (${#DEPENDENCIES[@]})..."
+download_packages "$PACKAGES_DIR" "${DEPENDENCIES[@]}"
 
 # --- Clean up yum repos ---
 

@@ -1,6 +1,6 @@
 # Put this file in the same directory as download script
 
-[packages-offline-prereqs]
+[packages-repo-prereqs]
 createrepo
 httpd
 mod_ssl
