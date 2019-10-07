@@ -4,7 +4,7 @@ import time
 from subprocess import Popen, PIPE
 from cli.helpers.Log import LogPipe, Log
 from cli.helpers.doc_list_helpers import select_first
-from cli.helpers.naming_helpers import resource_name
+from cli.helpers.naming_helpers import resource_name, cluster_tag
 from cli.models.AnsibleHostModel import AnsibleHostModel
 
 class APIProxy:
@@ -22,13 +22,19 @@ class APIProxy:
     def __exit__(self, exc_type, exc_value, traceback):
         pass
 
-    def login(self):
+    def login_account(self):
         subscription_name = self.cluster_model.specification.cloud.subscription_name
         all_subscription = self.run(self, 'az login')
         subscription = select_first(all_subscription, lambda x: x['name'] == subscription_name)
         if subscription is None:
             raise Exception(f'User does not have access to subscription: "{subscription_name}"')
         return subscription
+
+    def login_sp(self, sp_data):
+        name = sp_data['name']
+        password = sp_data['password']
+        tenant = sp_data['tenant']
+        return self.run(self, f'az login --service-principal -u {name} -p {password} --tenant {tenant}')      
 
     def set_active_subscribtion(self, subscription_id):
         self.run(self, f'az account set --subscription {subscription_id}')  
@@ -41,12 +47,12 @@ class APIProxy:
         #TODO: make role configurable?
         sp = self.run(self, f'az ad sp create-for-rbac -n "{app_name}" --role="Contributor" --scopes="/subscriptions/{subscription_id}"')
         # Sleep for a while. Sometimes the call returns before the rights of the SP are finished creating.
-        self.wait(self, 20)
+        self.wait(self, 60)
         return sp  
 
     def get_ips_for_feature(self, component_key):
         look_for_public_ip = self.cluster_model.specification.cloud.use_public_ips
-        cluster = f'{self.cluster_prefix}-{self.cluster_name}'      
+        cluster = cluster_tag(self.cluster_prefix, self.cluster_name)
         running_instances = self.run(self, f'az vm list-ip-addresses --ids $(az resource list --query "[?type==\'Microsoft.Compute/virtualMachines\' && tags.{component_key} == \'\' && tags.cluster == \'{cluster}\'].id" --output tsv)')
         result = []
         for instance in running_instances:

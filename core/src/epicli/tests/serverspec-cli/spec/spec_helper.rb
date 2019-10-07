@@ -62,11 +62,14 @@ set :shell, '/bin/bash'
       end
   end
 
-  def readDataYaml
+  def readDataYaml(kind)
     path = ENV['inventory'].dup
     path.sub! 'inventory' , 'manifest.yml'
-    datayaml = YAML.load_file(path)
-    return datayaml
+    datayaml = []
+    YAML.load_stream(File.read path) do |ruby|
+      datayaml << ruby
+    end
+    return datayaml.select {|x| x["kind"] == kind }[0]
   end
 
   def listInventoryHosts(role)
@@ -83,5 +86,20 @@ set :shell, '/bin/bash'
       end
     end
     return list
-   end
+  end
 
+  def listInventoryIPs(role)
+    file = File.open(ENV['inventory'], "rb")
+    input = file.read
+    file.close
+    list = []
+    if input.include? "[#{role}]"
+      rows = input.split("[#{role}]")[1].split("[")[0]
+      rows.each_line do |line|
+        if line[0] != '#' and line =~ /(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})/
+          list << line.split('=').last.strip
+        end
+      end
+    end
+    return list
+  end

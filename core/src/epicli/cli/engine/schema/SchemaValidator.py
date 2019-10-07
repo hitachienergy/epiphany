@@ -34,10 +34,16 @@ class SchemaValidator(Step):
 
     def run(self):
         for doc in self.validation_docs:
-            self.logger.info('Validating: ' + doc.kind)
+            self.logger.info(f'Validating: {doc.kind}')
             schema = self.get_base_schema(doc.kind)
-            schema['specification'] = load_yaml_obj(types.VALIDATION, self.cluster_model.provider, doc.kind)
-            if schema["specification"]['$ref'] == '#/definitions/unvalidated_specification':
-                self.logger.warn('No specification validation for ' + doc.kind)
-            validate(instance=objdict_to_dict(doc), schema=objdict_to_dict(schema))
+            schema['properties']['specification'] = load_yaml_obj(types.VALIDATION, self.cluster_model.provider, doc.kind)
+            if hasattr(schema['properties']["specification"], '$ref'):
+                if schema['properties']["specification"]['$ref'] == '#/definitions/unvalidated_specification':
+                    self.logger.warn('No specification validation for ' + doc.kind)
+            try:
+                validate(instance=objdict_to_dict(doc), schema=objdict_to_dict(schema))
+            except Exception as e:
+                self.logger.error(f'Failed validating: {doc.kind}')
+                self.logger.error(e)
+                raise Exception('Schema validation error, see the error above.')
 
