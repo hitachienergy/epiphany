@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-# VERSION 1.2.1
+# VERSION 1.2.3
 
 set -euo pipefail
 
@@ -111,9 +111,7 @@ download_packages() {
 
 echol() {
 	echo -e "$@"
-	if [[ $LOG_TO_JOURNAL == 'YES' ]]; then
-		echo -e "$@" | systemd-cat --identifier=$SCRIPT_FILE_NAME
-	else # log to $LOG_FILE_PATH
+	if [[ $CREATE_LOGFILE == 'yes' ]]; then
 		local timestamp=$(date +"%b %e %H:%M:%S")
 		echo -e "${timestamp}: $@" >> "$LOG_FILE_PATH"
 	fi
@@ -321,15 +319,16 @@ usage() {
 # === Start ===
 
 [ $# -gt 0 ] || usage 1 >&2
+readonly START_TIME=$(date +%s)
 
 # --- Parse arguments ---
 
 POSITIONAL_ARGS=()
-LOG_TO_JOURNAL='NO'
+CREATE_LOGFILE='yes'
 while [[ $# -gt 0 ]]; do
 case $1 in
-	--log-to-journal)
-	LOG_TO_JOURNAL='YES'
+	--no-logfile)
+	CREATE_LOGFILE='no'
 	shift # past argument
 	;;
 	*) # unknown option
@@ -504,7 +503,7 @@ if ! is_package_installed 'epel-release'; then
 	install_package 'https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm' 'epel-release'
 fi
 
-echol "Executing: yum -y makecache" && yum -y makecache
+echol "Executing: yum -y makecache fast" && yum -y makecache fast
 
 # --- Download packages ---
 
@@ -601,4 +600,6 @@ done
 # --- Clean up packages ---
 remove_installed_packages "$INSTALLED_PACKAGES_FILE_PATH"
 
-echol "$(basename $0) finished"
+readonly END_TIME=$(date +%s)
+
+echol "$(basename $0) finished, execution time: $(date -u -d @$((END_TIME-START_TIME)) +'%Hh:%Mm:%Ss')"
