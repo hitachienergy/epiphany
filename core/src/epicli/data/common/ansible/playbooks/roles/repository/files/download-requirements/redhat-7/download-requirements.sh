@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-# VERSION 1.2.2
+# VERSION 1.2.3
 
 set -euo pipefail
 
@@ -58,6 +58,17 @@ create_directory() {
 		echol "Creating directory: $dir_path"
 		mkdir -p "$dir_path" || exit_with_error "Command failed: mkdir -p \"$dir_path\""
 	fi
+}
+
+# params: <seconds>
+display_seconds() {
+	local seconds=$1
+	local h=$((seconds/3600))
+	local m=$((seconds%3600/60))
+	local s=$((seconds%60))
+	(( h > 0 )) && printf '%dh ' $h
+	(( m > 0 )) && printf '%dm ' $m
+	               printf '%ds' $s
 }
 
 # params: <file_url> <dest_dir>
@@ -319,6 +330,7 @@ usage() {
 # === Start ===
 
 [ $# -gt 0 ] || usage 1 >&2
+readonly START_TIME=$(date +%s)
 
 # --- Parse arguments ---
 
@@ -599,4 +611,6 @@ done
 # --- Clean up packages ---
 remove_installed_packages "$INSTALLED_PACKAGES_FILE_PATH"
 
-echol "$(basename $0) finished"
+readonly END_TIME=$(date +%s)
+
+echol "$(basename $0) finished in $(display_seconds $((START_TIME-END_TIME)))"
