@@ -1,6 +1,6 @@
 # Epiphany Platform backup design document
 
-Affected version: 0.4.1
+Affected version: 0.4.x
 
 ## Goals
 
@@ -78,7 +78,7 @@ Where `-b` is path to build folder that contains Ansible inventory and `-t` cont
 ![Epiphany backup component](backup_component.png)
 
 User/background service/job executes `epibackup` (code name) application. Application takes parameters:
-- `-b`: build directory of existing cluster. Most important is ansible inventory existing in this directory - so it can be assumed that this should be folder of Ansible inventory file. 
+- `-b`: build directory of existing cluster. Most important is ansible inventory existing in this directory - so it can be assumed that this should be folder of Ansible inventory file.
 - `-t`: target location of zip/tar.gz file that will contain backup files and metadata file.
 
 Tool when executed looks for the inventory file in `-b` location and executes backup playbooks. All playbooks are optional, in MVP version it can try to backup all components (it they exists in the inventory). After that, some components can be skipped (by providing additional flag, or parameter to cli).
@@ -105,9 +105,10 @@ Possible options for backing up Kafka broker data and indexes:
 3. File system copy: take Kafka broker and ZooKeeper data stored in files and copy it to backup location. It requires Kafka Broker to be stopped. Solution described in Digital Ocean [post](https://www.digitalocean.com/community/tutorials/how-to-back-up-import-and-migrate-your-apache-kafka-data-on-ubuntu-18-04).
 
 ## 3. Elastic stack backup
+
 Use built-in features of Elasticsearch to create backup like:
 
-```
+```REST
 PUT /_snapshot/my_unverified_backup?verify=false
 {
   "type": "fs",
@@ -125,8 +126,8 @@ OpenDistro uses similar way of doing backups - it should be compatible. [OpenDis
 
 Prometheus from version 2.1 is able to create data snapshot by doing HTTP request:
 
-```
-$ curl -XPOST http://localhost:9090/api/v1/admin/tsdb/snapshot
+```bash
+curl -XPOST http://localhost:9090/api/v1/admin/tsdb/snapshot
 ```
 Snapshot will be created in `<data-dir>/snapshots/SNAPSHOT-NAME-RETURNED-IN-RESPONSE`
 
