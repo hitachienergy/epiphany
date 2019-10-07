@@ -590,4 +590,4 @@ remove_installed_packages "$INSTALLED_PACKAGES_FILE_PATH"
 
 readonly END_TIME=$(date +%s)
 
-echol "$(basename $0) finished in $(display_seconds $((START_TIME-END_TIME)))"
+echol "$(basename $0) finished, execution time: $(display_seconds $((END_TIME-START_TIME)))"
