@@ -24,10 +24,10 @@
     Run download-requirements script, it can take a long time
     You can check progress on repository host with: journalctl -f -t download-requirements.sh
   shell: >-
-    time /tmp/epi-download-requirements/download-requirements.sh /var/www/html/epirepo --no-logfile |&
+    set -o pipefail && time /tmp/epi-download-requirements/download-requirements.sh /var/www/html/epirepo --no-logfile |&
     tee >(systemd-cat --identifier=download-requirements.sh)
   args:
-    executable: /bin/bash -o pipefail
+    executable: /bin/bash
   when: not stat_result.stat.exists
 
 - name: Create flag file to not re-download requirements next time
