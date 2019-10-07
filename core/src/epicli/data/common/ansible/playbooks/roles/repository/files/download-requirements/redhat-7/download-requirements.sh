@@ -60,17 +60,6 @@ create_directory() {
 	fi
 }
 
-# params: <seconds>
-display_seconds() {
-	local seconds=$1
-	local h=$((seconds/3600))
-	local m=$((seconds%3600/60))
-	local s=$((seconds%60))
-	(( h > 0 )) && printf '%dh ' $h
-	(( m > 0 )) && printf '%dm ' $m
-	               printf '%ds' $s
-}
-
 # params: <file_url> <dest_dir>
 download_file() {
 	local file_url="$1"
@@ -613,4 +602,4 @@ remove_installed_packages "$INSTALLED_PACKAGES_FILE_PATH"
 
 readonly END_TIME=$(date +%s)
 
-echol "$(basename $0) finished, execution time: $(display_seconds $((END_TIME-START_TIME)))"
+echol "$(basename $0) finished, execution time: $(date -u -d @$((END_TIME-START_TIME)) +'%Hh:%Mm:%Ss')"
