@@ -4,3 +4,4 @@ title: "Epiphany requirements repository"
 name: default
 specification:
   description: "Local repository of binaries required to install Epiphany"
+  download_done_flag_expire_minutes: 120
