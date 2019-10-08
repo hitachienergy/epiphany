@@ -1,5 +1,4 @@
 ---
-
 - name: Enable system repositories and disable epirepo for offline mode
   block:
     - name: Enable system repositories

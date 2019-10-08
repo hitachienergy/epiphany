@@ -46,8 +46,10 @@ class AnsibleCommand:
                 break
             except Exception as e:
                 self.logger.error(e)
-                self.logger.info("Retry running task: " + str(i + 1) + "/" + str(retries))
+                self.logger.info('Retry running task: ' + str(i + 1) + '/' + str(retries))
                 time.sleep(timeout)
+        else:
+            raise Exception(f'Failed running task after {str(retries)} retries')
 
     def run_playbook(self, inventory, playbook_path):
         cmd = ['ansible-playbook']
@@ -73,13 +75,13 @@ class AnsibleCommand:
 
     def run_playbook_with_retries(self, inventory, playbook_path, retries, timeout=10):
         for i in range(retries):
-
             try:
                 self.run_playbook(inventory=inventory,
                                   playbook_path=playbook_path)
-                return 0
+                break
             except Exception as e:
                 self.logger.error(e)
-                self.logger.info("Retry running playbook: " + str(i + 1) + "/" + str(retries))
+                self.logger.info('Retry running playbook: ' + str(i + 1) + '/' + str(retries))
                 time.sleep(timeout)
-        return 1
+        else:
+            raise Exception(f'Failed running playbook after {str(retries)} retries')

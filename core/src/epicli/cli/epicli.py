@@ -223,7 +223,7 @@ def experimental_query():
 
 
 def adjust_paths_from_output_dir():
-    if not os.path.exists(Config().output_dir):
+    if not Config().output_dir:
         Config().output_dir = os.getcwd()  # Default to working dir so we can at least write logs.
     dump_config(Config())
 

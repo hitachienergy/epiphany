@@ -4,6 +4,8 @@ title: "Feature mapping to roles"
 name: default
 specification:
   available_roles:
+    - name: repository
+      enabled: yes
     - name: kubernetes-master
       enabled: yes
     - name: kubernetes-node
@@ -72,6 +74,7 @@ specification:
       - node-exporter
       - filebeat
     custom:
+      - repository
       - kubernetes-master
       - node-exporter
       - filebeat
@@ -84,12 +87,14 @@ specification:
       - elasticsearch
       - elasticsearch-curator
     single_machine:
+      - repository
       - kubernetes-master
       - applications
       - rabbitmql
       - postgresql
     kubernetes_master:
       - kubernetes-master
+      - repository
       - applications
       - node-exporter
       - filebeat
