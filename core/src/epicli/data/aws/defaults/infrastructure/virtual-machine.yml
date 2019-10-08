@@ -138,6 +138,26 @@ specification:
        destination_port_range: "5672"
        source_address_prefix: "10.1.0.0/20"
        destination_address_prefix: "0.0.0.0/0"
+     - name: rabbitmq_clustering_1
+       description: Allow rabbitmq clustering traffic 1
+       priority: 304
+       direction: Inbound
+       access: Allow
+       protocol: Tcp
+       source_port_range: "*"
+       destination_port_range: "4369"
+       source_address_prefix: "10.1.8.0/24"
+       destination_address_prefix: "0.0.0.0/0"
+     - name: rabbitmq_clustering_1
+       description: Allow rabbitmq clustering traffic 2
+       priority: 305
+       direction: Inbound
+       access: Allow
+       protocol: Tcp
+       source_port_range: "*"
+       destination_port_range: "25672"
+       source_address_prefix: "10.1.8.0/24"
+       destination_address_prefix: "0.0.0.0/0"       
      - name: out
        description: Allow out
        priority: 101
@@ -619,6 +639,16 @@ specification:
        destination_port_range: "0"
        source_address_prefix: "10.1.2.0/24"
        destination_address_prefix: "0.0.0.0/0"
+     - name: postgres_clustering
+       description: Allow Postgres clustering traffic
+       priority: 305
+       direction: Inbound
+       access: Allow
+       protocol: Tcp
+       source_port_range: "*"
+       destination_port_range: "5432"
+       source_address_prefix: "10.1.6.0/24"
+       destination_address_prefix: "0.0.0.0/0"  
 ---
 kind: infrastructure/virtual-machine
 version: 0.4.0
