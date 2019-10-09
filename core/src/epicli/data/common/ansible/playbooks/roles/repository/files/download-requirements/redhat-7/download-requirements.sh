@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-# VERSION 1.2.3
+# VERSION 1.0.0
 
 set -euo pipefail
 
@@ -155,7 +155,7 @@ get_package_dependencies_with_arch() {
 	# $1 reserved for result
 	local package="$2"
 
-	local query_output=$(repoquery --requires --resolve --queryformat '%{name}.%{arch}' --archlist=x86_64,noarch "$package" 2>&1) ||
+	local query_output=$(repoquery --requires --resolve --queryformat '%{name}.%{arch}' --archlist=x86_64,noarch "$package") ||
 		exit_with_error "repoquery failed for dependencies of package: $package with exit code: $?, output was: $query_output"
 
 	if [[ -z $query_output ]]; then
@@ -173,7 +173,7 @@ get_package_with_version_arch() {
 	# $1 reserved for result
 	local package="$2"
 
-	local query_output=$(repoquery --queryformat '%{ui_nevra}' --archlist=x86_64,noarch "$package" 2>&1) ||
+	local query_output=$(repoquery --queryformat '%{ui_nevra}' --archlist=x86_64,noarch "$package") ||
 		exit_with_error "repoquery failed for package: $package with exit code: $?, output was: $query_output"
 
 	# yumdownloader doesn't set error code if repoquery returns empty output

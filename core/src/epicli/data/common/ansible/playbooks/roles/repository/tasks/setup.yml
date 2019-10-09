@@ -62,7 +62,7 @@
 
 - name: Copy requirements for offline installation to repository host
   copy:
-    src: "{{ offline_requirements }}/" #TODO: handle case with double slash
+    src: "{{ offline_requirements }}/"
     dest: /var/www/html/epirepo
     force: no # if target exists it will skip, default is 'yes'
   when:
