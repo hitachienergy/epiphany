@@ -2,45 +2,42 @@
 
 set -euo pipefail
 
+# source common functions
+. common.sh
+
+if [[ $# -lt 1 ]]; then
+  usage 
+  exit
+fi
 
 if [[ "$EUID" -ne 0 ]]; then
   echo "err: this script must be run as root"
   exit
 fi
 
-# beautify input path - remove double slashes if occurs
-dst_dir=$(readlink -m $1)
+script_path="$( cd "$(dirname "$0")" ; pwd -P )"
+input_file="${script_path}/requirements.txt"
+dst_dir=$(readlink -m $1) # beautify input path - remove double slashes if occurs
 dst_dir_packages="${dst_dir}/packages"
 dst_dir_files="${dst_dir}/files"
 dst_dir_images="${dst_dir}/images"
-script_path="$( cd "$(dirname "$0")" ; pwd -P )"
-input_file="${script_path}/requirements.txt"
 deplist="${script_path}/.dependencies"
 logfile="${script_path}/log"
+download_cmd="apt-get download"
+add_repos="${script_path}/add-repositories.sh"
 
 # to download everything add "--recurse" here:
 deplist_cmd() {
     apt-cache depends --no-recommends --no-suggests --no-conflicts --no-breaks --no-replaces --no-enhances --no-pre-depends $1
 }
-download_cmd="apt-get download"
 
-usage() {
-	echo "usage: ./$(basename $0) <download_dir>"
-	echo "       ./$(basename $0) /tmp/downloads"
-	[[ -z "$1" ]] || exit "$1"
-}
-
-[[ $# -gt 0 ]] || usage
+# install prerequisites which might be missing
+apt install wget gpg
 
 # some quick sanity check
 echo "dependency list: ${deplist}"
 echo "command used to download packages: ${download_cmd}"
 echo "destination directory for packages: ${dst_dir_packages}"
-
-## clear old dependency file
-#if [[ -f "${deplist}" ]]; then
-#    : > "${deplist}"
-#fi
 
 # make sure destination dir exists
 mkdir -p "${dst_dir_packages}"
@@ -48,7 +45,7 @@ mkdir -p "${dst_dir_files}"
 mkdir -p "${dst_dir_images}"
 
 # add 3rd party repositories
-. ${script_path}/add-repositories.sh 
+. ${add_repos} 
 
 # parse the input file, separete by tags: [packages], [files], [images]
 packages=$(awk '/^$/ || /^#/ {next}; /\[packages\]/ {f=1; next}; /^\[/ {f=0}; f {print $0}' "${input_file}")
@@ -94,11 +91,6 @@ cd $script_path
 
 printf "\n" 
 
-
-# source common functions
-. common.sh
-
-
 # FILES
 # process files
 if [[ -z "${files}" ]]; then
@@ -140,4 +132,11 @@ else
     done <<< "${images}"
 fi
 
-
+# CLEANUP
+for i in $(grep -o '[[:blank:]]/etc/apt/sources.list.d/.*list' ${add_repos}); do
+    if [[ -f ${i} ]]; then
+        echol "Cleaning up 3rd party repository: rm ${i}"
+        rm -f ${i}
+	#TODO: remove apt keys
+    fi
+done

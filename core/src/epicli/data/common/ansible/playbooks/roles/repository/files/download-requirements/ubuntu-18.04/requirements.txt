@@ -89,6 +89,12 @@ gcc-8-base
 # for rabbit/erlang
 libodbc1
 
+# for air-gap repo installation
+apache2
+apache2-bin
+apache2-utils
+
+
 [files]
 https://repo1.maven.org/maven2/io/prometheus/jmx/jmx_prometheus_javaagent/0.12.0/jmx_prometheus_javaagent-0.12.0.jar
 https://archive.apache.org/dist/kafka/2.0.0/kafka_2.12-2.0.0.tgz
