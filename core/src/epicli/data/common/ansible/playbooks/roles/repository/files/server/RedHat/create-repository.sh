@@ -4,7 +4,7 @@ EPI_REPO_SERVER_PATH=$1 # /var/www/html/epirepo is the default
 IS_OFFLINE_MODE=$2
 
 if $IS_OFFLINE_MODE = true; then
-  # deprecated yum localinstall is used since yum install returns error code when 'nothing to do'
+  # deprecated 'yum localinstall' is used since 'yum install' returns error code when 'nothing to do'
   yum localinstall -y $(ls $EPI_REPO_SERVER_PATH/packages/repo-prereqs/*.rpm)
 else
   yum install -y httpd createrepo yum-utils
