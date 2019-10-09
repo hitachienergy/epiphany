@@ -10,6 +10,7 @@ Here are some materials concerning Epiphany tooling and cluster components - bot
     - AWS use case [example](https://www.terraform.io/intro/getting-started/build.html)
 3. [Ansible](https://www.ansible.com/)
     - [Intro to playbooks](https://docs.ansible.com/ansible/latest/user_guide/playbooks_intro.html)
+4. [Azure-cli](https://docs.microsoft.com/en-us/cli/azure/?view=azure-cli-latest)
 
 ## Cluster Components
 

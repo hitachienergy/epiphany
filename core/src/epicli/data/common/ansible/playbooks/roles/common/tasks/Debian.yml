@@ -34,6 +34,7 @@
       - ethtool
       - telnet
       - ufw 
+      - jq
     update_cache: yes 
     state: present  
 

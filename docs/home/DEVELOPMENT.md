@@ -167,7 +167,7 @@ There is one launch configuration called ```server spec tests```. This launch co
         "type": "python",
         "request": "launch",
         "program": "${workspaceFolder}/run-tests.py",
-        "cwd": "${workspaceFolder}",      
+        "cwd": "${workspaceFolder}",
         "pythonPath": "${config:python.pythonPath}",
         "env": { "PYTHONPATH": "${workspaceFolder}" },
         "console": "integratedTerminal",
