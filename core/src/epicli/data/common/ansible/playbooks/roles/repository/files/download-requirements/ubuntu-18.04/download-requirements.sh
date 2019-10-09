@@ -10,22 +10,19 @@ fi
 
 # beautify input path - remove double slashes if occurs
 dst_dir=$(readlink -m $1)
-
+dst_dir_packages="${dst_dir}/packages"
+dst_dir_files="${dst_dir}/files"
+dst_dir_images="${dst_dir}/images"
 script_path="$( cd "$(dirname "$0")" ; pwd -P )"
 input_file="${script_path}/requirements.txt"
 deplist="${script_path}/.dependencies"
 logfile="${script_path}/log"
-dst_dir_packages="${dst_dir}/packages"
-dst_dir_files="${dst_dir}/files"
-dst_dir_images="${dst_dir}/images"
+
 # to download everything add "--recurse" here:
-#deplist_cmd="apt-cache depends --no-recommends --no-suggests --no-conflicts --no-breaks --no-replaces --no-enhances --no-pre-depends"
 deplist_cmd() {
     apt-cache depends --no-recommends --no-suggests --no-conflicts --no-breaks --no-replaces --no-enhances --no-pre-depends $1
 }
 download_cmd="apt-get download"
-
-
 
 usage() {
 	echo "usage: ./$(basename $0) <download_dir>"
@@ -34,11 +31,6 @@ usage() {
 }
 
 [[ $# -gt 0 ]] || usage
-
-
-
-
-
 
 # some quick sanity check
 echo "dependency list: ${deplist}"
@@ -54,26 +46,9 @@ echo "destination directory for packages: ${dst_dir_packages}"
 mkdir -p "${dst_dir_packages}"
 mkdir -p "${dst_dir_files}"
 mkdir -p "${dst_dir_images}"
-#if [[ ! -d "${dst_dir_packages}" ]]; then
-#    mkdir -p "${dst_dir_packages}"{,packages, files, images}
-#fi
 
+# add 3rd party repositories
 . ${script_path}/add-repositories.sh 
-## enable 3rd party repositories
-## TODO: don't fail when dir doesn't exist or empty
-## this is done in add-repositories.sh script and not needed here
-#for i in "${script_path}"/repos/*; do
-#    if [[ ! -f /etc/apt/sources.list.d/$(basename "${i}") ]]; then
-#        echo "copying repository definition: ${i} to: /etc/apt/sources.list.d/"
-#        cp "${i}" /etc/apt/sources.list.d/
-#        chmod 644 "${i}"
-#    else
-#        echo "file /etc/apt/sources.list.d/"$(basename ${i})" already exists. make sure your repository works. skipping..."
-#    fi
-#done
-
-# make sure apt knows about new repositories
-apt update
 
 # parse the input file, separete by tags: [packages], [files], [images]
 packages=$(awk '/^$/ || /^#/ {next}; /\[packages\]/ {f=1; next}; /^\[/ {f=0}; f {print $0}' "${input_file}")
@@ -113,7 +88,7 @@ sort -u -o ${deplist} ${deplist}
 echo "packages to be downloaded:"
 cat -n "${deplist}"
 
-# download dependencies (supress apt-get harmless sandboxing warning when running as root)
+# download dependencies (apt-get sandboxing warning when running as root are harmless)
 cd $dst_dir_packages && xargs --no-run-if-empty --arg-file=${deplist} --delimiter='\n' ${download_cmd} | tee -a ${logfile} 
 cd $script_path
 
