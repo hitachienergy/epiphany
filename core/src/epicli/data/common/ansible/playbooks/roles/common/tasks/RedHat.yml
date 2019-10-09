@@ -29,6 +29,7 @@
       - ebtables
       - ethtool
       - telnet
+      - jq
     update_cache: yes
     state: present
   register: result

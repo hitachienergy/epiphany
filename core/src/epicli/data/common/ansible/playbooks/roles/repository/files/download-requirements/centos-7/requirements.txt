@@ -5,6 +5,13 @@ createrepo
 httpd
 mod_ssl
 yum-utils
+glibc-common
+libdb-utils
+python-chardet
+python-libs
+rpm-build-libs
+rpm-libs
+systemd-sysv
 
 [packages]
 audit # for docker-ce
@@ -67,6 +74,8 @@ python-lxml # for java-1.8.0-openjdk-headless
 python-psycopg2
 python-setuptools
 python-slip-dbus # for firewalld
+python-ipaddress
+python-backports
 quota # for nfs-utils
 rabbitmq-server-3.7.10
 rh-haproxy18
