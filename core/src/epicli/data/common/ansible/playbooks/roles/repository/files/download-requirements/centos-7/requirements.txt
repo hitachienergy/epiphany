@@ -15,7 +15,6 @@ systemd-sysv
 
 [packages]
 audit # for docker-ce
-audit-libs # for docker-ce
 bash-completion
 ca-certificates
 cifs-utils
