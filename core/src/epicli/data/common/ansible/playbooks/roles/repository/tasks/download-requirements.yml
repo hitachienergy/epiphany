@@ -28,7 +28,7 @@
     tee >(systemd-cat --identifier=download-requirements.sh)
   args:
     executable: /bin/bash
-  #when: not stat_result.stat.exists
+  when: not stat_result.stat.exists
 
 - name: Create flag file to not re-download requirements next time
   file:

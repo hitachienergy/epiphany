@@ -18,7 +18,15 @@
     - gnupg2
   when: ansible_os_family == "Debian"
 
+#TODO: this is a quick workaround, we should tackle versioning in a smarter way
 - name: Install Grafana
   package:
     name: "grafana-{{ grafana_version }}"
     state: present
+  when: ansible_os_family == "RedHat"
+
+- name: Install Grafana
+  package:
+    name: "grafana={{ grafana_version }}"
+    state: present
+  when: ansible_os_family == "Debian"
