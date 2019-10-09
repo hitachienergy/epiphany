@@ -20,5 +20,12 @@ networking:
   dnsDomain: {{ specification.advanced.networking.dnsDomain }}
   podSubnet: {{ specification.advanced.networking.podSubnet }}
   serviceSubnet: {{ specification.advanced.networking.serviceSubnet }}
-imageRepository: {{ specification.advanced.imageRepository }}
+
+{% if custom_image_registry_address|length == 0 %}
+imageRepository: {{ image_registry_address }}/{{ specification.advanced.imageRepository }}
+{% else %}
+imageRepository: {{ custom_image_registry_address }}/{{ specification.advanced.imageRepository }}
+{% endif %}
+
+
 certificatesDir: {{ specification.advanced.certificatesDir }}

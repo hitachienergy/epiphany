@@ -3,7 +3,8 @@ version: 0.4.0
 title: "Shared configuration that will be visible to all roles"
 name: default
 specification:
-  custom_repository_url: '' # leave it empty to use repository on master node or provide url to your repo
+  custom_repository_url: '' # leave it empty to use local repository or provide url to your repo
+  custom_image_registry_address: '' # leave it empty to use local registry or provide url to your registry. This registry will be used to populate K8s controlplane and should contain all required images.
   download_directory: /tmp # directory where files and images will be stored just before installing/loading 
   architecture_map:
     i386: '386'

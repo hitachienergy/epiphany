@@ -128,5 +128,7 @@ calico/pod2daemon-flexvol:v3.8.1
 kubernetesui/dashboard:v2.0.0-beta1
 kubernetesui/metrics-scraper:v1.0.0
 calico/cni:v3.8.1
+calico/kube-controllers:v3.8.1
 jboss/keycloak:4.8.3.Final
 rabbitmq:3.7.10
+registry:2

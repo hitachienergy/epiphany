@@ -24,6 +24,7 @@ specification:
   - name: "quay.io/coreos/flannel:v0.11.0"
     file_name: flannel-v0.11.0.tar
   - name: "calico/node:v3.8.1"
+  - name: "calico/node:v3.8.1"
     file_name: node-v3.8.1.tar
   - name: "calico/pod2daemon-flexvol:v3.8.1"
     file_name: pod2daemon-flexvol-v3.8.1.tar
@@ -33,6 +34,8 @@ specification:
     file_name: metrics-scraper-v1.0.0.tar
   - name: "calico/cni:v3.8.1"
     file_name: cni-v3.8.1.tar
+  - name: "calico/kube-controllers:v3.8.1"
+    file_name: kube-controllers-v3.8.1.tar
   - name: "jboss/keycloak:4.8.3.Final"
     file_name: keycloak-4.8.3.Final.tar
   - name: "rabbitmq:3.7.10"

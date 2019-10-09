@@ -1,0 +1,9 @@
+kind: configuration/image-registry
+version: 0.4.0
+title: "Epiphany image registry"
+name: default
+specification:
+  description: "Local registry with Docker images"
+  repository_image:
+    name: "registry:2"
+    file_name: registry-2.tar
