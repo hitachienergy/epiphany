@@ -57,7 +57,6 @@
     dest: "/tmp/epi-repository-setup-scripts"
     mode: a+x
   when:
-    - not offline_mode
     - not custom_repository_url
     - inventory_hostname in groups['repository']
 
@@ -65,6 +64,7 @@
   copy:
     src: "{{ offline_requirements }}/" #TODO: handle case with double slash
     dest: /var/www/html/epirepo
+    force: no # if target exists it will skip, default is 'yes'
   when:
     - offline_mode
     - not custom_repository_url
