@@ -197,9 +197,47 @@ TODO
 
 TODO
 
-### How to scale components
+### How to scale or cluster components
 
-TODO
+Epiphany has the ability to automaticly scale and cluster certain components on cloud providers (AWS, Azure). To upscale or downscale a component the `count` number must be increased or decreased:
+
+  ```yaml
+  components:
+    kubernetes_node:
+      count: ...
+      ...
+  ```
+
+Then when applying the changed configuration using Epicli additional VM's will be spawned and configured or removed. The following components support scaling/clustering:
+
+- kubernetes_node: When changed this will setup or remove additional nodes with `kubernetes_master`.
+- kafka: When changed this will setup or remove additional nodes for the Kafka cluster.
+- rabbitmq: When changed this will setup or remove additional nodes for the RabbitMQ cluster. Note that this will require to enable clustering in the `configuration/rabbitmq` configuration:
+
+  ```yaml
+  kind: configuration/rabbitmq
+  ...
+  specification:
+    cluster:
+      is_clustered: true
+  ...
+  ```
+- postgresql: When changed this will setup or remove additional nodes for Postgresql. Note that extra nodes can only be setup todo replication by adding the following additional `configuration/postgresql` configuration:
+
+  ```yaml
+  kind: configuration/postgresql
+  ...
+  specification:
+    replication:
+      enable: true
+      user: postgresql-replication-user
+      password: postgresql-replication-password
+      max_wal_senders: 5
+      wal_keep_segments: 32  
+    ...
+  ```
+
+Changing the count for other predefined components will spawn additional machines or remove VM's 
 
 ## Legacy
 

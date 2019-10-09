@@ -19,7 +19,7 @@
     - [How to delete an Epiphany cluster on a cloud provider](./howto/CLUSTER.md#how-to-delete-an-epiphany-cluster-on-a-cloud-provider)
     - [How to create an offline installation of for Epiphany cluster](./howto/CLUSTER.md#how-to-create-an-offline-installation-for-an-Epiphany-cluster)
     - [Single machine cluster](./howto/CLUSTER.md#single-machine-cluster)
-    - [How to scale components](./howto/CLUSTER.md#how-to-scale-components)
+    - [How to scale  or cluster components](./howto/CLUSTER.md#how-to-scale-or-cluster-components)
   - Legacy
     - [How to create an Epiphany legacy cluster on premise](./howto/CLUSTER.md#how-to-create-an-epiphany-legacy-cluster-on-premise)
     - [How to create an Epiphany legacy cluster on Azure](./howto/CLUSTER.md#how-to-create-an-epiphany-legacy-cluster-on-azure)
