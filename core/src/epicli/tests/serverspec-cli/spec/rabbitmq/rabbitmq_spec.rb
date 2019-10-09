@@ -54,6 +54,7 @@ describe 'Checking the health of the target nodes' do
   let(:disable_sudo) { false }
   if clustered == true
     listInventoryHosts("rabbitmq").each do |val|
+      val = val.split(".")[0]
       describe command("rabbitmqctl node_health_check -n rabbit@#{val}") do
         its(:stdout) { should match /^Health check passed$/ }
         its(:exit_status) { should eq 0 }
@@ -74,6 +75,7 @@ describe 'Checking the RabbitMQ status/cluster status' do
   end
   if clustered
     listInventoryHosts("rabbitmq").each do |val|
+      val = val.split(".")[0]
       describe command("rabbitmqctl cluster_status | awk '/running_nodes/,/}/'") do
         its(:stdout) { should match /rabbit@#{val}/ }
         its(:exit_status) { should eq 0 }
@@ -127,6 +129,7 @@ if plugins.include? "rabbitmq_management"
     let(:disable_sudo) { false }
     if clustered
       listInventoryHosts("rabbitmq").each do |val|
+        val = val.split(".")[0]
         describe command("curl -o /dev/null -s -w '%{http_code}' -u #{user}:#{pass} #{rabbitmq_host}:#{rabbitmq_api_port}/api/healthchecks/node/rabbit@#{val}") do
           it "is expected to be equal" do
             expect(subject.stdout.to_i).to eq 200
