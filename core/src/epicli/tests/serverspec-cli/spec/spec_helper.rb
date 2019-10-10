@@ -57,7 +57,7 @@ set :shell, '/bin/bash'
     file.close
       if input.include? "[#{role}]"
         rows = input.split("[#{role}]")[1].split("[")[0]
-        return rows.include? ENV['TARGET_HOST']
+        return rows =~ /\b#{ENV['TARGET_HOST']}\b/
       else return false
       end
   end
