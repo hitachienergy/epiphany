@@ -12,6 +12,15 @@
     - not custom_repository_url
     - inventory_hostname in groups['repository']
 
+- name: Ensure httpd is running
+  service:
+    name: httpd
+    state: started
+  when:
+    - ansible_os_family == "RedHat"
+    - not custom_repository_url
+    - inventory_hostname in groups['repository']
+
 - name: Disable system repositories and set up epirepo
   block:
     - name: Create list of enabled repositories
