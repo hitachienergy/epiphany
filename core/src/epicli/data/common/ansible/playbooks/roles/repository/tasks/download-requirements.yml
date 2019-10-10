@@ -21,7 +21,7 @@
   register: stat_result
 
 - name: |-
-    Run download-requirements script, it can take a long time
+    Run download-requirements script, this can take a long time
     You can check progress on repository host with: journalctl -f -t download-requirements.sh
   shell: >-
     set -o pipefail && /tmp/epi-download-requirements/download-requirements.sh /var/www/html/epirepo --no-logfile |&

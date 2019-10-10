@@ -60,10 +60,12 @@
     - not custom_repository_url
     - inventory_hostname in groups['repository']
 
-- name: Copy requirements for offline installation to repository host
+- name: |-
+    Copy requirements for offline installation to repository host, this can take a long time
+    Destination: /var/www/html/epirepo
   copy:
     src: "{{ offline_requirements }}/"
-    dest: /var/www/html/epirepo
+    dest: /var/www/html/epirepo/
     force: no # if target exists it will skip, default is 'yes'
   when:
     - offline_mode
