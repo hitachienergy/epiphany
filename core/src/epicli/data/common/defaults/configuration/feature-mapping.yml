@@ -6,6 +6,8 @@ specification:
   available_roles:
     - name: repository
       enabled: yes
+    - name: image-registry
+      enabled: yes
     - name: kubernetes-master
       enabled: yes
     - name: kubernetes-node
@@ -75,6 +77,7 @@ specification:
       - filebeat
     custom:
       - repository
+      - image-registry
       - kubernetes-master
       - node-exporter
       - filebeat
@@ -88,11 +91,13 @@ specification:
       - elasticsearch-curator
     single_machine:
       - repository
+      - image-registry
       - kubernetes-master
       - applications
       - rabbitmql
       - postgresql
     kubernetes_master:
+      - image-registry
       - kubernetes-master
       - repository
       - applications
