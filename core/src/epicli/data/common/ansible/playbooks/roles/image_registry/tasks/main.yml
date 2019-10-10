@@ -1,0 +1,32 @@
+---
+- name: Check if image is already loaded
+  shell: "docker images {{ specification.repository_image.name }} --format {{ '{{' }}.ID{{ '}}' }}"
+  register: image_check
+  ignore_errors: true
+  changed_when: false
+
+- name: Load image if does not exists
+  block:
+  - name: Download file
+    include_role:
+      name: download
+      tasks_from: download_image
+    vars:
+      file_name: "{{ specification.repository_image.file_name }}"
+
+  - name: Load image {{ specification.repository_image.name }}
+    become: yes
+    shell: "docker load --input {{ download_directory }}/{{ specification.repository_image.file_name }}"
+  when: image_check.stdout | length == 0
+
+- name: Check if registry is running
+  become: yes
+  shell: docker ps | grep registry:2 | cat
+  register: regitry_up_check
+  check_mode: no
+
+# todo run registry with SSL - generate/copy certs, mount it to registry container
+- name: Run registry
+  become: yes
+  shell: "docker run -d -e REGISTRY_HTTP_ADDR=0.0.0.0:5000 -p 5000:5000 --restart=always --name epiphany-registry {{ specification.repository_image.name }}"
+  when: regitry_up_check.stdout | length == 0

@@ -399,7 +399,7 @@ spec:
         # This container installs the CNI binaries
         # and CNI network config file on each node.
         - name: install-cni
-          image: calico/cni:v3.8.1
+          image: {{ image_registry_address }}/calico/cni:v3.8.1
           command: ["/install-cni.sh"]
           env:
             # Name of the CNI config file to create.
@@ -427,7 +427,7 @@ spec:
         # Adds a Flex Volume Driver that creates a per-pod Unix Domain Socket to allow Dikastes
         # to communicate with Felix over the Policy Sync API.
         - name: flexvol-driver
-          image: calico/pod2daemon-flexvol:v3.8.1
+          image: {{ image_registry_address }}/calico/pod2daemon-flexvol:v3.8.1
           volumeMounts:
           - name: flexvol-driver-host
             mountPath: /host/driver
@@ -436,7 +436,7 @@ spec:
         # container programs network policy and routes on each
         # host.
         - name: calico-node
-          image: calico/node:v3.8.1
+          image: {{ image_registry_address }}/calico/node:v3.8.1
           env:
             # Use Kubernetes API as the backing datastore.
             - name: DATASTORE_TYPE
@@ -520,7 +520,7 @@ spec:
         # This container runs flannel using the kube-subnet-mgr backend
         # for allocating subnets.
         - name: kube-flannel
-          image: quay.io/coreos/flannel:v0.11.0
+          image: {{ image_registry_address }}/quay.io/coreos/flannel:v0.11.0
           command: [ "/opt/bin/flanneld", "--ip-masq", "--kube-subnet-mgr" ]
           securityContext:
             privileged: true

@@ -7,4 +7,5 @@
   vars:
     docker_image: "{{ item }}"
   loop: "{{ specification.images_to_load }}"
+  when: not custom_image_registry_address
 
