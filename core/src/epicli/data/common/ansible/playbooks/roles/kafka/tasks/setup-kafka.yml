@@ -21,7 +21,7 @@
 
 - name: Install Java package
   package:
-    name: "openjdk-8-jre"
+    name: "openjdk-8-jre-headless"
     state: present
   when: ansible_os_family == "Debian"
 
