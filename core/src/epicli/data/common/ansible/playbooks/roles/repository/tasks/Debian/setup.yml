@@ -1,7 +1,7 @@
 ---
 - name: Create epirepo repository
   shell: >-
-    /tmp/epi-repository-setup-scripts/create-repository.sh /var/www/html/epirepo {{ offline_mode | lower }} 2>&1 |
+    /tmp/epi-repository-setup-scripts/create-repository.sh /var/www/html/epirepo {{ offline_mode | lower }} |&
     tee /tmp/epi-repository-setup-scripts/create-repository.log
   args:
     executable: /bin/bash
