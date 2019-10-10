@@ -24,6 +24,7 @@
       - sysstat
       - python-setuptools
       - openssl
+      - yum-utils
       - yum-versionlock
       - logrotate
       - ebtables
