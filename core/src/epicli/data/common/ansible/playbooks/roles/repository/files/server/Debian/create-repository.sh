@@ -4,8 +4,7 @@ EPI_REPO_SERVER_PATH=$1 # /var/www/html/epirepo is the default
 IS_OFFLINE_MODE=$2
 
 if $IS_OFFLINE_MODE = true; then
-    # bootstrap apache and dpkg-dev installation for real repository creation later in air-gap mode
-    # temporarily create repository epilocal.list and cleanup afterwards
+    # bootstrap apache and dpkg-dev installation in air-gap mode
     if ! dpkg -l | grep -q libdpkg-perl; then
         echo libdpkg-perl not found, installing...
         dpkg -i ${EPI_REPO_SERVER_PATH}/packages/libdpkg-perl*.deb
