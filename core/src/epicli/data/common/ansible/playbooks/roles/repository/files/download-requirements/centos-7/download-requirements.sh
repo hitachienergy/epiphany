@@ -96,8 +96,8 @@ download_image() {
 		local tmp_file_path=$(mktemp)
 		local skopeo_cmd="$SKOPEO_BIN --insecure-policy copy docker://$image_name docker-archive:$dest_path:$repository:$tag"
 		echol "Downloading image: $image"
-		{ $skopeo_cmd && mv $tmp_file_path $dest_path; } ||
-			exit_with_error "skopeo failed, command was: $skopeo_cmd && mv $tmp_file_path $dest_path"
+		{ $skopeo_cmd && chmod 644 $tmp_file_path && mv $tmp_file_path $dest_path; } ||
+			exit_with_error "skopeo failed, command was: $skopeo_cmd && chmod 644 $tmp_file_path && mv $tmp_file_path $dest_path"
 	fi
 }
 
@@ -495,27 +495,17 @@ create_directory "$REPO_PREREQ_PACKAGES_DIR"
 
 # prepare lists
 PREREQ_PACKAGES=()
-DEPENDENCIES_OF_PREREQ_PACKAGES=()
 for package in $REPO_PREREQ_PACKAGES; do
 	echol "Processing package: $package"
 	get_package_with_version_arch 'QUERY_OUTPUT' "$package"
 	PREREQ_PACKAGES+=("$QUERY_OUTPUT")
-	get_package_dependencies_with_arch 'DEPENDENCIES' "$package"
-	if [[ ${#DEPENDENCIES[@]} -gt 0 ]]; then
-		for dependency in "${DEPENDENCIES[@]}"; do
-			DEPENDENCIES_OF_PREREQ_PACKAGES+=("$dependency")
-		done
-	fi
 done
 
 # download requirements (fixed versions)
-echol "Downloading repository prerequisite packages (${#PREREQ_PACKAGES[@]})..."
-download_packages "$REPO_PREREQ_PACKAGES_DIR" "${PREREQ_PACKAGES[@]}"
-# download dependencies (latest versions)
-get_unique_array 'DEPENDENCIES' "${DEPENDENCIES_OF_PREREQ_PACKAGES[@]}"
-get_packages_with_version_arch 'DEPENDENCIES' "${DEPENDENCIES[@]}"
-echol "Downloading dependencies of repository prerequisite packages (${#DEPENDENCIES[@]})..."
-download_packages "$REPO_PREREQ_PACKAGES_DIR" "${DEPENDENCIES[@]}"
+if [[ ${#PREREQ_PACKAGES[@]} -gt 0 ]]; then
+	echol "Downloading repository prerequisite packages (${#PREREQ_PACKAGES[@]})..."
+	download_packages "$REPO_PREREQ_PACKAGES_DIR" "${PREREQ_PACKAGES[@]}"
+fi
 
 # 2) non-prerequisite packages
 
@@ -536,14 +526,16 @@ for package in $PACKAGES; do
 	fi
 done
 
-# download requirements (fixed versions)
-echol "Downloading packages (${#NON_PREREQ_PACKAGES[@]})..."
-download_packages "$PACKAGES_DIR" "${NON_PREREQ_PACKAGES[@]}"
-# download dependencies (latest versions)
-get_unique_array 'DEPENDENCIES' "${DEPENDENCIES_OF_NON_PREREQ_PACKAGES[@]}"
-get_packages_with_version_arch 'DEPENDENCIES' "${DEPENDENCIES[@]}"
-echol "Downloading dependencies of packages (${#DEPENDENCIES[@]})..."
-download_packages "$PACKAGES_DIR" "${DEPENDENCIES[@]}"
+if [[ ${#NON_PREREQ_PACKAGES[@]} -gt 0 ]]; then
+	# download requirements (fixed versions)
+	echol "Downloading packages (${#NON_PREREQ_PACKAGES[@]})..."
+	download_packages "$PACKAGES_DIR" "${NON_PREREQ_PACKAGES[@]}"
+	# download dependencies (latest versions)
+	get_unique_array 'DEPENDENCIES' "${DEPENDENCIES_OF_NON_PREREQ_PACKAGES[@]}"
+	get_packages_with_version_arch 'DEPENDENCIES' "${DEPENDENCIES[@]}"
+	echol "Downloading dependencies of packages (${#DEPENDENCIES[@]})..."
+	download_packages "$PACKAGES_DIR" "${DEPENDENCIES[@]}"
+fi
 
 # --- Clean up yum repos ---
 
@@ -553,9 +545,9 @@ remove_added_repos "$ADDED_REPOSITORIES_FILE_PATH"
 
 if [ -f $YUM_CONFIG_BACKUP_FILE_PATH ]; then
 	echol "Restoring /etc/yum.repos.d/*.repo from: $YUM_CONFIG_BACKUP_FILE_PATH"
-	echol "Executing: tar --extract --verbose --file $YUM_CONFIG_BACKUP_FILE_PATH ..."
+	echol "Executing: tar --extract --verbose --file $YUM_CONFIG_BACKUP_FILE_PATH"
 	if tar --extract --verbose --file $YUM_CONFIG_BACKUP_FILE_PATH --directory /etc/yum.repos.d \
-			--strip-components=2 etc/yum.repos.d/*.repo; then
+	       --strip-components=2 etc/yum.repos.d/*.repo; then
 		echol "Restored: yum repositories"
 		remove_file $YUM_CONFIG_BACKUP_FILE_PATH
 	else
