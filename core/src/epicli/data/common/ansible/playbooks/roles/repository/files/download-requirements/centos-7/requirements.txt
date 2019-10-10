@@ -1,17 +1,18 @@
 # Put this file in the same directory as download script
 
 [packages-repo-prereqs]
+apr # for httpd
+apr-util # for httpd
 createrepo
+deltarpm # for createrepo
 httpd
-mod_ssl
+httpd-tools # for httpd
+mailcap # for httpd
+mod_ssl # for httpd
+python-chardet # for createrepo
+python-deltarpm # for createrepo
+python-kitchen # for createrepo
 yum-utils
-glibc-common
-libdb-utils
-python-chardet
-python-libs
-rpm-build-libs
-rpm-libs
-systemd-sysv
 
 [packages]
 audit # for docker-ce
