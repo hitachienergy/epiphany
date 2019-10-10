@@ -1,0 +1,12 @@
+---
+# Ansible playbook that makes sure the base items for all nodes are installed
+
+- hosts: all
+  gather_facts: yes
+  tasks: [ ]  
+
+- hosts: image_registry
+  become: true
+  become_method: sudo
+  roles:
+    - image_registry

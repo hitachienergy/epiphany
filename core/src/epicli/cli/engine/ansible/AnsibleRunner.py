@@ -35,7 +35,7 @@ class AnsibleRunner(Step):
         self.inventory_creator.__exit__(exc_type, exc_value, traceback)
 
     def playbook_path(self, name):
-        return os.path.join(get_ansible_path(self.cluster_model.specification.name), f'{name}.yml')       
+        return os.path.join(get_ansible_path(self.cluster_model.specification.name), f'{name}.yml')        
 
     def run(self):
         inventory_path = get_inventory_path(self.cluster_model.specification.name)
@@ -50,42 +50,28 @@ class AnsibleRunner(Step):
         if not Config().offline_requirements:
             shutil.copy(os.path.join(dirname(dirname(inspect.getfile(os))), 'skopeo_linux'), '/tmp')
 
-        # todo: install packages to run ansible on Red Hat hosts
-        self.ansible_command.run_task_with_retries(hosts='all', inventory=inventory_path, module='raw',
-                                                   args='cat /etc/lsb-release | grep -i DISTRIB_ID | grep -i ubuntu && '
-                                                        'sudo apt-get update && sudo apt-get install -y python-simplejson '
-                                                        '|| echo \'Cannot find information about Ubuntu distribution\'', retries=5)
+        # ~~this shouldn't be needed at all~~
+        # # todo: install packages to run ansible on Red Hat hosts
+        # self.ansible_command.run_task_with_retries(hosts='all', inventory=inventory_path, module='raw',
+        #                                            args='cat /etc/lsb-release | grep -i DISTRIB_ID | grep -i ubuntu && '
+        #                                                 'sudo apt-get update && sudo apt-get install -y python-simplejson '
+        #                                                 '|| echo \'Cannot find information about Ubuntu distribution\'', retries=5)
 
         self.ansible_vars_generator.run()
 
         self.logger.info('Setting up repository for cluster provisioning. This will take a while...')
-        repository_setup_play_result = self.ansible_command.run_playbook_with_retries(
-                                                                            inventory=inventory_path,
-                                                                            playbook_path=self.playbook_path('repository_setup'),
-                                                                            retries=5)
+        self.ansible_command.run_playbook_with_retries(inventory=inventory_path,
+                                                       playbook_path=self.playbook_path('repository_setup'),
+                                                       retries=5)
 
-        if repository_setup_play_result != 0:
-            return
-
-        common_play_result = self.ansible_command.run_playbook_with_retries(inventory=inventory_path,
-                                                                            playbook_path=self.playbook_path('common'),
-                                                                            retries=1)
-        if common_play_result != 0:
-            return
+        self.ansible_command.run_playbook(inventory=inventory_path,
+                                          playbook_path=self.playbook_path('common'))
 
         enabled_roles = self.inventory_creator.get_enabled_roles()
 
         for role in enabled_roles:
-            play_result = self.ansible_command.run_playbook_with_retries(inventory=inventory_path,
-                                                                         playbook_path=self.playbook_path(to_role_name(role)),
-                                                                         retries=1)
-            if play_result != 0:
-                break
+            self.ansible_command.run_playbook(inventory=inventory_path,
+                                              playbook_path=self.playbook_path(to_role_name(role)))
 
-        repository_teardown_play_result = self.ansible_command.run_playbook_with_retries(
-                                                                            inventory=inventory_path,
-                                                                            playbook_path=self.playbook_path('repository_teardown'),
-                                                                            retries=1)
-
-        if repository_teardown_play_result != 0:
-            return
+        self.ansible_command.run_playbook(inventory=inventory_path,
+                                          playbook_path=self.playbook_path('repository_teardown'))

@@ -1,9 +1,7 @@
-#!/bin/bash
+#!/bin/bash -eu
 
-SERVER_IP=$1;
+REPOSITORY_URL=$1
 
-echo "deb [trusted=yes] http://$SERVER_IP/epirepo/ packages/" > /etc/apt/sources.list.d/epirepo.list;
+echo "deb [trusted=yes] $REPOSITORY_URL/packages ./" > /etc/apt/sources.list.d/epirepo.list
 
-apt-cache policy;
-
-apt update; 
+apt update

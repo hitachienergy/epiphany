@@ -1,7 +1,8 @@
 #!/bin/bash -eu
 
-ENABLED_REPOS_FILE=/tmp/enabled-system-repos.txt
+ENABLED_REPOS_LIST_FILE=/var/tmp/enabled-system-repos.txt
 
-if [ ! -f "$ENABLED_REPOS_FILE" ]; then
-  yum repolist -v enabled | grep -i Repo-id | awk -F ":" '{print $2}' |  sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//' | awk -F "/" '{print $1}' > $ENABLED_REPOS_FILE
+if [ ! -f "$ENABLED_REPOS_LIST_FILE" ]; then
+  # 'yum repoinfo' or 'yum repolist -v' not used since they may require Internet access, even with --cacheonly
+  yum --cacheonly repolist enabled | awk '/^$/ {next}; /repo id/ {f=1; next}; /^repolist/ {f=0}; f {sub(/\/.*/,""); print $1}' > $ENABLED_REPOS_LIST_FILE
 fi

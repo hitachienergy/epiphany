@@ -21,7 +21,7 @@
 
 - name: Install Java package
   package:
-    name: "openjdk-8-jre"
+    name: "openjdk-8-jre-headless"
     state: present
   when: ansible_os_family == "Debian"
 
@@ -76,7 +76,7 @@
     group: "{{ zookeeper_group }}"
   check_mode: false
 
-- name: "Create zookeeper {{item}} directory."
+- name: Create directories
   file:
     path: "{{ item }}"
     state: directory
@@ -88,7 +88,7 @@
     - "{{ zookeeper_install_dir }}/conf"
     - "/etc/zookeeper/conf"
 
-- name: Systemd script.
+- name: Create zookeeper service
   template:
     src: zookeeper.service.j2
     dest: /lib/systemd/system/zookeeper.service
