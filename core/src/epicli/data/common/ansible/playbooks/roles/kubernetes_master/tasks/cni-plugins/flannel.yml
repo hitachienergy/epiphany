@@ -2,7 +2,7 @@
 - name: Create flannel deployment
   template:
     dest: "/home/{{ admin_user.name }}/kube-flannel.yml"
-    src: flannel.yml.j2
+    src: kube-flannel.yml.j2
     owner: "{{ admin_user.name }}"
     group: "{{ admin_user.name }}"
 
