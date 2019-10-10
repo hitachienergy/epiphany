@@ -139,6 +139,26 @@ specification:
         destination_port_range: "0"
         source_address_prefix: "10.1.2.0/24"
         destination_address_prefix: "0.0.0.0/0"
+      - name: package_repository
+        description: Allow package repository traffic
+        priority: 205
+        direction: Inbound
+        access: Allow
+        protocol: Tcp
+        source_port_range: "*"
+        destination_port_range: "80"
+        source_address_prefix: "10.1.0.0/20"
+        destination_address_prefix: "0.0.0.0/0"
+      - name: image_repository
+        description: Allow image repository traffic
+        priority: 206
+        direction: Inbound
+        access: Allow
+        protocol: Tcp
+        source_port_range: "*"
+        destination_port_range: "5000"
+        source_address_prefix: "10.1.0.0/20"
+        destination_address_prefix: "0.0.0.0/0"
   #    - name: node2-subnet-traffic
   #      description: Allow node subnet traffic
   #      priority: 102

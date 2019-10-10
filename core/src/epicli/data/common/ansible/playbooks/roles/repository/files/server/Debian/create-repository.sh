@@ -4,7 +4,15 @@ EPI_REPO_SERVER_PATH=$1 # /var/www/html/epirepo is the default
 IS_OFFLINE_MODE=$2
 
 if $IS_OFFLINE_MODE = true; then
-  echo yum install -y $(ls $EPI_REPO_SERVER_PATH/packages/offline_prereqs/*.rpm) #TODO: to rewrite for ubuntu
+  # bootstrap apache and dpkg-dev installation for real repository creation later in air-gap mode
+  # temporarily create file repository and cleanup afterwards
+  cd ${EPI_REPO_SERVER_PATH}/packages && /tmp/epi-repository-setup-scripts/dpkg-scanpackages -m . | gzip -9c > Packages.gz && cd -
+  echo 'deb [trusted=yes] file:${EPI_REPO_SERVER_PATH}/packages ./' > /etc/apt/sources.list.d/epilocal.list
+  apt update --assume-no # workaround for botched docker repository https://github.com/docker/for-linux/issues/812
+  apt -y install apache2 dpkg-dev
+  rm -f /etc/apt/sources.list.d/epilocal.list
+  rm -f ${EPI_REPO_SERVER_PATH}/packages/Packages.gz
+  apt update --assume-no
 else
   apt -y install reprepro apache2 dpkg-dev
 fi
