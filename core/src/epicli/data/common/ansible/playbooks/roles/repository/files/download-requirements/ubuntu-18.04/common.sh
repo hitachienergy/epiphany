@@ -41,14 +41,14 @@ download_image() {
 	local dst_image="${dest_dir}/${repo_basename}-${tag}.tar"
 
 	#[[ ! -f $dst_image ]] || remove_file "$dst_image"
-	if [[ -f $dst_image ]]; then
-            echo "Image: "$dst_image" already exists. Skipping..."
+	if [[ -f ${dst_image} ]]; then
+            echo "Image: "${dst_image}" already exists. Skipping..."
         else
 	    local tmp_file=$(mktemp)
 	    echo "Downloading image: $1"
-	    echo "Skopeo command is: ./skopeo_linux --insecure-policy copy docker://$image_name docker-archive:$dst_image:$repository:$tag"
+	    echo "Skopeo command is: ./skopeo_linux --insecure-policy copy docker://{$image_name} docker-archive:${dst_image}:${repository}:${tag}"
 	    # use temporary file for downloading to be safe from sudden interruptions (network, ctrl+c)
-	    ./skopeo_linux --insecure-policy copy docker://$image_name docker-archive:$tmp_file:$repository:$tag && mv $tmp_file $dst_image
+	    ./skopeo_linux --insecure-policy copy docker://${image_name} docker-archive:${tmp_file}:${repository}:${tag} && chmod 644 ${tmp_file} && mv ${tmp_file} ${dst_image}
         fi
 }
 

@@ -32,7 +32,7 @@ deplist_cmd() {
 . "${script_path}/common.sh"
 
 # install prerequisites which might be missing
-apt install wget gpg
+apt install -y wget gpg
 
 # some quick sanity check
 echo "dependency list: ${deplist}"

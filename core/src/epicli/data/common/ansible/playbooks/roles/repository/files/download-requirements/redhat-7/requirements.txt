@@ -1,9 +1,17 @@
 # Put this file in the same directory as download script
 
 [packages-repo-prereqs]
+apr # for httpd
+apr-util # for httpd
 createrepo
+deltarpm # for createrepo
 httpd
-mod_ssl
+httpd-tools # for httpd
+mailcap # for httpd
+mod_ssl # for httpd
+python-chardet # for createrepo
+python-deltarpm # for createrepo
+python-kitchen # for createrepo
 yum-utils
 
 [packages]
@@ -92,6 +100,7 @@ wget
 xorg-x11-font-utils # for grafana
 xorg-x11-server-utils # for grafana
 yum-plugin-versionlock
+yum-utils
 
 [files]
 https://github.com/prometheus/haproxy_exporter/releases/download/v0.10.0/haproxy_exporter-0.10.0.linux-amd64.tar.gz

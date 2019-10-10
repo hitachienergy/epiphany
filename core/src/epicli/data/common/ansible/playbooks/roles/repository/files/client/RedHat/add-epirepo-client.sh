@@ -15,6 +15,5 @@ enabled=1
 gpgcheck=0
 EOF
 
-yum-config-manager --enable epirepo
 yum makecache fast
 yum repolist
