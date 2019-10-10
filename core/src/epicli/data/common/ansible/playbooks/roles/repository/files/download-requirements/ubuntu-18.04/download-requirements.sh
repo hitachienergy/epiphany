@@ -2,9 +2,6 @@
 
 set -euo pipefail
 
-# source common functions
-. common.sh
-
 if [[ $# -lt 1 ]]; then
   usage 
   exit
@@ -30,6 +27,9 @@ add_repos="${script_path}/add-repositories.sh"
 deplist_cmd() {
     apt-cache depends --no-recommends --no-suggests --no-conflicts --no-breaks --no-replaces --no-enhances --no-pre-depends $1
 }
+
+# source common functions
+. "${script_path}/common.sh"
 
 # install prerequisites which might be missing
 apt install wget gpg
