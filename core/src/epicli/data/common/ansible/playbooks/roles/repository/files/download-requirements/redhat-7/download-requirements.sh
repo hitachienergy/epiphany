@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-# VERSION 1.0.0
+# VERSION 1.0.1
 
 set -euo pipefail
 
@@ -89,11 +89,16 @@ download_image() {
 	local repo_basename=$(basename -- "$repository")
 	local dest_path="${dest_dir}/${repo_basename}-${tag}.tar"
 
-	[[ ! -f $dest_path ]] || remove_file "$dest_path"
-
-	echol "Downloading image: $image"
-	$SKOPEO_BIN --insecure-policy copy docker://$image_name docker-archive:$dest_path:$repository:$tag ||
-		exit_with_error "skopeo failed, command was: $SKOPEO_BIN --insecure-policy copy docker://$image_name docker-archive:$dest_path:$repository:$tag"
+	if [[ -f $dest_path ]]; then
+		echol "Image file: "$dest_path" already exists. Skipping..."
+	else
+		# use temporary file for downloading to be safe from sudden interruptions (network, ctrl+c)
+		local tmp_file_path=$(mktemp)
+		local skopeo_cmd="$SKOPEO_BIN --insecure-policy copy docker://$image_name docker-archive:$dest_path:$repository:$tag"
+		echol "Downloading image: $image"
+		{ $skopeo_cmd && mv $tmp_file_path $dest_path; } ||
+			exit_with_error "skopeo failed, command was: $skopeo_cmd && mv $tmp_file_path $dest_path"
+	fi
 }
 
 # params: <dest_dir> <package_1> ... [package_N]

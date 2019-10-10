@@ -4,10 +4,8 @@
 - name: Clean up temporary files
   file:
     state: absent
-    path: "{{ path }}"
+    path: "{{ item }}"
   loop:
     - /tmp/epi-download-requirements
     - /tmp/epi-repository-setup-scripts
     - /var/tmp/enabled-system-repos.txt
-  loop_control:
-    index_var: path
