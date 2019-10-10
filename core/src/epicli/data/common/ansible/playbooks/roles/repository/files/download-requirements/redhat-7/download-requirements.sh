@@ -94,7 +94,7 @@ download_image() {
 	else
 		# use temporary file for downloading to be safe from sudden interruptions (network, ctrl+c)
 		local tmp_file_path=$(mktemp)
-		local skopeo_cmd="$SKOPEO_BIN --insecure-policy copy docker://$image_name docker-archive:$dest_path:$repository:$tag"
+		local skopeo_cmd="$SKOPEO_BIN --insecure-policy copy docker://$image_name docker-archive:$tmp_file_path:$repository:$tag"
 		echol "Downloading image: $image"
 		{ $skopeo_cmd && chmod 644 $tmp_file_path && mv $tmp_file_path $dest_path; } ||
 			exit_with_error "skopeo failed, command was: $skopeo_cmd && chmod 644 $tmp_file_path && mv $tmp_file_path $dest_path"

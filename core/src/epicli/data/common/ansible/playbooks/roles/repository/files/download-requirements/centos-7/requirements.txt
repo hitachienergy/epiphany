@@ -7,12 +7,14 @@ createrepo
 deltarpm # for createrepo
 httpd
 httpd-tools # for httpd
+libxml2-python # for createrepo
 mailcap # for httpd
 mod_ssl # for httpd
 python-chardet # for createrepo
 python-deltarpm # for createrepo
 python-kitchen # for createrepo
 yum-utils
+
 
 [packages]
 audit # for docker-ce
