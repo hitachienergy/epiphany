@@ -6,13 +6,13 @@ Epicli has the ability to setup a cluster on infrastructure provided by you. The
 
 *Note. Hardware requirements are not listed since this dependends on use-case, component configuration etc.*
 
-1. All the machines are connected by a network or virtual network of some sorts and can communicate which each other.
-2. Running one of the following Linux distributions:
+1. The cluster machines/vm`s are connected by a network or virtual network of some sorts and can communicate which each other and have access to the internet.
+2. The cluster machines/vm`s are running one of the following Linux distributions:
     - Redhat 7.4+
     - CentOS 7.4+
     - Ubuntu 18.04
    Other distributions/version might work but are un-tested.
-3. All machines should be accessible through SSH with a set of SSH keys you provide and configure on each machine yourself.
+3. The cluster machines/vm`s are should be accessible through SSH with a set of SSH keys you provide and configure on each machine yourself.
 4. A provisioning machine that:
     - Has access to the SSH keys
     - Is on the same network as your cluster machines
@@ -71,6 +71,101 @@ To setup the cluster do the following steps from the provisioning machine:
     ```
 
     This will create the inventory for Ansible based on the component/machine definitions made inside the `newcluster.yml` and let Absible deploy it. Note that the `--no-infra` is important since it tells Epicli to skip the Terraform part.
+
+### How to create an Epiphany cluster on existing airgapped infrastructure
+
+Epicli has the ability to setup a cluster on airgapped infrastructure provided by you. These can be either bare metal machines or VM's and should meet the following requirements:
+
+*Note. Hardware requirements are not listed since this dependends on use-case, component configuration etc.*
+
+1. The airgapped cluster machines/vm`s are connected by a network or virtual network of some sorts and can communicate which each other:
+2. The airgapped cluster machines/vm`s are running one of the following Linux distributions:
+    - Redhat 7.4+
+    - CentOS 7.4+
+    - Ubuntu 18.04
+   Other distributions/version might work but are un-tested.
+3. The airgapped cluster machines/vm`s should be accessible through SSH with a set of SSH keys you provide and configure on each machine yourself.
+2. A requirements machine that:
+    - Runs the same distribution as the airgapped cluster machines/vm`s (Redhat 7.4+, CentOS 7.4+, Ubuntu 18.04)
+    - Has access to the internet.
+3. A provisioning machine that:
+    - Has access to the SSH keys
+    - Is on the same network as your cluster machines
+    - Has Epicli running.
+      *Note. To run Epicli check the [Prerequisites](./PREREQUISITES.md)*
+
+To setup the cluster do the following steps:
+
+1. First we need to get the tooling to prepare the requirements. On the provisioning machine run:
+
+    ```shell
+    epicli prepare --os OS
+    ```
+
+    Where OS should be `centos-7`, `redhat-7`, `ubuntu-18.04`. This will create a directory called `prepare_scripts` with the following files inside:
+
+    - download-requirements.sh
+    - requirements.txt
+    - skopeo_linux
+
+2. The scripts in the `prepare_scripts` will be used to download all requirements. To do that copy the `prepare_scripts` folder over to the requirements machine and run the following command:
+
+    ```shell
+    download-requirements.sh /requirementsoutput/
+    ```
+
+    This will start downloading all requirements and put them in the `/requirementsoutput/` folder. Once run succesfully the `/requirementsoutput/` needs to be copied to the provisioning machine to be used later on.
+
+3. Then generate a minimal data yaml file on the provisioning machine:
+
+    ```shell
+    epicli init -p any -n newcluster
+    ```
+
+    The `any` provider will tell Epicli to create a minimal data config which does not contain any cloud provider related information. If you want full control you can add the `--full` flag which will give you a configuration with all parts of a cluster that can be configured.
+
+4. Open the configuration file and setup the  `admin_user` data:
+
+    ```yaml
+    admin_user:
+      key_path: /path/to/your/ssh/keys
+      name: user_name
+    ```
+    Here you should specify the path to the SSH keys and the admin user name which will be used by Anisble to provision the cluster machines.
+
+5. Define the components you want to install and link them to the machines you want to install them on:
+
+    Under the  `components` tag you will find a bunch of definitions like this one:
+
+    ```yaml
+    kubernetes_master:
+      count: 1
+      machines:
+      - default-k8s-master
+    ```
+
+    The `count` specifies how much machines you want to provision with this component. The `machines` tag is the array of machine names you want to install this component on. Note that the `count` and the number of `machines` defined must match. If you don't want to use a component you can set the `count` to 0 and remove the `machines` tag. Finally a machine can be used by multiple component since multiple components can be installed on one machine of desired.
+
+    You will also find a bunch of `infrastructure/machine`  definitions like below:
+
+    ```yaml
+    kind: infrastructure/machine
+    name: default-k8s-master
+    provider: any
+    specification:
+      hostname: master
+      ip: 192.168.100.101
+    ```
+
+    Each machine name used when setting up the component layout earlier must have such a configuration where the `name` tag matches with the defined one in the components. The `hostname` and `ip` fields must be filled to match the actual cluster machines you provide. Ansible will use this to match the machine to a component which in turn will determin which roles to install on the machine.
+
+6. Finally start the deployment with:
+
+    ```shell
+    epicli apply -f newcluster.yml --no-infra --offline-requirements /requirementsoutput/
+    ```
+
+    This will create the inventory for Ansible based on the component/machine definitions made inside the `newcluster.yml` and let Absible deploy it. Note that the `--no-infra` is important since it tells Epicli to skip the Terraform part. The `--offline-requirements` tells Epicli it is an airgapped installation and to use the  `/requirementsoutput/` requirements folder prepared in steps 1 and 2 as source for all requirements.
 
 ### How to create an Epiphany cluster on a cloud provider
 
@@ -189,17 +284,51 @@ Epicli has a delete command to remove a cluster from a cloud provider (AWS, Azur
 
 From the defined cluster build folder it will take the information needed to remove the resources from the cloud provider.
 
-### How to create an offline installation for an Epiphany cluster
-
-TODO
-
 ### Single machine cluster
 
 TODO
 
-### How to scale components
+### How to scale or cluster components
 
-TODO
+Epiphany has the ability to automaticly scale and cluster certain components on cloud providers (AWS, Azure). To upscale or downscale a component the `count` number must be increased or decreased:
+
+  ```yaml
+  components:
+    kubernetes_node:
+      count: ...
+      ...
+  ```
+
+Then when applying the changed configuration using Epicli additional VM's will be spawned and configured or removed. The following components support scaling/clustering:
+
+- kubernetes_node: When changed this will setup or remove additional nodes with `kubernetes_master`.
+- kafka: When changed this will setup or remove additional nodes for the Kafka cluster.
+- rabbitmq: When changed this will setup or remove additional nodes for the RabbitMQ cluster. Note that this will require to enable clustering in the `configuration/rabbitmq` configuration:
+
+  ```yaml
+  kind: configuration/rabbitmq
+  ...
+  specification:
+    cluster:
+      is_clustered: true
+  ...
+  ```
+- postgresql: When changed this will setup or remove additional nodes for Postgresql. Note that extra nodes can only be setup todo replication by adding the following additional `configuration/postgresql` configuration:
+
+  ```yaml
+  kind: configuration/postgresql
+  ...
+  specification:
+    replication:
+      enable: true
+      user: postgresql-replication-user
+      password: postgresql-replication-password
+      max_wal_senders: 5
+      wal_keep_segments: 32  
+    ...
+  ```
+
+Changing the count for other predefined components will spawn additional machines or remove VM's 
 
 ## Legacy
 
