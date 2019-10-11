@@ -50,13 +50,6 @@ class AnsibleRunner(Step):
         if not Config().offline_requirements:
             shutil.copy(os.path.join(dirname(dirname(inspect.getfile(os))), 'skopeo_linux'), '/tmp')
 
-        # ~~this shouldn't be needed at all~~
-        # # todo: install packages to run ansible on Red Hat hosts
-        # self.ansible_command.run_task_with_retries(hosts='all', inventory=inventory_path, module='raw',
-        #                                            args='cat /etc/lsb-release | grep -i DISTRIB_ID | grep -i ubuntu && '
-        #                                                 'sudo apt-get update && sudo apt-get install -y python-simplejson '
-        #                                                 '|| echo \'Cannot find information about Ubuntu distribution\'', retries=5)
-
         self.ansible_vars_generator.run()
 
         self.logger.info('Setting up repository for cluster provisioning. This will take a while...')
