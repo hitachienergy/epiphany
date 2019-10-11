@@ -51,6 +51,8 @@ class AnsibleVarsGenerator(Step):
         main_vars = ObjDict()
         main_vars = self.add_admin_user_name(main_vars)
         main_vars = self.add_validate_certs(main_vars)
+        main_vars = self.add_shared_config(main_vars)
+        main_vars = self.add_offline_requirements(main_vars)
 
         vars_dir = os.path.join(ansible_dir, 'group_vars')
         if not os.path.exists(vars_dir):
@@ -59,22 +61,24 @@ class AnsibleVarsGenerator(Step):
         vars_file_name = 'all.yml'
         vars_file_path = os.path.join(vars_dir, vars_file_name)
 
-        with open(vars_file_path, 'w') as stream:
+        with open(vars_file_path, 'a') as stream:
             dump(main_vars, stream)
 
     def add_admin_user_name(self, document):
-        if document is None:
-            raise Exception('Config is empty for: ' + 'group_vars/all.yml')
-
         document['admin_user'] = self.cluster_model.specification.admin_user
         return document
 
     def add_validate_certs(self, document):
-        if document is None:
-            raise Exception('Config is empty for: ' + 'group_vars/all.yml')
-
         document['validate_certs'] = Config().validate_certs
+        return document
 
+    def add_offline_requirements(self, document):
+        document['offline_requirements'] = Config().offline_requirements
+        return document
+
+    def add_shared_config(self, document):
+        shared_config_doc = select_first(self.config_docs, lambda x: x.kind == 'configuration/shared-config')
+        document.update(shared_config_doc.specification)
         return document
 
     def add_provider_info(self, document):

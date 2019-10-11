@@ -1,5 +1,8 @@
 ---
 # Ansible playbook that installs and performs basic configuration of postgresql
+- hosts: all
+  gather_facts: yes
+  tasks: [ ]
 
 - hosts: postgresql
   become: true

@@ -3,6 +3,7 @@ version: 0.4.0
 title: "HAProxy"
 name: default
 specification:
+  version: '1.8'
   service_port: 30001
   logs_max_days: 60
   self_signed_certificate_name: self-signed-fullchain.pem
@@ -22,11 +23,11 @@ specification:
       https: yes
       backend:
       - http_back1
-  backend:
+  backend: # example backend config below
     - name: http_back1
-#      server_groups:
-#      - kubernetes_node
-      servers: # Definition for server to that hosts the application.
-      - name: "node1"
-        address: "epiphany-vm1.domain.com"
+      server_groups:
+      - kubernetes_node
+      # servers: # Definition for server to that hosts the application.
+      # - name: "node1"
+      #   address: "epiphany-vm1.domain.com"
       port: 30104

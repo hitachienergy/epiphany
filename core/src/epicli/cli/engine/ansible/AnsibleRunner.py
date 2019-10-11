@@ -1,5 +1,8 @@
+import inspect
 import os
 import time
+import shutil
+from os.path import dirname
 
 from cli.engine.ansible.AnsibleCommand import AnsibleCommand
 from cli.engine.ansible.AnsibleInventoryCreator import AnsibleInventoryCreator
@@ -8,10 +11,11 @@ from cli.helpers.Step import Step
 from cli.helpers.build_saver import get_inventory_path, get_ansible_path, copy_files_recursively
 from cli.helpers.naming_helpers import to_role_name
 from cli.helpers.data_loader import DATA_FOLDER_PATH
+from cli.helpers.Config import Config
 
 
 class AnsibleRunner(Step):
-    ANSIBLE_PLAYBOOKS_PATH = DATA_FOLDER_PATH + "/common/ansible/playbooks/"
+    ANSIBLE_PLAYBOOKS_PATH = DATA_FOLDER_PATH + '/common/ansible/playbooks/'
 
     def __init__(self, cluster_model, config_docs):
         super().__init__(__name__)
@@ -42,21 +46,25 @@ class AnsibleRunner(Step):
 
         copy_files_recursively(AnsibleRunner.ANSIBLE_PLAYBOOKS_PATH, get_ansible_path(self.cluster_model.specification.name))
 
-        # todo: install packages to run ansible on Red Hat hosts
-        self.ansible_command.run_task_with_retries(hosts="all", inventory=inventory_path, module="raw",
-                                                   args="cat /etc/lsb-release | grep -i DISTRIB_ID | grep -i ubuntu && "
-                                                        "sudo apt-get update && sudo apt-get install -y python-simplejson "
-                                                        "|| echo 'Cannot find information about Ubuntu distribution'", retries=5)
+        # copy skopeo so Ansible can move it to the repositry machine
+        if not Config().offline_requirements:
+            shutil.copy(os.path.join(dirname(dirname(inspect.getfile(os))), 'skopeo_linux'), '/tmp')
 
         self.ansible_vars_generator.run()
 
-
+        self.logger.info('Setting up repository for cluster provisioning. This will take a while...')
         self.ansible_command.run_playbook_with_retries(inventory=inventory_path,
-                                                       playbook_path=self.playbook_path('common'),
+                                                       playbook_path=self.playbook_path('repository_setup'),
                                                        retries=5)
+
+        self.ansible_command.run_playbook(inventory=inventory_path,
+                                          playbook_path=self.playbook_path('common'))
 
         enabled_roles = self.inventory_creator.get_enabled_roles()
 
         for role in enabled_roles:
             self.ansible_command.run_playbook(inventory=inventory_path,
                                               playbook_path=self.playbook_path(to_role_name(role)))
+
+        self.ansible_command.run_playbook(inventory=inventory_path,
+                                          playbook_path=self.playbook_path('repository_teardown'))

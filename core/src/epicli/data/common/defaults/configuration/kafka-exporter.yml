@@ -4,19 +4,9 @@ title: "Kafka exporter"
 name: default
 specification:
   description: "Service that runs Kafka Exporter"
-  download_urls:
-    i386: "https://github.com/danielqsj/kafka_exporter/releases/download/v1.2.0/kafka_exporter-1.2.0.linux-386.tar.gz"
-    x86_64: "https://github.com/danielqsj/kafka_exporter/releases/download/v1.2.0/kafka_exporter-1.2.0.linux-amd64.tar.gz"
-    aarch64: "https://github.com/danielqsj/kafka_exporter/releases/download/v1.2.0/kafka_exporter-1.2.0.linux-arm64.tar.gz"
-
-
-  download_shas:
-    - "7afa40365ddf0cb0a88457684bd64d565e250c7e5a4536ba7f9d37d02d2808c3b07766f94e0b1338beb296573ade29db630948c931be44bde416c0410b5d783b"
-    - "1b36d0dc45b9dc20d90f88ee43b84277154d6d589c19b0674b10b4c3e48ce31e5410094deeae4426e069f9d30108bb26dcb84fab2e87e2841dadb75e58fb5916"
-    - "d354c47b34dc0c7ebb9834455bba98bfa157a324a63cfb322611373d8aab1280ec05727721fe46c615554658cc25d9a55aceeb538ec8f2ca920e86c3fe4a818d"
-
-  download_directory: "/tmp"
-
+  version: 1.2.0
+  file_name: "kafka_exporter-1.2.0.linux-amd64.tar.gz"
+  
   web_listen_port: "9308"
   config_flags:
     - "--web.listen-address=:9308" # Address to listen on for web interface and telemetry.

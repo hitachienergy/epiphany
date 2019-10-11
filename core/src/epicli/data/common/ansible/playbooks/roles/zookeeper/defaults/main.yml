@@ -2,13 +2,8 @@
 
 zookeeper_hosts: "{{ groups['zookeeper'] }}"
 
-zookeeper_version: 3.4.12
-zookeeper: zookeeper-{{zookeeper_version}}
-zookeeper_url: http://archive.apache.org/dist/zookeeper
-
 zookeeper_data_dir: /var/lib/zookeeper
 zookeeper_log_dir: /var/log/zookeeper
-zookeeper_dir: /opt/{{zookeeper}}
 
 zookeeper_rolling_log_file_max_size: 10MB
 zookeeper_max_rolling_log_file_count: 10

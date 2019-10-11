@@ -1,0 +1,33 @@
+---
+- name: Set SELinux in permissive mode until the machine is rebooted
+  command: setenforce 0
+  ignore_errors: true
+  changed_when: false
+
+- name: Create epirepo repository
+  shell: >-
+    set -o pipefail && /tmp/epi-repository-setup-scripts/create-repository.sh /var/www/html/epirepo {{ offline_mode | lower }} |&
+    tee /tmp/epi-repository-setup-scripts/create-repository.log
+  when:
+    - not custom_repository_url
+    - inventory_hostname in groups['repository']
+
+- name: Ensure httpd is running
+  service:
+    name: httpd
+    state: started
+  when:
+    - ansible_os_family == "RedHat"
+    - not custom_repository_url
+    - inventory_hostname in groups['repository']
+
+- name: Disable system repositories and set up epirepo
+  block:
+    - name: Create list of enabled repositories
+      shell: /tmp/epi-repository-setup-scripts/create-enabled-system-repos-list.sh
+    - name: Disable system repositories
+      shell: /tmp/epi-repository-setup-scripts/disable-system-repos.sh
+    - name: Add and enable epirepo
+      shell: >-
+        set -o pipefail && /tmp/epi-repository-setup-scripts/add-epirepo-client.sh {{ repository_url }} |&
+        tee /tmp/epi-repository-setup-scripts/add-epirepo-client.log

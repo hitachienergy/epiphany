@@ -1,8 +1,6 @@
 ---
 # Filebeat
-
-- name: Include {{ ansible_os_family }} family tasks
-  include_tasks: "{{ ansible_os_family }}.yml"
+- include_tasks: "{{ ansible_os_family }}.yml"  
 
 - name: Include configuration tasks
   include_tasks: configure-filebeat.yml

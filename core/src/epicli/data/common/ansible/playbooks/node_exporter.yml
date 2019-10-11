@@ -1,4 +1,7 @@
 ---
+- hosts: all
+  gather_facts: yes
+  tasks: [ ]  
 
 - hosts: node_exporter
   become: true
