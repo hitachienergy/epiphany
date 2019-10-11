@@ -99,11 +99,17 @@ libjq1
 
 # for gnupg2
 gnupg
+gpg
+gpg-agent
 
 # for azure
 smbclient
 samba-libs
 libsmbclient
+
+# for postgres
+postgresql-client-10
+postgresql-common
 
 [files]
 https://repo1.maven.org/maven2/io/prometheus/jmx/jmx_prometheus_javaagent/0.12.0/jmx_prometheus_javaagent-0.12.0.jar
