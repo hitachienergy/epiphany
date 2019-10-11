@@ -31,13 +31,24 @@ deplist_cmd() {
 # source common functions
 . "${script_path}/common.sh"
 
+repos_backup_file="/tmp/epi-repository-setup-scripts/enable-system-repos.sh"
+# restore system repositories in case they're missing if ansible role gets interrupted
+if [[ ! -f /etc/apt/sources.list ]]; then
+    if [[ -f /var/tmp/enabled-system-repos.tar ]] && [[ -f ${repos_backup_file} ]]; then
+        echol "OS repositories seems missing, restoring..."
+        ${repos_backup_file} 
+    else
+        echol "/etc/apt/sources.list seems missing, you either know what you're doing or you need to fix your repositories"
+    fi
+fi
+
 # install prerequisites which might be missing
 apt install -y wget gpg
 
 # some quick sanity check
-echo "dependency list: ${deplist}"
-echo "command used to download packages: ${download_cmd}"
-echo "destination directory for packages: ${dst_dir_packages}"
+echol "Dependency list: ${deplist}"
+echol "Command used to download packages: ${download_cmd}"
+echol "Destination directory for packages: ${dst_dir_packages}"
 
 # make sure destination dir exists
 mkdir -p "${dst_dir_packages}"
@@ -63,15 +74,15 @@ find "$script_path" -type f -wholename "$input_file" -mmin -1 -exec rm "${deplis
 # if dependency list doesn't exist or is zero size then resolve dependency and store them in a deplist file
 if [[ ! -f ${deplist} ]] || [[ ! -s ${deplist} ]] ; then
     # clean dependency list if process gets interrupted
-    trap "rm -f ${deplist}; echo 'dependency resolution interrupted, cleaning cache file'" SIGINT SIGTERM
+    trap "rm -f ${deplist}; echol 'Dependency resolution interrupted, cleaning cache file'" SIGINT SIGTERM
     echo Resolving dependencies to download. This might take a while and will be cached in ${deplist}
     while IFS= read -r package; do
-        echo "package read from requirements file: $package" | tee -a ${logfile}
+        echol "Package read from requirements file: $package"
         # if package has a specified version e.g. "name 1.0" store it as "name=1.0*" for compatibility with "apt-get download"
         package=$(echo ${package} | awk '{if($2 != "") {print $1 "=" $2 "*"} else {print $1}}')
-        echo "package to download: $package" | tee -a ${logfile}
+        echol "Package to download: $package"
         # store package itself in the list of dependencies...
-        echo "${package}" >> "${deplist}"
+        echol "${package}" >> "${deplist}"
         # .. and create depency list for the package
         # (names only for dependencies, no version check here, not necessary as most dependencies are backward-compatible)
 	dependencies=$(deplist_cmd "${package}" | awk '/Depends/ && !/</ {print$2}' | tee -a "${deplist}")
@@ -82,7 +93,7 @@ fi
 sort -u -o ${deplist} ${deplist}
 
 # be verbose, show what will be downloaded
-echo "packages to be downloaded:"
+echol "Packages to be downloaded:"
 cat -n "${deplist}"
 
 # download dependencies (apt-get sandboxing warning when running as root are harmless)
@@ -94,11 +105,11 @@ printf "\n"
 # FILES
 # process files
 if [[ -z "${files}" ]]; then
-    echo "no files to download"
+    echol "No files to download"
 else
     # be verbose, show what will be downloaded
     # TODO: this is the list of all files shows on every run, not only the files that will be downloaded this run
-    echo "files to be downloaded:"
+    echol "Files to be downloaded:"
     cat -n <<< "${files}"
     
     printf "\n" 
@@ -119,10 +130,10 @@ printf "\n"
 create_directory "${dst_dir_images}"
 
 if [[ -z "${images}" ]]; then
-    echo "No images to download"
+    echol "No images to download"
 else
     # be verbose, show what will be downloaded
-    echo "Images to be downloaded:"
+    echol "Images to be downloaded:"
     cat -n <<< "${images}"
     
     printf "\n" 
