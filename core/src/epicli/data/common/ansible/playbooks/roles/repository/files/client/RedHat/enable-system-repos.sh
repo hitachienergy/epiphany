@@ -5,7 +5,7 @@ YUM_REPOS_BACKUP_FILE=/etc/yum.repos.d/yum.repos.d-epi-backup.tar
 
 if [ -f $YUM_REPOS_BACKUP_FILE ]; then # hosts without yum-config-manager
   echo "Restoring /etc/yum.repos.d/*.repo from: $YUM_REPOS_BACKUP_FILE"
-  if tar -xv --file $YUM_CONFIG_BACKUP_FILE_PATH --directory /etc/yum.repos.d \
+  if tar -xv --file $YUM_REPOS_BACKUP_FILE --directory /etc/yum.repos.d \
          --strip-components=2 etc/yum.repos.d/*.repo; then
     echo "yum repositories restored"
     rm -f $YUM_REPOS_BACKUP_FILE
