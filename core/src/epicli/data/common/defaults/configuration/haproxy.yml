@@ -23,11 +23,11 @@ specification:
       https: yes
       backend:
       - http_back1
-  backend:
+  backend: # example backend config below
     - name: http_back1
-#      server_groups:
-#      - kubernetes_node
-      servers: # Definition for server to that hosts the application.
-      - name: "node1"
-        address: "epiphany-vm1.domain.com"
+      server_groups:
+      - kubernetes_node
+      # servers: # Definition for server to that hosts the application.
+      # - name: "node1"
+      #   address: "epiphany-vm1.domain.com"
       port: 30104
