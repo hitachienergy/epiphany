@@ -28,7 +28,7 @@ share/python-wheels/
 *.egg
 MANIFEST
 
-requirements.txt
+/requirements.txt
 
 # PyInstaller
 #  Usually these files are written by a python script from a template
@@ -121,8 +121,11 @@ dmypy.json
 # pycharm settings
 .idea/
 
-# external packages for BDS scan
+# epicli specific
 external/
-
-# test results
-tests_result/
+tests/serverspec-cli/results/
+tests/cli/results/
+.terraform
+clusters
+.vscode
+.devcontainer

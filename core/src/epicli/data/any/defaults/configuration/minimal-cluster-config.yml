@@ -1,10 +1,10 @@
 kind: epiphany-cluster
-version: 0.3.0
+version: 0.4.0
 title: "Epiphany cluster Config"
 provider: any
 name: "default"
 specification:
-  name: YOUR_CLUSTER_NAME
+  name: name
   admin_user:
     name: operations # YOUR-ADMIN-USERNAME
     key_path: /user/.ssh/epiphany-operations/id_rsa # YOUR-SSH-KEY-PATH

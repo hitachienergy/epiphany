@@ -1,11 +1,11 @@
 kind: epiphany-cluster
-version: 0.3.0
+version: 0.4.0
 title: "Epiphany cluster Config"
 provider: aws
 name: "default"
 specification:
-  name: EpiphanyCluster
   prefix: default
+  name: epiphanycluster
   admin_user:
     name: operations # YOUR-ADMIN-USERNAME
     key_path: /root/.ssh/epiphany-operations/id_rsa # YOUR-SSH-KEY-PATH
@@ -13,6 +13,7 @@ specification:
     subscription_name: YOUR-SUB-NAME
     vnet_address_pool: 10.1.0.0/20
     use_public_ips: False # When not using public IPs you have to provide connectivity via private IPs (VPN)
+    use_service_principal: False
     region: eu-west-2
     credentials: # todo change it to get credentials from vault
       key: 3124-4124-4124
@@ -64,17 +65,16 @@ specification:
       subnets:
         - availability_zone: eu-west-2a
           address_pool: 10.1.6.0/24
-
     load_balancer:
       count: 1
-      machine: default
+      machine: load-balancer-machine
       configuration: default
       subnets:
         - availability_zone: eu-west-2a
           address_pool: 10.1.7.0/24
     rabbitmq:
       count: 0
-      machine: default
+      machine: rabbitmq-machine
       configuration: default
       subnets:
         - availability_zone: eu-west-2a

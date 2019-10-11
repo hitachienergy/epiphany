@@ -5,6 +5,7 @@ prometheus_port = 9090
 kube_apiserver_secure_port = 6443
 alertmanager_host = 'localhost'
 alertmanager_port = 9093
+kubelet_port = 10250
 
 describe 'Checking if Prometheus user exists' do
   describe group('prometheus') do
@@ -110,7 +111,7 @@ end
 describe 'Checking connection to HAProxy Exporter hosts' do
     listInventoryHosts("haproxy_exporter").each do |val|
         let(:disable_sudo) { false }
-        describe command("curl -o /dev/null -s -w '%{http_code}' $(grep -oP \"(?<=targets: \\\[\\\").*(?=\\\"\\\])\" /etc/prometheus/file_sd/haproxy-exporter-#{val}.yml)/metrics") do
+        describe command("curl -o /dev/null -s -w '%{http_code}' $(grep -oP \"(?<=targets: \\\[\').*(?=\'\\\])\" /etc/prometheus/file_sd/haproxy-exporter-#{val}.yml)/metrics") do
           it "is expected to be equal" do
             expect(subject.stdout.to_i).to eq 200
           end
@@ -168,7 +169,7 @@ describe 'Checking connection to Kubernetes API server' do
     listInventoryHosts("kubernetes_master").each do |val|
         let(:disable_sudo) { false }
         describe command("curl -o /dev/null -s -w '%{http_code}' -k -H \"Authorization: Bearer $(grep -A 6 kubernetes-apiservers /etc/prometheus/prometheus.yml \
-        | awk '/bearer_token/ {print $2}')\" https://#{val}:#{kube_apiserver_secure_port}/metrics") do
+        | awk '/bearer_token/ {print $2}' | tr -d '\"')\" https://#{val}:#{kube_apiserver_secure_port}/metrics") do
           it "is expected to be equal" do
             expect(subject.stdout.to_i).to eq 200
           end
@@ -180,40 +181,40 @@ describe 'Checking connection to Kubernetes cAdvisor' do
     let(:disable_sudo) { false }
     listInventoryHosts("kubernetes_master").each do |val_m|
         describe command("curl -o /dev/null -s -w '%{http_code}' -k -H \"Authorization: Bearer $(grep -A 6 kubernetes-cadvisor /etc/prometheus/prometheus.yml \
-        | awk '/bearer_token/ {print $2}')\" https://#{val_m}:#{kube_apiserver_secure_port}/api/v1/nodes/#{val_m}/proxy/metrics/cadvisor") do
+        | awk '/bearer_token/ {print $2}' | tr -d '\"')\" https://#{val_m}:#{kubelet_port}/metrics/cadvisor") do
             it "is expected to be equal" do
                 expect(subject.stdout.to_i).to eq 200
             end
         end
-        listInventoryHosts("kubernetes_node").each do |val_w|
-            describe command("curl -o /dev/null -s -w '%{http_code}' -k -H \"Authorization: Bearer $(grep -A 6 kubernetes-cadvisor /etc/prometheus/prometheus.yml \
-            | awk '/bearer_token/ {print $2}')\" https://#{val_m}:#{kube_apiserver_secure_port}/api/v1/nodes/#{val_w}/proxy/metrics/cadvisor") do
-                it "is expected to be equal" do
-                    expect(subject.stdout.to_i).to eq 200
-                end
+      end
+    listInventoryHosts("kubernetes_node").each do |val_w|
+        describe command("curl -o /dev/null -s -w '%{http_code}' -k -H \"Authorization: Bearer $(grep -A 6 kubernetes-cadvisor /etc/prometheus/prometheus.yml \
+        | awk '/bearer_token/ {print $2}' | tr -d '\"')\" https://#{val_w}:#{kubelet_port}/metrics/cadvisor") do
+            it "is expected to be equal" do
+                expect(subject.stdout.to_i).to eq 200
             end
         end
-    end 
+    end
 end
 
 describe 'Checking connection to Kubernetes nodes' do
     let(:disable_sudo) { false }
     listInventoryHosts("kubernetes_master").each do |val_m|
         describe command("curl -o /dev/null -s -w '%{http_code}' -k -H \"Authorization: Bearer $(grep -A 6 kubernetes-nodes /etc/prometheus/prometheus.yml \
-        | awk '/bearer_token/ {print $2}')\" https://#{val_m}:#{kube_apiserver_secure_port}/api/v1/nodes/#{val_m}/proxy/metrics") do
+        | awk '/bearer_token/ {print $2}' | tr -d '\"')\" https://#{val_m}:#{kubelet_port}/metrics") do
             it "is expected to be equal" do
                 expect(subject.stdout.to_i).to eq 200
             end
         end
-        listInventoryHosts("kubernetes_node").each do |val_w|
-            describe command("curl -o /dev/null -s -w '%{http_code}' -k -H \"Authorization: Bearer $(grep -A 6 kubernetes-nodes /etc/prometheus/prometheus.yml \
-            | awk '/bearer_token/ {print $2}')\" https://#{val_m}:#{kube_apiserver_secure_port}/api/v1/nodes/#{val_w}/proxy/metrics") do
-                it "is expected to be equal" do
-                    expect(subject.stdout.to_i).to eq 200
-                end
+      end
+    listInventoryHosts("kubernetes_node").each do |val_w|
+        describe command("curl -o /dev/null -s -w '%{http_code}' -k -H \"Authorization: Bearer $(grep -A 6 kubernetes-nodes /etc/prometheus/prometheus.yml \
+        | awk '/bearer_token/ {print $2}' | tr -d '\"')\" https://#{val_w}:#{kubelet_port}/metrics") do
+            it "is expected to be equal" do
+                expect(subject.stdout.to_i).to eq 200
             end
         end
-    end 
+    end
 end
 
 

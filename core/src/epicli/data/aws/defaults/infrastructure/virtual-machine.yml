@@ -1,5 +1,5 @@
 kind: infrastructure/virtual-machine
-version: 0.3.0
+version: 0.4.0
 title: "Virtual Machine Infra"
 provider: aws
 name: default
@@ -10,10 +10,10 @@ specification:
   availability_zones: [] # specified automatically - based on subnet az's
   launch_configuration: SET_BY_AUTOMATION
   cluster_name: SET_BY_AUTOMATION
-  authorized_to_efs: False
-  mount_efs: False
+  authorized_to_efs: false
+  mount_efs: false
   tags:
-    - version: 0.3.0
+    - version: 0.4.0
   size: t2.micro
   os_full_name: "ubuntu/images/hvm-ssd/ubuntu-bionic-18.04-amd64-server-20190212.1"
   os_type: linux
@@ -41,6 +41,36 @@ specification:
        destination_port_range: "22"
        source_address_prefix: "0.0.0.0/0"
        destination_address_prefix: "0.0.0.0/0"
+     - name: node_exporter
+       description: Allow node_exporter traffic
+       priority: 302
+       direction: Inbound
+       access: Allow
+       protocol: Tcp
+       source_port_range: "*"
+       destination_port_range: "9100"
+       source_address_prefix: "10.1.0.0/20"
+       destination_address_prefix: "0.0.0.0/0"
+     - name: image_registry
+       description: Allow image registry traffic
+       priority: 303
+       direction: Inbound
+       access: Allow
+       protocol: Tcp
+       source_port_range: "*"
+       destination_port_range: "80"
+       source_address_prefix: "10.1.0.0/20"
+       destination_address_prefix: "0.0.0.0/0"
+     - name: package_repository
+       description: Allow package repository traffic
+       priority: 304
+       direction: Inbound
+       access: Allow
+       protocol: Tcp
+       source_port_range: "*"
+       destination_port_range: "5000"
+       source_address_prefix: "10.1.0.0/20"
+       destination_address_prefix: "0.0.0.0/0"
      - name: out
        description: Allow out
        priority: 101
@@ -54,25 +84,121 @@ specification:
 
 ---
 kind: infrastructure/virtual-machine
-version: 0.3.0
+version: 0.4.0
 title: "Virtual Machine Infra"
 provider: aws
 name: default-size-t3
 specification:
   tags:
-    - version: 0.3.0
+    - version: 0.4.0
   size: t3.micro
   os_type: linux
+  security:
+    rules:
+     - name: ssh
+       description: Allow SSH
+       priority: 101
+       direction: Inbound
+       access: Allow
+       protocol: Tcp
+       source_port_range: "*"
+       destination_port_range: "22"
+       source_address_prefix: "0.0.0.0/0"
+       destination_address_prefix: "0.0.0.0/0"
+     - name: node_exporter
+       description: Allow node_exporter traffic
+       priority: 302
+       direction: Inbound
+       access: Allow
+       protocol: Tcp
+       source_port_range: "*"
+       destination_port_range: "9100"
+       source_address_prefix: "10.1.0.0/20"
+       destination_address_prefix: "0.0.0.0/0"
 ---
 kind: infrastructure/virtual-machine
-version: 0.3.0
+version: 0.4.0
 title: "Virtual Machine Infra"
 provider: aws
-name: kubernetes-master-machine
+name: rabbitmq-machine
 specification:
-  size: t3.medium
-  authorized_to_efs: True
-  mount_efs: True
+  tags:
+    - version: 0.4.0
+  size: t3.micro
+  os_type: linux
+  security:
+    rules:
+     - name: ssh
+       description: Allow SSH
+       priority: 101
+       direction: Inbound
+       access: Allow
+       protocol: Tcp
+       source_port_range: "*"
+       destination_port_range: "22"
+       source_address_prefix: "0.0.0.0/0"
+       destination_address_prefix: "0.0.0.0/0"
+     - name: node_exporter
+       description: Allow node_exporter traffic
+       priority: 302
+       direction: Inbound
+       access: Allow
+       protocol: Tcp
+       source_port_range: "*"
+       destination_port_range: "9100"
+       source_address_prefix: "10.1.0.0/20"
+       destination_address_prefix: "0.0.0.0/0"
+     - name: rabbitmq
+       description: Allow rabbitmq traffic
+       priority: 303
+       direction: Inbound
+       access: Allow
+       protocol: Tcp
+       source_port_range: "*"
+       destination_port_range: "5672"
+       source_address_prefix: "10.1.0.0/20"
+       destination_address_prefix: "0.0.0.0/0"
+     - name: rabbitmq_clustering_1
+       description: Allow rabbitmq clustering traffic 1
+       priority: 304
+       direction: Inbound
+       access: Allow
+       protocol: Tcp
+       source_port_range: "*"
+       destination_port_range: "4369"
+       source_address_prefix: "10.1.8.0/24"
+       destination_address_prefix: "0.0.0.0/0"
+     - name: rabbitmq_clustering_1
+       description: Allow rabbitmq clustering traffic 2
+       priority: 305
+       direction: Inbound
+       access: Allow
+       protocol: Tcp
+       source_port_range: "*"
+       destination_port_range: "25672"
+       source_address_prefix: "10.1.8.0/24"
+       destination_address_prefix: "0.0.0.0/0"       
+     - name: out
+       description: Allow out
+       priority: 101
+       direction: Egress
+       access: Allow
+       protocol: "all"
+       source_port_range: "*"
+       destination_port_range: "0"
+       source_address_prefix: "0.0.0.0/0"
+       destination_address_prefix: "0.0.0.0/0"
+---
+kind: infrastructure/virtual-machine
+version: 0.4.0
+title: "Virtual Machine Infra"
+provider: aws
+name: load-balancer-machine
+specification:
+  tags:
+    - version: 0.4.0
+  size: t3.micro
+  os_type: linux
   security:
     rules:
      - name: ssh
@@ -84,6 +210,78 @@ specification:
        source_port_range: "*"
        destination_port_range: "22"
        source_address_prefix: "0.0.0.0/0"
+       destination_address_prefix: "0.0.0.0/0"
+     - name: node_exporter
+       description: Allow node_exporter traffic
+       priority: 302
+       direction: Inbound
+       access: Allow
+       protocol: Tcp
+       source_port_range: "*"
+       destination_port_range: "9100"
+       source_address_prefix: "10.1.0.0/20"
+       destination_address_prefix: "0.0.0.0/0"
+     - name: haproxy_exporter
+       description: Allow haproxy_exporter traffic
+       priority: 302
+       direction: Inbound
+       access: Allow
+       protocol: Tcp
+       source_port_range: "*"
+       destination_port_range: "9101"
+       source_address_prefix: "10.1.0.0/20"
+       destination_address_prefix: "0.0.0.0/0"
+     - name: out
+       description: Allow out
+       priority: 101
+       direction: Egress
+       access: Allow
+       protocol: "all"
+       source_port_range: "*"
+       destination_port_range: "0"
+       source_address_prefix: "0.0.0.0/0"
+       destination_address_prefix: "0.0.0.0/0"
+---
+kind: infrastructure/virtual-machine
+version: 0.4.0
+title: "Virtual Machine Infra"
+provider: aws
+name: kubernetes-master-machine
+specification:
+  size: t3.medium
+  authorized_to_efs: true
+  mount_efs: true
+  security:
+    rules:
+     - name: ssh
+       description: Allow ssh traffic
+       priority: 101
+       direction: Inbound
+       access: Allow
+       protocol: Tcp
+       source_port_range: "*"
+       destination_port_range: "22"
+       source_address_prefix: "0.0.0.0/0"
+       destination_address_prefix: "0.0.0.0/0"
+     - name: repository
+       description: Allow repository traffic
+       priority: 302
+       direction: Inbound
+       access: Allow
+       protocol: Tcp
+       source_port_range: "*"
+       destination_port_range: "80"
+       source_address_prefix: "10.1.0.0/20"
+       destination_address_prefix: "0.0.0.0/0"
+     - name: node_exporter
+       description: Allow node_exporter traffic
+       priority: 302
+       direction: Inbound
+       access: Allow
+       protocol: Tcp
+       source_port_range: "*"
+       destination_port_range: "9100"
+       source_address_prefix: "10.1.0.0/20"
        destination_address_prefix: "0.0.0.0/0"
      - name: subnet-traffic
        description: Allow subnet traffic
@@ -145,14 +343,14 @@ specification:
        destination_address_prefix: "0.0.0.0/0"
 ---
 kind: infrastructure/virtual-machine
-version: 0.3.0
+version: 0.4.0
 title: "Virtual Machine Infra"
 provider: aws
 name: kubernetes-node-machine
 specification:
   size: t3.medium
-  authorized_to_efs: True
-  mount_efs: True
+  authorized_to_efs: true
+  mount_efs: true
   security:
     rules:
      - name: ssh
@@ -164,6 +362,16 @@ specification:
        source_port_range: "*"
        destination_port_range: "22"
        source_address_prefix: "0.0.0.0/0"
+       destination_address_prefix: "0.0.0.0/0"
+     - name: node_exporter
+       description: Allow node_exporter traffic
+       priority: 302
+       direction: Inbound
+       access: Allow
+       protocol: Tcp
+       source_port_range: "*"
+       destination_port_range: "9100"
+       source_address_prefix: "10.1.0.0/20"
        destination_address_prefix: "0.0.0.0/0"
      - name: subnet-traffic
        description: Allow master subnet traffic
@@ -213,7 +421,7 @@ specification:
        destination_address_prefix: "0.0.0.0/0"
 ---
 kind: infrastructure/virtual-machine
-version: 0.3.0
+version: 0.4.0
 title: "Virtual Machine Infra"
 provider: aws
 name: kafka-machine
@@ -230,6 +438,26 @@ specification:
        source_port_range: "*"
        destination_port_range: "22"
        source_address_prefix: "0.0.0.0/0"
+       destination_address_prefix: "0.0.0.0/0"
+     - name: node_exporter
+       description: Allow node_exporter traffic
+       priority: 302
+       direction: Inbound
+       access: Allow
+       protocol: Tcp
+       source_port_range: "*"
+       destination_port_range: "9100"
+       source_address_prefix: "10.1.0.0/20"
+       destination_address_prefix: "0.0.0.0/0"
+     - name: kafka_exporter
+       description: Allow kafka exporter traffic
+       priority: 303
+       direction: Inbound
+       access: Allow
+       protocol: Tcp
+       source_port_range: "*"
+       destination_port_range: "9308"
+       source_address_prefix: "10.1.0.0/20"
        destination_address_prefix: "0.0.0.0/0"
      - name: zookeeper1
        description: Allow Zookeeper 1
@@ -319,7 +547,7 @@ specification:
        destination_address_prefix: "0.0.0.0/0"
 ---
 kind: infrastructure/virtual-machine
-version: 0.3.0
+version: 0.4.0
 title: "Virtual Machine Infra"
 provider: aws
 name: monitoring-machine
@@ -337,6 +565,36 @@ specification:
        destination_port_range: "22"
        source_address_prefix: "0.0.0.0/0"
        destination_address_prefix: "0.0.0.0/0"
+     - name: node_exporter
+       description: Allow node_exporter traffic
+       priority: 302
+       direction: Inbound
+       access: Allow
+       protocol: Tcp
+       source_port_range: "*"
+       destination_port_range: "9100"
+       source_address_prefix: "10.1.0.0/20"
+       destination_address_prefix: "0.0.0.0/0"
+     - name: prometheus
+       description: Allow connection to Prometheus
+       priority: 302
+       direction: Inbound
+       access: Allow
+       protocol: Tcp
+       source_port_range: "*"
+       destination_port_range: "9090"
+       source_address_prefix: "10.1.0.0/20"
+       destination_address_prefix: "0.0.0.0/0"
+     - name: grafana
+       description: Allow connection to Grafana
+       priority: 302
+       direction: Inbound
+       access: Allow
+       protocol: Tcp
+       source_port_range: "*"
+       destination_port_range: "3000"
+       source_address_prefix: "10.1.0.0/20"
+       destination_address_prefix: "0.0.0.0/0"
      - name: out
        description: Allow out
        priority: 101
@@ -349,7 +607,7 @@ specification:
        destination_address_prefix: "0.0.0.0/0"
 ---
 kind: infrastructure/virtual-machine
-version: 0.3.0
+version: 0.4.0
 title: "Virtual Machine Infra"
 provider: aws
 name: postgresql-machine
@@ -366,6 +624,16 @@ specification:
        source_port_range: "*"
        destination_port_range: "22"
        source_address_prefix: "0.0.0.0/0"
+       destination_address_prefix: "0.0.0.0/0"
+     - name: node_exporter
+       description: Allow node_exporter traffic
+       priority: 302
+       direction: Inbound
+       access: Allow
+       protocol: Tcp
+       source_port_range: "*"
+       destination_port_range: "9100"
+       source_address_prefix: "10.1.0.0/20"
        destination_address_prefix: "0.0.0.0/0"
      - name: out
        description: Allow out
@@ -401,9 +669,19 @@ specification:
        destination_port_range: "0"
        source_address_prefix: "10.1.2.0/24"
        destination_address_prefix: "0.0.0.0/0"
+     - name: postgres_clustering
+       description: Allow Postgres clustering traffic
+       priority: 305
+       direction: Inbound
+       access: Allow
+       protocol: Tcp
+       source_port_range: "*"
+       destination_port_range: "5432"
+       source_address_prefix: "10.1.6.0/24"
+       destination_address_prefix: "0.0.0.0/0"  
 ---
 kind: infrastructure/virtual-machine
-version: 0.3.0
+version: 0.4.0
 title: "Virtual Machine Infra"
 provider: aws
 name: logging-machine
@@ -420,6 +698,16 @@ specification:
        source_port_range: "*"
        destination_port_range: "22"
        source_address_prefix: "0.0.0.0/0"
+       destination_address_prefix: "0.0.0.0/0"
+     - name: node_exporter
+       description: Allow node_exporter traffic
+       priority: 302
+       direction: Inbound
+       access: Allow
+       protocol: Tcp
+       source_port_range: "*"
+       destination_port_range: "9100"
+       source_address_prefix: "10.1.0.0/20"
        destination_address_prefix: "0.0.0.0/0"
      - name: Elastic
        description: Allow Elastic

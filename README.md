@@ -15,9 +15,16 @@ Epiphany can run on as few as one node (laptop, desktop, server) but the real va
 
 We currently use Terraform and Ansible for our automation orchestration. All automation is idempotent so you can run it as many times as you wish and it will maintain the same state unless you change the data. If someone makes a "snow flake" change to the environment (you should never do this) then simply running the automation again will put the environment back to the desired state.
 
-## Legacy note
+## Note about legacy Epiphany
 
-In Epiphany 0.3 a new CLI tool was introduced (epicli) for deploying and managing clusters and currently supports AWS and bare metal deployment. Azure support will be added soon in a subsequent release but for now if you are in need for deploying a cluster on Azure use the older Legacy engine.
+Epicli 0.4.0 adds support for Azure deployments so using legacy Epiphany is no longer needed. We advice new projects to start straight with Epicli and older projects which still use legacy Epiphany to move over to Epicli 0.4.0. A tool to migrate legacy data files to the new format is in the works and will be released shortly.
+
+The Epicli 0.5.0 release later this year will drop the inclusion of the legacy path entirely.
+
+## Note about documentation
+
+- The documentation is a moving target. Always check the latest documentation on the develop branch. There is a big chance that whatever you are looking for is already added/updated or improved there.
+- We are currently in the process of documenting all features of Epicli and phasing out legacy Epiphany documentation. When documentation is specific for `Epicli` or `Legacy` it will be marked under a header with the these names. If its not under any of these headers then it applies to both.
 
 ## Quickstart
 
@@ -41,7 +48,7 @@ This minimum file definition is fine to start with, if you need more control ove
 epicli init -p aws -n demo --full
 ```
 
-You will need to modify a few values (like you AWS secrets, directory path for ssh keys). Once you are done done with `demo.yaml` you can start cluster deployment by executing with:
+You will need to modify a few values (like your AWS secrets, directory path for SSH keys). Once you are done with `demo.yaml` you can start cluster deployment by executing:
 
 ```shell
 epicli apply -f demo.yaml
@@ -73,16 +80,17 @@ Find more information using table of contents below - especially the [How-to gui
 - Platform
   - [Resources](docs/home/RESOURCES.md)
   - [How-to guides](docs/home/HOWTO.md)
-  - [Troubleshooting](docs/home/TROUBLESHOOTING.md)
+  - [Components](docs/home/COMPONENTS.md)
+  - [Security](docs/home/SECURITY.md)
+  - [Troubleshooting](docs/home/TROUBLESHOOTING.md)  
+  - [Changelog](CHANGELOG.md)  
 - Architecture
   - [Logical View](docs/architecture/logical-view.md)
   - [Process View](docs/architecture/process-view.md)
   - [Physical View](docs/architecture/physical-view.md)
-- Project
-  - [How-to contribute](docs/home/CONTRIBUTING.md)
-  - [Workflow to follow](docs/home/GITWORKFLOW.md)
+- Contributing
   - [Governance model](docs/home/GOVERNANCE.md)
-  - [Components](docs/home/COMPONENTS.md)
-  - [Changelog](CHANGELOG.md)
-
+  - [Development environment](docs/home/DEVELOPMENT.md)
+  - [GIT Workflow](docs/home/GITWORKFLOW.md)
+  
 <!-- TOC -->

@@ -1,10 +1,12 @@
 ---
-- name: Copy calico config
-  copy:
-    src: calico.yml
-    dest: /home/{{ admin_user.name }}/
+
+- name: Create calico deployment
+  template:
+    dest: "/home/{{ admin_user.name }}/calico.yml"
+    src: calico.yml.j2
     owner: "{{ admin_user.name }}"
     group: "{{ admin_user.name }}"
+
 
 - name: Apply calico definition
   shell: kubectl apply --kubeconfig=/home/{{ admin_user.name }}/.kube/config -f /home/{{ admin_user.name }}/calico.yml

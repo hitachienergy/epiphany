@@ -1,8 +1,8 @@
 ---
 # Ansible playbook that makes sure the base items for all nodes are installed
-
 - hosts: all
-  tasks: [ ]  
+  gather_facts: yes
+  tasks: [ ]
 
 - hosts: haproxy
   become: true

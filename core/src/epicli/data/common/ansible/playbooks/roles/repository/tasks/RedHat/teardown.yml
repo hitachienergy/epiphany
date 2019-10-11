@@ -1,0 +1,12 @@
+---
+- name: Re-enable system repositories
+  shell: /tmp/epi-repository-setup-scripts/enable-system-repos.sh
+
+- name: Disable epirepo
+  shell: /tmp/epi-repository-setup-scripts/disable-epirepo-client.sh
+
+- name: Disable epirepo server
+  shell: /tmp/epi-repository-setup-scripts/disable-repository-server.sh
+  when:
+    - not custom_repository_url
+    - inventory_hostname in groups['repository']

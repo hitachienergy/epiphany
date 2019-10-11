@@ -3,11 +3,12 @@ import shutil
 import os
 from distutils import dir_util
 from cli.helpers.data_loader import load_template_file, types
-from cli.helpers.yaml_helpers import dump_all
+from cli.helpers.yaml_helpers import dump_all, dump
 from cli.helpers.Config import Config
 
 TERRAFORM_OUTPUT_DIR = 'terraform/'
 MANIFEST_FILE_NAME = 'manifest.yml'
+SP_FILE_NAME = 'sp.yml'
 INVENTORY_FILE_NAME = 'inventory'
 ANSIBLE_OUTPUT_DIR = 'ansible/'
 
@@ -17,6 +18,14 @@ def save_manifest(docs, cluster_name, manifest_name=MANIFEST_FILE_NAME):
     path = os.path.join(build_dir, manifest_name)
     with open(path, 'w') as stream:
         dump_all(docs, stream)
+    return path
+
+
+def save_sp(service_principle, cluster_name):
+    terraform_dir = get_terraform_path(cluster_name)
+    path = os.path.join(terraform_dir, SP_FILE_NAME)
+    with open(path, 'w') as stream:
+        dump(service_principle, stream)
     return path
 
 
@@ -50,10 +59,9 @@ def save_to_file(file_path, content):
 
 
 def get_output_path():
-    output_dir = os.path.join(os.path.dirname(__file__), Config().output_dir)
-    if not os.path.exists(output_dir):
-        os.makedirs(output_dir)
-    return output_dir
+    if not os.path.exists(Config().output_dir):
+        os.makedirs(Config().output_dir)
+    return Config().output_dir
 
 
 def get_build_path(cluster_name):

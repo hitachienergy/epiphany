@@ -1,0 +1,8 @@
+---
+# Ansible playbook that downloads files and images
+
+- hosts: 127.0.0.1
+  gather_facts: no
+  connection: local
+  roles:
+    - download

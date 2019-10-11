@@ -1,14 +1,5 @@
 ---
-
-- name: Add kubernetes repository
-  yum_repository:
-    name: kubernetes
-    description: Kubernetes
-    file: kubernetes
-    baseurl: https://packages.cloud.google.com/yum/repos/kubernetes-el7-x86_64
-    gpgcheck: yes
-    gpgkey: https://packages.cloud.google.com/yum/doc/yum-key.gpg https://packages.cloud.google.com/yum/doc/rpm-package-key.gpg
-
+ 
 - name: Install NFS package for RedHat family
   yum:
     name:
@@ -20,8 +11,8 @@
   yum:
     name:
       - kubernetes-cni-0.7.5-0
-      - kubelet-{{specification.version}}
-      - kubectl-{{specification.version}}
-      - kubeadm-{{specification.version}}
+      - kubelet-{{specification.version}}-0
+      - kubectl-{{specification.version}}-0
+      - kubeadm-{{specification.version}}-0
     update_cache: yes
     state: present

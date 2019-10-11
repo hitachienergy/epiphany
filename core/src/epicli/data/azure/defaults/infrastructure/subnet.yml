@@ -1,0 +1,9 @@
+kind: infrastructure/subnet
+version: 0.4.0
+title: "Subnet Config"
+provider: azure
+name: default
+specification:
+  name: SET_BY_AUTOMATION
+  address_prefix: SET_BY_AUTOMATION
+  security_group_name: SET_BY_AUTOMATION

@@ -1,5 +1,75 @@
 #####################################################
-# VMs - {{ name }}
+# DO NOT Modify by hand - Managed by Automation
+#####################################################
+#####################################################
+# This file can be used as a base template to build other Terraform files. It attempts to use as much
+# Terraform interprolation as possible by creating Terraform variables instead of changing inline
+# this approach provides an easier way to do creative looping, fetch IDs of created resources etc.
+#####################################################
+#####################################################
+# {{ specification.name }}
 #####################################################
 
-# TODO: Fill template
+resource "azurerm_virtual_machine" "{{ specification.name  }}" {
+  name                  = "{{ specification.name }}"
+  location              = "${azurerm_resource_group.rg.location}"
+  resource_group_name   = "${azurerm_resource_group.rg.name}"
+  vm_size               = "{{ specification.size }}"
+  network_interface_ids = ["${azurerm_network_interface.{{ specification.network_interface_name }}.id}"]
+
+  storage_image_reference {
+    publisher = "{{ specification.storage_image_reference.publisher }}"
+    offer     = "{{ specification.storage_image_reference.offer }}"
+    sku       = "{{ specification.storage_image_reference.sku }}"
+    version   = "{{ specification.storage_image_reference.version }}"
+  }
+
+  os_profile {
+    computer_name  = "{{ specification.name }}"
+    admin_username = "{{ specification.admin_username }}"
+    admin_password = "{{ specification.admin_password }}"
+  }  
+
+  {%- if specification.os_type == "linux" %}
+  os_profile_linux_config {
+    disable_password_authentication = true
+    ssh_keys {
+      path     = "/home/{{ specification.admin_username }}/.ssh/authorized_keys"
+      key_data = "${file("{{ specification.public_key }}")}"
+    }
+  }
+  {%- endif %}
+
+  {%- if specification.os_type == "windows" %}
+  # windows specific stuff here maybe... hopefully never.
+  {%- endif %}  
+
+  {%- if specification.storage_os_disk.managed != true %}
+  delete_os_disk_on_termination = "{{ specification.storage_os_disk.delete_on_termination | lower }}"
+  {%- endif %}
+  storage_os_disk {
+    name          = "{{ specification.name }}-os-disk"
+    caching       = "{{ specification.storage_os_disk.caching }}"
+    create_option = "{{ specification.storage_os_disk.create_option }}"
+    {%- if specification.storage_os_disk.managed != true %}
+    managed_disk_type = "{{ specification.storage_os_disk.managed_disk_type | lower }}"
+    {%- else %}
+    #TODO: Container storage
+    #{%- if specification.storage_container.enable %}
+    #vhd_uri       = "${azurerm_storage_account.sa.primary_blob_endpoint}${azurerm_storage_container.storage_container_{{ specification.name }}.name}/{{ specification.name }}-${format("%03d", count.index + 1)}-os-disk.vhd"
+    #{%- endif %}
+    {%- endif %}
+  }
+
+  tags = {
+  {%- for tag in specification.tags %}
+    {%- for tag_key, tag_value in tag.items() %}
+    {{ tag_key }} = "{{ tag_value }}"
+    {%- endfor %}
+  {%- endfor %}
+  }
+
+  #TODO:
+  # availability_set_id
+  # storage_data_disk
+}

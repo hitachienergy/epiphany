@@ -1,18 +1,12 @@
 ---
 # Common Redhat family of specific tasks
 
-# Install RedHat extras if on redhat family. This needs to be done first
-- name: Install Extras packages
-  yum:
-    name: https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
-    state: latest
-
 # Subscriptions with certs: subscription-manager repos --enable "rhel-*-optional-rpms" --enable "rhel-*-extras-rpms"
 # w/o subscription https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
 
 - name: Install RedHat family packages
   yum:
-    name: 
+    name:
       - libselinux-python
       - libsemanage-python
       - firewalld
@@ -30,12 +24,14 @@
       - sysstat
       - python-setuptools
       - openssl
+      - yum-utils
       - yum-versionlock
       - logrotate
       - ebtables
       - ethtool
       - telnet
-    update_cache: yes 
+      - jq
+    update_cache: yes
     state: present
   register: result
   retries: 3
