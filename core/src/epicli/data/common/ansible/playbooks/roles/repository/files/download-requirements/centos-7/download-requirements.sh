@@ -1,6 +1,9 @@
 #!/usr/bin/env bash
 
-# VERSION 1.0.1
+# VERSION 1.0.3
+
+# NOTE: You can run only one instance of this script, new instance kills the previous one
+#       This limitation is for Ansible
 
 set -euo pipefail
 
@@ -346,14 +349,41 @@ readonly YUM_CONFIG_BACKUP_FILE_PATH="$SCRIPT_DIR/${SCRIPT_FILE_NAME}-yum-repos-
 readonly SKOPEO_BIN="$SCRIPT_DIR/skopeo_linux"
 readonly ADDED_REPOSITORIES_FILE_PATH="$SCRIPT_DIR/${SCRIPT_FILE_NAME}-added-repositories-list-do-not-remove.tmp"
 readonly INSTALLED_PACKAGES_FILE_PATH="$SCRIPT_DIR/${SCRIPT_FILE_NAME}-installed-packages-list-do-not-remove.tmp"
+readonly PID_FILE_PATH=/var/run/${SCRIPT_FILE_NAME/sh/pid}
 
 # --- Checks ---
 
-[ $EUID -eq 0 ] || { echo "You have to run as super user" && exit 1; }
+[ $EUID -eq 0 ] || { echo "You have to run as root" && exit 1; }
 
 [[ -f $REQUIREMENTS_FILE_PATH ]] || exit_with_error "File not found: $REQUIREMENTS_FILE_PATH"
 [[ -f $SKOPEO_BIN ]] || exit_with_error "File not found: $SKOPEO_BIN"
 [[ -x $SKOPEO_BIN ]] || exit_with_error "$SKOPEO_BIN have to be executable"
+
+# --- Want to have only one instance for Ansible ---
+
+if [ -f $PID_FILE_PATH ]; then
+	readonly PID_FROM_FILE=$(cat $PID_FILE_PATH 2> /dev/null)
+	if [[ -n $PID_FROM_FILE ]] && kill -0 $PID_FROM_FILE > /dev/null 2>&1; then
+		echol "Found running process with pid: $PID_FROM_FILE, cmd: $(ps -p $PID_FROM_FILE -o cmd=)"
+		if ps -p $PID_FROM_FILE -o cmd= | grep --quiet $SCRIPT_FILE_NAME; then
+			echol "Killing old instance using SIGTERM"
+			kill -s SIGTERM $PID_FROM_FILE # try gracefully
+			if sleep 3 && kill -0 $PID_FROM_FILE > /dev/null 2>&1; then
+				echol "Still running, killing old instance using SIGKILL"
+				kill -s SIGKILL $PID_FROM_FILE # forcefully
+			fi
+		else
+			remove_file $PID_FILE_PATH
+			exit_with_error "Process with pid: $PID_FILE_PATH seems to be not an instance of this script"
+		fi
+	else
+		echol "Process with pid: $PID_FROM_FILE not found"
+	fi
+	remove_file $PID_FILE_PATH
+fi
+
+echol "PID is: $$, creating file: $PID_FILE_PATH"
+echo $$ > $PID_FILE_PATH || exit_with_error "Command failed: echo $$ > $PID_FILE_PATH"
 
 # --- Parse requirements file ---
 
@@ -573,6 +603,8 @@ done
 
 # --- Clean up packages ---
 remove_installed_packages "$INSTALLED_PACKAGES_FILE_PATH"
+
+remove_file $PID_FILE_PATH
 
 readonly END_TIME=$(date +%s)
 
