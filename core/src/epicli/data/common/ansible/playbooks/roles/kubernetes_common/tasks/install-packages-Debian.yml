@@ -1,21 +1,9 @@
 ---
 
-- name: APT Key
-  apt_key:
-    url: https://packages.cloud.google.com/apt/doc/apt-key.gpg
-    state: present
-
-- name: Add kubernetes repository
-  apt_repository:
-    repo: deb http://apt.kubernetes.io/ kubernetes-xenial main
-    state: present
-    filename: kubernetes
-
 - name: Install NFS package for Debian family
   apt:
     name:
       - nfs-common
-    update_cache: yes
     state: present
 
 - name: Install Kubernetes packages for Debian family
@@ -25,5 +13,4 @@
       - kubelet={{specification.version}}-00
       - kubectl={{specification.version}}-00
       - kubeadm={{specification.version}}-00
-    update_cache: yes
     state: present

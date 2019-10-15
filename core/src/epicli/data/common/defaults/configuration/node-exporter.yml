@@ -4,15 +4,7 @@ title: "Node exporter"
 name: default
 specification:
   description: "Service that runs Prometheus Node Exporter"
-  download_urls:
-    i386: 'https://github.com/prometheus/node_exporter/releases/download/v0.16.0/node_exporter-0.16.0.linux-386.tar.gz'
-    x86_64: "https://github.com/prometheus/node_exporter/releases/download/v0.16.0/node_exporter-0.16.0.linux-amd64.tar.gz"
-    aarch64: 'https://github.com/prometheus/node_exporter/releases/download/v0.16.0/node_exporter-0.16.0.linux-arm64.tar.gz'
-  download_shas:
-  - f6f788839cbac510430c15b97fe976f459bd9887d7faf6f035e40bb4531adf4ee8894556faa1652f7ee93c40ccbf16695b39e61775aaa2e0a837b536f5931284
-  - a94882b89546c727806acec677d76791285f2c3ec291d9b3b89db97d47e01a3cd7ee4b76a5bced7478b671df4043cf3a054107cb1502b002a51232ff0cff2289
-  - b999eb2f661617b041f8b81b747527f91cac02ff6b466dd5e253938fe288001d7cca89138e39cf3d1f0f6be5f329d12f4f739deb8a24d1fc6460861bbfa4d95d
-  download_directory: "/tmp"
+  file_name: "node_exporter-0.16.0.linux-amd64.tar.gz"
   enabled_collectors:
     - conntrack
     - diskstats

@@ -1,19 +1,8 @@
----
-## RabbitMQ Red Hat
-
-- name: Install Erlang package
-  yum:
-    name: "https://github.com/rabbitmq/erlang-rpm/releases/download/v21.2.2/erlang-21.2.2-1.el7.centos.x86_64.rpm"
-    state: present
-
-- name: Install dependency for RabbitMQ
+- name: Install Rabbitmq packages
   yum:
     name:
       - socat
       - logrotate
-    state: present
-
-- name: Install RabbitMQ package
-  yum:
-    name: "https://github.com/rabbitmq/rabbitmq-server/releases/download/v{{ specification.version }}/rabbitmq-server-{{ specification.version }}-1.el7.noarch.rpm"
+      - erlang-21.3.* # order matters, check RabbitMQ/Erlang version compatibility matrix before modification
+      - rabbitmq-server-3.7.10
     state: present

@@ -1,0 +1,11 @@
+- name: Re-enable system repositories and disable epirepo
+  include_tasks: "{{ ansible_os_family }}/teardown.yml"
+
+- name: Clean up temporary files
+  file:
+    state: absent
+    path: "{{ item }}"
+  loop:
+    - /tmp/epi-download-requirements
+    - /tmp/epi-repository-setup-scripts
+    - /var/tmp/enabled-system-repos.txt

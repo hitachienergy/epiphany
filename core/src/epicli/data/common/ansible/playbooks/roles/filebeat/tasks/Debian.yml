@@ -1,7 +1,6 @@
----
-## Filebeat Debian
-
-- name: Install Filebeat package
+- name: Install Filbeat package
   apt: 
-    deb: "https://artifacts.elastic.co/downloads/beats/filebeat/filebeat-oss-{{ specification.filebeat_version }}-amd64.deb"
+    name:
+      - filebeat
+    update_cache: yes 
     state: present

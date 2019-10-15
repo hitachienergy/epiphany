@@ -1,0 +1,76 @@
+---
+- name: Set mode
+  set_fact:
+    offline_mode: "{{ offline_requirements | length > 0 }}"
+
+- name: Print mode
+  debug:
+    var: offline_mode
+
+- name: Download Epiphany requirements on repository host # online mode
+  block:
+    - name: Set directory name for download script
+      set_fact:
+        download_script_subdir: >-
+          {{ 'centos-7' if (ansible_distribution == 'CentOS' and ansible_distribution_major_version == '7') else
+             'redhat-7' if (ansible_distribution == 'RedHat' and ansible_distribution_major_version == '7') else
+             'ubuntu-18.04' if (ansible_distribution == 'Ubuntu' and ansible_distribution_version == '18.04') else None }}
+
+    - name: Check if OS distribution is supported
+      assert:
+        that: download_script_subdir | length > 0
+        fail_msg: "Your OS distribution is not supported"
+
+    - name: Copy files for downloading requirements to repository host
+      copy:
+        src: "download-requirements/{{ download_script_subdir }}/"
+        dest: /tmp/epi-download-requirements
+
+    - name: Copy skopeo binary to repository host
+      copy:
+        src: /tmp/skopeo_linux
+        dest: /tmp/epi-download-requirements
+        mode: a+x
+
+    - name: Make download script executable
+      file:
+        dest: /tmp/epi-download-requirements/download-requirements.sh
+        mode: a+x
+
+    - name: Download Epiphany requirements
+      include_tasks: download-requirements.yml
+
+  when:
+    - not offline_mode
+    - not custom_repository_url
+    - inventory_hostname in groups['repository']
+
+- name: Copy repository client configuration scripts
+  copy:
+    src: "client/{{ ansible_os_family }}/"
+    dest: "/tmp/epi-repository-setup-scripts"
+    mode: a+x
+
+- name: Copy repository server configuration scripts
+  copy:
+    src: "server/{{ ansible_os_family }}/"
+    dest: "/tmp/epi-repository-setup-scripts"
+    mode: a+x
+  when:
+    - not custom_repository_url
+    - inventory_hostname in groups['repository']
+
+- name: |-
+    Copy requirements for offline installation to repository host, this can take a long time
+    Destination: /var/www/html/epirepo
+  copy:
+    src: "{{ offline_requirements }}/"
+    dest: /var/www/html/epirepo/
+    force: no # if target exists it will skip, default is 'yes'
+  when:
+    - offline_mode
+    - not custom_repository_url
+    - inventory_hostname in groups['repository']
+
+- name: Set up repositories
+  include_tasks: "{{ ansible_os_family }}/setup.yml"

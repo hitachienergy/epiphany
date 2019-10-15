@@ -1,6 +1,6 @@
----
-
-- name: Install Elasticsearch-Curator Package
+- name: Install Elasticsearch-Curator package
   yum:
-    name: "https://packages.elastic.co/curator/5/centos/7/Packages/elasticsearch-curator-{{ specification.redhat_curator_version }}.rpm"
-
+    name:
+      - elasticsearch-curator
+    update_cache: yes
+    state: present

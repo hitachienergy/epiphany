@@ -8,7 +8,7 @@
       - postgresql-contrib-10
       - python-psycopg2 # required for postresql ansible management
     update_cache: yes 
-    state: present  
+    state: present
 
 - name: Changing pg_hba.conf
   replace:

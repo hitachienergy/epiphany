@@ -1,0 +1,134 @@
+# Put this file in the same directory as download script
+
+[packages-repo-prereqs]
+apr # for httpd
+apr-util # for httpd
+createrepo
+deltarpm # for createrepo
+httpd
+httpd-tools # for httpd
+mailcap # for httpd
+mod_ssl # for httpd
+python-chardet # for createrepo
+python-deltarpm # for createrepo
+python-kitchen # for createrepo
+yum-utils
+
+[packages]
+audit # for docker-ce
+bash-completion
+ca-certificates
+cifs-utils
+conntrack-tools # for kubelet
+containerd.io
+container-selinux
+cri-tools-1.13.0
+curl
+dejavu-sans-fonts # for grafana
+docker-ce-18.09.9
+docker-ce-cli-18.09.9
+ebtables
+elasticsearch-curator-5.5.4
+elasticsearch-oss-6.4.0
+erlang-21.3.8.7
+ethtool
+filebeat-6.5.4 # actually it's filebeat-oss
+firewalld
+fontconfig # for grafana
+fping
+grafana-6.2.5
+gssproxy # for nfs-utils
+htop
+iftop
+ipset # for firewalld
+java-1.8.0-openjdk-headless
+javapackages-tools # for java-1.8.0-openjdk-headless
+jq
+kibana-oss-6.4.0
+kubeadm-1.14.6
+kubectl-1.14.6
+kubelet-1.14.6
+kubernetes-cni-0.7.5
+libini_config # for nfs-utils
+libselinux-python
+libsemanage-python
+libX11 # for grafana
+libxcb # for grafana
+libXcursor # for grafana
+libXt # for grafana
+logrotate
+net-tools
+nfs-utils
+nmap-ncat
+openssl
+perl # for vim
+perl-Getopt-Long # for vim
+perl-libs # for vim
+perl-Pod-Perldoc # for vim
+perl-Pod-Simple # for vim
+perl-Pod-Usage # for vim
+policycoreutils-python # for container-selinux
+python-firewall # for firewalld
+python-kitchen # for yum-utils
+python-lxml # for java-1.8.0-openjdk-headless
+python-psycopg2
+python-setuptools
+python-slip-dbus # for firewalld
+quota # for nfs-utils
+rabbitmq-server-3.7.10
+rh-haproxy18
+rh-haproxy18-haproxy-syspaths
+rh-postgresql10-postgresql
+rh-postgresql10-postgresql-contrib
+rh-postgresql10-postgresql-contrib-syspaths
+rh-postgresql10-postgresql-libs
+rh-postgresql10-postgresql-server
+rh-postgresql10-postgresql-server-syspaths
+rh-postgresql10-postgresql-syspaths
+samba-client
+samba-client-libs # for samba-client
+samba-common
+socat
+sysstat
+tar
+telnet
+tmux
+urw-base35-fonts # for grafana
+vim-common # for vim
+vim-enhanced
+wget
+xorg-x11-font-utils # for grafana
+xorg-x11-server-utils # for grafana
+yum-plugin-versionlock
+yum-utils
+
+[files]
+https://github.com/prometheus/haproxy_exporter/releases/download/v0.10.0/haproxy_exporter-0.10.0.linux-amd64.tar.gz
+https://repo1.maven.org/maven2/io/prometheus/jmx/jmx_prometheus_javaagent/0.12.0/jmx_prometheus_javaagent-0.12.0.jar
+https://archive.apache.org/dist/kafka/2.0.0/kafka_2.12-2.0.0.tgz
+https://github.com/danielqsj/kafka_exporter/releases/download/v1.2.0/kafka_exporter-1.2.0.linux-amd64.tar.gz
+https://github.com/prometheus/node_exporter/releases/download/v0.16.0/node_exporter-0.16.0.linux-amd64.tar.gz
+https://github.com/prometheus/prometheus/releases/download/v2.10.0/prometheus-2.10.0.linux-amd64.tar.gz
+https://github.com/prometheus/alertmanager/releases/download/v0.17.0/alertmanager-0.17.0.linux-amd64.tar.gz
+https://archive.apache.org/dist/zookeeper/zookeeper-3.4.12/zookeeper-3.4.12.tar.gz
+
+[images]
+k8s.gcr.io/kube-apiserver:v1.14.6
+k8s.gcr.io/kube-controller-manager:v1.14.6
+k8s.gcr.io/kube-scheduler:v1.14.6
+k8s.gcr.io/kube-proxy:v1.14.6
+k8s.gcr.io/pause:3.1
+k8s.gcr.io/etcd:3.3.10
+k8s.gcr.io/coredns:1.3.1
+coredns/coredns:1.5.0
+quay.io/coreos/flannel:v0.11.0-amd64
+quay.io/coreos/flannel:v0.11.0
+calico/node:v3.8.1
+calico/pod2daemon-flexvol:v3.8.1
+kubernetesui/dashboard:v2.0.0-beta1
+kubernetesui/metrics-scraper:v1.0.0
+calico/cni:v3.8.1
+calico/kube-controllers:v3.8.1
+jboss/keycloak:4.8.3.Final
+rabbitmq:3.7.10
+registry:2
