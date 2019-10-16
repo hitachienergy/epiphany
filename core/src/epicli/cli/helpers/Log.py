@@ -17,14 +17,14 @@ class Log:
             log_path = os.path.join(get_output_path(), config.log_file)
             logging.basicConfig(level=logging.INFO, format=config.log_format, datefmt=config.log_date_format)
             formatter = jsonlogger.JsonFormatter(config.log_format, datefmt=config.log_date_format)
-            self.json_file_handler = logging.FileHandler(filename=log_path)
+            handler = logging.handlers.RotatingFileHandler(log_path, backupCount=config.log_count)
+            should_roll_over = os.path.isfile(log_path)
+            if should_roll_over:
+                handler.doRollover()
+            self.json_file_handler = handler
             self.json_file_handler.setFormatter(formatter)
             self.json_stream_handler = logging.StreamHandler()
             self.json_stream_handler.setFormatter(formatter)
-            should_roll_over = os.path.isfile(log_path)
-            handler = logging.handlers.RotatingFileHandler(log_path, mode='w', backupCount=config.log_count)
-            if should_roll_over:
-                handler.doRollover()
 
     instance = None
 
