@@ -38,17 +38,14 @@ class InitEngine(Step):
         cluster_config_path = save_manifest(config_docs, self.name, self.name + '.yml')
         args = type('obj', (object,), {'file': cluster_config_path})()
         with BuildEngine(args) as build:
-            config_docs = build.dry_run()
-
-        infra_docs = load_all_documents_from_folder(self.provider, 'defaults/infrastructure')
-        merged_docs = [*config_docs, *infra_docs]
+            docs = build.dry_run()
 
         # set the provider for all docs
-        for doc in merged_docs:
+        for doc in docs:
             if 'provider' not in doc.keys():
                 doc['provider'] = self.provider
 
-        return merged_docs
+        return docs
 
 
 
