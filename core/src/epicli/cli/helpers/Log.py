@@ -17,8 +17,8 @@ class Log:
             log_path = os.path.join(get_output_path(), config.log_file)
             logging.basicConfig(level=logging.INFO, format=config.log_format, datefmt=config.log_date_format)
             formatter = jsonlogger.JsonFormatter(config.log_format, datefmt=config.log_date_format)
-            handler = logging.handlers.RotatingFileHandler(log_path, backupCount=config.log_count)
             should_roll_over = os.path.isfile(log_path)
+            handler = logging.handlers.RotatingFileHandler(log_path, backupCount=config.log_count)
             if should_roll_over:
                 handler.doRollover()
             self.json_file_handler = handler
