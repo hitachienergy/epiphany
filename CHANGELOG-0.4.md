@@ -1,10 +1,10 @@
 # Changelog 0.4
 
-## [0.4.1] 2019-10-17
+## [0.4.0.1] 2019-10-17
 
 ### Fixed
 
-- [#613](https://github.com/epiphany-platform/epiphany/pull/613/files) - Hotfixes for Ubuntu offline installation in air-gap mode
+- [#613](https://github.com/epiphany-platform/epiphany/pull/613) - Hotfixes for Ubuntu offline installation in air-gap mode
 
 ## [0.4.0] 2019-10-11
 
