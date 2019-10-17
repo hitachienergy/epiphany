@@ -9,3 +9,4 @@
     - /tmp/epi-download-requirements
     - /tmp/epi-repository-setup-scripts
     - /var/tmp/enabled-system-repos.txt
+    - /var/tmp/enabled-system-repos.tar
