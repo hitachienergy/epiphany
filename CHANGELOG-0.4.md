@@ -5,6 +5,7 @@
 ### Fixed
 
 - [#613](https://github.com/epiphany-platform/epiphany/pull/613) - Hotfixes for Ubuntu offline installation in air-gap mode
+- [#614](https://github.com/epiphany-platform/epiphany/pull/614) - Fixed RotatingFileHandler permission error (for Docker Toolbox on Windows)
 
 ## [0.4.0] 2019-10-11
 
