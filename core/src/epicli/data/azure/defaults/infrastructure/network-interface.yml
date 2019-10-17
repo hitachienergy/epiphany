@@ -1,5 +1,5 @@
 kind: infrastructure/network-interface
-version: 0.4.0
+version: 0.4.1
 title: "Network Interface Config"
 provider: azure
 name: default

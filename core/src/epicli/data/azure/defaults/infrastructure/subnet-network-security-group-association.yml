@@ -1,5 +1,5 @@
 kind: infrastructure/subnet-network-security-group-association
-version: 0.4.0
+version: 0.4.1
 title: "Subnet Network Security Group Association"
 provider: azure
 name: default
