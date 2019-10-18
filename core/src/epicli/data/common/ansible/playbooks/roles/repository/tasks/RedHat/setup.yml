@@ -17,7 +17,6 @@
     name: httpd
     state: started
   when:
-    - ansible_os_family == "RedHat"
     - not custom_repository_url
     - inventory_hostname in groups['repository']
 

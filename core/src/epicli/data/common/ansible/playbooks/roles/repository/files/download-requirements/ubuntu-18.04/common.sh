@@ -46,7 +46,7 @@ download_image() {
         else
 	    local tmp_file=$(mktemp)
 	    echo "Downloading image: $1"
-	    echo "Skopeo command is: ./skopeo_linux --insecure-policy copy docker://{$image_name} docker-archive:${dst_image}:${repository}:${tag}"
+	    echo "Skopeo command is: ./skopeo_linux --insecure-policy copy docker://${image_name} docker-archive:${dst_image}:${repository}:${tag}"
 	    # use temporary file for downloading to be safe from sudden interruptions (network, ctrl+c)
 	    ./skopeo_linux --insecure-policy copy docker://${image_name} docker-archive:${tmp_file}:${repository}:${tag} && chmod 644 ${tmp_file} && mv ${tmp_file} ${dst_image}
         fi
@@ -74,8 +74,5 @@ download_file() {
 
 	# --no-use-server-timestamps - we don't use --timestamping and we need to expire files somehow 
 	# --continue - don't download the same file multiple times, gracefully skip if file is fully downloaded	
-	wget --no-use-server-timestamps --continue --show-progress --directory-prefix="${dest_dir}" "${file_url}"
-
-	#wget --no-verbose --directory-prefix="$dest_dir" "$file_url" ||
-		#exit_with_error "Command failed: wget --no-verbose --directory-prefix=\"$dest_dir\" \"$file_url\""
+	wget --no-use-server-timestamps --continue --show-progress --prefer-family=IPv4 --directory-prefix="${dest_dir}" "${file_url}"
 }

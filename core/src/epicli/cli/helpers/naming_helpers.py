@@ -46,11 +46,12 @@ def storage_account_name(prefix, cluster_name, storage_use):
         sto = storage_use.lower()    
 
     clu = ''
+    cn = cluster_name.replace('-', '')
     length = 24 - (len(pre)+len(sto))
-    if len(cluster_name) > length:
-        clu = cluster_name[:length].lower()
+    if len(cn) > length:
+        clu = cn[:length].lower()
     else:
-        clu = cluster_name.lower()
+        clu = cn.lower()
 
     return f'{pre}{clu}{sto}'
     

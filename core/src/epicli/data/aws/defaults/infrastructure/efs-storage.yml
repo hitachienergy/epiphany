@@ -1,5 +1,5 @@
 kind: infrastructure/efs-storage
-version: 0.4.0
+version: 0.4.1
 title: "Elastic File System Config"
 provider: aws
 name: default

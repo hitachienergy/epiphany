@@ -1,10 +1,18 @@
 ---
 - name: Create epirepo repository
   shell: >-
-    /tmp/epi-repository-setup-scripts/create-repository.sh /var/www/html/epirepo {{ offline_mode | lower }} |&
+    set -o pipefail && /tmp/epi-repository-setup-scripts/create-repository.sh /var/www/html/epirepo {{ offline_mode | lower }} |&
     tee /tmp/epi-repository-setup-scripts/create-repository.log
   args:
     executable: /bin/bash
+  when:
+    - not custom_repository_url
+    - inventory_hostname in groups['repository']
+
+- name: Ensure apache is running
+  service:
+    name: apache2
+    state: started
   when:
     - not custom_repository_url
     - inventory_hostname in groups['repository']

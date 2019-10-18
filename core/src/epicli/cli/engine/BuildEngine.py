@@ -93,6 +93,8 @@ class BuildEngine(Step):
 
         self.process_infrastructure_docs()
 
+        save_manifest([*self.input_docs, *self.infrastructure_docs], self.cluster_model.specification.name)
+
         if not (self.skip_infrastructure or self.is_provider_any(self.cluster_model)):
             # Generate terraform templates
             with TerraformTemplateGenerator(self.cluster_model, self.infrastructure_docs) as template_generator:
@@ -124,7 +126,7 @@ class BuildEngine(Step):
 
         self.process_configuration_docs()
 
-        return [*self.input_docs, *self.configuration_docs]
+        return [*self.configuration_docs, *self.infrastructure_docs]
 
     @staticmethod
     def is_provider_any(cluster_model):
