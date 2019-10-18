@@ -1,5 +1,5 @@
 kind: configuration/applications
-version: 0.4.0
+version: 0.4.1
 title: "Kubernetes Applications Config"
 name: default
 specification:
@@ -8,7 +8,7 @@ specification:
 # Abstract these configs to seperate default files and add 
 # the ability to add custom application roles.
 
-# - name: rabbitmq 
+# - name: rabbitmq 2
 #   image_path: rabbitmq:3.7.10
 #   #image_pull_secret_name: regcred # optional
 #   service:
