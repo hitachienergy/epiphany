@@ -11,7 +11,7 @@ Make epicli easier to work on with multiple teams and make it easier to maintain
 
 ## Architectural design
 
-The current monitlithic epicli will be split up into the following modules.
+The current monolithic epicli will be split up into the following modules.
 
 ![Module cli design proposal](modular-cli.png)
 
