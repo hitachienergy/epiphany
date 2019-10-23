@@ -194,7 +194,11 @@ spec:
               name: {{ auth_service_name }}-db
         - name: X509_CA_BUNDLE
           value: "/var/run/secrets/kubernetes.io/serviceaccount/ca.crt"
+{% if data.use_image_registry_address is defined and data.use_image_registry_address is sameas true %}
+        image: {{ image_registry_address }}/{{ data.image_path }}
+{% else %}
         image: {{ data.image_path }}
+{% endif %}
         imagePullPolicy: IfNotPresent
         name: {{ auth_service_name }}
         ports:
