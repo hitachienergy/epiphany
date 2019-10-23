@@ -19,10 +19,7 @@
   - [RabbitMQ installation and setting](./howto/CLUSTER.md#rabbitmq-installation-and-setting)
 
 - [Monitoring](./howto/MONITORING.md)
-  - Epicli
-    - [How to configure Prometheus alerts](./howto/MONITORING.md#how-to-configure-prometheus-alerts)
-  - Legacy  
-    - [How to configure Prometheus alerts in a legacy cluster](./howto/MONITORING.md#how-to-configure-prometheus-alerts-in-a-legacy-cluster)
+  - [How to configure Prometheus alerts](./howto/MONITORING.md#how-to-configure-prometheus-alerts)
   - [Import and create of Grafana dashboards](./howto/MONITORING.md#import-and-create-of-grafana-dashboards)
   - [How to configure Kibana](./howto/MONITORING.md#how-to-configure-kibana)
   - [How to configure scalable Prometheus setup](./howto/MONITORING.md#how-to-configure-scalable-prometheus-setup)
