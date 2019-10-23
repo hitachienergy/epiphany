@@ -28,7 +28,7 @@ kubeadm init phase certs apiserver
 
 rm etcd/peer.crt etcd/peer.key
 kubeadm init phase certs etcd-peer
-
+cd -
 systemctl restart kubelet
 systemctl restart docker
 
