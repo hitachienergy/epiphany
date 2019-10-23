@@ -25,7 +25,7 @@
 ```bash
 ./3_update_hosts.sh "CURRENT_MASTER_IP" "NEW_MASTER_IP"
 ```
-2. Modify `/etc/kubeadm/kubeadm-join.yml` file with values in `I.6.`
+2. Modify `/etc/kubeadm/kubeadm-join.yml` file using values from `I.6.`
 
 3. Execute command to reset worker Node.
 ```bash
