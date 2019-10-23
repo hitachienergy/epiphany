@@ -7,7 +7,7 @@
 
 1. Note current Kubernetes Master IP
 2. Note new Kubernetes Master IP (do not change machine IP yet)
-3. Execute `start.sh` script with replacing placeholder strings respectively.
+3. Execute `start.sh` script, replacing placeholder strings respectively.
 ```bash
 ./start.sh "CURRENT_MASTER_IP" "NEW_MASTER_IP"
 ```
