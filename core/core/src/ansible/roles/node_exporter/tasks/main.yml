@@ -1,5 +1,0 @@
----
-
-- include: prometheus-node-exporter.yml
-  when: prometheus_node_exporter
-  tags: prometheus-node-exporter
