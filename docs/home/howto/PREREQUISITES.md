@@ -1,10 +1,8 @@
-## Epicli
-
-### Run Epicli from Docker image
+## Run Epicli from Docker image
 
 There are 2 ways to get the image, build it locally yourself or pull it from the Epiphany docker registry.
 
-#### Build Epicli image locally
+### Build Epicli image locally
 
 1. Install the following dependencies:
 
@@ -27,7 +25,7 @@ There are 2 ways to get the image, build it locally yourself or pull it from the
     ./build-docker.bat
     ```
   
-#### Pull Epicli image from the registry
+### Pull Epicli image from the registry
 
 ```bash
 docker pull epiphanyplatform/epicli:TAG
@@ -35,7 +33,7 @@ docker pull epiphanyplatform/epicli:TAG
 
 *Check [here](https://cloud.docker.com/u/epiphanyplatform/repository/docker/epiphanyplatform/epicli) for the available tags.*
 
-#### Running the Epicli image
+### Running the Epicli image
 
 To run the image:
 
@@ -55,7 +53,7 @@ docker run -it -v LOCAL_DIR:/shared --rm epiphanyplatform/epicli:TAG
 
 Where `LOCAL_DIR` should be replaced with the local path to the directory for Epicli input (SSH keys, data yamls) and output (logs, build states).
 
-### Run Epicli directly from OS
+## Run Epicli directly from OS
 
 *Note: Epicli will only run on Lixux or MacOS and not on Windows. This is because Ansible at this point in time does not work on Windows.*
 
@@ -101,126 +99,9 @@ Where `LOCAL_DIR` should be replaced with the local path to the directory for Ep
 
 Now you can use Epicli inside the created virtual environment.
 
-### Epicli development
+## Epicli development
 
 For setting up en Epicli development environment please refer to this dedicated document [here.](./../DEVELOPMENT.md)
-
-## Legacy
-
-### Run Docker image for deployment
-
-For people who are only using the Epiphany engine to deploy and maintain clusters there is a Dockerfile for the image with the engine already embedded.
-
-There are 2 ways to get the image, build it locally yourself or pull it from the Epiphany docker registry.
-
-#### Build deployment image locally
-
-```bash
-docker build -t epiphany-dev -f core/src/docker/deploy/Dockerfile .
-```
-
-#### Pull deployment image from the registry
-
-```bash
-docker pull epiphanyplatform/epiphany-deploy:TAG
-```
-
-*Check [here](https://cloud.docker.com/u/epiphanyplatform/repository/docker/epiphanyplatform/epiphany-deploy) for the available tags.*
-
-#### Running the deployment image
-
-To run the image:
-
-Locally build:
-
-```bash
-docker run -it -v LOCAL_DATA_DIR:/epiphany/core/data \
-                -v LOCAL_BUILD_DIR:/epiphany/core/build \
-                -v LOCAL_SSH_DIR:/epiphany/core/ssh \
-                --rm epiphany-deploy
-```
-
-Pulled:
-
-```bash
-docker run -it -v LOCAL_DATA_DIR:/epiphany/core/data \
-                -v LOCAL_BUILD_DIR:/epiphany/core/build \
-                -v LOCAL_SSH_DIR:/epiphany/core/ssh \
-                --rm epiphanyplatform/epiphany-deploy:TAG
-```
-
-*Check [here](https://cloud.docker.com/u/epiphanyplatform/repository/docker/epiphanyplatform/epiphany-deploy) for the available tags.*
-
-```LOCAL_DATA_DIR``` should be the host input directy for your data YAMLs and certificates.  ```LOCAL_BUILD_DIR``` should be the host directory where you want the Epiphany engine to write its build output. ```LOCAL_SSH_DIR``` should be the host directory where the SSH keys are stored. If everything is ok you will be presented with a Bash prompt from which one can run the Epiphany engine. Note that when filling in your data YAMLs one needs to specify the paths from the container's point of view.
-
-[`Azure specific`] Ensure that you have already enough resources/quotas accessible in your region/subscription on Azure before you run Epiphany - depending on your configuration it can create large number of resources.
-
-### Run directly from OS
-
-To be able to run the Epiphany engine from your local OS you have to install:
-
-- Bash 4.4+
-  - Should be natively installed on Linux distributions.
-  - MacOS version of bash most likely needs upgrading.
-  - For Windows 10 you can install Ubuntu subsystem.
-  - For Windows 7 see the docker image options below.
-- Ansible 2.6+
-- Hashicorp Terraform 0.11.8+
-- jq (JSON Query tool: <https://stedolan.github.io/jq/download>)
-- Python 2.7
-  - jinja2 2.10+
-  - jmespath 0.9.3+
-- Git
-- Azure CLI 2.0+
-- SSH
-
-This can both be used for deploying/managing clusters or for development.
-
-### Run Docker image for development
-
-To facilitate an easier path for developers to contribute to Epiphany we have a development docker image based on alpine. This image will help to more easily setup a development environment or to develop on systems which do not support Bash like Windows 7.
-
-The following prerequisites are needed when working with the development image:
-
-- Docker <https://www.docker.com>
-  - For Windows 7 check [here](https://docs.docker.com/toolbox/toolbox_install_windows)
-- Git <https://git-scm.com>
-
-There are 2 ways to get the image, build it locally yourself or pull it from the Epiphany docker registry.
-
-#### Build dev image locally
-
-```bash
-docker build -t epiphany-dev -f core/src/docker/dev/Dockerfile .
-```
-
-#### Pull dev image from the registry
-
-```bash
-docker pull epiphanyplatform/epiphany-dev:TAG
-```
-
-*Check [here](https://cloud.docker.com/u/epiphanyplatform/repository/docker/epiphanyplatform/epicli) for the available tags.*
-
-#### Running the dev image
-
-To run the image:
-
-Locally build:
-
-```bash
-docker run -it -v LOCAL_DEV_DIR:/epiphany --rm epiphany-dev
-```
-
-Pulled:
-
-```bash
-docker run -it -v LOCAL_DEV_DIR:/epiphany --rm epiphanyplatform/epiphany-dev:TAG
-```
-
-*Check [here](https://cloud.docker.com/u/epiphanyplatform/repository/docker/epiphanyplatform/epicli) for the available tags.*
-
-Where `LOCAL_DEV_DIR` should be replaced with the local path to your local Epiphany repo. This will then be mapped to `epiphany` inside the container. If everything is ok you will be presented with a Bash prompt from which one can run the Epiphany engine while editing the core and data sources on the local OS. Note that when filling in your data YAMLs one needs to specify the paths from the container's point of view.
 
 ## Note for Windows users
 
@@ -256,7 +137,7 @@ Use: [Checkout as-is, commit Unix-style](https://stackoverflow.com/questions/104
 
 ## Note about proxies
 
-To run the legacy Epiphany or the new Epicli from behind a proxy, enviroment variables need to be set.
+To run Epicli from behind a proxy, enviroment variables need to be set.
 
 When running directly from OS (upper and lowercase are needed because of an issue with the Ansible dependency):
 

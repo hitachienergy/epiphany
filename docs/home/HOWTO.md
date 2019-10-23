@@ -1,14 +1,9 @@
 # How-To Guides
 
 - [Prerequisites for Epiphany](./howto/PREREQUISITES.md)
-  - Epicli
-    - [Run Epicli from Docker image](./howto/PREREQUISITES.md#run-epicli-from-docker-image)
-    - [Run Epicli directly from OS](./howto/PREREQUISITES.md#run-epicli-directly-from-os)
-    - [Epicli development](./howto/PREREQUISITES.md#epicli-development)
-  - Legacy
-    - [Run Docker image for deployment](./howto/PREREQUISITES.md#run-docker-image-for-deployment)  
-    - [Run directly from OS](./howto/PREREQUISITES.md#run-directly-from-os)
-    - [Run Docker image for development](./howto/PREREQUISITES.md#run-docker-image-for-development)
+  - [Run Epicli from Docker image](./howto/PREREQUISITES.md#run-epicli-from-docker-image)
+  - [Run Epicli directly from OS](./howto/PREREQUISITES.md#run-epicli-directly-from-os)
+  - [Epicli development](./howto/PREREQUISITES.md#epicli-development)
   - [Note for Windows users](./howto/PREREQUISITES.md#note-for-windows-users)
   - [Note about proxies](./howto/PREREQUISITES.md#note-about-proxies)
 
