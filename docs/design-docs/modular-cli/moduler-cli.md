@@ -149,7 +149,7 @@ components-|
 
 Based on the Ansible inventory and the command we can easily select which roles to apply to which components. For the commands we probably also want to introduce some extra flags to only execute commands for certain components.
 
-Finally we want to add support for an external plugin directory where teams can specify there own role plguins which are not (jet) available inside Epiphany itself. A feature that can also be used by other teams to more easily start contributing developing new components.
+Finally we want to add support for an external plugin directory where teams can specify there own role plguins which are not (yet) available inside Epiphany itself. A feature that can also be used by other teams to more easily start contributing developing new components.
 
 ### Epicli
 
