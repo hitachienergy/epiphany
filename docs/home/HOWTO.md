@@ -27,10 +27,7 @@
   - [How to configure AWS additional monitoring and alerting](./howto/MONITORING.md#how-to-configure-aws-additional-monitoring-and-alerting)
 
 - [Kubernetes](./howto/KUBERNETES.md)
-  - Epicli
-    - TODO
-  - Legacy  
-    - [How to expose service through HA Proxy load balancer](./howto/KUBERNETES.md#how-to-expose-service-through-ha-proxy-load-balancer)
+  - [How to expose service through HA Proxy load balancer](./howto/KUBERNETES.md#how-to-expose-service-through-ha-proxy-load-balancer)
   - [How to do Kubernetes RBAC](./howto/KUBERNETES.md#how-to-do-kubernetes-rbac)
   - [How to run an example app](./howto/KUBERNETES.md#how-to-run-an-example-app)
   - [How to set resource requests and limits for Containers](./howto/KUBERNETES.md#how-to-set-resource-requests-and-limits-for-containers)
