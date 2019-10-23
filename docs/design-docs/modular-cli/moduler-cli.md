@@ -114,7 +114,7 @@ Functionality (rough outline and subjected to change):
 
 ### Components
 
-Module for applying a command on a component which can contain one or multiple roles. It will take the Ansible inventory to determin which roles should be applied to which component. The command each role can implement are (rough outline and subjected to change):
+Module for applying a command on a component which can contain one or multiple roles. It will take the Ansible inventory to determine which roles should be applied to which component. The command each role can implement are (rough outline and subjected to change):
 
 - apply: Command to install roles for components
 - backup: Command to backup roles for components
