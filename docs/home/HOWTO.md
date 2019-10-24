@@ -60,13 +60,10 @@
   - [How to configure PostgreSQL replication](./howto/DATABASES.md#how-to-configure-postgresql-replication)
 
 - [Data and log retention](./howto/RETENTION.md)
-  - Epicli
-    - TODO
-  - Legacy
-    - [Elasticsearch](./howto/RETENTION.md#elasticsearch)
-    - [Grafana](./howto/RETENTION.md#grafana)
-    - [Kafka](./howto/RETENTION.md#kafka)
-    - [Kibana](./howto/RETENTION.md#kibana)
-    - [Kubernetes](./howto/RETENTION.md#kubernetes)
-    - [Prometheus](./howto/RETENTION.md#prometheus)
-    - [Zookeeper](./howto/RETENTION.md#zookeeper)
+  - [Elasticsearch](./howto/RETENTION.md#elasticsearch)
+  - [Grafana](./howto/RETENTION.md#grafana)
+  - [Kafka](./howto/RETENTION.md#kafka)
+  - [Kibana](./howto/RETENTION.md#kibana)
+  - [Kubernetes](./howto/RETENTION.md#kubernetes)
+  - [Prometheus](./howto/RETENTION.md#prometheus)
+  - [Zookeeper](./howto/RETENTION.md#zookeeper)
