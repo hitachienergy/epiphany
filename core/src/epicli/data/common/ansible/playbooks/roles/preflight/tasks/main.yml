@@ -1,0 +1,9 @@
+---
+
+#- name: Fail if preflight conditions not met
+#  fail:
+  #    msg:
+#  when:
+#    - (ansible_os_family == "RedHat" and ansible_distribution_version == "7.6") or
+#      (ansible_distribution == 'Ubuntu' and ansible_distribution_version == '18.04') or
+

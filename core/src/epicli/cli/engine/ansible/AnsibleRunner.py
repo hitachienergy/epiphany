@@ -35,7 +35,7 @@ class AnsibleRunner(Step):
         self.inventory_creator.__exit__(exc_type, exc_value, traceback)
 
     def playbook_path(self, name):
-        return os.path.join(get_ansible_path(self.cluster_model.specification.name), f'{name}.yml')        
+        return os.path.join(get_ansible_path(self.cluster_model.specification.name), f'{name}.yml')
 
     def run(self):
         inventory_path = get_inventory_path(self.cluster_model.specification.name)
@@ -52,10 +52,15 @@ class AnsibleRunner(Step):
 
         self.ansible_vars_generator.run()
 
-        self.logger.info('Setting up repository for cluster provisioning. This will take a while...')
+        self.logger.info('Checking preflight conditions on each machine.')
         self.ansible_command.run_playbook_with_retries(inventory=inventory_path,
                                                        playbook_path=self.playbook_path('repository_setup'),
                                                        retries=5)
+
+        self.logger.info('Setting up repository for cluster provisioning. This will take a while...')
+        self.ansible_command.run_playbook_with_retries(inventory=inventory_path,
+                                                       playbook_path=self.playbook_path('repository_setup'),
+                                                       retries=1)
 
         self.ansible_command.run_playbook(inventory=inventory_path,
                                           playbook_path=self.playbook_path('common'))
