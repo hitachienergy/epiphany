@@ -1,7 +1,0 @@
----
-
-- hosts: prometheus
-  become: true
-  become_method: sudo
-  roles:
-    - prometheus

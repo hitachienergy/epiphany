@@ -1,4 +1,0 @@
----
-## Elasticsearch master
-
-- include_tasks: "{{ ansible_os_family }}.yml"

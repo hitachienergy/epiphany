@@ -1,58 +1,4 @@
-## Epicli
-
-### How to configure Prometheus alerts
-
-TODO
-
-## Legacy
-
-### How to configure Prometheus alerts in a legacy cluster
-
-In order to send messages from Prometheus add monitoring block to your data.yaml similar to the one below:
-
-```yaml
-  monitoring:
-    alerts:
-      enable: true
-      handlers:
-        mail:
-          smtp_from: 'some-sender@example.com'
-          smtp_host: 'somesmtp.example.com:587'
-          smtp_auth_username: 'someusername'
-          smtp_auth_password: 'somepassword'
-          smtp_require_tls: true
-          recipients: ['recipient1@example.com', 'recipient2@example.com']
-      rules:
-      - name: "disk"
-        expression: ((node_filesystem_avail_bytes * 100) / node_filesystem_size_bytes) < 99
-        duration: 1m #1s, 1m, 1h, 1d, 1w, ...
-        severity: critical
-        message: "Disk space Exceeded"
-      - name: "updown"
-        expression: up == 0
-        duration: 1m #1s, 1m, 1h, 1d, 1w, ...
-        severity: critical
-        message: "Instance down"
-```
-
-    monitoring: - this covers whole monitoring section and is needed to define alerts
-      alerts: - this covers whole alerts section and is needed to define alerts
-        enable: true - global switch to turn off/on alerts. Set to true enable alerts.
-        handlers: - this section covers email handlers, right now only email is supported
-          mail: - global configuration for smtp and email
-            smtp_from: 'some-sender@example.com' - name of email sender
-            smtp_host: 'somesmtp.example.com:port' - address of your smtp server with port
-            smtp_auth_username: 'someusername' - name of your smtp server username
-            smtp_auth_password: 'somepassword' - password for your smtp server user
-            smtp_require_tls: true - enabling/disabling tls. Set to true to enable TLS support.
-            recipients: ['recipient1@example.com', 'recipient2@example.com'] - list of recipients in form
-             ['recipient1@example.com', 'recipient2@example.com']. At least one recipient has to be declared.
-        rules: - this section covers rules for Prometheus to enable monitoring. Each of rule have to follow pattern defined below.
-        - name: "disk" - name of file for Prometheus where rule will be stored. Permitted are alphanumerical characters only.
-          expression: ((node_filesystem_avail_bytes * 100) / node_filesystem_size_bytes) < 99 - rule in format of Prometheus queries
-          duration: 1m #1s, 1m, 1h, 1d, 1w, ... - duration of event after which notification will be sent, follow Prometheus convention
-          severity: critical - severity label, that will be showed in email sent to users
-          message: "Disk space Exceeded" - email topic that will be showed in email sent to users
+## How to configure Prometheus alerts
 
 More information about Prometheus queries you can find under links provided below:
 
@@ -61,6 +7,8 @@ https://prometheus.io/docs/prometheus/latest/querying/basics/
 https://prometheus.io/docs/prometheus/latest/querying/examples/
 
 Right now we are only supporting email messages, but we are working heavily on introducing integration with Slack and Pager Duty.
+
+TODO
 
 ## Import and create of Grafana dashboards
 

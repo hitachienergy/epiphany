@@ -1,7 +1,0 @@
-# {{ ansible_managed }}
-
-- targets: ["{{ inventory_hostname }}:9101"]
-  labels:
-{% for label, value in prometheus_haproxy_exporter_file_sd_labels.iteritems() %}
-    "{{ label }}": "{{ value }}"
-{% endfor %}
