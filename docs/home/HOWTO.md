@@ -56,11 +56,8 @@
   - [How to authenticate to Azure AD app](./howto/SECURITY.md#how-to-authenticate-to-azure-ad-app)
 
 - [Databases](./howto/DATABASES.md)
-  - Epicli
-    - TODO
-  - Legacy
-    - [How to configure PostgreSQL](./howto/DATABASES.md#how-to-configure-postgresql)
-    - [How to configure PostgreSQL replication](./howto/DATABASES.md#how-to-configure-postgresql-replication)
+  - [How to configure PostgreSQL](./howto/DATABASES.md#how-to-configure-postgresql)
+  - [How to configure PostgreSQL replication](./howto/DATABASES.md#how-to-configure-postgresql-replication)
 
 - [Data and log retention](./howto/RETENTION.md)
   - Epicli
