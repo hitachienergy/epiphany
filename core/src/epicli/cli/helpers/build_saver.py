@@ -94,13 +94,13 @@ def check_build_output_version(build_directory):
     if os.path.exists(manifest_path) and not os.path.isdir(manifest_path):
         return BUILD_EPICLI
     
-    # if manifest is in root/inventory/development or we are dealing with pre 0.3.0
+    # if manifest is in root/inventory/development we are dealing with pre 0.3.0
     manifest_path = os.path.join(build_directory, INVENTORY_FILE_NAME_LEGACY)
     if os.path.exists(manifest_path) and not os.path.isdir(manifest_path):
         return BUILD_LEGACY
 
     # if we come here its not a valid build directory
-    raise Exception(f'Missing {MANIFEST_FILE_NAME} file. No valid build directory.')
+    raise Exception(f'Not a valid build directory.')
 
 
 def get_terraform_path(cluster_name):
