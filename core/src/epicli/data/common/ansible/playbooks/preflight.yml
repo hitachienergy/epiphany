@@ -1,0 +1,9 @@
+---
+# Ansible playbook that checks if the preflight conditions are met
+
+- hosts: all
+  gather_facts: yes
+  become: true
+  become_method: sudo
+  roles:
+    - preflight
