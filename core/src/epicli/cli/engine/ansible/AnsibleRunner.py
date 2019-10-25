@@ -52,10 +52,16 @@ class AnsibleRunner(Step):
 
         self.ansible_vars_generator.run()
 
+        self.logger.info('Checking connection to each machine.')
+        self.ansible_command.run_task_with_retries(inventory=inventory_path,
+                                                   module="ping",
+                                                   hosts="all",
+                                                   retries=5)
+
         self.logger.info('Checking preflight conditions on each machine.')
         self.ansible_command.run_playbook_with_retries(inventory=inventory_path,
-                                                       playbook_path=self.playbook_path('repository_setup'),
-                                                       retries=5)
+                                                       playbook_path=self.playbook_path('preflight'),
+                                                       retries=1)
 
         self.logger.info('Setting up repository for cluster provisioning. This will take a while...')
         self.ansible_command.run_playbook_with_retries(inventory=inventory_path,
