@@ -1,5 +1,5 @@
 ---
-# Ansible playbook that makes sure the base items for all nodes are installed
+# Ansible playbook that checks if the preflight conditions are met
 
 - hosts: all
   gather_facts: yes
