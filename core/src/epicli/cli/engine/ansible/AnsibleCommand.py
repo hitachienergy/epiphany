@@ -14,7 +14,7 @@ class AnsibleCommand:
     def __init__(self):
         self.logger = Log(__name__)
 
-    def run_task(self, hosts, inventory, module, args):
+    def run_task(self, hosts, inventory, module, args=None):
         cmd = ['ansible']
 
         cmd.extend(["-m", module])
@@ -38,7 +38,7 @@ class AnsibleCommand:
         else:
             self.logger.info('Done running "' + ' '.join(cmd) + '"')
 
-    def run_task_with_retries(self, inventory, module, args, hosts, retries, timeout=10):
+    def run_task_with_retries(self, inventory, module, hosts, retries, timeout=10, args=None):
         for i in range(retries):
             try:
                 self.run_task(hosts=hosts, inventory=inventory, module=module,
@@ -60,7 +60,7 @@ class AnsibleCommand:
         cmd.append(playbook_path)
 
         if Config().debug:
-            cmd.append('-vvv')        
+            cmd.append('-vvv')
 
         self.logger.info('Running: "' + ' '.join(cmd) + '"')
 
