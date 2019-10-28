@@ -10,7 +10,7 @@ specification:
 
 # - name: rabbitmq 2
 #   image_path: rabbitmq:3.7.10
-#   use_image_registry_address: true
+#   use_local_image_registry: true
 #   #image_pull_secret_name: regcred # optional
 #   service:
 #     name: rabbitmq-cluster
@@ -38,7 +38,7 @@ specification:
 
 # - name: auth-service # this service require postgresql to be installed in cluster
 #   image_path: jboss/keycloak:4.8.3.Final
-#   use_image_registry_address: true
+#   use_local_image_registry: true
 #   #image_pull_secret_name: regcred
 #   service:
 #     name: as-testauthdb
