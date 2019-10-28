@@ -71,8 +71,8 @@ class AnsibleInventoryUpgrade(Step):
             self.rename_role(new_inventory, 'worker', 'kubernetes_node')
             self.rename_role(new_inventory, 'deployments', 'applications')
             self.rename_role(new_inventory, 'elasticsearch-curator', 'elasticsearch_curator')
-            self.rename_role(new_inventory, 'jmx-exporter', 'applications')
-            self.rename_role(new_inventory, 'kafka-exporter', 'jmx_exporter')
+            self.rename_role(new_inventory, 'jmx-exporter', 'jmx_exporter')
+            self.rename_role(new_inventory, 'kafka-exporter', 'kafka_exporter')
             self.rename_role(new_inventory, 'haproxy_tls_termination', 'haproxy')
 
             # remove linux and reboot roles if present
