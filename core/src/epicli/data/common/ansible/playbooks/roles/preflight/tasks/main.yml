@@ -1,19 +1,10 @@
 ---
 
-- name: Check OS version - Red Hat family
+- name: Check OS version
   assert:
     that:
-      - ansible_os_family == 'RedHat' and ansible_distribution_version is version('7.6', '>=')
-    fail_msg: "Your operating system [{{ ansible_distribution  }} - {{ ansible_distribution_version }}] is not supported,
-              please upgrade to version 7.6."
+      - (ansible_os_family == 'RedHat' and ansible_distribution_version is version('7.6', '>=')) or
+        (ansible_distribution == 'Ubuntu' and ansible_distribution_version is version('18.04', '=='))
+    fail_msg: "Your operating system [{{ ansible_distribution  }} - {{ ansible_distribution_version }}] is not supported.
+              Supported operating systems are Red Hat/Centos 7.6 and higher or Ubuntu 18.04."
     success_msg:  "Your operating system [{{ ansible_distribution  }} - {{ ansible_distribution_version }}] is supported."
-  when: ansible_os_family == 'RedHat'
-
-- name: Check OS version - Ubuntu
-  assert:
-    that:
-      - ansible_distribution == 'Ubuntu' and ansible_distribution_version is version('18.04', '==')
-    fail_msg: "Your operating system [{{ ansible_distribution  }} - {{ ansible_distribution_version }}] is not supported,
-              please upgrade to version 18.04."
-    success_msg:  "Your operating system [{{ ansible_distribution  }} - {{ ansible_distribution_version }}] is supported."
-  when: ansible_distribution == 'Ubuntu'
