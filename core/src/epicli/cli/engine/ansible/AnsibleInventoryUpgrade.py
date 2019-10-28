@@ -66,10 +66,14 @@ class AnsibleInventoryUpgrade(Step):
         if self.build_version == BUILD_LEGACY:
             self.logger.info(f'Upgrading Ansible inventory Epiphany < 0.3.0')
 
-            # Remap master to kubernetes_master, worker to kubernetes_node and  deployments to applications
+            # Remap roles
             self.rename_role(new_inventory, 'master', 'kubernetes_master')
             self.rename_role(new_inventory, 'worker', 'kubernetes_node')
             self.rename_role(new_inventory, 'deployments', 'applications')
+            self.rename_role(new_inventory, 'elasticsearch-curator', 'elasticsearch_curator')
+            self.rename_role(new_inventory, 'jmx-exporter', 'applications')
+            self.rename_role(new_inventory, 'kafka-exporter', 'jmx_exporter')
+            self.rename_role(new_inventory, 'haproxy_tls_termination', 'haproxy')
 
             # remove linux and reboot roles if present
             self.delete_role(new_inventory, 'linux')
