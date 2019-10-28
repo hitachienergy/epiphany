@@ -1,6 +1,6 @@
 ---
 
-- name: Fail if preflight conditions not met
+- name: Check OS
   fail:
       msg: "Your operating system [{{ ansible_distribution  }} - {{ ansible_distribution_version }}] is not supported"
   when:
