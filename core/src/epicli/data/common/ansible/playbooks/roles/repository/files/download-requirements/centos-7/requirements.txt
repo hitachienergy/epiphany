@@ -146,9 +146,16 @@ jboss/keycloak:4.8.3.Final
 rabbitmq:3.7.10
 # K8s upgrades
 ## v1.12.10
+k8s.gcr.io/coredns:1.2.2
+k8s.gcr.io/etcd:3.2.24
 k8s.gcr.io/kube-apiserver:v1.12.10
 k8s.gcr.io/kube-controller-manager:v1.12.10
 k8s.gcr.io/kube-proxy:v1.12.10
 k8s.gcr.io/kube-scheduler:v1.12.10
+## v1.13.12
+k8s.gcr.io/coredns:1.2.6
 k8s.gcr.io/etcd:3.2.24
-k8s.gcr.io/coredns:1.2.2
+k8s.gcr.io/kube-apiserver:v1.13.12
+k8s.gcr.io/kube-controller-manager:v1.13.12
+k8s.gcr.io/kube-proxy:v1.13.12
+k8s.gcr.io/kube-scheduler:v1.13.12
