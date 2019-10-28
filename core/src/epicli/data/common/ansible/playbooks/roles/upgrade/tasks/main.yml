@@ -1,36 +1,35 @@
 ---
-- name: Check cluster version
+- name: Get cluster version
   environment:
     KUBECONFIG: "/home/{{ admin_user.name }}/.kube/config"
-  shell: kubectl version --short | grep -i server
+  shell: >-
+    set -o pipefail &&
+    kubectl version --short -o json | jq --raw-output '.serverVersion.gitVersion'
   register: cluster_version
   changed_when: false
 
-- name: Check kubelet version
+- name: Get kubelet version
   environment:
     KUBECONFIG: "/home/{{ admin_user.name }}/.kube/config"
-  shell: kubectl get node {{ inventory_hostname }} -o custom-columns=VERSION:.status.nodeInfo.kubeletVersion
+  shell: >-
+    kubectl get node {{ inventory_hostname }} -o jsonpath='{.status.nodeInfo.kubeletVersion}'
   register: kubelet_version
   changed_when: false
 
-- name: Upgrade master to {{ version }}
-  include_tasks: "upgrade_master.yml"
+- name: Upgrade master to v{{ version }}
+  include_tasks: upgrade_master.yml
   vars:
     version: "{{ ver }}"
     cni_version: "{{ cni_ver }}"
   when:
     - groups['kubernetes_master'][0] == inventory_hostname
-    - (version == "1.12.10" and "1.11" in cluster_version.stdout) or
-      (version == "1.13.8" and "1.12" in cluster_version.stdout) or
-      (version == "1.14.4" and "1.13" in cluster_version.stdout)
+    - cluster_version.stdout is version('v' + version, '<=')
 
-- name: Upgrade nodes to {{ version }}
-  include_tasks: "upgrade_nodes.yml"
+- name: Upgrade node to v{{ version }}
+  include_tasks: upgrade_node.yml
   vars:
     version: "{{ ver }}"
     cni_version: "{{ cni_ver }}"
   when:
     - inventory_hostname in groups['kubernetes_node']
-    - (version == "1.12.10" and "1.11" in kubelet_version.stdout and kubelet_version.stdout != cluster_version.stdout) or
-      (version == "1.13.8" and "1.12" in kubelet_version.stdout and kubelet_version.stdout != cluster_version.stdout) or
-      (version == "1.14.4" and "1.13" in kubelet_version.stdout and kubelet_version.stdout != cluster_version.stdout )
+    - kubelet_version.stdout is version('v' + version, '<=')
