@@ -11,8 +11,8 @@
 		"davidanson.vscode-markdownlint"
 	],
 	"settings": {
-		"python.pythonPath": "/usr/local/bin/python",
+		"python.pythonPath": "/usr/local/bin/python"
 	},
-	"postCreateCommand": "sudo pipenv install --system --dev",
+	"postCreateCommand": "sudo --preserve-env=https_proxy pipenv install --system --dev",
 	"runArgs": [ "-u", "vscode" ]
 }
