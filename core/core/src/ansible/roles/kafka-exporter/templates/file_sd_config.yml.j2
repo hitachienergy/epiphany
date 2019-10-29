@@ -1,7 +1,0 @@
-# {{ ansible_managed }}
-
-- targets: ['{{ inventory_hostname }}:{{ kafka_exporter_web_listen_port }}']
-  labels:
-{% for label, value in prometheus_kafka_exporter_file_sd_labels.iteritems() %}
-    "{{ label }}": "{{ value }}"
-{% endfor %}

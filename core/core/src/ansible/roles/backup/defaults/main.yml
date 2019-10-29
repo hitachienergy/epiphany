@@ -1,2 +1,0 @@
----
-backup_dir: /home/{{ admin_user.name }}/backupdir

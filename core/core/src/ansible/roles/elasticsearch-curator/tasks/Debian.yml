@@ -1,7 +1,0 @@
----
-
-- name: Install Elasticsearch-Curator Package
-  apt:
-    deb: "https://packages.elastic.co/curator/5/debian9/pool/main/e/elasticsearch-curator/elasticsearch-curator_{{ debian_curator_version }}.deb"
-
-
