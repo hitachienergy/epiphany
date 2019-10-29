@@ -1,5 +1,4 @@
----
-# Ansible playbook that checks if the preflight conditions are met
+# Ansible playbook that checks if requirements are met
 
 - hosts: all
   gather_facts: yes
