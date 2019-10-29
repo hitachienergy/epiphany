@@ -20,10 +20,6 @@ class PatchEngine(Step):
     def __exit__(self, exc_type, exc_value, traceback):
         super().__exit__(exc_type, exc_value, traceback)
 
-    def upgrade(self):
-        self.upgrade_patch_files_and_run('upgrade')
-        return 0
-
     def backup(self):
         self.upgrade_patch_files_and_run('backup')
         return 0
