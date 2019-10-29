@@ -1,20 +1,20 @@
 ---
 
-- name:
+- name: Set is OS supported to false
   set_fact:
      is_os_supported: false
 
-- name: Write OS versions
+- name: Check if OS is supported
   set_fact:
      is_os_supported: true
   loop: "{{ supported_os }}"
   when:
     - ansible_distribution == item.name
-    - ansible_distribution_version is version(item.version, item.comparision_operator)
+    - ansible_distribution_version is version(item.version, item.comparison_operator)
 
 - name: Check OS version
   assert:
     that: is_os_supported
     fail_msg: "Your operating system [{{ ansible_distribution  }} - {{ ansible_distribution_version }}] version and distribution doesn't meet system requirements.
               Distributions meetings requirements are: {{ supported_os | join(',') }}"
-    success_msg:  "Operating system [{{ ansible_distribution  }} - {{ ansible_distribution_version }}] version and distribution meets system requirements."
+    success_msg:  "Operating system [{{ ansible_distribution  }} - {{ ansible_distribution_version }}] version and distribution meet system requirements."

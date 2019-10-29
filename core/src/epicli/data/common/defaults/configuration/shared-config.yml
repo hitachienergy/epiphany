@@ -14,11 +14,11 @@ specification:
     armv6l: 'armv6'
   supported_os:
     - name: RedHat
-      comparision_operator: ">="
+      comparison_operator: ">="
       version: 7.6
     - name: CentOS
-      comparision_operator: ">="
+      comparison_operator: ">="
       version: 7.6
     - name: Ubuntu
-      comparision_operator: "=="
+      comparison_operator: "=="
       version: 18.04
