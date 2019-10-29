@@ -18,7 +18,14 @@ class AnsibleVarsGenerator(Step):
         self.config_docs = [cluster_model] + infrastructure
         self.inventory_creator = inventory_creator
 
-    def run(self):
+    def __enter__(self):
+        super().__enter__()
+        return self
+
+    def __exit__(self, exc_type, exc_value, traceback):
+        super().__exit__(exc_type, exc_value, traceback)           
+
+    def generate(self):
         enabled_roles = self.inventory_creator.get_enabled_roles()
 
         ansible_dir = get_ansible_path(self.cluster_model.specification.name)

@@ -1,7 +1,7 @@
 from ansible.parsing.dataloader import DataLoader
 from ansible.inventory.manager import InventoryManager
 from cli.helpers.Step import Step
-from cli.helpers.build_saver import get_inventory_path_for_build, BUILD_LEGACY
+from cli.helpers.build_saver import get_inventory_path_for_build, check_build_output_version, BUILD_LEGACY
 from cli.models.AnsibleHostModel import AnsibleHostModel
 from cli.models.AnsibleInventoryItem import AnsibleInventoryItem
 from cli.helpers.build_saver import save_inventory
@@ -9,12 +9,10 @@ from cli.helpers.objdict_helpers import dict_to_objdict
 
 
 class AnsibleInventoryUpgrade(Step):
-    def __init__(self, build_dir, backup_build_dir, build_version):
+    def __init__(self, build_dir, backup_build_dir):
         super().__init__(__name__)
         self.build_dir = build_dir
-        self.build_version = build_version
         self.backup_build_dir = backup_build_dir
-        self.inventory_path = get_inventory_path_for_build(backup_build_dir, self.build_version)       
 
     def __enter__(self):
         super().__enter__()
@@ -41,8 +39,11 @@ class AnsibleInventoryUpgrade(Step):
             role.role = new_role_name
 
     def upgrade(self):
-        self.logger.info(f'Loading Ansible inventory: {self.inventory_path}')
-        loaded_inventory = InventoryManager(loader = DataLoader(), sources=self.inventory_path)
+        inventory_path = get_inventory_path_for_build(self.backup_build_dir)  
+        build_version = check_build_output_version(self.backup_build_dir)
+
+        self.logger.info(f'Loading Ansible inventory: {inventory_path}')
+        loaded_inventory = InventoryManager(loader = DataLoader(), sources=inventory_path)
 
         # move loaded inventory to templating structure
         new_inventory = []
@@ -63,7 +64,7 @@ class AnsibleInventoryUpgrade(Step):
             }
         })
 
-        if self.build_version == BUILD_LEGACY:
+        if build_version == BUILD_LEGACY:
             self.logger.info(f'Upgrading Ansible inventory Epiphany < 0.3.0')
 
             # Remap roles

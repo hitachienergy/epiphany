@@ -6,15 +6,12 @@ import re
 from cli.helpers.Step import Step
 from cli.engine.ansible.AnsibleCommand import AnsibleCommand
 from cli.engine.ansible.AnsibleRunner import AnsibleRunner
-from cli.engine.ansible.AnsibleInventoryUpgrade import AnsibleInventoryUpgrade
-from cli.helpers.build_saver import check_build_output_version, get_inventory_path_for_build, BUILD_EPICLI
 
 
 class UpgradeEngine(Step):
     def __init__(self, input_data):
         super().__init__(__name__)
         self.build_dir = input_data.build_directory
-        self.build_version = BUILD_EPICLI
         self.backup_build_dir = ''
         self.ansible_command = AnsibleCommand()
 
@@ -54,11 +51,8 @@ class UpgradeEngine(Step):
         # backup existing build
         self.backup_build()
 
-        # upgrade inventory
-        self.build_version = check_build_output_version(self.backup_build_dir)
-        with AnsibleInventoryUpgrade(self.build_dir, self.backup_build_dir, self.build_version) as inventory_upgrade:
-            inventory_upgrade.upgrade()
-
-        # do ansible stuff
+        # Run Ansible to upgrade infrastructure
+        with AnsibleRunner(build_dir=self.build_dir, backup_build_dir=self.backup_build_dir) as ansible_runner:
+            ansible_runner.upgrade()
 
         return 0      
