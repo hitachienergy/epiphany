@@ -2,13 +2,6 @@
 
 - include_tasks: install-packages.yml
 
-- name: Include load-image.yml
-  include_tasks: "load-image.yml"
-  vars:
-    docker_image: "{{ item }}"
-  loop: "{{ specification.images_to_load }}"
-  when: not custom_image_registry_address
-
 - name: Enable ip forwarding
   sysctl:
     name: net.ipv4.ip_forward
