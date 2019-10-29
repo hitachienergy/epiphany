@@ -1,4 +1,3 @@
----
 # Ansible playbook that checks if requirements are met
 
 - hosts: all
