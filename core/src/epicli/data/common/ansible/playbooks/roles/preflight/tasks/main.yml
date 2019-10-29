@@ -1,17 +1,27 @@
-- name: Check OS version - Red Hat family
-  assert:
-    that:
-      - ansible_os_family == 'RedHat' and ansible_distribution_version is version('7.6', '>=')
-    fail_msg: "Your operating system [{{ ansible_distribution  }} - {{ ansible_distribution_version }}] is not supported,
-              please upgrade to version 7.6."
-    success_msg:  "Your operating system [{{ ansible_distribution  }} - {{ ansible_distribution_version }}] is supported."
-  when: ansible_os_family == 'RedHat'
+---
 
-- name: Check OS version - Ubuntu
+- name: Set is OS supported to false
+  set_fact:
+     is_os_supported: false
+  changed_when: false
+
+- name: Check if OS is supported
+  set_fact:
+     is_os_supported: true
+  loop: "{{ supported_os }}"
+  when:
+    - ansible_distribution == item.name
+    - ansible_distribution_version is version(item.version, item.comparison_operator)
+
+- name: List of supported OSes
+  set_fact:
+     message_supported_oeses: "{% for item in supported_os %} {{ item.name }} {{ item.comparison_operator }} {{ item.version }}{%- if not loop.last -%},{% endif %}{% endfor %}"
+  loop: "{{ supported_os }}"
+  changed_when: false
+
+- name: Check OS version
   assert:
-    that:
-      - ansible_distribution == 'Ubuntu' and ansible_distribution_version is version('18.04', '==')
-    fail_msg: "Your operating system [{{ ansible_distribution  }} - {{ ansible_distribution_version }}] is not supported,
-              please upgrade to version 18.04."
-    success_msg:  "Your operating system [{{ ansible_distribution  }} - {{ ansible_distribution_version }}] is supported."
-  when: ansible_distribution == 'Ubuntu'
+    that: is_os_supported
+    fail_msg: "Your operating system [{{ ansible_distribution  }} - {{ ansible_distribution_version }}] version and distribution doesn't meet system requirements.
+              Distributions meetings requirements are: {{ message_supported_oeses }}"
+    success_msg:  "Operating system [{{ ansible_distribution  }} - {{ ansible_distribution_version }}] version and distribution meet system requirements."
