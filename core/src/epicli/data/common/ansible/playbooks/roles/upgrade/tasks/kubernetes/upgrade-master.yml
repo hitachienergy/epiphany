@@ -1,88 +1,40 @@
 ---
-- name: upgrade_master | Wait for cluster's readiness
+- name: upgrade-master | Wait for cluster's readiness
   include_tasks: wait.yml
 
-- name: upgrade_master | Drain master in preparation for maintenance
+- name: upgrade-master | Drain master in preparation for maintenance
   environment:
     KUBECONFIG: /home/{{ admin_user.name }}/.kube/config
   shell: kubectl drain {{ inventory_hostname }} --ignore-daemonsets --delete-local-data
 
-- name: upgrade_master | Wait for cluster's readiness
+- name: upgrade-master | Wait for cluster's readiness
   include_tasks: wait.yml
 
-- name: >-
-    upgrade_master | Install kubernetes-cni-{{ cni_version }}, kubelet-{{ version }}, kubectl-{{ version }}
-    and kubeadm-{{ version }} packages for RedHat family
-  yum:
-    name:
-      - kubernetes-cni-{{ cni_version }}
-      - kubelet-{{ version }}
-      - kubectl-{{ version }}
-      - kubeadm-{{ version }}
-    update_cache: yes
-    allow_downgrade: yes
-    state: present
-  when:
-    - ansible_os_family == "RedHat"
+- name: upgrade-master | Install packages
+  include_tasks: "{{ ansible_os_family }}/install-packages.yml"
 
-- name: upgrade_master | Get information about installed packages as facts
-  package_facts:
-    manager: auto
-  changed_when: false
-  when:
-    - ansible_os_family == "Debian"
-
-- name: upgrade_master | Remove newer Debian packages installed as dependencies if they exist # as there is no allow_downgrade parameter in ansible apt module
-  apt:
-    name:
-      - kubernetes-cni
-      - kubelet
-      - kubectl
-      - kubeadm
-    state: absent
-  when:
-    - ansible_os_family == "Debian"
-    - (ansible_facts.packages['kubernetes-cni'][0].version is version (cni_version + '-00', '>')) or
-      (ansible_facts.packages['kubelet'][0].version is version (version + '-00', '>')) or
-      (ansible_facts.packages['kubectl'][0].version is version (version + '-00', '>')) or
-      (ansible_facts.packages['kubeadm'][0].version is version (version + '-00', '>'))
-
-- name: >-
-    upgrade_master | Install kubernetes-cni {{ cni_version }}, kubelet {{ version }}, kubectl {{ version }}
-    and kubeadm {{ version }} packages for Debian family
-  apt:
-    name:
-      - kubernetes-cni={{ cni_version }}-00
-      - kubelet={{ version }}-00
-      - kubectl={{ version }}-00
-      - kubeadm={{ version }}-00
-    update_cache: yes
-    state: present
-  when:
-    - ansible_os_family == "Debian"
-
-- name: upgrade_master | Wait for cluster's readiness
+- name: upgrade-master | Wait for cluster's readiness
   include_tasks: wait.yml
 
-- name: upgrade_master | Check if kubeadm configuration file exists
+- name: upgrade-master | Check if kubeadm configuration file exists
   stat:
     path: /etc/kubeadm/kubeadm-config.yml
   changed_when: false
   register: kubeadm_config
 
-- name: upgrade_master | Validate whether cluster is upgradeable (using kubeadm configuration file)
+- name: upgrade-master | Validate whether cluster is upgradeable (using kubeadm configuration file)
   shell: kubeadm upgrade plan v{{ version }} --config /etc/kubeadm/kubeadm-config.yml
   changed_when: false
   when:
     - kubeadm_config.stat.exists
 
-- name: upgrade_master | Validate whether cluster is upgradeable
+- name: upgrade-master | Validate whether cluster is upgradeable
   shell: kubeadm upgrade plan v{{ version }}
   changed_when: false
   when:
     - not kubeadm_config.stat.exists
 
-- name: upgrade_master | Upgrade K8s cluster to v{{ version }} (using kubeadm configuration file)
+- name: upgrade-master | Upgrade K8s cluster to v{{ version }} (using kubeadm configuration file)
   shell: kubeadm upgrade apply -y v{{ version }} --config /etc/kubeadm/kubeadm-config.yml
   register: output
   until: output is succeeded
@@ -91,7 +43,7 @@
   when:
     - kubeadm_config.stat.exists
 
-- name: upgrade_master | Upgrade K8s cluster to v{{ version }}
+- name: upgrade-master | Upgrade K8s cluster to v{{ version }}
   shell: kubeadm upgrade apply -y v{{ version }}
   register: output
   until: output is succeeded
@@ -100,26 +52,26 @@
   when:
     - not kubeadm_config.stat.exists
 
-- name: upgrade_master | Wait for cluster's readiness
+- name: upgrade-master | Wait for cluster's readiness
   include_tasks: wait.yml
 
-- name: upgrade_master | Restart kubelet
+- name: upgrade-master | Restart kubelet
   systemd:
     state: restarted
     daemon_reload: yes
     name: kubelet
 
-- name: upgrade_master | Wait for cluster's readiness
+- name: upgrade-master | Wait for cluster's readiness
   include_tasks: wait.yml
 
-- name: upgrade_master | Uncordon master - mark master as schedulable
+- name: upgrade-master | Uncordon master - mark master as schedulable
   environment:
     KUBECONFIG: /home/{{ admin_user.name }}/.kube/config
   shell: kubectl uncordon {{ inventory_hostname }}
-  retries: 5
-  delay: 5
   register: output
   until: output is succeeded
+  retries: 5
+  delay: 5
 
-- name: upgrade_master | Verify cluster version
-  include_tasks: verify.yml
+- name: upgrade-master | Verify cluster version
+  include_tasks: verify-upgrade.yml

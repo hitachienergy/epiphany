@@ -1,23 +1,12 @@
 ---
-- name: Get cluster version
-  environment:
-    KUBECONFIG: "/home/{{ admin_user.name }}/.kube/config"
-  shell: >-
-    set -o pipefail &&
-    kubectl version --short -o json | jq --raw-output '.serverVersion.gitVersion'
-  register: cluster_version
-  changed_when: false
+- name: Include get-cluster-version.yml
+  include_tasks: kubernetes/get-cluster-version.yml # sets cluster_version
 
-- name: Get kubelet version
-  environment:
-    KUBECONFIG: "/home/{{ admin_user.name }}/.kube/config"
-  shell: >-
-    kubectl get node {{ inventory_hostname }} -o jsonpath='{.status.nodeInfo.kubeletVersion}'
-  register: kubelet_version
-  changed_when: false
+- name: Include get-kubelet-version.yml
+  include_tasks: kubernetes/get-kubelet-version.yml # sets kubelet_version
 
 - name: Upgrade master to v{{ version }}
-  include_tasks: upgrade_master.yml
+  include_tasks: kubernetes/upgrade-master.yml
   vars:
     version: "{{ ver }}"
     cni_version: "{{ cni_ver }}"
@@ -26,7 +15,7 @@
     - cluster_version.stdout is version('v' + version, '<=')
 
 - name: Upgrade node to v{{ version }}
-  include_tasks: upgrade_node.yml
+  include_tasks: kubernetes/upgrade-node.yml
   vars:
     version: "{{ ver }}"
     cni_version: "{{ cni_ver }}"

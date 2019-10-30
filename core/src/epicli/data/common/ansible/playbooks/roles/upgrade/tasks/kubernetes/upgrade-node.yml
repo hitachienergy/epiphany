@@ -1,80 +1,32 @@
 ---
-- name: upgrade_node | Wait for cluster's readiness
+- name: upgrade-node | Wait for cluster's readiness
   include_tasks: wait.yml
 
-- name: upgrade_node | Drain node in preparation for maintenance
+- name: upgrade-node | Drain node in preparation for maintenance
   environment:
     KUBECONFIG: /home/{{ admin_user.name }}/.kube/config
   shell: kubectl drain {{ inventory_hostname }} --ignore-daemonsets --delete-local-data
   delegate_to: "{{ groups['kubernetes_master'][0] }}"
 
-- name: upgrade_node | Wait for cluster's readiness
+- name: upgrade-node | Wait for cluster's readiness
   include_tasks: wait.yml
 
-- name: >-
-    upgrade_node | Install kubernetes-cni-{{ cni_version }}, kubelet-{{ version }}, kubectl-{{ version }}
-    and kubeadm-{{ version }} packages for RedHat family
-  yum:
-    name:
-      - kubernetes-cni-{{ cni_version }}
-      - kubelet-{{ version }}
-      - kubectl-{{ version }}
-      - kubeadm-{{ version }}
-    update_cache: yes
-    allow_downgrade: yes
-    state: present
-  when:
-    - ansible_os_family == "RedHat"
+- name: upgrade-node | Install packages
+  include_tasks: "{{ ansible_os_family }}/install-packages.yml"
 
-- name: upgrade_node | Get information about installed packages as facts
-  package_facts:
-    manager: auto
-  changed_when: false
-  when:
-    - ansible_os_family == "Debian"
-
-- name: upgrade_node | Remove newer Debian packages installed as dependencies if they exist # as there is no allow_downgrade parameter in ansible apt module
-  apt:
-    name:
-      - kubernetes-cni
-      - kubelet
-      - kubectl
-      - kubeadm
-    state: absent
-  when:
-    - ansible_os_family == "Debian"
-    - (ansible_facts.packages['kubernetes-cni'][0].version is version (cni_version + '-00', '>')) or
-      (ansible_facts.packages['kubelet'][0].version is version (version + '-00', '>')) or
-      (ansible_facts.packages['kubectl'][0].version is version (version + '-00', '>')) or
-      (ansible_facts.packages['kubeadm'][0].version is version (version + '-00', '>'))
-
-- name: >-
-    upgrade_node | Install kubernetes-cni {{ cni_version }}, kubelet {{ version }}, kubectl {{ version }}
-    and kubeadm {{ version }} packages for Debian family
-  apt:
-    name:
-      - kubernetes-cni={{ cni_version }}-00
-      - kubelet={{ version }}-00
-      - kubectl={{ version }}-00
-      - kubeadm={{ version }}-00
-    update_cache: yes
-    state: present
-  when:
-    - ansible_os_family == "Debian"
-
-- name: upgrade_node | Upgrade node config
+- name: upgrade-node | Upgrade node config
   shell: kubeadm upgrade node config --kubelet-version v{{ version }}
 
-- name: upgrade_node | Restart kubelet
+- name: upgrade-node | Restart kubelet
   systemd:
     state: restarted
     daemon_reload: yes
     name: kubelet
 
-- name: upgrade_node | Wait for cluster's readiness
+- name: upgrade-node | Wait for cluster's readiness
   include_tasks: wait.yml
 
-- name: upgrade_node | Uncordon node - mark node as schedulable
+- name: upgrade-node | Uncordon node - mark node as schedulable
   environment:
     KUBECONFIG: /home/{{ admin_user.name }}/.kube/config
   shell: kubectl uncordon {{ inventory_hostname }}
@@ -84,5 +36,5 @@
   delay: 5
   delegate_to: "{{ groups['kubernetes_master'][0] }}"
 
-- name: upgrade_node | Verify cluster version
-  include_tasks: verify.yml
+- name: upgrade-node | Verify component versions and node status
+  include_tasks: verify-upgrade.yml
