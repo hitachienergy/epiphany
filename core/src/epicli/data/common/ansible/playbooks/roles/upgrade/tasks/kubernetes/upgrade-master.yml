@@ -51,6 +51,7 @@
   delay: 5
   when:
     - not kubeadm_config.stat.exists
+    - cluster_version.stdout is version('v' + version, '<') # without this condition fails when 'upgrading' again from 1.12.10 to 1.12.10
 
 - name: upgrade-master | Wait for cluster's readiness
   include_tasks: wait.yml
