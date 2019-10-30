@@ -121,6 +121,10 @@ class AnsibleRunner(Step):
         # pre-flight to prepare machines
         self.pre_flight(inventory_path)
 
+        # run image_registry playbook
+        self.ansible_command.run_playbook(inventory=inventory_path,
+                                          playbook_path=self.playbook_path('image_registry'))          
+
         # run upgrade playbook
         self.ansible_command.run_playbook(inventory=inventory_path,
                                           playbook_path=self.playbook_path('upgrade'))
