@@ -1,0 +1,3 @@
+---
+- name: Include get-cluster-version.yml
+  include_tasks: common/upgrade-common.yml # upgrades common components
