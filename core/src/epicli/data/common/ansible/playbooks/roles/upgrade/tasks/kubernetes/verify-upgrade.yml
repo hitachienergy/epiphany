@@ -44,8 +44,9 @@
   shell: >-
     set -o pipefail &&
     kubectl get nodes {{ inventory_hostname }} |
+    # get values only for STATUS and VERSION columns, example output: 'Ready v1.14.6'
     awk 'NR==1 { for (col=1; col<=NF; col++) { columns[$col] = col } };
-         NR==2 { print $columns["STATUS"], $columns["VERSION"] }'
+         NR>1  { print $columns["STATUS"], $columns["VERSION"] }'
   changed_when: false
   register: node_status_and_version
   until: version in node_status_and_version.stdout
