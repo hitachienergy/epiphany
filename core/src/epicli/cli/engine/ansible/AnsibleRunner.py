@@ -101,7 +101,7 @@ class AnsibleRunner(Step):
                                               playbook_path=self.playbook_path(to_role_name(role)))
 
         #post-flight after we are done
-        self.pre_flight(inventory_path)
+        self.post_flight(inventory_path)
 
 
     def upgrade(self):
@@ -126,4 +126,4 @@ class AnsibleRunner(Step):
                                           playbook_path=self.playbook_path('upgrade'))
 
         #post-flight after we are done
-        self.pre_flight(inventory_path)
+        self.post_flight(inventory_path)
