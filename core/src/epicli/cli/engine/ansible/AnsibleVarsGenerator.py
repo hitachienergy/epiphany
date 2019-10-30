@@ -2,7 +2,7 @@ import os
 import copy
 
 from cli.helpers.Step import Step
-from cli.helpers.build_saver import get_ansible_path
+from cli.helpers.build_saver import get_ansible_path, get_ansible_path_for_build
 from cli.helpers.doc_list_helpers import select_first
 from cli.helpers.naming_helpers import to_feature_name, to_role_name
 from cli.helpers.ObjDict import ObjDict
@@ -12,20 +12,43 @@ from cli.helpers.Config import Config
 
 class AnsibleVarsGenerator(Step):
 
-    def __init__(self, cluster_model, infrastructure, inventory_creator):
+    def __init__(self, inventory_creator=None,  inventory_upgrade=None):
         super().__init__(__name__)
-        self.cluster_model = cluster_model
-        self.config_docs = [cluster_model] + infrastructure
+
         self.inventory_creator = inventory_creator
+        self.inventory_upgrade = inventory_upgrade
 
-    def run(self):
+        if inventory_creator != None and inventory_upgrade == None:
+            self.cluster_model = inventory_creator.cluster_model
+            self.config_docs = [self.cluster_model] + inventory_creator.config_docs
+        elif inventory_upgrade != None and inventory_creator == None:
+            self.cluster_model = inventory_upgrade.cluster_model
+            self.config_docs = []
+        else:
+            raise Exception('Invalid AnsibleVarsGenerator configuration')
+
+    def __enter__(self):
+        super().__enter__()
+        return self
+
+    def __exit__(self, exc_type, exc_value, traceback):
+        super().__exit__(exc_type, exc_value, traceback)           
+
+    def generate(self):
+        self.logger.info('Generate Ansible vars')
+        if self.inventory_creator != None: 
+            ansible_dir = get_ansible_path(self.cluster_model.specification.name)
+        else:
+            ansible_dir = get_ansible_path_for_build(self.inventory_upgrade.build_dir)
+
+        self.populate_group_vars(ansible_dir)
+
+        if self.inventory_creator == None: 
+            return
+
         enabled_roles = self.inventory_creator.get_enabled_roles()
-
-        ansible_dir = get_ansible_path(self.cluster_model.specification.name)
-
         cluster_config_file_path = os.path.join(ansible_dir, 'roles', 'common', 'vars', 'main.yml')
         clean_cluster_model = self.get_clean_cluster_model()
-        self.populate_group_vars(ansible_dir)
         with open(cluster_config_file_path, 'w') as stream:
             dump(clean_cluster_model, stream)
 
@@ -36,7 +59,7 @@ class AnsibleVarsGenerator(Step):
                 self.logger.warn('No config document for enabled role: ' + role)
                 continue
 
-            document = self.add_provider_info(document)
+            document.specification['provider'] = self.cluster_model.provider
             vars_dir = os.path.join(ansible_dir, 'roles', to_role_name(role), 'vars')
             if not os.path.exists(vars_dir):
                 os.makedirs(vars_dir)
@@ -49,10 +72,13 @@ class AnsibleVarsGenerator(Step):
 
     def populate_group_vars(self, ansible_dir):
         main_vars = ObjDict()
-        main_vars = self.add_admin_user_name(main_vars)
-        main_vars = self.add_validate_certs(main_vars)
-        main_vars = self.add_shared_config(main_vars)
-        main_vars = self.add_offline_requirements(main_vars)
+        main_vars['admin_user'] = self.cluster_model.specification.admin_user
+        main_vars['validate_certs'] = Config().validate_certs
+        main_vars['offline_requirements'] = Config().offline_requirements
+
+        shared_config_doc = select_first(self.config_docs, lambda x: x.kind == 'configuration/shared-config')
+        if shared_config_doc != None:
+            main_vars.update(shared_config_doc.specification)        
 
         vars_dir = os.path.join(ansible_dir, 'group_vars')
         if not os.path.exists(vars_dir):
@@ -63,27 +89,6 @@ class AnsibleVarsGenerator(Step):
 
         with open(vars_file_path, 'a') as stream:
             dump(main_vars, stream)
-
-    def add_admin_user_name(self, document):
-        document['admin_user'] = self.cluster_model.specification.admin_user
-        return document
-
-    def add_validate_certs(self, document):
-        document['validate_certs'] = Config().validate_certs
-        return document
-
-    def add_offline_requirements(self, document):
-        document['offline_requirements'] = Config().offline_requirements
-        return document
-
-    def add_shared_config(self, document):
-        shared_config_doc = select_first(self.config_docs, lambda x: x.kind == 'configuration/shared-config')
-        document.update(shared_config_doc.specification)
-        return document
-
-    def add_provider_info(self, document):
-        document.specification['provider'] = self.cluster_model.provider
-        return document
 
     def get_clean_cluster_model(self):
         cluster_model = copy.copy(self.cluster_model)
