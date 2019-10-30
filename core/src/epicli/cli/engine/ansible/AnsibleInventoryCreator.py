@@ -16,11 +16,10 @@ class AnsibleInventoryCreator(Step):
 
     def __enter__(self):
         super().__enter__()
-        self.proxy.__enter__()
         return self
 
     def __exit__(self, exc_type, exc_value, traceback):
-        self.proxy.__exit__(exc_type, exc_value, traceback)
+        super().__exit__(exc_type, exc_value, traceback)
 
     # todo: add login for ansible
     def create(self):
