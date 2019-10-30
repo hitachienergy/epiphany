@@ -95,7 +95,7 @@ class AnsibleRunner(Step):
         self.pre_flight(inventory_path)
 
         # run roles
-        enabled_roles = self.inventory_creator.get_enabled_roles()
+        enabled_roles = inventory_creator.get_enabled_roles()
         for role in enabled_roles:
             self.ansible_command.run_playbook(inventory=inventory_path,
                                               playbook_path=self.playbook_path(to_role_name(role)))
