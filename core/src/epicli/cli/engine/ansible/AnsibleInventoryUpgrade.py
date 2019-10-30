@@ -13,6 +13,7 @@ class AnsibleInventoryUpgrade(Step):
         super().__init__(__name__)
         self.build_dir = build_dir
         self.backup_build_dir = backup_build_dir
+        self.cluster_model = None
 
     def __enter__(self):
         super().__enter__()
@@ -42,7 +43,7 @@ class AnsibleInventoryUpgrade(Step):
         inventory_path = get_inventory_path_for_build(self.backup_build_dir)  
         build_version = check_build_output_version(self.backup_build_dir)
 
-        self.logger.info(f'Loading Ansible inventory: {inventory_path}')
+        self.logger.info(f'Loading backup Ansible inventory: {inventory_path}')
         loaded_inventory = InventoryManager(loader = DataLoader(), sources=inventory_path)
 
         # move loaded inventory to templating structure
@@ -55,7 +56,7 @@ class AnsibleInventoryUpgrade(Step):
                     new_hosts.append(AnsibleHostModel(host.address, host.vars['ansible_host']))
                 new_inventory.append(AnsibleInventoryItem(key, new_hosts))
 
-        cluster_model = dict_to_objdict({
+        self.cluster_model = dict_to_objdict({
             'specification': {
                 'admin_user': {
                     'name': loaded_inventory.groups['all'].vars['ansible_user'],
@@ -103,6 +104,6 @@ class AnsibleInventoryUpgrade(Step):
             new_inventory.append(AnsibleInventoryItem('repository', hosts))
 
         # save new inventory
-        save_inventory(new_inventory, cluster_model, self.build_dir)
+        save_inventory(new_inventory, self.cluster_model, self.build_dir)
 
         return 0

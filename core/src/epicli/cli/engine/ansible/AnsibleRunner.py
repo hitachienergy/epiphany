@@ -39,14 +39,25 @@ class AnsibleRunner(Step):
         else:
             return os.path.join(get_ansible_path_for_build(self.build_dir), f'{name}.yml')
 
+    def copy_resources(self):
+        self.logger.info('Copying Ansible resources')
+        if self.cluster_model != None:
+            copy_files_recursively(AnsibleRunner.ANSIBLE_PLAYBOOKS_PATH, get_ansible_path(self.cluster_model.specification.name))
+        else:
+            copy_files_recursively(AnsibleRunner.ANSIBLE_PLAYBOOKS_PATH, get_ansible_path_for_build(self.build_dir))
+
+        # copy skopeo so Ansible can move it to the repositry machine
+        if not Config().offline_requirements:
+            shutil.copy(os.path.join(dirname(dirname(inspect.getfile(os))), 'skopeo_linux'), '/tmp')            
+
     def pre_flight(self, inventory_path):
-        self.logger.info('Checking connection to each machine.')
+        self.logger.info('Checking connection to each machine')
         self.ansible_command.run_task_with_retries(inventory=inventory_path,
                                                    module="ping",
                                                    hosts="all",
                                                    retries=5)
 
-        self.logger.info('Checking preflight conditions on each machine.')
+        self.logger.info('Checking preflight conditions on each machine')
         self.ansible_command.run_playbook_with_retries(inventory=inventory_path,
                                                        playbook_path=self.playbook_path('preflight'),
                                                        retries=1)
@@ -68,19 +79,16 @@ class AnsibleRunner(Step):
     def apply(self):
         inventory_path = get_inventory_path(self.cluster_model.specification.name)
 
-        # create inventory on every run
+        # copy resources
+        self.copy_resources()
+
+        # create inventory
         inventory_creator = AnsibleInventoryCreator(self.cluster_model, self.config_docs)  
         inventory_creator.create()
         time.sleep(10)
 
-        copy_files_recursively(AnsibleRunner.ANSIBLE_PLAYBOOKS_PATH, get_ansible_path(self.cluster_model.specification.name))
-
-        # copy skopeo so Ansible can move it to the repositry machine
-        if not Config().offline_requirements:
-            shutil.copy(os.path.join(dirname(dirname(inspect.getfile(os))), 'skopeo_linux'), '/tmp')
-
         # generate vars
-        ansible_vars_generator = AnsibleVarsGenerator(self.cluster_model, self.config_docs, inventory_creator)      
+        ansible_vars_generator = AnsibleVarsGenerator(inventory_creator=inventory_creator)      
         ansible_vars_generator.generate()
 
         # pre-flight to prepare machines
@@ -99,22 +107,23 @@ class AnsibleRunner(Step):
     def upgrade(self):
         inventory_path = get_inventory_path_for_build(self.build_dir)
 
-        # upgrade ansible inventory
-        inventory_upgrade=  AnsibleInventoryUpgrade(self.build_dir, self.backup_build_dir)
+        # copy resources
+        self.copy_resources()
+
+        # upgrade inventory
+        inventory_upgrade = AnsibleInventoryUpgrade(self.build_dir, self.backup_build_dir)
         inventory_upgrade.upgrade()
 
-        # copy skopeo so Ansible can move it to the repositry machine
-        shutil.copy(os.path.join(dirname(dirname(inspect.getfile(os))), 'skopeo_linux'), '/tmp')
-
-        # copy lastest versions of the playbooks
-        copy_files_recursively(AnsibleRunner.ANSIBLE_PLAYBOOKS_PATH, get_ansible_path_for_build(self.build_dir))
+        # generate vars
+        ansible_vars_generator = AnsibleVarsGenerator(inventory_upgrade=inventory_upgrade)      
+        ansible_vars_generator.generate()        
 
         # pre-flight to prepare machines
-        #self.pre_flight(inventory_path)
+        self.pre_flight(inventory_path)
 
         # run upgrade playbook
-        #self.ansible_command.run_playbook(inventory=inventory_path,
-        #                                  playbook_path=self.playbook_path('upgrade'))
+        self.ansible_command.run_playbook(inventory=inventory_path,
+                                          playbook_path=self.playbook_path('upgrade'))
 
         #post-flight after we are done
-        #self.pre_flight(inventory_path)
+        self.pre_flight(inventory_path)

@@ -163,9 +163,11 @@ def delete_parser(subparsers):
 
 def upgrade_parser(subparsers):
     sub_parser = subparsers.add_parser('upgrade',
-                                       description='Upgrades the Docker and K8n roles of an existing Epiphany Platform to latest version.')
+                                       description='Upgrades the Docker and K8n roles of an existing Epiphany Platform to the latest version.')
     sub_parser.add_argument('-b', '--build', dest='build_directory', type=str, required=True,
                             help='Absolute path to directory with build artifacts.')
+    sub_parser.add_argument('--offline-requirements', dest='offline_requirements', type=str, required=True,
+                            help='Path to the folder with pre-prepared offline requirements.')                            
 
     def run_upgrade(args):
         adjust_paths_from_build(args)
