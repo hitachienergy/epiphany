@@ -1,0 +1,40 @@
+---
+- name: upgrade-node | Wait for cluster's readiness
+  include_tasks: wait.yml
+
+- name: upgrade-node | Drain node in preparation for maintenance
+  environment:
+    KUBECONFIG: /home/{{ admin_user.name }}/.kube/config
+  shell: kubectl drain {{ inventory_hostname }} --ignore-daemonsets --delete-local-data
+  delegate_to: "{{ groups['kubernetes_master'][0] }}"
+
+- name: upgrade-node | Wait for cluster's readiness
+  include_tasks: wait.yml
+
+- name: upgrade-node | Install packages
+  include_tasks: "{{ ansible_os_family }}/install-packages.yml"
+
+- name: upgrade-node | Upgrade node config
+  shell: kubeadm upgrade node config --kubelet-version v{{ version }}
+
+- name: upgrade-node | Restart kubelet
+  systemd:
+    state: restarted
+    daemon_reload: yes
+    name: kubelet
+
+- name: upgrade-node | Wait for cluster's readiness
+  include_tasks: wait.yml
+
+- name: upgrade-node | Uncordon node - mark node as schedulable
+  environment:
+    KUBECONFIG: /home/{{ admin_user.name }}/.kube/config
+  shell: kubectl uncordon {{ inventory_hostname }}
+  register: output
+  until: output is succeeded
+  retries: 5
+  delay: 5
+  delegate_to: "{{ groups['kubernetes_master'][0] }}"
+
+- name: upgrade-node | Verify component versions and node status
+  include_tasks: verify-upgrade.yml

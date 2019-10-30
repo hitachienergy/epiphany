@@ -80,7 +80,8 @@ def get_inventory_path(cluster_name):
     return os.path.join(get_build_path(cluster_name), INVENTORY_FILE_NAME)
 
 
-def get_inventory_path_for_build(build_directory, build_version=BUILD_EPICLI):
+def get_inventory_path_for_build(build_directory):
+    build_version = check_build_output_version(build_directory)
     inventory =  os.path.join(build_directory, INVENTORY_FILE_NAME)
     if build_version == BUILD_EPICLI: 
         return inventory
@@ -89,6 +90,7 @@ def get_inventory_path_for_build(build_directory, build_version=BUILD_EPICLI):
         if len(files) != 1:
             raise Exception(f'Not a valid legacy build directory.')
         return join(inventory, files[0]) 
+
 
 def check_build_output_version(build_directory):
     if not os.path.exists(build_directory):
@@ -104,8 +106,8 @@ def check_build_output_version(build_directory):
     if os.path.exists(manifest_path) and os.path.isdir(manifest_path):
         return BUILD_LEGACY
 
-    # if we come here its not a valid build directory
-    raise Exception(f'Not a valid build directory.')
+    # if we come here its a new run or upgrade in which case its EPICLI
+    return BUILD_EPICLI
 
 
 def get_terraform_path(cluster_name):
@@ -120,6 +122,13 @@ def get_ansible_path(cluster_name):
     if not os.path.exists(ansible_dir):
         os.makedirs(ansible_dir)
     return ansible_dir
+
+
+def get_ansible_path_for_build(build_directory):
+    ansible_dir = os.path.join(build_directory, ANSIBLE_OUTPUT_DIR)
+    if not os.path.exists(ansible_dir):
+        os.makedirs(ansible_dir)
+    return ansible_dir    
 
 
 def copy_files_recursively(src, dst):

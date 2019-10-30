@@ -4,20 +4,22 @@ from cli.engine.providers.provider_class_loader import provider_class_loader
 from cli.models.AnsibleInventoryItem import AnsibleInventoryItem
 from collections import defaultdict
 from cli.helpers.build_saver import save_inventory
+from cli.helpers.Step import Step
 
 
-class AnsibleInventoryCreator:
+class AnsibleInventoryCreator(Step):
     def __init__(self, cluster_model, config_docs):
+        super().__init__(__name__)
         self.cluster_model = cluster_model
         self.config_docs = config_docs
         self.proxy = self.get_proxy()
 
     def __enter__(self):
-        self.proxy.__enter__()
+        super().__enter__()
         return self
 
     def __exit__(self, exc_type, exc_value, traceback):
-        self.proxy.__exit__(exc_type, exc_value, traceback)
+        super().__exit__(exc_type, exc_value, traceback)
 
     # todo: add login for ansible
     def create(self):
