@@ -5,22 +5,31 @@
   serial: 1
   become: true
   become_method: sudo
-  roles:
-    - { role: upgrade, ver: "1.12.10", cni_ver: "0.7.5" }
+  tasks:
+    - import_role:
+        name: upgrade
+        tasks_from: kubernetes
+      vars: { ver: "1.12.10", cni_ver: "0.7.5" }
 
 - hosts: kubernetes_master:kubernetes_node
   serial: 1
   become: true
   become_method: sudo
-  roles:
-    - { role: upgrade, ver: "1.13.12", cni_ver: "0.7.5" }
+  tasks:
+    - import_role:
+        name: upgrade
+        tasks_from: kubernetes
+      vars: { ver: "1.13.12", cni_ver: "0.7.5" }
 
 - hosts: kubernetes_master:kubernetes_node
   serial: 1
   become: true
   become_method: sudo
-  roles:
-    - { role: upgrade, ver: "1.14.6", cni_ver: "0.7.5" }
+  tasks:
+    - import_role:
+        name: upgrade
+        tasks_from: kubernetes
+      vars: { ver: "1.14.6", cni_ver: "0.7.5" }
 
 
 # latest patch versions:
@@ -28,4 +37,3 @@
 # 1.12.10
 # 1.13.12
 # 1.14.8
-

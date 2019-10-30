@@ -1,0 +1,78 @@
+---
+- name: upgrade-master | Wait for cluster's readiness
+  include_tasks: wait.yml
+
+- name: upgrade-master | Drain master in preparation for maintenance
+  environment:
+    KUBECONFIG: /home/{{ admin_user.name }}/.kube/config
+  shell: kubectl drain {{ inventory_hostname }} --ignore-daemonsets --delete-local-data
+
+- name: upgrade-master | Wait for cluster's readiness
+  include_tasks: wait.yml
+
+- name: upgrade-master | Install packages
+  include_tasks: "{{ ansible_os_family }}/install-packages.yml"
+
+- name: upgrade-master | Wait for cluster's readiness
+  include_tasks: wait.yml
+
+- name: upgrade-master | Check if kubeadm configuration file exists
+  stat:
+    path: /etc/kubeadm/kubeadm-config.yml
+  changed_when: false
+  register: kubeadm_config
+
+- name: upgrade-master | Validate whether cluster is upgradeable (using kubeadm configuration file)
+  shell: kubeadm upgrade plan v{{ version }} --config /etc/kubeadm/kubeadm-config.yml
+  changed_when: false
+  when:
+    - kubeadm_config.stat.exists
+
+- name: upgrade-master | Validate whether cluster is upgradeable
+  shell: kubeadm upgrade plan v{{ version }}
+  changed_when: false
+  when:
+    - not kubeadm_config.stat.exists
+
+- name: upgrade-master | Upgrade K8s cluster to v{{ version }} (using kubeadm configuration file)
+  shell: kubeadm upgrade apply -y v{{ version }} --config /etc/kubeadm/kubeadm-config.yml
+  register: output
+  until: output is succeeded
+  retries: 5
+  delay: 5
+  when:
+    - kubeadm_config.stat.exists
+
+- name: upgrade-master | Upgrade K8s cluster to v{{ version }}
+  shell: kubeadm upgrade apply -y v{{ version }}
+  register: output
+  until: output is succeeded
+  retries: 5
+  delay: 5
+  when:
+    - not kubeadm_config.stat.exists
+    - cluster_version.stdout is version('v' + version, '<') # without this condition fails when 'upgrading' again from 1.12.10 to 1.12.10
+
+- name: upgrade-master | Wait for cluster's readiness
+  include_tasks: wait.yml
+
+- name: upgrade-master | Restart kubelet
+  systemd:
+    state: restarted
+    daemon_reload: yes
+    name: kubelet
+
+- name: upgrade-master | Wait for cluster's readiness
+  include_tasks: wait.yml
+
+- name: upgrade-master | Uncordon master - mark master as schedulable
+  environment:
+    KUBECONFIG: /home/{{ admin_user.name }}/.kube/config
+  shell: kubectl uncordon {{ inventory_hostname }}
+  register: output
+  until: output is succeeded
+  retries: 5
+  delay: 5
+
+- name: upgrade-master | Verify cluster version
+  include_tasks: verify-upgrade.yml

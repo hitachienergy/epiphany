@@ -3,10 +3,10 @@
   environment:
     KUBECONFIG: /home/{{ admin_user.name }}/.kube/config
   shell: kubectl cluster-info
-  retries: 30 # 1min
-  delay: 2
   register: output
   until: output is succeeded and "running" in output.stdout
+  retries: 30 # 1min
+  delay: 2
   changed_when: false
 
 - name: Wait for all nodes to be ready
