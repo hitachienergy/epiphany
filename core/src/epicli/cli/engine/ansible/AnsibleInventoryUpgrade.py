@@ -56,7 +56,9 @@ class AnsibleInventoryUpgrade(Step):
                     new_hosts.append(AnsibleHostModel(host.address, host.vars['ansible_host']))
                 new_inventory.append(AnsibleInventoryItem(key, new_hosts))
 
+        # re-constructure cluster model with all data necessary to run required upgrade rolls
         self.cluster_model = dict_to_objdict({
+            'provider': 'any',
             'specification': {
                 'admin_user': {
                     'name': loaded_inventory.groups['all'].vars['ansible_user'],
