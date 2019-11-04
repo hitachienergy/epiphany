@@ -1,8 +1,28 @@
 ---
 - name: Load images and run local registry
   block:
+    - name: Check if Docker is installed
+      command: which docker
+      register: check_docker
+      ignore_errors: yes
+      changed_when: false
+
+    # run docker role only if Docker is not installed, since it could upgrade it implicitly (before K8s)
+    - name: Install and configure Docker
+      import_role:
+        name: docker
+      when:
+        - check_docker is failed
+
+    - name: Reconfigure Docker # this restarts Docker daemon
+      include_role:
+        name: docker
+        tasks_from: configure-docker
+      when:
+        - check_docker is succeeded
+
     - name: Load registry image
-      include_tasks: "load-image.yml"
+      include_tasks: load-image.yml
       vars:
         docker_image: "{{ specification.registry_image }}"
 
@@ -15,11 +35,13 @@
     # todo run registry with SSL - generate/copy certs, mount it to registry container
     - name: Run registry
       become: yes
-      shell: "docker run -d -e REGISTRY_HTTP_ADDR=0.0.0.0:5000 -p 5000:5000 --restart=always --name epiphany-registry {{ specification.registry_image.name }}"
+      shell: >-
+        docker run -d -e REGISTRY_HTTP_ADDR=0.0.0.0:5000 -p 5000:5000 --restart=always
+        --name epiphany-registry {{ specification.registry_image.name }}
       when: regitry_up_check.stdout | length == 0
 
     - name: Include load-image.yml
-      include_tasks: "load-image.yml"
+      include_tasks: load-image.yml
       vars:
         docker_image: "{{ item }}"
       loop: "{{ specification.images_to_load }}"

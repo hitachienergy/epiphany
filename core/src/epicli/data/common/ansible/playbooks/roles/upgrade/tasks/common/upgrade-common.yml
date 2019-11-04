@@ -1,0 +1,23 @@
+---
+
+- name: Remove jq installed from directly from github
+  file:
+    path: /usr/local/bin/jq
+    state: absent
+  register: jq
+
+- name: Install jq Debian family packages
+  apt:
+    name:
+      - jq
+    update_cache: yes
+    state: present
+  when: ansible_os_family == "Debian"
+
+- name: Install jq RedHat family packages
+  yum:
+    name:
+      - jq
+    update_cache: yes
+    state: present
+  when: ansible_os_family == "RedHat"
