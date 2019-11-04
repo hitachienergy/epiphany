@@ -44,15 +44,16 @@ class AnsibleVarsGenerator(Step):
 
         self.populate_group_vars(ansible_dir)
 
-        if self.inventory_creator == None: 
-            return
-
-        enabled_roles = self.inventory_creator.get_enabled_roles()
         cluster_config_file_path = os.path.join(ansible_dir, 'roles', 'common', 'vars', 'main.yml')
         clean_cluster_model = self.get_clean_cluster_model()
         with open(cluster_config_file_path, 'w') as stream:
             dump(clean_cluster_model, stream)
 
+        # For upgrade at this point we dont need any of the other roles.
+        if self.inventory_creator == None: 
+            return            
+
+        enabled_roles = self.inventory_creator.get_enabled_roles()
         for role in enabled_roles:
             document = select_first(self.config_docs, lambda x: x.kind == 'configuration/'+to_feature_name(role))
 
