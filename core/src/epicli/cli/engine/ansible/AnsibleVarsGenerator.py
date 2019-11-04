@@ -8,6 +8,7 @@ from cli.helpers.naming_helpers import to_feature_name, to_role_name
 from cli.helpers.ObjDict import ObjDict
 from cli.helpers.yaml_helpers import dump
 from cli.helpers.Config import Config
+from cli.helpers.data_loader import load_yaml_obj, types
 
 
 class AnsibleVarsGenerator(Step):
@@ -77,8 +78,9 @@ class AnsibleVarsGenerator(Step):
         main_vars['offline_requirements'] = Config().offline_requirements
 
         shared_config_doc = select_first(self.config_docs, lambda x: x.kind == 'configuration/shared-config')
-        if shared_config_doc != None:
-            main_vars.update(shared_config_doc.specification)        
+        if shared_config_doc == None:
+            shared_config_doc = load_yaml_obj(types.DEFAULT, 'common', 'configuration/shared-config')
+        main_vars.update(shared_config_doc.specification)        
 
         vars_dir = os.path.join(ansible_dir, 'group_vars')
         if not os.path.exists(vars_dir):
