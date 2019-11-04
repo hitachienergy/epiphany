@@ -49,8 +49,16 @@ class AnsibleVarsGenerator(Step):
         with open(cluster_config_file_path, 'w') as stream:
             dump(clean_cluster_model, stream)
 
-        # For upgrade at this point we dont need any of the other roles.
-        if self.inventory_creator == None: 
+        # For upgrade at this point we dont need any of other roles then 
+        # common, upgrade, repository and image_registry.
+        # - commmon us already provisioned from the cluster model constructed from the inventory.
+        # - upgrade should not require any addition config
+        # - repository and image_registry are provisioned below from default for upgrade
+        if self.inventory_creator == None:
+            needed_roles_for_upgrade = ['repository', 'image_registry']
+            for role in needed_roles_for_upgrade:           
+                role_defaults = load_yaml_obj(types.DEFAULT, 'common', 'configuration/'+to_feature_name(role))
+                self.write_role_vars(ansible_dir, role, role_defaults)              
             return            
 
         enabled_roles = self.inventory_creator.get_enabled_roles()
@@ -62,15 +70,18 @@ class AnsibleVarsGenerator(Step):
                 continue
 
             document.specification['provider'] = self.cluster_model.provider
-            vars_dir = os.path.join(ansible_dir, 'roles', to_role_name(role), 'vars')
-            if not os.path.exists(vars_dir):
-                os.makedirs(vars_dir)
+            self.write_role_vars(ansible_dir, role, document)
 
-            vars_file_name = 'main.yml'
-            vars_file_path = os.path.join(vars_dir, vars_file_name)
+    def write_role_vars(self, ansible_dir, role, document):
+        vars_dir = os.path.join(ansible_dir, 'roles', to_role_name(role), 'vars')
+        if not os.path.exists(vars_dir):
+            os.makedirs(vars_dir)
 
-            with open(vars_file_path, 'w') as stream:
-                dump(document, stream)
+        vars_file_name = 'main.yml'
+        vars_file_path = os.path.join(vars_dir, vars_file_name)
+
+        with open(vars_file_path, 'w') as stream:
+            dump(document, stream)       
 
     def populate_group_vars(self, ansible_dir):
         main_vars = ObjDict()
