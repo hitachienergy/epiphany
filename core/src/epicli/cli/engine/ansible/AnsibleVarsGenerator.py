@@ -8,7 +8,7 @@ from cli.helpers.naming_helpers import to_feature_name, to_role_name
 from cli.helpers.ObjDict import ObjDict
 from cli.helpers.yaml_helpers import dump
 from cli.helpers.Config import Config
-from cli.helpers.data_loader import load_yaml_obj, types
+from cli.helpers.data_loader import load_yaml_obj, types, load_all_documents_from_folder
 
 
 class AnsibleVarsGenerator(Step):
@@ -24,7 +24,7 @@ class AnsibleVarsGenerator(Step):
             self.config_docs = [self.cluster_model] + inventory_creator.config_docs
         elif inventory_upgrade != None and inventory_creator == None:
             self.cluster_model = inventory_upgrade.cluster_model
-            self.config_docs = []
+            self.config_docs = load_all_documents_from_folder('common', 'defaults/configuration')
         else:
             raise Exception('Invalid AnsibleVarsGenerator configuration')
 
@@ -49,19 +49,16 @@ class AnsibleVarsGenerator(Step):
         with open(cluster_config_file_path, 'w') as stream:
             dump(clean_cluster_model, stream)
 
-        # For upgrade at this point we dont need any of other roles then 
-        # common, upgrade, repository and image_registry.
-        # - commmon us already provisioned from the cluster model constructed from the inventory.
-        # - upgrade should not require any addition config
-        # - repository and image_registry are provisioned below from default for upgrade
         if self.inventory_creator == None:
-            needed_roles_for_upgrade = ['repository', 'image_registry']
-            for role in needed_roles_for_upgrade:           
-                role_defaults = load_yaml_obj(types.DEFAULT, 'common', 'configuration/'+to_feature_name(role))
-                self.write_role_vars(ansible_dir, role, role_defaults)              
-            return            
+            # For upgrade at this point we dont need any of other roles then 
+            # common, upgrade, repository and image_registry.
+            # - commmon us already provisioned from the cluster model constructed from the inventory.
+            # - upgrade should not require any addition config
+            # - repository and image_registry are provisioned below from default for upgrade
+            enabled_roles = ['repository', 'image_registry']        
+        else:
+            enabled_roles = self.inventory_creator.get_enabled_roles()
 
-        enabled_roles = self.inventory_creator.get_enabled_roles()
         for role in enabled_roles:
             document = select_first(self.config_docs, lambda x: x.kind == 'configuration/'+to_feature_name(role))
 
