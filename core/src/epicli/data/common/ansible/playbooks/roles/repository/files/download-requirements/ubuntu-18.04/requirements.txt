@@ -111,6 +111,14 @@ libsmbclient
 postgresql-client-10
 postgresql-common
 
+# K8s upgrade
+kubeadm 1.12.10
+kubectl 1.12.10
+kubelet 1.12.10
+kubeadm 1.13.12
+kubectl 1.13.12
+kubelet 1.13.12
+
 [files]
 https://repo1.maven.org/maven2/io/prometheus/jmx/jmx_prometheus_javaagent/0.12.0/jmx_prometheus_javaagent-0.12.0.jar
 https://archive.apache.org/dist/kafka/2.0.0/kafka_2.12-2.0.0.tgz
