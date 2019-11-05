@@ -1,10 +1,9 @@
 ---
 
-- name: Remove jq installed from directly from github
+- name: Remove jq installed directly from github
   file:
     path: /usr/local/bin/jq
     state: absent
-  register: jq
 
 - name: Install jq Debian family packages
   apt:
