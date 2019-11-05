@@ -20,6 +20,8 @@
         kubectl version --client --short -o json | jq --raw-output '.clientVersion.gitVersion'
       changed_when: false
       register: kubectl_version
+      args:
+        executable: /bin/bash
 
     - name: verify-upgrade | Verify kubectl version
       assert:
@@ -52,6 +54,8 @@
   until: version in node_status_and_version.stdout
   retries: 30 # 1min
   delay: 2
+  args:
+    executable: /bin/bash
 
 - name: verify-upgrade | Verify node status
   assert:
