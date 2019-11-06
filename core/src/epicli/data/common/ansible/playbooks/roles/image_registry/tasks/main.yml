@@ -16,10 +16,19 @@
       when:
         - check_docker.rc != 0
 
-    - name: Reconfigure Docker # this restarts Docker daemon
-      include_role:
-        name: docker
-        tasks_from: configure-docker
+    - name: Reconfigure Docker if necessary
+      block:
+        - name: Include get-registries.yml from docker role # this sets result
+          include_role:
+            name: docker
+            tasks_from: get-registries
+
+        - name: Reconfigure Docker # this restarts Docker daemon
+          include_role:
+            name: docker
+            tasks_from: configure-docker
+          when:
+            - not image_registry_address in result.stdout
       when:
         - check_docker.rc == 0
 

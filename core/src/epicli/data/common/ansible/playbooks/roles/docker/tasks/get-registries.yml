@@ -1,0 +1,7 @@
+---
+# This file is used by other roles
+
+- name: Get list of configured Docker registries
+  command: docker info --format '{{json .RegistryConfig.IndexConfigs}}'
+  register: result
+  changed_when: false
