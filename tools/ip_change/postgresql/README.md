@@ -60,3 +60,5 @@ This part describes actions to execute on Slave Database Nodes
 sudo ./3_update_pgpass.sh "MASTER_CURRENT_IP" "MASTER_NEW_IP"
 ```
 This script will update connection string to Master Database
+
+3. Update any other application connection strings to establish connection to new address.
