@@ -4,7 +4,9 @@
     - name: Check if Docker is installed
       command: which docker
       register: check_docker
-      ignore_errors: yes
+      failed_when:
+        - check_docker.rc != 0
+        - not 'no docker' in check_docker.stderr
       changed_when: false
 
     # run docker role only if Docker is not installed, since it could upgrade it implicitly (before K8s)
@@ -12,14 +14,14 @@
       import_role:
         name: docker
       when:
-        - check_docker is failed
+        - check_docker.rc != 0
 
     - name: Reconfigure Docker # this restarts Docker daemon
       include_role:
         name: docker
         tasks_from: configure-docker
       when:
-        - check_docker is succeeded
+        - check_docker.rc == 0
 
     - name: Load registry image
       include_tasks: load-image.yml
