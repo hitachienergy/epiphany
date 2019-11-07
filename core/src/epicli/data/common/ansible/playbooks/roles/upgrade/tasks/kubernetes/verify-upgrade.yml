@@ -43,7 +43,7 @@
 - name: verify-upgrade | Verify kubelet version from API server and get node status
   environment:
     KUBECONFIG: /home/{{ admin_user.name }}/.kube/config
-  shell: >-
+  shell: |-
     set -o pipefail &&
     kubectl get nodes {{ inventory_hostname }} |
     # get values only for STATUS and VERSION columns, example output: 'Ready v1.14.6'
