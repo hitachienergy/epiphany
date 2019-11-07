@@ -2,11 +2,10 @@
 - name: Load images and run local registry
   block:
     - name: Check if Docker is installed
-      command: which docker
+      shell: docker --version
       register: check_docker
       failed_when:
-        - check_docker.rc != 0
-        - not 'no docker' in check_docker.stderr
+        - check_docker.rc not in [0, 127] # 127 means command not found
       changed_when: false
 
     # run docker role only if Docker is not installed, since it could upgrade it implicitly (before K8s)
