@@ -32,7 +32,7 @@ This script will update files:
 
 Both services will be restarted.
 
-3. Update Filebeat configuration on every host in cluster.
+3. Update Filebeat configuration on every host in cluster to setup new Elasticseach's ip.
 
  Execute `3_update_filebeat.sh` script on all cluster nodes.
  This will also restart filebeat service.
