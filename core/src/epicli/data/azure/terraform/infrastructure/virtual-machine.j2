@@ -10,7 +10,7 @@
 # {{ specification.name }}
 #####################################################
 
-resource "azurerm_virtual_machine" "{{ specification.name  }}" {
+resource "azurerm_virtual_machine" "{{ specification.name }}" {
   name                  = "{{ specification.name }}"
   location              = "${azurerm_resource_group.rg.location}"
   resource_group_name   = "${azurerm_resource_group.rg.name}"
@@ -44,15 +44,15 @@ resource "azurerm_virtual_machine" "{{ specification.name  }}" {
   # windows specific stuff here maybe... hopefully never.
   {%- endif %}  
 
-  {%- if specification.storage_os_disk.managed != true %}
-  delete_os_disk_on_termination = "{{ specification.storage_os_disk.delete_on_termination | lower }}"
+  {%- if specification.disks.storage_os_disk.managed != true %}
+  delete_os_disk_on_termination = "{{ specification.disks.storage_os_disk.delete_on_termination | lower }}"
   {%- endif %}
   storage_os_disk {
     name          = "{{ specification.name }}-os-disk"
-    caching       = "{{ specification.storage_os_disk.caching }}"
-    create_option = "{{ specification.storage_os_disk.create_option }}"
-    {%- if specification.storage_os_disk.managed != true %}
-    managed_disk_type = "{{ specification.storage_os_disk.managed_disk_type | lower }}"
+    caching       = "{{ specification.disks.storage_os_disk.caching }}"
+    create_option = "{{ specification.disks.storage_os_disk.create_option }}"
+    {%- if specification.disks.storage_os_disk.managed != true %}
+    managed_disk_type = "{{ specification.disks.storage_os_disk.managed_disk_type | lower }}"
     {%- else %}
     #TODO: Container storage
     #{%- if specification.storage_container.enable %}
@@ -71,5 +71,28 @@ resource "azurerm_virtual_machine" "{{ specification.name  }}" {
 
   #TODO:
   # availability_set_id
-  # storage_data_disk
+
 }
+
+{% if specification.disks.managed_disks is defined %}
+  {% for disk in specification.disks.managed_disks %}
+    {% set disk_lun = loop.index + 10 %}
+
+    resource "azurerm_managed_disk" "{{ specification.name }}-managed-disk-{{loop.index}}" {
+      name                 = "{{ specification.name }}-managed-disk-{{loop.index}}"
+      location              = "${azurerm_resource_group.rg.location}"
+      resource_group_name   = "${azurerm_resource_group.rg.name}"
+      storage_account_type = "{{ disk.storage_account_type }}"
+      create_option        = "{{ disk.create_option }}"
+      disk_size_gb         = "{{ disk.disk_size_gb }}"
+    }
+
+    resource "azurerm_virtual_machine_data_disk_attachment" "{{ specification.name }}-managed-disk-{{loop.index}}" {
+      managed_disk_id    = "${azurerm_managed_disk.{{ specification.name }}-managed-disk-{{loop.index}}.id}"
+      virtual_machine_id = "${azurerm_virtual_machine.{{ specification.name }}.id}"
+      lun                = "{{ disk_lun }}"
+      caching            = "{{ disk.caching }}"
+    }
+
+  {%- endfor %}
+{% endif %}

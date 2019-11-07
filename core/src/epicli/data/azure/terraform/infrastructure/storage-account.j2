@@ -11,9 +11,10 @@
 #####################################################
 #####################################################
 
-resource "azurerm_storage_share" "{{ specification.name }}" {
-  name = "k8s"
-  resource_group_name  = "${azurerm_resource_group.rg.name}"
-  storage_account_name = "${azurerm_storage_account.{{ specification.storage_account_name }}.name}"
-  quota = "{{ specification.quota }}"
-}
+resource "azurerm_storage_account" "{{ specification.name }}" {
+  name     = "{{ specification.name }}"
+  resource_group_name      = "${azurerm_resource_group.rg.name}"
+  location                 = "${azurerm_resource_group.rg.location}"
+  account_tier             = "{{ specification.account_tier }}"
+  account_replication_type = "{{ specification.account_replication_type }}"
+} 

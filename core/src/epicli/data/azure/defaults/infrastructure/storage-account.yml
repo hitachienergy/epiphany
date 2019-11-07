@@ -1,0 +1,9 @@
+kind: infrastructure/storage-account
+version: 0.4.1
+title: "Azure storage account"
+provider: azure
+name: default
+specification:
+  name: SET_BY_AUTOMATION
+  account_tier: Standard
+  account_replication_type : LRS

@@ -9,6 +9,7 @@ specification:
   admin_password: SET_BY_AUTOMATION 
   public_key: SET_BY_AUTOMATION
   network_interface_name: SET_BY_AUTOMATION
+  storage_account_name: SET_BY_AUTOMATION
   tags: []
   os_type: linux
   size: Standard_DS1_v2 
@@ -17,13 +18,16 @@ specification:
     offer: UbuntuServer
     sku: 18.04-LTS
     version: "18.04.201810030" # Never put latest on anything! Need to always pin the version number but testing we can get away with it
-  storage_os_disk:
-    delete_on_termination: false
-    managed: false
-    caching: ReadWrite
-    create_option: FromImage
-    disk_size_gb: 30
-    managed_disk_type: Premium_LRS
+  disks:
+    storage_os_disk:
+      delete_on_termination: false
+      managed: false
+      caching: ReadWrite
+      create_option: FromImage
+      disk_size_gb: 30
+      managed_disk_type: Premium_LRS
+    managed_disks: []
+
   network_interface:
     enable_accelerated_networking: false
     private_ip:
@@ -71,6 +75,12 @@ provider: azure
 name: kubernetes-master-machine
 specification:
   size: Standard_DS2_v2  
+  disks:
+    managed_disks:
+      - create_option: empty
+        storage_account_type: Standard_LRS
+        disk_size_gb: 100
+        caching: ReadWrite
   security:
     rules:            
       - name: ssh

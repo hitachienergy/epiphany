@@ -29,7 +29,10 @@ class InfrastructureBuilder(Step):
         vnet = self.get_virtual_network()
         infrastructure.append(vnet)
 
-        shared_storage = self.get_storage_share_config()
+        storage_account = self.get_storage_account_config()
+        infrastructure.append(storage_account)
+
+        shared_storage = self.get_storage_share_config(storage_account)
         infrastructure.append(shared_storage)
 
         for component_key, component_value in self.cluster_model.specification.components.items():
@@ -92,7 +95,7 @@ class InfrastructureBuilder(Step):
                                                                index)
                 infrastructure.append(network_interface)
 
-                vm = self.get_vm(component_key, component_value, vm_config, network_interface.specification.name, index)
+                vm = self.get_vm(component_key, component_value, vm_config, network_interface.specification.name, storage_account.specification.name, index)
                 infrastructure.append(vm)                               
 
         return infrastructure
@@ -149,17 +152,23 @@ class InfrastructureBuilder(Step):
         public_ip.specification.sku = vm_config.specification.network_interface.public_ip.sku
         return public_ip     
 
-    def get_storage_share_config(self):
+    def get_storage_share_config(self, storage_account):
         storage_share = self.get_config_or_default(self.docs, 'infrastructure/storage-share')
         storage_share.specification.name = resource_name(self.cluster_prefix, self.cluster_name, 'k8s-ss')
-        storage_share.specification.storage_account_name = storage_account_name(self.cluster_prefix, self.cluster_name, 'k8s')
+        storage_share.specification.storage_account_name = storage_account.specification.name 
         return storage_share           
 
-    def get_vm(self, component_key, component_value, vm_config, network_interface_name, index):
+    def get_storage_account_config(self):
+        storage_account = self.get_config_or_default(self.docs, 'infrastructure/storage-account')
+        storage_account.specification.name = storage_account_name(self.cluster_prefix, self.cluster_name, 'default')
+        return storage_account           
+
+    def get_vm(self, component_key, component_value, vm_config, network_interface_name, storage_account_name, index):
         vm = dict_to_objdict(deepcopy(vm_config))
         vm.specification.name = resource_name(self.cluster_prefix, self.cluster_name, 'vm' + '-' + str(index), component_key)
         vm.specification.admin_username = self.cluster_model.specification.admin_user.name
         vm.specification.network_interface_name = network_interface_name
+        vm.specification.storage_account_name = storage_account_name
         vm.specification.tags.append({'cluster': cluster_tag(self.cluster_prefix, self.cluster_name)})
         vm.specification.tags.append({component_key: ''})        
         if vm.specification.os_type == 'linux':
