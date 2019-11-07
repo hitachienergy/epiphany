@@ -15,14 +15,15 @@
 # limitations under the License.
 
 #Run this script on Master as many times as many Slaves you've got
-
-echo "==== Modifying /etc/postgresql/10/main/pg_hba.conf for new IP ===="
+set -e
 
 #OLD_IP_SLAVE - Address which will be modified
-#NEW_IP_SLAVE - Updated value 
+#NEW_IP_SLAVE - Updated value
 
 OLD_IP_SLAVE=$1
 NEW_IP_SLAVE=$2
+
+echo "==== Modifying /etc/postgresql/10/main/pg_hba.conf for new IP ===="
 
 sed -i "s/$OLD_IP_SLAVE/$NEW_IP_SLAVE/g" "/etc/postgresql/10/main/pg_hba.conf"
 

@@ -5,7 +5,7 @@
 - Note all actual and desired ip configurations for master and all slaves (if exist)
 - User with sudo privileges
 
-## Note that host ip change may impact database when data contains any network address types
+## Note that host ip change may impact database when data contains network address types
 
 See more: <https://www.postgresql.org/docs/10/datatype-net-types.html>
 

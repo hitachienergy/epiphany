@@ -13,12 +13,13 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
-echo "==== Modifying /etc/hosts for new IP ===="
-echo "Run this script also if you want to modify slave inserts"
+set -e
 
 OLD_IP=$1
 NEW_IP=$2
+
+echo "==== Modifying /etc/hosts for new IP ===="
+echo "Run this script also if you want to modify slave inserts"
 
 sed -i "s/$OLD_IP/$NEW_IP/g" "/etc/hosts"
 
