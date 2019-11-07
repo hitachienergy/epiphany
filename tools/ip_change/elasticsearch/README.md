@@ -27,8 +27,8 @@ sudo ./2_config_files.sh "CURRENT_IP" "NEW_IP"
 
 This script will update files:
 
---* /etc/elasticsearch/elasticsearch.yml
---* /etc/kibana/kibana.yml
+- /etc/elasticsearch/elasticsearch.yml
+- /etc/kibana/kibana.yml
 
 Both services will be restarted.
 
