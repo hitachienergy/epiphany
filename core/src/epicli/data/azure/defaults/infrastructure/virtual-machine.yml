@@ -1,5 +1,5 @@
 kind: infrastructure/virtual-machine
-version: 0.4.1
+version: 0.4.2
 title: "Virtual Machine Infra"
 provider: azure
 name: default
@@ -65,7 +65,7 @@ specification:
         destination_address_prefix: "0.0.0.0/0"                       
 ---
 kind: infrastructure/virtual-machine
-version: 0.4.1
+version: 0.4.2
 title: "Virtual Machine Infra"
 provider: azure
 name: kubernetes-master-machine
@@ -173,7 +173,7 @@ specification:
   #      destination_address_prefix: "0.0.0.0/0"     
 ---
 kind: infrastructure/virtual-machine
-version: 0.4.1
+version: 0.4.2
 title: "Virtual Machine Infra"
 provider: azure
 name: kubernetes-node-machine
@@ -249,7 +249,7 @@ specification:
         destination_address_prefix: "0.0.0.0/0"
 ---
 kind: infrastructure/virtual-machine
-version: 0.4.1
+version: 0.4.2
 title: "Virtual Machine Infra"
 provider: azure
 name: kafka-machine
@@ -375,7 +375,7 @@ specification:
         #   destination_address_prefix: "0.0.0.0/0"
 ---
 kind: infrastructure/virtual-machine
-version: 0.4.1
+version: 0.4.2
 title: "Virtual Machine Infra"
 provider: azure
 name: rabbitmq-machine
@@ -425,7 +425,7 @@ specification:
         destination_address_prefix: "0.0.0.0/0"   
 ---
 kind: infrastructure/virtual-machine
-version: 0.4.1
+version: 0.4.2
 title: "Virtual Machine Infra"
 provider: azure
 name: monitoring-machine
@@ -485,7 +485,7 @@ specification:
         destination_address_prefix: "0.0.0.0/0"        
 ---
 kind: infrastructure/virtual-machine
-version: 0.4.1
+version: 0.4.2
 title: "Virtual Machine Infra"
 provider: azure
 name: postgresql-machine
@@ -549,7 +549,7 @@ specification:
       #  destination_address_prefix: "0.0.0.0/0"        
 ---
 kind: infrastructure/virtual-machine
-version: 0.4.1
+version: 0.4.2
 title: "Virtual Machine Infra"
 provider: azure
 name: logging-machine
@@ -619,7 +619,7 @@ specification:
         destination_address_prefix: "0.0.0.0/0"      
 ---
 kind: infrastructure/virtual-machine
-version: 0.4.1
+version: 0.4.2
 title: "Virtual Machine Infra"
 provider: azure
 name: load-balancer-machine

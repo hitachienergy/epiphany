@@ -1,5 +1,5 @@
 kind: configuration/shared-config
-version: 0.4.1
+version: 0.4.2
 title: "Shared configuration that will be visible to all roles"
 name: default
 specification:

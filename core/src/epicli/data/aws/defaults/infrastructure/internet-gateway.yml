@@ -1,5 +1,5 @@
 kind: infrastructure/internet-gateway
-version: 0.4.1
+version: 0.4.2
 title: "Internet Gateway Config"
 provider: aws
 name: default
