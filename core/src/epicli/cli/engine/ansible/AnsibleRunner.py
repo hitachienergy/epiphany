@@ -42,9 +42,12 @@ class AnsibleRunner(Step):
     def copy_resources(self):
         self.logger.info('Copying Ansible resources')
         if self.cluster_model != None:
-            copy_files_recursively(AnsibleRunner.ANSIBLE_PLAYBOOKS_PATH, get_ansible_path(self.cluster_model.specification.name))
+            ansible_dir = get_ansible_path(self.cluster_model.specification.name)
         else:
-            copy_files_recursively(AnsibleRunner.ANSIBLE_PLAYBOOKS_PATH, get_ansible_path_for_build(self.build_dir))
+            ansible_dir = get_ansible_path_for_build(self.build_dir)
+            
+        shutil.rmtree(ansible_dir, ignore_errors=True)              
+        copy_files_recursively(AnsibleRunner.ANSIBLE_PLAYBOOKS_PATH, ansible_dir)          
 
         # copy skopeo so Ansible can move it to the repositry machine
         if not Config().offline_requirements:
