@@ -9,6 +9,15 @@
         name: upgrade
         tasks_from: common
 
+- hosts: kubernetes_node
+  serial: 1
+  become: true
+  become_method: sudo
+  tasks:
+    - import_role:
+        name: upgrade
+        tasks_from: image-registry
+
 - hosts: kubernetes_master:kubernetes_node
   serial: 1
   become: true
