@@ -38,9 +38,7 @@
   - [How to tunnel Kubernetes dashboard from remote kubectl to your PC](./howto/KUBERNETES.md#how-to-tunnel-kubernetes-dashboard-from-remote-kubectl-to-your-pc)
 
 - [Upgrade](./howto/UPGRADE.md)
-  - [How to upgrade Kubernetes cluster](./howto/UPGRADE.md#how-to-upgrade-kubernetes-cluster)
-  - [How to upgrade Kubernetes cluster from 1.13.0 to 1.13.1](./howto/UPGRADE.md#how-to-upgrade-kubernetes-cluster-from-1130-to-1131)
-  - [How to upgrade Kubernetes cluster from 1.13.1 to 1.13.10 / latest patch](./howto/UPGRADE.md#how-to-upgrade-kubernetes-cluster-from-1131-to-11310--latest-patch)
+  - [Offline upgrade](./howto/UPGRADE.md#offline-upgrade)
   - [How to upgrade Kafka cluster](./howto/UPGRADE.md#how-to-upgrade-Kafka-cluster)
 
 - [Security](./howto/SECURITY.md)

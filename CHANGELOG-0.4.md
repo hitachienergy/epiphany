@@ -1,9 +1,18 @@
 # Changelog 0.4
 
-## [0.4.1] 2019-10-17
+## [0.4.2] 2019-11-TOCHANGE
+
+### Added
+
+- Offline upgrade for K8n and Docker
 
 ### Fixed
 
+- [#612](https://github.com/epiphany-platform/epiphany/issues/694) - epicli apply does not remove from build files removed from sources
+
+## [0.4.1] 2019-10-17
+
+### Fixed
 
 - [#612](https://github.com/epiphany-platform/epiphany/issues/612) - 'epicli delete' - cannot delete a partially built infrastructure
 - [#613](https://github.com/epiphany-platform/epiphany/pull/613) - Hotfixes for Ubuntu offline installation in air-gap mode
