@@ -101,6 +101,13 @@ xorg-x11-font-utils # for grafana
 xorg-x11-server-utils # for grafana
 yum-plugin-versionlock
 yum-utils
+# K8s upgrade
+kubeadm-1.12.10
+kubectl-1.12.10
+kubelet-1.12.10
+kubeadm-1.13.12
+kubectl-1.13.12
+kubelet-1.13.12
 
 [files]
 https://github.com/prometheus/haproxy_exporter/releases/download/v0.10.0/haproxy_exporter-0.10.0.linux-amd64.tar.gz
@@ -133,7 +140,7 @@ registry:2
 # applications
 jboss/keycloak:4.8.3.Final
 rabbitmq:3.7.10
-# K8s upgrades
+# K8s upgrade
 ## v1.12.10
 k8s.gcr.io/coredns:1.2.2
 k8s.gcr.io/etcd:3.2.24

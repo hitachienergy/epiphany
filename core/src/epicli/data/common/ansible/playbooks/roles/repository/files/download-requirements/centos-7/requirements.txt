@@ -15,7 +15,6 @@ python-deltarpm # for createrepo
 python-kitchen # for createrepo
 yum-utils
 
-
 [packages]
 audit # for docker-ce
 bash-completion
@@ -144,7 +143,7 @@ registry:2
 # applications
 jboss/keycloak:4.8.3.Final
 rabbitmq:3.7.10
-# K8s upgrades
+# K8s upgrade
 ## v1.12.10
 k8s.gcr.io/coredns:1.2.2
 k8s.gcr.io/etcd:3.2.24
