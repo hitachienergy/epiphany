@@ -8,20 +8,6 @@
 - name: Include get-kubelet-version.yml
   include_tasks: kubernetes/get-kubelet-version.yml # sets kubelet_version
 
-- name: Reconfigure Docker for pulling images from local registry
-  block:
-    - name: Include get-registries.yml from docker role # this sets result
-      include_role:
-        name: docker
-        tasks_from: get-registries
-
-    - name: Reconfigure Docker if necessary # this restarts Docker daemon
-      include_role:
-        name: docker
-        tasks_from: configure-docker
-      when:
-        - not image_registry_address in result.stdout
-
 - name: Upgrade master to v{{ version }}
   include_tasks: kubernetes/upgrade-master.yml
   vars:
