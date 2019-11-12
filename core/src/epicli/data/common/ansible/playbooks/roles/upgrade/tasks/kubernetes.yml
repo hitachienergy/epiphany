@@ -1,4 +1,7 @@
 ---
+- name: Include wait-for-kube-apiserver.yml
+  include_tasks: kubernetes/wait-for-kube-apiserver.yml
+
 - name: Include get-cluster-version.yml
   include_tasks: kubernetes/get-cluster-version.yml # sets cluster_version
 
