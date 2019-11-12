@@ -4,7 +4,7 @@
     manager: auto
   changed_when: false
 
-- name: Remove jq installed as binary from GitHub
+- name: Clean up jq installed as binary from GitHub
   file:
     path: /usr/local/bin/jq
     state: absent
