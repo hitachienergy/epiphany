@@ -166,7 +166,7 @@ def upgrade_parser(subparsers):
                                        description='Upgrades common and K8s components of an existing Epiphany Platform cluster.')
     sub_parser.add_argument('-b', '--build', dest='build_directory', type=str, required=True,
                             help='Absolute path to directory with build artifacts.')
-    sub_parser.add_argument('--offline-requirements', dest='offline_requirements', type=str, required=True,
+    sub_parser.add_argument('--offline-requirements', dest='offline_requirements', type=str, required=False,
                             help='Path to the folder with pre-prepared offline requirements.')                            
 
     def run_upgrade(args):
