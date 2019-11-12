@@ -1,22 +1,12 @@
 ---
+- name: Get list of installed packages as facts
+  package_facts:
+    manager: auto
+  changed_when: false
 
-- name: Remove jq installed directly from github
+- name: Remove jq installed as binary from GitHub
   file:
     path: /usr/local/bin/jq
     state: absent
-
-- name: Install jq Debian family packages
-  apt:
-    name:
-      - jq
-    update_cache: yes
-    state: present
-  when: ansible_os_family == "Debian"
-
-- name: Install jq RedHat family packages
-  yum:
-    name:
-      - jq
-    update_cache: yes
-    state: present
-  when: ansible_os_family == "RedHat"
+  when:
+    - "'jq' in ansible_facts.packages"
