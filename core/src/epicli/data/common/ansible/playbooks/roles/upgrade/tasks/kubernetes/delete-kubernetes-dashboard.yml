@@ -12,7 +12,7 @@
     KUBECONFIG: /home/{{ admin_user.name }}/.kube/config
   shell: kubectl delete all -l k8s-app=kubernetes-dashboard -n kube-system
   when:
-    - "'No resources found' not in result.stdout"
+    - not 'No resources found' in result.stderr
 
 - name: Check if 'kubernetes-dashboard-minimal' Role or RoleBinding exists in kube-system
   environment:
@@ -20,10 +20,13 @@
   shell: kubectl get Role,RoleBinding kubernetes-dashboard-minimal -n kube-system
   register: result
   changed_when: false
+  failed_when:
+    - result.rc != 0
+    - not 'not found' in result.stderr
 
 - name: Delete 'kubernetes-dashboard-minimal' Role and RoleBinding from kube-system
   environment:
     KUBECONFIG: /home/{{ admin_user.name }}/.kube/config
   shell: kubectl delete Role,RoleBinding kubernetes-dashboard-minimal -n kube-system
   when:
-    - "'No resources found' not in result.stdout"
+    - not 'not found' in result.stderr
