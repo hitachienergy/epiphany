@@ -141,6 +141,8 @@ registry:2
 jboss/keycloak:4.8.3.Final
 rabbitmq:3.7.10
 # K8s upgrade
+## v1.11.5
+coredns/coredns:1.1.3 # needed to drain master before upgrade
 ## v1.12.10
 k8s.gcr.io/coredns:1.2.2
 k8s.gcr.io/etcd:3.2.24
