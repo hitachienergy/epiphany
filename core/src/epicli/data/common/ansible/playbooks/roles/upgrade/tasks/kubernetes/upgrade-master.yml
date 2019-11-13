@@ -63,14 +63,18 @@
     kubeadm upgrade plan v{{ version +
     (' --config /etc/kubeadm/kubeadm-config.yml' if kubeadm_config_file.stat.exists else '') }}
   changed_when: false
+  register: result
+  until: result is succeeded
+  retries: 5
+  delay: 5
 
 - name: "upgrade-master | Upgrade K8s cluster to v{{ version }}
          {{ '(using kubeadm-config.yml file)' if kubeadm_config_file.stat.exists else '' }}"
   shell: >-
     kubeadm upgrade apply -y v{{ version +
     (' --config /etc/kubeadm/kubeadm-config.yml' if kubeadm_config_file.stat.exists else '') }}
-  register: output
-  until: output is succeeded
+  register: result
+  until: result is succeeded
   retries: 5
   delay: 5
   when:
