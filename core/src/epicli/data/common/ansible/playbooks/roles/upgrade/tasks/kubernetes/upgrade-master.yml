@@ -54,6 +54,11 @@
 - name: upgrade-master | Wait for cluster's readiness
   include_tasks: wait.yml
 
+- name: upgrade-master | Upgrade Docker # this may restart Docker daemon
+  include_tasks: docker.yml
+  when:
+    - version is version('1.14.0', '>=') # Docker 18.09 validated since K8s 1.14
+
 - name: upgrade-master | Install packages
   include_tasks: "{{ ansible_os_family }}/install-packages.yml"
 
