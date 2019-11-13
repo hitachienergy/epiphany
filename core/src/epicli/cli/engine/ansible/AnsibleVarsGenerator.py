@@ -85,6 +85,7 @@ class AnsibleVarsGenerator(Step):
         main_vars['admin_user'] = self.cluster_model.specification.admin_user
         main_vars['validate_certs'] = Config().validate_certs
         main_vars['offline_requirements'] = Config().offline_requirements
+        main_vars['skip_k8s_check'] = Config().skip_k8s_check
 
         shared_config_doc = select_first(self.config_docs, lambda x: x.kind == 'configuration/shared-config')
         if shared_config_doc == None:

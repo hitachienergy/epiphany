@@ -20,6 +20,7 @@ class Config:
             self._debug = False
             self._auto_approve = False
             self._offline_requirements = ''
+            self._skip_k8s_check = False
 
         @property
         def docker_cli(self):
@@ -120,6 +121,15 @@ class Config:
                 if not offline_requirements.endswith('/'):
                     offline_requirements =  f'{offline_requirements}/'
                 self._offline_requirements = offline_requirements
+
+        @property
+        def skip_k8s_check(self):
+            return self._skip_k8s_check
+
+        @skip_k8s_check.setter
+        def skip_k8s_check(self, skip_k8s_check):
+            if not skip_k8s_check is None:
+                self._skip_k8s_check = skip_k8s_check                
 
     instance = None
 

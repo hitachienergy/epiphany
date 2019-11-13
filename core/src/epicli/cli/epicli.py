@@ -83,6 +83,8 @@ def main():
     config.validate_certs = True if args.validate_certs == 'true' else False
     if 'offline_requirements' in args and not args.offline_requirements is None:
         config.offline_requirements = args.offline_requirements
+    if 'skip_k8s_check' in args and not args.skip_k8s_check is None:
+        config.skip_k8s_check = args.skip_k8s_check
     config.debug = args.debug
     config.auto_approve = args.auto_approve
 
@@ -166,6 +168,8 @@ def upgrade_parser(subparsers):
                                        description='Upgrades common and K8s components of an existing Epiphany Platform cluster.')
     sub_parser.add_argument('-b', '--build', dest='build_directory', type=str, required=True,
                             help='Absolute path to directory with build artifacts.')
+    sub_parser.add_argument('--skip-k8s-check', dest='skip_k8s_check', action="store_true",
+                            help='Skip K8s status check when upgrading a cluster.')                            
     sub_parser.add_argument('--offline-requirements', dest='offline_requirements', type=str, required=False,
                             help='Path to the folder with pre-prepared offline requirements.')                            
 
