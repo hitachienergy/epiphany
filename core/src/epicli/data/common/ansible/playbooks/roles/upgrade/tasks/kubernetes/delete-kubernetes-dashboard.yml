@@ -1,0 +1,27 @@
+---
+# Delete old kubernetes-dashboard from kube-system, new dashboard has its own namespace
+- name: Check if any resource with label 'k8s-app=kubernetes-dashboard' exists in kube-system
+  environment:
+    KUBECONFIG: /home/{{ admin_user.name }}/.kube/config
+  shell: kubectl get all -l k8s-app=kubernetes-dashboard -n kube-system
+  register: result
+
+- name: Delete all resources with label 'k8s-app=kubernetes-dashboard' from kube-system
+  environment:
+    KUBECONFIG: /home/{{ admin_user.name }}/.kube/config
+  shell: kubectl delete all -l k8s-app=kubernetes-dashboard -n kube-system
+  when:
+    - "'No resources found' not in result.stdout"
+
+- name: Check if 'kubernetes-dashboard-minimal' Role or RoleBinding exists in kube-system
+  environment:
+    KUBECONFIG: /home/{{ admin_user.name }}/.kube/config
+  shell: kubectl get Role,RoleBinding kubernetes-dashboard-minimal -n kube-system
+  register: result
+
+- name: Delete 'kubernetes-dashboard-minimal' Role and RoleBinding from kube-system
+  environment:
+    KUBECONFIG: /home/{{ admin_user.name }}/.kube/config
+  shell: kubectl delete Role,RoleBinding kubernetes-dashboard-minimal -n kube-system
+  when:
+    - "'No resources found' not in result.stdout"
