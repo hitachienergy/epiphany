@@ -1,5 +1,6 @@
 ---
 # Delete old kubernetes-dashboard from kube-system, new dashboard has its own namespace
+
 - name: Check if any resource with label 'k8s-app=kubernetes-dashboard' exists in kube-system
   environment:
     KUBECONFIG: /home/{{ admin_user.name }}/.kube/config

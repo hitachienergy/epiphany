@@ -1,6 +1,15 @@
 ---
+- name: Include get-server-version from docker role # this sets result
+  include_role:
+    name: docker
+    tasks_from: get-server-version
+
+- name: Print version of Docker server
+  debug:
+    var: result.stdout
+
 # Remove Docker v17.03 before installing v18.09 to avoid package conflict error like below
-# file /usr/bin/docker from install of docker-ce-cli-1:18.09.9-3.el7.x86_64 conflicts with file from package docker-ce-17.03.2.ce-1.el7.centos.x86_64
+# 'file /usr/bin/docker from install of docker-ce-cli-1:18.09.9-3.el7.x86_64 conflicts with file from package docker-ce-17.03.2.ce-1.el7.centos.x86_64'
 
 - name: Remove Docker in version 17.03 (RedHat)
   package:
@@ -23,3 +32,12 @@
 - name: Install Docker # this may restart Docker daemon
   import_role:
     name: docker
+
+- name: Include get-server-version from docker role # this sets result
+  include_role:
+    name: docker
+    tasks_from: get-server-version
+
+- name: Print version of Docker server
+  debug:
+    var: result.stdout
