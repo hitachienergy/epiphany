@@ -5,6 +5,7 @@
     KUBECONFIG: /home/{{ admin_user.name }}/.kube/config
   shell: kubectl get all -l k8s-app=kubernetes-dashboard -n kube-system
   register: result
+  changed_when: false
 
 - name: Delete all resources with label 'k8s-app=kubernetes-dashboard' from kube-system
   environment:
@@ -18,6 +19,7 @@
     KUBECONFIG: /home/{{ admin_user.name }}/.kube/config
   shell: kubectl get Role,RoleBinding kubernetes-dashboard-minimal -n kube-system
   register: result
+  changed_when: false
 
 - name: Delete 'kubernetes-dashboard-minimal' Role and RoleBinding from kube-system
   environment:
