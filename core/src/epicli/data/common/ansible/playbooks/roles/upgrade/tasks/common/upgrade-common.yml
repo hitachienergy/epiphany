@@ -1,12 +1,5 @@
 ---
-- name: Get list of installed packages as facts
-  package_facts:
-    manager: auto
-  changed_when: false
-
 - name: Clean up jq installed as binary from GitHub
   file:
     path: /usr/local/bin/jq
     state: absent
-  when:
-    - "'jq' in ansible_facts.packages"
