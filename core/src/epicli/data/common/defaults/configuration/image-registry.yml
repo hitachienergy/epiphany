@@ -46,7 +46,10 @@ specification:
       file_name: keycloak-4.8.3.Final.tar
     - name: "rabbitmq:3.7.10"
       file_name: rabbitmq-3.7.10.tar
-    # K8s upgrades
+    # K8s upgrade
+    ## v1.11.5
+    - name: "coredns/coredns:1.1.3"
+      file_name: coredns-1.1.3.tar
     ## v1.12.10
     - name: "k8s.gcr.io/coredns:1.2.2"
       file_name: coredns-1.2.2.tar

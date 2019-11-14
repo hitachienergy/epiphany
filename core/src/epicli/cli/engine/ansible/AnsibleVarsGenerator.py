@@ -50,12 +50,12 @@ class AnsibleVarsGenerator(Step):
             dump(clean_cluster_model, stream)
 
         if self.inventory_creator == None:
-            # For upgrade at this point we dont need any of other roles then 
-            # common, upgrade, repository and image_registry.
-            # - commmon us already provisioned from the cluster model constructed from the inventory.
+            # For upgrade at this point we don't need any of other roles then
+            # common, upgrade, repository, image_registry, kubernetes_master and kubernetes_node.
+            # - commmon is already provisioned from the cluster model constructed from the inventory.
             # - upgrade should not require any addition config
-            # - repository and image_registry are provisioned below from default for upgrade
-            enabled_roles = ['repository', 'image_registry']        
+            # - other roles are provisioned below from default for upgrade
+            enabled_roles = ['repository', 'image_registry', 'kubernetes_master', 'kubernetes_node']
         else:
             enabled_roles = self.inventory_creator.get_enabled_roles()
 
@@ -85,6 +85,7 @@ class AnsibleVarsGenerator(Step):
         main_vars['admin_user'] = self.cluster_model.specification.admin_user
         main_vars['validate_certs'] = Config().validate_certs
         main_vars['offline_requirements'] = Config().offline_requirements
+        main_vars['wait_for_pods'] = Config().wait_for_pods
 
         shared_config_doc = select_first(self.config_docs, lambda x: x.kind == 'configuration/shared-config')
         if shared_config_doc == None:

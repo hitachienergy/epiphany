@@ -20,6 +20,7 @@ class Config:
             self._debug = False
             self._auto_approve = False
             self._offline_requirements = ''
+            self._wait_for_pods = False
 
         @property
         def docker_cli(self):
@@ -120,6 +121,15 @@ class Config:
                 if not offline_requirements.endswith('/'):
                     offline_requirements =  f'{offline_requirements}/'
                 self._offline_requirements = offline_requirements
+
+        @property
+        def wait_for_pods(self):
+            return self._wait_for_pods
+
+        @wait_for_pods.setter
+        def wait_for_pods(self, wait_for_pods):
+            if not wait_for_pods is None:
+                self._wait_for_pods = wait_for_pods                
 
     instance = None
 
