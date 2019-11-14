@@ -35,10 +35,10 @@ Your airgapped existing cluster should meet the following requirements:
 Start the upgrade with:
 
     ```shell
-    epicli upgrade -b /buildoutput/ --skip-k8s-check
+    epicli upgrade -b /buildoutput/
     ```
 
-This will backup and upgrade the Ansible inventory in the provided build folder `/buildoutput/` which will be used to perform the upgrade of the components. The `--skip-k8s-check` is optional and tells Epicli to skip the ready check when upgrading K8s. 
+This will backup and upgrade the Ansible inventory in the provided build folder `/buildoutput/` which will be used to perform the upgrade of the components.
 
 ### Offline upgrade
 
@@ -89,10 +89,14 @@ To upgrade the cluster components run the following steps:
 3. Finally start the upgrade with:
 
     ```shell
-    epicli upgrade -b /buildoutput/ --offline-requirements /requirementsoutput/ --skip-k8s-check
+    epicli upgrade -b /buildoutput/ --offline-requirements /requirementsoutput/
     ```
 
-    This will backup and upgrade the Ansible inventory in the provided build folder `/buildoutput/` which will be used to perform the upgrade of the components. The `--skip-k8s-check` is optional and tells Epicli to skip the ready check when upgrading K8s. The `--offline-requirements` flag tells Epicli where to find the requirements folder (`/requirementsoutput/`) prepared in steps 1 and 2 which is needed for the offline upgrade.
+    This will backup and upgrade the Ansible inventory in the provided build folder `/buildoutput/` which will be used to perform the upgrade of the components. The `--offline-requirements` flag tells Epicli where to find the requirements folder (`/requirementsoutput/`) prepared in steps 1 and 2 which is needed for the offline upgrade.
+
+### Additional parameters
+
+The `epicli upgrade` command had an additional flag `--wait-for-pods`. When this flag is added, the Kubernetes upgrade will wait until all pods are in the **ready** state before proceding. This can be usefull when a zero downtime upgrade is required. **Note: that this can also cause the upgrade to hang indefinitely.**
 
 ## How to upgrade Kafka
 

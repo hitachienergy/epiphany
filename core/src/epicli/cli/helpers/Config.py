@@ -20,7 +20,7 @@ class Config:
             self._debug = False
             self._auto_approve = False
             self._offline_requirements = ''
-            self._skip_k8s_check = False
+            self._wait_for_pods = False
 
         @property
         def docker_cli(self):
@@ -123,13 +123,13 @@ class Config:
                 self._offline_requirements = offline_requirements
 
         @property
-        def skip_k8s_check(self):
-            return self._skip_k8s_check
+        def wait_for_pods(self):
+            return self._wait_for_pods
 
-        @skip_k8s_check.setter
-        def skip_k8s_check(self, skip_k8s_check):
-            if not skip_k8s_check is None:
-                self._skip_k8s_check = skip_k8s_check                
+        @wait_for_pods.setter
+        def wait_for_pods(self, wait_for_pods):
+            if not wait_for_pods is None:
+                self._wait_for_pods = wait_for_pods                
 
     instance = None
 
