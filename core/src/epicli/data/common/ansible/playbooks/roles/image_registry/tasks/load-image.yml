@@ -27,7 +27,8 @@
       become: yes
       shell: "docker load --input {{ download_directory }}/{{ docker_image.file_name }}"
 
-    - name: Tag image {{ docker_image.name }} with {{ new_image_tag }}
+    - name: Tag image {{ docker_image.name +
+            (' with ' + new_image_tag if docker_image.name != specification.registry_image.name else '') }}
       become: yes
       shell: "docker tag {{ docker_image.name }} {{ new_image_tag }}"
       when:

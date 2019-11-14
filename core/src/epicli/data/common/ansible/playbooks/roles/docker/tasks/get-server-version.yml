@@ -1,0 +1,7 @@
+---
+# This file is meant to be used by other roles
+
+- name: Get version of Docker server
+  command: "{% raw %}docker version --format '{{.Server.Version}}'{% endraw %}"
+  register: result
+  changed_when: false

@@ -5,7 +5,7 @@ IS_OFFLINE_MODE=$2
 
 if $IS_OFFLINE_MODE = true; then
   # deprecated 'yum localinstall' is used since 'yum install' returns error code when 'nothing to do'
-  yum --cacheonly localinstall -y $(ls $EPI_REPO_SERVER_PATH/packages/repo-prereqs/*.rpm)
+  yum --cacheonly --disablerepo='*' localinstall -y $(ls $EPI_REPO_SERVER_PATH/packages/repo-prereqs/*.rpm)
 else
   yum install -y httpd createrepo yum-utils
 fi
