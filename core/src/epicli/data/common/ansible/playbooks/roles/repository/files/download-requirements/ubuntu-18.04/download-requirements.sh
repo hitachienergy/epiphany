@@ -56,9 +56,11 @@ mkdir -p "${dst_dir_files}"
 mkdir -p "${dst_dir_images}"
 
 # mask custom repositories to avoid possible conflicts
+shopt -s nullglob
 for i in /etc/apt/sources.list.d/*.list; do
     mv "${i}" "${i}.bak"
 done
+shopt -u nullglob
 
 # add 3rd party repositories
 . ${add_repos} 
@@ -158,6 +160,8 @@ for i in $(grep -o '[[:blank:]]/etc/apt/sources.list.d/.*list' ${add_repos}); do
 done
 
 # restore masked custom repositories to their original names
+shopt -s nullglob
 for i in /etc/apt/sources.list.d/*.list.bak; do
     mv "${i}" "${i::-4}"
 done
+shopt -u nullglob
