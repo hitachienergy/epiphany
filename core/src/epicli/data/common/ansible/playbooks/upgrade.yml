@@ -48,18 +48,6 @@
         tasks_from: kubernetes
       vars: { ver: "1.14.6", cni_ver: "0.7.5" }
 
-- hosts: kubernetes_master
-  become: true
-  become_method: sudo
-  roles:
-    - kubernetes_master
-
-- hosts: kubernetes_node
-  become: true
-  become_method: sudo
-  roles:
-    - kubernetes_node
-
 # latest patch versions:
 # 1.11.10
 # 1.12.10
