@@ -1,19 +1,50 @@
-## Offline upgrade
+## Upgrade
 
 ### Introduction
 
-From Epicli 0.4.2 and up the CLI has the ability to perform upgrades on certain components on an airgapped cluster. The components it currently can upgrade and will add are:
+From Epicli 0.4.2 and up the CLI has the ability to perform upgrades on certain components on a cluster. The components it currently can upgrade and will add are:
 
 - kubernetes (master and nodes): Upgrades Kubernetes starting from 1.11.5 to 1.14.6 currently used in Epiphany 0.4.2
 - common: Upgrades all common configurations to match them to Epiphany 0.4.2
-- repository: Adds the repository role needed for offline installation in Epiphany 0.4.2
+- repository: Adds the repository role needed for component installation in Epiphany 0.4.2
 - image_registry: Adds the image_registry role needed for offline installation in Epiphany 0.4.2
 
 *Note: The component upgrade takes the existing Ansible build output and based on that performs the upgrade of the currently supported components. If you need to upgrade your entire Epiphany cluster a **manual** upgrade of the input yaml is needed to the latest specification which then should be applied with `epicli apply...` after the offline upgrade which is described here.*
 
-### Prerequisites
+### Online upgrade
 
-Your existing cluster should meet the following requirements:
+#### Online prerequisites
+
+Your airgapped existing cluster should meet the following requirements:
+
+1. The cluster machines/vm`s are connected by a network or virtual network of some sorts and can communicate which each other and have access to the internet:
+2. The cluster machines/vm`s are **upgraded** to the following versions:
+    - Redhat 7.4
+    - CentOS 7.4
+    - Ubuntu 18.04
+3. The cluster machines/vm`s should be accessible through SSH with a set of SSH keys you provided and configured on each machine yourself.
+4. A provisioning machine that:
+    - Has access to the SSH keys
+    - Has access to the build output from when the cluster was first created.
+    - Is on the same network as your cluster machines
+    - Has Epicli 0.4.2 or up running.
+      *Note. To run Epicli check the [Prerequisites](./PREREQUISITES.md)*
+
+#### Start the online upgrade
+
+Start the upgrade with:
+
+    ```shell
+    epicli upgrade -b /buildoutput/
+    ```
+
+This will backup and upgrade the Ansible inventory in the provided build folder `/buildoutput/` which will be used to perform the upgrade of the components.
+
+### Offline upgrade
+
+#### Offline prerequisites
+
+Your airgapped existing cluster should meet the following requirements:
 
 1. The airgapped cluster machines/vm`s are connected by a network or virtual network of some sorts and can communicate which each other:
 2. The airgapped cluster machines/vm`s are **upgraded** to the following versions:
@@ -21,17 +52,17 @@ Your existing cluster should meet the following requirements:
     - CentOS 7.4
     - Ubuntu 18.04
 3. The airgapped cluster machines/vm`s should be accessible through SSH with a set of SSH keys you provided and configured on each machine yourself.
-2. A requirements machine that:
+4. A requirements machine that:
     - Runs the same distribution as the airgapped cluster machines/vm`s (Redhat 7.4, CentOS 7.4, Ubuntu 18.04)
     - Has access to the internet.
-3. A provisioning machine that:
+5. A provisioning machine that:
     - Has access to the SSH keys
     - Has access to the build output from when the cluster was first created.
     - Is on the same network as your cluster machines
     - Has Epicli 0.4.2 or up running.
       *Note. To run Epicli check the [Prerequisites](./PREREQUISITES.md)*
 
-### Upgrade
+#### Start the offline upgrade
 
 To upgrade the cluster components run the following steps:
 
@@ -62,6 +93,10 @@ To upgrade the cluster components run the following steps:
     ```
 
     This will backup and upgrade the Ansible inventory in the provided build folder `/buildoutput/` which will be used to perform the upgrade of the components. The `--offline-requirements` flag tells Epicli where to find the requirements folder (`/requirementsoutput/`) prepared in steps 1 and 2 which is needed for the offline upgrade.
+
+### Additional parameters
+
+The `epicli upgrade` command had an additional flag `--wait-for-pods`. When this flag is added, the Kubernetes upgrade will wait until all pods are in the **ready** state before proceding. This can be usefull when a zero downtime upgrade is required. **Note: that this can also cause the upgrade to hang indefinitely.**
 
 ## How to upgrade Kafka
 
