@@ -158,6 +158,6 @@ for i in $(grep -o '[[:blank:]]/etc/apt/sources.list.d/.*list' ${add_repos}); do
 done
 
 # restore masked custom repositories to their original names
-for i in /etc/apt/sources.list.d/*.list; do
-    mv "${i}.bak" "${i::-4}"
+for i in /etc/apt/sources.list.d/*.list.bak; do
+    mv "${i}" "${i::-4}"
 done
