@@ -33,7 +33,7 @@ class AnsibleVarsGenerator(Step):
         return self
 
     def __exit__(self, exc_type, exc_value, traceback):
-        super().__exit__(exc_type, exc_value, traceback)           
+        super().__exit__(exc_type, exc_value, traceback)
 
     def generate(self):
         self.logger.info('Generate Ansible vars')
@@ -51,11 +51,11 @@ class AnsibleVarsGenerator(Step):
 
         if self.inventory_creator == None:
             # For upgrade at this point we don't need any of other roles then
-            # common, upgrade, repository, image_registry, kubernetes_master and kubernetes_node.
+            # common, upgrade, repository and image_registry.
             # - commmon is already provisioned from the cluster model constructed from the inventory.
-            # - upgrade should not require any addition config
-            # - other roles are provisioned below from default for upgrade
-            enabled_roles = ['repository', 'image_registry', 'kubernetes_master', 'kubernetes_node']
+            # - upgrade should not require any additional config
+            # roles in the list below are provisioned for upgrade from defaults
+            enabled_roles = ['repository', 'image_registry']
         else:
             enabled_roles = self.inventory_creator.get_enabled_roles()
 

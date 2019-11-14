@@ -66,8 +66,8 @@
       when:
         - not image_registry_address in coredns_image_repository.stdout
 
-- name: upgrade-master | Delete old kubernetes-dashboard from kube-system
-  include_tasks: delete-kubernetes-dashboard.yml
+- name: upgrade-master | Upgrade kubernetes-dashboard
+  include_tasks: upgrade-kubernetes-dashboard.yml
 
 - name: upgrade-master | Drain master in preparation for maintenance
   environment:
