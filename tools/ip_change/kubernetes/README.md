@@ -1,4 +1,4 @@
-# Changing IP for configured Kubernetes claster.
+# Changing IP for configured Kubernetes cluster.
 
 ## WARNING: Cluster downtime will be required.
 ## WARNING: Solution was validated for Kubernetes version 1.14.x.
@@ -23,7 +23,7 @@
 
 1. On each Kubernetes worker Node update /etc/hosts with new IP or using following command:
 ```bash
-./3_update_hosts.sh "CURRENT_MASTER_IP" "NEW_MASTER_IP"
+sudo ./3_update_hosts.sh "CURRENT_MASTER_IP" "NEW_MASTER_IP"
 ```
 2. Modify `/etc/kubeadm/kubeadm-join.yml` file using values from `I.6.`
 
