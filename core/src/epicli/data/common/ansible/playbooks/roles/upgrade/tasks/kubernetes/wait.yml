@@ -28,6 +28,7 @@
   retries: 600 # 20min
   delay: 2
   changed_when: false
+  when: wait_for_pods|default(false)|bool
 
 - name: Wait for all pods to be ready
   environment:
@@ -38,3 +39,4 @@
   retries: 600 # 20min
   delay: 2
   changed_when: false
+  when: wait_for_pods|default(false)|bool

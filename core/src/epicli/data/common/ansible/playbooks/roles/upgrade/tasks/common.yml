@@ -1,3 +1,5 @@
 ---
-- name: Include upgrade-common
-  include_tasks: common/upgrade-common.yml # upgrades common components
+- name: Clean up jq installed as binary from GitHub
+  file:
+    path: /usr/local/bin/jq
+    state: absent

@@ -6,8 +6,8 @@ Epicli has the ability to setup a cluster on infrastructure provided by you. The
 
 1. The cluster machines/vm`s are connected by a network or virtual network of some sorts and can communicate which each other and have access to the internet.
 2. The cluster machines/vm`s are running one of the following Linux distributions:
-    - Redhat 7.4+
-    - CentOS 7.4+
+    - RedHat 7.6+ and < 8
+    - CentOS 7.6+ and < 8
     - Ubuntu 18.04
    Other distributions/version might work but are un-tested.
 3. The cluster machines/vm`s are should be accessible through SSH with a set of SSH keys you provide and configure on each machine yourself.
@@ -78,13 +78,13 @@ Epicli has the ability to setup a cluster on airgapped infrastructure provided b
 
 1. The airgapped cluster machines/vm`s are connected by a network or virtual network of some sorts and can communicate which each other:
 2. The airgapped cluster machines/vm`s are running one of the following Linux distributions:
-    - Redhat 7.4+
-    - CentOS 7.4+
+    - RedHat 7.6+ and < 8
+    - CentOS 7.6+ and < 8
     - Ubuntu 18.04
    Other distributions/version might work but are un-tested.
 3. The airgapped cluster machines/vm`s should be accessible through SSH with a set of SSH keys you provide and configure on each machine yourself.
 2. A requirements machine that:
-    - Runs the same distribution as the airgapped cluster machines/vm`s (Redhat 7.4+, CentOS 7.4+, Ubuntu 18.04)
+    - Runs the same distribution as the airgapped cluster machines/vm`s (RedHat 7, CentOS 7, Ubuntu 18.04)
     - Has access to the internet.
 3. A provisioning machine that:
     - Has access to the SSH keys

@@ -1,4 +1,7 @@
 ---
+- name: upgrade-master | Wait for cluster's readiness
+  include_tasks: wait.yml
+
 - name: upgrade-master | Check if /etc/kubeadm/kubeadm-config.yml exists
   stat:
     path: /etc/kubeadm/kubeadm-config.yml
@@ -40,8 +43,8 @@
   when:
     - not kubeadm_config_file.stat.exists
 
-- name: upgrade-master | Wait for cluster's readiness
-  include_tasks: wait.yml
+- name: upgrade-master | Upgrade kubernetes-dashboard
+  include_tasks: upgrade-kubernetes-dashboard.yml
 
 - name: upgrade-master | Drain master in preparation for maintenance
   environment:
@@ -82,6 +85,13 @@
 
 - name: upgrade-master | Wait for cluster's readiness
   include_tasks: wait.yml
+
+- name: Upgrade Docker
+  block:
+    - name: upgrade-master | Upgrade Docker # this may restart Docker daemon
+      include_tasks: docker.yml
+  when:
+    - version is version('1.14.0', '>=') # Docker 18.09 validated since K8s 1.14
 
 - name: upgrade-master | Restart kubelet
   systemd:
