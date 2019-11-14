@@ -169,7 +169,7 @@ def upgrade_parser(subparsers):
     sub_parser.add_argument('-b', '--build', dest='build_directory', type=str, required=True,
                             help='Absolute path to directory with build artifacts.')
     sub_parser.add_argument('--wait-for-pods', dest='wait_for_pods', action="store_true",
-                            help='Skip K8s status check when upgrading a cluster.')                            
+                            help='Waits for the pods to be in a ready state before starting the K8s upgrade.')                            
     sub_parser.add_argument('--offline-requirements', dest='offline_requirements', type=str, required=False,
                             help='Path to the folder with pre-prepared offline requirements.')                            
 
