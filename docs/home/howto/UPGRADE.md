@@ -19,8 +19,8 @@ Your airgapped existing cluster should meet the following requirements:
 
 1. The cluster machines/vm`s are connected by a network or virtual network of some sorts and can communicate which each other and have access to the internet:
 2. The cluster machines/vm`s are **upgraded** to the following versions:
-    - Redhat 7.4
-    - CentOS 7.4
+    - RedHat 7.6
+    - CentOS 7.6
     - Ubuntu 18.04
 3. The cluster machines/vm`s should be accessible through SSH with a set of SSH keys you provided and configured on each machine yourself.
 4. A provisioning machine that:
@@ -48,12 +48,12 @@ Your airgapped existing cluster should meet the following requirements:
 
 1. The airgapped cluster machines/vm`s are connected by a network or virtual network of some sorts and can communicate which each other:
 2. The airgapped cluster machines/vm`s are **upgraded** to the following versions:
-    - Redhat 7.4
-    - CentOS 7.4
+    - RedHat 7.6
+    - CentOS 7.6
     - Ubuntu 18.04
 3. The airgapped cluster machines/vm`s should be accessible through SSH with a set of SSH keys you provided and configured on each machine yourself.
 4. A requirements machine that:
-    - Runs the same distribution as the airgapped cluster machines/vm`s (Redhat 7.4, CentOS 7.4, Ubuntu 18.04)
+    - Runs the same distribution as the airgapped cluster machines/vm`s (RedHat 7, CentOS 7, Ubuntu 18.04)
     - Has access to the internet.
 5. A provisioning machine that:
     - Has access to the SSH keys
