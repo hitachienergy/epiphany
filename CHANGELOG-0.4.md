@@ -1,10 +1,14 @@
 # Changelog 0.4
 
-## [0.4.2] 2019-11-TOCHANGE
+## [0.4.2] 2019-11-15
 
 ### Added
 
-- Offline upgrade for K8n and Docker
+- online/offline upgrade for K8n and Docker
+
+### Changed
+
+- Removed legacy Epiphany from the repository
 
 ### Fixed
 
