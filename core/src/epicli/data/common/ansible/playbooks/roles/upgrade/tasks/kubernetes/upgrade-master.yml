@@ -73,6 +73,8 @@
   environment:
     KUBECONFIG: /home/{{ admin_user.name }}/.kube/config
   shell: kubectl drain {{ inventory_hostname }} --ignore-daemonsets --delete-local-data
+  when:
+    - groups['kubernetes_node'] is defined and groups['kubernetes_node']|list|length > 0 # drain master only if there is at least one worker node
 
 - name: upgrade-master | Wait for cluster's readiness
   include_tasks: wait.yml
