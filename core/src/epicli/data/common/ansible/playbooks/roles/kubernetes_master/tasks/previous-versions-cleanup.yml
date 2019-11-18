@@ -1,8 +1,9 @@
 ---
 
 - name: Check if old flannel daemonset exists
-  shell: "kubectl --kubeconfig=/home/{{ admin_user.name }}/.kube/config -n kube-system get ds kube-flannel-ds"
-  become_user: "{{ admin_user.name }}"
+  environment:
+    KUBECONFIG: "/home/{{ admin_user.name }}/.kube/config"
+  shell: "kubectl -n kube-system get ds kube-flannel-ds"
   register: result
   changed_when: false
   failed_when:
@@ -10,6 +11,7 @@
     - not 'not found' in result.stderr
   
 - name: Delete old flannel daemonset if exists
-  shell: "kubectl --kubeconfig=/home/{{ admin_user.name }}/.kube/config -n kube-system delete ds kube-flannel-ds"
-  become_user: "{{ admin_user.name }}"
+  environment:
+    KUBECONFIG: "/home/{{ admin_user.name }}/.kube/config"
+  shell: "kubectl -n kube-system delete ds kube-flannel-ds"
   when: result.rc == 0
