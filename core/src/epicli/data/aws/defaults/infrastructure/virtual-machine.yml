@@ -1,5 +1,4 @@
 kind: infrastructure/virtual-machine
-version: 0.4.2
 title: "Virtual Machine Infra"
 provider: aws
 name: default
@@ -84,7 +83,6 @@ specification:
 
 ---
 kind: infrastructure/virtual-machine
-version: 0.4.2
 title: "Virtual Machine Infra"
 provider: aws
 name: default-size-t3
@@ -117,7 +115,6 @@ specification:
        destination_address_prefix: "0.0.0.0/0"
 ---
 kind: infrastructure/virtual-machine
-version: 0.4.2
 title: "Virtual Machine Infra"
 provider: aws
 name: rabbitmq-machine
@@ -190,7 +187,6 @@ specification:
        destination_address_prefix: "0.0.0.0/0"
 ---
 kind: infrastructure/virtual-machine
-version: 0.4.2
 title: "Virtual Machine Infra"
 provider: aws
 name: load-balancer-machine
@@ -243,7 +239,6 @@ specification:
        destination_address_prefix: "0.0.0.0/0"
 ---
 kind: infrastructure/virtual-machine
-version: 0.4.2
 title: "Virtual Machine Infra"
 provider: aws
 name: kubernetes-master-machine
@@ -343,7 +338,6 @@ specification:
        destination_address_prefix: "0.0.0.0/0"
 ---
 kind: infrastructure/virtual-machine
-version: 0.4.2
 title: "Virtual Machine Infra"
 provider: aws
 name: kubernetes-node-machine
@@ -421,7 +415,6 @@ specification:
        destination_address_prefix: "0.0.0.0/0"
 ---
 kind: infrastructure/virtual-machine
-version: 0.4.2
 title: "Virtual Machine Infra"
 provider: aws
 name: kafka-machine
@@ -547,7 +540,6 @@ specification:
        destination_address_prefix: "0.0.0.0/0"
 ---
 kind: infrastructure/virtual-machine
-version: 0.4.2
 title: "Virtual Machine Infra"
 provider: aws
 name: monitoring-machine
@@ -607,7 +599,6 @@ specification:
        destination_address_prefix: "0.0.0.0/0"
 ---
 kind: infrastructure/virtual-machine
-version: 0.4.2
 title: "Virtual Machine Infra"
 provider: aws
 name: postgresql-machine
@@ -681,7 +672,6 @@ specification:
        destination_address_prefix: "0.0.0.0/0"  
 ---
 kind: infrastructure/virtual-machine
-version: 0.4.2
 title: "Virtual Machine Infra"
 provider: aws
 name: logging-machine

@@ -1,5 +1,4 @@
 kind: infrastructure/subnet
-version: 0.4.2
 title: "Subnet Config"
 provider: aws
 name: default

@@ -1,5 +1,4 @@
 kind: infrastructure/virtual-machine
-version: 0.4.2
 title: "Virtual Machine Infra"
 provider: any
 name: default

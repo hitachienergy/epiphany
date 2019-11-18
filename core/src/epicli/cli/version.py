@@ -1,1 +1,2 @@
-VERSION = '0.4.2'
+import os
+VERSION = open(os.path.join( os.path.dirname(__file__), 'version.txt.py'), 'r').read()

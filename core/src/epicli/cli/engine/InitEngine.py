@@ -5,6 +5,7 @@ from cli.helpers.Step import Step
 from cli.helpers.build_saver import save_manifest, get_build_path
 from cli.helpers.data_loader import load_all_yaml_objs, types, load_all_documents_from_folder
 from cli.engine.BuildEngine import BuildEngine
+from cli.version import VERSION
 
 
 class InitEngine(Step):
@@ -25,6 +26,9 @@ class InitEngine(Step):
     def init(self):
         defaults = load_all_yaml_objs(types.DEFAULT, self.provider, 'configuration/minimal-cluster-config')
         defaults[0].specification.name = self.name
+
+        for i in range(len(defaults)): 
+            defaults[i]['version'] = VERSION       
 
         if self.is_full_config:
             defaults = self.get_full_config(defaults)

@@ -1,5 +1,4 @@
 kind: configuration/kafka
-version: 0.4.2
 title: "Kafka"
 name: default
 specification:
