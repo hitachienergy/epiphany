@@ -11,6 +11,7 @@ from cli.helpers.build_saver import get_terraform_path
 from cli.helpers.data_loader import load_json_obj
 from cli.helpers.naming_helpers import resource_name
 from cli.helpers.objdict_helpers import objdict_to_dict
+from cli.version import VERSION
 
 
 class InfrastructureBuilder(Step):
@@ -265,7 +266,8 @@ class InfrastructureBuilder(Step):
     def get_config_or_default(docs, kind):
         config = select_first(docs, lambda x: x.kind == kind)
         if config is None:
-            return load_yaml_obj(types.DEFAULT, 'aws', kind)
+            config = load_yaml_obj(types.DEFAULT, 'aws', kind)
+            config['version'] = VERSION
         return config
 
     @staticmethod

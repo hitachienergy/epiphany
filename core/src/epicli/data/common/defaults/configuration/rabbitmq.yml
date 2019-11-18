@@ -1,5 +1,4 @@
 kind: configuration/rabbitmq
-version: 0.4.2
 title: "RabbitMQ"
 name: default
 specification:

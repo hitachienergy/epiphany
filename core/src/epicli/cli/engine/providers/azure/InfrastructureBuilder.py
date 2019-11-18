@@ -9,6 +9,7 @@ from cli.helpers.doc_list_helpers import select_first
 from cli.helpers.data_loader import load_yaml_obj, types
 from cli.helpers.config_merger import merge_with_defaults
 from cli.helpers.objdict_helpers import objdict_to_dict, dict_to_objdict
+from cli.version import VERSION
 
 class InfrastructureBuilder(Step):
     def __init__(self, docs):
@@ -179,8 +180,9 @@ class InfrastructureBuilder(Step):
     def get_config_or_default(docs, kind):
         config = select_first(docs, lambda x: x.kind == kind)
         if config is None:
-            return load_yaml_obj(types.DEFAULT, 'azure', kind)
-        return config   
+            config = load_yaml_obj(types.DEFAULT, 'azure', kind)
+            config['version'] = VERSION
+        return config
 
     @staticmethod
     def get_virtual_machine(component_value, cluster_model, docs):

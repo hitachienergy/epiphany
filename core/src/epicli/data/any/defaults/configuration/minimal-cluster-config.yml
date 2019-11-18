@@ -1,5 +1,4 @@
 kind: epiphany-cluster
-version: 0.4.2
 title: "Epiphany cluster Config"
 provider: any
 name: "default"

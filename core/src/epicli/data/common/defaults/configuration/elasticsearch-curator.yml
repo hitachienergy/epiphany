@@ -1,5 +1,4 @@
 kind: configuration/elasticsearch-curator
-version: 0.4.2
 title: "ElasticSearch curator"
 name: default
 specification:

@@ -1,5 +1,4 @@
 kind: infrastructure/public-key
-version: 0.4.2
 title: "Public Key"
 provider: aws
 name: default

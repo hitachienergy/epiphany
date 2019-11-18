@@ -1,5 +1,4 @@
 kind: configuration/image-registry
-version: 0.4.2
 title: "Epiphany image registry"
 name: default
 specification:
