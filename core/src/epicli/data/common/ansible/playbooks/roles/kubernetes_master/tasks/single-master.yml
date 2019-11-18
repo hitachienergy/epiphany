@@ -53,7 +53,7 @@
     owner: "{{ admin_user.name }}"
     group: "{{ admin_user.name }}"
 
-- name: Cleanup previous version leftovers
+- name: Clean up previous version leftovers
   include_tasks: "./previous-versions-cleanup.yml"
 
 - name: Create dashboard deployment
