@@ -2,6 +2,7 @@ from cli.helpers.data_loader import load_all_yaml_objs, types
 from cli.helpers.objdict_helpers import merge_objdict
 from cli.helpers.doc_list_helpers import select_first
 from cli.helpers.Step import Step
+from cli.version import VERSION
 
 
 class DefaultMerger(Step):
@@ -25,8 +26,10 @@ class DefaultMerger(Step):
             self.logger.info(doc.name + ' is based on: '+doc.based_on)
             parent = select_first(files, lambda x: x.name == doc.based_on)
             merged_parent = self.merge_parent(files, parent)
+            merged_parent['version'] = VERSION
             merge_objdict(merged_parent, doc)
             return merged_parent
         default_doc = select_first(files, lambda x: x.name == 'default')
+        default_doc['version'] = VERSION
         merge_objdict(default_doc, doc)
         return default_doc
