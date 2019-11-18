@@ -8,25 +8,31 @@
   debug:
     var: result.stdout
 
-# Remove Docker v17.03 before installing v18.09 to avoid package conflict error like below
+# Remove Docker in version < 18.09 on RedHat before installing v18.09 to avoid package conflict error like below
 # 'file /usr/bin/docker from install of docker-ce-cli-1:18.09.9-3.el7.x86_64 conflicts with file from package docker-ce-17.03.2.ce-1.el7.centos.x86_64'
+- name: Remove Docker in version < 18.09 (RedHat)
+  block:
+    - name: Get information about installed packages as facts
+      package_facts:
+        manager: auto
 
-- name: Remove Docker in version 17.03 (RedHat)
-  package:
-    name: "{{ item }}"
-    state: absent
-  loop:
-    - docker-ce-17.03.*
-    - docker-ce-selinux-17.03.*
-  when: ansible_os_family == "RedHat"
+    - name: Remove docker-ce and docker-ce-selinux
+      block:
+        - name: Remove docker-ce
+          package:
+            name: docker-ce-{{ ansible_facts.packages['docker-ce'][0].version }}
+            state: absent
 
-- name: Remove Docker in version 18.06 (Debian)
-  package:
-    name: "{{ item }}"
-    state: absent
-  loop:
-    - docker-ce=18.06.*
-  when: ansible_os_family == "Debian"
+        - name: Remove docker-ce-selinux
+          package:
+            name: docker-ce-selinux-{{ ansible_facts.packages['docker-ce-selinux'][0].version }}
+            state: absent
+          when: ansible_facts.packages['docker-ce-selinux'] is defined
+      when:
+        - ansible_facts.packages['docker-ce'] is defined
+        - ansible_facts.packages['docker-ce'][0].version is version ('18.09', '<')
+  when:
+    - ansible_os_family == "RedHat"
 
 # Install Docker in current version
 - name: Install Docker # this may restart Docker daemon
