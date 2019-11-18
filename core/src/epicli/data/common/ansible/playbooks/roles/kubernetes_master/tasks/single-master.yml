@@ -53,6 +53,8 @@
     owner: "{{ admin_user.name }}"
     group: "{{ admin_user.name }}"
 
+- include_tasks: "./previous-versions-cleanup.yml"
+
 - name: Create dashboard deployment
   template:
     dest: "/home/{{ admin_user.name }}/kubernetes-dashboard.yml"
