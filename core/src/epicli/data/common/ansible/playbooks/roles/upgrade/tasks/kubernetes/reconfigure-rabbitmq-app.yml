@@ -5,7 +5,7 @@
       environment:
         KUBECONFIG: /home/{{ admin_user.name }}/.kube/config
       shell: |-
-        kubectl get statefulsets.apps --all-namespaces -o=jsonpath='{range .items[]}{.metadata.name}{"\t"}{.spec.template.spec.containers[].image}{"\n"}{end}'|
+        kubectl get statefulsets.apps --all-namespaces -o=jsonpath='{range .items[*]}{.metadata.name}{"\t"}{.spec.template.spec.containers[].image}{"\n"}{end}'|
         grep -i rabbitmq |
         awk '{print $1}'
       changed_when: false
@@ -16,7 +16,7 @@
       environment:
         KUBECONFIG: /home/{{ admin_user.name }}/.kube/config
       shell: |-
-        kubectl get statefulsets.apps --all-namespaces -o=jsonpath='{range .items[]}{.metadata.namespace}{"\t"}{.spec.template.spec.containers[].image}{"\n"}{end}'|
+        kubectl get statefulsets.apps --all-namespaces -o=jsonpath='{range .items[*]}{.metadata.namespace}{"\t"}{.spec.template.spec.containers[].image}{"\n"}{end}'|
         grep -i rabbitmq |
         awk '{print $1}'
       changed_when: false
