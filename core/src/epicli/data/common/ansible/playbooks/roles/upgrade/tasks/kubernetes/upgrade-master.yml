@@ -43,28 +43,14 @@
   when:
     - not kubeadm_config_file.stat.exists
 
-- name: Change deployments to use {{ image_registry_address }}
-  block:
-    - name: upgrade-master | Get coredns image
-      environment:
-        KUBECONFIG: /home/{{ admin_user.name }}/.kube/config
-      shell: |-
-        kubectl get deployments.apps coredns -n kube-system -o=jsonpath='{$.spec.template.spec.containers[:1].image}'
-      changed_when: false
-      register: coredns_image_repository
-      args:
-        executable: /bin/bash
+- name: upgrade-master | Reconfigure coredns
+  include_tasks: reconfigure-coredns.yml
 
-    - name: upgrade-master | Patch coredns to use {{ image_registry_address }}
-      environment:
-        KUBECONFIG: /home/{{ admin_user.name }}/.kube/config
-      shell: |-
-        set -o pipefail &&
-        kubectl patch deployment coredns --patch '{"spec": {"template": { "spec": { "containers": [ { "image": "{{ image_registry_address }}/{{ coredns_image_repository.stdout }}", "name": "coredns" }]}}}}' -n kube-system
-      args:
-        executable: /bin/bash
-      when:
-        - not image_registry_address in coredns_image_repository.stdout
+- name: upgrade-master | Reconfigure rabbitmq application
+  include_tasks: reconfigure-rabbitmq-app.yml
+
+- name: upgrade-master | Reconfigure keycloak application
+  include_tasks: reconfigure-auth-service-app.yml
 
 - name: upgrade-master | Upgrade kubernetes-dashboard
   include_tasks: upgrade-kubernetes-dashboard.yml
@@ -142,9 +128,9 @@
   register: untainted_nodes_list
   failed_when: "untainted_nodes_list.rc == 2"
   when:
-    - groups['kubernetes_master'][0] == inventory_hostname   
+    - groups['kubernetes_master'][0] == inventory_hostname
 
-- name: upgrade-master | Check if master should be untainted 
+- name: upgrade-master | Check if master should be untainted
   set_fact:
     untaint_master: True
   when:
