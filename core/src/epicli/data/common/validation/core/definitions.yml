@@ -24,9 +24,9 @@ provider:
 version:
   type: string
   title: The Version Schema
-  default: '0.4.1'
+  default: '0.4.2'
   examples:
-  - 0.4.1
+  - 0.4.2
   pattern: ^((\d+\.)(\d+\.)(\d))$
 unvalidated_specification:
   type:

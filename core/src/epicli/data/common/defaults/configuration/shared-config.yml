@@ -1,14 +1,41 @@
 kind: configuration/shared-config
-version: 0.4.1
 title: "Shared configuration that will be visible to all roles"
 name: default
 specification:
   custom_repository_url: '' # leave it empty to use local repository or provide url to your repo
   custom_image_registry_address: '' # leave it empty to use local registry or provide address of your registry (hostname:port). This registry will be used to populate K8s control plane and should contain all required images.
-  download_directory: /tmp # directory where files and images will be stored just before installing/loading 
+  download_directory: /tmp # directory where files and images will be stored just before installing/loading
   architecture_map:
     i386: '386'
     x86_64: 'amd64'
     aarch64: 'arm64'
     armv7l: 'armv7'
     armv6l: 'armv6'
+  supported_os:
+    - name: RedHat
+      comparison_operator: "=="
+      version: 7.6
+    - name: RedHat
+      comparison_operator: "=="
+      version: 7.7
+    - name: RedHat
+      comparison_operator: "=="
+      version: 7.8
+    - name: RedHat
+      comparison_operator: "=="
+      version: 7.9
+    - name: CentOS
+      comparison_operator: "=="
+      version: 7.6
+    - name: CentOS
+      comparison_operator: "=="
+      version: 7.7
+    - name: CentOS
+      comparison_operator: "=="
+      version: 7.8
+    - name: CentOS
+      comparison_operator: "=="
+      version: 7.9
+    - name: Ubuntu
+      comparison_operator: "=="
+      version: 18.04

@@ -116,7 +116,7 @@ class BuildEngine(Step):
 
         # Run Ansible to provision infrastructure
         with AnsibleRunner(self.cluster_model, docs) as ansible_runner:
-            ansible_runner.run()
+            ansible_runner.apply()
 
         return 0
 

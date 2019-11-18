@@ -1,0 +1,27 @@
+---
+- name: Include wait-for-kube-apiserver.yml
+  include_tasks: kubernetes/wait-for-kube-apiserver.yml
+
+- name: Include get-cluster-version.yml
+  include_tasks: kubernetes/get-cluster-version.yml # sets cluster_version
+
+- name: Include get-kubelet-version.yml
+  include_tasks: kubernetes/get-kubelet-version.yml # sets kubelet_version
+
+- name: Upgrade master to v{{ version }}
+  include_tasks: kubernetes/upgrade-master.yml
+  vars:
+    version: "{{ ver }}"
+    cni_version: "{{ cni_ver }}"
+  when:
+    - groups['kubernetes_master'][0] == inventory_hostname
+    - cluster_version.stdout is version('v' + version, '<=')
+
+- name: Upgrade node to v{{ version }}
+  include_tasks: kubernetes/upgrade-node.yml
+  vars:
+    version: "{{ ver }}"
+    cni_version: "{{ cni_ver }}"
+  when:
+    - inventory_hostname in groups['kubernetes_node']
+    - kubelet_version.stdout is version('v' + version, '<=')

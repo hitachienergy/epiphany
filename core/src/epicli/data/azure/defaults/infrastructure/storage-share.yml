@@ -1,5 +1,4 @@
 kind: infrastructure/storage-share
-version: 0.4.1
 title: "Azure shared storage"
 provider: azure
 name: default

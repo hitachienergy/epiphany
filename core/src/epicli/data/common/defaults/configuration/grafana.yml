@@ -1,5 +1,4 @@
 kind: configuration/grafana
-version: 0.4.1
 title: "Grafana"
 name: default
 specification:

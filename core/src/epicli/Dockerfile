@@ -1,7 +1,8 @@
 FROM python:3.7-alpine
 
+ARG EPICLI_VERSION
+
 ENV DOCKER_CLI Yes
-ENV EPICLI_VERSION 0.4.1
 
 COPY /dist/ /epicli
 WORKDIR /epicli

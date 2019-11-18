@@ -1,5 +1,4 @@
 kind: configuration/applications
-version: 0.4.1
 title: "Kubernetes Applications Config"
 name: default
 specification:

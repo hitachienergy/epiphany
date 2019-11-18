@@ -1,0 +1,49 @@
+---
+- name: Include get-server-version from docker role # this sets result
+  include_role:
+    name: docker
+    tasks_from: get-server-version
+
+- name: Print version of Docker server
+  debug:
+    var: result.stdout
+
+# Remove Docker in version < 18.09 on RedHat before installing v18.09 to avoid package conflict error like below
+# 'file /usr/bin/docker from install of docker-ce-cli-1:18.09.9-3.el7.x86_64 conflicts with file from package docker-ce-17.03.2.ce-1.el7.centos.x86_64'
+- name: Remove Docker in version < 18.09 (RedHat)
+  block:
+    - name: Get information about installed packages as facts
+      package_facts:
+        manager: auto
+
+    - name: Remove docker-ce and docker-ce-selinux
+      block:
+        - name: Remove docker-ce
+          package:
+            name: docker-ce-{{ ansible_facts.packages['docker-ce'][0].version }}
+            state: absent
+
+        - name: Remove docker-ce-selinux
+          package:
+            name: docker-ce-selinux-{{ ansible_facts.packages['docker-ce-selinux'][0].version }}
+            state: absent
+          when: "'docker-ce-selinux' in ansible_facts.packages"
+      when:
+        - "'docker-ce' in ansible_facts.packages"
+        - ansible_facts.packages['docker-ce'][0].version is version ('18.09', '<')
+  when:
+    - ansible_os_family == "RedHat"
+
+# Install Docker in current version
+- name: Install Docker # this may restart Docker daemon
+  import_role:
+    name: docker
+
+- name: Include get-server-version from docker role # this sets result
+  include_role:
+    name: docker
+    tasks_from: get-server-version
+
+- name: Print version of Docker server
+  debug:
+    var: result.stdout

@@ -1,5 +1,4 @@
 kind: configuration/elasticsearch
-version: 0.4.1
 title: "ElasticSearch Config"
 name: default
 specification:

@@ -1,5 +1,4 @@
 kind: configuration/kubernetes-master
-version: 0.4.1
 title: "Kubernetes Master Config"
 name: default
 specification:
