@@ -27,9 +27,9 @@
           package:
             name: docker-ce-selinux-{{ ansible_facts.packages['docker-ce-selinux'][0].version }}
             state: absent
-          when: ansible_facts.packages['docker-ce-selinux'] is defined
+          when: "'docker-ce-selinux' in ansible_facts.packages"
       when:
-        - ansible_facts.packages['docker-ce'] is defined
+        - "'docker-ce' in ansible_facts.packages"
         - ansible_facts.packages['docker-ce'][0].version is version ('18.09', '<')
   when:
     - ansible_os_family == "RedHat"
