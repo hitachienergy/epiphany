@@ -1,0 +1,45 @@
+---
+- name: Set Kafka file name to install
+  set_fact:
+    kafka_file_name: "{{ specification.kafka_var.target_file_name }}"
+
+- name: Download Kafka binaries
+  include_role:
+    name: download
+    tasks_from: download_file
+  vars:
+    file_name: "{{ kafka_file_name }}"
+
+- name: Check for Kafka package
+  stat:
+    path: /opt/kafka_{{ specification.kafka_var.scala.target_version }}-{{ specification.kafka_var.version }}/bin/kafka-server-start.sh
+  register: kafka_package
+
+- name: Uncompress the Kafka tar
+  unarchive:
+    remote_src: yes
+    creates: /opt/kafka_{{ specification.kafka_var.scala.target_version }}-{{ specification.kafka_var.version }}
+    src: "{{ download_directory }}/{{ kafka_file_name }}"
+    dest: /opt
+  when: not kafka_package.stat.exists
+
+- name: Change ownership on kafka directory.
+  file:
+    path: /opt/kafka_{{ specification.kafka_var.scala.target_version }}-{{ specification.kafka_var.version }}
+    state: directory
+    owner: kafka
+    group: kafka
+
+- name: Link /opt/kafka to the right version
+  file:
+    dest: /opt/kafka
+    state: link
+    src: /opt/kafka_{{ specification.kafka_var.scala.target_version }}-{{ specification.kafka_var.version }}
+
+- name: Reload daemon
+  command: systemctl daemon-reload
+
+- name: Remove lost+found in the datadir
+  file:
+    path: "{{ specification.kafka_var.data_dir }}/lost+found"
+    state: absent

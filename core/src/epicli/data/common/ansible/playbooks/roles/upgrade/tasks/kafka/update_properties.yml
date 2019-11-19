@@ -1,0 +1,24 @@
+---
+- name: Add current_kafka_version property
+  lineinfile:
+    path: "{{ specification.kafka_var.conf_dir }}/server.properties"
+    line: "CURRENT_KAFKA_VERSION={{ specification.kafka_var.version }}"
+    create: yes
+
+- name: Is defined current_message_format_version property
+  lineinfile:
+    dest: "{{ specification.kafka_var.conf_dir }}/server.properties"
+    line: "^CURRENT_MESSAGE_FORMAT_VERSION="
+    register: message_format_defined
+
+- name: Add current_message_format_version property
+  lineinfile:
+    path: "{{ specification.kafka_var.conf_dir }}/server.properties"
+    line: "CURRENT_MESSAGE_FORMAT_VERSION={{ specification.kafka_var.message_format_version }}"
+    create: yes
+    when: not message_format_defined.exists
+
+- name: Add inter.broker.protocol.version property
+  lineinfile:
+    path: "{{ specification.kafka_var.conf_dir }}/server.properties"
+    line: "inter.broker.protocol.version={{ specification.kafka_var.version }}"
