@@ -10,17 +10,13 @@
 
 # Check if docker-ce is updatable to conditionally stop kubelet service before update
 - name: Check if docker-ce is updatable
-  command: yum check-update docker-ce
+  command: >-
+    {{ 'yum check-update docker-ce' if ansible_os_family == 'RedHat' else
+       'apt list --upgradable docker-ce' if ansible_os_family == 'Debian' else None }}
+  args:
+    warn: no
   register: check_docker_update
   failed_when: check_docker_update.rc not in [0, 100] # check-update returns code 100 if there are packages available for an update
-  when:
-    - ansible_os_family == "RedHat"
-
-- name: Check if docker-ce is updatable
-  command: apt list --upgradable docker-ce
-  register: check_docker_update
-  when:
-    - ansible_os_family == "Debian"
 
 - name: Set is_docker_updatable fact
   set_fact:
