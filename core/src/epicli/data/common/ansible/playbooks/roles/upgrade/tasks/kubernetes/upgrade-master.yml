@@ -109,6 +109,8 @@
     state: restarted
     daemon_reload: yes
     name: kubelet
+  when:
+    - is_docker_updatable is undefined or not is_docker_updatable
 
 - name: upgrade-master | Wait for cluster's readiness
   include_tasks: wait.yml
