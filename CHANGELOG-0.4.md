@@ -4,15 +4,16 @@
 
 ### Added
 
-- online/offline upgrade for K8s and Docker
+- Online/offline upgrade of K8s, Docker and common packages
 
 ### Changed
 
 - Removed legacy Epiphany from the repository
+- [#617](https://github.com/epiphany-platform/epiphany/issues/617) - Docker images are loaded only on image registry host
 
 ### Fixed
 
-- [#612](https://github.com/epiphany-platform/epiphany/issues/694) - epicli apply does not remove from build files removed from sources
+- [#694](https://github.com/epiphany-platform/epiphany/issues/694) - epicli apply does not remove from build files that were removed from sources
 
 ## [0.4.1] 2019-10-17
 
