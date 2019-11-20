@@ -6,17 +6,15 @@
     create: yes
 
 - name: Is defined current_message_format_version property
-  lineinfile:
-    dest: "{{ specification.kafka_var.conf_dir }}/server.properties"
-    line: "^CURRENT_MESSAGE_FORMAT_VERSION="
-    register: message_format_defined
+  shell: grep "^CURRENT_MESSAGE_FORMAT_VERSION" {{ specification.kafka_var.conf_dir }}/server.properties
+  register: message_format_defined
 
 - name: Add current_message_format_version property
   lineinfile:
     path: "{{ specification.kafka_var.conf_dir }}/server.properties"
     line: "CURRENT_MESSAGE_FORMAT_VERSION={{ specification.kafka_var.message_format_version }}"
     create: yes
-    when: not message_format_defined.exists
+  when: message_format_defined == ""
 
 - name: Add inter.broker.protocol.version property
   lineinfile:

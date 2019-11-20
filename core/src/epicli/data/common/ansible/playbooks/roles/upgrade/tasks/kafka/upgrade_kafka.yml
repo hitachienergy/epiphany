@@ -30,6 +30,17 @@
     owner: kafka
     group: kafka
 
+- name: Transfer configuration from earlier version
+  copy:
+    remote_src: yes
+    src: /opt/kafka/config/
+    dest: /opt/kafka_{{ specification.kafka_var.scala.target_version }}-{{ specification.kafka_var.version }}/config
+
+- name: Remove old symlink
+  file:
+    path: /opt/kafka
+    state: absent
+
 - name: Link /opt/kafka to the right version
   file:
     dest: /opt/kafka

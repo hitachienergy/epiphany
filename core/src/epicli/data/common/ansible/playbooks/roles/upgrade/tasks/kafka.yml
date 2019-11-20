@@ -1,9 +1,4 @@
 ---
-- hosts: kafka
-- gather_facts: True
-- name: Upgrade kafka
-  tasks:
-  - include_tasks: kafka/stop_service.yml
-  - include_tasks: kafka/clean.yml
-  - include_tasks: kafka/update_properties.yml
-  - include_tasks: kafka/install.yml
+- include_tasks: kafka/stop_service.yml
+- include_tasks: kafka/update_properties.yml
+- include_tasks: kafka/upgrade_kafka.yml
