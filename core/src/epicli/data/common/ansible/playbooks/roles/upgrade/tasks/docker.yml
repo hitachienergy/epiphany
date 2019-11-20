@@ -16,7 +16,8 @@
   args:
     warn: no
   register: check_docker_update
-  failed_when: check_docker_update.rc not in [0, 100] # check-update returns code 100 if there are packages available for an update
+  failed_when: check_docker_update.rc not in [0, 100] # yum check-update returns code 100 if there are packages available for update
+  changed_when: false
 
 - name: Set is_docker_updatable fact
   set_fact:
