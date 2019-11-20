@@ -1,6 +1,9 @@
 ---
 - name: Verify cluster version
   block:
+    - name: verify-upgrade | Include wait-for-kube-apiserver.yml
+      include_tasks: wait-for-kube-apiserver.yml
+
     - name: verify-upgrade | Include get-cluster-version.yml
       include_tasks: get-cluster-version.yml # sets cluster_version
 
