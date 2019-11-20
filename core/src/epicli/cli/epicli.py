@@ -9,6 +9,7 @@ from cli.engine.PatchEngine import PatchEngine
 from cli.engine.DeleteEngine import DeleteEngine
 from cli.engine.InitEngine import InitEngine
 from cli.engine.PrepareEngine import PrepareEngine
+from cli.engine.UpgradeEngine import UpgradeEngine
 from cli.helpers.Log import Log
 from cli.helpers.Config import Config
 from cli.version import VERSION
@@ -82,6 +83,8 @@ def main():
     config.validate_certs = True if args.validate_certs == 'true' else False
     if 'offline_requirements' in args and not args.offline_requirements is None:
         config.offline_requirements = args.offline_requirements
+    if 'wait_for_pods' in args and not args.wait_for_pods is None:
+        config.wait_for_pods = args.wait_for_pods
     config.debug = args.debug
     config.auto_approve = args.auto_approve
 
@@ -162,14 +165,17 @@ def delete_parser(subparsers):
 
 def upgrade_parser(subparsers):
     sub_parser = subparsers.add_parser('upgrade',
-                                       description='[Experimental]: Upgrades existing Epiphany Platform to latest version.')
+                                       description='Upgrades common and K8s components of an existing Epiphany Platform cluster.')
     sub_parser.add_argument('-b', '--build', dest='build_directory', type=str, required=True,
                             help='Absolute path to directory with build artifacts.')
+    sub_parser.add_argument('--wait-for-pods', dest='wait_for_pods', action="store_true",
+                            help="Waits for all pods to be in the 'Ready' state before proceeding to the next step of the K8s upgrade.")
+    sub_parser.add_argument('--offline-requirements', dest='offline_requirements', type=str, required=False,
+                            help='Path to the folder with pre-prepared offline requirements.')
 
     def run_upgrade(args):
-        experimental_query()
         adjust_paths_from_build(args)
-        with PatchEngine(args) as engine:
+        with UpgradeEngine(args) as engine:
             return engine.upgrade()
 
     sub_parser.set_defaults(func=run_upgrade)

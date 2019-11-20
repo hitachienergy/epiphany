@@ -1,5 +1,4 @@
 kind: epiphany-cluster
-version: 0.4.1
 title: "Epiphany cluster Config"
 provider: azure
 name: "default"

@@ -1,5 +1,4 @@
 kind: infrastructure/security-group
-version: 0.4.1
 title: "Security Group Config"
 provider: aws
 name: default

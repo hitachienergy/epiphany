@@ -1,22 +1,7 @@
-## Epicli
+
+## How to expose service through HA Proxy load balancer
 
 TODO
-
-## Legacy
-
-### How to expose service through HA Proxy load balancer
-
-1. Add haproxy role to your data.yaml
-2. Create a folder repository_path/core/src/ansible/roles/haproxy/vars/
-3. Create a file repository_path/core/src/ansible/roles/haproxy/vars/main.yml:
-4. Add to repository_path/core/src/ansible/roles/haproxy/vars/main.yml content:
-
-    ```yaml
-    ---
-    service_port: your_service_port
-    ```
-
-    Where `your_service_port` is a port where your service is exposed using NodePort.
 
 ## How to do Kubernetes RBAC
 

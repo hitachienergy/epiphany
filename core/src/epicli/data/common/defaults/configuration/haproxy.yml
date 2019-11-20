@@ -1,5 +1,4 @@
 kind: configuration/haproxy
-version: 0.4.1
 title: "HAProxy"
 name: default
 specification:

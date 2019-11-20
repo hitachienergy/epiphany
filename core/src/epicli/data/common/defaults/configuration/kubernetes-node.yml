@@ -1,12 +1,6 @@
 kind: configuration/kubernetes-node
-version: 0.4.1
 title: "Kubernetes Node Config"
 name: default
 specification:
   version: 1.14.6
-  images_to_load:
-  - name: "jboss/keycloak:4.8.3.Final"
-    file_name: keycloak-4.8.3.Final.tar
-  - name: "rabbitmq:3.7.10"
-    file_name: rabbitmq-3.7.10.tar
   node_labels: "node-type=epiphany"

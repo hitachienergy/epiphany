@@ -1,5 +1,4 @@
 kind: configuration/kibana
-version: 0.4.1
 title: "Kibana"
 name: default
 specification:

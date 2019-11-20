@@ -1,0 +1,44 @@
+---
+- name: Set tag name with local image registry
+  set_fact:
+     new_image_tag: "{{ image_registry_address }}/{{ docker_image.name }}"
+  changed_when: false
+  when:
+    - docker_image.name != specification.registry_image.name
+
+- name: Check if image is already loaded
+  shell: >-
+    docker images {{ new_image_tag if (docker_image.name != specification.registry_image.name)
+                                   else docker_image.name }} --format {{ '{{' }}.ID{{ '}}' }}
+  register: image_check
+  ignore_errors: true
+  changed_when: false
+
+- name: Load image if does not exists
+  block:
+    - name: Download image file
+      include_role:
+        name: download
+        tasks_from: download_image
+      vars:
+        file_name: "{{ docker_image.file_name }}"
+
+    - name: Load image {{ docker_image.name }}
+      become: yes
+      shell: "docker load --input {{ download_directory }}/{{ docker_image.file_name }}"
+
+    - name: Tag image {{ docker_image.name +
+            (' with ' + new_image_tag if docker_image.name != specification.registry_image.name else '') }}
+      become: yes
+      shell: "docker tag {{ docker_image.name }} {{ new_image_tag }}"
+      when:
+        - docker_image.name != specification.registry_image.name
+
+    - name: Push image to registry {{ docker_image.name }}
+      become: yes
+      shell: "docker push {{ new_image_tag }}"
+      when:
+        - docker_image.name != specification.registry_image.name
+
+  when:
+    - image_check.stdout | length == 0

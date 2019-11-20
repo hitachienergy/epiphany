@@ -1,32 +1,59 @@
 ---
-- name: Check if image is already loaded
-  shell: "docker images {{ specification.repository_image.name }} --format {{ '{{' }}.ID{{ '}}' }}"
-  register: image_check
-  ignore_errors: true
-  changed_when: false
-
-- name: Load image if does not exists
+- name: Load images and run local registry
   block:
-  - name: Download file
-    include_role:
-      name: download
-      tasks_from: download_image
-    vars:
-      file_name: "{{ specification.repository_image.file_name }}"
+    - name: Check if Docker is installed
+      shell: docker --version
+      register: check_docker
+      failed_when:
+        - check_docker.rc not in [0, 127] # 127 means command not found
+      changed_when: false
 
-  - name: Load image {{ specification.repository_image.name }}
-    become: yes
-    shell: "docker load --input {{ download_directory }}/{{ specification.repository_image.file_name }}"
-  when: image_check.stdout | length == 0
+    # run docker role only if Docker is not installed, since it could upgrade it implicitly (before K8s)
+    - name: Install and configure Docker
+      import_role:
+        name: docker
+      when:
+        - check_docker.rc != 0
 
-- name: Check if registry is running
-  become: yes
-  shell: docker ps | grep registry:2 | cat
-  register: regitry_up_check
-  check_mode: no
+    - name: Reconfigure Docker if necessary
+      block:
+        - name: Include get-registries.yml from docker role # this sets result
+          include_role:
+            name: docker
+            tasks_from: get-registries
 
-# todo run registry with SSL - generate/copy certs, mount it to registry container
-- name: Run registry
-  become: yes
-  shell: "docker run -d -e REGISTRY_HTTP_ADDR=0.0.0.0:5000 -p 5000:5000 --restart=always --name epiphany-registry {{ specification.repository_image.name }}"
-  when: regitry_up_check.stdout | length == 0
+        - name: Reconfigure Docker # this restarts Docker daemon
+          include_role:
+            name: docker
+            tasks_from: configure-docker
+          when:
+            - not image_registry_address in result.stdout
+      when:
+        - check_docker.rc == 0
+
+    - name: Load registry image
+      include_tasks: load-image.yml
+      vars:
+        docker_image: "{{ specification.registry_image }}"
+
+    - name: Check if registry is running
+      become: yes
+      shell: docker ps | grep registry:2 | cat
+      register: regitry_up_check
+      check_mode: no
+
+    # todo run registry with SSL - generate/copy certs, mount it to registry container
+    - name: Run registry
+      become: yes
+      shell: >-
+        docker run -d -e REGISTRY_HTTP_ADDR=0.0.0.0:5000 -p 5000:5000 --restart=always
+        --name epiphany-registry {{ specification.registry_image.name }}
+      when: regitry_up_check.stdout | length == 0
+
+    - name: Include load-image.yml
+      include_tasks: load-image.yml
+      vars:
+        docker_image: "{{ item }}"
+      loop: "{{ specification.images_to_load }}"
+
+  when: not custom_image_registry_address

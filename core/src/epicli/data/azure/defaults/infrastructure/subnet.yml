@@ -1,5 +1,4 @@
 kind: infrastructure/subnet
-version: 0.4.1
 title: "Subnet Config"
 provider: azure
 name: default

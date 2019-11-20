@@ -1,5 +1,0 @@
----
-# Common main as the entry point
-
-- include_tasks: "{{ ansible_os_family }}.yml"
-

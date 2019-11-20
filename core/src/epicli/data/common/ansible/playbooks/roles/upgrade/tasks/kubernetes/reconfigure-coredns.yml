@@ -1,0 +1,22 @@
+---
+- name: Change coredns to use {{ image_registry_address }}
+  block:
+    - name: upgrade-master | Get coredns image
+      environment:
+        KUBECONFIG: /home/{{ admin_user.name }}/.kube/config
+      shell: |-
+        kubectl get deployments.apps coredns -n kube-system -o=jsonpath='{$.spec.template.spec.containers[:1].image}'
+      changed_when: false
+      register: coredns_image_repository
+      args:
+        executable: /bin/bash
+    - name: upgrade-master | Patch coredns to use {{ image_registry_address }}
+      environment:
+        KUBECONFIG: /home/{{ admin_user.name }}/.kube/config
+      shell: |-
+        set -o pipefail &&
+        kubectl patch deployment coredns --patch '{"spec": {"template": { "spec": { "containers": [ { "image": "{{ image_registry_address }}/{{ coredns_image_repository.stdout }}", "name": "coredns" }]}}}}' -n kube-system
+      args:
+        executable: /bin/bash
+      when:
+        - not image_registry_address in coredns_image_repository.stdout

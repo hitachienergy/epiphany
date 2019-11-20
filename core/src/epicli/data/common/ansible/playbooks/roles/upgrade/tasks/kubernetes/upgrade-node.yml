@@ -1,0 +1,35 @@
+---
+- name: upgrade-node | Wait for cluster's readiness
+  include_tasks: wait.yml
+
+- name: upgrade-node | Drain node in preparation for maintenance
+  include_tasks: node/drain.yml
+
+- name: upgrade-node | Wait for cluster's readiness
+  include_tasks: wait.yml
+
+- name: upgrade-node | Upgrade Docker # this may restart Docker daemon
+  include_tasks: docker.yml
+  when:
+    - version is version('1.14.0', '>=') # Docker 18.09 validated since K8s 1.14
+
+- name: upgrade-node | Install packages
+  include_tasks: "{{ ansible_os_family }}/install-packages.yml"
+
+- name: upgrade-node | Upgrade node config
+  shell: kubeadm upgrade node config --kubelet-version v{{ version }}
+
+- name: upgrade-node | Restart kubelet
+  systemd:
+    state: restarted
+    daemon_reload: yes
+    name: kubelet
+
+- name: upgrade-node | Wait for cluster's readiness
+  include_tasks: wait.yml
+
+- name: upgrade-node | Uncordon node - mark node as schedulable
+  include_tasks: node/uncordon.yml
+
+- name: upgrade-node | Verify component versions and node status
+  include_tasks: verify-upgrade.yml

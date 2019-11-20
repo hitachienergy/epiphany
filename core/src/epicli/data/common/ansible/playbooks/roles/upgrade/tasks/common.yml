@@ -1,0 +1,5 @@
+---
+- name: Clean up jq installed as binary from GitHub
+  file:
+    path: /usr/local/bin/jq
+    state: absent

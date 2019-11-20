@@ -1,0 +1,36 @@
+---
+
+- name: image-registry | Include get-registries.yml from docker role # this sets result
+  include_role:
+    name: docker
+    tasks_from: get-registries
+
+- name: Reconfigure Docker for pulling images from local registry
+  block:
+    - name: image-registry | Drain node in preparation for Docker reconfiguration
+      include_tasks: kubernetes/node/drain.yml
+      when:
+        - inventory_hostname in groups['kubernetes_node']
+
+    - name: image-registry | Wait for cluster's readiness
+      include_tasks: kubernetes/wait.yml
+      when:
+        - inventory_hostname in groups['kubernetes_node']
+
+    - name: image-registry | Reconfigure Docker if necessary # this restarts Docker daemon
+      include_role:
+        name: docker
+        tasks_from: configure-docker
+
+    - name: Include wait-for-kube-apiserver.yml
+      include_tasks: kubernetes/wait-for-kube-apiserver.yml
+      when:
+        - inventory_hostname in groups['kubernetes_master']
+
+    - name: image-registry | Uncordon node - mark node as schedulable
+      include_tasks: kubernetes/node/uncordon.yml
+      when:
+        - inventory_hostname in groups['kubernetes_node']
+
+  when:
+    - not image_registry_address in result.stdout

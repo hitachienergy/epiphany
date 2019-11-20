@@ -8,13 +8,12 @@ class APIProxy:
     def __init__(self, cluster_model, config_docs):
         self.cluster_model = cluster_model
         self.config_docs = config_docs
-
-    def __enter__(self):
         credentials = self.cluster_model.specification.cloud.credentials
         self.session = boto3.session.Session(aws_access_key_id=credentials.key,
                                              aws_secret_access_key=credentials.secret,
-                                             region_name=self.cluster_model.specification.cloud.region)
+                                             region_name=self.cluster_model.specification.cloud.region)        
 
+    def __enter__(self):
         return self
 
     def __exit__(self, exc_type, exc_value, traceback):

@@ -78,9 +78,13 @@ spec:
     spec:
       serviceAccountName: {{ rabbitmq_service_name }}
       terminationGracePeriodSeconds: 10
-      containers:        
+      containers:
       - name: {{ rabbitmq_service_name }}
+{% if data.use_local_image_registry is undefined or data.use_local_image_registry is sameas true %}
+        image: {{ image_registry_address }}/{{ data.image_path }}
+{% else %}
         image: {{ data.image_path }}
+{% endif %}
         volumeMounts:
           - name: config-volume
             mountPath: /etc/rabbitmq
@@ -124,7 +128,7 @@ spec:
                 name: {{ rabbitmq_service_name }}-cookie
 {% if data.image_pull_secret_name is defined and data.image_pull_secret_name|length %}
       imagePullSecrets:
-      - name: {{ data.image_pull_secret_name  }}
+      - name: {{ data.image_pull_secret_name }}
 {% endif %}
       volumes:
         - name: config-volume
