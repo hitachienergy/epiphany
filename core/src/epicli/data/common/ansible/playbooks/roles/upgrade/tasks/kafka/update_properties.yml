@@ -1,22 +1,41 @@
 ---
+- name: Is server.properties file exists
+  stat:
+    path: "{{ specification.kafka_var.conf_dir }}/server.properties"
+
+- name: Is defined current_kafka_version property
+  shell: grep "^CURRENT_KAFKA_VERSION" {{ specification.kafka_var.conf_dir }}/server.properties
+  register: current_kafka_version_property
+  ignore_errors: yes
+
+- name: debug
+  debug:
+    msg: "{{ current_kafka_version_property }}"
+---
 - name: Add current_kafka_version property
   lineinfile:
     path: "{{ specification.kafka_var.conf_dir }}/server.properties"
     line: "CURRENT_KAFKA_VERSION={{ specification.kafka_var.version }}"
-    create: yes
+  when: current_kafka_version_property.stdout == ""
 
 - name: Is defined current_message_format_version property
   shell: grep "^CURRENT_MESSAGE_FORMAT_VERSION" {{ specification.kafka_var.conf_dir }}/server.properties
-  register: message_format_defined
+  register: current_message_format_version_property
+  ignore_errors: yes
 
 - name: Add current_message_format_version property
   lineinfile:
     path: "{{ specification.kafka_var.conf_dir }}/server.properties"
-    line: "CURRENT_MESSAGE_FORMAT_VERSION={{ specification.kafka_var.message_format_version }}"
-    create: yes
-  when: message_format_defined == ""
+    line: "CURRENT_MESSAGE_FORMAT_VERSION={{ specification.kafka_var.version }}"
+  when: current_message_format_version_property.stdout == ""
+
+- name: Is defined inter.broker.protocol.version property
+  shell: grep "^inter.broker.protocol.version" {{ specification.kafka_var.conf_dir }}/server.properties
+  register: inter_broker_protocol_version_property
+  ignore_errors: yes
 
 - name: Add inter.broker.protocol.version property
   lineinfile:
     path: "{{ specification.kafka_var.conf_dir }}/server.properties"
     line: "inter.broker.protocol.version={{ specification.kafka_var.version }}"
+  when: inter_broker_protocol_version_property.stdout == ""

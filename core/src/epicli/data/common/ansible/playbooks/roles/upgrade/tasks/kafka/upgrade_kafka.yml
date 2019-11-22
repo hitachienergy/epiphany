@@ -12,20 +12,20 @@
 
 - name: Check for Kafka package
   stat:
-    path: /opt/kafka_{{ specification.kafka_var.scala.target_version }}-{{ specification.kafka_var.version }}/bin/kafka-server-start.sh
+    path: /opt/kafka_{{ specification.kafka_var.scala.version }}-{{ specification.kafka_var.target_version }}/bin/kafka-server-start.sh
   register: kafka_package
 
 - name: Uncompress the Kafka tar
   unarchive:
     remote_src: yes
-    creates: /opt/kafka_{{ specification.kafka_var.scala.target_version }}-{{ specification.kafka_var.version }}
+    creates: /opt/kafka_{{ specification.kafka_var.scala.version }}-{{ specification.kafka_var.target_version }}
     src: "{{ download_directory }}/{{ kafka_file_name }}"
     dest: /opt
   when: not kafka_package.stat.exists
 
 - name: Change ownership on kafka directory.
   file:
-    path: /opt/kafka_{{ specification.kafka_var.scala.target_version }}-{{ specification.kafka_var.version }}
+    path: /opt/kafka_{{ specification.kafka_var.scala.version }}-{{ specification.kafka_var.target_version }}
     state: directory
     owner: kafka
     group: kafka
@@ -34,7 +34,7 @@
   copy:
     remote_src: yes
     src: /opt/kafka/config/
-    dest: /opt/kafka_{{ specification.kafka_var.scala.target_version }}-{{ specification.kafka_var.version }}/config
+    dest: /opt/kafka_{{ specification.kafka_var.scala.version }}-{{ specification.kafka_var.target_version }}/config
 
 - name: Remove old symlink
   file:
@@ -45,7 +45,7 @@
   file:
     dest: /opt/kafka
     state: link
-    src: /opt/kafka_{{ specification.kafka_var.scala.target_version }}-{{ specification.kafka_var.version }}
+    src: /opt/kafka_{{ specification.kafka_var.scala.version }}-{{ specification.kafka_var.target_version }}
 
 - name: Reload daemon
   command: systemctl daemon-reload
