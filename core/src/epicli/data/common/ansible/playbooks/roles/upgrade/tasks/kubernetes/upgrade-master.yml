@@ -60,7 +60,8 @@
     KUBECONFIG: /home/{{ admin_user.name }}/.kube/config
   shell: kubectl drain {{ inventory_hostname }} --ignore-daemonsets --delete-local-data
   when:
-    - groups['kubernetes_node'] is defined and groups['kubernetes_node']|list|length > 0 # drain master only if there is at least one worker node
+    - groups['kubernetes_node'] is defined
+    - groups['kubernetes_node']|length > 0 # drain master only if there is at least one worker node
 
 - name: upgrade-master | Wait for cluster's readiness
   include_tasks: wait.yml
@@ -129,6 +130,7 @@
   become_user: "{{ admin_user.name }}"
   register: untainted_nodes_list
   failed_when: "untainted_nodes_list.rc == 2"
+  changed_when: false
   when:
     - groups['kubernetes_master'][0] == inventory_hostname
 
@@ -139,7 +141,6 @@
     - groups['kubernetes_master'] is defined
     - untainted_nodes_list.stdout_lines[0]|int == 0
     - (groups['kubernetes_master']|list|length == 1) and (groups['kubernetes_node'] is defined and groups['kubernetes_node']|list|length == 0)
-  changed_when: false
 
 - name: upgrade-master | Untaint master
   shell: "kubectl --kubeconfig=/home/{{ admin_user.name }}/.kube/config taint node {{ groups['kubernetes_master'][0] }} node-role.kubernetes.io/master:NoSchedule-"
