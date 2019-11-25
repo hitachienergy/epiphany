@@ -12,3 +12,4 @@
   service:
     name: kafka
     state: restarted
+    
