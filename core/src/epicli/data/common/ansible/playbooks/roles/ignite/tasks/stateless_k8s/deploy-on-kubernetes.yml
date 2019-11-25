@@ -1,0 +1,22 @@
+---
+
+- name: Create directory for files
+  file: 
+    path: "{{ configuration_temp_directory }}"
+    state: directory
+  become_user: "{{ admin_user.name }}"
+
+- name: Upload and deploy Ignite
+  become: yes
+  template:
+    dest: "{{ configuration_temp_directory }}/{{ file_name }}"
+    src: k8s-stateless/{{ file_name }}.j2
+    owner: "{{ admin_user.name }}"
+    group: "{{ admin_user.name }}"
+    mode: 0644
+
+- name: Apply {{ file_name }} file
+  environment:
+    KUBECONFIG: /home/{{ admin_user.name }}/.kube/config
+  shell: kubectl apply -f {{ configuration_temp_directory }}/{{ file_name }}
+  become_user: "{{ admin_user.name }}"

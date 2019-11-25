@@ -1,0 +1,37 @@
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: ignite
+  namespace: {{ specification.deployment.stateless_k8s.namespace }}
+
+---
+apiVersion: rbac.authorization.k8s.io/v1beta1
+kind: ClusterRole
+metadata:
+  name: ignite
+  namespace: {{ specification.deployment.stateless_k8s.namespace }}
+rules:
+- apiGroups:
+  - ""
+  resources: # Here are resources you can access
+  - pods
+  - endpoints
+  verbs: # That is what you can do with them
+  - get
+  - list
+  - watch
+
+---
+kind: ClusterRoleBinding
+apiVersion: rbac.authorization.k8s.io/v1beta1
+metadata:
+  name: ignite
+roleRef:
+  kind: ClusterRole
+  name: ignite
+  apiGroup: rbac.authorization.k8s.io
+subjects:
+- kind: ServiceAccount
+  name: ignite
+  namespace: {{ specification.deployment.stateless_k8s.namespace }}

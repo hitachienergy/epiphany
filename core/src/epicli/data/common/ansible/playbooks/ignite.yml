@@ -1,0 +1,8 @@
+---
+# Ansible playbook for installing Apache Ignite
+
+- hosts: ignite
+  become: true
+  become_method: sudo
+  roles:
+    - ignite

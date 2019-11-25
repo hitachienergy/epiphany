@@ -1,0 +1,4 @@
+---
+
+- name: Include Ignite setup
+  include_tasks: "{{ specification.deployment_type }}/main.yml"

@@ -1,0 +1,43 @@
+
+---
+# An example of a Kubernetes configuration for Ignite pods deployment.
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  # Custom Ignite cluster's name.
+  name: ignite-cluster
+  namespace: {{ specification.deployment.stateless_k8s.namespace }}
+spec:
+  # A number of Ignite pods to be started by Kubernetes initially.
+  replicas: {{ specification.deployment.stateless_k8s.replicas }}
+  template:
+    metadata:
+      labels:
+        app: ignite
+    spec:
+      serviceAccountName: ignite
+      containers:
+        # Custom Ignite pod name.
+      - name: ignite-node
+        image: {{ image_registry_address }}/{{ specification.deployment.stateless_k8s.image_path }}
+        env:
+        - name: OPTION_LIBS
+          value: ignite-kubernetes
+        - name: CONFIG_URI
+          value: /ignite-config/ignite-config.xml
+        ports:
+        # Ports to open.
+        # Might be optional depending on your Kubernetes environment.
+        - containerPort: 11211 # REST port number.
+        - containerPort: 47100 # communication SPI port number.
+        - containerPort: 47500 # discovery SPI port number.
+        - containerPort: 49112 # JMX port number.
+        - containerPort: 10800 # SQL port number.
+        - containerPort: 10900 # Thin clients port number.
+        volumeMounts:
+        - name: ignite-config
+          mountPath: /ignite-config
+      volumes:
+      - configMap:
+          name: ignite
+        name: ignite-config

@@ -1,0 +1,21 @@
+---
+- name: Wait until the cluster is available
+  environment:
+    KUBECONFIG: /home/{{ admin_user.name }}/.kube/config
+  shell: kubectl cluster-info
+  delegate_to: "{{ groups['kubernetes_master'] | first }}"
+  retries: 10
+  delay: 5
+  register: output
+  until: output is succeeded
+
+- name: Upload and deploy Ignite
+  include_tasks: "./deploy-on-kubernetes.yml"
+  delegate_to: "{{ groups['kubernetes_master'] | first }}"
+  vars:
+    file_name: "{{ item }}"
+  with_items:
+  - "namespace.yml"
+  - "configmap.yml"
+  - "rbac.yml"
+  - "deployment"
