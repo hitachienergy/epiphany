@@ -23,5 +23,6 @@
     version: "{{ ver }}"
     cni_version: "{{ cni_ver }}"
   when:
+    - groups['kubernetes_node'] is defined
     - inventory_hostname in groups['kubernetes_node']
     - kubelet_version.stdout is version('v' + version, '<=')

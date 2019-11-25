@@ -10,11 +10,13 @@
     - name: image-registry | Drain node in preparation for Docker reconfiguration
       include_tasks: kubernetes/node/drain.yml
       when:
+        - groups['kubernetes_node'] is defined
         - inventory_hostname in groups['kubernetes_node']
 
     - name: image-registry | Wait for cluster's readiness
       include_tasks: kubernetes/wait.yml
       when:
+        - groups['kubernetes_node'] is defined
         - inventory_hostname in groups['kubernetes_node']
 
     - name: image-registry | Reconfigure Docker if necessary # this restarts Docker daemon
@@ -30,6 +32,7 @@
     - name: image-registry | Uncordon node - mark node as schedulable
       include_tasks: kubernetes/node/uncordon.yml
       when:
+        - groups['kubernetes_node'] is defined
         - inventory_hostname in groups['kubernetes_node']
 
   when:
