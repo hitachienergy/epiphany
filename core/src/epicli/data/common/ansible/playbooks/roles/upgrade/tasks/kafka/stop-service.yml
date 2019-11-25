@@ -3,4 +3,3 @@
   service:
     name: kafka
     state: stopped
-    
