@@ -55,7 +55,7 @@ class AnsibleVarsGenerator(Step):
             # - commmon is already provisioned from the cluster model constructed from the inventory.
             # - upgrade should not require any additional config
             # roles in the list below are provisioned for upgrade from defaults
-            enabled_roles = ['repository', 'image_registry']
+            enabled_roles = ['repository', 'image_registry', 'kafka']
         else:
             enabled_roles = self.inventory_creator.get_enabled_roles()
 

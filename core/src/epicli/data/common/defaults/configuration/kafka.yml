@@ -12,6 +12,9 @@ specification:
     enable: True
     admin: kafka
     admin_pwd: epiphany
+# Upgrade values
+    target_version: 2.3.1
+    target_file_name: "kafka_2.12-2.3.1.tgz"
     # users:
 
     security:

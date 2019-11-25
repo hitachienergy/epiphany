@@ -1,0 +1,14 @@
+---
+- name: Is server.properties file exists
+  stat:
+    path: "{{ specification.kafka_var.conf_dir }}/server.properties"
+
+- name: Modify inter.broker.protocol.version property
+  lineinfile:
+    path: "{{ specification.kafka_var.conf_dir }}/server.properties"
+    line: "inter.broker.protocol.version={{ specification.kafka_var.target_version }}"
+
+- name: Restart kafka service
+  service:
+    name: kafka
+    state: restarted

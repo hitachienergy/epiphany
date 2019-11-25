@@ -1,4 +1,5 @@
 ---
-- include_tasks: kafka/stop_service.yml
-- include_tasks: kafka/update_properties.yml
-- include_tasks: kafka/upgrade_kafka.yml
+- include_tasks: kafka/stop-service.yml
+- include_tasks: kafka/update-properties.yml
+- include_tasks: kafka/install-upgrade.yml
+- include_tasks: kafka/set-current-version.yml

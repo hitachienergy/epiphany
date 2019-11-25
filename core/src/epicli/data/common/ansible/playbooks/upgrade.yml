@@ -9,56 +9,50 @@
          name: upgrade
          tasks_from: common
 
-#  - hosts: kubernetes_master:kubernetes_node
-#    serial: 1
-#    become: true
-#    become_method: sudo
-#    tasks:
-#      - import_role:
-#          name: upgrade
-#          tasks_from: image-registry
+ - hosts: kubernetes_master:kubernetes_node
+   serial: 1
+   become: true
+   become_method: sudo
+   tasks:
+     - import_role:
+         name: upgrade
+         tasks_from: image-registry
 
-#  - hosts: kubernetes_master:kubernetes_node
-#    serial: 1
-#    become: true
-#    become_method: sudo
-#    tasks:
-#      - import_role:
-#          name: upgrade
-#          tasks_from: kubernetes
-#        vars: { ver: "1.12.10", cni_ver: "0.7.5" }
+ - hosts: kubernetes_master:kubernetes_node
+   serial: 1
+   become: true
+   become_method: sudo
+   tasks:
+     - import_role:
+         name: upgrade
+         tasks_from: kubernetes
+       vars: { ver: "1.12.10", cni_ver: "0.7.5" }
 
-#  - hosts: kubernetes_master:kubernetes_node
-#    serial: 1
-#    become: true
-#    become_method: sudo
-#    tasks:
-#      - import_role:
-#          name: upgrade
-#          tasks_from: kubernetes
-#        vars: { ver: "1.13.12", cni_ver: "0.7.5" }
+ - hosts: kubernetes_master:kubernetes_node
+   serial: 1
+   become: true
+   become_method: sudo
+   tasks:
+     - import_role:
+         name: upgrade
+         tasks_from: kubernetes
+       vars: { ver: "1.13.12", cni_ver: "0.7.5" }
 
-#  - hosts: kubernetes_master:kubernetes_node
-#    serial: 1
-#    become: true
-#    become_method: sudo
-#    tasks:
-#      - import_role:
-#          name: upgrade
-#          tasks_from: kubernetes
-#        vars: { ver: "1.14.6", cni_ver: "0.7.5" }
+ - hosts: kubernetes_master:kubernetes_node
+   serial: 1
+   become: true
+   become_method: sudo
+   tasks:
+     - import_role:
+         name: upgrade
+         tasks_from: kubernetes
+       vars: { ver: "1.14.6", cni_ver: "0.7.5" }
 
 # latest patch versions:
 # 1.11.10
 # 1.12.10
 # 1.13.12
 # 1.14.8
- #- hosts: kafka
- #  serial: 1
- #  become: true
- #  become_method: sudo
- #  tasks:
- #   - fail
 
  - hosts: kafka
    serial: 1

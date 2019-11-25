@@ -35,6 +35,7 @@
     remote_src: yes
     src: /opt/kafka/config/
     dest: /opt/kafka_{{ specification.kafka_var.scala.version }}-{{ specification.kafka_var.target_version }}/config
+    mode: preserve
 
 - name: Remove old symlink
   file:
@@ -49,6 +50,11 @@
 
 - name: Reload daemon
   command: systemctl daemon-reload
+
+- name: Remove old binaries
+  file:
+    path: /opt/kafka_{{ specification.kafka_var.scala.version }}-{{ specification.kafka_var.version }}
+    state: absent
 
 - name: Remove lost+found in the datadir
   file:
