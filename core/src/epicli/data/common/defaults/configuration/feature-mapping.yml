@@ -109,5 +109,9 @@ specification:
     kubernetes_node:
       - kubernetes-node
       - node-exporter
+      - filebeat    
+    ignite:
+      - ignite
+      - node-exporter
       - filebeat
 
