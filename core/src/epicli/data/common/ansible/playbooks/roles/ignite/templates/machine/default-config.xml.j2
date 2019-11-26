@@ -20,10 +20,32 @@
        xsi:schemaLocation="
        http://www.springframework.org/schema/beans
        http://www.springframework.org/schema/beans/spring-beans.xsd">
-    <!--
-        Alter configuration below as needed.
-    -->
+
     <bean id="grid.cfg" class="org.apache.ignite.configuration.IgniteConfiguration">
+      <property name="dataStorageConfiguration">
+        <bean class="org.apache.ignite.configuration.DataStorageConfiguration">
+          <!-- Set the page size to 4 KB -->
+          <property name="pageSize" value="#{4 * 1024}"/>
+          <!--
+          Sets a path to the root directory where data and indexes are
+          to be persisted. It's assumed the directory is on a separated SSD.
+          -->
+          <property name="storagePath" value="/var/lib/ignite/persistence"/>
+
+          <!--
+              Sets a path to the directory where WAL is stored.
+              It's assumed the directory is on a separated HDD.
+          -->
+          <property name="walPath" value="/wal"/>
+
+          <!--
+              Sets a path to the directory where WAL archive is stored.
+              The directory is on the same HDD as the WAL.
+          -->
+          <property name="walArchivePath" value="/wal/archive"/>
+        </bean>
+      </property>
+    
       <property name="discoverySpi">
 	      <bean class="org.apache.ignite.spi.discovery.tcp.TcpDiscoverySpi">
 	        <property name="ipFinder">

@@ -68,8 +68,6 @@
     group: ignite
     mode: 0644
     src: default-config.xml.j2
-  notify:
-    - restart ignite
 
 - name: Create systemd service
   template:
@@ -83,9 +81,9 @@
 - name: systemctl daemon-reload
   become: yes
   become_user: root
-  when: ignite_systemd_service_created is changed
   systemd:
     daemon_reload: yes
+  when: ignite_systemd_service_created is changed
 
 - name: start ignite
   become: yes
