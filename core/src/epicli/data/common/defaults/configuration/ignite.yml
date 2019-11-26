@@ -8,3 +8,6 @@ specification:
       image_path: "apacheignite/ignite:2.5.0" # it will be part of the image path: {{local_repository}}/{{image_path}}
       namespace: ignite
       replicas: 1
+    machine:
+      version: 2.7.6
+      file_name: apache-ignite-2.7.6-bin.zip

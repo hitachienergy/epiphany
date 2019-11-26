@@ -22,7 +22,7 @@ spec:
         image: {{ image_registry_address }}/{{ specification.deployment.stateless_k8s.image_path }}
         env:
         - name: OPTION_LIBS
-          value: ignite-kubernetes
+          value: ignite-kubernetes,ignite-rest-http
         - name: CONFIG_URI
           value: /ignite-config/ignite-config.xml
         ports:

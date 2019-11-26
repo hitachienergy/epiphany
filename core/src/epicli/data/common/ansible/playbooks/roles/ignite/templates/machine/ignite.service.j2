@@ -1,0 +1,14 @@
+[Unit]
+Description=Apache Ignite Server
+
+[Service]
+EnvironmentFile=-/usr/local/java/java-oracle.env
+EnvironmentFile=-/usr/local/java/oracle-jre.env 
+Type=simple
+User=ignite
+WorkingDirectory=/opt/ignite
+ExecStart=/opt/ignite/bin/ignite.sh
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target
