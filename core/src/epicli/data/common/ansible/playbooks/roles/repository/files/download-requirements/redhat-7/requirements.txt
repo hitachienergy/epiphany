@@ -28,7 +28,7 @@ dejavu-sans-fonts # for grafana
 docker-ce-18.09.9
 docker-ce-cli-18.09.9
 ebtables
-elasticsearch-curator-5.5.4
+elasticsearch-curator-5.8.1
 elasticsearch-oss-6.4.0
 erlang-21.3.8.7
 ethtool
