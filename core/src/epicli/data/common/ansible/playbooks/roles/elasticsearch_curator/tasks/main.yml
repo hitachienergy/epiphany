@@ -1,6 +1,6 @@
 ---
-
-- include_tasks: "{{ ansible_os_family }}.yml"  
+- name: Include installation tasks
+  include_tasks: install-package.yml
 
 - name: Configure cron jobs for Elasticsearch Curator
   cron:

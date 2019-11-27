@@ -1,6 +1,6 @@
 ---
-# Ansible playbook that makes sure elasticsearch-curator will be installed
-- hosts: all
+# Ansible playbook that installs and configures Elasticsearch Curator
+- hosts: elasticsearch
   gather_facts: yes
   tasks: [ ]
 
