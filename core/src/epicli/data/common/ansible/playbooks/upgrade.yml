@@ -64,3 +64,4 @@
   - import_role:
       name: upgrade
       tasks_from: kafka
+    vars: {lock_file: /tmp/.upgrade-kafka-p.lock}

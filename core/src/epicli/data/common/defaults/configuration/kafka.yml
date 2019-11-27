@@ -5,16 +5,13 @@ specification:
 
   # Have to use odd name to support valid yaml due to ansible getting confused over playbook names and variables etc.
   kafka_var:
-    version: 2.0.0
+    version: 2.3.1
     scala:
       version: 2.12
-    file_name: "kafka_2.12-2.0.0.tgz"
+    file_name: "kafka_2.12-2.3.1.tgz"
     enable: True
     admin: kafka
     admin_pwd: epiphany
-# Upgrade values
-    target_version: 2.3.1
-    target_file_name: "kafka_2.12-2.3.1.tgz"
     # users:
 
     security:

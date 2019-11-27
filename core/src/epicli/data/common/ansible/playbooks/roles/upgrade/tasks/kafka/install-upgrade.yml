@@ -1,62 +1,69 @@
 ---
-- name: Set Kafka file name to install
+- name: Set Kafka installation file name as fact
   set_fact:
-    kafka_file_name: "{{ specification.kafka_var.target_file_name }}"
+    kafka_installation_file_name: "{{ specification.kafka_var.file_name }}"
+  changed_when: False
 
 - name: Download Kafka binaries
   include_role:
     name: download
     tasks_from: download_file
   vars:
-    file_name: "{{ kafka_file_name }}"
+    file_name: "{{ kafka_installation_file_name }}"
 
-- name: Check for Kafka package
+- name: Check for Kafka binary
   stat:
-    path: /opt/kafka_{{ specification.kafka_var.scala.version }}-{{ specification.kafka_var.target_version }}/bin/kafka-server-start.sh
+    path: /opt/kafka_{{ specification.kafka_var.scala.version }}-{{ specification.kafka_var.version }}/bin/kafka-server-start.sh
   register: kafka_package
 
-- name: Uncompress the Kafka tar
+- name: Uncompress Kafka installation file
   unarchive:
     remote_src: yes
-    creates: /opt/kafka_{{ specification.kafka_var.scala.version }}-{{ specification.kafka_var.target_version }}
-    src: "{{ download_directory }}/{{ kafka_file_name }}"
+    creates: /opt/kafka_{{ specification.kafka_var.scala.version }}-{{ specification.kafka_var.version }}
+    src: "{{ download_directory }}/{{ kafka_installation_file_name }}"
     dest: /opt
   when: not kafka_package.stat.exists
 
-- name: Change ownership on kafka directory.
+- name: Change ownership on kafka directory
   file:
-    path: /opt/kafka_{{ specification.kafka_var.scala.version }}-{{ specification.kafka_var.target_version }}
+    path: /opt/kafka_{{ specification.kafka_var.scala.version }}-{{ specification.kafka_var.version }}
     state: directory
     owner: kafka
     group: kafka
 
-- name: Transfer configuration from earlier version
+- name: Copy configuration from previous version
   copy:
     remote_src: yes
     src: /opt/kafka/config/
-    dest: /opt/kafka_{{ specification.kafka_var.scala.version }}-{{ specification.kafka_var.target_version }}/config
+    dest: /opt/kafka_{{ specification.kafka_var.scala.version }}-{{ specification.kafka_var.version }}/config
     mode: preserve
 
-- name: Remove old symlink
-  file:
-    path: /opt/kafka
-    state: absent
-
-- name: Link /opt/kafka to the right version
+- name: Link /opt/kafka to recently installed version
   file:
     dest: /opt/kafka
     state: link
-    src: /opt/kafka_{{ specification.kafka_var.scala.version }}-{{ specification.kafka_var.target_version }}
+    src: /opt/kafka_{{ specification.kafka_var.scala.version }}-{{ specification.kafka_var.version }}
+    force: yes
 
-- name: Reload daemon
-  command: systemctl daemon-reload
+- name: Run systemctl daemon-reload
+  systemd: 
+    daemon_reload: yes
 
-- name: Remove old binaries
+- name: Remove previous version binaries
   file:
-    path: /opt/kafka_{{ specification.kafka_var.scala.version }}-{{ specification.kafka_var.version }}
+    path: /opt/kafka_{{ specification.kafka_var.scala.version }}-{{ current_kafka_version.stdout }}
     state: absent
 
-- name: Remove lost+found in the datadir
+- name: Identify lost+found location
+  shell: >-
+    set -o pipefail &&
+    grep log.dirs "{{ specification.kafka_var.conf_dir }}/server.properties" | awk -F'=' '{print $2}'
+  register: log_dir
+  changed_when: False
+  args:
+    executable: /bin/bash
+
+- name: Remove lost+found from the log.dir
   file:
-    path: "{{ specification.kafka_var.data_dir }}/lost+found"
+    path: "{{ log_dir.stdout }}/lost+found"
     state: absent

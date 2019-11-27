@@ -1,30 +1,34 @@
 ---
-- name: Is server.properties file exists
-  stat:
-    path: "{{ specification.kafka_var.conf_dir }}/server.properties"
-
-- name: Is defined current_kafka_version property
-  shell: grep "^CURRENT_KAFKA_VERSION" {{ specification.kafka_var.conf_dir }}/server.properties
+- name: Check if current_kafka_version property is defined 
+  shell: >-
+    set -o pipefail && 
+    grep "^CURRENT_KAFKA_VERSION" {{ specification.kafka_var.conf_dir }}/server.properties
   register: current_kafka_version_property
-  ignore_errors: yes
-
-- name: debug
-  debug:
-    msg: "{{ current_kafka_version_property }}"
+  failed_when:
+    - result.rc == 2
+  changed_when: False
+  args: 
+    executable: /bin/bash
 
 - name: Add current_kafka_version property
   lineinfile:
     path: "{{ specification.kafka_var.conf_dir }}/server.properties"
-    line: "CURRENT_KAFKA_VERSION={{ specification.kafka_var.version }}"
+    line: "CURRENT_KAFKA_VERSION={{ current_kafka_version.stdout }}"
   when: current_kafka_version_property.stdout == ""
 
-- name: Is defined inter.broker.protocol.version property
-  shell: grep "^inter.broker.protocol.version" {{ specification.kafka_var.conf_dir }}/server.properties
+- name: Check if inter.broker.protocol.version property is defined
+  shell: >-
+    set -o pipefail &&
+    grep "^inter.broker.protocol.version" {{ specification.kafka_var.conf_dir }}/server.properties
   register: inter_broker_protocol_version_property
-  ignore_errors: yes
+  failed_when:
+    - result.rc == 2
+  changed_when: False
+  args:
+    executable: /bin/bash
 
 - name: Add inter.broker.protocol.version property
   lineinfile:
     path: "{{ specification.kafka_var.conf_dir }}/server.properties"
-    line: "inter.broker.protocol.version={{ specification.kafka_var.version }}"
+    line: "inter.broker.protocol.version={{ current_kafka_version.stdout }}"
   when: inter_broker_protocol_version_property.stdout == ""

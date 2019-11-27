@@ -1,5 +1,27 @@
 ---
-- include_tasks: kafka/stop-service.yml
-- include_tasks: kafka/update-properties.yml
-- include_tasks: kafka/install-upgrade.yml
-- include_tasks: kafka/set-current-version.yml
+- name: Check prerequisits
+  include_tasks: kafka/pre-check.yml
+
+- name: Include upgrade tasks
+  block:
+  - name: Stop Kafka service
+    service:
+      name: kafka
+      state: stopped
+
+  - name: Include kafka update properties
+    include_tasks: kafka/update-properties.yml
+
+  - name: Include kafka upgrade task 
+    include_tasks: kafka/install-upgrade.yml
+
+  - name: Include kafka version set
+    include_tasks: kafka/set-updated-version.yml
+  when: >
+    current_kafka_version.stdout is version( specification.kafka_var.version , '<' ) or
+    (current_kafka_version.stdout is version( specification.kafka_var.version , '<=' ) and lock_file_status.stat.exists == True)
+
+- name: Remove lock file
+  file:
+    path: "{{ lock_file }}"
+    state: absent
