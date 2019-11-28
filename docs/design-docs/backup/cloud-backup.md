@@ -1,4 +1,4 @@
-# Epiphany Platform backup design document
+# Epiphany Platform cloud backup design document
 
 Affected version: 0.5.x
 
