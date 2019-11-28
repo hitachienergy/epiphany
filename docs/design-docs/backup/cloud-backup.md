@@ -20,8 +20,6 @@ Where `-f` is path to data yaml file with configuration of environment. `--disks
 
 ## Backup Component View
 
-![Epiphany backup component](backup_component.png)
-
 User/background service/job executes `epibackup` (code name) application. Application takes parameters:
 - `-f`: path to data yaml file with configuration of environment.
 - `--disks-snapshot`: option to create whole disk snapshot
