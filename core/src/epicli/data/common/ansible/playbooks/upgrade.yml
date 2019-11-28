@@ -53,3 +53,11 @@
 # 1.12.10
 # 1.13.12
 # 1.14.8
+
+- hosts: elasticsearch_curator
+  become: true
+  become_method: sudo
+  tasks:
+    - import_role:
+        name: elasticsearch_curator
+        tasks_from: install-package # upgrade only package and do not change configured jobs
