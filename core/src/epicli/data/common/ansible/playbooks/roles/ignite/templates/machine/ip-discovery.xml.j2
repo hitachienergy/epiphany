@@ -1,0 +1,5 @@
+<list>
+ {% for host in groups['ignite'] %}
+ <value>{{hostvars[host]['ansible_default_ipv4']['address']}}</value>
+ {% endfor %}
+</list>

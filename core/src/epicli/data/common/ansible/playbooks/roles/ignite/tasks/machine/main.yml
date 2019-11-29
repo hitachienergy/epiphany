@@ -26,6 +26,13 @@
     state: present
   when: ansible_os_family == "Debian"
 
+- name: Set JAVA_HOME environment variable
+  lineinfile: 
+    path: /etc/environment 
+    state: present 
+    regexp: '^JAVA_HOME' 
+    line: 'JAVA_HOME=/usr/lib/jvm/java-1.8.0-openjdk-amd64/bin'
+
 - name: Set Apache Ignite file name to install
   set_fact:
     ignite_file_name: "{{ specification.deployment.machine.file_name }}"
@@ -43,6 +50,23 @@
     file_name: "{{ ignite_file_name }}"
   when: not ignite_exists.stat.exists
 
+- name: Create temp directory
+  file:
+    path: /tmp/ignite_{{ specification.deployment.machine.version }}
+    state: directory
+    owner: ignite
+    group: ignite
+
+- name: Uncompress the temp directory 
+  unarchive:
+    remote_src: yes
+    src: "{{ download_directory }}/{{ ignite_file_name }}"
+    dest: /tmp/ignite_{{ specification.deployment.machine.version }}
+    owner: ignite
+    list_files: yes
+  register: archive_contents
+  when: not ignite_exists.stat.exists
+   
 - name: Create /opt/ignite_{{ specification.deployment.machine.version }} directory
   file:
     path: /opt/ignite_{{ specification.deployment.machine.version }}
@@ -50,14 +74,11 @@
     owner: ignite
     group: ignite
 
-- name: Uncompress the Ignite archive
-  unarchive:
+- name: Copy Ignite files from tmp location
+  copy:
     remote_src: yes
-    creates: /opt/ignite_{{ specification.deployment.machine.version }}
-    src: "{{ download_directory }}/{{ ignite_file_name }}"
+    src: "/tmp/ignite_{{ specification.deployment.machine.version }}/{{ archive_contents.files[0].split('/')[0] }}/"
     dest: /opt/ignite_{{ specification.deployment.machine.version }}
-    owner: ignite
-    extra_opts: [--strip-components=1]
   when: not ignite_exists.stat.exists
 
 - name: Link /opt/ignite to the right version
@@ -66,13 +87,32 @@
     state: link
     src: /opt/ignite_{{ specification.deployment.machine.version }}
 
+- name: Copy Ignite enabled plugins
+  copy:
+    remote_src: yes
+    src: "/opt/ignite/libs/optional/{{ item }}"
+    dest: /opt/ignite/libs
+  with_items: "{{ specification.deployment.machine.enabled_plugins }}"
+  register: plugins_installed
+
+- name: Set Ignite ip discovery list
+  set_fact:
+    ip_discovery_list: "{{ lookup('template', 'machine/ip-discovery.xml.j2') }}"
+  changed_when: false
+
+- name: Prepare Ignite configuration
+  set_fact:
+    ignite_configuration: "{{ specification.deployment.machine.config | replace('IP_LIST_PLACEHOLDER',ip_discovery_list) }}"
+  changed_when: false
+
 - name: Create Ignite config
   template:
-    dest: /opt/ignite/config
+    dest: /opt/ignite/config/default-config.xml
     owner: ignite
     group: ignite
     mode: 0644
     src: machine/default-config.xml.j2
+  register: ignite_configuration_created
 
 - name: Create systemd service
   template:
@@ -97,3 +137,12 @@
     name: ignite
     enabled: yes
     state: started
+
+- name: Restart service
+  become: yes
+  become_user: root
+  service: 
+    name: ignite 
+    state: restarted 
+    enabled: yes
+  when: plugins_installed.changed or ignite_configuration_created.changed
