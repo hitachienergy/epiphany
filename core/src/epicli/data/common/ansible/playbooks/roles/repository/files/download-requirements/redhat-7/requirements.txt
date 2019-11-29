@@ -109,6 +109,8 @@ kubeadm-1.13.12
 kubectl-1.13.12
 kubelet-1.13.12
 
+unzip
+
 [files]
 https://github.com/prometheus/haproxy_exporter/releases/download/v0.10.0/haproxy_exporter-0.10.0.linux-amd64.tar.gz
 https://repo1.maven.org/maven2/io/prometheus/jmx/jmx_prometheus_javaagent/0.12.0/jmx_prometheus_javaagent-0.12.0.jar
@@ -158,3 +160,4 @@ k8s.gcr.io/kube-apiserver:v1.13.12
 k8s.gcr.io/kube-controller-manager:v1.13.12
 k8s.gcr.io/kube-proxy:v1.13.12
 k8s.gcr.io/kube-scheduler:v1.13.12
+apacheignite/ignite:2.5.0

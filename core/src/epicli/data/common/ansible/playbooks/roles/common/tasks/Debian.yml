@@ -35,6 +35,7 @@
       - telnet
       - ufw 
       - jq
+      - unzip
     update_cache: yes 
     state: present  
 
