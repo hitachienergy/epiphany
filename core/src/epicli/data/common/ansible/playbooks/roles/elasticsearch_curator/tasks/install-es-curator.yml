@@ -1,5 +1,5 @@
 ---
-# This file is meant to be used also by upgrade role
+# This file is meant to be also used by upgrade role
 
 - name: Install Elasticsearch Curator ({{ ansible_os_family }})
   include_tasks: "{{ ansible_os_family }}.yml"

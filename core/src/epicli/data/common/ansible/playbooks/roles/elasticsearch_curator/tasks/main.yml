@@ -1,27 +1,6 @@
 ---
 - name: Include installation tasks
-  include_tasks: install-package.yml
+  include_tasks: install-es-curator.yml
 
-- name: Configure cron jobs for Elasticsearch Curator
-  cron:
-    name: "{{ item.name }}"
-    job: "{{ item.job }}"
-    minute: "{{ item.minute | default('*') }}"
-    hour: "{{ item.hour | default('*') }}"
-    day: "{{ item.day | default('*') }}"
-    weekday: "{{ item.weekday | default('*') }}"
-    month: "{{ item.month | default('*') }}"
-  with_items: "{{ specification.elasticsearch_curator_cron_jobs }}"
-  when: specification.elasticsearch_curator_cron_jobs is defined
-
-- name: Configure cron jobs for Elasticsearch Curator
-  cron:
-    name: "{{ item.name }}"
-    job: "{{ item.job }}"
-    minute: "{{ item.minute | default('*') }}"
-    hour: "{{ item.hour | default('*') }}"
-    day: "{{ item.day | default('*') }}"
-    weekday: "{{ item.weekday | default('*') }}"
-    month: "{{ item.month | default('*') }}"
-  with_items: "{{ elasticsearch_curator_cron_jobs }}"
-  when: not specification.elasticsearch_curator_cron_jobs is defined
+- name: Include configuration tasks
+  include_tasks: configure-cron-jobs.yml

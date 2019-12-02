@@ -1,8 +1,5 @@
 ---
-# Ansible playbook that installs and configures Elasticsearch Curator
-- hosts: elasticsearch
-  gather_facts: yes
-  tasks: [ ]
+# Ansible playbook that installs Elasticsearch Curator and configures cron jobs that delete indices
 
 - hosts: elasticsearch_curator
   become: true
