@@ -1,4 +1,19 @@
 ---
+
+- name: Prepare list of cron jobs based on configuration
+  set_fact:
+    curator_cron_jobs: >-
+      {{ curator_cron_jobs | default([])
+         + [ { 'cmd': curator_cmd, 'cron': item.cron, 'config_hash': job_config_hash } ] }}
+  vars:
+    curator_cmd: curator_cli --host '{{ elasticsearch_ip }}' delete_indices
+      --filter_list '{{ item.filter_list | to_json(separators=(',',':')) }}'
+      --ignore_empty_list                        # separators used to remove spaces
+    job_config_hash: "{{ item | string | hash('sha1') }}"
+  loop: "{{ specification.delete_indices_cron_jobs }}"
+  when:
+    - specification.delete_indices_cron_jobs is defined
+
 - name: Remove old Ansible managed Elasticsearch Curator cron jobs
   block:
     - name: Get crontab
@@ -9,7 +24,10 @@
     - name: Get Ansible managed Elasticsearch Curator cron jobs
       set_fact:
         managed_curator_cron_jobs: >-
-          {{ managed_curator_cron_jobs | default([]) + [ item | regex_replace('^[^:]+:\s*', '', ignorecase=True) ] }}
+          {{ managed_curator_cron_jobs | default([])
+             + [ { 'name':        item | regex_replace('^[^:]+:\s*', '', ignorecase=True),
+                   'config_hash': item | regex_replace('.*config_hash: ([a-f0-9]+).*', '\1')
+                 } ] }}
       loop_control:
         extended: yes
       loop: "{{ crontab.stdout_lines }}"
@@ -20,54 +38,52 @@
 
     - name: Remove old Ansible managed Elasticsearch Curator cron jobs
       cron:
-        name: "{{ item }}"
+        name: "{{ item.name }}"
         state: absent
       loop: "{{ managed_curator_cron_jobs }}"
-      when: managed_curator_cron_jobs is defined
+      when:
+        - managed_curator_cron_jobs is defined
+        - curator_cron_jobs is undefined
+          or (curator_cron_jobs | selectattr('config_hash','equalto', item.config_hash) | list | count == 0)
 
-- name: Configure cron jobs that delete Elasticsearch indices
+- name: Test curator_cli commands for new cron jobs
   block:
-    - name: Set curator_cli commands for cron jobs
-      set_fact:
-        curator_cli_cmds: "{{ curator_cli_cmds | default([]) + [ curator_cmd ] }}"
-      vars:
-        curator_cmd: curator_cli --host '{{ elasticsearch_ip }}' delete_indices
-          --filter_list '{{ item.filter_list | to_json(separators=(',',':')) }}'
-          --ignore_empty_list                        # separators used to remove spaces
-      loop: "{{ specification.delete_indices_cron_jobs }}"
-
-    - name: Test curator_cli commands with --dry-run
+    - name: Test curator_cli commands for new cron jobs with --dry-run
       command: "{{ curator_test_cmd }}"
       changed_when: false
       failed_when: false
       register: result
       vars:
-        curator_test_cmd: "{{ item | replace('curator_cli', 'curator_cli --dry-run') }}"
+        curator_test_cmd: "{{ item.cmd | replace('curator_cli', 'curator_cli --dry-run') }}"
       loop_control:
         label: "{{ curator_test_cmd }}"
-      loop: "{{ curator_cli_cmds }}"
+      loop: "{{ curator_cron_jobs }}"
+      when:
+       - managed_curator_cron_jobs is undefined
+         or (managed_curator_cron_jobs | selectattr('config_hash','equalto', item.config_hash) | list | count == 0)
 
     - name: Check test results
       assert:
         that: item.rc == 0
         quiet: true
       loop_control:
-        label: "{{ item.cmd }}"
+        label: "{{ item.cmd | default('skipped') }}"
       loop: "{{ result.results }}"
-
-    - name: Configure cron jobs that delete Elasticsearch indices
-      cron:
-        # NOTE: name should be unique since changing it will result in a new cron task being created
-        name: "Elasticsearch Curator job that deletes indices #{{ ansible_loop.index }}"
-        job: "{{ curator_cli_cmds[ansible_loop.index0] }}"
-        minute:   "{{ item.cron.minute       | default('*') }}"
-        hour:     "{{ item.cron.hour         | default('*') }}"
-        day:      "{{ item.cron.day          | default('*') }}"
-        weekday:  "{{ item.cron.weekday      | default('*') }}"
-        month:    "{{ item.cron.month        | default('*') }}"
-        disabled: "{{ not (item.cron.enabled | default(True)) }}"
-      loop_control:
-        extended: yes
-      loop: "{{ specification.delete_indices_cron_jobs }}"
+      when: item.rc is defined
   when:
-    - specification.delete_indices_cron_jobs is defined
+    - curator_cron_jobs is defined
+
+- name: Configure cron jobs that delete Elasticsearch indices
+  cron:
+    # NOTE: name should be unique since changing it will result in a new cron task being created
+    name: "Elasticsearch Curator job that deletes indices, config_hash: {{ item.config_hash }}"
+    job: "{{ item.cmd }}"
+    minute:   "{{ item.cron.minute       | default('*') }}"
+    hour:     "{{ item.cron.hour         | default('*') }}"
+    day:      "{{ item.cron.day          | default('*') }}"
+    weekday:  "{{ item.cron.weekday      | default('*') }}"
+    month:    "{{ item.cron.month        | default('*') }}"
+    disabled: "{{ not (item.cron.enabled | default(True)) }}"
+  loop: "{{ curator_cron_jobs }}"
+  when:
+    - curator_cron_jobs is defined
