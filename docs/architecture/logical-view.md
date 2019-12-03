@@ -65,7 +65,7 @@ Docker containers | Kubernetes components that run in a container
 
 `Elasticsearch Curator` is component that manages and cleans indices and snapshots. Epiphany uses `Elasticsearch Curator` to ensure that centralized logging will not completely fill disk space.
 
-[Read more](https://www.elastic.co/guide/en/elasticsearch/client/curator/5.5/index.html)
+[Read more](https://www.elastic.co/guide/en/elasticsearch/client/curator/5.8/index.html)
 
 ### Kibana
 
