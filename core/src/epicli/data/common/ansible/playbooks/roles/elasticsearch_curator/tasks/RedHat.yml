@@ -1,6 +1,6 @@
-- name: Install Elasticsearch-Curator package
+- name: Install elasticsearch-curator package
   yum:
     name:
-      - elasticsearch-curator
+      - elasticsearch-curator-{{ versions.elasticsearch_curator }}
     update_cache: yes
     state: present
