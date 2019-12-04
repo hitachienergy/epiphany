@@ -5,6 +5,7 @@
     path: "{{ configuration_temp_directory }}"
     state: directory
   become_user: "{{ admin_user.name }}"
+  delegate_to: "{{ groups['kubernetes_master'] | first }}"
 
 - name: Upload and deploy Ignite
   become: yes
@@ -14,9 +15,11 @@
     owner: "{{ admin_user.name }}"
     group: "{{ admin_user.name }}"
     mode: 0644
+  delegate_to: "{{ groups['kubernetes_master'] | first }}"
 
 - name: Apply {{ file_name }} file
   environment:
     KUBECONFIG: /home/{{ admin_user.name }}/.kube/config
   shell: kubectl apply -f {{ configuration_temp_directory }}/{{ file_name }}
   become_user: "{{ admin_user.name }}"
+  delegate_to: "{{ groups['kubernetes_master'] | first }}"

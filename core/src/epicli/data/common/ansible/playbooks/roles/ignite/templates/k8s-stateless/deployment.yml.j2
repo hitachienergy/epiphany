@@ -1,4 +1,4 @@
-
+#jinja2: trim_blocks:False
 ---
 # An example of a Kubernetes configuration for Ignite pods deployment.
 apiVersion: extensions/v1beta1
@@ -22,7 +22,7 @@ spec:
         image: {{ image_registry_address }}/{{ specification.deployment.stateless_k8s.image_path }}
         env:
         - name: OPTION_LIBS
-          value: ignite-kubernetes,ignite-rest-http
+          value: {% for plugin in specification.deployment.stateless_k8s.enabled_plugins %}{{ plugin }}{{ "," if not loop.last else "" }}{% endfor %}
         - name: CONFIG_URI
           value: /ignite-config/ignite-config.xml
         ports:

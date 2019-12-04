@@ -10,12 +10,12 @@
   until: output is succeeded
 
 - name: Upload and deploy Ignite
-  include_tasks: "./deploy-on-kubernetes.yml"
-  delegate_to: "{{ groups['kubernetes_master'] | first }}"
+  include: "./deploy-on-kubernetes.yml"
   vars:
     file_name: "{{ item }}"
   with_items:
   - "namespace.yml"
   - "configmap.yml"
   - "rbac.yml"
-  - "deployment"
+  - "deployment.yml"
+  - "service.yml"
