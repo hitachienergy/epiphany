@@ -26,21 +26,29 @@
     state: present
   when: ansible_os_family == "Debian"
 
+- name: Set java home variable
+  shell: "which java | xargs readlink -f | xargs dirname | xargs dirname"
+  register: java_home_location
+  failed_when: "java_home_location.rc != 0"
+  changed_when: false
+
 - name: Set JAVA_HOME environment variable
   lineinfile: 
     path: /etc/environment 
     state: present 
     regexp: '^JAVA_HOME' 
-    line: 'JAVA_HOME=/usr/lib/jvm/java-1.8.0-openjdk-amd64/bin'
+    line: 'JAVA_HOME={{ java_home_location.stdout }}'
 
 - name: Set Apache Ignite file name to install
   set_fact:
     ignite_file_name: "{{ specification.deployment.machine.file_name }}"
+  changed_when: false
 
 - name: Check if Ignite in current version exists
   stat:
     path: /opt/ignite_{{ specification.deployment.machine.version }}/bin/ignite.sh
   register: ignite_exists
+  changed_when: false
 
 - name: Download Ignite binaries
   include_role:
@@ -130,7 +138,7 @@
     daemon_reload: yes
   when: ignite_systemd_service_created is changed
 
-- name: start ignite
+- name: Start ignite
   become: yes
   become_user: root
   service:
