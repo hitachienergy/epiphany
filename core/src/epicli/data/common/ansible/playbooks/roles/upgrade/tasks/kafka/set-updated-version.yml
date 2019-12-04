@@ -1,16 +1,17 @@
 ---
 - name: Check if server.properties file exists
   stat:
-    path: "{{ specification.kafka_var.conf_dir }}/server.properties"
+    path: /opt/kafka/config/server.properties
   changed_when: False
 
 - name: Modify inter.broker.protocol.version property
   lineinfile:
-    path: "{{ specification.kafka_var.conf_dir }}/server.properties"
+    path: /opt/kafka/config/server.properties
     regexp: "^inter.broker.protocol.version"
     line: "inter.broker.protocol.version={{ specification.kafka_var.version }}"
 
 - name: Restart kafka service
-  service:
+  systemd:
     name: kafka
-    state: restarted
+    state: started
+    daemon-reload: yes

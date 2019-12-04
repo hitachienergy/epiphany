@@ -11,7 +11,7 @@ curl
 docker-ce 5:18.09
 docker-ce-cli 5:18.09
 ebtables
-elasticsearch-curator
+elasticsearch-curator 5.8.1
 elasticsearch-oss 6.4.0
 erlang-nox
 ethtool

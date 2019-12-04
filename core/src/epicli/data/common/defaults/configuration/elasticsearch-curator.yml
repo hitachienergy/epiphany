@@ -1,7 +1,25 @@
 kind: configuration/elasticsearch-curator
-title: "ElasticSearch curator"
+title: Elasticsearch Curator
 name: default
 specification:
-  indices_retention_days: 30
-  debian_curator_version: "5.5.4_amd64"
-  redhat_curator_version: "5.5.4-1.x86_64"
+  delete_indices_cron_jobs:
+    - description: Delete indices older than N days
+      cron:
+        hour: 1
+        minute: 0
+        enabled: true
+      filter_list:
+        - filtertype: age
+          unit_count: 30
+          unit: days
+          source: creation_date
+          direction: older
+    - description: Delete the oldest indices to not consume more than N gigabytes of disk space
+      cron:
+        minute: 30
+        enabled: true
+      filter_list:
+        - filtertype: space
+          disk_space: 20
+          use_age: True
+          source: creation_date

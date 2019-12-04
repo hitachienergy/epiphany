@@ -60,7 +60,8 @@
     KUBECONFIG: /home/{{ admin_user.name }}/.kube/config
   shell: kubectl drain {{ inventory_hostname }} --ignore-daemonsets --delete-local-data
   when:
-    - groups['kubernetes_node'] is defined and groups['kubernetes_node']|list|length > 0 # drain master only if there is at least one worker node
+    - groups['kubernetes_node'] is defined
+    - groups['kubernetes_node']|length > 0 # drain master only if there is at least one worker node
 
 - name: upgrade-master | Wait for cluster's readiness
   include_tasks: wait.yml
@@ -109,6 +110,8 @@
     state: restarted
     daemon_reload: yes
     name: kubelet
+  when:
+    - is_docker_updatable is undefined or not is_docker_updatable
 
 - name: upgrade-master | Wait for cluster's readiness
   include_tasks: wait.yml
@@ -121,29 +124,9 @@
   until: output is succeeded
   retries: 5
   delay: 5
-
-- name: upgrade-master | Get nodes with noschedule-
-  shell: kubectl --kubeconfig=/home/{{ admin_user.name }}/.kube/config get nodes -o jsonpath-file=/home/{{ admin_user.name }}/jsonpath.json | grep -v NoSchedule | grep -c -i {{ inventory_hostname }}
-  become_user: "{{ admin_user.name }}"
-  register: untainted_nodes_list
-  failed_when: "untainted_nodes_list.rc == 2"
   when:
-    - groups['kubernetes_master'][0] == inventory_hostname
-
-- name: upgrade-master | Check if master should be untainted
-  set_fact:
-    untaint_master: True
-  when:
-    - groups['kubernetes_master'] is defined
-    - untainted_nodes_list.stdout_lines[0]|int == 0
-    - (groups['kubernetes_master']|list|length == 1) and (groups['kubernetes_node'] is defined and groups['kubernetes_node']|list|length == 0)
-  changed_when: false
-
-- name: upgrade-master | Untaint master
-  shell: "kubectl --kubeconfig=/home/{{ admin_user.name }}/.kube/config taint node {{ groups['kubernetes_master'][0] }} node-role.kubernetes.io/master:NoSchedule-"
-  become_user: "{{ admin_user.name }}"
-  when:
-    - untaint_master is defined and untaint_master == True
+    - groups['kubernetes_node'] is defined
+    - groups['kubernetes_node']|length > 0 # master is drained only if there is at least one worker node
 
 - name: upgrade-master | Verify cluster version
   include_tasks: verify-upgrade.yml

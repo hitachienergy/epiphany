@@ -1,8 +1,8 @@
 ---
-- name: Check if current_kafka_version property is defined 
+- name: Check if kafka_version_preference property is defined 
   shell: >-
     set -o pipefail && 
-    grep "^CURRENT_KAFKA_VERSION" {{ specification.kafka_var.conf_dir }}/server.properties
+    grep "^CURRENT_KAFKA_VERSION" /opt/kafka/config/server.properties
   register: current_kafka_version_property
   failed_when:
     - result.rc == 2
@@ -12,14 +12,14 @@
 
 - name: Add current_kafka_version property
   lineinfile:
-    path: "{{ specification.kafka_var.conf_dir }}/server.properties"
-    line: "CURRENT_KAFKA_VERSION={{ current_kafka_version.stdout }}"
+    path: /opt/kafka/config/server.properties
+    line: "CURRENT_KAFKA_VERSION={{ before_upgrade_kafka_version.stdout }}"
   when: current_kafka_version_property.stdout == ""
 
 - name: Check if inter.broker.protocol.version property is defined
   shell: >-
     set -o pipefail &&
-    grep "^inter.broker.protocol.version" {{ specification.kafka_var.conf_dir }}/server.properties
+    grep "^inter.broker.protocol.version" /opt/kafka/config/server.properties
   register: inter_broker_protocol_version_property
   failed_when:
     - result.rc == 2
@@ -29,6 +29,6 @@
 
 - name: Add inter.broker.protocol.version property
   lineinfile:
-    path: "{{ specification.kafka_var.conf_dir }}/server.properties"
-    line: "inter.broker.protocol.version={{ current_kafka_version.stdout }}"
+    path: /opt/kafka/config/server.properties
+    line: "inter.broker.protocol.version={{ before_upgrade_kafka_version.stdout }}"
   when: inter_broker_protocol_version_property.stdout == ""

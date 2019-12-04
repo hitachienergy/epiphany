@@ -39,3 +39,5 @@ specification:
     - name: Ubuntu
       comparison_operator: "=="
       version: 18.04
+  versions: # versions to install or upgrade to (please keep alphabetical order)
+    elasticsearch_curator: "5.8.1"

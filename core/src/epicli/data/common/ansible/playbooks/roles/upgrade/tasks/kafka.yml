@@ -1,6 +1,10 @@
 ---
-- name: Check prerequisits
-  include_tasks: kafka/pre-check.yml
+- name: include vars
+  include_vars:
+    file: roles/kafka/defaults/main.yml
+
+- name: Preflight check
+  include_tasks: kafka/preflight-check.yml
 
 - name: Include upgrade tasks
   block:
@@ -17,9 +21,9 @@
 
   - name: Include kafka version set
     include_tasks: kafka/set-updated-version.yml
-  when: >
-    current_kafka_version.stdout is version( specification.kafka_var.version , '<' ) or
-    (current_kafka_version.stdout is version( specification.kafka_var.version , '<=' ) and lock_file_status.stat.exists == True)
+  when:
+    - before_upgrade_kafka_version.stdout is defined
+    - lock_file_status.stat.exists or before_upgrade_kafka_version.stdout is version( specification.kafka_var.version , '<' )
 
 - name: Remove lock file
   file:
