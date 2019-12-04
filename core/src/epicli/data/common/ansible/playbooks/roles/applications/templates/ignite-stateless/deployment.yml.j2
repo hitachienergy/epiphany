@@ -6,10 +6,10 @@ kind: Deployment
 metadata:
   # Custom Ignite cluster's name.
   name: ignite-cluster
-  namespace: {{ specification.deployment.stateless_k8s.namespace }}
+  namespace: {{ data.namespace }}
 spec:
   # A number of Ignite pods to be started by Kubernetes initially.
-  replicas: {{ specification.deployment.stateless_k8s.replicas }}
+  replicas: {{ data.replicas }}
   template:
     metadata:
       labels:
@@ -19,10 +19,10 @@ spec:
       containers:
         # Custom Ignite pod name.
       - name: ignite-node
-        image: {{ image_registry_address }}/{{ specification.deployment.stateless_k8s.image_path }}
+        image: {{ image_registry_address }}/{{ data.image_path }}
         env:
         - name: OPTION_LIBS
-          value: {% for plugin in specification.deployment.stateless_k8s.enabled_plugins %}{{ plugin }}{{ "," if not loop.last else "" }}{% endfor %}
+          value: {% for plugin in data.enabled_plugins %}{{ plugin }}{{ "," if not loop.last else "" }}{% endfor %}
         - name: CONFIG_URI
           value: /ignite-config/ignite-config.xml
         ports:

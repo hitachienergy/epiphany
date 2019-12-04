@@ -6,7 +6,7 @@ metadata:
   labels:
     app: ignite
   name: ignite
-  namespace: {{ specification.deployment.stateless_k8s.namespace }}
+  namespace: {{ data.namespace }}
 data:
   ignite-config.xml: |
     <?xml version="1.0" encoding="UTF-8"?>
@@ -24,7 +24,7 @@ data:
         <bean class="org.apache.ignite.spi.discovery.tcp.TcpDiscoverySpi">
         <property name="ipFinder">
             <bean class="org.apache.ignite.spi.discovery.tcp.ipfinder.kubernetes.TcpDiscoveryKubernetesIpFinder">
-            <property name="namespace" value="{{ specification.deployment.stateless_k8s.namespace }}"/>
+            <property name="namespace" value="{{ data.namespace }}"/>
             </bean>
         </property>
         </bean>

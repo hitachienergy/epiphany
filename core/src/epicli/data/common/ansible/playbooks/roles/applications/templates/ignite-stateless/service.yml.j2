@@ -5,22 +5,22 @@ metadata:
   # The name must be equal to TcpDiscoveryKubernetesIpFinder.serviceName
   name: ignite
   # The name must be equal to TcpDiscoveryKubernetesIpFinder.namespaceName
-  namespace: {{ specification.deployment.stateless_k8s.namespace }}
+  namespace: {{ data.namespace }}
 spec:
   type: LoadBalancer
   ports:
     - name: rest
       port: 8080
       targetPort: 8080
-      nodePort: {{ specification.deployment.stateless_k8s.rest_nodeport }} 
+      nodePort: {{ data.service.rest_nodeport }} 
     - name: sql
       port: 10800
       targetPort: 10800
-      nodePort: {{ specification.deployment.stateless_k8s.sql_nodeport }}
+      nodePort: {{ data.service.sql_nodeport }}
     - name: thinclients
       port: 10900
       targetPort: 10900
-      nodePort: {{ specification.deployment.stateless_k8s.thinclients_nodeport }}
+      nodePort: {{ data.service.thinclients_nodeport }}
   # Optional - remove 'sessionAffinity' property if the Ignite cluster
   # and applications deployed within Kubernetes
   sessionAffinity: ClientIP   

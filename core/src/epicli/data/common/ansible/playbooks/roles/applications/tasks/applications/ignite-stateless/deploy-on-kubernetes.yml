@@ -11,7 +11,7 @@
   become: yes
   template:
     dest: "{{ configuration_temp_directory }}/{{ file_name }}"
-    src: k8s-stateless/{{ file_name }}.j2
+    src: ignite-stateless/{{ file_name }}.j2
     owner: "{{ admin_user.name }}"
     group: "{{ admin_user.name }}"
     mode: 0644
