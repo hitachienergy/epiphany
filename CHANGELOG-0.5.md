@@ -4,5 +4,5 @@
 
 ### Changed
 
-- [#763](https://github.com/epiphany-platform/epiphany/pull/763) - Flexible configuration of Elasticsearch Curator cron jobs
-- [#763](https://github.com/epiphany-platform/epiphany/pull/763) - Elasticsearch Curator updated to v5.8.1
+- [#763](https://github.com/epiphany-platform/epiphany/pull/763) - Elasticsearch Curator: Flexible configuration of cron jobs
+- [#763](https://github.com/epiphany-platform/epiphany/pull/763) - Elasticsearch Curator: Upgrade to v5.8.1

@@ -20,6 +20,9 @@
       command: crontab -l
       register: crontab
       changed_when: false
+      failed_when:
+        - crontab.rc != 0
+        - crontab.stderr is not match('no crontab for')
 
     - name: Get Ansible managed Elasticsearch Curator cron jobs
       set_fact:
@@ -73,7 +76,7 @@
   when:
     - curator_cron_jobs is defined
 
-- name: Configure cron jobs that delete Elasticsearch indices
+- name: Create cron jobs that delete Elasticsearch indices
   cron:
     # NOTE: name should be unique since changing it will result in a new cron task being created
     name: "Elasticsearch Curator job that deletes indices, config_hash: {{ item.config_hash }}"
