@@ -95,7 +95,7 @@
   loop: "{{ specification.enabled_plugins }}"
   register: plugins_installed
 
-- name: Set Ignite ip discovery list
+- name: Set Ignite IP discovery list
   set_fact:
     ip_discovery_list: "{{ lookup('template', 'ip-discovery.xml.j2') }}"
   changed_when: false
