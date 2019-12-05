@@ -1,6 +1,6 @@
 ---
 # tasks file for ignite
-- name: add ignite group
+- name: Add ignite group
   become: yes
   become_user: root
   group:
