@@ -29,7 +29,7 @@
   register: java_home_location
   changed_when: false
 
-- name: Set JAVA_HOME environment variable
+- name: Set JAVA_HOME environment variable for all users
   lineinfile: 
     path: /etc/environment 
     state: present 
