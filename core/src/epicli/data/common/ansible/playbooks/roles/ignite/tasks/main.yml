@@ -102,7 +102,6 @@
 - name: Prepare Ignite configuration
   set_fact:
     ignite_configuration: "{{ specification.config | replace('IP_LIST_PLACEHOLDER',ip_discovery_list) }}"
-  changed_when: false
 
 - name: Create Ignite config file
   template:
