@@ -1,0 +1,20 @@
+---
+- name: Configure network.host in elasticsearch.yml
+  lineinfile:
+    path: /etc/elasticsearch/elasticsearch.yml
+    state: present
+    regexp: '^[#]*network.host:'
+    line: "network.host: {{ host_ip }}"
+  register: change_config
+
+- name: Restart elasticsearch service
+  systemd:
+    name: elasticsearch
+    state: restarted
+  when: change_config.changed
+
+- name: Enable and start elasticsearch service
+  systemd:
+    name: elasticsearch
+    state: started
+    enabled: yes

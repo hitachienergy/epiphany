@@ -1,14 +1,14 @@
 # splitted to separate tasks to make it work on Debian/Ubuntu:
 # https://github.com/elastic/elasticsearch/issues/33607#issue-359124678
 
-- name: Install prerequisites for Elasticsearch
-  apt: 
+- name: Install Elasticsearch prerequisites
+  apt:
     name:
       - openjdk-8-jre-headless
     state: present
 
 - name: Install Elasticsearch package
-  apt: 
+  apt:
     name:
-      - elasticsearch-oss
+      - elasticsearch-oss={{ specification.elasticsearch_version }}
     state: present

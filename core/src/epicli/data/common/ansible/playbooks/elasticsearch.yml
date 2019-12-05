@@ -1,8 +1,5 @@
 ---
-# Ansible playbook that makes sure the base items for all nodes are installed
-- hosts: all
-  gather_facts: yes
-  tasks: [ ]
+# Ansible playbook for installing Elasticsearch
 
 - hosts: elasticsearch
   become: true

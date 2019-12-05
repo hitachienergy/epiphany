@@ -12,7 +12,7 @@ docker-ce 5:18.09
 docker-ce-cli 5:18.09
 ebtables
 elasticsearch-curator 5.8.1
-elasticsearch-oss 6.4.0
+elasticsearch-oss 6.8.5
 erlang-nox
 ethtool
 filebeat 6.5.4
@@ -173,4 +173,3 @@ k8s.gcr.io/kube-apiserver:v1.13.12
 k8s.gcr.io/kube-controller-manager:v1.13.12
 k8s.gcr.io/kube-proxy:v1.13.12
 k8s.gcr.io/kube-scheduler:v1.13.12
-

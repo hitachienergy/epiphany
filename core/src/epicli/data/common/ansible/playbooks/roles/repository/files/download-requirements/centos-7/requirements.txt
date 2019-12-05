@@ -30,7 +30,7 @@ docker-ce-18.09.9
 docker-ce-cli-18.09.9
 ebtables
 elasticsearch-curator-5.8.1
-elasticsearch-oss-6.4.0
+elasticsearch-oss-6.8.5
 erlang-21.3.8.7
 ethtool
 filebeat-6.5.4 # actually it's filebeat-oss
@@ -112,8 +112,6 @@ kubelet-1.12.10
 kubeadm-1.13.12
 kubectl-1.13.12
 kubelet-1.13.12
-
-
 
 [files]
 https://github.com/prometheus/haproxy_exporter/releases/download/v0.10.0/haproxy_exporter-0.10.0.linux-amd64.tar.gz

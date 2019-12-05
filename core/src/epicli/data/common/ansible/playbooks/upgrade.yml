@@ -54,6 +54,14 @@
 # 1.13.12
 # 1.14.8
 
+- hosts: elasticsearch
+  become: true
+  become_method: sudo
+  tasks:
+    - import_role:
+        name: upgrade
+        tasks_from: elasticsearch
+
 - hosts: elasticsearch_curator
   become: true
   become_method: sudo

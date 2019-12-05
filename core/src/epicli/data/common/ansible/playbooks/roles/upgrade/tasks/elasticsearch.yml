@@ -1,0 +1,21 @@
+---
+- name: Get elasticsearch-oss package version
+  command: >-
+    {{ "rpm -q --queryformat '%{VERSION}\n' elasticsearch-oss"           if ansible_os_family == 'RedHat' else
+       "dpkg-query --showformat='${Version}\n' --show elasticsearch-oss" if ansible_os_family == 'Debian' else None }}
+  register: elasticsearch_version_before
+  changed_when: false
+  args:
+    warn: false # to avoid Ansible's warning about using rpm instead of yum
+
+- name: Print Elasticsearch versions
+  debug:
+    msg:
+      - "Installed version: {{ elasticsearch_version_before.stdout }}"
+      - "Target version: {{ specification.elasticsearch_version }}"
+
+- name: Update elasticsearch
+  import_role:
+    name: elasticsearch
+  when:
+    - specification.elasticsearch_version is version(elasticsearch_version_before.stdout, '>=')
