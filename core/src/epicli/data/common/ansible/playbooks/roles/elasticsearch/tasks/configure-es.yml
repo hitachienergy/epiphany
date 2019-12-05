@@ -12,6 +12,7 @@
     name: elasticsearch
     state: restarted
   when: change_config.changed
+     or (install_elasticsearch_package is defined and install_elasticsearch_package.changed)
 
 - name: Enable and start elasticsearch service
   systemd:

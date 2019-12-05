@@ -12,3 +12,4 @@
     name:
       - elasticsearch-oss={{ specification.elasticsearch_version }}
     state: present
+  register: install_elasticsearch_package
