@@ -36,7 +36,6 @@
 - name: Set Apache Ignite file name to install
   set_fact:
     ignite_file_name: "{{ specification.file_name }}"
-  changed_when: false
 
 - name: Check if Ignite in current version exists
   stat:
