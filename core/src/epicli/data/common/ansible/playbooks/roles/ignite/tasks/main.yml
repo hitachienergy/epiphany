@@ -92,7 +92,7 @@
     remote_src: yes
     src: "/opt/ignite/libs/optional/{{ item }}"
     dest: /opt/ignite/libs
-  with_items: "{{ specification.enabled_plugins }}"
+  loop: "{{ specification.enabled_plugins }}"
   register: plugins_installed
 
 - name: Set Ignite ip discovery list
