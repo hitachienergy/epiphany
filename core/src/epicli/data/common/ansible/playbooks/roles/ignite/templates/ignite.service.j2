@@ -1,0 +1,12 @@
+[Unit]
+Description=Apache Ignite Server
+
+[Service]
+Type=simple
+User=ignite
+WorkingDirectory=/opt/ignite
+ExecStart=/opt/ignite/bin/ignite.sh
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target

@@ -42,6 +42,8 @@ specification:
     - name: haproxy-exporter
       enabled: yes
     - name: applications
+      enabled: yes    
+    - name: ignite
       enabled: yes
   roles_mapping:
     kafka:
@@ -108,6 +110,10 @@ specification:
       - filebeat
     kubernetes_node:
       - kubernetes-node
+      - node-exporter
+      - filebeat    
+    ignite:
+      - ignite
       - node-exporter
       - filebeat
 

@@ -94,6 +94,7 @@ tar
 telnet
 tmux
 urw-base35-fonts # for grafana
+unzip
 vim-common # for vim
 vim-enhanced
 wget
@@ -118,6 +119,7 @@ https://github.com/prometheus/node_exporter/releases/download/v0.16.0/node_expor
 https://github.com/prometheus/prometheus/releases/download/v2.10.0/prometheus-2.10.0.linux-amd64.tar.gz
 https://github.com/prometheus/alertmanager/releases/download/v0.17.0/alertmanager-0.17.0.linux-amd64.tar.gz
 https://archive.apache.org/dist/zookeeper/zookeeper-3.4.12/zookeeper-3.4.12.tar.gz
+https://archive.apache.org/dist/ignite/2.7.6/apache-ignite-2.7.6-bin.zip
 
 [images]
 k8s.gcr.io/kube-apiserver:v1.14.6
@@ -138,6 +140,7 @@ calico/cni:v3.8.1
 calico/kube-controllers:v3.8.1
 registry:2
 # applications
+apacheignite/ignite:2.5.0
 jboss/keycloak:4.8.3.Final
 rabbitmq:3.7.10
 # K8s upgrade
@@ -157,3 +160,4 @@ k8s.gcr.io/kube-apiserver:v1.13.12
 k8s.gcr.io/kube-controller-manager:v1.13.12
 k8s.gcr.io/kube-proxy:v1.13.12
 k8s.gcr.io/kube-scheduler:v1.13.12
+
