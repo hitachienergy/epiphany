@@ -34,7 +34,7 @@
     path: /etc/environment 
     state: present 
     regexp: '^JAVA_HOME' 
-    line: 'JAVA_HOME={{ java_home_location.stdout }}'
+    line: JAVA_HOME="{{ java_home_location.stdout }}"
 
 - name: Set Apache Ignite file name to install
   set_fact:
