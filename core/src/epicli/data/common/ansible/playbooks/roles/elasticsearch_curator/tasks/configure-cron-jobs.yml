@@ -6,7 +6,7 @@
       {{ curator_cron_jobs | default([])
          + [ { 'cmd': curator_cmd, 'cron': item.cron, 'config_hash': job_config_hash } ] }}
   vars:
-    curator_cmd: curator_cli --host '{{ elasticsearch_ip }}' delete_indices
+    curator_cmd: curator_cli --host '{{ elasticsearch_host_ip }}' delete_indices
       --filter_list '{{ item.filter_list | to_json(separators=(',',':')) }}'
       --ignore_empty_list                        # separators used to remove spaces
     job_config_hash: "{{ item | string | hash('sha1') }}"
