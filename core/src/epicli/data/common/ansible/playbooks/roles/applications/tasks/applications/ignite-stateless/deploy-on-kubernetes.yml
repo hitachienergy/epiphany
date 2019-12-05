@@ -7,7 +7,7 @@
   become_user: "{{ admin_user.name }}"
   delegate_to: "{{ groups['kubernetes_master'] | first }}"
 
-- name: Upload and deploy Ignite
+- name: Upload {{ file_name }} file
   become: yes
   template:
     dest: "{{ configuration_temp_directory }}/{{ file_name }}"
