@@ -8,7 +8,6 @@
 
 - name: Add ignite user
   become: yes
-  become_user: root
   user:
     name: ignite
     group: ignite
