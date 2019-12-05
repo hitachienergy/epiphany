@@ -53,6 +53,7 @@ tar
 telnet
 tmux
 ufw
+unzip
 vim
 
 # for openjdk-8-jre-headless
@@ -119,7 +120,6 @@ kubeadm 1.13.12
 kubectl 1.13.12
 kubelet 1.13.12
 
-unzip
 
 [files]
 https://repo1.maven.org/maven2/io/prometheus/jmx/jmx_prometheus_javaagent/0.12.0/jmx_prometheus_javaagent-0.12.0.jar

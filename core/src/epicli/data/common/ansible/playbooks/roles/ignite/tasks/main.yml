@@ -57,12 +57,13 @@
     owner: ignite
     group: ignite
 
-- name: Uncompress the temp directory 
+- name: Uncompress {{ ignite_file_name }} to temp directory 
   unarchive:
     remote_src: yes
     src: "{{ download_directory }}/{{ ignite_file_name }}"
     dest: /tmp/ignite_{{ specification.version }}
     owner: ignite
+    group: ignite
     list_files: yes
   register: archive_contents
   when: not ignite_exists.stat.exists
@@ -123,7 +124,6 @@
 
 - name: Start ignite
   become: yes
-  become_user: root
   systemd:
     name: ignite
     enabled: yes

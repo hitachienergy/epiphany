@@ -94,6 +94,7 @@ tar
 telnet
 tmux
 urw-base35-fonts # for grafana
+unzip
 vim-common # for vim
 vim-enhanced
 wget
@@ -108,8 +109,6 @@ kubelet-1.12.10
 kubeadm-1.13.12
 kubectl-1.13.12
 kubelet-1.13.12
-
-unzip
 
 [files]
 https://github.com/prometheus/haproxy_exporter/releases/download/v0.10.0/haproxy_exporter-0.10.0.linux-amd64.tar.gz
