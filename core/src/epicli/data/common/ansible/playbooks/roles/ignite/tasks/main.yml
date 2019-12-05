@@ -2,7 +2,6 @@
 # tasks file for ignite
 - name: Add ignite group
   become: yes
-  become_user: root
   group:
     name: ignite
     state: present
