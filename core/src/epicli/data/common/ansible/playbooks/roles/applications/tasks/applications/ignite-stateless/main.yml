@@ -19,7 +19,7 @@
   include: "deploy-on-kubernetes.yml"
   vars:
     file_name: "{{ deployment_file }}"
-  with_items:
+  loop:
   - "namespace.yml"
   - "configmap.yml"
   - "rbac.yml"
