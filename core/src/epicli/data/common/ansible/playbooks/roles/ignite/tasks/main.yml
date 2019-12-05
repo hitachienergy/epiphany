@@ -6,7 +6,7 @@
     name: ignite
     state: present
 
-- name: add ignite user
+- name: Add ignite user
   become: yes
   become_user: root
   user:
