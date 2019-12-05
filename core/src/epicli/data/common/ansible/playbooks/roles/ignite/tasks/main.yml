@@ -148,7 +148,7 @@
 
 - name: Restart service
   become: yes
-  service: 
+  systemd: 
     name: ignite 
     state: restarted 
     enabled: yes
