@@ -148,7 +148,6 @@
 
 - name: Restart service
   become: yes
-  become_user: root
   service: 
     name: ignite 
     state: restarted 
