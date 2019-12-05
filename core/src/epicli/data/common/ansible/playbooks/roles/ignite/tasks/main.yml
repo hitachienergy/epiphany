@@ -150,5 +150,5 @@
   systemd: 
     name: ignite 
     state: restarted 
-    enabled: yes
+    daemon_reload: "{{ ignite_systemd_service_created.changed }}"
   when: plugins_installed.changed or ignite_configuration_created.changed
