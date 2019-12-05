@@ -45,7 +45,6 @@
   stat:
     path: /opt/ignite_{{ specification.version }}/bin/ignite.sh
   register: ignite_exists
-  changed_when: false
 
 - name: Download Ignite binaries
   include_role:
