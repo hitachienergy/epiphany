@@ -120,7 +120,7 @@ https://github.com/prometheus/node_exporter/releases/download/v0.16.0/node_expor
 https://github.com/prometheus/prometheus/releases/download/v2.10.0/prometheus-2.10.0.linux-amd64.tar.gz
 https://github.com/prometheus/alertmanager/releases/download/v0.17.0/alertmanager-0.17.0.linux-amd64.tar.gz
 https://archive.apache.org/dist/zookeeper/zookeeper-3.4.12/zookeeper-3.4.12.tar.gz
-https://www-us.apache.org/dist//ignite/2.7.6/apache-ignite-2.7.6-bin.zip
+https://archive.apache.org/dist/ignite/2.7.6/apache-ignite-2.7.6-bin.zip
 
 [images]
 k8s.gcr.io/kube-apiserver:v1.14.6
