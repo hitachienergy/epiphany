@@ -24,7 +24,7 @@
     state: present
   when: ansible_os_family == "Debian"
 
-- name: Set java home variable
+- name: Get path to set JAVA_HOME variable
   shell: "which java | xargs readlink -f | xargs dirname | xargs dirname"
   register: java_home_location
   failed_when: "java_home_location.rc != 0"
