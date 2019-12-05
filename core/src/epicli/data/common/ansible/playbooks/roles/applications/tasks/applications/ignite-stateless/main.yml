@@ -10,8 +10,8 @@
     KUBECONFIG: /home/{{ admin_user.name }}/.kube/config
   shell: kubectl cluster-info
   delegate_to: "{{ groups['kubernetes_master'] | first }}"
-  retries: 10
-  delay: 5
+  retries: 50
+  delay: 1
   register: output
   until: output is succeeded
 

@@ -121,25 +121,18 @@
     src: ignite.service.j2
   register: ignite_systemd_service_created
 
-- name: systemctl daemon-reload
-  become: yes
-  become_user: root
-  systemd:
-    daemon_reload: yes
-  when: ignite_systemd_service_created is changed
-
 - name: Start ignite
   become: yes
   become_user: root
-  service:
+  systemd:
     name: ignite
     enabled: yes
     state: started
+    daemon_reload: "{{ ignite_systemd_service_created.changed }}"
 
 - name: Restart Ignite service
   become: yes
   systemd: 
     name: ignite 
     state: restarted 
-    daemon_reload: "{{ ignite_systemd_service_created.changed }}"
   when: plugins_installed.changed or ignite_configuration_created.changed
