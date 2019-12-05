@@ -10,7 +10,7 @@ end
 
 describe 'Checking if the number of cron jobs on the system is the same as defined in the configuration file' do
   let(:disable_sudo) { false }
-  describe command("crontab -l | grep -i -c 'curator_cli'") do
+  describe command("crontab -l | grep -ic 'curator_cli'") do
     it "is expected to be equal" do
       expect(subject.stdout.to_i).to eq cron_jobs_list.length
     end
