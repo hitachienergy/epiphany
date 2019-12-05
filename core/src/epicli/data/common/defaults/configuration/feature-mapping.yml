@@ -42,6 +42,8 @@ specification:
     - name: haproxy-exporter
       enabled: yes
     - name: applications
+      enabled: yes    
+    - name: ignite
       enabled: yes
   roles_mapping:
     kafka:
