@@ -27,7 +27,6 @@
 - name: Get path to set JAVA_HOME variable
   shell: "which java | xargs readlink -f | xargs dirname | xargs dirname"
   register: java_home_location
-  failed_when: "java_home_location.rc != 0"
   changed_when: false
 
 - name: Set JAVA_HOME environment variable
