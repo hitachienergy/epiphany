@@ -13,7 +13,6 @@
 - name: Uncompress Kafka installation file
   unarchive:
     remote_src: yes
-    creates: /opt/kafka_{{ specification.kafka_var.scala.version }}-{{ specification.kafka_var.version }}
     src: "{{ download_directory }}/{{ kafka_installation_file_name }}"
     dest: /opt
 
@@ -40,19 +39,19 @@
 
 - name: Remove previous version binaries
   file:
-    path: /opt/kafka_{{ specification.kafka_var.scala.version }}-{{ before_upgrade_kafka_version.stdout }}
+    path: /opt/kafka_{{ specification.kafka_var.scala.version }}-{{ before_upgrade_kafka_version }}
     state: absent
 
-- name: Identify lost+found location
+- name: Get log.dirs property
   shell: >-
     set -o pipefail &&
     grep log.dirs /opt/kafka/config/server.properties | awk -F'=' '{print $2}'
-  register: log_dir
+  register: log_dirs
   changed_when: False
   args:
     executable: /bin/bash
 
-- name: Remove lost+found from the log.dir
+- name: Remove lost+found directory from log.dirs
   file:
-    path: "{{ log_dir.stdout }}/lost+found"
+    path: "{{ log_dirs.stdout }}/lost+found"
     state: absent

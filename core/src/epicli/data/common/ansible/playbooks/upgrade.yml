@@ -54,20 +54,28 @@
 # 1.13.12
 # 1.14.8
 
+- hosts: elasticsearch
+  become: true
+  become_method: sudo
+  tasks:
+    - import_role:
+        name: upgrade
+        tasks_from: elasticsearch
+
 - hosts: elasticsearch_curator
   become: true
   become_method: sudo
   tasks:
     - import_role:
-        name: elasticsearch_curator
-        tasks_from: install-es-curator # upgrade only package and do not change configured cron jobs
+        name: upgrade
+        tasks_from: elasticsearch-curator
 
 - hosts: kafka
   serial: 1
   become: true
   become_method: sudo
   tasks:
-  - import_role:
-      name: upgrade
-      tasks_from: kafka
-    vars: {lock_file: /var/tmp/upgrade-kafka-in-progress.flag}
+    - import_role:
+        name: upgrade
+        tasks_from: kafka
+      vars: {lock_file: /var/tmp/kafka-upgrade-in-progress.flag}

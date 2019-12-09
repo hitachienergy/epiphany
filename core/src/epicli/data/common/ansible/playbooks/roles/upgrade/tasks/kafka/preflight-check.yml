@@ -4,31 +4,8 @@
       path: /opt/kafka/bin/kafka-server-start.sh
     register: kafka_exec_file
 
-  - name: Assert kafka location
+  - name: Assert Kafka location
     assert:
       that:
         - kafka_exec_file.stat.exists
-      fail_msg: Kafka is not delivered by Epiphany - check your configuration
-
-  - name: Check for lock file
-    stat:
-      path: "{{ lock_file }}"
-    register: lock_file_status
-
-  - name: Create lock file
-    file:
-      path: "{{ lock_file }}"
-      state: touch
-    when: lock_file_status.stat.exists == False
-
-  - name: Check current Kafka version
-    shell: >-
-      set -o pipefail &&
-      /opt/kafka/bin/kafka-server-start.sh --version | grep Commit | grep -oP '^\d+\.\d+\.\d+'
-    register: result
-    args:
-      executable: /bin/bash
-
-  - name: Set variable current_kafka_version
-    set_fact:
-      before_upgrade_kafka_version: "{{ result }}"
+      fail_msg: Kafka not found in /opt/kafka (Epiphany default) - check your configuration
