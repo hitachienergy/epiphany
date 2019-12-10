@@ -1,0 +1,138 @@
+---
+# tasks file for ignite
+- name: Add ignite group
+  become: yes
+  group:
+    name: ignite
+    state: present
+
+- name: Add ignite user
+  become: yes
+  user:
+    name: ignite
+    group: ignite
+
+- name: Install Java package
+  package:
+    name: "{{ package_name[ansible_os_family] }}"
+    state: present
+  vars:
+    package_name:
+      Debian: openjdk-8-jre-headless
+      RedHat: java-1.8.0-openjdk-headless
+
+- name: Get path to set JAVA_HOME variable
+  shell: "which java | xargs readlink -f | xargs dirname | xargs dirname"
+  register: java_home_location
+  changed_when: false
+
+- name: Set JAVA_HOME environment variable for all users
+  lineinfile: 
+    path: /etc/environment 
+    state: present 
+    regexp: '^JAVA_HOME=' 
+    line: JAVA_HOME="{{ java_home_location.stdout }}"
+
+- name: Set Apache Ignite file name to install
+  set_fact:
+    ignite_file_name: "{{ specification.file_name }}"
+
+- name: Check if Ignite in current version exists
+  stat:
+    path: /opt/ignite_{{ specification.version }}/bin/ignite.sh
+  register: ignite_exists
+
+- name: Download Ignite binaries
+  include_role:
+    name: download
+    tasks_from: download_file
+  vars:
+    file_name: "{{ ignite_file_name }}"
+  when: not ignite_exists.stat.exists
+
+- name: Create temp directory
+  file:
+    path: /tmp/ignite_{{ specification.version }}
+    state: directory
+    owner: ignite
+    group: ignite
+
+- name: Uncompress {{ ignite_file_name }} to temp directory 
+  unarchive:
+    remote_src: yes
+    src: "{{ download_directory }}/{{ ignite_file_name }}"
+    dest: /tmp/ignite_{{ specification.version }}
+    owner: ignite
+    group: ignite
+    list_files: yes
+  register: archive_contents
+  when: not ignite_exists.stat.exists
+   
+- name: Create /opt/ignite_{{ specification.version }} directory
+  file:
+    path: /opt/ignite_{{ specification.version }}
+    state: directory
+    owner: ignite
+    group: ignite
+
+- name: Copy Ignite files from tmp location
+  copy:
+    remote_src: yes
+    src: "/tmp/ignite_{{ specification.version }}/{{ archive_contents.files[0].split('/')[0] }}/"
+    dest: /opt/ignite_{{ specification.version }}
+  when: not ignite_exists.stat.exists
+
+- name: Link /opt/ignite to the right version
+  file:
+    dest: /opt/ignite
+    state: link
+    src: /opt/ignite_{{ specification.version }}
+
+- name: Copy Ignite enabled plugins
+  copy:
+    remote_src: yes
+    src: "/opt/ignite/libs/optional/{{ item }}"
+    dest: /opt/ignite/libs
+  loop: "{{ specification.enabled_plugins }}"
+  register: plugins_installed
+
+- name: Set Ignite IP discovery list
+  set_fact:
+    ip_discovery_list: "{{ lookup('template', 'ip-discovery.xml.j2') }}"
+
+- name: Prepare Ignite configuration
+  set_fact:
+    ignite_configuration: "{{ specification.config | replace('IP_LIST_PLACEHOLDER',ip_discovery_list) }}"
+
+- name: Create Ignite config file
+  template:
+    dest: /opt/ignite/config/default-config.xml
+    owner: ignite
+    group: ignite
+    mode: 0644
+    src: default-config.xml.j2
+  register: ignite_configuration_created
+
+- name: Create systemd service
+  template:
+    dest: /etc/systemd/system/ignite.service
+    owner: ignite
+    group: ignite
+    mode: 0644
+    src: ignite.service.j2
+  register: ignite_systemd_service_created
+
+- name: Start ignite
+  become: yes
+  systemd:
+    name: ignite
+    enabled: yes
+    state: started
+    daemon_reload: "{{ ignite_systemd_service_created.changed }}"
+
+- name: Restart Ignite service
+  become: yes
+  systemd: 
+    name: ignite 
+    state: restarted 
+  when: plugins_installed.changed or ignite_configuration_created.changed

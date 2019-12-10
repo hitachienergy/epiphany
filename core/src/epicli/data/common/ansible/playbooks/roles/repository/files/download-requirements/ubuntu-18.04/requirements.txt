@@ -12,7 +12,7 @@ docker-ce 5:18.09
 docker-ce-cli 5:18.09
 ebtables
 elasticsearch-curator 5.8.1
-elasticsearch-oss 6.4.0
+elasticsearch-oss 6.8.5
 erlang-nox
 ethtool
 filebeat 6.5.4
@@ -53,6 +53,7 @@ tar
 telnet
 tmux
 ufw
+unzip
 vim
 
 # for openjdk-8-jre-headless
@@ -119,6 +120,7 @@ kubeadm 1.13.12
 kubectl 1.13.12
 kubelet 1.13.12
 
+
 [files]
 https://repo1.maven.org/maven2/io/prometheus/jmx/jmx_prometheus_javaagent/0.12.0/jmx_prometheus_javaagent-0.12.0.jar
 https://archive.apache.org/dist/kafka/2.3.1/kafka_2.12-2.3.1.tgz
@@ -129,6 +131,7 @@ https://github.com/prometheus/haproxy_exporter/releases/download/v0.10.0/haproxy
 https://github.com/prometheus/node_exporter/releases/download/v0.16.0/node_exporter-0.16.0.linux-amd64.tar.gz
 https://github.com/prometheus/prometheus/releases/download/v2.10.0/prometheus-2.10.0.linux-amd64.tar.gz
 https://packages.elastic.co/curator/5/debian9/pool/main/e/elasticsearch-curator/elasticsearch-curator_5.5.4_amd64.deb
+https://archive.apache.org/dist/ignite/2.7.6/apache-ignite-2.7.6-bin.zip
 
 [images]
 k8s.gcr.io/kube-apiserver:v1.14.6
@@ -149,6 +152,7 @@ calico/cni:v3.8.1
 calico/kube-controllers:v3.8.1
 registry:2
 # applications
+apacheignite/ignite:2.5.0
 jboss/keycloak:4.8.3.Final
 rabbitmq:3.7.10
 # K8s upgrade

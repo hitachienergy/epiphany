@@ -59,7 +59,7 @@ Docker containers | Kubernetes components that run in a container
 
 `Elasticsearch` is highly scalable and full-text search enabled analytics engine. Epiphany Platform uses it for storage and analysis of logs.
 
-[Read more](https://www.elastic.co/guide/en/elasticsearch/reference/current/index.html)
+[Read more](https://www.elastic.co/guide/en/elasticsearch/reference/6.8/index.html)
 
 ### Elasticsearch Curator
 

@@ -29,7 +29,7 @@ docker-ce-18.09.9
 docker-ce-cli-18.09.9
 ebtables
 elasticsearch-curator-5.8.1
-elasticsearch-oss-6.4.0
+elasticsearch-oss-6.8.5
 erlang-21.3.8.7
 ethtool
 filebeat-6.5.4 # actually it's filebeat-oss
@@ -94,6 +94,7 @@ tar
 telnet
 tmux
 urw-base35-fonts # for grafana
+unzip
 vim-common # for vim
 vim-enhanced
 wget
@@ -118,6 +119,7 @@ https://github.com/prometheus/node_exporter/releases/download/v0.16.0/node_expor
 https://github.com/prometheus/prometheus/releases/download/v2.10.0/prometheus-2.10.0.linux-amd64.tar.gz
 https://github.com/prometheus/alertmanager/releases/download/v0.17.0/alertmanager-0.17.0.linux-amd64.tar.gz
 https://archive.apache.org/dist/zookeeper/zookeeper-3.4.12/zookeeper-3.4.12.tar.gz
+https://archive.apache.org/dist/ignite/2.7.6/apache-ignite-2.7.6-bin.zip
 
 [images]
 k8s.gcr.io/kube-apiserver:v1.14.6
@@ -138,6 +140,7 @@ calico/cni:v3.8.1
 calico/kube-controllers:v3.8.1
 registry:2
 # applications
+apacheignite/ignite:2.5.0
 jboss/keycloak:4.8.3.Final
 rabbitmq:3.7.10
 # K8s upgrade

@@ -739,3 +739,45 @@ specification:
        destination_port_range: "0"
        source_address_prefix: "0.0.0.0/0"
        destination_address_prefix: "0.0.0.0/0"
+
+---
+kind: infrastructure/virtual-machine
+title: "Virtual Machine Infra"
+provider: aws
+name: ignite-machine
+specification:
+  size: t3.medium
+  security:
+    rules:
+     - name: ssh
+       description: Allow SSH
+       priority: 101
+       direction: Inbound
+       access: Allow
+       protocol: Tcp
+       source_port_range: "*"
+       destination_port_range: "22"
+       source_address_prefix: "0.0.0.0/0"
+       destination_address_prefix: "0.0.0.0/0"
+     - name: ignite_traffic
+       description: Allow traffic to Apache Ignite cluster
+       priority: 302
+       direction: Inbound
+       access: Allow
+       protocol: ALL
+       source_port_range: "*"
+       destination_from_port: 8080
+       destination_to_port: 48300
+       destination_port_range: "0"
+       source_address_prefix: "10.1.0.0/20"
+       destination_address_prefix: "10.1.0.0/20"
+     - name: out
+       description: Allow out
+       priority: 101
+       direction: Egress
+       access: Allow
+       protocol: "all"
+       source_port_range: "*"
+       destination_port_range: "0"
+       source_address_prefix: "0.0.0.0/0"
+       destination_address_prefix: "0.0.0.0/0"

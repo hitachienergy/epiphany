@@ -31,6 +31,7 @@
       - ethtool
       - telnet
       - jq
+      - unzip
     update_cache: yes
     state: present
   register: result
