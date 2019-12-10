@@ -8,7 +8,7 @@ Note that versions are default versions and can be changed in certain cases thro
 | Calico                | -       | https://github.com/projectcalico/calico               | [Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0) |
 | Flannel               | -       | https://github.com/coreos/flannel/                    | [Apache License](https://www.apache.org/licenses/LICENSE-1.0)     |
 | Canal                 | -       | https://github.com/projectcalico/calico               | [Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0) |
-| Kafka                 | 2.0.0   | https://github.com/apache/kafka                       | [Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0) |
+| Kafka                 | 2.3.1   | https://github.com/apache/kafka                       | [Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0) |
 | Zookeeper             | 3.4.12  | https://github.com/apache/zookeeper                   | [Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0) |
 | RabbitMQ              | 3.7.10  | https://github.com/rabbitmq/rabbitmq-server           | [Mozilla Public License](https://www.mozilla.org/en-US/MPL/)      |
 | Docker-ce             | 18.09.6 | https://github.com/docker/docker-ce/                  | [Apache License](https://www.apache.org/licenses/LICENSE-1.0)     |

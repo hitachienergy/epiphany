@@ -1,0 +1,11 @@
+---
+  - name: Check if Kafka is installed in default location
+    stat:
+      path: /opt/kafka/bin/kafka-server-start.sh
+    register: kafka_exec_file
+
+  - name: Assert Kafka location
+    assert:
+      that:
+        - kafka_exec_file.stat.exists
+      fail_msg: Kafka not found in /opt/kafka (Epiphany default) - check your configuration
