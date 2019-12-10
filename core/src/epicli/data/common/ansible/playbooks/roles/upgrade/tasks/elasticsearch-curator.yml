@@ -1,0 +1,24 @@
+---
+- name: Get information about installed packages as facts
+  package_facts:
+    manager: auto
+  when: ansible_facts.packages is undefined
+
+- name: Test if elasticsearch-curator package is installed
+  assert:
+    that: ansible_facts.packages['elasticsearch-curator'] is defined
+    fail_msg: elasticsearch-curator package not found, nothing to update
+    quiet: true
+
+- name: Print elasticsearch-curator version
+  debug:
+    msg:
+      - "Installed version: {{ ansible_facts.packages['elasticsearch-curator'][0].version }}"
+      - "Target version: {{ specification.curator_version }}"
+
+- name: Update elasticsearch-curator package
+  import_role:
+    name: elasticsearch_curator
+    tasks_from: install-es-curator # update only package and do not change configured cron jobs
+  when:
+    - specification.curator_version is version(ansible_facts.packages['elasticsearch-curator'][0].version, '>')

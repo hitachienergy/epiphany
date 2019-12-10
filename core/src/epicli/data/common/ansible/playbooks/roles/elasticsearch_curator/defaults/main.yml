@@ -1,2 +1,5 @@
 ---
-elasticsearch_ip: "{{ ansible_default_ipv4.address | default(ansible_all_ipv4_addresses[0]) }}"
+specification:
+  curator_version: "5.8.1" # used by upgrade playbook
+
+elasticsearch_host_ip: "{{ ansible_default_ipv4.address | default(ansible_all_ipv4_addresses[0]) }}"
