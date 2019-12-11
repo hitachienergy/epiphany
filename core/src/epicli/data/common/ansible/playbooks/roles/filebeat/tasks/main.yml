@@ -7,7 +7,7 @@
     - name: Set value for output.elasticsearch.hosts
       set_fact:
         output_elasticsearch_hosts: >-
-          {{ (hostvars[groups['elasticsearch'][0]].ansible_default_ipv4.address + ':9200') | list }}
+          {{ [(hostvars[groups['elasticsearch'][0]].ansible_default_ipv4.address + ':9200')] }}
       when:
         - groups['elasticsearch'][0] is defined
         - specification.custom_output_elasticsearch_hosts | length == 0
