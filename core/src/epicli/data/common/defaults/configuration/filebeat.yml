@@ -1,5 +1,6 @@
 kind: configuration/filebeat
-title: "Filebeat"
+title: Filebeat
 name: default
 specification:
-  filebeat_version: "6.5.4"
+  filebeat_version: "6.8.5"
+  custom_output_elasticsearch_hosts: []

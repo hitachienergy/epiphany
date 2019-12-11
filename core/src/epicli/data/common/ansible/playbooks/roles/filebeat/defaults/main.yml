@@ -1,3 +1,3 @@
-elastic_address: ""
-kibana_address: ""
-
+---
+specification:
+  filebeat_version: "6.8.5"

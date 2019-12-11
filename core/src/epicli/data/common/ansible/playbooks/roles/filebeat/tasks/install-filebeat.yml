@@ -1,0 +1,5 @@
+---
+# This file is meant to be also used by upgrade playbook
+
+- name: Install Filebeat ({{ ansible_os_family }})
+  include_tasks: "{{ ansible_os_family }}.yml"

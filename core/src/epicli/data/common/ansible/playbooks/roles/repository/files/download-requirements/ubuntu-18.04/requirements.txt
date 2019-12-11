@@ -15,7 +15,7 @@ elasticsearch-curator 5.8.1
 elasticsearch-oss 6.8.5
 erlang-nox
 ethtool
-filebeat 6.5.4
+filebeat 6.8.5
 fping
 gnupg2
 grafana 6.2.5

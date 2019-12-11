@@ -70,6 +70,14 @@
         name: upgrade
         tasks_from: elasticsearch-curator
 
+- hosts: filebeat
+  become: true
+  become_method: sudo
+  tasks:
+    - import_role:
+        name: upgrade
+        tasks_from: filebeat
+
 - hosts: kafka
   serial: 1
   become: true
@@ -78,4 +86,4 @@
     - import_role:
         name: upgrade
         tasks_from: kafka
-      vars: {lock_file: /var/tmp/kafka-upgrade-in-progress.flag}
+      vars: { lock_file: /var/tmp/kafka-upgrade-in-progress.flag }
