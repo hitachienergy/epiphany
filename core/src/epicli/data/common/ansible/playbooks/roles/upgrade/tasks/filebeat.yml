@@ -18,10 +18,6 @@
 
 - name: Update Filebeat
   block:
-    - import_role:
-        name: filebeat
-        tasks_from: install-filebeat
-
     - name: Get values for filebeat.yml template from existing configuration
       block:
         - name: Load /etc/filebeat/filebeat.yml
@@ -45,6 +41,10 @@
             setup_kibana_host: "{{ filebeat_exisitng_config['setup.kibana'].host }}"
           when:
             - filebeat_exisitng_config['setup.kibana'].host is defined
+
+    - import_role:
+        name: filebeat
+        tasks_from: install-filebeat
 
     - import_role:
         name: filebeat
