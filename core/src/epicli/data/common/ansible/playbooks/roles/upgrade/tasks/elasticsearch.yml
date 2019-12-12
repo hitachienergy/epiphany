@@ -22,7 +22,6 @@
     - name: Print Elasticsearch versions
       debug:
         msg:
-          - "Installed package: {{ elasticsearch_installed_package }}"
           - "Installed version: {{ ansible_facts.packages[elasticsearch_installed_package][0].version }}"
           - "Target version: {{ specification.elasticsearch_version }}"
 

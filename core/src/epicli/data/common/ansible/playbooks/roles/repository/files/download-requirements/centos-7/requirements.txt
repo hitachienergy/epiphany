@@ -33,7 +33,7 @@ elasticsearch-curator-5.8.1
 elasticsearch-oss-6.8.5
 erlang-21.3.8.7
 ethtool
-filebeat-6.5.4 # actually it's filebeat-oss
+filebeat-6.8.5 # actually it's filebeat-oss
 firewalld
 fontconfig # for grafana
 fping

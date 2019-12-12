@@ -10,7 +10,7 @@
     fail_msg: elasticsearch-curator package not found, nothing to update
     quiet: true
 
-- name: Print elasticsearch-curator version
+- name: Print elasticsearch-curator versions
   debug:
     msg:
       - "Installed version: {{ ansible_facts.packages['elasticsearch-curator'][0].version }}"

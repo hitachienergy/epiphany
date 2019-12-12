@@ -1,19 +1,29 @@
 ---
-# Filebeat
-- include_tasks: "{{ ansible_os_family }}.yml"  
+- name: Include installation tasks
+  include_tasks: install-filebeat.yml
+
+- name: Set facts for filebeat.yml template
+  block:
+    - name: Set value for output.elasticsearch.hosts
+      set_fact:
+        output_elasticsearch_hosts: >-
+          {{ [(hostvars[groups['elasticsearch'][0]].ansible_default_ipv4.address + ':9200')] }}
+      when:
+        - groups['elasticsearch'][0] is defined
+        - specification.custom_output_elasticsearch_hosts | length == 0
+
+    - name: Set custom value for output.elasticsearch.hosts
+      set_fact:
+        output_elasticsearch_hosts: "{{ specification.custom_output_elasticsearch_hosts }}"
+      when:
+        - specification.custom_output_elasticsearch_hosts | length > 0
+
+    - name: Set value for setup.kibana.host
+      set_fact:
+        setup_kibana_host: >-
+          {{ hostvars[groups['kibana'][0]].ansible_default_ipv4.address + ':5601' }}
+      when:
+        - groups['kibana'][0] is defined
 
 - name: Include configuration tasks
   include_tasks: configure-filebeat.yml
-
-# Trigger restart if configuration has changed
-- name: Flush handlers
-  meta: flush_handlers
-
-- name: Start Filebeat service
-  systemd:
-    name: filebeat
-    state: started
-
-- name: Verify Filebeat is running
-  command: systemctl is-active filebeat
-  changed_when: false
