@@ -40,7 +40,7 @@
 #   stat:
 #     path: "/tmp/kafka_{{ specification.kafka_var.scala.version }}-{{ specification.kafka_var.version }}.tgz"
 #   register: kafka_check
-  
+
 # - name: Fetch Kafka binary package
 #   get_url:
 #     url: "https://archive.apache.org/dist/kafka/{{ specification.kafka_var.version }}/kafka_{{ specification.kafka_var.scala.version }}-{{ specification.kafka_var.version }}.tgz"
@@ -151,6 +151,12 @@
   notify:
     - restart kafka
 
+- name: Generate certificate
+  include_tasks: generate-certificates.yml
+  when:
+    - specification.kafka_var.security.ssl.enable is defined
+    - specification.kafka_var.security.ssl.enable
+
 # Setup server.properties
 - name: Create server.properties
   template:
@@ -182,7 +188,7 @@
     - { limit_type: '-', limit_item: 'nproc', value: 128000 }
     - { limit_type: 'soft', limit_item: 'memlock', value: unlimited }
     - { limit_type: 'hard', limit_item: 'memlock', value: unlimited }
-    
+
 - name: reload settings from all system configuration files
   shell: sysctl --system
 
