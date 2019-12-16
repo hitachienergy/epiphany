@@ -68,17 +68,36 @@
   when:
     - not groups['kafka'][0] == inventory_hostname
 
+- name:
+  stat:
+    path: "{{ specification.kafka_var.security.ssl.server.truststore_location }}"
+  register: trustore_exists
+
 - name: Create trustore
   shell: keytool -noprompt -keystore "{{ specification.kafka_var.security.ssl.server.truststore_location }}" -alias CARoot \
          -import -file "{{ specification.kafka_var.security.ssl.server.keystore_location | dirname }}/ca-cert" \
          -storepass {{ specification.kafka_var.security.ssl.server.passwords.keystore }} \
          -keypass {{ specification.kafka_var.security.ssl.server.passwords.key }}
+  when:
+    - not trustore_exists.stat.exists
+
+- name: Check if CA certificate is already imported
+  shell: keytool -list -v -keystore kafka.server.keystore.jks -storepass epiphany | grep -i "Alias name" | grep -i "caroot"
+  failed_when: "caroot_exists.rc == 2"
+  register: caroot_exists
+
+- name: Check if certificate signed by CA is already imported
+  shell: keytool -list -v -keystore kafka.server.keystore.jks -storepass epiphany | grep -i "Alias name" | grep -i "localhost"
+  failed_when: "caroot_exists.rc == 2"
+  register: signed_cert_exists
 
 - name: Export certificate to sign certificate with CA
   shell: keytool -noprompt -keystore {{ specification.kafka_var.security.ssl.server.keystore_location }} \
          -alias localhost -certreq -file "{{ specification.kafka_var.security.ssl.server.keystore_location | dirname }}/cert-file" \
          -storepass {{ specification.kafka_var.security.ssl.server.passwords.keystore }} \
          -keypass {{ specification.kafka_var.security.ssl.server.passwords.key }}
+  when:
+    - not signed_cert_exists
 
 - name: Signing certificate with CA
   shell: openssl x509 -req -CA "{{ specification.kafka_var.security.ssl.server.keystore_location | dirname }}/ca-cert" \
@@ -87,13 +106,19 @@
          -out "{{ specification.kafka_var.security.ssl.server.keystore_location | dirname }}/cert-signed" \
          -days {{ specification.kafka_var.security.ssl.server.cert_validity }} -CAcreateserial \
          -passin pass:{{ specification.kafka_var.security.ssl.server.passwords.key }}
+  when:
+    - not signed_cert_exists
 
 - name: Import certificate CA
   shell: keytool -noprompt -keystore {{ specification.kafka_var.security.ssl.server.keystore_location }} -alias CARoot \
          -import -file "{{ specification.kafka_var.security.ssl.server.keystore_location | dirname }}/ca-cert" \
          -storepass {{ specification.kafka_var.security.ssl.server.passwords.keystore }}
+  when:
+    - not caroot_exists
 
-- name: Import certificate
+- name: Import certificate signed by CA
   shell: keytool -noprompt -keystore {{ specification.kafka_var.security.ssl.server.keystore_location }} -alias localhost \
          -import -file "{{ specification.kafka_var.security.ssl.server.keystore_location | dirname }}/cert-signed" \
          -storepass {{ specification.kafka_var.security.ssl.server.passwords.keystore }}
+  when:
+    - not signed_cert_exists
