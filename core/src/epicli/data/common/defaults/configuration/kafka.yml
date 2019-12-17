@@ -21,6 +21,7 @@ specification:
         enable: True
         port: 9093
         server:
+          local_cert_download_path: kafka-certs
           keystore_location: /var/private/ssl/kafka.server.keystore.jks
           truststore_location: /var/private/ssl/kafka.server.truststore.jks
           cert_validity: 730
