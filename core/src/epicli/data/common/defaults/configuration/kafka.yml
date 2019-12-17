@@ -17,19 +17,17 @@ specification:
     security:
       # Verify if security is working: `openssl s_client -debug -connect localhost:9093 -tls1`
       ssl:
-        # todo: change default to false after tests
-        enable: True
+        enable: False
         port: 9093
         server:
           local_cert_download_path: kafka-certs
           keystore_location: /var/private/ssl/kafka.server.keystore.jks
           truststore_location: /var/private/ssl/kafka.server.truststore.jks
-          cert_validity: 730
+          cert_validity: 365
           passwords:
-            # todo: set passwords to empty values
-            keystore: epiphany
-            truststore: epiphany
-            key: epiphany
+            keystore: password-to-change
+            truststore: password-to-change
+            key: password-to-change
 
         endpoint_identification_algorithm: HTTPS
         client_auth: none
