@@ -60,16 +60,14 @@ class InfrastructureBuilder(Step):
                                                          0)
                 infrastructure.append(nsg)
 
-                subnet = self.get_subnet(subnet_definition, component_key, nsg.specification.name, 0)
+                subnet = self.get_subnet(subnet_definition, component_key, 0)
                 infrastructure.append(subnet) 
 
-                #TODO: This gives issues for now when creating more then 3 subnets. Re-test when
-                #      upgrading from azurerm 1.27 to 2.0 and for now stick to azurerm_subnet.network_security_group_id
-                #ssga = self.get_subnet_network_security_group_association(component_key, 
-                #                                                                     subnet.specification.name, 
-                #                                                                     nsg.specification.name,
-                #                                                                     0)
-                #infrastructure.append(ssga)
+                ssga = self.get_subnet_network_security_group_association(component_key, 
+                                                                                     subnet.specification.name, 
+                                                                                     nsg.specification.name,
+                                                                                     0)
+                infrastructure.append(ssga)
 
             #TODO: For now we create the VM infrastructure compatible with the Epiphany 2.x 
             #      code line but later we might want to look at scale sets to achieve the same result:
@@ -116,11 +114,10 @@ class InfrastructureBuilder(Step):
         security_group.specification.rules = security_rules
         return security_group       
 
-    def get_subnet(self, subnet_definition, component_key, security_group_name, index):
+    def get_subnet(self, subnet_definition, component_key, index):
         subnet = self.get_config_or_default(self.docs, 'infrastructure/subnet')
         subnet.specification.name = resource_name(self.cluster_prefix, self.cluster_name, 'subnet' + '-' + str(index), component_key)
         subnet.specification.address_prefix = subnet_definition['address_pool']
-        subnet.specification.security_group_name = security_group_name
         subnet.specification.cluster_name = self.cluster_name
         return subnet     
 
