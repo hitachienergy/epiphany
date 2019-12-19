@@ -4,3 +4,11 @@
       - filebeat-{{ specification.filebeat_version }}
     update_cache: yes
     state: present
+
+- name: Install auditd packages
+  yum:
+    name:
+      - audit-2.8.5
+      - audit-libs-2.8.5
+    update_cache: yes
+    state: present

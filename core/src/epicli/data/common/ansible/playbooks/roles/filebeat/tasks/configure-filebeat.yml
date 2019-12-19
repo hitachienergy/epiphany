@@ -7,6 +7,12 @@
     src: filebeat.yml.j2
   register: modify_filebeat_yml
 
+- name: Enable filebeat auditd module
+  shell: >-
+    filebeat modules enable auditd
+  register: enable_module
+  changed_when: "'already enabled' not in enable_module.stdout"
+
 - name: Set Filebeat to be started after Docker
   block:
     - name: Create directory (filebeat.service.d)
@@ -37,6 +43,7 @@
         state: restarted
       when: modify_filebeat_yml.changed
          or modify_filebeat_unit_dependencies.changed
+         or enable_module.changed
 
     - name: Enable and start filebeat service
       systemd:
