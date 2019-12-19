@@ -17,7 +17,8 @@ specification:
     security:
       # Verify if security is working: `openssl s_client -debug -connect localhost:9093 -tls1`
       ssl:
-        enable: False
+        # todo: change to false after tests
+        enable: True
         port: 9093
         server:
           local_cert_download_path: kafka-certs

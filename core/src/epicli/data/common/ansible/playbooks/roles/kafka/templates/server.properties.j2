@@ -31,7 +31,7 @@ offsets.retention.minutes={{ specification.kafka_var.offset_retention_minutes }}
 #     listeners = PLAINTEXT://your.host.name:9092
 {%- if specification.kafka_var.security.ssl.enable %}
 #listeners=PLAINTEXT://0.0.0.0:9092,SSL://0.0.0.0:9093
-listeners=SSL://{{ ansible_default_ipv4.address }}:{{ specification.kafka_var.security.ssl.port }}
+listeners=SSL://{{ ansible_hostname }}:{{ specification.kafka_var.security.ssl.port }}
 {% else %}
 listeners=PLAINTEXT://{{ ansible_default_ipv4.address }}:{{ specification.kafka_var.port }}
 
