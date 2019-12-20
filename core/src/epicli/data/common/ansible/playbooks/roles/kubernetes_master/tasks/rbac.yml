@@ -1,0 +1,14 @@
+---
+
+- name: Upload and deploy RBAC
+  include: "deployments/deploy-file.yml"
+  vars:
+    file_name: "{{ deployment_file }}"
+  loop:
+  - "users.yml"
+  - "roles.yml"
+  - "role-binding.yml"
+  loop_control:
+    loop_var: deployment_file
+
+

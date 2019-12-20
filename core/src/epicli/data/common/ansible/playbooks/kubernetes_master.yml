@@ -8,5 +8,9 @@
 - hosts: kubernetes_master
   become: true
   become_method: sudo
+  pre_tasks:
+    - import_role:
+        name: kubernetes_master
+        tasks_from: copy_kubeconfig.yml
   roles:
     - kubernetes_master
