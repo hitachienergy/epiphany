@@ -1,4 +1,5 @@
 #!/usr/bin/env py
+import atexit
 import sys
 import argparse
 import json
@@ -15,6 +16,8 @@ from cli.helpers.Config import Config
 from cli.version import VERSION
 from cli.licenses import LICENSES
 from cli.helpers.query_yes_no import query_yes_no
+from cli.helpers.input_query import input_query
+from cli.helpers.build_saver import save_to_file
 
 
 def main():
@@ -122,10 +125,13 @@ def apply_parser(subparsers):
     sub_parser.add_argument('--no-infra', dest='no_infra', action="store_true",
                             help='Skip infrastructure provisioning.')
     sub_parser.add_argument('--offline-requirements', dest='offline_requirements', type=str,
+                            help='Path to the folder with pre-prepared offline requirements.')    
+    sub_parser.add_argument('--vault-password', dest='vault_password', type=str,
                             help='Path to the folder with pre-prepared offline requirements.')
 
     def run_apply(args):
         adjust_paths_from_file(args)
+        ensure_vault_password_is_set(args)
         with BuildEngine(args) as engine:
             return engine.apply()
 
@@ -264,6 +270,22 @@ def dump_config(config):
         if attr.startswith('_'):
             logger.info('%s = %r' % (attr[1:], getattr(config, attr)))
 
+def ensure_vault_password_is_set(args):
+    vault_password = args.vault_password 
+    if vault_password is None:
+        vault_password = input_query("Provide password to encrypt vault")
+
+    directory_path = os.path.dirname(Config().vault_password_location)
+    os.makedirs(directory_path, exist_ok=True)
+    save_to_file(Config().vault_password_location, vault_password)
+
+def ensure_vault_password_cleaned():
+    if os.path.exists(Config().vault_password_location):
+        os.remove(Config().vault_password_location)
+
+def exit_handler():
+    ensure_vault_password_cleaned()
 
 if __name__ == '__main__':
+    atexit.register(exit_handler)
     exit(main())
