@@ -131,12 +131,12 @@
   when:
     - signed_cert_exists.rc == 1
 
-#- name: Remove extracted key and cert from others than root node
-#  file:
-#    path: "{{ specification.kafka_var.security.ssl.server.keystore_location | dirname }}/{{ item }}"
-#    state: absent
-#  loop:
-#    - "ca-cert"
-#    - "ca-key"
-#  when:
-#    - not groups['kafka'][0] == inventory_hostname
+- name: Remove extracted key and cert from others than root node
+  file:
+    path: "{{ specification.kafka_var.security.ssl.server.keystore_location | dirname }}/{{ item }}"
+    state: absent
+  loop:
+    - "ca-cert"
+    - "ca-key"
+  when:
+    - not groups['kafka'][0] == inventory_hostname
