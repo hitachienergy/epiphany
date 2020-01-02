@@ -17,7 +17,7 @@
          -alias localhost -validity {{ specification.kafka_var.security.ssl.server.cert_validity }} -genkey -keyalg RSA \
          -noprompt -storepass {{ specification.kafka_var.security.ssl.server.passwords.keystore }} \
          -keypass {{ specification.kafka_var.security.ssl.server.passwords.key }} \
-         -dname "CN={{ ansible_hostname }}" -ext SAN="DNS:{{ ansible_hostname }}"
+         -dname "CN={{ inventory_hostname }}" -ext SAN="DNS:{{ inventory_hostname }}"
   when:
     - not keystore_exists.stat.exists
 
@@ -33,7 +33,7 @@
   shell: openssl req -new -x509 -keyout {{ specification.kafka_var.security.ssl.server.keystore_location | dirname }}/ca-key \
          -out {{ specification.kafka_var.security.ssl.server.keystore_location | dirname }}/ca-cert \
          -days {{ specification.kafka_var.security.ssl.server.cert_validity }} \
-         -subj "/CN={{ ansible_hostname }}" \
+         -subj "/CN={{ inventory_hostname }}" \
          --passout pass:{{ specification.kafka_var.security.ssl.server.passwords.key }}
   when:
     - groups['kafka'][0] == inventory_hostname
