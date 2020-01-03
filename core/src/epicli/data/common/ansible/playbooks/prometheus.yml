@@ -1,11 +1,16 @@
 ---
+# Ansible playbook that makes sure the base items for all nodes are installed
 
 - hosts: all
   gather_facts: yes
   tasks: [ ]  
-
+  
 - hosts: prometheus
   become: true
   become_method: sudo
   roles:
     - prometheus
+  post_tasks:
+    - import_role:
+        name: kubernetes_master
+        tasks_from: remove-kubeconfig.yml
