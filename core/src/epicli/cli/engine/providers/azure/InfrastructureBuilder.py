@@ -63,7 +63,7 @@ class InfrastructureBuilder(Step):
                 subnet = self.get_subnet(subnet_definition, component_key, 0)
                 infrastructure.append(subnet) 
 
-                ssga = self.get_subnet_network_security_group_association(component_key, 
+                subnet_nsg_association = self.get_subnet_network_security_group_association(component_key, 
                                                                                      subnet.specification.name, 
                                                                                      nsg.specification.name,
                                                                                      0)
@@ -191,4 +191,3 @@ class InfrastructureBuilder(Step):
                                                       machine_selector)
 
         return model_with_defaults         
-
