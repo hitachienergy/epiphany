@@ -127,7 +127,7 @@ def apply_parser(subparsers):
     sub_parser.add_argument('--offline-requirements', dest='offline_requirements', type=str,
                             help='Path to the folder with pre-prepared offline requirements.')    
     sub_parser.add_argument('--vault-password', dest='vault_password', type=str,
-                            help='Path to the folder with pre-prepared offline requirements.')
+                            help='Password that will be used to encrypt build artifacts.')
 
     def run_apply(args):
         adjust_paths_from_file(args)
