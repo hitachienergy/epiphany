@@ -67,7 +67,7 @@ class InfrastructureBuilder(Step):
                                                                                      subnet.specification.name, 
                                                                                      nsg.specification.name,
                                                                                      0)
-                infrastructure.append(ssga)
+                infrastructure.append(subnet_nsg_association)
 
             #TODO: For now we create the VM infrastructure compatible with the Epiphany 2.x 
             #      code line but later we might want to look at scale sets to achieve the same result:
