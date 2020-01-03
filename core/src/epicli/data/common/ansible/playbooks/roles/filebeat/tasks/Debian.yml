@@ -5,10 +5,9 @@
     update_cache: yes
     state: present
 
-- name: Install auditd packages
+- name: Install auditd package
   apt:
     name:
-      - audit-2.8.5
-      - audit-libs-2.8.5
+      - auditd
     update_cache: yes
     state: present

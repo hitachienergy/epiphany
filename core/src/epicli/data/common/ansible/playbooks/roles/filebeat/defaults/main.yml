@@ -1,5 +1,3 @@
 ---
 specification:
   filebeat_version: "6.8.5"
-  audit_version: "2.8.5"
-  audit-libs_version: "2.8.5"

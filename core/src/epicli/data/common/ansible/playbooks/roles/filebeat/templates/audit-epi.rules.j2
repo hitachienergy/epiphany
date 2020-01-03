@@ -1,2 +1,4 @@
--a always,exit -F arch=b32 -S execve -F euid=0 -k exec32root
--a always,exit -F arch=b64 -S execve -F euid=0 -k exec64root
+-a always,exit -F arch=b32 -S execve -k exec32
+-a always,exit -F arch=b64 -S execve -k exec64
+-w /etc/shadow -p war -k shadow
+-w /etc/passwd -p war -k passwd

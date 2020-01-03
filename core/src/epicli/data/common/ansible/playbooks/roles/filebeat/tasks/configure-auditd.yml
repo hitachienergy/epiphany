@@ -25,4 +25,3 @@
     - name: Verify auditd is running
       command: systemctl is-active auditd
       changed_when: false
-

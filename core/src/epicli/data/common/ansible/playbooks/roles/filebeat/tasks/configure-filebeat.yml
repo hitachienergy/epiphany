@@ -7,11 +7,11 @@
     src: filebeat.yml.j2
   register: modify_filebeat_yml
 
-- name: Enable filebeat auditd module
+- name: Enable auditd and system modules
   shell: >-
-    filebeat modules enable auditd
+    filebeat modules enable auditd system
   register: enable_module
-  changed_when: "'already enabled' not in enable_module.stdout"
+  changed_when: "'Enabled auditd' in enable_module.stdout or 'Enabled system' in enable_module.stdout"
 
 - name: Set Filebeat to be started after Docker
   block:

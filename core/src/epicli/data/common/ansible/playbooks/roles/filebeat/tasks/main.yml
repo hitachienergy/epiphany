@@ -28,5 +28,5 @@
 - name: Include auditd configuration tasks
   include_tasks: configure-auditd.yml
 
-- name: Include configuration tasks
+- name: Include filebeat configuration tasks
   include_tasks: configure-filebeat.yml
