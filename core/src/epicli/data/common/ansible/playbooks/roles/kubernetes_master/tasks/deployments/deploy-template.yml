@@ -19,4 +19,4 @@
     mode: 0644
 
 - name: Apply file
-  include_tasks: "apply.yml"
+  include_tasks: "apply-file.yml"

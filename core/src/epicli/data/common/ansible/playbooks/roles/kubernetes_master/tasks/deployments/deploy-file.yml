@@ -8,9 +8,9 @@
     owner: root
     group: root
     mode: 0644
-  # become_user: "{{ admin_user.name }}"
 
 - name: Copy {{ file_name }}
+  become: yes
   copy:
     src: "{{ file_name }}"
     dest: /etc/epiphany/manifests/{{ file_name }}
@@ -18,4 +18,4 @@
     group: "{{ admin_user.name }}"
 
 - name: Apply file
-  include_tasks: "apply.yml"
+  include_tasks: "apply-file.yml"

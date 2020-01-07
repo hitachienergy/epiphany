@@ -4,9 +4,9 @@ def input_query(question):
 
     while True:
         sys.stdout.write(question)
-        inputText = input()
-        if inputText != '':
-            return inputText
+        input_text = input()
+        if input_text != '':
+            return input_text 
         else:
-            sys.stdout.write("Please respond with 'yes' or 'no' "
-                             "(or 'y' or 'n').\n")
+            sys.stdout.write(question)
+            sys.stdout.write("\n")
