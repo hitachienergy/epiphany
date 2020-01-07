@@ -68,7 +68,7 @@ socket.request.max.bytes=104857600
 security.inter.broker.protocol={{ specification.kafka_var.security.inter_broker_protocol }}
 
 #### Encryption Settings ####
-ssl.endpoint.identification.algorithm=
+ssl.endpoint.identification.algorithm={{ specification.kafka_var.security.ssl.endpoint_identification_algorithm }}
 
 ssl.keystore.location={{ specification.kafka_var.security.ssl.server.keystore_location }}
 ssl.keystore.password={{ specification.kafka_var.security.ssl.server.passwords.keystore }}
@@ -76,35 +76,42 @@ ssl.truststore.location={{ specification.kafka_var.security.ssl.server.truststor
 ssl.truststore.password={{ specification.kafka_var.security.ssl.server.passwords.truststore }}
 ssl.key.password={{ specification.kafka_var.security.ssl.server.passwords.key }}
 
-authorizer.class.name=kafka.security.auth.SimpleAclAuthorizer
-
-{% set super_users = groups['kafka'] + specification.kafka_var.super_users.split(';')  %}
-super.users=User:CN={{ super_users | list | join(';User:CN=') }};
-
-
 ssl.client.auth={{ specification.kafka_var.security.ssl.client_auth }}
 {% endif %}
 
-{% if specification.kafka_var.authentication.sasl.enable %}
+{% if specification.kafka_var.security.authentication.enable %}
+
+{% if specification.kafka_var.security.authentication.authentication_method == "sasl" %}
 #### Authentication Settings ####
 # SASL mechanism used for inter-broker communication.
-sasl.mechanism.inter.broker.protocol={{ specification.kafka_var.authentication.sasl.mechanism_inter_broker_protocol }}
+sasl.mechanism.inter.broker.protocol={{ specification.kafka_var.security.authentication.mechanism_inter_broker_protocol }}
+{% if specification.kafka_var.security.authorization.super_users is defined %}
+super.users={{ specification.kafka_var.security.authorization.super_users.split(';') }}
+{% endif %}
+sasl.enabled.mechanisms={{ specification.kafka_var.security.authentication.enabled_mechanisms }}
 
 # The list of SASL mechanisms enabled in the Kafka server. The list may contain any mechanism
 # for which a security provider is available. Only GSSAPI is enabled by default.
-sasl.enabled.mechanisms={{ specification.kafka_var.authentication.sasl.enabled_mechanisms }}
+{% endif %}
 
 ############################# ACLs #############################################
 
+{% if specification.kafka_var.security.authentication.authentication_method == "certificates" %}
+#### SSL Authentication Settings ####
+# SSL mechanism used for inter-broker communication.
+{% set super_users = groups['kafka'] %}
+{% if specification.kafka_var.security.authorization.super_users is defined %}
+{% set super_users = super_users + specification.kafka_var.security.authorization.super_users.split(';')  %}
+{% endif %}
+super.users=User:CN={{ super_users | list | join(';User:CN=') }};
+{% endif %}
+
 # The authorizer class that should be used for authorization
-authorizer.class.name={{ specification.kafka_var.authorization.authorizer_class_name }}
+authorizer.class.name={{ specification.kafka_var.security.authorization.authorizer_class_name }}
 
 # If a Resource R has no associated ACLs, no one other than super users is allowed to access R. If you want to change that behavior, set this property to true
-allow.everyone.if.no.acl.found={{ specification.kafka_var.authorization.allow_everyone_if_no_acl_found }}
+allow.everyone.if.no.acl.found={{ specification.kafka_var.security.authorization.allow_everyone_if_no_acl_found }}
 
-{% if specification.kafka_var.super_users is defined %}
-super.users={{ specification.kafka_var.super_users }}
-{% endif %}
 {% endif %}
 
 ############################# Log Basics #############################

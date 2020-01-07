@@ -26,24 +26,31 @@ specification:
           truststore_location: /var/private/ssl/kafka.server.truststore.jks
           cert_validity: 365
           passwords:
-            keystore: password-to-change
-            truststore: password-to-change
-            key: password-to-change
+            keystore: PasswordToChange
+            truststore: PasswordToChange
+            key: PasswordToChange
 
         endpoint_identification_algorithm: HTTPS
-        client_auth: none
+        client_auth: required
       encrypt_at_rest: False
       inter_broker_protocol: SSL #PLAINTEXT #SSL  version: 1.1.0
 
-    authorization:
-      authorizer_class_name: kafka.security.auth.SimpleAclAuthorizer
-      allow_everyone_if_no_acl_found: false # Change to True if ACL and PLAINTEXT
+      authorization:
+        authorizer_class_name: kafka.security.auth.SimpleAclAuthorizer
+        allow_everyone_if_no_acl_found: False
+        super_users: pawel
+        users:
+          - name: test_user
+            topic: test_topic
 
-    authentication:
-      sasl:
+
+      authentication:
+        authentication_method: certificates
         enable: false
         mechanism_inter_broker_protocol:
         enabled_mechanisms: PLAIN
+
+
 
     sha: "b28e81705e30528f1abb6766e22dfe9dae50b1e1e93330c880928ff7a08e6b38ee71cbfc96ec14369b2dfd24293938702cab422173c8e01955a9d1746ae43f98"
     port: 9092
@@ -58,18 +65,9 @@ specification:
     group: kafka
     user: kafka
 
-    super_users:
-
     conf_dir: /opt/kafka/config
     data_dir: /var/lib/kafka
     log_dir: /var/log/kafka
-
-    tests:
-      enable: True
-      epiphany_topic_test: epiphanytest
-      epiphany_topic_test_msgs:
-        - First message
-        - Hello, World
 
   zookeeper_set_acl: false
   zookeeper_hosts: "{{ groups['zookeeper']|join(':2181,') }}:2181"
