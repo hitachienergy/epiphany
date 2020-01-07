@@ -7,6 +7,11 @@
   set_fact:
     api_server_address: "https://{{ master_hostname }}:6443"
 
+- name: Set Kubernetes credentials 
+  include_role:
+    name: kubernetes_master
+    tasks_from: copy-kubeconfig
+
 - name: Deploy rolebinding file to server for prometheus
   copy:
     src: k8s-rolebinding.yml
