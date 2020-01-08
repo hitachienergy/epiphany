@@ -6,7 +6,7 @@ roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: ClusterRole
   name: view
-subjects: # todo add possibility to add more
+subjects:
 - kind: ServiceAccount
   name: reader
   namespace: kube-system
@@ -19,7 +19,7 @@ roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: ClusterRole
   name: operator
-subjects: # todo add possibility to add more
+subjects:
 - kind: ServiceAccount
   name: operator
   namespace: kube-system
@@ -32,7 +32,7 @@ roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: ClusterRole
   name: cluster-admin
-subjects: # todo add possibility to add more
+subjects:
 - kind: ServiceAccount
   name: admin
   namespace: kube-system
