@@ -36,19 +36,24 @@ specification:
       inter_broker_protocol: SSL #PLAINTEXT #SSL  version: 1.1.0
 
       authorization:
+        # todo: change to false after tests
+        enable: True
         authorizer_class_name: kafka.security.auth.SimpleAclAuthorizer
         allow_everyone_if_no_acl_found: False
-        super_users: pawel
+        super_users:
+          - tester01
+          - tester02
         users:
           - name: test_user
             topic: test_topic
 
 
       authentication:
+        # todo: change to false after tests
+        enable: True
         authentication_method: certificates
-        enable: false
-        mechanism_inter_broker_protocol:
-        enabled_mechanisms: PLAIN
+        sasl_mechanism_inter_broker_protocol:
+        sasl_enabled_mechanisms: PLAIN
 
 
 

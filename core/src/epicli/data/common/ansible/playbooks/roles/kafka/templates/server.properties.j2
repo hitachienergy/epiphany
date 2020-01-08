@@ -29,17 +29,16 @@ offsets.retention.minutes={{ specification.kafka_var.offset_retention_minutes }}
 #     listeners = listener_name://host_name:port
 #   EXAMPLE:
 #     listeners = PLAINTEXT://your.host.name:9092
-{%- if specification.kafka_var.security.ssl.enable %}
-#listeners=PLAINTEXT://0.0.0.0:9092,SSL://0.0.0.0:9093
+{% if specification.kafka_var.security.ssl.enable -%}
 listeners=SSL://{{ inventory_hostname }}:{{ specification.kafka_var.security.ssl.port }}
 {% else %}
 listeners=PLAINTEXT://{{ ansible_default_ipv4.address }}:{{ specification.kafka_var.port }}
+{%- endif %}
 
 # Hostname and port the broker will advertise to producers and consumers. If not set,
 # it uses the value for "listeners" if configured.  Otherwise, it will use the value
 # returned from java.net.InetAddress.getCanonicalHostName().
 #advertised.listeners=PLAINTEXT://0.0.0.0:9092,SSL://0.0.0.0:9093
-{%- endif %}
 
 # Maps listener names to security protocols, the default is for them to be the same. See the config documentation for more details
 #listener.security.protocol.map=PLAINTEXT:PLAINTEXT,SSL:SSL,SASL_PLAINTEXT:SASL_PLAINTEXT,SASL_SSL:SASL_SSL
@@ -63,7 +62,7 @@ socket.request.max.bytes=104857600
 
 # Security protocol used to communicate between brokers
 
-{% if specification.kafka_var.security.ssl.enable %}
+{% if specification.kafka_var.security.ssl.enable -%}
 # If not enabled it should default to PLAINTEXT
 security.inter.broker.protocol={{ specification.kafka_var.security.inter_broker_protocol }}
 
@@ -77,41 +76,42 @@ ssl.truststore.password={{ specification.kafka_var.security.ssl.server.passwords
 ssl.key.password={{ specification.kafka_var.security.ssl.server.passwords.key }}
 
 ssl.client.auth={{ specification.kafka_var.security.ssl.client_auth }}
-{% endif %}
+{%- endif %}
 
 {% if specification.kafka_var.security.authentication.enable %}
-
-{% if specification.kafka_var.security.authentication.authentication_method == "sasl" %}
+{% if specification.kafka_var.security.authentication.authentication_method == "sasl" -%}
 #### Authentication Settings ####
 # SASL mechanism used for inter-broker communication.
-sasl.mechanism.inter.broker.protocol={{ specification.kafka_var.security.authentication.mechanism_inter_broker_protocol }}
-{% if specification.kafka_var.security.authorization.super_users is defined %}
-super.users={{ specification.kafka_var.security.authorization.super_users.split(';') }}
-{% endif %}
-sasl.enabled.mechanisms={{ specification.kafka_var.security.authentication.enabled_mechanisms }}
+sasl.mechanism.inter.broker.protocol={{ specification.kafka_var.security.authentication.sasl_mechanism_inter_broker_protocol }}
+
+sasl.enabled.mechanisms={{ specification.kafka_var.security.sasl_authentication.enabled_mechanisms }}
 
 # The list of SASL mechanisms enabled in the Kafka server. The list may contain any mechanism
 # for which a security provider is available. Only GSSAPI is enabled by default.
-{% endif %}
+{%- endif %}
 
 ############################# ACLs #############################################
-
-{% if specification.kafka_var.security.authentication.authentication_method == "certificates" %}
-#### SSL Authentication Settings ####
-# SSL mechanism used for inter-broker communication.
-{% set super_users = groups['kafka'] %}
-{% if specification.kafka_var.security.authorization.super_users is defined %}
-{% set super_users = super_users + specification.kafka_var.security.authorization.super_users.split(';')  %}
-{% endif %}
-super.users=User:CN={{ super_users | list | join(';User:CN=') }};
-{% endif %}
-
 # The authorizer class that should be used for authorization
 authorizer.class.name={{ specification.kafka_var.security.authorization.authorizer_class_name }}
 
 # If a Resource R has no associated ACLs, no one other than super users is allowed to access R. If you want to change that behavior, set this property to true
 allow.everyone.if.no.acl.found={{ specification.kafka_var.security.authorization.allow_everyone_if_no_acl_found }}
 
+{% if specification.kafka_var.security.authentication.enable and specification.kafka_var.security.authorization.enable -%}
+
+{% if specification.kafka_var.security.authentication.authentication_method == "certificates" -%}
+{% set super_users = groups['kafka'] %}
+{% if specification.kafka_var.security.authorization.super_users is defined -%}
+{% set super_users = super_users + specification.kafka_var.security.authorization.super_users  %}
+{%- endif %}
+super.users=User:CN={{ super_users | list | join(';User:CN=') }};
+{%- endif %}
+
+{% if specification.kafka_var.security.authentication.authentication_method == "sasl" and specification.kafka_var.security.authorization.super_users is defined -%}
+super.users={{ specification.kafka_var.security.authorization.super_users }}
+{%- endif %}
+
+{%- endif %}
 {% endif %}
 
 ############################# Log Basics #############################
