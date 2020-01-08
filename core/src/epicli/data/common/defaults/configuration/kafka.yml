@@ -3,7 +3,6 @@ title: "Kafka"
 name: default
 specification:
 
-  # Have to use odd name to support valid yaml due to ansible getting confused over playbook names and variables etc.
   kafka_var:
     version: 2.3.1
     scala:
@@ -12,13 +11,10 @@ specification:
     enabled: True
     admin: kafka
     admin_pwd: epiphany
-    # users:
 
     security:
-      # Verify if security is working: `openssl s_client -debug -connect localhost:9093 -tls1`
       ssl:
-        # todo: change to false after tests
-        enabled: True
+        enabled: False
         port: 9093
         server:
           local_cert_download_path: kafka-certs
@@ -33,12 +29,10 @@ specification:
         endpoint_identification_algorithm: HTTPS
         client_auth: required
       encrypt_at_rest: False
-      # todo: change to false after tests
-      inter_broker_protocol: SSL #PLAINTEXT #SSL  version: 1.1.0
+      inter_broker_protocol: PLAINTEXT
 
       authorization:
-        # todo: change to false after tests
-        enabled: True
+        enabled: False
         authorizer_class_name: kafka.security.auth.SimpleAclAuthorizer
         allow_everyone_if_no_acl_found: False
         super_users:
@@ -48,15 +42,11 @@ specification:
           - name: test_user
             topic: test_topic
 
-
       authentication:
-        # todo: change to false after tests
-        enabled: True
+        enabled: False
         authentication_method: certificates
         sasl_mechanism_inter_broker_protocol:
         sasl_enabled_mechanisms: PLAIN
-
-
 
     sha: "b28e81705e30528f1abb6766e22dfe9dae50b1e1e93330c880928ff7a08e6b38ee71cbfc96ec14369b2dfd24293938702cab422173c8e01955a9d1746ae43f98"
     port: 9092
