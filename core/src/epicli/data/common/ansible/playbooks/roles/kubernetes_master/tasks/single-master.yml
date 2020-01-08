@@ -63,7 +63,7 @@
   when: secret is not defined
 
 - name: Upload and deploy CoreDNS and Dashboard
-  include: "deployments/deploy-template.yml"
+  include_tasks: "deployments/deploy-template.yml"
   vars:
     file_name: "{{ deployment_file }}"
   loop:

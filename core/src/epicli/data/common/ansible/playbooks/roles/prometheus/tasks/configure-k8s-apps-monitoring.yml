@@ -8,7 +8,7 @@
     api_server_address: "https://{{ master_hostname }}:6443"
 
 - name: Set Kubernetes credentials 
-  include_role:
+  import_role:
     name: kubernetes_master
     tasks_from: copy-kubeconfig
 
@@ -37,5 +37,7 @@
   set_fact:
     bearer_token: "{{ kube_token.stdout }}"
 
-- debug:
-    msg: "{{ bearer_token }}"
+- name: Set Kubernetes credentials 
+  import_role:
+    name: kubernetes_master
+    tasks_from: remove-kubeconfig

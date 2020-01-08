@@ -16,6 +16,7 @@
     dest: /etc/epiphany/manifests/{{ file_name }}
     owner: "{{ admin_user.name }}"
     group: "{{ admin_user.name }}"
+    mode: 0644
 
 - name: Apply file
   include_tasks: "apply-file.yml"
