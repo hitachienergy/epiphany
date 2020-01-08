@@ -9,7 +9,7 @@ specification:
     scala:
       version: 2.12
     file_name: "kafka_2.12-2.3.1.tgz"
-    enable: True
+    enabled: True
     admin: kafka
     admin_pwd: epiphany
     # users:
@@ -18,7 +18,7 @@ specification:
       # Verify if security is working: `openssl s_client -debug -connect localhost:9093 -tls1`
       ssl:
         # todo: change to false after tests
-        enable: True
+        enabled: True
         port: 9093
         server:
           local_cert_download_path: kafka-certs
@@ -33,11 +33,12 @@ specification:
         endpoint_identification_algorithm: HTTPS
         client_auth: required
       encrypt_at_rest: False
+      # todo: change to false after tests
       inter_broker_protocol: SSL #PLAINTEXT #SSL  version: 1.1.0
 
       authorization:
         # todo: change to false after tests
-        enable: True
+        enabled: True
         authorizer_class_name: kafka.security.auth.SimpleAclAuthorizer
         allow_everyone_if_no_acl_found: False
         super_users:
@@ -50,7 +51,7 @@ specification:
 
       authentication:
         # todo: change to false after tests
-        enable: True
+        enabled: True
         authentication_method: certificates
         sasl_mechanism_inter_broker_protocol:
         sasl_enabled_mechanisms: PLAIN

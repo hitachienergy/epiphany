@@ -29,7 +29,7 @@ offsets.retention.minutes={{ specification.kafka_var.offset_retention_minutes }}
 #     listeners = listener_name://host_name:port
 #   EXAMPLE:
 #     listeners = PLAINTEXT://your.host.name:9092
-{% if specification.kafka_var.security.ssl.enable -%}
+{% if specification.kafka_var.security.ssl.enabled -%}
 listeners=SSL://{{ inventory_hostname }}:{{ specification.kafka_var.security.ssl.port }}
 {% else %}
 listeners=PLAINTEXT://{{ ansible_default_ipv4.address }}:{{ specification.kafka_var.port }}
@@ -62,7 +62,7 @@ socket.request.max.bytes=104857600
 
 # Security protocol used to communicate between brokers
 
-{% if specification.kafka_var.security.ssl.enable -%}
+{% if specification.kafka_var.security.ssl.enabled -%}
 # If not enabled it should default to PLAINTEXT
 security.inter.broker.protocol={{ specification.kafka_var.security.inter_broker_protocol }}
 
@@ -78,7 +78,7 @@ ssl.key.password={{ specification.kafka_var.security.ssl.server.passwords.key }}
 ssl.client.auth={{ specification.kafka_var.security.ssl.client_auth }}
 {%- endif %}
 
-{% if specification.kafka_var.security.authentication.enable %}
+{% if specification.kafka_var.security.authentication.enabled %}
 {% if specification.kafka_var.security.authentication.authentication_method == "sasl" -%}
 #### Authentication Settings ####
 # SASL mechanism used for inter-broker communication.
@@ -97,7 +97,7 @@ authorizer.class.name={{ specification.kafka_var.security.authorization.authoriz
 # If a Resource R has no associated ACLs, no one other than super users is allowed to access R. If you want to change that behavior, set this property to true
 allow.everyone.if.no.acl.found={{ specification.kafka_var.security.authorization.allow_everyone_if_no_acl_found }}
 
-{% if specification.kafka_var.security.authentication.enable and specification.kafka_var.security.authorization.enable -%}
+{% if specification.kafka_var.security.authentication.enabled and specification.kafka_var.security.authorization.enabled -%}
 
 {% if specification.kafka_var.security.authentication.authentication_method == "certificates" -%}
 {% set super_users = groups['kafka'] %}
