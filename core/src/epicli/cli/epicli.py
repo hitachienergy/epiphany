@@ -279,7 +279,7 @@ def ensure_vault_password_is_set(args):
     os.makedirs(directory_path, exist_ok=True)
     save_to_file(Config().vault_password_location, vault_password)
 
-def ensure_vault_password_cleaned():
+def ensure_vault_password_is_cleaned():
     if os.path.exists(Config().vault_password_location):
         os.remove(Config().vault_password_location)
 
