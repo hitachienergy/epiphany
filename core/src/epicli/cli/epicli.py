@@ -273,7 +273,7 @@ def dump_config(config):
 def ensure_vault_password_is_set(args):
     vault_password = args.vault_password 
     if vault_password is None:
-        vault_password = input_query("Provide password to encrypt vault")
+        vault_password = input_query("Provide password to encrypt vault: ")
 
     directory_path = os.path.dirname(Config().vault_password_location)
     os.makedirs(directory_path, exist_ok=True)
