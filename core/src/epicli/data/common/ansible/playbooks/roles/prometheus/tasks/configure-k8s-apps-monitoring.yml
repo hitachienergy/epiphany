@@ -37,7 +37,7 @@
   set_fact:
     bearer_token: "{{ kube_token.stdout }}"
 
-- name: Set Kubernetes credentials 
+- name: Remove Kubernetes credentials 
   import_role:
     name: kubernetes_master
     tasks_from: remove-kubeconfig

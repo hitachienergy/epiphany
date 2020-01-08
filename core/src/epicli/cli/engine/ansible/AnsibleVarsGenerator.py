@@ -105,8 +105,8 @@ class AnsibleVarsGenerator(Step):
             dump(main_vars, stream)
 
     def set_vault_path(self, shared_config):
+        shared_config.specification.vault_tmp_file_location = Config().vault_password_location
         if shared_config.specification.vault_location == '':
-            shared_config.specification.vault_tmp_file_location = Config().vault_password_location
             shared_config.specification.vault_location = get_ansible_vault_path(self.cluster_model.specification.name)
 
     def get_clean_cluster_model(self):
