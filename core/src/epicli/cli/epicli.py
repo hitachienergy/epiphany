@@ -284,7 +284,7 @@ def ensure_vault_password_is_cleaned():
         os.remove(Config().vault_password_location)
 
 def exit_handler():
-    ensure_vault_password_cleaned()
+    ensure_vault_password_is_cleaned()
 
 if __name__ == '__main__':
     atexit.register(exit_handler)
