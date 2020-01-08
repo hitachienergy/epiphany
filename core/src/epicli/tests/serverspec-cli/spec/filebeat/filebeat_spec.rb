@@ -39,7 +39,7 @@ if count_inventory_roles("elasticsearch") > 0
   describe 'Checking the connection to the Elasticsearch host' do
     let(:disable_sudo) { false }
     describe command("curl -o /dev/null -s -w '%{http_code}' $(awk '/- Elasticsearch output -/,/- Logstash output -/' /etc/filebeat/filebeat.yml \
-    |  grep -oP '(?<=hosts: \\\[\\\").*(?=\\\"\\\])')") do
+    |  grep -oP \"(?<=hosts: \\\[[\\\"']).+(?=[\\\"']\\\])\")") do
       it "is expected to be equal" do
         expect(subject.stdout.to_i).to eq 200
       end
@@ -51,7 +51,7 @@ if count_inventory_roles("kibana") > 0
   describe 'Checking the connection to the Kibana endpoint' do
     let(:disable_sudo) { false }
     describe command("curl -o /dev/null -s -w '%{http_code}' $(awk '/= Kibana =/,/= Elastic Cloud =/' /etc/filebeat/filebeat.yml \
-    |  grep -oP '(?<=host: \\\").*(?=\\\")')") do
+    |  grep -oP '(?<=host: \\\").+(?=\\\")')") do
       it "is expected to be equal" do
         expect(subject.stdout.to_i).to eq 200
       end
