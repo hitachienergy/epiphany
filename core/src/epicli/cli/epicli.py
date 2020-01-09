@@ -16,7 +16,7 @@ from cli.helpers.Config import Config
 from cli.version import VERSION
 from cli.licenses import LICENSES
 from cli.helpers.query_yes_no import query_yes_no
-from cli.helpers.input_query import prompt_for_value
+from cli.helpers.input_query import prompt_for_password
 from cli.helpers.build_saver import save_to_file
 
 
@@ -273,7 +273,7 @@ def dump_config(config):
 def ensure_vault_password_is_set(args):
     vault_password = args.vault_password 
     if vault_password is None:
-        vault_password = prompt_for_value("Provide password to encrypt vault: ")
+        vault_password = prompt_for_password("Provide password to encrypt vault: ")
 
     directory_path = os.path.dirname(Config().vault_password_location)
     os.makedirs(directory_path, exist_ok=True)
