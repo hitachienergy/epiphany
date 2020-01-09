@@ -2,7 +2,7 @@ import os
 import copy
 
 from cli.helpers.Step import Step
-from cli.helpers.build_saver import get_ansible_path, get_ansible_path_for_build
+from cli.helpers.build_saver import get_ansible_path, get_ansible_path_for_build, get_ansible_vault_path
 from cli.helpers.doc_list_helpers import select_first
 from cli.helpers.naming_helpers import to_feature_name, to_role_name
 from cli.helpers.ObjDict import ObjDict
@@ -90,6 +90,8 @@ class AnsibleVarsGenerator(Step):
         shared_config_doc = select_first(self.config_docs, lambda x: x.kind == 'configuration/shared-config')
         if shared_config_doc == None:
             shared_config_doc = load_yaml_obj(types.DEFAULT, 'common', 'configuration/shared-config')
+        
+        self.set_vault_path(shared_config_doc)
         main_vars.update(shared_config_doc.specification)        
 
         vars_dir = os.path.join(ansible_dir, 'group_vars')
@@ -101,6 +103,11 @@ class AnsibleVarsGenerator(Step):
 
         with open(vars_file_path, 'a') as stream:
             dump(main_vars, stream)
+
+    def set_vault_path(self, shared_config):
+        shared_config.specification.vault_tmp_file_location = Config().vault_password_location
+        if shared_config.specification.vault_location == '':
+            shared_config.specification.vault_location = get_ansible_vault_path(self.cluster_model.specification.name)
 
     def get_clean_cluster_model(self):
         cluster_model = copy.copy(self.cluster_model)

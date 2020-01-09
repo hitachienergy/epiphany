@@ -43,7 +43,6 @@
     state: directory
     owner: "{{ admin_user.name }}"
     group: "{{ admin_user.name }}"
-  # become_user: "{{ admin_user.name }}"
 
 - name: Create .kube/config
   copy:
@@ -56,26 +55,22 @@
 - name: Clean up previous version leftovers
   include_tasks: "./previous-versions-cleanup.yml"
 
-- name: Create dashboard deployment
-  template:
-    dest: "/home/{{ admin_user.name }}/kubernetes-dashboard.yml"
-    src: kubernetes-dashboard.yml.j2
-    owner: "{{ admin_user.name }}"
-    group: "{{ admin_user.name }}"
+- name: Configure RBAC
+  include_tasks: "rbac.yml"
 
-- name: Copy sample-role.yml
-  copy:
-    src: sample-role.yml
-    dest: /home/{{ admin_user.name }}/
-    owner: "{{ admin_user.name }}"
-    group: "{{ admin_user.name }}"
+- name: Generate Secrets
+  include_tasks: "generate-cluster-credentials.yml"
+  when: secret is not defined
 
-- name: Copy role-binding.yml
-  copy:
-    src: role-binding.yml
-    dest: /home/{{ admin_user.name }}/
-    owner: "{{ admin_user.name }}"
-    group: "{{ admin_user.name }}"
+- name: Upload and deploy CoreDNS and Dashboard
+  include_tasks: "deployments/deploy-template.yml"
+  vars:
+    file_name: "{{ deployment_file }}"
+  loop:
+  - "kubernetes-dashboard.yml.j2"
+  - "coredns-config.yml.j2"
+  loop_control:
+    loop_var: deployment_file
 
 - name: Copy jsonpath.json
   copy:
@@ -83,17 +78,6 @@
     dest: /home/{{ admin_user.name }}/
     owner: "{{ admin_user.name }}"
     group: "{{ admin_user.name }}"
-
-- name: Create CoreDNS deployment
-  template:
-    dest: "/home/{{ admin_user.name }}/coredns-config.yml"
-    src: coredns-config.yml.j2
-    owner: "{{ admin_user.name }}"
-    group: "{{ admin_user.name }}"
-
-- name: Apply coredns-config.yml
-  shell: kubectl apply --kubeconfig=/home/{{ admin_user.name }}/.kube/config -f /home/{{ admin_user.name }}/coredns-config.yml
-  become_user: "{{ admin_user.name }}"
 
 # Apply network plugin configured by user
 - include_tasks: "./cni-plugins/{{ specification.advanced.networking.plugin }}.yml"
@@ -109,27 +93,6 @@
 - name: Dashboard count
   debug:
     msg: "Dashboards: {{ dashboard_count }}"
-
-- name: Apply kubernetes-dashboard.yml
-  shell: kubectl apply --kubeconfig=/home/{{ admin_user.name }}/.kube/config -f /home/{{ admin_user.name }}/kubernetes-dashboard.yml
-  become_user: "{{ admin_user.name }}"
-  when:
-    - groups['kubernetes_master'][0] == inventory_hostname
-    - dashboard_count.stdout_lines[0]|int == 0
-
-- name: Apply sample-role.yml
-  shell: kubectl apply --kubeconfig=/home/{{ admin_user.name }}/.kube/config -f /home/{{ admin_user.name }}/sample-role.yml
-  become_user: "{{ admin_user.name }}"
-  when:
-    - groups['kubernetes_master'][0] == inventory_hostname
-    - dashboard_count.stdout_lines[0]|int == 0
-
-- name: Apply role-binding.yml
-  shell: kubectl apply --kubeconfig=/home/{{ admin_user.name }}/.kube/config -f /home/{{ admin_user.name }}/role-binding.yml
-  become_user: "{{ admin_user.name }}"
-  when:
-    - groups['kubernetes_master'][0] == inventory_hostname
-    - dashboard_count.stdout_lines[0]|int == 0
 
 - name: Get nodes with noschedule-
   shell: kubectl --kubeconfig=/home/{{ admin_user.name }}/.kube/config get nodes -o jsonpath-file=/home/{{ admin_user.name }}/jsonpath.json | grep -v NoSchedule | grep -c -i {{ inventory_hostname }}

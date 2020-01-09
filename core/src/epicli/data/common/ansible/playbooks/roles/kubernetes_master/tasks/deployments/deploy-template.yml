@@ -1,0 +1,22 @@
+---
+
+- name: Create directory for files
+  become: yes
+  file: 
+    path: "/etc/epiphany/manifests"
+    state: directory
+    owner: root
+    group: root
+    mode: 0644
+
+- name: Upload {{ file_name }} file
+  become: yes
+  template:
+    dest: "/etc/epiphany/manifests/{{ file_name }}"
+    src: "{{ file_name }}"
+    owner: "{{ admin_user.name }}"
+    group: "{{ admin_user.name }}"
+    mode: 0644
+
+- name: Apply file
+  include_tasks: "apply-file.yml"
