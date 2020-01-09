@@ -2,6 +2,7 @@
 # and from that download and build/extract all used python dependencies 
 # to the externals directory for inclusion with the BDS scan.
 sh ./build-wheel.sh
-pip download --no-clean --no-binary all -d $PWD/external/packages/ --build $PWD/external/ $PWD/dist/epicli-0.4.0-py3-none-any.whl
+read EPICLI_VERSION < cli/version.txt.py
+pip download --no-clean --no-binary all -d $PWD/external/packages/ --build $PWD/external/ $PWD/dist/epicli-$EPICLI_VERSION-py3-none-any.whl
 rm -rf $PWD/external/packages/
 rm -rf $PWD/external/epicli/
