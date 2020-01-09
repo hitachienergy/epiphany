@@ -57,6 +57,9 @@
 
 - name: Configure RBAC
   include_tasks: "rbac.yml"
+  
+- name: Configure network policies
+  include_tasks: "network-policies.yml"
 
 - name: Generate Secrets
   include_tasks: "generate-cluster-credentials.yml"
