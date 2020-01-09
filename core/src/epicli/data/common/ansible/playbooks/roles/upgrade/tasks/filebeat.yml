@@ -48,6 +48,10 @@
 
     - import_role:
         name: filebeat
-        tasks_from: configure-filebeat
+        tasks_from: configure-auditd
+
+    - import_role:
+        name: filebeat
+        tasks_from: configure-filebeat       
   when:
     - specification.filebeat_version is version(ansible_facts.packages['filebeat'][0].version, '>=')

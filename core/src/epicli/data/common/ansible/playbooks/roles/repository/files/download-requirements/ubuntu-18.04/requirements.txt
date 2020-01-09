@@ -1,6 +1,7 @@
 [packages]
 adduser
 apt-transport-https
+auditd
 bash-completion
 build-essential
 ca-certificates

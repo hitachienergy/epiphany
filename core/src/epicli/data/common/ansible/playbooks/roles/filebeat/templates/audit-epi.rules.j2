@@ -1,0 +1,8 @@
+-a always,exit -F arch=b32 -S execve -k audit_exec32
+-a always,exit -F arch=b64 -S execve -k audit_exec64
+-w /etc/passwd -p rwa -k audit_passwd
+-w /etc/shadow -p rwa -k audit_shadow
+-w /etc/gshadow -p rwa -k audit_gshadow
+-w /etc/group -p rwa -k audit_group
+-w /usr/sbin/usermod -p x -k audit_usermod
+-w /usr/sbin/groupmod -p x -k audit_groupmod

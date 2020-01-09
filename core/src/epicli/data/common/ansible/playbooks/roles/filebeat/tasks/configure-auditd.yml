@@ -1,0 +1,27 @@
+---
+# This file is meant to be also used by upgrade playbook
+
+- name: Copy auditd configuration file (audit-epi.rules)
+  template:
+    dest: /etc/audit/rules.d/audit-epi.rules
+    src: audit-epi.rules.j2
+  register: modify_audit_epi_rules
+
+- name: Start/restart and enable auditd service
+  block:
+    - name: Restart auditd service
+      shell: >-
+        service auditd restart
+      args:  
+        warn: false  
+      when: modify_audit_epi_rules.changed  
+
+    - name: Enable and start auditd service
+      service:
+        name: auditd
+        state: started
+        enabled: true
+
+    - name: Verify auditd is running
+      command: systemctl is-active auditd
+      changed_when: false

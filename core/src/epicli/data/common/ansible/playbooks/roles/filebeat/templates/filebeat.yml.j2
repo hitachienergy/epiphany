@@ -21,7 +21,7 @@ filebeat.inputs:
 
   # Paths (in alphabetical order) that should be crawled and fetched. Glob based paths.
   paths:
-    - /var/log/audit/audit.log
+#   - /var/log/audit/audit.log
     - /var/log/auth.log
     - /var/log/firewalld
     - /var/log/haproxy.log
@@ -130,7 +130,7 @@ setup.template.settings:
 # These settings control loading the sample dashboards to the Kibana index. Loading
 # the dashboards is disabled by default and can be enabled either by setting the
 # options here, or by using the `-setup` CLI flag or the `setup` command.
-#setup.dashboards.enabled: false
+setup.dashboards.enabled: true
 
 # The URL from where to download the dashboards archive. By default this URL
 # has a value which is computed based on the Beat name and version. For released
