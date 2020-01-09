@@ -154,8 +154,8 @@
 - name: Generate certificate
   include_tasks: generate-certificates.yml
   when:
-    - specification.kafka_var.security.ssl.enable is defined
-    - specification.kafka_var.security.ssl.enable
+    - specification.kafka_var.security.ssl.enabled is defined
+    - specification.kafka_var.security.ssl.enabled
 
 # Setup server.properties
 - name: Create server.properties
