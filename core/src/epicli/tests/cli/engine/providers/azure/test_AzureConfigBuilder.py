@@ -39,12 +39,10 @@ def test_get_subnet_should_set_proper_values_to_model():
         'availability_zone': 'eu-west-2a'
     })    
     builder = InfrastructureBuilder([cluster_model])
-
-    actual = builder.get_subnet(subnet_definition, 'component', 'prefix-testcluster-component-sg-1', 1)
+    actual = builder.get_subnet(subnet_definition, 'component', 1)
 
     assert actual.specification.name == 'prefix-testcluster-component-subnet-1'
     assert actual.specification.address_prefix == subnet_definition['address_pool']
-    assert actual.specification.security_group_name == 'prefix-testcluster-component-sg-1'
     assert actual.specification.cluster_name == 'testcluster'
 
 
