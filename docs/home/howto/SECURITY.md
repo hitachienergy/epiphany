@@ -3,6 +3,140 @@
 
 TODO
 
+## How to use TLS/SSL with Kafka
+
+Right now Epiphany supports only self-signed certificates 
+generated and signed by CA self-sign certificate. If you want to 
+provide your own certificates you need to configure Kafka 
+manually according to Kafka documentation.
+
+To use Epiphany automation and self-signed certificates you need 
+to provide your own configuration for kafka role and enable TLS/SSL 
+as this is disabled by default.
+
+To enable TLS/SSL communication in Kafka you can provide your own 
+configuration of Kafka, add this to your Epiphany configuration file
+and change in section security/ssl parameter enabled to True.
+
+If in section ssl you will set also parameter client_auth to required,
+you need also to provide configuration of authorization and authentication
+as this setting enforce checking identity. This option is by default set to 
+required. Options requested and none doesn't require such setup.
+
+When TLS/SSL is turned on then all communication to kafka is encrypted and no
+other option is enabled. If you need different configuration, you need to configure
+Kafka manually.
+
+When CA certificate and key is created on server it is also downloaded to host from 
+which Epiphany was executed. By default is downloading this package to build output 
+folder to directory ansible/kafka_certs. You can also change this path in Epiphany configuration.
+
+Sample configuration for Kafka TLS/SSL configuration you can find below.
+
+```yaml
+kind: configuration/kafka
+title: "Kafka"
+name: default
+specification:
+
+    ...
+
+    security:
+      ssl:
+        enabled: True
+        port: 9093 - port on which kafka will listen for encrypted communication
+        server:
+          local_cert_download_path: kafka-certs - path where generated key and certificate will be downloaded
+          keystore_location: /var/private/ssl/kafka.server.keystore.jks - location of keystore on servers
+          truststore_location: /var/private/ssl/kafka.server.truststore.jks - location of truststore on servers
+          cert_validity: 365 - period of time when certificates are valid
+          passwords: - in this section you can define passwords to keystore, truststore and key
+            keystore: PasswordToChange
+            truststore: PasswordToChange
+            key: PasswordToChange
+
+        endpoint_identification_algorithm: HTTPS - this parameter enforces validating of hostname in certificate
+        client_auth: required - this parameter sets authentication mode for Kafka - options are none (no authentication), requested (optional authentication), required (enforce authentication, you need to setup also authentication and authorization then)
+      inter_broker_protocol: SSL - must be set to SSL if TLS/SSL is enabled
+
+    ...
+```
+
+## How to use TLS/SSL certificates for Kafka authentication
+
+To configure Kafka authentication with TLS/SSL, you need to first
+configure ssl section. After this to configuration/kafka in 
+Epiphany configuration file you need to add to security section, section authentication and provide parameters enabled with value True and set authentication_method to certificates. Setting authentication_method sasl is not described right now in this document.
+
+```yaml
+kind: configuration/kafka
+title: "Kafka"
+name: default
+specification:
+
+    ...
+
+    security:
+
+      ...
+
+      authentication:
+        enabled: True
+        authentication_method: certificates
+
+    ...
+```
+
+
+
+## How to use TLS/SSL certificates for Kafka authorization
+
+To configure Kafka authentication with TLS/SSL, you need to first
+configure ssl and also authentication section. If authentication 
+is disabled also authorization is disabled.
+
+To enable authorization section you need to provide authorization section and set parameter enabled to True.
+
+For authorization you can also provide different than default 
+authorizer_class_name. By default
+kafka.security.auth.SimpleAclAuthorizer is used.
+
+Parameter allow_everyone_if_no_acl_found if set to False will 
+prevent accessing resources everyone except super users and 
+users that are having permissions granted to access topic.
+
+You can also provide super users that will be added to Kafka 
+configuration. To do this you will need to provide list of users
+like in the example below and also generate certificate on your 
+own only with CN that matches position that can be found in list 
+(do not set OU, DC or any other of parameters). After this 
+certificate needs to be signed by certificate that was used for
+CA root certificate for Kafka. This certificate can be downloaded
+to location set in ssl local_cert_download_path or on first Kafka server keystore_location directory. You need to have root priviledges to access certificate key.
+
+```yaml
+kind: configuration/kafka
+title: "Kafka"
+name: default
+specification:
+
+    ...
+
+    security:
+
+      ...
+
+      authorization:
+        enabled: True
+        authorizer_class_name: kafka.security.auth.SimpleAclAuthorizer
+        allow_everyone_if_no_acl_found: False
+        super_users:
+          - tester01
+          - tester02
+    ...
+```
+
+
 ## How to enable AWS disk encryption
 
 ### EC2 Root volumes
@@ -76,3 +210,4 @@ Prerequisites: Epiphany Kubernetes cluster
     - ClientSecret - Created secret key from 4. point.
 
 6. The service should return Access Token.
+
