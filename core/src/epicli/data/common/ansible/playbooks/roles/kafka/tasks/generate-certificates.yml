@@ -1,0 +1,142 @@
+- name: Create stores directory
+  file:
+    path: "{{ specification.kafka_var.security.ssl.server.keystore_location | dirname }}"
+    state: directory
+    owner: "{{ specification.kafka_var.user }}"
+    group: "{{ specification.kafka_var.group }}"
+    mode: "0755"
+
+- name: Check if keystore exists on broker
+  stat:
+    path: "{{ specification.kafka_var.security.ssl.server.keystore_location }}"
+  changed_when: false
+  register: keystore_exists
+
+- name: Generate keystore for each server
+  shell: keytool -keystore {{ specification.kafka_var.security.ssl.server.keystore_location }} \
+         -alias localhost -validity {{ specification.kafka_var.security.ssl.server.cert_validity }} -genkey -keyalg RSA \
+         -noprompt -storepass {{ specification.kafka_var.security.ssl.server.passwords.keystore }} \
+         -keypass {{ specification.kafka_var.security.ssl.server.passwords.key }} \
+         -dname "CN={{ inventory_hostname }}" -ext SAN="DNS:{{ inventory_hostname }}"
+  when:
+    - not keystore_exists.stat.exists
+
+- name: Check if signing certificate exists
+  stat:
+    path: "{{ specification.kafka_var.security.ssl.server.keystore_location | dirname }}/ca-cert"
+  register: signing_certificate_exists
+  changed_when: false
+  when:
+    - groups['kafka'][0] == inventory_hostname
+
+- name: Generate signing certificate
+  shell: openssl req -new -x509 -keyout {{ specification.kafka_var.security.ssl.server.keystore_location | dirname }}/ca-key \
+         -out {{ specification.kafka_var.security.ssl.server.keystore_location | dirname }}/ca-cert \
+         -days {{ specification.kafka_var.security.ssl.server.cert_validity }} \
+         -subj "/CN={{ inventory_hostname }}" \
+         --passout pass:{{ specification.kafka_var.security.ssl.server.passwords.key }}
+  when:
+    - groups['kafka'][0] == inventory_hostname
+    - not signing_certificate_exists.stat.exists
+
+- name: Create kafka certificates directory on Epiphany host
+  become: false
+  file:
+    path: "{{ specification.kafka_var.security.ssl.server.local_cert_download_path }}"
+    state: directory
+  delegate_to: localhost
+
+- name: Fetching files
+  fetch:
+    src: "{{ specification.kafka_var.security.ssl.server.keystore_location | dirname }}/{{ item }}"
+    dest: "{{ specification.kafka_var.security.ssl.server.local_cert_download_path }}/{{ item }}"
+    flat: yes
+  loop:
+    - "ca-cert"
+    - "ca-key"
+  when:
+    - groups['kafka'][0] == inventory_hostname
+
+- name: Copy signing certificate and key to brokers
+  copy:
+     src: "{{ specification.kafka_var.security.ssl.server.local_cert_download_path }}/{{ item }}"
+     dest: "{{ specification.kafka_var.security.ssl.server.keystore_location | dirname }}/"
+  loop:
+    - "ca-cert"
+    - "ca-key"
+  when:
+    - not groups['kafka'][0] == inventory_hostname
+
+- name: Check if trustore exists
+  stat:
+    path: "{{ specification.kafka_var.security.ssl.server.truststore_location }}"
+  register: trustore_exists
+
+- name: Create trustore
+  shell: keytool -noprompt -keystore "{{ specification.kafka_var.security.ssl.server.truststore_location }}" -alias CARoot \
+         -import -file "{{ specification.kafka_var.security.ssl.server.keystore_location | dirname }}/ca-cert" \
+         -storepass {{ specification.kafka_var.security.ssl.server.passwords.keystore }} \
+         -keypass {{ specification.kafka_var.security.ssl.server.passwords.key }}
+  when:
+    - not trustore_exists.stat.exists
+
+- name: Check if CA certificate is already imported
+  shell: keytool -list -v -keystore {{ specification.kafka_var.security.ssl.server.keystore_location }} \
+         -storepass {{ specification.kafka_var.security.ssl.server.passwords.keystore }} \
+         | grep -i "Alias name" | grep -i "caroot"
+  failed_when: "caroot_exists.rc == 2"
+  changed_when: false
+  register: caroot_exists
+
+- name: Check if certificate signed by CA is already imported
+  shell: |-
+         keytool -list -v -keystore {{ specification.kafka_var.security.ssl.server.keystore_location }} \
+         -storepass {{ specification.kafka_var.security.ssl.server.passwords.keystore }} \
+         -alias localhost \
+         | grep -i 'Certificate chain length: 2'
+  failed_when: "signed_cert_exists.rc == 2"
+  changed_when: false
+  register: signed_cert_exists
+
+- name: Export certificate to sign certificate with CA
+  shell: keytool -noprompt -keystore {{ specification.kafka_var.security.ssl.server.keystore_location }} \
+         -alias localhost -certreq \
+         -file "{{ specification.kafka_var.security.ssl.server.keystore_location | dirname }}/cert-file" \
+         -storepass {{ specification.kafka_var.security.ssl.server.passwords.keystore }} \
+         -keypass {{ specification.kafka_var.security.ssl.server.passwords.key }}
+  when:
+    - signed_cert_exists.rc == 1
+
+- name: Signing certificate with CA
+  shell: openssl x509 -req -CA "{{ specification.kafka_var.security.ssl.server.keystore_location | dirname }}/ca-cert" \
+         -CAkey "{{ specification.kafka_var.security.ssl.server.keystore_location | dirname }}/ca-key" \
+         -in "{{ specification.kafka_var.security.ssl.server.keystore_location | dirname }}/cert-file" \
+         -out "{{ specification.kafka_var.security.ssl.server.keystore_location | dirname }}/cert-signed" \
+         -days {{ specification.kafka_var.security.ssl.server.cert_validity }} -CAcreateserial \
+         -passin pass:{{ specification.kafka_var.security.ssl.server.passwords.key }}
+  when:
+    - signed_cert_exists.rc == 1
+
+- name: Import certificate CA
+  shell: keytool -noprompt -keystore {{ specification.kafka_var.security.ssl.server.keystore_location }} -alias CARoot \
+         -import -file "{{ specification.kafka_var.security.ssl.server.keystore_location | dirname }}/ca-cert" \
+         -storepass {{ specification.kafka_var.security.ssl.server.passwords.keystore }}
+  when:
+    - caroot_exists.rc == 1
+
+- name: Import certificate signed by CA
+  shell: keytool -noprompt -keystore {{ specification.kafka_var.security.ssl.server.keystore_location }} -alias localhost \
+         -import -file "{{ specification.kafka_var.security.ssl.server.keystore_location | dirname }}/cert-signed" \
+         -storepass {{ specification.kafka_var.security.ssl.server.passwords.keystore }}
+  when:
+    - signed_cert_exists.rc == 1
+
+- name: Remove extracted key and cert from others than root node
+  file:
+    path: "{{ specification.kafka_var.security.ssl.server.keystore_location | dirname }}/{{ item }}"
+    state: absent
+  loop:
+    - "ca-cert"
+    - "ca-key"
+  when:
+    - not groups['kafka'][0] == inventory_hostname
