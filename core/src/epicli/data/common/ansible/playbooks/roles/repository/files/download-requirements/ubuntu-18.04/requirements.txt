@@ -14,6 +14,7 @@ docker-ce-cli 5:18.09
 ebtables
 elasticsearch-curator 5.8.1
 elasticsearch-oss 6.8.5
+elasticsearch-oss 7.3.2
 erlang-nox
 ethtool
 filebeat 6.8.5
@@ -36,6 +37,12 @@ logrotate
 netcat
 net-tools
 nfs-common
+opendistro-alerting 1.3.0
+opendistro-index-management 1.3.0
+opendistro-job-scheduler 1.3.0
+opendistro-performance-analyzer 1.3.0
+opendistro-security 1.3.0
+opendistro-sql 1.3.0
 openjdk-8-jre-headless
 openssl
 postgresql-10

@@ -61,6 +61,7 @@ logrotate
 net-tools
 nfs-utils
 nmap-ncat
+opendistroforelasticsearch-1.3.0
 openssl
 perl # for vim
 perl-Getopt-Long # for vim
