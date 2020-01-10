@@ -1,0 +1,8 @@
+- name: Install Elasticsearch package
+  yum:
+    name:
+      - java-1.8.0-openjdk-headless
+      - opendistroforelasticsearch-{{ specification.opendistro_version_redhat }}
+    update_cache: yes
+    state: present
+  register: install_elasticsearch_package
