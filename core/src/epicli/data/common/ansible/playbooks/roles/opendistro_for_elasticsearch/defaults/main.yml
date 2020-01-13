@@ -1,0 +1,2 @@
+---
+host_ip: "{{ ansible_default_ipv4.address | default(ansible_all_ipv4_addresses[0]) }}"

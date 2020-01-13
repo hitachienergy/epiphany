@@ -4,4 +4,4 @@ name: default
 specification:
   opendistro_version_redhat: "1.3.0"
   elasticsearch_oss_version_debian: "7.3.2"
-  opendistro_version_debian: "1.3.0"
+  opendistro_version_debian: "1.3.0*"
