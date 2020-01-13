@@ -57,7 +57,8 @@ class AnsibleVarsGenerator(Step):
             # roles in the list below are provisioned for upgrade from defaults
             enabled_roles = ['repository', 'image_registry']
         else:
-            enabled_roles = self.inventory_creator.get_enabled_roles()
+            mandatory_roles = ['firewall'] # not present in feature-mapping but always enabled
+            enabled_roles = self.inventory_creator.get_enabled_roles() + mandatory_roles
 
         for role in enabled_roles:
             document = select_first(self.config_docs, lambda x: x.kind == 'configuration/'+to_feature_name(role))

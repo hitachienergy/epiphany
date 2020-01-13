@@ -63,12 +63,6 @@
   when:
     - groups['postgresql'][0] == inventory_hostname
 
-- name: Disable ufw
-  ufw:
-    state: disabled
-  when:
-    - groups['postgresql'][0] == inventory_hostname
-
 # Slave:
 
 - name: Stop postgresql service

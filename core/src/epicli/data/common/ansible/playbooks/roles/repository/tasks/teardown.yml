@@ -1,5 +1,21 @@
-- name: Re-enable system repositories and disable epirepo
-  include_tasks: "{{ ansible_os_family }}/teardown.yml"
+- name: Re-enable system repositories
+  shell: /tmp/epi-repository-setup-scripts/enable-system-repos.sh
+
+- name: Disable epirepo
+  shell: /tmp/epi-repository-setup-scripts/disable-epirepo-client.sh
+
+- name: Disable epirepo and clean up firewall rule
+  block:
+    - name: Disable epirepo server
+      shell: /tmp/epi-repository-setup-scripts/disable-repository-server.sh
+
+    - name: Clean up temporary firewall rule for HTTP service
+      include_tasks: adjust-firewall.yml
+      vars:
+        firewall_action: clean-up-rule
+  when:
+    - not custom_repository_url
+    - inventory_hostname in groups['repository']
 
 - name: Clean up temporary files
   file:

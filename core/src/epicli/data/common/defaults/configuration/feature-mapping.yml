@@ -42,7 +42,7 @@ specification:
     - name: haproxy-exporter
       enabled: yes
     - name: applications
-      enabled: yes    
+      enabled: yes
     - name: ignite
       enabled: yes
   roles_mapping:
@@ -87,7 +87,6 @@ specification:
       - prometheus
       - grafana
       - node-exporter
-      - filebeat
       - elasticsearch
       - elasticsearch-curator
     single_machine:
@@ -111,7 +110,7 @@ specification:
     kubernetes_node:
       - kubernetes-node
       - node-exporter
-      - filebeat    
+      - filebeat
     ignite:
       - ignite
       - node-exporter

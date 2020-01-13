@@ -7,7 +7,8 @@ from cli.helpers.doc_list_helpers import select_single
 
 
 class ConfigurationAppender(Step):
-    REQUIRED_DOCS = ['configuration/feature-mapping', 'configuration/shared-config', 'epiphany-cluster']
+    REQUIRED_DOCS = ['configuration/feature-mapping', 'configuration/shared-config', 'epiphany-cluster',
+                     'configuration/firewall']
 
     def __init__(self, input_docs):
         super().__init__(__name__)
@@ -19,7 +20,7 @@ class ConfigurationAppender(Step):
 
         def append_config(doc):
             doc['version'] = VERSION
-            configuration_docs.append(doc)    
+            configuration_docs.append(doc)
 
         for document_kind in ConfigurationAppender.REQUIRED_DOCS:
             doc = select_first(self.input_docs, lambda x: x.kind == document_kind)

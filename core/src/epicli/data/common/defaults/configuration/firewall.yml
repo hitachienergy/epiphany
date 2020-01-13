@@ -1,0 +1,102 @@
+kind: configuration/firewall
+title: OS level firewall
+name: default
+specification:
+  firewall_service_enabled: true # for all inventory hosts
+  apply_configuration: true
+  managed_zone_name: epiphany
+  rules:
+    applications:
+      enabled: false
+      ports:
+        - 30104/tcp       # auth-service
+        - 30672/tcp       # rabbitmq-amqp
+        - 31672/tcp       # rabbitmq-http (management)
+        - 32300-32302/tcp # ignite
+    common: # for all inventory hosts
+      enabled: true
+      ports:
+        - 22/tcp
+    elasticsearch:
+      enabled: true
+      ports:
+        - 9200/tcp
+    grafana:
+      enabled: true
+      ports:
+        - 3000/tcp
+    haproxy:
+      enabled: true
+      ports:
+        - 443/tcp
+        - 9000/tcp # stats
+    haproxy_exporter:
+      enabled: true
+      ports:
+        - 9101/tcp
+    ignite:
+      enabled: true
+      ports:
+        - 8080/tcp  # REST API
+        - 10800/tcp # thin client connection
+        - 11211/tcp # JDBC
+        - 47100/tcp # local communication
+        - 47500/tcp # local discovery
+    image_registry:
+      enabled: true
+      ports:
+        - 5000/tcp
+    jmx_exporter:
+      enabled: true
+      ports:
+        - 7071/tcp # Kafka
+        - 7072/tcp # ZooKeeper
+    kafka:
+      enabled: true
+      ports:
+        - 9092/tcp
+    kafka_exporter:
+      enabled: true
+      ports:
+        - 9308/tcp
+    kibana:
+      enabled: true
+      ports:
+        - 5601/tcp
+    kubernetes_master:
+      enabled: true
+      ports:
+        - 6443/tcp      # API server
+        - 2379-2380/tcp # etcd server client API
+        - 10250/tcp     # Kubelet API
+        - 10251/tcp     # kube-scheduler
+        - 10252/tcp     # kube-controller-manager
+    kubernetes_node:
+      enabled: true
+      ports:
+        - 10250/tcp # Kubelet API
+    node_exporter:
+      enabled: true
+      ports:
+        - 9100/tcp
+    postgresql:
+      enabled: true
+      ports:
+        - 5432/tcp
+    prometheus:
+      enabled: true
+      ports:
+        - 9090/tcp
+        - 9093/tcp # Alertmanager
+    rabbitmq:
+      enabled: true
+      ports:
+        - 5672/tcp # AMQP
+        # - 15672/tcp # HTTP API clients, management UI and rabbitmqadmin (only if the management plugin is enabled)
+        - 25672/tcp # distribution server
+    zookeeper:
+      enabled: true
+      ports:
+        - 2181/tcp # client connections
+        - 2888/tcp # peers communication
+        - 3888/tcp # leader election

@@ -1,0 +1,124 @@
+---
+- name: Get firewall state
+  shell: firewall-cmd --state
+  register: firewall_state
+  changed_when: false
+  failed_when: firewall_state.rc not in [0, 127, 252] # 252 means not running
+
+- name: Get zone of default network interface ({{ ansible_default_ipv4.interface }})
+  command: firewall-cmd --get-zone-of-interface {{ ansible_default_ipv4.interface }}
+  register: default_interface_zone
+  changed_when: false
+  failed_when:
+    - default_interface_zone.rc != 0
+    - default_interface_zone.stderr != 'no zone'
+  when:
+    - firewall_state.stdout == 'running'
+
+- name: Set zone of default network interface as fact
+  set_fact:
+    current_zone: "{{ default_interface_zone.stdout }}"
+  when:
+    - default_interface_zone.stdout is defined
+    - default_interface_zone.stdout | length > 0
+
+- name: Set paths for temporary files as facts
+  set_fact:
+    firewall_rule_added_flag_file: /var/tmp/epiphany-repo-http-firewall-rule-added.flag
+    modified_zone_name_store_file: /var/tmp/epiphany-repo-temporarily-modified-firewall-zone.save
+    zone_config_backup_dest_dir: /var/tmp/epiphany
+
+- name: Ensure HTTP port is not blocked by firewall
+  block:
+    - name: Check if firewall rule for HTTP server exists
+      command: firewall-cmd --query-service=http --zone={{ current_zone }}
+      register: query_result
+      changed_when: false
+      failed_when: query_result.rc not in [0, 1] # 0 means service rule exists
+
+    - name: Add temporary firewall rule
+      block:
+        - name: Save name of modified zone to file for persistence
+          copy:
+            content: "{{ current_zone }}"
+            dest: "{{ modified_zone_name_store_file }}"
+
+        - name: Backup configuration file of {{ current_zone }} zone
+          copy:
+            remote_src: yes
+            src: /etc/firewalld/zones/{{ current_zone }}.xml
+            dest: "{{ zone_config_backup_dest_dir }}/{{ current_zone }}.xml.bak"
+            mode: preserve
+
+        - name: Add temporary firewall rule for HTTP server
+          shell: firewall-cmd --add-service=http --zone={{ current_zone }} --permanent &&
+                 firewall-cmd --add-service=http --zone={{ current_zone }}
+          args:
+            creates: "{{ firewall_rule_added_flag_file }}"
+      when:
+        - firewall_action == 'add-rule'
+        - query_result.rc == 1 # service rule does not exist
+  when:
+    - firewall_state.stdout == 'running'
+    - current_zone is defined
+
+# Note: Current zone when 'teardown' may be different than was when 'setup'
+
+- name: Clean up temporary firewall rule
+  block:
+    - name: Include vars from firewall role
+      include_vars:
+        file: roles/firewall/vars/main.yml
+        name: firewall_role_config
+
+    - name: Get name of Epiphany managed zone from configuration
+      set_fact:
+        managed_zone: firewall_role_config.specification.managed_zone_name
+
+    - name: Check if {{ firewall_rule_added_flag_file }} file exists
+      stat:
+        path: "{{ firewall_rule_added_flag_file }}"
+      register: firewall_rule_added_flag_file_stat
+
+    - name: Remove temporary firewall rule for epirepo added by repository role
+      block:
+        - name: Get name of modified zone from file
+          set_fact:
+            modified_zone: "{{ lookup('file', modified_zone_name_store_file) }}"
+
+        - name: Restore configuration of {{ modified_zone }} zone from backup
+          copy:
+            remote_src: yes
+            src: "{{ zone_config_backup_dest_dir }}/{{ modified_zone }}.xml.bak"
+            dest:  /etc/firewalld/zones/{{ modified_zone }}.xml
+            mode: preserve
+          register: restore_modified_zone_from_backup
+          when: modified_zone != managed_zone
+             or not firewall_role_config.specification.apply_configuration
+
+        - name: Clean up temporary files
+          file:
+            path: "{{ item }}"
+            state: absent
+          loop: [ firewall_rule_added_flag_file, modified_zone_name_store_file, "{{ zone_config_backup_dest_dir }}/{{ current_zone }}.xml.bak" ]
+
+      when: firewall_rule_added_flag_file_stat.stat.exists
+
+    - name: Remove temporary firewall rule for epirepo added by firewall role
+      lineinfile:
+        path: /etc/firewalld/zones/{{ managed_zone }}.xml
+        state: absent
+        regexp: '^\s+<service name="http"/>'
+      register: remove_http_service_from_managed_zone
+      when:
+        - firewall_role_config.specification.apply_configuration
+
+    - name: Reload firewalld to apply permanent configuration to runtime
+      command: firewall-cmd --reload
+      when:
+        - firewall_state.stdout == 'running'
+        - restore_modified_zone_from_backup.changed
+          or remove_http_service_from_managed_zone.changed
+
+  when:
+    - firewall_action == 'clean-up-rule'

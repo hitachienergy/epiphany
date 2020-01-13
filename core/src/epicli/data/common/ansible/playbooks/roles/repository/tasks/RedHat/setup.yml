@@ -1,21 +1,26 @@
 ---
 - name: Set SELinux in permissive mode until the machine is rebooted
   command: setenforce 0
-  ignore_errors: true
+  failed_when: false
   changed_when: false
 
-- name: Create epirepo repository
-  shell: >-
-    set -o pipefail && /tmp/epi-repository-setup-scripts/create-repository.sh /var/www/html/epirepo {{ offline_mode | lower }} |&
-    tee /tmp/epi-repository-setup-scripts/create-repository.log
-  when:
-    - not custom_repository_url
-    - inventory_hostname in groups['repository']
+- name: Create epirepo and start httpd
+  block:
+    - name: Create epirepo repository
+      shell: >-
+        set -o pipefail &&
+        /tmp/epi-repository-setup-scripts/create-repository.sh /var/www/html/epirepo {{ offline_mode | lower }} |&
+        tee /tmp/epi-repository-setup-scripts/create-repository.log
 
-- name: Ensure httpd is running
-  service:
-    name: httpd
-    state: started
+    - name: Ensure HTTP port is not blocked by firewall
+      include_tasks: adjust-firewall.yml
+      vars:
+        firewall_action: add-rule
+
+    - name: Ensure httpd is running
+      service:
+        name: httpd
+        state: started
   when:
     - not custom_repository_url
     - inventory_hostname in groups['repository']
