@@ -1,18 +1,19 @@
 ---
-# - name: Configure network.host in elasticsearch.yml
-#   lineinfile:
-#     path: /etc/elasticsearch/elasticsearch.yml
-#     state: present
-#     regexp: '^[#]*network.host:'
-#     line: "network.host: {{ host_ip }}"
-#   register: change_config
 
-# - name: Restart elasticsearch service
-#   systemd:
-#     name: elasticsearch
-#     state: restarted
-#   when: change_config.changed
-#      or (install_elasticsearch_package is defined and install_elasticsearch_package.changed)
+- name: Create configuration Elasticsearch configuration file
+  template:
+    src: elasticsearch.yml.j2
+    dest: /etc/elasticsearch/elasticsearch.yml
+    owner: elasticsearch
+    group: root
+    mode: 0644
+  register: change_config
+
+- name: Restart elasticsearch service
+  systemd:
+    name: elasticsearch
+    state: restarted
+  when: change_config.changed
 
 - name: Enable and start elasticsearch service
   systemd:

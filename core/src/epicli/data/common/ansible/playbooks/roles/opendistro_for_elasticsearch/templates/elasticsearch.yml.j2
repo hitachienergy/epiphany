@@ -14,13 +14,13 @@
 #
 # Use a descriptive name for your cluster:
 #
-#cluster.name: my-application
+cluster.name: {{specification.cluster_name}}
 #
 # ------------------------------------ Node ------------------------------------
 #
 # Use a descriptive name for the node:
 #
-#node.name: node-1
+node.name: {{ansible_hostname}}
 #
 # Add custom attributes to the node:
 #
@@ -30,11 +30,11 @@
 #
 # Path to directory where to store the data (separate multiple locations by comma):
 #
-path.data: /var/lib/elasticsearch
+path.data: {{specification.paths.data}}
 #
 # Path to log files:
 #
-path.logs: /var/log/elasticsearch
+path.logs: {{specification.paths.logs}}
 #
 # ----------------------------------- Memory -----------------------------------
 #
@@ -52,7 +52,7 @@ path.logs: /var/log/elasticsearch
 #
 # Set the bind address to a specific IP (IPv4 or IPv6):
 #
-network.host: {{ host_ip }} # todo change to hostname
+network.host: {{ansible_hostname}} 
 #
 # Set a custom port for HTTP:
 #
@@ -65,11 +65,16 @@ network.host: {{ host_ip }} # todo change to hostname
 # Pass an initial list of hosts to perform discovery when this node is started:
 # The default list of hosts is ["127.0.0.1", "[::1]"]
 #
-discovery.seed_hosts: ["{{ host_ip }}"]
+{% if specification.clustered -%}
+discovery.seed_hosts: [{% for host in groups['opendistro_for_elasticsearch'] %}"{{hostvars[host]['ansible_default_ipv4']['address']}}"{%- if not loop.last -%},{% endif %}{% endfor %}]
+{% else %}
+discovery.seed_hosts: ["{{ ansible_default_ipv4.address | default(ansible_all_ipv4_addresses[0]) }}"]
+{%- endif %}
+
 #
 # Bootstrap the cluster using an initial set of master-eligible nodes:
 #
-#cluster.initial_master_nodes: ["node-1", "node-2"]
+cluster.initial_master_nodes: [{% for host in groups['opendistro_for_elasticsearch'] %}"{{hostvars[host]['ansible_hostname']}}"{%- if not loop.last -%},{% endif %}{% endfor %}]
 #
 # For more information, consult the discovery and cluster formation module documentation.
 #
