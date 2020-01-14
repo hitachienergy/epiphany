@@ -4,19 +4,37 @@
 
 - name: Set facts for filebeat.yml template
   block:
-    - name: Set value for output.elasticsearch.hosts
+    # - name: Set value for output.elasticsearch.hosts
+    #   set_fact:
+    #     output_elasticsearch_hosts: >-
+    #       {{ [(hostvars[groups['elasticsearch'][0]].ansible_default_ipv4.address + ':9200')] }}
+    #   when:
+    #     - groups['elasticsearch'][0] is defined
+    #     - specification.custom_output_elasticsearch_hosts | length == 0    
+    
+    - name: Set flag if logging output exists
       set_fact:
-        output_elasticsearch_hosts: >-
-          {{ [(hostvars[groups['elasticsearch'][0]].ansible_default_ipv4.address + ':9200')] }}
+        logging_output_exists: False 
+
+    - name: Set flag if logging output exists
+      set_fact:
+        logging_output_exists: True
       when:
-        - groups['elasticsearch'][0] is defined
-        - specification.custom_output_elasticsearch_hosts | length == 0
+        - groups["logging"] is defined
+        - groups["logging"] | length > 0
+        - specification.custom_output_elasticsearch_hosts | length == 0 
 
     - name: Set custom value for output.elasticsearch.hosts
       set_fact:
-        output_elasticsearch_hosts: "{{ specification.custom_output_elasticsearch_hosts }}"
+        logging_output_exists: True
       when:
         - specification.custom_output_elasticsearch_hosts | length > 0
+
+    # - name: Set custom value for output.elasticsearch.hosts
+    #   set_fact:
+    #     output_elasticsearch_hosts: "{{ specification.custom_output_elasticsearch_hosts }}"
+    #   when:
+    #     - specification.custom_output_elasticsearch_hosts | length > 0
 
     - name: Set value for setup.kibana.host
       set_fact:

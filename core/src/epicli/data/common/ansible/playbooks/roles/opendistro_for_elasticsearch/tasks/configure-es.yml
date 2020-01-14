@@ -1,6 +1,6 @@
 ---
 
-- name: Create configuration Elasticsearch configuration file
+- name: Create Elasticsearch configuration file
   template:
     src: elasticsearch.yml.j2
     dest: /etc/elasticsearch/elasticsearch.yml

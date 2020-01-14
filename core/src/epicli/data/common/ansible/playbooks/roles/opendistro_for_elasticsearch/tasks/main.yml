@@ -1,6 +1,7 @@
 ---
+
 - name: Include installation tasks
   include_tasks: install-es.yml
 
-- name: Include configuration tasks
+- name: Include configuration tasks in a context of {{ current_group_name }}
   include_tasks: configure-es.yml

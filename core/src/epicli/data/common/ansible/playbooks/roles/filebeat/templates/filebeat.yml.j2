@@ -153,6 +153,8 @@ setup.kibana:
 {% else %}
   #host: "localhost:5601"
 {% endif %}
+  username: logstash
+  password: logstash
 
   # Kibana Space ID
   # ID of the Kibana Space into which the dashboards should be loaded. By default,
@@ -179,8 +181,15 @@ setup.kibana:
 #-------------------------- Elasticsearch output ------------------------------
 output.elasticsearch:
   # Array of hosts to connect to.
-{% if output_elasticsearch_hosts is defined %}
-  hosts: {{ output_elasticsearch_hosts }}
+{% if logging_output_exists %}
+  hosts: 
+{% for host in groups['logging'] %}
+  - "https://{{hostvars[host]['ansible_hostname']}}:9200"
+{% endfor %}
+  protocol: "https"
+  ssl.verification_mode: none
+  username: logstash
+  password: logstash
 {% else %}
   hosts: []
 {% endif %}

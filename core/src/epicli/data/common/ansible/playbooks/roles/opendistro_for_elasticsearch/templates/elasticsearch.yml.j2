@@ -66,7 +66,7 @@ network.host: {{ansible_hostname}}
 # The default list of hosts is ["127.0.0.1", "[::1]"]
 #
 {% if specification.clustered -%}
-discovery.seed_hosts: [{% for host in groups['opendistro_for_elasticsearch'] %}"{{hostvars[host]['ansible_default_ipv4']['address']}}"{%- if not loop.last -%},{% endif %}{% endfor %}]
+discovery.seed_hosts: [{% for host in groups[current_group_name] %}"{{hostvars[host]['ansible_default_ipv4']['address']}}"{%- if not loop.last -%},{% endif %}{% endfor %}]
 {% else %}
 discovery.seed_hosts: ["{{ ansible_default_ipv4.address | default(ansible_all_ipv4_addresses[0]) }}"]
 {%- endif %}
@@ -74,7 +74,7 @@ discovery.seed_hosts: ["{{ ansible_default_ipv4.address | default(ansible_all_ip
 #
 # Bootstrap the cluster using an initial set of master-eligible nodes:
 #
-cluster.initial_master_nodes: [{% for host in groups['opendistro_for_elasticsearch'] %}"{{hostvars[host]['ansible_hostname']}}"{%- if not loop.last -%},{% endif %}{% endfor %}]
+cluster.initial_master_nodes: [{% for host in groups[current_group_name] %}"{{hostvars[host]['ansible_hostname']}}"{%- if not loop.last -%},{% endif %}{% endfor %}]
 #
 # For more information, consult the discovery and cluster formation module documentation.
 #

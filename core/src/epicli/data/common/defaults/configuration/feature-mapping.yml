@@ -13,6 +13,8 @@ specification:
       enabled: yes
     - name: kubernetes-node
       enabled: yes
+    - name: logging
+      enabled: yes    
     - name: opendistro-for-elasticsearch
       enabled: yes
     - name: elasticsearch
@@ -133,5 +135,7 @@ specification:
       - filebeat
       - firewall   
     opendistro:
-      - opendistro-for-elasticsearch
+      - logging
+      - kibana
+      - filebeat
 
