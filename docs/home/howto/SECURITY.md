@@ -3,6 +3,63 @@
 
 TODO
 
+## How to use TLS/SSL certificate with RabbitMQ
+
+
+To configure RabbitMQ SSL/TLS support in Epiphany you need to set custom_configurations in Epiphany configuration file and you need to manually create certificate with common CA 
+according to documentation on your RabbitMQ machines: 
+
+https://www.rabbitmq.com/ssl.html#manual-certificate-generation
+
+or:
+
+https://www.rabbitmq.com/ssl.html#automated-certificate-generation
+
+Custom_configurations are settings in Epiphany, that are to extend RabbitMQ configuration with your custom one. We can also use this to perform TLS configuration of RabbitMQ. 
+To add custom configuration to RabbitMQ configuration you need to pass list of attributes in format:
+
+-name: rabbitmq.configuration.parameter
+ value: rabbitmq.configuration.value
+
+These settings are mapping to RabbitMQ TLS parameters configuration from documentation that you can find below the link:
+https://www.rabbitmq.com/ssl.html
+
+Below you can find example of TLS/SSL configuration.
+
+```yaml
+
+kind: configuration/rabbitmq
+title: "RabbitMQ"
+name: default
+specification:
+
+  ...
+
+  custom_configurations: 
+    - name: listeners.tcp # option that disables non-TLS/SSL support
+      value: none
+    - name: listeners.ssl.default # port on which TLS/SSL RabbitMQ will be listening for connections
+      value: 5671
+    - name: ssl_options.cacertfile # file with certificate of CA which should sign all certificates
+      value: /var/private/ssl/ca/ca_certificate.pem
+    - name: ssl_options.certfile # file with certificate of the server that should be signed by CA
+      value: /var/private/ssl/server/server_certificate.pem
+    - name: ssl_options.keyfile # file with key to the certificate of the server
+      value: /var/private/ssl/server/private_key.pem
+    - name: ssl_options.password # password to key protecting server certificate
+      value: PasswordToChange
+    - name: ssl_options.verify # setting of peer verification
+      value: verify_peer
+    - name: ssl_options.fail_if_no_peer_cert # parameter that configure behaviour if peer cannot present a certificate
+      value: "false"
+
+  ...
+
+```
+
+Right now RabbitMQ configuration is available only for standalone machines. Also please be carreful about boolean values as they need to be double quoted 
+and written in lowercase form as this will RabbitMQ startup fail.
+
 ## How to enable AWS disk encryption
 
 ### EC2 Root volumes
