@@ -30,6 +30,7 @@ docker-ce-cli-18.09.9
 ebtables
 elasticsearch-curator-5.8.1
 elasticsearch-oss-6.8.5
+elasticsearch-oss-7.3.2
 erlang-21.3.8.7
 ethtool
 filebeat-6.8.5 # actually it's filebeat-oss

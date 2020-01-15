@@ -1,5 +1,4 @@
 ---
-  # Ansible playbook that makes sure the base items for all nodes are installed
   - hosts: all
     tasks: [ ]  
   

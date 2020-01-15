@@ -496,13 +496,12 @@ EOF
 )
 
 ELASTIC_7_REPO_CONF=$(cat <<'EOF'
-[opendistroforelasticsearch-artifacts-repo]
-name=Release RPM artifacts of OpenDistroForElasticsearch
-baseurl=https://d3g5vo6xdbdb9a.cloudfront.net/yum/noarch/
-enabled=1
-gpgkey=https://d3g5vo6xdbdb9a.cloudfront.net/GPG-KEY-opendistroforelasticsearch
+[elasticsearch-7.x]
+name=Elasticsearch repository for 7.x packages
+baseurl=https://artifacts.elastic.co/packages/oss-7.x/yum
 gpgcheck=1
-repo_gpgcheck=1
+gpgkey=https://artifacts.elastic.co/GPG-KEY-elasticsearch
+enabled=1
 autorefresh=1
 type=rpm-md
 EOF

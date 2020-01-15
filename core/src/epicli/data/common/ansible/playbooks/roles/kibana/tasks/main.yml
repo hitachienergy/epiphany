@@ -23,6 +23,12 @@
   when:
     - groups['kibana'][0] == inventory_hostname
 
+- name: Restart Kibana service
+  systemd:
+    name: kibana
+    state: restarted
+  when: change_config.changed
+
 - name: Start kibana service
   service:
     name: kibana
