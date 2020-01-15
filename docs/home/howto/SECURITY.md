@@ -3,11 +3,14 @@
 
 TODO
 
-## Azure disk encryption
+## How to enable Azure disk encryption
 
-TODO
+Automatic encryption of storage on Azure is not jet supported by Epiphany. Guides to encrypt manually can be found:
 
-## AWS disk encryption
+- [Here](https://docs.microsoft.com/en-us/azure/security/fundamentals/azure-disk-encryption-vms-vmss) for VM storage.
+- [Here](https://docs.microsoft.com/en-us/azure/storage/common/storage-service-encryption) for storage shares,
+
+## How to enable AWS disk encryption
 
 ### EC2 Root volumes
 
