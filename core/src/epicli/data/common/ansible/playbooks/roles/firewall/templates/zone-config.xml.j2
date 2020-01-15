@@ -8,10 +8,11 @@
 {% endif %}
 {# ssh service is hard-coded by purpose - to be always allowed #}
   <service name="ssh"/>
-{# http service is allowed temporarily for epirepo and removed by repository role at the end #}
 {% if inventory_hostname in groups['repository'] and specification.firewall_service_enabled %}
-  <!-- http service is added temporarily for epirepo -->
+<!-- BEGIN ANSIBLE MANAGED TEMPORARY BLOCK -->
+  <!-- http service is added temporarily for epirepo and removed at the end of installation -->
   <service name="http"/>
+<!-- END ANSIBLE MANAGED TEMPORARY BLOCK -->
 {% endif %}
 {% for item in ports_to_open %}
   <port protocol="{{ item.protocol }}" port="{{ item.range }}"/>

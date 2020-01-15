@@ -1,0 +1,36 @@
+---
+- name: Set firewall facts
+  include_tasks: firewall/set-common-vars.yml
+
+- name: Ensure HTTP port is not blocked by firewall
+  block:
+    - name: Check if firewall rule for HTTP server exists
+      command: firewall-cmd --query-service=http --zone={{ current_zone }}
+      register: query_result
+      changed_when: false
+      failed_when: query_result.rc not in [0, 1] # 0 means service rule exists
+
+    - name: Add temporary firewall rule
+      block:
+        - name: Save name of modified zone to file for persistence
+          copy:
+            content: "{{ current_zone }}"
+            dest: "{{ modified_zone_name_file }}"
+
+        - name: Backup configuration file of {{ current_zone }} zone
+          copy:
+            remote_src: yes
+            src: /etc/firewalld/zones/{{ current_zone }}.xml
+            dest: "{{ zone_config_backup_dest_dir }}/{{ current_zone }}.xml.bak"
+            mode: preserve
+
+        - name: Add temporary firewall rule for HTTP server
+          shell: firewall-cmd --add-service=http --zone={{ current_zone }} --permanent &&
+                 firewall-cmd --add-service=http --zone={{ current_zone }}
+          args:
+            creates: "{{ firewall_rule_added_flag_file }}"
+      when:
+        - query_result.rc == 1 # service rule does not exist
+  when:
+    - firewall_state == 'running'
+    - current_zone is defined

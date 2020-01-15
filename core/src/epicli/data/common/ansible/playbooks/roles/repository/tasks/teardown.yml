@@ -9,10 +9,8 @@
     - name: Disable epirepo server
       shell: /tmp/epi-repository-setup-scripts/disable-repository-server.sh
 
-    - name: Clean up temporary firewall rule for HTTP service
-      include_tasks: adjust-firewall.yml
-      vars:
-        firewall_action: clean-up-rule
+    - name: Clean up temporary firewall rule for HTTP server
+      include_tasks: firewall/clean-up-rule.yml
   when:
     - not custom_repository_url
     - inventory_hostname in groups['repository']

@@ -3,7 +3,7 @@ title: OS level firewall
 name: default
 specification:
   firewall_service_enabled: true # for all inventory hosts
-  apply_configuration: true
+  apply_configuration: true      # if false only service state is managed
   managed_zone_name: epiphany
   rules:
     applications:
