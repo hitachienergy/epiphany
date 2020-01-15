@@ -5,6 +5,8 @@ specification:
   available_roles:
     - name: repository
       enabled: yes
+    - name: firewall
+      enabled: yes
     - name: image-registry
       enabled: yes
     - name: kubernetes-master
@@ -53,29 +55,35 @@ specification:
       - kafka-exporter
       - node-exporter
       - filebeat
+      - firewall
     rabbitmq:
       - rabbitmq
       - node-exporter
       - filebeat
+      - firewall
     logging:
       - elasticsearch
       - elasticsearch-curator
       - kibana
       - filebeat
+      - firewall
     load_balancer:
       - haproxy
       - haproxy-exporter
       - node-exporter
       - filebeat
+      - firewall
     monitoring:
       - prometheus
       - grafana
       - node-exporter
       - filebeat
+      - firewall
     postgresql:
       - postgresql
       - node-exporter
       - filebeat
+      - firewall
     custom:
       - repository
       - image-registry
@@ -89,6 +97,7 @@ specification:
       - node-exporter
       - elasticsearch
       - elasticsearch-curator
+      - firewall
     single_machine:
       - repository
       - image-registry
@@ -96,6 +105,7 @@ specification:
       - applications
       - rabbitmql
       - postgresql
+      - firewall
     kubernetes_master:
       - image-registry
       - kubernetes-master
@@ -103,16 +113,19 @@ specification:
       - applications
       - node-exporter
       - filebeat
+      - firewall
     kubernetes_node_ha:
       - kubernetes-node
       - node-exporter
       - filebeat
+      - firewall
     kubernetes_node:
       - kubernetes-node
       - node-exporter
       - filebeat
+      - firewall
     ignite:
       - ignite
       - node-exporter
       - filebeat
-
+      - firewall

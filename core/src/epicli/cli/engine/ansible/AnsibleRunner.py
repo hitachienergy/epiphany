@@ -97,10 +97,6 @@ class AnsibleRunner(Step):
         # pre-flight to prepare machines
         self.pre_flight(inventory_path)
 
-        # run firewall playbook (no in 'common' role to not run for 'upgrade')
-        self.ansible_command.run_playbook(inventory=inventory_path,
-                                          playbook_path=self.playbook_path('firewall'))
-
         # run roles
         enabled_roles = inventory_creator.get_enabled_roles()
         for role in enabled_roles:
