@@ -49,7 +49,7 @@
   - [How to enable Azure disk encryption](./howto/SECURITY.md#how-to-enable-azure-disk-encryption)
   - [How to enable AWS disk encryption](./howto/SECURITY.md#how-to-enable-AWS-disk-encryption)
   - [How to use Kubernetes Secrets](./howto/SECURITY.md#how-to-use-kubernetes-secrets)
-  - [How to authenticate to Azure AD app](./howto/SECURITY.md#how-to-authenticate-to-azure-ad-app)
+  - [How to authenticate to Azure AD app](./howto/SECURITY.md#how-to-authenticate-to-azure-ad-app)  
 
 - [Databases](./howto/DATABASES.md)
   - [How to configure PostgreSQL](./howto/DATABASES.md#how-to-configure-postgresql)
