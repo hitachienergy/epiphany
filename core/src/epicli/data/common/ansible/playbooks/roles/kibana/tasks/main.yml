@@ -10,16 +10,6 @@
   when:
     - groups['kibana'][0] == inventory_hostname
 
-# - name: Replace with interface
-#   replace:
-#     path: /etc/kibana/kibana.yml
-#     regexp: '^#server.host: "localhost"$'
-#     replace: "server.host: \"{{ hostvars[groups['kibana'][0]]['ansible_default_ipv4']['address'] }}\""
-#     backup: no
-#   when:
-#     - groups['kibana'][0] == inventory_hostname
-
-
 - name: Create Kibana configuration file
   template:
     src: kibana.yml.j2
