@@ -17,6 +17,14 @@
             content: "{{ current_zone }}"
             dest: "{{ modified_zone_name_file }}"
 
+        - name: Make sure {{ zone_config_backup_dest_dir }} directory exists
+          file:
+            path: "{{ zone_config_backup_dest_dir }}"
+            state: directory
+            mode: 750
+            owner: "{{ admin_user.name }}"
+            group: "{{ admin_user.name }}"
+
         - name: Backup configuration file of {{ current_zone }} zone
           copy:
             remote_src: yes
