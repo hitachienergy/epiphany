@@ -92,6 +92,7 @@ specification:
     rabbitmq:
       enabled: true
       ports:
+        - 4369/tcp    # peer discovery service used by RabbitMQ nodes and CLI tools
         # - 5671/tcp  # encrypted communication (if TLS/SSL is enabled)
         - 5672/tcp    # AMQP
         # - 15672/tcp # HTTP API clients, management UI and rabbitmqadmin (only if the management plugin is enabled)
