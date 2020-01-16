@@ -5,9 +5,8 @@ TODO
 
 ## How to use TLS/SSL certificate with RabbitMQ
 
-
-To configure RabbitMQ SSL/TLS support in Epiphany you need to set custom_configurations in Epiphany configuration file and you need to manually create certificate with common CA 
-according to documentation on your RabbitMQ machines: 
+To configure RabbitMQ SSL/TLS support in Epiphany you need to set `custom_configurations` in Epiphany configuration file and you need to 
+manually create certificate with common CA according to documentation on your RabbitMQ machines: 
 
 https://www.rabbitmq.com/ssl.html#manual-certificate-generation
 
@@ -15,8 +14,10 @@ or:
 
 https://www.rabbitmq.com/ssl.html#automated-certificate-generation
 
-Custom_configurations are settings in Epiphany, that are to extend RabbitMQ configuration with your custom one. We can also use this to perform TLS configuration of RabbitMQ. 
-To add custom configuration to RabbitMQ configuration you need to pass list of attributes in format:
+If in `custom_configurations` parameter `listeners.ssl.default` is set then RabbitMQ will be installed and stopped to allow you to perform manual actions required to create server certificates with CA certificate.
+
+`custom_configurations` are settings in Epiphany, that are to extend RabbitMQ configuration with your custom one. We can also use this to 
+perform TLS configuration of RabbitMQ. To add custom configuration to RabbitMQ configuration you need to pass list of attributes in format:
 
 -name: rabbitmq.configuration.parameter
  value: rabbitmq.configuration.value
