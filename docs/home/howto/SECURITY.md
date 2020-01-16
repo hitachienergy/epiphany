@@ -129,7 +129,7 @@ specification:
 
 ## How to enable Azure disk encryption
 
-Automatic encryption of storage on Azure is not jet supported by Epiphany. Guides to encrypt manually can be found:
+Automatic encryption of storage on Azure is not yet supported by Epiphany. Guides to encrypt manually can be found:
 
 - [Here](https://docs.microsoft.com/en-us/azure/security/fundamentals/azure-disk-encryption-vms-vmss) for VM storage.
 - [Here](https://docs.microsoft.com/en-us/azure/storage/common/storage-service-encryption) for storage shares,
