@@ -99,8 +99,7 @@ specification:
       - prometheus
       - grafana
       - node-exporter
-      - elasticsearch
-      - elasticsearch-curator
+      - logging
       - firewall
     single_machine:
       - repository
@@ -131,5 +130,11 @@ specification:
     ignite:
       - ignite
       - node-exporter
-      - filebeat    
+      - filebeat
+      - firewall
+    opendistro_for_elasticsearch:
+      - opendistro-for-elasticsearch
+      - node-exporter
+      - filebeat
+      - firewall
 
