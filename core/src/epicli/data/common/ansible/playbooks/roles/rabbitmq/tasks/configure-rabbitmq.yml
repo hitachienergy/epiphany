@@ -1,4 +1,13 @@
 ---
+- name: Set variable with SSL/TLS to enabled false
+  set_fact: is_ssl_enabled="false"
+  changed_when: false
+
+- name: Check if variable with SSL/TLS should be set to true
+  set_fact: is_ssl_enabled="{{ specification.custom_configurations | selectattr('name','equalto','listeners.ssl.default') | list | length > 0 }}"
+  changed_when: false
+  when: specification.custom_configurations | length > 0
+
 - name: rabbitmq default file
   template:
     src: rabbitmq-server.j2
@@ -33,4 +42,11 @@
 
 - name: Restart RabbitMQ
   service: name=rabbitmq-server state=restarted
-  when: config_changed.changed or env_settings_changed.changed
+  when:
+    - config_changed.changed or env_settings_changed.changed
+    - not is_ssl_enabled
+
+- name: Stop RabbitMQ for manual certificates configuration
+  service: name=rabbitmq-server state=stopped
+  when:
+     - is_ssl_enabled
