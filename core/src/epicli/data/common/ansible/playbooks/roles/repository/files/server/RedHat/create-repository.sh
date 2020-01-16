@@ -13,8 +13,3 @@ fi
 systemctl start httpd
 
 createrepo $EPI_REPO_SERVER_PATH/packages
-
-if systemctl is-active firewalld; then
-  firewall-cmd --permanent --add-service=http
-  firewall-cmd --reload
-fi

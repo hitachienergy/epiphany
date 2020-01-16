@@ -127,32 +127,63 @@ specification:
     ...
 ```
 
+## How to enable Azure disk encryption
+
+Automatic encryption of storage on Azure is not yet supported by Epiphany. Guides to encrypt manually can be found:
+
+- [Here](https://docs.microsoft.com/en-us/azure/security/fundamentals/azure-disk-encryption-vms-vmss) for VM storage.
+- [Here](https://docs.microsoft.com/en-us/azure/storage/common/storage-service-encryption) for storage shares,
+
 ## How to enable AWS disk encryption
 
 ### EC2 Root volumes
 
-Since [May 2019](https://aws.amazon.com/about-aws/whats-new/2019/05/launch-encrypted-ebs-backed-ec2-instances-from-unencrypted-amis-in-a-single-step/) AWS supports the creation of instances from unencrypted AMIs. At this point Terraform does not [support](https://github.com/terraform-providers/terraform-provider-aws/issues/8624) this jet. If you need encrypted root volumes for now you need to supply your own pre-encryped AMIs as specified in the guide [here](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/AMIEncryption.html).
-
-We will add this as the functionality becomes available in Terraform. The issue is beeing tracked [here](https://github.com/epiphany-platform/epiphany/issues/381).
-
-### Additional EC2 storage
-
-When defining extra storage inside the `infrastructure/virtual-machine` document one can set the `encryption` flag:
+Encryption at rest for EC2 root volumes is turned on by default. To change this one can modify the `encrypted` flag for the `root` disk inside a `infrastructure/virtual-machine` document:
 
 ```yaml
 ...
-additional_disks:
-  - device_name: "/dev/sdb"
+disks:
+  root:
     volume_type: gp2
-    volume_size: 60
+    volume_size: 30
     delete_on_termination: true
     encrypted: true
 ...
 ```
 
+### Additional EC2 volumes
+
+Encryption at rest for additional EC2 volumes is turned on by default. To change this one can modify the `encrypted` flag for each `additional_disks` inside a `infrastructure/virtual-machine` document:
+
+```yaml
+...
+disks:
+  root:
+  ...
+  additional_disks:
+    - device_name: "/dev/sdb"
+      volume_type: gp2
+      volume_size: 60
+      delete_on_termination: true
+      encrypted: true
+...
+```
+
 ### EFS storage
 
-EFS storage is encrypted by default.
+Encryption at rest for EFS storage is turned on by default. To change this one can modify the `encrypted` flag inside the `infrastructure/efs-storage` document:
+
+```yaml
+kind: infrastructure/efs-storage
+title: "Elastic File System Config"
+provider: aws
+name: default
+specification:
+  encrypted: true
+...
+```
+
+Additional information can be found [here](https://docs.aws.amazon.com/efs/latest/ug/encryption-at-rest.html).
 
 ## How to use Kubernetes Secrets
 

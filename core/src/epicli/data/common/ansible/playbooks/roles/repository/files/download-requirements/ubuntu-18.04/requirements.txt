@@ -14,9 +14,11 @@ docker-ce-cli 5:18.09
 ebtables
 elasticsearch-curator 5.8.1
 elasticsearch-oss 6.8.5
+elasticsearch-oss 7.3.2
 erlang-nox
 ethtool
 filebeat 6.8.5
+firewalld
 fping
 gnupg2
 grafana 6.2.5
@@ -25,7 +27,6 @@ htop
 iftop
 init-system-helpers
 jq
-kibana-oss 6.4.0
 kubeadm 1.14.6
 kubectl 1.14.6
 kubelet 1.14.6
@@ -35,7 +36,15 @@ logrotate
 netcat
 net-tools
 nfs-common
+opendistro-alerting 1.3.0
+opendistro-index-management 1.3.0
+opendistro-job-scheduler 1.3.0
+opendistroforelasticsearch-kibana 1.3.0
+opendistro-performance-analyzer 1.3.0
+opendistro-security 1.3.0
+opendistro-sql 1.3.0
 openjdk-8-jre-headless
+openjdk-11-jre-headless
 openssl
 postgresql-10
 python-pip
@@ -53,7 +62,6 @@ sysstat
 tar
 telnet
 tmux
-ufw
 unzip
 vim
 
@@ -66,6 +74,9 @@ libjpeg8
 libfontconfig1
 libxtst6
 fontconfig-config
+
+# for openjdk-11-jre-headless
+liboss4-salsa-asound2
 
 python-apt
 
@@ -112,6 +123,14 @@ libsmbclient
 # for postgres
 postgresql-client-10
 postgresql-common
+
+# for firewalld
+ipset
+libipset3
+python3-decorator
+python3-selinux
+python3-slip
+python3-slip-dbus
 
 # K8s upgrade
 kubeadm 1.12.10
