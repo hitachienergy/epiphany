@@ -108,13 +108,19 @@
   tags:
     - epiuser
 
+- include_tasks: os_users.yml
+  when:
+    - specification.users is defined and specification.users | list | length > 0
+  tags:
+    - os_users
+
 - include_tasks: security.yml
   tags:
     - security
 
 - include_tasks: aws-hostname.yml
   when:
-    - provider == "aws"  
+    - provider == "aws"
 
 
 

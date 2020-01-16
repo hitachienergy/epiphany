@@ -1,3 +1,31 @@
+## How to add/remove additional users to/from OS
+
+To add/remove users you need to provide additional section to `kind: epiphany-cluster` configuration.
+
+You need to add `specification.users` in the format similar to example that you can find below:
+
+```yaml
+kind: epiphany-cluster
+name: pg-aws-deb
+provider: aws
+specification:
+
+  ...
+
+  users:
+    - name: user01 # name of the user
+      sudo: true # does user have sudo priviledge, not defined will set to false
+      state: present # user will be added if not exist
+      public_key: "ssh-rsa ..." # public key to add to .ssh/authorized_keys
+    - name: user02
+      state: absent # user will deleted if exists
+      public_key: "ssh-rsa ..."
+    - name: user03
+      state: present
+      public_key: "ssh-rsa ..."
+
+  ...
+```
 
 ## How to use TLS/SSL certificate with HA Proxy
 
