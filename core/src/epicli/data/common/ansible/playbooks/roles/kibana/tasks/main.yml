@@ -10,7 +10,7 @@
   when:
     - groups['kibana'][0] == inventory_hostname
 
-- name: Create Kibana configuration file
+- name: Update Kibana configuration file
   template:
     src: kibana.yml.j2
     dest: /etc/kibana/kibana.yml
@@ -36,4 +36,3 @@
     enabled: yes
   when:
     - groups['kibana'][0] == inventory_hostname
-
