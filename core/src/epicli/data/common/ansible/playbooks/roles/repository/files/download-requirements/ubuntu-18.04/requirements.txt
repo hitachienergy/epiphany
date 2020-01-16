@@ -14,6 +14,7 @@ docker-ce-cli 5:18.09
 ebtables
 elasticsearch-curator 5.8.1
 elasticsearch-oss 6.8.5
+elasticsearch-oss 7.3.2
 erlang-nox
 ethtool
 filebeat 6.8.5
@@ -26,17 +27,25 @@ htop
 iftop
 init-system-helpers
 jq
-kibana-oss 6.4.0
 kubeadm 1.14.6
 kubectl 1.14.6
 kubelet 1.14.6
 kubernetes-cni 0.7.5
+liboss4-salsa-asound2 # openjdk-11-jre-headless dependency
 libfontconfig1
 logrotate
 netcat
 net-tools
 nfs-common
+opendistro-alerting 1.3.0
+opendistro-index-management 1.3.0
+opendistro-job-scheduler 1.3.0
+opendistroforelasticsearch-kibana 1.3.0
+opendistro-performance-analyzer 1.3.0
+opendistro-security 1.3.0
+opendistro-sql 1.3.0
 openjdk-8-jre-headless
+openjdk-11-jre-headless
 openssl
 postgresql-10
 python-pip
