@@ -53,6 +53,7 @@ You will need to modify a few values (like your AWS secrets, directory path for 
 ```shell
 epicli apply -f demo.yaml
 ```
+You will be asked for a password that will be used for encryption of some of build artifacts. More information [here](docs/home/howto/SECURITY.md#how-to-run-epicli-with-password)
 
 Find more information using table of contents below - especially the [How-to guides](docs/home/HOWTO.md).
 

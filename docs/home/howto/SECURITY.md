@@ -289,3 +289,25 @@ Prerequisites: Epiphany Kubernetes cluster
     - ClientSecret - Created secret key from 4. point.
 
 6. The service should return Access Token.
+
+## How to run epicli with password
+
+Epiphany encrypts Kubernetes artifacts (access tokens) stored in Epiphany build directory. In order to achieve it, user is asked for password which will be used for encryption and decryption of artifacts. Remember to enter the same password for the same cluster - if password will not be the same, epicli will not be able to decrypt secrets. 
+
+Standard way of executing epicli has not been changed:
+
+```shell
+epicli apply -f demo.yaml
+```
+
+But you will be asked to enter a password:
+
+```shell
+Provide password to encrypt vault:
+```
+
+When running epicli from CI pipeline you can use new parameter for epicli:
+
+```shell
+epicli apply -f demo.yaml --vault-password MYPWD
+```
