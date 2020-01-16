@@ -1,0 +1,21 @@
+---
+- name: Get service facts
+  service_facts:
+
+- name: Stop ufw service
+  systemd:
+    name: ufw
+    state: stopped
+    enabled: no
+  when: ansible_facts.services['ufw'] is defined
+
+- name: Remove ufw package
+  apt:
+    name: ufw
+    state: absent
+    purge: yes
+
+- name: Install firewalld package
+  package:
+    name: firewalld
+    state: present

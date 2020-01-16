@@ -17,6 +17,7 @@ elasticsearch-oss 6.8.5
 erlang-nox
 ethtool
 filebeat 6.8.5
+firewalld
 fping
 gnupg2
 grafana 6.2.5
@@ -53,7 +54,6 @@ sysstat
 tar
 telnet
 tmux
-ufw
 unzip
 vim
 
@@ -112,6 +112,14 @@ libsmbclient
 # for postgres
 postgresql-client-10
 postgresql-common
+
+# for firewalld
+ipset
+libipset3
+python3-decorator
+python3-selinux
+python3-slip
+python3-slip-dbus
 
 # K8s upgrade
 kubeadm 1.12.10

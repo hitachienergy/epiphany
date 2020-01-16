@@ -36,7 +36,7 @@ class AnsibleInventoryCreator(Step):
                 roles = self.get_roles_for_feature(component_key)
                 for role in roles:
                     ansible_role_name = to_role_name(role)
-                    inventory.append(AnsibleInventoryItem(to_role_name(ansible_role_name), ips))
+                    inventory.append(AnsibleInventoryItem(ansible_role_name, ips))
 
         return self.group_duplicated(inventory)
 

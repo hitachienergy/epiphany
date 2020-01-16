@@ -1,0 +1,30 @@
+---
+- name: Get firewall state
+  shell: firewall-cmd --state
+  register: firewall_state
+  changed_when: false
+  failed_when: firewall_state.rc not in [0, 127, 252] # 252 means not running
+
+- name: Get zone of default network interface ({{ ansible_default_ipv4.interface }})
+  command: firewall-cmd --get-zone-of-interface {{ ansible_default_ipv4.interface }}
+  register: default_interface_zone
+  changed_when: false
+  failed_when:
+    - default_interface_zone.rc != 0
+    - default_interface_zone.stderr != 'no zone'
+  when:
+    - firewall_state.stdout == 'running'
+
+- name: Set zone of default network interface as fact
+  set_fact:
+    current_zone: "{{ default_interface_zone.stdout }}"
+  when:
+    - default_interface_zone.stdout is defined
+    - default_interface_zone.stdout | length > 0
+
+- name: Set common facts
+  set_fact:
+    firewall_state: "{{ firewall_state.stdout }}"
+    firewall_rule_added_flag_file: /var/tmp/epiphany-repo-http-firewall-rule-added.flag
+    modified_zone_name_file: /var/tmp/epiphany-repo-temporarily-modified-firewall-zone.save
+    zone_config_backup_dest_dir: /var/tmp/epiphany

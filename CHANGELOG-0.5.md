@@ -1,6 +1,10 @@
 # Changelog 0.5
 
-## [0.5.0] 2019-12-NN
+## [0.5.0] 2020-01-NN
+
+### Added
+
+- [#820](https://github.com/epiphany-platform/epiphany/pull/820) - Firewall: OS level firewall setup (firewalld)
 
 ### Changed
 
