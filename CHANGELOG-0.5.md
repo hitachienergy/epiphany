@@ -1,16 +1,13 @@
 # Changelog 0.5
 
-## [0.5.0] 2020-01-NN
-
-### Added
-
-- [#820](https://github.com/epiphany-platform/epiphany/pull/820) - Firewall: OS level firewall setup (firewalld)
+## [0.5.0] 2020-01-17
 
 ### Added
 
 - [#381](https://github.com/epiphany-platform/epiphany/issues/381) - Add AWS EC2 Root Volume encryption
 - [#782](https://github.com/epiphany-platform/epiphany/issues/781) - All disks encryption documentation - AWS
 - [#782](https://github.com/epiphany-platform/epiphany/issues/782) - All disks encryption documentation - Azure
+- [#820](https://github.com/epiphany-platform/epiphany/pull/820) - Firewall: OS level firewall setup (firewalld)
 
 ### Changed
 
