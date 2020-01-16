@@ -31,7 +31,6 @@ kubeadm 1.14.6
 kubectl 1.14.6
 kubelet 1.14.6
 kubernetes-cni 0.7.5
-liboss4-salsa-asound2 # openjdk-11-jre-headless dependency
 libfontconfig1
 logrotate
 netcat
@@ -75,6 +74,9 @@ libjpeg8
 libfontconfig1
 libxtst6
 fontconfig-config
+
+# for openjdk-11-jre-headless
+liboss4-salsa-asound2
 
 python-apt
 
