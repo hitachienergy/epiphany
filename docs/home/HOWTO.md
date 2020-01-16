@@ -44,6 +44,8 @@
 - [Security](./howto/SECURITY.md)
   - [How to add/remove additional users to/from OS](./howto/SECURITY.md#how-to-addremove-additional users to/from OS)
   - [How to use TLS/SSL certificate with HA Proxy](./howto/SECURITY.md#how-to-use-tlsssl-certificate-with-ha-proxy)
+  - [How to use TLS/SSL certificate with HA Proxy](./howto/SECURITY.md#how-to-use-tls/ssl-certificate-with-ha-proxy)
+  - [How to use TLS/SSL certificate with RabbitMQ](./howto/SECURITY.md#how-to-use-tlsssl-certificate-with-rabbitmq)
   - [How to use TLS/SSL with Kafka](./howto/SECURITY.md#how-to-use-tlsssl-with-kafka)
   - [How to use TLS/SSL certificates for Kafka authentication](./howto/SECURITY.md#how-to-use-tlsssl-certificates-for-kafka-authentication)
   - [How to use TLS/SSL certificates for Kafka authorization](./howto/SECURITY.md#how-to-use-tlsssl-certificates-for-kafka-authorization)  
@@ -51,10 +53,14 @@
   - [How to enable AWS disk encryption](./howto/SECURITY.md#how-to-enable-AWS-disk-encryption)
   - [How to use Kubernetes Secrets](./howto/SECURITY.md#how-to-use-kubernetes-secrets)
   - [How to authenticate to Azure AD app](./howto/SECURITY.md#how-to-authenticate-to-azure-ad-app)  
+  - [How to run epicli with password](./howto/SECURITY.md#how-to-run-epicli-with-password)
 
 - [Databases](./howto/DATABASES.md)
   - [How to configure PostgreSQL](./howto/DATABASES.md#how-to-configure-postgresql)
   - [How to configure PostgreSQL replication](./howto/DATABASES.md#how-to-configure-postgresql-replication)
+  - [How to start working with OpenDistro for Elasticsearch](./howto/DATABASES.md#how-to-start-working-with-opendistro-for-elasticsearch)
+  - [How to start working with Apache Ignite Stateful setup](./howto/DATABASES.md#how-to-start-working-with-apache-ignite-stateful-setup)
+  - [How to start working with Apache Ignite Stateless setup](./howto/DATABASES.md#how-to-start-working-with-apache-ignite-stateless-setup)
 
 - [Data and log retention](./howto/RETENTION.md)
   - [Elasticsearch](./howto/RETENTION.md#elasticsearch)
@@ -64,3 +70,6 @@
   - [Kubernetes](./howto/RETENTION.md#kubernetes)
   - [Prometheus](./howto/RETENTION.md#prometheus)
   - [Zookeeper](./howto/RETENTION.md#zookeeper)
+
+- [Centralized Logging](./howto/LOGGING.md)
+  - [Centralized logging setup](./howto/LOGGING.md#centralized-logging-setup)
