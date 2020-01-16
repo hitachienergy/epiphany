@@ -22,6 +22,7 @@ specification:
       volume_type: gp2
       volume_size: 30
       delete_on_termination: true
+      encrypted: true
     additional_disks: []
 #      - device_name: "/dev/sdb"
 #        volume_type: gp2

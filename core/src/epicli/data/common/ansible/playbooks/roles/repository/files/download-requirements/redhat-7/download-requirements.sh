@@ -457,7 +457,7 @@ enable_repo "$REPO_ID"
 
 # --- Add repos ---
 
-ELASTIC_REPO_CONF=$(cat <<'EOF'
+ELASTIC_6_REPO_CONF=$(cat <<'EOF'
 [elastic-6]
 name=Elastic repository for 6.x packages
 baseurl=https://artifacts.elastic.co/packages/oss-6.x/yum
@@ -525,8 +525,35 @@ gpgkey=https://packagecloud.io/rabbitmq/rabbitmq-server/gpgkey
 EOF
 )
 
+ELASTIC_7_REPO_CONF=$(cat <<'EOF'
+[elasticsearch-7.x]
+name=Elasticsearch repository for 7.x packages
+baseurl=https://artifacts.elastic.co/packages/oss-7.x/yum
+gpgcheck=1
+gpgkey=https://artifacts.elastic.co/GPG-KEY-elasticsearch
+enabled=1
+autorefresh=1
+type=rpm-md
+EOF
+)
+
+OPENDISTRO_REPO_CONF=$(cat <<'EOF'
+[opendistroforelasticsearch-artifacts-repo]
+name=Release RPM artifacts of OpenDistroForElasticsearch
+baseurl=https://d3g5vo6xdbdb9a.cloudfront.net/yum/noarch/
+enabled=1
+gpgkey=https://d3g5vo6xdbdb9a.cloudfront.net/GPG-KEY-opendistroforelasticsearch
+gpgcheck=1
+repo_gpgcheck=1
+autorefresh=1
+type=rpm-md
+EOF
+)
+
 add_repo 'docker-ce' 'https://download.docker.com/linux/centos/docker-ce.repo'
-add_repo_as_file 'elastic-6' "$ELASTIC_REPO_CONF"
+add_repo_as_file 'opendistro' "$OPENDISTRO_REPO_CONF"
+add_repo_as_file 'elastic-7' "$ELASTIC_7_REPO_CONF"
+add_repo_as_file 'elastic-6' "$ELASTIC_6_REPO_CONF"
 add_repo_as_file 'curator-5' "$ELASTICSEARCH_CURATOR_REPO_CONF"
 add_repo_as_file 'grafana' "$GRAFANA_REPO_CONF"
 add_repo_as_file 'kubernetes' "$KUBERNETES_REPO_CONF"

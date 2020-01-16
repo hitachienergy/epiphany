@@ -5,11 +5,17 @@ specification:
   available_roles:
     - name: repository
       enabled: yes
+    - name: firewall
+      enabled: yes
     - name: image-registry
       enabled: yes
     - name: kubernetes-master
       enabled: yes
     - name: kubernetes-node
+      enabled: yes
+    - name: logging
+      enabled: yes    
+    - name: opendistro-for-elasticsearch
       enabled: yes
     - name: elasticsearch
       enabled: yes
@@ -42,9 +48,10 @@ specification:
     - name: haproxy-exporter
       enabled: yes
     - name: applications
-      enabled: yes    
-    - name: ignite
       enabled: yes
+    - name: ignite
+      enabled: yes  
+ 
   roles_mapping:
     kafka:
       - zookeeper
@@ -53,29 +60,34 @@ specification:
       - kafka-exporter
       - node-exporter
       - filebeat
+      - firewall
     rabbitmq:
       - rabbitmq
       - node-exporter
       - filebeat
+      - firewall
     logging:
-      - elasticsearch
-      - elasticsearch-curator
+      - logging
       - kibana
       - filebeat
+      - firewall
     load_balancer:
       - haproxy
       - haproxy-exporter
       - node-exporter
       - filebeat
+      - firewall
     monitoring:
       - prometheus
       - grafana
       - node-exporter
       - filebeat
+      - firewall
     postgresql:
       - postgresql
       - node-exporter
       - filebeat
+      - firewall
     custom:
       - repository
       - image-registry
@@ -87,9 +99,8 @@ specification:
       - prometheus
       - grafana
       - node-exporter
-      - filebeat
-      - elasticsearch
-      - elasticsearch-curator
+      - logging
+      - firewall
     single_machine:
       - repository
       - image-registry
@@ -97,6 +108,7 @@ specification:
       - applications
       - rabbitmql
       - postgresql
+      - firewall
     kubernetes_master:
       - image-registry
       - kubernetes-master
@@ -104,16 +116,25 @@ specification:
       - applications
       - node-exporter
       - filebeat
+      - firewall
     kubernetes_node_ha:
       - kubernetes-node
       - node-exporter
       - filebeat
+      - firewall
     kubernetes_node:
       - kubernetes-node
       - node-exporter
-      - filebeat    
+      - filebeat
+      - firewall
     ignite:
       - ignite
       - node-exporter
       - filebeat
+      - firewall
+    opendistro_for_elasticsearch:
+      - opendistro-for-elasticsearch
+      - node-exporter
+      - filebeat
+      - firewall
 

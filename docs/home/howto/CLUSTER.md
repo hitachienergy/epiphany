@@ -277,7 +277,7 @@ To setup the cluster do the following steps from the provisioning machine:
 Epicli has a delete command to remove a cluster from a cloud provider (AWS, Azure). With Epicli run the following:
 
   ```shell
-  epicli apply -b /path/to/cluster/build/folder
+  epicli delete -b /path/to/cluster/build/folder
   ```
 
 From the defined cluster build folder it will take the information needed to remove the resources from the cloud provider.

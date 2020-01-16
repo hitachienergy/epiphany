@@ -1,0 +1,8 @@
+---
+# Ansible playbook that installs and configures OS level firewall
+
+- hosts: all
+  become: true
+  become_method: sudo
+  roles:
+    - firewall
