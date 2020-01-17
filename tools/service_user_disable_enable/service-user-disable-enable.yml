@@ -1,0 +1,19 @@
+---
+- hosts: all
+  become: true
+  become_method: sudo
+
+  tasks:
+  - name: Enable {{ name }} user
+    user:
+      name: "{{ name }}"
+      shell: /bin/bash
+    when:
+      - operation == "enable"
+
+  - name: Disable {{ name }} user
+    user:
+      name: "{{ name }}"
+      shell: /bin/nologin
+    when:
+      - operation == "disable"
