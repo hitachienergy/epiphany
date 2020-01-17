@@ -144,8 +144,8 @@
       register: change_default_zone
       when: default_zone_name.stdout != specification.managed_zone_name
   when:
-    - inventory_hostname in groups['kubernetes_master'] or inventory_hostname in groups['kubernetes_node']
     - specification.apply_configuration
+    - inventory_hostname in groups['kubernetes_master'] or inventory_hostname in groups['kubernetes_node']
 
 - name: Stop and disable firewalld service
   systemd:
