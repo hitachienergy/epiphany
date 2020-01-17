@@ -7,30 +7,30 @@
 - name: Install RedHat family packages
   yum:
     name:
-      - libselinux-python
-      - libsemanage-python
-      - firewalld
       - bash-completion
       - ca-certificates
-      - net-tools
-      - tar
-      - nc
       - curl
-      - tmux
-      - fping
-      - iftop
-      - htop
-      - vim
-      - sysstat
-      - python-setuptools
-      - openssl
-      - yum-utils
-      - yum-versionlock
-      - logrotate
       - ebtables
       - ethtool
-      - telnet
+      - fping
+      - htop
+      - iftop
       - jq
+      - libselinux-python
+      - libsemanage-python
+      - logrotate
+      - nc
+      - net-tools
+      - openssl
+      - python-setuptools
+      - sysstat
+      - tar
+      - telnet
+      - tmux
+      - unzip
+      - vim
+      - yum-utils
+      - yum-versionlock
     update_cache: yes
     state: present
   register: result

@@ -1,5 +1,4 @@
 ---
-# Master node specific
 
 - include_tasks: single-master.yml
   when: groups['kubernetes_master'][0] == inventory_hostname

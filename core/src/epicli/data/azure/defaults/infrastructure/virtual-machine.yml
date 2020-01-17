@@ -5,12 +5,12 @@ name: default
 specification:
   name: SET_BY_AUTOMATION
   admin_username: SET_BY_AUTOMATION
-  admin_password: SET_BY_AUTOMATION 
+  admin_password: SET_BY_AUTOMATION
   public_key: SET_BY_AUTOMATION
   network_interface_name: SET_BY_AUTOMATION
   tags: []
   os_type: linux
-  size: Standard_DS1_v2 
+  size: Standard_DS1_v2
   storage_image_reference:
     publisher: Canonical
     offer: UbuntuServer
@@ -29,9 +29,9 @@ specification:
     public_ip:
       allocation_method: Static
       idle_timeout_in_minutes: 30
-      sku: Standard 
+      sku: Standard
   security:
-    rules:            
+    rules:
       - name: ssh
         description: Allow SSH
         priority: 100
@@ -41,7 +41,7 @@ specification:
         source_port_range: "*"
         destination_port_range: "22"
         source_address_prefix: "*"
-        destination_address_prefix: "*"  
+        destination_address_prefix: "*"
       - name: out
         description: Allow out
         priority: 101
@@ -51,7 +51,7 @@ specification:
         source_port_range: "*"
         destination_port_range: "0"
         source_address_prefix: "0.0.0.0/0"
-        destination_address_prefix: "0.0.0.0/0"          
+        destination_address_prefix: "0.0.0.0/0"
       - name: node_exporter
         description: Allow node_exporter traffic
         priority: 200
@@ -61,16 +61,16 @@ specification:
         source_port_range: "*"
         destination_port_range: "9100"
         source_address_prefix: "10.1.0.0/20"
-        destination_address_prefix: "0.0.0.0/0"                       
+        destination_address_prefix: "0.0.0.0/0"
 ---
 kind: infrastructure/virtual-machine
 title: "Virtual Machine Infra"
 provider: azure
 name: kubernetes-master-machine
 specification:
-  size: Standard_DS2_v2  
+  size: Standard_DS2_v2
   security:
-    rules:            
+    rules:
       - name: ssh
         description: Allow SSH
         priority: 100
@@ -90,7 +90,7 @@ specification:
         source_port_range: "*"
         destination_port_range: "0"
         source_address_prefix: "0.0.0.0/0"
-        destination_address_prefix: "0.0.0.0/0"         
+        destination_address_prefix: "0.0.0.0/0"
       - name: node_exporter
         description: Allow node_exporter traffic
         priority: 200
@@ -168,7 +168,7 @@ specification:
   #      destination_to_port: 65536
   #      destination_port_range: "0"
   #      source_address_prefix: "10.1.4.0/24"
-  #      destination_address_prefix: "0.0.0.0/0"     
+  #      destination_address_prefix: "0.0.0.0/0"
 ---
 kind: infrastructure/virtual-machine
 title: "Virtual Machine Infra"
@@ -177,7 +177,7 @@ name: kubernetes-node-machine
 specification:
   size: Standard_DS1_v2
   security:
-    rules:            
+    rules:
       - name: ssh
         description: Allow SSH
         priority: 100
@@ -197,7 +197,7 @@ specification:
         source_port_range: "*"
         destination_port_range: "0"
         source_address_prefix: "0.0.0.0/0"
-        destination_address_prefix: "0.0.0.0/0"        
+        destination_address_prefix: "0.0.0.0/0"
       - name: node_exporter
         description: Allow node_exporter traffic
         priority: 200
@@ -252,7 +252,7 @@ name: kafka-machine
 specification:
   size: Standard_DS2_v2
   security:
-    rules:            
+    rules:
       - name: ssh
         description: Allow SSH
         priority: 100
@@ -272,7 +272,7 @@ specification:
         source_port_range: "*"
         destination_port_range: "0"
         source_address_prefix: "0.0.0.0/0"
-        destination_address_prefix: "0.0.0.0/0"        
+        destination_address_prefix: "0.0.0.0/0"
       - name: node_exporter
         description: Allow node_exporter traffic
         priority: 200
@@ -323,8 +323,8 @@ specification:
         destination_port_range: "2181"
         source_address_prefix: "10.1.0.0/20"
         destination_address_prefix: "0.0.0.0/0"
-      - name: zookeeper_client_9092
-        description: Allow Zookeeper Client
+      - name: kafka_client_9092
+        description: Allow Kafka Client
         priority: 205
         direction: Inbound
         access: Allow
@@ -333,9 +333,19 @@ specification:
         destination_port_range: "9092"
         source_address_prefix: "10.1.0.0/20"
         destination_address_prefix: "0.0.0.0/0"
+      - name: kafka_ssl_client_9093
+        description: Allow Kafka SSL Client
+        priority: 206
+        direction: Inbound
+        access: Allow
+        protocol: "Tcp"
+        source_port_range: "*"
+        destination_port_range: "9093"
+        source_address_prefix: "10.1.0.0/20"
+        destination_address_prefix: "0.0.0.0/0"
       - name: monitoring-traffic
         description: Allow monitoring subnet traffic
-        priority: 206
+        priority: 207
         direction: Inbound
         access: Allow
         protocol: "*"
@@ -347,7 +357,7 @@ specification:
         destination_address_prefix: "0.0.0.0/0"
       - name: kubernetes-traffic
         description: Allow Kubernetes subnet traffic
-        priority: 207
+        priority: 208
         direction: Inbound
         access: Allow
         protocol: "*"
@@ -377,7 +387,7 @@ name: rabbitmq-machine
 specification:
   size: Standard_DS2_v2
   security:
-    rules:            
+    rules:
       - name: ssh
         description: Allow SSH
         priority: 100
@@ -397,7 +407,7 @@ specification:
         source_port_range: "*"
         destination_port_range: "0"
         source_address_prefix: "0.0.0.0/0"
-        destination_address_prefix: "0.0.0.0/0"              
+        destination_address_prefix: "0.0.0.0/0"
       - name: node_exporter
         description: Allow node_exporter traffic
         priority: 200
@@ -417,7 +427,7 @@ specification:
         source_port_range: "*"
         destination_port_range: "5672"
         source_address_prefix: "10.1.0.0/20"
-        destination_address_prefix: "0.0.0.0/0"   
+        destination_address_prefix: "0.0.0.0/0"
 ---
 kind: infrastructure/virtual-machine
 title: "Virtual Machine Infra"
@@ -426,7 +436,7 @@ name: monitoring-machine
 specification:
   size: Standard_DS1_v2
   security:
-    rules:            
+    rules:
       - name: ssh
         description: Allow SSH
         priority: 100
@@ -446,7 +456,7 @@ specification:
         source_port_range: "*"
         destination_port_range: "0"
         source_address_prefix: "0.0.0.0/0"
-        destination_address_prefix: "0.0.0.0/0"          
+        destination_address_prefix: "0.0.0.0/0"
       - name: node_exporter
         description: Allow node_exporter traffic
         priority: 200
@@ -476,16 +486,16 @@ specification:
         source_port_range: "*"
         destination_port_range: "3000"
         source_address_prefix: "10.1.0.0/20"
-        destination_address_prefix: "0.0.0.0/0"        
+        destination_address_prefix: "0.0.0.0/0"
 ---
 kind: infrastructure/virtual-machine
 title: "Virtual Machine Infra"
 provider: azure
 name: postgresql-machine
 specification:
-  size: Standard_DS1_v2  
+  size: Standard_DS1_v2
   security:
-    rules:            
+    rules:
       - name: ssh
         description: Allow SSH
         priority: 100
@@ -505,7 +515,7 @@ specification:
         source_port_range: "*"
         destination_port_range: "0"
         source_address_prefix: "0.0.0.0/0"
-        destination_address_prefix: "0.0.0.0/0"        
+        destination_address_prefix: "0.0.0.0/0"
       - name: node_exporter
         description: Allow node_exporter traffic
         priority: 200
@@ -539,7 +549,7 @@ specification:
       #  destination_to_port: 65536
       #  destination_port_range: "0"
       #  source_address_prefix: "10.1.2.0/24"
-      #  destination_address_prefix: "0.0.0.0/0"        
+      #  destination_address_prefix: "0.0.0.0/0"
 ---
 kind: infrastructure/virtual-machine
 title: "Virtual Machine Infra"
@@ -548,7 +558,7 @@ name: logging-machine
 specification:
   size: Standard_DS1_v2
   security:
-    rules:            
+    rules:
       - name: ssh
         description: Allow SSH
         priority: 100
@@ -568,7 +578,7 @@ specification:
         source_port_range: "*"
         destination_port_range: "0"
         source_address_prefix: "0.0.0.0/0"
-        destination_address_prefix: "0.0.0.0/0"          
+        destination_address_prefix: "0.0.0.0/0"
       - name: node_exporter
         description: Allow node_exporter traffic
         priority: 200
@@ -608,7 +618,7 @@ specification:
         source_port_range: "*"
         destination_port_range: "5601"
         source_address_prefix: "10.1.0.0/20"
-        destination_address_prefix: "0.0.0.0/0"      
+        destination_address_prefix: "0.0.0.0/0"
 ---
 kind: infrastructure/virtual-machine
 title: "Virtual Machine Infra"
@@ -617,7 +627,7 @@ name: load-balancer-machine
 specification:
   size: Standard_DS1_v2
   security:
-    rules:            
+    rules:
       - name: ssh
         description: Allow SSH
         priority: 100
@@ -637,7 +647,7 @@ specification:
         source_port_range: "*"
         destination_port_range: "0"
         source_address_prefix: "0.0.0.0/0"
-        destination_address_prefix: "0.0.0.0/0"          
+        destination_address_prefix: "0.0.0.0/0"
       - name: node_exporter
         description: Allow node_exporter traffic
         priority: 200
@@ -658,3 +668,43 @@ specification:
         destination_port_range: "9101"
         source_address_prefix: "10.1.0.0/20"
         destination_address_prefix: "0.0.0.0/0"
+
+---
+kind: infrastructure/virtual-machine
+title: "Virtual Machine Infra"
+provider: azure
+name: ignite-machine
+specification:
+  size: Standard_DS1_v2
+  security:
+    rules:
+      - name: ssh
+        description: Allow SSH
+        priority: 100
+        direction: Inbound
+        access: Allow
+        protocol: Tcp
+        source_port_range: "*"
+        destination_port_range: "22"
+        source_address_prefix: "0.0.0.0/0"
+        destination_address_prefix: "0.0.0.0/0"
+      - name: out
+        description: Allow out
+        priority: 101
+        direction: Outbound
+        access: Allow
+        protocol: "*"
+        source_port_range: "*"
+        destination_port_range: "0"
+        source_address_prefix: "0.0.0.0/0"
+        destination_address_prefix: "0.0.0.0/0"
+      - name: vnet_traffic
+        description: Allow vnet traffic
+        priority: 300
+        direction: Inbound
+        access: Allow
+        protocol: Tcp
+        source_port_range: "*"
+        destination_port_range: "*"
+        source_address_prefix: "10.1.0.0/20"
+        destination_address_prefix: "10.1.0.0/20"

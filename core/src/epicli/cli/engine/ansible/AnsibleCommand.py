@@ -27,7 +27,7 @@ class AnsibleCommand:
 
         cmd.append(hosts)
 
-        self.logger.info('Running: "' + ' '.join(cmd) + '"')
+        self.logger.info('Running: "' + ' '.join(module) + '"')
 
         logpipe = LogPipe(__name__)
         with subprocess.Popen(cmd, stdout=logpipe, stderr=logpipe) as sp:
@@ -51,18 +51,21 @@ class AnsibleCommand:
         else:
             raise Exception(f'Failed running task after {str(retries)} retries')
 
-    def run_playbook(self, inventory, playbook_path):
+    def run_playbook(self, inventory, playbook_path, vault_file=None):
         cmd = ['ansible-playbook']
 
         if inventory is not None and len(inventory) > 0:
             cmd.extend(["-i", inventory])
+
+        if vault_file is not None:
+            cmd.extend(["--vault-password-file", vault_file])
 
         cmd.append(playbook_path)
 
         if Config().debug:
             cmd.append('-vvv')
 
-        self.logger.info('Running: "' + ' '.join(cmd) + '"')
+        self.logger.info('Running: "' + ' '.join(playbook_path) + '"')
 
         logpipe = LogPipe(__name__)
         with subprocess.Popen(cmd, stdout=logpipe, stderr=logpipe) as sp:

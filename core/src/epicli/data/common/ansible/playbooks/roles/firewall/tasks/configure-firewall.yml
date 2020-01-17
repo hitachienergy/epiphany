@@ -1,0 +1,156 @@
+---
+- name: Configure Epiphany managed firewall zone
+  block:
+    - name: Set roles with enabled firewall rules as fact
+      set_fact:
+        # json_query does not support filter operations over dictionaries, so dict2items is used
+        roles_with_enabled_rules: "{{ specification.rules | default({}, true) |
+          dict2items(key_name='role', value_name='rules') | json_query('[?rules.enabled].role') }}"
+
+    - name: Set roles of current host with enabled firewall rules as fact
+      set_fact:
+        # 'common' is not present in Ansible inventory
+        current_host_roles_with_rules: >-
+          {{ (group_names + ['common']) | intersect(roles_with_enabled_rules) }}
+
+    - name: Adjust list of current host roles for K8s applications
+      set_fact:
+        # rules defined in 'applications' section have to be applied on hosts
+        # from 'kubernetes_master' group and 'kubernetes_node' as well
+        current_host_roles_with_rules: "{{ (current_host_roles_with_rules + ['applications']) | unique }}"
+      when:
+        - group_names | intersect(['kubernetes_master', 'kubernetes_node']) | count > 0
+        - "'applications' in roles_with_enabled_rules"
+
+    - name: Set ports to open
+      set_fact:
+        ports_to_open: >-
+          {{ current_host_roles_with_rules | map('extract', specification.rules, 'ports') | list | flatten | unique }}
+
+    - name: Parse and sort ports numerically
+      set_fact:
+        ports_to_open: "{{ parsed_ports_with_sort_index | sort(attribute='sort_index') | list }}"
+      vars:
+        parsed_ports_with_sort_index: |-
+          [
+            {% for port in ports_to_open %}
+            {% set range, protocol = port.split('/') %}
+            { 'range':'{{ range }}', 'protocol':'{{ protocol }}', 'sort_index': {{ range | regex_replace('-\d+$', '') | int }} },
+            {% endfor %}
+          ]
+
+    - name: Copy managed zone configuration file ({{ zone_file_path }})
+      template:
+        src: epi-zone-config.xml.j2
+        dest: "{{ zone_file_path }}"
+        owner: "{{ admin_user.name }}"
+        group: "{{ admin_user.name }}"
+        mode: 0644
+      register: copy_zone_configuration
+      vars:
+        zone_file_name: "{{ specification.managed_zone_name | lower }}.xml"
+        zone_file_path: /etc/firewalld/zones/{{ zone_file_name }}
+  when:
+    - specification.apply_configuration
+
+# For next tasks firewalld service has to be running (to reload firewall rules or bind network interface to zone)
+
+- name: Start firewalld service
+  systemd:
+    name: firewalld
+    state: started
+    enabled: "{{ specification.firewall_service_enabled }}"
+    masked: no
+  when: specification.firewall_service_enabled
+     or specification.apply_configuration
+
+- name: Reload firewalld to apply permanent configuration to runtime
+  command: firewall-cmd --reload
+  when: copy_zone_configuration.changed
+
+- name: Bind default network interface to Epiphany managed zone
+  block:
+    # On Ubuntu there is no any active zone listed after installing firewalld (firewall-cmd --get-active-zones).
+    # The default zone is not always listed as being used for an interface or source as it will be used for it either way.
+    # This depends on the manager of the interfaces. See https://firewalld.org/documentation/zone/default-zone.html
+
+    # On RHEL zone is controlled by ZONE=option parameter in ifcfg files in /etc/sysconfig/network-scripts/ directory.
+    # If the option is missing or empty, the default zone set in firewalld is used.
+
+    - name: Get zone of default network interface ({{ ansible_default_ipv4.interface }})
+      command: firewall-cmd --get-zone-of-interface {{ ansible_default_ipv4.interface }}
+      register: default_interface_zone
+      changed_when: false
+      failed_when:
+        - default_interface_zone.rc != 0
+        - default_interface_zone.stderr != 'no zone'
+
+    - name: Look for existing (explicit) zone binding
+      block:
+        - name: Check if {{ config_file_to_check[ansible_os_family] }} file exists
+          stat:
+            path: "{{ config_file_to_check[ansible_os_family] }}"
+          register: config_file_stat
+
+        - name: Look for existing zone binding
+          command: "{{ grep_cmd[ansible_os_family] }} {{ config_file_to_check[ansible_os_family] }}"
+          register: grep_result
+          failed_when: grep_result.rc not in [0, 1]
+          changed_when: false
+          vars:
+            grep_cmd:
+              Debian: grep 'interface name="{{ ansible_default_ipv4.interface }}"'
+              RedHat: grep -iE "^ZONE=[\"']?{{ specification.managed_zone_name }}[\"']?$"
+          when: config_file_stat.stat.exists
+      vars:
+        config_file_to_check:
+          Debian: /etc/firewalld/zones/{{ specification.managed_zone_name }}.xml
+          RedHat: /etc/sysconfig/network-scripts/ifcfg-{{ ansible_default_ipv4.interface }}
+
+    - name: Set grep result as fact
+      set_fact:
+        explicit_zone_binding_found: "{{ grep_result.rc is defined and grep_result.rc == 0 }}"
+
+    - name: Bind default interface to managed zone and verify
+      block:
+        - name: Bind default interface ({{ ansible_default_ipv4.interface }}) to Epiphany managed zone ({{ specification.managed_zone_name }})
+          # The command below on RHEL should set ZONE={{ specification.managed_zone_name }} parameter in ifcfg file
+          # Ansible's firewalld module didn't change ifcfg file when tested (Ansible v2.8.6)
+          shell: firewall-cmd --change-interface={{ ansible_default_ipv4.interface }}
+                              --zone={{ specification.managed_zone_name }} --permanent &&
+                 firewall-cmd --change-interface={{ ansible_default_ipv4.interface }}
+                              --zone={{ specification.managed_zone_name }}
+
+        - name: Verify zone binding
+          command: firewall-cmd --query-interface={{ ansible_default_ipv4.interface }}
+                                --zone={{ specification.managed_zone_name }}
+          changed_when: false
+      when: default_interface_zone.stdout != specification.managed_zone_name
+         or not explicit_zone_binding_found
+  when: specification.apply_configuration
+
+# The following block was added because rabbitmq on K8s worked only if cni0 interface (flannel)
+# was bound to zone with enabled masquerading (TODO: analysis is needed).
+# However Keycloak and K8s dashboard worked fine without this.
+- name: Change the default zone to managed zone for K8s hosts
+  block:
+    - name: Get name of default zone
+      command: firewall-cmd --get-default-zone
+      register: default_zone_name
+      changed_when: false
+
+    - name: Change the default zone to managed zone for K8s hosts
+      command: firewall-cmd --set-default-zone={{ specification.managed_zone_name }}
+      register: change_default_zone
+      when: default_zone_name.stdout != specification.managed_zone_name
+  when:
+    - specification.apply_configuration
+    - inventory_hostname in groups['kubernetes_master'] or inventory_hostname in groups['kubernetes_node']
+
+- name: Stop and disable firewalld service
+  systemd:
+    name: firewalld
+    state: stopped
+    enabled: no
+    masked: yes # to make sure it is not started by accessing firewalld D-Bus interface or if other services require firewalld
+  when: not specification.firewall_service_enabled

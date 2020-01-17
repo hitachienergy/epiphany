@@ -2,6 +2,7 @@
   yum:
     name:
       - java-1.8.0-openjdk-headless
-      - elasticsearch-oss
+      - elasticsearch-oss-{{ specification.elasticsearch_version }}
     update_cache: yes
     state: present
+  register: install_elasticsearch_package

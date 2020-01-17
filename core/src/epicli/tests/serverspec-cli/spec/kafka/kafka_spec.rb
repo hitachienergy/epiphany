@@ -58,7 +58,7 @@ describe 'Checking the possibility of creating a topic, producing and consuming 
   describe 'Checking if the topic was created' do
     describe command("/opt/kafka/bin/kafka-topics.sh --create --zookeeper #{zookeeper_host}:#{zookeeper_client_port} --replication-factor #{kafka_brokers_count} \
     --partitions #{partitions} --topic #{topic_name}") do
-      its(:stdout) { should match /Created topic "#{topic_name}"./ }
+      its(:stdout) { should match /Created topic "?#{topic_name}"?\./ }
       its(:exit_status) { should eq 0 }
     end
   end

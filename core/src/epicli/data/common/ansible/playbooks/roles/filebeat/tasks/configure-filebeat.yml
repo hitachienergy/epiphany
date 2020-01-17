@@ -1,17 +1,17 @@
 ---
-- name: Get Elasticsearch host IP
-  set_fact: elastic_address="{{ hostvars[groups['elasticsearch'][0]]['ansible_default_ipv4']['address'] }}"
-  when: groups['elasticsearch'][0] is defined
-
-- name: Get Kibana host IP
-  set_fact: kibana_address="{{ hostvars[groups['kibana'][0]]['ansible_default_ipv4']['address'] }}"
-  when: groups['kibana'][0] is defined
+# This file is meant to be also used by upgrade playbook
 
 - name: Copy configuration file (filebeat.yml)
   template:
     dest: /etc/filebeat/filebeat.yml
     src: filebeat.yml.j2
-  notify: Restart Filebeat service
+  register: modify_filebeat_yml
+
+- name: Enable auditd module
+  shell: >-
+    filebeat modules enable auditd 
+  register: enable_module
+  changed_when: "'Enabled auditd' in enable_module.stdout"
 
 - name: Set Filebeat to be started after Docker
   block:
@@ -19,15 +19,48 @@
       file:
         path: /etc/systemd/system/filebeat.service.d
         state: directory
+
     - name: Copy drop-in configuration file (extra-dependencies.conf)
       template:
         dest: /etc/systemd/system/filebeat.service.d/extra-dependencies.conf
         src: extra-dependencies.conf.j2
-      register: filebeat_unit_dependencies
-      notify: Restart Filebeat service
-  when: (groups['kubernetes_master'] is defined and inventory_hostname in groups['kubernetes_master']) or (groups['kubernetes_node'] is defined and inventory_hostname in groups['kubernetes_node'])
+      register: modify_filebeat_unit_dependencies
 
-- name: Enable Filebeat service
+    - name: Run systemctl daemon-reload
+      systemd:
+        name: filebeat
+        daemon_reload: true
+      when: modify_filebeat_unit_dependencies.changed
+
+  when: (groups['kubernetes_master'] is defined and inventory_hostname in groups['kubernetes_master'])
+     or (groups['kubernetes_node'] is defined and inventory_hostname in groups['kubernetes_node'])
+
+- name: Start/restart and enable filebeat service
+  block:
+    - name: Restart filebeat service
+      systemd:
+        name: filebeat
+        state: restarted
+      when: modify_filebeat_yml.changed
+         or modify_filebeat_unit_dependencies.changed
+         or enable_module.changed
+
+    - name: Enable and start filebeat service
+      systemd:
+        name: filebeat
+        state: started
+        enabled: true
+
+    - name: Verify Filebeat is running
+      command: systemctl is-active filebeat
+      changed_when: false
+  when:
+    - groups['logging'][0] is defined
+
+- name: Stop and disable filebeat service
   systemd:
     name: filebeat
-    enabled: yes
+    state: stopped
+    enabled: false
+  when:
+    - groups['logging'][0] is undefined

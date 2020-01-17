@@ -110,6 +110,7 @@ spec:
             memory: 170Mi
           requests:
             cpu: 100m
+            ephemeral-storage: 2Mi
             memory: 70Mi
         args: [ "-conf", "/etc/coredns/Corefile" ]
         volumeMounts:

@@ -1,6 +1,13 @@
-- name: Install Filbeat package
-  apt: 
+- name: Install filebeat package
+  apt:
     name:
-      - filebeat
-    update_cache: yes 
+      - filebeat={{ specification.filebeat_version }}
+    update_cache: yes
+    state: present
+
+- name: Install auditd package
+  apt:
+    name:
+      - auditd
+    update_cache: yes
     state: present

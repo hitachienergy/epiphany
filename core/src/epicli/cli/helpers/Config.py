@@ -1,5 +1,5 @@
 import os
-
+from os.path import expanduser
 
 class Config:
     class __ConfigBase:
@@ -21,6 +21,7 @@ class Config:
             self._auto_approve = False
             self._offline_requirements = ''
             self._wait_for_pods = False
+            self._vault_password_location = os.path.join(expanduser("~"), '.epicli/vault.cfg')
 
         @property
         def docker_cli(self):
@@ -106,6 +107,15 @@ class Config:
         def auto_approve(self, auto_approve):
             if not auto_approve is None:
                 self._auto_approve = auto_approve
+
+        @property
+        def vault_password_location(self):
+            return self._vault_password_location
+
+        @vault_password_location.setter
+        def vault_password_location(self, vault_password_location):
+            if not vault_password_location is None:
+                self._vault_password_location = vault_password_location
 
         @property
         def offline_requirements(self):

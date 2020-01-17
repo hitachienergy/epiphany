@@ -21,7 +21,7 @@ filebeat.inputs:
 
   # Paths (in alphabetical order) that should be crawled and fetched. Glob based paths.
   paths:
-    - /var/log/audit/audit.log
+#   - /var/log/audit/audit.log
     - /var/log/auth.log
     - /var/log/firewalld
     - /var/log/haproxy.log
@@ -130,7 +130,7 @@ setup.template.settings:
 # These settings control loading the sample dashboards to the Kibana index. Loading
 # the dashboards is disabled by default and can be enabled either by setting the
 # options here, or by using the `-setup` CLI flag or the `setup` command.
-#setup.dashboards.enabled: false
+#setup.dashboards.enabled: true
 
 # The URL from where to download the dashboards archive. By default this URL
 # has a value which is computed based on the Beat name and version. For released
@@ -142,13 +142,19 @@ setup.template.settings:
 
 # Starting with Beats version 6.0.0, the dashboards are loaded via the Kibana API.
 # This requires a Kibana endpoint configuration.
-setup.kibana:
+# setup.kibana:
 
-  # Kibana Host
-  # Scheme and port can be left out and will be set to the default (http and 5601)
-  # In case you specify and additional path, the scheme is required: http://localhost:5601/path
-  # IPv6 addresses should always be defined as: https://[2001:db8::1]:5601
-  host: "{{ kibana_address }}:5601"
+#   # Kibana Host
+#   # Scheme and port can be left out and will be set to the default (http and 5601)
+#   # In case you specify and additional path, the scheme is required: http://localhost:5601/path
+#   # IPv6 addresses should always be defined as: https://[2001:db8::1]:5601
+# {% if setup_kibana_host is defined %}
+#   host: "{{ setup_kibana_host }}"
+# {% else %}
+#   #host: "localhost:5601"
+# {% endif %}
+#   username: logstash
+#   password: logstash
 
   # Kibana Space ID
   # ID of the Kibana Space into which the dashboards should be loaded. By default,
@@ -175,7 +181,18 @@ setup.kibana:
 #-------------------------- Elasticsearch output ------------------------------
 output.elasticsearch:
   # Array of hosts to connect to.
-  hosts: ["{{ elastic_address }}:9200"]
+{% if logging_output_exists %}
+  hosts: 
+{% for host in groups['logging'] %}
+  - "https://{{hostvars[host]['ansible_hostname']}}:9200"
+{% endfor %}
+  protocol: "https"
+  ssl.verification_mode: none
+  username: logstash
+  password: logstash
+{% else %}
+  hosts: []
+{% endif %}
 
   # Optional protocol and basic auth credentials.
   #protocol: "https"

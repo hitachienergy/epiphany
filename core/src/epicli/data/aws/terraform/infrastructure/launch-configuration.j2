@@ -27,6 +27,7 @@ resource "aws_launch_configuration" "{{ specification.name }}" {
     volume_type           = "{{ specification.disks.root.volume_type }}"
     volume_size           = "{{ specification.disks.root.volume_size }}"
     delete_on_termination = "{{ specification.disks.root.delete_on_termination | lower }}"
+    encrypted             = "{{ specification.disks.root.encrypted | lower }}"
   }
 
 {% for disk in specification.disks.additional_disks %}

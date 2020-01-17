@@ -1,10 +1,5 @@
 ---
-elasticsearch_ip: "{{ hostvars[groups['elasticsearch'][0]]['ansible_default_ipv4']['address'] }}"
+specification:
+  curator_version: "5.8.1" # used by upgrade playbook
 
-elasticsearch_curator_cron_jobs:
-- hour: 1
-  job: curator_cli --host '{{ elasticsearch_ip }}' delete_indices --filter_list
-    '[{"filtertype":"age","source":"creation_date","direction":"older","unit":"days","unit_count":{{
-    specification.indices_retention_days }}}]'
-  minute: 0
-  name: Delete old elasticsearch indices.
+elasticsearch_host_ip: "{{ ansible_default_ipv4.address | default(ansible_all_ipv4_addresses[0]) }}"

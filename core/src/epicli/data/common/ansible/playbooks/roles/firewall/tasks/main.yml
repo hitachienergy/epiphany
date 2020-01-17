@@ -1,0 +1,6 @@
+---
+- name: Include installation tasks ({{ ansible_os_family }})
+  include_tasks: "{{ ansible_os_family }}/install-firewall.yml"
+
+- name: Include configuration tasks
+  include_tasks: configure-firewall.yml

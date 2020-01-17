@@ -1,6 +1,13 @@
-- name: Install Filbeat package
-  yum: 
+- name: Install filebeat package
+  yum:
     name:
-      - filebeat
-    update_cache: yes 
+      - filebeat-{{ specification.filebeat_version }}
+    update_cache: yes
+    state: present
+
+- name: Install auditd package
+  yum:
+    name:
+      - audit
+    update_cache: yes
     state: present

@@ -53,3 +53,37 @@
 # 1.12.10
 # 1.13.12
 # 1.14.8
+
+- hosts: elasticsearch
+  become: true
+  become_method: sudo
+  tasks:
+    - import_role:
+        name: upgrade
+        tasks_from: elasticsearch
+
+- hosts: elasticsearch_curator
+  become: true
+  become_method: sudo
+  tasks:
+    - import_role:
+        name: upgrade
+        tasks_from: elasticsearch-curator
+
+- hosts: filebeat
+  become: true
+  become_method: sudo
+  tasks:
+    - import_role:
+        name: upgrade
+        tasks_from: filebeat
+
+- hosts: kafka
+  serial: 1
+  become: true
+  become_method: sudo
+  tasks:
+    - import_role:
+        name: upgrade
+        tasks_from: kafka
+      vars: { lock_file: /var/tmp/kafka-upgrade-in-progress.flag }

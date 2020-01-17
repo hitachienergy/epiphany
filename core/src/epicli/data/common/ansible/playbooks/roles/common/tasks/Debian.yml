@@ -1,42 +1,42 @@
 ---
-# Common Debian family of specific tasks
+# Common Debian family specific tasks
 
 - name: Install selinux packages as prerequisite for SELinux module
   apt:
     name:
       - build-essential
       - python-selinux
-    update_cache: yes 
-    state: present    
+    update_cache: yes
+    state: present
 
-- name: Install debian family packages
+- name: Install Debian family packages
   apt:
     name:
+      - apt-transport-https
       - bash-completion
       - ca-certificates
-      - net-tools
-      - tar
-      - netcat
       - curl
-      - tmux
-      - fping
-      - iftop
-      - htop
-      - sshpass
-      - vim
-      - sysstat
-      - python-setuptools
-      - apt-transport-https
-      - software-properties-common
-      - openssl
-      - logrotate
       - ebtables
       - ethtool
-      - telnet
-      - ufw 
+      - fping
+      - htop
+      - iftop
       - jq
-    update_cache: yes 
-    state: present  
+      - logrotate
+      - net-tools
+      - netcat
+      - openssl
+      - python-setuptools
+      - software-properties-common
+      - sshpass
+      - sysstat
+      - tar
+      - telnet
+      - tmux
+      - unzip
+      - vim
+    update_cache: yes
+    state: present
 
 - name: Append prompt to .profile
   lineinfile:

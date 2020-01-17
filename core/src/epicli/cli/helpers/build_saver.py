@@ -13,6 +13,7 @@ MANIFEST_FILE_NAME = 'manifest.yml'
 SP_FILE_NAME = 'sp.yml'
 INVENTORY_FILE_NAME = 'inventory'
 ANSIBLE_OUTPUT_DIR = 'ansible/'
+ANSIBLE_VAULT_OUTPUT_DIR = 'vault/'
 
 BUILD_EPICLI = 'BUILD_EPICLI'
 BUILD_LEGACY = 'BUILD_LEGACY_02X'
@@ -123,6 +124,11 @@ def get_ansible_path(cluster_name):
         os.makedirs(ansible_dir)
     return ansible_dir
 
+def get_ansible_vault_path(cluster_name):
+    ansible_vault_dir = os.path.join(get_build_path(cluster_name), ANSIBLE_VAULT_OUTPUT_DIR)
+    if not os.path.exists(ansible_vault_dir):
+        os.makedirs(ansible_vault_dir)
+    return ansible_vault_dir
 
 def get_ansible_path_for_build(build_directory):
     ansible_dir = os.path.join(build_directory, ANSIBLE_OUTPUT_DIR)
@@ -130,10 +136,8 @@ def get_ansible_path_for_build(build_directory):
         os.makedirs(ansible_dir)
     return ansible_dir    
 
-
 def copy_files_recursively(src, dst):
     distutils.dir_util.copy_tree(src, dst)
-
 
 def copy_file(src, dst):
     shutil.copy2(src, dst)

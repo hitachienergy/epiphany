@@ -1,6 +1,7 @@
 [packages]
 adduser
 apt-transport-https
+auditd
 bash-completion
 build-essential
 ca-certificates
@@ -11,11 +12,13 @@ curl
 docker-ce 5:18.09
 docker-ce-cli 5:18.09
 ebtables
-elasticsearch-curator
-elasticsearch-oss 6.4.0
+elasticsearch-curator 5.8.1
+elasticsearch-oss 6.8.5
+elasticsearch-oss 7.3.2
 erlang-nox
 ethtool
-filebeat 6.5.4
+filebeat 6.8.5
+firewalld
 fping
 gnupg2
 grafana 6.2.5
@@ -24,7 +27,6 @@ htop
 iftop
 init-system-helpers
 jq
-kibana-oss 6.4.0
 kubeadm 1.14.6
 kubectl 1.14.6
 kubelet 1.14.6
@@ -34,7 +36,15 @@ logrotate
 netcat
 net-tools
 nfs-common
+opendistro-alerting 1.3.0
+opendistro-index-management 1.3.0
+opendistro-job-scheduler 1.3.0
+opendistroforelasticsearch-kibana 1.3.0
+opendistro-performance-analyzer 1.3.0
+opendistro-security 1.3.0
+opendistro-sql 1.3.0
 openjdk-8-jre-headless
+openjdk-11-jre-headless
 openssl
 postgresql-10
 python-pip
@@ -52,7 +62,7 @@ sysstat
 tar
 telnet
 tmux
-ufw
+unzip
 vim
 
 # for openjdk-8-jre-headless
@@ -64,6 +74,9 @@ libjpeg8
 libfontconfig1
 libxtst6
 fontconfig-config
+
+# for openjdk-11-jre-headless
+liboss4-salsa-asound2
 
 python-apt
 
@@ -111,6 +124,14 @@ libsmbclient
 postgresql-client-10
 postgresql-common
 
+# for firewalld
+ipset
+libipset3
+python3-decorator
+python3-selinux
+python3-slip
+python3-slip-dbus
+
 # K8s upgrade
 kubeadm 1.12.10
 kubectl 1.12.10
@@ -119,9 +140,10 @@ kubeadm 1.13.12
 kubectl 1.13.12
 kubelet 1.13.12
 
+
 [files]
 https://repo1.maven.org/maven2/io/prometheus/jmx/jmx_prometheus_javaagent/0.12.0/jmx_prometheus_javaagent-0.12.0.jar
-https://archive.apache.org/dist/kafka/2.0.0/kafka_2.12-2.0.0.tgz
+https://archive.apache.org/dist/kafka/2.3.1/kafka_2.12-2.3.1.tgz
 https://archive.apache.org/dist/zookeeper/zookeeper-3.4.12/zookeeper-3.4.12.tar.gz
 https://github.com/danielqsj/kafka_exporter/releases/download/v1.2.0/kafka_exporter-1.2.0.linux-amd64.tar.gz
 https://github.com/prometheus/alertmanager/releases/download/v0.17.0/alertmanager-0.17.0.linux-amd64.tar.gz
@@ -129,6 +151,7 @@ https://github.com/prometheus/haproxy_exporter/releases/download/v0.10.0/haproxy
 https://github.com/prometheus/node_exporter/releases/download/v0.16.0/node_exporter-0.16.0.linux-amd64.tar.gz
 https://github.com/prometheus/prometheus/releases/download/v2.10.0/prometheus-2.10.0.linux-amd64.tar.gz
 https://packages.elastic.co/curator/5/debian9/pool/main/e/elasticsearch-curator/elasticsearch-curator_5.5.4_amd64.deb
+https://archive.apache.org/dist/ignite/2.7.6/apache-ignite-2.7.6-bin.zip
 
 [images]
 k8s.gcr.io/kube-apiserver:v1.14.6
@@ -149,6 +172,7 @@ calico/cni:v3.8.1
 calico/kube-controllers:v3.8.1
 registry:2
 # applications
+apacheignite/ignite:2.5.0
 jboss/keycloak:4.8.3.Final
 rabbitmq:3.7.10
 # K8s upgrade

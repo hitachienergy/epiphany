@@ -1,16 +1,12 @@
 ---
 
-- name: Write certs in haproxy
+- name: Print admin_user.name
   debug:
     msg: "{{ admin_user.name }}"
 
 # Common main as the entry point
 
 - include_tasks: "{{ ansible_os_family }}.yml"
-
-# todo: Setup
-- include_tasks: firewall/configure-fw.yml
-  tags: firewall
 
 - name: Get environment variables
   command: env
@@ -112,13 +108,19 @@
   tags:
     - epiuser
 
+- include_tasks: os_users.yml
+  when:
+    - specification.users is defined and specification.users | list | length > 0
+  tags:
+    - os_users
+
 - include_tasks: security.yml
   tags:
     - security
 
 - include_tasks: aws-hostname.yml
   when:
-    - provider == "aws"  
+    - provider == "aws"
 
 
 

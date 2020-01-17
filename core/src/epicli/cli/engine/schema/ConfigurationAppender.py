@@ -19,7 +19,7 @@ class ConfigurationAppender(Step):
 
         def append_config(doc):
             doc['version'] = VERSION
-            configuration_docs.append(doc)    
+            configuration_docs.append(doc)
 
         for document_kind in ConfigurationAppender.REQUIRED_DOCS:
             doc = select_first(self.input_docs, lambda x: x.kind == document_kind)

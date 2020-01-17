@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- {{ ansible_managed }} -->
+<zone>
+  <short>{{ specification.managed_zone_name[0] | upper }}{{ specification.managed_zone_name[1:] }}</short>
+  <description>Epiphany managed zone. Only selected incoming connections are accepted.</description>
+{% if ansible_os_family != 'RedHat' %}
+  <interface name="{{ ansible_default_ipv4.interface }}"/>
+{% endif %}
+{# ssh service is hard-coded by purpose - to be always allowed #}
+  <service name="ssh"/>
+{% if inventory_hostname in groups['repository'] and specification.firewall_service_enabled %}
+<!-- BEGIN ANSIBLE MANAGED TEMPORARY BLOCK -->
+  <!-- http service is added temporarily for epirepo and removed at the end of installation -->
+  <service name="http"/>
+<!-- END ANSIBLE MANAGED TEMPORARY BLOCK -->
+{% endif %}
+{% for item in ports_to_open %}
+  <port protocol="{{ item.protocol }}" port="{{ item.range }}"/>
+{% endfor %}
+{% if inventory_hostname in groups['kubernetes_master'] or inventory_hostname in groups['kubernetes_node'] %}
+  <masquerade/>
+{% endif %}
+</zone>

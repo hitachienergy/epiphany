@@ -1,0 +1,5 @@
+---
+- name: Install firewalld package
+  package:
+    name: firewalld
+    state: present

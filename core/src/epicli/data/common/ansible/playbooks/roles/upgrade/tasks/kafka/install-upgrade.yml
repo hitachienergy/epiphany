@@ -1,0 +1,57 @@
+---
+- name: Set Kafka installation file name as fact
+  set_fact:
+    kafka_installation_file_name: "kafka_{{ specification.kafka_var.scala.version }}-{{ specification.kafka_var.version }}.tgz"
+
+- name: Download Kafka binaries
+  include_role:
+    name: download
+    tasks_from: download_file
+  vars:
+    file_name: "{{ kafka_installation_file_name }}"
+
+- name: Uncompress Kafka installation file
+  unarchive:
+    remote_src: yes
+    src: "{{ download_directory }}/{{ kafka_installation_file_name }}"
+    dest: /opt
+
+- name: Change ownership on kafka directory
+  file:
+    path: /opt/kafka_{{ specification.kafka_var.scala.version }}-{{ specification.kafka_var.version }}
+    state: directory
+    owner: kafka
+    group: kafka
+
+- name: Copy configuration from previous version
+  copy:
+    remote_src: yes
+    src: /opt/kafka/config/
+    dest: /opt/kafka_{{ specification.kafka_var.scala.version }}-{{ specification.kafka_var.version }}/config
+    mode: preserve
+
+- name: Link /opt/kafka to recently installed version
+  file:
+    dest: /opt/kafka
+    state: link
+    src: /opt/kafka_{{ specification.kafka_var.scala.version }}-{{ specification.kafka_var.version }}
+    force: yes
+
+- name: Remove previous version binaries
+  file:
+    path: /opt/kafka_{{ specification.kafka_var.scala.version }}-{{ before_upgrade_kafka_version }}
+    state: absent
+
+- name: Get log.dirs property
+  shell: >-
+    set -o pipefail &&
+    grep log.dirs /opt/kafka/config/server.properties | awk -F'=' '{print $2}'
+  register: log_dirs
+  changed_when: False
+  args:
+    executable: /bin/bash
+
+- name: Remove lost+found directory from log.dirs
+  file:
+    path: "{{ log_dirs.stdout }}/lost+found"
+    state: absent

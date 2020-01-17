@@ -1,0 +1,17 @@
+---
+# Ansible playbook that installs and configures OS level firewall
+
+# To make sure connection to epirepo is not blocked between firewalld was installed and not configured yet
+# On Ubuntu firewalld service starts automatically while installing firewalld package
+
+- hosts: repository
+  become: true
+  become_method: sudo
+  roles:
+    - firewall
+
+- hosts: all:!repository
+  become: true
+  become_method: sudo
+  roles:
+    - firewall

@@ -1,0 +1,4 @@
+- name: Apply /etc/epiphany/manifests/{{ file_name }} file
+  environment:
+    KUBECONFIG: "/home/{{ admin_user.name }}/.kube/config"
+  shell: kubectl apply -f /etc/epiphany/manifests/{{ file_name }}

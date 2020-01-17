@@ -31,7 +31,7 @@ specification:
         - default-kafka1
         - default-kafka2
     postgresql:
-      count: 0
+      count: 1
       machines:
         - default-postgresql
     load_balancer:
@@ -39,7 +39,7 @@ specification:
       machines:
         - default-loadbalancer
     rabbitmq:
-      count: 0
+      count: 1
       machines:
         - default-rabbitmq
 

@@ -1,0 +1,8 @@
+---
+# Ansible playbook for installing Elasticsearch
+
+- hosts: opendistro_for_elasticsearch
+  become: true
+  become_method: sudo
+  roles:
+    - opendistro_for_elasticsearch

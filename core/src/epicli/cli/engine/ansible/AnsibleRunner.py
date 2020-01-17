@@ -101,7 +101,7 @@ class AnsibleRunner(Step):
         enabled_roles = inventory_creator.get_enabled_roles()
         for role in enabled_roles:
             self.ansible_command.run_playbook(inventory=inventory_path,
-                                              playbook_path=self.playbook_path(to_role_name(role)))
+                                              playbook_path=self.playbook_path(to_role_name(role)), vault_file=Config().vault_password_location)
 
         #post-flight after we are done
         self.post_flight(inventory_path)
