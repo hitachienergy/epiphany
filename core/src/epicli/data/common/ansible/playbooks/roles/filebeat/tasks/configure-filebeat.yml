@@ -55,7 +55,7 @@
       command: systemctl is-active filebeat
       changed_when: false
   when:
-    - output_elasticsearch_hosts is defined
+    - groups['logging'][0] is defined
 
 - name: Stop and disable filebeat service
   systemd:
@@ -63,4 +63,4 @@
     state: stopped
     enabled: false
   when:
-    - output_elasticsearch_hosts is undefined
+    - groups['logging'][0] is undefined
