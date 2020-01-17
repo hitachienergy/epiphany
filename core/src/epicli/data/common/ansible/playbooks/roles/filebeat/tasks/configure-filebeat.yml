@@ -11,7 +11,7 @@
   shell: >-
     filebeat modules enable auditd 
   register: enable_module
-  changed_when: "'Enabled auditd' in enable_module.stdout
+  changed_when: "'Enabled auditd' in enable_module.stdout"
 
 - name: Set Filebeat to be started after Docker
   block:
