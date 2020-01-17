@@ -17,20 +17,35 @@
             content: "{{ current_zone }}"
             dest: "{{ modified_zone_name_file }}"
 
-        - name: Make sure {{ zone_config_backup_dest_dir }} directory exists
-          file:
-            path: "{{ zone_config_backup_dest_dir }}"
-            state: directory
-            mode: 750
-            owner: "{{ admin_user.name }}"
-            group: "{{ admin_user.name }}"
+        - name: Backup configuration file of current zone
+          block:
+            - name: Check if configuration file of current zone exist
+              stat:
+                path: /etc/firewalld/zones/{{ current_zone }}.xml
+              register: current_zone_config_file_stat
 
-        - name: Backup configuration file of {{ current_zone }} zone
-          copy:
-            remote_src: yes
-            src: /etc/firewalld/zones/{{ current_zone }}.xml
-            dest: "{{ zone_config_backup_dest_dir }}/{{ current_zone }}.xml.bak"
-            mode: preserve
+            - name: Set path of current zone config file as fact
+              set_fact:
+                zone_config_file_path: "{{ zone_config_file_dir }}/{{ current_zone }}.xml"
+              vars:
+                zone_config_file_dir: >-
+                  {{ '/etc/firewalld/zones' if current_zone_config_file_stat.stat.exists
+                                            else '/usr/lib/firewalld/zones' }}
+
+            - name: Create {{ zone_config_backup_dest_dir }} directory
+              file:
+                path: "{{ zone_config_backup_dest_dir }}"
+                state: directory
+                mode: 0750
+                owner: "{{ admin_user.name }}"
+                group: "{{ admin_user.name }}"
+
+            - name: Backup configuration file of current zone ({{ current_zone }})
+              copy:
+                remote_src: yes
+                src: "{{ zone_config_file_path }}"
+                dest: "{{ zone_config_backup_dest_dir }}/{{ current_zone }}.xml.bak"
+                mode: 0644
 
         - name: Add temporary firewall rule for HTTP server
           shell: firewall-cmd --add-service=http --zone={{ current_zone }} --permanent &&

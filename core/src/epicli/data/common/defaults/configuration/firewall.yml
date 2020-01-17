@@ -69,17 +69,27 @@ specification:
       ports:
         - 6443/tcp      # API server
         - 2379-2380/tcp # etcd server client API
+        - 8472/udp      # flannel (vxlan backend)
         - 10250/tcp     # Kubelet API
         - 10251/tcp     # kube-scheduler
         - 10252/tcp     # kube-controller-manager
     kubernetes_node:
       enabled: true
       ports:
+        - 8472/udp  # flannel (vxlan backend)
         - 10250/tcp # Kubelet API
+    logging:
+      enabled: true
+      ports:
+        - 9200/tcp
     node_exporter:
       enabled: true
       ports:
         - 9100/tcp
+    opendistro_for_elasticsearch:
+      enabled: true
+      ports:
+        - 9200/tcp
     postgresql:
       enabled: true
       ports:
