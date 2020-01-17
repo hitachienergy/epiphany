@@ -1,3 +1,21 @@
+## How to enable/disable Epiphany service user
+
+To enable/disable Epiphany service user you can use tool from our repository. You can find this in directory `tools/service_user_disable_enable` under name `service-user-disable-enable.yml`.
+
+To use this you need to have Ansible installed on machine from which you want to execute this.
+
+To disable user you need to run command:
+
+```sh
+ansible-playbook -i inventory --extra-vars "operation=disable name=your_service_user_name" service-user-disable-enable.yml
+```
+
+To enable user you need to run command:
+
+```sh
+ansible-playbook -i inventory --extra-vars "operation=enable name=your_service_user_name" service-user-disable-enable.yml
+```
+
 ## How to add/remove additional users to/from OS
 
 To add/remove users you need to provide additional section to `kind: epiphany-cluster` configuration.
