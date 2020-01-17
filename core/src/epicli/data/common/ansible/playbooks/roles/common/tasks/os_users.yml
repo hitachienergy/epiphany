@@ -1,0 +1,123 @@
+---
+
+# Add users block
+- name: Add user group
+  group:
+    name: "{{ item.name }}"
+    state: present
+  when:
+    - item.state == "present"
+  with_items:
+    - "{{ specification.users }}"
+
+- name: Add user with sudo privileges and no password
+  user:
+    name: "{{ item.name }}"
+    shell: /bin/bash
+    group: "{{ item.name }}"
+    groups: "wheel"
+    append: yes
+  when:
+    - ansible_os_family == "RedHat"
+    - item.sudo is defined and item.sudo
+    - item.state == "present"
+  with_items:
+    - "{{ specification.users }}"
+
+- name: Add user with sudo privileges and no password
+  user:
+    name: "{{ item.name }}"
+    shell: /bin/bash
+    group: "{{ item.name }}"
+    groups: "sudo"
+    append: yes
+  when:
+    - ansible_os_family == "Debian"
+    - item.sudo is defined and item.sudo
+    - item.state == "present"
+  with_items:
+    - "{{ specification.users }}"
+
+- name: Add user with correct shell, and groups, and no password
+  user:
+    name: "{{ item.name }}"
+    shell: /bin/bash
+    group: "{{ item.name }}"
+    append: yes
+  when:
+    - ansible_os_family == "RedHat"
+    - not (item.sudo is defined and item.sudo)
+    - item.state == "present"
+  with_items:
+    - "{{ specification.users }}"
+
+- name: Add user with correct shell, and groups, and no password
+  user:
+    name: "{{ item.name }}"
+    shell: /bin/bash
+    group: "{{ item.name }}"
+    append: yes
+  when:
+    - ansible_os_family == "Debian"
+    - not (item.sudo is defined and item.sudo)
+    - item.state == "present"
+  with_items:
+    - "{{ specification.users }}"
+
+- name: Put user authorized key on servers
+  authorized_key:
+    user: "{{ item.name }}"
+    state: present
+    key: "{{ item.public_key }}"
+  when:
+    - item.state == "present"
+  with_items:
+    - "{{ specification.users }}"
+
+- name: Set NOPASSWD in /etc/sudoers for wheel group
+  lineinfile:
+    dest: /etc/sudoers
+    state: present
+    regexp: '^%wheel'
+    line: '%wheel ALL=(ALL) NOPASSWD: ALL'
+    validate: visudo -cf %s
+  when:
+    - ansible_os_family == "RedHat"
+
+- name: Set NOPASSWD in /etc/sudoers for sudo group
+  lineinfile:
+    dest: /etc/sudoers
+    state: present
+    regexp: '^%sudo'
+    line: '%sudo ALL=(ALL) NOPASSWD: ALL'
+    validate: visudo -cf %s
+  when:
+    - ansible_os_family == "Debian"
+
+# Remove OS users
+- name: Remove users authorized keys on servers
+  file:
+    path: "/home/{{  item.name }}/.ssh/authorized_keys"
+    state: absent
+  when:
+    - item.state == "absent"
+  with_items:
+    - "{{ specification.users }}"
+
+- name: Remove users
+  user:
+    name: "{{ item.name }}"
+    state: absent
+  when:
+    - item.state == "absent"
+  with_items:
+    - "{{ specification.users }}"
+
+- name: Remove user groups
+  group:
+    name: "{{ item.name }}"
+    state: absent
+  when:
+    - item.state == "absent"
+  with_items:
+    - "{{ specification.users }}"

@@ -42,6 +42,8 @@
   - [How to upgrade Kafka cluster](./howto/UPGRADE.md#how-to-upgrade-Kafka-cluster)
 
 - [Security](./howto/SECURITY.md)
+  - [How to add/remove additional users to/from OS](./howto/SECURITY.md#how-to-addremove-additional users to/from OS)
+  - [How to use TLS/SSL certificate with HA Proxy](./howto/SECURITY.md#how-to-use-tlsssl-certificate-with-ha-proxy)
   - [How to use TLS/SSL certificate with HA Proxy](./howto/SECURITY.md#how-to-use-tls/ssl-certificate-with-ha-proxy)
   - [How to use TLS/SSL certificate with RabbitMQ](./howto/SECURITY.md#how-to-use-tlsssl-certificate-with-rabbitmq)
   - [How to use TLS/SSL with Kafka](./howto/SECURITY.md#how-to-use-tlsssl-with-kafka)
