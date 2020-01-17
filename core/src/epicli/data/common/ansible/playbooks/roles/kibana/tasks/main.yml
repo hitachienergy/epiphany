@@ -36,3 +36,18 @@
     enabled: yes
   when:
     - groups['kibana'][0] == inventory_hostname
+
+- name: Wait for kibana to start listening
+  wait_for:
+    host: "{{ ansible_default_ipv4.address | default(ansible_all_ipv4_addresses[0]) }}"
+    port: 5601
+    delay: 5
+  
+- name: Wait for kibana to be ready
+  uri:
+    url: http://{{ ansible_default_ipv4.address | default(ansible_all_ipv4_addresses[0]) }}:5601/api/kibana/settings
+    method: GET
+  register: response
+  until: "'kbn_name' in response and response.status == 200"
+  retries: 60
+  delay: 5
