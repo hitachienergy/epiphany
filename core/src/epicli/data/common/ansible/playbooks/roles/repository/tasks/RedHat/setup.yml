@@ -12,8 +12,8 @@
         /tmp/epi-repository-setup-scripts/create-repository.sh /var/www/html/epirepo {{ offline_mode | lower }} |&
         tee /tmp/epi-repository-setup-scripts/create-repository.log
 
-    - name: Ensure HTTP port is not blocked by firewall
-      include_tasks: firewall/add-rule.yml
+    # - name: Ensure HTTP port is not blocked by firewall
+    #   include_tasks: firewall/add-rule.yml
 
     - name: Ensure httpd is running
       service:

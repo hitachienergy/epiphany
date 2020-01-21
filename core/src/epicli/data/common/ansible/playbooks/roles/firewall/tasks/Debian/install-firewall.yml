@@ -15,7 +15,8 @@
     state: absent
     purge: yes
 
-- name: Install firewalld package
-  package:
-    name: firewalld
-    state: present
+# TODO: Temporary hotfix - do not install firewalld, since on Ubuntu it automatically starts firewalld service
+# - name: Install firewalld package
+#   package:
+#     name: firewalld
+#     state: present

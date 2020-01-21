@@ -14,7 +14,7 @@ specification:
     - name: kubernetes-node
       enabled: yes
     - name: logging
-      enabled: yes    
+      enabled: yes
     - name: opendistro-for-elasticsearch
       enabled: yes
     - name: elasticsearch
@@ -50,7 +50,7 @@ specification:
     - name: applications
       enabled: yes
     - name: ignite
-      enabled: yes  
+      enabled: yes
  
   roles_mapping:
     kafka:
@@ -137,4 +137,3 @@ specification:
       - node-exporter
       - filebeat
       - firewall
-

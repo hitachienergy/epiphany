@@ -9,8 +9,8 @@
       args:
         executable: /bin/bash
 
-    - name: Ensure HTTP port is not blocked by firewall
-      include_tasks: firewall/add-rule.yml
+    # - name: Ensure HTTP port is not blocked by firewall
+    #   include_tasks: firewall/add-rule.yml
 
     - name: Ensure Apache HTTP server is running
       service:

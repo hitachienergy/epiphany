@@ -1,4 +1,10 @@
 ---
+- name: Make sure OS firewall is disabled # temporary hotfix
+  set_fact:
+    specification:
+      apply_configuration: false
+      firewall_service_enabled: false
+
 - name: Configure Epiphany managed firewall zone
   block:
     - name: Set roles with enabled firewall rules as fact
@@ -145,7 +151,11 @@
       when: default_zone_name.stdout != specification.managed_zone_name
   when:
     - specification.apply_configuration
-    - inventory_hostname in groups['kubernetes_master'] or inventory_hostname in groups['kubernetes_node']
+    - (groups['kubernetes_master'] is defined and inventory_hostname in groups['kubernetes_master'])
+      or (groups['kubernetes_node'] is defined and inventory_hostname in groups['kubernetes_node'])
+
+- name: Get service facts
+  service_facts:
 
 - name: Stop and disable firewalld service
   systemd:
@@ -153,4 +163,6 @@
     state: stopped
     enabled: no
     masked: yes # to make sure it is not started by accessing firewalld D-Bus interface or if other services require firewalld
-  when: not specification.firewall_service_enabled
+  when:
+    - ansible_facts.services['firewalld'] is defined
+    - not specification.firewall_service_enabled
