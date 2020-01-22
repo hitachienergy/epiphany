@@ -148,7 +148,7 @@
     - (groups['kubernetes_master'] is defined and inventory_hostname in groups['kubernetes_master'])
       or (groups['kubernetes_node'] is defined and inventory_hostname in groups['kubernetes_node'])
 
-- name: Get service facts # to check 
+- name: Get service facts
   service_facts:
 
 - name: Print firewalld.service state
