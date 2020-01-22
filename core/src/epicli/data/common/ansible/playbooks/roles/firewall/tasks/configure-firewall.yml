@@ -148,6 +148,15 @@
     - (groups['kubernetes_master'] is defined and inventory_hostname in groups['kubernetes_master'])
       or (groups['kubernetes_node'] is defined and inventory_hostname in groups['kubernetes_node'])
 
+- name: Get service facts # to check 
+  service_facts:
+
+- name: Print firewalld.service state
+  debug:
+    var: ansible_facts.services['firewalld.service']
+  when:
+    - ansible_facts.services['firewalld.service'] is defined
+
 - name: Stop, disable and mask firewalld service
   block:
     - name: Stop and disable firewalld service
@@ -164,13 +173,15 @@
         masked: yes
   when:
     - not specification.firewall_service_enabled
+    - ansible_facts.services['firewalld.service'] is defined
 
 - name: Get firewall state
   shell: firewall-cmd --state 2>&1
   register: firewall_state
   changed_when: false
-  failed_when: firewall_state.rc not in [0, 252] # 252 means not running
+  failed_when: firewall_state.rc not in [0, 127, 252] # 252 means not running
 
 - name: Print firewall state
   debug:
     var: firewall_state.stdout
+  when: firewall_state.rc in [0, 252]

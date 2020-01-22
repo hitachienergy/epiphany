@@ -16,26 +16,30 @@
     purge: yes
 
 - name: Install firewalld package
-  package:
-    name: firewalld
-    state: present
-  register: install_firewalld
-
-- name: Stop and mask service for consistency with RHEL
   block:
-    # On Ubuntu firewalld service starts automatically after installing package
-    # Stop to avoid unexpected blocking and for consistency with RHEL
-    - name: Stop firewalld service
-      systemd:
+    - name: Install firewalld package
+      package:
         name: firewalld
-        state: stopped
-        enabled: no
+        state: present
+      register: install_firewalld
 
-    # On RHEL firewalld service is initially masked, so mask it for consistency
-    # This task is separated by purpose to mask service AFTER it was stopped
-    - name: Mask firewalld service
-      systemd:
-        name: firewalld
-        masked: yes
+    - name: Stop and mask service for consistency with RHEL
+      block:
+        # On Ubuntu firewalld service starts automatically after installing package
+        # Stop to avoid unexpected blocking and for consistency with RHEL
+        - name: Stop firewalld service
+          systemd:
+            name: firewalld
+            state: stopped
+            enabled: no
+
+        # On RHEL firewalld service is initially masked, so mask it for consistency
+        # This task is separated by purpose to mask service AFTER it was stopped
+        - name: Mask firewalld service
+          systemd:
+            name: firewalld
+            masked: yes
+      when:
+        - install_firewalld.changed
   when:
-    - install_firewalld.changed
+    - specification.Debian.install_firewalld
