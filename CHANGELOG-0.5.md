@@ -1,13 +1,20 @@
 # Changelog 0.5
 
+## [0.5.1] 2020-01-23
+
+### Hotfixed
+
+- [#849](https://github.com/epiphany-platform/epiphany/issues/849) - Firewall: Do not install firewalld package on Ubuntu
+- [#842](https://github.com/epiphany-platform/epiphany/issues/842) - Firewall: Do not require kubernetes_master and kubernetes_node components
+- Filebeat (Ubuntu): [Installing auditd sometimes fails in post-inst](https://bugs.launchpad.net/ubuntu/+source/auditd/+bug/1848330)
+- Filebeat (Ubuntu): Restarting auditd service sometimes fails with error: "Job for auditd.service failed because a timeout was exceeded"
+- Repository (RHEL/CentOS): Add second try for skopeo to avoid random error on Azure: "pinging docker registry returned: Get https://k8s.gcr.io/v2/: net/http: TLS handshake timeout"
+
 ## [0.5.0] 2020-01-17
 
 ### Added
 
 - [#820](https://github.com/epiphany-platform/epiphany/pull/820) - Firewall: OS level firewall setup (firewalld)
-
-### Added
-
 - [#381](https://github.com/epiphany-platform/epiphany/issues/381) - Add AWS EC2 Root Volume encryption
 - [#782](https://github.com/epiphany-platform/epiphany/issues/781) - All disks encryption documentation - AWS
 - [#782](https://github.com/epiphany-platform/epiphany/issues/782) - All disks encryption documentation - Azure
