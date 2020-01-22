@@ -155,3 +155,13 @@
     enabled: no
     masked: yes # to make sure it is not started by accessing firewalld D-Bus interface or if other services require firewalld
   when: not specification.firewall_service_enabled
+
+- name: Get firewall state
+  shell: firewall-cmd --state 2>&1
+  register: firewall_state
+  changed_when: false
+  failed_when: firewall_state.rc not in [0, 252] # 252 means not running
+
+- name: Print firewall state
+  debug:
+    var: firewall_state.stdout
