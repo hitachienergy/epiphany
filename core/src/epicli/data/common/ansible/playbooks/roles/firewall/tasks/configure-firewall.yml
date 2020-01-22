@@ -148,13 +148,22 @@
     - (groups['kubernetes_master'] is defined and inventory_hostname in groups['kubernetes_master'])
       or (groups['kubernetes_node'] is defined and inventory_hostname in groups['kubernetes_node'])
 
-- name: Stop and disable firewalld service
-  systemd:
-    name: firewalld
-    state: stopped
-    enabled: no
-    masked: yes # to make sure it is not started by accessing firewalld D-Bus interface or if other services require firewalld
-  when: not specification.firewall_service_enabled
+- name: Stop, disable and mask firewalld service
+  block:
+    - name: Stop and disable firewalld service
+      systemd:
+        name: firewalld
+        state: stopped
+        enabled: no
+
+    # Mask service to make sure it is not started by accessing firewalld D-Bus interface or if other services require firewalld
+    # This task is separated by purpose to mask service AFTER it was stopped
+    - name: Mask firewalld service
+      systemd:
+        name: firewalld
+        masked: yes
+  when:
+    - not specification.firewall_service_enabled
 
 - name: Get firewall state
   shell: firewall-cmd --state 2>&1
