@@ -9,6 +9,7 @@
 - Filebeat (Ubuntu): [Installing auditd sometimes fails in post-inst](https://bugs.launchpad.net/ubuntu/+source/auditd/+bug/1848330)
 - Filebeat (Ubuntu): Restarting auditd service sometimes fails with error: "Job for auditd.service failed because a timeout was exceeded"
 - Repository (RHEL/CentOS): Add second try for skopeo to avoid random error on Azure: "pinging docker registry returned: Get https://k8s.gcr.io/v2/: net/http: TLS handshake timeout"
+- [#860](https://github.com/epiphany-platform/epiphany/issues/860) - Prometheus: K8s packages and their dependencies are installed on prometheus host
 
 ## [0.5.0] 2020-01-17
 
