@@ -99,7 +99,9 @@ download_image() {
 		local tmp_file_path=$(mktemp)
 		local skopeo_cmd="$SKOPEO_BIN --insecure-policy copy docker://$image_name docker-archive:$tmp_file_path:$repository:$tag"
 		echol "Downloading image: $image"
+		# try twice to avoid random error on Azure: "pinging docker registry returned: Get https://k8s.gcr.io/v2/: net/http: TLS handshake timeout"
 		{ $skopeo_cmd && chmod 644 $tmp_file_path && mv $tmp_file_path $dest_path; } ||
+		{ echol "Second try:" && $skopeo_cmd && chmod 644 $tmp_file_path && mv $tmp_file_path $dest_path; } ||
 			exit_with_error "skopeo failed, command was: $skopeo_cmd && chmod 644 $tmp_file_path && mv $tmp_file_path $dest_path"
 	fi
 }

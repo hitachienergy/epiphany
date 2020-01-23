@@ -4,19 +4,27 @@
 
 # Note: Current zone when run 'teardown' may be different than was while 'setup'
 
-- name: Include vars from firewall role
-  include_vars:
-    file: roles/firewall/vars/main.yml
-    name: firewall_role_config
-
-- name: Get name of Epiphany managed zone from configuration
-  set_fact:
-    managed_zone: "{{ firewall_role_config.specification.managed_zone_name }}"
-
 - name: Check if {{ firewall_rule_added_flag_file }} file exists
   stat:
     path: "{{ firewall_rule_added_flag_file }}"
   register: firewall_rule_added_flag_file_stat
+
+- name: Get firewall settings from Epiphany configuration
+  block:
+    - name: Include vars from firewall role
+      include_vars:
+        file: roles/firewall/vars/main.yml
+        name: firewall_role_config
+      failed_when: false # to not fail if firewall role is disabled
+
+    - name: Get firewall settings from Epiphany configuration
+      set_fact:
+        managed_zone: "{{ firewall_role_config.specification.managed_zone_name }}"
+        apply_firewall_configuration: "{{ firewall_role_config.specification.apply_configuration }}"
+      when:
+        - firewall_role_config.specification is defined
+  when:
+    - "'firewall' in group_names"
 
 - name: Remove temporary firewall rule for epirepo added by repository role
   block:
@@ -26,21 +34,24 @@
 
     - name: Restore configuration of {{ modified_zone | default('modified') }} zone from backup
       copy:
-        remote_src: yes
         src: "{{ zone_config_backup_dest_dir }}/{{ modified_zone }}.xml.bak"
-        dest:  /etc/firewalld/zones/{{ modified_zone }}.xml
+        dest: /etc/firewalld/zones/{{ modified_zone }}.xml
+        remote_src: yes
         mode: preserve
       register: restore_modified_zone_from_backup
-      when: modified_zone != managed_zone
-         or not firewall_role_config.specification.apply_configuration
+      when:
+        - apply_firewall_configuration is undefined
+          or not apply_firewall_configuration
+          or managed_zone is undefined
+          or managed_zone != modified_zone
 
     - name: Clean up temporary firewall files
       file:
         path: "{{ item }}"
         state: absent
       loop: [ firewall_rule_added_flag_file, modified_zone_name_file, "{{ zone_config_backup_dest_dir }}/{{ modified_zone }}.xml.bak" ]
-
-  when: firewall_rule_added_flag_file_stat.stat.exists
+  when:
+    - firewall_rule_added_flag_file_stat.stat.exists
 
 - name: Remove temporary firewall rule for epirepo added by firewall role
   blockinfile:
@@ -51,7 +62,8 @@
     state: absent
   register: remove_http_service_from_managed_zone
   when:
-    - firewall_role_config.specification.apply_configuration
+    - apply_firewall_configuration is defined
+    - apply_firewall_configuration
 
 - name: Reload firewalld to apply permanent configuration to runtime
   command: firewall-cmd --reload

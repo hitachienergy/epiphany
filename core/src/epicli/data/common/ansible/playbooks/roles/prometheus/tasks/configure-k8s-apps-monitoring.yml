@@ -7,10 +7,11 @@
   set_fact:
     api_server_address: "https://{{ master_hostname }}:6443"
 
-- name: Set Kubernetes credentials 
+- name: Set Kubernetes credentials
   import_role:
     name: kubernetes_master
     tasks_from: copy-kubeconfig
+  delegate_to: "{{ master_hostname }}"
 
 - name: Deploy rolebinding file to server for prometheus
   copy:
@@ -37,7 +38,8 @@
   set_fact:
     bearer_token: "{{ kube_token.stdout }}"
 
-- name: Remove Kubernetes credentials 
+- name: Remove Kubernetes credentials
   import_role:
     name: kubernetes_master
     tasks_from: remove-kubeconfig
+  delegate_to: "{{ master_hostname }}"

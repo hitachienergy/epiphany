@@ -145,12 +145,43 @@
       when: default_zone_name.stdout != specification.managed_zone_name
   when:
     - specification.apply_configuration
-    - inventory_hostname in groups['kubernetes_master'] or inventory_hostname in groups['kubernetes_node']
+    - (groups['kubernetes_master'] is defined and inventory_hostname in groups['kubernetes_master'])
+      or (groups['kubernetes_node'] is defined and inventory_hostname in groups['kubernetes_node'])
 
-- name: Stop and disable firewalld service
-  systemd:
-    name: firewalld
-    state: stopped
-    enabled: no
-    masked: yes # to make sure it is not started by accessing firewalld D-Bus interface or if other services require firewalld
-  when: not specification.firewall_service_enabled
+- name: Get service facts
+  service_facts:
+
+- name: Print firewalld.service state
+  debug:
+    var: ansible_facts.services['firewalld.service']
+  when:
+    - ansible_facts.services['firewalld.service'] is defined
+
+- name: Stop, disable and mask firewalld service
+  block:
+    - name: Stop and disable firewalld service
+      systemd:
+        name: firewalld
+        state: stopped
+        enabled: no
+
+    # Mask service to make sure it is not started by accessing firewalld D-Bus interface or if other services require firewalld
+    # This task is separated by purpose to mask service AFTER it was stopped
+    - name: Mask firewalld service
+      systemd:
+        name: firewalld
+        masked: yes
+  when:
+    - not specification.firewall_service_enabled
+    - ansible_facts.services['firewalld.service'] is defined
+
+- name: Get firewall state
+  shell: firewall-cmd --state 2>&1
+  register: firewall_state
+  changed_when: false
+  failed_when: firewall_state.rc not in [0, 127, 252] # 252 means not running
+
+- name: Print firewall state
+  debug:
+    var: firewall_state.stdout
+  when: firewall_state.rc in [0, 252]
