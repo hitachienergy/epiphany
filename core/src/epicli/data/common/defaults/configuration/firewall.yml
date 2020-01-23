@@ -2,6 +2,8 @@ kind: configuration/firewall
 title: OS level firewall
 name: default
 specification:
+  Debian:                         # On RHEL on Azure firewalld is already in VM image (pre-installed)
+    install_firewalld: false      # false to avoid random issue "No route to host" even when firewalld service is disabled
   firewall_service_enabled: false # for all inventory hosts
   apply_configuration: false      # if false only service state is managed
   managed_zone_name: epiphany
