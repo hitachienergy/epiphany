@@ -1,0 +1,18 @@
+FROM python:3.7
+
+ARG EPICLI_VERSION
+
+ENV DOCKER_CLI Yes
+
+COPY /dist/ /epicli
+WORKDIR /epicli
+
+RUN apt-get update \
+    && apt-get -y install gcc make musl-dev libffi-dev tar unzip
+
+RUN pip install epicli-${EPICLI_VERSION}-py3-none-any.whl
+
+RUN mkdir /shared/
+WORKDIR /shared
+
+ENTRYPOINT ["/bin/bash"]
