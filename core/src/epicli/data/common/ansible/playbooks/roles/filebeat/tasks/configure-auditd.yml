@@ -12,9 +12,13 @@
     - name: Restart auditd service
       shell: >-
         service auditd restart
-      args:  
-        warn: false  
-      when: modify_audit_epi_rules.changed  
+      args:
+        warn: false
+      register: result
+      retries: 3 # to avoid error "job for auditd.service failed because a timeout was exceeded"
+      delay: 1
+      until: result is succeeded
+      when: modify_audit_epi_rules.changed
 
     - name: Enable and start auditd service
       service:

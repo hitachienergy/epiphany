@@ -15,12 +15,22 @@
   when:
     - firewall_state.stdout == 'running'
 
+- name: Get name of default zone
+  command: firewall-cmd --get-default-zone
+  register: default_zone_name
+  changed_when: false
+  when: # 'no zone' on Ubuntu means the default zone (public) is used implicitly
+    - default_interface_zone.stderr is defined
+    - default_interface_zone.stderr == 'no zone'
+
 - name: Set zone of default network interface as fact
   set_fact:
-    current_zone: "{{ default_interface_zone.stdout }}"
+    current_zone: "{{ default_interface_zone.stdout if default_interface_zone.stdout | length > 0
+                                                    else default_zone_name.stdout }}"
   when:
     - default_interface_zone.stdout is defined
     - default_interface_zone.stdout | length > 0
+      or default_interface_zone.stderr == 'no zone'
 
 - name: Set common facts
   set_fact:

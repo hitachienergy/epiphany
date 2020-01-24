@@ -1,14 +1,31 @@
 ---
 - name: Configure Epiphany managed firewall zone
   block:
-    - name: Set ports to open
+    - name: Set roles with enabled firewall rules as fact
       set_fact:
-        ports_to_open: "{{ current_host_roles_with_rules | map('extract', specification.rules, 'ports') | list | flatten | unique }}"
-      vars:
-        current_host_roles_with_rules: "{{ (group_names + ['common']) | intersect(roles_with_enabled_rules) }}"
         # json_query does not support filter operations over dictionaries, so dict2items is used
         roles_with_enabled_rules: "{{ specification.rules | default({}, true) |
           dict2items(key_name='role', value_name='rules') | json_query('[?rules.enabled].role') }}"
+
+    - name: Set roles of current host with enabled firewall rules as fact
+      set_fact:
+        # 'common' is not present in Ansible inventory
+        current_host_roles_with_rules: >-
+          {{ (group_names + ['common']) | intersect(roles_with_enabled_rules) }}
+
+    - name: Adjust list of current host roles for K8s applications
+      set_fact:
+        # rules defined in 'applications' section have to be applied on hosts
+        # from 'kubernetes_master' group and 'kubernetes_node' as well
+        current_host_roles_with_rules: "{{ (current_host_roles_with_rules + ['applications']) | unique }}"
+      when:
+        - group_names | intersect(['kubernetes_master', 'kubernetes_node']) | count > 0
+        - "'applications' in roles_with_enabled_rules"
+
+    - name: Set ports to open
+      set_fact:
+        ports_to_open: >-
+          {{ current_host_roles_with_rules | map('extract', specification.rules, 'ports') | list | flatten | unique }}
 
     - name: Parse and sort ports numerically
       set_fact:
@@ -22,16 +39,17 @@
             {% endfor %}
           ]
 
-    - name: Copy managed zone configuration file ({{ config_file_path }})
+    - name: Copy managed zone configuration file ({{ zone_file_path }})
       template:
-        src: zone-config.xml.j2
-        dest: "{{ config_file_path }}"
+        src: epi-zone-config.xml.j2
+        dest: "{{ zone_file_path }}"
         owner: "{{ admin_user.name }}"
         group: "{{ admin_user.name }}"
         mode: 0644
       register: copy_zone_configuration
       vars:
-        config_file_path: /etc/firewalld/zones/{{ specification.managed_zone_name | lower }}.xml
+        zone_file_name: "{{ specification.managed_zone_name | lower }}.xml"
+        zone_file_path: /etc/firewalld/zones/{{ zone_file_name }}
   when:
     - specification.apply_configuration
 
@@ -111,10 +129,59 @@
          or not explicit_zone_binding_found
   when: specification.apply_configuration
 
-- name: Stop and disable firewalld service
-  systemd:
-    name: firewalld
-    state: stopped
-    enabled: no
-    masked: yes # to make sure it is not started by accessing firewalld D-Bus interface or if other services require firewalld
-  when: not specification.firewall_service_enabled
+# The following block was added because rabbitmq on K8s worked only if cni0 interface (flannel)
+# was bound to zone with enabled masquerading (TODO: analysis is needed).
+# However Keycloak and K8s dashboard worked fine without this.
+- name: Change the default zone to managed zone for K8s hosts
+  block:
+    - name: Get name of default zone
+      command: firewall-cmd --get-default-zone
+      register: default_zone_name
+      changed_when: false
+
+    - name: Change the default zone to managed zone for K8s hosts
+      command: firewall-cmd --set-default-zone={{ specification.managed_zone_name }}
+      register: change_default_zone
+      when: default_zone_name.stdout != specification.managed_zone_name
+  when:
+    - specification.apply_configuration
+    - (groups['kubernetes_master'] is defined and inventory_hostname in groups['kubernetes_master'])
+      or (groups['kubernetes_node'] is defined and inventory_hostname in groups['kubernetes_node'])
+
+- name: Get service facts
+  service_facts:
+
+- name: Print firewalld.service state
+  debug:
+    var: ansible_facts.services['firewalld.service']
+  when:
+    - ansible_facts.services['firewalld.service'] is defined
+
+- name: Stop, disable and mask firewalld service
+  block:
+    - name: Stop and disable firewalld service
+      systemd:
+        name: firewalld
+        state: stopped
+        enabled: no
+
+    # Mask service to make sure it is not started by accessing firewalld D-Bus interface or if other services require firewalld
+    # This task is separated by purpose to mask service AFTER it was stopped
+    - name: Mask firewalld service
+      systemd:
+        name: firewalld
+        masked: yes
+  when:
+    - not specification.firewall_service_enabled
+    - ansible_facts.services['firewalld.service'] is defined
+
+- name: Get firewall state
+  shell: firewall-cmd --state 2>&1
+  register: firewall_state
+  changed_when: false
+  failed_when: firewall_state.rc not in [0, 127, 252] # 252 means not running
+
+- name: Print firewall state
+  debug:
+    var: firewall_state.stdout
+  when: firewall_state.rc in [0, 252]

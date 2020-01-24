@@ -2,8 +2,10 @@ kind: configuration/firewall
 title: OS level firewall
 name: default
 specification:
-  firewall_service_enabled: true # for all inventory hosts
-  apply_configuration: true      # if false only service state is managed
+  Debian:                         # On RHEL on Azure firewalld is already in VM image (pre-installed)
+    install_firewalld: false      # false to avoid random issue "No route to host" even when firewalld service is disabled
+  firewall_service_enabled: false # for all inventory hosts
+  apply_configuration: false      # if false only service state is managed
   managed_zone_name: epiphany
   rules:
     applications:
@@ -69,17 +71,27 @@ specification:
       ports:
         - 6443/tcp      # API server
         - 2379-2380/tcp # etcd server client API
+        - 8472/udp      # flannel (vxlan backend)
         - 10250/tcp     # Kubelet API
         - 10251/tcp     # kube-scheduler
         - 10252/tcp     # kube-controller-manager
     kubernetes_node:
       enabled: true
       ports:
+        - 8472/udp  # flannel (vxlan backend)
         - 10250/tcp # Kubelet API
+    logging:
+      enabled: true
+      ports:
+        - 9200/tcp
     node_exporter:
       enabled: true
       ports:
         - 9100/tcp
+    opendistro_for_elasticsearch:
+      enabled: true
+      ports:
+        - 9200/tcp
     postgresql:
       enabled: true
       ports:

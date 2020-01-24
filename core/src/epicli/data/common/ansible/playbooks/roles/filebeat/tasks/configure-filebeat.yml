@@ -7,11 +7,11 @@
     src: filebeat.yml.j2
   register: modify_filebeat_yml
 
-- name: Enable auditd and system modules
+- name: Enable auditd module
   shell: >-
-    filebeat modules enable auditd system
+    filebeat modules enable auditd 
   register: enable_module
-  changed_when: "'Enabled auditd' in enable_module.stdout or 'Enabled system' in enable_module.stdout"
+  changed_when: "'Enabled auditd' in enable_module.stdout"
 
 - name: Set Filebeat to be started after Docker
   block:
@@ -55,7 +55,7 @@
       command: systemctl is-active filebeat
       changed_when: false
   when:
-    - output_elasticsearch_hosts is defined
+    - groups['logging'][0] is defined
 
 - name: Stop and disable filebeat service
   systemd:
@@ -63,4 +63,4 @@
     state: stopped
     enabled: false
   when:
-    - output_elasticsearch_hosts is undefined
+    - groups['logging'][0] is undefined

@@ -17,4 +17,7 @@
 {% for item in ports_to_open %}
   <port protocol="{{ item.protocol }}" port="{{ item.range }}"/>
 {% endfor %}
+{% if inventory_hostname in groups['kubernetes_master'] or inventory_hostname in groups['kubernetes_node'] %}
+  <masquerade/>
+{% endif %}
 </zone>
