@@ -17,14 +17,14 @@ Epiphany Platform delivers solution to build master - slave database nodes confi
 - Select operations on replica
 - There is no Pgpool-II software available for Ubuntu 18.04 - not officially supported
 
-## 5. Design proposal
+## 4. Design proposal
 
-### 5.1. Minimal configuration
+### 4.1. Minimal configuration
 
 Minimal solution to meet with client requirements is to install Pgbouncer on database master node to maintain connection pool. This will partially solve problem with exceeded connection limits. All applications need to be reconfigure to connect not directly with database, but with Pgbouncer service which will redirect connection to database master.
 This solution we can deliver fast and it's quite easy to implement.
 
-### 5.2. High Availability configuration
+### 4.2. High Availability configuration
 
 ![High Availablility Cluster](ha_cluster.PNG)
 
