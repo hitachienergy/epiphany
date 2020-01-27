@@ -2,13 +2,23 @@
 # Postgresql Debian family of specific tasks
 
 - name: Install postgresql packages
-  apt: 
+  apt:
     name:
       - postgresql-10
       - postgresql-contrib-10
       - python-psycopg2 # required for postresql ansible management
-    update_cache: yes 
+    update_cache: yes
     state: present
+
+- name: Install pgaudit packages
+  apt:
+    name:
+      - postgresql-10-pgaudit
+    update_cache: yes
+    state: present
+  when:
+    - specification.additional_config is defined
+    - specification.additional_config | selectattr('value','contains','pgaudit')
 
 - name: Changing pg_hba.conf
   replace:
@@ -23,6 +33,17 @@
     regexp: "#listen_addresses = 'localhost'"
     replace: "listen_addresses = '*'"
     backup: yes
+
+- name: Add additional configuration to postgresql.conf
+  lineinfile:
+    path: /etc/postgresql/10/main/postgresql.conf
+    insertafter: '^# Add settings for extensions here'
+    line: "{{ item.name }} = '{{ item.value }}'"
+  with_items:
+    - "{{ specification.additional_config }}"
+  when:
+    - specification.additional_config is defined
+    - specification.additional_config | list | length > 0
 
 - name: Restart postgresql service
   service:

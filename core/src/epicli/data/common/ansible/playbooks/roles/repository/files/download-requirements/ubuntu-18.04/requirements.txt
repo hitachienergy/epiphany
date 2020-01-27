@@ -122,6 +122,7 @@ libsmbclient
 
 # for postgres
 postgresql-client-10
+postgresql-10-pgaudit
 postgresql-common
 
 # for firewalld
