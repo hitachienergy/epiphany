@@ -106,7 +106,7 @@ specification:
       - image-registry
       - kubernetes-master
       - applications
-      - rabbitmql
+      - rabbitmq
       - postgresql
       - firewall
     kubernetes_master:
