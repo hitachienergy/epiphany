@@ -1,0 +1,80 @@
+---
+- name: Set OS specific paths
+  set_fact:
+    pg_config_dir: "{{ pg_config_dir[ansible_os_family] }}"
+  vars:
+    pg_config_dir:
+      RedHat: /var/opt/rh/rh-postgresql10/lib/pgsql/data
+      Debian: /etc/postgresql/10/main
+
+- name: Initialize database # RedHat specific block
+  block:
+    - name: Check initialization status
+      stat:
+        path: "{{ pg_config_dir }}/pg_hba.conf"
+      register: pg_hba_conf_stat
+
+    - name: Initialize database
+      command: /opt/rh/rh-postgresql10/root/usr/bin/postgresql-setup --initdb
+      when:
+        - not pg_hba_conf_stat.stat.exists
+  when:
+    - ansible_os_family == 'RedHat'
+
+- name: Enable postgresql service
+  systemd:
+    name: postgresql
+    enabled: yes
+
+- name: Change pg_hba.conf
+  replace:
+    path: "{{ pg_config_dir }}/pg_hba.conf"
+    regexp: '^host\s+all\s+all\s+127\.0\.0\.1/32\s+(?:ident|md5)$'
+    replace: 'host    all             all             0.0.0.0/0               md5'
+    backup: yes
+  register: change_pg_hba_conf
+
+- name: Configure pgAudit extension
+  include_tasks: extensions/configure-pgaudit.yml
+  when:
+    - specification.extensions.pgaudit.enabled is defined
+    - specification.extensions.pgaudit.enabled
+
+- name: Create Epiphany managed configuration sub-file
+  template:
+    src: postgresql-epiphany.conf.j2
+    dest: "{{ pg_config_dir }}/postgresql-epiphany.conf"
+    owner: postgres
+    group: postgres
+    mode: 0600
+  register: change_postgresql_epiphany_conf
+
+- name: Change postgresql.conf
+  lineinfile:
+    path: "{{ pg_config_dir }}/postgresql.conf"
+    line: "include = 'postgresql-epiphany.conf'	# Epiphany managed configuration that overrides above settings"
+    insertafter: '^#include ' # insert line after the last 'include' to override all settings
+    firstmatch: no
+    backup: yes
+  register: change_postgresql_conf
+
+- name: Restart postgresql service
+  systemd:
+    name: postgresql
+    state: restarted
+  when: change_pg_hba_conf
+     or change_postgresql_epiphany_conf
+     or change_postgresql_conf
+
+- name: Set up replication
+  include_tasks: replication-{{ ansible_os_family }}.yml
+  when:
+    - specification.replication.enable is defined
+    - specification.replication.enable
+
+- name: Include pgbouncer configuration tasks
+  include_tasks: additional-components/configure-pgbouncer.yml
+  when:
+    - specification.additional_components.pgbouncer.enabled is defined
+    - specification.additional_components.pgbouncer.enabled
+    - groups['postgresql'][0] == inventory_hostname

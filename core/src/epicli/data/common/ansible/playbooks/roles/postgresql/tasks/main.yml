@@ -1,4 +1,6 @@
 ---
-# Common main as the entry point
-- include_tasks: "{{ ansible_os_family }}.yml"
+- name: Include installation tasks ({{ ansible_os_family }})
+  include_tasks: install-packages/{{ ansible_os_family }}.yml
 
+- name: Include configuration tasks
+  include_tasks: configure-postgresql.yml

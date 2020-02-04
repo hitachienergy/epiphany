@@ -1,0 +1,63 @@
+# {{ ansible_managed }}
+# --------------------------------------------------
+# Epiphany managed PostgreSQL configuration sub-file
+# --------------------------------------------------
+
+# This file is included by postgresql.conf to override settings.
+# Only the last setting encountered for a parameter while the server is reading
+# configuration files is used.
+
+{% if specification.config_file.parameter_groups is defined
+      and specification.config_file.parameter_groups|length %}
+{%   for group in (specification.config_file.parameter_groups) %}
+#------------------------------------------------------------------------------
+# {{ group.name | upper }}
+#------------------------------------------------------------------------------
+{%     for subgroup in group.subgroups %}
+
+# - {{ subgroup.name }} -
+
+{%       for parameter in subgroup.parameters %}
+{%         if parameter.comment is defined and parameter.comment|length %}
+{{ parameter.name }} = {{ parameter.value }}	# {{ parameter.comment }}
+{%         else %}
+{{ parameter.name }} = {{ parameter.value }}
+{%         endif %}
+{%       endfor %}
+{%     endfor %}
+{%     if not loop.last %}
+
+{%     endif %}
+{%   endfor %}
+{% endif %}
+
+{% if specification.extensions is defined and (specification.extensions|length)
+      and (specification.extensions | dict2items(key_name='name', value_name='config')
+                                    | map(attribute='config') | selectattr('enabled') | list | length) %}
+#------------------------------------------------------------------------------
+# EXTENSIONS
+#------------------------------------------------------------------------------
+# Note: Settings for extensions have higher priority by purpose and override
+# previous values.
+{%   for extension, config in specification.extensions.items() %}
+{%     if config.enabled is sameas true %}
+
+# - Extension: {{ extension }} -
+
+{%       for parameter, value in config.config_file_parameters.items() %}
+{%         if value != 'SET_BY_AUTOMATION' %}
+{{ parameter }} = {{ value }}
+{%         else %}
+{# pgaudit must be loaded in shared_preload_libraries #}
+{%           if extension == 'pgaudit' and parameter == 'shared_preload_libraries' %}
+{%             if runtime_shared_preload_libraries is defined and (runtime_shared_preload_libraries|length) %}
+shared_preload_libraries = '{{ (runtime_shared_preload_libraries.split(',') + ['pgaudit']) | unique | join(',') }}'
+{%             else %}
+shared_preload_libraries = 'pgaudit'
+{%             endif %}
+{%           endif %}
+{%         endif %}
+{%       endfor %}
+{%     endif %}
+{%   endfor %}
+{% endif %}
