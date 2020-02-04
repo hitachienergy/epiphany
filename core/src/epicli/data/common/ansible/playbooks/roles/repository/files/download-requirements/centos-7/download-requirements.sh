@@ -41,6 +41,13 @@ add_repo_as_file() {
 	fi
 }
 
+# params: <script_url>
+add_repo_script() {
+	local script_url="$1"
+
+	curl $script_url | bash
+}
+
 # params: <backup_file_path> <path_1_to_backup1> ... [path_N_to_backup]
 backup_files() {
 	local backup_file_path="$1"
@@ -531,6 +538,7 @@ add_repo_as_file 'grafana' "$GRAFANA_REPO_CONF"
 add_repo_as_file 'kubernetes' "$KUBERNETES_REPO_CONF"
 add_repo_as_file 'rabbitmq_erlang' "$RABBITMQ_ERLANG_REPO_CONF"
 add_repo_as_file 'rabbitmq_rabbitmq-server' "$RABBITMQ_SERVER_REPO_CONF"
+add_repo_script 'https://dl.2ndquadrant.com/default/release/get/10/rpm'
 
 # -> Software Collections (SCL) https://wiki.centos.org/AdditionalResources/Repositories/SCL
 if ! is_package_installed 'centos-release-scl'; then

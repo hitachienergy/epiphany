@@ -18,6 +18,7 @@ yum-utils
 [packages]
 audit # for docker-ce
 bash-completion
+c-ares # for pgbouncer
 ca-certificates
 cifs-utils
 conntrack-tools # for kubelet
@@ -70,6 +71,7 @@ perl-libs # for vim
 perl-Pod-Perldoc # for vim
 perl-Pod-Simple # for vim
 perl-Pod-Usage # for vim
+pgbouncer
 policycoreutils-python # for container-selinux
 python-firewall # for firewalld
 python-kitchen # for yum-utils

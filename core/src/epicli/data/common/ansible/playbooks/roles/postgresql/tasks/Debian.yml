@@ -55,3 +55,52 @@
   include_tasks: "replication-Debian.yml"
   when:
     - specification.replication is defined and specification.replication.enable is defined and specification.replication.enable
+
+- name: Install pgbouncer package
+  apt:
+    name:
+      - pgbouncer
+    update_cache: yes
+    state: present
+  when:
+    - specification.additional_components is defined
+    - specification.additional_components.pgbouncer.enable
+
+- name: Changing pgbouncer configuration
+  lineinfile:
+    path: /etc/pgbouncer/pgbouncer.ini
+    insertafter: '\[databases\]'
+    line: postgres = host=127.0.0.1 port=5432 dbname=postgres
+    backup: yes
+  when:
+    - specification.additional_components is defined
+    - specification.additional_components.pgbouncer.enable
+
+- name: Changing pool mode
+  lineinfile:
+    path: /etc/pgbouncer/pgbouncer.ini
+    regexp: '^pool_mode ='
+    replace: "pool_mode = transaction"
+  when:
+    - specification.additional_components is defined
+    - specification.additional_components.pgbouncer.enable
+
+
+- name: Changing pgbouncer users configuration
+  lineinfile:
+    path: /etc/pgbouncer/userlist.txt
+    line: '"postgres" "*"'
+    create: yes
+    backup: yes
+  when:
+    - specification.additional_components is defined
+    - specification.additional_components.pgbouncer.enable
+
+- name: Restart pgbouncer service
+  service:
+    name: pgbouncer
+    state: restarted
+    enabled: yes
+  when:
+    - specification.additional_components is defined
+    - specification.additional_components.pgbouncer.enable

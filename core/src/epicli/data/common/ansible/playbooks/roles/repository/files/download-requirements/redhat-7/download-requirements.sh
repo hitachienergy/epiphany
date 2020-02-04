@@ -9,6 +9,13 @@ set -euo pipefail
 
 # === Functions (in alphabetical order) ===
 
+# params: <script_url>
+add_repo_script() {
+	local script_url="$1"
+
+	curl $script_url | bash
+}
+
 # params: <repo_id> <repo_url>
 add_repo() {
 	local repo_id="$1"
@@ -561,6 +568,7 @@ add_repo_as_file 'grafana' "$GRAFANA_REPO_CONF"
 add_repo_as_file 'kubernetes' "$KUBERNETES_REPO_CONF"
 add_repo_as_file 'rabbitmq_erlang' "$RABBITMQ_ERLANG_REPO_CONF"
 add_repo_as_file 'rabbitmq_rabbitmq-server' "$RABBITMQ_SERVER_REPO_CONF"
+add_repo_script 'https://dl.2ndquadrant.com/default/release/get/10/rpm'
 
 # some packages are from EPEL repo
 if ! is_package_installed 'epel-release'; then

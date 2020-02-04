@@ -5,3 +5,6 @@ specification:
   version: '10'
   replication:
     enable: no
+  additional_components:
+    pgbouncer:
+      enable: no
