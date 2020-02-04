@@ -65,6 +65,7 @@
   when:
     - specification.additional_components is defined
     - specification.additional_components.pgbouncer.enable
+    - groups['postgresql'][0] == inventory_hostname
 
 - name: Changing pgbouncer configuration
   lineinfile:
@@ -75,6 +76,7 @@
   when:
     - specification.additional_components is defined
     - specification.additional_components.pgbouncer.enable
+    - groups['postgresql'][0] == inventory_hostname
 
 - name: Changing pool mode
   lineinfile:
@@ -84,6 +86,7 @@
   when:
     - specification.additional_components is defined
     - specification.additional_components.pgbouncer.enable
+    - groups['postgresql'][0] == inventory_hostname
 
 
 - name: Changing pgbouncer users configuration
@@ -95,6 +98,7 @@
   when:
     - specification.additional_components is defined
     - specification.additional_components.pgbouncer.enable
+    - groups['postgresql'][0] == inventory_hostname
 
 - name: Restart pgbouncer service
   service:
@@ -104,3 +108,4 @@
   when:
     - specification.additional_components is defined
     - specification.additional_components.pgbouncer.enable
+    - groups['postgresql'][0] == inventory_hostname
