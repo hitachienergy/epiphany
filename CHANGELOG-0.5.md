@@ -1,5 +1,11 @@
 # Changelog 0.5
 
+## [0.5.2] 2020-02-XX
+
+### Added
+
+- [#854](https://github.com/epiphany-platform/epiphany/issues/854) - PGBouncer implementation
+
 ## [0.5.1] 2020-01-23
 
 ### Hotfixed
