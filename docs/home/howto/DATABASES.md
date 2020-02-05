@@ -31,18 +31,17 @@ specification:
 If enable is set to yes in replication then Epiphany will automatically create cluster of master and slave server with replication user with name and password
 specified in data.yaml.
 
-## How to setup Postgresql connection pooling
+## How to set up Postgresql connection pooling
 
-Postgresql connection pooling in Epiphany is served by PGBouncer application. This might be added as a feature if needed. Simplest configuration run PGBouncer on Postgresql master node. This needs to be enabled in configuration yaml file:
+Postgresql connection pooling in Epiphany is served by PGBouncer application. This might be added as a feature if needed. Simplest configuration runs PGBouncer on Postgresql master node. This needs to be enabled in configuration yaml file:
 
 ```yaml
 specification:
-  version: '10'
   additional_components:
     pgbouncer:
-      enable: yes
+      enabled: yes
 ```
-PGBouncer listening on standard port 6432. Basic configuration is just template, with very limited access to database. This is because security reasons. [Configuration needs to be tailored according component documentation and stick to security rules and best practices](http://www.pgbouncer.org/).
+PGBouncer listens on standard port 6432. Basic configuration is just template, with very limited access to database. This is because security reasons. [Configuration needs to be tailored according component documentation and stick to security rules and best practices](http://www.pgbouncer.org/).
 
 ## How to start working with OpenDistro for Elasticsearch
 

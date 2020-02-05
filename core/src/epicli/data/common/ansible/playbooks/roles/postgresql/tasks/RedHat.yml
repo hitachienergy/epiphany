@@ -53,54 +53,41 @@
   when:
     - specification.replication is defined and specification.replication.enable is defined and specification.replication.enable
 
-- name: Install pgbouncer
-  yum:
-    name: pgbouncer
-    update_cache: yes
-    state: present
-  when:
-    - specification.additional_components is defined
-    - specification.additional_components.pgbouncer.enable
-    - groups['postgresql'][0] == inventory_hostname
+- name: Include pgbouncer tasks
+  block:
+  - name: Install pgbouncer
+    yum:
+      name: 
+        - pgbouncer
+      update_cache: yes
+      state: present
 
-- name: Changing pgbouncer configuration
-  lineinfile:
-    path: /etc/pgbouncer/pgbouncer.ini
-    insertafter: '\[databases\]'
-    line: postgres = host=127.0.0.1 port=5432 dbname=postgres
-    backup: yes
-  when:
-    - specification.additional_components is defined
-    - specification.additional_components.pgbouncer.enable
-    - groups['postgresql'][0] == inventory_hostname
+  - name: Changing pgbouncer configuration
+    lineinfile:
+      path: /etc/pgbouncer/pgbouncer.ini
+      insertafter: '\[databases\]'
+      line: postgres = host=127.0.0.1 port=5432 dbname=postgres
+      backup: yes
 
-- name: Changing pool mode
-  lineinfile:
-    path: /etc/pgbouncer/pgbouncer.ini
-    regexp: '^pool_mode ='
-    line: "pool_mode = transaction"
-  when:
-    - specification.additional_components is defined
-    - specification.additional_components.pgbouncer.enable
-    - groups['postgresql'][0] == inventory_hostname
+  - name: Changing pool mode
+    lineinfile:
+      path: /etc/pgbouncer/pgbouncer.ini
+      regexp: '^pool_mode ='
+      line: "pool_mode = transaction"
 
-- name: Changing pgbouncer users configuration
-  lineinfile:
-    path: /etc/pgbouncer/userlist.txt
-    line: '"postgres" "*"'
-    create: yes
-    backup: yes
-  when:
-    - specification.additional_components is defined
-    - specification.additional_components.pgbouncer.enable
-    - groups['postgresql'][0] == inventory_hostname
+  - name: Changing pgbouncer users configuration
+    lineinfile:
+      path: /etc/pgbouncer/userlist.txt
+      line: '"postgres" "*"'
+      create: yes
+      backup: yes
 
-- name: Restart pgbouncer service
-  service:
-    name: pgbouncer
-    state: restarted
-    enabled: yes
+  - name: Restart pgbouncer service
+    service:
+      name: pgbouncer
+      state: restarted
+      enabled: yes
   when:
-    - specification.additional_components is defined
-    - specification.additional_components.pgbouncer.enable
+    - specification.additional_components.pgbouncer is defined
+    - specification.additional_components.pgbouncer.enabled
     - groups['postgresql'][0] == inventory_hostname

@@ -1,5 +1,11 @@
 # Changelog 0.5
 
+## [0.5.2] 2020-02-XX
+
+### Added
+
+- [#854](https://github.com/epiphany-platform/epiphany/issues/854) - PGBouncer implementation
+
 ## [0.5.1] 2020-01-23
 
 ### Hotfixed
@@ -15,7 +21,6 @@
 
 ### Added
 
-- [#854](https://github.com/epiphany-platform/epiphany/issues/854) - PGBouncer implementation
 - [#820](https://github.com/epiphany-platform/epiphany/pull/820) - Firewall: OS level firewall setup (firewalld)
 - [#381](https://github.com/epiphany-platform/epiphany/issues/381) - Add AWS EC2 Root Volume encryption
 - [#782](https://github.com/epiphany-platform/epiphany/issues/781) - All disks encryption documentation - AWS

@@ -1,5 +1,5 @@
 ---
-#Common Debian family specific tasks
+# Common Debian family specific tasks
 
 - name: Install selinux packages as prerequisite for SELinux module
   apt:

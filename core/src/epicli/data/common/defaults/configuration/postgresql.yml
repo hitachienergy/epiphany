@@ -7,4 +7,4 @@ specification:
     enable: no
   additional_components:
     pgbouncer:
-      enable: no
+      enabled: no
