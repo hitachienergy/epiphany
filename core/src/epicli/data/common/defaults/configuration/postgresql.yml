@@ -13,20 +13,28 @@ specification:
               - name: listen_addresses
                 value: "'*'"
                 comment: listen on all addresses
+      - name: RESOURCE USAGE (except WAL)
+        subgroups:
+          - name: Kernel Resource Usage
+            parameters:
+              - name: shared_preload_libraries
+                value: SET_BY_AUTOMATION
+                comment: set by automation
       - name: ERROR REPORTING AND LOGGING
         subgroups:
           - name: Where to Log
             parameters:
               - name: log_filename
-                value: "'postgresql-%Y-%m-%d_%H%M%S.log'"
+                value: "'postgresql-%Y-%m-%d_%H%M.log'"
   additional_components:
     pgbouncer:
       enabled: no
   extensions:
     pgaudit:
       enabled: false
+      shared_preload_libraries:
+        - pgaudit
       config_file_parameters:
-        shared_preload_libraries: SET_BY_AUTOMATION
         ## standard
         log_connections: 'off'
         log_disconnections: 'off'

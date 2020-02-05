@@ -1,34 +1,4 @@
 ---
-# Note: This file sets runtime_shared_preload_libraries fact that is used in postgresql-epiphany.conf.j2 template
-
-# pgAudit extension must be loaded in shared_preload_libraries
-# https://www.postgresql.org/docs/10/runtime-config-client.html#GUC-SHARED-PRELOAD-LIBRARIES
-
-# Doc: https://github.com/pgaudit/pgaudit/blob/master/README.md#settings
-
-- name: Get shared_preload_libraries when postgresql service is running
-  block:
-    - name: Check if postgresql service is running
-      command: systemctl status postgresql
-      register: postgresql_status
-      changed_when: false
-      failed_when: postgresql_status.rc not in [0, 3, 4]
-
-    - name: Get PostgreSQL settings
-      become: yes
-      become_user: postgres
-      postgresql_info:
-        filter: settings
-      register: postgresql_info
-      when:
-        - postgresql_status.rc == 0 # running
-
-    - name: Set shared_preload_libraries as fact
-      set_fact:
-        runtime_shared_preload_libraries: "{{ postgresql_info.settings.shared_preload_libraries.setting }}"
-      when:
-        - postgresql_info.settings is defined
-
 # For RHEL we use PostgreSQL from Software Collections, which uses different directories than packages installed from PG repository.
 # Extension's control file must be placed in the installation's SHAREDIR/extension directory, so we create symlinks.
 # Doc: https://www.postgresql.org/docs/10/extend-extensions.html#id-1.8.3.18.12

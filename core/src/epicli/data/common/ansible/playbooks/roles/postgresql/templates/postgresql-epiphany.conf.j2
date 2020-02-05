@@ -7,8 +7,7 @@
 # Only the last setting encountered for a parameter while the server is reading
 # configuration files is used.
 
-{% if specification.config_file.parameter_groups is defined
-      and specification.config_file.parameter_groups|length %}
+{% if specification.config_file.parameter_groups is defined and specification.config_file.parameter_groups %}
 {%   for group in (specification.config_file.parameter_groups) %}
 #------------------------------------------------------------------------------
 # {{ group.name | upper }}
@@ -18,10 +17,34 @@
 # - {{ subgroup.name }} -
 
 {%       for parameter in subgroup.parameters %}
-{%         if parameter.comment is defined and parameter.comment|length %}
-{{ parameter.name }} = {{ parameter.value }}	# {{ parameter.comment }}
+{#         use of 'parameter_value' is workaround since we don't have Jinja's {% do %} statement enabled (required to update dictionaries) #}
+{%         set parameter_value = parameter.value %}
+{%         if parameter.name == 'shared_preload_libraries' and parameter.value == 'SET_BY_AUTOMATION' %}
+{%           set shared_preload_libraries = [] %}
+{#           shared_preload_libraries from runtime #}
+{%           if runtime_shared_preload_libraries is defined and runtime_shared_preload_libraries %}
+{%             set shared_preload_libraries = shared_preload_libraries + runtime_shared_preload_libraries.split(',') %}
+{%           endif %}
+{#           shared_preload_libraries for enabled extensions #}
+{%           if specification.extensions is defined and specification.extensions %}
+{%             set libraries = specification.extensions | dict2items(key_name='name', value_name='config')
+                                                        | map(attribute='config')
+                                                        | selectattr('enabled')
+                                                        | selectattr('shared_preload_libraries', 'defined')
+                                                        | map(attribute='shared_preload_libraries')
+                                                        | list | flatten %}
+{%             set shared_preload_libraries = shared_preload_libraries + libraries %}
+{%           endif %}
+{%           if shared_preload_libraries %}
+{%             set parameter_value = "'" + shared_preload_libraries | unique | join(',') + "'" %}
+{%           else %}
+{%             set parameter_value = "''" %}
+{%           endif %}
+{%         endif %}
+{%         if parameter.comment is defined and parameter.comment %}
+{{ parameter.name }} = {{ parameter_value }}	# {{ parameter.comment }}
 {%         else %}
-{{ parameter.name }} = {{ parameter.value }}
+{{ parameter.name }} = {{ parameter_value }}
 {%         endif %}
 {%       endfor %}
 {%     endfor %}
@@ -31,7 +54,7 @@
 {%   endfor %}
 {% endif %}
 
-{% if specification.extensions is defined and (specification.extensions|length)
+{% if specification.extensions is defined and specification.extensions
       and (specification.extensions | dict2items(key_name='name', value_name='config')
                                     | map(attribute='config') | selectattr('enabled') | list | length) %}
 #------------------------------------------------------------------------------
@@ -45,18 +68,7 @@
 # - Extension: {{ extension }} -
 
 {%       for parameter, value in config.config_file_parameters.items() %}
-{%         if value != 'SET_BY_AUTOMATION' %}
 {{ parameter }} = {{ value }}
-{%         else %}
-{# pgaudit must be loaded in shared_preload_libraries #}
-{%           if extension == 'pgaudit' and parameter == 'shared_preload_libraries' %}
-{%             if runtime_shared_preload_libraries is defined and (runtime_shared_preload_libraries|length) %}
-shared_preload_libraries = '{{ (runtime_shared_preload_libraries.split(',') + ['pgaudit']) | unique | join(',') }}'
-{%             else %}
-shared_preload_libraries = 'pgaudit'
-{%             endif %}
-{%           endif %}
-{%         endif %}
 {%       endfor %}
 {%     endif %}
 {%   endfor %}

@@ -7,6 +7,13 @@
       RedHat: /var/opt/rh/rh-postgresql10/lib/pgsql/data
       Debian: /etc/postgresql/10/main
 
+- name: Configure pgAudit extension
+  include_tasks: extensions/configure-pgaudit.yml
+  when:
+    - specification.extensions.pgaudit.enabled is defined
+    - specification.extensions.pgaudit.enabled
+    - ansible_os_family == 'RedHat'
+
 - name: Initialize database # RedHat specific block
   block:
     - name: Check initialization status
@@ -34,11 +41,29 @@
     backup: yes
   register: change_pg_hba_conf
 
-- name: Configure pgAudit extension
-  include_tasks: extensions/configure-pgaudit.yml
-  when:
-    - specification.extensions.pgaudit.enabled is defined
-    - specification.extensions.pgaudit.enabled
+# Set runtime_shared_preload_libraries fact that is used in postgresql-epiphany.conf.j2
+- name: Get shared_preload_libraries when postgresql service is running
+  block:
+    - name: Check if postgresql service is running
+      command: systemctl status postgresql
+      register: postgresql_status
+      changed_when: false
+      failed_when: postgresql_status.rc not in [0, 3, 4]
+
+    - name: Get PostgreSQL settings
+      become: yes
+      become_user: postgres
+      postgresql_info:
+        filter: settings
+      register: postgresql_info
+      when:
+        - postgresql_status.rc == 0 # running
+
+    - name: Set runtime_shared_preload_libraries fact
+      set_fact:
+        runtime_shared_preload_libraries: "{{ postgresql_info.settings.shared_preload_libraries.setting }}"
+      when:
+        - postgresql_info.settings is defined
 
 - name: Create Epiphany managed configuration sub-file
   template:
