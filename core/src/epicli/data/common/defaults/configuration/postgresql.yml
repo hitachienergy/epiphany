@@ -29,26 +29,28 @@ specification:
         subgroups:
           - name: Where to Log
             parameters:
-              - name: log_filename
-                value: "'postgresql-%Y-%m-%d_%H%M.log'"
+              - name: log_directory
+                value: "'/var/log/postgresql'"
+                comment: to have standard location for Filebeat
   additional_components:
     pgbouncer:
       enabled: no
   extensions:
     pgaudit:
-      enabled: false
+      enabled: no
       shared_preload_libraries:
         - pgaudit
       config_file_parameters:
-        ## standard
+        ## postgresql standard
         log_connections: 'off'
         log_disconnections: 'off'
-        log_line_prefix: "'<%m:%r:%u@%d:[%p]:> '"
-        log_statement: none
-        ## pgaudit specific
-        pgaudit.log: "'read, write, function, role, ddl, misc_set'" # same as: 'all, -misc'
-        # the following first 3 parameters are set to reduce overhead of logging
-        pgaudit.log_catalog: 'off'
-        pgaudit.log_relation: 'off' # same as default but explicitly
-        pgaudit.log_statement_once: 'on'
-        pgaudit.log_parameter: 'off' # same as default but explicitly
+        log_statement: 'none'
+        log_line_prefix: "'%m [%p] %q%u@%d,host=%h '"
+        ## pgaudit specific, see https://github.com/pgaudit/pgaudit/blob/REL_10_STABLE/README.md#settings
+        pgaudit.log: "'write, function, role, ddl' # 'misc_set' is not supported for PG 10"
+        pgaudit.log_catalog: 'off # to reduce overhead of logging' # default is 'on'
+        # the following first 2 parameters are set to values that make it easier to access audit log per table
+        # change their values to the opposite if you need to reduce overhead of logging
+        pgaudit.log_relation: 'on # separate log entry for each relation' # default is 'off'
+        pgaudit.log_statement_once: 'off' # same as default
+        pgaudit.log_parameter: 'on' # default is 'off'

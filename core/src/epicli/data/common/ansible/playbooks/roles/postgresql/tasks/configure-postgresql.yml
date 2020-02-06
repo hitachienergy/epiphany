@@ -7,6 +7,22 @@
       RedHat: /var/opt/rh/rh-postgresql10/lib/pgsql/data
       Debian: /etc/postgresql/10/main
 
+- name: Check if /var/log/postgresql directory exists
+  stat:
+    path: /var/log/postgresql
+  register: var_log_postgresql
+
+- name: Create directory /var/log/postgresql
+  # the same permissions as for PG installed on RHEL from Software Collections (on Ubuntu are different)
+  file:
+    path: /var/log/postgresql
+    state: directory
+    owner: postgres
+    group: postgres
+    mode: 0700
+  when:
+    - not var_log_postgresql.stat.exists
+
 - name: Configure pgAudit extension
   include_tasks: extensions/configure-pgaudit.yml
   when:
