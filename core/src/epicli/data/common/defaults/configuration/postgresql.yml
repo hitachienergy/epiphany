@@ -13,6 +13,11 @@ specification:
               - name: listen_addresses
                 value: "'*'"
                 comment: listen on all addresses
+          - name: Security and Authentication
+            parameters:
+              - name: ssl
+                value: 'off'
+                comment: to have the default value also on Ubuntu
       - name: RESOURCE USAGE (except WAL)
         subgroups:
           - name: Kernel Resource Usage
