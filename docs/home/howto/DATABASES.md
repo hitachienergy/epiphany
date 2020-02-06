@@ -21,15 +21,14 @@ version: 0.4.1
 provider: aws
 specification:
   replication:
-    enable: yes
+    enabled: yes
     user: your-postgresql-replication-user
     password: your-postgresql-replication-password
     max_wal_senders: 10 # (optional) - default value 5
     wal_keep_segments: 34 # (optional) - default value 32
-  version: '10'
 ```
-If enable is set to yes in replication then Epiphany will automatically create cluster of master and slave server with replication user with name and password
-specified in data.yaml.
+If `enabled` is set to `yes` in `replication`, then Epiphany will automatically create cluster of master and slave server
+with replication user with name and password specified in data.yaml.
 
 ## How to set up Postgresql connection pooling
 

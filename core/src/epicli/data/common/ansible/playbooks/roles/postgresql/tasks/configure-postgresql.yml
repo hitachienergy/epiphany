@@ -93,9 +93,9 @@
 
 - name: Set up replication
   include_tasks: replication-{{ ansible_os_family }}.yml
-  when:
-    - specification.replication.enable is defined
-    - specification.replication.enable
+  # 'specification.replication.enable' is for backward compatibility
+  when: (specification.replication.enabled is defined and specification.replication.enabled)
+     or (specification.replication.enable is defined and specification.replication.enable)
 
 - name: Include pgbouncer configuration tasks
   include_tasks: additional-components/configure-pgbouncer.yml

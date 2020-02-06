@@ -3,7 +3,7 @@ title: PostgreSQL
 name: default
 specification:
   replication:
-    enable: no
+    enabled: no
   config_file:
     parameter_groups:
       - name: CONNECTIONS AND AUTHENTICATION
