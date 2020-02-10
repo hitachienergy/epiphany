@@ -1,0 +1,8 @@
+---
+# defaults file for nfs
+
+host_ip: "{{ ansible_default_ipv4.address | default(ansible_all_ipv4_addresses[0]) }}"
+current_group_name: "storage"
+nfs_paths:
+  - "/srv/nfs4/exports"
+nfs_exports: "*(rw,sync,no_subtree_check,no_root_squash)"

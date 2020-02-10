@@ -1,0 +1,5 @@
+---
+# ...
+
+- name: Install NPM for ({{ ansible_os_family }})
+  include_tasks: "{{ ansible_os_family }}.yml"

@@ -1,0 +1,6 @@
+---
+
+- name: Ensure NFS packages are installed (Debian).
+  apt: "name={{ item }} state=installed"
+  with_items:
+    - "{{ nfs_packages }}"

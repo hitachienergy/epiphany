@@ -1,0 +1,31 @@
+---
+#
+
+- name: Create exports file
+  template:
+    src: etc-exports.j2
+    dest: /etc/exports
+    owner: root
+    group: root
+    mode: 0644
+
+- name: Create new NFS directories
+  file: path="{{ item }}" state=directory
+  with_items:
+    - "{{ nfs_paths }}"
+
+- name: Mount exports directory
+  mount:
+    path: /exports
+    src: /srv/nfs4/exports
+    opts: bind
+    state: mounted
+    fstype: none
+
+- name: Ensure rpcbind and NFS are running
+  service: "name={{ item }} state=started enabled=yes"
+  with_items:
+    - "{{ nfs_service }}"
+
+- name: Export all entries from the exports file
+  command: "exportfs -a"

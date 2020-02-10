@@ -64,6 +64,7 @@ telnet
 tmux
 unzip
 vim
+nfs-kernel-server
 
 # for openjdk-8-jre-headless
 libnss3
