@@ -4,7 +4,9 @@
 
 ### Added
 
-- [#854](https://github.com/epiphany-platform/epiphany/issues/854) - PGBouncer implementation
+- PostgreSQL: PGBouncer implementation [#854](https://github.com/epiphany-platform/epiphany/issues/854)
+- PostgreSQL: pgAudit extension for audit logging [#905](https://github.com/epiphany-platform/epiphany/pull/905)
+- PostgreSQL: Send logs to Elasticsearch
 
 ## [0.5.1] 2020-01-23
 

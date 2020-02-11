@@ -70,7 +70,8 @@ perl-libs # for vim
 perl-Pod-Perldoc # for vim
 perl-Pod-Simple # for vim
 perl-Pod-Usage # for vim
-pgbouncer 
+pgaudit12_10
+pgbouncer
 policycoreutils-python # for container-selinux
 python-firewall # for firewalld
 python-kitchen # for yum-utils
