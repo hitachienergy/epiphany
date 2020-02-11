@@ -1,51 +1,111 @@
 ## How to configure PostgreSQL
 
-To configure PostgreSQL login to server using ssh and switch to postgres user with command:
+To configure PostgreSQL, login to server using ssh and switch to `postgres` user with command:
 
 ```bash
 sudo -u postgres -i
 ```
 
-And then configure database server using psql according to your needs and
-PostgreSQL documentation, to which link you can find at [here](https://www.postgresql.org/docs/)
+Then configure database server using psql according to your needs and
+[PostgreSQL documentation](https://www.postgresql.org/docs/).
 
 ## How to configure PostgreSQL replication
 
-In order to configure PostgreSQL replication add to your data.yaml a block similar to the one below to core section:
+In order to configure PostgreSQL replication, add to your data.yaml a block similar to the one below to core section:
 
 ```yaml
 kind: configuration/postgresql
 name: default
-title: Postgresql
+title: PostgreSQL
 version: 0.4.1
 provider: aws
 specification:
   replication:
-    enable: yes
+    enabled: yes
     user: your-postgresql-replication-user
     password: your-postgresql-replication-password
     max_wal_senders: 10 # (optional) - default value 5
     wal_keep_segments: 34 # (optional) - default value 32
-  version: '10'
 ```
-If enable is set to yes in replication then Epiphany will automatically create cluster of master and slave server with replication user with name and password
-specified in data.yaml.
+If `enabled` is set to `yes` in `replication`, then Epiphany will automatically create cluster of master and slave server
+with replication user with name and password specified in data.yaml.
 
-## How to set up Postgresql connection pooling
+## How to set up PostgreSQL connection pooling
 
-Postgresql connection pooling in Epiphany is served by PGBouncer application. This might be added as a feature if needed. Simplest configuration runs PGBouncer on Postgresql master node. This needs to be enabled in configuration yaml file:
+PostgreSQL connection pooling in Epiphany is served by PGBouncer application. This might be added as a feature if needed.
+Simplest configuration runs PGBouncer on PostgreSQL master node. This needs to be enabled in configuration yaml file:
 
 ```yaml
+kind: configuration/postgresql
+...
 specification:
   additional_components:
     pgbouncer:
       enabled: yes
+  ...
 ```
 PGBouncer listens on standard port 6432. Basic configuration is just template, with very limited access to database. This is because security reasons. [Configuration needs to be tailored according component documentation and stick to security rules and best practices](http://www.pgbouncer.org/).
 
+## How to set up PostgreSQL audit logging
+
+Audit logging of database activities is available through the PostgreSQL Audit Extension: [pgAudit](https://github.com/pgaudit/pgaudit/blob/REL_10_STABLE/README.md).
+It provides session and/or object audit logging via the standard PostgreSQL log.
+
+pgAudit may generate a large volume of logging, which has an impact on performance and log storage.
+For this reason, pgAudit is not enabled by default.
+
+To install and configure pgAudit, add to your configuration yaml file a doc similar to the following:
+
+```yaml
+kind: configuration/postgresql
+title: PostgreSQL
+name: default
+provider: aws
+version: 0.5.2
+specification:
+  extensions:
+    pgaudit:
+      enabled: yes
+      config_file_parameters:
+        ## postgresql standard
+        log_connections: 'off'
+        log_disconnections: 'off'
+        log_statement: 'none'
+        log_line_prefix: "'%m [%p] %q%u@%d,host=%h '"
+        ## pgaudit specific, see https://github.com/pgaudit/pgaudit/blob/REL_10_STABLE/README.md#settings
+        pgaudit.log: "'write, function, role, ddl' # 'misc_set' is not supported for PG 10"
+        pgaudit.log_catalog: 'off # to reduce overhead of logging'
+        # the following first 2 parameters are set to values that make it easier to access audit log per table
+        # change their values to the opposite if you need to reduce overhead of logging
+        pgaudit.log_relation: 'on # separate log entry for each relation'
+        pgaudit.log_statement_once: 'off'
+        pgaudit.log_parameter: 'on'
+```
+
+If `specification.extensions.pgaudit.enabled` is set to `yes`, Epiphany will install pgAudit package
+and add pgaudit extension to be loaded in [shared_preload_libraries](http://www.postgresql.org/docs/10/static/runtime-config-client.html#GUC-SHARED-PRELOAD-LIBRARIES).
+Settings defined in `config_file_parameters` section are populated to Epiphany managed PostgreSQL configuration
+file. Using this section, you can also set any additional parameter if needed (e.g. `pgaudit.role`) but keep in mind
+that these settings are global.
+
+To configure pgAudit according to your needs, see [pgAudit documentation](https://github.com/pgaudit/pgaudit/blob/REL_10_STABLE/README.md#settings).
+
+Once Epiphany installation is complete, there is one manual action at database level (per each database). Connect to your database
+using a client (like psql) and load pgaudit extension into current database by running command:
+
+```sql
+CREATE EXTENSION pgaudit;
+```
+
+To remove the extension from database, run:
+
+```sql
+DROP EXTENSION IF EXISTS pgaudit;
+```
+
 ## How to start working with OpenDistro for Elasticsearch
 
-OpenDistro for Elasticsearch is [an Apache 2.0-licensed distribution of Elasticsearch enhanced with enterprise security, alerting, SQL](https://opendistro.github.io/for-elasticsearch/). In order to start working with OpenDistro change machines count to value greater than 0 in your cluster configuration: 
+OpenDistro for Elasticsearch is [an Apache 2.0-licensed distribution of Elasticsearch enhanced with enterprise security, alerting, SQL](https://opendistro.github.io/for-elasticsearch/). In order to start working with OpenDistro change machines count to value greater than 0 in your cluster configuration:
 
 ```yaml
 kind: epiphany-cluster
@@ -80,8 +140,8 @@ Result of this configuration will be one or more independent nodes of OpenDistro
 
 ## How to start working with Apache Ignite Stateful setup
 
-Apache Ignite can be installed in Epiphany if `count` property for `ignite` feature is greater than 0. 
-Example: 
+Apache Ignite can be installed in Epiphany if `count` property for `ignite` feature is greater than 0.
+Example:
 
 ```yaml
     ...
@@ -154,7 +214,7 @@ specification:
               <property name="walArchivePath" value="/wal/archive"/>
             </bean>
           </property>
-        
+
           <property name="discoverySpi">
             <bean class="org.apache.ignite.spi.discovery.tcp.TcpDiscoverySpi">
               <property name="ipFinder">
@@ -196,4 +256,4 @@ specification:
     - ignite-rest-http
 ```
 
-Adjust this config to your requirements with number of replicas and plugins that should be enabled. 
+Adjust this config to your requirements with number of replicas and plugins that should be enabled.
