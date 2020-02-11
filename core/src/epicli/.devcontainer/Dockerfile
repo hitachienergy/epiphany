@@ -6,6 +6,12 @@ ARG USERNAME=vscode
 ARG USER_UID=1000
 ARG USER_GID=$USER_UID
 
+ADD cert/*.crt /usr/local/share/ca-certificates
+ADD cert/config.sh /
+ADD requirements.txt /
+RUN chmod +x /config.sh
+RUN /config.sh
+
 RUN apt-get update \
     && apt-get -y install --no-install-recommends apt-utils dialog 2>&1 \
 
@@ -15,9 +21,9 @@ RUN apt-get update \
 
     && gem install serverspec rake rspec_junit_formatter \
 
-    && pip --disable-pip-version-check --no-cache-dir install pylint \
+    && pip --disable-pip-version-check --no-cache-dir install pylint pytest wheel setuptools twine --default-timeout=100 \
 
-    && pip --disable-pip-version-check --no-cache-dir install pipenv \
+    && pip --disable-pip-version-check --no-cache-dir install -r /requirements.txt --default-timeout=100 \
 
     && groupadd --gid $USER_GID $USERNAME \
     && useradd -s /bin/bash --uid $USER_UID --gid $USER_GID -m $USERNAME \
