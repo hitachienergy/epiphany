@@ -21,19 +21,25 @@
 {%         set parameter_value = parameter.value %}
 {%         if parameter.name == 'shared_preload_libraries' and parameter.value == 'SET_BY_AUTOMATION' %}
 {%           set shared_preload_libraries = [] %}
-{#           shared_preload_libraries from runtime #}
+{#           shared_preload_libraries from runtime, including those that were set outside Epiphany managed config #}
 {%           if runtime_shared_preload_libraries is defined and runtime_shared_preload_libraries %}
-{%             set shared_preload_libraries = shared_preload_libraries + runtime_shared_preload_libraries.split(',') %}
+{%             set shared_preload_libraries = runtime_shared_preload_libraries.split(',') %}
 {%           endif %}
-{#           shared_preload_libraries for enabled extensions #}
+{#           shared_preload_libraries for extensions #}
 {%           if specification.extensions is defined and specification.extensions %}
-{%             set libraries = specification.extensions | dict2items(key_name='name', value_name='config')
+{%             set enabled_extensions_libraries = specification.extensions | dict2items(key_name='name', value_name='config')
                                                         | map(attribute='config')
                                                         | selectattr('enabled')
                                                         | selectattr('shared_preload_libraries', 'defined')
                                                         | map(attribute='shared_preload_libraries')
                                                         | list | flatten %}
-{%             set shared_preload_libraries = shared_preload_libraries + libraries %}
+{%             set disabled_extensions_libraries = specification.extensions | dict2items(key_name='name', value_name='config')
+                                                        | map(attribute='config')
+                                                        | rejectattr('enabled')
+                                                        | selectattr('shared_preload_libraries', 'defined')
+                                                        | map(attribute='shared_preload_libraries')
+                                                        | list | flatten %}
+{%             set shared_preload_libraries = (shared_preload_libraries | difference(disabled_extensions_libraries)) + enabled_extensions_libraries %}
 {%           endif %}
 {%           if shared_preload_libraries %}
 {%             set parameter_value = "'" + shared_preload_libraries | unique | join(',') + "'" %}
