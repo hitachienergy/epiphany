@@ -6,7 +6,8 @@ ARG USERNAME=vscode
 ARG USER_UID=1000
 ARG USER_GID=$USER_UID
 
-COPY cert/config.sh cert/*.crt /usr/local/share/ca-certificates/
+COPY cert/cert.md cert/*.crt /usr/local/share/ca-certificates/
+COPY cert/config.sh /usr/local/share/ca-certificates
 RUN chmod +x /usr/local/share/ca-certificates/config.sh
 RUN /usr/local/share/ca-certificates/config.sh
 ADD requirements.txt /
