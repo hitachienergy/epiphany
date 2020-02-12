@@ -7,10 +7,10 @@ ARG USER_UID=1000
 ARG USER_GID=$USER_UID
 
 COPY cert/cert.md cert/*.crt /usr/local/share/ca-certificates/
-COPY cert/config.sh /usr/local/share/ca-certificates
-RUN chmod +x /usr/local/share/ca-certificates/config.sh
-RUN /usr/local/share/ca-certificates/config.sh
+ADD cert/config.sh /
 ADD requirements.txt /
+RUN chmod +x /config.sh
+RUN /bin/bash -c /config.sh
 
 RUN apt-get update \
     && apt-get -y install --no-install-recommends apt-utils dialog 2>&1 \
