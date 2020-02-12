@@ -126,3 +126,4 @@ tests/cli/results/
 .terraform
 clusters
 .vscode
+.devcontainer
