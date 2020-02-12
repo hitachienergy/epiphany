@@ -1,8 +1,8 @@
 ---
 # Ansible playbook for installing NFS
 
-- hosts: storage
+- hosts: nfs
   become: true
   become_method: sudo
   roles:
-    - storage
+    - nfs

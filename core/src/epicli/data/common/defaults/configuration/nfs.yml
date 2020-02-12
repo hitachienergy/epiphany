@@ -1,0 +1,8 @@
+kind: configuration/nfs
+title: "NFS Node Config"
+name: default
+specification:
+  nfs_defs:
+    - nfs_path: "/srv/nfs4/exports/"
+      nfs_src: "/exports"
+      nfs_export: "*(rw,sync,no_subtree_check,no_root_squash)"

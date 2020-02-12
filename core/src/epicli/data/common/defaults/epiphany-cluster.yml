@@ -92,9 +92,9 @@ specification:
       subnets:
         - availability_zone: eu-west-2a
           address_pool: 10.1.10.0/24
-    storage:
+    nfs:
       count: 1
-      machine: storage-machine
+      machine: nfs-machine
       configuration: default
       subnets:
         - availability_zone: eu-west-2a

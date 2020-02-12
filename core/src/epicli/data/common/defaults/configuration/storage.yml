@@ -1,6 +1,0 @@
-kind: configuration/storage
-title: "Storage Node"
-name: default
-specification:
-  version: 1.14.6
-  node_labels: "node-type=epiphany"

@@ -712,7 +712,7 @@ specification:
 kind: infrastructure/virtual-machine
 title: "Virtual Machine Infra"
 provider: azure
-name: storage-machine
+name: nfs-machine
 specification:
   size: Standard_DS1_v2
   security:
