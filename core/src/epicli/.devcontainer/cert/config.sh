@@ -1,6 +1,5 @@
 #!/bin/bash
 FILES=/usr/local/share/ca-certificates/*.crt
-
 if [ ${#FILES[@]} -gt 0 ]
 then
   echo "Processing cert ${FILES[0]}..."
