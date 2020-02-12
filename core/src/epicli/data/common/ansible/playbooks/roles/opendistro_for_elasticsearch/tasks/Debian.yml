@@ -7,16 +7,17 @@
       - openjdk-8-jre-headless
     state: present
 
-# Keep in mind compatibility matrix for OpenDistro https://opendistro.github.io/for-elasticsearch-docs/docs/install/plugins/#plugin-compatibility
-- name: Install OpenDistro for Elasticsearch packages
+# Keep in mind compatibility matrix for Open Distro https://opendistro.github.io/for-elasticsearch-docs/docs/install/plugins/#plugin-compatibility
+- name: Install Open Distro for Elasticsearch packages
   apt:
     name:
-      - elasticsearch-oss={{ specification.elasticsearch_oss_version_debian }} 
-      - opendistro-alerting={{ specification.opendistro_version_debian }}
-      - opendistro-performance-analyzer={{ specification.opendistro_version_debian }}
-      - opendistro-job-scheduler={{ specification.opendistro_version_debian }}
-      - opendistro-security={{ specification.opendistro_version_debian }}
-      - opendistro-sql={{ specification.opendistro_version_debian }}
+      - elasticsearch-oss={{ specification.versions[ansible_os_family].elasticsearch_oss }}
+      - opendistro-alerting={{ specification.versions[ansible_os_family].opendistro }}
+      - opendistro-index-management={{ specification.versions[ansible_os_family].opendistro }}
+      - opendistro-job-scheduler={{ specification.versions[ansible_os_family].opendistro }}
+      - opendistro-performance-analyzer={{ specification.versions[ansible_os_family].opendistro }}
+      - opendistro-security={{ specification.versions[ansible_os_family].opendistro }}
+      - opendistro-sql={{ specification.versions[ansible_os_family].opendistro }}
     state: present
   register: install_elasticsearch_package
 
