@@ -3,7 +3,7 @@
 set -euo pipefail
 
 if [[ $# -lt 1 ]]; then
-  usage 
+  usage
   exit
 fi
 
@@ -23,7 +23,7 @@ logfile="${script_path}/log"
 download_cmd="apt-get download"
 add_repos="${script_path}/add-repositories.sh"
 
-# to download everything add "--recurse" here:
+# to download everything, add "--recurse" flag but then you will get much more packages (e.g. 596 vs 319)
 deplist_cmd() {
     apt-cache depends --no-recommends --no-suggests --no-conflicts --no-breaks --no-replaces --no-enhances --no-pre-depends $1
 }
@@ -36,7 +36,7 @@ repos_backup_file="/tmp/epi-repository-setup-scripts/enable-system-repos.sh"
 if [[ ! -f /etc/apt/sources.list ]]; then
     if [[ -f /var/tmp/enabled-system-repos.tar ]] && [[ -f ${repos_backup_file} ]]; then
         echol "OS repositories seems missing, restoring..."
-        ${repos_backup_file} 
+        ${repos_backup_file}
     else
         echol "/etc/apt/sources.list seems missing, you either know what you're doing or you need to fix your repositories"
     fi
@@ -63,14 +63,14 @@ done
 shopt -u nullglob
 
 # add 3rd party repositories
-. ${add_repos} 
+. ${add_repos}
 
 # parse the input file, separete by tags: [packages], [files], [images]
 packages=$(awk '/^$/ || /^#/ {next}; /\[packages\]/ {f=1; next}; /^\[/ {f=0}; f {print $0}' "${input_file}")
 files=$(awk '/^$/ || /^#/ {next}; /\[files\]/ {f=1; next}; /^\[/ {f=0}; f {print $0}' "${input_file}")
 images=$(awk '/^$/ || /^#/ {next}; /\[images\]/ {f=1; next}; /^\[/ {f=0}; f {print $0}' "${input_file}")
 
-printf "\n" 
+printf "\n"
 
 # clear list of cached dependencies if .dependencies is older than 15 minutes
 find "$script_path" -type f -wholename "${deplist}" -mmin +15 -exec rm "${deplist}" \;
@@ -92,7 +92,7 @@ if [[ ! -f ${deplist} ]] || [[ ! -s ${deplist} ]] ; then
         echol "${package}" >> "${deplist}"
         # .. and create depency list for the package
         # (names only for dependencies, no version check here, not necessary as most dependencies are backward-compatible)
-	dependencies=$(deplist_cmd "${package}" | awk '/Depends/ && !/</ {print$2}' | tee -a "${deplist}")
+        dependencies=$(deplist_cmd "${package}" | awk '/Depends/ && !/</ {print$2}' | tee -a "${deplist}")
     done <<< "${packages}"
 fi
 
@@ -104,10 +104,10 @@ echol "Packages to be downloaded:"
 cat -n "${deplist}"
 
 # download dependencies (apt-get sandboxing warning when running as root are harmless)
-cd $dst_dir_packages && xargs --no-run-if-empty --arg-file=${deplist} --delimiter='\n' ${download_cmd} | tee -a ${logfile} 
+cd $dst_dir_packages && xargs --no-run-if-empty --arg-file=${deplist} --delimiter='\n' ${download_cmd} | tee -a ${logfile}
 cd $script_path
 
-printf "\n" 
+printf "\n"
 
 # FILES
 # process files
@@ -118,12 +118,12 @@ else
     # TODO: this is the list of all files shows on every run, not only the files that will be downloaded this run
     echol "Files to be downloaded:"
     cat -n <<< "${files}"
-    
-    printf "\n" 
+
+    printf "\n"
     # download files using wget
     while IFS= read -r file; do
-	# download files, skip if exists
-        #wget --no-verbose --continue --directory-prefix="${dst_dir_files}" "${file}" 
+        # download files, skip if exists
+        #wget --no-verbose --continue --directory-prefix="${dst_dir_files}" "${file}"
         #wget --continue --show-progress --directory-prefix="${dst_dir_files}" "${file}"
         download_file "${file}" "${dst_dir_files}"
     done <<< "${files}"
@@ -142,8 +142,8 @@ else
     # be verbose, show what will be downloaded
     echol "Images to be downloaded:"
     cat -n <<< "${images}"
-    
-    printf "\n" 
+
+    printf "\n"
     # download images using skopeo
     while IFS= read -r image_name; do
         download_image "${image_name}" "${dst_dir_images}"
