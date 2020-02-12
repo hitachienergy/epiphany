@@ -245,7 +245,7 @@ def adjust_paths_from_file(args):
         args.file = os.path.join(os.getcwd(), args.file)
     if not os.path.isfile(args.file):
         Config().output_dir = os.getcwd()  # Default to working dir so we can at least write logs.
-        raise Exception(f'File "{args.file}" does not excist')
+        raise Exception(f'File "{args.file}" does not exist')
     if Config().output_dir is None:
         Config().output_dir = os.path.join(os.path.dirname(args.file), 'build')
     dump_config(Config())
@@ -256,7 +256,7 @@ def adjust_paths_from_build(args):
         args.build_directory = os.path.join(os.getcwd(), args.build_directory)
     if not os.path.exists(args.build_directory):
         Config().output_dir = os.getcwd()  # Default to working dir so we can at least write logs.
-        raise Exception(f'Build directory "{args.build_directory}" does not excist')
+        raise Exception(f'Build directory "{args.build_directory}" does not exist')
     if args.build_directory[-1:] == '/':
         args.build_directory = args.build_directory.rstrip('/')
     if Config().output_dir is None:
