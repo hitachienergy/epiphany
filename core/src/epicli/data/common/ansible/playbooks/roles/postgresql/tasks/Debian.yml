@@ -54,7 +54,20 @@
 - name: Set up replication
   include_tasks: "replication-Debian.yml"
   when:
-    - specification.replication is defined and specification.replication.enable is defined and specification.replication.enable
+    - specification.replication is defined
+    - specification.replication.enable is defined
+    - specification.replication.enable
+    - not specification.replication.repmgr is defined
+    - not specification.replication.repmgr
+
+- name: Set up replication with repmgr
+  include_tasks: "replication-repmgr-Debian.yml"
+  when:
+    - specification.replication is defined
+    - specification.replication.enable is defined
+    - specification.replication.enable
+    - specification.replication.repmgr is defined
+    - specification.replication.repmgr
 
 - name: Include pgbouncer tasks
   block:
