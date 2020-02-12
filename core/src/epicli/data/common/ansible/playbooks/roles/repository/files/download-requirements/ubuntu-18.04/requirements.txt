@@ -64,6 +64,9 @@ tmux
 unzip
 vim
 
+# for curl, issue #869
+libcurl4
+
 # for openjdk-8-jre-headless
 libnss3
 libcups2
@@ -129,6 +132,9 @@ python3-decorator
 python3-selinux
 python3-slip
 python3-slip-dbus
+
+# for vim, issue #869
+libpython3.6
 
 # K8s upgrade
 kubeadm 1.12.10
