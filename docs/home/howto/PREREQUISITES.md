@@ -97,7 +97,7 @@ Where `LOCAL_DIR` should be replaced with the local path to the directory for Ep
 
     This should return the version of the CLI deployed.
 
-Now you can use Epicli directly on you machine.
+Now you can use Epicli directly on your machine.
 
 ## Epicli development
 
