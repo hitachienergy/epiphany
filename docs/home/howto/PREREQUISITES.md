@@ -158,4 +158,23 @@ Or when running from a Docker image (upper and lowercase are needed because of a
 
 ### Note about custom CA certificates
 
-TODO
+In some cases it might be that a company uses custom CA certificates for providing secure connections. To use these with Epicli you can do the following:
+
+#### Devcontainer
+
+Before building the VSCode devcontainer place the *.crt file here: `/epiphany/core/src/epicli/.devcontainer/cert/`. Then the certificat will be include and configured during the build process. After that no additional configuration should be needed.
+
+#### MacOS
+
+Install the certiciate in you keychain as described [here.](https://www.sslsupportdesk.com/how-to-import-a-certificate-into-mac-os/)
+
+#### Epicli container or Debian based OS
+
+If you are running Epicli from one of the prebuild containers or a debian based OS directly you can do the following to install the certificate:
+
+  ```bash
+  cp ./path/to/cert.crt /usr/local/share/ca-certificates/
+  chmod 644 /usr/local/share/ca-certificates/cert.crt
+  update-ca-certificates
+
+*Note: Configuring the CA cert on the prebuild container only works on the debian based ones on NOT on alpine based ones.*
