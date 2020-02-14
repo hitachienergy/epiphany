@@ -177,4 +177,4 @@ If you are running Epicli from one of the prebuild containers or a debian based 
   chmod 644 /usr/local/share/ca-certificates/cert.crt
   update-ca-certificates
 
-*Note: Configuring the CA cert on the prebuild container only works on the debian based ones on NOT on alpine based ones.*
+*Note: Configuring the CA cert on the prebuild container only works on the `debian` based ones and NOT on `alpine` based.*
