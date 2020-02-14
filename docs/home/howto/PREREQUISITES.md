@@ -162,7 +162,7 @@ In some cases it might be that a company uses custom CA certificates for providi
 
 #### Devcontainer
 
-Before building the VSCode devcontainer place the *.crt file here: `/epiphany/core/src/epicli/.devcontainer/cert/`. Then the certificat will be include and configured during the build process. After that no additional configuration should be needed.
+Before building the VSCode devcontainer place the *.crt file here: `/epiphany/core/src/epicli/.devcontainer/cert/`. Then the certificate will be included and configured during the build process. After that no additional configuration should be needed.
 
 #### MacOS
 
