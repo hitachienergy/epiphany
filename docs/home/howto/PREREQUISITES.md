@@ -10,7 +10,7 @@ There are 2 ways to get the image, build it locally yourself or pull it from the
     - PIP
     - Docker
 
-2. Install the following python dependencies using PIP:
+2. Install the following Python dependencies using PIP:
 
     ```bash
     pip install wheel setuptools twine
