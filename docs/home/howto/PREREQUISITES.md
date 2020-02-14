@@ -166,7 +166,7 @@ Before building the VSCode devcontainer place the *.crt file here: `/epiphany/co
 
 #### MacOS
 
-Install the certiciate in you keychain as described [here.](https://www.sslsupportdesk.com/how-to-import-a-certificate-into-mac-os/)
+Install the certiciate in your keychain as described [here](https://www.sslsupportdesk.com/how-to-import-a-certificate-into-mac-os/).
 
 #### Epicli container or Debian based OS
 
