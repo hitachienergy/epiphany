@@ -8,7 +8,7 @@ ARG USER_GID=$USER_UID
 
 COPY cert/cert.md cert/*.crt /usr/local/share/ca-certificates/
 COPY cert/config.sh /
-ADD requirements.txt /
+COPY requirements.txt /
 RUN chmod +x /config.sh
 RUN /bin/bash -c /config.sh
 
@@ -37,4 +37,3 @@ RUN apt-get update \
     && rm -rf /var/lib/apt/lists/*
 
 ENV DEBIAN_FRONTEND=
-
