@@ -79,6 +79,7 @@ filebeat.inputs:
   enabled: true
   paths:
     - /var/log/postgresql/*.log*
+  exclude_files: [".gz$"]
   multiline:
     pattern: '^\d{4}-\d{2}-\d{2} '
     negate: true

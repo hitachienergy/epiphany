@@ -31,7 +31,10 @@ specification:
             parameters:
               - name: log_directory
                 value: "'/var/log/postgresql'"
-                comment: to have standard location for Filebeat
+                comment: to have standard location for Filebeat and logrotate
+              - name: log_filename
+                value: "'postgresql.log'"
+                comment: to use logrotate with common configuration
   additional_components:
     pgbouncer:
       enabled: no
@@ -54,3 +57,28 @@ specification:
         pgaudit.log_relation: 'on # separate log entry for each relation' # default is 'off'
         pgaudit.log_statement_once: 'off' # same as default
         pgaudit.log_parameter: 'on' # default is 'off'
+  logrotate:
+    # Configuration partly based on /etc/logrotate.d/postgresql-common provided by 'postgresql-common' package from Ubuntu repo.
+      # PostgreSQL from Ubuntu repo:
+        # By default 'logging_collector' is disabled, so 'log_directory' parameter is ignored.
+        # Default log path is /var/log/postgresql/postgresql-$version-$cluster.log.
+      # PostgreSQL from SCL repo (RHEL):
+        # By default 'logging_collector' is enabled and there is up to 7 files named 'daily' (e.g. postgresql-Wed.log)
+        # and thus they can be overwritten by built-in log facility to provide rotation.
+    # To have similar configuration for both distros (with logrotate), 'log_filename' parameter is modified.
+    config: |-
+      /var/log/postgresql/postgresql*.log {
+          maxsize 10M
+          daily
+          rotate 6
+          copytruncate
+      # delaycompress is for Filebeat
+          delaycompress
+          compress
+          notifempty
+          missingok
+          su root root
+          nomail
+      # to have multiple unique filenames per day when dateext option is set
+          dateformat -%Y%m%d-%H
+      }
