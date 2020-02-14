@@ -9,9 +9,9 @@ follow_command='/usr/bin/repmgr standby follow -f /etc/repmgr.conf --log-to-file
 monitoring_history=yes
 monitor_interval_secs=10
 
-log_file=/var/log/repmgr.log
+log_file='/var/log/repmgr.log'
 
-pg_bindir=/usr/lib/postgresql/10/bin/
+pg_bindir='/usr/lib/postgresql/10/bin/'
 service_start_command='sudo /bin/systemctl start postgresql'
 service_stop_command='sudo /bin/systemctl stop postgresql'
 service_restart_command='sudo /bin/systemctl restart postgresql'

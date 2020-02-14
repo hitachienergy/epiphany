@@ -34,16 +34,10 @@
     password: "{{ specification.replication.password }}"
     role_attr_flags: LOGIN,REPLICATION
 
-- name: Set CIDR
-  set_fact:
-    network_cidr: "{{ ip | ipaddr('network') }}/{{ ip | ipaddr('prefix') }}"
-  vars:
-    ip: "{{ ansible_default_ipv4.address }}/{{ansible_default_ipv4.netmask }}"
-
 - name: Add replication user to pg_hba.conf
   lineinfile:
     path: /etc/postgresql/10/main/pg_hba.conf
-    line: "host    replication     {{ specification.replication.user }}     {{ network_cidr }}             md5"
+    line: "host    replication     {{ specification.replication.user }}     0.0.0.0/0            md5"
 
 - name: Create pgpass file
   template:
@@ -131,10 +125,17 @@
 
 - name: Check if node is registered already in repmgr
   become_user: postgres
-  shell: "repmgr cluster show -f /etc/postgresql/10/main/repmgr.conf | grep -i {{ inventory_hostname }} | wc -l"
+  shell: "repmgr cluster show -f /etc/postgresql/10/main/repmgr.conf | grep -i {{ inventory_hostname }}"
   changed_when: false
   register: is_node_already_registered
   failed_when: "is_node_already_registered.rc == 2"
+  when:
+    - groups['postgresql'][1] == inventory_hostname
+
+- name: Stop postgresql service
+  service:
+    name: postgresql
+    state: started
   when:
     - groups['postgresql'][1] == inventory_hostname
 
@@ -145,7 +146,7 @@
     - groups['postgresql'][1] == inventory_hostname
     - not is_node_already_registered.rc == 0
 
-- name: Stop postgresql service
+- name: Start postgresql service
   service:
     name: postgresql
     state: started
@@ -158,20 +159,3 @@
   when:
     - groups['postgresql'][1] == inventory_hostname
     - not is_node_already_registered.rc == 0
-
-- name: Create recovery.conf file
-  template:
-    src: recovery.conf.j2
-    dest: /var/lib/postgresql/10/main/recovery.conf
-    owner: postgres
-    group: postgres
-  when:
-    - groups['postgresql'][1] == inventory_hostname
-
-- name: Start postgresql service
-  service:
-    name: postgresql
-    state: started
-  when:
-    - groups['postgresql'][1] == inventory_hostname
-
