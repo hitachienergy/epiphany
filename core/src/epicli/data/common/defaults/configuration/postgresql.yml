@@ -80,5 +80,5 @@ specification:
           su root root
           nomail
       # to have multiple unique filenames per day when dateext option is set
-          dateformat -%Y%m%d-%H
+          dateformat -%Y%m%dH%H
       }

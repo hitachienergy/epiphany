@@ -23,7 +23,7 @@
   when:
     - not var_log_postgresql.stat.exists
 
-- name: Configure pgAudit extension
+- name: Configure pgAudit extension (RedHat)
   include_tasks: extensions/configure-pgaudit.yml
   when:
     - specification.extensions.pgaudit.enabled is defined
@@ -32,12 +32,12 @@
 
 - name: Initialize database # RedHat specific block
   block:
-    - name: Check initialization status
+    - name: Check initialization status (RedHat)
       stat:
         path: "{{ pg_config_dir }}/pg_hba.conf"
       register: pg_hba_conf_stat
 
-    - name: Initialize database
+    - name: Initialize database (RedHat)
       command: /opt/rh/rh-postgresql10/root/usr/bin/postgresql-setup --initdb
       when:
         - not pg_hba_conf_stat.stat.exists
