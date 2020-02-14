@@ -7,6 +7,11 @@
 - PostgreSQL: PGBouncer implementation [#854](https://github.com/epiphany-platform/epiphany/issues/854)
 - PostgreSQL: pgAudit extension for audit logging [#905](https://github.com/epiphany-platform/epiphany/pull/905)
 - PostgreSQL: Send logs to Elasticsearch
+- PostgreSQL: Add logrotate configuration [#915](https://github.com/epiphany-platform/epiphany/pull/915)
+
+### Fixed
+
+- Open Distro for Elasticsearch: Task 'Install Elasticsearch package' fails [#906](https://github.com/epiphany-platform/epiphany/issues/906)
 
 ## [0.5.1] 2020-01-23
 
