@@ -170,7 +170,7 @@ Install the certiciate in your keychain as described [here](https://www.sslsuppo
 
 #### Epicli container or Debian based OS
 
-If you are running Epicli from one of the prebuild containers or a debian based OS directly you can do the following to install the certificate:
+If you are running Epicli from one of the prebuild containers or a Debian based OS directly you can do the following to install the certificate:
 
   ```bash
   cp ./path/to/cert.crt /usr/local/share/ca-certificates/
