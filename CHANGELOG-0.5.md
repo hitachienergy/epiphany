@@ -1,5 +1,11 @@
 # Changelog 0.5
 
+## [0.5.3] 2020-0X-XX
+
+### Changed
+
+- Common: Run logrotate on hourly basis instead of daily [#916](https://github.com/epiphany-platform/epiphany/issues/916)
+
 ## [0.5.2] 2020-02-17
 
 ### Added
