@@ -15,6 +15,9 @@
 - Upgrade: Missing property 'name' when running epicli upgrade [#909](https://github.com/epiphany-platform/epiphany/issues/909)
 - Common: Issue installing Debian packages [#869](https://github.com/epiphany-platform/epiphany/issues/869)
 
+### Known issues
+- Elasticsearch service not starting on RHEL after running epicli upgrade command [#922](https://github.com/epiphany-platform/epiphany/issues/922)
+
 ## [0.5.1] 2020-01-23
 
 ### Hotfixed
