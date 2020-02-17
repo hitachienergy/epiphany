@@ -25,4 +25,7 @@ echo "deb https://artifacts.elastic.co/packages/oss-7.x/apt stable main" | tee /
 wget -qO - https://d3g5vo6xdbdb9a.cloudfront.net/GPG-KEY-opendistroforelasticsearch | sudo apt-key add -
 echo "deb https://d3g5vo6xdbdb9a.cloudfront.net/apt stable main" | tee -a   /etc/apt/sources.list.d/opendistroforelasticsearch.list
 
+wget -qO - https://dl.2ndquadrant.com/gpg-key.asc | apt-key add -
+echo "deb https://dl.2ndquadrant.com/default/release/apt bionic-2ndquadrant main" | tee -a /etc/apt/sources.list.d/2ndquadrant-dl-default-release.list
+
 apt update

@@ -105,9 +105,17 @@ class AnsibleVarsGenerator(Step):
             dump(main_vars, stream)
 
     def set_vault_path(self, shared_config):
-        shared_config.specification.vault_tmp_file_location = Config().vault_password_location
         if shared_config.specification.vault_location == '':
-            shared_config.specification.vault_location = get_ansible_vault_path(self.cluster_model.specification.name)
+            shared_config.specification.vault_tmp_file_location = Config().vault_password_location
+            cluster_name = self.get_cluster_name()
+            shared_config.specification.vault_location = get_ansible_vault_path(cluster_name)
+    
+    def get_cluster_name(self):
+        if 'name' in self.cluster_model.specification.keys():
+            return self.cluster_model.specification.name
+        elif self.inventory_upgrade is not None:
+            return os.path.basename(self.inventory_upgrade.build_dir)
+        return 'default'
 
     def get_clean_cluster_model(self):
         cluster_model = copy.copy(self.cluster_model)

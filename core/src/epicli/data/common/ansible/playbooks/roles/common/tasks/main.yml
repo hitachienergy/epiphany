@@ -8,13 +8,9 @@
 
 - include_tasks: "{{ ansible_os_family }}.yml"
 
-- name: Get environment variables
-  command: env
-  register: env_output
-  changed_when: false
-
 - name: Print environment variables
-  debug: msg={{ env_output.stdout_lines }}
+  debug:
+    msg: "{{ ansible_env }}"
 
 - name: Adjust swappiness parameter
   sysctl:

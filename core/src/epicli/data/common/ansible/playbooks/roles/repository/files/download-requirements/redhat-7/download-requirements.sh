@@ -9,6 +9,13 @@ set -euo pipefail
 
 # === Functions (in alphabetical order) ===
 
+# params: <script_url>
+add_repo_from_script() {
+	local script_url="$1"
+
+	curl $script_url | bash
+}
+
 # params: <repo_id> <repo_url>
 add_repo() {
 	local repo_id="$1"
@@ -433,7 +440,7 @@ fi
 # --- Install required packages unless present ---
 
 # repos can be enabled or disabled using the yum-config-manager command, which is provided by yum-utils package
-for package in 'yum-utils' 'wget'; do
+for package in 'yum-utils' 'wget' 'curl'; do
 	if ! is_package_installed "$package"; then
 		install_package "$package"
 	fi
@@ -463,6 +470,18 @@ ELASTIC_6_REPO_CONF=$(cat <<'EOF'
 [elastic-6]
 name=Elastic repository for 6.x packages
 baseurl=https://artifacts.elastic.co/packages/oss-6.x/yum
+gpgcheck=1
+gpgkey=https://artifacts.elastic.co/GPG-KEY-elasticsearch
+enabled=1
+autorefresh=1
+type=rpm-md
+EOF
+)
+
+ELASTICSEARCH_7_REPO_CONF=$(cat <<'EOF'
+[elasticsearch-7.x]
+name=Elasticsearch repository for 7.x packages
+baseurl=https://artifacts.elastic.co/packages/oss-7.x/yum
 gpgcheck=1
 gpgkey=https://artifacts.elastic.co/GPG-KEY-elasticsearch
 enabled=1
@@ -505,6 +524,29 @@ gpgkey=https://packages.cloud.google.com/yum/doc/yum-key.gpg https://packages.cl
 EOF
 )
 
+OPENDISTRO_REPO_CONF=$(cat <<'EOF'
+[opendistroforelasticsearch-artifacts-repo]
+name=Release RPM artifacts of OpenDistroForElasticsearch
+baseurl=https://d3g5vo6xdbdb9a.cloudfront.net/yum/noarch/
+enabled=1
+gpgkey=https://d3g5vo6xdbdb9a.cloudfront.net/GPG-KEY-opendistroforelasticsearch
+gpgcheck=1
+repo_gpgcheck=1
+autorefresh=1
+type=rpm-md
+EOF
+)
+
+POSTGRESQL_REPO_CONF=$(cat <<'EOF'
+[pgdg10]
+name=PostgreSQL 10 for RHEL/CentOS $releasever - $basearch
+baseurl=https://download.postgresql.org/pub/repos/yum/10/redhat/rhel-$releasever-$basearch
+enabled=1
+gpgcheck=1
+gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-PGDG
+EOF
+)
+
 RABBITMQ_ERLANG_REPO_CONF=$(cat <<'EOF'
 [rabbitmq_erlang]
 name=rabbitmq_erlang
@@ -527,40 +569,17 @@ gpgkey=https://packagecloud.io/rabbitmq/rabbitmq-server/gpgkey
 EOF
 )
 
-ELASTIC_7_REPO_CONF=$(cat <<'EOF'
-[elasticsearch-7.x]
-name=Elasticsearch repository for 7.x packages
-baseurl=https://artifacts.elastic.co/packages/oss-7.x/yum
-gpgcheck=1
-gpgkey=https://artifacts.elastic.co/GPG-KEY-elasticsearch
-enabled=1
-autorefresh=1
-type=rpm-md
-EOF
-)
-
-OPENDISTRO_REPO_CONF=$(cat <<'EOF'
-[opendistroforelasticsearch-artifacts-repo]
-name=Release RPM artifacts of OpenDistroForElasticsearch
-baseurl=https://d3g5vo6xdbdb9a.cloudfront.net/yum/noarch/
-enabled=1
-gpgkey=https://d3g5vo6xdbdb9a.cloudfront.net/GPG-KEY-opendistroforelasticsearch
-gpgcheck=1
-repo_gpgcheck=1
-autorefresh=1
-type=rpm-md
-EOF
-)
-
 add_repo 'docker-ce' 'https://download.docker.com/linux/centos/docker-ce.repo'
-add_repo_as_file 'opendistro' "$OPENDISTRO_REPO_CONF"
-add_repo_as_file 'elastic-7' "$ELASTIC_7_REPO_CONF"
 add_repo_as_file 'elastic-6' "$ELASTIC_6_REPO_CONF"
-add_repo_as_file 'curator-5' "$ELASTICSEARCH_CURATOR_REPO_CONF"
+add_repo_as_file 'elasticsearch-7' "$ELASTICSEARCH_7_REPO_CONF"
+add_repo_as_file 'elasticsearch-curator-5' "$ELASTICSEARCH_CURATOR_REPO_CONF"
 add_repo_as_file 'grafana' "$GRAFANA_REPO_CONF"
 add_repo_as_file 'kubernetes' "$KUBERNETES_REPO_CONF"
+add_repo_as_file 'opendistroforelasticsearch' "$OPENDISTRO_REPO_CONF"
+add_repo_as_file 'postgresql-10' "$POSTGRESQL_REPO_CONF"
 add_repo_as_file 'rabbitmq_erlang' "$RABBITMQ_ERLANG_REPO_CONF"
 add_repo_as_file 'rabbitmq_rabbitmq-server' "$RABBITMQ_SERVER_REPO_CONF"
+add_repo_from_script 'https://dl.2ndquadrant.com/default/release/get/10/rpm'
 
 # some packages are from EPEL repo
 if ! is_package_installed 'epel-release'; then

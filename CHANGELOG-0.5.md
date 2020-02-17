@@ -1,5 +1,23 @@
 # Changelog 0.5
 
+## [0.5.2] 2020-02-17
+
+### Added
+
+- PostgreSQL: PGBouncer implementation [#854](https://github.com/epiphany-platform/epiphany/issues/854)
+- PostgreSQL: pgAudit extension for audit logging [#905](https://github.com/epiphany-platform/epiphany/pull/905)
+- PostgreSQL: Send logs to Elasticsearch
+- PostgreSQL: Add logrotate configuration [#915](https://github.com/epiphany-platform/epiphany/pull/915)
+
+### Fixed
+
+- Open Distro for Elasticsearch: Task 'Install Elasticsearch package' fails [#906](https://github.com/epiphany-platform/epiphany/issues/906)
+- Upgrade: Missing property 'name' when running epicli upgrade [#909](https://github.com/epiphany-platform/epiphany/issues/909)
+- Common: Issue installing Debian packages [#869](https://github.com/epiphany-platform/epiphany/issues/869)
+
+### Known issues
+- Elasticsearch service not starting on RHEL after running epicli upgrade command [#922](https://github.com/epiphany-platform/epiphany/issues/922)
+
 ## [0.5.1] 2020-01-23
 
 ### Hotfixed

@@ -1,0 +1,32 @@
+---
+- name: Install PostgreSQL packages ({{ ansible_os_family }})
+  apt:
+    name:
+      - postgresql-10
+      - postgresql-contrib-10
+      - python-psycopg2 # required for postresql ansible management
+    update_cache: yes
+    state: present
+
+# --- additional components ---
+
+- name: Install pgbouncer package
+  apt:
+    name:
+      - pgbouncer
+    state: present
+    update_cache: yes
+  when:
+    - specification.additional_components.pgbouncer.enabled is defined
+    - specification.additional_components.pgbouncer.enabled
+
+# --- extensions ---
+
+- name: Install pgaudit package
+  apt:
+    name:
+      - postgresql-10-pgaudit
+    state: present
+  when:
+    - specification.extensions.pgaudit.enabled is defined
+    - specification.extensions.pgaudit.enabled
