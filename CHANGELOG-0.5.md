@@ -13,6 +13,9 @@
 
 - Open Distro for Elasticsearch: Task 'Install Elasticsearch package' fails [#906](https://github.com/epiphany-platform/epiphany/issues/906)
 
+### Known issues
+- Elasticsearch service not starting on RHEL after running epicli upgrade command [#922](https://github.com/epiphany-platform/epiphany/issues/922)
+
 ## [0.5.1] 2020-01-23
 
 ### Hotfixed
