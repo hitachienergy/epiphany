@@ -12,7 +12,6 @@ with open('../../../LICENSE') as f:
 
 with open('requirements.txt') as f:
     requirements = f.read().splitlines()
-del requirements[0]
 
 datadir = os.path.join('data')
 datafiles = [(os.path.join('epicli', d), [os.path.join(d, f) for f in files])

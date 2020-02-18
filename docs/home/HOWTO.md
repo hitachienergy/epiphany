@@ -4,8 +4,10 @@
   - [Run Epicli from Docker image](./howto/PREREQUISITES.md#run-epicli-from-docker-image)
   - [Run Epicli directly from OS](./howto/PREREQUISITES.md#run-epicli-directly-from-os)
   - [Epicli development](./howto/PREREQUISITES.md#epicli-development)
-  - [Note for Windows users](./howto/PREREQUISITES.md#note-for-windows-users)
-  - [Note about proxies](./howto/PREREQUISITES.md#note-about-proxies)
+  - [Important notes](./howto/PREREQUISITES.md#important-notes)
+    - [Note for Windows users](./howto/PREREQUISITES.md#note-for-windows-users)
+    - [Note about proxies](./howto/PREREQUISITES.md#note-about-proxies)
+    - [Note about custom CA certificates](./howto/PREREQUISITES.md#note-about-custom-ca-certificates)
 
 - [Epiphany cluster](./howto/CLUSTER.md)
   - [How to create an Epiphany cluster on existing infrastructure](./howto/CLUSTER.md#how-to-create-an-epiphany-cluster-on-existing-infrastructure)
