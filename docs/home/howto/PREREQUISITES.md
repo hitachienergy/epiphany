@@ -103,7 +103,7 @@ Now you can use Epicli directly on your machine.
 
 For setting up en Epicli development environment please refer to this dedicated document [here.](./../DEVELOPMENT.md)
 
-## Imporant notes
+## Important notes
 
 ### Note for Windows users
 
