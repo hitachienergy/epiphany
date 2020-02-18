@@ -4,7 +4,7 @@
   - [Run Epicli from Docker image](./howto/PREREQUISITES.md#run-epicli-from-docker-image)
   - [Run Epicli directly from OS](./howto/PREREQUISITES.md#run-epicli-directly-from-os)
   - [Epicli development](./howto/PREREQUISITES.md#epicli-development)
-  - [Important notes](./howto/PREREQUISITES.md#imporant-notes)
+  - [Important notes](./howto/PREREQUISITES.md#important-notes)
     - [Note for Windows users](./howto/PREREQUISITES.md#note-for-windows-users)
     - [Note about proxies](./howto/PREREQUISITES.md#note-about-proxies)
     - [Note about custom CA certificates](./howto/PREREQUISITES.md#note-about-custom-ca-certificates)
