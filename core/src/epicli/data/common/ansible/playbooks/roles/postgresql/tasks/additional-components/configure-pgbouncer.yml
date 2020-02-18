@@ -1,0 +1,30 @@
+---
+- name: Change pgbouncer configuration
+  lineinfile:
+    path: /etc/pgbouncer/pgbouncer.ini
+    insertafter: '\[databases\]'
+    line: postgres = host=127.0.0.1 port=5432 dbname=postgres
+    backup: yes
+
+- name: Change pool mode
+  lineinfile:
+    path: /etc/pgbouncer/pgbouncer.ini
+    regexp: '^pool_mode ='
+    line: "pool_mode = transaction"
+
+- name: Change pgbouncer users configuration
+  lineinfile:
+    path: /etc/pgbouncer/userlist.txt
+    line: '"postgres" "*"'
+    create: yes
+    backup: yes
+
+- name: Enable pgbouncer service
+  systemd:
+    name: pgbouncer
+    enabled: yes
+
+- name: Restart pgbouncer service
+  systemd:
+    name: pgbouncer
+    state: restarted

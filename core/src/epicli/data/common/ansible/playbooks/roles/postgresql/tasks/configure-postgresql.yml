@@ -1,0 +1,138 @@
+---
+- name: Set OS specific paths
+  set_fact:
+    pg_config_dir: "{{ pg_config_dir[ansible_os_family] }}"
+  vars:
+    pg_config_dir:
+      RedHat: /var/opt/rh/rh-postgresql10/lib/pgsql/data
+      Debian: /etc/postgresql/10/main
+
+- name: Check if /var/log/postgresql directory exists
+  stat:
+    path: /var/log/postgresql
+  register: var_log_postgresql
+
+- name: Create directory /var/log/postgresql
+  # the same permissions as for PG installed on RHEL from Software Collections (on Ubuntu are different)
+  file:
+    path: /var/log/postgresql
+    state: directory
+    owner: postgres
+    group: postgres
+    mode: 0700
+  when:
+    - not var_log_postgresql.stat.exists
+
+- name: Configure pgAudit extension
+  include_tasks: extensions/configure-pgaudit.yml
+  when:
+    - specification.extensions.pgaudit.enabled is defined
+    - specification.extensions.pgaudit.enabled
+    - ansible_os_family == 'RedHat'
+
+- name: Initialize database # RedHat specific block
+  block:
+    - name: Check initialization status
+      stat:
+        path: "{{ pg_config_dir }}/pg_hba.conf"
+      register: pg_hba_conf_stat
+
+    - name: Initialize database
+      command: /opt/rh/rh-postgresql10/root/usr/bin/postgresql-setup --initdb
+      when:
+        - not pg_hba_conf_stat.stat.exists
+  when:
+    - ansible_os_family == 'RedHat'
+
+- name: Enable postgresql service
+  systemd:
+    name: postgresql
+    enabled: yes
+
+- name: Change pg_hba.conf
+  replace:
+    path: "{{ pg_config_dir }}/pg_hba.conf"
+    regexp: '^host\s+all\s+all\s+127\.0\.0\.1/32\s+(?:ident|md5)$'
+    replace: 'host    all             all             0.0.0.0/0               md5'
+    backup: yes
+  register: change_pg_hba_conf
+
+# Set runtime_shared_preload_libraries fact that is used in postgresql-epiphany.conf.j2
+- name: Get shared_preload_libraries when postgresql service is running
+  block:
+    - name: Check if postgresql service is running
+      command: systemctl status postgresql
+      register: postgresql_status
+      changed_when: false
+      failed_when: postgresql_status.rc not in [0, 3, 4]
+
+    - name: Get PostgreSQL settings
+      become: yes
+      become_user: postgres
+      postgresql_info:
+        filter: settings
+      register: postgresql_info
+      when:
+        - postgresql_status.rc == 0 # running
+
+    - name: Set runtime_shared_preload_libraries fact
+      set_fact:
+        runtime_shared_preload_libraries: "{{ postgresql_info.settings.shared_preload_libraries.setting }}"
+      when:
+        - postgresql_info.settings is defined
+
+- name: Create Epiphany managed configuration sub-file
+  template:
+    src: postgresql-epiphany.conf.j2
+    dest: "{{ pg_config_dir }}/postgresql-epiphany.conf"
+    owner: postgres
+    group: postgres
+    mode: 0600
+  register: change_postgresql_epiphany_conf
+
+- name: Change postgresql.conf
+  lineinfile:
+    path: "{{ pg_config_dir }}/postgresql.conf"
+    line: "include = 'postgresql-epiphany.conf'	# Epiphany managed configuration that overrides above settings"
+    insertafter: '^#include ' # insert line after the last 'include' to override all settings
+    firstmatch: no
+    backup: yes
+  register: change_postgresql_conf
+
+- name: Restart postgresql service
+  systemd:
+    name: postgresql
+    state: restarted
+  when: change_pg_hba_conf
+     or change_postgresql_epiphany_conf
+     or change_postgresql_conf
+
+- name: Configure logrotate
+  block:
+    - name: Remove logrotate configuration provided by 'postgresql-common' package
+      file:
+        path: /etc/logrotate.d/postgresql-common
+        state: absent
+      when: ansible_os_family == 'Debian'
+    - name: Create logrotate configuration file
+      template:
+        src: logrotate.conf.j2
+        dest: /etc/logrotate.d/postgresql
+        owner: root
+        group: root
+        mode: 0644
+  when:
+    - specification.logrotate.config is defined
+
+- name: Set up replication
+  include_tasks: replication-{{ ansible_os_family }}.yml
+  # 'specification.replication.enable' is for backward compatibility
+  when: (specification.replication.enabled is defined and specification.replication.enabled)
+     or (specification.replication.enable is defined and specification.replication.enable)
+
+- name: Include pgbouncer configuration tasks
+  include_tasks: additional-components/configure-pgbouncer.yml
+  when:
+    - specification.additional_components.pgbouncer.enabled is defined
+    - specification.additional_components.pgbouncer.enabled
+    - groups['postgresql'][0] == inventory_hostname

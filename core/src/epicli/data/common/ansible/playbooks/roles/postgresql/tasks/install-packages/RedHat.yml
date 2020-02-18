@@ -1,0 +1,37 @@
+---
+- name: Install PostgreSQL packages ({{ ansible_os_family }})
+  yum:
+    name:
+      - rh-postgresql10-postgresql
+      - rh-postgresql10-postgresql-syspaths
+      - rh-postgresql10-postgresql-server
+      - rh-postgresql10-postgresql-server-syspaths
+      - rh-postgresql10-postgresql-contrib
+      - rh-postgresql10-postgresql-contrib-syspaths
+      - rh-postgresql10-postgresql-libs
+      - python-psycopg2 # required for postresql ansible management
+    update_cache: yes
+    state: present
+
+# --- additional components ---
+
+- name: Install pgbouncer package
+  yum:
+    name:
+      - pgbouncer
+    state: present
+    update_cache: yes
+  when:
+    - specification.additional_components.pgbouncer.enabled is defined
+    - specification.additional_components.pgbouncer.enabled
+
+# --- extensions ---
+
+- name: Install pgaudit package
+  yum:
+    name:
+      - pgaudit12_10
+    state: present
+  when:
+    - specification.extensions.pgaudit.enabled is defined
+    - specification.extensions.pgaudit.enabled

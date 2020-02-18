@@ -32,7 +32,7 @@ docker-ce-cli-18.09.9
 ebtables
 elasticsearch-curator-5.8.1
 elasticsearch-oss-6.8.5
-elasticsearch-oss-7.3.2
+elasticsearch-oss-7.3.2 # Open Distro for Elasticsearch
 erlang-21.3.8.7
 ethtool
 filebeat-6.8.5 # actually it's filebeat-oss
@@ -62,7 +62,13 @@ logrotate
 net-tools
 nfs-utils
 nmap-ncat
-opendistroforelasticsearch-1.3.0
+# Open Distro for Elasticsearch plugins are installed individually to not download them twice in different versions (as dependencies of opendistroforelasticsearch package)
+opendistro-alerting-1.3.0*
+opendistro-index-management-1.3.0*
+opendistro-job-scheduler-1.3.0*
+opendistro-performance-analyzer-1.3.0*
+opendistro-security-1.3.0*
+opendistro-sql-1.3.0*
 opendistroforelasticsearch-kibana-1.3.0
 openssl
 perl # for vim
@@ -71,6 +77,7 @@ perl-libs # for vim
 perl-Pod-Perldoc # for vim
 perl-Pod-Simple # for vim
 perl-Pod-Usage # for vim
+pgaudit12_10
 pgbouncer
 policycoreutils-python # for container-selinux
 python-firewall # for firewalld
