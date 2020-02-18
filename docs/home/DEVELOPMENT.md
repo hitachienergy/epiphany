@@ -21,7 +21,7 @@ This document explains how to set up the preferred [VSCode](https://code.visuals
 
 2. VSCode's [devcontainers](https://code.visualstudio.com/docs/remote/containers) allow us to quickly set up a dockerized development environment, which is the same for every developer regardless of development platform (Linux, MacOS, Windows).
 
-*Note: More information when running the devcontainer environment on Windows or behind a proxy can be found [here.](./howto/PREREQUISITES.md#imporant-notes)*
+*Note: More information when running the devcontainer environment on Windows or behind a proxy can be found [here](./howto/PREREQUISITES.md#important-notes).*
 
 ## Prerequisites
 
