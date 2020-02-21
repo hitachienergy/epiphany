@@ -1,6 +1,10 @@
 # Gitignore for Epiphany
 # Ignore specific items from the git repo
 
+# Nerd stuff
+*.swp
+*.swo
+
 # Do want these
 **/!.dockerignore
 /!.editorconfig
