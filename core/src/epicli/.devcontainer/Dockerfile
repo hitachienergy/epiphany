@@ -7,12 +7,14 @@ ARG USER_UID=1000
 ARG USER_GID=$USER_UID
 
 COPY cert/cert.md cert/*.crt /usr/local/share/ca-certificates/
-COPY cert/config.sh /
+COPY cert/config-pre.sh /
+COPY cert/config-post.sh /
 COPY requirements.txt /
-RUN chmod +x /config.sh \
-    && /bin/bash -c /config.sh
 
-RUN apt-get update \
+RUN chmod +x /config-pre.sh \
+    && /bin/bash -c /config-pre.sh \
+
+    && apt-get update \
     && apt-get -y install --no-install-recommends apt-utils dialog 2>&1 \
 
     && apt-get -y install git procps lsb-release gcc make musl-dev libffi-dev tar unzip \
@@ -34,6 +36,9 @@ RUN apt-get update \
 
     && apt-get autoremove -y \
     && apt-get clean -y \
-    && rm -rf /var/lib/apt/lists/*
+    && rm -rf /var/lib/apt/lists/* \
+
+    && chmod +x /config-post.sh \
+    && /bin/bash -c /config-post.sh
 
 ENV DEBIAN_FRONTEND=
