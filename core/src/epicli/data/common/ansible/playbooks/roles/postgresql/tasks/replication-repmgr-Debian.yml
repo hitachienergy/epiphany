@@ -7,6 +7,12 @@
     update_cache: yes
     state: present
 
+- name: Add user to sudoers file
+  lineinfile:
+    path: /etc/sudoers
+    line: 'postgres ALL=(ALL:ALL) NOPASSWD: /bin/systemctl start postgresql, /bin/systemctl stop postgresql, /bin/systemctl restart postgresql, /bin/systemctl reload postgresql'
+    validate: 'visudo -cf %s'
+
 - name: Turn on replica
   replace:
     path: /etc/postgresql/10/main/postgresql.conf
@@ -18,26 +24,26 @@
   replace:
     path: /etc/postgresql/10/main/postgresql.conf
     regexp: "^[#]?max_wal_senders\\s*=\\s*[0-9]+"
-    replace: "max_wal_senders = {{ specification.replication.max_wal_senders | default('5') }}"
+    replace: "max_wal_senders = {{ specification.additional_components.replication.max_wal_senders | default('5') }}"
 
 - name: Add password for super user in postgresql
   become_user: postgres
   postgresql_user:
-    user: "{{ specification.replication.user }}"
-    password: "{{ specification.replication.password }}"
+    user: "{{ specification.additional_components.replication.user }}"
+    password: "{{ specification.additional_components.replication.password }}"
     role_attr_flags: LOGIN,SUPERUSER
 
 - name: Add replication user to postgresql
   become_user: postgres
   postgresql_user:
-    user: "{{ specification.replication.user }}"
-    password: "{{ specification.replication.password }}"
+    user: "{{ specification.additional_components.replication.user }}"
+    password: "{{ specification.additional_components.replication.password }}"
     role_attr_flags: LOGIN,REPLICATION
 
 - name: Add replication user to pg_hba.conf
   lineinfile:
     path: /etc/postgresql/10/main/pg_hba.conf
-    line: "host    replication     {{ specification.replication.user }}     0.0.0.0/0            md5"
+    line: "host    replication     {{ specification.additional_components.replication.user }}     0.0.0.0/0            md5"
 
 - name: Create pgpass file
   template:
@@ -59,7 +65,14 @@
     group: postgres
     mode: 0600
 
-- name: Insert
+- name: Creates directory
+  file:
+    path: /dbbackup/{{ inventory_hostname }}/backup/
+    state: directory
+    owner: postgres
+    group: postgres
+
+- name: Insert postgresql configuration
   blockinfile:
     path: /etc/postgresql/10/main/postgresql.conf
     marker: "# ANSIBLE MANAGED BLOCK"
@@ -69,12 +82,11 @@
       archive_command = 'test ! -f /dbbackup/{{ inventory_hostname }}/backup/%f && gzip -c < %p > /dbbackup/{{ inventory_hostname }}/backup/%f'
       shared_preload_libraries = 'repmgr'
 
-- name: Creates directory
-  file:
-    path: /dbbackup/{{ inventory_hostname }}
-    state: directory
-    owner: postgres
-    group: postgres
+- name: Create a new database for repmgr
+  become_user: postgres
+  postgresql_db:
+    name: "{{ specification.additional_components.replication.repmgr_database }}"
+    owner: "{{ specification.additional_components.replication.user }}"
 
 # Master:
 - name: Restart postgresql service
@@ -91,14 +103,6 @@
   when:
     - groups['postgresql'][0] == inventory_hostname
 
-- name: Create a new database for repmgr
-  become_user: postgres
-  postgresql_db:
-    name: "{{ specification.replication.repmgr_database }}"
-    owner: "{{ specification.replication.user }}"
-  when:
-    - groups['postgresql'][0] == inventory_hostname
-
 - name: Register primary with repmgr
   become_user: postgres
   shell: "repmgr primary register -f /etc/postgresql/10/main/repmgr.conf -F -S postgres"
@@ -107,13 +111,6 @@
 
 
 # Slave:
-- name: Stop postgresql service
-  service:
-    name: postgresql
-    state: stopped
-  when:
-    - groups['postgresql'][1] == inventory_hostname
-
 - name: Turn on hot_standby
   replace:
     path: /etc/postgresql/10/main/postgresql.conf
@@ -135,13 +132,13 @@
 - name: Stop postgresql service
   service:
     name: postgresql
-    state: started
+    state: stopped
   when:
     - groups['postgresql'][1] == inventory_hostname
 
 - name: Clone content with repmgr
   become_user: postgres
-  shell: "repmgr -h {{ hostvars[groups['postgresql'][0]]['ansible_default_ipv4']['address'] }} -U repmgr -d repmgr -p 5432 -F standby clone"
+  shell: "repmgr -h {{ hostvars[groups['postgresql'][0]]['ansible_default_ipv4']['address'] }} -U {{ specification.additional_components.replication.user }} -d {{ specification.additional_components.replication.repmgr_database }} -p 5432 -F standby clone"
   when:
     - groups['postgresql'][1] == inventory_hostname
     - not is_node_already_registered.rc == 0
@@ -153,9 +150,16 @@
   when:
     - groups['postgresql'][1] == inventory_hostname
 
+- name: Restart repmgrd service
+  service:
+    name: repmgrd
+    state: restarted
+  when:
+    - groups['postgresql'][0] == inventory_hostname
+
 - name: Register node with repmgr
   become_user: postgres
-  shell: "repmgr standby -f /etc/postgresql/10/main/repmgr.conf register"
+  shell: "repmgr standby -F -f /etc/postgresql/10/main/repmgr.conf --upstream-conninfo='host={{ hostvars[groups['postgresql'][0]]['ansible_default_ipv4']['address'] }}, user={{ specification.additional_components.replication.user }}, dbname={{ specification.additional_components.replication.repmgr_database }}, connect_timeout=2' --upstream-node-id 1 register"
   when:
     - groups['postgresql'][1] == inventory_hostname
     - not is_node_already_registered.rc == 0

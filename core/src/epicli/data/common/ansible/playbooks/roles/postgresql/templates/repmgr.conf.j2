@@ -1,6 +1,6 @@
 node_id={{ node_id }}
 node_name={{ inventory_hostname }}
-conninfo='host={{ ansible_default_ipv4.address }} user={{ specification.replication.user }} dbname={{ specification.replication.repmgr_database }} connect_timeout=2' #connection string to master
+conninfo='host={{ ansible_default_ipv4.address }} user={{ specification.additional_components.replication.user }} dbname={{ specification.additional_components.replication.repmgr_database }} connect_timeout=2'
 data_directory='/var/lib/postgresql/10/main'
 
 failover=automatic
