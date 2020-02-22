@@ -1,4 +1,5 @@
 #!/bin/bash
+
 if ls /usr/local/share/ca-certificates/*.crt 1> /dev/null 2>&1; then
   echo "Setup cert for System, PIP..."
   pattern="/usr/local/share/ca-certificates/*.crt"
