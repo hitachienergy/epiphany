@@ -163,3 +163,19 @@
   when:
     - groups['postgresql'][1] == inventory_hostname
     - not is_node_already_registered.rc == 0
+
+- name: Check if node is not attached in repmgr
+  become_user: postgres
+  shell: "repmgr cluster show -f /etc/postgresql/10/main/repmgr.conf | grep -i {{ inventory_hostname }} | grep -i 'is not attached to its upstream node'"
+  changed_when: false
+  register: is_node_not_attached
+  failed_when: "is_node_not_attached.rc == 2"
+  when:
+    - groups['postgresql'][1] == inventory_hostname
+
+- name: Rejoin node with repmgr
+  become_user: postgres
+  shell: "repmgr standby -f /etc/postgresql/10/main/repmgr.conf follow"
+  when:
+    - groups['postgresql'][1] == inventory_hostname
+    - is_node_not_attached.rc == 0
