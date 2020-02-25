@@ -1,11 +1,4 @@
 ---
-- name: Install packages needed for managing Postgresql with Ansible and install repmgr
-  apt:
-    name:
-    - python-psycopg2
-    - postgresql-10-repmgr
-    update_cache: yes
-    state: present
 
 - name: Add user to sudoers file
   lineinfile:
