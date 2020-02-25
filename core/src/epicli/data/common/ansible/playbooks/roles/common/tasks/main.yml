@@ -118,6 +118,5 @@
   when:
     - provider == "aws"
 
-
-
-
+- name: Include logrotate configuration tasks
+  include_tasks: configure-logrotate.yml
