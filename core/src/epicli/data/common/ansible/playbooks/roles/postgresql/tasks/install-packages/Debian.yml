@@ -20,6 +20,16 @@
     - specification.additional_components.pgbouncer.enabled is defined
     - specification.additional_components.pgbouncer.enabled
 
+- name: Install repmgr package
+  apt:
+    name:
+      - postgresql-10-repmgr
+    state: present
+    update_cache: yes
+  when:
+    - specification.replication.repmgr is defined
+    - specification.replication.repmgr
+
 # --- extensions ---
 
 - name: Install pgaudit package
