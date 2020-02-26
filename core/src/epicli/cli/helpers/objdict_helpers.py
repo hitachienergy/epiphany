@@ -37,3 +37,20 @@ def merge_objdict(to_merge, extend_by):
                 to_merge[key] = val
         else:
             to_merge[key] = val
+
+
+def remove_value(d, value):
+    if isinstance(d, str):
+        return
+    elif isinstance(d, list):
+        for dd in d:     
+            remove_value(dd, value)
+    else:
+        for k in list(d):
+            v = d[k]
+            if isinstance(v, list) or isinstance(v, dict):
+                remove_value(v, value)
+            else:
+                if value == v:
+                    del d[k]
+        
