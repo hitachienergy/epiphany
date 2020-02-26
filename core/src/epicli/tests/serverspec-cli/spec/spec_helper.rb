@@ -39,7 +39,7 @@ set :shell, '/bin/bash'
 # Set PATH
 # set :path, '/sbin:/usr/local/sbin:$PATH'
 
-  def count_inventory_roles(role)
+  def countInventoryHosts(role)
     file = File.open(ENV['inventory'], "rb")
     input = file.read
     file.close
