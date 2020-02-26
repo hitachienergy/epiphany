@@ -42,19 +42,22 @@ describe 'Checking if the ports are open' do
   end
 end 
 
-describe 'Checking Elasticsearch HTTP status code' do
-  let(:disable_sudo) { false }
-  describe command("curl -o /dev/null -s -w '%{http_code}' $(grep 'network.host' /etc/elasticsearch/elasticsearch.yml | awk '{print $2}'):#{elasticsearch_rest_api_port}") do
-    it "is expected to be equal" do
-      expect(subject.stdout.to_i).to eq 200
+listInventoryHosts("logging").each do |val|
+  describe 'Checking Elasticsearch nodes status codes' do
+    let(:disable_sudo) { false }
+    describe command("curl -k -u admin:admin -o /dev/null -s -w '%{http_code}' https://#{val}:#{elasticsearch_rest_api_port}") do
+      it "is expected to be equal" do
+        expect(subject.stdout.to_i).to eq 200
+      end
     end
   end
 end
 
 describe 'Checking Elasticsearch health' do
   let(:disable_sudo) { false }
-  describe command("curl $(grep 'network.host' /etc/elasticsearch/elasticsearch.yml | awk '{print $2}'):#{elasticsearch_rest_api_port}/_cluster/health?pretty=true") do
+  describe command("curl -k -u admin:admin https://$(hostname):#{elasticsearch_rest_api_port}/_cluster/health?pretty=true") do
     its(:stdout_as_json) { should include('status' => /green|yellow/) }
+    its(:stdout_as_json) { should include('number_of_nodes' => countInventoryHosts("logging")) }
     its(:exit_status) { should eq 0 }
   end
 end

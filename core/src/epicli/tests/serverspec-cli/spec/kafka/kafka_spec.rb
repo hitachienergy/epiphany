@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-kafka_host = 'localhost'
+kafka_host = '$(hostname)'
 kafka_port = 9092
 zookeeper_host = 'localhost'
 zookeeper_client_port = 2181
@@ -42,14 +42,14 @@ end
 describe 'Checking if the number of Kafka brokers is the same as indicated in the inventory file' do
   describe command("echo 'dump' | curl -s telnet://#{zookeeper_host}:#{zookeeper_client_port} | grep -c brokers") do
     it "is expected to be equal" do
-    expect(subject.stdout.to_i).to eq count_inventory_roles("kafka")
+    expect(subject.stdout.to_i).to eq countInventoryHosts("kafka")
     end
   end
 end
 
 describe 'Checking the possibility of creating a topic, producing and consuming messages' do
 
-  kafka_brokers_count = count_inventory_roles("kafka")
+  kafka_brokers_count = countInventoryHosts("kafka")
   timestamp = DateTime.now.to_time.to_i.to_s
   topic_name = 'topic' + timestamp
   partitions = kafka_brokers_count*3
