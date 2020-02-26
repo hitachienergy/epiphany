@@ -10,35 +10,12 @@ from typing import Set, List, Dict
 import pkg_resources
 
 
-def _get_dependencies_from_pipfile() -> Set[str]:
-    with open('Pipfile') as pip_file:
-        start_gen = dropwhile(lambda x: x.strip() != '[packages]', pip_file)
-        next(start_gen)
-        interesting_gen = takewhile(lambda x: not (x.startswith('[') or x == "\n"), start_gen)
-        return {interesting.split()[0] for interesting in interesting_gen}
-
-
-def _get_package_dependencies(dependencies: List[Dict[str, str]]) -> Set[str]:
-    return {dependency['key'] for dependency in dependencies}
-
-
-def _get_recursive_dependencies_for(direct_dependencies: Set[str]) -> Set[str]:
-    result = subprocess.run(
-        ['pipenv', 'graph', '--json'], stdout=subprocess.PIPE)
-    dependencies_dict = {
-        k['package']['key']: k
-        for k in json.loads(result.stdout)
-    }
-    universe = set(dependencies_dict)
-    res = direct_dependencies
-    set_to_check = direct_dependencies
-    while set_to_check:
-        deps = universe & reduce(
-            lambda x, y: x | _get_package_dependencies(dependencies_dict[y]['dependencies']),
-            set_to_check, set())
-        set_to_check = deps - res
-        res = res | deps
-    return {dependencies_dict[r]['package']['package_name'] for r in res}
+def get_dependencies_from_requirements() -> Set[str]:
+    req = []
+    with open('requirements.txt') as req_file:
+        for line in req_file:
+            req.append(line.split("==")[0])
+    return req
 
 def makeRequest(url, token):
     request = urllib.request.Request(url)
@@ -96,8 +73,7 @@ def _main() -> None:
     if pat == None:
         logging.critical('No Github personal access tokens passed as argument.' )
         return
-    direct_dependencies = _get_dependencies_from_pipfile()
-    all_deps = _get_recursive_dependencies_for(direct_dependencies)
+    all_deps = get_dependencies_from_requirements()
     all_deps_data = []
     for dep in all_deps:
         data = get_pkg_data(dep, pat)
