@@ -2,6 +2,7 @@ require 'spec_helper'
 
 kibana_default_port = 5601
 elasticsearch_api_port = 9200
+
 describe 'Checking if Kibana package is installed' do
   describe package('opendistroforelasticsearch-kibana') do
     it { should be_installed }
@@ -37,7 +38,7 @@ describe 'Checking Kibana directories and config files' do
 end
 
 describe 'Checking if Kibana log file exists and is not empty' do
-  describe file('/var/log/kibana/kibana.logx') do
+  describe file('/var/log/kibana/kibana.log') do
     it { should exist }
     it { should be_a_file }
     its(:size) { should > 0 }
