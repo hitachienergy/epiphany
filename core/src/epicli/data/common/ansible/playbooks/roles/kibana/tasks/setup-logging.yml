@@ -18,11 +18,9 @@
     mode: 0644
 
 - name: Replace log location
-  replace:
+  lineinfile:
     path: /etc/kibana/kibana.yml
-    regexp: '^#logging.dest: stdout$'
-    replace: "logging.dest: \"{{ specification.kibana_log_dir }}/kibana.log\""
-    backup: no
+    line: "logging.dest: {{ specification.kibana_log_dir }}/kibana.log"
 
 - name: Copy logrotate config
   template:

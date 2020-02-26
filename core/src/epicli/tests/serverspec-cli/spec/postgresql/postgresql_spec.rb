@@ -63,6 +63,16 @@ def queryForDropping
   end
 end
 
+# Running the 'systemctl is-active' command returns the result 'unknown'.
+# https://bugzilla.redhat.com/show_bug.cgi?id=1073481
+# Must first run the 'systemctl status' command to be able to view the service status withe the 'is-active' command.
+
+describe 'Checking PostgreSQL service status' do
+  describe command("systemctl status postgresql > /dev/null") do
+    its(:exit_status) { should eq 0 }
+  end
+end
+
 describe 'Checking if PostgreSQL service is running' do
   describe service('postgresql') do
     it { should be_enabled }
