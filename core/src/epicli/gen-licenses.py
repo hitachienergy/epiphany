@@ -74,7 +74,6 @@ def _main() -> None:
         logging.critical('No Github personal access tokens passed as argument.' )
         return
     all_deps = get_dependencies_from_requirements()
-    print(all_deps)
     all_deps_data = []
     for dep in all_deps:
         data = get_pkg_data(dep, pat)
