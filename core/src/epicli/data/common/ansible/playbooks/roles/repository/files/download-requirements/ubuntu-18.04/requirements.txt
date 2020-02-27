@@ -124,7 +124,7 @@ postgresql-client-10
 postgresql-10-pgaudit
 postgresql-10-repmgr
 postgresql-common
-pgbouncer
+pgbouncer 1.10.*
 
 # for firewalld
 ipset
