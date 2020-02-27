@@ -77,7 +77,7 @@ perl-Pod-Perldoc # for vim
 perl-Pod-Simple # for vim
 perl-Pod-Usage # for vim
 pgaudit12_10
-pgbouncer
+pgbouncer-1.10.*
 policycoreutils-python # for container-selinux
 python-firewall # for firewalld
 python-kitchen # for yum-utils
