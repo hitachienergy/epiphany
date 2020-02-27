@@ -10,7 +10,7 @@ with open('../../../README.md') as f:
 with open('../../../LICENSE') as f:
     license = f.read()
 
-with open('requirements.txt') as f:
+with open('.devcontainer/requirements.txt') as f:
     requirements = f.read().splitlines()
 
 datadir = os.path.join('data')
