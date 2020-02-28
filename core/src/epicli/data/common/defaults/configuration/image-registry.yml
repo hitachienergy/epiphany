@@ -77,3 +77,17 @@ specification:
       file_name: kube-proxy-v1.13.12.tar
     - name: "k8s.gcr.io/kube-scheduler:v1.13.12"
       file_name: kube-scheduler-v1.13.12.tar
+    ## todo v1.15.x, v1.16.x
+    ## v1.17.3
+    - name: "k8s.gcr.io/kube-apiserver:v1.17.3"
+      file_name: kube-apiserver-v1.17.3.tar
+    - name: "k8s.gcr.io/kube-controller-manager:v1.17.3"
+      file_name: kube-controller-manager-v1.17.3.tar
+    - name: "k8s.gcr.io/kube-scheduler:v1.17.3"
+      file_name: kube-scheduler-v1.17.3.tar
+    - name: "k8s.gcr.io/kube-proxy:v1.17.3"
+      file_name: kube-proxy-v1.17.3.tar
+    - name: "k8s.gcr.io/etcd:3.4.3-0"
+      file_name: etcd-3.4.3-0.tar
+    - name: "k8s.gcr.io/coredns:1.6.5"
+      file_name: coredns-1.6.5.tar
