@@ -20,6 +20,7 @@ class InfrastructureBuilder(Step):
         self.cluster_model = select_single(docs, lambda x: x.kind == 'epiphany-cluster')
         self.cluster_name = self.cluster_model.specification.name.lower()
         self.cluster_prefix = self.cluster_model.specification.prefix.lower()
+        self.use_network_security_groups = self.cluster_model.specification.cloud.network.use_network_security_groups
         self.docs = docs
 
     def run(self):
@@ -45,6 +46,9 @@ class InfrastructureBuilder(Step):
         infrastructure.append(route_table)
 
         efs_config = self.get_efs_config()
+
+        if not(self.use_network_security_groups):
+            self.logger.warning('The "use_network_security_groups" flag is currently ignored on AWS')
 
         for component_key, component_value in self.cluster_model.specification.components.items():
             if component_value['count'] < 1:
