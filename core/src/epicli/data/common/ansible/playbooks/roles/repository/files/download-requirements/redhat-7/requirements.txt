@@ -46,10 +46,6 @@ ipset # for firewalld
 java-1.8.0-openjdk-headless
 javapackages-tools # for java-1.8.0-openjdk-headless
 jq
-kubeadm-1.14.6
-kubectl-1.14.6
-kubelet-1.14.6
-kubernetes-cni-0.7.5
 libini_config # for nfs-utils
 libselinux-python
 libsemanage-python
@@ -113,13 +109,33 @@ xorg-x11-font-utils # for grafana
 xorg-x11-server-utils # for grafana
 yum-plugin-versionlock
 yum-utils
-# K8s upgrade
+# K8s upgrade v1.12
 kubeadm-1.12.10
 kubectl-1.12.10
 kubelet-1.12.10
+# K8s upgrade v1.13
 kubeadm-1.13.12
 kubectl-1.13.12
 kubelet-1.13.12
+# K8s upgrade v1.14
+kubeadm-1.14.6
+kubectl-1.14.6
+kubelet-1.14.6
+# K8s upgrade v1.15
+kubeadm-1.15.10
+kubectl-1.15.10
+kubelet-1.15.10
+# K8s upgrade v1.16
+kubeadm-1.16.7
+kubectl-1.16.7
+kubelet-1.16.7
+# K8s upgrade v1.17
+kubeadm-1.17.3
+kubectl-1.17.3
+kubelet-1.17.3
+
+# Kubernetes Generic
+kubernetes-cni-0.7.5
 
 [files]
 https://github.com/prometheus/haproxy_exporter/releases/download/v0.10.0/haproxy_exporter-0.10.0.linux-amd64.tar.gz
