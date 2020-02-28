@@ -84,11 +84,16 @@ class InfrastructureBuilder(Step):
                     infrastructure.append(public_ip)
                     public_ip_name = public_ip.specification.name
 
+                if self.use_network_security_groups:
+                    nsg_name = nsg.specification.name
+                else:
+                    nsg_name = ''
+
                 network_interface = self.get_network_interface(component_key, 
                                                                component_value, 
                                                                vm_config,
                                                                subnet.specification.name, 
-                                                               nsg.specification.name,
+                                                               nsg_name,
                                                                public_ip_name,
                                                                index)
                 infrastructure.append(network_interface)
@@ -133,6 +138,7 @@ class InfrastructureBuilder(Step):
     def get_network_interface(self, component_key, component_value, vm_config, subnet_name, security_group_name, public_ip_name, index):
         network_interface = self.get_config_or_default(self.docs, 'infrastructure/network-interface')
         network_interface.specification.name = resource_name(self.cluster_prefix, self.cluster_name, 'nic' + '-' + str(index), component_key)
+        network_interface.specification.use_network_security_groups = self.use_network_security_groups
         network_interface.specification.security_group_name = security_group_name
         network_interface.specification.ip_configuration_name = resource_name(self.cluster_prefix, self.cluster_name, 'ipconf' + '-' + str(index), component_key)
         network_interface.specification.subnet_name = subnet_name
