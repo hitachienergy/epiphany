@@ -129,10 +129,10 @@
   when: 
     - specification.additional_components.replication.enabled is defined
     - specification.additional_components.replication.enabled
-    - not specification.additional_components.replication.repmgr is defined
+    - specification.additional_components.replication.repmgr is defined
     - not specification.additional_components.replication.repmgr
 
-- name: Set up replication
+- name: Set up replication with repmgr
   include_tasks: replication-repmgr-{{ ansible_os_family }}.yml
   when: 
     - specification.additional_components.replication.enabled is defined

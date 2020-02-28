@@ -38,6 +38,16 @@ specification:
   additional_components:
     pgbouncer:
       enabled: no
+    replication:
+      enabled: no
+      repmgr: no
+      user: repmgr
+      password: PasswordToChange
+      priviledged_user_name: postgres
+      priviledged_user_password: PasswordToChange
+      repmgr_database: repmgr
+      max_wal_senders: 10
+      wal_keep_segments: 34
   extensions:
     pgaudit:
       enabled: no
