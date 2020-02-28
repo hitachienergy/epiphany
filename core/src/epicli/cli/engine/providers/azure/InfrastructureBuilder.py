@@ -19,6 +19,7 @@ class InfrastructureBuilder(Step):
         self.cluster_prefix = self.cluster_model.specification.prefix.lower()
         self.resource_group_name = resource_name(self.cluster_prefix, self.cluster_name, 'rg')
         self.region = self.cluster_model.specification.cloud.region
+        self.use_network_security_groups = self.cluster_model.specification.cloud.network.use_network_security_groups
         self.docs = docs
 
     def run(self):
@@ -55,19 +56,20 @@ class InfrastructureBuilder(Step):
                                     item.specification.address_prefix == subnet_definition['address_pool'])
 
             if subnet is None:
-                nsg = self.get_network_security_group(component_key, 
-                                                         vm_config.specification.security.rules,
-                                                         0)
-                infrastructure.append(nsg)
-
                 subnet = self.get_subnet(subnet_definition, component_key, 0)
                 infrastructure.append(subnet) 
+                
+                if self.use_network_security_groups:
+                    nsg = self.get_network_security_group(component_key, 
+                                                            vm_config.specification.security.rules,
+                                                            0)
+                    infrastructure.append(nsg)                
 
-                subnet_nsg_association = self.get_subnet_network_security_group_association(component_key, 
-                                                                                     subnet.specification.name, 
-                                                                                     nsg.specification.name,
-                                                                                     0)
-                infrastructure.append(subnet_nsg_association)
+                    subnet_nsg_association = self.get_subnet_network_security_group_association(component_key, 
+                                                                                        subnet.specification.name, 
+                                                                                        nsg.specification.name,
+                                                                                        0)
+                    infrastructure.append(subnet_nsg_association)
 
             #TODO: For now we create the VM infrastructure compatible with the Epiphany 2.x 
             #      code line but later we might want to look at scale sets to achieve the same result:
