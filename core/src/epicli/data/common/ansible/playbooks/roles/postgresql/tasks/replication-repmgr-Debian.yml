@@ -17,13 +17,13 @@
   replace:
     path: /etc/postgresql/10/main/postgresql.conf
     regexp: "^[#]?max_wal_senders\\s*=\\s*[0-9]+"
-    replace: "max_wal_senders = {{ specification.additional_components.replication.max_wal_senders | default('5') }}"
+    replace: "max_wal_senders = {{ specification.additional_components.replication.max_wal_senders }}"
 
 - name: Add password for super user in postgresql
   become_user: postgres
   postgresql_user:
-    user: "{{ specification.additional_components.replication.user }}"
-    password: "{{ specification.additional_components.replication.password }}"
+    user: "{{ specification.additional_components.replication.priviledged_user_name }}"
+    password: "{{ specification.additional_components.replication.priviledged_user_password }}"
     role_attr_flags: LOGIN,SUPERUSER
 
 - name: Add replication user to postgresql
@@ -46,10 +46,6 @@
     group: postgres
     mode: 0600
 
-- name: Set Node ID
-  set_fact:
-    node_id: "{{ (groups.postgresql.index(inventory_hostname) + 1) }}"
-
 - name: Create repmgr config file
   template:
     src: repmgr.conf.j2
@@ -57,8 +53,10 @@
     owner: postgres
     group: postgres
     mode: 0600
+  vars:
+    node_id: "{{ (groups.postgresql.index(inventory_hostname) + 1) }}"
 
-- name: Creates directory
+- name: Create directory for db backup
   file:
     path: /dbbackup/{{ inventory_hostname }}/backup/
     state: directory
@@ -68,7 +66,7 @@
 - name: Insert postgresql configuration
   blockinfile:
     path: /etc/postgresql/10/main/postgresql.conf
-    marker: "# ANSIBLE MANAGED BLOCK"
+    marker: "# ANSIBLE MANAGED BLOCK - REPLICATION"
     insertafter: "# Add settings for extensions here"
     block: |
       archive_mode = on
@@ -98,7 +96,7 @@
 
 - name: Register primary with repmgr
   become_user: postgres
-  shell: "repmgr primary register -f /etc/postgresql/10/main/repmgr.conf -F -S postgres"
+  shell: repmgr primary register -f /etc/postgresql/10/main/repmgr.conf -F -S postgres
   when:
     - groups['postgresql'][0] == inventory_hostname
 
@@ -113,12 +111,14 @@
   when:
     - groups['postgresql'][1] == inventory_hostname
 
-- name: Check if node is registered already in repmgr
+- name: Check if node is already registered in repmgr
   become_user: postgres
-  shell: "repmgr cluster show -f /etc/postgresql/10/main/repmgr.conf | grep -i {{ inventory_hostname }}"
+  shell: >-
+    set -o pipefail &&
+    repmgr cluster show -f /etc/postgresql/10/main/repmgr.conf | grep -i {{ inventory_hostname }}
   changed_when: false
   register: is_node_already_registered
-  failed_when: "is_node_already_registered.rc == 2"
+  failed_when: is_node_already_registered.rc == 2
   when:
     - groups['postgresql'][1] == inventory_hostname
 
@@ -131,7 +131,7 @@
 
 - name: Clone content with repmgr
   become_user: postgres
-  shell: "repmgr -h {{ hostvars[groups['postgresql'][0]]['ansible_default_ipv4']['address'] }} -U {{ specification.additional_components.replication.user }} -d {{ specification.additional_components.replication.repmgr_database }} -p 5432 -F standby clone"
+  shell: repmgr -h {{ hostvars[groups['postgresql'][0]]['ansible_default_ipv4']['address'] }} -U {{ specification.additional_components.replication.user }} -d {{ specification.additional_components.replication.repmgr_database }} -p 5432 -F standby clone
   when:
     - groups['postgresql'][1] == inventory_hostname
     - not is_node_already_registered.rc == 0
@@ -157,12 +157,14 @@
     - groups['postgresql'][1] == inventory_hostname
     - not is_node_already_registered.rc == 0
 
-- name: Check if node is not attached in repmgr
+- name: Check if node is not attached to repmgr
   become_user: postgres
-  shell: "repmgr cluster show -f /etc/postgresql/10/main/repmgr.conf | grep -i {{ inventory_hostname }} | grep -i 'is not attached to its upstream node'"
+  shell: >-
+    set -o pipefail &&
+    repmgr cluster show -f /etc/postgresql/10/main/repmgr.conf | grep -i {{ inventory_hostname }} | grep -i 'is not attached to its upstream node'
   changed_when: false
   register: is_node_not_attached
-  failed_when: "is_node_not_attached.rc == 2"
+  failed_when: is_node_not_attached.rc == 2
   when:
     - groups['postgresql'][1] == inventory_hostname
 
