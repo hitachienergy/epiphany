@@ -1,0 +1,81 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: pgpool
+  labels:
+    app: pgpool
+  namespace: {{ data.namespace }}
+spec:
+  replicas: {{ data.replicas }}
+  selector:
+    matchLabels:
+      app: pgpool
+  template:
+    metadata:
+      name: pgpool
+      labels:
+        app: pgpool
+    spec:
+{% for field, value in data.pod_spec.items() if value %} {# affinity, nodeSelector, tolerations #}
+      {{ field }}:
+        {{ value | to_nice_yaml }}
+{% endfor %}
+      containers:
+        - name: pgpool
+          image: {{ data.image.path }}
+          envFrom:
+            - configMapRef:
+                name: pgpool-container-env
+          env:
+            - name: BITNAMI_DEBUG
+              value: {{ (data.image.debug == true) | ternary('true', 'false') | quote }}
+{% if data.pgpool.env.PGPOOL_BACKEND_NODES is undefined or data.pgpool.env.PGPOOL_BACKEND_NODES == 'SET_BY_AUTOMATION' %}
+            - name: PGPOOL_BACKEND_NODES
+              value: {% for node in groups['postgresql'] %}{{ loop.index0 }}:{{ hostvars[groups['postgresql'][loop.index0].ansible_default_ipv4.address] }}:5432{% if not loop.last %},{% endif %}{% endfor %}
+{% endif %}
+          ports:
+            - name: postgresql
+              containerPort: 5432
+              protocol: TCP
+          livenessProbe:
+            exec:
+              command:
+                - /healthcheck.sh
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            timeoutSeconds: 5
+            successThreshold: 1
+            failureThreshold: 6
+{# TODO
+          readinessProbe:
+            exec:
+              command:
+                - bash
+                - -ec
+                - PGPASSWORD=${PGPOOL_POSTGRES_PASSWORD} psql -U {{ (include "postgresql-ha.postgresqlUsername" .) | quote }} {{- if not (empty (include "postgresql-ha.postgresqlDatabase" .)) }} -d {{ (include "postgresql-ha.postgresqlDatabase" .) | quote }}{{- end }} -h 127.0.0.1 -tA -c "SELECT 1" >/dev/null
+            initialDelaySeconds: 5
+            periodSeconds: 10
+            timeoutSeconds: 5
+            successThreshold: 1
+            failureThreshold: 6
+#}
+          resources: {{ data.resources | to_nice_yaml }}
+          volumeMounts:
+            - name: postgresql-password
+              mountPath: /opt/bitnami/pgpool/secrets/
+            - name: pgpool-password
+              mountPath: /opt/bitnami/pgpool/secrets/
+      volumes: {# TODO: check whether it's OK to use better names #}
+        - name: postgresql-password
+          secret:
+            secretName: pgpool
+            items:
+              - key: pgpool_postgres_password
+                path: pgpool-password
+        - name: pgpool-password
+          secret:
+            secretName: pgpool
+            items:
+              - key: pgpool_admin_password
+                path: admin-password

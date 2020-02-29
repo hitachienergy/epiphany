@@ -1,0 +1,22 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: pgpool-container-env
+  labels:
+    app: pgpool
+  namespace: {{ data.namespace }}
+data: {{ data.pgpool.env }}
+
+---
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: pgpool-config-file
+  labels:
+    app: pgpool
+  namespace: {{ data.namespace }}
+data:
+  pgpool.conf: |
+    {{ data.pgpool.config_file_content }}
