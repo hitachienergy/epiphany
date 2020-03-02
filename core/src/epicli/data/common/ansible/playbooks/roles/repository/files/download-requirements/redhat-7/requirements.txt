@@ -161,8 +161,8 @@ quay.io/coreos/flannel:v0.11.0-amd64
 quay.io/coreos/flannel:v0.11.0
 calico/node:v3.8.1
 calico/pod2daemon-flexvol:v3.8.1
-kubernetesui/dashboard:v2.0.0-beta1
-kubernetesui/metrics-scraper:v1.0.0
+kubernetesui/dashboard:v2.0.0-beta8
+kubernetesui/metrics-scraper:v1.0.1
 calico/cni:v3.8.1
 calico/kube-controllers:v3.8.1
 registry:2

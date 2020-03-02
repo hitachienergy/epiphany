@@ -32,10 +32,10 @@ specification:
       file_name: node-v3.8.1.tar
     - name: "calico/pod2daemon-flexvol:v3.8.1"
       file_name: pod2daemon-flexvol-v3.8.1.tar
-    - name: "kubernetesui/dashboard:v2.0.0-beta1"
-      file_name: dashboard-v2.0.0-beta1.tar
-    - name: "kubernetesui/metrics-scraper:v1.0.0"
-      file_name: metrics-scraper-v1.0.0.tar
+    - name: "kubernetesui/dashboard:v2.0.0-beta8"
+      file_name: dashboard-v2.0.0-beta8.tar
+    - name: "kubernetesui/metrics-scraper:v1.0.1"
+      file_name: metrics-scraper-v1.0.1.tar
     - name: "calico/cni:v3.8.1"
       file_name: cni-v3.8.1.tar
     - name: "calico/kube-controllers:v3.8.1"
