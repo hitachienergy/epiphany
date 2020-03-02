@@ -1,13 +1,16 @@
 #jinja2: trim_blocks:False
 ---
 # An example of a Kubernetes configuration for Ignite pods deployment.
-apiVersion: extensions/v1beta1
+apiVersion: apps/v1
 kind: Deployment
 metadata:
   # Custom Ignite cluster's name.
   name: ignite-cluster
   namespace: {{ data.namespace }}
 spec:
+  selector:
+    matchLabels:
+      app: ignite
   # A number of Ignite pods to be started by Kubernetes initially.
   replicas: {{ data.replicas }}
   template:
