@@ -19,6 +19,24 @@
     regexp: "^[#]?max_wal_senders\\s*=\\s*[0-9]+"
     replace: "max_wal_senders = {{ specification.additional_components.replication.max_wal_senders }}"
 
+- name: Enable repmgrd in /etc/default/repmgrd
+  replace:
+    path: /etc/default/repmgrd
+    regexp: "^[#]?REPMGRD_ENABLED=no"
+    replace: "REPMGRD_ENABLED=yes"
+
+- name: Set repmgrd path to config file in /etc/default/repmgrd
+  replace:
+    path: /etc/default/repmgrd
+    regexp: "^#REPMGRD_CONF=\"/path/to/repmgr.conf\""
+    replace: "REPMGRD_CONF=\"/etc/postgresql/10/main/repmgr.conf\""
+
+- name: Turn off daemonize to false for repmgrd in /etc/default/repmgrd
+  replace:
+    path: /etc/default/repmgrd
+    regexp: "^#REPMGRD_OPTS=\"\""
+    replace: "REPMGRD_OPTS=\"--daemonize=false\""
+
 - name: Add password for super user in postgresql
   become_user: postgres
   postgresql_user:
@@ -80,12 +98,32 @@
     owner: "{{ specification.additional_components.replication.user }}"
 
 # Master:
+- name: Check if master is already registered in repmgr
+  become_user: postgres
+  shell: >-
+    set -o pipefail &&
+    repmgr cluster show -f /etc/postgresql/10/main/repmgr.conf | grep -i {{ inventory_hostname }} | grep -v standby
+  changed_when: false
+  register: is_master_already_registered
+  failed_when: is_master_already_registered.rc == 2
+  args:
+    executable: /bin/bash
+  when:
+    - groups['postgresql'][0] == inventory_hostname
+
+- name: Debug
+  debug:
+    msg: "{{ is_master_already_registered }}"
+  when:
+    - groups['postgresql'][0] == inventory_hostname
+
 - name: Restart postgresql service
   service:
     name: postgresql
     state: restarted
   when:
     - groups['postgresql'][0] == inventory_hostname
+    - is_master_already_registered.stdout == ""
 
 - name: Restart repmgrd service
   service:
@@ -93,13 +131,14 @@
     state: restarted
   when:
     - groups['postgresql'][0] == inventory_hostname
+    - is_master_already_registered.stdout == ""
 
 - name: Register primary with repmgr
   become_user: postgres
   shell: repmgr primary register -f /etc/postgresql/10/main/repmgr.conf -F -S postgres
   when:
     - groups['postgresql'][0] == inventory_hostname
-
+    - is_master_already_registered.stdout == ""
 
 # Slave:
 - name: Turn on hot_standby
@@ -119,6 +158,8 @@
   changed_when: false
   register: is_node_already_registered
   failed_when: is_node_already_registered.rc == 2
+  args:
+    executable: /bin/bash
   when:
     - groups['postgresql'][1] == inventory_hostname
 
@@ -128,13 +169,14 @@
     state: stopped
   when:
     - groups['postgresql'][1] == inventory_hostname
+    - is_node_already_registered.stdout == ""
 
 - name: Clone content with repmgr
   become_user: postgres
-  shell: repmgr -h {{ hostvars[groups['postgresql'][0]]['ansible_default_ipv4']['address'] }} -U {{ specification.additional_components.replication.user }} -d {{ specification.additional_components.replication.repmgr_database }} -p 5432 -F standby clone
+  shell: repmgr -h {{ hostvars[groups['postgresql'][0]]['ansible_default_ipv4']['address'] }} -U {{ specification.additional_components.replication.priviledged_user_name }} -d {{ specification.additional_components.replication.repmgr_database }} -p 5432 -F standby clone
   when:
     - groups['postgresql'][1] == inventory_hostname
-    - not is_node_already_registered.rc == 0
+    - is_node_already_registered.stdout == ""
 
 - name: Start postgresql service
   service:
@@ -142,29 +184,33 @@
     state: started
   when:
     - groups['postgresql'][1] == inventory_hostname
+    - is_node_already_registered.stdout == ""
 
 - name: Restart repmgrd service
   service:
     name: repmgrd
     state: restarted
   when:
-    - groups['postgresql'][0] == inventory_hostname
+    - groups['postgresql'][1] == inventory_hostname
+    - is_node_already_registered.stdout == ""
 
 - name: Register node with repmgr
   become_user: postgres
   shell: "repmgr standby -F -f /etc/postgresql/10/main/repmgr.conf --upstream-conninfo='host={{ hostvars[groups['postgresql'][0]]['ansible_default_ipv4']['address'] }}, user={{ specification.additional_components.replication.user }}, dbname={{ specification.additional_components.replication.repmgr_database }}, connect_timeout=2' --upstream-node-id 1 register"
   when:
     - groups['postgresql'][1] == inventory_hostname
-    - not is_node_already_registered.rc == 0
+    - is_node_already_registered.stdout == ""
 
 - name: Check if node is not attached to repmgr
   become_user: postgres
   shell: >-
     set -o pipefail &&
-    repmgr cluster show -f /etc/postgresql/10/main/repmgr.conf | grep -i {{ inventory_hostname }} | grep -i 'is not attached to its upstream node'
+    repmgr cluster show -f /etc/postgresql/10/main/repmgr.conf | grep -i 'not attached to its upstream node'
   changed_when: false
   register: is_node_not_attached
   failed_when: is_node_not_attached.rc == 2
+  args:
+    executable: /bin/bash
   when:
     - groups['postgresql'][1] == inventory_hostname
 
@@ -173,4 +219,4 @@
   shell: "repmgr standby -f /etc/postgresql/10/main/repmgr.conf follow"
   when:
     - groups['postgresql'][1] == inventory_hostname
-    - is_node_not_attached.rc == 0
+    - not is_node_not_attached.stdout == ""
