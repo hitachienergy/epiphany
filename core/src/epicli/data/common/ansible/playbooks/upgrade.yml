@@ -56,7 +56,7 @@
     - import_role:
         name: upgrade
         tasks_from: kubernetes
-      vars: { ver: "v1.15.10", cni_ver: "0.7.5" }
+      vars: { ver: "1.15.10", cni_ver: "0.7.5" }
 
 - hosts: kubernetes_master:kubernetes_node
   serial: 1
@@ -66,7 +66,7 @@
     - import_role:
         name: upgrade
         tasks_from: kubernetes
-      vars: { ver: "v1.16.7", cni_ver: "0.7.5" }
+      vars: { ver: "1.16.7", cni_ver: "0.7.5" }
 
 - hosts: kubernetes_master:kubernetes_node
   serial: 1
@@ -76,7 +76,7 @@
     - import_role:
         name: upgrade
         tasks_from: kubernetes
-      vars: { ver: "v1.17.3", cni_ver: "0.7.5" }
+      vars: { ver: "1.17.3", cni_ver: "0.7.5" }
 
 - hosts: elasticsearch
   become: true
