@@ -20,6 +20,7 @@ class InfrastructureBuilder(Step):
         self.resource_group_name = resource_name(self.cluster_prefix, self.cluster_name, 'rg')
         self.region = self.cluster_model.specification.cloud.region
         self.use_network_security_groups = self.cluster_model.specification.cloud.network.use_network_security_groups
+        self.use_public_ips = self.cluster_model.specification.cloud.use_public_ips
         self.docs = docs
 
     def run(self):
@@ -42,6 +43,11 @@ class InfrastructureBuilder(Step):
             # The vm config also contains some other stuff we use for network and security config. 
             # So get it here and pass it allong.
             vm_config = self.get_virtual_machine(component_value, self.cluster_model, self.docs)
+
+            # If there are no security groups Ansible provisioning will fail because 
+            # SSH is not allowed then with public IPs on Azure.
+            if not(self.use_network_security_groups) and self.use_public_ips:
+                 self.logger.warning('Use of security groups has been disabled and public IP are used. Ansible run will fail because SSH will not be allowed.')            
 
             # For now only one subnet per component.
             if (len(component_value.subnets) > 1):

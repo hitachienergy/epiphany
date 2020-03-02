@@ -123,7 +123,13 @@ def apply_parser(subparsers):
     sub_parser.add_argument('-f', '--file', dest='file', type=str,
                             help='File with infrastructure/configuration definitions to use.')
     sub_parser.add_argument('--no-infra', dest='no_infra', action="store_true",
-                            help='Skip infrastructure provisioning.')
+                            help='''Skip terraform infrastructure provisioning. 
+                            Use this when you already have infrastructure available and only want to run the 
+                            Ansible role provisioning.''')
+    sub_parser.add_argument('--skip-config', dest='skip_config', action="store_true",
+                            help='''Skip Ansible role provisioning.
+                            Use this when you need to create cloud infrastructure and apply manual changes before
+                            you want to run the Ansible role provisioning.''')                         
     sub_parser.add_argument('--offline-requirements', dest='offline_requirements', type=str,
                             help='Path to the folder with pre-prepared offline requirements.')    
     sub_parser.add_argument('--vault-password', dest='vault_password', type=str,
@@ -154,12 +160,11 @@ def validate_parser(subparsers):
 
 
 def delete_parser(subparsers):
-    sub_parser = subparsers.add_parser('delete', description='[Experimental]: Delete a cluster from build artifacts.')
+    sub_parser = subparsers.add_parser('delete', description='Delete a cluster from build artifacts.')
     sub_parser.add_argument('-b', '--build', dest='build_directory', type=str, required=True,
                             help='Absolute path to directory with build artifacts.')
 
     def run_delete(args):
-        experimental_query()
         if not query_yes_no('Do you really want to delete your cluster?'):
             return 0
         adjust_paths_from_build(args)

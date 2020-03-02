@@ -18,6 +18,7 @@ class BuildEngine(Step):
     def __init__(self, input_data):
         self.file = input_data.file
         self.skip_infrastructure = input_data.no_infra if hasattr(input_data, 'no_infra') else False
+        self.skip_config = input_data.skip_config if hasattr(input_data, 'skip_config') else False
         self.logger = Log(__name__)
 
         self.cluster_model = None
@@ -115,8 +116,9 @@ class BuildEngine(Step):
         save_manifest(docs, self.cluster_model.specification.name)   
 
         # Run Ansible to provision infrastructure
-        with AnsibleRunner(self.cluster_model, docs) as ansible_runner:
-            ansible_runner.apply()
+        if not(self.skip_config):
+            with AnsibleRunner(self.cluster_model, docs) as ansible_runner:
+                ansible_runner.apply()
 
         return 0
 
