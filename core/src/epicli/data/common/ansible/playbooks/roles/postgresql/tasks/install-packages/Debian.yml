@@ -27,8 +27,8 @@
     state: present
     update_cache: yes
   when:
-    - specification.replication.repmgr is defined
-    - specification.replication.repmgr
+    - specification.additional_components.replication.repmgr is defined
+    - specification.additional_components.replication.repmgr
 
 # --- extensions ---
 

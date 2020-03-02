@@ -4,8 +4,8 @@ conninfo='host={{ ansible_default_ipv4.address }} user={{ specification.addition
 data_directory='/var/lib/postgresql/10/main'
 
 failover=automatic
-promote_command='/usr/bin/repmgr standby promote -f /etc/repmgr.conf --log-to-file'
-follow_command='/usr/bin/repmgr standby follow -f /etc/repmgr.conf --log-to-file --upstream-node-id=%n'
+promote_command='/usr/bin/repmgr standby promote -f /etc/postgresql/10/main/repmgr.conf --log-to-file'
+follow_command='/usr/bin/repmgr standby follow -f /etc/postgresql/10/main/repmgr.conf --log-to-file --upstream-node-id=%n'
 monitoring_history=yes
 monitor_interval_secs=10
 
