@@ -18,7 +18,7 @@ specification:
 # Abstract these configs to seperate default files and add 
 # the ability to add custom application roles.
 
-# - name: rabbitmq 2
+# - name: rabbitmq
 #   image_path: rabbitmq:3.7.10
 #   use_local_image_registry: true
 #   #image_pull_secret_name: regcred # optional
@@ -47,7 +47,7 @@ specification:
 
 
 # - name: auth-service # this service require postgresql to be installed in cluster
-#   image_path: jboss/keycloak:4.8.3.Final
+#   image_path: jboss/keycloak:9.0.0
 #   use_local_image_registry: true
 #   #image_pull_secret_name: regcred
 #   service:
