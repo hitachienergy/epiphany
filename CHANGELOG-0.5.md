@@ -4,7 +4,7 @@
 
 ### Added
 
-- Upgraded Epicli container and devcontainer `from python3.7-alpine` to `python:3.7-slim`
+- Upgraded Epicli container and devcontainer from `python3.7-alpine` to `python:3.7-slim`
 
 ### Fixed
 
