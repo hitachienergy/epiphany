@@ -1,4 +1,4 @@
-"$id": "#/epiphany-cluster/specification"
+"$id": "#/specification"
 title: "Cluster specification schema"
 description: "The main cluster specification"
 type: object
@@ -8,7 +8,7 @@ required:
   - components
 properties: 
   prefix: 
-    "$id": "#/epiphany-cluster/properties/prefix"
+    "$id": "#/properties/prefix"
     title: "Cluster prefix"
     description: "A prefix the can be prepended to the cluster name"
     examples: 
@@ -19,7 +19,7 @@ properties:
     type: string
     pattern: "^[a-z0-9]{2,8}$"
   name: 
-    "$id": "#/epiphany-cluster/properties/name"
+    "$id": "#/properties/name"
     title: "Cluster name"
     description: "The name of the cluster"
     examples: 
@@ -27,17 +27,90 @@ properties:
     type: string
     pattern: "^[a-z0-9\\-]{3,20}$"
   admin_user: 
-    "$id": "#/epiphany-cluster/properties/admin_user"
+    "$id": "#/properties/admin_user"
     title: "The admin_user Schema"
     description: "Settings needed for the SSH connection to the cluster machines or VM's"
     type: object
-  cloud: 
-    "$id": "#/epiphany-cluster/properties/cloud"
-    title: "Cloud Schema"
-    description: "Settings specific to cloud providers (AWS, Azure)"
-    type: object  
+  cloud:
+    "$id": "#/properties/specification/properties/cloud"
+    type: object
+    title: The Cloud Schema
+    properties:
+      subscription_name:
+        "$id": "#/properties/specification/properties/cloud/properties/subscription_name"
+        type: string
+        title: The Subscription_name Schema
+        default: ''
+        examples:
+        - subsciptionname
+        pattern: "^(.*)$"
+      vnet_address_pool:
+        "$id": "#/properties/specification/properties/cloud/properties/vnet_address_pool"
+        type: string
+        title: The Vnet_address_pool Schema
+        default: ''
+        examples:
+        - 10.1.0.0/20
+        pattern: "^(.*)$"
+      use_public_ips:
+        "$id": "#/properties/specification/properties/cloud/properties/use_public_ips"
+        type: boolean
+        title: The Use_public_ips Schema
+        default: false
+        examples:
+        - false
+      use_service_principal:
+        "$id": "#/properties/specification/properties/cloud/properties/use_service_principal"
+        type: boolean
+        title: The Use_service_principal Schema
+        default: false
+        examples:
+        - false
+      region:
+        "$id": "#/properties/specification/properties/cloud/properties/region"
+        type: string
+        title: The Region Schema
+        default: ''
+        examples:
+        - eu-west-2
+        pattern: "^(.*)$"
+      credentials:
+        "$id": "#/properties/specification/properties/cloud/properties/credentials"
+        type: object
+        title: The Credentials Schema
+        required:
+        - key
+        - secret
+        properties:
+          key:
+            "$id": "#/properties/specification/properties/cloud/properties/credentials/properties/key"
+            type: string
+            title: The Key Schema
+            pattern: "^(.*)$"
+          secret:
+            "$id": "#/properties/specification/properties/cloud/properties/credentials/properties/secret"
+            type: string
+            title: The Secret Schema
+            pattern: "^(.*)$"
+      network:
+        "$id": "#/properties/specification/properties/cloud/properties/network"
+        type: object
+        title: The Network Schema
+        properties:
+          use_network_security_groups:
+            "$id": "#/properties/specification/properties/cloud/properties/network/properties/use_network_security_groups"
+            type: boolean
+            title: The Use_network_security_groups Schema
+            default: false
+            examples:
+            - true
   components: 
-    "$id": "#/epiphany-cluster/properties/components"
+    "$id": "#/properties/components"
     title: "Components schema"
     description: "Cluster component layout specification"
     type: object
+  
+
+
+
+
