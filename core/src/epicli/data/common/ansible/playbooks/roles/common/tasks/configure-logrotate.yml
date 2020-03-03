@@ -1,0 +1,44 @@
+---
+# Move logrotate script from cron.daily to cron.hourly
+
+- name: Check if /etc/cron.daily/logrotate exists
+  stat:
+    path: /etc/cron.daily/logrotate
+  register: cron_daily_logrotate_stat
+
+- name: Move script and reconfigure logrotate
+  block:
+    - name: Reconfigure logrotate
+      blockinfile:
+        dest: /etc/logrotate.conf
+        # RHEL v7.6: Only %Y %m %d %H and %s specifiers are allowed
+        block: |
+          # to have multiple unique filenames per day when dateext option is set
+          dateformat -%Y%m%dH%H
+        backup: yes
+
+    - name: Copy logrotate script from /etc/cron.daily to /etc/cron.hourly
+      copy:
+        src: /etc/cron.daily/logrotate
+        dest: /etc/cron.hourly/logrotate
+        remote_src: yes
+        mode: preserve
+      register: copy_logrotate_script
+
+    - name: Remove /etc/cron.daily/logrotate
+      file:
+        path: /etc/cron.daily/logrotate
+        state: absent
+
+    - name: Restart cron service
+      systemd:
+        name: "{{ cron_service[ansible_os_family] }}"
+        state: restarted
+      vars:
+        cron_service:
+          RedHat: crond
+          Debian: cron
+      when:
+        - copy_logrotate_script.changed
+  when:
+    - cron_daily_logrotate_stat.stat.exists

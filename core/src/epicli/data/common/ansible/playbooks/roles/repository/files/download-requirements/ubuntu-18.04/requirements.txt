@@ -39,12 +39,11 @@ nfs-common
 opendistro-alerting 1.3.0
 opendistro-index-management 1.3.0
 opendistro-job-scheduler 1.3.0
-opendistroforelasticsearch-kibana 1.3.0
 opendistro-performance-analyzer 1.3.0
 opendistro-security 1.3.0
 opendistro-sql 1.3.0
+opendistroforelasticsearch-kibana 1.3.0
 openjdk-8-jre-headless
-openjdk-11-jre-headless
 openssl
 postgresql-10
 python-pip
@@ -66,6 +65,9 @@ unzip
 vim
 nfs-kernel-server
 
+# for curl, issue #869
+libcurl4
+
 # for openjdk-8-jre-headless
 libnss3
 libcups2
@@ -75,9 +77,6 @@ libjpeg8
 libfontconfig1
 libxtst6
 fontconfig-config
-
-# for openjdk-11-jre-headless
-liboss4-salsa-asound2
 
 python-apt
 
@@ -125,7 +124,7 @@ libsmbclient
 postgresql-client-10
 postgresql-10-pgaudit
 postgresql-common
-pgbouncer
+pgbouncer 1.10.*
 
 # for firewalld
 ipset
@@ -134,6 +133,9 @@ python3-decorator
 python3-selinux
 python3-slip
 python3-slip-dbus
+
+# for vim, issue #869
+libpython3.6
 
 # K8s upgrade
 kubeadm 1.12.10

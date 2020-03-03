@@ -8,22 +8,29 @@ There are 2 ways to get the image, build it locally yourself or pull it from the
 
     - Python 3.7
     - PIP
-    - Pipenv
     - Docker
 
-2. Open a terminal in `/core/src/epicli` and run:
-
-    On Linux:
+2. Install the following Python dependencies using PIP:
 
     ```bash
-    ./build-docker.sh
+    pip install wheel setuptools twine
+    ```
+
+3. Open a terminal in `/core/src/epicli` and run:
+
+    On Linux/Mac:
+
+    ```bash
+    ./build-docker.sh debian|alpine
     ```
 
     On windows:
 
     ```bash
-    ./build-docker.bat
+    ./build-docker.bat debian|alpine
     ```
+
+*Note: Use the debian or alpine flag to indicate which base image you want to use for the Epicli container.*
   
 ### Pull Epicli image from the registry
 
@@ -57,39 +64,32 @@ Where `LOCAL_DIR` should be replaced with the local path to the directory for Ep
 
 *Note: Epicli will only run on Lixux or MacOS and not on Windows. This is because Ansible at this point in time does not work on Windows.*
 
+*Note: You might want to consider installing Epicli in a virtual python enviroment. More information can be found [here](https://packaging.python.org/guides/installing-using-pip-and-virtual-environments/).*
+
 1. To be able to run the Epicli from your local OS you have to install:
 
     - Python 3.7
     - PIP
-    - Pipenv
 
-2. Open a terminal in `/core/src/epicli` and run:
+2. Install the following Python dependencies (in your virtual environment) using PIP:
 
     ```bash
-    pipenv install
+    pip install wheel setuptools twine
     ```
 
-    This will create a virtual Python 3.7 environment and install all needed dependencies.
-
-3. Build the Epicli wheel:
+3. Open a terminal in `/core/src/epicli` and run the following to build the Epicli wheel:
 
     ```bash
     ./build-wheel.sh
     ```
 
-4. Enter the virtual Python enviroment:
-
-    ```bash
-    pipenv shell
-    ```
-
-5. Install the Epicli wheel inside the virtual enviroment:
+4. Install the Epicli wheel:
 
     ```bash
     pip install dist/epicli-VERSION-py3-none-any.whl
     ```
 
-6. Verify the Epicli installation:
+5. Verify the Epicli installation:
 
     ```bash
     epicli --version
@@ -97,13 +97,15 @@ Where `LOCAL_DIR` should be replaced with the local path to the directory for Ep
 
     This should return the version of the CLI deployed.
 
-Now you can use Epicli inside the created virtual environment.
+Now you can use Epicli directly on your machine.
 
 ## Epicli development
 
 For setting up en Epicli development environment please refer to this dedicated document [here.](./../DEVELOPMENT.md)
 
-## Note for Windows users
+## Important notes
+
+### Note for Windows users
 
 - Watch out for the line endings conversion. By default Git for Windows sets `core.autocrlf=true`. Mounting such files with Docker results in `^M` end-of-line character in the config files.
 Use: [Checkout as-is, commit Unix-style](https://stackoverflow.com/questions/10418975/how-to-change-line-ending-settings) (`core.autocrlf=input`) or Checkout as-is, commit as-is (`core.autocrlf=false`). Be sure to use a text editor that can work with Unix line endings (e.g. Notepad++).
@@ -135,11 +137,11 @@ Use: [Checkout as-is, commit Unix-style](https://stackoverflow.com/questions/104
     chmod 400 ~/.ssh/epiphany-operations/id_rsa*
     ```
 
-## Note about proxies
+### Note about proxies
 
 To run Epicli from behind a proxy, enviroment variables need to be set.
 
-When running directly from OS (upper and lowercase are needed because of an issue with the Ansible dependency):
+When running directly from OS or from a development container (upper and lowercase are needed because of an issue with the Ansible dependency):
 
   ```bash
   export http_proxy="http://PROXY_SERVER:PORT"
@@ -153,3 +155,27 @@ Or when running from a Docker image (upper and lowercase are needed because of a
   ```bash
   docker run -it -v POSSIBLE_MOUNTS... -e HTTP_PROXY=http://PROXY_SERVER:PORT -e HTTPS_PROXY=http://PROXY_SERVER:PORT http_proxy=http://PROXY_SERVER:PORT -e https_proxy=http://PROXY_SERVER:PORT --rm IMAGE_NAME
   ```
+
+### Note about custom CA certificates
+
+In some cases it might be that a company uses custom CA certificates for providing secure connections. To use these with Epicli you can do the following:
+
+#### Devcontainer
+
+Before building the VSCode devcontainer place the *.crt file here: `/epiphany/core/src/epicli/.devcontainer/cert/`. Then the certificate will be included and configured during the build process. After that no additional configuration should be needed.
+
+#### MacOS
+
+Install the certiciate in your keychain as described [here](https://www.sslsupportdesk.com/how-to-import-a-certificate-into-mac-os/).
+
+#### Epicli container or Debian based OS
+
+If you are running Epicli from one of the prebuild containers or a Debian based OS directly you can do the following to install the certificate:
+
+  ```bash
+  cp ./path/to/cert.crt /usr/local/share/ca-certificates/
+  chmod 644 /usr/local/share/ca-certificates/cert.crt
+  update-ca-certificates
+  ```
+
+*Note: Configuring the CA cert on the prebuild container only works on the `Debian` based ones and NOT on `Alpine` based.*
