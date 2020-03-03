@@ -4,8 +4,16 @@
     pg_config_dir: "{{ pg_config_dir[ansible_os_family] }}"
   vars:
     pg_config_dir:
-      RedHat: /var/opt/rh/rh-postgresql10/lib/pgsql/data
+      RedHat:  /var/lib/pgsql/10/data
       Debian: /etc/postgresql/10/main
+
+- name: Set OS specific paths
+  set_fact:
+    pg_service_name: "{{ pg_service_name[ansible_os_family] }}"
+  vars:
+    pg_service_name:
+      RedHat: postgresql-10
+      Debian: postgresql
 
 - name: Check if /var/log/postgresql directory exists
   stat:
@@ -38,7 +46,7 @@
       register: pg_hba_conf_stat
 
     - name: Initialize database (RedHat)
-      command: /opt/rh/rh-postgresql10/root/usr/bin/postgresql-setup --initdb
+      command: /usr/pgsql-10/bin/postgresql-10-setup initdb {{ pg_service_name }}
       when:
         - not pg_hba_conf_stat.stat.exists
   when:
@@ -46,7 +54,7 @@
 
 - name: Enable postgresql service
   systemd:
-    name: postgresql
+    name: "{{ pg_service_name }}"
     enabled: yes
 
 - name: Change pg_hba.conf
@@ -101,7 +109,7 @@
 
 - name: Restart postgresql service
   systemd:
-    name: postgresql
+    name: "{{ pg_service_name }}"
     state: restarted
   when: change_pg_hba_conf
      or change_postgresql_epiphany_conf
