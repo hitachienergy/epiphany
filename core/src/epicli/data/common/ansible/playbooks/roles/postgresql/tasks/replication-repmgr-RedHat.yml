@@ -8,34 +8,18 @@
 
 - name: Turn on replica
   replace:
-    path: /etc/postgresql/10/main/postgresql.conf
+    path: /var/lib/pgsql/10/data/postgresql.conf
     regexp: "^#wal_level = replica"
     replace: "wal_level = replica"
     backup: yes
 
 - name: Set max_wal_senders
   replace:
-    path: /etc/postgresql/10/main/postgresql.conf
+    path: /var/lib/pgsql/10/data/postgresql.conf
     regexp: "^[#]?max_wal_senders\\s*=\\s*[0-9]+"
     replace: "max_wal_senders = {{ specification.additional_components.replication.max_wal_senders }}"
 
-- name: Enable repmgrd in /etc/default/repmgrd
-  replace:
-    path: /etc/default/repmgrd
-    regexp: "^[#]?REPMGRD_ENABLED=no"
-    replace: "REPMGRD_ENABLED=yes"
 
-- name: Set repmgrd path to config file in /etc/default/repmgrd
-  replace:
-    path: /etc/default/repmgrd
-    regexp: "^#REPMGRD_CONF=\"/path/to/repmgr.conf\""
-    replace: "REPMGRD_CONF=\"/etc/postgresql/10/main/repmgr.conf\""
-
-- name: Turn off daemonize to false for repmgrd in /etc/default/repmgrd
-  replace:
-    path: /etc/default/repmgrd
-    regexp: "^#REPMGRD_OPTS=\"\""
-    replace: "REPMGRD_OPTS=\"--daemonize=false\""
 
 - name: Add password for super user in postgresql
   become_user: postgres
@@ -53,13 +37,13 @@
 
 - name: Add replication user to pg_hba.conf
   lineinfile:
-    path: /etc/postgresql/10/main/pg_hba.conf
+    path: /var/lib/pgsql/10/data/pg_hba.conf
     line: "host    replication     {{ specification.additional_components.replication.user }}     0.0.0.0/0            md5"
 
 - name: Create pgpass file
   template:
     src: pgpass-repmgr.j2
-    dest: /var/lib/postgresql/.pgpass
+    dest: /var/lib/pgsql/.pgpass
     owner: postgres
     group: postgres
     mode: 0600
@@ -67,7 +51,7 @@
 - name: Create repmgr config file
   template:
     src: repmgr.conf-{{ ansible_os_family }}.j2
-    dest: /etc/postgresql/10/main/repmgr.conf
+    dest: /etc/repmgr/10/repmgr.conf
     owner: postgres
     group: postgres
     mode: 0600
@@ -83,7 +67,7 @@
 
 - name: Insert postgresql configuration
   blockinfile:
-    path: /etc/postgresql/10/main/postgresql.conf
+    path: /var/lib/pgsql/10/data/postgresql.conf
     marker: "# ANSIBLE MANAGED BLOCK - REPLICATION"
     insertafter: "# Add settings for extensions here"
     block: |
@@ -102,7 +86,7 @@
   become_user: postgres
   shell: >-
     set -o pipefail &&
-    repmgr cluster show -f /etc/postgresql/10/main/repmgr.conf | grep -i {{ inventory_hostname }} | grep -v standby
+    /usr/pgsql-10/bin/repmgr cluster show -f  /etc/repmgr/10/repmgr.conf | grep -i {{ inventory_hostname }} | grep -v standby
   changed_when: false
   register: is_master_already_registered
   failed_when: is_master_already_registered.rc == 2
@@ -113,7 +97,7 @@
 
 - name: Restart postgresql service
   service:
-    name: postgresql
+    name: postgresql-10
     state: restarted
   when:
     - groups['postgresql'][0] == inventory_hostname
@@ -121,7 +105,7 @@
 
 - name: Restart repmgrd service
   service:
-    name: repmgrd
+    name: repmgr10
     state: restarted
   when:
     - groups['postgresql'][0] == inventory_hostname
@@ -129,7 +113,7 @@
 
 - name: Register primary with repmgr
   become_user: postgres
-  shell: repmgr primary register -f /etc/postgresql/10/main/repmgr.conf -F -S postgres
+  shell: repmgr primary register -f  /etc/repmgr/10/repmgr.conf -F -S postgres
   when:
     - groups['postgresql'][0] == inventory_hostname
     - is_master_already_registered.stdout == ""
@@ -137,7 +121,7 @@
 # Slave:
 - name: Turn on hot_standby
   replace:
-    path: /etc/postgresql/10/main/postgresql.conf
+    path: /var/lib/pgsql/10/data/postgresql.conf
     regexp: "^#hot_standby = on"
     replace: "hot_standby = on"
     backup: yes
@@ -148,7 +132,7 @@
   become_user: postgres
   shell: >-
     set -o pipefail &&
-    repmgr cluster show -f /etc/postgresql/10/main/repmgr.conf | grep -i {{ inventory_hostname }}
+    /usr/pgsql-10/bin/repmgr cluster show -f  /etc/repmgr/10/repmgr.conf | grep -i {{ inventory_hostname }}
   changed_when: false
   register: is_node_already_registered
   failed_when: is_node_already_registered.rc == 2
@@ -159,7 +143,7 @@
 
 - name: Stop postgresql service
   service:
-    name: postgresql
+    name: postgresql-10
     state: stopped
   when:
     - groups['postgresql'][1] == inventory_hostname
@@ -167,14 +151,14 @@
 
 - name: Clone content with repmgr
   become_user: postgres
-  shell: repmgr -h {{ hostvars[groups['postgresql'][0]]['ansible_default_ipv4']['address'] }} -U {{ specification.additional_components.replication.priviledged_user_name }} -d {{ specification.additional_components.replication.repmgr_database }} -p 5432 -F standby clone
+  shell: /usr/pgsql-10/bin/repmgr -h {{ hostvars[groups['postgresql'][0]]['ansible_default_ipv4']['address'] }} -U {{ specification.additional_components.replication.priviledged_user_name }} -d {{ specification.additional_components.replication.repmgr_database }} -p 5432 -F standby clone
   when:
     - groups['postgresql'][1] == inventory_hostname
     - is_node_already_registered.stdout == ""
 
 - name: Start postgresql service
   service:
-    name: postgresql
+    name: postgresql-10
     state: started
   when:
     - groups['postgresql'][1] == inventory_hostname
@@ -182,7 +166,7 @@
 
 - name: Restart repmgrd service
   service:
-    name: repmgrd
+    name: repmgr10
     state: restarted
   when:
     - groups['postgresql'][1] == inventory_hostname
@@ -190,7 +174,7 @@
 
 - name: Register node with repmgr
   become_user: postgres
-  shell: "repmgr standby -F -f /etc/postgresql/10/main/repmgr.conf --upstream-conninfo='host={{ hostvars[groups['postgresql'][0]]['ansible_default_ipv4']['address'] }}, user={{ specification.additional_components.replication.user }}, dbname={{ specification.additional_components.replication.repmgr_database }}, connect_timeout=2' --upstream-node-id 1 register"
+  shell: "/usr/pgsql-10/bin/repmgr standby -F -f  /etc/repmgr/10/repmgr.conf --upstream-conninfo='host={{ hostvars[groups['postgresql'][0]]['ansible_default_ipv4']['address'] }}, user={{ specification.additional_components.replication.user }}, dbname={{ specification.additional_components.replication.repmgr_database }}, connect_timeout=2' --upstream-node-id 1 register"
   when:
     - groups['postgresql'][1] == inventory_hostname
     - is_node_already_registered.stdout == ""
@@ -199,7 +183,7 @@
   become_user: postgres
   shell: >-
     set -o pipefail &&
-    repmgr cluster show -f /etc/postgresql/10/main/repmgr.conf | grep -i 'not attached to its upstream node'
+    /usr/pgsql-10/bin/repmgr cluster show -f  /etc/repmgr/10/repmgr.conf | grep -i 'not attached to its upstream node'
   changed_when: false
   register: is_node_not_attached
   failed_when: is_node_not_attached.rc == 2
@@ -210,7 +194,7 @@
 
 - name: Rejoin node with repmgr
   become_user: postgres
-  shell: "repmgr standby -f /etc/postgresql/10/main/repmgr.conf follow"
+  shell: "/usr/pgsql-10/bin/repmgr standby -f  /etc/repmgr/10/repmgr.conf follow"
   when:
     - groups['postgresql'][1] == inventory_hostname
     - not is_node_not_attached.stdout == ""
