@@ -15,6 +15,7 @@
 - [#951](https://github.com/epiphany-platform/epiphany/issues/951) - Fix PGBouncer to use v1.10 for all platforms
 - [#945](https://github.com/epiphany-platform/epiphany/issues/945) - Disable NSG creation on Azure
 - Fix for [CVE-2019-14864](https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-14864)
+- [#966](https://github.com/epiphany-platform/epiphany/issues/966) - Ubuntu builds get stuck on 'Create epirepo repository' task waiting for user input
 
 ## [0.5.2] 2020-02-17
 
