@@ -1,19 +1,4 @@
 ---
-- name: Set OS specific paths
-  set_fact:
-    pg_config_dir: "{{ pg_config_dir[ansible_os_family] }}"
-  vars:
-    pg_config_dir:
-      RedHat:  /var/lib/pgsql/10/data
-      Debian: /etc/postgresql/10/main
-
-- name: Set OS specific paths
-  set_fact:
-    pg_service_name: "{{ pg_service_name[ansible_os_family] }}"
-  vars:
-    pg_service_name:
-      RedHat: postgresql-10
-      Debian: postgresql
 
 - name: Check if /var/log/postgresql directory exists
   stat:
@@ -42,11 +27,11 @@
   block:
     - name: Check initialization status (RedHat)
       stat:
-        path: "{{ pg_config_dir }}/pg_hba.conf"
+        path: "{{ pg_config_dir[ansible_os_family] }}/pg_hba.conf"
       register: pg_hba_conf_stat
 
     - name: Initialize database (RedHat)
-      command: /usr/pgsql-10/bin/postgresql-10-setup initdb {{ pg_service_name }}
+      command: /usr/pgsql-10/bin/postgresql-10-setup initdb {{ pg_service_name[ansible_os_family] }}
       when:
         - not pg_hba_conf_stat.stat.exists
   when:
@@ -54,12 +39,12 @@
 
 - name: Enable postgresql service
   systemd:
-    name: "{{ pg_service_name }}"
+    name: "{{ pg_service_name[ansible_os_family] }}"
     enabled: yes
 
 - name: Change pg_hba.conf
   replace:
-    path: "{{ pg_config_dir }}/pg_hba.conf"
+    path: "{{ pg_config_dir[ansible_os_family] }}/pg_hba.conf"
     regexp: '^host\s+all\s+all\s+127\.0\.0\.1/32\s+(?:ident|md5)$'
     replace: 'host    all             all             0.0.0.0/0               md5'
     backup: yes
@@ -92,7 +77,7 @@
 - name: Create Epiphany managed configuration sub-file
   template:
     src: postgresql-epiphany.conf.j2
-    dest: "{{ pg_config_dir }}/postgresql-epiphany.conf"
+    dest: "{{ pg_config_dir[ansible_os_family] }}/postgresql-epiphany.conf"
     owner: postgres
     group: postgres
     mode: 0600
@@ -100,7 +85,7 @@
 
 - name: Change postgresql.conf
   lineinfile:
-    path: "{{ pg_config_dir }}/postgresql.conf"
+    path: "{{ pg_config_dir[ansible_os_family] }}/postgresql.conf"
     line: "include = 'postgresql-epiphany.conf'	# Epiphany managed configuration that overrides above settings"
     insertafter: '^#include ' # insert line after the last 'include' to override all settings
     firstmatch: no
@@ -109,7 +94,7 @@
 
 - name: Restart postgresql service
   systemd:
-    name: "{{ pg_service_name }}"
+    name: "{{ pg_service_name[ansible_os_family] }}"
     state: restarted
   when: change_pg_hba_conf
      or change_postgresql_epiphany_conf
