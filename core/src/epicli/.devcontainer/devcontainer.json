@@ -13,6 +13,5 @@
 	"settings": {
 		"python.pythonPath": "/usr/local/bin/python"
 	},
-	"postCreateCommand": "sudo --preserve-env=https_proxy pipenv install --system --dev",
 	"runArgs": [ "-u", "vscode" ]
 }

@@ -10,9 +10,8 @@ with open('../../../README.md') as f:
 with open('../../../LICENSE') as f:
     license = f.read()
 
-with open('requirements.txt') as f:
+with open('.devcontainer/requirements.txt') as f:
     requirements = f.read().splitlines()
-del requirements[0]
 
 datadir = os.path.join('data')
 datafiles = [(os.path.join('epicli', d), [os.path.join(d, f) for f in files])

@@ -1,11 +1,14 @@
 
 import os
+import sys
 
 from cli.helpers.Step import Step
 from cli.helpers.build_saver import save_manifest, get_build_path
 from cli.helpers.data_loader import load_all_yaml_objs, types, load_all_documents_from_folder
 from cli.engine.BuildEngine import BuildEngine
+from cli.helpers.objdict_helpers import remove_value
 from cli.version import VERSION
+from cli.helpers.doc_list_helpers import select_all, select_single
 
 
 class InitEngine(Step):
@@ -24,32 +27,64 @@ class InitEngine(Step):
         super().__exit__(exc_type, exc_value, traceback)  
 
     def init(self):
-        defaults = load_all_yaml_objs(types.DEFAULT, self.provider, 'configuration/minimal-cluster-config')
-        defaults[0].specification.name = self.name
-
-        for i in range(len(defaults)): 
-            defaults[i]['version'] = VERSION       
+        input = load_all_yaml_objs(types.DEFAULT, self.provider, 'configuration/minimal-cluster-config')
+        input[0].specification.name = self.name     
 
         if self.is_full_config:
-            defaults = self.get_full_config(defaults)
+            config = self.get_config_docs(input)
+            config_only = select_all(config, lambda x: not(x.kind.startswith('epiphany-cluster')))
+            if self.provider == 'any':
+                # for any provider we want to use the default config from minimal-cluster-config
+                cluster_model = select_single(input, lambda x: x.kind == 'epiphany-cluster')
+            else:
+                # for azure|aws provider we want to use the extended defaults cluster-config after dry run.
+                # TODO: We probably wants this comming from seperate documents since Azure and AWS overlap now...
+                cluster_model = select_single(config, lambda x: x.kind == 'epiphany-cluster')
+            infra  = self.get_infra_docs(input)
+            docs = [cluster_model, *config_only, *infra]
+        else:
+            docs = [*input]
 
-        save_manifest(defaults, self.name, self.name+'.yml')
+        # set the provider and version for all docs
+        for doc in docs:
+            doc['provider'] = self.provider
+            doc['version'] = VERSION  
 
-        self.logger.info('Initialized user configuration and saved it to "' + os.path.join(get_build_path(self.name), self.name + '.yml') + '"')
+        # remove SET_BY_AUTOMATION fields
+        remove_value(docs, 'SET_BY_AUTOMATION')  
+
+        # save document
+        save_manifest(docs, self.name, self.name+'.yml')
+
+        self.logger.info('Initialized new configuration and saved it to "' + os.path.join(get_build_path(self.name), self.name + '.yml') + '"')
         return 0
 
-    def get_full_config(self, config_docs):
-        cluster_config_path = save_manifest(config_docs, self.name, self.name + '.yml')
+    def get_config_docs(self, input_docs):
+        cluster_config_path = save_manifest(input_docs, self.name, self.name + '.yml')
         args = type('obj', (object,), {'file': cluster_config_path})()
+
+        # generate the config documents
         with BuildEngine(args) as build:
-            docs = build.dry_run()
+            config = build.dry_run() 
+        
+        return config
 
-        # set the provider for all docs
-        for doc in docs:
-            if 'provider' not in doc.keys():
-                doc['provider'] = self.provider
+    def get_infra_docs(self, input_docs):
+        if self.provider == 'any':
+            # For any we can include the machine documents from the minimal-cluster-config
+            infra = select_all(input_docs, lambda x: x.kind.startswith('infrastructure/machine'))
+        else:
+            # VMs are curently the infrastructure documents the user might interact with for:
+            # - type/size
+            # - distro
+            # - network security rules
+            # ...
+            # So we add the defaults here.
+            # TODO: Check if we want to include possible other infrastructure documents.           
+            infra = load_all_yaml_objs(types.DEFAULT, self.provider, 'infrastructure/virtual-machine')
+        
+        return infra
 
-        return docs
 
 
 
