@@ -1,5 +1,6 @@
 ---
 
+# All
 - name: Add user to sudoers file
   lineinfile:
     path: /etc/sudoers
@@ -18,8 +19,6 @@
     path: /var/lib/pgsql/10/data/postgresql.conf
     regexp: "^[#]?max_wal_senders\\s*=\\s*[0-9]+"
     replace: "max_wal_senders = {{ specification.additional_components.replication.max_wal_senders }}"
-
-
 
 - name: Add password for super user in postgresql
   become_user: postgres
@@ -103,17 +102,9 @@
     - groups['postgresql'][0] == inventory_hostname
     - is_master_already_registered.stdout == ""
 
-- name: Restart repmgrd service
-  service:
-    name: repmgr10
-    state: restarted
-  when:
-    - groups['postgresql'][0] == inventory_hostname
-    - is_master_already_registered.stdout == ""
-
 - name: Register primary with repmgr
   become_user: postgres
-  shell: repmgr primary register -f  /etc/repmgr/10/repmgr.conf -F -S postgres
+  shell: /usr/pgsql-10/bin/repmgr primary register -f  /etc/repmgr/10/repmgr.conf -F -S postgres
   when:
     - groups['postgresql'][0] == inventory_hostname
     - is_master_already_registered.stdout == ""
@@ -164,14 +155,6 @@
     - groups['postgresql'][1] == inventory_hostname
     - is_node_already_registered.stdout == ""
 
-- name: Restart repmgrd service
-  service:
-    name: repmgr10
-    state: restarted
-  when:
-    - groups['postgresql'][1] == inventory_hostname
-    - is_node_already_registered.stdout == ""
-
 - name: Register node with repmgr
   become_user: postgres
   shell: "/usr/pgsql-10/bin/repmgr standby -F -f  /etc/repmgr/10/repmgr.conf --upstream-conninfo='host={{ hostvars[groups['postgresql'][0]]['ansible_default_ipv4']['address'] }}, user={{ specification.additional_components.replication.user }}, dbname={{ specification.additional_components.replication.repmgr_database }}, connect_timeout=2' --upstream-node-id 1 register"
@@ -198,3 +181,10 @@
   when:
     - groups['postgresql'][1] == inventory_hostname
     - not is_node_not_attached.stdout == ""
+
+# All
+- name: Restart repmgrd service
+  service:
+    name: repmgr10
+    state: restarted
+    enabled: yes
