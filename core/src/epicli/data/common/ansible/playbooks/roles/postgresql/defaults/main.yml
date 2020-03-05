@@ -7,6 +7,18 @@ pg_config_dir:
   RedHat:  /var/lib/pgsql/10/data
   Debian: /etc/postgresql/10/main
 
+pg_data_dir:
+  RedHat:  /var/lib/pgsql/10/data
+  #Debian: /etc/postgresql/10/main  
+
+repmgr_bindir:
+  RedHat:  /usr/pgsql-10/bin
+  #Debian: /etc/postgresql/10/main
+
+repmgr_pg_bindir:
+  RedHat:  /usr/pgsql-10/bin
+  #Debian: /etc/postgresql/10/main
+
 repmgr_service_name:
   RedHat:  repmgr10
   Debian: repmgrd
