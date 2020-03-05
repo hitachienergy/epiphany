@@ -92,13 +92,15 @@ specification:
         PGPOOL_POSTGRES_USERNAME: postgres # administrator user, used to allow postgres admin authentication through pgpool
         PGPOOL_TIMEOUT: 360
         PGPOOL_ADMIN_USERNAME: admin
-        PGPOOL_ENABLE_LOAD_BALANCING: yes
+        PGPOOL_ENABLE_LOAD_BALANCING: "yes" # allowed: yes or no
         PGPOOL_MAX_POOL: 15
-        PGPOOL_POSTGRES_PASSWORD_FILE: '"/opt/bitnami/pgpool/secrets/pgpool-password"'
-        PGPOOL_ADMIN_PASSWORD_FILE: '"/opt/bitnami/pgpool/secrets/admin-password"'
+        PGPOOL_POSTGRES_PASSWORD_FILE: /opt/bitnami/pgpool/secrets/pgpool-password
+        PGPOOL_ADMIN_PASSWORD_FILE: /opt/bitnami/pgpool/secrets/admin-password
+        PGPOOL_SR_CHECK_USER: postgresql-replication-user # TODO: test, user added becouse of: ERROR ==> The PostrgreSQL replication credentials are mandatory. Set the environment variables PGPOOL_SR_CHECK_USER and PGPOOL_SR_CHECK_PASSWORD with the PostrgreSQL replication credentials.
       secrets:
         pgpool_postgres_password: adminpassword
         pgpool_admin_password: adminpassword
+        pgpool_sr_check_password: postgresql-replication-password # TODO: test
       config_file_content : |
         # Specify content for pgpool.conf
         # TODO: To be implemented

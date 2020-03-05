@@ -1,0 +1,14 @@
+---
+- name: Deploy Pgpool
+  include_tasks: deploy-k8s-app.yml
+  vars:
+    file_name: "{{ deployment_file }}"
+    app_dir_name: "{{ data.name }}"
+  loop:
+    - namespace.yml
+    - configmaps.yml
+    - secrets.yml
+    - deployment.yml
+    - service.yml
+  loop_control:
+    loop_var: deployment_file

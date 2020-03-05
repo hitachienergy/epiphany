@@ -17,7 +17,7 @@ spec:
       labels:
         app: pgpool
     spec:
-{% for field, value in data.pod_spec.items() if value %} {# affinity, nodeSelector, tolerations #}
+{% for field, value in data.pod_spec.items() if value %}{# affinity, nodeSelector, tolerations #}
       {{ field }}:
         {{ value | to_nice_yaml }}
 {% endfor %}
@@ -29,11 +29,22 @@ spec:
                 name: pgpool-container-env
           env:
             - name: BITNAMI_DEBUG
-              value: {{ (data.image.debug == true) | ternary('true', 'false') | quote }}
-{% if data.pgpool.env.PGPOOL_BACKEND_NODES is undefined or data.pgpool.env.PGPOOL_BACKEND_NODES == 'SET_BY_AUTOMATION' %}
-            - name: PGPOOL_BACKEND_NODES
-              value: {% for node in groups['postgresql'] %}{{ loop.index0 }}:{{ hostvars[groups['postgresql'][loop.index0].ansible_default_ipv4.address] }}:5432{% if not loop.last %},{% endif %}{% endfor %}
-{% endif %}
+              value: "{{ data.image.debug | ternary('true', 'false') }}"
+            - name: PGPOOL_ADMIN_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: pgpool
+                  key: pgpool_admin_password
+            - name: PGPOOL_POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: pgpool
+                  key: pgpool_postgres_password
+            - name: PGPOOL_SR_CHECK_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: pgpool
+                  key: pgpool_sr_check_password
           ports:
             - name: postgresql
               containerPort: 5432
@@ -60,13 +71,17 @@ spec:
             successThreshold: 1
             failureThreshold: 6
 #}
-          resources: {{ data.resources | to_nice_yaml }}
+          resources:
+            {{ data.resources | to_nice_yaml | indent(12) | trim }}
           volumeMounts:
             - name: postgresql-password
-              mountPath: /opt/bitnami/pgpool/secrets/
+              mountPath: /opt/bitnami/pgpool/secrets/pgpool_postgres_password
+              subPath: pgpool_postgres_password
             - name: pgpool-password
-              mountPath: /opt/bitnami/pgpool/secrets/
-      volumes: {# TODO: check whether it's OK to use better names #}
+              mountPath: /opt/bitnami/pgpool/secrets/pgpool_admin_password
+              subPath: pgpool_admin_password
+{#    TODO: check whether it's OK to use better names #}
+      volumes:
         - name: postgresql-password
           secret:
             secretName: pgpool

@@ -1,0 +1,30 @@
+---
+- name: "{{ data.name }}: Set directory for deployment files"
+  set_fact:
+    deployment_tmp_dir: /tmp/epiphany/apps/{{ app_dir_name }}
+  changed_when: false
+
+- name: "{{ data.name }}: Create directory for deployment files"
+  file:
+    path: "{{ deployment_tmp_dir }}"
+    state: directory
+  become_user: "{{ admin_user.name }}"
+
+- name: "{{ data.name }}: Upload {{ file_name }} file"
+  become: yes
+  template:
+    dest: "{{ deployment_tmp_dir }}/{{ file_name }}"
+    src: "{{ app_dir_name }}/{{ file_name }}.j2"
+    owner: "{{ admin_user.name }}"
+    group: "{{ admin_user.name }}"
+    mode: 0644
+  register: upload_template
+
+- name: "{{ data.name }}: Apply {{ file_name }} file"
+  shell: kubectl apply -f {{ deployment_tmp_dir }}/{{ file_name }}
+  environment:
+    KUBECONFIG: /home/{{ admin_user.name }}/.kube/config
+  when:
+    - upload_template.changed
+
+# TODO: Add clean-up

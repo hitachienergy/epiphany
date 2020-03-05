@@ -6,7 +6,17 @@ metadata:
   labels:
     app: pgpool
   namespace: {{ data.namespace }}
-data: {{ data.pgpool.env }}
+data:
+{% if data.pgpool.env.PGPOOL_BACKEND_NODES is undefined or data.pgpool.env.PGPOOL_BACKEND_NODES == 'SET_BY_AUTOMATION' %}
+  PGPOOL_BACKEND_NODES: "{% for node in groups['postgresql'] %}{{ loop.index0 }}:{{ hostvars[groups['postgresql'][loop.index0]]['ansible_default_ipv4']['address'] }}:5432{% if not loop.last %},{% endif %}{% endfor %}"
+{% endif %}
+{% for var, value in data.pgpool.env.items() if value != 'SET_BY_AUTOMATION' %}
+{#   convert boolean to 'yes' or 'no' string #}
+{%   if value is sameas true or value is sameas false %}
+{%     set value = value | ternary('yes', 'no') %}
+{%   endif %}
+  {{ var }}: "{{ value }}"
+{% endfor %}
 
 ---
 
