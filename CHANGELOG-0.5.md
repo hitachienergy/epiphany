@@ -5,6 +5,7 @@
 ### Added
 
 - Upgraded Epicli container and devcontainer from `python3.7-alpine` to `python:3.7-slim`
+- Moved `epicli delete` out of experimental mode
 
 ### Fixed
 
@@ -15,6 +16,8 @@
 - [#951](https://github.com/epiphany-platform/epiphany/issues/951) - Fix PGBouncer to use v1.10 for all platforms
 - [#945](https://github.com/epiphany-platform/epiphany/issues/945) - Disable NSG creation on Azure
 - Fix for [CVE-2019-14864](https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-14864)
+- [#966](https://github.com/epiphany-platform/epiphany/issues/966) - Ubuntu builds get stuck on 'Create epirepo repository' task waiting for user input
+- [#965](https://github.com/epiphany-platform/epiphany/issues/965) - Install Kibana on all logging vms
 
 ## [0.5.2] 2020-02-17
 

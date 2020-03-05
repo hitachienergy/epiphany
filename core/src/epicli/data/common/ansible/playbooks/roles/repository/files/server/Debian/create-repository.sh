@@ -27,8 +27,13 @@ if $IS_OFFLINE_MODE = true; then
     echo "updating apt..."
     apt -y update
 else
-    # for online mode just install apache
-    apt -y install apache2 dpkg-dev
+    # for online mode just install apache (force non-interactive mode, ref: https://bugs.launchpad.net/ubuntu/+source/ansible/+bug/1833013)
+    DEBIAN_FRONTEND=noninteractive \
+    UCF_FORCE_CONFOLD=1 \
+      apt-get \
+      -o Dpkg::Options::=--force-confold \
+      -o Dpkg::Options::=--force-confdef \
+      -y -q install apache2 dpkg-dev
 
     # -m is important because it allow same packages with different versions
     # 'cd' is needed here becuase 'dpkg-scanpackages' prepends path to "Filename" field in Packages.gz
