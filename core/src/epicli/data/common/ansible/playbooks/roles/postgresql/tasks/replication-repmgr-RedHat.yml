@@ -49,7 +49,7 @@
 
 - name: Create repmgr config file
   template:
-    src: repmgr.conf-{{ ansible_os_family }}.j2
+    src: repmgr.conf.j2
     dest: "{{ repmgr_config_dir[ansible_os_family] }}/repmgr.conf"
     owner: postgres
     group: postgres

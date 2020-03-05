@@ -1,19 +1,19 @@
 node_id={{ node_id }}
 node_name={{ inventory_hostname }}
 conninfo='host={{ ansible_default_ipv4.address }} user={{ specification.additional_components.replication.user }} dbname={{ specification.additional_components.replication.repmgr_database }} connect_timeout=2'
-data_directory='/var/lib/postgresql/10/main'
+data_directory='{{ pg_data_dir[ansible_os_family] }}'
 
 failover=automatic
-promote_command='/usr/bin/repmgr standby promote -f /etc/postgresql/10/main/repmgr.conf --log-to-file'
-follow_command='/usr/bin/repmgr standby follow -f /etc/postgresql/10/main/repmgr.conf --log-to-file --upstream-node-id=%n'
+promote_command='{{ repmgr_pg_bindir[ansible_os_family] }}/repmgr standby promote -f {{ repmgr_config_dir[ansible_os_family] }}/repmgr.conf --log-to-file'
+follow_command='{{ repmgr_pg_bindir[ansible_os_family] }}/repmgr standby follow -f {{ repmgr_config_dir[ansible_os_family] }}/repmgr.conf --log-to-file --upstream-node-id=%n'
 monitoring_history=yes
 monitor_interval_secs=10
 
 log_file='/var/log/postgresql/repmgr.log'
 
-pg_bindir='/usr/lib/postgresql/10/bin/'
-service_start_command='sudo /bin/systemctl start postgresql'
-service_stop_command='sudo /bin/systemctl stop postgresql'
-service_restart_command='sudo /bin/systemctl restart postgresql'
-service_reload_command='sudo /bin/systemctl reload postgresql'
+pg_bindir='{{ repmgr_pg_bindir[ansible_os_family] }}/'
+service_start_command='sudo /bin/systemctl start {{ pg_service_name[ansible_os_family] }}'
+service_stop_command='sudo /bin/systemctl stop {{ pg_service_name[ansible_os_family] }}'
+service_restart_command='sudo /bin/systemctl restart {{ pg_service_name[ansible_os_family] }}'
+service_reload_command='sudo /bin/systemctl reload {{ pg_service_name[ansible_os_family] }}'
 
