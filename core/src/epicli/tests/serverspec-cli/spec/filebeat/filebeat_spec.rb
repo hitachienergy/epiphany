@@ -1,5 +1,8 @@
 require 'spec_helper'
 
+elasticsearch_api_port = 9200
+kibana_api_port = 5601
+
 describe 'Checking if Filebeat package is installed' do
   describe package('filebeat') do
     it { should be_installed }
@@ -35,11 +38,10 @@ if hostInGroups?("kubernetes_master") || hostInGroups?("kubernetes_node")
   end
 end
 
-if count_inventory_roles("elasticsearch") > 0
-  describe 'Checking the connection to the Elasticsearch host' do
+listInventoryHosts("logging").each do |val|
+  describe 'Checking the connection to the Elasticsearch hosts' do
     let(:disable_sudo) { false }
-    describe command("curl -o /dev/null -s -w '%{http_code}' $(awk '/- Elasticsearch output -/,/- Logstash output -/' /etc/filebeat/filebeat.yml \
-    |  grep -oP \"(?<=hosts: \\\[[\\\"']).+(?=[\\\"']\\\])\")") do
+    describe command("curl -k -u admin:admin -o /dev/null -s -w '%{http_code}' https://#{val}:#{elasticsearch_api_port}") do
       it "is expected to be equal" do
         expect(subject.stdout.to_i).to eq 200
       end
@@ -47,11 +49,10 @@ if count_inventory_roles("elasticsearch") > 0
   end
 end
 
-if count_inventory_roles("kibana") > 0
+listInventoryHosts("kibana").each do |val|
   describe 'Checking the connection to the Kibana endpoint' do
     let(:disable_sudo) { false }
-    describe command("curl -o /dev/null -s -w '%{http_code}' $(awk '/= Kibana =/,/= Elastic Cloud =/' /etc/filebeat/filebeat.yml \
-    |  grep -oP '(?<=host: \\\").+(?=\\\")')") do
+    describe command("curl -u admin:admin -o /dev/null -s -w '%{http_code}' http://#{val}:#{kibana_api_port}/app/kibana") do
       it "is expected to be equal" do
         expect(subject.stdout.to_i).to eq 200
       end
