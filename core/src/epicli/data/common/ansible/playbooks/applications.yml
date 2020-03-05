@@ -2,7 +2,7 @@
 # Ansible playbook that deploys applications on Kubernetes after cluster creation
 
 - hosts: all
-  tasks: [ ]  
+  tasks: []
 
 - hosts: applications
   become: true

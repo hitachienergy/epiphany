@@ -9,13 +9,15 @@ metadata:
 data:
 {% if data.pgpool.env.PGPOOL_BACKEND_NODES is undefined or data.pgpool.env.PGPOOL_BACKEND_NODES == 'SET_BY_AUTOMATION' %}
   PGPOOL_BACKEND_NODES: "{% for node in groups['postgresql'] %}{{ loop.index0 }}:{{ hostvars[groups['postgresql'][loop.index0]]['ansible_default_ipv4']['address'] }}:5432{% if not loop.last %},{% endif %}{% endfor %}"
+{% else %}
+  PGPOOL_BACKEND_NODES: "{ data.pgpool.env.PGPOOL_BACKEND_NODES }"
 {% endif %}
-{% for var, value in data.pgpool.env.items() if value != 'SET_BY_AUTOMATION' %}
-{#   convert boolean to 'yes' or 'no' string #}
+{% for env_var, value in data.pgpool.env.items() if env_var not in ["PGPOOL_BACKEND_NODES"] %}
+{#   convert boolean to 'yes' or 'no' to meet requirements #}
 {%   if value is sameas true or value is sameas false %}
 {%     set value = value | ternary('yes', 'no') %}
 {%   endif %}
-  {{ var }}: "{{ value }}"
+  {{ env_var }}: "{{ value }}"
 {% endfor %}
 
 ---
@@ -29,4 +31,4 @@ metadata:
   namespace: {{ data.namespace }}
 data:
   pgpool.conf: |
-    {{ data.pgpool.config_file_content }}
+    {{ data.pgpool.config_file_content | indent(4) }}
