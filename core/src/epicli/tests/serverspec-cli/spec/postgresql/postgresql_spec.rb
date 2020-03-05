@@ -5,12 +5,15 @@ require 'securerandom'
 postgresql_host = '127.0.0.1'
 postgresql_default_port = 5432
 pgbouncer_default_port = 6432
+elasticsearch_host = listInventoryHosts("logging")[0]
+elasticsearch_api_port = 9200
 replicated = readDataYaml("configuration/postgresql")["specification"]["replication"]["enable"]
 replication_user = readDataYaml("configuration/postgresql")["specification"]["replication"]["user"]
 replication_password = readDataYaml("configuration/postgresql")["specification"]["replication"]["password"]
 max_wal_senders = readDataYaml("configuration/postgresql")["specification"]["replication"]["max_wal_senders"]
 wal_keep_segments = readDataYaml("configuration/postgresql")["specification"]["replication"]["wal_keep_segments"]
 pgbouncer_enabled = readDataYaml("configuration/postgresql")["specification"]["additional_components"]["pgbouncer"]["enabled"]
+pgaudit_enabled = readDataYaml("configuration/postgresql")["specification"]["extensions"]["pgaudit"]["enabled"]
 pg_user = 'tester'
 pg_pass = 'testpass'
 
@@ -50,6 +53,22 @@ def queryForSelecting
   end
 end
 
+def queryForAlteringTable
+  describe 'Altering table with multiline command to verify multiline messages support' do
+    let(:disable_sudo) { false }
+    describe command("su - postgres -c psql <<SQLs
+    ALTER TABLE serverspec_test.test
+    ADD COLUMN id int,
+    ADD COLUMN name text,
+    ADD COLUMN city text,
+    ADD COLUMN description text;
+  SQL") do
+      its(:stdout) { should match /^ALTER TABLE$/ }
+      its(:exit_status) { should eq 0 }
+    end
+  end
+end
+
 def queryForDropping
   describe 'Checking if it is possible to drop the test table' do
     let(:disable_sudo) { false }
@@ -61,7 +80,7 @@ def queryForDropping
   
   describe 'Checking if it is possible to drop the test schema' do
     let(:disable_sudo) { false }
-    describe command("su - postgres -c \"psql -t -c 'DROP SCHEMA serverspec_test;'\"") do
+    describe command("su - postgres -c \"psql -t -c 'DROP SCHEMA serverspec_test CASCADE;'\"") do
       its(:stdout) { should match /^DROP SCHEMA$/ }
       its(:exit_status) { should eq 0 }
     end
@@ -148,7 +167,7 @@ end
 if !replicated
   queryForCreating
   queryForSelecting
-  queryForDropping
+  queryForAlteringTable
 end   
 
 if replicated
@@ -223,6 +242,7 @@ if replicated
 
     queryForCreating
     queryForSelecting
+    queryForAlteringTable
     
   elsif slave.include? host_inventory['hostname']
     if os[:family] == 'redhat'
@@ -267,11 +287,18 @@ if replicated
   end
 end
 
-### PGBOUNCER
+### Tests for PGBouncer
 
 if pgbouncer_enabled
 
   if listInventoryHosts("postgresql")[0].include? host_inventory['hostname']
+
+    describe 'Checking if PGBouncer service is running' do
+      describe service('pgbouncer') do
+        it { should be_enabled }
+        it { should be_running }
+      end
+    end
 
     describe 'Create a test user' do
       let(:disable_sudo) { false }
@@ -320,10 +347,9 @@ if pgbouncer_enabled
       end
     end
 
-
   end
 
-  if (replicated || (listInventoryHosts("postgresql")[0].include? host_inventory['hostname']))
+  if replicated || (listInventoryHosts("postgresql")[0].include? host_inventory['hostname'])
 
     describe 'Select values from the test tables' do
       let(:disable_sudo) { false }
@@ -336,30 +362,73 @@ if pgbouncer_enabled
         its(:exit_status) { should eq 0 }
       end    
     end
+
   end
 
 end
 
+### Tests for PGAudit
 
-if listInventoryHosts("postgresql")[1].include? host_inventory['hostname']
-  describe 'Clean up' do
-    it "Remove test user from userlist.txt" do
-      Net::SSH.start(listInventoryIPs("postgresql")[0], ENV['user'], keys: [ENV['keypath']], :keys_only => TRUE) do|ssh|
-        result = ssh.exec!("sudo su - -c \"sed -i '/#{pg_pass}/d' /etc/pgbouncer/userlist.txt && cat /etc/pgbouncer/userlist.txt\" 2>&1")
-        expect(result).not_to match "#{pg_pass}"
+if pgaudit_enabled
+
+  if listInventoryHosts("postgresql")[0].include? host_inventory['hostname']
+
+    describe 'Checking if the Elasticsearch logs contain queries from the PostrgeSQL database' do
+      describe command("curl -k -u admin:admin 'https://#{elasticsearch_host}:#{elasticsearch_api_port}/_search?pretty=true' -H 'Content-Type: application/json' -d '{\"size\":100,\"_source\":{\"includes\":\"message\"},\"query\":{\"bool\":{\"must\":[{\"match_phrase\":{\"source\":{\"query\":\"/var/log/postgresql/postgresql.log\"}}}],\"filter\":{\"query_string\":{\"query\":\"*serverspec*\"}}}}}'") do
+        its(:stdout) { should match /CREATE SCHEMA serverspec_test/ }
+        its(:stdout) { should match /CREATE TABLE serverspec_test\.test/ }
+        its(:stdout) { should match /INSERT INTO serverspec_test\.test/ }
+        its(:stdout) { should match /DROP TABLE serverspec_test\.test/ }
+        its(:stdout) { should match /DROP SCHEMA serverspec_test/ }
+        its(:exit_status) { should eq 0 }
       end
     end
+
+    describe 'Checking if the Elasticsearch logs contain queries run with PGBouncer', :if => pgbouncer_enabled do
+      describe command("curl -k -u admin:admin 'https://#{elasticsearch_host}:#{elasticsearch_api_port}/_search?pretty=true' -H 'Content-Type: application/json' -d '{\"size\":100,\"_source\":{\"includes\":\"message\"},\"query\":{\"bool\":{\"must\":[{\"match_phrase\":{\"source\":{\"query\":\"/var/log/postgresql/postgresql.log\"}}}],\"filter\":{\"query_string\":{\"query\":\"*#{pg_user}*\"}}}}}'") do
+        its(:stdout) { should match /GRANT ALL ON SCHEMA serverspec_test to #{pg_user}/ }
+        its(:stdout) { should match /GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA serverspec_test to #{pg_user}/ }
+        its(:stdout) { should match /CREATE TABLE serverspec_test\.pgbtest/ }
+        its(:stdout) { should match /INSERT INTO serverspec_test\.pgbtest/ }
+        its(:stdout) { should match /CREATE USER #{pg_user} WITH PASSWORD/ }
+        its(:stdout) { should match /DROP USER #{pg_user}/ }
+        its(:exit_status) { should eq 0 }
+      end
+    end
+
+    describe 'Checking support for multiline messages' do
+      describe command("curl -k -u admin:admin 'https://#{elasticsearch_host}:#{elasticsearch_api_port}/_search?pretty=true' -H 'Content-Type: application/json' -d '{\"size\":100,\"_source\":{\"includes\":\"message\"},\"query\":{\"bool\":{\"must\":[{\"match_phrase\":{\"source\":{\"query\":\"/var/log/postgresql/postgresql.log\"}}}],\"filter\":{\"query_string\":{\"query\":\"ADD AND COLUMN\"}}}}}'") do
+        its(:stdout) { should match /ALTER TABLE serverspec_test\.test.*\\n\\t.*ADD COLUMN id.*\\n\\t.*ADD COLUMN name.*\\n\\t.*ADD COLUMN city.*\\n\\t.*ADD COLUMN description/ }
+        its(:exit_status) { should eq 0 }
+      end
+    end
+
+  end
+end
+
+if !replicated
+  queryForDropping
+end
+
+if replicated && (listInventoryHosts("postgresql")[1].include? host_inventory['hostname'])
+  describe 'Clean up' do
     it "Delegate drop schema query to master" do
       Net::SSH.start(listInventoryIPs("postgresql")[0], ENV['user'], keys: [ENV['keypath']], :keys_only => TRUE) do|ssh|
         result = ssh.exec!("sudo su - postgres -c \"psql -t -c 'DROP SCHEMA serverspec_test CASCADE;'\" 2>&1")
         expect(result).to match 'DROP SCHEMA'
       end
     end
-    it "Delegate drop user query to master" do
+    it "Delegate drop user query to master", :if => pgbouncer_enabled do
       Net::SSH.start(listInventoryIPs("postgresql")[0], ENV['user'], keys: [ENV['keypath']], :keys_only => TRUE) do|ssh|
         result = ssh.exec!("sudo su - postgres -c \"psql -t -c 'DROP USER #{pg_user};'\" 2>&1")
         expect(result).to match 'DROP ROLE'
       end
-    end        
+    end
+    it "Remove test user from userlist.txt", :if => pgbouncer_enabled do
+      Net::SSH.start(listInventoryIPs("postgresql")[0], ENV['user'], keys: [ENV['keypath']], :keys_only => TRUE) do|ssh|
+        result = ssh.exec!("sudo su - -c \"sed -i '/#{pg_pass}/d' /etc/pgbouncer/userlist.txt && cat /etc/pgbouncer/userlist.txt\" 2>&1")
+        expect(result).not_to match "#{pg_pass}"
+      end
+    end    
   end
 end
