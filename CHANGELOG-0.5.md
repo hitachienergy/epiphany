@@ -16,6 +16,7 @@
 - [#945](https://github.com/epiphany-platform/epiphany/issues/945) - Disable NSG creation on Azure
 - Fix for [CVE-2019-14864](https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-14864)
 - [#966](https://github.com/epiphany-platform/epiphany/issues/966) - Ubuntu builds get stuck on 'Create epirepo repository' task waiting for user input
+- [#965](https://github.com/epiphany-platform/epiphany/issues/965) - Install Kibana on all logging vms
 
 ## [0.5.2] 2020-02-17
 
