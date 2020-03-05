@@ -5,6 +5,7 @@
 ### Added
 
 - Upgraded Epicli container and devcontainer from `python3.7-alpine` to `python:3.7-slim`
+- Moved `epicli delete` out of experimental mode
 
 ### Fixed
 
