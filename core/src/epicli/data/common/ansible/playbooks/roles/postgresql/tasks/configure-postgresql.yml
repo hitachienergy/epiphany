@@ -16,13 +16,6 @@
   when:
     - not var_log_postgresql.stat.exists
 
-- name: Configure pgAudit extension (RedHat)
-  include_tasks: extensions/configure-pgaudit.yml
-  when:
-    - specification.extensions.pgaudit.enabled is defined
-    - specification.extensions.pgaudit.enabled
-    - ansible_os_family == 'RedHat'
-
 - name: Initialize database # RedHat specific block
   block:
     - name: Check initialization status (RedHat)
