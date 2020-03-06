@@ -7,14 +7,14 @@
     line: 'postgres ALL=(ALL:ALL) NOPASSWD: /bin/systemctl start postgresql, /bin/systemctl stop postgresql, /bin/systemctl restart postgresql, /bin/systemctl reload postgresql'
     validate: 'visudo -cf %s'
 
-- name: Add password for super user in postgresql
+- name: Add or update super user in postgresql
   become_user: postgres
   postgresql_user:
     user: "{{ specification.extensions.replication.priviledged_user_name }}"
     password: "{{ specification.extensions.replication.priviledged_user_password }}"
     role_attr_flags: LOGIN,SUPERUSER
 
-- name: Add replication user to postgresql
+- name: Add or update replication user to postgresql
   become_user: postgres
   postgresql_user:
     user: "{{ specification.extensions.replication.replication_user_name }}"
