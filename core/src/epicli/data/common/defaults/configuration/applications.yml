@@ -76,7 +76,18 @@ specification:
       port: 5432
     replicas: 2
     pod_spec:
-      affinity: {}
+      affinity:
+        podAntiAffinity: # prefer to schedule replicas on different nodes
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 100
+              podAffinityTerm:
+                labelSelector:
+                  matchExpressions:
+                    - key: app
+                      operator: In
+                      values:
+                        - pgpool
+                topologyKey: kubernetes.io/hostname
       nodeSelector: {}
       tolerations: {}
     resources:
@@ -88,19 +99,25 @@ specification:
     pgpool:
       # https://github.com/bitnami/bitnami-docker-pgpool#configuration + https://github.com/bitnami/bitnami-docker-pgpool#environment-variables
       env:
-        PGPOOL_BACKEND_NODES: SET_BY_AUTOMATION # e.g. 0:pg-node-0:5432,1:pg-node-1:5432
-        PGPOOL_POSTGRES_USERNAME: postgres # administrator user, used to allow postgres admin authentication through pgpool
+        PGPOOL_BACKEND_NODES: SET_BY_AUTOMATION # you can use custom value like '0:pg-node-1:5432,1:pg-node-2:5432'
+        # TODO: Create 'pgpool_postgres_admin' user by Epiphany in postgresql role
+        PGPOOL_POSTGRES_USERNAME: pgpool_postgres_admin # Postgres administrator user, used to allow postgres admin authentication through pgpool
+        PGPOOL_ADMIN_USERNAME: pgpool_admin # Pgpool administrator
+        # TODO: test PGPOOL_SR_CHECK_USER, user added because of: ERROR ==> The PostrgreSQL replication credentials are mandatory. Set the environment variables PGPOOL_SR_CHECK_USER and PGPOOL_SR_CHECK_PASSWORD with the PostrgreSQL replication credentials.
+        PGPOOL_SR_CHECK_USER: postgresql_replication_user # user for streaming checks
         PGPOOL_TIMEOUT: 360
-        PGPOOL_ADMIN_USERNAME: admin
-        PGPOOL_ENABLE_LOAD_BALANCING: "yes" # allowed: yes or no
+        PGPOOL_ENABLE_LOAD_BALANCING: yes # set to 'no' if there is no replication
         PGPOOL_MAX_POOL: 15
+        # TODO: check if we want password files since we have to use PGPOOL_POSTGRES_PASSWORD env var
         PGPOOL_POSTGRES_PASSWORD_FILE: /opt/bitnami/pgpool/secrets/pgpool-password
         PGPOOL_ADMIN_PASSWORD_FILE: /opt/bitnami/pgpool/secrets/admin-password
-        PGPOOL_SR_CHECK_USER: postgresql-replication-user # TODO: test, user added becouse of: ERROR ==> The PostrgreSQL replication credentials are mandatory. Set the environment variables PGPOOL_SR_CHECK_USER and PGPOOL_SR_CHECK_PASSWORD with the PostrgreSQL replication credentials.
+        # TODO:
+        # PGPOOL_PASSWD_FILE The password file for authentication. Defaults to pool_passwd
+        PGDATABASE: postgres # for /healthcheck.sh
       secrets:
-        pgpool_postgres_password: adminpassword
-        pgpool_admin_password: adminpassword
-        pgpool_sr_check_password: postgresql-replication-password # TODO: test
+        pgpool_postgres_password: pgpool_postgres_admin_password
+        pgpool_admin_password: pgpool_admin_password
+        pgpool_sr_check_password: postgresql_replication_password # TODO: test if this is OK
       config_file_content : |
         # Specify content for pgpool.conf
         # TODO: To be implemented

@@ -19,7 +19,7 @@ spec:
     spec:
 {% for field, value in data.pod_spec.items() if value %}{# affinity, nodeSelector, tolerations #}
       {{ field }}:
-        {{ value | to_nice_yaml }}
+        {{ value | to_nice_yaml(indent=2) | indent(8) | trim }}
 {% endfor %}
       containers:
         - name: pgpool
@@ -72,7 +72,7 @@ spec:
             failureThreshold: 6
 #}
           resources:
-            {{ data.resources | to_nice_yaml | indent(12) | trim }}
+            {{ data.resources | to_nice_yaml(indent=2) | indent(12) | trim }}
           volumeMounts:
             - name: postgresql-password
               mountPath: /opt/bitnami/pgpool/secrets/pgpool_postgres_password
@@ -94,3 +94,4 @@ spec:
             items:
               - key: pgpool_admin_password
                 path: admin-password
+      restartPolicy: Always
