@@ -26,29 +26,6 @@ specification:
         - comment: set by automation
           name: shared_preload_libraries
           value: SET_BY_AUTOMATION
-    - name: WAL LOG SETTINGS
-      subgroups:
-      - name: WAL log settings
-        parameters:
-        - comment: maximum numeber of WAL senders
-          name: max_wal_senders
-          value: 10
-        - comment: maximum numeber of segments kept
-          name: wal_keep_segments
-          value: 34
-        - comment: WAL level
-          name: wal_level
-          value: replica
-    - name: Archive settings  
-      subgroups:
-      - name: Archive settings
-        parameters:
-        - comment: archive mode
-          name: archive_mode
-          value: on
-        - comment: archive command
-          name: archive_command
-          value: '''test ! -f /dbbackup/{{ inventory_hostname }}/backup/%f && gzip -c < %p > /dbbackup/{{ inventory_hostname }}/backup/%f'''
     - name: ERROR REPORTING AND LOGGING
       subgroups:
       - name: Where to Log
