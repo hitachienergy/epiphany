@@ -8,7 +8,7 @@
     update_cache: yes
     state: present
 
-# --- additional components ---
+# --- extensions ---
 
 - name: Install pgbouncer package
   apt:
@@ -27,10 +27,8 @@
     state: present
     update_cache: yes
   when:
-    - specification.additional_components.replication.repmgr is defined
-    - specification.additional_components.replication.repmgr
-
-# --- extensions ---
+    - specification.extensions.replication.use_repmgr is defined
+    - specification.extensions.replication.use_repmgr
 
 - name: Install pgaudit package
   apt:
