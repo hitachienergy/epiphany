@@ -81,15 +81,16 @@
     owner: postgres
     group: postgres
 
-- name: Insert postgresql configuration
+- name: Add postgresql configuration
   blockinfile:
     path: "{{ pg_config_dir[ansible_os_family] }}/postgresql.conf"
-    marker: "# ANSIBLE MANAGED BLOCK - REPLICATION"
     insertafter: "# Add settings for extensions here"
     block: |
+      # BEGIN - ANSIBLE MANAGED BLOCK - REPLICATION
       archive_mode = on
       archive_command = 'test ! -f /dbbackup/{{ inventory_hostname }}/backup/%f && gzip -c < %p > /dbbackup/{{ inventory_hostname }}/backup/%f'
       shared_preload_libraries = 'repmgr'
+      # END - ANSIBLE MANAGED BLOCK - REPLICATION
 
 - name: Create a new database for repmgr
   become_user: postgres
