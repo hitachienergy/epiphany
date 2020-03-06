@@ -7,7 +7,7 @@
     update_cache: yes
     state: present
 
-# --- additional components ---
+# --- extensions ---
 
 - name: Install pgbouncer package
   yum:
@@ -28,8 +28,6 @@
   when:
     - specification.extensions.replication.use_repmgr is defined
     - specification.extensions.replication.use_repmgr
-
-# --- extensions ---
 
 - name: Install pgaudit package
   yum:
