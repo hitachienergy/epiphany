@@ -7,37 +7,24 @@
     line: 'postgres ALL=(ALL:ALL) NOPASSWD: /bin/systemctl start postgresql, /bin/systemctl stop postgresql, /bin/systemctl restart postgresql, /bin/systemctl reload postgresql'
     validate: 'visudo -cf %s'
 
-- name: Turn on replica
-  replace:
-    path: "{{ pg_config_dir[ansible_os_family] }}/postgresql.conf"
-    regexp: "^#wal_level = replica"
-    replace: "wal_level = replica"
-    backup: yes
-
-- name: Set max_wal_senders
-  replace:
-    path: "{{ pg_config_dir[ansible_os_family] }}/postgresql.conf"
-    regexp: "^[#]?max_wal_senders\\s*=\\s*[0-9]+"
-    replace: "max_wal_senders = {{ specification.additional_components.replication.max_wal_senders }}"
-
 - name: Add password for super user in postgresql
   become_user: postgres
   postgresql_user:
-    user: "{{ specification.additional_components.replication.priviledged_user_name }}"
-    password: "{{ specification.additional_components.replication.priviledged_user_password }}"
+    user: "{{ specification.extensions.replication.priviledged_user_name }}"
+    password: "{{ specification.extensions.replication.priviledged_user_password }}"
     role_attr_flags: LOGIN,SUPERUSER
 
 - name: Add replication user to postgresql
   become_user: postgres
   postgresql_user:
-    user: "{{ specification.additional_components.replication.user }}"
-    password: "{{ specification.additional_components.replication.password }}"
+    user: "{{ specification.extensions.replication.replication_user_name }}"
+    password: "{{ specification.extensions.replication.replication_user_password }}"
     role_attr_flags: LOGIN,REPLICATION
 
 - name: Add replication user to pg_hba.conf
   lineinfile:
     path: "{{ pg_config_dir[ansible_os_family] }}/pg_hba.conf"
-    line: "host    replication     {{ specification.additional_components.replication.user }}     0.0.0.0/0            md5"
+    line: "host    replication     {{ specification.extensions.replication.replication_user_name }}     0.0.0.0/0            md5"
 
 - name: Create pgpass file
   template:
@@ -64,22 +51,11 @@
     owner: postgres
     group: postgres
 
-- name: Add postgresql configuration
-  blockinfile:
-    path: "{{ pg_config_dir[ansible_os_family] }}/postgresql.conf"
-    insertafter: "# Add settings for extensions here"
-    block: |
-      # BEGIN - ANSIBLE MANAGED BLOCK - REPLICATION
-      archive_mode = on
-      archive_command = 'test ! -f /dbbackup/{{ inventory_hostname }}/backup/%f && gzip -c < %p > /dbbackup/{{ inventory_hostname }}/backup/%f'
-      shared_preload_libraries = 'repmgr'
-      # END - ANSIBLE MANAGED BLOCK - REPLICATION
-
 - name: Create a new database for repmgr
   become_user: postgres
   postgresql_db:
-    name: "{{ specification.additional_components.replication.repmgr_database }}"
-    owner: "{{ specification.additional_components.replication.user }}"
+    name: "{{ specification.extensions.replication.repmgr_database }}"
+    owner: "{{ specification.extensions.replication.replication_user_name }}"
 
 # Master:
 - name: Check if master is already registered in repmgr
@@ -143,7 +119,7 @@
 
 - name: Clone content with repmgr
   become_user: postgres
-  shell: /usr/pgsql-10/bin/repmgr -h {{ hostvars[groups['postgresql'][0]]['ansible_default_ipv4']['address'] }} -U {{ specification.additional_components.replication.priviledged_user_name }} -d {{ specification.additional_components.replication.repmgr_database }} -p 5432 -F standby clone
+  shell: /usr/pgsql-10/bin/repmgr -h {{ hostvars[groups['postgresql'][0]]['ansible_default_ipv4']['address'] }} -U {{ specification.extensions.replication.priviledged_user_name }} -d {{ specification.extensions.replication.repmgr_database }} -p 5432 -F standby clone
   when:
     - groups['postgresql'][1] == inventory_hostname
     - is_node_already_registered.stdout == ""
@@ -158,7 +134,7 @@
 
 - name: Register node with repmgr
   become_user: postgres
-  shell: "/usr/pgsql-10/bin/repmgr standby -F -f  {{ repmgr_config_dir[ansible_os_family] }}/repmgr.conf --upstream-conninfo='host={{ hostvars[groups['postgresql'][0]]['ansible_default_ipv4']['address'] }}, user={{ specification.additional_components.replication.user }}, dbname={{ specification.additional_components.replication.repmgr_database }}, connect_timeout=2' --upstream-node-id 1 register"
+  shell: "/usr/pgsql-10/bin/repmgr standby -F -f  {{ repmgr_config_dir[ansible_os_family] }}/repmgr.conf --upstream-conninfo='host={{ hostvars[groups['postgresql'][0]]['ansible_default_ipv4']['address'] }}, user={{ specification.extensions.replication.replication_user_name }}, dbname={{ specification.extensions.replication.repmgr_database }}, connect_timeout=2' --upstream-node-id 1 register"
   when:
     - groups['postgresql'][1] == inventory_hostname
     - is_node_already_registered.stdout == ""

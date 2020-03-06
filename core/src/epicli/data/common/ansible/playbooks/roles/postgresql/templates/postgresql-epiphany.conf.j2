@@ -73,9 +73,11 @@
 
 # - Extension: {{ extension }} -
 
+{% if config.config_file_parameters is defined %}
 {%       for parameter, value in config.config_file_parameters.items() %}
 {{ parameter }} = {{ value }}
 {%       endfor %}
+{% endif %}
 {%     endif %}
 {%   endfor %}
 {% endif %}
