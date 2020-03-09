@@ -93,7 +93,7 @@ specification:
         - availability_zone: eu-west-2a
           address_pool: 10.1.10.0/24
     nfs:
-      count: 1
+      count: 0
       machine: nfs-machine
       configuration: default
       subnets:

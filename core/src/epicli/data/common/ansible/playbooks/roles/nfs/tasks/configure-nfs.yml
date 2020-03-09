@@ -16,7 +16,6 @@
   with_items:
     - "{{ specification.nfs_defs }}"
 
-# TODO: This need to be based on flexible paths & srcs
 - name: Ensure NFS mounts are bound
   mount:
     path: "{{ item.nfs_src }}"
@@ -36,4 +35,4 @@
     - "{{ nfs_service }}"
 
 - name: Export all entries from /etc/exports
-  command: "exportfs -a"
+  command: "exportfs -ra"

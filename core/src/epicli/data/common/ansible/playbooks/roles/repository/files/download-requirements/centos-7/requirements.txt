@@ -61,6 +61,7 @@ libXt # for grafana
 logrotate
 net-tools
 nfs-utils
+rpcbind
 nmap-ncat
 # Open Distro for Elasticsearch plugins are installed individually to not download them twice in different versions (as dependencies of opendistroforelasticsearch package)
 opendistro-alerting-1.3.0*
