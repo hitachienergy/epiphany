@@ -3,7 +3,7 @@ ARG BUILD_ID
 FROM epicli:$BUILD_ID
 
 RUN apt-get update \
-&& apt-get -y install ruby-full openssh-client \
+&& apt-get -y install ruby-full \
 && gem install serverspec rake rspec_junit_formatter
 
 RUN ssh-keygen -q -t rsa -m PEM -N '' -f ~/.ssh/id_rsa
