@@ -1,28 +1,39 @@
 # Changelog 0.5
 
-## [0.5.3] 2020-0X-XX
+## [0.5.3] 2020-xx-xx
 
-### Changed
+### Added
 
-- Common: Run logrotate on hourly basis instead of daily [#916](https://github.com/epiphany-platform/epiphany/issues/916)
+- Upgraded Epicli container and devcontainer from `python3.7-alpine` to `python:3.7-slim`
+
+### Fixed
+
+- [#940](https://github.com/epiphany-platform/epiphany/issues/940) - Epicli init does not include any infrastructure documents
+- [#611](https://github.com/epiphany-platform/epiphany/issues/611) - Lack of configuration/rabbitmq and configuration/postgresql after running epicli init --full
+- [#736](https://github.com/epiphany-platform/epiphany/issues/736) - Running epicli init -p any --full generates cloud sample configuration instead of bare metal config
+- [#942](https://github.com/epiphany-platform/epiphany/issues/942) - Additional security rules for NSGs are not applied properly for Azure
+- [#951](https://github.com/epiphany-platform/epiphany/issues/951) - Fix PGBouncer to use v1.10 for all platforms
+- [#945](https://github.com/epiphany-platform/epiphany/issues/945) - Disable NSG creation on Azure
+- Fix for [CVE-2019-14864](https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-14864)
 
 ## [0.5.2] 2020-02-17
 
 ### Added
 
-- PostgreSQL: PGBouncer implementation [#854](https://github.com/epiphany-platform/epiphany/issues/854)
-- PostgreSQL: pgAudit extension for audit logging [#905](https://github.com/epiphany-platform/epiphany/pull/905)
+- [#854](https://github.com/epiphany-platform/epiphany/issues/854) - PostgreSQL: PGBouncer implementation
+- [#905](https://github.com/epiphany-platform/epiphany/pull/905) - PostgreSQL: pgAudit extension for audit logging
 - PostgreSQL: Send logs to Elasticsearch
-- PostgreSQL: Add logrotate configuration [#915](https://github.com/epiphany-platform/epiphany/pull/915)
+- [#915](https://github.com/epiphany-platform/epiphany/pull/915) - PostgreSQL: Add logrotate configuration
 
 ### Fixed
 
-- Open Distro for Elasticsearch: Task 'Install Elasticsearch package' fails [#906](https://github.com/epiphany-platform/epiphany/issues/906)
-- Upgrade: Missing property 'name' when running epicli upgrade [#909](https://github.com/epiphany-platform/epiphany/issues/909)
-- Common: Issue installing Debian packages [#869](https://github.com/epiphany-platform/epiphany/issues/869)
+- [#906](https://github.com/epiphany-platform/epiphany/issues/906) - Open Distro for Elasticsearch: Task 'Install Elasticsearch package' fails
+- [#909](https://github.com/epiphany-platform/epiphany/issues/909) - Upgrade: Missing property 'name' when running epicli upgrade
+- [#869](https://github.com/epiphany-platform/epiphany/issues/869) - Common: Issue installing Debian packages
 
 ### Known issues
-- Elasticsearch service not starting on RHEL after running epicli upgrade command [#922](https://github.com/epiphany-platform/epiphany/issues/922)
+
+- [#922](https://github.com/epiphany-platform/epiphany/issues/922) - Elasticsearch service not starting on RHEL after running epicli upgrade command
 
 ## [0.5.1] 2020-01-23
 
