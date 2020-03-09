@@ -129,6 +129,6 @@
 - name: Include pgbouncer configuration tasks
   include_tasks: additional-components/configure-pgbouncer.yml
   when:
-    - specification.additional_components.pgbouncer.enabled is defined
-    - specification.additional_components.pgbouncer.enabled
+    - specification.extensions.pgbouncer.enabled is defined
+    - specification.extensions.pgbouncer.enabled
     - groups['postgresql'][0] == inventory_hostname
