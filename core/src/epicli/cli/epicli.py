@@ -25,7 +25,7 @@ def main():
     parser = argparse.ArgumentParser(
         description=__doc__,
         usage='''epicli <command> [<args>]''',
-        formatter_class=argparse.RawDescriptionHelpFormatter)
+        formatter_class=argparse.RawTextHelpFormatter)
 
     # setup some root arguments
     parser.add_argument('--version', action='version', help='Shows the CLI version', version=VERSION)
@@ -45,12 +45,32 @@ def main():
     parser.add_argument('--validate-certs', choices=['true', 'false'], default='true', action='store',
                         dest='validate_certs',
                         help='''[Experimental]: Disables certificate checks for certain Ansible operations
-                         which might have issues behind proxies (https://github.com/ansible/ansible/issues/32750). 
-                         Should NOT be used in production for security reasons.''')
-    parser.add_argument('--debug', dest='debug', action="store_true",
-                        help='Set this to output extensive debug information. Carries over to Ansible and Terraform.')
+which might have issues behind proxies (https://github.com/ansible/ansible/issues/32750). 
+Should NOT be used in production for security reasons.''')
     parser.add_argument('--auto-approve', dest='auto_approve', action="store_true",
                         help='Auto approve any user input queries asked by Epicli')
+
+    # set debug verbosity level.
+    def debug_level(x):
+        x = int(x)
+        if x < 0 or x > 4:
+            raise argparse.ArgumentTypeError("--debug value should be between 0 and 4")
+        return x
+    parser.add_argument('--debug', dest='debug', type=debug_level,
+                        help='''Set this flag (0..4) to enable debug output where 0 is no
+debug output and 1..4 is debug output with different verbosity levels:
+Python    : Anything heigher then 0 enables printing of Python stacktraces
+Ansible   : 1..4 map to following Ansible verbosity levels:
+            1: -v
+            2: -vv
+            3: -vvv
+            4: -vvvv
+Terraform : 1..4 map to the following Terraform verbosity levels:
+            1: WARN
+            2: INFO
+            3: DEBUG
+            4: TRACE''')
+
     # some arguments we don't want available when running from the docker image.
     if not config.docker_cli:
         parser.add_argument('-o', '--output', dest='output_dir', type=str,
@@ -95,7 +115,7 @@ def main():
         return args.func(args)
     except Exception as e:
         logger = Log('epicli')
-        logger.error(e, exc_info=config.debug)
+        logger.error(e, exc_info=(config.debug > 0))
         return 1
 
 
