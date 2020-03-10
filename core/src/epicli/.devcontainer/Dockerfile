@@ -1,4 +1,4 @@
-FROM python:3.7
+FROM python:3.7-slim
 
 ENV DEBIAN_FRONTEND=noninteractive
 
@@ -23,9 +23,9 @@ RUN chmod +x /config-pre.sh \
 
     && gem install serverspec rake rspec_junit_formatter \
 
-    && pip --disable-pip-version-check --no-cache-dir install pylint pytest wheel setuptools twine --default-timeout=100 \
-
     && pip --disable-pip-version-check --no-cache-dir install -r /requirements.txt --default-timeout=100 \
+
+    && pip --disable-pip-version-check --no-cache-dir install pylint pytest wheel setuptools twine --default-timeout=100 \
 
     && groupadd --gid $USER_GID $USERNAME \
     && useradd -s /bin/bash --uid $USER_UID --gid $USER_GID -m $USERNAME \

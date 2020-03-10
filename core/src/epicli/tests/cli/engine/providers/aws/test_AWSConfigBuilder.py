@@ -111,7 +111,10 @@ def get_cluster_model(address_pool='10.22.0.0/22', cluster_name='EpiphanyTestClu
             'name': cluster_name,
             'prefix': 'prefix',
             'cloud': {
-                'vnet_address_pool': address_pool
+                'vnet_address_pool': address_pool,
+                'network': {
+                    'use_network_security_groups': True
+                }
             }
         }
     })

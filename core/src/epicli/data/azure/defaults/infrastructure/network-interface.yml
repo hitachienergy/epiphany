@@ -4,6 +4,7 @@ provider: azure
 name: default
 specification:
     name: SET_BY_AUTOMATION
+    use_network_security_groups: SET_BY_AUTOMATION
     security_group_name: SET_BY_AUTOMATION
     ip_configuration_name: SET_BY_AUTOMATION
     subnet_name: SET_BY_AUTOMATION

@@ -46,7 +46,7 @@ end
 describe 'Checking if the number of master nodes is the same as indicated in the inventory file' do
   describe command('kubectl get nodes --selector=node-role.kubernetes.io/master --no-headers | wc -l | tr -d "\n"') do
     it "is expected to be equal" do
-      expect(subject.stdout.to_i).to eq count_inventory_roles("kubernetes_master")
+      expect(subject.stdout.to_i).to eq countInventoryHosts("kubernetes_master")
       end
   end
 end
@@ -54,7 +54,7 @@ end
 describe 'Checking if the number of worker nodes is the same as indicated in the inventory file' do
   describe command('kubectl get nodes --no-headers | grep -v master | wc -l | tr -d "\n"') do
     it "is expected to be equal" do
-      expect(subject.stdout.to_i).to eq count_inventory_roles("kubernetes_node")
+      expect(subject.stdout.to_i).to eq countInventoryHosts("kubernetes_node")
       end
   end
 end
