@@ -58,19 +58,18 @@ spec:
             timeoutSeconds: 5
             successThreshold: 1
             failureThreshold: 6
-{# TODO
           readinessProbe:
             exec:
               command:
                 - bash
                 - -ec
-                - PGPASSWORD=${PGPOOL_POSTGRES_PASSWORD} psql -U {{ (include "postgresql-ha.postgresqlUsername" .) | quote }} {{- if not (empty (include "postgresql-ha.postgresqlDatabase" .)) }} -d {{ (include "postgresql-ha.postgresqlDatabase" .) | quote }}{{- end }} -h 127.0.0.1 -tA -c "SELECT 1" >/dev/null
+{#              TODO: switch to no super user - PGPOOL_USERNAME if possible, when tried (with default pgpool.conf), got error: pool_passwd file does not contain an entry for "epi_pgpool" #}
+                - PGPASSWORD=${PGPOOL_POSTGRES_PASSWORD} psql -U "${PGPOOL_POSTGRES_USERNAME}" -d "${PGDATABASE}" -h 127.0.0.1 -tA -c "SELECT 1" >/dev/null
             initialDelaySeconds: 5
             periodSeconds: 10
             timeoutSeconds: 5
             successThreshold: 1
             failureThreshold: 6
-#}
           resources:
             {{ data.resources | to_nice_yaml(indent=2) | indent(12) | trim }}
           volumeMounts:

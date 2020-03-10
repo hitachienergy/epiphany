@@ -101,10 +101,11 @@ specification:
       env:
         PGPOOL_BACKEND_NODES: SET_BY_AUTOMATION # you can use custom value like '0:pg-node-1:5432,1:pg-node-2:5432'
         # TODO: Create 'pgpool_postgres_admin' user by Epiphany in postgresql role
-        PGPOOL_POSTGRES_USERNAME: pgpool_postgres_admin # Postgres administrator user, used to allow postgres admin authentication through pgpool
-        PGPOOL_ADMIN_USERNAME: pgpool_admin # Pgpool administrator
+        PGPOOL_POSTGRES_USERNAME: epi_pgpool_postgres_admin # Postgres administrator user, used to allow postgres admin authentication through pgpool
+        PGPOOL_ADMIN_USERNAME: epi_pgpool_admin # Pgpool administrator
         # TODO: test PGPOOL_SR_CHECK_USER, user added because of: ERROR ==> The PostrgreSQL replication credentials are mandatory. Set the environment variables PGPOOL_SR_CHECK_USER and PGPOOL_SR_CHECK_PASSWORD with the PostrgreSQL replication credentials.
-        PGPOOL_SR_CHECK_USER: postgresql_replication_user # user for streaming checks
+        PGPOOL_SR_CHECK_USER: epi_pgpool_replication_check # user for streaming checks
+        PGPOOL_USERNAME: epi_pgpool # user with login privilege (TODO: to be used for pgpool container health checks)
         PGPOOL_TIMEOUT: 360
         PGPOOL_ENABLE_LOAD_BALANCING: yes # set to 'no' if there is no replication
         PGPOOL_MAX_POOL: 15
@@ -115,9 +116,10 @@ specification:
         # PGPOOL_PASSWD_FILE The password file for authentication. Defaults to pool_passwd
         PGDATABASE: postgres # for /healthcheck.sh
       secrets:
-        pgpool_postgres_password: pgpool_postgres_admin_password
-        pgpool_admin_password: pgpool_admin_password
-        pgpool_sr_check_password: postgresql_replication_password # TODO: test if this is OK
+        pgpool_postgres_password: epi_pgpool_postgres_admin_password
+        pgpool_admin_password: epi_pgpool_admin_password
+        pgpool_sr_check_password: epi_pgpool_replication_check_password # TODO: test if this is OK
+        pgpool_user_password: epi_pgpool_password # TODO: test if needed and if yes, add to secrets and pool_passwd file
       config_file_content : |
         # Specify content for pgpool.conf
         # TODO: To be implemented

@@ -8,6 +8,7 @@ metadata:
   namespace: {{ data.namespace }}
 data:
 {% if data.pgpool.env.PGPOOL_BACKEND_NODES is undefined or data.pgpool.env.PGPOOL_BACKEND_NODES == 'SET_BY_AUTOMATION' %}
+{# TODO: IPs -> host names #}
   PGPOOL_BACKEND_NODES: "{% for node in groups['postgresql'] %}{{ loop.index0 }}:{{ hostvars[groups['postgresql'][loop.index0]]['ansible_default_ipv4']['address'] }}:5432{% if not loop.last %},{% endif %}{% endfor %}"
 {% else %}
   PGPOOL_BACKEND_NODES: "{ data.pgpool.env.PGPOOL_BACKEND_NODES }"

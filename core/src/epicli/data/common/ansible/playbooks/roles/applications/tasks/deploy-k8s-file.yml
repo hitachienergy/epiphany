@@ -6,7 +6,7 @@
     src: "{{ app_dir_name }}/{{ file_name }}.j2"
     owner: "{{ admin_user.name }}"
     group: "{{ admin_user.name }}"
-    mode: 0640 # can contain secrets
+    mode: 0600 # may contain secrets
   register: upload_template
 
 - name: "{{ data.name }}: Apply {{ file_name }} file"
