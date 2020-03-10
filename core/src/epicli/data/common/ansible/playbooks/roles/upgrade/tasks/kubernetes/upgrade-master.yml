@@ -72,28 +72,55 @@
 - name: upgrade-master | Wait for cluster's readiness
   include_tasks: wait.yml
 
-- name: "upgrade-master | Validate whether cluster is upgradeable
-         {{ '(using kubeadm-config.yml file)' if kubeadm_config_file.stat.exists else '' }}"
-  shell: >-
-    kubeadm upgrade plan v{{ version +
-    (' --config /etc/kubeadm/kubeadm-config.yml' if kubeadm_config_file.stat.exists else '') }}
-  changed_when: false
-  register: result
-  until: result is succeeded
-  retries: 20
-  delay: 30
+- name: upgrade-master | Upgrade plan block
+  block:
+    - name: "upgrade-master | Validate whether cluster is upgradeable
+            {{ '(using kubeadm-config.yml file)' if kubeadm_config_file.stat.exists else '' }}"
+      shell: >-
+        kubeadm upgrade plan v{{ version +
+        (' --config /etc/kubeadm/kubeadm-config.yml' if kubeadm_config_file.stat.exists else '') }}
+      changed_when: false
+      register: result
+      until: result is succeeded
+      retries: 20
+      delay: 30
+  rescue: # ignore CoreDNSUnsupportedPlugins error since coredns migration does not support all plugins that are valid and currently used
+    - name: "upgrade-master | Validate whether cluster is upgradeable with ignore CoreDNS plugin related erroros
+            {{ '(using kubeadm-config.yml file)' if kubeadm_config_file.stat.exists else '' }}"
+      shell: >-
+        kubeadm upgrade plan v{{ version +
+        (' --config /etc/kubeadm/kubeadm-config.yml' if kubeadm_config_file.stat.exists else '') }} --ignore-preflight-errors=CoreDNSUnsupportedPlugins
+      changed_when: false
+      register: result
+      until: result is succeeded
+      retries: 20
+      delay: 30
 
-- name: "upgrade-master | Upgrade K8s cluster to v{{ version }}
-         {{ '(using kubeadm-config.yml file)' if kubeadm_config_file.stat.exists else '' }}"
-  shell: >-
-    kubeadm upgrade apply -y v{{ version +
-    (' --config /etc/kubeadm/kubeadm-config.yml' if kubeadm_config_file.stat.exists else '') }}
-  register: result
-  until: result is succeeded
-  retries: 20
-  delay: 30
-  when:
-    - cluster_version.stdout is version('v' + version, '<') # without this condition fails when 'upgrading' again from 1.12.10 to 1.12.10
+- name: upgrade-master | Upgrade apply block
+  block:
+    - name: "upgrade-master | Upgrade K8s cluster to v{{ version }}
+            {{ '(using kubeadm-config.yml file)' if kubeadm_config_file.stat.exists else '' }}"
+      shell: >-
+        kubeadm upgrade apply -y v{{ version +
+        (' --config /etc/kubeadm/kubeadm-config.yml' if kubeadm_config_file.stat.exists else '') }}
+      register: result
+      until: result is succeeded
+      retries: 20
+      delay: 30
+      when:
+        - cluster_version.stdout is version('v' + version, '<') # without this condition fails when 'upgrading' again from 1.12.10 to 1.12.10
+  rescue:  # ignore CoreDNSUnsupportedPlugins error since coredns migration does not support all plugins that are valid and currently used
+    - name: "upgrade-master | Upgrade K8s cluster to v{{ version }}
+            {{ '(using kubeadm-config.yml file)' if kubeadm_config_file.stat.exists else '' }}"
+      shell: >-
+        kubeadm upgrade apply -y v{{ version +
+        (' --config /etc/kubeadm/kubeadm-config.yml' if kubeadm_config_file.stat.exists else '') }} --ignore-preflight-errors=CoreDNSUnsupportedPlugins
+      register: result
+      until: result is succeeded
+      retries: 20
+      delay: 30
+      when:
+        - cluster_version.stdout is version('v' + version, '<') 
 
 - name: upgrade-master | Wait for cluster's readiness
   include_tasks: wait.yml
