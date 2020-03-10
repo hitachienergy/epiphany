@@ -3,9 +3,6 @@ name: default
 title: PostgreSQL
 version: 0.5.2
 specification:
-  additional_components:
-    pgbouncer:
-      enabled: false
   config_file:
     parameter_groups:
     - name: CONNECTIONS AND AUTHENTICATION
@@ -38,6 +35,8 @@ specification:
           name: log_filename
           value: '''postgresql.log'''
   extensions:
+    pgbouncer:
+      enabled: false
     pgaudit:
       config_file_parameters:
         log_connections: 'off'
