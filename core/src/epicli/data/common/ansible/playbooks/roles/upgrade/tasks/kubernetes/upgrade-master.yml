@@ -132,13 +132,31 @@
   when:
     - version is version('1.14.0', '>=') # Docker 18.09 validated since K8s 1.14
 
-- name: upgrade-master | Restart kubelet
+- name: upgrade-master | Stop Kubelet
   systemd:
-    state: restarted
-    daemon_reload: yes
+    state: stopped
     name: kubelet
-  when:
-    - is_docker_updatable is undefined or not is_docker_updatable
+
+- name: upgrade-master | Stop Docker
+  systemd:
+    state: stopped
+    name: docker
+
+- name: upgrade-master | Reload daemon
+  systemd:
+    daemon_reload: yes
+
+- name: upgrade-master | Start Docker
+  systemd:
+    name: docker
+    state: started
+    enabled: yes
+    
+- name: upgrade-master | Start Kubelet
+  systemd:
+    name: kubelet
+    state: started
+    enabled: yes
 
 - name: upgrade-master | Wait for cluster's readiness
   include_tasks: wait.yml
