@@ -178,6 +178,44 @@ spec:
                   app: {{ auth_service_name }}
               topologyKey: failure-domain.beta.kubernetes.io/zone
             weight: 100
+      initContainers:
+      - name: "{{ auth_service_name }}-init"
+{% if data.use_local_image_registry is undefined or data.use_local_image_registry is sameas true %}
+        image: {{ image_registry_address }}/{{ data.image_path }}
+{% else %}
+        image: {{ data.image_path }}
+{% endif %}
+        imagePullPolicy: IfNotPresent
+        command: ['sh', '-c', '/opt/jboss/keycloak/bin/jboss-cli.sh --file=/opt/jboss/keycloak/bin/migrate-standalone-ha.cli']
+        env:
+        - name: KEYCLOAK_USER
+          value: {{ data.service.admin_user }}
+        - name: KEYCLOAK_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              key: password
+              name: "{{ auth_service_name }}-http"
+        - name: JGROUPS_DISCOVERY_PROTOCOL
+          value: dns.DNS_PING
+        - name: JGROUPS_DISCOVERY_PROPERTIES
+          value: dns_query={{ auth_service_name }}-headless.{{ namespace_name }}.svc.cluster.local # todo allow to pass cluster domain in vars (could be different than 'cluster.local'
+        - name: DB_VENDOR
+          value: postgres
+        - name: DB_ADDR
+          value: {{ auth_service_db_address }}
+        - name: DB_PORT
+          value: "{{ auth_service_db_port }}"
+        - name: DB_DATABASE
+          value: {{ data.database.name }}
+        - name: DB_USER
+          value: {{ data.database.user }}
+        - name: DB_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              key: password
+              name: "{{ auth_service_name }}-db"
+        - name: X509_CA_BUNDLE
+          value: "/var/run/secrets/kubernetes.io/serviceaccount/ca.crt"
       containers:
       - command:
         - /scripts/keycloak.sh
@@ -208,8 +246,6 @@ spec:
             secretKeyRef:
               key: password
               name: "{{ auth_service_name }}-db"
-#        - name: PROXY_ADDRESS_FORWARDING ## TODO
-#          value: "{{ data.XXXX }}"
         - name: X509_CA_BUNDLE
           value: "/var/run/secrets/kubernetes.io/serviceaccount/ca.crt"
 {% if data.use_local_image_registry is undefined or data.use_local_image_registry is sameas true %}
