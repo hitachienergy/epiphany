@@ -4,6 +4,9 @@ import sys
 import argparse
 import json
 import os
+import time
+import json
+import subprocess
 
 from cli.engine.BuildEngine import BuildEngine
 from cli.engine.PatchEngine import PatchEngine
@@ -17,7 +20,7 @@ from cli.version import VERSION
 from cli.licenses import LICENSES
 from cli.helpers.query_yes_no import query_yes_no
 from cli.helpers.input_query import prompt_for_password
-from cli.helpers.build_saver import save_to_file
+from cli.helpers.build_saver import save_to_file, get_output_path
 
 
 def main():
@@ -132,6 +135,8 @@ def init_parser(subparsers):
     def run_init(args):
         Config().output_dir = os.getcwd()
         dump_config(Config())
+
+        dump_debug_info()
         with InitEngine(args) as engine:
             return engine.init()
 
@@ -310,6 +315,30 @@ def ensure_vault_password_is_cleaned():
 
 def exit_handler():
     ensure_vault_password_is_cleaned()
+
+def dump_debug_info():
+    timestr = time.strftime("%Y%m%d-%H%M%S")
+    dump_name = os.getcwd() + f'/epicli_error_{timestr}.dump'
+    dump_file = open(dump_name, 'a') 
+
+    dump_file.write('*****CMD******\n')
+    temp = ' '
+    dump_file.write(temp.join([*['epicli'], *sys.argv[1:]]))
+
+    dump_file.write('\n\n*****ENVIROMENT VARS******\n')
+    dump_file.write(json.dumps(dict(os.environ), indent=2))
+
+    dump_file.write('\n\n*****ANSIBLE CONFIG******\n')
+    p = subprocess.Popen(['ansible-config', 'dump'], stdout=subprocess.PIPE)
+    out, err = p.communicate()
+    dump_file.writelines(out.decode("utf-8").splitlines())
+
+    dump_file.write('\n\n*****LOG******\n') 
+    config = Config()
+    log_path = os.path.join(get_output_path(), config.log_file)
+    dump_file.writelines([l for l in open(log_path).readlines()]) 
+
+    dump_file.close()
 
 if __name__ == '__main__':
     atexit.register(exit_handler)
