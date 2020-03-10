@@ -19,6 +19,8 @@ class InfrastructureBuilder(Step):
         self.cluster_prefix = self.cluster_model.specification.prefix.lower()
         self.resource_group_name = resource_name(self.cluster_prefix, self.cluster_name, 'rg')
         self.region = self.cluster_model.specification.cloud.region
+        self.use_network_security_groups = self.cluster_model.specification.cloud.network.use_network_security_groups
+        self.use_public_ips = self.cluster_model.specification.cloud.use_public_ips
         self.docs = docs
 
     def run(self):
@@ -42,6 +44,11 @@ class InfrastructureBuilder(Step):
             # So get it here and pass it allong.
             vm_config = self.get_virtual_machine(component_value, self.cluster_model, self.docs)
 
+            # If there are no security groups Ansible provisioning will fail because 
+            # SSH is not allowed then with public IPs on Azure.
+            if not(self.use_network_security_groups) and self.use_public_ips:
+                 self.logger.warning('Use of security groups has been disabled and public IP are used. Ansible run will fail because SSH will not be allowed.')            
+
             # For now only one subnet per component.
             if (len(component_value.subnets) > 1):
                 self.logger.warning(f'On Azure only one subnet per component is supported for now. Taking first and ignoring others.')    
@@ -55,19 +62,20 @@ class InfrastructureBuilder(Step):
                                     item.specification.address_prefix == subnet_definition['address_pool'])
 
             if subnet is None:
-                nsg = self.get_network_security_group(component_key, 
-                                                         vm_config.specification.security.rules,
-                                                         0)
-                infrastructure.append(nsg)
-
                 subnet = self.get_subnet(subnet_definition, component_key, 0)
                 infrastructure.append(subnet) 
+                
+                if self.use_network_security_groups:
+                    nsg = self.get_network_security_group(component_key, 
+                                                            vm_config.specification.security.rules,
+                                                            0)
+                    infrastructure.append(nsg)                
 
-                subnet_nsg_association = self.get_subnet_network_security_group_association(component_key, 
-                                                                                     subnet.specification.name, 
-                                                                                     nsg.specification.name,
-                                                                                     0)
-                infrastructure.append(subnet_nsg_association)
+                    subnet_nsg_association = self.get_subnet_network_security_group_association(component_key, 
+                                                                                        subnet.specification.name, 
+                                                                                        nsg.specification.name,
+                                                                                        0)
+                    infrastructure.append(subnet_nsg_association)
 
             #TODO: For now we create the VM infrastructure compatible with the Epiphany 2.x 
             #      code line but later we might want to look at scale sets to achieve the same result:
@@ -82,11 +90,16 @@ class InfrastructureBuilder(Step):
                     infrastructure.append(public_ip)
                     public_ip_name = public_ip.specification.name
 
+                if self.use_network_security_groups:
+                    nsg_name = nsg.specification.name
+                else:
+                    nsg_name = ''
+
                 network_interface = self.get_network_interface(component_key, 
                                                                component_value, 
                                                                vm_config,
                                                                subnet.specification.name, 
-                                                               nsg.specification.name,
+                                                               nsg_name,
                                                                public_ip_name,
                                                                index)
                 infrastructure.append(network_interface)
@@ -131,6 +144,7 @@ class InfrastructureBuilder(Step):
     def get_network_interface(self, component_key, component_value, vm_config, subnet_name, security_group_name, public_ip_name, index):
         network_interface = self.get_config_or_default(self.docs, 'infrastructure/network-interface')
         network_interface.specification.name = resource_name(self.cluster_prefix, self.cluster_name, 'nic' + '-' + str(index), component_key)
+        network_interface.specification.use_network_security_groups = self.use_network_security_groups
         network_interface.specification.security_group_name = security_group_name
         network_interface.specification.ip_configuration_name = resource_name(self.cluster_prefix, self.cluster_name, 'ipconf' + '-' + str(index), component_key)
         network_interface.specification.subnet_name = subnet_name
