@@ -25,3 +25,18 @@
     fail_msg: "Your operating system [{{ ansible_distribution  }} - {{ ansible_distribution_version }}] version and distribution doesn't meet system requirements.
               Distributions meetings requirements are: {{ message_supported_oeses }}"
     success_msg:  "Operating system [{{ ansible_distribution  }} - {{ ansible_distribution_version }}] version and distribution meet system requirements."
+
+- name: Check if PostgreSQL version needs to be migrated to version installed from PostgreSQL repository
+  command:  rpm -q rh-postgresql10-postgresql-servery
+  failed_when: no
+  changed_when: no
+  register: rpm_check
+
+- name: Check PostgreSQL version
+  assert:
+    that: rpm_check.stdout.find('is not installed') == -1
+    fail_msg: "You have not supported PostgreSQL version, please migrate this according to procedure ... "
+    success_msg:  "Your PostgresSQL installation is supported"
+  when:
+    - inventory_hostname in groups['postgresql']
+  
