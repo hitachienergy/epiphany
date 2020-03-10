@@ -80,8 +80,8 @@
   changed_when: false
   register: result
   until: result is succeeded
-  retries: 5
-  delay: 5
+  retries: 20
+  delay: 30
 
 - name: "upgrade-master | Upgrade K8s cluster to v{{ version }}
          {{ '(using kubeadm-config.yml file)' if kubeadm_config_file.stat.exists else '' }}"
@@ -90,8 +90,8 @@
     (' --config /etc/kubeadm/kubeadm-config.yml' if kubeadm_config_file.stat.exists else '') }}
   register: result
   until: result is succeeded
-  retries: 5
-  delay: 5
+  retries: 20
+  delay: 30
   when:
     - cluster_version.stdout is version('v' + version, '<') # without this condition fails when 'upgrading' again from 1.12.10 to 1.12.10
 
@@ -122,7 +122,7 @@
   shell: kubectl uncordon {{ inventory_hostname }}
   register: output
   until: output is succeeded
-  retries: 5
+  retries: 20
   delay: 5
   when:
     - groups['kubernetes_node'] is defined
