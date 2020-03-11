@@ -9,14 +9,18 @@ Reference for actual cluster component versions can be found [here](docs/home/CO
 
 ## Current release
 
+### 0.6.x
+
+- [CHANGELOG-0.6.0](./CHANGELOG-0.6.md#060-2020-03-xx)
+
+## Older releases
+
 ### 0.5.x
 
 - [CHANGELOG-0.5.3](./CHANGELOG-0.5.md#051-2020-03-09)
 - [CHANGELOG-0.5.2](./CHANGELOG-0.5.md#051-2020-02-17)
 - [CHANGELOG-0.5.1](./CHANGELOG-0.5.md#051-2020-01-23)
 - [CHANGELOG-0.5.0](./CHANGELOG-0.5.md#050-2020-01-17)
-
-## Older releases
 
 ### 0.4.x
 
