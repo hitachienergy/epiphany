@@ -32,7 +32,7 @@
   changed_when: no
   register: rpm_check
   when:
-    - ansible_os_family == "Debian"
+    - ansible_os_family == "RedHat"
 
 - name: Check PostgreSQL version
   assert:
@@ -41,7 +41,7 @@
               described at:  "
     success_msg:  "Your PostgresSQL installation is supported"
   when:
-    - ansible_os_family == "Debian"
+    - ansible_os_family == "RedHat"
     - "'postgresql' in groups"
     - "inventory_hostname in groups['postgresql']"
   
