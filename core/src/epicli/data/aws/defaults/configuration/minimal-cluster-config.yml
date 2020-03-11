@@ -1,5 +1,5 @@
 kind: epiphany-cluster
-version: 0.3.0
+version: 0.3.1
 title: "Epiphany cluster Config"
 provider: aws
 name: "default"

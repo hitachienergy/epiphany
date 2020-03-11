@@ -1,5 +1,5 @@
 kind: infrastructure/virtual-machine
-version: 0.3.0
+version: 0.3.1
 title: "Virtual Machine Infra"
 provider: aws
 name: default
@@ -13,7 +13,7 @@ specification:
   authorized_to_efs: False
   mount_efs: False
   tags:
-    - version: 0.3.0
+    - version: 0.3.1
   size: t2.micro
   os_full_name: "ubuntu/images/hvm-ssd/ubuntu-bionic-18.04-amd64-server-20190212.1"
   os_type: linux
@@ -54,18 +54,18 @@ specification:
 
 ---
 kind: infrastructure/virtual-machine
-version: 0.3.0
+version: 0.3.1
 title: "Virtual Machine Infra"
 provider: aws
 name: default-size-t3
 specification:
   tags:
-    - version: 0.3.0
+    - version: 0.3.1
   size: t3.micro
   os_type: linux
 ---
 kind: infrastructure/virtual-machine
-version: 0.3.0
+version: 0.3.1
 title: "Virtual Machine Infra"
 provider: aws
 name: kubernetes-master-machine
@@ -145,7 +145,7 @@ specification:
        destination_address_prefix: "0.0.0.0/0"
 ---
 kind: infrastructure/virtual-machine
-version: 0.3.0
+version: 0.3.1
 title: "Virtual Machine Infra"
 provider: aws
 name: kubernetes-node-machine
@@ -213,7 +213,7 @@ specification:
        destination_address_prefix: "0.0.0.0/0"
 ---
 kind: infrastructure/virtual-machine
-version: 0.3.0
+version: 0.3.1
 title: "Virtual Machine Infra"
 provider: aws
 name: kafka-machine
@@ -319,7 +319,7 @@ specification:
        destination_address_prefix: "0.0.0.0/0"
 ---
 kind: infrastructure/virtual-machine
-version: 0.3.0
+version: 0.3.1
 title: "Virtual Machine Infra"
 provider: aws
 name: monitoring-machine
@@ -349,7 +349,7 @@ specification:
        destination_address_prefix: "0.0.0.0/0"
 ---
 kind: infrastructure/virtual-machine
-version: 0.3.0
+version: 0.3.1
 title: "Virtual Machine Infra"
 provider: aws
 name: postgresql-machine
@@ -403,7 +403,7 @@ specification:
        destination_address_prefix: "0.0.0.0/0"
 ---
 kind: infrastructure/virtual-machine
-version: 0.3.0
+version: 0.3.1
 title: "Virtual Machine Infra"
 provider: aws
 name: logging-machine

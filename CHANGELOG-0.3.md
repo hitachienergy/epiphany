@@ -1,5 +1,16 @@
 # Changelog 0.3
 
+## [0.3.1] 2020-03-xx
+
+### Fixed
+
+- Fixed vulnerabilities for KeyCloak examples
+
+### Known issues
+
+- Deployment/Application role fails because Kubernetes cluster is not ready after reboot. More info [here](https://github.com/epiphany-platform/epiphany/issues/407)
+- Node_exporter ports are not present in defaults resulting in Prometheus not beeing able to scrape data with minimal cluster data.yaml. More info [here](https://github.com/epiphany-platform/epiphany/issues/410)
+
 ## [0.3.0] 2019-07-31
 
 ### Added
