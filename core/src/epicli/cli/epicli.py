@@ -7,6 +7,8 @@ import os
 import time
 import json
 import subprocess
+import platform
+import socket
 
 from cli.engine.BuildEngine import BuildEngine
 from cli.engine.PatchEngine import PatchEngine
@@ -119,6 +121,7 @@ Terraform : 1..4 map to the following Terraform verbosity levels:
     except Exception as e:
         logger = Log('epicli')
         logger.error(e, exc_info=(config.debug > 0))
+        dump_debug_info()
         return 1
 
 
@@ -134,9 +137,9 @@ def init_parser(subparsers):
 
     def run_init(args):
         Config().output_dir = os.getcwd()
-        dump_config(Config())
 
-        dump_debug_info()
+        raise Exception('kaasbal')
+
         with InitEngine(args) as engine:
             return engine.init()
 
@@ -267,7 +270,6 @@ def experimental_query():
 def adjust_paths_from_output_dir():
     if not Config().output_dir:
         Config().output_dir = os.getcwd()  # Default to working dir so we can at least write logs.
-    dump_config(Config())
 
 
 def adjust_paths_from_file(args):
@@ -278,7 +280,6 @@ def adjust_paths_from_file(args):
         raise Exception(f'File "{args.file}" does not exist')
     if Config().output_dir is None:
         Config().output_dir = os.path.join(os.path.dirname(args.file), 'build')
-    dump_config(Config())
 
 
 def adjust_paths_from_build(args):
@@ -291,14 +292,6 @@ def adjust_paths_from_build(args):
         args.build_directory = args.build_directory.rstrip('/')
     if Config().output_dir is None:
         Config().output_dir = os.path.split(args.build_directory)[0]
-    dump_config(Config())
-
-
-def dump_config(config):
-    logger = Log('config')
-    for attr in config.__dict__:
-        if attr.startswith('_'):
-            logger.info('%s = %r' % (attr[1:], getattr(config, attr)))
 
 def ensure_vault_password_is_set(args):
     vault_password = args.vault_password 
@@ -309,36 +302,78 @@ def ensure_vault_password_is_set(args):
     os.makedirs(directory_path, exist_ok=True)
     save_to_file(Config().vault_password_location, vault_password)
 
+
 def ensure_vault_password_is_cleaned():
     if os.path.exists(Config().vault_password_location):
         os.remove(Config().vault_password_location)
 
+
 def exit_handler():
     ensure_vault_password_is_cleaned()
 
+
 def dump_debug_info():
-    timestr = time.strftime("%Y%m%d-%H%M%S")
-    dump_name = os.getcwd() + f'/epicli_error_{timestr}.dump'
-    dump_file = open(dump_name, 'a') 
+    def dump_external_debug_info(title, args):
+        dump_file.write(f'\n\n*****{title}******\n')
+        p = subprocess.Popen(args, stdout=subprocess.PIPE)
+        out, err = p.communicate()
+        lines = filter(lambda x: x.strip(), out.decode("utf-8").splitlines(keepends=True))
+        dump_file.writelines(lines)
 
-    dump_file.write('*****CMD******\n')
-    temp = ' '
-    dump_file.write(temp.join([*['epicli'], *sys.argv[1:]]))
+    try:
+        logger = Log('dump_debug_info')
+        config = Config()
 
-    dump_file.write('\n\n*****ENVIROMENT VARS******\n')
-    dump_file.write(json.dumps(dict(os.environ), indent=2))
+        timestr = time.strftime("%Y%m%d-%H%M%S")
+        dump_path = os.getcwd() + f'/epicli_error_{timestr}.dump'
+        dump_file = open(dump_path, 'w') 
 
-    dump_file.write('\n\n*****ANSIBLE CONFIG******\n')
-    p = subprocess.Popen(['ansible-config', 'dump'], stdout=subprocess.PIPE)
-    out, err = p.communicate()
-    dump_file.writelines(out.decode("utf-8").splitlines())
+        dump_file.write('*****EPICLI VERSION******\n')
+        dump_file.write(f'{VERSION}')
 
-    dump_file.write('\n\n*****LOG******\n') 
-    config = Config()
-    log_path = os.path.join(get_output_path(), config.log_file)
-    dump_file.writelines([l for l in open(log_path).readlines()]) 
+        dump_file.write('\n\n*****EPICLI ARGS******\n')
+        dump_file.write(' '.join([*['epicli'], *sys.argv[1:]]))        
 
-    dump_file.close()
+        dump_file.write('\n\n*****EPICLI CONFIG******\n')
+        for attr in config.__dict__:
+            if attr.startswith('_'):
+                dump_file.write('%s = %r\n' % (attr[1:], getattr(config, attr)))
+
+        dump_file.write('\n\n*****SYSTEM******\n')      
+        system_data = {
+            'platform':platform.system(),
+            'release':platform.release(),
+            'type': platform.uname().system,
+            'arch': platform.uname().machine,
+            'cpus': json.dumps(os.cpu_count()),
+            'hostname': socket.gethostname()
+        }
+        dump_file.write(json.dumps(dict(system_data), indent=2))
+
+        dump_file.write('\n\n*****ENVIROMENT VARS******\n')
+        dump_file.write(json.dumps(dict(os.environ), indent=2))
+
+        dump_file.write('\n\n*****PYTHON******\n')
+        dump_file.write(f'python_version: {platform.python_version()}\n') 
+        dump_file.write(f'python_build: {platform.python_build()}\n')  
+        dump_file.write(f'python_revision: {platform.python_revision()}\n')
+        dump_file.write(f'python_compiler: {platform.python_compiler()}\n')    
+        dump_file.write(f'python_branch: {platform.python_branch()}\n')    
+        dump_file.write(f'python_implementation: {platform.python_implementation()}\n')  
+
+        dump_external_debug_info('ANSIBLE VERSION', ['ansible', '--version'])
+        dump_external_debug_info('ANSIBLE CONFIG', ['ansible-config', 'dump'])
+        dump_external_debug_info('ANSIBLE-VAULT VERSION', ['ansible-vault', '--version'])
+        dump_external_debug_info('TERRAFORM VERSION', ['terraform', '--version'])
+        dump_external_debug_info('SKOPEO VERSION', ['skopeo', '--version'])
+
+        dump_file.write('\n\n*****LOG******\n')
+        log_path = os.path.join(get_output_path(), config.log_file)
+        dump_file.writelines([l for l in open(log_path).readlines()]) 
+    finally:
+        dump_file.close()
+        logger.info(f'Error dump has been written to: {dump_path}')
+        logger.warning('This dump might contain sensitive information. Check before sharing.')
 
 if __name__ == '__main__':
     atexit.register(exit_handler)
