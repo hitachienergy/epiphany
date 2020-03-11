@@ -4,12 +4,7 @@
 
 ### Fixed
 
-- Fixed vulnerabilities for KeyCloak examples
-
-### Known issues
-
-- Deployment/Application role fails because Kubernetes cluster is not ready after reboot. More info [here](https://github.com/epiphany-platform/epiphany/issues/407)
-- Node_exporter ports are not present in defaults resulting in Prometheus not beeing able to scrape data with minimal cluster data.yaml. More info [here](https://github.com/epiphany-platform/epiphany/issues/410)
+- [#839](https://github.com/epiphany-platform/epiphany/issues/839) - Add ServerAliveInterval option to keep SSH connection for long running tasks
 
 ## [0.3.0] 2019-07-31
 
