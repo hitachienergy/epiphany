@@ -37,11 +37,12 @@ class AnsibleVarsGenerator(Step):
 
     def generate(self):
         self.logger.info('Generate Ansible vars')
-        if self.inventory_creator != None: 
-            ansible_dir = get_ansible_path(self.cluster_model.specification.name)
-        else:
+        self.is_upgrade_run = self.inventory_creator == None
+        if self.is_upgrade_run:
             ansible_dir = get_ansible_path_for_build(self.inventory_upgrade.build_dir)
-
+        else:
+            ansible_dir = get_ansible_path(self.cluster_model.specification.name)
+        
         self.populate_group_vars(ansible_dir)
 
         cluster_config_file_path = os.path.join(ansible_dir, 'roles', 'common', 'vars', 'main.yml')
@@ -49,7 +50,7 @@ class AnsibleVarsGenerator(Step):
         with open(cluster_config_file_path, 'w') as stream:
             dump(clean_cluster_model, stream)
 
-        if self.inventory_creator == None:
+        if self.is_upgrade_run:
             # For upgrade at this point we don't need any of other roles then
             # common, upgrade, repository and image_registry.
             # - commmon is already provisioned from the cluster model constructed from the inventory.
@@ -86,6 +87,7 @@ class AnsibleVarsGenerator(Step):
         main_vars['validate_certs'] = Config().validate_certs
         main_vars['offline_requirements'] = Config().offline_requirements
         main_vars['wait_for_pods'] = Config().wait_for_pods
+        main_vars['is_upgrade_run'] = self.is_upgrade_run
 
         shared_config_doc = select_first(self.config_docs, lambda x: x.kind == 'configuration/shared-config')
         if shared_config_doc == None:

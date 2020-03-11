@@ -50,10 +50,23 @@
         --name epiphany-registry {{ specification.registry_image.name }}
       when: regitry_up_check.stdout | length == 0
 
-    - name: Include load-image.yml
+    - name: Load generic images to registry
       include_tasks: load-image.yml
       vars:
         docker_image: "{{ item }}"
-      loop: "{{ specification.images_to_load }}"
+      loop: "{{ specification.images_to_load.generic }}"
+
+    - name: Load current version images to registry
+      include_tasks: load-image.yml
+      vars:
+        docker_image: "{{ item }}"
+      loop: "{{ specification.images_to_load.current }}"
+
+    - name: Load legacy version images to registry when upgrading
+      include_tasks: load-image.yml
+      vars:
+        docker_image: "{{ item }}"
+      loop: "{{ specification.images_to_load.legacy }}"
+      when: is_upgrade_run
 
   when: not custom_image_registry_address
