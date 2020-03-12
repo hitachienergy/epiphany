@@ -1,5 +1,5 @@
 kind: infrastructure/virtual-machine
-version: 0.3.0
+version: 0.3.1
 title: "Virtual Machine Infra"
 provider: azure
 name: default
@@ -7,7 +7,7 @@ specification:
   count: SET_BY_AUTOMATION
   subnet: SET_BY_AUTOMATION
   tags:
-    - version: 0.3.0
+    - version: 0.3.1
   size: Standard_DS1_v2
   os_type: linux
   disks:
@@ -35,7 +35,7 @@ specification:
 
 ---
 kind: infrastructure/virtual-machine
-version: 0.3.0
+version: 0.3.1
 title: "Virtual Machine Infra"
 provider: azure
 name: default-external-disk

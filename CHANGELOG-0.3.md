@@ -1,5 +1,11 @@
 # Changelog 0.3
 
+## [0.3.1] 2020-03-xx
+
+### Fixed
+
+- [#839](https://github.com/epiphany-platform/epiphany/issues/839) - Add ServerAliveInterval option to keep SSH connection for long running tasks
+
 ## [0.3.0] 2019-07-31
 
 ### Added
