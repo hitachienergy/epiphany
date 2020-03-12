@@ -8,7 +8,7 @@
     update_cache: yes
     state: present
 
-# --- additional components ---
+# --- extensions ---
 
 - name: Install pgbouncer package
   apt:
@@ -17,10 +17,18 @@
     state: present
     update_cache: yes
   when:
-    - specification.additional_components.pgbouncer.enabled is defined
-    - specification.additional_components.pgbouncer.enabled
+    - specification.extensions.pgbouncer.enabled is defined
+    - specification.extensions.pgbouncer.enabled
 
-# --- extensions ---
+- name: Install repmgr package
+  apt:
+    name:
+      - postgresql-10-repmgr
+    state: present
+    update_cache: yes
+  when:
+    - specification.extensions.replication.use_repmgr is defined
+    - specification.extensions.replication.use_repmgr
 
 - name: Install pgaudit package
   apt:
