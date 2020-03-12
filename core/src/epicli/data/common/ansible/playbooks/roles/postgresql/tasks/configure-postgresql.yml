@@ -126,9 +126,33 @@
     - specification.extensions.replication.use_repmgr is defined
     - specification.extensions.replication.use_repmgr
 
-- name: Include pgbouncer configuration tasks
+- name: Include PgBouncer configuration tasks
   include_tasks: additional-components/configure-pgbouncer.yml
   when:
     - specification.extensions.pgbouncer.enabled is defined
     - specification.extensions.pgbouncer.enabled
     - groups['postgresql'][0] == inventory_hostname
+
+- name: Set up Pgpool if enabled
+  block:
+    - name: Include vars from applications role
+      include_vars:
+        file: roles/applications/vars/main.yml
+        name: applications_role_config
+      when:
+        - "'applications' in roles_with_generated_vars"
+
+    - name: Get Pgpool configuration
+      set_fact:
+        pgpool: "{{ pgpool_config[0] | default({}) }}"
+      vars:
+        pgpool_config: >-
+          {{ applications_role_config.specification.applications | default([])
+                                                                 | selectattr("name", "equalto", "pgpool") | selectattr('enabled')
+                                                                 | map(attribute='pgpool') | list }}
+
+    - name: Include Pgpool setup tasks
+      include_tasks: additional-components/pgpool.yml
+      when:
+        - pgpool.env is defined
+        - groups['postgresql'][0] == inventory_hostname
