@@ -4,6 +4,7 @@ from cli.helpers.Log import LogPipe, Log
 from cli.helpers.Config import Config
 import time
 
+ansible_verbosity = ['NONE','-v','-vv','-vvv','-vvvv']
 
 class AnsibleCommand:
 
@@ -62,8 +63,8 @@ class AnsibleCommand:
 
         cmd.append(playbook_path)
 
-        if Config().debug:
-            cmd.append('-vvv')
+        if Config().debug > 0:
+            cmd.append(ansible_verbosity[Config().debug])
 
         self.logger.info('Running: "' + ' '.join(playbook_path) + '"')
 
