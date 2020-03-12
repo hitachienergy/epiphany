@@ -1,0 +1,23 @@
+---
+
+- name: upgrade-master | Get all deployments from kube-system
+  environment:
+    KUBECONFIG: /home/{{ admin_user.name }}/.kube/config
+  shell: |-
+    kubectl -n kube-system get {{ item }} -o yaml > {{ item }}.yml
+  args:
+    executable: /bin/bash
+  loop:
+    - daemonsets
+    - deployments
+
+- name: upgrade-master | Convert and apply daemonsets and deployments
+  environment:
+    KUBECONFIG: /home/{{ admin_user.name }}/.kube/config
+  shell: |-
+    kubectl convert -f {{ item }}.yml --output-version apps/v1 | kubectl apply -f -
+  args:
+    executable: /bin/bash
+  loop:
+    - daemonsets
+    - deployments

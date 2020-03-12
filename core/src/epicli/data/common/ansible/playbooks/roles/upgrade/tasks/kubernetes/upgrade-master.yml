@@ -69,6 +69,11 @@
 - name: upgrade-master | Install packages
   include_tasks: "{{ ansible_os_family }}/install-packages.yml"
 
+- name: upgrade-master | Convert deployments for compatibility with v1.16.x
+  include_tasks: convert-deployments-1-16.yml
+  when:
+    - version is version('1.16.7', '==') 
+
 - name: upgrade-master | Wait for cluster's readiness
   include_tasks: wait.yml
 
