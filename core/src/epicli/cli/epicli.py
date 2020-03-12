@@ -138,8 +138,6 @@ def init_parser(subparsers):
     def run_init(args):
         Config().output_dir = os.getcwd()
 
-        raise Exception('kaasbal')
-
         with InitEngine(args) as engine:
             return engine.init()
 
