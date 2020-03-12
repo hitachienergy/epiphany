@@ -34,11 +34,12 @@
   when:
     - ansible_os_family == "RedHat"
 
+# TODO: Add link to PostgreSQL migration from Software Collections to PostgreSQL installation from PostgreSQL repository
 - name: Check PostgreSQL version
   assert:
     that: rpm_check.stdout.find('is not installed') != -1
     fail_msg: "You have not supported PostgreSQL installed from Software Collections version, please migrate this according to procedure 
-              described at:  "
+              described at: TODO"
     success_msg:  "Your PostgresSQL installation is supported"
   when:
     - ansible_os_family == "RedHat"
