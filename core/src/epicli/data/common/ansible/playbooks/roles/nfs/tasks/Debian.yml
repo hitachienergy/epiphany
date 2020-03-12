@@ -1,6 +1,9 @@
 ---
+# Install required NFS packages for Debian based operating systems
 
 - name: Ensure NFS packages are installed (Debian).
-  apt: "name={{ item }} state=installed"
-  with_items:
-    - "{{ nfs_packages }}"
+  apt:
+    name:
+      - nfs-common
+      - nfs-kernel-server
+    state: present

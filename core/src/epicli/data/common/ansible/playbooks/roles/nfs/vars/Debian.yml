@@ -1,7 +1,5 @@
 ---
 # Debian specific variables for NFS
-nfs_packages:
- - nfs-common
- - nfs-kernel-server
 
-nfs_service: nfs-kernel-server
+nfs_service:
+  - nfs-kernel-server
