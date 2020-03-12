@@ -17,7 +17,7 @@ class Config:
             self._log_type = 'plain'
 
             self._validate_certs = True
-            self._debug = False
+            self._debug = 0
             self._auto_approve = False
             self._offline_requirements = ''
             self._wait_for_pods = False

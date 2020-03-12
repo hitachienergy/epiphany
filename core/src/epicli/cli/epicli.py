@@ -4,6 +4,11 @@ import sys
 import argparse
 import json
 import os
+import time
+import json
+import subprocess
+import platform
+import socket
 
 from cli.engine.BuildEngine import BuildEngine
 from cli.engine.PatchEngine import PatchEngine
@@ -17,7 +22,7 @@ from cli.version import VERSION
 from cli.licenses import LICENSES
 from cli.helpers.query_yes_no import query_yes_no
 from cli.helpers.input_query import prompt_for_password
-from cli.helpers.build_saver import save_to_file
+from cli.helpers.build_saver import save_to_file, get_output_path
 
 
 def main():
@@ -25,7 +30,7 @@ def main():
     parser = argparse.ArgumentParser(
         description=__doc__,
         usage='''epicli <command> [<args>]''',
-        formatter_class=argparse.RawDescriptionHelpFormatter)
+        formatter_class=argparse.RawTextHelpFormatter)
 
     # setup some root arguments
     parser.add_argument('--version', action='version', help='Shows the CLI version', version=VERSION)
@@ -45,12 +50,32 @@ def main():
     parser.add_argument('--validate-certs', choices=['true', 'false'], default='true', action='store',
                         dest='validate_certs',
                         help='''[Experimental]: Disables certificate checks for certain Ansible operations
-                         which might have issues behind proxies (https://github.com/ansible/ansible/issues/32750). 
-                         Should NOT be used in production for security reasons.''')
-    parser.add_argument('--debug', dest='debug', action="store_true",
-                        help='Set this to output extensive debug information. Carries over to Ansible and Terraform.')
+which might have issues behind proxies (https://github.com/ansible/ansible/issues/32750). 
+Should NOT be used in production for security reasons.''')
     parser.add_argument('--auto-approve', dest='auto_approve', action="store_true",
                         help='Auto approve any user input queries asked by Epicli')
+
+    # set debug verbosity level.
+    def debug_level(x):
+        x = int(x)
+        if x < 0 or x > 4:
+            raise argparse.ArgumentTypeError("--debug value should be between 0 and 4")
+        return x
+    parser.add_argument('--debug', dest='debug', type=debug_level,
+                        help='''Set this flag (0..4) to enable debug output where 0 is no
+debug output and 1..4 is debug output with different verbosity levels:
+Python    : Anything heigher then 0 enables printing of Python stacktraces
+Ansible   : 1..4 map to following Ansible verbosity levels:
+            1: -v
+            2: -vv
+            3: -vvv
+            4: -vvvv
+Terraform : 1..4 map to the following Terraform verbosity levels:
+            1: WARN
+            2: INFO
+            3: DEBUG
+            4: TRACE''')
+
     # some arguments we don't want available when running from the docker image.
     if not config.docker_cli:
         parser.add_argument('-o', '--output', dest='output_dir', type=str,
@@ -95,7 +120,8 @@ def main():
         return args.func(args)
     except Exception as e:
         logger = Log('epicli')
-        logger.error(e, exc_info=config.debug)
+        logger.error(e, exc_info=(config.debug > 0))
+        dump_debug_info()
         return 1
 
 
@@ -111,7 +137,7 @@ def init_parser(subparsers):
 
     def run_init(args):
         Config().output_dir = os.getcwd()
-        dump_config(Config())
+
         with InitEngine(args) as engine:
             return engine.init()
 
@@ -242,7 +268,6 @@ def experimental_query():
 def adjust_paths_from_output_dir():
     if not Config().output_dir:
         Config().output_dir = os.getcwd()  # Default to working dir so we can at least write logs.
-    dump_config(Config())
 
 
 def adjust_paths_from_file(args):
@@ -253,7 +278,6 @@ def adjust_paths_from_file(args):
         raise Exception(f'File "{args.file}" does not exist')
     if Config().output_dir is None:
         Config().output_dir = os.path.join(os.path.dirname(args.file), 'build')
-    dump_config(Config())
 
 
 def adjust_paths_from_build(args):
@@ -266,14 +290,6 @@ def adjust_paths_from_build(args):
         args.build_directory = args.build_directory.rstrip('/')
     if Config().output_dir is None:
         Config().output_dir = os.path.split(args.build_directory)[0]
-    dump_config(Config())
-
-
-def dump_config(config):
-    logger = Log('config')
-    for attr in config.__dict__:
-        if attr.startswith('_'):
-            logger.info('%s = %r' % (attr[1:], getattr(config, attr)))
 
 def ensure_vault_password_is_set(args):
     vault_password = args.vault_password 
@@ -284,12 +300,78 @@ def ensure_vault_password_is_set(args):
     os.makedirs(directory_path, exist_ok=True)
     save_to_file(Config().vault_password_location, vault_password)
 
+
 def ensure_vault_password_is_cleaned():
     if os.path.exists(Config().vault_password_location):
         os.remove(Config().vault_password_location)
 
+
 def exit_handler():
     ensure_vault_password_is_cleaned()
+
+
+def dump_debug_info():
+    def dump_external_debug_info(title, args):
+        dump_file.write(f'\n\n*****{title}******\n')
+        p = subprocess.Popen(args, stdout=subprocess.PIPE)
+        out, err = p.communicate()
+        lines = filter(lambda x: x.strip(), out.decode("utf-8").splitlines(keepends=True))
+        dump_file.writelines(lines)
+
+    try:
+        logger = Log('dump_debug_info')
+        config = Config()
+
+        timestr = time.strftime("%Y%m%d-%H%M%S")
+        dump_path = os.getcwd() + f'/epicli_error_{timestr}.dump'
+        dump_file = open(dump_path, 'w') 
+
+        dump_file.write('*****EPICLI VERSION******\n')
+        dump_file.write(f'{VERSION}')
+
+        dump_file.write('\n\n*****EPICLI ARGS******\n')
+        dump_file.write(' '.join([*['epicli'], *sys.argv[1:]]))        
+
+        dump_file.write('\n\n*****EPICLI CONFIG******\n')
+        for attr in config.__dict__:
+            if attr.startswith('_'):
+                dump_file.write('%s = %r\n' % (attr[1:], getattr(config, attr)))
+
+        dump_file.write('\n\n*****SYSTEM******\n')      
+        system_data = {
+            'platform':platform.system(),
+            'release':platform.release(),
+            'type': platform.uname().system,
+            'arch': platform.uname().machine,
+            'cpus': json.dumps(os.cpu_count()),
+            'hostname': socket.gethostname()
+        }
+        dump_file.write(json.dumps(dict(system_data), indent=2))
+
+        dump_file.write('\n\n*****ENVIROMENT VARS******\n')
+        dump_file.write(json.dumps(dict(os.environ), indent=2))
+
+        dump_file.write('\n\n*****PYTHON******\n')
+        dump_file.write(f'python_version: {platform.python_version()}\n') 
+        dump_file.write(f'python_build: {platform.python_build()}\n')  
+        dump_file.write(f'python_revision: {platform.python_revision()}\n')
+        dump_file.write(f'python_compiler: {platform.python_compiler()}\n')    
+        dump_file.write(f'python_branch: {platform.python_branch()}\n')    
+        dump_file.write(f'python_implementation: {platform.python_implementation()}\n')  
+
+        dump_external_debug_info('ANSIBLE VERSION', ['ansible', '--version'])
+        dump_external_debug_info('ANSIBLE CONFIG', ['ansible-config', 'dump'])
+        dump_external_debug_info('ANSIBLE-VAULT VERSION', ['ansible-vault', '--version'])
+        dump_external_debug_info('TERRAFORM VERSION', ['terraform', '--version'])
+        dump_external_debug_info('SKOPEO VERSION', ['skopeo', '--version'])
+
+        dump_file.write('\n\n*****LOG******\n')
+        log_path = os.path.join(get_output_path(), config.log_file)
+        dump_file.writelines([l for l in open(log_path).readlines()]) 
+    finally:
+        dump_file.close()
+        logger.info(f'Error dump has been written to: {dump_path}')
+        logger.warning('This dump might contain sensitive information. Check before sharing.')
 
 if __name__ == '__main__':
     atexit.register(exit_handler)

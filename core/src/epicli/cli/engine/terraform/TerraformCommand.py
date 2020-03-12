@@ -3,6 +3,7 @@ import subprocess
 from cli.helpers.Log import LogPipe, Log
 from cli.helpers.Config import Config
 
+terraform_verbosity = ['ERROR','WARN','INFO','DEBUG','TRACE']
 
 class TerraformCommand:
 
@@ -41,8 +42,8 @@ class TerraformCommand:
         cmd = ' '.join(cmd)
         self.logger.info(f'Running: "{cmd}"')
 
-        if Config().debug:
-            env['TF_LOG'] = 'TRACE'
+        if Config().debug > 0:
+            env['TF_LOG'] = terraform_verbosity[Config().debug]
 
         logpipe = LogPipe(__name__)
         with subprocess.Popen(cmd, stdout=logpipe, stderr=logpipe, env=env,  shell=True) as sp:
