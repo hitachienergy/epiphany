@@ -38,7 +38,9 @@ Health Monitor exposes endpoint that is compliant with [Prometheus metrics forma
 **Health Checks**
 
 Platform Health checks are a means of regularly monitoring the health of individual components within the Epiphany environment. These monitoring probes checks the liveness of containers, services, processes at specified intervals and, in the event of an unhealthy object take predefined action.
-![Health Monitor diagram](https://github.com/smeadows-abb/epiphany/tree/develop/docs/design-docs/health-monitor/health-monitor.svg)
+
+![Health Monitor diagram](health-monitor.svg)
+
 **Health Check Daemon (healthd)**
 
 healthd is an Epiphany Linux based service process providing health check probes, this process is instantiated at system startup, managed and supervised by the service manager (Systemd), and runs unobtrusively in the background throughout its lifecycle. Initial support will be provided for the following Linux based distros:
