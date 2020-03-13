@@ -157,10 +157,9 @@ min.insync.replicas={{ specification.kafka_var.replicas }}
 # The minimum age of a log file to be eligible for deletion due to age
 log.retention.hours={{ specification.kafka_var.log_retention_hours }}
 
-
 # A size-based retention policy for logs. Segments are pruned from the log as long as the remaining
 # segments don't drop below log.retention.bytes. Functions independently of log.retention.hours.
-#log.retention.bytes=1073741824
+log.retention.bytes={{ specification.kafka_var.log_retention_bytes }}
 
 # The maximum size of a log segment file. When this size is reached a new log segment will be created.
 log.segment.bytes=1073741824

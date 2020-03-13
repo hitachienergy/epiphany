@@ -53,6 +53,7 @@ specification:
     replicas: 1 # Default to at least 1 (1 broker)
     partitions: 8 # 100 x brokers x replicas for reasonable size cluster. Small clusters can be less
     log_retention_hours: 168 # The minimum age of a log file to be eligible for deletion due to age
+    log_retention_bytes: -1 # -1 is no size limit only a time limit (log_retention_hours). This limit is enforced at the partition level, multiply it by the number of partitions to compute the topic retention in bytes.
     offset_retention_minutes: 10080 # Offsets older than this retention period will be discarded
     heap_opts: "-Xmx2G -Xms2G"
     opts: "-Djavax.net.debug=all"
