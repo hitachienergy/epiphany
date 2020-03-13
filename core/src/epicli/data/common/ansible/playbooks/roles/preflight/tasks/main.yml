@@ -26,7 +26,7 @@
               Distributions meetings requirements are: {{ message_supported_oeses }}"
     success_msg:  "Operating system [{{ ansible_distribution  }} - {{ ansible_distribution_version }}] version and distribution meet system requirements."
 
-- name: Check if PostgreSQL version needs to be migrated to version installed from Software Collections to installed from PostgreSQL repository
+- name: Check if existing PostgreSQL needs to be migrated to distribution installed from PostgreSQL repository
   block:
 
   - name: Check if PostgreSQL has been installed from Software Collections repository
