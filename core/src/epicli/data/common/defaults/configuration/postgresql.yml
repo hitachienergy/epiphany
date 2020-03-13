@@ -32,6 +32,33 @@ specification:
               - name: log_filename
                 value: "'postgresql.log'"
                 comment: to use logrotate with common configuration
+      - name: WRITE AHEAD LOG
+        subgroups:
+          - name: Settings
+            parameters:
+              - name: wal_level
+                value: replica
+                when: replication
+          - name: Archiving
+            parameters:
+              - name: archive_mode
+                value: 'on'
+                when: replication
+              - name: archive_command
+                value: "'test ! -f /dbbackup/{{ inventory_hostname }}/backup/%f && gzip -c < %p > /dbbackup/{{ inventory_hostname }}/backup/%f'"
+                when: replication
+      - name: REPLICATION
+        subgroups:
+          - name: Sending Server(s)
+            parameters:
+              - name: max_wal_senders
+                value: 10
+                comment: maximum number of simultaneously running WAL sender processes
+                when: replication
+              - name: wal_keep_segments
+                value: 34
+                comment: number of WAL files held for standby servers
+                when: replication
   extensions:
     pgaudit:
       enabled: no
