@@ -62,14 +62,15 @@
 
 {% if specification.extensions is defined and specification.extensions
       and (specification.extensions | dict2items(key_name='name', value_name='config')
-                                    | map(attribute='config') | selectattr('enabled') | list | length) %}
+                                    | map(attribute='config')
+                                    | selectattr('config_file_parameters', 'defined') | selectattr('enabled') | list | length) %}
 #------------------------------------------------------------------------------
 # EXTENSIONS
 #------------------------------------------------------------------------------
 # Note: Settings for extensions have higher priority by purpose and override
 # previous values.
 {%   for extension, config in specification.extensions.items() %}
-{%     if config.enabled is sameas true %}
+{%     if config.config_file_parameters is defined and config.config_file_parameters and config.enabled is sameas true %}
 
 # - Extension: {{ extension }} -
 
