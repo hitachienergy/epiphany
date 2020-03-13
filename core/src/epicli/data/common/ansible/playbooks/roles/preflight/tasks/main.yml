@@ -29,7 +29,7 @@
 - name: Check if PostgreSQL version needs to be migrated to version installed from Software Collections to installed from PostgreSQL repository
   block:
 
-  - name: Check if PostgreSQL version has been installed from Software Collections
+  - name: Check if PostgreSQL has been installed from Software Collections repository
     command:  rpm -q rh-postgresql10-postgresql-server
     failed_when: no
     changed_when: no
