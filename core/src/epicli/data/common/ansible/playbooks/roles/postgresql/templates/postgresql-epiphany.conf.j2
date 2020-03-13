@@ -50,6 +50,13 @@
 {%             set parameter_value = "''" %}
 {%           endif %}
 {%         endif %}
+{#         BEGIN convert booleans to postgres style strings #}
+{%         if parameter_value is sameas true %}
+{%           set parameter_value = 'on' %}
+{%         elif parameter_value is sameas false %}
+{%           set parameter_value = 'off' %}
+{%         endif %}
+{#         END #}
 {%         if parameter.comment is defined and parameter.comment %}
 {{ parameter.name }} = {{ parameter_value }}	# {{ parameter.comment }}
 {%         else %}
@@ -78,6 +85,12 @@
 # - Extension: {{ extension }} -
 
 {%       for parameter, value in config.config_file_parameters.items() %}
+{#         convert booleans to postgres style strings #}
+{%         if value is sameas true %}
+{%           set value = 'on' %}
+{%         elif value is sameas false %}
+{%           set value = 'off' %}
+{%         endif %}
 {{ parameter }} = {{ value }}
 {%       endfor %}
 {%     endif %}
