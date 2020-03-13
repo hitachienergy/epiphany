@@ -60,7 +60,7 @@ data:
   # Flannel network configuration. Mounted into the flannel container.
   net-conf.json: |
     {
-      "Network": "{{ specification.advanced.networking.podSubnet }}",
+      "Network": "10.244.0.0/16",
       "Backend": {
         "Type": "vxlan"
       }
@@ -562,7 +562,7 @@ spec:
             # chosen from this range. Changing this value after installation will have
             # no effect. This should fall within `--cluster-cidr`.
             - name: CALICO_IPV4POOL_CIDR
-              value: "{{ specification.advanced.networking.podSubnet }}"
+              value: "10.244.0.0/16"
             # Disable file logging so `kubectl logs` works.
             - name: CALICO_DISABLE_FILE_LOGGING
               value: "true"

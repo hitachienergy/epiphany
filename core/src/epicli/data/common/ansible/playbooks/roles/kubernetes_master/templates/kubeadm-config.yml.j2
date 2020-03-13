@@ -20,7 +20,7 @@ scheduler:
 {% endfor %}
 networking:
   dnsDomain: {{ specification.advanced.networking.dnsDomain }}
-  podSubnet: {{ specification.advanced.networking.podSubnet }}
+  podSubnet: "10.244.0.0/16"
   serviceSubnet: {{ specification.advanced.networking.serviceSubnet }}
 
 {% if custom_image_registry_address|length == 0 %}

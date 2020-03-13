@@ -65,15 +65,10 @@
   include_tasks: "generate-cluster-credentials.yml"
   when: secret is not defined
 
-- name: Upload and deploy CoreDNS and Dashboard
+- name: Upload and deploy Dashboard
   include_tasks: "deployments/deploy-template.yml"
   vars:
-    file_name: "{{ deployment_file }}"
-  loop:
-  - "kubernetes-dashboard.yml.j2"
-  - "coredns-config.yml.j2"
-  loop_control:
-    loop_var: deployment_file
+    file_name: "kubernetes-dashboard.yml.j2"
 
 - name: Copy jsonpath.json
   copy:
@@ -82,8 +77,10 @@
     owner: "{{ admin_user.name }}"
     group: "{{ admin_user.name }}"
 
-# Apply network plugin configured by user
-- include_tasks: "./cni-plugins/{{ specification.advanced.networking.plugin }}.yml"
+- name: Apply network plugin configured by user
+  include_tasks: "apply_network_components.yml"
+  vars: 
+    network_plugin: "{{ specification.advanced.networking.plugin }}"
 
 - name: Check if kubernetes-dashboard is already deployed
   shell: kubectl --kubeconfig=/home/{{ admin_user.name }}/.kube/config get pods --all-namespaces | grep -c -i dashboard

@@ -8,6 +8,9 @@
   become_method: sudo
   pre_tasks:
     - import_role:
+        name: kubernetes_common
+        tasks_from: main
+    - import_role:
         name: kubernetes_master
         tasks_from: copy-kubeconfig.yml
   roles:

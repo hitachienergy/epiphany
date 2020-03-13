@@ -1,0 +1,9 @@
+---
+
+- name: Upload and deploy CoreDNS
+  include_tasks: "deployments/deploy-template.yml"
+  vars:
+    file_name: "coredns-config.yml.j2"
+
+- name: Apply network plugin configured by user
+  include_tasks: "./cni-plugins/{{ network_plugin }}.yml"
