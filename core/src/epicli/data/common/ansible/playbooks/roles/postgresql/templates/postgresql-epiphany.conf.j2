@@ -16,7 +16,10 @@
 
 # - {{ subgroup.name }} -
 
-{%       for parameter in subgroup.parameters %}
+{%       for parameter in subgroup.parameters if parameter.when is undefined
+                                                 or (parameter.when
+                                                     and specification.extensions[parameter.when].enabled is defined
+                                                     and specification.extensions[parameter.when].enabled) %}
 {#         use of 'parameter_value' is workaround since we don't have Jinja's {% do %} statement enabled (required to update dictionaries) #}
 {%         set parameter_value = parameter.value %}
 {%         if parameter.name == 'shared_preload_libraries' and parameter.value == 'SET_BY_AUTOMATION' %}
