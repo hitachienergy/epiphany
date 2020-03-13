@@ -31,24 +31,19 @@
 
   - name: Check if PostgreSQL has been installed from Software Collections repository
     command:  rpm -q rh-postgresql10-postgresql-server
-    failed_when: no
-    changed_when: no
-    register: rpm_status
-
-  - name: Check if there is unexpected error during package testing
-    fail:
-      msg: "There was some unexpected error."
-    when:
+    failed_when: 
       - rpm_status.rc != 0
       - rpm_status.stdout.find('is not installed') == -1
+    changed_when: no
+    register: rpm_status
 
   # TODO: Add link to PostgreSQL migration from Software Collections to PostgreSQL installation from PostgreSQL repository
   - name: Validate if PostgreSQL has been installed from Software Collections repository
     assert:
       that: rpm_status.stdout.find('is not installed') != -1
-      fail_msg: You have not supported PostgreSQL installed from Software Collections repository, please migrate it according to procedure described at: TODO
+      fail_msg: "You have not supported PostgreSQL installed from Software Collections repository, please migrate it according to procedure described at: TODO"
       success_msg:  "PostgresSQL installation is supported"
- 
+
   when:
     - ansible_os_family == "RedHat"
     - "'postgresql' in groups"
