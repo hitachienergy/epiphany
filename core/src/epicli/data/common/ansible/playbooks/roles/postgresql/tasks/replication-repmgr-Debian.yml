@@ -106,7 +106,8 @@
 
 - name: Register primary with repmgr
   become_user: postgres
-  shell: "{{ repmgr_bindir[ansible_os_family] }}/repmgr primary register -f {{ repmgr_config_dir[ansible_os_family] }}/repmgr.conf -F -S postgres"
+  shell: "{{ repmgr_bindir[ansible_os_family] }}/repmgr primary register -f {{ repmgr_config_dir[ansible_os_family] }}/repmgr.conf
+    --force --superuser={{ specification.extensions.replication.priviledged_user_name }}"
   when:
     - groups['postgresql'][0] == inventory_hostname
     - is_master_already_registered.stdout == ""
