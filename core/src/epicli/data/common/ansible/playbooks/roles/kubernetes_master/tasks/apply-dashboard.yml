@@ -1,0 +1,18 @@
+---
+
+- name: Upload and deploy Dashboard
+  include_tasks: "deployments/deploy-template.yml"
+  vars:
+    file_name: "kubernetes-dashboard.yml.j2"
+
+- name: Check if kubernetes-dashboard is already deployed
+  shell: kubectl --kubeconfig=/home/{{ admin_user.name }}/.kube/config get pods -n kubernetes-dashboard | grep -c -i dashboard
+  become_user: "{{ admin_user.name }}"
+  register: dashboard_count
+  failed_when: "dashboard_count.rc == 2"
+  when:
+    - groups['kubernetes_master'][0] == inventory_hostname
+
+- name: Dashboard count
+  debug:
+    msg: "Dashboards: {{ dashboard_count }}"

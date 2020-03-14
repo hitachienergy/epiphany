@@ -65,11 +65,6 @@
   include_tasks: "generate-cluster-credentials.yml"
   when: secret is not defined
 
-- name: Upload and deploy Dashboard
-  include_tasks: "deployments/deploy-template.yml"
-  vars:
-    file_name: "kubernetes-dashboard.yml.j2"
-
 - name: Copy jsonpath.json
   copy:
     src: jsonpath.json
@@ -81,18 +76,6 @@
   include_tasks: "apply_network_components.yml"
   vars: 
     network_plugin: "{{ specification.advanced.networking.plugin }}"
-
-- name: Check if kubernetes-dashboard is already deployed
-  shell: kubectl --kubeconfig=/home/{{ admin_user.name }}/.kube/config get pods --all-namespaces | grep -c -i dashboard
-  become_user: "{{ admin_user.name }}"
-  register: dashboard_count
-  failed_when: "dashboard_count.rc == 2"
-  when:
-    - groups['kubernetes_master'][0] == inventory_hostname
-
-- name: Dashboard count
-  debug:
-    msg: "Dashboards: {{ dashboard_count }}"
 
 - name: Get nodes with noschedule-
   shell: kubectl --kubeconfig=/home/{{ admin_user.name }}/.kube/config get nodes -o jsonpath-file=/home/{{ admin_user.name }}/jsonpath.json | grep -v NoSchedule | grep -c -i {{ inventory_hostname }}
@@ -117,3 +100,6 @@
   when:
     - groups['kubernetes_master'][0] == inventory_hostname
     - untaint_master is defined and untaint_master == True
+
+- name: Apply Kubernetes Dashboard
+  include_tasks: "apply-dashboard.yml"
