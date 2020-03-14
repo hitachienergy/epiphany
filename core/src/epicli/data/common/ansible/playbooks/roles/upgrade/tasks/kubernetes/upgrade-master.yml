@@ -127,6 +127,14 @@
       when:
         - cluster_version.stdout is version('v' + version, '<') 
 
+- name: Update kubeadm-config.yml if exists
+  lineinfile:
+    dest: /etc/kubeadm/kubeadm-config.yml
+    regexp: "^kubernetesVersion:"
+    line: "kubernetesVersion: v{{ version }}"
+    state: present
+  when: kubeadm_config_file.stat.exists
+
 - name: upgrade-master | Set etcd encryption if configured
   include_tasks: etcd-encryption.yml
 
