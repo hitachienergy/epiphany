@@ -127,6 +127,9 @@
       when:
         - cluster_version.stdout is version('v' + version, '<') 
 
+- name: upgrade-master | Set etcd encryption if configured
+  include_tasks: etcd-encryption.yml
+
 - name: upgrade-master | Wait for cluster's readiness
   include_tasks: wait.yml
 
