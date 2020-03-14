@@ -45,6 +45,8 @@
 
 - name: upgrade-master | Reconfigure coredns
   include_tasks: reconfigure-coredns.yml
+  when:
+    - version is version('1.16.7', '<=') 
 
 - name: upgrade-master | Reconfigure rabbitmq application
   include_tasks: reconfigure-rabbitmq-app.yml
@@ -73,6 +75,11 @@
   include_tasks: upgrade-network-components.yml
   when:
     - version is version('1.16.7', '>=') 
+
+- name: upgrade-master | Upgrade coredns for latest Kubernetes (1.17.3)
+  include_tasks: upgrade-coredns.yml
+  when:
+    - version is version('1.17.3', '==') 
 
 - name: upgrade-master | Wait for cluster's readiness
   include_tasks: wait.yml
