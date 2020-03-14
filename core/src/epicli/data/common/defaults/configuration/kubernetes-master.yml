@@ -2,7 +2,7 @@ kind: configuration/kubernetes-master
 title: "Kubernetes Master Config"
 name: default
 specification:
-  version: 1.17.3
+  version: 1.17.4
   cluster_name: "kubernetes-epiphany"
   allow_pods_on_master: False
   storage:

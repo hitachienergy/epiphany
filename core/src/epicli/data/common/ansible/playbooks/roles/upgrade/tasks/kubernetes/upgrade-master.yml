@@ -76,10 +76,10 @@
   when:
     - version is version('1.16.7', '>=') 
 
-- name: upgrade-master | Upgrade coredns for latest Kubernetes (1.17.3)
+- name: upgrade-master | Upgrade coredns for latest Kubernetes (1.17.4)
   include_tasks: upgrade-coredns.yml
   when:
-    - version is version('1.17.3', '==') 
+    - version is version('1.17.4', '==') 
 
 - name: upgrade-master | Wait for cluster's readiness
   include_tasks: wait.yml

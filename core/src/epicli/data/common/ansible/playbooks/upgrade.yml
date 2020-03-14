@@ -76,7 +76,7 @@
     - import_role:
         name: upgrade
         tasks_from: kubernetes
-      vars: { ver: "1.17.3", cni_ver: "0.7.5" }
+      vars: { ver: "1.17.4", cni_ver: "0.7.5" }
 
 - hosts: elasticsearch
   become: true
