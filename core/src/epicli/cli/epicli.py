@@ -149,8 +149,8 @@ def init_parser(subparsers):
 
 def prepare_parser(subparsers):
     sub_parser = subparsers.add_parser('prepare', description='Creates a folder with all prerequisites to setup the offline requirements to install a cluster offline.')
-    sub_parser.add_argument('--os', type=str, required=True, dest='os',
-                            help='The OS to prepare the offline requirements for.')
+    sub_parser.add_argument('--os', type=str, required=True, dest='os', choices=['ubuntu-18.04', 'redhat-7', 'centos-7'],
+                            help='The OS to prepare the offline requirements for: ubuntu-18.04|redhat-7|centos-7')
 
     def run_prepare(args):
         adjust_paths_from_output_dir()
