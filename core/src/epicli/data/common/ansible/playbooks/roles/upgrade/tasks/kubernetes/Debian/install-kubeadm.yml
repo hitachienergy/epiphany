@@ -1,0 +1,14 @@
+- name: "upgrade-master | Unhold kubeadm"
+  shell: >-
+    apt-mark unhold kubeadm
+
+- name: >-
+    install-packages | Install kubeadm {{ version }} packages for Debian family
+  apt:
+    name: kubeadm={{ version }}-00
+    update_cache: yes
+    state: present
+
+- name: "upgrade-master | Hold kubeadm"
+  shell: >-
+    apt-mark hold kubeadm

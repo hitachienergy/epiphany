@@ -1,0 +1,3 @@
+- name: "upgrade-master | Hold kubeadm, kubelet, kubectl, kubernetes-cni"
+  shell: >-
+    apt-mark hold kubeadm kubelet kubectl kubernetes-cni

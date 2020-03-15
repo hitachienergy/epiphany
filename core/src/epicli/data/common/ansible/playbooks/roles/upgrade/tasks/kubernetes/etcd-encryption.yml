@@ -1,15 +1,5 @@
 
-- name: Check if etcd encryption configuration exists
-  stat:
-    path: /etc/kubernetes/pki/etcd/etc-encryption.conf
-  register: etcd_conf_file
-
 - name: Apply etcd encryption to API server manifest if etcd encryption enabled
   import_role:
     name: kubernetes_master
     tasks_from: etcd-encryption
-  vars:
-    etcd_conf_file: etcd_conf_file
-  when:
-    - groups['kubernetes_master'][0] == inventory_hostname
-    - etcd_conf_file.stat.exists

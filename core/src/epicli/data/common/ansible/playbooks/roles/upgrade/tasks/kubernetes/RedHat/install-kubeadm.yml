@@ -1,0 +1,9 @@
+---
+- name: >-
+    install-packages | Install kubeadm-{{ version }} package for RedHat family
+  yum:
+    name: kubeadm-{{ version }}
+    update_cache: yes
+    allow_downgrade: yes
+    disable_excludes: kubernetes
+    state: present
