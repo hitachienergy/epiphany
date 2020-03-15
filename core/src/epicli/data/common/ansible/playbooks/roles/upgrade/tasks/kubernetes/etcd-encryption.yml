@@ -8,6 +8,8 @@
   import_role:
     name: kubernetes_master
     tasks_from: etcd-encryption
+  vars:
+    etcd_conf_file: etcd_conf_file
   when:
     - groups['kubernetes_master'][0] == inventory_hostname
     - etcd_conf_file.stat.exists
