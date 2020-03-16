@@ -89,28 +89,17 @@ The Health Check Daemon configuration file format will be based upon YAML to pro
 **Env:**
 
 dockerd **:**
-
-**   -Name:  **&quot;Something application&quot;,
-
-**   -Package:** docker **,**
-
-**   -Interval:  ** 5,
-
-**   -Retries:  ** 7,
-
-**   -RetryDelay:** 3,
-
-**   -ActionFatal:** True,
-
-**   -IP:** 127.0.0.1,
-
-**   -Port:** 8080,
-
-**   -PATH:**&quot;/&quot;,
-
-    **-RequestType** : HEAD,
-
-**   -Response:**  200
+  -Name:  &quot;Something application&quot;,
+  -Package: docker,
+  -Interval:   5,
+  -Retries:   7,
+  -RetryDelay:  3,
+  -ActionFatal:  True,
+  -IP:  127.0.0.1,
+  -Port: 8080,
+  -PATH: &quot;/&quot;,
+  -RequestType: HEAD,
+  -Response: 200
 
 
 
