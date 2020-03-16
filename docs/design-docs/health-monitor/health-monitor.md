@@ -91,15 +91,15 @@ Env:
 dockerd:
   -Package: docker,
   
-  -Interval:   5,
+  -Interval: 5,
   
-  -Retries:   7,
+  -Retries:  7,
   
-  -RetryDelay:  3,
+  -RetryDelay: 3,
   
-  -ActionFatal:  True,
+  -ActionFatal: True,
   
-  -IP:  127.0.0.1,
+  -IP: 127.0.0.1,
   
   -Port: 8080,
   
@@ -111,27 +111,6 @@ dockerd:
 
 
 
-Kubernetes-1:
-
-  -Package: docker,
-
-  -Interval: 5,
-
-  -Retries: 7,
-
-  -RetryDelay: 3,
-
-  -ActionFatal: True,
-
-  -IP: 127.0.0.1,
-
-  -Port: 8080,
-
-  -PATH: /,
-
-  -RequestType: HEAD,
-
-  -Response:  200
 
 **Packages**
 
