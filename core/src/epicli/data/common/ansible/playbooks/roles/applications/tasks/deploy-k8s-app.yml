@@ -1,0 +1,24 @@
+---
+- name: "{{ data.name }}: Set directory for deployment files"
+  set_fact:
+    deployment_tmp_dir: /tmp/epiphany/apps/{{ app_dir_name }}
+
+- name: "{{ data.name }}: Create directory for deployment files"
+  file:
+    path: "{{ deployment_tmp_dir }}"
+    state: directory
+    owner: "{{ admin_user.name }}"
+    group: "{{ admin_user.name }}"
+
+- name: "{{ data.name }}: Deploy K8s files"
+  include_tasks: deploy-k8s-file.yml
+  vars:
+    file_name: "{{ deployment_file }}"
+  loop: "{{ deployment_files }}"
+  loop_control:
+    loop_var: deployment_file
+
+- name: "{{ data.name }}: Remove temporary directory"
+  file:
+    path: "{{ deployment_tmp_dir }}"
+    state: absent

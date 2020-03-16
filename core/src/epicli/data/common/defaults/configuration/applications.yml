@@ -2,7 +2,7 @@ kind: configuration/applications
 title: "Kubernetes Applications Config"
 name: default
 specification:
-  applications: []
+  applications:
   # - name: ignite-stateless
   #   image_path: "apacheignite/ignite:2.5.0" # it will be part of the image path: {{local_repository}}/{{image_path}}
   #   namespace: ignite
@@ -46,7 +46,7 @@ specification:
 #       #cookie: "cookieSetFromDataYaml" #optional - default value will be random generated string
 
 
-# - name: auth-service # this service require postgresql to be installed in cluster
+# - name: auth-service # this service requires PostgreSQL to be installed in cluster
 #   image_path: jboss/keycloak:9.0.0
 #   use_local_image_registry: true
 #   #image_pull_secret_name: regcred
@@ -63,3 +63,64 @@ specification:
 #     user: "auth-db-user"
 #     password: "auth-db-password"
 
+## --- Pgpool ---
+
+  - name: pgpool # this service requires PostgreSQL to be installed in cluster
+    enabled: yes # TODO: set to 'no' once development is done
+    image:
+      path: bitnami/pgpool:4.1.1
+      debug: no # ref: https://github.com/bitnami/minideb-extras/#turn-on-bash-debugging
+    namespace: pgpool
+    service:
+      name: pgpool
+      port: 5432
+    replicas: 2
+    pod_spec:
+      affinity:
+        podAntiAffinity: # prefer to schedule replicas on different nodes
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 100
+              podAffinityTerm:
+                labelSelector:
+                  matchExpressions:
+                    - key: app
+                      operator: In
+                      values:
+                        - pgpool
+                topologyKey: kubernetes.io/hostname
+      nodeSelector: {}
+      tolerations: {}
+    resources:
+      limits:
+        memory: 256Mi
+      requests:
+        cpu: 250m
+        memory: 256Mi
+    pgpool:
+      # https://github.com/bitnami/bitnami-docker-pgpool#configuration + https://github.com/bitnami/bitnami-docker-pgpool#environment-variables
+      env:
+        PGPOOL_BACKEND_NODES: SET_BY_AUTOMATION # you can use custom value like '0:pg-node-1:5432,1:pg-node-2:5432'
+        # TODO: Create 'pgpool_postgres_admin' user by Epiphany in postgresql role
+        PGPOOL_POSTGRES_USERNAME: epi_pgpool_postgres_admin # Postgres administrator user, used to allow postgres admin authentication through pgpool
+        PGPOOL_ADMIN_USERNAME: epi_pgpool_admin # Pgpool administrator
+        # TODO: test PGPOOL_SR_CHECK_USER, user added because of: ERROR ==> The PostrgreSQL replication credentials are mandatory. Set the environment variables PGPOOL_SR_CHECK_USER and PGPOOL_SR_CHECK_PASSWORD with the PostrgreSQL replication credentials.
+        PGPOOL_SR_CHECK_USER: epi_pgpool_replication_check # user for streaming checks
+        PGPOOL_USERNAME: epi_pgpool # user with login privilege (TODO: to be used for pgpool container health checks)
+        PGPOOL_TIMEOUT: 360
+        PGPOOL_ENABLE_LOAD_BALANCING: yes # set to 'no' if there is no replication
+        PGPOOL_MAX_POOL: 15
+        # TODO: check if we want password files since we have to use PGPOOL_POSTGRES_PASSWORD env var
+        PGPOOL_POSTGRES_PASSWORD_FILE: /opt/bitnami/pgpool/secrets/pgpool-password
+        PGPOOL_ADMIN_PASSWORD_FILE: /opt/bitnami/pgpool/secrets/admin-password
+        # TODO:
+        # PGPOOL_PASSWD_FILE The password file for authentication. Defaults to pool_passwd
+        PGDATABASE: postgres # for /healthcheck.sh
+      secrets:
+        pgpool_postgres_password: epi_pgpool_postgres_admin_password
+        pgpool_admin_password: epi_pgpool_admin_password
+        pgpool_sr_check_password: epi_pgpool_replication_check_password # TODO: test if this is OK
+        pgpool_user_password: epi_pgpool_password # TODO: test if needed and if yes, add to secrets and pool_passwd file
+      config_file_content : |
+        # Specify content for pgpool.conf
+        # TODO: To be implemented
+        # Example: https://github.com/CrunchyData/crunchy-containers/blob/master/examples/kube/pgpool/configs/pgpool.conf
