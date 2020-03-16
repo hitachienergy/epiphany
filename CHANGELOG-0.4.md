@@ -1,5 +1,12 @@
 # Changelog 0.4
 
+## [0.4.3] 2020-03-16
+
+### Fixed
+
+- [#966](https://github.com/epiphany-platform/epiphany/issues/966) - Ubuntu builds get stuck on task [repository : Create epirepo repository] waiting for user input
+- [#839](https://github.com/epiphany-platform/epiphany/issues/839) - Add ServerAliveInterval option to keep SSH connection for long running tasks
+
 ## [0.4.2] 2019-11-20
 
 ### Added
