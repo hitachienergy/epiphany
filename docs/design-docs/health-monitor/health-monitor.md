@@ -86,46 +86,52 @@ The Health Check Daemon configuration file format will be based upon YAML to pro
 | RequestType | Specifies the HTTP method to be used for probing associated daemon. | head, get, put, and  post. Default head. |
 | Response | Specifies the associated good response &quot;200 Ok&quot;. | Optional, default 200. |
 
-**Env:**
+Env:
 
-dockerd **:**
-  -Name:  &quot;Something application&quot;,
+dockerd:
   -Package: docker,
+  
   -Interval:   5,
+  
   -Retries:   7,
+  
   -RetryDelay:  3,
+  
   -ActionFatal:  True,
+  
   -IP:  127.0.0.1,
+  
   -Port: 8080,
-  -PATH: &quot;/&quot;,
+  
+  -PATH: /,
+  
   -RequestType: HEAD,
+  
   -Response: 200
 
 
 
-Kubernetes-1 **:**
+Kubernetes-1:
 
-**   -Name:  **&quot;Something application&quot;,
+  -Package: docker,
 
-**   -Package:** docker **,**
+  -Interval: 5,
 
-**   -Interval:  ** 5,
+  -Retries: 7,
 
-**   -Retries:  ** 7,
+  -RetryDelay: 3,
 
-**   -RetryDelay:** 3,
+  -ActionFatal: True,
 
-**   -ActionFatal:** True,
+  -IP: 127.0.0.1,
 
-**   -IP:** 127.0.0.1,
+  -Port: 8080,
 
-**   -Port:** 8080,
+  -PATH: /,
 
-**   -PATH:**&quot;/&quot;,
+  -RequestType: HEAD,
 
-    **-RequestType** : HEAD,
-
-**   -Response:**  200
+  -Response:  200
 
 **Packages**
 
