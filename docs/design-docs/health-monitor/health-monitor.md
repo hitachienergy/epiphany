@@ -29,7 +29,6 @@ Components that Health Monitor should check:
 
 \* means MVP version.
 
-Health Monitor exposes endpoint that is compliant with [Prometheus metrics format](https://github.com/prometheus/docs/blob/master/content/docs/instrumenting/exposition_formats.md#text-format-example) and serves data about health checks. This endpoint should listen on the configurable port (default 98XX).
 
 ## Design proposal
 
