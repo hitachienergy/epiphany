@@ -10,7 +10,7 @@ import subprocess
 import platform
 import socket
 
-from cli.engine.BuildEngine import BuildEngine
+from cli.engine.ApplyEngine import ApplyEngine
 from cli.engine.PatchEngine import PatchEngine
 from cli.engine.DeleteEngine import DeleteEngine
 from cli.engine.InitEngine import InitEngine
@@ -83,14 +83,17 @@ Terraform : 1..4 map to the following Terraform verbosity levels:
 
     # setup subparsers
     subparsers = parser.add_subparsers()
-    apply_parser(subparsers)
-    validate_parser(subparsers)
+    prepare_parser(subparsers)
     init_parser(subparsers)
+    apply_parser(subparsers)
     upgrade_parser(subparsers)
+    delete_parser(subparsers)
+
+    '''
+    validate_parser(subparsers)
     backup_parser(subparsers)
     recovery_parser(subparsers)
-    delete_parser(subparsers)
-    prepare_parser(subparsers)
+    '''
 
     # check if there were any variables and display full help
     if len(sys.argv) < 2:
@@ -144,6 +147,19 @@ def init_parser(subparsers):
     sub_parser.set_defaults(func=run_init)
 
 
+def prepare_parser(subparsers):
+    sub_parser = subparsers.add_parser('prepare', description='Creates a folder with all prerequisites to setup the offline requirements to install a cluster offline.')
+    sub_parser.add_argument('--os', type=str, required=True, dest='os', choices=['ubuntu-18.04', 'redhat-7', 'centos-7'],
+                            help='The OS to prepare the offline requirements for: ubuntu-18.04|redhat-7|centos-7')
+
+    def run_prepare(args):
+        adjust_paths_from_output_dir()
+        with PrepareEngine(args) as engine:
+            return engine.prepare()
+
+    sub_parser.set_defaults(func=run_prepare)       
+
+
 def apply_parser(subparsers):
     sub_parser = subparsers.add_parser('apply', description='Applies configuration from file.')
     sub_parser.add_argument('-f', '--file', dest='file', type=str,
@@ -164,25 +180,10 @@ def apply_parser(subparsers):
     def run_apply(args):
         adjust_paths_from_file(args)
         ensure_vault_password_is_set(args)
-        with BuildEngine(args) as engine:
+        with ApplyEngine(args) as engine:
             return engine.apply()
 
     sub_parser.set_defaults(func=run_apply)
-
-
-def validate_parser(subparsers):
-    sub_parser = subparsers.add_parser('verify', description='Validates the configuration from file by executing a dry '
-                                                             'run without changing the physical '
-                                                             'infrastructure/configuration')
-    sub_parser.add_argument('-f', '--file', dest='file', type=str,
-                            help='File with infrastructure/configuration definitions to use.')
-
-    def run_validate(args):
-        adjust_paths_from_file(args)
-        with BuildEngine(args) as engine:
-            return engine.validate()
-
-    sub_parser.set_defaults(func=run_validate)
 
 
 def delete_parser(subparsers):
@@ -218,6 +219,22 @@ def upgrade_parser(subparsers):
     sub_parser.set_defaults(func=run_upgrade)
 
 
+'''
+def validate_parser(subparsers):
+    sub_parser = subparsers.add_parser('verify', description='Validates the configuration from file by executing a dry '
+                                                             'run without changing the physical '
+                                                             'infrastructure/configuration')
+    sub_parser.add_argument('-f', '--file', dest='file', type=str,
+                            help='File with infrastructure/configuration definitions to use.')
+
+    def run_validate(args):
+        adjust_paths_from_file(args)
+        with ApplyEngine(args) as engine:
+            return engine.validate()
+
+    sub_parser.set_defaults(func=run_validate)    
+
+
 def backup_parser(subparsers):
     sub_parser = subparsers.add_parser('backup',
                                        description='[Experimental]: Backups existing Epiphany Platform components.')
@@ -245,19 +262,7 @@ def recovery_parser(subparsers):
             return engine.recovery()
 
     sub_parser.set_defaults(func=run_recovery)
-
-
-def prepare_parser(subparsers):
-    sub_parser = subparsers.add_parser('prepare', description='Creates a folder with all prerequisites to setup the offline requirements to install a cluster offline.')
-    sub_parser.add_argument('--os', type=str, required=True, dest='os',
-                            help='The OS to prepare the offline requirements for.')
-
-    def run_prepare(args):
-        adjust_paths_from_output_dir()
-        with PrepareEngine(args) as engine:
-            return engine.prepare()
-
-    sub_parser.set_defaults(func=run_prepare)   
+'''
 
 
 def experimental_query():
