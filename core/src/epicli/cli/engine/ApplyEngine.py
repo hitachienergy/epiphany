@@ -14,7 +14,7 @@ from cli.engine.terraform.TerraformRunner import TerraformRunner
 from cli.engine.ansible.AnsibleRunner import AnsibleRunner
 
 
-class BuildEngine(Step):
+class ApplyEngine(Step):
     def __init__(self, input_data):
         self.file = input_data.file
         self.skip_infrastructure = input_data.no_infra if hasattr(input_data, 'no_infra') else False

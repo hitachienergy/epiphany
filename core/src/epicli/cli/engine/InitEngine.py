@@ -5,7 +5,7 @@ import sys
 from cli.helpers.Step import Step
 from cli.helpers.build_saver import save_manifest, get_build_path
 from cli.helpers.data_loader import load_all_yaml_objs, types, load_all_documents_from_folder
-from cli.engine.BuildEngine import BuildEngine
+from cli.engine.ApplyEngine import ApplyEngine
 from cli.helpers.objdict_helpers import remove_value
 from cli.version import VERSION
 from cli.helpers.doc_list_helpers import select_all, select_single
@@ -64,7 +64,7 @@ class InitEngine(Step):
         args = type('obj', (object,), {'file': cluster_config_path})()
 
         # generate the config documents
-        with BuildEngine(args) as build:
+        with ApplyEngine(args) as build:
             config = build.dry_run() 
         
         return config
