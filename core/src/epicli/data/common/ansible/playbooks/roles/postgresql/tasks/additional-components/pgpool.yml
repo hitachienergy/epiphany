@@ -1,0 +1,16 @@
+---
+# Create users for Pgpool
+- name: Create user in PostgreSQL database cluster
+  become_user: postgres
+  postgresql_user:
+    user: "{{ item.user }}"
+    password: "{{ item.password }}"
+    role_attr_flags: "{{ item.role_attr_flags }}"
+  # TODO: hide passwords from Ansible output
+  loop:
+    - user: "{{ pgpool.env.PGPOOL_POSTGRES_USERNAME }}" # TODO: verify this user - whether superuser is required
+      password: "{{ pgpool.secrets.pgpool_postgres_password }}"
+      role_attr_flags: LOGIN
+    - user: "{{ pgpool.env.PGPOOL_SR_CHECK_USER }}"
+      password: "{{ pgpool.secrets.pgpool_sr_check_password }}"
+      role_attr_flags: LOGIN

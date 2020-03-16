@@ -89,8 +89,8 @@ provider: aws
 specification:
   replication:
     enabled: yes
-    user: your-postgresql-replication-user
-    password: your-postgresql-replication-password
+    user: your_postgresql_replication_user
+    password: your_postgresql_replication_password
     max_wal_senders: 10 # (optional) - default value 5
     wal_keep_segments: 34 # (optional) - default value 32
 ```
