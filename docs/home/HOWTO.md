@@ -57,6 +57,7 @@
   - [How to use Kubernetes Secrets](./howto/SECURITY.md#how-to-use-kubernetes-secrets)
   - [How to authenticate to Azure AD app](./howto/SECURITY.md#how-to-authenticate-to-azure-ad-app)  
   - [How to run epicli with password](./howto/SECURITY.md#how-to-run-epicli-with-password)
+  - [How to enable kubectl on Kubernetes master](./howto/SECURITY.md#how-to-enable-kubectl-on-Kubernetes-master)
 
 - [Databases](./howto/DATABASES.md)
   - [How to configure PostgreSQL](./howto/DATABASES.md#how-to-configure-postgresql)
