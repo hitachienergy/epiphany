@@ -10,3 +10,5 @@
 - [#1016](https://github.com/epiphany-platform/epiphany/issues/1016) - Disable verify , backup and recovery as they are not fully implemented
 
 ### Fixed
+
+- [#624](https://github.com/epiphany-platform/epiphany/issues/624) - Don't run epicli as root in container
