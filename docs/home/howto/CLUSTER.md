@@ -105,8 +105,6 @@ To setup the cluster do the following steps:
     - download-requirements.sh
     - requirements.txt
     - skopeo_linux
-    - add-repositories.sh
-    - common.sh
 
 2. The scripts in the `prepare_scripts` will be used to download all requirements. To do that copy the `prepare_scripts` folder over to the requirements machine and run the following command:
 
@@ -242,7 +240,25 @@ To setup the cluster do the following steps from the provisioning machine:
 
     The [region](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Concepts.RegionsAndAvailabilityZones.html) lets you chose the most optimal place to deploy your cluster. The `subscription_name` is the Azure subscribtion under which you want to deploy the cluster.
 
-    Terraform will ask you to sign in to your Microsoft Azure subscibtion when it prepares to build/modify/destroy the infrastructure on `azure`. In case you need to share cluster managment with other people you can set the `use_service_principal` tag to true. This will create a service principle and uses it to manage the resources.
+    Terraform will ask you to sign in to your Microsoft Azure subscibtion when it prepares to build/modify/destroy the infrastructure on `azure`. In case you need to share cluster managment with other people you can set the `use_service_principal` tag to true. This will create a service principle and uses it to manage the resources. 
+
+    If you already have a service principle and don't want to create a new one you can do the following. Make sure the `use_service_principal` tag is set to true. Then before you run `epicli apply -f yourcluster.yml` create the following folder structure from the path you are running Epicli:
+
+    ```shell
+    /build/clustername/terraform
+    ```
+
+    Where the clustername is the name you specified under `specification.name` in your cluster yaml. Then in the terraform folder add the file named `sp.yml` and fill it with the service priciple information like so:
+
+    ```yaml
+    appId: xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxx
+    displayName: app-name
+    name: http://app-name
+    password: xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxx
+    tenant: xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxx
+    ```
+
+    Epicli will read this file and automaticly use it for authentication for resource creation and management.
 
     For both `aws`and `azure` there is a `use_public_ips` tag. When this is true the VM's will also have a direct inferface to the internet. While this is easy for setting up a cluster for testing it should not be used in production. A VPN setup should be used which we will document in a different section (TODO).
 
