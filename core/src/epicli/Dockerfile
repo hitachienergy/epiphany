@@ -30,6 +30,8 @@ RUN groupadd --gid $USER_GID $USERNAME \
 RUN mkdir /shared/
 WORKDIR /shared
 
+COPY permissions.sh /permissions.sh
+
 USER $USERNAME
 
-ENTRYPOINT ["/bin/bash"]
+ENTRYPOINT ["/bin/bash", "permissions.sh"]
