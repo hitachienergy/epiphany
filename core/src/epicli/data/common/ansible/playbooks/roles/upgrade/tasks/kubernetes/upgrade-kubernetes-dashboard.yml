@@ -1,5 +1,5 @@
 ---
-# Delete old kubernetes-dashboard from kube-system, new dashboard has its own namespace
+# Delete old kubernetes-dashboard from kube-system, new dashboard has its own namespace - TODO remove this block in 0.7.0
 
 - name: Check if any resource with label 'k8s-app=kubernetes-dashboard' exists in kube-system
   environment:
@@ -34,25 +34,7 @@
 
 # Deploy new version of kubernetes-dashboard
 
-- name: Check if kubernetes-dashboard is already deployed
-  environment:
-    KUBECONFIG: /home/{{ admin_user.name }}/.kube/config
-  shell: kubectl get pods --all-namespaces --selector=k8s-app=kubernetes-dashboard
-  changed_when: false
-  register: result
-
-- name: Deploy kubernetes-dashboard
-  block:
-    - name: Copy dashboard deployment file
-      template:
-        dest: /home/{{ admin_user.name }}/kubernetes-dashboard.yml
-        src: roles/kubernetes_master/templates/kubernetes-dashboard.yml.j2
-        owner: "{{ admin_user.name }}"
-        group: "{{ admin_user.name }}"
-
-    - name: Apply kubernetes-dashboard.yml
-      environment:
-        KUBECONFIG: /home/{{ admin_user.name }}/.kube/config
-      shell: kubectl apply -f /home/{{ admin_user.name }}/kubernetes-dashboard.yml
-  when:
-    - not 'kubernetes-dashboard' in result.stdout
+- name: Apply Kubernetes Dashboard
+  import_role:
+    name: kubernetes_master
+    tasks_from: apply-dashboard

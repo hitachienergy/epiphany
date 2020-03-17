@@ -61,12 +61,15 @@ data:
       loopback_users.guest = false
    
 ---
-apiVersion: apps/v1beta1
+apiVersion: apps/v1
 kind: StatefulSet
 metadata:
   name: {{ rabbitmq_service_name }}
   namespace: {{ namespace_name }}
 spec:
+  selector:
+    matchLabels:
+      app: {{ rabbitmq_service_name }}
   serviceName: {{ rabbitmq_service_name }}
   replicas: {{ data.service.replicas }}
   updateStrategy:

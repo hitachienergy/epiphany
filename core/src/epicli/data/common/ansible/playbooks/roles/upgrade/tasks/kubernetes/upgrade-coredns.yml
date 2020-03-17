@@ -1,0 +1,4 @@
+- name: Apply latest coredns
+  import_role:
+    name: kubernetes_master
+    tasks_from: apply-coredns

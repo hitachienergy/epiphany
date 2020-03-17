@@ -1,7 +1,9 @@
-apiVersion: kubeadm.k8s.io/v1beta1
+apiVersion: kubeadm.k8s.io/v1beta2
 kind: ClusterConfiguration
 kubernetesVersion: v{{ specification.version }}
+clusterName: "{{ specification.cluster_name }}"
 apiServer:
+  timeoutForControlPlane: 4m0s
   extraArgs: # https://kubernetes.io/docs/reference/command-line-tools-reference/kube-apiserver/
 {% for key, value in specification.advanced.api_server_args.items() %}
     {{ key }}: "{{ value }}"
@@ -18,7 +20,7 @@ scheduler:
 {% endfor %}
 networking:
   dnsDomain: {{ specification.advanced.networking.dnsDomain }}
-  podSubnet: {{ specification.advanced.networking.podSubnet }}
+  podSubnet: "10.244.0.0/16"
   serviceSubnet: {{ specification.advanced.networking.serviceSubnet }}
 
 {% if custom_image_registry_address|length == 0 %}
@@ -26,6 +28,5 @@ imageRepository: {{ image_registry_address }}/{{ specification.advanced.imageRep
 {% else %}
 imageRepository: {{ custom_image_registry_address }}/{{ specification.advanced.imageRepository }}
 {% endif %}
-
 
 certificatesDir: {{ specification.advanced.certificatesDir }}

@@ -44,25 +44,41 @@ data:
   keycloak.cli: |
     embed-server --server-config=standalone-ha.xml --std-out=echo
     batch
-
-    # Makes node identifier unique getting rid of a warning in the logs
+    ## Sets the node identifier to the node name (= pod name). Node identifiers have to be unique. They can have a
+    ## maximum length of 23 characters. Thus, the chart's fullname template truncates its length accordingly.
     /subsystem=transactions:write-attribute(name=node-identifier, value=${jboss.node.name})
+
 
     # Allow log level to be configured via environment variable
     /subsystem=logging/console-handler=CONSOLE:write-attribute(name=level, value=${env.WILDFLY_LOGLEVEL:INFO})
     /subsystem=logging/root-logger=ROOT:write-attribute(name=level, value=${env.WILDFLY_LOGLEVEL:INFO})
 
-    # Log only to console
-    /subsystem=logging/root-logger=ROOT:write-attribute(name=handlers, value=[CONSOLE])
+    # Add dedicated eventsListener config element to allow configuring elements.
+    /subsystem=keycloak-server/spi=eventsListener:add()
+    /subsystem=keycloak-server/spi=eventsListener/provider=jboss-logging:add(enabled=true)
 
-    /socket-binding-group=standard-sockets/socket-binding=proxy-https:add(port=443)
-    /subsystem=undertow/server=default-server/http-listener=default:write-attribute(name=redirect-socket, value=proxy-https)
-    /subsystem=undertow/server=default-server/http-listener=default:write-attribute(name=proxy-address-forwarding, value=true)
+    # Propagate success events to INFO instead of DEBUG, to expose successful logins for log analysis
+    /subsystem=keycloak-server/spi=eventsListener/provider=jboss-logging:write-attribute(name=properties.success-level,value=info)
+    /subsystem=keycloak-server/spi=eventsListener/provider=jboss-logging:write-attribute(name=properties.error-level,value=warn)
+
+
+    # Configure datasource to use explicit query timeout in seconds
+    /subsystem=datasources/data-source=KeycloakDS/:write-attribute(name=query-timeout,value=${env.DB_QUERY_TIMEOUT:300})
+
+    # Configure datasource to connection before use
+    /subsystem=datasources/data-source=KeycloakDS/:write-attribute(name=validate-on-match,value=${env.DB_VALIDATE_ON_MATCH:true})
+
+    # Configure datasource to try all other connections before failing
+    /subsystem=datasources/data-source=KeycloakDS/:write-attribute(name=use-fast-fail,value=${env.DB_USE_CAST_FAIL:false})
+
 
     /subsystem=infinispan/cache-container=keycloak/distributed-cache=sessions:write-attribute(name=owners, value=${env.CACHE_OWNERS:2})
     /subsystem=infinispan/cache-container=keycloak/distributed-cache=authenticationSessions:write-attribute(name=owners, value=${env.CACHE_OWNERS:2})
     /subsystem=infinispan/cache-container=keycloak/distributed-cache=offlineSessions:write-attribute(name=owners, value=${env.CACHE_OWNERS:2})
+    /subsystem=infinispan/cache-container=keycloak/distributed-cache=clientSessions:write-attribute(name=owners, value=${env.CACHE_OWNERS:2})
+    /subsystem=infinispan/cache-container=keycloak/distributed-cache=offlineClientSessions:write-attribute(name=owners, value=${env.CACHE_OWNERS:2})
     /subsystem=infinispan/cache-container=keycloak/distributed-cache=loginFailures:write-attribute(name=owners, value=${env.CACHE_OWNERS:2})
+    /subsystem=infinispan/cache-container=keycloak/distributed-cache=actionTokens:write-attribute(name=owners, value=${env.CACHE_OWNERS:2})
 
     /subsystem=jgroups/channel=ee:write-attribute(name=stack, value=tcp)
 
@@ -162,9 +178,15 @@ spec:
                   app: {{ auth_service_name }}
               topologyKey: failure-domain.beta.kubernetes.io/zone
             weight: 100
-      containers:
-      - command:
-        - /scripts/keycloak.sh
+      initContainers:
+      - name: "{{ auth_service_name }}-init"
+{% if data.use_local_image_registry is undefined or data.use_local_image_registry is sameas true %}
+        image: {{ image_registry_address }}/{{ data.image_path }}
+{% else %}
+        image: {{ data.image_path }}
+{% endif %}
+        imagePullPolicy: IfNotPresent
+        command: ['sh', '-c', '/opt/jboss/keycloak/bin/jboss-cli.sh --file=/opt/jboss/keycloak/bin/migrate-standalone-ha.cli']
         env:
         - name: KEYCLOAK_USER
           value: {{ data.service.admin_user }}
@@ -172,7 +194,7 @@ spec:
           valueFrom:
             secretKeyRef:
               key: password
-              name: {{ auth_service_name }}-http
+              name: "{{ auth_service_name }}-http"
         - name: JGROUPS_DISCOVERY_PROTOCOL
           value: dns.DNS_PING
         - name: JGROUPS_DISCOVERY_PROPERTIES
@@ -191,7 +213,39 @@ spec:
           valueFrom:
             secretKeyRef:
               key: password
-              name: {{ auth_service_name }}-db
+              name: "{{ auth_service_name }}-db"
+        - name: X509_CA_BUNDLE
+          value: "/var/run/secrets/kubernetes.io/serviceaccount/ca.crt"
+      containers:
+      - command:
+        - /scripts/keycloak.sh
+        env:
+        - name: KEYCLOAK_USER
+          value: {{ data.service.admin_user }}
+        - name: KEYCLOAK_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              key: password
+              name: "{{ auth_service_name }}-http"
+        - name: JGROUPS_DISCOVERY_PROTOCOL
+          value: dns.DNS_PING
+        - name: JGROUPS_DISCOVERY_PROPERTIES
+          value: dns_query={{ auth_service_name }}-headless.{{ namespace_name }}.svc.cluster.local # todo allow to pass cluster domain in vars (could be different than 'cluster.local'
+        - name: DB_VENDOR
+          value: postgres
+        - name: DB_ADDR
+          value: {{ auth_service_db_address }}
+        - name: DB_PORT
+          value: "{{ auth_service_db_port }}"
+        - name: DB_DATABASE
+          value: {{ data.database.name }}
+        - name: DB_USER
+          value: {{ data.database.user }}
+        - name: DB_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              key: password
+              name: "{{ auth_service_name }}-db"
         - name: X509_CA_BUNDLE
           value: "/var/run/secrets/kubernetes.io/serviceaccount/ca.crt"
 {% if data.use_local_image_registry is undefined or data.use_local_image_registry is sameas true %}
@@ -214,7 +268,7 @@ spec:
         readinessProbe:
           failureThreshold: 3
           httpGet:
-            path: /auth/
+            path: /auth/realms/master
             port: http
             scheme: HTTP
           initialDelaySeconds: 30
@@ -227,7 +281,7 @@ spec:
             path: /auth/
             port: http
             scheme: HTTP
-          initialDelaySeconds: 120
+          initialDelaySeconds: 300
           periodSeconds: 10
           successThreshold: 1
           timeoutSeconds: 5

@@ -13,11 +13,18 @@
   when:
     - version is version('1.14.0', '>=') # Docker 18.09 validated since K8s 1.14
 
-- name: upgrade-node | Install packages
-  include_tasks: "{{ ansible_os_family }}/install-packages.yml"
+- name: upgrade-master | Hold packages for Debian family
+  include_tasks: "Debian/hold-packages.yml"
+  when: ansible_os_family == "Debian"
+
+- name: upgrade-master | Install kubeadm
+  include_tasks: "{{ ansible_os_family }}/install-kubeadm.yml"
 
 - name: upgrade-node | Upgrade node config
   shell: kubeadm upgrade node config --kubelet-version v{{ version }}
+
+- name: upgrade-node | Install packages
+  include_tasks: "{{ ansible_os_family }}/install-packages.yml"
 
 - name: upgrade-node | Restart kubelet
   systemd:
