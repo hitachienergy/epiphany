@@ -135,7 +135,7 @@ specification:
     replicas: 2
     pgbouncer:
       env:
-        target_address: plirglo-test-c-pgb-db-01
+        target_address: pgpool.pgpool.svc.cluster.local #pgpool service name
         target_port: "5432"
         listen_address: "*"
         authentication_file: "/etc/pgbouncer/auth/users"
@@ -146,5 +146,5 @@ specification:
         pool_mode: transaction
       secrets:
         admin_users: pgbouncer
-        db_user: '"database-user"'
-        db_password: '"database-password"'
+        db_user: '"epi_pgpool_postgres_admin"' #username
+        db_password: '"md5password"' #md5 password
