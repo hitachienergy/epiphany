@@ -2,4 +2,4 @@
 :: and from use that to provision the docker image.
 call build-wheel.bat
 set /p EPICLI_VERSION=<cli/version.txt.py
-docker build -t epicli -f Dockerfile-%1 . --build-arg EPICLI_VERSION=%EPICLI_VERSION%
+docker build -t epicli -f Dockerfile . --build-arg EPICLI_VERSION=%EPICLI_VERSION%
