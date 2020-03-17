@@ -2,9 +2,9 @@ ARG BUILD_ID
 
 FROM epicli:$BUILD_ID
 
-RUN apt-get update \
-&& apt-get -y install ruby-full \
-&& gem install serverspec rake rspec_junit_formatter
+RUN sudo apt-get update \
+&& sudo apt-get -y install ruby-full \
+&& sudo gem install serverspec rake rspec_junit_formatter
 
 RUN ssh-keygen -q -t rsa -m PEM -N '' -f ~/.ssh/id_rsa
 
