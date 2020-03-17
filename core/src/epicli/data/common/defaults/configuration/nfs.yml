@@ -2,11 +2,7 @@ kind: configuration/nfs
 title: "NFS Node Config"
 name: default
 specification:
-  nfs_defs:
-    - nfs_path: "/srv/nfs4/exports/"
-      nfs_src: "/exports"
-      nfs_export: "*(rw,sync,no_subtree_check,no_root_squash)"
-  # nfs_defs is a list of NFS definitions to be created
-    # nfs_path is the mountable path (i.e. the path that is exported, typically in /srv/nfs)
-    # nfs_src is the directory on the server that is bound as the mountable path
-    # nfs_export are the sharing options that will be associated with the current NFS definition
+  nfs_defs: # a list of NFS definitions to be created
+    - nfs_path: "/srv/nfs4/exports/" # the client mountable path (i.e. the path that is exported, typically in /srv/nfs)
+      nfs_src: "/exports" # the directory on the server that is bound as the mountable path
+      nfs_export: "*(rw,sync,no_subtree_check,no_root_squash)" # the sharing options that will be associated with the current NFS definition

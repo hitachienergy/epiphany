@@ -30,5 +30,3 @@ specification:
       count: 1
     rabbitmq:
       count: 1
-    nfs:
-      count: 0
