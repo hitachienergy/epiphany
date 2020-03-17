@@ -124,3 +124,27 @@ specification:
         # Specify content for pgpool.conf
         # TODO: To be implemented
         # Example: https://github.com/CrunchyData/crunchy-containers/blob/master/examples/kube/pgpool/configs/pgpool.conf
+
+  - name: pgbouncer
+    enabled: yes
+    image_path: brainsam/pgbouncer:1.12
+    namespace: pgbouncer
+    service:
+      name: pgbouncer-service
+      port: 5432
+    replicas: 2
+    pgbouncer:
+      env:
+        target_address: plirglo-test-c-pgb-db-01
+        target_port: "5432"
+        listen_address: "*"
+        authentication_file: "/etc/pgbouncer/auth/users"
+        authentication_type: md5
+        max_client_connections: "500"
+        default_pool_size: "25"
+        reserve_pool_size: "25"
+        pool_mode: transaction
+      secrets:
+        admin_users: pgbouncer
+        db_user: '"database-user"'
+        db_password: '"database-password"'

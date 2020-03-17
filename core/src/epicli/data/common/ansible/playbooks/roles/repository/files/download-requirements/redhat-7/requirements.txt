@@ -148,6 +148,7 @@ registry:2
 # applications
 apacheignite/ignite:2.5.0
 bitnami/pgpool:4.1.1
+brainsam/pgbouncer:1.12
 jboss/keycloak:4.8.3.Final
 rabbitmq:3.7.10
 # K8s upgrade

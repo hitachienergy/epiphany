@@ -1,0 +1,21 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: pgbouncer-container-env
+  labels:
+    app: pgbouncer
+  namespace: {{ data.namespace }}
+data:
+  DB_HOST: "{{ data.pgbouncer.env.target_address }}"
+  DB_LISTEN_PORT: "{{ data.pgbouncer.env.target_port }}"
+  LISTEN_ADDR: "{{ data.pgbouncer.env.listen_address }}"
+  AUTH_FILE: "{{ data.pgbouncer.env.authentication_file }}"
+  AUTH_TYPE: "{{ data.pgbouncer.env.authentication_type }}"
+  MAX_CLIENT_CONN: "{{ data.pgbouncer.env.max_client_connections }}"
+  DEFAULT_POOL_SIZE: "{{ data.pgbouncer.env.default_pool_size }}"
+  RESERVE_POOL_SIZE: "{{ data.pgbouncer.env.reserve_pool_size }}"
+  POOL_MODE: "{{ data.pgbouncer.env.pool_mode }}"
+---
+
+
