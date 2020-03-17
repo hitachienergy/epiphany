@@ -29,15 +29,16 @@ Components that Health Monitor should check:
 
 \* means MVP version.
 
+Health Monitor exposes endpoint that is compliant with [Prometheus metrics format](https://github.com/prometheus/docs/blob/master/content/docs/instrumenting/exposition_formats.md#text-format-example) and serves data about health checks. This endpoint should listen on the configurable port (default 98XX).
 
 ## Design proposal
 
-![Health Monitor diagram](health-monitor.svg)
+
 
 **Health Checks**
 
 Platform Health checks are a means of regularly monitoring the health of individual components within the Epiphany environment. These monitoring probes checks the liveness of containers, services, processes at specified intervals and, in the event of an unhealthy object take predefined action.
-
+![Health Monitor diagram](https://github.com/smeadows-abb/epiphany/tree/develop/docs/design-docs/health-monitor/health-monitor.svg)
 **Health Check Daemon (healthd)**
 
 healthd is an Epiphany Linux based service process providing health check probes, this process is instantiated at system startup, managed and supervised by the service manager (Systemd), and runs unobtrusively in the background throughout its lifecycle. Initial support will be provided for the following Linux based distros:
@@ -85,28 +86,32 @@ The Health Check Daemon configuration file format will be based upon YAML to pro
 | RequestType | Specifies the HTTP method to be used for probing associated daemon. | head, get, put, and  post. Default head. |
 | Response | Specifies the associated good response &quot;200 Ok&quot;. | Optional, default 200. |
 
-Env:
+**Env:**
 
-dockerd:
+dockerd :
+
+  -Name: "something-application-name",
 
   -Package: docker,
-  
+
   -Interval: 5,
-  
-  -Retries:  7,
-  
+
+  -Retries: 7,
+
   -RetryDelay: 3,
-  
+
   -ActionFatal: True,
-  
+
   -IP: 127.0.0.1,
-  
+
   -Port: 8080,
-  
-  -PATH: /,
-  
-  -RequestType: HEAD,
-  
+
+  -PATH: "/",
+
+  -TIMEOUT: 300
+
+  -RequestType: head,
+
   -Response: 200
 
 
@@ -117,5 +122,8 @@ dockerd:
 Golang packages will be used to implement each client interface and provide liveness probe. Initial support will be provided for the following probes:
 
 1. **HTTP Probe** Probably the most common liveness probe used to provide client-side HTTP liveness and will be used to send a valid HTTP request per yaml Config. It&#39;s z light weight HTTP API package that will provide interrogation of response code for valid responses typically 200 or 300 range.
-2. **Docker Probe** Docker provides an API for interacting with the Docker daemon. The Docker API will be used to provide the client-side interface to containers. The API will be used to query all containers using the &quot;list container&quot; service. This client will interrogate the results returned for stopped/abnormal containers and take the appropriate action.
-3. **Prometheus** Client API will be used to provide metric (TBD) to provide instrumentation via predefined or default endpoint and send current state of all tracked metrics assigned to individual liveness probes.
+2. **Docker Probe** Docker provides an API for interacting with the Docker daemon. The Docker API will be used to provide the client-side interface to containers. The API will be used to query all containers using the &quot;list container&quot; service. This client will interrogate the results returned for stopped/abnormal containers and take the appropriate action as defined in configuration file.
+3. **Prometheus** Client API will be used to provide the state metrics (below) via predefined or default endpoint and allow prometheus to scrap current state of all tracked metrics assigned to individual liveness probes.
+    - is_docker_running: 1
+    - is_kubelet_running: 1
+    - restart_count: 4
