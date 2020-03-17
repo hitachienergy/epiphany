@@ -28,10 +28,9 @@ RUN groupadd --gid $USER_GID $USERNAME \
     && rm -rf /var/lib/apt/lists/*   
 
 RUN mkdir /shared/
-WORKDIR /shared
 
-COPY permissions.sh /permissions.sh
+COPY entrypoint.sh /
 
 USER $USERNAME
 
-ENTRYPOINT ["/bin/bash", "permissions.sh"]
+ENTRYPOINT ["/entrypoint.sh"]
