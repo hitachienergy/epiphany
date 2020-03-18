@@ -127,10 +127,11 @@ specification:
 
   - name: pgbouncer
     enabled: yes
-    image_path: brainsam/pgbouncer:1.12 #https://github.com/brainsam/pgbouncer/tree/release/1.12
+    #https://github.com/brainsam/pgbouncer/tree/release/1.12
+    image_path: brainsam/pgbouncer:1.12
     namespace: pgbouncer
     service:
-      name: pgbouncer-service
+      name: pgbouncer
       port: 5432
     replicas: 2
     pgbouncer:
@@ -147,5 +148,5 @@ specification:
         pool_mode: transaction
       secrets:
         admin_users: postgres #pgbouncer admin user(s), eg: user1, user2
-        db_user: '"username"' #pgpool postgres username
-        db_password: '"md5password"' #md5 password
+        db_user: '"username"' #postgres username
+        db_password: '"md5password"' #md5 postgres password
