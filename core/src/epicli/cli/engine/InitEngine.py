@@ -84,9 +84,3 @@ class InitEngine(Step):
             infra = load_all_yaml_objs(types.DEFAULT, self.provider, 'infrastructure/virtual-machine')
         
         return infra
-
-
-
-
-
-

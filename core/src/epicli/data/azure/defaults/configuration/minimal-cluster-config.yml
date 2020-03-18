@@ -14,7 +14,7 @@ specification:
     kubernetes_master:
       count: 1
     kubernetes_node:
-      count: 3
+      count: 2
     logging:
       count: 1
     monitoring:
@@ -27,3 +27,17 @@ specification:
       count: 1
     rabbitmq:
       count: 1
+---
+kind: configuration/kubernetes-master
+title: "Kubernetes Master Config"
+provider: azure
+name: default
+specification:
+  use_ha_control_plane: False
+---
+kind: configuration/kubernetes-node
+title: "Kubernetes Node Config"
+provider: azure
+name: default
+specification:
+  use_ha_control_plane: False

@@ -5,6 +5,7 @@ specification:
   version: 1.17.4
   cluster_name: "kubernetes-epiphany"
   allow_pods_on_master: False
+  use_ha_control_plane: False
   storage:
     name: epiphany-cluster-volume # name of the Kubernetes resource
     path: / # directory path in mounted storage
