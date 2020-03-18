@@ -84,10 +84,10 @@ specification:
       replication_user_password: PASSWORD_TO_CHANGE
       priviledged_user_name: epi_repmgr_admin
       priviledged_user_password: PASSWORD_TO_CHANGE
-      use_repmgr: true
+      use_repmgr: false
       repmgr_database: epi_repmgr
-      shared_preload_libraries:
-        - repmgr
+      shared_preload_libraries: []
+        #- repmgr
   logrotate:
     # Configuration partly based on /etc/logrotate.d/postgresql-common provided by 'postgresql-common' package from Ubuntu repo.
       # PostgreSQL from Ubuntu repo:
