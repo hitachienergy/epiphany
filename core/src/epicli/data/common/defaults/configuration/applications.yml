@@ -90,7 +90,7 @@ specification:
                 topologyKey: kubernetes.io/hostname
       nodeSelector: {}
       tolerations: {}
-    resources:
+    resources: # TODO: test and adjust
       limits:
         memory: 256Mi
       requests:
