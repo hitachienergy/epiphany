@@ -27,6 +27,8 @@ specification:
       - name: "kubernetesui/metrics-scraper:v1.0.1"
         file_name: metrics-scraper-v1.0.1.tar
     #postgres:
+      - name: bitnami/pgpool:4.1.1
+        file_name: pgpool-4.1.1.tar
       - name: "brainsam/pgbouncer:1.12"
         file_name: pgbouncer-1.12.tar
     current:
