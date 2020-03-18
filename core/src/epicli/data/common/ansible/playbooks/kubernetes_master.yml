@@ -2,8 +2,8 @@
 # Ansible playbook that makes sure the base items for all nodes are installed
 
 - hosts: all
-  gather_facts: yes
-  tasks: [ ]  
+  gather_facts: true
+  tasks: []
 
 - hosts: kubernetes_master
   become: true
@@ -14,10 +14,19 @@
         tasks_from: main
     - import_role:
         name: kubernetes_master
-        tasks_from: copy-kubeconfig.yml
+        tasks_from: copy-kubeconfig
+
+- hosts: kubernetes_master
+  serial: 1
+  become: true
+  become_method: sudo
   roles:
     - kubernetes_master
+
+- hosts: kubernetes_master
+  become: true
+  become_method: sudo
   post_tasks:
     - import_role:
         name: kubernetes_master
-        tasks_from: remove-kubeconfig.yml
+        tasks_from: remove-kubeconfig

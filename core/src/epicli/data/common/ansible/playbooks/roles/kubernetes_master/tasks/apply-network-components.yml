@@ -1,4 +1,3 @@
 ---
-
 - name: Apply network plugin configured by user
   include_tasks: "./cni-plugins/{{ network_plugin }}.yml"
