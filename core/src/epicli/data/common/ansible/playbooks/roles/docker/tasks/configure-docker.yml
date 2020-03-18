@@ -17,8 +17,11 @@
 - name: Start Docker
   systemd:
     name: docker
-    state: started
+    state: "{{ item }}"
     enabled: yes
+  loop:
+    - started
+    - reloaded
 
 # Get log driver for verification
 - name: Get Docker logging driver
