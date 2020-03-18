@@ -23,7 +23,7 @@ spec:
 {% endfor %}
       containers:
         - name: pgpool
-          image: {{ data.image.path }}
+          image: {{ image_registry_address }}/{{ data.image.path }}
           envFrom:
             - configMapRef:
                 name: pgpool-container-env
