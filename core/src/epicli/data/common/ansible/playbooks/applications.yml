@@ -2,18 +2,19 @@
 # Ansible playbook that deploys applications on Kubernetes after cluster creation
 
 - hosts: all
-  tasks: [ ]  
+  gather_facts: true
+  tasks: []
 
-- hosts: applications
+- hosts: applications:!kubernetes_master[1:]
   become: true
   become_method: sudo
   pre_tasks:
     - import_role:
         name: kubernetes_master
-        tasks_from: copy-kubeconfig.yml
+        tasks_from: copy-kubeconfig
   roles:
     - applications
   post_tasks:
     - import_role:
         name: kubernetes_master
-        tasks_from: remove-kubeconfig.yml
+        tasks_from: remove-kubeconfig
