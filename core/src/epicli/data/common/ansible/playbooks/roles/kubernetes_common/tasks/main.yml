@@ -1,5 +1,4 @@
 ---
-
 - include_tasks: install-packages.yml
 
 - name: Enable ip forwarding
@@ -25,3 +24,5 @@
   with_items:
     - net.bridge.bridge-nf-call-iptables
     - net.bridge.bridge-nf-call-ip6tables
+
+- include_tasks: gather-facts.yml
