@@ -33,11 +33,11 @@ spec:
             configMapKeyRef:
               name: pgbouncer-container-env
               key: DB_HOST
-        - name: DB_HOST
+        - name: DB_PORT
           valueFrom:
             configMapKeyRef:
               name: pgbouncer-container-env
-              key: DB_HOST
+              key: DB_LISTEN_PORT
         - name: LISTEN_ADDR
           valueFrom:
             configMapKeyRef:
@@ -47,7 +47,7 @@ spec:
           valueFrom:
             configMapKeyRef:
               name: pgbouncer-container-env
-              key: DB_LISTEN_PORT
+              key: LISTEN_PORT
         - name: AUTH_FILE
           valueFrom:
             configMapKeyRef:
@@ -93,20 +93,20 @@ spec:
           limits:
             cpu: "1000m"
             memory: "1024Mi"
-        livenessProbe:        
-          httpGet:
-            path: /healthy
-            port: {{ data.service.port }}
-          initialDelaySeconds: 5
-          timeoutSeconds: 1
-          periodSeconds: 10
-          failureThreshold: 3
-        readinessProbe:
-          httpGet:
-            path: /ready
-            port: {{ data.service.port }}
-          initialDelaySeconds: 30
-          timeoutSeconds: 1
-          periodSeconds: 10
-          failureThreshold: 3
+#        livenessProbe:        
+#          httpGet:
+#            path: /healthy
+#            port: {{ data.service.port }}
+#          initialDelaySeconds: 5
+#          timeoutSeconds: 5
+#          periodSeconds: 10
+#          failureThreshold: 3
+#        readinessProbe:
+#          httpGet:
+#            path: /ready
+#            port: {{ data.service.port }}
+#          initialDelaySeconds: 30
+#          timeoutSeconds: 5
+#          periodSeconds: 10
+#          failureThreshold: 3
       restartPolicy: Always

@@ -10,6 +10,7 @@ data:
   DB_HOST: "{{ data.pgbouncer.env.target_address }}"
   DB_LISTEN_PORT: "{{ data.pgbouncer.env.target_port }}"
   LISTEN_ADDR: "{{ data.pgbouncer.env.listen_address }}"
+  LISTEN_PORT: "{{ data.pgbouncer.env.listen_port }}"
   AUTH_FILE: "{{ data.pgbouncer.env.authentication_file }}"
   AUTH_TYPE: "{{ data.pgbouncer.env.authentication_type }}"
   MAX_CLIENT_CONN: "{{ data.pgbouncer.env.max_client_connections }}"
