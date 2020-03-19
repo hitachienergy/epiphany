@@ -33,17 +33,17 @@ spec:
             - name: PGPOOL_ADMIN_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: pgpool
+                  name: pgpool-passwords
                   key: pgpool_admin_password
             - name: PGPOOL_POSTGRES_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: pgpool
+                  name: pgpool-passwords
                   key: pgpool_postgres_password
             - name: PGPOOL_SR_CHECK_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: pgpool
+                  name: pgpool-passwords
                   key: pgpool_sr_check_password
           ports:
             - name: postgresql
@@ -83,13 +83,13 @@ spec:
       volumes:
         - name: postgresql-password
           secret:
-            secretName: pgpool
+            secretName: pgpool-passwords
             items:
               - key: pgpool_postgres_password
                 path: pgpool-password
         - name: pgpool-password
           secret:
-            secretName: pgpool
+            secretName: pgpool-passwords
             items:
               - key: pgpool_admin_password
                 path: admin-password
