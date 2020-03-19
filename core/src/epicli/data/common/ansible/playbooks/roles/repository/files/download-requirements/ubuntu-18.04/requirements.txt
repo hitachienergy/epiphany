@@ -63,6 +63,7 @@ telnet
 tmux
 unzip
 vim
+nfs-kernel-server
 
 # for curl, issue #869
 libcurl4

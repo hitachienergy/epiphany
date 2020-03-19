@@ -1,0 +1,6 @@
+---
+# RedHat specific variables for NFS
+
+nfs_service:
+  - rpcbind
+  - nfs

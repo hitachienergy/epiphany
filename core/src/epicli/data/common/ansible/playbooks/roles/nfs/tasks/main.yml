@@ -1,0 +1,15 @@
+---
+# main tasks for an nfs role
+
+- name: Gather variables for each operating system
+  include_vars: "{{ item }}"
+  with_first_found:
+    - "{{ ansible_os_family }}.yml"
+  tags:
+    - always
+
+- name: Include installation tasks for NFS
+  include_tasks: install-nfs.yml
+
+- name: Include configuration tasks for NFS
+  include_tasks: configure-nfs.yml

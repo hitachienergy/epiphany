@@ -1,0 +1,8 @@
+---
+# Install required NFS packages for RedHat based operating systems
+
+- name: Ensure NFS packages are installed (RedHat).
+  yum:
+    name:
+      - nfs-utils
+    state: present

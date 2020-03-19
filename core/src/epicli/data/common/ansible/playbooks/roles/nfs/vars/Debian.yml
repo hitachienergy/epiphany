@@ -1,0 +1,5 @@
+---
+# Debian specific variables for NFS
+
+nfs_service:
+  - nfs-kernel-server

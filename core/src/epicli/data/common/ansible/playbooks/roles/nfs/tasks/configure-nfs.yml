@@ -1,0 +1,38 @@
+---
+# Tasks to configure NFS
+
+- name: Generate /etc/exports file
+  template:
+    src: etc-exports.j2
+    dest: /etc/exports
+    owner: root
+    group: root
+    mode: 0644
+
+- name: Ensure NFS directories exist
+  file:
+    path: "{{ item.nfs_path }}"
+    state: directory
+  with_items:
+    - "{{ specification.nfs_defs }}"
+
+- name: Ensure NFS mounts are bound
+  mount:
+    path: "{{ item.nfs_src }}"
+    src: "{{ item.nfs_path }}"
+    opts: bind
+    state: mounted
+    fstype: none
+  with_items:
+    - "{{ specification.nfs_defs }}"
+
+- name: Ensure NFS is running
+  service: #"name={{ item }} state=started enabled=yes"
+    name: "{{ item }}"
+    state: started
+    enabled: yes
+  with_items:
+    - "{{ nfs_service }}"
+
+- name: Export all entries from /etc/exports
+  command: "exportfs -ra"

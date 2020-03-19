@@ -792,3 +792,63 @@ specification:
        destination_port_range: "0"
        source_address_prefix: "0.0.0.0/0"
        destination_address_prefix: "0.0.0.0/0"
+---
+kind: infrastructure/virtual-machine
+title: "Virtual Machine Infra"
+provider: aws
+name: nfs-machine
+specification:
+  size: t3.medium
+  authorized_to_efs: true
+  security:
+    rules:
+      - name: ssh
+        description: Allow ssh traffic
+        priority: 101
+        direction: Inbound
+        access: Allow
+        protocol: Tcp
+        source_port_range: "*"
+        destination_port_range: "22"
+        source_address_prefix: "0.0.0.0/0"
+        destination_address_prefix: "0.0.0.0/0"
+      - name: node_exporter
+        description: Allow node_exporter traffic
+        priority: 302
+        direction: Inbound
+        access: Allow
+        protocol: Tcp
+        source_port_range: "*"
+        destination_port_range: "9100"
+        source_address_prefix: "10.1.0.0/20"
+        destination_address_prefix: "0.0.0.0/0"
+      - name: out
+        description: Allow out
+        priority: 101
+        direction: Egress
+        access: Allow
+        protocol: "all"
+        source_port_range: "*"
+        destination_port_range: "0"
+        source_address_prefix: "0.0.0.0/0"
+        destination_address_prefix: "0.0.0.0/0"
+      - name: nfs-traffic1
+        description: Allow nfs traffic 1
+        priority: 102
+        direction: Inbound
+        access: Allow
+        protocol: Tcp
+        source_port_range: "*"
+        destination_port_range: "2049"
+        source_address_prefix: "10.1.1.0/24"
+        destination_address_prefix: "0.0.0.0/0"
+      - name: nfs-traffic2
+        description: Allow nfs traffic 2
+        priority: 102
+        direction: Inbound
+        access: Allow
+        protocol: Tcp
+        source_port_range: "*"
+        destination_port_range: "2049"
+        source_address_prefix: "10.1.2.0/24"
+        destination_address_prefix: "0.0.0.0/0"
