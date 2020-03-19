@@ -12,3 +12,4 @@
 ### Fixed
 
 - [#624](https://github.com/epiphany-platform/epiphany/issues/624) - Don't run epicli as root in container
+- [#966](https://github.com/epiphany-platform/epiphany/issues/966) - Ubuntu builds get stuck on 'Create epirepo repository' task waiting for user input in offline mode
