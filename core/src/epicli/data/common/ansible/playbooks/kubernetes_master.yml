@@ -1,6 +1,4 @@
 ---
-# Ansible playbook that makes sure the base items for all nodes are installed
-
 - hosts: all
   gather_facts: true
   tasks: []
@@ -9,6 +7,9 @@
   become: true
   become_method: sudo
   pre_tasks:
+    - import_role:
+        name: docker
+        tasks_from: main
     - import_role:
         name: kubernetes_common
         tasks_from: main

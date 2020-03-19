@@ -3,3 +3,8 @@
   systemd:
     name: docker
     state: restarted
+
+- name: Reload Docker
+  systemd:
+    name: docker
+    state: reloaded

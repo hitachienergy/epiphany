@@ -9,19 +9,16 @@
     src: daemon.json.j2
     dest: /etc/docker/daemon.json
     mode: 0644
-  notify: Restart Docker
+  notify: Reload Docker
 
-- name: Restart Docker before verification # to apply new configuration
+- name: Reload Docker before verification # to apply new configuration
   meta: flush_handlers
 
 - name: Start Docker
   systemd:
     name: docker
-    state: "{{ item }}"
+    state: started
     enabled: yes
-  loop:
-    - started
-    - reloaded
 
 # Get log driver for verification
 - name: Get Docker logging driver
