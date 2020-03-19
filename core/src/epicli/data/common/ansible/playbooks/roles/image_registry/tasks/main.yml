@@ -1,5 +1,10 @@
 ---
+- import_tasks: gather-facts.yml
+
 - name: Load images and run local registry
+  when:
+    - not custom_image_registry_address
+    - inventory_hostname in target_image_registry_hostnames
   block:
     - name: Check if Docker is installed
       shell: docker --version
@@ -68,5 +73,3 @@
         docker_image: "{{ item }}"
       loop: "{{ specification.images_to_load.legacy }}"
       when: is_upgrade_run
-
-  when: not custom_image_registry_address
