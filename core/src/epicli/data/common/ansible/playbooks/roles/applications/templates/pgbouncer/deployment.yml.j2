@@ -22,7 +22,7 @@ spec:
           secretName: pgbouncer-users-file
       containers:
       - name: pgbouncer 
-        image: {{ data.image_path }}
+        image: {{ image_registry_address }}/{{ data.image.path }}
         ports:
         - name: pgbouncer
           containerPort: 5432

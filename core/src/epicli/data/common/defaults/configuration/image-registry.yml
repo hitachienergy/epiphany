@@ -47,6 +47,8 @@ specification:
       file_name: rabbitmq-3.7.10.tar
     - name: "apacheignite/ignite:2.5.0"
       file_name: ignite-2.5.0.tar
+    - name: "brainsam/pgbouncer:1.12"
+      file_name: pgbouncer-1.12.tar
     # K8s upgrade
     ## v1.11.5
     - name: "coredns/coredns:1.1.3"
