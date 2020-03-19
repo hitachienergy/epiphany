@@ -1,4 +1,6 @@
 ---
+- import_tasks: gather-facts.yml
+
 - name: Set mode
   set_fact:
     offline_mode: "{{ offline_requirements | length > 0 }}"
@@ -43,7 +45,7 @@
   when:
     - not offline_mode
     - not custom_repository_url
-    - inventory_hostname in groups['repository']
+    - inventory_hostname in target_repository_hostnames
 
 - name: Copy repository client configuration scripts
   copy:
@@ -58,7 +60,7 @@
     mode: a+x
   when:
     - not custom_repository_url
-    - inventory_hostname in groups['repository']
+    - inventory_hostname in target_repository_hostnames
 
 - name: |-
     Copy requirements for offline installation to repository host, this can take a long time
@@ -70,7 +72,7 @@
   when:
     - offline_mode
     - not custom_repository_url
-    - inventory_hostname in groups['repository']
+    - inventory_hostname in target_repository_hostnames
 
 - name: Set up repositories
   include_tasks: "{{ ansible_os_family }}/setup.yml"

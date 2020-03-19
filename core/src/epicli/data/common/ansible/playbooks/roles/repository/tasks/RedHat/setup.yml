@@ -21,7 +21,7 @@
         state: started
   when:
     - not custom_repository_url
-    - inventory_hostname in groups['repository']
+    - inventory_hostname in target_repository_hostnames
 
 - name: Disable system repositories and set up epirepo
   block:
