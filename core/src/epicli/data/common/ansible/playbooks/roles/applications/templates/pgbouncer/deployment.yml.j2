@@ -22,7 +22,7 @@ spec:
           secretName: pgbouncer-users-file
       containers:
       - name: pgbouncer 
-        image: {{ image_registry_address }}/{{ data.image.path }}
+        image: {{ image_registry_address }}/{{ data.image_path }}
         ports:
         - name: pgbouncer
           containerPort: 5432
@@ -93,7 +93,7 @@ spec:
           limits:
             cpu: "1000m"
             memory: "1024Mi"
-##TODO Healthchecks
+##TODO
 #        livenessProbe:        
 #          httpGet:
 #            path: /healthy
