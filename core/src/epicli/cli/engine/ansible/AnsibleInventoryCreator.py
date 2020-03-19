@@ -26,9 +26,6 @@ class AnsibleInventoryCreator(Step):
         inventory = self.get_inventory()
         save_inventory(inventory, self.cluster_model)
 
-    def should_be_singleton(self, ansible_role_name):
-        return ansible_role_name in {"image_registry", "repository"}
-
     def get_inventory(self):
         inventory = []
         for component_key, component_value in self.cluster_model.specification.components.items():
@@ -39,11 +36,7 @@ class AnsibleInventoryCreator(Step):
                 roles = self.get_roles_for_feature(component_key)
                 for role in roles:
                     ansible_role_name = to_role_name(role)
-                    if self.should_be_singleton(ansible_role_name):
-                        effective_ips = ips[:1]
-                    else:
-                        effective_ips = ips
-                    inventory.append(AnsibleInventoryItem(ansible_role_name, effective_ips))
+                    inventory.append(AnsibleInventoryItem(ansible_role_name, ips))
 
         return self.group_duplicated(inventory)
 
