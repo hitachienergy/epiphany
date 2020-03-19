@@ -23,6 +23,6 @@ backend epiphany
     balance roundrobin
     option tcp-check
 
-{% for master_name, ipv4_address in kubernetes_haproxy_backend_servers %}
+{% for master_name, ipv4_address in kubernetes_common.haproxy_backend_servers %}
     server {{ master_name }} {{ ipv4_address }}:6443 check port 6443
 {% endfor %}

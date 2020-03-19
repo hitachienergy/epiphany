@@ -1,6 +1,6 @@
 ---
-- delegate_to: "{{ automation_designated_master }}"
-  when: not master_already_joined
+- delegate_to: "{{ kubernetes_common.automation_designated_master }}"
+  when: not kubernetes_common.master_already_joined
   block:
     - name: Get token from master
       shell: |
@@ -36,7 +36,7 @@
       register: kubeadm_cert_hash
       changed_when: false
 
-- when: not master_already_joined
+- when: not kubernetes_common.master_already_joined
   vars:
     kubeadm_token: >-
       {{ kubeadm_valid_token.stdout if kubeadm_valid_token.stdout else kubeadm_new_token.stdout_lines[-1] }}
@@ -68,7 +68,11 @@
 
     - name: Mark master as joined
       set_fact:
-        master_already_joined: true
+        kubernetes_common: >-
+          {{ kubernetes_common | d({}) | combine(set_fact, recursive=true) }}
+      vars:
+        set_fact:
+          master_already_joined: true
 
 - name: Include kubelet configuration tasks
   include_role:

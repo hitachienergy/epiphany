@@ -17,7 +17,7 @@
   register: dashboard_count
   failed_when: dashboard_count.rc == 2
   when:
-    - automation_designated_master == inventory_hostname
+    - kubernetes_common.automation_designated_master == inventory_hostname
 
 - name: Dashboard count
   debug:

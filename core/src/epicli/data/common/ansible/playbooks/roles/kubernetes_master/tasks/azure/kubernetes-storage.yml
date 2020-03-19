@@ -26,7 +26,7 @@
     group: "{{ admin_user.name }}"
     mode: u=rw,go=r
 
-- when: groups.kubernetes_master.0 == inventory_hostname
+- when: kubernetes_common.automation_designated_master == inventory_hostname
   become_user: "{{ admin_user.name }}"
   environment:
     KUBECONFIG: "/home/{{ admin_user.name }}/.kube/config"

@@ -1,17 +1,27 @@
 ---
 - name: Prepare backend configuration for HAProxy
-  vars:
-    kubernetes_master_names: >-
-      {{ groups.kubernetes_master
-      | map('extract', hostvars, ['inventory_hostname'])
-      | list }}
-    kubernetes_master_ipv4s: >-
-      {{ groups.kubernetes_master
-      | map('extract', hostvars, ['ansible_default_ipv4', 'address'])
-      | list }}
   set_fact:
-    kubernetes_haproxy_backend_servers: >-
-      {{ kubernetes_master_names | zip(kubernetes_master_ipv4s) | list }}
+    kubernetes_common: >-
+      {{ kubernetes_common | d({}) | combine(set_fact, recursive=true) }}
+  vars:
+    set_fact:
+      haproxy_master_names: >-
+        {{ groups.kubernetes_master
+        | map('extract', hostvars, ['inventory_hostname'])
+        | list }}
+      haproxy_master_ipv4s: >-
+        {{ groups.kubernetes_master
+        | map('extract', hostvars, ['ansible_default_ipv4', 'address'])
+        | list }}
+
+- name: Prepare backend configuration for HAProxy
+  set_fact:
+    kubernetes_common: >-
+      {{ kubernetes_common | d({}) | combine(set_fact, recursive=true) }}
+  vars:
+    set_fact:
+      haproxy_backend_servers: >-
+        {{ kubernetes_common.haproxy_master_names | zip(kubernetes_common.haproxy_master_ipv4s) | list }}
 
 - name: Render haproxy config
   template:

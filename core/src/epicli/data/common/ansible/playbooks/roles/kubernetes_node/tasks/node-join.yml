@@ -1,6 +1,6 @@
 ---
-- delegate_to: "{{ automation_designated_master }}"
-  when: not node_already_joined
+- delegate_to: "{{ kubernetes_common.automation_designated_master }}"
+  when: not kubernetes_common.node_already_joined
   block:
     - name: Get token from master
       shell: |
@@ -36,7 +36,7 @@
       register: kubeadm_cert_hash
       changed_when: false
 
-- when: not node_already_joined
+- when: not kubernetes_common.node_already_joined
   block:
     - name: Render /etc/kubeadm/kubeadm-join-node.yml template
       vars:
@@ -94,5 +94,9 @@
 
             - name: Mark node regardless of join result
               set_fact:
-                node_already_joined: >-
-                  {{ kubeadm_join_result is succeeded }}
+                kubernetes_common: >-
+                  {{ kubernetes_common | d({}) | combine(set_fact, recursive=true) }}
+              vars:
+                set_fact:
+                  node_already_joined: >-
+                    {{ kubeadm_join_result is succeeded }}

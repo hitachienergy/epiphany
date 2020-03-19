@@ -26,7 +26,7 @@
 - name: Copy PKI from master node to Ephiphany's vault
   when: not stat_kubernetes_pki.stat.exists
   block:
-    - delegate_to: "{{ automation_designated_master }}"
+    - delegate_to: "{{ kubernetes_common.automation_designated_master }}"
       slurp:
         src: "/etc/kubernetes/{{ item }}"
       loop: >-

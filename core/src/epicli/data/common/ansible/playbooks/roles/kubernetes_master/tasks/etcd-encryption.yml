@@ -7,7 +7,7 @@
     get_mime: false
   register: stat_etcd_conf_file
 
-- when: automation_designated_master == inventory_hostname
+- when: kubernetes_common.automation_designated_master == inventory_hostname
   block:
     - when: not stat_etcd_conf_file.stat.exists
       block:
@@ -39,7 +39,7 @@
     insertafter: "^    - kube-apiserver$"
     line: "    - --encryption-provider-config=/etc/kubernetes/pki/etcd/etc-encryption.conf"
 
-- when: automation_designated_master == inventory_hostname
+- when: kubernetes_common.automation_designated_master == inventory_hostname
   block:
     - name: Run secrets encryption
       environment:

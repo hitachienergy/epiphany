@@ -36,8 +36,12 @@
         executable: /bin/bash
 
     - name: Mark master as joined
+      vars:
+        set_fact:
+          master_already_joined: true
       set_fact:
-        master_already_joined: true
+        kubernetes_common: >-
+          {{ kubernetes_common | d({}) | combine(set_fact, recursive=true) }}
 
 - name: Include kubelet configuration tasks
   include_role:

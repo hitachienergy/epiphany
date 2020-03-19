@@ -7,7 +7,7 @@
         tasks_from: configure-haproxy
 
 - name: Init Kubernetes master
-  when: automation_designated_master == inventory_hostname
+  when: kubernetes_common.automation_designated_master == inventory_hostname
   block:
     - import_tasks: master-init.yml
     - import_tasks: etcd-encryption.yml
@@ -18,7 +18,7 @@
 - when: specification.use_ha_control_plane
   block:
     - name: Join Kubernetes HA master
-      when: automation_designated_master != inventory_hostname
+      when: kubernetes_common.automation_designated_master != inventory_hostname
       block:
         - import_tasks: copy-kubernetes-pki.yml
         - import_tasks: master-join.yml
