@@ -1,5 +1,4 @@
 ---
-
 - name: Set is OS supported to false
   set_fact:
      is_os_supported: false
@@ -48,3 +47,7 @@
     - ansible_os_family == "RedHat"
     - "'postgresql' in groups"
     - "inventory_hostname in groups['postgresql']"
+
+- import_role:
+    name: preflight_facts
+    tasks_from: store

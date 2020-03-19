@@ -1,0 +1,126 @@
+---
+- when: inventory_hostname in groups.kubernetes_master
+  block:
+    - name: Check if /etc/kubernetes/admin.conf file exists
+      stat:
+        path: /etc/kubernetes/admin.conf
+        get_attributes: false
+        get_checksum: false
+        get_mime: false
+      register: stat_admin_conf
+
+    - when: stat_admin_conf.stat.exists
+      block:
+        - name: Get list of all master nodes
+          shell: |
+            kubectl get nodes \
+              --selector={{ selector }} \
+              --output=jsonpath={{ jsonpath }}
+          vars:
+            selector: >-
+              'node-role.kubernetes.io/master'
+            jsonpath: >-
+              '{range .items[*]}{.metadata.name}{"\n"}{end}'
+          environment:
+            KUBECONFIG: /etc/kubernetes/admin.conf
+          args:
+            executable: /bin/bash
+          register: kubectl_get_master_nodes
+          changed_when: false
+
+    - name: Decide if current node is a master
+      set_fact:
+        master_already_joined: >-
+          {{ stat_admin_conf.stat.exists and (kubectl_get_master_nodes.stdout_lines is defined)
+                                         and (inventory_hostname in kubectl_get_master_nodes.stdout_lines) }}
+
+- name: Collect registered masters
+  set_fact:
+    registered_masters: >-
+      {{ groups.kubernetes_master | map('extract', hostvars, ['master_already_joined'])
+      | zip(groups.kubernetes_master)
+      | selectattr(0)
+      | map(attribute=1)
+      | list }}
+
+- when: (registered_masters.0 is defined) and (inventory_hostname == registered_masters.0)
+  block:
+    - name: Collect live kubeadm ClusterConfiguration object if available
+      shell: |
+        kubectl get configmap kubeadm-config \
+          --namespace=kube-system \
+          --output=jsonpath={{ jsonpath }}
+      vars:
+        jsonpath: >-
+          '{.data.ClusterConfiguration}'
+      environment:
+        KUBECONFIG: /etc/kubernetes/admin.conf
+      args:
+        executable: /bin/bash
+      register: ClusterConfiguration
+      changed_when: false
+
+    - name: Extract repository hostname from ClusterConfiguration
+      set_fact:
+        repository_hostname: >-
+          {{ ( 'http://' ~ (ClusterConfiguration.stdout | from_yaml).imageRepository )
+          | urlsplit('hostname') }}
+
+- name: PREFLIGHT_FACTS | Produce default repository and image registry urls
+  set_fact:
+    preflight_facts: >-
+      {{ preflight_facts | d({}) | combine(set_fact, recursive=true) }}
+  vars:
+    set_fact:
+      repository_url: >-
+        {%- if (registered_masters.0 is defined) and (hostvars[registered_masters.0].repository_hostname is defined) -%}
+          {{ 'http://' ~  hostvars[registered_masters.0].repository_hostname ~ '/epirepo' }}
+        {%- else -%}
+          {{ repository_url }}
+        {%- endif -%}
+      image_registry_address: >-
+        {%- if (registered_masters.0 is defined) and (hostvars[registered_masters.0].repository_hostname is defined) -%}
+          {{ hostvars[registered_masters.0].repository_hostname ~ ':5000' }}
+        {%- else -%}
+          {{ image_registry_address }}
+        {%- endif -%}
+
+- name: PREFLIGHT_FACTS | Produce default repository and image registry hostnames
+  set_fact:
+    preflight_facts: >-
+      {{ preflight_facts | d({}) | combine(set_fact, recursive=true) }}
+  vars:
+    set_fact:
+      repository_hostname: >-
+        {{ preflight_facts.repository_url | urlsplit('hostname') }}
+      image_registry_hostname: >-
+        {{ ( 'http://' ~ preflight_facts.image_registry_address ) | urlsplit('hostname') }}
+
+- name: Produce ipv4 address to hostname mapping
+  set_fact:
+    ipv4_address_to_hostname_map: >-
+      {{ dict(ipv4_addresses | zip(groups.all)) }}
+  vars:
+    ipv4_addresses: >-
+      {{ groups.all
+      | map('extract', hostvars, ['ansible_default_ipv4', 'address'])
+      | list }}
+
+- name: PREFLIGHT_FACTS | Resolve default repository and image registry hostnames
+  set_fact:
+    preflight_facts: >-
+      {{ preflight_facts | d({}) | combine(set_fact, recursive=true) }}
+  vars:
+    set_fact:
+      resolved_repository_hostname: >-
+        {%- if preflight_facts.repository_hostname in ipv4_address_to_hostname_map -%}
+          {{ ipv4_address_to_hostname_map[preflight_facts.repository_hostname] }}
+        {%- else -%}
+          {{ preflight_facts.repository_hostname }}
+        {%- endif -%}
+      resolved_image_registry_hostname: >-
+        {%- if preflight_facts.image_registry_hostname in ipv4_address_to_hostname_map -%}
+          {{ ipv4_address_to_hostname_map[preflight_facts.image_registry_hostname] }}
+        {%- else -%}
+          {{ preflight_facts.image_registry_hostname }}
+        {%- endif -%}

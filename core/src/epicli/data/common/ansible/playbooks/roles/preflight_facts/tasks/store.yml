@@ -1,0 +1,11 @@
+---
+- import_tasks: kubernetes.yml
+
+- name: Store preflight facts
+  delegate_to: localhost
+  run_once: true
+  copy:
+    dest: "{{ vault_location }}/../preflight_facts.yml"
+    content: |
+      # This file is managed by ansible. >>> DO NOT EDIT! <<<
+      {{ preflight_facts | to_nice_yaml }}
