@@ -104,7 +104,7 @@ specification:
         PGPOOL_POSTGRES_USERNAME: epi_pgpool_postgres_admin # Postgres administrator user, used to allow postgres admin authentication through pgpool
         PGPOOL_ADMIN_USERNAME: epi_pgpool_admin # Pgpool administrator
         # TODO: test PGPOOL_SR_CHECK_USER, user added because of: ERROR ==> The PostrgreSQL replication credentials are mandatory. Set the environment variables PGPOOL_SR_CHECK_USER and PGPOOL_SR_CHECK_PASSWORD with the PostrgreSQL replication credentials.
-        PGPOOL_SR_CHECK_USER: epi_pgpool_replication_check # user for streaming checks
+        PGPOOL_SR_CHECK_USER: epi_pgpool_sr_check # user for streaming checks
         PGPOOL_USERNAME: epi_pgpool # user with login privilege (TODO: to be used for pgpool container health checks)
         PGPOOL_TIMEOUT: 360
         PGPOOL_ENABLE_LOAD_BALANCING: yes # set to 'no' if there is no replication
