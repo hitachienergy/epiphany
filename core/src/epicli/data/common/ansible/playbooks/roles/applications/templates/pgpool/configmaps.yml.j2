@@ -8,8 +8,7 @@ metadata:
   namespace: {{ data.namespace }}
 data:
 {% if data.pgpool.env.PGPOOL_BACKEND_NODES is undefined or data.pgpool.env.PGPOOL_BACKEND_NODES == 'SET_BY_AUTOMATION' %}
-{# TODO: IPs -> host names #}
-  PGPOOL_BACKEND_NODES: "{% for node in groups['postgresql'] %}{{ loop.index0 }}:{{ hostvars[groups['postgresql'][loop.index0]]['ansible_default_ipv4']['address'] }}:5432{% if not loop.last %},{% endif %}{% endfor %}"
+  PGPOOL_BACKEND_NODES: "{% for node in groups['postgresql'] %}{{ loop.index0 }}:{{ hostvars[groups['postgresql'][loop.index0]].ansible_hostname }}:5432{% if not loop.last %},{% endif %}{% endfor %}"
 {% else %}
   PGPOOL_BACKEND_NODES: "{ data.pgpool.env.PGPOOL_BACKEND_NODES }"
 {% endif %}
@@ -33,3 +32,48 @@ metadata:
 data:
   pgpool.conf: |
     {{ data.pgpool.config_file_content | indent(4) }}
+
+---
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: pgpool-init
+  labels:
+    app: pgpool
+  namespace: {{ data.namespace }}
+data:
+  init_pool_passwd_file.sh: |
+    #!/bin/bash
+
+    set -o errexit
+    set -o nounset
+    set -o pipefail
+
+    if ! test -f $HOME/.pgpass; then
+      echo "Creating '$HOME/.pgpass' file"
+      touch $HOME/.pgpass && chmod 0600 $HOME/.pgpass
+    fi
+
+    # User with SELECT on pg_authid table privilege is required
+    if ! grep -q ":postgres:${PGPOOL_POSTGRES_USERNAME}:" $HOME/.pgpass; then
+      echo "Adding '${PGPOOL_POSTGRES_USERNAME}' user to '$HOME/.pgpass'"
+      echo "*:*:postgres:${PGPOOL_POSTGRES_USERNAME}:${PGPOOL_POSTGRES_PASSWORD}" >> $HOME/.pgpass
+    fi
+
+    # TODO: try all nodes from PGPOOL_BACKEND_NODES (needs parsing) before failing
+    POSTGRES_HOSTNAME={{ hostvars[groups['postgresql'][0]].ansible_hostname }}
+    PGCONNECT_TIMEOUT=15
+    (set -x && \
+    psql -U "$PGPOOL_POSTGRES_USERNAME" -h "$POSTGRES_HOSTNAME" -d postgres -tA \
+         -c "SELECT rolname||':'||rolpassword FROM pg_authid WHERE rolpassword IS NOT NULL" > /epiphany/workdir/pool_passwd_new)
+
+    OUTPUT_FILE=/epiphany/workdir/pool_passwd
+    if ! test -f $OUTPUT_FILE; then
+      echo "Creating '$OUTPUT_FILE' file"
+    else
+      echo "Updating '$OUTPUT_FILE' file"
+    fi
+    mv -f /epiphany/workdir/pool_passwd_new $OUTPUT_FILE
+
+    echo "Completed: $0"
