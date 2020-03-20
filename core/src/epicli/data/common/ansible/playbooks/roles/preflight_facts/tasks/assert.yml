@@ -1,0 +1,14 @@
+---
+- delegate_to: localhost
+  run_once: true
+  block:
+    - include_vars:
+        dir: "{{ role_path }}/../{{ item }}/vars/"
+        name: "{{ item }}"
+      loop:
+        - kubernetes_master
+        - kubernetes_node
+
+    - assert:
+        that: kubernetes_master.specification.use_ha_control_plane == kubernetes_node.specification.use_ha_control_plane
+        fail_msg: "use_ha_control_plane must stay consitent across all nodes"
