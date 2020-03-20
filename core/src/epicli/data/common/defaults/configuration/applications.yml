@@ -136,17 +136,19 @@ specification:
     replicas: 2
     pgbouncer:
       env:
-        target_address: pgpool.pgpool.svc.cluster.local #pgpool service name
-        target_port: "5432"
-        listen_address: "*"
-        listen_port: "5432"
-        authentication_file: "/etc/pgbouncer/auth/users"
-        authentication_type: md5
-        max_client_connections: "500"
-        default_pool_size: "25"
-        reserve_pool_size: "25"
-        pool_mode: transaction
+        DB_HOST: pgpool.pgpool.svc.cluster.local #pgpool service name
+        DB_LISTEN_PORT: 5432
+        LISTEN_ADDR: "*"
+        LISTEN_PORT: 5432
+        AUTH_FILE: "/etc/pgbouncer/auth/users.txt"
+        AUTH_TYPE: md5
+        MAX_CLIENT_CONN: 500
+        DEFAULT_POOL_SIZE: 25
+        RESERVE_POOL_SIZE: 25
+        POOL_MODE: transaction
       secrets:
-        admin_users: postgres #pgbouncer admin user(s), eg: user1, user2
+        admin_users: 
+          - postgres #provide list of users
+#TODO add list of users handling
         db_user: '"username"' #postgres username
         db_password: '"md5password"' #md5 postgres password

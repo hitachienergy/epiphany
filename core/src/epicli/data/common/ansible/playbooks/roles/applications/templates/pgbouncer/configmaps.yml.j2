@@ -7,13 +7,13 @@ metadata:
     app: pgbouncer
   namespace: {{ data.namespace }}
 data:
-  DB_HOST: "{{ data.pgbouncer.env.target_address }}"
-  DB_LISTEN_PORT: "{{ data.pgbouncer.env.target_port }}"
-  LISTEN_ADDR: "{{ data.pgbouncer.env.listen_address }}"
-  LISTEN_PORT: "{{ data.pgbouncer.env.listen_port }}"
-  AUTH_FILE: "{{ data.pgbouncer.env.authentication_file }}"
-  AUTH_TYPE: "{{ data.pgbouncer.env.authentication_type }}"
-  MAX_CLIENT_CONN: "{{ data.pgbouncer.env.max_client_connections }}"
-  DEFAULT_POOL_SIZE: "{{ data.pgbouncer.env.default_pool_size }}"
-  RESERVE_POOL_SIZE: "{{ data.pgbouncer.env.reserve_pool_size }}"
-  POOL_MODE: "{{ data.pgbouncer.env.pool_mode }}"
+  DB_HOST: "{{ data.pgbouncer.env.DB_HOST }}"
+  DB_LISTEN_PORT: "{{ data.pgbouncer.env.DB_LISTEN_PORT }}"
+  LISTEN_ADDR: "{{ data.pgbouncer.env.LISTEN_ADDR }}"
+  LISTEN_PORT: "{{ data.pgbouncer.env.LISTEN_PORT }}"
+  AUTH_FILE: "{{ data.pgbouncer.env.AUTH_FILE }}"
+  AUTH_TYPE: "{{ data.pgbouncer.env.AUTH_TYPE }}"
+  MAX_CLIENT_CONN: "{{ data.pgbouncer.env.MAX_CLIENT_CONN }}"
+  DEFAULT_POOL_SIZE: "{{ data.pgbouncer.env.DEFAULT_POOL_SIZE }}"
+  RESERVE_POOL_SIZE: "{{ data.pgbouncer.env.RESERVE_POOL_SIZE }}"
+  POOL_MODE: "{{ data.pgbouncer.env.POOL_MODE }}"

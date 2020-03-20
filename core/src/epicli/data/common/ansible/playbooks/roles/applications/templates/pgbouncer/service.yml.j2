@@ -13,6 +13,5 @@ spec:
       port: {{ data.service.port }}
       targetPort: 5432
       protocol: TCP
-  sessionAffinity: ClientIP 
   selector:
     app: pgbouncer

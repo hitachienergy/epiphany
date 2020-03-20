@@ -16,10 +16,6 @@ spec:
       labels:
         app: pgbouncer
     spec:
-      volumes:
-      - name: pgbouncer-users-file
-        secret:
-          secretName: pgbouncer-users-file
       containers:
       - name: pgbouncer 
         image: {{ image_registry_address }}/{{ data.image_path }}
@@ -27,73 +23,31 @@ spec:
         - name: pgbouncer
           containerPort: 5432
           protocol: TCP
+        envFrom:
+          - configMapRef:
+              name: pgbouncer-container-env
         env:
-        - name: DB_HOST
-          valueFrom:
-            configMapKeyRef:
-              name: pgbouncer-container-env
-              key: DB_HOST
-        - name: DB_PORT
-          valueFrom:
-            configMapKeyRef:
-              name: pgbouncer-container-env
-              key: DB_LISTEN_PORT
-        - name: LISTEN_ADDR
-          valueFrom:
-            configMapKeyRef:
-              name: pgbouncer-container-env
-              key: LISTEN_ADDR
-        - name: LISTEN_PORT
-          valueFrom:
-            configMapKeyRef:
-              name: pgbouncer-container-env
-              key: LISTEN_PORT
-        - name: AUTH_FILE
-          valueFrom:
-            configMapKeyRef:
-              name: pgbouncer-container-env
-              key: AUTH_FILE
-        - name: AUTH_TYPE
-          valueFrom:
-            configMapKeyRef:
-              name: pgbouncer-container-env
-              key: AUTH_TYPE
-        - name: MAX_CLIENT_CONN
-          valueFrom:
-            configMapKeyRef:
-              name: pgbouncer-container-env
-              key: MAX_CLIENT_CONN
-        - name: DEFAULT_POOL_SIZE
-          valueFrom:
-            configMapKeyRef:
-              name: pgbouncer-container-env
-              key: DEFAULT_POOL_SIZE
-        - name: RESERVE_POOL_SIZE
-          valueFrom:
-            configMapKeyRef:
-              name: pgbouncer-container-env
-              key: RESERVE_POOL_SIZE
-        - name: POOL_MODE
-          valueFrom:
-            configMapKeyRef:
-              name: pgbouncer-container-env
-              key: POOL_MODE
-        - name: ADMIN_USERS
-          valueFrom:
-            secretKeyRef:
-              name: pgbouncer
-              key: admin_users
+          - name: ADMIN_USERS
+            valueFrom:
+              secretKeyRef:
+                name: pgbouncer
+                key: admin_users
+      volumes:
+      - name: pgbouncer-users-file
+        secret:
+          secretName: pgbouncer-users-file
         volumeMounts:
         - name: pgbouncer-users-file
           mountPath: "/etc/pgbouncer/auth"
+##TODO: resources requests and limits needs to be adjust aftet testing
         resources:
           requests:
-            cpu: "500m"
+            cpu: "250m"
             memory: "512Mi"
           limits:
             cpu: "1000m"
             memory: "1024Mi"
-##TODO
+##TODO: livenessProbe, readinessProbe, podAntiAffinity
 #        livenessProbe:        
 #          httpGet:
 #            path: /healthy
