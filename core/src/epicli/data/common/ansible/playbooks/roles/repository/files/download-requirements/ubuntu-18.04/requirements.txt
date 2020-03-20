@@ -194,6 +194,7 @@ registry:2
 # applications
 apacheignite/ignite:2.5.0
 bitnami/pgpool:4.1.1
+brainsam/pgbouncer:1.12
 # TODO remove?
 jboss/keycloak:4.8.3.Final
 jboss/keycloak:9.0.0

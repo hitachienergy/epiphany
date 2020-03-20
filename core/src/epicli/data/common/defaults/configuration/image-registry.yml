@@ -26,6 +26,9 @@ specification:
         file_name: dashboard-v2.0.0-beta8.tar
       - name: "kubernetesui/metrics-scraper:v1.0.1"
         file_name: metrics-scraper-v1.0.1.tar
+    #postgres:
+      - name: "brainsam/pgbouncer:1.12"
+        file_name: pgbouncer-1.12.tar
     current:
       - name: "k8s.gcr.io/kube-apiserver:v1.17.4"
         file_name: kube-apiserver-v1.17.4.tar
