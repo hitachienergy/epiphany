@@ -69,7 +69,7 @@
 - name: PREFLIGHT_FACTS | Produce default repository and image registry urls
   set_fact:
     preflight_facts: >-
-      {{ preflight_facts | d({}) | combine(set_fact, recursive=true) }}
+      {{ preflight_facts | default({}) | combine(set_fact, recursive=true) }}
   vars:
     set_fact:
       repository_url: >-
@@ -88,7 +88,7 @@
 - name: PREFLIGHT_FACTS | Produce default repository and image registry hostnames
   set_fact:
     preflight_facts: >-
-      {{ preflight_facts | d({}) | combine(set_fact, recursive=true) }}
+      {{ preflight_facts | default({}) | combine(set_fact, recursive=true) }}
   vars:
     set_fact:
       repository_hostname: >-
@@ -109,7 +109,7 @@
 - name: PREFLIGHT_FACTS | Resolve default repository and image registry hostnames
   set_fact:
     preflight_facts: >-
-      {{ preflight_facts | d({}) | combine(set_fact, recursive=true) }}
+      {{ preflight_facts | default({}) | combine(set_fact, recursive=true) }}
   vars:
     set_fact:
       resolved_repository_hostname: >-

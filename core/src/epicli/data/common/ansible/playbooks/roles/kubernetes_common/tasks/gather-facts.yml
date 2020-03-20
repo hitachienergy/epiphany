@@ -32,7 +32,7 @@
 - name: Decide if current node is a master
   set_fact:
     kubernetes_common: >-
-      {{ kubernetes_common | d({}) | combine(set_fact, recursive=true) }}
+      {{ kubernetes_common | default({}) | combine(set_fact, recursive=true) }}
   vars:
     set_fact:
       master_already_joined: >-
@@ -42,7 +42,7 @@
 - name: Collect registered masters
   set_fact:
     kubernetes_common: >-
-      {{ kubernetes_common | d({}) | combine(set_fact, recursive=true) }}
+      {{ kubernetes_common | default({}) | combine(set_fact, recursive=true) }}
   vars:
     set_fact:
       registered_masters: >-
@@ -55,7 +55,7 @@
 - name: Select the primary "delegate_to" master
   set_fact:
     kubernetes_common: >-
-      {{ kubernetes_common | d({}) | combine(set_fact, recursive=true) }}
+      {{ kubernetes_common | default({}) | combine(set_fact, recursive=true) }}
   vars:
     set_fact:
       automation_designated_master: >-
@@ -95,7 +95,7 @@
 - name: Decide if current node is a worker
   set_fact:
     kubernetes_common: >-
-      {{ kubernetes_common | d({}) | combine(set_fact, recursive=true) }}
+      {{ kubernetes_common | default({}) | combine(set_fact, recursive=true) }}
   vars:
     set_fact:
       node_already_joined: >-

@@ -95,7 +95,7 @@
             - name: Mark node regardless of join result
               set_fact:
                 kubernetes_common: >-
-                  {{ kubernetes_common | d({}) | combine(set_fact, recursive=true) }}
+                  {{ kubernetes_common | default({}) | combine(set_fact, recursive=true) }}
               vars:
                 set_fact:
                   node_already_joined: >-

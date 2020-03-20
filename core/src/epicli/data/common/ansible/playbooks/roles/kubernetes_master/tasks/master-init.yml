@@ -41,7 +41,7 @@
           master_already_joined: true
       set_fact:
         kubernetes_common: >-
-          {{ kubernetes_common | d({}) | combine(set_fact, recursive=true) }}
+          {{ kubernetes_common | default({}) | combine(set_fact, recursive=true) }}
 
 - name: Include kubelet configuration tasks
   include_role:

@@ -2,7 +2,7 @@
 - name: Prepare backend configuration for HAProxy
   set_fact:
     kubernetes_common: >-
-      {{ kubernetes_common | d({}) | combine(set_fact, recursive=true) }}
+      {{ kubernetes_common | default({}) | combine(set_fact, recursive=true) }}
   vars:
     set_fact:
       haproxy_master_names: >-
@@ -17,7 +17,7 @@
 - name: Prepare backend configuration for HAProxy
   set_fact:
     kubernetes_common: >-
-      {{ kubernetes_common | d({}) | combine(set_fact, recursive=true) }}
+      {{ kubernetes_common | default({}) | combine(set_fact, recursive=true) }}
   vars:
     set_fact:
       haproxy_backend_servers: >-

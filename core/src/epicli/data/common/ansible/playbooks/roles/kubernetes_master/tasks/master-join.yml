@@ -69,7 +69,7 @@
     - name: Mark master as joined
       set_fact:
         kubernetes_common: >-
-          {{ kubernetes_common | d({}) | combine(set_fact, recursive=true) }}
+          {{ kubernetes_common | default({}) | combine(set_fact, recursive=true) }}
       vars:
         set_fact:
           master_already_joined: true
