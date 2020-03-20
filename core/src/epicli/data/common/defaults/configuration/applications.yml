@@ -66,7 +66,7 @@ specification:
 ## --- Pgpool ---
 
   - name: pgpool # this service requires PostgreSQL to be installed in cluster
-    enabled: yes # TODO: set to 'no' once development is done
+    enabled: no
     image:
       path: bitnami/pgpool:4.1.1-debian-10-r29
       debug: no # ref: https://github.com/bitnami/minideb-extras/#turn-on-bash-debugging
@@ -92,6 +92,7 @@ specification:
       tolerations: {}
     resources: # TODO: test and adjust
       limits:
+        # cpu: 900m # Set cpu limit according to your env
         memory: 256Mi
       requests:
         cpu: 250m
@@ -100,21 +101,19 @@ specification:
       # https://github.com/bitnami/bitnami-docker-pgpool#configuration + https://github.com/bitnami/bitnami-docker-pgpool#environment-variables
       env:
         PGPOOL_BACKEND_NODES: SET_BY_AUTOMATION # you can use custom value like '0:pg-node-1:5432,1:pg-node-2:5432'
-        # TODO: Create 'pgpool_postgres_admin' user by Epiphany in postgresql role
-        PGPOOL_POSTGRES_USERNAME: epi_pgpool_postgres_admin # Postgres administrator user, used to allow postgres admin authentication through pgpool
-        PGPOOL_ADMIN_USERNAME: epi_pgpool_admin # Pgpool administrator
-        # TODO: test PGPOOL_SR_CHECK_USER, user added because of: ERROR ==> The PostrgreSQL replication credentials are mandatory. Set the environment variables PGPOOL_SR_CHECK_USER and PGPOOL_SR_CHECK_PASSWORD with the PostrgreSQL replication credentials.
-        PGPOOL_SR_CHECK_USER: epi_pgpool_sr_check # user for streaming checks
-        PGPOOL_USERNAME: epi_pgpool # user with login privilege (TODO: to be used for pgpool container health checks)
+        # Postgres users
+        PGPOOL_POSTGRES_USERNAME: epi_pgpool_postgres_admin # with SELECT on pg_authid table privilege, SUPERUSER is not required
+        PGPOOL_SR_CHECK_USER: epi_pgpool_sr_check # for streaming replication checks, only with LOGIN privilege
+        PGPOOL_USERNAME: epi_pgpool # only with LOGIN privilege (TODO: to be used for pgpool container health checks - or use PGPOOL_SR_CHECK_USER)
+        # ---
+        PGPOOL_ADMIN_USERNAME: epi_pgpool_admin # Pgpool administrator (Pgpool local user)
         PGPOOL_TIMEOUT: 360
         PGPOOL_ENABLE_LOAD_BALANCING: yes # set to 'no' if there is no replication
         PGPOOL_MAX_POOL: 15
         # TODO: check if we want password files since we have to use PGPOOL_POSTGRES_PASSWORD env var
         PGPOOL_POSTGRES_PASSWORD_FILE: /opt/bitnami/pgpool/secrets/pgpool-password
         PGPOOL_ADMIN_PASSWORD_FILE: /opt/bitnami/pgpool/secrets/admin-password
-        # TODO:
-        # PGPOOL_PASSWD_FILE The password file for authentication. Defaults to pool_passwd
-        PGDATABASE: postgres # for /healthcheck.sh
+        PGDATABASE: postgres # for /healthcheck.sh TODO: test with new image
       secrets:
         pgpool_postgres_password: epi_pgpool_postgres_admin_password
         pgpool_admin_password: epi_pgpool_admin_password
