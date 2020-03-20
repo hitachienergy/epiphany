@@ -79,6 +79,29 @@ spec:
             - name: pgpool-password
               mountPath: /opt/bitnami/pgpool/secrets/pgpool_admin_password
               subPath: pgpool_admin_password
+            - name: pgpool-workdir
+              mountPath: /opt/bitnami/pgpool/conf/pool_passwd
+              subPath: pool_passwd
+      initContainers:
+{#        pgpool-init container is for creating/refreshing pool_passwd file, users having passwords are fetched from PostgreSQL instance directly #}
+        - name: pgpool-init
+          image: {{ image_registry_address }}/{{ data.image.path }}
+          command:
+            - /epiphany/scripts/init_pool_passwd_file.sh
+          envFrom:
+            - configMapRef:
+                name: pgpool-container-env
+          env:
+            - name: PGPOOL_POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: pgpool-passwords
+                  key: pgpool_postgres_password
+          volumeMounts:
+            - name: pgpool-init-script
+              mountPath: /epiphany/scripts
+            - name: pgpool-workdir
+              mountPath: /epiphany/workdir
 {#    TODO: check whether it's OK to use better names #}
       volumes:
         - name: postgresql-password
@@ -93,4 +116,13 @@ spec:
             items:
               - key: pgpool_admin_password
                 path: admin-password
+        - name: pgpool-init-script
+          configMap:
+            name: pgpool-init
+            items:
+              - key: init_pool_passwd_file.sh
+                path: init_pool_passwd_file.sh
+                mode: 0755
+        - name: pgpool-workdir
+          emptyDir: {}
       restartPolicy: Always
