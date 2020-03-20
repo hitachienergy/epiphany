@@ -124,3 +124,31 @@ specification:
         # Specify content for pgpool.conf
         # TODO: To be implemented
         # Example: https://github.com/CrunchyData/crunchy-containers/blob/master/examples/kube/pgpool/configs/pgpool.conf
+
+  - name: pgbouncer
+    enabled: yes
+    #https://github.com/brainsam/pgbouncer/tree/release/1.12
+    image_path: brainsam/pgbouncer:1.12
+    namespace: pgbouncer
+    service:
+      name: pgbouncer
+      port: 5432
+    replicas: 2
+    pgbouncer:
+      env:
+        DB_HOST: pgpool.pgpool.svc.cluster.local #pgpool service name
+        DB_LISTEN_PORT: 5432
+        LISTEN_ADDR: "*"
+        LISTEN_PORT: 5432
+        AUTH_FILE: "/etc/pgbouncer/auth/users.txt"
+        AUTH_TYPE: md5
+        MAX_CLIENT_CONN: 500
+        DEFAULT_POOL_SIZE: 25
+        RESERVE_POOL_SIZE: 25
+        POOL_MODE: transaction
+      secrets:
+        admin_users: 
+          - postgres #provide list of users
+#TODO add list of users handling
+        db_user: '"username"' #postgres username
+        db_password: '"md5password"' #md5 postgres password

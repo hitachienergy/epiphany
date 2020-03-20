@@ -1,0 +1,67 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: pgbouncer
+  labels:
+    app: pgbouncer
+  namespace: {{ data.namespace }}
+spec:
+  replicas: {{ data.replicas }}
+  selector:
+    matchLabels:
+      app: pgbouncer
+  template:
+    metadata:
+      labels:
+        app: pgbouncer
+    spec:
+      containers:
+      - name: pgbouncer 
+        image: {{ image_registry_address }}/{{ data.image_path }}
+        ports:
+        - name: pgbouncer
+          containerPort: 5432
+          protocol: TCP
+        envFrom:
+          - configMapRef:
+              name: pgbouncer-container-env
+        env:
+          - name: ADMIN_USERS
+            valueFrom:
+              secretKeyRef:
+                name: pgbouncer
+                key: admin_users
+      volumes:
+      - name: pgbouncer-users-file
+        secret:
+          secretName: pgbouncer-users-file
+        volumeMounts:
+        - name: pgbouncer-users-file
+          mountPath: "/etc/pgbouncer/auth"
+##TODO: resources requests and limits needs to be adjust aftet testing
+        resources:
+          requests:
+            cpu: "250m"
+            memory: "512Mi"
+          limits:
+            cpu: "1000m"
+            memory: "1024Mi"
+##TODO: livenessProbe, readinessProbe, podAntiAffinity
+#        livenessProbe:        
+#          httpGet:
+#            path: /healthy
+#            port: {{ data.service.port }}
+#          initialDelaySeconds: 5
+#          timeoutSeconds: 5
+#          periodSeconds: 10
+#          failureThreshold: 3
+#        readinessProbe:
+#          httpGet:
+#            path: /ready
+#            port: {{ data.service.port }}
+#          initialDelaySeconds: 30
+#          timeoutSeconds: 5
+#          periodSeconds: 10
+#          failureThreshold: 3
+      restartPolicy: Always
