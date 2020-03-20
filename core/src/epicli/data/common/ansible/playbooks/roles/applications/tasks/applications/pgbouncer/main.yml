@@ -1,0 +1,11 @@
+---
+- name: Deploy PgBouncer
+  include_tasks: deploy-k8s-app.yml
+  vars:
+    app_dir_name: "{{ data.name }}"
+    deployment_files:
+      - namespace.yml
+      - configmaps.yml
+      - secrets.yml
+      - deployment.yml
+      - service.yml
