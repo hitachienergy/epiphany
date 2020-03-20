@@ -52,7 +52,7 @@ spec:
           livenessProbe:
             exec:
               command:
-                - /healthcheck.sh
+                - /opt/bitnami/scripts/pgpool/healthcheck.sh
             initialDelaySeconds: 30
             periodSeconds: 10
             timeoutSeconds: 5
