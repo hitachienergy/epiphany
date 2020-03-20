@@ -12,6 +12,7 @@ mod_ssl # for httpd
 python-chardet # for createrepo
 python-deltarpm # for createrepo
 python-kitchen # for createrepo
+redhat-logos # for httpd
 yum-utils
 
 [packages]
