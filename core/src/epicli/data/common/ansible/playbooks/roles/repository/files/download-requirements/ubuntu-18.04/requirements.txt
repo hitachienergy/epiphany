@@ -193,7 +193,7 @@ calico/kube-controllers:v3.8.1
 registry:2
 # applications
 apacheignite/ignite:2.5.0
-bitnami/pgpool:4.1.1
+bitnami/pgpool:4.1.1-debian-10-r29
 brainsam/pgbouncer:1.12
 # TODO remove?
 jboss/keycloak:4.8.3.Final

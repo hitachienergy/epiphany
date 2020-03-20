@@ -68,7 +68,7 @@ specification:
   - name: pgpool # this service requires PostgreSQL to be installed in cluster
     enabled: yes # TODO: set to 'no' once development is done
     image:
-      path: bitnami/pgpool:4.1.1
+      path: bitnami/pgpool:4.1.1-debian-10-r29
       debug: no # ref: https://github.com/bitnami/minideb-extras/#turn-on-bash-debugging
     namespace: pgpool
     service:
