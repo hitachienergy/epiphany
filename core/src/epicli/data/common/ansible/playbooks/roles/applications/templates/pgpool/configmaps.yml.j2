@@ -61,19 +61,47 @@ data:
       echo "*:*:postgres:${PGPOOL_POSTGRES_USERNAME}:${PGPOOL_POSTGRES_PASSWORD}" >> $HOME/.pgpass
     fi
 
-    # TODO: try all nodes from PGPOOL_BACKEND_NODES (needs parsing) before failing
+    export PGDATABASE=postgres
+    export PGUSER="$PGPOOL_POSTGRES_USERNAME"
+
+    test_connection() {
+      local -r hostname=${1:?hostname is missing}
+      echo "Testing connection to '$PGDATABASE' database on '$hostname' host"
+      if PGCONNECT_TIMEOUT=15 psql -h "$hostname" -tA -c "SELECT 1" >/dev/null; then
+        echo "OK"
+        return 0
+      else
+        echo "FAILED"
+        return 1
+      fi
+    }
+
+    run_query() {
+      local -r sql=${1:?sql is missing}
+      local -r hostname=${2:?hostname is missing}
+      psql -h "$hostname" -tA -c "$sql"
+    }
+
+    # TODO: try all nodes from PGPOOL_BACKEND_NODES (needs parsing) before failing, see pgpool_validate() in https://github.com/bitnami/bitnami-docker-pgpool/blob/master/4/debian-10/rootfs/opt/bitnami/scripts/libpgpool.sh
     POSTGRES_HOSTNAME={{ hostvars[groups['postgresql'][0]].ansible_hostname }}
-    PGCONNECT_TIMEOUT=15
-    (set -x && \
-    psql -U "$PGPOOL_POSTGRES_USERNAME" -h "$POSTGRES_HOSTNAME" -d postgres -tA \
-         -c "SELECT rolname||':'||rolpassword FROM pg_authid WHERE rolpassword IS NOT NULL" > /epiphany/workdir/pool_passwd_new)
+
+    test_connection "$POSTGRES_HOSTNAME" || { echo "ERROR: Connection test failed" 1>&2 && exit 1; }
+
+    SQL="SELECT rolname||':'||rolpassword FROM pg_authid WHERE rolpassword IS NOT NULL"
+    echo "Running query: $SQL"
+    RESULT="$(run_query "$SQL" "$POSTGRES_HOSTNAME")" || { echo "ERROR: psql failed" 1>&2 && exit 1; }
 
     OUTPUT_FILE=/epiphany/workdir/pool_passwd
-    if ! test -f $OUTPUT_FILE; then
-      echo "Creating '$OUTPUT_FILE' file"
+
+    if test -n "$RESULT"; then
+      if ! test -f $OUTPUT_FILE; then
+        echo "Creating '$OUTPUT_FILE' file"
+      else
+        echo "Updating '$OUTPUT_FILE' file"
+      fi
+      cat <<< "$RESULT" > $OUTPUT_FILE
     else
-      echo "Updating '$OUTPUT_FILE' file"
+      echo "ERROR: 0 rows in query result" 1>&2 && exit 1;
     fi
-    mv -f /epiphany/workdir/pool_passwd_new $OUTPUT_FILE
 
     echo "Completed: $0"
