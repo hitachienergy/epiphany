@@ -12,7 +12,7 @@ import pkg_resources
 
 def get_dependencies_from_requirements() -> Set[str]:
     req = []
-    with open('requirements.txt') as req_file:
+    with open('.devcontainer/requirements.txt') as req_file:
         for line in req_file:
             req.append(line.split("==")[0])
     return req
@@ -56,8 +56,10 @@ def get_pkg_data(pkgname: str, pat:str) -> str:
             split = home.split('/')
             repo = split[len(split)-1]
             user = split[len(split)-2]
-            license_data = json.loads(makeRequest('https://api.github.com/repos/' + user + '/' + repo + '/license', pat).read().decode())
+            license_url = 'https://api.github.com/repos/' + user + '/' + repo + '/license'
+            license_data = json.loads(makeRequest(license_url, pat).read().decode())
             pkg_data['License'] = license_data['license']['name']
+            pkg_data['License URL'] = license_url
             pkg_data['License repo'] = makeRequest(license_data['download_url'], pat).read().decode()
             if license_data['license']['key'] != 'other':
                 license_text =  json.loads(makeRequest(license_data['license']['url'], pat).read().decode())
@@ -80,6 +82,7 @@ def _main() -> None:
         if data != None:
             all_deps_data.append(data)
 
+    # Write licenses 'cli/licenses.py'
     licenses_content = """
 # This is a generated file so don`t change this manually. 
 # To re-generate run 'python gen-licenses.py' from the project root.
@@ -89,6 +92,27 @@ LICENSES = """ + json.dumps(all_deps_data, indent=4)
     path = os.path.join(os.path.dirname(__file__), 'cli/licenses.py')
     with open(path, 'w') as file:
         file.write(licenses_content)
+
+     # Write components table to be pasted into 'COMPONENTS.md'
+    dependancies_content = """
+| Component | Version | Repo/Website | License |
+| --------- | ------- | ------------ | ------- |
+"""   
+    for dep in all_deps_data: 
+        dep_name = dep['Name']
+        dep_version = dep['Version']
+        dep_website = dep['Home-page']
+        dep_license = dep['License']
+        if 'License URL' in dep:
+            dep_license_url = dep['License URL']
+            dep_line = f'| {dep_name} | {dep_version} | {dep_website} | [{dep_license}]({dep_license_url}) |\n'
+        else:
+            dep_line = f'| {dep_name} | {dep_version} | {dep_website} | {dep_license} |\n'
+        dependancies_content = dependancies_content + dep_line
+
+    path = os.path.join(os.path.dirname(__file__), 'DEPENDENCIES.md')
+    with open(path, 'w') as file:
+        file.write(dependancies_content)
 
 if __name__ == '__main__':
     _main()
