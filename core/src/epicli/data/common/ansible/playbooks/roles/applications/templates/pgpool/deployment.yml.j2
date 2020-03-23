@@ -23,28 +23,13 @@ spec:
 {% endfor %}
       containers:
         - name: pgpool
-          image: {{ data.image.path }}
+          image: {{ image_registry_address }}/{{ data.image.path }}
           envFrom:
             - configMapRef:
                 name: pgpool-container-env
           env:
             - name: BITNAMI_DEBUG
               value: "{{ data.image.debug | ternary('true', 'false') }}"
-            - name: PGPOOL_ADMIN_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: pgpool
-                  key: pgpool_admin_password
-            - name: PGPOOL_POSTGRES_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: pgpool
-                  key: pgpool_postgres_password
-            - name: PGPOOL_SR_CHECK_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: pgpool
-                  key: pgpool_sr_check_password
           ports:
             - name: postgresql
               containerPort: 5432
@@ -52,7 +37,10 @@ spec:
           livenessProbe:
             exec:
               command:
-                - /healthcheck.sh
+                - bash
+                - -ec
+                - PGDATABASE=postgres
+                  /opt/bitnami/scripts/pgpool/healthcheck.sh
             initialDelaySeconds: 30
             periodSeconds: 10
             timeoutSeconds: 5
@@ -63,8 +51,8 @@ spec:
               command:
                 - bash
                 - -ec
-{#              TODO: switch to no super user - PGPOOL_USERNAME if possible, when tried (with default pgpool.conf), got error: pool_passwd file does not contain an entry for "epi_pgpool" #}
-                - PGPASSWORD=${PGPOOL_POSTGRES_PASSWORD} psql -U "${PGPOOL_POSTGRES_USERNAME}" -d "${PGDATABASE}" -h 127.0.0.1 -tA -c "SELECT 1" >/dev/null
+                - PGPASSWORD="$(< "${PGPOOL_POSTGRES_PASSWORD_FILE}")"
+                  psql -U "${PGPOOL_POSTGRES_USERNAME}" -d postgres -h 127.0.0.1 -tA -c "SELECT 1" >/dev/null
             initialDelaySeconds: 5
             periodSeconds: 10
             timeoutSeconds: 5
@@ -73,24 +61,58 @@ spec:
           resources:
             {{ data.resources | to_nice_yaml(indent=2) | indent(12) | trim }}
           volumeMounts:
-            - name: postgresql-password
+            - name: pgpool-passwords
               mountPath: /opt/bitnami/pgpool/secrets/pgpool_postgres_password
               subPath: pgpool_postgres_password
-            - name: pgpool-password
+            - name: pgpool-passwords
+              mountPath: /opt/bitnami/pgpool/secrets/pgpool_sr_check_password
+              subPath: pgpool_sr_check_password
+            - name: pgpool-passwords
               mountPath: /opt/bitnami/pgpool/secrets/pgpool_admin_password
               subPath: pgpool_admin_password
-{#    TODO: check whether it's OK to use better names #}
+            - name: pgpool-config-files
+              mountPath: /opt/bitnami/pgpool/conf/pgpool.conf
+              subPath: pgpool.conf
+            - name: pgpool-config-files
+              mountPath: /opt/bitnami/pgpool/conf/pool_hba.conf
+              subPath: pool_hba.conf
+            - name: pgpool-shared-init-dir
+              mountPath: /opt/bitnami/pgpool/conf/pool_passwd
+              subPath: pool_passwd
+            - name: pgpool-admin-password-file
+              mountPath: /opt/bitnami/pgpool/etc/pcp.conf
+              subPath: pcp.conf
+      initContainers:
+{#      pgpool-init container creates/synchronizes pool_passwd file, users with passwords are fetched directly from PostgreSQL instance #}
+        - name: pgpool-init
+          image: {{ image_registry_address }}/{{ data.image.path }}
+          command:
+            - /epiphany/scripts/init_pool_passwd_file.sh
+          envFrom:
+            - configMapRef:
+                name: pgpool-container-env
+          volumeMounts:
+            - name: pgpool-init-scripts
+              mountPath: /epiphany/scripts
+            - name: pgpool-passwords
+              mountPath: /opt/bitnami/pgpool/secrets/pgpool_postgres_password
+              subPath: pgpool_postgres_password
+            - name: pgpool-shared-init-dir
+              mountPath: /epiphany/shared_dir
       volumes:
-        - name: postgresql-password
+        - name: pgpool-init-scripts
+          configMap:
+            name: pgpool-init-scripts
+            defaultMode: 0755
+        - name: pgpool-config-files
+          configMap:
+            name: pgpool-config-files
+        - name: pgpool-passwords
           secret:
-            secretName: pgpool
-            items:
-              - key: pgpool_postgres_password
-                path: pgpool-password
-        - name: pgpool-password
+            secretName: pgpool-passwords
+        - name: pgpool-admin-password-file
           secret:
-            secretName: pgpool
-            items:
-              - key: pgpool_admin_password
-                path: admin-password
+            secretName: pgpool-admin-password-file
+        - name: pgpool-shared-init-dir
+          emptyDir: {}
       restartPolicy: Always
