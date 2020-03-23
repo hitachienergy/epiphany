@@ -43,20 +43,6 @@ specification:
       machines:
         - default-rabbitmq
 ---
-kind: configuration/kubernetes-master
-title: "Kubernetes Master Config"
-provider: any
-name: default
-specification:
-  use_ha_control_plane: False
----
-kind: configuration/kubernetes-node
-title: "Kubernetes Node Config"
-provider: any
-name: default
-specification:
-  use_ha_control_plane: False
----
 kind: infrastructure/machine
 provider: any
 name: default-k8s-master1
