@@ -256,6 +256,7 @@ To setup the cluster do the following steps from the provisioning machine:
     name: "http://app-name"
     password: "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxx"
     tenant: "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxx"
+    subscriptionId: "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxx"
     ```
 
     Epicli will read this file and automaticly use it for authentication for resource creation and management.
