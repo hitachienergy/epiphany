@@ -20,10 +20,6 @@
           register: random_secret
           changed_when: false
 
-        - name: Stdout
-          debug:
-            msg: "*{{ random_secret.stdout }}*"
-
         - name: Create etcd encryption config
           template:
             src: etc-encryption.conf.j2
