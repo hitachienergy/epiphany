@@ -21,7 +21,7 @@ specification:
     managed: false
     caching: ReadWrite
     create_option: FromImage
-    disk_size_gb: 30
+    disk_size_gb: 32
     managed_disk_type: Premium_LRS
   network_interface:
     enable_accelerated_networking: false
