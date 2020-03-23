@@ -70,12 +70,18 @@ spec:
             - name: pgpool-passwords
               mountPath: /opt/bitnami/pgpool/secrets/pgpool_admin_password
               subPath: pgpool_admin_password
+            - name: pgpool-config-files
+              mountPath: /opt/bitnami/pgpool/conf/pgpool.conf
+              subPath: pgpool.conf
+            - name: pgpool-config-files
+              mountPath: /opt/bitnami/pgpool/conf/pool_hba.conf
+              subPath: pool_hba.conf
             - name: pgpool-shared-init-dir
               mountPath: /opt/bitnami/pgpool/conf/pool_passwd
               subPath: pool_passwd
-            - name: pgpool-config-file
-              mountPath: /opt/bitnami/pgpool/conf/pgpool.conf.injected
-              subPath: pgpool.conf.injected
+            - name: pgpool-admin-password-file
+              mountPath: /opt/bitnami/pgpool/etc/pcp.conf
+              subPath: pcp.conf
       initContainers:
 {#      pgpool-init container creates/synchronizes pool_passwd file, users with passwords are fetched directly from PostgreSQL instance #}
         - name: pgpool-init
@@ -98,15 +104,15 @@ spec:
           configMap:
             name: pgpool-init-scripts
             defaultMode: 0755
-        - name: pgpool-config-file
+        - name: pgpool-config-files
           configMap:
-            name: pgpool-config-file
-            items:
-              - key: pgpool.conf
-                path: pgpool.conf.injected
+            name: pgpool-config-files
         - name: pgpool-passwords
           secret:
             secretName: pgpool-passwords
+        - name: pgpool-admin-password-file
+          secret:
+            secretName: pgpool-admin-password-file
         - name: pgpool-shared-init-dir
           emptyDir: {}
       restartPolicy: Always
