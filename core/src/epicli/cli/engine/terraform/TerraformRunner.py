@@ -42,29 +42,37 @@ class TerraformRunner(Step):
             subscription = apiproxy.login_account()
             apiproxy.set_active_subscribtion(subscription['id'])
         else:
-            # Service principle
+            # Service principal
             sp_file = os.path.join(get_terraform_path(self.cluster_model.specification.name), SP_FILE_NAME)
             if not os.path.exists(sp_file):
-                # If no service principle exists or is defined we created one and for that we need to login using an account
+                # If no service principal exists or is defined we created one and for that we need to login using an account
                 subscription = apiproxy.login_account()
                 apiproxy.set_active_subscribtion(subscription['id'])
 
-                # Create the service principle
+                # Create the service principal, for now we use the default subscription
                 self.logger.info('Creating service principal')
                 cluster_name = self.cluster_model.specification.name.lower()
                 cluster_prefix = self.cluster_model.specification.prefix.lower()               
                 resource_group_name = resource_name(cluster_prefix, cluster_name, 'rg')
                 sp = apiproxy.create_sp(resource_group_name, subscription['id'])
+                sp['subscriptionId'] = subscription['id']
                 save_sp(sp, self.cluster_model.specification.name)
             else:
                 self.logger.info('Using service principal from file')
                 sp = load_yaml_file(sp_file)
 
-            # Login as SP.
+            # Login as SP and get the default subscription.
             subscription = apiproxy.login_sp(sp)
 
-            # Setup environment variables for Terraform when working with Azure and service principal.
-            self.new_env['ARM_SUBSCRIPTION_ID'] = subscription[0]['id']
+            if 'subscriptionId' in sp:
+                # Set active subscription if sp contains it. 
+                apiproxy.set_active_subscribtion(sp['subscriptionId'])
+                self.new_env['ARM_SUBSCRIPTION_ID'] = sp['subscriptionId']
+            else:
+                # No subscriptionId in sp.yml so use the default one from Azure SP login.
+                self.new_env['ARM_SUBSCRIPTION_ID'] = subscription[0]['id']
+
+             # Set other environment variables for Terraform when working with Azure and service principal.
             self.new_env['ARM_TENANT_ID'] = sp['tenant']
             self.new_env['ARM_CLIENT_ID'] = sp['appId']
             self.new_env['ARM_CLIENT_SECRET'] = sp['password']

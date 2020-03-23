@@ -251,11 +251,12 @@ To setup the cluster do the following steps from the provisioning machine:
     Where the clustername is the name you specified under `specification.name` in your cluster yaml. Then in the terraform folder add the file named `sp.yml` and fill it with the service priciple information like so:
 
     ```yaml
-    appId: xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxx
-    displayName: app-name
-    name: http://app-name
-    password: xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxx
-    tenant: xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxx
+    appId: "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxx"
+    displayName: "app-name"
+    name: "http://app-name"
+    password: "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxx"
+    tenant: "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxx"
+    subscriptionId: "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxx"
     ```
 
     Epicli will read this file and automaticly use it for authentication for resource creation and management.
