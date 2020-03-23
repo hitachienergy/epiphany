@@ -1,5 +1,8 @@
 # Security related information
 
+You are strongly advised use encrypted over unencrypted communication between Epiphany components where possible. Please consider
+this during planning your Epiphany deployment and configuration.
+
 ## Contents
 
 - [Users and roles created by Epiphany](#users-and-roles-created-by-epiphany)
@@ -7,8 +10,8 @@
 
 ### Users and roles created by epiphany
 
-By default Epiphany is creating user operations that is used to connect to machines with admin rights. This setting can 
-be changed in Epiphany yaml configuration files. 
+By default Epiphany is creating user operations that is used to connect to machines with admin rights on every machine. This 
+setting can be changed in Epiphany yaml configuration files.
 
 Additional to users created by each component Epiphany creates also users and groups:
 
