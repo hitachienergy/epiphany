@@ -42,14 +42,14 @@ class TerraformRunner(Step):
             subscription = apiproxy.login_account()
             apiproxy.set_active_subscribtion(subscription['id'])
         else:
-            # Service principle
+            # Service principal
             sp_file = os.path.join(get_terraform_path(self.cluster_model.specification.name), SP_FILE_NAME)
             if not os.path.exists(sp_file):
-                # If no service principle exists or is defined we created one and for that we need to login using an account
+                # If no service principal exists or is defined we created one and for that we need to login using an account
                 subscription = apiproxy.login_account()
                 apiproxy.set_active_subscribtion(subscription['id'])
 
-                # Create the service principle, for now we use the default subscription
+                # Create the service principal, for now we use the default subscription
                 self.logger.info('Creating service principal')
                 cluster_name = self.cluster_model.specification.name.lower()
                 cluster_prefix = self.cluster_model.specification.prefix.lower()               
