@@ -60,11 +60,23 @@
       register: ClusterConfiguration
       changed_when: false
 
+    - name: Extract control plane endpoint from ClusterConfiguration
+      set_fact:
+        control_plane_endpoint: >-
+          {{ (ClusterConfiguration.stdout | from_yaml).controlPlaneEndpoint | default('') }}
+
     - name: Extract repository hostname from ClusterConfiguration
       set_fact:
         repository_hostname: >-
           {{ ( 'http://' ~ (ClusterConfiguration.stdout | from_yaml).imageRepository )
           | urlsplit('hostname') }}
+
+- name: Proxy control_plane_endpoint fact
+  set_fact:
+    control_plane_endpoint: >-
+      {%- if registered_masters.0 is defined -%}
+        {{ hostvars[registered_masters.0].control_plane_endpoint }}
+      {%- endif -%}
 
 - name: PREFLIGHT_FACTS | Produce default repository and image registry urls
   set_fact:

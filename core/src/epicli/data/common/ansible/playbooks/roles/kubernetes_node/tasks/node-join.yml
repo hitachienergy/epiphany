@@ -43,7 +43,7 @@
         kubeadm_token: >-
           {{ kubeadm_valid_token.stdout if kubeadm_valid_token.stdout else kubeadm_new_token.stdout_lines[-1] }}
         api_server_url: >-
-          {%- if specification.use_ha_control_plane -%}
+          {%- if use_ha_control_plane -%}
             localhost:3446
           {%- else -%}
             {{ hostvars[groups.kubernetes_master.0].ansible_default_ipv4.address }}:6443

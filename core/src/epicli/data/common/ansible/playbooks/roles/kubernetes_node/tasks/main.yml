@@ -1,5 +1,5 @@
 ---
-- when: specification.use_ha_control_plane
+- when: use_ha_control_plane
   block:
     - name: Configure internal load-balancer (HAProxy)
       import_role:

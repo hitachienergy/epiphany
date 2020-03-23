@@ -1,5 +1,5 @@
 ---
-- when: specification.use_ha_control_plane
+- when: use_ha_control_plane
   block:
     - name: Configure internal load-balancer (HAProxy)
       import_role:
@@ -15,7 +15,7 @@
     - import_tasks: registry-secrets.yml
     - import_tasks: copy-kubernetes-pki.yml
 
-- when: specification.use_ha_control_plane
+- when: use_ha_control_plane
   block:
     - name: Join Kubernetes HA master
       when: kubernetes_common.automation_designated_master != inventory_hostname

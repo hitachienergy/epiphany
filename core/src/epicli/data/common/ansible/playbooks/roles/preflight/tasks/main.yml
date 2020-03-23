@@ -50,8 +50,8 @@
 
 - import_role:
     name: preflight_facts
-    tasks_from: assert
+    tasks_from: store
 
 - import_role:
     name: preflight_facts
-    tasks_from: store
+    tasks_from: assert

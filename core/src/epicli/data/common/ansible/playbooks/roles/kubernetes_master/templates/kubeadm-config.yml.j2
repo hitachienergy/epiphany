@@ -3,7 +3,7 @@ kind: ClusterConfiguration
 kubernetesVersion: v{{ specification.version }}
 clusterName: "{{ specification.cluster_name }}"
 
-{% if specification.use_ha_control_plane %}
+{% if use_ha_control_plane %}
 controlPlaneEndpoint: "localhost:3446"
 {% endif %}
 
