@@ -37,56 +37,117 @@ data:
     set -o nounset
     set -o pipefail
 
-    test -f "${PGPOOL_POSTGRES_PASSWORD_FILE}" || { echo "PGPOOL_POSTGRES_PASSWORD_FILE=${PGPOOL_POSTGRES_PASSWORD_FILE} not found" 1>&2 && exit 1; }
-    PGPOOL_POSTGRES_PASSWORD="$(< "${PGPOOL_POSTGRES_PASSWORD_FILE}")"
+    echo "==> Started: $0"
 
-    # User with SELECT on pg_authid table privilege is required
-    export PGDATABASE=postgres
-    export PGUSER="${PGPOOL_POSTGRES_USERNAME}"
-    export PGPASSWORD="${PGPOOL_POSTGRES_PASSWORD}"
+    # ----------------------
+    # Arguments:
+    #   output_file_path | default=/epiphany/shared_dir/pool_passwd
+    # ----------------------
+    main() {
+      local -r users_with_passwords_query="SELECT rolname||':'||rolpassword FROM pg_authid WHERE rolpassword IS NOT NULL"
+      local -r output_file=${1:-/epiphany/shared_dir/pool_passwd}
 
+      validate_env
+
+      # User with SELECT on pg_authid table privilege is required (or SUPERUSER)
+      export PGUSER="${PGPOOL_POSTGRES_USERNAME}"
+      export PGPASSWORD="$(< "${PGPOOL_POSTGRES_PASSWORD_FILE}")"
+
+      test_connection "$(get_connection_string 15)" || fail "Connection test failed"
+
+      echo "Running query: '${users_with_passwords_query}'..."
+      local query_result="$(run_sql "${users_with_passwords_query}" "$(get_connection_string 15)")" || fail "psql failed"
+
+      echo "Fetched rows: $(printf '%s\n' "${query_result}" | wc -l)"
+
+      if test -n "${query_result}"; then
+        if ! test -f ${output_file}; then
+          echo "Creating '${output_file}' file..."
+        else
+          echo "Updating '${output_file}' file..."
+        fi
+        cat <<< "${query_result}" > $output_file \
+          && echo "Done"
+      else
+        fail "No rows in query result"
+      fi
+    }
+
+    validate_env() {
+      # Fail if password file does not exist
+      test -f "${PGPOOL_POSTGRES_PASSWORD_FILE}" || fail "PGPOOL_POSTGRES_PASSWORD_FILE='${PGPOOL_POSTGRES_PASSWORD_FILE}' not found"
+
+      # Fail if PGPOOL_BACKEND_NODES is empty
+      test -n "${PGPOOL_BACKEND_NODES}" || fail "PGPOOL_BACKEND_NODES cannot be empty"
+    }
+
+    fail() {
+      local -r error_message=${1:?error_message is missing}
+
+      echo ""
+      echo "ERROR: $error_message" 1>&2 && exit 1
+    }
+
+    # ----------------------
+    # Arguments:
+    #   connect_timeout | default=15 | maximum wait for connection in seconds
+    # Returns:
+    #   connection_string
+    # ----------------------
+    get_connection_string() {
+      local -r connect_timeout=${1:-15}
+      local -a hosts
+      local -a ports
+
+      read -r -a nodes <<< "$(tr ',;' ' ' <<< "${PGPOOL_BACKEND_NODES}")"
+      for node in "${nodes[@]}"; do
+        read -r -a fields <<< "$(tr ':' ' ' <<< "${node}")"
+        hosts+=(${fields[1]})
+        ports+=(${fields[2]})
+      done
+
+      join() { local IFS=","; echo "$*"; }
+      echo "host=$(join ${hosts[@]}) port=$(join ${ports[@]}) dbname=postgres connect_timeout=$connect_timeout"
+    }
+
+    # ----------------------
+    # Arguments:
+    #   connection_string
+    # Returns:
+    #   0 when OK
+    #   1 when failed
+    # There is no pg_isready in the container so psql is used
+    # ----------------------
     test_connection() {
-      local -r hostname=${1:?hostname is missing}
-      echo "Testing connection to '${PGDATABASE}' database on '$hostname' host"
-      if PGCONNECT_TIMEOUT=15 psql -h "$hostname" -tA -c "SELECT 1" >/dev/null; then
-        echo "OK"
+      local -r connection_string=${1:?connection_string is missing}
+ 
+      echo "Testing connection to postgres database [connection string: '$connection_string']..."
+      # psql returns 0 if finished normally, 1 if fatal error occurs, 2 if connection to server went bad and session was not interactive
+      if psql --no-password -d "$connection_string" -c "SELECT 1" >/dev/null; then
+        echo "Test OK"
         return 0
       else
-        echo "FAILED"
+        echo "Test FAILED"
         return 1
       fi
     }
 
-    run_query() {
-      local -r sql=${1:?sql is missing}
-      local -r hostname=${2:?hostname is missing}
-      psql -h "$hostname" -tA -c "$sql"
+    # ----------------------
+    # Arguments:
+    #   sql_query
+    #   connection_string
+    # Returns:
+    #   result_string
+    # ----------------------
+    run_sql() {
+      local -r sql_query=${1:?sql_query is missing}
+      local -r connection_string=${2:?connection_string is missing}
+      psql --no-password -d "$connection_string" --tuples-only --no-align -c "$sql_query"
     }
 
-    # TODO: try all nodes from PGPOOL_BACKEND_NODES (needs parsing) before failing, see pgpool_validate() in https://github.com/bitnami/bitnami-docker-pgpool/blob/master/4/debian-10/rootfs/opt/bitnami/scripts/libpgpool.sh
-    POSTGRES_HOSTNAME={{ hostvars[groups['postgresql'][0]].ansible_hostname }}
+    main "$@"
 
-    test_connection "${POSTGRES_HOSTNAME}" || { echo "ERROR: Connection test failed" 1>&2 && exit 1; }
-
-    SQL="SELECT rolname||':'||rolpassword FROM pg_authid WHERE rolpassword IS NOT NULL"
-    echo "Running query: $SQL"
-    RESULT="$(run_query "$SQL" "$POSTGRES_HOSTNAME")" || { echo "ERROR: psql failed" 1>&2 && exit 1; }
-
-    OUTPUT_FILE=/epiphany/shared_dir/pool_passwd
-
-    # TODO: grep result for md5, see http://saule1508.github.io/pgpool/
-    if test -n "${RESULT}"; then
-      if ! test -f $OUTPUT_FILE; then
-        echo "Creating '${OUTPUT_FILE}' file"
-      else
-        echo "Updating '${OUTPUT_FILE}' file"
-      fi
-      cat <<< "${RESULT}" > $OUTPUT_FILE
-    else
-      echo "ERROR: No rows in query result" 1>&2 && exit 1;
-    fi
-
-    echo "Completed: $0"
+    echo "==> Completed: $0"
 
 ---
 
