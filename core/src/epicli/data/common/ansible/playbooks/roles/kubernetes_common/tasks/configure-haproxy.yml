@@ -23,18 +23,13 @@
       haproxy_backend_servers: >-
         {{ kubernetes_common.haproxy_master_names | zip(kubernetes_common.haproxy_master_ipv4s) | list }}
 
-- name: Render haproxy config
-  template:
-    src: haproxy.cfg.j2
-    dest: /etc/haproxy/haproxy.cfg
-  notify:
-    - Restart HAProxy
+- include_tasks: "configure-haproxy-{{ ansible_os_family }}.yml"
 
 - name: Restart HAProxy to apply new configuration
   meta: flush_handlers
 
 - name: Start haproxy service
-  systemd:
+  service:
     name: haproxy
     enabled: true
     state: started

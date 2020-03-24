@@ -9,12 +9,4 @@
     - samba-client
     - samba-common
 
-- name: Install HAProxy package
-  package:
-    name: "{{ item }}"
-    update_cache: true
-    state: present
-  loop:
-    - haproxy
-
 - include_tasks: "install-packages-{{ ansible_os_family }}.yml"

@@ -1,0 +1,7 @@
+---
+- name: Render haproxy config
+  template:
+    src: haproxy.cfg.j2
+    dest: /etc/opt/rh/rh-haproxy18/haproxy/haproxy.cfg
+  notify:
+    - Restart HAProxy
