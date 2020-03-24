@@ -101,6 +101,14 @@ specification:
       - node-exporter
       - logging
       - firewall
+    single_machine:
+      - repository
+      - image-registry
+      - kubernetes-master
+      - applications
+      - rabbitmq
+      - postgresql
+      - firewall
     kubernetes_master:
       - image-registry
       - kubernetes-master
