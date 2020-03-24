@@ -17,3 +17,71 @@ data:
   DEFAULT_POOL_SIZE: "{{ data.pgbouncer.env.DEFAULT_POOL_SIZE }}"
   RESERVE_POOL_SIZE: "{{ data.pgbouncer.env.RESERVE_POOL_SIZE }}"
   POOL_MODE: "{{ data.pgbouncer.env.POOL_MODE }}"
+
+---
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: pgbouncer-init-scripts
+  labels:
+    app: pgbouncer
+  namespace: {{ data.namespace }}
+data:
+  init_pool_passwd_file.sh: |
+    #!/bin/bash
+
+    set -o errexit
+    set -o nounset
+    set -o pipefail
+
+    test -f "${PGPOOL_POSTGRES_PASSWORD_FILE}" || { echo "PGPOOL_POSTGRES_PASSWORD_FILE=${PGPOOL_POSTGRES_PASSWORD_FILE} not found" 1>&2 && exit 1; }
+    PGPOOL_POSTGRES_PASSWORD="$(< "${PGPOOL_POSTGRES_PASSWORD_FILE}")"
+
+    # User with SELECT on pg_authid table privilege is required
+    export PGDATABASE=postgres
+    export PGUSER="${PGPOOL_POSTGRES_USERNAME}"
+    export PGPASSWORD="${PGPOOL_POSTGRES_PASSWORD}"
+
+    test_connection() {
+      local -r hostname=${1:?hostname is missing}
+      echo "Testing connection to '${PGDATABASE}' database on '$hostname' host"
+      if PGCONNECT_TIMEOUT=15 psql -h "$hostname" -tA -c "SELECT 1" >/dev/null; then
+        echo "OK"
+        return 0
+      else
+        echo "FAILED"
+        return 1
+      fi
+    }
+
+    run_query() {
+      local -r sql=${1:?sql is missing}
+      local -r hostname=${2:?hostname is missing}
+      psql -h "$hostname" -tA -c "$sql"
+    }
+
+    # TODO: try all nodes from PGPOOL_BACKEND_NODES (needs parsing) before failing, see pgpool_validate() in https://github.com/bitnami/bitnami-docker-pgpool/blob/master/4/debian-10/rootfs/opt/bitnami/scripts/libpgpool.sh
+    POSTGRES_HOSTNAME={{ hostvars[groups['postgresql'][0]].ansible_hostname }}
+
+    test_connection "${POSTGRES_HOSTNAME}" || { echo "ERROR: Connection test failed" 1>&2 && exit 1; }
+
+    SQL="SELECT '\"' || rolname || '\" \"' || rolpassword || '\"'    FROM pg_authid WHERE rolpassword IS NOT NULL;"
+    echo "Running query: $SQL"
+    RESULT="$(run_query "$SQL" "$POSTGRES_HOSTNAME")" || { echo "ERROR: psql failed" 1>&2 && exit 1; }
+
+    OUTPUT_FILE=/epiphany/shared_dir/pool_passwd
+
+    # TODO: grep result for md5, see http://saule1508.github.io/pgpool/
+    if test -n "${RESULT}"; then
+      if ! test -f $OUTPUT_FILE; then
+        echo "Creating '${OUTPUT_FILE}' file"
+      else
+        echo "Updating '${OUTPUT_FILE}' file"
+      fi
+      cat <<< "${RESULT}" > $OUTPUT_FILE
+    else
+      echo "ERROR: No rows in query result" 1>&2 && exit 1;
+    fi
+
+    echo "Completed: $0"

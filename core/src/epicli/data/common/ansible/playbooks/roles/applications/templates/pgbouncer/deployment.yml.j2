@@ -1,3 +1,4 @@
+
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -38,30 +39,51 @@ spec:
               cpu: "250m"
               memory: "512Mi"
             limits:
-              cpu: "1000m"
+              cpu: "500m"
               memory: "1024Mi"
-##TODO: livenessProbe, readinessProbe, podAntiAffinity
-          # livenessProbe:
-          #   httpGet:
-          #     path: /healthy
-          #     port: {{ data.service.port }}
-          #   initialDelaySeconds: 5
-          #   timeoutSeconds: 5
-          #   periodSeconds: 10
-          #   failureThreshold: 3
-          # readinessProbe:
-          #   httpGet:
-          #     path: /ready
-          #     port: {{ data.service.port }}
-          #   initialDelaySeconds: 30
-          #   timeoutSeconds: 5
-          #   periodSeconds: 10
-          #   failureThreshold: 3
+          livenessProbe:
+            tcpSocket:
+              port: {{ data.service.port }}
+            initialDelaySeconds: 60
+            periodSeconds: 10
+            failureThreshold: 3
+          readinessProbe:
+            tcpSocket:
+              port: {{ data.service.port }}
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            failureThreshold: 6
           volumeMounts:
-            - name: pgbouncer-users-file
-              mountPath: /etc/pgbouncer/auth
+            - name: pgpool-shared-init-dir
+              mountPath: /etc/pgbouncer/auth/users.txt
+              subPath: pool_passwd
+      initContainers:
+        - name: pgbouncer-init
+          image: {{ image_registry_address }}/{{ data.init_image_path }} 
+          command:
+            - /epiphany/scripts/init_pool_passwd_file.sh
+          envFrom:
+            - configMapRef:
+                name: pgpool-container-env
+          volumeMounts:
+            - name: pgbouncer-init-scripts
+              mountPath: /epiphany/scripts
+            - name: pgpool-passwords
+              mountPath: /opt/bitnami/pgpool/secrets/pgpool_postgres_password
+              subPath: pgpool_postgres_password
+            - name: pgpool-shared-init-dir
+              mountPath: /epiphany/shared_dir
       volumes:
-        - name: pgbouncer-users-file
+        - name: pgbouncer-init-scripts
+          configMap:
+            name: pgbouncer-init-scripts
+            defaultMode: 0755
+        - name: pgpool-passwords
           secret:
-            secretName: pgbouncer-users-file
+            secretName: pgpool-passwords
+        - name: pgpool-admin-password-file
+          secret:
+            secretName: pgpool-admin-password-file
+        - name: pgpool-shared-init-dir
+          emptyDir: {}
       restartPolicy: Always
