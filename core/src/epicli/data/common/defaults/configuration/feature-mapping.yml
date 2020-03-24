@@ -117,11 +117,6 @@ specification:
       - node-exporter
       - filebeat
       - firewall
-    kubernetes_node_ha:
-      - kubernetes-node
-      - node-exporter
-      - filebeat
-      - firewall
     kubernetes_node:
       - kubernetes-node
       - node-exporter

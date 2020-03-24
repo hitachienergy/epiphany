@@ -1,0 +1,28 @@
+# {{ ansible_managed }}
+
+global
+    log /dev/log local0
+    log /dev/log local1 notice
+    daemon
+
+defaults
+    log global
+    retries 3
+    maxconn 2000
+    timeout connect 5s
+    timeout client 120s
+    timeout server 120s
+
+frontend epiphany
+    mode tcp
+    bind 0.0.0.0:3446
+    default_backend epiphany
+
+backend epiphany
+    mode tcp
+    balance roundrobin
+    option tcp-check
+
+{% for master_name, ipv4_address in kubernetes_common.haproxy_backend_servers %}
+    server {{ master_name }} {{ ipv4_address }}:6443 check port 6443
+{% endfor %}

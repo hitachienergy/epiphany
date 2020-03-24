@@ -1,0 +1,88 @@
+---
+- name: Check kubeadm init
+  stat:
+    path: /etc/kubernetes/manifests/kube-apiserver.yaml
+    get_attributes: false
+    get_checksum: false
+    get_mime: false
+  register: stat_kube_apiserver_yaml
+
+# TODO ensure there are images in repo - if not, fail
+
+- when: not stat_kube_apiserver_yaml.stat.exists
+  block:
+    - name: Ensure /etc/kubeadm/ directory exists
+      file:
+        path: /etc/kubeadm/
+        state: directory
+        owner: root
+        group: root
+        mode: u=rw,go=r
+
+    - name: Render kubeadm config
+      become: true
+      template:
+        src: kubeadm-config.yml.j2
+        dest: /etc/kubeadm/kubeadm-config.yml
+        owner: root
+        group: root
+        mode: u=rw,go=r
+
+    - name: Initialize Kubernetes cluster
+      shell: |
+        kubeadm init \
+          --config /etc/kubeadm/kubeadm-config.yml
+      args:
+        executable: /bin/bash
+
+    - name: Mark master as joined
+      vars:
+        set_fact:
+          master_already_joined: true
+      set_fact:
+        kubernetes_common: >-
+          {{ kubernetes_common | default({}) | combine(set_fact, recursive=true) }}
+
+- name: Include kubelet configuration tasks
+  include_role:
+    name: kubernetes_common
+    tasks_from: configure-kubelet
+
+- name: Create .kube
+  file:
+    path: /home/{{ admin_user.name }}/.kube
+    state: directory
+    owner: "{{ admin_user.name }}"
+    group: "{{ admin_user.name }}"
+
+- name: Create .kube/config
+  copy:
+    src: /etc/kubernetes/admin.conf
+    dest: /home/{{ admin_user.name }}/.kube/config
+    remote_src: yes
+    owner: "{{ admin_user.name }}"
+    group: "{{ admin_user.name }}"
+
+- name: Clean up previous version leftovers
+  include_tasks: ./previous-versions-cleanup.yml
+
+- name: Configure RBAC
+  include_tasks: rbac.yml
+
+- name: Configure network policies
+  include_tasks: network-policies.yml
+
+- name: Generate Secrets
+  include_tasks: generate-cluster-credentials.yml
+  when: secret is not defined
+
+- name: Apply network plugin configured by user
+  include_tasks: apply-network-components.yml
+  vars:
+    network_plugin: "{{ specification.advanced.networking.plugin }}"
+
+- name: Apply coredns
+  include_tasks: apply-coredns.yml
+
+- name: Apply Kubernetes Dashboard
+  include_tasks: apply-dashboard.yml

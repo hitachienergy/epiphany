@@ -1,0 +1,40 @@
+---
+- name: Prepare backend configuration for HAProxy
+  set_fact:
+    kubernetes_common: >-
+      {{ kubernetes_common | default({}) | combine(set_fact, recursive=true) }}
+  vars:
+    set_fact:
+      haproxy_master_names: >-
+        {{ groups.kubernetes_master
+        | map('extract', hostvars, ['inventory_hostname'])
+        | list }}
+      haproxy_master_ipv4s: >-
+        {{ groups.kubernetes_master
+        | map('extract', hostvars, ['ansible_default_ipv4', 'address'])
+        | list }}
+
+- name: Prepare backend configuration for HAProxy
+  set_fact:
+    kubernetes_common: >-
+      {{ kubernetes_common | default({}) | combine(set_fact, recursive=true) }}
+  vars:
+    set_fact:
+      haproxy_backend_servers: >-
+        {{ kubernetes_common.haproxy_master_names | zip(kubernetes_common.haproxy_master_ipv4s) | list }}
+
+- name: Render haproxy config
+  template:
+    src: haproxy.cfg.j2
+    dest: /etc/haproxy/haproxy.cfg
+  notify:
+    - Restart HAProxy
+
+- name: Restart HAProxy to apply new configuration
+  meta: flush_handlers
+
+- name: Start haproxy service
+  systemd:
+    name: haproxy
+    enabled: true
+    state: started

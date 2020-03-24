@@ -1,11 +1,16 @@
 ---
 - name: Create flannel deployment
   template:
-    dest: "/home/{{ admin_user.name }}/kube-flannel.yml"
     src: kube-flannel.yml.j2
+    dest: "/home/{{ admin_user.name }}/kube-flannel.yml"
     owner: "{{ admin_user.name }}"
     group: "{{ admin_user.name }}"
 
 - name: Apply flannel definition
-  shell: kubectl apply --kubeconfig=/home/{{ admin_user.name }}/.kube/config -f /home/{{ admin_user.name }}/kube-flannel.yml
-  become_user: "{{ admin_user.name }}"
+  environment:
+    KUBECONFIG: "/home/{{ admin_user.name }}/.kube/config"
+  shell: |
+    kubectl apply \
+      -f /home/{{ admin_user.name }}/kube-flannel.yml
+  args:
+    executable: /bin/bash

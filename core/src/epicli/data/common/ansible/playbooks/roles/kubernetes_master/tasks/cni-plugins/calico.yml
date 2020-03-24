@@ -1,13 +1,16 @@
 ---
-
 - name: Create calico deployment
   template:
-    dest: "/home/{{ admin_user.name }}/calico.yml"
     src: calico.yml.j2
+    dest: "/home/{{ admin_user.name }}/calico.yml"
     owner: "{{ admin_user.name }}"
     group: "{{ admin_user.name }}"
 
-
 - name: Apply calico definition
-  shell: kubectl apply --kubeconfig=/home/{{ admin_user.name }}/.kube/config -f /home/{{ admin_user.name }}/calico.yml
-  become_user: "{{ admin_user.name }}"
+  environment:
+    KUBECONFIG: "/home/{{ admin_user.name }}/.kube/config"
+  shell: |
+    kubectl apply \
+      -f /home/{{ admin_user.name }}/calico.yml
+  args:
+    executable: /bin/bash

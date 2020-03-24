@@ -1,21 +1,36 @@
 ---
+- when: use_ha_control_plane
+  block:
+    - name: Configure internal load-balancer (HAProxy)
+      import_role:
+        name: kubernetes_common
+        tasks_from: configure-haproxy
 
-- include_tasks: single-master.yml
-  when: groups['kubernetes_master'][0] == inventory_hostname
+- name: Init Kubernetes master
+  when: kubernetes_common.automation_designated_master == inventory_hostname
+  block:
+    - import_tasks: master-init.yml
+    - import_tasks: etcd-encryption.yml
+      when: specification.advanced.etcd_args.encrypted
+    - import_tasks: registry-secrets.yml
+    - import_tasks: copy-kubernetes-pki.yml
+
+- when: use_ha_control_plane
+  block:
+    - name: Join Kubernetes HA master
+      when: kubernetes_common.automation_designated_master != inventory_hostname
+      block:
+        - import_tasks: copy-kubernetes-pki.yml
+        - import_tasks: master-join.yml
+        - import_tasks: etcd-encryption.yml
+          when: specification.advanced.etcd_args.encrypted
+
+- import_tasks: master-untaint.yml
 
 - include_tasks: "{{ specification.provider }}/kubernetes-storage.yml"
-  when: specification.storage.enable == True
+  when: specification.storage.enable
 
 - name: Append kubectl bash-completion
   lineinfile:
-    path: /home/{{ admin_user.name }}/.bashrc
+    path: "/home/{{ admin_user.name }}/.bashrc"
     line: source <(kubectl completion bash)
-
-- include_tasks: etcd-encryption.yml
-  when:
-    - groups['kubernetes_master'][0] == inventory_hostname
-    - specification.advanced.etcd_args.encrypted == True
-
-- include_tasks: "registry-secrets.yml"
-  when: 
-      - groups['kubernetes_master'][0] == inventory_hostname

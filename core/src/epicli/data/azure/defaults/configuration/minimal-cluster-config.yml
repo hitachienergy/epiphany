@@ -14,7 +14,7 @@ specification:
     kubernetes_master:
       count: 1
     kubernetes_node:
-      count: 3
+      count: 2
     logging:
       count: 1
     monitoring:

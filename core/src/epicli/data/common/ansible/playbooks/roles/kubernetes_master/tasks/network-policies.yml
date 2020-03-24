@@ -1,14 +1,21 @@
 ---
 - name: Check if default policy is deployed
+  vars:
+    jsonpath: >-
+      '{.items[?(@.metadata.name == "default-network-policy")].metadata.name}'
   environment:
     KUBECONFIG: "/home/{{ admin_user.name }}/.kube/config"
-  shell: kubectl get networkpolicies -o jsonpath='{.items[?(@.metadata.name == "default-network-policy")].metadata.name}'
+  shell: |
+    kubectl get networkpolicies \
+      --output jsonpath={{ jsonpath }}
+  args:
+    executable: /bin/bash
   register: kubectl_result
-  changed_when: false
   failed_when: kubectl_result.rc != 0
+  changed_when: false
 
 - name: Upload and deploy network policy if not deployed already
-  include_tasks: "deployments/deploy-file.yml"
   vars:
-    file_name: "default-network-policy.yml"
+    file_name: default-network-policy.yml
+  include_tasks: deployments/deploy-file.yml
   when: kubectl_result.stdout == ""

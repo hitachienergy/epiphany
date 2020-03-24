@@ -1,0 +1,24 @@
+---
+- delegate_to: localhost
+  run_once: true
+  block:
+    - assert:
+        that: (not x) or y  # implication
+        fail_msg: "When kubernetes is not HA yet, use_ha_control_plane must be disabled (upgrade is not supported yet)."
+      vars:
+        x: "{{ ((registered_masters | length) > 0) and ((control_plane_endpoint | length) == 0) }}"
+        y: "{{ not use_ha_control_plane }}"
+
+    - assert:
+        that: (not x) or y  # implication
+        fail_msg: "When kubernetes is HA already, use_ha_control_plane must be enabled (downgrade is not supported)."
+      vars:
+        x: "{{ ((registered_masters | length) > 0) and control_plane_endpoint.startswith('localhost') }}"
+        y: "{{ use_ha_control_plane }}"
+
+    - assert:
+        that: (not x) or y  # implication
+        fail_msg: "When use_ha_control_plane is disabled, number of masters must not be bigger than one."
+      vars:
+        x: "{{ not use_ha_control_plane }}"
+        y: "{{ not ((groups.kubernetes_master | length) > 1) }}"

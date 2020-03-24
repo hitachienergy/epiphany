@@ -1,0 +1,105 @@
+---
+- set_fact:
+    kubernetes_pki_folders:
+      - pki/
+      - pki/etcd/
+    kubernetes_pki_file_map:
+      pki_ca_crt: pki/ca.crt
+      pki_ca_key: pki/ca.key
+      pki_sa_key: pki/sa.key
+      pki_sa_pub: pki/sa.pub
+      pki_etcd_ca_crt: pki/etcd/ca.crt
+      pki_etcd_ca_key: pki/etcd/ca.key
+      pki_front_proxy_ca_crt: pki/front-proxy-ca.crt
+      pki_front_proxy_ca_key: pki/front-proxy-ca.key
+      pki_etcd_etc_encryption_conf: pki/etcd/etc-encryption.conf
+
+- name: Check if the PKI file exists
+  delegate_to: localhost
+  stat:
+    path: "{{ vault_location }}/kubernetes-pki.yml"
+    get_attributes: false
+    get_checksum: false
+    get_mime: false
+  register: stat_kubernetes_pki
+
+- name: Copy PKI from master node to Ephiphany's vault
+  when: not stat_kubernetes_pki.stat.exists
+  block:
+    - delegate_to: "{{ kubernetes_common.automation_designated_master }}"
+      slurp:
+        src: "/etc/kubernetes/{{ item }}"
+      loop: >-
+        {{ kubernetes_pki_file_map.values() | list }}
+      register: slurp_kubernetes_pki_files
+      no_log: true
+
+    - delegate_to: localhost
+      vars:
+        # Decoding slurp's contents
+        kubernetes_pki_files_slurped_content: >-
+          {{ slurp_kubernetes_pki_files.results
+          | map(attribute='content')
+          | map('b64decode')
+          | list }}
+      environment:
+        ANSIBLE_VAULT_PASSWORD_FILE: "{{ vault_tmp_file_location }}"
+      block:
+        - name: Encrypt Kubernetes PKI file contents
+          shell: |
+            echo -n '{{ item.1 }}' \
+            | ansible-vault encrypt_string \
+                --stdin-name '{{ item.0 }}'
+          args:
+            executable: /bin/bash
+          loop: >-
+            {{ kubernetes_pki_file_map.keys()
+            | zip(kubernetes_pki_files_slurped_content)
+            | list }}
+          register: kubernetes_pki_files_encrypted
+          no_log: true
+
+        - name: Render kubernetes-pki.yml file inside Epiphany's vault
+          vars:
+            kubernetes_pki_files_encrypted_stdout: >-
+              {{ kubernetes_pki_files_encrypted.results
+              | map(attribute='stdout')
+              | list }}
+          copy:
+            dest: "{{ vault_location }}/kubernetes-pki.yml"
+            content: |
+              {% for item in kubernetes_pki_files_encrypted_stdout %}
+              {{ item }}
+              {% endfor %}
+          no_log: true
+
+- name: Load PKI variables
+  delegate_to: localhost
+  environment:
+    ANSIBLE_VAULT_PASSWORD_FILE: "{{ vault_tmp_file_location }}"
+  include_vars:
+    file: "{{ vault_location }}/kubernetes-pki.yml"
+    name: kubernetes_pki
+  no_log: true
+
+- name: Ensure PKI folders exist
+  file:
+    path: "/etc/kubernetes/{{ item }}"
+    state: directory
+    owner: root
+    group: root
+    mode: u=rwx,g=rx,o=
+  loop: >-
+    {{ kubernetes_pki_folders }}
+
+- name: Create PKI files
+  copy:
+    dest: "/etc/kubernetes/{{ item.value }}"
+    content: |
+      {{ kubernetes_pki[item.key] }}
+    owner: root
+    group: root
+    mode: u=rw,g=r,o=
+  with_dict: >-
+    {{ kubernetes_pki_file_map }}
+  no_log: true

@@ -1,3 +1,6 @@
+---
+- import_tasks: gather-facts.yml
+
 - name: Re-enable system repositories
   shell: /tmp/epi-repository-setup-scripts/enable-system-repos.sh
 
@@ -13,7 +16,7 @@
       include_tasks: firewall/clean-up-rule.yml
   when:
     - not custom_repository_url
-    - inventory_hostname in groups['repository']
+    - inventory_hostname in target_repository_hostnames
 
 - name: Clean up temporary files
   file:

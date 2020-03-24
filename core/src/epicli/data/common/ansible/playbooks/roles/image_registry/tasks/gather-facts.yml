@@ -1,0 +1,5 @@
+---
+- name: Produce final list of hosts to deploy image registries on
+  set_fact:
+    target_image_registry_hostnames: >-
+      {{ groups.image_registry | difference(groups.kubernetes_master) | union([resolved_image_registry_hostname]) | unique }}

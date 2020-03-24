@@ -1,0 +1,104 @@
+---
+# Due to inventory generation procedure not being deterministic in general (order of hostnames in group.kubernetes_master may change at any run),
+# we have to make sure some common master node is selected uniformly and later used in "delegate_to" statements (aka "automation_designated_master").
+
+- name: Check if /etc/kubernetes/admin.conf file exists
+  stat:
+    path: /etc/kubernetes/admin.conf
+    get_attributes: false
+    get_checksum: false
+    get_mime: false
+  register: stat_admin_conf
+
+- when: stat_admin_conf.stat.exists
+  block:
+    - name: Get list of all master nodes
+      shell: |
+        kubectl get nodes \
+          --selector={{ selector }} \
+          --output=jsonpath={{ jsonpath }}
+      vars:
+        selector: >-
+          'node-role.kubernetes.io/master'
+        jsonpath: >-
+          '{range .items[*]}{.metadata.name}{"\n"}{end}'
+      environment:
+        KUBECONFIG: /etc/kubernetes/admin.conf
+      args:
+        executable: /bin/bash
+      register: kubectl_get_master_nodes
+      changed_when: false
+
+- name: Decide if current node is a master
+  set_fact:
+    kubernetes_common: >-
+      {{ kubernetes_common | default({}) | combine(set_fact, recursive=true) }}
+  vars:
+    set_fact:
+      master_already_joined: >-
+        {{ stat_admin_conf.stat.exists and (kubectl_get_master_nodes.stdout_lines is defined)
+                                       and (inventory_hostname in kubectl_get_master_nodes.stdout_lines) }}
+
+- name: Collect registered masters
+  set_fact:
+    kubernetes_common: >-
+      {{ kubernetes_common | default({}) | combine(set_fact, recursive=true) }}
+  vars:
+    set_fact:
+      registered_masters: >-
+        {{ groups.kubernetes_master | map('extract', hostvars, ['kubernetes_common', 'master_already_joined'])
+        | zip(groups.kubernetes_master)
+        | selectattr(0)
+        | map(attribute=1)
+        | list }}
+
+- name: Select the primary "delegate_to" master
+  set_fact:
+    kubernetes_common: >-
+      {{ kubernetes_common | default({}) | combine(set_fact, recursive=true) }}
+  vars:
+    set_fact:
+      automation_designated_master: >-
+        {{ kubernetes_common.registered_masters
+        | default(groups.kubernetes_master, true)
+        | first }}
+
+- when: not kubernetes_common.master_already_joined
+  block:
+    - name: Check if /etc/kubernetes/kubelet.conf file exists
+      stat:
+        path: /etc/kubernetes/kubelet.conf
+        get_attributes: false
+        get_checksum: false
+        get_mime: false
+      register: stat_kubelet_conf
+
+    - when: stat_kubelet_conf.stat.exists
+      block:
+        - name: Get list of all worker nodes
+          shell: |
+            kubectl get nodes \
+              --selector={{ selector }} \
+              --output=jsonpath={{ jsonpath }}
+          vars:
+            selector: >-
+              '!node-role.kubernetes.io/master'
+            jsonpath: >-
+              '{range .items[*]}{.metadata.name}{"\n"}{end}'
+          environment:
+            KUBECONFIG: /etc/kubernetes/kubelet.conf
+          args:
+            executable: /bin/bash
+          register: kubectl_get_worker_nodes
+          changed_when: false
+
+- name: Decide if current node is a worker
+  set_fact:
+    kubernetes_common: >-
+      {{ kubernetes_common | default({}) | combine(set_fact, recursive=true) }}
+  vars:
+    set_fact:
+      node_already_joined: >-
+        {{ (not kubernetes_common.master_already_joined) and stat_kubelet_conf.stat.exists
+                                                         and (kubectl_get_worker_nodes.stdout_lines is defined)
+                                                         and (inventory_hostname in kubectl_get_worker_nodes.stdout_lines) }}
