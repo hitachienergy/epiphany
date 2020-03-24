@@ -1,5 +1,5 @@
 ---
 - name: Restart HAProxy
-  systemd:
+  service:
     name: haproxy
     state: restarted
