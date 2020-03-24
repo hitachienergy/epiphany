@@ -1,0 +1,18 @@
+---
+# Please look at assertions in preflight_facts role.
+
+- when: promote_to_ha
+  block:
+    - name: Update /etc/kubernetes/kubelet.conf
+      replace:
+        path: /etc/kubernetes/kubelet.conf
+        regexp: "server: .*$"
+        replace: "server: {{ server }}"
+      vars:
+        server: https://localhost:3446
+      notify:
+        - Restart kubelet
+        - Restart kube-proxy
+        - Mark Kubernetes as already HA
+
+    - meta: flush_handlers

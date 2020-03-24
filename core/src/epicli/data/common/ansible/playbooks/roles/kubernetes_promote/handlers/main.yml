@@ -1,0 +1,49 @@
+---
+- name: Restart apiserver
+  shell: |
+    docker ps \
+      --filter 'name=kube-apiserver_kube-apiserver' \
+      --format '{{ "{{.ID}}" }}' \
+    | xargs --no-run-if-empty docker kill
+  args:
+    executable: /bin/bash
+
+- name: Restart controller-manager
+  shell: |
+    docker ps \
+      --filter 'name=kube-controller-manager_kube-controller-manager' \
+      --format '{{ "{{.ID}}" }}' \
+    | xargs --no-run-if-empty docker kill
+  args:
+    executable: /bin/bash
+
+- name: Restart scheduler
+  shell: |
+    docker ps \
+      --filter 'name=kube-scheduler_kube-scheduler' \
+      --format '{{ "{{.ID}}" }}' \
+    | xargs --no-run-if-empty docker kill
+  args:
+    executable: /bin/bash
+
+- name: Restart kubelet
+  systemd:
+    name: kubelet
+    state: restarted
+
+- name: Restart kube-proxy
+  shell: |
+    docker ps \
+      --filter 'name=kube-proxy_kube-proxy' \
+      --format '{{ "{{.ID}}" }}' \
+    | xargs --no-run-if-empty docker kill
+  args:
+    executable: /bin/bash
+
+- name: Mark Kubernetes as already HA
+  set_fact:
+    kubernetes_promote: >-
+      {{ kubernetes_promote | default({}) | combine(set_fact, recursive=true) }}
+  vars:
+    set_fact:
+      kubernetes_already_ha: true
