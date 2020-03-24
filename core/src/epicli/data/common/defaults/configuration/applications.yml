@@ -70,7 +70,7 @@ specification:
     image:
       path: bitnami/pgpool:4.1.1-debian-10-r29
       debug: no # ref: https://github.com/bitnami/minideb-extras/#turn-on-bash-debugging
-    namespace: pgpool
+    namespace: postgres-pool
     service:
       name: pgpool
       port: 5432
@@ -123,29 +123,27 @@ specification:
         # See pgpool_create_config function in https://github.com/bitnami/bitnami-docker-pgpool/blob/master/4/debian-10/rootfs/opt/bitnami/scripts/libpgpool.sh
 
   - name: pgbouncer
-    enabled: yes
+    enabled: no
     #https://github.com/brainsam/pgbouncer/tree/release/1.12
     image_path: brainsam/pgbouncer:1.12
-    namespace: pgbouncer
+    init_image_path: bitnami/pgpool:4.1.1-debian-10-r29 #TODO: make reference to pgpool section
+    namespace: postgres-pool
     service:
       name: pgbouncer
       port: 5432
     replicas: 2
     pgbouncer:
       env:
-        DB_HOST: pgpool.pgpool.svc.cluster.local #pgpool service name
+        DB_HOST: pgpool.postgres-pool.svc.cluster.local #pgpool service name
         DB_LISTEN_PORT: 5432
         LISTEN_ADDR: "*"
         LISTEN_PORT: 5432
         AUTH_FILE: "/etc/pgbouncer/auth/users.txt"
         AUTH_TYPE: md5
-        MAX_CLIENT_CONN: 500
+        MAX_CLIENT_CONN: 300
         DEFAULT_POOL_SIZE: 25
         RESERVE_POOL_SIZE: 25
         POOL_MODE: transaction
       secrets:
         admin_users: 
           - postgres #provide list of users
-#TODO add list of users handling
-        db_user: '"username"' #postgres username
-        db_password: '"md5password"' #md5 postgres password
