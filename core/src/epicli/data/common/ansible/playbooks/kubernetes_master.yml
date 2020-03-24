@@ -23,6 +23,13 @@
   become_method: sudo
   roles:
     - kubernetes_master
+  post_tasks:
+    - import_role:
+        name: kubernetes_promote
+        tasks_from: update-master
+    - import_role:
+        name: kubernetes_promote
+        tasks_from: update-kubelet
 
 - hosts: kubernetes_master
   become: true

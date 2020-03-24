@@ -1,0 +1,26 @@
+---
+- delegate_to: "{{ kubernetes_common.automation_designated_master }}"
+  block:
+    - name: Collect live kubeadm ClusterConfiguration object if available
+      shell: |
+        kubectl get configmap kubeadm-config \
+          --namespace=kube-system \
+          --output=jsonpath={{ jsonpath }}
+      vars:
+        jsonpath: >-
+          '{.data.ClusterConfiguration}'
+      environment:
+        KUBECONFIG: /etc/kubernetes/admin.conf
+      args:
+        executable: /bin/bash
+      register: ClusterConfiguration
+      changed_when: false
+
+    - name: Decide if Kubernetes runs in HA mode already
+      set_fact:
+        kubernetes_promote: >-
+          {{ kubernetes_promote | default({}) | combine(set_fact, recursive=true) }}
+      vars:
+        set_fact:
+          kubernetes_already_ha: >-
+              {{ ((ClusterConfiguration.stdout | from_yaml).controlPlaneEndpoint | default('')).startswith('localhost') }}

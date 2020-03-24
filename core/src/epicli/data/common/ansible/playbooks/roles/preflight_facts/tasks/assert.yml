@@ -3,22 +3,21 @@
   run_once: true
   block:
     - assert:
-        that: (not x) or y  # implication
-        fail_msg: "When kubernetes is not HA yet, use_ha_control_plane must be disabled (upgrade is not supported yet)."
-      vars:
-        x: "{{ ((registered_masters | length) > 0) and ((control_plane_endpoint | length) == 0) }}"
-        y: "{{ not use_ha_control_plane }}"
+        that: not promote_to_ha or use_ha_control_plane
+        fail_msg: "When promote_to_ha is enabled, use_ha_control_plane must be enabled as well."
 
     - assert:
-        that: (not x) or y  # implication
+        that: not promote_to_ha or ((groups.kubernetes_master | length) == 1)
+        fail_msg: "When promote_to_ha is enabled, control plane must contain exactly one master."
+
+    - assert:
+        that: not (((registered_masters | length) > 0) and ((control_plane_endpoint | length) == 0) and use_ha_control_plane) or promote_to_ha
+        fail_msg: "When kubernetes is not HA yet and use_ha_control_plane is enabled, promote_to_ha must be enabled to force promotion."
+
+    - assert:
+        that: not (((registered_masters | length) > 0) and control_plane_endpoint.startswith('localhost')) or use_ha_control_plane
         fail_msg: "When kubernetes is HA already, use_ha_control_plane must be enabled (downgrade is not supported)."
-      vars:
-        x: "{{ ((registered_masters | length) > 0) and control_plane_endpoint.startswith('localhost') }}"
-        y: "{{ use_ha_control_plane }}"
 
     - assert:
-        that: (not x) or y  # implication
+        that: use_ha_control_plane or not ((groups.kubernetes_master | length) > 1)
         fail_msg: "When use_ha_control_plane is disabled, number of masters must not be bigger than one."
-      vars:
-        x: "{{ not use_ha_control_plane }}"
-        y: "{{ not ((groups.kubernetes_master | length) > 1) }}"

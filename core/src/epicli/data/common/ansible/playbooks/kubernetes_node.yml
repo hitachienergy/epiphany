@@ -22,6 +22,10 @@
   become_method: sudo
   roles:
     - kubernetes_node
+  post_tasks:
+    - import_role:
+        name: kubernetes_promote
+        tasks_from: update-kubelet
 
 - hosts: kubernetes_node
   become: true

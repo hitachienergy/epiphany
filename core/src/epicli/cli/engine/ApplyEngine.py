@@ -1,8 +1,11 @@
 import os
 
+from ansible.parsing.dataloader import DataLoader
+from ansible.inventory.manager import InventoryManager
+
 from cli.helpers.Step import Step
 from cli.helpers.doc_list_helpers import select_single
-from cli.helpers.build_saver import save_manifest
+from cli.helpers.build_saver import save_manifest, get_inventory_path
 from cli.helpers.yaml_helpers import safe_load_all
 from cli.helpers.Log import Log
 from cli.engine.providers.provider_class_loader import provider_class_loader
@@ -89,8 +92,28 @@ class ApplyEngine(Step):
 
         return 0
 
+    def assert_no_master_downscale(self):
+        cluster_name = self.cluster_model.specification.name
+        inventory_path = get_inventory_path(cluster_name)
+
+        if os.path.exists(inventory_path):
+            existing_inventory = InventoryManager(loader=DataLoader(), sources=inventory_path)
+
+            sanity_check = all([
+                'kubernetes_master' in existing_inventory.list_groups(),
+                'kubernetes_master' in self.cluster_model.specification.components,
+            ])
+            if sanity_check:
+                prev_master_count = len(existing_inventory.list_hosts(pattern='kubernetes_master'))
+                next_master_count = int(self.cluster_model.specification.components['kubernetes_master']['count'])
+
+                if prev_master_count > next_master_count:
+                    raise Exception("ControlPlane downscale is not supported yet. Please revert your kubernetes_master count to previous value or increase it to scale up kubernetes.")
+
     def apply(self):
         self.process_input_docs()
+
+        self.assert_no_master_downscale()
 
         self.process_infrastructure_docs()
 
