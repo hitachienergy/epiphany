@@ -4,10 +4,24 @@
   block:
     - assert:
         that: (not x) or y  # implication
-        fail_msg: "When kubernetes is not HA yet, use_ha_control_plane must be disabled (upgrade is not supported yet)."
+        fail_msg: "When promote_to_ha is enabled, use_ha_control_plane must be enabled as well."
       vars:
-        x: "{{ ((registered_masters | length) > 0) and ((control_plane_endpoint | length) == 0) }}"
-        y: "{{ not use_ha_control_plane }}"
+        x: "{{ promote_to_ha }}"
+        y: "{{ use_ha_control_plane }}"
+
+    - assert:
+        that: (not x) or y  # implication
+        fail_msg: "When promote_to_ha is enabled, control plane must contain exactly one master."
+      vars:
+        x: "{{ promote_to_ha }}"
+        y: "{{ (groups.kubernetes_master | length) == 1 }}"
+
+    - assert:
+        that: (not x) or y  # implication
+        fail_msg: "When kubernetes is not HA yet and use_ha_control_plane is enabled, promote_to_ha must be enabled to force promotion."
+      vars:
+        x: "{{ ((registered_masters | length) > 0) and ((control_plane_endpoint | length) == 0) and use_ha_control_plane }}"
+        y: "{{ promote_to_ha }}"
 
     - assert:
         that: (not x) or y  # implication
