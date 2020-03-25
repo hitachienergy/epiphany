@@ -303,16 +303,16 @@ From the defined cluster build folder it will take the information needed to rem
 
 ## Single machine cluster
 
-Sometimes it might be desirable to run an Epiphany cluster on a single machine. For this purpose Epiphany shipes with a `single_cluster` component configuration. This cluster comes with the following main components:
+Sometimes it might be desirable to run an Epiphany cluster on a single machine. For this purpose Epiphany ships with a `single_cluster` component configuration. This cluster comes with the following main components:
 
 - kubernetes-master: Untainted so pods can be deployed on it
 - rabbitmq: Rabbitmq for messaging instead of Kafka
-- applications: For deploying Keycloak authentication service
+- applications: For deploying the Keycloak authentication service
 - postgresql: To provide a database for Keycloak
 
 Note that components like logging and monitoring are missing since they do not provide much benefit in a single machine scenario. Also RabbitMQ is included over Kafka since that is much less resource intensive.
 
-To get started with a single machine cluster you can use the following template as a base. Note that some configurations where omitted:
+To get started with a single machine cluster you can use the following template as a base. Note that some configurations are omitted:
 
 ```yaml
 kind: epiphany-cluster
