@@ -90,7 +90,7 @@ specification:
                 topologyKey: kubernetes.io/hostname
       nodeSelector: {}
       tolerations: {}
-    resources: # TODO: test and adjust
+    resources:
       limits:
         # cpu: 900m # Set cpu limit according to your env
         memory: 256Mi
@@ -108,7 +108,7 @@ specification:
         PGPOOL_ADMIN_USERNAME: epi_pgpool_admin # Pgpool administrator (local pcp user)
         PGPOOL_TIMEOUT: 360
         PGPOOL_ENABLE_LOAD_BALANCING: yes # set to 'no' if there is no replication
-        PGPOOL_MAX_POOL: 15
+        PGPOOL_MAX_POOL: 4
         PGPOOL_POSTGRES_PASSWORD_FILE: /opt/bitnami/pgpool/secrets/pgpool_postgres_password
         PGPOOL_SR_CHECK_PASSWORD_FILE: /opt/bitnami/pgpool/secrets/pgpool_sr_check_password
         PGPOOL_ADMIN_PASSWORD_FILE: /opt/bitnami/pgpool/secrets/pgpool_admin_password
@@ -118,7 +118,13 @@ specification:
         pgpool_admin_password: PASSWORD_TO_CHANGE
       config_file_content_to_append: |
         # Custom content that is appended to pgpool.conf to override default settings
-        # Example: https://github.com/CrunchyData/crunchy-containers/blob/master/examples/kube/pgpool/configs/pgpool.conf
+        num_init_children = '48'
+        memcache_expire = '0'
+        child_max_connections = '0'
+        superuser_reserved_connections = '4'
+        child_life_time = '300'
+        connections_life_time = '300'
+        client_idle_limit = '30'
 
   - name: pgbouncer
     enabled: no
@@ -143,5 +149,5 @@ specification:
         RESERVE_POOL_SIZE: 25
         POOL_MODE: transaction
       secrets:
-        admin_users: 
+        admin_users:
           - postgres #provide list of users
