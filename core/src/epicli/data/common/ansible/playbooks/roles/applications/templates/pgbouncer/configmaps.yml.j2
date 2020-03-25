@@ -28,7 +28,7 @@ metadata:
     app: pgbouncer
   namespace: {{ data.namespace }}
 data:
-  init_pool_passwd_file.sh: |
+  init_users_passwd_file.sh: |
     #!/bin/bash
 
     set -o errexit
@@ -61,18 +61,20 @@ data:
       psql -h "$hostname" -tA -c "$sql"
     }
 
-    # TODO: try all nodes from PGPOOL_BACKEND_NODES (needs parsing) before failing, see pgpool_validate() in https://github.com/bitnami/bitnami-docker-pgpool/blob/master/4/debian-10/rootfs/opt/bitnami/scripts/libpgpool.sh
+{% if groups['postgresql'] | length > 1 %}
+    POSTGRES_HOSTNAME="{{ hostvars[groups['postgresql'][0]].ansible_hostname }},{{ hostvars[groups['postgresql'][1]].ansible_hostname }}"
+{% else %}
     POSTGRES_HOSTNAME={{ hostvars[groups['postgresql'][0]].ansible_hostname }}
+{% endif %}
 
     test_connection "${POSTGRES_HOSTNAME}" || { echo "ERROR: Connection test failed" 1>&2 && exit 1; }
 
-    SQL="SELECT '\"' || rolname || '\" \"' || rolpassword || '\"'    FROM pg_authid WHERE rolpassword IS NOT NULL;"
+    SQL="SELECT '\"' || rolname || '\" \"' || rolpassword || '\"' FROM pg_authid WHERE rolpassword IS NOT NULL"
     echo "Running query: $SQL"
     RESULT="$(run_query "$SQL" "$POSTGRES_HOSTNAME")" || { echo "ERROR: psql failed" 1>&2 && exit 1; }
 
-    OUTPUT_FILE=/epiphany/shared_dir/pool_passwd
+    OUTPUT_FILE=/epiphany/shared_dir/users.txt
 
-    # TODO: grep result for md5, see http://saule1508.github.io/pgpool/
     if test -n "${RESULT}"; then
       if ! test -f $OUTPUT_FILE; then
         echo "Creating '${OUTPUT_FILE}' file"
