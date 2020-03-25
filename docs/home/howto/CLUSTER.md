@@ -303,6 +303,72 @@ From the defined cluster build folder it will take the information needed to rem
 
 ## Single machine cluster
 
+Sometimes it might be desirable to run an Epiphany cluster on a single machine. For this purpose Epiphany shipes with a `single_cluster` component configuration. This cluster comes with the following main components:
+
+- kubernetes-master: Untainted so pods can be deployed on it
+- rabbitmq: Rabbitmq for messaging instead of Kafka
+- applications: For deploying Keycloak authentication service
+- postgresql: To provide a database for Keycloak
+
+Note that components like logging and monitoring are missing since they do not provide much benefit in a single machine scenario. Also RabbitMQ is included over Kafka since that is much less resource intensive.
+
+To get started with a single machine cluster you can use the following template as a base. Note that some configurations where omitted:
+
+```yaml
+kind: epiphany-cluster
+title: Epiphany cluster Config
+name: default
+specification:
+  prefix: dev
+  name: single
+  admin_user:
+    name: operations
+    key_path: /user/.ssh/id_rsa
+  cloud:
+    ... # add other cloud configuration as needed
+  components:
+    kubernetes_master:
+      count: 0
+    kubernetes_node:
+      count: 0
+    logging:
+      count: 0
+    monitoring:
+      count: 0
+    kafka:
+      count: 0
+    postgresql:
+      count: 0
+    load_balancer:
+      count: 0
+    rabbitmq:
+      count: 0
+    ignite:
+      count: 0
+    opendistro_for_elasticsearch:
+      count: 0
+    single_machine:
+      count: 1
+---
+kind: configuration/applications
+title: "Kubernetes Applications Config"
+name: default
+specification:
+  applications:
+  - name: auth-service
+    enabled: yes # set to yest to enable authentication service
+    ... # add other authentication service as needed
+---
+kind: configuration/kubernetes-master
+title: Kubernetes Master Config
+name: default
+specification:
+  allow_pods_on_master: true # set to true to enable untaint master for pod deployment
+  ... # add other kubernetes-master as needed
+```
+
+## How to create custom cluster components
+
 TODO
 
 ## How to scale or cluster components

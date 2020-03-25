@@ -15,6 +15,7 @@
   - [How to create an Epiphany cluster on a cloud provider](./howto/CLUSTER.md#how-to-create-an-epiphany-cluster-on-a-cloud-provider)
   - [How to delete an Epiphany cluster on a cloud provider](./howto/CLUSTER.md#how-to-delete-an-epiphany-cluster-on-a-cloud-provider)
   - [Single machine cluster](./howto/CLUSTER.md#single-machine-cluster)
+  - [How to create custom cluster components](./howto/CLUSTER.md#how-to-create-custom-cluster-components)
   - [How to scale  or cluster components](./howto/CLUSTER.md#how-to-scale-or-cluster-components)
   - [Build artifacts](./howto/CLUSTER.md#build-artifacts)
   - [Kafka replication and partition setting](./howto/CLUSTER.md#kafka-replication-and-partition-setting)
