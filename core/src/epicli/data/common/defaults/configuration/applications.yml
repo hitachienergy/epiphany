@@ -113,12 +113,11 @@ specification:
         PGPOOL_SR_CHECK_PASSWORD_FILE: /opt/bitnami/pgpool/secrets/pgpool_sr_check_password
         PGPOOL_ADMIN_PASSWORD_FILE: /opt/bitnami/pgpool/secrets/pgpool_admin_password
       secrets:
-        pgpool_postgres_password: epi_pgpool_postgres_admin_password
-        pgpool_sr_check_password: epi_pgpool_replication_check_password
-        pgpool_admin_password: epi_pgpool_admin_password
+        pgpool_postgres_password: PASSWORD_TO_CHANGE
+        pgpool_sr_check_password: PASSWORD_TO_CHANGE
+        pgpool_admin_password: PASSWORD_TO_CHANGE
       config_file_content_to_append: |
         # Custom content that is appended to pgpool.conf to override default settings
-        # TODO: To be implemented
         # Example: https://github.com/CrunchyData/crunchy-containers/blob/master/examples/kube/pgpool/configs/pgpool.conf
         # See pgpool_create_config function in https://github.com/bitnami/bitnami-docker-pgpool/blob/master/4/debian-10/rootfs/opt/bitnami/scripts/libpgpool.sh
 
