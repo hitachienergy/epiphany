@@ -160,6 +160,7 @@ metadata:
   namespace: {{ data.namespace }}
 data:
   pgpool.conf: |
+    # {{ ansible_managed }}
     # ----------------------------
     # pgPool-II configuration file
     # ----------------------------
@@ -168,17 +169,15 @@ data:
     #
     #   name = value
     #
-    # Whitespace may be used.  Comments are introduced with "#" anywhere on a line.
-    # The complete list of parameter names and allowed values can be found in the
+    # Whitespace may be used. Comments are introduced with "#" anywhere on a line.
+    #
+    # The complete list of parameters and allowed values can be found in the
     # pgPool-II documentation.
     #
     # This file is read on server startup and when the server receives a SIGHUP
-    # signal.  If you edit the file on a running system, you have to SIGHUP the
-    # server for the changes to take effect, or use "pgpool reload".  Some
-    # parameters, which are marked below, require a server shutdown and restart to
-    # take effect.
-    #
-
+    # signal. If you edit the file on a running system, you have to SIGHUP the
+    # server for the changes to take effect, or use "pgpool reload". Some
+    # parameters require a server shutdown and restart to take effect.
 
     #------------------------------------------------------------------------------
     # CONNECTIONS
@@ -187,17 +186,11 @@ data:
     # - pgpool Connection Settings -
 
     listen_addresses = '*'
-                                      # Host name or IP address to listen on:
-                                      # '*' for all, '' for no TCP/IP connections
-                                      # (change requires restart)
-    port = '5432'
-                                      # Port number
-                                      # (change requires restart)
+                                      # Host name or IP address to listen on
+    port = '{{ data.pgpool.env.PGPOOL_PORT_NUMBER | default('5432') }}'
+
     socket_dir = '/opt/bitnami/pgpool/tmp'
-                                      # Unix domain socket path
-                                      # The Debian package defaults to
-                                      # /var/run/postgresql
-                                      # (change requires restart)
+
     reserved_connections = 0
                                       # Number of reserved connections.
                                       # Pgpool-II does not accept connections if over
@@ -207,24 +200,16 @@ data:
     # - pgpool Communication Manager Connection Settings -
 
     pcp_listen_addresses = '*'
-                                      # Host name or IP address for pcp process to listen on:
-                                      # '*' for all, '' for no TCP/IP connections
-                                      # (change requires restart)
+                                      # Host name or IP address for pcp process to listen on
     pcp_port = 9898
-                                      # Port number for pcp
-                                      # (change requires restart)
+
     pcp_socket_dir = '/opt/bitnami/pgpool/tmp'
-                                      # Unix domain socket path for pcp
-                                      # The Debian package defaults to
-                                      # /var/run/postgresql
-                                      # (change requires restart)
+
     listen_backlog_multiplier = 2
                                       # Set the backlog parameter of listen(2) to
                                       # num_init_children * listen_backlog_multiplier.
-                                      # (change requires restart)
     serialize_accept = off
                                       # whether to serialize accept() call to avoid thundering herd problem
-                                      # (change requires restart)
 
     # - Backend Connection Settings -
 
@@ -278,17 +263,31 @@ data:
 
     # - Authentication -
 
-    enable_pool_hba = 'on'
+{% set allow_clear_text_frontend_auth = 'off' %}
+{% if data.pgpool.env.PGPOOL_ENABLE_POOL_HBA is defined and not data.pgpool.env.PGPOOL_ENABLE_POOL_HBA %}
+{%   set pool_hba = 'off' %}
+{% else %}
+{%   set pool_hba = 'on' %}
+{% endif %}
+{% if data.pgpool.env.PGPOOL_ENABLE_POOL_PASSWD is defined and not data.pgpool.env.PGPOOL_ENABLE_POOL_PASSWD %}
+{%   set pool_passwd = "" %}
+{%   if pool_hba == 'off' %}
+{%     set allow_clear_text_frontend_auth = 'on' %}
+{%   endif %}
+{% else %}
+{%   set pool_passwd = data.pgpool.env.PGPOOL_PASSWD_FILE | default('pool_passwd') %}
+{% endif %}
+
+    enable_pool_hba = '{{ pool_hba }}'
                                       # Use pool_hba.conf for client authentication
-    pool_passwd = 'pool_passwd'
+    pool_passwd = '{{ pool_passwd }}'
                                       # File name of pool_passwd for md5 authentication.
                                       # "" disables pool_passwd.
-                                      # (change requires restart)
     authentication_timeout = '30'
                                       # Delay in seconds to complete client authentication
                                       # 0 means no timeout.
 
-    allow_clear_text_frontend_auth = 'off'
+    allow_clear_text_frontend_auth = '{{ allow_clear_text_frontend_auth }}'
                                       # Allow Pgpool-II to use clear text password authentication
                                       # with clients, when pool_passwd does not
                                       # contain the user password
@@ -334,7 +333,7 @@ data:
     num_init_children = 32
                                       # Number of concurrent sessions allowed
                                       # (change requires restart)
-    max_pool = '15'
+    max_pool = '{{ data.pgpool.env.PGPOOL_MAX_POOL | default('15') }}'
                                       # Number of connection pool caches per connection
                                       # (change requires restart)
 
@@ -465,7 +464,11 @@ data:
     # LOAD BALANCING MODE
     #------------------------------------------------------------------------------
 
+{% if data.pgpool.env.PGPOOL_ENABLE_LOAD_BALANCING is defined and not data.pgpool.env.PGPOOL_ENABLE_LOAD_BALANCING %}
+    load_balance_mode = 'off'
+{% else %}
     load_balance_mode = 'on'
+{% endif %}
                                       # Activate load balancing mode
                                       # (change requires restart)
     ignore_leading_white_space = on
@@ -599,18 +602,6 @@ data:
                                       # the value. 0 means no timeout.
                                       # Note that this value is not only used for health check,
                                       # but also for ordinary conection to backend.
-
-    #------------------------------------------------------------------------------
-    # HEALTH CHECK PER NODE PARAMETERS (OPTIONAL)
-    #------------------------------------------------------------------------------
-    #health_check_period0 = 0
-    #health_check_timeout0 = 20
-    #health_check_user0 = 'nobody'
-    #health_check_password0 = ''
-    #health_check_database0 = ''
-    #health_check_max_retries0 = 0
-    #health_check_retry_delay0 = 1
-    #connect_timeout0 = 10000
 
     #------------------------------------------------------------------------------
     # FAILOVER AND FAILBACK
@@ -783,13 +774,11 @@ data:
                                       # Comma separated list of table names not to memcache
                                       # that don't write to database
                                       # Regexp are accepted
+
     {{ data.pgpool.config_file_content_to_append | indent(4) }}
 
   pool_hba.conf: |
     local    all             all                            trust
     host     all             {{ data.pgpool.env.PGPOOL_SR_CHECK_USER }}       all         trust
     host     all             {{ data.pgpool.env.PGPOOL_POSTGRES_USERNAME }}       all         md5
-{# TODO: check wide and pop_user - content taken from bitnami container, see 'pgpool_create_pghba' function in libpgpool.sh #}
-    host     all             wide               all         trust
-    host     all             pop_user           all         trust
     host     all             all                all         md5

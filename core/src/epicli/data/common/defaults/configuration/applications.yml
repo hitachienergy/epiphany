@@ -102,7 +102,7 @@ specification:
       env:
         PGPOOL_BACKEND_NODES: SET_BY_AUTOMATION # you can use custom value like '0:pg-node-1:5432,1:pg-node-2:5432'
         # Postgres users
-        PGPOOL_POSTGRES_USERNAME: epi_pgpool_postgres_admin # with SELECT on pg_authid privilege, SUPERUSER is not required, also used for pgpool container health checks
+        PGPOOL_POSTGRES_USERNAME: epi_pgpool_postgres_admin # with SELECT on pg_authid privilege to synchronize users, SUPERUSER is not required, also used for pgpool container health checks
         PGPOOL_SR_CHECK_USER: epi_pgpool_sr_check # with pg_monitor role, for streaming replication checks
         # ---
         PGPOOL_ADMIN_USERNAME: epi_pgpool_admin # Pgpool administrator (local pcp user)
@@ -119,7 +119,6 @@ specification:
       config_file_content_to_append: |
         # Custom content that is appended to pgpool.conf to override default settings
         # Example: https://github.com/CrunchyData/crunchy-containers/blob/master/examples/kube/pgpool/configs/pgpool.conf
-        # See pgpool_create_config function in https://github.com/bitnami/bitnami-docker-pgpool/blob/master/4/debian-10/rootfs/opt/bitnami/scripts/libpgpool.sh
 
   - name: pgbouncer
     enabled: no
