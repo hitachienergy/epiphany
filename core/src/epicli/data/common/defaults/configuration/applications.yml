@@ -102,8 +102,8 @@ specification:
       env:
         PGPOOL_BACKEND_NODES: SET_BY_AUTOMATION # you can use custom value like '0:pg-node-1:5432,1:pg-node-2:5432'
         # Postgres users
-        PGPOOL_POSTGRES_USERNAME: epi_pgpool_postgres_admin # with SELECT on pg_authid table privilege, SUPERUSER is not required, also used for pgpool container health checks
-        PGPOOL_SR_CHECK_USER: epi_pgpool_sr_check # for streaming replication checks, only with LOGIN privilege
+        PGPOOL_POSTGRES_USERNAME: epi_pgpool_postgres_admin # with SELECT on pg_authid privilege, SUPERUSER is not required, also used for pgpool container health checks
+        PGPOOL_SR_CHECK_USER: epi_pgpool_sr_check # with pg_monitor role, for streaming replication checks
         # ---
         PGPOOL_ADMIN_USERNAME: epi_pgpool_admin # Pgpool administrator (local pcp user)
         PGPOOL_TIMEOUT: 360
