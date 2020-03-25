@@ -1,3 +1,70 @@
+## How to migrate from PostgreSQL installed from Software Collections to installed from PostgreSQL repository
+
+This operation is only required for RedHat/CentOS installations with PostgreSQL 10 installed from Software Collections.
+
+This change is required due to additional modules added by Epiphany that are not supported by PostgreSQL installed from Software
+Collections, but are supported by PostgreSQL installed from official PostgreSQL repository. That's why PostgreSQL 10 installed from RedHat/CentOS Software Collections needs to be replaced with PostgreSQL 10 installed from PostgreSQL repository.
+
+### PostgreSQL servers
+
+0). Check if package rh-postgresql10-postgresql-server is installed. You can check this with command:
+
+```bash
+rpm -qa | grep rh-postgresql10-postgresql-server
+```
+
+1). Stop instance of PostgreSQL installed from Software Collections database with command:
+
+```bash
+systemctl stop postgresql
+```
+
+2). Prepare backup of your PostgreSQL data directory -  - e.g. with tar command:
+
+```bash
+tar -cf backup.tar /var/opt/rh/rh-postgresql10/lib/pgsql/data/
+```
+
+But any other tool that will provide you reliable backup that will prevent you from data loose can be chosen.
+
+3). Create new directory for your PostgreSQL with command:
+
+```bash
+mkdir -p /var/lib/pgsql/10/data/
+```
+
+4). Copy/move content of whole data folder to previously created directory:
+
+```bash
+cp -R /var/opt/rh/rh-postgresql10/lib/pgsql/data/* /var/lib/pgsql/10/data/
+```
+
+5). Remove unnecessary packages with command:
+
+```bash
+yum erase rh-postgresql10-postgresql-server rh-postgresql10-postgresql-contrib rh-postgresql10-postgresql \
+rh-postgresql10-postgresql-libs \
+rh-postgresql10-runtime yum erase postgresql10-libs
+```
+
+6). Change ownership of folder /var/lib/pgsql/ and all folders below to user and group postgres with command:
+
+```bash
+chown -R postgres:postgres -R /var/lib/pgsql
+```
+
+7). Provide configuration to PostgreSQL component with Epiphany configuration. Please refer to Epiphany HOWTO.md for more details.
+
+### Online mode - Repository server
+
+1). Ensure that on repository server file /tmp/epi-download-requirements/download-requirements-done.flag doesn't exist to force downloading new packages.
+
+### Offline mode - machine to which you want to download packages for airgapped deployment:
+
+1).  Ensure that you have downloaded package that name stars with postgresql10-server. Refer to documentation about airgapped 
+installation HOWTO.md(https://github.com/epiphany-platform/epiphany/blob/develop/docs/home/howto/CLUSTER.md#how-to-create-an-epiphany-cluster-on-existing-airgapped-infrastructure)
+for more details. If package doesn't exist re-run download-requirements.sh script again.
+
 ## How to configure PostgreSQL
 
 To configure PostgreSQL, login to server using ssh and switch to `postgres` user with command:

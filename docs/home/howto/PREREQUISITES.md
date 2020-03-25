@@ -160,6 +160,15 @@ Or when running from a Docker image (upper and lowercase are needed because of a
 
 In some cases it might be that a company uses custom CA certificates for providing secure connections. To use these with Epicli you can do the following:
 
+### Note about PostgreSQL preflight check
+
+This reffers only to CentOS/Red Hat installations.
+
+To prevent installation failure of PostgreSQL 10 server we are checking in preflight mode we are checking if previous 
+installation has been installed from PostgreSQL official repository. If this has been installed from Software Collections
+this will make Epiphany deployment fail in preflight mode. For more details please refer to [How to migrate from PostgreSQL installed from Software Collections to installed from PostgreSQL repository](./DATABASES.md#how-to-migrate-from-postgresql-installed-from-software-collections-to-installed-from-postgresql-repository)
+
+
 #### Devcontainer
 
 Before building the VSCode devcontainer place the *.crt file here: `/epiphany/core/src/epicli/.devcontainer/cert/`. Then the certificate will be included and configured during the build process. After that no additional configuration should be needed.
