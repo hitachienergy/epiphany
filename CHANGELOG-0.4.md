@@ -1,5 +1,14 @@
 # Changelog 0.4
 
+## [0.4.4] 2020-04-xx
+
+### Fixed
+
+- [#966](https://github.com/epiphany-platform/epiphany/issues/966) - Ubuntu builds get stuck on 'Create epirepo repository' task waiting for user input in offline mode
+- [#1043](https://github.com/epiphany-platform/epiphany/issues/1043) - For vm template on Azure disk_size_gb is missing in storage_os_disk
+- [#1049](https://github.com/epiphany-platform/epiphany/issues/1049) - Azure/RedHat specified disk size 30 GB is smaller than the size of the disk in the VM image
+- [#1063](https://github.com/epiphany-platform/epiphany/issues/1063) - Issues with single_machine install
+
 ## [0.4.3] 2020-03-16
 
 ### Fixed
