@@ -56,12 +56,12 @@ spec:
           volumeMounts:
             - name: pgpool-shared-init-dir
               mountPath: /etc/pgbouncer/auth/users.txt
-              subPath: pool_passwd
+              subPath: users.txt
       initContainers:
         - name: pgbouncer-init
           image: {{ image_registry_address }}/{{ data.init_image_path }} 
           command:
-            - /epiphany/scripts/init_pool_passwd_file.sh
+            - /epiphany/scripts/init_users_passwd_file.sh
           envFrom:
             - configMapRef:
                 name: pgpool-container-env
