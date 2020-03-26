@@ -19,13 +19,13 @@ rpm -qa | grep rh-postgresql10-postgresql-server
 systemctl stop postgresql
 ```
 
-2). Prepare backup of your PostgreSQL data directory -  - e.g. with tar command:
+2). Prepare backup of your PostgreSQL data directory - e.g. with tar command:
 
 ```bash
 tar -cf backup.tar /var/opt/rh/rh-postgresql10/lib/pgsql/data/
 ```
 
-But any other tool that will provide you reliable backup that will prevent you from data loose can be chosen.
+But any other tool that will provide you reliable backup that will prevent you from data loss can be chosen.
 
 3). Create new directory for your PostgreSQL with command:
 
