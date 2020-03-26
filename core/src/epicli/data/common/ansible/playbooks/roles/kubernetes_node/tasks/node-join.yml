@@ -14,6 +14,8 @@
       register: kubeadm_valid_token
       failed_when: kubeadm_valid_token.rc != 0 or kubeadm_valid_token.stderr  # detect errors in pipeline
       changed_when: false
+      retries: 60
+      delay: 5
 
     - name: Create new token
       shell: |
