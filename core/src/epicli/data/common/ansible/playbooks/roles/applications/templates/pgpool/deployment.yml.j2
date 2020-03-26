@@ -79,11 +79,14 @@ spec:
             - name: pgpool-shared-init-dir
               mountPath: /opt/bitnami/pgpool/conf/pool_passwd
               subPath: pool_passwd
-            - name: pgpool-admin-password-file
-              mountPath: /opt/bitnami/pgpool/etc/pcp.conf
-              subPath: pcp.conf
+            - name: pgpool-init-scripts
+              mountPath: /docker-entrypoint-initdb.d/init_pcp_conf.sh
+              subPath: init_pcp_conf.sh
+            - name: pgpool-init-scripts
+              mountPath: /docker-entrypoint-initdb.d/init_pcppass.sh
+              subPath: init_pcppass.sh
       initContainers:
-{#      pgpool-init container creates/synchronizes pool_passwd file, users with passwords are fetched directly from PostgreSQL instance #}
+{#      pgpool-init container creates/synchronizes pool_passwd file, users with passwords are fetched directly from PostgreSQL server #}
         - name: pgpool-init
           image: {{ image_registry_address }}/{{ data.image.path }}
           command:
@@ -93,7 +96,8 @@ spec:
                 name: pgpool-container-env
           volumeMounts:
             - name: pgpool-init-scripts
-              mountPath: /epiphany/scripts
+              mountPath: /epiphany/scripts/init_pool_passwd_file.sh
+              subPath: init_pool_passwd_file.sh
             - name: pgpool-passwords
               mountPath: /opt/bitnami/pgpool/secrets/pgpool_postgres_password
               subPath: pgpool_postgres_password
@@ -110,9 +114,6 @@ spec:
         - name: pgpool-passwords
           secret:
             secretName: pgpool-passwords
-        - name: pgpool-admin-password-file
-          secret:
-            secretName: pgpool-admin-password-file
         - name: pgpool-shared-init-dir
           emptyDir: {}
       restartPolicy: Always
