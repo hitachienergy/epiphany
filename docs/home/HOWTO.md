@@ -8,6 +8,7 @@
     - [Note for Windows users](./howto/PREREQUISITES.md#note-for-windows-users)
     - [Note about proxies](./howto/PREREQUISITES.md#note-about-proxies)
     - [Note about custom CA certificates](./howto/PREREQUISITES.md#note-about-custom-ca-certificates)
+    - [Note about PostgreSQL preflight check](./howto/PREREQUISITES.md#note-about-postgresql-preflight-check)
 
 - [Epiphany cluster](./howto/CLUSTER.md)
   - [How to create an Epiphany cluster on existing infrastructure](./howto/CLUSTER.md#how-to-create-an-epiphany-cluster-on-existing-infrastructure)
@@ -61,6 +62,7 @@
   - [How to enable kubectl on Kubernetes master](./howto/SECURITY.md#how-to-enable-kubectl-on-Kubernetes-master)
 
 - [Databases](./howto/DATABASES.md)
+  - [How to migrate from PostgreSQL installed from Software Collections to installed from PostgreSQL repository](./howto/DATABASES.md#how-to-migrate-from-postgresql-installed-from-software-collections-to-installed-from-postgresql-repository)
   - [How to configure PostgreSQL](./howto/DATABASES.md#how-to-configure-postgresql)
   - [How to configure PostgreSQL replication](./howto/DATABASES.md#how-to-configure-postgresql-replication)
   - [How to set up PostgreSQL connection pooling](./howto/DATABASES.md#how-to-set-up-postgresql-connection-pooling)
