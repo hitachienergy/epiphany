@@ -118,7 +118,7 @@ libsmbclient
 # for postgres
 postgresql-client-10
 postgresql-10-pgaudit
-postgresql-10-repmgr
+postgresql-10-repmgr 4.0.6
 postgresql-common
 pgbouncer 1.10.*
 
