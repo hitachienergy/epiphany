@@ -72,7 +72,7 @@ specification:
       user: auth-db-user
       password: PASSWORD_TO_CHANGE
 
-## --- Pgpool ---
+## --- pgpool ---
 
   - name: pgpool # this service requires PostgreSQL to be installed in cluster
     enabled: no
@@ -99,7 +99,7 @@ specification:
                 topologyKey: kubernetes.io/hostname
       nodeSelector: {}
       tolerations: {}
-    resources:
+    resources: # Adjust to your Pgpool configuration
       limits:
         # cpu: 900m # Set cpu limit according to your env
         memory: 256Mi
@@ -115,7 +115,6 @@ specification:
         PGPOOL_SR_CHECK_USER: epi_pgpool_sr_check # with pg_monitor role, for streaming replication checks
         # ---
         PGPOOL_ADMIN_USERNAME: epi_pgpool_admin # Pgpool administrator (local pcp user)
-        PGPOOL_TIMEOUT: 360
         PGPOOL_ENABLE_LOAD_BALANCING: yes # set to 'no' if there is no replication
         PGPOOL_MAX_POOL: 4
         PGPOOL_POSTGRES_PASSWORD_FILE: /opt/bitnami/pgpool/secrets/pgpool_postgres_password
@@ -125,15 +124,15 @@ specification:
         pgpool_postgres_password: PASSWORD_TO_CHANGE
         pgpool_sr_check_password: PASSWORD_TO_CHANGE
         pgpool_admin_password: PASSWORD_TO_CHANGE
+      # https://www.pgpool.net/docs/41/en/html/runtime-config.html
       config_file_content_to_append: |
-        # Custom content that is appended to pgpool.conf to override default settings
-        num_init_children = '48'
-        memcache_expire = '0'
-        child_max_connections = '0'
-        superuser_reserved_connections = '4'
-        child_life_time = '300'
-        connections_life_time = '300'
-        client_idle_limit = '30'
+        #------------------------------------------------------------------------------
+        # CUSTOM SETTINGS (appended by Epiphany to override defaults)
+        #------------------------------------------------------------------------------
+        # num_init_children = 32
+        # connection_life_time = 600
+
+## --- pgbouncer ---
 
   - name: pgbouncer
     enabled: no
