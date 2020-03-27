@@ -25,11 +25,11 @@
 
 - include_tasks: "configure-haproxy-{{ ansible_os_family }}.yml"
 
-- name: Restart HAProxy to apply new configuration
-  meta: flush_handlers
-
-- name: Start haproxy service
+- name: Reload HAProxy service
   service:
     name: haproxy
     enabled: true
-    state: started
+    state: "{{ item }}"
+  loop:
+    - started
+    - reloaded
