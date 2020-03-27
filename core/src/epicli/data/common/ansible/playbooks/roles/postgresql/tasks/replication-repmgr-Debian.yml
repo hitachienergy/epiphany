@@ -186,3 +186,9 @@
   when:
     - groups['postgresql'][1] == inventory_hostname
     - not is_node_not_attached.stdout == ""
+
+# All
+- name: Restart repmgrd service
+  service:
+    name: "{{ repmgr_service_name[ansible_os_family] }}"
+    state: restarted
