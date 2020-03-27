@@ -18,12 +18,6 @@
     regexp: "^#REPMGRD_CONF=\"/path/to/repmgr.conf\""
     replace: "REPMGRD_CONF=\"{{ repmgr_config_dir[ansible_os_family] }}/repmgr.conf\""
 
-- name: Turn off daemonize to false for repmgrd in /etc/default/repmgrd
-  replace:
-    path: /etc/default/repmgrd
-    regexp: "^#REPMGRD_OPTS=\"\""
-    replace: "REPMGRD_OPTS=\"--daemonize=false\""
-
 - name: Add or update super user in postgresql
   become_user: postgres
   postgresql_user:
