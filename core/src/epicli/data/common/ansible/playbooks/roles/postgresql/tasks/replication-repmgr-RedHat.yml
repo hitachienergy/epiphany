@@ -1,20 +1,23 @@
 ---
 
 # All
-- name: Add user to sudoers file
+- name: Add postgres user to sudoers file
   lineinfile:
     path: /etc/sudoers
-    line: 'postgres ALL=(ALL:ALL) NOPASSWD: /bin/systemctl start postgresql, /bin/systemctl stop postgresql, /bin/systemctl restart postgresql, /bin/systemctl reload postgresql'
+    line: >-
+      postgres ALL=(ALL:ALL) NOPASSWD: /bin/systemctl start {{ pg_service_name[ansible_os_family] }},
+      /bin/systemctl stop {{ pg_service_name[ansible_os_family] }}, /bin/systemctl restart {{ pg_service_name[ansible_os_family] }},
+      /bin/systemctl reload {{ pg_service_name[ansible_os_family] }}
     validate: 'visudo -cf %s'
 
-- name: Add password for super user in postgresql
+- name: Create replication super user in postgres cluster
   become_user: postgres
   postgresql_user:
     user: "{{ specification.extensions.replication.priviledged_user_name }}"
     password: "{{ specification.extensions.replication.priviledged_user_password }}"
     role_attr_flags: LOGIN,SUPERUSER
 
-- name: Add replication user to postgresql
+- name: Create replication user in postgres cluster
   become_user: postgres
   postgresql_user:
     user: "{{ specification.extensions.replication.replication_user_name }}"
