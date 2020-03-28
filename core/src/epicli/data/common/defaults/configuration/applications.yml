@@ -125,12 +125,14 @@ specification:
         pgpool_sr_check_password: PASSWORD_TO_CHANGE
         pgpool_admin_password: PASSWORD_TO_CHANGE
       # https://www.pgpool.net/docs/41/en/html/runtime-config.html
-      config_file_content_to_append: |
+      pgpool_conf_content_to_append: |
         #------------------------------------------------------------------------------
         # CUSTOM SETTINGS (appended by Epiphany to override defaults)
         #------------------------------------------------------------------------------
         # num_init_children = 32
         # connection_life_time = 600
+      # https://www.pgpool.net/docs/41/en/html/auth-pool-hba-conf.html
+      pool_hba_conf: SET_BY_AUTOMATION
 
 ## --- pgbouncer ---
 

@@ -818,11 +818,22 @@ data:
                                       # Comma separated list of table names not to memcache
                                       # that don't write to database
                                       # Regexp are accepted
-
-    {{ data.pgpool.config_file_content_to_append | indent(4) }}
+{% if data.pgpool.pgpool_conf_content_to_append is defined and data.pgpool.pgpool_conf_content_to_append %}
+    {{ data.pgpool.pgpool_conf_content_to_append | indent(4) }}
+{% endif %}
 
   pool_hba.conf: |
-    local    all             all                            trust
-    host     all             {{ data.pgpool.env.PGPOOL_SR_CHECK_USER }}       all         trust
-    host     all             {{ data.pgpool.env.PGPOOL_POSTGRES_USERNAME }}       all         md5
-    host     all             all                all         md5
+    # {{ ansible_managed }}
+
+    # Built-in record
+    # TYPE   DATABASE        USER{% for n in range(data.pgpool.env.PGPOOL_SR_CHECK_USER|length) %}{{" "}}{% endfor %}ADDRESS             METHOD
+    host     all             {{ data.pgpool.env.PGPOOL_SR_CHECK_USER }}    127.0.0.1/32        trust
+
+{% if data.pgpool.pool_hba_conf is defined and data.pgpool.pool_hba_conf and data.pgpool.pool_hba_conf != 'SET_BY_AUTOMATION' %}
+    # Records from Epiphany configuration
+    {{ data.pgpool.pool_hba_conf | indent(4) }}
+{% else %}
+    # Default configuration
+    # TYPE   DATABASE        USER                   ADDRESS             METHOD
+    host     all             all                    all                 md5
+{% endif %}
