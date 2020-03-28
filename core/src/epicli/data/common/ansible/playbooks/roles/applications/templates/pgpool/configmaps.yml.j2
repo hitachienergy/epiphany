@@ -379,7 +379,7 @@ data:
     num_init_children = 32
                                       # Number of concurrent sessions allowed
                                       # (change requires restart)
-    max_pool = '{{ data.pgpool.env.PGPOOL_MAX_POOL | default('15') }}'
+    max_pool = {{ data.pgpool.env.PGPOOL_MAX_POOL | default('15') }}{# to be consistent with bitmami image default, pgpool default is 4 #}
                                       # Number of connection pool caches per connection
                                       # (change requires restart)
 
