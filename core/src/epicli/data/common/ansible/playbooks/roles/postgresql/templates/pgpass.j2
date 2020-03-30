@@ -1,1 +1,1 @@
-{{ hostvars[groups['postgresql'][0]]['ansible_default_ipv4']['address'] }}:5432:*:{{ specification.replication.user }}:{{ specification.replication.password }}
+{{ hostvars[groups['postgresql'][0]]['ansible_default_ipv4']['address'] }}:5432:*:{{ specification.extensions.replication.replication_user_name }}:{{ specification.extensions.replication.replication_user_password }}
