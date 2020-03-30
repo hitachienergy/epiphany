@@ -1,10 +1,4 @@
 ---
-- name: Reconstruct resolved_repository_hostname if needed
-  set_fact:
-    # Applying default repo hostname (groups.repository.0) in case of old legacy clusters that used 'k8s.gcr.io'.
-    resolved_repository_hostname: >-
-      {{ groups.repository.0 if (resolved_repository_hostname == 'k8s.gcr.io') else resolved_repository_hostname }}
-
 - name: Produce final list of hosts to deploy repositories on
   set_fact:
     target_repository_hostnames: >-
@@ -12,3 +6,7 @@
     # Replace repo address according to current resolved repo hostname.
     repository_url: >-
       {{ ( 'http://' ~ resolved_repository_hostname ~ '/epirepo' ) if (resolved_repository_hostname in groups.repository) else repository_url }}
+  vars:
+    # Applying default repo hostname (groups.repository.0) in case of old legacy clusters that used 'k8s.gcr.io'.
+    resolved_repository_hostname: >-
+      {{ groups.repository.0 if (resolved_repository_hostname == 'k8s.gcr.io') else resolved_repository_hostname }}
