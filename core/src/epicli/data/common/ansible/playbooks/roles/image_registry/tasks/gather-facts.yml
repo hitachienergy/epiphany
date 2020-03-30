@@ -3,10 +3,3 @@
   set_fact:
     target_image_registry_hostnames: >-
       {{ groups.image_registry | difference(groups.kubernetes_master) | union([resolved_image_registry_hostname]) | unique }}
-    # Replace repo address according to current resolved repo hostname.
-    image_registry_address: >-
-      {{ (resolved_image_registry_hostname ~ ':5000') if (resolved_image_registry_hostname in groups.image_registry) else image_registry_address }}
-  vars:
-    # Applying default repo hostname (groups.image_registry.0) in case of old legacy clusters that used 'k8s.gcr.io'.
-    resolved_image_registry_hostname: >-
-      {{ groups.image_registry.0 if (resolved_image_registry_hostname == 'k8s.gcr.io') else resolved_image_registry_hostname }}
