@@ -30,7 +30,7 @@
 
     - name: Create repmgr symlink
       file:
-        src: "{{ repmgr_pg_bindir[ansible_os_family] }}"
+        src: "{{ repmgr_pg_bindir[ansible_os_family] }}/repmgr"
         dest: "/usr/bin/repmgr"
         state: link
   when:
