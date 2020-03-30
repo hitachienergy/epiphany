@@ -521,7 +521,7 @@ data:
                                       # Comma separated list of function names
                                       # that don't write to database
                                       # Regexp are accepted
-    black_function_list = 'nextval,setval'
+    black_function_list = 'currval,lastval,nextval,setval'
                                       # Comma separated list of function names
                                       # that write to database
                                       # Regexp are accepted
@@ -579,7 +579,7 @@ data:
 
     # - Streaming -
 
-    sr_check_period = '30'
+    sr_check_period = 10
                                       # Streaming replication check period
                                       # Disabled (0) by default
     sr_check_user = '{{ data.pgpool.env.PGPOOL_SR_CHECK_USER }}'
