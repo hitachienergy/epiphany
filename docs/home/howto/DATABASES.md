@@ -132,7 +132,7 @@ You may use option --force if this node was registered in cluster before.
 For more options see repmgr manual:
 https://repmgr.org/docs/4.0/repmgr-standby-register.html
 
-## How switchover database nodes
+## How to switchover database nodes
 
 For some reason you may want to switchover database nodes (promote standby to primary and demote existing primary to standby).
 
