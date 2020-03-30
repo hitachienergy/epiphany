@@ -113,6 +113,50 @@ specification:
 ```
 PGBouncer listens on standard port 6432. Basic configuration is just template, with very limited access to database. This is because security reasons. [Configuration needs to be tailored according component documentation and stick to security rules and best practices](http://www.pgbouncer.org/).
 
+## How to register database standby in repmgr cluster
+
+If one of database nodes has been recovered to desired state you may want to re-attach it to database cluster. Execute these steps on node which will be attached as standby:
+
+1). Clone data from current primary node:
+
+```bash
+repmgr -h current_primary_address -U epi_repmgr_admin -d epi_repmgr standby clone -F
+```
+
+2). Register node as stanby
+
+```bash
+repmgr -f /etc/repmgr/10/repmgr.conf standby register
+```
+You may use option --force if this node was registered in cluster before.
+For more options see repmgr manual:
+https://repmgr.org/docs/4.0/repmgr-standby-register.html
+
+## How to switchover database nodes
+
+For some reason you may want to switchover database nodes (promote standby to primary and demote existing primary to standby).
+
+1). Configure passwordless comunication for postgres user between database nodes using ssh key.
+
+2). Test and tun inistial login between nodes to authenticate host (if host authentication is enabled)
+
+### Execute commands listed below on actual slave node:
+
+3). Confirm that standby you want to promote is registered in repmgr cluster:
+
+```bash
+repmgr -f /etc/repmgr/10/repmgr.conf cluster show
+```
+
+4). Run command:
+
+```bash
+repmgr -f /etc/repmgr/10/repmgr.conf standby switchover
+```
+
+5). Run command from step 3 and check status. For more details or troubleshooting see repmgr manual:
+https://repmgr.org/docs/4.0/repmgr-standby-switchover.html
+
 ## How to set up PostgreSQL audit logging
 
 Audit logging of database activities is available through the PostgreSQL Audit Extension: [pgAudit](https://github.com/pgaudit/pgaudit/blob/REL_10_STABLE/README.md).
