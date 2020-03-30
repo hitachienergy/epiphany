@@ -124,13 +124,21 @@
     set_fact:
       repository_url: >-
         {%- if (registered_masters.0 is defined) and (hostvars[registered_masters.0].repository_hostname is defined) -%}
-          {{ 'http://' ~  hostvars[registered_masters.0].repository_hostname ~ '/epirepo' }}
+          {%- if hostvars[registered_masters.0].repository_hostname == 'k8s.gcr.io' -%}
+            {{ 'http://' ~ groups.repository.0 ~ '/epirepo' }}
+          {%- else -%}
+            {{ 'http://' ~ hostvars[registered_masters.0].repository_hostname ~ '/epirepo' }}
+          {%- endif -%}
         {%- else -%}
           {{ repository_url }}
         {%- endif -%}
       image_registry_address: >-
         {%- if (registered_masters.0 is defined) and (hostvars[registered_masters.0].repository_hostname is defined) -%}
-          {{ hostvars[registered_masters.0].repository_hostname ~ ':5000' }}
+          {%- if hostvars[registered_masters.0].repository_hostname == 'k8s.gcr.io' -%}
+            {{ groups.image_registry.0 ~ ':5000' }}
+          {%- else -%}
+            {{ hostvars[registered_masters.0].repository_hostname ~ ':5000' }}
+          {%- endif -%}
         {%- else -%}
           {{ image_registry_address }}
         {%- endif -%}
