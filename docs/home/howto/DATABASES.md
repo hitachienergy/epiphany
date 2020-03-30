@@ -117,10 +117,10 @@ PGBouncer listens on standard port 6432. Basic configuration is just template, w
 
 If one of database nodes has been recovered to desired state you may want to re-attach it to database cluster. Execute these steps on node which will be attached as standby:
 
-1). Clone data from primary node:
+1). Clone data from current primary node:
 
 ```bash
-repmgr -h primary_address -U epi_repmgr_admin -d epi_repmgr standby clone -F
+repmgr -h current_primary_address -U epi_repmgr_admin -d epi_repmgr standby clone -F
 ```
 
 2). Register node as stanby
@@ -132,11 +132,11 @@ You may use option --force if this node was registered in cluster before.
 For more options see repmgr manual:
 https://repmgr.org/docs/4.0/repmgr-standby-register.html
 
-## How switchover databases when using repmgr
+## How switchover database nodes
 
 For some reason you may want to switchover database nodes (promote standby to primary and demote existing primary to standby).
 
-1). Configure poswordless comunication for postgres user between database nodes using ssh key.
+1). Configure passwordless comunication for postgres user between database nodes using ssh key.
 
 2). Test and tun inistial login between nodes to authenticate host (if host authentication is enabled)
 
