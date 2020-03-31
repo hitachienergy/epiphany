@@ -363,7 +363,7 @@ specification:
 
 Epiphany gives you the ability to define custom components. This allows you define a custom set of roles for a component you want to use in your cluster and can be usefull when you for example want to maximize usage of the available machines you have at your disposal.
 
-The first thing you will need todo is define it in the `configuration/feature-mapping` configuration. To get this configuration you can run `epicli init ... --full` command. In the `available_roles` roles section you can see all the available roles that Epiphany provides. The `roles_mapping` is where all the Epiphany components are defined and were you need to add your custom components.
+The first thing you will need to do is define it in the `configuration/feature-mapping` configuration. To get this configuration you can run `epicli init ... --full` command. In the `available_roles` roles section you can see all the available roles that Epiphany provides. The `roles_mapping` is where all the Epiphany components are defined and were you need to add your custom components.
 
 Below are parts of an example `configuration/feature-mapping` were we define an new `single_machine_new` component. We want to use Kafka instead of RabbitMQ and don`t need applications and postgress since we dont want a Keycloak deployment:
 
@@ -446,7 +446,7 @@ Then when applying the changed configuration using Epicli additional VM's will b
       is_clustered: true
   ...
   ```
-- postgresql: When changed this will setup or remove additional nodes for Postgresql. Note that extra nodes can only be setup todo replication by adding the following additional `configuration/postgresql` configuration:
+- postgresql: When changed this will setup or remove additional nodes for Postgresql. Note that extra nodes can only be setup to do replication by adding the following additional `configuration/postgresql` configuration:
 
   ```yaml
   kind: configuration/postgresql
