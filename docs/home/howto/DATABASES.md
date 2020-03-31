@@ -113,12 +113,13 @@ In order to configure PostgreSQL replication, add to your data.yaml a block simi
 
 ```yaml
 kind: configuration/postgresql
+title: PostgreSQL
 name: default
 specification:
   config_file:
     parameter_groups:
     ...
-    # Part below is optional, you can use it to override default values
+    # Block below is optional, you can use it to override default values
     - name: REPLICATION
       subgroups:
         - name: Sending Server(s)
@@ -137,10 +138,9 @@ specification:
       enabled: true
       replication_user_name: your_postgresql_replication_user
       replication_user_password: your_postgresql_replication_password
-      specification.extensions.replication.replication_user_password
       use_repmgr: false
+      shared_preload_libraries: []
     ...
-title: PostgreSQL
 ```
 
 If `enabled` is set to `yes` in `replication`, then Epiphany will automatically create cluster of primary and secondary server
@@ -162,6 +162,51 @@ specification:
   ...
 ```
 PGBouncer listens on standard port 6432. Basic configuration is just template, with very limited access to database. This is because security reasons. [Configuration needs to be tailored according component documentation and stick to security rules and best practices](http://www.pgbouncer.org/).
+
+## How to setup PostgreSQL HA replication with repmgr cluster
+
+This component can be used as a part of PostgreSQL clustering configured by Epiphany. In order to configure PostgreSQL HA 
+replication, add to your data.yaml a block similar to the one below to core section:
+
+```yaml
+---
+kind: configuration/postgresql
+name: default
+title: PostgreSQL
+specification:
+  config_file:
+    parameter_groups:
+    # Block below is optional, you can use it to override default values
+    - name: REPLICATION
+      subgroups:
+        - name: Sending Server(s)
+          parameters:
+            - name: max_wal_senders
+              value: 10 # default value
+              comment: maximum number of simultaneously running WAL sender processes
+            - name: wal_keep_segments
+              value: 34 # default value
+              comment: number of WAL files held for standby servers
+    ...
+  extensions:
+    ...
+    replication:
+      enabled: true
+      replication_user_name: your_priviledged_user_name
+      replication_user_password: PASSWORD_TO_CHANGE
+      priviledged_user_name: your_priviledged_user_name
+      priviledged_user_password: PASSWORD_TO_CHANGE
+      use_repmgr: true
+      repmgr_database: repmgr
+      shared_preload_libraries:
+      - repmgr
+```
+If `enabled` is set to `yes` in `replication`, then Epiphany will automatically create cluster of primary and secondary server
+with replication user with name and password specified in data.yaml. This is only possible for configurations containing two
+PostgreSQL servers.
+
+Priviledged user is used to perform full backup of primary instance and replicate this at the beginning to secondary node. After 
+that for replication only replication user with limited permissions is used for WAL replication.
 
 ## How to register database standby in repmgr cluster
 
