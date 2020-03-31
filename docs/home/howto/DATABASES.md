@@ -323,13 +323,7 @@ specification:
         AUTH_FILE: "/etc/pgbouncer/auth/users.txt"
         AUTH_TYPE: md5
         MAX_CLIENT_CONN: 300
-        DEFAULT_POOL_SIZE: 25
-        RESERVE_POOL_SIZE: 25
-        POOL_MODE: transaction
-      secrets:
-        admin_users:
-          - postgres #provide list of users
-```
+       ```
 
 ### Default setup - main parameters
 This chapter describe default setup and main parameters which are responsible for the pefomance limitations in this Epiphany setup.
@@ -338,7 +332,7 @@ All of the configuration parameters changes can be modified in main configuratio
 
 #### Memory server usage
 
-Each of the component have memory usage limitis which are defined based on different algorytm provided by Vendor.
+Each of the component have memory usage limitis which are defined based on different algorithm provided by Vendor.
 
 ##### PGBouncer
 
@@ -375,13 +369,13 @@ Parameters which are responsible for calculation how much memory for pgpool serv
 num_init_children =
 max_pool = 
 ```
-Both parameters can be specified in the main configuration yaml file but please but aware that they are also synchronized with PGBouncer and PostgreSQL configs. Detailed parameter configuration you can find in PgPool documentation mentioned at the beginning of this document.
+Both parameters can be specified in the main configuration yaml file but please be aware that they are also synchronized with PGBouncer and PostgreSQL configs. Detailed parameter configuration you can find in PgPool documentation mentioned at the beginning of this document.
 
 Increasing num_init_children and max_pool parameters probably require changes in hardware resources limitation in main configuration yaml file.
 
 ##### PostgreSQL
 
-The default parameters defined in postgresql.conf for local memory area and for shared memory area are using default values delivered with PostgreSQL database. These paramaters was not predefined and tuned by Epiphany team because they are depended from used hardware resources.
+The default parameters defined in postgresql.conf for local memory area and for shared memory area are using default values delivered with PostgreSQL database. These parameters was not predefined and tuned by Epiphany team because they are dependent from used hardware resources.
 We can only recommend that if your setup require performance improvment you should start from considering changes in such parameters: 
 
 ```
@@ -415,7 +409,7 @@ There are connection limitation defined in PgBouncer configuration. Each of thes
 
 ##### PGPool
 
-PGPool configuration setup by default is preapred for support around 60 concurrent connections. This is because we are using two parameters in default setup  
+PGPool configuration setup by default is prepared for support around 60 concurrent connections. This is because we are using two parameters in default setup  
 ```
 num_init_children = 32
 reserved_connections = 1
@@ -450,7 +444,7 @@ max_pool =
 num_init_children =
 reserved_connections =
 ```
-Detailed documentation about connection tunning you can find in a "Performance Considerations" document which is linked in a first chapter of this document. There is also "Connection settings" chapter in official PgPool documentation which is describig how to balance between connections limit setting and hardware resource usage. 
+Detailed documentation about connection tunning you can find in a "Performance Considerations" document which is linked in a first chapter of this document. There is also "Connection settings" chapter in official PgPool documentation which describes how to balance between connections limit setting and hardware resource usage. 
 
 ##### PostgreSQL
 
