@@ -35,12 +35,7 @@ spec:
                   key: admin_users
 ##TODO: resources requests and limits needs to be adjust aftet testing
           resources:
-            requests:
-              cpu: "250m"
-              memory: "512Mi"
-            limits:
-              cpu: "500m"
-              memory: "1024Mi"
+            {{ data.resources | to_nice_yaml(indent=2) | indent(12) | trim }}
           livenessProbe:
             tcpSocket:
               port: {{ data.service.port }}
