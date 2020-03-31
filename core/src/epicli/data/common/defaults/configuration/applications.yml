@@ -99,13 +99,13 @@ specification:
                 topologyKey: kubernetes.io/hostname
       nodeSelector: {}
       tolerations: {}
-    resources: # Adjust to your Pgpool configuration
+    resources: # Adjust to your configuration, see https://www.pgpool.net/docs/41/en/html/resource-requiremente.html
       limits:
-        # cpu: 900m # Set cpu limit according to your env
-        memory: 256Mi
+        # cpu: 900m # Set according to your env
+        memory: 164Mi
       requests:
-        cpu: 250m
-        memory: 256Mi
+        cpu: 250m # Adjust to your env, increase if possible
+        memory: 164Mi
     pgpool:
       # https://github.com/bitnami/bitnami-docker-pgpool#configuration + https://github.com/bitnami/bitnami-docker-pgpool#environment-variables
       env:
