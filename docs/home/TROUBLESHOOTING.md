@@ -1,6 +1,6 @@
 # Troubleshooting
 
-## Epicli container connection issues after hybernation/sleep on Windows
+## Epicli container connection issues after hibernation/sleep on Windows
 
 When running the Epicli container on Windows you might get such errors when trying to run the apply command:
 
