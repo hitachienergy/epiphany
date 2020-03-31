@@ -3,14 +3,14 @@
 <!-- TOC -->
 
 - [Epiphany Governance Model](#epiphany-governance-model)
-    - [Overview](#overview)
-    - [Roles And Responsibilities](#roles-and-responsibilities)
-    - [Committers](#committers)
-    - [Contributors](#contributors)
-    - [Users](#users)
-    - [Support](#support)
-    - [Contribution Process](#contribution-process)
-    - [Decision-Making Process](#decision-making-process)
+  - [Overview](#overview)
+  - [Roles And Responsibilities](#roles-and-responsibilities)
+  - [Committers](#committers)
+  - [Contributors](#contributors)
+  - [Users](#users)
+  - [Support](#support)
+  - [Contribution Process](#contribution-process)
+  - [Decision-Making Process](#decision-making-process)
 
 <!-- /TOC -->
 
@@ -38,15 +38,15 @@ Anyone can become a contributor. There is no expectation of commitment to the pr
 
 Some contributors will already be engaging with the project as users, but will also find themselves doing one or more of the following:
 
-* supporting new users (current users often provide the most effective new user support)
-* reporting bugs
-* identifying requirements
-* supplying graphics and web design
-* programming
-* assisting with project infrastructure
-* writing documentation
-* fixing bugs
-* adding features
+- supporting new users (current users often provide the most effective new user support)
+- reporting bugs
+- identifying requirements
+- supplying graphics and web design
+- programming
+- assisting with project infrastructure
+- writing documentation
+- fixing bugs
+- adding features
 
 As contributors gain experience and familiarity with the project, they may find that the project lead starts relying on them more and more. When this begins to happen, they gradually adopt the role of committer, as described above.
 
@@ -56,10 +56,10 @@ Users are community members who have a need for the project. They are the most i
 
 Users should be encouraged to participate in the life of the project and the community as much as possible. User contributions enable the project team to ensure that they are satisfying the needs of those users. Common user activities may include (but are not limited to):
 
-* evangelizing about the project
-* informing developers of project strengths and weaknesses from a new user’s perspective
-* providing moral support (a ‘thank you’ goes a long way)
-* providing support
+- evangelizing about the project
+- informing developers of project strengths and weaknesses from a new user’s perspective
+- providing moral support (a ‘thank you’ goes a long way)
+- providing support
 
 Users who continue to engage with the project and its community will often find themselves becoming more and more involved. Such users may then go on to become contributors, as described above.
 

@@ -369,7 +369,65 @@ specification:
 
 ## How to create custom cluster components
 
-TODO
+Epiphany gives you the ability to define custom components. This allows you define a custom set of roles for a component you want to use in your cluster and can be usefull when you for example want to maximize usage of the available machines you have at your disposal.
+
+The first thing you will need todo is define it in the `configuration/feature-mapping` configuration. To get this configuration you can run `epicli init ... --full` command. In the `available_roles` roles section you can see all the available roles that Epiphany provides. The `roles_mapping` is where all the Epiphany components are defined and were you need to add your custom components.
+
+Below are parts of an example `configuration/feature-mapping` were we define an new `single_machine_new` component. We want to use Kafka instead of RabbitMQ and don`t need applications and postgress since we dont want a Keycloak deployment:
+
+```yaml
+kind: configuration/feature-mapping
+title: Feature mapping to roles
+name: default
+specification:
+  available_roles: # All entries here represent the available roles within Epiphany
+  - name: repository
+    enabled: yes
+  - name: firewall
+    enabled: yes
+  - name: image-registry
+  ...
+  roles_mapping: # All entries here represent the default components provided with Epiphany
+  ...
+    single_machine:
+    - repository
+    - image-registry
+    - kubernetes-master
+    - applications
+    - rabbitmq
+    - postgresql
+    - firewall
+    # Below is the new single_machine_new definition
+    single_machine_new:
+    - repository
+    - image-registry
+    - kubernetes-master
+    - kafka
+    - firewall
+  ...
+```
+
+Once defined the new `single_machine_new` can be used inside the `epiphany-cluster` configuration:
+
+```yaml
+kind: epiphany-cluster
+title: Epiphany cluster Config
+name: default
+specification:
+  prefix: new
+  name: single
+  admin_user:
+    name: operations
+    key_path: /user/.ssh/id_rsa
+  cloud:
+    ... # add other cloud configuration as needed
+  components:
+    ... # other components as needed
+    single_machine_new:
+      count: x
+```
+
+*Note: After defining a new component you might also need to define aditional configurations for virtual machines and security rules depending on what you are trying to achieve.*
 
 ## How to scale or cluster components
 
