@@ -358,14 +358,6 @@ specification:
   - name: auth-service
     enabled: yes # set to yest to enable authentication service
     ... # add other authentication service configuration as needed
----
-kind: configuration/kubernetes-master
-title: Kubernetes Master Config
-name: default
-specification:
-  allow_pods_on_master: true # set to true to enable untaint master for pod deployment
-  ... # add other kubernetes-master configuration as needed
-```
 
 ## How to create custom cluster components
 
