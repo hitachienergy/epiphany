@@ -4,13 +4,17 @@ Here are some materials concerning Epiphany tooling and cluster components - bot
 
 ## Tooling
 
-1. [Python 3.7](https://docs.python.org/3.7/)
+1. [Visualstudio Code](https://code.visualstudio.com/)
+    - [Devcontainers](https://code.visualstudio.com/docs/remote/containers)
+2. [Python 3.7](https://docs.python.org/3.7/)
     - [Docs and tutorials](https://docs.python.org/3/tutorial/)
-2. [Terraform](https://www.terraform.io/)
-    - AWS use case [example](https://www.terraform.io/intro/getting-started/build.html)
-3. [Ansible](https://www.ansible.com/)
-    - [Intro to playbooks](https://docs.ansible.com/ansible/latest/user_guide/playbooks_intro.html)
-4. [Azure-cli](https://docs.microsoft.com/en-us/cli/azure/?view=azure-cli-latest)
+3. [Terraform](https://www.terraform.io/)
+    - AWS use case [example](https://learn.hashicorp.com/terraform/getting-started/build.html)
+    - Azure use case [example](https://learn.hashicorp.com/terraform?track=azure#azure)
+4. [Ansible](https://www.ansible.com/)
+    - [Introduction to playbooks](https://docs.ansible.com/ansible/latest/user_guide/playbooks_intro.html)
+5. [Azure-cli](https://docs.microsoft.com/en-us/cli/azure/?view=azure-cli-latest)
+6. [Boto3](https://boto3.amazonaws.com/v1/documentation/api/latest/index.html)
 
 ## Cluster Components
 
@@ -46,5 +50,9 @@ Here are some materials concerning Epiphany tooling and cluster components - bot
     1. [HaProxy](http://www.haproxy.org/)
 7. Databases
     1. [PostgreSQL](https://www.postgresql.org/docs/)
+        - [Repmng](https://repmgr.org/)
+        - [PGBouncer](https://www.pgbouncer.org/)
+        - [PGPool](https://www.pgpool.net/mediawiki/index.php/Main_Page)
+        - [PGAudit](https://www.pgaudit.org/)
 8. Authentication
     1. [KeyCloak](https://www.keycloak.org/documentation.html)

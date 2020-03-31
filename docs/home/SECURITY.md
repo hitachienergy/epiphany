@@ -10,19 +10,18 @@ this during planning your Epiphany deployment and configuration.
 
 ### Users and roles created by epiphany
 
-By default Epiphany is creating user operations that is used to connect to machines with admin rights on every machine. This 
-setting can be changed in Epiphany yaml configuration files.
+By default Epiphany is creating user operations that is used to connect to machines with admin rights on every machine. This setting can be changed in Epiphany yaml configuration files.
 
 Additional to users created by each component Epiphany creates also users and groups:
 
-  - haproxy_exporter/haproxy_exporter
-  - kafka_exporter/kafka_exporter
-  - node_exporter/node_exporter
-  - jmx-exporter/jmx-exporter
-  - prometheus/prometheus
-  - rabbitmq/rabbitmq
-  - zookeeper/zookeeper
-  - kafka/kafka
+- haproxy_exporter/haproxy_exporter
+- kafka_exporter/kafka_exporter
+- node_exporter/node_exporter
+- jmx-exporter/jmx-exporter
+- prometheus/prometheus
+- rabbitmq/rabbitmq
+- zookeeper/zookeeper
+- kafka/kafka
   
 Other accounts created by each component you can find in these components documentation.
 
