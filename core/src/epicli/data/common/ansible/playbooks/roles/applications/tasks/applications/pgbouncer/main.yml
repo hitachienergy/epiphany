@@ -6,6 +6,5 @@
     deployment_files:
       - namespace.yml
       - configmaps.yml
-      - secrets.yml
       - deployment.yml
       - service.yml

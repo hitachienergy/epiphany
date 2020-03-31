@@ -78,13 +78,17 @@ Then configure database server using psql according to your needs and
 
 ## How to configure PostgreSQL replication
 
-In order to configure PostgreSQL replication, add to your data.yaml a block similar to the one below to core section:
+#### Attention
+
+In version 0.6.0 because of delivering full HA for PostgreSQL we needed to change configuration for PostgreSQL native
+replication.
+
+You need to change old configuration file from the one visible below:
 
 ```yaml
 kind: configuration/postgresql
 name: default
 title: PostgreSQL
-version: 0.4.1
 provider: aws
 specification:
   replication:
@@ -94,8 +98,54 @@ specification:
     max_wal_senders: 10 # (optional) - default value 5
     wal_keep_segments: 34 # (optional) - default value 32
 ```
-If `enabled` is set to `yes` in `replication`, then Epiphany will automatically create cluster of master and slave server
-with replication user with name and password specified in data.yaml.
+
+to one described below.
+
+old value | new value |
+--- | --- |
+specification.replication.enabled | specification.extensions.enabled |
+specification.replication.user | specification.extensions.replication_user_name |
+specification.replication.password | specification.extensions.replication_user_password |
+specification.replication.max_wal_senders | defined in subgroups section |
+specification.replication.wal_keep_segments | defined in subgroups section |
+
+In order to configure PostgreSQL replication, add to your data.yaml a block similar to the one below to core section:
+
+```yaml
+kind: configuration/postgresql
+name: default
+specification:
+  config_file:
+    parameter_groups:
+    ...
+    # Part below is optional, you can use it to override default values
+    - name: REPLICATION
+      subgroups:
+        - name: Sending Server(s)
+          parameters:
+            - name: max_wal_senders
+              value: 10 # default value
+              comment: maximum number of simultaneously running WAL sender processes
+              when: replication # default value
+            - name: wal_keep_segments
+              value: 34 # default value
+              comment: number of WAL files held for standby servers
+              when: replication
+  extensions:
+    ...
+    replication:
+      enabled: true
+      replication_user_name: your_postgresql_replication_user
+      replication_user_password: your_postgresql_replication_password
+      specification.extensions.replication.replication_user_password
+      use_repmgr: false
+    ...
+title: PostgreSQL
+```
+
+If `enabled` is set to `yes` in `replication`, then Epiphany will automatically create cluster of primary and secondary server
+with replication user with name and password specified in data.yaml. This is only possible for configurations containing two
+PostgreSQL servers.
 
 ## How to set up PostgreSQL connection pooling
 

@@ -27,13 +27,6 @@ spec:
           envFrom:
             - configMapRef:
                 name: pgbouncer-container-env
-          env:
-            - name: ADMIN_USERS
-              valueFrom:
-                secretKeyRef:
-                  name: pgbouncer
-                  key: admin_users
-##TODO: resources requests and limits needs to be adjust aftet testing
           resources:
             {{ data.resources | to_nice_yaml(indent=2) | indent(12) | trim }}
           livenessProbe:
