@@ -83,7 +83,7 @@ specification:
     service:
       name: pgpool
       port: 5432
-    replicas: 2
+    replicas: 4
     pod_spec:
       affinity:
         podAntiAffinity: # prefer to schedule replicas on different nodes
@@ -134,7 +134,9 @@ specification:
         reserved_connections = 1
       # https://www.pgpool.net/docs/41/en/html/auth-pool-hba-conf.html
       pool_hba_conf: SET_BY_AUTOMATION
+
 ## --- pgbouncer ---
+
   - name: pgbouncer
     enabled: no
     #https://github.com/brainsam/pgbouncer/tree/release/1.12
