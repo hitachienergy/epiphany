@@ -111,8 +111,8 @@ specification:
       env:
         PGPOOL_BACKEND_NODES: SET_BY_AUTOMATION # you can use custom value like '0:pg-node-1:5432,1:pg-node-2:5432'
         # Postgres users
-        PGPOOL_POSTGRES_USERNAME: epi_pgpool_postgres_admin # with SELECT on pg_authid privilege to synchronize users, SUPERUSER is not required, also used for pgpool container health checks
-        PGPOOL_SR_CHECK_USER: epi_pgpool_sr_check # with pg_monitor role, for streaming replication checks
+        PGPOOL_POSTGRES_USERNAME: epi_pgpool_postgres_admin # with SUPERUSER role to use connection slots reserved for superusers for K8s liveness probes, also for user synchronization
+        PGPOOL_SR_CHECK_USER: epi_pgpool_sr_check # with pg_monitor role, for streaming replication checks and health checks
         # ---
         PGPOOL_ADMIN_USERNAME: epi_pgpool_admin # Pgpool administrator (local pcp user)
         PGPOOL_ENABLE_LOAD_BALANCING: yes # set to 'no' if there is no replication

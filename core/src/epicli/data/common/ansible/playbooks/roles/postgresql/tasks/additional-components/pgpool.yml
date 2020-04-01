@@ -11,7 +11,7 @@
   loop:
     - user: "{{ pgpool.env.PGPOOL_POSTGRES_USERNAME }}"
       password: "{{ pgpool.secrets.pgpool_postgres_password }}"
-      role_attr_flags: LOGIN
+      role_attr_flags: LOGIN,SUPERUSER
       priv: pg_authid:SELECT
       db: postgres # required by 'priv'
     - user: "{{ pgpool.env.PGPOOL_SR_CHECK_USER }}"
