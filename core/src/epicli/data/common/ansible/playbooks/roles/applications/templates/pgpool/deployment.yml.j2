@@ -37,6 +37,7 @@ spec:
           livenessProbe:
             exec:
               command:
+{#              healthcheck.sh runs 'pcp_attach_node' to reattach backend if it has come back online #}
                 - bash
                 - -ec
                 - PGDATABASE=postgres
