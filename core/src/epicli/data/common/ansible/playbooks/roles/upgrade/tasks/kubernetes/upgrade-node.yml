@@ -13,18 +13,34 @@
   when:
     - version is version('1.14.0', '>=') # Docker 18.09 validated since K8s 1.14
 
-- name: upgrade-master | Hold packages for Debian family
-  include_tasks: "Debian/hold-packages.yml"
-  when: ansible_os_family == "Debian"
+# For Redhat and Debian & K8n > 1.14.6 we want to update package like so
+- name: upgrade-node | Upgrade, configure packages
+  block:
+  - name: upgrade-node | Hold packages for Debian family
+    include_tasks: "Debian/hold-packages.yml"
+    when: ansible_os_family == "Debian"
 
-- name: upgrade-master | Install kubeadm
-  include_tasks: "{{ ansible_os_family }}/install-kubeadm.yml"
+  - name: upgrade-node | Install kubeadm
+    include_tasks: "{{ ansible_os_family }}/install-kubeadm.yml"
 
-- name: upgrade-node | Upgrade node config
-  shell: kubeadm upgrade node config --kubelet-version v{{ version }}
+  - name: upgrade-node | Upgrade node config
+    shell: kubeadm upgrade node config --kubelet-version v{{ version }}
 
-- name: upgrade-node | Install packages
-  include_tasks: "{{ ansible_os_family }}/install-packages.yml"
+  - name: upgrade-node | Install packages
+    include_tasks: "{{ ansible_os_family }}/install-packages.yml"
+  when: version is version('1.15.0', '>=') or
+        ansible_os_family == "RedHat"
+
+# For Debian & K8n <= 1.14.6 we want to update package like so
+- name: upgrade-node | Upgrade, configure packages
+  block:
+  - name: upgrade-node | Install packages
+    include_tasks: "{{ ansible_os_family }}/install-packages-pre-1.15.yml"
+
+  - name: upgrade-node | Upgrade node config
+    shell: kubeadm upgrade node config --kubelet-version v{{ version }}
+  when: version is version('1.14.6', '<=') and
+        ansible_os_family == "Debian"
 
 - name: upgrade-node | Restart kubelet
   systemd:
