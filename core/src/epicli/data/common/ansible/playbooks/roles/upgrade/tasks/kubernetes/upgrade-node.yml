@@ -13,7 +13,7 @@
   when:
     - version is version('1.14.0', '>=') # Docker 18.09 validated since K8s 1.14
 
-# For Redhat and Debian & K8n > 1.12.10 we want to update package like so
+# For Redhat and Debian & K8n > 1.14.6 we want to update package like so
 - name: upgrade-node | Upgrade, configure packages
   block:
   - name: upgrade-node | Hold packages for Debian family
@@ -28,18 +28,18 @@
 
   - name: upgrade-node | Install packages
     include_tasks: "{{ ansible_os_family }}/install-packages.yml"
-  when: version is version('1.13.0', '>=') or
+  when: version is version('1.15.0', '>=') or
         ansible_os_family == "RedHat"
 
-# For Debian & K8n <= 1.12.10 we want to update package like so
+# For Debian & K8n <= 1.14.6 we want to update package like so
 - name: upgrade-node | Upgrade, configure packages
   block:
   - name: upgrade-node | Install packages
-    include_tasks: "{{ ansible_os_family }}/install-packages-pre-1.13.yml"
+    include_tasks: "{{ ansible_os_family }}/install-packages-pre-1.15.yml"
 
   - name: upgrade-node | Upgrade node config
     shell: kubeadm upgrade node config --kubelet-version v{{ version }}
-  when: version is version('1.12.10', '==') and
+  when: version is version('1.14.6', '<=') and
         ansible_os_family == "Debian"
 
 - name: upgrade-node | Restart kubelet

@@ -73,7 +73,7 @@
 - name: upgrade-master | Wait for cluster's readiness
   include_tasks: wait.yml
 
-# For Redhat and Debian & K8n > 1.12.10 we want to update master like so
+# For Redhat and Debian & K8n > 1.14.6 we want to update package like so
 - name: upgrade-master | Upgrade, configure packages
   block:
   - name: upgrade-master | Hold packages for Debian family
@@ -165,14 +165,14 @@
     when:
       - groups['kubernetes_master'][0] == inventory_hostname
       - etcd_encryption_file.stat.exists
-  when: version is version('1.13.0', '>=') or
+  when: version is version('1.15.0', '>=') or
         ansible_os_family == "RedHat"
 
-# For Debian & K8n <= 1.12.10 we want to update package like so
+# For Debian & K8n <= 1.14.6 we want to update package like so
 - name: upgrade-master | Upgrade, configure packages
   block:
   - name: upgrade-master | Install packages
-    include_tasks: "{{ ansible_os_family }}/install-packages-pre-1.13.yml"
+    include_tasks: "{{ ansible_os_family }}/install-packages-pre-1.15.yml"
 
   - name: upgrade-master | Wait for cluster's readiness
     include_tasks: wait.yml
@@ -199,7 +199,7 @@
     delay: 5
     when:
       - cluster_version.stdout is version('v' + version, '<') # without this condition fails when 'upgrading' again from 1.12.10 to 1.12.10
-  when: version is version('1.12.10', '==') and
+  when: version is version('1.14.6', '<=') and
         ansible_os_family == "Debian"
 
 - name: upgrade-master | Wait for cluster's readiness
