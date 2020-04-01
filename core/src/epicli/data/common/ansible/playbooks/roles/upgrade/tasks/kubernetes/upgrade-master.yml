@@ -172,7 +172,7 @@
 - name: upgrade-master | Upgrade, configure packages
   block:
   - name: upgrade-master | Install packages
-    include_tasks: "{{ ansible_os_family }}}/install-packages-pre-1.13.yml"
+    include_tasks: "{{ ansible_os_family }}/install-packages-pre-1.13.yml"
 
   - name: upgrade-master | Wait for cluster's readiness
     include_tasks: wait.yml
