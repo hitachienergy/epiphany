@@ -28,12 +28,7 @@ spec:
             - configMapRef:
                 name: pgbouncer-container-env
           resources:
-            requests:
-              cpu: "250m"
-              memory: "128Mi"
-            limits:
-              cpu: "500m"
-              memory: "128Mi"
+            {{ data.resources | to_nice_yaml(indent=2) | indent(12) | trim }}
           livenessProbe:
             tcpSocket:
               port: {{ data.service.port }}
