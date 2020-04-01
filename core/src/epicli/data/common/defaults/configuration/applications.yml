@@ -160,7 +160,7 @@ specification:
         LISTEN_PORT: 5432
         AUTH_FILE: "/etc/pgbouncer/auth/users.txt"
         AUTH_TYPE: md5
-        MAX_CLIENT_CONN: 300
+        MAX_CLIENT_CONN: 150
         DEFAULT_POOL_SIZE: 25
         RESERVE_POOL_SIZE: 25
         POOL_MODE: transaction
