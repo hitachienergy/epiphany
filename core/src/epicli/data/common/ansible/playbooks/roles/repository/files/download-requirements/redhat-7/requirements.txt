@@ -36,6 +36,7 @@ filebeat-6.5.4 # actually it's filebeat-oss
 firewalld
 fontconfig # for grafana
 fping
+gnutls # for cifs-utils
 grafana-6.2.5
 gssproxy # for nfs-utils
 htop
@@ -68,6 +69,7 @@ perl-Pod-Perldoc # for vim
 perl-Pod-Simple # for vim
 perl-Pod-Usage # for vim
 policycoreutils-python # for container-selinux
+pyldb # for cifs-utils
 python-firewall # for firewalld
 python-kitchen # for yum-utils
 python-lxml # for java-1.8.0-openjdk-headless
@@ -88,6 +90,7 @@ rh-postgresql10-postgresql-syspaths
 samba-client
 samba-client-libs # for samba-client
 samba-common
+samba-libs # for cifs-utils
 socat
 sysstat
 tar
