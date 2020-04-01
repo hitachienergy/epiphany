@@ -332,7 +332,7 @@ All of the configuration parameters changes can be modified in main configuratio
 
 #### Memory server usage
 
-Each of the component have memory usage limitis which are defined based on different algorithm provided by Vendor.
+Each of the component have memory usage limits which are defined based on different algorithm provided by Vendor.
 
 ##### PGBouncer
 
