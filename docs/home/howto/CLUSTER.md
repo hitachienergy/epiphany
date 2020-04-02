@@ -465,16 +465,16 @@ Changing the count for other predefined components will spawn additional machine
 
 ## Multi master cluster
 
-Epiphany can deploy [HA Kubernetes clusters](../../design-docs/kubernetes-ha/kubernetes-ha.md) (since v0.6). To achieve that, it is required:
+Epiphany can deploy [HA Kubernetes clusters](../../design-docs/kubernetes-ha/kubernetes-ha.md) (since v0.6). To achieve that, it is required that:
 
-- specify master count to be higher than 1 (proper values should be 1, 3, 5, 7):
+- the master count must be higher than 1 (proper values should be 1, 3, 5, 7):
 
   ```yaml
   kubernetes_master:
     count: 3
   ```
 
-- indicate that HA Control Plane will be deployed:
+- the HA mode must be enabled in `configuration/shared-config`:
 
   ```yaml
   kind: configuration/shared-config
@@ -484,15 +484,15 @@ Epiphany can deploy [HA Kubernetes clusters](../../design-docs/kubernetes-ha/kub
     promote_to_ha: false
   ```
 
-- run regular epicli apply cycle
+- the regular epcli apply cycle must be executed
 
-Epiphany can promote / convert older single-master clusters to HA mode (since v0.6). To achieve that, it is required:
+Epiphany can promote / convert older single-master clusters to HA mode (since v0.6). To achieve that, it is required that:
 
-- existing cluster is legacy single-master cluster
+- the existing cluster is legacy single-master cluster
 
-- existing cluster has been [upgraded](UPGRADE.md) to Kubernetes 1.17 first
+- the existing cluster has been [upgraded](UPGRADE.md) to Kubernetes 1.17 first
 
-- indicate that HA Control Plane will be deployed and HA promotion is enabled:
+- the HA mode and HA promotion must be enabled in `configuration/shared-config`:
 
   ```yaml
   kind: configuration/shared-config
@@ -502,9 +502,9 @@ Epiphany can promote / convert older single-master clusters to HA mode (since v0
     promote_to_ha: true
   ```
 
-- run regular epicli apply cycle
+- the regular epcli apply cycle must be executed
 
-- since it is one-time operation, after successful promotion `promote_to_ha` must be disabled in the config:
+- since it is one-time operation, after successful promotion, the HA promotion must be disabled in the config:
 
   ```yaml
   kind: configuration/shared-config
@@ -514,20 +514,20 @@ Epiphany can promote / convert older single-master clusters to HA mode (since v0
     promote_to_ha: false
   ```
 
-__Please notice, it is not supported yet to reverse HA promotion!__
+<em>Note: it is not supported yet to reverse HA promotion.</em>
 
-Epiphany can scale-up existing HA clusters (including ones that were promoted). To achieve that, it is required:
+Epiphany can scale-up existing HA clusters (including ones that were promoted). To achieve that, it is required that:
 
-- existing cluster must be already running in HA mode
+- the existing cluster must be already running in HA mode
 
-- specify master count to be higher than previous value (proper values should be 3, 5, 7):
+- the master count must be higher than previous value (proper values should be 3, 5, 7):
 
   ```yaml
   kubernetes_master:
     count: 5
   ```
 
-- indicate that HA Control Plane will be deployed:
+- the HA mode must be enabled in `configuration/shared-config`:
 
   ```yaml
   kind: configuration/shared-config
@@ -537,9 +537,9 @@ Epiphany can scale-up existing HA clusters (including ones that were promoted). 
     promote_to_ha: false
   ```
 
-- run regular epicli apply cycle
+- the regular epcli apply cycle must be executed
 
-__Please notice, it is not supported yet to scale-down clusters (master count cannot be decreased)!__
+<em>Note: it is not supported yet to scale-down clusters (master count cannot be decreased).</em>
 
 ## Build artifacts
 
