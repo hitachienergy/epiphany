@@ -42,6 +42,7 @@ spec:
                 - -ec
                 - PGDATABASE=postgres
                   /opt/bitnami/scripts/pgpool/healthcheck.sh
+{#          it's better to avoid overlapping with readinessProbe #}
             initialDelaySeconds: 30
             periodSeconds: 10
             timeoutSeconds: 5
