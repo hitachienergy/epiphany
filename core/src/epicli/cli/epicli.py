@@ -76,7 +76,12 @@ def main():
     config.log_count = args.log_count
     config.validate_certs = True if args.validate_certs == 'true' else False
 
-    return args.func(args)
+    try:
+        return args.func(args)
+    except Exception as e:
+        logger = Log('epicli')
+        logger.error(e, exc_info=True)
+        return 1
 
 def init_parser(subparsers):
     sub_parser = subparsers.add_parser('init', description='Creates configuration file in working directory.')

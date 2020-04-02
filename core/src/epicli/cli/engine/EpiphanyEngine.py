@@ -77,51 +77,43 @@ class EpiphanyEngine:
             config_collector.run()
 
     def verify(self):
-        try:
-            self.process_input_docs()
+        self.process_input_docs()
 
-            self.process_configuration_docs()
+        self.process_configuration_docs()
 
-            self.process_infrastructure_docs()
+        self.process_infrastructure_docs()
 
-            save_manifest([*self.input_docs, *self.configuration_docs, *self.infrastructure_docs], self.cluster_model.specification.name)
+        save_manifest([*self.input_docs, *self.configuration_docs, *self.infrastructure_docs], self.cluster_model.specification.name)
 
-            return 0
-        except Exception as e:
-            self.logger.error(e, exc_info=True) #TODO extensive debug output might not always be wanted. Make this configurable with input flag?
-            return 1
+        return 0
 
     def apply(self):
-        try:
-            self.process_input_docs()
+        self.process_input_docs()
 
-            self.process_infrastructure_docs()
+        self.process_infrastructure_docs()
 
-            if not self.skip_infrastructure:
-                # Generate terraform templates
-                with TerraformTemplateGenerator(self.cluster_model, self.infrastructure_docs) as template_generator:
-                    template_generator.run()
+        if not self.skip_infrastructure:
+            # Generate terraform templates
+            with TerraformTemplateGenerator(self.cluster_model, self.infrastructure_docs) as template_generator:
+                template_generator.run()
 
-                # Run Terraform to create infrastructure
-                with TerraformRunner(self.cluster_model.specification.name) as tf_runner:
-                    tf_runner.run()
+            # Run Terraform to create infrastructure
+            with TerraformRunner(self.cluster_model.specification.name) as tf_runner:
+                tf_runner.run()
 
-            self.process_configuration_docs()
+        self.process_configuration_docs()
 
-            self.collect_infrastructure_config()
+        self.collect_infrastructure_config()
 
-            # Run Ansible to provision infrastructure
-            docs = [*self.input_docs, *self.configuration_docs, *self.infrastructure_docs]
-            with AnsibleRunner(self.cluster_model, docs) as ansible_runner:
-                ansible_runner.run()
+        # Run Ansible to provision infrastructure
+        docs = [*self.input_docs, *self.configuration_docs, *self.infrastructure_docs]
+        with AnsibleRunner(self.cluster_model, docs) as ansible_runner:
+            ansible_runner.run()
 
-            # Save docs to manifest file
-            save_manifest(docs, self.cluster_model.specification.name)
+        # Save docs to manifest file
+        save_manifest(docs, self.cluster_model.specification.name)
 
-            return 0
-        except Exception as e:
-            self.logger.error(e, exc_info=True)  # TODO extensive debug output might not always be wanted. Make this configurable with input flag?
-            return 1
+        return 0
 
     def dry_run(self):
 

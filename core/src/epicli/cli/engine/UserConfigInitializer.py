@@ -22,20 +22,16 @@ class UserConfigInitializer(Step):
         super().__exit__(exc_type, exc_value, traceback)
 
     def run(self):
-        try:
-            defaults = load_all_yaml_objs(types.DEFAULT, self.provider, 'configuration/minimal-cluster-config')
-            defaults[0].specification.name = self.name
+        defaults = load_all_yaml_objs(types.DEFAULT, self.provider, 'configuration/minimal-cluster-config')
+        defaults[0].specification.name = self.name
 
-            if self.is_full_config:
-                defaults = self.get_full_config(defaults)
+        if self.is_full_config:
+            defaults = self.get_full_config(defaults)
 
-            save_manifest(defaults, self.name, self.name+'.yml')
+        save_manifest(defaults, self.name, self.name+'.yml')
 
-            self.logger.info('Initialized user configuration and saved it to "' + os.path.join(get_build_path(self.name), self.name + '.yml') + '"')
-            return 0
-        except Exception as e:
-            self.logger.error(e, exc_info=True)  # TODO extensive debug output might not always be wanted. Make this configurable with input flag?
-            return 1
+        self.logger.info('Initialized user configuration and saved it to "' + os.path.join(get_build_path(self.name), self.name + '.yml') + '"')
+        return 0
 
     def get_full_config(self, config_docs):
         cluster_config_path = save_manifest(config_docs, self.name, self.name + '.yml')
