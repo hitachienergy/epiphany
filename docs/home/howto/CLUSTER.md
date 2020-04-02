@@ -463,6 +463,84 @@ Then when applying the changed configuration using Epicli additional VM's will b
 
 Changing the count for other predefined components will spawn additional machines or remove VM's 
 
+## Multi master cluster
+
+Epiphany can deploy [HA Kubernetes clusters](../../design-docs/kubernetes-ha/kubernetes-ha.md) (since v0.6). To achieve that, it is required:
+
+- specify master count to be higher than 1 (proper values should be 1, 3, 5, 7):
+
+  ```yaml
+  kubernetes_master:
+    count: 3
+  ```
+
+- indicate that HA Control Plane will be deployed:
+
+  ```yaml
+  kind: configuration/shared-config
+  ...
+  specification:
+    use_ha_control_plane: true
+    promote_to_ha: false
+  ```
+
+- run regular epicli apply cycle
+
+Epiphany can promote / convert older single-master clusters to HA mode (since v0.6). To achieve that, it is required:
+
+- existing cluster is legacy single-master cluster
+
+- existing cluster has been [upgraded](UPGRADE.md) to Kubernetes 1.17 first
+
+- indicate that HA Control Plane will be deployed and HA promotion is enabled:
+
+  ```yaml
+  kind: configuration/shared-config
+  ...
+  specification:
+    use_ha_control_plane: true
+    promote_to_ha: true
+  ```
+
+- run regular epicli apply cycle
+
+- since it is one-time operation, after successful promotion `promote_to_ha` must be disabled in the config:
+
+  ```yaml
+  kind: configuration/shared-config
+  ...
+  specification:
+    use_ha_control_plane: true
+    promote_to_ha: false
+  ```
+
+__Please notice, it is not supported yet to reverse HA promotion!__
+
+Epiphany can scale-up existing HA clusters (including ones that were promoted). To achieve that, it is required:
+
+- existing cluster must be already running in HA mode
+
+- specify master count to be higher than previous value (proper values should be 3, 5, 7):
+
+  ```yaml
+  kubernetes_master:
+    count: 5
+  ```
+
+- indicate that HA Control Plane will be deployed:
+
+  ```yaml
+  kind: configuration/shared-config
+  ...
+  specification:
+    use_ha_control_plane: true
+    promote_to_ha: false
+  ```
+
+- run regular epicli apply cycle
+
+__Please notice, it is not supported yet to scale-down clusters (master count cannot be decreased)!__
+
 ## Build artifacts
 
 Epiphany engine produce build artifacts during each deployment. Those artifacts contains:
