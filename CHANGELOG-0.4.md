@@ -10,6 +10,7 @@
 - [#1063](https://github.com/epiphany-platform/epiphany/issues/1063) - Issues with single_machine install
 - [#1108](https://github.com/epiphany-platform/epiphany/issues/1108) - [Azure RedHat] Create epirepo: package httpd-2.4.6-93 requires httpd-tools = 2.4.6-93 but latest available is 2.4.6-90
 - [#1110](https://github.com/epiphany-platform/epiphany/issues/1110) - Install fixed version of httpd when latest fails (RHEL)
+- [#1016](https://github.com/epiphany-platform/epiphany/issues/1016) - Disable verify, backup and recovery as they are not fully implemented
 
 ## [0.4.3] 2020-03-16
 
