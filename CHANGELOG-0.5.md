@@ -50,6 +50,7 @@
 - [#906](https://github.com/epiphany-platform/epiphany/issues/906) - Open Distro for Elasticsearch: Task 'Install Elasticsearch package' fails
 - [#909](https://github.com/epiphany-platform/epiphany/issues/909) - Upgrade: Missing property 'name' when running epicli upgrade
 - [#869](https://github.com/epiphany-platform/epiphany/issues/869) - Common: Issue installing Debian packages
+- [#1016](https://github.com/epiphany-platform/epiphany/issues/1016) - Disable verify, backup and recovery as they are not fully implemented
 
 ### Known issues
 
