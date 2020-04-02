@@ -2,8 +2,6 @@ kind: configuration/postgresql
 title: PostgreSQL
 name: default
 specification:
-  replication:
-    enabled: no
   config_file:
     parameter_groups:
       - name: CONNECTIONS AND AUTHENTICATION
@@ -35,16 +33,37 @@ specification:
               - name: log_filename
                 value: "'postgresql.log'"
                 comment: to use logrotate with common configuration
-  additional_components:
-    pgbouncer:
-      enabled: no
+      - name: WRITE AHEAD LOG
+        subgroups:
+          - name: Settings
+            parameters:
+              - name: wal_level
+                value: replica
+                when: replication
+          - name: Archiving
+            parameters:
+              - name: archive_mode
+                value: 'on'
+                when: replication
+              - name: archive_command
+                value: "'test ! -f /dbbackup/{{ inventory_hostname }}/backup/%f && gzip -c < %p > /dbbackup/{{ inventory_hostname }}/backup/%f'"
+                when: replication
+      - name: REPLICATION
+        subgroups:
+          - name: Sending Server(s)
+            parameters:
+              - name: max_wal_senders
+                value: 10
+                comment: maximum number of simultaneously running WAL sender processes
+                when: replication
+              - name: wal_keep_segments
+                value: 34
+                comment: number of WAL files held for standby servers
+                when: replication
   extensions:
     pgaudit:
       enabled: no
-      shared_preload_libraries:
-        - pgaudit
       config_file_parameters:
-        ## postgresql standard
         log_connections: 'off'
         log_disconnections: 'off'
         log_statement: 'none'
@@ -57,6 +76,18 @@ specification:
         pgaudit.log_relation: 'on # separate log entry for each relation' # default is 'off'
         pgaudit.log_statement_once: 'off' # same as default
         pgaudit.log_parameter: 'on' # default is 'off'
+    pgbouncer:
+      enabled: no
+    replication:
+      enabled: false
+      replication_user_name: epi_repmgr
+      replication_user_password: PASSWORD_TO_CHANGE
+      priviledged_user_name: epi_repmgr_admin
+      priviledged_user_password: PASSWORD_TO_CHANGE
+      use_repmgr: true
+      repmgr_database: epi_repmgr
+      shared_preload_libraries:
+        - repmgr
   logrotate:
     # Configuration partly based on /etc/logrotate.d/postgresql-common provided by 'postgresql-common' package from Ubuntu repo.
       # PostgreSQL from Ubuntu repo:

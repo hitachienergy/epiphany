@@ -1,0 +1,77 @@
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: pgbouncer
+  labels:
+    app: pgbouncer
+  namespace: {{ data.namespace }}
+spec:
+  replicas: {{ data.replicas }}
+  selector:
+    matchLabels:
+      app: pgbouncer
+  template:
+    metadata:
+      labels:
+        app: pgbouncer
+    spec:
+      containers:
+        - name: pgbouncer
+          image: {{ image_registry_address }}/{{ data.image_path }}
+          ports:
+            - name: pgbouncer
+              containerPort: 5432
+              protocol: TCP
+          envFrom:
+            - configMapRef:
+                name: pgbouncer-container-env
+          resources:
+            {{ data.resources | to_nice_yaml(indent=2) | indent(12) | trim }}
+          livenessProbe:
+            tcpSocket:
+              port: {{ data.service.port }}
+            initialDelaySeconds: 60
+            periodSeconds: 10
+            failureThreshold: 3
+          readinessProbe:
+            tcpSocket:
+              port: {{ data.service.port }}
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            failureThreshold: 6
+          volumeMounts:
+            - name: pgpool-shared-init-dir
+              mountPath: /etc/pgbouncer/auth/users.txt
+              subPath: users.txt
+      initContainers:
+        - name: pgbouncer-init
+          image: {{ image_registry_address }}/{{ data.init_image_path }} 
+          command:
+            - /epiphany/scripts/init_users_passwd_file.sh
+          envFrom:
+            - configMapRef:
+                name: pgpool-container-env
+          volumeMounts:
+            - name: pgbouncer-init-scripts
+              mountPath: /epiphany/scripts
+            - name: pgpool-passwords
+              mountPath: /opt/bitnami/pgpool/secrets/pgpool_postgres_password
+              subPath: pgpool_postgres_password
+            - name: pgpool-shared-init-dir
+              mountPath: /epiphany/shared_dir
+      volumes:
+        - name: pgbouncer-init-scripts
+          configMap:
+            name: pgbouncer-init-scripts
+            defaultMode: 0755
+        - name: pgpool-passwords
+          secret:
+            secretName: pgpool-passwords
+        - name: pgpool-admin-password-file
+          secret:
+            secretName: pgpool-admin-password-file
+        - name: pgpool-shared-init-dir
+          emptyDir: {}
+      restartPolicy: Always

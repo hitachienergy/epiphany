@@ -88,13 +88,8 @@ quota # for nfs-utils
 rabbitmq-server-3.7.10
 rh-haproxy18
 rh-haproxy18-haproxy-syspaths
-rh-postgresql10-postgresql
-rh-postgresql10-postgresql-contrib
-rh-postgresql10-postgresql-contrib-syspaths
-rh-postgresql10-postgresql-libs
-rh-postgresql10-postgresql-server
-rh-postgresql10-postgresql-server-syspaths
-rh-postgresql10-postgresql-syspaths
+postgresql10-server
+repmgr10-4.0.6
 samba-client
 samba-client-libs # for samba-client
 samba-common
@@ -172,8 +167,10 @@ calico/kube-controllers:v3.8.1
 registry:2
 # applications
 apacheignite/ignite:2.5.0
+bitnami/pgpool:4.1.1-debian-10-r29
+brainsam/pgbouncer:1.12
 # TODO remove?
-jboss/keycloak:4.8.3.Final 
+jboss/keycloak:4.8.3.Final
 jboss/keycloak:9.0.0
 rabbitmq:3.7.10
 # K8s upgrade

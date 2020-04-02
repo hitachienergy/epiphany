@@ -1,15 +1,21 @@
 ---
 - name: Wait until the cluster is available
-  shell: kubectl --kubeconfig=/home/{{ admin_user.name }}/.kube/config cluster-info
-  retries: 10
-  delay: 5
-  register: output
-  until: output is succeeded
+  shell: kubectl cluster-info
+  environment:
+    KUBECONFIG: /home/{{ admin_user.name }}/.kube/config
+  changed_when: false
+  retries: 50
+  delay: 1
+  register: result
+  until: result is succeeded
 
 - name: Include applications
-  include_tasks: "applications/{{ item.name }}/main.yml"
+  include_tasks: applications/{{ item.name }}/main.yml
+  no_log: true # to hide sensitive data
   vars:
     data: "{{ item }}"
   loop: "{{ specification.applications }}"
   when:
     - specification.applications is defined and specification.applications | length > 0
+    - item.enabled | default(True)
+    - groups['applications'][0] == inventory_hostname

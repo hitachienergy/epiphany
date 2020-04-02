@@ -118,6 +118,7 @@ libsmbclient
 # for postgres
 postgresql-client-10
 postgresql-10-pgaudit
+postgresql-10-repmgr 4.0.6
 postgresql-common
 pgbouncer 1.10.*
 
@@ -192,8 +193,10 @@ calico/kube-controllers:v3.8.1
 registry:2
 # applications
 apacheignite/ignite:2.5.0
+bitnami/pgpool:4.1.1-debian-10-r29
+brainsam/pgbouncer:1.12
 # TODO remove?
-jboss/keycloak:4.8.3.Final 
+jboss/keycloak:4.8.3.Final
 jboss/keycloak:9.0.0
 rabbitmq:3.7.10
 # K8s upgrade

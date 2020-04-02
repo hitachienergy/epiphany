@@ -1,0 +1,89 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: pgbouncer-container-env
+  labels:
+    app: pgbouncer
+  namespace: {{ data.namespace }}
+data:
+  DB_HOST: "{{ data.pgbouncer.env.DB_HOST }}"
+  DB_LISTEN_PORT: "{{ data.pgbouncer.env.DB_LISTEN_PORT }}"
+  LISTEN_ADDR: "{{ data.pgbouncer.env.LISTEN_ADDR }}"
+  LISTEN_PORT: "{{ data.pgbouncer.env.LISTEN_PORT }}"
+  AUTH_FILE: "{{ data.pgbouncer.env.AUTH_FILE }}"
+  AUTH_TYPE: "{{ data.pgbouncer.env.AUTH_TYPE }}"
+  MAX_CLIENT_CONN: "{{ data.pgbouncer.env.MAX_CLIENT_CONN }}"
+  DEFAULT_POOL_SIZE: "{{ data.pgbouncer.env.DEFAULT_POOL_SIZE }}"
+  RESERVE_POOL_SIZE: "{{ data.pgbouncer.env.RESERVE_POOL_SIZE }}"
+  POOL_MODE: "{{ data.pgbouncer.env.POOL_MODE }}"
+
+---
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: pgbouncer-init-scripts
+  labels:
+    app: pgbouncer
+  namespace: {{ data.namespace }}
+data:
+  init_users_passwd_file.sh: |
+    #!/bin/bash
+
+    set -o errexit
+    set -o nounset
+    set -o pipefail
+
+    test -f "${PGPOOL_POSTGRES_PASSWORD_FILE}" || { echo "PGPOOL_POSTGRES_PASSWORD_FILE=${PGPOOL_POSTGRES_PASSWORD_FILE} not found" 1>&2 && exit 1; }
+    PGPOOL_POSTGRES_PASSWORD="$(< "${PGPOOL_POSTGRES_PASSWORD_FILE}")"
+
+    # User with SELECT on pg_authid table privilege is required
+    export PGDATABASE=postgres
+    export PGUSER="${PGPOOL_POSTGRES_USERNAME}"
+    export PGPASSWORD="${PGPOOL_POSTGRES_PASSWORD}"
+
+    test_connection() {
+      local -r hostname=${1:?hostname is missing}
+      echo "Testing connection to '${PGDATABASE}' database on '$hostname' host"
+      if PGCONNECT_TIMEOUT=15 psql -h "$hostname" -tA -c "SELECT 1" >/dev/null; then
+        echo "OK"
+        return 0
+      else
+        echo "FAILED"
+        return 1
+      fi
+    }
+
+    run_query() {
+      local -r sql=${1:?sql is missing}
+      local -r hostname=${2:?hostname is missing}
+      psql -h "$hostname" -tA -c "$sql"
+    }
+
+{% if groups['postgresql'] | length > 1 %}
+    POSTGRES_HOSTNAME="{{ hostvars[groups['postgresql'][0]].ansible_hostname }},{{ hostvars[groups['postgresql'][1]].ansible_hostname }}"
+{% else %}
+    POSTGRES_HOSTNAME={{ hostvars[groups['postgresql'][0]].ansible_hostname }}
+{% endif %}
+
+    test_connection "${POSTGRES_HOSTNAME}" || { echo "ERROR: Connection test failed" 1>&2 && exit 1; }
+
+    SQL="SELECT '\"' || rolname || '\" \"' || rolpassword || '\"' FROM pg_authid WHERE rolpassword IS NOT NULL"
+    echo "Running query: $SQL"
+    RESULT="$(run_query "$SQL" "$POSTGRES_HOSTNAME")" || { echo "ERROR: psql failed" 1>&2 && exit 1; }
+
+    OUTPUT_FILE=/epiphany/shared_dir/users.txt
+
+    if test -n "${RESULT}"; then
+      if ! test -f $OUTPUT_FILE; then
+        echo "Creating '${OUTPUT_FILE}' file"
+      else
+        echo "Updating '${OUTPUT_FILE}' file"
+      fi
+      cat <<< "${RESULT}" > $OUTPUT_FILE
+    else
+      echo "ERROR: No rows in query result" 1>&2 && exit 1;
+    fi
+
+    echo "Completed: $0"
