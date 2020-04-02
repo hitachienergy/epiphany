@@ -2,13 +2,7 @@
 - name: Install PostgreSQL packages ({{ ansible_os_family }})
   yum:
     name:
-      - rh-postgresql10-postgresql
-      - rh-postgresql10-postgresql-syspaths
-      - rh-postgresql10-postgresql-server
-      - rh-postgresql10-postgresql-server-syspaths
-      - rh-postgresql10-postgresql-contrib
-      - rh-postgresql10-postgresql-contrib-syspaths
-      - rh-postgresql10-postgresql-libs
+      - postgresql10-server
       - python-psycopg2 # required for postresql ansible management
     update_cache: yes
     state: present
@@ -22,8 +16,26 @@
     state: present
     update_cache: yes
   when:
-    - specification.additional_components.pgbouncer.enabled is defined
-    - specification.additional_components.pgbouncer.enabled
+    - specification.extensions.pgbouncer.enabled is defined
+    - specification.extensions.pgbouncer.enabled
+
+- name: Install repmgr
+  block:
+    - name: install repmgr package
+      yum:
+        name:
+          - repmgr10-4.0.6
+        state: present
+        update_cache: yes
+
+    - name: Create repmgr symlink
+      file:
+        src: "{{ repmgr_pg_bindir[ansible_os_family] }}/repmgr"
+        dest: "/usr/bin/repmgr"
+        state: link
+  when:
+    - specification.extensions.replication.use_repmgr is defined
+    - specification.extensions.replication.use_repmgr
 
 # --- extensions ---
 

@@ -3,5 +3,3 @@
   template:
     src: haproxy.cfg.j2
     dest: /etc/haproxy/haproxy.cfg
-  notify:
-    - Restart HAProxy

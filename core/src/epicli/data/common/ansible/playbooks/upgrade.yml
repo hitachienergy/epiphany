@@ -1,6 +1,18 @@
 ---
 # Ansible playbook for upgrading common and K8s components
 
+- hosts: kubernetes_master
+  become: true
+  become_method: sudo
+  pre_tasks:
+    # Needed for tasks upgrade playbook borrows from kubernetes_master role.
+    - import_role:
+        name: kubernetes_common
+        tasks_from: gather-facts
+    - import_role:
+        name: upgrade
+        tasks_from: ensure-kubeconfig
+
 - hosts: all
   become: true
   become_method: sudo

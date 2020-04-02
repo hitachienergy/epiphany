@@ -1,15 +1,32 @@
 # Troubleshooting
 
-## Kubernetes
+## Epicli container connection issues after hibernation/sleep on Windows
 
-Sometimes Google has a connection issue with pulling down images. You may see something like below:
+When running the Epicli container on Windows you might get such errors when trying to run the apply command:
 
-```text
-TASK [master : kubeadm config images pull] **********************************************************************************************
-fatal: [vm-epiphany-rhel-playground-master-001]: FAILED! => {"changed": true, "cmd": "kubeadm config images pull", "delta": "0:00:01.428562", "end": "2018-07-18 08:56:47.608629", "msg": "non-zero return code", "rc": 1, "start": "2018-07-18 08:56:46.180067", "stderr": "failed to pull image \"k8s.gcr.io/kube-apiserver-amd64:v1.11.1\": exit status 1", "stderr_lines": ["failed to pull image \"k8s.gcr.io/kube-apiserver-amd64:v1.11.1\": exit status 1"], "stdout": "", "stdout_lines": []}
+Azure:
+```
+12:28:39 INFO cli.engine.terraform.TerraformCommand - Error: Error reading queue properties for AzureRM Storage Account "cluster": queues.Client#GetServiceProperties: Failure responding to request: StatusCode=403 -- Original Error: autorest/azure: error response cannot be parsed: "\ufeff<?xml version=\"1.0\" encoding=\"utf-8\"?><Error><Code>AuthenticationFailed</Code><Message>Server failed to authenticate the request. Make sure the value of Authorization header is formed correctly including the signature.\nRequestId:cba2935f-1003-006f-071d-db55f6000000\nTime:2020-02-04T05:38:45.4268197Z</Message><AuthenticationErrorDetail>Request date header too old: 'Fri, 31 Jan 2020 12:28:37 GMT'</AuthenticationErrorDetail></Error>" error: invalid character 'ï' looking for beginning of value
 ```
 
-Wait a little while and try again and it will usually resolve itself quickly. If it does not go away then it could be the version of Kubernetes. For example, in the error above, v1.11.1 did not have proper images in the google registry. Changing to v1.11.0 fixed it until Google fixed their issue.
+AWS:
+```
+19:50:14 ERROR epicli - An error occurred (AuthFailure) when calling the DescribeImages operation: AWS was not able to validate the provided access credentials
+```
+
+These issues might occur when the host machine you are running the Epicli container on was put to sleep or hybernated for an extended period of time. Hyper-V might have issues syncing the time between the container and the host after it wakes up or is resumed. You can confirm this by checking the date and time in your container by running:
+
+```shell
+Date
+```
+
+If the times are out of sync restarting the container will resolve the issue. If you do not want to restart the container you can also run the following 2 commands from an elevated Powershell prompt to force it during container runtime:
+
+```shell
+Get-VMIntegrationService -VMName DockerDesktopVM -Name "Time Synchronization" | Disable-VMIntegrationService
+
+Get-VMIntegrationService -VMName DockerDesktopVM -Name "Time Synchronization" | Enable-VMIntegrationService
+```
 
 ## Kafka
 

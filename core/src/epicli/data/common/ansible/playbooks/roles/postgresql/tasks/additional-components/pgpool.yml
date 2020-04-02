@@ -1,0 +1,27 @@
+---
+- name: Create PostgreSQL users for Pgpool
+  become_user: postgres
+  postgresql_user:
+    user: "{{ item.user }}"
+    password: "{{ item.password }}"
+    role_attr_flags: "{{ item.role_attr_flags }}"
+    priv: "{{ item.priv | default(omit) }}"
+    db: "{{ item.db | default(omit) }}"
+  no_log: true # to hide passwords
+  loop:
+    - user: "{{ pgpool.env.PGPOOL_POSTGRES_USERNAME }}"
+      password: "{{ pgpool.secrets.pgpool_postgres_password }}"
+      role_attr_flags: LOGIN,SUPERUSER
+      priv: pg_authid:SELECT
+      db: postgres # required by 'priv'
+    - user: "{{ pgpool.env.PGPOOL_SR_CHECK_USER }}"
+      password: "{{ pgpool.secrets.pgpool_sr_check_password }}"
+      role_attr_flags: LOGIN
+
+- name: Grant pg_monitor role to {{ pgpool.env.PGPOOL_SR_CHECK_USER }} user
+  become_user: postgres
+  postgresql_membership:
+    group: pg_monitor
+    target_roles:
+      - "{{ pgpool.env.PGPOOL_SR_CHECK_USER }}"
+    state: present

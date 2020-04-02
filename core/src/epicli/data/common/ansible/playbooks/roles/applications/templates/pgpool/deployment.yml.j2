@@ -1,0 +1,120 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: pgpool
+  labels:
+    app: pgpool
+  namespace: {{ data.namespace }}
+spec:
+  replicas: {{ data.replicas }}
+  selector:
+    matchLabels:
+      app: pgpool
+  template:
+    metadata:
+      name: pgpool
+      labels:
+        app: pgpool
+    spec:
+{% for field, value in data.pod_spec.items() if value %}{# affinity, nodeSelector, tolerations #}
+      {{ field }}:
+        {{ value | to_nice_yaml(indent=2) | indent(8) | trim }}
+{% endfor %}
+      containers:
+        - name: pgpool
+          image: {{ image_registry_address }}/{{ data.image.path }}
+          envFrom:
+            - configMapRef:
+                name: pgpool-container-env
+          env:
+            - name: BITNAMI_DEBUG
+              value: "{{ data.image.debug | ternary('true', 'false') }}"
+          ports:
+            - name: postgresql
+              containerPort: 5432
+              protocol: TCP
+          livenessProbe:
+            exec:
+              command:
+{#              healthcheck.sh runs 'pcp_attach_node' to reattach backend if it has come back online #}
+                - bash
+                - -ec
+                - PGDATABASE=postgres
+                  /opt/bitnami/scripts/pgpool/healthcheck.sh
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            timeoutSeconds: 5
+            successThreshold: 1
+            failureThreshold: 6
+          readinessProbe:
+            exec:
+              command:
+                - bash
+                - -ec
+                - PGPASSWORD="$(< "${PGPOOL_POSTGRES_PASSWORD_FILE}")"
+                  psql -U "${PGPOOL_POSTGRES_USERNAME}" -d postgres -h 127.0.0.1 -tA -c "SELECT 1" >/dev/null
+            initialDelaySeconds: 5
+            periodSeconds: 10
+            timeoutSeconds: 5
+            successThreshold: 1
+            failureThreshold: 6
+          resources:
+            {{ data.resources | to_nice_yaml(indent=2) | indent(12) | trim }}
+          volumeMounts:
+            - name: pgpool-passwords
+              mountPath: /opt/bitnami/pgpool/secrets/pgpool_postgres_password
+              subPath: pgpool_postgres_password
+            - name: pgpool-passwords
+              mountPath: /opt/bitnami/pgpool/secrets/pgpool_sr_check_password
+              subPath: pgpool_sr_check_password
+            - name: pgpool-passwords
+              mountPath: /opt/bitnami/pgpool/secrets/pgpool_admin_password
+              subPath: pgpool_admin_password
+            - name: pgpool-config-files
+              mountPath: /opt/bitnami/pgpool/conf/pgpool.conf
+              subPath: pgpool.conf
+            - name: pgpool-config-files
+              mountPath: /opt/bitnami/pgpool/conf/pool_hba.conf
+              subPath: pool_hba.conf
+            - name: pgpool-shared-init-dir
+              mountPath: /opt/bitnami/pgpool/conf/pool_passwd
+              subPath: pool_passwd
+            - name: pgpool-init-scripts
+              mountPath: /docker-entrypoint-initdb.d/init_pcp_conf.sh
+              subPath: init_pcp_conf.sh
+            - name: pgpool-init-scripts
+              mountPath: /docker-entrypoint-initdb.d/init_pcppass.sh
+              subPath: init_pcppass.sh
+      initContainers:
+{#      pgpool-init container creates/synchronizes pool_passwd file, users with passwords are fetched directly from PostgreSQL server #}
+        - name: pgpool-init
+          image: {{ image_registry_address }}/{{ data.image.path }}
+          command:
+            - /epiphany/scripts/init_pool_passwd_file.sh
+          envFrom:
+            - configMapRef:
+                name: pgpool-container-env
+          volumeMounts:
+            - name: pgpool-init-scripts
+              mountPath: /epiphany/scripts/init_pool_passwd_file.sh
+              subPath: init_pool_passwd_file.sh
+            - name: pgpool-passwords
+              mountPath: /opt/bitnami/pgpool/secrets/pgpool_postgres_password
+              subPath: pgpool_postgres_password
+            - name: pgpool-shared-init-dir
+              mountPath: /epiphany/shared_dir
+      volumes:
+        - name: pgpool-init-scripts
+          configMap:
+            name: pgpool-init-scripts
+            defaultMode: 0755
+        - name: pgpool-config-files
+          configMap:
+            name: pgpool-config-files
+        - name: pgpool-passwords
+          secret:
+            secretName: pgpool-passwords
+        - name: pgpool-shared-init-dir
+          emptyDir: {}
+      restartPolicy: Always

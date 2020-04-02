@@ -78,24 +78,74 @@ Then configure database server using psql according to your needs and
 
 ## How to configure PostgreSQL replication
 
-In order to configure PostgreSQL replication, add to your data.yaml a block similar to the one below to core section:
+#### Attention
+
+In version 0.6.0 because of delivering full HA for PostgreSQL we needed to change configuration for PostgreSQL native
+replication.
+
+You need to change old configuration file from the one visible below:
 
 ```yaml
 kind: configuration/postgresql
 name: default
 title: PostgreSQL
-version: 0.4.1
 provider: aws
 specification:
   replication:
     enabled: yes
-    user: your-postgresql-replication-user
-    password: your-postgresql-replication-password
+    user: your_postgresql_replication_user
+    password: your_postgresql_replication_password
     max_wal_senders: 10 # (optional) - default value 5
     wal_keep_segments: 34 # (optional) - default value 32
 ```
-If `enabled` is set to `yes` in `replication`, then Epiphany will automatically create cluster of master and slave server
-with replication user with name and password specified in data.yaml.
+
+to one described below.
+
+old value | new value |
+--- | --- |
+specification.replication.enabled | specification.extensions.enabled |
+specification.replication.user | specification.extensions.replication_user_name |
+specification.replication.password | specification.extensions.replication_user_password |
+specification.replication.max_wal_senders | defined in subgroups section |
+specification.replication.wal_keep_segments | defined in subgroups section |
+
+In order to configure PostgreSQL replication, add to your data.yaml a block similar to the one below to core section:
+
+```yaml
+kind: configuration/postgresql
+title: PostgreSQL
+name: default
+specification:
+  config_file:
+    parameter_groups:
+    ...
+    # Block below is optional, you can use it to override default values
+    - name: REPLICATION
+      subgroups:
+        - name: Sending Server(s)
+          parameters:
+            - name: max_wal_senders
+              value: 10 # default value
+              comment: maximum number of simultaneously running WAL sender processes
+              when: replication # default value
+            - name: wal_keep_segments
+              value: 34 # default value
+              comment: number of WAL files held for standby servers
+              when: replication
+  extensions:
+    ...
+    replication:
+      enabled: true
+      replication_user_name: your_postgresql_replication_user
+      replication_user_password: your_postgresql_replication_password
+      use_repmgr: false
+      shared_preload_libraries: []
+    ...
+```
+
+If `enabled` is set to `yes` in `replication`, then Epiphany will automatically create cluster of primary and secondary server
+with replication user with name and password specified in data.yaml. This is only possible for configurations containing two
+PostgreSQL servers.
 
 ## How to set up PostgreSQL connection pooling
 
@@ -112,6 +162,308 @@ specification:
   ...
 ```
 PGBouncer listens on standard port 6432. Basic configuration is just template, with very limited access to database. This is because security reasons. [Configuration needs to be tailored according component documentation and stick to security rules and best practices](http://www.pgbouncer.org/).
+
+## How to setup PostgreSQL HA replication with repmgr cluster
+
+This component can be used as a part of PostgreSQL clustering configured by Epiphany. In order to configure PostgreSQL HA 
+replication, add to your data.yaml a block similar to the one below to core section:
+
+```yaml
+---
+kind: configuration/postgresql
+name: default
+title: PostgreSQL
+specification:
+  config_file:
+    parameter_groups:
+    # Block below is optional, you can use it to override default values
+    - name: REPLICATION
+      subgroups:
+        - name: Sending Server(s)
+          parameters:
+            - name: max_wal_senders
+              value: 10 # default value
+              comment: maximum number of simultaneously running WAL sender processes
+            - name: wal_keep_segments
+              value: 34 # default value
+              comment: number of WAL files held for standby servers
+    ...
+  extensions:
+    ...
+    replication:
+      enabled: true
+      replication_user_name: your_priviledged_user_name
+      replication_user_password: PASSWORD_TO_CHANGE
+      priviledged_user_name: your_priviledged_user_name
+      priviledged_user_password: PASSWORD_TO_CHANGE
+      use_repmgr: true
+      repmgr_database: repmgr
+      shared_preload_libraries:
+      - repmgr
+```
+If `enabled` is set to `yes` in `replication`, then Epiphany will automatically create cluster of primary and secondary server
+with replication user with name and password specified in data.yaml. This is only possible for configurations containing two
+PostgreSQL servers.
+
+Priviledged user is used to perform full backup of primary instance and replicate this at the beginning to secondary node. After 
+that for replication only replication user with limited permissions is used for WAL replication.
+
+## How to register database standby in repmgr cluster
+
+If one of database nodes has been recovered to desired state you may want to re-attach it to database cluster. Execute these steps on node which will be attached as standby:
+
+1). Clone data from current primary node:
+
+```bash
+repmgr -h current_primary_address -U epi_repmgr_admin -d epi_repmgr standby clone -F
+```
+
+2). Register node as stanby
+
+```bash
+repmgr -f /etc/repmgr/10/repmgr.conf standby register
+```
+You may use option --force if this node was registered in cluster before.
+For more options see repmgr manual:
+https://repmgr.org/docs/4.0/repmgr-standby-register.html
+
+## How to switchover database nodes
+
+For some reason you may want to switchover database nodes (promote standby to primary and demote existing primary to standby).
+
+1). Configure passwordless comunication for postgres user between database nodes using ssh key.
+
+2). Test and tun inistial login between nodes to authenticate host (if host authentication is enabled)
+
+### Execute commands listed below on actual slave node:
+
+3). Confirm that standby you want to promote is registered in repmgr cluster:
+
+```bash
+repmgr -f /etc/repmgr/10/repmgr.conf cluster show
+```
+
+4). Run command:
+
+```bash
+repmgr -f /etc/repmgr/10/repmgr.conf standby switchover
+```
+
+5). Run command from step 3 and check status. For more details or troubleshooting see repmgr manual:
+https://repmgr.org/docs/4.0/repmgr-standby-switchover.html
+
+## How to set up PGBouncer PgPool and PostgreSQL parameters
+
+This document describe how to enable and setup database connections load balancing and pooling for PostgreSQL highly available instance.
+Default configuration available with Epiphany deliver default performance setup. This setup can fit to the midrange application system.
+
+To improve performance of your Epiphany setup please visit dedicated documentation webistes:
+
+Application | Documentation url |
+--- | --- |
+PGBouncer | https://www.pgbouncer.org/config.html   |
+PGPool | https://www.pgpool.net/docs/latest/en/html/performance.html |
+PostgreSQL connections | https://www.postgresql.org/docs/10/runtime-config-connection.html  |
+PostgreSQL resources management | https://www.postgresql.org/docs/10/runtime-config-resource.html |
+ 
+
+### Enable configuration
+
+To enable connection load balancing and pooling you need to add "configuration/applications" section to you main configuration yaml file.  
+
+Sample configuration block which should be added to main configuration file:
+
+```yaml
+---
+kind: configuration/applications
+version: 0.6.0
+title: "Kubernetes Applications Config"
+provider: aws
+name: default
+specification:
+  applications:
+#   [...]  
+## --- pgpool ---
+  - name: pgpool 
+    enabled: yes
+    replicas: 2
+#   [...]
+    pgpool:
+      env:
+        PGPOOL_BACKEND_NODES: SET_BY_AUTOMATION 
+        PGPOOL_POSTGRES_USERNAME: epi_pgpool_postgres_admin 
+        PGPOOL_SR_CHECK_USER: epi_pgpool_sr_check
+        PGPOOL_ADMIN_USERNAME: epi_pgpool_admin 
+        PGPOOL_ENABLE_LOAD_BALANCING: yes # set to 'no' if there is no PostgreSQL replication
+        PGPOOL_MAX_POOL: 4
+        PGPOOL_POSTGRES_PASSWORD_FILE: /opt/bitnami/pgpool/secrets/pgpool_postgres_password
+        PGPOOL_SR_CHECK_PASSWORD_FILE: /opt/bitnami/pgpool/secrets/pgpool_sr_check_password
+        PGPOOL_ADMIN_PASSWORD_FILE: /opt/bitnami/pgpool/secrets/pgpool_admin_password
+      secrets:
+        pgpool_postgres_password: PASSWORD_TO_CHANGE
+        pgpool_sr_check_password: PASSWORD_TO_CHANGE
+        pgpool_admin_password: PASSWORD_TO_CHANGE
+      # https://www.pgpool.net/docs/41/en/html/runtime-config.html
+      config_file_content_to_append: |
+        #------------------------------------------------------------------------------
+        # CUSTOM SETTINGS (appended by Epiphany to override defaults)
+        #------------------------------------------------------------------------------
+        # num_init_children = 32
+        # connection_life_time = 600
+  - name: pgbouncer
+    enabled: yes
+    replicas: 2
+#   [...]
+    pgbouncer:
+      env:
+        DB_HOST: pgpool.postgres-pool.svc.cluster.local #pgpool service name
+        DB_LISTEN_PORT: 5432
+        LISTEN_ADDR: "*"
+        LISTEN_PORT: 5432
+        AUTH_FILE: "/etc/pgbouncer/auth/users.txt"
+        AUTH_TYPE: md5
+        MAX_CLIENT_CONN: 300
+       ```
+
+### Default setup - main parameters
+This chapter describe default setup and main parameters which are responsible for the pefomance limitations in this Epiphany setup.
+Default limitations we can divide to 3 layers: memory server usage, connection limits, query caching.
+All of the configuration parameters changes can be modified in main configuration yaml file.
+
+#### Memory server usage
+
+Each of the component have memory usage limits which are defined based on different algorithm provided by Vendor.
+
+##### PGBouncer
+
+Resources for the pods. 
+There are two pods deployed with default setup. Number of the pods (replicas) is defined in main configuration yaml file under pgbouncer section. The number of deployed pods can be changed using main configuration yaml file.
+
+```yaml
+ namespace: postgres-pool
+    service:
+      name: pgbouncer
+      port: 5432
+    replicas: 2
+```
+There are hardware resources limitation defined for CPU and Memory usage also. They are defined *in service deployment template.* 
+
+Hardware resource limits:
+```yaml
+resources:
+  requests:
+    cpu: "250m"
+    memory: "128Mi"
+  limits:
+    cpu: "500m"
+    memory: "128Mi"
+```
+
+
+##### PGPool
+
+Each PgPool pod in a default setup require at least 164MB of memory. This is beacuse of definition of pgpool parameters setup.
+Parameters which are responsible for calculation how much memory for pgpool service is required are:
+
+```
+num_init_children =
+max_pool = 
+```
+Both parameters can be specified in the main configuration yaml file but please be aware that they are also synchronized with PGBouncer and PostgreSQL configs. Detailed parameter configuration you can find in PgPool documentation mentioned at the beginning of this document.
+
+Increasing num_init_children and max_pool parameters probably require changes in hardware resources limitation in main configuration yaml file.
+
+##### PostgreSQL
+
+The default parameters defined in postgresql.conf for local memory area and for shared memory area are using default values delivered with PostgreSQL database. These parameters was not predefined and tuned by Epiphany team because they are dependent from used hardware resources.
+We can only recommend that if your setup require performance improvment you should start from considering changes in such parameters: 
+
+```
+shared_buffers =  
+work_mem =  
+maintenance _work_mem =  
+effective_cache_size = 
+temp_buffers =  
+```
+
+#### Connection limits
+
+##### PGBouncer
+
+There are connection limitation defined in PgBouncer configuration. Each of these parameters are defined per PgBouncer instance (pod). Two pods are deployed by default.
+
+```yaml
+ - name: pgbouncer
+    enabled: yes
+    replicas: 2
+#   [...]
+    pgbouncer:
+      env:
+#       [...]
+        MAX_CLIENT_CONN: 300
+        DEFAULT_POOL_SIZE: 25
+        RESERVE_POOL_SIZE: 25
+        POOL_MODE: transaction
+```
+
+
+##### PGPool
+
+PGPool configuration setup by default is prepared for support around 60 concurrent connections. This is because we are using two parameters in default setup  
+```
+num_init_children = 32
+reserved_connections = 1
+```
+Parameter num_init_children = 32 means that each Kubernetes POD can support 32 concurrent connections where one connection is reserved for incoming traffic (reserved_connections = 1). This means that we can have 33 concurrent client connections running through one PGPool POD. We must remember that there will be also some reserved connections for end sessions.
+
+If you need to improve connection limits on PGPool level we recommend to start from increasing number of PGPool PODs.
+This can be easily setup in configuration main yaml file in PGPool section:
+
+```yaml
+## --- pgpool ---
+  - name: pgpool 
+    enabled: yes
+    replicas: 2
+```
+For example. If you need to have more than 100 concurrent connections, you should consider to run PGPool in 4 PODs (4-5 PODS x num_init_children = 32). Please remember that you need some reserve for incoming and ending connections.
+
+PGPool configuration is using default configuration parameters. As a example of PgPool configuration there are two parameters defined in main configuration yaml file. In the section config_file_content_to_append:   
+
+```yaml
+config_file_content_to_append: |
+        #------------------------------------------------------------------------------
+        # CUSTOM SETTINGS (appended by Epiphany to override defaults)
+        #------------------------------------------------------------------------------
+        num_init_children = 32
+        connection_life_time = 600
+```
+
+There are a few parameters in PgPool configuration which are defining the connections policy. 
+```
+max_pool = 
+num_init_children =
+reserved_connections =
+```
+Detailed documentation about connection tunning you can find in a "Performance Considerations" document which is linked in a first chapter of this document. There is also "Connection settings" chapter in official PgPool documentation which describes how to balance between connections limit setting and hardware resource usage. 
+
+##### PostgreSQL
+
+In 'postgresql.conf' default file there is max_connections parameter used to limit client connections to database instance.
+Parameter max_connections sets exactly that: the maximum number of client connections allowed. 
+This is very important to some of the other configuration parameters (particularly work_mem) because there are some memory resources that are or can be allocated on a per-client basis, so the maximum number of clients suggests the maximum possible memory use. Generally, PostgreSQL on sufficient amount of hardware can support a few hundred connections. 
+
+#### Query caching
+
+Query caching is not available in PGBouncer.
+
+##### PGPool
+
+Query caching is disabled by default in PGPool configuration.
+
+##### PostgreSQL
+
+PostgreSQL database is deliever in the default configuration setup. If you need to imporve SQL query performance please view official PostgreSQL 10 documentation.
+
 
 ## How to set up PostgreSQL audit logging
 

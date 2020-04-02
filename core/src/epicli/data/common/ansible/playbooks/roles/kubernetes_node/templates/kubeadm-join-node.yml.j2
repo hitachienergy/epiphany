@@ -3,9 +3,9 @@ kind: JoinConfiguration
 discovery:
   bootstrapToken:
     apiServerEndpoint: {{ api_server_url }}
-    token: {{ kubeadm_token }}
+    token: {{ kubernetes_common.kubeadm_join_token }}
     caCertHashes:
-    - sha256:{{ kubeadm_cert_hash.stdout }}
+    - sha256:{{ kubernetes_common.kubeadm_cert_hash }}
 nodeRegistration:
   kubeletExtraArgs:
     enable-controller-attach-detach: "false"
