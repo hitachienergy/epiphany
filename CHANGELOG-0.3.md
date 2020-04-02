@@ -5,6 +5,7 @@
 ### Fixed
 
 - [#839](https://github.com/epiphany-platform/epiphany/issues/839) - Add ServerAliveInterval option to keep SSH connection for long running tasks
+- [#1016](https://github.com/epiphany-platform/epiphany/issues/1016) - Disable verify, backup and recovery as they are not fully implemented
 
 ## [0.3.0] 2019-07-31
 

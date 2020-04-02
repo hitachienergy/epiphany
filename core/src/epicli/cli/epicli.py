@@ -48,12 +48,15 @@ def main():
 
     # setup subparsers
     subparsers = parser.add_subparsers()
-    apply_parser(subparsers)
-    validate_parser(subparsers)
     init_parser(subparsers)
+    apply_parser(subparsers)
     upgrade_parser(subparsers)
+    
+    '''
+    validate_parser(subparsers)
     backup_parser(subparsers)
     recovery_parser(subparsers)
+    '''
 
     # check if there were any variables and display full help
     if len(sys.argv) < 2:
@@ -75,26 +78,6 @@ def main():
 
     return args.func(args)
 
-
-def apply_parser(subparsers):
-    sub_parser = subparsers.add_parser('apply', description='Applies configuration from file.')
-    sub_parser.add_argument('-f', '--file', dest='file', type=str,
-                            help='File with infrastructure/configuration definitions to use.')
-    sub_parser.add_argument('--no-infra', dest='no_infra', action="store_true",
-                            help='Skip infrastructure provisioning.')
-
-    sub_parser.set_defaults(func=run_apply)
-
-
-def validate_parser(subparsers):
-    sub_parser = subparsers.add_parser('verify', description='Validates the configuration from file by executing a dry '
-                                                             'run without changing the physical '
-                                                             'infrastructure/configuration')
-    sub_parser.add_argument('-f', '--file', dest='file', type=str,
-                            help='File with infrastructure/configuration definitions to use.')
-    sub_parser.set_defaults(func=run_validate)
-
-
 def init_parser(subparsers):
     sub_parser = subparsers.add_parser('init', description='Creates configuration file in working directory.')
     sub_parser.add_argument('-p', '--provider', dest='provider', choices=['aws', 'azure', 'any'], default='any', type=str,
@@ -106,13 +89,29 @@ def init_parser(subparsers):
                             help='Use this flag if you want to create verbose configuration file.')
     sub_parser.set_defaults(func=run_init)
 
+def apply_parser(subparsers):
+    sub_parser = subparsers.add_parser('apply', description='Applies configuration from file.')
+    sub_parser.add_argument('-f', '--file', dest='file', type=str,
+                            help='File with infrastructure/configuration definitions to use.')
+    sub_parser.add_argument('--no-infra', dest='no_infra', action="store_true",
+                            help='Skip infrastructure provisioning.')
+
+    sub_parser.set_defaults(func=run_apply)
 
 def upgrade_parser(subparsers):
     sub_parser = subparsers.add_parser('upgrade', description='[Experimental]: Upgrades existing Epiphany Platform to latest version.')
     sub_parser.add_argument('-b', '--build', dest='build_directory', type=str, required=True,
                             help='Absolute path to directory with build artifacts.')
-    sub_parser.set_defaults(func=run_upgrade)
+    sub_parser.set_defaults(func=run_upgrade)    
 
+'''
+def validate_parser(subparsers):
+    sub_parser = subparsers.add_parser('verify', description='Validates the configuration from file by executing a dry '
+                                                             'run without changing the physical '
+                                                             'infrastructure/configuration')
+    sub_parser.add_argument('-f', '--file', dest='file', type=str,
+                            help='File with infrastructure/configuration definitions to use.')
+    sub_parser.set_defaults(func=run_validate)
 
 def backup_parser(subparsers):
     sub_parser = subparsers.add_parser('backup', description='[Experimental]: Backups existing Epiphany Platform components.')
@@ -126,18 +125,13 @@ def recovery_parser(subparsers):
     sub_parser.add_argument('-b', '--build', dest='build_directory', type=str, required=True,
                             help='Absolute path to directory with build artifacts.')
     sub_parser.set_defaults(func=run_recovery)
-
+'''
 
 def run_apply(args):
     adjust_paths(args)
     with EpiphanyEngine(args) as engine:
         return engine.apply()
 
-
-def run_validate(args):
-    adjust_paths(args)
-    with EpiphanyEngine(args) as engine:
-        return engine.verify()
 
 
 def run_init(args):
@@ -153,6 +147,12 @@ def run_upgrade(args):
     with PatchEngine() as engine:
         return engine.run_upgrade()
 
+'''
+def run_validate(args):
+    adjust_paths(args)
+    with EpiphanyEngine(args) as engine:
+        return engine.verify()
+
 
 def run_backup(args):
     if not query_yes_no('This is an experimental feature and could change at any time. Do you want to continue?'):
@@ -161,14 +161,13 @@ def run_backup(args):
     with PatchEngine() as engine:
         return engine.run_backup()
 
-
 def run_recovery(args):
     if not query_yes_no('This is an experimental feature and could change at any time. Do you want to continue?'):
         return 0
     Config().output_dir = args.build_directory
     with PatchEngine() as engine:
         return engine.run_recovery()
-
+'''
 
 def adjust_paths(args):
     args.file = get_config_file_path(args.file)
