@@ -18,6 +18,7 @@
   - [Single machine cluster](./howto/CLUSTER.md#single-machine-cluster)
   - [How to create custom cluster components](./howto/CLUSTER.md#how-to-create-custom-cluster-components)
   - [How to scale  or cluster components](./howto/CLUSTER.md#how-to-scale-or-cluster-components)
+  - [Multi master cluster](./howto/CLUSTER.md#multi-master-cluster)
   - [Build artifacts](./howto/CLUSTER.md#build-artifacts)
   - [Kafka replication and partition setting](./howto/CLUSTER.md#kafka-replication-and-partition-setting)
   - [RabbitMQ installation and setting](./howto/CLUSTER.md#rabbitmq-installation-and-setting)
