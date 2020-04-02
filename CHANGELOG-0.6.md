@@ -59,3 +59,5 @@
 - [#1049](https://github.com/epiphany-platform/epiphany/issues/1049) - Azure/RedHat specified disk size 30 GB is smaller than the size of the disk in the VM image
 - [#1054](https://github.com/epiphany-platform/epiphany/issues/1054) - Application configurations are not included with epicli init -full
 - [#1063](https://github.com/epiphany-platform/epiphany/issues/1063) - Issues with single_machine install
+- [#1108](https://github.com/epiphany-platform/epiphany/issues/1108) - [Azure RedHat] Create epirepo: package httpd-2.4.6-93 requires httpd-tools = 2.4.6-93 but latest available is 2.4.6-90
+- [#1110](https://github.com/epiphany-platform/epiphany/issues/1110) - Install fixed version of httpd when latest fails (RHEL)
