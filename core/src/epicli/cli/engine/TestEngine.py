@@ -12,6 +12,7 @@ class TestEngine(Step):
     def __init__(self, input_data):
         super().__init__(__name__)
         self.build_directory = input_data.build_directory
+        self.group = input_data.group
 
     def __enter__(self):
         super().__enter__()
@@ -43,6 +44,6 @@ class TestEngine(Step):
         
         # run the spec tests
         spec_command = SpecCommand()
-        spec_command.run(spec_output, path_to_inventory, admin_user.name, admin_user.key_path)   
+        spec_command.run(spec_output, path_to_inventory, admin_user.name, admin_user.key_path, self.group)   
 
         return 0

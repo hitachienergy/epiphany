@@ -225,6 +225,9 @@ def test_parser(subparsers):
     sub_parser = subparsers.add_parser('test', description='Test a cluster from build artifacts.')
     sub_parser.add_argument('-b', '--build', dest='build_directory', type=str, required=True,
                             help='Absolute path to directory with build artifacts.')
+    #TODO: specify which groups we can run from the spec test folder
+    sub_parser.add_argument('-g', '--group', choices=['all'], default='all', action='store', dest='group',  required=False,
+                            help='Specify which group of tests needs to be run.')
 
     def run_test(args):
         experimental_query()
@@ -385,6 +388,9 @@ def dump_debug_info():
         dump_external_debug_info('ANSIBLE-VAULT VERSION', ['ansible-vault', '--version'])
         dump_external_debug_info('TERRAFORM VERSION', ['terraform', '--version'])
         dump_external_debug_info('SKOPEO VERSION', ['skopeo', '--version'])
+        dump_external_debug_info('RUBY VERSION', ['ruby', '--version'])
+        dump_external_debug_info('RUBY GEM VERSION', ['gem', '--version'])
+        dump_external_debug_info('RUBY INSTALLED GEMS', ['gem', 'query', '--local'])
 
         dump_file.write('\n\n*****LOG******\n')
         log_path = os.path.join(get_output_path(), config.log_file)
