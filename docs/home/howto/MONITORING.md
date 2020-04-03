@@ -10,6 +10,12 @@ Right now we are only supporting email messages, but we are working heavily on i
 
 TODO
 
+## How to setup default admin password and user in Grafana
+
+To use other default user than admin/admin created automatically after Grafana installation please follow official Grafana 
+documentation accessible at https://grafana.com/docs/grafana/latest/installation/configuration/#security address. You can also find
+there other useful configuration options for Grafana security.
+
 ## Import and create of Grafana dashboards
 
 Epiphany uses Grafana for monitoring data visualization. Epiphany installation creates Prometheus datasource in Grafana, so the only additional step you have to do is to create your dashboard.
@@ -45,7 +51,7 @@ List of monitoring components - so called exporters:
 
 When dashboard creation or import succeeds you will see it on your dashboard list.
 
-## How to configure Kibana
+## How to configure Kibana - Open Distro
 
 In order to start viewing and analyzing logs with Kibana, you first need to add an index pattern for Filebeat according to the following steps:
 
@@ -59,6 +65,10 @@ In order to start viewing and analyzing logs with Kibana, you first need to add 
 This filter pattern can now be used to query the Elasticsearch indices.
 
 By default Kibana adjusts the UTC time in `@timestamp` to the browser's local timezone. This can be changed in `Management` > `Advanced Settings` > `Timezone for date formatting`.
+
+## How to configure default user password to Kibana - Open Distro and Open Distro for Elasticsearch
+
+To configure default user and password please follow documentation accessible at this: https://aws.amazon.com/blogs/opensource/change-passwords-open-distro-for-elasticsearch/ address.
 
 ## How to configure scalable Prometheus setup
 
