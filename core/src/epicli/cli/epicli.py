@@ -24,6 +24,7 @@ from cli.licenses import LICENSES
 from cli.helpers.query_yes_no import query_yes_no
 from cli.helpers.input_query import prompt_for_password
 from cli.helpers.build_saver import save_to_file, get_output_path
+from cli.engine.spec.SpecCommand import SpecCommand
 
 
 def main():
@@ -225,9 +226,8 @@ def test_parser(subparsers):
     sub_parser = subparsers.add_parser('test', description='Test a cluster from build artifacts.')
     sub_parser.add_argument('-b', '--build', dest='build_directory', type=str, required=True,
                             help='Absolute path to directory with build artifacts.')
-    #TODO: specify which groups we can run from the spec test folder
-    sub_parser.add_argument('-g', '--group', choices=['all'], default='all', action='store', dest='group',  required=False,
-                            help='Specify which group of tests needs to be run.')
+    #sub_parser.add_argument('-g', '--group', choices=['all'] + SpecCommand.get_spec_groups(), default='all', action='store', dest='group',  required=False,
+    #                        help='Specify which group of tests needs to be run.')
 
     def run_test(args):
         experimental_query()
