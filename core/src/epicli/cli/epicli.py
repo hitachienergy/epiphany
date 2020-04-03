@@ -226,8 +226,8 @@ def test_parser(subparsers):
     sub_parser = subparsers.add_parser('test', description='Test a cluster from build artifacts.')
     sub_parser.add_argument('-b', '--build', dest='build_directory', type=str, required=True,
                             help='Absolute path to directory with build artifacts.')
-    #sub_parser.add_argument('-g', '--group', choices=['all'] + SpecCommand.get_spec_groups(), default='all', action='store', dest='group',  required=False,
-    #                        help='Specify which group of tests needs to be run.')
+    sub_parser.add_argument('-g', '--group', choices=['all'] + SpecCommand.get_spec_groups(), default='all', action='store', dest='group',  required=False,
+                            help='Specify which group of tests needs to be run.')
 
     def run_test(args):
         experimental_query()

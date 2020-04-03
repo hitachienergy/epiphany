@@ -42,7 +42,7 @@ These need to be installed to run the cluster spec tests from epicli'''
         env['user'] = user
         env['keypath'] = key
 
-        cmd = f'rake inventory="{inventory}" user={user} keypath="{key}" spec_output="{spec_output}" spec:all'
+        cmd = f'rake inventory="{inventory}" user={user} keypath="{key}" spec_output="{spec_output}" spec:{group}'
 
         self.logger.info(f'Running: "{cmd}"')
 
