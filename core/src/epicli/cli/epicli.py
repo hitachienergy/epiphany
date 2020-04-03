@@ -16,6 +16,7 @@ from cli.engine.DeleteEngine import DeleteEngine
 from cli.engine.InitEngine import InitEngine
 from cli.engine.PrepareEngine import PrepareEngine
 from cli.engine.UpgradeEngine import UpgradeEngine
+from cli.engine.TestEngine import TestEngine
 from cli.helpers.Log import Log
 from cli.helpers.Config import Config
 from cli.version import VERSION
@@ -88,6 +89,7 @@ Terraform : 1..4 map to the following Terraform verbosity levels:
     apply_parser(subparsers)
     upgrade_parser(subparsers)
     delete_parser(subparsers)
+    test_parser(subparsers)
 
     '''
     validate_parser(subparsers)
@@ -217,6 +219,20 @@ def upgrade_parser(subparsers):
             return engine.upgrade()
 
     sub_parser.set_defaults(func=run_upgrade)
+
+
+def test_parser(subparsers):
+    sub_parser = subparsers.add_parser('test', description='Test a cluster from build artifacts.')
+    sub_parser.add_argument('-b', '--build', dest='build_directory', type=str, required=True,
+                            help='Absolute path to directory with build artifacts.')
+
+    def run_test(args):
+        experimental_query()
+        adjust_paths_from_build(args)
+        with TestEngine(args) as engine:
+            return engine.test()
+
+    sub_parser.set_defaults(func=run_test)
 
 
 '''

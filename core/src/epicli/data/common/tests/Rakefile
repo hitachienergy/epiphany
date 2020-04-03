@@ -19,7 +19,10 @@ unless ENV['keypath']
   exit
 end
 
-
+unless ENV['spec_output']
+  print "ERROR: Private key path must be specified by 'spec_output' environment variable\n"
+  exit
+end
 
 groups = {}
 hosts  = []
@@ -73,7 +76,7 @@ namespace :spec do
         t.pattern = "spec/#{group}/*_spec.rb"
         t.fail_on_error = false
         t.rspec_opts = "--format documentation --format RspecJunitFormatter  \
-        --out results/" + Time.now.strftime("%Y-%m-%d_%H-%M-%S") + "_#{group}_#{groups[group][host]}.xml"
+        --out " + ENV['spec_output'] + Time.now.strftime("%Y-%m-%d_%H-%M-%S") + "_#{group}_#{groups[group][host]}.xml"
        end
     end
   end
