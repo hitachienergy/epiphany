@@ -69,7 +69,7 @@
   - [How to set up PostgreSQL connection pooling](./howto/DATABASES.md#how-to-set-up-postgresql-connection-pooling)
   - [How to register database standby in repmgr cluster](./howto/DATABASES.md#how-to-register-database-standby-in-repmgr-cluster)
   - [How to switchover database nodes](./howto/DATABASES.md#how-to-switchover-database-nodes)
-  - [How to set up PGBouncer PgPool and PostgreSQL parameters](./howto/DATABASES.md#how-to-set-up-pgbouncer-pgpool-and-postgresql-parameters)
+  - [How to set up PGBouncer, PgPool and PostgreSQL parameters](./howto/DATABASES.md#how-to-set-up-pgbouncer-pgpool-and-postgresql-parameters)
   - [How to set up PostgreSQL audit logging](./howto/DATABASES.md#how-to-set-up-postgresql-audit-logging)
   - [How to start working with OpenDistro for Elasticsearch](./howto/DATABASES.md#how-to-start-working-with-opendistro-for-elasticsearch)
   - [How to start working with Apache Ignite Stateful setup](./howto/DATABASES.md#how-to-start-working-with-apache-ignite-stateful-setup)
