@@ -42,12 +42,12 @@ These need to be installed to run the cluster spec tests from epicli'''
         env['user'] = user
         env['keypath'] = key
 
-        cmd = f'rake inventory="{inventory}" user={user} keypath="{key}" spec_output="{spec_output}" spec:{group}'
+        cmd = f'rake inventory={inventory} user={user} keypath={key} spec_output={spec_output} spec:{group}'
 
         self.logger.info(f'Running: "{cmd}"')
 
         logpipe = LogPipe(__name__)
-        with Popen(cmd.split(' '), cwd=SPEC_TEST_PATH, env=env, stdout=logpipe, stderr=logpipe, shell=True) as sp:
+        with Popen(cmd.split(' '), cwd=SPEC_TEST_PATH, env=env, stdout=logpipe, stderr=logpipe) as sp:
             logpipe.close()
 
         if sp.returncode != 0:
