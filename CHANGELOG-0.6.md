@@ -69,3 +69,4 @@
 - [#1085](https://github.com/epiphany-platform/epiphany/issues/1085) - K8s HA installation - etcdserver: request timed out
 - [#1086](https://github.com/epiphany-platform/epiphany/issues/1086) - K8s HA installation - Error from server: etcdserver: leader changed
 - [#1072](https://github.com/epiphany-platform/epiphany/issues/1072) - AWS RedHat - cluster networking issues/lags using canal and flannel plugins
+- [#1129](https://github.com/epiphany-platform/epiphany/issues/1129) - [AWS] cluster networking issues using calico plugin - NodePort service not always responding
