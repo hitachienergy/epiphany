@@ -149,7 +149,7 @@ PostgreSQL servers.
 
 ## How to set up PostgreSQL connection pooling
 
-PostgreSQL connection pooling in Epiphany is served by PGBouncer application. This might be added as a feature if needed.
+PostgreSQL connection pooling in Epiphany is served by PgBouncer application. This might be added as a feature if needed.
 Simplest configuration runs PGBouncer on PostgreSQL master node. This needs to be enabled in configuration yaml file:
 
 ```yaml
@@ -161,7 +161,9 @@ specification:
       enabled: yes
   ...
 ```
-PGBouncer listens on standard port 6432. Basic configuration is just template, with very limited access to database. This is because security reasons. [Configuration needs to be tailored according component documentation and stick to security rules and best practices](http://www.pgbouncer.org/).
+PgBouncer listens on standard port 6432. Basic configuration is just template, with very limited access to database. This is because security reasons. [Configuration needs to be tailored according component documentation and stick to security rules and best practices](http://www.pgbouncer.org/).
+
+PgBouncer can be also installed (together with Pgpool) in K8s cluster. See [How to set up PgBouncer, PgPool and PostgreSQL parameters](#how-to-set-up-pgbouncer-pgpool-and-postgresql-parameters).
 
 ## How to setup PostgreSQL HA replication with repmgr cluster
 
@@ -252,26 +254,25 @@ repmgr -f /etc/repmgr/10/repmgr.conf standby switchover
 5). Run command from step 3 and check status. For more details or troubleshooting see repmgr manual:
 https://repmgr.org/docs/4.0/repmgr-standby-switchover.html
 
-## How to set up PGBouncer PgPool and PostgreSQL parameters
+## How to set up PgBouncer, Pgpool and PostgreSQL parameters
 
-This document describe how to enable and setup database connections load balancing and pooling for PostgreSQL highly available instance.
-Default configuration available with Epiphany deliver default performance setup. This setup can fit to the midrange application system.
+This section describes how to set up connection pooling and load balancing for highly available PostgreSQL cluster.
+The default configuration provided by Epiphany is meant for midrange class systems but can be customized to scale up 
+or to improve performance.
 
-To improve performance of your Epiphany setup please visit dedicated documentation webistes:
+To adjust the configuration to your needs, you can refer to the following documentation:
 
-Application | Documentation url |
+Component | Documentation URL |
 --- | --- |
-PGBouncer | https://www.pgbouncer.org/config.html   |
-PGPool | https://www.pgpool.net/docs/latest/en/html/performance.html |
-PostgreSQL connections | https://www.postgresql.org/docs/10/runtime-config-connection.html  |
-PostgreSQL resources management | https://www.postgresql.org/docs/10/runtime-config-resource.html |
- 
+PgBouncer | https://www.pgbouncer.org/config.html |
+Pgpool: Performance Considerations | https://www.pgpool.net/docs/41/en/html/performance.html |
+Pgpool: Server Configuration | https://www.pgpool.net/docs/41/en/html/runtime-config.html |
+PostgreSQL: connections | https://www.postgresql.org/docs/10/runtime-config-connection.html |
+PostgreSQL: resources management | https://www.postgresql.org/docs/10/runtime-config-resource.html |
 
-### Enable configuration
+### Installing PgBouncer and Pgpool
 
-To enable connection load balancing and pooling you need to add "configuration/applications" section to you main configuration yaml file.  
-
-Sample configuration block which should be added to main configuration file:
+PgBouncer and Pgpool are provided as K8s deployments. By default they are not installed. To deploy them you need to add "configuration/applications" document to your configuration yaml file, similar to the example below (`enabled` flags must be set as `true`):
 
 ```yaml
 ---
@@ -282,19 +283,36 @@ provider: aws
 name: default
 specification:
   applications:
-#   [...]  
+  [...]
+
 ## --- pgpool ---
-  - name: pgpool 
+
+  - name: pgpool
     enabled: yes
-    replicas: 2
-#   [...]
+    [...]
+    namespace: postgres-pool
+    service:
+      name: pgpool
+      port: 5432
+    replicas: 3
+    [...]
+    resources: # Adjust to your configuration, see https://www.pgpool.net/docs/41/en/html/resource-requiremente.html
+      limits:
+        # cpu: 900m # Set according to your env
+        memory: 176Mi
+      requests:
+        cpu: 250m # Adjust to your env, increase if possible
+        memory: 176Mi
     pgpool:
+      # https://github.com/bitnami/bitnami-docker-pgpool#configuration + https://github.com/bitnami/bitnami-docker-pgpool#environment-variables
       env:
-        PGPOOL_BACKEND_NODES: SET_BY_AUTOMATION 
-        PGPOOL_POSTGRES_USERNAME: epi_pgpool_postgres_admin 
-        PGPOOL_SR_CHECK_USER: epi_pgpool_sr_check
-        PGPOOL_ADMIN_USERNAME: epi_pgpool_admin 
-        PGPOOL_ENABLE_LOAD_BALANCING: yes # set to 'no' if there is no PostgreSQL replication
+        PGPOOL_BACKEND_NODES: SET_BY_AUTOMATION # you can use custom value like '0:pg-node-1:5432,1:pg-node-2:5432'
+        # Postgres users
+        PGPOOL_POSTGRES_USERNAME: epi_pgpool_postgres_admin # with SUPERUSER role to use connection slots reserved for superusers for K8s liveness probes, also for user synchronization
+        PGPOOL_SR_CHECK_USER: epi_pgpool_sr_check # with pg_monitor role, for streaming replication checks and health checks
+        # ---
+        PGPOOL_ADMIN_USERNAME: epi_pgpool_admin # Pgpool administrator (local pcp user)
+        PGPOOL_ENABLE_LOAD_BALANCING: yes # set to 'no' if there is no replication
         PGPOOL_MAX_POOL: 4
         PGPOOL_POSTGRES_PASSWORD_FILE: /opt/bitnami/pgpool/secrets/pgpool_postgres_password
         PGPOOL_SR_CHECK_PASSWORD_FILE: /opt/bitnami/pgpool/secrets/pgpool_sr_check_password
@@ -304,165 +322,166 @@ specification:
         pgpool_sr_check_password: PASSWORD_TO_CHANGE
         pgpool_admin_password: PASSWORD_TO_CHANGE
       # https://www.pgpool.net/docs/41/en/html/runtime-config.html
-      config_file_content_to_append: |
+      pgpool_conf_content_to_append: |
         #------------------------------------------------------------------------------
         # CUSTOM SETTINGS (appended by Epiphany to override defaults)
         #------------------------------------------------------------------------------
         # num_init_children = 32
-        # connection_life_time = 600
+        connection_life_time = 600
+        reserved_connections = 1
+      # https://www.pgpool.net/docs/41/en/html/auth-pool-hba-conf.html
+      pool_hba_conf: SET_BY_AUTOMATION
+
+## --- pgbouncer ---
+
   - name: pgbouncer
     enabled: yes
+    [...]
+    namespace: postgres-pool
+    service:
+      name: pgbouncer
+      port: 5432
     replicas: 2
-#   [...]
+    resources:
+      requests:
+        cpu: 250m
+        memory: 128Mi
+      limits:
+        cpu: 500m
+        memory: 128Mi
     pgbouncer:
       env:
-        DB_HOST: pgpool.postgres-pool.svc.cluster.local #pgpool service name
+        DB_HOST: pgpool.postgres-pool.svc.cluster.local # pgpool service name
         DB_LISTEN_PORT: 5432
         LISTEN_ADDR: "*"
         LISTEN_PORT: 5432
         AUTH_FILE: "/etc/pgbouncer/auth/users.txt"
         AUTH_TYPE: md5
-        MAX_CLIENT_CONN: 300
-       ```
-
-### Default setup - main parameters
-This chapter describe default setup and main parameters which are responsible for the pefomance limitations in this Epiphany setup.
-Default limitations we can divide to 3 layers: memory server usage, connection limits, query caching.
-All of the configuration parameters changes can be modified in main configuration yaml file.
-
-#### Memory server usage
-
-Each of the component have memory usage limits which are defined based on different algorithm provided by Vendor.
-
-##### PGBouncer
-
-Resources for the pods. 
-There are two pods deployed with default setup. Number of the pods (replicas) is defined in main configuration yaml file under pgbouncer section. The number of deployed pods can be changed using main configuration yaml file.
-
-```yaml
- namespace: postgres-pool
-    service:
-      name: pgbouncer
-      port: 5432
-    replicas: 2
-```
-There are hardware resources limitation defined for CPU and Memory usage also. They are defined *in service deployment template.* 
-
-Hardware resource limits:
-```yaml
-resources:
-  requests:
-    cpu: "250m"
-    memory: "128Mi"
-  limits:
-    cpu: "500m"
-    memory: "128Mi"
-```
-
-
-##### PGPool
-
-Each PgPool pod in a default setup require at least 164MB of memory. This is beacuse of definition of pgpool parameters setup.
-Parameters which are responsible for calculation how much memory for pgpool service is required are:
-
-```
-num_init_children =
-max_pool = 
-```
-Both parameters can be specified in the main configuration yaml file but please be aware that they are also synchronized with PGBouncer and PostgreSQL configs. Detailed parameter configuration you can find in PgPool documentation mentioned at the beginning of this document.
-
-Increasing num_init_children and max_pool parameters probably require changes in hardware resources limitation in main configuration yaml file.
-
-##### PostgreSQL
-
-The default parameters defined in postgresql.conf for local memory area and for shared memory area are using default values delivered with PostgreSQL database. These parameters was not predefined and tuned by Epiphany team because they are dependent from used hardware resources.
-We can only recommend that if your setup require performance improvment you should start from considering changes in such parameters: 
-
-```
-shared_buffers =  
-work_mem =  
-maintenance _work_mem =  
-effective_cache_size = 
-temp_buffers =  
-```
-
-#### Connection limits
-
-##### PGBouncer
-
-There are connection limitation defined in PgBouncer configuration. Each of these parameters are defined per PgBouncer instance (pod). Two pods are deployed by default.
-
-```yaml
- - name: pgbouncer
-    enabled: yes
-    replicas: 2
-#   [...]
-    pgbouncer:
-      env:
-#       [...]
-        MAX_CLIENT_CONN: 300
+        MAX_CLIENT_CONN: 150
         DEFAULT_POOL_SIZE: 25
         RESERVE_POOL_SIZE: 25
         POOL_MODE: transaction
 ```
 
+### Default setup - main parameters
 
-##### PGPool
+This chapter describes the default setup and main parameters responsible for the perfomance limitations.
+The limitations can be divided into 3 layers: resource usage, connection limits and query caching.
+All of the configuration parameters can be modified in the configuration yaml file.
 
-PGPool configuration setup by default is prepared for support around 60 concurrent connections. This is because we are using two parameters in default setup  
+#### Resource usage
+
+Each of the components has hardware requirements that depend on its configuration, in particular on the number of allowed connections.
+
+##### PgBouncer
+
+```yaml
+    replicas: 2
+    resources:
+      requests:
+        cpu: 250m
+        memory: 128Mi
+      limits:
+        cpu: 500m
+        memory: 128Mi
+```
+
+##### Pgpool
+
+```yaml
+    replicas: 3
+    resources: # Adjust to your configuration, see https://www.pgpool.net/docs/41/en/html/resource-requiremente.html
+      limits:
+        # cpu: 900m # Set according to your env
+        memory: 176Mi
+      requests:
+        cpu: 250m # Adjust to your env, increase if possible
+        memory: 176Mi
+```
+
+By default, each Pgpool pod requires 176 MB of memory. This value has been determined based on Pgpool [docs](https://www.pgpool.net/docs/41/en/html/resource-requiremente.html), however after stress testing we need to add several extra megabytes to avoid [failed to fork a child](https://github.com/epiphany-platform/epiphany/pull/1123) issue.
+You may need to adjust `resources` after changing `num_init_children` or `max_pool` (`PGPOOL_MAX_POOL`) settings.
+Such changes should be synchronized with PostgreSQL and PgBouncer configuration.
+
+##### PostgreSQL
+
+Memory related parameters have PostgreSQL default values.
+If your setup requires performance improvments, you may consider changing values of the following parameters:
+
+- shared_buffers
+- work_mem
+- maintenance _work_mem
+- effective_cache_size
+- temp_buffers
+
+The default settings can be overridden by Epiphany using `configuration/postgresql` doc in the configuration yaml file.
+
+#### Connection limits
+
+##### PgBouncer
+
+There are connection limitations defined in PgBouncer configuration. Each of these parameters is defined per PgBouncer instance (pod).
+For example, having 2 pods (with MAX_CLIENT_CONN = 150) allows for up to 300 client connections.
+
+```yaml
+    pgbouncer:
+      env:
+        [...]
+        MAX_CLIENT_CONN: 150
+        DEFAULT_POOL_SIZE: 25
+        RESERVE_POOL_SIZE: 25
+        POOL_MODE: transaction
+```
+
+##### Pgpool
+
+By default, Pgpool service is configured to handle up to 93 active concurrent connections to PostgreSQL (3 pods x 31). This is because of the following settings:
+
 ```
 num_init_children = 32
 reserved_connections = 1
 ```
-Parameter num_init_children = 32 means that each Kubernetes POD can support 32 concurrent connections where one connection is reserved for incoming traffic (reserved_connections = 1). This means that we can have 33 concurrent client connections running through one PGPool POD. We must remember that there will be also some reserved connections for end sessions.
 
-If you need to improve connection limits on PGPool level we recommend to start from increasing number of PGPool PODs.
-This can be easily setup in configuration main yaml file in PGPool section:
+Each pod can handle up to 32 concurrent connections but one is [reserved](https://www.pgpool.net/docs/41/en/html/runtime-config-connection.html#GUC-NUM-INIT-CHILDREN).
+This means that the 32th connection from a client will be refused.
+Keep in mind that canceling a query creates another connection to PostgreSQL, thus, a query cannot be canceled if all the connections are in use.
+Furthermore, for each pod, one connection slot must be available for K8s health checks.
+Hence the real number of available concurrent connections is 30 per pod.
 
-```yaml
-## --- pgpool ---
-  - name: pgpool 
-    enabled: yes
-    replicas: 2
-```
-For example. If you need to have more than 100 concurrent connections, you should consider to run PGPool in 4 PODs (4-5 PODS x num_init_children = 32). Please remember that you need some reserve for incoming and ending connections.
+If you need more active concurrent connections, you can increase the number of pods (`replicas`) but the total number of allowed concurrent connections should not exceed the value defined by PostgreSQL parameters: (`max_connections` - `superuser_reserved_connections`).
 
-PGPool configuration is using default configuration parameters. As a example of PgPool configuration there are two parameters defined in main configuration yaml file. In the section config_file_content_to_append:   
+In order to change Pgpool settings (defined in pgpool.conf), you can edit `pgpool_conf_content_to_append` section:
 
 ```yaml
-config_file_content_to_append: |
+      pgpool_conf_content_to_append: |
         #------------------------------------------------------------------------------
         # CUSTOM SETTINGS (appended by Epiphany to override defaults)
         #------------------------------------------------------------------------------
-        num_init_children = 32
-        connection_life_time = 600
+        connection_life_time = 900
+        reserved_connections = 1
 ```
 
-There are a few parameters in PgPool configuration which are defining the connections policy. 
-```
-max_pool = 
-num_init_children =
-reserved_connections =
-```
-Detailed documentation about connection tunning you can find in a "Performance Considerations" document which is linked in a first chapter of this document. There is also "Connection settings" chapter in official PgPool documentation which describes how to balance between connections limit setting and hardware resource usage. 
+The content of pgpool.conf file is stored in K8s `pgpool-config-files` ConfigMap.
+
+For detailed information about connection tunning, see "Performance Considerations" chapter in Pgpool documentation.
 
 ##### PostgreSQL
 
-In 'postgresql.conf' default file there is max_connections parameter used to limit client connections to database instance.
-Parameter max_connections sets exactly that: the maximum number of client connections allowed. 
-This is very important to some of the other configuration parameters (particularly work_mem) because there are some memory resources that are or can be allocated on a per-client basis, so the maximum number of clients suggests the maximum possible memory use. Generally, PostgreSQL on sufficient amount of hardware can support a few hundred connections. 
+PostgreSQL uses `max_connections` parameter to limit the number of client connections to database server.
+The default is typically 100 connections.
+Generally, PostgreSQL on sufficient amount of hardware can support a few hundred connections.
 
 #### Query caching
 
-Query caching is not available in PGBouncer.
+Query caching is not available in PgBouncer.
 
-##### PGPool
+##### Pgpool
 
-Query caching is disabled by default in PGPool configuration.
+Query caching is disabled by default in Pgpool configuration.
 
 ##### PostgreSQL
 
-PostgreSQL database is deliever in the default configuration setup. If you need to imporve SQL query performance please view official PostgreSQL 10 documentation.
+PostgreSQL is installed with default settings.
 
 
 ## How to set up PostgreSQL audit logging
