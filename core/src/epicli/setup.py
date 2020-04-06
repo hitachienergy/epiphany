@@ -24,6 +24,7 @@ setup(
     long_description=readme,
     author='Epiphany Team',
     author_email='',
+    python_requires='=3.7.*',
     url='https://github.com/epiphany-platform/epiphany',
     license=license,
     packages=find_packages(exclude=('tests', 'docs')),
