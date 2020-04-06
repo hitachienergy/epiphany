@@ -20,15 +20,15 @@
             // "args": ["test", "-b", "${workspaceFolder}/clusters/build/dir"]
         },
         {
-            "name": "python unit tests",
+            "name": "unit tests",
             "type": "python",
             "request": "launch",
-            "program": "${workspaceFolder}/run-tests.py",
+            "module": "pytest",
             "cwd": "${workspaceFolder}",
             "pythonPath": "${config:python.pythonPath}",
             "env": { "PYTHONPATH": "${workspaceFolder}" },
             "console": "integratedTerminal",
-            "args": []
+            "args": ["${workspaceFolder}/tests/", "--junitxml=${workspaceFolder}/tests/results/unit_tests_results.xml"]
         }
     ]	
 }
