@@ -25,17 +25,19 @@ class TestEngine(Step):
         # get manifest
         path_to_manifest = os.path.join(self.build_directory, MANIFEST_FILE_NAME)
         if not os.path.isfile(path_to_manifest):
-            raise Exception(f'No {MANIFEST_FILE_NAME} inside the build folder')
+            raise Exception(f'No "{MANIFEST_FILE_NAME}" inside the build folder: "{self.build_directory}"')
 
         # get inventory
         path_to_inventory = os.path.join(self.build_directory, INVENTORY_FILE_NAME)
         if not os.path.isfile(path_to_inventory):
-            raise Exception(f'No {INVENTORY_FILE_NAME} inside the build folder')        
+            raise Exception(f'No "{INVENTORY_FILE_NAME}" inside the build folder: "{self.build_directory}"')        
 
         # get admin user
         docs = load_yamls_file(path_to_manifest)
         cluster_model = select_single(docs, lambda x: x.kind == 'epiphany-cluster')
         admin_user = cluster_model.specification.admin_user
+        if not os.path.isfile(admin_user.key_path):
+            raise Exception(f'No SSH key file in folder: "{admin_user.key_path}"')        
 
         # get and create the spec output dir if it does not exist
         spec_output = os.path.join(self.build_directory, SPEC_OUTPUT_DIR)

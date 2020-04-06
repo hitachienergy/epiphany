@@ -13,8 +13,8 @@ WORKDIR /epicli
 
 RUN apt-get update \
     && apt-get -y install gcc make musl-dev libffi-dev tar unzip openssh-client vim \
-    && sudo apt-get -y install ruby-full \
-    && sudo gem install serverspec rake rspec_junit_formatter    
+    && apt-get -y install ruby-full \
+    && gem install serverspec rake rspec_junit_formatter    
 
 RUN pip install epicli-${EPICLI_VERSION}-py3-none-any.whl
 
