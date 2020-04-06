@@ -61,3 +61,11 @@
 - [#1063](https://github.com/epiphany-platform/epiphany/issues/1063) - Issues with single_machine install
 - [#1108](https://github.com/epiphany-platform/epiphany/issues/1108) - [Azure RedHat] Create epirepo: package httpd-2.4.6-93 requires httpd-tools = 2.4.6-93 but latest available is 2.4.6-90
 - [#1110](https://github.com/epiphany-platform/epiphany/issues/1110) - Install fixed version of httpd when latest fails (RHEL)
+
+### Known Issues
+
+- [#1068](https://github.com/epiphany-platform/epiphany/issues/1068) - K8s HA installation - failing in some cases on task "Get token from master
+- [#1075](https://github.com/epiphany-platform/epiphany/issues/1075) - K8s HA installation - timed out on task "Join master to ControlPlane
+- [#1085](https://github.com/epiphany-platform/epiphany/issues/1085) - K8s HA installation - etcdserver: request timed out
+- [#1086](https://github.com/epiphany-platform/epiphany/issues/1086) - K8s HA installation - Error from server: etcdserver: leader changed
+- [#1072](https://github.com/epiphany-platform/epiphany/issues/1072) - AWS RedHat - cluster networking issues/lags using canal and flannel plugins
