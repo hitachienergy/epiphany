@@ -102,10 +102,10 @@ specification:
     resources: # Adjust to your configuration, see https://www.pgpool.net/docs/41/en/html/resource-requiremente.html
       limits:
         # cpu: 900m # Set according to your env
-        memory: 164Mi
+        memory: 176Mi
       requests:
         cpu: 250m # Adjust to your env, increase if possible
-        memory: 164Mi
+        memory: 176Mi
     pgpool:
       # https://github.com/bitnami/bitnami-docker-pgpool#configuration + https://github.com/bitnami/bitnami-docker-pgpool#environment-variables
       env:

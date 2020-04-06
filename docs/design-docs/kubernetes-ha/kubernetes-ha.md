@@ -1,6 +1,6 @@
 # Epiphany Kubernetes HA design document
 
-Affected version: 0.5.x
+Affected version: 0.6.x
 
 ## 1. Goals
 
@@ -234,3 +234,8 @@ $ sudo kubeadm reset --force
 ```
 
 In later versions ([Kubernetes 1.17](https://kubernetes.io/docs/setup/production-environment/tools/kubeadm/high-availability/#stacked-control-plane-and-etcd-nodes)) this feature became stable and "experimental" word in the commandline paremeters was removed.
+
+## 7. Post-implementation erratum
+
+- It turned out, that [init-phase upload-certs](https://v1-17.docs.kubernetes.io/docs/reference/setup-tools/kubeadm/kubeadm-init/#uploading-control-plane-certificates-to-the-cluster) does not take into account [etcd encryption feature](https://v1-17.docs.kubernetes.io/docs/tasks/administer-cluster/encrypt-data/) and does not copy such configuration to newly joined masters.
+- Instead, for consistency, master joining has been implemented via automated [replication of Kubernetes PKI](https://v1-17.docs.kubernetes.io/docs/setup/production-environment/tools/kubeadm/high-availability/#manual-certs) in ansible.
