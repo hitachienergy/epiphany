@@ -3,25 +3,25 @@ require 'rspec/core/rake_task'
 
 unless ENV['inventory']
   print "ERROR: Inventory file must be specified by 'inventory' environment variable\n"
-  print "  e.g.) rake inventory=./hosts user=operations keypath=./id_rsa spec:all\n"
+  print "  e.g.) rake inventory=./hosts user=operations keypath=./id_rsa spec_output=./spec_output/ spec:all\n"
   exit
 end
 
 unless ENV['user']
   print "ERROR: Service user must be specified by 'user' environment variable\n"
-  print "  e.g.) rake inventory=./hosts user=operations keypath=./id_rsa spec:all\n"
+  print "  e.g.) rake inventory=./hosts user=operations keypath=./id_rsa spec_output=./spec_output/ spec:all\n"
   exit
 end
 
 unless ENV['keypath']
   print "ERROR: Private key path must be specified by 'keypath' environment variable\n"
-  print "  e.g.) rake inventory=./hosts user=operations keypath=./id_rsa spec:all\n"
+  print "  e.g.) rake inventory=./hosts user=operations keypath=./id_rsa spec_output=./spec_output/ spec:all\n"
   exit
 end
 
 unless ENV['spec_output']
   print "ERROR: Output path must be specified by 'spec_output' environment variable\n"
-  print "  e.g.) rake inventory=./hosts user=operations keypath=./id_rsa spec:all\n"
+  print "  e.g.) rake inventory=./hosts user=operations keypath=./id_rsa spec_output=./spec_output/ spec:all\n"
   exit
 end
 
