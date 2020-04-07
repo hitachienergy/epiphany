@@ -14,7 +14,7 @@ SP_FILE_NAME = 'sp.yml'
 INVENTORY_FILE_NAME = 'inventory'
 ANSIBLE_OUTPUT_DIR = 'ansible/'
 ANSIBLE_VAULT_OUTPUT_DIR = 'vault/'
-SPEC_OUTPUT_DIR = 'spec/'
+SPEC_OUTPUT_DIR = 'spec_tests/'
 
 BUILD_EPICLI = 'BUILD_EPICLI'
 BUILD_LEGACY = 'BUILD_LEGACY_02X'
@@ -142,4 +142,3 @@ def copy_files_recursively(src, dst):
 
 def copy_file(src, dst):
     shutil.copy2(src, dst)
-
