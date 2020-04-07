@@ -189,7 +189,7 @@ Note that versions are default versions and can be changed in certain cases thro
 | azure-storage-common | 1.4.2 | https://github.com/Azure/azure-storage-python | [MIT License](https://api.github.com/repos/azure/azure-storage-python/license) |
 | azure-storage-nspkg | 3.1.0 | https://github.com/Azure/azure-storage-python | [MIT License](https://api.github.com/repos/azure/azure-storage-python/license) |
 | bcrypt | 3.1.7 | https://github.com/pyca/bcrypt/ | [Apache License 2.0](https://api.github.com/repos/pyca/bcrypt/license) |
-| bleach | 3.1.1 | https://github.com/mozilla/bleach | [Other](https://api.github.com/repos/mozilla/bleach/license) |
+| bleach | 3.1.4 | https://github.com/mozilla/bleach | [Other](https://api.github.com/repos/mozilla/bleach/license) |
 | boto3 | 1.10.9 | https://github.com/boto/boto3 | [Apache License 2.0](https://api.github.com/repos/boto/boto3/license) |
 | botocore | 1.13.9 | https://github.com/boto/botocore | [Apache License 2.0](https://api.github.com/repos/boto/botocore/license) |
 | certifi | 2019.9.11 | https://certifi.io/ | MPL-2.0 |
@@ -225,7 +225,7 @@ Note that versions are default versions and can be changed in certain cases thro
 | pluggy | 0.13.1 | https://github.com/pytest-dev/pluggy | [MIT License](https://api.github.com/repos/pytest-dev/pluggy/license) |
 | portalocker | 1.2.1 | https://github.com/WoLpH/portalocker | [Other](https://api.github.com/repos/wolph/portalocker/license) |
 | prompt-toolkit | 1.0.18 | https://github.com/jonathanslenders/python-prompt-toolkit | [BSD 3-Clause "New" or "Revised" License](https://api.github.com/repos/jonathanslenders/python-prompt-toolkit/license) |
-| psutil | 5.6.4 | https://github.com/giampaolo/psutil | [BSD 3-Clause "New" or "Revised" License](https://api.github.com/repos/giampaolo/psutil/license) |
+| psutil | 5.6.6 | https://github.com/giampaolo/psutil | [BSD 3-Clause "New" or "Revised" License](https://api.github.com/repos/giampaolo/psutil/license) |
 | py | 1.8.1 | http://py.readthedocs.io/ | MIT license |
 | pycparser | 2.19 | https://github.com/eliben/pycparser | [Other](https://api.github.com/repos/eliben/pycparser/license) |
 | Pygments | 2.4.2 | http://pygments.org/ | BSD License |
