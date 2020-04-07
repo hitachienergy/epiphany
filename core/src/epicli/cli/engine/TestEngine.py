@@ -25,7 +25,7 @@ class TestEngine(Step):
         # get manifest
         path_to_manifest = os.path.join(self.build_directory, MANIFEST_FILE_NAME)
         if not os.path.isfile(path_to_manifest):
-            raise Exception(f'No "{MANIFEST_FILE_NAME}" inside the build folder: "{self.build_directory}"')
+            raise Exception(f'No "{MANIFEST_FILE_NAME}" inside the build directory: "{self.build_directory}"')
 
         # get inventory
         path_to_inventory = os.path.join(self.build_directory, INVENTORY_FILE_NAME)
