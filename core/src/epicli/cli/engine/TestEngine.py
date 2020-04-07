@@ -30,7 +30,7 @@ class TestEngine(Step):
         # get inventory
         path_to_inventory = os.path.join(self.build_directory, INVENTORY_FILE_NAME)
         if not os.path.isfile(path_to_inventory):
-            raise Exception(f'No "{INVENTORY_FILE_NAME}" inside the build folder: "{self.build_directory}"')        
+            raise Exception(f'No "{INVENTORY_FILE_NAME}" inside the build directory: "{self.build_directory}"')        
 
         # get admin user
         docs = load_yamls_file(path_to_manifest)
