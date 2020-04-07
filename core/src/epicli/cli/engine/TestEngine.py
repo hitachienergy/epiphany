@@ -37,7 +37,7 @@ class TestEngine(Step):
         cluster_model = select_single(docs, lambda x: x.kind == 'epiphany-cluster')
         admin_user = cluster_model.specification.admin_user
         if not os.path.isfile(admin_user.key_path):
-            raise Exception(f'No SSH key file in folder: "{admin_user.key_path}"')        
+            raise Exception(f'No SSH key file in directory: "{admin_user.key_path}"')
 
         # get and create the spec output dir if it does not exist
         spec_output = os.path.join(self.build_directory, SPEC_OUTPUT_DIR)
