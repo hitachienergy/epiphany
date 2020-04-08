@@ -16,6 +16,7 @@ from cli.engine.DeleteEngine import DeleteEngine
 from cli.engine.InitEngine import InitEngine
 from cli.engine.PrepareEngine import PrepareEngine
 from cli.engine.UpgradeEngine import UpgradeEngine
+from cli.engine.TestEngine import TestEngine
 from cli.helpers.Log import Log
 from cli.helpers.Config import Config
 from cli.version import VERSION
@@ -23,6 +24,7 @@ from cli.licenses import LICENSES
 from cli.helpers.query_yes_no import query_yes_no
 from cli.helpers.input_query import prompt_for_password
 from cli.helpers.build_saver import save_to_file, get_output_path
+from cli.engine.spec.SpecCommand import SpecCommand
 
 
 def main():
@@ -88,6 +90,7 @@ Terraform : 1..4 map to the following Terraform verbosity levels:
     apply_parser(subparsers)
     upgrade_parser(subparsers)
     delete_parser(subparsers)
+    test_parser(subparsers)
 
     '''
     validate_parser(subparsers)
@@ -217,6 +220,22 @@ def upgrade_parser(subparsers):
             return engine.upgrade()
 
     sub_parser.set_defaults(func=run_upgrade)
+
+
+def test_parser(subparsers):
+    sub_parser = subparsers.add_parser('test', description='Test a cluster from build artifacts.')
+    sub_parser.add_argument('-b', '--build', dest='build_directory', type=str, required=True,
+                            help='Absolute path to directory with build artifacts.')
+    sub_parser.add_argument('-g', '--group', choices=['all'] + SpecCommand.get_spec_groups(), default='all', action='store', dest='group',  required=False,
+                            help='Group of tests to be run, e.g. kafka.')
+
+    def run_test(args):
+        experimental_query()
+        adjust_paths_from_build(args)
+        with TestEngine(args) as engine:
+            return engine.test()
+
+    sub_parser.set_defaults(func=run_test)
 
 
 '''
@@ -369,6 +388,9 @@ def dump_debug_info():
         dump_external_debug_info('ANSIBLE-VAULT VERSION', ['ansible-vault', '--version'])
         dump_external_debug_info('TERRAFORM VERSION', ['terraform', '--version'])
         dump_external_debug_info('SKOPEO VERSION', ['skopeo', '--version'])
+        dump_external_debug_info('RUBY VERSION', ['ruby', '--version'])
+        dump_external_debug_info('RUBY GEM VERSION', ['gem', '--version'])
+        dump_external_debug_info('RUBY INSTALLED GEMS', ['gem', 'query', '--local'])
 
         dump_file.write('\n\n*****LOG******\n')
         log_path = os.path.join(get_output_path(), config.log_file)

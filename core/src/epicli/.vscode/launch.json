@@ -17,28 +17,18 @@
             // "args": ["apply", "-f", "${workspaceFolder}/clusters/YOUR_DATA_YAML.yml", "--offline-requirements", "${workspaceFolder}/downloads/epirepo"]
             // "args": ["delete", "-b", "${workspaceFolder}/clusters/build/dir"]
             // "args": ["init", "-p", "PROVIDER", "-n", "NAME"]
+            // "args": ["test", "-b", "${workspaceFolder}/clusters/build/dir"]
         },
         {
-            "name": "python unit tests",
+            "name": "unit tests",
             "type": "python",
             "request": "launch",
-            "program": "${workspaceFolder}/run-tests.py",
+            "module": "pytest",
             "cwd": "${workspaceFolder}",
             "pythonPath": "${config:python.pythonPath}",
             "env": { "PYTHONPATH": "${workspaceFolder}" },
             "console": "integratedTerminal",
-            "args": ["python"]
-        },
-        {
-            "name": "server spec tests",
-            "type": "python",
-            "request": "launch",
-            "program": "${workspaceFolder}/run-tests.py",
-            "cwd": "${workspaceFolder}",
-            "pythonPath": "${config:python.pythonPath}",
-            "env": { "PYTHONPATH": "${workspaceFolder}" },
-            "console": "integratedTerminal",
-            "args": ["spec", "-i", "${workspaceFolder}/PATH_TO_CLUSTER_INVENTORY", "-u", "ADMIN_USER", "-k", "${workspaceFolder}/PATH_TO_SSH_KEY"]
+            "args": ["${workspaceFolder}/tests/", "--junitxml=${workspaceFolder}/tests/results/unit_test_results.xml"]
         }
     ]	
 }
