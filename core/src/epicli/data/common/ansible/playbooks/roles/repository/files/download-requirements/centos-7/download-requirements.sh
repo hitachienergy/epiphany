@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-# VERSION 1.0.3
+# VERSION 1.0.4
 
 # NOTE: You can run only one instance of this script, new instance kills the previous one
 #       This limitation is for Ansible
@@ -18,24 +18,22 @@ add_repo() {
 		echol "Adding repository: $repo_id"
 		yum-config-manager --add-repo "$repo_url" ||
 			exit_with_error "Command failed: yum-config-manager --add-repo \"$repo_url\""
-		echo "$repo_id.repo" >> "$ADDED_REPOSITORIES_FILE_PATH"
 		# to accept import of GPG keys
 		yum -y repolist > /dev/null ||
 			exit_with_error "Command failed: yum -y repolist"
 	fi
 }
 
-# params: <repo_id> <config_file_contents>
+# params: <repo_id> <config_file_content>
 add_repo_as_file() {
 	local repo_id="$1"
-	local config_file_contents="$2"
+	local config_file_content="$2"
 	local config_file_name="$repo_id.repo"
 
 	if ! is_repo_enabled "$repo_id"; then
 		echol "Adding repository: $repo_id"
-		cat <<< "$config_file_contents" > "/etc/yum.repos.d/$config_file_name" ||
+		cat <<< "$config_file_content" > "/etc/yum.repos.d/$config_file_name" ||
 			exit_with_error "Function add_repo_as_file failed for repo: $repo_id"
-		echo "$config_file_name" >> "$ADDED_REPOSITORIES_FILE_PATH"
 		# to accept import of GPG keys
 		yum -y repolist > /dev/null || exit_with_error "Command failed: yum -y repolist"
 	fi
@@ -45,6 +43,7 @@ add_repo_as_file() {
 add_repo_from_script() {
 	local script_url="$1"
 
+	echol "Running: curl $script_url | bash"
 	curl $script_url | bash
 }
 
@@ -67,6 +66,17 @@ create_directory() {
 	else
 		echol "Creating directory: $dir_path"
 		mkdir -p "$dir_path" || exit_with_error "Command failed: mkdir -p \"$dir_path\""
+	fi
+}
+
+# params: <repo_id>
+disable_repo() {
+	local repo_id="$1"
+
+	if yum repolist enabled | grep --quiet "$repo_id"; then
+		echol "Disabling repository: $repo_id"
+		yum-config-manager --disable "$repo_id" ||
+			exit_with_error "Command failed: yum-config-manager --disable \"$repo_id\""
 	fi
 }
 
@@ -278,16 +288,23 @@ remove_package() {
 	fi
 }
 
-# params: <added_repos_list_file_path>
+# params: <yum_repos_backup_tar_file_path>
 remove_added_repos() {
-	local added_repos_list_file="$1"
+	local yum_repos_backup_tar_file_path="$1"
 
-	if [ -f "$added_repos_list_file" ]; then
-		for repo_config_file in $(cat $added_repos_list_file | sort --unique); do
-			remove_file "/etc/yum.repos.d/$repo_config_file"
-		done
-		remove_file "$added_repos_list_file"
-	fi
+	declare -A initial_yum_repo_files
+	for repo_config_file in $(tar -tf "$yum_repos_backup_tar_file_path" | grep '.repo$' | xargs -L 1 --no-run-if-empty basename); do
+		initial_yum_repo_files["$repo_config_file"]=1
+	done
+
+	for repo_config_file in $(find /etc/yum.repos.d/ -maxdepth 1 -type f -name '*.repo' -printf "%f\n"); do
+		if (( ${initial_yum_repo_files["$repo_config_file"]:-0} == 0)); then
+			# remove only if not owned by a package
+			if ! rpm --quiet --query --file "/etc/yum.repos.d/$repo_config_file"; then
+				remove_file "/etc/yum.repos.d/$repo_config_file"
+			fi
+		fi
+	done
 }
 
 # params: <file_path>
@@ -356,7 +373,6 @@ readonly LOG_FILE_NAME=${SCRIPT_FILE_NAME/sh/log}
 readonly LOG_FILE_PATH="$SCRIPT_DIR/$LOG_FILE_NAME"
 readonly YUM_CONFIG_BACKUP_FILE_PATH="$SCRIPT_DIR/${SCRIPT_FILE_NAME}-yum-repos-backup-tmp-do-not-remove.tar"
 readonly SKOPEO_BIN="$SCRIPT_DIR/skopeo_linux"
-readonly ADDED_REPOSITORIES_FILE_PATH="$SCRIPT_DIR/${SCRIPT_FILE_NAME}-added-repositories-list-do-not-remove.tmp"
 readonly INSTALLED_PACKAGES_FILE_PATH="$SCRIPT_DIR/${SCRIPT_FILE_NAME}-installed-packages-list-do-not-remove.tmp"
 readonly PID_FILE_PATH=/var/run/${SCRIPT_FILE_NAME/sh/pid}
 
@@ -406,15 +422,15 @@ get_requirements_from_group 'IMAGES'               'images'                "$REQ
 
 # --- Backup yum repositories ---
 
-if [ -f $YUM_CONFIG_BACKUP_FILE_PATH ]; then
+if [ -f "$YUM_CONFIG_BACKUP_FILE_PATH" ]; then
 	echol "Backup aleady exists: $YUM_CONFIG_BACKUP_FILE_PATH"
 else
 	echol "Backuping /etc/yum.repos.d/ to $YUM_CONFIG_BACKUP_FILE_PATH"
-	if backup_files $YUM_CONFIG_BACKUP_FILE_PATH '/etc/yum.repos.d/'; then
+	if backup_files "$YUM_CONFIG_BACKUP_FILE_PATH" '/etc/yum.repos.d/'; then
 		echol "Backup done"
 	else
-		if [ -f $YUM_CONFIG_BACKUP_FILE_PATH ]; then
-			remove_file $YUM_CONFIG_BACKUP_FILE_PATH
+		if [ -f "$YUM_CONFIG_BACKUP_FILE_PATH" ]; then
+			remove_file "$YUM_CONFIG_BACKUP_FILE_PATH"
 		fi
 		exit_with_error "Backup of yum repositories failed"
 	fi
@@ -550,6 +566,7 @@ add_repo_as_file 'postgresql-10' "$POSTGRESQL_REPO_CONF"
 add_repo_as_file 'rabbitmq_erlang' "$RABBITMQ_ERLANG_REPO_CONF"
 add_repo_as_file 'rabbitmq_rabbitmq-server' "$RABBITMQ_SERVER_REPO_CONF"
 add_repo_from_script 'https://dl.2ndquadrant.com/default/release/get/10/rpm'
+disable_repo '2ndquadrant-dl-default-release-pg10-debug'
 
 # -> Software Collections (SCL) https://wiki.centos.org/AdditionalResources/Repositories/SCL
 if ! is_package_installed 'centos-release-scl'; then
@@ -617,20 +634,17 @@ fi
 
 # --- Clean up yum repos ---
 
-remove_added_repos "$ADDED_REPOSITORIES_FILE_PATH"
+remove_added_repos "$YUM_CONFIG_BACKUP_FILE_PATH"
 
 # --- Restore yum repos ---
 
-if [ -f $YUM_CONFIG_BACKUP_FILE_PATH ]; then
-	echol "Restoring /etc/yum.repos.d/*.repo from: $YUM_CONFIG_BACKUP_FILE_PATH"
-	echol "Executing: tar --extract --verbose --file $YUM_CONFIG_BACKUP_FILE_PATH"
-	if tar --extract --verbose --file $YUM_CONFIG_BACKUP_FILE_PATH --directory /etc/yum.repos.d \
-	       --strip-components=2 etc/yum.repos.d/*.repo; then
-		echol "Restored: yum repositories"
-		remove_file $YUM_CONFIG_BACKUP_FILE_PATH
-	else
-		exit_with_error "Extracting tar failed: $YUM_CONFIG_BACKUP_FILE_PATH"
-	fi
+echol "Restoring /etc/yum.repos.d/*.repo from: $YUM_CONFIG_BACKUP_FILE_PATH"
+echol "Executing: tar --extract --verbose --file $YUM_CONFIG_BACKUP_FILE_PATH"
+if tar --extract --verbose --file "$YUM_CONFIG_BACKUP_FILE_PATH" --directory /etc/yum.repos.d \
+		--strip-components=2 etc/yum.repos.d/*.repo; then
+	echol "Restored: yum repositories"
+else
+	exit_with_error "Extracting tar failed: $YUM_CONFIG_BACKUP_FILE_PATH"
 fi
 
 # === Files ===
@@ -649,10 +663,13 @@ for image in $IMAGES; do
 	download_image "$image" "$IMAGES_DIR"
 done
 
-# --- Clean up packages ---
+# --- Clean up ---
+
 remove_installed_packages "$INSTALLED_PACKAGES_FILE_PATH"
 
-remove_file $PID_FILE_PATH
+remove_file "$YUM_CONFIG_BACKUP_FILE_PATH"
+
+remove_file "$PID_FILE_PATH"
 
 readonly END_TIME=$(date +%s)
 
