@@ -1,5 +1,22 @@
 # Changelog 0.5
 
+## [0.5.4] 2020-04-xx
+
+### Added
+
+- [#986](https://github.com/epiphany-platform/epiphany/issues/986) - Add vim to Epicli container and devcontainer
+- [#1044](https://github.com/epiphany-platform/epiphany/issues/1044) - Add ability to add subscriptionId to sp.yml on Azure
+
+### Fixed
+
+- [#624](https://github.com/epiphany-platform/epiphany/issues/624) - Don't run epicli as root in container
+- [#966](https://github.com/epiphany-platform/epiphany/issues/966) - Ubuntu builds get stuck on 'Create epirepo repository' task waiting for user input in offline mode
+- [#1043](https://github.com/epiphany-platform/epiphany/issues/1043) - For vm template on Azure disk_size_gb is missing in storage_os_disk
+- [#1049](https://github.com/epiphany-platform/epiphany/issues/1049) - Azure/RedHat specified disk size 30 GB is smaller than the size of the disk in the VM image
+- [#1063](https://github.com/epiphany-platform/epiphany/issues/1063) - Issues with single_machine install
+- [#1108](https://github.com/epiphany-platform/epiphany/issues/1108) - [Azure RedHat] Create epirepo: package httpd-2.4.6-93 requires httpd-tools = 2.4.6-93 but latest available is 2.4.6-90
+- [#1110](https://github.com/epiphany-platform/epiphany/issues/1110) - Install fixed version of httpd when latest fails (RHEL)
+
 ## [0.5.3] 2020-03-09
 
 ### Added
@@ -33,6 +50,7 @@
 - [#906](https://github.com/epiphany-platform/epiphany/issues/906) - Open Distro for Elasticsearch: Task 'Install Elasticsearch package' fails
 - [#909](https://github.com/epiphany-platform/epiphany/issues/909) - Upgrade: Missing property 'name' when running epicli upgrade
 - [#869](https://github.com/epiphany-platform/epiphany/issues/869) - Common: Issue installing Debian packages
+- [#1016](https://github.com/epiphany-platform/epiphany/issues/1016) - Disable verify, backup and recovery as they are not fully implemented
 
 ### Known issues
 

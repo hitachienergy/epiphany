@@ -58,14 +58,17 @@ def main():
 
     # setup subparsers
     subparsers = parser.add_subparsers()
-    apply_parser(subparsers)
-    validate_parser(subparsers)
-    init_parser(subparsers)
-    upgrade_parser(subparsers)
-    backup_parser(subparsers)
-    recovery_parser(subparsers)
-    delete_parser(subparsers)
     prepare_parser(subparsers)
+    init_parser(subparsers)
+    apply_parser(subparsers)
+    upgrade_parser(subparsers)
+    delete_parser(subparsers)
+
+    '''
+    validate_parser(subparsers)
+    backup_parser(subparsers)
+    recovery_parser(subparsers)  
+    '''  
 
     # check if there were any variables and display full help
     if len(sys.argv) < 2:
@@ -97,6 +100,19 @@ def main():
         logger = Log('epicli')
         logger.error(e, exc_info=config.debug)
         return 1
+
+
+def prepare_parser(subparsers):
+    sub_parser = subparsers.add_parser('prepare', description='Creates a folder with all prerequisites to setup the offline requirements to install a cluster offline.')
+    sub_parser.add_argument('--os', type=str, required=True, dest='os',
+                            help='The OS to prepare the offline requirements for.')
+
+    def run_prepare(args):
+        adjust_paths_from_output_dir()
+        with PrepareEngine(args) as engine:
+            return engine.prepare()
+
+    sub_parser.set_defaults(func=run_prepare)         
 
 
 def init_parser(subparsers):
@@ -144,19 +160,22 @@ def apply_parser(subparsers):
     sub_parser.set_defaults(func=run_apply)
 
 
-def validate_parser(subparsers):
-    sub_parser = subparsers.add_parser('verify', description='Validates the configuration from file by executing a dry '
-                                                             'run without changing the physical '
-                                                             'infrastructure/configuration')
-    sub_parser.add_argument('-f', '--file', dest='file', type=str,
-                            help='File with infrastructure/configuration definitions to use.')
+def upgrade_parser(subparsers):
+    sub_parser = subparsers.add_parser('upgrade',
+                                       description='Upgrades common and K8s components of an existing Epiphany Platform cluster.')
+    sub_parser.add_argument('-b', '--build', dest='build_directory', type=str, required=True,
+                            help='Absolute path to directory with build artifacts.')
+    sub_parser.add_argument('--wait-for-pods', dest='wait_for_pods', action="store_true",
+                            help="Waits for all pods to be in the 'Ready' state before proceeding to the next step of the K8s upgrade.")
+    sub_parser.add_argument('--offline-requirements', dest='offline_requirements', type=str, required=False,
+                            help='Path to the folder with pre-prepared offline requirements.')
 
-    def run_validate(args):
-        adjust_paths_from_file(args)
-        with BuildEngine(args) as engine:
-            return engine.validate()
+    def run_upgrade(args):
+        adjust_paths_from_build(args)
+        with UpgradeEngine(args) as engine:
+            return engine.upgrade()
 
-    sub_parser.set_defaults(func=run_validate)
+    sub_parser.set_defaults(func=run_upgrade)
 
 
 def delete_parser(subparsers):
@@ -174,22 +193,20 @@ def delete_parser(subparsers):
     sub_parser.set_defaults(func=run_delete)
 
 
-def upgrade_parser(subparsers):
-    sub_parser = subparsers.add_parser('upgrade',
-                                       description='Upgrades common and K8s components of an existing Epiphany Platform cluster.')
-    sub_parser.add_argument('-b', '--build', dest='build_directory', type=str, required=True,
-                            help='Absolute path to directory with build artifacts.')
-    sub_parser.add_argument('--wait-for-pods', dest='wait_for_pods', action="store_true",
-                            help="Waits for all pods to be in the 'Ready' state before proceeding to the next step of the K8s upgrade.")
-    sub_parser.add_argument('--offline-requirements', dest='offline_requirements', type=str, required=False,
-                            help='Path to the folder with pre-prepared offline requirements.')
+'''
+def validate_parser(subparsers):
+    sub_parser = subparsers.add_parser('verify', description='Validates the configuration from file by executing a dry '
+                                                             'run without changing the physical '
+                                                             'infrastructure/configuration')
+    sub_parser.add_argument('-f', '--file', dest='file', type=str,
+                            help='File with infrastructure/configuration definitions to use.')
 
-    def run_upgrade(args):
-        adjust_paths_from_build(args)
-        with UpgradeEngine(args) as engine:
-            return engine.upgrade()
+    def run_validate(args):
+        adjust_paths_from_file(args)
+        with BuildEngine(args) as engine:
+            return engine.validate()
 
-    sub_parser.set_defaults(func=run_upgrade)
+    sub_parser.set_defaults(func=run_validate)    
 
 
 def backup_parser(subparsers):
@@ -219,20 +236,7 @@ def recovery_parser(subparsers):
             return engine.recovery()
 
     sub_parser.set_defaults(func=run_recovery)
-
-
-def prepare_parser(subparsers):
-    sub_parser = subparsers.add_parser('prepare', description='Creates a folder with all prerequisites to setup the offline requirements to install a cluster offline.')
-    sub_parser.add_argument('--os', type=str, required=True, dest='os',
-                            help='The OS to prepare the offline requirements for.')
-
-    def run_prepare(args):
-        adjust_paths_from_output_dir()
-        with PrepareEngine(args) as engine:
-            return engine.prepare()
-
-    sub_parser.set_defaults(func=run_prepare)   
-
+'''
 
 def experimental_query():
     if not query_yes_no('This is an experimental feature and could change at any time. Do you want to continue?'):
