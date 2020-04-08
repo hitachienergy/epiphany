@@ -51,6 +51,7 @@ resource "azurerm_virtual_machine" "{{ specification.name  }}" {
     name          = "{{ specification.name }}-os-disk"
     caching       = "{{ specification.storage_os_disk.caching }}"
     create_option = "{{ specification.storage_os_disk.create_option }}"
+    disk_size_gb  = "{{ specification.storage_os_disk.disk_size_gb }}"
     {%- if specification.storage_os_disk.managed != true %}
     managed_disk_type = "{{ specification.storage_os_disk.managed_disk_type | lower }}"
     {%- else %}
