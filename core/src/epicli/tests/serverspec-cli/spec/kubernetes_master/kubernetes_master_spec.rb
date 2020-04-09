@@ -39,7 +39,7 @@ end
 describe 'Checking if there are any pods that have status other than Running' do
   describe command('kubectl get pods --all-namespaces --field-selector=status.phase!=Running') do
     its(:stdout) { should match /^$/ }
-    its(:stderr) { should match /No resources found./ }
+    its(:stderr) { should match /No resources found/ }
   end
 end  
 
@@ -173,4 +173,20 @@ describe 'Checking if kubernetes healthz endpoint is responding' do
       expect(subject.stdout.to_i).to eq 401
     end
   end
+end
+
+
+if countInventoryHosts("kubernetes_node") == 0
+
+  describe 'Checking taints on Kubernetes master' do
+    describe command('kubectl get nodes -o jsonpath="{.items[*].spec.taints}"') do
+      its(:stdout) { should match /^$/ }
+      its(:exit_status) { should eq 0 }
+    end
+    describe command('kubectl describe nodes | grep -i taints') do
+      its(:stdout) { should match /<none>/ }
+      its(:exit_status) { should eq 0 }
+    end    
+  end
+
 end
