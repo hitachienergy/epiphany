@@ -8,6 +8,7 @@
 - [#1016](https://github.com/epiphany-platform/epiphany/issues/1016) - Disable verify, backup and recovery as they are not fully implemented
 - [#1105](https://github.com/epiphany-platform/epiphany/issues/1105) - [v0.3] failing on task: Install container-selinux for RHEL
 - [#1106](https://github.com/epiphany-platform/epiphany/issues/1106) - [v0.3] Epicli exiting with exit code 0 despite errors
+- Added default machines for rabbitmq and load_balancer components
 
 ## [0.3.0] 2019-07-31
 
