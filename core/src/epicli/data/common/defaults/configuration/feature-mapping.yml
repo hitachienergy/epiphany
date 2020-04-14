@@ -69,6 +69,7 @@ specification:
     logging:
       - logging
       - kibana
+      - node-exporter
       - filebeat
       - firewall
     load_balancer:
