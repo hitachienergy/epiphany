@@ -16,6 +16,7 @@
 - [#1063](https://github.com/epiphany-platform/epiphany/issues/1063) - Issues with single_machine install
 - [#1108](https://github.com/epiphany-platform/epiphany/issues/1108) - [Azure RedHat] Create epirepo: package httpd-2.4.6-93 requires httpd-tools = 2.4.6-93 but latest available is 2.4.6-90
 - [#1110](https://github.com/epiphany-platform/epiphany/issues/1110) - Install fixed version of httpd when latest fails (RHEL)
+- [#1154](https://github.com/epiphany-platform/epiphany/issues/1154) - Node exporter is not installed on logging vms
 
 ## [0.5.3] 2020-03-09
 
