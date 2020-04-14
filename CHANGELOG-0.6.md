@@ -1,5 +1,11 @@
 # Changelog 0.6
 
+## [0.6.1] 2020-XX-XX
+
+### Fixed
+
+- [#1154](https://github.com/epiphany-platform/epiphany/issues/1154) - Node exporter is not installed on logging vms
+
 ## [0.6.0] 2020-04-06
 
 ### Added
