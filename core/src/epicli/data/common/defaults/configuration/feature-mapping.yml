@@ -57,6 +57,7 @@ specification:
       - elasticsearch
       - elasticsearch-curator
       - kibana
+      - node-exporter
       - filebeat
     load_balancer:
       - haproxy
