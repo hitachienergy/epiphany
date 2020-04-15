@@ -11,6 +11,7 @@
 - [#1108](https://github.com/epiphany-platform/epiphany/issues/1108) - [Azure RedHat] Create epirepo: package httpd-2.4.6-93 requires httpd-tools = 2.4.6-93 but latest available is 2.4.6-90
 - [#1016](https://github.com/epiphany-platform/epiphany/issues/1016) - Disable verify, backup and recovery as they are not fully implemented
 - [#1154](https://github.com/epiphany-platform/epiphany/issues/1154) - Node exporter is not installed on logging vms
+- [#1163](https://github.com/epiphany-platform/epiphany/issues/1163) - [v0.4, v0.3] Typo in the role name rabbitmq
 
 ## [0.4.3] 2020-03-16
 

@@ -94,7 +94,7 @@ specification:
       - image-registry
       - kubernetes-master
       - applications
-      - rabbitmql
+      - rabbitmq
       - postgresql
     kubernetes_master:
       - image-registry
