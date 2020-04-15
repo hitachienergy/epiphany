@@ -4,10 +4,10 @@ require 'applications/rabbitmq/rabbitmq'
 require 'applications/auth-service/auth-service'
 
 
-if !readDataYaml("configuration/applications")["specification"]["applications"].select {|i| i["name"] == 'rabbitmq' }.nil?
+if !readDataYaml("configuration/applications")["specification"]["applications"].select {|i| i["name"] == 'rabbitmq' }.empty?
   callRabbitMQDeploymentTests
 end
 
-if !readDataYaml("configuration/applications")["specification"]["applications"].select {|i| i["name"] == 'auth-service' }.nil?
+if !readDataYaml("configuration/applications")["specification"]["applications"].select {|i| i["name"] == 'auth-service' }.empty?
   callAuthServiceDeploymentTests
 end
