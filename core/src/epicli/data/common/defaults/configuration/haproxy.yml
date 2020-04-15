@@ -2,8 +2,6 @@ kind: configuration/haproxy
 title: "HAProxy"
 name: default
 specification:
-  version: '1.8'
-  service_port: 30001
   logs_max_days: 60
   self_signed_certificate_name: self-signed-fullchain.pem
   self_signed_private_key_name: self-signed-privkey.pem
