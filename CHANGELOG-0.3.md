@@ -6,6 +6,7 @@
 
 - [#839](https://github.com/epiphany-platform/epiphany/issues/839) - Add ServerAliveInterval option to keep SSH connection for long running tasks
 - [#1154](https://github.com/epiphany-platform/epiphany/issues/1154) - Node exporter is not installed on logging vms
+- [#1163](https://github.com/epiphany-platform/epiphany/issues/1163) - [v0.4, v0.3] Typo in the role name rabbitmq
 
 ## [0.3.0] 2019-07-31
 

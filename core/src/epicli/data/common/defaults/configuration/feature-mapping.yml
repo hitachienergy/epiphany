@@ -87,7 +87,7 @@ specification:
       - elasticsearch-curator
     single_machine:
       - kubernetes-master
-      - rabbitmql
+      - rabbitmq
       - postgresql
     kubernetes_master:
       - kubernetes-master
