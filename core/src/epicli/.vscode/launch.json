@@ -14,7 +14,6 @@
             "env": { "PYTHONPATH": "${workspaceFolder}" },
             "console": "integratedTerminal",
             "args": ["apply", "-f", "${workspaceFolder}/clusters/YOUR_DATA_YAML.yml"]
-            // "args": ["apply", "-f", "${workspaceFolder}/clusters/YOUR_DATA_YAML.yml", "--offline-requirements", "${workspaceFolder}/downloads/epirepo"]
             // "args": ["delete", "-b", "${workspaceFolder}/clusters/build/dir"]
             // "args": ["init", "-p", "PROVIDER", "-n", "NAME"]
         }
