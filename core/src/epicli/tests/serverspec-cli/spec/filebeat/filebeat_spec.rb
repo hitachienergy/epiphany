@@ -35,7 +35,7 @@ if hostInGroups?("kubernetes_master") || hostInGroups?("kubernetes_node")
   end
 end
 
-if count_inventory_roles("elasticsearch") > 0
+if countInventoryHosts("elasticsearch") > 0
   describe 'Checking the connection to the Elasticsearch host' do
     let(:disable_sudo) { false }
     describe command("curl -o /dev/null -s -w '%{http_code}' $(awk '/- Elasticsearch output -/,/- Logstash output -/' /etc/filebeat/filebeat.yml \
@@ -47,7 +47,7 @@ if count_inventory_roles("elasticsearch") > 0
   end
 end
 
-if count_inventory_roles("kibana") > 0
+if countInventoryHosts("kibana") > 0
   describe 'Checking the connection to the Kibana endpoint' do
     let(:disable_sudo) { false }
     describe command("curl -o /dev/null -s -w '%{http_code}' $(awk '/= Kibana =/,/= Elastic Cloud =/' /etc/filebeat/filebeat.yml \
