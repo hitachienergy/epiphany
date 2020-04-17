@@ -1,4 +1,5 @@
 kind: infrastructure/virtual-machine
+version: 0.3.1
 title: "Virtual Machine Infra"
 provider: aws
 name: default
@@ -62,6 +63,7 @@ specification:
        destination_address_prefix: "0.0.0.0/0"
 ---
 kind: infrastructure/virtual-machine
+version: 0.3.1
 title: "Virtual Machine Infra"
 provider: aws
 name: default-size-t3
@@ -104,6 +106,7 @@ specification:
        destination_address_prefix: "0.0.0.0/0"
 ---
 kind: infrastructure/virtual-machine
+version: 0.3.1
 title: "Virtual Machine Infra"
 provider: aws
 name: kubernetes-master-machine
@@ -193,6 +196,7 @@ specification:
        destination_address_prefix: "0.0.0.0/0"
 ---
 kind: infrastructure/virtual-machine
+version: 0.3.1
 title: "Virtual Machine Infra"
 provider: aws
 name: kubernetes-node-machine
@@ -270,6 +274,7 @@ specification:
        destination_address_prefix: "0.0.0.0/0"
 ---
 kind: infrastructure/virtual-machine
+version: 0.3.1
 title: "Virtual Machine Infra"
 provider: aws
 name: kafka-machine
@@ -395,6 +400,7 @@ specification:
        destination_address_prefix: "0.0.0.0/0"
 ---
 kind: infrastructure/virtual-machine
+version: 0.3.1
 title: "Virtual Machine Infra"
 provider: aws
 name: monitoring-machine
@@ -454,6 +460,7 @@ specification:
        destination_address_prefix: "0.0.0.0/0"
 ---
 kind: infrastructure/virtual-machine
+version: 0.3.1
 title: "Virtual Machine Infra"
 provider: aws
 name: postgresql-machine
@@ -527,6 +534,7 @@ specification:
        destination_address_prefix: "0.0.0.0/0"
 ---
 kind: infrastructure/virtual-machine
+version: 0.3.1
 title: "Virtual Machine Infra"
 provider: aws
 name: logging-machine
@@ -596,6 +604,7 @@ specification:
        destination_address_prefix: "0.0.0.0/0"
 ---
 kind: infrastructure/virtual-machine
+version: 0.3.1
 title: "Virtual Machine Infra"
 provider: aws
 name: rabbitmq-machine
@@ -668,6 +677,7 @@ specification:
        destination_address_prefix: "0.0.0.0/0"
 ---
 kind: infrastructure/virtual-machine
+version: 0.3.1
 title: "Virtual Machine Infra"
 provider: aws
 name: load-balancer-machine
@@ -720,6 +730,7 @@ specification:
        destination_address_prefix: "0.0.0.0/0"
 ---
 kind: infrastructure/virtual-machine
+version: 0.3.1
 title: "Virtual Machine Infra"
 provider: aws
 name: single-machine
@@ -761,4 +772,3 @@ specification:
        destination_port_range: "0"
        source_address_prefix: "0.0.0.0/0"
        destination_address_prefix: "0.0.0.0/0"
-       
