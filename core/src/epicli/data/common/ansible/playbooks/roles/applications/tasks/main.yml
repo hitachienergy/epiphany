@@ -1,4 +1,14 @@
 ---
+- name: Wait until the cluster is available
+  shell: kubectl cluster-info
+  environment:
+    KUBECONFIG: /home/{{ admin_user.name }}/.kube/config
+  changed_when: false
+  retries: 50
+  delay: 1
+  register: result
+  until: result is succeeded
+
 - name: Include applications
   include_tasks: "applications/{{ item.name }}/main.yml"
   vars:
