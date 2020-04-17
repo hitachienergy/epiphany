@@ -5,6 +5,7 @@
 ### Fixed
 
 - [#1154](https://github.com/epiphany-platform/epiphany/issues/1154) - Node exporter is not installed on logging vms
+- [#1135](https://github.com/epiphany-platform/epiphany/issues/1135) - 2ndquadrant yum repos remain enabled on repository host after teardown
 
 ## [0.6.0] 2020-04-06
 
