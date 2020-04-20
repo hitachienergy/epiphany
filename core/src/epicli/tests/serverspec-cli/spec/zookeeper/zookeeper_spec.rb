@@ -79,7 +79,7 @@ describe 'Checking if it is possible to list down and count all the active broke
   end  
   describe command("echo 'dump' | curl -s telnet://#{zookeeper_host}:#{zookeeper_client_port} | grep -c brokers") do
     it "is expected to be equal" do
-      expect(subject.stdout.to_i).to eq count_inventory_roles("kafka")  
+      expect(subject.stdout.to_i).to eq countInventoryHosts("kafka")  
     end  
   end
 end
