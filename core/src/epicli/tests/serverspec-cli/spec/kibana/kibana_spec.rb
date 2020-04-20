@@ -48,7 +48,7 @@ describe 'Checking if Kibana log file exists and is not empty' do
   end
 end
 
-if count_inventory_roles("elasticsearch") > 0
+if countInventoryHosts("elasticsearch") > 0
   describe 'Checking the connection to the Elasticsearch host' do
     let(:disable_sudo) { false }
     describe command("curl -o /dev/null -s -w '%{http_code}' $(grep -oP '(?<=elasticsearch.url: \\\").*(?=\\\")' /etc/kibana/kibana.yml)") do
