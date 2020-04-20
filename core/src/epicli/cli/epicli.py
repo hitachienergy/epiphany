@@ -50,12 +50,12 @@ def main():
     subparsers = parser.add_subparsers()
     init_parser(subparsers)
     apply_parser(subparsers)
-    upgrade_parser(subparsers)
     
     '''
     validate_parser(subparsers)
     backup_parser(subparsers)
     recovery_parser(subparsers)
+    upgrade_parser(subparsers)
     '''
 
     # check if there were any variables and display full help
@@ -103,12 +103,6 @@ def apply_parser(subparsers):
 
     sub_parser.set_defaults(func=run_apply)
 
-def upgrade_parser(subparsers):
-    sub_parser = subparsers.add_parser('upgrade', description='[Experimental]: Upgrades existing Epiphany Platform to latest version.')
-    sub_parser.add_argument('-b', '--build', dest='build_directory', type=str, required=True,
-                            help='Absolute path to directory with build artifacts.')
-    sub_parser.set_defaults(func=run_upgrade)    
-
 '''
 def validate_parser(subparsers):
     sub_parser = subparsers.add_parser('verify', description='Validates the configuration from file by executing a dry '
@@ -130,6 +124,12 @@ def recovery_parser(subparsers):
     sub_parser.add_argument('-b', '--build', dest='build_directory', type=str, required=True,
                             help='Absolute path to directory with build artifacts.')
     sub_parser.set_defaults(func=run_recovery)
+
+def upgrade_parser(subparsers):
+    sub_parser = subparsers.add_parser('upgrade', description='[Experimental]: Upgrades existing Epiphany Platform to latest version.')
+    sub_parser.add_argument('-b', '--build', dest='build_directory', type=str, required=True,
+                            help='Absolute path to directory with build artifacts.')
+    sub_parser.set_defaults(func=run_upgrade)
 '''
 
 def run_apply(args):
@@ -144,13 +144,6 @@ def run_init(args):
     with UserConfigInitializer(args) as initializer:
         return initializer.run()
 
-
-def run_upgrade(args):
-    if not query_yes_no('This is an experimental feature and could change at any time. Do you want to continue?'):
-        return 0
-    Config().output_dir = args.build_directory
-    with PatchEngine() as engine:
-        return engine.run_upgrade()
 
 '''
 def run_validate(args):
@@ -172,6 +165,13 @@ def run_recovery(args):
     Config().output_dir = args.build_directory
     with PatchEngine() as engine:
         return engine.run_recovery()
+
+def run_upgrade(args):
+    if not query_yes_no('This is an experimental feature and could change at any time. Do you want to continue?'):
+        return 0
+    Config().output_dir = args.build_directory
+    with PatchEngine() as engine:
+        return engine.run_upgrade()
 '''
 
 def adjust_paths(args):
