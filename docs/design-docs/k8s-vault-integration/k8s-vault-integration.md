@@ -38,7 +38,8 @@ development scenario. In production however to maximize security level unseal sh
 In all scenarios machine on which Hashicorp Vault will be running swap will be disabled and Hashicorp Vault will run under
 user with limited privileges (e.g. vault). User under which Hashicorp Vault will be running will have ability to
 use the mlock syscall In configuration from Epiphany side we want to provide possibility to turn off dumps at the system level
-(turned off by default), use auditing (turned on by default) and disable root token after configuration (by default set to disable).
+(turned off by default), use auditing (turned on by default), expose UI (by default set to disabled) and disable root token after
+configuration (by default root token will be disabled after deployment).
 
 We want to provide three scenarios of installing Hashicorp Vault:
 
@@ -48,14 +49,27 @@ We want to provide three scenarios of installing Hashicorp Vault:
 
 ### 1. vault - prod/dev mode without https
 
-In this scenario we want to use file storage for secrets.
+In this scenario we want to use file storage for secrets. Vault can be set to manual or automatic unseal with script. In automatic
+unseal mode file with unseal keys is stored in file in safe location with permission to read only by vault user. In case of manual
+unseal vault post-deployment configuration script needs to be executed against vault. Vault is installed as a service managed by systemd.
+Traffic in this scenario is served via http, which make possible to perform attacks man in the middle attacks, so this option should be
+only used in development scenarios.
 
 ### 2. vault - prod/dev mode with https
 
+This scenario differs from previous with usage of https. In this scenario we should cover also generation of keys with usage of PKI, to
+provide certificate and mutual trust between the endpoints.
+
 ### 3. vault - cluster with raft storage
 
-In this scenario we want to use raft storage for secrets.
+In this scenario we want to use raft storage for secrets. Raft storage is used for cluster setup and doesn't require additional Consul
+component what makes configuration easier and requires less maintenance. It also limit network traffic and increase performance. In this
+scenario we can also implement auto-unseal provided with Transient Secrets from Hashicorp Vault. 
+
+In this scenario at least 3 nodes are required, but preferable is 5 nodes setup to provide quorum for raft protocol. This can cover http
+and also https traffic.
 
 ## 4. Further extensions
 
-
+We can provide additional components for vault unsealing - like integration with pgp keys to encrypt services and auto-unsealing with
+Transient Secrets from Hashicorp Vault.
