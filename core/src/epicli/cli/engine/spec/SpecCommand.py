@@ -53,9 +53,11 @@ These need to be installed to run the cluster spec tests from epicli'''
         if sp.returncode != 0:
             raise Exception(f'Error running: "{cmd}"')
         else:
-            self.logger.info(f'Done running: "{cmd}"')       
+            self.logger.info(f'Done running: "{cmd}"')
 
 
     @staticmethod
     def get_spec_groups():
-        return os.listdir(SPEC_TEST_PATH + '/spec')
+        groups = os.listdir(SPEC_TEST_PATH + '/spec')
+        groups.remove('spec_helper.rb')
+        return ['all'] + groups
