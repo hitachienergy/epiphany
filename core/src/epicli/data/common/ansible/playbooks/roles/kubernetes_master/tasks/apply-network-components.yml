@@ -22,4 +22,4 @@
       canal: k8s-app=canal
       flannel: app=flannel
   when:
-    - specification.advanced.networking.plugin in selectors.keys()
+    - network_plugin in selectors.keys()
