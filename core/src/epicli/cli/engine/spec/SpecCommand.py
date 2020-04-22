@@ -60,4 +60,6 @@ These need to be installed to run the cluster spec tests from epicli'''
     def get_spec_groups():
         groups = os.listdir(SPEC_TEST_PATH + '/spec')
         groups.remove('spec_helper.rb')
-        return ['all'] + groups
+        groups = ['all'] + groups
+        sorted(groups, key=str.lower)
+        return groups
