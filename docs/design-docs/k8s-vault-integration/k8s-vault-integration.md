@@ -72,4 +72,4 @@ and also https traffic.
 ## 4. Further extensions
 
 We can provide additional components for vault unsealing - like integration with pgp keys to encrypt services and auto-unsealing with
-Transient Secrets from Hashicorp Vault.
+Transient Secrets from Hashicorp Vault. We can also add integration with Prometheus to share statistics with it.
