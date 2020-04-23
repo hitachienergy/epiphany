@@ -21,18 +21,21 @@ Where `-b` is path to build folder that contains Ansible inventory and `-t` cont
 
 `build_dir` contains cluster's ansible inventory
 
-`target_path` location to store backup, see [storage](Storage) section below.
+`target_path` location to store backup, see [Storage](#-Storage) section below.
 
 ### Storage
 
-Any block storage which is mounted under location indicated as `target_path`.
-When epicli is used from docker container this might be location created under /shared directory which is linked to some block storage mounted on host. We should also consider to store backup in location mounted directly on machine inside cluster to avoid not necessary network load.
+Location created on master node to keep backup files. This location might be used to mount external storage, like:
+- Amazon S3
+- Azure blob
+- NFS
+- Any external disk mounted by administrator
 
-### Backup scripts (ansible) structure:
+### Backup scripts structure:
 
 #### Role backup
 
-Main role for `backup` containes ansible tasks to run backups on cluster components one by one
+Main role for `backup` containes ansible tasks to run backups on cluster components.
 
 #### Tasks:
 
@@ -157,8 +160,9 @@ Main role for `backup` containes ansible tasks to run backups on cluster compone
 
     3.3. Copy configuration files:
     ```bash
-    postgres.conf - configuration file
-    pg_hba.conf - client authentication config file
+    /etc/postgresql/10/main/* - configuration files
+    .pgpass - authentication credentials
+
     ```
 
 4. RabbitMQ
