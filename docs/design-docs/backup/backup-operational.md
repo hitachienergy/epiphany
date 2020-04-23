@@ -1,4 +1,4 @@
-# Epiphany Platform backup design document with more operational details
+# Epiphany Platform backup design document with details
 
 Affected version: 0.6.x
 
@@ -30,6 +30,8 @@ Location created on master node to keep backup files. This location might be use
 - Azure blob
 - NFS
 - Any external disk mounted by administrator
+
+In cloud configuration blob or S3 storage might be mounted directly on every machine in cluster and can be configured by epiphany. For on-prem installation it's up to administrator to attach external disk to backup location on master node. This location should be shared with other machines in cluster as NFS.
 
 ### Backup scripts structure:
 
