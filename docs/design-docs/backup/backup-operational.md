@@ -1,6 +1,6 @@
 # Epiphany Platform backup design document with details
 
-Affected version: 0.6.x
+Affected version: 0.7.x
 
 ## Goals
 
@@ -12,16 +12,18 @@ Document does not include Kubernetes and Kafka stack
 ### Epibackup application
  Example use:
 ```bash
-epibackup -b build_dir -t target_path
+epicli backup -b build_dir -t target_path
 ```
 
 Where `-b` is path to build folder that contains Ansible inventory and `-t` contains target path to store backup.
 
-`epibackup` runs tasks from ansible backup role
+`backup` runs tasks from ansible backup role
 
 `build_dir` contains cluster's ansible inventory
 
 `target_path` location to store backup, see [Storage](#-Storage) section below.
+
+Consider to add disclaimer for user to check whether backup location has enough space to store whole backup.
 
 ### Storage
 
@@ -44,10 +46,10 @@ Main role for `backup` containes ansible tasks to run backups on cluster compone
 1. Elasticsearch & Kibana
 
     1.1. Create local location where snapshot will be stored: /tmp/snapshots
-    1.2. Update elasticsearch.yml file with elbackup location
+    1.2. Update elasticsearch.yml file with backup location
 
         ```bash
-        path.repo: ["/tmp/snapshots"]
+        path.repo: ["/tmp/backup/elastic"]
         ```
     1.3. Reload configuration
     1.4. Register repository:
@@ -57,7 +59,7 @@ Main role for `backup` containes ansible tasks to run backups on cluster compone
     {
         "type": "fs",
         "settings": {
-        "location": "/tmp/snapshots"
+        "location": "/tmp/backup/elastic"
         }
     }
     '
@@ -150,7 +152,7 @@ Main role for `backup` containes ansible tasks to run backups on cluster compone
     ```bash
     pg_dump dbname > dbname.bak
     ```
-    `pg_dumpall` - create dump of all databases:
+    `pg_dumpall` - create dump of all databases of a cluster into one script. This dumps also global objects that are common to all databases like: users, groups, tablespaces and properties such as access permissions (pg_dump does not save these objects)
     ```bash
     pg_dumpall > pg_backup.bak
     ```
@@ -200,4 +202,7 @@ Main role for `backup` containes ansible tasks to run backups on cluster compone
 
 5. HAProxy
 
-Copy ```/etc/haproxy.haproxy.conf``` to backup location
+Copy ```/etc/haproxy/``` to backup location
+
+Copy certificates stored in ``` /etc/ssl/haproxy/``` location.
+
