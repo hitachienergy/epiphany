@@ -1,6 +1,6 @@
 # Epiphany Platform Autoscaling
 
-Affected vestion: 0.7.x
+Affected version: 0.7.x
 
 ## 1. Goals
 
@@ -27,8 +27,8 @@ We want to provide automatic scale up / down feature for cloud-based Epiphany cl
 
 ### PHASE 3: Building packer images to quickly add new Kubernetes nodes.
 
-- Autoscaling is expected to react reasonably quick, providing pre-built images should result in great speed-up.
-- Packer code should be added to the epicli codebase somewhere "before" the terraform code.
+- Autoscaling is expected to react reasonably quickly. Providing pre-built images should result in great speed-ups.
+- Packer code should be added to the epicli codebase somewhere "before" the terraform code executes.
 
 ### PHASE 4: Realistic provisioning minimalization and speedup.
 
@@ -39,13 +39,14 @@ We want to provide automatic scale up / down feature for cloud-based Epiphany cl
 
 - To be able to execute epicli form a running Epiphany cluster, it is required to deploy SSH keys and cloud access configuration (ie. Service Principal).
 - SSH keys can be created and distributed automatically (in Ansible) just for the purpose of autoscaling.
-- For now it seems resonable to store them in Kubernetes secrets. Later the Hashicorp Vault can be used.
+- For now, it seems resonable to store them in Kubernetes secrets (later the Hashicorp Vault will be used).
 
 ### PHASE 6: Introducing python application that will execute epicli from a pod (in reaction to performance metrics) to scale the pool of worker nodes.
 
 - Metrics can be obtained from the [metrics server](https://github.com/kubernetes-sigs/metrics-server).
-- For simplicity standard CPU / Memory metrics will be used, but later it should be posible to introduce [custom metrics](https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale/#support-for-custom-metrics) taken from Prometheus.
-- Best way to package and deploy this application would be to use Helm (v3).
+- For simplicity, standard CPU / Memory metrics will be used, but later it should be posible to introduce [custom metrics](https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale/#support-for-custom-metrics) taken from Prometheus.
+- Best way to package and deploy the application would be to use Helm (v3).
+- The docker image for the application can be stored in a public docker registry.
 
 ### PHASE 7: Introducing standard Horizontal Pod Autoscaler to scale pods in Epiphany clusters.
 
