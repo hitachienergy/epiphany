@@ -26,10 +26,10 @@
   changed_when: false
 
 - name: Set JAVA_HOME environment variable for all users
-  lineinfile: 
-    path: /etc/environment 
-    state: present 
-    regexp: '^JAVA_HOME=' 
+  lineinfile:
+    path: /etc/environment
+    state: present
+    regexp: '^JAVA_HOME='
     line: JAVA_HOME="{{ java_home_location.stdout }}"
 
 - name: Check if Ignite in current version exists
@@ -58,7 +58,7 @@
         owner: ignite
         group: ignite
 
-    - name: Uncompress {{ ignite_file_name }} to temp directory 
+    - name: Uncompress {{ ignite_file_name }} to temp directory
       unarchive:
         remote_src: yes
         src: "{{ download_directory }}/{{ ignite_file_name }}"
@@ -110,6 +110,17 @@
       vars:
         reserved_ports: "{{ ip_local_reserved_ports.stdout.split(',') | reject('equalto', '') | list }}"
 
+- name: Append block to /opt/ignite/bin/include/functions.sh
+  blockinfile:
+    path: /opt/ignite/bin/include/functions.sh
+    marker: "# {mark} ANSIBLE MANAGED BLOCK"
+    insertafter: EOF
+    backup: yes
+    block: "{{ block_to_append_to_ignite_functions_script }}"
+    owner: root
+    group: root
+    mode: u=rwx,g=rx,o=rx
+
 - name: Copy Ignite enabled plugins
   copy:
     remote_src: yes
@@ -154,7 +165,7 @@
 
 - name: Restart Ignite service
   become: yes
-  systemd: 
-    name: ignite 
-    state: restarted 
+  systemd:
+    name: ignite
+    state: restarted
   when: plugins_installed.changed or ignite_configuration_created.changed
