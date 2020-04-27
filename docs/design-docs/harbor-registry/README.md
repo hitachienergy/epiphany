@@ -60,13 +60,13 @@ Additional components are required for Harbor implementation.
 Diagram for TLS certificate management:
 
 
-![enter image description here](https://github.com/baurbaniak/harbor/raw/master/CertDiagram.png)
+![enter image description here](./CertDiagram.png)
 
 
 
 Kubernetes deployment diagram:
 
-![enter image description here](https://github.com/baurbaniak/harbor/raw/master/KubernetesDiagram.png)
+![enter image description here](./KubernetesDiagram.png)
 
 
 ## Implementation steps
