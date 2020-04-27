@@ -86,9 +86,29 @@
         src: "{{ ignite_dest_path }}"
         dest: /opt/ignite
         state: link
+      register: link_ignite_version
+
   vars:
     ignite_file_name: "{{ specification.file_name }}"
     ignite_dest_path: /opt/ignite_{{ specification.version }}
+
+- name: Reserve ports from ephemeral range
+  when: link_ignite_version.changed
+  block:
+    - name: Get net.ipv4.ip_local_reserved_ports
+      command: cat /proc/sys/net/ipv4/ip_local_reserved_ports
+      register: ip_local_reserved_ports
+      changed_when: false
+
+    - name: Reserve ports from ephemeral range
+      sysctl:
+        name: net.ipv4.ip_local_reserved_ports
+        value: "{{ (reserved_ports + ignite_ports_from_ephemeral_range) | sort | unique | join(',') }}"
+        sysctl_set: yes
+        state: present
+        reload: yes
+      vars:
+        reserved_ports: "{{ ip_local_reserved_ports.stdout.split(',') | reject('equalto', '') | list }}"
 
 - name: Copy Ignite enabled plugins
   copy:

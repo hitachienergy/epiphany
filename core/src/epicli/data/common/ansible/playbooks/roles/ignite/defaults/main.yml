@@ -1,0 +1,5 @@
+---
+ignite_ports_from_ephemeral_range: # strings are required
+  - '47100-47109'
+  - '47500-47509'
+  - '49112'
