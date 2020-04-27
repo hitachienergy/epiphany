@@ -53,7 +53,7 @@ Additional components are required for Harbor implementation.
 
 - Shared storage volume between kubernetes nodes (in example NFS),
 - Component for TLS/SSL certificate request (maybe cert-manager?), 
-- Component for TLS/SSL certificate store and manage certificate validation ( maybe Vault?), 
+- Component for TLS/SSL certificate store and manage certificate validation (maybe Vault?), 
 - Component for TLS/SSL certificate share between server and client (maybe Vault?). 
 - HELM component for deployment procedure.
 
