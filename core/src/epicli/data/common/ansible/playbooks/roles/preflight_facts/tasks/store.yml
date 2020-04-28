@@ -3,6 +3,7 @@
 
 - name: Store preflight facts
   delegate_to: localhost
+  become: false
   run_once: true
   copy:
     dest: "{{ vault_location }}/../preflight_facts.yml"
