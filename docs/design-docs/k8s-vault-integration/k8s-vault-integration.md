@@ -4,7 +4,7 @@ Affected version: 0.7.x
 
 ## 1. Introduction
 
-We want to provide integration of Kubernetes with Hashicorp Vault integration with couple of different modes:
+We want to provide integration of Kubernetes with Hashicorp Vault with couple of different modes:
 
 1. vault - prod/dev mode without https
 2. vault - prod/dev mode with https
@@ -52,7 +52,7 @@ We want to provide three scenarios of installing Hashicorp Vault:
 In this scenario we want to use file storage for secrets. Vault can be set to manual or automatic unseal with script. In automatic
 unseal mode file with unseal keys is stored in file in safe location with permission to read only by vault user. In case of manual
 unseal vault post-deployment configuration script needs to be executed against vault. Vault is installed as a service managed by systemd.
-Traffic in this scenario is served via http, which make possible to perform attacks man in the middle attacks, so this option should be
+Traffic in this scenario is served via http, which make possible to perform man in the middle attacks, so this option should be
 only used in development scenarios.
 
 ### 2. vault - prod/dev mode with https
