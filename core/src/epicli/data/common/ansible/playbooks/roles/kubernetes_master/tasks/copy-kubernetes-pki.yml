@@ -1,5 +1,6 @@
 ---
-- set_fact:
+- name: Prepare PKI relative paths
+  set_fact:
     kubernetes_pki_folders:
       - pki/
       - pki/etcd/
@@ -16,6 +17,7 @@
 
 - name: Check if the PKI file exists
   delegate_to: localhost
+  become: false
   stat:
     path: "{{ vault_location }}/kubernetes-pki.yml"
     get_attributes: false
@@ -26,7 +28,8 @@
 - name: Copy PKI from master node to Ephiphany's vault
   when: not stat_kubernetes_pki.stat.exists
   block:
-    - delegate_to: "{{ kubernetes_common.automation_designated_master }}"
+    - name: Slurp PKI files
+      delegate_to: "{{ kubernetes_common.automation_designated_master }}"
       slurp:
         src: "/etc/kubernetes/{{ item }}"
       loop: >-
@@ -34,7 +37,9 @@
       register: slurp_kubernetes_pki_files
       no_log: true
 
-    - delegate_to: localhost
+    - name: Copy PKI files
+      delegate_to: localhost
+      become: false
       vars:
         # Decoding slurp's contents
         kubernetes_pki_files_slurped_content: >-
@@ -75,6 +80,7 @@
 
 - name: Load PKI variables
   delegate_to: localhost
+  become: false
   environment:
     ANSIBLE_VAULT_PASSWORD_FILE: "{{ vault_tmp_file_location }}"
   include_vars:
