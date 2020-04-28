@@ -1,5 +1,7 @@
 ---
-- delegate_to: localhost
+- name: Applying HA-related assertions for Kubernetes
+  delegate_to: localhost
+  become: false
   run_once: true
   block:
     - assert:

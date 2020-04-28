@@ -3,23 +3,27 @@ require 'rspec/core/rake_task'
 
 unless ENV['inventory']
   print "ERROR: Inventory file must be specified by 'inventory' environment variable\n"
-  print "  e.g.) bundle exec rake inventory=./hosts spec:all\n"
+  print "  e.g.) rake inventory=./hosts user=operations keypath=./id_rsa spec_output=./spec_output/ spec:all\n"
   exit
 end
 
 unless ENV['user']
   print "ERROR: Service user must be specified by 'user' environment variable\n"
-  print "  e.g.) bundle exec rake inventory=./hosts user=operations spec:all\n"
+  print "  e.g.) rake inventory=./hosts user=operations keypath=./id_rsa spec_output=./spec_output/ spec:all\n"
   exit
 end
 
 unless ENV['keypath']
   print "ERROR: Private key path must be specified by 'keypath' environment variable\n"
-  print "  e.g.) bundle exec rake inventory=./hosts user=operations keypath=./id_rsa spec:all\n"
+  print "  e.g.) rake inventory=./hosts user=operations keypath=./id_rsa spec_output=./spec_output/ spec:all\n"
   exit
 end
 
-
+unless ENV['spec_output']
+  print "ERROR: Output path must be specified by 'spec_output' environment variable\n"
+  print "  e.g.) rake inventory=./hosts user=operations keypath=./id_rsa spec_output=./spec_output/ spec:all\n"
+  exit
+end
 
 groups = {}
 hosts  = []
@@ -73,7 +77,7 @@ namespace :spec do
         t.pattern = "spec/#{group}/*_spec.rb"
         t.fail_on_error = false
         t.rspec_opts = "--format documentation --format RspecJunitFormatter  \
-        --out results/" + Time.now.strftime("%Y-%m-%d_%H-%M-%S") + "_#{group}_#{groups[group][host]}.xml"
+        --out " + ENV['spec_output'] + Time.now.strftime("%Y-%m-%d_%H-%M-%S") + "_#{group}_#{groups[group][host]}.xml"
        end
     end
   end

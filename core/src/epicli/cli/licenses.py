@@ -1523,7 +1523,7 @@ LICENSES = [
     },
     {
         "Name": "bleach",
-        "Version": "3.1.1",
+        "Version": "3.1.4",
         "Summary": "An easy safelist-based HTML-sanitizing tool.",
         "Home-page": "https://github.com/mozilla/bleach",
         "License": "Other",
@@ -1872,7 +1872,7 @@ LICENSES = [
     },
     {
         "Name": "psutil",
-        "Version": "5.6.4",
+        "Version": "5.6.6",
         "Summary": "Cross-platform lib for process and system monitoring in Python.",
         "Home-page": "https://github.com/giampaolo/psutil",
         "Author": "Giampaolo Rodola",
