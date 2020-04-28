@@ -358,6 +358,84 @@ specification:
   - name: auth-service
     enabled: yes # set to yest to enable authentication service
     ... # add other authentication service configuration as needed
+```
+
+To create a single machine cluster using the "any" provider (with extra load\_balancer config included) use the following template below:
+
+```yaml
+kind: epiphany-cluster
+title: "Epiphany cluster Config"
+provider: any
+name: single
+specification:
+  name: single
+  admin_user:
+    name: ubuntu
+    key_path: /shared/id_rsa
+  components:
+    kubernetes_master:
+      count: 0
+    kubernetes_node:
+      count: 0
+    logging:
+      count: 0
+    monitoring:
+      count: 0
+    kafka:
+      count: 0
+    postgresql:
+      count: 0
+    load_balancer:
+      count: 1
+      configuration: default
+      machines: [single-machine]
+    rabbitmq:
+      count: 0
+    single_machine:
+      count: 1
+      configuration: default
+      machines: [single-machine]
+---
+kind: configuration/haproxy
+title: HAProxy
+provider: any
+name: default
+specification:
+  version: '1.8'
+  service_port: 30001
+  logs_max_days: 60
+  self_signed_certificate_name: self-signed-fullchain.pem
+  self_signed_private_key_name: self-signed-privkey.pem
+  self_signed_concatenated_cert_name: self-signed-test.tld.pem
+  haproxy_log_path: /var/log/haproxy.log
+  stats:
+    enable: true
+    bind_address: 127.0.0.1:9000
+    uri: /haproxy?stats
+    user: operations
+    password: your-haproxy-stats-pwd
+  frontend:
+  - name: https_front
+    port: 443
+    https: yes
+    backend:
+    - http_back1
+  backend: # example backend config below
+  - name: http_back1
+    server_groups:
+    - kubernetes_master
+      # servers: # Definition for server to that hosts the application.
+      # - name: "node1"
+      #   address: "epiphany-vm1.domain.com"
+    port: 30104
+---
+kind: infrastructure/machine
+provider: any
+name: single-machine
+specification:
+  hostname: x1a1
+  ip: 10.20.2.10
+```
 
 ## How to create custom cluster components
 
