@@ -238,10 +238,7 @@ k8s.gcr.io/kube-scheduler:v1.17.4
 k8s.gcr.io/kube-proxy:v1.17.4
 k8s.gcr.io/etcd:3.4.3-0
 k8s.gcr.io/coredns:1.6.5
-calico/kube-controllers:v3.11.2
-calico/cni:v3.11.2
-calico/pod2daemon-flexvol:v3.11.2
-calico/node:v3.11.2
-calico/cni:v3.12.0
-calico/pod2daemon-flexvol:v3.12.0
-calico/node:v3.12.0
+calico/cni:v3.13.2
+calico/kube-controllers:v3.13.2
+calico/node:v3.13.2
+calico/pod2daemon-flexvol:v3.13.2
