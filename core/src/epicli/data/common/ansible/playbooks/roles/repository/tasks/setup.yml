@@ -62,12 +62,30 @@
     - not custom_repository_url
     - inventory_hostname in target_repository_hostnames
 
+- name: Copy repository server charts
+  copy:
+    src: "server/charts/"
+    dest: "/tmp/epi-repository-charts"
+    mode: a+x
+  when:
+    - not custom_repository_url
+    - inventory_hostname in target_repository_hostnames
+
+- name: replace helm charts index url
+  replace:
+    path: /tmp/epi-repository-charts/index.yaml
+    regexp: '__REPO_ADDRESS__'
+    replace: '{{ repository_url }}'
+  when:
+    - not custom_repository_url
+    - inventory_hostname in target_repository_hostnames
+
 - name: |-
     Copy requirements for offline installation to repository host, this can take a long time
-    Destination: /var/www/html/epirepo
+    Destination: {{ apache_epirepo_path }}
   copy:
     src: "{{ offline_requirements }}/"
-    dest: /var/www/html/epirepo/
+    dest: "{{ apache_epirepo_path }}"
     force: no # if target exists it will skip, default is 'yes'
   when:
     - offline_mode

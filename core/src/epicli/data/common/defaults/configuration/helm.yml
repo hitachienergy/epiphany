@@ -1,0 +1,5 @@
+kind: configuration/helm
+title: Helm Config
+name: default
+specification:
+  helm_version: "3.2.0"

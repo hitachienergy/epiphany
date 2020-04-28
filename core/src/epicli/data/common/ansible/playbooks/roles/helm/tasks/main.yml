@@ -1,0 +1,55 @@
+---
+
+- name: download helm
+  unarchive: 
+    src: "{{ apache_epirepo_path }}/files/helm-{{ helm_version }}-linux-amd64.tar.gz"
+    dest: /tmp
+    remote_src: yes
+
+- name: create the installation directory
+  file:
+    path: "{{ helm_bin_dir }}"
+    state: directory
+
+- name: copy helm binary
+  copy:
+    src: /tmp/linux-amd64/helm
+    dest: "{{ helm_bin_dir }}"
+    mode: 0755
+    remote_src: yes
+
+- name: Add helm repository from url {{ repository_url }}
+  become: yes
+  shell: |-
+    if (! helm repo list | grep {{ helm_chart_repo_name }} 1>/dev/null)
+    then 
+      helm repo add {{ helm_chart_repo_name }} {{ repository_url }}/charts
+    fi
+
+- name: Helm repo update 
+  become: yes
+  shell: helm repo update
+
+- name: Get charts list from repo  
+  become: yes
+  shell: helm search repo {{ helm_chart_repo_name }} | awk '{print $1}' | grep -v NAME
+  register: helm_charts_list
+
+- name: Delete charts 
+  become: yes
+  shell: |- 
+    chart_subname=$(echo {{ item }} | cut -d "/" -f 2)
+    if (helm list --filter "^$chart_subname$" | awk '{ print $1 }' | grep -v NAME)
+    then
+      helm delete $chart_subname
+    fi
+  with_items:
+    - "{{ helm_charts_list.stdout }}"
+
+- name: Install charts 
+  become: yes
+  shell: |- 
+    chart_subname=$(echo {{ item }} | cut -d "/" -f 2)
+    helm install $chart_subname {{ item }}
+  with_items:
+    - "{{ helm_charts_list.stdout }}"

@@ -4,8 +4,16 @@
     - name: Create epirepo repository
       shell: >-
         set -o pipefail &&
-        /tmp/epi-repository-setup-scripts/create-repository.sh /var/www/html/epirepo {{ offline_mode | lower }} |&
+        /tmp/epi-repository-setup-scripts/create-repository.sh {{ apache_epirepo_path }} {{ offline_mode | lower }} |&
         tee /tmp/epi-repository-setup-scripts/create-repository.log
+      args:
+        executable: /bin/bash
+
+    - name: Copy helm charts
+      shell: >-
+        set -o pipefail &&
+        /tmp/epi-repository-setup-scripts/copy-helm-charts.sh {{ apache_epirepo_path }} |&
+        tee /tmp/epi-repository-setup-scripts/copy-helm-charts.log
       args:
         executable: /bin/bash
 
