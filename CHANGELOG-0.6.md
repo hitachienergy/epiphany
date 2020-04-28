@@ -7,6 +7,7 @@
 - [#1154](https://github.com/epiphany-platform/epiphany/issues/1154) - Node exporter is not installed on logging vms
 - [#1135](https://github.com/epiphany-platform/epiphany/issues/1135) - 2ndquadrant yum repos remain enabled on repository host after teardown
 - [#1169](https://github.com/epiphany-platform/epiphany/issues/1169) - Task 'Get token from master' fails on-prem when calico plugin is used
+- [#1182](https://github.com/epiphany-platform/epiphany/issues/1182) - Re-run single machine installation may fail
 
 ### Updates
 
