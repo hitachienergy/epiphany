@@ -1,0 +1,58 @@
+---
+# This role is responsible for installing and configuring Hashicorp Vault
+
+- name: Setup Vault system group
+  group:
+    name: "{{ specification.vault_system_group }}"
+    system: yes
+
+- name: Setup Vault system user
+  user:
+    name: "{{ specification.vault_system_user }}"
+    system: yes
+    group: "{{ specification.vault_system_group }}"
+    #shell: "/usr/sbin/nologin"
+
+- name: Create Vault directories
+  file:
+    path: "{{ specification.paths.main }}/{{ item }}"
+    state: directory
+    owner: "{{ specification.vault_system_user }}"
+    group: "{{ specification.vault_system_group }}"
+    mode: 0755
+  with_items:
+    - "bin"
+    - "config"
+    - "data"
+
+- name: Create Vault log directory
+  file:
+    path: "{{ specification.paths.logs }}"
+    state: directory
+    owner: "{{ specification.vault_system_user }}"
+    group: "{{ specification.vault_system_group }}"
+    mode: 0750
+
+- name: Set Vault file name to install
+  set_fact:
+    vault_file_name: "{{ specification.file_name }}"
+
+- name: Download Vault binaries
+  include_role:
+    name: download
+    tasks_from: download_file
+  vars:
+    file_name: "{{ vault_file_name }}"
+
+- name: Check for Vault package
+  stat:
+    path: "{{ specification.paths.main }}/bin/vault"
+  register: vault_package
+
+- name: Uncompress the Vault zip
+  unarchive:
+    remote_src: yes
+    creates: /opt/vault/bin
+    src: "{{ download_directory }}/{{ vault_file_name }}"
+    dest: /opt
+  when: not vault_package.stat.exists

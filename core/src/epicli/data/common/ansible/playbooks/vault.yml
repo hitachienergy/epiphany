@@ -1,0 +1,7 @@
+---
+# Ansible playbook that installs Hashicorp Vault
+- hosts: vault
+  become: true
+  become_method: sudo
+  roles:
+    - vault
