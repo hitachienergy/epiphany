@@ -1,0 +1,12 @@
+[Unit]
+Description=Hashicorp Vault server
+Requires=network-online.target
+
+[Service]
+User={{ specification.vault_system_user }}
+Group={{ specification.vault_system_group }}
+Restart=on-failure
+ExecStart={{ specification.paths.main }}/bin/vault server -config={{ specification.paths.main }}/config/config.hcl
+
+[Install]
+WantedBy=multi-user.target

@@ -67,9 +67,28 @@
     mode: 0644
     src: config.hcl.j2
 
-# setcap cap_ipc_lock=+ep $(readlink -f $(which /opt/vault/bin/vault))
 - name: Set capabilities required to lock memory
   capabilities:
     path: "{{ specification.paths.main }}/bin/vault"
     capability: cap_ipc_lock=+ep
     state: present
+
+- name: Check if limits for Vault are set
+  shell: grep -e "^\*[ \t]*hard[ \]core[ \t]0" /etc/security/limits.conf
+  register: test_grep
+
+- name: Set if limits for Vault are not set
+  lineinfile:
+    dest: /etc/security/limits.conf
+    line: "* hard core 0"
+  when: test_grep.stdout != ""
+
+- name: Create systemd config
+  template:
+    dest: /etc/systemd/system/vault.service
+    owner: root
+    group: root
+    mode: 0644
+    src: vault.service.j2
+  notify:
+    - Restart Vault service
