@@ -127,3 +127,4 @@ tests/cli/results/
 clusters
 .vscode
 .devcontainer
+*.dump
