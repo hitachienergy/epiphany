@@ -40,10 +40,14 @@ In cloud configuration blob or S3 storage might be mounted directly on every mac
 #### Role backup
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 Main role for `backup` containes ansible tasks to run backups on cluster components.
 =======
 Main role for `backup` contains ansible tasks to run backups on cluster components.
 >>>>>>> upstream/develop
+=======
+Main role for `backup` contains ansible tasks to run backups on cluster components.
+>>>>>>> 68286632a764bb3e6057ca0d33217a20173d7a89
 
 #### Tasks:
 
@@ -108,10 +112,14 @@ Main role for `backup` contains ansible tasks to run backups on cluster componen
     curl -XPOST http://localhost:9090/api/v1/admin/tsdb/snapshot
     ```
 <<<<<<< HEAD
+<<<<<<< HEAD
     By dafault snapshot is saved in data directory, which is configured in Prometheus service configuration file as flag:
 =======
     By default snapshot is saved in data directory, which is configured in Prometheus service configuration file as flag:
 >>>>>>> upstream/develop
+=======
+    By default snapshot is saved in data directory, which is configured in Prometheus service configuration file as flag:
+>>>>>>> 68286632a764bb3e6057ca0d33217a20173d7a89
     ```bash
     --storage.tsdb.path=/var/lib/prometheus
     ```
