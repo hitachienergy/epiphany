@@ -13,6 +13,7 @@
 ### Updates
 
 - Update Calico and Canal to v3.13.2
+- [#1180](https://github.com/epiphany-platform/epiphany/issues/1180) - Update list of ports used by Epiphany components
 
 ## [0.6.0] 2020-04-06
 
