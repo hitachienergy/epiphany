@@ -52,7 +52,24 @@
 - name: Uncompress the Vault zip
   unarchive:
     remote_src: yes
-    creates: /opt/vault/bin
+    owner: "{{ specification.vault_system_user }}"
+    group: "{{ specification.vault_system_group }}"
     src: "{{ download_directory }}/{{ vault_file_name }}"
-    dest: /opt
+    creates: "{{ specification.paths.main }}/bin/vault"
+    dest: "{{ specification.paths.main }}/bin/"
   when: not vault_package.stat.exists
+
+- name: Create Vault configuration
+  template:
+    dest: "{{ specification.paths.main }}/config/config.hcl"
+    owner: "{{ specification.vault_system_user }}"
+    group: "{{ specification.vault_system_group }}"
+    mode: 0644
+    src: config.hcl.j2
+
+# setcap cap_ipc_lock=+ep $(readlink -f $(which /opt/vault/bin/vault))
+- name: Set capabilities required to lock memory
+  capabilities:
+    path: "{{ specification.paths.main }}/bin/vault"
+    capability: cap_ipc_lock=+ep
+    state: present

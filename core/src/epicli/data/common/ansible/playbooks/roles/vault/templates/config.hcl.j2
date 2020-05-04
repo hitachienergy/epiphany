@@ -1,0 +1,8 @@
+ui = true
+storage "file" {
+  path    = "{{ specification.paths.main }}/data"
+}
+listener "tcp" {
+  address = "{{ ansible_default_ipv4.address }}:8200"
+  tls_disable = true
+}
