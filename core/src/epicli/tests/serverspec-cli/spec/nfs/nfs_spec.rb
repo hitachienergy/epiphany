@@ -30,8 +30,9 @@ describe 'Checking NFS export file' do
 end
 
 describe 'Checking available NFS mounts' do
+  let(:disable_sudo) { false }
   nfs_defs.select {|i|
-    describe command("/usr/sbin/showmount -e localhost | grep #{i['nfs_path'].chomp('/')}") do
+    describe command("showmount -e localhost | grep #{i['nfs_path'].chomp('/')}") do
       its(:stdout) { should match /^#{i["nfs_path"].chomp("/")}*/}
       its(:exit_status) { should eq 0 }
     end}
