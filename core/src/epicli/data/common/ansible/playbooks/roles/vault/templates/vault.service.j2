@@ -1,12 +1,36 @@
 [Unit]
 Description=Hashicorp Vault server
 Requires=network-online.target
+After=network-online.target
+ConditionFileNotEmpty={{ specification.paths.main }}/config/config.hcl
+StartLimitIntervalSec=60
+StartLimitBurst=3
 
 [Service]
 User={{ specification.vault_system_user }}
 Group={{ specification.vault_system_group }}
 Restart=on-failure
+ProtectSystem=full
+ProtectHome=read-only
+PrivateTmp=yes
+PrivateDevices=yes
+SecureBits=keep-caps
+AmbientCapabilities=CAP_IPC_LOCK
+Capabilities=CAP_IPC_LOCK+ep
+CapabilityBoundingSet=CAP_SYSLOG CAP_IPC_LOCK
+NoNewPrivileges=yes
 ExecStart={{ specification.paths.main }}/bin/vault server -config={{ specification.paths.main }}/config/config.hcl
+ExecReload=/bin/kill --signal HUP $MAINPID
+KillMode=process
+KillSignal=SIGINT
+Restart=on-failure
+RestartSec=5
+TimeoutStopSec=30
+StartLimitInterval=60
+StartLimitIntervalSec=60
+StartLimitBurst=3
+LimitNOFILE=65536
+LimitMEMLOCK=infinity
 
 [Install]
 WantedBy=multi-user.target
