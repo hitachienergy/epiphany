@@ -832,23 +832,13 @@ specification:
         destination_port_range: "0"
         source_address_prefix: "0.0.0.0/0"
         destination_address_prefix: "0.0.0.0/0"
-      - name: nfs-traffic1
-        description: Allow nfs traffic 1
-        priority: 102
+      - name: nfs-traffic
+        description: Allow traffic to nfs server
+        priority: 303
         direction: Inbound
         access: Allow
         protocol: Tcp
         source_port_range: "*"
         destination_port_range: "2049"
-        source_address_prefix: "10.1.1.0/24"
-        destination_address_prefix: "0.0.0.0/0"
-      - name: nfs-traffic2
-        description: Allow nfs traffic 2
-        priority: 102
-        direction: Inbound
-        access: Allow
-        protocol: Tcp
-        source_port_range: "*"
-        destination_port_range: "2049"
-        source_address_prefix: "10.1.2.0/24"
+        source_address_prefix: "10.1.0.0/20"
         destination_address_prefix: "0.0.0.0/0"

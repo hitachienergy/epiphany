@@ -1,6 +1,8 @@
 require 'spec_helper'
 
 nfs_defs = readDataYaml("configuration/nfs")["specification"]["nfs_defs"]
+nfs_default_port = 2049
+rpcbind_default_port = 111
 
 if os[:family] == 'redhat'
   describe 'Checking if NFS service is running' do
@@ -21,6 +23,16 @@ elsif os[:family] == 'ubuntu'
     end
   end
 end
+
+describe 'Checking if the ports are open' do
+  let(:disable_sudo) { false }
+  describe port(nfs_default_port) do
+    it { should be_listening }
+  end
+  describe port(rpcbind_default_port) do
+    it { should be_listening }
+  end
+end  
 
 describe 'Checking NFS export file' do
   describe file('/etc/exports') do
