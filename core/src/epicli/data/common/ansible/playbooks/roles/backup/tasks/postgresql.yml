@@ -1,0 +1,12 @@
+---
+- name: Create timestamp value
+  set_fact:
+    timestamp: "{{ ansible_date_time.epoch }}"
+
+- name: Create a backup directory
+  file:
+    path: "{{ backup_dir }}"
+    state: directory
+
+- name: Dump database
+  command: runuser -l postgres -c 'pg_dumpall > /tmp/postgresq.sql'

@@ -1,9 +1,27 @@
 ---
 # Ansible playbook for backing up Kubernetes cluster 
 
+- hosts: all
+  become: true
+  become_method: sudo
+  tasks: 
+    - import_role:
+        name: backup
+        tasks_from: nfs-config.yml
+
 - hosts: kubernetes_master
   serial: 1
   become: true
   become_method: sudo
-  roles:
-    - backup
+  tasks:
+    - import_role:
+        name: backup
+        tasks_from: kubernetes
+
+#- hosts: postgresql[0]
+#  become: true
+#  become_method: sudo
+#  tasks:
+#    - import_role:
+#        name: backup
+#        tasks_from: postgresql

@@ -1,2 +1,4 @@
 ---
-backup_dir: /home/{{ admin_user.name }}/backupdir
+#backup_dir: /home/{{ admin_user.name }}/backupdir
+backup_dir: /epibackup
+

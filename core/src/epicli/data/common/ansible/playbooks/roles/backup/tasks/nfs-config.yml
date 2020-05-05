@@ -1,0 +1,76 @@
+# Create share location for backup filesystem
+---
+- name: Configure NFS host
+  block:
+  - name: Install NFS server on Debian
+    apt:
+      name: nfs-kernel-server
+      update_cache: yes
+      state: present
+    when:
+      - ansible_os_family == "Debian"
+
+  - name: Install NFS server on RedHat
+    yum:
+      name: nfs-kernel-server
+      update_cache: yes
+      state: present
+    when:
+      - ansible_os_family == "RedHat"
+
+  - name: Create share location
+    file:
+      path: "{{ backup_dir }}"
+      state: directory
+      mode: 0777
+
+  - name: Assign server access to clients through NFS export
+    template:
+      src: nfs-config/templates/exports.j2
+      dest: /etc/exports
+      mode: 0644
+      owner: root
+      group: root
+
+  - name: Export filesystem
+    command: /usr/sbin/exportfs -a
+
+  - name: Restart NFS service
+    systemd:
+      name: nfs-kernel-server
+      state: restarted
+  when:
+    - groups['repository'][0] == inventory_hostname
+
+- name: Configure nfs clients
+  block:
+  - name: Install NFS Common on Debian
+    apt:
+      name: nfs-common
+      update_cache: yes
+      state: present
+    when:
+      - ansible_os_family == "Debian"
+
+  - name: Install NFS server on RedHat
+    yum:
+      name: nfs-common
+      update_cache: yes
+      state: present
+    when:
+      - ansible_os_family == "RedHat"
+
+  #- name: Create mount point Not needed since next step will automatically create mount point
+  #  file:
+  #    path: "{{ backup_dir }}"
+  #    state: directory
+  #    mode: 0777
+  
+  - name: Mount shared system
+    mount:
+      src: "{{ hostvars[groups['repository'][0]]['ansible_default_ipv4']['address'] }}:{{ backup_dir }}"
+      path: "{{ backup_dir }}"
+      fstype: nfs
+      state: mounted
+  when:
+    - not groups['repository'][0] == inventory_hostname
