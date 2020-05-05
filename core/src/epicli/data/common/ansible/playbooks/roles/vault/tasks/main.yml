@@ -74,7 +74,7 @@
     state: present
 
 - name: Check if limits for Vault are set
-  shell: grep -e "^\*[ \t]*hard[ \]core[ \t]0" /etc/security/limits.conf
+  shell: grep -e "^\*[[:space:]]*hard[[:space:]]*core[[:space:]]*0" /etc/security/limits.conf
   register: test_grep
 
 - name: Set if limits for Vault are not set
@@ -92,3 +92,35 @@
     src: vault.service.j2
   notify:
     - Restart Vault service
+
+- name: Check if Vault was already initialized
+  shell: >-
+    set -o pipefail && {{ specification.paths.main }}/bin/vault status -address='http://{{ ansible_default_ipv4.address }}:8200' | grep -e 'Initialized[[:space:]]*true'
+  register: vault_init_output
+  args:
+    executable: /bin/bash
+  failed_when: "vault_init_output.rc == 1"
+
+- name: Initialize Vault
+  shell: "{{ specification.paths.main }}/bin/vault operator init -address='http://{{ ansible_default_ipv4.address }}:8200'"
+  when: vault_init_output.stdout == ""
+
+- name: Copy vault configuration file
+  copy:
+    src: configure-vault.sh
+    dest: "{{ specification.paths.main }}/bin/"
+    owner: "{{ specification.vault_system_user }}"
+    group: "{{ specification.vault_system_group }}"
+    mode: 0700
+
+- name: Initialize Vault
+  shell: "{{ specification.paths.main }}/bin/vault operator init -address='http://{{ ansible_default_ipv4.address }}:8200'"
+  when: vault_init_output.stdout == ""
+
+- name: Debug
+  debug:
+    msg: "{{ vault_init_output }}"
+
+- name: Run configuration script
+  shell: "{{ specification.paths.main }}/bin/configure-vault.sh {{ specification.paths.main }} {{ ansible_default_ipv4.address }} true"
+
