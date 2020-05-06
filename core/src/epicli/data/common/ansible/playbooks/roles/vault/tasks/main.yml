@@ -1,5 +1,7 @@
 ---
 # This role is responsible for installing and configuring Hashicorp Vault
+# TODO: Add swap disable
+# TODO: Set 'fs.suid_dumpable = 0' in /etc/sysctl.conf
 
 - name: Setup Vault system group
   group:
@@ -9,9 +11,9 @@
 - name: Setup Vault system user
   user:
     name: "{{ specification.vault_system_user }}"
-    system: yes
     group: "{{ specification.vault_system_group }}"
-    #shell: "/usr/sbin/nologin"
+    system: yes
+    shell: "/usr/sbin/nologin"
 
 - name: Create Vault directories
   file:
@@ -19,7 +21,7 @@
     state: directory
     owner: "{{ specification.vault_system_user }}"
     group: "{{ specification.vault_system_group }}"
-    mode: 0755
+    mode: 0750
   with_items:
     - "bin"
     - "config"
@@ -50,6 +52,7 @@
   register: vault_package
 
 - name: Uncompress the Vault zip
+  when: not vault_package.stat.exists
   unarchive:
     remote_src: yes
     owner: "{{ specification.vault_system_user }}"
@@ -57,14 +60,14 @@
     src: "{{ download_directory }}/{{ vault_file_name }}"
     creates: "{{ specification.paths.main }}/bin/vault"
     dest: "{{ specification.paths.main }}/bin/"
-  when: not vault_package.stat.exists
+    mode: 0740
 
 - name: Create Vault configuration
   template:
     dest: "{{ specification.paths.main }}/config/config.hcl"
     owner: "{{ specification.vault_system_user }}"
     group: "{{ specification.vault_system_group }}"
-    mode: 0644
+    mode: 0640
     src: config.hcl.j2
 
 - name: Set capabilities required to lock memory
@@ -78,17 +81,17 @@
   register: test_grep
 
 - name: Set if limits for Vault are not set
+  when: test_grep.stdout != ""
   lineinfile:
     dest: /etc/security/limits.conf
     line: "* hard core 0"
-  when: test_grep.stdout != ""
 
 - name: Create systemd config
   template:
     dest: /etc/systemd/system/vault.service
     owner: root
     group: root
-    mode: 0644
+    mode: 0640
     src: vault.service.j2
   notify:
     - Restart Vault service
@@ -102,8 +105,8 @@
   failed_when: "vault_init_output.rc == 1"
 
 - name: Initialize Vault
-  shell: "{{ specification.paths.main }}/bin/vault operator init -address='http://{{ ansible_default_ipv4.address }}:8200'"
   when: vault_init_output.stdout == ""
+  shell: "{{ specification.paths.main }}/bin/vault operator init -address='http://{{ ansible_default_ipv4.address }}:8200'"
 
 - name: Copy vault configuration file
   copy:
@@ -111,16 +114,14 @@
     dest: "{{ specification.paths.main }}/bin/"
     owner: "{{ specification.vault_system_user }}"
     group: "{{ specification.vault_system_group }}"
-    mode: 0700
+    mode: 0740
 
 - name: Initialize Vault
-  shell: "{{ specification.paths.main }}/bin/vault operator init -address='http://{{ ansible_default_ipv4.address }}:8200'"
   when: vault_init_output.stdout == ""
+  shell: "{{ specification.paths.main }}/bin/vault operator init -address='http://{{ ansible_default_ipv4.address }}:8200'"
 
-- name: Debug
-  debug:
-    msg: "{{ vault_init_output }}"
+# TODO: Add vault initialization support
 
 - name: Run configuration script
-  shell: "{{ specification.paths.main }}/bin/configure-vault.sh {{ specification.paths.main }} {{ ansible_default_ipv4.address }} true"
-
+  when: specification.vault_script_unseal
+  shell: "{{ specification.paths.main }}/bin/configure-vault.sh {{ specification.paths.main }} {{ ansible_default_ipv4.address }} {{ specification.vault_script_unseal }}"
