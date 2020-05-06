@@ -18,10 +18,10 @@
         name: backup
         tasks_from: kubernetes
 
-#- hosts: postgresql[0]
-#  become: true
-#  become_method: sudo
-#  tasks:
-#    - import_role:
-#        name: backup
-#        tasks_from: postgresql
+- hosts: postgresql[0]
+  become: true
+  become_method: sudo
+  tasks:
+    - import_role:
+        name: backup
+        tasks_from: postgresql

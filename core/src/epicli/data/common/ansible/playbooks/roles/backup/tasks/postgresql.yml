@@ -5,8 +5,9 @@
 
 - name: Create a backup directory
   file:
-    path: "{{ backup_dir }}"
+    path: "{{ backup_dir }}/postgresql_backup_{{ timestamp }}"
     state: directory
+    mode: 0777
 
 - name: Dump database
-  command: runuser -l postgres -c 'pg_dumpall > /tmp/postgresq.sql'
+  command: runuser -l postgres -c 'pg_dumpall > {{ backup_dir }}/postgresql_backup_{{ timestamp }}/database_dump.sql'
