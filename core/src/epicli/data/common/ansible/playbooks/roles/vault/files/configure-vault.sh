@@ -1,5 +1,4 @@
 #!/bin/bash
-# Add proper error handling
 
 VAULT_INSTALL_PATH=$1
 INIT_FILE_PATH=$VAULT_INSTALL_PATH/test.txt
@@ -11,14 +10,20 @@ export PATH=$VAULT_INSTALL_PATH/bin:$PATH
 if [ "$AUTO_UNSEAL" = true ] ; then
   grep -m 3 Unseal $INIT_FILE_PATH | awk '{print $4}' | while read -r line ; do
     vault operator unseal -address="http://$VAULT_IP:8200" "$line";
-    # TODO: Add proper error handling
+    if [ $? != 1 ] ; then
+        echo "Done";
+    fi
   done
 fi
 
-vault secrets list -address="http://$VAULT_IP:8200" | grep "secret/"
+LOGIN_TOKEN=$(grep "Initial Root Token:" $INIT_FILE_PATH | awk -F'[ ]' '{print $5}');
 
-# TODO: Add login to vault
+vault login -address="http://$VAULT_IP:8200" $LOGIN_TOKEN;
+
+vault secrets list -address="http://$VAULT_IP:8200" | grep "secret/";
 
 if [ $? = 1 ] ; then
-   vault secrets enable -path=secret -address="http://$VAULT_IP:8200" kv-v2
+   vault secrets enable -path=secret -address="http://$VAULT_IP:8200" kv-v2;
 fi
+
+rm -f $HOME/.vault-token
