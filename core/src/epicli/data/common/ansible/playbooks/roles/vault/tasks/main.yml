@@ -1,7 +1,6 @@
 ---
 # This role is responsible for installing and configuring Hashicorp Vault
 # TODO: Add swap disable
-# TODO: Set 'fs.suid_dumpable = 0' in /etc/sysctl.conf
 
 - name: Setup Vault system group
   group:
@@ -76,8 +75,17 @@
     capability: cap_ipc_lock=+ep
     state: present
 
+- name: Set fs.suid_dumpable to 0
+  sysctl:
+    name: fs.suid_dumpable
+    value: '0'
+    sysctl_set: yes
+    state: present
+    reload: yes
+
 - name: Check if limits for Vault are set
   shell: grep -e "^\*[[:space:]]*hard[[:space:]]*core[[:space:]]*0" /etc/security/limits.conf
+  changed_when: false
   register: test_grep
 
 - name: Set if limits for Vault are not set
@@ -96,6 +104,14 @@
   notify:
     - Restart Vault service
 
+- name: Start Vault service
+  systemd:
+    name: vault
+    state: started
+    enabled: yes
+  retries: 10
+  delay: 10
+
 - name: Check if Vault was already initialized
   shell: >-
     set -o pipefail && {{ specification.paths.main }}/bin/vault status -address='http://{{ ansible_default_ipv4.address }}:8200' | grep -e 'Initialized[[:space:]]*true'
@@ -103,10 +119,6 @@
   args:
     executable: /bin/bash
   failed_when: "vault_init_output.rc == 1"
-
-- name: Initialize Vault
-  when: vault_init_output.stdout == ""
-  shell: "{{ specification.paths.main }}/bin/vault operator init -address='http://{{ ansible_default_ipv4.address }}:8200'"
 
 - name: Copy vault configuration file
   copy:
@@ -118,10 +130,23 @@
 
 - name: Initialize Vault
   when: vault_init_output.stdout == ""
-  shell: "{{ specification.paths.main }}/bin/vault operator init -address='http://{{ ansible_default_ipv4.address }}:8200'"
+  shell: "{{ specification.paths.main }}/bin/vault operator init -address='http://{{ ansible_default_ipv4.address }}:8200' > {{ specification.paths.main }}/init.txt"
 
-# TODO: Add vault initialization support
+- name: Check if init file exists
+  stat:
+    path: "{{ specification.paths.main }}/init.txt"
+  register: init_file_stat
 
 - name: Run configuration script
-  when: specification.vault_script_unseal
+  when:
+    - specification.vault_script_unseal
+    - init_file_stat.stat.exists
   shell: "{{ specification.paths.main }}/bin/configure-vault.sh {{ specification.paths.main }} {{ ansible_default_ipv4.address }} {{ specification.vault_script_unseal }}"
+
+- name: Display information about running configuration script
+  when:
+    - not init_file_stat.stat.exists or not  specification.vault_script_unseal
+  debug:
+    msg: "Init file doesn't exist or you have chosen manual unseal, so to finish configuration please run script manually with command:
+          {{ specification.paths.main }}/bin/configure-vault.sh {{ specification.paths.main }} {{ ansible_default_ipv4.address }} false.
+          Also please put file init.txt with vault init file command output in {{ specification.paths.main }} location."
