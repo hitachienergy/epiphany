@@ -5,15 +5,6 @@
 ### Fixed
 
 - [#1154](https://github.com/epiphany-platform/epiphany/issues/1154) - Node exporter is not installed on logging vms
-- [#1135](https://github.com/epiphany-platform/epiphany/issues/1135) - 2ndquadrant yum repos remain enabled on repository host after teardown
-- [#1169](https://github.com/epiphany-platform/epiphany/issues/1169) - Task 'Get token from master' fails on-prem when calico plugin is used
-- [#1182](https://github.com/epiphany-platform/epiphany/issues/1182) - Re-run single machine installation may fail
-- [#1209](https://github.com/epiphany-platform/epiphany/issues/1209) - Can not apply cluster, "sudo: a password is required"
-
-### Updates
-
-- Update Calico and Canal to v3.13.2
-- [#1180](https://github.com/epiphany-platform/epiphany/issues/1180) - Update list of ports used by Epiphany components
 
 ## [0.6.0] 2020-04-06
 
