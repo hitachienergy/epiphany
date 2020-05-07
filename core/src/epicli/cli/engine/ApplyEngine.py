@@ -15,6 +15,7 @@ from cli.engine.schema.ConfigurationAppender import ConfigurationAppender
 from cli.engine.terraform.TerraformTemplateGenerator import TerraformTemplateGenerator
 from cli.engine.terraform.TerraformRunner import TerraformRunner
 from cli.engine.ansible.AnsibleRunner import AnsibleRunner
+from cli.engine.providers.azure.APIProxy import APIProxy
 
 
 class ApplyEngine(Step):
@@ -28,6 +29,7 @@ class ApplyEngine(Step):
         self.input_docs = []
         self.configuration_docs = []
         self.infrastructure_docs = []
+        self.existing_subnet_id = None
 
     def __enter__(self):
         return self
@@ -58,9 +60,12 @@ class ApplyEngine(Step):
             schema_validator.run()
 
     def process_infrastructure_docs(self):
+        if self.cluster_model.provider == 'azure':
+            self.azure_subnet_query_if_required()
+
         # Build the infrastructure docs
         with provider_class_loader(self.cluster_model.provider, 'InfrastructureBuilder')(
-                self.input_docs) as infrastructure_builder:
+                self.input_docs, self.existing_subnet_id) as infrastructure_builder:
             self.infrastructure_docs = infrastructure_builder.run()
 
         # Validate infrastructure documents
@@ -143,7 +148,7 @@ class ApplyEngine(Step):
         docs = [*self.configuration_docs, *self.infrastructure_docs]
 
         # Save docs to manifest file
-        save_manifest(docs, self.cluster_model.specification.name)   
+        save_manifest(docs, self.cluster_model.specification.name)
 
         # Run Ansible to provision infrastructure
         if not(self.skip_config):
@@ -159,6 +164,18 @@ class ApplyEngine(Step):
         self.process_configuration_docs()
 
         return [*self.configuration_docs, *self.infrastructure_docs]
+
+    def azure_subnet_query_if_required(self):
+        network = self.cluster_model.specification.cloud.network
+        if not(hasattr(network, 'existing_rg')) and not(hasattr(network, 'existing_vnet')) and not(hasattr(network, 'existing_subnet')):
+            return
+
+        if not(hasattr(network, 'existing_rg')) or not(hasattr(network, 'existing_vnet')) or not(hasattr(network, 'existing_subnet')):
+            raise Exception('"existing_rg", "existing_vnet" and "existing_subnet are required to use an existing '
+                            'Azure network"')
+
+        apiproxy = APIProxy(self.cluster_model, self.configuration_docs)
+        self.existing_subnet_id = apiproxy.get_existing_subnet_id(network)
 
     @staticmethod
     def is_provider_any(cluster_model):

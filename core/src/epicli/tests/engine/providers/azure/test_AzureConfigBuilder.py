@@ -5,7 +5,7 @@ import pytest
 
 def test_get_resource_group_should_set_proper_values_to_model():
     cluster_model = get_cluster_model(cluster_name='TestCluster')
-    builder = InfrastructureBuilder([cluster_model])
+    builder = InfrastructureBuilder([cluster_model], None)
 
     actual = builder.get_resource_group()
 
@@ -15,7 +15,7 @@ def test_get_resource_group_should_set_proper_values_to_model():
 
 def test_get_virtual_network_should_set_proper_values_to_model():
     cluster_model = get_cluster_model(cluster_name='TestCluster')
-    builder = InfrastructureBuilder([cluster_model])
+    builder = InfrastructureBuilder([cluster_model], None)
 
     actual = builder.get_virtual_network()
 
@@ -25,7 +25,7 @@ def test_get_virtual_network_should_set_proper_values_to_model():
 
 def test_get_security_group_should_set_proper_values_to_model():
     cluster_model = get_cluster_model(cluster_name='TestCluster')
-    builder = InfrastructureBuilder([cluster_model])
+    builder = InfrastructureBuilder([cluster_model], None)
 
     actual = builder.get_network_security_group('component', [], 1)
 
@@ -38,7 +38,7 @@ def test_get_subnet_should_set_proper_values_to_model():
         'address_pool': '10.20.0.0/24',
         'availability_zone': 'eu-west-2a'
     })    
-    builder = InfrastructureBuilder([cluster_model])
+    builder = InfrastructureBuilder([cluster_model], None)
     actual = builder.get_subnet(subnet_definition, 'component', 1)
 
     assert actual.specification.name == 'prefix-testcluster-component-subnet-1'
@@ -48,7 +48,7 @@ def test_get_subnet_should_set_proper_values_to_model():
 
 def test_get_subnet_network_security_group_association_should_set_proper_values_to_model():
     cluster_model = get_cluster_model(cluster_name='TestCluster')
-    builder = InfrastructureBuilder([cluster_model])
+    builder = InfrastructureBuilder([cluster_model], None)
 
     actual = builder.get_subnet_network_security_group_association(
                                 'component',
@@ -64,7 +64,7 @@ def test_get_subnet_network_security_group_association_should_set_proper_values_
 
 def test_get_public_ip_should_set_proper_values_to_model():
     cluster_model = get_cluster_model(cluster_name='TestCluster')
-    builder = InfrastructureBuilder([cluster_model])
+    builder = InfrastructureBuilder([cluster_model], None)
     component_value = dict_to_objdict({
         'machine': 'kubernetes-master-machine'
     })
@@ -80,7 +80,7 @@ def test_get_public_ip_should_set_proper_values_to_model():
 
 def test_get_network_interface_should_set_proper_values_to_model():
     cluster_model = get_cluster_model(cluster_name='TestCluster')
-    builder = InfrastructureBuilder([cluster_model])
+    builder = InfrastructureBuilder([cluster_model], None)
     component_value = dict_to_objdict({
         'machine': 'kubernetes-master-machine'
     })
@@ -90,7 +90,8 @@ def test_get_network_interface_should_set_proper_values_to_model():
                                 'kubernetes_master',
                                 component_value,
                                 vm_config,
-                                'prefix-testcluster-component-subnet-1', 
+                                'prefix-testcluster-component-subnet-1',
+                                '',
                                 'prefix-testcluster-component-sg-1',
                                 'prefix-testcluster-kubernetes-master-pubip-1',
                                 1)          
@@ -106,7 +107,7 @@ def test_get_network_interface_should_set_proper_values_to_model():
 
 def test_get_storage_share_config_should_set_proper_values_to_model():
     cluster_model = get_cluster_model(cluster_name='TestCluster')
-    builder = InfrastructureBuilder([cluster_model])
+    builder = InfrastructureBuilder([cluster_model], None)
 
     actual = builder.get_storage_share_config()
 
