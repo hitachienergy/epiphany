@@ -37,7 +37,7 @@ def test_get_subnet_should_set_proper_values_to_model():
     subnet_definition = dict_to_objdict({
         'address_pool': '10.20.0.0/24',
         'availability_zone': 'eu-west-2a'
-    })    
+    })
     builder = InfrastructureBuilder([cluster_model], None)
     actual = builder.get_subnet(subnet_definition, 'component', 1)
 
@@ -52,12 +52,12 @@ def test_get_subnet_network_security_group_association_should_set_proper_values_
 
     actual = builder.get_subnet_network_security_group_association(
                                 'component',
-                                'prefix-testcluster-component-subnet-1', 
+                                'prefix-testcluster-component-subnet-1',
                                 'prefix-testcluster-component-sg-1',
                                 1)
 
     assert actual.specification.name == 'prefix-testcluster-component-ssga-1'
-    assert actual.specification.subnet_name == 'prefix-testcluster-component-subnet-1'   
+    assert actual.specification.subnet_name == 'prefix-testcluster-component-subnet-1'
     assert actual.specification.security_group_name == 'prefix-testcluster-component-sg-1'
 
 
@@ -94,12 +94,41 @@ def test_get_network_interface_should_set_proper_values_to_model():
                                 '',
                                 'prefix-testcluster-component-sg-1',
                                 'prefix-testcluster-kubernetes-master-pubip-1',
-                                1)          
+                                1)
 
     assert actual.specification.name == 'prefix-testcluster-kubernetes-master-nic-1'
     assert actual.specification.security_group_name == 'prefix-testcluster-component-sg-1'
     assert actual.specification.ip_configuration_name == 'prefix-testcluster-kubernetes-master-ipconf-1'
     assert actual.specification.subnet_name == 'prefix-testcluster-component-subnet-1'
+    assert actual.specification.existing_subnet_id == ''
+    assert actual.specification.use_public_ip == True
+    assert actual.specification.public_ip_name == 'prefix-testcluster-kubernetes-master-pubip-1'
+    assert actual.specification.enable_accelerated_networking == False
+
+
+def test_get_network_interface_with_existing_network_should_set_proper_values_to_model():
+    cluster_model = get_cluster_model(cluster_name='TestCluster')
+    builder = InfrastructureBuilder([cluster_model], 'some_existing_subnet_id')
+    component_value = dict_to_objdict({
+        'machine': 'kubernetes-master-machine'
+    })
+    vm_config = builder.get_virtual_machine(component_value, cluster_model, [])
+
+    actual = builder.get_network_interface(
+        'kubernetes_master',
+        component_value,
+        vm_config,
+        '',
+        'some_existing_subnet_id',
+        'prefix-testcluster-component-sg-1',
+        'prefix-testcluster-kubernetes-master-pubip-1',
+        1)
+
+    assert actual.specification.name == 'prefix-testcluster-kubernetes-master-nic-1'
+    assert actual.specification.security_group_name == 'prefix-testcluster-component-sg-1'
+    assert actual.specification.ip_configuration_name == 'prefix-testcluster-kubernetes-master-ipconf-1'
+    assert actual.specification.subnet_name == ''
+    assert actual.specification.existing_subnet_id == 'some_existing_subnet_id'
     assert actual.specification.use_public_ip == True
     assert actual.specification.public_ip_name == 'prefix-testcluster-kubernetes-master-pubip-1'
     assert actual.specification.enable_accelerated_networking == False
@@ -111,7 +140,7 @@ def test_get_storage_share_config_should_set_proper_values_to_model():
 
     actual = builder.get_storage_share_config()
 
-    assert actual.specification.name == 'prefix-testcluster-k8s-ss'   
+    assert actual.specification.name == 'prefix-testcluster-k8s-ss'
     assert actual.specification.storage_account_name == 'prefixtestclusterk8s'
     assert actual.specification.quota == 50
 
