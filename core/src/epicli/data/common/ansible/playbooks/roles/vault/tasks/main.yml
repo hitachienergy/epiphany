@@ -141,12 +141,18 @@
   when:
     - specification.vault_script_unseal
     - init_file_stat.stat.exists
-  shell: "{{ specification.paths.main }}/bin/configure-vault.sh {{ specification.paths.main }} {{ ansible_default_ipv4.address }} {{ specification.vault_script_unseal }}"
+  shell: >-
+    {{ specification.paths.main }}/bin/configure-vault.sh
+    -p {{ specification.paths.main }}
+    -a {{ ansible_default_ipv4.address }}
+    -u {{ specification.vault_script_unseal }}
+    -l {{ specification.paths.logs }}
+    -s {{ specification.secret_mount_path }}
 
 - name: Display information about running configuration script
   when:
     - not init_file_stat.stat.exists or not  specification.vault_script_unseal
   debug:
     msg: "Init file doesn't exist or you have chosen manual unseal, so to finish configuration please run script manually with command:
-          {{ specification.paths.main }}/bin/configure-vault.sh {{ specification.paths.main }} {{ ansible_default_ipv4.address }} false.
+          {{ specification.paths.main }}/bin/configure-vault.sh -p {{ specification.paths.main }} -a {{ ansible_default_ipv4.address }} -u {{ specification.vault_script_unseal }} -s {{ specification.secret_mount_path }}.
           Also please put file init.txt with vault init file command output in {{ specification.paths.main }} location."
