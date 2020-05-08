@@ -1,0 +1,11 @@
+---
+# Ansible playbook for recovering monitoring data
+
+- hosts: prometheus
+  become: true
+  become_method: sudo
+  serial: 1
+  tasks:
+    - import_role:
+        name: recovery
+        tasks_from: monitoring
