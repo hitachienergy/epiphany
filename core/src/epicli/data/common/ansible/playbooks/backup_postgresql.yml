@@ -1,0 +1,11 @@
+---
+# Ansible playbook for backing up Postgresql database
+
+- hosts: postgresql[0]
+  become: true
+  become_method: sudo
+  serial: 1
+  tasks:
+    - import_role:
+        name: backup
+        tasks_from: postgresql
