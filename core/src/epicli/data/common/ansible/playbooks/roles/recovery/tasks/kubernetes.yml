@@ -1,4 +1,10 @@
 ---
+
+- fail:
+    msg: This is a dangerous procedure that is currently disabled because it needs refactoring!
+
+# The procedure of restoring kubernetes cluster
+
 - name: Reset kubeadm
   shell: kubeadm reset -f
 
@@ -49,7 +55,7 @@
     state: directory
 
 - name: Get etcd image name
-  shell: cat "{{ backup_dir }}/tmp/etcd_ver.txt" 
+  shell: cat "{{ backup_dir }}/tmp/etcd_ver.txt"
   register: etcd_image_name
 
 - name: Restore etcd backup
@@ -95,7 +101,7 @@
   retries: 120
   delay: 10
 
-- name: Check cluster version 
+- name: Check cluster version
   environment:
     KUBECONFIG: "/home/{{ admin_user.name }}/.kube/config"
   shell: kubectl version --short | grep -i server
@@ -109,7 +115,7 @@
   - name: Show upgrade plan
     shell: kubeadm upgrade plan
   when: '"1.13" in cluster_version.stdout'
-  
+
   rescue:
   - name: Find the existing etcd server certificates
     find:
@@ -125,7 +131,7 @@
 
   - name: Regenerate the etcd server certificates
     shell: kubeadm init phase certs etcd-server
-   
+
 - name: Clean temporary directory
   file:
     state: absent

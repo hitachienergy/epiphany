@@ -92,12 +92,11 @@ Terraform : 1..4 map to the following Terraform verbosity levels:
     upgrade_parser(subparsers)
     delete_parser(subparsers)
     test_parser(subparsers)
-
     '''
     validate_parser(subparsers)
+    '''
     backup_parser(subparsers)
     recovery_parser(subparsers)
-    '''
 
     # check if there were any variables and display full help
     if len(sys.argv) < 2:
@@ -260,6 +259,24 @@ def validate_parser(subparsers):
             return engine.validate()
 
     sub_parser.set_defaults(func=run_validate)    
+'''
+
+
+def _component_parser_for(available_components={}):
+    def parse_components(value):
+        parsed_items = set(
+            item_stripped
+            for item in value.split(',')
+            for item_stripped in [item.strip()]
+            if item_stripped
+        )
+        if len(parsed_items) == 1 and 'all' in parsed_items:
+            return set(available_components)
+        difference = parsed_items - set(available_components)
+        if difference:
+            raise Exception('Error parsing components: invalid values present')
+        return parsed_items
+    return parse_components
 
 
 def backup_parser(subparsers):
@@ -267,6 +284,15 @@ def backup_parser(subparsers):
                                        description='[Experimental]: Backups existing Epiphany Platform components.')
     sub_parser.add_argument('-b', '--build', dest='build_directory', type=str, required=True,
                             help='Absolute path to directory with build artifacts.')
+
+    available_components = {'kubernetes', 'postgresql', 'monitoring'}
+
+    enabled_components = set(available_components)  # enable everything by default
+    enabled_components_joined = ','.join(sorted(enabled_components))
+
+    sub_parser.add_argument('-c', '--components', dest='components', type=_component_parser_for(available_components), required=False,
+                            help=f'Specify comma-separated list of components to backup (defaults to "{enabled_components_joined}").',
+                            default=enabled_components_joined)
 
     def run_backup(args):
         experimental_query()
@@ -278,9 +304,19 @@ def backup_parser(subparsers):
 
 
 def recovery_parser(subparsers):
-    sub_parser = subparsers.add_parser('recovery', description='[Experimental]: Recover from existing backup.')
+    sub_parser = subparsers.add_parser('recovery',
+                                       description='[Experimental]: Recover from existing backup.')
     sub_parser.add_argument('-b', '--build', dest='build_directory', type=str, required=True,
                             help='Absolute path to directory with build artifacts.')
+
+    available_components = {'kubernetes', 'postgresql', 'monitoring'}
+
+    enabled_components = set()  # disable everything by default
+    enabled_components_joined = ','.join(sorted(enabled_components))
+
+    sub_parser.add_argument('-c', '--components', dest='components', type=_component_parser_for(available_components), required=False,
+                            help=f'Specify comma-separated list of components to restore (defaults to "{enabled_components_joined}").',
+                            default=enabled_components_joined)
 
     def run_recovery(args):
         experimental_query()
@@ -289,7 +325,6 @@ def recovery_parser(subparsers):
             return engine.recovery()
 
     sub_parser.set_defaults(func=run_recovery)
-'''
 
 
 def experimental_query():
