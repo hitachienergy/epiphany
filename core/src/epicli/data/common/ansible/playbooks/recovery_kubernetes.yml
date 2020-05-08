@@ -1,0 +1,11 @@
+---
+# Ansible playbook for recovering Kubernetes cluster
+
+- hosts: kubernetes_master[0]
+  become: true
+  become_method: sudo
+  serial: 1
+  tasks:
+    - import_role:
+        name: recovery
+        tasks_from: kubernetes
