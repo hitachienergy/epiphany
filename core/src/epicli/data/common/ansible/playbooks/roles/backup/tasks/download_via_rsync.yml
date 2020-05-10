@@ -1,15 +1,19 @@
 ---
+# Invoke with (example):
+#- set_fact:
+#    artifacts:
+#      - /tmp/artifact1
+#      - /tmp/artifact2
+
 - name: Assert that the "artifacts" fact is defined and valid
   assert:
     that:
       - artifacts is defined
-      - artifacts | type_debug == 'list'
+      - artifacts is sequence
       - artifacts | length > 0
     fail_msg: The "artifacts" fact must be defined and must be a non-empty list.
 
-- name: Upload artifacts to mounted storage
-  vars:
-    private_key_path: "~/.ssh/id_rsa_{{ inventory_hostname_short }}"
+- name: Download artifacts to mounted storage
 
   delegate_to: "{{ backup_destination_host }}"
 
@@ -19,8 +23,8 @@
         path: "{{ item }}"
         state: absent
       loop:
-        - "{{ private_key_path }}"
-        - "{{ private_key_path }}.pub"
+        - "{{ private_key_file.path }}"
+        - "{{ private_key_file.path }}.pub"
 
     - delegate_to: "{{ inventory_hostname }}"  # cancel previous delegate_to
       block:
@@ -32,10 +36,18 @@
               {{ openssh_keypair.public_key }}
 
   block:
+    - name: Create a temporary file path to hold the private key in
+      tempfile:
+        path: ~/.ssh/
+        suffix: .tmp
+        state: file
+      register: private_key_file
+
     - name: Generate openssh keypair for rsync over ssh
       openssh_keypair:
-        path: "{{ private_key_path }}"
+        path: "{{ private_key_file.path }}"
         size: 2048
+        force: true
       register: openssh_keypair
 
     - delegate_to: "{{ inventory_hostname }}"  # cancel previous delegate_to
@@ -64,5 +76,5 @@
         # this fixes / replaces incorrect path to the private key file that synchronize provides
         # (setting private_key parameter has no effect whatsoever, looks like a bug tbh)
         rsh: >-
-          /usr/bin/ssh -S none -i {{ private_key_path }} -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null
+          /usr/bin/ssh -S none -i {{ private_key_file.path }} -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null
       loop: "{{ artifacts }}"
