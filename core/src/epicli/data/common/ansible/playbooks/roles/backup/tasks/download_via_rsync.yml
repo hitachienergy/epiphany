@@ -61,7 +61,7 @@
 
     - name: Ensure destination directory for artifacts exists
       file:
-        path: "{{ backup_destination_dir }}"
+        path: "{{ backup_destination_dir }}/"
         state: directory
 
     - name: Use rsync to copy all artifacts

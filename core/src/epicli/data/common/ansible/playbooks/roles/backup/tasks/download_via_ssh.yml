@@ -3,7 +3,7 @@
 #- set_fact:
 #    backup_inline_script: >-
 #      (date; uname -a) | gzip
-#    backup_destination_file: "{{ backup_dir }}/mounted/date_uname-a.gz"
+#    backup_destination_file: "{{ backup_destination_dir }}/date_uname-a.gz"
 
 - name: Assert that "backup_inline_script" and "backup_destination_file" facts are defined and valid
   assert:
@@ -64,12 +64,14 @@
 
     - name: Ensure destination directory for artifacts exists
       file:
-        path: "{{ backup_destination_dir }}"
+        path: "{{ backup_destination_dir }}/"
         state: directory
 
     - name: Execute remote script via ssh and save its stdout output locally
       shell: |
-        ssh -i $SSH_KEY_PATH $SSH_OPTIONS $SSH_USER@$SSH_HOST -- "set -o errexit -o nounset -o pipefail && $INLINE_SCRIPT" 1> $DESTINATION_FILE
+        set -o errexit -o nounset -o pipefail
+        ssh -i $SSH_KEY_PATH $SSH_OPTIONS $SSH_USER@$SSH_HOST -- \
+          "set -o errexit -o nounset -o pipefail && $INLINE_SCRIPT" 1> $DESTINATION_FILE
       environment:
         SSH_KEY_PATH: "{{ private_key_file.path }}"
         SSH_OPTIONS: "-S none -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null"
