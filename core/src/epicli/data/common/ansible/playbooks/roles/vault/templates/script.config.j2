@@ -1,6 +1,6 @@
 VAULT_INSTALL_PATH="{{ specification.paths.main }}"
-ENABLE_AUDITING={{ specification.enable_auditing | lower }}
-SCRIPT_AUTO_UNSEAL={{ specification.vault_script_unseal | lower }}
+ENABLE_AUDITING={{ specification.enable_auditing }}
+SCRIPT_AUTO_UNSEAL={{ specification.vault_script_unseal }}
 SECRET_PATH={{ specification.secret_mount_path }}
-KUBERNETES_INTEGRATION={{ specification.kubernetes_integration | lower }}
+KUBERNETES_INTEGRATION={{ specification.kubernetes_integration }}
 LOG_DIR={{ specification.paths.logs }}
