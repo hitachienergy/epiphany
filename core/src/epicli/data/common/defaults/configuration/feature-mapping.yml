@@ -108,6 +108,7 @@ specification:
       - repository
       - image-registry
       - kubernetes-master
+      - helm
       - applications
       - rabbitmq
       - postgresql

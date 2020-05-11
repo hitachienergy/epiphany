@@ -13,6 +13,7 @@ MANIFEST_FILE_NAME = 'manifest.yml'
 SP_FILE_NAME = 'sp.yml'
 INVENTORY_FILE_NAME = 'inventory'
 ANSIBLE_OUTPUT_DIR = 'ansible/'
+HELM_CHARTS_OUTPUT_DIR = ANSIBLE_OUTPUT_DIR + 'roles/repository/files/helm-charts/'
 ANSIBLE_VAULT_OUTPUT_DIR = 'vault/'
 SPEC_OUTPUT_DIR = 'spec_tests/'
 
@@ -77,7 +78,6 @@ def get_build_path(cluster_name):
         os.makedirs(build_dir)
     return build_dir
 
-
 def get_inventory_path(cluster_name):
     return os.path.join(get_build_path(cluster_name), INVENTORY_FILE_NAME)
 
@@ -136,6 +136,18 @@ def get_ansible_path_for_build(build_directory):
     if not os.path.exists(ansible_dir):
         os.makedirs(ansible_dir)
     return ansible_dir    
+
+def get_helm_charts_path(cluster_name):
+    helm_charts_dir = os.path.join(get_build_path(cluster_name), HELM_CHARTS_OUTPUT_DIR)
+    if not os.path.exists(helm_charts_dir):
+        os.makedirs(helm_charts_dir)
+    return helm_charts_dir
+
+def get_helm_charts_path_for_build(build_directory):
+    helm_charts_dir = os.path.join(build_directory, HELM_CHARTS_OUTPUT_DIR)
+    if not os.path.exists(helm_charts_dir):
+        os.makedirs(helm_charts_dir)
+    return helm_charts_dir
 
 def copy_files_recursively(src, dst):
     distutils.dir_util.copy_tree(src, dst)

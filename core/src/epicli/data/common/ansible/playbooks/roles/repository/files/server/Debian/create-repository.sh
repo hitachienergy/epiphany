@@ -47,7 +47,7 @@ else
     # -m is important because it allow same packages with different versions
     # 'cd' is needed here becuase 'dpkg-scanpackages' prepends path to "Filename" field in Packages.gz
     # otherwise it would break package URL for apt
-    cd {{ apache_epirepo_path }}/packages && dpkg-scanpackages -m . | gzip -9c > Packages.gz && cd "${script_path}"
+    cd "${EPI_REPO_SERVER_PATH}/packages" && dpkg-scanpackages -m . | gzip -9c > Packages.gz && cd "${script_path}"
 fi
 
 systemctl start apache2

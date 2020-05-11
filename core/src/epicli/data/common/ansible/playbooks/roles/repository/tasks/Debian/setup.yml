@@ -9,14 +9,6 @@
       args:
         executable: /bin/bash
 
-    - name: Copy helm charts
-      shell: >-
-        set -o pipefail &&
-        /tmp/epi-repository-setup-scripts/copy-helm-charts.sh {{ apache_epirepo_path }} |&
-        tee /tmp/epi-repository-setup-scripts/copy-helm-charts.log
-      args:
-        executable: /bin/bash
-
     - name: Ensure HTTP port is not blocked by firewall
       include_tasks: firewall/add-rule.yml
 
@@ -27,6 +19,20 @@
   when:
     - not custom_repository_url
     - inventory_hostname in target_repository_hostnames
+
+- name: Create Helm charts directory
+  file:
+    path: "{{ apache_epirepo_path }}/helm-charts"
+    state: directory
+
+- name: Copy Helm charts files to apache location
+  copy:
+    src: /tmp/epi-repository-helm-charts/
+    dest: "{{ apache_epirepo_path }}/helm-charts"
+    owner: root
+    group: root
+    mode: 0644
+    remote_src: yes
 
 - name: Disable system repositories and set up epirepo
   block:

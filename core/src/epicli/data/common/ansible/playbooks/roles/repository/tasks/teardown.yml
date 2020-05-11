@@ -25,5 +25,6 @@
   loop:
     - /tmp/epi-download-requirements
     - /tmp/epi-repository-setup-scripts
+    - /tmp/epi-repository-helm-charts
     - /var/tmp/enabled-system-repos.txt
     - /var/tmp/enabled-system-repos.tar

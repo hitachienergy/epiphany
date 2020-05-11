@@ -1,5 +1,4 @@
 kind: configuration/helm
-title: Helm Config
+title: "Helm"
 name: default
-specification:
-  helm_version: "3.2.0"
+specification: {}
