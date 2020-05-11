@@ -1,1 +1,17 @@
 ---
+- name: Trigger snapshot creation
+  uri:
+    url: http://localhost:9090/api/v1/admin/tsdb/snapshot
+    method: POST
+  register: uri_response
+
+- debug: var=uri_response
+
+- name: Provide parameters for the download_via_ssh backup copy method
+  set_fact:
+    backup_inline_script: >-
+      tar czpf - -C {{ snapshot_directory }}/ {{ snapshot_name }}/
+    backup_destination_file: "{{ backup_dir }}/mounted/prometheus_backup_{{ snapshot_name }}.tar.gz"
+  vars:
+    snapshot_directory: "{{ specification.storage.data_directory }}/snapshots"
+    snapshot_name: "{{ uri_response.json.data.name }}"

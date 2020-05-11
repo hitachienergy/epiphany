@@ -60,6 +60,9 @@ tmux
 unzip
 vim
 
+# to make remote-to-remote "synchronize" work in ansible
+rsync
+
 # for curl, issue #869
 libcurl4
 
