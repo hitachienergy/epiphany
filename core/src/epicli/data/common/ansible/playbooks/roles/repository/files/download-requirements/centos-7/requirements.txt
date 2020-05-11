@@ -110,6 +110,10 @@ xorg-x11-font-utils # for grafana
 xorg-x11-server-utils # for grafana
 yum-plugin-versionlock
 yum-utils
+
+# to make remote-to-remote "synchronize" work in ansible
+rsync
+
 # K8s upgrade v1.12
 kubeadm-1.12.10
 kubectl-1.12.10
