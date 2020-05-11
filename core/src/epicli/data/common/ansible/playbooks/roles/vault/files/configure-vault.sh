@@ -2,7 +2,6 @@
 # TODO: Revoke root token
 # TODO: Policy for non-root access
 # TODO: Rewrite to functions
-# TODO: Enable kubernetes authentication
 
 #set -o errexit -o pipefail;
 
@@ -50,20 +49,21 @@ LOGIN_TOKEN="";
 if [ "$ENABLE_AUDITING" = "true" ] ; then
     echo "Enabling auditing.";
     vault audit list | grep "file";
-
     if [ "$?" = "1" ] ; then
         vault audit enable file file_path="$LOG_DIR/audit.log";
     fi
 fi
 
 vault secrets list | grep "$SECRET_PATH/";
-
 if [ "$?" = "1" ] ; then
    vault secrets enable -path="$SECRET_PATH" kv-v2;
 fi
 
-#if [ "$KUBERNETES_INTEGRATION" = "true" ] ; then
-#
-#fi
+if [ "$KUBERNETES_INTEGRATION" = "true" ] ; then
+  vault auth list | grep kubernetes
+  if [ "$?" = "1" ] ; then
+    vault auth enable kubernetes;
+  fi
+fi
 
-#rm -f "$HOME/.vault-token"
+rm -f "$HOME/.vault-token"
