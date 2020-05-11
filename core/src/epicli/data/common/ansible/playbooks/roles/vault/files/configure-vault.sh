@@ -7,25 +7,15 @@
 #set -o errexit -o pipefail;
 
 HELP_MESSAGE="Usage: configure-vault.sh
--p path to vault installation folder
--a vault ip address
--u vault script unseal - true/false
--k kubernetes integration - true/false
--l log directory
--s secret mount path"
-LOG_DIR="/var/log/vault";
+-c path to script configuration file
+-a vault ip address"
 
 function print_help { echo "$HELP_MESSAGE"; }
 
-while getopts ":p:a:Aus:kl:h?" opt; do
+while getopts ":p:a:c:h?" opt; do
     case "$opt" in
-        p) VAULT_INSTALL_PATH=$OPTARG;;
         a) VAULT_IP=$OPTARG;;
-        A) ENABLE_AUDITING=$OPTARG;;
-        u) AUTO_UNSEAL=$OPTARG;;
-        s) SECRET_PATH=$OPTARG;;
-        k) KUBERNETES_INTEGRATION=$OPTARG;;
-        l) LOG_DIR=$OPTARG;;
+        c) CONFIG_FILE=$OPTARG;;
         ? | h | *) print_help; exit 2;;
     esac
 done
@@ -36,11 +26,13 @@ if [ $OPTIND -eq 1 ]; then
     exit 2;
 fi
 
+. "$CONFIG_FILE";
+
 INIT_FILE_PATH="$VAULT_INSTALL_PATH/init.txt"
 export VAULT_ADDR="http://$VAULT_IP:8200"
 PATH=$VAULT_INSTALL_PATH/bin:$PATH
 
-if [ "$AUTO_UNSEAL" = "true" ] ; then
+if [ "${SCRIPT_AUTO_UNSEAL,,}" = "true" ] ; then
   echo "Unsealing vault.";
   grep -m 3 Unseal "$INIT_FILE_PATH" | awk '{print $4}' | while read -r line ; do
     vault operator unseal "$line";
@@ -74,4 +66,4 @@ fi
 #
 #fi
 
-rm -f "$HOME/.vault-token"
+#rm -f "$HOME/.vault-token"

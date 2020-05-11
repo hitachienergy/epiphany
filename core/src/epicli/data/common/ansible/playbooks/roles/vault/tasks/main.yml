@@ -118,7 +118,7 @@
   register: vault_init_output
   args:
     executable: /bin/bash
-  failed_when: "vault_init_output.rc == 1"
+  failed_when: "vault_init_output.rc == 2"
 
 - name: Copy vault configuration file
   copy:
@@ -137,22 +137,27 @@
     path: "{{ specification.paths.main }}/init.txt"
   register: init_file_stat
 
+- name: Generate config script confiugration
+  template:
+    dest: "{{ specification.paths.main }}/script.config"
+    owner: "{{ specification.vault_system_user }}"
+    group: "{{ specification.vault_system_group }}"
+    mode: 0640
+    src: script.config.j2
+
 - name: Run configuration script
   when:
     - specification.vault_script_unseal
     - init_file_stat.stat.exists
   shell: >-
     {{ specification.paths.main }}/bin/configure-vault.sh
-    -p {{ specification.paths.main }}
+    -c {{ specification.paths.main }}/script.config
     -a {{ ansible_default_ipv4.address }}
-    -u {{ specification.vault_script_unseal }}
-    -l {{ specification.paths.logs }}
-    -s {{ specification.secret_mount_path }}
 
 - name: Display information about running configuration script
   when:
     - not init_file_stat.stat.exists or not  specification.vault_script_unseal
   debug:
     msg: "Init file doesn't exist or you have chosen manual unseal, so to finish configuration please run script manually with command:
-          {{ specification.paths.main }}/bin/configure-vault.sh -p {{ specification.paths.main }} -a {{ ansible_default_ipv4.address }} -u {{ specification.vault_script_unseal }} -s {{ specification.secret_mount_path }}.
+          {{ specification.paths.main }}/bin/configure-vault.sh -c {{ specification.paths.main }}/script.config -a {{ ansible_default_ipv4.address }}.
           Also please put file init.txt with vault init file command output in {{ specification.paths.main }} location."
