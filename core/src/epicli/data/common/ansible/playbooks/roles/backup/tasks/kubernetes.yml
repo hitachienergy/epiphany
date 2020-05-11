@@ -18,6 +18,7 @@
       file:
         path: "{{ backup_temp_dir.path }}/"
         state: absent
+
   block:
     - name: Get etcd image name
       shell: |
@@ -102,3 +103,9 @@
             dest: "{{ stat_k8s_backup_tar_gz.stat.path }}.sha1"
             content: |
               {{ stat_k8s_backup_tar_gz.stat.checksum }}  {{ stat_k8s_backup_tar_gz.stat.path | basename }}
+
+    - name: Export artifact list
+      set_fact:
+        artifacts:
+          - "{{ stat_k8s_backup_tar_gz.stat.path }}"
+          - "{{ stat_k8s_backup_tar_gz.stat.path }}.sha1"

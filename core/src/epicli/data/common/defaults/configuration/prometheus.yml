@@ -15,6 +15,7 @@ specification:
     - "--web.console.libraries=/etc/prometheus/console_libraries"                 # Directory should be the same as "config_directory"
     - "--web.console.templates=/etc/prometheus/consoles"                          # Directory should be the same as "config_directory"
     - "--web.listen-address=0.0.0.0:9090"                                         # Address that Prometheus console will be available
+    - "--web.enable-admin-api"                                                    # Enables administrative HTTP API
 
   metrics_path: "/metrics"
   scrape_interval : "15s"
