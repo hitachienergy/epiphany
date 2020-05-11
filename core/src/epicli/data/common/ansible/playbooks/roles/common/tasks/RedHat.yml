@@ -23,6 +23,7 @@
       - net-tools
       - openssl
       - python-setuptools
+      - rsync
       - sysstat
       - tar
       - telnet
