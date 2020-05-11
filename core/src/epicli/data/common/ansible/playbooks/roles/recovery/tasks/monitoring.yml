@@ -1,1 +1,44 @@
 ---
+- name: Stop the prometheus service
+  systemd:
+    name: prometheus
+    state: stopped
+
+- name: Find everything in the data directory
+  find:
+    paths: "{{ specification.storage.data_directory }}/"
+    patterns: "*"
+    file_type: any
+    recurse: false
+  register: find_everything_in_data_directory
+
+- name: Remove all prometheus data
+  file:
+    path: "{{ item }}"
+    state: absent
+  loop: >-
+    {{ find_everything_in_data_directory.files | map(attribute='path') | list }}
+
+- name: Find all prometheus snapshots
+  delegate_to: "{{ recovery_source_host }}"
+  find:
+    paths: "{{ recovery_source_dir }}/"
+    patterns: "prometheus_backup_*-*.tar.gz"
+    file_type: file
+    recurse: false
+  register: find_prometheus_snapshots
+
+- name: Provide parameters for the upload_via_ssh restore method
+  set_fact:
+    recovery_inline_script: >-
+      sudo tar xzpf - --strip-components=1 -C {{ specification.storage.data_directory }}/
+    # Pick the newest prometheus snapshot path
+    recovery_source_file: >-
+      {{ find_prometheus_snapshots.files | map(attribute='path') | max }}
+
+- import_tasks: upload_via_ssh.yml
+
+- name: Start the prometheus service
+  systemd:
+    name: prometheus
+    state: started
