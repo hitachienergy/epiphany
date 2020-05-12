@@ -1,0 +1,5 @@
+teardown_full_repository: true
+teardown_helm_repository: false
+teardown_docker_images_repository: false
+teardown_packages_repository: false
+teardown_files_repository: false

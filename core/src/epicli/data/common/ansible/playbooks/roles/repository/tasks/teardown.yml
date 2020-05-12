@@ -1,11 +1,35 @@
 ---
 - import_tasks: gather-facts.yml
 
-- name: Re-enable system repositories
-  shell: /tmp/epi-repository-setup-scripts/enable-system-repos.sh
+- name: Rollback system repo packages
+  block:
+    - name: Re-enable system repositories
+      shell: /tmp/epi-repository-setup-scripts/enable-system-repos.sh
+    - name: Disable epirepo
+      shell: /tmp/epi-repository-setup-scripts/disable-epirepo-client.sh
+    - name: Remove epirepo packages directory
+      file: 
+        state: absent
+        path: "{{ apache_epirepo_path }}/packages"
+  when: (teardown_packages_repository == true) or (teardown_full_repository == true)
 
-- name: Disable epirepo
-  shell: /tmp/epi-repository-setup-scripts/disable-epirepo-client.sh
+- name: Remove epirepo Helm charts directory
+  file:
+    state: absent
+    path: "{{ apache_epirepo_path }}/helm-charts"
+  when: (teardown_helm_repository == true) or (teardown_full_repository == true)
+
+- name: Remove epirepo docker images directory
+  file: 
+    state: absent
+    path: "{{ apache_epirepo_path }}/images"
+  when: (teardown_docker_images_repository == true) or (teardown_full_repository == true)
+
+- name: Remove epirepo files directory
+  file: 
+    state: absent
+    path: "{{ apache_epirepo_path }}/files"
+  when: (teardown_files_repository == true) or (teardown_full_repository == true)
 
 - name: Disable epirepo and clean up firewall rule
   block:
@@ -17,6 +41,7 @@
   when:
     - not custom_repository_url
     - inventory_hostname in target_repository_hostnames
+    - teardown_full_repository == true
 
 - name: Clean up temporary files
   file:
@@ -25,5 +50,8 @@
   loop:
     - /tmp/epi-download-requirements
     - /tmp/epi-repository-setup-scripts
+    - /tmp/epi-repository-helm-charts
     - /var/tmp/enabled-system-repos.txt
     - /var/tmp/enabled-system-repos.tar
+  when:
+    - teardown_full_repository == true
