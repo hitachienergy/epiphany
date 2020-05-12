@@ -2,6 +2,7 @@ kind: configuration/vault
 title: Vault Config
 name: default
 specification:
+  vault_enabled: false
   vault_system_user: vault
   vault_system_group: vault
   file_name: vault_1.4.0_linux_amd64.zip

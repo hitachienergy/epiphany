@@ -2,164 +2,167 @@
 # This role is responsible for installing and configuring Hashicorp Vault
 # TODO: Add swap disable
 
-- name: Setup Vault system group
-  group:
-    name: "{{ specification.vault_system_group }}"
-    system: yes
-
-- name: Setup Vault system user
-  user:
-    name: "{{ specification.vault_system_user }}"
-    group: "{{ specification.vault_system_group }}"
-    system: yes
-    shell: "/usr/sbin/nologin"
-
-- name: Create Vault directories
-  file:
-    path: "{{ specification.paths.main }}/{{ item }}"
-    state: directory
-    owner: "{{ specification.vault_system_user }}"
-    group: "{{ specification.vault_system_group }}"
-    mode: 0750
-  with_items:
-    - "bin"
-    - "config"
-    - "data"
-
-- name: Create Vault log directory
-  file:
-    path: "{{ specification.paths.logs }}"
-    state: directory
-    owner: "{{ specification.vault_system_user }}"
-    group: "{{ specification.vault_system_group }}"
-    mode: 0750
-
-- name: Set Vault file name to install
-  set_fact:
-    vault_file_name: "{{ specification.file_name }}"
-
-- name: Download Vault binaries
-  include_role:
-    name: download
-    tasks_from: download_file
-  vars:
-    file_name: "{{ vault_file_name }}"
-
-- name: Check for Vault package
-  stat:
-    path: "{{ specification.paths.main }}/bin/vault"
-  register: vault_package
-
-- name: Uncompress the Vault zip
-  when: not vault_package.stat.exists
-  unarchive:
-    remote_src: yes
-    owner: "{{ specification.vault_system_user }}"
-    group: "{{ specification.vault_system_group }}"
-    src: "{{ download_directory }}/{{ vault_file_name }}"
-    creates: "{{ specification.paths.main }}/bin/vault"
-    dest: "{{ specification.paths.main }}/bin/"
-    mode: 0740
-
-- name: Create Vault configuration
-  template:
-    dest: "{{ specification.paths.main }}/config/config.hcl"
-    owner: "{{ specification.vault_system_user }}"
-    group: "{{ specification.vault_system_group }}"
-    mode: 0640
-    src: config.hcl.j2
-
-- name: Set capabilities required to lock memory
-  capabilities:
-    path: "{{ specification.paths.main }}/bin/vault"
-    capability: cap_ipc_lock=+ep
-    state: present
-
-- name: Set fs.suid_dumpable to 0
-  sysctl:
-    name: fs.suid_dumpable
-    value: '0'
-    sysctl_set: yes
-    state: present
-    reload: yes
-
-- name: Check if limits for Vault are set
-  shell: grep -e "^\*[[:space:]]*hard[[:space:]]*core[[:space:]]*0" /etc/security/limits.conf
-  changed_when: false
-  register: test_grep
-  failed_when: "test_grep.rc == 2"
-
-- name: Set if limits for Vault are not set
-  when: test_grep.stdout != ""
-  lineinfile:
-    dest: /etc/security/limits.conf
-    line: "* hard core 0"
-
-- name: Create systemd config
-  template:
-    dest: /etc/systemd/system/vault.service
-    owner: root
-    group: root
-    mode: 0640
-    src: vault.service.j2
-  notify:
-    - Restart Vault service
-
-- name: Start Vault service
-  systemd:
-    name: vault
-    state: started
-    enabled: yes
-  retries: 10
-  delay: 10
-
-# TODO: Move this to initialization script
-- name: Check if Vault was already initialized
-  shell: >-
-    {{ specification.paths.main }}/bin/vault status -address='http://{{ ansible_default_ipv4.address }}:8200' | grep -e 'Initialized[[:space:]]*true'
-  register: vault_init_output
-  args:
-    executable: /bin/bash
-  failed_when: "vault_init_output.rc == 2"
-
-- name: Copy vault configuration file
-  copy:
-    src: configure-vault.sh
-    dest: "{{ specification.paths.main }}/bin/"
-    owner: "{{ specification.vault_system_user }}"
-    group: "{{ specification.vault_system_group }}"
-    mode: 0740
-
-- name: Initialize Vault
-  when: vault_init_output.stdout == ""
-  shell: "{{ specification.paths.main }}/bin/vault operator init -address='http://{{ ansible_default_ipv4.address }}:8200' > {{ specification.paths.main }}/init.txt"
-
-- name: Check if init file exists
-  stat:
-    path: "{{ specification.paths.main }}/init.txt"
-  register: init_file_stat
-
-- name: Generate config script confiugration
-  template:
-    dest: "{{ specification.paths.main }}/script.config"
-    owner: "{{ specification.vault_system_user }}"
-    group: "{{ specification.vault_system_group }}"
-    mode: 0640
-    src: script.config.j2
-
-- name: Run configuration script
+- name: Install and configure Hashicorp vault if enabled
   when:
-    - specification.vault_script_unseal
-    - init_file_stat.stat.exists
-  shell: >-
-    {{ specification.paths.main }}/bin/configure-vault.sh
-    -c {{ specification.paths.main }}/script.config
-    -a {{ ansible_default_ipv4.address }}
+    - specification.vault_enabled
+  block:
+    - name: Setup Vault system group
+      group:
+        name: "{{ specification.vault_system_group }}"
+        system: yes
 
-- name: Display information about running configuration script
-  when:
-    - not init_file_stat.stat.exists or not  specification.vault_script_unseal
-  debug:
-    msg: "Init file doesn't exist or you have chosen manual unseal, so to finish configuration please run script manually with command:
-          {{ specification.paths.main }}/bin/configure-vault.sh -c {{ specification.paths.main }}/script.config -a {{ ansible_default_ipv4.address }}.
-          Also please put file init.txt with vault init file command output in {{ specification.paths.main }} location."
+    - name: Setup Vault system user
+      user:
+        name: "{{ specification.vault_system_user }}"
+        group: "{{ specification.vault_system_group }}"
+        system: yes
+        shell: "/usr/sbin/nologin"
+
+    - name: Create Vault directories
+      file:
+        path: "{{ specification.paths.main }}/{{ item }}"
+        state: directory
+        owner: "{{ specification.vault_system_user }}"
+        group: "{{ specification.vault_system_group }}"
+        mode: 0750
+      with_items:
+        - "bin"
+        - "config"
+        - "data"
+
+    - name: Create Vault log directory
+      file:
+        path: "{{ specification.paths.logs }}"
+        state: directory
+        owner: "{{ specification.vault_system_user }}"
+        group: "{{ specification.vault_system_group }}"
+        mode: 0750
+
+    - name: Set Vault file name to install
+      set_fact:
+        vault_file_name: "{{ specification.file_name }}"
+
+    - name: Download Vault binaries
+      include_role:
+        name: download
+        tasks_from: download_file
+      vars:
+        file_name: "{{ vault_file_name }}"
+
+    - name: Check for Vault package
+      stat:
+        path: "{{ specification.paths.main }}/bin/vault"
+      register: vault_package
+
+    - name: Uncompress the Vault zip
+      when: not vault_package.stat.exists
+      unarchive:
+        remote_src: yes
+        owner: "{{ specification.vault_system_user }}"
+        group: "{{ specification.vault_system_group }}"
+        src: "{{ download_directory }}/{{ vault_file_name }}"
+        creates: "{{ specification.paths.main }}/bin/vault"
+        dest: "{{ specification.paths.main }}/bin/"
+        mode: 0740
+
+    - name: Create Vault configuration
+      template:
+        dest: "{{ specification.paths.main }}/config/config.hcl"
+        owner: "{{ specification.vault_system_user }}"
+        group: "{{ specification.vault_system_group }}"
+        mode: 0640
+        src: config.hcl.j2
+
+    - name: Set capabilities required to lock memory
+      capabilities:
+        path: "{{ specification.paths.main }}/bin/vault"
+        capability: cap_ipc_lock=+ep
+        state: present
+
+    - name: Set fs.suid_dumpable to 0
+      sysctl:
+        name: fs.suid_dumpable
+        value: '0'
+        sysctl_set: yes
+        state: present
+        reload: yes
+
+    - name: Check if limits for Vault are set
+      shell: grep -e "^\*[[:space:]]*hard[[:space:]]*core[[:space:]]*0" /etc/security/limits.conf
+      changed_when: false
+      register: test_grep
+      failed_when: "test_grep.rc == 2"
+
+    - name: Set if limits for Vault are not set
+      when: test_grep.stdout != ""
+      lineinfile:
+        dest: /etc/security/limits.conf
+        line: "* hard core 0"
+
+    - name: Create systemd config
+      template:
+        dest: /etc/systemd/system/vault.service
+        owner: root
+        group: root
+        mode: 0640
+        src: vault.service.j2
+      notify:
+        - Restart Vault service
+
+    - name: Start Vault service
+      systemd:
+        name: vault
+        state: started
+        enabled: yes
+      retries: 10
+      delay: 10
+
+    - name: Check if Vault was already initialized
+      shell: >-
+        {{ specification.paths.main }}/bin/vault status -address='http://{{ ansible_default_ipv4.address }}:8200' | grep -e 'Initialized[[:space:]]*true'
+      register: vault_init_output
+      args:
+        executable: /bin/bash
+      failed_when: "vault_init_output.rc == 2"
+
+    - name: Copy vault configuration file
+      copy:
+        src: configure-vault.sh
+        dest: "{{ specification.paths.main }}/bin/"
+        owner: "{{ specification.vault_system_user }}"
+        group: "{{ specification.vault_system_group }}"
+        mode: 0740
+
+    - name: Initialize Vault
+      when: vault_init_output.stdout == ""
+      shell: "{{ specification.paths.main }}/bin/vault operator init -address='http://{{ ansible_default_ipv4.address }}:8200' > {{ specification.paths.main }}/init.txt"
+
+    - name: Check if init file exists
+      stat:
+        path: "{{ specification.paths.main }}/init.txt"
+      register: init_file_stat
+
+    - name: Generate config script confiugration
+      template:
+        dest: "{{ specification.paths.main }}/script.config"
+        owner: "{{ specification.vault_system_user }}"
+        group: "{{ specification.vault_system_group }}"
+        mode: 0640
+        src: script.config.j2
+
+    - name: Run configuration script
+      when:
+        - specification.vault_script_unseal
+        - init_file_stat.stat.exists
+      shell: >-
+        {{ specification.paths.main }}/bin/configure-vault.sh
+        -c {{ specification.paths.main }}/script.config
+        -a {{ ansible_default_ipv4.address }}
+
+    - name: Display information about running configuration script
+      when:
+        - not init_file_stat.stat.exists or not  specification.vault_script_unseal
+      debug:
+        msg: "Init file doesn't exist or you have chosen manual unseal, so to finish configuration please run script manually with command:
+              {{ specification.paths.main }}/bin/configure-vault.sh -c {{ specification.paths.main }}/script.config -a {{ ansible_default_ipv4.address }}.
+              Also please put file init.txt with vault init file command output in {{ specification.paths.main }} location."
