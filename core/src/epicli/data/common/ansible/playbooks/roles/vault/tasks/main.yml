@@ -87,6 +87,7 @@
   shell: grep -e "^\*[[:space:]]*hard[[:space:]]*core[[:space:]]*0" /etc/security/limits.conf
   changed_when: false
   register: test_grep
+  failed_when: "test_grep.rc == 2"
 
 - name: Set if limits for Vault are not set
   when: test_grep.stdout != ""
@@ -114,7 +115,7 @@
 
 - name: Check if Vault was already initialized
   shell: >-
-    set -o pipefail && {{ specification.paths.main }}/bin/vault status -address='http://{{ ansible_default_ipv4.address }}:8200' | grep -e 'Initialized[[:space:]]*true'
+    {{ specification.paths.main }}/bin/vault status -address='http://{{ ansible_default_ipv4.address }}:8200' | grep -e 'Initialized[[:space:]]*true'
   register: vault_init_output
   args:
     executable: /bin/bash
