@@ -113,6 +113,7 @@
   retries: 10
   delay: 10
 
+# TODO: Move this to initialization script
 - name: Check if Vault was already initialized
   shell: >-
     {{ specification.paths.main }}/bin/vault status -address='http://{{ ansible_default_ipv4.address }}:8200' | grep -e 'Initialized[[:space:]]*true'
