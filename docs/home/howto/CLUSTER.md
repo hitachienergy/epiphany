@@ -291,6 +291,21 @@ To setup the cluster do the following steps from the provisioning machine:
     epicli apply -f newcluster.yml
     ```
 
+## How to create an Epiphany cluster into an existing network (Azure only)
+
+An existing network can be specified in the cluster's YAML file as follows:
+
+```yaml
+network:
+      existing_rg: resource-group-name
+      existing_vnet: vnet-name
+      existing_subnet: subnet-name
+```
+
+If these values are specific, the `use_network_security_groups` will be ignored (i.e. effectively always be false).
+All components created by Epiphany will go into the same specified subnet, unlike the default behaviour that creates 
+various subnets.
+
 ## How to delete an Epiphany cluster on a cloud provider
 
 Epicli has a delete command to remove a cluster from a cloud provider (AWS, Azure). With Epicli run the following:
