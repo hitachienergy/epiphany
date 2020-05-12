@@ -1,4 +1,10 @@
 ---
+<<<<<<< HEAD
 #backup_dir: /home/{{ admin_user.name }}/backupdir
 backup_dir: /epibackup
 
+=======
+backup_dir: /epibackup
+backup_destination_dir: "{{ backup_dir }}/mounted"
+backup_destination_host: "{{ groups.kubernetes_master.0 }}"
+>>>>>>> upstream/feature/backup-restore
