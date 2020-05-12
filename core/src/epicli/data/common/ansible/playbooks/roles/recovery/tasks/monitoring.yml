@@ -1,4 +1,18 @@
 ---
+- name: Find all prometheus snapshots
+  delegate_to: "{{ recovery_source_host }}"
+  find:
+    paths: "{{ recovery_source_dir }}/"
+    patterns: "prometheus_backup_*-*.tar.gz"
+    file_type: file
+    recurse: false
+  register: find_prometheus_snapshots
+
+- name: Do sanity check if there are any snapshots available
+  assert:
+    that: find_prometheus_snapshots.matched > 0
+    fail_msg: No snapshots found.
+
 - name: Stop the prometheus service
   systemd:
     name: prometheus
@@ -18,15 +32,6 @@
     state: absent
   loop: >-
     {{ find_everything_in_data_directory.files | map(attribute='path') | list }}
-
-- name: Find all prometheus snapshots
-  delegate_to: "{{ recovery_source_host }}"
-  find:
-    paths: "{{ recovery_source_dir }}/"
-    patterns: "prometheus_backup_*-*.tar.gz"
-    file_type: file
-    recurse: false
-  register: find_prometheus_snapshots
 
 - name: Provide parameters for the upload_via_ssh restore method
   set_fact:
