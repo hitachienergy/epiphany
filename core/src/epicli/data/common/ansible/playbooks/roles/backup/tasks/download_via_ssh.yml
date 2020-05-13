@@ -73,19 +73,25 @@
         ssh -i $SSH_KEY_PATH $SSH_OPTIONS $SSH_USER@$SSH_HOST -- \
           '{{ inline_script }}' \
             1>$DESTINATION_FILE 2>$DESTINATION_FILE.sha1
+        cd $DESTINATION_DIR/ && sha1sum -c $DESTINATION_FILE.sha1
       environment:
         SSH_KEY_PATH: "{{ private_key_file.path }}"
         SSH_OPTIONS: "-q -S none -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null"
         SSH_USER: "{{ admin_user.name }}"
         SSH_HOST: "{{ ansible_default_ipv4.address }}"
+        DESTINATION_DIR: "{{ backup_destination_dir }}"
         DESTINATION_FILE: "{{ backup_destination_file }}"
       vars:
         # Variables from the environment array will not work here!
         inline_script: >-
           set -o errexit -o nounset -o pipefail;
           FIFO_PATH=$(mktemp -ud ~/fifo-XXXXXX);
-          mkfifo $FIFO_PATH;
           trap "rm -f $FIFO_PATH" EXIT;
-          ( ({{ backup_inline_script }}) | tee $FIFO_PATH & sha1sum $FIFO_PATH | sed "s:[^ ]*$:{{ backup_destination_file | basename }}:" >&2 & wait );
+          mkfifo $FIFO_PATH;
+          (
+            (sha1sum $FIFO_PATH | sed "s:[^ ]*$:{{ backup_destination_file | basename }}:") >&2 &
+            ({{ backup_inline_script }}) | tee $FIFO_PATH;
+            wait;
+          );
       args:
         executable: /bin/bash
