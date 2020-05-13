@@ -2,8 +2,8 @@
 # Invoke with (example):
 #- set_fact:
 #    artifacts:
-#      - /tmp/artifact1
-#      - /tmp/artifact2
+#      - {{ recovery_source_dir }}/artifact1
+#      - {{ recovery_source_dir }}/artifact2
 
 - name: Assert that the "artifacts" fact is defined and valid
   assert:
@@ -13,9 +13,9 @@
       - artifacts | length > 0
     fail_msg: The "artifacts" fact must be defined and must be a non-empty list.
 
-- name: Download artifacts to mounted storage
+- name: Upload artifacts from mounted storage
 
-  delegate_to: "{{ backup_destination_host }}"
+  delegate_to: "{{ recovery_source_host }}"
 
   always:
     - name: Delete generated files
@@ -61,13 +61,13 @@
 
     - name: Ensure destination directory for artifacts exists
       file:
-        path: "{{ backup_destination_dir }}/"
+        path: "{{ recovery_dir }}/"
         state: directory
 
     - name: Use rsync to copy all artifacts
       synchronize:
-        mode: pull
-        dest: "{{ backup_destination_dir }}"
+        mode: push
+        dest: "{{ recovery_dir }}/"
         src: "{{ item }}"
         checksum: true
         rsync_opts:
@@ -77,4 +77,5 @@
         # (setting private_key parameter has no effect whatsoever, looks like a bug tbh)
         rsh: >-
           /usr/bin/ssh -S none -i {{ private_key_file.path }} -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null
-      loop: "{{ artifacts }}"
+      loop: >-
+        {{ artifacts }}

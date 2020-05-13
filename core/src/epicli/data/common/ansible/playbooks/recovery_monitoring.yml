@@ -1,7 +1,7 @@
 ---
 # Ansible playbook for recovering monitoring data
 
-- hosts: prometheus
+- hosts: prometheus[0]
   become: true
   become_method: sudo
   serial: 1
@@ -9,3 +9,5 @@
     - import_role:
         name: recovery
         tasks_from: monitoring
+  vars_files:
+    - roles/prometheus/vars/main.yml
