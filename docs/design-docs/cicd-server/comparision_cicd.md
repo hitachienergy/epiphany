@@ -144,7 +144,7 @@ __jenkins__:
 * Big amount of information in Internet
 * Big community
 
-The most popular CI/CD tool. Small and simple. You can do everything as a code or by GUI - which is not good because it's temptenion to fix it right now and then probably do not put it to repository. A lot of plugins which and each of them is single point of failure. Hard to configure some plugin as a code - but still possible.
+The most popular CI/CD tool. Small and simple. You can do everything as a code or by GUI - which is not good because it's temptation to fix it right now and then probably do not put it to repository. A lot of plugins which and each of them is single point of failure. Hard to configure some plugin as a code - but still possible.
 
 __jenkins-x__:
 * There is new sheriff in town - new way of maintainig CICD server
