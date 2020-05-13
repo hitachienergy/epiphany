@@ -123,7 +123,7 @@ __tekton__: tekton itself is kind of plugin for building. You can create whateve
 ## Personal conclusion
 __gocd__:
 * This looks like really good CI/CD central server which can be use by many teams.
-* Really mature application. Older release on github from Nov 2014. Accordind to wiki first release in 2007!
+* Really mature application. Older release on github from Nov 2014. According to wiki first release in 2007.
 * very intuitive
 * Working really good in kubernetes
 * Good granuality of permission.
