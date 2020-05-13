@@ -139,7 +139,7 @@ __jenkins__:
 * Very simple
 * Working very good in kubernetes
 * After using it for some time pipelines are getting bigger and harder to maintain
-* Goo granuality of permission
+* Good granuality of permission
 * XML configuration for many plugins
 * Big amount of information in Internet
 * Big community
