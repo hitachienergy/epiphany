@@ -1,2 +1,4 @@
 ---
-backup_dir: /epibackup
+recovery_dir: /epibackup
+recovery_source_dir: "{{ recovery_dir }}/mounted"
+recovery_source_host: "{{ groups.kubernetes_master.0 }}"

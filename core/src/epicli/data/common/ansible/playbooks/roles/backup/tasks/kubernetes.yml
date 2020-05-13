@@ -104,8 +104,10 @@
             content: |
               {{ stat_k8s_backup_tar_gz.stat.checksum }}  {{ stat_k8s_backup_tar_gz.stat.path | basename }}
 
-    - name: Export artifact list
+    - name: Export artifact list for the download_via_rsync backup copy method
       set_fact:
         artifacts:
           - "{{ stat_k8s_backup_tar_gz.stat.path }}"
           - "{{ stat_k8s_backup_tar_gz.stat.path }}.sha1"
+
+    - import_tasks: download_via_rsync.yml
