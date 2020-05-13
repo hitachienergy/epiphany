@@ -103,7 +103,7 @@ __tekton__: Use secrets from kubernetes so everything what is inside kubernetes 
 
 __gocd__: multiple level of variables: environment, pipeline, stage, job
 
-__jenkins__: environment variables can be override
+__jenkins__: environment variables can be overriden
 
 __jenkins-x__: Didn't find any information but expect it will not be worst than in gocd
 
