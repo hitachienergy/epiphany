@@ -93,22 +93,29 @@ class ApplyEngine(Step):
         return 0
 
     def assert_no_master_downscale(self):
+        components = self.cluster_model.specification.components
+
+        # Skip downscale assertion for single machine clusters
+        if ('single_machine' in components) and (int(components['single_machine']['count']) > 0):
+            return
+
         cluster_name = self.cluster_model.specification.name
         inventory_path = get_inventory_path(cluster_name)
 
-        if os.path.exists(inventory_path):
+        if os.path.isfile(inventory_path):
             existing_inventory = InventoryManager(loader=DataLoader(), sources=inventory_path)
 
-            sanity_check = all([
+            both_present = all([
                 'kubernetes_master' in existing_inventory.list_groups(),
-                'kubernetes_master' in self.cluster_model.specification.components,
+                'kubernetes_master' in components,
             ])
-            if sanity_check:
+
+            if both_present:
                 prev_master_count = len(existing_inventory.list_hosts(pattern='kubernetes_master'))
-                next_master_count = int(self.cluster_model.specification.components['kubernetes_master']['count'])
+                next_master_count = int(components['kubernetes_master']['count'])
 
                 if prev_master_count > next_master_count:
-                    raise Exception("ControlPlane downscale is not supported yet. Please revert your kubernetes_master count to previous value or increase it to scale up kubernetes.")
+                    raise Exception("ControlPlane downscale is not supported yet. Please revert your 'kubernetes_master' count to previous value or increase it to scale up kubernetes.")
 
     def apply(self):
         self.process_input_docs()

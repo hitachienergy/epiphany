@@ -14,7 +14,7 @@ specification:
     - name: kubernetes-node
       enabled: yes
     - name: logging
-      enabled: yes    
+      enabled: yes
     - name: opendistro-for-elasticsearch
       enabled: yes
     - name: elasticsearch
@@ -48,11 +48,13 @@ specification:
     - name: haproxy-exporter
       enabled: yes
     - name: helm
-      enabled: yes 
+      enabled: yes  
+    - name: vault
+      enabled: yes
     - name: applications
       enabled: yes
     - name: ignite
-      enabled: yes  
+      enabled: yes
 
   roles_mapping:
     kafka:
@@ -122,6 +124,7 @@ specification:
       - node-exporter
       - filebeat
       - firewall
+      - vault
     kubernetes_node:
       - kubernetes-node
       - node-exporter

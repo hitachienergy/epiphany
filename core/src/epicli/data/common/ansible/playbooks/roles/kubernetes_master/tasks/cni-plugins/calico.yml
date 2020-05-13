@@ -1,4 +1,43 @@
 ---
+- name: Configure NetworkManager before attempting to use Calico networking
+  block:
+    # /etc/NetworkManager/conf.d directory is created by NetworkManager(rpm)/network-manager(deb) package
+    - name: Check if /etc/NetworkManager/conf.d exists
+      stat:
+        path: /etc/NetworkManager/conf.d
+        get_attributes: no
+      register: network_manager_conf_d_stat
+
+    - name: Copy calico.conf to /etc/NetworkManager/conf.d
+      copy:
+        src: calico-network-manager.conf
+        dest: /etc/NetworkManager/conf.d/calico.conf
+        owner: root
+        group: root
+        mode: u=rw,g=r,o=r
+      register: copy_calico_network_manager_conf
+      when:
+        - network_manager_conf_d_stat.stat.exists
+
+    - name: Reload NetworkManager service
+      block:
+        - name: Check if NetworkManager service is loaded
+          shell: >-
+            set -o pipefail &&
+            systemctl list-units --type=service --state=loaded | grep -q NetworkManager.service
+          args:
+            executable: /bin/bash
+          register: network_manager_service_status
+          changed_when: false
+
+        - name: Reload NetworkManager service
+          systemd:
+            name: NetworkManager
+            state: reloaded
+          when:
+            - network_manager_service_status.rc == 0
+      when: copy_calico_network_manager_conf.changed
+
 - name: Create calico deployment
   template:
     src: calico.yml.j2

@@ -1,3 +1,1 @@
-apache_epirepo_path: "/var/www/html/epirepo"
-helm_version: v3.2.0
 helm_chart_repo_name: system-charts

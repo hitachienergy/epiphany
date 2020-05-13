@@ -1,67 +1,47 @@
 ---
+- name: Check if Helm chart repo already exists
+  shell: helm repo list | grep {{ helm_chart_repo_name }}
+  args:
+    executable: /bin/bash
+  register: helm_repo_list
+  failed_when: (helm_repo_list.rc != 0 and not 'no repositories' in helm_repo_list.stderr) 
+               or helm_repo_list.rc > 1
 
-- name: Download and unpack Helm binary
-  unarchive: 
-    src: "{{ apache_epirepo_path }}/files/helm-{{ helm_version }}-linux-amd64.tar.gz"
-    dest: "/usr/local/bin"
-    extra_opts:
-      - --strip=1
-      - --wildcards
-      - '*/helm'
-    remote_src: yes
-
-- name: Create Helm binary file symlink (RHEL) 
-  file:
-    src: "/usr/local/bin/helm"
-    dest: /usr/local/sbin/helm
-    state: link
-
-- name: Get list of Helm repos 
-  become: yes
-  shell: 'helm repo list | grep {{ helm_chart_repo_name }} || :'
-  register: helm_repo
-
-- name: Check if files exist in {{ apache_epirepo_path }}/helm-charts
-  become: yes
-  shell: 'ls {{ apache_epirepo_path }}/helm-charts/system | wc -l'
+- name: Check if files exist in {{ specification.apache_epirepo_path }}/helm-charts/system
+  find:
+    paths: "{{ specification.apache_epirepo_path }}/helm-charts/system"
   register: helm_charts_files_number
 
 - name: "Add Helm chart repo and install charts"
   block:
     - name: Get Helm charts list from repo before update 
-      become: yes
       shell: helm search repo {{ helm_chart_repo_name }} --output json | jq -r '.[].name'
-      register: helm_current_charts_list
+      register: helm_charts_list_before_update
 
     - name: "Add {{ helm_chart_repo_name }} Helm repository from url {{ repository_url }}"
-      become: yes
       shell: helm repo add {{ helm_chart_repo_name }} {{ repository_url }}/helm-charts/system
       when: 
-        - helm_chart_repo_name not in helm_repo.stdout 
+        - helm_chart_repo_name not in helm_repo_list.stdout 
 
     - name: Update Helm repo
-      become: yes
       shell: helm repo update
 
     - name: Get Helm charts list from repo after update 
-      become: yes
       shell: helm search repo {{ helm_chart_repo_name }} --output json | jq -r '.[].name'
-      register: helm_charts_list
+      register: helm_charts_list_after_update
 
-    - name: Delete not needed Helm charts 
-      become: yes
-      shell: |- 
-        chart_subname=$(echo {{ item }} | cut -d "/" -f 2)
-        helm delete $chart_subname
-      loop: "{{ helm_current_charts_list.stdout_lines }}"
-      when: item not in helm_charts_list.stdout_lines
+    - name: Delete Helm charts not present in repository
+      shell: helm delete {{ chart_subname }} --purge
+      vars:
+        chart_subname: "{{ item.split('/')[1] }}"
+      loop: "{{ helm_charts_list_before_update.stdout_lines }}"
+      when: item not in helm_charts_list_after_update.stdout_lines
 
     - name: Install Helm charts 
-      become: yes
-      shell: |- 
-        chart_subname=$(echo {{ item }} | cut -d "/" -f 2)
-        helm upgrade --install $chart_subname {{ item }}
-      loop: "{{ helm_charts_list.stdout_lines }}"
+      shell: helm upgrade --install {{ chart_subname }} {{ item }}
+      vars:
+        chart_subname: "{{ item.split('/')[1] }}"
+      loop: "{{ helm_charts_list_after_update.stdout_lines }}"
   when: 
-    - helm_charts_files_number.stdout|int > 2
+    - helm_charts_files_number.matched > 1
 

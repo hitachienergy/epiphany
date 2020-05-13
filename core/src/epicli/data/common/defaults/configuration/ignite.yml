@@ -54,7 +54,7 @@ specification:
               <property name="walArchivePath" value="/wal/archive"/>
             </bean>
           </property>
-        
+
           <property name="discoverySpi">
             <bean class="org.apache.ignite.spi.discovery.tcp.TcpDiscoverySpi">
               <property name="ipFinder">
@@ -64,7 +64,35 @@ specification:
                   </property>
                 </bean>
               </property>
+              <property name="localPort" value="47500"/>
+              <!-- Limit number of potentially used ports from 100 to 10 -->
+              <property name="localPortRange" value="10"/>
             </bean>
           </property>
+
+          <property name="communicationSpi">
+            <bean class="org.apache.ignite.spi.communication.tcp.TcpCommunicationSpi">
+              <property name="localPort" value="47100"/>
+              <!-- Limit number of potentially used ports from 100 to 10 -->
+              <property name="localPortRange" value="10"/>
+            </bean>
+          </property>
+
+          <property name="clientConnectorConfiguration">
+            <bean class="org.apache.ignite.configuration.ClientConnectorConfiguration">
+              <property name="port" value="10800"/>
+              <!-- Limit number of potentially used ports from 100 to 10 -->
+              <property name="portRange" value="10"/>
+            </bean>
+          </property>
+
+          <property name="connectorConfiguration">
+            <bean class="org.apache.ignite.configuration.ConnectorConfiguration">
+              <property name="port" value="11211"/>
+              <!-- Limit number of potentially used ports from 100 to 10 -->
+              <property name="portRange" value="10"/>
+            </bean>
+          </property>
+
         </bean>
     </beans>

@@ -1,0 +1,12 @@
+---
+- name: Create Helm charts directory
+  file:
+    path: "{{ specification.apache_epirepo_path }}/helm-charts"
+    state: directory
+    mode: u=rwx,go=rx
+
+- name: Copy Helm charts to repository server
+  copy:
+    src: "./"
+    dest: "{{ specification.apache_epirepo_path }}/helm-charts"
+    mode: u=rwx,go=rx

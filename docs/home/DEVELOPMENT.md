@@ -151,7 +151,7 @@ The standard Python test runner fails to discover the tests so we use the ```Pyt
 
 See the [Python Test Explorer](https://marketplace.visualstudio.com/items?itemName=LittleFoxTeam.vscode-python-test-adapter) extension page on how to debug and run individual tests.
 
-You can also run the Python unit tests from a launch configuration called ```epicli```
+You can also run the Python unit tests from a launch configuration called ```unit tests```
 
 ![rununittests](../assets/images/development/rununittests.png)
 
@@ -159,26 +159,24 @@ You can also run the Python unit tests from a launch configuration called ```epi
 
 We maintain a set of serverspec tests that can be run to verify if a cluster is functioning properly. While it might not cover all cases at this point it is a good place to start.
 
-There is one launch configuration called ```server spec tests```. This launch configuration can be found in ```/epiphany/core/src/epicli/.vscode/``` and looks like this:
+The serverspec tests are integrated in Epicli. To run them you can extend the launch configuration ```epicli``` with the following arguments:
 
   ```json
     ...
 
     {
-        "name": "server spec tests",
+        "name": "epicli",
         "type": "python",
         "request": "launch",
-        "program": "${workspaceFolder}/run-tests.py",
+        "program": "${workspaceFolder}/cli/epicli.py",
         "cwd": "${workspaceFolder}",
         "pythonPath": "${config:python.pythonPath}",
         "env": { "PYTHONPATH": "${workspaceFolder}" },
         "console": "integratedTerminal",
-        "args": ["spec", "-i", "${workspaceFolder}/PATH_TO_CLUSTER_INVENTORY", "-u", "ADMIN_USER", "-k", "${workspaceFolder}/PATH_TO_SSH_KEY"]
-    }
+        "args": ["test", "-b", "${workspaceFolder}/clusters/buildfolder/", "-g", "postgresql"]
+    },
 
     ...
   ```
 
-To run the serverspec tests against a given cluster change the ```args``` field to point to the cluster inventory, admin username and the propper SSH key. Then the run from the run tab:
-
-![runserverspectests](../assets/images/development/runserverspectests.png)
+Where the ```-b``` argument points to the build folder of a cluster. The ```-g``` argument can be used to execute a subset of tests and is optional. Omitting ```-g``` will execute all tests.

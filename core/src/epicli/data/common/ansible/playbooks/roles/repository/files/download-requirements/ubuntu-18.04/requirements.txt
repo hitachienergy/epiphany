@@ -173,6 +173,7 @@ https://github.com/prometheus/prometheus/releases/download/v2.10.0/prometheus-2.
 https://packages.elastic.co/curator/5/debian9/pool/main/e/elasticsearch-curator/elasticsearch-curator_5.5.4_amd64.deb
 https://archive.apache.org/dist/ignite/2.7.6/apache-ignite-2.7.6-bin.zip
 https://get.helm.sh/helm-v3.2.0-linux-amd64.tar.gz
+https://releases.hashicorp.com/vault/1.4.0/vault_1.4.0_linux_amd64.zip
 
 [images]
 k8s.gcr.io/kube-apiserver:v1.14.6
@@ -239,10 +240,7 @@ k8s.gcr.io/kube-scheduler:v1.17.4
 k8s.gcr.io/kube-proxy:v1.17.4
 k8s.gcr.io/etcd:3.4.3-0
 k8s.gcr.io/coredns:1.6.5
-calico/kube-controllers:v3.11.2
-calico/cni:v3.11.2
-calico/pod2daemon-flexvol:v3.11.2
-calico/node:v3.11.2
-calico/cni:v3.12.0
-calico/pod2daemon-flexvol:v3.12.0
-calico/node:v3.12.0
+calico/cni:v3.13.2
+calico/kube-controllers:v3.13.2
+calico/node:v3.13.2
+calico/pod2daemon-flexvol:v3.13.2

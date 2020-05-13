@@ -9,7 +9,7 @@ from cli.engine.ansible.AnsibleInventoryCreator import AnsibleInventoryCreator
 from cli.engine.ansible.AnsibleVarsGenerator import AnsibleVarsGenerator
 from cli.engine.ansible.AnsibleInventoryUpgrade import AnsibleInventoryUpgrade
 from cli.helpers.Step import Step
-from cli.helpers.build_saver import get_inventory_path, get_inventory_path_for_build, get_ansible_path, get_ansible_path_for_build, get_helm_charts_path, get_helm_charts_path_for_build, copy_files_recursively
+from cli.helpers.build_saver import get_inventory_path, get_inventory_path_for_build, get_ansible_path, get_ansible_path_for_build, copy_files_recursively
 from cli.helpers.naming_helpers import to_role_name
 from cli.helpers.data_loader import DATA_FOLDER_PATH
 from cli.helpers.Config import Config
@@ -17,7 +17,6 @@ from cli.helpers.Config import Config
 
 class AnsibleRunner(Step):
     ANSIBLE_PLAYBOOKS_PATH = DATA_FOLDER_PATH + '/common/ansible/playbooks/'
-    HELM_CHARTS_PATH = DATA_FOLDER_PATH + '/common/helm-charts/'
 
     def __init__(self, cluster_model=None, config_docs=None, build_dir=None, backup_build_dir=None):
         super().__init__(__name__)
@@ -41,23 +40,18 @@ class AnsibleRunner(Step):
             return os.path.join(get_ansible_path_for_build(self.build_dir), f'{name}.yml')
 
     def copy_resources(self):
-        self.logger.info('Copying Ansible and Helm charts resources')
+        self.logger.info('Copying Ansible resources')
         if self.cluster_model != None:
             ansible_dir = get_ansible_path(self.cluster_model.specification.name)
-            helm_charts_dir = get_helm_charts_path(self.cluster_model.specification.name)
         else:
             ansible_dir = get_ansible_path_for_build(self.build_dir)
-            helm_charts_dir = get_helm_charts_path_for_build(self.build_dir)
             
         shutil.rmtree(ansible_dir, ignore_errors=True)              
-        copy_files_recursively(AnsibleRunner.ANSIBLE_PLAYBOOKS_PATH, ansible_dir)
-        copy_files_recursively(AnsibleRunner.HELM_CHARTS_PATH, helm_charts_dir)
-        if os.path.exists(AnsibleRunner.HELM_CHARTS_PATH + 'system/index.yaml.j2'):
-            shutil.copy(AnsibleRunner.HELM_CHARTS_PATH + 'system/index.yaml.j2', ansible_dir + 'roles/repository/templates/index.yaml.j2')
+        copy_files_recursively(AnsibleRunner.ANSIBLE_PLAYBOOKS_PATH, ansible_dir)          
 
         # copy skopeo so Ansible can move it to the repositry machine
         if not Config().offline_requirements:
-            shutil.copy(os.path.join(dirname(dirname(inspect.getfile(os))), 'skopeo_linux'), '/tmp')
+            shutil.copy(os.path.join(dirname(dirname(inspect.getfile(os))), 'skopeo_linux'), '/tmp')            
 
     def pre_flight(self, inventory_path):
         self.logger.info('Checking connection to each machine')

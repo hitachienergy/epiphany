@@ -1,0 +1,31 @@
+---
+- name: Get list of directories for system Helm charts 
+  find:
+    paths: "{{ specification.apache_epirepo_path }}/helm-charts/system"
+    file_type: directory
+  register: system_charts_dir_list
+
+- name: Prepare files for Helm chart repository
+  block:
+    - name: Generate index.yaml file
+      shell: helm repo index {{ specification.apache_epirepo_path }}/helm-charts/system/ --url {{ repository_url }}/helm-charts/system
+      args:
+        executable: /bin/bash
+        
+    - name: Create compressed archives of Helm charts directories
+      archive:
+        path: "{{ item.path }}"
+        dest: "{{ item.path }}.tgz"
+        format: gz
+        #remove: yes  //doesn't work for directories
+      loop: "{{ system_charts_dir_list.files }}"
+
+    - name: Remove Helm charts directories
+      file:
+        path: "{{ item.path }}"
+        state: absent
+      loop: "{{ system_charts_dir_list.files }}"
+  when:
+    - not custom_repository_url
+    - inventory_hostname in target_repository_hostnames
+    - system_charts_dir_list.matched > 0

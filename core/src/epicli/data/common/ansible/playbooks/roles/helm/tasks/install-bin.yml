@@ -1,0 +1,17 @@
+---
+- name: Download and unpack Helm binary
+  unarchive: 
+    src: "{{ specification.apache_epirepo_path }}/files/helm-{{ specification.version }}-linux-amd64.tar.gz"
+    dest: "/usr/local/bin"
+    extra_opts:
+      - --strip=1
+      - --wildcards
+      - '*/helm'
+    remote_src: yes
+
+- name: Create symlink for Helm binary
+  file:
+    src: "/usr/local/bin/helm"
+    dest: /usr/local/sbin/helm
+    state: link
+  when: ansible_os_family == "RedHat"

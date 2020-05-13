@@ -62,56 +62,12 @@
     - not custom_repository_url
     - inventory_hostname in target_repository_hostnames
 
-- name: Copy repository server Helm charts
-  copy:
-    src: "helm-charts/"
-    dest: "/tmp/epi-repository-helm-charts"
-    mode: a+x
-
-- name: Check that index.yaml.j2 file exists
-  stat:
-    path: /tmp/epi-repository-helm-charts/system/index.yaml.j2
-  register: stat_index_file
-
-- name: Prepare repository server Helm charts
-  block:
-    - name: Get system Helm charts directories list
-      become: yes
-      shell: find /tmp/epi-repository-helm-charts/system/* -maxdepth 0 -type d
-      register: system_charts_dir_list
-      
-    - name: Create a compressed archives of Helm charts directories
-      archive:
-        path: "{{ item }}"
-        dest: "{{ item }}.tgz"
-        format: gz
-        #remove: yes  //doesn't work for directories
-      loop: "{{ system_charts_dir_list.stdout_lines }}"
-
-    - name: Remove Helm charts directories
-      file:
-        path: "{{ item }}"
-        state: absent
-      loop: "{{ system_charts_dir_list.stdout_lines }}"
-
-    - name: Set repo URL in Helm charts index file
-      template:
-        src: index.yaml.j2
-        dest: /tmp/epi-repository-helm-charts/system/index.yaml
-        owner: root
-        group: root
-        mode: 0644
-  when:
-    - not custom_repository_url
-    - inventory_hostname in target_repository_hostnames
-    - stat_index_file.stat.exists
-
 - name: |-
     Copy requirements for offline installation to repository host, this can take a long time
-    Destination: {{ apache_epirepo_path }}
+    Destination: {{ specification.apache_epirepo_path }}
   copy:
     src: "{{ offline_requirements }}/"
-    dest: "{{ apache_epirepo_path }}"
+    dest: "{{ specification.apache_epirepo_path }}"
     force: no # if target exists it will skip, default is 'yes'
   when:
     - offline_mode

@@ -1,0 +1,5 @@
+kind: configuration/helm-charts
+title: "Helm charts"
+name: default
+specification:
+  apache_epirepo_path: "/var/www/html/epirepo"
