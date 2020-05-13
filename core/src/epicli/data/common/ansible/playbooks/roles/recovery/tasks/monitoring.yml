@@ -13,6 +13,21 @@
     that: find_prometheus_snapshots.matched > 0
     fail_msg: No snapshots found.
 
+- name: Provide parameters for the upload_via_ssh restore method
+  set_fact:
+    recovery_inline_script: >-
+      sudo tar xzpf - --strip-components=1 -C {{ specification.storage.data_directory }}/
+    # Pick the newest prometheus snapshot path
+    recovery_source_file: >-
+      {{ find_prometheus_snapshots.files | map(attribute='path') | max }}
+
+- name: Execute "sha1sum -c" to verify the checksum
+  delegate_to: "{{ recovery_source_host }}"
+  shell: |
+    cd {{ recovery_source_file | dirname }}/ && sha1sum -c {{ recovery_source_file | basename }}.sha1
+  args:
+    executable: /bin/bash
+
 - name: Stop the prometheus service
   systemd:
     name: prometheus
@@ -32,14 +47,6 @@
     state: absent
   loop: >-
     {{ find_everything_in_data_directory.files | map(attribute='path') | list }}
-
-- name: Provide parameters for the upload_via_ssh restore method
-  set_fact:
-    recovery_inline_script: >-
-      sudo tar xzpf - --strip-components=1 -C {{ specification.storage.data_directory }}/
-    # Pick the newest prometheus snapshot path
-    recovery_source_file: >-
-      {{ find_prometheus_snapshots.files | map(attribute='path') | max }}
 
 - import_tasks: upload_via_ssh.yml
 
