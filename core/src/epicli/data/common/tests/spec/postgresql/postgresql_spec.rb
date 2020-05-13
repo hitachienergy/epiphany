@@ -6,12 +6,14 @@ postgresql_default_port = 5432
 pgbouncer_default_port = 6432
 elasticsearch_host = listInventoryHosts("logging")[0]
 elasticsearch_api_port = 9200
-replicated = readDataYaml("configuration/postgresql")["specification"]["replication"]["enable"]
-replication_user = readDataYaml("configuration/postgresql")["specification"]["replication"]["user"]
-replication_password = readDataYaml("configuration/postgresql")["specification"]["replication"]["password"]
-max_wal_senders = readDataYaml("configuration/postgresql")["specification"]["replication"]["max_wal_senders"]
-wal_keep_segments = readDataYaml("configuration/postgresql")["specification"]["replication"]["wal_keep_segments"]
-pgbouncer_enabled = readDataYaml("configuration/postgresql")["specification"]["additional_components"]["pgbouncer"]["enabled"]
+replicated = readDataYaml("configuration/postgresql")["specification"]["extensions"]["replication"]["enabled"]
+replication_user = readDataYaml("configuration/postgresql")["specification"]["extensions"]["replication"]["replication_user_name"]
+replication_password = readDataYaml("configuration/postgresql")["specification"]["extensions"]["replication"]["replication_user_password"]
+# max_wal_senders = readDataYaml("configuration/postgresql")["specification"]["replication"]["max_wal_senders"]
+# wal_keep_segments = readDataYaml("configuration/postgresql")["specification"]["replication"]["wal_keep_segments"]
+max_wal_senders = 10
+wal_keep_segments = 34
+pgbouncer_enabled = readDataYaml("configuration/postgresql")["specification"]["extensions"]["pgbouncer"]["enabled"]
 pgaudit_enabled = readDataYaml("configuration/postgresql")["specification"]["extensions"]["pgaudit"]["enabled"]
 pg_user = 'testuser'
 pg_pass = 'testpass'
@@ -91,35 +93,53 @@ end
 # Must first run the 'systemctl status' command to be able to view the service status withe the 'is-active' command.
 
 describe 'Checking PostgreSQL service status' do
-  describe command("systemctl status postgresql > /dev/null") do
-    its(:exit_status) { should eq 0 }
+  if os[:family] == 'redhat'
+    describe command("systemctl status postgresql-10 > /dev/null") do
+      its(:exit_status) { should eq 0 }
+    end
+  elsif os[:family] == 'ubuntu'
+    describe command("systemctl status postgresql > /dev/null") do
+      its(:exit_status) { should eq 0 }
+    end
   end
 end
 
 describe 'Checking if PostgreSQL service is running' do
-  describe service('postgresql') do
-    it { should be_enabled }
-    it { should be_running }
+  if os[:family] == 'redhat'
+    describe service('postgresql-10') do
+      it { should be_enabled }
+      it { should be_running }
+    end
+  elsif os[:family] == 'ubuntu'
+    describe service('postgresql') do
+      it { should be_enabled }
+      it { should be_running }
+    end
   end
 end
 
 if os[:family] == 'redhat'
   describe 'Checking PostgreSQL directories and config files' do
     let(:disable_sudo) { false }
-    describe file('/var/opt/rh/rh-postgresql10/lib/pgsql/data') do
+    describe file('/var/lib/pgsql/10/data') do
       it { should exist }
       it { should be_a_directory }
     end
-    describe file("/var/opt/rh/rh-postgresql10/lib/pgsql/data/pg_hba.conf") do
+    describe file("/var/lib/pgsql/10/data/pg_hba.conf") do
       it { should exist }
       it { should be_a_file }
       it { should be_readable }
      end
-    describe file("/var/opt/rh/rh-postgresql10/lib/pgsql/data/postgresql.conf") do
+    describe file("/var/lib/pgsql/10/data/postgresql.conf") do
       it { should exist }
       it { should be_a_file }
       it { should be_readable }
     end
+    describe file("/var/lib/pgsql/10/data/postgresql-epiphany.conf") do
+      it { should exist }
+      it { should be_a_file }
+      it { should be_readable }
+    end    
   end
 elsif os[:family] == 'ubuntu'
   describe 'Checking PostgreSQL directories and config files' do
@@ -138,6 +158,11 @@ elsif os[:family] == 'ubuntu'
       it { should be_a_file }
       it { should be_readable }
     end
+    describe file("/etc/postgresql/10/main/postgresql-epiphany.conf") do
+      it { should exist }
+      it { should be_a_file }
+      it { should be_readable }
+    end    
   end
 end
 
@@ -148,10 +173,12 @@ describe 'Checking if the ports are open' do
   end
 end 
 
-describe 'Checking if PostgreSQL is ready' do
-  describe command("pg_isready") do
-    its(:stdout) { should match /postgresql:#{postgresql_default_port} - accepting connections/ }
-    its(:exit_status) { should eq 0 }
+if os[:family] == 'ubuntu'
+  describe 'Checking if PostgreSQL is ready' do
+    describe command("pg_isready") do
+      its(:stdout) { should match /postgresql:#{postgresql_default_port} - accepting connections/ }
+      its(:exit_status) { should eq 0 }
+    end
   end
 end
 
@@ -178,15 +205,15 @@ if replicated
     if os[:family] == 'redhat'
       describe 'Checking PostgreSQL config files for master node' do
         let(:disable_sudo) { false }
-        describe command("cat /var/opt/rh/rh-postgresql10/lib/pgsql/data/postgresql.conf | grep wal_level") do
+        describe command("cat /var/lib/pgsql/10/data/postgresql-epiphany.conf | grep wal_level") do
           its(:stdout) { should match /^wal_level = replica/ }
           its(:exit_status) { should eq 0 }
         end
-        describe command("cat /var/opt/rh/rh-postgresql10/lib/pgsql/data/postgresql.conf | grep max_wal_senders") do
+        describe command("cat /var/lib/pgsql/10/data/postgresql-epiphany.conf | grep max_wal_senders") do
           its(:stdout) { should match /^max_wal_senders = #{max_wal_senders}/ }
           its(:exit_status) { should eq 0 }
         end
-        describe command("cat /var/opt/rh/rh-postgresql10/lib/pgsql/data/postgresql.conf | grep wal_keep_segments") do
+        describe command("cat /var/lib/pgsql/10/data/postgresql-epiphany.conf | grep wal_keep_segments") do
           its(:stdout) { should match /^wal_keep_segments = #{wal_keep_segments}/ }
           its(:exit_status) { should eq 0 }
         end
@@ -195,7 +222,7 @@ if replicated
           its(:stdout) { should match /Replication/ }
           its(:exit_status) { should eq 0 }
         end
-        describe command("cat /var/opt/rh/rh-postgresql10/lib/pgsql/data/pg_hba.conf | grep replication | grep md5") do
+        describe command("cat /var/lib/pgsql/10/data/pg_hba.conf | grep replication | grep md5") do
           its(:stdout) { should match /#{replication_user}/ }
           its(:stdout) { should match /replication/ }
           its(:exit_status) { should eq 0 }
@@ -204,15 +231,15 @@ if replicated
     elsif os[:family] == 'ubuntu'
       describe 'Checking PostgreSQL config files for master node' do
         let(:disable_sudo) { false }
-        describe command("cat /etc/postgresql/10/main/postgresql.conf | grep wal_level") do
+        describe command("cat /etc/postgresql/10/main/postgresql-epiphany.conf | grep wal_level") do
           its(:stdout) { should match /^wal_level = replica/ }
           its(:exit_status) { should eq 0 }
         end
-        describe command("cat /etc/postgresql/10/main/postgresql.conf | grep max_wal_senders") do
+        describe command("cat /etc/postgresql/10/main/postgresql-epiphany.conf | grep max_wal_senders") do
           its(:stdout) { should match /^max_wal_senders = #{max_wal_senders}/ }
           its(:exit_status) { should eq 0 }
         end
-        describe command("cat /etc/postgresql/10/main/postgresql.conf | grep wal_keep_segments") do
+        describe command("cat /etc/postgresql/10/main/postgresql-epiphany.conf | grep wal_keep_segments") do
           its(:stdout) { should match /^wal_keep_segments = #{wal_keep_segments}/ }
           its(:exit_status) { should eq 0 }
         end
@@ -246,7 +273,7 @@ if replicated
     if os[:family] == 'redhat'
       describe 'Checking PostgreSQL config files for secondary node' do
         let(:disable_sudo) { false }
-        describe command("cat /var/opt/rh/rh-postgresql10/lib/pgsql/data/postgresql.conf | grep hot_standby") do
+        describe command("cat /var/lib/pgsql/10/data/postgresql.conf | grep hot_standby") do
           its(:stdout) { should match /^hot_standby = on/ }
           its(:exit_status) { should eq 0 }
         end
