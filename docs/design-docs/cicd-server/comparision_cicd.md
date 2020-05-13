@@ -198,4 +198,4 @@ Possible to use: local users, SSO with Bundled Dex OIDC provider, SSO with Exist
 * KSOPS
 
 #### Conclusion
-ArgoCCD looks very good if you have a really big number of clusters you are managing. Thanks to that you can deploy whatever you want wherever you need. But this is needed for really for big scale.
+ArgoCD looks very good if you have a really big number of clusters you are managing. Thanks to that you can deploy whatever you want wherever you need. But this is needed for really for big scale.
