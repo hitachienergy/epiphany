@@ -113,7 +113,7 @@ __tekton__: You can read env variables from any config map so this is kind of ov
 
 __gocd__: not big number of plugins (but is this really bad?) but very of them really usefull (LDAP, running in pods, vault, k8s secrets, docker registry, push to S3, slack notification, etc)
 
-__jenkins__: many, many maaaaaaaaaaaany plugins. But if there is too much of them they start making seeeeeeeeeerious issues. Each plugin has different quality and each can breake the server and has its own security issues so we have to be very careful with them.
+__jenkins__: many plugins. But if there is too much of them they start making serious issues. Each plugin has different quality and each can breake the server and has its own security issues so we have to be very careful with them.
 
 __jenkins-x__: plugins are called app. There are few of them and this app are helm charts.
 Jenkins-x uses embeded nexus, chartmuseum and monocular services. I don't know if the is option to get rid of them.
