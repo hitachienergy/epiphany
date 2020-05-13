@@ -131,7 +131,7 @@ __gocd__:
 * Small amount of help in Internet (compare to jenkins)
 * Small community
 
-GoCD can be easily set up for our organizations. Adding new customers should be big deal. Working with is very intuitive - old school concept of CICD.
+GoCD can be easily set up for our organizations. Adding new customers should not be big deal. Working with is very intuitive - old school concept of CICD.
 
 __jenkins__:
 * Production ready
