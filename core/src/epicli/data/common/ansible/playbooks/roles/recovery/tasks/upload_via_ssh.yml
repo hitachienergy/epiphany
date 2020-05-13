@@ -1,24 +1,24 @@
 ---
 # Invoke with (example):
 #- set_fact:
-#    backup_inline_script: >-
-#      (date; uname -a) | gzip
-#    backup_destination_file: "{{ backup_destination_dir }}/date_uname-a.gz"
+#    recovery_inline_script: >-
+#      (date; uname -a) | gunzip 1> /tmp/date_uname-a
+#    recovery_source_file: "{{ recovery_source_dir }}/date_uname-a.gz"
 
-- name: Assert that "backup_inline_script" and "backup_destination_file" facts are defined and valid
+- name: Assert that "recovery_inline_script" and "recovery_source_file" facts are defined and valid
   assert:
     that:
-      - backup_inline_script is defined
-      - backup_inline_script is string
-      - backup_inline_script | length > 0
-      - backup_destination_file is defined
-      - backup_destination_file is string
-      - backup_destination_file | length > 0
-    fail_msg: The backup_inline_script and backup_destination_file facts must be defined and both must be non-empty strings.
+      - recovery_inline_script is defined
+      - recovery_inline_script is string
+      - recovery_inline_script | length > 0
+      - recovery_source_file is defined
+      - recovery_source_file is string
+      - recovery_source_file | length > 0
+    fail_msg: The recovery_inline_script and recovery_source_file facts must be defined and both must be non-empty strings.
 
-- name: Download artifacts to mounted storage
+- name: Upload artifacts from mounted storage
 
-  delegate_to: "{{ backup_destination_host }}"
+  delegate_to: "{{ recovery_source_host }}"
 
   always:
     - name: Delete generated files
@@ -62,22 +62,17 @@
             key: >-
               {{ openssh_keypair.public_key }}
 
-    - name: Ensure destination directory for artifacts exists
-      file:
-        path: "{{ backup_destination_dir }}/"
-        state: directory
-
-    - name: Execute remote script via ssh and save its stdout output locally
+    - name: Load local data and execute remote script to restore the backup
       shell: |
         set -o errexit -o nounset -o pipefail
-        ssh -i $SSH_KEY_PATH $SSH_OPTIONS $SSH_USER@$SSH_HOST -- \
-          "set -o errexit -o nounset -o pipefail && $INLINE_SCRIPT" 1> $DESTINATION_FILE
+        dd if=$SOURCE_FILE oflag=dsync | ssh -i $SSH_KEY_PATH $SSH_OPTIONS $SSH_USER@$SSH_HOST -- \
+          "set -o errexit -o nounset -o pipefail && $INLINE_SCRIPT"
       environment:
         SSH_KEY_PATH: "{{ private_key_file.path }}"
         SSH_OPTIONS: "-S none -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null"
         SSH_USER: "{{ admin_user.name }}"
         SSH_HOST: "{{ ansible_default_ipv4.address }}"
-        INLINE_SCRIPT: "{{ backup_inline_script }}"
-        DESTINATION_FILE: "{{ backup_destination_file }}"
+        INLINE_SCRIPT: "{{ recovery_inline_script }}"
+        SOURCE_FILE: "{{ recovery_source_file }}"
       args:
         executable: /bin/bash

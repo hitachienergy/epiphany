@@ -10,8 +10,11 @@
 - name: Provide parameters for the download_via_ssh backup copy method
   set_fact:
     backup_inline_script: >-
-      tar czpf - -C {{ snapshot_directory }}/ {{ snapshot_name }}/
-    backup_destination_file: "{{ backup_dir }}/mounted/prometheus_backup_{{ snapshot_name }}.tar.gz"
+      sudo tar czpf - -C {{ snapshot_directory }}/ {{ snapshot_name }}/
+    backup_destination_file: >-
+      {{ backup_dir }}/mounted/prometheus_backup_{{ snapshot_name }}.tar.gz
   vars:
     snapshot_directory: "{{ specification.storage.data_directory }}/snapshots"
     snapshot_name: "{{ uri_response.json.data.name }}"
+
+- import_tasks: download_via_ssh.yml

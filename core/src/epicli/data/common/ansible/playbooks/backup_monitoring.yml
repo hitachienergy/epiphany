@@ -9,8 +9,5 @@
     - import_role:
         name: backup
         tasks_from: monitoring
-    - import_role:
-        name: backup
-        tasks_from: download_via_ssh
   vars_files:
     - roles/prometheus/vars/main.yml
