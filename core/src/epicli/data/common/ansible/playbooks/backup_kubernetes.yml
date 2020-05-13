@@ -9,6 +9,3 @@
     - import_role:
         name: backup
         tasks_from: kubernetes
-    - import_role:
-        name: backup
-        tasks_from: download_via_rsync
