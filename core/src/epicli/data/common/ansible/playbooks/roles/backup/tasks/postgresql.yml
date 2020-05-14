@@ -1,5 +1,4 @@
 ---
-<<<<<<< HEAD
 - name: Create timestamp value
   set_fact:
     timestamp: "{{ ansible_date_time.epoch }}"
@@ -12,5 +11,3 @@
 
 - name: Dump database
   command: runuser -l postgres -c 'pg_dumpall > {{ backup_dir }}/postgresql_backup_{{ timestamp }}/database_dump.sql'
-=======
->>>>>>> upstream/feature/backup-restore
