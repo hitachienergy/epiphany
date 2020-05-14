@@ -9,9 +9,6 @@
     - import_role:
         name: backup
         tasks_from: kubernetes
-<<<<<<< HEAD
-=======
     - import_role:
         name: backup
         tasks_from: download_via_rsync
->>>>>>> upstream/feature/backup-restore

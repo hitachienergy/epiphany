@@ -1,11 +1,7 @@
 ---
 # Ansible playbook for backing up monitoring data
 
-<<<<<<< HEAD
-- hosts: prometheus
-=======
 - hosts: prometheus[0]
->>>>>>> upstream/feature/backup-restore
   become: true
   become_method: sudo
   serial: 1
@@ -13,11 +9,8 @@
     - import_role:
         name: backup
         tasks_from: monitoring
-<<<<<<< HEAD
-=======
     - import_role:
         name: backup
         tasks_from: download_via_ssh
   vars_files:
     - roles/prometheus/vars/main.yml
->>>>>>> upstream/feature/backup-restore
