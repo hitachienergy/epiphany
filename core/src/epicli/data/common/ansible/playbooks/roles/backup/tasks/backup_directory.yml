@@ -1,7 +1,0 @@
-# Create location for backup filesystem
----
-  - name: Create share location
-    file:
-      path: "{{ backup_dir }}"
-      state: directory
-      mode: 0700

@@ -4,7 +4,6 @@
 - hosts: postgresql[0]
   become: true
   become_method: sudo
-  serial: 1
   tasks:
     - import_role:
         name: backup
