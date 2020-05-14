@@ -78,3 +78,9 @@
         rsh: >-
           /usr/bin/ssh -S none -i {{ private_key_file.path }} -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null
       loop: "{{ artifacts }}"
+    
+    - name: Remove copied artifacts from source
+      file: 
+        path: "{{ item }}"
+        state: absent
+      loop: "{{ artifacts }}"
