@@ -278,7 +278,7 @@ def backup_parser(subparsers):
     sub_parser.add_argument('-b', '--build', dest='build_directory', type=str, required=True,
                             help='Absolute path to directory with build artifacts.')
 
-    available_components = {'kubernetes', 'loadbalancer', 'postgresql', 'monitoring'}
+    available_components = {'kubernetes', 'loadbalancer', 'logging', 'monitoring', 'postgresql'}
 
     enabled_components = set(available_components)  # enable everything by default
     enabled_components_joined = ','.join(sorted(enabled_components))
@@ -302,7 +302,7 @@ def recovery_parser(subparsers):
     sub_parser.add_argument('-b', '--build', dest='build_directory', type=str, required=True,
                             help='Absolute path to directory with build artifacts.')
 
-    available_components = {'kubernetes', 'loadbalancer', 'postgresql', 'monitoring'}
+    available_components = {'kubernetes', 'loadbalancer', 'logging', 'monitoring', 'postgresql'}
 
     enabled_components = set()  # disable everything by default
     enabled_components_joined = ','.join(sorted(enabled_components))

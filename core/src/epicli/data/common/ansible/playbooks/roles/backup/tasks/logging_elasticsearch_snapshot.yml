@@ -1,0 +1,111 @@
+---
+- name: Set helper facts
+  set_fact:
+    elasticsearch_endpoint: >-
+      https://{{ ansible_default_ipv4.address }}:9200
+    snapshot_name: >-
+      {{ ansible_date_time.iso8601_basic_short | replace('T','-') }}
+  vars:
+    uri_template: &uri
+      client_cert: /etc/elasticsearch/kirk.pem
+      client_key: /etc/elasticsearch/kirk-key.pem
+      validate_certs: false
+      body_format: json
+
+- debug: var=snapshot_name
+
+- name: Check cluster health
+  uri:
+    <<: *uri
+    url: "{{ elasticsearch_endpoint }}/_cluster/health"
+    method: GET
+  register: uri_response
+  until: uri_response is success
+  retries: 12
+  delay: 5
+
+- name: Ensure snapshot repository is defined
+  uri:
+    <<: *uri
+    url: "{{ elasticsearch_endpoint }}/_snapshot/{{ elasticsearch_snapshot_repository_name }}"
+    method: PUT
+    body:
+      type: fs
+      settings:
+        location: "{{ elasticsearch_snapshot_repository_location }}"
+        compress: true
+
+- name: Trigger snapshot creation
+  uri:
+    <<: *uri
+    url: "{{ elasticsearch_endpoint }}/_snapshot/{{ elasticsearch_snapshot_repository_name }}/{{ snapshot_name }}"
+    method: PUT
+
+- name: Wait (up to 12h) for snapshot completion
+  uri:
+    <<: *uri
+    url: "{{ elasticsearch_endpoint }}/_snapshot/{{ elasticsearch_snapshot_repository_name }}/{{ snapshot_name }}"
+    method: GET
+  register: uri_response
+  until: (uri_response.json.snapshots | selectattr('snapshot', 'equalto', snapshot_name) | first).state == "SUCCESS"
+  retries: "{{ (12 * 3600 // 10) | int }}"  # 12h
+  delay: 10
+
+- name: Find all snapshots
+  uri:
+    <<: *uri
+    url: "{{ elasticsearch_endpoint }}/_snapshot/{{ elasticsearch_snapshot_repository_name }}/_all"
+    method: GET
+  register: uri_response
+
+- name: Delete old snapshots
+  uri:
+    <<: *uri
+    url: "{{ elasticsearch_endpoint }}/_snapshot/{{ elasticsearch_snapshot_repository_name }}/{{ item }}"
+    method: DELETE
+  loop: >-
+    {{ uri_response.json.snapshots | map(attribute='snapshot') | reject('equalto', snapshot_name) | list }}
+
+- name: Create and copy snapshot archive to backup destination
+  always:
+    - name: Delete snapshot archive (cleanup)
+      file:
+        path: "{{ item }}"
+        state: absent
+      loop:
+        - "{{ backup_dir }}/elasticsearch_snapshot_{{ snapshot_name }}.tar.gz"
+        - "{{ backup_dir }}/elasticsearch_snapshot_{{ snapshot_name }}.tar.gz.sha1"
+
+  block:
+    - name: Ensure backup dir exists
+      file:
+        path: "{{ backup_dir }}/"
+        state: directory
+
+    - name: Create snapshot archive
+      archive:
+        dest: "{{ backup_dir }}/elasticsearch_snapshot_{{ snapshot_name }}.tar.gz"
+        path: "{{ elasticsearch_snapshot_repository_location }}/*"
+        format: gz
+
+    - name: Calculate checksum from snapshot archive
+      stat:
+        path: "{{ backup_dir }}/elasticsearch_snapshot_{{ snapshot_name }}.tar.gz"
+        get_attributes: false
+        get_checksum: true
+        get_mime: false
+        checksum_algorithm: sha1
+      register: stat_snapshot_archive
+
+    - name: Store snapshot archive checksum in a file
+      copy:
+        dest: "{{ backup_dir }}/elasticsearch_snapshot_{{ snapshot_name }}.tar.gz.sha1"
+        content: |
+          {{ stat_snapshot_archive.stat.checksum }}  elasticsearch_snapshot_{{ snapshot_name }}.tar.gz
+
+    - name: Transfer snapshot archive via rsync
+      import_tasks: download_via_rsync.yml
+      vars:
+        artifacts:
+          - "{{ backup_dir }}/elasticsearch_snapshot_{{ snapshot_name }}.tar.gz"
+          - "{{ backup_dir }}/elasticsearch_snapshot_{{ snapshot_name }}.tar.gz.sha1"
