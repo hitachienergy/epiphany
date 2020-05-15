@@ -1,5 +1,0 @@
-- name: Restart Vault service
-  systemd:
-    name: vault
-    state: restarted
-    daemon_reload: yes

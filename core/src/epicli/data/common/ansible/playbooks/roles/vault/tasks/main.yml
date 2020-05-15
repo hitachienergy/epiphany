@@ -3,7 +3,7 @@
 # TODO: Add swap disable
 # TODO: Change to: https://docs.ansible.com/ansible/latest/modules/pam_limits_module.html
 
-- name: Install and configure Hashicorp vault if enabled
+- name: Install and configure Hashicorp Vault if enabled
   when:
     - specification.vault_enabled
   block:
@@ -25,7 +25,7 @@
         state: directory
         owner: "{{ specification.vault_system_user }}"
         group: "{{ specification.vault_system_group }}"
-        mode: 0750
+        mode: u=rwx,g=rx,o=
       with_items:
         - "bin"
         - "config"
@@ -56,14 +56,14 @@
         src: "{{ download_directory }}/{{ vault_file_name }}"
         creates: "{{ specification.vault_install_dir }}/bin/vault"
         dest: "{{ specification.vault_install_dir }}/bin/"
-        mode: 0740
+        mode: u=rwx,g=r,o=
 
     - name: Create Vault configuration file
       template:
         dest: "{{ specification.vault_install_dir }}/config/config.hcl"
         owner: "{{ specification.vault_system_user }}"
         group: "{{ specification.vault_system_group }}"
-        mode: 0640
+        mode: u=rw,g=r,o=
         src: config.hcl.j2
 
     - name: Set capabilities required to lock memory
@@ -98,10 +98,17 @@
         dest: /etc/systemd/system/vault.service
         owner: root
         group: root
-        mode: 0640
+        mode: u=rw,g=r,o=
         src: vault.service.j2
-      notify:
-        - Restart Vault service
+      register: service_conf
+
+    - name: Restart Vault service and reload config
+      systemd:
+        name: vault
+        state: restarted
+        daemon_reload: yes
+      when:
+        - service_conf.changed
 
     - name: Start Vault service
       systemd:
@@ -123,7 +130,7 @@
         dest: "{{ specification.vault_install_dir }}/bin/"
         owner: "{{ specification.vault_system_user }}"
         group: "{{ specification.vault_system_group }}"
-        mode: 0740
+        mode: u=rwx,g=r,o=
 
     - name: Initialize Vault
       when: vault_init_output.stdout == ""
@@ -139,7 +146,7 @@
         dest: "{{ specification.vault_install_dir }}/script.config"
         owner: "{{ specification.vault_system_user }}"
         group: "{{ specification.vault_system_group }}"
-        mode: 0640
+        mode: u=rw,g=r,o=
         src: script.config.j2
 
     - name: Run configuration script
