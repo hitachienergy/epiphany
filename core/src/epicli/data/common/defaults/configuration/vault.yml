@@ -8,7 +8,6 @@ specification:
   file_name: vault_1.4.0_linux_amd64.zip
   enable_vault_audit_logs: false
   vault_script_unseal: true
-  vault_auto_unseal: false
   vault_audit: false
   use_https: false
   kubernetes_integration: true

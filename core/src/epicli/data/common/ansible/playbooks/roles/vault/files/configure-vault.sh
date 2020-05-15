@@ -1,5 +1,5 @@
 #!/bin/bash
-# Description: This script configures of Hashicorp Vault to be used with Epiphany
+# Description: This script configures Hashicorp Vault to be used with Epiphany
 # You can find more information in Epiphany documentation in HOWTO.md
 # TODO: Revoke root token
 # TODO: Policy for non-root access

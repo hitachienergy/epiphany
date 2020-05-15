@@ -26,7 +26,7 @@
         owner: "{{ specification.vault_system_user }}"
         group: "{{ specification.vault_system_group }}"
         mode: u=rwx,g=rx,o=
-      with_items:
+      loop:
         - "bin"
         - "config"
         - "data"
@@ -134,7 +134,7 @@
 
     - name: Initialize Vault
       when: vault_init_output.stdout == ""
-      shell: "{{ specification.vault_install_dir }}/bin/vault operator init -address='http://{{ ansible_default_ipv4.address }}:8200' > {{ specification.paths.vault_install_dir }}/init.txt"
+      shell: "{{ specification.vault_install_dir }}/bin/vault operator init -address='http://{{ ansible_default_ipv4.address }}:8200' > {{ specification.vault_install_dir }}/init.txt"
 
     - name: Check if init file exists
       stat:
@@ -164,4 +164,4 @@
       debug:
         msg: "Init file doesn't exist or you have chosen manual unseal, so to finish configuration please run script manually with command:
               {{ specification.vault_install_dir }}/bin/configure-vault.sh -c {{ specification.vault_install_dir }}/script.config -a {{ ansible_default_ipv4.address }}.
-              Also please put 'init.txt' file, containing output from 'vault operator init' command, in '{{ specification.vault_home_dir }}' directory."
+              Also please put 'init.txt' file, containing output from 'vault operator init' command, in ''{{ specification.vault_install_dir }}' directory."
