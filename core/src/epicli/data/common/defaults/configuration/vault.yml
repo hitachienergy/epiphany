@@ -6,14 +6,12 @@ specification:
   vault_system_user: vault
   vault_system_group: vault
   file_name: vault_1.4.0_linux_amd64.zip
-  enable_auditing: false
+  enable_vault_audit_logs: false
   vault_script_unseal: true
   vault_auto_unseal: false
   vault_audit: false
   use_https: false
   kubernetes_integration: true
-  root_token_revoke: false
+  revoke_root_token: false
   secret_mount_path: secret
-  paths:
-    main: /opt/vault
-    logs: /var/log/vault
+  vault_install_dir: /opt/vault

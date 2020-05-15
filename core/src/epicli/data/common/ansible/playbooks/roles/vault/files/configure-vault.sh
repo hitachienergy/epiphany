@@ -4,7 +4,7 @@
 # TODO: Revoke root token
 # TODO: Policy for non-root access
 
-HELP_MESSAGE="Usage: configure-vault.sh -c path_to_script_configuration_file -a vault_ip_address"
+HELP_MESSAGE="Usage: configure-vault.sh -c SCRIPT_CONFIGURATION_FILE_PATH -a VAULT_IP_ADDRESS"
 
 function print_help { echo "$HELP_MESSAGE"; }
 
@@ -13,20 +13,20 @@ function log_and_print {
     echo "$string_to_log" | tee -a configure-vault.log;
 }
 
-function fail_script {
+function exit_with_error {
     local string_to_log="$1";
     log_and_print "$string_to_log";
     exit 1;
 }
 
 function check_vault_error {
-    local status="$1";
+    local exit_code ="$1";
     local success_message="$2";
     local failure_message="$3";
-    if [ "$status" != "1" ] ; then
+    if [ "$exit_code" != "1" ] ; then
         log_and_print "$success_message";
     else
-        fail_script "$failure_message";
+        exit_with_error "$failure_message";
     fi
 }
 
@@ -39,16 +39,15 @@ function unseal_vault {
   done
 }
 
-function enable_auditing {
-    local log_dir="$1";
+function enable_vault_audit_logs {
     log_and_print "Enabling auditing.";
     vault audit list | grep "file";
     local COMMAND_RESULT=(${PIPESTATUS[@]})
     if [ "$COMMAND_RESULT[0]" = "1"] ; then
-        fail_script "There was an error during listing auditing.";
+        exit_with_error "There was an error during listing auditing.";
     fi
     if [ "$COMMAND_RESULT[1]" = "1" ] ; then
-        vault audit enable file file_path="$log_dir/audit.log";
+        vault audit enable file file_path="/var/log/vault_audit.log";
         check_vault_error "$?" "Auditing enabled." "There was an error during enabling auditing.";
     fi
 }
@@ -59,7 +58,7 @@ function mount_secret_path {
     vault secrets list | grep "$secret_path/";
     local COMMAND_RESULT=(${PIPESTATUS[@]})
     if [ "$COMMAND_RESULT[0]" = "1" ] ; then
-        fail_script "There was an error during listing secret engines.";
+        exit_with_error "There was an error during listing secret engines.";
     fi
     if [ "$COMMAND_RESULT[1]" = "1" ] ; then
         vault secrets enable -path="$secret_path" -version=2 kv;
@@ -68,15 +67,15 @@ function mount_secret_path {
 }
 
 function integrate_with_kubernetes {
-    log_and_print "Turning on kubernetes integration.";
+    log_and_print "Turning on Kubernetes integration.";
     vault auth list | grep kubernetes;
     local COMMAND_RESULT=(${PIPESTATUS[@]})
     if [ "$COMMAND_RESULT[0]" = "1" ] ; then
-        fail_script "There was an error during listing authentication methods.";
+        exit_with_error "There was an error during listing authentication methods.";
     fi
     if [ "$COMMAND_RESULT[1]" = "1" ] ; then
         vault auth enable kubernetes;
-        check_vault_error "$?" "Kubernetes authentication enabled." "There was an error during enabling kubernetes authentication.";
+        check_vault_error "$?" "Kubernetes authentication enabled." "There was an error during enabling Kubernetes authentication.";
     fi
 }
 
@@ -84,7 +83,7 @@ function cleanup {
     [ -e "$HOME/.vault-token" ] && rm -f "$HOME/.vault-token";
 }
 
-while getopts ":p:a:c:h?" opt; do
+while getopts ":a:c:h?" opt; do
     case "$opt" in
         a) VAULT_IP=$OPTARG;;
         c) CONFIG_FILE=$OPTARG;;
@@ -94,7 +93,7 @@ done
 
 if [ $OPTIND -eq 1 ]; then
     print_help;
-    fail_script "No options passed to script. Aborting.";
+    exit_with_error "No options passed to script. Aborting.";
 fi
 
 . "$CONFIG_FILE";
@@ -103,9 +102,7 @@ init_file_path="$VAULT_INSTALL_PATH/init.txt"
 export VAULT_ADDR="http://$VAULT_IP:8200"
 PATH=$VAULT_INSTALL_PATH/bin:$PATH
 
-trap cleanup EXIT;
-trap cleanup INT;
-trap cleanup TERM;
+trap cleanup EXIT INT TERM;
 
 if [ "${SCRIPT_AUTO_UNSEAL,,}" = "true" ] ; then
     unseal_vault "$init_file_path";
@@ -118,7 +115,7 @@ check_vault_error "$?" "Login successful." "There was an error loging into Vault
 LOGIN_TOKEN="";
 
 if [ "${ENABLE_AUDITING,,}" = "true" ] ; then
-    enable_auditing "$log_dir";
+    enable_vault_audit_logs;
 fi
 
 mount_secret_path "$secret_path";

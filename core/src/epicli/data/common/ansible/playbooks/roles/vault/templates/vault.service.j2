@@ -2,7 +2,7 @@
 Description=Hashicorp Vault server
 Requires=network-online.target
 After=network-online.target
-ConditionFileNotEmpty={{ specification.paths.main }}/config/config.hcl
+ConditionFileNotEmpty={{ specification.vault_install_dir }}/config/config.hcl
 StartLimitIntervalSec=60
 StartLimitBurst=3
 
@@ -19,7 +19,7 @@ AmbientCapabilities=CAP_IPC_LOCK
 Capabilities=CAP_IPC_LOCK+ep
 CapabilityBoundingSet=CAP_SYSLOG CAP_IPC_LOCK
 NoNewPrivileges=yes
-ExecStart={{ specification.paths.main }}/bin/vault server -config={{ specification.paths.main }}/config/config.hcl
+ExecStart={{ specification.vault_install_dir }}/bin/vault server -config={{ specification.vault_install_dir }}/config/config.hcl
 ExecReload=/bin/kill --signal HUP $MAINPID
 KillMode=process
 KillSignal=SIGINT

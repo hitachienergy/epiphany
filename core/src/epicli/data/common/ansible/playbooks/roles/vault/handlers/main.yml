@@ -2,7 +2,4 @@
   systemd:
     name: vault
     state: restarted
-    enabled: yes
     daemon_reload: yes
-  retries: 10
-  delay: 10

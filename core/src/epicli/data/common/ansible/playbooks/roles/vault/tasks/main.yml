@@ -1,17 +1,18 @@
 ---
 # This role is responsible for installing and configuring Hashicorp Vault
 # TODO: Add swap disable
+# TODO: Change to: https://docs.ansible.com/ansible/latest/modules/pam_limits_module.html
 
 - name: Install and configure Hashicorp vault if enabled
   when:
     - specification.vault_enabled
   block:
-    - name: Setup Vault system group
+    - name: Create Vault system group
       group:
         name: "{{ specification.vault_system_group }}"
         system: yes
 
-    - name: Setup Vault system user
+    - name: Create Vault system user
       user:
         name: "{{ specification.vault_system_user }}"
         group: "{{ specification.vault_system_group }}"
@@ -20,7 +21,7 @@
 
     - name: Create Vault directories
       file:
-        path: "{{ specification.paths.main }}/{{ item }}"
+        path: "{{ specification.vault_install_dir }}/{{ item }}"
         state: directory
         owner: "{{ specification.vault_system_user }}"
         group: "{{ specification.vault_system_group }}"
@@ -29,14 +30,6 @@
         - "bin"
         - "config"
         - "data"
-
-    - name: Create Vault log directory
-      file:
-        path: "{{ specification.paths.logs }}"
-        state: directory
-        owner: "{{ specification.vault_system_user }}"
-        group: "{{ specification.vault_system_group }}"
-        mode: 0750
 
     - name: Set Vault file name to install
       set_fact:
@@ -51,7 +44,7 @@
 
     - name: Check for Vault package
       stat:
-        path: "{{ specification.paths.main }}/bin/vault"
+        path: "{{ specification.vault_install_dir }}/bin/vault"
       register: vault_package
 
     - name: Uncompress the Vault zip
@@ -61,13 +54,13 @@
         owner: "{{ specification.vault_system_user }}"
         group: "{{ specification.vault_system_group }}"
         src: "{{ download_directory }}/{{ vault_file_name }}"
-        creates: "{{ specification.paths.main }}/bin/vault"
-        dest: "{{ specification.paths.main }}/bin/"
+        creates: "{{ specification.vault_install_dir }}/bin/vault"
+        dest: "{{ specification.vault_install_dir }}/bin/"
         mode: 0740
 
-    - name: Create Vault configuration
+    - name: Create Vault configuration file
       template:
-        dest: "{{ specification.paths.main }}/config/config.hcl"
+        dest: "{{ specification.vault_install_dir }}/config/config.hcl"
         owner: "{{ specification.vault_system_user }}"
         group: "{{ specification.vault_system_group }}"
         mode: 0640
@@ -75,7 +68,7 @@
 
     - name: Set capabilities required to lock memory
       capabilities:
-        path: "{{ specification.paths.main }}/bin/vault"
+        path: "{{ specification.vault_install_dir }}/bin/vault"
         capability: cap_ipc_lock=+ep
         state: present
 
@@ -93,6 +86,7 @@
       register: test_grep
       failed_when: "test_grep.rc == 2"
 
+    # TODO: Change to: https://docs.ansible.com/ansible/latest/modules/pam_limits_module.html
     - name: Set if limits for Vault are not set
       when: test_grep.stdout != ""
       lineinfile:
@@ -114,37 +108,35 @@
         name: vault
         state: started
         enabled: yes
-      retries: 10
-      delay: 10
 
     - name: Check if Vault was already initialized
       shell: >-
-        {{ specification.paths.main }}/bin/vault status -address='http://{{ ansible_default_ipv4.address }}:8200' | grep -e 'Initialized[[:space:]]*true'
+        {{ specification.vault_install_dir }}/bin/vault status -address='http://{{ ansible_default_ipv4.address }}:8200' | grep -e 'Initialized[[:space:]]*true'
       register: vault_init_output
       args:
         executable: /bin/bash
       failed_when: "vault_init_output.rc == 2"
 
-    - name: Copy vault configuration file
+    - name: Copy Vault configuration script
       copy:
         src: configure-vault.sh
-        dest: "{{ specification.paths.main }}/bin/"
+        dest: "{{ specification.vault_install_dir }}/bin/"
         owner: "{{ specification.vault_system_user }}"
         group: "{{ specification.vault_system_group }}"
         mode: 0740
 
     - name: Initialize Vault
       when: vault_init_output.stdout == ""
-      shell: "{{ specification.paths.main }}/bin/vault operator init -address='http://{{ ansible_default_ipv4.address }}:8200' > {{ specification.paths.main }}/init.txt"
+      shell: "{{ specification.vault_install_dir }}/bin/vault operator init -address='http://{{ ansible_default_ipv4.address }}:8200' > {{ specification.paths.vault_install_dir }}/init.txt"
 
     - name: Check if init file exists
       stat:
-        path: "{{ specification.paths.main }}/init.txt"
+        path: "{{ specification.vault_install_dir }}/init.txt"
       register: init_file_stat
 
     - name: Generate config script confiugration
       template:
-        dest: "{{ specification.paths.main }}/script.config"
+        dest: "{{ specification.vault_install_dir }}/script.config"
         owner: "{{ specification.vault_system_user }}"
         group: "{{ specification.vault_system_group }}"
         mode: 0640
@@ -155,8 +147,8 @@
         - specification.vault_script_unseal
         - init_file_stat.stat.exists
       shell: >-
-        {{ specification.paths.main }}/bin/configure-vault.sh
-        -c {{ specification.paths.main }}/script.config
+        {{ specification.vault_install_dir }}/bin/configure-vault.sh
+        -c {{ specification.vault_install_dir }}/script.config
         -a {{ ansible_default_ipv4.address }}
 
     - name: Display information about running configuration script
@@ -164,5 +156,5 @@
         - not init_file_stat.stat.exists or not  specification.vault_script_unseal
       debug:
         msg: "Init file doesn't exist or you have chosen manual unseal, so to finish configuration please run script manually with command:
-              {{ specification.paths.main }}/bin/configure-vault.sh -c {{ specification.paths.main }}/script.config -a {{ ansible_default_ipv4.address }}.
-              Also please put file init.txt with vault init file command output in {{ specification.paths.main }} location."
+              {{ specification.vault_install_dir }}/bin/configure-vault.sh -c {{ specification.vault_install_dir }}/script.config -a {{ ansible_default_ipv4.address }}.
+              Also please put 'init.txt' file, containing output from 'vault operator init' command, in '{{ specification.vault_home_dir }}' directory."
