@@ -118,7 +118,7 @@ if [ "${ENABLE_AUDITING,,}" = "true" ] ; then
     enable_vault_audit_logs;
 fi
 
-mount_secret_path "$secret_path";
+mount_secret_path "$SECRET_PATH";
 
 if [ "${KUBERNETES_INTEGRATION,,}" = "true" ] ; then
     integrate_with_kubernetes;
