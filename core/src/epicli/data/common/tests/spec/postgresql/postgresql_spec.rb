@@ -440,7 +440,7 @@ if pgaudit_enabled
   if !replicated || (replicated && (listInventoryHosts("postgresql")[1].include? host_inventory['hostname']))
 
     describe 'Checking if the Elasticsearch logs contain queries from the PostrgeSQL database' do
-      describe command("sleep 60 && curl -k -u admin:admin 'https://#{elasticsearch_host}:#{elasticsearch_api_port}/_search?pretty=true' -H 'Content-Type: application/json' -d '{\"size\":100,\"_source\":{\"includes\":\"message\"},\"query\":{\"bool\":{\"must\":[{\"bool\":{\"should\":[{\"match_phrase\":{\"source\":\"/var/log/postgresql/postgresql-10-main.log\"}},{\"match_phrase\":{\"source\":\"/var/log/postgresql/postgresql.log\"}}],\"minimum_should_match\":1}}],\"filter\":{\"query_string\":{\"query\":\"*serverspec*\"}}}}}'") do
+      describe command("for i in {1..600}; do if curl -k -s -u admin:admin 'https://#{elasticsearch_host}:#{elasticsearch_api_port}/_search?pretty=true' -H 'Content-Type: application/json' -d '{\"size\":100,\"_source\":{\"includes\":\"message\"},\"query\":{\"bool\":{\"must\":[{\"bool\":{\"should\":[{\"match_phrase\":{\"source\":\"/var/log/postgresql/postgresql-10-main.log\"}},{\"match_phrase\":{\"source\":\"/var/log/postgresql/postgresql.log\"}}],\"minimum_should_match\":1}}],\"filter\":{\"query_string\":{\"query\":\"*serverspec*\"}}}}}' | grep -z \"DROP SCHEMA\"; then echo 'READY'; break; else echo 'WAITING'; sleep 1; fi; done") do
         its(:stdout) { should match /CREATE SCHEMA serverspec_test/ }
         its(:stdout) { should match /CREATE TABLE serverspec_test\.test/ }
         its(:stdout) { should match /INSERT INTO serverspec_test\.test/ }
@@ -451,7 +451,7 @@ if pgaudit_enabled
     end
 
     describe 'Checking if the Elasticsearch logs contain queries executed with PGBouncer', :if => pgbouncer_enabled do
-      describe command("curl -k -u admin:admin 'https://#{elasticsearch_host}:#{elasticsearch_api_port}/_search?pretty=true' -H 'Content-Type: application/json' -d '{\"size\":100,\"_source\":{\"includes\":\"message\"},\"query\":{\"bool\":{\"must\":[{\"bool\":{\"should\":[{\"match_phrase\":{\"source\":\"/var/log/postgresql/postgresql-10-main.log\"}},{\"match_phrase\":{\"source\":\"/var/log/postgresql/postgresql.log\"}}],\"minimum_should_match\":1}}],\"filter\":{\"query_string\":{\"query\":\"*#{pg_user}*\"}}}}}'") do
+      describe command("for i in {1..600}; do if curl -k -s -u admin:admin 'https://#{elasticsearch_host}:#{elasticsearch_api_port}/_search?pretty=true' -H 'Content-Type: application/json' -d '{\"size\":100,\"_source\":{\"includes\":\"message\"},\"query\":{\"bool\":{\"must\":[{\"bool\":{\"should\":[{\"match_phrase\":{\"source\":\"/var/log/postgresql/postgresql-10-main.log\"}},{\"match_phrase\":{\"source\":\"/var/log/postgresql/postgresql.log\"}}],\"minimum_should_match\":1}}],\"filter\":{\"query_string\":{\"query\":\"*#{pg_user}*\"}}}}}' | grep -z \"DROP USER\"; then echo 'READY'; break; else echo 'WAITING'; sleep 1; fi; done") do
         its(:stdout) { should match /GRANT ALL ON SCHEMA serverspec_test to #{pg_user}/ }
         its(:stdout) { should match /GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA serverspec_test to #{pg_user}/ }
         its(:stdout) { should match /CREATE TABLE serverspec_test\.pgbtest/ }
