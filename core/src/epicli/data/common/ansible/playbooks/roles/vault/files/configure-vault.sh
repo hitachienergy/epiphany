@@ -80,7 +80,7 @@ function integrate_with_kubernetes {
 }
 
 function cleanup {
-    [ -e "$HOME/.vault-token" ] && rm -f "$HOME/.vault-token";
+    rm -f "$HOME/.vault-token";
 }
 
 while getopts ":a:c:h?" opt; do
@@ -96,7 +96,7 @@ if [ $OPTIND -eq 1 ]; then
     exit_with_error "No options passed to script. Aborting.";
 fi
 
-. "$CONFIG_FILE";
+source "$CONFIG_FILE";
 
 INIT_FILE_PATH="$VAULT_INSTALL_PATH/init.txt"
 export VAULT_ADDR="http://$VAULT_IP:8200"
