@@ -1,5 +1,4 @@
 ---
-# tasks file for ignite
 - name: Add ignite group
   become: yes
   group:
@@ -27,66 +26,100 @@
   changed_when: false
 
 - name: Set JAVA_HOME environment variable for all users
-  lineinfile: 
-    path: /etc/environment 
-    state: present 
-    regexp: '^JAVA_HOME=' 
+  lineinfile:
+    path: /etc/environment
+    state: present
+    regexp: '^JAVA_HOME='
     line: JAVA_HOME="{{ java_home_location.stdout }}"
-
-- name: Set Apache Ignite file name to install
-  set_fact:
-    ignite_file_name: "{{ specification.file_name }}"
 
 - name: Check if Ignite in current version exists
   stat:
-    path: /opt/ignite_{{ specification.version }}/bin/ignite.sh
-  register: ignite_exists
+    path: /opt/ignite # symlink
+    get_attributes: no
+    get_checksum: no
+    get_mime: no
+  register: ignite_dir_stat
 
-- name: Download Ignite binaries
-  include_role:
-    name: download
-    tasks_from: download_file
+- name: Install Ignite binaries
+  when: ignite_dir_stat.stat.lnk_source is not defined
+     or ignite_dir_stat.stat.lnk_source != ignite_dest_path
+  block:
+    - name: Download Ignite binaries
+      include_role:
+        name: download
+        tasks_from: download_file
+      vars:
+        file_name: "{{ ignite_file_name }}"
+
+    - name: Create temp directory
+      file:
+        path: /tmp/ignite_{{ specification.version }}
+        state: directory
+        owner: ignite
+        group: ignite
+
+    - name: Uncompress {{ ignite_file_name }} to temp directory
+      unarchive:
+        remote_src: yes
+        src: "{{ download_directory }}/{{ ignite_file_name }}"
+        dest: /tmp/ignite_{{ specification.version }}
+        owner: ignite
+        group: ignite
+        list_files: yes
+      register: archive_contents
+
+    - name: Create {{ ignite_dest_path }} directory
+      file:
+        path: "{{ ignite_dest_path }}"
+        state: directory
+        owner: ignite
+        group: ignite
+
+    - name: Copy Ignite files from tmp location
+      copy:
+        remote_src: yes
+        src: "/tmp/ignite_{{ specification.version }}/{{ archive_contents.files[0].split('/')[0] }}/"
+        dest: "{{ ignite_dest_path }}"
+
+    - name: Link /opt/ignite to the right version
+      file:
+        src: "{{ ignite_dest_path }}"
+        dest: /opt/ignite
+        state: link
+      register: link_ignite_version
+
   vars:
-    file_name: "{{ ignite_file_name }}"
-  when: not ignite_exists.stat.exists
+    ignite_file_name: "{{ specification.file_name }}"
+    ignite_dest_path: /opt/ignite_{{ specification.version }}
 
-- name: Create temp directory
-  file:
-    path: /tmp/ignite_{{ specification.version }}
-    state: directory
-    owner: ignite
-    group: ignite
+- name: Reserve ports from ephemeral range
+  when: link_ignite_version.changed
+  block:
+    - name: Get net.ipv4.ip_local_reserved_ports
+      command: cat /proc/sys/net/ipv4/ip_local_reserved_ports
+      register: ip_local_reserved_ports
+      changed_when: false
 
-- name: Uncompress {{ ignite_file_name }} to temp directory 
-  unarchive:
-    remote_src: yes
-    src: "{{ download_directory }}/{{ ignite_file_name }}"
-    dest: /tmp/ignite_{{ specification.version }}
-    owner: ignite
-    group: ignite
-    list_files: yes
-  register: archive_contents
-  when: not ignite_exists.stat.exists
-   
-- name: Create /opt/ignite_{{ specification.version }} directory
-  file:
-    path: /opt/ignite_{{ specification.version }}
-    state: directory
-    owner: ignite
-    group: ignite
+    - name: Reserve ports from ephemeral range
+      sysctl:
+        name: net.ipv4.ip_local_reserved_ports
+        value: "{{ (reserved_ports + ignite_ports_from_ephemeral_range) | sort | unique | join(',') }}"
+        sysctl_set: yes
+        state: present
+        reload: yes
+      vars:
+        reserved_ports: "{{ ip_local_reserved_ports.stdout.split(',') | reject('equalto', '') | list }}"
 
-- name: Copy Ignite files from tmp location
-  copy:
-    remote_src: yes
-    src: "/tmp/ignite_{{ specification.version }}/{{ archive_contents.files[0].split('/')[0] }}/"
-    dest: /opt/ignite_{{ specification.version }}
-  when: not ignite_exists.stat.exists
-
-- name: Link /opt/ignite to the right version
-  file:
-    dest: /opt/ignite
-    state: link
-    src: /opt/ignite_{{ specification.version }}
+- name: Append block to /opt/ignite/bin/include/functions.sh
+  blockinfile:
+    path: /opt/ignite/bin/include/functions.sh
+    marker: "# {mark} ANSIBLE MANAGED BLOCK"
+    insertafter: EOF
+    backup: yes
+    block: "{{ block_to_append_to_ignite_functions_script }}"
+    owner: root
+    group: root
+    mode: u=rwx,g=rx,o=rx
 
 - name: Copy Ignite enabled plugins
   copy:
@@ -132,7 +165,7 @@
 
 - name: Restart Ignite service
   become: yes
-  systemd: 
-    name: ignite 
-    state: restarted 
+  systemd:
+    name: ignite
+    state: restarted
   when: plugins_installed.changed or ignite_configuration_created.changed

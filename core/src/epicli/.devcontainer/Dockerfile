@@ -17,7 +17,7 @@ RUN chmod +x /config-pre.sh \
     && apt-get update \
     && apt-get -y install --no-install-recommends apt-utils dialog 2>&1 \
 
-    && apt-get -y install git procps lsb-release gcc make musl-dev libffi-dev tar unzip vim \
+    && apt-get -y install git git-lfs procps lsb-release gcc make musl-dev libffi-dev tar unzip vim \
 
     && apt-get -y install ruby-full \
 

@@ -1,0 +1,6 @@
+# {{ ansible_managed }}
+VAULT_INSTALL_PATH="{{ specification.vault_install_dir }}"
+ENABLE_AUDITING={{ specification.enable_vault_audit_logs }}
+SCRIPT_AUTO_UNSEAL={{ specification.vault_script_unseal }}
+SECRET_PATH={{ specification.secret_mount_path }}
+KUBERNETES_INTEGRATION={{ specification.kubernetes_integration }}
