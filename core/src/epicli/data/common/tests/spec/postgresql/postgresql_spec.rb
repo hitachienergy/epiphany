@@ -9,10 +9,10 @@ elasticsearch_api_port = 9200
 replicated = readDataYaml("configuration/postgresql")["specification"]["extensions"]["replication"]["enabled"]
 replication_user = readDataYaml("configuration/postgresql")["specification"]["extensions"]["replication"]["replication_user_name"]
 replication_password = readDataYaml("configuration/postgresql")["specification"]["extensions"]["replication"]["replication_user_password"]
-# max_wal_senders = readDataYaml("configuration/postgresql")["specification"]["replication"]["max_wal_senders"]
-# wal_keep_segments = readDataYaml("configuration/postgresql")["specification"]["replication"]["wal_keep_segments"]
-max_wal_senders = 10
-wal_keep_segments = 34
+use_repmgr = readDataYaml("configuration/postgresql")["specification"]["extensions"]["replication"]["use_repmgr"]
+max_wal_senders = readDataYaml("configuration/postgresql")["specification"]["config_file"]["parameter_groups"].detect {|i| i["name"] == 'REPLICATION'}["subgroups"].detect {|i| i["name"] == "Sending Server(s)"}["parameters"].detect {|i| i["name"] == "max_wal_senders"}["value"]
+wal_keep_segments = readDataYaml("configuration/postgresql")["specification"]["config_file"]["parameter_groups"].detect {|i| i["name"] == 'REPLICATION'}["subgroups"].detect {|i| i["name"] == "Sending Server(s)"}["parameters"].detect {|i| i["name"] == "wal_keep_segments"}["value"]
+
 pgbouncer_enabled = readDataYaml("configuration/postgresql")["specification"]["extensions"]["pgbouncer"]["enabled"]
 pgaudit_enabled = readDataYaml("configuration/postgresql")["specification"]["extensions"]["pgaudit"]["enabled"]
 pg_user = 'testuser'
@@ -118,6 +118,22 @@ describe 'Checking if PostgreSQL service is running' do
   end
 end
 
+if use_repmgr
+  describe 'Checking if repmgr service is running' do
+    if os[:family] == 'redhat'
+      describe service('repmgr10') do
+        it { should be_enabled }
+        it { should be_running }
+      end
+    elsif os[:family] == 'ubuntu'
+      describe service('repmgrd') do
+        it { should be_enabled }
+        it { should be_running }
+      end
+    end
+  end
+end
+
 if os[:family] == 'redhat'
   describe 'Checking PostgreSQL directories and config files' do
     let(:disable_sudo) { false }
@@ -200,7 +216,23 @@ if replicated
 
   primary = listInventoryHosts("postgresql")[0]
   secondary = listInventoryHosts("postgresql")[1]
- 
+
+  if use_repmgr
+    describe 'Displaying information about each registered node in the replication cluster' do
+      let(:disable_sudo) { false }
+      describe command("su - postgres -c \"repmgr -f /etc/postgresql/10/main/repmgr.conf cluster show\""), :if => os[:family] == 'ubuntu' do
+        its(:stdout) { should match /primary.*\*.*running/ }
+        its(:stdout) { should match /standby.*running/ }
+        its(:exit_status) { should eq 0 }
+      end
+      describe command("su - postgres -c \"repmgr -f /etc/repmgr/10/repmgr.conf cluster show\""), :if => os[:family] == 'redhat' do
+        its(:stdout) { should match /primary.*\*.*running/ }
+        its(:stdout) { should match /standby.*running/ }
+        its(:exit_status) { should eq 0 }
+      end
+    end
+  end
+
   if primary.include? host_inventory['hostname']
     if os[:family] == 'redhat'
       describe 'Checking PostgreSQL config files for master node' do
@@ -265,6 +297,14 @@ if replicated
       end
     end
 
+    describe 'Checking recovery status of master node' do
+      let(:disable_sudo) { false }
+      describe command("su - postgres -c \"psql -t -c 'SELECT pg_is_in_recovery();'\"") do
+        its(:stdout) { should match /\bf\b/ }
+        its(:exit_status) { should eq 0 }
+      end
+    end
+
     queryForCreating
     queryForSelecting
     queryForAlteringTable
@@ -303,6 +343,14 @@ if replicated
       describe command("su - postgres -c \"psql -t -c 'SELECT status, conninfo  from pg_stat_wal_receiver;'\"") do
         its(:stdout) { should match /\bstreaming\b/ }
         its(:stdout) { should match /\buser=#{replication_user}\b/ }
+        its(:exit_status) { should eq 0 }
+      end
+    end
+
+    describe 'Checking recovery status of replica node' do
+      let(:disable_sudo) { false }
+      describe command("su - postgres -c \"psql -t -c 'SELECT pg_is_in_recovery();'\"") do
+        its(:stdout) { should match /\bt\b/ }
         its(:exit_status) { should eq 0 }
       end
     end
