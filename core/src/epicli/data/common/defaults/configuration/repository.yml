@@ -4,3 +4,10 @@ name: default
 specification:
   description: "Local repository of binaries required to install Epiphany"
   download_done_flag_expire_minutes: 120
+  teardown:
+    disable_http_server: false
+    remove:
+      files: false
+      helm_charts: false
+      images: false
+      packages: false

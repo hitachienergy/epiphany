@@ -11,25 +11,33 @@
       file: 
         state: absent
         path: "{{ apache_epirepo_path }}/packages"
-  when: (teardown_packages_repository == true) or (teardown_full_repository == true)
+  when:
+    - specification.teardown.remove.packages is defined
+    - specification.teardown.remove.packages
 
-- name: Remove epirepo Helm charts directory
+- name: Remove Helm charts from epirepo
   file:
     state: absent
     path: "{{ apache_epirepo_path }}/helm-charts"
-  when: (teardown_helm_repository == true) or (teardown_full_repository == true)
+  when: 
+    - specification.teardown.remove.helm_charts is defined
+    - specification.teardown.remove.helm_charts
 
-- name: Remove epirepo docker images directory
+- name: Remove Docker images from epirepo
   file: 
     state: absent
     path: "{{ apache_epirepo_path }}/images"
-  when: (teardown_docker_images_repository == true) or (teardown_full_repository == true)
+  when:
+    - specification.teardown.remove.images is defined
+    - specification.teardown.remove.images
 
 - name: Remove epirepo files directory
   file: 
     state: absent
     path: "{{ apache_epirepo_path }}/files"
-  when: (teardown_files_repository == true) or (teardown_full_repository == true)
+  when:
+    - specification.teardown.remove.files is defined
+    - specification.teardown.remove.files
 
 - name: Disable epirepo and clean up firewall rule
   block:
@@ -41,7 +49,7 @@
   when:
     - not custom_repository_url
     - inventory_hostname in target_repository_hostnames
-    - teardown_full_repository == true
+    - specification.teardown.disable_http_server
 
 - name: Clean up temporary files
   file:
@@ -50,8 +58,5 @@
   loop:
     - /tmp/epi-download-requirements
     - /tmp/epi-repository-setup-scripts
-    - /tmp/epi-repository-helm-charts
     - /var/tmp/enabled-system-repos.txt
     - /var/tmp/enabled-system-repos.tar
-  when:
-    - teardown_full_repository == true
