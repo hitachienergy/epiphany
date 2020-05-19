@@ -1,1 +1,42 @@
 ---
+- name: Create timestamp value
+  set_fact:
+    timestamp: "{{ lookup('pipe', 'date +%Y%m%d%H%M%S') }}"
+
+- name: Create temp backup directory
+  file:
+    path: "/var/tmp/postgresql_backup_{{ timestamp }}"
+    state: directory
+    mode: 0777
+
+- name: Dump database
+  command: runuser -l postgres -c 'pg_dumpall > /var/tmp/postgresql_backup_{{ timestamp }}/database_dump.sql'
+
+- name: List config files to copy
+  shell: "find *.conf"
+  args:
+    chdir: "{{ pg_config_dir[ansible_os_family] }}"
+  register: config_files
+
+- name: Copy config files
+  copy:
+    src: "{{ pg_config_dir[ansible_os_family] }}/{{ item }}"
+    dest: "/var/tmp/postgresql_backup_{{ timestamp }}/"
+    remote_src: yes
+  loop: "{{ config_files.stdout_lines|flatten(levels=1) }}"
+
+- name: Archive backed up files
+  archive:
+    path: "/var/tmp/postgresql_backup_{{ timestamp }}/"
+    dest: "/var/tmp/postgresql_backup_{{ timestamp }}.tar"
+    remove: yes
+
+- name: Remove temoporary directory
+  file:
+    path: "/var/tmp/postgresql_backup_{{ timestamp }}/"
+    state: absent
+
+- name: Set artifact to copy
+  set_fact:
+    artifacts:
+      - /var/tmp/postgresql_backup_{{ timestamp }}.tar
