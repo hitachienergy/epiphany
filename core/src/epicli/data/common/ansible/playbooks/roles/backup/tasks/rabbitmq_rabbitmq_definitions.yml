@@ -1,0 +1,77 @@
+---
+- name: Set helper facts
+  set_fact:
+    snapshot_name: >-
+      {{ ansible_date_time.iso8601_basic_short | replace('T','-') }}
+
+- debug: var=snapshot_name
+
+- name: Ensure management api is enabled
+  shell: |
+    rabbitmq-plugins enable rabbitmq_management
+  args:
+    executable: /bin/bash
+
+- name: Ensure the rabbitmqadmin binary is installed
+  shell: |
+    curl -fsSL http://localhost:15672/cli/rabbitmqadmin \
+         -o /usr/local/bin/rabbitmqadmin \
+    && chmod +x /usr/local/bin/rabbitmqadmin
+  args:
+    creates: /usr/local/bin/rabbitmqadmin
+    executable: /bin/bash
+
+- name: Ensure a folder to hold definitions in exists
+  file:
+    path: /var/lib/rabbitmq/definitions/
+    state: directory
+
+- name: Store definitions json file
+  shell: |
+    rabbitmqadmin export /var/lib/rabbitmq/definitions/definitions-{{ snapshot_name }}.json
+  args:
+    executable: /bin/bash
+
+- name: Create and copy definitions archive to backup destination
+  always:
+    - name: Delete definitions archive (cleanup)
+      file:
+        path: "{{ item }}"
+        state: absent
+      loop:
+        - "{{ backup_dir }}/rabbitmq_definitions_{{ snapshot_name }}.tar.gz"
+        - "{{ backup_dir }}/rabbitmq_definitions_{{ snapshot_name }}.tar.gz.sha1"
+
+  block:
+    - name: Ensure backup dir exists
+      file:
+        path: "{{ backup_dir }}/"
+        state: directory
+
+    - name: Create definitions archive
+      archive:
+        dest: "{{ backup_dir }}/rabbitmq_definitions_{{ snapshot_name }}.tar.gz"
+        path: /var/lib/rabbitmq/definitions/definitions?{{ snapshot_name }}.json  # ? is used here as a workaround
+        format: gz
+
+    - name: Calculate checksum from definitions archive
+      stat:
+        path: "{{ backup_dir }}/rabbitmq_definitions_{{ snapshot_name }}.tar.gz"
+        get_attributes: false
+        get_checksum: true
+        get_mime: false
+        checksum_algorithm: sha1
+      register: stat_rabbitmq_definitions_archive
+
+    - name: Store definitions archive checksum in a file
+      copy:
+        dest: "{{ backup_dir }}/rabbitmq_definitions_{{ snapshot_name }}.tar.gz.sha1"
+        content: |
+          {{ stat_rabbitmq_definitions_archive.stat.checksum }}  rabbitmq_definitions_{{ snapshot_name }}.tar.gz
+
+    - name: Transfer definitions archive via rsync
+      import_tasks: download_via_rsync.yml
+      vars:
+        artifacts:
+          - "{{ backup_dir }}/rabbitmq_definitions_{{ snapshot_name }}.tar.gz"
+          - "{{ backup_dir }}/rabbitmq_definitions_{{ snapshot_name }}.tar.gz.sha1"
