@@ -1,0 +1,28 @@
+---
+# Ansible playbook for recovering logging data
+
+- hosts: logging[0]
+  become: true
+  become_method: sudo
+  serial: 1
+  tasks:
+    - import_role:
+        name: recovery
+        tasks_from: logging_elasticsearch_etc
+    - import_role:
+        name: recovery
+        tasks_from: logging_elasticsearch_snapshot
+  vars_files:
+    - roles/logging/vars/main.yml
+
+- hosts: kibana[0]
+  gather_facts: true
+  become: true
+  become_method: sudo
+  serial: 1
+  tasks:
+    - import_role:
+        name: recovery
+        tasks_from: logging_kibana_etc
+  vars_files:
+    - roles/kibana/vars/main.yml

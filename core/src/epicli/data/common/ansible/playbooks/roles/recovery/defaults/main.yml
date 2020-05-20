@@ -2,3 +2,5 @@
 recovery_dir: /epibackup
 recovery_source_dir: "{{ recovery_dir }}/mounted"
 recovery_source_host: "{{ groups.kubernetes_master.0 }}"
+elasticsearch_snapshot_repository_name: epiphany
+elasticsearch_snapshot_repository_location: /var/lib/elasticsearch-snapshots
