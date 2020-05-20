@@ -1,0 +1,113 @@
+---
+- name: Set helper facts
+  set_fact:
+    elasticsearch_endpoint: >-
+      https://{{ ansible_default_ipv4.address }}:9200
+  vars:
+    uri_template: &uri
+      client_cert: /etc/elasticsearch/kirk.pem
+      client_key: /etc/elasticsearch/kirk-key.pem
+      validate_certs: false
+      body_format: json
+
+- name: Check cluster health
+  uri:
+    <<: *uri
+    url: "{{ elasticsearch_endpoint }}/_cluster/health"
+    method: GET
+  register: uri_response
+  until: uri_response is success
+  retries: 12
+  delay: 5
+
+- name: Find all elasticsearch snapshots
+  delegate_to: "{{ recovery_source_host }}"
+  find:
+    paths: "{{ recovery_source_dir }}/"
+    patterns: "elasticsearch_snapshot_*-*.tar.gz"
+    file_type: file
+    recurse: false
+  register: find_elasticsearch_snapshots
+
+- name: Do sanity check if there are any snapshots available
+  assert:
+    that: find_elasticsearch_snapshots.matched > 0
+    fail_msg: No snapshots found.
+
+- name: Pick the newest snapshot
+  set_fact:
+    newest_snapshot_path: >-
+      {{ find_elasticsearch_snapshots.files | map(attribute='path') | max }}
+
+- name: Transfer snapshot archive via rsync
+  import_tasks: upload_via_rsync.yml
+  vars:
+    artifacts:
+      - "{{ newest_snapshot_path }}"
+      - "{{ newest_snapshot_path }}.sha1"
+
+- name: Slurp snapshot archive checksum from file
+  slurp:
+    path: "{{ recovery_dir }}/{{ newest_snapshot_path | basename }}.sha1"
+  register: slurp_snapshot_archive_checksum
+
+- name: Calculate checksum from snapshot archive
+  stat:
+    path: "{{ recovery_dir }}/{{ newest_snapshot_path | basename }}"
+    get_attributes: false
+    get_checksum: true
+    get_mime: false
+    checksum_algorithm: sha1
+  register: stat_snapshot_archive
+
+- name: Compare snapshot archive checksums
+  assert:
+    that: (slurp_snapshot_archive_checksum.content | b64decode | trim).startswith(stat_snapshot_archive.stat.checksum)
+    fail_msg: Checksums do not match.
+
+- name: Find everything in the snapshot directory
+  find:
+    paths: "{{ elasticsearch_snapshot_repository_location }}/"
+    patterns: "*"
+    file_type: any
+    recurse: false
+  register: find_everything_in_snapshot_directory
+
+- name: Remove everything from snapshot directory
+  file:
+    path: "{{ item }}"
+    state: absent
+  loop: >-
+    {{ find_everything_in_snapshot_directory.files | map(attribute='path') | list }}
+
+- name: Extract snapshot archive to snapshot directory
+  unarchive:
+    dest: "{{ elasticsearch_snapshot_repository_location }}/"
+    src: "{{ recovery_dir }}/{{ newest_snapshot_path | basename }}"
+    remote_src: true
+
+- name: Change snapshot directory owner
+  file:
+    path: "{{ elasticsearch_snapshot_repository_location }}/"
+    owner: elasticsearch
+    group: elasticsearch
+    recurse: true
+
+- name: Extract newest snapshot name
+  set_fact:
+    snapshot_name: >-
+      {{ newest_snapshot_path | basename | regex_replace('^elasticsearch_snapshot_(.*).tar.gz$', '\1') }}
+
+- debug: var=snapshot_name
+
+- name: Close all indices
+  uri:
+    <<: *uri
+    url: "{{ elasticsearch_endpoint }}/_all/_close"
+    method: POST
+
+- name: Restore newest snapshot
+  uri:
+    <<: *uri
+    url: "{{ elasticsearch_endpoint }}/_snapshot/{{ elasticsearch_snapshot_repository_name }}/{{ snapshot_name }}/_restore"
+    method: POST
