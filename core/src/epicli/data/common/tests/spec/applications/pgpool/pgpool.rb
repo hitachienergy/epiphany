@@ -7,11 +7,6 @@ def callPgpoolDeploymentTests
   service_namespace = readDataYaml("configuration/applications")["specification"]["applications"].detect {|i| i["name"] == 'pgpool'}["namespace"]
   service_name = readDataYaml("configuration/applications")["specification"]["applications"].detect {|i| i["name"] == 'pgpool'}["service"]["name"]
 
-  puts service_port
-  puts service_replicas
-  puts service_namespace
-  puts service_name
-
   describe 'Checking if Pgpool service is running' do
     describe command("kubectl get services --namespace=#{service_namespace}") do
       its(:stdout) { should match /#{service_name}/ }
@@ -63,4 +58,3 @@ def callPgpoolDeploymentTests
   end
 
 end
-
