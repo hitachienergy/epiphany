@@ -1,0 +1,66 @@
+---
+- name: Set helper facts
+  set_fact:
+    prometheus_endpoint: >-
+      http://{{ ansible_default_ipv4.address }}:9090
+  vars:
+    uri_template: &uri
+      body_format: json
+
+- name: Trigger snapshot creation
+  uri:
+    <<: *uri
+    url: "{{ prometheus_endpoint }}/api/v1/admin/tsdb/snapshot"
+    method: POST
+  register: uri_response
+
+- name: Extract snapshot name
+  set_fact:
+    snapshot_name: "{{ uri_response.json.data.name }}"
+    snapshot_directory: "{{ specification.storage.data_directory }}/snapshots"
+
+- debug: var=snapshot_name
+
+- name: Create and copy snapshot archive to backup destination
+  always:
+    - name: Delete snapshot archive (cleanup)
+      file:
+        path: "{{ item }}"
+        state: absent
+      loop:
+        - "{{ backup_dir }}/prometheus_snapshot_{{ snapshot_name }}.tar.gz"
+        - "{{ backup_dir }}/prometheus_snapshot_{{ snapshot_name }}.tar.gz.sha1"
+
+  block:
+    - name: Ensure backup dir exists
+      file:
+        path: "{{ backup_dir }}/"
+        state: directory
+
+    - name: Create snapshot archive
+      archive:
+        dest: "{{ backup_dir }}/prometheus_snapshot_{{ snapshot_name }}.tar.gz"
+        path: "{{ snapshot_directory }}/{{ snapshot_name }}/"  # keep the / here!
+        format: gz
+
+    - name: Calculate checksum from snapshot archive
+      stat:
+        path: "{{ backup_dir }}/prometheus_snapshot_{{ snapshot_name }}.tar.gz"
+        get_attributes: false
+        get_checksum: true
+        get_mime: false
+        checksum_algorithm: sha1
+      register: stat_snapshot_archive
+
+    - name: Store snapshot archive checksum in a file
+      copy:
+        dest: "{{ backup_dir }}/prometheus_snapshot_{{ snapshot_name }}.tar.gz.sha1"
+        content: |
+          {{ stat_snapshot_archive.stat.checksum }}  prometheus_snapshot_{{ snapshot_name }}.tar.gz
+
+    - name: Transfer snapshot archive via rsync
+      import_tasks: download_via_rsync.yml
+      vars:
+        artifacts:
+          - "{{ backup_dir }}/prometheus_snapshot_{{ snapshot_name }}.tar.gz"
+          - "{{ backup_dir }}/prometheus_snapshot_{{ snapshot_name }}.tar.gz.sha1"
