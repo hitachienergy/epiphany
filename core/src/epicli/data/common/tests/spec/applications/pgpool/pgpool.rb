@@ -47,10 +47,20 @@ def callPgpoolDeploymentTests
       describe command("kubectl exec --namespace=#{service_namespace} $(kubectl get pods --namespace=#{service_namespace} -o custom-columns=:metadata.name -l app=#{service_name} --no-headers | head -n1) -- bash -c 'pcp_node_info -h localhost -U $PGPOOL_ADMIN_USERNAME -w --node-id=#{i} --verbose'") do
         its(:stdout) { should match /Status.*: 2/ }
         its(:stdout) { should match /Status Name.*: up/ }
-        its(:stdout) { should match /Role.*: (primary|standby)/ }
+        its(:stdout) { should match /Role.*: (primary|standby.*Replication State.*: streaming)/m }
+        its(:exit_status) { should eq 0 }
+      end
+    end
+  end
+  
+  describe 'Checking load balancing' do
+    describe command("kubectl exec --namespace=#{service_namespace} $(kubectl get pods --namespace=#{service_namespace} -o custom-columns=:metadata.name -l app=#{service_name} --no-headers | head -n1) -- bash -c 'export PGPASSWORD=$(cat /opt/bitnami/pgpool/secrets/pgpool_sr_check_password) && psql -qAtX -h localhost -U $PGPOOL_SR_CHECK_USER -d postgres -c \"show pool_nodes\"'") do
+      countInventoryHosts("postgresql").times do |i|
+        its(:stdout) { should match /^#{i}\|.*\|up\|.*(primary\|([1-9][0-9]*)|standby\|([1-9][0-9]*)\|.*streaming)/ }
         its(:exit_status) { should eq 0 }
       end
     end
   end
 
-end 
+end
+

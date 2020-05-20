@@ -118,7 +118,7 @@ describe 'Checking if PostgreSQL service is running' do
   end
 end
 
-if use_repmgr
+if replicated && use_repmgr
   describe 'Checking if repmgr service is running' do
     if os[:family] == 'redhat'
       describe service('repmgr10') do
@@ -444,6 +444,21 @@ end
 
 if !replicated
   queryForDropping
+
+  if pgbouncer_enabled
+    describe 'Dropping test user' do
+      let(:disable_sudo) { false }
+      describe command("su - postgres -c \"psql -t -c 'DROP USER #{pg_user};'\" 2>&1") do
+        its(:stdout) { should match /^DROP ROLE$/ }
+        its(:exit_status) { should eq 0 }
+      end
+      describe command("su - -c \"sed -i '/#{pg_pass}/d' /etc/pgbouncer/userlist.txt && cat /etc/pgbouncer/userlist.txt\" 2>&1") do
+        its(:stdout) { should_not match /#{pg_pass}/ }
+        its(:exit_status) { should eq 0 }
+      end
+    end
+  end
+
 end
 
 if replicated && (listInventoryHosts("postgresql")[1].include? host_inventory['hostname'])
