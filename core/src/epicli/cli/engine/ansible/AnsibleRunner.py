@@ -6,10 +6,12 @@ from os.path import dirname
 
 from cli.engine.ansible.AnsibleCommand import AnsibleCommand
 from cli.engine.ansible.AnsibleInventoryCreator import AnsibleInventoryCreator
+from cli.engine.ansible.AnsibleConfigFileCreator import AnsibleConfigFileCreator
 from cli.engine.ansible.AnsibleVarsGenerator import AnsibleVarsGenerator
 from cli.engine.ansible.AnsibleInventoryUpgrade import AnsibleInventoryUpgrade
 from cli.helpers.Step import Step
-from cli.helpers.build_saver import get_inventory_path, get_inventory_path_for_build, get_ansible_path, get_ansible_path_for_build, copy_files_recursively
+from cli.helpers.build_saver import (get_inventory_path, get_inventory_path_for_build, get_ansible_path,
+    get_ansible_path_for_build, copy_files_recursively)
 from cli.helpers.naming_helpers import to_role_name
 from cli.helpers.data_loader import DATA_FOLDER_PATH
 from cli.helpers.Config import Config
@@ -18,12 +20,14 @@ from cli.helpers.Config import Config
 class AnsibleRunner(Step):
     ANSIBLE_PLAYBOOKS_PATH = DATA_FOLDER_PATH + '/common/ansible/playbooks/'
 
-    def __init__(self, cluster_model=None, config_docs=None, build_dir=None, backup_build_dir=None):
+    def __init__(self, cluster_model=None, config_docs=None, build_dir=None, backup_build_dir=None,
+                 ansible_options=None):
         super().__init__(__name__)
         self.cluster_model = cluster_model
         self.config_docs = config_docs
         self.build_dir = build_dir
         self.backup_build_dir = backup_build_dir
+        self.ansible_options = ansible_options
         self.ansible_command = AnsibleCommand()
 
     def __enter__(self):
@@ -90,6 +94,10 @@ class AnsibleRunner(Step):
         inventory_creator.create()
         time.sleep(10)
 
+        # create ansible.cfg
+        ansible_cfg_creator = AnsibleConfigFileCreator(self.ansible_options, self.cluster_model)
+        ansible_cfg_creator.create()
+
         # generate vars
         ansible_vars_generator = AnsibleVarsGenerator(inventory_creator=inventory_creator)      
         ansible_vars_generator.generate()
@@ -116,6 +124,10 @@ class AnsibleRunner(Step):
         # upgrade inventory
         inventory_upgrade = AnsibleInventoryUpgrade(self.build_dir, self.backup_build_dir)
         inventory_upgrade.upgrade()
+
+        # create ansible.cfg
+        ansible_cfg_creator = AnsibleConfigFileCreator(self.ansible_options, self.cluster_model)
+        ansible_cfg_creator.create()
 
         # generate vars
         ansible_vars_generator = AnsibleVarsGenerator(inventory_upgrade=inventory_upgrade)      

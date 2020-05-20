@@ -20,8 +20,9 @@ from cli.engine.ansible.AnsibleRunner import AnsibleRunner
 class ApplyEngine(Step):
     def __init__(self, input_data):
         self.file = input_data.file
-        self.skip_infrastructure = input_data.no_infra if hasattr(input_data, 'no_infra') else False
-        self.skip_config = input_data.skip_config if hasattr(input_data, 'skip_config') else False
+        self.skip_infrastructure = getattr(input_data, 'no_infra', False)
+        self.skip_config = getattr(input_data, 'skip_config', False)
+        self.ansible_options = {'profile_tasks': getattr(input_data, 'profile_ansible_tasks', False)}
         self.logger = Log(__name__)
 
         self.cluster_model = None
@@ -147,7 +148,7 @@ class ApplyEngine(Step):
 
         # Run Ansible to provision infrastructure
         if not(self.skip_config):
-            with AnsibleRunner(self.cluster_model, docs) as ansible_runner:
+            with AnsibleRunner(self.cluster_model, docs, ansible_options=self.ansible_options) as ansible_runner:
                 ansible_runner.apply()
 
         return 0

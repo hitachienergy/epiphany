@@ -23,6 +23,7 @@ class AnsibleInventoryCreator(Step):
 
     # todo: add login for ansible
     def create(self):
+        self.logger.info('Creating Ansible inventory')
         inventory = self.get_inventory()
         save_inventory(inventory, self.cluster_model)
 
