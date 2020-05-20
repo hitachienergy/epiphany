@@ -8,6 +8,20 @@
   tasks:
     - import_role:
         name: recovery
-        tasks_from: monitoring
+        tasks_from: monitoring_prometheus_etc
+    - import_role:
+        name: recovery
+        tasks_from: monitoring_prometheus_snapshot
   vars_files:
     - roles/prometheus/vars/main.yml
+
+- hosts: grafana[0]
+  become: true
+  become_method: sudo
+  serial: 1
+  tasks:
+    - import_role:
+        name: recovery
+        tasks_from: monitoring_grafana_data
+  vars_files:
+    - roles/grafana/vars/main.yml

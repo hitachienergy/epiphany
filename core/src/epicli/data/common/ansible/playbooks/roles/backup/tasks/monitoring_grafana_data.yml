@@ -1,0 +1,52 @@
+---
+- name: Assert that the "snapshot_name" fact is defined and valid
+  assert:
+    that:
+      - snapshot_name is defined
+      - snapshot_name is string
+      - snapshot_name | length > 0
+    fail_msg: The "snapshot_name" fact must be defined and must be a non-empty string.
+
+- name: Create and copy data archive to backup destination
+  always:
+    - name: Delete data archive (cleanup)
+      file:
+        path: "{{ item }}"
+        state: absent
+      loop:
+        - "{{ backup_dir }}/grafana_data_{{ snapshot_name }}.tar.gz"
+        - "{{ backup_dir }}/grafana_data_{{ snapshot_name }}.tar.gz.sha1"
+
+  block:
+    - name: Ensure backup dir exists
+      file:
+        path: "{{ backup_dir }}/"
+        state: directory
+
+    - name: Create data archive
+      archive:
+        dest: "{{ backup_dir }}/grafana_data_{{ snapshot_name }}.tar.gz"
+        path: "{{ specification.grafana_data_dir }}/"  # keep the / here!
+        format: gz
+
+    - name: Calculate checksum from data archive
+      stat:
+        path: "{{ backup_dir }}/grafana_data_{{ snapshot_name }}.tar.gz"
+        get_attributes: false
+        get_checksum: true
+        get_mime: false
+        checksum_algorithm: sha1
+      register: stat_data_archive
+
+    - name: Store data archive checksum in a file
+      copy:
+        dest: "{{ backup_dir }}/grafana_data_{{ snapshot_name }}.tar.gz.sha1"
+        content: |
+          {{ stat_data_archive.stat.checksum }}  grafana_data_{{ snapshot_name }}.tar.gz
+
+    - name: Transfer data archive via rsync
+      import_tasks: download_via_rsync.yml
+      vars:
+        artifacts:
+          - "{{ backup_dir }}/grafana_data_{{ snapshot_name }}.tar.gz"
+          - "{{ backup_dir }}/grafana_data_{{ snapshot_name }}.tar.gz.sha1"
