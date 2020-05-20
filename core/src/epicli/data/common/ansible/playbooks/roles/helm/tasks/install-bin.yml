@@ -1,5 +1,5 @@
 ---
-- name: Download and unpack Helm binary
+- name: Unpack Helm binary
   unarchive: 
     src: "{{ specification.apache_epirepo_path }}/files/helm-{{ specification.version }}-linux-amd64.tar.gz"
     dest: "/usr/local/bin"
