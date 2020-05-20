@@ -1,0 +1,8 @@
+---
+
+- hosts: kubernetes_master[0]
+  become: true
+  become_method: sudo
+  become_flags: --login
+  roles:
+    - helm 

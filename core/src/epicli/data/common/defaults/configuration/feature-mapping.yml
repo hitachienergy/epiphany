@@ -47,6 +47,8 @@ specification:
       enabled: yes
     - name: haproxy-exporter
       enabled: yes
+    - name: helm
+      enabled: yes 
     - name: vault
       enabled: yes
     - name: applications
@@ -108,6 +110,7 @@ specification:
       - repository
       - image-registry
       - kubernetes-master
+      - helm
       - applications
       - rabbitmq
       - postgresql
@@ -116,6 +119,7 @@ specification:
       - image-registry
       - kubernetes-master
       - repository
+      - helm
       - applications
       - node-exporter
       - filebeat
