@@ -76,3 +76,7 @@
 
 - name: Set up repositories
   include_tasks: "{{ ansible_os_family }}/setup.yml"
+
+- name: Include Helm repository creation
+  include_tasks: "create-helm-repo.yml"
+  when: inventory_hostname == target_repository_hostnames[0]
