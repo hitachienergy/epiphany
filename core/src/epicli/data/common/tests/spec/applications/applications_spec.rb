@@ -5,26 +5,26 @@ require 'applications/auth-service/auth-service'
 require 'applications/ignite-stateless/ignite-stateless'
 require 'applications/pgpool/pgpool'
 
-# if !readDataYaml("configuration/applications")["specification"]["applications"].select {|i| i["name"] == 'rabbitmq'}.empty? &&
-#   readDataYaml("configuration/applications")["specification"]["applications"].detect {|i| i["name"] == 'rabbitmq'}["enabled"]
+if !readDataYaml("configuration/applications")["specification"]["applications"].select {|i| i["name"] == 'rabbitmq'}.empty? &&
+  readDataYaml("configuration/applications")["specification"]["applications"].detect {|i| i["name"] == 'rabbitmq'}["enabled"]
 
-#   callRabbitMQDeploymentTests
+  callRabbitMQDeploymentTests
 
-# end
+end
 
-# if !readDataYaml("configuration/applications")["specification"]["applications"].select {|i| i["name"] == 'auth-service'}.empty? &&
-#   readDataYaml("configuration/applications")["specification"]["applications"].detect {|i| i["name"] == 'auth-service'}["enabled"]
+if !readDataYaml("configuration/applications")["specification"]["applications"].select {|i| i["name"] == 'auth-service'}.empty? &&
+  readDataYaml("configuration/applications")["specification"]["applications"].detect {|i| i["name"] == 'auth-service'}["enabled"]
 
-#   callAuthServiceDeploymentTests
+  callAuthServiceDeploymentTests
 
-# end
+end
 
-# if !readDataYaml("configuration/applications")["specification"]["applications"].select {|i| i["name"] == 'ignite-stateless'}.empty? &&
-#   readDataYaml("configuration/applications")["specification"]["applications"].detect {|i| i["name"] == 'ignite-stateless'}["enabled"]
+if !readDataYaml("configuration/applications")["specification"]["applications"].select {|i| i["name"] == 'ignite-stateless'}.empty? &&
+  readDataYaml("configuration/applications")["specification"]["applications"].detect {|i| i["name"] == 'ignite-stateless'}["enabled"]
 
-#   callIgniteDeploymentTests
+  callIgniteDeploymentTests
   
-# end
+end
 
 if !readDataYaml("configuration/applications")["specification"]["applications"].select {|i| i["name"] == 'pgpool'}.empty? &&
   readDataYaml("configuration/applications")["specification"]["applications"].detect {|i| i["name"] == 'pgpool'}["enabled"]
