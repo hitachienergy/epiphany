@@ -51,8 +51,9 @@
     - name: Create definitions archive
       archive:
         dest: "{{ backup_dir }}/rabbitmq_definitions_{{ snapshot_name }}.tar.gz"
-        path: /var/lib/rabbitmq/definitions/definitions?{{ snapshot_name }}.json  # ? is used here as a workaround
+        path: /var/lib/rabbitmq/definitions/definitions-{{ snapshot_name }}.json
         format: gz
+        force_archive: true
 
     - name: Calculate checksum from definitions archive
       stat:
