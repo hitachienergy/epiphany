@@ -23,14 +23,6 @@
     - not custom_repository_url
     - inventory_hostname in target_repository_hostnames
 
-- name: Include Helm binary installation 
-  include_role:
-    name: helm
-    tasks_from: install-bin
-
-- name: Include helm repository creation
-  include_tasks: "create-helm-repo.yml"
-
 - name: Disable system repositories and set up epirepo
   block:
     - name: Create list of enabled repositories
