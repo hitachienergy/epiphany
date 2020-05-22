@@ -82,6 +82,10 @@ function enable_vault_kubernetes_authentication {
     fi
 }
 
+function integrate_with_kubernetes {
+    log_and_print "Todo: Checking if Kubernetes integration";
+}
+
 function cleanup {
     rm -f "$HOME/.vault-token";
 }
@@ -122,6 +126,10 @@ if [ "${ENABLE_AUDITING,,}" = "true" ] ; then
 fi
 
 mount_secret_path "$SECRET_PATH";
+
+if [ "${ENABLE_VAULT_KUBERNETES_AUTHENTICATION,,}" = "true" ] ; then
+    enable_vault_kubernetes_authentication;
+fi
 
 if [ "${KUBERNETES_INTEGRATION,,}" = "true" ] ; then
     enable_vault_kubernetes_authentication;
