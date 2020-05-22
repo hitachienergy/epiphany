@@ -20,7 +20,7 @@ function exit_with_error {
 }
 
 function check_vault_error {
-    local exit_code ="$1";
+    local exit_code="$1";
     local success_message="$2";
     local failure_message="$3";
     if [ "$exit_code" != "1" ] ; then
@@ -40,13 +40,14 @@ function unseal_vault {
 }
 
 function enable_vault_audit_logs {
-    log_and_print "Enabling auditing.";
+    log_and_print "Checking if audit is enabled...";
     vault audit list | grep "file";
-    local COMMAND_RESULT=(${PIPESTATUS[@]})
-    if [ "$COMMAND_RESULT[0]" = "1"] ; then
+    local command_result=( ${PIPESTATUS[@]} );
+    if [ "${command_result[0]}" = "1"] ; then
         exit_with_error "There was an error during listing auditing.";
     fi
-    if [ "$COMMAND_RESULT[1]" = "1" ] ; then
+    if [ "${command_result[1]}" = "1" ] ; then
+        log_and_print "Enabling auditing...";
         vault audit enable file file_path="/var/log/vault_audit.log";
         check_vault_error "$?" "Auditing enabled." "There was an error during enabling auditing.";
     fi
@@ -54,26 +55,28 @@ function enable_vault_audit_logs {
 
 function mount_secret_path {
     local secret_path="$1";
-    log_and_print "Mounting secret engine...";
+    log_and_print "Checking if secret engine has been initialized already...";
     vault secrets list | grep "$secret_path/";
-    local command_result=(${PIPESTATUS[@]})
-    if [ "$command_result[0]" = "1" ] ; then
+    local command_result=( ${PIPESTATUS[@]} );
+    if [ "${command_result[0]}" = "1" ] ; then
         exit_with_error "There was an error during listing secret engines.";
     fi
-    if [ "$command_result[1]" = "1" ] ; then
+    if [ "${command_result[1]}" = "1" ] ; then
+        log_and_print "Mounting secret engine...";
         vault secrets enable -path="$secret_path" -version=2 kv;
         check_vault_error "$?" "Secret engine enabled under path: $secret_path." "There was an error during enabling secret engine under path: $secret_path.";
     fi
 }
 
-function integrate_with_kubernetes {
-    log_and_print "Turning on Kubernetes integration.";
+function enable_vault_kubernetes_authentication {
+    log_and_print "Checking if Kubernetes authentication has been enabled";
     vault auth list | grep kubernetes;
-    local command_result=(${PIPESTATUS[@]})
-    if [ "$command_result[0]" = "1" ] ; then
+    local command_result=( ${PIPESTATUS[@]} );
+    if [ "${command_result[0]}" = "1" ] ; then
         exit_with_error "There was an error during listing authentication methods.";
     fi
-    if [ "$command_result[1]" = "1" ] ; then
+    if [ "${command_result[1]}" = "1" ] ; then
+        log_and_print "Turning on Kubernetes integration...";
         vault auth enable kubernetes;
         check_vault_error "$?" "Kubernetes authentication enabled." "There was an error during enabling Kubernetes authentication.";
     fi
@@ -121,7 +124,7 @@ fi
 mount_secret_path "$SECRET_PATH";
 
 if [ "${KUBERNETES_INTEGRATION,,}" = "true" ] ; then
-    integrate_with_kubernetes;
+    enable_vault_kubernetes_authentication;
 fi
 
 exit 0;
