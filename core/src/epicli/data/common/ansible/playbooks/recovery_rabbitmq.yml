@@ -1,0 +1,24 @@
+---
+# Ansible playbook for recovering rabbitmq config
+
+- hosts: rabbitmq
+  become: true
+  become_method: sudo
+  serial: 1
+  tasks:
+    - import_role:
+        name: recovery
+        tasks_from: rabbitmq_rabbitmq_etc
+  vars_files:
+    - roles/rabbitmq/vars/main.yml
+
+- hosts: rabbitmq[0]
+  become: true
+  become_method: sudo
+  serial: 1
+  tasks:
+    - import_role:
+        name: recovery
+        tasks_from: rabbitmq_rabbitmq_definitions
+  vars_files:
+    - roles/rabbitmq/vars/main.yml
