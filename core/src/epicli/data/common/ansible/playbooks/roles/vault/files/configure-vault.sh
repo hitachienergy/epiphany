@@ -30,13 +30,42 @@ function check_vault_error {
     fi
 }
 
+function initialize_vault {
+    local init_file_path="$1";
+    log_and_print "Checking if Vault is already initialized...";
+    vault status | grep -e 'Initialized[[:space:]]*true';
+    local command_result=( ${PIPESTATUS[@]} );
+    if [ "${command_result[0]}" = "1" ] ; then
+        exit_with_error "There was an error during checking status of Vault.";
+    fi
+    if [ "${command_result[1]}" = "0" ] ; then
+        log_and_print "Vault has been aldready initialized.";
+    fi
+    if [ "${command_result[1]}" = "1" ] ; then
+        log_and_print "Initializing vault...";
+        vault operator init > $init_file_path;
+        check_vault_error "$?" "Vault initialized." "There was an error during initialization of Vault.";
+    fi
+}
+
 function unseal_vault {
-  local init_file_path="$1";
-  log_and_print "Unsealing Vault.";
-  grep --max-count=3 Unseal "$init_file_path" | awk '{print $4}' | while read -r line ; do
-    vault operator unseal "$line";
-    check_vault_error "$?" "Unseal performed." "There was an error during unsealing of Vault.";
-  done
+    local init_file_path="$1";
+    log_and_print "Checking if vault is already unsealed...";
+    vault status | grep -e 'Sealed[[:space:]]*false';
+    local command_result=( ${PIPESTATUS[@]} );
+    if [ "${command_result[0]}" = "1" ] ; then
+        exit_with_error "There was an error during checking status of Vault.";
+    fi
+    if [ "${command_result[1]}" = "0" ] ; then
+        log_and_print "Vault has been aldready usealed.";
+    fi
+    if [ "${command_result[1]}" = "1" ] ; then
+        log_and_print "Unsealing Vault.";
+        grep --max-count=3 Unseal "$init_file_path" | awk '{print $4}' | while read -r line ; do
+            vault operator unseal "$line";
+            check_vault_error "$?" "Unseal performed." "There was an error during unsealing of Vault.";
+        done
+    fi
 }
 
 function enable_vault_audit_logs {
@@ -69,7 +98,7 @@ function mount_secret_path {
 }
 
 function enable_vault_kubernetes_authentication {
-    log_and_print "Checking if Kubernetes authentication has been enabled";
+    log_and_print "Checking if Kubernetes authentication has been enabled...";
     vault auth list | grep kubernetes;
     local command_result=( ${PIPESTATUS[@]} );
     if [ "${command_result[0]}" = "1" ] ; then
@@ -111,6 +140,8 @@ PATH=$VAULT_INSTALL_PATH/bin:$PATH
 
 trap cleanup EXIT INT TERM;
 
+initialize_vault "$INIT_FILE_PATH";
+
 if [ "${SCRIPT_AUTO_UNSEAL,,}" = "true" ] ; then
     unseal_vault "$INIT_FILE_PATH";
 fi
@@ -134,5 +165,3 @@ fi
 if [ "${KUBERNETES_INTEGRATION,,}" = "true" ] ; then
     enable_vault_kubernetes_authentication;
 fi
-
-exit 0;
