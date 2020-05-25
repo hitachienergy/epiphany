@@ -116,14 +116,6 @@
         state: started
         enabled: yes
 
-    - name: Check if Vault was already initialized
-      shell: >-
-        {{ specification.vault_install_dir }}/bin/vault status -address='http://{{ ansible_default_ipv4.address }}:8200' | grep -e 'Initialized[[:space:]]*true'
-      register: vault_init_output
-      args:
-        executable: /bin/bash
-      failed_when: "vault_init_output.rc == 2"
-
     - name: Copy Vault configuration script
       copy:
         src: configure-vault.sh
@@ -131,15 +123,6 @@
         owner: "{{ specification.vault_system_user }}"
         group: "{{ specification.vault_system_group }}"
         mode: u=rwx,g=r,o=
-
-    - name: Initialize Vault
-      when: vault_init_output.stdout == ""
-      shell: "{{ specification.vault_install_dir }}/bin/vault operator init -address='http://{{ ansible_default_ipv4.address }}:8200' > {{ specification.vault_install_dir }}/init.txt"
-
-    - name: Check if init file exists
-      stat:
-        path: "{{ specification.vault_install_dir }}/init.txt"
-      register: init_file_stat
 
     - name: Generate config script confiugration
       template:
@@ -152,7 +135,6 @@
     - name: Run configuration script
       when:
         - specification.vault_script_unseal
-        - init_file_stat.stat.exists
       shell: >-
         {{ specification.vault_install_dir }}/bin/configure-vault.sh
         -c {{ specification.vault_install_dir }}/script.config
@@ -160,7 +142,7 @@
 
     - name: Display information about running configuration script
       when:
-        - not init_file_stat.stat.exists or not  specification.vault_script_unseal
+        - not specification.vault_script_unseal
       debug:
         msg: "Init file doesn't exist or you have chosen manual unseal, so to finish configuration please run script manually with command:
               {{ specification.vault_install_dir }}/bin/configure-vault.sh -c {{ specification.vault_install_dir }}/script.config -a {{ ansible_default_ipv4.address }}.
