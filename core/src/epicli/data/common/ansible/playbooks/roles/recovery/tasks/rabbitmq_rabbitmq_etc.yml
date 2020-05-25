@@ -1,0 +1,76 @@
+---
+- name: Find all rabbitmq etc archives
+  delegate_to: "{{ recovery_source_host }}"
+  find:
+    paths: "{{ recovery_source_dir }}/"
+    patterns: "rabbitmq_etc_*-*.tar.gz"
+    file_type: file
+    recurse: false
+  register: find_rabbitmq_etc_archives
+
+- name: Do sanity check if there are any etc archives available
+  assert:
+    that: find_rabbitmq_etc_archives.matched > 0
+    fail_msg: No etc archives found.
+
+- name: Pick the newest etc archive
+  set_fact:
+    newest_etc_archive_path: >-
+      {{ find_rabbitmq_etc_archives.files | map(attribute='path') | max }}
+
+- name: Transfer etc archive via rsync
+  import_tasks: upload_via_rsync.yml
+  vars:
+    artifacts:
+      - "{{ newest_etc_archive_path }}"
+      - "{{ newest_etc_archive_path }}.sha1"
+
+- name: Slurp etc archive checksum from file
+  slurp:
+    path: "{{ recovery_dir }}/{{ newest_etc_archive_path | basename }}.sha1"
+  register: slurp_etc_archive_checksum
+
+- name: Calculate checksum from etc archive
+  stat:
+    path: "{{ recovery_dir }}/{{ newest_etc_archive_path | basename }}"
+    get_attributes: false
+    get_checksum: true
+    get_mime: false
+    checksum_algorithm: sha1
+  register: stat_etc_archive
+
+- name: Compare etc archive checksums
+  assert:
+    that: (slurp_etc_archive_checksum.content | b64decode | trim).startswith(stat_etc_archive.stat.checksum)
+    fail_msg: Checksums do not match.
+
+- name: Stop rabbitmq service
+  systemd:
+    name: rabbitmq-server
+    state: stopped
+
+- name: Find everything in the etc directory
+  find:
+    paths: /etc/rabbitmq/
+    patterns: "*"
+    file_type: any
+    recurse: false
+  register: find_everything_in_etc_directory
+
+- name: Remove all rabbitmq etc config files
+  file:
+    path: "{{ item }}"
+    state: absent
+  loop: >-
+    {{ find_everything_in_etc_directory.files | map(attribute='path') | list }}
+
+- name: Extract etc archive to etc directory
+  unarchive:
+    dest: /etc/rabbitmq/
+    src: "{{ recovery_dir }}/{{ newest_etc_archive_path | basename }}"
+    remote_src: true
+
+- name: Start rabbitmq service
+  systemd:
+    name: rabbitmq-server
+    state: started
