@@ -36,12 +36,6 @@
         chart_subname: "{{ item.split('/')[1] }}"
       loop: "{{ helm_charts_list_before_update.stdout_lines }}"
       when: item not in helm_charts_list_after_update.stdout_lines
-
-    - name: Install Helm charts 
-      shell: helm upgrade --install {{ chart_subname }} {{ item }}
-      vars:
-        chart_subname: "{{ item.split('/')[1] }}"
-      loop: "{{ helm_charts_list_after_update.stdout_lines }}"
   when: 
     - helm_charts_files_number.matched > 1
 
