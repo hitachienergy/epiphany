@@ -2,29 +2,29 @@ from cli.helpers.ObjDict import ObjDict
 from copy import deepcopy
 
 
-def _nested_dict_to_dict(d, *, src_class, dst_class):
-    if isinstance(d, src_class):
+def _nested_dict_to_dict(something, *, src_class, dst_class):
+    if isinstance(something, src_class):
         return dst_class(
-            (k, _nested_dict_to_dict(v, src_class=src_class, dst_class=dst_class))
-            for k, v in d.items()
+            (key, _nested_dict_to_dict(value, src_class=src_class, dst_class=dst_class))
+            for key, value in something.items()
         )
-    if isinstance(d, list):
+    if isinstance(something, list):
         return list(
-            _nested_dict_to_dict(v, src_class=src_class, dst_class=dst_class)
-            for v in d
+            _nested_dict_to_dict(value, src_class=src_class, dst_class=dst_class)
+            for value in something
         )
     # Clone everything unexpected
-    return deepcopy(d)
+    return deepcopy(something)
 
 
-def dict_to_objdict(d):
+def dict_to_objdict(something):
     """Recursively convert any dictionary (subclass of dict) to ObjDict."""
-    return _nested_dict_to_dict(d, src_class=dict, dst_class=ObjDict)
+    return _nested_dict_to_dict(something, src_class=dict, dst_class=ObjDict)
 
 
-def objdict_to_dict(d):
+def objdict_to_dict(something):
     """Recursively convert any ObjDict to python dictionary."""
-    return _nested_dict_to_dict(d, src_class=dict, dst_class=dict)  # ObjDict is a subclass of dict
+    return _nested_dict_to_dict(something, src_class=dict, dst_class=dict)  # ObjDict is a subclass of dict
 
 
 def merge_objdict(to_merge, extend_by):

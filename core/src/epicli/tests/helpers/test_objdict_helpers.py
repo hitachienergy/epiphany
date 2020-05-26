@@ -4,7 +4,7 @@ from cli.helpers.ObjDict import ObjDict
 from collections import OrderedDict
 
 
-def test_dict_to_objdict_simple():
+def test_dict_to_objdict():
     base = {
         'field1': {
             'field2': {
@@ -24,7 +24,7 @@ def test_dict_to_objdict_simple():
     assert converted.field1.field2.field3.field4 == 'val'
 
 
-def test_dict_to_objdict_mixed():
+def test_dict_to_objdict_different_dict_types():
     base = {
         'field1': ObjDict({
             'field2': {
@@ -44,7 +44,7 @@ def test_dict_to_objdict_mixed():
     assert converted.field1.field2.field3.field4 == 'val'
 
 
-def test_dict_to_objdict_simple_nested_with_lists():
+def test_dict_to_objdict_nested_with_lists():
     base = {
         'field1': [
             {
