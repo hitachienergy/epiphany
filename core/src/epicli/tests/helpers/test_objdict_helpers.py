@@ -1,6 +1,8 @@
 from cli.helpers.objdict_helpers import merge_objdict, dict_to_objdict, objdict_to_dict
 from cli.helpers.ObjDict import ObjDict
 
+from collections import OrderedDict
+
 
 def test_dict_to_objdict():
     base = {
@@ -20,6 +22,52 @@ def test_dict_to_objdict():
     assert type(converted.field1.field2.field3) is ObjDict
     assert type(converted.field1.field2.field3.field4) is str
     assert converted.field1.field2.field3.field4 == 'val'
+
+
+def test_dict_to_objdict_different_dict_types():
+    base = {
+        'field1': ObjDict({
+            'field2': {
+                'field3': OrderedDict({
+                    'field4': 'val'
+                })
+            }
+        })
+    }
+    converted = dict_to_objdict(base)
+
+    assert type(converted) is ObjDict
+    assert type(converted.field1) is ObjDict
+    assert type(converted.field1.field2) is ObjDict
+    assert type(converted.field1.field2.field3) is ObjDict
+    assert type(converted.field1.field2.field3.field4) is str
+    assert converted.field1.field2.field3.field4 == 'val'
+
+
+def test_dict_to_objdict_nested_with_lists():
+    base = {
+        'field1': [
+            {
+                'field2': {
+                    'field3': [
+                        {
+                            'field4': 'val'
+                        },
+                    ]
+                }
+            },
+        ]
+    }
+    converted = dict_to_objdict(base)
+
+    assert type(converted) is ObjDict
+    assert type(converted.field1) is list
+    assert type(converted.field1[0]) is ObjDict
+    assert type(converted.field1[0].field2) is ObjDict
+    assert type(converted.field1[0].field2.field3) is list
+    assert type(converted.field1[0].field2.field3[0]) is ObjDict
+    assert type(converted.field1[0].field2.field3[0].field4) is str
+    assert converted.field1[0].field2.field3[0].field4 == 'val'
 
 
 def test_objdict_to_dict():
