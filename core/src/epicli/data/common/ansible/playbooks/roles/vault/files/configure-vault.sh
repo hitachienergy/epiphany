@@ -68,6 +68,18 @@ function unseal_vault {
     fi
 }
 
+function check_if_vault_is_unsealed {
+    log_and_print "Checking if vault is already unsealed...";
+    vault status;
+    local command_result="$?";
+    if [ "$command_result" = "1" ] ; then
+        exit_with_error "There was an error during checking status of Vault.";
+    fi
+    if [ "$command_result" = "2" ] ; then
+        exit_with_error "Vault hasn't been successfully unsealed. Please configure script for auto-unseal option operator unseal Vault manually.";
+    fi
+}
+
 function enable_vault_audit_logs {
     log_and_print "Checking if audit is enabled...";
     vault audit list | grep "file";
@@ -146,6 +158,8 @@ if [ "${SCRIPT_AUTO_UNSEAL,,}" = "true" ] ; then
     unseal_vault "$INIT_FILE_PATH";
 fi
 
+check_if_vault_is_unsealed;
+
 log_and_print "Logging into Vault.";
 LOGIN_TOKEN="$(grep "Initial Root Token:" "$INIT_FILE_PATH" | awk -F'[ ]' '{print $4}')";
 vault login -no-print "$LOGIN_TOKEN";
@@ -158,7 +172,7 @@ fi
 
 mount_secret_path "$SECRET_PATH";
 
-if [ "${ENABLE_VAULT_KUBERNETES_AUTHENTICATION,,}" = "true" ] ; then
+if [ "${KUBERNETES_INTEGRATION,,}" = "true" ]  || [ "${ENABLE_VAULT_KUBERNETES_AUTHENTICATION,,}" = "true" ] ; then
     enable_vault_kubernetes_authentication;
 fi
 
