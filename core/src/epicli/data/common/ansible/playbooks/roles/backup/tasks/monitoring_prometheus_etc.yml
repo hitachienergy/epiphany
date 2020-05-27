@@ -1,52 +1,27 @@
 ---
-- name: Assert that the "snapshot_name" fact is defined and valid
+- name: Assert that the snapshot_name fact is defined and valid
   assert:
     that:
       - snapshot_name is defined
       - snapshot_name is string
       - snapshot_name | length > 0
-    fail_msg: The "snapshot_name" fact must be defined and must be a non-empty string.
+    fail_msg: The snapshot_name fact must be defined and must be a non-empty string.
 
-- name: Create and copy etc archive to backup destination
-  always:
-    - name: Delete etc archive (cleanup)
-      file:
-        path: "{{ item }}"
-        state: absent
-      loop:
-        - "{{ backup_dir }}/prometheus_etc_{{ snapshot_name }}.tar.gz"
-        - "{{ backup_dir }}/prometheus_etc_{{ snapshot_name }}.tar.gz.sha1"
+- debug: var=snapshot_name
 
-  block:
-    - name: Ensure backup dir exists
-      file:
-        path: "{{ backup_dir }}/"
-        state: directory
+- name: Create snapshot archive
+  import_tasks: common/create_snapshot_archive.yml
+  vars:
+    snapshot_prefix: "prometheus_etc"
+    dirs_to_archive:
+      - /etc/prometheus/
 
-    - name: Create etc archive
-      archive:
-        dest: "{{ backup_dir }}/prometheus_etc_{{ snapshot_name }}.tar.gz"
-        path: /etc/prometheus/  # keep the / here!
-        format: gz
+- name: Create snapshot checksum
+  import_tasks: common/create_snapshot_checksum.yml
 
-    - name: Calculate checksum from etc archive
-      stat:
-        path: "{{ backup_dir }}/prometheus_etc_{{ snapshot_name }}.tar.gz"
-        get_attributes: false
-        get_checksum: true
-        get_mime: false
-        checksum_algorithm: sha1
-      register: stat_prometheus_etc_archive
-
-    - name: Store etc archive checksum in a file
-      copy:
-        dest: "{{ backup_dir }}/prometheus_etc_{{ snapshot_name }}.tar.gz.sha1"
-        content: |
-          {{ stat_prometheus_etc_archive.stat.checksum }}  prometheus_etc_{{ snapshot_name }}.tar.gz
-
-    - name: Transfer etc archive via rsync
-      import_tasks: download_via_rsync.yml
-      vars:
-        artifacts:
-          - "{{ backup_dir }}/prometheus_etc_{{ snapshot_name }}.tar.gz"
-          - "{{ backup_dir }}/prometheus_etc_{{ snapshot_name }}.tar.gz.sha1"
+- name: Transfer artifacts via rsync
+  import_tasks: common/download_via_rsync.yml
+  vars:
+    artifacts:
+      - "{{ snapshot_path }}"
+      - "{{ snapshot_path }}.sha1"

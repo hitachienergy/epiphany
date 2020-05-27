@@ -1,73 +1,35 @@
 ---
-- name: Find all grafana data archives
-  delegate_to: "{{ recovery_source_host }}"
-  find:
-    paths: "{{ recovery_source_dir }}/"
-    patterns: "grafana_data_*-*.tar.gz"
-    file_type: file
-    recurse: false
-  register: find_data_archives
+- name: Find snapshot archive
+  import_tasks: common/find_snapshot_archive.yml
+  vars:
+    snapshot_prefix: "grafana_data"
+    snapshot_name: "{{ specification.components.monitoring.snapshot_name }}"
 
-- name: Do sanity check if there are any data archives available
-  assert:
-    that: find_data_archives.matched > 0
-    fail_msg: No data archives found.
-
-- name: Pick the newest data archive
-  set_fact:
-    newest_data_archive_path: >-
-      {{ find_data_archives.files | map(attribute='path') | max }}
-
-- name: Transfer data archive via rsync
-  import_tasks: upload_via_rsync.yml
+- name: Transfer the archive via rsync
+  import_tasks: common/upload_via_rsync.yml
   vars:
     artifacts:
-      - "{{ newest_data_archive_path }}"
-      - "{{ newest_data_archive_path }}.sha1"
+      - "{{ snapshot_path }}"
+      - "{{ snapshot_path }}.sha1"
 
-- name: Slurp data archive checksum from file
-  slurp:
-    path: "{{ recovery_dir }}/{{ newest_data_archive_path | basename }}.sha1"
-  register: slurp_data_archive_checksum
-
-- name: Calculate checksum from data archive
-  stat:
-    path: "{{ recovery_dir }}/{{ newest_data_archive_path | basename }}"
-    get_attributes: false
-    get_checksum: true
-    get_mime: false
-    checksum_algorithm: sha1
-  register: stat_data_archive
-
-- name: Compare data archive checksums
-  assert:
-    that: (slurp_data_archive_checksum.content | b64decode | trim).startswith(stat_data_archive.stat.checksum)
-    fail_msg: Checksums do not match.
+- name: Verify snapshot checksum
+  import_tasks: common/verify_snapshot_checksum.yml
 
 - name: Stop grafana service
   systemd:
     name: grafana-server
     state: stopped
 
-- name: Find everything in the data directory
-  find:
-    paths: "{{ specification.grafana_data_dir }}/"
-    patterns: "*"
-    file_type: any
-    recurse: false
-  register: find_everything_in_data_directory
+- name: Clear directories
+  import_tasks: common/clear_directories.yml
+  vars:
+    dirs_to_clear:
+      - "{{ component_vars.specification.grafana_data_dir }}/"
 
-- name: Remove all grafana data files
-  file:
-    path: "{{ item }}"
-    state: absent
-  loop: >-
-    {{ find_everything_in_data_directory.files | map(attribute='path') | list }}
-
-- name: Extract data archive to data directory
+- name: Extract the archive
   unarchive:
-    dest: "{{ specification.grafana_data_dir }}/"
-    src: "{{ recovery_dir }}/{{ newest_data_archive_path | basename }}"
+    dest: "{{ component_vars.specification.grafana_data_dir }}/"
+    src: "{{ recovery_dir }}/{{ snapshot_path | basename }}"
     remote_src: true
 
 - name: Start grafana service
