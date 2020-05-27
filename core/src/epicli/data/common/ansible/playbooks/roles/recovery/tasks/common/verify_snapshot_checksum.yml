@@ -1,0 +1,31 @@
+---
+# Invoke with (example):
+#- set_fact:
+#    snapshot_path: "rabbitmq_etc_20200526-102034.tar.gz"
+
+- name: Assert that the snapshot_path fact is defined and valid
+  assert:
+    that:
+      - snapshot_path is defined
+      - snapshot_path is string
+      - snapshot_path | length > 0
+    fail_msg: The snapshot_path fact must be defined and must be a non-empty string.
+
+- name: Slurp checksum from file
+  slurp:
+    path: "{{ recovery_dir }}/{{ snapshot_path | basename }}.sha1"
+  register: slurp_checksum
+
+- name: Calculate archive checksum
+  stat:
+    path: "{{ recovery_dir }}/{{ snapshot_path | basename }}"
+    get_attributes: false
+    get_checksum: true
+    get_mime: false
+    checksum_algorithm: sha1
+  register: stat_archive
+
+- name: Compare checksums
+  assert:
+    that: (slurp_checksum.content | b64decode | trim).startswith(stat_archive.stat.checksum)
+    fail_msg: Checksums do not match.
