@@ -271,7 +271,7 @@ def backup_parser(subparsers):
     sub_parser.add_argument('-f', '--file', dest='file', type=str,
                             help='File with infrastructure/configuration definitions to use.')
 
-    available_components = {'kubernetes', 'loadbalancer', 'logging', 'monitoring', 'postgresql', 'rabbitmq'}
+    available_components = {'kubernetes', 'load_balancer', 'logging', 'monitoring', 'postgresql', 'rabbitmq'}
 
     sub_parser.add_argument('-c', '--components', dest='components', type=get_component_parser(available_components), required=False,
                             help=f'Specify comma-separated list of components to backup.',
@@ -293,7 +293,7 @@ def recovery_parser(subparsers):
     sub_parser.add_argument('-f', '--file', dest='file', type=str,
                             help='File with infrastructure/configuration definitions to use.')
 
-    available_components = {'kubernetes', 'loadbalancer', 'logging', 'monitoring', 'postgresql', 'rabbitmq'}
+    available_components = {'kubernetes', 'load_balancer', 'logging', 'monitoring', 'postgresql', 'rabbitmq'}
 
     sub_parser.add_argument('-c', '--components', dest='components', type=get_component_parser(available_components), required=False,
                             help=f'Specify comma-separated list of components to recover.',

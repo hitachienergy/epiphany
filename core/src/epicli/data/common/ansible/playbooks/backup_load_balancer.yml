@@ -1,0 +1,16 @@
+---
+# Ansible playbook for backing up load_balancer config
+
+- hosts: haproxy[0]
+  become: true
+  become_method: sudo
+  serial: 1
+  tasks:
+    - when: specification.components.load_balancer.enabled | default(false)
+      block:
+        - include_vars:
+            file: roles/haproxy/vars/main.yml
+            name: component_vars
+        - import_role:
+            name: backup
+            tasks_from: load_balancer_haproxy_etc

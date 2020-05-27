@@ -1,0 +1,25 @@
+---
+- name: Set helper facts
+  set_fact:
+    snapshot_name: >-
+      {{ ansible_date_time.iso8601_basic_short | replace('T','-') }}
+
+- debug: var=snapshot_name
+
+- name: Create snapshot archive
+  import_tasks: common/create_snapshot_archive.yml
+  vars:
+    snapshot_prefix: "haproxy_etc"
+    dirs_to_archive:
+      - /etc/haproxy/
+      - /etc/ssl/haproxy/
+
+- name: Create snapshot checksum
+  import_tasks: common/create_snapshot_checksum.yml
+
+- name: Transfer artifacts via rsync
+  import_tasks: common/download_via_rsync.yml
+  vars:
+    artifacts:
+      - "{{ snapshot_path }}"
+      - "{{ snapshot_path }}.sha1"

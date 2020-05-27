@@ -5,7 +5,7 @@ specification:
   components:
     kubernetes:
       enabled: false
-    loadbalancer:
+    load_balancer:
       enabled: false
     logging:
       enabled: false

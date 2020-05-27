@@ -6,7 +6,7 @@ specification:
     kubernetes:
       enabled: false
       snapshot_name: latest
-    loadbalancer:
+    load_balancer:
       enabled: false
       snapshot_name: latest
     logging:
