@@ -1,0 +1,17 @@
+kind: configuration/backup
+title: Backup Config
+name: default
+specification:
+  components:
+    kubernetes:
+      enabled: false
+    loadbalancer:
+      enabled: false
+    logging:
+      enabled: false
+    monitoring:
+      enabled: false
+    postgresql:
+      enabled: false
+    rabbitmq:
+      enabled: false

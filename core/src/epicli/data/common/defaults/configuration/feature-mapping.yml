@@ -48,7 +48,7 @@ specification:
     - name: haproxy-exporter
       enabled: yes
     - name: helm
-      enabled: yes 
+      enabled: yes
     - name: vault
       enabled: yes
     - name: applications
@@ -140,4 +140,3 @@ specification:
       - node-exporter
       - filebeat
       - firewall
-
