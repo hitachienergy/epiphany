@@ -1,4 +1,9 @@
 ---
+- name: Set helper facts
+  set_fact:
+    snapshot_name: >-
+      {{ ansible_date_time.iso8601_basic_short | replace('T','-') }}
+
 - name: Ensure backup directory exists
   file:
     path: "{{ backup_dir }}/"
@@ -76,38 +81,19 @@
             dest: "{{ backup_temp_dir.path }}/"
             remote_src: true
 
-    - name: Get current timestamp
-      run_once: true
-      set_fact:
-        timestamp: "{{ ansible_date_time.iso8601_basic_short }}"
+    - name: Create snapshot archive
+      import_tasks: common/create_snapshot_archive.yml
+      vars:
+        snapshot_prefix: "k8s_snapshot"
+        dirs_to_archive:
+          - "{{ backup_temp_dir.path }}/"
 
-    - name: Create tar.gz archive
-      archive:
-        path: "{{ backup_temp_dir.path }}/"
-        dest: "{{ backup_dir }}/k8s_backup_{{ timestamp }}.tar.gz"
-        format: gz
+    - name: Create snapshot checksum
+      import_tasks: common/create_snapshot_checksum.yml
 
-    - name: Create checksum file
-      block:
-        - name: Calculate checksum
-          stat:
-            path: "{{ backup_dir }}/k8s_backup_{{ timestamp }}.tar.gz"
-            get_attributes: false
-            get_checksum: true
-            get_mime: false
-            checksum_algorithm: sha1
-          register: stat_k8s_backup_tar_gz
-
-        - name: Save checksum to a file
-          copy:
-            dest: "{{ stat_k8s_backup_tar_gz.stat.path }}.sha1"
-            content: |
-              {{ stat_k8s_backup_tar_gz.stat.checksum }}  {{ stat_k8s_backup_tar_gz.stat.path | basename }}
-
-    - name: Export artifact list for the download_via_rsync backup copy method
-      set_fact:
+    - name: Transfer artifacts via rsync
+      import_tasks: common/download_via_rsync.yml
+      vars:
         artifacts:
-          - "{{ stat_k8s_backup_tar_gz.stat.path }}"
-          - "{{ stat_k8s_backup_tar_gz.stat.path }}.sha1"
-
-    - import_tasks: download_via_rsync.yml
+          - "{{ snapshot_path }}"
+          - "{{ snapshot_path }}.sha1"

@@ -2,8 +2,8 @@
 - name: Find snapshot archive
   import_tasks: common/find_snapshot_archive.yml
   vars:
-    snapshot_prefix: "grafana_data"
-    snapshot_name: "{{ specification.components.monitoring.snapshot_name }}"
+    snapshot_prefix: "haproxy_etc"
+    snapshot_name: "{{ specification.components.load_balancer.snapshot_name }}"
 
 - name: Transfer the archive via rsync
   import_tasks: common/upload_via_rsync.yml
@@ -15,24 +15,25 @@
 - name: Verify snapshot checksum
   import_tasks: common/verify_snapshot_checksum.yml
 
-- name: Stop grafana service
+- name: Stop haproxy service
   systemd:
-    name: grafana-server
+    name: haproxy
     state: stopped
 
 - name: Clear directories
   import_tasks: common/clear_directories.yml
   vars:
     dirs_to_clear:
-      - "{{ component_vars.specification.grafana_data_dir }}/"
+      - /etc/haproxy/
+      - /etc/ssh/haproxy/
 
 - name: Extract the archive
   unarchive:
-    dest: "{{ component_vars.specification.grafana_data_dir }}/"
+    dest: /etc/
     src: "{{ recovery_dir }}/{{ snapshot_path | basename }}"
     remote_src: true
 
-- name: Start grafana service
+- name: Start haproxy service
   systemd:
-    name: grafana-server
+    name: haproxy
     state: started

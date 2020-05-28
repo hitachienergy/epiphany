@@ -1,20 +1,18 @@
 ---
-- name: Assert that the snapshot_name fact is defined and valid
-  assert:
-    that:
-      - snapshot_name is defined
-      - snapshot_name is string
-      - snapshot_name | length > 0
-    fail_msg: The snapshot_name fact must be defined and must be a non-empty string.
+- name: Set helper facts
+  set_fact:
+    snapshot_name: >-
+      {{ ansible_date_time.iso8601_basic_short | replace('T','-') }}
 
 - debug: var=snapshot_name
 
 - name: Create snapshot archive
   import_tasks: common/create_snapshot_archive.yml
   vars:
-    snapshot_prefix: "prometheus_etc"
+    snapshot_prefix: "haproxy_etc"
     dirs_to_archive:
-      - /etc/prometheus/
+      - /etc/haproxy/
+      - /etc/ssl/haproxy/
 
 - name: Create snapshot checksum
   import_tasks: common/create_snapshot_checksum.yml

@@ -36,7 +36,8 @@
     path: "/var/tmp/postgresql_backup_{{ timestamp }}/"
     state: absent
 
-- name: Set artifact to copy
-  set_fact:
+- name: Transfer artifacts via rsync
+  import_tasks: common/download_via_rsync.yml
+  vars:
     artifacts:
       - /var/tmp/postgresql_backup_{{ timestamp }}.tar

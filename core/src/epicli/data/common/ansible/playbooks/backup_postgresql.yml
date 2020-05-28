@@ -5,11 +5,11 @@
   become: true
   become_method: sudo
   tasks:
-    - import_role:
-        name: backup
-        tasks_from: postgresql
-    - import_role:
-        name: backup
-        tasks_from: download_via_rsync
-  vars_files:
-    - roles/postgresql/defaults/main.yml
+    - when: specification.components.postgresql.enabled | default(false)
+      block:
+        - include_vars:
+            file: roles/postgresql/vars/main.yml
+            name: component_vars
+        - import_role:
+            name: backup
+            tasks_from: postgresql

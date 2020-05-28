@@ -1,25 +1,19 @@
 ---
-- name: Find all kubernetes backups
-  delegate_to: "{{ recovery_source_host }}"
-  find:
-    paths: "{{ recovery_source_dir }}/"
-    patterns: "k8s_backup_*.tar.gz"
-    file_type: file
-    recurse: false
-  register: find_kubernetes_snapshots
-
-- name: Provide parameters for the upload_via_rsync restore method
-  set_fact:
-    artifacts:
-      - "{{ newest_kubernetes_snapshot }}"
-      - "{{ newest_kubernetes_snapshot }}.sha1"
+- name: Find snapshot archive
+  import_tasks: common/find_snapshot_archive.yml
   vars:
-    newest_kubernetes_snapshot: >-
-      {{ find_kubernetes_snapshots.files | map(attribute='path') | max }}
+    snapshot_prefix: "k8s_backup"
+    snapshot_name: "{{ specification.components.kubernetes.snapshot_name }}"
 
-- debug: var=artifacts
+- name: Transfer the archive via rsync
+  import_tasks: common/upload_via_rsync.yml
+  vars:
+    artifacts:
+      - "{{ snapshot_path }}"
+      - "{{ snapshot_path }}.sha1"
 
-- import_tasks: upload_via_rsync.yml
+- name: Verify snapshot checksum
+  import_tasks: common/verify_snapshot_checksum.yml
 
 - fail:
     msg: This is a dangerous procedure that is currently disabled because it needs refactoring!
