@@ -6,19 +6,25 @@
   become_method: sudo
   serial: 1
   tasks:
-    - import_role:
-        name: recovery
-        tasks_from: rabbitmq_rabbitmq_etc
-  vars_files:
-    - roles/rabbitmq/vars/main.yml
+    - when: specification.components.rabbitmq.enabled | default(false)
+      block:
+        - include_vars:
+            file: roles/rabbitmq/vars/main.yml
+            name: component_vars
+        - import_role:
+            name: recovery
+            tasks_from: rabbitmq_rabbitmq_etc
 
 - hosts: rabbitmq[0]
   become: true
   become_method: sudo
   serial: 1
   tasks:
-    - import_role:
-        name: recovery
-        tasks_from: rabbitmq_rabbitmq_definitions
-  vars_files:
-    - roles/rabbitmq/vars/main.yml
+    - when: specification.components.rabbitmq.enabled | default(false)
+      block:
+        - include_vars:
+            file: roles/rabbitmq/vars/main.yml
+            name: component_vars
+        - import_role:
+            name: recovery
+            tasks_from: rabbitmq_rabbitmq_definitions

@@ -1,58 +1,29 @@
 ---
-- name: Find all rabbitmq etc archives
-  delegate_to: "{{ recovery_source_host }}"
-  find:
-    paths: "{{ recovery_source_dir }}/"
-    patterns: "rabbitmq_definitions_*-*.tar.gz"
-    file_type: file
-    recurse: false
-  register: find_rabbitmq_definitions_archives
+- name: Find snapshot archive
+  import_tasks: common/find_snapshot_archive.yml
+  vars:
+    snapshot_prefix: "rabbitmq_definitions"
+    snapshot_name: "{{ specification.components.rabbitmq.snapshot_name }}"
 
-- name: Do sanity check if there are any etc archives available
-  assert:
-    that: find_rabbitmq_definitions_archives.matched > 0
-    fail_msg: No etc archives found.
-
-- name: Pick the newest etc archive
-  set_fact:
-    newest_definitions_archive_path: >-
-      {{ find_rabbitmq_definitions_archives.files | map(attribute='path') | max }}
-
-- name: Transfer etc archive via rsync
-  import_tasks: upload_via_rsync.yml
+- name: Transfer the archive via rsync
+  import_tasks: common/upload_via_rsync.yml
   vars:
     artifacts:
-      - "{{ newest_definitions_archive_path }}"
-      - "{{ newest_definitions_archive_path }}.sha1"
+      - "{{ snapshot_path }}"
+      - "{{ snapshot_path }}.sha1"
 
-- name: Slurp etc archive checksum from file
-  slurp:
-    path: "{{ recovery_dir }}/{{ newest_definitions_archive_path | basename }}.sha1"
-  register: slurp_definitions_archive_checksum
-
-- name: Calculate checksum from etc archive
-  stat:
-    path: "{{ recovery_dir }}/{{ newest_definitions_archive_path | basename }}"
-    get_attributes: false
-    get_checksum: true
-    get_mime: false
-    checksum_algorithm: sha1
-  register: stat_definitions_archive
-
-- name: Compare etc archive checksums
-  assert:
-    that: (slurp_definitions_archive_checksum.content | b64decode | trim).startswith(stat_definitions_archive.stat.checksum)
-    fail_msg: Checksums do not match.
+- name: Verify snapshot checksum
+  import_tasks: common/verify_snapshot_checksum.yml
 
 - name: Ensure a folder to hold definitions in exists
   file:
     path: /var/lib/rabbitmq/definitions/
     state: directory
 
-- name: Extract etc archive to etc directory
+- name: Extract the archive
   unarchive:
     dest: /var/lib/rabbitmq/definitions/
-    src: "{{ recovery_dir }}/{{ newest_definitions_archive_path | basename }}"
+    src: "{{ recovery_dir }}/{{ snapshot_path | basename }}"
     remote_src: true
 
 - name: Ensure management api is enabled
@@ -70,11 +41,15 @@
     creates: /usr/local/bin/rabbitmqadmin
     executable: /bin/bash
 
+- name: Reconstruct the snapshot_name
+  set_fact:
+    snapshot_name: >-
+      {{ snapshot_path | basename | regex_replace('^rabbitmq_definitions_(.*).tar.gz$', '\1') }}
+
+- debug: var=snapshot_name
+
 - name: Import definitions json file
   shell: |
     rabbitmqadmin import /var/lib/rabbitmq/definitions/definitions-{{ snapshot_name }}.json
   args:
     executable: /bin/bash
-  vars:
-    snapshot_name: >-
-      {{ newest_definitions_archive_path | basename | regex_replace('^rabbitmq_definitions_(.*).tar.gz$', '\1') }}

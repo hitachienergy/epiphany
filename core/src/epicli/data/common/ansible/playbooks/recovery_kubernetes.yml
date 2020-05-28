@@ -6,6 +6,8 @@
   become_method: sudo
   serial: 1
   tasks:
-    - import_role:
-        name: recovery
-        tasks_from: kubernetes
+    - when: specification.components.kubernetes.enabled | default(false)
+      block:
+        - import_role:
+            name: recovery
+            tasks_from: kubernetes

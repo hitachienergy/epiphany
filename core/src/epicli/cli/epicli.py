@@ -24,6 +24,7 @@ from cli.licenses import LICENSES
 from cli.helpers.query_yes_no import query_yes_no
 from cli.helpers.input_query import prompt_for_password
 from cli.helpers.build_saver import save_to_file, get_output_path
+from cli.helpers.argparse_helpers import get_component_parser
 from cli.engine.spec.SpecCommand import SpecCommand
 
 
@@ -262,41 +263,22 @@ def validate_parser(subparsers):
 '''
 
 
-def _component_parser_for(available_components={}):
-    def parse_components(value):
-        parsed_items = set(
-            item_stripped
-            for item in value.split(',')
-            for item_stripped in [item.strip()]
-            if item_stripped
-        )
-        if len(parsed_items) == 1 and 'all' in parsed_items:
-            return set(available_components)
-        difference = parsed_items - set(available_components)
-        if difference:
-            raise Exception('Error parsing components: invalid values present')
-        return parsed_items
-    return parse_components
-
-
 def backup_parser(subparsers):
+    """Configure and execute backup of cluster components."""
+
     sub_parser = subparsers.add_parser('backup',
-                                       description='[Experimental]: Backups existing Epiphany Platform components.')
-    sub_parser.add_argument('-b', '--build', dest='build_directory', type=str, required=True,
-                            help='Absolute path to directory with build artifacts.')
+                                       description='Create backup of cluster components.')
+    sub_parser.add_argument('-f', '--file', dest='file', type=str,
+                            help='File with infrastructure/configuration definitions to use.')
 
-    available_components = {'kubernetes', 'loadbalancer', 'logging', 'monitoring', 'postgresql', 'rabbitmq'}
+    available_components = {'kubernetes', 'load_balancer', 'logging', 'monitoring', 'postgresql', 'rabbitmq'}
 
-    enabled_components = set(available_components)  # enable everything by default
-    enabled_components_joined = ','.join(sorted(enabled_components))
-
-    sub_parser.add_argument('-c', '--components', dest='components', type=_component_parser_for(available_components), required=False,
-                            help=f'Specify comma-separated list of components to backup (defaults to "{enabled_components_joined}").',
-                            default=enabled_components_joined)
+    sub_parser.add_argument('-c', '--components', dest='components', type=get_component_parser(available_components), required=False,
+                            help=f'Specify comma-separated list of components to backup.',
+                            default=None)  # "None" indicates that the yaml config will be used
 
     def run_backup(args):
-        experimental_query()
-        adjust_paths_from_build(args)
+        adjust_paths_from_file(args)
         with PatchEngine(args) as engine:
             return engine.backup()
 
@@ -304,23 +286,23 @@ def backup_parser(subparsers):
 
 
 def recovery_parser(subparsers):
+    """Configure and execute recovery of cluster components."""
+
     sub_parser = subparsers.add_parser('recovery',
-                                       description='[Experimental]: Recover from existing backup.')
-    sub_parser.add_argument('-b', '--build', dest='build_directory', type=str, required=True,
-                            help='Absolute path to directory with build artifacts.')
+                                       description='Recover from existing backup.')
+    sub_parser.add_argument('-f', '--file', dest='file', type=str,
+                            help='File with infrastructure/configuration definitions to use.')
 
-    available_components = {'kubernetes', 'loadbalancer', 'logging', 'monitoring', 'postgresql', 'rabbitmq'}
+    available_components = {'kubernetes', 'load_balancer', 'logging', 'monitoring', 'postgresql', 'rabbitmq'}
 
-    enabled_components = set()  # disable everything by default
-    enabled_components_joined = ','.join(sorted(enabled_components))
-
-    sub_parser.add_argument('-c', '--components', dest='components', type=_component_parser_for(available_components), required=False,
-                            help=f'Specify comma-separated list of components to restore (defaults to "{enabled_components_joined}").',
-                            default=enabled_components_joined)
+    sub_parser.add_argument('-c', '--components', dest='components', type=get_component_parser(available_components), required=False,
+                            help=f'Specify comma-separated list of components to recover.',
+                            default=None)  # "None" indicates that the yaml config will be used
 
     def run_recovery(args):
-        experimental_query()
-        adjust_paths_from_build(args)
+        if not query_yes_no('Do you really want to perform recovery?'):
+            return 0
+        adjust_paths_from_file(args)
         with PatchEngine(args) as engine:
             return engine.recovery()
 

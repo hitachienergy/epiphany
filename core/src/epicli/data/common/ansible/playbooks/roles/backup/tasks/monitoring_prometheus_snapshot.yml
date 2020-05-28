@@ -3,9 +3,13 @@
   set_fact:
     prometheus_endpoint: >-
       http://{{ ansible_default_ipv4.address }}:9090
+    snapshot_name: >-
+      {{ ansible_date_time.iso8601_basic_short | replace('T','-') }}
   vars:
     uri_template: &uri
       body_format: json
+
+- debug: var=snapshot_name
 
 - name: Trigger snapshot creation
   uri:
@@ -13,54 +17,36 @@
     url: "{{ prometheus_endpoint }}/api/v1/admin/tsdb/snapshot"
     method: POST
   register: uri_response
+  until: uri_response is success
+  retries: 12
+  delay: 5
 
-- name: Extract snapshot name
+- name: Get the prometheus_snapshot_name
   set_fact:
-    snapshot_name: "{{ uri_response.json.data.name }}"
-    snapshot_directory: "{{ specification.storage.data_directory }}/snapshots"
+    prometheus_snapshot_name: "{{ uri_response.json.data.name }}"
 
-- debug: var=snapshot_name
+- debug: var=prometheus_snapshot_name
 
-- name: Create and copy snapshot archive to backup destination
+- name: Create, transfer and cleanup snapshot
   always:
-    - name: Delete snapshot archive (cleanup)
+    - name: Remove snapshot directory (cleanup)
       file:
-        path: "{{ item }}"
+        path: "{{ component_vars.specification.storage.data_directory }}/snapshots/{{ prometheus_snapshot_name }}/"
         state: absent
-      loop:
-        - "{{ backup_dir }}/prometheus_snapshot_{{ snapshot_name }}.tar.gz"
-        - "{{ backup_dir }}/prometheus_snapshot_{{ snapshot_name }}.tar.gz.sha1"
-
   block:
-    - name: Ensure backup dir exists
-      file:
-        path: "{{ backup_dir }}/"
-        state: directory
-
     - name: Create snapshot archive
-      archive:
-        dest: "{{ backup_dir }}/prometheus_snapshot_{{ snapshot_name }}.tar.gz"
-        path: "{{ snapshot_directory }}/{{ snapshot_name }}/"  # keep the / here!
-        format: gz
+      import_tasks: common/create_snapshot_archive.yml
+      vars:
+        snapshot_prefix: "prometheus_snapshot"
+        dirs_to_archive:
+          - "{{ component_vars.specification.storage.data_directory }}/snapshots/{{ prometheus_snapshot_name }}/"
 
-    - name: Calculate checksum from snapshot archive
-      stat:
-        path: "{{ backup_dir }}/prometheus_snapshot_{{ snapshot_name }}.tar.gz"
-        get_attributes: false
-        get_checksum: true
-        get_mime: false
-        checksum_algorithm: sha1
-      register: stat_snapshot_archive
+    - name: Create snapshot checksum
+      import_tasks: common/create_snapshot_checksum.yml
 
-    - name: Store snapshot archive checksum in a file
-      copy:
-        dest: "{{ backup_dir }}/prometheus_snapshot_{{ snapshot_name }}.tar.gz.sha1"
-        content: |
-          {{ stat_snapshot_archive.stat.checksum }}  prometheus_snapshot_{{ snapshot_name }}.tar.gz
-
-    - name: Transfer snapshot archive via rsync
-      import_tasks: download_via_rsync.yml
+    - name: Transfer artifacts via rsync
+      import_tasks: common/download_via_rsync.yml
       vars:
         artifacts:
-          - "{{ backup_dir }}/prometheus_snapshot_{{ snapshot_name }}.tar.gz"
-          - "{{ backup_dir }}/prometheus_snapshot_{{ snapshot_name }}.tar.gz.sha1"
+          - "{{ snapshot_path }}"
+          - "{{ snapshot_path }}.sha1"

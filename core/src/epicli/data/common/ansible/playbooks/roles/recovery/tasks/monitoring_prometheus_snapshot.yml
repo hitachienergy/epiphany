@@ -1,73 +1,35 @@
 ---
-- name: Find all prometheus snapshots
-  delegate_to: "{{ recovery_source_host }}"
-  find:
-    paths: "{{ recovery_source_dir }}/"
-    patterns: "prometheus_snapshot_*-*.tar.gz"
-    file_type: file
-    recurse: false
-  register: find_prometheus_snapshots
+- name: Find snapshot archive
+  import_tasks: common/find_snapshot_archive.yml
+  vars:
+    snapshot_prefix: "prometheus_snapshot"
+    snapshot_name: "{{ specification.components.monitoring.snapshot_name }}"
 
-- name: Do sanity check if there are any snapshots available
-  assert:
-    that: find_prometheus_snapshots.matched > 0
-    fail_msg: No snapshots found.
-
-- name: Pick the newest snapshot
-  set_fact:
-    newest_snapshot_path: >-
-      {{ find_prometheus_snapshots.files | map(attribute='path') | max }}
-
-- name: Transfer snapshot archive via rsync
-  import_tasks: upload_via_rsync.yml
+- name: Transfer the archive via rsync
+  import_tasks: common/upload_via_rsync.yml
   vars:
     artifacts:
-      - "{{ newest_snapshot_path }}"
-      - "{{ newest_snapshot_path }}.sha1"
+      - "{{ snapshot_path }}"
+      - "{{ snapshot_path }}.sha1"
 
-- name: Slurp snapshot archive checksum from file
-  slurp:
-    path: "{{ recovery_dir }}/{{ newest_snapshot_path | basename }}.sha1"
-  register: slurp_snapshot_archive_checksum
-
-- name: Calculate checksum from snapshot archive
-  stat:
-    path: "{{ recovery_dir }}/{{ newest_snapshot_path | basename }}"
-    get_attributes: false
-    get_checksum: true
-    get_mime: false
-    checksum_algorithm: sha1
-  register: stat_snapshot_archive
-
-- name: Compare snapshot archive checksums
-  assert:
-    that: (slurp_snapshot_archive_checksum.content | b64decode | trim).startswith(stat_snapshot_archive.stat.checksum)
-    fail_msg: Checksums do not match.
+- name: Verify snapshot checksum
+  import_tasks: common/verify_snapshot_checksum.yml
 
 - name: Stop prometheus service
   systemd:
     name: prometheus
     state: stopped
 
-- name: Find everything in the data directory
-  find:
-    paths: "{{ specification.storage.data_directory }}/"
-    patterns: "*"
-    file_type: any
-    recurse: false
-  register: find_everything_in_data_directory
+- name: Clear directories
+  import_tasks: common/clear_directories.yml
+  vars:
+    dirs_to_clear:
+      - "{{ component_vars.specification.storage.data_directory }}/"
 
-- name: Remove all prometheus data
-  file:
-    path: "{{ item }}"
-    state: absent
-  loop: >-
-    {{ find_everything_in_data_directory.files | map(attribute='path') | list }}
-
-- name: Extract snapshot archive to data directory
+- name: Extract the archive
   unarchive:
-    dest: "{{ specification.storage.data_directory }}/"
-    src: "{{ recovery_dir }}/{{ newest_snapshot_path | basename }}"
+    dest: "{{ component_vars.specification.storage.data_directory }}/"
+    src: "{{ recovery_dir }}/{{ snapshot_path | basename }}"
     remote_src: true
 
 - name: Start prometheus service

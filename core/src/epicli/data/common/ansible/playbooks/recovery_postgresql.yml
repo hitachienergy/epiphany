@@ -6,6 +6,11 @@
   become_method: sudo
   serial: 1
   tasks:
-    - import_role:
-        name: recovery
-        tasks_from: postgresql
+    - when: specification.components.postgresql.enabled | default(false)
+      block:
+        - include_vars:
+            file: roles/postgresql/vars/main.yml
+            name: component_vars
+        - import_role:
+            name: recovery
+            tasks_from: postgresql
