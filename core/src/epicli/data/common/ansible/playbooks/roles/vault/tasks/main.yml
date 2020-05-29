@@ -124,6 +124,17 @@
         group: "{{ specification.vault_system_group }}"
         mode: u=rwx,g=r,o=
 
+    - name: Copy Vault policies configuration
+      copy:
+        src: "{{ item }}"
+        dest: "{{ specification.vault_install_dir }}/config/"
+        owner: "{{ specification.vault_system_user }}"
+        group: "{{ specification.vault_system_group }}"
+        mode: u=rw,g=r,o=
+      loop:
+        - policy-admin.hcl
+        - policy-provisioner.hcl
+
     - name: Generate config script confiugration
       template:
         dest: "{{ specification.vault_install_dir }}/script.config"
