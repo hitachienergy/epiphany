@@ -268,8 +268,11 @@ def backup_parser(subparsers):
 
     sub_parser = subparsers.add_parser('backup',
                                        description='Create backup of cluster components.')
-    sub_parser.add_argument('-f', '--file', dest='file', type=str,
+    sub_parser.add_argument('-f', '--file', dest='file', type=str, required=True,
                             help='File with infrastructure/configuration definitions to use.')
+    sub_parser.add_argument('-b', '--build', dest='build_directory', type=str, required=False,
+                            help='Absolute path to directory with build artifacts.',
+                            default=None)
 
     available_components = {'kubernetes', 'load_balancer', 'logging', 'monitoring', 'postgresql', 'rabbitmq'}
 
@@ -290,8 +293,11 @@ def recovery_parser(subparsers):
 
     sub_parser = subparsers.add_parser('recovery',
                                        description='Recover from existing backup.')
-    sub_parser.add_argument('-f', '--file', dest='file', type=str,
+    sub_parser.add_argument('-f', '--file', dest='file', type=str, required=True,
                             help='File with infrastructure/configuration definitions to use.')
+    sub_parser.add_argument('-b', '--build', dest='build_directory', type=str, required=False,
+                            help='Absolute path to directory with build artifacts.',
+                            default=None)
 
     available_components = {'kubernetes', 'load_balancer', 'logging', 'monitoring', 'postgresql', 'rabbitmq'}
 
