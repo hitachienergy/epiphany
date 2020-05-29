@@ -117,16 +117,36 @@ function enable_vault_kubernetes_authentication {
         exit_with_error "There was an error during listing authentication methods.";
     fi
     if [ "${command_result[1]}" = "1" ] ; then
-        log_and_print "Turning on Kubernetes integration...";
+        log_and_print "Turning on Kubernetes authentication...";
         vault auth enable kubernetes;
         check_vault_error "$?" "Kubernetes authentication enabled." "There was an error during enabling Kubernetes authentication.";
     fi
 }
 
-function integrate_with_kubernetes {
-    log_and_print "Todo: Checking if Kubernetes integration";
+function apply_epiphany_vault_policies {
+    log_and_print "Applying Epiphany default Vault policies...";
+    local local vault_config_data_path="$1";
+    vault policy write admin $vault_config_data_path/policy-admin.hcl;
+    check_vault_error "$?" "Admin policy applied." "There was an error during applying admin policy.";
+    vault policy write provisioner $vault_config_data_path/policy-provisioner.hcl;
+    check_vault_error "$?" "Provisioner policy applied." "There was an error during applying provisioner policy.";
 }
 
+function enable_vault_userpass_authentication {
+    log_and_print "Checking if userpass authentication has been enabled...";
+    vault auth list | grep userpass;
+    local command_result=( ${PIPESTATUS[@]} );
+    if [ "${command_result[0]}" = "1" ] ; then
+        exit_with_error "There was an error during listing authentication methods.";
+    fi
+    if [ "${command_result[1]}" = "1" ] ; then
+        log_and_print "Turning on userpass authentication...";
+        vault auth enable userpass;
+        check_vault_error "$?" "Userpass authentication enabled." "There was an error during enabling userpass authentication.";
+    fi
+}
+
+# TODO: Add flag to enable/disable token cleanup
 function cleanup {
     rm -f "$HOME/.vault-token";
 }
@@ -147,6 +167,7 @@ fi
 source "$CONFIG_FILE";
 
 INIT_FILE_PATH="$VAULT_INSTALL_PATH/init.txt"
+VAULT_CONFIG_DATA_PATH="$VAULT_INSTALL_PATH/config"
 export VAULT_ADDR="http://$VAULT_IP:8200"
 PATH=$VAULT_INSTALL_PATH/bin:$PATH
 
@@ -176,6 +197,5 @@ if [ "${KUBERNETES_INTEGRATION,,}" = "true" ]  || [ "${ENABLE_VAULT_KUBERNETES_A
     enable_vault_kubernetes_authentication;
 fi
 
-if [ "${KUBERNETES_INTEGRATION,,}" = "true" ] ; then
-    enable_vault_kubernetes_authentication;
-fi
+apply_epiphany_vault_policies $VAULT_CONFIG_DATA_PATH;
+enable_vault_userpass_authentication;
