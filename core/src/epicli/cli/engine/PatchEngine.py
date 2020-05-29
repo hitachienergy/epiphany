@@ -23,13 +23,13 @@ class PatchEngine(Step):
     def __init__(self, input_data):
         super().__init__(__name__)
         self.file = input_data.file
+        self.build_directory = input_data.build_directory  # can be None
         self.parsed_components = None if input_data.components is None else set(input_data.components)
         self.component_dict = dict()
         self.input_docs = list()
         self.cluster_model = None
         self.backup_doc = None
         self.recovery_doc = None
-        self.build_directory = None
         self.ansible_command = AnsibleCommand()
 
     def __enter__(self):
@@ -67,11 +67,16 @@ class PatchEngine(Step):
         # Get recovery config document
         self.recovery_doc = select_single(self.input_docs, lambda x: x.kind == 'configuration/recovery')
 
-        # Derive the build directory path
-        self.build_directory = get_build_path(self.cluster_model.specification.name)
+        if self.build_directory is None:
+            # Derive the build directory path (if not provided)
+            self.build_directory = get_build_path(self.cluster_model.specification.name)
+
+        if not os.path.exists(self.build_directory):
+            raise Exception('Provided build directory path does not exist')
 
     def _process_component_config(self, document):
         if self.parsed_components is not None:
+            # Overwrite enable/disable settings from yaml config
             available_components = set(document.specification.components.keys())
             self.component_dict = components_to_dict(self.parsed_components, available_components)
 
