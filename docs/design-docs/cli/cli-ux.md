@@ -17,12 +17,18 @@ Following scenarios assume:
  * there is component version introduced - epicli version is separated from component version. It means that i.e. epicli v0.0.1 can provide component PostgreSQL 10.x and/or PostgreSQL 11.x.
  * there is server-side component - epiphany environment is always equipped with server side daemon component exposing some API to epicli. 
  
+## Convention
+I used square brackets with dots inside: 
+```
+[...]
+```
+to indicate processing or some not important for this document output. 
+
 ## Story
 
 ### epicli installation
 
 To increase user base we need to provide brew formulae to allow simple installation. 
-
 ```
 > brew install epicli
 ``` 
@@ -32,11 +38,10 @@ To increase user base we need to provide brew formulae to allow simple installat
 #### init
 
 As before user should be able to start interaction with epicli with `epicli init` command. In case of no parameters interactive version would be opened. 
-
 ```
 > epicli init 
 What cloud provider do you want to use? (Azure, AWS): AWS
-Is that a production environment? **No**
+Is that a production environment? No
 Do you want Single Node Kubernetes?: No
 How many Kubernetes Masters do you want?: 1
 How many Kubernetes Nodes do you want?: 2
@@ -53,7 +58,6 @@ It could also be `epicli init -p aws -t nonprod -c postgresql ....` or `epicli -
 #### inspect .epicli/
 
 Previous command generated files in ~/.epicli directory. 
-
 ```
 > ls –la ~/.epicli
 config
@@ -80,12 +84,10 @@ contexts:
     environment: test2
 current-context: test2-admin
 ```
- 
 
 #### status after init
 
 Output from `epicli init` asked to run `epicli status`. 
-
 ```
 > epicli status
 Client Version: 0.5.3
@@ -120,7 +122,6 @@ As output is saying for now this command only uses local files in ~/.epicli dire
 #### init cloud
 
 Follow instructions to provide cloud provider authentication.  
-
 ```
 > epicli init cloud
 Provide AWS API Key: HD876KDKJH9KJDHSK26KJDH 
@@ -128,13 +129,12 @@ Provide AWS API Secret: ***********************************
 [...]
 Credentials are correct! Type 'epicli status' to check environment. 
 ```
- 
+
 Or in non-interactive mode something like: `epicli init cloud -k HD876KDKJH9KJDHSK26KJDH -s dhakjhsdaiu29du2h9uhd2992hd9hu`. 
 
 #### status after init cloud
 
 Follow instructions. 
-
 ```
 > epicli status 
 Client Version: 0.5.3
@@ -163,11 +163,10 @@ Components:
 --- 
 Remote status is unknown! Please type 'epicli status update' to synchronize status with remote. 
 ```
- 
+
 #### status update
 
 As epicli was able to connect to cloud but it doesn't know remote state it asked to update state. 
-
 ```
 > epicli status update
 [...]
@@ -204,7 +203,6 @@ Please type 'epicli status update' to synchronize status with remote.
 It connected to cloud provider and checked that there is no cluster. 
 
 #### apply
-
 ```
 > epicli apply
 [...]
@@ -212,13 +210,12 @@ It connected to cloud provider and checked that there is no cluster.
 Environment 'test2' was initialized successfully! Plese type 'epicli status' to see status or 'epicli components' to list components. To login to kubernetes cluster as root please type 'epicli components kubernetes login'. 
 Command 'epicli status' will synchronize every time now, so no need to run 'epicli status update'
 ```
- 
+
 epicli knows now that there is cluster and it will connect for status every time user types `epicli status` unless some additional preferences are used. 
 
 #### status after apply
 
 Now it connects to cluster to check status. That relates to assumption from the beginning of this document that there is some server-side component providing status. Other way `epicli status` would have to call multiple services for status. 
-
 ```
 > epicli status 
 [...]
@@ -254,7 +251,6 @@ You can now operate your kubernetes cluster via 'kubectl' command!
 ```
 
 Content is added to ~/.kube/config file. To be agreed how to do it. 
-
 ```
 > kubectl get nodes
 [...]
@@ -263,7 +259,6 @@ Content is added to ~/.kube/config file. To be agreed how to do it.
 #### components
 
 RabbitMQ is here on the list but with “-“ because it is not installed. 
-
 ```
 > epicli components
 [...]
@@ -273,7 +268,6 @@ RabbitMQ is here on the list but with “-“ because it is not installed.
 ```
 
 #### component status
-
 ```
 > epicli components kubernetes status
 [...]
@@ -291,7 +285,6 @@ Dashboard: http://12.13.14.15:8008/
 #### component status
 
 `epicli status` command will notify user that there is new component version available. 
-
 ```
 > epicli components kubernetes status
 [...]
@@ -305,7 +298,6 @@ Run 'epicli components kubernetes update' to update to 1.18.1 version! Use '--dr
 ```
 
 #### component update
-
 ```
 > epicli components kubernetes update
 [...]
@@ -313,13 +305,11 @@ Kubernetes was successfully updated from version 1.17.1 to 1.18.1!
 ```
 It means that it updated ONLY one component. User could probably write something like `epicli components update` or even `epicli update` but there is no need to go all in, if one does not want to. 
 
-
 ### cli tool update  
 
 User typed `brew update` in and epicli was updated to newest version.
 
 #### status
-
 ```
 > epicli status 
 [...]
@@ -364,7 +354,6 @@ RabbitMQ config was added to your local configuration. Please type “epicli app
 Component configuration files were generated in .epicli directory. Changes are still not applied.
 
 #### apply 
-
 ``` 
 > epicli apply
 [...]
@@ -376,7 +365,6 @@ Command “epicli status” will synchronize every time now, so no need to run �
 ## Daemon
 
 We should also consider scenario with web browser management tool. It might look like: 
-
 ```
 > epicli web
 open http://127.0.0.1:8080 to play with environments configuration. Type Ctrl-C to finish ...
@@ -384,7 +372,6 @@ open http://127.0.0.1:8080 to play with environments configuration. Type Ctrl-C 
 ```
 
 User would be able to access tool via web browser based UI to operate it even easier. 
-
 
 ## Context switching
 
