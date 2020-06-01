@@ -2,7 +2,6 @@
 name = "pypi"
 url = "https://pypi.org/simple"
 verify_ssl = false
-allow_prereleases = true
 
 [packages]
 pyyaml = "*"
@@ -18,3 +17,6 @@ skopeo-bin = "*"
 
 [requires]
 python_version = "3.7"
+
+[pipenv]
+allow_prereleases = true
