@@ -14,3 +14,5 @@
         - import_role:
             name: recovery
             tasks_from: postgresql
+  vars_files:
+    - roles/postgresql/defaults/main.yml
