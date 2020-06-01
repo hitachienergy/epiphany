@@ -1,7 +1,7 @@
 ---
 # Ansible playbook for backing up Postgresql database
 
-- hosts: postgresql[0]  ##TODO: Consider to support other hosts
+- hosts: postgresql
   become: true
   become_method: sudo
   tasks:
@@ -13,3 +13,5 @@
         - import_role:
             name: backup
             tasks_from: postgresql
+  vars_files:
+    - roles/postgresql/defaults/main.yml
