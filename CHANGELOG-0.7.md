@@ -12,6 +12,7 @@
 
 - Update Calico and Canal to v3.13.2
 - [#1180](https://github.com/epiphany-platform/epiphany/issues/1180) - Update list of ports used by Epiphany components
+- [#1310](https://github.com/epiphany-platform/epiphany/issues/1310) - Updated Azure-cli from to 2.0.67 to 2.6.0
 
 ### Fixed
 
