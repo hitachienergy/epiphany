@@ -1,0 +1,22 @@
+[[source]]
+name = "pypi"
+url = "https://pypi.org/simple"
+verify_ssl = false
+
+[packages]
+pyyaml = "*"
+jinja2 = "*"
+boto3 = "*"
+jsonschema = "*"
+python-json-logger = "*"
+ansible = "==2.8.8"
+terraform-bin = "*"
+azure-cli = "==2.6.0"
+skopeo-bin = "*"
+"ruamel.yaml" = "*"
+
+[requires]
+python_version = "3.7"
+
+[pipenv]
+allow_prereleases = true
