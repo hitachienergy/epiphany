@@ -143,6 +143,14 @@
         mode: u=rw,g=r,o=
         src: script.config.j2
 
+    - name: Generate users to be created by the script
+      template:
+        dest: "{{ specification.vault_install_dir }}/users.csv"
+        owner: "{{ specification.vault_system_user }}"
+        group: "{{ specification.vault_system_group }}"
+        mode: u=rw,g=r,o=
+        src: users.csv.j2
+
     - name: Run configuration script
       when:
         - specification.vault_script_unseal
