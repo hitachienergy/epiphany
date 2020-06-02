@@ -163,27 +163,29 @@ function create_vault_user {
     local token="$4";
     local vault_addr="$5";
 
+    if [ -f "$token_path" ]; then
+      touch $token_path;
+      chmod 0640 $token_path;
+    fi
+    local users_path_response=$(curl -o -I -L -s -w "%{http_code}" --header "X-Vault-Token: $token" --request LIST "$VAULT_ADDR/v1/auth/userpass/users");
     curl --header "X-Vault-Token: $token" --request LIST "$vault_addr/v1/auth/userpass/users" | jq -e ".data.keys[] | select(.== \"$username\")";
     local local command_result="$?";
     echo "Command result: $command_result";
-    if [ "$command_result" = "4" ]; then
+    if [ $users_path_response -eq 404 ] || [ "$command_result" = "4" ]; then
         log_and_print "Creating user: $username...";
         local password="$( < /dev/urandom tr -dc _A-Z-a-z-0-9 | head -c32 )";
         vault write auth/userpass/users/$username password=$password policies=$policy;
         check_vault_error "$?" "User: $username created." "There was an error during creation of user: $username.";
-        if [ -f "$token_path" ]; then
-            touch $token_path;
-            chmod 0640 $token_path;
-        fi
-        echo "username:$username;policy:$policy;password:$password;" >> $token_path;
+        echo "$username;$policy;$password;" >> $token_path;
     elif [ "$command_result" = "0" ]; then
         log_and_print "$username already exists. Not adding or modyfing.";
-        echo "username:$username;policy:$policy;password:ALREADY_EXISTS;" >> $token_path;
+        echo "$username;$policy;ALREADY_EXISTS;" >> $token_path;
     else
         exit_with_error "There was an critical error during adding user $username.";
     fi
 }
 
+# TODO: Add flag to override existing users
 function create_vault_users_from_file {
     local vault_install_path="$1";
     local users_file_csv_path="$vault_install_path/users.csv";
