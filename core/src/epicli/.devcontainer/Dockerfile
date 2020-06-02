@@ -7,6 +7,7 @@ ARG USER_UID=1000
 ARG USER_GID=$USER_UID
 
 COPY cert/cert.md cert/*.crt /usr/local/share/ca-certificates/
+COPY cert/*.pem /
 COPY cert/config-pre.sh /
 COPY cert/config-post.sh /
 COPY requirements.txt /
