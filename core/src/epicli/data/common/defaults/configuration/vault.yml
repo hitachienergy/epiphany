@@ -11,6 +11,14 @@ specification:
   vault_audit: false
   use_https: false
   kubernetes_integration: true
+  enable_vault_kubernetes_authentication: true
   revoke_root_token: false
   secret_mount_path: secret
   vault_install_dir: /opt/vault
+  vault_log_level: info
+  provider: aws
+  vault_users:
+    - name: admin
+      policy: admin
+    - name: provisioner1
+      policy: provisioner
