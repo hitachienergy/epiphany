@@ -4,7 +4,6 @@
 # TODO: Revoke root token
 # TODO: Policy for non-root access
 # TODO: Add system logs to vault
-# TODO: Add error handling to create_vault_user
 
 HELP_MESSAGE="Usage: configure-vault.sh -c SCRIPT_CONFIGURATION_FILE_PATH -a VAULT_IP_ADDRESS"
 
@@ -86,8 +85,8 @@ function enable_vault_audit_logs {
     log_and_print "Checking if audit is enabled...";
     vault audit list | grep "file";
     local command_result=( ${PIPESTATUS[@]} );
-    if [ "${command_result[0]}" = "1"] ; then
-        exit_with_error "There was an error during listing auditing.";
+    if [ "${command_result[0]}" != "0"] ; then
+        exit_with_error "There was an error during listing auditing. Exit status: ${command_result[0]}";
     fi
     if [ "${command_result[1]}" = "1" ] ; then
         log_and_print "Enabling auditing...";
@@ -101,8 +100,8 @@ function mount_secret_path {
     log_and_print "Checking if secret engine has been initialized already...";
     vault secrets list | grep "$secret_path/";
     local command_result=( ${PIPESTATUS[@]} );
-    if [ "${command_result[0]}" = "1" ] ; then
-        exit_with_error "There was an error during listing secret engines.";
+    if [ "${command_result[0]}" != "0" ] ; then
+        exit_with_error "There was an error during listing secret engines. Exit status: ${command_result[0]}";
     fi
     if [ "${command_result[1]}" = "1" ] ; then
         log_and_print "Mounting secret engine...";
@@ -115,8 +114,8 @@ function enable_vault_kubernetes_authentication {
     log_and_print "Checking if Kubernetes authentication has been enabled...";
     vault auth list | grep kubernetes;
     local command_result=( ${PIPESTATUS[@]} );
-    if [ "${command_result[0]}" = "1" ] ; then
-        exit_with_error "There was an error during listing authentication methods.";
+    if [ "${command_result[0]}" != "0" ] ; then
+        exit_with_error "There was an error during listing authentication methods. Exit status: ${command_result[0]}";
     fi
     if [ "${command_result[1]}" = "1" ] ; then
         log_and_print "Turning on Kubernetes authentication...";
@@ -147,8 +146,8 @@ function enable_vault_userpass_authentication {
     log_and_print "Checking if userpass authentication has been enabled...";
     vault auth list | grep userpass;
     local command_result=( ${PIPESTATUS[@]} );
-    if [ "${command_result[0]}" = "1" ] ; then
-        exit_with_error "There was an error during listing authentication methods.";
+    if [ "${command_result[0]}" != "0" ] ; then
+        exit_with_error "There was an error during listing authentication methods. Exit status: ${command_result[0]}";
     fi
     if [ "${command_result[1]}" = "1" ] ; then
         log_and_print "Turning on userpass authentication...";
@@ -157,7 +156,6 @@ function enable_vault_userpass_authentication {
     fi
 }
 
-# TODO: Add error handling to create_vault_user
 function create_vault_user {
     local username="$1";
     local policy="$2";
@@ -168,19 +166,22 @@ function create_vault_user {
     curl --header "X-Vault-Token: $token" --request LIST "$vault_addr/v1/auth/userpass/users" | jq -e ".data.keys[] | select(.== \"$username\")";
     local local command_result="$?";
     echo "Command result: $command_result";
-    if [ "$command_result" != "0" ]; then
+    if [ "$command_result" = "4" ]; then
         log_and_print "Creating user: $username...";
         local password="$( < /dev/urandom tr -dc _A-Z-a-z-0-9 | head -c32 )";
         vault write auth/userpass/users/$username password=$password policies=$policy;
+        check_vault_error "$?" "User: $username created." "There was an error during creation of user: $username.";
         if [ -f "$token_path" ]; then
             touch $token_path;
             chmod 0640 $token_path;
-            echo "username: $username, policy: $policy, password: $password" >> $token_path;
         fi
+        echo "username:$username;policy:$policy;password:$password;" >> $token_path;
+    elif [ "$command_result" = "0" ]; then
+        log_and_print "$username already exists. Not adding or modyfing.";
+        echo "username:$username;policy:$policy;password:ALREADY_EXISTS;" >> $token_path;
     else
-            log_and_print "$username already exists.";
+        exit_with_error "There was an critical error during adding user $username.";
     fi
-
 }
 
 function create_vault_users_from_file {
