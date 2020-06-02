@@ -14,8 +14,6 @@ if ls /usr/local/share/ca-certificates/*.crt 1> /dev/null 2>&1; then
     echo "Setup AWS cert $f"
     echo -e "[default]\nca_bundle=$f" >> "/home/vscode/.aws/config"
   fi
-  echo "Setup Ansible SSH timeout settings"
-  echo -e "[defaults]\ntimeout=0" >> "/home/vscode/.ansible.cfg"
 else
   echo "No cert/ca-bundle to setup"
 fi
