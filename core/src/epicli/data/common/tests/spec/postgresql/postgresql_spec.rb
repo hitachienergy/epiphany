@@ -6,12 +6,14 @@ postgresql_default_port = 5432
 pgbouncer_default_port = 6432
 elasticsearch_host = listInventoryHosts("logging")[0]
 elasticsearch_api_port = 9200
-replicated = readDataYaml("configuration/postgresql")["specification"]["replication"]["enable"]
-replication_user = readDataYaml("configuration/postgresql")["specification"]["replication"]["user"]
-replication_password = readDataYaml("configuration/postgresql")["specification"]["replication"]["password"]
-max_wal_senders = readDataYaml("configuration/postgresql")["specification"]["replication"]["max_wal_senders"]
-wal_keep_segments = readDataYaml("configuration/postgresql")["specification"]["replication"]["wal_keep_segments"]
-pgbouncer_enabled = readDataYaml("configuration/postgresql")["specification"]["additional_components"]["pgbouncer"]["enabled"]
+replicated = readDataYaml("configuration/postgresql")["specification"]["extensions"]["replication"]["enabled"]
+replication_user = readDataYaml("configuration/postgresql")["specification"]["extensions"]["replication"]["replication_user_name"]
+replication_password = readDataYaml("configuration/postgresql")["specification"]["extensions"]["replication"]["replication_user_password"]
+use_repmgr = readDataYaml("configuration/postgresql")["specification"]["extensions"]["replication"]["use_repmgr"]
+max_wal_senders = readDataYaml("configuration/postgresql")["specification"]["config_file"]["parameter_groups"].detect {|i| i["name"] == 'REPLICATION'}["subgroups"].detect {|i| i["name"] == "Sending Server(s)"}["parameters"].detect {|i| i["name"] == "max_wal_senders"}["value"]
+wal_keep_segments = readDataYaml("configuration/postgresql")["specification"]["config_file"]["parameter_groups"].detect {|i| i["name"] == 'REPLICATION'}["subgroups"].detect {|i| i["name"] == "Sending Server(s)"}["parameters"].detect {|i| i["name"] == "wal_keep_segments"}["value"]
+
+pgbouncer_enabled = readDataYaml("configuration/postgresql")["specification"]["extensions"]["pgbouncer"]["enabled"]
 pgaudit_enabled = readDataYaml("configuration/postgresql")["specification"]["extensions"]["pgaudit"]["enabled"]
 pg_user = 'testuser'
 pg_pass = 'testpass'
@@ -91,35 +93,69 @@ end
 # Must first run the 'systemctl status' command to be able to view the service status withe the 'is-active' command.
 
 describe 'Checking PostgreSQL service status' do
-  describe command("systemctl status postgresql > /dev/null") do
-    its(:exit_status) { should eq 0 }
+  if os[:family] == 'redhat'
+    describe command("systemctl status postgresql-10 > /dev/null") do
+      its(:exit_status) { should eq 0 }
+    end
+  elsif os[:family] == 'ubuntu'
+    describe command("systemctl status postgresql > /dev/null") do
+      its(:exit_status) { should eq 0 }
+    end
   end
 end
 
 describe 'Checking if PostgreSQL service is running' do
-  describe service('postgresql') do
-    it { should be_enabled }
-    it { should be_running }
+  if os[:family] == 'redhat'
+    describe service('postgresql-10') do
+      it { should be_enabled }
+      it { should be_running }
+    end
+  elsif os[:family] == 'ubuntu'
+    describe service('postgresql') do
+      it { should be_enabled }
+      it { should be_running }
+    end
+  end
+end
+
+if replicated && use_repmgr
+  describe 'Checking if repmgr service is running' do
+    if os[:family] == 'redhat'
+      describe service('repmgr10') do
+        it { should be_enabled }
+        it { should be_running }
+      end
+    elsif os[:family] == 'ubuntu'
+      describe service('repmgrd') do
+        it { should be_enabled }
+        it { should be_running }
+      end
+    end
   end
 end
 
 if os[:family] == 'redhat'
   describe 'Checking PostgreSQL directories and config files' do
     let(:disable_sudo) { false }
-    describe file('/var/opt/rh/rh-postgresql10/lib/pgsql/data') do
+    describe file('/var/lib/pgsql/10/data') do
       it { should exist }
       it { should be_a_directory }
     end
-    describe file("/var/opt/rh/rh-postgresql10/lib/pgsql/data/pg_hba.conf") do
+    describe file("/var/lib/pgsql/10/data/pg_hba.conf") do
       it { should exist }
       it { should be_a_file }
       it { should be_readable }
      end
-    describe file("/var/opt/rh/rh-postgresql10/lib/pgsql/data/postgresql.conf") do
+    describe file("/var/lib/pgsql/10/data/postgresql.conf") do
       it { should exist }
       it { should be_a_file }
       it { should be_readable }
     end
+    describe file("/var/lib/pgsql/10/data/postgresql-epiphany.conf") do
+      it { should exist }
+      it { should be_a_file }
+      it { should be_readable }
+    end    
   end
 elsif os[:family] == 'ubuntu'
   describe 'Checking PostgreSQL directories and config files' do
@@ -138,6 +174,11 @@ elsif os[:family] == 'ubuntu'
       it { should be_a_file }
       it { should be_readable }
     end
+    describe file("/etc/postgresql/10/main/postgresql-epiphany.conf") do
+      it { should exist }
+      it { should be_a_file }
+      it { should be_readable }
+    end    
   end
 end
 
@@ -148,10 +189,12 @@ describe 'Checking if the ports are open' do
   end
 end 
 
-describe 'Checking if PostgreSQL is ready' do
-  describe command("pg_isready") do
-    its(:stdout) { should match /postgresql:#{postgresql_default_port} - accepting connections/ }
-    its(:exit_status) { should eq 0 }
+if os[:family] == 'ubuntu'
+  describe 'Checking if PostgreSQL is ready' do
+    describe command("pg_isready") do
+      its(:stdout) { should match /postgresql:#{postgresql_default_port} - accepting connections/ }
+      its(:exit_status) { should eq 0 }
+    end
   end
 end
 
@@ -173,20 +216,36 @@ if replicated
 
   primary = listInventoryHosts("postgresql")[0]
   secondary = listInventoryHosts("postgresql")[1]
- 
+
+  if use_repmgr
+    describe 'Displaying information about each registered node in the replication cluster' do
+      let(:disable_sudo) { false }
+      describe command("su - postgres -c \"repmgr -f /etc/postgresql/10/main/repmgr.conf cluster show\""), :if => os[:family] == 'ubuntu' do
+        its(:stdout) { should match /primary.*\*.*running/ }
+        its(:stdout) { should match /standby.*running/ }
+        its(:exit_status) { should eq 0 }
+      end
+      describe command("su - postgres -c \"repmgr -f /etc/repmgr/10/repmgr.conf cluster show\""), :if => os[:family] == 'redhat' do
+        its(:stdout) { should match /primary.*\*.*running/ }
+        its(:stdout) { should match /standby.*running/ }
+        its(:exit_status) { should eq 0 }
+      end
+    end
+  end
+
   if primary.include? host_inventory['hostname']
     if os[:family] == 'redhat'
       describe 'Checking PostgreSQL config files for master node' do
         let(:disable_sudo) { false }
-        describe command("cat /var/opt/rh/rh-postgresql10/lib/pgsql/data/postgresql.conf | grep wal_level") do
+        describe command("cat /var/lib/pgsql/10/data/postgresql-epiphany.conf | grep wal_level") do
           its(:stdout) { should match /^wal_level = replica/ }
           its(:exit_status) { should eq 0 }
         end
-        describe command("cat /var/opt/rh/rh-postgresql10/lib/pgsql/data/postgresql.conf | grep max_wal_senders") do
+        describe command("cat /var/lib/pgsql/10/data/postgresql-epiphany.conf | grep max_wal_senders") do
           its(:stdout) { should match /^max_wal_senders = #{max_wal_senders}/ }
           its(:exit_status) { should eq 0 }
         end
-        describe command("cat /var/opt/rh/rh-postgresql10/lib/pgsql/data/postgresql.conf | grep wal_keep_segments") do
+        describe command("cat /var/lib/pgsql/10/data/postgresql-epiphany.conf | grep wal_keep_segments") do
           its(:stdout) { should match /^wal_keep_segments = #{wal_keep_segments}/ }
           its(:exit_status) { should eq 0 }
         end
@@ -195,7 +254,7 @@ if replicated
           its(:stdout) { should match /Replication/ }
           its(:exit_status) { should eq 0 }
         end
-        describe command("cat /var/opt/rh/rh-postgresql10/lib/pgsql/data/pg_hba.conf | grep replication | grep md5") do
+        describe command("cat /var/lib/pgsql/10/data/pg_hba.conf | grep replication | grep md5") do
           its(:stdout) { should match /#{replication_user}/ }
           its(:stdout) { should match /replication/ }
           its(:exit_status) { should eq 0 }
@@ -204,15 +263,15 @@ if replicated
     elsif os[:family] == 'ubuntu'
       describe 'Checking PostgreSQL config files for master node' do
         let(:disable_sudo) { false }
-        describe command("cat /etc/postgresql/10/main/postgresql.conf | grep wal_level") do
+        describe command("cat /etc/postgresql/10/main/postgresql-epiphany.conf | grep wal_level") do
           its(:stdout) { should match /^wal_level = replica/ }
           its(:exit_status) { should eq 0 }
         end
-        describe command("cat /etc/postgresql/10/main/postgresql.conf | grep max_wal_senders") do
+        describe command("cat /etc/postgresql/10/main/postgresql-epiphany.conf | grep max_wal_senders") do
           its(:stdout) { should match /^max_wal_senders = #{max_wal_senders}/ }
           its(:exit_status) { should eq 0 }
         end
-        describe command("cat /etc/postgresql/10/main/postgresql.conf | grep wal_keep_segments") do
+        describe command("cat /etc/postgresql/10/main/postgresql-epiphany.conf | grep wal_keep_segments") do
           its(:stdout) { should match /^wal_keep_segments = #{wal_keep_segments}/ }
           its(:exit_status) { should eq 0 }
         end
@@ -238,6 +297,14 @@ if replicated
       end
     end
 
+    describe 'Checking recovery status of master node' do
+      let(:disable_sudo) { false }
+      describe command("su - postgres -c \"psql -t -c 'SELECT pg_is_in_recovery();'\"") do
+        its(:stdout) { should match /\bf\b/ }
+        its(:exit_status) { should eq 0 }
+      end
+    end
+
     queryForCreating
     queryForSelecting
     queryForAlteringTable
@@ -246,7 +313,7 @@ if replicated
     if os[:family] == 'redhat'
       describe 'Checking PostgreSQL config files for secondary node' do
         let(:disable_sudo) { false }
-        describe command("cat /var/opt/rh/rh-postgresql10/lib/pgsql/data/postgresql.conf | grep hot_standby") do
+        describe command("cat /var/lib/pgsql/10/data/postgresql.conf | grep hot_standby") do
           its(:stdout) { should match /^hot_standby = on/ }
           its(:exit_status) { should eq 0 }
         end
@@ -276,6 +343,14 @@ if replicated
       describe command("su - postgres -c \"psql -t -c 'SELECT status, conninfo  from pg_stat_wal_receiver;'\"") do
         its(:stdout) { should match /\bstreaming\b/ }
         its(:stdout) { should match /\buser=#{replication_user}\b/ }
+        its(:exit_status) { should eq 0 }
+      end
+    end
+
+    describe 'Checking recovery status of replica node' do
+      let(:disable_sudo) { false }
+      describe command("su - postgres -c \"psql -t -c 'SELECT pg_is_in_recovery();'\"") do
+        its(:stdout) { should match /\bt\b/ }
         its(:exit_status) { should eq 0 }
       end
     end
@@ -369,6 +444,21 @@ end
 
 if !replicated
   queryForDropping
+
+  if pgbouncer_enabled
+    describe 'Dropping test user' do
+      let(:disable_sudo) { false }
+      describe command("su - postgres -c \"psql -t -c 'DROP USER #{pg_user};'\" 2>&1") do
+        its(:stdout) { should match /^DROP ROLE$/ }
+        its(:exit_status) { should eq 0 }
+      end
+      describe command("su - -c \"sed -i '/#{pg_pass}/d' /etc/pgbouncer/userlist.txt && cat /etc/pgbouncer/userlist.txt\" 2>&1") do
+        its(:stdout) { should_not match /#{pg_pass}/ }
+        its(:exit_status) { should eq 0 }
+      end
+    end
+  end
+
 end
 
 if replicated && (listInventoryHosts("postgresql")[1].include? host_inventory['hostname'])
@@ -413,7 +503,7 @@ if pgaudit_enabled
   if !replicated || (replicated && (listInventoryHosts("postgresql")[1].include? host_inventory['hostname']))
 
     describe 'Checking if the Elasticsearch logs contain queries from the PostrgeSQL database' do
-      describe command("sleep 60 && curl -k -u admin:admin 'https://#{elasticsearch_host}:#{elasticsearch_api_port}/_search?pretty=true' -H 'Content-Type: application/json' -d '{\"size\":100,\"_source\":{\"includes\":\"message\"},\"query\":{\"bool\":{\"must\":[{\"bool\":{\"should\":[{\"match_phrase\":{\"source\":\"/var/log/postgresql/postgresql-10-main.log\"}},{\"match_phrase\":{\"source\":\"/var/log/postgresql/postgresql.log\"}}],\"minimum_should_match\":1}}],\"filter\":{\"query_string\":{\"query\":\"*serverspec*\"}}}}}'") do
+      describe command("for i in {1..600}; do if curl -k -s -u admin:admin 'https://#{elasticsearch_host}:#{elasticsearch_api_port}/_search?pretty=true' -H 'Content-Type: application/json' -d '{\"size\":100,\"_source\":{\"includes\":\"message\"},\"query\":{\"bool\":{\"must\":[{\"bool\":{\"should\":[{\"match_phrase\":{\"source\":\"/var/log/postgresql/postgresql-10-main.log\"}},{\"match_phrase\":{\"source\":\"/var/log/postgresql/postgresql.log\"}}],\"minimum_should_match\":1}}],\"filter\":{\"query_string\":{\"query\":\"*serverspec*\"}}}}}' | grep -z \"DROP SCHEMA\"; then echo 'READY'; break; else echo 'WAITING'; sleep 1; fi; done") do
         its(:stdout) { should match /CREATE SCHEMA serverspec_test/ }
         its(:stdout) { should match /CREATE TABLE serverspec_test\.test/ }
         its(:stdout) { should match /INSERT INTO serverspec_test\.test/ }
@@ -424,7 +514,7 @@ if pgaudit_enabled
     end
 
     describe 'Checking if the Elasticsearch logs contain queries executed with PGBouncer', :if => pgbouncer_enabled do
-      describe command("curl -k -u admin:admin 'https://#{elasticsearch_host}:#{elasticsearch_api_port}/_search?pretty=true' -H 'Content-Type: application/json' -d '{\"size\":100,\"_source\":{\"includes\":\"message\"},\"query\":{\"bool\":{\"must\":[{\"bool\":{\"should\":[{\"match_phrase\":{\"source\":\"/var/log/postgresql/postgresql-10-main.log\"}},{\"match_phrase\":{\"source\":\"/var/log/postgresql/postgresql.log\"}}],\"minimum_should_match\":1}}],\"filter\":{\"query_string\":{\"query\":\"*#{pg_user}*\"}}}}}'") do
+      describe command("for i in {1..600}; do if curl -k -s -u admin:admin 'https://#{elasticsearch_host}:#{elasticsearch_api_port}/_search?pretty=true' -H 'Content-Type: application/json' -d '{\"size\":100,\"_source\":{\"includes\":\"message\"},\"query\":{\"bool\":{\"must\":[{\"bool\":{\"should\":[{\"match_phrase\":{\"source\":\"/var/log/postgresql/postgresql-10-main.log\"}},{\"match_phrase\":{\"source\":\"/var/log/postgresql/postgresql.log\"}}],\"minimum_should_match\":1}}],\"filter\":{\"query_string\":{\"query\":\"*#{pg_user}*\"}}}}}' | grep -z \"DROP USER\"; then echo 'READY'; break; else echo 'WAITING'; sleep 1; fi; done") do
         its(:stdout) { should match /GRANT ALL ON SCHEMA serverspec_test to #{pg_user}/ }
         its(:stdout) { should match /GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA serverspec_test to #{pg_user}/ }
         its(:stdout) { should match /CREATE TABLE serverspec_test\.pgbtest/ }

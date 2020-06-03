@@ -8,16 +8,15 @@ def callRabbitMQDeploymentTests
   user = 'testuser' + SecureRandom.hex(5)
   pass = SecureRandom.hex
 
-  rabbitmq_deployment_array_index = readDataYaml("configuration/applications")["specification"]["applications"].index {|h| h["name"] == "rabbitmq" }
-  service_port = readDataYaml("configuration/applications")["specification"]["applications"]["#{rabbitmq_deployment_array_index}".to_i]["service"]["port"]
-  service_management_port = readDataYaml("configuration/applications")["specification"]["applications"]["#{rabbitmq_deployment_array_index}".to_i]["service"]["management_port"]
-  service_replicas = readDataYaml("configuration/applications")["specification"]["applications"]["#{rabbitmq_deployment_array_index}".to_i]["service"]["replicas"]
-  service_namespace = readDataYaml("configuration/applications")["specification"]["applications"]["#{rabbitmq_deployment_array_index}".to_i]["service"]["namespace"]
-  service_name = readDataYaml("configuration/applications")["specification"]["applications"]["#{rabbitmq_deployment_array_index}".to_i]["service"]["name"]
-  plugins = readDataYaml("configuration/applications")["specification"]["applications"]["#{rabbitmq_deployment_array_index}".to_i]["rabbitmq"]["plugins"]
+  service_port = readDataYaml("configuration/applications")["specification"]["applications"].detect {|i| i["name"] == 'rabbitmq'}["service"]["port"]
+  service_management_port = readDataYaml("configuration/applications")["specification"]["applications"].detect {|i| i["name"] == 'rabbitmq'}["service"]["management_port"]
+  service_replicas = readDataYaml("configuration/applications")["specification"]["applications"].detect {|i| i["name"] == 'rabbitmq'}["service"]["replicas"]
+  service_namespace = readDataYaml("configuration/applications")["specification"]["applications"].detect {|i| i["name"] == 'rabbitmq'}["service"]["namespace"]
+  service_name = readDataYaml("configuration/applications")["specification"]["applications"].detect {|i| i["name"] == 'rabbitmq'}["service"]["name"]
+  plugins = readDataYaml("configuration/applications")["specification"]["applications"].detect {|i| i["name"] == 'rabbitmq'}["rabbitmq"]["plugins"]
 
-  if !readDataYaml("configuration/applications")["specification"]["applications"]["#{rabbitmq_deployment_array_index}".to_i]["rabbitmq"]["amqp_port"].nil?
-    rabbitmq_amqp_port = readDataYaml("configuration/applications")["specification"]["applications"]["#{rabbitmq_deployment_array_index}".to_i]["rabbitmq"]["amqp_port"]
+  if !readDataYaml("configuration/applications")["specification"]["applications"].detect {|i| i["name"] == 'rabbitmq'}["rabbitmq"]["amqp_port"].nil?
+    rabbitmq_amqp_port = readDataYaml("configuration/applications")["specification"]["applications"].detect {|i| i["name"] == 'rabbitmq'}["rabbitmq"]["amqp_port"]
   end
 
   describe 'Checking if RabbitMQ service is running' do

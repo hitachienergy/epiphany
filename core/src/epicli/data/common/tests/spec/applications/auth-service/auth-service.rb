@@ -3,13 +3,12 @@ require 'securerandom'
 
 def callAuthServiceDeploymentTests
 
-  auth_service_array_index = readDataYaml("configuration/applications")["specification"]["applications"].index {|h| h["name"] == "auth-service" }
-  service_port = readDataYaml("configuration/applications")["specification"]["applications"]["#{auth_service_array_index}".to_i]["service"]["port"]
-  service_replicas = readDataYaml("configuration/applications")["specification"]["applications"]["#{auth_service_array_index}".to_i]["service"]["replicas"]
-  service_namespace = readDataYaml("configuration/applications")["specification"]["applications"]["#{auth_service_array_index}".to_i]["service"]["namespace"]
-  service_name = readDataYaml("configuration/applications")["specification"]["applications"]["#{auth_service_array_index}".to_i]["service"]["name"]
-  service_admin_user = readDataYaml("configuration/applications")["specification"]["applications"]["#{auth_service_array_index}".to_i]["service"]["admin_user"]
-  service_admin_password = readDataYaml("configuration/applications")["specification"]["applications"]["#{auth_service_array_index}".to_i]["service"]["admin_password"]
+  service_port = readDataYaml("configuration/applications")["specification"]["applications"].detect {|i| i["name"] == 'auth-service'}["service"]["port"]
+  service_replicas = readDataYaml("configuration/applications")["specification"]["applications"].detect {|i| i["name"] == 'auth-service'}["service"]["replicas"]
+  service_namespace = readDataYaml("configuration/applications")["specification"]["applications"].detect {|i| i["name"] == 'auth-service'}["service"]["namespace"]
+  service_name = readDataYaml("configuration/applications")["specification"]["applications"].detect {|i| i["name"] == 'auth-service'}["service"]["name"]
+  service_admin_user = readDataYaml("configuration/applications")["specification"]["applications"].detect {|i| i["name"] == 'auth-service'}["service"]["admin_user"]
+  service_admin_password = readDataYaml("configuration/applications")["specification"]["applications"].detect {|i| i["name"] == 'auth-service'}["service"]["admin_password"]
 
 
   describe 'Checking if auth-service is running' do
