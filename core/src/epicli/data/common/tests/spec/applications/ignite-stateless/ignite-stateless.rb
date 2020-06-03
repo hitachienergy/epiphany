@@ -4,12 +4,11 @@ def callIgniteDeploymentTests
 
   rest_api_host = '127.0.0.1'
   cacheName = 'epi-test-k8s'
-  ignite_stateless_array_index = readDataYaml("configuration/applications")["specification"]["applications"].index {|h| h["name"] == "ignite-stateless" }
-  service_namespace = readDataYaml("configuration/applications")["specification"]["applications"]["#{ignite_stateless_array_index}".to_i]["namespace"]
-  service_replicas = readDataYaml("configuration/applications")["specification"]["applications"]["#{ignite_stateless_array_index}".to_i]["replicas"]
-  rest_nodeport = readDataYaml("configuration/applications")["specification"]["applications"]["#{ignite_stateless_array_index}".to_i]["service"]["rest_nodeport"]
-  sql_nodeport = readDataYaml("configuration/applications")["specification"]["applications"]["#{ignite_stateless_array_index}".to_i]["service"]["sql_nodeport"]
-  thinclients_nodeport = readDataYaml("configuration/applications")["specification"]["applications"]["#{ignite_stateless_array_index}".to_i]["service"]["thinclients_nodeport"]
+  service_namespace = readDataYaml("configuration/applications")["specification"]["applications"].detect {|i| i["name"] == 'ignite-stateless'}["namespace"]
+  service_replicas = readDataYaml("configuration/applications")["specification"]["applications"].detect {|i| i["name"] == 'ignite-stateless'}["replicas"]
+  rest_nodeport = readDataYaml("configuration/applications")["specification"]["applications"].detect {|i| i["name"] == 'ignite-stateless'}["service"]["rest_nodeport"]
+  sql_nodeport = readDataYaml("configuration/applications")["specification"]["applications"].detect {|i| i["name"] == 'ignite-stateless'}["service"]["sql_nodeport"]
+  thinclients_nodeport = readDataYaml("configuration/applications")["specification"]["applications"].detect {|i| i["name"] == 'ignite-stateless'}["service"]["thinclients_nodeport"]
 
   describe 'Checking if th Ignite service exists' do
     describe command("kubectl get services --namespace=#{service_namespace} --no-headers -o custom-columns=:metadata.name") do
