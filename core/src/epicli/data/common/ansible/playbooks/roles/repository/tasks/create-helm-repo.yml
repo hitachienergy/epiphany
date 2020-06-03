@@ -12,11 +12,6 @@
 
 - name: Prepare files for Helm chart repository
   block:
-    - name: Generate index.yaml file
-      shell: helm repo index {{ specification.apache_epirepo_path }}/helm-charts/system/ --url {{ repository_url }}/helm-charts/system
-      args:
-        executable: /bin/bash
-
     - name: Create compressed archives of Helm charts directories
       archive:
         path: "{{ item.path }}"
@@ -24,6 +19,11 @@
         format: gz
         #remove: yes  //doesn't work for directories
       loop: "{{ system_charts_dir_list.files }}"
+
+    - name: Generate index.yaml file
+      shell: helm repo index {{ specification.apache_epirepo_path }}/helm-charts/system/ --url {{ repository_url }}/helm-charts/system
+      args:
+        executable: /bin/bash
 
     - name: Remove Helm charts directories
       file:
