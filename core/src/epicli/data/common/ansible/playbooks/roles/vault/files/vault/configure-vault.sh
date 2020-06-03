@@ -2,8 +2,8 @@
 # Description: This script configures Hashicorp Vault to be used with Epiphany
 # You can find more information in Epiphany documentation in HOWTO.md
 # TODO: Revoke root token
-# TODO: Policy for non-root access
-# TODO: Add system logs to vault
+# TODO: Add flag to override existing users
+# TODO: Add flag to enable/disable token cleanup
 
 HELP_MESSAGE="Usage: configure-vault.sh -c SCRIPT_CONFIGURATION_FILE_PATH -a VAULT_IP_ADDRESS"
 
@@ -125,12 +125,39 @@ function enable_vault_kubernetes_authentication {
 }
 
 function integrate_with_kubernetes {
+    local vault_config_data_path="$1";
+
     log_and_print "Turning on Kubernetes integration...";
     local token_reviewer_jwt="$(kubectl --kubeconfig=/etc/kubernetes/admin.conf get secret vault-auth -o go-template='{{ .data.token }}' | base64 --decode)";
     local kube_ca_cert=$(kubectl --kubeconfig=/etc/kubernetes/admin.conf config view --raw --minify --flatten -o jsonpath='{.clusters[].cluster.certificate-authority-data}' | base64 --decode);
     local kube_host=$(kubectl --kubeconfig=/etc/kubernetes/admin.conf config view --raw --minify --flatten -o jsonpath='{.clusters[].cluster.server}');
     vault write auth/kubernetes/config token_reviewer_jwt="$token_reviewer_jwt" kubernetes_host="$kube_host" kubernetes_ca_cert="$kube_ca_cert";
+    check_vault_error "$?" "Kubernetes parameters written to auth/kubernetes/config." "There was an error during writing kubernetes parameters to auth/kubernetes/config.";
+    vault policy write devweb-app $vault_config_data_path/policy-application.hcl;
+    check_vault_error "$?" "Application policy applied." "There was an error during applying application policy.";
+    vault write auth/kubernetes/role/devweb-app bound_service_account_names=internal-app bound_service_account_namespaces=default policies=devweb-app ttl=24h;
+    check_vault_error "$?" "Admin policy applied." "There was an error during applying admin policy.";
+}
 
+function configure_kubernetes {
+    local vault_install_path="$1";
+
+    log_and_print "Configuring kubernetes...";
+    log_and_print "Applying vault-endpoint-configuration.yml...";
+    kubectl apply -f "$vault_install_path/kubernetes/vault-endpoint-configuration.yml";
+    log_and_print "Applying vault-service-account.yml...";
+    kubectl apply -f "$vault_install_path/kubernetes/vault-service-account.yml";
+    log_and_print "Checking if Vault Agent Helm Chart is already installed...";
+    helm list | grep vault;
+    local command_result=( ${PIPESTATUS[@]} );
+    if [ "${command_result[0]}" != "0" ] ; then
+        exit_with_error "There was an error during checking if Vault Agent Helm Chart is already installed. Exit status: ${command_result[0]}";
+    fi
+    if [ "${command_result[1]}" = "1" ] ; then
+        log_and_print "Installing Vault Agent Helm Chart...";
+        helm install vault --set "injector.externalVaultAddr=http://external-vault:8200" https://github.com/hashicorp/vault-helm/archive/v0.4.0.tar.gz
+        check_vault_error "$?" "Vault Agent Helm Chart installed." "There was an error during installation of Vault Agent Helm Chart.";
+    fi
 }
 
 function apply_epiphany_vault_policies {
@@ -223,6 +250,7 @@ source "$CONFIG_FILE";
 INIT_FILE_PATH="$VAULT_INSTALL_PATH/init.txt"
 VAULT_CONFIG_DATA_PATH="$VAULT_INSTALL_PATH/config"
 export VAULT_ADDR="http://$VAULT_IP:8200"
+export KUBECONFIG=/etc/kubernetes/admin.conf
 PATH=$VAULT_INSTALL_PATH/bin:$PATH
 
 trap cleanup EXIT INT TERM;
@@ -251,11 +279,14 @@ if [ "${KUBERNETES_INTEGRATION,,}" = "true" ]  || [ "${ENABLE_VAULT_KUBERNETES_A
     enable_vault_kubernetes_authentication;
 fi
 
-if [ "${KUBERNETES_INTEGRATION,,}" = "true" ] ; then
-    integrate_with_kubernetes;
-fi
-
 apply_epiphany_vault_policies "$VAULT_CONFIG_DATA_PATH";
 enable_vault_userpass_authentication;
-
 create_vault_users_from_file "$VAULT_INSTALL_PATH" "$LOGIN_TOKEN" "$VAULT_ADDR";
+
+if [ "${KUBERNETES_INTEGRATION,,}" = "true" ] ; then
+    integrate_with_kubernetes "$VAULT_CONFIG_DATA_PATH";
+fi
+
+if [ "${KUBERNETES_CONFIGURATION,,}" = "true" ] ; then
+    configure_kubernetes "$VAULT_INSTALL_PATH";
+fi
