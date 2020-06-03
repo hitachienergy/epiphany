@@ -11,6 +11,7 @@ specification:
   vault_audit: false
   use_https: false
   kubernetes_integration: true
+  kubernetes_configuration: true
   enable_vault_kubernetes_authentication: true
   revoke_root_token: false
   secret_mount_path: secret
