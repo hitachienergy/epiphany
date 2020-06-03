@@ -2,6 +2,7 @@
 # This role is responsible for installing and configuring Hashicorp Vault
 # TODO: Add swap disable
 # TODO: Change to: https://docs.ansible.com/ansible/latest/modules/pam_limits_module.html
+# TODO: Check licenses for Hashicorp Vault policies used by Epiphany
 
 - name: Install and configure Hashicorp Vault if enabled
   when:
@@ -30,6 +31,7 @@
         - "bin"
         - "config"
         - "data"
+        - "kubernetes"
 
     - name: Set Vault file name to install
       set_fact:
@@ -64,7 +66,7 @@
         owner: "{{ specification.vault_system_user }}"
         group: "{{ specification.vault_system_group }}"
         mode: u=rw,g=r,o=
-        src: config.hcl.j2
+        src: vault/config.hcl.j2
 
     - name: Set capabilities required to lock memory
       capabilities:
@@ -99,7 +101,7 @@
         owner: root
         group: root
         mode: u=rw,g=r,o=
-        src: vault.service.j2
+        src: vault/vault.service.j2
       register: service_conf
 
     - name: Restart Vault service and reload config
@@ -118,7 +120,7 @@
 
     - name: Copy Vault configuration script
       copy:
-        src: configure-vault.sh
+        src: vault/configure-vault.sh
         dest: "{{ specification.vault_install_dir }}/bin/"
         owner: "{{ specification.vault_system_user }}"
         group: "{{ specification.vault_system_group }}"
@@ -126,7 +128,7 @@
 
     - name: Copy Vault policies configuration
       copy:
-        src: "{{ item }}"
+        src: "vault/{{ item }}"
         dest: "{{ specification.vault_install_dir }}/config/"
         owner: "{{ specification.vault_system_user }}"
         group: "{{ specification.vault_system_group }}"
@@ -134,6 +136,7 @@
       loop:
         - policy-admin.hcl
         - policy-provisioner.hcl
+        - policy-application.hcl
 
     - name: Generate config script confiugration
       template:
@@ -141,7 +144,7 @@
         owner: "{{ specification.vault_system_user }}"
         group: "{{ specification.vault_system_group }}"
         mode: u=rw,g=r,o=
-        src: script.config.j2
+        src: vault/script.config.j2
 
     - name: Generate users to be created by the script
       template:
@@ -149,7 +152,23 @@
         owner: "{{ specification.vault_system_user }}"
         group: "{{ specification.vault_system_group }}"
         mode: u=rw,g=r,o=
-        src: users.csv.j2
+        src: vault/users.csv.j2
+
+    - name: Create vault endpoint configuration on kubernetes cluster
+      template:
+        dest: "{{ specification.vault_install_dir }}/kubernetes/vault-endpoint-configuration.yml"
+        owner: "{{ specification.vault_system_user }}"
+        group: "{{ specification.vault_system_group }}"
+        mode: u=rw,g=r,o=
+        src: kubernetes/vault-endpoint-configuration.yml.j2
+
+    - name: Create vault endpoint configuration on kubernetes cluster
+      template:
+        dest: "{{ specification.vault_install_dir }}/kubernetes/vault-service-account.yml"
+        owner: "{{ specification.vault_system_user }}"
+        group: "{{ specification.vault_system_group }}"
+        mode: u=rw,g=r,o=
+        src: kubernetes/vault-service-account.yml.j2
 
     - name: Run configuration script
       when:
