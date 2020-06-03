@@ -4,6 +4,7 @@
 # TODO: Revoke root token
 # TODO: Add flag to override existing users
 # TODO: Add flag to enable/disable token cleanup
+# TODO: Add catching exit 2 in check_vault_error
 
 HELP_MESSAGE="Usage: configure-vault.sh -c SCRIPT_CONFIGURATION_FILE_PATH -a VAULT_IP_ADDRESS"
 
@@ -251,7 +252,7 @@ INIT_FILE_PATH="$VAULT_INSTALL_PATH/init.txt"
 VAULT_CONFIG_DATA_PATH="$VAULT_INSTALL_PATH/config"
 export VAULT_ADDR="http://$VAULT_IP:8200"
 export KUBECONFIG=/etc/kubernetes/admin.conf
-PATH=$VAULT_INSTALL_PATH/bin:$PATH
+PATH=$VAULT_INSTALL_PATH/bin:/usr/local/bin/:$PATH
 
 trap cleanup EXIT INT TERM;
 

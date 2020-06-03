@@ -3,6 +3,8 @@
 # TODO: Add swap disable
 # TODO: Change to: https://docs.ansible.com/ansible/latest/modules/pam_limits_module.html
 # TODO: Check licenses for Hashicorp Vault policies used by Epiphany
+# TODO: Add vault to PATH
+# TODO: Limit to set only on 1 master until vault will be clustered
 
 - name: Install and configure Hashicorp Vault if enabled
   when:
