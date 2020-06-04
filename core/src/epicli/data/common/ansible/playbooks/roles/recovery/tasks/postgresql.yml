@@ -17,10 +17,10 @@
       - groups['postgresql'][0] == inventory_hostname
 
   when: 
-    - specification.extensions.replication.enabled is defined
-    - specification.extensions.replication.enabled
-    - specification.extensions.replication.use_repmgr is defined
-    - specification.extensions.replication.use_repmgr
+    - component_vars.specification.extensions.replication.enabled is defined
+    - component_vars.specification.extensions.replication.enabled
+    - component_vars.specification.extensions.replication.use_repmgr is defined
+    - component_vars.specification.extensions.replication.use_repmgr
 
 - name: Copy and restore backup files
 
@@ -32,7 +32,7 @@
         snapshot_name: "{{ specification.components.postgresql.snapshot_name }}"
 
     - name: Transfer database backup via rsync
-      import_tasks: upload_via_rsync.yml
+      import_tasks: common/upload_via_rsync.yml
       vars:
         artifacts:
           - "{{ snapshot_path  }}"
@@ -122,12 +122,12 @@
         become: yes
         become_user: postgres
         shell: "{{ repmgr_bindir[ansible_os_family] }}/repmgr -f {{ repmgr_config_dir[ansible_os_family] }}/repmgr.conf
-        --force --superuser={{ specification.extensions.replication.priviledged_user_name }} primary register -F"
+        --force --superuser={{ component_vars.specification.extensions.replication.priviledged_user_name }} primary register -F"
       when:
-        - specification.extensions.replication.enabled is defined
-        - specification.extensions.replication.enabled
-        - specification.extensions.replication.use_repmgr is defined
-        - specification.extensions.replication.use_repmgr
+        - component_vars.specification.extensions.replication.enabled is defined
+        - component_vars.specification.extensions.replication.enabled
+        - component_vars.specification.extensions.replication.use_repmgr is defined
+        - component_vars.specification.extensions.replication.use_repmgr
 
     - name: Remove temporary files
       file:
@@ -189,7 +189,7 @@
 
     - name: Clone content from primary node using repmgr
       become_user: postgres
-      shell: "{{ repmgr_bindir[ansible_os_family] }}/repmgr -f {{ repmgr_config_dir[ansible_os_family] }}/repmgr.conf -h {{ hostvars[groups['postgresql'][0]]['ansible_default_ipv4']['address'] }} -U {{ specification.extensions.replication.priviledged_user_name }} -d {{ specification.extensions.replication.repmgr_database }} -p 5432 -F standby clone"
+      shell: "{{ repmgr_bindir[ansible_os_family] }}/repmgr -f {{ repmgr_config_dir[ansible_os_family] }}/repmgr.conf -h {{ hostvars[groups['postgresql'][0]]['ansible_default_ipv4']['address'] }} -U {{ component_vars.specification.extensions.replication.priviledged_user_name }} -d {{ component_vars.specification.extensions.replication.repmgr_database }} -p 5432 -F standby clone"
 
     - name: Start postgresql service
       service:
@@ -205,18 +205,18 @@
       shell: "{{ repmgr_bindir[ansible_os_family] }}/repmgr -f {{ repmgr_config_dir[ansible_os_family] }}/repmgr.conf standby follow -F"
   when:
     - groups['postgresql'][1] == inventory_hostname
-    - specification.extensions.replication.enabled is defined
-    - specification.extensions.replication.enabled
-    - specification.extensions.replication.use_repmgr is defined
-    - specification.extensions.replication.use_repmgr
+    - component_vars.specification.extensions.replication.enabled is defined
+    - component_vars.specification.extensions.replication.enabled
+    - component_vars.specification.extensions.replication.use_repmgr is defined
+    - component_vars.specification.extensions.replication.use_repmgr
 
 - name: Restart repmgrd service
   service:
     name: "{{ repmgr_service_name[ansible_os_family] }}"
     state: restarted
   when:
-    - specification.extensions.replication.enabled is defined
-    - specification.extensions.replication.enabled
-    - specification.extensions.replication.use_repmgr is defined
-    - specification.extensions.replication.use_repmgr
+    - component_vars.specification.extensions.replication.enabled is defined
+    - component_vars.specification.extensions.replication.enabled
+    - component_vars.specification.extensions.replication.use_repmgr is defined
+    - component_vars.specification.extensions.replication.use_repmgr
     
