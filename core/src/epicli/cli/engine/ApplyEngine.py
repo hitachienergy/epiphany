@@ -5,7 +5,8 @@ from ansible.inventory.manager import InventoryManager
 
 from cli.helpers.Step import Step
 from cli.helpers.doc_list_helpers import select_single
-from cli.helpers.build_saver import save_manifest, get_inventory_path
+from cli.helpers.build_saver import save_manifest, get_inventory_path, get_terraform_path, SP_FILE_NAME
+from cli.helpers.data_loader import load_yaml_file
 from cli.helpers.yaml_helpers import safe_load_all
 from cli.helpers.Log import Log
 from cli.engine.providers.provider_class_loader import provider_class_loader
@@ -30,6 +31,8 @@ class ApplyEngine(Step):
         self.configuration_docs = []
         self.infrastructure_docs = []
         self.existing_subnet_id = None
+
+        self.new_env = os.environ.copy()
 
     def __enter__(self):
         return self
@@ -175,6 +178,33 @@ class ApplyEngine(Step):
                             'Azure network"')
 
         apiproxy = APIProxy(self.cluster_model, self.configuration_docs)
+
+        # TODO: Azure Login is required to query resources. Needs to be cleaned-up as this is a stripped down version from TerraformRunner.py
+        if not self.cluster_model.specification.cloud.use_service_principal:
+            # Account
+            subscription = apiproxy.login_account()
+            apiproxy.set_active_subscribtion(subscription['id'])
+        else:
+            # Service principal
+            sp_file = os.path.join(get_terraform_path(self.cluster_model.specification.name), SP_FILE_NAME)
+            if not os.path.exists(sp_file):
+                subscription = apiproxy.login_account()
+                apiproxy.set_active_subscribtion(subscription['id'])
+            else:
+                sp = load_yaml_file(sp_file)
+                subscription = apiproxy.login_sp(sp)
+                if 'subscriptionId' in sp:
+                    # Set active subscription if sp contains it.
+                    apiproxy.set_active_subscribtion(sp['subscriptionId'])
+                    self.new_env['ARM_SUBSCRIPTION_ID'] = sp['subscriptionId']
+                else:
+                    # No subscriptionId in sp.yml so use the default one from Azure SP login.
+                    self.new_env['ARM_SUBSCRIPTION_ID'] = subscription[0]['id']
+
+                    # Set other environment variables for Terraform when working with Azure and service principal.
+                    self.new_env['ARM_TENANT_ID'] = sp['tenant']
+                    self.new_env['ARM_CLIENT_ID'] = sp['appId']
+                    self.new_env['ARM_CLIENT_SECRET'] = sp['password']
         self.existing_subnet_id = apiproxy.get_existing_subnet_id(network)
 
     @staticmethod
