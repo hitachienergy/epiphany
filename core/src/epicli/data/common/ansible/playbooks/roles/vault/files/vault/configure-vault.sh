@@ -5,6 +5,7 @@
 # TODO: Add flag to override existing users
 # TODO: Add flag to enable/disable token cleanup
 # TODO: Add catching exit 2 in check_vault_error
+# TODO: Configuration of unsealing after server restart with script
 
 HELP_MESSAGE="Usage: configure-vault.sh -c SCRIPT_CONFIGURATION_FILE_PATH -a VAULT_IP_ADDRESS"
 
@@ -148,6 +149,8 @@ function configure_kubernetes {
     kubectl apply -f "$vault_install_path/kubernetes/vault-endpoint-configuration.yml";
     log_and_print "Applying vault-service-account.yml...";
     kubectl apply -f "$vault_install_path/kubernetes/vault-service-account.yml";
+    log_and_print "Applying app-service-account.yml...";
+    kubectl apply -f "$vault_install_path/kubernetes/app-service-account.yml";
     log_and_print "Checking if Vault Agent Helm Chart is already installed...";
     helm list | grep vault;
     local command_result=( ${PIPESTATUS[@]} );
