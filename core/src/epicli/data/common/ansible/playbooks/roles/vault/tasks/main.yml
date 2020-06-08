@@ -35,6 +35,7 @@
         - "data"
         - "kubernetes"
         - "logs"
+        - "config/policies"
 
     - name: Set Vault file name to install
       set_fact:
@@ -132,7 +133,7 @@
     - name: Copy Vault policies configuration
       copy:
         src: "vault/{{ item }}"
-        dest: "{{ specification.vault_install_dir }}/config/"
+        dest: "{{ specification.vault_install_dir }}/config/policies/"
         owner: "{{ specification.vault_system_user }}"
         group: "{{ specification.vault_system_group }}"
         mode: u=rw,g=r,o=
@@ -142,7 +143,7 @@
 
     - name: Generate application policy
       template:
-        dest: "{{ specification.vault_install_dir }}/config/policy-application.hcl"
+        dest: "{{ specification.vault_install_dir }}/config/policies/policy-application.hcl"
         owner: "{{ specification.vault_system_user }}"
         group: "{{ specification.vault_system_group }}"
         mode: u=rw,g=r,o=

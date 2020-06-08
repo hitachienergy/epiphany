@@ -13,7 +13,7 @@ specification:
   kubernetes_integration: true
   kubernetes_configuration: true
   enable_vault_kubernetes_authentication: true
-  secret_path: devwebapp
+  app_secret_path: devwebapp
   revoke_root_token: false
   secret_mount_path: secret
   vault_install_dir: /opt/vault
