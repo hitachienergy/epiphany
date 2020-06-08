@@ -4,7 +4,6 @@
 # TODO: Revoke root token
 # TODO: Add flag to override existing users
 # TODO: Add flag to enable/disable token cleanup
-# TODO: Add catching exit 2 in check_vault_error
 # TODO: Configuration of unsealing after server restart with script
 # TODO: Add folder for policies in configuration
 
