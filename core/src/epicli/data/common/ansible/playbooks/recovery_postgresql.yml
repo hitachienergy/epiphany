@@ -1,10 +1,9 @@
 ---
 # Ansible playbook for recovering Postgresql database
 
-- hosts: postgresql[0]
+- hosts: postgresql
   become: true
   become_method: sudo
-  serial: 1
   tasks:
     - when: specification.components.postgresql.enabled | default(false)
       block:
