@@ -139,7 +139,14 @@
       loop:
         - policy-admin.hcl
         - policy-provisioner.hcl
-        - policy-application.hcl
+
+    - name: Generate application policy
+      template:
+        dest: "{{ specification.vault_install_dir }}/config/policy-application.hcl"
+        owner: "{{ specification.vault_system_user }}"
+        group: "{{ specification.vault_system_group }}"
+        mode: u=rw,g=r,o=
+        src: vault/policy-application.hcl.j2
 
     - name: Generate config script confiugration
       template:
