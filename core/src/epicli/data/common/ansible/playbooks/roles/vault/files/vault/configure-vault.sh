@@ -27,7 +27,7 @@ function check_vault_error {
     local exit_code="$1";
     local success_message="$2";
     local failure_message="$3";
-    if [ "$exit_code" != "1" ] ; then
+    if [ "$exit_code" == "0" ] ; then
         log_and_print "$success_message";
     else
         exit_with_error "$failure_message";
@@ -93,7 +93,7 @@ function enable_vault_audit_logs {
     fi
     if [ "${command_result[1]}" = "1" ] ; then
         log_and_print "Enabling auditing...";
-        vault audit enable file file_path="/var/log/vault_audit.log";
+        vault audit enable file file_path="/opt/vault/logs/vault_audit.log";
         check_vault_error "$?" "Auditing enabled." "There was an error during enabling auditing.";
     fi
 }
@@ -152,6 +152,7 @@ function configure_kubernetes {
     kubectl apply -f "$vault_install_path/kubernetes/vault-service-account.yml";
     log_and_print "Applying app-service-account.yml...";
     kubectl apply -f "$vault_install_path/kubernetes/app-service-account.yml";
+    check_vault_error "$?" "app-service-account: Success" "app-service-account: Failure";
     log_and_print "Checking if Vault Agent Helm Chart is already installed...";
     helm list | grep vault;
     local command_result=( ${PIPESTATUS[@]} );
