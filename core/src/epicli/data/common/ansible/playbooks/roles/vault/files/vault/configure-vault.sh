@@ -3,7 +3,6 @@
 # You can find more information in Epiphany documentation in HOWTO.md
 # TODO: Revoke root token
 # TODO: Add flag to override existing users
-# TODO: Add flag to enable/disable token cleanup
 # TODO: Configuration of unsealing after server restart with script
 
 HELP_MESSAGE="Usage: configure-vault.sh -c SCRIPT_CONFIGURATION_FILE_PATH -a VAULT_IP_ADDRESS"
@@ -257,7 +256,9 @@ export VAULT_ADDR="http://$VAULT_IP:8200"
 export KUBECONFIG=/etc/kubernetes/admin.conf
 PATH=$VAULT_INSTALL_PATH/bin:/usr/local/bin/:$PATH
 
-trap cleanup EXIT INT TERM;
+if [ "${VAULT_TOKEN_CLEANUP,,}" = "true" ] ; then
+    trap cleanup EXIT INT TERM;
+fi
 
 initialize_vault "$INIT_FILE_PATH";
 
