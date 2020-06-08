@@ -16,6 +16,7 @@ specification:
   app_secret_path: devwebapp
   revoke_root_token: false
   secret_mount_path: secret
+  vault_token_cleanup: true
   vault_install_dir: /opt/vault
   vault_log_level: info
   provider: aws
