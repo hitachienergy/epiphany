@@ -1,0 +1,76 @@
+---
+- name: Install Java package
+  package:
+    name: "java-1.8.0-openjdk-headless"
+    state: present
+  when: ansible_os_family == "RedHat"
+
+- name: Install Java package
+  package:
+    name: "openjdk-8-jre-headless"
+    state: present
+  when: ansible_os_family == "Debian"
+
+- name: Create druid system group
+  group:
+    name: druid
+    system: true
+    state: present
+
+- name: Create druid system user
+  user:
+    name: druid
+    system: true
+    shell: "/usr/sbin/nologin"
+    group: druid
+    createhome: false
+
+- name: Set Druid file name to install
+  set_fact:
+    druid_binary_file_name: "{{ specification.file_name }}"
+
+- name: Download Druid binaries
+  include_role:
+    name: download
+    tasks_from: download_file
+  vars:
+    file_name: "{{ druid_binary_file_name }}"
+
+- name: Check for Druid package
+  stat:
+    path: /opt/apache-druid-{{ specification.version }}/bin/start-single-server-small
+  register: druid_package
+
+- name: Uncompress the Druid tar
+  unarchive:
+    remote_src: yes
+    creates: /opt/apache-druid-{{ specification.version }}
+    src: "{{ download_directory }}/{{ druid_binary_file_name }}"
+    dest: /opt
+  when: not druid_package.stat.exists
+
+- name: Change ownership on Druid directory.
+  file:
+    path: /opt/apache-druid-{{ specification.version }}
+    state: directory
+    owner: druid
+    group: druid
+
+- name: Link /opt/druid to the right version
+  file:
+    dest: /opt/druid
+    state: link
+    src: /opt/apache-druid-{{ specification.version }}
+
+- name: Create systemd config
+  template:
+    dest: /etc/systemd/system/druid.service
+    owner: root
+    group: root
+    mode: 0644
+    src: druid.service.j2
+  notify:
+    - restart druid
+
+- name: Reload daemon
+  command: systemctl daemon-reload

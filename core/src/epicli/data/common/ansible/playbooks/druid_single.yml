@@ -1,0 +1,7 @@
+---
+
+- hosts: druid_single
+  become: true
+  become_method: sudo
+  roles:
+    - druid_single

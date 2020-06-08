@@ -1,0 +1,13 @@
+[Unit]
+Description=Druid Daemon
+
+[Service]
+Type=simple
+User=druid
+Group=druid
+Restart=on-failure
+Environment="DRUID_SKIP_JAVA_CHECK=1"
+ExecStart=/opt/druid/bin/{{specification.single_server_config_name}}
+
+[Install]
+WantedBy=multi-user.target 

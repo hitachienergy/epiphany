@@ -9,6 +9,8 @@ specification:
       enabled: yes
     - name: image-registry
       enabled: yes
+    - name: druid-single
+      enabled: yes
     - name: kubernetes-master
       enabled: yes
     - name: kubernetes-node
@@ -140,4 +142,8 @@ specification:
       - node-exporter
       - filebeat
       - firewall
+    druid:
+      - druid-single
+      - filebeat
+      - node-exporter
 

@@ -1,0 +1,8 @@
+kind: configuration/druid-single
+title: Druid Single Instance Config
+name: default
+specification:
+  version: "0.18.1"
+  file_name: "apache-druid-0.18.1-bin.tar.gz"
+  # https://druid.apache.org/docs/latest/operations/single-server.html
+  single_server_config_name: "micro-quickstart" # default config name, verified on 2 CPU, 8GB RAM

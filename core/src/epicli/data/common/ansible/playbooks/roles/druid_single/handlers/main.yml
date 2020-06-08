@@ -1,0 +1,9 @@
+---
+
+- name: restart druid
+  service:
+    name: druid
+    state: restarted
+    enabled: yes
+  retries: 10
+  delay: 10
