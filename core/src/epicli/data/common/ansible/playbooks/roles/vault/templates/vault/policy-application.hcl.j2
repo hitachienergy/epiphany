@@ -1,6 +1,6 @@
-path "secret/data/{{ specification.secret_path }}/*" {
+path "{{ specification.secret_mount_path }}/data/{{ specification.app_secret_path }}/*" {
         capabilities = ["read"]
 }
-path "secret/data/{{ specification.secret_path }}/" {
+path "{{ specification.secret_mount_path }}/data/{{ specification.app_secret_path }}/" {
         capabilities = ["list"]
 }

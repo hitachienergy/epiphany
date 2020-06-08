@@ -5,7 +5,6 @@
 # TODO: Add flag to override existing users
 # TODO: Add flag to enable/disable token cleanup
 # TODO: Configuration of unsealing after server restart with script
-# TODO: Add folder for policies in configuration
 
 HELP_MESSAGE="Usage: configure-vault.sh -c SCRIPT_CONFIGURATION_FILE_PATH -a VAULT_IP_ADDRESS"
 
@@ -135,7 +134,7 @@ function integrate_with_kubernetes {
     local kube_host=$(kubectl --kubeconfig=/etc/kubernetes/admin.conf config view --raw --minify --flatten -o jsonpath='{.clusters[].cluster.server}');
     vault write auth/kubernetes/config token_reviewer_jwt="$token_reviewer_jwt" kubernetes_host="$kube_host" kubernetes_ca_cert="$kube_ca_cert";
     check_vault_error "$?" "Kubernetes parameters written to auth/kubernetes/config." "There was an error during writing kubernetes parameters to auth/kubernetes/config.";
-    vault policy write devweb-app $vault_config_data_path/policy-application.hcl;
+    vault policy write devweb-app $vault_config_data_path/policies/policy-application.hcl;
     check_vault_error "$?" "Application policy applied." "There was an error during applying application policy.";
     vault write auth/kubernetes/role/devweb-app bound_service_account_names=internal-app bound_service_account_namespaces=default policies=devweb-app ttl=24h;
     check_vault_error "$?" "Admin policy applied." "There was an error during applying admin policy.";
@@ -168,9 +167,9 @@ function configure_kubernetes {
 function apply_epiphany_vault_policies {
     log_and_print "Applying Epiphany default Vault policies...";
     local local vault_config_data_path="$1";
-    vault policy write admin $vault_config_data_path/policy-admin.hcl;
+    vault policy write admin $vault_config_data_path/policies/policy-admin.hcl;
     check_vault_error "$?" "Admin policy applied." "There was an error during applying admin policy.";
-    vault policy write provisioner $vault_config_data_path/policy-provisioner.hcl;
+    vault policy write provisioner $vault_config_data_path/policies/policy-provisioner.hcl;
     check_vault_error "$?" "Provisioner policy applied." "There was an error during applying provisioner policy.";
 }
 
