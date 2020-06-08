@@ -174,6 +174,7 @@ https://packages.elastic.co/curator/5/debian9/pool/main/e/elasticsearch-curator/
 https://archive.apache.org/dist/ignite/2.7.6/apache-ignite-2.7.6-bin.zip
 https://releases.hashicorp.com/vault/1.4.0/vault_1.4.0_linux_amd64.zip
 https://get.helm.sh/helm-v3.2.0-linux-amd64.tar.gz
+https://downloads.apache.org/druid/0.18.1/apache-druid-0.18.1-bin.tar.gz
 
 [images]
 k8s.gcr.io/kube-apiserver:v1.14.6
