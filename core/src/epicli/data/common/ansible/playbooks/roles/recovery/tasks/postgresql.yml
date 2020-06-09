@@ -183,7 +183,7 @@
         path: "{{ pg_data_dir[ansible_os_family] }}/"
         state: absent
     
-    - name: Ensure that data directory exists (RedHat) #This needs to be ckech pn RedHat family sytems since not always location is created by init
+    - name: Ensure that data directory exists (RedHat) #This needs to be check pn RedHat family sytems since not always location is created by init
       file:
         path: "{{ pg_data_dir[ansible_os_family] }}/"
         state: directory
@@ -191,30 +191,18 @@
         group: postgres
       when: 
         - ansible_os_family == 'RedHat'
-    
-    # - name: Copy config files back to database configuration location
-    #   copy:
-    #     src: "/var/tmp/postgresql_temp_config/"
-    #     dest: "{{ pg_config_dir[ansible_os_family] }}/"
-    #     owner: postgres
-    #     group: postgres
-    #     remote_src: yes
-    #   when:
-    #     - ansible_os_family == 'Debian'
 
     - name: Clone content from primary node using repmgr
       become_user: postgres
       shell: "{{ repmgr_bindir[ansible_os_family] }}/repmgr -f {{ repmgr_config_dir[ansible_os_family] }}/repmgr.conf -h {{ hostvars[groups['postgresql'][0]]['ansible_default_ipv4']['address'] }} -U {{ component_vars.specification.extensions.replication.priviledged_user_name }} -d {{ component_vars.specification.extensions.replication.repmgr_database }} -p 5432 -F standby clone"
 
-    - name: Copy config files back to database configuration location
+    - name: Copy cached config files back to database configuration location
       copy:
         src: "/var/tmp/postgresql_temp_config/"
         dest: "{{ pg_config_dir[ansible_os_family] }}/"
         owner: postgres
         group: postgres
         remote_src: yes
-      # when:
-      #   - ansible_os_family == 'RedHat'
 
     - name: Start postgresql service
       service:
