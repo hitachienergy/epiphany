@@ -1,4 +1,7 @@
 import os
+import copy
+
+from cli.version import VERSION
 
 from cli.helpers.Config import Config
 from cli.helpers.Log import Log
@@ -7,7 +10,8 @@ from cli.helpers.Step import Step
 from cli.helpers.build_saver import get_build_path, get_inventory_path_for_build
 from cli.helpers.build_saver import copy_files_recursively, copy_file
 from cli.helpers.yaml_helpers import safe_load_all, dump
-from cli.helpers.doc_list_helpers import select_single
+from cli.helpers.data_loader import load_yaml_obj, types as data_types
+from cli.helpers.doc_list_helpers import select_single, ExpectedSingleResultException
 from cli.helpers.argparse_helpers import components_to_dict
 
 from cli.engine.schema.DefaultMerger import DefaultMerger
@@ -25,8 +29,8 @@ class PatchEngine(Step):
         self.file = input_data.file
         self.build_directory = input_data.build_directory  # can be None
         self.parsed_components = None if input_data.components is None else set(input_data.components)
-        self.component_dict = dict()
         self.input_docs = list()
+        self.configuration_docs = list()
         self.cluster_model = None
         self.backup_doc = None
         self.recovery_doc = None
@@ -61,11 +65,33 @@ class PatchEngine(Step):
         with SchemaValidator(self.cluster_model, self.input_docs) as schema_validator:
             schema_validator.run()
 
+    def _process_configuration_docs(self):
+        # Seed the self.configuration_docs
+        self.configuration_docs = copy.deepcopy(self.input_docs)
+
+        # Please notice using DefaultMerger is not needed here, since it is done already at this point.
+        # We just check if documents are missing and insert default ones without the unneeded merge operation.
+        for kind in ['configuration/backup', 'configuration/recovery']:
+            try:
+                # Check if the required document is in user inputs
+                select_single(self.configuration_docs, lambda x: x.kind == kind)
+            except ExpectedSingleResultException:
+                # If there is no document provided by the user, then fallback to defaults
+                document = load_yaml_obj(data_types.DEFAULT, 'common', kind)
+                # Inject the required "version" attribute
+                document['version'] = VERSION
+                # Save the document for later use
+                self.configuration_docs.append(document)
+
+        # Validate configuration documents
+        with SchemaValidator(self.cluster_model, self.configuration_docs) as schema_validator:
+            schema_validator.run()
+
         # Get backup config document
-        self.backup_doc = select_single(self.input_docs, lambda x: x.kind == 'configuration/backup')
+        self.backup_doc = select_single(self.configuration_docs, lambda x: x.kind == 'configuration/backup')
 
         # Get recovery config document
-        self.recovery_doc = select_single(self.input_docs, lambda x: x.kind == 'configuration/recovery')
+        self.recovery_doc = select_single(self.configuration_docs, lambda x: x.kind == 'configuration/recovery')
 
         if self.build_directory is None:
             # Derive the build directory path (if not provided)
@@ -75,27 +101,28 @@ class PatchEngine(Step):
             raise Exception('Provided build directory path does not exist')
 
     def _process_component_config(self, document):
+        # Overwrite enabled/disabled settings from yaml config
         if self.parsed_components is not None:
-            # Overwrite enable/disable settings from yaml config
             available_components = set(document.specification.components.keys())
-            self.component_dict = components_to_dict(self.parsed_components, available_components)
+            component_dict = components_to_dict(self.parsed_components, available_components)
+
+            # Merge back enabled/disabled settings to satisfy similar checks in ansible playbooks later.
+            # Those will be copied to the vars/main.yml files.
+            for component_name, component_enabled in component_dict.items():
+                document.specification.components[component_name].enabled = component_enabled
 
     def backup(self):
         """Backup all enabled components."""
 
         self._process_input_docs()
+        self._process_configuration_docs()
         self._process_component_config(self.backup_doc)
         self._update_role_files_and_vars('backup', self.backup_doc)
 
         # Execute all enabled component playbooks sequentially
         for component_name, component_config in sorted(self.backup_doc.specification.components.items()):
-            if self.component_dict:
-                # Override yaml config with command line parameters
-                if self.component_dict[component_name]:
-                    self._update_playbook_files_and_run('backup', component_name)
-            else:
-                if component_config.enabled:
-                    self._update_playbook_files_and_run('backup', component_name)
+            if component_config.enabled:
+                self._update_playbook_files_and_run('backup', component_name)
 
         return 0
 
@@ -103,18 +130,14 @@ class PatchEngine(Step):
         """Recover all enabled components."""
 
         self._process_input_docs()
+        self._process_configuration_docs()
         self._process_component_config(self.recovery_doc)
         self._update_role_files_and_vars('recovery', self.recovery_doc)
 
         # Execute all enabled component playbooks sequentially
         for component_name, component_config in sorted(self.recovery_doc.specification.components.items()):
-            if self.component_dict:
-                # Override yaml config with command line parameters
-                if self.component_dict[component_name]:
-                    self._update_playbook_files_and_run('recovery', component_name)
-            else:
-                if component_config.enabled:
-                    self._update_playbook_files_and_run('recovery', component_name)
+            if component_config.enabled:
+                self._update_playbook_files_and_run('recovery', component_name)
 
         return 0
 
