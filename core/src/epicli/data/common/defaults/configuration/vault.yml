@@ -20,6 +20,7 @@ specification:
   vault_install_dir: /opt/vault
   vault_log_level: info
   provider: aws
+  override_existing_vault_users: false
   vault_users:
     - name: admin
       policy: admin
