@@ -3,6 +3,7 @@
 # You can find more information in Epiphany documentation in HOWTO.md
 # TODO: Revoke root token
 # TODO: Configuration of unsealing after server restart with script
+# TODO: Add configurable log paths
 
 HELP_MESSAGE="Usage: configure-vault.sh -c SCRIPT_CONFIGURATION_FILE_PATH -a VAULT_IP_ADDRESS"
 
@@ -10,7 +11,7 @@ function print_help { echo "$HELP_MESSAGE"; }
 
 function log_and_print {
     local string_to_log="$1";
-    echo "$string_to_log" | tee -a configure-vault.log;
+    echo "`date +"%Y-%m-%d-%H:%M:%S"` - $string_to_log" | tee -a /opt/vault/logs/configure_vault.log;
 }
 
 function exit_with_error {
