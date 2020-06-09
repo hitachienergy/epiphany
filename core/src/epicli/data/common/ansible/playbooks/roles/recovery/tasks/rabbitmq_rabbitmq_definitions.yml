@@ -50,6 +50,6 @@
 
 - name: Import definitions json file
   shell: |
-    rabbitmqadmin import /var/lib/rabbitmq/definitions/definitions-{{ snapshot_name }}.json
+    /usr/local/bin/rabbitmqadmin import /var/lib/rabbitmq/definitions/definitions-{{ snapshot_name }}.json
   args:
     executable: /bin/bash
