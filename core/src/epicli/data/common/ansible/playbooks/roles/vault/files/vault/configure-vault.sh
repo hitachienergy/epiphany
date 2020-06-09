@@ -2,7 +2,6 @@
 # Description: This script configures Hashicorp Vault to be used with Epiphany
 # You can find more information in Epiphany documentation in HOWTO.md
 # TODO: Revoke root token
-# TODO: Add flag to override existing users
 # TODO: Configuration of unsealing after server restart with script
 
 HELP_MESSAGE="Usage: configure-vault.sh -c SCRIPT_CONFIGURATION_FILE_PATH -a VAULT_IP_ADDRESS"
@@ -27,7 +26,7 @@ function check_vault_error {
     if [ "$exit_code" == "0" ] ; then
         log_and_print "$success_message";
     else
-        exit_with_error "$failure_message";
+        exit_with_error "$failure_message. Exit status: $exit_code";
     fi
 }
 
@@ -126,7 +125,6 @@ function enable_vault_kubernetes_authentication {
 
 function integrate_with_kubernetes {
     local vault_config_data_path="$1";
-
     log_and_print "Turning on Kubernetes integration...";
     local token_reviewer_jwt="$(kubectl --kubeconfig=/etc/kubernetes/admin.conf get secret vault-auth -o go-template='{{ .data.token }}' | base64 --decode)";
     local kube_ca_cert=$(kubectl --kubeconfig=/etc/kubernetes/admin.conf config view --raw --minify --flatten -o jsonpath='{.clusters[].cluster.certificate-authority-data}' | base64 --decode);
@@ -141,7 +139,6 @@ function integrate_with_kubernetes {
 
 function configure_kubernetes {
     local vault_install_path="$1";
-
     log_and_print "Configuring kubernetes...";
     log_and_print "Applying vault-endpoint-configuration.yml...";
     kubectl apply -f "$vault_install_path/kubernetes/vault-endpoint-configuration.yml";
@@ -192,6 +189,7 @@ function create_vault_user {
     local token_path="$3";
     local token="$4";
     local vault_addr="$5";
+    local override_existing_vault_users="$6";
 
     if [ -f "$token_path" ]; then
       touch $token_path;
@@ -201,7 +199,8 @@ function create_vault_user {
     curl --header "X-Vault-Token: $token" --request LIST "$vault_addr/v1/auth/userpass/users" | jq -e ".data.keys[] | select(.== \"$username\")";
     local local command_result="$?";
     echo "Command result: $command_result";
-    if [ $users_path_response -eq 404 ] || [ "$command_result" = "4" ]; then
+    echo "override_existing_vault_users: $override_existing_vault_users";
+    if [ "${override_existing_vault_users,,}" = "true" ] || [ $users_path_response -eq 404 ] || [ "$command_result" = "4" ]; then
         log_and_print "Creating user: $username...";
         local password="$( < /dev/urandom tr -dc _A-Z-a-z-0-9 | head -c32 )";
         vault write auth/userpass/users/$username password=$password policies=$policy;
@@ -215,22 +214,20 @@ function create_vault_user {
     fi
 }
 
-# TODO: Add flag to override existing users
 function create_vault_users_from_file {
     local vault_install_path="$1";
     local users_file_csv_path="$vault_install_path/users.csv";
     local users_token_path="$vault_install_path/tokens-`date +"%Y-%m-%d-%H%M%S"`.csv";
     local token="$2";
     local vault_addr="$3";
-
+    local override_existing_vault_users="$4";
     cat $users_file_csv_path | while read -r line ; do
         local username="$( echo $line | cut -d ';' -f 1 )";
         local policy="$( echo $line | cut -d ';' -f 2 )";
-        create_vault_user "$username" "$policy" "$users_token_path" "$token" "$vault_addr";
+        create_vault_user "$username" "$policy" "$users_token_path" "$token" "$vault_addr" "$override_existing_vault_users";
     done
 }
 
-# TODO: Add flag to enable/disable token cleanup
 function cleanup {
     rm -f "$HOME/.vault-token";
 }
@@ -272,7 +269,6 @@ log_and_print "Logging into Vault.";
 LOGIN_TOKEN="$(grep "Initial Root Token:" "$INIT_FILE_PATH" | awk -F'[ ]' '{print $4}')";
 vault login -no-print "$LOGIN_TOKEN";
 check_vault_error "$?" "Login successful." "There was an error while logging into Vault.";
-#LOGIN_TOKEN="";
 
 if [ "${ENABLE_AUDITING,,}" = "true" ] ; then
     enable_vault_audit_logs;
@@ -286,7 +282,7 @@ fi
 
 apply_epiphany_vault_policies "$VAULT_CONFIG_DATA_PATH";
 enable_vault_userpass_authentication;
-create_vault_users_from_file "$VAULT_INSTALL_PATH" "$LOGIN_TOKEN" "$VAULT_ADDR";
+create_vault_users_from_file "$VAULT_INSTALL_PATH" "$LOGIN_TOKEN" "$VAULT_ADDR" "$OVERRIDE_EXISTING_VAULT_USERS";
 
 if [ "${KUBERNETES_INTEGRATION,,}" = "true" ] ; then
     integrate_with_kubernetes "$VAULT_CONFIG_DATA_PATH";

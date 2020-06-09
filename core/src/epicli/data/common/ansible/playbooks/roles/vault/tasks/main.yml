@@ -1,7 +1,6 @@
 ---
 # This role is responsible for installing and configuring Hashicorp Vault
 # TODO: Add swap disable
-# TODO: Change to: https://docs.ansible.com/ansible/latest/modules/pam_limits_module.html
 # TODO: Check licenses for Hashicorp Vault policies used by Epiphany
 # TODO: Add vault to PATH
 # TODO: Limit to set only on 1 master until vault will be clustered
@@ -86,18 +85,12 @@
         state: present
         reload: yes
 
-    - name: Check if limits for Vault are set
-      shell: grep -e "^\*[[:space:]]*hard[[:space:]]*core[[:space:]]*0" /etc/security/limits.conf
-      changed_when: false
-      register: test_grep
-      failed_when: "test_grep.rc == 2"
-
-    # TODO: Change to: https://docs.ansible.com/ansible/latest/modules/pam_limits_module.html
-    - name: Set if limits for Vault are not set
-      when: test_grep.stdout != ""
-      lineinfile:
-        dest: /etc/security/limits.conf
-        line: "* hard core 0"
+    - name: Set security limits for Vault
+      pam_limits:
+        domain: '*'
+        limit_type: hard
+        limit_item: core
+        value: '0'
 
     - name: Create systemd config
       template:
