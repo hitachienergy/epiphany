@@ -3,6 +3,7 @@
 # TODO: Add swap disable
 # TODO: Check licenses for Hashicorp Vault policies used by Epiphany
 # TODO: Limit to set only on 1 master until vault will be clustered
+# TODO: Add conditional for unsealing
 
 - name: Install and configure Hashicorp Vault if enabled
   when:
@@ -99,6 +100,14 @@
         limit_item: core
         value: '0'
 
+    - name: Copy Vault unseal script
+      copy:
+        src: vault/unseal-vault.sh
+        dest: "{{ specification.vault_install_dir }}/bin/"
+        owner: "{{ specification.vault_system_user }}"
+        group: "{{ specification.vault_system_group }}"
+        mode: u=rwx,g=rx,o=
+
     - name: Create systemd config
       template:
         dest: /etc/systemd/system/vault.service
@@ -128,7 +137,7 @@
         dest: "{{ specification.vault_install_dir }}/bin/"
         owner: "{{ specification.vault_system_user }}"
         group: "{{ specification.vault_system_group }}"
-        mode: u=rwx,g=r,o=
+        mode: u=rwx,g=rx,o=
 
     - name: Copy Vault policies configuration
       copy:
