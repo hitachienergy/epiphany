@@ -1,4 +1,5 @@
 # {{ ansible_managed }}
+# TODO: Add conditional for unsealing
 [Unit]
 Description=Hashicorp Vault server
 Requires=network-online.target
@@ -32,6 +33,7 @@ StartLimitIntervalSec=60
 StartLimitBurst=3
 LimitNOFILE=65536
 LimitMEMLOCK=infinity
+ExecStartPost=/opt/vault/bin/unseal-vault.sh {{ specification.vault_install_dir }}/init.txt {{ ansible_default_ipv4.address }}
 
 [Install]
 WantedBy=multi-user.target
