@@ -11,7 +11,7 @@ function print_help { echo "$HELP_MESSAGE"; }
 
 function log_and_print {
     local string_to_log="$1";
-    echo "`date +"%Y-%m-%d-%H:%M:%S"` - $string_to_log" | tee -a /opt/vault/logs/configure_vault.log;
+    echo "$(date +"%Y-%m-%d-%H:%M:%S") - $string_to_log" | tee -a /opt/vault/logs/configure_vault.log;
 }
 
 function exit_with_error {
@@ -220,7 +220,7 @@ function create_vault_user {
 function create_vault_users_from_file {
     local vault_install_path="$1";
     local users_file_csv_path="$vault_install_path/users.csv";
-    local users_token_path="$vault_install_path/tokens-`date +"%Y-%m-%d-%H%M%S"`.csv";
+    local users_token_path="$vault_install_path/tokens-$(date +"%Y-%m-%d-%H%M%S").csv";
     local token="$2";
     local vault_addr="$3";
     local override_existing_vault_users="$4";
