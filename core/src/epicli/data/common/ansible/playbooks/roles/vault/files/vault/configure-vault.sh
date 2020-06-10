@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # Description: This script configures Hashicorp Vault to be used with Epiphany
 # You can find more information in Epiphany documentation in HOWTO.md
 # TODO: Revoke root token
@@ -24,7 +24,7 @@ function check_vault_error {
     local exit_code="$1";
     local success_message="$2";
     local failure_message="$3";
-    if [ "$exit_code" == "0" ] ; then
+    if [ "$exit_code" = "0" ] ; then
         log_and_print "$success_message";
     else
         exit_with_error "$failure_message. Exit status: $exit_code";
