@@ -58,7 +58,7 @@ function unseal_vault {
         exit_with_error "There was an error during checking status of Vault.";
     fi
     if [ "${command_result[1]}" = "0" ] ; then
-        log_and_print "Vault has been aldready usealed.";
+        log_and_print "Vault has been aldready unsealed.";
     fi
     if [ "${command_result[1]}" = "1" ] ; then
         log_and_print "Unsealing Vault.";
