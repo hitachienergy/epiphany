@@ -190,7 +190,6 @@
         src: kubernetes/app-service-account.yml.j2
 
     - name: Run configuration script
-      #become: yes
       when:
         - specification.vault_script_unseal
       shell: >-
