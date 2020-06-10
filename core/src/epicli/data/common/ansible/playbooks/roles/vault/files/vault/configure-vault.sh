@@ -20,7 +20,7 @@ function exit_with_error {
     exit 1;
 }
 
-function check_vault_error {
+function check_status {
     local exit_code="$1";
     local success_message="$2";
     local failure_message="$3";
@@ -45,7 +45,7 @@ function initialize_vault {
     if [ "${command_result[1]}" = "1" ] ; then
         log_and_print "Initializing vault...";
         vault operator init > $init_file_path;
-        check_vault_error "$?" "Vault initialized." "There was an error during initialization of Vault.";
+        check_status "$?" "Vault initialized." "There was an error during initialization of Vault.";
     fi
 }
 
@@ -64,7 +64,7 @@ function unseal_vault {
         log_and_print "Unsealing Vault.";
         grep --max-count=3 Unseal "$init_file_path" | awk '{print $4}' | while read -r line ; do
             vault operator unseal "$line";
-            check_vault_error "$?" "Unseal performed." "There was an error during unsealing of Vault.";
+            check_status "$?" "Unseal performed." "There was an error during unsealing of Vault.";
         done
     fi
 }
@@ -91,7 +91,7 @@ function enable_vault_audit_logs {
     if [ "${command_result[1]}" = "1" ] ; then
         log_and_print "Enabling auditing...";
         vault audit enable file file_path="/opt/vault/logs/vault_audit.log";
-        check_vault_error "$?" "Auditing enabled." "There was an error during enabling auditing.";
+        check_status "$?" "Auditing enabled." "There was an error during enabling auditing.";
     fi
 }
 
@@ -106,7 +106,7 @@ function mount_secret_path {
     if [ "${command_result[1]}" = "1" ] ; then
         log_and_print "Mounting secret engine...";
         vault secrets enable -path="$secret_path" -version=2 kv;
-        check_vault_error "$?" "Secret engine enabled under path: $secret_path." "There was an error during enabling secret engine under path: $secret_path.";
+        check_status "$?" "Secret engine enabled under path: $secret_path." "There was an error during enabling secret engine under path: $secret_path.";
     fi
 }
 
@@ -120,7 +120,7 @@ function enable_vault_kubernetes_authentication {
     if [ "${command_result[1]}" = "1" ] ; then
         log_and_print "Turning on Kubernetes authentication...";
         vault auth enable kubernetes;
-        check_vault_error "$?" "Kubernetes authentication enabled." "There was an error during enabling Kubernetes authentication.";
+        check_status "$?" "Kubernetes authentication enabled." "There was an error during enabling Kubernetes authentication.";
     fi
 }
 
@@ -131,11 +131,11 @@ function integrate_with_kubernetes {
     local kube_ca_cert=$(kubectl --kubeconfig=/etc/kubernetes/admin.conf config view --raw --minify --flatten -o jsonpath='{.clusters[].cluster.certificate-authority-data}' | base64 --decode);
     local kube_host=$(kubectl --kubeconfig=/etc/kubernetes/admin.conf config view --raw --minify --flatten -o jsonpath='{.clusters[].cluster.server}');
     vault write auth/kubernetes/config token_reviewer_jwt="$token_reviewer_jwt" kubernetes_host="$kube_host" kubernetes_ca_cert="$kube_ca_cert";
-    check_vault_error "$?" "Kubernetes parameters written to auth/kubernetes/config." "There was an error during writing kubernetes parameters to auth/kubernetes/config.";
+    check_status "$?" "Kubernetes parameters written to auth/kubernetes/config." "There was an error during writing kubernetes parameters to auth/kubernetes/config.";
     vault policy write devweb-app $vault_config_data_path/policies/policy-application.hcl;
-    check_vault_error "$?" "Application policy applied." "There was an error during applying application policy.";
+    check_status "$?" "Application policy applied." "There was an error during applying application policy.";
     vault write auth/kubernetes/role/devweb-app bound_service_account_names=internal-app bound_service_account_namespaces=default policies=devweb-app ttl=24h;
-    check_vault_error "$?" "Admin policy applied." "There was an error during applying admin policy.";
+    check_status "$?" "Admin policy applied." "There was an error during applying admin policy.";
 }
 
 function configure_kubernetes {
@@ -143,11 +143,13 @@ function configure_kubernetes {
     log_and_print "Configuring kubernetes...";
     log_and_print "Applying vault-endpoint-configuration.yml...";
     kubectl apply -f "$vault_install_path/kubernetes/vault-endpoint-configuration.yml";
+    check_status "$?" "vault-endpoint-configuration: Success" "vault-endpoint-configuration: Failure";
     log_and_print "Applying vault-service-account.yml...";
     kubectl apply -f "$vault_install_path/kubernetes/vault-service-account.yml";
+    check_status "$?" "vault-service-account: Success" "vault-service-account: Failure";
     log_and_print "Applying app-service-account.yml...";
     kubectl apply -f "$vault_install_path/kubernetes/app-service-account.yml";
-    check_vault_error "$?" "app-service-account: Success" "app-service-account: Failure";
+    check_status "$?" "app-service-account: Success" "app-service-account: Failure";
     log_and_print "Checking if Vault Agent Helm Chart is already installed...";
     helm list | grep vault;
     local command_result=( ${PIPESTATUS[@]} );
@@ -157,7 +159,7 @@ function configure_kubernetes {
     if [ "${command_result[1]}" = "1" ] ; then
         log_and_print "Installing Vault Agent Helm Chart...";
         helm install vault --set "injector.externalVaultAddr=http://external-vault:8200" https://github.com/hashicorp/vault-helm/archive/v0.4.0.tar.gz
-        check_vault_error "$?" "Vault Agent Helm Chart installed." "There was an error during installation of Vault Agent Helm Chart.";
+        check_status "$?" "Vault Agent Helm Chart installed." "There was an error during installation of Vault Agent Helm Chart.";
     fi
 }
 
@@ -165,9 +167,9 @@ function apply_epiphany_vault_policies {
     log_and_print "Applying Epiphany default Vault policies...";
     local local vault_config_data_path="$1";
     vault policy write admin $vault_config_data_path/policies/policy-admin.hcl;
-    check_vault_error "$?" "Admin policy applied." "There was an error during applying admin policy.";
+    check_status "$?" "Admin policy applied." "There was an error during applying admin policy.";
     vault policy write provisioner $vault_config_data_path/policies/policy-provisioner.hcl;
-    check_vault_error "$?" "Provisioner policy applied." "There was an error during applying provisioner policy.";
+    check_status "$?" "Provisioner policy applied." "There was an error during applying provisioner policy.";
 }
 
 function enable_vault_userpass_authentication {
@@ -180,7 +182,7 @@ function enable_vault_userpass_authentication {
     if [ "${command_result[1]}" = "1" ] ; then
         log_and_print "Turning on userpass authentication...";
         vault auth enable userpass;
-        check_vault_error "$?" "Userpass authentication enabled." "There was an error during enabling userpass authentication.";
+        check_status "$?" "Userpass authentication enabled." "There was an error during enabling userpass authentication.";
     fi
 }
 
@@ -205,7 +207,7 @@ function create_vault_user {
         log_and_print "Creating user: $username...";
         local password="$( < /dev/urandom tr -dc _A-Z-a-z-0-9 | head -c32 )";
         vault write auth/userpass/users/$username password=$password policies=$policy;
-        check_vault_error "$?" "User: $username created." "There was an error during creation of user: $username.";
+        check_status "$?" "User: $username created." "There was an error during creation of user: $username.";
         echo "$username;$policy;$password;" >> $token_path;
     elif [ "$command_result" = "0" ]; then
         log_and_print "$username already exists. Not adding or modyfing.";
@@ -269,7 +271,7 @@ check_if_vault_is_unsealed;
 log_and_print "Logging into Vault.";
 LOGIN_TOKEN="$(grep "Initial Root Token:" "$INIT_FILE_PATH" | awk -F'[ ]' '{print $4}')";
 vault login -no-print "$LOGIN_TOKEN";
-check_vault_error "$?" "Login successful." "There was an error while logging into Vault.";
+check_status "$?" "Login successful." "There was an error while logging into Vault.";
 
 if [ "${ENABLE_AUDITING,,}" = "true" ] ; then
     enable_vault_audit_logs;
