@@ -3,7 +3,6 @@
 # TODO: Add swap disable
 # TODO: Check licenses for Hashicorp Vault policies used by Epiphany
 # TODO: Limit to set only on 1 master until vault will be clustered
-# TODO: Add conditional for unsealing
 
 - name: Install and configure Hashicorp Vault if enabled
   when:
@@ -200,7 +199,7 @@
 
     - name: Run configuration script
       when:
-        - specification.vault_script_unseal
+        - specification.vault_script_autoconfiguration
       shell: >-
         {{ specification.vault_install_dir }}/bin/configure-vault.sh
         -c {{ specification.vault_install_dir }}/script.config
@@ -208,7 +207,7 @@
 
     - name: Display information about running configuration script
       when:
-        - not specification.vault_script_unseal
+        - not specification.vault_script_autoconfiguration
       debug:
         msg: "Init file doesn't exist or you have chosen manual unseal, so to finish configuration please run script manually with command:
               {{ specification.vault_install_dir }}/bin/configure-vault.sh -c {{ specification.vault_install_dir }}/script.config -a {{ ansible_default_ipv4.address }}.
