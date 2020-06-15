@@ -7,7 +7,8 @@ specification:
   vault_system_group: vault
   file_name: vault_1.4.0_linux_amd64.zip
   enable_vault_audit_logs: false
-  vault_script_unseal: true
+  vault_script_autounseal: true
+  vault_script_autoconfiguration: true
   vault_audit: false
   use_https: false
   kubernetes_integration: true
@@ -24,5 +25,5 @@ specification:
   vault_users:
     - name: admin
       policy: admin
-    - name: provisioner1
+    - name: provisioner
       policy: provisioner
