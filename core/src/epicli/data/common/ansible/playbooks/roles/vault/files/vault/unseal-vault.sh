@@ -61,19 +61,19 @@ INIT_FILE_PATH="$1";
 VAULT_IP="$2";
 export VAULT_ADDR="http://$VAULT_IP:8200"
 
-count=1;
+running_check_count=1;
 is_vault_running="false";
-while [ "$count" -le 10 ] && [ "$is_vault_running" = "false" ] ; do
+while [ "$running_check_count" -le 10 ] && [ "$is_vault_running" = "false" ] ; do
     log_and_print "Checking if vault is running...";
     response_code=$(curl -o -I -L -s -w "%{http_code}" "$VAULT_ADDR");
     if [ $response_code = 200 ] ; then
           is_vault_running="true";
     fi
     sleep 2;
-    count=$[count + 1];
+    running_check_count=$[running_check_count + 1];
 done
 if [ "$is_vault_running" = "false" ] ; then
-    exit 1;
+    exit_with_error "Vault is not running. Please solve problem with vault and execute script again.";
 fi
 check_if_vault_initialized;
 if [ -f "$INIT_FILE_PATH" ]; then
