@@ -25,5 +25,5 @@ specification:
   vault_users:
     - name: admin
       policy: admin
-    - name: provisioner1
+    - name: provisioner
       policy: provisioner

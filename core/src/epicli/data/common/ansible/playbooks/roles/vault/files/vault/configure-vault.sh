@@ -2,7 +2,6 @@
 # Description: This script configures Hashicorp Vault to be used with Epiphany
 # You can find more information in Epiphany documentation in HOWTO.md
 # TODO: Revoke root token
-# TODO: Configuration of unsealing after server restart with script
 # TODO: Add configurable log paths
 
 HELP_MESSAGE="Usage: configure-vault.sh -c SCRIPT_CONFIGURATION_FILE_PATH -a VAULT_IP_ADDRESS"
@@ -224,7 +223,7 @@ function create_vault_users_from_file {
     local token="$2";
     local vault_addr="$3";
     local override_existing_vault_users="$4";
-    cat $users_file_csv_path | while read -r line ; do
+    grep -v '#' $users_file_csv_path | while read -r line ; do
         local username="$( echo $line | cut -d ';' -f 1 )";
         local policy="$( echo $line | cut -d ';' -f 2 )";
         create_vault_user "$username" "$policy" "$users_token_path" "$token" "$vault_addr" "$override_existing_vault_users";
@@ -285,7 +284,10 @@ fi
 
 apply_epiphany_vault_policies "$VAULT_CONFIG_DATA_PATH";
 enable_vault_userpass_authentication;
+
+if [ "${CREATE_VAULT_USERS,,}" = "true" ] ; then
 create_vault_users_from_file "$VAULT_INSTALL_PATH" "$LOGIN_TOKEN" "$VAULT_ADDR" "$OVERRIDE_EXISTING_VAULT_USERS";
+fi
 
 if [ "${KUBERNETES_INTEGRATION,,}" = "true" ] ; then
     integrate_with_kubernetes "$VAULT_CONFIG_DATA_PATH";
