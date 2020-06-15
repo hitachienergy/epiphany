@@ -2,4 +2,7 @@
 - name: Produce final list of hosts to deploy repositories on
   set_fact:
     target_repository_hostnames: >-
-      {{ groups.repository | difference(groups.kubernetes_master) | union([resolved_repository_hostname]) | unique }}
+      {{ groups.repository | difference(available_masters) | union([resolved_repository_hostname]) | unique }}
+  vars:
+    available_masters: >-
+      {{ groups.kubernetes_master | default([]) }}

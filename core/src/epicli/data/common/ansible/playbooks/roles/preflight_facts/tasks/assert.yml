@@ -11,7 +11,7 @@
         fail_msg: "When promote_to_ha is enabled, use_ha_control_plane must be enabled as well."
 
     - assert:
-        that: not promote_to_ha or ((groups.kubernetes_master | length) == 1)
+        that: not promote_to_ha or ((available_masters | length) == 1)
         fail_msg: "When promote_to_ha is enabled, control plane must contain exactly one master."
 
     - assert:
@@ -23,5 +23,5 @@
         fail_msg: "When kubernetes is HA already, use_ha_control_plane must be enabled (downgrade is not supported)."
 
     - assert:
-        that: use_ha_control_plane or not ((groups.kubernetes_master | length) > 1)
+        that: use_ha_control_plane or not ((available_masters | length) > 1)
         fail_msg: "When use_ha_control_plane is disabled, number of masters must not be bigger than one."
