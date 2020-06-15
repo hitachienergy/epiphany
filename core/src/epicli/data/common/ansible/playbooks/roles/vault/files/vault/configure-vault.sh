@@ -4,7 +4,7 @@
 # TODO: Revoke root token
 # TODO: Add configurable log paths
 
-HELP_MESSAGE="Usage: configure-vault.sh -c SCRIPT_CONFIGURATION_FILE_PATH -a VAULT_IP_ADDRESS"
+HELP_MESSAGE="Usage: configure-vault.sh -c SCRIPT_CONFIGURATION_FILE_PATH -a VAULT_IP_ADDRESS -p PROTOCOL[http/https]"
 
 function print_help { echo "$HELP_MESSAGE"; }
 
@@ -150,6 +150,7 @@ function integrate_with_kubernetes {
 function configure_kubernetes {
     local vault_install_path="$1";
     local kubernetes_namespace="$2";
+    local vault_protocol="$3";
     log_and_print "Configuring kubernetes...";
     if [ "$kubernetes_namespace" != "default" ] ; then
         log_and_print "Applying app-namespace.yml...";
@@ -176,7 +177,7 @@ function configure_kubernetes {
     fi
     if [ "${command_result[1]}" = "1" ] ; then
         log_and_print "Installing Vault Agent Helm Chart...";
-        helm install vault --set "injector.externalVaultAddr=http://external-vault:8200" https://github.com/hashicorp/vault-helm/archive/v0.4.0.tar.gz
+        helm install vault --set "injector.externalVaultAddr=$vault_protocol://external-vault:8200" https://github.com/hashicorp/vault-helm/archive/v0.4.0.tar.gz
         check_status "$?" "Vault Agent Helm Chart installed." "There was an error during installation of Vault Agent Helm Chart.";
     fi
 }
@@ -260,6 +261,7 @@ while getopts ":a:c:h?" opt; do
     case "$opt" in
         a) VAULT_IP=$OPTARG;;
         c) CONFIG_FILE=$OPTARG;;
+        p) VAULT_PROTOCOL=$OPTARG;;
         ? | h | *) print_help; exit 2;;
     esac
 done
@@ -273,7 +275,7 @@ source "$CONFIG_FILE";
 
 INIT_FILE_PATH="$VAULT_INSTALL_PATH/init.txt"
 VAULT_CONFIG_DATA_PATH="$VAULT_INSTALL_PATH/config"
-export VAULT_ADDR="http://$VAULT_IP:8200"
+export VAULT_ADDR="$VAULT_PROTOCOL://$VAULT_IP:8200"
 export KUBECONFIG=/etc/kubernetes/admin.conf
 PATH=$VAULT_INSTALL_PATH/bin:/usr/local/bin/:$PATH
 
@@ -316,5 +318,5 @@ if [ "${KUBERNETES_INTEGRATION,,}" = "true" ] ; then
 fi
 
 if [ "${KUBERNETES_CONFIGURATION,,}" = "true" ] ; then
-    configure_kubernetes "$VAULT_INSTALL_PATH" "$KUBERNETES_NAMESPACE";
+    configure_kubernetes "$VAULT_INSTALL_PATH" "$KUBERNETES_NAMESPACE" "$VAULT_PROTOCOL";
 fi

@@ -33,7 +33,11 @@ StartLimitBurst=3
 LimitNOFILE=65536
 LimitMEMLOCK=infinity
 {% if specification.vault_script_autounseal is defined and specification.vault_script_autounseal == True %}
-ExecStartPost=/opt/vault/bin/unseal-vault.sh {{ specification.vault_install_dir }}/init.txt {{ ansible_default_ipv4.address }}
+{% if specification.tls_disable is defined and specification.tls_disable == True  %}
+ExecStartPost=/opt/vault/bin/unseal-vault.sh {{ specification.vault_install_dir }}/init.txt {{ ansible_default_ipv4.address }} http
+{% else %}
+ExecStartPost=/opt/vault/bin/unseal-vault.sh {{ specification.vault_install_dir }}/init.txt {{ ansible_default_ipv4.address }} https
+{% endif %}
 {% endif %}
 
 

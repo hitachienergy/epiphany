@@ -11,7 +11,7 @@ specification:
   vault_script_autounseal: true
   vault_script_autoconfiguration: true
   vault_audit: false
-  use_https: false
+  tls_disable: false
   kubernetes_integration: true
   kubernetes_configuration: true
   kubernetes_namespace: default
@@ -23,6 +23,9 @@ specification:
   vault_install_dir: /opt/vault
   vault_log_level: info
   override_existing_vault_users: false
+  certificate_name: fullchain.pem
+  private_key_name: privkey.pem
+  vault_tls_valid_days: 365
   vault_users:
     - name: admin
       policy: admin
