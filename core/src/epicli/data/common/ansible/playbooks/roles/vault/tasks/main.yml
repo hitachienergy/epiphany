@@ -30,6 +30,7 @@
         - "bin"
         - "config"
         - "data"
+        - "tls"
 
     - name: Set Vault file name to install
       set_fact:
@@ -102,6 +103,44 @@
         src: vault.service.j2
       register: service_conf
 
+    - name: Find certificate file in role directory
+      local_action: find paths="{{ role_path }}/files/tls-certs" patterns="*.pem" 
+      become: no
+      register: certificates_names
+
+    - name: Check if any certificate exist in role directory
+      set_fact:
+        certificates_exist: "{{ certificates_names is defined and (certificates_names.files | length > 0) }}"
+   
+    - name: Display if certificate file in role directory exists
+      debug:
+        msg: "Certificate exists"
+      when:
+        - certificates_exist
+   
+    - name: Copy certificate remotely if certificate file in role directory exists
+      copy:
+        src: "{{ item.path }}"
+        dest: "{{ specification.vault_install_dir }}/tls/"
+      loop: "{{ certificates_names.files }}"
+      when:
+        - certificates_exist
+
+    - name: Generate TLS certificate
+      include_tasks: certificate_generate.yml
+      when:
+        - not certificates_exist
+
+    - name: Check if Vault_protocol is set to http
+      set_fact:
+        vault_protocol: "http"
+      when: specification.tls_disable
+
+    - name: Check if Vault_protocol is set to https
+      set_fact:
+        vault_protocol: "https"
+      when: not specification.tls_disable
+
     - name: Restart Vault service and reload config
       systemd:
         name: vault
@@ -118,7 +157,7 @@
 
     - name: Check if Vault was already initialized
       shell: >-
-        {{ specification.vault_install_dir }}/bin/vault status -address='http://{{ ansible_default_ipv4.address }}:8200' | grep -e 'Initialized[[:space:]]*true'
+        {{ specification.vault_install_dir }}/bin/vault status -address='{{ vault_protocol }}://{{ ansible_default_ipv4.address }}:8200' | grep -e 'Initialized[[:space:]]*true'
       register: vault_init_output
       args:
         executable: /bin/bash
@@ -134,7 +173,7 @@
 
     - name: Initialize Vault
       when: vault_init_output.stdout == ""
-      shell: "{{ specification.vault_install_dir }}/bin/vault operator init -address='http://{{ ansible_default_ipv4.address }}:8200' > {{ specification.vault_install_dir }}/init.txt"
+      shell: "{{ specification.vault_install_dir }}/bin/vault operator init -address='{{ vault_protocol }}://{{ ansible_default_ipv4.address }}:8200' > {{ specification.vault_install_dir }}/init.txt"
 
     - name: Check if init file exists
       stat:

@@ -2,15 +2,18 @@ kind: configuration/vault
 title: Vault Config
 name: default
 specification:
-  vault_enabled: false
+  vault_enabled: true
   vault_system_user: vault
   vault_system_group: vault
   file_name: vault_1.4.0_linux_amd64.zip
-  enable_vault_audit_logs: false
+  enable_vault_audit_logs: true
   vault_script_unseal: true
-  vault_audit: false
-  use_https: false
+  vault_audit: true
+  tls_disable: false
   kubernetes_integration: true
   revoke_root_token: false
   secret_mount_path: secret
   vault_install_dir: /opt/vault
+  certificate_name: fullchain.pem
+  private_key_name: privkey.pem
+  vault_tls_valid_days: 365
