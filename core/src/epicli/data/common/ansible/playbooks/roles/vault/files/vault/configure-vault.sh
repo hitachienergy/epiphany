@@ -262,7 +262,7 @@ fi
 
 initialize_vault "$INIT_FILE_PATH";
 
-if [ "${SCRIPT_AUTO_UNSEAL,,}" = "true" ] ; then
+if [ "${VAULT_SCRIPT_AUTOCONFIGURATION,,}" = "true" ] ; then
     unseal_vault "$INIT_FILE_PATH";
 fi
 
