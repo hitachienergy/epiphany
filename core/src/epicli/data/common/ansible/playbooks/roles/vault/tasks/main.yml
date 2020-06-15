@@ -34,6 +34,7 @@
         - "kubernetes"
         - "logs"
         - "config/policies"
+        - "tls"
 
     - name: Set Vault file name to install
       set_fact:
@@ -115,6 +116,34 @@
         mode: u=rw,g=r,o=
         src: vault/vault.service.j2
       register: service_conf
+
+    - name: Find certificate file in role directory
+      local_action: find paths="{{ role_path }}/files/tls-certs" patterns="*.pem" 
+      become: no
+      register: certificates_names
+
+    - name: Check if any certificate exist in role directory
+      set_fact:
+        certificates_exist: "{{ certificates_names is defined and (certificates_names.files | length > 0) }}"
+
+    - name: Display if certificate file in role directory exists
+      debug:
+        msg: "Certificate exists"
+      when:
+        - certificates_exist
+
+    - name: Copy certificate remotely if certificate file in role directory exists
+      copy:
+        src: "{{ item.path }}"
+        dest: "{{ specification.vault_install_dir }}/tls/"
+      loop: "{{ certificates_names.files }}"
+      when:
+        - certificates_exist
+
+    - name: Generate TLS certificate
+      include_tasks: certificate_generate.yml
+      when:
+        - not certificates_exist
 
     - name: Restart Vault service and reload config
       systemd:
@@ -206,6 +235,16 @@
         mode: u=rw,g=r,o=
         src: kubernetes/app-service-account.yml.j2
 
+    - name: Check if Vault_protocol is set to http
+      set_fact:
+        vault_protocol: "http"
+      when: specification.tls_disable
+
+    - name: Check if Vault_protocol is set to https
+      set_fact:
+        vault_protocol: "https"
+      when: not specification.tls_disable
+
     - name: Run configuration script
       when:
         - specification.vault_script_autoconfiguration
@@ -213,6 +252,7 @@
         {{ specification.vault_install_dir }}/bin/configure-vault.sh
         -c {{ specification.vault_install_dir }}/script.config
         -a {{ ansible_default_ipv4.address }}
+        -p {{ vault_protocol }}
 
     - name: Display information about running configuration script
       when:

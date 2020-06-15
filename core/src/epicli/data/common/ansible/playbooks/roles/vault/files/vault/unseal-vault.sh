@@ -59,7 +59,8 @@ function unseal_vault {
 PATH=$VAULT_INSTALL_PATH/bin:/usr/local/bin/:$PATH;
 INIT_FILE_PATH="$1";
 VAULT_IP="$2";
-export VAULT_ADDR="http://$VAULT_IP:8200"
+VAULT_PROTOCOL="$3";
+export VAULT_ADDR="$VAULT_PROTOCOL://$VAULT_IP:8200"
 
 running_check_count=1;
 is_vault_running="false";
