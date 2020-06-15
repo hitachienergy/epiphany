@@ -42,7 +42,7 @@ function initialize_vault {
         log_and_print "Vault has been aldready initialized.";
     fi
     if [ "${command_result[1]}" = "1" ] ; then
-        log_and_print "Initializing vault...";
+        log_and_print "Initializing Vault...";
         vault operator init > $init_file_path;
         check_status "$?" "Vault initialized." "There was an error during initialization of Vault.";
     fi
@@ -87,6 +87,9 @@ function enable_vault_audit_logs {
     if [ "${command_result[0]}" != "0"] ; then
         exit_with_error "There was an error during listing auditing. Exit status: ${command_result[0]}";
     fi
+    if [ "${command_result[1]}" = "0" ] ; then
+        log_and_print "Auditing has been aldready enabled.";
+    fi
     if [ "${command_result[1]}" = "1" ] ; then
         log_and_print "Enabling auditing...";
         vault audit enable file file_path="/opt/vault/logs/vault_audit.log";
@@ -102,6 +105,9 @@ function mount_secret_path {
     if [ "${command_result[0]}" != "0" ] ; then
         exit_with_error "There was an error during listing secret engines. Exit status: ${command_result[0]}";
     fi
+    if [ "${command_result[1]}" = "0" ] ; then
+        log_and_print "Secret engine has been aldready mounted under path: $secret_path.";
+    fi
     if [ "${command_result[1]}" = "1" ] ; then
         log_and_print "Mounting secret engine...";
         vault secrets enable -path="$secret_path" -version=2 kv;
@@ -115,6 +121,9 @@ function enable_vault_kubernetes_authentication {
     local command_result=( ${PIPESTATUS[@]} );
     if [ "${command_result[0]}" != "0" ] ; then
         exit_with_error "There was an error during listing authentication methods. Exit status: ${command_result[0]}";
+    fi
+    if [ "${command_result[1]}" = "0" ] ; then
+        log_and_print "Kubernetes authentication has been aldready enabled.";
     fi
     if [ "${command_result[1]}" = "1" ] ; then
         log_and_print "Turning on Kubernetes authentication...";
@@ -155,6 +164,9 @@ function configure_kubernetes {
     if [ "${command_result[0]}" != "0" ] ; then
         exit_with_error "There was an error during checking if Vault Agent Helm Chart is already installed. Exit status: ${command_result[0]}";
     fi
+    if [ "${command_result[1]}" = "0" ] ; then
+        log_and_print "Vault Agent Helm Chart is already installed.";
+    fi
     if [ "${command_result[1]}" = "1" ] ; then
         log_and_print "Installing Vault Agent Helm Chart...";
         helm install vault --set "injector.externalVaultAddr=http://external-vault:8200" https://github.com/hashicorp/vault-helm/archive/v0.4.0.tar.gz
@@ -178,6 +190,9 @@ function enable_vault_userpass_authentication {
     if [ "${command_result[0]}" != "0" ] ; then
         exit_with_error "There was an error during listing authentication methods. Exit status: ${command_result[0]}";
     fi
+    if [ "${command_result[1]}" = "0" ] ; then
+        log_and_print "Userpass authentication has been aldready enabled.";
+    fi
     if [ "${command_result[1]}" = "1" ] ; then
         log_and_print "Turning on userpass authentication...";
         vault auth enable userpass;
@@ -197,11 +212,11 @@ function create_vault_user {
       touch $token_path;
       chmod 0640 $token_path;
     fi
-    local users_path_response=$(curl -o -I -L -s -w "%{http_code}" --header "X-Vault-Token: $token" --request LIST "$VAULT_ADDR/v1/auth/userpass/users");
-    curl --header "X-Vault-Token: $token" --request LIST "$vault_addr/v1/auth/userpass/users" | jq -e ".data.keys[] | select(.== \"$username\")";
-    local local command_result="$?";
-    echo "Command result: $command_result";
-    echo "override_existing_vault_users: $override_existing_vault_users";
+    local users_path_response=$(curl -o -I -L -s -w "%{http_code}" --header "X-Vault-Token: $token" --request LIST "$vault_addr/v1/auth/userpass/users");
+    if [ $users_path_response -eq 200 ] ; then
+        curl --header "X-Vault-Token: $token" --request LIST "$vault_addr/v1/auth/userpass/users" | jq -e ".data.keys[] | select(.== \"$username\")";
+        local command_result="$?";
+    fi
     if [ "${override_existing_vault_users,,}" = "true" ] || [ $users_path_response -eq 404 ] || [ "$command_result" = "4" ]; then
         log_and_print "Creating user: $username...";
         local password="$( < /dev/urandom tr -dc _A-Z-a-z-0-9 | head -c32 )";
