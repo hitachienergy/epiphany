@@ -3,6 +3,8 @@
 
 title Epiphany Component Diagram (runtime dependencies)
 
+LAYOUT_LEFT_RIGHT
+
 Person_Ext(user, "End user", "Uses hosted applications to get business value.")
 
 Container_Boundary(epiphany, "Epiphany managed environment"){

@@ -3,6 +3,8 @@
 
 title Epiphany Component Diagram (human interactions)
 
+LAYOUT_LEFT_RIGHT
+
 Person(admin, "Admin", "Creates and manages Epiphany environment.")
 Person(developer, "Developer", "Uses Epiphany components to provide middleware for hosted applications.")
 Person_Ext(user, "End user", "Uses hosted applications to get business value.")
