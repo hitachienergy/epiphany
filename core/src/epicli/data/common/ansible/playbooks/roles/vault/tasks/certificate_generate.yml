@@ -4,7 +4,7 @@
     owner: "{{ specification.vault_system_user }}"
     group: "{{ specification.vault_system_group }}"
     mode: u=rw,g=r,o=
-    src: selfsigned.cfr.j2
+    src: vault/selfsigned.cfr.j2
 
 - name: Check if self signed certificate exists on node
   stat:
