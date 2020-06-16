@@ -21,7 +21,6 @@
     
 - name: Create and export backup
   block:
-
   - name: Create temporary directories for backup files
     file:
       path: "/var/tmp/{{ snapshot_name }}/{{ item }}"
@@ -42,7 +41,7 @@
       chdir: "{{ pg_config_dir[ansible_os_family] }}"
     register: config_files
 
-  - name: Copy config files into teporary location
+  - name: Copy config files into temporary location
     copy:
       src: "{{ pg_config_dir[ansible_os_family] }}/{{ item }}"
       dest: "/var/tmp/{{ snapshot_name  }}/configs"
@@ -70,6 +69,5 @@
     file:
       path: "/var/tmp/{{ snapshot_name  }}/"
       state: absent
-  
   when: (groups['postgresql'][0] == inventory_hostname and hostvars[groups['postgresql'][0]]['node0'].rc == 0) or
         (groups['postgresql'][1] == inventory_hostname and hostvars[groups['postgresql'][0]]['node0'].rc != 0)

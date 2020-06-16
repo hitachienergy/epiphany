@@ -28,7 +28,7 @@
 
 - name: Save definitions in a json file
   shell: |
-    rabbitmqadmin export /var/lib/rabbitmq/definitions/definitions-{{ snapshot_name }}.json
+    /usr/local/bin/rabbitmqadmin export /var/lib/rabbitmq/definitions/definitions-{{ snapshot_name }}.json
   args:
     executable: /bin/bash
 

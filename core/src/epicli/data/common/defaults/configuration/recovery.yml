@@ -3,9 +3,6 @@ title: Recovery Config
 name: default
 specification:
   components:
-    kubernetes:
-      enabled: false
-      snapshot_name: latest
     load_balancer:
       enabled: false
       snapshot_name: latest
@@ -21,3 +18,8 @@ specification:
     rabbitmq:
       enabled: false
       snapshot_name: latest
+#This is a dangerous procedure that is currently disabled because it needs refactoring!
+#Kubernetes recovery should be done manually according Kubernetes documentation
+#    kubernetes:
+#      enabled: false
+#      snapshot_name: latest
