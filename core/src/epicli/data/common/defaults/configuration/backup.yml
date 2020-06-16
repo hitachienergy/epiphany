@@ -1,6 +1,7 @@
 kind: configuration/backup
 title: Backup Config
 name: default
+provider: any
 specification:
   components:
     kubernetes:

@@ -1,6 +1,7 @@
 kind: configuration/recovery
 title: Recovery Config
 name: default
+provider: any
 specification:
   components:
     kubernetes:
