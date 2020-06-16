@@ -257,7 +257,7 @@ function cleanup {
     rm -f "$HOME/.vault-token";
 }
 
-while getopts ":a:c:h?" opt; do
+while getopts ":a:c:p:h?" opt; do
     case "$opt" in
         a) VAULT_IP=$OPTARG;;
         c) CONFIG_FILE=$OPTARG;;
