@@ -1,6 +1,6 @@
 ---
 - name: Unpack Helm binary
-  unarchive: 
+  unarchive:
     src: "{{ specification.apache_epirepo_path }}/files/helm-{{ specification.version }}-linux-amd64.tar.gz"
     dest: "/usr/local/bin"
     extra_opts:
@@ -14,4 +14,4 @@
     src: "/usr/local/bin/helm"
     dest: /usr/local/sbin/helm
     state: link
-  when: ansible_os_family == "RedHat" 
+  when: ansible_os_family == "RedHat"

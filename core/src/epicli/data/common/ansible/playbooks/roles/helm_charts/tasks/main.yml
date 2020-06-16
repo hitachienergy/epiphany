@@ -9,4 +9,4 @@
   copy:
     src: "./"
     dest: "{{ specification.apache_epirepo_path }}/helm-charts"
-    mode: u=rwx,go=rx 
+    mode: u=rwx,go=rx
