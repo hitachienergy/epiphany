@@ -80,6 +80,8 @@ class PatchEngine(Step):
                 document = load_yaml_obj(data_types.DEFAULT, 'common', kind)
                 # Inject the required "version" attribute
                 document['version'] = VERSION
+                # Copy the "provider" value from the cluster model
+                document.specification['provider'] = self.cluster_model.provider
                 # Save the document for later use
                 self.configuration_docs.append(document)
 
