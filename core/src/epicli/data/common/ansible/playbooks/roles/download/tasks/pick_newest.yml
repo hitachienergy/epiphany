@@ -1,0 +1,50 @@
+---
+# Invoke with (example):
+#- set_fact:
+#    archive_names:
+#      - "haproxy_exporter-0.10.0.linux-amd64.tar.gz"
+#      - "helm-v2.2.0-linux-amd64.tar.gz"
+#      - "helm-v10.2.3-linux-amd64.tar.gz"
+#      - "elasticsearch-curator_5.5.4_amd64.deb"
+#      - "helm-v3.2.0-linux-amd64.tar.gz"
+#      - "prometheus-2.10.0.linux-amd64.tar.gz"
+#    archive_name_regexp: '^helm-v([0-9.]+)-linux-amd64.tar.gz$'
+#    archive_version_format: '{:0>4s}.{:0>4s}.{:0>4s}'  # OPTIONAL
+
+- name: "Find and return the newest archive's name and version (using pattern: {{ archive_name_regexp }})"
+
+  set_fact:
+    newest_archive_name: >-
+      {{ _newest_archive_name }}
+
+    newest_archive_version: >-
+      {{ _newest_archive_name | regex_replace(archive_name_regexp, '\1') }}
+
+  vars:
+    # Provide a default value for the version format (assuming 3 segments, left-padded up to 4 zeros).
+    _archive_version_format: >-
+      {{ archive_version_format | default( '{:0>4s}.{:0>4s}.{:0>4s}' ) }}
+
+    # Drop all archive names not matching the pattern.
+    _archive_names_filtered: >-
+      {{ archive_names | select('match', archive_name_regexp) | list }}
+
+    # Extract all archive version strings.
+    _archive_versions: >-
+      {{ _archive_names_filtered | map('regex_replace', archive_name_regexp, '\1') | list }}
+
+    # Zero-pad each segment of the version string (returns a list of strings).
+    _archive_versions_padded: >-
+      {%- set output = [] -%}
+      {%- for version in _archive_versions -%}
+        {{- output.append( _archive_version_format.format(*version.split('.')) ) -}}
+      {%- endfor -%}
+      {{- output -}}
+
+    # Create a version (padded) to archive name mapping.
+    _version_to_name_map: >-
+      {{ dict(_archive_versions_padded | zip(_archive_names_filtered)) }}
+
+    # Use map to get the newest archive's name.
+    _newest_archive_name: >-
+      {{ _version_to_name_map[_version_to_name_map.keys() | max] }}
