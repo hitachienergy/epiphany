@@ -39,6 +39,11 @@
               {{ openssh_keypair.public_key }}
 
   block:
+    - name: Ensure that .ssh directory exists
+      file:
+        path: ~/.ssh/
+        state: directory
+
     - name: Create a temporary file path to hold the private key in
       tempfile:
         path: ~/.ssh/
