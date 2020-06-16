@@ -36,7 +36,7 @@
               {{ openssh_keypair.public_key }}
 
   block:
-    - name: Make sure that .ssh directory exists
+    - name: Ensure that .ssh directory exists
       file:
         path: ~/.ssh/
         state: directory

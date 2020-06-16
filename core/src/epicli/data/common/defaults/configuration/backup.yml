@@ -1,11 +1,8 @@
 kind: configuration/backup
 title: Backup Config
 name: default
-provider: any
 specification:
   components:
-    kubernetes:
-      enabled: false
     load_balancer:
       enabled: false
     logging:
@@ -15,4 +12,8 @@ specification:
     postgresql:
       enabled: false
     rabbitmq:
+      enabled: false
+#Kubernes backup and recovery is not supported by Epiphany. 
+#You may create backup by enabling this below, but recovery should be done manually according Kubernetes documentation.
+    kubernetes:
       enabled: false
