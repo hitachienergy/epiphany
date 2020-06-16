@@ -134,6 +134,7 @@ function enable_vault_kubernetes_authentication {
 
 function integrate_with_kubernetes {
     local vault_config_data_path="$1";
+    local kubernetes_namespace="$2";
     log_and_print "Turning on Kubernetes integration...";
     local token_reviewer_jwt="$(kubectl --kubeconfig=/etc/kubernetes/admin.conf get secret vault-auth -o go-template='{{ .data.token }}' | base64 --decode)";
     local kube_ca_cert=$(kubectl --kubeconfig=/etc/kubernetes/admin.conf config view --raw --minify --flatten -o jsonpath='{.clusters[].cluster.certificate-authority-data}' | base64 --decode);
@@ -142,13 +143,19 @@ function integrate_with_kubernetes {
     check_status "$?" "Kubernetes parameters written to auth/kubernetes/config." "There was an error during writing kubernetes parameters to auth/kubernetes/config.";
     vault policy write devweb-app $vault_config_data_path/policies/policy-application.hcl;
     check_status "$?" "Application policy applied." "There was an error during applying application policy.";
-    vault write auth/kubernetes/role/devweb-app bound_service_account_names=internal-app bound_service_account_namespaces=default policies=devweb-app ttl=24h;
+    vault write auth/kubernetes/role/devweb-app bound_service_account_names=internal-app bound_service_account_namespaces=$kubernetes_namespace policies=devweb-app ttl=24h;
     check_status "$?" "Admin policy applied." "There was an error during applying admin policy.";
 }
 
 function configure_kubernetes {
     local vault_install_path="$1";
+    local kubernetes_namespace="$2";
     log_and_print "Configuring kubernetes...";
+    if [ "$kubernetes_namespace" != "default" ] ; then
+        log_and_print "Applying app-namespace.yml...";
+        kubectl apply -f "$vault_install_path/kubernetes/app-namespace.yml";
+        check_status "$?" "app-namespace: Success" "app-namespace: Failure";
+    fi
     log_and_print "Applying vault-endpoint-configuration.yml...";
     kubectl apply -f "$vault_install_path/kubernetes/vault-endpoint-configuration.yml";
     check_status "$?" "vault-endpoint-configuration: Success" "vault-endpoint-configuration: Failure";
@@ -176,7 +183,7 @@ function configure_kubernetes {
 
 function apply_epiphany_vault_policies {
     log_and_print "Applying Epiphany default Vault policies...";
-    local local vault_config_data_path="$1";
+    local vault_config_data_path="$1";
     vault policy write admin $vault_config_data_path/policies/policy-admin.hcl;
     check_status "$?" "Admin policy applied." "There was an error during applying admin policy.";
     vault policy write provisioner $vault_config_data_path/policies/policy-provisioner.hcl;
@@ -305,9 +312,9 @@ create_vault_users_from_file "$VAULT_INSTALL_PATH" "$LOGIN_TOKEN" "$VAULT_ADDR" 
 fi
 
 if [ "${KUBERNETES_INTEGRATION,,}" = "true" ] ; then
-    integrate_with_kubernetes "$VAULT_CONFIG_DATA_PATH";
+    integrate_with_kubernetes "$VAULT_CONFIG_DATA_PATH" "$KUBERNETES_NAMESPACE";
 fi
 
 if [ "${KUBERNETES_CONFIGURATION,,}" = "true" ] ; then
-    configure_kubernetes "$VAULT_INSTALL_PATH";
+    configure_kubernetes "$VAULT_INSTALL_PATH" "$KUBERNETES_NAMESPACE";
 fi
