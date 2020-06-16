@@ -175,6 +175,15 @@
 
     - name: Create vault endpoint configuration on kubernetes cluster
       template:
+        dest: "{{ specification.vault_install_dir }}/kubernetes/app-namespace.yml"
+        owner: "{{ specification.vault_system_user }}"
+        group: "{{ specification.vault_system_group }}"
+        mode: u=rw,g=r,o=
+        src: kubernetes/app-namespace.yml.j2
+      when: not specification.kubernetes_namespace == "default"
+
+    - name: Create vault endpoint configuration on kubernetes cluster
+      template:
         dest: "{{ specification.vault_install_dir }}/kubernetes/vault-endpoint-configuration.yml"
         owner: "{{ specification.vault_system_user }}"
         group: "{{ specification.vault_system_group }}"

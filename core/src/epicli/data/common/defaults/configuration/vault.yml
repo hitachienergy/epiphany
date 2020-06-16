@@ -7,12 +7,14 @@ specification:
   vault_system_group: vault
   file_name: vault_1.4.0_linux_amd64.zip
   enable_vault_audit_logs: false
+  enable_vault_ui: false
   vault_script_autounseal: true
   vault_script_autoconfiguration: true
   vault_audit: false
   use_https: false
   kubernetes_integration: true
   kubernetes_configuration: true
+  kubernetes_namespace: default
   enable_vault_kubernetes_authentication: true
   app_secret_path: devwebapp
   revoke_root_token: false
@@ -20,7 +22,6 @@ specification:
   vault_token_cleanup: true
   vault_install_dir: /opt/vault
   vault_log_level: info
-  provider: aws
   override_existing_vault_users: false
   vault_users:
     - name: admin

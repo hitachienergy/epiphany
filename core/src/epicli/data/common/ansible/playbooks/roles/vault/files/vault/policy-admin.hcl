@@ -1,3 +1,4 @@
+# TODO: Add parametrization of path "secret/*"
 path "auth/*"
 {
   capabilities = ["create", "read", "update", "delete", "list", "sudo"]
