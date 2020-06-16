@@ -3,6 +3,8 @@
 
 title Epiphany Component Diagram (metrics and logs)
 
+LAYOUT_LEFT_RIGHT
+
 Container_Boundary(epiphany, "Epiphany managed environment"){
 
     Container(orchestrator, "Containers Orchestrator", "kubernetes")
