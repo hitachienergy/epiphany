@@ -173,7 +173,7 @@
         mode: u=rw,g=r,o=
         src: vault/users.csv.j2
 
-    - name: Create vault endpoint configuration on kubernetes cluster
+    - name: Create application namespace yaml
       template:
         dest: "{{ specification.vault_install_dir }}/kubernetes/app-namespace.yml"
         owner: "{{ specification.vault_system_user }}"
@@ -182,7 +182,7 @@
         src: kubernetes/app-namespace.yml.j2
       when: not specification.kubernetes_namespace == "default"
 
-    - name: Create vault endpoint configuration on kubernetes cluster
+    - name: Create Vault endpoint configuration yaml
       template:
         dest: "{{ specification.vault_install_dir }}/kubernetes/vault-endpoint-configuration.yml"
         owner: "{{ specification.vault_system_user }}"
@@ -190,7 +190,7 @@
         mode: u=rw,g=r,o=
         src: kubernetes/vault-endpoint-configuration.yml.j2
 
-    - name: Create Vault service account
+    - name: Create Vault service account yaml
       template:
         dest: "{{ specification.vault_install_dir }}/kubernetes/vault-service-account.yml"
         owner: "{{ specification.vault_system_user }}"
@@ -198,7 +198,7 @@
         mode: u=rw,g=r,o=
         src: kubernetes/vault-service-account.yml.j2
 
-    - name: Create application service account
+    - name: Create application service account yaml
       template:
         dest: "{{ specification.vault_install_dir }}/kubernetes/app-service-account.yml"
         owner: "{{ specification.vault_system_user }}"
