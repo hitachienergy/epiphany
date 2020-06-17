@@ -17,7 +17,7 @@ global
    ssl-default-server-ciphers ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20-POLY1305:DHE-RSA-AES128-GCM-SHA256:DHE-RSA-AES256-GCM-SHA384
    ssl-default-server-options no-sslv3 no-tlsv10 no-tlsv11 no-tls-tickets
 
- 
+
 defaults
    log global
    mode http
@@ -72,7 +72,7 @@ backend {{ back.name }}
   option tcp-check
   mode tcp
   {%- endif %}
-  {%- if back.server_groups is defined %}
+  {%- if back.server_groups is defined and back.server_groups is subset(groups) %}
   {%- for server_group in back.server_groups %}
   {%- for server in groups[server_group] %}
   {%- if back.https is defined and back.https == True %}
