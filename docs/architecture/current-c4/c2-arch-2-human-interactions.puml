@@ -1,0 +1,62 @@
+@startuml Epiphany Component Diagram (human interactions)
+!includeurl https://raw.githubusercontent.com/RicardoNiepel/C4-PlantUML/release/1-0/C4_Component.puml
+
+title Epiphany Component Diagram (human interactions)
+
+LAYOUT_LEFT_RIGHT
+
+Person(admin, "Admin", "Creates and manages Epiphany environment.")
+Person(developer, "Developer", "Uses Epiphany components to provide middleware for hosted applications.")
+Person_Ext(user, "End user", "Uses hosted applications to get business value.")
+
+
+Container_Boundary(epiphany, "Epiphany managed environment"){
+
+    Container(orchestrator, "Containers Orchestrator", "kubernetes")
+    Container(logging, "Logging", "EFK")
+    Container(monitoring, "Monitoring", "Prometheus + Grafana")
+    Container(streams, "Streams Processing", "Apache Kafka")
+    Container(rdb, "Relational Database", "PostrgreSQL")
+    Container(lb, "Load Balancer", "HAProxy")
+    Container(messages, "Message Broker", "RabbitMQ")
+    Container(memdb, "In-Memory Database", "Apache Ignite")
+    Container(vault, "Vault", "Hashicorp Vault")
+    Container(repository, "Repository", "Apache")
+    Container(auth, "Authentication and Authorization", "Keycloak")
+
+}
+
+System(epicli, "Epiphany Client", "Provides configuration, templating and management abstraction. ")
+System(workload, "Application", "Provides business value.")
+
+System_Ext(provider, "Infrastructure provider", "Provides infrastructure to run Epiphany services and hosted applications.")
+
+Rel(admin, epicli, "uses", "Console")
+
+Rel(developer, orchestrator, "deploys applications to")
+Rel(developer, streams, "manages")
+Rel(developer, rdb, "manages")
+Rel(developer, memdb, "manages")
+Rel(developer, messages, "manages")
+Rel(developer, auth, "manages")
+Rel(developer, lb, "manages")
+Rel(developer, vault, "manages")
+Rel(developer, workload, "provides")
+
+Rel(user, lb, "accesses", "TCP")
+Rel(user, orchestrator, "accesses", "TCP")
+
+Rel(epicli, provider, "operates")
+Rel(epicli, orchestrator, "operates")
+Rel(epicli, logging, "operates")
+Rel(epicli, monitoring, "operates")
+Rel(epicli, streams, "operates")
+Rel(epicli, rdb, "operates")
+Rel(epicli, lb, "operates")
+Rel(epicli, vault, "operates")
+Rel(epicli, repository, "operates")
+Rel(epicli, memdb, "operates")
+Rel(epicli, messages, "operates")
+Rel(epicli, auth, "operates")
+
+@enduml

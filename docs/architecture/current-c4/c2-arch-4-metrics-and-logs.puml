@@ -1,0 +1,47 @@
+@startuml Epiphany Component Diagram (metrics and logs)
+!includeurl https://raw.githubusercontent.com/RicardoNiepel/C4-PlantUML/release/1-0/C4_Component.puml
+
+title Epiphany Component Diagram (metrics and logs)
+
+LAYOUT_LEFT_RIGHT
+
+Container_Boundary(epiphany, "Epiphany managed environment"){
+
+    Container(orchestrator, "Containers Orchestrator", "kubernetes")
+    Container(logging, "Logging", "EFK")
+    Container(monitoring, "Monitoring", "Prometheus + Grafana")
+    Container(streams, "Streams Processing", "Apache Kafka")
+    Container(rdb, "Relational Database", "PostrgreSQL")
+    Container(lb, "Load Balancer", "HAProxy")
+    Container(messages, "Message Broker", "RabbitMQ")
+    Container(memdb, "In-Memory Database", "Apache Ignite")
+    Container(vault, "Vault", "Hashicorp Vault")
+    Container(repository, "Repository", "Apache")
+    Container(auth, "Authentication and Authorization", "Keycloak")
+
+    Rel(streams, logging, "sends logs")
+    Rel(messages, logging, "sends logs")
+    Rel(logging, logging, "sends logs")
+    Rel(lb, logging, "sends logs")
+    Rel(monitoring, logging, "sends logs")
+    Rel(rdb, logging, "sends logs")
+    Rel(orchestrator, logging, "sends logs")
+    Rel(repository, logging, "sends logs")
+    Rel(memdb, logging, "sends logs")
+    Rel(vault, logging, "sends logs")
+    Rel(auth, logging, "sends logs")
+
+    Rel(monitoring, streams, "scraps metrics")
+    Rel(monitoring, messages, "scraps metrics")
+    Rel(monitoring, logging, "scraps metrics")
+    Rel(monitoring, lb, "scraps metrics")
+    Rel(monitoring, monitoring, "scraps metrics")
+    Rel(monitoring, rdb, "scraps metrics")
+    Rel(monitoring, orchestrator, "scraps metrics")
+    Rel(monitoring, repository, "scraps metrics")
+    Rel(monitoring, memdb, "scraps metrics")
+    Rel(monitoring, vault, "scraps metrics")
+    Rel(monitoring, auth, "scraps metrics")
+}
+
+@enduml

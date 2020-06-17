@@ -1,0 +1,46 @@
+@startuml Epiphany Component Diagram (runtime dependencies)
+!includeurl https://raw.githubusercontent.com/RicardoNiepel/C4-PlantUML/release/1-0/C4_Component.puml
+
+title Epiphany Component Diagram (runtime dependencies)
+
+LAYOUT_LEFT_RIGHT
+
+Person_Ext(user, "End user", "Uses hosted applications to get business value.")
+
+Container_Boundary(epiphany, "Epiphany managed environment"){
+
+    Container(orchestrator, "Containers Orchestrator", "kubernetes")
+    Container(logging, "Logging", "EFK")
+    Container(monitoring, "Monitoring", "Prometheus + Grafana")
+    Container(streams, "Streams Processing", "Apache Kafka")
+    Container(rdb, "Relational Database", "PostrgreSQL")
+    Container(lb, "Load Balancer", "HAProxy")
+    Container(messages, "Message Broker", "RabbitMQ")
+    Container(memdb, "In-Memory Database", "Apache Ignite")
+    Container(vault, "Vault", "Hashicorp Vault")
+    Container(repository, "Repository", "Apache")
+    Container(auth, "Authentication and Authorization", "Keycloak")
+
+    Rel(auth, rdb, "stores data in")
+
+    Rel(lb, orchestrator, "sends traffic to")
+
+    Rel(vault, orchestrator, "injects secrets to")
+}
+
+System(workload, "Application", "Provides business value.")
+
+Rel(user, lb, "accesses", "TCP")
+Rel(user, orchestrator, "accesses", "TCP")
+
+Rel(workload, orchestrator, "executes on")
+Rel(workload, streams, "uses")
+Rel(workload, rdb, "uses")
+Rel(workload, memdb, "uses")
+Rel(workload, messages, "uses")
+Rel(workload, auth, "uses")
+Rel(workload, vault, "uses")
+Rel(logging, workload, "transfers logs from")
+Rel(monitoring, workload, "scraps metrics from")
+
+@enduml
