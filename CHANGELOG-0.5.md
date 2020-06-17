@@ -1,5 +1,11 @@
 # Changelog 0.5
 
+## [0.5.5] 2020-XX-XX
+
+### Fixed
+
+- [#1350](https://github.com/epiphany-platform/epiphany/issues/1350) - Cannot deploy a non-k8s cluster with load\_balancer vm
+
 ## [0.5.4] 2020-04-14
 
 ### Added
