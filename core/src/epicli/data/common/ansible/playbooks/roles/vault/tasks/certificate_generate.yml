@@ -1,0 +1,68 @@
+- name: Create selfsigned cfr file for TLS certificate generation
+  template:
+    dest: "{{ specification.vault_install_dir }}/tls/selfsigned.cfr"
+    owner: "{{ specification.vault_system_user }}"
+    group: "{{ specification.vault_system_group }}"
+    mode: u=rw,g=r,o=
+    src: vault/selfsigned.cfr.j2
+
+- name: Check if self signed certificate exists on node
+  stat:
+    path: "{{ specification.vault_install_dir }}/tls/{{ specification.certificate_name }}"
+  register: certificate_node
+
+- name: Check if private key for self signed certificate exists on node
+  stat:
+    path: "{{ specification.vault_install_dir }}/tls/{{ specification.private_key_name }}"
+  register: privkey_node
+
+- name: Generate self signed cert and priv key if files were not found in directory
+  shell: openssl req -x509 -batch -nodes -newkey rsa:4096 -keyout {{ specification.vault_install_dir }}/tls/{{ specification.private_key_name }} -out {{ specification.vault_install_dir }}/tls/{{ specification.certificate_name }} -config {{ specification.vault_install_dir }}/tls/selfsigned.cfr -days {{ specification.vault_tls_valid_days }}
+  when:
+    - not certificate_node.stat.exists
+    - not privkey_node.stat.exists
+
+- name: Set file permissions for self signed cert
+  file:
+    path: "{{ specification.vault_install_dir }}/tls/{{ specification.private_key_name }}"
+    owner: "{{ specification.vault_system_user }}"
+    group: "{{ specification.vault_system_group }}"
+    mode: u=rw,g=r,o=r
+
+- name: Set file permissions for self signed priv key
+  file:
+    path: "{{ specification.vault_install_dir }}/tls/{{ specification.certificate_name }}"
+    owner: "{{ specification.vault_system_user }}"
+    group: "{{ specification.vault_system_group }}"
+    mode: u=rw,g=r,o=r
+
+- name: Copy generated cert file to ca-trust location 
+  copy:
+    src: "{{ specification.vault_install_dir }}/tls/{{ specification.certificate_name }}"
+    dest: "/etc/pki/ca-trust/source/anchors/{{ specification.certificate_name }}"
+    remote_src: yes
+  when: ansible_os_family == "RedHat" 
+
+- name: Execute update-ca-trust extract in order to trust self signed CA for RHEL > 6
+  shell: update-ca-trust extract
+  when: 
+    - ansible_os_family == "RedHat"
+    - ansible_distribution_major_version > '6'
+
+- name: Execute update-ca-trust extract in order to trust self signed CA for RHEL == 6
+  shell: update-ca-trust enable
+  when: 
+    - ansible_os_family == "RedHat"
+    - ansible_distribution_major_version == '6'
+
+- name: Copy generated cert file to ca-certificates location 
+  copy:
+    src: "{{ specification.vault_install_dir }}/tls/{{ specification.certificate_name }}"
+    dest: "/usr/local/share/ca-certificates/{{ specification.certificate_name }}.crt"
+    remote_src: yes
+  when: ansible_os_family == "Debian" 
+
+- name: Execute update-ca-certificates in order to trust self signed CA for Debian
+  shell: update-ca-certificates
+  when: 
+    - ansible_os_family == "Debian"
