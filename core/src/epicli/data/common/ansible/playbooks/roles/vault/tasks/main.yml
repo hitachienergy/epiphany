@@ -47,6 +47,13 @@
       vars:
         file_name: "{{ vault_file_name }}"
 
+    - name: Download Vault Agent Helm Chart tar
+      include_role:
+        name: download
+        tasks_from: download_file
+      vars:
+        file_name: "v0.4.0.tar.gz"
+
     - name: Check for Vault package
       stat:
         path: "{{ specification.vault_install_dir }}/bin/vault"
