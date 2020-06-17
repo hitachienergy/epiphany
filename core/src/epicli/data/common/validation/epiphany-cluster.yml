@@ -2,31 +2,31 @@
 title: "Cluster specification schema"
 description: "The main cluster specification"
 type: object
-required: 
+required:
   - name
   - admin_user
   - components
-properties: 
-  prefix: 
+properties:
+  prefix:
     "$id": "#/properties/prefix"
     title: "Cluster prefix"
     description: "A prefix the can be prepended to the cluster name"
-    examples: 
+    examples:
       - prod01
       - dev02
       - test03
       - cust04
     type: string
     pattern: "^[a-z0-9]{2,8}$"
-  name: 
+  name:
     "$id": "#/properties/name"
     title: "Cluster name"
     description: "The name of the cluster"
-    examples: 
+    examples:
       - clustername01
     type: string
     pattern: "^[a-z0-9\\-]{3,20}$"
-  admin_user: 
+  admin_user:
     "$id": "#/properties/admin_user"
     title: "The admin_user Schema"
     description: "Settings needed for the SSH connection to the cluster machines or VM's"
@@ -104,13 +104,23 @@ properties:
             default: false
             examples:
             - true
-  components: 
+  components:
     "$id": "#/properties/components"
+    type: object
     title: "Components schema"
     description: "Cluster component layout specification"
-    type: object
-  
-
-
-
-
+    # When "kubernetes_node" property exists, "kubernetes_master" must exist as well
+    dependencies:
+      kubernetes_node: [kubernetes_master]
+    allOf:
+      # When no master is deployed, there must be no nodes deployed as well
+      - if:
+          properties:
+            kubernetes_master:
+              properties:
+                count: { type: integer, enum: [0] }
+        then:
+          properties:
+            kubernetes_node:
+              properties:
+                count: { type: integer, enum: [0] }
