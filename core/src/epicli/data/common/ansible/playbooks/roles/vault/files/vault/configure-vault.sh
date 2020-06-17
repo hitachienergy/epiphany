@@ -177,7 +177,7 @@ function configure_kubernetes {
     fi
     if [ "${command_result[1]}" = "1" ] ; then
         log_and_print "Installing Vault Agent Helm Chart...";
-        helm install vault --set "injector.externalVaultAddr=$vault_protocol://external-vault:8200" https://github.com/hashicorp/vault-helm/archive/v0.4.0.tar.gz
+        helm install vault --set "injector.externalVaultAddr=$vault_protocol://external-vault:8200" /tmp/v0.4.0.tar.gz
         check_status "$?" "Vault Agent Helm Chart installed." "There was an error during installation of Vault Agent Helm Chart.";
     fi
 }
