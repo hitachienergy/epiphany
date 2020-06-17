@@ -23,6 +23,7 @@
 - [#1182](https://github.com/epiphany-platform/epiphany/issues/1182) - Re-run single machine installation may fail
 - [#1209](https://github.com/epiphany-platform/epiphany/issues/1209) - Can not apply cluster, "sudo: a password is required"
 - [#1183](https://github.com/epiphany-platform/epiphany/issues/1183) - Task 'Check if /etc/kubernetes/admin.conf file exists' fails when kubernetes\_master.count = 0
+- [#1350](https://github.com/epiphany-platform/epiphany/issues/1350) - Cannot deploy a non-k8s cluster with load\_balancer vm
 
 ### Known Issues
 
