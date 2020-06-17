@@ -65,7 +65,7 @@ running_check_count=1;
 is_vault_running="false";
 while [ "$running_check_count" -le 10 ] && [ "$is_vault_running" = "false" ] ; do
     log_and_print "Checking if vault is running...";
-    response_code=$(curl -o -I -L -s -w "%{http_code}" "$VAULT_ADDR");
+    response_code=$(curl -o -I -L -s -w "%{http_code}" "$VAULT_ADDR/v1/sys/seal-status");
     if [ $response_code = 200 ] ; then
           is_vault_running="true";
     fi

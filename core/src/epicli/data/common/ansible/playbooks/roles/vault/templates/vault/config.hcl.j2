@@ -1,5 +1,5 @@
 # {{ ansible_managed }}
-ui = {{ specification.enable_vault_ui }}
+ui = {{ specification.enable_vault_ui | lower }}
 storage "file" {
   path    = "{{ specification.vault_install_dir }}/data"
 }
