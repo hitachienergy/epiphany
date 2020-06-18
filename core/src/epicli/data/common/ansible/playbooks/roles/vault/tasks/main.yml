@@ -1,7 +1,6 @@
 ---
 # This role is responsible for installing and configuring Hashicorp Vault
 # TODO: Add swap disable
-# TODO: Check licenses for Hashicorp Vault policies used by Epiphany
 # TODO: Limit to set only on 1 master until vault will be clustered
 
 - name: Install and configure Hashicorp Vault if enabled
@@ -174,16 +173,21 @@
         group: "{{ specification.vault_system_group }}"
         mode: u=rwx,g=rx,o=
 
-    - name: Copy Vault policies configuration
-      copy:
-        src: "vault/{{ item }}"
-        dest: "{{ specification.vault_install_dir }}/config/policies/"
+    - name: Generate admin policy
+      template:
+        dest: "{{ specification.vault_install_dir }}/config/policies/policy-admin.hcl"
         owner: "{{ specification.vault_system_user }}"
         group: "{{ specification.vault_system_group }}"
         mode: u=rw,g=r,o=
-      loop:
-        - policy-admin.hcl
-        - policy-provisioner.hcl
+        src: vault/policy-admin.hcl.j2
+
+    - name: Generate provisioner policy
+      template:
+        dest: "{{ specification.vault_install_dir }}/config/policies/policy-provisioner.hcl"
+        owner: "{{ specification.vault_system_user }}"
+        group: "{{ specification.vault_system_group }}"
+        mode: u=rw,g=r,o=
+        src: vault/policy-provisioner.hcl.j2
 
     - name: Generate application policy
       template:
