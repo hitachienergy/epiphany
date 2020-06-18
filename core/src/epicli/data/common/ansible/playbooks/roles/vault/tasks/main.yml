@@ -52,7 +52,7 @@
         name: download
         tasks_from: download_file
       vars:
-        file_name: "v0.4.0.tar.gz"
+        file_name: "{{ specification.vault_agent_file_name }}"
 
     - name: Check for Vault package
       stat:
@@ -125,7 +125,7 @@
       register: service_conf
 
     - name: Find certificate file in role directory
-      local_action: find paths="{{ role_path }}/files/tls-certs" patterns="*.pem" 
+      local_action: find paths="{{ role_path }}/files/tls-certs" patterns="*.pem"
       become: no
       register: certificates_names
 
