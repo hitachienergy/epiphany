@@ -1,1 +1,19 @@
-$ref: '#/definitions/unvalidated_specification'
+type: object
+required:
+ - name
+ - provider
+ - specification
+properties:
+  name:
+    $ref: '#/definitions/name'
+  provider:
+    $ref: '#/definitions/provider'
+  title:
+    $ref: '#/definitions/title'
+  specification:
+    type: object
+    required:
+      - components
+    properties:
+      components:
+        type: object
