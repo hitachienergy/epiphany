@@ -43,6 +43,16 @@ class PatchEngine(Step):
     def __exit__(self, exc_type, exc_value, traceback):
         super().__exit__(exc_type, exc_value, traceback)
 
+    def _validate_input_doc(self, document):
+        # Load document schema
+        schema = load_yaml_obj(data_types.VALIDATION, self.cluster_model.provider, document.kind)
+
+        # Include standard "definitions"
+        schema['definitions'] = load_yaml_obj(data_types.VALIDATION, self.cluster_model.provider, 'core/definitions')
+
+        # Assert the schema
+        jsonschema.validate(instance=document, schema=schema)
+
     def _process_input_docs(self):
         path_to_manifest = os.path.join(self.build_directory, MANIFEST_FILE_NAME)
         if not os.path.isfile(path_to_manifest):
@@ -55,19 +65,13 @@ class PatchEngine(Step):
         # Load backup / recovery configuration documents
         self.input_docs = load_yamls_file(self.file)
 
+        # Validate all input documents
+        for document in self.input_docs:
+            self._validate_input_doc(document)
+
         # Merge the input docs with defaults
         with DefaultMerger(self.input_docs) as doc_merger:
             self.input_docs = doc_merger.run()
-
-    def _validate_configuration_doc(self, document):
-        # Load document schema
-        schema = load_yaml_obj(data_types.VALIDATION, self.cluster_model.provider, document.kind)
-
-        # Include standard "definitions"
-        schema['definitions'] = load_yaml_obj(data_types.VALIDATION, self.cluster_model.provider, 'core/definitions')
-
-        # Assert the schema
-        jsonschema.validate(instance=document, schema=schema)
 
     def _process_configuration_docs(self):
         # Seed the self.configuration_docs
@@ -92,13 +96,11 @@ class PatchEngine(Step):
                 # Copy the "provider" value to the specification as well
                 document.specification['provider'] = document['provider']
 
-        # Get and validate backup config document
+        # Get backup config document
         self.backup_doc = select_single(self.configuration_docs, lambda x: x.kind == 'configuration/backup')
-        self._validate_configuration_doc(self.backup_doc)
 
-        # Get and validate recovery config document
+        # Get recovery config document
         self.recovery_doc = select_single(self.configuration_docs, lambda x: x.kind == 'configuration/recovery')
-        self._validate_configuration_doc(self.recovery_doc)
 
     def backup(self):
         """Backup all enabled components."""
