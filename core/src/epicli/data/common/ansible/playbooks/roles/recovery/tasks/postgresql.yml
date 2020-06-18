@@ -222,11 +222,11 @@
       become_user: postgres
       shell: "{{ repmgr_bindir[ansible_os_family] }}/repmgr -f {{ repmgr_config_dir[ansible_os_family] }}/repmgr.conf standby follow -F"
   when:
-    - groups['postgresql'][1] == inventory_hostname
     - component_vars.specification.extensions.replication.enabled is defined
     - component_vars.specification.extensions.replication.enabled
     - component_vars.specification.extensions.replication.use_repmgr is defined
     - component_vars.specification.extensions.replication.use_repmgr
+    - groups['postgresql'][1] == inventory_hostname
 
 - name: Restart repmgrd service
   service:
