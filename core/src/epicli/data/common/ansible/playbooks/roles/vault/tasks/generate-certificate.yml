@@ -1,4 +1,4 @@
-- name: Create selfsigned cfr file for TLS certificate generation
+- name: Create selfsigned.cfr file for TLS certificate generation
   template:
     dest: "{{ specification.vault_install_dir }}/tls/selfsigned.cfr"
     owner: "{{ specification.vault_system_user }}"
@@ -36,33 +36,33 @@
     group: "{{ specification.vault_system_group }}"
     mode: u=rw,g=r,o=r
 
-- name: Copy generated cert file to ca-trust location 
+- name: Copy generated cert file to ca-trust location
   copy:
     src: "{{ specification.vault_install_dir }}/tls/{{ specification.certificate_name }}"
     dest: "/etc/pki/ca-trust/source/anchors/{{ specification.certificate_name }}"
     remote_src: yes
-  when: ansible_os_family == "RedHat" 
+  when: ansible_os_family == "RedHat"
 
 - name: Execute update-ca-trust extract in order to trust self signed CA for RHEL > 6
   shell: update-ca-trust extract
-  when: 
+  when:
     - ansible_os_family == "RedHat"
     - ansible_distribution_major_version > '6'
 
 - name: Execute update-ca-trust extract in order to trust self signed CA for RHEL == 6
   shell: update-ca-trust enable
-  when: 
+  when:
     - ansible_os_family == "RedHat"
     - ansible_distribution_major_version == '6'
 
-- name: Copy generated cert file to ca-certificates location 
+- name: Copy generated cert file to ca-certificates location
   copy:
     src: "{{ specification.vault_install_dir }}/tls/{{ specification.certificate_name }}"
     dest: "/usr/local/share/ca-certificates/{{ specification.certificate_name }}.crt"
     remote_src: yes
-  when: ansible_os_family == "Debian" 
+  when: ansible_os_family == "Debian"
 
 - name: Execute update-ca-certificates in order to trust self signed CA for Debian
   shell: update-ca-certificates
-  when: 
+  when:
     - ansible_os_family == "Debian"
