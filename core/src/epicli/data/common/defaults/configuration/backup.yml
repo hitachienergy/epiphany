@@ -10,10 +10,10 @@ specification:
     monitoring:
       enabled: false
     postgresql:
-      enabled: false
+      enabled: true
     rabbitmq:
       enabled: false
-#Kubernes backup and recovery is not supported by Epiphany. 
+#Kubernes backup and recovery is not supported by Epiphany.
 #You may create backup by enabling this below, but recovery should be done manually according Kubernetes documentation.
     kubernetes:
       enabled: false

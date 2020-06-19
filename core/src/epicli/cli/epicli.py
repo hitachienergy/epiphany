@@ -269,16 +269,10 @@ def backup_parser(subparsers):
     sub_parser = subparsers.add_parser('backup',
                                        description='Create backup of cluster components.')
     sub_parser.add_argument('-f', '--file', dest='file', type=str, required=True,
-                            help='File with infrastructure/configuration definitions to use.')
-    sub_parser.add_argument('-b', '--build', dest='build_directory', type=str, required=False,
+                            help='Backup configuration definition file to use.')
+    sub_parser.add_argument('-b', '--build', dest='build_directory', type=str, required=True,
                             help='Absolute path to directory with build artifacts.',
                             default=None)
-
-    available_components = {'kubernetes', 'load_balancer', 'logging', 'monitoring', 'postgresql', 'rabbitmq'}
-
-    sub_parser.add_argument('-c', '--components', dest='components', type=get_component_parser(available_components), required=False,
-                            help=f'Specify comma-separated list of components to backup.',
-                            default=None)  # "None" indicates that the yaml config will be used
 
     def run_backup(args):
         adjust_paths_from_file(args)
@@ -294,16 +288,10 @@ def recovery_parser(subparsers):
     sub_parser = subparsers.add_parser('recovery',
                                        description='Recover from existing backup.')
     sub_parser.add_argument('-f', '--file', dest='file', type=str, required=True,
-                            help='File with infrastructure/configuration definitions to use.')
-    sub_parser.add_argument('-b', '--build', dest='build_directory', type=str, required=False,
+                            help='Recovery configuration definition file to use.')
+    sub_parser.add_argument('-b', '--build', dest='build_directory', type=str, required=True,
                             help='Absolute path to directory with build artifacts.',
                             default=None)
-
-    available_components = {'kubernetes', 'load_balancer', 'logging', 'monitoring', 'postgresql', 'rabbitmq'}
-
-    sub_parser.add_argument('-c', '--components', dest='components', type=get_component_parser(available_components), required=False,
-                            help=f'Specify comma-separated list of components to recover.',
-                            default=None)  # "None" indicates that the yaml config will be used
 
     def run_recovery(args):
         if not query_yes_no('Do you really want to perform recovery?'):

@@ -60,45 +60,6 @@ docker run -it -v LOCAL_DIR:/shared --rm epiphanyplatform/epicli:TAG
 
 Where `LOCAL_DIR` should be replaced with the local path to the directory for Epicli input (SSH keys, data yamls) and output (logs, build states).
 
-## Run Epicli directly from OS
-
-*Note: Epicli will only run on Lixux or MacOS and not on Windows. This is because Ansible at this point in time does not work on Windows.*
-
-*Note: You might want to consider installing Epicli in a virtual python enviroment. More information can be found [here](https://packaging.python.org/guides/installing-using-pip-and-virtual-environments/).*
-
-1. To be able to run the Epicli from your local OS you have to install:
-
-    - Python 3.7
-    - PIP
-
-2. Install the following Python dependencies (in your virtual environment) using PIP:
-
-    ```bash
-    pip install wheel setuptools twine
-    ```
-
-3. Open a terminal in `/core/src/epicli` and run the following to build the Epicli wheel:
-
-    ```bash
-    ./build-wheel.sh
-    ```
-
-4. Install the Epicli wheel:
-
-    ```bash
-    pip install dist/epicli-VERSION-py3-none-any.whl
-    ```
-
-5. Verify the Epicli installation:
-
-    ```bash
-    epicli --version
-    ```
-
-    This should return the version of the CLI deployed.
-
-Now you can use Epicli directly on your machine.
-
 ## Epicli development
 
 For setting up en Epicli development environment please refer to this dedicated document [here.](./../DEVELOPMENT.md)
@@ -141,7 +102,7 @@ Use: [Checkout as-is, commit Unix-style](https://stackoverflow.com/questions/104
 
 To run Epicli from behind a proxy, enviroment variables need to be set.
 
-When running directly from OS or from a development container (upper and lowercase are needed because of an issue with the Ansible dependency):
+When running a development container (upper and lowercase are needed because of an issue with the Ansible dependency):
 
   ```bash
   export http_proxy="http://PROXY_SERVER:PORT"
@@ -156,10 +117,6 @@ Or when running from a Docker image (upper and lowercase are needed because of a
   docker run -it -v POSSIBLE_MOUNTS... -e HTTP_PROXY=http://PROXY_SERVER:PORT -e HTTPS_PROXY=http://PROXY_SERVER:PORT http_proxy=http://PROXY_SERVER:PORT -e https_proxy=http://PROXY_SERVER:PORT --rm IMAGE_NAME
   ```
 
-### Note about custom CA certificates
-
-In some cases it might be that a company uses custom CA certificates for providing secure connections. To use these with Epicli you can do the following:
-
 ### Note about PostgreSQL preflight check
 
 This reffers only to CentOS/Red Hat installations.
@@ -168,23 +125,25 @@ To prevent installation failure of PostgreSQL 10 server we are checking in prefl
 installation has been installed from PostgreSQL official repository. If this has been installed from Software Collections
 this will make Epiphany deployment fail in preflight mode. For more details please refer to [How to migrate from PostgreSQL installed from Software Collections to installed from PostgreSQL repository](./DATABASES.md#how-to-migrate-from-postgresql-installed-from-software-collections-to-installed-from-postgresql-repository)
 
+### Note about custom CA certificates
+
+In some cases it might be that a company uses custom CA certificates or CA bundles for providing secure connections. To use these with Epicli you can do the following:
 
 #### Devcontainer
 
-Before building the VSCode devcontainer place the *.crt file here: `/epiphany/core/src/epicli/.devcontainer/cert/`. Then the certificate will be included and configured during the build process. After that no additional configuration should be needed.
+Note that for the comments below the filenames of the certificate(s)/bundle do not matter, only the extensions. The certificate(s)/bundle need to be placed here before building the devcontainer.
 
-#### MacOS
+1. If you have one CA certificate you can add it here with the ```crt``` extension.
+2. If you have multiple certificates in a chain/bundle you need to add them here individually with the ```crt``` extension and also add the single bundle with the ```pem``` extension containing the same certificates. This is needed unfortunally because not all tools inside the container accept the single bundle.
 
-Install the certiciate in your keychain as described [here](https://www.sslsupportdesk.com/how-to-import-a-certificate-into-mac-os/).
+#### Epicli release container
 
-#### Epicli container or Debian based OS
-
-If you are running Epicli from one of the prebuild containers or a Debian based OS directly you can do the following to install the certificate:
+If you are running Epicli from one of the prebuild release containers you can do the following to install the certificate(s):
 
   ```bash
-  cp ./path/to/cert.crt /usr/local/share/ca-certificates/
-  chmod 644 /usr/local/share/ca-certificates/cert.crt
+  cp ./path/to/*.crt /usr/local/share/ca-certificates/
+  chmod 644 /usr/local/share/ca-certificates/*.crt
   update-ca-certificates
   ```
 
-*Note: Configuring the CA cert on the prebuild container only works on the `Debian` based ones and NOT on `Alpine` based.*
+If you plan to deploy on AWS you also need to add a seperate configuration for ```Boto3``` which can either be done by a ```config``` file or setting the ```AWS_CA_BUNDLE``` environment variable. More information about for ```Boto3``` can be found [here.](https://boto3.amazonaws.com/v1/documentation/api/latest/guide/configuration.html)

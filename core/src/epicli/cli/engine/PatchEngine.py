@@ -1,5 +1,6 @@
 import os
 import copy
+import jsonschema
 
 from cli.version import VERSION
 
@@ -7,16 +8,15 @@ from cli.helpers.Config import Config
 from cli.helpers.Log import Log
 from cli.helpers.Step import Step
 
-from cli.helpers.build_saver import get_build_path, get_inventory_path_for_build
+from cli.helpers.build_saver import get_inventory_path_for_build
 from cli.helpers.build_saver import copy_files_recursively, copy_file
-from cli.helpers.yaml_helpers import safe_load_all, dump
-from cli.helpers.data_loader import load_yaml_obj, types as data_types
+from cli.helpers.build_saver import MANIFEST_FILE_NAME
+
+from cli.helpers.yaml_helpers import dump
+from cli.helpers.data_loader import load_yamls_file, load_yaml_obj, types as data_types
 from cli.helpers.doc_list_helpers import select_single, ExpectedSingleResultException
-from cli.helpers.argparse_helpers import components_to_dict
 
 from cli.engine.schema.DefaultMerger import DefaultMerger
-from cli.engine.schema.SchemaValidator import SchemaValidator
-
 from cli.engine.ansible.AnsibleCommand import AnsibleCommand
 from cli.engine.ansible.AnsibleRunner import AnsibleRunner
 
@@ -27,8 +27,8 @@ class PatchEngine(Step):
     def __init__(self, input_data):
         super().__init__(__name__)
         self.file = input_data.file
-        self.build_directory = input_data.build_directory  # can be None
-        self.parsed_components = None if input_data.components is None else set(input_data.components)
+        self.build_directory = input_data.build_directory
+        self.manifest_docs = list()
         self.input_docs = list()
         self.configuration_docs = list()
         self.cluster_model = None
@@ -43,27 +43,35 @@ class PatchEngine(Step):
     def __exit__(self, exc_type, exc_value, traceback):
         super().__exit__(exc_type, exc_value, traceback)
 
+    def _validate_input_doc(self, document):
+        # Load document schema
+        schema = load_yaml_obj(data_types.VALIDATION, self.cluster_model.provider, document.kind)
+
+        # Include standard "definitions"
+        schema['definitions'] = load_yaml_obj(data_types.VALIDATION, self.cluster_model.provider, 'core/definitions')
+
+        # Assert the schema
+        jsonschema.validate(instance=document, schema=schema)
+
     def _process_input_docs(self):
-        # Load the user input YAML docs from the input file
-        if os.path.isabs(self.file):
-            path_to_load = self.file
-        else:
-            path_to_load = os.path.join(os.getcwd(), self.file)
-        user_file_stream = open(path_to_load, 'r')
-        self.input_docs = safe_load_all(user_file_stream)
+        path_to_manifest = os.path.join(self.build_directory, MANIFEST_FILE_NAME)
+        if not os.path.isfile(path_to_manifest):
+            raise Exception('No manifest.yml inside the build folder')
+
+        # Get existing manifest config documents
+        self.manifest_docs = load_yamls_file(path_to_manifest)
+        self.cluster_model = select_single(self.manifest_docs, lambda x: x.kind == 'epiphany-cluster')
+
+        # Load backup / recovery configuration documents
+        self.input_docs = load_yamls_file(self.file)
+
+        # Validate all input documents
+        for document in self.input_docs:
+            self._validate_input_doc(document)
 
         # Merge the input docs with defaults
         with DefaultMerger(self.input_docs) as doc_merger:
             self.input_docs = doc_merger.run()
-
-        # Get the cluster model
-        self.cluster_model = select_single(self.input_docs, lambda x: x.kind == 'epiphany-cluster')
-        if self.cluster_model is None:
-            raise Exception('No cluster model defined in input YAML file')
-
-        # Validate input documents
-        with SchemaValidator(self.cluster_model, self.input_docs) as schema_validator:
-            schema_validator.run()
 
     def _process_configuration_docs(self):
         # Seed the self.configuration_docs
@@ -74,18 +82,19 @@ class PatchEngine(Step):
         for kind in ['configuration/backup', 'configuration/recovery']:
             try:
                 # Check if the required document is in user inputs
-                select_single(self.configuration_docs, lambda x: x.kind == kind)
+                document = select_single(self.configuration_docs, lambda x: x.kind == kind)
             except ExpectedSingleResultException:
                 # If there is no document provided by the user, then fallback to defaults
                 document = load_yaml_obj(data_types.DEFAULT, 'common', kind)
                 # Inject the required "version" attribute
                 document['version'] = VERSION
+                # Copy the "provider" value from the cluster model
+                document['provider'] = self.cluster_model.provider
                 # Save the document for later use
                 self.configuration_docs.append(document)
-
-        # Validate configuration documents
-        with SchemaValidator(self.cluster_model, self.configuration_docs) as schema_validator:
-            schema_validator.run()
+            finally:
+                # Copy the "provider" value to the specification as well
+                document.specification['provider'] = document['provider']
 
         # Get backup config document
         self.backup_doc = select_single(self.configuration_docs, lambda x: x.kind == 'configuration/backup')
@@ -93,30 +102,11 @@ class PatchEngine(Step):
         # Get recovery config document
         self.recovery_doc = select_single(self.configuration_docs, lambda x: x.kind == 'configuration/recovery')
 
-        if self.build_directory is None:
-            # Derive the build directory path (if not provided)
-            self.build_directory = get_build_path(self.cluster_model.specification.name)
-
-        if not os.path.exists(self.build_directory):
-            raise Exception('Provided build directory path does not exist')
-
-    def _process_component_config(self, document):
-        # Overwrite enabled/disabled settings from yaml config
-        if self.parsed_components is not None:
-            available_components = set(document.specification.components.keys())
-            component_dict = components_to_dict(self.parsed_components, available_components)
-
-            # Merge back enabled/disabled settings to satisfy similar checks in ansible playbooks later.
-            # Those will be copied to the vars/main.yml files.
-            for component_name, component_enabled in component_dict.items():
-                document.specification.components[component_name].enabled = component_enabled
-
     def backup(self):
         """Backup all enabled components."""
 
         self._process_input_docs()
         self._process_configuration_docs()
-        self._process_component_config(self.backup_doc)
         self._update_role_files_and_vars('backup', self.backup_doc)
 
         # Execute all enabled component playbooks sequentially
@@ -131,7 +121,6 @@ class PatchEngine(Step):
 
         self._process_input_docs()
         self._process_configuration_docs()
-        self._process_component_config(self.recovery_doc)
         self._update_role_files_and_vars('recovery', self.recovery_doc)
 
         # Execute all enabled component playbooks sequentially

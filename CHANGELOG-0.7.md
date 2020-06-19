@@ -12,6 +12,7 @@
 
 - Update Calico and Canal to v3.13.2
 - [#1180](https://github.com/epiphany-platform/epiphany/issues/1180) - Update list of ports used by Epiphany components
+- [#1310](https://github.com/epiphany-platform/epiphany/issues/1310) - Updated Azure-cli from 2.0.67 to 2.6.0
 
 ### Fixed
 
@@ -21,6 +22,7 @@
 - [#1181](https://github.com/epiphany-platform/epiphany/issues/1181) - Configure Ignite to use fixed ports
 - [#1182](https://github.com/epiphany-platform/epiphany/issues/1182) - Re-run single machine installation may fail
 - [#1209](https://github.com/epiphany-platform/epiphany/issues/1209) - Can not apply cluster, "sudo: a password is required"
+- [#1183](https://github.com/epiphany-platform/epiphany/issues/1183) - Task 'Check if /etc/kubernetes/admin.conf file exists' fails when kubernetes\_master.count = 0
 
 ### Known Issues
 
