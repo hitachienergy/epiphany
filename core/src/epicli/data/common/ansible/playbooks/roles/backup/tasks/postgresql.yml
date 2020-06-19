@@ -4,7 +4,7 @@
     snapshot_name: >-
       {{ ansible_date_time.iso8601_basic_short | replace('T','-') }}
 
-- debug: 
+- debug:
     var: snapshot_name
 
 - name: Check if database is running on node0 database server
@@ -18,7 +18,7 @@
 - name: Debug
   debug:
     var: hostvars[groups['postgresql'][0]]['node0'].rc
-    
+
 - name: Create and export backup
   block:
   - name: Create temporary directories for backup files
@@ -26,7 +26,7 @@
       path: "/var/tmp/{{ snapshot_name }}/{{ item }}"
       state: directory
       mode: 0777
-    loop: 
+    loop:
       - data
       - configs
 
