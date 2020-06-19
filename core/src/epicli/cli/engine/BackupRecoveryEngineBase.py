@@ -1,6 +1,5 @@
 import os
 import copy
-import jsonschema
 
 from cli.version import VERSION
 from cli.helpers.Step import Step
@@ -13,7 +12,9 @@ from cli.helpers.yaml_helpers import dump
 from cli.helpers.data_loader import load_yamls_file, load_yaml_obj, types as data_types
 from cli.helpers.doc_list_helpers import select_single, ExpectedSingleResultException
 
+from cli.engine.schema.SchemaValidator import SchemaValidator
 from cli.engine.schema.DefaultMerger import DefaultMerger
+
 from cli.engine.ansible.AnsibleCommand import AnsibleCommand
 from cli.engine.ansible.AnsibleRunner import AnsibleRunner
 
@@ -40,16 +41,6 @@ class BackupRecoveryEngineBase(Step):
     def __exit__(self, exc_type, exc_value, traceback):
         super().__exit__(exc_type, exc_value, traceback)
 
-    def _validate_input_doc(self, document):
-        # Load document schema
-        schema = load_yaml_obj(data_types.VALIDATION, self.cluster_model.provider, document.kind)
-
-        # Include standard "definitions"
-        schema['definitions'] = load_yaml_obj(data_types.VALIDATION, self.cluster_model.provider, 'core/definitions')
-
-        # Assert the schema
-        jsonschema.validate(instance=document, schema=schema)
-
     def _process_input_docs(self):
         """Load, validate and merge (with defaults) input yaml documents."""
 
@@ -64,9 +55,9 @@ class BackupRecoveryEngineBase(Step):
         # Load backup / recovery configuration documents
         self.input_docs = load_yamls_file(self.file)
 
-        # Validate all input documents
-        for document in self.input_docs:
-            self._validate_input_doc(document)
+        # Validate input documents
+        with SchemaValidator(self.cluster_model, self.input_docs) as schema_validator:
+            schema_validator.run_for_individual_documents()
 
         # Merge the input docs with defaults
         with DefaultMerger(self.input_docs) as doc_merger:
