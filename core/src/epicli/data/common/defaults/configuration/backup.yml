@@ -13,7 +13,7 @@ specification:
       enabled: false
     rabbitmq:
       enabled: false
-#Kubernes backup and recovery is not supported by Epiphany.
-#You may create backup by enabling this below, but recovery should be done manually according Kubernetes documentation.
+# Kubernetes recovery is not supported by Epiphany at this point.
+# You may create backup by enabling this below, but recovery should be done manually according to Kubernetes documentation.
     kubernetes:
       enabled: false
