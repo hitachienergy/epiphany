@@ -216,7 +216,7 @@ function create_vault_user {
     local vault_addr="$5";
     local override_existing_vault_users="$6";
 
-    if [ -f "$token_path" ]; then
+    if [ ! -f "$token_path" ]; then
       touch $token_path;
       chmod 0640 $token_path;
     fi
