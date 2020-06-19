@@ -37,29 +37,29 @@
 
     - name: Set Vault file name to install
       set_fact:
-        vault_file_name: "{{ specification.file_name }}"
+        vault_file_name: "{{ specification.files.vault_package_file_name }}"
 
-    - name: Download Vault binaries
+    - name: Download Vault binary package
       include_role:
         name: download
         tasks_from: download_file
       vars:
         file_name: "{{ vault_file_name }}"
 
-    - name: Download Vault Agent Helm Chart tar
+    - name: Download Vault Agent Helm chart package
       include_role:
         name: download
         tasks_from: download_file
       vars:
-        file_name: "{{ specification.vault_agent_file_name }}"
+        file_name: "{{ specification.files.vault_helm_chart_file_name }}"
 
-    - name: Check for Vault package
+    - name: Check for Vault binary
       stat:
         path: "{{ specification.vault_install_dir }}/bin/vault"
-      register: vault_package
+      register: vault_binary
 
     - name: Uncompress the Vault zip
-      when: not vault_package.stat.exists
+      when: not vault_binary.stat.exists
       unarchive:
         remote_src: yes
         owner: "{{ specification.vault_system_user }}"
@@ -106,7 +106,7 @@
         limit_item: core
         value: '0'
 
-    - name: Copy Vault unseal script
+    - name: Copy Vault unsealing script
       copy:
         src: vault/unseal-vault.sh
         dest: "{{ specification.vault_install_dir }}/bin/"
@@ -114,7 +114,7 @@
         group: "{{ specification.vault_system_group }}"
         mode: u=rwx,g=rx,o=
 
-    - name: Create systemd config
+    - name: Create systemd service
       template:
         dest: /etc/systemd/system/vault.service
         owner: root
@@ -123,33 +123,31 @@
         src: vault/vault.service.j2
       register: service_conf
 
-    - name: Find certificate file in role directory
+    - name: Look for certificate in role directory
       local_action: find paths="{{ role_path }}/files/tls-certs" patterns="*.pem"
       become: no
-      register: certificates_names
+      register: provided_certificates
 
-    - name: Check if any certificate exist in role directory
+    - name: Check if any certificate exists in role directory
       set_fact:
-        certificates_exist: "{{ certificates_names is defined and (certificates_names.files | length > 0) }}"
+        certificate_exists: "{{ provided_certificates.matched > 0 }}"
 
-    - name: Display if certificate file in role directory exists
+    - name: Display result
       debug:
-        msg: "Certificate exists"
-      when:
-        - certificates_exist
+        msg: Certificate file {{ (provided_certificates.matched > 0) | ternary('found','not found') }}
 
-    - name: Copy certificate remotely if certificate file in role directory exists
+    - name: Copy certificate to remote host
       copy:
         src: "{{ item.path }}"
         dest: "{{ specification.vault_install_dir }}/tls/"
-      loop: "{{ certificates_names.files }}"
+      loop: "{{ provided_certificates.files }}"
       when:
-        - certificates_exist
+        - certificate_exists
 
     - name: Generate TLS certificate
       include_tasks: generate-certificate.yml
       when:
-        - not certificates_exist
+        - not certificate_exists
 
     - name: Restart Vault service and reload config
       systemd:
@@ -197,7 +195,7 @@
         mode: u=rw,g=r,o=
         src: vault/policy-application.hcl.j2
 
-    - name: Generate config script confiugration
+    - name: Generate config file for Vault configuration script
       template:
         dest: "{{ specification.vault_install_dir }}/script.config"
         owner: "{{ specification.vault_system_user }}"
@@ -205,7 +203,7 @@
         mode: u=rw,g=r,o=
         src: vault/script.config.j2
 
-    - name: Generate users to be created by the script
+    - name: Generate file with users to be created by the script
       template:
         dest: "{{ specification.vault_install_dir }}/users.csv"
         owner: "{{ specification.vault_system_user }}"
@@ -246,14 +244,14 @@
         mode: u=rw,g=r,o=
         src: kubernetes/app-service-account.yml.j2
 
-    - name: Check if Vault_protocol is set to http
+    - name: Check if Vault protocol is set to http
       set_fact:
-        vault_protocol: "http"
+        vault_protocol: http
       when: specification.tls_disable
 
-    - name: Check if Vault_protocol is set to https
+    - name: Check if Vault protocol is set to https
       set_fact:
-        vault_protocol: "https"
+        vault_protocol: https
       when: not specification.tls_disable
 
     - name: Run configuration script
@@ -269,6 +267,6 @@
       when:
         - not specification.vault_script_autoconfiguration
       debug:
-        msg: "Init file doesn't exist or you have chosen manual unseal, so to finish configuration please run script manually with command:
+        msg: "Init file doesn't exist or you have chosen manual unsealing, so to finish configuration please run script manually with command:
               {{ specification.vault_install_dir }}/bin/configure-vault.sh -c {{ specification.vault_install_dir }}/script.config -a {{ ansible_default_ipv4.address }}.
               Also please put 'init.txt' file, containing output from 'vault operator init' command, in ''{{ specification.vault_install_dir }}' directory."

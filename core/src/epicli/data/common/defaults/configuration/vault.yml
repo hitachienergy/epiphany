@@ -5,13 +5,10 @@ specification:
   vault_enabled: false
   vault_system_user: vault
   vault_system_group: vault
-  file_name: vault_1.4.0_linux_amd64.zip
-  vault_agent_file_name: v0.4.0.tar.gz
   enable_vault_audit_logs: false
   enable_vault_ui: false
   vault_script_autounseal: true
   vault_script_autoconfiguration: true
-  vault_audit: false
   tls_disable: false
   kubernetes_integration: true
   kubernetes_configuration: true
@@ -32,3 +29,6 @@ specification:
       policy: admin
     - name: provisioner
       policy: provisioner
+  files:
+    vault_package_file_name: vault_1.4.0_linux_amd64.zip
+    vault_helm_chart_file_name: v0.4.0.tar.gz
