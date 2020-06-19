@@ -1,4 +1,3 @@
-from cli.version import VERSION
 from cli.helpers.doc_list_helpers import select_single
 from cli.engine.BackupRecoveryEngineBase import BackupRecoveryEngineBase
 
