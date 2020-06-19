@@ -3,9 +3,6 @@ import copy
 import jsonschema
 
 from cli.version import VERSION
-
-from cli.helpers.Config import Config
-from cli.helpers.Log import Log
 from cli.helpers.Step import Step
 
 from cli.helpers.build_saver import get_inventory_path_for_build
@@ -21,11 +18,11 @@ from cli.engine.ansible.AnsibleCommand import AnsibleCommand
 from cli.engine.ansible.AnsibleRunner import AnsibleRunner
 
 
-class PatchEngine(Step):
-    """Perform backup and recovery operations."""
+class BackupRecoveryEngineBase(Step):
+    """Perform backup and recovery operations (abstract base class)."""
 
     def __init__(self, input_data):
-        super().__init__(__name__)
+        # super(BackupRecoveryEngineBase, self).__init__(__name__) needs to be called in any subclass
         self.file = input_data.file
         self.build_directory = input_data.build_directory
         self.manifest_docs = list()
@@ -54,6 +51,8 @@ class PatchEngine(Step):
         jsonschema.validate(instance=document, schema=schema)
 
     def _process_input_docs(self):
+        """Load, validate and merge (with defaults) input yaml documents."""
+
         path_to_manifest = os.path.join(self.build_directory, MANIFEST_FILE_NAME)
         if not os.path.isfile(path_to_manifest):
             raise Exception('No manifest.yml inside the build folder')
@@ -74,12 +73,14 @@ class PatchEngine(Step):
             self.input_docs = doc_merger.run()
 
     def _process_configuration_docs(self):
+        """Populate input yaml documents with additional required ad-hoc data."""
+
         # Seed the self.configuration_docs
         self.configuration_docs = copy.deepcopy(self.input_docs)
 
         # Please notice using DefaultMerger is not needed here, since it is done already at this point.
         # We just check if documents are missing and insert default ones without the unneeded merge operation.
-        for kind in ['configuration/backup', 'configuration/recovery']:
+        for kind in {'configuration/backup', 'configuration/recovery'}:
             try:
                 # Check if the required document is in user inputs
                 document = select_single(self.configuration_docs, lambda x: x.kind == kind)
@@ -96,41 +97,9 @@ class PatchEngine(Step):
                 # Copy the "provider" value to the specification as well
                 document.specification['provider'] = document['provider']
 
-        # Get backup config document
-        self.backup_doc = select_single(self.configuration_docs, lambda x: x.kind == 'configuration/backup')
-
-        # Get recovery config document
-        self.recovery_doc = select_single(self.configuration_docs, lambda x: x.kind == 'configuration/recovery')
-
-    def backup(self):
-        """Backup all enabled components."""
-
-        self._process_input_docs()
-        self._process_configuration_docs()
-        self._update_role_files_and_vars('backup', self.backup_doc)
-
-        # Execute all enabled component playbooks sequentially
-        for component_name, component_config in sorted(self.backup_doc.specification.components.items()):
-            if component_config.enabled:
-                self._update_playbook_files_and_run('backup', component_name)
-
-        return 0
-
-    def recovery(self):
-        """Recover all enabled components."""
-
-        self._process_input_docs()
-        self._process_configuration_docs()
-        self._update_role_files_and_vars('recovery', self.recovery_doc)
-
-        # Execute all enabled component playbooks sequentially
-        for component_name, component_config in sorted(self.recovery_doc.specification.components.items()):
-            if component_config.enabled:
-                self._update_playbook_files_and_run('recovery', component_name)
-
-        return 0
-
     def _update_role_files_and_vars(self, action, document):
+        """Render mandatory vars files for backup/recovery ansible roles inside the existing build directory."""
+
         self.logger.info(f'Updating {action} role files...')
 
         # Copy role files
@@ -146,6 +115,8 @@ class PatchEngine(Step):
             dump(document, stream)
 
     def _update_playbook_files_and_run(self, action, component):
+        """Update backup/recovery ansible playbooks inside the existing build directory and run the provisioning."""
+
         self.logger.info(f'Running {action} on {component}...')
 
         # Copy playbook file
