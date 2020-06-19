@@ -147,7 +147,7 @@
         - certificates_exist
 
     - name: Generate TLS certificate
-      include_tasks: certificate_generate.yml
+      include_tasks: generate-certificate.yml
       when:
         - not certificates_exist
 
