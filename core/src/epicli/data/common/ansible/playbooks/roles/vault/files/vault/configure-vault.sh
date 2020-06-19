@@ -43,6 +43,8 @@ function initialize_vault {
     if [ "${command_result[1]}" = "0" ] ; then
         log_and_print "Vault is already initialized.";
     elif [ "${command_result[1]}" = "1" ] ; then
+        touch "$init_file_path";
+        chmod 0640 "$init_file_path";
         log_and_print "Initializing Vault...";
         vault operator init > "$init_file_path";
         check_status $? "Vault initialized." "There was an error during initialization of Vault.";
@@ -257,6 +259,11 @@ function cleanup {
 
 # --- Start ---
 
+if [ "$#" -lt 6 ]; then
+    print_help;
+    exit_with_error "Mandatory argument is missing. Aborting.";
+fi
+
 while getopts ":a:c:p:h" opt; do
     case "$opt" in
         a) VAULT_IP=$OPTARG;;
@@ -268,11 +275,6 @@ while getopts ":a:c:p:h" opt; do
     esac
 done
 shift $((OPTIND-1))
-
-if [ "$#" -lt 6 ]; then
-    print_help;
-    exit_with_error "Mandatory argument is missing. Aborting.";
-fi
 
 test -f "$CONFIG_FILE" || exit_with_error "Config file not found. Aborting.";
 
