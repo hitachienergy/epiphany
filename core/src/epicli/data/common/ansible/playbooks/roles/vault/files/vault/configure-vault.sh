@@ -85,7 +85,7 @@ function enable_vault_audit_logs {
     log_and_print "Checking if audit logging is enabled...";
     vault audit list | grep "file";
     local command_result=( "${PIPESTATUS[@]}" );
-    if [ "${command_result[0]}" != "0" ] ; then
+    if [ "${command_result[0]}" = "1" ] ; then  #IMPORTANT exit code = 2 if audit list is empty so it is ignored 
         exit_with_error "There was an error during listing audit devices. Exit status: ${command_result[0]}";
     fi
     if [ "${command_result[1]}" = "0" ] ; then
