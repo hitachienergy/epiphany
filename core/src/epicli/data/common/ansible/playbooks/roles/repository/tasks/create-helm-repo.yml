@@ -1,10 +1,10 @@
 ---
-- name: Include Helm binary installation 
+- name: Include Helm binary installation
   include_role:
     name: helm
     tasks_from: install-bin
 
-- name: Get list of directories for system Helm charts 
+- name: Get list of directories for system Helm charts
   find:
     paths: "{{ specification.apache_epirepo_path }}/helm-charts/system"
     file_type: directory
@@ -32,4 +32,4 @@
       loop: "{{ system_charts_dir_list.files }}"
   when:
     - not custom_repository_url
-    - system_charts_dir_list.matched > 0 
+    - system_charts_dir_list.matched > 0

@@ -11,4 +11,4 @@ specification:
       files: false
       helm_charts: false
       images: false
-      packages: false 
+      packages: false
