@@ -72,6 +72,13 @@
         state: started
       loop: "{{ groups.kibana | default([]) }}"
 
+    - name: Start all filebeat instances
+      delegate_to: "{{ item }}"
+      systemd:
+        name: filebeat
+        state: started
+      loop: "{{ groups.filebeat | default([]) }}"
+
   block:
     - name: Stop all kibana instances
       delegate_to: "{{ item }}"
@@ -79,6 +86,13 @@
         name: kibana
         state: stopped
       loop: "{{ groups.kibana | default([]) }}"
+
+    - name: Stop all filebeat instances
+      delegate_to: "{{ item }}"
+      systemd:
+        name: filebeat
+        state: stopped
+      loop: "{{ groups.filebeat | default([]) }}"
 
     - name: Close all indices
       uri:
