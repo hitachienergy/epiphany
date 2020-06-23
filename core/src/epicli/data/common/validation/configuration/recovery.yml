@@ -78,7 +78,6 @@ properties:
             type: object
             required:
             - enabled
-            - snapshot_name
             additionalProperties: false
             properties:
               enabled:
