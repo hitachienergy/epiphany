@@ -62,7 +62,7 @@
 
 - debug: var=snapshot_name
 
-- name: Ensure all kibana instances are stopped, then restore the snapshot
+- name: Ensure all kibana and filebeat instances are stopped, then restore the snapshot
 
   always:
     - name: Start all kibana instances
@@ -70,6 +70,7 @@
       systemd:
         name: kibana
         state: started
+        enabled: true
       loop: "{{ groups.kibana | default([]) }}"
 
     - name: Start all filebeat instances
@@ -77,6 +78,7 @@
       systemd:
         name: filebeat
         state: started
+        enabled: true
       loop: "{{ groups.filebeat | default([]) }}"
 
   block:
@@ -85,6 +87,7 @@
       systemd:
         name: kibana
         state: stopped
+        enabled: false
       loop: "{{ groups.kibana | default([]) }}"
 
     - name: Stop all filebeat instances
@@ -92,6 +95,7 @@
       systemd:
         name: filebeat
         state: stopped
+        enabled: false
       loop: "{{ groups.filebeat | default([]) }}"
 
     - name: Close all indices
