@@ -6,7 +6,7 @@
 # TODO: Make devweb-app policy and role configurable (function integrate_with_kubernetes)
 # TODO: Make Helm chart location configurable (function configure_kubernetes)
 
-HELP_MESSAGE="Usage: configure-vault.sh -c SCRIPT_CONFIGURATION_FILE_PATH -a VAULT_IP_ADDRESS -p {http|https}"
+HELP_MESSAGE="Usage: configure-vault.sh -c SCRIPT_CONFIGURATION_FILE_PATH -a VAULT_IP_ADDRESS -p {http|https} -v {true|false}"
 
 function print_help { echo "$HELP_MESSAGE"; }
 
@@ -85,7 +85,7 @@ function enable_vault_audit_logs {
     log_and_print "Checking if audit logging is enabled...";
     vault audit list | grep "file";
     local command_result=( "${PIPESTATUS[@]}" );
-    if [ "${command_result[0]}" = "1" ] ; then  #IMPORTANT exit code = 2 if audit list is empty so it is ignored 
+    if [ "${command_result[0]}" = "1" ] ; then  #IMPORTANT exit code = 2 if audit list is empty so it is ignored
         exit_with_error "There was an error during listing audit devices. Exit status: ${command_result[0]}";
     fi
     if [ "${command_result[1]}" = "0" ] ; then
@@ -154,6 +154,7 @@ function configure_kubernetes {
     local vault_install_path="$1";
     local kubernetes_namespace="$2";
     local vault_protocol="$3";
+    local helm_custom_values_set_bool="$4";
     log_and_print "Configuring Kubernetes...";
     local files_to_apply=( app-namespace.yml vault-endpoint-configuration.yml vault-service-account.yml app-service-account.yml )
     for file in "${files_to_apply[@]}" ; do
@@ -174,7 +175,12 @@ function configure_kubernetes {
         log_and_print "Vault Agent Helm Chart is already installed.";
     elif [ "${command_result[1]}" = "1" ] ; then
         log_and_print "Installing Vault Agent Helm Chart...";
-        helm install vault --set "injector.externalVaultAddr=$vault_protocol://external-vault:8200" /tmp/v0.4.0.tar.gz
+        if [ "$helm_custom_values_set_bool" = true ] ; then
+          helm upgrade --install -f /tmp/vault_helm_chart_values.yaml vault /tmp/v0.4.0.tar.gz
+        else
+          helm upgrade --install vault /tmp/v0.4.0.tar.gz
+        fi
+        
         check_status $? "Vault Agent Helm Chart installed." "There was an error during installation of Vault Agent Helm Chart.";
     fi
 }
@@ -264,11 +270,12 @@ if [ "$#" -lt 6 ]; then
     exit_with_error "Mandatory argument is missing. Aborting.";
 fi
 
-while getopts ":a:c:p:h" opt; do
+while getopts ":a:c:p:v:h" opt; do
     case "$opt" in
         a) VAULT_IP=$OPTARG;;
         c) CONFIG_FILE=$OPTARG;;
         p) VAULT_PROTOCOL=$OPTARG;;
+        v) HELM_CUSTOM_VALUES_SET_BOOL=$OPTARG;;
         \?) print_help; exit_with_error "Invalid parameter: -$OPTARG. Aborting.";;
         :) print_help; exit_with_error "Parameter -$OPTARG requires an argument. Aborting.";;
         h) print_help; exit 0;;
@@ -327,5 +334,5 @@ if [ "${KUBERNETES_INTEGRATION,,}" = "true" ] ; then
 fi
 
 if [ "${KUBERNETES_CONFIGURATION,,}" = "true" ] ; then
-    configure_kubernetes "$VAULT_INSTALL_PATH" "$KUBERNETES_NAMESPACE" "$VAULT_PROTOCOL";
+    configure_kubernetes "$VAULT_INSTALL_PATH" "$KUBERNETES_NAMESPACE" "$VAULT_PROTOCOL" "$HELM_CUSTOM_VALUES_SET_BOOL";
 fi

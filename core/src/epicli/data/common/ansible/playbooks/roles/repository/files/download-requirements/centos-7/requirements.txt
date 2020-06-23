@@ -170,6 +170,8 @@ kubernetesui/metrics-scraper:v1.0.1
 calico/cni:v3.8.1
 calico/kube-controllers:v3.8.1
 registry:2
+hashicorp/vault-k8s:0.2.0
+vault:1.3.2
 # applications
 apacheignite/ignite:2.5.0
 bitnami/pgpool:4.1.1-debian-10-r29

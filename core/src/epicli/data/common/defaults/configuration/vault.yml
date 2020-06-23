@@ -32,3 +32,6 @@ specification:
   files:
     vault_package_file_name: vault_1.4.0_linux_amd64.zip
     vault_helm_chart_file_name: v0.4.0.tar.gz
+  vault_helm_chart_values:
+    injector:
+      externalVaultAddr: https://external-vault:8200
