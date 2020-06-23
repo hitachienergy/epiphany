@@ -11,10 +11,11 @@ import platform
 import socket
 
 from cli.engine.ApplyEngine import ApplyEngine
-from cli.engine.PatchEngine import PatchEngine
+from cli.engine.BackupEngine import BackupEngine
 from cli.engine.DeleteEngine import DeleteEngine
 from cli.engine.InitEngine import InitEngine
 from cli.engine.PrepareEngine import PrepareEngine
+from cli.engine.RecoveryEngine import RecoveryEngine
 from cli.engine.UpgradeEngine import UpgradeEngine
 from cli.engine.TestEngine import TestEngine
 from cli.helpers.Log import Log
@@ -275,7 +276,7 @@ def backup_parser(subparsers):
 
     def run_backup(args):
         adjust_paths_from_file(args)
-        with PatchEngine(args) as engine:
+        with BackupEngine(args) as engine:
             return engine.backup()
 
     sub_parser.set_defaults(func=run_backup)
@@ -296,7 +297,7 @@ def recovery_parser(subparsers):
         if not query_yes_no('Do you really want to perform recovery?'):
             return 0
         adjust_paths_from_file(args)
-        with PatchEngine(args) as engine:
+        with RecoveryEngine(args) as engine:
             return engine.recovery()
 
     sub_parser.set_defaults(func=run_recovery)

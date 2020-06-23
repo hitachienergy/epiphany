@@ -40,7 +40,7 @@
       file:
         path: ~/.ssh/
         state: directory
-        
+
     - name: Create a temporary file path to hold the private key in
       tempfile:
         path: ~/.ssh/

@@ -13,13 +13,13 @@ class SchemaValidator(Step):
         self.validation_docs = validation_docs
 
         base = load_yaml_obj(types.VALIDATION, self.cluster_model.provider, 'core/base')
-        definitions = load_yaml_obj(types.VALIDATION, self.cluster_model.provider, 'core/definitions')
+        self.definitions = load_yaml_obj(types.VALIDATION, self.cluster_model.provider, 'core/definitions')
 
         self.base_schema = dict_to_objdict(deepcopy(base))
-        self.base_schema['definitions'] = definitions
+        self.base_schema['definitions'] = self.definitions
 
         self.base_schema_no_provider = dict_to_objdict(deepcopy(base))
-        self.base_schema_no_provider['definitions'] = definitions
+        self.base_schema_no_provider['definitions'] = self.definitions
         del self.base_schema_no_provider.required[0]
         del self.base_schema_no_provider.properties['provider']
 
@@ -31,6 +31,27 @@ class SchemaValidator(Step):
         schema.properties.kind.default = kind
         schema.properties.kind.pattern = '^(' + kind + ')$'
         return schema
+
+    def run_for_individual_documents(self):
+        for doc in self.validation_docs:
+            # Load document schema
+            schema = load_yaml_obj(types.VALIDATION, self.cluster_model.provider, doc.kind)
+
+            # Include "definitions"
+            schema['definitions'] = self.definitions
+
+            # Warn the user about the missing validation
+            if hasattr(schema, '$ref'):
+                if schema['$ref'] == '#/definitions/unvalidated_specification':
+                    self.logger.warn('No specification validation for ' + doc.kind)
+
+            # Assert the schema
+            try:
+                validate(instance=objdict_to_dict(doc), schema=objdict_to_dict(schema))
+            except Exception as e:
+                self.logger.error(f'Failed validating: {doc.kind}')
+                self.logger.error(e)
+                raise Exception('Schema validation error, see the error above.')
 
     def run(self):
         for doc in self.validation_docs:
@@ -46,4 +67,3 @@ class SchemaValidator(Step):
                 self.logger.error(f'Failed validating: {doc.kind}')
                 self.logger.error(e)
                 raise Exception('Schema validation error, see the error above.')
-
