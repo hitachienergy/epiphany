@@ -153,10 +153,10 @@ kubelet 1.15.10
 kubeadm 1.16.7
 kubectl 1.16.7
 kubelet 1.16.7
-# K8s upgrade v1.16
-kubeadm 1.17.4
-kubectl 1.17.4
-kubelet 1.17.4
+# K8s upgrade v1.17
+kubeadm 1.17.7
+kubectl 1.17.7
+kubelet 1.17.7
 
 # Kubernetes Generic
 kubernetes-cni 0.7.5
@@ -236,11 +236,11 @@ k8s.gcr.io/kube-apiserver:v1.16.7
 k8s.gcr.io/kube-controller-manager:v1.16.7
 k8s.gcr.io/etcd:3.3.15-0
 k8s.gcr.io/coredns:1.6.2
-## v1.17.4
-k8s.gcr.io/kube-apiserver:v1.17.4
-k8s.gcr.io/kube-controller-manager:v1.17.4
-k8s.gcr.io/kube-scheduler:v1.17.4
-k8s.gcr.io/kube-proxy:v1.17.4
+## v1.17.7
+k8s.gcr.io/kube-apiserver:v1.17.7
+k8s.gcr.io/kube-controller-manager:v1.17.7
+k8s.gcr.io/kube-scheduler:v1.17.7
+k8s.gcr.io/kube-proxy:v1.17.7
 k8s.gcr.io/etcd:3.4.3-0
 k8s.gcr.io/coredns:1.6.5
 calico/cni:v3.13.2

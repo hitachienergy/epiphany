@@ -32,14 +32,14 @@ specification:
       - name: "brainsam/pgbouncer:1.12"
         file_name: pgbouncer-1.12.tar
     current:
-      - name: "k8s.gcr.io/kube-apiserver:v1.17.4"
-        file_name: kube-apiserver-v1.17.4.tar
-      - name: "k8s.gcr.io/kube-controller-manager:v1.17.4"
-        file_name: kube-controller-manager-v1.17.4.tar
-      - name: "k8s.gcr.io/kube-scheduler:v1.17.4"
-        file_name: kube-scheduler-v1.17.4.tar
-      - name: "k8s.gcr.io/kube-proxy:v1.17.4"
-        file_name: kube-proxy-v1.17.4.tar
+      - name: "k8s.gcr.io/kube-apiserver:v1.17.7"
+        file_name: kube-apiserver-v1.17.7.tar
+      - name: "k8s.gcr.io/kube-controller-manager:v1.17.7"
+        file_name: kube-controller-manager-v1.17.7.tar
+      - name: "k8s.gcr.io/kube-scheduler:v1.17.7"
+        file_name: kube-scheduler-v1.17.7.tar
+      - name: "k8s.gcr.io/kube-proxy:v1.17.7"
+        file_name: kube-proxy-v1.17.7.tar
       - name: "k8s.gcr.io/etcd:3.4.3-0"
         file_name: etcd-3.4.3-0.tar
       - name: "k8s.gcr.io/coredns:1.6.5"

@@ -6,28 +6,30 @@
 
 - name: install-packages | Remove newer Debian packages installed as dependencies if they exist # as there is no allow_downgrade parameter in ansible apt module
   apt:
-    name: kubernetes-cni kubelet kubectl kubeadm
+    name:
+      - kubernetes-cni # absent in version >= 1.17.7
+      - kubelet
+      - kubectl
+      - kubeadm
     state: absent
-  when:
-    - (ansible_facts.packages['kubernetes-cni'][0].version is version (cni_version + '-00', '>')) or
-      (ansible_facts.packages['kubelet'][0].version is version (version + '-00', '>')) or
-      (ansible_facts.packages['kubectl'][0].version is version (version + '-00', '>')) or
-      (ansible_facts.packages['kubeadm'][0].version is version (version + '-00', '>'))
+  when: ansible_facts.packages['kubernetes-cni'] is defined
+     or ansible_facts.packages['kubelet'][0].version is version(version + '-00', '>')
+     or ansible_facts.packages['kubectl'][0].version is version(version + '-00', '>')
+     or ansible_facts.packages['kubeadm'][0].version is version(version + '-00', '>')
 
-- name: "install-packages | Unhold kubelet, kubectl, kubernetes-cni"
+- name: install-packages | Unhold kubelet and kubectl
   shell: >-
-    apt-mark unhold kubelet kubectl kubernetes-cni
+    apt-mark unhold kubelet kubectl
 
 - name: >-
-    install-packages | Install kubernetes-cni {{ cni_version }}, kubelet {{ version }}, kubectl {{ version }} packages for Debian family
+    install-packages | Install kubelet {{ version }} and kubectl {{ version }} packages for Debian family
   apt:
     name:
-    - kubernetes-cni={{ cni_version }}-00
     - kubelet={{ version }}-00
     - kubectl={{ version }}-00
     update_cache: yes
     state: present
 
-- name: "install-packages | Hold kubelet, kubectl, kubernetes-cni"
+- name: install-packages | Hold kubelet and kubectl
   shell: >-
-    apt-mark hold kubelet kubectl kubernetes-cni
+    apt-mark hold kubelet kubectl
