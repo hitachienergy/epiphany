@@ -32,6 +32,7 @@ properties:
               snapshot_name:
                 "$id": "#/properties/specification/properties/components/properties/load_balancer/properties/snapshot_name"
                 type: string
+                pattern: "(^[0-9]{8}-[0-9]{6}$)|(^latest$)"
           logging:
             "$id": "#/properties/specification/properties/components/properties/logging"
             type: object
@@ -45,6 +46,7 @@ properties:
               snapshot_name:
                 "$id": "#/properties/specification/properties/components/properties/logging/properties/snapshot_name"
                 type: string
+                pattern: "(^[0-9]{8}-[0-9]{6}$)|(^latest$)"
           monitoring:
             "$id": "#/properties/specification/properties/components/properties/monitoring"
             type: object
@@ -58,6 +60,7 @@ properties:
               snapshot_name:
                 "$id": "#/properties/specification/properties/components/properties/monitoring/properties/snapshot_name"
                 type: string
+                pattern: "(^[0-9]{8}-[0-9]{6}$)|(^latest$)"
           postgresql:
             "$id": "#/properties/specification/properties/components/properties/postgresql"
             type: object
@@ -71,6 +74,7 @@ properties:
               snapshot_name:
                 "$id": "#/properties/specification/properties/components/properties/postgresql/properties/snapshot_name"
                 type: string
+                pattern: "(^[0-9]{8}-[0-9]{6}$)|(^latest$)"
           rabbitmq:
             "$id": "#/properties/specification/properties/components/properties/rabbitmq"
             type: object
@@ -84,3 +88,4 @@ properties:
               snapshot_name:
                 "$id": "#/properties/specification/properties/components/properties/rabbitmq/properties/snapshot_name"
                 type: string
+                pattern: "(^[0-9]{8}-[0-9]{6}$)|(^latest$)"
