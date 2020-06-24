@@ -17,3 +17,66 @@ properties:
     properties:
       components:
         type: object
+        additionalProperties: false
+        properties:
+          load_balancer:
+            "$id": "#/properties/specification/properties/components/properties/load_balancer"
+            type: object
+            required:
+            - enabled
+            additionalProperties: false
+            properties:
+              enabled:
+                "$id": "#/properties/specification/properties/components/properties/load_balancer/properties/enabled"
+                type: boolean
+          logging:
+            "$id": "#/properties/specification/properties/components/properties/logging"
+            type: object
+            required:
+            - enabled
+            additionalProperties: false
+            properties:
+              enabled:
+                "$id": "#/properties/specification/properties/components/properties/logging/properties/enabled"
+                type: boolean
+          monitoring:
+            "$id": "#/properties/specification/properties/components/properties/monitoring"
+            type: object
+            required:
+            - enabled
+            additionalProperties: false
+            properties:
+              enabled:
+                "$id": "#/properties/specification/properties/components/properties/monitoring/properties/enabled"
+                type: boolean
+          postgresql:
+            "$id": "#/properties/specification/properties/components/properties/postgresql"
+            type: object
+            required:
+            - enabled
+            additionalProperties: false
+            properties:
+              enabled:
+                "$id": "#/properties/specification/properties/components/properties/postgresql/properties/enabled"
+                type: boolean
+          rabbitmq:
+            "$id": "#/properties/specification/properties/components/properties/rabbitmq"
+            type: object
+            required:
+            - enabled
+            additionalProperties: false
+            properties:
+              enabled:
+                "$id": "#/properties/specification/properties/components/properties/rabbitmq/properties/enabled"
+                type: boolean
+          kubernetes:
+            "$id": "#/properties/specification/properties/components/properties/kubernetes"
+            type: object
+            required:
+            - enabled
+            additionalProperties: false
+            properties:
+              enabled:
+                "$id": "#/properties/specification/properties/components/properties/kubernetes/properties/enabled"
+                type: boolean
+
