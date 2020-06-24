@@ -8,7 +8,7 @@ class Config:
 
             self._output_dir = None
             if self._docker_cli:
-                self._output_dir = os.environ.get('EPICLI_DOCKER_SHARED_DIR')
+                self._output_dir = os.path.join(os.environ.get('EPICLI_DOCKER_SHARED_DIR'), 'build')
 
             self._log_file = 'log.log'
             self._log_format = '%(asctime)s %(levelname)s %(name)s - %(message)s'
