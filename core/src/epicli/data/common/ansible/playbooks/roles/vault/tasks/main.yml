@@ -278,7 +278,7 @@
         -c {{ specification.vault_install_dir }}/script.config
         -a {{ ansible_default_ipv4.address }}
         -p {{ vault_protocol }}
-        -v {{ vault_helm_chart_values_bool }}
+        -v {{ vault_helm_chart_values_bool|lower }}
 
     - name: Display information about running configuration script
       when:

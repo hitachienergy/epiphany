@@ -175,7 +175,7 @@ function configure_kubernetes {
         log_and_print "Vault Agent Helm Chart is already installed.";
     elif [ "${command_result[1]}" = "1" ] ; then
         log_and_print "Installing Vault Agent Helm Chart...";
-        if [ "$helm_custom_values_set_bool" = true ] ; then
+        if [ "$helm_custom_values_set_bool" = "true" ] ; then
           helm upgrade --install -f /tmp/vault_helm_chart_values.yaml vault /tmp/v0.4.0.tar.gz
         else
           helm upgrade --install vault /tmp/v0.4.0.tar.gz

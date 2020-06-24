@@ -35,3 +35,10 @@ specification:
   vault_helm_chart_values:
     injector:
       externalVaultAddr: https://external-vault:8200
+      image:
+        repository: "{{ image_registry_address }}/hashicorp/vault-k8s"
+      agentImage:
+        repository: "{{ image_registry_address }}/vault"
+    server:
+      image:
+        repository: "{{ image_registry_address }}/vault"
