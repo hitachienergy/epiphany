@@ -62,7 +62,9 @@ specification:
                 when: replication
   extensions:
     pgaudit:
-      enabled: no
+      enabled: yes
+      shared_preload_libraries:
+        - pgaudit
       config_file_parameters:
         log_connections: 'off'
         log_disconnections: 'off'
