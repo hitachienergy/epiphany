@@ -156,10 +156,10 @@
 
     - name: Install kubelet and kubectl for {{ version }}
       include_tasks: >-
-        {%- if version is version('1.17.7', '>=') -%}
+        {%- if cni_version -%}
           {{ ansible_os_family }}/install-packages.yml
         {%- else -%}
-          {{ ansible_os_family }}/install-packages-pre-1.17.7.yml
+          {{ ansible_os_family }}/install-packages-cni-in-kubelet.yml
         {%- endif -%}
       when: result is succeeded
 

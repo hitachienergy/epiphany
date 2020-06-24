@@ -1,10 +1,11 @@
 ---
 - name: >-
-    install-packages | Install kubelet-{{ version }} and kubectl-{{ version }} packages for RedHat family
+    install-packages | Install kubernetes-cni-{{ cni_version }}, kubelet-{{ version }}, kubectl-{{ version }} packages for RedHat family
   yum:
     name:
-      - kubelet-{{ version }}
-      - kubectl-{{ version }}
+      - kubernetes-cni-{{ cni_version }}-0
+      - kubelet-{{ version }}-0
+      - kubectl-{{ version }}-0
     update_cache: yes
     allow_downgrade: yes
     disable_excludes: kubernetes

@@ -3,8 +3,8 @@
     apt-mark hold {{ packages | join(' ') }}
   vars:
     packages: >-
-      {%- if version is version('1.17.7', '>=') -%}
-        ['kubeadm', 'kubelet', 'kubectl']
-      {%- else -%}
+      {%- if cni_version -%}
         ['kubeadm', 'kubelet', 'kubectl', 'kubernetes-cni']
+      {%- else -%}
+        ['kubeadm', 'kubelet', 'kubectl']
       {%- endif -%}

@@ -130,13 +130,13 @@ kubelet-1.15.10
 kubeadm-1.16.7
 kubectl-1.16.7
 kubelet-1.16.7
-# K8s upgrade v1.17
-kubeadm-1.17.7
-kubectl-1.17.7
-kubelet-1.17.7
+# K8s upgrade v1.17, see https://github.com/kubernetes/release/pull/1375
+kubeadm-1.17.7-0
+kubectl-1.17.7-0
+kubelet-1.17.7-0
 
 # Kubernetes Generic
-kubernetes-cni-0.7.5
+kubernetes-cni-0.7.5-0
 
 [files]
 https://github.com/prometheus/haproxy_exporter/releases/download/v0.10.0/haproxy_exporter-0.10.0.linux-amd64.tar.gz
