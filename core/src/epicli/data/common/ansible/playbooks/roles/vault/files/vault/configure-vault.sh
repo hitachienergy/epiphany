@@ -130,22 +130,63 @@ function enable_vault_kubernetes_authentication {
     fi
 }
 
+function kubectl_with_retries {
+    local kubectl_args="$1";
+    local number_of_retries="${2:-69}";  # use default value of 69
+    local number_of_seconds="${3:-2}";   # use default value of 2
+    local retry;
+
+    for (( retry = 0; retry < number_of_retries; retry++ )); do
+        sleep $number_of_seconds;
+        if RESULT="$($SHELL -c "kubectl $kubectl_args")"; then  # please note, RESULT is a global variable!
+            return 0;
+        fi;
+    done;
+
+    # Return original command string for debugging purposes.
+    RESULT="Command >>>> kubectl $kubectl_args <<<< failed after $retry retries.";
+    return 1;
+}
+
 function integrate_with_kubernetes {
     local vault_config_data_path="$1";
     local kubernetes_namespace="$2";
-    local policy_name="devweb-app"
-    local role_name="devweb-app"
+    local policy_name="devweb-app";
+    local role_name="devweb-app";
+
     log_and_print "Turning on Kubernetes integration...";
-    local token_reviewer_jwt
-    token_reviewer_jwt="$(kubectl --kubeconfig=/etc/kubernetes/admin.conf get secret vault-auth -o go-template='{{ .data.token }}' | base64 --decode)";
-    local kube_ca_cert
-    kube_ca_cert=$(kubectl --kubeconfig=/etc/kubernetes/admin.conf config view --raw --minify --flatten -o jsonpath='{.clusters[].cluster.certificate-authority-data}' | base64 --decode);
-    local kube_host
-    kube_host=$(kubectl --kubeconfig=/etc/kubernetes/admin.conf config view --raw --minify --flatten -o jsonpath='{.clusters[].cluster.server}');
+
+    local token_reviewer_jwt;
+    if kubectl_with_retries "--kubeconfig=/etc/kubernetes/admin.conf get secret vault-auth -o go-template='{{ .data.token }}'"; then
+        if ! token_reviewer_jwt="$(base64 --decode <<< "$RESULT")"; then
+            exit_with_error "Unable to base64/decode vault-auth secret.";
+        fi;
+    else
+        exit_with_error "$RESULT";
+    fi;
+
+    local kube_ca_cert;
+    if kubectl_with_retries "--kubeconfig=/etc/kubernetes/admin.conf config view --raw --minify --flatten -o jsonpath='{.clusters[].cluster.certificate-authority-data}'"; then
+        if ! kube_ca_cert="$(base64 --decode <<< "$RESULT")"; then
+            exit_with_error "Unable to base64/decode kubernetes certificate authority data."
+        fi;
+    else
+        exit_with_error "$RESULT";
+    fi;
+
+    local kube_host;
+    if kubectl_with_retries "--kubeconfig=/etc/kubernetes/admin.conf config view --raw --minify --flatten -o jsonpath='{.clusters[].cluster.server}'"; then
+        kube_host="$RESULT";
+    else
+        exit_with_error "$RESULT";
+    fi;
+
     vault write auth/kubernetes/config token_reviewer_jwt="$token_reviewer_jwt" kubernetes_host="$kube_host" kubernetes_ca_cert="$kube_ca_cert";
     check_status $? "Kubernetes parameters written to auth/kubernetes/config." "There was an error during writing Kubernetes parameters to auth/kubernetes/config.";
+
     vault policy write "$policy_name" "$vault_config_data_path/policies/policy-application.hcl";
     check_status $? "Application policy applied." "There was an error during applying application policy.";
+
     vault write "auth/kubernetes/role/$role_name" bound_service_account_names=internal-app bound_service_account_namespaces="$kubernetes_namespace" policies="$policy_name" ttl=24h;
     check_status $? "Application role applied." "There was an error during applying application role.";
 }
@@ -176,11 +217,10 @@ function configure_kubernetes {
     elif [ "${command_result[1]}" = "1" ] ; then
         log_and_print "Installing Vault Agent Helm Chart...";
         if [ "$helm_custom_values_set_bool" = "true" ] ; then
-          helm upgrade --install -f /tmp/vault_helm_chart_values.yaml vault /tmp/v0.4.0.tar.gz
+          helm upgrade --install --wait -f /tmp/vault_helm_chart_values.yaml vault /tmp/v0.4.0.tar.gz
         else
-          helm upgrade --install vault /tmp/v0.4.0.tar.gz
+          helm upgrade --install --wait vault /tmp/v0.4.0.tar.gz
         fi
-        
         check_status $? "Vault Agent Helm Chart installed." "There was an error during installation of Vault Agent Helm Chart.";
     fi
 }
@@ -329,10 +369,10 @@ if [ "${CREATE_VAULT_USERS,,}" = "true" ] ; then
     create_vault_users_from_file "$VAULT_INSTALL_PATH" "$LOGIN_TOKEN" "$VAULT_ADDR" "$OVERRIDE_EXISTING_VAULT_USERS";
 fi
 
-if [ "${KUBERNETES_INTEGRATION,,}" = "true" ] ; then
-    integrate_with_kubernetes "$VAULT_CONFIG_DATA_PATH" "$KUBERNETES_NAMESPACE";
-fi
-
 if [ "${KUBERNETES_CONFIGURATION,,}" = "true" ] ; then
     configure_kubernetes "$VAULT_INSTALL_PATH" "$KUBERNETES_NAMESPACE" "$VAULT_PROTOCOL" "$HELM_CUSTOM_VALUES_SET_BOOL";
+fi
+
+if [ "${KUBERNETES_INTEGRATION,,}" = "true" ] ; then
+    integrate_with_kubernetes "$VAULT_CONFIG_DATA_PATH" "$KUBERNETES_NAMESPACE";
 fi
