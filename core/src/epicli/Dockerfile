@@ -1,13 +1,11 @@
 FROM python:3.7-slim
 
 ARG EPICLI_VERSION
-
 ARG USERNAME=epiuser
 ARG USER_UID=1000
 ARG USER_GID=$USER_UID
-ARG SHARED_DIR=/shared
 
-ENV DOCKER_CLI Yes
+ENV EPICLI_DOCKER_SHARED_DIR=/shared
 
 COPY /dist/ /epicli
 WORKDIR /epicli
@@ -28,11 +26,11 @@ RUN groupadd --gid $USER_GID $USERNAME \
     && apt-get clean -y \
     && rm -rf /var/lib/apt/lists/*
 
-RUN mkdir $SHARED_DIR \
-    ;chown :$USERNAME $SHARED_DIR \
-    && chmod g+w $SHARED_DIR
+RUN mkdir $EPICLI_DOCKER_SHARED_DIR \
+    ;chown :$USERNAME $EPICLI_DOCKER_SHARED_DIR \
+    && chmod g+w $EPICLI_DOCKER_SHARED_DIR
 
-WORKDIR $SHARED_DIR
+WORKDIR $EPICLI_DOCKER_SHARED_DIR
 
 USER $USERNAME
 
