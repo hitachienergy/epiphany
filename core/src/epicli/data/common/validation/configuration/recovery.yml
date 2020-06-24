@@ -38,7 +38,7 @@ properties:
             type: object
             required:
             - enabled
-            additionalProperties: true
+            additionalProperties: false
             properties:
               enabled:
                 "$id": "#/properties/specification/properties/components/properties/logging/properties/enabled"
