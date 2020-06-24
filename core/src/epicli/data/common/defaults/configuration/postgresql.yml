@@ -62,7 +62,7 @@ specification:
                 when: replication
   extensions:
     pgaudit:
-      enabled: yes
+      enabled: no
       shared_preload_libraries:
         - pgaudit
       config_file_parameters:
