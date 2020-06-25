@@ -23,6 +23,12 @@ specification:
   override_existing_vault_users: false
   certificate_name: fullchain.pem
   private_key_name: privkey.pem
+  selfsigned_certificate:
+    country: UK
+    state: state
+    city: city
+    company: company
+    common_name: "*"
   vault_tls_valid_days: 365
   vault_users:
     - name: admin

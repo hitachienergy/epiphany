@@ -4,11 +4,11 @@ x509_extensions = v3_req
 prompt = no
 
 [req_distinguished_name]
-C = US
-ST = state
-L =  city
-O = company
-CN = *
+C = {{ specification.selfsigned_certificate.country }}
+ST = {{ specification.selfsigned_certificate.state }}
+L =  {{ specification.selfsigned_certificate.city }}
+O = {{ specification.selfsigned_certificate.company }}
+CN = {{ specification.selfsigned_certificate.common_name }}
 
 [v3_req]
 subjectKeyIdentifier = hash
