@@ -4,11 +4,11 @@ from os.path import expanduser
 class Config:
     class __ConfigBase:
         def __init__(self):
-            self._docker_cli = bool(os.environ.get('DOCKER_CLI', ''))
+            self._docker_cli = bool(os.environ.get('EPICLI_DOCKER_SHARED_DIR',''))
 
             self._output_dir = None
             if self._docker_cli:
-                self._output_dir = '/shared/build/'
+                self._output_dir = os.path.join(os.environ.get('EPICLI_DOCKER_SHARED_DIR'), 'build')
 
             self._log_file = 'log.log'
             self._log_format = '%(asctime)s %(levelname)s %(name)s - %(message)s'
