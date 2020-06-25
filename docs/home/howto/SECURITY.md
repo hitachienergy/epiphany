@@ -367,3 +367,101 @@ cp /etc/kubernetes/admin.conf $HOME/
 chown $(id -u):$(id -g) $HOME/admin.conf
 export KUBECONFIG=$HOME/admin.conf
 ```
+
+## How to turn on Hashicorp Vault functionality
+
+In Epiphany beside storing secrets in Kubernetes Secrets there is also a possibility of using Vault from Hashicorp. This can provide much more sophisticated solution for using secrets and also higher level of security than standard Kubernetes implementation. Also Epiphany provides transparent method to access Hashicorp Vault secrets with applications running on top of Kubernetes, about what you can read in the [How to turn on Hashicorp Vault integration with k8s](./SECURITY.md#how-to-turn-on-hashicorp-vault-integration-with-k8s) section. In the future we want also to provide additional features that right now can be configured manually according to Hashicorp Vault [configuration](https://www.vaultproject.io/docs). Right now only installation on Kubernetes Master is provided, but we are also planning separate installation with no other components. 
+
+Below you can find sample configuration for Vault with description of all options.
+
+```yaml
+kind: configuration/vault
+title: Vault Config
+name: default
+specification:
+  vault_enabled: true # this setting needs to be provide to install Vault
+  vault_system_user: vault # this is name of user under which Vault service will be running
+  vault_system_group: vault # this is name of group under which Vault service will be running
+  enable_vault_audit_logs: false # this is an option to turn on audit logs that can be found at /opt/vault/logs/vault_audit.log
+  enable_vault_ui: false # this is an
+  vault_script_autounseal: true # this is an option to automatically unseal vault at the start of the service, shouldn't be used at production
+  vault_script_autoconfiguration: true # this is option to perform automatic configuration of Hashicorp Vault
+  tls_disable: false
+  ...
+  app_secret_path: devwebapp
+  revoke_root_token: false # not implemented yet
+  secret_mount_path: secret
+  vault_token_cleanup: true
+  vault_install_dir: /opt/vault
+  vault_log_level: info
+  certificate_name: fullchain.pem
+  private_key_name: privkey.pem
+  vault_tls_valid_days: 365
+  override_existing_vault_users: false # 
+  vault_users: # users that will be 
+    - name: admin
+      policy: admin
+    - name: provisioner
+      policy: provisioner
+```
+
+[policies](https://www.hashicorp.com/resources/policies-vault/)
+
+### Configuration with manual unsealing
+
+### Creating your own policy
+
+### Creating your own user
+
+### Root token revocation
+
+### Troubleshooting
+
+To perform troubleshooting of vault and find the root cause of the problem please enable 
+
+
+## How to turn on Hashicorp Vault integration with k8s
+
+In Epiphany there is also an option to configure automatically integration with Kubernetes. This is achieved with usage of 
+
+```yaml
+kind: configuration/vault
+title: Vault Config
+name: default
+specification:
+  vault_enabled: true
+  vault_system_user: vault
+  vault_system_group: vault
+  ...
+  vault_script_autounseal: true
+  vault_script_autoconfiguration: true
+  ...
+  kubernetes_integration: true
+  kubernetes_configuration: true
+  enable_vault_kubernetes_authentication: true
+  kubernetes_namespace: default
+  ...
+```
+
+
+
+
+
+```shell
+vault kv put secret/yourpath/to/secret username='some_user' password='some_password'
+```
+
+```yaml
+  template:
+    metadata:
+      labels:
+        app: devwebapp
+      annotations:
+        vault.hashicorp.com/agent-inject: "true"
+        vault.hashicorp.com/role: "devweb-app"
+        vault.hashicorp.com/agent-inject-secret-credentials.txt: "secret/data/yourpath/to/secret"
+        vault.hashicorp.com/tls-skip-verify: "true"
+```
+
+[annotations](https://www.vaultproject.io/docs/platform/k8s/injector/annotations).
+
