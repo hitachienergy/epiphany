@@ -6,3 +6,7 @@
     kubectl get node {{ inventory_hostname }} -o jsonpath='{.status.nodeInfo.kubeletVersion}'
   register: kubelet_version
   changed_when: false
+
+- name: Set kubelet version as fact
+  set_fact:
+    kubelet_version: "{{ kubelet_version.stdout }}"

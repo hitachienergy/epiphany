@@ -20,7 +20,7 @@
     - name: upgrade-master | Set parent key of imageRepository key in kubeadm-config ConfigMap
       set_fact:
         kubeadm_config_parent_key: >-
-          {{ 'MasterConfiguration' if 'v1.11' in cluster_version.stdout else 'ClusterConfiguration' }}
+          {{ 'MasterConfiguration' if 'v1.11' in cluster_version else 'ClusterConfiguration' }}
 
     - name: upgrade-master | Get value of imageRepository key
       environment:
@@ -140,7 +140,7 @@
           retries: 20
           delay: 30
           when:
-            - cluster_version.stdout is version('v' + version, '<') # without this condition fails when 'upgrading' again from 1.12.10 to 1.12.10
+            - cluster_version is version('v' + version, '<') # without this condition fails when 'upgrading' again from 1.12.10 to 1.12.10
       rescue:  # ignore CoreDNSUnsupportedPlugins error since coredns migration does not support all plugins that are valid and currently used
         - name: "upgrade-master | Upgrade K8s cluster to v{{ version }}
                 {{ '(using kubeadm-config.yml file)' if kubeadm_config_file.stat.exists else '' }}"
@@ -152,7 +152,7 @@
           retries: 20
           delay: 30
           when:
-            - cluster_version.stdout is version('v' + version, '<')
+            - cluster_version is version('v' + version, '<')
 
     - name: Install kubelet and kubectl for {{ version }}
       include_tasks: >-
@@ -206,7 +206,7 @@
       retries: 5
       delay: 5
       when:
-        - cluster_version.stdout is version('v' + version, '<') # without this condition fails when 'upgrading' again from 1.12.10 to 1.12.10
+        - cluster_version is version('v' + version, '<') # without this condition fails when 'upgrading' again from 1.12.10 to 1.12.10
 
 - name: upgrade-master | Wait for cluster's readiness
   include_tasks: wait.yml
