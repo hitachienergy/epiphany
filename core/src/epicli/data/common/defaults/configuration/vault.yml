@@ -24,7 +24,7 @@ specification:
   certificate_name: fullchain.pem
   private_key_name: privkey.pem
   selfsigned_certificate:
-    country: UK
+    country: US
     state: state
     city: city
     company: company
