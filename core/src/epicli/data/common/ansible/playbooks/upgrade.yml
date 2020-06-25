@@ -90,26 +90,24 @@
         tasks_from: kubernetes
       vars: { ver: "1.17.7", cni_ver: "0.8.6", cni_in_kubelet: true }
 
-# TODO: Temporarily commented out for testing time
-# - hosts: elasticsearch
-#   become: true
-#   become_method: sudo
-#   tasks:
-#     - import_role:
-#         name: upgrade
-#         tasks_from: elasticsearch
+- hosts: elasticsearch
+  become: true
+  become_method: sudo
+  tasks:
+    - import_role:
+        name: upgrade
+        tasks_from: elasticsearch
 
-# TODO: Temporarily commented out for testing time
-# - hosts: elasticsearch_curator
-#   become: true
-#   become_method: sudo
-#   tasks:
-#     - import_role:
-#         name: upgrade
-#         tasks_from: elasticsearch-curator
+- hosts: elasticsearch_curator
+  become: true
+  become_method: sudo
+  tasks:
+    - import_role:
+        name: upgrade
+        tasks_from: elasticsearch-curator
 
 # Disabling Filebeat upgrade. This will be included in future releases.
-# 
+#
 # - hosts: filebeat
 #   become: true
 #   become_method: sudo
@@ -118,13 +116,12 @@
 #         name: upgrade
 #         tasks_from: filebeat
 
-# TODO: Temporarily commented out for testing time
-# - hosts: kafka
-#   serial: 1
-#   become: true
-#   become_method: sudo
-#   tasks:
-#     - import_role:
-#         name: upgrade
-#         tasks_from: kafka
-#       vars: { lock_file: /var/tmp/kafka-upgrade-in-progress.flag }
+- hosts: kafka
+  serial: 1
+  become: true
+  become_method: sudo
+  tasks:
+    - import_role:
+        name: upgrade
+        tasks_from: kafka
+      vars: { lock_file: /var/tmp/kafka-upgrade-in-progress.flag }
