@@ -1,0 +1,7 @@
+---
+- hosts: helm
+  become: true
+  become_method: sudo
+  become_flags: --login
+  roles:
+    - helm

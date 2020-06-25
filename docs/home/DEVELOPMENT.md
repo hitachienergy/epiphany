@@ -180,3 +180,7 @@ The serverspec tests are integrated in Epicli. To run them you can extend the la
   ```
 
 Where the ```-b``` argument points to the build folder of a cluster. The ```-g``` argument can be used to execute a subset of tests and is optional. Omitting ```-g``` will execute all tests.
+
+## Epicli Python dependencies
+
+Information about how to manage the Epicli Python dependencies can be found [here.](../../core/src/epicli/.devcontainer/requirements.md#python-requirement-management)

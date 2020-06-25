@@ -1,0 +1,40 @@
+---
+- name: Download the newest Helm binary package from the epirepo
+  import_role:
+    name: download
+    tasks_from: download_newest_file
+  vars:
+    archive_name_regexp: '^helm-v([0-9.]+)-linux-amd64.tar.gz$'
+    validate_certs: false
+
+- name: Create versioned destination directory for Helm binary
+  file:
+    dest: "/usr/local/bin/helm-{{ newest_archive_version }}/"
+    state: directory
+
+- name: Unpack Helm binary
+  unarchive:
+    src: "{{ download_directory }}/{{ newest_archive_name }}"
+    dest: "/usr/local/bin/helm-{{ newest_archive_version }}/"
+    creates: "/usr/local/bin/helm-{{ newest_archive_version }}/helm"
+    extra_opts:
+      - --strip=1
+      - --wildcards
+      - '*/helm'
+    remote_src: true
+  register: unarchive_result
+
+- when: unarchive_result is changed
+  block:
+    - name: Create symlink to enable the newest Helm binary
+      file:
+        src: "/usr/local/bin/helm-{{ newest_archive_version }}/helm"
+        dest: "/usr/local/bin/helm"
+        state: link
+
+    - name: Create "sbin" symlink for Helm binary (RedHat fix)
+      file:
+        src: "/usr/local/bin/helm"
+        dest: "/usr/local/sbin/helm"
+        state: link
+      when: ansible_os_family == "RedHat"

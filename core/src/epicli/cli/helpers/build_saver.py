@@ -45,6 +45,12 @@ def save_inventory(inventory, cluster_model, build_dir=None):
     save_to_file(file_path, content)
 
 
+def save_ansible_config_file(ansible_config_file_settings, ansible_config_file_path):
+    template = load_template_file(types.ANSIBLE, "common", "ansible.cfg")
+    content = template.render(ansible_config_file_settings=ansible_config_file_settings)
+    save_to_file(ansible_config_file_path, content)
+
+
 # method cleans generated .tf files (not tfstate)
 def clear_terraform_templates(cluster_name):
     terraform_dir = get_terraform_path(cluster_name)
@@ -92,6 +98,14 @@ def get_inventory_path_for_build(build_directory):
         if len(files) != 1:
             raise Exception(f'Not a valid legacy build directory.')
         return join(inventory, files[0]) 
+
+
+def get_ansible_config_file_path(cluster_name):
+    return os.path.join(get_ansible_path(cluster_name), "ansible.cfg")
+
+
+def get_ansible_config_file_path_for_build(build_directory):
+    return os.path.join(get_ansible_path_for_build(build_directory), "ansible.cfg")
 
 
 def check_build_output_version(build_directory):

@@ -12,6 +12,7 @@ class UpgradeEngine(Step):
     def __init__(self, input_data):
         super().__init__(__name__)
         self.build_dir = input_data.build_directory
+        self.ansible_options = {'profile_tasks': getattr(input_data, 'profile_ansible_tasks', False)}
         self.backup_build_dir = ''
         self.ansible_command = AnsibleCommand()
 
@@ -52,7 +53,8 @@ class UpgradeEngine(Step):
         self.backup_build()
 
         # Run Ansible to upgrade infrastructure
-        with AnsibleRunner(build_dir=self.build_dir, backup_build_dir=self.backup_build_dir) as ansible_runner:
+        with AnsibleRunner(build_dir=self.build_dir, backup_build_dir=self.backup_build_dir,
+                           ansible_options=self.ansible_options) as ansible_runner:
             ansible_runner.upgrade()
 
         return 0      

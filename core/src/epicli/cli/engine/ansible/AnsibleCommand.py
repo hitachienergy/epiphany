@@ -28,6 +28,9 @@ class AnsibleCommand:
 
         cmd.append(hosts)
 
+        if Config().debug > 0:
+            cmd.append(ansible_verbosity[Config().debug])
+
         self.logger.info('Running: "' + ' '.join(module) + '"')
 
         logpipe = LogPipe(__name__)

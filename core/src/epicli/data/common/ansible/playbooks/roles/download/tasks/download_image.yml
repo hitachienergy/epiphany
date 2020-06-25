@@ -1,12 +1,11 @@
 ---
-
-- name: Download image {{ file_name }}
+- name: "Download image {{ file_name }}"
   get_url:
     url: "{{ repository_url }}/images/{{ file_name }}"
     dest: "{{ download_directory }}"
     validate_certs: "{{ validate_certs }}"
   register: get_url_result
   until: "'OK' in get_url_result.msg or 'file already exists' in get_url_result.msg"
-  retries: "3"
-  delay: "2"
+  retries: 3
+  delay: 2
   become: false

@@ -9,7 +9,7 @@
     - name: Create epirepo repository
       shell: >-
         set -o pipefail &&
-        /tmp/epi-repository-setup-scripts/create-repository.sh /var/www/html/epirepo {{ offline_mode | lower }} |&
+        /tmp/epi-repository-setup-scripts/create-repository.sh {{ specification.apache_epirepo_path }} {{ offline_mode | lower }} |&
         tee /tmp/epi-repository-setup-scripts/create-repository.log
 
     - name: Ensure HTTP port is not blocked by firewall

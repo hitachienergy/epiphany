@@ -63,6 +63,7 @@ Should NOT be used in production for security reasons.''')
         if x < 0 or x > 4:
             raise argparse.ArgumentTypeError("--debug value should be between 0 and 4")
         return x
+
     parser.add_argument('--debug', dest='debug', type=debug_level,
                         help='''Set this flag (0..4) to enable debug output where 0 is no
 debug output and 1..4 is debug output with different verbosity levels:
@@ -108,7 +109,7 @@ Terraform : 1..4 map to the following Terraform verbosity levels:
     # add some arguments to the general config so we can easily use them throughout the CLI
     args = parser.parse_args(arguments)
 
-    config.output_dir = args.output_dir if hasattr(args, 'output_dir') else None
+    config.output_dir = getattr(args, 'output_dir', None)
     config.log_file = args.log_name
     config.log_format = args.log_format
     config.log_date_format = args.log_date_format
@@ -179,6 +180,9 @@ def apply_parser(subparsers):
                             help='Path to the folder with pre-prepared offline requirements.')    
     sub_parser.add_argument('--vault-password', dest='vault_password', type=str,
                             help='Password that will be used to encrypt build artifacts.')
+    # developer options
+    sub_parser.add_argument('--profile-ansible-tasks', dest='profile_ansible_tasks', action="store_true",
+                            help='Enable Ansible profile_tasks plugin for timing tasks.')
 
     def run_apply(args):
         adjust_paths_from_file(args)
@@ -213,6 +217,9 @@ def upgrade_parser(subparsers):
                             help="Waits for all pods to be in the 'Ready' state before proceeding to the next step of the K8s upgrade.")
     sub_parser.add_argument('--offline-requirements', dest='offline_requirements', type=str, required=False,
                             help='Path to the folder with pre-prepared offline requirements.')
+    # developer options
+    sub_parser.add_argument('--profile-ansible-tasks', dest='profile_ansible_tasks', action="store_true",
+                            help='Enable Ansible profile_tasks plugin for timing tasks.')
 
     def run_upgrade(args):
         adjust_paths_from_build(args)

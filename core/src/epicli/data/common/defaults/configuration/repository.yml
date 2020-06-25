@@ -4,3 +4,11 @@ name: default
 specification:
   description: "Local repository of binaries required to install Epiphany"
   download_done_flag_expire_minutes: 120
+  apache_epirepo_path: "/var/www/html/epirepo"
+  teardown:
+    disable_http_server: true # whether to stop and disable Apache HTTP Server service
+    remove:
+      files: false
+      helm_charts: false
+      images: false
+      packages: false

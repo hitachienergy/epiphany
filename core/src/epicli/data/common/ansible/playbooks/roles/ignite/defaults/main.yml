@@ -1,0 +1,33 @@
+---
+ignite_ports_from_ephemeral_range: # strings are required
+  - '47100-47109'
+  - '47500-47509'
+  - '49112'
+
+# The following block is appended to $IGNITE_HOME/bin/include/functions.sh
+block_to_append_to_ignite_functions_script: |
+  #
+  # The function exports JMX_MON variable with Java JMX options.
+  # Overrides original version in order to:
+  # 1) Use fixed ports for JMX (https://github.com/epiphany-platform/epiphany/issues/1181)
+  # 2) Disable direct remote access to unsecured JMX (remote access possible through SSH tunnel)
+  #
+  findAvailableJmxPort() {
+      export IGNITE_JMX_PORT=49112
+
+      JMX_PORT=`"$JAVA" -cp "${IGNITE_LIBS}" org.apache.ignite.internal.util.portscanner.GridJmxPortFinder`
+
+      #
+      # This variable defines parameters for JMX monitoring and management.
+      #
+      if [ -n "$JMX_PORT" ]; then
+          # java.rmi.server.hostname=127.0.0.1 is used to make JMX accessible through SSH tunnel
+          JMX_MON="-Dcom.sun.management.jmxremote -Dcom.sun.management.jmxremote.port=${JMX_PORT} \
+              -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false \
+              -Dcom.sun.management.jmxremote.rmi.port=${JMX_PORT} -Djava.rmi.server.hostname=127.0.0.1"
+      else
+          # If JMX port wasn't found do not initialize JMX.
+          echo "$0, WARN: Failed to resolve JMX host (JMX will be disabled): $HOSTNAME"
+          JMX_MON=""
+      fi
+  }

@@ -64,10 +64,10 @@
 
 - name: |-
     Copy requirements for offline installation to repository host, this can take a long time
-    Destination: /var/www/html/epirepo
+    Destination: {{ specification.apache_epirepo_path }}
   copy:
     src: "{{ offline_requirements }}/"
-    dest: /var/www/html/epirepo/
+    dest: "{{ specification.apache_epirepo_path }}"
     force: no # if target exists it will skip, default is 'yes'
   when:
     - offline_mode
@@ -76,3 +76,7 @@
 
 - name: Set up repositories
   include_tasks: "{{ ansible_os_family }}/setup.yml"
+
+- name: Include Helm repository creation
+  include_tasks: "create-helm-repo.yml"
+  when: inventory_hostname == target_repository_hostnames[0]

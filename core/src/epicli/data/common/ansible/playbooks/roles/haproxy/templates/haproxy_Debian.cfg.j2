@@ -19,7 +19,7 @@ global
 
    ssl-dh-param-file /etc/haproxy/dhparam
 
- 
+
 defaults
    log global
    mode http
@@ -73,7 +73,7 @@ backend {{ back.name }}
   option tcp-check
   mode tcp
   {%- endif %}
-  {%- if back.server_groups is defined %}
+  {%- if back.server_groups is defined and back.server_groups is subset(groups) %}
   {%- for server_group in back.server_groups %}
   {%- for server in groups[server_group] %}
   {%- if back.https is defined and back.https == True %}

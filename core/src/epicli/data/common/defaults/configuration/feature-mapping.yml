@@ -13,8 +13,10 @@ specification:
       enabled: yes
     - name: kubernetes-node
       enabled: yes
+    - name: helm
+      enabled: yes
     - name: logging
-      enabled: yes    
+      enabled: yes
     - name: opendistro-for-elasticsearch
       enabled: yes
     - name: elasticsearch
@@ -47,11 +49,13 @@ specification:
       enabled: yes
     - name: haproxy-exporter
       enabled: yes
+    - name: vault
+      enabled: yes
     - name: applications
       enabled: yes
     - name: ignite
-      enabled: yes  
- 
+      enabled: yes
+
   roles_mapping:
     kafka:
       - zookeeper
@@ -106,6 +110,7 @@ specification:
       - repository
       - image-registry
       - kubernetes-master
+      - helm
       - applications
       - rabbitmq
       - postgresql
@@ -114,10 +119,12 @@ specification:
       - image-registry
       - kubernetes-master
       - repository
+      - helm
       - applications
       - node-exporter
       - filebeat
       - firewall
+      - vault
     kubernetes_node:
       - kubernetes-node
       - node-exporter

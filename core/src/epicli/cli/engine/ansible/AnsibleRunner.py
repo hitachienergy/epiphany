@@ -6,10 +6,13 @@ from os.path import dirname
 
 from cli.engine.ansible.AnsibleCommand import AnsibleCommand
 from cli.engine.ansible.AnsibleInventoryCreator import AnsibleInventoryCreator
+from cli.engine.ansible.AnsibleConfigFileCreator import AnsibleConfigFileCreator
 from cli.engine.ansible.AnsibleVarsGenerator import AnsibleVarsGenerator
 from cli.engine.ansible.AnsibleInventoryUpgrade import AnsibleInventoryUpgrade
 from cli.helpers.Step import Step
-from cli.helpers.build_saver import get_inventory_path, get_inventory_path_for_build, get_ansible_path, get_ansible_path_for_build, copy_files_recursively
+from cli.helpers.build_saver import (get_inventory_path, get_inventory_path_for_build,
+    get_ansible_path, get_ansible_path_for_build, get_ansible_config_file_path, get_ansible_config_file_path_for_build,
+    copy_files_recursively)
 from cli.helpers.naming_helpers import to_role_name
 from cli.helpers.data_loader import DATA_FOLDER_PATH
 from cli.helpers.Config import Config
@@ -18,12 +21,14 @@ from cli.helpers.Config import Config
 class AnsibleRunner(Step):
     ANSIBLE_PLAYBOOKS_PATH = DATA_FOLDER_PATH + '/common/ansible/playbooks/'
 
-    def __init__(self, cluster_model=None, config_docs=None, build_dir=None, backup_build_dir=None):
+    def __init__(self, cluster_model=None, config_docs=None, build_dir=None, backup_build_dir=None,
+                 ansible_options=None):
         super().__init__(__name__)
         self.cluster_model = cluster_model
         self.config_docs = config_docs
         self.build_dir = build_dir
         self.backup_build_dir = backup_build_dir
+        self.ansible_options = ansible_options
         self.ansible_command = AnsibleCommand()
 
     def __enter__(self):
@@ -45,13 +50,13 @@ class AnsibleRunner(Step):
             ansible_dir = get_ansible_path(self.cluster_model.specification.name)
         else:
             ansible_dir = get_ansible_path_for_build(self.build_dir)
-            
-        shutil.rmtree(ansible_dir, ignore_errors=True)              
-        copy_files_recursively(AnsibleRunner.ANSIBLE_PLAYBOOKS_PATH, ansible_dir)          
+
+        shutil.rmtree(ansible_dir, ignore_errors=True)
+        copy_files_recursively(AnsibleRunner.ANSIBLE_PLAYBOOKS_PATH, ansible_dir)
 
         # copy skopeo so Ansible can move it to the repositry machine
         if not Config().offline_requirements:
-            shutil.copy(os.path.join(dirname(dirname(inspect.getfile(os))), 'skopeo_linux'), '/tmp')            
+            shutil.copy(os.path.join(dirname(dirname(inspect.getfile(os))), 'skopeo_linux'), '/tmp')
 
     def pre_flight(self, inventory_path):
         self.logger.info('Checking connection to each machine')
@@ -71,12 +76,12 @@ class AnsibleRunner(Step):
                                                        retries=1)
 
         self.ansible_command.run_playbook(inventory=inventory_path,
-                                          playbook_path=self.playbook_path('common'))    
+                                          playbook_path=self.playbook_path('common'))
 
 
-    def post_flight(self, inventory_path):                                          
+    def post_flight(self, inventory_path):
         self.ansible_command.run_playbook(inventory=inventory_path,
-                                          playbook_path=self.playbook_path('repository_teardown'))  
+                                          playbook_path=self.playbook_path('repository_teardown'))
 
 
     def apply(self):
@@ -86,12 +91,17 @@ class AnsibleRunner(Step):
         self.copy_resources()
 
         # create inventory
-        inventory_creator = AnsibleInventoryCreator(self.cluster_model, self.config_docs)  
+        inventory_creator = AnsibleInventoryCreator(self.cluster_model, self.config_docs)
         inventory_creator.create()
         time.sleep(10)
 
+        # create ansible.cfg
+        ansible_config_file_path = get_ansible_config_file_path(self.cluster_model.specification.name)
+        ansible_cfg_creator = AnsibleConfigFileCreator(self.ansible_options, ansible_config_file_path)
+        ansible_cfg_creator.create()
+
         # generate vars
-        ansible_vars_generator = AnsibleVarsGenerator(inventory_creator=inventory_creator)      
+        ansible_vars_generator = AnsibleVarsGenerator(inventory_creator=inventory_creator)
         ansible_vars_generator.generate()
 
         # pre-flight to prepare machines
@@ -117,16 +127,21 @@ class AnsibleRunner(Step):
         inventory_upgrade = AnsibleInventoryUpgrade(self.build_dir, self.backup_build_dir)
         inventory_upgrade.upgrade()
 
+        # create ansible.cfg
+        ansible_config_file_path = get_ansible_config_file_path_for_build(self.build_dir)
+        ansible_cfg_creator = AnsibleConfigFileCreator(self.ansible_options, ansible_config_file_path)
+        ansible_cfg_creator.create()
+
         # generate vars
-        ansible_vars_generator = AnsibleVarsGenerator(inventory_upgrade=inventory_upgrade)      
-        ansible_vars_generator.generate()        
+        ansible_vars_generator = AnsibleVarsGenerator(inventory_upgrade=inventory_upgrade)
+        ansible_vars_generator.generate()
 
         # pre-flight to prepare machines
         self.pre_flight(inventory_path)
 
         # run image_registry playbook
         self.ansible_command.run_playbook(inventory=inventory_path,
-                                          playbook_path=self.playbook_path('image_registry'))          
+                                          playbook_path=self.playbook_path('image_registry'))
 
         # run upgrade playbook
         self.ansible_command.run_playbook(inventory=inventory_path,
