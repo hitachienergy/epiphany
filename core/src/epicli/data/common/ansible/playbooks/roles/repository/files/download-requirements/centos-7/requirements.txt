@@ -110,14 +110,6 @@ xorg-x11-font-utils # for grafana
 xorg-x11-server-utils # for grafana
 yum-plugin-versionlock
 yum-utils
-# K8s upgrade v1.12
-kubeadm-1.12.10
-kubectl-1.12.10
-kubelet-1.12.10
-# K8s upgrade v1.13
-kubeadm-1.13.12
-kubectl-1.13.12
-kubelet-1.13.12
 # K8s upgrade v1.14
 kubeadm-1.14.6
 kubectl-1.14.6
@@ -153,22 +145,9 @@ https://get.helm.sh/helm-v3.2.0-linux-amd64.tar.gz
 https://github.com/hashicorp/vault-helm/archive/v0.4.0.tar.gz
 
 [images]
-k8s.gcr.io/kube-apiserver:v1.14.6
-k8s.gcr.io/kube-controller-manager:v1.14.6
-k8s.gcr.io/kube-scheduler:v1.14.6
-k8s.gcr.io/kube-proxy:v1.14.6
 k8s.gcr.io/pause:3.1
-k8s.gcr.io/etcd:3.3.10
-k8s.gcr.io/coredns:1.3.1
-coredns/coredns:1.5.0
-quay.io/coreos/flannel:v0.11.0-amd64
-quay.io/coreos/flannel:v0.11.0
-calico/node:v3.8.1
-calico/pod2daemon-flexvol:v3.8.1
 kubernetesui/dashboard:v2.0.0-beta8
 kubernetesui/metrics-scraper:v1.0.1
-calico/cni:v3.8.1
-calico/kube-controllers:v3.8.1
 registry:2
 hashicorp/vault-k8s:0.2.0
 vault:1.3.2
@@ -181,22 +160,20 @@ jboss/keycloak:4.8.3.Final
 jboss/keycloak:9.0.0
 rabbitmq:3.7.10
 # K8s upgrade
-## v1.11.5
-coredns/coredns:1.1.3 # needed to drain master before upgrade
-## v1.12.10
-k8s.gcr.io/coredns:1.2.2
-k8s.gcr.io/etcd:3.2.24
-k8s.gcr.io/kube-apiserver:v1.12.10
-k8s.gcr.io/kube-controller-manager:v1.12.10
-k8s.gcr.io/kube-proxy:v1.12.10
-k8s.gcr.io/kube-scheduler:v1.12.10
-## v1.13.12
-k8s.gcr.io/coredns:1.2.6
-k8s.gcr.io/etcd:3.2.24
-k8s.gcr.io/kube-apiserver:v1.13.12
-k8s.gcr.io/kube-controller-manager:v1.13.12
-k8s.gcr.io/kube-proxy:v1.13.12
-k8s.gcr.io/kube-scheduler:v1.13.12
+## v1.14.6
+k8s.gcr.io/kube-apiserver:v1.14.6
+k8s.gcr.io/kube-controller-manager:v1.14.6
+k8s.gcr.io/kube-scheduler:v1.14.6
+k8s.gcr.io/kube-proxy:v1.14.6
+k8s.gcr.io/etcd:3.3.10
+k8s.gcr.io/coredns:1.3.1
+coredns/coredns:1.5.0
+quay.io/coreos/flannel:v0.11.0-amd64
+quay.io/coreos/flannel:v0.11.0
+calico/cni:v3.8.1
+calico/kube-controllers:v3.8.1
+calico/node:v3.8.1
+calico/pod2daemon-flexvol:v3.8.1
 ## v1.15.10
 k8s.gcr.io/kube-proxy:v1.15.10
 k8s.gcr.io/kube-apiserver:v1.15.10
@@ -211,15 +188,32 @@ k8s.gcr.io/kube-apiserver:v1.16.7
 k8s.gcr.io/kube-controller-manager:v1.16.7
 k8s.gcr.io/etcd:3.3.15-0
 k8s.gcr.io/coredns:1.6.2
+## v1.17.4
+k8s.gcr.io/kube-apiserver:v1.17.4
+k8s.gcr.io/kube-controller-manager:v1.17.4
+k8s.gcr.io/kube-scheduler:v1.17.4
+k8s.gcr.io/kube-proxy:v1.17.4
+k8s.gcr.io/etcd:3.4.3-0
+k8s.gcr.io/coredns:1.6.5
+quay.io/coreos/flannel:v0.11.0-amd64
+quay.io/coreos/flannel:v0.11.0
+calico/cni:v3.11.2
+calico/cni:v3.12.0
+calico/kube-controllers:v3.11.2
+calico/node:v3.11.2
+calico/node:v3.12.0
+calico/pod2daemon-flexvol:v3.11.2
+calico/pod2daemon-flexvol:v3.12.0
 ## v1.17.7
 k8s.gcr.io/kube-apiserver:v1.17.7
 k8s.gcr.io/kube-controller-manager:v1.17.7
 k8s.gcr.io/kube-scheduler:v1.17.7
 k8s.gcr.io/kube-proxy:v1.17.7
-k8s.gcr.io/pause:3.1
 k8s.gcr.io/etcd:3.4.3-0
 k8s.gcr.io/coredns:1.6.5
-calico/cni:v3.13.2
-calico/kube-controllers:v3.13.2
-calico/node:v3.13.2
-calico/pod2daemon-flexvol:v3.13.2
+quay.io/coreos/flannel:v0.12.0-amd64
+quay.io/coreos/flannel:v0.12.0
+calico/cni:v3.15.0
+calico/kube-controllers:v3.15.0
+calico/node:v3.15.0
+calico/pod2daemon-flexvol:v3.15.0
