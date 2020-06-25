@@ -1,0 +1,24 @@
+@startuml Epiphany System Context Diagram
+!includeurl https://raw.githubusercontent.com/RicardoNiepel/C4-PlantUML/release/1-0/C4_Context.puml
+
+title Epiphany System Context Diagram
+
+Person(admin, "Admin", "Creates and manages Epiphany environment.")
+Person(developer, "Developer", "Uses Epiphany components to provide middleware for hosted applications.")
+Person_Ext(user, "End user", "Uses hosted applications to get business value.")
+
+System(epicli, "Epiphany Client", "Provides configuration, templating and management abstraction. ")
+System(epiphany, "Epiphany managed environment", "Provides integrated services for developers to run their applications.")
+System(workload, "Application", "Provides business value.")
+
+System_Ext(provider, "Infrastructure provider", "Provides infrastructure to run Epiphany services and hosted applications.")
+
+Rel(admin, epicli, "uses", "Console")
+Rel(epicli, epiphany, "operates", "SSH/HTTPS")
+Rel(developer, epiphany, "deploys applications to", "HTTPS")
+Rel(developer, workload, "provides")
+Rel(workload, epiphany, "executes on")
+Rel(user, workload, "accesses", "TCP")
+
+Rel(epiphany, provider, "executes on")
+@enduml

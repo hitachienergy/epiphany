@@ -63,6 +63,8 @@ specification:
   extensions:
     pgaudit:
       enabled: no
+      shared_preload_libraries:
+        - pgaudit
       config_file_parameters:
         log_connections: 'off'
         log_disconnections: 'off'

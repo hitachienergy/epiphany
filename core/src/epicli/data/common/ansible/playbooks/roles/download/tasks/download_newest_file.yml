@@ -1,0 +1,18 @@
+---
+# Invoke with (example):
+#- set_fact:
+#    archive_name_regexp: '^helm-v([0-9.]+)-linux-amd64.tar.gz$'
+#    archive_version_format: '{:0>4s}.{:0>4s}.{:0>4s}'  # OPTIONAL
+
+- name: Get "files" list from the repository
+  import_tasks: list_files.yml
+
+- name: Pick the newest archive file
+  import_tasks: pick_newest.yml
+  vars:
+    archive_names: "{{ list_files_result }}"
+
+- name: Download the newest archive file
+  import_tasks: download_file.yml
+  vars:
+    file_name: "{{ newest_archive_name }}"

@@ -1,0 +1,45 @@
+@startuml Epiphany Component Diagram (execution place)
+!includeurl https://raw.githubusercontent.com/RicardoNiepel/C4-PlantUML/release/1-0/C4_Component.puml
+
+title Epiphany Component Diagram (execution place)
+
+LAYOUT_LEFT_RIGHT
+
+Container_Boundary(epiphany, "Epiphany managed environment"){
+
+    Container(orchestrator, "Containers Orchestrator", "kubernetes")
+    Container(logging, "Logging", "EFK")
+    Container(monitoring, "Monitoring", "Prometheus + Grafana")
+    Container(streams, "Streams Processing", "Apache Kafka")
+    Container(rdb, "Relational Database", "PostrgreSQL")
+    Container(lb, "Load Balancer", "HAProxy")
+    Container(messages, "Message Broker", "RabbitMQ")
+    Container(memdb, "In-Memory Database", "Apache Ignite")
+    Container(vault, "Vault", "Hashicorp Vault")
+    Container(repository, "Repository", "Apache")
+    Container(auth, "Authentication and Authorization", "Keycloak")
+
+    Rel(memdb, orchestrator, "executes on")
+    Rel(messages, orchestrator, "can execute on")
+    Rel(auth, orchestrator, "executes on")
+    Rel(rdb, orchestrator, "partially executes on")
+}
+
+System(workload, "Application", "Provides business value.")
+
+System_Ext(provider, "Infrastructure provider", "Provides infrastructure to run Epiphany services and hosted applications.")
+
+
+Rel(orchestrator, provider, "executes on")
+Rel(logging, provider, "executes on")
+Rel(monitoring, provider, "executes on")
+Rel(streams, provider, "executes on")
+Rel(rdb, provider, "executes on")
+Rel(lb, provider, "executes on")
+Rel(vault, provider, "executes on")
+Rel(repository, provider, "executes on")
+Rel(messages, provider, "can execute on")
+
+Rel(workload, orchestrator, "executes on")
+
+@enduml

@@ -9,7 +9,7 @@
       shell: /tmp/epi-repository-setup-scripts/disable-epirepo-client.sh
 
 - name: Remove epirepo packages directory
-  file: 
+  file:
     state: absent
     path: "{{ apache_epirepo_path }}/packages"
   when:
@@ -20,12 +20,12 @@
   file:
     state: absent
     path: "{{ apache_epirepo_path }}/helm-charts"
-  when: 
+  when:
     - specification.teardown.remove.helm_charts is defined
     - specification.teardown.remove.helm_charts
 
 - name: Remove Docker images from epirepo
-  file: 
+  file:
     state: absent
     path: "{{ apache_epirepo_path }}/images"
   when:
@@ -33,7 +33,7 @@
     - specification.teardown.remove.images
 
 - name: Remove files directory from epirepo
-  file: 
+  file:
     state: absent
     path: "{{ apache_epirepo_path }}/files"
   when:

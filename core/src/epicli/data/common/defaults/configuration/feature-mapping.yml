@@ -13,6 +13,8 @@ specification:
       enabled: yes
     - name: kubernetes-node
       enabled: yes
+    - name: helm
+      enabled: yes
     - name: logging
       enabled: yes
     - name: opendistro-for-elasticsearch
@@ -47,8 +49,6 @@ specification:
       enabled: yes
     - name: haproxy-exporter
       enabled: yes
-    - name: helm
-      enabled: yes 
     - name: vault
       enabled: yes
     - name: applications
