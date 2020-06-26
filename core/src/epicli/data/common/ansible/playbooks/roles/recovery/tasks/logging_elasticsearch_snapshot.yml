@@ -62,14 +62,56 @@
 
 - debug: var=snapshot_name
 
-- name: Close all indices
-  uri:
-    <<: *uri
-    url: "{{ elasticsearch_endpoint }}/_all/_close"
-    method: POST
+- name: Ensure all kibana and filebeat instances are stopped, then restore the snapshot
 
-- name: Restore the snapshot
-  uri:
-    <<: *uri
-    url: "{{ elasticsearch_endpoint }}/_snapshot/{{ elasticsearch_snapshot_repository_name }}/{{ snapshot_name }}/_restore"
-    method: POST
+  always:
+    - name: Start all kibana instances
+      delegate_to: "{{ item }}"
+      systemd:
+        name: kibana
+        state: started
+        enabled: true
+      loop: "{{ groups.kibana | default([]) }}"
+
+    - name: Start all filebeat instances
+      delegate_to: "{{ item }}"
+      systemd:
+        name: filebeat
+        state: started
+        enabled: true
+      loop: "{{ groups.filebeat | default([]) }}"
+
+  block:
+    - name: Stop all kibana instances
+      delegate_to: "{{ item }}"
+      systemd:
+        name: kibana
+        state: stopped
+        enabled: false
+      loop: "{{ groups.kibana | default([]) }}"
+
+    - name: Stop all filebeat instances
+      delegate_to: "{{ item }}"
+      systemd:
+        name: filebeat
+        state: stopped
+        enabled: false
+      loop: "{{ groups.filebeat | default([]) }}"
+
+    - name: Close all indices
+      uri:
+        <<: *uri
+        url: "{{ elasticsearch_endpoint }}/_all/_close"
+        method: POST
+
+    - name: Delete all indices
+      uri:
+        <<: *uri
+        url: "{{ elasticsearch_endpoint }}/_all"
+        method: DELETE
+
+    - name: Restore the snapshot
+      uri:
+        <<: *uri
+        url: "{{ elasticsearch_endpoint }}/_snapshot/{{ elasticsearch_snapshot_repository_name }}/{{ snapshot_name }}/_restore"
+        method: POST
