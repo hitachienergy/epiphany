@@ -8,22 +8,11 @@
     var: snapshot_name
 
 - name: Check if database is running on node0 database server
-  block:
-  - name: Check on Debian
-    become: true
-    become_user: postgres
-    command: "pg_isready"
-    register: node0
-    ignore_errors: True
-    when: ansible_os_family == 'Debian'
-    
-  - name: Check on RedHat
-    become: true
-    become_user: postgres
-    command: "/usr/pgsql-10/bin/pg_isready"
-    register: node0
-    ignore_errors: True
-    when: ansible_os_family == 'RedHat'
+  become: true
+  become_user: postgres
+  command: "{{ repmgr_pg_bindir[ansible_os_family] }}/pg_isready"
+  register: node0
+  ignore_errors: True
   when: groups['postgresql'][0] == inventory_hostname
 
 - name: Debug
