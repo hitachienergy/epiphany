@@ -1,7 +1,23 @@
 ---
 # This role is responsible for installing and configuring Hashicorp Vault
 # TODO: Add swap disable
-# TODO: Change to: https://docs.ansible.com/ansible/latest/modules/pam_limits_module.html
+# TODO: Limit to set only on 1 master until vault will be clustered
+
+- name: Determine if helm chart custom values are set
+  set_fact:
+    # Handling "undefined", "null" and "empty" values all at once.
+    vault_helm_chart_values_bool: "{{ specification.vault_helm_chart_values | default(false) | ternary(true, false) }}"
+
+- name: Clean up temporary Vault Helm chart values file
+  file:
+    state: absent
+    path: /tmp/vault_helm_chart_values.yaml
+
+- name: Copy Vault Helm chart's custom configuration to file
+  copy:
+    content: "{{ specification.vault_helm_chart_values }}"
+    dest: /tmp/vault_helm_chart_values.yaml
+  when: vault_helm_chart_values_bool
 
 - name: Install and configure Hashicorp Vault if enabled
   when:
@@ -30,25 +46,36 @@
         - "bin"
         - "config"
         - "data"
+        - "kubernetes"
+        - "logs"
+        - "config/policies"
+        - "tls"
 
     - name: Set Vault file name to install
       set_fact:
-        vault_file_name: "{{ specification.file_name }}"
+        vault_file_name: "{{ specification.files.vault_package_file_name }}"
 
-    - name: Download Vault binaries
+    - name: Download Vault binary package
       include_role:
         name: download
         tasks_from: download_file
       vars:
         file_name: "{{ vault_file_name }}"
 
-    - name: Check for Vault package
+    - name: Download Vault Agent Helm chart package
+      include_role:
+        name: download
+        tasks_from: download_file
+      vars:
+        file_name: "{{ specification.files.vault_helm_chart_file_name }}"
+
+    - name: Check for Vault binary
       stat:
         path: "{{ specification.vault_install_dir }}/bin/vault"
-      register: vault_package
+      register: vault_binary
 
     - name: Uncompress the Vault zip
-      when: not vault_package.stat.exists
+      when: not vault_binary.stat.exists
       unarchive:
         remote_src: yes
         owner: "{{ specification.vault_system_user }}"
@@ -56,7 +83,15 @@
         src: "{{ download_directory }}/{{ vault_file_name }}"
         creates: "{{ specification.vault_install_dir }}/bin/vault"
         dest: "{{ specification.vault_install_dir }}/bin/"
-        mode: u=rwx,g=r,o=
+        mode: u=rwx,g=rx,o=
+
+    - name: Create a symbolic link to Vault
+      file:
+        src: "{{ specification.vault_install_dir }}/bin/vault"
+        dest: /usr/local/bin/vault
+        owner: "{{ specification.vault_system_user }}"
+        group: "{{ specification.vault_system_group }}"
+        state: link
 
     - name: Create Vault configuration file
       template:
@@ -64,7 +99,7 @@
         owner: "{{ specification.vault_system_user }}"
         group: "{{ specification.vault_system_group }}"
         mode: u=rw,g=r,o=
-        src: config.hcl.j2
+        src: vault/config.hcl.j2
 
     - name: Set capabilities required to lock memory
       capabilities:
@@ -80,27 +115,55 @@
         state: present
         reload: yes
 
-    - name: Check if limits for Vault are set
-      shell: grep -e "^\*[[:space:]]*hard[[:space:]]*core[[:space:]]*0" /etc/security/limits.conf
-      changed_when: false
-      register: test_grep
-      failed_when: "test_grep.rc == 2"
+    - name: Set security limits for Vault
+      pam_limits:
+        domain: '*'
+        limit_type: hard
+        limit_item: core
+        value: '0'
 
-    # TODO: Change to: https://docs.ansible.com/ansible/latest/modules/pam_limits_module.html
-    - name: Set if limits for Vault are not set
-      when: test_grep.stdout != ""
-      lineinfile:
-        dest: /etc/security/limits.conf
-        line: "* hard core 0"
+    - name: Copy Vault unsealing script
+      copy:
+        src: vault/unseal-vault.sh
+        dest: "{{ specification.vault_install_dir }}/bin/"
+        owner: "{{ specification.vault_system_user }}"
+        group: "{{ specification.vault_system_group }}"
+        mode: u=rwx,g=rx,o=
 
-    - name: Create systemd config
+    - name: Create systemd service
       template:
         dest: /etc/systemd/system/vault.service
         owner: root
         group: root
         mode: u=rw,g=r,o=
-        src: vault.service.j2
+        src: vault/vault.service.j2
       register: service_conf
+
+    - name: Look for certificate in role directory
+      local_action: find paths="{{ role_path }}/files/tls-certs" patterns="*.pem"
+      become: no
+      register: provided_certificates
+
+    - name: Check if any certificate exists in role directory
+      set_fact:
+        certificate_exists: "{{ provided_certificates.matched > 0 }}"
+
+    - name: Display result
+      debug:
+        msg: Certificate file {{ (provided_certificates.matched > 0) | ternary('found','not found') }}
+
+    - name: Copy certificate to remote host
+      copy:
+        src: "{{ item.path }}"
+        dest: "{{ specification.vault_install_dir }}/tls/"
+      loop: "{{ provided_certificates.files }}"
+      when:
+        - certificate_exists
+
+    - name: Generate TLS certificate
+      include_tasks: generate-certificate.yml
+      when:
+        - not certificate_exists
 
     - name: Restart Vault service and reload config
       systemd:
@@ -116,52 +179,111 @@
         state: started
         enabled: yes
 
-    - name: Check if Vault was already initialized
-      shell: >-
-        {{ specification.vault_install_dir }}/bin/vault status -address='http://{{ ansible_default_ipv4.address }}:8200' | grep -e 'Initialized[[:space:]]*true'
-      register: vault_init_output
-      args:
-        executable: /bin/bash
-      failed_when: "vault_init_output.rc == 2"
-
     - name: Copy Vault configuration script
       copy:
-        src: configure-vault.sh
+        src: vault/configure-vault.sh
         dest: "{{ specification.vault_install_dir }}/bin/"
         owner: "{{ specification.vault_system_user }}"
         group: "{{ specification.vault_system_group }}"
-        mode: u=rwx,g=r,o=
+        mode: u=rwx,g=rx,o=
 
-    - name: Initialize Vault
-      when: vault_init_output.stdout == ""
-      shell: "{{ specification.vault_install_dir }}/bin/vault operator init -address='http://{{ ansible_default_ipv4.address }}:8200' > {{ specification.vault_install_dir }}/init.txt"
+    - name: Generate admin policy
+      template:
+        dest: "{{ specification.vault_install_dir }}/config/policies/policy-admin.hcl"
+        owner: "{{ specification.vault_system_user }}"
+        group: "{{ specification.vault_system_group }}"
+        mode: u=rw,g=r,o=
+        src: vault/policy-admin.hcl.j2
 
-    - name: Check if init file exists
-      stat:
-        path: "{{ specification.vault_install_dir }}/init.txt"
-      register: init_file_stat
+    - name: Generate provisioner policy
+      template:
+        dest: "{{ specification.vault_install_dir }}/config/policies/policy-provisioner.hcl"
+        owner: "{{ specification.vault_system_user }}"
+        group: "{{ specification.vault_system_group }}"
+        mode: u=rw,g=r,o=
+        src: vault/policy-provisioner.hcl.j2
 
-    - name: Generate config script confiugration
+    - name: Generate application policy
+      template:
+        dest: "{{ specification.vault_install_dir }}/config/policies/policy-application.hcl"
+        owner: "{{ specification.vault_system_user }}"
+        group: "{{ specification.vault_system_group }}"
+        mode: u=rw,g=r,o=
+        src: vault/policy-application.hcl.j2
+
+    - name: Generate config file for Vault configuration script
       template:
         dest: "{{ specification.vault_install_dir }}/script.config"
         owner: "{{ specification.vault_system_user }}"
         group: "{{ specification.vault_system_group }}"
         mode: u=rw,g=r,o=
-        src: script.config.j2
+        src: vault/script.config.j2
+
+    - name: Generate file with users to be created by the script
+      template:
+        dest: "{{ specification.vault_install_dir }}/users.csv"
+        owner: "{{ specification.vault_system_user }}"
+        group: "{{ specification.vault_system_group }}"
+        mode: u=rw,g=r,o=
+        src: vault/users.csv.j2
+
+    - name: Create application namespace yaml
+      template:
+        dest: "{{ specification.vault_install_dir }}/kubernetes/app-namespace.yml"
+        owner: "{{ specification.vault_system_user }}"
+        group: "{{ specification.vault_system_group }}"
+        mode: u=rw,g=r,o=
+        src: kubernetes/app-namespace.yml.j2
+      when: not specification.kubernetes_namespace == "default"
+
+    - name: Create Vault endpoint configuration yaml
+      template:
+        dest: "{{ specification.vault_install_dir }}/kubernetes/vault-endpoint-configuration.yml"
+        owner: "{{ specification.vault_system_user }}"
+        group: "{{ specification.vault_system_group }}"
+        mode: u=rw,g=r,o=
+        src: kubernetes/vault-endpoint-configuration.yml.j2
+
+    - name: Create Vault service account yaml
+      template:
+        dest: "{{ specification.vault_install_dir }}/kubernetes/vault-service-account.yml"
+        owner: "{{ specification.vault_system_user }}"
+        group: "{{ specification.vault_system_group }}"
+        mode: u=rw,g=r,o=
+        src: kubernetes/vault-service-account.yml.j2
+
+    - name: Create application service account yaml
+      template:
+        dest: "{{ specification.vault_install_dir }}/kubernetes/app-service-account.yml"
+        owner: "{{ specification.vault_system_user }}"
+        group: "{{ specification.vault_system_group }}"
+        mode: u=rw,g=r,o=
+        src: kubernetes/app-service-account.yml.j2
+
+    - name: Check if Vault protocol is set to http
+      set_fact:
+        vault_protocol: http
+      when: specification.tls_disable
+
+    - name: Check if Vault protocol is set to https
+      set_fact:
+        vault_protocol: https
+      when: not specification.tls_disable
 
     - name: Run configuration script
       when:
-        - specification.vault_script_unseal
-        - init_file_stat.stat.exists
+        - specification.vault_script_autoconfiguration
       shell: >-
         {{ specification.vault_install_dir }}/bin/configure-vault.sh
         -c {{ specification.vault_install_dir }}/script.config
         -a {{ ansible_default_ipv4.address }}
+        -p {{ vault_protocol }}
+        -v {{ vault_helm_chart_values_bool|lower }}
 
     - name: Display information about running configuration script
       when:
-        - not init_file_stat.stat.exists or not  specification.vault_script_unseal
+        - not specification.vault_script_autoconfiguration
       debug:
-        msg: "Init file doesn't exist or you have chosen manual unseal, so to finish configuration please run script manually with command:
+        msg: "Init file doesn't exist or you have chosen manual unsealing, so to finish configuration please run script manually with command:
               {{ specification.vault_install_dir }}/bin/configure-vault.sh -c {{ specification.vault_install_dir }}/script.config -a {{ ansible_default_ipv4.address }}.
               Also please put 'init.txt' file, containing output from 'vault operator init' command, in ''{{ specification.vault_install_dir }}' directory."

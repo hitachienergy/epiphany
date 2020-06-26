@@ -1,0 +1,13 @@
+# {{ ansible_managed }}
+ui = {{ specification.enable_vault_ui | lower }}
+storage "file" {
+  path    = "{{ specification.vault_install_dir }}/data"
+}
+listener "tcp" {
+  address = "{{ ansible_default_ipv4.address }}:8200"
+  tls_disable = {{ specification.tls_disable | lower }}
+  {% if not specification.tls_disable -%}
+  tls_cert_file = "{{ specification.vault_install_dir }}/tls/{{ specification.certificate_name }}"
+  tls_key_file = "{{ specification.vault_install_dir }}/tls/{{ specification.private_key_name }}"
+  {% endif %}
+}

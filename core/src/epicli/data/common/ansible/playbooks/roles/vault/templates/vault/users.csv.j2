@@ -1,0 +1,4 @@
+# {{ ansible_managed }}
+{% for vault_user in specification.vault_users %}
+{{ vault_user.name }};{{ vault_user.policy }};
+{% endfor %}
