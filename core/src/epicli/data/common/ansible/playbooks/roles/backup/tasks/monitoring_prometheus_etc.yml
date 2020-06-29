@@ -1,0 +1,27 @@
+---
+- name: Assert that the snapshot_name fact is defined and valid
+  assert:
+    that:
+      - snapshot_name is defined
+      - snapshot_name is string
+      - snapshot_name | length > 0
+    fail_msg: The snapshot_name fact must be defined and must be a non-empty string.
+
+- debug: var=snapshot_name
+
+- name: Create snapshot archive
+  import_tasks: common/create_snapshot_archive.yml
+  vars:
+    snapshot_prefix: "prometheus_etc"
+    dirs_to_archive:
+      - /etc/prometheus/
+
+- name: Create snapshot checksum
+  import_tasks: common/create_snapshot_checksum.yml
+
+- name: Transfer artifacts via rsync
+  import_tasks: common/download_via_rsync.yml
+  vars:
+    artifacts:
+      - "{{ snapshot_path }}"
+      - "{{ snapshot_path }}.sha1"

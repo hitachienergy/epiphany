@@ -77,6 +77,13 @@
   - [How to start working with Apache Ignite Stateful setup](./howto/DATABASES.md#how-to-start-working-with-apache-ignite-stateful-setup)
   - [How to start working with Apache Ignite Stateless setup](./howto/DATABASES.md#how-to-start-working-with-apache-ignite-stateless-setup)
 
+- [Backup and Recovery](./howto/BACKUP.md)
+  - [Epiphany backup and restore](./howto/BACKUP.md#epiphany-backup-and-restore)
+  - [How to perform backup](./howto/BACKUP.md#1-how-to-perform-backup)
+  - [How to store backup](./howto/BACKUP.md#2-how-to-store-backup)
+  - [How to perform recovery](./howto/BACKUP.md#3-how-to-perform-recovery)
+  - [How backup and recovery work](./howto/BACKUP.md#4-how-backup-and-recovery-work)
+
 - [Data and log retention](./howto/RETENTION.md)
   - [Elasticsearch](./howto/RETENTION.md#elasticsearch)
   - [Grafana](./howto/RETENTION.md#grafana)

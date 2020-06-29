@@ -1,0 +1,117 @@
+---
+- name: Set helper facts
+  set_fact:
+    elasticsearch_endpoint: >-
+      https://{{ ansible_default_ipv4.address }}:9200
+  vars:
+    uri_template: &uri
+      client_cert: /etc/elasticsearch/kirk.pem
+      client_key: /etc/elasticsearch/kirk-key.pem
+      validate_certs: false
+      body_format: json
+
+- name: Check cluster health
+  uri:
+    <<: *uri
+    url: "{{ elasticsearch_endpoint }}/_cluster/health"
+    method: GET
+  register: uri_response
+  until: uri_response is success
+  retries: 12
+  delay: 5
+
+- name: Find snapshot archive
+  import_tasks: common/find_snapshot_archive.yml
+  vars:
+    snapshot_prefix: "elasticsearch_snapshot"
+    snapshot_name: "{{ specification.components.logging.snapshot_name }}"
+
+- name: Transfer the archive via rsync
+  import_tasks: common/upload_via_rsync.yml
+  vars:
+    artifacts:
+      - "{{ snapshot_path }}"
+      - "{{ snapshot_path }}.sha1"
+
+- name: Verify snapshot checksum
+  import_tasks: common/verify_snapshot_checksum.yml
+
+- name: Clear directories
+  import_tasks: common/clear_directories.yml
+  vars:
+    dirs_to_clear:
+      - "{{ elasticsearch_snapshot_repository_location }}/"
+
+- name: Extract the archive
+  unarchive:
+    dest: "{{ elasticsearch_snapshot_repository_location }}/"
+    src: "{{ recovery_dir }}/{{ snapshot_path | basename }}"
+    remote_src: true
+
+- name: Change snapshot directory permissions
+  file:
+    path: "{{ elasticsearch_snapshot_repository_location }}/"
+    owner: elasticsearch
+    group: elasticsearch
+    recurse: true
+
+- name: Reconstruct the snapshot_name
+  set_fact:
+    snapshot_name: >-
+      {{ snapshot_path | basename | regex_replace('^elasticsearch_snapshot_(.*).tar.gz$', '\1') }}
+
+- debug: var=snapshot_name
+
+- name: Ensure all kibana and filebeat instances are stopped, then restore the snapshot
+
+  always:
+    - name: Start all kibana instances
+      delegate_to: "{{ item }}"
+      systemd:
+        name: kibana
+        state: started
+        enabled: true
+      loop: "{{ groups.kibana | default([]) }}"
+
+    - name: Start all filebeat instances
+      delegate_to: "{{ item }}"
+      systemd:
+        name: filebeat
+        state: started
+        enabled: true
+      loop: "{{ groups.filebeat | default([]) }}"
+
+  block:
+    - name: Stop all kibana instances
+      delegate_to: "{{ item }}"
+      systemd:
+        name: kibana
+        state: stopped
+        enabled: false
+      loop: "{{ groups.kibana | default([]) }}"
+
+    - name: Stop all filebeat instances
+      delegate_to: "{{ item }}"
+      systemd:
+        name: filebeat
+        state: stopped
+        enabled: false
+      loop: "{{ groups.filebeat | default([]) }}"
+
+    - name: Close all indices
+      uri:
+        <<: *uri
+        url: "{{ elasticsearch_endpoint }}/_all/_close"
+        method: POST
+
+    - name: Delete all indices
+      uri:
+        <<: *uri
+        url: "{{ elasticsearch_endpoint }}/_all"
+        method: DELETE
+
+    - name: Restore the snapshot
+      uri:
+        <<: *uri
+        url: "{{ elasticsearch_endpoint }}/_snapshot/{{ elasticsearch_snapshot_repository_name }}/{{ snapshot_name }}/_restore"
+        method: POST

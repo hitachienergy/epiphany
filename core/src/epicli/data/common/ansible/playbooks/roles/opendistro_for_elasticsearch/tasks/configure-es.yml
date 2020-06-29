@@ -1,4 +1,11 @@
 ---
+- name: Ensure snapshot folder exists
+  file:
+    path: "{{ specification.paths.repo }}/"
+    state: directory
+    owner: elasticsearch
+    group: elasticsearch
+    mode: u=rwx,go=
 
 - name: Create Elasticsearch configuration file
   template:

@@ -1,0 +1,17 @@
+---
+# Ansible playbook for recovering Postgresql database
+
+- hosts: postgresql
+  become: true
+  become_method: sudo
+  tasks:
+    - when: specification.components.postgresql.enabled | default(false)
+      block:
+        - include_vars:
+            file: roles/postgresql/vars/main.yml
+            name: component_vars
+        - import_role:
+            name: recovery
+            tasks_from: postgresql
+  vars_files:
+    - roles/postgresql/defaults/main.yml

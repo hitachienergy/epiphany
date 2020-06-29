@@ -141,4 +141,3 @@ specification:
       - node-exporter
       - filebeat
       - firewall
-

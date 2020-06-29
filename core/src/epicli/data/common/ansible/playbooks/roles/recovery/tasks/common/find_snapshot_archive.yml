@@ -1,0 +1,56 @@
+---
+# Invoke with (example):
+#- set_fact:
+#    snapshot_prefix: "rabbitmq_etc"
+#    snapshot_name: "20200526-102034"
+
+- name: Assert that the snapshot_prefix fact is defined and valid
+  assert:
+    that:
+      - snapshot_prefix is defined
+      - snapshot_prefix is string
+      - snapshot_prefix | length > 0
+    fail_msg: The snapshot_prefix fact must be defined and must be a non-empty string.
+
+- name: Assert that the snapshot_name fact is defined and valid
+  assert:
+    that:
+      - snapshot_name is defined
+      - snapshot_name is string
+      - snapshot_name | length > 0
+    fail_msg: The snapshot_name fact must be defined and must be a non-empty string.
+
+- debug: var=snapshot_name
+
+- name: Decide what should be the search pattern
+  set_fact:
+    search_pattern: >-
+      {{ (snapshot_name != "latest") | ternary(
+          snapshot_prefix ~ "_" ~ snapshot_name ~ ".tar.gz",
+          snapshot_prefix ~ "_" ~ "*-*"         ~ ".tar.gz"
+      ) }}
+
+- debug: var=search_pattern
+
+- name: Find all matching archives
+  delegate_to: "{{ recovery_source_host }}"
+  find:
+    paths: "{{ recovery_source_dir }}/"
+    patterns: "{{ search_pattern }}"
+    file_type: file
+    recurse: false
+  register: find_archives
+
+- name: Assert that there are archives available
+  assert:
+    that: find_archives.matched > 0
+    fail_msg: No etc archives found.
+
+- name: Pick the newest archive (if many)
+  set_fact:
+    snapshot_path: >-
+      {{ find_archives.files | map(attribute='path') | max }}
+
+- name: Assert that the snapshot_path fact is not an empty string
+  assert:
+    that: snapshot_path | length > 0
