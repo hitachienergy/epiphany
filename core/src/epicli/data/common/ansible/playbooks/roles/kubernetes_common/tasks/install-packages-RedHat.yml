@@ -10,7 +10,6 @@
 - name: Install Kubernetes packages for RedHat family
   yum:
     name:
-      - kubernetes-cni-0.7.5-0
       - kubelet-{{specification.version}}-0
       - kubectl-{{specification.version}}-0
       - kubeadm-{{specification.version}}-0
