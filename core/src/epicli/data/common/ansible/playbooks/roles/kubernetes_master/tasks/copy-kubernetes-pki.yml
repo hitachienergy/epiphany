@@ -4,7 +4,15 @@
     kubernetes_pki_folders:
       - pki/
       - pki/etcd/
-    kubernetes_pki_file_map:
+    # Remove empty values from the combined map
+    kubernetes_pki_file_map: >-
+      {{ _required_pki_files_map | combine(_optional_pki_files_map)
+                                 | dict2items
+                                 | rejectattr('value', 'equalto', '')
+                                 | list
+                                 | items2dict }}
+  vars:
+    _required_pki_files_map:
       pki_ca_crt: pki/ca.crt
       pki_ca_key: pki/ca.key
       pki_sa_key: pki/sa.key
@@ -13,7 +21,9 @@
       pki_etcd_ca_key: pki/etcd/ca.key
       pki_front_proxy_ca_crt: pki/front-proxy-ca.crt
       pki_front_proxy_ca_key: pki/front-proxy-ca.key
-      pki_etcd_etc_encryption_conf: pki/etcd/etc-encryption.conf
+    _optional_pki_files_map:
+      pki_etcd_etc_encryption_conf: >-
+        {{ 'pki/etcd/etc-encryption.conf' if specification.advanced.etcd_args.encrypted else '' }}
 
 - name: Check if the PKI file exists
   delegate_to: localhost
