@@ -1,0 +1,21 @@
+# {{ ansible_managed }}
+# Features
+ENABLE_VAULT_AUDIT_LOGS={{ specification.enable_vault_audit_logs }}
+
+# Paths
+VAULT_INSTALL_PATH="{{ specification.vault_install_dir }}"
+SECRETS_ENGINE_PATH={{ specification.secret_mount_path }}
+
+# Actions
+UNSEAL_VAULT={{ specification.vault_script_autoconfiguration }}
+VAULT_TOKEN_CLEANUP={{ specification.vault_token_cleanup }}
+
+# Kubernetes integration
+ENABLE_VAULT_KUBERNETES_AUTHENTICATION={{ specification.enable_vault_kubernetes_authentication }}
+KUBERNETES_CONFIGURATION={{ specification.kubernetes_configuration }}
+KUBERNETES_INTEGRATION={{ specification.kubernetes_integration }}
+KUBERNETES_NAMESPACE={{ specification.kubernetes_namespace }}
+
+# Users
+CREATE_VAULT_USERS={{ specification.vault_users is defined and specification.vault_users | list | length > 0 }}
+OVERRIDE_EXISTING_VAULT_USERS={{ specification.override_existing_vault_users }}

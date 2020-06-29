@@ -1,0 +1,33 @@
+# {{ ansible_managed }}
+# Auth methods
+path "auth/*"
+{
+  capabilities = ["create", "read", "update", "delete", "list", "sudo"]
+}
+
+path "sys/auth/*"
+{
+  capabilities = ["create", "update", "delete", "sudo"]
+}
+
+path "sys/auth"
+{
+  capabilities = ["read"]
+}
+
+# Policies
+path "sys/policies/acl"
+{
+  capabilities = ["list"]
+}
+
+path "sys/policies/acl/*"
+{
+  capabilities = ["create", "read", "update", "delete", "list", "sudo"]
+}
+
+# KV secrets from path {{ specification.secret_mount_path }}
+path "{{ specification.secret_mount_path }}/*"
+{
+  capabilities = ["create", "read", "update", "delete", "list"]
+}

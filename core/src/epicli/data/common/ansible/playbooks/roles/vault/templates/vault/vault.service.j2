@@ -20,7 +20,7 @@ AmbientCapabilities=CAP_IPC_LOCK
 Capabilities=CAP_IPC_LOCK+ep
 CapabilityBoundingSet=CAP_SYSLOG CAP_IPC_LOCK
 NoNewPrivileges=yes
-ExecStart={{ specification.vault_install_dir }}/bin/vault server -config={{ specification.vault_install_dir }}/config/config.hcl
+ExecStart={{ specification.vault_install_dir }}/bin/vault server -config={{ specification.vault_install_dir }}/config/config.hcl -log-level={{ specification.vault_log_level|lower }}
 ExecReload=/bin/kill --signal HUP $MAINPID
 KillMode=process
 KillSignal=SIGINT
@@ -32,6 +32,13 @@ StartLimitIntervalSec=60
 StartLimitBurst=3
 LimitNOFILE=65536
 LimitMEMLOCK=infinity
+{% if specification.vault_script_autounseal is defined and specification.vault_script_autounseal == True %}
+{%   if specification.tls_disable is defined and specification.tls_disable == True %}
+ExecStartPost=/opt/vault/bin/unseal-vault.sh {{ specification.vault_install_dir }}/init.txt {{ ansible_default_ipv4.address }} http
+{%   else %}
+ExecStartPost=/opt/vault/bin/unseal-vault.sh {{ specification.vault_install_dir }}/init.txt {{ ansible_default_ipv4.address }} https
+{%   endif %}
+{% endif %}
 
 [Install]
 WantedBy=multi-user.target
