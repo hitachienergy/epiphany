@@ -370,14 +370,15 @@ export KUBECONFIG=$HOME/admin.conf
 
 ## How to turn on Hashicorp Vault functionality
 
-In Epiphany beside storing secrets in Kubernetes Secrets there is also a possibility of using Vault from Hashicorp.
-This can provide much more sophisticated solution for using secrets and also higher level of security than standard
-Kubernetes implementation. Also Epiphany provides transparent method to access Hashicorp Vault secrets with applications
-running on top of Kubernetes, about what you can read in the [How to turn on Hashicorp Vault integration with k8s](./SECURITY.md#how-to-turn-on-hashicorp-vault-integration-with-k8s) section. In the future we want also to provide additional features
-that right now can be configured manually according to Hashicorp Vault [configuration](https://www.vaultproject.io/docs).
-Right now only installation on Kubernetes Master is provided, but we are also planning separate installation with no other
-components. Also at this moment we are not providing clustered option for Vault deployment, but this will be part of the
-future releases.
+In Epiphany beside storing secrets in Kubernetes secrets there is also a possibility of using secrets stored in Vault
+from Hashicorp. This can provide much more sophisticated solution for using secrets and also higher level of security
+than standard Kubernetes secrets implementation. Also Epiphany provides transparent method to access Hashicorp Vault
+secrets with applications running on Kubernetes. You can read in the more about it in [How to turn on Hashicorp Vault integration with k8s](./SECURITY.md#how-to-turn-on-hashicorp-vault-integration-with-k8s) section. In the future we want also to provide additional features
+that right now can be configured manually according to Hashicorp Vault [documentation](https://www.vaultproject.io/docs).
+
+At the moment only installation on Kubernetes Master is supported, but we are also planning separate installation with no
+other components. Also at this moment we are not providing clustered option for Vault deployment, but this will be part
+of the future releases.
 
 Below you can find sample configuration for Vault with description of all options.
 
@@ -412,8 +413,9 @@ specification:
       policy: provisioner
 ```
 
-More information about configuration of Vault in Epiphany and some guidance how to start working with Vault you can find below. Also to
-get more familiarity with Vault usage you can reffer to [official getting started](https://learn.hashicorp.com/vault) guide.
+More information about configuration of Vault in Epiphany and some guidance how to start working with Vault with Epiphany you can find below.
+
+To get more familiarity with Vault usage you can reffer to [official getting started](https://learn.hashicorp.com/vault) guide.
 
 ### Creation of user using Epiphany in Vault
 
@@ -428,9 +430,9 @@ username, policy and password. If password won't be updated you will see `ALREAD
 ### Predefined Vault policies
 
 Vault policies are used to define Role-Based Access Control that can be assigned to clients, applications and other
-components that are using Vault. You can find more about policies [here](https://www.hashicorp.com/resources/policies-vault/).
+components that are using Vault. You can find more information about policies [here](https://www.hashicorp.com/resources/policies-vault/).
 
-Epiphany besides two already included in vault policies (root and default)  provides two additional predefined policies:
+Epiphany besides two already included in vault policies (root and default) provides two additional predefined policies:
 
 - admin - policy granting administration privileges, have sudo permission on Vault system endpoints
 - provisioner - policy granting permissions to create user secrets, adding secrets, enable authentication methods, but
@@ -450,7 +452,7 @@ vault operator unseal
 and passing three unseal keys from /opt/vault/init.txt file. In the future number of keys will be defined from the level
 of Epiphany configuration, right now we are using default Hashicorp Vault settings.
 
-For development purposes you can also use vault_script_autounseal option in Epiphany configuration.
+For development purposes you can also use `vault_script_autounseal` option in Epiphany configuration.
 
 More information about unseal you can find in documentation for [CLI](https://www.vaultproject.io/docs/commands/operator/unseal)
 and about concepts [here](https://www.vaultproject.io/docs/concepts/seal).
@@ -501,7 +503,7 @@ userpass authentication [here](https://www.vaultproject.io/docs/auth/userpass).
 
 Vault provide option to use token helper. By default Vault is creating a file .vault-token in home directory of user
 running command vault login, which let to user perform automatically commands without providing a token. This token
-will be removed by default after Epiphany configuration, but this can be changed using vault_token_cleanup flag.
+will be removed by default after Epiphany configuration, but this can be changed using `vault_token_cleanup flag`.
 
 More information about token helper you can find [here](https://www.vaultproject.io/docs/commands/token-helper).
 
@@ -517,8 +519,7 @@ If you have configured any user using Epiphany authentication userpass will be e
 
 ### Root token revocation
 
-In production is a good practice to
-[revoke root token](https://www.vaultproject.io/docs/commands/token/revoke). This option is not implemented yet,
+In production is a good practice to [revoke root token](https://www.vaultproject.io/docs/commands/token/revoke). This option is not implemented yet,
 by Epiphany, but will be implemented in the future releases.
 
 Be aware that after revoking root token you won't be able to use configuration script without generating new token
@@ -594,7 +595,8 @@ You can do this running command similar to sample below:
 vault kv put secret/yourpath/to/secret username='some_user' password='some_password'
 ```
 
-Epiphany as backend for Vault secrets is using kv secrets engine. More information about kv secrets engine you can find [here](https://www.vaultproject.io/docs/secrets/kv).
+Epiphany as backend for Vault secrets is using kv secrets engine. More information about kv secrets engine you can find
+[here](https://www.vaultproject.io/docs/secrets/kv).
 
 ### Kubernetes namespace
 
