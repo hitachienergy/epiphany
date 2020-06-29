@@ -370,7 +370,14 @@ export KUBECONFIG=$HOME/admin.conf
 
 ## How to turn on Hashicorp Vault functionality
 
-In Epiphany beside storing secrets in Kubernetes Secrets there is also a possibility of using Vault from Hashicorp. This can provide much more sophisticated solution for using secrets and also higher level of security than standard Kubernetes implementation. Also Epiphany provides transparent method to access Hashicorp Vault secrets with applications running on top of Kubernetes, about what you can read in the [How to turn on Hashicorp Vault integration with k8s](./SECURITY.md#how-to-turn-on-hashicorp-vault-integration-with-k8s) section. In the future we want also to provide additional features that right now can be configured manually according to Hashicorp Vault [configuration](https://www.vaultproject.io/docs). Right now only installation on Kubernetes Master is provided, but we are also planning separate installation with no other components. Also at this moment we are not providing clustered option for Vault deployment, but this will be part of the future releases.
+In Epiphany beside storing secrets in Kubernetes Secrets there is also a possibility of using Vault from Hashicorp.
+This can provide much more sophisticated solution for using secrets and also higher level of security than standard
+Kubernetes implementation. Also Epiphany provides transparent method to access Hashicorp Vault secrets with applications
+running on top of Kubernetes, about what you can read in the [How to turn on Hashicorp Vault integration with k8s](./SECURITY.md#how-to-turn-on-hashicorp-vault-integration-with-k8s) section. In the future we want also to provide additional features
+that right now can be configured manually according to Hashicorp Vault [configuration](https://www.vaultproject.io/docs).
+Right now only installation on Kubernetes Master is provided, but we are also planning separate installation with no other
+components. Also at this moment we are not providing clustered option for Vault deployment, but this will be part of the
+future releases.
 
 Below you can find sample configuration for Vault with description of all options.
 
@@ -410,24 +417,29 @@ get more familiarity with Vault usage you can reffer to [official getting starte
 
 ### Creation of user using Epiphany in Vault
 
-To create user by Epiphany please provide list of users with name of policy that should be assigned to user. You can use predefined policy delivered by Epiphany, default Vault policies or your own policy. Remember that if you have written your own policy it must exist before user creation.
+To create user by Epiphany please provide list of users with name of policy that should be assigned to user. You can
+use predefined policy delivered by Epiphany, default Vault policies or your own policy. Remember that if you have
+written your own policy it must exist before user creation.
 
-Password for user will be generated automatically and can be found in directory /opt/vault in files matching tokens-*.csv pattern. If user password will be generated or changed you will see corresponding line in csv file with username, policy and password. If password won't be updated you will see `ALREADY_EXISTS` in password place.
+Password for user will be generated automatically and can be found in directory /opt/vault in files matching
+tokens-*.csv pattern. If user password will be generated or changed you will see corresponding line in csv file with
+username, policy and password. If password won't be updated you will see `ALREADY_EXISTS` in password place.
 
 ### Predefined Vault policies
 
-Vault policies are used to define Role-Based Access Control that can be assigned to
-clients, applications and other components that are using Vault. You can find more about
-policies [here](https://www.hashicorp.com/resources/policies-vault/).
+Vault policies are used to define Role-Based Access Control that can be assigned to clients, applications and other
+components that are using Vault. You can find more about policies [here](https://www.hashicorp.com/resources/policies-vault/).
 
 Epiphany besides two already included in vault policies (root and default)  provides two additional predefined policies:
 
 - admin - policy granting administration privileges, have sudo permission on Vault system endpoints
-- provisioner - policy granting permissions to create user secrets, adding secrets, enable authentication methods, but without access to Vault system endpoints
+- provisioner - policy granting permissions to create user secrets, adding secrets, enable authentication methods, but
+  without access to Vault system endpoints
 
 ### Manual unsealing of the Vault
 
-When Hashicorp Vault starts it starts in sealed mode. This mean that Vault data is encrypted and Vault needs to generate key to decrypt and access data.
+When Hashicorp Vault starts it starts in sealed mode. This mean that Vault data is encrypted and Vault needs to generate key
+to decrypt and access data.
 
 Vault can be unsealed manually using command:
 
@@ -435,16 +447,18 @@ Vault can be unsealed manually using command:
 vault operator unseal
 ```
 
-and passing three unseal keys from /opt/vault/init.txt file. In the future number of keys will be defined from the level of Epiphany configuration, right now we are using default
-Hashicorp Vault settings.
+and passing three unseal keys from /opt/vault/init.txt file. In the future number of keys will be defined from the level
+of Epiphany configuration, right now we are using default Hashicorp Vault settings.
 
 For development purposes you can also use vault_script_autounseal option in Epiphany configuration.
 
-More information about unseal you can find in documentation for [CLI](https://www.vaultproject.io/docs/commands/operator/unseal) and about concepts [here](https://www.vaultproject.io/docs/concepts/seal).
+More information about unseal you can find in documentation for [CLI](https://www.vaultproject.io/docs/commands/operator/unseal)
+and about concepts [here](https://www.vaultproject.io/docs/concepts/seal).
 
 ### Configuration with manual unsealing
 
-If you are using option with manual unseal or want to perform manual configuration you can run script later on manually from the command line:
+If you are using option with manual unseal or want to perform manual configuration you can run script later on manually
+from the command line:
 
 ```bash
 /opt/vault/bin/configure-vault.sh
@@ -454,7 +468,8 @@ If you are using option with manual unseal or want to perform manual configurati
         -v helm_chart_values_be_override
 ```
 
-Values for script configuration in script.config are automatically generated by Epiphany and can be later on used to perform configuration.
+Values for script configuration in script.config are automatically generated by Epiphany and can be later on used to
+perform configuration.
 
 ### Log into Vault with token
 
@@ -464,45 +479,55 @@ To log into Vault with token you just need to pass token. You can do this using 
 vault login
 ```
 
-Only root token has no expiration date, so be aware that all other tokens can expire. To avoid such situations you need to renew the token.
-You can assign policy to token to define access.
+Only root token has no expiration date, so be aware that all other tokens can expire. To avoid such situations you need
+to renew the token. You can assign policy to token to define access.
 
-More information about login with tokens you can find [here](https://www.vaultproject.io/docs/commands/login) and about tokens [here](https://www.vaultproject.io/docs/concepts/tokens).
+More information about login with tokens you can find [here](https://www.vaultproject.io/docs/commands/login) and about
+tokens [here](https://www.vaultproject.io/docs/concepts/tokens).
 
 ### Log into Vault with user and password
 
-Other option to log into Vault is to use user/password pair. This method doesn't have disadvantage of login each time with different token after expire. To login with user/password pair you need to have userpass method
-and login with command:
+Other option to log into Vault is to use user/password pair. This method doesn't have disadvantage of login each time
+with different token after expire. To login with user/password pair you need to have userpass method and login with command:
 
 ```bash
 vault login -method=userpass username=your-username
 ```
 
-More information about login with tokens you can find [here](https://www.vaultproject.io/docs/commands/login) and about userpass authentication [here](https://www.vaultproject.io/docs/auth/userpass).
+More information about login with tokens you can find [here](https://www.vaultproject.io/docs/commands/login) and about
+userpass authentication [here](https://www.vaultproject.io/docs/auth/userpass).
 
 ### Token Helpers
 
-Vault provide option to use token helper. By default Vault is creating a file .vault-token in home directory of user running command vault login, which let to user perform automatically commands without providing a token. This token will be removed by default after Epiphany configuration, but this can be changed using vault_token_cleanup flag. More information about token helper you can find [here](https://www.vaultproject.io/docs/commands/token-helper).
+Vault provide option to use token helper. By default Vault is creating a file .vault-token in home directory of user
+running command vault login, which let to user perform automatically commands without providing a token. This token
+will be removed by default after Epiphany configuration, but this can be changed using vault_token_cleanup flag.
+
+More information about token helper you can find [here](https://www.vaultproject.io/docs/commands/token-helper).
 
 ### Creating your own policy
 
-In order to create your own policy using CLI please refer to [CLI documentation](https://www.vaultproject.io/docs/commands) and [documentation](https://www.vaultproject.io/docs/concepts/policies).
+In order to create your own policy using CLI please refer to [CLI documentation](https://www.vaultproject.io/docs/commands)
+and [documentation](https://www.vaultproject.io/docs/concepts/policies).
 
 ### Creating your own user
 
-In order to create your own user with user and password login please refer to [documentation](https://www.vaultproject.io/docs/auth/userpass). If you have configured any user using Epiphany authentication userpass will be enabled, if not needs to be enabled manually.
+In order to create your own user with user and password login please refer to [documentation](https://www.vaultproject.io/docs/auth/userpass).
+If you have configured any user using Epiphany authentication userpass will be enabled, if not needs to be enabled manually.
 
 ### Root token revocation
 
 In production is a good practice to
-[revoke root token](https://www.vaultproject.io/docs/commands/token/revoke). This option is not implemented yet, by Epiphany, but will be implemented in the future releases.
+[revoke root token](https://www.vaultproject.io/docs/commands/token/revoke). This option is not implemented yet,
+by Epiphany, but will be implemented in the future releases.
 
-Be aware that after revoking root token you won't be able to use configuration script without generating new token and replace old token with the new one in /opt/vault/init.txt (field `Initial Root Token`). For new root token generation please refer to documentation accessible [here](https://learn.hashicorp.com/vault/operations/ops-generate-root).
+Be aware that after revoking root token you won't be able to use configuration script without generating new token
+and replace old token with the new one in /opt/vault/init.txt (field `Initial Root Token`). For new root token generation
+please refer to documentation accessible [here](https://learn.hashicorp.com/vault/operations/ops-generate-root).
 
 ### Production hardening for Vault
 
-In Epiphany we have performed a lot of things to improve Vault security, 
-e.g.:
+In Epiphany we have performed a lot of things to improve Vault security, e.g.:
 
 - End-to-End TLS
 - Disable Swap (when running on Kubernetes machine)
@@ -517,12 +542,13 @@ However if you want to provide more security please refer to this
 
 ### Troubleshooting
 
-To perform troubleshooting of vault and find the root cause of the problem please enable audit logs and set vault_log_level to debug. Please be aware that audit logs can contain sensitive data.
+To perform troubleshooting of vault and find the root cause of the problem please enable audit logs and set vault_log_level
+to debug. Please be aware that audit logs can contain sensitive data.
 
 ## How to turn on Hashicorp Vault integration with k8s
 
-In Epiphany there is also an option to configure automatically integration with Kubernetes. This is achieved with applying additional
-settings to Vault configuration. Sample config with description you can find below.
+In Epiphany there is also an option to configure automatically integration with Kubernetes. This is achieved
+with applying additional settings to Vault configuration. Sample config with description you can find below.
 
 ```yaml
 kind: configuration/vault
@@ -542,7 +568,8 @@ specification:
 ```
 
 Vault and Kubernetes integration in Epiphany relies on vault-k8s tool.
-Thit tool enables sidecar injection of secret into pod with usage of Kubernetes Mutating Admission Webhook. This is transparent for your application and you do not need to perform any binding to Hashicorp libaries to use secret stored in Vault.
+Thit tool enables sidecar injection of secret into pod with usage of Kubernetes Mutating Admission Webhook. This is transparent
+for your application and you do not need to perform any binding to Hashicorp libaries to use secret stored in Vault.
 
 You can also configure Vault manually on your own enabling by Epiphany only options that are necessary for you.
 
@@ -550,13 +577,16 @@ More about Kubernetes sidecar integration you can find at the [link](https://www
 
 ### Vault Kubernetes authentication
 
-To work with sidecar integration with Vault you need to enable Kubernetes authentication. Without that sidecar won't be able to access secret stored in Vault.
+To work with sidecar integration with Vault you need to enable Kubernetes authentication. Without that sidecar won't be able
+to access secret stored in Vault.
 
-If you don't want to use sidecar integration, but you want to access automatically Vault secrets you can use Kubernetes authentication. To find more information about capabilities of Kubernetes authentication please refer to [documentation](https://www.vaultproject.io/docs/auth/kubernetes).
+If you don't want to use sidecar integration, but you want to access automatically Vault secrets you can use Kubernetes
+authentication. To find more information about capabilities of Kubernetes authentication please refer to [documentation](https://www.vaultproject.io/docs/auth/kubernetes).
 
 ### Create your secret in Vault
 
-In Epiphany you can use integration of key value secrets to inject them into container. To do this you need to create them using vault CLI.
+In Epiphany you can use integration of key value secrets to inject them into container. To do this you need to create them
+using vault CLI.
 
 You can do this running command similar to sample below:
 
@@ -568,17 +598,19 @@ Epiphany as backend for Vault secrets is using kv secrets engine. More informati
 
 ### Kubernetes namespace
 
-In Epiphany we are creating additional Kubernetes objects to inject secrets automatically using sidecar. Those objects to have access to your application pods needs to be deployed in the same namespace.
+In Epiphany we are creating additional Kubernetes objects to inject secrets automatically using sidecar. Those objects
+to have access to your application pods needs to be deployed in the same namespace.
 
 ### Annotations
 
-Below you can find sample of deployment configuration excerpt with annotations. For this moment `vault.hashicorp.com/role` cannot be changed, but this will change in future release.
+Below you can find sample of deployment configuration excerpt with annotations. For this moment `vault.hashicorp.com/role`
+cannot be changed, but this will change in future release.
 
 ```yaml
   template:
     metadata:
       labels:
-        app: yourapp 
+        app: yourapp
       annotations:
         vault.hashicorp.com/agent-inject: "true"
         vault.hashicorp.com/role: "devweb-app"
