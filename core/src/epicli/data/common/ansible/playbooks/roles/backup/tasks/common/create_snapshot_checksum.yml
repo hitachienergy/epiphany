@@ -1,0 +1,32 @@
+---
+# Invoke with (example):
+#- set_fact:
+#    snapshot_path: "{{ backup_dir }}/{{ snapshot_prefix }}_{{ snapshot_name }}.tar.gz"
+
+- name: Assert that the snapshot_path fact is defined and valid
+  assert:
+    that:
+      - snapshot_path is defined
+      - snapshot_path is string
+      - snapshot_path | length > 0
+    fail_msg: The snapshot_path fact must be defined and must be a non-empty string.
+
+- name: Ensure backup directory exists
+  file:
+    path: "{{ backup_dir }}/"
+    state: directory
+
+- name: Calculate the checksum
+  stat:
+    path: "{{ snapshot_path }}"
+    get_attributes: false
+    get_checksum: true
+    get_mime: false
+    checksum_algorithm: sha1
+  register: stat_checksum
+
+- name: Save the checksum
+  copy:
+    dest: "{{ snapshot_path }}.sha1"
+    content: |
+      {{ stat_checksum.stat.checksum }}  {{ snapshot_path | basename }}

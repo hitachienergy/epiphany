@@ -1,0 +1,45 @@
+---
+# Invoke with (example):
+#- set_fact:
+#    dirs_to_clear:
+#      - /etc/haproxy/
+#      - /etc/ssl/haproxy/
+
+- name: Assert that the dirs_to_clear fact is defined and valid
+  assert:
+    that:
+      - dirs_to_clear is defined
+      - dirs_to_clear is sequence
+      - dirs_to_clear | length > 0
+    fail_msg: The dirs_to_clear fact must be defined and must be a non-empty list.
+
+- name: Assert that the dirs_to_clear fact does not contain empty strings
+  assert:
+    that:
+      - (dirs_to_clear | length) == (dirs_to_clear_cleaned | length)
+    fail_msg: The dirs_to_clear fact must not contain empty strings.
+  vars:
+    # remove empty strings
+    dirs_to_clear_cleaned: >-
+      {{ dirs_to_clear | select | list }}
+
+- name: Find everything in target directories
+  find:
+    paths: "{{ dirs_to_clear_corrected }}"
+    patterns: "*"
+    file_type: any
+    recurse: false
+  register: find_everything_in_target_directories
+  vars:
+    # make sure each path ends with single /
+    dirs_to_clear_corrected: >-
+      {{ dirs_to_clear | map('regex_replace', '//*$', '')
+                       | map('regex_replace', '$', '/')
+                       | list }}
+
+- name: Remove everything from target directories
+  file:
+    path: "{{ item }}"
+    state: absent
+  loop: >-
+    {{ find_everything_in_target_directories.files | map(attribute='path') | list }}
