@@ -21,7 +21,7 @@ specification:
           - name: Kernel Resource Usage
             parameters:
               - name: shared_preload_libraries
-                value: SET_BY_AUTOMATION
+                value: AUTOCONFIGURED
                 comment: set by automation
       - name: ERROR REPORTING AND LOGGING
         subgroups:
