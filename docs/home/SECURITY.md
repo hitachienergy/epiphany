@@ -22,6 +22,7 @@ Additional to users created by each component Epiphany creates also users and gr
 - rabbitmq/rabbitmq
 - zookeeper/zookeeper
 - kafka/kafka
+- vault/vault
 
 Other accounts created by each component you can find in these components documentation.
 
@@ -135,6 +136,10 @@ The list does not include ports that are bound to the loopback interface (localh
 
     - 80 - deb/rpm package repository (httpd is stopped at the end of installation)
     - 5000 - Docker image registry
+
+17. Hashicorp Vault:
+
+    - 8200 - REST API
 
 #### Notes
 
