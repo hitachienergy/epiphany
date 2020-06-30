@@ -1,10 +1,10 @@
 # Changelog 0.7
 
-## [0.7.0] 2020-0X-XX
+## [0.7.0] 2020-06-30
 
 ### Added
 
-#### General
+### General
 
 - [#811](https://github.com/epiphany-platform/epiphany/issues/811) - Measure execution time of Ansible tasks
 
@@ -25,6 +25,10 @@
 - [#1209](https://github.com/epiphany-platform/epiphany/issues/1209) - Can not apply cluster, "sudo: a password is required"
 - [#1183](https://github.com/epiphany-platform/epiphany/issues/1183) - Task 'Check if /etc/kubernetes/admin.conf file exists' fails when kubernetes\_master.count = 0
 - [#1350](https://github.com/epiphany-platform/epiphany/issues/1350) - Cannot deploy a non-k8s cluster with load\_balancer vm
+- [#1372](https://github.com/epiphany-platform/epiphany/issues/1372) - [BUG] Epicli does not create Postgresql SET\_BY\_AUTOMATION values correctly
+- [#1373](https://github.com/epiphany-platform/epiphany/issues/1373) - [BUG] permission denied for shared directory in the container when no volume was mounted
+- [#1385](https://github.com/epiphany-platform/epiphany/issues/1385) - [BUG] Regression issue with disabling etcd encryption
+- [#1399](https://github.com/epiphany-platform/epiphany/issues/1399) - [BUG] Epicli upgrade issue - the process hangs for several hours on the task kubeadm upgrade apply
 
 ### Known Issues
 
