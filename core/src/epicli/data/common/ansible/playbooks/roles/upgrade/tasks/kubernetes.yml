@@ -4,11 +4,11 @@
   delegate_to: "{{ groups['kubernetes_master'][0] }}"
 
 - name: Include get-cluster-version.yml
-  include_tasks: kubernetes/get-cluster-version.yml # sets cluster_version
+  import_tasks: kubernetes/get-cluster-version.yml # sets cluster_version
   delegate_to: "{{ groups['kubernetes_master'][0] }}"
 
 - name: Include get-kubelet-version.yml
-  include_tasks: kubernetes/get-kubelet-version.yml # sets kubelet_version
+  import_tasks: kubernetes/get-kubelet-version.yml # sets kubelet_version
   delegate_to: "{{ groups['kubernetes_master'][0] }}"
 
 - name: Upgrade master to v{{ version }}
