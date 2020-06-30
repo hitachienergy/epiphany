@@ -19,7 +19,7 @@
   tasks:
     - import_role:
         name: upgrade
-        tasks_from: provide-kube-config
+        tasks_from: provide-kubeconfig
 
 - hosts: all
   become: true
