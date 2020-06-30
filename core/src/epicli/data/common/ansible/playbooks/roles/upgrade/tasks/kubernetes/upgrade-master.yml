@@ -131,21 +131,8 @@
 
     - name: upgrade-master | Upgrade apply block
       block:
-        - name: "upgrade-master | Upgrade K8s cluster to v{{ version }}
-                {{ '(using kubeadm-config.yml file)' if kubeadm_config_file.stat.exists else '' }}"
-          shell: >-
-            kubeadm upgrade apply -y v{{ version +
-            (' --config /etc/kubeadm/kubeadm-config.yml' if kubeadm_config_file.stat.exists else '') }}
-          register: result
-          until: result is succeeded
-          retries: 20
-          delay: 30
-          when:
-            - cluster_version is version('v' + version, '<') # without this condition fails when 'upgrading' again from 1.12.10 to 1.12.10
-
-      rescue:  # ignore CoreDNSUnsupportedPlugins error since coredns migration does not support all plugins that are valid and currently used
         - when: etcd_encryption_file.stat.exists
-          block:
+          block: &kube-apiserver-etcd-encryption-fix
             - name: Spawn shell task in background to correct the kube-apiserver.yaml config file (if needed)
               shell: |
                 for (( RETRY = 0; RETRY < {{ _async // _sleep }}; RETRY++ )); do
@@ -163,6 +150,22 @@
                 _sleep: 30
               async: "{{ _async | int }}"
               poll: 0
+
+        - name: "upgrade-master | Upgrade K8s cluster to v{{ version }}
+                {{ '(using kubeadm-config.yml file)' if kubeadm_config_file.stat.exists else '' }}"
+          shell: >-
+            kubeadm upgrade apply -y v{{ version +
+            (' --config /etc/kubeadm/kubeadm-config.yml' if kubeadm_config_file.stat.exists else '') }}
+          register: result
+          until: result is succeeded
+          retries: 20
+          delay: 30
+          when:
+            - cluster_version is version('v' + version, '<') # without this condition fails when 'upgrading' again from 1.12.10 to 1.12.10
+
+      rescue:  # ignore CoreDNSUnsupportedPlugins error since coredns migration does not support all plugins that are valid and currently used
+        - when: etcd_encryption_file.stat.exists
+          block: *kube-apiserver-etcd-encryption-fix
 
         - name: "upgrade-master | Upgrade K8s cluster to v{{ version }}
                 {{ '(using kubeadm-config.yml file)' if kubeadm_config_file.stat.exists else '' }}"
