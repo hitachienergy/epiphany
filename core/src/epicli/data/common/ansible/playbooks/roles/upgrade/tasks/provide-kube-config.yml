@@ -1,0 +1,5 @@
+---
+- name: Provide .kube/config
+  copy:
+    dest: "/home/{{ admin_user.name }}/.kube/config"
+    content: "{{ kube_config.content | b64decode }}"
