@@ -114,8 +114,8 @@
           changed_when: false
           register: result
           until: result is succeeded
-          retries: 2
-          delay: 3
+          retries: 20
+          delay: 30
 
       rescue: # ignore CoreDNSUnsupportedPlugins error since coredns migration does not support all plugins that are valid and currently used
         - name: "upgrade-master | Validate whether cluster is upgradeable with ignore CoreDNS plugin related erroros
@@ -158,8 +158,8 @@
             (' --config /etc/kubeadm/kubeadm-config.yml' if kubeadm_config_file.stat.exists else '') }}
           register: result
           until: result is succeeded
-          retries: 2
-          delay: 3
+          retries: 20
+          delay: 30
           when:
             - cluster_version is version('v' + version, '<') # without this condition fails when 'upgrading' again from 1.12.10 to 1.12.10
 
