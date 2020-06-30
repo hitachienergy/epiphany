@@ -393,8 +393,7 @@ specification:
   enable_vault_audit_logs: false # turn on audit logs that can be found at /opt/vault/logs/vault_audit.log
   enable_vault_ui: false # enable Vault UI, shouldn't be used at production
   vault_script_autounseal: true # enable automatic unseal vault at the start of the service, shouldn't be used at production
-  vault_script_autoconfiguration: true # enable automatic configuration of Hashicorp Vault
-  tls_disable: false # enable TLS support, should be used always in production
+  vault_script_autoconfiguration: true # enable automatic configuration of Hashicorp Vault. It sets the UNSEAL_VAULT variable in script.config
   ...
   app_secret_path: devwebapp # application specific path where application secrets will be mounted
   revoke_root_token: false # not implemented yet (more about in section Root token revocation)
@@ -402,15 +401,34 @@ specification:
   vault_token_cleanup: true # should configuration script clean token
   vault_install_dir: /opt/vault # directory where vault will be installed
   vault_log_level: info # logging level that will be set for Vault service
-  certificate_name: fullchain.pem
-  private_key_name: privkey.pem
-  vault_tls_valid_days: 365
   override_existing_vault_users: false # should user from vault_users ovverride existing user and generate new password
   vault_users: # users that will be created with vault
     - name: admin # name of the user that will be created in Vault
       policy: admin # name of the policy that will be assigned to user (descrption bellow)
     - name: provisioner
       policy: provisioner
+  vault_helm_chart_values: # helm chart values overwriting the default package (to be able to use internal registry for offline purposes)
+    injector:
+      externalVaultAddr: https://external-vault:8200 # external vault address [IMPORTANT: switch https->http if tls_disable parameter is set to true]
+      image:
+        repository: "{{ image_registry_address }}/hashicorp/vault-k8s" # docker image used by vault injector in kubernetes
+      agentImage:
+        repository: "{{ image_registry_address }}/vault" # docker image used by vault injector in kubernetes
+    server:
+      image:
+        repository: "{{ image_registry_address }}/vault" # docker image used by vault injector in kubernetes
+  # TLS part
+  tls_disable: false # enable TLS support, should be used always in production
+  certificate_name: fullchain.pem # certificate file name
+  private_key_name: privkey.pem # private key file name for certificate
+  vault_tls_valid_days: 365 # certificate valid time in days
+  selfsigned_certificate: # selfsigned certificate information
+    country: US # selfexplanatory
+    state: state # selfexplanatory
+    city: city # selfexplanatory
+    company: company # selfexplanatory
+    common_name: "*" # selfexplanatory
+
 ```
 
 More information about configuration of Vault in Epiphany and some guidance how to start working with Vault with Epiphany you can find below.
@@ -440,8 +458,7 @@ Epiphany besides two already included in vault policies (root and default) provi
 
 ### Manual unsealing of the Vault
 
-When Hashicorp Vault starts it starts in sealed mode. This mean that Vault data is encrypted and Vault needs to generate key
-to decrypt and access data.
+By design Hashicorp Vault starts in sealed mode. It means that Vault data is encrypted and operator needs to provide unsealing key to be able to access data.
 
 Vault can be unsealed manually using command:
 
@@ -449,8 +466,9 @@ Vault can be unsealed manually using command:
 vault operator unseal
 ```
 
-and passing three unseal keys from /opt/vault/init.txt file. In the future number of keys will be defined from the level
-of Epiphany configuration, right now we are using default Hashicorp Vault settings.
+and passing three unseal keys from /opt/vault/init.txt file. 
+Number of keys will be defined from the level of Epiphany configuration in the future releases.
+Right now we are using default Hashicorp Vault settings.
 
 For development purposes you can also use `vault_script_autounseal` option in Epiphany configuration.
 
@@ -525,6 +543,34 @@ by Epiphany, but will be implemented in the future releases.
 Be aware that after revoking root token you won't be able to use configuration script without generating new token
 and replace old token with the new one in /opt/vault/init.txt (field `Initial Root Token`). For new root token generation
 please refer to documentation accessible [here](https://learn.hashicorp.com/vault/operations/ops-generate-root).
+
+### TLS support
+
+By default tls_disable is set to false which means that certificates are used by vault. There are 2 ways of certificate configuration:
+
+1. selfsigned
+
+Vault selfsigned certificates are generated automatically during vault setup if no custom certificates are present in dedicated location.
+
+2. certificate provided by user
+
+In dedicated location user can add certificate (and private key). File names are important and have to be the same as provided in configuration and ```.pem``` file extensions are required.
+
+Dedicated location of custom certificates:
+```core/src/epicli/data/common/ansible/playbooks/roles/vault/files/tls-certs```
+
+Certificate files names configuration:
+
+```yaml
+kind: configuration/vault
+title: Vault Config
+name: default
+specification:
+...
+  certificate_name: fullchain.pem # certificate file name
+  private_key_name: privkey.pem # private key file name for certificate
+...
+```
 
 ### Production hardening for Vault
 
@@ -619,5 +665,9 @@ cannot be changed, but this will change in future release.
         vault.hashicorp.com/agent-inject-secret-credentials.txt: "secret/data/yourpath/to/secret"
         vault.hashicorp.com/tls-skip-verify: "true"
 ```
+
+```vault.hashicorp.com/tls-skip-verify```
+If true, configures the Vault Agent to skip verification of Vault's TLS certificate. 
+It's mandatory for selfsigned certificates and not recommended to set this value to true in a production environment.
 
 More information about annotations you can find [here](https://www.vaultproject.io/docs/platform/k8s/injector/annotations).
