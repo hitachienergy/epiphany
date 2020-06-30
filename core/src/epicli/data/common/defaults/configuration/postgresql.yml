@@ -21,7 +21,7 @@ specification:
           - name: Kernel Resource Usage
             parameters:
               - name: shared_preload_libraries
-                value: SET_BY_AUTOMATION
+                value: AUTOCONFIGURED
                 comment: set by automation
       - name: ERROR REPORTING AND LOGGING
         subgroups:
@@ -63,6 +63,8 @@ specification:
   extensions:
     pgaudit:
       enabled: no
+      shared_preload_libraries:
+        - pgaudit
       config_file_parameters:
         log_connections: 'off'
         log_disconnections: 'off'

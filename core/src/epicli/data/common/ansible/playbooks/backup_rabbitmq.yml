@@ -1,0 +1,20 @@
+---
+# Ansible playbook for backing up rabbitmq config
+
+- hosts: rabbitmq[0]
+  gather_facts: true
+  become: true
+  become_method: sudo
+  serial: 1
+  tasks:
+    - when: specification.components.rabbitmq.enabled | default(false)
+      block:
+        - include_vars:
+            file: roles/rabbitmq/vars/main.yml
+            name: component_vars
+        - import_role:
+            name: backup
+            tasks_from: rabbitmq_rabbitmq_definitions
+        - import_role:
+            name: backup
+            tasks_from: rabbitmq_rabbitmq_etc

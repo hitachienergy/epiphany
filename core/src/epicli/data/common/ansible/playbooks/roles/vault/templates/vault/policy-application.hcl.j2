@@ -1,0 +1,7 @@
+# {{ ansible_managed }}
+path "{{ specification.secret_mount_path }}/data/{{ specification.app_secret_path }}/*" {
+        capabilities = ["read"]
+}
+path "{{ specification.secret_mount_path }}/data/{{ specification.app_secret_path }}/" {
+        capabilities = ["list"]
+}

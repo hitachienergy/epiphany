@@ -1,0 +1,35 @@
+---
+# Ansible playbook for recovering monitoring data
+
+- hosts: prometheus[0]
+  become: true
+  become_method: sudo
+  serial: 1
+  tasks:
+    - when: specification.components.monitoring.enabled | default(false)
+      block:
+        - include_vars:
+            file: roles/prometheus/vars/main.yml
+            name: component_vars
+        - import_role:
+            name: recovery
+            tasks_from: monitoring_prometheus_etc
+        - import_role:
+            name: recovery
+            tasks_from: monitoring_prometheus_snapshot
+  vars_files:
+    - roles/prometheus/vars/main.yml
+
+- hosts: grafana[0]
+  become: true
+  become_method: sudo
+  serial: 1
+  tasks:
+    - when: specification.components.monitoring.enabled | default(false)
+      block:
+        - include_vars:
+            file: roles/grafana/vars/main.yml
+            name: component_vars
+        - import_role:
+            name: recovery
+            tasks_from: monitoring_grafana_data

@@ -115,6 +115,7 @@ specification:
       - rabbitmq
       - postgresql
       - firewall
+      - vault
     kubernetes_master:
       - image-registry
       - kubernetes-master
@@ -140,4 +141,3 @@ specification:
       - node-exporter
       - filebeat
       - firewall
-

@@ -1,16 +1,23 @@
 ---
 - name: Create canal deployment
   template:
-    src: canal-deployment.yml.j2
-    dest: "/home/{{ admin_user.name }}/canal-deployment.yml"
+    src: "{{ template_file_name }}"
+    dest: "/home/{{ admin_user.name }}/canal.yml"
     owner: "{{ admin_user.name }}"
     group: "{{ admin_user.name }}"
+  vars:
+    template_file_name: >-
+      {%- if k8s_server_version is defined and k8s_server_version is version('v1.16', '<') -%}
+        canal-for-k8s-below-1.16.yml.j2
+      {%- else -%}
+        canal.yml.j2
+      {%- endif -%}
 
 - name: Apply canal deployment
   environment:
     KUBECONFIG: "/home/{{ admin_user.name }}/.kube/config"
   shell: |
     kubectl apply \
-      -f /home/{{ admin_user.name }}/canal-deployment.yml
+      -f /home/{{ admin_user.name }}/canal.yml
   args:
     executable: /bin/bash

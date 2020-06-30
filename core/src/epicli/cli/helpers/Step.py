@@ -1,6 +1,6 @@
 import time
 from cli.helpers.Log import Log
-from abc import ABCMeta, abstractmethod
+from abc import ABCMeta
 
 
 class Step(metaclass=ABCMeta):

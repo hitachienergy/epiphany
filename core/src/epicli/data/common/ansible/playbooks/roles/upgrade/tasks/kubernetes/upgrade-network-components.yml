@@ -40,5 +40,6 @@
   import_role:
     name: kubernetes_master
     tasks_from: apply-network-components
-  vars: 
+  vars:
     network_plugin: "{{ plugin }}"
+    k8s_server_version: "{{ cluster_version }}"
