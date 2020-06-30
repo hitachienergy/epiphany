@@ -1,3 +1,10 @@
-- name: "upgrade-master | Hold kubeadm, kubelet, kubectl, kubernetes-cni"
+- name: "upgrade-master | Hold packages: {{ packages | join(', ') }}"
   shell: >-
-    apt-mark hold kubeadm kubelet kubectl kubernetes-cni
+    apt-mark hold {{ packages | join(' ') }}
+  vars:
+    packages: >-
+      {%- if cni_in_kubelet is undefined or not cni_in_kubelet -%}
+        ['kubeadm', 'kubelet', 'kubectl', 'kubernetes-cni']
+      {%- else -%}
+        ['kubeadm', 'kubelet', 'kubectl']
+      {%- endif -%}

@@ -1,9 +1,0 @@
-# {{ ansible_managed }}
-ui = true
-storage "file" {
-  path    = "{{ specification.vault_install_dir }}/data"
-}
-listener "tcp" {
-  address = "{{ ansible_default_ipv4.address }}:8200"
-  tls_disable = true
-}

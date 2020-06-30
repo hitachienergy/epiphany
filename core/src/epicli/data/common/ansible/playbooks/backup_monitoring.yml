@@ -1,0 +1,37 @@
+---
+# Ansible playbook for backing up monitoring data
+
+- hosts: prometheus[0]
+  gather_facts: true
+  become: true
+  become_method: sudo
+  serial: 1
+  tasks:
+    - when: specification.components.monitoring.enabled | default(false)
+      block:
+        - include_vars:
+            file: roles/prometheus/vars/main.yml
+            name: component_vars
+        - import_role:
+            name: backup
+            tasks_from: monitoring_prometheus_snapshot
+        - import_role:
+            name: backup
+            tasks_from: monitoring_prometheus_etc
+
+- hosts: grafana[0]
+  gather_facts: true
+  become: true
+  become_method: sudo
+  serial: 1
+  tasks:
+    - when: specification.components.monitoring.enabled | default(false)
+      block:
+        - include_vars:
+            file: roles/grafana/vars/main.yml
+            name: component_vars
+        - import_role:
+            name: backup
+            tasks_from: monitoring_grafana_data
+          vars:
+            snapshot_name: "{{ hostvars[groups.prometheus.0].snapshot_name }}"

@@ -1,0 +1,13 @@
+---
+# Ansible playbook for backing up Kubernetes cluster
+
+- hosts: kubernetes_master[0]
+  become: true
+  become_method: sudo
+  serial: 1
+  tasks:
+    - when: specification.components.kubernetes.enabled | default(false)
+      block:
+        - import_role:
+            name: backup
+            tasks_from: kubernetes

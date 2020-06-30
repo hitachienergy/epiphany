@@ -9,3 +9,7 @@
   changed_when: false
   args:
     executable: /bin/bash
+
+- name: Set cluster version as fact
+  set_fact:
+    cluster_version: "{{ cluster_version.stdout }}"

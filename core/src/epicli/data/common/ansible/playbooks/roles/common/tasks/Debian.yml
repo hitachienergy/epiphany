@@ -27,6 +27,7 @@
       - netcat
       - openssl
       - python-setuptools
+      - rsync
       - software-properties-common
       - sshpass
       - sysstat

@@ -1,0 +1,59 @@
+- name: Create selfsigned.cfr file for TLS certificate generation
+  template:
+    dest: "{{ specification.vault_install_dir }}/tls/selfsigned.cfr"
+    owner: "{{ specification.vault_system_user }}"
+    group: "{{ specification.vault_system_group }}"
+    mode: u=rw,g=r,o=
+    src: vault/selfsigned.cfr.j2
+
+- name: Check if self-signed certificate exists
+  stat:
+    path: "{{ specification.vault_install_dir }}/tls/{{ specification.certificate_name }}"
+  register: certificate_file_stat
+
+- name: Check if private key for self-signed certificate exists
+  stat:
+    path: "{{ specification.vault_install_dir }}/tls/{{ specification.private_key_name }}"
+  register: priv_key_file_stat
+
+- name: Generate self-signed cert and private key if files were not found in directory
+  shell: >-
+    openssl req -x509 -batch -nodes -newkey rsa:4096
+    -keyout {{ specification.vault_install_dir }}/tls/{{ specification.private_key_name }}
+    -out {{ specification.vault_install_dir }}/tls/{{ specification.certificate_name }}
+    -config {{ specification.vault_install_dir }}/tls/selfsigned.cfr
+    -days {{ specification.vault_tls_valid_days }}
+  when:
+    - not certificate_file_stat.stat.exists
+    - not priv_key_file_stat.stat.exists
+
+- name: Set file permissions for self-signed certificate
+  file:
+    path: "{{ specification.vault_install_dir }}/tls/{{ specification.certificate_name }}"
+    owner: "{{ specification.vault_system_user }}"
+    group: "{{ specification.vault_system_group }}"
+    mode: u=rw,g=r,o=r
+
+- name: Set file permissions for private key
+  file:
+    path: "{{ specification.vault_install_dir }}/tls/{{ specification.private_key_name }}"
+    owner: "{{ specification.vault_system_user }}"
+    group: "{{ specification.vault_system_group }}"
+    mode: u=rw,g=r,o=
+
+- name: Copy generated cert file to CA certificates location
+  copy:
+    src: "{{ specification.vault_install_dir }}/tls/{{ specification.certificate_name }}"
+    dest: "{{ ca_certificates_dir[ansible_os_family] }}/{{ specification.certificate_name }}.crt"
+    remote_src: yes
+  vars:
+    ca_certificates_dir:
+      Debian: /usr/local/share/ca-certificates
+      RedHat: /etc/pki/ca-trust/source/anchors
+
+- name: Update list of trusted CA certificates
+  shell: "{{ update_command[ansible_os_family] }}"
+  vars:
+    update_command:
+      Debian: update-ca-certificates
+      RedHat: update-ca-trust extract

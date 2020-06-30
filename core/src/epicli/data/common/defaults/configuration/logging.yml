@@ -13,4 +13,5 @@ specification:
   clustered: True
   paths:
     data: /var/lib/elasticsearch
+    repo: /var/lib/elasticsearch-snapshots
     logs: /var/log/elasticsearch

@@ -1,0 +1,52 @@
+---
+- name: Set helper facts
+  set_fact:
+    prometheus_endpoint: >-
+      http://{{ ansible_default_ipv4.address }}:9090
+    snapshot_name: >-
+      {{ ansible_date_time.iso8601_basic_short | replace('T','-') }}
+  vars:
+    uri_template: &uri
+      body_format: json
+
+- debug: var=snapshot_name
+
+- name: Trigger snapshot creation
+  uri:
+    <<: *uri
+    url: "{{ prometheus_endpoint }}/api/v1/admin/tsdb/snapshot"
+    method: POST
+  register: uri_response
+  until: uri_response is success
+  retries: 12
+  delay: 5
+
+- name: Get the prometheus_snapshot_name
+  set_fact:
+    prometheus_snapshot_name: "{{ uri_response.json.data.name }}"
+
+- debug: var=prometheus_snapshot_name
+
+- name: Create, transfer and cleanup snapshot
+  always:
+    - name: Remove snapshot directory (cleanup)
+      file:
+        path: "{{ component_vars.specification.storage.data_directory }}/snapshots/{{ prometheus_snapshot_name }}/"
+        state: absent
+  block:
+    - name: Create snapshot archive
+      import_tasks: common/create_snapshot_archive.yml
+      vars:
+        snapshot_prefix: "prometheus_snapshot"
+        dirs_to_archive:
+          - "{{ component_vars.specification.storage.data_directory }}/snapshots/{{ prometheus_snapshot_name }}/"
+
+    - name: Create snapshot checksum
+      import_tasks: common/create_snapshot_checksum.yml
+
+    - name: Transfer artifacts via rsync
+      import_tasks: common/download_via_rsync.yml
+      vars:
+        artifacts:
+          - "{{ snapshot_path }}"
+          - "{{ snapshot_path }}.sha1"

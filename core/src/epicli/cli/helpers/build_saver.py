@@ -101,7 +101,11 @@ def get_inventory_path_for_build(build_directory):
 
 
 def get_ansible_config_file_path(cluster_name):
-    return os.path.join(get_build_path(cluster_name), "ansible/ansible.cfg")
+    return os.path.join(get_ansible_path(cluster_name), "ansible.cfg")
+
+
+def get_ansible_config_file_path_for_build(build_directory):
+    return os.path.join(get_ansible_path_for_build(build_directory), "ansible.cfg")
 
 
 def check_build_output_version(build_directory):

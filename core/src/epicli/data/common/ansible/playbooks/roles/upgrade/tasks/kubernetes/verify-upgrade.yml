@@ -9,7 +9,7 @@
 
     - name: verify-upgrade | Verify cluster version
       assert:
-        that: "'{{ version }}' in cluster_version.stdout"
+        that: "'{{ version }}' in cluster_version"
   when:
     - inventory_hostname in groups['kubernetes_master']
 

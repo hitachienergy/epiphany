@@ -63,6 +63,8 @@
   - [How to authenticate to Azure AD app](./howto/SECURITY.md#how-to-authenticate-to-azure-ad-app)  
   - [How to run epicli with password](./howto/SECURITY.md#how-to-run-epicli-with-password)
   - [How to enable kubectl on Kubernetes master](./howto/SECURITY.md#how-to-enable-kubectl-on-Kubernetes-master)
+  - [How to turn on Hashicorp Vault functionality](./howto/SECURITY.md#how-to-turn-on-hashicorp-vault-functionality)
+  - [How to turn on Hashicorp Vault integration with k8s](./howto/SECURITY.md#how-to-turn-on-hashicorp-vault-integration-with-k8s)
 
 - [Databases](./howto/DATABASES.md)
   - [How to migrate from PostgreSQL installed from Software Collections to installed from PostgreSQL repository](./howto/DATABASES.md#how-to-migrate-from-postgresql-installed-from-software-collections-to-installed-from-postgresql-repository)
@@ -76,6 +78,13 @@
   - [How to start working with OpenDistro for Elasticsearch](./howto/DATABASES.md#how-to-start-working-with-opendistro-for-elasticsearch)
   - [How to start working with Apache Ignite Stateful setup](./howto/DATABASES.md#how-to-start-working-with-apache-ignite-stateful-setup)
   - [How to start working with Apache Ignite Stateless setup](./howto/DATABASES.md#how-to-start-working-with-apache-ignite-stateless-setup)
+
+- [Backup and Recovery](./howto/BACKUP.md)
+  - [Epiphany backup and restore](./howto/BACKUP.md#epiphany-backup-and-restore)
+  - [How to perform backup](./howto/BACKUP.md#1-how-to-perform-backup)
+  - [How to store backup](./howto/BACKUP.md#2-how-to-store-backup)
+  - [How to perform recovery](./howto/BACKUP.md#3-how-to-perform-recovery)
+  - [How backup and recovery work](./howto/BACKUP.md#4-how-backup-and-recovery-work)
 
 - [Data and log retention](./howto/RETENTION.md)
   - [Elasticsearch](./howto/RETENTION.md#elasticsearch)

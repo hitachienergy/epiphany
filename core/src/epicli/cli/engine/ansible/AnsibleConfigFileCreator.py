@@ -1,14 +1,13 @@
 import os
-from cli.helpers.build_saver import get_ansible_config_file_path, save_ansible_config_file
+from cli.helpers.build_saver import save_ansible_config_file
 from cli.helpers.Step import Step
 from collections import OrderedDict
 
 class AnsibleConfigFileCreator(Step):
-    def __init__(self, ansible_options, cluster_model):
+    def __init__(self, ansible_options, ansible_config_file_path):
         super().__init__(__name__)
         self.ansible_options = ansible_options
-        cluster_name = cluster_model.specification.name
-        self.ansible_config_file_path = get_ansible_config_file_path(cluster_name)
+        self.ansible_config_file_path = ansible_config_file_path
         self.ansible_config_file_settings = OrderedDict()
 
     def __enter__(self):

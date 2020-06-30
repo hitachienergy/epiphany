@@ -32,6 +32,10 @@ node.name: {{ansible_hostname}}
 #
 path.data: {{specification.paths.data}}
 #
+# Path to directory where the shared storage should be mounted:
+#
+path.repo: {{specification.paths.repo}}
+#
 # Path to log files:
 #
 path.logs: {{specification.paths.logs}}
@@ -52,7 +56,7 @@ path.logs: {{specification.paths.logs}}
 #
 # Set the bind address to a specific IP (IPv4 or IPv6):
 #
-network.host: {{ansible_hostname}} 
+network.host: {{ansible_hostname}}
 #
 # Set a custom port for HTTP:
 #
