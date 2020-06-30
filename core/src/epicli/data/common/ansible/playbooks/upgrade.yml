@@ -13,6 +13,14 @@
         name: upgrade
         tasks_from: ensure-kubeconfig
 
+- hosts: kubernetes_node
+  become: true
+  become_method: sudo
+  tasks:
+    - import_role:
+        name: upgrade
+        tasks_from: provide-kubeconfig
+
 - hosts: all
   become: true
   become_method: sudo
