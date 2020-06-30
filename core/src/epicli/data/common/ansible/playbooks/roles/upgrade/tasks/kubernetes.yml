@@ -1,6 +1,6 @@
 ---
 - name: Include wait-for-kube-apiserver.yml
-  include_tasks: kubernetes/wait-for-kube-apiserver.yml
+  import_tasks: kubernetes/wait-for-kube-apiserver.yml
   delegate_to: "{{ groups['kubernetes_master'][0] }}"
 
 - name: Include get-cluster-version.yml
