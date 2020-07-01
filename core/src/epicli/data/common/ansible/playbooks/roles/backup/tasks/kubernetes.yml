@@ -1,0 +1,99 @@
+---
+- name: Set helper facts
+  set_fact:
+    snapshot_name: >-
+      {{ ansible_date_time.iso8601_basic_short | replace('T','-') }}
+
+- name: Ensure backup directory exists
+  file:
+    path: "{{ backup_dir }}/"
+    state: directory
+    mode: u=rwx,go=
+
+- name: Create temporary directory
+  tempfile:
+    path: "{{ backup_dir }}/"
+    suffix: .tmp
+    state: directory
+  register: backup_temp_dir
+
+- name: Save backup and cleanup afterwards
+  always:
+    - name: Delete temporary directory
+      file:
+        path: "{{ backup_temp_dir.path }}/"
+        state: absent
+
+  block:
+    - name: Get etcd image name
+      shell: |
+        kubectl get pods \
+          --all-namespaces \
+          --output jsonpath={{ jsonpath }}
+      vars:
+        jsonpath: >-
+          "{.items[*].spec.containers[?(@.name=='etcd')].image}"
+      environment:
+        KUBECONFIG: /etc/kubernetes/admin.conf
+      register: etcd_image_name
+
+    - name: Save etcd image name to a file
+      copy:
+        dest: "{{ backup_temp_dir.path }}/etcd_ver.txt"
+        content: |-
+          {{ etcd_image_name.stdout | trim }}
+
+    - name: Save kubernetes PKI
+      copy:
+        src: /etc/kubernetes/pki  # do not put / at the end here!
+        dest: "{{ backup_temp_dir.path }}/"
+        remote_src: true
+
+    - name: Save etcd snapshot
+      shell: |
+        docker run \
+        -v "{{ backup_temp_dir.path }}/:/backup/" \
+        --network host \
+        --env ETCDCTL_API=3 \
+        --rm "{{ etcd_image_name.stdout | trim }}" \
+        etcdctl \
+        --endpoints https://127.0.0.1:2379 \
+        --cacert /backup/pki/etcd/ca.crt \
+        --cert /backup/pki/etcd/healthcheck-client.crt \
+        --key /backup/pki/etcd/healthcheck-client.key \
+        snapshot save /backup/etcd-snapshot.db
+      args:
+        executable: /bin/bash
+
+    - name: Check if kubeadm configuration file exists
+      stat:
+        path: /etc/kubeadm/kubeadm-config.yml
+        get_attributes: false
+        get_checksum: false
+        get_mime: false
+      register: stat_kubeadm_config_yml
+
+    - when: stat_kubeadm_config_yml.stat.exists
+      block:
+        - name: Save kubeadm configuration file
+          copy:
+            src: "{{ stat_kubeadm_config_yml.stat.path }}"
+            dest: "{{ backup_temp_dir.path }}/"
+            remote_src: true
+
+    - name: Create snapshot archive
+      import_tasks: common/create_snapshot_archive.yml
+      vars:
+        snapshot_prefix: "k8s_snapshot"
+        dirs_to_archive:
+          - "{{ backup_temp_dir.path }}/"
+
+    - name: Create snapshot checksum
+      import_tasks: common/create_snapshot_checksum.yml
+
+    - name: Transfer artifacts via rsync
+      import_tasks: common/download_via_rsync.yml
+      vars:
+        artifacts:
+          - "{{ snapshot_path }}"
+          - "{{ snapshot_path }}.sha1"

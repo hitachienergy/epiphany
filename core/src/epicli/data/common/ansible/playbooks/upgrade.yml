@@ -13,6 +13,14 @@
         name: upgrade
         tasks_from: ensure-kubeconfig
 
+- hosts: kubernetes_node
+  become: true
+  become_method: sudo
+  tasks:
+    - import_role:
+        name: upgrade
+        tasks_from: provide-kubeconfig
+
 - hosts: all
   become: true
   become_method: sudo
@@ -29,36 +37,6 @@
     - import_role:
         name: upgrade
         tasks_from: image-registry
-
-- hosts: kubernetes_master:kubernetes_node
-  serial: 1
-  become: true
-  become_method: sudo
-  tasks:
-    - import_role:
-        name: upgrade
-        tasks_from: kubernetes
-      vars: { ver: "1.12.10", cni_ver: "0.7.5" }
-
-- hosts: kubernetes_master:kubernetes_node
-  serial: 1
-  become: true
-  become_method: sudo
-  tasks:
-    - import_role:
-        name: upgrade
-        tasks_from: kubernetes
-      vars: { ver: "1.13.12", cni_ver: "0.7.5" }
-
-- hosts: kubernetes_master:kubernetes_node
-  serial: 1
-  become: true
-  become_method: sudo
-  tasks:
-    - import_role:
-        name: upgrade
-        tasks_from: kubernetes
-      vars: { ver: "1.14.6", cni_ver: "0.7.5" }
 
 - hosts: kubernetes_master:kubernetes_node
   serial: 1
@@ -88,7 +66,7 @@
     - import_role:
         name: upgrade
         tasks_from: kubernetes
-      vars: { ver: "1.17.4", cni_ver: "0.7.5" }
+      vars: { ver: "1.17.7", cni_ver: "0.8.6", cni_in_kubelet: true }
 
 - hosts: elasticsearch
   become: true
@@ -97,6 +75,7 @@
     - import_role:
         name: upgrade
         tasks_from: elasticsearch
+      when: ansible_os_family == 'Debian' # TODO: Fix issue #922 for RedHat
 
 - hosts: elasticsearch_curator
   become: true
@@ -107,7 +86,7 @@
         tasks_from: elasticsearch-curator
 
 # Disabling Filebeat upgrade. This will be included in future releases.
-# 
+#
 # - hosts: filebeat
 #   become: true
 #   become_method: sudo

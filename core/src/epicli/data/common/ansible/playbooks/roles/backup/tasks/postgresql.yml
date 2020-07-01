@@ -1,0 +1,73 @@
+---
+- name: Set helper facts
+  set_fact:
+    snapshot_name: >-
+      {{ ansible_date_time.iso8601_basic_short | replace('T','-') }}
+
+- debug:
+    var: snapshot_name
+
+- name: Check if database is running on node0 database server
+  become: true
+  become_user: postgres
+  command: "{{ repmgr_pg_bindir[ansible_os_family] }}/pg_isready"
+  register: node0
+  ignore_errors: True
+  when: groups['postgresql'][0] == inventory_hostname
+
+- name: Debug
+  debug:
+    var: hostvars[groups['postgresql'][0]]['node0'].rc
+
+- name: Create and export backup
+  block:
+  - name: Create temporary directories for backup files
+    file:
+      path: "/var/tmp/{{ snapshot_name }}/{{ item }}"
+      state: directory
+      mode: 0777
+    loop:
+      - data
+      - configs
+
+  - name: Create database snapshot
+    become: yes
+    become_user: postgres
+    command: "pg_dumpall -f /var/tmp/{{ snapshot_name }}/data/database_dump.sql"
+
+  - name: Search for config files to back up
+    shell: "find *.conf"
+    args:
+      chdir: "{{ pg_config_dir[ansible_os_family] }}"
+    register: config_files
+
+  - name: Copy config files into temporary location
+    copy:
+      src: "{{ pg_config_dir[ansible_os_family] }}/{{ item }}"
+      dest: "/var/tmp/{{ snapshot_name  }}/configs"
+      remote_src: yes
+    loop: "{{ config_files.stdout_lines|flatten(levels=1) }}"
+
+  - name: Create snapshot archive
+    import_tasks: common/create_snapshot_archive.yml
+    vars:
+      snapshot_prefix: "postgresql"
+      dirs_to_archive:
+        - /var/tmp/{{ snapshot_name  }}/
+
+  - name: Create snapshot checksum
+    import_tasks: common/create_snapshot_checksum.yml
+
+  - name: Transfer artifacts via rsync
+    import_tasks: common/download_via_rsync.yml
+    vars:
+      artifacts:
+        - "{{ snapshot_path }}"
+        - "{{ snapshot_path }}.sha1"
+
+  - name: Remove temporary files and content
+    file:
+      path: "/var/tmp/{{ snapshot_name  }}/"
+      state: absent
+  when: (groups['postgresql'][0] == inventory_hostname and hostvars[groups['postgresql'][0]]['node0'].rc == 0) or
+        (groups['postgresql'][1] == inventory_hostname and hostvars[groups['postgresql'][0]]['node0'].rc != 0)

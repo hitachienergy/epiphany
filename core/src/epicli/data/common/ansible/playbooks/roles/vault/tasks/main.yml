@@ -285,5 +285,5 @@
         - not specification.vault_script_autoconfiguration
       debug:
         msg: "Init file doesn't exist or you have chosen manual unsealing, so to finish configuration please run script manually with command:
-              {{ specification.vault_install_dir }}/bin/configure-vault.sh -c {{ specification.vault_install_dir }}/script.config -a {{ ansible_default_ipv4.address }}.
+              {{ specification.vault_install_dir }}/bin/configure-vault.sh -c {{ specification.vault_install_dir }}/script.config -a {{ ansible_default_ipv4.address }} -p {{ vault_protocol }} -v {{ vault_helm_chart_values_bool|lower }}.
               Also please put 'init.txt' file, containing output from 'vault operator init' command, in ''{{ specification.vault_install_dir }}' directory."

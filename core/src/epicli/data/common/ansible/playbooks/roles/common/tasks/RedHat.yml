@@ -4,11 +4,15 @@
 # Subscriptions with certs: subscription-manager repos --enable "rhel-*-optional-rpms" --enable "rhel-*-extras-rpms"
 # w/o subscription https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
 
+- name: Install the latest version of ca-certificates package
+  yum:
+    name: ca-certificates
+    state: latest
+
 - name: Install RedHat family packages
   yum:
     name:
       - bash-completion
-      - ca-certificates
       - curl
       - ebtables
       - ethtool
@@ -23,6 +27,7 @@
       - net-tools
       - openssl
       - python-setuptools
+      - rsync
       - sysstat
       - tar
       - telnet

@@ -1,12 +1,15 @@
 ---
 - name: Include wait-for-kube-apiserver.yml
-  include_tasks: kubernetes/wait-for-kube-apiserver.yml
+  import_tasks: kubernetes/wait-for-kube-apiserver.yml
+  delegate_to: "{{ groups['kubernetes_master'][0] }}"
 
 - name: Include get-cluster-version.yml
-  include_tasks: kubernetes/get-cluster-version.yml # sets cluster_version
+  import_tasks: kubernetes/get-cluster-version.yml # sets cluster_version
+  delegate_to: "{{ groups['kubernetes_master'][0] }}"
 
 - name: Include get-kubelet-version.yml
-  include_tasks: kubernetes/get-kubelet-version.yml # sets kubelet_version
+  import_tasks: kubernetes/get-kubelet-version.yml # sets kubelet_version
+  delegate_to: "{{ groups['kubernetes_master'][0] }}"
 
 - name: Upgrade master to v{{ version }}
   include_tasks: kubernetes/upgrade-master.yml
@@ -15,7 +18,7 @@
     cni_version: "{{ cni_ver }}"
   when:
     - groups['kubernetes_master'][0] == inventory_hostname
-    - cluster_version.stdout is version('v' + version, '<=')
+    - cluster_version is version('v' + version, '<=')
 
 - name: Upgrade node to v{{ version }}
   include_tasks: kubernetes/upgrade-node.yml
@@ -25,4 +28,4 @@
   when:
     - groups['kubernetes_node'] is defined
     - inventory_hostname in groups['kubernetes_node']
-    - kubelet_version.stdout is version('v' + version, '<=')
+    - kubelet_version is version('v' + version, '<=')

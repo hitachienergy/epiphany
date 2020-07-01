@@ -1,0 +1,55 @@
+---
+- name: Find snapshot archive
+  import_tasks: common/find_snapshot_archive.yml
+  vars:
+    snapshot_prefix: "rabbitmq_definitions"
+    snapshot_name: "{{ specification.components.rabbitmq.snapshot_name }}"
+
+- name: Transfer the archive via rsync
+  import_tasks: common/upload_via_rsync.yml
+  vars:
+    artifacts:
+      - "{{ snapshot_path }}"
+      - "{{ snapshot_path }}.sha1"
+
+- name: Verify snapshot checksum
+  import_tasks: common/verify_snapshot_checksum.yml
+
+- name: Ensure a folder to hold definitions in exists
+  file:
+    path: /var/lib/rabbitmq/definitions/
+    state: directory
+
+- name: Extract the archive
+  unarchive:
+    dest: /var/lib/rabbitmq/definitions/
+    src: "{{ recovery_dir }}/{{ snapshot_path | basename }}"
+    remote_src: true
+
+- name: Ensure management api is enabled
+  shell: |
+    rabbitmq-plugins enable rabbitmq_management
+  args:
+    executable: /bin/bash
+
+- name: Ensure the rabbitmqadmin binary is installed
+  shell: |
+    curl -fsSL http://localhost:15672/cli/rabbitmqadmin \
+         -o /usr/local/bin/rabbitmqadmin \
+    && chmod +x /usr/local/bin/rabbitmqadmin
+  args:
+    creates: /usr/local/bin/rabbitmqadmin
+    executable: /bin/bash
+
+- name: Reconstruct the snapshot_name
+  set_fact:
+    snapshot_name: >-
+      {{ snapshot_path | basename | regex_replace('^rabbitmq_definitions_(.*).tar.gz$', '\1') }}
+
+- debug: var=snapshot_name
+
+- name: Import definitions json file
+  shell: |
+    /usr/local/bin/rabbitmqadmin import /var/lib/rabbitmq/definitions/definitions-{{ snapshot_name }}.json
+  args:
+    executable: /bin/bash

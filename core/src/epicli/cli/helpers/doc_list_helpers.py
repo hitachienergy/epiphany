@@ -1,3 +1,9 @@
+
+class ExpectedSingleResultException(Exception):
+    """Raised when the query returns none or too many results."""
+    pass
+
+
 def select_first(documents, query):
     if documents is not None:
         for x in documents:
@@ -22,5 +28,5 @@ def select_single(documents, query):
         elements_count = len(results)
         if elements_count == 1:
             return results[0]
-        raise Exception("Expected one element but received: " + str(elements_count))
+        raise ExpectedSingleResultException("Expected one element but received: " + str(elements_count))
     return None

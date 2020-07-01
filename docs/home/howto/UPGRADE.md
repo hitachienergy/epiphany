@@ -4,7 +4,7 @@
 
 From Epicli 0.4.2 and up the CLI has the ability to perform upgrades on certain components on a cluster. The components it currently can upgrade and will add are:
 
-- kubernetes (master and nodes): Upgrades Kubernetes starting from 1.11.5 to 1.17.4 currently used in Epiphany 0.4.2
+- kubernetes (master and nodes): Upgrades Kubernetes starting from 1.11.5 to 1.17.7
 - common: Upgrades all common configurations to match them to Epiphany 0.4.2
 - repository: Adds the repository role needed for component installation in Epiphany 0.4.2
 - image_registry: Adds the image_registry role needed for offline installation in Epiphany 0.4.2
