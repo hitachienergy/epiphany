@@ -74,8 +74,8 @@ resource "azurerm_virtual_machine" "{{ specification.name }}" {
   }
 
   {%- if specification.availability_set is defined %}
-    availability_set_id   = "${azurerm_availability_set.{{ specification.availability_set_name }}.id}"
-  {- endif %}
+    availability_set_id   = "${azurerm_availability_set.{{ specification.availability_set }}.id}"
+  {%- endif %}
 
   #TODO:
   # storage_data_disk

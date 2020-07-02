@@ -78,10 +78,13 @@ class InfrastructureBuilder(Step):
                     infrastructure.append(subnet_nsg_association)
 
             if 'availability_set' in component_value:
-                availability_set_name = component_value.component_value
+                availability_set_name = component_value.availability_set
                 availability_set = select_first(infrastructure, lambda item: item.kind == 'infrastructure/availability-set' and
-                                    item.specification.name == availability_set_name)
-                infrastructure.append(availability_set)
+                                   item.name == availability_set_name)
+                if availability_set is None:
+                    availability_set = self.get_availability_set(availability_set_name)
+                    if availability_set:
+                        infrastructure.append(availability_set)
 
 
             #TODO: For now we create the VM infrastructure compatible with the Epiphany 2.x
@@ -141,6 +144,11 @@ class InfrastructureBuilder(Step):
         subnet.specification.cluster_name = self.cluster_name
         return subnet
 
+    def get_availability_set(self, availability_set_name):
+        availability_set =  select_first(self.docs, lambda item: item.kind == 'infrastructure/availability-set' and
+                                    item.name == availability_set_name)
+        return availability_set
+
     def get_subnet_network_security_group_association(self, component_key, subnet_name, security_group_name, index):
         ssga = self.get_config_or_default(self.docs, 'infrastructure/subnet-network-security-group-association')
         ssga.specification.name = resource_name(self.cluster_prefix, self.cluster_name, 'ssga' + '-' + str(index), component_key)
@@ -159,9 +167,6 @@ class InfrastructureBuilder(Step):
         network_interface.specification.public_ip_name = public_ip_name
         network_interface.specification.enable_accelerated_networking = vm_config.specification.network_interface.enable_accelerated_networking
         return network_interface
-
-    def get_availability_set(self, self, component_key, component_value, vm_config, index):
-        pass
 
     def get_public_ip(self, component_key, component_value, vm_config, index):
         public_ip = self.get_config_or_default(self.docs, 'infrastructure/public-ip')
