@@ -24,9 +24,22 @@ This test create fresh cluster from scratch with all components, verifies comple
 
 ### Upgrade cluster
 
-This test creates cluster using release X and updates it to release / branch Y, verifies completion, and then destroys cluster.
+This test creates cluster using release X and upgrades it to release / branch Y, verifies completion, and then destroys cluster.
 
-TODO
+| From Release | To Branch/Release | OS     | AWS Status                     | Azure Status                     |
+| :---         | :---:             | :---:  | :---:                          | :---:                            |
+| 0.4.x        | 0.7.x             | RedHat | ![04x-07x-upgrade-rh-aws]      | ![04x-07x-upgrade-rh-azure]      |
+|              |                   | Ubuntu | ![04x-07x-upgrade-ubu-aws]     | ![04x-07x-upgrade-ubu-azure]     |
+| 0.5.x        | 0.7.x             | RedHat | ![05x-07x-upgrade-rh-aws]      | ![05x-07x-upgrade-rh-azure]      |
+|              |                   | Ubuntu | ![05x-07x-upgrade-ubu-aws]     | ![05x-07x-upgrade-ubu-azure]     |
+| 0.6.x        | 0.7.x             | RedHat | ![06x-07x-upgrade-rh-aws]      | ![06x-07x-upgrade-rh-azure]      |
+|              |                   | Ubuntu | ![06x-07x-upgrade-ubu-aws]     | ![06x-07x-upgrade-ubu-azure]     |
+| 0.4.x        | develop           | RedHat | ![04x-develop-upgrade-rh-aws]  | ![04x-develop-upgrade-rh-azure]  |
+|              |                   | Ubuntu | ![04x-develop-upgrade-ubu-aws] | ![04x-develop-upgrade-ubu-azure] |
+| 0.5.x        | develop           | RedHat | ![05x-develop-upgrade-rh-aws]  | ![05x-develop-upgrade-rh-azure]  |
+|              |                   | Ubuntu | ![05x-develop-upgrade-ubu-aws] | ![05x-develop-upgrade-ubu-azure] |
+| 0.6.x        | develop           | RedHat | ![06x-develop-upgrade-rh-aws]  | ![06x-develop-upgrade-rh-azure]  |
+|              |                   | Ubuntu | ![06x-develop-upgrade-ubu-aws] | ![06x-develop-upgrade-ubu-azure] |
 
 ### Create cluster with multi-master (HA) K8s
 
@@ -87,3 +100,29 @@ TODO
 [04x-apply-rh-azure]: https://abb-epiphany.vsrm.visualstudio.com/_apis/public/Release/badge/ce756f3f-4d59-41c4-983e-e8643138cd4e/69/280
 [04x-apply-ubu-aws]: https://abb-epiphany.vsrm.visualstudio.com/_apis/public/Release/badge/ce756f3f-4d59-41c4-983e-e8643138cd4e/69/279
 [04x-apply-ubu-azure]: https://abb-epiphany.vsrm.visualstudio.com/_apis/public/Release/badge/ce756f3f-4d59-41c4-983e-e8643138cd4e/69/281
+
+[04x-07x-upgrade-rh-aws]: https://abb-epiphany.vsrm.visualstudio.com/_apis/public/Release/badge/ce756f3f-4d59-41c4-983e-e8643138cd4e/97/420   
+[04x-07x-upgrade-ubu-aws]: https://abb-epiphany.vsrm.visualstudio.com/_apis/public/Release/badge/ce756f3f-4d59-41c4-983e-e8643138cd4e/97/421
+[05x-07x-upgrade-rh-aws]: https://abb-epiphany.vsrm.visualstudio.com/_apis/public/Release/badge/ce756f3f-4d59-41c4-983e-e8643138cd4e/98/424
+[05x-07x-upgrade-ubu-aws]: https://abb-epiphany.vsrm.visualstudio.com/_apis/public/Release/badge/ce756f3f-4d59-41c4-983e-e8643138cd4e/98/425
+[06x-07x-upgrade-rh-aws]: https://abb-epiphany.vsrm.visualstudio.com/_apis/public/Release/badge/ce756f3f-4d59-41c4-983e-e8643138cd4e/99/428
+[06x-07x-upgrade-ubu-aws]: https://abb-epiphany.vsrm.visualstudio.com/_apis/public/Release/badge/ce756f3f-4d59-41c4-983e-e8643138cd4e/99/429
+[04x-develop-upgrade-rh-aws]: https://abb-epiphany.vsrm.visualstudio.com/_apis/public/Release/badge/ce756f3f-4d59-41c4-983e-e8643138cd4e/92/399
+[04x-develop-upgrade-ubu-aws]: https://abb-epiphany.vsrm.visualstudio.com/_apis/public/Release/badge/ce756f3f-4d59-41c4-983e-e8643138cd4e/92/400
+[05x-develop-upgrade-rh-aws]: https://abb-epiphany.vsrm.visualstudio.com/_apis/public/Release/badge/ce756f3f-4d59-41c4-983e-e8643138cd4e/94/406
+[05x-develop-upgrade-ubu-aws]: https://abb-epiphany.vsrm.visualstudio.com/_apis/public/Release/badge/ce756f3f-4d59-41c4-983e-e8643138cd4e/94/407
+[06x-develop-upgrade-rh-aws]: https://abb-epiphany.vsrm.visualstudio.com/_apis/public/Release/badge/ce756f3f-4d59-41c4-983e-e8643138cd4e/95/411
+[06x-develop-upgrade-ubu-aws]: https://abb-epiphany.vsrm.visualstudio.com/_apis/public/Release/badge/ce756f3f-4d59-41c4-983e-e8643138cd4e/95/412
+
+[04x-07x-upgrade-rh-azure]: https://abb-epiphany.vsrm.visualstudio.com/_apis/public/Release/badge/ce756f3f-4d59-41c4-983e-e8643138cd4e/97/422
+[04x-07x-upgrade-ubu-azure]: https://abb-epiphany.vsrm.visualstudio.com/_apis/public/Release/badge/ce756f3f-4d59-41c4-983e-e8643138cd4e/97/423
+[05x-07x-upgrade-rh-azure]: https://abb-epiphany.vsrm.visualstudio.com/_apis/public/Release/badge/ce756f3f-4d59-41c4-983e-e8643138cd4e/98/426
+[05x-07x-upgrade-ubu-azure]: https://abb-epiphany.vsrm.visualstudio.com/_apis/public/Release/badge/ce756f3f-4d59-41c4-983e-e8643138cd4e/98/427
+[06x-07x-upgrade-rh-azure]: https://abb-epiphany.vsrm.visualstudio.com/_apis/public/Release/badge/ce756f3f-4d59-41c4-983e-e8643138cd4e/99/430
+[06x-07x-upgrade-ubu-azure]: https://abb-epiphany.vsrm.visualstudio.com/_apis/public/Release/badge/ce756f3f-4d59-41c4-983e-e8643138cd4e/99/431
+[04x-develop-upgrade-rh-azure]: https://abb-epiphany.vsrm.visualstudio.com/_apis/public/Release/badge/ce756f3f-4d59-41c4-983e-e8643138cd4e/92/401
+[04x-develop-upgrade-ubu-azure]: https://abb-epiphany.vsrm.visualstudio.com/_apis/public/Release/badge/ce756f3f-4d59-41c4-983e-e8643138cd4e/92/402
+[05x-develop-upgrade-rh-azure]: https://abb-epiphany.vsrm.visualstudio.com/_apis/public/Release/badge/ce756f3f-4d59-41c4-983e-e8643138cd4e/94/408
+[05x-develop-upgrade-ubu-azure]: https://abb-epiphany.vsrm.visualstudio.com/_apis/public/Release/badge/ce756f3f-4d59-41c4-983e-e8643138cd4e/94/409
+[06x-develop-upgrade-rh-azure]: https://abb-epiphany.vsrm.visualstudio.com/_apis/public/Release/badge/ce756f3f-4d59-41c4-983e-e8643138cd4e/95/413
+[06x-develop-upgrade-ubu-azure]: https://abb-epiphany.vsrm.visualstudio.com/_apis/public/Release/badge/ce756f3f-4d59-41c4-983e-e8643138cd4e/95/414
