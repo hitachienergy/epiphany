@@ -217,6 +217,9 @@ function configure_kubernetes {
     elif [ "${command_result[1]}" = "1" ] ; then
         log_and_print "Installing Vault Agent Helm Chart...";
         if [ "$helm_custom_values_set_bool" = "true" ] ; then
+          if [ "$vault_protocol" = "http" ] ; then
+            sed -i 's|"externalVaultAddr": "http[s]://|"externalVaultAddr": "http://|g' /tmp/vault_helm_chart_values.yaml
+          fi
           helm upgrade --install --wait -f /tmp/vault_helm_chart_values.yaml vault /tmp/v0.4.0.tar.gz
         else
           helm upgrade --install --wait vault /tmp/v0.4.0.tar.gz
