@@ -16,44 +16,8 @@
 - name: upgrade-master | Make sure the etcd encryption feature is properly configured (if enabled)
   import_tasks: patch-kubeadm-config.yml
 
-- name: Set imageRepository in kubeadm-config ConfigMap to use {{ image_registry_address }}
-  when:
-    - not kubeadm_config_file.stat.exists
-  block:
-    - name: upgrade-master | Set parent key of imageRepository key in kubeadm-config ConfigMap
-      set_fact:
-        kubeadm_config_parent_key: >-
-          {{ 'MasterConfiguration' if 'v1.11' in cluster_version else 'ClusterConfiguration' }}
-
-    - name: upgrade-master | Get value of imageRepository key
-      shell: |
-        kubectl get cm -n kube-system kubeadm-config -o jsonpath={{ jsonpath }}
-      vars:
-        jsonpath: >-
-          '{.data.{{ kubeadm_config_parent_key }}}'
-      environment:
-        KUBECONFIG: /home/{{ admin_user.name }}/.kube/config
-      changed_when: false
-      register: result
-
-    - name: upgrade-master | Save value of imageRepository as fact
-      set_fact:
-        kubeadm_image_repository: "{{ (result.stdout|from_yaml).imageRepository }}"
-
-    - name: upgrade-master | Patch imageRepository in kubeadm-config ConfigMap
-      environment:
-        KUBECONFIG: /home/{{ admin_user.name }}/.kube/config
-      shell: |-
-        set -o pipefail &&
-        # do not use --export option since it has been deprecated in 1.14
-        kubectl get cm kubeadm-config -n kube-system -o yaml |
-        sed 's/imageRepository: {{ kubeadm_image_repository }}/imageRepository: {{ image_registry_address }}\/{{ kubeadm_image_repository }}/g' |
-        xargs --null -I config_map_content \
-        kubectl patch cm kubeadm-config -n kube-system --patch config_map_content
-      args:
-        executable: /bin/bash
-      when:
-        - not image_registry_address in kubeadm_image_repository
+- name: upgrade-master | Update imageRepository in kubeadm-config ConfigMap
+  include_tasks: update-kubeadm-image-repository.yml
 
 - name: upgrade-master | Reconfigure coredns
   include_tasks: reconfigure-coredns.yml
@@ -80,10 +44,7 @@
 - name: upgrade-master | Wait for cluster's readiness
   include_tasks: wait.yml
 
-# For Redhat and Debian K8s > 1.14.6 we want to update packages like so
 - name: upgrade-master | Upgrade, configure packages
-  when: version is version('1.15.0', '>=')
-     or ansible_os_family == "RedHat"
   block:
     - name: upgrade-master | Hold packages for Debian family
       include_tasks: "Debian/hold-packages.yml"
@@ -105,63 +66,38 @@
     - name: upgrade-master | Wait for cluster's readiness
       include_tasks: wait.yml
 
-    - name: upgrade-master | Migrate kubeadm config
-      include_tasks: migrate-kubeadm-config.yml
+    - name: upgrade-master | Validate whether cluster is upgradeable
+      # Ignore CoreDNSUnsupportedPlugins error since coredns-migration does not support 'hosts' plugin.
+      # This issue is fixed in K8s v1.18, see https://github.com/kubernetes/kubernetes/pull/88482
+      shell: >-
+        {%- if version is version('1.18.0', '>=') -%}
+           kubeadm upgrade plan v{{ version }}
+        {%- else -%}
+          kubeadm upgrade plan v{{ version }} --ignore-preflight-errors=CoreDNSUnsupportedPlugins
+        {%- endif -%}
+      changed_when: false
+      register: result
+      until: result is succeeded
+      retries: 20
+      delay: 30
+
+    # Note: Usage of the --config flag for reconfiguring the cluster during upgrade is not recommended since v1.16
+    - name: upgrade-master | Upgrade K8s cluster to v{{ version }}
+      # Ignore CoreDNSUnsupportedPlugins error since coredns-migration does not support 'hosts' plugin.
+      # This issue is fixed in K8s v1.18, see https://github.com/kubernetes/kubernetes/pull/88482
+      shell: >-
+        {%- if version is version('1.18.0', '>=') -%}
+           kubeadm upgrade apply -y v{{ version }}
+        {%- else -%}
+          kubeadm upgrade apply -y v{{ version }} --ignore-preflight-errors=CoreDNSUnsupportedPlugins
+        {%- endif -%}
+      changed_when: false
+      register: result
+      until: result is succeeded
+      retries: 20
+      delay: 30
       when:
-        - kubeadm_config_file.stat.exists
-        - version is version('1.17.7', '==') # Migrate kubeadm config for K8s 1.17
-
-    - name: upgrade-master | Upgrade plan block
-      block:
-        - name: "upgrade-master | Validate whether cluster is upgradeable
-                {{ '(using kubeadm-config.yml file)' if kubeadm_config_file.stat.exists else '' }}"
-          shell: >-
-            kubeadm upgrade plan v{{ version +
-            (' --config /etc/kubeadm/kubeadm-config.yml' if kubeadm_config_file.stat.exists else '') }}
-          changed_when: false
-          register: result
-          until: result is succeeded
-          retries: 20
-          delay: 30
-
-      rescue: # ignore CoreDNSUnsupportedPlugins error since coredns migration does not support all plugins that are valid and currently used
-        - name: "upgrade-master | Validate whether cluster is upgradeable with ignore CoreDNS plugin related erroros
-                {{ '(using kubeadm-config.yml file)' if kubeadm_config_file.stat.exists else '' }}"
-          shell: >-
-            kubeadm upgrade plan v{{ version +
-            (' --config /etc/kubeadm/kubeadm-config.yml' if kubeadm_config_file.stat.exists else '') }} --ignore-preflight-errors=CoreDNSUnsupportedPlugins
-          changed_when: false
-          register: result
-          until: result is succeeded
-          retries: 20
-          delay: 30
-
-    - name: upgrade-master | Upgrade apply block
-      block:
-        - name: "upgrade-master | Upgrade K8s cluster to v{{ version }}
-                {{ '(using kubeadm-config.yml file)' if kubeadm_config_file.stat.exists else '' }}"
-          shell: >-
-            kubeadm upgrade apply -y v{{ version +
-            (' --config /etc/kubeadm/kubeadm-config.yml' if kubeadm_config_file.stat.exists else '') }}
-          register: result
-          until: result is succeeded
-          retries: 20
-          delay: 30
-          when:
-            - cluster_version is version('v' + version, '<') # without this condition fails when 'upgrading' again from 1.12.10 to 1.12.10
-
-      rescue:  # ignore CoreDNSUnsupportedPlugins error since coredns migration does not support all plugins that are valid and currently used
-        - name: "upgrade-master | Upgrade K8s cluster to v{{ version }}
-                {{ '(using kubeadm-config.yml file)' if kubeadm_config_file.stat.exists else '' }}"
-          shell: >-
-            kubeadm upgrade apply -y v{{ version +
-            (' --config /etc/kubeadm/kubeadm-config.yml' if kubeadm_config_file.stat.exists else '') }} --ignore-preflight-errors=CoreDNSUnsupportedPlugins
-          register: result
-          until: result is succeeded
-          retries: 20
-          delay: 30
-          when:
-            - cluster_version is version('v' + version, '<')
+        - cluster_version is version('v' + version, '<')
 
     - name: Install kubelet and kubectl for {{ version }}
       include_tasks: >-
@@ -172,54 +108,15 @@
         {%- endif -%}
       when: result is succeeded
 
-    - name: Update kubeadm-config.yml if exists
-      include_tasks: upgrade-kubeadm-config.yml
-      when: kubeadm_config_file.stat.exists
-
-# For Debian & K8s <= 1.14.6 we want to update packages like so
-- name: upgrade-master | Upgrade, configure packages
-  when:
-    - ansible_os_family == "Debian"
-    - version is version('1.14.6', '<=')
-  block:
-    - name: upgrade-master | Install packages
-      include_tasks: "{{ ansible_os_family }}/install-packages-pre-1.15.yml"
-
-    - name: upgrade-master | Wait for cluster's readiness
-      include_tasks: wait.yml
-
-    - name: "upgrade-master | Validate whether cluster is upgradeable
-            {{ '(using kubeadm-config.yml file)' if kubeadm_config_file.stat.exists else '' }}"
-      shell: >-
-        kubeadm upgrade plan v{{ version +
-        (' --config /etc/kubeadm/kubeadm-config.yml' if kubeadm_config_file.stat.exists else '') }}
-      changed_when: false
-      register: result
-      until: result is succeeded
-      retries: 5
-      delay: 5
-
-    - name: "upgrade-master | Upgrade K8s cluster to v{{ version }}
-            {{ '(using kubeadm-config.yml file)' if kubeadm_config_file.stat.exists else '' }}"
-      shell: >-
-        kubeadm upgrade apply -y v{{ version +
-        (' --config /etc/kubeadm/kubeadm-config.yml' if kubeadm_config_file.stat.exists else '') }}
-      register: result
-      until: result is succeeded
-      retries: 5
-      delay: 5
-      when:
-        - cluster_version is version('v' + version, '<') # without this condition fails when 'upgrading' again from 1.12.10 to 1.12.10
-
 - name: upgrade-master | Wait for cluster's readiness
   include_tasks: wait.yml
 
-- name: Upgrade Docker
-  block:
-    - name: upgrade-master | Upgrade Docker # this may restart Docker daemon
-      include_tasks: docker.yml
-  when:
-    - version is version('1.14.0', '>=') # Docker 18.09 validated since K8s 1.14
+- name: upgrade-master | Upgrade kubeadm-config.yml if exists
+  include_tasks: upgrade-kubeadm-config.yml
+  when: kubeadm_config_file.stat.exists
+
+- name: upgrade-master | Upgrade Docker # this may restart Docker daemon
+  include_tasks: docker.yml
 
 - name: upgrade-master | Stop Kubelet
   systemd:
@@ -264,3 +161,5 @@
 
 - name: upgrade-master | Verify cluster version
   include_tasks: verify-upgrade.yml
+
+# TODO: Create a flag file that the upgrade completed to not run it again for the same version next time
