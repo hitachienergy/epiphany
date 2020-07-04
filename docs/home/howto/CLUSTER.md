@@ -669,3 +669,109 @@ You can read more [here](https://www.confluent.io/blog/how-choose-number-topics-
 ## RabbitMQ installation and setting
 
 To install RabbitMQ in single mode just add rabbitmq role to your data.yaml for your server and in general roles section. All configuration on RabbitMQ - e.g. user other than guest creation should be performed manually.
+
+## Howto use azure scalability set feature
+
+In your cluster yaml config declare several (if required) object of kind `infrastructure/availability-set` like
+example below, change the `name` field as you wish.
+
+```yaml
+---
+kind: infrastructure/availability-set
+name: kube-node-availability-set
+provider: azure
+specification:
+  name: kube-node-availability-set
+  platform_fault_domain_count: 2
+  platform_update_domain_count: 5
+  managed: 'true'
+```
+
+Then your infrastructure type `infrastructure/virtual-machine` with the name you want to enable (below is
+kubernetes-node-machine) reference the entry, for example:
+
+```yaml
+kind: infrastructure/virtual-machine
+name: kubernetes-node-machine
+provider: azure
+specification:
+  size: Standard_DS3_V2
+# This tell to template the vm terraform to insert the id of the availability-set
+  availability_set: kube-node-availability-set
+title: Virtual Machine Infra
+```
+
+Then in the corresponding `components` section of the kind `kind: epiphany-cluster` set it as well.
+
+```yaml
+  components:
+    kafka:
+      count: 0
+    kubernetes_master:
+      count: 1
+    kubernetes_node:
+# This line tell we generate the availability-set terraform template
+      availability_set: kube-node-availability-set
+```
+
+The full minimum cluster is listed below. Note that you can set different type of machine within different
+availability set, eg. all kubenetes master in one availability set, all kubernetes nodes in another one, also
+kafka etc.. .
+
+```yaml
+# Test availability set config
+---
+kind: epiphany-cluster
+name: default
+provider: azure
+specification:
+  name: test-cluster
+  prefix: test
+  admin_user:
+    key_path: /path/to/ssk/key
+    name: di-dev
+  cloud:
+    region: Australia East
+    subscription_name: <your subscription name>
+    use_public_ips: true
+    use_service_principal: true
+  components:
+    kafka:
+      count: 0
+    kubernetes_master:
+      count: 1
+    kubernetes_node:
+# This line tell we generate the availability-set terraform template
+      availability_set: kube-node-availability-set
+      count: 1
+    load_balancer:
+      count: 1
+    logging:
+      count: 0
+    monitoring:
+      count: 0
+    postgresql:
+      count: 0
+    rabbitmq:
+      count: 0
+title: Epiphany cluster Config
+---
+kind: infrastructure/virtual-machine
+name: kubernetes-node-machine
+provider: azure
+specification:
+  size: Standard_DS3_V2
+# This tell to template the vm terraform to insert the id of the availability-set
+  availability_set: kube-node-availability-set
+title: Virtual Machine Infra
+---
+kind: infrastructure/availability-set
+name: kube-node-availability-set
+provider: azure
+specification:
+  name: kube-node-availability-set
+  platform_fault_domain_count: 2
+  platform_update_domain_count: 5
+  managed: 'true'
+```
+
