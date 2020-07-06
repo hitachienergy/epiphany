@@ -23,9 +23,13 @@
           {{ 'MasterConfiguration' if 'v1.11' in cluster_version else 'ClusterConfiguration' }}
 
     - name: upgrade-master | Get value of imageRepository key
+      shell: |
+        kubectl get cm -n kube-system kubeadm-config -o jsonpath={{ jsonpath }}
+      vars:
+        jsonpath: >-
+          '{.data.{{ kubeadm_config_parent_key }}}'
       environment:
         KUBECONFIG: /home/{{ admin_user.name }}/.kube/config
-      shell: kubectl get cm -n kube-system kubeadm-config -o jsonpath='{.data.{{ kubeadm_config_parent_key }}}'
       changed_when: false
       register: result
 
