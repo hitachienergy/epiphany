@@ -8,10 +8,13 @@
   changed_when: false
   register: kubeadm_config_file
 
-- name: Check if etcd encryption configuration exists
-  stat:
-    path: /etc/kubernetes/pki/etcd/etc-encryption.conf
-  register: etcd_encryption_file
+# This resolves issues (related to the etcd encryption) causing upgrades to hang.
+# Legacy clusters may have incomplete configs, thus it is corrected here, before any `kubeadm upgrade` command is executed.
+# If config is incomplete, kubeadm rewrites the kube-apiserver.yaml manifest file without the etcd feature enabled.
+# In turn, this causes Kuberentes components such as the controller-manager to lose ability to read internal (kube-system) secrets, then
+# any upgrade attempt freezes and the cluster at hand becomes unusable.
+- name: upgrade-master | Make sure the etcd encryption feature is properly configured (if enabled)
+  import_tasks: patch-kubeadm-config.yml
 
 - name: Set imageRepository in kubeadm-config ConfigMap to use {{ image_registry_address }}
   when:
@@ -135,26 +138,6 @@
 
     - name: upgrade-master | Upgrade apply block
       block:
-        - when: etcd_encryption_file.stat.exists
-          block: &kube-apiserver-etcd-encryption-fix
-            - name: Spawn shell task in background to correct the kube-apiserver.yaml config file (if needed)
-              shell: |
-                for (( RETRY = 0; RETRY < {{ _async // _sleep }}; RETRY++ )); do
-                  if grep -m1 '{{ _insertafter }}' '{{ _path }}' && ! grep -m1 '{{ _line }}' '{{ _path }}'; then
-                    sed -i '/{{ _insertafter }}/a\{{ _line }}' '{{ _path }}'
-                  fi
-                  sleep {{ _sleep }}
-                done
-              args: { executable: /bin/bash }
-              vars:
-                _path: /etc/kubernetes/manifests/kube-apiserver.yaml
-                _insertafter: '^    - kube-apiserver$'
-                _line: "    - --encryption-provider-config=/etc/kubernetes/pki/etcd/etc-encryption.conf"
-                _async: 600  # this task will terminate after 10 minutes
-                _sleep: 30
-              async: "{{ _async | int }}"
-              poll: 0
-
         - name: "upgrade-master | Upgrade K8s cluster to v{{ version }}
                 {{ '(using kubeadm-config.yml file)' if kubeadm_config_file.stat.exists else '' }}"
           shell: >-
@@ -168,9 +151,6 @@
             - cluster_version is version('v' + version, '<') # without this condition fails when 'upgrading' again from 1.12.10 to 1.12.10
 
       rescue:  # ignore CoreDNSUnsupportedPlugins error since coredns migration does not support all plugins that are valid and currently used
-        - when: etcd_encryption_file.stat.exists
-          block: *kube-apiserver-etcd-encryption-fix
-
         - name: "upgrade-master | Upgrade K8s cluster to v{{ version }}
                 {{ '(using kubeadm-config.yml file)' if kubeadm_config_file.stat.exists else '' }}"
           shell: >-
@@ -195,12 +175,6 @@
     - name: Update kubeadm-config.yml if exists
       include_tasks: upgrade-kubeadm-config.yml
       when: kubeadm_config_file.stat.exists
-
-    - name: upgrade-master | Set etcd encryption if configured
-      include_tasks: etcd-encryption.yml
-      when:
-        - groups['kubernetes_master'][0] == inventory_hostname
-        - etcd_encryption_file.stat.exists
 
 # For Debian & K8s <= 1.14.6 we want to update packages like so
 - name: upgrade-master | Upgrade, configure packages
