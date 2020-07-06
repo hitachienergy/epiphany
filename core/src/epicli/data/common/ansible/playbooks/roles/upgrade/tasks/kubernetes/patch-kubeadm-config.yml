@@ -1,0 +1,130 @@
+---
+- name: Check the etc-encryption.conf file
+  stat:
+    path: &etc-encryption-conf /etc/kubernetes/pki/etcd/etc-encryption.conf
+    get_attributes: false
+    get_checksum: false
+    get_mime: false
+  register: stat_etcd_encryption_config
+
+# Assuming that if the etcd encryption config file is absent, then
+# the encryption feature has never been enabled for the cluster at hand.
+- when:
+    - stat_etcd_encryption_config.stat.exists
+  block:
+    - name: Check the kubeadm-config.yml file
+      stat:
+        path: &kubeadm-config-yml /etc/kubeadm/kubeadm-config.yml
+        get_attributes: false
+        get_checksum: false
+        get_mime: false
+      register: stat_kubeadm_config
+
+- when:
+    - stat_etcd_encryption_config.stat.exists
+    - stat_kubeadm_config.stat.exists
+  block:
+    - name: Load contents of the kubeadm-config.yml file
+      slurp:
+        path: *kubeadm-config-yml
+      register: slurp_kubeadm_config
+
+    - name: Save modified contents of the kubeadm-config.yml file
+      copy:
+        dest: *kubeadm-config-yml
+
+        # Save all documents.
+        content: |
+          {% for document in _documents_updated %}
+          ---
+          {{ document | to_nice_yaml(indent=2) }}
+          {% endfor -%}
+
+      vars:
+        # Parse yaml payload (remove empty documents).
+        _documents: >-
+          {{ slurp_kubeadm_config.content | b64decode
+                                          | from_yaml_all
+                                          | select
+                                          | list }}
+        # Prepare the patch.
+        # In this patch we include location of the etcd encryption config file.
+        # If it is not included, then the etcd encryption feature becomes disabled/broken.
+        # If it is not present on a cluster that has kube-system secrets already encrypted, then
+        # it may cause any upgrade attempt to freeze for a very long time (in Epiphany it has been reported to be even up to 8 hours).
+        _update:
+          apiServer:
+            extraArgs:
+              encryption-provider-config: *etc-encryption-conf
+
+        # Process all documents (returns a list of dictionaries).
+        _documents_updated: >-
+          {%- set output = [] -%}
+          {%- for document in _documents -%}
+            {%- if document.kind is defined and document.kind == 'ClusterConfiguration' -%}
+              {{- output.append(document | combine(_update, recursive=true)) -}}
+            {%- else -%}
+              {{- output.append(document) -}}
+            {%- endif -%}
+          {%- endfor -%}
+          {{- output -}}
+
+# The `kubeadm upgrade` command can be executed with or without a config file.
+# If the kubeadm-config.yml file does not exists, then we at least patch the kubeadm-config configmap.
+- when:
+    - stat_etcd_encryption_config.stat.exists
+    - not stat_kubeadm_config.stat.exists
+  run_once: true  # makes no sense to execute it more than once (would be redundant)
+  block:
+    - name: Load the kubeadm-config configmap
+      shell: |
+        kubectl get configmap kubeadm-config \
+          --namespace kube-system \
+          --output yaml
+      args:
+        executable: /bin/bash
+      environment:
+        KUBECONFIG: &KUBECONFIG /etc/kubernetes/admin.conf
+      register: shell_kubeadm_configmap
+      changed_when: false
+
+    # The following procedure ensures that etcd encryption is always enabled
+    # during subsequent kubeadm executions (if the config file is not present).
+    - name: Patch and re-apply the kubeadm-config configmap
+      shell: |
+        kubectl apply \
+          --namespace kube-system \
+          --filename - \
+          <<< "$KUBEADM_CONFIGMAP_DOCUMENT"
+      args:
+        executable: /bin/bash
+      environment:
+        KUBECONFIG: *KUBECONFIG
+        # Render an altered kubeadm-config configmap document.
+        KUBEADM_CONFIGMAP_DOCUMENT: >-
+          {{ _document | combine(_update2, recursive=true) | to_nice_yaml(indent=2) }}
+      changed_when: false
+
+      vars:
+        # Parse yaml payload.
+        _document: >-
+          {{ shell_kubeadm_configmap.stdout | from_yaml }}
+
+        # Extract cluster config.
+        _cluster_config: >-
+          {{ _document.data.ClusterConfiguration | from_yaml }}
+
+        # Prepare the cluster config patch.
+        _update1:
+          apiServer:
+            extraArgs:
+              encryption-provider-config: *etc-encryption-conf
+
+        _cluster_config_updated: >-
+          {{ _cluster_config | combine(_update1, recursive=true) }}
+
+        # Prepare the final update for the whole document.
+        _update2:
+          data:
+            ClusterConfiguration: >-
+              {{ _cluster_config_updated | to_nice_yaml(indent=2) }}
