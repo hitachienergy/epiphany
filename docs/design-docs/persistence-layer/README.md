@@ -38,9 +38,9 @@ There are numerous other solutions possible to use over CSI, but they require se
 - We should have kafka performance tests automated
 
 # Initial Plan
-1.	Have epiphany cluster with PostgreSQL database
-2.	Create performance test running in Kubernetes pod using PostgreSQL in current setup (pgbench can be used) 
-3.	Deploy rook operator and create Ceph cluster
-4.	Create PostgreSQL database running in Kubernetes pod using Ceph PVC
-5.	Run performance test using Kubernetes PostgreSQL instance
-6.	Compare results
+1. Have epiphany cluster with PostgreSQL database
+2. Create performance test running in Kubernetes pod using PostgreSQL in current setup (pgbench can be used) 
+3. Deploy rook operator and create Ceph cluster
+4. Create PostgreSQL database running in Kubernetes pod using Ceph PVC
+5. Run performance test using Kubernetes PostgreSQL instance
+6. Compare results
