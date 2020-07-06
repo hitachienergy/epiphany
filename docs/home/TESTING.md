@@ -96,18 +96,23 @@ This test creates epiphany environment down-sized to single machine, verifies co
 
 This test prepares prerequisites for air-gaped installation, creates VMs and cuts them out from internet access, and then create fresh cluster from scratch, verifies completion, and then destroys cluster.
 
-| Brench/Release | Prepare                    | OS     | Download Requirements           | AWS Status                 | Azure Status               |
-| :---           | :---:                      | :---:  | :---:                           | :---:                      | :---:                      |
-| develop        | ![develop-offline-prepare] | RedHat | ![develop-offline-download-rh]  | ![develop-offline-rh-aws]  | ![develop-offline-rh-azure]  |
-|                |                            | Ubuntu | ![develop-offline-download-ubu] | ![develop-offline-ubu-aws] | ![develop-offline-ubu-azure] |
-| 0.7.x          | ![07x-offline-prepare]     | RedHat | ![07x-offline-download-rh]      | ![07x-offline-rh-aws]      | ![07x-offline-rh-azure]      |
-|                |                            | Ubuntu | ![07x-offline-download-ubu]     | ![07x-offline-ubu-aws]     | ![07x-offline-ubu-azure]     |
-| 0.6.x          | ![06x-offline-prepare]     | RedHat | ![06x-offline-download-rh]      | ![06x-offline-rh-aws]      | ![06x-offline-rh-azure]      |
-|                |                            | Ubuntu | ![06x-offline-download-ubu]     | ![06x-offline-ubu-aws]     | ![06x-offline-ubu-azure]     |
-| 0.5.x          | ![05x-offline-prepare]     | RedHat | ![05x-offline-download-rh]      | ![05x-offline-rh-aws]      | ![05x-offline-rh-azure]      |
-|                |                            | Ubuntu | ![05x-offline-download-ubu]     | ![05x-offline-ubu-aws]     | ![05x-offline-ubu-azure]     |
-| 0.4.x          | ![04x-offline-prepare]     | RedHat | ![04x-offline-download-rh]      | ![04x-offline-rh-aws]      | ![04x-offline-rh-azure]      |
-|                |                            | Ubuntu | ![04x-offline-download-ubu]     | ![04x-offline-ubu-aws]     | ![04x-offline-ubu-azure]     |
+| Brench/Release | Prepare                    | OS     | Download Requirements           | AWS Status                    | Azure Status                  |
+| :---           | :---:                      | :---:  | :---:                           | :---:                         | :---:                         |
+| develop        | ![develop-offline-prepare] | RedHat | ![develop-offline-download-rh]  | ![develop-offline-rh-aws]     | ![develop-offline-rh-azure]   |
+|                |                            | Centos | :bangbang: missing :bangbang:   | :bangbang: missing :bangbang: | :bangbang: missing :bangbang: |
+|                |                            | Ubuntu | ![develop-offline-download-ubu] | ![develop-offline-ubu-aws]    | ![develop-offline-ubu-azure]  |
+| 0.7.x          | ![07x-offline-prepare]     | RedHat | ![07x-offline-download-rh]      | ![07x-offline-rh-aws]         | ![07x-offline-rh-azure]       |
+|                |                            | Centos | :bangbang: missing :bangbang:   | :bangbang: missing :bangbang: | :bangbang: missing :bangbang: |
+|                |                            | Ubuntu | ![07x-offline-download-ubu]     | ![07x-offline-ubu-aws]        | ![07x-offline-ubu-azure]      |
+| 0.6.x          | ![06x-offline-prepare]     | RedHat | ![06x-offline-download-rh]      | ![06x-offline-rh-aws]         | ![06x-offline-rh-azure]       |
+|                |                            | Centos | :bangbang: missing :bangbang:   | :bangbang: missing :bangbang: | :bangbang: missing :bangbang: |
+|                |                            | Ubuntu | ![06x-offline-download-ubu]     | ![06x-offline-ubu-aws]        | ![06x-offline-ubu-azure]      |
+| 0.5.x          | ![05x-offline-prepare]     | RedHat | ![05x-offline-download-rh]      | ![05x-offline-rh-aws]         | ![05x-offline-rh-azure]       |
+|                |                            | Centos | :bangbang: missing :bangbang:   | :bangbang: missing :bangbang: | :bangbang: missing :bangbang: |
+|                |                            | Ubuntu | ![05x-offline-download-ubu]     | ![05x-offline-ubu-aws]        | ![05x-offline-ubu-azure]      |
+| 0.4.x          | ![04x-offline-prepare]     | RedHat | ![04x-offline-download-rh]      | ![04x-offline-rh-aws]         | ![04x-offline-rh-azure]       |
+|                |                            | Centos | :bangbang: missing :bangbang:   | :bangbang: missing :bangbang: | :bangbang: missing :bangbang: |
+|                |                            | Ubuntu | ![04x-offline-download-ubu]     | ![04x-offline-ubu-aws]        | ![04x-offline-ubu-azure]      |
 
 [develop-apply-init-prepare]: https://abb-epiphany.vsrm.visualstudio.com/_apis/public/Release/badge/ce756f3f-4d59-41c4-983e-e8643138cd4e/76/304
 [07x-apply-init-prepare]: https://abb-epiphany.vsrm.visualstudio.com/_apis/public/Release/badge/ce756f3f-4d59-41c4-983e-e8643138cd4e/96/415
