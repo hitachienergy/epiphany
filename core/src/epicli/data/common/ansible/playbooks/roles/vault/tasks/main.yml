@@ -227,6 +227,14 @@
         mode: u=rw,g=r,o=
         src: vault/users.csv.j2
 
+    - name: Copy Vault namespace yaml
+      copy:
+        src: kubernetes/vault-namespace.yml
+        dest: "{{ specification.vault_install_dir }}/kubernetes/"
+        owner: "{{ specification.vault_system_user }}"
+        group: "{{ specification.vault_system_group }}"
+        mode: u=rw,g=r,o=
+
     - name: Create application namespace yaml
       template:
         dest: "{{ specification.vault_install_dir }}/kubernetes/app-namespace.yml"
