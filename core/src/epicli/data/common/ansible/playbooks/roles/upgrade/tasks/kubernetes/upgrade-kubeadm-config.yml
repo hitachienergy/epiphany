@@ -14,9 +14,9 @@
     get_attributes: false
     get_checksum: false
     get_mime: false
-  register: stat_kubeadm_config
+  register: stat_kubeadm_config_file
 
-- when: stat_kubeadm_config.stat.exists
+- when: stat_kubeadm_config_file.stat.exists
   block:
     - name: Load contents of the kubeadm-config.yml file
       slurp:

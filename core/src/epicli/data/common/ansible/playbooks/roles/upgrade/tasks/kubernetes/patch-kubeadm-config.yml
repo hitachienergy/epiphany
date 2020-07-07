@@ -5,12 +5,12 @@
     get_attributes: false
     get_checksum: false
     get_mime: false
-  register: stat_etcd_encryption_config
+  register: stat_etcd_encryption_config_file
 
 # Assuming that if the etcd encryption config file is absent, then
 # the encryption feature has never been enabled for the cluster at hand.
 - when:
-    - stat_etcd_encryption_config.stat.exists
+    - stat_etcd_encryption_config_file.stat.exists
   block:
     - name: Check the kubeadm-config.yml file
       stat:
@@ -18,11 +18,11 @@
         get_attributes: false
         get_checksum: false
         get_mime: false
-      register: stat_kubeadm_config
+      register: stat_kubeadm_config_file
 
 - when:
-    - stat_etcd_encryption_config.stat.exists
-    - stat_kubeadm_config.stat.exists
+    - stat_etcd_encryption_config_file.stat.exists
+    - stat_kubeadm_config_file.stat.exists
   block:
     - name: Load contents of the kubeadm-config.yml file
       slurp:
@@ -72,8 +72,8 @@
 # The `kubeadm upgrade` command can be executed with or without a config file.
 # If the kubeadm-config.yml file does not exists, then we at least patch the kubeadm-config configmap.
 - when:
-    - stat_etcd_encryption_config.stat.exists
-    - not stat_kubeadm_config.stat.exists
+    - stat_etcd_encryption_config_file.stat.exists
+    - not stat_kubeadm_config_file.stat.exists
   run_once: true  # makes no sense to execute it more than once (would be redundant)
   block:
     - name: Load the kubeadm-config configmap
