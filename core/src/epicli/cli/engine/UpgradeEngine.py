@@ -42,11 +42,8 @@ class UpgradeEngine(Step):
         backup_dir_name = f'backup_{int(round(time.time() * 1000))}'
         backup_temp_dir = os.path.join(self.build_dir, '../', backup_dir_name)
         self.backup_build_dir = os.path.join(self.build_dir, backup_dir_name )
-        self.logger.info(f'Backing up old build files to "{self.backup_build_dir}"')
-        shutil.move(self.build_dir, backup_temp_dir, copy_function = shutil.copytree) 
-        if not os.path.exists(self.build_dir):
-            os.mkdir(self.build_dir)        
-        shutil.move(backup_temp_dir, self.backup_build_dir, copy_function = shutil.copytree)
+        self.logger.info(f'Backing up build dir to "{self.backup_build_dir}"')
+        shutil.copytree(self.build_dir, self.backup_build_dir)
 
     def upgrade(self):
         # backup existing build
