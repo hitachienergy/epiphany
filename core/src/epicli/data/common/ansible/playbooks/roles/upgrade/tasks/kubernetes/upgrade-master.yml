@@ -19,11 +19,6 @@
 - name: upgrade-master | Update imageRepository in kubeadm-config ConfigMap
   include_tasks: update-kubeadm-image-repository.yml
 
-- name: upgrade-master | Reconfigure coredns
-  include_tasks: reconfigure-coredns.yml
-  when:
-    - version is version('1.16.7', '<=')
-
 - name: upgrade-master | Reconfigure rabbitmq application
   include_tasks: reconfigure-rabbitmq-app.yml
 
@@ -57,6 +52,11 @@
       include_tasks: upgrade-network-components.yml
       when:
         - version is version('1.16.7', '>=')
+
+    - name: upgrade-master | Downgrade CoreDNS to K8s built-in version
+      include_tasks: downgrade-coredns.yml
+      when:
+        - version is version('1.16.0', '<')
 
     - name: upgrade-master | Upgrade coredns for latest Kubernetes (1.17.7)
       include_tasks: upgrade-coredns.yml
