@@ -1,0 +1,18 @@
+# {{ ansible_managed }}
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: vault-policy
+  namespace: default
+spec:
+  podSelector: {}
+  policyTypes:
+  - Egress
+  egress:
+  - to:
+    {% for server in groups['vault'] %}- ipBlock:
+        cidr: {{ hostvars[server]['ansible_default_ipv4']['address'] }}/32
+    {% endfor %}ports:
+    - protocol: TCP
+      port: 8200

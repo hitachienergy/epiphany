@@ -235,6 +235,14 @@
         group: "{{ specification.vault_system_group }}"
         mode: u=rw,g=r,o=
 
+    - name: Create policy yaml for default namespace
+      template:
+        dest: "{{ specification.vault_install_dir }}/kubernetes/vault-default-policy.yml"
+        owner: "{{ specification.vault_system_user }}"
+        group: "{{ specification.vault_system_group }}"
+        mode: u=rw,g=r,o=
+        src: kubernetes/vault-default-policy.yml.j2
+
     - name: Create application namespace yaml
       template:
         dest: "{{ specification.vault_install_dir }}/kubernetes/app-namespace.yml"
