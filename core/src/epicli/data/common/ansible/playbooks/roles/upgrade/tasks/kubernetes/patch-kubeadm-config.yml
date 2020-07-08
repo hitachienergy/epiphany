@@ -103,7 +103,9 @@
         # Render an altered kubeadm-config configmap document.
         KUBEADM_CONFIGMAP_DOCUMENT: >-
           {{ _document | combine(_update2, recursive=true) | to_nice_yaml(indent=2) }}
-      changed_when: false
+
+      # Skip the task if there is no change in the cluster config.
+      when: _cluster_config_updated != _cluster_config  # comparing two dictionaries here
 
       vars:
         # Parse yaml payload.
