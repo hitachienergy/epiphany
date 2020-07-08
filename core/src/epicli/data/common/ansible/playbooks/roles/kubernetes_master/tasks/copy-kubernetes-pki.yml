@@ -23,7 +23,7 @@
       pki_front_proxy_ca_key: pki/front-proxy-ca.key
     _optional_pki_files_map:
       pki_etcd_etc_encryption_conf: >-
-        {{ 'pki/etcd/etc-encryption.conf' if specification.advanced.etcd_args.encrypted else '' }}
+        {{ 'pki/etcd/etc-encryption.conf' if (specification.advanced.etcd_args.encrypted | bool) else '' }}
 
 - name: Check if the PKI file exists
   delegate_to: localhost

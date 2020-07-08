@@ -9,9 +9,9 @@
 - name: Init Kubernetes master
   when: kubernetes_common.automation_designated_master == inventory_hostname
   block:
+    - import_tasks: etcd-encryption-init.yml
+      when: specification.advanced.etcd_args.encrypted | bool
     - import_tasks: master-init.yml
-    - import_tasks: etcd-encryption.yml
-      when: specification.advanced.etcd_args.encrypted
     - import_tasks: registry-secrets.yml
     - import_tasks: copy-kubernetes-pki.yml
 
@@ -22,8 +22,6 @@
       block:
         - import_tasks: copy-kubernetes-pki.yml
         - import_tasks: master-join.yml
-        - import_tasks: etcd-encryption.yml
-          when: specification.advanced.etcd_args.encrypted
 
 - import_tasks: master-untaint.yml
 

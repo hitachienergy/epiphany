@@ -1,0 +1,18 @@
+---
+- name: Ensure the /etc/kubernetes/pki/etcd/ directory exists
+  file:
+    path: /etc/kubernetes/pki/etcd/
+    state: directory
+    owner: root
+    group: root
+    mode: u=rwx,g=rx,o=
+
+# Please note, the config file is automatically redistributed to other masters (via copy-kubernetes-pki.yml).
+- name: Render the etcd encryption config file (just one time)
+  template:
+    dest: /etc/kubernetes/pki/etcd/etc-encryption.conf
+    src: etc-encryption.conf.j2
+    force: false  # please keep it "false" here, otherwise the secret will change and your cluster will start failing eventually
+  vars:
+    etcd_encryption_secret: >-
+      {{ lookup('password', '/dev/null length=32') | b64encode }}
