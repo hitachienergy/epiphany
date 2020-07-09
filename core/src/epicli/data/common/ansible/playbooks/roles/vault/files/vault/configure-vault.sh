@@ -197,7 +197,7 @@ function configure_kubernetes {
     local vault_protocol="$3";
     local helm_custom_values_set_bool="$4";
     log_and_print "Configuring Kubernetes...";
-    local files_to_apply=( app-namespace.yml vault-namespace.yml vault-default-policy.yml vault-endpoint-configuration.yml vault-service-account.yml app-service-account.yml )
+    local files_to_apply=( app-namespace.yml vault-namespace.yml vault-default-policy.yml vault-service-account.yml app-service-account.yml )
     for file in "${files_to_apply[@]}" ; do
         if [ "$file" = "app-namespace.yml" ] && [ "$kubernetes_namespace" = "default" ]; then
             continue
