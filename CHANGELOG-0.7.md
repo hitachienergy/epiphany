@@ -1,5 +1,11 @@
 # Changelog 0.7
 
+## [0.7.1] 2020-07-xx
+
+### Fixed
+
+- [#1423](https://github.com/epiphany-platform/epiphany/issues/1423) - Error reading generated service principal
+
 ## [0.7.0] 2020-06-30
 
 ### Added
