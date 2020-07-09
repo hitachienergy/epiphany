@@ -22,6 +22,11 @@
 - name: k8s/master0 | Upgrade kubernetes-dashboard
   include_tasks: upgrade-kubernetes-dashboard.yml
 
+- name: k8s/master0 | Get CNI plugin if undefined
+  include_tasks: get-cni-plugin.yml
+  when:
+    - cni_plugin_name is undefined
+
 - name: k8s/master0 | Drain master in preparation for maintenance
   include_tasks: utils/drain.yml
 

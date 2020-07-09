@@ -1,51 +1,8 @@
 ---
-- name: k8s/master | Determine which network plugin is used
-  run_once: true
-  environment:
-    KUBECONFIG: /etc/kubernetes/admin.conf
-  block:
-    - name: k8s/master | Set default cni plugin - flannel
-      set_fact:
-        plugin: "flannel"
-
-    - name: k8s/master | Wait for API resources to propagate
-      shell: >-
-        kubectl api-resources --cached=false && kubectl -n kube-system get daemonsets
-      register: daemonsets_query_result
-      until:
-        - daemonsets_query_result is success
-      retries: 20
-      delay: 30
-      changed_when: false
-
-    - name: k8s/master | If canal is installed on the cluster
-      command: >-
-        kubectl -n kube-system get daemonsets -l k8s/app=canal
-      register: canal_query_result
-      changed_when: false
-
-    - name: k8s/master | Set network plugin variable to canal
-      set_fact:
-        plugin: "canal"
-      when:
-        - '"canal" in canal_query_result.stdout'
-
-    - name: k8s/master | If calico is installed on the cluster
-      command: >-
-        kubectl -n kube-system get daemonsets -l k8s/app=calico-node
-      register: calico_query_result
-      changed_when: false
-
-    - name: k8s/master | Set network plugin variable to calico
-      set_fact:
-        plugin: "calico"
-      when:
-        - '"calico" in calico_query_result.stdout'
-
-- name: k8s/master | Apply network plugin configured by user {{ plugin }}
-  import_role:
+- name: k8s/master | Apply network plugin configured by user {{ network_plugin }}
+  include_role:
     name: kubernetes_master
     tasks_from: apply-network-components
   vars:
-    network_plugin: "{{ plugin }}"
+    network_plugin: "{{ cni_plugin_name }}"
     k8s_server_version: "{{ cluster_version }}"
