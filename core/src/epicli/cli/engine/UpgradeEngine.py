@@ -40,7 +40,6 @@ class UpgradeEngine(Step):
 
         # no backup dir so use the latest
         backup_dir_name = f'backup_{int(round(time.time() * 1000))}'
-        backup_temp_dir = os.path.join(self.build_dir, '../', backup_dir_name)
         self.backup_build_dir = os.path.join(self.build_dir, backup_dir_name )
         self.logger.info(f'Backing up build dir to "{self.backup_build_dir}"')
         shutil.copytree(self.build_dir, self.backup_build_dir)
