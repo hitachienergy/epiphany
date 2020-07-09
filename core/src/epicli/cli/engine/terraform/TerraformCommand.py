@@ -1,6 +1,6 @@
 import os
 import subprocess
-from cli.helpers.Log import LogPipe, Log
+from cli.helpers.Log import LogPipe, Log, LogPipeType
 from cli.helpers.Config import Config
 
 terraform_verbosity = ['ERROR','WARN','INFO','DEBUG','TRACE']
@@ -37,6 +37,8 @@ class TerraformCommand:
         if command == self.APPLY_COMMAND or command == self.DESTROY_COMMAND:
             cmd.append(f'-state={self.working_directory}/terraform.tfstate')
 
+        cmd.append('-no-color')
+
         cmd.append(self.working_directory)
 
         cmd = ' '.join(cmd)
@@ -45,9 +47,11 @@ class TerraformCommand:
         if Config().debug > 0:
             env['TF_LOG'] = terraform_verbosity[Config().debug]
 
-        logpipe = LogPipe(__name__)
-        with subprocess.Popen(cmd, stdout=logpipe, stderr=logpipe, env=env,  shell=True) as sp:
-            logpipe.close()
+        logpipeout = LogPipe(__name__, LogPipeType.STDOUT)
+        logpipeerr = LogPipe(__name__, LogPipeType.STDERR)
+        with subprocess.Popen(cmd, stdout=logpipeout, stderr=logpipeerr, env=env,  shell=True) as sp:
+            logpipeout.close()
+            logpipeerr.close()
 
         if sp.returncode != 0:
             raise Exception(f'Error running: "{cmd}"')

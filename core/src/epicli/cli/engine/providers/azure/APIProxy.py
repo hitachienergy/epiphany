@@ -2,7 +2,7 @@ import json
 import re
 import time
 from subprocess import Popen, PIPE
-from cli.helpers.Log import LogPipe, Log
+from cli.helpers.Log import LogPipe, Log, LogPipeType
 from cli.helpers.doc_list_helpers import select_first
 from cli.helpers.naming_helpers import resource_name, cluster_tag
 from cli.models.AnsibleHostModel import AnsibleHostModel
@@ -81,9 +81,9 @@ class APIProxy:
         if log_cmd:
             self.logger.info('Running: "' + cmd + '"')
 
-        logpipe = LogPipe(__name__)
-        with Popen(cmd, stdout=PIPE, stderr=logpipe, shell=True) as sp:
-            logpipe.close()
+        logpipeerr = LogPipe(__name__, LogPipeType.STDERR)
+        with Popen(cmd, stdout=PIPE, stderr=logpipeerr, shell=True) as sp:
+            logpipeerr.close()
             try:
                 data = sp.stdout.read().decode('utf-8')
                 data = re.sub(r'\s+', '', data)

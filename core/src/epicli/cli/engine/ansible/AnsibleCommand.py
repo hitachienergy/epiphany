@@ -1,6 +1,6 @@
 import os
 import subprocess
-from cli.helpers.Log import LogPipe, Log
+from cli.helpers.Log import LogPipe, Log, LogPipeType
 from cli.helpers.Config import Config
 import time
 
@@ -33,9 +33,11 @@ class AnsibleCommand:
 
         self.logger.info('Running: "' + ' '.join(module) + '"')
 
-        logpipe = LogPipe(__name__)
-        with subprocess.Popen(cmd, stdout=logpipe, stderr=logpipe) as sp:
-            logpipe.close()
+        logpipeout = LogPipe(__name__, LogPipeType.STDOUT)
+        logpipeerr = LogPipe(__name__, LogPipeType.STDERR)
+        with subprocess.Popen(cmd, stdout=logpipeout, stderr=logpipeerr) as sp:
+            logpipeout.close()
+            logpipeerr.close()
 
         if sp.returncode != 0:
             raise Exception('Error running: "' + ' '.join(cmd) + '"')
@@ -71,9 +73,11 @@ class AnsibleCommand:
 
         self.logger.info('Running: "' + ' '.join(playbook_path) + '"')
 
-        logpipe = LogPipe(__name__)
-        with subprocess.Popen(cmd, stdout=logpipe, stderr=logpipe) as sp:
-            logpipe.close()
+        logpipeout = LogPipe(__name__, LogPipeType.STDOUT)
+        logpipeerr = LogPipe(__name__, LogPipeType.STDERR)
+        with subprocess.Popen(cmd, stdout=logpipeout, stderr=logpipeerr) as sp:
+            logpipeout.close()
+            logpipeerr.close()
 
         if sp.returncode != 0:
             raise Exception('Error running: "' + ' '.join(cmd) + '"')

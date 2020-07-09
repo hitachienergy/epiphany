@@ -3,7 +3,7 @@ import subprocess
 import shutil
 from subprocess import Popen, PIPE
 
-from cli.helpers.Log import LogPipe, Log
+from cli.helpers.Log import LogPipe, Log, LogPipeType
 from cli.helpers.Config import Config
 from cli.helpers.data_loader import DATA_FOLDER_PATH
 
@@ -46,9 +46,11 @@ These need to be installed to run the cluster spec tests from epicli'''
 
         self.logger.info(f'Running: "{cmd}"')
 
-        logpipe = LogPipe(__name__)
-        with Popen(cmd.split(' '), cwd=SPEC_TEST_PATH, env=env, stdout=logpipe, stderr=logpipe) as sp:
-            logpipe.close()
+        logpipeout = LogPipe(__name__, LogPipeType.STDOUT)
+        logpipeerr = LogPipe(__name__, LogPipeType.STDERR)
+        with Popen(cmd.split(' '), cwd=SPEC_TEST_PATH, env=env, stdout=logpipeout, stderr=logpipeerr) as sp:
+            logpipeout.close()
+            logpipeerr.close()
 
         if sp.returncode != 0:
             raise Exception(f'Error running: "{cmd}"')
