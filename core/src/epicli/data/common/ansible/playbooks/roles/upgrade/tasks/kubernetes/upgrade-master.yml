@@ -53,15 +53,13 @@
       when:
         - version is version('1.16.7', '>=')
 
+    # CoreDNS is overwritten (upgraded or downgraded) by 'kubeadm upgrade apply', see CoreDNS version matrix in downgrade-coredns.yml.
+    # kubeadm upgrade is not able to downgrade coredns ConfigMap properly (at least when upgrade from 1.14.6 to 1.15.10)
+    # which may cause the update to hang.
     - name: upgrade-master | Downgrade CoreDNS to K8s built-in version
       include_tasks: downgrade-coredns.yml
       when:
         - version is version('1.16.0', '<')
-
-    - name: upgrade-master | Upgrade coredns for latest Kubernetes (1.17.7)
-      include_tasks: upgrade-coredns.yml
-      when:
-        - version is version('1.17.7', '==')
 
     - name: upgrade-master | Wait for cluster's readiness
       include_tasks: wait.yml
@@ -110,6 +108,14 @@
 
 - name: upgrade-master | Wait for cluster's readiness
   include_tasks: wait.yml
+
+# 'kubeadm upgrade apply' overwrites Epiphany's customized CoreDNS deployment so we restore it.
+# This task should be run each time K8s is upgraded to the latest version.
+# Keep Epiphany's CoreDNS version in synch with K8s CoreDNS version.
+- name: upgrade-master | Deploy customized CoreDNS for latest Kubernetes (1.17.7)
+  include_tasks: upgrade-coredns.yml
+  when:
+    - version is version('1.17.7', '==')
 
 - name: upgrade-master | Upgrade kubeadm-config.yml if exists
   include_tasks: upgrade-kubeadm-config.yml

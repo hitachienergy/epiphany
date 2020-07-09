@@ -31,7 +31,7 @@
         group: "{{ admin_user.name }}"
         mode: u=rw,go=r
 
-    - name: Apply /etc/epiphany/manifests/{{ file_name }} file
+    - name: upgrade-master | Apply /etc/epiphany/manifests/{{ file_name }} file
       environment:
         KUBECONFIG: /home/{{ admin_user.name }}/.kube/config
       shell: |
