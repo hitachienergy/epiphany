@@ -40,5 +40,10 @@
       when:
         - docker_image.name != specification.registry_image.name
 
+    - name: Remove downloaded image archive {{ docker_image.file_name }}
+      file:
+        path: "{{ download_directory }}/{{ docker_image.file_name }}"
+        state: absent
+
   when:
     - image_check.stdout | length == 0

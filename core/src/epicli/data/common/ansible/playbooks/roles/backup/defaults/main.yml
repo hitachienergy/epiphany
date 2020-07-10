@@ -1,2 +1,6 @@
 ---
-backup_dir: /home/{{ admin_user.name }}/backupdir
+backup_dir: /epibackup
+backup_destination_dir: "{{ backup_dir }}/mounted"
+backup_destination_host: "{{ resolved_repository_hostname | default(groups.repository.0) }}"
+elasticsearch_snapshot_repository_name: epiphany
+elasticsearch_snapshot_repository_location: /var/lib/elasticsearch-snapshots

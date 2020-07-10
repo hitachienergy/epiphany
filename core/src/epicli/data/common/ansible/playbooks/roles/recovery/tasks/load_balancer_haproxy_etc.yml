@@ -1,0 +1,47 @@
+---
+- name: Find snapshot archive
+  import_tasks: common/find_snapshot_archive.yml
+  vars:
+    snapshot_prefix: "haproxy_etc"
+    snapshot_name: "{{ specification.components.load_balancer.snapshot_name }}"
+
+- name: Transfer the archive via rsync
+  import_tasks: common/upload_via_rsync.yml
+  vars:
+    artifacts:
+      - "{{ snapshot_path }}"
+      - "{{ snapshot_path }}.sha1"
+
+- name: Verify snapshot checksum
+  import_tasks: common/verify_snapshot_checksum.yml
+
+- name: Stop haproxy service
+  systemd:
+    name: haproxy
+    state: stopped
+
+- name: Clear directories
+  import_tasks: common/clear_directories.yml
+  vars:
+    dirs_to_clear: >-
+      {{ _dirs_to_clear_switch[ansible_os_family] | default(_dirs_to_clear_switch.default) }}
+    # Simulate some basic in-place switch/case expression using a dictionary.
+    _dirs_to_clear_switch:
+      RedHat:
+        - /etc/haproxy/
+        - /etc/ssl/haproxy/
+        - /etc/opt/rh/rh-haproxy18/haproxy/
+      default:
+        - /etc/haproxy/
+        - /etc/ssl/haproxy/
+
+- name: Extract the archive
+  unarchive:
+    dest: /etc/
+    src: "{{ recovery_dir }}/{{ snapshot_path | basename }}"
+    remote_src: true
+
+- name: Start haproxy service
+  systemd:
+    name: haproxy
+    state: started

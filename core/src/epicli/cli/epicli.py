@@ -11,10 +11,11 @@ import platform
 import socket
 
 from cli.engine.ApplyEngine import ApplyEngine
-from cli.engine.PatchEngine import PatchEngine
+from cli.engine.BackupEngine import BackupEngine
 from cli.engine.DeleteEngine import DeleteEngine
 from cli.engine.InitEngine import InitEngine
 from cli.engine.PrepareEngine import PrepareEngine
+from cli.engine.RecoveryEngine import RecoveryEngine
 from cli.engine.UpgradeEngine import UpgradeEngine
 from cli.engine.TestEngine import TestEngine
 from cli.helpers.Log import Log
@@ -92,12 +93,11 @@ Terraform : 1..4 map to the following Terraform verbosity levels:
     upgrade_parser(subparsers)
     delete_parser(subparsers)
     test_parser(subparsers)
-
     '''
     validate_parser(subparsers)
+    '''
     backup_parser(subparsers)
     recovery_parser(subparsers)
-    '''
 
     # check if there were any variables and display full help
     if len(sys.argv) < 2:
@@ -260,36 +260,47 @@ def validate_parser(subparsers):
             return engine.validate()
 
     sub_parser.set_defaults(func=run_validate)    
+'''
 
 
 def backup_parser(subparsers):
+    """Configure and execute backup of cluster components."""
+
     sub_parser = subparsers.add_parser('backup',
-                                       description='[Experimental]: Backups existing Epiphany Platform components.')
+                                       description='Create backup of cluster components.')
+    sub_parser.add_argument('-f', '--file', dest='file', type=str, required=True,
+                            help='Backup configuration definition file to use.')
     sub_parser.add_argument('-b', '--build', dest='build_directory', type=str, required=True,
-                            help='Absolute path to directory with build artifacts.')
+                            help='Absolute path to directory with build artifacts.',
+                            default=None)
 
     def run_backup(args):
-        experimental_query()
-        adjust_paths_from_build(args)
-        with PatchEngine(args) as engine:
+        adjust_paths_from_file(args)
+        with BackupEngine(args) as engine:
             return engine.backup()
 
     sub_parser.set_defaults(func=run_backup)
 
 
 def recovery_parser(subparsers):
-    sub_parser = subparsers.add_parser('recovery', description='[Experimental]: Recover from existing backup.')
+    """Configure and execute recovery of cluster components."""
+
+    sub_parser = subparsers.add_parser('recovery',
+                                       description='Recover from existing backup.')
+    sub_parser.add_argument('-f', '--file', dest='file', type=str, required=True,
+                            help='Recovery configuration definition file to use.')
     sub_parser.add_argument('-b', '--build', dest='build_directory', type=str, required=True,
-                            help='Absolute path to directory with build artifacts.')
+                            help='Absolute path to directory with build artifacts.',
+                            default=None)
 
     def run_recovery(args):
-        experimental_query()
-        adjust_paths_from_build(args)
-        with PatchEngine(args) as engine:
+        if not query_yes_no('Do you really want to perform recovery?'):
+            return 0
+        adjust_paths_from_file(args)
+        with RecoveryEngine(args) as engine:
             return engine.recovery()
 
     sub_parser.set_defaults(func=run_recovery)
-'''
 
 
 def experimental_query():

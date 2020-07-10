@@ -1,0 +1,38 @@
+---
+- name: Find snapshot archive
+  import_tasks: common/find_snapshot_archive.yml
+  vars:
+    snapshot_prefix: "kibana_etc"
+    snapshot_name: "{{ specification.components.logging.snapshot_name }}"
+
+- name: Transfer the archive via rsync
+  import_tasks: common/upload_via_rsync.yml
+  vars:
+    artifacts:
+      - "{{ snapshot_path }}"
+      - "{{ snapshot_path }}.sha1"
+
+- name: Verify snapshot checksum
+  import_tasks: common/verify_snapshot_checksum.yml
+
+- name: Stop kibana service
+  systemd:
+    name: kibana
+    state: stopped
+
+- name: Clear directories
+  import_tasks: common/clear_directories.yml
+  vars:
+    dirs_to_clear:
+      - /etc/kibana/
+
+- name: Extract the archive
+  unarchive:
+    dest: /etc/kibana/
+    src: "{{ recovery_dir }}/{{ snapshot_path | basename }}"
+    remote_src: true
+
+- name: Start kibana service
+  systemd:
+    name: kibana
+    state: started

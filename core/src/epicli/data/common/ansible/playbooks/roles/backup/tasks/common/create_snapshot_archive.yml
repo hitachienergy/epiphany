@@ -1,0 +1,66 @@
+---
+# Invoke with (example):
+#- set_fact:
+#    snapshot_prefix: "haproxy_etc"
+#    snapshot_name: "20200526-102034"
+#    dirs_to_archive:
+#      - /etc/haproxy/
+#      - /etc/ssl/haproxy/
+#    files_to_archive:
+#      - /var/lib/rabbitmq/definitions/definitions-{{ snapshot_name }}.json
+
+- name: Assert that the snapshot_prefix fact is defined and valid
+  assert:
+    that:
+      - snapshot_prefix is defined
+      - snapshot_prefix is string
+      - snapshot_prefix | length > 0
+    fail_msg: The snapshot_prefix fact must be defined and must be a non-empty string.
+
+- name: Assert that the snapshot_name fact is defined and valid
+  assert:
+    that:
+      - snapshot_name is defined
+      - snapshot_name is string
+      - snapshot_name | length > 0
+    fail_msg: The snapshot_name fact must be defined and must be a non-empty string.
+
+- name: Reconstruct the paths_to_archive list
+  set_fact:
+    paths_to_archive: >-
+      {{ (dirs_to_archive_corrected + files_to_archive_corrected) | unique }}
+  vars:
+    # remove empty strings and make sure each path ends with single /
+    dirs_to_archive_corrected: >-
+      {{ dirs_to_archive | default([])
+                         | map('regex_replace', '//*$', '')
+                         | select
+                         | map('regex_replace', '$', '/')
+                         | list }}
+    # remove empty strings
+    files_to_archive_corrected: >-
+      {{ files_to_archive | default([])
+                          | select
+                          | list }}
+
+- name: Assert that the paths_to_archive list has at least one element
+  assert:
+    that:
+      - paths_to_archive | length > 0
+    fail_msg: The paths_to_archive list must contain at least one element.
+
+- name: Reconstruct the snapshot_path
+  set_fact:
+    snapshot_path: "{{ backup_dir }}/{{ snapshot_prefix }}_{{ snapshot_name }}.tar.gz"
+
+- name: Ensure backup directory exists
+  file:
+    path: "{{ backup_dir }}/"
+    state: directory
+
+- name: Create the archive
+  archive:
+    dest: "{{ snapshot_path }}"
+    path: "{{ paths_to_archive }}"
+    format: gz
+    force_archive: true

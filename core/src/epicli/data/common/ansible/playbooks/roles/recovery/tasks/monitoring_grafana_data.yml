@@ -1,0 +1,38 @@
+---
+- name: Find snapshot archive
+  import_tasks: common/find_snapshot_archive.yml
+  vars:
+    snapshot_prefix: "grafana_data"
+    snapshot_name: "{{ specification.components.monitoring.snapshot_name }}"
+
+- name: Transfer the archive via rsync
+  import_tasks: common/upload_via_rsync.yml
+  vars:
+    artifacts:
+      - "{{ snapshot_path }}"
+      - "{{ snapshot_path }}.sha1"
+
+- name: Verify snapshot checksum
+  import_tasks: common/verify_snapshot_checksum.yml
+
+- name: Stop grafana service
+  systemd:
+    name: grafana-server
+    state: stopped
+
+- name: Clear directories
+  import_tasks: common/clear_directories.yml
+  vars:
+    dirs_to_clear:
+      - "{{ component_vars.specification.grafana_data_dir }}/"
+
+- name: Extract the archive
+  unarchive:
+    dest: "{{ component_vars.specification.grafana_data_dir }}/"
+    src: "{{ recovery_dir }}/{{ snapshot_path | basename }}"
+    remote_src: true
+
+- name: Start grafana service
+  systemd:
+    name: grafana-server
+    state: started

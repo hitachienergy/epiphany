@@ -1,5 +1,0 @@
-
-- name: Apply etcd encryption to API server manifest if etcd encryption enabled
-  import_role:
-    name: kubernetes_master
-    tasks_from: etcd-encryption

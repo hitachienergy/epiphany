@@ -1,0 +1,91 @@
+---
+# Invoke with (example):
+#- set_fact:
+#    artifacts:
+#      - /tmp/artifact1
+#      - /tmp/artifact2
+
+- name: Assert that the "artifacts" fact is defined and valid
+  assert:
+    that:
+      - artifacts is defined
+      - artifacts is sequence
+      - artifacts | length > 0
+    fail_msg: The "artifacts" fact must be defined and must be a non-empty list.
+
+- name: Download artifacts to mounted storage
+
+  delegate_to: "{{ backup_destination_host }}"
+
+  always:
+    - name: Delete generated files
+      file:
+        path: "{{ item }}"
+        state: absent
+      loop:
+        - "{{ private_key_file.path }}"
+        - "{{ private_key_file.path }}.pub"
+
+    - delegate_to: "{{ inventory_hostname }}"  # cancel previous delegate_to
+      block:
+        - name: Remove public openssh key from admin's authorized_keys
+          authorized_key:
+            user: "{{ admin_user.name }}"
+            state: absent
+            key: >-
+              {{ openssh_keypair.public_key }}
+
+  block:
+    - name: Ensure that .ssh directory exists
+      file:
+        path: ~/.ssh/
+        state: directory
+
+    - name: Create a temporary file path to hold the private key in
+      tempfile:
+        path: ~/.ssh/
+        suffix: .tmp
+        state: file
+      register: private_key_file
+
+    - name: Generate openssh keypair for rsync over ssh
+      openssh_keypair:
+        path: "{{ private_key_file.path }}"
+        size: 2048
+        force: true
+      register: openssh_keypair
+
+    - delegate_to: "{{ inventory_hostname }}"  # cancel previous delegate_to
+      block:
+        - name: Add public openssh key to admin's authorized_keys
+          authorized_key:
+            user: "{{ admin_user.name }}"
+            state: present
+            key: >-
+              {{ openssh_keypair.public_key }}
+
+    - name: Ensure destination directory for artifacts exists
+      file:
+        path: "{{ backup_destination_dir }}/"
+        state: directory
+
+    - name: Use rsync to copy all artifacts
+      synchronize:
+        mode: pull
+        dest: "{{ backup_destination_dir }}"
+        src: "{{ item }}"
+        checksum: true
+        rsync_opts:
+          - --rsh={{ rsh }}
+      vars:
+        # this fixes / replaces incorrect path to the private key file that synchronize provides
+        # (setting private_key parameter has no effect whatsoever, looks like a bug tbh)
+        rsh: >-
+          /usr/bin/ssh -S none -i {{ private_key_file.path }} -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null
+      loop: "{{ artifacts }}"
+
+    - name: Remove copied artifacts from source
+      file:
+        path: "{{ item }}"
+        state: absent
+      loop: "{{ artifacts }}"

@@ -1,7 +1,58 @@
+---
+- name: Run assertions for parameters of the task file at hand
+  block:
+    - assert:
+        that:
+          - version is defined
+          - version is string
+          - version | length > 0
+        fail_msg: "Invalid version string."
 
-- name: Update kubeadm-config.yml with current version (v{{ version }})
-  lineinfile:
-    dest: /etc/kubeadm/kubeadm-config.yml
-    regexp: "^kubernetesVersion:"
-    line: "kubernetesVersion: v{{ version }}"
-    state: present
+- name: Check the kubeadm-config.yml file
+  stat:
+    path: &kubeadm-config-yml /etc/kubeadm/kubeadm-config.yml
+    get_attributes: false
+    get_checksum: false
+    get_mime: false
+  register: stat_kubeadm_config_file
+
+- when: stat_kubeadm_config_file.stat.exists
+  block:
+    - name: Load contents of the kubeadm-config.yml file
+      slurp:
+        path: *kubeadm-config-yml
+      register: slurp_kubeadm_config
+
+    - name: Save modified contents of the kubeadm-config.yml file
+      copy:
+        dest: *kubeadm-config-yml
+
+        # Save all documents.
+        content: |
+          {% for document in _documents_updated %}
+          ---
+          {{ document | to_nice_yaml(indent=2) }}
+          {% endfor -%}
+
+      vars:
+        # Parse yaml payload (remove empty documents).
+        _documents: >-
+          {{ slurp_kubeadm_config.content | b64decode
+                                          | from_yaml_all
+                                          | select
+                                          | list }}
+        # Prepare the patch.
+        _update:
+          kubernetesVersion: "v{{ version }}"
+
+        # Process all documents (returns a list of dictionaries).
+        _documents_updated: >-
+          {%- set output = [] -%}
+          {%- for document in _documents -%}
+            {%- if document.kind is defined and document.kind == 'ClusterConfiguration' -%}
+              {{- output.append(document | combine(_update, recursive=true)) -}}
+            {%- else -%}
+              {{- output.append(document) -}}
+            {%- endif -%}
+          {%- endfor -%}
+          {{- output -}}

@@ -40,10 +40,17 @@
 
 - name: Create calico deployment
   template:
-    src: calico.yml.j2
+    src: "{{ template_file_name }}"
     dest: "/home/{{ admin_user.name }}/calico.yml"
     owner: "{{ admin_user.name }}"
     group: "{{ admin_user.name }}"
+  vars:
+    template_file_name: >-
+      {%- if k8s_server_version is defined and k8s_server_version is version('v1.16', '<') -%}
+        calico-for-k8s-below-1.16.yml.j2
+      {%- else -%}
+        calico.yml.j2
+      {%- endif -%}
 
 - name: Apply calico definition
   environment:
