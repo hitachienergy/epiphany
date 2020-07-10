@@ -16,10 +16,17 @@
 - name: Set full Vault address
   set_fact:
     full_vault_address: "{{ specification.tls_disable | ternary('http', 'https') }}://{{ hostvars[groups['vault'][0]]['ansible_default_ipv4']['address'] }}:8200"
+  when: specification.vault_helm_chart_values.injector.externalVaultAddr is not defined
 
 - name: Set final Vault Helm chart's custom configuration file content
   set_fact:
     final_vault_helm_chart_values: "{{ specification.vault_helm_chart_values | combine({'injector': {'externalVaultAddr': full_vault_address}},recursive=True) }}"
+  when: specification.vault_helm_chart_values.injector.externalVaultAddr is not defined
+
+- name: Set final Vault Helm chart's custom configuration file content - manual externalVaultAddr config
+  set_fact:
+    final_vault_helm_chart_values: "{{ specification.vault_helm_chart_values }}"
+  when: specification.vault_helm_chart_values.injector.externalVaultAddr is defined
 
 - name: Copy Vault Helm chart's custom configuration to file
   copy:
