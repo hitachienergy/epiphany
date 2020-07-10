@@ -5,10 +5,8 @@
 # kube-apiserver uses --encryption-provider-config parameter to control how data is encrypted in etcd.
 # If this parameter is absent the encryption is not enabled.
 - name: upgrade-master | Check if encryption of secret data is enabled
-  shell: >-
+  command: >-
     grep -- '--encryption-provider-config' /etc/kubernetes/manifests/kube-apiserver.yaml
-  args:
-    executable: /bin/bash
   register: shell_grep_encryption_flag
   changed_when: false
   failed_when: shell_grep_encryption_flag.rc > 1

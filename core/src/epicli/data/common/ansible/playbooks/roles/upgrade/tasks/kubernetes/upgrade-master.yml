@@ -64,12 +64,13 @@
     - name: upgrade-master | Wait for cluster's readiness
       include_tasks: wait.yml
 
+    # Note: Usage of the --config flag for reconfiguring the cluster during upgrade is not recommended since v1.16
     - name: upgrade-master | Validate whether cluster is upgradeable
       # Ignore CoreDNSUnsupportedPlugins error since coredns-migration does not support 'hosts' plugin.
       # This issue is fixed in K8s v1.18, see https://github.com/kubernetes/kubernetes/pull/88482
       shell: >-
         {%- if version is version('1.18.0', '>=') -%}
-           kubeadm upgrade plan v{{ version }}
+          kubeadm upgrade plan v{{ version }}
         {%- else -%}
           kubeadm upgrade plan v{{ version }} --ignore-preflight-errors=CoreDNSUnsupportedPlugins
         {%- endif -%}
@@ -85,7 +86,7 @@
       # This issue is fixed in K8s v1.18, see https://github.com/kubernetes/kubernetes/pull/88482
       shell: >-
         {%- if version is version('1.18.0', '>=') -%}
-           kubeadm upgrade apply -y v{{ version }}
+          kubeadm upgrade apply -y v{{ version }}
         {%- else -%}
           kubeadm upgrade apply -y v{{ version }} --ignore-preflight-errors=CoreDNSUnsupportedPlugins
         {%- endif -%}
