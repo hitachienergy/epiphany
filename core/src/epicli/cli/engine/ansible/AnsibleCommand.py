@@ -1,6 +1,6 @@
 import os
 import subprocess
-from cli.helpers.Log import LogPipe, Log, LogPipeType
+from cli.helpers.Log import LogPipe, Log
 from cli.helpers.Config import Config
 import time
 
@@ -33,11 +33,9 @@ class AnsibleCommand:
 
         self.logger.info('Running: "' + ' '.join(module) + '"')
 
-        logpipeout = LogPipe(__name__, LogPipeType.STDOUT)
-        logpipeerr = LogPipe(__name__, LogPipeType.STDERR)
-        with subprocess.Popen(cmd, stdout=logpipeout, stderr=logpipeerr) as sp:
-            logpipeout.close()
-            logpipeerr.close()
+        logpipe = LogPipe(__name__)
+        with subprocess.Popen(cmd, stdout=logpipe, stderr=logpipe) as sp:
+            logpipe.close()
 
         if sp.returncode != 0:
             raise Exception('Error running: "' + ' '.join(cmd) + '"')
@@ -52,7 +50,7 @@ class AnsibleCommand:
                 break
             except Exception as e:
                 self.logger.error(e)
-                self.logger.info('Retry running task: ' + str(i + 1) + '/' + str(retries))
+                self.logger.warning('Retry running task: ' + str(i + 1) + '/' + str(retries))
                 time.sleep(timeout)
         else:
             raise Exception(f'Failed running task after {str(retries)} retries')
@@ -73,11 +71,9 @@ class AnsibleCommand:
 
         self.logger.info('Running: "' + ' '.join(playbook_path) + '"')
 
-        logpipeout = LogPipe(__name__, LogPipeType.STDOUT)
-        logpipeerr = LogPipe(__name__, LogPipeType.STDERR)
-        with subprocess.Popen(cmd, stdout=logpipeout, stderr=logpipeerr) as sp:
-            logpipeout.close()
-            logpipeerr.close()
+        logpipe = LogPipe(__name__)
+        with subprocess.Popen(cmd, stdout=logpipe, stderr=logpipe) as sp:
+            logpipe.close()
 
         if sp.returncode != 0:
             raise Exception('Error running: "' + ' '.join(cmd) + '"')
@@ -92,7 +88,7 @@ class AnsibleCommand:
                 break
             except Exception as e:
                 self.logger.error(e)
-                self.logger.info('Retry running playbook: ' + str(i + 1) + '/' + str(retries))
+                self.logger.warning('Retry running playbook: ' + str(i + 1) + '/' + str(retries))
                 time.sleep(timeout)
         else:
             raise Exception(f'Failed running playbook after {str(retries)} retries')

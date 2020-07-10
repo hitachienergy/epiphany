@@ -66,23 +66,18 @@ class Log:
         return logger
 
 
-class LogPipeType(enum.Enum):
-   STDOUT = 1
-   STDERR = 2
-
-
 class LogPipe(threading.Thread):
 
-    def __init__(self, logger_name, type = LogPipeType.STDOUT):
+    def __init__(self, logger_name):
         threading.Thread.__init__(self)
         self.logger = Log(logger_name)
         self.daemon = False
         self.fdRead, self.fdWrite = os.pipe()
         self.pipeReader = os.fdopen(self.fdRead)
-        self.pipeType = type
         self.start()
         self.errorStrings = ['error', 'Error', 'ERROR', 'fatal', 'FAILED']
         self.warningStrings = ['warning', 'warning', 'WARNING']
+        self.stderrstrings = []
 
     def fileno(self):
         return self.fdWrite
@@ -90,13 +85,11 @@ class LogPipe(threading.Thread):
     def run(self):
         for line in iter(self.pipeReader.readline, ''):
             line = line.strip('\n')
-            if self.pipeType == LogPipeType.STDERR:
-                if any([substring in line for substring in self.errorStrings]):
-                    self.logger.error(line)
-                elif any([substring in line for substring in self.warningStrings]):
-                     self.logger.warning(line)
-                else:
-                   self.logger.info(line)
+            if any([substring in line for substring in self.errorStrings]):
+                self.stderrstrings.append(line)
+                self.logger.error(line)
+            elif any([substring in line for substring in self.warningStrings]):
+                    self.logger.warning(line)
             else:
                 self.logger.info(line)
         self.pipeReader.close()
