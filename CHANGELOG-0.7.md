@@ -1,5 +1,11 @@
 # Changelog 0.7
 
+## [0.7.1] 2020-07-XX
+
+### Fixed
+
+- [#1399](https://github.com/epiphany-platform/epiphany/issues/1399) - Epicli upgrade: Kubernetes upgrade may hang
+
 ## [0.7.0] 2020-06-30
 
 ### Added
@@ -48,7 +54,6 @@
 - [#1372](https://github.com/epiphany-platform/epiphany/issues/1372) - [BUG] Epicli does not create Postgresql SET\_BY\_AUTOMATION values correctly
 - [#1373](https://github.com/epiphany-platform/epiphany/issues/1373) - [BUG] permission denied for shared directory in the container when no volume was mounted
 - [#1385](https://github.com/epiphany-platform/epiphany/issues/1385) - [BUG] Regression issue with disabling etcd encryption
-- [#1399](https://github.com/epiphany-platform/epiphany/issues/1399) - [BUG] Epicli upgrade issue - the process hangs for several hours on the task kubeadm upgrade apply
 
 ### Known Issues
 
