@@ -6,7 +6,7 @@
     state: directory
     owner: root
     group: root
-    mode: u=rw,go=r
+    mode: u=rwx,go=r
 
 - name: "Upload {{ file_name }} file"
   become: true
