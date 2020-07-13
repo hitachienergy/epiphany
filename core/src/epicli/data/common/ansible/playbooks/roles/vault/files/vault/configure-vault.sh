@@ -197,7 +197,7 @@ function configure_kubernetes {
     local vault_protocol="$3";
     local helm_custom_values_set_bool="$4";
     log_and_print "Configuring Kubernetes...";
-    local files_to_apply=( app-namespace.yml vault-endpoint-configuration.yml vault-service-account.yml app-service-account.yml )
+    local files_to_apply=( app-namespace.yml vault-namespace.yml vault-default-policy.yml vault-service-account.yml app-service-account.yml )
     for file in "${files_to_apply[@]}" ; do
         if [ "$file" = "app-namespace.yml" ] && [ "$kubernetes_namespace" = "default" ]; then
             continue
@@ -217,9 +217,9 @@ function configure_kubernetes {
     elif [ "${command_result[1]}" = "1" ] ; then
         log_and_print "Installing Vault Agent Helm Chart...";
         if [ "$helm_custom_values_set_bool" = "true" ] ; then
-          helm upgrade --install --wait -f /tmp/vault_helm_chart_values.yaml vault /tmp/v0.4.0.tar.gz
+          helm upgrade --install --wait -f /tmp/vault_helm_chart_values.yaml vault /tmp/v0.4.0.tar.gz --namespace vault
         else
-          helm upgrade --install --wait vault /tmp/v0.4.0.tar.gz
+          helm upgrade --install --wait vault /tmp/v0.4.0.tar.gz --namespace vault
         fi
         check_status $? "Vault Agent Helm Chart installed." "There was an error during installation of Vault Agent Helm Chart.";
     fi
