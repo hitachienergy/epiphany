@@ -28,24 +28,24 @@ class UpgradeEngine(Step):
         for d in os.listdir(self.build_dir):
             bd = os.path.join(self.build_dir, d)
             if os.path.isdir(bd) and re.match(r'backup_\d', d): result.append(bd)
-        return result        
+        return result
 
     def backup_build(self):
-        # check if there are backup dirs and if so take the latest to work with.
+        # Check if there are backup dirs and if so take the latest to work with
         backup_dirs = self.get_backup_dirs()
         if len(backup_dirs) > 0:
             self.backup_build_dir = max(backup_dirs , key=os.path.getmtime)
             self.logger.info(f'There is already a backup present. Using latest for upgrade: "{self.backup_build_dir}"')
             return
 
-        # no backup dir so use the latest
+        # No backup dir so use the latest
         backup_dir_name = f'backup_{int(round(time.time() * 1000))}'
         self.backup_build_dir = os.path.join(self.build_dir, backup_dir_name )
         self.logger.info(f'Backing up build dir to "{self.backup_build_dir}"')
         shutil.copytree(self.build_dir, self.backup_build_dir)
 
     def upgrade(self):
-        # backup existing build
+        # Backup existing build
         self.backup_build()
 
         # Run Ansible to upgrade infrastructure
@@ -53,4 +53,4 @@ class UpgradeEngine(Step):
                            ansible_options=self.ansible_options) as ansible_runner:
             ansible_runner.upgrade()
 
-        return 0      
+        return 0

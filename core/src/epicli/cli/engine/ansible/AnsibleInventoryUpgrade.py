@@ -1,11 +1,17 @@
+import os
+
 from ansible.parsing.dataloader import DataLoader
 from ansible.inventory.manager import InventoryManager
+
 from cli.helpers.Step import Step
 from cli.helpers.build_saver import get_inventory_path_for_build, check_build_output_version, BUILD_LEGACY
+from cli.helpers.build_saver import save_inventory, MANIFEST_FILE_NAME
+from cli.helpers.data_loader import load_yamls_file
+from cli.helpers.objdict_helpers import dict_to_objdict
+from cli.helpers.doc_list_helpers import select_single
+
 from cli.models.AnsibleHostModel import AnsibleHostModel
 from cli.models.AnsibleInventoryItem import AnsibleInventoryItem
-from cli.helpers.build_saver import save_inventory
-from cli.helpers.objdict_helpers import dict_to_objdict
 
 
 class AnsibleInventoryUpgrade(Step):
@@ -14,13 +20,14 @@ class AnsibleInventoryUpgrade(Step):
         self.build_dir = build_dir
         self.backup_build_dir = backup_build_dir
         self.cluster_model = None
+        self.shared_config = None
 
     def __enter__(self):
         super().__enter__()
         return self
 
     def __exit__(self, exc_type, exc_value, traceback):
-        super().__exit__(exc_type, exc_value, traceback)   
+        super().__exit__(exc_type, exc_value, traceback)
 
     def get_role(self, inventory, role_name):
         for role in inventory:
@@ -32,7 +39,7 @@ class AnsibleInventoryUpgrade(Step):
         for i in range(len(inventory)):
             if inventory[i].role == role_name:
                 del inventory[i]
-                return       
+                return
 
     def rename_role(self, inventory, role_name, new_role_name):
         role = self.get_role(inventory, role_name)
@@ -40,13 +47,13 @@ class AnsibleInventoryUpgrade(Step):
             role.role = new_role_name
 
     def upgrade(self):
-        inventory_path = get_inventory_path_for_build(self.backup_build_dir)  
+        inventory_path = get_inventory_path_for_build(self.backup_build_dir)
         build_version = check_build_output_version(self.backup_build_dir)
 
         self.logger.info(f'Loading backup Ansible inventory: {inventory_path}')
         loaded_inventory = InventoryManager(loader = DataLoader(), sources=inventory_path)
 
-        # move loaded inventory to templating structure
+        # Move loaded inventory to templating structure
         new_inventory = []
         for key in loaded_inventory.groups:
             if key != 'all' and  key != 'ungrouped':
@@ -56,7 +63,7 @@ class AnsibleInventoryUpgrade(Step):
                     new_hosts.append(AnsibleHostModel(host.address, host.vars['ansible_host']))
                 new_inventory.append(AnsibleInventoryItem(key, new_hosts))
 
-        # re-constructure cluster model with all data necessary to run required upgrade rolls
+        # Reconstruct cluster model with all data necessary to run required upgrade rolls
         self.cluster_model = dict_to_objdict({
             'provider': 'any',
             'specification': {
@@ -66,6 +73,14 @@ class AnsibleInventoryUpgrade(Step):
                 }
             }
         })
+
+        # Reuse shared config from existing manifest
+        # Shared config contains the use_ha_control_plane flag which is required during upgrades
+        path_to_manifest = os.path.join(self.backup_build_dir, MANIFEST_FILE_NAME)
+        if not os.path.isfile(path_to_manifest):
+            raise Exception('No manifest.yml inside the build folder')
+        manifest_docs = load_yamls_file(path_to_manifest)
+        self.shared_config = select_single(manifest_docs, lambda x: x.kind == 'configuration/shared-config')
 
         if build_version == BUILD_LEGACY:
             self.logger.info(f'Upgrading Ansible inventory Epiphany < 0.3.0')
@@ -79,7 +94,7 @@ class AnsibleInventoryUpgrade(Step):
             self.rename_role(new_inventory, 'kafka-exporter', 'kafka_exporter')
             self.rename_role(new_inventory, 'haproxy_tls_termination', 'haproxy')
 
-            # remove linux and reboot roles if present
+            # Remove linux and reboot roles if present
             self.delete_role(new_inventory, 'linux')
             self.delete_role(new_inventory, 'reboot')
         else:
@@ -91,21 +106,21 @@ class AnsibleInventoryUpgrade(Step):
             raise Exception('No kubernetes_master to use as repository')
         master_node = master.hosts[0]
 
-        # add image_registry
+        # Add image_registry
         image_registry = self.get_role(new_inventory, 'image_registry')
         if image_registry == None:
             hosts = []
             hosts.append(AnsibleHostModel(master_node.name, master_node.ip))
             new_inventory.append(AnsibleInventoryItem('image_registry', hosts))
 
-        # add repository
+        # Add repository
         repository = self.get_role(new_inventory, 'repository')
         if repository == None:
             hosts = []
             hosts.append(AnsibleHostModel(master_node.name, master_node.ip))
             new_inventory.append(AnsibleInventoryItem('repository', hosts))
 
-        # save new inventory
+        # Save new inventory
         save_inventory(new_inventory, self.cluster_model, self.build_dir)
 
         return 0
