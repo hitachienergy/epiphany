@@ -6,7 +6,7 @@
         "vscoss.vscode-ansible",
         "wholroyd.jinja",
         "redhat.vscode-yaml",
-        "mauve.terraform",
+        "hashicorp.terraform",
         "davidanson.vscode-markdownlint"
     ]
 }
