@@ -4,6 +4,17 @@
   set_fact:
     plugin: "flannel"
 
+- name: upgrade-master | Wait for API resources to propagate
+  shell: |
+    kubectl api-resources --cached=false && kubectl -n kube-system get daemonsets
+  environment:
+    KUBECONFIG: /home/{{ admin_user.name }}/.kube/config
+  changed_when: false
+  register: daemonsets_query_result
+  until: daemonsets_query_result is success
+  retries: 20
+  delay: 30
+
 - name: upgrade-master | If canal is installed on the cluster
   environment:
     KUBECONFIG: /home/{{ admin_user.name }}/.kube/config
