@@ -5,7 +5,7 @@
 ### Added
 
 - Minor logging improvements added while fixing issue [#1424](https://github.com/epiphany-platform/epiphany/issues/1424).
-- Rename Terraform plugin vendor in VSCode recommendations
+- [#1438](https://github.com/epiphany-platform/epiphany/pull/1438) - Rename Terraform plugin vendor in VSCode recommendations
 
 ### Fixed
 
