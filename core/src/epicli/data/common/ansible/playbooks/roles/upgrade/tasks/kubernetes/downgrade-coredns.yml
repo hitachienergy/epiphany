@@ -22,6 +22,8 @@
     mode: u=rwx,go=r
 
 - name: Upload and apply template
+  vars:
+    file_name: coredns-config-for-k8s-below-1.16.yml
   block:
     - name: upgrade-master | Upload {{ file_name }} file
       template:
@@ -31,13 +33,9 @@
         group: "{{ admin_user.name }}"
         mode: u=rw,go=r
 
-    - name: upgrade-master | Apply /etc/epiphany/manifests/{{ file_name }} file
+    - name: "upgrade-master | Apply /etc/epiphany/manifests/{{ file_name }} file"
       environment:
         KUBECONFIG: /home/{{ admin_user.name }}/.kube/config
-      shell: |
+      command: |
         kubectl apply \
           -f /etc/epiphany/manifests/{{ file_name }}
-      args:
-        executable: /bin/bash
-  vars:
-    file_name: coredns-config-for-k8s-below-1.16.yml

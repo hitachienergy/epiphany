@@ -1,12 +1,6 @@
 ---
-- name: upgrade-node | Wait for cluster's readiness
-  include_tasks: wait.yml
-
 - name: upgrade-node | Drain node in preparation for maintenance
-  include_tasks: node/drain.yml
-
-- name: upgrade-node | Wait for cluster's readiness
-  include_tasks: wait.yml
+  include_tasks: utils/drain.yml
 
 - name: upgrade-node | Upgrade Docker # this may restart Docker daemon
   include_tasks: docker.yml
@@ -21,7 +15,13 @@
       include_tasks: "{{ ansible_os_family }}/install-kubeadm.yml"
 
     - name: upgrade-node | Upgrade node config
-      shell: kubeadm upgrade node config --kubelet-version v{{ version }}
+      command: >-
+        kubeadm upgrade node config --kubelet-version v{{ version }}
+      register: result
+      until:
+        - result is succeeded
+      retries: 20
+      delay: 30
 
     - name: upgrade-node | Install packages
       include_tasks: >-
@@ -34,14 +34,14 @@
 - name: upgrade-node | Restart kubelet
   systemd:
     state: restarted
-    daemon_reload: yes
+    daemon_reload: true
     name: kubelet
 
 - name: upgrade-node | Wait for cluster's readiness
-  include_tasks: wait.yml
+  include_tasks: utils/wait.yml
 
 - name: upgrade-node | Uncordon node - mark node as schedulable
-  include_tasks: node/uncordon.yml
+  include_tasks: utils/uncordon.yml
 
 - name: upgrade-node | Verify component versions and node status
   include_tasks: verify-upgrade.yml

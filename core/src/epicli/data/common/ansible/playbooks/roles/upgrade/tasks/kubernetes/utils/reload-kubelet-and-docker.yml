@@ -1,0 +1,26 @@
+---
+- name: upgrade | Stop Kubelet
+  systemd:
+    state: stopped
+    name: kubelet
+
+- name: upgrade | Stop Docker
+  systemd:
+    state: stopped
+    name: docker
+
+- name: upgrade | Reload daemon
+  systemd:
+    daemon_reload: true
+
+- name: upgrade | Start Docker
+  systemd:
+    name: docker
+    state: started
+    enabled: true
+
+- name: upgrade | Start Kubelet
+  systemd:
+    name: kubelet
+    state: started
+    enabled: true

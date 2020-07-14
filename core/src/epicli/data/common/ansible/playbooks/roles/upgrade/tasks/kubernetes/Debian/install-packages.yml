@@ -6,7 +6,7 @@
 
 # Unhold before removing to avoid error
 - name: install-packages | Unhold kubelet, kubectl and kubernetes-cni
-  shell: >-
+  command: >-
     apt-mark unhold kubelet kubectl kubernetes-cni
 
 - name: install-packages | Remove newer Debian packages installed as dependencies if they exist # as there is no allow_downgrade parameter in ansible apt module
@@ -17,8 +17,7 @@
      or ansible_facts.packages['kubelet'][0].version is version (version + '-00', '>')
      or ansible_facts.packages['kubectl'][0].version is version (version + '-00', '>')
 
-- name: >-
-    install-packages | Install kubernetes-cni {{ cni_version }}, kubelet {{ version }}, kubectl {{ version }} packages for Debian family
+- name: "install-packages | Install kubernetes-cni {{ cni_version }}, kubelet {{ version }}, kubectl {{ version }} packages for Debian family"
   apt:
     name:
     - kubernetes-cni={{ cni_version }}-00
@@ -28,5 +27,5 @@
     state: present
 
 - name: install-packages | Hold kubelet, kubectl and kubernetes-cni
-  shell: >-
+  command: >-
     apt-mark hold kubelet kubectl kubernetes-cni

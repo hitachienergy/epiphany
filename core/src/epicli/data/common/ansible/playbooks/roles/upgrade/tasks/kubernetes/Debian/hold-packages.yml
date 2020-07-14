@@ -1,6 +1,7 @@
-- name: "upgrade-master | Hold packages: {{ packages | join(', ') }}"
-  shell: >-
-    apt-mark hold {{ packages | join(' ') }}
+---
+- name: "upgrade-master | Hold packages: {{ packages | join( ', ' ) }}"
+  command: >-
+    apt-mark hold {{ packages | join( ' ' ) }}
   vars:
     packages: >-
       {%- if cni_in_kubelet is undefined or not cni_in_kubelet -%}

@@ -1,0 +1,43 @@
+---
+- delegate_to: "{{ groups.kubernetes_master[0] }}"
+  run_once: true
+  environment:
+    KUBECONFIG: /home/{{ admin_user.name }}/.kube/config
+  block:
+    - name: Wait for kubectl to find and access K8s cluster
+      include_tasks: kubernetes/utils/wait-for-kube-apiserver.yml
+
+    - name: Wait for all nodes to be ready
+      command: >-
+        kubectl get nodes -o json
+      register: result
+      until:
+        - result is succeeded
+        - result.stdout | from_json | json_query("items[*].status.conditions[?(@.type=='Ready')].status[]") | unique == ["True"]
+      retries: 600  # 20min
+      delay: 2
+      changed_when: false
+
+    - when: wait_for_pods | default(false) | bool
+      block:
+        - name: Wait for all pods to be running
+          command: >-
+            kubectl get pods --all-namespaces -o json
+          register: result
+          until:
+            - result is succeeded
+            - result.stdout | from_json | json_query('items[*].status.phase') | unique == ["Running"]
+          retries: 600  # 20min
+          delay: 2
+          changed_when: false
+
+        - name: Wait for all pods to be ready
+          command: >-
+            kubectl get pods --all-namespaces -o json
+          register: result
+          until:
+            - result is succeeded
+            - result.stdout | from_json | json_query('items[*].status.conditions[].status') | unique == ["True"]
+          retries: 600  # 20min
+          delay: 2
+          changed_when: false

@@ -1,25 +1,25 @@
 ---
 - name: upgrade-master | Patch imageRepository in kubeadm-config ConfigMap
+  run_once: true
+  environment:
+    KUBECONFIG: /home/{{ admin_user.name }}/.kube/config
   block:
     - name: upgrade-master | Get kubeadm-config configmap
-      shell: |
+      command: |
         kubectl get configmap kubeadm-config \
           --namespace kube-system \
           --output yaml
-      environment:
-        KUBECONFIG: &KUBECONFIG /etc/kubernetes/admin.conf
-      register: shell_kubeadm_configmap
+      register: command_kubeadm_configmap
       changed_when: false
 
     - name: upgrade-master | Patch kubeadm-config configmap (update-kubeadm-image-repository.yml)
       when:
         - _image_repository_updated != _image_repository  # skip the task if nothing changed
-      shell: |
+      command: |
         kubectl patch configmap kubeadm-config \
           --namespace kube-system \
           --patch "$KUBEADM_CONFIGMAP_DOCUMENT"
       environment:
-        KUBECONFIG: *KUBECONFIG
         # Render an altered kubeadm-config configmap document
         KUBEADM_CONFIGMAP_DOCUMENT: >-
           {{ _document | combine(_update2, recursive=true) | to_nice_yaml(indent=2) }}
@@ -27,7 +27,7 @@
       vars:
         # Parse yaml payload
         _document: >-
-          {{ shell_kubeadm_configmap.stdout | from_yaml }}
+          {{ command_kubeadm_configmap.stdout | from_yaml }}
 
         # Extract cluster config
         _cluster_config: >-
@@ -37,7 +37,7 @@
           {{ _cluster_config.imageRepository }}
 
         _image_repository_updated: >-
-          {%- if _image_repository is search(':') -%}
+          {%- if _image_repository is search( ':' ) -%}
             {{ _image_repository | regex_replace('^(?P<host>.+):(?P<port>\d+)', image_registry_address) }}
           {%- else -%}
             {{ image_registry_address }}/{{ _image_repository }}

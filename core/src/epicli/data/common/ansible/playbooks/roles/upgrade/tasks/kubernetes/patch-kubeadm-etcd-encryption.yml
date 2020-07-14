@@ -7,40 +7,34 @@
 - name: upgrade-master | Check if encryption of secret data is enabled
   command: >-
     grep -- '--encryption-provider-config' /etc/kubernetes/manifests/kube-apiserver.yaml
-  register: shell_grep_encryption_flag
+  register: command_grep_encryption_flag
   changed_when: false
-  failed_when: shell_grep_encryption_flag.rc > 1
+  failed_when: command_grep_encryption_flag.rc > 1
 
 - name: upgrade-master | Patch kubeadm-config ConfigMap if needed
   when:
-    - shell_grep_encryption_flag.rc == 0 # encryption enabled
+    - command_grep_encryption_flag.rc == 0 # encryption enabled
   run_once: true  # makes no sense to execute it more than once (would be redundant)
+  environment:
+    KUBECONFIG: /home/{{ admin_user.name }}/.kube/config
   block:
     - name: Get kubeadm-config ConfigMap
-      shell: |
+      command: |
         kubectl get configmap kubeadm-config \
           --namespace kube-system \
           --output yaml
-      args:
-        executable: /bin/bash
-      environment:
-        KUBECONFIG: &KUBECONFIG /etc/kubernetes/admin.conf
-      register: shell_kubeadm_configmap
+      register: command_kubeadm_configmap
       changed_when: false
 
     # The following procedure ensures that etcd encryption is always enabled during subsequent kubeadm executions
-    - name: upgrade-master | Patch and re-apply the kubeadm-config ConfigMap
+    - name: upgrade-master | Patch kubeadm-config configmap (patch-kubeadm-etcd-encryption.yml)
       when:
         - _kubeadm_api_server_extra_args['encryption-provider-config'] is undefined
-      shell: |
-        kubectl apply \
+      command: |
+        kubectl patch configmap kubeadm-config \
           --namespace kube-system \
-          --filename - \
-          <<< "$KUBEADM_CONFIGMAP_DOCUMENT"
-      args:
-        executable: /bin/bash
+          --patch "$KUBEADM_CONFIGMAP_DOCUMENT"
       environment:
-        KUBECONFIG: *KUBECONFIG
         # Render an altered kubeadm-config configmap document
         KUBEADM_CONFIGMAP_DOCUMENT: >-
           {{ _document | combine(_update2, recursive=true) | to_nice_yaml(indent=2) }}
@@ -48,7 +42,7 @@
       vars:
         # Parse yaml payload
         _document: >-
-          {{ shell_kubeadm_configmap.stdout | from_yaml }}
+          {{ command_kubeadm_configmap.stdout | from_yaml }}
 
         # Extract cluster config
         _cluster_config: >-

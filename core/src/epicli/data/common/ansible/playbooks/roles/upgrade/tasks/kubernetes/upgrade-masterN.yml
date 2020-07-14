@@ -1,44 +1,25 @@
 ---
-- name: upgrade-master | Wait for cluster's readiness
-  include_tasks: wait.yml
-
-- name: upgrade-master | Check if /etc/kubeadm/kubeadm-config.yml exists
-  stat:
-    path: /etc/kubeadm/kubeadm-config.yml
-  changed_when: false
-  register: kubeadm_config_file
-
 - name: upgrade-master | Drain master in preparation for maintenance
-  environment:
-    KUBECONFIG: /home/{{ admin_user.name }}/.kube/config
-  shell: kubectl drain {{ inventory_hostname }} --ignore-daemonsets --delete-local-data
-  when:
-    - groups.kubernetes_node is defined
-    - groups.kubernetes_node | length > 0  # drain master only if there is at least one worker node
-
-- name: upgrade-master | Wait for cluster's readiness
-  include_tasks: wait.yml
+  include_tasks: utils/drain.yml
 
 - name: upgrade-master | Upgrade, configure packages
   block:
     - name: upgrade-master | Hold packages for Debian family
-      include_tasks: "Debian/hold-packages.yml"
+      include_tasks: Debian/hold-packages.yml
       when: ansible_os_family == "Debian"
 
     - name: upgrade-master | Install kubeadm
       include_tasks: "{{ ansible_os_family }}/install-kubeadm.yml"
 
-    - name: upgrade-master | Wait for cluster's readiness
-      include_tasks: wait.yml
-
     - name: upgrade-master | Upgrade master {{ inventory_hostname }}
-      shell: >-
+      command: >-
         kubeadm upgrade node
-      changed_when: false
       register: result
-      until: result is succeeded
+      until:
+        - result is succeeded
       retries: 20
       delay: 30
+      changed_when: false
 
     - name: Install kubelet and kubectl for {{ version }}
       include_tasks: >-
@@ -47,55 +28,20 @@
         {%- else -%}
           {{ ansible_os_family }}/install-packages-cni-in-kubelet.yml
         {%- endif -%}
-      when: result is succeeded
+      when:
+        - result is succeeded
 
 - name: upgrade-master | Wait for cluster's readiness
-  include_tasks: wait.yml
+  include_tasks: utils/wait.yml
 
 - name: upgrade-master | Upgrade kubeadm-config.yml if exists
   include_tasks: upgrade-kubeadm-config.yml
-  when: kubeadm_config_file.stat.exists
 
 - name: upgrade-master | Upgrade Docker  # this may restart Docker daemon
   include_tasks: docker.yml
 
-- name: upgrade-master | Stop Kubelet
-  systemd:
-    state: stopped
-    name: kubelet
-
-- name: upgrade-master | Stop Docker
-  systemd:
-    state: stopped
-    name: docker
-
-- name: upgrade-master | Reload daemon
-  systemd:
-    daemon_reload: yes
-
-- name: upgrade-master | Start Docker
-  systemd:
-    name: docker
-    state: started
-    enabled: yes
-
-- name: upgrade-master | Start Kubelet
-  systemd:
-    name: kubelet
-    state: started
-    enabled: yes
-
-- name: upgrade-master | Wait for cluster's readiness
-  include_tasks: wait.yml
+- name: upgrade-master | Reload kubelet and docker
+  include_tasks: utils/reload-kubelet-and-docker.yml
 
 - name: upgrade-master | Uncordon master - mark master as schedulable
-  environment:
-    KUBECONFIG: /home/{{ admin_user.name }}/.kube/config
-  shell: kubectl uncordon {{ inventory_hostname }}
-  register: output
-  until: output is succeeded
-  retries: 20
-  delay: 5
-  when:
-    - groups.kubernetes_node is defined
-    - groups.kubernetes_node | length > 0  # master is drained only if there is at least one worker node
+  include_tasks: utils/uncordon.yml

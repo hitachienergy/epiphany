@@ -1,4 +1,12 @@
 ---
-- name: upgrade-kubeadm-config | Save kubeadm-config ConfigMap to file
-  shell: >-
-    kubeadm config view > /etc/kubeadm/kubeadm-config.yml
+- name: upgrade-kubeadm-config | Check if /etc/kubeadm/kubeadm-config.yml exists
+  stat:
+    path: /etc/kubeadm/kubeadm-config.yml
+  register: kubeadm_config_file
+  changed_when: false
+
+- when: kubeadm_config_file.stat.exists
+  block:
+    - name: upgrade-kubeadm-config | Save kubeadm-config ConfigMap to file
+      command: >-
+        kubeadm config view > /etc/kubeadm/kubeadm-config.yml
