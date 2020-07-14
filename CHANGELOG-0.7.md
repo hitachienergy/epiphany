@@ -10,6 +10,7 @@
 
 - [#1424](https://github.com/epiphany-platform/epiphany/issues/1424) - Terraform returning an error during deployments on Azure ("A retryable error occurred.")
 - [#1399](https://github.com/epiphany-platform/epiphany/issues/1399) - Epicli upgrade: Kubernetes upgrade may hang
+- [#1423](https://github.com/epiphany-platform/epiphany/issues/1423) - Error reading generated service principal
 
 ## [0.7.0] 2020-06-30
 

@@ -34,7 +34,7 @@ class APIProxy:
         name = sp_data['name']
         password = sp_data['password']
         tenant = sp_data['tenant']
-        return self.run(self, f'az login --service-principal -u \'{name}\' -p "{password}" --tenant \'{tenant}\'', False)      
+        return self.run(self, f'az login --service-principal -u \'{name}\' -p \'{password}\' --tenant \'{tenant}\'', False)      
 
     def set_active_subscribtion(self, subscription_id):
         self.run(self, f'az account set --subscription {subscription_id}')  
