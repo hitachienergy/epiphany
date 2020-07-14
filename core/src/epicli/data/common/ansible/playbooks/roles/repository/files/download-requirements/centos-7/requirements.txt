@@ -88,7 +88,7 @@ python-slip-dbus # for firewalld
 python-ipaddress
 python-backports
 quota # for nfs-utils
-rabbitmq-server-3.7.10
+rabbitmq-server-3.8.3
 rh-haproxy18
 rh-haproxy18-haproxy-syspaths
 postgresql10-server
@@ -172,7 +172,7 @@ brainsam/pgbouncer:1.12
 # TODO remove?
 jboss/keycloak:4.8.3.Final
 jboss/keycloak:9.0.0
-rabbitmq:3.7.10
+rabbitmq:3.8.3
 # K8s upgrade
 ## v1.14.6
 k8s.gcr.io/kube-apiserver:v1.14.6
