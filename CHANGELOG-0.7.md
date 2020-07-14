@@ -1,9 +1,14 @@
 # Changelog 0.7
 
-## [0.7.1] 2020-07-XX
+## [0.7.1] 2020-07-xx
+
+### Added
+
+- Minor logging improvements added while fixing issue [#1424](https://github.com/epiphany-platform/epiphany/issues/1424).
 
 ### Fixed
 
+- [#1424](https://github.com/epiphany-platform/epiphany/issues/1424) - Terraform returning an error during deployments on Azure ("A retryable error occurred.")
 - [#1399](https://github.com/epiphany-platform/epiphany/issues/1399) - Epicli upgrade: Kubernetes upgrade may hang
 
 ## [0.7.0] 2020-06-30
