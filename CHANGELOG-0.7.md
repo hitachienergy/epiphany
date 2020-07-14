@@ -5,6 +5,7 @@
 ### Fixed
 
 - [#1399](https://github.com/epiphany-platform/epiphany/issues/1399) - Epicli upgrade: Kubernetes upgrade may hang
+- Rename Terraform plugin vendor in VSCode recommendations
 
 ## [0.7.0] 2020-06-30
 
