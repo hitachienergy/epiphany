@@ -1,0 +1,43 @@
+---
+# CoreDNS version matrix
+#+-----------------------------------------------------------------+
+#| Epiphany version | K8s version | Epiphany CoreDNS | K8s CoreDNS |
+#|------------------|-------------|------------------|-------------|
+#| 0.4.4            | 1.14.6      | 1.5.0            | 1.3.1       |
+#| 0.5.0            | 1.14.6      | 1.5.0            | 1.3.1       |
+#| upgrade < 0.6.0  | 1.15.10     | 1.5.0            | 1.3.1       |
+#| upgrade < 0.6.0  | 1.16.7      | 1.5.0            | 1.6.2       |
+#| 0.6.0            | 1.17.4      | 1.6.5            | 1.6.5       |
+#| 0.7.0            | 1.17.7      | 1.6.5            | 1.6.5       |
+#+-----------------------------------------------------------------+
+# Source: look for 'CoreDNSVersion' at https://github.com/kubernetes/kubernetes/blob/$TAG/cmd/kubeadm/app/constants/constants.go
+
+- name: upgrade-master | Create directory /etc/epiphany/manifests
+  become: true
+  file:
+    path: /etc/epiphany/manifests
+    state: directory
+    owner: root
+    group: root
+    mode: u=rwx,go=r
+
+- name: Upload and apply template
+  block:
+    - name: upgrade-master | Upload {{ file_name }} file
+      template:
+        src: kubernetes/{{ file_name }}.j2
+        dest: /etc/epiphany/manifests/{{ file_name }}
+        owner: "{{ admin_user.name }}"
+        group: "{{ admin_user.name }}"
+        mode: u=rw,go=r
+
+    - name: upgrade-master | Apply /etc/epiphany/manifests/{{ file_name }} file
+      environment:
+        KUBECONFIG: /home/{{ admin_user.name }}/.kube/config
+      shell: |
+        kubectl apply \
+          -f /etc/epiphany/manifests/{{ file_name }}
+      args:
+        executable: /bin/bash
+  vars:
+    file_name: coredns-config-for-k8s-below-1.16.yml

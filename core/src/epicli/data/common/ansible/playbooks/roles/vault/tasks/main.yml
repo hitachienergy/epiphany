@@ -13,9 +13,24 @@
     state: absent
     path: /tmp/vault_helm_chart_values.yaml
 
+- name: Set full Vault address
+  set_fact:
+    full_vault_address: "{{ specification.tls_disable | ternary('http', 'https') }}://{{ hostvars[groups['vault'][0]]['ansible_default_ipv4']['address'] }}:8200"
+  when: specification.vault_helm_chart_values.injector.externalVaultAddr is not defined
+
+- name: Set final Vault Helm chart's custom configuration file content
+  set_fact:
+    final_vault_helm_chart_values: "{{ specification.vault_helm_chart_values | combine({'injector': {'externalVaultAddr': full_vault_address}},recursive=True) }}"
+  when: specification.vault_helm_chart_values.injector.externalVaultAddr is not defined
+
+- name: Set final Vault Helm chart's custom configuration file content - manual externalVaultAddr config
+  set_fact:
+    final_vault_helm_chart_values: "{{ specification.vault_helm_chart_values }}"
+  when: specification.vault_helm_chart_values.injector.externalVaultAddr is defined
+
 - name: Copy Vault Helm chart's custom configuration to file
   copy:
-    content: "{{ specification.vault_helm_chart_values }}"
+    content: "{{ final_vault_helm_chart_values }}"
     dest: /tmp/vault_helm_chart_values.yaml
   when: vault_helm_chart_values_bool
 
@@ -139,31 +154,35 @@
         src: vault/vault.service.j2
       register: service_conf
 
-    - name: Look for certificate in role directory
-      local_action: find paths="{{ role_path }}/files/tls-certs" patterns="*.pem"
-      become: no
-      register: provided_certificates
-
-    - name: Check if any certificate exists in role directory
-      set_fact:
-        certificate_exists: "{{ provided_certificates.matched > 0 }}"
-
-    - name: Display result
-      debug:
-        msg: Certificate file {{ (provided_certificates.matched > 0) | ternary('found','not found') }}
-
-    - name: Copy certificate to remote host
-      copy:
-        src: "{{ item.path }}"
-        dest: "{{ specification.vault_install_dir }}/tls/"
-      loop: "{{ provided_certificates.files }}"
+    - name: Configure Hashicorp Vault TLS support if enabled
       when:
-        - certificate_exists
+        - not specification.tls_disable
+      block:
+        - name: Look for certificate in role directory
+          local_action: find paths="{{ role_path }}/files/tls-certs" patterns="*.pem"
+          become: no
+          register: provided_certificates
 
-    - name: Generate TLS certificate
-      include_tasks: generate-certificate.yml
-      when:
-        - not certificate_exists
+        - name: Check if any certificate exists in role directory
+          set_fact:
+            certificate_exists: "{{ provided_certificates.matched > 0 }}"
+
+        - name: Display result
+          debug:
+            msg: Certificate file {{ (provided_certificates.matched > 0) | ternary('found','not found') }}
+
+        - name: Copy certificate to remote host
+          copy:
+            src: "{{ item.path }}"
+            dest: "{{ specification.vault_install_dir }}/tls/"
+          loop: "{{ provided_certificates.files }}"
+          when:
+            - certificate_exists
+
+        - name: Generate TLS certificate
+          include_tasks: generate-certificate.yml
+          when:
+            - not certificate_exists
 
     - name: Restart Vault service and reload config
       systemd:
@@ -227,6 +246,22 @@
         mode: u=rw,g=r,o=
         src: vault/users.csv.j2
 
+    - name: Copy Vault namespace yaml
+      copy:
+        src: kubernetes/vault-namespace.yml
+        dest: "{{ specification.vault_install_dir }}/kubernetes/"
+        owner: "{{ specification.vault_system_user }}"
+        group: "{{ specification.vault_system_group }}"
+        mode: u=rw,g=r,o=
+
+    - name: Create policy yaml for default namespace
+      template:
+        dest: "{{ specification.vault_install_dir }}/kubernetes/vault-default-policy.yml"
+        owner: "{{ specification.vault_system_user }}"
+        group: "{{ specification.vault_system_group }}"
+        mode: u=rw,g=r,o=
+        src: kubernetes/vault-default-policy.yml.j2
+
     - name: Create application namespace yaml
       template:
         dest: "{{ specification.vault_install_dir }}/kubernetes/app-namespace.yml"
@@ -235,14 +270,6 @@
         mode: u=rw,g=r,o=
         src: kubernetes/app-namespace.yml.j2
       when: not specification.kubernetes_namespace == "default"
-
-    - name: Create Vault endpoint configuration yaml
-      template:
-        dest: "{{ specification.vault_install_dir }}/kubernetes/vault-endpoint-configuration.yml"
-        owner: "{{ specification.vault_system_user }}"
-        group: "{{ specification.vault_system_group }}"
-        mode: u=rw,g=r,o=
-        src: kubernetes/vault-endpoint-configuration.yml.j2
 
     - name: Create Vault service account yaml
       template:
