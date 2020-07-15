@@ -19,24 +19,17 @@
       when:
         - network_manager_conf_d_stat.stat.exists
 
-    - name: Reload NetworkManager service
-      block:
-        - name: Check if NetworkManager service is loaded
-          shell: >-
-            set -o pipefail &&
-            systemctl list-units --type=service --state=loaded | grep -q NetworkManager.service
-          args:
-            executable: /bin/bash
-          register: network_manager_service_status
-          changed_when: false
+- name: Reload NetworkManager service
+  block:
+    - name: Populate service facts
+      service_facts:
 
-        - name: Reload NetworkManager service
-          systemd:
-            name: NetworkManager
-            state: reloaded
-          when:
-            - network_manager_service_status.rc == 0
-      when: copy_calico_network_manager_conf.changed
+    - name: Reload if NetworkManager service is running
+      systemd:
+        name: NetworkManager
+        state: reloaded
+      when: ansible_facts.services["NetworkManager.service"].state == "running"
+  when: copy_calico_network_manager_conf.changed
 
 - name: Create calico deployment
   template:
@@ -55,8 +48,4 @@
 - name: Apply calico definition
   environment:
     KUBECONFIG: "/home/{{ admin_user.name }}/.kube/config"
-  shell: |
-    kubectl apply \
-      -f /home/{{ admin_user.name }}/calico.yml
-  args:
-    executable: /bin/bash
+  command: kubectl apply -f /home/{{ admin_user.name }}/calico.yml

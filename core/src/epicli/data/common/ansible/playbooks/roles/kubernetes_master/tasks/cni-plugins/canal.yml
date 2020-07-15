@@ -16,8 +16,4 @@
 - name: Apply canal deployment
   environment:
     KUBECONFIG: "/home/{{ admin_user.name }}/.kube/config"
-  shell: |
-    kubectl apply \
-      -f /home/{{ admin_user.name }}/canal.yml
-  args:
-    executable: /bin/bash
+  command: kubectl apply -f /home/{{ admin_user.name }}/canal.yml

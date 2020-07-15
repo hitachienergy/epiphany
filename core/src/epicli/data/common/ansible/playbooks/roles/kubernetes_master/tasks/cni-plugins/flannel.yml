@@ -9,8 +9,4 @@
 - name: Apply flannel definition
   environment:
     KUBECONFIG: "/home/{{ admin_user.name }}/.kube/config"
-  shell: |
-    kubectl apply \
-      -f /home/{{ admin_user.name }}/kube-flannel.yml
-  args:
-    executable: /bin/bash
+  command: kubectl apply -f /home/{{ admin_user.name }}/kube-flannel.yml
