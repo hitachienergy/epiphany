@@ -4,7 +4,7 @@
 - name: uprgade-kubernetes-dashboard | Delete old kubernetes dashboard
   run_once: true
   environment:
-    KUBECONFIG: /home/{{ admin_user.name }}/.kube/config
+    KUBECONFIG: /etc/kubernetes/admin.conf
   block:
     - name: Check if any resource with label 'k8s-app=kubernetes-dashboard' exists in kube-system
       command: |

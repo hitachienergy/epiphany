@@ -10,7 +10,7 @@
   args:
     executable: /bin/bash
   environment:
-    KUBECONFIG: /home/{{ admin_user.name }}/.kube/config
+    KUBECONFIG: /etc/kubernetes/admin.conf
   register: wait_for_cni_plugin
   until: wait_for_cni_plugin is succeeded
   retries: 30

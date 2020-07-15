@@ -35,7 +35,7 @@
 
     - name: "upgrade-master | Apply /etc/epiphany/manifests/{{ file_name }} file"
       environment:
-        KUBECONFIG: /home/{{ admin_user.name }}/.kube/config
+        KUBECONFIG: /etc/kubernetes/admin.conf
       command: |
         kubectl apply \
           -f /etc/epiphany/manifests/{{ file_name }}

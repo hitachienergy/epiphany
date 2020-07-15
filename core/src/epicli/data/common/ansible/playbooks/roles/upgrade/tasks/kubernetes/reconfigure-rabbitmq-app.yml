@@ -2,7 +2,7 @@
 - name: Change rabbitmq stateful set to use {{ image_registry_address }}
   run_once: true
   environment:
-    KUBECONFIG: /home/{{ admin_user.name }}/.kube/config
+    KUBECONFIG: /etc/kubernetes/admin.conf
   block:
     - name: upgrade-master | Get rabbitmq statefulset name
       shell: |-

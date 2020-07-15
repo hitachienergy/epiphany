@@ -1,7 +1,7 @@
 ---
 - name: verify-upgrade | Verify cluster versions
   environment:
-    KUBECONFIG: /home/{{ admin_user.name }}/.kube/config
+    KUBECONFIG: /etc/kubernetes/admin.conf
   block:
     - name: Verify cluster version
       when:

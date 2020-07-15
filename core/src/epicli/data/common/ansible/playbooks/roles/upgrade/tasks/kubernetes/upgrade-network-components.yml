@@ -2,7 +2,7 @@
 - name: upgrade-master | Determine which network plugin is used
   run_once: true
   environment:
-    KUBECONFIG: /home/{{ admin_user.name }}/.kube/config
+    KUBECONFIG: /etc/kubernetes/admin.conf
   block:
     - name: upgrade-master | Set default cni plugin - flannel
       set_fact:
