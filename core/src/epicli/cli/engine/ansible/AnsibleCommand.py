@@ -50,7 +50,7 @@ class AnsibleCommand:
                 break
             except Exception as e:
                 self.logger.error(e)
-                self.logger.info('Retry running task: ' + str(i + 1) + '/' + str(retries))
+                self.logger.warning('Retry running task: ' + str(i + 1) + '/' + str(retries))
                 time.sleep(timeout)
         else:
             raise Exception(f'Failed running task after {str(retries)} retries')
@@ -88,7 +88,7 @@ class AnsibleCommand:
                 break
             except Exception as e:
                 self.logger.error(e)
-                self.logger.info('Retry running playbook: ' + str(i + 1) + '/' + str(retries))
+                self.logger.warning('Retry running playbook: ' + str(i + 1) + '/' + str(retries))
                 time.sleep(timeout)
         else:
             raise Exception(f'Failed running playbook after {str(retries)} retries')
