@@ -1,5 +1,5 @@
 ---
-- name: "Change keycloak stateful set to use {{ image_registry_address }}"
+- name: Change keycloak statefulset to use {{ image_registry_address }}
   run_once: true
   environment:
     KUBECONFIG: /home/{{ admin_user.name }}/.kube/config

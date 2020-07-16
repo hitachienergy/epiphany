@@ -4,8 +4,8 @@ from ansible.parsing.dataloader import DataLoader
 from ansible.inventory.manager import InventoryManager
 
 from cli.helpers.Step import Step
-from cli.helpers.build_saver import get_inventory_path_for_build, check_build_output_version, BUILD_LEGACY
-from cli.helpers.build_saver import save_inventory, MANIFEST_FILE_NAME
+from cli.helpers.build_saver import (get_inventory_path_for_build, check_build_output_version, BUILD_LEGACY,
+    save_inventory, MANIFEST_FILE_NAME)
 from cli.helpers.data_loader import load_yamls_file
 from cli.helpers.objdict_helpers import dict_to_objdict
 from cli.helpers.doc_list_helpers import select_single

@@ -1,5 +1,6 @@
 ---
-- delegate_to: "{{ groups.kubernetes_master[0] }}"
+- name: Wait for kube-apiserver then get cluster and kubelet version
+  delegate_to: "{{ groups.kubernetes_master[0] }}"
   block:
     - name: Include wait-for-kube-apiserver.yml
       import_tasks: kubernetes/utils/wait-for-kube-apiserver.yml

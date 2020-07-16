@@ -1,5 +1,5 @@
 ---
-- name: "upgrade-master | Hold packages: {{ packages | join( ', ' ) }}"
+- name: Hold packages: {{ packages | join( ', ' ) }}
   command: >-
     apt-mark hold {{ packages | join( ' ' ) }}
   vars:

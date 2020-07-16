@@ -118,3 +118,6 @@
 
 - name: upgrade-master | Uncordon master - mark master as schedulable
   include_tasks: utils/uncordon.yml
+
+- name: upgrade-master | Verify component versions and node status
+  include_tasks: kubernetes/verify-upgrade.yml
