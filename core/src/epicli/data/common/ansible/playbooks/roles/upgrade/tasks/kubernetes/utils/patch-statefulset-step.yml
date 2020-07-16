@@ -6,16 +6,16 @@
 # - _statefulset
 # - _documents
 
-- name: upgrade-k8s | Patch statefulset
+- name: k8s/utils | Patch statefulset (step)
   when:
     - _names_and_images_updated != _names_and_images
     - _containers_updated | length > 0
 
   block:
-    - name: upgrade-k8s | Patch statefulset {{ _statefulset }} (step)
+    - name: k8s/utils | Patch statefulset {{ _statefulset }} (step)
       environment:
         KUBECONFIG: /etc/kubernetes/admin.conf
-      connand: |
+      command: |
         kubectl patch statefulsets.apps {{ _statefulset }} \
           --namespace {{ _namespace }} \
           --patch '{{ _patch | to_json }}'

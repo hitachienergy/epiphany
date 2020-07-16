@@ -1,25 +1,25 @@
 ---
-- name: verify-upgrade | Verify cluster versions
+- name: k8s/verify | Verify cluster versions
   environment:
-    KUBECONFIG: /etc/kubernetes/admin.conf
+    KUBECONFIG: /etc/kubernetes/kubelet.conf
   block:
-    - name: Verify cluster version
+    - name: k8s/verify | Verify cluster version
       when:
         - inventory_hostname in groups.kubernetes_master
       block:
-        - name: verify-upgrade | Include wait-for-kube-apiserver.yml
+        - name: k8s/verify | Include wait-for-kube-apiserver.yml
           include_tasks: utils/wait-for-kube-apiserver.yml
 
-        - name: verify-upgrade | Include get-cluster-version.yml
+        - name: k8s/verify | Include get-cluster-version.yml
           include_tasks: get-cluster-version.yml  # sets cluster_version
 
-        - name: verify-upgrade | Verify cluster version
+        - name: k8s/verify | Verify cluster version
           assert:
             that: version in cluster_version
 
-    - name: Verify kubectl version
+    - name: k8s/verify | Verify kubectl version
       block:
-        - name: verify-upgrade | Get kubectl version
+        - name: k8s/verify | Get kubectl version
           shell: |-
             set -o pipefail &&
             kubectl version --client --short -o json | jq --raw-output '.clientVersion.gitVersion'
@@ -28,23 +28,23 @@
             executable: /bin/bash
           changed_when: false
 
-        - name: verify-upgrade | Verify kubectl version
+        - name: k8s/verify | Verify kubectl version
           assert:
             that: version in kubectl_version.stdout
 
-    - name: Verify kubeadm version
+    - name: k8s/verify | Verify kubeadm version
       block:
-        - name: verify-upgrade | Get kubeadm version
+        - name: k8s/verify | Get kubeadm version
           command: >-
             kubeadm version -o short
           register: kubeadm_version
           changed_when: false
 
-        - name: verify-upgrade | Verify kubeadm version
+        - name: k8s/verify | Verify kubeadm version
           assert:
             that: version in kubeadm_version.stdout
 
-    - name: verify-upgrade | Verify kubelet version from API server and get node status
+    - name: k8s/verify | Verify kubelet version from API server and get node status
       run_once: true
       shell: |-
         set -o pipefail &&
@@ -60,6 +60,6 @@
       args: *args
       changed_when: false
 
-    - name: verify-upgrade | Verify node status
+    - name: k8s/verify | Verify node status
       assert:
         that: "'Ready' in node_status_and_version.stdout"

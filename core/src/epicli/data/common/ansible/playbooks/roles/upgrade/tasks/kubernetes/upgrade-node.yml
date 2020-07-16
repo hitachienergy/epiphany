@@ -1,20 +1,20 @@
 ---
-- name: upgrade-node | Drain node in preparation for maintenance
+- name: k8s/node | Drain node in preparation for maintenance
   include_tasks: utils/drain.yml
 
-- name: upgrade-node | Upgrade Docker # this may restart Docker daemon
+- name: k8s/node | Upgrade Docker # this may restart Docker daemon
   include_tasks: docker.yml
 
-- name: upgrade-node | Upgrade, configure packages
+- name: k8s/node | Upgrade, configure packages
   block:
-    - name: upgrade-node | Hold packages for Debian family
+    - name: k8s/node | Hold packages for Debian family
       include_tasks: "Debian/hold-packages.yml"
       when: ansible_os_family == "Debian"
 
-    - name: upgrade-node | Install kubeadm
+    - name: k8s/node | Install kubeadm
       include_tasks: "{{ ansible_os_family }}/install-kubeadm.yml"
 
-    - name: upgrade-node | Upgrade node config
+    - name: k8s/node | Upgrade node config
       command: >-
         kubeadm upgrade node config --kubelet-version v{{ version }}
       register: result
@@ -23,7 +23,7 @@
       retries: 20
       delay: 30
 
-    - name: upgrade-node | Install packages
+    - name: k8s/node | Install packages
       include_tasks: >-
         {%- if cni_in_kubelet is undefined or not cni_in_kubelet -%}
           {{ ansible_os_family }}/install-packages.yml
@@ -31,17 +31,17 @@
           {{ ansible_os_family }}/install-packages-cni-in-kubelet.yml
         {%- endif -%}
 
-- name: upgrade-node | Restart kubelet
+- name: k8s/node | Restart kubelet
   systemd:
     state: restarted
     daemon_reload: true
     name: kubelet
 
-- name: upgrade-node | Wait for cluster's readiness
+- name: k8s/node | Wait for cluster's readiness
   include_tasks: utils/wait.yml
 
-- name: upgrade-node | Uncordon node - mark node as schedulable
+- name: k8s/node | Uncordon node - mark node as schedulable
   include_tasks: utils/uncordon.yml
 
-- name: upgrade-node | Verify component versions and node status
+- name: k8s/node | Verify component versions and node status
   include_tasks: verify-upgrade.yml

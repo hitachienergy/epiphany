@@ -3,7 +3,7 @@
 # - image_registry_address
 # - image_regexp
 
-- name: upgrade-k8s | Get all statefulsets
+- name: k8s/utils | Get all statefulsets
   environment:
     KUBECONFIG: /etc/kubernetes/admin.conf
   command: |
@@ -13,10 +13,10 @@
   register: command_statefulsets
   changed_when: false
 
-- name: upgrade-k8s | Patch all statefulsets
+- name: k8s/utils | Patch all statefulsets
   block:
-    - name: upgrade-k8s | Patch statefulset {{ _statefulset }}
-      include_tasks: utils/patch-statefulset-step.yml
+    - name: k8s/utils | Patch statefulset {{ _statefulset }}
+      include_tasks: patch-statefulset-step.yml
       vars:
         _namespace: "{{ item.0 }}"
         _statefulset: "{{ item.1 }}"

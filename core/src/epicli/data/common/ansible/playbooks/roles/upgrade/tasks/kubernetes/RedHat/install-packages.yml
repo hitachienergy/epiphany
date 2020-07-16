@@ -1,5 +1,5 @@
 ---
-- name: "install-packages | Install kubernetes-cni-{{ cni_version }}, kubelet-{{ version }} and kubectl-{{ version }} for RedHat family"
+- name: k8s/install | Install kubernetes-cni-{{ cni_version }}, kubelet-{{ version }} and kubectl-{{ version }} for RedHat family
   yum:
     name:
       - kubernetes-cni-{{ cni_version }}-0

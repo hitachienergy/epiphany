@@ -1,24 +1,25 @@
 ---
-- name: upgrade | Wait for cluster's readiness
+- name: k8s/utils | Wait for cluster's readiness
   include_tasks: kubernetes/utils/wait.yml
 
-- when:
+- name: k8s/utils | Uncordon master or node
+  when:
     - groups.kubernetes_node is defined
     - groups.kubernetes_node | length > 0  # master or node is drained only if there is at least one worker node
+
   block:
-    - delegate_to: "{{ groups.kubernetes_master[0] }}"
+    - name: k8s/utils | Uncordon master or node - mark it as schedulable
+      delegate_to: "{{ groups.kubernetes_master[0] }}"
       run_once: true
       environment:
         KUBECONFIG: /etc/kubernetes/admin.conf
-      block:
-        - name: upgrade | Uncordon master or node - mark it as schedulable
-          command: >-
-            kubectl uncordon {{ inventory_hostname }}
-          register: result
-          until:
-            - result is succeeded
-          retries: 20
-          delay: 5
+      command: >-
+        kubectl uncordon {{ inventory_hostname }}
+      register: result
+      until:
+        - result is succeeded
+      retries: 20
+      delay: 5
 
-    - name: upgrade | Wait for cluster's readiness
+    - name: k8s/utils | Wait for cluster's readiness
       include_tasks: kubernetes/utils/wait.yml

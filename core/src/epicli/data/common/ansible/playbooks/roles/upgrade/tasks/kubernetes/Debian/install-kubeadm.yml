@@ -1,15 +1,14 @@
 ---
-- name: Unhold kubeadm package
+- name: k8s/install | Unhold kubeadm package
   command: >-
     apt-mark unhold kubeadm
 
-- name: >-
-    Install kubeadm {{ version }} package for Debian family
+- name: k8s/install | Install kubeadm {{ version }} package for Debian family
   apt:
     name: kubeadm={{ version }}-00
     update_cache: true
     state: present
 
-- name: Hold kubeadm package
+- name: k8s/install | Hold kubeadm package
   command: >-
     apt-mark hold kubeadm

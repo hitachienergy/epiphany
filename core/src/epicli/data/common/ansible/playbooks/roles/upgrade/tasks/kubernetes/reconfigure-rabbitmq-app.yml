@@ -1,5 +1,5 @@
 ---
-- name: upgrade-master | Patch rabbitmq's statefulset
+- name: k8s/master | Patch rabbitmq's statefulset
   include_tasks: utils/patch-statefulset.yml
   vars:
     image_regexp: 'rabbitmq:'

@@ -1,5 +1,5 @@
 ---
-- name: Hold packages: {{ packages | join( ', ' ) }}
+- name: k8s/install | Hold packages {{ packages | join( ', ' ) }}
   command: >-
     apt-mark hold {{ packages | join( ' ' ) }}
   vars:

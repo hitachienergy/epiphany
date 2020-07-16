@@ -1,47 +1,45 @@
 ---
-- name: Wait for kube-apiserver then get cluster and kubelet version
+- name: k8s | Wait for kube-apiserver then get cluster and kubelet version
   delegate_to: "{{ groups.kubernetes_master[0] }}"
   block:
-    - name: Include wait-for-kube-apiserver.yml
+    - name: k8s | Include wait-for-kube-apiserver.yml
       import_tasks: kubernetes/utils/wait-for-kube-apiserver.yml
 
-    - name: Include get-cluster-version.yml
+    - name: k8s | Include get-cluster-version.yml
       import_tasks: kubernetes/get-cluster-version.yml # sets cluster_version
 
-- name: Check if upgrade from current K8s version is supported
+- name: k8s | Check if upgrade from current K8s version is supported
   assert:
     that: cluster_version is version('v1.14.6', '>=')
     fail_msg: Your Kubernetes version ({{ cluster_version }}) is not supported by this version of Epiphany which requires at least version 1.14.6 (Epiphany v0.4.4). For more information, refer to the documentation.
     quiet: true
 
-- name: Include get-kubelet-version.yml
+- name: k8s | Include get-kubelet-version.yml
   import_tasks: kubernetes/get-kubelet-version.yml # sets kubelet_version
   delegate_to: "{{ groups['kubernetes_master'][0] }}"
 
-- vars:
+- name: k8s | Upgrade masters then nodes
+  vars:
     version: "{{ ver }}"
     cni_version: "{{ cni_ver }}"
   block:
-    - when: cluster_version is version('v' + version, '<=')
+    - name: k8s | Upgrade masters
+      when: cluster_version is version('v' + version, '<=')
       block:
-        - name: Upgrade master0 to v{{ version }}
+        - name: k8s | Upgrade first master to v{{ version }}
           include_tasks: kubernetes/upgrade-master0.yml
           when:
             - inventory_hostname == groups.kubernetes_master[0]
 
-        - name: Upgrade masterN to v{{ version }}
+        - name: k8s | Upgrade next master to v{{ version }}
           include_tasks: kubernetes/upgrade-masterN.yml
           when:
             - inventory_hostname in groups.kubernetes_master[1:]
 
-        - name: upgrade-master | Verify cluster version
-          include_tasks: kubernetes/verify-upgrade.yml
-          when:
-            - inventory_hostname == groups.kubernetes_master[0]
-
-    - when: kubelet_version is version('v' + version, '<=')
+    - name: k8s | Upgrade nodes
+      when: kubelet_version is version('v' + version, '<=')
       block:
-        - name: Upgrade node to v{{ version }}
+        - name: k8s | Upgrade node to v{{ version }}
           include_tasks: kubernetes/upgrade-node.yml
           when:
             - groups.kubernetes_node is defined

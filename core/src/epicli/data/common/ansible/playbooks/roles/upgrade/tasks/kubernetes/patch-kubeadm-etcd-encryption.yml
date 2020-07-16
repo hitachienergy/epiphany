@@ -4,14 +4,14 @@
 
 # kube-apiserver uses --encryption-provider-config parameter to control how data is encrypted in etcd.
 # If this parameter is absent the encryption is not enabled.
-- name: upgrade-master | Check if encryption of secret data is enabled
+- name: k8s/master | Check if encryption of secret data is enabled
   command: >-
     grep -- '--encryption-provider-config' /etc/kubernetes/manifests/kube-apiserver.yaml
   register: command_grep_encryption_flag
   changed_when: false
   failed_when: command_grep_encryption_flag.rc > 1
 
-- name: upgrade-master | Patch kubeadm-config ConfigMap if needed
+- name: k8s/master | Patch kubeadm-config ConfigMap if needed
   when:
     - command_grep_encryption_flag.rc == 0 # encryption enabled
   run_once: true  # makes no sense to execute it more than once (would be redundant)
@@ -27,7 +27,7 @@
       changed_when: false
 
     # The following procedure ensures that etcd encryption is always enabled during subsequent kubeadm executions
-    - name: upgrade-master | Patch kubeadm-config configmap (patch-kubeadm-etcd-encryption.yml)
+    - name: k8s/master | Patch kubeadm-config configmap (patch-kubeadm-etcd-encryption.yml)
       when:
         - _kubeadm_api_server_extra_args['encryption-provider-config'] is undefined
       command: |

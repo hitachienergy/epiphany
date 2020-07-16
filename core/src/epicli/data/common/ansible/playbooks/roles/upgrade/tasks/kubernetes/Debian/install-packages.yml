@@ -1,15 +1,15 @@
 ---
-- name: install-packages | Get information about installed packages as facts
+- name: k8s/install | Get information about installed packages as facts
   package_facts:
     manager: auto
   changed_when: false
 
 # Unhold before removing to avoid error
-- name: install-packages | Unhold kubelet, kubectl and kubernetes-cni
+- name: k8s/install | Unhold kubelet, kubectl and kubernetes-cni
   command: >-
     apt-mark unhold kubelet kubectl kubernetes-cni
 
-- name: install-packages | Remove newer Debian packages installed as dependencies if they exist # as there is no allow_downgrade parameter in ansible apt module
+- name: k8s/install | Remove newer Debian packages installed as dependencies if they exist # as there is no allow_downgrade parameter in ansible apt module
   apt:
     name: kubernetes-cni kubelet kubectl
     state: absent
@@ -17,7 +17,7 @@
      or ansible_facts.packages['kubelet'][0].version is version (version + '-00', '>')
      or ansible_facts.packages['kubectl'][0].version is version (version + '-00', '>')
 
-- name: "install-packages | Install kubernetes-cni {{ cni_version }}, kubelet {{ version }}, kubectl {{ version }} packages for Debian family"
+- name: k8s/install | Install kubernetes-cni {{ cni_version }}, kubelet {{ version }}, kubectl {{ version }} packages for Debian family
   apt:
     name:
     - kubernetes-cni={{ cni_version }}-00
@@ -26,6 +26,6 @@
     update_cache: yes
     state: present
 
-- name: install-packages | Hold kubelet, kubectl and kubernetes-cni
+- name: k8s/install | Hold kubelet, kubectl and kubernetes-cni
   command: >-
     apt-mark hold kubelet kubectl kubernetes-cni

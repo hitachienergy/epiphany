@@ -1,25 +1,25 @@
 ---
-- name: upgrade | Stop Kubelet
+- name: k8s/utils | Stop Kubelet
   systemd:
     state: stopped
     name: kubelet
 
-- name: upgrade | Stop Docker
+- name: k8s/utils | Stop Docker
   systemd:
     state: stopped
     name: docker
 
-- name: upgrade | Reload daemon
+- name: k8s/utils | Reload daemon
   systemd:
     daemon_reload: true
 
-- name: upgrade | Start Docker
+- name: k8s/utils | Start Docker
   systemd:
     name: docker
     state: started
     enabled: true
 
-- name: upgrade | Start Kubelet
+- name: k8s/utils | Start Kubelet
   systemd:
     name: kubelet
     state: started
