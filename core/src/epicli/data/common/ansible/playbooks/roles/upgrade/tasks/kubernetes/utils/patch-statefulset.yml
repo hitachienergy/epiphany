@@ -1,0 +1,37 @@
+---
+# Expected vars:
+# - image_registry_address
+# - image_regexp
+
+- name: upgrade-k8s | Get all statefulsets
+  environment:
+    KUBECONFIG: /etc/kubernetes/admin.conf
+  command: |
+    kubectl get statefulsets.apps \
+      --all-namespaces \
+      --output json
+  register: command_statefulsets
+  changed_when: false
+
+- name: upgrade-k8s | Patch all statefulsets
+  block:
+    - name: upgrade-k8s | Patch statefulset {{ _statefulset }}
+      include_tasks: utils/patch-statefulset-step.yml
+      vars:
+        _namespace: "{{ item.0 }}"
+        _statefulset: "{{ item.1 }}"
+      loop: >-
+        {{ _namespaces | zip(_statefulsets) | list }}
+
+  vars:
+    # Parse output from kubeadm
+    _documents: >-
+      {{ (command_statefulsets.stdout | from_json)['items'] }}
+
+    # Extract namespaces from all documents
+    _namespaces: >-
+      {{ _documents | map(attribute='metadata.namespace') | list }}
+
+    # Extract statefulset names from all documents
+    _statefulsets: >-
+      {{ _documents | map(attribute='metadata.name') | list }}
