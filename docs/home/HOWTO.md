@@ -44,6 +44,10 @@
   - [How to test the central logging features](./howto/KUBERNETES.md#how-to-test-the-central-logging-features)
   - [How to tunnel Kubernetes dashboard from remote kubectl to your PC](./howto/KUBERNETES.md#how-to-tunnel-kubernetes-dashboard-from-remote-kubectl-to-your-pc)
 
+- [Helm](./howto/HELM.md)
+  - [Helm charts in repository](./howto/HELM.md#helm-charts-in-repository)
+  - [Installing Helm charts from repository](./howto/HELM.md#installing-helm-charts-from-repository)
+
 - [Upgrade](./howto/UPGRADE.md)
   - [Offline upgrade](./howto/UPGRADE.md#offline-upgrade)
   - [How to upgrade Kafka cluster](./howto/UPGRADE.md#how-to-upgrade-Kafka-cluster)
