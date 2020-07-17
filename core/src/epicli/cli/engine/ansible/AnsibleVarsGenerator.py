@@ -93,7 +93,11 @@ class AnsibleVarsGenerator(Step):
         main_vars['is_upgrade_run'] = self.is_upgrade_run
         main_vars['roles_with_generated_vars'] = sorted(self.roles_with_generated_vars)
 
-        shared_config_doc = self.inventory_upgrade.shared_config
+        if self.is_upgrade_run:
+            shared_config_doc = self.inventory_upgrade.shared_config
+        else:
+            shared_config_doc = select_first(self.config_docs, lambda x: x.kind == 'configuration/shared-config')
+
         if shared_config_doc == None:
             shared_config_doc = load_yaml_obj(types.DEFAULT, 'common', 'configuration/shared-config')
 
