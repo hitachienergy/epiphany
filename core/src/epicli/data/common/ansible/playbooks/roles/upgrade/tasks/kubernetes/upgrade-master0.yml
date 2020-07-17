@@ -52,9 +52,6 @@
       when:
         - version is version('1.16.0', '<')
 
-    - name: k8s/master0 | Wait for cluster's readiness
-      include_tasks: utils/wait.yml
-
     # Note: Usage of the --config flag for reconfiguring the cluster during upgrade is not recommended since v1.16
     - name: k8s/master0 | Validate whether cluster is upgradeable
       # Ignore CoreDNSUnsupportedPlugins error since coredns-migration does not support 'hosts' plugin.
