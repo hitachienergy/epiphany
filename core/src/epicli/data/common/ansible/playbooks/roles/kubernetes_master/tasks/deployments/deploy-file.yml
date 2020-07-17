@@ -8,16 +8,20 @@
     group: root
     mode: u=rwx,go=r
 
-- name: Upload {{ file_name }} file
-  become: true
-  copy:
-    src: "{{ file_name }}"
-    dest: "{{ epiphany_manifests_dir }}/{{ file_name }}"
-    owner: "{{ admin_user.name }}"
-    group: "{{ admin_user.name }}"
-    mode: u=rw,go=r
-
-- name: Apply file
-  include_tasks: apply-file.yml
+- name: Upload and apply file
   vars:
-    file_path: "{{ epiphany_manifests_dir }}/{{ file_name }}"
+    dest_path: "{{ epiphany_manifests_dir }}/{{ file_name | basename }}"
+  block:
+    - name: Upload {{ file_name }} file
+      become: true
+      copy:
+        src: "{{ file_name }}"
+        dest: "{{ dest_path }}"
+        owner: "{{ admin_user.name }}"
+        group: "{{ admin_user.name }}"
+        mode: u=rw,g=r,o=
+
+    - name: Apply {{ dest_path }} file
+      command: kubectl apply -f {{ dest_path }}
+      environment:
+        KUBECONFIG: /etc/kubernetes/admin.conf
