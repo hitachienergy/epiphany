@@ -34,8 +34,8 @@
 - name: k8s/masterN | Wait for cluster's readiness
   include_tasks: utils/wait.yml
 
-- name: k8s/masterN | Upgrade kubeadm-config.yml if exists
-  include_tasks: upgrade-kubeadm-config.yml
+- name: k8s/masterN | Backup kubeadm-config.yml
+  include_tasks: backup-kubeadm-config.yml
 
 - name: k8s/masterN | Upgrade Docker  # this may restart Docker daemon
   include_tasks: docker.yml

@@ -112,8 +112,8 @@
   when:
     - version is version('1.17.7', '==')
 
-- name: k8s/master0 | Upgrade kubeadm-config.yml if exists
-  include_tasks: upgrade-kubeadm-config.yml
+- name: k8s/master0 | Backup kubeadm-config.yml
+  include_tasks: backup-kubeadm-config.yml
 
 - name: k8s/master0 | Upgrade Docker  # this may restart Docker daemon
   include_tasks: docker.yml
