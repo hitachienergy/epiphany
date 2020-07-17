@@ -2,7 +2,7 @@
 - name: k8s/master | Apply network plugin configured by user {{ network_plugin }}
   include_role:
     name: kubernetes_master
-    tasks_from: apply-network-components
+    tasks_from: apply-cni-plugin
   vars:
     network_plugin: "{{ cni_plugin_name }}"
     k8s_server_version: "{{ cluster_version }}"
