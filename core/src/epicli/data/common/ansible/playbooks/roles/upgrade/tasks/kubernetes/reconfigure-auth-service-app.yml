@@ -2,4 +2,4 @@
 - name: k8s/master | Patch keycloak's statefulset
   include_tasks: utils/patch-statefulset.yml
   vars:
-    image_regexp: 'jboss/keycloak:'
+    image_regexp: 'jboss/keycloak:.*'

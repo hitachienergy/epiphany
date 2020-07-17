@@ -2,4 +2,4 @@
 - name: k8s/master | Patch rabbitmq's statefulset
   include_tasks: utils/patch-statefulset.yml
   vars:
-    image_regexp: 'rabbitmq:'
+    image_regexp: 'rabbitmq:.*'
