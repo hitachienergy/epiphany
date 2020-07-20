@@ -1,25 +1,20 @@
 ---
 # Docker (used by master & worker as dependency)
 
-- name: Install Docker for Debian family
+- name:  Install docker packages
   package:
-    name: "{{ item }}"
+    name: "{{ packages[ansible_os_family] }}"
     state: present
-  loop:
-    - apt-transport-https
-    - ca-certificates
-    - containerd.io
-    - docker-ce-cli={{ docker_cli_version }}
-    - docker-ce={{ docker_version }}
-  when: ansible_os_family == "Debian"
-
-- name: Install Docker for RedHat family
-  package:
-    name: "{{ item }}"
-    state: present
-  loop:
-      - docker-ce-cli-{{ docker_cli_version_rh }}
-      - docker-ce-{{ docker_version_rh }}
-  when: ansible_os_family == "RedHat"
+  vars:
+    packages:
+      RedHat:
+      - docker-ce-cli-{{ docker_version }}
+      - docker-ce-{{ docker_version }}
+      Debian:
+      - apt-transport-https
+      - ca-certificates
+      - containerd.io
+      - docker-ce-cli=5:{{ docker_version }}
+      - docker-ce=5:{{ docker_version }}
 
 - include_tasks: configure-docker.yml
