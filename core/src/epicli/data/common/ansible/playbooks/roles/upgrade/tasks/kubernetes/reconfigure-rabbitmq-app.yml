@@ -3,3 +3,74 @@
   include_tasks: utils/patch-statefulset.yml
   vars:
     image_regexp: 'rabbitmq:.*'
+- name: Change rabbitmq stateful set to use {{ image_registry_address }}
+  block:
+    - name: upgrade-master | Get rabbitmq statefulset name
+      environment:
+        KUBECONFIG: /home/{{ admin_user.name }}/.kube/config
+      shell: |-
+        kubectl get statefulsets.apps --all-namespaces -o=jsonpath='{range .items[*]}{.metadata.name}{"\t"}{.spec.template.spec.containers[].image}{"\n"}{end}'|
+        grep -i rabbitmq |
+        awk '{print $1}'
+      changed_when: false
+      register: rabbit_mq_ss_name
+      args:
+        executable: /bin/bash
+    - name: upgrade-master | Get rabbitmq namespace
+      environment:
+        KUBECONFIG: /home/{{ admin_user.name }}/.kube/config
+      shell: |-
+        kubectl get statefulsets.apps --all-namespaces -o=jsonpath='{range .items[*]}{.metadata.namespace}{"\t"}{.spec.template.spec.containers[].image}{"\n"}{end}'|
+        grep -i rabbitmq |
+        awk '{print $1}'
+      changed_when: false
+      register: rabbit_mq_namespace
+      args:
+        executable: /bin/bash
+    - name: upgrade-master | Get rabbitmq image
+      environment:
+        KUBECONFIG: /home/{{ admin_user.name }}/.kube/config
+      shell: |-
+        kubectl get statefulsets.apps {{ rabbit_mq_ss_name.stdout }} -n {{ rabbit_mq_namespace.stdout }} -o=jsonpath='{$.spec.template.spec.containers[:1].image}'
+      changed_when: false
+      register: rabbit_mq_repository
+      args:
+        executable: /bin/bash
+      when:
+        - not rabbit_mq_namespace.stdout == ""
+    - name: upgrade-master | Patch rabbitmq to use {{ image_registry_address }}
+      environment:
+        KUBECONFIG: /home/{{ admin_user.name }}/.kube/config
+      shell: |-
+        set -o pipefail &&
+        kubectl patch statefulsets.apps {{ rabbit_mq_ss_name.stdout }} -n {{ rabbit_mq_namespace.stdout }} --patch '{"spec": {"template": { "spec": { "containers": [ { "image": "{{ image_registry_address }}/{{ rabbit_mq_repository.stdout }}", "name": "{{ rabbit_mq_ss_name.stdout }}" }]}}}}'
+      args:
+        executable: /bin/bash
+      when:
+        - not rabbit_mq_namespace.stdout == ""
+        - not image_registry_address in rabbit_mq_repository.stdout
+    - name: upgrade-master | Get rabbitmq pod names
+      environment:
+        KUBECONFIG: /home/{{ admin_user.name }}/.kube/config
+      shell: |-
+        set -o pipefail &&
+        kubectl get pod -n {{ rabbit_mq_namespace.stdout }} -o=jsonpath='{range .items[*]}{.metadata.name}{"\n"}'
+      changed_when: false
+      register: rabbit_mq_pod_names
+      args:
+        executable: /bin/bash
+      when:
+        - not rabbit_mq_namespace.stdout == ""
+    - name: upgrade-master | Delete rabbitmq pods
+      environment:
+        KUBECONFIG: /home/{{ admin_user.name }}/.kube/config
+      shell: |-
+        set -o pipefail &&
+        kubectl delete pod --namespace {{ rabbit_mq_namespace.stdout }} {{ item }}
+      changed_when: false
+      args:
+        executable: /bin/bash
+      loop: "{{ rabbit_mq_pod_names.stdout_lines }}"
+      when:
+        - not rabbit_mq_namespace.stdout == ""
+        - not rabbit_mq_pod_names.stdout == ""
