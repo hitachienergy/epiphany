@@ -20,6 +20,7 @@
         - network_manager_conf_d_stat.stat.exists
 
 - name: Reload NetworkManager service
+  when: copy_calico_network_manager_conf.changed
   block:
     - name: Populate service facts
       service_facts:
@@ -29,23 +30,8 @@
         name: NetworkManager
         state: reloaded
       when: ansible_facts.services["NetworkManager.service"].state == "running"
-  when: copy_calico_network_manager_conf.changed
 
-- name: Create calico deployment
-  template:
-    src: "{{ template_file_name }}"
-    dest: "/home/{{ admin_user.name }}/calico.yml"
-    owner: "{{ admin_user.name }}"
-    group: "{{ admin_user.name }}"
+- name: Include Calico deployment tasks
+  include_tasks: deployments/deploy-template.yml
   vars:
-    template_file_name: >-
-      {%- if k8s_server_version is defined and k8s_server_version is version('v1.16', '<') -%}
-        calico-for-k8s-below-1.16.yml.j2
-      {%- else -%}
-        calico.yml.j2
-      {%- endif -%}
-
-- name: Apply calico definition
-  environment:
-    KUBECONFIG: /etc/kubernetes/admin.conf
-  command: kubectl apply -f /home/{{ admin_user.name }}/calico.yml
+    file_name: calico.yml.j2
