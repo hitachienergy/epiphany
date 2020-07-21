@@ -22,6 +22,11 @@
   import_tasks: kubernetes/get-kubelet-version.yml # sets kubelet_version
   delegate_to: "{{ groups.kubernetes_master[0] }}"
 
+- name: k8s | Include get-cni-plugin.yml
+  import_tasks: kubernetes/get-cni-plugin.yml # sets cni_plugin_name
+  delegate_to: "{{ groups.kubernetes_master[0] }}"
+  when: cni_plugin_name is undefined
+
 - name: Upgrade masters then nodes
   vars:
     version: "{{ ver }}"
