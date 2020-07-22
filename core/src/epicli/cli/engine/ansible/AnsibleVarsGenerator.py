@@ -93,10 +93,10 @@ class AnsibleVarsGenerator(Step):
         main_vars['is_upgrade_run'] = self.is_upgrade_run
         main_vars['roles_with_generated_vars'] = sorted(self.roles_with_generated_vars)
 
-        shared_config_doc = self.inventory_upgrade.shared_config
+        shared_config_doc = select_first(self.config_docs, lambda x: x.kind == 'configuration/shared-config')
         if shared_config_doc == None:
             shared_config_doc = load_yaml_obj(types.DEFAULT, 'common', 'configuration/shared-config')
-
+        
         self.set_vault_path(shared_config_doc)
         main_vars.update(shared_config_doc.specification)
 
@@ -115,7 +115,7 @@ class AnsibleVarsGenerator(Step):
             shared_config.specification.vault_tmp_file_location = Config().vault_password_location
             cluster_name = self.get_cluster_name()
             shared_config.specification.vault_location = get_ansible_vault_path(cluster_name)
-
+    
     def get_cluster_name(self):
         if 'name' in self.cluster_model.specification.keys():
             return self.cluster_model.specification.name
