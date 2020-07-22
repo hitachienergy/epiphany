@@ -13,6 +13,8 @@ from cli.helpers.doc_list_helpers import select_single
 from cli.models.AnsibleHostModel import AnsibleHostModel
 from cli.models.AnsibleInventoryItem import AnsibleInventoryItem
 
+from cli.engine.schema.DefaultMerger import DefaultMerger
+
 
 class AnsibleInventoryUpgrade(Step):
     def __init__(self, build_dir, backup_build_dir):
@@ -81,6 +83,10 @@ class AnsibleInventoryUpgrade(Step):
             raise Exception('No manifest.yml inside the build folder')
         manifest_docs = load_yamls_file(path_to_manifest)
         self.shared_config = select_single(manifest_docs, lambda x: x.kind == 'configuration/shared-config')
+
+        # Merge the shared config doc with defaults
+        with DefaultMerger([self.shared_config]) as doc_merger:
+           self.shared_config = doc_merger.run()[0]
 
         if build_version == BUILD_LEGACY:
             self.logger.info(f'Upgrading Ansible inventory Epiphany < 0.3.0')
