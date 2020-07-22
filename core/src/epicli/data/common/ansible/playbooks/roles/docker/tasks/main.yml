@@ -8,13 +8,13 @@
   vars:
     packages:
       RedHat:
-      - docker-ce-cli-{{ docker_version }}
-      - docker-ce-{{ docker_version }}
+      - docker-ce-cli-{{ docker_version.RedHat }}
+      - docker-ce-{{ docker_version.RedHat }}
       Debian:
       - apt-transport-https
       - ca-certificates
       - containerd.io
-      - docker-ce-cli=5:{{ docker_version }}
-      - docker-ce=5:{{ docker_version }}
+      - docker-ce-cli={{ docker_version.Debian }}
+      - docker-ce={{ docker_version.Debian }}
 
 - include_tasks: configure-docker.yml
