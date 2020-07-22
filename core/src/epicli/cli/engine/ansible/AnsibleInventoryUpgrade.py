@@ -82,16 +82,6 @@ class AnsibleInventoryUpgrade(Step):
         manifest_docs = load_yamls_file(path_to_manifest)
         self.shared_config = select_single(manifest_docs, lambda x: x.kind == 'configuration/shared-config')
 
-        # Ensure settings for backward compatibility
-        compatibility_settings = {
-            'vault_location': '',          # for Epiphany v0.4
-            'use_ha_control_plane': False, # for Epiphany v0.5
-            'promote_to_ha': False         # for Epiphany v0.5
-        }
-        for key, value in compatibility_settings.items():
-            if key not in self.shared_config.specification:
-                self.shared_config.specification[key] = value
-
         if build_version == BUILD_LEGACY:
             self.logger.info(f'Upgrading Ansible inventory Epiphany < 0.3.0')
 
