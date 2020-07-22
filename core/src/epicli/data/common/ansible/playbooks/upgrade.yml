@@ -9,6 +9,10 @@
     - import_role:
         name: kubernetes_common
         tasks_from: gather-facts
+    - include_role:
+        name: upgrade
+        tasks_from: kubernetes/gather-static-facts
+      run_once: true
 
 - hosts: all
   become: true

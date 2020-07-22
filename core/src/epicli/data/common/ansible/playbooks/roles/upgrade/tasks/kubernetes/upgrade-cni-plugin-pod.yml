@@ -1,35 +1,30 @@
 ---
-- name: k8s | Load defaults from kubernetes_master role
-  include_vars:
-    file: roles/kubernetes_master/defaults/main.yml
-    name: kubernetes_master_defaults
-  when:
-    - kubernetes_master_defaults.cni_plugin_vars.selector is undefined
-
 - name: k8s | Check DaemonSet update strategy
   command: |-
-    kubectl get ds -l {{ selector }} -n kube-system \
+    kubectl get daemonsets -l {{ selector }} -n kube-system \
     -o=jsonpath='{range .items[*]}{.spec.updateStrategy.type}{"\n"}{end}'
   register: cni_plugin_ds_update_strategy
+  run_once: true
   changed_when: false
   environment:
     KUBECONFIG: &KUBECONFIG /etc/kubernetes/admin.conf
   vars:
-    selector: "{{ kubernetes_master_defaults.cni_plugin_vars.selector[cni_plugin_name] }}"
+    selector: "{{ hostvars[groups.kubernetes_master.0].cni_plugin_selector }}"
 
 - name: Upgrade CNI plugin pod
   when: "'OnDelete' in cni_plugin_ds_update_strategy.stdout_lines"
   vars:
-    selector: "{{ kubernetes_master_defaults.cni_plugin_vars.selector[cni_plugin_name] }}"
+    selector: "{{ hostvars[groups.kubernetes_master.0].cni_plugin_selector }}"
+  environment:
+    KUBECONFIG: *KUBECONFIG
   block:
     - name: k8s | Get list of CNI plugin's expected images
       command: |-
-        kubectl get ds -l {{ selector }} -n kube-system \
+        kubectl get daemonsets -l {{ selector }} -n kube-system \
         -o=jsonpath='{range .items[*]}{range .spec.template.spec.containers[*]}{.image}{"\n"}{end}{end}'
       register: cni_plugin_ds_images
+      run_once: true
       changed_when: false
-      environment:
-        KUBECONFIG: *KUBECONFIG
 
     - name: k8s | Get list of images of CNI plugin pod
       command: |-
@@ -37,15 +32,11 @@
         -o=jsonpath='{range .items[*]}{range .spec.containers[*]}{.image}{"\n"}{end}{end}'
       register: cni_plugin_pod_images
       changed_when: false
-      environment:
-        KUBECONFIG: *KUBECONFIG
 
     - name: k8s | Delete pod if uses unexpected image
       command: |-
         kubectl delete pod -l {{ selector }} --field-selector=spec.nodeName={{ ansible_fqdn }} -n kube-system
       register: delete_cni_plugin_pod
-      environment:
-        KUBECONFIG: *KUBECONFIG
       when: not cni_plugin_ds_images.stdout_lines is superset(cni_plugin_pod_images.stdout_lines)
 
     - name: k8s | Wait for CNI plugin to become ready
@@ -55,4 +46,4 @@
       when:
         - delete_cni_plugin_pod.changed
       vars:
-        network_plugin: "{{ cni_plugin_name }}"
+        network_plugin: "{{ hostvars[groups.kubernetes_master.0].cni_plugin_name }}"
