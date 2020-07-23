@@ -19,13 +19,14 @@
 
 server.host: "{{ ansible_default_ipv4.address | default(ansible_all_ipv4_addresses[0]) }}"
 elasticsearch.hosts:
-{% if groups['logging'] is defined %}
-  {%- for host in groups['logging'] %}
+{% if 'logging' in group_names %}
+  # Logging hosts:
+  {% for host in groups['logging'] %}
   - "https://{{hostvars[host]['ansible_hostname']}}:9200"
   {% endfor %}
-{% endif %}
-{% if groups['opendistro_for_elasticsearch'] is defined %}
-  {%- for host in groups['opendistro_for_elasticsearch'] -%}
+{% elif 'opendistro_for_elasticsearch' in group_names %}
+  # Opendistro hosts:
+  {% for host in groups['opendistro_for_elasticsearch'] %}
   - "https://{{hostvars[host]['ansible_hostname']}}:9200"
   {% endfor %}
 {% endif %}
