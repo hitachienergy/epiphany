@@ -1,0 +1,13 @@
+#jinja2: trim_blocks:False
+[Unit]
+Description={{ specification.description }}
+
+[Service]
+User=postgres_exporter
+Group=postgres_exporter
+ExecStart=/opt/postgres_exporter/postgres_exporter {% for flag in specification.config_flags %} {{ flag }} {% endfor %}
+SyslogIdentifier=postgres_exporter
+Restart=always
+
+[Install]
+WantedBy=multi-user.target

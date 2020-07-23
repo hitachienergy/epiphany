@@ -1,0 +1,5 @@
+# /usr/local/epicli/data/common/validation/configuration/postgres-exporter.yml
+postgres-exporter:
+      enabled: true
+      ports:
+      - 9187/tcp
