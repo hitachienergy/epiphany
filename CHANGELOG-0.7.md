@@ -14,6 +14,7 @@
 - [#1398](https://github.com/epiphany-platform/epiphany/issues/1398) - Vault installation fails when using canal/calico network plugin
 - [#1412](https://github.com/epiphany-platform/epiphany/issues/1412) - Certificate in Vault is also generated or copied even if flag in configuration tls_disable is set to true
 - [#1408](https://github.com/epiphany-platform/epiphany/issues/1408) - Epiphany does not support upgrades for Kubernetes in HA mode
+- [#1482](https://github.com/epiphany-platform/epiphany/issues/1482) - Epicli upgrade: flannel CNI plugin is not upgraded to v0.12.0
 
 ### Added
 
