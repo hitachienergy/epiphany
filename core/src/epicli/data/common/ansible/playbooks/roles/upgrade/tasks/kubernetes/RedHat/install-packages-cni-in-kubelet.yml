@@ -1,11 +1,10 @@
 ---
-- name: >-
-    install-packages | Install kubelet-{{ version }} and kubectl-{{ version }} packages for RedHat family
+- name: k8s/install | Install kubelet-{{ version }} and kubectl-{{ version }} for RedHat family
   yum:
     name:
       - kubelet-{{ version }}-0 # removes (replaces) kubernetes-cni when full version is 1.17.7-0 but not when 1.17.7-1
       - kubectl-{{ version }}-0
-    update_cache: yes
-    allow_downgrade: yes
+    update_cache: true
+    allow_downgrade: true
     disable_excludes: kubernetes
     state: present

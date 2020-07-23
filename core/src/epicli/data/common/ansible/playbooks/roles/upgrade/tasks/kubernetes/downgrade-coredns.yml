@@ -12,7 +12,7 @@
 #+-----------------------------------------------------------------+
 # Source: look for 'CoreDNSVersion' at https://github.com/kubernetes/kubernetes/blob/$TAG/cmd/kubeadm/app/constants/constants.go
 
-- name: upgrade-master | Create directory /etc/epiphany/manifests
+- name: k8s/master | Create directory /etc/epiphany/manifests
   become: true
   file:
     path: /etc/epiphany/manifests
@@ -21,9 +21,11 @@
     group: root
     mode: u=rwx,go=r
 
-- name: Upload and apply template
+- name: k8s/master | Upload and apply template
+  vars:
+    file_name: coredns-config-for-k8s-below-1.16.yml
   block:
-    - name: upgrade-master | Upload {{ file_name }} file
+    - name: k8s/master | Upload {{ file_name }} file
       template:
         src: kubernetes/{{ file_name }}.j2
         dest: /etc/epiphany/manifests/{{ file_name }}
@@ -31,13 +33,9 @@
         group: "{{ admin_user.name }}"
         mode: u=rw,go=r
 
-    - name: upgrade-master | Apply /etc/epiphany/manifests/{{ file_name }} file
+    - name: k8s/master | Apply /etc/epiphany/manifests/{{ file_name }} file
       environment:
-        KUBECONFIG: /home/{{ admin_user.name }}/.kube/config
-      shell: |
+        KUBECONFIG: /etc/kubernetes/admin.conf
+      command: |
         kubectl apply \
           -f /etc/epiphany/manifests/{{ file_name }}
-      args:
-        executable: /bin/bash
-  vars:
-    file_name: coredns-config-for-k8s-below-1.16.yml

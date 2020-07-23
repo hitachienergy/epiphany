@@ -5,9 +5,8 @@
   include_tasks: deployments/deploy-template.yml
 
 - name: Check if kubernetes-dashboard is already deployed
-  become_user: "{{ admin_user.name }}"
   environment:
-    KUBECONFIG: "/home/{{ admin_user.name }}/.kube/config"
+    KUBECONFIG: /etc/kubernetes/admin.conf
   shell: |
     kubectl get pods \
       --namespace kubernetes-dashboard \

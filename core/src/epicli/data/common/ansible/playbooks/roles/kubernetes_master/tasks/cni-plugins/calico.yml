@@ -47,5 +47,5 @@
 
 - name: Apply calico definition
   environment:
-    KUBECONFIG: "/home/{{ admin_user.name }}/.kube/config"
+    KUBECONFIG: /etc/kubernetes/admin.conf
   command: kubectl apply -f /home/{{ admin_user.name }}/calico.yml

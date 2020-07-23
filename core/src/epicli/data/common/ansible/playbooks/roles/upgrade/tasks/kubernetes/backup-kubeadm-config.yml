@@ -1,0 +1,6 @@
+---
+# The kubeadm-config.yml file is no longer used during upgrade process,
+# but we keep it for backup and reference purposes.
+- name: k8s/master | Save kubeadm-config ConfigMap to file
+  command: >-
+    kubeadm config view > /etc/kubeadm/kubeadm-config.yml
