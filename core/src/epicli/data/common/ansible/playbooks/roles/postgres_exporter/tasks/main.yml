@@ -59,6 +59,17 @@
     group: root
     mode: 0644
 
+- name: Deploy extend query-path file
+  copy:
+    content: "{{ specification.extend_query_path_file_content }}"
+    dest: "{{ specification.extend_query_path_file_path }}"
+    owner: root
+    group: postgres_exporter
+  when:
+    - 'extend_query_path_file_path' in specification
+    - 'extend_query_path_file_content' in specification
+    - specification.extend_query_path_file_content != ''
+
 - name: Configure systemd to use postgres-exporter service
   systemd:
     daemon_reload: yes
