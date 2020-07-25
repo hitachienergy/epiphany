@@ -66,9 +66,9 @@
     owner: root
     group: postgres_exporter
   when:
-    - 'extend_query_path_file_path' in specification
-    - 'extend_query_path_file_content' in specification
-    - specification.extend_query_path_file_content != ''
+    - '"extend_query_path_file_path" in specification'
+    - '"extend_query_path_file_content" in specification'
+    - 'specification.extend_query_path_file_content != ""'
 
 - name: Configure systemd to use postgres-exporter service
   systemd:
