@@ -20,6 +20,32 @@
     path: /tmp/epi-download-requirements/download-requirements-done.flag
   register: stat_result
 
+- name: Detect system sources file /etc/apt/sources.list
+  stat:
+    path: /etc/apt/sources.list
+  register: system_sources_list_result
+
+# this is to fix a situation when I re-run the ansible stage and hit the error
+# firewalld pacakge not exists. Get in the system the condition is we have no
+# repo sources at all. It is probably died before the tear down process
+- name: Detect epirepo source list file
+  stat:
+    path: /etc/apt/sources.list.d/epirepo.list
+  register: epirepo_list_result
+
+- name: Detect epirepo backup source list file
+  stat:
+    path: /etc/apt/sources.list.d/epirepo.list.bak
+  register: epirepo_list_result
+
+- name: Restore epirepo backup file if no system sources file and epirepo source file exists
+  shell: "mv /etc/apt/sources.list.d/epirepo.list.bak /etc/apt/sources.list.d/epirepo.list && apt -y update"
+  when:
+    - 'not system_sources_list_result.stat.exists'
+    - 'not epirepo_list_result.stat.exists'
+    - 'epirepo_list_result.stat.exists'
+# end
+
 - name: |-
     Run download-requirements script, this can take a long time
     You can check progress on repository host with: journalctl -f -t download-requirements.sh
