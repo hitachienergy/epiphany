@@ -1,6 +1,7 @@
 #!/bin/bash
 
 set -euo pipefail
+export DEBIAN_FRONTEND=noninteractive
 
 if [[ $# -lt 1 ]]; then
   usage
