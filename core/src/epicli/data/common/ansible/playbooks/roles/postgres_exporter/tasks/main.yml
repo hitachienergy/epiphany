@@ -31,7 +31,7 @@
     recurse: yes
     owner: root
     group: postgres_exporter
-    mode: 0750
+    mode: 0755
     state: directory
   with_items:
   - /opt/postgres_exporter
