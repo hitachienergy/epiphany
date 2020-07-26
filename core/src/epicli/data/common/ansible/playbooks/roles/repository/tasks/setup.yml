@@ -9,7 +9,7 @@
   debug:
     var: offline_mode
 
-- name: Download Epiphany requirements on repository host # online mode
+- name: Prepare Download Epiphany requirements on repository host # online mode
   block:
     - name: Set directory name for download script
       set_fact:
@@ -38,10 +38,6 @@
       file:
         dest: /tmp/epi-download-requirements/download-requirements.sh
         mode: a+x
-
-    - name: Download Epiphany requirements
-      include_tasks: download-requirements.yml
-
   when:
     - not offline_mode
     - not custom_repository_url
@@ -71,6 +67,15 @@
     force: no # if target exists it will skip, default is 'yes'
   when:
     - offline_mode
+    - not custom_repository_url
+    - inventory_hostname in target_repository_hostnames
+
+# Put it down here as the script download-requirements.sh relies on some files
+# in the folder /tmp/epi-repository-setup-scripts
+- name: Download Epiphany requirements
+  include_tasks: download-requirements.yml
+  when:
+    - not offline_mode
     - not custom_repository_url
     - inventory_hostname in target_repository_hostnames
 

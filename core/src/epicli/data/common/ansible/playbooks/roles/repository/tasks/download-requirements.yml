@@ -28,41 +28,35 @@
 # this is to fix a situation when I re-run the ansible stage and hit the error
 # firewalld pacakge not exists. Get in the system the condition is we have no
 # repo sources at all. It is probably died before the tear down process
-- name: Detect epirepo source list file
-  stat:
-    path: /etc/apt/sources.list.d/epirepo.list
-  register: epirepo_list_result
-
-- name: Detect epirepo backup source list file
-  stat:
-    path: /etc/apt/sources.list.d/epirepo.list.bak
-  register: epirepo_list_backup_result
-
-- name: Restore epirepo backup file if no system sources file and epirepo source file exists
-  shell: "mv /etc/apt/sources.list.d/epirepo.list.bak /etc/apt/sources.list.d/epirepo.list && apt -y update"
-  when:
-    - 'not system_sources_list_result.stat.exists'
-    - 'not epirepo_list_result.stat.exists'
-    - 'epirepo_list_backup_result.stat.exists'
-
-- name: Detect /var/tmp/enabled-system-repos.tar
-  stat:
-    path: /var/tmp/enabled-system-repos.tar
-  register: enabled_system_repos_result
-
-- name: Restore the system repo as last resort
-  unarchive:
-    remote_src: yes
-    src: /var/tmp/enabled-system-repos.tar
-    dest: "/etc/apt"
-    creates: "/etc/apt/sources.list"
-    extra_opts: [--strip-components=2]
-  when:
-    - 'not system_sources_list_result.stat.exists'
-    - 'not epirepo_list_result.stat.exists'
-    - 'not epirepo_list_backup_result.stat.exists'
-    - 'enabled_system_repos_result.stat.exists'
-
+# TODO I have put down the run download requirement after deploying files in
+# setup repo, this block might not needed iny more
+#- name: Detect epirepo source list file
+#  stat:
+#    path: /etc/apt/sources.list.d/epirepo.list
+#  register: epirepo_list_result
+#
+#- name: Detect epirepo backup source list file
+#  stat:
+#    path: /etc/apt/sources.list.d/epirepo.list.bak
+#  register: epirepo_list_backup_result
+#
+#- name: Detect /var/tmp/enabled-system-repos.tar
+#  stat:
+#    path: /var/tmp/enabled-system-repos.tar
+#  register: enabled_system_repos_result
+#
+#- name: Restore the system repo as last resort
+#  unarchive:
+#    remote_src: yes
+#    src: /var/tmp/enabled-system-repos.tar
+#    dest: "/etc/apt"
+#    creates: "/etc/apt/sources.list"
+#    extra_opts: [--strip-components=2]
+#  when:
+#    - 'not system_sources_list_result.stat.exists'
+#    - 'not epirepo_list_result.stat.exists'
+#    - 'not epirepo_list_backup_result.stat.exists'
+#    - 'enabled_system_repos_result.stat.exists'
 # end
 
 - name: |-
