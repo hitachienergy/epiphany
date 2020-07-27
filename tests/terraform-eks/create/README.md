@@ -21,7 +21,10 @@ The Amazon Elastic Kubernetes Service (EKS) is the AWS service for deploying, ma
 ``` terraform apply```
 - Destroy the cluster:  
 ``` terraform destroy```
-
+- Setup kubernetes config for new cluster:
+```
+aws eks --region $REGION update-kubeconfig --name $CLUSTER_NAME
+```
 
 #### Files overview:
 - aws-eks.tf   
