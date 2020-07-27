@@ -1,5 +1,5 @@
 ---
-- name: Upload and deploy CoreDNS
+- name: Include CoreDNS deployment tasks
+  include_tasks: deployments/deploy-template.yml
   vars:
     file_name: coredns-config.yml.j2
-  include_tasks: deployments/deploy-template.yml

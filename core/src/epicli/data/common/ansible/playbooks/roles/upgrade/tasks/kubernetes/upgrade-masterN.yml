@@ -31,8 +31,11 @@
       when:
         - result is succeeded
 
-- name: k8s/masterN | Wait for cluster's readiness
-  include_tasks: utils/wait.yml
+- name: k8s/masterN | Upgrade CNI plugin pod
+  import_tasks: upgrade-cni-plugin-pod.yml
+  delegate_to: "{{ groups.kubernetes_master[0] }}"
+  when:
+    - version is version('1.17.7', '>=')
 
 - name: k8s/masterN | Backup kubeadm-config.yml
   include_tasks: backup-kubeadm-config.yml
@@ -42,6 +45,9 @@
 
 - name: k8s/masterN | Reload kubelet and docker
   include_tasks: utils/reload-kubelet-and-docker.yml
+
+- name: k8s/masterN | Wait for cluster's readiness
+  include_tasks: utils/wait.yml
 
 - name: k8s/masterN | Uncordon master - mark master as schedulable
   include_tasks: utils/uncordon.yml

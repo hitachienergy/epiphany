@@ -77,7 +77,7 @@
   when: secret is not defined
 
 - name: Apply network plugin configured by user
-  include_tasks: apply-network-components.yml
+  include_tasks: apply-cni-plugin.yml
   vars:
     network_plugin: "{{ specification.advanced.networking.plugin }}"
 
