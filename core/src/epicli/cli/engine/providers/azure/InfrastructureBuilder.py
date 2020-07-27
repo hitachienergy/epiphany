@@ -53,9 +53,6 @@ class InfrastructureBuilder(Step):
             if (len(component_value.subnets) > 1):
                 self.logger.warning(f'On Azure only one subnet per component is supported for now. Taking first and ignoring others.')
 
-            # Add message for ignoring availabiltity zones if present.
-            if 'availability_zone' in component_value.subnets[0]:
-                self.logger.warning(f'On Azure availability_zones are not supported jet. Ignoring definition.')
 
             subnet_definition = component_value.subnets[0]
             subnet = select_first(infrastructure, lambda item: item.kind == 'infrastructure/subnet' and
