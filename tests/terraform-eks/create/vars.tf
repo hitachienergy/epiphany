@@ -1,5 +1,6 @@
 // -- [ VARS ] -------------------------------------------------------------------------
 variable "eks_cluster_name"     { default = "gdajuk-cluster" }
+variable "eks_cluster_version"  { default = "1.17" }
 variable "region"               { default = "eu-central-1" }
 variable "environment"          { default = "dev" }
 variable "resource_group_name"  { default = "gdajuk-cluster-rg" }

@@ -6,7 +6,7 @@ The Amazon Elastic Kubernetes Service (EKS) is the AWS service for deploying, ma
 ***
 
 #### Requirements:
-- AWS account with the IAM permissions listed on the EKS module documentation
+- AWS account with the IAM permissions listed on the [EKS module documentation](https://github.com/terraform-aws-modules/terraform-aws-eks/blob/master/docs/iam-permissions.md)
 - Configured AWS CLI
 - AWS IAM Authenticator
 - kubectl
@@ -30,6 +30,8 @@ Provisions all the resources (AutoScaling Groups, etc...) required to set up an 
 Provisions the security groups used by the EKS cluster.
 - aws-vpc.tf  
 Provisions a VPC, subnets and availability zones using the AWS VPC Module.
+- main.fg
+Setup kubernetes and aws providers.
 - output.tf  
 Defines the output configuration.
 - vars.tf  
