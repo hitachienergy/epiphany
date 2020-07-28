@@ -19,6 +19,7 @@ The following target platforms are available: AWS, Azure and on-prem installatio
 
 Epiphany can run on as few as one node (laptop, desktop, server) but the real value comes from running 3 or more nodes for scale and HA. Everything is data driven so simply changing the manifest data and running the automation will modify the environment.
 Kubernetes hosts (masters, nodes) and component VMs can be added depending on data in the initial manifest. More informations [here](https://github.com/epiphany-platform/epiphany/blob/develop/docs/home/howto/CLUSTER.md#how-to-scale-or-cluster-components).
+
 Please note, that currently Epiphany supports only creating new masters and nodes and adding them to the Kubernets cluster. It doesn't support downscale. To remove them from Kubernetes cluster you have to do it manually.
 
 We currently use Terraform and Ansible for our automation orchestration. All automation is idempotent so you can run it as many times as you wish and it will maintain the same state unless you change the data. If someone makes a "snow flake" change to the environment (you should never do this) then simply running the automation again will put the environment back to the desired state.
