@@ -6,7 +6,7 @@
     state: directory
     owner: root
     group: root
-    mode: u=rwx,go=r
+    mode: u=rwx,go=rx
 
 - name: Upload and apply file
   vars:
@@ -23,5 +23,7 @@
 
     - name: Apply {{ dest_path }} file
       command: kubectl apply -f {{ dest_path }}
+      register: kubectl_apply
+      changed_when: kubectl_apply.stdout_lines | map('regex_replace', '^.+ ') | reject('eq', 'unchanged') | list
       environment:
         KUBECONFIG: /etc/kubernetes/admin.conf

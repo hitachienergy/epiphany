@@ -1,5 +1,5 @@
 ---
-- name: k8s/master | Apply latest coredns
+- name: k8s/master | Patch CoreDNS
   import_role:
     name: kubernetes_master
-    tasks_from: apply-coredns
+    tasks_from: patch-coredns

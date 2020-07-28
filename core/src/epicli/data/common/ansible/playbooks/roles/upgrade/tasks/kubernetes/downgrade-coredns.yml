@@ -9,6 +9,7 @@
 #| upgrade < 0.6.0  | 1.16.7      | 1.5.0            | 1.6.2       |
 #| 0.6.0            | 1.17.4      | 1.6.5            | 1.6.5       |
 #| 0.7.0            | 1.17.7      | 1.6.5            | 1.6.5       |
+#| 0.7.1+           | K8s CoreDNS is patched by Epiphany           |
 #+-----------------------------------------------------------------+
 # Source: look for 'CoreDNSVersion' at https://github.com/kubernetes/kubernetes/blob/$TAG/cmd/kubeadm/app/constants/constants.go
 
