@@ -3,7 +3,7 @@
 ## [0.7.1] 2020-07-xx
 
 ### Added
-- [#802] (https://github.com/epiphany-platform/epiphany/issues/802) - Docker: docker_version variable added to easly manage versioning
+- [#802](https://github.com/epiphany-platform/epiphany/issues/802) - Docker: docker_version variable added to easly manage versioning
 - Minor logging improvements added while fixing issue [#1424](https://github.com/epiphany-platform/epiphany/issues/1424).
 - [#1438](https://github.com/epiphany-platform/epiphany/pull/1438) - Rename Terraform plugin vendor in VSCode recommendations
 
