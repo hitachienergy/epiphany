@@ -1,4 +1,22 @@
 ---
+- name: Disable timers for unattended upgrade, so that none will be triggered by the `date -s` call.
+  raw: systemctl disable --now {{item}}
+  with_items:
+    - 'apt-daily.timer'
+    - 'apt-daily-upgrade.timer'
+
+- name: Reload systemctl daemon to apply the new changes
+  raw: systemctl daemon-reload
+
+- name: Wait for any possibly running unattended upgrade to finish
+  raw: systemd-run --property="After=apt-daily.service apt-daily-upgrade.service" --wait /bin/true
+
+- name: Purge unattended upgrades
+  raw: apt-get -y purge unattended-upgrades
+
+- name: Update apt cache
+  raw: apt-get -y update
+
 - name: Create epirepo and start HTTP server
   block:
     - name: Create epirepo repository
