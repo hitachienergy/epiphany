@@ -9,6 +9,7 @@
     - import_role:
         name: kubernetes_common
         tasks_from: gather-facts
+
     - include_role:
         name: upgrade
         tasks_from: kubernetes/gather-static-facts
@@ -39,7 +40,7 @@
     - import_role:
         name: upgrade
         tasks_from: kubernetes
-      vars: { ver: "1.15.10", cni_ver: "0.7.5" }
+      vars: { ver: "1.15.10", cni_ver: "0.7.5", last_upgrade: false }
 
 - hosts: kubernetes_master:kubernetes_node
   serial: 1
@@ -49,7 +50,7 @@
     - import_role:
         name: upgrade
         tasks_from: kubernetes
-      vars: { ver: "1.16.7", cni_ver: "0.7.5" }
+      vars: { ver: "1.16.7", cni_ver: "0.7.5", last_upgrade: false }
 
 - hosts: kubernetes_master:kubernetes_node
   serial: 1
@@ -59,7 +60,17 @@
     - import_role:
         name: upgrade
         tasks_from: kubernetes
-      vars: { ver: "1.17.7", cni_ver: "0.8.6", cni_in_kubelet: true }
+      vars: { ver: "1.17.7", cni_ver: "0.8.6", cni_in_kubelet: true, last_upgrade: false }
+
+- hosts: kubernetes_master:kubernetes_node
+  serial: 1
+  become: true
+  become_method: sudo
+  tasks:
+    - import_role:
+        name: upgrade
+        tasks_from: kubernetes
+      vars: { ver: "1.18.6", cni_ver: "0.8.6", last_upgrade: true }
 
 - hosts: elasticsearch
   become: true

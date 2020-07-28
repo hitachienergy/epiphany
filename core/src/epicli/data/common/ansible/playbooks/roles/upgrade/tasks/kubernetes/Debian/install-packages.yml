@@ -5,9 +5,15 @@
   changed_when: false
 
 # Unhold before removing to avoid error
-- name: k8s/install | Unhold kubelet, kubectl and kubernetes-cni
-  command: >-
-    apt-mark unhold kubelet kubectl kubernetes-cni
+- name: k8s/install | Include unhold packages task
+  include_tasks: unhold-packages.yml
+  vars:
+    packages: >-
+      {%- if ansible_facts.packages['kubernetes-cni'] is defined -%}
+        ['kubelet', 'kubectl', 'kubernetes-cni']
+      {%- else -%}
+        ['kubelet', 'kubectl']
+      {%- endif -%}
 
 - name: k8s/install | Remove newer Debian packages installed as dependencies if they exist # as there is no allow_downgrade parameter in ansible apt module
   apt:
@@ -26,6 +32,7 @@
     update_cache: yes
     state: present
 
-- name: k8s/install | Hold kubelet, kubectl and kubernetes-cni
-  command: >-
-    apt-mark hold kubelet kubectl kubernetes-cni
+- name: k8s/install | Include hold packages task
+  include_tasks: hold-packages.yml
+  vars:
+    packages: [kubelet, kubectl, kubernetes-cni]

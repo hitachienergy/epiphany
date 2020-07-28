@@ -25,12 +25,8 @@
 - name: k8s/master0 | Drain master in preparation for maintenance
   include_tasks: utils/drain.yml
 
-- name: k8s/master0 | Upgrade, configure packages
+- name: Upgrade packages and perform upgrade
   block:
-    - name: k8s/master0 | Hold packages for Debian family
-      include_tasks: Debian/hold-packages.yml
-      when: ansible_os_family == "Debian"
-
     - name: k8s/master0 | Install kubeadm
       include_tasks: "{{ ansible_os_family }}/install-kubeadm.yml"
 
@@ -102,17 +98,16 @@
 - name: k8s/master0 | Wait for cluster's readiness
   include_tasks: utils/wait.yml
 
-# 'kubeadm upgrade apply' overwrites Epiphany's customized CoreDNS deployment so we restore it.
+# 'kubeadm upgrade apply' overwrites Epiphany's customized CoreDNS so we patch it again.
 # This task should be run each time K8s is upgraded to the latest version.
-# Keep Epiphany's CoreDNS version in synch with K8s CoreDNS version.
-- name: k8s/master0 | Deploy customized CoreDNS for latest Kubernetes (1.17.7)
+- name: k8s/master0 | Customize CoreDNS for latest Kubernetes ({{ version }})
   include_tasks: upgrade-coredns.yml
   when:
-    - version is version('1.17.7', '>=')
+    - last_upgrade
 
 - name: Upgrade CNI plugin (deployment then local pod)
   when:
-    - version is version('1.17.7', '>=')
+    - last_upgrade
   block:
     - name: k8s/master0 | Upgrade CNI plugin deployment
       include_tasks: upgrade-cni-plugin-deployment.yml
