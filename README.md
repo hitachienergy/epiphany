@@ -10,13 +10,16 @@ Epiphany at its core is a full automation of Kubernetes and Docker plus addition
 - Prometheus and Alertmanager for monitoring with Graphana for visualization
 - Elasticsearch and Kibana for centralized logging (OpenDistro)
 - HAProxy for loadbalancing
-- Postgress and Elasticsearch for date storage
-- Vault (MVP) and KeyCloak for authentication
+- Postgres and Elasticsearch for date storage
+- KeyCloak for authentication
+- Vault (MVP) for protecting secrets and other sensitive data
 - Helm as package manager for Kubernetes
 
-Following target platforms are available: AWS, Azure and on-prem installation.
+The following target platforms are available: AWS, Azure and on-prem installation.
 
-Epiphany can run on as few as one node (laptop, desktop, server) but the real value comes from running 3 or more nodes for scale and HA. Nodes can be added or removed at will depending on data in the initial manifest. Everything is data driven so simply changing the manifest data and running the automation will modify the environment.
+Epiphany can run on as few as one node (laptop, desktop, server) but the real value comes from running 3 or more nodes for scale and HA. Everything is data driven so simply changing the manifest data and running the automation will modify the environment.
+Kubernetes hosts (masters, nodes) and component VMs can be added depending on data in the initial manifest. More informations [here](https://github.com/epiphany-platform/epiphany/blob/develop/docs/home/howto/CLUSTER.md#how-to-scale-or-cluster-components).
+Please note, that currently Epiphany supports only creating new masters and nodes and adding them to the Kubernets cluster. It doesn't support downscale. To remove them from Kubernetes cluster you have to do it manually.
 
 We currently use Terraform and Ansible for our automation orchestration. All automation is idempotent so you can run it as many times as you wish and it will maintain the same state unless you change the data. If someone makes a "snow flake" change to the environment (you should never do this) then simply running the automation again will put the environment back to the desired state.
 
@@ -53,7 +56,7 @@ epicli apply -f demo.yaml
 ```
 You will be asked for a password that will be used for encryption of some of build artifacts. More information [here](docs/home/howto/SECURITY.md#how-to-run-epicli-with-password)
 
-Since version 0.7 epicli has an option to backup/recovery almost all its components. More information [here](https://github.com/epiphany-platform/epiphany/blob/develop/docs/home/howto/BACKUP.md)
+Since version 0.7 epicli has an option to backup/recovery some of its components. More information [here](https://github.com/epiphany-platform/epiphany/blob/develop/docs/home/howto/BACKUP.md)
 ```shell
 epicli backup -f <file.yml> -b <build_folder>
 epicli recovery -f <file.yml> -b <build_folder>
