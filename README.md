@@ -1,4 +1,6 @@
-# Documentation
+# Epiphany Platform
+[![GitHub release](https://img.shields.io/github/v/release/epiphany-platform/epiphany.svg)](https://github.com/epiphany-platform/epiphany/releases)
+[![Github license](https://img.shields.io/github/license/epiphany-platform/epiphany)](https://github.com/epiphany-platform/epiphany/releases)
 
 ## Overview
 
@@ -6,12 +8,15 @@ Epiphany at its core is a full automation of Kubernetes and Docker plus addition
 
 - Kafka or RabbitMQ for high speed messaging/events
 - Prometheus and Alertmanager for monitoring with Graphana for visualization
-- Elasticsearch and Kibana for centralized logging
+- Elasticsearch and Kibana for centralized logging (OpenDistro)
 - HAProxy for loadbalancing
-- Postgress for storage
-- KeyCloak for authentication
+- Postgress and Elasticsearch for date storage
+- Vault (MVP) and KeyCloak for authentication
+- Helm as package manager for Kubernetes
 
-Epiphany can run on as few as one node (laptop, desktop, server) but the real value comes from running 3 or more nodes for scale and HA. Nodes can be added or removed at will depending on data in the manifest. Everything is data driven so simply changing the manifest data and running the automation will modify the environment.
+Following target platforms are available: AWS, Azure and on-prem installation.
+
+Epiphany can run on as few as one node (laptop, desktop, server) but the real value comes from running 3 or more nodes for scale and HA. Nodes can be added or removed at will depending on data in the initial manifest. Everything is data driven so simply changing the manifest data and running the automation will modify the environment.
 
 We currently use Terraform and Ansible for our automation orchestration. All automation is idempotent so you can run it as many times as you wish and it will maintain the same state unless you change the data. If someone makes a "snow flake" change to the environment (you should never do this) then simply running the automation again will put the environment back to the desired state.
 
@@ -48,6 +53,13 @@ epicli apply -f demo.yaml
 ```
 You will be asked for a password that will be used for encryption of some of build artifacts. More information [here](docs/home/howto/SECURITY.md#how-to-run-epicli-with-password)
 
+Since version 0.7 epicli has an option to backup/recovery almost all its components. More information [here](https://github.com/epiphany-platform/epiphany/blob/develop/docs/home/howto/BACKUP.md)
+```shell
+epicli backup -f <file.yml> -b <build_folder>
+epicli recovery -f <file.yml> -b <build_folder>
+```
+
+
 Find more information using table of contents below - especially the [How-to guides](docs/home/HOWTO.md).
 
 ## Documentation
@@ -59,8 +71,8 @@ Find more information using table of contents below - especially the [How-to gui
   - [How-to guides](docs/home/HOWTO.md)
   - [Components](docs/home/COMPONENTS.md)
   - [Security](docs/home/SECURITY.md)
-  - [Troubleshooting](docs/home/TROUBLESHOOTING.md)  
-  - [Changelog](CHANGELOG.md)  
+  - [Troubleshooting](docs/home/TROUBLESHOOTING.md)
+  - [Changelog](CHANGELOG.md)
 - Architecture
   - [Logical View](docs/architecture/logical-view.md)
   - [Process View](docs/architecture/process-view.md)
@@ -69,5 +81,5 @@ Find more information using table of contents below - especially the [How-to gui
   - [Governance model](docs/home/GOVERNANCE.md)
   - [Development environment](docs/home/DEVELOPMENT.md)
   - [GIT Workflow](docs/home/GITWORKFLOW.md)
-  
+
 <!-- TOC -->
