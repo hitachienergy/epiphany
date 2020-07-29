@@ -15,6 +15,8 @@
 - [#1412](https://github.com/epiphany-platform/epiphany/issues/1412) - Certificate in Vault is also generated or copied even if flag in configuration tls_disable is set to true
 - [#1408](https://github.com/epiphany-platform/epiphany/issues/1408) - Epiphany does not support upgrades for Kubernetes in HA mode
 - [#1482](https://github.com/epiphany-platform/epiphany/issues/1482) - Epicli upgrade: flannel CNI plugin is not upgraded to v0.12.0
+- [#1462](https://github.com/epiphany-platform/epiphany/issues/1461) - [BUG] Error upgrading AWS/RHEL/calico cluster from 0.6 to 0.7
+- [#802](https://github.com/epiphany-platform/epiphany/issues/802) - Docker version is hard-coded in installation tasks 
 
 ### Added
 
