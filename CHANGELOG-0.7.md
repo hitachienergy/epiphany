@@ -17,6 +17,7 @@
 - [#1482](https://github.com/epiphany-platform/epiphany/issues/1482) - Epicli upgrade: flannel CNI plugin is not upgraded to v0.12.0
 - [#1462](https://github.com/epiphany-platform/epiphany/issues/1461) - [BUG] Error upgrading AWS/RHEL/calico cluster from 0.6 to 0.7
 - [#802](https://github.com/epiphany-platform/epiphany/issues/802) - Docker version is hard-coded in installation tasks
+- [#1495](https://github.com/epiphany-platform/epiphany/issues/1495) - Offline installation is broken for CentOS 7.8 environments
 - [#1347](https://github.com/epiphany-platform/epiphany/issues/1347) - [BUG] Kibana config always points its elasticsearch.hosts to a "logging" VM
 
 ### Added
