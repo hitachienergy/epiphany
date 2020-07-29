@@ -1,0 +1,16 @@
+---
+# "Changing the hostname always" seems to be working because we always put
+# all of the play hosts inside /etc/hosts files on every cluster node.
+# It makes an illusion that Epiphany has control over DNS inside the underlying network.
+- name: Set hostname
+  hostname:
+    name: '{{ inventory_hostname }}'
+
+# https://aws.amazon.com/premiumsupport/knowledge-center/linux-static-hostname-rhel7-centos7/
+- name: Disable AWS cloud hostname
+  lineinfile:
+    dest: /etc/cloud/cloud.cfg
+    line: 'preserve_hostname: true'
+    state: present
+  when:
+    - provider == "aws"
