@@ -577,7 +577,7 @@ specification:
 
 Result of this configuration will be one or more independent nodes of OpenDistro.
 
-By default Kibana is deployed only for `logging` component. If you want to deploy kibana for `opendistro_for_elasticsearch` you have to modify feature mapping. Use below configuration in your initial manifest.
+By default Kibana is deployed only for `logging` component. If you want to deploy Kibana for `opendistro_for_elasticsearch` you have to modify feature mapping. Use below configuration in your manifest.
 ```yaml
 kind: configuration/feature-mapping
 title: "Feature mapping to roles"
@@ -592,7 +592,7 @@ specification:
       - kibana
 ```
 
-Filebeat running on `opendistro_for_elasticsearch` hosts will always point to centralized logging hosts (./LOGGING.md). You can change it manually in /etc/filebeat/filebeat.yml if needed.
+Filebeat running on `opendistro_for_elasticsearch` hosts will always point to centralized logging hosts (./LOGGING.md).
 
 ## How to start working with Apache Ignite Stateful setup
 

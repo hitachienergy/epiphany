@@ -14,8 +14,7 @@
 # permissions and limitations under the License.
 
 # Description:
-# https://www.elastic.co/guide/en/kibana/current/settings.html
-# Default Kibana configuration
+# Default Kibana configuration for Open Distro.
 
 server.host: "{{ ansible_default_ipv4.address | default(ansible_all_ipv4_addresses[0]) }}"
 elasticsearch.hosts:
@@ -25,7 +24,7 @@ elasticsearch.hosts:
   - "https://{{hostvars[host]['ansible_hostname']}}:9200"
   {% endfor %}
 {% elif 'opendistro_for_elasticsearch' in group_names %}
-  # Opendistro hosts:
+  # Opendistro (data) hosts:
   {% for host in groups['opendistro_for_elasticsearch'] %}
   - "https://{{hostvars[host]['ansible_hostname']}}:9200"
   {% endfor %}

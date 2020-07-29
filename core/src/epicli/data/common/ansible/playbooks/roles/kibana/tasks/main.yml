@@ -1,5 +1,5 @@
 ---
-- name: Include task for providing Kibana package
+- name: Include Kibana package installation task
   include_tasks: "{{ ansible_os_family }}.yml"
 
 - name: Update Kibana configuration file
@@ -11,7 +11,7 @@
     mode: 0644
   register: change_config
 
-- name: Include tasks for configure logging
+- name: Include logging configuration tasks
   include_tasks: setup-logging.yml
 
 - name: Restart Kibana service
