@@ -3,6 +3,7 @@
 [packages-repo-prereqs]
 apr # for httpd
 apr-util # for httpd
+centos-logos
 createrepo
 deltarpm # for createrepo
 httpd
