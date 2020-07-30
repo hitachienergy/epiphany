@@ -22,13 +22,13 @@ The Amazon Elastic Kubernetes Service (EKS) is the AWS service for deploying, ma
 - Destroy the cluster:  
 ``` terraform destroy```
 - Setup kubernetes config for new cluster:
-```
-aws eks --region $REGION update-kubeconfig --name $CLUSTER_NAME
-```
+```aws eks --region $REGION update-kubeconfig --name $CLUSTER_NAME```
 
 #### Files overview:
 - aws-eks.tf   
 Provisions all the resources (AutoScaling Groups, etc...) required to set up an EKS cluster in the private subnets and bastion servers to access the cluster using the AWS EKS Module.
+- aws-resource-groups.tf  
+Provisions the resource groups to nicely group EKS EC2 resources.
 - aws-security-groups.tf  
 Provisions the security groups used by the EKS cluster.
 - aws-vpc.tf  
@@ -39,7 +39,7 @@ Setup kubernetes and aws providers.
 Defines the output configuration.
 - vars.tf  
 Sets the min component versions and setup vars used on other files
-> Be aware that, there should be also a file `vars-secret.tf` which contain two variables required to log-in into Azure: `access_key` and `secret_key`.  This file is not included into this repo because of security reasons.
+> Be aware that, there should be also a file `vars-secret.tf` which contain two variables required to log-in into Azure: `access_key` and `secret_key`.  This file is not included into this repo because of security reasons. As example, file `vars-secret.tf-example` has been created - adjust the variables, remove the `-example` extension.
 
 ***
 
