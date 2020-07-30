@@ -157,8 +157,8 @@ https://get.helm.sh/helm-v3.2.0-linux-amd64.tar.gz
 https://github.com/hashicorp/vault-helm/archive/v0.4.0.tar.gz
 
 [images]
-kubernetesui/dashboard:v2.0.0-beta8
-kubernetesui/metrics-scraper:v1.0.1
+kubernetesui/dashboard:v2.0.3
+kubernetesui/metrics-scraper:v1.0.4
 registry:2
 hashicorp/vault-k8s:0.2.0
 vault:1.3.2

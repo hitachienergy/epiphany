@@ -10,6 +10,7 @@
 ### Updated
 
 - [#1479](https://github.com/epiphany-platform/epiphany/issues/1479) - Upgrade K8s to v1.18.6
+- [#1510](https://github.com/epiphany-platform/epiphany/issues/1510) - Upgrade Kubernetes Dashboard to v2.0.3
 
 ### Fixed
 
