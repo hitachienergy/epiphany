@@ -198,27 +198,29 @@ setup.template.settings:
 #================================ Outputs =====================================
 
 # Configure what output to use when sending the data collected by the beat.
+# Default Elasticsearch output is array of 'logging' hosts. If not exist, 'hosts' remains empty to manual configuration.
 
 #-------------------------- Elasticsearch output ------------------------------
 output.elasticsearch:
   # Array of hosts to connect to.
-{% if logging_output_exists %}
-  hosts: 
-{% for host in groups['logging'] %}
-  - "https://{{hostvars[host]['ansible_hostname']}}:9200"
-{% endfor %}
+{% if groups['logging'] is defined %}
+  hosts:
+    # Logging hosts:
+    {% for host in groups['logging'] -%}
+    - "https://{{hostvars[host]['ansible_hostname']}}:9200"
+    {% endfor %}
+
   protocol: "https"
   ssl.verification_mode: none
   username: logstash
   password: logstash
 {% else %}
   hosts: []
-{% endif %}
-
-  # Optional protocol and basic auth credentials.
   #protocol: "https"
+  #ssl.verification_mode: none
   #username: "elastic"
   #password: "changeme"
+{% endif %}
 
 #----------------------------- Logstash output --------------------------------
 #output.logstash:
