@@ -1,0 +1,15 @@
+---
+# Expected vars:
+# - template_file
+# - kind { deployment | daemonset }
+
+- name: "Load {{ kind }}s from template file: {{ template_file }}"
+  set_fact:
+    deployments: >-
+      {{ lookup('template', './' + template_file) | from_yaml_all
+          | selectattr('kind', 'match', '(?i)' + kind) | list }}
+
+- name: Get list of images from loaded template
+  set_fact:
+    template_images: >-
+      {{ deployments | json_query('[*].spec.template.spec.containers[*].image') | flatten }}

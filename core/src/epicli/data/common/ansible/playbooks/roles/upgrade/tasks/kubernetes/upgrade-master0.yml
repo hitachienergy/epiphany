@@ -19,9 +19,6 @@
 - name: k8s/master0 | Reconfigure keycloak application
   include_tasks: reconfigure-auth-service-app.yml
 
-- name: k8s/master0 | Upgrade kubernetes-dashboard
-  include_tasks: upgrade-kubernetes-dashboard.yml
-
 - name: k8s/master0 | Drain master in preparation for maintenance
   include_tasks: utils/drain.yml
 
@@ -114,6 +111,11 @@
 
     - name: k8s/master0 | Upgrade CNI plugin pod
       include_tasks: upgrade-cni-plugin-pod.yml
+
+- name: k8s/master0 | Upgrade Kubernetes Dashboard
+  include_tasks: upgrade-k8s-dashboard.yml
+  when:
+    - upgrade_to_final_version
 
 - name: k8s/master0 | Backup kubeadm-config.yml
   include_tasks: backup-kubeadm-config.yml
