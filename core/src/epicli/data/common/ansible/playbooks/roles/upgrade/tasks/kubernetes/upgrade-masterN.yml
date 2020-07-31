@@ -31,7 +31,7 @@
   import_tasks: upgrade-cni-plugin-pod.yml
   delegate_to: "{{ groups.kubernetes_master[0] }}"
   when:
-    - last_upgrade
+    - upgrade_to_final_version
 
 - name: k8s/masterN | Backup kubeadm-config.yml
   include_tasks: backup-kubeadm-config.yml
