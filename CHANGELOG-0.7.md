@@ -19,6 +19,7 @@
 - [#802](https://github.com/epiphany-platform/epiphany/issues/802) - Docker version is hard-coded in installation tasks
 - [#1495](https://github.com/epiphany-platform/epiphany/issues/1495) - Offline installation is broken for CentOS 7.8 environments
 - [#1347](https://github.com/epiphany-platform/epiphany/issues/1347) - [BUG] Kibana config always points its elasticsearch.hosts to a "logging" VM
+- [#1336](https://github.com/epiphany-platform/epiphany/issues/1336) - Deployment of version 0.7.0 failed on-prem (spec.hostname)
 
 ### Added
 
