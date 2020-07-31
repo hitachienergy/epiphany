@@ -1,0 +1,4 @@
+*.log
+.terraform
+terraform.tfstate*
+kubeconfig*
