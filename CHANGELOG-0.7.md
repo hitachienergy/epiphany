@@ -4,8 +4,12 @@
 
 ### Added
 
-- Minor logging improvements added while fixing issue [#1424](https://github.com/epiphany-platform/epiphany/issues/1424).
+- Minor logging improvements added while fixing issue [#1424](https://github.com/epiphany-platform/epiphany/issues/1424)
 - [#1438](https://github.com/epiphany-platform/epiphany/pull/1438) - Rename Terraform plugin vendor in VSCode recommendations
+
+### Updated
+
+- [#1479](https://github.com/epiphany-platform/epiphany/issues/1479) - Upgrade K8s to v1.18.6
 
 ### Fixed
 
@@ -13,12 +17,13 @@
 - [#1399](https://github.com/epiphany-platform/epiphany/issues/1399) - Epicli upgrade: Kubernetes upgrade may hang
 - [#1398](https://github.com/epiphany-platform/epiphany/issues/1398) - Vault installation fails when using canal/calico network plugin
 - [#1412](https://github.com/epiphany-platform/epiphany/issues/1412) - Certificate in Vault is also generated or copied even if flag in configuration tls_disable is set to true
-- [#1408](https://github.com/epiphany-platform/epiphany/issues/1408) - Epiphany does not support upgrades for Kubernetes in HA mode
+- [#1408](https://github.com/epiphany-platform/epiphany/issues/1408) - Epicli upgrade: Epiphany does not support upgrades for Kubernetes in HA mode
 - [#1482](https://github.com/epiphany-platform/epiphany/issues/1482) - Epicli upgrade: flannel CNI plugin is not upgraded to v0.12.0
-- [#1462](https://github.com/epiphany-platform/epiphany/issues/1461) - [BUG] Error upgrading AWS/RHEL/calico cluster from 0.6 to 0.7
+- [#1462](https://github.com/epiphany-platform/epiphany/issues/1461) - Epicli upgrade: [AWS/RHEL/calico] Upgrading cluster from 0.6 to 0.7 fails
+- [#1072](https://github.com/epiphany-platform/epiphany/issues/1072) - [AWS/RHEL] Cluster networking issues/lags when using flannel/canal plugin
 - [#802](https://github.com/epiphany-platform/epiphany/issues/802) - Docker version is hard-coded in installation tasks
 - [#1495](https://github.com/epiphany-platform/epiphany/issues/1495) - Offline installation is broken for CentOS 7.8 environments
-- [#1347](https://github.com/epiphany-platform/epiphany/issues/1347) - [BUG] Kibana config always points its elasticsearch.hosts to a "logging" VM
+- [#1347](https://github.com/epiphany-platform/epiphany/issues/1347) - Kibana config always points its elasticsearch.hosts to a "logging" VM
 - [#1336](https://github.com/epiphany-platform/epiphany/issues/1336) - Deployment of version 0.7.0 failed on-prem (spec.hostname)
 
 ### Added

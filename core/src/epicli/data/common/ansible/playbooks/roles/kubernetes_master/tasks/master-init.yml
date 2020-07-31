@@ -63,9 +63,6 @@
     owner: "{{ admin_user.name }}"
     group: "{{ admin_user.name }}"
 
-- name: Clean up previous version leftovers
-  include_tasks: ./previous-versions-cleanup.yml
-
 - name: Configure RBAC
   include_tasks: rbac.yml
 
@@ -81,8 +78,8 @@
   vars:
     network_plugin: "{{ specification.advanced.networking.plugin }}"
 
-- name: Apply coredns
-  include_tasks: apply-coredns.yml
+- name: Patch CoreDNS
+  include_tasks: patch-coredns.yml
 
 - name: Apply Kubernetes Dashboard
   include_tasks: apply-dashboard.yml

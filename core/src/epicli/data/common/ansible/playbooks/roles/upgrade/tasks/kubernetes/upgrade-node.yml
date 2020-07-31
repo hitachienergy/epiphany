@@ -5,18 +5,14 @@
 - name: k8s/node | Upgrade Docker # this may restart Docker daemon
   include_tasks: docker.yml
 
-- name: k8s/node | Upgrade, configure packages
+- name: Upgrade packages and perform upgrade
   block:
-    - name: k8s/node | Hold packages for Debian family
-      include_tasks: "Debian/hold-packages.yml"
-      when: ansible_os_family == "Debian"
-
     - name: k8s/node | Install kubeadm
       include_tasks: "{{ ansible_os_family }}/install-kubeadm.yml"
 
     - name: k8s/node | Upgrade node config
       command: >-
-        kubeadm upgrade node config --kubelet-version v{{ version }}
+        kubeadm upgrade node --kubelet-version v{{ version }}
       register: result
       until:
         - result is succeeded
@@ -35,7 +31,7 @@
   import_tasks: upgrade-cni-plugin-pod.yml
   delegate_to: "{{ groups.kubernetes_master[0] }}"
   when:
-    - version is version('1.17.7', '>=')
+    - upgrade_to_final_version
 
 - name: k8s/node | Restart kubelet
   systemd:

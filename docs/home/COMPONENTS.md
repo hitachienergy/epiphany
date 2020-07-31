@@ -6,7 +6,7 @@ Note that versions are default versions and can be changed in certain cases thro
 
 | Component                 | Version | Repo/Website                                          | License                                                           |
 | ------------------------- | ------- | ----------------------------------------------------- | ----------------------------------------------------------------- |
-| Kubernetes                | 1.17.7  | https://github.com/kubernetes/kubernetes              | [Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0) |
+| Kubernetes                | 1.18.6  | https://github.com/kubernetes/kubernetes              | [Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0) |
 | Calico                    | 3.15.0  | https://github.com/projectcalico/calico               | [Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0) |
 | Flannel                   | 0.12.0  | https://github.com/coreos/flannel/                    | [Apache License](https://www.apache.org/licenses/LICENSE-1.0)     |
 | Canal                     | 3.15.0  | https://github.com/projectcalico/calico               | [Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0) |
