@@ -52,24 +52,16 @@
     - name: upgrade-master | Get rabbitmq pod names
       environment:
         KUBECONFIG: /home/{{ admin_user.name }}/.kube/config
-      shell: |-
-        set -o pipefail &&
-        kubectl get pod -n {{ rabbit_mq_namespace.stdout }} -o=jsonpath='{range .items[*]}{.metadata.name}{"\n"}'
+      command: kubectl get pod -n {{ rabbit_mq_namespace.stdout }} -o=jsonpath='{range .items[*]}{.metadata.name}{"\n"}'
       changed_when: false
       register: rabbit_mq_pod_names
-      args:
-        executable: /bin/bash
       when:
         - not rabbit_mq_namespace.stdout == ""
     - name: upgrade-master | Delete rabbitmq pods
       environment:
         KUBECONFIG: /home/{{ admin_user.name }}/.kube/config
-      shell: |-
-        set -o pipefail &&
-        kubectl delete pod --namespace {{ rabbit_mq_namespace.stdout }} {{ item }}
+      command: kubectl delete pod --namespace {{ rabbit_mq_namespace.stdout }} {{ item }}
       changed_when: false
-      args:
-        executable: /bin/bash
       loop: "{{ rabbit_mq_pod_names.stdout_lines }}"
       when:
         - not rabbit_mq_namespace.stdout == ""
