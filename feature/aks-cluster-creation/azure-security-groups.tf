@@ -1,4 +1,3 @@
-
 resource "azurerm_subnet_network_security_group_association" "aks-nsg-association" {
   count = "${var.existing_vnet_subnet_id != "" ? 0 : 1}"
   subnet_id                 = "${azurerm_subnet.subnet[0].id}"

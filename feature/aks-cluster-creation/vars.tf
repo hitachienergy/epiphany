@@ -40,7 +40,7 @@ variable "aks_address_prefix" {
 
 variable "public_ssh_key_path" {
     description = "Public ssh key path"
-    default     = "/workspaces/epiphany/core/src/epicli/ssh/id_rsa.pub"
+    default     = "~/.ssh/id_rsa.pub"
 }
 
 variable "nodes_public_ip" {

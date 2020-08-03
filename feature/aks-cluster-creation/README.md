@@ -4,7 +4,7 @@ The Azure Kubernetes Service (AKS) is the service for deploying, managing, and s
 ***
 #### Nice to know:
 - AKS require two resources group. First resource group which is managed by user and contains only the Kubernetes service resource. Second resource group, known as the node resource group, contains all of the infrastructure resources associated with the cluster. These resources include the Kubernetes node VMs, virtual networking, and storage. AKS automatically remove the node resource group whenever the cluster is removed.
-- AKS require service principle to create additional resources but managed identities are essentially a wrapper around service principals, and make their management simpler. It is better to use Managed identities since are passwordless.
+- AKS require service principal to create additional resources but managed identities are essentially a wrapper around service principals, and make their management simpler. It is better to use Managed identities since are passwordless.
 - AKS require default node pool which serve the primary purpose of hosting critical system pods such as CoreDNS and tunnelfront and operating system must be Linux. In additional node pools user can choose which operation system will be installed (Linux/Windows)
 #### Features:
 - Different operating systems (Linux/Windows)

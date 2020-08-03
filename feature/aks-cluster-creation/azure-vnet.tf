@@ -1,4 +1,3 @@
-
 resource "azurerm_virtual_network" "vnet" {
   count = "${var.existing_vnet_subnet_id != "" ? 0 : 1}"
   name                = "${var.prefix}-network-aks"
