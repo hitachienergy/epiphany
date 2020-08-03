@@ -1,0 +1,11 @@
+---
+
+- hosts: postgres_exporter[0]
+  gather_facts: yes
+  tasks: [ ]
+
+- hosts: postgres_exporter[0]
+  become: true
+  become_method: sudo
+  roles:
+    - postgres_exporter

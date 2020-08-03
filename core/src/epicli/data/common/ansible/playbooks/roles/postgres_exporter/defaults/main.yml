@@ -1,0 +1,3 @@
+---
+
+postgres_instances: "--postgres.server={{ groups['postgres'][0] }}"
