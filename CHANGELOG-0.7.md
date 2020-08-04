@@ -26,6 +26,7 @@
 - [#1495](https://github.com/epiphany-platform/epiphany/issues/1495) - Offline installation is broken for CentOS 7.8 environments
 - [#1347](https://github.com/epiphany-platform/epiphany/issues/1347) - Kibana config always points its elasticsearch.hosts to a "logging" VM
 - [#1336](https://github.com/epiphany-platform/epiphany/issues/1336) - Deployment of version 0.7.0 failed on-prem (spec.hostname)
+- [#1394](https://github.com/epiphany-platform/epiphany/issues/1394) - Cannot access Kubernetes dashboard after upgrading
 
 ### Added
 
