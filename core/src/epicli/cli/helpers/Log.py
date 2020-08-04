@@ -76,7 +76,7 @@ class LogPipe(threading.Thread):
         self.pipeReader = os.fdopen(self.fdRead)
         self.start()
         self.errorStrings = ['error', 'Error', 'ERROR', 'fatal', 'FAILED']
-        self.warningStrings = ['warning', 'warning', 'WARNING']
+        self.warningStrings = ['warning', 'Warning', 'WARNING']
         self.stderrstrings = []
 
     def fileno(self):
