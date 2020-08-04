@@ -2,65 +2,67 @@
 
 // If You want to use existing network and resource group, just update the two variables, if not, leave them empty:
 variable "existing_vnet_subnet_id" {
-  description = "Resource id of existing the Virtual Network subnet where You want to join Your AKS cluster"
-  default = ""
+	description = "Resource id of existing the Virtual Network subnet where You want to join Your AKS cluster"
+	type        = string
+	default     = ""
 }
 
 variable "existing_resource_group_name" {
-  description = "Name of the existing AKS cluster resource group where You want to join Your AKS cluster"
-  default = ""
+	description = "Name of the existing AKS cluster resource group where You want to join Your AKS cluster"
+	type        = string
+	default     = ""
 }
 
 // General variables:
 
 variable "prefix" {
     description = "Prefix for resources's name"
-    default     = "ropu"
+    type        = string
 }
 
 variable "location" {
     description = "AKS cluster location"
-    default     = "North Central US"
+    type        = string
 }
 
 variable "kubernetes_version" {
-  description = "Kubernetes version"
-  default     = "1.17.7"
+	description = "Kubernetes version"
+	type        = string
 }
 
 variable "vnet_address_space" {
-  description = "Network address space"
-  default = ["10.1.0.0/16"]
+	description = "Network address space"
+	type        = list(string)
 }
 
 variable "aks_address_prefix" {
-  description = "SubNetwork address space"
-  default = ["10.1.1.0/24"]
+	description = "SubNetwork address space"
+	type        = list(string)
 }
 
 variable "public_ssh_key_path" {
     description = "Public ssh key path"
-    default     = "~/.ssh/id_rsa.pub"
+    type        = string
 }
 
 variable "nodes_public_ip" {
     description = "Assign a public IP per node for your node pools. In order to allow that, You have to install latest aks-preview extension and register feature for Node Public IP following the url: https://docs.microsoft.com/en-us/azure/aks/use-multiple-node-pools#assign-a-public-ip-per-node-for-your-node-pools-preview "
-    default     = false
+    type        = bool
 }
 
 variable "network_plugin" {
     description = "azure or kubenet supported only, if network policy set to azure, network plugin must be set to azure"
-    default     = "azure"
+    type        = string
 }
 
 variable "network_policy" {
     description = "azure or calico supported, when Azure is set, network plugin must be set Azure value too"
-    default     = "azure"
+    type        = string
 }
 
 variable "linux_admin_username" {
     description = "Admin user on Linux OS"
-    default     = "operation"
+    type        = string
 }
 
 variable "default_node_pool" {
@@ -75,16 +77,6 @@ variable "default_node_pool" {
     min_count                      = number
     max_count                      = number
   })
-    default = {
-    name                           = "linux"
-    node_count                     = 1
-    vm_size                        = "Standard_DS2_v2"
-    os_disk_size_gb                = "50"
-    type                           = "VirtualMachineScaleSets"
-    enable_auto_scaling            = false
-    min_count                      = null
-    max_count                      = null
-    }
 }
 
 
@@ -102,15 +94,5 @@ variable "additional_cluster_node_pools" {
     min_count                      = number
     max_count                      = number
   })
-    default = {
-    name                           = "windows"
-    node_count                     = 0
-    vm_size                        = "Standard_DS2_v2"
-    os_type                        = "Windows"
-    os_disk_size_gb                = "50"
-    type                           = "VirtualMachineScaleSets"
-    enable_auto_scaling            = false
-    min_count                      = null
-    max_count                      = null
-    }
 }
+
