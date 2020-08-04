@@ -1,5 +1,6 @@
 module "eks" {
   source          = "terraform-aws-modules/eks/aws"
+  version         = "12.2.0"
   cluster_name    = var.eks_cluster_name
   subnets         = module.vpc.private_subnets
   vpc_id          = module.vpc.vpc_id
@@ -11,20 +12,20 @@ module "eks" {
 
   worker_groups = [
     {
-      name                          = var.worker_group1
-      instance_type                 = "t2.small"
-      asg_desired_capacity          = 2
-      asg_min_size                  = 1
-      asg_max_size                  = 5
+      name                          = var.worker1_data["name"]
+      instance_type                 = var.worker1_data["instance_type"]
+      asg_desired_capacity          = var.worker1_data["asg_desired_capacity"]
+      asg_min_size                  = var.worker1_data["asg_min_size"]
+      asg_max_size                  = var.worker1_data["asg_max_size"]
       additional_security_group_ids = [aws_security_group.worker_group_mgmt_one.id]
     },
     {
-      name                          = var.worker_group2
-      instance_type                 = "t2.medium"
-      additional_security_group_ids = [aws_security_group.worker_group_mgmt_two.id]
-      asg_desired_capacity          = 1
-      asg_min_size                  = 1
-      asg_max_size                  = 3
+      name                          = var.worker2_data["name"]
+      instance_type                 = var.worker2_data["instance_type"]
+      asg_desired_capacity          = var.worker2_data["asg_desired_capacity"]
+      asg_min_size                  = var.worker2_data["asg_min_size"]
+      asg_max_size                  = var.worker2_data["asg_max_size"]
+      additional_security_group_ids = [aws_security_group.worker_group_mgmt_one.id]
     },
   ]
 }

@@ -9,6 +9,7 @@ The Amazon Elastic Kubernetes Service (EKS) is the AWS service for deploying, ma
 - AWS account with the IAM permissions listed on the [EKS module documentation](https://github.com/terraform-aws-modules/terraform-aws-eks/blob/master/docs/iam-permissions.md) - set credentials in `vars-secret.tf` file.
 - kubectl
 - terraform
+- ssh-key uploaded into [AWS](https://www.eksworkshop.com/020_prerequisites/sshkey/) - in case you need to connect into the node
 
 #### Deployment:
 - Initialize working directory:  
