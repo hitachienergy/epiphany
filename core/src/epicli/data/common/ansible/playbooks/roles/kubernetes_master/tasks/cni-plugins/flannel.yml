@@ -8,7 +8,8 @@
         get_attributes: no
       register: network_manager_conf_d_stat
 
-    # Remove flannel.1 interface from NetworkManager managed devices
+    # Remove flannel.1 interface from NetworkManager managed devices to get rid of
+    # random network issue with missing flannel.1 IP address
     - name: Copy flannel.conf to /etc/NetworkManager/conf.d
       template:
         src: network-manager.conf.j2
