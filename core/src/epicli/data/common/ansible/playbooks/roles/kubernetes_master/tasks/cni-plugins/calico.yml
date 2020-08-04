@@ -8,14 +8,17 @@
         get_attributes: no
       register: network_manager_conf_d_stat
 
+    # https://docs.projectcalico.org/maintenance/troubleshoot/troubleshooting#configure-networkmanager
     - name: Copy calico.conf to /etc/NetworkManager/conf.d
-      copy:
-        src: calico-network-manager.conf
+      template:
+        src: network-manager.conf.j2
         dest: /etc/NetworkManager/conf.d/calico.conf
         owner: root
         group: root
         mode: u=rw,g=r,o=r
       register: copy_calico_network_manager_conf
+      vars:
+        network_interface_prefix: cali
       when:
         - network_manager_conf_d_stat.stat.exists
 
