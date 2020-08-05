@@ -50,7 +50,13 @@ specification:
 
     sha: "b28e81705e30528f1abb6766e22dfe9dae50b1e1e93330c880928ff7a08e6b38ee71cbfc96ec14369b2dfd24293938702cab422173c8e01955a9d1746ae43f98"
     port: 9092
-    replicas: 1 # Default to at least 1 (1 broker)
+    min_insync_replicas: 1 # Minimum number of replicas (ack write)
+    default_replication_factor: 1 # Minimum number of automatically created topics
+    offsets_topic_replication_factor: 1 # Minimum number of offsets topic (consider higher value for HA)
+    num_recovery_threads_per_data_dir: 1 # Minimum number of recovery threads per data dir
+    num_replica_fetchers: 1 # Minimum number of replica fetchers
+    replica_fetch_max_bytes: 1048576
+    replica_socket_receive_buffer_bytes: 65536
     partitions: 8 # 100 x brokers x replicas for reasonable size cluster. Small clusters can be less
     log_retention_hours: 168 # The minimum age of a log file to be eligible for deletion due to age
     log_retention_bytes: -1 # -1 is no size limit only a time limit (log_retention_hours). This limit is enforced at the partition level, multiply it by the number of partitions to compute the topic retention in bytes.
@@ -58,6 +64,8 @@ specification:
     heap_opts: "-Xmx2G -Xms2G"
     opts: "-Djavax.net.debug=all"
     jmx_opts:
+    max_incremental_fetch_session_cache_slots: 1000
+    controlled_shutdown_enable: true
 
     group: kafka
     user: kafka
