@@ -19,7 +19,7 @@ filebeat.inputs:
 - type: log
   enabled: true
 
-  # Paths (in alphabetical order) that should be crawled and fetched. Glob based paths.
+  # Paths that should be crawled and fetched. Glob based paths.
   paths:
 #   - /var/log/audit/audit.log
     - /var/log/auth.log
@@ -34,7 +34,7 @@ filebeat.inputs:
     - /var/log/secure
     - /var/log/syslog
 
-  # Exclude lines. A list of regular expressions to match. It drops the lines that are
+ # Exclude lines. A list of regular expressions to match. It drops the lines that are
   # matching any regular expression from the list.
   #exclude_lines: ['^DBG']
 
@@ -67,9 +67,10 @@ filebeat.inputs:
   # that was (not) matched before or after or as long as a pattern is not matched based on negate.
   # Note: After is the equivalent to previous and before is the equivalent to to next in Logstash
   #multiline.match: after
+
 {% if 'postgresql' in group_names %}
 
-#--- PostgreSQL ---
+# ============================== PostgreSQL ==============================
 
 # Filebeat postgresql module doesn't support custom log_line_prefix (without patching), see https://discuss.elastic.co/t/filebeats-with-postgresql-module-custom-log-line-prefix/204457
 # Dedicated configuration to handle log messages spanning multiple lines.
@@ -85,9 +86,10 @@ filebeat.inputs:
     negate: true
     match: after
 {% endif %}
+
 {% if 'kubernetes_master' in group_names or 'kubernetes_node' in group_names %}
 
-#--- Kubernetes ---
+# ==============================  Kubernetes ==============================
 
 # K8s metadata are fetched from Docker labels to not make Filebeat on worker nodes dependent on K8s master
 # since Filebeat should start even if K8s master is not available.
@@ -112,7 +114,7 @@ filebeat.inputs:
           - docker # Drop all fields added by 'add_docker_metadata' that were not renamed
 {% endif %}
 
-#============================= Filebeat modules ===============================
+# ============================== Filebeat modules ==============================
 
 filebeat.config.modules:
   # Glob pattern for configuration loading
@@ -124,14 +126,14 @@ filebeat.config.modules:
   # Period on which files under path should be checked for changes
   #reload.period: 10s
 
-#==================== Elasticsearch template setting ==========================
+# ======================= Elasticsearch template setting =======================
 
 setup.template.settings:
   index.number_of_shards: 3
   #index.codec: best_compression
   #_source.enabled: false
 
-#================================ General =====================================
+# ================================== General ===================================
 
 # The name of the shipper that publishes the network data. It can be used to group
 # all the transactions sent by a single shipper in the web interface.
@@ -147,17 +149,53 @@ setup.template.settings:
 #  env: staging
 
 
-#============================== Dashboards =====================================
+# ================================= Dashboards =================================
 # These settings control loading the sample dashboards to the Kibana index. Loading
 # the dashboards is disabled by default and can be enabled either by setting the
-# options here, or by using the `-setup` CLI flag or the `setup` command.
-#setup.dashboards.enabled: true
+# options here or by using the `setup` command.
+#setup.dashboards.enabled: false
 
 # The URL from where to download the dashboards archive. By default this URL
 # has a value which is computed based on the Beat name and version. For released
 # versions, this URL points to the dashboard archive on the artifacts.elastic.co
 # website.
 #setup.dashboards.url:
+
+# ====================== Index Lifecycle Management (ILM) ======================
+
+# Configure index lifecycle management (ILM). These settings create a write
+# alias and add additional settings to the index template. When ILM is enabled,
+# output.elasticsearch.index is ignored, and the write alias is used to set the
+# index name.
+
+# Enable ILM support. Valid values are true, false, and auto. When set to auto
+# (the default), the Beat uses index lifecycle management when it connects to a
+# cluster that supports ILM; otherwise, it creates daily indices.
+# Disabled because ILM is not enabled by default in Epiphany
+setup.ilm.enabled: false
+
+# Set the prefix used in the index lifecycle write alias name. The default alias
+# name is 'filebeat-%{[agent.version]}'.
+#setup.ilm.rollover_alias: 'filebeat'
+
+# Set the rollover index pattern. The default is "%{now/d}-000001".
+#setup.ilm.pattern: "{now/d}-000001"
+
+# Set the lifecycle policy name. The default policy name is
+# 'beatname'.
+#setup.ilm.policy_name: "mypolicy"
+
+# The path to a JSON file that contains a lifecycle policy configuration. Used
+# to load your own lifecycle policy.
+#setup.ilm.policy_file:
+
+# Disable the check for an existing lifecycle policy. The default is true. If
+# you disable this check, set setup.ilm.overwrite: true so the lifecycle policy
+# can be installed.
+#setup.ilm.check_exists: true
+
+# Overwrite the lifecycle policy at startup. The default is false.
+#setup.ilm.overwrite: false
 
 #============================== Kibana =====================================
 
@@ -182,9 +220,9 @@ setup.template.settings:
   # the Default Space will be used.
   #space.id:
 
-#============================= Elastic Cloud ==================================
+# =============================== Elastic Cloud ================================
 
-# These settings simplify using filebeat with the Elastic Cloud (https://cloud.elastic.co/).
+# These settings simplify using Filebeat with the Elastic Cloud (https://cloud.elastic.co/).
 
 # The cloud.id setting overwrites the `output.elasticsearch.hosts` and
 # `setup.kibana.host` options.
@@ -210,19 +248,24 @@ output.elasticsearch:
     - "https://{{hostvars[host]['ansible_hostname']}}:9200"
     {% endfor %}
 
+  # Protocol - either `http` (default) or `https`.
   protocol: "https"
   ssl.verification_mode: none
   username: logstash
   password: logstash
 {% else %}
   hosts: []
+  # Protocol - either `http` (default) or `https`.
   #protocol: "https"
+
   #ssl.verification_mode: none
+  # Authentication credentials - either API key or username/password.
+  #api_key: "id:api_key"
   #username: "elastic"
   #password: "changeme"
 {% endif %}
 
-#----------------------------- Logstash output --------------------------------
+# ------------------------------ Logstash Output -------------------------------
 #output.logstash:
   # The Logstash hosts
   #hosts: ["localhost:5044"]
@@ -237,15 +280,17 @@ output.elasticsearch:
   # Client Certificate Key
   #ssl.key: "/etc/pki/client/cert.key"
 
-#================================ Processors =====================================
+# ================================= Processors =================================
 
 # Configure processors to enhance or manipulate events generated by the beat.
 
 processors:
   #- add_host_metadata: ~
   - add_cloud_metadata: ~
+  #- add_docker_metadata: ~
+  #- add_kubernetes_metadata: ~
 
-#================================ Logging =====================================
+# ================================== Logging ===================================
 
 # Sets log level. The default log level is info.
 # Available log levels are: error, warning, info, debug
@@ -256,17 +301,30 @@ processors:
 # "publish", "service".
 #logging.selectors: ["*"]
 
-#============================== Xpack Monitoring ===============================
-# filebeat can export internal metrics to a central Elasticsearch monitoring
+# ============================= X-Pack Monitoring ==============================
+# Filebeat can export internal metrics to a central Elasticsearch monitoring
 # cluster.  This requires xpack monitoring to be enabled in Elasticsearch.  The
 # reporting is disabled by default.
 
 # Set to true to enable the monitoring reporter.
-#xpack.monitoring.enabled: false
+#monitoring.enabled: false
+
+# Sets the UUID of the Elasticsearch cluster under which monitoring data for this
+# Filebeat instance will appear in the Stack Monitoring UI. If output.elasticsearch
+# is enabled, the UUID is derived from the Elasticsearch cluster referenced by output.elasticsearch.
+#monitoring.cluster_uuid:
 
 # Uncomment to send the metrics to Elasticsearch. Most settings from the
-# Elasticsearch output are accepted here as well. Any setting that is not set is
-# automatically inherited from the Elasticsearch output configuration, so if you
-# have the Elasticsearch output configured, you can simply uncomment the
-# following line.
-#xpack.monitoring.elasticsearch:
+# Elasticsearch output are accepted here as well.
+# Note that the settings should point to your Elasticsearch *monitoring* cluster.
+# Any setting that is not set is automatically inherited from the Elasticsearch
+# output configuration, so if you have the Elasticsearch output configured such
+# that it is pointing to your Elasticsearch monitoring cluster, you can simply
+# uncomment the following line.
+#monitoring.elasticsearch:
+
+# ================================= Migration ==================================
+
+# Enable the compatibility layer for Elastic Common Schema (ECS) fields.
+# This allows to enable 6 > 7 migration aliases.
+#migration.6_to_7.enabled: true
