@@ -36,7 +36,7 @@ elasticsearch-oss-6.8.5
 elasticsearch-oss-7.3.2 # Open Distro for Elasticsearch
 erlang-21.3.8.7
 ethtool
-filebeat-6.8.5 # actually it's filebeat-oss
+filebeat-7.8.1 # actually it's filebeat-oss
 firewalld
 fontconfig # for grafana
 fping

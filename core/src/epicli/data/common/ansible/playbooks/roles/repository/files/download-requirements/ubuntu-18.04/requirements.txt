@@ -17,7 +17,7 @@ elasticsearch-oss 6.8.5
 elasticsearch-oss 7.3.2
 erlang-nox
 ethtool
-filebeat 6.8.5
+filebeat 7.8.1
 firewalld
 fping
 gnupg2
