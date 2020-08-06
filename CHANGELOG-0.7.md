@@ -66,7 +66,8 @@
 - [#1180](https://github.com/epiphany-platform/epiphany/issues/1180) - Update list of ports used by Epiphany components
 - [#1310](https://github.com/epiphany-platform/epiphany/issues/1310) - Updated Azure-cli from 2.0.67 to 2.6.0
 - [#1330](https://github.com/epiphany-platform/epiphany/issues/1330) - Update cloud based OS images
-- [#1138](https://github.com/epiphany-platform/epiphany/issues/1138) - Upgrade Kubernetes to 1.17.7
+- [#1138](https://github.com/epiphany-platform/epiphany/issues/1138) - Upgrade Kubernetes to 1.17.70
+- [#1395](https://github.com/epiphany-platform/epiphany/issues/1395) - Upgrade RabbitMQ from 3.7.10 to 3.8.3
 
 ### Fixed
 
