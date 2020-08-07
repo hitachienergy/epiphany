@@ -4,6 +4,7 @@
 
 ### Fixed
 
+- [#1506](https://github.com/epiphany-platform/epiphany/issues/1506) - v0.5 Terraform returning an error during deployments on Azure ("A retryable error occurred.")
 - [#1350](https://github.com/epiphany-platform/epiphany/issues/1350) - Cannot deploy a non-k8s cluster with load\_balancer vm
 
 ## [0.5.4] 2020-04-14
