@@ -4,6 +4,7 @@
 
 ### Fixed
 
+- [#1505](https://github.com/epiphany-platform/epiphany/issues/1505) - v0.6 Terraform returning an error during deployments on Azure ("A retryable error occurred.")
 - [#1154](https://github.com/epiphany-platform/epiphany/issues/1154) - Node exporter is not installed on logging vms
 - [#1183](https://github.com/epiphany-platform/epiphany/issues/1183) - Task 'Check if /etc/kubernetes/admin.conf file exists' fails when kubernetes\_master.count = 0
 - [#1350](https://github.com/epiphany-platform/epiphany/issues/1350) - Cannot deploy a non-k8s cluster with load\_balancer vm
