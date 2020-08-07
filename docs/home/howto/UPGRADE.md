@@ -1,5 +1,12 @@
 ## Upgrade
 
+### Prerequisites
+
+Before k8s version upgrade make sure that deprecated API versions are not used:
+
+1. [v1.17](https://v1-17.docs.kubernetes.io/docs/setup/release/notes/#deprecations-and-removals)
+2. [v1.18](https://v1-18.docs.kubernetes.io/docs/setup/release/notes/#deprecation)
+
 ### Introduction
 
 From Epicli 0.4.2 and up the CLI has the ability to perform upgrades on certain components on a cluster. The components it currently can upgrade and will add are:
