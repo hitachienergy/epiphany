@@ -63,6 +63,11 @@ epicli backup -f <file.yml> -b <build_folder>
 epicli recovery -f <file.yml> -b <build_folder>
 ```
 
+To delete all deployed components following command should be used
+
+```shell
+epicli delete -b <build_folder>
+```
 
 Find more information using table of contents below - especially the [How-to guides](docs/home/HOWTO.md).
 
