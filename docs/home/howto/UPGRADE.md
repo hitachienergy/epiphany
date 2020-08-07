@@ -4,7 +4,7 @@
 
 From Epicli 0.4.2 and up the CLI has the ability to perform upgrades on certain components on a cluster. The components it currently can upgrade and will add are:
 
-*Note: Since v0.7.0 Epiphany does not support K8s version uprades older than 1.14.6 (Epiphany v0.4.4).
+*Note: Since v0.7.0 Epiphany does not support k8s version upgrades older than 1.14.6 (Epiphany v0.4.4).
 There is an assertion to check whether K8s version is supported before running upgrade,
 but upgrade for v0.3.1 is not possible due to the open [issue](https://github.com/epiphany-platform/epiphany/issues/1491).*
 
