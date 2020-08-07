@@ -14,6 +14,7 @@ def callRabbitMQDeploymentTests
   service_namespace = readDataYaml("configuration/applications")["specification"]["applications"].detect {|i| i["name"] == 'rabbitmq'}["service"]["namespace"]
   service_name = readDataYaml("configuration/applications")["specification"]["applications"].detect {|i| i["name"] == 'rabbitmq'}["service"]["name"]
   plugins = readDataYaml("configuration/applications")["specification"]["applications"].detect {|i| i["name"] == 'rabbitmq'}["rabbitmq"]["plugins"]
+  version = readDataYaml("configuration/applications")["specification"]["applications"].detect {|i| i["name"] == 'rabbitmq'}["image_path"].split(':').last
 
   if !readDataYaml("configuration/applications")["specification"]["applications"].detect {|i| i["name"] == 'rabbitmq'}["rabbitmq"]["amqp_port"].nil?
     rabbitmq_amqp_port = readDataYaml("configuration/applications")["specification"]["applications"].detect {|i| i["name"] == 'rabbitmq'}["rabbitmq"]["amqp_port"]
@@ -44,6 +45,15 @@ def callRabbitMQDeploymentTests
     end
   end
 
+  describe 'Checking RabbitMQ version' do
+    service_replicas.times do |i|
+      describe command("kubectl exec --namespace=#{service_namespace} #{service_name}-#{i} -- rabbitmqctl version") do
+        its(:stdout) { should match /^#{version}$/ }
+        its(:exit_status) { should eq 0 }
+      end
+    end
+  end
+
   describe 'Checking RabbitMQ ping' do
     service_replicas.times do |i|
       describe command("kubectl exec --namespace=#{service_namespace} #{service_name}-#{i} -- rabbitmqctl ping") do
@@ -68,7 +78,7 @@ def callRabbitMQDeploymentTests
         its(:exit_status) { should eq 0 }
       end
       describe command("kubectl exec --namespace=#{service_namespace} #{service_name}-#{i} -- rabbitmqctl cluster_status \
-      | awk '/running_nodes/,/}/' | grep -o rabbit@ | wc -l") do
+      | sed -n '/Running Nodes/,/Versions/{/rabbit/p}' | wc -l") do
         it "is expected to be equal" do
           expect(subject.stdout.to_i).to eq service_replicas
         end
@@ -100,9 +110,9 @@ def callRabbitMQDeploymentTests
         end
       end
     end
-  end 
+  end
 
-#   # Tests to be run only when RabbitMQ Management Plugin is enabled
+  # Tests to be run only when RabbitMQ Management Plugin is enabled
 
   if plugins.include? "rabbitmq_management"
 
@@ -114,20 +124,20 @@ def callRabbitMQDeploymentTests
       describe command("kubectl describe service #{service_name} --namespace=#{service_namespace} | grep TargetPort") do
         its(:stdout) { should match /#{rabbitmq_http_port}/ }
       end
-    end  
+    end
   
     describe 'Checking node health using RabbitMQ API' do
       service_replicas.times do |i|
         describe command("curl -o /dev/null -s -w '%{http_code}' -u #{user}#{i}:#{pass} \
         #{host_inventory['hostname']}:#{service_management_port}/api/healthchecks/node/rabbit@$(kubectl describe pods rabbitmq-cluster-#{i} \
-        --namespace=#{service_namespace} | grep ^IP: | awk '{print $2}')") do
+        --namespace=#{service_namespace} | awk '/^IP:/ {print $2}')") do
           it "is expected to be equal" do
             expect(subject.stdout.to_i).to eq 200
           end
         end
         describe command("curl -u #{user}#{i}:#{pass} \
         #{host_inventory['hostname']}:#{service_management_port}/api/healthchecks/node/rabbit@$(kubectl describe pods rabbitmq-cluster-#{i} \
-        --namespace=#{service_namespace} | grep ^IP: | awk '{print $2}')") do
+        --namespace=#{service_namespace} | awk '/^IP:/ {print $2}')") do
           its(:stdout_as_json) { should include('status' => /ok/) }
           its(:stdout_as_json) { should_not include('status' => /failed/) }
           its(:exit_status) { should eq 0 }
@@ -139,7 +149,7 @@ def callRabbitMQDeploymentTests
         end
       end
     end
-  end 
+ end
 
   describe 'Cleaning up' do
     service_replicas.times do |i|
@@ -150,4 +160,4 @@ def callRabbitMQDeploymentTests
     end
   end
 
-end 
+end

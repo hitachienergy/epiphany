@@ -6,6 +6,7 @@ rabbitmq_port =  readDataYaml("configuration/rabbitmq")["specification"]["amqp_p
 rabbitmq_node_port = rabbitmq_port + 20000
 rabbitmq_api_port = 15672
 clustered = readDataYaml("configuration/rabbitmq")["specification"]["cluster"]["is_clustered"]
+version = readDataYaml("configuration/rabbitmq")["specification"]["version"]
 user = 'testuser' + SecureRandom.hex(5)
 pass = SecureRandom.hex
 
@@ -40,7 +41,15 @@ describe 'Checking if the ports are open' do
   describe port(rabbitmq_node_port) do
     it { should be_listening }
   end
-end  
+end
+
+describe 'Checking RabbitMQ version' do
+  describe command("rabbitmqctl version") do
+    let(:disable_sudo) { false }
+    its(:stdout) { should match /^#{version}$/ }
+    its(:exit_status) { should eq 0 }
+  end
+end
 
 describe 'Checking RabbitMQ ping' do
   describe command("rabbitmqctl ping") do
@@ -48,7 +57,7 @@ describe 'Checking RabbitMQ ping' do
     its(:stdout) { should match /^Ping succeeded$/ }
     its(:exit_status) { should eq 0 }
   end
-end  
+end
 
 describe 'Checking the health of the target nodes' do
   let(:disable_sudo) { false }
@@ -76,13 +85,13 @@ describe 'Checking the RabbitMQ status/cluster status' do
   if clustered
     listInventoryHosts("rabbitmq").each do |val|
       val = val.split(".")[0]
-      describe command("rabbitmqctl cluster_status | awk '/running_nodes/,/}/'") do
+      describe command("rabbitmqctl cluster_status | awk '/Running Nodes/,/Versions/'") do
         its(:stdout) { should match /rabbit@#{val}/ }
         its(:exit_status) { should eq 0 }
       end
     end
   else
-    describe command("rabbitmqctl cluster_status | awk '/running_nodes/,/}/'") do
+    describe command("rabbitmqctl cluster_status | awk '/Running Nodes/,/Versions/'") do
       its(:stdout) { should match /rabbit@#{host_inventory['hostname']}/ }
       its(:exit_status) { should eq 0 }
     end
@@ -112,7 +121,7 @@ describe 'Checking if RabbitMQ plugins are enabled' do
       its(:exit_status) { should eq 0 }
     end
   end
-end 
+end
 
 # Tests to be run only when RabbitMQ Management Plugin is enabled
 
@@ -123,7 +132,7 @@ if plugins.include? "rabbitmq_management"
     describe port(rabbitmq_api_port) do
       it { should be_listening }
     end
-  end  
+  end
  
   describe 'Checking nodes health using RabbitMQ API' do
     let(:disable_sudo) { false }
