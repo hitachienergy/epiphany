@@ -1,11 +1,13 @@
 # Changelog 0.7
 
-## [0.7.1] 2020-07-xx
+## [0.7.1] 2020-08-xx
 
 ### Added
 
 - Minor logging improvements added while fixing issue [#1424](https://github.com/epiphany-platform/epiphany/issues/1424)
 - [#1438](https://github.com/epiphany-platform/epiphany/pull/1438) - Rename Terraform plugin vendor in VSCode recommendations
+- [#1413](https://github.com/epiphany-platform/epiphany/issues/1413) - Set protocol for Vault only in one place in configuration
+- [#1423](https://github.com/epiphany-platform/epiphany/issues/1423) - Error reading generated service principal
 
 ### Updated
 
@@ -27,11 +29,6 @@
 - [#1347](https://github.com/epiphany-platform/epiphany/issues/1347) - Kibana config always points its elasticsearch.hosts to a "logging" VM
 - [#1336](https://github.com/epiphany-platform/epiphany/issues/1336) - Deployment of version 0.7.0 failed on-prem (spec.hostname)
 - [#1394](https://github.com/epiphany-platform/epiphany/issues/1394) - Cannot access Kubernetes dashboard after upgrading
-
-### Added
-
-- [#1413](https://github.com/epiphany-platform/epiphany/issues/1413) - Set protocol for Vault only in one place in configuration
-- [#1423](https://github.com/epiphany-platform/epiphany/issues/1423) - Error reading generated service principal
 
 ## [0.7.0] 2020-06-30
 
