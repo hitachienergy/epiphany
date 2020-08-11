@@ -1,5 +1,4 @@
 ---
-
 - name: Copy /etc/kubernetes/pki/apiserver.{crt,key}
   copy:
     dest: "{{ item }}.OLD"
@@ -26,5 +25,3 @@
     creates: /etc/kubernetes/pki/apiserver.key
   notify:
     - Restart apiserver
-
-- meta: flush_handlers

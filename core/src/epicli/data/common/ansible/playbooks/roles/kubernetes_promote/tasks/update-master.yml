@@ -42,7 +42,8 @@
           {{ kubeadm_config | to_nice_yaml }}
 
     - name: Backup and generate apiserver certificates
-      include_tasks: apiserver-generate-certificates.yml
+      include_role:
+        name: kubernetes_apiserver_certificates
 
     - name: Update in-cluster configuration
       shell: |
