@@ -43,6 +43,11 @@
         kubernetes_common: >-
           {{ kubernetes_common | default({}) | combine(set_fact, recursive=true) }}
 
+- name: Backup and generate apiserver certificates
+  include_role:
+    name: kubernetes_apiserver_certificates
+  when: stat_kube_apiserver_yaml.stat.exists
+
 - name: Include kubelet configuration tasks
   include_role:
     name: kubernetes_common
