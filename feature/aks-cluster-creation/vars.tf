@@ -96,3 +96,17 @@ variable "additional_cluster_node_pools" {
   })
 }
 
+variable "auto_scaler_profile" {
+  description = "Customize Your cluster autoscaler"
+  type = object({
+	balance_similar_node_groups 		= bool
+	max_graceful_termination_sec 		= string
+	scale_down_delay_after_add 			= string
+	scale_down_delay_after_delete		= string
+	scale_down_delay_after_failure 		= string
+	scan_interval 						= string
+	scale_down_unneeded 				= string
+	scale_down_unready 					= string
+	scale_down_utilization_threshold 	= string
+  })
+}

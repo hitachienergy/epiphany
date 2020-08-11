@@ -14,6 +14,7 @@ Azure Kubernetes Service (AKS) is the service for deploying, managing, and scali
 - Different network drivers (basic/advance)
 - Different resource groups
 - Possibility to create new network or use existing network and resource group. AKS will just join to the existing network.
+- Cluster autoscaling
 ## Requirements:
 - Azure account
 - kubectl
@@ -45,7 +46,9 @@ Setup azure providers.
 - output.tf  
 Defines the output configuration.
 - vars.tf  
-Sets the main component versions and setup vars used in other files.
+Declare variables with description and default values.
+- terraform.tfvars  
+Sets the main component versions and define variables used in other files.
 ## Design:
 ![AKS cluster](epiphany-aks.png)
 #### Sources
