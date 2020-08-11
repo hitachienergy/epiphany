@@ -1,0 +1,21 @@
+cloudProvider: aws
+awsRegion: eu-central-1
+
+rbac:
+  create: true
+  serviceAccountAnnotations:
+    eks.amazonaws.com/role-arn: "arn:aws:iam::540350320930:role/cluster-autoscaler"
+
+autoDiscovery:
+  clusterName: training-eks-R2oZwz5s
+  enabled: true
+
+image:
+  repository: k8s.gcr.io/autoscaling/cluster-autoscaler
+  tag: v1.16.6
+
+
+# Install cluster autoscaller
+# helm install cluster-autoscaler --namespace kube-system stable/cluster-autoscaler --values=helm-values/cluster-autoscaler.yaml
+# Install metrics-server
+# kubectl apply -f https://github.com/kubernetes-sigs/metrics-server/releases/download/v0.3.6/components.yaml

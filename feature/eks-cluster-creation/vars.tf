@@ -1,13 +1,15 @@
 // -- [ VARS ] ------------------------------------------------------
 // Cluster name
-variable "eks_cluster_name" {
-  default = "eks-terraform-cluster"
-}
+// variable "eks_cluster_name" {
+//   default = "eks-terraform-cluster"
+// }
 
 // Cluster version
 variable "eks_cluster_version" {
-  default = "1.17"
+  default = "1.16"
 }
+
+variable "iam_path" { default = "/autoscale" }
 
 // AWS Region
 variable "region" {
@@ -40,29 +42,29 @@ variable "worker1_data" {
   })
   default = {
     name = "eks-worker-1"
-    instance_type = "t2.small"
+    instance_type = "t2.medium"
     asg_desired_capacity = 2
     asg_min_size = 1
-    asg_max_size = 5
+    asg_max_size = 10
   }
 }
 
-variable "worker2_data" {
-  type = object({
-    name                 = string
-    instance_type        = string
-    asg_desired_capacity = number
-    asg_min_size         = number
-    asg_max_size         = number
-  })
-  default = {
-    name = "eks-worker-2"
-    instance_type = "t2.medium"
-    asg_desired_capacity = 1
-    asg_min_size = 1
-    asg_max_size = 5
-  }
-}
+// variable "worker2_data" {
+//   type = object({
+//     name                 = string
+//     instance_type        = string
+//     asg_desired_capacity = number
+//     asg_min_size         = number
+//     asg_max_size         = number
+//   })
+//   default = {
+//     name = "eks-worker-2"
+//     instance_type = "t2.medium"
+//     asg_desired_capacity = 1
+//     asg_min_size = 1
+//     asg_max_size = 5
+//   }
+// }
 
 // VPC CIDR
 variable "cidr" {
