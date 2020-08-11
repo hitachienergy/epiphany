@@ -1,0 +1,16 @@
+---
+# This file is meant to be also used by upgrade role
+
+- name: Wait for CNI plugin to become ready
+  command: >-
+    kubectl wait --for=condition=Ready pods -l {{ selector }}
+    --field-selector=spec.nodeName={{ ansible_fqdn }} -n kube-system --timeout=10s
+  changed_when: false
+  environment:
+    KUBECONFIG: /etc/kubernetes/admin.conf
+  register: wait_for_cni_plugin
+  until: wait_for_cni_plugin is succeeded
+  retries: 30
+  delay: 1
+  vars:
+    selector: "{{ cni_plugin_vars.selector[network_plugin] }}"

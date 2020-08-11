@@ -1,0 +1,21 @@
+---
+- name: Upload and deploy CoreDNS ConfigMap
+  include_tasks: deployments/deploy-file.yml
+  vars:
+    file_name: coredns-configmap.yml
+
+- name: Load patch file for CoreDNS deployment
+  include_vars:
+    file: roles/kubernetes_master/files/coredns-deployment-patch.yml
+    name: coredns_deployment_patch
+
+- name: Include tasks from utils/patch-object.yml
+  include_tasks: utils/patch-object.yml
+  vars:
+    object:
+      kind: deployment
+      name: coredns
+      namespace: kube-system
+    patch:
+      content: "{{ coredns_deployment_patch | to_json }}"
+      type: strategic

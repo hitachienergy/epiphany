@@ -1,7 +1,0 @@
-
-- name: Update kubeadm-config.yml with current version (v{{ version }})
-  lineinfile:
-    dest: /etc/kubeadm/kubeadm-config.yml
-    regexp: "^kubernetesVersion:"
-    line: "kubernetesVersion: v{{ version }}"
-    state: present

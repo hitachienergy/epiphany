@@ -1,0 +1,52 @@
+---
+- name: k8s/masterN | Drain master in preparation for maintenance
+  include_tasks: utils/drain.yml
+
+- name: Upgrade packages and perform upgrade
+  block:
+    - name: k8s/masterN | Install kubeadm
+      include_tasks: "{{ ansible_os_family }}/install-kubeadm.yml"
+
+    - name: k8s/masterN | Upgrade master {{ inventory_hostname }}
+      command: >-
+        kubeadm upgrade node
+      register: result
+      until:
+        - result is succeeded
+      retries: 20
+      delay: 30
+      changed_when: false
+
+    - name: k8s/masterN | Install kubelet and kubectl for {{ version }}
+      include_tasks: >-
+        {%- if cni_in_kubelet is undefined or not cni_in_kubelet -%}
+          {{ ansible_os_family }}/install-packages.yml
+        {%- else -%}
+          {{ ansible_os_family }}/install-packages-cni-in-kubelet.yml
+        {%- endif -%}
+      when:
+        - result is succeeded
+
+- name: k8s/masterN | Upgrade CNI plugin pod
+  import_tasks: upgrade-cni-plugin-pod.yml
+  delegate_to: "{{ groups.kubernetes_master[0] }}"
+  when:
+    - upgrade_to_final_version
+
+- name: k8s/masterN | Backup kubeadm-config.yml
+  include_tasks: backup-kubeadm-config.yml
+
+- name: k8s/masterN | Upgrade Docker  # this may restart Docker daemon
+  include_tasks: docker.yml
+
+- name: k8s/masterN | Reload kubelet and docker
+  include_tasks: utils/reload-kubelet-and-docker.yml
+
+- name: k8s/masterN | Wait for cluster's readiness
+  include_tasks: utils/wait.yml
+
+- name: k8s/masterN | Uncordon master - mark master as schedulable
+  include_tasks: utils/uncordon.yml
+
+- name: k8s/masterN | Verify component versions and node status
+  include_tasks: kubernetes/verify-upgrade.yml

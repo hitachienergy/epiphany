@@ -5,8 +5,8 @@
 LICENSES = [
     {
         "Name": "adal",
-        "Version": "1.2.3",
-        "Summary": "The ADAL for Python library makes it easy for python application to authenticate to Azure Active Directory (AAD) in order to access AAD protected web resources.",
+        "Version": "1.2.4",
+        "Summary": "Note: This library is already replaced by MSAL Python, available here: https://pypi.org/project/msal/ .ADAL Python remains available here as a legacy. The ADAL for Python library makes it easy for python application to authenticate to Azure Active Directory (AAD) in order to access AAD protected web resources.",
         "Home-page": "https://github.com/AzureAD/azure-activedirectory-library-for-python",
         "Author": "Microsoft Corporation",
         "License": "Other",
@@ -83,7 +83,7 @@ LICENSES = [
     },
     {
         "Name": "azure-cli-core",
-        "Version": "2.6.0",
+        "Version": "2.8.0",
         "Summary": "Microsoft Azure Command-Line Tools Core Module",
         "Home-page": "https://github.com/Azure/azure-cli",
         "Author": "Microsoft Corporation",
@@ -116,7 +116,7 @@ LICENSES = [
     },
     {
         "Name": "azure-cli",
-        "Version": "2.6.0",
+        "Version": "2.8.0",
         "Summary": "Microsoft Azure Command-Line Tools",
         "Home-page": "https://github.com/Azure/azure-cli",
         "Author": "Microsoft Corporation",
@@ -138,7 +138,7 @@ LICENSES = [
     },
     {
         "Name": "azure-core",
-        "Version": "1.5.0",
+        "Version": "1.7.0",
         "Summary": "Microsoft Azure Core Library for Python",
         "Home-page": "https://github.com/Azure/azure-sdk-for-python/tree/master/sdk/core/azure-core",
         "Author": "Microsoft Corporation",
@@ -146,7 +146,7 @@ LICENSES = [
     },
     {
         "Name": "azure-cosmos",
-        "Version": "3.1.2",
+        "Version": "3.2.0",
         "Summary": "Azure Cosmos Python SDK",
         "Home-page": "https://github.com/Azure/azure-documentdb-python",
         "Author": "Microsoft",
@@ -266,7 +266,7 @@ LICENSES = [
     },
     {
         "Name": "azure-mgmt-batch",
-        "Version": "7.0.0",
+        "Version": "9.0.0",
         "Summary": "Microsoft Azure Batch Management Client Library for Python",
         "Home-page": "https://github.com/Azure/azure-sdk-for-python",
         "Author": "Microsoft Corporation",
@@ -321,7 +321,7 @@ LICENSES = [
     },
     {
         "Name": "azure-mgmt-cognitiveservices",
-        "Version": "5.0.0",
+        "Version": "6.2.0",
         "Summary": "Microsoft Azure Cognitive Services Management Client Library for Python",
         "Home-page": "https://github.com/Azure/azure-sdk-for-python",
         "Author": "Microsoft Corporation",
@@ -332,7 +332,7 @@ LICENSES = [
     },
     {
         "Name": "azure-mgmt-compute",
-        "Version": "12.0.0",
+        "Version": "12.1.0",
         "Summary": "Microsoft Azure Compute Management Client Library for Python",
         "Home-page": "https://github.com/Azure/azure-sdk-for-python",
         "Author": "Microsoft Corporation",
@@ -494,7 +494,7 @@ LICENSES = [
     },
     {
         "Name": "azure-mgmt-eventhub",
-        "Version": "3.0.0",
+        "Version": "4.0.0",
         "Summary": "Microsoft Azure EventHub Management Client Library for Python",
         "Home-page": "https://github.com/Azure/azure-sdk-for-python",
         "Author": "Microsoft Corporation",
@@ -516,7 +516,7 @@ LICENSES = [
     },
     {
         "Name": "azure-mgmt-imagebuilder",
-        "Version": "0.2.1",
+        "Version": "0.4.0",
         "Summary": "Microsoft Azure Image Builder Client Library for Python",
         "Home-page": "https://github.com/Azure/azure-sdk-for-python",
         "Author": "Microsoft Corporation",
@@ -582,7 +582,7 @@ LICENSES = [
     },
     {
         "Name": "azure-mgmt-loganalytics",
-        "Version": "0.5.0",
+        "Version": "0.6.0",
         "Summary": "Microsoft Azure Log Analytics Management Client Library for Python",
         "Home-page": "https://github.com/Azure/azure-sdk-for-python",
         "Author": "Microsoft Corporation",
@@ -637,7 +637,7 @@ LICENSES = [
     },
     {
         "Name": "azure-mgmt-media",
-        "Version": "2.1.0",
+        "Version": "2.2.0",
         "Summary": "Microsoft Azure Media Services Client Library for Python",
         "Home-page": "https://github.com/Azure/azure-sdk-for-python",
         "Author": "Microsoft Corporation",
@@ -681,7 +681,7 @@ LICENSES = [
     },
     {
         "Name": "azure-mgmt-network",
-        "Version": "10.1.0",
+        "Version": "10.2.0",
         "Summary": "Microsoft Azure Network Management Client Library for Python",
         "Home-page": "https://github.com/Azure/azure-sdk-for-python",
         "Author": "Microsoft Corporation",
@@ -802,7 +802,7 @@ LICENSES = [
     },
     {
         "Name": "azure-mgmt-resource",
-        "Version": "9.0.0",
+        "Version": "10.0.0",
         "Summary": "Microsoft Azure Resource Management Client Library for Python",
         "Home-page": "https://github.com/Azure/azure-sdk-for-python",
         "Author": "Microsoft Corporation",
@@ -824,8 +824,8 @@ LICENSES = [
     },
     {
         "Name": "azure-mgmt-security",
-        "Version": "0.1.0",
-        "Summary": "Microsoft Azure Secutiry Center Management Client Library for Python",
+        "Version": "0.4.1",
+        "Summary": "Microsoft Azure Security Center Management Client Library for Python",
         "Home-page": "https://github.com/Azure/azure-sdk-for-python",
         "Author": "Microsoft Corporation",
         "License": "MIT License",
@@ -890,7 +890,7 @@ LICENSES = [
     },
     {
         "Name": "azure-mgmt-storage",
-        "Version": "9.0.0",
+        "Version": "11.0.0",
         "Summary": "Microsoft Azure Storage Management Client Library for Python",
         "Home-page": "https://github.com/Azure/azure-sdk-for-python",
         "Author": "Microsoft Corporation",
@@ -923,7 +923,7 @@ LICENSES = [
     },
     {
         "Name": "azure-multiapi-storage",
-        "Version": "0.3.2",
+        "Version": "0.3.5",
         "Summary": "Microsoft Azure Storage Client Library for Python with multi API version support.",
         "Home-page": "https://github.com/Azure/azure-multiapi-storage-python",
         "Author": "Microsoft Corporation",
@@ -978,7 +978,7 @@ LICENSES = [
     },
     {
         "Name": "boto3",
-        "Version": "1.13.19",
+        "Version": "1.14.19",
         "Summary": "The AWS SDK for Python",
         "Home-page": "https://github.com/boto/boto3",
         "Author": "Amazon Web Services",
@@ -989,7 +989,7 @@ LICENSES = [
     },
     {
         "Name": "botocore",
-        "Version": "1.16.19",
+        "Version": "1.17.19",
         "Summary": "Low-level, data-driven core of boto 3.",
         "Home-page": "https://github.com/boto/botocore",
         "Author": "Amazon Web Services",
@@ -1000,7 +1000,7 @@ LICENSES = [
     },
     {
         "Name": "certifi",
-        "Version": "2020.4.5.1",
+        "Version": "2020.6.20",
         "Summary": "Python package for providing Mozilla's CA Bundle.",
         "Home-page": "https://certifiio.readthedocs.io/en/latest/",
         "Author": "Kenneth Reitz",
@@ -1072,17 +1072,17 @@ LICENSES = [
     },
     {
         "Name": "idna",
-        "Version": "2.9",
+        "Version": "2.10",
         "Summary": "Internationalized Domain Names in Applications (IDNA)",
         "Home-page": "https://github.com/kjd/idna",
         "Author": "Kim Davies",
         "License": "Other",
         "License URL": "https://api.github.com/repos/kjd/idna/license",
-        "License repo": "License\n-------\n\nLicense: bsd-3-clause\n\nCopyright (c) 2013-2020, Kim Davies. All rights reserved.\n\nRedistribution and use in source and binary forms, with or without\nmodification, are permitted provided that the following conditions are met:\n\n#. Redistributions of source code must retain the above copyright\n   notice, this list of conditions and the following disclaimer.\n\n#. Redistributions in binary form must reproduce the above\n   copyright notice, this list of conditions and the following\n   disclaimer in the documentation and/or other materials provided with\n   the distribution.\n\n#. Neither the name of the copyright holder nor the names of the \n   contributors may be used to endorse or promote products derived \n   from this software without specific prior written permission.\n\n#. THIS SOFTWARE IS PROVIDED BY THE CONTRIBUTORS \"AS IS\" AND ANY\n   EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE\n   IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR\n   PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDERS OR \n   CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, \n   SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT \n   LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,\n   DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY\n   THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT\n   (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE\n   USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH\n   DAMAGE.\n"
+        "License repo": "License\n-------\n\nCopyright (c) 2013-2020, Kim Davies. All rights reserved.\n\nRedistribution and use in source and binary forms, with or without\nmodification, are permitted provided that the following conditions are met:\n\n#. Redistributions of source code must retain the above copyright\n   notice, this list of conditions and the following disclaimer.\n\n#. Redistributions in binary form must reproduce the above\n   copyright notice, this list of conditions and the following\n   disclaimer in the documentation and/or other materials provided with\n   the distribution.\n\n#. Neither the name of the copyright holder nor the names of the \n   contributors may be used to endorse or promote products derived \n   from this software without specific prior written permission.\n\n#. THIS SOFTWARE IS PROVIDED BY THE CONTRIBUTORS \"AS IS\" AND ANY\n   EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE\n   IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR\n   PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDERS OR \n   CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, \n   SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT \n   LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,\n   DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY\n   THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT\n   (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE\n   USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH\n   DAMAGE.\n"
     },
     {
         "Name": "importlib-metadata",
-        "Version": "1.6.0",
+        "Version": "1.7.0",
         "Summary": "Read metadata from Python packages",
         "Home-page": "http://importlib-metadata.readthedocs.io/",
         "Author": "Barry Warsaw",
@@ -1213,7 +1213,7 @@ LICENSES = [
     },
     {
         "Name": "msrest",
-        "Version": "0.6.14",
+        "Version": "0.6.17",
         "Summary": "AutoRest swagger generator Python client runtime.",
         "Home-page": "https://github.com/Azure/msrest-for-python",
         "Author": "Microsoft Corporation",
@@ -1224,7 +1224,7 @@ LICENSES = [
     },
     {
         "Name": "msrestazure",
-        "Version": "0.6.3",
+        "Version": "0.6.4",
         "Summary": "AutoRest swagger generator Python client runtime. Azure-specific module.",
         "Home-page": "https://github.com/Azure/msrestazure-for-python",
         "Author": "Microsoft Corporation",
@@ -1383,7 +1383,7 @@ LICENSES = [
     },
     {
         "Name": "requests",
-        "Version": "2.23.0",
+        "Version": "2.24.0",
         "Summary": "Python HTTP for Humans.",
         "Home-page": "https://requests.readthedocs.io",
         "Author": "Kenneth Reitz",

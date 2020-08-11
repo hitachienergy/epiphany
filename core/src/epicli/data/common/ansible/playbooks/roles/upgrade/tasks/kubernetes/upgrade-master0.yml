@@ -1,0 +1,133 @@
+---
+- name: k8s/master0 | Wait for cluster's readiness
+  include_tasks: utils/wait.yml
+
+# This resolves issues (related to the etcd encryption) causing upgrades to hang.
+# Legacy clusters may have incomplete configs, thus it is corrected here, before any `kubeadm upgrade` command is executed.
+# If config is incomplete, kubeadm rewrites the kube-apiserver.yaml manifest file without the etcd feature enabled.
+# In turn, this causes Kuberentes components such as the controller-manager to lose ability to read internal (kube-system) secrets, then
+# any upgrade attempt freezes and the cluster at hand becomes unusable.
+- name: k8s/master0 | Make sure the etcd encryption feature is properly configured (if enabled)
+  include_tasks: patch-kubeadm-etcd-encryption.yml
+
+- name: k8s/master0 | Update imageRepository in kubeadm-config ConfigMap
+  include_tasks: update-kubeadm-image-repository.yml
+
+- name: k8s/master0 | Reconfigure rabbitmq application
+  include_tasks: reconfigure-rabbitmq-app.yml
+
+- name: k8s/master0 | Reconfigure keycloak application
+  include_tasks: reconfigure-auth-service-app.yml
+
+- name: k8s/master0 | Drain master in preparation for maintenance
+  include_tasks: utils/drain.yml
+
+- name: Upgrade packages and perform upgrade
+  block:
+    - name: k8s/master0 | Install kubeadm
+      include_tasks: "{{ ansible_os_family }}/install-kubeadm.yml"
+
+    - name: k8s/master0 | Update kube-flannel-cfg ConfigMap
+      include_role:
+        name: kubernetes_master
+        tasks_from: deployments/deploy-template
+      vars:
+        file_name: kubernetes/flannel-config-for-k8s-below-1.17.yml.j2
+      when:
+        - cni_plugin_name == 'flannel'
+        - version is version('1.15.0', '>')
+        - version is version('1.17.0', '<')
+
+    # CoreDNS is overwritten (upgraded or downgraded) by 'kubeadm upgrade apply', see CoreDNS version matrix in downgrade-coredns.yml.
+    # kubeadm upgrade is not able to downgrade coredns ConfigMap properly (at least when upgrade from 1.14.6 to 1.15.10)
+    # which may cause the update to hang.
+    - name: k8s/master0 | Downgrade CoreDNS to K8s built-in version
+      include_tasks: downgrade-coredns.yml
+      when:
+        - version is version('1.16.0', '<')
+
+    # Note: Usage of the --config flag for reconfiguring the cluster during upgrade is not recommended since v1.16
+    - name: k8s/master0 | Validate whether cluster is upgradeable
+      # Ignore CoreDNSUnsupportedPlugins error since coredns-migration does not support 'hosts' plugin.
+      # This issue is fixed in K8s v1.18, see https://github.com/kubernetes/kubernetes/pull/88482
+      command: >-
+        {%- if version is version('1.18.0', '>=') -%}
+          kubeadm upgrade plan v{{ version }}
+        {%- else -%}
+          kubeadm upgrade plan v{{ version }} --ignore-preflight-errors=CoreDNSUnsupportedPlugins
+        {%- endif -%}
+      register: result
+      until:
+        - result is succeeded
+      retries: 20
+      delay: 30
+      changed_when: false
+
+    # Note: Usage of the --config flag for reconfiguring the cluster during upgrade is not recommended since v1.16
+    - name: k8s/master0 | Upgrade K8s cluster to v{{ version }}
+      # Ignore CoreDNSUnsupportedPlugins error since coredns-migration does not support 'hosts' plugin.
+      # This issue is fixed in K8s v1.18, see https://github.com/kubernetes/kubernetes/pull/88482
+      command: >-
+        {%- if version is version('1.18.0', '>=') -%}
+          kubeadm upgrade apply -y v{{ version }}
+        {%- else -%}
+          kubeadm upgrade apply -y v{{ version }} --ignore-preflight-errors=CoreDNSUnsupportedPlugins
+        {%- endif -%}
+      register: result
+      until:
+        - result is succeeded
+      retries: 20
+      delay: 30
+      changed_when: false
+      when:
+        - cluster_version is version('v' + version, '<')
+
+    - name: Install kubelet and kubectl for {{ version }}
+      include_tasks: >-
+        {%- if cni_in_kubelet is undefined or not cni_in_kubelet -%}
+          {{ ansible_os_family }}/install-packages.yml
+        {%- else -%}
+          {{ ansible_os_family }}/install-packages-cni-in-kubelet.yml
+        {%- endif -%}
+      when:
+        - result is succeeded
+
+- name: k8s/master0 | Wait for cluster's readiness
+  include_tasks: utils/wait.yml
+
+# 'kubeadm upgrade apply' overwrites Epiphany's customized CoreDNS so we patch it again.
+# This task should be run each time K8s is upgraded to the latest version.
+- name: k8s/master0 | Customize CoreDNS for latest Kubernetes ({{ version }})
+  include_tasks: upgrade-coredns.yml
+  when:
+    - upgrade_to_final_version
+
+- name: Upgrade CNI plugin (deployment then local pod)
+  when:
+    - upgrade_to_final_version
+  block:
+    - name: k8s/master0 | Upgrade CNI plugin deployment
+      include_tasks: upgrade-cni-plugin-deployment.yml
+
+    - name: k8s/master0 | Upgrade CNI plugin pod
+      include_tasks: upgrade-cni-plugin-pod.yml
+
+- name: k8s/master0 | Upgrade Kubernetes Dashboard
+  include_tasks: upgrade-k8s-dashboard.yml
+  when:
+    - upgrade_to_final_version
+
+- name: k8s/master0 | Backup kubeadm-config.yml
+  include_tasks: backup-kubeadm-config.yml
+
+- name: k8s/master0 | Upgrade Docker  # this may restart Docker daemon
+  include_tasks: docker.yml
+
+- name: k8s/master0 | Reload kubelet and docker
+  include_tasks: utils/reload-kubelet-and-docker.yml
+
+- name: k8s/master0 | Uncordon master - mark master as schedulable
+  include_tasks: utils/uncordon.yml
+
+- name: k8s/master0 | Verify component versions and node status
+  include_tasks: kubernetes/verify-upgrade.yml

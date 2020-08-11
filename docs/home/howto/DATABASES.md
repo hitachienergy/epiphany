@@ -543,7 +543,8 @@ DROP EXTENSION IF EXISTS pgaudit;
 
 ## How to start working with OpenDistro for Elasticsearch
 
-OpenDistro for Elasticsearch is [an Apache 2.0-licensed distribution of Elasticsearch enhanced with enterprise security, alerting, SQL](https://opendistro.github.io/for-elasticsearch/). In order to start working with OpenDistro change machines count to value greater than 0 in your cluster configuration:
+OpenDistro for Elasticsearch is [an Apache 2.0-licensed distribution of Elasticsearch enhanced with enterprise security, alerting, SQL](https://opendistro.github.io/for-elasticsearch/).
+In order to start working with OpenDistro change machines count to value greater than 0 in your cluster configuration:
 
 ```yaml
 kind: epiphany-cluster
@@ -575,6 +576,23 @@ specification:
 ```
 
 Result of this configuration will be one or more independent nodes of OpenDistro.
+
+By default Kibana is deployed only for `logging` component. If you want to deploy Kibana for `opendistro_for_elasticsearch` you have to modify feature mapping. Use below configuration in your manifest.
+```yaml
+kind: configuration/feature-mapping
+title: "Feature mapping to roles"
+name: default
+specification:
+  roles_mapping:
+    opendistro_for_elasticsearch:
+      - opendistro-for-elasticsearch
+      - node-exporter
+      - filebeat
+      - firewall
+      - kibana
+```
+
+Filebeat running on `opendistro_for_elasticsearch` hosts will always point to centralized logging hosts (./LOGGING.md).
 
 ## How to start working with Apache Ignite Stateful setup
 

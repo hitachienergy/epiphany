@@ -11,7 +11,7 @@ jsonschema = "*"
 python-json-logger = "*"
 ansible = "==2.8.8"
 terraform-bin = "*"
-azure-cli = "==2.6.0"
+azure-cli = "==2.8.0"
 skopeo-bin = "*"
 "ruamel.yaml" = "*"
 

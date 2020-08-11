@@ -1,31 +1,52 @@
 ---
-- name: Include wait-for-kube-apiserver.yml
-  import_tasks: kubernetes/wait-for-kube-apiserver.yml
-  delegate_to: "{{ groups['kubernetes_master'][0] }}"
+- name: Wait for kube-apiserver and get cluster version
+  delegate_to: "{{ groups.kubernetes_master[0] }}"
+  block:
+    - name: k8s | Include wait-for-kube-apiserver.yml
+      import_tasks: kubernetes/utils/wait-for-kube-apiserver.yml
 
-- name: Include get-cluster-version.yml
-  import_tasks: kubernetes/get-cluster-version.yml # sets cluster_version
-  delegate_to: "{{ groups['kubernetes_master'][0] }}"
+    - name: k8s | Include get-cluster-version.yml
+      import_tasks: kubernetes/get-cluster-version.yml # sets cluster_version
 
-- name: Include get-kubelet-version.yml
+- name: k8s | Check if upgrade from current K8s version is supported
+  assert:
+    that: cluster_version is version('v1.14.6', '>=')
+    fail_msg: >-
+      Your Kubernetes version ({{ cluster_version }}) is not supported by this version of Epiphany which requires
+      at least version 1.14.6 (Epiphany v0.4.4). For more information, refer to the documentation.
+    quiet: true
+  when:
+    - groups.kubernetes_master[0] == inventory_hostname
+
+- name: k8s | Include get-kubelet-version.yml
   import_tasks: kubernetes/get-kubelet-version.yml # sets kubelet_version
-  delegate_to: "{{ groups['kubernetes_master'][0] }}"
+  delegate_to: "{{ groups.kubernetes_master[0] }}"
 
-- name: Upgrade master to v{{ version }}
-  include_tasks: kubernetes/upgrade-master.yml
+- name: Upgrade masters then nodes
   vars:
     version: "{{ ver }}"
     cni_version: "{{ cni_ver }}"
-  when:
-    - groups['kubernetes_master'][0] == inventory_hostname
-    - cluster_version is version('v' + version, '<=')
+  block:
+    - name: Upgrade masters
+      when: cluster_version is version('v' + version, '<=')
+      block:
+        - name: k8s | Upgrade first master to v{{ version }}
+          include_tasks: kubernetes/upgrade-master0.yml
+          when:
+            - inventory_hostname == groups.kubernetes_master[0]
 
-- name: Upgrade node to v{{ version }}
-  include_tasks: kubernetes/upgrade-node.yml
-  vars:
-    version: "{{ ver }}"
-    cni_version: "{{ cni_ver }}"
-  when:
-    - groups['kubernetes_node'] is defined
-    - inventory_hostname in groups['kubernetes_node']
-    - kubelet_version is version('v' + version, '<=')
+        - name: k8s | Upgrade next master to v{{ version }}
+          include_tasks: kubernetes/upgrade-masterN.yml
+          when:
+            - inventory_hostname in groups.kubernetes_master[1:]
+
+    - name: Upgrade nodes
+      when: kubelet_version is version('v' + version, '<=')
+      block:
+        - name: k8s | Upgrade node to v{{ version }}
+          include_tasks: kubernetes/upgrade-node.yml
+          when:
+            - groups.kubernetes_node is defined
+            - inventory_hostname in groups.kubernetes_node
+
+# TODO: Create a flag file that the upgrade completed to not run it again for the same version next time

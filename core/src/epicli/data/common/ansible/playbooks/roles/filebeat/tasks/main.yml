@@ -2,26 +2,12 @@
 - name: Include installation tasks
   include_tasks: install-filebeat.yml
 
-- name: Set facts for filebeat.yml template
-  block: 
-    
-    - name: Set flag if logging output exists
-      set_fact:
-        logging_output_exists: False 
-
-    - name: Set flag if logging output exists
-      set_fact:
-        logging_output_exists: True
-      when:
-        - groups["logging"] is defined
-        - groups["logging"] | length > 0
-
-    - name: Set value for setup.kibana.host
-      set_fact:
-        setup_kibana_host: >-
-          {{ hostvars[groups['kibana'][0]].ansible_default_ipv4.address + ':5601' }}
-      when:
-        - groups['kibana'][0] is defined
+- name: Set value for setup.kibana.host
+  set_fact:
+    setup_kibana_host: >-
+      {{ hostvars[groups['kibana'][0]].ansible_default_ipv4.address + ':5601' }}
+  when:
+    - groups['kibana'][0] is defined
 
 - name: Include auditd configuration tasks
   include_tasks: configure-auditd.yml

@@ -1,0 +1,116 @@
+---
+# Expected vars:
+# - image_registry_address
+# - image_regexp
+
+- name: k8s/utils | Get all statefulsets
+  environment:
+    KUBECONFIG: &KUBECONFIG /etc/kubernetes/admin.conf
+  command: |
+    kubectl get statefulsets.apps \
+      --all-namespaces \
+      --output json
+  register: command_statefulsets
+  changed_when: false
+
+- name: k8s/utils | Patch all statefulsets
+  environment:
+    KUBECONFIG: *KUBECONFIG
+  block:
+    - name: k8s/utils | Patch statefulset (containers)
+      when:
+        - _item.changed
+      command: |
+        kubectl patch statefulsets.apps {{ _item.metadata.name }} \
+          --namespace {{ _item.metadata.namespace }} \
+          --patch '{{ _patch | to_json }}'
+      vars:
+        _patch:
+          spec:
+            template:
+              spec:
+                containers:
+                  - "{{ _item.data }}"
+      loop_control:
+        loop_var: _item
+      loop: >-
+        {{ _updates.containers }}
+
+    - name: k8s/utils | Patch statefulset (initContainers)
+      when:
+        - _item.changed
+      command: |
+        kubectl patch statefulsets.apps {{ _item.metadata.name }} \
+          --namespace {{ _item.metadata.namespace }} \
+          --patch '{{ _patch | to_json }}'
+      vars:
+        _patch:
+          spec:
+            template:
+              spec:
+                initContainers:
+                  - "{{ _item.data }}"
+      loop_control:
+        loop_var: _item
+      loop: >-
+        {{ _updates.initContainers }}
+
+  vars:
+    # Parse output from kubeadm
+    _documents: >-
+      {{ (command_statefulsets.stdout | from_json)['items'] }}
+
+    _updates: >-
+      {%- set ns = namespace() -%}
+      {%- set ns.containers = [] -%}
+      {%- set ns.initContainers = [] -%}
+
+      {%- for document in _documents -%}
+        {%- set ns.images = document.spec.template.spec.containers | map(attribute='image') | list -%}
+
+        {%- if ns.images | map('regex_search', image_regexp) | select | list -%}
+          {%- set ns.prefixes = (ns.images | map('regex_replace', image_regexp) | unique | list) + [image_registry_address ~ '/'] -%}
+          {%- set ns.lengths = ns.prefixes | map('length') | list -%}
+          {%- set ns.prefixes_sorted = ns.prefixes | zip(ns.lengths) | sort(attribute=1, reverse=true) | list -%}
+
+          {%- for container in document.spec.template.spec.containers -%}
+            {%- set ns.image = container.image -%}
+
+            {%- for prefix, _ in ns.prefixes_sorted -%}
+              {%- set ns.image = ns.image | regex_replace('^' ~ prefix) -%}
+            {%- endfor -%}
+
+            {%- set ns.image = image_registry_address ~ '/' ~ ns.image -%}
+
+            {{-
+              ns.containers.append({
+                "metadata": { "name": document.metadata.name, "namespace": document.metadata.namespace },
+                "data": { "name": container.name, "image": ns.image },
+                "changed": ns.image != container.image,
+              })
+            -}}
+          {%- endfor -%}
+
+          {%- for container in document.spec.template.spec.initContainers | default([]) -%}
+            {%- set ns.image = container.image -%}
+
+            {%- for prefix, _ in ns.prefixes_sorted -%}
+              {%- set ns.image = ns.image | regex_replace('^' ~ prefix) -%}
+            {%- endfor -%}
+
+            {%- set ns.image = image_registry_address ~ '/' ~ ns.image -%}
+
+            {{-
+              ns.initContainers.append({
+                "metadata": { "name": document.metadata.name, "namespace": document.metadata.namespace },
+                "data": { "name": container.name, "image": ns.image },
+                "changed": ns.image != container.image,
+              })
+            -}}
+          {%- endfor -%}
+
+        {%- endif -%}
+
+      {%- endfor -%}
+
+      {{- dict(containers=ns.containers, initContainers=ns.initContainers) -}}

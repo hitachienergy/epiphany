@@ -10,6 +10,9 @@ controlPlaneEndpoint: "localhost:3446"
 apiServer:
   timeoutForControlPlane: 4m0s
   extraArgs: # https://kubernetes.io/docs/reference/command-line-tools-reference/kube-apiserver/
+{% if specification.advanced.etcd_args.encrypted | bool %}
+    encryption-provider-config: /etc/kubernetes/pki/etcd/etc-encryption.conf
+{% endif %}
 {% for key, value in specification.advanced.api_server_args.items() %}
     {{ key }}: "{{ value }}"
 {% endfor %}

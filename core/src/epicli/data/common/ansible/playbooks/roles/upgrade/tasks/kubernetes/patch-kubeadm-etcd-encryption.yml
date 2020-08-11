@@ -1,0 +1,67 @@
+---
+# Since usage of the --config flag for reconfiguring the cluster during upgrade is not recommended
+# (warning added in v1.17), we patch kubeadm-config ConfigMap directly.
+
+# kube-apiserver uses --encryption-provider-config parameter to control how data is encrypted in etcd.
+# If this parameter is absent the encryption is not enabled.
+- name: k8s/master | Check if encryption of secret data is enabled
+  command: >-
+    grep -- '--encryption-provider-config' /etc/kubernetes/manifests/kube-apiserver.yaml
+  register: command_grep_encryption_flag
+  changed_when: false
+  failed_when: command_grep_encryption_flag.rc > 1
+
+- name: k8s/master | Patch kubeadm-config ConfigMap if needed
+  when:
+    - command_grep_encryption_flag.rc == 0 # encryption enabled
+  run_once: true  # makes no sense to execute it more than once (would be redundant)
+  environment:
+    KUBECONFIG: /etc/kubernetes/admin.conf
+  block:
+    - name: Get kubeadm-config ConfigMap
+      command: |
+        kubectl get configmap kubeadm-config \
+          --namespace kube-system \
+          --output yaml
+      register: command_kubeadm_configmap
+      changed_when: false
+
+    # The following procedure ensures that etcd encryption is always enabled during subsequent kubeadm executions
+    - name: k8s/master | Patch kubeadm-config configmap (patch-kubeadm-etcd-encryption.yml)
+      when:
+        - _kubeadm_api_server_extra_args['encryption-provider-config'] is undefined
+      command: |
+        kubectl patch configmap kubeadm-config \
+          --namespace kube-system \
+          --patch "$KUBEADM_CONFIGMAP_DOCUMENT"
+      environment:
+        # Render an altered kubeadm-config configmap document
+        KUBEADM_CONFIGMAP_DOCUMENT: >-
+          {{ _document | combine(_update2, recursive=true) | to_nice_yaml(indent=2) }}
+
+      vars:
+        # Parse yaml payload
+        _document: >-
+          {{ command_kubeadm_configmap.stdout | from_yaml }}
+
+        # Extract cluster config
+        _cluster_config: >-
+          {{ _document.data.ClusterConfiguration | from_yaml }}
+
+        _kubeadm_api_server_extra_args: >-
+          {{ _cluster_config.apiServer.extraArgs }}
+
+        # Prepare the cluster config patch
+        _update1:
+          apiServer:
+            extraArgs:
+              encryption-provider-config: /etc/kubernetes/pki/etcd/etc-encryption.conf
+
+        _cluster_config_updated: >-
+          {{ _cluster_config | combine(_update1, recursive=true) }}
+
+        # Prepare the final update for the whole document
+        _update2:
+          data:
+            ClusterConfiguration: >-
+              {{ _cluster_config_updated | to_nice_yaml(indent=2) }}
