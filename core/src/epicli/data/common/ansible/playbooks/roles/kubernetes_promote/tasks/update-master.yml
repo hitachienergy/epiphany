@@ -41,34 +41,8 @@
         content: >-
           {{ kubeadm_config | to_nice_yaml }}
 
-    - name: Copy /etc/kubernetes/pki/apiserver.{crt,key}
-      copy:
-        dest: "{{ item }}.OLD"
-        src: "{{ item }}"
-        remote_src: true
-      loop:
-        - /etc/kubernetes/pki/apiserver.crt
-        - /etc/kubernetes/pki/apiserver.key
-
-    - name: Delete /etc/kubernetes/pki/apiserver.{crt,key}
-      file:
-        path: "{{ item }}"
-        state: absent
-      loop:
-        - /etc/kubernetes/pki/apiserver.crt
-        - /etc/kubernetes/pki/apiserver.key
-
-    - name: Render new certificates /etc/kubernetes/pki/apiserver.{crt,key}
-      shell: |
-        kubeadm init phase certs apiserver \
-          --config /etc/kubeadm/kubeadm-config.yml
-      args:
-        executable: /bin/bash
-        creates: /etc/kubernetes/pki/apiserver.key
-      notify:
-        - Restart apiserver
-
-    - meta: flush_handlers
+    - name: Backup and generate apiserver certificates
+      include_tasks: apiserver-generate-certificates.yml
 
     - name: Update in-cluster configuration
       shell: |
