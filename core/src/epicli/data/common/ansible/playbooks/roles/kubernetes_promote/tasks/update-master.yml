@@ -34,7 +34,7 @@
             certSANs:
               - localhost
               - 127.0.0.1
-              - {{ ansible_host }}
+              - "{{ ansible_host }}"
 
     - name: Render /etc/kubeadm/kubeadm-config.yml
       copy:
