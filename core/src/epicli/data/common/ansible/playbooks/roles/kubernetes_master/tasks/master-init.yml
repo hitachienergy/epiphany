@@ -57,7 +57,8 @@
         mode: u=rw,go=r
     - name: Backup and generate apiserver certificates
       include_role:
-        name: kubernetes_apiserver_certificates
+        name: kubernetes_common
+        tasks_from: apiserver_certificates
 
 - name: Include kubelet configuration tasks
   include_role:
