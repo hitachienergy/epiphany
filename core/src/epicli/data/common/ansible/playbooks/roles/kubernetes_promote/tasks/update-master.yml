@@ -47,17 +47,6 @@
         name: kubernetes_common
         tasks_from: apiserver_certificates
 
-    - name: Update in-cluster configuration
-      shell: |
-        kubeadm init phase upload-config kubeadm \
-          --config /etc/kubeadm/kubeadm-config.yml
-      args:
-        executable: /bin/bash
-      register: upload_config
-      until: upload_config is succeeded
-      retries: 30
-      delay: 10
-
     - name: Update /etc/kubernetes/{controller-manager,scheduler,admin}.conf
       replace:
         path: "/etc/kubernetes/{{ item }}"
