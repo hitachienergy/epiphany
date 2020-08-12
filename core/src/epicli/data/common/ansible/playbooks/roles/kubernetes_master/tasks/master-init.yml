@@ -43,10 +43,21 @@
         kubernetes_common: >-
           {{ kubernetes_common | default({}) | combine(set_fact, recursive=true) }}
 
-- name: Backup and generate apiserver certificates
-  include_role:
-    name: kubernetes_apiserver_certificates
+
+- name: Regenerate apiserver certificates
   when: stat_kube_apiserver_yaml.stat.exists
+  block:
+    - name: Render kubeadm config
+      become: true
+      template:
+        src: kubeadm-config.yml.j2
+        dest: /etc/kubeadm/kubeadm-config.yml
+        owner: root
+        group: root
+        mode: u=rw,go=r
+    - name: Backup and generate apiserver certificates
+      include_role:
+        name: kubernetes_apiserver_certificates
 
 - name: Include kubelet configuration tasks
   include_role:
