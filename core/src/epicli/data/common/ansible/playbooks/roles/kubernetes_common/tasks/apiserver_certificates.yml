@@ -32,14 +32,3 @@
     | xargs --no-run-if-empty docker kill
   args:
     executable: /bin/bash
-
-- name: Update in-cluster configuration
-  shell: |
-    kubeadm init phase upload-config kubeadm \
-      --config /etc/kubeadm/kubeadm-config.yml
-  args:
-    executable: /bin/bash
-  register: upload_config
-  until: upload_config is succeeded
-  retries: 30
-  delay: 10

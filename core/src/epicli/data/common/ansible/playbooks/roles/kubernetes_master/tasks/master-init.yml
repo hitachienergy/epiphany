@@ -59,6 +59,10 @@
       include_role:
         name: kubernetes_common
         tasks_from: apiserver_certificates
+    - name: Update in-cluster configuration
+      include_role:
+        name: kubernetes_common
+        tasks_from: update-in-cluster-config
 
 - name: Include kubelet configuration tasks
   include_role:

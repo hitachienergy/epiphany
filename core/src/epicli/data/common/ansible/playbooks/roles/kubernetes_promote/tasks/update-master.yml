@@ -47,6 +47,11 @@
         name: kubernetes_common
         tasks_from: apiserver_certificates
 
+    - name: Update in-cluster configuration
+      include_role:
+        name: kubernetes_common
+        tasks_from: update-in-cluster-config
+
     - name: Update /etc/kubernetes/{controller-manager,scheduler,admin}.conf
       replace:
         path: "/etc/kubernetes/{{ item }}"
