@@ -25,27 +25,17 @@
       set_fact:
         kubeadm_config: >-
           {{ original | combine(update, recursive=true) }}
-        apiserver_cert_san: >-
-          {{ groups['kubernetes_master'] | map('extract', hostvars, ['ansible_host']) | list + [ 'localhost', '127.0.0.1' ] }}
       vars:
         original: >-
           {{ kubeadm_config.stdout | from_yaml }}
         update:
           controlPlaneEndpoint: localhost:3446
-          apiServer:
-            certSANs: >-
-              {{ apiserver_cert_san }}
 
     - name: Render /etc/kubeadm/kubeadm-config.yml
       copy:
         dest: /etc/kubeadm/kubeadm-config.yml
         content: >-
           {{ kubeadm_config | to_nice_yaml }}
-
-    - name: Backup and generate apiserver certificates
-      include_role:
-        name: kubernetes_common
-        tasks_from: apiserver-certificates
 
     - name: Update in-cluster configuration
       include_role:

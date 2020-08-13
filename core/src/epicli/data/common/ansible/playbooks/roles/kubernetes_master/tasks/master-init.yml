@@ -43,27 +43,6 @@
         kubernetes_common: >-
           {{ kubernetes_common | default({}) | combine(set_fact, recursive=true) }}
 
-
-- name: Regenerate apiserver certificates
-  when: stat_kube_apiserver_yaml.stat.exists
-  block:
-    - name: Render kubeadm config
-      become: true
-      template:
-        src: kubeadm-config.yml.j2
-        dest: /etc/kubeadm/kubeadm-config.yml
-        owner: root
-        group: root
-        mode: u=rw,go=r
-    - name: Backup and generate apiserver certificates
-      include_role:
-        name: kubernetes_common
-        tasks_from: apiserver-certificates
-    - name: Update in-cluster configuration
-      include_role:
-        name: kubernetes_common
-        tasks_from: update-in-cluster-config
-
 - name: Include kubelet configuration tasks
   include_role:
     name: kubernetes_common
