@@ -1,17 +1,8 @@
-# splitted to separate tasks to make it work on Debian/Ubuntu:
-# https://github.com/elastic/elasticsearch/issues/33607#issue-359124678
-
-- name: Install Elasticsearch prerequisites
-  apt:
-    name:
-      - openjdk-8-jre-headless
-    state: present
-
+---
 # Keep in mind compatibility matrix for Open Distro https://opendistro.github.io/for-elasticsearch-docs/docs/install/plugins/#plugin-compatibility
 - name: Install Open Distro for Elasticsearch packages
   apt:
     name:
-      - elasticsearch-oss={{ specification.versions[ansible_os_family].elasticsearch_oss }}
       - opendistro-alerting={{ specification.versions[ansible_os_family].opendistro }}
       - opendistro-index-management={{ specification.versions[ansible_os_family].opendistro }}
       - opendistro-job-scheduler={{ specification.versions[ansible_os_family].opendistro }}
@@ -20,6 +11,4 @@
       - opendistro-sql={{ specification.versions[ansible_os_family].opendistro }}
     state: present
   register: install_elasticsearch_package
-
-
   

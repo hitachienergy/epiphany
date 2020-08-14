@@ -97,6 +97,24 @@
         name: upgrade
         tasks_from: filebeat
 
+- hosts: logging
+  become: true
+  become_method: sudo
+  serial: 1
+  tasks:
+    - import_role:
+        name: upgrade
+        tasks_from: opendistro_for_elasticsearch
+
+- hosts: opendistro_for_elasticsearch
+  become: true
+  become_method: sudo
+  serial: 1
+  tasks:
+    - import_role:
+        name: upgrade
+        tasks_from: opendistro_for_elasticsearch
+
 - hosts: kafka
   serial: 1
   become: true

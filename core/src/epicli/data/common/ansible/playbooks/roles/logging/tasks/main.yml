@@ -1,9 +1,8 @@
 ---
 - name: Set current group name to logging
   set_fact:
-    current_group_name: "logging" 
+    current_group_name: "logging"
 
 - name: Install and configure OpenDistro for Elasticsearch
   import_role:
     name: opendistro_for_elasticsearch
-   

@@ -3,8 +3,6 @@
 - name: Install Open Distro for Elasticsearch packages
   yum:
     name:
-      - java-1.8.0-openjdk-headless
-      - elasticsearch-oss-{{ specification.versions[ansible_os_family].elasticsearch_oss }}
       - opendistro-alerting-{{ specification.versions[ansible_os_family].opendistro }}
       - opendistro-index-management-{{ specification.versions[ansible_os_family].opendistro }}
       - opendistro-job-scheduler-{{ specification.versions[ansible_os_family].opendistro }}
@@ -14,3 +12,4 @@
     update_cache: yes
     state: present
   register: install_elasticsearch_package
+  

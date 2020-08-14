@@ -1,0 +1,136 @@
+---
+- name: Open Distro for Elasticsearch | Set the available_host variable
+  set_fact:
+    available_host: >-
+      {% if inventory_hostname == ansible_play_hosts_all[0] and ansible_play_hosts_all[1] is defined -%}
+        {{ ansible_play_hosts_all[1] }}
+      {%- elif inventory_hostname != ansible_play_hosts_all[0] and ansible_play_hosts_all[0] is defined -%}
+        {{ ansible_play_hosts_all[0] }}
+      {%- elif ansible_play_hosts_all[1] is undefined -%}
+        {{ ansible_play_hosts_all[0] }}
+      {%- endif %}
+
+- name: Open Distro for Elasticsearch | Ensure elasticsearch service is running
+  systemd:
+    name: elasticsearch
+    enabled: yes
+    state: started
+  register: elasticsearch_state
+
+- name: Open Distro for Elasticsearch | Wait for elasticsearch service to start up
+  wait_for:
+    port: "{{ es_transport_port }}"
+    host: "{{ ansible_default_ipv4.address | default(ansible_all_ipv4_addresses[0]) }}"
+    delay: 10
+  when: elasticsearch_state.changed == true
+
+- name: Open Distro for Elasticsearch | Disable shard allocation for the cluster
+  uri:
+    url: https://{{ ansible_default_ipv4.address | default(ansible_all_ipv4_addresses[0]) }}:{{ es_http_port }}/_cluster/settings
+    method: PUT
+    url_username: "{{ specification.es_user }}"
+    url_password: "{{ specification.es_password }}"
+    validate_certs: no
+    body_format: json
+    body: '{"persistent":{"cluster.routing.allocation.enable": "primaries"}}'
+  register: response
+  until: response.json.acknowledged == true
+  retries: 10
+  delay: 15
+
+- name: Open Distro for Elasticsearch | Perform a synced flush
+  uri:
+    url: https://{{ ansible_default_ipv4.address | default(ansible_all_ipv4_addresses[0]) }}:{{ es_http_port }}/_flush/synced
+    method: POST
+    url_username: "{{ specification.es_user }}"
+    url_password: "{{ specification.es_password }}"
+    validate_certs: no
+    status_code: "200, 409"
+
+- name: Open Distro for Elasticsearch | Stop elasticsearch service
+  systemd:
+    name: elasticsearch
+    state: stopped
+
+- name: Open Distro for Elasticsearch | Rolling Upgrade of the Elasticsearch
+  include_role:
+    name: opendistro_for_elasticsearch
+    tasks_from: install-es-{{ ansible_os_family }}.yml
+
+- name: Open Distro for Elasticsearch | Get facts of {{ available_host }}
+  delegate_to: "{{ available_host }}"
+  delegate_facts: true
+  setup:
+  when: available_host != ansible_play_hosts_all[0]
+
+- name: Open Distro for Elasticsearch | Wait for all shards to be reallocated
+  delegate_to: "{{ available_host }}"
+  uri:
+    url: https://{{ hostvars[available_host].ansible_default_ipv4.address | default(hostvars[available_host].ansible_all_ipv4_addresses[0]) }}:{{ es_http_port }}/_cluster/health
+    method: GET
+    url_username: "{{ specification.es_user }}"
+    url_password: "{{ specification.es_password }}"
+    validate_certs: no
+  register: response
+  until: response.json.relocating_shards == 0
+  retries: 20
+  delay: 15
+  when: ansible_play_hosts_all[1] is defined
+
+- name: Open Distro for Elasticsearch | Start elasticsearch service
+  systemd:
+    name: elasticsearch
+    state: restarted
+    enabled: yes
+    daemon_reload: yes
+
+- name: Open Distro for Elasticsearch | Wait for elasticsearch node to come back up
+  wait_for:
+    port: "{{ es_transport_port }}"
+    host: "{{ ansible_default_ipv4.address | default(ansible_all_ipv4_addresses[0]) }}"
+    delay: 10
+
+- name: Open Distro for Elasticsearch | Wait for elasticsearch http to come back up
+  wait_for:
+    port: "{{ es_http_port }}"
+    host: "{{ ansible_default_ipv4.address | default(ansible_all_ipv4_addresses[0]) }}"
+    delay: 5
+
+- name: Open Distro for Elasticsearch | Wait for 'yellow' or 'green' cluster health status
+  uri:
+    url: https://{{ ansible_default_ipv4.address | default(ansible_all_ipv4_addresses[0]) }}:{{ es_http_port }}/_cluster/health
+    method: GET
+    url_username: "{{ specification.es_user }}"
+    url_password: "{{ specification.es_password }}"
+    validate_certs: no
+  register: cluster_health
+  until: cluster_health.json.status == 'yellow' or cluster_health.json.status == 'green'
+  retries: 10
+  delay: 15
+
+- name: Open Distro for Elasticsearch | Enable shard allocation for the cluster
+  uri:
+    url: https://{{ ansible_default_ipv4.address | default(ansible_all_ipv4_addresses[0]) }}:{{ es_http_port }}/_cluster/settings
+    method: PUT
+    url_username: "{{ specification.es_user }}"
+    url_password: "{{ specification.es_password }}"
+    validate_certs: no
+    body_format: json
+    body: '{"persistent":{"cluster.routing.allocation.enable": null}}'
+  register: response
+  until: response.json.acknowledged == true
+  retries: 10
+  delay: 15
+
+- name: Open Distro for Elasticsearch | Wait for 'yellow' or 'green' cluster health status
+  uri:
+    url: https://{{ ansible_default_ipv4.address | default(ansible_all_ipv4_addresses[0]) }}:{{ es_http_port }}/_cluster/health
+    method: GET
+    url_username: "{{ specification.es_user }}"
+    url_password: "{{ specification.es_password }}"
+    validate_certs: no
+    return_content: yes
+  register: cluster_health
+  until: cluster_health.json.status == 'yellow' or cluster_health.json.status == 'green'
+  retries: 10
+  delay: 15

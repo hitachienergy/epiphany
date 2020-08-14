@@ -1,0 +1,19 @@
+---
+- name: Open Distro for Elasticsearch - plugins | Assert that opendistro-* packages are installed
+  assert:
+    that: ansible_facts.packages['{{ item }}'] is defined
+    fail_msg: "Missing package to upgrade: {{ item }}"
+    quiet: true
+  loop:
+    - opendistro-alerting
+    - opendistro-index-management
+    - opendistro-job-scheduler
+    - opendistro-performance-analyzer
+    - opendistro-security
+    - opendistro-sql
+    - opendistroforelasticsearch-kibana
+
+- name: Open Distro for Elasticsearch - plugins | Upgrade opendistro-* packages
+  include_role:
+    name: opendistro_for_elasticsearch
+    tasks_from: install-opendistro-{{ ansible_os_family }}.yml
