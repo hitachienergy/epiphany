@@ -11,6 +11,10 @@
 
 - when: not stat_kube_apiserver_yaml.stat.exists
   block:
+    - name: Set is_first_deployment fact
+      set_fact:
+        is_first_deployment: true
+
     - name: Ensure /etc/kubeadm/ directory exists
       file:
         path: /etc/kubeadm/
