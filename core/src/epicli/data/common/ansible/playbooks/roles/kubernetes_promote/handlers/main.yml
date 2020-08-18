@@ -1,13 +1,4 @@
 ---
-- name: Restart apiserver
-  shell: |
-    docker ps \
-      --filter 'name=kube-apiserver_kube-apiserver' \
-      --format '{{ "{{.ID}}" }}' \
-    | xargs --no-run-if-empty docker kill
-  args:
-    executable: /bin/bash
-
 - name: Restart controller-manager
   shell: |
     docker ps \
