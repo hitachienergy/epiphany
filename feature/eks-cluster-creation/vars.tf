@@ -1,15 +1,17 @@
-// -- [ VARS ] ------------------------------------------------------
-// Cluster name
-// variable "eks_cluster_name" {
-//   default = "eks-terraform-cluster"
-// }
-
 // Cluster version
 variable "eks_cluster_version" {
+  // default = "1.17"
   default = "1.16"
 }
 
-variable "iam_path" { default = "/autoscale" }
+variable "eks_autoscaler_version" {
+  // default = "v1.17.3"
+  default = "v1.16.6"
+}
+
+variable "eks_autoscaler_chart_version" {
+  default = "7.3.4"
+}
 
 // AWS Region
 variable "region" {
@@ -31,6 +33,27 @@ variable "resource_group_name" {
   default = "eks-terraform-rg"
 }
 
+// Cluster name
+variable "cluster_name" {
+  default = "gdajuk-cluster"
+}
+
+// IAM roles save path
+variable "iam_path" {
+  default = "/autoscale"
+}
+
+// Autoscaling threshold
+variable "cluster-autoscaler_scale-down-utilization-threshold" {
+  default = "0.65"
+}
+
+// Save kubeconfig
+variable "write_kubeconfig" {
+  default = "true"
+}
+
+
 // Nodes/Workers objects
 variable "worker1_data" {
   type = object({
@@ -43,28 +66,28 @@ variable "worker1_data" {
   default = {
     name = "eks-worker-1"
     instance_type = "t2.medium"
-    asg_desired_capacity = 2
+    asg_desired_capacity = 1
     asg_min_size = 1
     asg_max_size = 10
   }
 }
 
-// variable "worker2_data" {
-//   type = object({
-//     name                 = string
-//     instance_type        = string
-//     asg_desired_capacity = number
-//     asg_min_size         = number
-//     asg_max_size         = number
-//   })
-//   default = {
-//     name = "eks-worker-2"
-//     instance_type = "t2.medium"
-//     asg_desired_capacity = 1
-//     asg_min_size = 1
-//     asg_max_size = 5
-//   }
-// }
+variable "worker2_data" {
+  type = object({
+    name                 = string
+    instance_type        = string
+    asg_desired_capacity = number
+    asg_min_size         = number
+    asg_max_size         = number
+  })
+  default = {
+    name = "eks-worker-2"
+    instance_type = "t2.medium"
+    asg_desired_capacity = 1
+    asg_min_size = 1
+    asg_max_size = 5
+  }
+}
 
 // VPC CIDR
 variable "cidr" {

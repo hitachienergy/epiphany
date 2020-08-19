@@ -2,6 +2,10 @@
 # # https://learn.hashicorp.com/terraform/kubernetes/provision-eks-cluster#optional-configure-terraform-kubernetes-provider
 # # To learn how to schedule deployments and services using the provider, go here: ttps://learn.hashicorp.com/terraform/kubernetes/deploy-nginx-kubernetes.
 
+terraform {
+  required_version = ">= 0.12"
+}
+
 provider "kubernetes" {
   version                = ">= 1.11.1"
   load_config_file       = "false"
@@ -17,23 +21,32 @@ provider "aws" {
   secret_key  = var.secret_key
 }
 
-// Minimum terraform version
-terraform {
-  required_version = ">= 0.12"
-}
-
-// Generate random suffix onto each object name to avoid collisions
 provider "random" {
   version = "~> 2.1"
 }
 
-locals {
-  cluster_name                  = "training-eks-${random_string.suffix.result}"
-  k8s_service_account_namespace = "kube-system"
-  k8s_service_account_name      = "cluster-autoscaler-aws-cluster-autoscaler"
+provider "template" {
+  version = "~> 2.1"
 }
 
-resource "random_string" "suffix" {
-  length  = 8
-  special = false
+provider "null" {
+  version = "~> 2.1"
+}
+
+provider "local" {
+  version = "~> 1.4"
+}
+
+provider "helm" {
+  kubernetes {
+  load_config_file       = "false"
+  host                   = data.aws_eks_cluster.cluster.endpoint
+  token                  = data.aws_eks_cluster_auth.cluster.token
+  cluster_ca_certificate = base64decode(data.aws_eks_cluster.cluster.certificate_authority.0.data)
+  }
+}
+
+locals {
+  k8s_service_account_namespace = "kube-system"
+  k8s_service_account_name      = "cluster-autoscaler-aws-cluster-autoscaler"
 }

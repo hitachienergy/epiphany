@@ -15,10 +15,9 @@ output "region" {
 
 output "cluster_name" {
   description = "Kubernetes Cluster Name"
-  // value       = "${var.eks_cluster_name}"
-  value       = local.cluster_name
+  value       = "${var.cluster_name}"
 }
 
 output "kubeconf" {
-  value       = "export KUBECONFIG=kubeconfig_${local.cluster_name}"
+  value       = "export KUBECONFIG=kubeconfig_${var.cluster_name}"
 }
