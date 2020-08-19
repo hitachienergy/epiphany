@@ -11,4 +11,3 @@
       - opendistro-sql={{ specification.versions[ansible_os_family].opendistro }}
     state: present
   register: install_elasticsearch_package
-  

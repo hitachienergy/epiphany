@@ -12,4 +12,3 @@
     update_cache: yes
     state: present
   register: install_elasticsearch_package
-  

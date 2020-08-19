@@ -14,7 +14,7 @@ docker-ce-cli 5:18.09
 ebtables
 elasticsearch-curator 5.8.1
 elasticsearch-oss 6.8.5 # for elasticsearch role
-elasticsearch-oss 7.8.0 # for opendistroforelasticsearch role
+elasticsearch-oss 7.8.0 # for opendistroforelasticsearch & logging roles
 erlang-nox
 ethtool
 filebeat 7.8.1
