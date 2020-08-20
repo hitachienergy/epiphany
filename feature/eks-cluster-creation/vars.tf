@@ -35,7 +35,7 @@ variable "resource_group_name" {
 
 // Cluster name
 variable "cluster_name" {
-  default = "gdajuk-cluster"
+  default = "aws-eks-cluster"
 }
 
 // IAM roles save path

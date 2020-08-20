@@ -44,6 +44,53 @@ File containing secret credentials to authorize into AWS. Currently this file is
 
 ***
 
+## Testing the autoscaling feature
+
+***
+#### Requirements:
+- working deployment of EKS cluster
+- kubectl
+
+#### Test:
+- Apply deployment with simple php-apache image:  
+``` kubectl apply -f https://k8s.io/examples/application/php-apache.yaml```
+- Create horizontal pod autoscale based on CPU/Memory or some other from eg. prometheus metrics. Server metrics is installed by default in AKS version higher then 1.10  
+```kubectl autoscale deployment php-apache --cpu-percent=50 --min=1 --max=50 ```
+- Create a load-generator deployment file (load-gen.yaml) to test LB:
+```
+Kind: Deployment
+apiVersion: apps/v1
+metadata:
+  name: load-generator
+spec:
+  selector:
+    matchLabels:
+      run: load-generator
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        run: load-generator
+    spec:
+      containers:
+      - name: load-generator
+        image: busybox
+        args:
+        - /bin/sh
+        - "-c"
+        - "while true; do wget -q -O- http://php-apache; done"
+```  
+- Execute the deployment with a containers in order to increase load on nodes using infinite loop of queries to the php-apache service created in previous point.:  
+```kubectl apply -f load-gen.yaml```  
+- Increase load as needed   
+```kubectl scale deployment load-generator --replicas=5```  
+- Check the effect using monitoring tools:  
+```kubectl get hpa```  
+- Check the autoscaller logs: 
+```kubectl  logs -n kube-system cluster-autoscaler...*```
+
+
 #### Sources
 - https://learn.hashicorp.com/terraform/kubernetes/provision-eks-cluster
 - https://registry.terraform.io/modules/terraform-aws-modules/vpc/aws/2.32.0
+- https://registry.terraform.io/modules/terraform-aws-modules/iam/aws/2.7.0/submodules/iam-assumable-role-with-oidc
