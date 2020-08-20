@@ -6,12 +6,12 @@ When running the Epicli container on Windows you might get such errors when tryi
 
 Azure:
 ```
-12:28:39 INFO cli.engine.terraform.TerraformCommand - Error: Error reading queue properties for AzureRM Storage Account "cluster": queues.Client#GetServiceProperties: Failure responding to request: StatusCode=403 -- Original Error: autorest/azure: error response cannot be parsed: "\ufeff<?xml version=\"1.0\" encoding=\"utf-8\"?><Error><Code>AuthenticationFailed</Code><Message>Server failed to authenticate the request. Make sure the value of Authorization header is formed correctly including the signature.\nRequestId:cba2935f-1003-006f-071d-db55f6000000\nTime:2020-02-04T05:38:45.4268197Z</Message><AuthenticationErrorDetail>Request date header too old: 'Fri, 31 Jan 2020 12:28:37 GMT'</AuthenticationErrorDetail></Error>" error: invalid character 'ï' looking for beginning of value
+INFO cli.engine.terraform.TerraformCommand - Error: Error reading queue properties for AzureRM Storage Account "cluster": queues.Client#GetServiceProperties: Failure responding to request: StatusCode=403 -- Original Error: autorest/azure: error response cannot be parsed: "\ufeff<?xml version=\"1.0\" encoding=\"utf-8\"?><Error><Code>AuthenticationFailed</Code><Message>Server failed to authenticate the request. Make sure the value of Authorization header is formed correctly including the signature.\nRequestId:cba2935f-1003-006f-071d-db55f6000000\nTime:2020-02-04T05:38:45.4268197Z</Message><AuthenticationErrorDetail>Request date header too old: 'Fri, 31 Jan 2020 12:28:37 GMT'</AuthenticationErrorDetail></Error>" error: invalid character 'ï' looking for beginning of value
 ```
 
 AWS:
 ```
-19:50:14 ERROR epicli - An error occurred (AuthFailure) when calling the DescribeImages operation: AWS was not able to validate the provided access credentials
+ERROR epicli - An error occurred (AuthFailure) when calling the DescribeImages operation: AWS was not able to validate the provided access credentials
 ```
 
 These issues might occur when the host machine you are running the Epicli container on was put to sleep or hybernated for an extended period of time. Hyper-V might have issues syncing the time between the container and the host after it wakes up or is resumed. You can confirm this by checking the date and time in your container by running:
@@ -26,6 +26,15 @@ If the times are out of sync restarting the container will resolve the issue. If
 Get-VMIntegrationService -VMName DockerDesktopVM -Name "Time Synchronization" | Disable-VMIntegrationService
 
 Get-VMIntegrationService -VMName DockerDesktopVM -Name "Time Synchronization" | Enable-VMIntegrationService
+```
+
+Common:
+
+When public key is created by `ssh-keygen` sometimes it's necessary to convert it to utf-8 encoding.
+Otherwise such error occurs:
+
+```text
+ERROR epicli - 'utf-8' codec can't decode byte 0xff in position 0: invalid start byte
 ```
 
 ## Kafka

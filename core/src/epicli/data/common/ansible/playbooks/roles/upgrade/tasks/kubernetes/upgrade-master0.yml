@@ -19,30 +19,24 @@
 - name: k8s/master0 | Reconfigure keycloak application
   include_tasks: reconfigure-auth-service-app.yml
 
-- name: k8s/master0 | Upgrade kubernetes-dashboard
-  include_tasks: upgrade-kubernetes-dashboard.yml
-
-- name: k8s/master0 | Get CNI plugin if undefined
-  include_tasks: get-cni-plugin.yml
-  when:
-    - cni_plugin_name is undefined
-
 - name: k8s/master0 | Drain master in preparation for maintenance
   include_tasks: utils/drain.yml
 
-- name: k8s/master0 | Upgrade, configure packages
+- name: Upgrade packages and perform upgrade
   block:
-    - name: k8s/master0 | Hold packages for Debian family
-      include_tasks: Debian/hold-packages.yml
-      when: ansible_os_family == "Debian"
-
     - name: k8s/master0 | Install kubeadm
       include_tasks: "{{ ansible_os_family }}/install-kubeadm.yml"
 
-    - name: k8s/master0 | Upgrade network components for Kubernetes >= v1.16.x
-      include_tasks: upgrade-network-components.yml
+    - name: k8s/master0 | Update kube-flannel-cfg ConfigMap
+      include_role:
+        name: kubernetes_master
+        tasks_from: deployments/deploy-template
+      vars:
+        file_name: kubernetes/flannel-config-for-k8s-below-1.17.yml.j2
       when:
-        - version is version('1.16.7', '>=')
+        - cni_plugin_name == 'flannel'
+        - version is version('1.15.0', '>')
+        - version is version('1.17.0', '<')
 
     # CoreDNS is overwritten (upgraded or downgraded) by 'kubeadm upgrade apply', see CoreDNS version matrix in downgrade-coredns.yml.
     # kubeadm upgrade is not able to downgrade coredns ConfigMap properly (at least when upgrade from 1.14.6 to 1.15.10)
@@ -51,9 +45,6 @@
       include_tasks: downgrade-coredns.yml
       when:
         - version is version('1.16.0', '<')
-
-    - name: k8s/master0 | Wait for cluster's readiness
-      include_tasks: utils/wait.yml
 
     # Note: Usage of the --config flag for reconfiguring the cluster during upgrade is not recommended since v1.16
     - name: k8s/master0 | Validate whether cluster is upgradeable
@@ -104,13 +95,27 @@
 - name: k8s/master0 | Wait for cluster's readiness
   include_tasks: utils/wait.yml
 
-# 'kubeadm upgrade apply' overwrites Epiphany's customized CoreDNS deployment so we restore it.
+# 'kubeadm upgrade apply' overwrites Epiphany's customized CoreDNS so we patch it again.
 # This task should be run each time K8s is upgraded to the latest version.
-# Keep Epiphany's CoreDNS version in synch with K8s CoreDNS version.
-- name: k8s/master0 | Deploy customized CoreDNS for latest Kubernetes (1.17.7)
+- name: k8s/master0 | Customize CoreDNS for latest Kubernetes ({{ version }})
   include_tasks: upgrade-coredns.yml
   when:
-    - version is version('1.17.7', '==')
+    - upgrade_to_final_version
+
+- name: Upgrade CNI plugin (deployment then local pod)
+  when:
+    - upgrade_to_final_version
+  block:
+    - name: k8s/master0 | Upgrade CNI plugin deployment
+      include_tasks: upgrade-cni-plugin-deployment.yml
+
+    - name: k8s/master0 | Upgrade CNI plugin pod
+      include_tasks: upgrade-cni-plugin-pod.yml
+
+- name: k8s/master0 | Upgrade Kubernetes Dashboard
+  include_tasks: upgrade-k8s-dashboard.yml
+  when:
+    - upgrade_to_final_version
 
 - name: k8s/master0 | Backup kubeadm-config.yml
   include_tasks: backup-kubeadm-config.yml

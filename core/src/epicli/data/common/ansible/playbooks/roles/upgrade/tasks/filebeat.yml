@@ -1,16 +1,16 @@
 ---
-- name: Get information about installed packages as facts
+- name: Filebeat | Get information about installed packages as facts
   package_facts:
     manager: auto
   when: ansible_facts.packages is undefined
 
-- name: Test if filebeat package is installed
+- name: Filebeat | Test if filebeat package is installed
   assert:
     that: ansible_facts.packages['filebeat'] is defined
     fail_msg: filebeat package not found, nothing to update
     quiet: true
 
-- name: Print filebeat versions
+- name: Filebeat | Print versions
   debug:
     msg:
       - "Installed version: {{ ansible_facts.packages['filebeat'][0].version }}"
@@ -18,29 +18,11 @@
 
 - name: Update Filebeat
   block:
-    - name: Get values for filebeat.yml template from existing configuration
-      block:
-        - name: Load /etc/filebeat/filebeat.yml
-          slurp:
-            src: /etc/filebeat/filebeat.yml
-          register: filebeat_config_yml
-        
-        - name: Set filebeat.yml content as fact
-          set_fact:
-            filebeat_exisitng_config: "{{ filebeat_config_yml.content | b64decode | from_yaml }}"
-
-        - name: Set value for output.elasticsearch.hosts
-          set_fact:
-            output_elasticsearch_hosts: "{{ filebeat_exisitng_config['output.elasticsearch'].hosts }}"
-          when:
-            - filebeat_exisitng_config['output.elasticsearch'].hosts is defined
-            - filebeat_exisitng_config['output.elasticsearch'].hosts | length > 0
-
-        - name: Set value for setup.kibana.host
-          set_fact:
-            setup_kibana_host: "{{ filebeat_exisitng_config['setup.kibana'].host }}"
-          when:
-            - filebeat_exisitng_config['setup.kibana'].host is defined
+    - name: Filebeat | Backup configuration file (filebeat.yml)
+      copy:
+        remote_src: yes
+        src: /etc/filebeat/filebeat.yml
+        dest: /etc/filebeat/filebeat.yml.bak_{{ ansible_facts.packages['filebeat'][0].version }}
 
     - import_role:
         name: filebeat
@@ -52,6 +34,6 @@
 
     - import_role:
         name: filebeat
-        tasks_from: configure-filebeat       
+        tasks_from: configure-filebeat
   when:
     - specification.filebeat_version is version(ansible_facts.packages['filebeat'][0].version, '>=')

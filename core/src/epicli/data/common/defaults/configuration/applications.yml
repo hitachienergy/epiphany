@@ -26,7 +26,7 @@ specification:
 
   - name: rabbitmq
     enabled: no
-    image_path: rabbitmq:3.7.10
+    image_path: rabbitmq:3.8.3
     use_local_image_registry: true
     #image_pull_secret_name: regcred # optional
     service:

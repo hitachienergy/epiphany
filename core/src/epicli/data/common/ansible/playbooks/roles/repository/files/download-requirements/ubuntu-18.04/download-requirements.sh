@@ -1,6 +1,7 @@
 #!/bin/bash
 
 set -euo pipefail
+export DEBIAN_FRONTEND=noninteractive
 
 if [[ $# -lt 1 ]]; then
   usage
@@ -147,6 +148,10 @@ else
     # download images using skopeo
     while IFS= read -r image_name; do
         download_image "${image_name}" "${dst_dir_images}"
+        if [ $? != 0 ]; then
+            echo "Skopeo download error, retrying..."
+            download_image "${image_name}" "${dst_dir_images}"
+        fi
     done <<< "${images}"
 fi
 

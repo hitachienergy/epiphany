@@ -1,6 +1,0 @@
----
-- name: Apply {{ file_path }} file
-  environment:
-    KUBECONFIG: /etc/kubernetes/admin.conf
-  shell: >-
-    kubectl apply -f {{ file_path }}

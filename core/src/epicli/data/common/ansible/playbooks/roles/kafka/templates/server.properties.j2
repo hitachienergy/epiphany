@@ -11,13 +11,34 @@ auto.create.topics.enable=true
 delete.topic.enable=true
 
 #default replication factors for automatically created topics
-default.replication.factor={{ specification.kafka_var.replicas }}
+default.replication.factor={{ specification.kafka_var.default_replication_factor }}
 
 #The replication factor for the offsets topic (set higher to ensure availability). Internal topic creation will fail until the cluster size meets this replication factor requirement.
-offsets.topic.replication.factor={{ specification.kafka_var.replicas }}
+offsets.topic.replication.factor={{ specification.kafka_var.offsets_topic_replication_factor }}
 
 #Offsets older than this retention period will be discarded
 offsets.retention.minutes={{ specification.kafka_var.offset_retention_minutes }}
+
+#The maximum number of incremental fetch sessions that we will maintain
+max.incremental.fetch.session.cache.slots={{ specification.kafka_var.max_incremental_fetch_session_cache_slots }}
+
+#Enable controlled shutdown of the server
+controlled.shutdown.enable={{ specification.kafka_var.controlled_shutdown_enable | lower }}
+
+#Number of fetcher threads used to replicate messages from a source broker. 
+#Increasing this value can increase the degree of I/O parallelism in the follower broker.
+num.replica.fetchers={{ specification.kafka_var.num_replica_fetchers }}
+
+#The number of bytes of messages to attempt to fetch for each partition. 
+#This is not an absolute maximum, if the first record batch in the first 
+#non-empty partition of the fetch is larger than this value, 
+#the record batch will still be returned to ensure that progress can be made. 
+#The maximum record batch size accepted by the broker is defined 
+#via message.max.bytes (broker config) or max.message.bytes (topic config).
+replica.fetch.max.bytes={{ specification.kafka_var.replica_fetch_max_bytes }}
+
+#The socket receive buffer for network requests
+replica.socket.receive.buffer.bytes={{ specification.kafka_var.replica_socket_receive_buffer_bytes }}
 
 ############################# Socket Server Settings #############################
   {%- endif %}
@@ -126,9 +147,11 @@ num.partitions={{ specification.kafka_var.partitions }}
 
 # The number of threads per data directory to be used for log recovery at startup and flushing at shutdown.
 # This value is recommended to be increased for installations with data dirs located in RAID array.
-num.recovery.threads.per.data.dir=1
+num.recovery.threads.per.data.dir={{ specification.kafka_var.num_recovery_threads_per_data_dir }}
 
-min.insync.replicas={{ specification.kafka_var.replicas }}
+# When a producer sets acks to "all" (or "-1"), this configuration specifies the minimum number 
+# of replicas that must acknowledge a write for the write to be considered successful.
+min.insync.replicas={{ specification.kafka_var.min_insync_replicas }}
 
 ############################# Log Flush Policy #############################
 
