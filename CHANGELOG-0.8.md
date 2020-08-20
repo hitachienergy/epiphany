@@ -9,3 +9,5 @@
 - [#846](https://github.com/epiphany-platform/epiphany/issues/846) - Update Filebeat to v7.8.1
 
 ### Fixed
+
+- Fix for changing Terraform templates between Epicli apply runs on Azure.
