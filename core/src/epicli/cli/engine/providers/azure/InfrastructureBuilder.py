@@ -174,10 +174,6 @@ class InfrastructureBuilder(Step):
         vm.specification.network_interface_name = network_interface_name
         vm.specification.tags.append({'cluster': cluster_tag(self.cluster_prefix, self.cluster_name)})
         vm.specification.tags.append({component_key: ''})        
-        if vm.specification.os_type == 'linux':
-            # For linux we dont need a PW since we only support SSH. We add something random for Terraform 
-            # to run and later disable password access in Ansible.
-            vm.specification.admin_password = str(uuid.uuid4())
         if vm_config.specification.os_type == 'windows':
             raise NotImplementedError('Windows VMs not supported jet.')
         pub_key_path = self.cluster_model.specification.admin_user.key_path + '.pub'
