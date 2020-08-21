@@ -1,5 +1,0 @@
-*.log
-.terraform
-terraform.tfstate*
-kubeconfig*
-vars-secret.tf
