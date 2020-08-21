@@ -1,0 +1,32 @@
+eks_cluster_version = "1.17"
+eks_autoscaler_version = "v1.17.3"
+eks_autoscaler_chart_version = "7.3.4"
+region  = "eu-central-1"
+environment = "testing"
+vpc_name = "eks-terraform-vpc"
+resource_group_name = "eks-terraform-rg"
+cluster_name = "aws-eks-cluster"
+iam_path = "/autoscale"
+cluster-autoscaler_scale-down-utilization-threshold = "0.65"
+cluster-autoscaler_rbac = "arn:aws:iam::540350320930:role/cluster-autoscaler"
+write_kubeconfig = "true"
+worker1_data = {
+    name = "eks-worker-1"
+    instance_type = "t2.medium"
+    asg_desired_capacity = 1
+    asg_min_size = 1
+    asg_max_size = 10
+    }
+worker2_data = {
+    name = "eks-worker-2"
+    instance_type = "t2.medium"
+    asg_desired_capacity = 1
+    asg_min_size = 1
+    asg_max_size = 5
+    }
+private_subnets = [ "10.0.1.0/24", "10.0.2.0/24", "10.0.3.0/24" ]
+public_subnets = [ "10.0.4.0/24", "10.0.5.0/24", "10.0.6.0/24" ]
+secgrp_mgmt_one = [ "10.0.0.0/8" ]
+secgrp_mgmt_two = [ "192.168.0.0/16" ]
+secgrp_mgmt_all = [ "10.0.0.0/8", "172.16.0.0/12", "192.168.0.0/16" ]
+cidr = "10.0.0.0/16"
