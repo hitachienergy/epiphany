@@ -1,21 +1,26 @@
-// Cluster version
+// // EKS Cluster name
+variable "eks_cluster_name" {
+  type = string
+}
+
+// EKS Cluster version
 variable "eks_cluster_version" {
-  // default = "1.17"
-  default = "1.16"
+  type = number
 }
 
+// EKS autoscaller version
 variable "eks_autoscaler_version" {
-  // default = "v1.17.3"
-  default = "v1.16.6"
+  type = string
 }
 
+// EKS chart version
 variable "eks_autoscaler_chart_version" {
-  default = "7.3.4"
+  type = string
 }
 
 // AWS Region
 variable "region" {
-  default = "eu-central-1"
+  type = string
 }
 
 // Environment type (used to tag resources)
@@ -30,11 +35,6 @@ variable "vpc_name" {
 
 // AWS Resource group name
 variable "resource_group_name" {
-  type = string
-}
-
-// Cluster name
-variable "cluster_name" {
   type = string
 }
 

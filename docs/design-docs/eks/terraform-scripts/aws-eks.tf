@@ -1,8 +1,8 @@
 module "eks" {
   source          = "terraform-aws-modules/eks/aws"
   version         = "12.2.0"
-  cluster_name    = var.cluster_name
-  subnets         = module.vpc.public_subnets
+  cluster_name    = var.eks_cluster_name
+  subnets         = module.vpc.private_subnets
   vpc_id          = module.vpc.vpc_id
   cluster_version = var.eks_cluster_version
   // enable IAM Roles for Service Accounts
@@ -25,7 +25,7 @@ module "eks" {
           "value"               = "true"
         },
         {
-          "key"                 = "k8s.io/cluster-autoscaler/${var.cluster_name}"
+          "key"                 = "k8s.io/cluster-autoscaler/${var.eks_cluster_name}"
           "propagate_at_launch" = "false"
           "value"               = "true"
         },
@@ -45,7 +45,7 @@ module "eks" {
           "value"               = "true"
         },
         {
-          "key"                 = "k8s.io/cluster-autoscaler/${var.cluster_name}"
+          "key"                 = "k8s.io/cluster-autoscaler/${var.eks_cluster_name}"
           "propagate_at_launch" = "false"
           "value"               = "true"
         }
