@@ -1,5 +1,6 @@
+---
 - name: Create log directory for Kibana
-  file: path={{specification.kibana_log_dir}} state=directory
+  file: path={{ specification.kibana_log_dir }} state=directory
 
 - name: Create logfile for Kibana
   copy:

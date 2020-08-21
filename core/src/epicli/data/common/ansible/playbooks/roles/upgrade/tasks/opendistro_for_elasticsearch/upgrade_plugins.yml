@@ -11,7 +11,6 @@
     - opendistro-performance-analyzer
     - opendistro-security
     - opendistro-sql
-    - opendistroforelasticsearch-kibana
 
 - name: Open Distro for Elasticsearch - plugins | Upgrade opendistro-* packages
   include_role:

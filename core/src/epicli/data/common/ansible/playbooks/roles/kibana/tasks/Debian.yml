@@ -1,6 +1,7 @@
+---
 - name: Install Kibana package
-  apt: 
+  apt:
     name:
-      - opendistroforelasticsearch-kibana
-    update_cache: yes 
+      - opendistroforelasticsearch-kibana={{ specification.versions[ansible_os_family].opendistro }}
+    update_cache: yes
     state: present

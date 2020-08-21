@@ -33,8 +33,8 @@
     validate_certs: no
     body_format: json
     body: '{"persistent":{"cluster.routing.allocation.enable": "primaries"}}'
-  register: response
-  until: response.json.acknowledged == true
+  register: response_allocation_primaries
+  until: response_allocation_primaries.json.acknowledged == true
   retries: 10
   delay: 15
 
@@ -63,6 +63,12 @@
   setup:
   when: available_host != ansible_play_hosts_all[0]
 
+- name: Open Distro for Elasticsearch | Ensure elasticsearch service is running on delegate host
+  delegate_to: "{{ available_host }}"
+  systemd:
+    name: elasticsearch.service
+    state: started
+
 - name: Open Distro for Elasticsearch | Wait for all shards to be reallocated
   delegate_to: "{{ available_host }}"
   uri:
@@ -71,8 +77,8 @@
     url_username: "{{ specification.es_user }}"
     url_password: "{{ specification.es_password }}"
     validate_certs: no
-  register: response
-  until: response.json.relocating_shards == 0
+  register: response_shards
+  until: response_shards.json.relocating_shards == 0
   retries: 20
   delay: 15
   when: ansible_play_hosts_all[1] is defined
