@@ -58,7 +58,7 @@ File containing secret credentials to authorize into AWS. Currently this file is
 ```kubectl autoscale deployment php-apache --cpu-percent=50 --min=1 --max=50 ```
 - Create a load-generator deployment file (load-gen.yaml) to test LB:
 ```
-Kind: Deployment
+kind: Deployment
 apiVersion: apps/v1
 metadata:
   name: load-generator

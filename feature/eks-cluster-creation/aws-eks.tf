@@ -5,6 +5,7 @@ module "eks" {
   subnets         = module.vpc.public_subnets
   vpc_id          = module.vpc.vpc_id
   cluster_version = var.eks_cluster_version
+  // enable IAM Roles for Service Accounts
   enable_irsa     = true
   tags = {
     Environment = var.environment
