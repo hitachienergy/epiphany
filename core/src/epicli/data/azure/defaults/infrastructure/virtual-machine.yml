@@ -8,7 +8,7 @@ specification:
   admin_password: SET_BY_AUTOMATION
   public_key: SET_BY_AUTOMATION
   network_interface_name: SET_BY_AUTOMATION
-  availability_set_name: SET_BY_AUTOMATION
+  availability_set_name: SET_BY_AUTOMATION  # Please don't change this default value, keep it "SET_BY_AUTOMATION"
   tags: []
   os_type: linux
   size: Standard_DS1_v2

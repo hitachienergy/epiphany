@@ -77,15 +77,17 @@ class InfrastructureBuilder(Step):
                                                                                         0)
                     infrastructure.append(subnet_nsg_association)
 
+            availability_set = None
             if 'availability_set' in component_value:
-                availability_set_name = component_value.availability_set
-                availability_set = select_first(infrastructure, lambda item: item.kind == 'infrastructure/availability-set' and
-                                   item.name == availability_set_name)
+                availability_set = select_first(
+                    infrastructure,
+                    lambda item: item.kind == 'infrastructure/availability-set' and
+                           item.specification.availability_set == component_value.availability_set,
+                )
                 if availability_set is None:
-                    availability_set = self.get_availability_set(availability_set_name)
-                    if availability_set:
+                    availability_set = self.get_availability_set(component_value.availability_set)
+                    if availability_set is not None:
                         infrastructure.append(availability_set)
-
 
             #TODO: For now we create the VM infrastructure compatible with the Epiphany 2.x
             #      code line but later we might want to look at scale sets to achieve the same result:
@@ -114,7 +116,8 @@ class InfrastructureBuilder(Step):
                                                                index)
                 infrastructure.append(network_interface)
 
-                vm = self.get_vm(component_key, component_value, vm_config, network_interface.specification.name, index)
+                vm = self.get_vm(component_key, component_value, vm_config, availability_set,
+                                 network_interface.specification.name, index)
                 infrastructure.append(vm)
 
         return infrastructure
@@ -144,10 +147,12 @@ class InfrastructureBuilder(Step):
         subnet.specification.cluster_name = self.cluster_name
         return subnet
 
-    def get_availability_set(self, availability_set_name):
-        availability_set =  select_first(self.docs, lambda item: item.kind == 'infrastructure/availability-set' and
-                                    item.name == availability_set_name)
-        return availability_set
+    def get_availability_set(self, availability_set):
+        aset = select_first(self.docs, lambda item: item.kind == 'infrastructure/availability-set' and
+                                                    item.specification.availability_set == availability_set)
+        if aset is not None:
+            aset.specification.name = resource_name(self.cluster_prefix, self.cluster_name, availability_set + '-' + 'aset')
+        return aset
 
     def get_subnet_network_security_group_association(self, component_key, subnet_name, security_group_name, index):
         ssga = self.get_config_or_default(self.docs, 'infrastructure/subnet-network-security-group-association')
@@ -182,7 +187,7 @@ class InfrastructureBuilder(Step):
         storage_share.specification.storage_account_name = storage_account_name(self.cluster_prefix, self.cluster_name, 'k8s')
         return storage_share
 
-    def get_vm(self, component_key, component_value, vm_config, network_interface_name, index):
+    def get_vm(self, component_key, component_value, vm_config, availability_set, network_interface_name, index):
         vm = dict_to_objdict(deepcopy(vm_config))
         vm.specification.name = resource_name(self.cluster_prefix, self.cluster_name, 'vm' + '-' + str(index), component_key)
         vm.specification.admin_username = self.cluster_model.specification.admin_user.name
@@ -196,6 +201,8 @@ class InfrastructureBuilder(Step):
             vm.specification.public_key = pub_key_path
         else:
             raise Exception(f'SSH key path "{pub_key_path}" is not valid. Ansible run will fail.')
+        if availability_set is not None:
+            vm.specification.availability_set_name = availability_set.specification.name
         return vm
 
     @staticmethod

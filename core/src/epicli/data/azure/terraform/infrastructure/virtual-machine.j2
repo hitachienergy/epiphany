@@ -73,8 +73,8 @@ resource "azurerm_virtual_machine" "{{ specification.name }}" {
   {%- endfor %}
   }
 
-  {%- if specification.availability_set is defined %}
-    availability_set_id   = "${azurerm_availability_set.{{ specification.availability_set }}.id}"
+  {%- if specification.availability_set_name is defined and specification.availability_set_name != "SET_BY_AUTOMATION" %}
+  availability_set_id = "${azurerm_availability_set.{{ specification.availability_set_name }}.id}"
   {%- endif %}
 
   #TODO:
