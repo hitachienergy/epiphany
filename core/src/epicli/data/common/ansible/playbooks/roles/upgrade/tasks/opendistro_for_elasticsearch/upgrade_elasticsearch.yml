@@ -1,15 +1,4 @@
 ---
-- name: Open Distro for Elasticsearch | Set the available_host variable
-  set_fact:
-    available_host: >-
-      {% if inventory_hostname == ansible_play_hosts_all[0] and ansible_play_hosts_all[1] is defined -%}
-        {{ ansible_play_hosts_all[1] }}
-      {%- elif inventory_hostname != ansible_play_hosts_all[0] and ansible_play_hosts_all[0] is defined -%}
-        {{ ansible_play_hosts_all[0] }}
-      {%- elif ansible_play_hosts_all[1] is undefined -%}
-        {{ ansible_play_hosts_all[0] }}
-      {%- endif %}
-
 - name: Open Distro for Elasticsearch | Ensure elasticsearch service is running
   systemd:
     name: elasticsearch
@@ -36,7 +25,7 @@
   register: response_allocation_primaries
   until: response_allocation_primaries.json.acknowledged == true
   retries: 10
-  delay: 15
+  delay: 20
 
 - name: Open Distro for Elasticsearch | Perform a synced flush
   uri:
@@ -57,31 +46,8 @@
     name: opendistro_for_elasticsearch
     tasks_from: install-es-{{ ansible_os_family }}.yml
 
-- name: Open Distro for Elasticsearch | Get facts of {{ available_host }}
-  delegate_to: "{{ available_host }}"
-  delegate_facts: true
-  setup:
-  when: available_host != ansible_play_hosts_all[0]
-
-- name: Open Distro for Elasticsearch | Ensure elasticsearch service is running on delegate host
-  delegate_to: "{{ available_host }}"
-  systemd:
-    name: elasticsearch.service
-    state: started
-
-- name: Open Distro for Elasticsearch | Wait for all shards to be reallocated
-  delegate_to: "{{ available_host }}"
-  uri:
-    url: https://{{ hostvars[available_host].ansible_default_ipv4.address | default(hostvars[available_host].ansible_all_ipv4_addresses[0]) }}:{{ es_http_port }}/_cluster/health
-    method: GET
-    url_username: "{{ specification.es_user }}"
-    url_password: "{{ specification.es_password }}"
-    validate_certs: no
-  register: response_shards
-  until: response_shards.json.relocating_shards == 0
-  retries: 20
-  delay: 15
-  when: ansible_play_hosts_all[1] is defined
+- name: Open Distro for Elasticsearch - plugins | Upgrade
+  include_tasks: opendistro_for_elasticsearch/upgrade_plugins.yml
 
 - name: Open Distro for Elasticsearch | Start elasticsearch service
   systemd:

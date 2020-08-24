@@ -28,8 +28,3 @@
   when:
     - "specification.versions[ansible_os_family].elasticsearch_oss
       is version(ansible_facts.packages['elasticsearch-oss'][0].version, '>')"
-  register: upgrade_result
-
-- name: Open Distro for Elasticsearch - plugins | Upgrade
-  include_tasks: opendistro_for_elasticsearch/upgrade_plugins.yml
-  when: upgrade_result.skipped is undefined
