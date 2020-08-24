@@ -1,1 +1,22 @@
-$ref: '#/definitions/unvalidated_specification'
+required:
+  - availability_set
+  - platform_fault_domain_count
+  - platform_update_domain_count
+  - managed
+properties:
+  availability_set:
+    "$id": "#/properties/specification/properties/availability_set"
+    type: string
+    pattern: ^[a-z0-9\-_]+$
+  platform_fault_domain_count:
+    "$id": "#/properties/specification/properties/platform_fault_domain_count"
+    type: integer
+    minimum: 1
+  platform_update_domain_count:
+    "$id": "#/properties/specification/properties/platform_update_domain_count"
+    type: integer
+    minimum: 1
+  managed:
+    "$id": "#/properties/specification/properties/managed"
+    type: string
+    pattern: ^(true|false)$
