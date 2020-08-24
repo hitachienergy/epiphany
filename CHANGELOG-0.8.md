@@ -4,6 +4,8 @@
 
 ### Added
 
+- [#1543](https://github.com/epiphany-platform/epiphany/issues/1543) - Add support for azure availability-set
+
 ### Updated
 
 - [#846](https://github.com/epiphany-platform/epiphany/issues/846) - Update Filebeat to v7.8.1
