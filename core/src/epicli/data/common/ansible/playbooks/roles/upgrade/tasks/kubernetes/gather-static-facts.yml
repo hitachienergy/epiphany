@@ -1,0 +1,49 @@
+---
+- name: Set cni_plugin_name
+  block:
+    - name: k8s | Get CNI plugin
+      shell: >-
+        kubectl get ds -n kube-system -o=json | jq --raw-output
+        '.items[].metadata | select (.labels."k8s-app" == "canal"
+                                  or .labels."k8s-app" == "calico-node"
+                                  or .labels.app == "flannel") | .name'
+      register: shell_cni_plugin_query
+      changed_when: false
+      environment:
+        KUBECONFIG: /etc/kubernetes/admin.conf
+      args:
+        executable: /bin/bash
+
+    - name: k8s | Set CNI plugin as fact
+      set_fact:
+        cni_plugin_name: >-
+          {%- if 'kube-flannel-ds' in shell_cni_plugin_query.stdout -%}
+            flannel
+          {%- elif 'canal' in shell_cni_plugin_query.stdout -%}
+            canal
+          {%- elif 'calico-node' in shell_cni_plugin_query.stdout -%}
+            calico
+          {%- else -%}
+            unknown
+          {%- endif -%}
+
+    - name: k8s | Assert CNI plugin was found
+      assert:
+        that:
+          - cni_plugin_name != 'unknown'
+        fail_msg: CNI plugin not found
+        success_msg: "CNI plugin: {{ cni_plugin_name }}"
+        quiet: true
+
+- name: Set cni_plugin_selector
+  block:
+    - name: k8s | Load defaults from kubernetes_master role
+      include_vars:
+        file: roles/kubernetes_master/defaults/main.yml
+        name: kubernetes_master_defaults
+      when:
+        - kubernetes_master_defaults.cni_plugin_vars.selector is undefined
+
+    - name: k8s | Set CNI plugin selector as fact
+      set_fact:
+        cni_plugin_selector: "{{ kubernetes_master_defaults.cni_plugin_vars.selector[cni_plugin_name] }}"

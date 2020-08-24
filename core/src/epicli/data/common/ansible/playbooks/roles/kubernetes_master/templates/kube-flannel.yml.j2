@@ -143,6 +143,8 @@ spec:
   selector:
     matchLabels:
       app: flannel
+  updateStrategy:
+    type: OnDelete
   template:
     metadata:
       labels:

@@ -1,0 +1,57 @@
+---
+- name: k8s/master | Patch imageRepository in kubeadm-config ConfigMap
+  run_once: true
+  environment:
+    KUBECONFIG: /etc/kubernetes/admin.conf
+  block:
+    - name: k8s/master | Get kubeadm-config configmap
+      command: |
+        kubectl get configmap kubeadm-config \
+          --namespace kube-system \
+          --output yaml
+      register: command_kubeadm_configmap
+      changed_when: false
+
+    - name: k8s/master | Patch kubeadm-config configmap (update-kubeadm-image-repository.yml)
+      when:
+        - _image_repository_updated != _image_repository  # skip the task if nothing changed
+      command: |
+        kubectl patch configmap kubeadm-config \
+          --namespace kube-system \
+          --patch "$KUBEADM_CONFIGMAP_DOCUMENT"
+      environment:
+        # Render an altered kubeadm-config configmap document
+        KUBEADM_CONFIGMAP_DOCUMENT: >-
+          {{ _document | combine(_update2, recursive=true) | to_nice_yaml(indent=2) }}
+
+      vars:
+        # Parse yaml payload
+        _document: >-
+          {{ command_kubeadm_configmap.stdout | from_yaml }}
+
+        # Extract cluster config
+        _cluster_config: >-
+          {{ _document.data.ClusterConfiguration | from_yaml }}
+
+        _image_repository: >-
+          {{ _cluster_config.imageRepository }}
+
+        _image_repository_updated: >-
+          {%- if _image_repository is search( ':' ) -%}
+            {{ _image_repository | regex_replace('^(?P<host>.+):(?P<port>\d+)', image_registry_address) }}
+          {%- else -%}
+            {{ image_registry_address }}/{{ _image_repository }}
+          {%- endif -%}
+
+        # Prepare the cluster config patch
+        _update1:
+          imageRepository: "{{ _image_repository_updated }}"
+
+        _cluster_config_updated: >-
+          {{ _cluster_config | combine(_update1, recursive=true) }}
+
+        # Prepare the final update for the whole document
+        _update2:
+          data:
+            ClusterConfiguration: >-
+              {{ _cluster_config_updated | to_nice_yaml(indent=2) }}

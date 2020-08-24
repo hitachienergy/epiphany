@@ -40,7 +40,6 @@ specification:
     vault_helm_chart_file_name: v0.4.0.tar.gz
   vault_helm_chart_values:
     injector:
-      externalVaultAddr: https://external-vault:8200
       image:
         repository: "{{ image_registry_address }}/hashicorp/vault-k8s"
       agentImage:

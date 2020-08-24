@@ -1,0 +1,7 @@
+---
+# Expected vars:
+# - packages (list)
+
+- name: "k8s/install | Unhold packages: {{ packages | join( ', ' ) }}"
+  command: >-
+    apt-mark unhold {{ packages | join( ' ' ) }}

@@ -1,0 +1,32 @@
+---
+# CoreDNS version matrix
+#+-----------------------------------------------------------------+
+#| Epiphany version | K8s version | Epiphany CoreDNS | K8s CoreDNS |
+#|------------------|-------------|------------------|-------------|
+#| 0.4.4            | 1.14.6      | 1.5.0            | 1.3.1       |
+#| 0.5.0            | 1.14.6      | 1.5.0            | 1.3.1       |
+#| upgrade < 0.6.0  | 1.15.10     | 1.5.0            | 1.3.1       |
+#| upgrade < 0.6.0  | 1.16.7      | 1.5.0            | 1.6.2       |
+#| 0.6.0            | 1.17.4      | 1.6.5            | 1.6.5       |
+#| 0.7.0            | 1.17.7      | 1.6.5            | 1.6.5       |
+#| 0.7.1+           | K8s CoreDNS is patched by Epiphany           |
+#+-----------------------------------------------------------------+
+# Source: look for 'CoreDNSVersion' at https://github.com/kubernetes/kubernetes/blob/$TAG/cmd/kubeadm/app/constants/constants.go
+
+- name: k8s/master | Deploy CoreDNS v1.3.1
+  include_role:
+    name: kubernetes_master
+    tasks_from: deployments/deploy-template
+  vars:
+    file_name: kubernetes/coredns-config-for-k8s-below-1.16.yml.j2
+
+- name: k8s/master | Wait for CoreDNS pods to become ready
+  command: >-
+    kubectl wait --for=condition=Ready pods -l k8s-app=kube-dns --timeout=10s -n kube-system
+  environment:
+    KUBECONFIG: /etc/kubernetes/admin.conf
+  register: wait_for_coredns
+  until: wait_for_coredns is succeeded
+  retries: 30
+  delay: 1
+  changed_when: false

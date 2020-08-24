@@ -1,0 +1,49 @@
+---
+- name: k8s | Check DaemonSet update strategy
+  command: |-
+    kubectl get daemonsets -l {{ selector }} -n kube-system \
+    -o=jsonpath='{range .items[*]}{.spec.updateStrategy.type}{"\n"}{end}'
+  register: cni_plugin_ds_update_strategy
+  run_once: true
+  changed_when: false
+  environment:
+    KUBECONFIG: &KUBECONFIG /etc/kubernetes/admin.conf
+  vars:
+    selector: "{{ hostvars[groups.kubernetes_master.0].cni_plugin_selector }}"
+
+- name: Upgrade CNI plugin pod
+  when: "'OnDelete' in cni_plugin_ds_update_strategy.stdout_lines"
+  vars:
+    selector: "{{ hostvars[groups.kubernetes_master.0].cni_plugin_selector }}"
+  environment:
+    KUBECONFIG: *KUBECONFIG
+  block:
+    - name: k8s | Get list of CNI plugin's expected images
+      command: |-
+        kubectl get daemonsets -l {{ selector }} -n kube-system \
+        -o=jsonpath='{range .items[*]}{range .spec.template.spec.containers[*]}{.image}{"\n"}{end}{end}'
+      register: cni_plugin_ds_images
+      run_once: true
+      changed_when: false
+
+    - name: k8s | Get list of images of CNI plugin pod
+      command: |-
+        kubectl get pod -l {{ selector }} --field-selector=spec.nodeName={{ ansible_fqdn }} -n kube-system \
+        -o=jsonpath='{range .items[*]}{range .spec.containers[*]}{.image}{"\n"}{end}{end}'
+      register: cni_plugin_pod_images
+      changed_when: false
+
+    - name: k8s | Delete pod if uses unexpected image
+      command: |-
+        kubectl delete pod -l {{ selector }} --field-selector=spec.nodeName={{ ansible_fqdn }} -n kube-system
+      register: delete_cni_plugin_pod
+      when: not cni_plugin_ds_images.stdout_lines is superset(cni_plugin_pod_images.stdout_lines)
+
+    - name: k8s | Wait for CNI plugin to become ready
+      include_role:
+        name: kubernetes_master
+        tasks_from: cni-plugins/wait-for-cni-plugin
+      when:
+        - delete_cni_plugin_pod.changed
+      vars:
+        network_plugin: "{{ hostvars[groups.kubernetes_master.0].cni_plugin_name }}"

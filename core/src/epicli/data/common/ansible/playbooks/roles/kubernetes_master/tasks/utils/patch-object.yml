@@ -1,0 +1,20 @@
+---
+# Expected vars:
+# - object:
+#     kind
+#     name
+#     namespace
+# - patch:
+#     content
+#     type (optional)
+
+- name: "Patch {{ object.kind }}: {{ object.name }}"
+  command: >-
+    kubectl patch {{ object.kind }} {{ object.name }}
+    --namespace {{ object.namespace }}
+    --type {{ patch.type | default('strategic') }}
+    --patch '{{ patch.content }}'
+  register: kubectl_patch
+  changed_when: not 'no change' in kubectl_patch.stdout
+  environment:
+    KUBECONFIG: /etc/kubernetes/admin.conf

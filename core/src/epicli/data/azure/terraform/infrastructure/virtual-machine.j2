@@ -27,9 +27,10 @@ resource "azurerm_virtual_machine" "{{ specification.name  }}" {
   os_profile {
     computer_name  = "{{ specification.name }}"
     admin_username = "{{ specification.admin_username }}"
+    {%- if specification.os_type == "windows" %}
     admin_password = "{{ specification.admin_password }}"
+    {%- endif %}
   }
-
   {%- if specification.os_type == "linux" %}
   os_profile_linux_config {
     disable_password_authentication = true

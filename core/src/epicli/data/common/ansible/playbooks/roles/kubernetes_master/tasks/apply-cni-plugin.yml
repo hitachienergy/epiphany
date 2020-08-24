@@ -1,0 +1,7 @@
+---
+- name: "Apply network plugin configured by user: {{ network_plugin }}"
+  include_tasks: cni-plugins/{{ network_plugin }}.yml
+
+# Wait for CNI plugin to become ready to prevent failure of 'Get token from master' task on node before joining master
+- name: Include wait-for-cni-plugin.yml
+  include_tasks: cni-plugins/wait-for-cni-plugin.yml

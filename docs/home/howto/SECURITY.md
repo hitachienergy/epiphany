@@ -409,7 +409,7 @@ specification:
       policy: provisioner
   vault_helm_chart_values: # helm chart values overwriting the default package (to be able to use internal registry for offline purposes)
     injector:
-      externalVaultAddr: https://external-vault:8200 # external vault address [IMPORTANT: switch https->http if tls_disable parameter is set to true]
+      externalVaultAddr: https://your-external-address:8200 # external vault address (only if you want to setup address to provide full name to use with signed certificate) [IMPORTANT: switch https->http if tls_disable parameter is set to true]
       image:
         repository: "{{ image_registry_address }}/hashicorp/vault-k8s" # docker image used by vault injector in kubernetes
       agentImage:

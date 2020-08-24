@@ -1,5 +1,35 @@
 # Changelog 0.7
 
+## [0.7.1] 2020-08-12
+
+### Added
+
+- Minor logging improvements added while fixing issue [#1424](https://github.com/epiphany-platform/epiphany/issues/1424)
+- [#1438](https://github.com/epiphany-platform/epiphany/pull/1438) - Rename Terraform plugin vendor in VSCode recommendations
+- [#1413](https://github.com/epiphany-platform/epiphany/issues/1413) - Set protocol for Vault only in one place in configuration
+- [#1423](https://github.com/epiphany-platform/epiphany/issues/1423) - Error reading generated service principal
+
+### Updated
+
+- [#1479](https://github.com/epiphany-platform/epiphany/issues/1479) - Upgrade K8s to v1.18.6
+- [#1510](https://github.com/epiphany-platform/epiphany/issues/1510) - Upgrade Kubernetes Dashboard to v2.0.3
+
+### Fixed
+
+- [#1424](https://github.com/epiphany-platform/epiphany/issues/1424) - Terraform returning an error during deployments on Azure ("A retryable error occurred.")
+- [#1399](https://github.com/epiphany-platform/epiphany/issues/1399) - Epicli upgrade: Kubernetes upgrade may hang
+- [#1398](https://github.com/epiphany-platform/epiphany/issues/1398) - Vault installation fails when using canal/calico network plugin
+- [#1412](https://github.com/epiphany-platform/epiphany/issues/1412) - Certificate in Vault is also generated or copied even if flag in configuration tls_disable is set to true
+- [#1408](https://github.com/epiphany-platform/epiphany/issues/1408) - Epicli upgrade: Epiphany does not support upgrades for Kubernetes in HA mode
+- [#1482](https://github.com/epiphany-platform/epiphany/issues/1482) - Epicli upgrade: flannel CNI plugin is not upgraded to v0.12.0
+- [#1462](https://github.com/epiphany-platform/epiphany/issues/1461) - Epicli upgrade: [AWS/RHEL/calico] Upgrading cluster from 0.6 to 0.7 fails
+- [#1072](https://github.com/epiphany-platform/epiphany/issues/1072) - [AWS/RHEL] Cluster networking issues/lags when using flannel/canal plugin
+- [#802](https://github.com/epiphany-platform/epiphany/issues/802) - Docker version is hard-coded in installation tasks
+- [#1495](https://github.com/epiphany-platform/epiphany/issues/1495) - Offline installation is broken for CentOS 7.8 environments
+- [#1347](https://github.com/epiphany-platform/epiphany/issues/1347) - Kibana config always points its elasticsearch.hosts to a "logging" VM
+- [#1336](https://github.com/epiphany-platform/epiphany/issues/1336) - Deployment of version 0.7.0 failed on-prem (spec.hostname)
+- [#1394](https://github.com/epiphany-platform/epiphany/issues/1394) - Cannot access Kubernetes dashboard after upgrading
+
 ## [0.7.0] 2020-06-30
 
 ### Added
@@ -33,7 +63,8 @@
 - [#1180](https://github.com/epiphany-platform/epiphany/issues/1180) - Update list of ports used by Epiphany components
 - [#1310](https://github.com/epiphany-platform/epiphany/issues/1310) - Updated Azure-cli from 2.0.67 to 2.6.0
 - [#1330](https://github.com/epiphany-platform/epiphany/issues/1330) - Update cloud based OS images
-- [#1138](https://github.com/epiphany-platform/epiphany/issues/1138) - Upgrade Kubernetes to 1.17.7
+- [#1138](https://github.com/epiphany-platform/epiphany/issues/1138) - Upgrade Kubernetes to 1.17.70
+- [#1395](https://github.com/epiphany-platform/epiphany/issues/1395) - Upgrade RabbitMQ from 3.7.10 to 3.8.3
 
 ### Fixed
 
@@ -48,7 +79,6 @@
 - [#1372](https://github.com/epiphany-platform/epiphany/issues/1372) - [BUG] Epicli does not create Postgresql SET\_BY\_AUTOMATION values correctly
 - [#1373](https://github.com/epiphany-platform/epiphany/issues/1373) - [BUG] permission denied for shared directory in the container when no volume was mounted
 - [#1385](https://github.com/epiphany-platform/epiphany/issues/1385) - [BUG] Regression issue with disabling etcd encryption
-- [#1399](https://github.com/epiphany-platform/epiphany/issues/1399) - [BUG] Epicli upgrade issue - the process hangs for several hours on the task kubeadm upgrade apply
 
 ### Known Issues
 

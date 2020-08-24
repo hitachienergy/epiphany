@@ -188,7 +188,7 @@ class InfrastructureBuilder(Step):
         vm.specification.admin_username = self.cluster_model.specification.admin_user.name
         vm.specification.network_interface_name = network_interface_name
         vm.specification.tags.append({'cluster': cluster_tag(self.cluster_prefix, self.cluster_name)})
-        vm.specification.tags.append({component_key: ''})
+        vm.specification.tags.append({component_key: ''})        
         if vm.specification.os_type == 'linux':
             # For linux we dont need a PW since we only support SSH. We add something random for Terraform
             # to run and later disable password access in Ansible.

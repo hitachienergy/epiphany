@@ -1,0 +1,29 @@
+---
+- name: Collect kubeadm-config
+  shell: |
+    kubectl get configmap kubeadm-config \
+      --namespace kube-system \
+      --output jsonpath={{ jsonpath }}
+  vars:
+    jsonpath: >-
+      '{.data.ClusterConfiguration}'
+  environment:
+    KUBECONFIG: /etc/kubernetes/admin.conf
+  args:
+    executable: /bin/bash
+  register: kubeadm_config
+  changed_when: false
+
+- name: Extend kubeadm config
+  set_fact:
+    kubeadm_config: >-
+      {{ original | combine(update, recursive=true) }}
+  vars:
+    original: >-
+      {{ kubeadm_config.stdout | from_yaml }}
+
+- name: Render /etc/kubeadm/kubeadm-config.yml
+  copy:
+    dest: /etc/kubeadm/kubeadm-config.yml
+    content: >-
+      {{ kubeadm_config | to_nice_yaml }}

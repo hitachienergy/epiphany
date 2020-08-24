@@ -1,65 +1,65 @@
 ---
-- name: Verify cluster version
-  block:
-    - name: verify-upgrade | Include wait-for-kube-apiserver.yml
-      include_tasks: wait-for-kube-apiserver.yml
-
-    - name: verify-upgrade | Include get-cluster-version.yml
-      include_tasks: get-cluster-version.yml # sets cluster_version
-
-    - name: verify-upgrade | Verify cluster version
-      assert:
-        that: "'{{ version }}' in cluster_version"
-  when:
-    - inventory_hostname in groups['kubernetes_master']
-
-- name: Verify kubectl version
-  block:
-    - name: verify-upgrade | Get kubectl version
-      environment:
-        KUBECONFIG: /home/{{ admin_user.name }}/.kube/config
-      shell: >-
-        set -o pipefail &&
-        kubectl version --client --short -o json | jq --raw-output '.clientVersion.gitVersion'
-      changed_when: false
-      register: kubectl_version
-      args:
-        executable: /bin/bash
-
-    - name: verify-upgrade | Verify kubectl version
-      assert:
-        that: "'{{ version }}' in kubectl_version.stdout"
-
-- name: Verify kubeadm version
-  block:
-    - name: verify-upgrade | Get kubeadm version
-      environment:
-        KUBECONFIG: /home/{{ admin_user.name }}/.kube/config
-      shell: kubeadm version -o short
-      changed_when: false
-      register: kubeadm_version
-
-    - name: verify-upgrade | Verify kubeadm version
-      assert:
-        that: "'{{ version }}' in kubeadm_version.stdout"
-
-- name: verify-upgrade | Verify kubelet version from API server and get node status
+- name: k8s/verify | Verify cluster versions
   environment:
-    KUBECONFIG: /home/{{ admin_user.name }}/.kube/config
-  shell: |-
-    set -o pipefail &&
-    kubectl get nodes {{ inventory_hostname }} |
-    # get values only for STATUS and VERSION columns, example output: 'Ready v1.14.6'
-    awk 'NR==1 { for (col=1; col<=NF; col++) { columns[$col] = col } };
-         NR>1  { print $columns["STATUS"], $columns["VERSION"] }'
-  changed_when: false
-  register: node_status_and_version
-  until: version in node_status_and_version.stdout
-  retries: 30 # 1min
-  delay: 2
-  args:
-    executable: /bin/bash
+    KUBECONFIG: /etc/kubernetes/kubelet.conf
+  block:
+    - name: k8s/verify | Verify cluster version
+      when:
+        - inventory_hostname in groups.kubernetes_master
+      block:
+        - name: k8s/verify | Include wait-for-kube-apiserver.yml
+          include_tasks: utils/wait-for-kube-apiserver.yml
 
-- name: verify-upgrade | Verify node status
-  assert:
-    that: "'Ready' in node_status_and_version.stdout"
+        - name: k8s/verify | Include get-cluster-version.yml
+          include_tasks: get-cluster-version.yml  # sets cluster_version
+
+        - name: k8s/verify | Verify cluster version
+          assert:
+            that: version in cluster_version
+
+    - name: k8s/verify | Verify kubectl version
+      block:
+        - name: k8s/verify | Get kubectl version
+          shell: |-
+            set -o pipefail &&
+            kubectl version --client --short -o json | jq --raw-output '.clientVersion.gitVersion'
+          register: kubectl_version
+          args: &args
+            executable: /bin/bash
+          changed_when: false
+
+        - name: k8s/verify | Verify kubectl version
+          assert:
+            that: version in kubectl_version.stdout
+
+    - name: k8s/verify | Verify kubeadm version
+      block:
+        - name: k8s/verify | Get kubeadm version
+          command: >-
+            kubeadm version -o short
+          register: kubeadm_version
+          changed_when: false
+
+        - name: k8s/verify | Verify kubeadm version
+          assert:
+            that: version in kubeadm_version.stdout
+
+    - name: k8s/verify | Verify kubelet version from API server and get node status
+      run_once: true
+      shell: |-
+        set -o pipefail &&
+        kubectl get nodes {{ inventory_hostname }} |
+        # get values only for STATUS and VERSION columns, example output: 'Ready v1.14.6'
+        awk 'NR==1 { for (col=1; col<=NF; col++) { columns[$col] = col } };
+             NR>1  { print $columns["STATUS"], $columns["VERSION"] }'
+      register: node_status_and_version
+      until:
+        - version in node_status_and_version.stdout
+      retries: 30 # 1min
+      delay: 2
+      args: *args
+      changed_when: false
+
+    - name: k8s/verify | Verify node status
+      assert:
+        that: "'Ready' in node_status_and_version.stdout"

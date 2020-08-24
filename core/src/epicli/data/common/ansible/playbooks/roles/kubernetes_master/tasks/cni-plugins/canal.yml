@@ -1,23 +1,41 @@
 ---
-- name: Create canal deployment
-  template:
-    src: "{{ template_file_name }}"
-    dest: "/home/{{ admin_user.name }}/canal.yml"
-    owner: "{{ admin_user.name }}"
-    group: "{{ admin_user.name }}"
-  vars:
-    template_file_name: >-
-      {%- if k8s_server_version is defined and k8s_server_version is version('v1.16', '<') -%}
-        canal-for-k8s-below-1.16.yml.j2
-      {%- else -%}
-        canal.yml.j2
-      {%- endif -%}
+- name: Configure NetworkManager before attempting to use Canal networking
+  block:
+    # /etc/NetworkManager/conf.d directory is created by NetworkManager(rpm)/network-manager(deb) package
+    - name: Check if /etc/NetworkManager/conf.d exists
+      stat:
+        path: /etc/NetworkManager/conf.d
+        get_attributes: no
+      register: network_manager_conf_d_stat
 
-- name: Apply canal deployment
-  environment:
-    KUBECONFIG: "/home/{{ admin_user.name }}/.kube/config"
-  shell: |
-    kubectl apply \
-      -f /home/{{ admin_user.name }}/canal.yml
-  args:
-    executable: /bin/bash
+    # Remove flannel.1 interface from NetworkManager managed devices to get rid of
+    # random network issue with missing flannel.1 IP address
+    - name: Copy flannel.conf to /etc/NetworkManager/conf.d
+      template:
+        src: network-manager.conf.j2
+        dest: /etc/NetworkManager/conf.d/flannel.conf
+        owner: root
+        group: root
+        mode: u=rw,g=r,o=r
+      register: copy_flannel_network_manager_conf
+      vars:
+        network_interface_prefix: flannel
+      when:
+        - network_manager_conf_d_stat.stat.exists
+
+- name: Reload NetworkManager service
+  when: copy_flannel_network_manager_conf.changed
+  block:
+    - name: Populate service facts
+      service_facts:
+
+    - name: Reload if NetworkManager service is running
+      systemd:
+        name: NetworkManager
+        state: reloaded
+      when: ansible_facts.services["NetworkManager.service"].state == "running"
+
+- name: Include Canal deployment tasks
+  include_tasks: deployments/deploy-template.yml
+  vars:
+    file_name: canal.yml.j2

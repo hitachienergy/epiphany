@@ -1,34 +1,25 @@
 ---
-- name: upgrade-node | Wait for cluster's readiness
-  include_tasks: wait.yml
+- name: k8s/node | Drain node in preparation for maintenance
+  include_tasks: utils/drain.yml
 
-- name: upgrade-node | Drain node in preparation for maintenance
-  include_tasks: node/drain.yml
-
-- name: upgrade-node | Wait for cluster's readiness
-  include_tasks: wait.yml
-
-- name: upgrade-node | Upgrade Docker # this may restart Docker daemon
+- name: k8s/node | Upgrade Docker # this may restart Docker daemon
   include_tasks: docker.yml
-  when:
-    - version is version('1.14.0', '>=') # Docker 18.09 validated since K8s 1.14
 
-# For Redhat and Debian & K8s > 1.14.6 we want to update packages like so
-- name: upgrade-node | Upgrade, configure packages
-  when: version is version('1.15.0', '>=')
-     or ansible_os_family == "RedHat"
+- name: Upgrade packages and perform upgrade
   block:
-    - name: upgrade-node | Hold packages for Debian family
-      include_tasks: "Debian/hold-packages.yml"
-      when: ansible_os_family == "Debian"
-
-    - name: upgrade-node | Install kubeadm
+    - name: k8s/node | Install kubeadm
       include_tasks: "{{ ansible_os_family }}/install-kubeadm.yml"
 
-    - name: upgrade-node | Upgrade node config
-      shell: kubeadm upgrade node config --kubelet-version v{{ version }}
+    - name: k8s/node | Upgrade node config
+      command: >-
+        kubeadm upgrade node --kubelet-version v{{ version }}
+      register: result
+      until:
+        - result is succeeded
+      retries: 20
+      delay: 30
 
-    - name: upgrade-node | Install packages
+    - name: k8s/node | Install packages
       include_tasks: >-
         {%- if cni_in_kubelet is undefined or not cni_in_kubelet -%}
           {{ ansible_os_family }}/install-packages.yml
@@ -36,29 +27,23 @@
           {{ ansible_os_family }}/install-packages-cni-in-kubelet.yml
         {%- endif -%}
 
-# For Debian & K8s <= 1.14.6 we want to update packages like so
-- name: upgrade-node | Upgrade, configure packages
+- name: k8s/node | Upgrade CNI plugin pod
+  import_tasks: upgrade-cni-plugin-pod.yml
+  delegate_to: "{{ groups.kubernetes_master[0] }}"
   when:
-    - version is version('1.14.6', '<=')
-    - ansible_os_family == "Debian"
-  block:
-    - name: upgrade-node | Install packages
-      include_tasks: "{{ ansible_os_family }}/install-packages-pre-1.15.yml"
+    - upgrade_to_final_version
 
-    - name: upgrade-node | Upgrade node config
-      shell: kubeadm upgrade node config --kubelet-version v{{ version }}
-
-- name: upgrade-node | Restart kubelet
+- name: k8s/node | Restart kubelet
   systemd:
     state: restarted
-    daemon_reload: yes
+    daemon_reload: true
     name: kubelet
 
-- name: upgrade-node | Wait for cluster's readiness
-  include_tasks: wait.yml
+- name: k8s/node | Wait for cluster's readiness
+  include_tasks: utils/wait.yml
 
-- name: upgrade-node | Uncordon node - mark node as schedulable
-  include_tasks: node/uncordon.yml
+- name: k8s/node | Uncordon node - mark node as schedulable
+  include_tasks: utils/uncordon.yml
 
-- name: upgrade-node | Verify component versions and node status
+- name: k8s/node | Verify component versions and node status
   include_tasks: verify-upgrade.yml

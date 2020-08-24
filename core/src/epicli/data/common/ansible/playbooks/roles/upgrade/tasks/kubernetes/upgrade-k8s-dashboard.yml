@@ -1,0 +1,39 @@
+---
+- name: Check if upgrade is needed
+  block:
+    - name: k8s/master | Include tasks from utils/get-images-from-deployment-template
+      include_role:
+        name: kubernetes_master
+        tasks_from: utils/get-images-from-deployment-template # sets template_images
+      vars:
+        kind: deployment
+        template_file: kubernetes-dashboard.yml.j2
+
+    - name: k8s/master | Include tasks from utils/get-deployment-images
+      include_role:
+        name: kubernetes_master
+        tasks_from: utils/get-deployment-images # sets object_images
+      vars:
+        kind: deployment
+        selector: k8s-app=kubernetes-dashboard
+        namespace: kubernetes-dashboard
+
+    - name: k8s/master | Check if Kubernetes Dashboard should be upgraded
+      set_fact:
+        upgrade_k8s_dashboard: >-
+          {{ (template_images | difference(object_images) | count > 0) | ternary(true, false) }}
+
+- name: Upgrade dashboard
+  when: upgrade_k8s_dashboard
+  block:
+    - name: k8s/master | Delete kubernetes-dashboard namespace
+      command: >-
+        kubectl delete ns kubernetes-dashboard
+      environment:
+        KUBECONFIG: /etc/kubernetes/admin.conf
+
+    # Deploy new version of kubernetes-dashboard
+    - name: k8s/master | Apply Kubernetes Dashboard
+      include_role:
+        name: kubernetes_master
+        tasks_from: apply-dashboard

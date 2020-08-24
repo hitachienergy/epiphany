@@ -2,20 +2,28 @@
 - name: Create directory for files
   become: true
   file:
-    path: /etc/epiphany/manifests
+    path: "{{ epiphany_manifests_dir }}"
     state: directory
     owner: root
     group: root
-    mode: u=rw,go=r
+    mode: u=rwx,go=rx
 
-- name: "Copy {{ file_name }}"
-  become: true
-  copy:
-    src: "{{ file_name }}"
-    dest: "/etc/epiphany/manifests/{{ file_name }}"
-    owner: "{{ admin_user.name }}"
-    group: "{{ admin_user.name }}"
-    mode: u=rw,go=r
+- name: Upload and apply file
+  vars:
+    dest_path: "{{ epiphany_manifests_dir }}/{{ file_name | basename }}"
+  block:
+    - name: Upload {{ file_name }} file
+      become: true
+      copy:
+        src: "{{ file_name }}"
+        dest: "{{ dest_path }}"
+        owner: "{{ admin_user.name }}"
+        group: "{{ admin_user.name }}"
+        mode: u=rw,g=r,o=
 
-- name: Apply file
-  include_tasks: apply-file.yml
+    - name: Apply {{ dest_path }} file
+      command: kubectl apply -f {{ dest_path }}
+      register: kubectl_apply
+      changed_when: kubectl_apply.stdout_lines | map('regex_replace', '^.+ ') | reject('eq', 'unchanged') | list
+      environment:
+        KUBECONFIG: /etc/kubernetes/admin.conf

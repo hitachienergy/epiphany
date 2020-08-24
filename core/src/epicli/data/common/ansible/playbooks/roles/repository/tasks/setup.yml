@@ -39,9 +39,6 @@
         dest: /tmp/epi-download-requirements/download-requirements.sh
         mode: a+x
 
-    - name: Download Epiphany requirements
-      include_tasks: download-requirements.yml
-
   when:
     - not offline_mode
     - not custom_repository_url
@@ -71,6 +68,15 @@
     force: no # if target exists it will skip, default is 'yes'
   when:
     - offline_mode
+    - not custom_repository_url
+    - inventory_hostname in target_repository_hostnames
+
+# Put it down here as the script download-requirements.sh relies on some files
+# in the folder /tmp/epi-repository-setup-scripts that until now it should be available
+- name: Download Epiphany requirements
+  include_tasks: download-requirements.yml
+  when:
+    - not offline_mode
     - not custom_repository_url
     - inventory_hostname in target_repository_hostnames
 

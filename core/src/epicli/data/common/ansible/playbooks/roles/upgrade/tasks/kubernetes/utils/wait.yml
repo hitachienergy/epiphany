@@ -1,0 +1,45 @@
+---
+- name: k8s/utils | Wait for nodes and pods to be ready
+  delegate_to: "{{ groups.kubernetes_master[0] }}"
+  run_once: true
+  environment:
+    KUBECONFIG: /etc/kubernetes/admin.conf
+  block:
+    - name: k8s/utils | Wait for kubectl to find and access K8s cluster
+      include_tasks: kubernetes/utils/wait-for-kube-apiserver.yml
+
+    - name: k8s/utils | Wait for nodes
+      command: >-
+        kubectl get nodes --output json
+      register: result
+      until:
+        - result is succeeded
+        - result.stdout | from_json | json_query("items[*].status.conditions[?(@.type=='Ready')].status[]") | unique == ["True"]
+      retries: 600  # 20min
+      delay: 2
+      changed_when: false
+
+    - name: k8s/utils | Wait for pods
+      when: wait_for_pods | default(false) | bool
+      block:
+        - name: k8s/utils | Wait for all pods to be running
+          command: >-
+            kubectl get pods --all-namespaces --output json
+          register: result
+          until:
+            - result is succeeded
+            - result.stdout | from_json | json_query('items[*].status.phase') | unique == ["Running"]
+          retries: 600  # 20min
+          delay: 2
+          changed_when: false
+
+        - name: k8s/utils | Wait for all pods to be ready
+          command: >-
+            kubectl get pods --all-namespaces --output json
+          register: result
+          until:
+            - result is succeeded
+            - result.stdout | from_json | json_query('items[*].status.conditions[].status') | unique == ["True"]
+          retries: 600  # 20min
+          delay: 2
+          changed_when: false
