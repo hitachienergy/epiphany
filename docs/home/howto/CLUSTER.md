@@ -679,26 +679,13 @@ example below, change the `name` field as you wish.
 ---
 kind: infrastructure/availability-set
 name: kube-node-availability-set
-provider: azure
 specification:
-  name: kube-node-availability-set
+# The "name" attribute is generated automatically according to Epiphany's naming conventions
+  availability_set: kube-node  # Short and simple name is preferred
   platform_fault_domain_count: 2
   platform_update_domain_count: 5
   managed: 'true'
-```
-
-Then your infrastructure type `infrastructure/virtual-machine` with the name you want to enable (below is
-kubernetes-node-machine) reference the entry, for example:
-
-```yaml
-kind: infrastructure/virtual-machine
-name: kubernetes-node-machine
 provider: azure
-specification:
-  size: Standard_DS3_V2
-# This tell to template the vm terraform to insert the id of the availability-set
-  availability_set: kube-node-availability-set
-title: Virtual Machine Infra
 ```
 
 Then in the corresponding `components` section of the kind `kind: epiphany-cluster` set it as well.
@@ -710,8 +697,9 @@ Then in the corresponding `components` section of the kind `kind: epiphany-clust
     kubernetes_master:
       count: 1
     kubernetes_node:
-# This line tell we generate the availability-set terraform template
-      availability_set: kube-node-availability-set
+# This line tells we generate the availability-set terraform template
+      availability_set: kube-node  # Short and simple name is preferred
+      count: 2
 ```
 
 The full minimum cluster is listed below. Note that you can set different type of machine within different
@@ -741,9 +729,9 @@ specification:
     kubernetes_master:
       count: 1
     kubernetes_node:
-# This line tell we generate the availability-set terraform template
-      availability_set: kube-node-availability-set
-      count: 1
+# This line tells we generate the availability-set terraform template
+      availability_set: kube-node  # Short and simple name is preferred
+      count: 2
     load_balancer:
       count: 1
     logging:
@@ -756,22 +744,14 @@ specification:
       count: 0
 title: Epiphany cluster Config
 ---
-kind: infrastructure/virtual-machine
-name: kubernetes-node-machine
-provider: azure
-specification:
-  size: Standard_DS3_V2
-# This tell to template the vm terraform to insert the id of the availability-set
-  availability_set: kube-node-availability-set
-title: Virtual Machine Infra
----
 kind: infrastructure/availability-set
 name: kube-node-availability-set
-provider: azure
 specification:
-  name: kube-node-availability-set
+# The "name" attribute (ommited here) is generated automatically according to Epiphany's naming conventions
+  availability_set: kube-node  # Short and simple name is preferred
   platform_fault_domain_count: 2
   platform_update_domain_count: 5
   managed: 'true'
+provider: azure
 ```
 
