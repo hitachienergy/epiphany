@@ -34,6 +34,7 @@ To setup the cluster do the following steps from the provisioning machine:
       key_path: /path/to/your/ssh/keys
       name: user_name
     ```
+
     Here you should specify the path to the SSH keys and the admin user name which will be used by Anisble to provision the cluster machines.
 
 3. Define the components you want to install and link them to the machines you want to install them on:
@@ -303,6 +304,13 @@ From the defined cluster build folder it will take the information needed to rem
 
 ## Single machine cluster
 
+---
+**NOTE**
+
+Single machine cannot be scaled up or deployed alongside other types of cluster.
+
+---
+
 Sometimes it might be desirable to run an Epiphany cluster on a single machine. For this purpose Epiphany ships with a `single_cluster` component configuration. This cluster comes with the following main components:
 
 - kubernetes-master: Untainted so pods can be deployed on it
@@ -501,6 +509,13 @@ specification:
 
 ## How to scale or cluster components
 
+---
+**NOTE**
+
+Not all components are supported for this action. There is a bunch of issues referenced below in this document, [one](https://github.com/epiphany-platform/epiphany/issues/1574) of them is that disks are not removed for all components after downscale.
+
+---
+
 Epiphany has the ability to automaticly scale and cluster certain components on cloud providers (AWS, Azure). To upscale or downscale a component the `count` number must be increased or decreased:
 
   ```yaml
@@ -512,19 +527,15 @@ Epiphany has the ability to automaticly scale and cluster certain components on 
 
 Then when applying the changed configuration using Epicli additional VM's will be spawned and configured or removed. The following components support scaling/clustering:
 
-- kubernetes_node: When changed this will setup or remove additional nodes with `kubernetes_master`.
-- kafka: When changed this will setup or remove additional nodes for the Kafka cluster.
-- rabbitmq: When changed this will setup or remove additional nodes for the RabbitMQ cluster. Note that this will require to enable clustering in the `configuration/rabbitmq` configuration:
-
-  ```yaml
-  kind: configuration/rabbitmq
-  ...
-  specification:
-    cluster:
-      is_clustered: true
-  ...
-  ```
-- postgresql: When changed this will setup or remove additional nodes for Postgresql. Note that extra nodes can only be setup to do replication by adding the following additional `configuration/postgresql` configuration:
+- kubernetes_master: When increased this will setup additional control plane nodes, but in the case of non-ha k8s cluster, existing control plane node must be promoted first. At the moment there is [no ability](https://github.com/epiphany-platform/epiphany/issues/1579) to downscale.
+- kubernetes_node: When increased this will setup additional nodes with `kubernetes_master`. There is [no ability](https://github.com/epiphany-platform/epiphany/issues/1580) to downscale.
+- ignite
+- kafka: When changed this will setup or remove additional nodes for the Kafka cluster. Note that there is an [issue](https://github.com/epiphany-platform/epiphany/issues/1576) that needs to be fixed before scaling usage.
+- load_balancer
+- logging: Sometimes it works, but often there is an [issue](https://github.com/epiphany-platform/epiphany/issues/1575) with Kibana installation that needs to be resoved
+- monitoring
+- opendistro_for_elasticsearch: Works the same as `logging` component, without issues if there is no `kibana` part in feature mapping configuration.
+- postgresql: At the moment does not work correctly, there is an [issue](https://github.com/epiphany-platform/epiphany/issues/1577). When changed this will setup or remove additional nodes for Postgresql. Note that extra nodes can only be setup to do replication by adding the following additional `configuration/postgresql` configuration:
 
   ```yaml
   kind: configuration/postgresql
@@ -539,7 +550,16 @@ Then when applying the changed configuration using Epicli additional VM's will b
     ...
   ```
 
-Changing the count for other predefined components will spawn additional machines or remove VM's 
+- rabbitmq: At the moment scaling is not supported, there is an [issue](https://github.com/epiphany-platform/epiphany/issues/1578). When changed this will setup or remove additional nodes for the RabbitMQ cluster. Note that this will require to enable clustering in the `configuration/rabbitmq` configuration:
+
+  ```yaml
+  kind: configuration/rabbitmq
+  ...
+  specification:
+    cluster:
+      is_clustered: true
+  ...
+  ```
 
 ## Multi master cluster
 
