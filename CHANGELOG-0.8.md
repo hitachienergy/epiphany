@@ -11,3 +11,4 @@
 ### Fixed
 
 - Fix for changing Terraform templates between Epicli apply runs on Azure.
+- [#1520](https://github.com/epiphany-platform/epiphany/issues/1520) - Added additional SANs to k8s-apiserver certificates to run kubectl outside the cluster
