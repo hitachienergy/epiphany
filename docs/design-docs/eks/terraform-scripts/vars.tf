@@ -1,32 +1,61 @@
-// -- [ VARS ] ------------------------------------------------------
-// Cluster name
+// // EKS Cluster name
 variable "eks_cluster_name" {
-  default = "eks-terraform-cluster"
+  type = string
 }
 
-// Cluster version
+// EKS Cluster version
 variable "eks_cluster_version" {
-  default = "1.17"
+  type = number
+}
+
+// EKS autoscaller version
+variable "eks_autoscaler_version" {
+  type = string
+}
+
+// EKS chart version
+variable "eks_autoscaler_chart_version" {
+  type = string
 }
 
 // AWS Region
 variable "region" {
-  default = "eu-central-1"
+  type = string
 }
 
 // Environment type (used to tag resources)
 variable "environment" {
-  default = "testing"
+  type = string
 }
 
 // AWS VPC name
 variable "vpc_name" {
-  default = "eks-terraform-vpc"
+  type = string
 }
 
 // AWS Resource group name
 variable "resource_group_name" {
-  default = "eks-terraform-rg"
+  type = string
+}
+
+// IAM roles save path
+variable "iam_path" {
+  type = string
+}
+
+// Autoscaling threshold
+variable "cluster-autoscaler_scale-down-utilization-threshold" {
+  type = number
+}
+
+// Rbac installation path
+variable "cluster-autoscaler_rbac" {
+  type = string
+}
+
+// Save kubeconfig
+variable "write_kubeconfig" {
+  type = bool
 }
 
 // Nodes/Workers objects
@@ -38,13 +67,6 @@ variable "worker1_data" {
     asg_min_size         = number
     asg_max_size         = number
   })
-  default = {
-    name = "eks-worker-1"
-    instance_type = "t2.small"
-    asg_desired_capacity = 2
-    asg_min_size = 1
-    asg_max_size = 5
-  }
 }
 
 variable "worker2_data" {
@@ -55,57 +77,30 @@ variable "worker2_data" {
     asg_min_size         = number
     asg_max_size         = number
   })
-  default = {
-    name = "eks-worker-2"
-    instance_type = "t2.medium"
-    asg_desired_capacity = 1
-    asg_min_size = 1
-    asg_max_size = 5
-  }
 }
 
 // VPC CIDR
 variable "cidr" {
-  default = "10.0.0.0/16"
+	type = string
 }
 
 // VPC Private subnet list
 variable "private_subnets" {
-  type = list
-  default = [
-    "10.0.1.0/24",
-    "10.0.2.0/24",
-    "10.0.3.0/24"
-  ]
+	type = list(string)
 }
 
 // VPC Public subnet list
 variable "public_subnets" {
-  type = list
-  default = [
-    "10.0.4.0/24",
-    "10.0.5.0/24",
-    "10.0.6.0/24"
-  ]
+	type = list(string)
 }
+
 // AWS Security group list
 variable "secgrp_mgmt_one" {
-  type = list
-  default = [
-    "10.0.0.0/8"
-  ]
+	type = list(string)
 }
 variable "secgrp_mgmt_two" {
-  type = list
-  default = [
-    "192.168.0.0/16"
-  ]
+	type = list(string)
 }
 variable "secgrp_mgmt_all" {
-  type = list
-  default = [
-      "10.0.0.0/8",
-      "172.16.0.0/12",
-      "192.168.0.0/16"
-  ]
+	type = list(string)
 }
