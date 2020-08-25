@@ -670,10 +670,10 @@ You can read more [here](https://www.confluent.io/blog/how-choose-number-topics-
 
 To install RabbitMQ in single mode just add rabbitmq role to your data.yaml for your server and in general roles section. All configuration on RabbitMQ - e.g. user other than guest creation should be performed manually.
 
-## Howto use azure scalability set feature
+## How to use Azure availability sets
 
-In your cluster yaml config declare several (if required) object of kind `infrastructure/availability-set` like
-example below, change the `name` field as you wish.
+In your cluster yaml config declare as many as required objects of kind `infrastructure/availability-set` like
+in the example below, change the `name` field as you wish.
 
 ```yaml
 ---
@@ -688,7 +688,7 @@ specification:
 provider: azure
 ```
 
-Then in the corresponding `components` section of the kind `kind: epiphany-cluster` set it as well.
+Then set it also in the corresponding `components` section of the `kind: epiphany-cluster` doc.
 
 ```yaml
   components:
@@ -703,8 +703,8 @@ Then in the corresponding `components` section of the kind `kind: epiphany-clust
 ```
 
 The full minimum cluster is listed below. Note that you can set different type of machine within different
-availability set, eg. all kubenetes master in one availability set, all kubernetes nodes in another one, also
-kafka etc.. .
+availability set, e.g. all `kubernetes_master` in one availability set, all `kubernetes_node` in another one, also
+`kafka` etc.
 
 ```yaml
 # Test availability set config
@@ -754,4 +754,3 @@ specification:
   managed: 'true'
 provider: azure
 ```
-

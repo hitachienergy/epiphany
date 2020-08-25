@@ -55,7 +55,7 @@ class InfrastructureBuilder(Step):
 
             # Add message for ignoring availabiltity zones if present.
             if 'availability_zone' in component_value.subnets[0]:
-                self.logger.warning(f'On Azure availability_zones are not supported jet. Ignoring definition.')
+                self.logger.warning(f'On Azure availability_zones are not supported yet. Ignoring definition.')
 
             subnet_definition = component_value.subnets[0]
             subnet = select_first(infrastructure, lambda item: item.kind == 'infrastructure/subnet' and

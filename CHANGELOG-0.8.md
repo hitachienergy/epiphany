@@ -4,7 +4,7 @@
 
 ### Added
 
-- [#1543](https://github.com/epiphany-platform/epiphany/issues/1543) - Add support for azure availability-set
+- [#1543](https://github.com/epiphany-platform/epiphany/issues/1543) - Add support for Azure availability sets
 
 ### Updated
 
