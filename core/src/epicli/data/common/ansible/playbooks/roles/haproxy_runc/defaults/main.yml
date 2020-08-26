@@ -1,0 +1,5 @@
+---
+runc_dir: "/opt/runc"
+haproxy_version: "2.2.2"
+haproxy_image_tag: "{{ haproxy_version }}-alpine"
+haproxy_image: "{{ image_registry_address }}/haproxy:{{ haproxy_image_tag }}"

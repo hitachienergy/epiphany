@@ -1,0 +1,18 @@
+---
+- name: Assert input parameters
+  assert:
+    that:
+      - haproxy_service is defined
+
+- name: Setup runc container
+  include_tasks: setup-runc-container.yml
+
+- name: Setup systemd unit
+  include_tasks: setup-systemd-unit.yml
+
+- name: Enable and start {{ haproxy_service }} service
+  systemd:
+    name: "{{ haproxy_service }}"
+    state: started
+    enabled: true
+    daemon_reload: true
