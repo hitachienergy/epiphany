@@ -4,7 +4,6 @@ provider: azure
 name: default
 specification:
     name: SET_BY_AUTOMATION
-    availability_set: SET_BY_AUTOMATION
     platform_fault_domain_count: SET_BY_AUTOMATION
     platform_update_domain_count: SET_BY_AUTOMATION
     managed: SET_BY_AUTOMATION

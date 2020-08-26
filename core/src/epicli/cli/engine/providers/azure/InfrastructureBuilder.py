@@ -81,8 +81,7 @@ class InfrastructureBuilder(Step):
             if 'availability_set' in component_value:
                 availability_set = select_first(
                     infrastructure,
-                    lambda item: item.kind == 'infrastructure/availability-set' and
-                           item.specification.availability_set == component_value.availability_set,
+                    lambda item: item.kind == 'infrastructure/availability-set' and item.name == component_value.availability_set,
                 )
                 if availability_set is None:
                     availability_set = self.get_availability_set(component_value.availability_set)
@@ -147,12 +146,14 @@ class InfrastructureBuilder(Step):
         subnet.specification.cluster_name = self.cluster_name
         return subnet
 
-    def get_availability_set(self, availability_set):
-        aset = select_first(self.docs, lambda item: item.kind == 'infrastructure/availability-set' and
-                                                    item.specification.availability_set == availability_set)
-        if aset is not None:
-            aset.specification.name = resource_name(self.cluster_prefix, self.cluster_name, availability_set + '-' + 'aset')
-        return aset
+    def get_availability_set(self, availability_set_name):
+        availability_set = select_first(
+            self.docs,
+            lambda item: item.kind == 'infrastructure/availability-set' and item.name == availability_set_name,
+        )
+        if availability_set is not None:
+            availability_set.specification.name = resource_name(self.cluster_prefix, self.cluster_name, availability_set_name + '-' + 'aset')
+        return availability_set
 
     def get_subnet_network_security_group_association(self, component_key, subnet_name, security_group_name, index):
         ssga = self.get_config_or_default(self.docs, 'infrastructure/subnet-network-security-group-association')
