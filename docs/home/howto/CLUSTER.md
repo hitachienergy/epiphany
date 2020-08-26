@@ -678,13 +678,12 @@ in the example below, change the `name` field as you wish.
 ```yaml
 ---
 kind: infrastructure/availability-set
-name: kube-node-availability-set
+name: kube-node  # Short and simple name is preferred
 specification:
 # The "name" attribute is generated automatically according to Epiphany's naming conventions
-  availability_set: kube-node  # Short and simple name is preferred
   platform_fault_domain_count: 2
   platform_update_domain_count: 5
-  managed: 'true'
+  managed: true
 provider: azure
 ```
 
@@ -745,12 +744,11 @@ specification:
 title: Epiphany cluster Config
 ---
 kind: infrastructure/availability-set
-name: kube-node-availability-set
+name: kube-node  # Short and simple name is preferred
 specification:
 # The "name" attribute (ommited here) is generated automatically according to Epiphany's naming conventions
-  availability_set: kube-node  # Short and simple name is preferred
   platform_fault_domain_count: 2
   platform_update_domain_count: 5
-  managed: 'true'
+  managed: true
 provider: azure
 ```
