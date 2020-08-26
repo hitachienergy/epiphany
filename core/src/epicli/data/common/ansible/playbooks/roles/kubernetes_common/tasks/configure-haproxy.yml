@@ -23,13 +23,20 @@
       haproxy_backend_servers: >-
         {{ kubernetes_common.haproxy_master_names | zip(kubernetes_common.haproxy_master_ipv4s) | list }}
 
-- include_tasks: "configure-haproxy-{{ ansible_os_family }}.yml"
+- name: Ensure /etc/haproxy directory exists
+  file:
+    path: /etc/haproxy/
+    state: directory
 
-- name: Reload HAProxy service
-  service:
-    name: haproxy
-    enabled: true
-    state: "{{ item }}"
-  loop:
-    - started
-    - reloaded
+- name: Configure and start haproxy
+  vars:
+    haproxy_service: haproxy-k8s
+  block:
+    - name: Render haproxy config
+      template:
+        dest: /etc/haproxy/{{ haproxy_service }}.cfg
+        src: haproxy.cfg.j2
+
+    - name: Setup and start {{ haproxy_service }} runc-based systemd service
+      include_role:
+        name: haproxy_runc
