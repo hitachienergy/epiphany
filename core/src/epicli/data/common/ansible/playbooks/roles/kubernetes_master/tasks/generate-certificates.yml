@@ -1,0 +1,142 @@
+---
+- name: Generate certificates block
+  vars:
+    # https://kubernetes.io/docs/setup/best-practices/certificates/#all-certificates
+    _certificates_opt_mapping:
+      - name: admin.conf
+        kind: ['clientAuth']
+        target: "{{ specification.advanced.certificates.location }}/admin.conf"
+        parent_ca: "ca"
+      - name: apiserver-etcd-client
+        kind: ['clientAuth']
+        target: "{{ specification.advanced.certificates.location }}/apiserver-etcd-client"
+        parent_ca: "etcd/ca"
+      - name: apiserver-kubelet-client
+        kind: ['clientAuth']
+        target: "{{ specification.advanced.certificates.location }}/apiserver-kubelet-client"
+        parent_ca: "ca"
+      - name: apiserver
+        kind: ['serverAuth']
+        target: "{{ specification.advanced.certificates.location }}/apiserver"
+        parent_ca: "ca"
+      - name: controller-manager.conf
+        kind: ['clientAuth']
+        target: "{{ specification.advanced.certificates.location }}/controller-manager.conf"
+        parent_ca: "ca"
+      - name: etcd-healthcheck-client
+        kind: ['clientAuth']
+        target: "{{ specification.advanced.certificates.location }}/etcd/healthcheck-client"
+        parent_ca: "etcd/ca"
+      - name: etcd-peer
+        kind: ['serverAuth', 'clientAuth']
+        target: "{{ specification.advanced.certificates.location }}/etcd/peer"
+        parent_ca: "etcd/ca"
+      - name: etcd-server
+        kind: ['serverAuth', 'clientAuth']
+        target: "{{ specification.advanced.certificates.location }}/etcd/server"
+        parent_ca: "etcd/ca"
+      - name: front-proxy-client
+        kind: ['clientAuth']
+        target: "{{ specification.advanced.certificates.location }}/front-proxy-client"
+        parent_ca: "front-proxy-ca"
+      - name: scheduler.conf
+        kind: ['clientAuth']
+        target: "{{ specification.advanced.certificates.location }}/scheduler.conf"
+        parent_ca: "ca"
+  block:
+  - name: Save old certificates
+    synchronize:
+      src: "{{ specification.advanced.certificates.location }}/"
+      dest: >-
+        "{{ specification.advanced.certificates.location | regex_replace('\\/$', '') }}-backup-{{ lookup('pipe','date +%Y%m%d%H%M%S') }}"
+    delegate_to: "{{ inventory_hostname }}"
+  - name: Ensure necessary directories exist
+    file:
+      path: "{{ specification.advanced.certificates.location }}/csr"
+      state: directory
+      owner: root
+      group: root
+      mode: u=rw
+  - name: Generate new CSR
+    shell: kubeadm alpha certs renew all --csr-only --csr-dir=csr
+    args:
+      executable: /bin/bash
+      chdir: "{{ specification.advanced.certificates.location }}"  
+  - name: Register CSR info
+    openssl_csr_info:
+      path: "{{ specification.advanced.certificates.location }}/csr/{{ item.name }}.csr"
+    register: csr_info
+    with_items: "{{ _certificates_opt_mapping }}"
+  - debug: var=csr_info
+  # https://github.com/openssl/openssl/issues/10458
+  #- name: Generate extension files
+  #  template:
+  #    src: certificate-v3.ext.j2
+  #    dest: "{{ specification.advanced.certificates.location }}/ext/{{ item.0.name }}.ext"
+  #  with_together:
+  #    - "{{ _certificates_opt_mapping }}"
+  #    - "{{ csr_info.results }}"
+  - name: Regenerate an OpenSSL Certificate Signing Request
+    openssl_csr:
+      path: "{{ specification.advanced.certificates.location }}/csr/{{ item.0.name }}.csr"
+      privatekey_path: "{{ specification.advanced.certificates.location }}/csr/{{ item.0.name }}.key"
+      common_name: "{{ item.1.subject.commonName }}"
+      organization_name: "{{ item.1.subject.organizationName is defined | ternary(item.1.subject.organizationName, '') }}"
+      # key usage and extended key usage are not added to CSR by kubeadm
+      key_usage:
+        - digitalSignature
+        - keyEncipherment
+      key_usage_critical: yes
+      extended_key_usage: "{{ item.0.kind }}"
+      subject_alt_name: "{{ item.1.subject_alt_name | ternary(item.1.subject_alt_name, []) }}"
+    with_together:
+      - "{{ _certificates_opt_mapping }}"
+      - "{{ csr_info.results }}"
+  - name: Create signed certificates
+    openssl_certificate:
+      path: "{{ item.target }}.crt"
+      csr_path: "{{ specification.advanced.certificates.location }}/csr/{{ item.name }}.csr"
+      ownca_path: "{{ specification.advanced.certificates.location }}/{{ item.parent_ca }}.crt"
+      ownca_privatekey_path: "{{ specification.advanced.certificates.location }}/{{ item.parent_ca }}.key"
+      ownca_not_after: "+{{ specification.advanced.certificates.expiration_days }}d"
+      provider: ownca
+    with_items:
+      - "{{ _certificates_opt_mapping }}"
+  - name: Copy keys to pki location and ensure that permissions are strict
+    copy:
+      src: "{{ specification.advanced.certificates.location }}/csr/{{ item.name }}.key"
+      remote_src: yes
+      dest: "{{ item.target }}.key"
+      owner: root
+      group: root
+      mode: '0600'
+    with_items:
+      - "{{ _certificates_opt_mapping }}"
+  - name: Remove CSR directory
+    file:
+      path: "{{ specification.advanced.certificates.location }}/csr"
+      state: absent
+  - name: Update conf files with embedded certs
+    environment:
+      KUBECONFIG: "/etc/kubernetes/{{ item.name }}"
+    shell: |
+      kubectl config set-credentials {{ item.account }} \
+      --client-key {{ specification.advanced.certificates.location }}/{{ item.name }}.key \
+      --client-certificate {{ specification.advanced.certificates.location }}/{{ item.name }}.crt --embed-certs
+    args:
+      executable: /bin/bash
+    with_items:
+      - { name: 'admin.conf', account: 'kubernetes-admin' }
+      - { name: 'scheduler.conf', account: 'system:kube-scheduler' }
+      - { name: 'controller-manager.conf', account: 'system:kube-controller-manager' }
+  - name: Remove conf certificates
+    file:
+      path: "{{ specification.advanced.certificates.location }}/{{ item.0 }}.{{ item.1 }}"
+      state: absent
+    with_nested:
+      - ['admin.conf', 'scheduler.conf', 'controller-manager.conf']
+      - ['crt', 'key']
+  - name: Restart kubelet service
+    systemd:
+      name: kubelet
+      state: restarted
