@@ -1,4 +1,9 @@
 ---
+- include_tasks: setup-ansible-postgres-and-detect-secondary-node.yaml
+
+- meta: end_host
+  when: "not is_secondary"
+
 - name: Create postgres_exporter system group
   group:
     name: postgres_exporter
