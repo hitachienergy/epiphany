@@ -701,9 +701,7 @@ Then set it also in the corresponding `components` section of the `kind: epiphan
       count: 2
 ```
 
-The full minimum cluster is listed below. Note that you can set different type of machine within different
-availability set, e.g. all `kubernetes_master` in one availability set, all `kubernetes_node` in another one, also
-`kafka` etc.
+The example below shows a complete configuration. Note that it's recommended to have a dedicated availability set for each clustered component.
 
 ```yaml
 # Test availability set config
