@@ -11,11 +11,11 @@ properties:
   platform_fault_domain_count:
     "$id": "#/properties/specification/properties/platform_fault_domain_count"
     type: integer
-    minimum: 1
+    minimum: 2
   platform_update_domain_count:
     "$id": "#/properties/specification/properties/platform_update_domain_count"
     type: integer
-    minimum: 1
+    minimum: 2
   managed:
     "$id": "#/properties/specification/properties/managed"
     type: string
