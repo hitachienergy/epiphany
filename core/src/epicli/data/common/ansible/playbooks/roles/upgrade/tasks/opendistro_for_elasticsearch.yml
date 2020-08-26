@@ -1,0 +1,30 @@
+---
+- name: Open Distro for Elasticsearch | Get information about installed packages as facts
+  package_facts:
+    manager: auto
+  when: ansible_facts.packages is undefined
+
+- name: Open Distro for Elasticsearch | Assert that elasticsearch-oss package is installed
+  assert:
+    that: ansible_facts.packages['elasticsearch-oss'] is defined
+    fail_msg: elasticsearch-oss package not found, nothing to upgrade
+    quiet: true
+
+- name: Open Distro for Elasticsearch | Include defaults from opendistro_for_elasticsearch role
+  include_vars:
+    file: roles/opendistro_for_elasticsearch/defaults/main.yml
+
+- name: Open Distro for Elasticsearch | Print elasticsearch-oss versions
+  debug:
+    msg:
+      - "Installed version: {{ ansible_facts.packages['elasticsearch-oss'][0].version }}"
+      - "Target version: {{ specification.versions[ansible_os_family].elasticsearch_oss }}"
+
+- name: Open Distro for Elasticsearch | Upgrade elasticsearch-oss
+  include_tasks: opendistro_for_elasticsearch/upgrade_elasticsearch.yml
+  vars:
+    es_http_port: 9200
+    es_transport_port: 9300
+  when:
+    - "specification.versions[ansible_os_family].elasticsearch_oss
+      is version(ansible_facts.packages['elasticsearch-oss'][0].version, '>')"
