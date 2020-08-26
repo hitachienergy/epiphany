@@ -738,13 +738,24 @@ specification:
     monitoring:
       count: 0
     postgresql:
-      count: 0
+# This line tells we generate the availability-set terraform template
+      availability_set: postgresql  # Short and simple name is preferred
+      count: 2
     rabbitmq:
       count: 0
 title: Epiphany cluster Config
 ---
 kind: infrastructure/availability-set
 name: kube-node  # Short and simple name is preferred
+specification:
+# The "name" attribute (ommited here) is generated automatically according to Epiphany's naming conventions
+  platform_fault_domain_count: 2
+  platform_update_domain_count: 5
+  managed: true
+provider: azure
+---
+kind: infrastructure/availability-set
+name: postgresql  # Short and simple name is preferred
 specification:
 # The "name" attribute (ommited here) is generated automatically according to Epiphany's naming conventions
   platform_fault_domain_count: 2
