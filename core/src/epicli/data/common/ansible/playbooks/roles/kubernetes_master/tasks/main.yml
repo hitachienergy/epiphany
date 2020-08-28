@@ -30,7 +30,7 @@
 
 - name: Regenerate apiserver certificates
   when: kubernetes_common.automation_designated_master != inventory_hostname or not is_first_deployment 
-# It's almost always necessary to regenerate apiserver certificates for designated and non-designated masters
+# It's almost always necessary to regenerate certificates for designated and non-designated masters
 # because of a few points:
 # a. Update certificates for old clusters have to be supported
 # b. Execution order is not defined, so when cluster is promoted to HA,
@@ -47,10 +47,23 @@
         name: kubernetes_common
         tasks_from: extend-kubeadm-config
 
+    - name: Collect current apiserver certificate info
+      openssl_certificate_info:
+        path: "{{ specification.advanced.certificates.location }}/apiserver.crt"
+      register: apiserver_certificate_info
+
     - name: Backup and generate apiserver certificates
-      include_role:
-        name: kubernetes_common
-        tasks_from: apiserver-certificates
+      include_tasks: apiserver-certificates.yml
+
+# kubeadm certs renewal uses the existing certificates as the authoritative source for attributes (Common Name, Organization, SAN, etc.)
+# instead of the kubeadm-config ConfigMap, so it's not possible to combine this step with previous ones
+# See https://kubernetes.io/docs/tasks/administer-cluster/kubeadm/kubeadm-certs/#manual-certificate-renewal
+    - name: Regenerate apiserver certificate with previous expiration value
+      when: not specification.advanced.certificates.update
+      vars:
+        certificates_renewal_list: ['apiserver']
+        valid_to: "{{ apiserver_certificate_info.not_after }}"
+      include_tasks: generate-certificates.yml
 
 - name: Update in-cluster configuration
   when: kubernetes_common.automation_designated_master == inventory_hostname
@@ -58,9 +71,11 @@
     name: kubernetes_common
     tasks_from: update-in-cluster-config
 
-# kubeadm certs renewal uses the existing certificates as the authoritative source for attributes (Common Name, Organization, SAN, etc.) 
-# instead of the kubeadm-config ConfigMap, so it's not possible to extend apiserver SANs in this step.
-# See https://kubernetes.io/docs/tasks/administer-cluster/kubeadm/kubeadm-certs/#manual-certificate-renewal
+- name: Regenerate all certificates
+  when: specification.advanced.certificates.update
+  vars:
+    valid_to: "+{{ specification.advanced.certificates.expiration_days }}d"
+  include_tasks: generate-certificates.yml
 
 - import_tasks: master-untaint.yml
 
