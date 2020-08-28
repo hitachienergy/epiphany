@@ -57,6 +57,7 @@ libxcb # for grafana
 libXcursor # for grafana
 libXt # for grafana
 logrotate
+logstash-oss-7.8.1
 net-tools
 nfs-utils
 nmap-ncat
