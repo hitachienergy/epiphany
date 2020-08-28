@@ -1,0 +1,13 @@
+labels:
+  version: 0.0.1
+  name: Azure Infrastructure
+  short: AzI
+  kind: infrastructure
+  provider: azure
+  provides-vms: true
+  provides-pubips: true
+influences:
+  - - key: kind
+      operator: eq
+      values:
+        - monitoring
