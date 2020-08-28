@@ -158,3 +158,9 @@
       with_items:
         - kubelet
         - docker
+    - name: Wait until cluster is available
+      shell: kubectl cluster-info
+      retries: 50
+      delay: 1
+      register: output
+      until: output is succeeded
