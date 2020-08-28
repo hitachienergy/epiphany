@@ -8,7 +8,7 @@ USER := epitest
 
 all: clean init-and-apply-azure-infrastructure init-and-apply-kafka state
 
-clean:
+clean: ensure-shared
 	rm $(ROOT_DIR)/shared/*
 
 init-and-apply-azure-infrastructure: guard-AZI_VERSION guard-USER ensure-shared
