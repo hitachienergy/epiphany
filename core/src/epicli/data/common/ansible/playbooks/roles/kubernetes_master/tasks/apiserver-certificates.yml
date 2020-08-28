@@ -29,6 +29,6 @@
     docker ps \
       --filter 'name=kube-apiserver_kube-apiserver' \
       --format '{{ "{{.ID}}" }}' \
-    | xargs --no-run-if-empty docker kill
+      | xargs --no-run-if-empty docker kill
   args:
     executable: /bin/bash
