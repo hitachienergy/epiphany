@@ -1,6 +1,7 @@
+---
 - name: Install Kibana package
   yum:
     name:
-      - opendistroforelasticsearch-kibana
+      - opendistroforelasticsearch-kibana-{{ specification.versions[ansible_os_family].opendistro }}
     update_cache: yes
     state: present

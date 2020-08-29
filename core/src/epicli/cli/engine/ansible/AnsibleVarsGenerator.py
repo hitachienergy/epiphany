@@ -3,7 +3,7 @@ import copy
 
 from cli.helpers.Step import Step
 from cli.helpers.build_saver import get_ansible_path, get_ansible_path_for_build, get_ansible_vault_path, MANIFEST_FILE_NAME
-from cli.helpers.doc_list_helpers import select_first, select_single
+from cli.helpers.doc_list_helpers import select_first, select_single, ExpectedSingleResultException
 from cli.helpers.naming_helpers import to_feature_name, to_role_name
 from cli.helpers.ObjDict import ObjDict
 from cli.helpers.yaml_helpers import dump
@@ -100,6 +100,7 @@ class AnsibleVarsGenerator(Step):
         else:
             shared_config_doc = select_first(self.config_docs, lambda x: x.kind == 'configuration/shared-config')
 
+        # Fallback if there is completely no trace of the shared-config doc
         if shared_config_doc is None:
             shared_config_doc = load_yaml_obj(types.DEFAULT, 'common', 'configuration/shared-config')
 
@@ -146,8 +147,14 @@ class AnsibleVarsGenerator(Step):
 
         cluster_model = select_single(manifest_docs, lambda x: x.kind == 'epiphany-cluster')
 
-        shared_config_doc = select_single(manifest_docs, lambda x: x.kind == 'configuration/shared-config')
-        shared_config_doc['provider'] = cluster_model['provider']
+        try:
+            shared_config_doc = select_single(manifest_docs, lambda x: x.kind == 'configuration/shared-config')
+            shared_config_doc['provider'] = cluster_model['provider']
+        except ExpectedSingleResultException:
+            # If there is no shared-config doc inside the manifest file, this is probably a v0.3 cluster
+            # Returning None here (there is nothing to merge at this point) and
+            # hoping that the shared-config doc from defaults will be enough
+            return None
 
         # Merge the shared config doc with defaults
         with DefaultMerger([shared_config_doc]) as doc_merger:

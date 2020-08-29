@@ -1,7 +1,23 @@
 ---
+- name: Configure OS limits (open files, processes and locked-in-memory address space)
+  pam_limits:
+    domain: elasticsearch
+    limit_type: "{{ item.limit_type }}"
+    limit_item: "{{ item.limit_item }}"
+    value: "{{ item.value }}"
+  loop:
+    - { limit_type: 'soft', limit_item: 'nofile',  value: 65536 }
+    - { limit_type: 'hard', limit_item: 'nofile',  value: 65536 }
+    - { limit_type: 'soft', limit_item: 'nproc',   value: 65536 }
+    - { limit_type: 'hard', limit_item: 'nproc',   value: 65536 }
+    - { limit_type: 'soft', limit_item: 'memlock', value: unlimited }
+    - { limit_type: 'hard', limit_item: 'memlock', value: unlimited }
 
-- name: Include installation tasks
-  include_tasks: install-es.yml
+- name: Include elasticsearch-oss installation task
+  include_tasks: "install-es-{{ ansible_os_family }}.yml"
+
+- name: Include opendistro-* plugins installation task
+  include_tasks: "install-opendistro-{{ ansible_os_family }}.yml"
 
 - name: Include configuration tasks in a context of {{ current_group_name }}
   include_tasks: configure-es.yml

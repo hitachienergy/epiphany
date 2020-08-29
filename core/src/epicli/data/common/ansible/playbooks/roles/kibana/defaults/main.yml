@@ -1,6 +1,5 @@
-kind: configuration/kibana
-title: "Kibana"
-name: default
+---
+# Required and used for upgrade Open Distro for Elasticsearch - Kibana:
 specification:
   versions:
     RedHat:

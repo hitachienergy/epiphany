@@ -1,0 +1,23 @@
+---
+- name: Open Distro for Elasticsearch - Kibana | Get information about installed packages as facts
+  package_facts:
+    manager: auto
+  when: ansible_facts.packages is undefined
+
+- name: Open Distro for Elasticsearch - Kibana | Assert that opendistroforelasticsearch-kibana package is installed
+  assert:
+    that: ansible_facts.packages['opendistroforelasticsearch-kibana'] is defined
+    fail_msg: opendistroforelasticsearch-kibana package not found, nothing to upgrade
+    quiet: true
+
+- name: Open Distro for Elasticsearch - Kibana  | Print versions
+  debug:
+    msg:
+      - "Installed version: {{ ansible_facts.packages['opendistroforelasticsearch-kibana'][0].version }}"
+      - "Target version: {{ specification.versions[ansible_os_family].opendistro }}"
+
+- name: Open Distro for Elasticsearch - Kibana  | Upgrade
+  import_role:
+    name: kibana
+  when:
+    - specification.versions[ansible_os_family].opendistro is version(ansible_facts.packages['opendistroforelasticsearch-kibana'][0].version, '>')

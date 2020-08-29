@@ -1,0 +1,108 @@
+---
+- name: Open Distro for Elasticsearch | Ensure elasticsearch service is running
+  systemd:
+    name: elasticsearch
+    enabled: yes
+    state: started
+  register: elasticsearch_state
+
+- name: Open Distro for Elasticsearch | Wait for elasticsearch service to start up
+  wait_for:
+    port: "{{ es_transport_port }}"
+    host: "{{ ansible_default_ipv4.address | default(ansible_all_ipv4_addresses[0]) }}"
+    delay: 10
+  when: elasticsearch_state.changed == true
+
+- name: Open Distro for Elasticsearch | Disable shard allocation for the cluster
+  uri:
+    url: https://{{ ansible_default_ipv4.address | default(ansible_all_ipv4_addresses[0]) }}:{{ es_http_port }}/_cluster/settings
+    method: PUT
+    url_username: "{{ specification.es_user }}"
+    url_password: "{{ specification.es_password }}"
+    validate_certs: no
+    body_format: json
+    body: '{"persistent":{"cluster.routing.allocation.enable": "primaries"}}'
+  register: response_allocation_primaries
+  until: response_allocation_primaries.json.acknowledged == true
+  retries: 10
+  delay: 20
+
+- name: Open Distro for Elasticsearch | Perform a synced flush
+  uri:
+    url: https://{{ ansible_default_ipv4.address | default(ansible_all_ipv4_addresses[0]) }}:{{ es_http_port }}/_flush/synced
+    method: POST
+    url_username: "{{ specification.es_user }}"
+    url_password: "{{ specification.es_password }}"
+    validate_certs: no
+    status_code: "200, 409"
+
+- name: Open Distro for Elasticsearch | Stop elasticsearch service
+  systemd:
+    name: elasticsearch
+    state: stopped
+
+- name: Open Distro for Elasticsearch | Rolling Upgrade of the Elasticsearch
+  include_role:
+    name: opendistro_for_elasticsearch
+    tasks_from: install-es-{{ ansible_os_family }}.yml
+
+- name: Open Distro for Elasticsearch - plugins | Upgrade
+  include_tasks: opendistro_for_elasticsearch/upgrade_plugins.yml
+
+- name: Open Distro for Elasticsearch | Start elasticsearch service
+  systemd:
+    name: elasticsearch
+    state: restarted
+    enabled: yes
+    daemon_reload: yes
+
+- name: Open Distro for Elasticsearch | Wait for elasticsearch node to come back up
+  wait_for:
+    port: "{{ es_transport_port }}"
+    host: "{{ ansible_default_ipv4.address | default(ansible_all_ipv4_addresses[0]) }}"
+    delay: 10
+
+- name: Open Distro for Elasticsearch | Wait for elasticsearch http to come back up
+  wait_for:
+    port: "{{ es_http_port }}"
+    host: "{{ ansible_default_ipv4.address | default(ansible_all_ipv4_addresses[0]) }}"
+    delay: 5
+
+- name: Open Distro for Elasticsearch | Wait for 'yellow' or 'green' cluster health status
+  uri:
+    url: https://{{ ansible_default_ipv4.address | default(ansible_all_ipv4_addresses[0]) }}:{{ es_http_port }}/_cluster/health
+    method: GET
+    url_username: "{{ specification.es_user }}"
+    url_password: "{{ specification.es_password }}"
+    validate_certs: no
+  register: cluster_health
+  until: cluster_health.json.status == 'yellow' or cluster_health.json.status == 'green'
+  retries: 10
+  delay: 15
+
+- name: Open Distro for Elasticsearch | Enable shard allocation for the cluster
+  uri:
+    url: https://{{ ansible_default_ipv4.address | default(ansible_all_ipv4_addresses[0]) }}:{{ es_http_port }}/_cluster/settings
+    method: PUT
+    url_username: "{{ specification.es_user }}"
+    url_password: "{{ specification.es_password }}"
+    validate_certs: no
+    body_format: json
+    body: '{"persistent":{"cluster.routing.allocation.enable": null}}'
+  register: response
+  until: response.json.acknowledged == true
+  retries: 10
+  delay: 15
+
+- name: Open Distro for Elasticsearch | Wait for 'yellow' or 'green' cluster health status
+  uri:
+    url: https://{{ ansible_default_ipv4.address | default(ansible_all_ipv4_addresses[0]) }}:{{ es_http_port }}/_cluster/health
+    method: GET
+    url_username: "{{ specification.es_user }}"
+    url_password: "{{ specification.es_password }}"
+    validate_certs: no
+    return_content: yes
+  register: cluster_health
+  until: cluster_health.json.status == 'yellow' or cluster_health.json.status == 'green'
+  retries: 10
+  delay: 15

@@ -4,11 +4,11 @@ name: default
 specification:
   versions:
     RedHat:
-      elasticsearch_oss: "7.3.2"
-      opendistro: "1.3.0*"
+      elasticsearch_oss: "7.8.0"
+      opendistro: "1.9.0*"
     Debian:
-      elasticsearch_oss: "7.3.2"
-      opendistro: "1.3.0*"
+      elasticsearch_oss: "7.8.0"
+      opendistro: "1.9.0*"
   cluster_name: EpiphanyElastic
   clustered: True
   paths:
