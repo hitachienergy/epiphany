@@ -48,9 +48,7 @@
         tasks_from: extend-kubeadm-config
 
     - name: Backup and generate apiserver certificates
-      include_role:
-        name: kubernetes_common
-        tasks_from: apiserver-certificates
+      include_tasks: apiserver-certificates
 
 - name: Update in-cluster configuration
   when: kubernetes_common.automation_designated_master == inventory_hostname
