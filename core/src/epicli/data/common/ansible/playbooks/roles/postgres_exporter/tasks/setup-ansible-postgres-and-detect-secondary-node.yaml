@@ -6,14 +6,11 @@
       - name: Install pip3
         apt:
           name:
-            - python3-pip
-            - libpq-dev
+            - libpq5
+            - python3-psycopg2
+            - python3-jmespath
           state: present
-
-      - name: Make sure python module psycopg2 required by ansible module installed
-        pip:
-          name: ['psycopg2','jmespath']
-          state: present
+          install_recommends: no
 
 - name: Detect if we are running on the postgres replica node
   block:
