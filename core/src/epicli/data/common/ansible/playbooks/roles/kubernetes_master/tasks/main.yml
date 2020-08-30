@@ -54,7 +54,7 @@
 # instead of the kubeadm-config ConfigMap, so it's not possible to combine this step with previous ones
 # See https://kubernetes.io/docs/tasks/administer-cluster/kubeadm/kubeadm-certs/#manual-certificate-renewal
 - name: Update apiserver certificate expiration date
-  when: not (specification.advanced.certificates.update | bool)
+  when: not (specification.advanced.certificates.update_enddate | bool)
   block:  
     - name: Collect current apiserver certificate 'not_after' date by openssl 
       shell: openssl x509 -enddate -noout -in apiserver.crt.OLD
@@ -84,7 +84,7 @@
     tasks_from: update-in-cluster-config
 
 - name: Regenerate all certificates
-  when: specification.advanced.certificates.update | bool
+  when: specification.advanced.certificates.update_enddate | bool
   vars:
     valid_days: "{{ specification.advanced.certificates.expiration_days }}"
     restart_services: 

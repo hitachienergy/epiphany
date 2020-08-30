@@ -31,7 +31,7 @@ specification:
     certificates:
       location: /etc/kubernetes/pki
       expiration_days: 365
-      update: false
+      update_enddate: false
     etcd_args:
       encrypted: yes
 

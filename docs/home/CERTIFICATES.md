@@ -14,13 +14,13 @@ specification:
   advanced:
     certificates:
       expiration_days: <int>
-      update: true
+      update_enddate: true
 ```
 
 Parameters:
 
 1. expiration_days - days to expire in, default value is `365`
-2. update - whether to update certificates or not
+2. update_enddate - whether to update certificates or not
 
 ## CA certificates rotation
 
