@@ -4,6 +4,8 @@
 
 ### Added
 
+- [#1302](https://github.com/epiphany-platform/epiphany/issues/1302) - Ability to update control plane certificates expiration date
+
 ### Updated
 
 - [#846](https://github.com/epiphany-platform/epiphany/issues/846) - Update Filebeat to v7.8.1
