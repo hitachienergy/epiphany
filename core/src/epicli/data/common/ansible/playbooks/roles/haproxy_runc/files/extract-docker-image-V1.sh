@@ -112,7 +112,7 @@ function merge_layers {
     # Ensure output directory exists.
     install -d "$_OUT_/"
 
-    local layer
+    local layer_name
     get_layer_names | while IFS= read layer_name; do
         process_whiteouts "$layer_name"
         process_symlinks "$layer_name"
