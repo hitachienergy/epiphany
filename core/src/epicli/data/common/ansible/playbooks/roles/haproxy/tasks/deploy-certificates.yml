@@ -30,7 +30,7 @@
   when: not certificates_exist
   block:
     - name: Generate self-signed certificates
-      include_tasks: generate_certificates.yml
+      include_tasks: generate-certificates.yml
 
     - name: Copy self-signed certificates to /etc/ssl/haproxy/
       copy:
