@@ -4,25 +4,31 @@
     that:
       - runc_dir is defined
       - haproxy_service is defined
-      - haproxy_image_tag is defined
-      - haproxy_image is defined
+      - haproxy_image_tar is defined
+      - extra_mounts is defined
 
 - name: Set haproxy related facts
   set_fact:
     haproxy_dir: "{{ runc_dir }}/{{ haproxy_service }}"
-    haproxy_archive: /tmp/haproxy-{{ haproxy_image_tag }}.tar
 
-- name: Pull and export haproxy docker container
-  shell: |
-    docker pull {{ haproxy_image }} && docker export $(docker create {{ haproxy_image }}) --output {{ haproxy_archive }}
-  args:
-    creates: "{{ haproxy_archive }}"
+- name: Download haproxy docker image archive
+  include_role:
+    name: download
+    tasks_from: download_image
+  vars:
+    file_name: "{{ haproxy_image_tar }}"
+    validate_certs: false
 
-- name: Extract haproxy container archive
-  shell: |
-    install -d {{ haproxy_dir }}/rootfs/ && tar xpf {{ haproxy_archive }} -C {{ haproxy_dir }}/rootfs/
+- name: Extract haproxy docker image
+  script:
+    cmd: extract-docker-image-V1.sh
+  environment:
+    IMAGE_TAR: "{{ download_directory }}/{{ haproxy_image_tar }}"
+    OUTPUT_DIR: "{{ haproxy_dir }}/rootfs"
   args:
+    chdir: /tmp  # free disk space is required (2x size of the image) (seems to be using ~/.ansible/tmp/)
     creates: "{{ haproxy_dir }}/rootfs/"
+    executable: /bin/bash
 
 - name: Create initial config.json file
   shell: |
@@ -37,25 +43,26 @@
   register: slurp_config_json
 
 - name: Adjust and save config.json file contents
+  when: _updated_document != _document
   copy:
     dest: "{{ haproxy_dir }}/config.json"
     # Update and render json payload
     content: |
-      {{ _document | combine(_update, recursive=true) | to_nice_json }}
+      {{ _updated_document | to_nice_json }}
   vars:
     # Parse json payload
     _document: >-
       {{ slurp_config_json.content | b64decode | from_json }}
     # Define extra volume mounts
     _mounts:
-      - destination: /usr/local/etc/haproxy/haproxy.cfg
+      - destination: /etc/haproxy/haproxy.cfg
         source: /etc/haproxy/{{ haproxy_service }}.cfg
         type: bind
         options: [rbind, ro]
     # Assemble document update
     _update:
       process:
-        args: [/usr/local/sbin/haproxy, -f, /usr/local/etc/haproxy/haproxy.cfg]
+        args: [/usr/local/sbin/haproxy, -f, /etc/haproxy/haproxy.cfg]
         terminal: false  # required for running it detached
       linux:
         # Remove "network" namespace to enable "host-networking"
@@ -63,4 +70,6 @@
           {{ _document.linux.namespaces | selectattr('type', '!=', 'network') | list }}
       # Merge cointainer's volume / mount definitions
       mounts: >-
-        {{ (_document.mounts + _mounts) | unique }}
+        {{ (_document.mounts + (extra_mounts | default([])) + _mounts) | unique }}
+    _updated_document: >-
+      {{ _document | combine(_update, recursive=true) }}

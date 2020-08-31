@@ -1,0 +1,7 @@
+---
+- name: Install containerd.io package for RedHat family
+  yum:
+    update_cache: true
+    name:
+      - containerd.io  # provides "runc"
+    state: present

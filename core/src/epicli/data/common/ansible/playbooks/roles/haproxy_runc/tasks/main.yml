@@ -4,6 +4,9 @@
     that:
       - haproxy_service is defined
 
+- name: Install required system packages
+  include_tasks: "install-packages-{{ ansible_os_family }}.yml"
+
 - name: Setup runc container
   include_tasks: setup-runc-container.yml
 

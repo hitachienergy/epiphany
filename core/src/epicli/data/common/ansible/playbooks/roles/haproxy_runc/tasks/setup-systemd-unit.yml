@@ -9,6 +9,7 @@
   shell: |
     which runc
   register: shell_which_runc
+  changed_when: false
 
 - name: Set runc and haproxy related facts
   set_fact:
