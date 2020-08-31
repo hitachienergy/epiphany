@@ -1,5 +1,25 @@
 ---
+- name: Ensure certificates exist remotely
+  include_tasks: deploy_certificates.yml
 
-- include_tasks: "{{ ansible_os_family }}.yml"
-- include_tasks: "setup_logrotate.yml"
+- name: Configure and start haproxy
+  vars: { haproxy_service: haproxy }
+  block:
+    - name: Render haproxy config
+      template:
+        dest: /etc/haproxy/{{ haproxy_service }}.cfg
+        src: haproxy.cfg.j2
 
+    - name: Setup and start {{ haproxy_service }} runc-based systemd service
+      include_role:
+        name: haproxy_runc
+      vars:
+        extra_mounts:
+          - destination: /etc/haproxy/dhparam
+            source: /etc/haproxy/dhparam
+            type: bind
+            options: [rbind, ro]
+          - destination: /etc/ssl/haproxy/
+            source: /etc/ssl/haproxy/
+            type: bind
+            options: [rbind, ro]

@@ -1,5 +1,4 @@
 ---
-
 - name: Check if self signed certificate exists on node
   stat:
     path: /tmp/{{ specification.self_signed_certificate_name }}
@@ -11,7 +10,13 @@
   register: privkey_node
 
 - name: Generate private key if certificate hasn't been found in directory
-  shell: openssl req -x509 -nodes -newkey rsa:4096 -keyout /tmp/{{ specification.self_signed_private_key_name }} -out /tmp/{{ specification.self_signed_certificate_name }} -days 365 -subj '/CN=test'
+  shell: |
+    openssl req \
+      -x509 -nodes -newkey rsa:4096 \
+      -keyout /tmp/{{ specification.self_signed_private_key_name }} \
+      -out /tmp/{{ specification.self_signed_certificate_name }} \
+      -days 365 \
+      -subj '/CN=test'
   when:
     - not certificate_node.stat.exists
     - not privkey_node.stat.exists
@@ -31,14 +36,12 @@
     path: /tmp/{{ specification.self_signed_concatenated_cert_name }}
   register: cert_consolidated
 
-- name: Display if cert exists
-  debug:
-    msg: "Cert doesn't exist"
-  when:
-    - not cert_consolidated.stat.exists
-
 - name: Concatenate key and cert for haproxy
-  shell: cat /tmp/{{ specification.self_signed_certificate_name }} /tmp/{{ specification.self_signed_private_key_name }} > /tmp/{{ specification.self_signed_concatenated_cert_name }}
+  shell: |
+    cat \
+      /tmp/{{ specification.self_signed_certificate_name }} \
+      /tmp/{{ specification.self_signed_private_key_name }} \
+      > /tmp/{{ specification.self_signed_concatenated_cert_name }}
   when:
     - certificate_node.stat.exists
     - privkey_node.stat.exists
