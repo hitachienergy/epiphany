@@ -23,17 +23,9 @@
 - name: Clear directories
   import_tasks: common/clear_directories.yml
   vars:
-    dirs_to_clear: >-
-      {{ _dirs_to_clear_switch[ansible_os_family] | default(_dirs_to_clear_switch.default) }}
-    # Simulate some basic in-place switch/case expression using a dictionary.
-    _dirs_to_clear_switch:
-      RedHat:
-        - /etc/haproxy/
-        - /etc/ssl/haproxy/
-        - /etc/opt/rh/rh-haproxy18/haproxy/
-      default:
-        - /etc/haproxy/
-        - /etc/ssl/haproxy/
+    dirs_to_clear:
+      - /etc/haproxy/
+      - /etc/ssl/haproxy/
 
 - name: Extract the archive
   unarchive:
