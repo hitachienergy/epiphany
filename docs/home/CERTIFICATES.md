@@ -24,7 +24,7 @@ Parameters:
 
 ## CA certificates rotation
 
-This part cannot be done by epiphany. Refer official [documentation](https://kubernetes.io/docs/tasks/tls/manual-rotation-of-ca-certificates/) to perform this task.
+This part cannot be done by epiphany. Refer to official [documentation](https://kubernetes.io/docs/tasks/tls/manual-rotation-of-ca-certificates/) to perform this task.
 
 ## References
 

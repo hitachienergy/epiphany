@@ -75,7 +75,7 @@
       args:
         executable: /bin/bash
         chdir: "{{ specification.advanced.certificates.location }}"
-    # ansible openssl modules and openssl tool behave different, extensions file is not necessary to sign certs
+    # ansible openssl modules and openssl tool behave different, extensions file is necessary for openssl
     # https://github.com/openssl/openssl/issues/10458
     - name: Register SAN extension for all csr files
       shell: |-
@@ -151,12 +151,10 @@
         path: "{{ specification.advanced.certificates.location }}/{{ item.0 }}.{{ item.1 }}"
         state: absent
       with_nested:
-        -
-          - 'admin.conf'
+        - - 'admin.conf'
           - 'scheduler.conf'
           - 'controller-manager.conf'
-        -
-          - 'crt'
+        - - 'crt'
           - 'key'
     - name: Restart systemd services
       when: restart_services is defined
