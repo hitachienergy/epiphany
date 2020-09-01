@@ -62,12 +62,14 @@
         executable: /bin/bash
         chdir: "{{ specification.advanced.certificates.location }}"
       register: apiserver_certificate_info
+
     - name: Regenerate apiserver certificate with previous expiration value
       vars:
         certificates_renewal_list:
           - apiserver
         valid_days: "{{ apiserver_certificate_info.stdout | openssl_date2days }}"
       include_tasks: generate-certificates.yml
+
     - name: Restart apiserver
       shell: |
         docker ps \

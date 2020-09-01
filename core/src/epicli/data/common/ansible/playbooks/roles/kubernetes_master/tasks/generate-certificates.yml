@@ -54,12 +54,14 @@
             certificates_opt_mapping: "{{ _certificates_opt_mapping }}"
           when: certificates_renewal_list is not defined
           with_items: "{{ _certificates_opt_mapping }}"
+
     - name: Save old certificates
       synchronize:
         src: "{{ specification.advanced.certificates.location }}/"
         dest: >-
           "{{ specification.advanced.certificates.location | regex_replace('\\/$', '') }}-backup-{{ lookup('pipe','date +%Y%m%d%H%M%S') }}"
       delegate_to: "{{ inventory_hostname }}"
+
     - name: Ensure necessary directories exist
       file:
         path: "{{ item }}"
@@ -70,11 +72,13 @@
       with_items:
         - "{{ specification.advanced.certificates.location }}/csr"
         - "{{ specification.advanced.certificates.location }}/ext"
+
     - name: Generate new CSR
       shell: kubeadm alpha certs renew all --csr-only --csr-dir=csr
       args:
         executable: /bin/bash
         chdir: "{{ specification.advanced.certificates.location }}"
+
     # ansible openssl modules and openssl tool behave different, extensions file is necessary for openssl
     # https://github.com/openssl/openssl/issues/10458
     - name: Register SAN extension for all csr files
@@ -88,6 +92,7 @@
         chdir: "{{ specification.advanced.certificates.location }}"
       register: csr_info
       with_items: "{{ certificates_opt_mapping }}"
+
     - name: Generate extension files
       template:
         src: certificate-v3.ext.j2
@@ -95,6 +100,7 @@
       with_together:
         - "{{ certificates_opt_mapping }}"
         - "{{ csr_info.results }}"
+
     - name: Create signed certificates
       shell: |-
         openssl x509 -req -days {{ valid_days }} -in csr/{{ item.name }}.csr -extfile ext/{{ item.name }}.ext \
@@ -103,6 +109,7 @@
         executable: /bin/bash
         chdir: "{{ specification.advanced.certificates.location }}"
       with_items: "{{ certificates_opt_mapping }}"
+
     - name: Copy keys to pki location and ensure that permissions are strict
       copy:
         src: "{{ specification.advanced.certificates.location }}/csr/{{ item.name }}.key"
@@ -112,6 +119,7 @@
         group: root
         mode: '0600'
       with_items: "{{ certificates_opt_mapping }}"
+
     - name: Remove csr and ext directories
       file:
         path: "{{ specification.advanced.certificates.location }}/{{ item }}"
@@ -119,18 +127,22 @@
       with_items:
         - csr
         - ext
+
     - name: Search for .conf certificates
       find:
         paths: [ "{{ specification.advanced.certificates.location }}" ]
         pattern: "*.conf.crt"
       register: _conf_certificates
-    - set_fact:
+
+    - name: Set conf_certificates fact
+      set_fact:
         conf_certificates: >-
           {{ _conf_certificates.files
             | map(attribute='path')
             | map('basename')
             | map('regex_replace', '\.crt$', '')
             | list }}
+
     - name: Update conf files with embedded certs
       environment:
         KUBECONFIG: "/etc/kubernetes/{{ item }}"
@@ -146,6 +158,7 @@
       args:
         executable: /bin/bash
       with_items: "{{ conf_certificates }}"
+
     - name: Remove conf certificates
       file:
         path: "{{ specification.advanced.certificates.location }}/{{ item.0 }}.{{ item.1 }}"
@@ -156,6 +169,7 @@
           - 'controller-manager.conf'
         - - 'crt'
           - 'key'
+
     - name: Restart systemd services
       when: restart_services is defined
       block:
@@ -164,6 +178,7 @@
             name: "{{ item }}"
             state: restarted
           with_items: "{{ restart_services }}"
+
         - name: Wait until cluster is available
           environment:
             KUBECONFIG: /etc/kubernetes/admin.conf
