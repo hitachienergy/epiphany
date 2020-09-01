@@ -55,8 +55,8 @@
       {{ slurp_config_json.content | b64decode | from_json }}
     # Define extra volume mounts
     _mounts:
-      - destination: /etc/haproxy/haproxy.cfg
-        source: /etc/haproxy/{{ haproxy_service }}.cfg
+      - destination: /etc/haproxy/
+        source: /etc/{{ haproxy_service }}/
         type: bind
         options: [rbind, ro]
     # Assemble document update

@@ -23,18 +23,17 @@
       haproxy_backend_servers: >-
         {{ kubernetes_common.haproxy_master_names | zip(kubernetes_common.haproxy_master_ipv4s) | list }}
 
-- name: Ensure /etc/haproxy directory exists
-  file:
-    path: /etc/haproxy/
-    state: directory
-
-- name: Configure and start haproxy
-  vars:
-    haproxy_service: haproxy-k8s
+- name: Configure and start haproxy "distributed" load-balancer
+  vars: { haproxy_service: haproxy-k8s }
   block:
+    - name: Ensure /etc/{{ haproxy_service }}/ directory exists
+      file:
+        path: /etc/{{ haproxy_service }}/
+        state: directory
+
     - name: Render haproxy config
       template:
-        dest: /etc/haproxy/{{ haproxy_service }}.cfg
+        dest: /etc/{{ haproxy_service }}/haproxy.cfg
         src: haproxy.cfg.j2
 
     - name: Setup and start {{ haproxy_service }} runc-based systemd service

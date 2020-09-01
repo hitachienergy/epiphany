@@ -2,26 +2,20 @@
 - name: Ensure certificates exist remotely
   include_tasks: deploy-certificates.yml
 
-- name: Configure and start haproxy
-  vars: { haproxy_service: haproxy }
-  block:
-    - name: Render haproxy config
-      template:
-        dest: /etc/haproxy/{{ haproxy_service }}.cfg
-        src: haproxy.cfg.j2
+- name: Render haproxy config
+  template:
+    dest: /etc/haproxy/haproxy.cfg
+    src: haproxy.cfg.j2
 
-    - name: Setup and start {{ haproxy_service }} runc-based systemd service
-      include_role: { name: haproxy_runc }
-      vars:
-        extra_mounts:
-          - destination: /etc/haproxy/dhparam
-            source: /etc/haproxy/dhparam
-            type: bind
-            options: [rbind, ro]
-          - destination: /etc/ssl/haproxy/
-            source: /etc/ssl/haproxy/
-            type: bind
-            options: [rbind, ro]
+- name: Setup and start haproxy runc-based systemd service
+  include_role: { name: haproxy_runc }
+  vars:
+    haproxy_service: haproxy
+    extra_mounts:
+      - destination: /etc/ssl/haproxy/
+        source: /etc/ssl/haproxy/
+        type: bind
+        options: [rbind, ro]
 
 - name: Setup haproxy logging
   include_tasks: setup-haproxy-logging.yml
