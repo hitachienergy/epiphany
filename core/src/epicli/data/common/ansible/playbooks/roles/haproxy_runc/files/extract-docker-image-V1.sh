@@ -123,8 +123,14 @@ function remove_cache {
     rm -rf "$_IMG_/" "$_TMP_/"
 }
 
+function remove_all {
+    rm -rf "$_OUT_/"
+    remove_cache
+}
+
 function main {
-    trap remove_cache ERR EXIT INT TERM
+    trap remove_cache EXIT
+    trap remove_all ERR INT TERM
     extract_image
     extract_layers
     merge_layers
