@@ -101,6 +101,7 @@ filebeat.inputs:
 
 # K8s metadata are fetched from Docker labels to not make Filebeat on worker nodes dependent on K8s master
 # since Filebeat should start even if K8s master is not available.
+
 - type: docker
   enabled: true
   containers.ids: "*"
