@@ -1,0 +1,9 @@
+kind: infrastructure/availability-set
+title: "Availability Set Config"
+provider: azure
+name: default
+specification:
+    name: SET_BY_AUTOMATION
+    platform_fault_domain_count: 2
+    platform_update_domain_count: 5
+    managed: true

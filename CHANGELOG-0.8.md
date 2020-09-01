@@ -5,6 +5,7 @@
 ### Added
 
 - [#1300](https://github.com/epiphany-platform/epiphany/issues/1300) - Configure OpenSSH according to Mozilla Infosec guidance
+- [#1543](https://github.com/epiphany-platform/epiphany/issues/1543) - Add support for Azure availability sets
 
 ### Updated
 
