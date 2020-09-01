@@ -5,6 +5,7 @@
 ### Added
 
 - [#1302](https://github.com/epiphany-platform/epiphany/issues/1302) - Ability to update control plane certificates expiration date
+- [#1543](https://github.com/epiphany-platform/epiphany/issues/1543) - Add support for Azure availability sets
 
 ### Updated
 

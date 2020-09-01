@@ -8,6 +8,7 @@ specification:
   admin_password: SET_BY_AUTOMATION
   public_key: SET_BY_AUTOMATION
   network_interface_name: SET_BY_AUTOMATION
+  availability_set_name: SET_BY_AUTOMATION  # Please don't change this default value, keep it "SET_BY_AUTOMATION"
   tags: []
   os_type: linux
   size: Standard_DS1_v2
@@ -780,4 +781,4 @@ specification:
   #      destination_to_port: 65536
   #      destination_port_range: "0"
   #      source_address_prefix: "10.1.4.0/24"
-  #      destination_address_prefix: "0.0.0.0/0"        
+  #      destination_address_prefix: "0.0.0.0/0"
