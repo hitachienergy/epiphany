@@ -7,15 +7,25 @@
 - name: Install required system packages
   include_tasks: "install-packages-{{ ansible_os_family }}.yml"
 
+- name: Prepare the haproxy_service_needs_restart fact
+  set_fact:
+    haproxy_service_needs_restart: false
+
 - name: Setup runc container
   include_tasks: setup-runc-container.yml
 
 - name: Setup systemd unit
   include_tasks: setup-systemd-unit.yml
 
-- name: Enable and start {{ haproxy_service }} service
+- name: Ensure {{ haproxy_service }} service is running
   systemd:
     name: "{{ haproxy_service }}"
     state: started
     enabled: true
     daemon_reload: true
+
+- name: Restart {{ haproxy_service }} service
+  systemd:
+    name: "{{ haproxy_service }}"
+    state: restarted
+  when: haproxy_service_needs_restart

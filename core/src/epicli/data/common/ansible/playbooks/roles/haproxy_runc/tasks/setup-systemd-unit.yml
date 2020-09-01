@@ -4,6 +4,7 @@
     that:
       - runc_dir is defined
       - haproxy_service is defined
+      - haproxy_service_needs_restart is defined
 
 - name: Discover runc binary
   shell: |
@@ -20,3 +21,9 @@
   template:
     dest: /etc/systemd/system/{{ haproxy_service }}.service
     src: haproxy.service.j2
+  register: template_haproxy_service
+
+- name: Mark {{ haproxy_service }} service to be restarted
+  set_fact:
+    haproxy_service_needs_restart: >-
+      {{ haproxy_service_needs_restart or ((template_haproxy_service is defined) and (template_haproxy_service is changed)) }}

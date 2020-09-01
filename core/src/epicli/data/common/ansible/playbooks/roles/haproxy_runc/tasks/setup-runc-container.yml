@@ -6,6 +6,7 @@
       - haproxy_service is defined
       - haproxy_image_tar is defined
       - extra_mounts is defined
+      - haproxy_service_needs_restart is defined
 
 - name: Set haproxy related facts
   set_fact:
@@ -62,7 +63,7 @@
     # Assemble document update
     _update:
       process:
-        args: [/usr/local/sbin/haproxy, -f, /etc/haproxy/haproxy.cfg]
+        args: [/usr/local/sbin/haproxy, -W, -f, /etc/haproxy/haproxy.cfg]
         terminal: false  # required for running it detached
       linux:
         # Remove "network" namespace to enable "host-networking"
@@ -73,3 +74,9 @@
         {{ (_document.mounts + (extra_mounts | default([])) + _mounts) | unique }}
     _updated_document: >-
       {{ _document | combine(_update, recursive=true) }}
+  register: copy_config_json
+
+- name: Mark {{ haproxy_service }} service to be restarted
+  set_fact:
+    haproxy_service_needs_restart: >-
+      {{ haproxy_service_needs_restart or ((copy_config_json is defined) and (copy_config_json is changed)) }}

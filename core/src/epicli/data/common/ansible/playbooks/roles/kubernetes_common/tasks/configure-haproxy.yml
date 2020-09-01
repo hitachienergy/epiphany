@@ -35,7 +35,14 @@
       template:
         dest: /etc/{{ haproxy_service }}/haproxy.cfg
         src: haproxy.cfg.j2
+      register: template_haproxy_cfg
 
-    - name: Setup and start {{ haproxy_service }} runc-based systemd service
+    - name: Setup and start {{ haproxy_service }} service
       include_role:
         name: haproxy_runc
+
+    - name: Reload {{ haproxy_service }} service
+      systemd:
+        name: "{{ haproxy_service }}"
+        state: reloaded
+      when: template_haproxy_cfg is changed
