@@ -90,13 +90,13 @@ function process_whiteouts {
 function process_symlinks {
     local layer_name="$1" must_be_removed
 
-    (cd "$_OUT_/" && find . -type f,d; cd "$_TMP_/$layer_name/" && find . -type l) | sort | uniq -d \
+    (cd "$_OUT_/" && find . -type f -or -type d; cd "$_TMP_/$layer_name/" && find . -type l) | sort | uniq -d \
     | while IFS= read must_be_removed; do
         echo must_be_removed = "$must_be_removed"
         rm -rf "$_OUT_/$must_be_removed"
     done
 
-    (cd "$_OUT_/" && find . -type l; cd "$_TMP_/$layer_name/" && find . -type f,d) | sort | uniq -d \
+    (cd "$_OUT_/" && find . -type l; cd "$_TMP_/$layer_name/" && find . -type f -or -type d) | sort | uniq -d \
     | while IFS= read must_be_removed; do
         echo must_be_removed = "$must_be_removed"
         rm -rf "$_OUT_/$must_be_removed"
