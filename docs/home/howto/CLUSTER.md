@@ -669,3 +669,95 @@ You can read more [here](https://www.confluent.io/blog/how-choose-number-topics-
 ## RabbitMQ installation and setting
 
 To install RabbitMQ in single mode just add rabbitmq role to your data.yaml for your server and in general roles section. All configuration on RabbitMQ - e.g. user other than guest creation should be performed manually.
+
+## How to use Azure availability sets
+
+In your cluster yaml config declare as many as required objects of kind `infrastructure/availability-set` like
+in the example below, change the `name` field as you wish.
+
+```yaml
+---
+kind: infrastructure/availability-set
+name: kube-node  # Short and simple name is preferred
+specification:
+# The "name" attribute is generated automatically according to Epiphany's naming conventions
+  platform_fault_domain_count: 2
+  platform_update_domain_count: 5
+  managed: true
+provider: azure
+```
+
+Then set it also in the corresponding `components` section of the `kind: epiphany-cluster` doc.
+
+```yaml
+  components:
+    kafka:
+      count: 0
+    kubernetes_master:
+      count: 1
+    kubernetes_node:
+# This line tells we generate the availability-set terraform template
+      availability_set: kube-node  # Short and simple name is preferred
+      count: 2
+```
+
+The example below shows a complete configuration. Note that it's recommended to have a dedicated availability set for each clustered component.
+
+```yaml
+# Test availability set config
+---
+kind: epiphany-cluster
+name: default
+provider: azure
+specification:
+  name: test-cluster
+  prefix: test
+  admin_user:
+    key_path: /path/to/ssk/key
+    name: di-dev
+  cloud:
+    region: Australia East
+    subscription_name: <your subscription name>
+    use_public_ips: true
+    use_service_principal: true
+  components:
+    kafka:
+      count: 0
+    kubernetes_master:
+      count: 1
+    kubernetes_node:
+# This line tells we generate the availability-set terraform template
+      availability_set: kube-node  # Short and simple name is preferred
+      count: 2
+    load_balancer:
+      count: 1
+    logging:
+      count: 0
+    monitoring:
+      count: 0
+    postgresql:
+# This line tells we generate the availability-set terraform template
+      availability_set: postgresql  # Short and simple name is preferred
+      count: 2
+    rabbitmq:
+      count: 0
+title: Epiphany cluster Config
+---
+kind: infrastructure/availability-set
+name: kube-node  # Short and simple name is preferred
+specification:
+# The "name" attribute (ommited here) is generated automatically according to Epiphany's naming conventions
+  platform_fault_domain_count: 2
+  platform_update_domain_count: 5
+  managed: true
+provider: azure
+---
+kind: infrastructure/availability-set
+name: postgresql  # Short and simple name is preferred
+specification:
+# The "name" attribute (ommited here) is generated automatically according to Epiphany's naming conventions
+  platform_fault_domain_count: 2
+  platform_update_domain_count: 5
+  managed: true
+provider: azure
+```
