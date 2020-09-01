@@ -1,5 +1,4 @@
 ---
-
 - name: Install NFS package for Debian family
   apt:
     name:
@@ -12,10 +11,4 @@
       - kubelet={{specification.version}}-00
       - kubectl={{specification.version}}-00
       - kubeadm={{specification.version}}-00
-    state: present
-
-- name: Install HAProxy package
-  apt:
-    name: haproxy
-    update_cache: true
     state: present
