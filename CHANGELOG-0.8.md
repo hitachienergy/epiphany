@@ -4,6 +4,8 @@
 
 ### Added
 
+- [#1300](https://github.com/epiphany-platform/epiphany/issues/1300) - Configure OpenSSH according to Mozilla Infosec guidance
+
 ### Updated
 
 - [#846](https://github.com/epiphany-platform/epiphany/issues/846) - Update Filebeat to v7.8.1
