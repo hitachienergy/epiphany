@@ -29,6 +29,7 @@ init-system-helpers
 jq
 libfontconfig1
 logrotate
+logstash-oss 1:7.8.1
 netcat
 net-tools
 nfs-common

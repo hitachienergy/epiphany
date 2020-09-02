@@ -1,0 +1,4 @@
+kind: configuration/logstash
+title: "Logstash"
+name: default
+specification: {}
