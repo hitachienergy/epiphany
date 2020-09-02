@@ -6,37 +6,22 @@ There are 2 ways to get the image, build it locally yourself or pull it from the
 
 1. Install the following dependencies:
 
-    - Python 3.7
-    - PIP
     - Docker
 
-2. Install the following Python dependencies using PIP:
+2. Open a terminal in the root directory of the Epiphany source code and run:
 
-    ```bash
-    pip install wheel setuptools twine
-    ```
+```bash
+TAG=$(cat core/src/epicli/cli/version.txt.py)
+docker build --file Dockerfile --tag epicli:${TAG} .
+```
 
-3. Open a terminal in `/core/src/epicli` and run:
-
-    On Linux/Mac:
-
-    ```bash
-    ./build-docker.sh debian|alpine
-    ```
-
-    On windows:
-
-    ```bash
-    ./build-docker.bat debian|alpine
-    ```
-
-*Note: Use the debian or alpine flag to indicate which base image you want to use for the Epicli container.*
-  
 ### Pull Epicli image from the registry
 
 ```bash
 docker pull epiphanyplatform/epicli:TAG
 ```
+
+Where `TAG` should be replaced with an existing tag.
 
 *Check [here](https://cloud.docker.com/u/epiphanyplatform/repository/docker/epiphanyplatform/epicli) for the available tags.*
 
@@ -44,21 +29,15 @@ docker pull epiphanyplatform/epicli:TAG
 
 To run the image:
 
-Locally build:
-
-```bash
-docker run -it -v LOCAL_DIR:/shared --rm epicli
-```
-
-Pulled:
-
 ```bash
 docker run -it -v LOCAL_DIR:/shared --rm epiphanyplatform/epicli:TAG
 ```
 
-*Check [here](https://cloud.docker.com/u/epiphanyplatform/repository/docker/epiphanyplatform/epicli) for the available tags.*
+Where:
+- `LOCAL_DIR` should be replaced with the local path to the directory for Epicli input (SSH keys, data yamls) and output (logs, build states),
+- `TAG` should be replaced with an existing tag.
 
-Where `LOCAL_DIR` should be replaced with the local path to the directory for Epicli input (SSH keys, data yamls) and output (logs, build states).
+*Check [here](https://cloud.docker.com/u/epiphanyplatform/repository/docker/epiphanyplatform/epicli) for the available tags.*
 
 ## Epicli development
 

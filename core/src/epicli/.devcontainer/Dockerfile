@@ -14,31 +14,32 @@ COPY requirements.txt /
 
 RUN chmod +x /config-pre.sh \
     && /bin/bash -c /config-pre.sh \
-
+\
     && apt-get update \
-    && apt-get -y install --no-install-recommends apt-utils dialog 2>&1 \
-
-    && apt-get -y install git git-lfs procps lsb-release gcc make musl-dev libffi-dev tar unzip vim \
-
-    && apt-get -y install ruby-full \
-
-    && gem install serverspec rake rspec_junit_formatter \
-
-    && pip --disable-pip-version-check --no-cache-dir install -r /requirements.txt --default-timeout=100 \
-
-    && pip --disable-pip-version-check --no-cache-dir install pipenv pylint pytest wheel setuptools twine --default-timeout=100 \
-
-    && groupadd --gid $USER_GID $USERNAME \
-    && useradd -s /bin/bash --uid $USER_UID --gid $USER_GID -m $USERNAME \
-
-    && apt-get install -y sudo \
-    && echo $USERNAME ALL=\(root\) NOPASSWD:ALL > /etc/sudoers.d/$USERNAME \
-    && chmod 0440 /etc/sudoers.d/$USERNAME \
-
+    && apt-get install --no-install-recommends -y \
+        apt-utils dialog 2>&1 \
+    && apt-get install --no-install-recommends -y \
+        gcc libffi-dev make musl-dev openssh-client ruby-full sudo tar unzip vim \
+        \
+        git git-lfs lsb-release procps \
+\
+    && gem install \
+        rake rspec_junit_formatter serverspec \
+\
+    && pip install --disable-pip-version-check --no-cache-dir --default-timeout=100 \
+        --requirement /requirements.txt \
+    && pip install --disable-pip-version-check --no-cache-dir --default-timeout=100 \
+        pipenv pylint pytest setuptools twine wheel \
+\
     && apt-get autoremove -y \
     && apt-get clean -y \
     && rm -rf /var/lib/apt/lists/* \
-
+\
+    && groupadd --gid $USER_GID $USERNAME \
+    && useradd -s /bin/bash --uid $USER_UID --gid $USER_GID -m $USERNAME \
+    && echo $USERNAME ALL=\(root\) NOPASSWD:ALL > /etc/sudoers.d/$USERNAME \
+    && chmod 0440 /etc/sudoers.d/$USERNAME \
+\
     && chmod +x /config-post.sh \
     && /bin/bash -c /config-post.sh
 
