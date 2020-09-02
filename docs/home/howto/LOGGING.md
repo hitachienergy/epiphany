@@ -55,10 +55,10 @@ Since v0.8 Epiphany provide posibility to export data from Elasticsearch to CSV 
 
 To install Logstash in your cluster add **logstash** to feature mapping for *logging, opendistro_for_elasticsearch* or *elasticsearch* group.
 
-`Note: Logstash is disabled by default after installation.`
-
-Epiphany provide a basic configuration file `(logstash-export.conf.temp)` as template for your data export.
+Epiphany provides a basic configuration file `(logstash-export.conf.template)` as template for your data export.
 This file has to be modified according to your Elasticsearch configuration and data you want to export.
+
+`Note: Exporting data is not automated. It has to be invoked manually. Logstash daemon is disabled by default after installation.`
 
 Run Logstash to export data:  
 `/usr/share/logstash/bin/logstash -f /etc/logstash/logstash-export.conf`
