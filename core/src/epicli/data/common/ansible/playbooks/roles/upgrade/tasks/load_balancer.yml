@@ -1,0 +1,6 @@
+---
+- name: load_balancer | Upgrade haproxy service (runc)
+  include_role:
+    name: haproxy
+  vars:
+    haproxy_upgrade_enabled: true
