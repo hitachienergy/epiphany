@@ -1,0 +1,34 @@
+---
+- name: Upgrade haproxy service
+  when:
+    # There is no need for running this upgrade for all k8s release upgrade steps
+    - upgrade_to_final_version is defined
+    - upgrade_to_final_version
+    # There is no need for running this upgrade when k8s cluster is not highly-available
+    - use_ha_control_plane is defined
+    - use_ha_control_plane
+  block:
+    - name: k8s/haproxy | Populate service facts
+      service_facts:
+      no_log: true
+
+    - name: k8s/haproxy | Stop and disable legacy haproxy.service
+      systemd:
+        name: haproxy.service
+        state: stopped
+        enabled: false
+      when:
+        # After this upgrade it is completely possible to have load_balancer component deployed on any k8s master/node
+        - ansible_facts.services["haproxy-k8s.services"] is undefined
+        - ansible_facts.services["haproxy.service"] is defined
+        - ansible_facts.services["haproxy.service"].state == "running"
+
+    - name: k8s/haproxy | Install haproxy-k8s service (runc)
+      include_role:
+        name: kubernetes_common
+        tasks_from: configure-haproxy.yml
+      vars:
+        haproxy_upgrade_enabled: true
+
+    - name: k8s/haproxy | Wait for cluster's readiness
+      include_tasks: utils/wait.yml
