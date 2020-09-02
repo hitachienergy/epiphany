@@ -2,8 +2,8 @@
 - name: Assert input parameters
   assert:
     that:
-      - runc_dir is defined
       - haproxy_service is defined
+      - haproxy_dir is defined
       - haproxy_service_needs_restart is defined
 
 - name: Discover runc binary
@@ -12,9 +12,8 @@
   register: shell_which_runc
   changed_when: false
 
-- name: Set runc and haproxy related facts
+- name: Set runc related facts
   set_fact:
-    haproxy_dir: "{{ runc_dir }}/{{ haproxy_service }}"
     runc_binary: "{{ shell_which_runc.stdout.strip() }}"
 
 - name: Render {{ haproxy_service }} service systemd unit
