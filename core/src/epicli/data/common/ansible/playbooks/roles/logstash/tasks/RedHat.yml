@@ -1,0 +1,7 @@
+---
+- name: Install Logstash package
+  yum:
+    name:
+      - logstash-oss-{{ versions[ansible_os_family] }}
+    update_cache: yes
+    state: present

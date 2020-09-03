@@ -1,13 +1,24 @@
 ## Upgrade
 
+### Prerequisites
+
+Before k8s version upgrade make sure that deprecated API versions are not used:
+
+1. [v1.17](https://v1-17.docs.kubernetes.io/docs/setup/release/notes/#deprecations-and-removals)
+2. [v1.18](https://v1-18.docs.kubernetes.io/docs/setup/release/notes/#deprecation)
+
 ### Introduction
 
 From Epicli 0.4.2 and up the CLI has the ability to perform upgrades on certain components on a cluster. The components it currently can upgrade and will add are:
 
-- kubernetes (master and nodes): Upgrades Kubernetes starting from 1.11.5 to 1.17.7
-- common: Upgrades all common configurations to match them to Epiphany 0.4.2
-- repository: Adds the repository role needed for component installation in Epiphany 0.4.2
-- image_registry: Adds the image_registry role needed for offline installation in Epiphany 0.4.2
+*Note: Since v0.7.0 Epiphany does not support k8s version upgrades older than 1.14.6 (Epiphany v0.4.4).
+There is an assertion to check whether K8s version is supported before running upgrade,
+but upgrade for v0.3.1 is not possible due to the open [issue](https://github.com/epiphany-platform/epiphany/issues/1491).*
+
+- Kubernetes (master and nodes): starting from version 1.14.6 to 1.18.6
+- common: Upgrades all common configurations to match them to current Epiphany version
+- repository: Adds the repository role needed for component installation in current Epiphany version
+- image_registry: Adds the image_registry role needed for offline installation in current Epiphany version
 
 *Note: The component upgrade takes the existing Ansible build output and based on that performs the upgrade of the currently supported components. If you need to upgrade your entire Epiphany cluster a **manual** upgrade of the input yaml is needed to the latest specification which then should be applied with `epicli apply...` after the offline upgrade which is described here.*
 
@@ -111,3 +122,16 @@ Upgrading Kafka could be different for every Kafka release, please refer to [Apa
 ZooKeeper redundancy is also recommended, since service restart is required during upgrade - it can cause ZooKeeper unavailability. Having at **least two ZooKeeper services** in *ZooKeepers ensemble* you can upgrade one and then start with the rest **one by one**.
 
 More detailed information about ZooKeeper you can find in  [ZooKeeper documentation](https://cwiki.apache.org/confluence/display/ZOOKEEPER).
+
+## Open Distro for Elasticsearch upgrade
+
+In Epiphany v0.8.0 we provided upgrade elasticsearch-oss package to v7.8.0 and opendistro-* plugins package to v1.9.0.
+Upgrade will be performed automatically when the upgrade procedure detects your logging, opendistro_for_elasticsearch or kibana hosts.
+Upgrade of elasticsearch-oss package using API calls (GET, PUT, POST) so before you start with upgrade procedure please make sure that you provided correct credentials:
+```shell
+specification.es_user
+specification.es_password
+```
+Both are accessible in opendistro_for_elasticsearch role defaults (`/core/src/epicli/data/common/ansible/playbooks/roles/opendistro_for_elasticsearch/defaults/main.yml`)
+
+*Note: before upgrade procedure make sure you have a data backup!*

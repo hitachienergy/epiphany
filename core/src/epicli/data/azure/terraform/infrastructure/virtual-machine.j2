@@ -10,7 +10,7 @@
 # {{ specification.name }}
 #####################################################
 
-resource "azurerm_virtual_machine" "{{ specification.name  }}" {
+resource "azurerm_virtual_machine" "{{ specification.name }}" {
   name                  = "{{ specification.name }}"
   location              = "${azurerm_resource_group.rg.location}"
   resource_group_name   = "${azurerm_resource_group.rg.name}"
@@ -27,8 +27,10 @@ resource "azurerm_virtual_machine" "{{ specification.name  }}" {
   os_profile {
     computer_name  = "{{ specification.name }}"
     admin_username = "{{ specification.admin_username }}"
+    {%- if specification.os_type == "windows" %}
     admin_password = "{{ specification.admin_password }}"
-  }  
+    {%- endif %}
+  }
 
   {%- if specification.os_type == "linux" %}
   os_profile_linux_config {
@@ -42,11 +44,12 @@ resource "azurerm_virtual_machine" "{{ specification.name  }}" {
 
   {%- if specification.os_type == "windows" %}
   # windows specific stuff here maybe... hopefully never.
-  {%- endif %}  
+  {%- endif %}
 
   {%- if specification.storage_os_disk.managed != true %}
   delete_os_disk_on_termination = "{{ specification.storage_os_disk.delete_on_termination | lower }}"
   {%- endif %}
+
   storage_os_disk {
     name          = "{{ specification.name }}-os-disk"
     caching       = "{{ specification.storage_os_disk.caching }}"
@@ -70,7 +73,10 @@ resource "azurerm_virtual_machine" "{{ specification.name  }}" {
   {%- endfor %}
   }
 
+  {%- if specification.availability_set_name is defined and specification.availability_set_name != "SET_BY_AUTOMATION" %}
+  availability_set_id = "${azurerm_availability_set.{{ specification.availability_set_name }}.id}"
+  {%- endif %}
+
   #TODO:
-  # availability_set_id
   # storage_data_disk
 }

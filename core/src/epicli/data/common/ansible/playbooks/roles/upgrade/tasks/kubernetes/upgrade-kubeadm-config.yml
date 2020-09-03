@@ -1,4 +1,0 @@
----
-- name: upgrade-kubeadm-config | Save kubeadm-config ConfigMap to file
-  shell: >-
-    kubeadm config view > /etc/kubeadm/kubeadm-config.yml

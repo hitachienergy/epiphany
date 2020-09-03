@@ -1,4 +1,12 @@
 ---
+cni_plugin_vars:
+  selector:
+    calico: k8s-app=calico-node
+    canal: k8s-app=canal
+    flannel: app=flannel
+
+epiphany_manifests_dir: /etc/epiphany/manifests
+
 # The default values below were chosen as a compromise between node stability when available resources are low
 # and utilization (costs) to support even SMALL size VMs and may need to be adjusted depending on your environment.
 # Typically 5-10% of node resources should be reserved to protect nodes, higher is safer. The values depend on various

@@ -1,4 +1,8 @@
 ---
+- name: Set is_first_deployment fact
+  set_fact:
+    is_first_deployment: false
+
 - when: use_ha_control_plane
   block:
     - name: Configure internal load-balancer (HAProxy)
@@ -15,13 +19,44 @@
     - import_tasks: registry-secrets.yml
     - import_tasks: copy-kubernetes-pki.yml
 
-- when: use_ha_control_plane
+- name: Join Kubernetes master
+  when: use_ha_control_plane
   block:
     - name: Join Kubernetes HA master
       when: kubernetes_common.automation_designated_master != inventory_hostname
       block:
         - import_tasks: copy-kubernetes-pki.yml
         - import_tasks: master-join.yml
+
+- name: Regenerate apiserver certificates
+  when: kubernetes_common.automation_designated_master != inventory_hostname or not is_first_deployment 
+# It's almost always necessary to regenerate certificates for designated and non-designated masters
+# because of a few points:
+# a. Update certificates for old clusters have to be supported
+# b. Execution order is not defined, so when cluster is promoted to HA,
+#    non-designated masters may join cluster before designated master's certificate update
+  block:
+    - name: Extend kubeadm config
+      vars:
+        update:
+          apiServer:
+            certSANs: >-
+              {{ groups['kubernetes_master'] | map('extract', hostvars, ['ansible_default_ipv4', 'address']) | list
+              + [ 'localhost', '127.0.0.1' ] }}
+      include_role:
+        name: kubernetes_common
+        tasks_from: extend-kubeadm-config
+
+    - name: Backup and generate apiserver certificates
+      include_role:
+        name: kubernetes_common
+        tasks_from: apiserver-certificates
+
+- name: Update in-cluster configuration
+  when: kubernetes_common.automation_designated_master == inventory_hostname
+  include_role:
+    name: kubernetes_common
+    tasks_from: update-in-cluster-config
 
 - import_tasks: master-untaint.yml
 

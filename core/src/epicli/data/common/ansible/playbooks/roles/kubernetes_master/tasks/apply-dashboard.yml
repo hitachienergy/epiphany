@@ -1,20 +1,7 @@
 ---
-- name: Upload and deploy Dashboard
+# This file is meant to be also used by upgrade role
+
+- name: Upload and deploy Kubernetes Dashboard
+  include_tasks: deployments/deploy-template.yml
   vars:
     file_name: kubernetes-dashboard.yml.j2
-  include_tasks: deployments/deploy-template.yml
-
-- name: Check if kubernetes-dashboard is already deployed
-  become_user: "{{ admin_user.name }}"
-  environment:
-    KUBECONFIG: "/home/{{ admin_user.name }}/.kube/config"
-  shell: |
-    kubectl get pods \
-      --namespace kubernetes-dashboard \
-    | grep -c -i dashboard
-  args:
-    executable: /bin/bash
-  register: dashboard_count
-  failed_when: dashboard_count.rc == 2
-  when:
-    - kubernetes_common.automation_designated_master == inventory_hostname

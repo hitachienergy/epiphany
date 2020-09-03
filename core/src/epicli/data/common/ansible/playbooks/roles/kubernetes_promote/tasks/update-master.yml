@@ -6,80 +6,18 @@
 
 - when: promote_to_ha and (not kubernetes_promote.kubernetes_already_ha)
   block:
-    - name: Collect kubeadm-config
-      shell: |
-        kubectl get configmap kubeadm-config \
-          --namespace kube-system \
-          --output jsonpath={{ jsonpath }}
-      vars:
-        jsonpath: >-
-          '{.data.ClusterConfiguration}'
-      environment:
-        KUBECONFIG: /etc/kubernetes/admin.conf
-      args:
-        executable: /bin/bash
-      register: kubeadm_config
-      changed_when: false
-
     - name: Extend kubeadm config
-      set_fact:
-        kubeadm_config: >-
-          {{ original | combine(update, recursive=true) }}
       vars:
-        original: >-
-          {{ kubeadm_config.stdout | from_yaml }}
         update:
           controlPlaneEndpoint: localhost:3446
-          apiServer:
-            certSANs:
-              - localhost
-              - 127.0.0.1
-
-    - name: Render /etc/kubeadm/kubeadm-config.yml
-      copy:
-        dest: /etc/kubeadm/kubeadm-config.yml
-        content: >-
-          {{ kubeadm_config | to_nice_yaml }}
-
-    - name: Copy /etc/kubernetes/pki/apiserver.{crt,key}
-      copy:
-        dest: "{{ item }}.OLD"
-        src: "{{ item }}"
-        remote_src: true
-      loop:
-        - /etc/kubernetes/pki/apiserver.crt
-        - /etc/kubernetes/pki/apiserver.key
-
-    - name: Delete /etc/kubernetes/pki/apiserver.{crt,key}
-      file:
-        path: "{{ item }}"
-        state: absent
-      loop:
-        - /etc/kubernetes/pki/apiserver.crt
-        - /etc/kubernetes/pki/apiserver.key
-
-    - name: Render new certificates /etc/kubernetes/pki/apiserver.{crt,key}
-      shell: |
-        kubeadm init phase certs apiserver \
-          --config /etc/kubeadm/kubeadm-config.yml
-      args:
-        executable: /bin/bash
-        creates: /etc/kubernetes/pki/apiserver.key
-      notify:
-        - Restart apiserver
-
-    - meta: flush_handlers
+      include_role:
+        name: kubernetes_common
+        tasks_from: extend-kubeadm-config
 
     - name: Update in-cluster configuration
-      shell: |
-        kubeadm init phase upload-config kubeadm \
-          --config /etc/kubeadm/kubeadm-config.yml
-      args:
-        executable: /bin/bash
-      register: upload_config
-      until: upload_config is succeeded
-      retries: 30
-      delay: 10
+      include_role:
+        name: kubernetes_common
+        tasks_from: update-in-cluster-config
 
     - name: Update /etc/kubernetes/{controller-manager,scheduler,admin}.conf
       replace:

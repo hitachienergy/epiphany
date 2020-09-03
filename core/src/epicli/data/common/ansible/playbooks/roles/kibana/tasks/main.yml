@@ -1,5 +1,6 @@
 ---
-- include_tasks: "{{ ansible_os_family }}.yml"
+- name: Include Kibana package installation task
+  include_tasks: "{{ ansible_os_family }}.yml"
 
 - name: Update Kibana configuration file
   template:
@@ -10,7 +11,8 @@
     mode: 0644
   register: change_config
 
-- include_tasks: setup-logging.yml
+- name: Include logging configuration tasks
+  include_tasks: setup-logging.yml
 
 - name: Restart Kibana service
   systemd:
@@ -29,7 +31,7 @@
     host: "{{ ansible_default_ipv4.address | default(ansible_all_ipv4_addresses[0]) }}"
     port: 5601
     delay: 5
-  
+
 - name: Wait for kibana to be ready
   uri:
     url: http://{{ ansible_default_ipv4.address | default(ansible_all_ipv4_addresses[0]) }}:5601/api/kibana/settings

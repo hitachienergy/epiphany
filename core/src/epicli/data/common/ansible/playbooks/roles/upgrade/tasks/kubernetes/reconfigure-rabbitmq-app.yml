@@ -1,47 +1,34 @@
 ---
-- name: Change rabbitmq stateful set to use {{ image_registry_address }}
+- name: k8s/master | Patch rabbitmq's statefulset
+  include_tasks: utils/patch-statefulset.yml
+  vars:
+    image_regexp: 'rabbitmq:.*'
+- name: Delete rabbitmq pods after patching
   block:
-    - name: upgrade-master | Get rabbitmq statefulset name
+    - name: after-patching | Get rabbitmq namespace
       environment:
-        KUBECONFIG: /home/{{ admin_user.name }}/.kube/config
-      shell: |-
-        kubectl get statefulsets.apps --all-namespaces -o=jsonpath='{range .items[*]}{.metadata.name}{"\t"}{.spec.template.spec.containers[].image}{"\n"}{end}'|
-        grep -i rabbitmq |
-        awk '{print $1}'
-      changed_when: false
-      register: rabbit_mq_ss_name
-      args:
-        executable: /bin/bash
-    - name: upgrade-master | Get rabbitmq namespace
-      environment:
-        KUBECONFIG: /home/{{ admin_user.name }}/.kube/config
+        KUBECONFIG: &KUBECONFIG /etc/kubernetes/admin.conf
       shell: |-
         kubectl get statefulsets.apps --all-namespaces -o=jsonpath='{range .items[*]}{.metadata.namespace}{"\t"}{.spec.template.spec.containers[].image}{"\n"}{end}'|
-        grep -i rabbitmq |
-        awk '{print $1}'
+        awk '/rabbitmq/ {print $1}'
       changed_when: false
       register: rabbit_mq_namespace
       args:
         executable: /bin/bash
-    - name: upgrade-master | Get rabbitmq image
+    - name: after-patching | Get rabbitmq pod names
       environment:
-        KUBECONFIG: /home/{{ admin_user.name }}/.kube/config
-      shell: |-
-        kubectl get statefulsets.apps {{ rabbit_mq_ss_name.stdout }} -n {{ rabbit_mq_namespace.stdout }} -o=jsonpath='{$.spec.template.spec.containers[:1].image}'
+        KUBECONFIG: *KUBECONFIG
+      command: kubectl get pod -n {{ rabbit_mq_namespace.stdout }} -o=jsonpath='{range .items[*]}{.metadata.name}{"\n"}'
       changed_when: false
-      register: rabbit_mq_repository
-      args:
-        executable: /bin/bash
+      register: rabbit_mq_pod_names
       when:
         - not rabbit_mq_namespace.stdout == ""
-    - name: upgrade-master | Patch rabbitmq to use {{ image_registry_address }}
+    - name: after-patching | Delete rabbitmq pods
       environment:
-        KUBECONFIG: /home/{{ admin_user.name }}/.kube/config
-      shell: |-
-        set -o pipefail &&
-        kubectl patch statefulsets.apps {{ rabbit_mq_ss_name.stdout }} -n {{ rabbit_mq_namespace.stdout }} --patch '{"spec": {"template": { "spec": { "containers": [ { "image": "{{ image_registry_address }}/{{ rabbit_mq_repository.stdout }}", "name": "{{ rabbit_mq_ss_name.stdout }}" }]}}}}'
-      args:
-        executable: /bin/bash
+        KUBECONFIG: *KUBECONFIG
+      command: kubectl delete pod --namespace {{ rabbit_mq_namespace.stdout }} {{ item }}
+      changed_when: false
+      loop: "{{ rabbit_mq_pod_names.stdout_lines }}"
       when:
         - not rabbit_mq_namespace.stdout == ""
-        - not image_registry_address in rabbit_mq_repository.stdout
+        - not rabbit_mq_pod_names.stdout == ""

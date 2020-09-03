@@ -1,7 +1,0 @@
----
-
-- name: Drain node in preparation for maintenance
-  environment:
-    KUBECONFIG: /home/{{ admin_user.name }}/.kube/config
-  shell: kubectl drain {{ inventory_hostname }} --ignore-daemonsets --delete-local-data
-  delegate_to: "{{ groups['kubernetes_master'][0] }}"

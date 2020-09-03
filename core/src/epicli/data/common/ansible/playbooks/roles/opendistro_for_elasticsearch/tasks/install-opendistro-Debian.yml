@@ -1,0 +1,13 @@
+---
+# Keep in mind compatibility matrix for Open Distro https://opendistro.github.io/for-elasticsearch-docs/docs/install/plugins/#plugin-compatibility
+- name: Install Open Distro for Elasticsearch packages
+  apt:
+    name:
+      - opendistro-alerting={{ specification.versions[ansible_os_family].opendistro }}
+      - opendistro-index-management={{ specification.versions[ansible_os_family].opendistro }}
+      - opendistro-job-scheduler={{ specification.versions[ansible_os_family].opendistro }}
+      - opendistro-performance-analyzer={{ specification.versions[ansible_os_family].opendistro }}
+      - opendistro-security={{ specification.versions[ansible_os_family].opendistro }}
+      - opendistro-sql={{ specification.versions[ansible_os_family].opendistro }}
+    state: present
+  register: install_elasticsearch_package

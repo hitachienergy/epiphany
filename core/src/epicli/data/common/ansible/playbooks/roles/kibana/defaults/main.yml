@@ -1,0 +1,9 @@
+---
+# Required and used for upgrade Open Distro for Elasticsearch - Kibana:
+specification:
+  versions:
+    RedHat:
+      opendistro: "1.9.0"
+    Debian:
+      opendistro: "1.9.0"
+  kibana_log_dir: /var/log/kibana

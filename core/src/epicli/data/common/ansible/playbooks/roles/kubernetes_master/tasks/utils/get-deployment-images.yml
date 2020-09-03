@@ -1,0 +1,21 @@
+---
+# Expected vars:
+# - kind { deployment | daemonset }
+# - selector
+# - namespace
+
+- name: "Get list of images for {{ kind }} using selector: {{ selector }}"
+  command: >-
+    kubectl get {{ kind }}
+    --selector {{ selector }}
+    -o=custom-columns='IMAGE:spec.template.spec.containers[*].image'
+    --namespace {{ namespace }}
+    --no-headers=true
+  register: kubectl_get_images
+  changed_when: false
+  environment:
+    KUBECONFIG: /etc/kubernetes/admin.conf
+
+- name: Set list of images as fact
+  set_fact:
+    object_images: kubectl_get_images.stdout_lines

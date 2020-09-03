@@ -9,35 +9,24 @@
 #| upgrade < 0.6.0  | 1.16.7      | 1.5.0            | 1.6.2       |
 #| 0.6.0            | 1.17.4      | 1.6.5            | 1.6.5       |
 #| 0.7.0            | 1.17.7      | 1.6.5            | 1.6.5       |
+#| 0.7.1+           | K8s CoreDNS is patched by Epiphany           |
 #+-----------------------------------------------------------------+
 # Source: look for 'CoreDNSVersion' at https://github.com/kubernetes/kubernetes/blob/$TAG/cmd/kubeadm/app/constants/constants.go
 
-- name: upgrade-master | Create directory /etc/epiphany/manifests
-  become: true
-  file:
-    path: /etc/epiphany/manifests
-    state: directory
-    owner: root
-    group: root
-    mode: u=rwx,go=r
-
-- name: Upload and apply template
-  block:
-    - name: upgrade-master | Upload {{ file_name }} file
-      template:
-        src: kubernetes/{{ file_name }}.j2
-        dest: /etc/epiphany/manifests/{{ file_name }}
-        owner: "{{ admin_user.name }}"
-        group: "{{ admin_user.name }}"
-        mode: u=rw,go=r
-
-    - name: upgrade-master | Apply /etc/epiphany/manifests/{{ file_name }} file
-      environment:
-        KUBECONFIG: /home/{{ admin_user.name }}/.kube/config
-      shell: |
-        kubectl apply \
-          -f /etc/epiphany/manifests/{{ file_name }}
-      args:
-        executable: /bin/bash
+- name: k8s/master | Deploy CoreDNS v1.3.1
+  include_role:
+    name: kubernetes_master
+    tasks_from: deployments/deploy-template
   vars:
-    file_name: coredns-config-for-k8s-below-1.16.yml
+    file_name: kubernetes/coredns-config-for-k8s-below-1.16.yml.j2
+
+- name: k8s/master | Wait for CoreDNS pods to become ready
+  command: >-
+    kubectl wait --for=condition=Ready pods -l k8s-app=kube-dns --timeout=10s -n kube-system
+  environment:
+    KUBECONFIG: /etc/kubernetes/admin.conf
+  register: wait_for_coredns
+  until: wait_for_coredns is succeeded
+  retries: 30
+  delay: 1
+  changed_when: false

@@ -1,0 +1,34 @@
+---
+- name: Copy /etc/kubernetes/pki/apiserver.{crt,key}
+  copy:
+    dest: "{{ item }}.OLD"
+    src: "{{ item }}"
+    remote_src: true
+  loop:
+    - /etc/kubernetes/pki/apiserver.crt
+    - /etc/kubernetes/pki/apiserver.key
+
+- name: Delete /etc/kubernetes/pki/apiserver.{crt,key}
+  file:
+    path: "{{ item }}"
+    state: absent
+  loop:
+    - /etc/kubernetes/pki/apiserver.crt
+    - /etc/kubernetes/pki/apiserver.key
+
+- name: Render new certificates /etc/kubernetes/pki/apiserver.{crt,key}
+  shell: |
+    kubeadm init phase certs apiserver \
+      --config /etc/kubeadm/kubeadm-config.yml
+  args:
+    executable: /bin/bash
+    creates: /etc/kubernetes/pki/apiserver.key
+
+- name: Restart apiserver
+  shell: |
+    docker ps \
+      --filter 'name=kube-apiserver_kube-apiserver' \
+      --format '{{ "{{.ID}}" }}' \
+    | xargs --no-run-if-empty docker kill
+  args:
+    executable: /bin/bash

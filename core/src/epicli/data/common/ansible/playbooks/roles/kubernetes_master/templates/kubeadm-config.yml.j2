@@ -9,6 +9,12 @@ controlPlaneEndpoint: "localhost:3446"
 
 apiServer:
   timeoutForControlPlane: 4m0s
+  certSANs:
+    - localhost
+    - 127.0.0.1
+{% for host in groups['kubernetes_master'] %}
+    - {{ hostvars[host]['ansible_default_ipv4']['address'] }}
+{% endfor %}
   extraArgs: # https://kubernetes.io/docs/reference/command-line-tools-reference/kube-apiserver/
 {% if specification.advanced.etcd_args.encrypted | bool %}
     encryption-provider-config: /etc/kubernetes/pki/etcd/etc-encryption.conf

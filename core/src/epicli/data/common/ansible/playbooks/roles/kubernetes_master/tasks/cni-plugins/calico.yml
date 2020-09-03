@@ -8,55 +8,33 @@
         get_attributes: no
       register: network_manager_conf_d_stat
 
+    # https://docs.projectcalico.org/maintenance/troubleshoot/troubleshooting#configure-networkmanager
     - name: Copy calico.conf to /etc/NetworkManager/conf.d
-      copy:
-        src: calico-network-manager.conf
+      template:
+        src: network-manager.conf.j2
         dest: /etc/NetworkManager/conf.d/calico.conf
         owner: root
         group: root
         mode: u=rw,g=r,o=r
       register: copy_calico_network_manager_conf
+      vars:
+        network_interface_prefix: cali
       when:
         - network_manager_conf_d_stat.stat.exists
 
-    - name: Reload NetworkManager service
-      block:
-        - name: Check if NetworkManager service is loaded
-          shell: >-
-            set -o pipefail &&
-            systemctl list-units --type=service --state=loaded | grep -q NetworkManager.service
-          args:
-            executable: /bin/bash
-          register: network_manager_service_status
-          changed_when: false
+- name: Reload NetworkManager service
+  when: copy_calico_network_manager_conf.changed
+  block:
+    - name: Populate service facts
+      service_facts:
 
-        - name: Reload NetworkManager service
-          systemd:
-            name: NetworkManager
-            state: reloaded
-          when:
-            - network_manager_service_status.rc == 0
-      when: copy_calico_network_manager_conf.changed
+    - name: Reload if NetworkManager service is running
+      systemd:
+        name: NetworkManager
+        state: reloaded
+      when: ansible_facts.services["NetworkManager.service"].state == "running"
 
-- name: Create calico deployment
-  template:
-    src: "{{ template_file_name }}"
-    dest: "/home/{{ admin_user.name }}/calico.yml"
-    owner: "{{ admin_user.name }}"
-    group: "{{ admin_user.name }}"
+- name: Include Calico deployment tasks
+  include_tasks: deployments/deploy-template.yml
   vars:
-    template_file_name: >-
-      {%- if k8s_server_version is defined and k8s_server_version is version('v1.16', '<') -%}
-        calico-for-k8s-below-1.16.yml.j2
-      {%- else -%}
-        calico.yml.j2
-      {%- endif -%}
-
-- name: Apply calico definition
-  environment:
-    KUBECONFIG: "/home/{{ admin_user.name }}/.kube/config"
-  shell: |
-    kubectl apply \
-      -f /home/{{ admin_user.name }}/calico.yml
-  args:
-    executable: /bin/bash
+    file_name: calico.yml.j2

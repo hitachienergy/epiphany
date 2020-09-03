@@ -27,6 +27,8 @@ specification:
       enabled: yes
     - name: filebeat
       enabled: yes
+    - name: logstash
+      enabled: yes
     - name: prometheus
       enabled: yes
     - name: grafana

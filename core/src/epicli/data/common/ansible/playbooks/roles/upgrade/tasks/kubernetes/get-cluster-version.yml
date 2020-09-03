@@ -1,14 +1,14 @@
 ---
 - name: Get cluster version
   environment:
-    KUBECONFIG: "/home/{{ admin_user.name }}/.kube/config"
+    KUBECONFIG: /etc/kubernetes/admin.conf
   shell: >-
     set -o pipefail &&
     kubectl version --short -o json | jq --raw-output '.serverVersion.gitVersion'
   register: cluster_version
-  changed_when: false
   args:
     executable: /bin/bash
+  changed_when: false
 
 - name: Set cluster version as fact
   set_fact:

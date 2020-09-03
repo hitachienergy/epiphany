@@ -1,14 +1,48 @@
-- name: "upgrade-master | Unhold kubeadm"
-  shell: >-
-    apt-mark unhold kubeadm
+---
+- name: k8s/install | Get information about installed packages as facts
+  package_facts:
+    manager: auto
+  changed_when: false
 
-- name: >-
-    install-packages | Install kubeadm {{ version }} packages for Debian family
-  apt:
-    name: kubeadm={{ version }}-00
-    update_cache: yes
-    state: present
+- name: Install kubeadm package
+  vars:
+    install_cni_as_new_package: >-
+      {{ (ansible_facts.packages['kubernetes-cni'] is undefined
+          and (cni_in_kubelet is undefined or not cni_in_kubelet)) }}
 
-- name: "upgrade-master | Hold kubeadm"
-  shell: >-
-    apt-mark hold kubeadm
+    # unhold kubelet to avoid errors:
+    # The following packages have unmet dependencies: kubelet : Conflicts: kubernetes-cni
+    # The following packages have unmet dependencies: kubeadm : Depends: kubernetes-cni (>= 0.8.6)
+    packages_to_unhold: >-
+      {{ ['kubeadm', 'kubelet'] if (install_cni_as_new_package) else
+         ['kubeadm'] }}
+
+    _packages:
+      kubeadm: "{{ version }}-00"
+      kubelet: "{{ version }}-00"
+      kubernetes-cni: "{{ cni_version }}-00"
+
+    packages_to_install: >-
+      {{ _packages if (install_cni_as_new_package)
+          else { 'kubeadm': _packages.kubeadm } }}
+
+    packages_to_hold: "{{ packages_to_unhold | union(packages_to_install.keys() | list) }}"
+  block:
+    - name: k8s/install | Include unhold packages task
+      include_tasks: unhold-packages.yml
+      vars:
+        packages: "{{ packages_to_unhold }}"
+
+    - name: k8s/install | Install kubeadm {{ version }} package for Debian family
+      apt:
+        name: "{{ packages_to_install_with_version }}"
+        update_cache: true
+        state: present
+      vars:
+        packages_to_install_with_version: >-
+          {{ packages_to_install.keys() | zip(packages_to_install.values()) | map('join', '=') | list }}
+
+    - name: k8s/install | Include hold packages task
+      include_tasks: hold-packages.yml
+      vars:
+        packages: "{{ packages_to_hold }}"
