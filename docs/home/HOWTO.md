@@ -97,3 +97,6 @@
 
 - [Centralized Logging](./howto/LOGGING.md)
   - [Centralized logging setup](./howto/LOGGING.md#centralized-logging-setup)
+
+- [Maintenance](./howto/MAINTENANCE.md)
+  - [Verification of service state](./howto/MAINTENANCE.md#verification-of-service-state)
