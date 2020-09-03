@@ -87,4 +87,4 @@ By default postgresql block is provided, you can use it as example:
       match: after
 ```
 Currently supported inputs: `common_input`,`postgresql_input`,`docker_input`  
-More details about multiline options you can find in the official documentation: https://www.elastic.co/guide/en/beats/filebeat/current/multiline-examples.html
+More details about multiline options you can find in the [official documentation](https://www.elastic.co/guide/en/beats/filebeat/current/multiline-examples.html)
