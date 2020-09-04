@@ -2,6 +2,9 @@ FROM python:3.7-slim
 
 ENV DEBIAN_FRONTEND=noninteractive
 
+ARG HELM_VERSION=3.3.0*
+ARG KUBECTL_VERSION=1.18.8*
+
 ARG USERNAME=vscode
 ARG USER_UID=1000
 ARG USER_GID=$USER_UID
@@ -19,9 +22,19 @@ RUN chmod +x /config-pre.sh \
     && apt-get install --no-install-recommends -y \
         apt-utils dialog 2>&1 \
     && apt-get install --no-install-recommends -y \
-        gcc libffi-dev make musl-dev openssh-client ruby-full sudo tar unzip vim \
+        curl gcc gnupg2 libffi-dev make musl-dev openssh-client ruby-full sudo tar unzip vim \
         \
         git git-lfs lsb-release procps \
+\
+    && echo "Adding APT repositories ..." \
+    && curl -s https://baltocdn.com/helm/signing.asc | APT_KEY_DONT_WARN_ON_DANGEROUS_USAGE=1 apt-key add - \
+    && echo "deb https://baltocdn.com/helm/stable/debian/ all main" | tee /etc/apt/sources.list.d/helm-stable-debian.list \
+    && curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | APT_KEY_DONT_WARN_ON_DANGEROUS_USAGE=1 apt-key add - \
+    && echo "deb https://apt.kubernetes.io/ kubernetes-xenial main" | tee /etc/apt/sources.list.d/kubernetes.list \
+    && apt-get update \
+    && apt-get install --no-install-recommends -y \
+        helm=${HELM_VERSION} \
+        kubectl=${KUBECTL_VERSION} \
 \
     && gem install \
         rake rspec_junit_formatter serverspec \
