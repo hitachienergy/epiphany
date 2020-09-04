@@ -1,13 +1,24 @@
 ## Upgrade
 
+### Prerequisites
+
+Before k8s version upgrade make sure that deprecated API versions are not used:
+
+1. [v1.17](https://v1-17.docs.kubernetes.io/docs/setup/release/notes/#deprecations-and-removals)
+2. [v1.18](https://v1-18.docs.kubernetes.io/docs/setup/release/notes/#deprecation)
+
 ### Introduction
 
 From Epicli 0.4.2 and up the CLI has the ability to perform upgrades on certain components on a cluster. The components it currently can upgrade and will add are:
 
-- kubernetes (master and nodes): Upgrades Kubernetes starting from 1.11.5 to 1.17.7
-- common: Upgrades all common configurations to match them to Epiphany 0.4.2
-- repository: Adds the repository role needed for component installation in Epiphany 0.4.2
-- image_registry: Adds the image_registry role needed for offline installation in Epiphany 0.4.2
+*Note: Since v0.7.0 Epiphany does not support k8s version upgrades older than 1.14.6 (Epiphany v0.4.4).
+There is an assertion to check whether K8s version is supported before running upgrade,
+but upgrade for v0.3.1 is not possible due to the open [issue](https://github.com/epiphany-platform/epiphany/issues/1491).*
+
+- Kubernetes (master and nodes): starting from version 1.14.6 to 1.18.6
+- common: Upgrades all common configurations to match them to current Epiphany version
+- repository: Adds the repository role needed for component installation in current Epiphany version
+- image_registry: Adds the image_registry role needed for offline installation in current Epiphany version
 
 *Note: The component upgrade takes the existing Ansible build output and based on that performs the upgrade of the currently supported components. If you need to upgrade your entire Epiphany cluster a **manual** upgrade of the input yaml is needed to the latest specification which then should be applied with `epicli apply...` after the offline upgrade which is described here.*
 

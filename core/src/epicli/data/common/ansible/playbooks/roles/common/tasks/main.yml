@@ -114,9 +114,7 @@
   tags:
     - security
 
-- include_tasks: aws-hostname.yml
-  when:
-    - provider == "aws"
+- include_tasks: set-hostname.yml
 
 - name: Include logrotate configuration tasks
   include_tasks: configure-logrotate.yml

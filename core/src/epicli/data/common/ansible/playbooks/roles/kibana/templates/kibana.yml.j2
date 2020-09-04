@@ -15,11 +15,21 @@
 
 # Description:
 # Default Kibana configuration for Open Distro.
+
 server.host: "{{ ansible_default_ipv4.address | default(ansible_all_ipv4_addresses[0]) }}"
-elasticsearch.hosts: 
-{% for host in groups['logging'] %}
+elasticsearch.hosts:
+{% if 'logging' in group_names %}
+  # Logging hosts:
+  {% for host in groups['logging'] %}
   - "https://{{hostvars[host]['ansible_hostname']}}:9200"
-{% endfor %}
+  {% endfor %}
+{% elif 'opendistro_for_elasticsearch' in group_names %}
+  # Opendistro (data) hosts:
+  {% for host in groups['opendistro_for_elasticsearch'] %}
+  - "https://{{hostvars[host]['ansible_hostname']}}:9200"
+  {% endfor %}
+{% endif %}
+
 elasticsearch.ssl.verificationMode: none
 elasticsearch.username: kibanaserver
 elasticsearch.password: kibanaserver

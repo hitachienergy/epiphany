@@ -1,5 +1,5 @@
 ---
-- name: k8s | Wait for kube-apiserver then get cluster and kubelet version
+- name: Wait for kube-apiserver and get cluster version
   delegate_to: "{{ groups.kubernetes_master[0] }}"
   block:
     - name: k8s | Include wait-for-kube-apiserver.yml
@@ -11,19 +11,23 @@
 - name: k8s | Check if upgrade from current K8s version is supported
   assert:
     that: cluster_version is version('v1.14.6', '>=')
-    fail_msg: Your Kubernetes version ({{ cluster_version }}) is not supported by this version of Epiphany which requires at least version 1.14.6 (Epiphany v0.4.4). For more information, refer to the documentation.
+    fail_msg: >-
+      Your Kubernetes version ({{ cluster_version }}) is not supported by this version of Epiphany which requires
+      at least version 1.14.6 (Epiphany v0.4.4). For more information, refer to the documentation.
     quiet: true
+  when:
+    - groups.kubernetes_master[0] == inventory_hostname
 
 - name: k8s | Include get-kubelet-version.yml
   import_tasks: kubernetes/get-kubelet-version.yml # sets kubelet_version
-  delegate_to: "{{ groups['kubernetes_master'][0] }}"
+  delegate_to: "{{ groups.kubernetes_master[0] }}"
 
-- name: k8s | Upgrade masters then nodes
+- name: Upgrade masters then nodes
   vars:
     version: "{{ ver }}"
     cni_version: "{{ cni_ver }}"
   block:
-    - name: k8s | Upgrade masters
+    - name: Upgrade masters
       when: cluster_version is version('v' + version, '<=')
       block:
         - name: k8s | Upgrade first master to v{{ version }}
@@ -36,7 +40,7 @@
           when:
             - inventory_hostname in groups.kubernetes_master[1:]
 
-    - name: k8s | Upgrade nodes
+    - name: Upgrade nodes
       when: kubelet_version is version('v' + version, '<=')
       block:
         - name: k8s | Upgrade node to v{{ version }}

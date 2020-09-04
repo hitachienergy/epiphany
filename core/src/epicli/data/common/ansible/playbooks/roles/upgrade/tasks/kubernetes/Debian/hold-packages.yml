@@ -1,11 +1,7 @@
 ---
-- name: k8s/install | Hold packages {{ packages | join( ', ' ) }}
+# Expected vars:
+# - packages (list)
+
+- name: "k8s/install | Hold packages: {{ packages | join( ', ' ) }}"
   command: >-
     apt-mark hold {{ packages | join( ' ' ) }}
-  vars:
-    packages: >-
-      {%- if cni_in_kubelet is undefined or not cni_in_kubelet -%}
-        ['kubeadm', 'kubelet', 'kubectl', 'kubernetes-cni']
-      {%- else -%}
-        ['kubeadm', 'kubelet', 'kubectl']
-      {%- endif -%}
