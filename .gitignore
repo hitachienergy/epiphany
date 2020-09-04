@@ -69,3 +69,5 @@ examples/**/bin/
 examples/**/obj/
 
 .python.venv/
+
+/docs/design-docs/modular-cli/cpt-tests/runs/infrastructure-and-kafka/shared/

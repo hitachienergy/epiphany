@@ -1,0 +1,36 @@
+labels:
+  version: 0.0.1
+  name: Bare Metal Kafka
+  short: BMK
+  kind: stream-processor
+  core-technology: apache-kafka
+  provides-kafka: 2.5.1
+  provides-zookeeper: 3.5.8
+requires:
+  strong:
+    - - key: kind
+        operator: eq
+        values: [infrastructure]
+      - key: provider,
+        operator: in,
+        values:
+          - azure
+          - aws
+  weak:
+    - - key: kind
+        operator: eq
+        values:
+          - logs-storage
+    - - key: kind
+        operator: eq
+        values:
+          - monitoring
+      - key: core-technology
+        operator: eq
+        values:
+          - prometheus
+influences:
+  - - key: kind
+      operator: eq
+      values:
+        - monitoring
