@@ -27,12 +27,12 @@ RUN apt-get update \
         curl gcc libffi-dev make musl-dev openssh-client ruby-full sudo tar unzip vim \
 \
     && echo "Installing helm binary ..." \
-    && curl -LOsS https://get.helm.sh/helm-v${HELM_VERSION}-linux-amd64.tar.gz \
+    && curl -fsSLO https://get.helm.sh/helm-v${HELM_VERSION}-linux-amd64.tar.gz \
     && tar -xzof ./helm-v${HELM_VERSION}-linux-amd64.tar.gz --strip=1 -C /usr/local/bin linux-amd64/helm \
     && rm ./helm-v${HELM_VERSION}-linux-amd64.tar.gz \
     && helm version \
     && echo "Installing kubectl binary ..." \
-    && curl -LOsS https://storage.googleapis.com/kubernetes-release/release/v${KUBECTL_VERSION}/bin/linux/amd64/kubectl \
+    && curl -fsSLO https://storage.googleapis.com/kubernetes-release/release/v${KUBECTL_VERSION}/bin/linux/amd64/kubectl \
     && chmod +x ./kubectl \
     && mv ./kubectl /usr/local/bin/kubectl \
     && kubectl version --client \
