@@ -28,6 +28,13 @@
         - import_tasks: copy-kubernetes-pki.yml
         - import_tasks: master-join.yml
 
+- name: Collect current apiserver certificate 'not_after' date by openssl
+  shell: openssl x509 -enddate -noout -in apiserver.crt
+  args:
+    executable: /bin/bash
+    chdir: "{{ specification.advanced.certificates.location }}"
+  register: apiserver_certificate_info
+
 - name: Regenerate apiserver certificates
   when: kubernetes_common.automation_designated_master != inventory_hostname or not is_first_deployment 
 # It's almost always necessary to regenerate apiserver certificates for designated and non-designated masters
@@ -56,13 +63,6 @@
 - name: Update apiserver certificate expiration date
   when: not (specification.advanced.certificates.renew | bool)
   block:  
-    - name: Collect current apiserver certificate 'not_after' date by openssl 
-      shell: openssl x509 -enddate -noout -in apiserver.crt.OLD
-      args:
-        executable: /bin/bash
-        chdir: "{{ specification.advanced.certificates.location }}"
-      register: apiserver_certificate_info
-
     - name: Regenerate apiserver certificate with previous expiration value
       vars:
         certificates_renewal_list:
