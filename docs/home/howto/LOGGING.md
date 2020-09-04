@@ -74,3 +74,17 @@ Note: Currently input plugin doesn't officialy support skipping certificate vali
 For non-production environment you can easly disable it by adding new line:  
 `ssl_options[:verify] = false` right after other ssl_options definitions in file:  
 `/usr/share/logstash/vendor/bundle/jruby/2.5.0/gems/logstash-input-elasticsearch-4.6.2/lib/logstash/inputs/elasticsearch.rb`
+
+### How to add multiline support for Filebeat logs
+In order to properly handle multilines in files harvested by Filebeat you have to provide `multiline` definition in the configuration manifest. Using the following code you will be able to specify which lines are part of a single event.
+
+By default postgresql block is provided, you can use it as example:  
+```yaml
+  postgresql_input:
+    multiline:
+      pattern: '^\d{4}-\d{2}-\d{2} '
+      negate: true
+      match: after
+```
+Currently supported inputs: `common_input`,`postgresql_input`,`docker_input`  
+More details about multiline options you can find in the [official documentation](https://www.elastic.co/guide/en/beats/filebeat/current/multiline-examples.html)

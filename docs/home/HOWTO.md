@@ -103,6 +103,7 @@
 - [Centralized Logging](./howto/LOGGING.md)
   - [Centralized logging setup](./howto/LOGGING.md#centralized-logging-setup)
   - [How to export Elasticsearch data to csv format](./howto/LOGGING.md#how-to-export-elasticsearch-data-to-csv-format)
+  - [How to add multiline support for Filebeat logs](./howto/LOGGING.md#how-to-add-multiline-support-for-filebeat-logs)
 
 - [Maintenance](./howto/MAINTENANCE.md)
   - [Verification of service state](./howto/MAINTENANCE.md#verification-of-service-state)

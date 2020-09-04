@@ -8,6 +8,7 @@
 - [#1300](https://github.com/epiphany-platform/epiphany/issues/1300) - Configure OpenSSH according to Mozilla Infosec guidance
 - [#1543](https://github.com/epiphany-platform/epiphany/issues/1543) - Add support for Azure availability sets
 - [#1609](https://github.com/epiphany-platform/epiphany/issues/1609) - Build epicli image using Dockerfile only (without shell script)
+- [#765](https://github.com/epiphany-platform/epiphany/issues/765) - Added multiline support for logs statements in Filebeat
 
 ### Updated
 

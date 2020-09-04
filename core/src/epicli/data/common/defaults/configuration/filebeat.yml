@@ -3,3 +3,8 @@ title: Filebeat
 name: default
 specification:
   filebeat_version: "7.8.1"
+  postgresql_input:
+    multiline:
+      pattern: '^\d{4}-\d{2}-\d{2} '
+      negate: true
+      match: after
