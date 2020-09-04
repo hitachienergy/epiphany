@@ -1,0 +1,23 @@
+input {
+ elasticsearch {
+    hosts => "HOST_IP:ES_HTTP_PORT"
+    ssl => "BOOLEAN"
+    ca_file => "CA_FILE.pem"
+    user => "USER"
+    password => "PASSWORD"
+    index => "INDEX_NAME"
+    query => '
+    {
+	    "query": {
+		    "match_all": {}
+	    }
+    }
+  '
+  }
+}
+output {
+  csv {
+    fields => ["FIELDS_TO_EXPORT"]
+    path => "PATH"
+  }
+}
