@@ -1,7 +1,5 @@
 FROM python:3.7-slim
 
-ENV DEBIAN_FRONTEND=noninteractive
-
 ARG HELM_VERSION=3.3.0*
 ARG KUBECTL_VERSION=1.18.8*
 
@@ -18,6 +16,7 @@ COPY requirements.txt /
 RUN chmod +x /config-pre.sh \
     && /bin/bash -c /config-pre.sh \
 \
+    && export DEBIAN_FRONTEND=noninteractive \
     && apt-get update \
     && apt-get install --no-install-recommends -y \
         apt-utils dialog 2>&1 \
@@ -55,5 +54,3 @@ RUN chmod +x /config-pre.sh \
 \
     && chmod +x /config-post.sh \
     && /bin/bash -c /config-post.sh
-
-ENV DEBIAN_FRONTEND=
