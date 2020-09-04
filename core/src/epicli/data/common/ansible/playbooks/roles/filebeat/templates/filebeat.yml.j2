@@ -18,6 +18,12 @@ filebeat.inputs:
 #--- Common group ---
 - type: log
   enabled: true
+  {% if specification.common_input.multiline is defined -%}
+  multiline:
+  {% for k, v in specification.common_input.multiline.items() %}
+  {{ k }}: {{ v }}
+  {% endfor %}
+  {% endif %}
 
   # Paths that should be crawled and fetched. Glob based paths.
   paths:
@@ -70,7 +76,7 @@ filebeat.inputs:
 
 {% if 'postgresql' in group_names %}
 
-# ============================== PostgreSQL ==============================
+# -------------------------- PostgreSQL input --------------------------
 
 # Filebeat postgresql module doesn't support custom log_line_prefix (without patching), see https://discuss.elastic.co/t/filebeats-with-postgresql-module-custom-log-line-prefix/204457
 # Dedicated configuration to handle log messages spanning multiple lines.
@@ -81,15 +87,17 @@ filebeat.inputs:
   paths:
     - /var/log/postgresql/*.log*
   exclude_files: [".gz$"]
+  {% if specification.postgresql_input.multiline is defined -%}
   multiline:
-    pattern: '^\d{4}-\d{2}-\d{2} '
-    negate: true
-    match: after
+  {% for k, v in specification.postgresql_input.multiline.items() %}
+  {{ k }}: {{ v }}
+  {% endfor %}
+  {% endif %}
 {% endif %}
 
 {% if 'kubernetes_master' in group_names or 'kubernetes_node' in group_names %}
 
-# ==============================  Kubernetes ==============================
+# -------------------------- Kubernetes input --------------------------
 
 # K8s metadata are fetched from Docker labels to not make Filebeat on worker nodes dependent on K8s master
 # since Filebeat should start even if K8s master is not available.
@@ -97,6 +105,13 @@ filebeat.inputs:
 - type: docker
   enabled: true
   containers.ids: "*"
+  {% if specification.docker_input.multiline is defined -%}
+  multiline:
+  {% for k, v in specification.docker_input.multiline.items() %}
+  {{ k }}: {{ v }}
+  {% endfor %}
+  {% endif %}
+
   processors:
     - add_docker_metadata:
     - rename:
