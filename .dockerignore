@@ -1,15 +1,13 @@
-# Ignore all unwanted files from the docker build process
+# Exclude unnecessary files from the build context
+# This file is meant to be used as a whitelist
 
-.git
-.git*
-*.log
-certs/
-**/data/*
+# Exclude everything
+*
 
-*.md
-
-tests/
-Dockerfile
-
-core/data/
-core/build/
+# Include the following
+!README.md
+!LICENSE
+!core/src/epicli/.devcontainer/requirements.txt
+!core/src/epicli/cli/
+!core/src/epicli/data/
+!core/src/epicli/setup.py

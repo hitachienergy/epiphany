@@ -1,0 +1,14 @@
+---
+- name: Install logstash-oss
+  include_tasks: "{{ ansible_os_family }}.yml"
+
+- name: Ensure Logstash is disabled
+  systemd:
+    name: logstash
+    enabled: no
+    state: stopped
+
+- name: Provide logstash-export.conf template file
+  copy:
+    src: logstash-export.conf.template
+    dest: /etc/logstash/logstash-export.conf.template

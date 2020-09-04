@@ -60,11 +60,11 @@
   - [How to use TLS/SSL certificate with RabbitMQ](./howto/SECURITY.md#how-to-use-tlsssl-certificate-with-rabbitmq)
   - [How to use TLS/SSL with Kafka](./howto/SECURITY.md#how-to-use-tlsssl-with-kafka)
   - [How to use TLS/SSL certificates for Kafka authentication](./howto/SECURITY.md#how-to-use-tlsssl-certificates-for-kafka-authentication)
-  - [How to use TLS/SSL certificates for Kafka authorization](./howto/SECURITY.md#how-to-use-tlsssl-certificates-for-kafka-authorization)  
+  - [How to use TLS/SSL certificates for Kafka authorization](./howto/SECURITY.md#how-to-use-tlsssl-certificates-for-kafka-authorization)
   - [How to enable Azure disk encryption](./howto/SECURITY.md#how-to-enable-azure-disk-encryption)
   - [How to enable AWS disk encryption](./howto/SECURITY.md#how-to-enable-AWS-disk-encryption)
   - [How to use Kubernetes Secrets](./howto/SECURITY.md#how-to-use-kubernetes-secrets)
-  - [How to authenticate to Azure AD app](./howto/SECURITY.md#how-to-authenticate-to-azure-ad-app)  
+  - [How to authenticate to Azure AD app](./howto/SECURITY.md#how-to-authenticate-to-azure-ad-app)
   - [How to run epicli with password](./howto/SECURITY.md#how-to-run-epicli-with-password)
   - [How to enable kubectl on Kubernetes master](./howto/SECURITY.md#how-to-enable-kubectl-on-Kubernetes-master)
   - [How to turn on Hashicorp Vault functionality](./howto/SECURITY.md#how-to-turn-on-hashicorp-vault-functionality)
@@ -80,6 +80,7 @@
   - [How to set up PGBouncer, PgPool and PostgreSQL parameters](./howto/DATABASES.md#how-to-set-up-pgbouncer-pgpool-and-postgresql-parameters)
   - [How to set up PostgreSQL audit logging](./howto/DATABASES.md#how-to-set-up-postgresql-audit-logging)
   - [How to start working with OpenDistro for Elasticsearch](./howto/DATABASES.md#how-to-start-working-with-opendistro-for-elasticsearch)
+  - [How to export Elasticsearch data to csv format](./howto/LOGGING.md##how-to-export-elasticsearch-data-to-csv-format)
   - [How to start working with Apache Ignite Stateful setup](./howto/DATABASES.md#how-to-start-working-with-apache-ignite-stateful-setup)
   - [How to start working with Apache Ignite Stateless setup](./howto/DATABASES.md#how-to-start-working-with-apache-ignite-stateless-setup)
 
@@ -101,3 +102,4 @@
 
 - [Centralized Logging](./howto/LOGGING.md)
   - [Centralized logging setup](./howto/LOGGING.md#centralized-logging-setup)
+  - [How to export Elasticsearch data to csv format](./howto/LOGGING.md#how-to-export-elasticsearch-data-to-csv-format)
