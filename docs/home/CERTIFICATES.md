@@ -3,7 +3,7 @@
 ## TLS certificates in a cluster
 
 It's possible to regenerate kubernetes control plane certificates with epiphany.
-To do so, additional configuration should be secified.
+To do so, additional configuration should be specified.
 
 ```yaml
 kind: configuration/kubernetes-master
@@ -17,14 +17,35 @@ specification:
       renew: true
 ```
 
-Parameters:
+Parameters (optional):
 
 1. expiration_days - days to expire in, default value is `365`
-2. renew - whether to renew certificates or not
+2. renew - whether to renew certificates or not, default value is `false`
+
+When `epicly apply` executes, if `renew` option is set to `true`, following certifictes will be renewed with expiration period defined by `expiration_days`:
+
+1. admin.conf
+2. apiserver
+3. apiserver-etcd-client
+4. apiserver-kubelet-client
+5. controller-manager.conf
+6. etcd-healthcheck-client
+7. etcd-peer
+8. etcd-server
+9. front-proxy-client
+10. scheduler.conf
+
+---
+**NOTE**
+
+kubelet.conf is not renewed because kubelet is configured for automatic certificate renewal.
+To verify that, navigate to `/var/lib/kubelet/` and check `config.yaml` file, where `rotateCertificates` setting is `true` by default.
+
+---
 
 ## CA certificates rotation
 
-This part cannot be done by epiphany. Refer to official [documentation](https://kubernetes.io/docs/tasks/tls/manual-rotation-of-ca-certificates/) to perform this task.
+This part cannot be done by epiphany. Refer to official kubernetes [documentation](https://kubernetes.io/docs/tasks/tls/manual-rotation-of-ca-certificates/) to perform this task.
 
 ## References
 
