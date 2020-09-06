@@ -22,7 +22,7 @@ Parameters (optional):
 1. expiration_days - days to expire in, default value is `365`
 2. renew - whether to renew certificates or not, default value is `false`
 
-When `epicly apply` executes, if `renew` option is set to `true`, following certifictes will be renewed with expiration period defined by `expiration_days`:
+When `epicly apply` executes, if `renew` option is set to `true`, following certificates will be renewed with expiration period defined by `expiration_days`:
 
 1. admin.conf
 2. apiserver
