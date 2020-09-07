@@ -28,9 +28,16 @@
         - import_tasks: copy-kubernetes-pki.yml
         - import_tasks: master-join.yml
 
+- name: Collect current apiserver certificate 'not_after' date by openssl
+  shell: openssl x509 -enddate -noout -in apiserver.crt
+  args:
+    executable: /bin/bash
+    chdir: "{{ specification.advanced.certificates.location }}"
+  register: apiserver_certificate_info
+
 - name: Regenerate apiserver certificates
   when: kubernetes_common.automation_designated_master != inventory_hostname or not is_first_deployment 
-# It's almost always necessary to regenerate certificates for designated and non-designated masters
+# It's almost always necessary to regenerate apiserver certificates for designated and non-designated masters
 # because of a few points:
 # a. Update certificates for old clusters have to be supported
 # b. Execution order is not defined, so when cluster is promoted to HA,
@@ -47,16 +54,44 @@
         name: kubernetes_common
         tasks_from: extend-kubeadm-config
 
-    - name: Backup and generate apiserver certificates
-      include_role:
-        name: kubernetes_common
-        tasks_from: apiserver-certificates
+    - name: Backup and generate apiserver certificates with latest kubeadm config
+      include_tasks: apiserver-certificates.yml
+
+# kubeadm certs renewal uses the existing certificates as the authoritative source for attributes (Common Name, Organization, SAN, etc.)
+# instead of the kubeadm-config ConfigMap, so it's not possible to combine this step with previous ones
+# See https://kubernetes.io/docs/tasks/administer-cluster/kubeadm/kubeadm-certs/#manual-certificate-renewal
+- name: Update apiserver certificate expiration date
+  when: not (specification.advanced.certificates.renew | bool)
+  block:  
+    - name: Regenerate apiserver certificate with previous expiration value
+      vars:
+        certificates_renewal_list:
+          - apiserver
+        valid_days: "{{ apiserver_certificate_info.stdout | openssl_date2days }}"
+      include_tasks: generate-certificates.yml
+
+    - name: Restart apiserver
+      shell: |
+        docker ps \
+          --filter 'name=kube-apiserver_kube-apiserver' \
+          --format '{{ "{{.ID}}" }}' \
+        | xargs --no-run-if-empty docker kill
+      args:
+        executable: /bin/bash
 
 - name: Update in-cluster configuration
   when: kubernetes_common.automation_designated_master == inventory_hostname
   include_role:
     name: kubernetes_common
     tasks_from: update-in-cluster-config
+
+- name: Regenerate all certificates
+  when: specification.advanced.certificates.renew | bool
+  vars:
+    valid_days: "{{ specification.advanced.certificates.expiration_days }}"
+    restart_services: 
+      - docker
+  include_tasks: generate-certificates.yml
 
 - import_tasks: master-untaint.yml
 
