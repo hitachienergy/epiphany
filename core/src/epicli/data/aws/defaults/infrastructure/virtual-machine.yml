@@ -259,6 +259,16 @@ specification:
        destination_port_range: "22"
        source_address_prefix: "0.0.0.0/0"
        destination_address_prefix: "0.0.0.0/0"
+     - name: k8s_api
+       description: Allow K8s API
+       priority: 102
+       direction: Inbound
+       access: Allow
+       protocol: Tcp
+       source_port_range: "*"
+       destination_port_range: "6443"
+       source_address_prefix: "0.0.0.0/0"
+       destination_address_prefix: "0.0.0.0/0"
      - name: repository
        description: Allow repository traffic
        priority: 302
