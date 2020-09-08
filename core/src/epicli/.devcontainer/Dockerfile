@@ -1,6 +1,7 @@
 FROM python:3.7-slim
 
-ENV DEBIAN_FRONTEND=noninteractive
+ARG HELM_VERSION=3.3.1
+ARG KUBECTL_VERSION=1.18.8
 
 ARG USERNAME=vscode
 ARG USER_UID=1000
@@ -15,13 +16,25 @@ COPY requirements.txt /
 RUN chmod +x /config-pre.sh \
     && /bin/bash -c /config-pre.sh \
 \
+    && export DEBIAN_FRONTEND=noninteractive \
     && apt-get update \
     && apt-get install --no-install-recommends -y \
         apt-utils dialog 2>&1 \
     && apt-get install --no-install-recommends -y \
-        gcc libffi-dev make musl-dev openssh-client ruby-full sudo tar unzip vim \
+        curl gcc libffi-dev make musl-dev openssh-client ruby-full sudo tar unzip vim \
         \
         git git-lfs lsb-release procps \
+\
+    && echo "Installing helm binary ..." \
+    && curl -fsSLO https://get.helm.sh/helm-v${HELM_VERSION}-linux-amd64.tar.gz \
+    && tar -xzof ./helm-v${HELM_VERSION}-linux-amd64.tar.gz --strip=1 -C /usr/local/bin linux-amd64/helm \
+    && rm ./helm-v${HELM_VERSION}-linux-amd64.tar.gz \
+    && helm version \
+    && echo "Installing kubectl binary ..." \
+    && curl -fsSLO https://storage.googleapis.com/kubernetes-release/release/v${KUBECTL_VERSION}/bin/linux/amd64/kubectl \
+    && chmod +x ./kubectl \
+    && mv ./kubectl /usr/local/bin/kubectl \
+    && kubectl version --client \
 \
     && gem install \
         rake rspec_junit_formatter serverspec \
@@ -42,5 +55,3 @@ RUN chmod +x /config-pre.sh \
 \
     && chmod +x /config-post.sh \
     && /bin/bash -c /config-post.sh
-
-ENV DEBIAN_FRONTEND=

@@ -11,6 +11,9 @@ RUN python setup.py bdist_wheel
 
 FROM python:3.7-slim
 
+ARG HELM_VERSION=3.3.1
+ARG KUBECTL_VERSION=1.18.8
+
 ARG USERNAME=epiuser
 ARG USER_UID=1000
 ARG USER_GID=$USER_UID
@@ -21,7 +24,19 @@ COPY --from=build-epicli-wheel /src/core/src/epicli/dist/ /epicli/
 
 RUN apt-get update \
     && apt-get install --no-install-recommends -y \
-        gcc libffi-dev make musl-dev openssh-client ruby-full sudo tar unzip vim \
+        curl gcc libffi-dev make musl-dev openssh-client ruby-full sudo tar unzip vim \
+\
+    && echo "Installing helm binary ..." \
+    && curl -fsSLO https://get.helm.sh/helm-v${HELM_VERSION}-linux-amd64.tar.gz \
+    && tar -xzof ./helm-v${HELM_VERSION}-linux-amd64.tar.gz --strip=1 -C /usr/local/bin linux-amd64/helm \
+    && rm ./helm-v${HELM_VERSION}-linux-amd64.tar.gz \
+    && helm version \
+    && echo "Installing kubectl binary ..." \
+    && curl -fsSLO https://storage.googleapis.com/kubernetes-release/release/v${KUBECTL_VERSION}/bin/linux/amd64/kubectl \
+    && chmod +x ./kubectl \
+    && mv ./kubectl /usr/local/bin/kubectl \
+    && kubectl version --client \
+\
     && gem install \
         rake rspec_junit_formatter serverspec \
     && pip install --disable-pip-version-check --no-cache-dir \
