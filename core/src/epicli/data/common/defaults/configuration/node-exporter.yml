@@ -2,8 +2,6 @@ kind: configuration/node-exporter
 title: "Node exporter"
 name: default
 specification:
-  description: "Service that runs Prometheus Node Exporter"
-  file_name: "node_exporter-1.0.1.linux-amd64.tar.gz"
   enabled_collectors:
     - conntrack
     - diskstats
@@ -25,14 +23,6 @@ specification:
 
   web_listen_port: "9100"
   web_listen_address: ""
-  config_flags:
-    - "--web.listen-address=:9100"
-    - '--log.level=info'
-    - '--collector.diskstats.ignored-devices=^(ram|loop|fd)\d+$'
-    - '--collector.filesystem.ignored-mount-points=^/(sys|proc|dev|run)($|/)'
-    - '--collector.netdev.device-blacklist="^$"'
-    - '--collector.textfile.directory="/var/lib/prometheus/node-exporter"'
-    - '--collector.systemd.unit-whitelist="(kafka\.service|zookeeper\.service)"'
 
   config_for_prometheus: # configuration that will be written to Prometheus to allow scraping metrics from this exporter
     exporter_listen_port: "9100"

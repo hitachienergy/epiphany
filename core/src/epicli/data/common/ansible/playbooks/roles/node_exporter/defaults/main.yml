@@ -1,4 +1,13 @@
 ---
-
-
-
+specification:
+  exporter_version: "1.0.1"
+  config_flags:
+    - "--web.listen-address=:9100"
+    - '--log.level=info'
+    - '--collector.diskstats.ignored-devices=^(ram|loop|fd)\d+$'
+    - '--collector.filesystem.ignored-mount-points=^/(sys|proc|dev|run)($|/)'
+    - '--collector.netdev.device-blacklist="^$"'
+    - '--collector.textfile.directory="/var/lib/prometheus/node-exporter"'
+    - '--collector.systemd.unit-whitelist="(kafka\.service|zookeeper\.service)"'
+  description: "Service that runs Prometheus Node Exporter"
+exporter_service_name: prometheus-node-exporter

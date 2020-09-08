@@ -1,7 +1,7 @@
 ---
 - name: restart prometheus-node-exporter
   service:
-    name: prometheus-node-exporter
+    name: "{{ exporter_service_name }}"
     state: restarted
   retries: 10
   delay: 10
