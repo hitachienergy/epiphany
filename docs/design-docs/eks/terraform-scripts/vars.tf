@@ -23,11 +23,6 @@ variable "eks_autoscaler_chart_version" {
   type = string
 }
 
-// AWS Account ID
-variable "account_id" {
-  type = string
-}
-
 // AWS Region
 variable "region" {
   type = string
