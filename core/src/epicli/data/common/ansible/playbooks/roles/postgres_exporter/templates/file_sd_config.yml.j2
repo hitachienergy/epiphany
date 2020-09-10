@@ -1,0 +1,7 @@
+# {{ ansible_managed }}
+
+- targets: ['{{ inventory_hostname }}:{{ specification.config_for_prometheus.exporter_listen_port }}']
+  labels:
+{% for item in specification.config_for_prometheus.file_sd_labels %}
+    "{{ item.label }}": "{{ item.value }}"
+{% endfor %}

@@ -1,0 +1,16 @@
+# /usr/local/epicli/data/common/defaults/configuration/postgres-exporter.yml
+
+kind: configuration/postgres-exporter
+title: Postgres exporter
+name: default
+specification:
+  version: 0.8.0
+  file_name: postgres_exporter_v0.8.0_linux-amd64.tar.gz
+  description: Service that runs Postgres Exporter
+  web_listen_port: '9187'
+  config_for_prometheus:
+    exporter_listen_port: '9187'
+    prometheus_config_dir: /etc/prometheus
+    file_sd_labels:
+    - label: job
+      value: postgres-exporter

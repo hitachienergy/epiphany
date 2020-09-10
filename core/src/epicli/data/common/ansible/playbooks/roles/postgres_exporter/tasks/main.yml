@@ -1,0 +1,99 @@
+---
+- include_tasks: setup-ansible-postgres-and-detect-secondary-node.yaml
+
+- meta: end_host
+  when: "not is_secondary"
+
+- name: Create postgres_exporter system group
+  group:
+    name: postgres_exporter
+    system: true
+    state: present
+
+- name: Create postgres_exporter system user
+  user:
+    name: postgres_exporter
+    system: true
+    shell: "/usr/sbin/nologin"
+    group: postgres_exporter
+    createhome: false
+
+- name: Set Postgres Exporter file name to install
+  set_fact:
+    exporter_file_name: "{{ specification.file_name }}"
+
+- name: Download Postgres Exporter binaries
+  include_role:
+    name: download
+    tasks_from: download_file
+  vars:
+    file_name: "{{ exporter_file_name }}"
+
+- name: Create /opt/postgres_exporter directory
+  become: yes
+  file:
+    path: "{{ item }}"
+    recurse: yes
+    owner: root
+    group: postgres_exporter
+    mode: 0755
+    state: directory
+  with_items:
+  - /opt/postgres_exporter
+
+- name: Unpack postgres_exporter binary
+  become: true
+  unarchive:
+    remote_src: yes
+    src: "{{ download_directory }}/{{ exporter_file_name }}"
+    dest: "/opt/postgres_exporter"
+    creates: "/opt/postgres_exporter/postgres_exporter"
+    extra_opts: [--strip-components=1]
+    mode: 0755
+    owner: root
+    group: postgres_exporter
+  check_mode: false
+  notify:
+    - restart postgres-exporter
+
+- name: Install postgres_exporter service to systemd
+  template:
+    src: postgres-exporter.service.j2
+    dest: /etc/systemd/system/postgres-exporter.service
+    owner: root
+    group: root
+    mode: 0644
+
+- name: Deploy extend query-path file
+  copy:
+    content: "{{ specification.extend_query_path_file_content }}"
+    dest: "{{ specification.extend_query_path_file_path }}"
+    owner: root
+    group: postgres_exporter
+  when:
+    - '"extend_query_path_file_path" in specification'
+    - '"extend_query_path_file_content" in specification'
+    - 'specification.extend_query_path_file_content != ""'
+
+- name: Configure systemd to use postgres-exporter service
+  systemd:
+    daemon_reload: yes
+    enabled: yes
+    name: postgres-exporter.service
+
+- name: Start Postgres exporter
+  service:
+    name: postgres-exporter
+    state: started
+
+- name: Copy file_sd_config to prometheus hosts
+  template:
+    dest: "{{ specification.config_for_prometheus.prometheus_config_dir }}/file_sd/postgres-exporter-{{ inventory_hostname }}.yml"
+    src: file_sd_config.yml.j2
+    owner: root
+    group: root
+    mode: 0644
+  delegate_to: "{{ item }}"
+  with_inventory_hostnames:
+    - prometheus
+  notify: restart prometheus on remote servers

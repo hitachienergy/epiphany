@@ -1,0 +1,38 @@
+# Install dependencies for ansible postgres modules and return a variable boolean
+# `is_secondary` which shows the instance we are on is a secondary postgres node.
+
+- name: Install ansible module dependencies
+  block:
+      - name: Install pip3
+        apt:
+          name:
+            - libpq5
+            - python3-psycopg2
+            - python3-jmespath
+          state: present
+          install_recommends: no
+
+- name: Detect if we are running on the postgres replica node
+  block:
+    - postgresql_query:
+        db: postgres
+        query: "select pg_is_in_recovery()"
+      register: query_o
+      changed_when: false
+
+    - set_fact:
+        q_result: "{{ query_o.query_result | json_query(q) }}"
+      vars:
+        q: '[*].pg_is_in_recovery'
+      changed_when: false
+
+    - set_fact:
+        is_secondary: '{{ q_result[0] }}'
+      changed_when: false
+
+    - debug: var=q_result
+
+  become: yes
+  become_user: postgres
+
+- debug: var=is_secondary
