@@ -10,6 +10,10 @@
     fail_msg: opendistroforelasticsearch-kibana package not found, nothing to upgrade
     quiet: true
 
+- name: Open Distro for Elasticsearch - Kibana | Include defaults from kibana role
+  include_vars:
+    file: roles/kibana/defaults/main.yml
+
 - name: Open Distro for Elasticsearch - Kibana  | Print versions
   debug:
     msg:
