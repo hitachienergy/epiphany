@@ -1,9 +1,7 @@
 # {{ ansible_managed }}
 
 global
-    log /dev/log local0
-    log /dev/log local1 notice
-    daemon
+    log stdout format raw local0 notice
 
 defaults
     log global

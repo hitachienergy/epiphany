@@ -1,5 +1,28 @@
 ---
+- name: Ensure certificates exist remotely
+  include_tasks: deploy-certificates.yml
 
-- include_tasks: "{{ ansible_os_family }}.yml"
-- include_tasks: "setup_logrotate.yml"
+- name: Render haproxy config
+  template:
+    dest: /etc/haproxy/haproxy.cfg
+    src: haproxy.cfg.j2
+  register: template_haproxy_cfg
 
+- name: Setup and start haproxy runc-based systemd service
+  include_role: { name: haproxy_runc }
+  vars:
+    haproxy_service: haproxy
+    extra_mounts:
+      - destination: /etc/ssl/haproxy/
+        source: /etc/ssl/haproxy/
+        type: bind
+        options: [rbind, ro]
+
+- name: Reload haproxy service
+  systemd:
+    name: haproxy
+    state: reloaded
+  when: template_haproxy_cfg is changed
+
+- name: Setup haproxy logging
+  include_tasks: setup-haproxy-logging.yml

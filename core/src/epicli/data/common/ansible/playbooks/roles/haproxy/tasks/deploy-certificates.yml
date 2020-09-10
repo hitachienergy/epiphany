@@ -1,0 +1,55 @@
+---
+- name: Ensure /etc/ssl/haproxy directory exists
+  file:
+    path: /etc/ssl/haproxy/
+    state: directory
+
+- name: Find certificate files in role directory
+  local_action:
+    module: find
+    paths: "{{ role_path }}/files/"
+    patterns: "*.pem"
+  become: false
+  register: certificates_names
+
+- name: Check if any certificate exist in role directory
+  set_fact:
+    certificates_exist: >-
+      {{ certificates_names is defined and (certificates_names.files | length > 0) }}
+
+- name: Handle "local" certificates
+  when: certificates_exist
+  block:
+    - name: Copy certificates remotely if certificate files in role directory exist
+      copy:
+        dest: /etc/ssl/haproxy/
+        src: "{{ item.path }}"
+      loop: "{{ certificates_names.files }}"
+
+- name: Handle "remote" certificates
+  when: not certificates_exist
+  block:
+    - name: Generate self-signed certificates
+      include_tasks: generate-certificates.yml
+
+    - name: Copy self-signed certificates to /etc/ssl/haproxy/
+      copy:
+        dest: /etc/ssl/haproxy/
+        src: /tmp/{{ specification.self_signed_concatenated_cert_name }}
+        remote_src: true
+
+- name: Find certificate files in haproxy directory  # needed in templates
+  find:
+    paths: /etc/ssl/haproxy/
+    patterns: "*.pem"
+  register: haproxy_certs_names
+
+- name: Ensure /etc/haproxy directory exists
+  file:
+    path: /etc/haproxy/
+    state: directory
+
+- name: Copy dhparam config
+  copy:
+    dest: /etc/haproxy/dhparam
+    src: dhparam

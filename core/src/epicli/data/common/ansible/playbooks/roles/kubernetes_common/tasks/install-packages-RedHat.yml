@@ -1,5 +1,4 @@
 ---
-
 - name: Install NFS package for RedHat family
   yum:
     name:
@@ -13,13 +12,5 @@
       - kubelet-{{specification.version}}-0
       - kubectl-{{specification.version}}-0
       - kubeadm-{{specification.version}}-0
-    update_cache: yes
-    state: present
-
-- name: Install HAProxy family packages
-  yum:
-    name:
-      - rh-haproxy18
-      - rh-haproxy18-haproxy-syspaths
     update_cache: yes
     state: present
