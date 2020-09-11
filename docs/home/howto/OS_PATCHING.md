@@ -22,18 +22,18 @@ Note: For different supported OS versions this guide may be useful as well.
 
 ### Patching methods
 
-AWS provides `Patch Manager` for patching OSes. This option is available via:  
-[Systems Manager](https://eu-central-1.console.aws.amazon.com/systems-manager/) > Instances & Nodes > [Patch Manager](https://eu-central-1.console.aws.amazon.com/systems-manager/patch-manager) and it has equivalent in [aws cli](https://docs.aws.amazon.com/systems-manager/latest/userguide/patch-manager-cli-commands.html).  
-To use AWS Patch Manager please use the following instruction: [link](https://docs.aws.amazon.com/systems-manager/latest/userguide/patch-manager-how-it-works.html)  
-This feature will let you automate patching your instances.  
+AWS provides `Patch Manager` that automates the process of patching managed instances.  
 Benefits:
-
-- Automate Patching
+- Automate patching
 - Define approval rules
 - Create patch baselines
 - Monitor compliance
 
-These aspects are well covered by AWS under the link above.
+This feature is available via:
+- console: [Systems Manager](https://console.aws.amazon.com/systems-manager/) > Instances & Nodes > [Patch Manager](https://console.aws.amazon.com/systems-manager/patch-manager)
+- [AWS CLI](https://docs.aws.amazon.com/systems-manager/latest/userguide/patch-manager-cli-commands.html)
+
+For more information, refer to [AWS Systems Manager User Guide](https://docs.aws.amazon.com/systems-manager/latest/userguide/systems-manager-patch.html).
 
 AWS supports a bunch of paid solutions to perform kernel patching without system reboot.  
 Examples:
@@ -63,21 +63,29 @@ The following commands can be executed in both clustered and non-clustered envir
 Note: Some of the particular patches may also require a system reboot.
 
 If your environment is clustered then hosts should be patched one by one. Before proceeding with the next host be sure that the patched host is up and all its components are running.  
-Here you can find information how to check state of specific Epiphany components: [link](./MAINTENANCE.md).  
-To verify your current Linux kernel version use:  
-`sudo uname -r`  
-To list installed security patches use:  
-`sudo yum updateinfo list security installed`  
-To list available patches without installing them use:  
-`sudo yum updateinfo list security available`  
-To grab more details about available patch use:  
-`sudo yum updateinfo info security available` or specify patch: `sudo yum updateinfo info security <patch_name>`  
+For information how to check state of specific Epiphany components, see [here](./MAINTENANCE.md).
+
+To verify your current Linux kernel version, use:  
+`sudo uname -r`
+
+To list installed security patches, use:  
+`sudo yum updateinfo list security installed`
+
+To list available patches without installing them, use:  
+`sudo yum updateinfo list security available`
+
+To grab more details about available patches, use:  
+`sudo yum updateinfo info security available` or specify patch: `sudo yum updateinfo info security <patch_name>`
+
 To install system security patches, execute:  
-`sudo yum update-minimal --sec-severity=critical,important --bugfix`  
+`sudo yum update-minimal --sec-severity=critical,important --bugfix`
+
 To install all patches and updates, not only flagged as critical and important, execute:  
-`yum update`  
-You can also specify the exact bugfix you want to install or even which CVE vulnerability to patch:  
-Example: `yum update --cve CVE-2008-0947`  
+`yum update`
+
+You can also specify the exact bugfix you want to install or even which CVE vulnerability to patch, for example:  
+`yum update --cve CVE-2008-0947`
+
 Available options:
 
 ```shell
