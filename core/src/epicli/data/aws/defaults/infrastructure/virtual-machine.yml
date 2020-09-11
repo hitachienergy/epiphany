@@ -687,7 +687,7 @@ title: "Virtual Machine Infra"
 provider: aws
 name: logging-machine
 specification:
-  size: t3.medium
+  size: t3.large
   security:
     rules:
      - name: ssh
