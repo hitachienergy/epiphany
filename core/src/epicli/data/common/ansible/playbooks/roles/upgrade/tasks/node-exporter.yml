@@ -7,15 +7,19 @@
   include_vars:
     file: roles/node_exporter/defaults/main.yml
 
+- name: Node Exporter | Include specification vars from node_exporter role
+  include_vars:
+    file: roles/node_exporter/vars/main.yml
+
 - name: Node Exporter | Test if node exporter service is configured
   assert:
-    that: "'{{ exporter_service_name }}.service' in ansible_facts.services"
-    fail_msg: "{{ exporter_service_name }} service is not found"
+    that: "'{{ exporter.service.name }}.service' in ansible_facts.services"
+    fail_msg: "{{ exporter.service.name }} service is not found"
     quiet: true
 
 - name: Node Exporter | Set facts
   set_fact:
-    exporter_file_name: "node_exporter-{{ specification.exporter_version }}.linux-amd64.tar.gz"
+    exporter_file_name: "node_exporter-{{ exporter.version }}.linux-amd64.tar.gz"
 
 - name: Node Exporter | Collect version
   shell: |-
@@ -28,7 +32,7 @@
   debug:
     msg:
       - "Installed version: {{ current_exporter_version.stdout }}"
-      - "Target version: {{ specification.exporter_version }}"
+      - "Target version: {{ exporter.version }}"
 
 - name: Node Exporter | Download binaries
   include_role:
@@ -39,7 +43,7 @@
 
 - name: Node Exporter | Stop exporter
   systemd:
-    name: "{{ exporter_service_name }}.service"
+    name: "{{ exporter.service.name }}.service"
     state: stopped
 
 - name: Node Exporter | Remove /opt/node_exporter directory
@@ -70,7 +74,7 @@
 - name: Node Exporter | Update systemd service configuration
   template:
     src: roles/node_exporter/templates/prometheus-node-exporter.service.j2
-    dest: "/etc/systemd/system/{{ exporter_service_name }}.service"
+    dest: "/etc/systemd/system/{{ exporter.service.name }}.service"
     owner: root
     group: root
     mode: '0644'
@@ -79,5 +83,5 @@
   systemd:
     daemon_reload: true
     enabled: true
-    name: "{{ exporter_service_name }}.service"
+    name: "{{ exporter.service.name }}.service"
     state: started

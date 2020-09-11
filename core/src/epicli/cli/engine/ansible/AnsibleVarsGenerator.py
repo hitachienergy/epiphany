@@ -55,11 +55,11 @@ class AnsibleVarsGenerator(Step):
 
         if self.is_upgrade_run:
             # For upgrade at this point we don't need any of other roles then
-            # common, upgrade, repository, image_registry and haproxy.
+            # common, upgrade, repository, image_registry, node_exporter and haproxy.
             # - commmon is already provisioned from the cluster model constructed from the inventory.
             # - upgrade should not require any additional config
             # roles in the list below are provisioned for upgrade from defaults
-            enabled_roles = ['repository', 'image_registry', 'haproxy']
+            enabled_roles = ['repository', 'image_registry', 'haproxy', 'node_exporter']
         else:
             enabled_roles = self.inventory_creator.get_enabled_roles()
 
@@ -91,7 +91,7 @@ class AnsibleVarsGenerator(Step):
             self.roles_with_generated_vars.append(to_role_name(role))
 
     def write_role_manifest_vars(self, ansible_dir, role, kind):
-        enabled_kinds = {"configuration/haproxy"}
+        enabled_kinds = {"configuration/haproxy", "configuration/node-exporter"}
 
         if kind not in enabled_kinds:
             return  # skip
