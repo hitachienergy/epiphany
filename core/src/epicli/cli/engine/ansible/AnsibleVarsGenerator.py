@@ -1,6 +1,7 @@
 import os
 import copy
 
+from cli.version import VERSION
 from cli.helpers.Step import Step
 from cli.helpers.build_saver import get_ansible_path, get_ansible_path_for_build, get_ansible_vault_path, MANIFEST_FILE_NAME
 from cli.helpers.doc_list_helpers import select_first, select_single, ExpectedSingleResultException
@@ -103,9 +104,12 @@ class AnsibleVarsGenerator(Step):
 
         document = select_first(self.manifest_docs, lambda x: x.kind == kind)
         if document is None:
-            # We dont really care if the document is in manifest, it can be absent (defaults are used)
-            document = dict()
+            # If there is no document provided by the user, then fallback to defaults
+            document = load_yaml_obj(types.DEFAULT, 'common', kind)
+            # Inject the required "version" attribute
+            document['version'] = VERSION
 
+        # Copy the "provider" value from the cluster model
         document['provider'] = cluster_model['provider']
 
         # Merge the document with defaults
