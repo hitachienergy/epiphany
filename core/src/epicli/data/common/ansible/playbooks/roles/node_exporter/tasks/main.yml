@@ -49,7 +49,7 @@
     group: node_exporter
   check_mode: false
   notify:
-    - restart prometheus-node-exporter
+    - restart prometheus node exporter service
 
 - name: Install node_exporter service to systemd
   template:
