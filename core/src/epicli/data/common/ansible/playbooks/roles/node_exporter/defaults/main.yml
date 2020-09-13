@@ -1,4 +1,6 @@
 ---
-
-
-
+exporter:
+  version: "1.0.1"
+  service:
+    description: "Service that runs Prometheus Node Exporter"
+    name: prometheus-node-exporter
