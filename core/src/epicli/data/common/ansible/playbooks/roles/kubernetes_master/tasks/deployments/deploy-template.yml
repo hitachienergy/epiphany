@@ -12,6 +12,7 @@
   vars:
     dest_path: "{{ epiphany_manifests_dir }}/{{ file_name | basename | regex_replace('\\.j2$') }}"
   delegate_to: localhost
+  run_once: true
   block:
     - name: Upload {{ file_name }} file
       template:

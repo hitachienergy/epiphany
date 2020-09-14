@@ -1,6 +1,7 @@
 ---
 - name: Create directory for files
   delegate_to: localhost
+  run_once: true
   file:
     path: "{{ epiphany_manifests_dir }}"
     state: directory
@@ -10,6 +11,7 @@
   vars:
     dest_path: "{{ epiphany_manifests_dir }}/{{ file_name | basename }}"
   delegate_to: localhost
+  run_once: true
   block:
     - name: Upload {{ file_name }} file
       copy:
