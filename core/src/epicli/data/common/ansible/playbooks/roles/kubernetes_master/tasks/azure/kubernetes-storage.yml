@@ -35,19 +35,16 @@
       shell: |
         kubectl apply \
           -f /home/{{ admin_user.name }}/k8s-storage-secret.yml
-      args:
-        executable: /bin/bash
+      delegate_to: localhost
 
     - name: Apply storage yml
       shell: |
         kubectl apply \
           -f /home/{{ admin_user.name }}/k8s-persistent-volume.yml
-      args:
-        executable: /bin/bash
+      delegate_to: localhost
 
     - name: Apply storage claim yml
       shell: |
         kubectl apply \
           -f /home/{{ admin_user.name }}/k8s-persistent-volume-claim.yml
-      args:
-        executable: /bin/bash
+      delegate_to: localhost

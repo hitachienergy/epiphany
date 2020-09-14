@@ -7,12 +7,9 @@
         '.items[].metadata | select (.labels."k8s-app" == "canal"
                                   or .labels."k8s-app" == "calico-node"
                                   or .labels.app == "flannel") | .name'
+      delegate_to: localhost
       register: shell_cni_plugin_query
       changed_when: false
-      environment:
-        KUBECONFIG: /etc/kubernetes/admin.conf
-      args:
-        executable: /bin/bash
 
     - name: k8s | Set CNI plugin as fact
       set_fact:

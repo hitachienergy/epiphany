@@ -9,10 +9,7 @@
       vars:
         jsonpath: >-
           '{.data.ClusterConfiguration}'
-      environment:
-        KUBECONFIG: /etc/kubernetes/admin.conf
-      args:
-        executable: /bin/bash
+      delegate_to: localhost
       register: ClusterConfiguration
       changed_when: false
 

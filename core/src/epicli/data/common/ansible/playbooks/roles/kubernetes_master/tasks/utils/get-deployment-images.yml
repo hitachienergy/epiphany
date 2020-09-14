@@ -11,10 +11,9 @@
     -o=custom-columns='IMAGE:spec.template.spec.containers[*].image'
     --namespace {{ namespace }}
     --no-headers=true
+  delegate_to: localhost
   register: kubectl_get_images
   changed_when: false
-  environment:
-    KUBECONFIG: /etc/kubernetes/admin.conf
 
 - name: Set list of images as fact
   set_fact:

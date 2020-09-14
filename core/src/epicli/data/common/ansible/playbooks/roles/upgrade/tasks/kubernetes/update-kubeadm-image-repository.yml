@@ -1,14 +1,13 @@
 ---
 - name: k8s/master | Patch imageRepository in kubeadm-config ConfigMap
   run_once: true
-  environment:
-    KUBECONFIG: /etc/kubernetes/admin.conf
   block:
     - name: k8s/master | Get kubeadm-config configmap
       command: |
         kubectl get configmap kubeadm-config \
           --namespace kube-system \
           --output yaml
+      delegate_to: localhost
       register: command_kubeadm_configmap
       changed_when: false
 
@@ -19,6 +18,7 @@
         kubectl patch configmap kubeadm-config \
           --namespace kube-system \
           --patch "$KUBEADM_CONFIGMAP_DOCUMENT"
+      delegate_to: localhost
       environment:
         # Render an altered kubeadm-config configmap document
         KUBEADM_CONFIGMAP_DOCUMENT: >-

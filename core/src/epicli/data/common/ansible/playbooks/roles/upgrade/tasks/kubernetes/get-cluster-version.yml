@@ -1,13 +1,10 @@
 ---
 - name: Get cluster version
-  environment:
-    KUBECONFIG: /etc/kubernetes/admin.conf
   shell: >-
     set -o pipefail &&
     kubectl version --short -o json | jq --raw-output '.serverVersion.gitVersion'
   register: cluster_version
-  args:
-    executable: /bin/bash
+  delegate_to: localhost
   changed_when: false
 
 - name: Set cluster version as fact

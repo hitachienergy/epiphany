@@ -45,12 +45,9 @@
         | kubectl apply \
           --namespace kube-system \
           -f-
+      delegate_to: localhost
       vars:
         server: https://localhost:3446
-      environment:
-        KUBECONFIG: /etc/kubernetes/admin.conf
-      args:
-        executable: /bin/bash
 
     - name: Get cluster-info config map
       shell: |
@@ -61,9 +58,6 @@
         | kubectl apply \
           --namespace kube-public \
           -f-
+      delegate_to: localhost
       vars:
         server: https://localhost:3446
-      environment:
-        KUBECONFIG: /etc/kubernetes/admin.conf
-      args:
-        executable: /bin/bash

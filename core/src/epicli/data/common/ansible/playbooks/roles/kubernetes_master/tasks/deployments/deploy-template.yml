@@ -25,7 +25,6 @@
 
     - name: Apply {{ dest_path }} file
       command: kubectl apply -f {{ dest_path }}
+      delegate_to: localhost
       register: kubectl_apply
       changed_when: kubectl_apply.stdout_lines | map('regex_replace', '^.+ ') | reject('eq', 'unchanged') | list
-      environment:
-        KUBECONFIG: /etc/kubernetes/admin.conf

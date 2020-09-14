@@ -9,10 +9,8 @@
 
   block:
     - name: k8s/utils | Uncordon master or node - mark it as schedulable
-      delegate_to: "{{ groups.kubernetes_master[0] }}"
+      delegate_to: localhost
       run_once: true
-      environment:
-        KUBECONFIG: /etc/kubernetes/admin.conf
       command: >-
         kubectl uncordon {{ inventory_hostname }}
       register: result

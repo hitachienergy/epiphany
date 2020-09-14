@@ -6,3 +6,5 @@
   become_method: sudo
   roles:
     - rabbitmq
+  environment:
+    KUBECONFIG: "{{ kubeconfig }}"

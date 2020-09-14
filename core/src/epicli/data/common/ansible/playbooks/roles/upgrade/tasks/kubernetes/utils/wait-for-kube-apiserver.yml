@@ -1,9 +1,7 @@
 ---
 - name: k8s/utils | Wait for kubectl to access K8s cluster
-  delegate_to: "{{ groups.kubernetes_master[0] }}"
+  delegate_to: localhost
   run_once: true
-  environment:
-    KUBECONFIG: /etc/kubernetes/admin.conf
   command: >-
     kubectl cluster-info
   register: result

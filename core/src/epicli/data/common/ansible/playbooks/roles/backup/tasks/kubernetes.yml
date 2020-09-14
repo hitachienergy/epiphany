@@ -33,8 +33,7 @@
       vars:
         jsonpath: >-
           "{.items[*].spec.containers[?(@.name=='etcd')].image}"
-      environment:
-        KUBECONFIG: /etc/kubernetes/admin.conf
+      delegate_to: localhost
       register: etcd_image_name
 
     - name: Save etcd image name to a file

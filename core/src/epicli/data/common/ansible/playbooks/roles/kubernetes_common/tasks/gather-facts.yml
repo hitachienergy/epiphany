@@ -2,12 +2,14 @@
 # Due to inventory generation procedure not being deterministic in general (order of hostnames in group.kubernetes_master may change at any run),
 # we have to make sure some common master node is selected uniformly and later used in "delegate_to" statements (aka "automation_designated_master").
 
-- name: Check if /etc/kubernetes/admin.conf file exists
+- name: Check if admin.conf file exists
   stat:
-    path: /etc/kubernetes/admin.conf
+    path: "{{ kubeconfig }}"
     get_attributes: false
     get_checksum: false
     get_mime: false
+  delegate_to: localhost
+  run_once: true
   register: stat_admin_conf
 
 - when: stat_admin_conf.stat.exists
@@ -22,10 +24,7 @@
           'node-role.kubernetes.io/master'
         jsonpath: >-
           '{range .items[*]}{.metadata.name}{"\n"}{end}'
-      environment:
-        KUBECONFIG: /etc/kubernetes/admin.conf
-      args:
-        executable: /bin/bash
+      delegate_to: localhost
       register: kubectl_get_master_nodes
       changed_when: false
 

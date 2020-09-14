@@ -6,3 +6,5 @@
   become_method: sudo
   roles:
     - preflight
+  environment:
+    KUBECONFIG: "{{ kubeconfig }}"

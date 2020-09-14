@@ -4,9 +4,11 @@
 - hosts: all
   gather_facts: yes
   tasks: [ ]  
-  
+
 - hosts: prometheus
   become: true
   become_method: sudo
   roles:
     - prometheus
+  environment:
+    KUBECONFIG: "{{ kubeconfig }}"

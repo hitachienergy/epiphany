@@ -8,8 +8,7 @@
   shell: |
     kubectl get networkpolicies \
       --output jsonpath={{ jsonpath }}
-  args:
-    executable: /bin/bash
+  delegate_to: localhost
   register: kubectl_result
   failed_when: kubectl_result.rc != 0
   changed_when: false

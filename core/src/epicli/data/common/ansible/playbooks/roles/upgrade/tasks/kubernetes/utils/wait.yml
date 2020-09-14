@@ -11,6 +11,7 @@
     - name: k8s/utils | Wait for nodes
       command: >-
         kubectl get nodes --output json
+      delegate_to: localhost
       register: result
       until:
         - result is succeeded
@@ -25,6 +26,7 @@
         - name: k8s/utils | Wait for all pods to be running
           command: >-
             kubectl get pods --all-namespaces --output json
+          delegate_to: localhost
           register: result
           until:
             - result is succeeded
@@ -36,6 +38,7 @@
         - name: k8s/utils | Wait for all pods to be ready
           command: >-
             kubectl get pods --all-namespaces --output json
+          delegate_to: localhost
           register: result
           until:
             - result is succeeded

@@ -9,10 +9,8 @@
 
   block:
     - name: k8s/utils | Drain master or node in preparation for maintenance
-      delegate_to: "{{ groups.kubernetes_master[0] }}"
+      delegate_to: localhost
       run_once: true
-      environment:
-        KUBECONFIG: /etc/kubernetes/admin.conf
       command: |
         kubectl drain {{ inventory_hostname }} \
           --ignore-daemonsets \
