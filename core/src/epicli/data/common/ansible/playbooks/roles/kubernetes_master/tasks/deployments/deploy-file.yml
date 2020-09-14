@@ -1,28 +1,23 @@
 ---
 - name: Create directory for files
-  become: true
+  delegate_to: localhost
   file:
     path: "{{ epiphany_manifests_dir }}"
     state: directory
-    owner: root
-    group: root
     mode: u=rwx,go=rx
 
 - name: Upload and apply file
   vars:
     dest_path: "{{ epiphany_manifests_dir }}/{{ file_name | basename }}"
+  delegate_to: localhost
   block:
     - name: Upload {{ file_name }} file
-      become: true
       copy:
         src: "{{ file_name }}"
         dest: "{{ dest_path }}"
-        owner: "{{ admin_user.name }}"
-        group: "{{ admin_user.name }}"
         mode: u=rw,g=r,o=
 
     - name: Apply {{ dest_path }} file
       command: kubectl apply -f {{ dest_path }}
-      delegate_to: localhost
       register: kubectl_apply
       changed_when: kubectl_apply.stdout_lines | map('regex_replace', '^.+ ') | reject('eq', 'unchanged') | list

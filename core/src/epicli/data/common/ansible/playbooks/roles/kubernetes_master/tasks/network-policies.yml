@@ -3,8 +3,6 @@
   vars:
     jsonpath: >-
       '{.items[?(@.metadata.name == "default-network-policy")].metadata.name}'
-  environment:
-    KUBECONFIG: "/home/{{ admin_user.name }}/.kube/config"
   shell: |
     kubectl get networkpolicies \
       --output jsonpath={{ jsonpath }}

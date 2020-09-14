@@ -5,7 +5,7 @@ cni_plugin_vars:
     canal: k8s-app=canal
     flannel: app=flannel
 
-epiphany_manifests_dir: /etc/epiphany/manifests
+epiphany_manifests_dir: "{{ inventory_dir }}/manifests"
 
 # The default values below were chosen as a compromise between node stability when available resources are low
 # and utilization (costs) to support even SMALL size VMs and may need to be adjusted depending on your environment.

@@ -1,50 +1,46 @@
 ---
+- name: Create directory for storage configuration
+  delegate_to: localhost
+  file:
+    path: "{{ inventory_dir }}/storage"
+    state: directory
+    mode: u=rwx,go=rx
+
 - name: Upload k8s storage secret yaml
-  become: true
+  delegate_to: localhost
   template:
     src: azure/k8s-storage-secret.yml.j2
-    dest: "/home/{{ admin_user.name }}/k8s-storage-secret.yml"
-    owner: "{{ admin_user.name }}"
-    group: "{{ admin_user.name }}"
+    dest: "{{ inventory_dir }}/storage/k8s-storage-secret.yml"
     mode: u=rw,go=r
 
 - name: Upload k8s persistent volume yaml
-  become: true
+  delegate_to: localhost
   template:
     src: azure/k8s-persistent-volume.yml.j2
-    dest: "/home/{{ admin_user.name }}/k8s-persistent-volume.yml"
-    owner: "{{ admin_user.name }}"
-    group: "{{ admin_user.name }}"
+    dest: "{{ inventory_dir }}/storage/k8s-persistent-volume.yml"
     mode: u=rw,go=r
 
 - name: Upload k8s persistent volume claim yaml
-  become: true
+  delegate_to: localhost
   template:
     src: azure/k8s-persistent-volume-claim.yml.j2
-    dest: "/home/{{ admin_user.name }}/k8s-persistent-volume-claim.yml"
-    owner: "{{ admin_user.name }}"
-    group: "{{ admin_user.name }}"
+    dest: "{{ inventory_dir }}/storage/k8s-persistent-volume-claim.yml"
     mode: u=rw,go=r
 
 - when: kubernetes_common.automation_designated_master == inventory_hostname
-  become_user: "{{ admin_user.name }}"
-  environment:
-    KUBECONFIG: "/home/{{ admin_user.name }}/.kube/config"
+  delegate_to: localhost
   block:
     - name: Apply secret yml
       shell: |
         kubectl apply \
-          -f /home/{{ admin_user.name }}/k8s-storage-secret.yml
-      delegate_to: localhost
+          -f {{ inventory_dir }}/storage/k8s-storage-secret.yml
 
     - name: Apply storage yml
       shell: |
         kubectl apply \
-          -f /home/{{ admin_user.name }}/k8s-persistent-volume.yml
-      delegate_to: localhost
+          -f {{ inventory_dir }}/storage/k8s-persistent-volume.yml
 
     - name: Apply storage claim yml
       shell: |
         kubectl apply \
-          -f /home/{{ admin_user.name }}/k8s-persistent-volume-claim.yml
-      delegate_to: localhost
+          -f {{ inventory_dir }}/storage/k8s-persistent-volume-claim.yml
