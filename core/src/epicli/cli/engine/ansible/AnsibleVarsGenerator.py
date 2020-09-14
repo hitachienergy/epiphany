@@ -1,6 +1,7 @@
 import os
 import copy
 
+from cli.version import VERSION
 from cli.helpers.Step import Step
 from cli.helpers.build_saver import get_ansible_path, get_ansible_path_for_build, get_ansible_vault_path, MANIFEST_FILE_NAME
 from cli.helpers.doc_list_helpers import select_first, select_single, ExpectedSingleResultException
@@ -21,6 +22,7 @@ class AnsibleVarsGenerator(Step):
         self.inventory_creator = inventory_creator
         self.inventory_upgrade = inventory_upgrade
         self.roles_with_generated_vars = []
+        self.manifest_docs = []
 
         if inventory_creator != None and inventory_upgrade == None:
             self.cluster_model = inventory_creator.cluster_model
@@ -28,6 +30,7 @@ class AnsibleVarsGenerator(Step):
         elif inventory_upgrade != None and inventory_creator == None:
             self.cluster_model = inventory_upgrade.cluster_model
             self.config_docs = load_all_documents_from_folder('common', 'defaults/configuration')
+            self.manifest_docs = self.get_manifest_docs()
         else:
             raise Exception('Invalid AnsibleVarsGenerator configuration')
 
@@ -53,38 +56,67 @@ class AnsibleVarsGenerator(Step):
 
         if self.is_upgrade_run:
             # For upgrade at this point we don't need any of other roles then
-            # common, upgrade, repository and image_registry.
+            # common, upgrade, repository, image_registry and haproxy.
             # - commmon is already provisioned from the cluster model constructed from the inventory.
             # - upgrade should not require any additional config
             # roles in the list below are provisioned for upgrade from defaults
-            enabled_roles = ['repository', 'image_registry']
+            enabled_roles = ['repository', 'image_registry', 'haproxy']
         else:
             enabled_roles = self.inventory_creator.get_enabled_roles()
 
         for role in enabled_roles:
-            document = select_first(self.config_docs, lambda x: x.kind == 'configuration/'+to_feature_name(role))
+            kind = 'configuration/' + to_feature_name(role)
 
+            document = select_first(self.config_docs, lambda x: x.kind == kind)
             if document is None:
                 self.logger.warn('No config document for enabled role: ' + role)
                 continue
 
             document.specification['provider'] = self.cluster_model.provider
             self.write_role_vars(ansible_dir, role, document)
+            self.write_role_manifest_vars(ansible_dir, role, kind)
 
         self.populate_group_vars(ansible_dir)
 
-    def write_role_vars(self, ansible_dir, role, document):
+    def write_role_vars(self, ansible_dir, role, document, vars_file_name='main.yml'):
         vars_dir = os.path.join(ansible_dir, 'roles', to_role_name(role), 'vars')
         if not os.path.exists(vars_dir):
             os.makedirs(vars_dir)
 
-        vars_file_name = 'main.yml'
         vars_file_path = os.path.join(vars_dir, vars_file_name)
 
         with open(vars_file_path, 'w') as stream:
             dump(document, stream)
 
-        self.roles_with_generated_vars.append(to_role_name(role))
+        if vars_file_name == 'main.yml':
+            self.roles_with_generated_vars.append(to_role_name(role))
+
+    def write_role_manifest_vars(self, ansible_dir, role, kind):
+        enabled_kinds = {"configuration/haproxy"}
+
+        if kind not in enabled_kinds:
+            return  # skip
+
+        try:
+            cluster_model = select_single(self.manifest_docs, lambda x: x.kind == 'epiphany-cluster')
+        except ExpectedSingleResultException:
+            return  # skip
+
+        document = select_first(self.manifest_docs, lambda x: x.kind == kind)
+        if document is None:
+            # If there is no document provided by the user, then fallback to defaults
+            document = load_yaml_obj(types.DEFAULT, 'common', kind)
+            # Inject the required "version" attribute
+            document['version'] = VERSION
+
+        # Copy the "provider" value from the cluster model
+        document['provider'] = cluster_model['provider']
+
+        # Merge the document with defaults
+        with DefaultMerger([document]) as doc_merger:
+            document = doc_merger.run()[0]
+
+        self.write_role_vars(ansible_dir, role, document, vars_file_name='manifest.yml')
 
     def populate_group_vars(self, ansible_dir):
         main_vars = ObjDict()
@@ -135,20 +167,22 @@ class AnsibleVarsGenerator(Step):
         self.clear_object(cluster_model, 'credentials')
         return cluster_model
 
-    def get_shared_config_from_manifest(self):
-        # Reuse shared config from existing manifest
-        # Shared config contains the use_ha_control_plane flag which is required during upgrades
-
+    def get_manifest_docs(self):
         path_to_manifest = os.path.join(self.inventory_upgrade.build_dir, MANIFEST_FILE_NAME)
         if not os.path.isfile(path_to_manifest):
             raise Exception('No manifest.yml inside the build folder')
 
         manifest_docs = load_yamls_file(path_to_manifest)
+        return manifest_docs
 
-        cluster_model = select_single(manifest_docs, lambda x: x.kind == 'epiphany-cluster')
+    def get_shared_config_from_manifest(self):
+        # Reuse shared config from existing manifest
+        # Shared config contains the use_ha_control_plane flag which is required during upgrades
+
+        cluster_model = select_single(self.manifest_docs, lambda x: x.kind == 'epiphany-cluster')
 
         try:
-            shared_config_doc = select_single(manifest_docs, lambda x: x.kind == 'configuration/shared-config')
+            shared_config_doc = select_single(self.manifest_docs, lambda x: x.kind == 'configuration/shared-config')
             shared_config_doc['provider'] = cluster_model['provider']
         except ExpectedSingleResultException:
             # If there is no shared-config doc inside the manifest file, this is probably a v0.3 cluster

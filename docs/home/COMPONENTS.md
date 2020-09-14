@@ -30,7 +30,7 @@ Note that versions are default versions and can be changed in certain cases thro
 | haproxy_exporter          | 0.10.0  | https://github.com/prometheus/haproxy_exporter        | [Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0) |
 | jmx_exporter              | 0.12.0  | https://github.com/prometheus/jmx_exporter            | [Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0) |
 | PostgresSQL               | 10      | https://www.postgresql.org/                           | https://opensource.org/licenses/postgresql                        |
-| HAProxy                   | 1.8     | https://www.haproxy.org/                              | [GNU General Public License 2.0](https://www.gnu.org/licenses/old-licenses/gpl-2.0.html) |
+| HAProxy                   | 2.2.2   | https://www.haproxy.org/                              | [GNU General Public License 2.0](https://www.gnu.org/licenses/old-licenses/gpl-2.0.html) |
 | PGAudit                   | 1.2.0   | https://github.com/pgaudit/pgaudit                    | [PostgreSQL license](http://www.postgresql.org/about/licence/)    |
 | PGBouncer                 | 1.10.0  | https://github.com/pgbouncer/pgbouncer                | [ISC License](https://opensource.org/licenses/isc)                |
 | repmgr                    | 4.0.6   | https://github.com/2ndQuadrant/repmgr                 | [Apache License 2.0](https://github.com/2ndQuadrant/repmgr/blob/master/LICENSE) |

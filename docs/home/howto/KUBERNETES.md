@@ -1,7 +1,33 @@
 
 ## How to expose service through HA Proxy load balancer
 
-TODO
+1. Create `NodePort` service type for your application in Kubernetes.
+
+2. Make sure your service has statically assigned `nodePort` (a number between 30000-32767), for example 31234.
+   More info [here](https://kubernetes.io/docs/concepts/services-networking/service/#nodeport).
+
+3. Add configuration document for `load_balancer`/`HAProxy` to your main config file.
+
+   ```yaml
+   kind: configuration/haproxy
+   title: "HAProxy"
+   name: haproxy
+   specification:
+     frontend:
+       - name: https_front
+         port: 443
+         https: yes
+         backend:
+           - http_back1
+     backend:
+       - name: http_back1
+         server_groups:
+           - kubernetes_node
+         port: 31234
+   provider: <your-provider-here-replace-it>
+   ```
+
+4. Run `epicli apply`.
 
 ## How to do Kubernetes RBAC
 
