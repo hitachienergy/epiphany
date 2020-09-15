@@ -22,10 +22,8 @@
     exporter_file_name: "node_exporter-{{ exporter.version }}.linux-amd64.tar.gz"
 
 - name: Node Exporter | Collect version
-  shell: |-
+  command: >-
     /opt/node_exporter/node_exporter --version
-  args:
-    executable: /bin/bash
   register: current_exporter_version
 
 - name: Node Exporter | Print version
