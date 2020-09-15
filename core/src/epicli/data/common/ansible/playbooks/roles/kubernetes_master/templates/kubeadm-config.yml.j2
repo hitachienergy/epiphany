@@ -12,7 +12,7 @@ apiServer:
   certSANs:
 {% set ip_address_list = ['127.0.0.1', 'localhost'] %}
 {% for host in groups['kubernetes_master'] %}
-{%   set x = ip_address_list.extend([ hostvars[host]['ansible_default_ipv4']['address'], hostvars[host]['ansible_host'] ]) %}
+{%   set _ = ip_address_list.extend([ hostvars[host]['ansible_default_ipv4']['address'], hostvars[host]['ansible_host'] ]) %}
 {% endfor %}
 {% for ip in ip_address_list|unique %}
     - {{ ip }}
