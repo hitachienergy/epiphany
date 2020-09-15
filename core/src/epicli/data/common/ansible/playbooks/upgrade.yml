@@ -141,3 +141,11 @@
     - import_role:
         name: upgrade
         tasks_from: load_balancer
+
+- hosts: node_exporter
+  become: true
+  become_method: sudo
+  tasks:
+    - import_role:
+        name: upgrade
+        tasks_from: node-exporter

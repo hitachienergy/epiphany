@@ -15,7 +15,7 @@
 
 - name: Set Node Exporter file name to install
   set_fact:
-    exporter_file_name: "{{ specification.file_name }}"
+    exporter_file_name: "node_exporter-{{ exporter.version }}.linux-amd64.tar.gz"
 
 - name: Download Node Exporter binaries
   include_role:
@@ -25,10 +25,10 @@
     file_name: "{{ exporter_file_name }}"
 
 - name: Create /opt/node_exporter directories
-  become: yes
+  become: true
   file:
     path: "{{ item }}"
-    recurse: yes
+    recurse: true
     owner: root
     group: "node_exporter"
     mode: 0750
@@ -39,7 +39,7 @@
 - name: Unpack node_exporter binary
   become: true
   unarchive:
-    remote_src: yes
+    remote_src: true
     src: "{{ download_directory }}/{{ exporter_file_name }}"
     dest: "/opt/node_exporter"
     creates: "/opt/node_exporter/node_exporter"
@@ -49,25 +49,25 @@
     group: node_exporter
   check_mode: false
   notify:
-    - restart prometheus-node-exporter
+    - restart prometheus node exporter service
 
 - name: Install node_exporter service to systemd
   template:
     src: prometheus-node-exporter.service.j2
-    dest: /etc/systemd/system/prometheus-node-exporter.service
+    dest: "/etc/systemd/system/{{ exporter.service.name }}.service"
     owner: root
     group: root
     mode: 0644
 
 - name: Configure systemd to use node_exporter service
   systemd:
-    daemon_reload: yes
-    enabled: yes
-    name: prometheus-node-exporter.service
+    daemon_reload: true
+    enabled: true
+    name: "{{ exporter.service.name }}.service"
 
 - name: Start exporter
   service:
-    name: prometheus-node-exporter
+    name: "{{ exporter.service.name }}"
     state: started
 
 - name: Copy file_sd_config to prometheus hosts

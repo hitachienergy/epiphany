@@ -1,14 +1,14 @@
 ---
-- name: restart prometheus-node-exporter
+- name: restart prometheus node exporter service
   service:
-    name: prometheus-node-exporter
+    name: "{{ exporter.service.name }}"
     state: restarted
   retries: 10
   delay: 10
 
 - name: reload systemd daemons
   systemd:
-    daemon_reload: yes
+    daemon_reload: true
 
 - name: restart prometheus on remote servers
   systemd:
@@ -17,5 +17,5 @@
   delegate_to: "{{ item }}"
   with_inventory_hostnames:
     - prometheus
-  run_once: True
+  run_once: true
 
