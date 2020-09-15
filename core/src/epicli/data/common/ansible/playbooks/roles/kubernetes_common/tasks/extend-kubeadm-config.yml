@@ -1,4 +1,10 @@
 ---
+- name: Assert that update variable is defined
+  assert:
+    that:
+      - update is defined
+    fail_msg: Variable 'update' must be defined.
+
 - name: Collect kubeadm-config
   shell: |
     kubectl get configmap kubeadm-config \
