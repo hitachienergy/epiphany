@@ -2,7 +2,7 @@
 # Due to inventory generation procedure not being deterministic in general (order of hostnames in group.kubernetes_master may change at any run),
 # we have to make sure some common master node is selected uniformly and later used in "delegate_to" statements (aka "automation_designated_master").
 
-- name: Check if admin.conf file exists
+- name: Check if kubeconfig file exists
   stat:
     path: "{{ kubeconfig }}"
     get_attributes: false

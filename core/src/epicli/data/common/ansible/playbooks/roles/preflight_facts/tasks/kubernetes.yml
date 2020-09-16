@@ -6,7 +6,7 @@
 
 - when: inventory_hostname in available_masters
   block:
-    - name: Check if admin.conf file exists
+    - name: Check if kubeconfig file exists
       stat:
         path: "{{ kubeconfig }}"
         get_attributes: false
