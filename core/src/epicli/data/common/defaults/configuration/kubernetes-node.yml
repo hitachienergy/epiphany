@@ -1,6 +1,7 @@
 kind: configuration/kubernetes-node
-title: "Kubernetes Node Config"
+title: Kubernetes Node Config
 name: default
 specification:
   version: 1.18.6
+  cni_version: 0.8.6
   node_labels: "node-type=epiphany"

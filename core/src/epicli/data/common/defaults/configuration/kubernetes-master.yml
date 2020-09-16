@@ -1,8 +1,9 @@
 kind: configuration/kubernetes-master
-title: "Kubernetes Master Config"
+title: Kubernetes Master Config
 name: default
 specification:
   version: 1.18.6
+  cni_version: 0.8.6
   cluster_name: "kubernetes-epiphany"
   allow_pods_on_master: False
   storage:
