@@ -179,10 +179,10 @@
           with_items: "{{ restart_services }}"
 
         - name: Wait until cluster is available
-          environment:
-            KUBECONFIG: /etc/kubernetes/admin.conf
-          shell: kubectl cluster-info
+          delegate_to: localhost
+          command: kubectl cluster-info
           retries: 50
           delay: 1
-          register: output
-          until: output is succeeded
+          register: result
+          until: result is succeeded and "running" in result.stdout
+          changed_when: false
