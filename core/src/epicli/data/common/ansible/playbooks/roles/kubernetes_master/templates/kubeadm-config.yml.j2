@@ -10,10 +10,12 @@ controlPlaneEndpoint: "localhost:3446"
 apiServer:
   timeoutForControlPlane: 4m0s
   certSANs:
-    - localhost
-    - 127.0.0.1
+{% set ip_address_list = ['127.0.0.1', 'localhost'] %}
 {% for host in groups['kubernetes_master'] %}
-    - {{ hostvars[host]['ansible_default_ipv4']['address'] }}
+{%   set _ = ip_address_list.extend([ hostvars[host]['ansible_default_ipv4']['address'], hostvars[host]['ansible_host'] ]) %}
+{% endfor %}
+{% for ip in ip_address_list|unique %}
+    - {{ ip }}
 {% endfor %}
   extraArgs: # https://kubernetes.io/docs/reference/command-line-tools-reference/kube-apiserver/
 {% if specification.advanced.etcd_args.encrypted | bool %}
