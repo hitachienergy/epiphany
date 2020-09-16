@@ -125,6 +125,13 @@ More detailed information about ZooKeeper you can find in  [ZooKeeper documentat
 
 ## Open Distro for Elasticsearch upgrade
 
+---
+**NOTE**
+
+Before upgrade procedure make sure you have a data backup!
+
+---
+
 In Epiphany v0.8.0 we provided upgrade elasticsearch-oss package to v7.8.0 and opendistro-* plugins package to v1.9.0.
 Upgrade will be performed automatically when the upgrade procedure detects your logging, opendistro_for_elasticsearch or kibana hosts.
 Upgrade of elasticsearch-oss package using API calls (GET, PUT, POST) so before you start with upgrade procedure please make sure that you provided correct credentials:
@@ -134,4 +141,14 @@ specification.es_password
 ```
 Both are accessible in opendistro_for_elasticsearch role defaults (`/core/src/epicli/data/common/ansible/playbooks/roles/opendistro_for_elasticsearch/defaults/main.yml`)
 
-*Note: before upgrade procedure make sure you have a data backup!*
+## Node exporter upgrade
+
+---
+**NOTE**
+
+Before upgrade procedure make sure you have a data backup and you are familiar with [breaking changes](https://github.com/prometheus/node_exporter/releases/tag/v1.0.0).
+
+---
+
+Starting from Epiphany v0.8.0 it's possible to upgrade node exporter to v1.0.1.
+Upgrade will be performed automatically when the upgrade procedure detects node exporter hosts.

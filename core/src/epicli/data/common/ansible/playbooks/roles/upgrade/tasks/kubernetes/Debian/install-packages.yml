@@ -10,14 +10,20 @@
   vars:
     packages: >-
       {%- if ansible_facts.packages['kubernetes-cni'] is defined -%}
-        ['kubelet', 'kubectl', 'kubernetes-cni']
+        ['kubelet', 'kubectl', 'kubernetes-cni', 'kubeadm']
       {%- else -%}
-        ['kubelet', 'kubectl']
+        ['kubelet', 'kubectl', 'kubeadm']
       {%- endif -%}
 
 - name: k8s/install | Remove newer Debian packages installed as dependencies if they exist # as there is no allow_downgrade parameter in ansible apt module
   apt:
-    name: kubernetes-cni kubelet kubectl
+    name:
+      # kubeadm removal is necessary as it's a dependent package
+      # otherwise force removal is required
+      - kubeadm
+      - kubernetes-cni
+      - kubelet
+      - kubectl
     state: absent
   when: ansible_facts.packages['kubernetes-cni'][0].version is version (cni_version + '-00', '>')
      or ansible_facts.packages['kubelet'][0].version is version (version + '-00', '>')
@@ -29,10 +35,11 @@
     - kubernetes-cni={{ cni_version }}-00
     - kubelet={{ version }}-00
     - kubectl={{ version }}-00
+    - kubeadm={{ version }}-00
     update_cache: yes
     state: present
 
 - name: k8s/install | Include hold packages task
   include_tasks: hold-packages.yml
   vars:
-    packages: [kubelet, kubectl, kubernetes-cni]
+    packages: [kubelet, kubectl, kubernetes-cni, kubeadm]
