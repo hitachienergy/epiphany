@@ -1,7 +1,5 @@
 ---
 - name: k8s/verify | Verify cluster versions
-  environment:
-    KUBECONFIG: /etc/kubernetes/kubelet.conf
   block:
     - name: k8s/verify | Verify cluster version
       when:
@@ -20,6 +18,8 @@
     - name: k8s/verify | Verify kubectl version
       block:
         - name: k8s/verify | Get kubectl version
+          environment:
+            KUBECONFIG: /etc/kubernetes/kubelet.conf
           shell: |-
             set -o pipefail &&
             kubectl version --client --short -o json | jq --raw-output '.clientVersion.gitVersion'
@@ -46,6 +46,7 @@
 
     - name: k8s/verify | Verify kubelet version from API server and get node status
       run_once: true
+      delegate_to: localhost
       shell: |-
         set -o pipefail &&
         kubectl get nodes {{ inventory_hostname }} |
