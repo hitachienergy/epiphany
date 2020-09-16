@@ -27,6 +27,7 @@
           else { 'kubeadm': _packages.kubeadm } }}
 
     packages_to_hold: "{{ packages_to_unhold | union(packages_to_install.keys() | list) }}"
+
   block:
     - name: k8s/install | Include unhold packages task
       include_tasks: unhold-packages.yml
