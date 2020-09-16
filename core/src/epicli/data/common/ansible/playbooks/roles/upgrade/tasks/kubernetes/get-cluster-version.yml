@@ -3,6 +3,8 @@
   shell: >-
     set -o pipefail &&
     kubectl version --short -o json | jq --raw-output '.serverVersion.gitVersion'
+  args:
+    executable: /bin/bash
   register: cluster_version
   delegate_to: localhost
   changed_when: false
