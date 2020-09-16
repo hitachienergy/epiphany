@@ -54,10 +54,7 @@
         kubectl get configmap kubeadm-config \
           --namespace=kube-system \
           --output=yaml
-      environment:
-        KUBECONFIG: /etc/kubernetes/admin.conf
-      args:
-        executable: /bin/bash
+      delegate_to: localhost
       register: kubeadm_config_yaml
       changed_when: false
 
@@ -94,10 +91,7 @@
       shell: |
         kubectl version \
           --output yaml
-      environment:
-        KUBECONFIG: /etc/kubernetes/admin.conf
-      args:
-        executable: /bin/bash
+      delegate_to: localhost
       register: kubectl_version_yaml
       changed_when: false
 
