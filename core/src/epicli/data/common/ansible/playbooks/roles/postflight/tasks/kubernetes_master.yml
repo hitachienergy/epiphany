@@ -1,0 +1,13 @@
+---
+- name: POSTFLIGHT | Remove local kubeconfig file
+  delegate_to: localhost
+  become: false
+  run_once: true
+  file:
+    path: "{{ inventory_dir }}/kubeconfig"
+    state: absent
+  when:
+    # If "kubernetes_master" group is non-empty then we assume the "kubeconfig" file comes
+    # from legacy (kubeadm) automation and it is safe to delete it.
+    - groups.kubernetes_master is defined
+    - groups.kubernetes_master | length > 0

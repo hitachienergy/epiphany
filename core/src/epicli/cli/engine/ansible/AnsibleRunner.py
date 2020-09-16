@@ -78,11 +78,12 @@ class AnsibleRunner(Step):
         self.ansible_command.run_playbook(inventory=inventory_path,
                                           playbook_path=self.playbook_path('common'))
 
-
     def post_flight(self, inventory_path):
         self.ansible_command.run_playbook(inventory=inventory_path,
                                           playbook_path=self.playbook_path('repository_teardown'))
 
+        self.ansible_command.run_playbook(inventory=inventory_path,
+                                          playbook_path=self.playbook_path('postflight'))
 
     def apply(self):
         inventory_path = get_inventory_path(self.cluster_model.specification.name)
@@ -115,7 +116,6 @@ class AnsibleRunner(Step):
 
         #post-flight after we are done
         self.post_flight(inventory_path)
-
 
     def upgrade(self):
         inventory_path = get_inventory_path_for_build(self.build_dir)
