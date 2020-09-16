@@ -57,6 +57,8 @@ specification:
       enabled: yes
     - name: ignite
       enabled: yes
+    - name: sshtunnel
+      enabled: yes
 
   roles_mapping:
     kafka:
@@ -109,6 +111,7 @@ specification:
       - logging
       - firewall
     single_machine:
+      - sshtunnel
       - repository
       - image-registry
       - kubernetes-master
@@ -119,6 +122,7 @@ specification:
       - firewall
       - vault
     kubernetes_master:
+      - sshtunnel
       - image-registry
       - kubernetes-master
       - repository

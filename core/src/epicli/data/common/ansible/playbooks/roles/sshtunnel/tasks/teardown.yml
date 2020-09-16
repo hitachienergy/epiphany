@@ -1,0 +1,7 @@
+---
+- include_tasks: "set_facts.yml"
+
+- name: Clear any existing SSH tunnel
+  shell: ./roles/sshtunnel/files/tunnel.sh --kill {{master_ip}}
+  when:
+    - master_present

@@ -1,0 +1,8 @@
+
+
+- include_tasks: "teardown.yml"
+
+- name: Start SSH tunnel
+  shell: ./roles/sshtunnel/files/tunnel.sh -f -N -M 0 -o "ServerAliveInterval 30" -o "ServerAliveCountMax 5" -4 -L  {{specification.port}}:localhost:{{specification.port}} -i {{admin_user.key_path}} {{admin_user.name}}@{{master_ip}} -4
+  when:
+    - master_present

@@ -70,6 +70,11 @@ class AnsibleRunner(Step):
                                                        playbook_path=self.playbook_path('preflight'),
                                                        retries=1)
 
+        self.logger.info('Setting up SSH tunnel for Kubectl')
+        self.ansible_command.run_playbook_with_retries(inventory=inventory_path,
+                                                       playbook_path=self.playbook_path('sshtunnel_setup'),
+                                                       retries=1)
+
         self.logger.info('Setting up repository for cluster provisioning. This will take a while...')
         self.ansible_command.run_playbook_with_retries(inventory=inventory_path,
                                                        playbook_path=self.playbook_path('repository_setup'),
@@ -80,6 +85,10 @@ class AnsibleRunner(Step):
 
 
     def post_flight(self, inventory_path):
+        self.ansible_command.run_playbook_with_retries(inventory=inventory_path,
+                                                       playbook_path=self.playbook_path('sshtunnel_teardown'),
+                                                       retries=1)
+
         self.ansible_command.run_playbook(inventory=inventory_path,
                                           playbook_path=self.playbook_path('repository_teardown'))
 

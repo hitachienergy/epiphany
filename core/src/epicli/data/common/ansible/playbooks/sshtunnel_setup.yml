@@ -1,0 +1,9 @@
+# Ansible playbook to setup an SSH tunnel for kubectl operations
+
+- hosts: 127.0.0.1
+  connection: local
+  gather_facts: yes
+  tasks:
+    - import_role:
+        name: sshtunnel
+        tasks_from: setup
