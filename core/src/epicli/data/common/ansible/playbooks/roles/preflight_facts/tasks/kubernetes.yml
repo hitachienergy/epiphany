@@ -8,12 +8,10 @@
   block:
     - name: Check if kubeconfig file exists
       stat:
-        path: "{{ kubeconfig }}"
+        path: "{{ lookup('env','KUBECONFIG') }}"
         get_attributes: false
         get_checksum: false
         get_mime: false
-      delegate_to: localhost
-      run_once: true
       register: stat_admin_conf
 
     - when: stat_admin_conf.stat.exists
@@ -28,7 +26,6 @@
               'node-role.kubernetes.io/master'
             jsonpath: >-
               '{range .items[*]}{.metadata.name}{"\n"}{end}'
-          delegate_to: localhost
           register: kubectl_get_master_nodes
           changed_when: false
 
@@ -54,7 +51,6 @@
         kubectl get configmap kubeadm-config \
           --namespace=kube-system \
           --output=yaml
-      delegate_to: localhost
       register: kubeadm_config_yaml
       changed_when: false
 
@@ -91,7 +87,6 @@
       shell: |
         kubectl version \
           --output yaml
-      delegate_to: localhost
       register: kubectl_version_yaml
       changed_when: false
 

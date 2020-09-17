@@ -7,4 +7,4 @@
   roles:
     - preflight
   environment:
-    KUBECONFIG: "{{ kubeconfig }}"
+    KUBECONFIG: /etc/kubernetes/admin.conf
