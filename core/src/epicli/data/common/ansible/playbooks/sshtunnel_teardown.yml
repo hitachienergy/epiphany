@@ -1,4 +1,4 @@
-# Ansible playbook to teardown an SSH tunnel for kubectl operations
+# Ansible playbook to close any SSH tunnel opened for kubectl operations
 
 - hosts: 127.0.0.1
   connection: local
