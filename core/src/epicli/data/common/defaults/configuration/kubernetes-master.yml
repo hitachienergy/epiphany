@@ -34,7 +34,13 @@ specification:
       renew: false
     etcd_args:
       encrypted: yes
-
+    kubeconfig:
+      local:
+        api_server:
+          # uncomment if you want a custom hostname (you can use jinja2/ansible expressions here, for example "{{ groups.kubernetes_master[0] }}")
+          hostname: 127.0.0.1
+          # uncomment if you want a custom port
+          # port: 3446
 #  image_registry_secrets:
 #  - email: emaul@domain.com
 #    name: secretname
