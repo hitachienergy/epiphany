@@ -1,7 +1,8 @@
 ---
-- include_tasks: "teardown.yml"
+- name: Include SSH connection teardown tasks
+  include_tasks: "teardown.yml"
 
 - name: Start SSH tunnel to K8s master
-  shell: {{ role_path }}/files/tunnel.sh -f -N -M 0 -o "ServerAliveInterval 30" -o "ServerAliveCountMax 5" -o "StrictHostKeyChecking=no" -L 6443:localhost:6443 -i {{ admin_user.key_path }} {{ admin_user.name }}@{{ k8s_master_ip }} -4
+  shell: '{{ role_path }}/files/tunnel.sh -f -N -M 0 -o "ServerAliveInterval 30" -o "ServerAliveCountMax 5" -o "StrictHostKeyChecking=no" -L 6443:localhost:6443 -i {{ admin_user.key_path }} {{ admin_user.name }}@{{ k8s_master_ip }} -4'
   when:
     - k8s_master_present
