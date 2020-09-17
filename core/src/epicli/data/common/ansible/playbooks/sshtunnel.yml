@@ -1,5 +1,0 @@
----
-# This playbook is empty by purpose, just to enable sshtunnel role in configuration/feature-mapping
-# to populate defaults/configuration to Ansible vars
-- hosts: []
-  tasks: []

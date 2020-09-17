@@ -3,6 +3,6 @@
 - include_tasks: "teardown.yml"
 
 - name: Start SSH tunnel
-  shell: ./roles/sshtunnel/files/tunnel.sh -f -N -M 0 -o "ServerAliveInterval 30" -o "ServerAliveCountMax 5" -o "StrictHostKeyChecking=no" -L  {{specification.api_server_port}}:localhost:{{specification.api_server_port}} -i {{admin_user.key_path}} {{admin_user.name}}@{{master_ip}} -4
+  shell: ./roles/sshtunnel/files/tunnel.sh -f -N -M 0 -o "ServerAliveInterval 30" -o "ServerAliveCountMax 5" -o "StrictHostKeyChecking=no" -L  6443:localhost:6443 -i {{admin_user.key_path}} {{admin_user.name}}@{{k8s_master_ip}} -4
   when:
-    - master_present
+    - k8s_master_present

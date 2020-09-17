@@ -1,8 +1,12 @@
+#!/bin/bash
+
+set -o errexit
+
 if [ "$1" = "--kill" ]; then
-  ps aux | 
-  grep -P "(/usr/bin/ssh|/usr/lib/autossh/autossh)\s.*$2" |
-  awk '{print $2}' |
+  ps -C ssh,autossh -o pid,cmd |
+  grep -E "@${2}($|[[:blank:]])" |
+  awk '{print $1}' |
   xargs -r kill
 else
-  $(which autossh) "$@"
+  autossh "$@"
 fi

@@ -1,16 +1,11 @@
 ---
-- set_fact:
-    master_present: False
-
-- name: Check if we have K8s master(s)
+- name: Set fact about existence of K8s master in inventory
   set_fact:
-    master_present: True
-  when:
-    - groups.kubernetes_master | default([]) | length >= 0
+    k8s_master_present: "{{ groups.kubernetes_master | default([]) | length > 0 }}"
 
-- name: Get first K8s master IP
+- name: Set IP of first K8s master (from inventory)
   set_fact:
-    master_ip: >-
-      {{hostvars[groups.kubernetes_master[0]].ansible_host}}
+    k8s_master_ip: >-
+      {{ hostvars[groups.kubernetes_master[0]].ansible_host }}
   when:
-    - master_present
+    - k8s_master_present

@@ -1,6 +1,0 @@
-kind: configuration/sshtunnel
-title: "Epiphany SSH tunnel"
-name: default
-specification:
-  description: "SSH Tunnel used for running Kubectl commands agains our own K8s clusters"
-  api_server_port: 6443
