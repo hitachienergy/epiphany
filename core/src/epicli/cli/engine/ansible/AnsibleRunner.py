@@ -70,7 +70,7 @@ class AnsibleRunner(Step):
                                                        playbook_path=self.playbook_path('preflight'),
                                                        retries=1)
 
-        self.logger.info('Setting up SSH tunnel for Kubectl')
+        self.logger.info('Setting up SSH tunnel for kubectl')
         self.ansible_command.run_playbook_with_retries(inventory=inventory_path,
                                                        playbook_path=self.playbook_path('sshtunnel_setup'),
                                                        retries=1)
