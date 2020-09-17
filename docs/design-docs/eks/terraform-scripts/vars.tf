@@ -1,4 +1,14 @@
-// // EKS Cluster name
+// Resource id of existing Subnets in the Virtual Network where You want to join Your EKS cluster
+variable "existing_subnets_id" {
+  type = list(string)
+}
+
+// Resource id of existing the Virtual Network where You want to join Your EKS cluster
+variable "existing_vpc_id" {
+  type = string
+}
+
+// EKS Cluster name
 variable "eks_cluster_name" {
   type = string
 }

@@ -1,3 +1,5 @@
+existing_vpc_id = ""
+existing_subnets_id = []
 eks_cluster_name = "aws-eks-cluster"
 eks_cluster_version = "1.17"
 eks_autoscaler_version = "v1.17.3"

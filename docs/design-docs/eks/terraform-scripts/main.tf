@@ -3,7 +3,7 @@
 # # To learn how to schedule deployments and services using the provider, go here: ttps://learn.hashicorp.com/terraform/kubernetes/deploy-nginx-kubernetes.
 
 terraform {
-  required_version = ">= 0.12"
+  required_version = ">= 0.12.9"
 }
 
 provider "kubernetes" {

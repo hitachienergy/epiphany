@@ -8,8 +8,15 @@ The Amazon Elastic Kubernetes Service (EKS) is the AWS service for deploying, ma
 #### Requirements:
 - AWS account with the IAM permissions listed on the [EKS module documentation](https://github.com/terraform-aws-modules/terraform-aws-eks/blob/master/docs/iam-permissions.md) - set credentials in `vars-secret.tf` file.
 - kubectl
-- terraform
+- terraform in version at least 0.12.9
+- helm and added repository: ``` helm repo add stable https://kubernetes-charts.storage.googleapis.com ```
+- awscli ``` aws configure ```
 - ssh-key uploaded into [AWS](https://www.eksworkshop.com/020_prerequisites/sshkey/) - in case you need to connect into the node
+
+#### Features:
+- Possibility to create new network or use existing network. EKS will just join to the existing network. It is enough to set two variables with existing VPC ID and SUBNETS ID and EKS will be based there ( var.existing_vpc_id and var.existing_subnets_id ). [VPC considerations](https://docs.aws.amazon.com/eks/latest/userguide/network_reqs.html)
+- Cluster autoscaling
+- Different cluster specification  (size, location, name, k8s version, name etc...)
 
 #### Deployment:
 - Initialize working directory:  

@@ -2,8 +2,8 @@ module "eks" {
   source          = "terraform-aws-modules/eks/aws"
   version         = "12.2.0"
   cluster_name    = var.eks_cluster_name
-  subnets         = module.vpc.private_subnets
-  vpc_id          = module.vpc.vpc_id
+  subnets         = length(var.existing_subnets_id) != 0 ? var.existing_subnets_id : module.vpc.private_subnets
+  vpc_id          = var.existing_vpc_id != "" ? var.existing_vpc_id : module.vpc.vpc_id
   cluster_version = var.eks_cluster_version
   // enable IAM Roles for Service Accounts
   enable_irsa     = true
