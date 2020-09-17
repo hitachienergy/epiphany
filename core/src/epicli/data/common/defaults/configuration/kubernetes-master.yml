@@ -1,8 +1,9 @@
 kind: configuration/kubernetes-master
-title: "Kubernetes Master Config"
+title: Kubernetes Master Config
 name: default
 specification:
   version: 1.18.6
+  cni_version: 0.8.6
   cluster_name: "kubernetes-epiphany"
   allow_pods_on_master: False
   storage:
@@ -34,7 +35,13 @@ specification:
       renew: false
     etcd_args:
       encrypted: yes
-
+    kubeconfig:
+      local:
+        api_server:
+          # change if you want a custom hostname (you can use jinja2/ansible expressions here, for example "{{ groups.kubernetes_master[0] }}")
+          hostname: 127.0.0.1
+          # uncomment if you want a custom port
+          # port: 3446
 #  image_registry_secrets:
 #  - email: emaul@domain.com
 #    name: secretname

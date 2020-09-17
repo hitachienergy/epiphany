@@ -27,6 +27,7 @@
           else { 'kubeadm': _packages.kubeadm } }}
 
     packages_to_hold: "{{ packages_to_unhold | union(packages_to_install.keys() | list) }}"
+
   block:
     - name: k8s/install | Include unhold packages task
       include_tasks: unhold-packages.yml
@@ -40,7 +41,7 @@
         state: present
       vars:
         packages_to_install_with_version: >-
-          {{ packages_to_install.keys() | zip(packages_to_install.values()) | map('join', '=') | list }}
+          {{ packages_to_install.items() | map('join', '=') | list }}
 
     - name: k8s/install | Include hold packages task
       include_tasks: hold-packages.yml
