@@ -61,7 +61,7 @@
         state: present
       vars:
         packages_to_install_with_version: >-
-          {{ target_packages.keys() | zip(target_packages.values()) | map('join', '=') | list }}
+          {{ target_packages.items() | map('join', '=') | list }}
 
     - name: k8s/install | Include hold packages task
       include_tasks: hold-packages.yml
