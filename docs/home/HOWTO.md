@@ -66,7 +66,7 @@
   - [How to use Kubernetes Secrets](./howto/SECURITY.md#how-to-use-kubernetes-secrets)
   - [How to authenticate to Azure AD app](./howto/SECURITY.md#how-to-authenticate-to-azure-ad-app)
   - [How to run epicli with password](./howto/SECURITY.md#how-to-run-epicli-with-password)
-  - [How to enable kubectl on Kubernetes master](./howto/SECURITY.md#how-to-enable-kubectl-on-Kubernetes-master)
+  - [How to make kubectl work for non-root user on master node](./howto/SECURITY.md#how-to-make-kubectl-work-for-non-root-user-on-master-node)
   - [How to turn on Hashicorp Vault functionality](./howto/SECURITY.md#how-to-turn-on-hashicorp-vault-functionality)
   - [How to turn on Hashicorp Vault integration with k8s](./howto/SECURITY.md#how-to-turn-on-hashicorp-vault-integration-with-k8s)
 

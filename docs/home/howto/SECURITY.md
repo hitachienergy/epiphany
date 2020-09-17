@@ -358,14 +358,15 @@ When running epicli from CI pipeline you can use new parameter for epicli:
 epicli apply -f demo.yaml --vault-password MYPWD
 ```
 
-## How to enable kubectl on Kubernetes master
+## How to make kubectl work for non-root user on master node
 
-For security reasons kubectl is disabled by default on the Kubernetes master node. To enable it execute the following commands:
+For security reason, the access to the admin credentials is limited to the root user.
+To make a non-root user the cluster administrator, run these commands (as the non-root user):
 
 ```shell
-cp /etc/kubernetes/admin.conf $HOME/
-chown $(id -u):$(id -g) $HOME/admin.conf
-export KUBECONFIG=$HOME/admin.conf
+mkdir -p $HOME/.kube
+sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
+sudo chown $(id -u):$(id -g) $HOME/.kube/config
 ```
 
 ## How to turn on Hashicorp Vault functionality

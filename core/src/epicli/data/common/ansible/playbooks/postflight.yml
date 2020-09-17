@@ -1,0 +1,7 @@
+---
+- hosts: all
+  gather_facts: true
+  become: true
+  become_method: sudo
+  roles:
+    - postflight
