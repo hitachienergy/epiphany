@@ -4,35 +4,66 @@
     manager: auto
   changed_when: false
 
-# Unhold before removing to avoid error
-- name: k8s/install | Include unhold packages task
-  include_tasks: unhold-packages.yml
+- name: Install K8s packages
+  when: packages_to_install_or_upgrade | length
+     or packages_to_downgrade | length
   vars:
-    packages: >-
-      {%- if ansible_facts.packages['kubernetes-cni'] is defined -%}
-        ['kubelet', 'kubectl', 'kubernetes-cni']
-      {%- else -%}
-        ['kubelet', 'kubectl']
-      {%- endif -%}
+    target_packages:
+      kubeadm: "{{ version }}-00" # kubeadm may be removed as dependency and then has to be reinstalled
+      kubectl: "{{ version }}-00"
+      kubelet: "{{ version }}-00"
+      kubernetes-cni: "{{ cni_version }}-00"
 
-- name: k8s/install | Remove newer Debian packages installed as dependencies if they exist # as there is no allow_downgrade parameter in ansible apt module
-  apt:
-    name: kubernetes-cni kubelet kubectl
-    state: absent
-  when: ansible_facts.packages['kubernetes-cni'][0].version is version (cni_version + '-00', '>')
-     or ansible_facts.packages['kubelet'][0].version is version (version + '-00', '>')
-     or ansible_facts.packages['kubectl'][0].version is version (version + '-00', '>')
+    packages_to_install_or_upgrade: >-
+      {%- set output = [] -%}
+      {%- for package in target_packages.keys() -%}
+        {%- if ansible_facts.packages[package] is undefined
+            or ansible_facts.packages[package][0].version is version (target_packages[package], '<') -%}
+          {{- output.append(package) -}}
+        {%- endif -%}
+      {%- endfor -%}
+      {{- output -}}
 
-- name: k8s/install | Install kubernetes-cni {{ cni_version }}, kubelet {{ version }}, kubectl {{ version }} packages for Debian family
-  apt:
-    name:
-    - kubernetes-cni={{ cni_version }}-00
-    - kubelet={{ version }}-00
-    - kubectl={{ version }}-00
-    update_cache: yes
-    state: present
+    # Downgrading is for backward compatibility (Epiphany version < 0.8), kubeadm is already installed
+    packages_to_downgrade: >-
+      {%- set output = [] -%}
+      {%- for package in (target_packages.keys() | reject('equalto', 'kubeadm')) -%}
+        {%- if ansible_facts.packages[package][0].version is version (target_packages[package], '>') -%}
+          {{- output.append(package) -}}
+        {%- endif -%}
+      {%- endfor -%}
+      {{- output -}}
 
-- name: k8s/install | Include hold packages task
-  include_tasks: hold-packages.yml
-  vars:
-    packages: [kubelet, kubectl, kubernetes-cni]
+    packages_to_unhold: >-
+      {{ (target_packages.keys() | list) | intersect(ansible_facts.packages.keys() | list) }}
+
+    packages_to_hold: "{{ target_packages.keys() | list }}"
+
+  block:
+    - name: k8s/install | Include unhold packages task
+      include_tasks: unhold-packages.yml
+      vars:
+        packages: "{{ packages_to_unhold }}"
+
+    # apt module doesn't support --allow-downgrades so we remove packages as workaround (see https://github.com/ansible/ansible/issues/29451).
+    # Note: There is no way to remove package using APT without also removing those packages that depend on it.
+    # Removing kubernetes-cni may require removing kubeadm and kubelet.
+    - name: k8s/install | Remove newer packages installed as dependency if they exist
+      apt:
+        name: "{{ packages_to_downgrade }}"
+        state: absent
+      when: packages_to_downgrade | length
+
+    - name: "k8s/install | Install packages: {{ packages_to_install_with_version | join( ', ' ) }}"
+      apt:
+        name: "{{ packages_to_install_with_version }}"
+        update_cache: true
+        state: present
+      vars:
+        packages_to_install_with_version: >-
+          {{ target_packages.items() | map('join', '=') | list }}
+
+    - name: k8s/install | Include hold packages task
+      include_tasks: hold-packages.yml
+      vars:
+        packages: "{{ packages_to_hold }}"

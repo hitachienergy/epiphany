@@ -9,8 +9,9 @@
 - name: Install Kubernetes packages for RedHat family
   yum:
     name:
-      - kubelet-{{specification.version}}-0
-      - kubectl-{{specification.version}}-0
-      - kubeadm-{{specification.version}}-0
+      - kubelet-{{ specification.version }}-0
+      - kubectl-{{ specification.version }}-0
+      - kubeadm-{{ specification.version }}-0
+      - kubernetes-cni-{{ specification.cni_version }}-0
     update_cache: yes
     state: present
