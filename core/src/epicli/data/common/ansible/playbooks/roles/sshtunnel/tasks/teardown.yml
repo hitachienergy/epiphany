@@ -1,7 +1,7 @@
 ---
 - include_tasks: "set_facts.yml"
 
-- name: Clear any existing SSH tunnel
+- name: Close any existing SSH tunnel to K8s master
   shell: ./roles/sshtunnel/files/tunnel.sh --kill {{k8s_master_ip}}
   when:
     - k8s_master_present
