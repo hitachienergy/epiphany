@@ -87,6 +87,7 @@ specification:
       - filebeat
       - firewall
     monitoring:
+      - sshtunnel
       - prometheus
       - grafana
       - node-exporter
