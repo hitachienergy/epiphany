@@ -1,4 +1,4 @@
-# Ansible playbook to setup an SSH tunnel for kubectl operations
+# Ansible playbook to set up an SSH tunnel for kubectl operations
 
 - hosts: 127.0.0.1
   connection: local
