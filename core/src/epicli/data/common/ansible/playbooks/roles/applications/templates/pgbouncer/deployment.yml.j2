@@ -1,4 +1,3 @@
-
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -47,7 +46,7 @@ spec:
               subPath: users.txt
       initContainers:
         - name: pgbouncer-init
-          image: {{ image_registry_address }}/{{ data.init_image_path }} 
+          image: {{ image_registry_address }}/{{ data.init_image_path }}
           command:
             - /epiphany/scripts/init_users_passwd_file.sh
           envFrom:

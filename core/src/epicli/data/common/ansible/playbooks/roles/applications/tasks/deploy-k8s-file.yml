@@ -1,17 +1,18 @@
 ---
+- name: Assert input parameters
+  assert:
+    that:
+      - deployment_tmp_dir is defined
+      - file_name is defined
+
 - name: "{{ data.name }}: Upload {{ file_name }} file"
-  become: yes
   template:
     dest: "{{ deployment_tmp_dir }}/{{ file_name }}"
     src: "{{ app_dir_name }}/{{ file_name }}.j2"
-    owner: "{{ admin_user.name }}"
-    group: "{{ admin_user.name }}"
-    mode: 0600 # may contain secrets
+    mode: u=rw,go=  # may contain secrets
   register: upload_template
 
 - name: "{{ data.name }}: Apply {{ file_name }} file"
-  shell: kubectl apply -f {{ deployment_tmp_dir }}/{{ file_name }}
-  environment:
-    KUBECONFIG: /home/{{ admin_user.name }}/.kube/config
+  command: kubectl apply -f {{ deployment_tmp_dir }}/{{ file_name }}
   when:
     - upload_template.changed
