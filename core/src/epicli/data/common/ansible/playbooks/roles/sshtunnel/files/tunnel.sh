@@ -16,7 +16,7 @@ if [ "$1" = "--kill" ]; then
   fi
 
   echo "Checking if local port ($LOCAL_PORT) is free"
-  if sudo lsof -i:"$LOCAL_PORT"; then
+  if lsof -i:"$LOCAL_PORT"; then
     echo "ERROR: Local port ($LOCAL_PORT) still in use"
     exit 98
   else
