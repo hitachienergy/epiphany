@@ -21,9 +21,9 @@ RUN chmod +x /config-pre.sh \
     && apt-get install --no-install-recommends -y \
         apt-utils dialog 2>&1 \
     && apt-get install --no-install-recommends -y \
-        autossh curl gcc jq libffi-dev make musl-dev openssh-client ruby-full sudo tar unzip vim \
+        autossh curl gcc jq libffi-dev make musl-dev openssh-client procps ruby-full sudo tar unzip vim \
         \
-        git git-lfs lsb-release procps \
+        git git-lfs lsb-release \
 \
     && echo "Installing helm binary ..." \
     && curl -fsSLO https://get.helm.sh/helm-v${HELM_VERSION}-linux-amd64.tar.gz \
