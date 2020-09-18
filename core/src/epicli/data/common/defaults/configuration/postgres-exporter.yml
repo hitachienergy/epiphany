@@ -2,10 +2,6 @@ kind: configuration/postgres-exporter
 title: Postgres exporter
 name: default
 specification:
-  version: 0.8.0
-  file_name: postgres_exporter_v0.8.0_linux-amd64.tar.gz
-  description: Service that runs Postgres Exporter
-  web_listen_port: '9187'
   config_flags:
   - --log.level=info
   - --extend.query-path=/opt/postgres_exporter/queries.yaml

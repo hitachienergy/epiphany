@@ -9,16 +9,6 @@
     install_recommends: no
   when: ansible_os_family == 'Debian'
 
-- name: Install pip3 [RedHat]
-  yum:
-    name:
-      - libpq5
-      - python3-psycopg2
-      - python3-jmespath
-    state: present
-    install_recommends: no
-  when: ansible_os_family == 'RedHat'
-
 - name: Create postgres_exporter system group
   group:
     name: postgres_exporter
@@ -35,7 +25,7 @@
 
 - name: Set Postgres Exporter file name to install
   set_fact:
-    exporter_file_name: "{{ specification.file_name }}"
+    exporter_file_name: "postgres_exporter_v{{ exporter.version }}_linux-amd64.tar.gz"
 
 - name: Download Postgres Exporter binaries
   include_role:
@@ -45,16 +35,14 @@
     file_name: "{{ exporter_file_name }}"
 
 - name: Create /opt/postgres_exporter directory
-  become: yes
+  become: true
   file:
-    path: "{{ item }}"
+    path: /opt/postgres_exporter
     recurse: yes
     owner: root
     group: postgres_exporter
-    mode: 0755
+    mode: u=rwx,go=rx
     state: directory
-  with_items:
-  - /opt/postgres_exporter
 
 - name: Unpack postgres_exporter binary
   become: true
@@ -64,7 +52,7 @@
     dest: "/opt/postgres_exporter"
     creates: "/opt/postgres_exporter/postgres_exporter"
     extra_opts: [--strip-components=1]
-    mode: 0755
+    mode: u=rwx,go=rx
     owner: root
     group: postgres_exporter
   check_mode: false
@@ -77,7 +65,7 @@
     dest: /etc/systemd/system/postgres-exporter.service
     owner: root
     group: root
-    mode: 0644
+    mode: u=rw,go=r
 
 - name: Copy extend query file
   copy:
@@ -85,7 +73,7 @@
     dest: /opt/postgres_exporter/queries.yaml
     owner: postgres_exporter
     group: postgres_exporter
-    mode: 0660
+    mode: ug=rw,o=
 
 - name: Configure systemd to use postgres-exporter service
   systemd:
@@ -94,9 +82,9 @@
     name: postgres-exporter.service
 
 - name: Start Postgres exporter
-  service:
-    name: postgres-exporter
+  systemd:
     state: started
+    name: postgres-exporter.service
 
 - name: Copy file_sd_config to prometheus hosts
   template:
@@ -104,7 +92,7 @@
     src: file_sd_config.yml.j2
     owner: root
     group: root
-    mode: 0644
+    mode: u=rw,go=r
   delegate_to: "{{ item }}"
   with_inventory_hostnames:
     - prometheus

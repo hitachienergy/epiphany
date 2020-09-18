@@ -1,6 +1,7 @@
 #jinja2: trim_blocks:False
+# {{ ansible_managed }}
 [Unit]
-Description={{ specification.description }}
+Description={{ exporter.service.description }}
 
 [Service]
 User={{ specification.dbuser|default('postgres') }}
