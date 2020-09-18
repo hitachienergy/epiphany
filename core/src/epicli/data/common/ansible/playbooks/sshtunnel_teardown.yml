@@ -4,7 +4,7 @@
   connection: local
   gather_facts: false
   tasks:
-    - import_role:
+    - include_role:
         name: sshtunnel
         tasks_from: teardown
       when:
