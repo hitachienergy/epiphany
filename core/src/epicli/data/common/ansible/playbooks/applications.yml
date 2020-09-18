@@ -8,13 +8,5 @@
 - hosts: applications:!kubernetes_master[1:]
   become: true
   become_method: sudo
-  pre_tasks:
-    - import_role:
-        name: kubernetes_master
-        tasks_from: copy-kubeconfig
   roles:
     - applications
-  post_tasks:
-    - import_role:
-        name: kubernetes_master
-        tasks_from: remove-kubeconfig
