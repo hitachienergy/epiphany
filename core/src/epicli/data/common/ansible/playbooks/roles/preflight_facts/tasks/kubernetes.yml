@@ -12,9 +12,9 @@
         get_attributes: false
         get_checksum: false
         get_mime: false
-      register: stat_admin_conf
+      register: stat_kubeconfig
 
-    - when: stat_admin_conf.stat.exists
+    - when: stat_kubecofig.stat.exists
       block:
         - name: Get list of all master nodes
           shell: |
@@ -32,7 +32,7 @@
     - name: Decide if current node is a master
       set_fact:
         master_already_joined: >-
-          {{ stat_admin_conf.stat.exists and (kubectl_get_master_nodes.stdout_lines is defined)
+          {{ stat_kubeconfig.stat.exists and (kubectl_get_master_nodes.stdout_lines is defined)
                                          and (inventory_hostname in kubectl_get_master_nodes.stdout_lines) }}
 
 - name: Collect registered masters
