@@ -1,13 +1,9 @@
 ---
 - name: Upload RabbitMQ service yaml
-  become: yes
   template:
     dest: "{{ configuration_temp_directory }}/{{ rabbitmq_service_name }}-{{ namespace_name }}.yml"
     src: rabbitmq/rabbitmq.yml.j2
-    owner: "{{ admin_user.name }}"
-    group: "{{ admin_user.name }}"
-    mode: 0644
+    mode: u=rw,go=r
 
 - name: Apply RabbitMQ deployment
-  shell: kubectl apply --kubeconfig=/home/{{ admin_user.name }}/.kube/config -f {{ configuration_temp_directory }}/{{ rabbitmq_service_name }}-{{ namespace_name }}.yml
-  become_user: "{{ admin_user.name }}"
+  command: kubectl apply -f {{ configuration_temp_directory }}/{{ rabbitmq_service_name }}-{{ namespace_name }}.yml

@@ -4,6 +4,7 @@ kind: ServiceAccount
 metadata:
   name: {{ rabbitmq_service_name }}
   namespace: {{ namespace_name }}
+
 ---
 kind: Role
 apiVersion: rbac.authorization.k8s.io/v1beta1
@@ -14,6 +15,7 @@ rules:
 - apiGroups: [""]
   resources: ["endpoints"]
   verbs: ["get"]
+
 ---
 kind: RoleBinding
 apiVersion: rbac.authorization.k8s.io/v1beta1
