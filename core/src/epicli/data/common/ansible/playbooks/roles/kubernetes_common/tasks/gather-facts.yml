@@ -4,10 +4,12 @@
 
 - name: Check if kubeconfig file exists
   stat:
-    path: "{{ lookup('env','KUBECONFIG') }}"
+    path: "{{ kubeconfig }}"
     get_attributes: false
     get_checksum: false
     get_mime: false
+  delegate_to: localhost
+  run_once: true
   register: stat_kubeconfig
 
 - when: stat_kubeconfig.stat.exists
@@ -22,6 +24,7 @@
           'node-role.kubernetes.io/master'
         jsonpath: >-
           '{range .items[*]}{.metadata.name}{"\n"}{end}'
+      delegate_to: localhost
       register: kubectl_get_master_nodes
       changed_when: false
 

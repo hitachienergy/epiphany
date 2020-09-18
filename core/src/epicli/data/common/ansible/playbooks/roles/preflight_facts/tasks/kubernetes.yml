@@ -14,7 +14,7 @@
         get_mime: false
       register: stat_kubeconfig
 
-    - when: stat_kubecofig.stat.exists
+    - when: stat_kubeconfig.stat.exists
       block:
         - name: Get list of all master nodes
           shell: |

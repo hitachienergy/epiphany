@@ -17,7 +17,7 @@
         name: kubernetes_common
         tasks_from: main
   environment:
-    KUBECONFIG: "{{ kubeconfig_remote }}"
+    KUBECONFIG: "{{ kubeconfig }}"
 
 - hosts: kubernetes_master
   serial: 1
