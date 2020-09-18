@@ -1,8 +1,23 @@
 ---
-- include_tasks: setup-ansible-postgres-and-detect-secondary-node.yaml
+- name: Install pip3 [Debian]
+  apt:
+    name:
+      - libpq5
+      - python3-psycopg2
+      - python3-jmespath
+    state: present
+    install_recommends: no
+  when: ansible_os_family == 'Debian'
 
-- meta: end_host
-  when: "not is_secondary"
+- name: Install pip3 [RedHat]
+  yum:
+    name:
+      - libpq5
+      - python3-psycopg2
+      - python3-jmespath
+    state: present
+    install_recommends: no
+  when: ansible_os_family == 'RedHat'
 
 - name: Create postgres_exporter system group
   group:
@@ -64,16 +79,13 @@
     group: root
     mode: 0644
 
-- name: Deploy extend query-path file
+- name: Copy extend query file
   copy:
-    content: "{{ specification.extend_query_path_file_content }}"
-    dest: "{{ specification.extend_query_path_file_path }}"
-    owner: root
+    src: "{{ role_path }}/files/queries.yaml"
+    dest: /opt/postgres_exporter/queries.yaml
+    owner: postgres_exporter
     group: postgres_exporter
-  when:
-    - '"extend_query_path_file_path" in specification'
-    - '"extend_query_path_file_content" in specification'
-    - 'specification.extend_query_path_file_content != ""'
+    mode: 0660
 
 - name: Configure systemd to use postgres-exporter service
   systemd:

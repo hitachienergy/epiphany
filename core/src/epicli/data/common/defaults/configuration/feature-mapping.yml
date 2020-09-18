@@ -47,6 +47,8 @@ specification:
       enabled: yes
     - name: postgresql
       enabled: yes
+    - name: postgres-exporter
+      enabled: yes
     - name: haproxy
       enabled: yes
     - name: haproxy-exporter
@@ -92,6 +94,7 @@ specification:
       - firewall
     postgresql:
       - postgresql
+      - postgres-exporter
       - node-exporter
       - filebeat
       - firewall

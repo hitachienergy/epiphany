@@ -1,5 +1,5 @@
 ---
-- hosts: postgres_exporter[0]
+- hosts: postgres_exporter
   become: true
   become_method: sudo
   roles:
