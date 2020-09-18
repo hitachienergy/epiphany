@@ -5,8 +5,14 @@
   gather_facts: true
   tasks: []
 
-- hosts: applications:!kubernetes_master[1:]
-  become: true
-  become_method: sudo
+- hosts: 127.0.0.1
+  gather_facts: false
+  connection: local
+  become: false
   roles:
-    - applications
+    - role: applications
+      when:
+        - groups.applications is defined
+        - groups.applications | length > 0
+  environment:
+    KUBECONFIG: "{{ vault_location }}/../kubeconfig"  # "inventory_dir" cannot be used here

@@ -1,0 +1,8 @@
+---
+- name: Wait until cluster is available
+  command: kubectl cluster-info
+  register: result
+  until: result is succeeded
+  retries: 50
+  delay: 1
+  changed_when: false
