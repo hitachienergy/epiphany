@@ -4,15 +4,13 @@
 
 - name: Check if kubeconfig file exists
   stat:
-    path: "{{ kubeconfig }}"
+    path: "{{ lookup('env','KUBECONFIG') }}"
     get_attributes: false
     get_checksum: false
     get_mime: false
-  delegate_to: localhost
-  run_once: true
-  register: stat_admin_conf
+  register: stat_kubeconfig
 
-- when: stat_admin_conf.stat.exists
+- when: stat_kubeconfig.stat.exists
   block:
     - name: Get list of all master nodes
       shell: |
@@ -24,7 +22,6 @@
           'node-role.kubernetes.io/master'
         jsonpath: >-
           '{range .items[*]}{.metadata.name}{"\n"}{end}'
-      delegate_to: localhost
       register: kubectl_get_master_nodes
       changed_when: false
 
@@ -35,7 +32,7 @@
   vars:
     set_fact:
       master_already_joined: >-
-        {{ stat_admin_conf.stat.exists and (kubectl_get_master_nodes.stdout_lines is defined)
+        {{ stat_kubeconfig.stat.exists and (kubectl_get_master_nodes.stdout_lines is defined)
                                        and (inventory_hostname in kubectl_get_master_nodes.stdout_lines) }}
 
 - name: Collect registered masters
