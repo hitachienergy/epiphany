@@ -80,6 +80,7 @@ specification:
     image:
       path: bitnami/pgpool:4.1.1-debian-10-r29
       debug: false # ref: https://github.com/bitnami/minideb-extras/#turn-on-bash-debugging
+    use_local_image_registry: true
     namespace: postgres-pool
     service:
       name: pgpool
@@ -143,6 +144,7 @@ specification:
     #https://github.com/brainsam/pgbouncer/tree/release/1.12
     image_path: brainsam/pgbouncer:1.12
     init_image_path: bitnami/pgpool:4.1.1-debian-10-r29 #TODO: make reference to pgpool section
+    use_local_image_registry: true
     namespace: postgres-pool
     service:
       name: pgbouncer
