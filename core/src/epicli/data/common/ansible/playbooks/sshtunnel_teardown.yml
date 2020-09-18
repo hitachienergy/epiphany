@@ -2,7 +2,11 @@
 
 - hosts: 127.0.0.1
   connection: local
+  gather_facts: false
   tasks:
     - import_role:
         name: sshtunnel
         tasks_from: teardown
+      when:
+        - groups.kubernetes_master is defined
+        - groups.kubernetes_master | length > 0

@@ -1,8 +1,12 @@
-# Ansible playbook to set up an SSH tunnel for kubectl operations
+# Ansible playbook to set up SSH tunnel for kubectl operations
 
 - hosts: 127.0.0.1
   connection: local
+  gather_facts: false
   tasks:
     - import_role:
         name: sshtunnel
         tasks_from: setup
+      when:
+        - groups.kubernetes_master is defined
+        - groups.kubernetes_master | length > 0

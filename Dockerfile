@@ -24,7 +24,7 @@ COPY --from=build-epicli-wheel /src/core/src/epicli/dist/ /epicli/
 
 RUN apt-get update \
     && apt-get install --no-install-recommends -y \
-        autossh curl gcc jq libffi-dev make musl-dev openssh-client procps ruby-full sudo tar unzip vim \
+        autossh curl gcc jq libffi-dev lsof make musl-dev openssh-client procps psmisc ruby-full sudo tar unzip vim \
 \
     && echo "Installing helm binary ..." \
     && curl -fsSLO https://get.helm.sh/helm-v${HELM_VERSION}-linux-amd64.tar.gz \

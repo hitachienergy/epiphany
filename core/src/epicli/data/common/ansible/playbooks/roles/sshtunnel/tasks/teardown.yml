@@ -1,8 +1,11 @@
 ---
-- name: Include gathering of facts task
-  include_tasks: "set_facts.yml"
+- name: Include gathering facts tasks
+  include_tasks: set_facts.yml
 
-- name: Close any existing SSH tunnel to K8s master
-  shell: '{{ role_path }}/files/tunnel.sh --kill {{ k8s_master_ip }}'
-  when:
-    - k8s_master_present
+- name: Close SSH tunnel to K8s master
+  script: tunnel.sh --kill {{ k8s_api_server_port }}
+  register: script_output
+
+- name: Print script output
+  debug:
+    var: script_output.stdout_lines
