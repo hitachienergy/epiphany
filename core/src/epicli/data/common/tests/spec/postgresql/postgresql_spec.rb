@@ -78,7 +78,7 @@ def queryForDropping
       its(:exit_status) { should eq 0 }
     end
   end
-  
+
   describe 'Checking if it is possible to drop the test schema' do
     let(:disable_sudo) { false }
     describe command("su - postgres -c \"psql -t -c 'DROP SCHEMA serverspec_test CASCADE;'\"") do
@@ -155,7 +155,7 @@ if os[:family] == 'redhat'
       it { should exist }
       it { should be_a_file }
       it { should be_readable }
-    end    
+    end
   end
 elsif os[:family] == 'ubuntu'
   describe 'Checking PostgreSQL directories and config files' do
@@ -178,7 +178,7 @@ elsif os[:family] == 'ubuntu'
       it { should exist }
       it { should be_a_file }
       it { should be_readable }
-    end    
+    end
   end
 end
 
@@ -187,7 +187,7 @@ describe 'Checking if the ports are open' do
   describe port(postgresql_default_port) do
     it { should be_listening }
   end
-end 
+end
 
 if os[:family] == 'ubuntu'
   describe 'Checking if PostgreSQL is ready' do
@@ -210,7 +210,7 @@ if !replicated
   queryForCreating
   queryForSelecting
   queryForAlteringTable
-end   
+end
 
 if replicated
 
@@ -308,7 +308,7 @@ if replicated
     queryForCreating
     queryForSelecting
     queryForAlteringTable
-    
+
   elsif secondary.include? host_inventory['hostname']
     if os[:family] == 'redhat'
       describe 'Checking PostgreSQL config files for secondary node' do
@@ -433,7 +433,7 @@ if pgbouncer_enabled
       describe command("PGPASSWORD=#{pg_pass} psql -h #{postgresql_host} -p #{postgresql_default_port} -U #{pg_user} postgres -c 'SELECT col from serverspec_test.pgbtest;' 2>&1") do
         its(:stdout) { should match /\bPGBSUCCESS\b/ }
         its(:exit_status) { should eq 0 }
-      end    
+      end
     end
 
   end
@@ -474,7 +474,7 @@ if replicated && (listInventoryHosts("postgresql")[1].include? host_inventory['h
         result = ssh.exec!("sudo su - postgres -c \"psql -t -c 'DROP TABLE serverspec_test.pgbtest;'\" 2>&1")
         expect(result).to match 'DROP TABLE'
       end
-    end      
+    end
     it "Delegating drop schema query to master node" do
       Net::SSH.start(listInventoryIPs("postgresql")[0], ENV['user'], keys: [ENV['keypath']], :keys_only => TRUE) do|ssh|
         result = ssh.exec!("sudo su - postgres -c \"psql -t -c 'DROP SCHEMA serverspec_test;'\" 2>&1")
@@ -492,7 +492,7 @@ if replicated && (listInventoryHosts("postgresql")[1].include? host_inventory['h
         result = ssh.exec!("sudo su - -c \"sed -i '/#{pg_pass}/d' /etc/pgbouncer/userlist.txt && cat /etc/pgbouncer/userlist.txt\" 2>&1")
         expect(result).not_to match "#{pg_pass}"
       end
-    end    
+    end
   end
 end
 
@@ -503,7 +503,7 @@ if pgaudit_enabled
   if !replicated || (replicated && (listInventoryHosts("postgresql")[1].include? host_inventory['hostname']))
 
     describe 'Checking if the Elasticsearch logs contain queries from the PostrgeSQL database' do
-      describe command("for i in {1..600}; do if curl -k -s -u admin:admin 'https://#{elasticsearch_host}:#{elasticsearch_api_port}/_search?pretty=true' -H 'Content-Type: application/json' -d '{\"size\":100,\"_source\":{\"includes\":\"message\"},\"query\":{\"bool\":{\"must\":[{\"bool\":{\"should\":[{\"match_phrase\":{\"source\":\"/var/log/postgresql/postgresql-10-main.log\"}},{\"match_phrase\":{\"source\":\"/var/log/postgresql/postgresql.log\"}}],\"minimum_should_match\":1}}],\"filter\":{\"query_string\":{\"query\":\"*serverspec*\"}}}}}' | grep -z \"DROP SCHEMA\"; then echo 'READY'; break; else echo 'WAITING'; sleep 1; fi; done") do
+      describe command("for i in {1..600}; do if curl -k -s -u admin:admin 'https://#{elasticsearch_host}:#{elasticsearch_api_port}/_search?pretty=true' -H 'Content-Type: application/json' -d '{\"size\":100,\"_source\":{\"includes\":\"message\"},\"query\":{\"bool\":{\"must\":[{\"bool\":{\"should\":[{\"match_phrase\":{\"log.file.path\":\"/var/log/postgresql/postgresql-10-main.log\"}},{\"match_phrase\":{\"log.file.path\":\"/var/log/postgresql/postgresql.log\"}}],\"minimum_should_match\":1}}],\"filter\":{\"query_string\":{\"query\":\"*serverspec*\"}}}}}' | grep -z \"DROP SCHEMA\"; then echo 'READY'; break; else echo 'WAITING'; sleep 1; fi; done") do
         its(:stdout) { should match /CREATE SCHEMA serverspec_test/ }
         its(:stdout) { should match /CREATE TABLE serverspec_test\.test/ }
         its(:stdout) { should match /INSERT INTO serverspec_test\.test/ }
@@ -514,7 +514,7 @@ if pgaudit_enabled
     end
 
     describe 'Checking if the Elasticsearch logs contain queries executed with PGBouncer', :if => pgbouncer_enabled do
-      describe command("for i in {1..600}; do if curl -k -s -u admin:admin 'https://#{elasticsearch_host}:#{elasticsearch_api_port}/_search?pretty=true' -H 'Content-Type: application/json' -d '{\"size\":100,\"_source\":{\"includes\":\"message\"},\"query\":{\"bool\":{\"must\":[{\"bool\":{\"should\":[{\"match_phrase\":{\"source\":\"/var/log/postgresql/postgresql-10-main.log\"}},{\"match_phrase\":{\"source\":\"/var/log/postgresql/postgresql.log\"}}],\"minimum_should_match\":1}}],\"filter\":{\"query_string\":{\"query\":\"*#{pg_user}*\"}}}}}' | grep -z \"DROP USER\"; then echo 'READY'; break; else echo 'WAITING'; sleep 1; fi; done") do
+      describe command("for i in {1..600}; do if curl -k -s -u admin:admin 'https://#{elasticsearch_host}:#{elasticsearch_api_port}/_search?pretty=true' -H 'Content-Type: application/json' -d '{\"size\":100,\"_source\":{\"includes\":\"message\"},\"query\":{\"bool\":{\"must\":[{\"bool\":{\"should\":[{\"match_phrase\":{\"log.file.path\":\"/var/log/postgresql/postgresql-10-main.log\"}},{\"match_phrase\":{\"log.file.path\":\"/var/log/postgresql/postgresql.log\"}}],\"minimum_should_match\":1}}],\"filter\":{\"query_string\":{\"query\":\"*#{pg_user}*\"}}}}}' | grep -z \"DROP USER\"; then echo 'READY'; break; else echo 'WAITING'; sleep 1; fi; done") do
         its(:stdout) { should match /GRANT ALL ON SCHEMA serverspec_test to #{pg_user}/ }
         its(:stdout) { should match /GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA serverspec_test to #{pg_user}/ }
         its(:stdout) { should match /CREATE TABLE serverspec_test\.pgbtest/ }
@@ -526,7 +526,7 @@ if pgaudit_enabled
     end
 
     describe 'Checking support for multiline messages' do
-      describe command("curl -k -u admin:admin 'https://#{elasticsearch_host}:#{elasticsearch_api_port}/_search?pretty=true' -H 'Content-Type: application/json' -d '{\"size\":100,\"_source\":{\"includes\":\"message\"},\"query\":{\"bool\":{\"must\":[{\"bool\":{\"should\":[{\"match_phrase\":{\"source\":\"/var/log/postgresql/postgresql-10-main.log\"}},{\"match_phrase\":{\"source\":\"/var/log/postgresql/postgresql.log\"}}],\"minimum_should_match\":1}}],\"filter\":{\"query_string\":{\"query\":\"ADD AND COLUMN\"}}}}}'") do
+      describe command("curl -k -u admin:admin 'https://#{elasticsearch_host}:#{elasticsearch_api_port}/_search?pretty=true' -H 'Content-Type: application/json' -d '{\"size\":100,\"_source\":{\"includes\":\"message\"},\"query\":{\"bool\":{\"must\":[{\"bool\":{\"should\":[{\"match_phrase\":{\"log.file.path\":\"/var/log/postgresql/postgresql-10-main.log\"}},{\"match_phrase\":{\"log.file.path\":\"/var/log/postgresql/postgresql.log\"}}],\"minimum_should_match\":1}}],\"filter\":{\"query_string\":{\"query\":\"ADD AND COLUMN\"}}}}}'") do
         its(:stdout) { should match /ALTER TABLE serverspec_test\.test.*\\n\\t.*ADD COLUMN id.*\\n\\t.*ADD COLUMN name.*\\n\\t.*ADD COLUMN city.*\\n\\t.*ADD COLUMN description/ }
         its(:exit_status) { should eq 0 }
       end
