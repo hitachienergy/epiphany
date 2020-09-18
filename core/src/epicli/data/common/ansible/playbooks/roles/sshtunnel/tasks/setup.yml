@@ -6,8 +6,8 @@
 - name: Start SSH tunnel to K8s master
   script: >-
     tunnel.sh {{ k8s_api_server_port }} -f -N -M 0
-    -o "ServerAliveInterval 30" -o "ServerAliveCountMax 5"
-    -o "StrictHostKeyChecking=no" -o "UserKnownHostsFile=/dev/null"
+    -o ServerAliveInterval=30 -o ServerAliveCountMax=5
+    -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null
     -L {{ k8s_api_server_port }}:localhost:{{ k8s_api_server_port }}
     -i {{ admin_user.key_path }} {{ admin_user.name }}@{{ k8s_master_ip }} -4
   register: script_output
