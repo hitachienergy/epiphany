@@ -1,0 +1,11 @@
+---
+- name: load_balancer | Remove legacy haproxy
+  include_tasks:
+    file: "legacy-haproxy/{{ ansible_os_family }}/uninstall-haproxy.yml"
+
+- name: load_balancer | Upgrade haproxy service (runc)
+  include_role:
+    name: haproxy
+    vars_from: manifest
+  vars:
+    haproxy_upgrade_enabled: true

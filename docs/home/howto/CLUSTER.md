@@ -405,37 +405,36 @@ specification:
       machines: [single-machine]
 ---
 kind: configuration/haproxy
-title: HAProxy
+title: "HAProxy"
 provider: any
 name: default
 specification:
-  version: '1.8'
-  service_port: 30001
   logs_max_days: 60
   self_signed_certificate_name: self-signed-fullchain.pem
   self_signed_private_key_name: self-signed-privkey.pem
   self_signed_concatenated_cert_name: self-signed-test.tld.pem
-  haproxy_log_path: /var/log/haproxy.log
+  haproxy_log_path: "/var/log/haproxy.log"
+
   stats:
     enable: true
     bind_address: 127.0.0.1:9000
-    uri: /haproxy?stats
+    uri: "/haproxy?stats"
     user: operations
     password: your-haproxy-stats-pwd
   frontend:
-  - name: https_front
-    port: 443
-    https: yes
-    backend:
-    - http_back1
+    - name: https_front
+      port: 443
+      https: yes
+      backend:
+      - http_back1
   backend: # example backend config below
-  - name: http_back1
-    server_groups:
-    - kubernetes_master
+    - name: http_back1
+      server_groups:
+      - kubernetes_node
       # servers: # Definition for server to that hosts the application.
       # - name: "node1"
       #   address: "epiphany-vm1.domain.com"
-    port: 30104
+      port: 30104
 ---
 kind: infrastructure/machine
 provider: any

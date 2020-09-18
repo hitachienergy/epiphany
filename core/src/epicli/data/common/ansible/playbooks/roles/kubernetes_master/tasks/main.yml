@@ -48,8 +48,9 @@
         update:
           apiServer:
             certSANs: >-
-              {{ groups['kubernetes_master'] | map('extract', hostvars, ['ansible_default_ipv4', 'address']) | list
-              + [ 'localhost', '127.0.0.1' ] }}
+              {{ (groups['kubernetes_master'] | map('extract', hostvars, ['ansible_default_ipv4', 'address']) | list) 
+              + (groups['kubernetes_master'] | map('extract', hostvars, ['ansible_host']) | list) 
+              + [ 'localhost', '127.0.0.1' ] | unique }}
       include_role:
         name: kubernetes_common
         tasks_from: extend-kubeadm-config

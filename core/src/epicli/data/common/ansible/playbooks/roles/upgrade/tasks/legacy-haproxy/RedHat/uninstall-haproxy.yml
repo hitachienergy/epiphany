@@ -1,0 +1,10 @@
+---
+- name: haproxy/uninstall | Uninstall haproxy family packages
+  yum:
+    name:
+      - rh-haproxy18
+      - rh-haproxy18-haproxy
+      - rh-haproxy18-haproxy-syspaths
+      - rh-haproxy18-runtime
+    update_cache: true
+    state: absent

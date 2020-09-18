@@ -10,17 +10,9 @@
   import_tasks: common/create_snapshot_archive.yml
   vars:
     snapshot_prefix: "haproxy_etc"
-    dirs_to_archive: >-
-      {{ _dirs_to_archive_switch[ansible_os_family] | default(_dirs_to_archive_switch.default) }}
-    # Simulate some basic in-place switch/case expression using a dictionary.
-    _dirs_to_archive_switch:
-      RedHat:
-        - /etc/haproxy/
-        - /etc/ssl/haproxy/
-        - /etc/opt/rh/rh-haproxy18/haproxy/
-      default:
-        - /etc/haproxy/
-        - /etc/ssl/haproxy/
+    dirs_to_archive:
+      - /etc/haproxy/
+      - /etc/ssl/haproxy/
 
 - name: Create snapshot checksum
   import_tasks: common/create_snapshot_checksum.yml

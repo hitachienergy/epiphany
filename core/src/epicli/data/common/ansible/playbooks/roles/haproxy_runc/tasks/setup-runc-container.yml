@@ -1,0 +1,76 @@
+---
+- name: Assert input parameters
+  assert:
+    that:
+      - haproxy_service is defined
+      - haproxy_dir is defined
+      - haproxy_service_needs_restart is defined
+
+- name: Download haproxy docker image archive
+  include_role:
+    name: download
+    tasks_from: download_image
+  vars:
+    file_name: "{{ haproxy_image_tar }}"
+    validate_certs: false
+
+- name: Extract haproxy docker image
+  script:
+    cmd: extract-docker-image-V1.sh
+  environment:
+    IMAGE_TAR: "{{ download_directory }}/{{ haproxy_image_tar }}"
+    OUTPUT_DIR: "{{ haproxy_dir }}/rootfs"
+  args:
+    chdir: /tmp  # free disk space is required (2x size of the image) (seems to be using ~/.ansible/tmp/)
+    creates: "{{ haproxy_dir }}/rootfs/"
+    executable: /bin/bash
+
+- name: Create initial config.json file
+  shell: |
+    runc spec
+  args:
+    chdir: "{{ haproxy_dir }}/"
+    creates: "{{ haproxy_dir }}/config.json"
+
+- name: Slurp config.json file contents
+  slurp:
+    src: "{{ haproxy_dir }}/config.json"
+  register: slurp_config_json
+
+- name: Adjust and save config.json file contents
+  when: _updated_document != _document
+  copy:
+    dest: "{{ haproxy_dir }}/config.json"
+    # Update and render json payload
+    content: |
+      {{ _updated_document | to_nice_json }}
+  vars:
+    # Parse json payload
+    _document: >-
+      {{ slurp_config_json.content | b64decode | from_json }}
+    # Define extra volume mounts
+    _mounts:
+      - destination: /etc/haproxy/
+        source: /etc/{{ haproxy_service }}/
+        type: bind
+        options: [rbind, ro]
+    # Assemble document update
+    _update:
+      process:
+        args: [/usr/local/sbin/haproxy, -W, -f, /etc/haproxy/haproxy.cfg]
+        terminal: false  # required for running it detached
+      linux:
+        # Remove "network" namespace to enable "host-networking"
+        namespaces: >-
+          {{ _document.linux.namespaces | selectattr('type', '!=', 'network') | list }}
+      # Merge cointainer's volume / mount definitions
+      mounts: >-
+        {{ (_document.mounts + (extra_mounts | default([])) + _mounts) | unique }}
+    _updated_document: >-
+      {{ _document | combine(_update, recursive=true) }}
+  register: copy_config_json
+
+- name: Mark {{ haproxy_service }} service to be restarted
+  set_fact:
+    haproxy_service_needs_restart: >-
+      {{ haproxy_service_needs_restart or ((copy_config_json is defined) and (copy_config_json is changed)) }}

@@ -1,0 +1,28 @@
+---
+- name: Assert input parameters
+  assert:
+    that:
+      - haproxy_service is defined
+      - haproxy_dir is defined
+      - haproxy_service_needs_restart is defined
+
+- name: Discover runc binary
+  shell: |
+    which runc
+  register: shell_which_runc
+  changed_when: false
+
+- name: Set runc related facts
+  set_fact:
+    runc_binary: "{{ shell_which_runc.stdout.strip() }}"
+
+- name: Render {{ haproxy_service }} service systemd unit
+  template:
+    dest: /etc/systemd/system/{{ haproxy_service }}.service
+    src: haproxy.service.j2
+  register: template_haproxy_service
+
+- name: Mark {{ haproxy_service }} service to be restarted
+  set_fact:
+    haproxy_service_needs_restart: >-
+      {{ haproxy_service_needs_restart or ((template_haproxy_service is defined) and (template_haproxy_service is changed)) }}

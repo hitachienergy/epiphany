@@ -1,0 +1,7 @@
+---
+runc_dir: "/opt/runc"
+haproxy_version: "2.2.2"
+haproxy_image_tag: "{{ haproxy_version }}-alpine"
+haproxy_image_tar: "haproxy-{{ haproxy_image_tag }}.tar"
+extra_mounts: []
+haproxy_upgrade_enabled: false

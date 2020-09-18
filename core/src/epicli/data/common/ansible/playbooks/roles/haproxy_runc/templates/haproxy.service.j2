@@ -1,0 +1,14 @@
+# {{ ansible_managed }}
+[Unit]
+After=network.target
+
+[Service]
+Type=forking
+WorkingDirectory={{ haproxy_dir }}
+ExecStart={{ runc_binary }} run --detach {{ haproxy_service }}
+ExecReload={{ runc_binary }} kill {{ haproxy_service }} SIGUSR2
+ExecStop={{ runc_binary }} kill {{ haproxy_service }} SIGUSR1
+ExecStopPost={{ runc_binary }} delete {{ haproxy_service }}
+
+[Install]
+WantedBy=multi-user.target

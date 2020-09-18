@@ -1,5 +1,4 @@
 ---
-
 - name: Install NFS package for Debian family
   apt:
     name:
@@ -9,13 +8,8 @@
 - name: Install Kubernetes packages for Debian family
   apt:
     name:
-      - kubelet={{specification.version}}-00
-      - kubectl={{specification.version}}-00
-      - kubeadm={{specification.version}}-00
-    state: present
-
-- name: Install HAProxy package
-  apt:
-    name: haproxy
-    update_cache: true
+      - kubelet={{ specification.version }}-00
+      - kubectl={{ specification.version }}-00
+      - kubeadm={{ specification.version }}-00
+      - kubernetes-cni={{ specification.cni_version }}-00
     state: present

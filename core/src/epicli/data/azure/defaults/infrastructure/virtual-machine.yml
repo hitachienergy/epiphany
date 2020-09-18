@@ -557,7 +557,7 @@ title: "Virtual Machine Infra"
 provider: azure
 name: logging-machine
 specification:
-  size: Standard_DS1_v2
+  size: Standard_DS2_v2
   security:
     rules:
       - name: ssh

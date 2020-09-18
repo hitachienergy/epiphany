@@ -4,7 +4,7 @@
     manager: auto
   changed_when: false
 
-# Unhold before removing to avoid error
+# Unhold before changing to avoid error
 - name: k8s/install | Include unhold packages task
   include_tasks: unhold-packages.yml
   vars:

@@ -49,4 +49,7 @@
             - groups.kubernetes_node is defined
             - inventory_hostname in groups.kubernetes_node
 
+- name: k8s | Upgrade internal haproxy load-balancer
+  import_tasks: kubernetes/upgrade-haproxy.yml
+
 # TODO: Create a flag file that the upgrade completed to not run it again for the same version next time

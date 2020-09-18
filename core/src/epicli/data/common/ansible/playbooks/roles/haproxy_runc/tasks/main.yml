@@ -1,0 +1,50 @@
+---
+- name: Assert input parameters
+  assert:
+    that:
+      - haproxy_service is defined
+
+- name: Set haproxy related facts
+  set_fact:
+    haproxy_dir: "{{ runc_dir }}/{{ haproxy_service }}"
+    haproxy_service_needs_restart: false
+
+- name: Install required system packages
+  include_tasks: "install-packages-{{ ansible_os_family }}.yml"
+
+- name: Remove haproxy container (upgrade)
+  when: haproxy_upgrade_enabled
+  block:
+    - name: Populate service facts
+      service_facts:
+      no_log: true
+
+    - name: Stop {{ haproxy_service }} service (upgrade)
+      systemd:
+        name: "{{ haproxy_service }}"
+        state: stopped
+      when: ansible_facts.services["{{ haproxy_service }}.service"] is defined
+
+    - name: Remove {{ haproxy_service }} rootfs data (upgrade)
+      file:
+        path: "{{ haproxy_dir }}/rootfs/"
+        state: absent
+
+- name: Setup runc container
+  include_tasks: setup-runc-container.yml
+
+- name: Setup systemd unit
+  include_tasks: setup-systemd-unit.yml
+
+- name: Ensure {{ haproxy_service }} service is running
+  systemd:
+    name: "{{ haproxy_service }}"
+    state: started
+    enabled: true
+    daemon_reload: true
+
+- name: Restart {{ haproxy_service }} service
+  systemd:
+    name: "{{ haproxy_service }}"
+    state: restarted
+  when: haproxy_service_needs_restart

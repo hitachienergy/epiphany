@@ -1,5 +1,4 @@
 ---
-
 - name: Create haproxy_exporter system group
   group:
     name: haproxy_exporter
@@ -16,7 +15,7 @@
 
 - name: Set HAProxy Exporter file name to install
   set_fact:
-    exporter_file_name: "{{ specification.file_name }}"    
+    exporter_file_name: "{{ specification.file_name }}"
 
 - name: Download HAProxy Exporter binaries
   include_role:
@@ -26,21 +25,19 @@
     file_name: "{{ exporter_file_name }}"
 
 - name: Create /opt/haproxy_exporter directories
-  become: yes
   file:
     path: "{{ item }}"
-    recurse: yes
+    recurse: true
     owner: root
     group: haproxy_exporter
     mode: 0750
     state: directory
   with_items:
-  - /opt/haproxy_exporter
+    - /opt/haproxy_exporter
 
 - name: Unpack haproxy_exporter binary
-  become: yes
   unarchive:
-    remote_src: yes
+    remote_src: true
     src: "{{ download_directory }}/{{ exporter_file_name }}"
     dest: "/opt/haproxy_exporter"
     creates: "/opt/haproxy_exporter/haproxy_exporter"
@@ -100,10 +97,10 @@
 
 - name: Configure systemd to use prometheus-haproxy-exporter service
   systemd:
-    enabled: yes
+    enabled: true
     state: started
     name: prometheus-haproxy-exporter
-    daemon_reload: yes
+    daemon_reload: true
 
 - name: Copy file_sd_haproxy_config to prometheus hosts
   template:
@@ -120,4 +117,4 @@
   systemd:
     state: restarted
     name: prometheus-haproxy-exporter
-    daemon_reload: yes
+    daemon_reload: true
