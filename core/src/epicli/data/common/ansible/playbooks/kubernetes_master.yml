@@ -11,11 +11,11 @@
         name: docker
         tasks_from: main
     - import_role:
-        name: kubernetes_common
-        tasks_from: main
-    - import_role:
         name: kubernetes_master
         tasks_from: copy-kubeconfig
+    - import_role:
+        name: kubernetes_common
+        tasks_from: main
   environment:
     KUBECONFIG: "{{ kubeconfig }}"
 
