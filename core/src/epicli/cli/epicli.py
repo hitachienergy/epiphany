@@ -217,12 +217,15 @@ def upgrade_parser(subparsers):
                             help="Waits for all pods to be in the 'Ready' state before proceeding to the next step of the K8s upgrade.")
     sub_parser.add_argument('--offline-requirements', dest='offline_requirements', type=str, required=False,
                             help='Path to the folder with pre-prepared offline requirements.')
+    sub_parser.add_argument('--vault-password', dest='vault_password', type=str,
+                            help='Password that will be used to encrypt build artifacts.')
     # developer options
     sub_parser.add_argument('--profile-ansible-tasks', dest='profile_ansible_tasks', action="store_true",
                             help='Enable Ansible profile_tasks plugin for timing tasks.')
 
     def run_upgrade(args):
         adjust_paths_from_build(args)
+        ensure_vault_password_is_set(args)
         with UpgradeEngine(args) as engine:
             return engine.upgrade()
 

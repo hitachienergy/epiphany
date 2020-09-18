@@ -154,7 +154,8 @@ class AnsibleRunner(Step):
 
         # run upgrade playbook
         self.ansible_command.run_playbook(inventory=inventory_path,
-                                          playbook_path=self.playbook_path('upgrade'))
+                                          playbook_path=self.playbook_path('upgrade'),
+                                          vault_file=Config().vault_password_location)
 
         #post-flight after we are done
         self.post_flight(inventory_path)

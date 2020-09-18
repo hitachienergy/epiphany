@@ -5,6 +5,10 @@
   become: true
   become_method: sudo
   pre_tasks:
+    - import_role:
+        name: kubernetes_master
+        tasks_from: copy-kubeconfig
+
     # Needed for tasks upgrade playbook borrows from kubernetes_master role.
     - import_role:
         name: kubernetes_common
