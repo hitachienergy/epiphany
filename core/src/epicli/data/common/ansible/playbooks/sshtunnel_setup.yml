@@ -10,3 +10,6 @@
       when:
         - groups.kubernetes_master is defined
         - groups.kubernetes_master | length > 0
+  module_defaults:
+    shell:
+      executable: /bin/bash

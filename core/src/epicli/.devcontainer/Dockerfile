@@ -21,7 +21,7 @@ RUN chmod +x /config-pre.sh \
     && apt-get install --no-install-recommends -y \
         apt-utils dialog 2>&1 \
     && apt-get install --no-install-recommends -y \
-        autossh curl gcc jq libffi-dev make musl-dev netcat openssh-client procps psmisc ruby-full sudo tar unzip vim \
+        autossh curl gcc jq libffi-dev make musl-dev openssh-client procps psmisc ruby-full sudo tar unzip vim \
         \
         git git-lfs lsb-release \
 \
