@@ -1,9 +1,0 @@
----
-- name: Upload RabbitMQ service yaml
-  template:
-    dest: "{{ configuration_temp_directory }}/{{ rabbitmq_service_name }}-{{ namespace_name }}.yml"
-    src: rabbitmq/rabbitmq.yml.j2
-    mode: u=rw,go=r
-
-- name: Apply RabbitMQ deployment
-  command: kubectl apply -f {{ configuration_temp_directory }}/{{ rabbitmq_service_name }}-{{ namespace_name }}.yml
