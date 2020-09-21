@@ -50,3 +50,11 @@ locals {
   k8s_service_account_namespace = "kube-system"
   k8s_service_account_name      = "cluster-autoscaler-aws-cluster-autoscaler"
 }
+
+resource "random_string" "random" {
+  length = 5
+  special = false
+  number = false
+  upper = false
+  lower = true
+}

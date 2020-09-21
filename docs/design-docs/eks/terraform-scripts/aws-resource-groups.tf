@@ -1,5 +1,5 @@
 resource "aws_resourcegroups_group" "eks_resource_group" {
-  name = var.resource_group_name
+  name = "resource-group-${random_string.random.result}"
 
   resource_query {
     query = <<JSON
