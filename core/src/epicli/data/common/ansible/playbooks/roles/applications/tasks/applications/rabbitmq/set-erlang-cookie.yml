@@ -18,7 +18,7 @@
 - name: Set cookie variable if user defined
   set_fact:
     erlang_cookie: "{{ data.rabbitmq.cluster.cookie }}"
-  when: is_cookie_user_defined is sameas true
+  when: is_cookie_user_defined
 
 - name: Check that the erlang cookie secret exists
   shell: kubectl -n {{ namespace_name }} get secrets | grep -i '{{ cookie_secret_name }}'
@@ -41,8 +41,8 @@
   set_fact:
     erlang_cookie: "{{ lookup('password', '/dev/null length=15 chars=ascii_letters') }}"
   when:
-    - is_cookie_user_defined is sameas false
-    - cookie_already_exist is sameas false
+    - not is_cookie_user_defined
+    - not cookie_already_exist
 
 # Apply cookie secret if cookie does not exist or is set by user
 - name: Upload secret yaml definition
@@ -50,8 +50,8 @@
     dest: "{{ configuration_temp_directory }}/{{ cookie_secret_name }}-{{ namespace_name }}.yml"
     src: rabbitmq/rabbitmq-secret.yml.j2
     mode: u=rw,go=r
-  when: is_cookie_user_defined is sameas true or cookie_already_exist is sameas false
+  when: is_cookie_user_defined or not cookie_already_exist
 
 - name: Apply secret with erlang cookie
   command: kubectl apply -f {{ configuration_temp_directory }}/{{ cookie_secret_name }}-{{ namespace_name }}.yml
-  when: is_cookie_user_defined is sameas true or cookie_already_exist is sameas false
+  when: is_cookie_user_defined or not cookie_already_exist
