@@ -15,4 +15,7 @@
         - groups.applications is defined
         - groups.applications | length > 0
   environment:
-    KUBECONFIG: "{{ vault_location }}/../kubeconfig"  # "inventory_dir" cannot be used here
+    # The "inventory_dir" fact cannot be used here.
+    # Documentation (https://docs.ansible.com/ansible/latest/inventory/implicit_localhost.html) states:
+    # - The inventory_file and inventory_dir magic variables are not available for the implicit localhost as they are dependent on each inventory host.
+    KUBECONFIG: "{{ vault_location }}/../kubeconfig"
