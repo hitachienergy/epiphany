@@ -9,7 +9,7 @@
 
 - name: Node Exporter | Include specification vars from node_exporter role
   include_vars:
-    file: roles/node_exporter/vars/manifest.yml
+    file: roles/node_exporter/vars/main.yml
 
 - name: Node Exporter | Test if node exporter service is configured
   assert:
@@ -17,69 +17,76 @@
     fail_msg: "{{ exporter.service.name }} service is not found"
     quiet: true
 
-- name: Node Exporter | Set facts
+- name: Node Exporter | Set exporter_file_name fact
   set_fact:
     exporter_file_name: "node_exporter-{{ exporter.version }}.linux-amd64.tar.gz"
 
 - name: Node Exporter | Collect version
-  command: >-
-    /opt/node_exporter/node_exporter --version
-  register: current_exporter_version
+  shell: >-
+    /opt/node_exporter/node_exporter --version 2>&1
+  register: exporter_current_version_out
+
+- name: Node Exporter | Set exporter_current_version fact
+  set_fact:
+    exporter_current_version: "{{ exporter_current_version_out.stdout_lines[0] | regex_replace('^.*version ([0-9.]+) .*$', '\\1') }}"
 
 - name: Node Exporter | Print version
   debug:
     msg:
-      - "Installed version: {{ current_exporter_version.stdout }}"
+      - "Installed version: {{ exporter_current_version }}"
       - "Target version: {{ exporter.version }}"
 
-- name: Node Exporter | Download binaries
-  include_role:
-    name: download
-    tasks_from: download_file
-  vars:
-    file_name: "{{ exporter_file_name }}"
+- name: Node Exporter | Upgrade block
+  when: exporter.version != exporter_current_version
+  block:
+    - name: Node Exporter | Download binaries
+      include_role:
+        name: download
+        tasks_from: download_file
+      vars:
+        file_name: "{{ exporter_file_name }}"
 
-- name: Node Exporter | Stop exporter
-  systemd:
-    name: "{{ exporter.service.name }}.service"
-    state: stopped
+    - name: Node Exporter | Stop exporter
+      systemd:
+        name: "{{ exporter.service.name }}.service"
+        state: stopped
 
-- name: Node Exporter | Remove /opt/node_exporter directory
-  file:
-    path: /opt/node_exporter
-    state: absent
+    - name: Node Exporter | Remove /opt/node_exporter directory
+      file:
+        path: /opt/node_exporter
+        state: absent
 
-- name: Node Exporter | Create empty /opt/node_exporter directory
-  file:
-    path: /opt/node_exporter
-    owner: root
-    group: node_exporter
-    mode: '0750'
-    state: directory
+    - name: Node Exporter | Create empty /opt/node_exporter directory
+      file:
+        path: /opt/node_exporter
+        owner: root
+        group: node_exporter
+        mode: '0750'
+        state: directory
 
-- name: Node Exporter | Unpack binary
-  unarchive:
-    remote_src: true
-    src: "{{ download_directory }}/{{ exporter_file_name }}"
-    dest: "/opt/node_exporter"
-    creates: "/opt/node_exporter/node_exporter"
-    extra_opts: [--strip-components=1]
-    mode: '0755'
-    owner: root
-    group: node_exporter
-  check_mode: false
+    - name: Node Exporter | Unpack binary
+      unarchive:
+        remote_src: true
+        src: "{{ download_directory }}/{{ exporter_file_name }}"
+        dest: "/opt/node_exporter"
+        creates: "/opt/node_exporter/node_exporter"
+        extra_opts: [--strip-components=1]
+        mode: '0755'
+        owner: root
+        group: node_exporter
+      check_mode: false
 
-- name: Node Exporter | Update systemd service configuration
-  template:
-    src: roles/node_exporter/templates/prometheus-node-exporter.service.j2
-    dest: "/etc/systemd/system/{{ exporter.service.name }}.service"
-    owner: root
-    group: root
-    mode: '0644'
+    - name: Node Exporter | Update systemd service configuration
+      template:
+        src: roles/node_exporter/templates/prometheus-node-exporter.service.j2
+        dest: "/etc/systemd/system/{{ exporter.service.name }}.service"
+        owner: root
+        group: root
+        mode: '0644'
 
-- name: Node Exporter | Start exporter
-  systemd:
-    daemon_reload: true
-    enabled: true
-    name: "{{ exporter.service.name }}.service"
-    state: started
+    - name: Node Exporter | Start exporter
+      systemd:
+        daemon_reload: true
+        enabled: true
+        name: "{{ exporter.service.name }}.service"
+        state: started
