@@ -8,6 +8,10 @@ specification:
     name: operations # YOUR-ADMIN-USERNAME
     key_path: /user/.ssh/epiphany-operations/id_rsa # YOUR-SSH-KEY-PATH
   components:
+    repository:
+      count: 1
+      machines:
+        - default-repository
     kubernetes_master:
       count: 1
       machines:
@@ -42,6 +46,13 @@ specification:
       count: 1
       machines:
         - default-rabbitmq
+---
+kind: infrastructure/machine
+provider: any
+name: default-repository
+specification:
+  hostname: repository # YOUR-MACHINE-HOSTNAME
+  ip: 192.168.100.112 # YOUR-MACHINE-IP
 ---
 kind: infrastructure/machine
 provider: any

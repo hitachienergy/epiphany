@@ -122,9 +122,7 @@ specification:
       - firewall
       - vault
     kubernetes_master:
-      - image-registry
       - kubernetes-master
-      - repository
       - helm
       - applications
       - node-exporter
@@ -146,3 +144,9 @@ specification:
       - node-exporter
       - filebeat
       - firewall
+    repository:
+      - repository
+      - image-registry
+      - firewall
+      - filebeat
+      - node-exporter

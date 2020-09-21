@@ -94,6 +94,13 @@ specification:
       subnets:
         - availability_zone: eu-west-2a
           address_pool: 10.1.10.0/24
+    repository:
+      count: 1
+      machine: repository-machine
+      configuration: default
+      subnets:
+        - availability_zone: eu-west-2a
+          address_pool: 10.1.11.0/24
     single_machine:
       count: 0
       machine: single-machine

@@ -11,6 +11,8 @@ specification:
   cloud:
     use_public_ips: False # When not using public IPs you have to provide connectivity via private IPs (VPN)
   components:
+    repository:
+      count: 1
     kubernetes_master:
       count: 1
     kubernetes_node:

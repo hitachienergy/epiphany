@@ -14,6 +14,8 @@ specification:
       key: XXXX-XXXX-XXXX
       secret: XXXXXXXXXXXXXXXX
   components:
+    repository:
+      count: 1
     kubernetes_master:
       count: 1
     kubernetes_node:

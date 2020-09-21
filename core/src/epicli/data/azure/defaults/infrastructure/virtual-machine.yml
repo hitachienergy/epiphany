@@ -782,3 +782,62 @@ specification:
   #      destination_port_range: "0"
   #      source_address_prefix: "10.1.4.0/24"
   #      destination_address_prefix: "0.0.0.0/0"
+---
+kind: infrastructure/virtual-machine
+title: "Virtual Machine Infra"
+provider: azure
+name: repository-machine
+specification:
+  size: Standard_DS1_v2
+  security:
+    rules:
+      - name: ssh
+        description: Allow SSH
+        priority: 100
+        direction: Inbound
+        access: Allow
+        protocol: Tcp
+        source_port_range: "*"
+        destination_port_range: "22"
+        source_address_prefix: "0.0.0.0/0"
+        destination_address_prefix: "0.0.0.0/0"
+      - name: node_exporter
+        description: Allow node_exporter traffic
+        priority: 200
+        direction: Inbound
+        access: Allow
+        protocol: Tcp
+        source_port_range: "*"
+        destination_port_range: "9100"
+        source_address_prefix: "10.1.0.0/20"
+        destination_address_prefix: "0.0.0.0/0"
+      - name: repository
+        description: Allow repository traffic
+        priority: 205
+        direction: Inbound
+        access: Allow
+        protocol: Tcp
+        source_port_range: "*"
+        destination_port_range: "80"
+        source_address_prefix: "10.1.0.0/20"
+        destination_address_prefix: "0.0.0.0/0"
+      - name: image_registry
+        description: Allow image registry traffic
+        priority: 206
+        direction: Inbound
+        access: Allow
+        protocol: Tcp
+        source_port_range: "*"
+        destination_port_range: "5000"
+        source_address_prefix: "10.1.0.0/20"
+        destination_address_prefix: "0.0.0.0/0"
+      - name: out
+        description: Allow out
+        priority: 101
+        direction: Outbound
+        access: Allow
+        protocol: "*"
+        source_port_range: "*"
+        destination_port_range: "0"
+        source_address_prefix: "0.0.0.0/0"
+        destination_address_prefix: "0.0.0.0/0"

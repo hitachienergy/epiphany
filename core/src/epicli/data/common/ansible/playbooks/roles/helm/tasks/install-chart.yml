@@ -1,4 +1,6 @@
 ---
+# This file is meant to be used by other roles
+
 - name: Prepare configuration and upgrade/install Helm chart
   vars:
     # Handling "undefined", "null", "empty" and "boolean" values all at once.
@@ -9,10 +11,14 @@
 
   always:
     - name: Clean up temporary Helm chart values file
+      delegate_to: localhost
       file:
         state: absent
         path: /tmp/{{ helm_chart_name }}_values.yaml
-
+  
+  delegate_to: localhost
+  environment:
+    KUBECONFIG: "{{ vault_location }}/../kubeconfig"
   block:
     # IF `disable_helm_chart`
     - when: disable_helm_chart_bool
