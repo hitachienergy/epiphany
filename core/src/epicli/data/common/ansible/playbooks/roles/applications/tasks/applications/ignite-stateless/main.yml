@@ -1,23 +1,5 @@
 ---
-- name: Set configuration temp directory
-  set_fact:
-    configuration_temp_directory: "{{ deployment_tmp_root_dir }}/epiphany-ignite"
-
-- name: Wait until cluster is available
-  include_tasks: wait-for-cluster.yml
-
-- name: Upload and deploy Ignite
-  include_tasks: deploy-on-kubernetes.yml
-  loop:
-    - namespace.yml
-    - configmap.yml
-    - rbac.yml
-    - deployment.yml
-    - service.yml
-  loop_control:
-    loop_var: file_name
-
-- name: Clean configs path
-  file:
-    path: "{{ configuration_temp_directory }}/"
-    state: absent
+- name: Deploy Ignite
+  include_tasks: deploy-k8s-app.yml
+  vars:
+    app_dir_name: "{{ data.name }}"
