@@ -5,22 +5,43 @@
       - deployment_tmp_root_dir is defined
       - app_dir_name is defined
 
-- name: Deploy application (k8s)
+- name: Deploy application
   vars:
     deployment_tmp_dir: "{{ deployment_tmp_root_dir }}/{{ app_dir_name }}"
   always:
-    - name: "{{ data.name }}: Remove temporary directory"
+    - &cleanup
+      name: Remove temporary directory
       file:
         path: "{{ deployment_tmp_dir }}"
         state: absent
   block:
-    - name: "{{ data.name }}: Create directory for deployment files"
+    - *cleanup  # to make sure there is no extra garbage inside the directory
+
+    - name: Create directory for deployment files
       file:
         path: "{{ deployment_tmp_dir }}"
         state: directory
 
-    - name: "{{ data.name }}: Deploy K8s files"
-      include_tasks: deploy-k8s-file.yml
-      loop: "{{ deployment_files }}"
-      loop_control:
-        loop_var: file_name
+    - name: Find all template files
+      find:
+        path: "{{ role_path }}/templates/{{ app_dir_name }}/"
+        patterns: "*.yml.j2"
+        recurse: false
+      register: find_template_files
+      no_log: true  # improve log readability
+
+    - name: Render templates
+      template:
+        dest: "{{ deployment_tmp_dir }}/{{ item }}"
+        src: "{{ app_dir_name }}/{{ item }}.j2"
+        mode: u=rw,go=  # may contain secrets
+      # Extract paths and drop .j2 extensions
+      loop: >-
+        {{ find_template_files.files | map(attribute='path')
+                                     | map('basename')
+                                     | map('splitext')
+                                     | map('first')
+                                     | sort }}
+
+    - name: Deploy k8s resources
+      command: kubectl apply -f {{ deployment_tmp_dir }}

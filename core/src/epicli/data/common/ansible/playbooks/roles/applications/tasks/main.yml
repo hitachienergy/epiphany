@@ -1,14 +1,25 @@
 ---
-- name: Wait until cluster is available
-  include_tasks: wait-for-cluster.yml
-
-- name: Include applications
-  include_tasks: applications/{{ data.name }}/main.yml
-  no_log: true  # to hide sensitive data
-  loop: "{{ specification.applications }}"
-  loop_control:
-    loop_var: data
+- name: Deploy applications
   when:
     - specification.applications is defined
     - specification.applications | length > 0
-    - data.enabled | default(true)
+  always:
+    - name: Remove temporary directory (root)
+      file:
+        path: "{{ deployment_tmp_root_dir }}"
+        state: absent
+  block:
+    - name: Wait until cluster is available
+      include_tasks: wait-for-cluster.yml
+
+    - name: Include applications
+      include_tasks: applications/{{ data.name }}/main.yml
+      loop_control:
+        loop_var: data
+      loop: "{{ _enabled_applications }}"
+      vars:
+        # Application must be explicitly enabled to be included
+        _enabled_applications: >-
+          {{ specification.applications | selectattr('enabled', 'defined')
+                                        | selectattr('enabled')
+                                        | list }}
