@@ -19,6 +19,7 @@ specification:
       audit-log-path: "/var/log/apiserver/audit.log"
       audit-log-maxbackup: 10
       audit-log-maxsize: 200
+      secure-port: 6443
     controller_manager_args: # https://kubernetes.io/docs/reference/command-line-tools-reference/kube-controller-manager/
       profiling: false
       terminated-pod-gc-threshold: 200

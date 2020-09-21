@@ -1,0 +1,3 @@
+---
+k8s_api_server:
+  autossh_pid_file_path: /tmp/autossh-k8s-api-server-tunnel.pid
