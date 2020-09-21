@@ -1,23 +1,23 @@
 # Patching OS with running Epiphany components
 
-This guide describes steps you have to perform to patch RHEL and Ubuntu systems in a way to don't interrupt working Epiphany components.
+This guide describes steps you have to perform to patch RHEL and Ubuntu operating systems in a way to not to interrupt working Epiphany components.
 
 ### Disclaimer
 
-We provide a recommended way to patch your RHEL and Ubuntu systems. Before proceeding with patching the production environment we highly recommend patching your test cluster first.  
+We provide a recommended way to patch your RHEL and Ubuntu operating systems. Before proceeding with patching the production environment we strongly recommend patching your test cluster first.  
 This document will help you decide how you should patch your OS. This is not a step-by-step guide.
 
 ### Requirements
 
 - The fresh, actual backup containing your all important data
-- Enabled official repository
-- Disabled Epiphany-provided repository
+- Verify if repositories are in the desired state. Details [here](#repositories)
 
-### Table of contents
+# Table of contents
 
 - [AWS](#aws)
 - [AZURE](#azure)
 - [Patching with Package Manager](#patching-with-package-manager)
+  - [Repositories](#repositories)
   - [RHEL](#rhel)
   - [Ubuntu](#ubuntu)
 - [Patching with external tools](#patching-with-external-tools)
@@ -66,7 +66,7 @@ Note: For different supported OS versions this guide may be useful as well.
 Azure has `Update Management` solution in `Azure Automation`. It gives you visibility into update compliance across Azure and other clouds, and on-premises. The feature allows you to create scheduled deployments that orchestrate the installation of updates within a defined maintenance window.  
 To manage updates that way please refer to [official documentation](https://docs.microsoft.com/en-us/azure/automation/update-management/update-mgmt-manage-updates-for-vm).
 
-## Patching with Package Manager
+## Patching with OS specific package manager
 
 The following commands can be executed in both clustered and non-clustered environments. In case of patching non-clustered environment, you have to schedule a maintenance window due to the required reboot after kernel patching.  
 
@@ -75,13 +75,17 @@ Note: Some of the particular patches may also require a system reboot.
 If your environment is clustered then hosts should be patched one by one. Before proceeding with the next host be sure that the patched host is up and all its components are running.  
 For information how to check state of specific Epiphany components, see [here](./MAINTENANCE.md).
 
+### Repositories
+
+Epiphany uses the repository role to provide all required packages. The role disables all existing repositories and provides a new one. After successful Epiphany deployment, official repositories should be re-enabled and Epiphany-provided repository should be disabled.
+
 ### RHEL
 
-Verify if *epirepo* is disabled and *official repositories* are enabled:  
-`yum repolist all`
+Verify if *epirepo* is disabled:  
+`yum repolist epirepo`
 
-Verify your current Linux kernel version:  
-`sudo uname -r`
+Verify if repositories you want to use for upgrade are enabled:  
+`yum repolist all`
 
 List installed security patches:  
 `yum updateinfo list security installed`
@@ -90,7 +94,7 @@ List available patches without installing them:
 `yum updateinfo list security available`
 
 Grab more details about available patches:  
-`yum updateinfo info security available` or specify patch: `yum updateinfo info security <patch_name>`
+`yum updateinfo info security available` or specific patch: `yum updateinfo info security <patch_name>`
 
 Install system security patches:  
 `sudo yum update-minimal --sec-severity=critical,important --bugfix`
@@ -112,8 +116,7 @@ Available options:
                         Include security relevant packages matching the severity, in updates
 ```
 
-## Additional information
-
+**Additional information**
 Red Hat provides notifications about security flaws that affect its products in the form of security advisories. For more information, see [here](https://access.redhat.com/security/updates/advisory).
 
 ### Ubuntu
@@ -129,11 +132,11 @@ The following steps will allow you to perform an upgrade manually.
 Update your local repository cache:  
 `sudo apt update`
 
-Verify if epirepo is disabled and official repositories are enabled:  
-`apt-cache policy`
+Verify if *epirepo* is disabled:  
+`apt-cache policy | grep epirepo`
 
-Verify your current Linux kernel version:  
-`uname -r`
+Verify if repositories you want to use for upgrade are enabled:  
+`apt-cache policy`
 
 List available upgrades without installing them:  
 `apt-get upgrade -s`
@@ -148,10 +151,9 @@ Install all patches and updates with dependencies:
 `sudo apt-get dist-upgrade`
 
 Verify if your system requires a reboot after an upgrade (check if file exists):  
-`cat /var/run/reboot-required`
+`test -e /var/run/reboot-required && echo reboot required || echo reboot not required`
 
-## Additional information
-
+**Additional information**
 Canonical provides notifications about security flaws that affect its products in the form of security notices. For more information, see [here](https://ubuntu.com/security/notices).
 
 ## Patching with external tools
