@@ -22,6 +22,7 @@
 - [#1115](https://github.com/epiphany-platform/epiphany/issues/1115) - Upgrade Node exporter to v1.0.1
 - [#1589](https://github.com/epiphany-platform/epiphany/issues/1589) - Update OS_PATCHING.md with information about patching Ubuntu OS
 - [#1639](https://github.com/epiphany-platform/epiphany/issues/1639) - Use local kubectl in 'prometheus' role
+- [#1654](https://github.com/epiphany-platform/epiphany/issues/1654) - Use local kubectl for 'applications' part
 
 ### Fixed
 
