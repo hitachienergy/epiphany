@@ -50,6 +50,9 @@
     - name: Copy kubernetes pki
       import_tasks: copy-kubernetes-pki.yml
 
+    - name: Create local kubeconfig
+      import_tasks: copy-kubeconfig.yml
+
 - name: Include kubelet configuration tasks
   include_role:
     name: kubernetes_common
