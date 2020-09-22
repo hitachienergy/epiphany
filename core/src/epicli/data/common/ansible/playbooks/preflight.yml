@@ -1,3 +1,4 @@
+---
 # Ansible playbook that checks if requirements are met
 
 - hosts: all
@@ -6,3 +7,5 @@
   become_method: sudo
   roles:
     - preflight
+  environment:
+    KUBECONFIG: "{{ kubeconfig.remote }}"

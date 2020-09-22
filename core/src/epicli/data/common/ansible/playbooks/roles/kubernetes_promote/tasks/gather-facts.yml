@@ -2,17 +2,13 @@
 - delegate_to: "{{ kubernetes_common.automation_designated_master }}"
   block:
     - name: Collect live kubeadm ClusterConfiguration object if available
-      shell: |
+      command: |
         kubectl get configmap kubeadm-config \
           --namespace=kube-system \
           --output=jsonpath={{ jsonpath }}
       vars:
         jsonpath: >-
           '{.data.ClusterConfiguration}'
-      environment:
-        KUBECONFIG: /etc/kubernetes/admin.conf
-      args:
-        executable: /bin/bash
       register: ClusterConfiguration
       changed_when: false
 

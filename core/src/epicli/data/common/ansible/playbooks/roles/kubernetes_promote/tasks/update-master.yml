@@ -47,10 +47,6 @@
           -f-
       vars:
         server: https://localhost:3446
-      environment:
-        KUBECONFIG: /etc/kubernetes/admin.conf
-      args:
-        executable: /bin/bash
 
     - name: Get cluster-info config map
       shell: |
@@ -63,7 +59,3 @@
           -f-
       vars:
         server: https://localhost:3446
-      environment:
-        KUBECONFIG: /etc/kubernetes/admin.conf
-      args:
-        executable: /bin/bash

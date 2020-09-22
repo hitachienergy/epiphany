@@ -5,15 +5,11 @@
       'node-role.kubernetes.io/master'
     jsonpath: >-
       '{range .items[*]}{.metadata.name}{":"}{.spec.taints[?(@.effect == "NoSchedule")].effect}{"\n"}{end}'
-  environment:
-    KUBECONFIG: "/etc/kubernetes/admin.conf"
   shell: |
     kubectl get nodes \
       --selector={{ selector }} \
       --output=jsonpath={{ jsonpath }} \
     | grep :NoSchedule
-  args:
-    executable: /bin/bash
   register: tainted_masters_list
   failed_when: tainted_masters_list.rc == 2
   changed_when: false
@@ -27,12 +23,8 @@
       {{ (tainted_masters_list.stdout_lines | length > 0) and (nodeless or specification.allow_pods_on_master) }}
 
 - name: Untaint all tainted masters
-  environment:
-    KUBECONFIG: "/etc/kubernetes/admin.conf"
-  shell: |
+  command: |
     kubectl taint node {{ item }} node-role.kubernetes.io/master:NoSchedule-
-  args:
-    executable: /bin/bash
   loop: >-
     {{ tainted_masters_list.stdout_lines
     | map('regex_replace', '^([^:][^:]*):.*$', '\1')

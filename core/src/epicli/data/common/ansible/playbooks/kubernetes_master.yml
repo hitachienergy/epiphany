@@ -16,6 +16,8 @@
     - import_role:
         name: kubernetes_master
         tasks_from: copy-kubeconfig
+  environment:
+    KUBECONFIG: "{{ kubeconfig.remote }}"
 
 - hosts: kubernetes_master
   serial: 1
@@ -30,6 +32,8 @@
     - import_role:
         name: kubernetes_promote
         tasks_from: update-kubelet
+  environment:
+    KUBECONFIG: "{{ kubeconfig.remote }}"
 
 - hosts: kubernetes_master
   become: true

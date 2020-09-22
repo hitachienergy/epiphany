@@ -1,16 +1,18 @@
 ---
+- name: Assert that update variable is defined
+  assert:
+    that:
+      - update is defined
+    fail_msg: Variable 'update' must be defined.
+
 - name: Collect kubeadm-config
-  shell: |
+  command: |
     kubectl get configmap kubeadm-config \
       --namespace kube-system \
       --output jsonpath={{ jsonpath }}
   vars:
     jsonpath: >-
       '{.data.ClusterConfiguration}'
-  environment:
-    KUBECONFIG: /etc/kubernetes/admin.conf
-  args:
-    executable: /bin/bash
   register: kubeadm_config
   changed_when: false
 

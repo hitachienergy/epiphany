@@ -1,5 +1,7 @@
 ---
-- name: Create directory for files
+# This file is meant to be also used by upgrade role
+
+- name: Ensure that directory for files exists
   become: true
   file:
     path: "{{ epiphany_manifests_dir }}"
@@ -25,5 +27,3 @@
       command: kubectl apply -f {{ dest_path }}
       register: kubectl_apply
       changed_when: kubectl_apply.stdout_lines | map('regex_replace', '^.+ ') | reject('eq', 'unchanged') | list
-      environment:
-        KUBECONFIG: /etc/kubernetes/admin.conf

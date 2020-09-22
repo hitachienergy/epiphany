@@ -3,13 +3,9 @@
   vars:
     jsonpath: >-
       '{.items[?(@.metadata.name == "default-network-policy")].metadata.name}'
-  environment:
-    KUBECONFIG: "/home/{{ admin_user.name }}/.kube/config"
-  shell: |
+  command: |
     kubectl get networkpolicies \
       --output jsonpath={{ jsonpath }}
-  args:
-    executable: /bin/bash
   register: kubectl_result
   failed_when: kubectl_result.rc != 0
   changed_when: false
