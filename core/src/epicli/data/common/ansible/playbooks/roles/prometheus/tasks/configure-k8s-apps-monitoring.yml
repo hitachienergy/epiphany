@@ -7,39 +7,23 @@
   set_fact:
     api_server_address: "https://{{ master_hostname }}:6443"
 
-- name: Set Kubernetes credentials
-  import_role:
-    name: kubernetes_master
-    tasks_from: copy-kubeconfig
-  delegate_to: "{{ master_hostname }}"
-
-- name: Deploy rolebinding file to server for prometheus
-  copy:
-    src: k8s-rolebinding.yml
-    dest: "/home/{{ admin_user.name }}/k8s-rolebinding.yml"
-  delegate_to: "{{ master_hostname }}"
-
-- name: apply rolebinding to k8s for prometheus
-  become: yes
-  become_user: "{{ admin_user.name }}"
-  shell: "kubectl apply --kubeconfig=/home/{{ admin_user.name }}/.kube/config -f /home/{{ admin_user.name }}/k8s-rolebinding.yml"
+- name: Apply rolebinding to k8s for prometheus
+  become: false
+  command: "kubectl apply -f {{ role_path }}/files/k8s-rolebinding.yml"
   run_once: true
-  delegate_to: "{{ master_hostname }}"
+  delegate_to: localhost
 
 - name: Get kubernetes bearer token for prometheus
-  become: yes
-  become_user: "{{ admin_user.name }}"
-  shell: "kubectl --kubeconfig=/home/{{ admin_user.name }}/.kube/config describe secret $(kubectl get secrets --namespace=kube-system | grep prometheus | awk '{print $1}') --namespace=kube-system | grep -E '^token' | awk '{print $2}' | head -1"
+  become: false
+  shell: |-
+    kubectl get $(kubectl get secrets -n kube-system -o name | grep prometheus) \
+      -n kube-system \
+      -o jsonpath='{.data.token}' \
+    | base64 -d
   register: kube_token
-  delegate_to: "{{ master_hostname }}"
+  delegate_to: localhost
   run_once: true
 
 - name: Set bearer token variable
   set_fact:
     bearer_token: "{{ kube_token.stdout }}"
-
-- name: Remove Kubernetes credentials
-  import_role:
-    name: kubernetes_master
-    tasks_from: remove-kubeconfig
-  delegate_to: "{{ master_hostname }}"

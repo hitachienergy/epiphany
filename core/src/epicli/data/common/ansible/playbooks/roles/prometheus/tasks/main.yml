@@ -11,11 +11,14 @@
   set_fact:
     does_k8s_exists: "(groups['kubernetes_master'] | default([])) | length > 0"
 
-- include: configure-k8s-apps-monitoring.yml
+- name: Configure kubernetes monitoring
+  when: does_k8s_exists
   become: true
+  include: configure-k8s-apps-monitoring.yml
+  environment:
+    KUBECONFIG: "{{ kubeconfig.local }}"
   tags:
     - kubernetes
-  when: does_k8s_exists
 
 - name: Gather variables for each operating system
   include_vars: "{{ item }}"
