@@ -9,6 +9,7 @@
 #     type (optional)
 
 - name: "Patch {{ object.kind }}: {{ object.name }}"
+  become: false
   command: >-
     kubectl patch {{ object.kind }} {{ object.name }}
     --namespace {{ object.namespace }}

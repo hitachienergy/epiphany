@@ -5,6 +5,7 @@
 # - namespace
 
 - name: "Get list of images for {{ kind }} using selector: {{ selector }}"
+  become: false
   command: >-
     kubectl get {{ kind }}
     --selector {{ selector }}

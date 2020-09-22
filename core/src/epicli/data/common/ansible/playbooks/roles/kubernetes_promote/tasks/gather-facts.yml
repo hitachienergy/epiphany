@@ -1,8 +1,8 @@
 ---
-- delegate_to: "{{ kubernetes_common.automation_designated_master }}"
-  block:
+- block:
     - name: Collect live kubeadm ClusterConfiguration object if available
-      shell: |
+      become: false
+      command: |
         kubectl get configmap kubeadm-config \
           --namespace=kube-system \
           --output=jsonpath={{ jsonpath }}
@@ -14,6 +14,7 @@
       changed_when: false
 
     - name: Decide if Kubernetes runs in HA mode already
+      delegate_to: "{{ kubernetes_common.automation_designated_master }}"
       set_fact:
         kubernetes_promote: >-
           {{ kubernetes_promote | default({}) | combine(set_fact, recursive=true) }}

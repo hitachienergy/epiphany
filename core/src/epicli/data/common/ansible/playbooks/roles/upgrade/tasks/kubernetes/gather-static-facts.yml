@@ -2,6 +2,7 @@
 - name: Set cni_plugin_name
   block:
     - name: k8s | Get CNI plugin
+      become: false
       shell: >-
         kubectl get ds -n kube-system -o=json | jq --raw-output
         '.items[].metadata | select (.labels."k8s-app" == "canal"

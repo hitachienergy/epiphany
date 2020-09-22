@@ -179,6 +179,7 @@
           with_items: "{{ restart_services }}"
 
         - name: Wait until cluster is available
+          become: false
           delegate_to: localhost
           command: kubectl cluster-info
           retries: 50

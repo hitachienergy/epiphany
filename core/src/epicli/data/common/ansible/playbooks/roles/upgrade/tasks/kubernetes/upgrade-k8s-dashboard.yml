@@ -27,6 +27,7 @@
   when: upgrade_k8s_dashboard
   block:
     - name: k8s/master | Delete kubernetes-dashboard namespace
+      become: false
       command: >-
         kubectl delete ns kubernetes-dashboard
       delegate_to: localhost

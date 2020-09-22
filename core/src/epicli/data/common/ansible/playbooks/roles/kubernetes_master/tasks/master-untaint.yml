@@ -1,5 +1,6 @@
 ---
 - name: Get masters with NoSchedule
+  become: false
   vars:
     selector: >-
       'node-role.kubernetes.io/master'
@@ -24,7 +25,8 @@
       {{ (tainted_masters_list.stdout_lines | length > 0) and (nodeless or specification.allow_pods_on_master) }}
 
 - name: Untaint all tainted masters
-  shell: |
+  become: false
+  command: |
     kubectl taint node {{ item }} node-role.kubernetes.io/master:NoSchedule-
   delegate_to: localhost
   loop: >-

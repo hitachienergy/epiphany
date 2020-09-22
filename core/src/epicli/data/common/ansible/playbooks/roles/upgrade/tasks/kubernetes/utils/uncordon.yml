@@ -9,6 +9,7 @@
 
   block:
     - name: k8s/utils | Uncordon master or node - mark it as schedulable
+      become: false
       delegate_to: localhost
       run_once: true
       command: >-

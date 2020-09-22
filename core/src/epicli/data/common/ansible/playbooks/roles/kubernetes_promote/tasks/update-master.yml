@@ -37,6 +37,7 @@
     - meta: flush_handlers
 
     - name: Get kube-proxy config map
+      become: false
       shell: |
         kubectl get configmap kube-proxy \
           --namespace kube-system \
@@ -50,6 +51,7 @@
         server: https://localhost:3446
 
     - name: Get cluster-info config map
+      become: false
       shell: |
         kubectl get configmap cluster-info \
           --namespace kube-public \

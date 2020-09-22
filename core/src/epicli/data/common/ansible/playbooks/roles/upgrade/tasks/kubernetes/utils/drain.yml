@@ -9,6 +9,7 @@
 
   block:
     - name: k8s/utils | Drain master or node in preparation for maintenance
+      become: false
       delegate_to: localhost
       run_once: true
       command: |

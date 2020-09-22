@@ -6,7 +6,8 @@
     fail_msg: Variable 'update' must be defined.
 
 - name: Collect kubeadm-config
-  shell: |
+  become: false
+  command: |
     kubectl get configmap kubeadm-config \
       --namespace kube-system \
       --output jsonpath={{ jsonpath }}

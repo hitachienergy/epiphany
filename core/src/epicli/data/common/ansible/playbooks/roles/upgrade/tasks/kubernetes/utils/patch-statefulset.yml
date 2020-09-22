@@ -4,6 +4,7 @@
 # - image_regexp
 
 - name: k8s/utils | Get all statefulsets
+  become: false
   command: |
     kubectl get statefulsets.apps \
       --all-namespaces \
@@ -15,8 +16,8 @@
 - name: k8s/utils | Patch all statefulsets
   block:
     - name: k8s/utils | Patch statefulset (containers)
-      when:
-        - _item.changed
+      when: _item.changed
+      become: false
       command: |
         kubectl patch statefulsets.apps {{ _item.metadata.name }} \
           --namespace {{ _item.metadata.namespace }} \
@@ -35,8 +36,8 @@
         {{ _updates.containers }}
 
     - name: k8s/utils | Patch statefulset (initContainers)
-      when:
-        - _item.changed
+      when: _item.changed
+      become: false
       command: |
         kubectl patch statefulsets.apps {{ _item.metadata.name }} \
           --namespace {{ _item.metadata.namespace }} \

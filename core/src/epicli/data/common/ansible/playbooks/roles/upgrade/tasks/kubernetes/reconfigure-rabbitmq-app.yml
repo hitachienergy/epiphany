@@ -3,28 +3,28 @@
   include_tasks: utils/patch-statefulset.yml
   vars:
     image_regexp: 'rabbitmq:.*'
+
 - name: Delete rabbitmq pods after patching
+  become: false
+  delegate_to: localhost
+  changed_when: false
   block:
     - name: after-patching | Get rabbitmq namespace
       shell: |-
         kubectl get statefulsets.apps --all-namespaces -o=jsonpath='{range .items[*]}{.metadata.namespace}{"\t"}{.spec.template.spec.containers[].image}{"\n"}{end}'|
         awk '/rabbitmq/ {print $1}'
-      delegate_to: localhost
-      changed_when: false
       register: rabbit_mq_namespace
       args:
         executable: /bin/bash
+
     - name: after-patching | Get rabbitmq pod names
       command: kubectl get pod -n {{ rabbit_mq_namespace.stdout }} -o=jsonpath='{range .items[*]}{.metadata.name}{"\n"}'
-      delegate_to: localhost
-      changed_when: false
       register: rabbit_mq_pod_names
       when:
         - not rabbit_mq_namespace.stdout == ""
+
     - name: after-patching | Delete rabbitmq pods
       command: kubectl delete pod --namespace {{ rabbit_mq_namespace.stdout }} {{ item }}
-      delegate_to: localhost
-      changed_when: false
       loop: "{{ rabbit_mq_pod_names.stdout_lines }}"
       when:
         - not rabbit_mq_namespace.stdout == ""

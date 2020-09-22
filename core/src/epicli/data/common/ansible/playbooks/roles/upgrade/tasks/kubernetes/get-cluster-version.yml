@@ -1,5 +1,6 @@
 ---
 - name: Get cluster version
+  become: false
   shell: >-
     set -o pipefail &&
     kubectl version --short -o json | jq --raw-output '.serverVersion.gitVersion'

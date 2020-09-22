@@ -1,5 +1,6 @@
 ---
 - name: Get kubelet version from API server
+  become: false
   command: >-
     kubectl get node {{ inventory_hostname }} -o jsonpath='{.status.nodeInfo.kubeletVersion}'
   delegate_to: localhost

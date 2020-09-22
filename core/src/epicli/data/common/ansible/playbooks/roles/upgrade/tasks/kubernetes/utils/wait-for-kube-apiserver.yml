@@ -1,5 +1,6 @@
 ---
 - name: k8s/utils | Wait for kubectl to access K8s cluster
+  become: false
   delegate_to: localhost
   run_once: true
   command: >-

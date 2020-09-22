@@ -3,6 +3,7 @@
 # we have to make sure some common master node is selected uniformly and later used in "delegate_to" statements (aka "automation_designated_master").
 
 - name: Check if kubeconfig file exists
+  become: false
   stat:
     path: "{{ kubeconfig }}"
     get_attributes: false
@@ -15,7 +16,8 @@
 - when: stat_kubeconfig.stat.exists
   block:
     - name: Get list of all master nodes
-      shell: |
+      become: false
+      command: |
         kubectl get nodes \
           --selector={{ selector }} \
           --output=jsonpath={{ jsonpath }}

@@ -1,9 +1,10 @@
 ---
 - name: Check if default policy is deployed
+  become: false
   vars:
     jsonpath: >-
       '{.items[?(@.metadata.name == "default-network-policy")].metadata.name}'
-  shell: |
+  command: |
     kubectl get networkpolicies \
       --output jsonpath={{ jsonpath }}
   delegate_to: localhost

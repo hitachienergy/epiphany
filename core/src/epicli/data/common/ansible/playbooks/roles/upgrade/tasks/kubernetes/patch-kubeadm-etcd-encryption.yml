@@ -17,6 +17,7 @@
   run_once: true  # makes no sense to execute it more than once (would be redundant)
   block:
     - name: Get kubeadm-config ConfigMap
+      become: false
       command: |
         kubectl get configmap kubeadm-config \
           --namespace kube-system \
@@ -29,6 +30,7 @@
     - name: k8s/master | Patch kubeadm-config configmap (patch-kubeadm-etcd-encryption.yml)
       when:
         - _kubeadm_api_server_extra_args['encryption-provider-config'] is undefined
+      become: false
       command: |
         kubectl patch configmap kubeadm-config \
           --namespace kube-system \

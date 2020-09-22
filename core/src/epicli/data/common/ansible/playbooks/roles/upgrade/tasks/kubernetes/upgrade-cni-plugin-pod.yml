@@ -1,5 +1,6 @@
 ---
 - name: k8s | Check DaemonSet update strategy
+  become: false
   command: |-
     kubectl get daemonsets -l {{ selector }} -n kube-system \
     -o=jsonpath='{range .items[*]}{.spec.updateStrategy.type}{"\n"}{end}'
@@ -12,6 +13,8 @@
 
 - name: Upgrade CNI plugin pod
   when: "'OnDelete' in cni_plugin_ds_update_strategy.stdout_lines"
+  become: false
+  delegate_to: localhost
   vars:
     selector: "{{ hostvars[groups.kubernetes_master.0].cni_plugin_selector }}"
   block:
@@ -19,7 +22,6 @@
       command: |-
         kubectl get daemonsets -l {{ selector }} -n kube-system \
         -o=jsonpath='{range .items[*]}{range .spec.template.spec.containers[*]}{.image}{"\n"}{end}{end}'
-      delegate_to: localhost
       register: cni_plugin_ds_images
       run_once: true
       changed_when: false
@@ -28,14 +30,12 @@
       command: |-
         kubectl get pod -l {{ selector }} --field-selector=spec.nodeName={{ ansible_fqdn }} -n kube-system \
         -o=jsonpath='{range .items[*]}{range .spec.containers[*]}{.image}{"\n"}{end}{end}'
-      delegate_to: localhost
       register: cni_plugin_pod_images
       changed_when: false
 
     - name: k8s | Delete pod if uses unexpected image
       command: |-
         kubectl delete pod -l {{ selector }} --field-selector=spec.nodeName={{ ansible_fqdn }} -n kube-system
-      delegate_to: localhost
       register: delete_cni_plugin_pod
       when: not cni_plugin_ds_images.stdout_lines is superset(cni_plugin_pod_images.stdout_lines)
 

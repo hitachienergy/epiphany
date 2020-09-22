@@ -2,6 +2,7 @@
 # This file is meant to be also used by upgrade role
 
 - name: Wait for CNI plugin to become ready
+  become: false
   command: >-
     kubectl wait --for=condition=Ready pods -l {{ selector }}
     --field-selector=spec.nodeName={{ ansible_fqdn }} -n kube-system --timeout=10s

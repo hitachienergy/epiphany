@@ -21,6 +21,7 @@
     file_name: kubernetes/coredns-config-for-k8s-below-1.16.yml.j2
 
 - name: k8s/master | Wait for CoreDNS pods to become ready
+  become: false
   command: >-
     kubectl wait --for=condition=Ready pods -l k8s-app=kube-dns --timeout=10s -n kube-system
   delegate_to: localhost

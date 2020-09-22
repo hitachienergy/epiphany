@@ -4,7 +4,7 @@
   delegate_to: localhost
   run_once: true
   block:
-    - name: Create directory for storage configuration
+    - name: Ensure that directory for storage configuration exists
       file:
         path: "{{ inventory_dir }}/storage"
         state: directory

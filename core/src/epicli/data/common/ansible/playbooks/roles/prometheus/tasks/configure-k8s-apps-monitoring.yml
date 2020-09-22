@@ -8,11 +8,13 @@
     api_server_address: "https://{{ master_hostname }}:6443"
 
 - name: apply rolebinding to k8s for prometheus
-  shell: "kubectl apply -f {{ role_path }}/files/k8s-rolebinding.yml"
+  become: false
+  command: "kubectl apply -f {{ role_path }}/files/k8s-rolebinding.yml"
   delegate_to: localhost
   run_once: true
 
 - name: Get kubernetes bearer token for prometheus
+  become: false
   shell: |-
     kubectl get $(kubectl get secrets -n kube-system -o name | grep prometheus) \
       -n kube-system \

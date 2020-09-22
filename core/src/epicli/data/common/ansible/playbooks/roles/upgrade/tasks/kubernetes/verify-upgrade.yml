@@ -45,6 +45,7 @@
             that: version in kubeadm_version.stdout
 
     - name: k8s/verify | Verify kubelet version from API server and get node status
+      become: false
       run_once: true
       delegate_to: localhost
       shell: |-
