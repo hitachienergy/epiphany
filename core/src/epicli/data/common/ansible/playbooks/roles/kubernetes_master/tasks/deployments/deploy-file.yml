@@ -1,18 +1,19 @@
 ---
-- name: Create directory for files
+# This file is meant to be also used by upgrade role
+
+- name: Apply manifest
+  become: false
   delegate_to: localhost
   run_once: true
-  file:
-    path: "{{ epiphany_manifests_dir }}"
-    state: directory
-    mode: u=rwx,go=rx
-
-- name: Upload and apply file
   vars:
     dest_path: "{{ epiphany_manifests_dir }}/{{ file_name | basename }}"
-  delegate_to: localhost
-  run_once: true
   block:
+    - name: Ensure that directory exists
+      file:
+        path: "{{ epiphany_manifests_dir }}"
+        state: directory
+        mode: u=rwx,go=rx
+
     - name: Upload {{ file_name }} file
       copy:
         src: "{{ file_name }}"
