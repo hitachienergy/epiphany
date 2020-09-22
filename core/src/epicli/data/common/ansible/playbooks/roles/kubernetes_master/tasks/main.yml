@@ -17,7 +17,6 @@
       when: specification.advanced.etcd_args.encrypted | bool
     - import_tasks: master-init.yml
     - import_tasks: registry-secrets.yml
-    - import_tasks: copy-kubernetes-pki.yml
 
 - name: Join Kubernetes master
   when: use_ha_control_plane

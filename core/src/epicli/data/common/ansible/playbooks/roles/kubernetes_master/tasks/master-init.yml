@@ -47,6 +47,9 @@
         kubernetes_common: >-
           {{ kubernetes_common | default({}) | combine(set_fact, recursive=true) }}
 
+    - name: Copy kubernetes pki
+      import_tasks: copy-kubernetes-pki.yml
+
 - name: Include kubelet configuration tasks
   include_role:
     name: kubernetes_common
