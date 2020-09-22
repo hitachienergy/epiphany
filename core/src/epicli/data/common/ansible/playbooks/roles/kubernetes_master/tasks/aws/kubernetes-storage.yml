@@ -18,7 +18,6 @@
     mode: u=rw,go=r
 
 - when: kubernetes_common.automation_designated_master == inventory_hostname
-  become_user: "{{ admin_user.name }}"
   block:
     - name: Apply storage yml
       command: |
