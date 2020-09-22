@@ -2,8 +2,6 @@
 - name: k8s/utils | Wait for nodes and pods to be ready
   delegate_to: "{{ groups.kubernetes_master[0] }}"
   run_once: true
-  environment:
-    KUBECONFIG: /etc/kubernetes/admin.conf
   block:
     - name: k8s/utils | Wait for kubectl to find and access K8s cluster
       include_tasks: kubernetes/utils/wait-for-kube-apiserver.yml

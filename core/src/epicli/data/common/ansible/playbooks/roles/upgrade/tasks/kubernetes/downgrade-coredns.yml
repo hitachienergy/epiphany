@@ -23,8 +23,6 @@
 - name: k8s/master | Wait for CoreDNS pods to become ready
   command: >-
     kubectl wait --for=condition=Ready pods -l k8s-app=kube-dns --timeout=10s -n kube-system
-  environment:
-    KUBECONFIG: /etc/kubernetes/admin.conf
   register: wait_for_coredns
   until: wait_for_coredns is succeeded
   retries: 30

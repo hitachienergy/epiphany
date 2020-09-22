@@ -6,8 +6,6 @@
   register: cni_plugin_ds_update_strategy
   run_once: true
   changed_when: false
-  environment:
-    KUBECONFIG: &KUBECONFIG /etc/kubernetes/admin.conf
   vars:
     selector: "{{ hostvars[groups.kubernetes_master.0].cni_plugin_selector }}"
 
@@ -15,8 +13,6 @@
   when: "'OnDelete' in cni_plugin_ds_update_strategy.stdout_lines"
   vars:
     selector: "{{ hostvars[groups.kubernetes_master.0].cni_plugin_selector }}"
-  environment:
-    KUBECONFIG: *KUBECONFIG
   block:
     - name: k8s | Get list of CNI plugin's expected images
       command: |-
