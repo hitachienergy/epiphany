@@ -11,6 +11,7 @@
 - [#1609](https://github.com/epiphany-platform/epiphany/issues/1609) - Build epicli image using Dockerfile only (without shell script)
 - [#765](https://github.com/epiphany-platform/epiphany/issues/765) - Added multiline support for logs statements in Filebeat
 - [#1618](https://github.com/epiphany-platform/epiphany/issues/1618) - Add kubectl and Helm to epicli and devcontainer images
+- [#1225](https://github.com/epiphany-platform/epiphany/issues/1225) - Add OS_PATCHING.md with information about patching RHEL OS
 
 ### Updated
 
@@ -18,6 +19,7 @@
 - [#1140](https://github.com/epiphany-platform/epiphany/issues/1140) - Upgrade Open Distro for Elasticsearch to v7.8.0
 - [#1316](https://github.com/epiphany-platform/epiphany/issues/1316) - Upgrade HAProxy to v2.2
 - [#1115](https://github.com/epiphany-platform/epiphany/issues/1115) - Upgrade Node exporter to v1.0.1
+- [#1589](https://github.com/epiphany-platform/epiphany/issues/1589) - Update OS_PATCHING.md with information about patching Ubuntu OS
 
 ### Fixed
 
@@ -25,3 +27,4 @@
 - [#1520](https://github.com/epiphany-platform/epiphany/issues/1520) - Added additional SANs to k8s-apiserver certificates to run kubectl outside the cluster
 - [#1491](https://github.com/epiphany-platform/epiphany/issues/1491) - Error running upgrade on a 0.3 cluster: missing shared-config
 - [#1659](https://github.com/epiphany-platform/epiphany/issues/1659) - epicli upgrade fails on Ubuntu on downgrading kubernetes-cni package
+- [#1681](https://github.com/epiphany-platform/epiphany/issues/1681) - Node exporter does not work after the upgrade
