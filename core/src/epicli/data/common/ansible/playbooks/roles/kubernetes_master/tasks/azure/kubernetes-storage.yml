@@ -1,51 +1,46 @@
 ---
-- name: Create directory for storage configuration
-  delegate_to: localhost
-  run_once: true
-  file:
-    path: "{{ inventory_dir }}/storage"
-    state: directory
-    mode: u=rwx,go=rx
-
-- name: Upload k8s storage secret yaml
-  delegate_to: localhost
-  run_once: true
-  template:
-    src: azure/k8s-storage-secret.yml.j2
-    dest: "{{ inventory_dir }}/storage/k8s-storage-secret.yml"
-    mode: u=rw,go=r
-
-- name: Upload k8s persistent volume yaml
-  delegate_to: localhost
-  run_once: true
-  template:
-    src: azure/k8s-persistent-volume.yml.j2
-    dest: "{{ inventory_dir }}/storage/k8s-persistent-volume.yml"
-    mode: u=rw,go=r
-
-- name: Upload k8s persistent volume claim yaml
-  delegate_to: localhost
-  run_once: true
-  template:
-    src: azure/k8s-persistent-volume-claim.yml.j2
-    dest: "{{ inventory_dir }}/storage/k8s-persistent-volume-claim.yml"
-    mode: u=rw,go=r
-
-- when: kubernetes_common.automation_designated_master == inventory_hostname
+- name: Azure storage tasks
+  become: false
   delegate_to: localhost
   run_once: true
   block:
-    - name: Apply secret yml
-      shell: |
-        kubectl apply \
-          -f {{ inventory_dir }}/storage/k8s-storage-secret.yml
+    - name: Ensure that directory for storage configuration exists
+      file:
+        path: "{{ inventory_dir }}/storage"
+        state: directory
+        mode: u=rwx,go=rx
 
-    - name: Apply storage yml
-      shell: |
-        kubectl apply \
-          -f {{ inventory_dir }}/storage/k8s-persistent-volume.yml
+    - name: Upload k8s storage secret yaml
+      template:
+        src: azure/k8s-storage-secret.yml.j2
+        dest: "{{ inventory_dir }}/storage/k8s-storage-secret.yml"
+        mode: u=rw,go=r
 
-    - name: Apply storage claim yml
-      shell: |
-        kubectl apply \
-          -f {{ inventory_dir }}/storage/k8s-persistent-volume-claim.yml
+    - name: Upload k8s persistent volume yaml
+      template:
+        src: azure/k8s-persistent-volume.yml.j2
+        dest: "{{ inventory_dir }}/storage/k8s-persistent-volume.yml"
+        mode: u=rw,go=r
+
+    - name: Upload k8s persistent volume claim yaml
+      template:
+        src: azure/k8s-persistent-volume-claim.yml.j2
+        dest: "{{ inventory_dir }}/storage/k8s-persistent-volume-claim.yml"
+        mode: u=rw,go=r
+
+    - when: kubernetes_common.automation_designated_master == inventory_hostname
+      block:
+        - name: Apply secret yml
+          command: |
+            kubectl apply \
+              -f {{ inventory_dir }}/storage/k8s-storage-secret.yml
+
+        - name: Apply storage yml
+          command: |
+            kubectl apply \
+              -f {{ inventory_dir }}/storage/k8s-persistent-volume.yml
+
+        - name: Apply storage claim yml
+          command: |
+            kubectl apply \
+              -f {{ inventory_dir }}/storage/k8s-persistent-volume-claim.yml
