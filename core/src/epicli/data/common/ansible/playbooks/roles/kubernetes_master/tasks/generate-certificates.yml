@@ -143,6 +143,8 @@
             | list }}
 
     - name: Update conf files with embedded certs
+      environment:
+        KUBECONFIG: "/etc/kubernetes/{{ item }}"
       vars:
         conf_account_mapping:
           admin.conf: "kubernetes-admin"
