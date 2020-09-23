@@ -12,7 +12,7 @@
     name: kubernetes_master
     tasks_from: copy-kubeconfig
 
-- name: Apply rolebinding to k8s for prometheus
+- name: Apply rolebinding to K8s for Prometheus
   become: false
   command: "kubectl apply -f {{ role_path }}/files/k8s-rolebinding.yml"
   run_once: true
