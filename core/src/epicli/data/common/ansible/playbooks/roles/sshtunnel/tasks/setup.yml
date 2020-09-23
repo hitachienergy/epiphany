@@ -9,11 +9,11 @@
       shell: >-
         autossh -M 0 -f
         {{ admin_user.name }}@{{ k8s_master_ip }} -L {{ k8s_api_server_port }}:localhost:{{ k8s_api_server_port }}
-        -i $(readlink -f {{ admin_user.key_path }}) -4 -N -T
+        -i $(realpath -s {{ admin_user.key_path }}) -4 -N -T
         -o BatchMode=yes -o ControlMaster=no -o ExitOnForwardFailure=yes -o ServerAliveInterval=30 -o ServerAliveCountMax=5
         -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null
       args:
-        chdir: "{{ lookup('env', 'PWD') }}" # chdir + readlink is to support relative path in admin_user.key_path
+        chdir: "{{ lookup('env', 'PWD') }}" # chdir + realpath to support relative path in admin_user.key_path
       register: shell_autossh
       environment: "{{ autossh_env }}"
 
@@ -24,8 +24,8 @@
         timeout: 15
         msg: |-
           Timeout waiting for port {{ k8s_api_server_port }} to respond.
-          Command used to start the tunnel: '{{ shell_autossh.cmd }}'
-          Environment: {{ autossh_env }}
+          Command used to start the tunnel: '{{ shell_autossh.cmd }}'.
+          Environment: {{ autossh_env.items() | map('join', '=') | list }}
   vars:
     autossh_env:
       AUTOSSH_LOGFILE: "{{ k8s_api_server.autossh_log_file_path }}"
