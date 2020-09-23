@@ -220,7 +220,7 @@ If one of database nodes has been recovered to desired state you may want to re-
 repmgr -h current_primary_address -U epi_repmgr_admin -d epi_repmgr standby clone -F
 ```
 
-2). Register node as stanby
+2). Register node as standby
 
 ```bash
 repmgr -f /etc/repmgr/10/repmgr.conf standby register

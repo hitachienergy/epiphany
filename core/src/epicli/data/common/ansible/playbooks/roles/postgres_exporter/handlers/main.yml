@@ -1,0 +1,23 @@
+---
+- name: restart postgres-exporter
+  service:
+    name: postgres-exporter
+    state: restarted
+  register: result
+  until: result is success
+  retries: 10
+  delay: 10
+
+- name: reload systemd daemons
+  systemd:
+    daemon_reload: true
+
+- name: restart prometheus on remote servers
+  systemd:
+    name: prometheus
+    state: restarted
+  delegate_to: "{{ item }}"
+  with_inventory_hostnames:
+    - prometheus
+  run_once: true
+

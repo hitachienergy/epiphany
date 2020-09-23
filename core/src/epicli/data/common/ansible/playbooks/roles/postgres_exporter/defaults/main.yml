@@ -1,0 +1,5 @@
+---
+exporter:
+  version: "0.8.0"
+  service:
+    description: "Service that runs Postgres Exporter"

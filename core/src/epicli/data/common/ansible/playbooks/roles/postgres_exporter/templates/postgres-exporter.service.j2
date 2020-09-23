@@ -1,0 +1,15 @@
+#jinja2: trim_blocks:False
+# {{ ansible_managed }}
+[Unit]
+Description={{ exporter.service.description }}
+
+[Service]
+User={{ specification.dbuser|default('postgres') }}
+Group={{ specification.dbuser_group|default('postgres') }}
+Environment="{{ specification.systemd_environment|default('DATA_SOURCE_NAME="postgresql://postgres@:5432/postgres?host=/var/run/postgresql/&sslmode=disable"') }}"
+ExecStart=/opt/postgres_exporter/postgres_exporter {% for flag in specification.config_flags %} {{ flag }} {% endfor %}
+SyslogIdentifier=postgres_exporter
+Restart=always
+
+[Install]
+WantedBy=multi-user.target

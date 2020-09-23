@@ -156,6 +156,7 @@ https://archive.apache.org/dist/ignite/2.7.6/apache-ignite-2.7.6-bin.zip
 https://releases.hashicorp.com/vault/1.4.0/vault_1.4.0_linux_amd64.zip
 https://get.helm.sh/helm-v3.2.0-linux-amd64.tar.gz
 https://github.com/hashicorp/vault-helm/archive/v0.4.0.tar.gz
+https://github.com/wrouesnel/postgres_exporter/releases/download/v0.8.0/postgres_exporter_v0.8.0_linux-amd64.tar.gz
 
 [images]
 haproxy:2.2.2-alpine

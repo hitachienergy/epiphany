@@ -1,0 +1,15 @@
+kind: configuration/postgres-exporter
+title: Postgres exporter
+name: default
+specification:
+  config_flags:
+  - --log.level=info
+  - --extend.query-path=/opt/postgres_exporter/queries.yaml
+  - --auto-discover-databases
+  # Please see optional flags: https://github.com/wrouesnel/postgres_exporter/tree/v0.8.0#flags
+  config_for_prometheus:
+    exporter_listen_port: '9187'
+    prometheus_config_dir: /etc/prometheus
+    file_sd_labels:
+    - label: "job"
+      value: "postgres-exporter"
