@@ -1,4 +1,9 @@
 ---
+- name: Set K8s autossh log and pid files
+  set_fact:
+    autossh_log_file_path: /tmp/autossh-k8s-api-server-tunnel.log
+    autossh_pid_file_path: /tmp/autossh-k8s-api-server-tunnel.pid
+
 - name: Get K8s API server secure port
   block:
     - name: Get K8s API server's secure port from configuration
@@ -15,10 +20,10 @@
 
 - name: Set K8s API server secure port
   set_fact:
-    k8s_api_server_port: >-
+    ssh_tunnel_port: >-
       {{ 6443 if (k8s_master_config.specification is undefined) else
          k8s_master_config.specification.advanced.api_server_args['secure-port'] }}
 
 - name: Set IP of first K8s master (from inventory)
   set_fact:
-    k8s_master_ip: "{{ hostvars[groups.kubernetes_master[0]].ansible_host }}"
+    ssh_tunnel_ip: "{{ hostvars[groups.kubernetes_master[0]].ansible_host }}"

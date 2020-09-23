@@ -6,10 +6,13 @@
   tasks:
     - include_role:
         name: sshtunnel
-        tasks_from: teardown
+        tasks_from: "{{ item }}.yml"
       when:
         - groups.kubernetes_master is defined
         - groups.kubernetes_master | length > 0
+      loop:
+        - set_facts_k8s
+        - teardown
   module_defaults:
     shell:
       executable: /bin/bash

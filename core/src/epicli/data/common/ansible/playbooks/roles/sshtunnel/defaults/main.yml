@@ -1,4 +1,3 @@
 ---
-k8s_api_server:
-  autossh_log_file_path: /tmp/autossh-k8s-api-server-tunnel.log
-  autossh_pid_file_path: /tmp/autossh-k8s-api-server-tunnel.pid
+autossh_log_file_path: /tmp/autossh-tunnel.log
+autossh_pid_file_path : /tmp/autossh-tunnel.pid

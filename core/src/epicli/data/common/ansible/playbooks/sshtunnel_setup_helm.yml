@@ -1,0 +1,18 @@
+# Ansible playbook to set up SSH tunnel for helm operations
+
+- hosts: 127.0.0.1
+  connection: local
+  gather_facts: false
+  tasks:
+    - include_role:
+        name: sshtunnel
+        tasks_from: "{{ item }}.yml"
+      when:
+        - groups.repository is defined
+        - groups.repository | length > 0
+      loop:
+        - set_facts_helm
+        - setup
+  module_defaults:
+    shell:
+      executable: /bin/bash
