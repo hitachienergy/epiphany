@@ -4,7 +4,7 @@
 
 - name: Check if kubeconfig file exists
   stat:
-    path: "{{ lookup('env','KUBECONFIG') }}"
+    path: "{{ ansible_env.KUBECONFIG }}"
     get_attributes: false
     get_checksum: false
     get_mime: false
