@@ -30,4 +30,4 @@
   vars:
     autossh_env:
       AUTOSSH_LOGFILE: "{{ autossh_log_file_path }}"
-      AUTOSSH_PIDFILE: "{{ autossh_pid_file_path  }}"
+      AUTOSSH_PIDFILE: "{{ autossh_pid_file_path }}"
