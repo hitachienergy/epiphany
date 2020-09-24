@@ -22,7 +22,7 @@
         kill "$AUTOSSH_PID"
       register: shell_output
       environment:
-        AUTOSSH_PIDFILE: "{{ autossh_pid_file_path  }}"
+        AUTOSSH_PIDFILE: "{{ autossh_pid_file_path }}"
 
     - name: Print shell output
       debug:
