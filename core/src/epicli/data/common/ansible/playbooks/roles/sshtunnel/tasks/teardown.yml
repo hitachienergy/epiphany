@@ -26,6 +26,13 @@
     - name: Print shell output
       debug:
         var: shell_output.stdout_lines
+  rescue:
+    - name: Removing PID after failing to close the autossh process
+      # if we fail to kill autossh we might have an $AUTOSSH_PIDFILE file
+      # but no process, so lets remove it and continue
+      file:
+        state: absent
+        path: "{{ autossh_pid_file_path }}"
 
 - name: Assert port {{ ssh_tunnel_port }} is free
   wait_for:

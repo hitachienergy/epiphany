@@ -1,3 +1,0 @@
----
-autossh_log_file_path: /tmp/autossh-tunnel.log
-autossh_pid_file_path : /tmp/autossh-tunnel.pid
