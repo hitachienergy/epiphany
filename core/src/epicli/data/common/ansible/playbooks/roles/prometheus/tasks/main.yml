@@ -13,10 +13,13 @@
 
 - name: Configure kubernetes monitoring
   when: does_k8s_exists
-  become: true
-  include: configure-k8s-apps-monitoring.yml
-  environment:
-    KUBECONFIG: "{{ kubeconfig.local }}"
+  include_tasks:
+    file: configure-k8s-apps-monitoring.yml
+    apply:
+      environment:
+        KUBECONFIG: "{{ kubeconfig.local }}"
+      tags:
+        - kubernetes
   tags:
     - kubernetes
 
