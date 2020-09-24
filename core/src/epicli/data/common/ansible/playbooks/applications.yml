@@ -18,4 +18,5 @@
     # The "inventory_dir" fact cannot be used here.
     # Documentation (https://docs.ansible.com/ansible/latest/inventory/implicit_localhost.html) states:
     # - The inventory_file and inventory_dir magic variables are not available for the implicit localhost as they are dependent on each inventory host.
+    # TODO: https://github.com/epiphany-platform/epiphany/issues/1650
     KUBECONFIG: "{{ vault_location }}/../kubeconfig"
