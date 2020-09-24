@@ -13,7 +13,6 @@
   when: autossh_pid_file_stat.stat.exists
   block:
     - name: Close SSH tunnel to {{ssh_tunnel_ip}}:{{ssh_tunnel_port}}
-      become: true
       # kill autossh (ssh is child process), $AUTOSSH_PIDFILE is auto-removed
       shell: |-
         AUTOSSH_PID=$(<$AUTOSSH_PIDFILE)

@@ -6,7 +6,6 @@
 - name: Start SSH tunnel to {{ssh_tunnel_ip}}:{{ssh_tunnel_port}}
   block:
     - name: Start SSH tunnel to {{ssh_tunnel_ip}}:{{ssh_tunnel_port}}
-      become: true
       shell: >-
         autossh -M 0 -f
         {{ admin_user.name }}@{{ ssh_tunnel_ip }} -L {{ ssh_tunnel_port }}:localhost:{{ ssh_tunnel_port }}
