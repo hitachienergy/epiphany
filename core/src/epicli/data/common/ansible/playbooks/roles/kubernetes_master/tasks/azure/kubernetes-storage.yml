@@ -27,27 +27,18 @@
     mode: u=rw,go=r
 
 - when: kubernetes_common.automation_designated_master == inventory_hostname
-  become_user: "{{ admin_user.name }}"
-  environment:
-    KUBECONFIG: "/home/{{ admin_user.name }}/.kube/config"
   block:
     - name: Apply secret yml
-      shell: |
+      command: |
         kubectl apply \
           -f /home/{{ admin_user.name }}/k8s-storage-secret.yml
-      args:
-        executable: /bin/bash
 
     - name: Apply storage yml
-      shell: |
+      command: |
         kubectl apply \
           -f /home/{{ admin_user.name }}/k8s-persistent-volume.yml
-      args:
-        executable: /bin/bash
 
     - name: Apply storage claim yml
-      shell: |
+      command: |
         kubectl apply \
           -f /home/{{ admin_user.name }}/k8s-persistent-volume-claim.yml
-      args:
-        executable: /bin/bash

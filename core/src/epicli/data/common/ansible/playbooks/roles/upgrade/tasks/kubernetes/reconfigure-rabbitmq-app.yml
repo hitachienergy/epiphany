@@ -6,8 +6,6 @@
 - name: Delete rabbitmq pods after patching
   block:
     - name: after-patching | Get rabbitmq namespace
-      environment:
-        KUBECONFIG: &KUBECONFIG /etc/kubernetes/admin.conf
       shell: |-
         kubectl get statefulsets.apps --all-namespaces -o=jsonpath='{range .items[*]}{.metadata.namespace}{"\t"}{.spec.template.spec.containers[].image}{"\n"}{end}'|
         awk '/rabbitmq/ {print $1}'
@@ -16,16 +14,12 @@
       args:
         executable: /bin/bash
     - name: after-patching | Get rabbitmq pod names
-      environment:
-        KUBECONFIG: *KUBECONFIG
       command: kubectl get pod -n {{ rabbit_mq_namespace.stdout }} -o=jsonpath='{range .items[*]}{.metadata.name}{"\n"}'
       changed_when: false
       register: rabbit_mq_pod_names
       when:
         - not rabbit_mq_namespace.stdout == ""
     - name: after-patching | Delete rabbitmq pods
-      environment:
-        KUBECONFIG: *KUBECONFIG
       command: kubectl delete pod --namespace {{ rabbit_mq_namespace.stdout }} {{ item }}
       changed_when: false
       loop: "{{ rabbit_mq_pod_names.stdout_lines }}"

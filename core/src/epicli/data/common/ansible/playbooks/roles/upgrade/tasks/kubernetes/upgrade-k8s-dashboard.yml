@@ -29,8 +29,6 @@
     - name: k8s/master | Delete kubernetes-dashboard namespace
       command: >-
         kubectl delete ns kubernetes-dashboard
-      environment:
-        KUBECONFIG: /etc/kubernetes/admin.conf
 
     # Deploy new version of kubernetes-dashboard
     - name: k8s/master | Apply Kubernetes Dashboard

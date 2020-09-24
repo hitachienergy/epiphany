@@ -2,18 +2,18 @@
 # Due to inventory generation procedure not being deterministic in general (order of hostnames in group.kubernetes_master may change at any run),
 # we have to make sure some common master node is selected uniformly and later used in "delegate_to" statements (aka "automation_designated_master").
 
-- name: Check if /etc/kubernetes/admin.conf file exists
+- name: Check if kubeconfig file exists
   stat:
-    path: /etc/kubernetes/admin.conf
+    path: "{{ ansible_env.KUBECONFIG }}"
     get_attributes: false
     get_checksum: false
     get_mime: false
-  register: stat_admin_conf
+  register: stat_kubeconfig
 
-- when: stat_admin_conf.stat.exists
+- when: stat_kubeconfig.stat.exists
   block:
     - name: Get list of all master nodes
-      shell: |
+      command: |
         kubectl get nodes \
           --selector={{ selector }} \
           --output=jsonpath={{ jsonpath }}
@@ -22,10 +22,6 @@
           'node-role.kubernetes.io/master'
         jsonpath: >-
           '{range .items[*]}{.metadata.name}{"\n"}{end}'
-      environment:
-        KUBECONFIG: /etc/kubernetes/admin.conf
-      args:
-        executable: /bin/bash
       register: kubectl_get_master_nodes
       changed_when: false
 
@@ -36,7 +32,7 @@
   vars:
     set_fact:
       master_already_joined: >-
-        {{ stat_admin_conf.stat.exists and (kubectl_get_master_nodes.stdout_lines is defined)
+        {{ stat_kubeconfig.stat.exists and (kubectl_get_master_nodes.stdout_lines is defined)
                                        and (inventory_hostname in kubectl_get_master_nodes.stdout_lines) }}
 
 - name: Collect registered masters

@@ -26,15 +26,13 @@
 
   block:
     - name: Get etcd image name
-      shell: |
+      command: |
         kubectl get pods \
           --all-namespaces \
           --output jsonpath={{ jsonpath }}
       vars:
         jsonpath: >-
           "{.items[*].spec.containers[?(@.name=='etcd')].image}"
-      environment:
-        KUBECONFIG: /etc/kubernetes/admin.conf
       register: etcd_image_name
 
     - name: Save etcd image name to a file

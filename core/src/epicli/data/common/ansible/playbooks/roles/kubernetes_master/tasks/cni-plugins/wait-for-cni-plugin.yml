@@ -6,8 +6,6 @@
     kubectl wait --for=condition=Ready pods -l {{ selector }}
     --field-selector=spec.nodeName={{ ansible_fqdn }} -n kube-system --timeout=10s
   changed_when: false
-  environment:
-    KUBECONFIG: /etc/kubernetes/admin.conf
   register: wait_for_cni_plugin
   until: wait_for_cni_plugin is succeeded
   retries: 30

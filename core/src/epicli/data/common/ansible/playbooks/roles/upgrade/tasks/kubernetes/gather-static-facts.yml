@@ -9,10 +9,6 @@
                                   or .labels.app == "flannel") | .name'
       register: shell_cni_plugin_query
       changed_when: false
-      environment:
-        KUBECONFIG: /etc/kubernetes/admin.conf
-      args:
-        executable: /bin/bash
 
     - name: k8s | Set CNI plugin as fact
       set_fact:

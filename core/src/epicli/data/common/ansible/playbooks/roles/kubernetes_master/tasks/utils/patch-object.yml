@@ -16,5 +16,3 @@
     --patch '{{ patch.content }}'
   register: kubectl_patch
   changed_when: not 'no change' in kubectl_patch.stdout
-  environment:
-    KUBECONFIG: /etc/kubernetes/admin.conf

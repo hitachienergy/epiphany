@@ -1,7 +1,5 @@
 ---
 - name: Get cluster version
-  environment:
-    KUBECONFIG: /etc/kubernetes/admin.conf
   shell: >-
     set -o pipefail &&
     kubectl version --short -o json | jq --raw-output '.serverVersion.gitVersion'

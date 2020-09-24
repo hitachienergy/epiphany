@@ -15,8 +15,6 @@
   when:
     - command_grep_encryption_flag.rc == 0 # encryption enabled
   run_once: true  # makes no sense to execute it more than once (would be redundant)
-  environment:
-    KUBECONFIG: /etc/kubernetes/admin.conf
   block:
     - name: Get kubeadm-config ConfigMap
       command: |

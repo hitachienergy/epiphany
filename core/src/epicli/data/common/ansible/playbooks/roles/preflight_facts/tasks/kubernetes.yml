@@ -6,18 +6,18 @@
 
 - when: inventory_hostname in available_masters
   block:
-    - name: Check if /etc/kubernetes/admin.conf file exists
+    - name: Check if kubeconfig file exists
       stat:
-        path: /etc/kubernetes/admin.conf
+        path: "{{ ansible_env.KUBECONFIG }}"
         get_attributes: false
         get_checksum: false
         get_mime: false
-      register: stat_admin_conf
+      register: stat_kubeconfig
 
-    - when: stat_admin_conf.stat.exists
+    - when: stat_kubeconfig.stat.exists
       block:
         - name: Get list of all master nodes
-          shell: |
+          command: |
             kubectl get nodes \
               --selector={{ selector }} \
               --output=jsonpath={{ jsonpath }}
@@ -26,17 +26,13 @@
               'node-role.kubernetes.io/master'
             jsonpath: >-
               '{range .items[*]}{.metadata.name}{"\n"}{end}'
-          environment:
-            KUBECONFIG: /etc/kubernetes/admin.conf
-          args:
-            executable: /bin/bash
           register: kubectl_get_master_nodes
           changed_when: false
 
     - name: Decide if current node is a master
       set_fact:
         master_already_joined: >-
-          {{ stat_admin_conf.stat.exists and (kubectl_get_master_nodes.stdout_lines is defined)
+          {{ stat_kubeconfig.stat.exists and (kubectl_get_master_nodes.stdout_lines is defined)
                                          and (inventory_hostname in kubectl_get_master_nodes.stdout_lines) }}
 
 - name: Collect registered masters
@@ -51,14 +47,10 @@
 - when: (registered_masters.0 is defined) and (inventory_hostname == registered_masters.0)
   block:
     - name: Collect live kubeadm ClusterConfiguration object if available
-      shell: |
+      command: |
         kubectl get configmap kubeadm-config \
           --namespace=kube-system \
           --output=yaml
-      environment:
-        KUBECONFIG: /etc/kubernetes/admin.conf
-      args:
-        executable: /bin/bash
       register: kubeadm_config_yaml
       changed_when: false
 
@@ -92,13 +84,9 @@
 - when: (registered_masters.0 is defined) and (inventory_hostname == registered_masters.0)
   block:
     - name: Collect server version of running kubernetes
-      shell: |
+      command: |
         kubectl version \
           --output yaml
-      environment:
-        KUBECONFIG: /etc/kubernetes/admin.conf
-      args:
-        executable: /bin/bash
       register: kubectl_version_yaml
       changed_when: false
 

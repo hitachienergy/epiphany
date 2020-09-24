@@ -1,8 +1,6 @@
 ---
 - name: k8s/master | Patch imageRepository in kubeadm-config ConfigMap
   run_once: true
-  environment:
-    KUBECONFIG: /etc/kubernetes/admin.conf
   block:
     - name: k8s/master | Get kubeadm-config configmap
       command: |

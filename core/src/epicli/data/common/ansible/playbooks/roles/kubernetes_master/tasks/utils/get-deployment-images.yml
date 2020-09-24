@@ -13,8 +13,6 @@
     --no-headers=true
   register: kubectl_get_images
   changed_when: false
-  environment:
-    KUBECONFIG: /etc/kubernetes/admin.conf
 
 - name: Set list of images as fact
   set_fact:

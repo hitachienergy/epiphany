@@ -4,8 +4,6 @@
 # - image_regexp
 
 - name: k8s/utils | Get all statefulsets
-  environment:
-    KUBECONFIG: &KUBECONFIG /etc/kubernetes/admin.conf
   command: |
     kubectl get statefulsets.apps \
       --all-namespaces \
@@ -14,8 +12,6 @@
   changed_when: false
 
 - name: k8s/utils | Patch all statefulsets
-  environment:
-    KUBECONFIG: *KUBECONFIG
   block:
     - name: k8s/utils | Patch statefulset (containers)
       when:

@@ -14,6 +14,8 @@
         name: upgrade
         tasks_from: kubernetes/gather-static-facts
       run_once: true
+  environment:
+    KUBECONFIG: "{{ kubeconfig.remote }}"
 
 - hosts: all
   become: true
@@ -31,6 +33,8 @@
     - import_role:
         name: upgrade
         tasks_from: image-registry
+  environment:
+    KUBECONFIG: "{{ kubeconfig.remote }}"
 
 - hosts: kubernetes_master:kubernetes_node
   serial: 1
@@ -41,6 +45,8 @@
         name: upgrade
         tasks_from: kubernetes
       vars: { ver: "1.15.10", cni_ver: "0.7.5", upgrade_to_final_version: false }
+  environment:
+    KUBECONFIG: "{{ kubeconfig.remote }}"
 
 - hosts: kubernetes_master:kubernetes_node
   serial: 1
@@ -51,6 +57,8 @@
         name: upgrade
         tasks_from: kubernetes
       vars: { ver: "1.16.7", cni_ver: "0.7.5", upgrade_to_final_version: false }
+  environment:
+    KUBECONFIG: "{{ kubeconfig.remote }}"
 
 - hosts: kubernetes_master:kubernetes_node
   serial: 1
@@ -61,6 +69,8 @@
         name: upgrade
         tasks_from: kubernetes
       vars: { ver: "1.17.7", cni_ver: "0.8.6", cni_in_kubelet: true, upgrade_to_final_version: false }
+  environment:
+    KUBECONFIG: "{{ kubeconfig.remote }}"
 
 - hosts: kubernetes_master:kubernetes_node
   serial: 1
@@ -71,6 +81,8 @@
         name: upgrade
         tasks_from: kubernetes
       vars: { ver: "1.18.6", cni_ver: "0.8.6", upgrade_to_final_version: true }
+  environment:
+    KUBECONFIG: "{{ kubeconfig.remote }}"
 
 - hosts: elasticsearch
   become: true
