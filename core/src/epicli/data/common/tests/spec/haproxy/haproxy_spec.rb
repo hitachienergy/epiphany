@@ -20,18 +20,6 @@ describe 'Checking if HAProxy service is running' do
   end
 end
 
-describe 'Checking if HAProxy user exists' do
-  describe group('haproxy') do
-    it { should exist }
-  end
-  describe user('haproxy') do
-    it { should exist }
-    it { should belong_to_group 'haproxy' }
-    it { should have_home_directory '/var/lib/haproxy' }
-    it { should have_login_shell('/usr/sbin/nologin').or have_login_shell('/sbin/nologin') } # HAProxy user shell is located in /sbin/nologin on RedHat
-  end
-end
-
 describe 'Checking if HAProxy log file exists and is not empty' do
   describe file('/var/log/haproxy.log') do
     let(:disable_sudo) { false }
