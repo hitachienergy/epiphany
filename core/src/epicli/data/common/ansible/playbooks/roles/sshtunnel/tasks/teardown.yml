@@ -7,7 +7,7 @@
     get_mime: false
   register: autossh_pid_file_stat
   vars:
-    pid_file: "{{ autossh_pid_file_path  }}"
+    pid_file: "{{ autossh_pid_file_path }}"
 
 - name: Close SSH tunnel to {{ssh_tunnel_ip}}:{{ssh_tunnel_port}}
   when: autossh_pid_file_stat.stat.exists
