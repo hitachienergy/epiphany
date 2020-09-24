@@ -47,7 +47,7 @@
                 path: "{{ deployment_tmp_dir }}"
                 state: directory
 
-            - name: Save encrypted templates into a file
+            - name: Save encrypted templates into {{ deployment_tmp_dir }}/debug.yml
               copy:
                 dest: "{{ deployment_tmp_dir }}/debug.yml"
                 # To be able to successfully parse yaml payload we need to remove the custom "!vault" tag
