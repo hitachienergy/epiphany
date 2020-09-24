@@ -1,4 +1,4 @@
 ---
 postgresql_database_port: "5432"
 default_namespace: "default"
-deployment_tmp_root_dir: "{{ vault_location }}/../apps"  # "inventory_dir" cannot be used here, see the playbook's entry file applications.yml
+deployment_tmp_root_dir: "{{ vault_location }}/applications"
