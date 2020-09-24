@@ -1,6 +1,0 @@
----
-- include: dashboards.yml
-  when: grafana_dashboards | length > 0
-  tags:
-    - configure
-    - dashboards

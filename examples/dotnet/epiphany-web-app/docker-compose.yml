@@ -1,8 +1,0 @@
-version: '3.4'
-
-services:
-  epiphany-web-app:
-    image: epiphanywebapp
-    build:
-      context: .
-      dockerfile: epiphany-web-app/Dockerfile
