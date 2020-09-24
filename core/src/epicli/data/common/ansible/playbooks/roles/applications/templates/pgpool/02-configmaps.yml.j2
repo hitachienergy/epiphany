@@ -21,7 +21,6 @@ data:
 {% endfor %}
 
 ---
-
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -120,7 +119,7 @@ data:
     # ----------------------
     test_connection() {
       local -r connection_string=${1:?connection_string is missing}
- 
+
       echo "Testing connection to postgres database [conninfo: '$connection_string']..."
       # psql returns 0 if finished normally, 1 if fatal error occurs, 2 if connection to server went bad and session was not interactive
       if psql --no-password -d "$connection_string" -c "SELECT 1" >/dev/null; then
@@ -196,7 +195,6 @@ data:
     echo "==> Completed: $0"
 
 ---
-
 apiVersion: v1
 kind: ConfigMap
 metadata:

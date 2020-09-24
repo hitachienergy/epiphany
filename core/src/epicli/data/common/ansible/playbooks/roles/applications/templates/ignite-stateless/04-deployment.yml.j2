@@ -22,7 +22,11 @@ spec:
       containers:
         # Custom Ignite pod name.
       - name: ignite-node
+{% if data.use_local_image_registry is undefined or (data.use_local_image_registry | bool) %}
         image: {{ image_registry_address }}/{{ data.image_path }}
+{% else %}
+        image: {{ data.image_path }}
+{% endif %}
         env:
         - name: OPTION_LIBS
           value: {% for plugin in data.enabled_plugins %}{{ plugin }}{{ "," if not loop.last else "" }}{% endfor %}
@@ -43,5 +47,4 @@ spec:
       volumes:
       - configMap:
           name: ignite
-        name: ignite-config 
-
+        name: ignite-config

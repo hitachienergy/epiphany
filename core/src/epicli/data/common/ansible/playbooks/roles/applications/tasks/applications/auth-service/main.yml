@@ -1,15 +1,15 @@
-- name: Include validation 
-  include_tasks: "validation.yml"
+---
+- name: Include validation
+  include_tasks: validation.yml
 
 - name: Include database configuration when Epiphany storage used
-  include_tasks: "configure-database.yml"
-  when: data.database.address is undefined 
+  include_tasks: configure-database.yml
+  when: data.database.address is undefined
 
 - name: Include variables setup
-  include_tasks: "set-variables.yml"
+  include_tasks: set-variables.yml
 
-- name: Include service creation
-  include_tasks: "create-service.yml"
-
-- name: Include cleanup tasks
-  include_tasks: "cleanup.yml"
+- name: Deploy Auth Service
+  include_tasks: deploy-k8s-app.yml
+  vars:
+    app_dir_name: "{{ data.name }}"

@@ -5,16 +5,18 @@
   gather_facts: true
   tasks: []
 
-- hosts: applications:!kubernetes_master[1:]
-  become: true
-  become_method: sudo
-  pre_tasks:
-    - import_role:
-        name: kubernetes_master
-        tasks_from: copy-kubeconfig
+- hosts: 127.0.0.1
+  gather_facts: false
+  connection: local
+  become: false
   roles:
-    - applications
-  post_tasks:
-    - import_role:
-        name: kubernetes_master
-        tasks_from: remove-kubeconfig
+    - role: applications
+      when:
+        - groups.applications is defined
+        - groups.applications | length > 0
+  environment:
+    # The "inventory_dir" fact cannot be used here.
+    # Documentation (https://docs.ansible.com/ansible/latest/inventory/implicit_localhost.html) states:
+    # - The inventory_file and inventory_dir magic variables are not available for the implicit localhost as they are dependent on each inventory host.
+    # TODO: https://github.com/epiphany-platform/epiphany/issues/1650
+    KUBECONFIG: "{{ vault_location }}/../kubeconfig"

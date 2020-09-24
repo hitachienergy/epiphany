@@ -1,29 +1,5 @@
 ---
-
-- name: Set configuration temp directory
-  set_fact:
-    configuration_temp_directory: /tmp/ignite
-  changed_when: false
-
-- name: Wait until the cluster is available
-  environment:
-    KUBECONFIG: /home/{{ admin_user.name }}/.kube/config
-  shell: kubectl cluster-info
-  delegate_to: "{{ groups['kubernetes_master'] | first }}"
-  retries: 50
-  delay: 1
-  register: output
-  until: output is succeeded
-
-- name: Upload and deploy Ignite
-  include: "deploy-on-kubernetes.yml"
+- name: Deploy Ignite
+  include_tasks: deploy-k8s-app.yml
   vars:
-    file_name: "{{ deployment_file }}"
-  loop:
-  - "namespace.yml"
-  - "configmap.yml"
-  - "rbac.yml"
-  - "deployment.yml"
-  - "service.yml"
-  loop_control:
-    loop_var: deployment_file
+    app_dir_name: "{{ data.name }}"

@@ -1,12 +1,10 @@
 ---
-
 apiVersion: v1
 kind: Namespace
 metadata:
   name: {{ namespace_name }}
 
 ---
-
 apiVersion: v1
 data:
   password: "{{ data.database.password | b64encode }}"
@@ -19,7 +17,6 @@ metadata:
 type: Opaque
 
 ---
-
 apiVersion: v1
 data:
   password: "{{ data.service.admin_password | b64encode }}"
@@ -32,7 +29,6 @@ metadata:
 type: Opaque
 
 ---
-
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -95,7 +91,6 @@ data:
     exit "$?"
 
 ---
-
 apiVersion: v1
 kind: Service
 metadata:
@@ -117,7 +112,6 @@ spec:
   type: NodePort
 
 ---
-
 apiVersion: v1
 kind: Service
 metadata:
@@ -142,7 +136,6 @@ spec:
   type: ClusterIP
 
 ---
-
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
@@ -180,7 +173,7 @@ spec:
             weight: 100
       initContainers:
       - name: "{{ auth_service_name }}-init"
-{% if data.use_local_image_registry is undefined or data.use_local_image_registry is sameas true %}
+{% if data.use_local_image_registry is undefined or (data.use_local_image_registry | bool) %}
         image: {{ image_registry_address }}/{{ data.image_path }}
 {% else %}
         image: {{ data.image_path }}
@@ -248,7 +241,7 @@ spec:
               name: "{{ auth_service_name }}-db"
         - name: X509_CA_BUNDLE
           value: "/var/run/secrets/kubernetes.io/serviceaccount/ca.crt"
-{% if data.use_local_image_registry is undefined or data.use_local_image_registry is sameas true %}
+{% if data.use_local_image_registry is undefined or (data.use_local_image_registry | bool) %}
         image: {{ image_registry_address }}/{{ data.image_path }}
 {% else %}
         image: {{ data.image_path }}

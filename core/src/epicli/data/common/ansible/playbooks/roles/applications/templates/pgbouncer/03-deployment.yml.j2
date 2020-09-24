@@ -1,4 +1,3 @@
-
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -19,7 +18,11 @@ spec:
     spec:
       containers:
         - name: pgbouncer
+{% if data.use_local_image_registry is undefined or (data.use_local_image_registry | bool) %}
           image: {{ image_registry_address }}/{{ data.image_path }}
+{% else %}
+          image: {{ data.image_path }}
+{% endif %}
           ports:
             - name: pgbouncer
               containerPort: 5432
@@ -47,7 +50,11 @@ spec:
               subPath: users.txt
       initContainers:
         - name: pgbouncer-init
-          image: {{ image_registry_address }}/{{ data.init_image_path }} 
+{% if data.use_local_image_registry is undefined or (data.use_local_image_registry | bool) %}
+          image: {{ image_registry_address }}/{{ data.init_image_path }}
+{% else %}
+          image: {{ data.init_image_path }}
+{% endif %}
           command:
             - /epiphany/scripts/init_users_passwd_file.sh
           envFrom:

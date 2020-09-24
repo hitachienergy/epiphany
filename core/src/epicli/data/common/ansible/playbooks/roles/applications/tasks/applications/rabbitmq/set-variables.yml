@@ -1,8 +1,4 @@
 ---
-- name: Set temp directory
-  set_fact:
-    configuration_temp_directory: "/home/{{ admin_user.name }}/epiphany-rabbitmq"
-
 - name: Set storage port if not set
   set_fact:
     amqp_port: "{{ data.rabbitmq.amqp_port | default(5672) }}"
@@ -25,7 +21,6 @@
   set_fact:
     rabbitmq_plugins: "{{ data.rabbitmq.plugins }}"
   when:
-    - data.rabbitmq is defined
     - data.rabbitmq.plugins is defined
     - data.rabbitmq.plugins | length > 0
 
@@ -33,7 +28,6 @@
   set_fact:
     rabbitmq_policies: "{{ data.rabbitmq.policies }}"
   when:
-    - data.rabbitmq is defined
     - data.rabbitmq.policies is defined
     - data.rabbitmq.policies | length > 0
 
@@ -41,6 +35,5 @@
   set_fact:
     custom_configurations: "{{ data.rabbitmq.custom_configurations }}"
   when:
-    - data.rabbitmq is defined
     - data.rabbitmq.custom_configurations is defined
     - data.rabbitmq.custom_configurations | length > 0

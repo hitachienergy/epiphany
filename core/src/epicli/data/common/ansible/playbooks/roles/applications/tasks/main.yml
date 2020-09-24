@@ -1,21 +1,29 @@
 ---
-- name: Wait until the cluster is available
-  shell: kubectl cluster-info
-  environment:
-    KUBECONFIG: /home/{{ admin_user.name }}/.kube/config
-  changed_when: false
-  retries: 50
-  delay: 1
-  register: result
-  until: result is succeeded
-
-- name: Include applications
-  include_tasks: applications/{{ item.name }}/main.yml
-  no_log: true # to hide sensitive data
-  vars:
-    data: "{{ item }}"
-  loop: "{{ specification.applications }}"
+- name: Deploy applications
   when:
-    - specification.applications is defined and specification.applications | length > 0
-    - item.enabled | default(True)
-    - groups['applications'][0] == inventory_hostname
+    - specification.applications is defined
+    - specification.applications | length > 0
+  always:
+    - name: Remove temporary directory (root)
+      file:
+        path: "{{ deployment_tmp_root_dir }}"
+        state: absent
+  block:
+    - name: Wait until cluster is available
+      include_tasks: wait-for-cluster.yml
+
+    - name: Include applications
+      include_tasks: applications/{{ data.name }}/main.yml
+      loop_control:
+        loop_var: data
+      loop: "{{ _enabled_applications }}"
+      vars:
+        _defined: >-
+          {{ specification.applications | selectattr('enabled', 'defined') | list }}
+
+        _undefined: >-
+          {{ specification.applications | selectattr('enabled', 'undefined') | list }}
+
+        # Respect user's conscious decisions, otherwise enable by default
+        _enabled_applications: >-
+          {{ (_defined | selectattr('enabled') | list) + _undefined }}

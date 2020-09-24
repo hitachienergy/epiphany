@@ -7,8 +7,9 @@ specification:
 ## --- ignite ---
 
   - name: ignite-stateless
-    enabled: no
+    enabled: false
     image_path: "apacheignite/ignite:2.5.0" # it will be part of the image path: {{local_repository}}/{{image_path}}
+    use_local_image_registry: true
     namespace: ignite
     service:
       rest_nodeport: 32300
@@ -19,13 +20,13 @@ specification:
     - ignite-kubernetes # required to work on K8s
     - ignite-rest-http
 
-# Abstract these configs to seperate default files and add 
+# Abstract these configs to seperate default files and add
 # the ability to add custom application roles.
 
 ## --- rabbitmq ---
 
   - name: rabbitmq
-    enabled: no
+    enabled: false
     image_path: rabbitmq:3.8.3
     use_local_image_registry: true
     #image_pull_secret_name: regcred # optional
@@ -55,7 +56,7 @@ specification:
 ## --- auth-service ---
 
   - name: auth-service # requires PostgreSQL to be installed in cluster
-    enabled: no
+    enabled: false
     image_path: jboss/keycloak:9.0.0
     use_local_image_registry: true
     #image_pull_secret_name: regcred
@@ -75,10 +76,11 @@ specification:
 ## --- pgpool ---
 
   - name: pgpool # this service requires PostgreSQL to be installed in cluster
-    enabled: no
+    enabled: false
     image:
       path: bitnami/pgpool:4.1.1-debian-10-r29
-      debug: no # ref: https://github.com/bitnami/minideb-extras/#turn-on-bash-debugging
+      debug: false # ref: https://github.com/bitnami/minideb-extras/#turn-on-bash-debugging
+    use_local_image_registry: true
     namespace: postgres-pool
     service:
       name: pgpool
@@ -115,7 +117,7 @@ specification:
         PGPOOL_SR_CHECK_USER: epi_pgpool_sr_check # with pg_monitor role, for streaming replication checks and health checks
         # ---
         PGPOOL_ADMIN_USERNAME: epi_pgpool_admin # Pgpool administrator (local pcp user)
-        PGPOOL_ENABLE_LOAD_BALANCING: yes # set to 'no' if there is no replication
+        PGPOOL_ENABLE_LOAD_BALANCING: true # set to 'false' if there is no replication
         PGPOOL_MAX_POOL: 4
         PGPOOL_POSTGRES_PASSWORD_FILE: /opt/bitnami/pgpool/secrets/pgpool_postgres_password
         PGPOOL_SR_CHECK_PASSWORD_FILE: /opt/bitnami/pgpool/secrets/pgpool_sr_check_password
@@ -138,10 +140,11 @@ specification:
 ## --- pgbouncer ---
 
   - name: pgbouncer
-    enabled: no
+    enabled: false
     #https://github.com/brainsam/pgbouncer/tree/release/1.12
     image_path: brainsam/pgbouncer:1.12
     init_image_path: bitnami/pgpool:4.1.1-debian-10-r29 #TODO: make reference to pgpool section
+    use_local_image_registry: true
     namespace: postgres-pool
     service:
       name: pgbouncer

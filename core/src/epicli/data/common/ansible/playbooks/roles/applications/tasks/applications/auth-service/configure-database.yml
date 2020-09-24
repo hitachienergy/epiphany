@@ -1,11 +1,14 @@
+---
 - name: Create database for Epiphany Auth Service
   delegate_to: "{{ groups['postgresql'] | first }}"
+  become: true
   become_user: postgres
   postgresql_db:
     name: "{{ data.database.name }}"
 
 - name: Add postresql user
   delegate_to: "{{ groups['postgresql'] | first }}"
+  become: true
   become_user: postgres
   postgresql_user:
     db: "{{ data.database.name }}"

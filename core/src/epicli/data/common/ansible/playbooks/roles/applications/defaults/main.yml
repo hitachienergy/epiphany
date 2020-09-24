@@ -1,3 +1,4 @@
+---
 postgresql_database_port: "5432"
-configuration_temp_directory: "/home/{{ admin_user.name }}/epiphany-auth"
 default_namespace: "default"
+deployment_tmp_root_dir: "{{ vault_location }}/applications"

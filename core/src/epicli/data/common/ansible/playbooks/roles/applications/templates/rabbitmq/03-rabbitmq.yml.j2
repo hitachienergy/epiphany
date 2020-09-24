@@ -21,6 +21,7 @@ spec:
      nodePort: {{ data.service.port }}
   selector:
     app: {{ rabbitmq_service_name }}
+
 ---
 apiVersion: v1
 kind: ConfigMap
@@ -32,10 +33,10 @@ data:
       [rabbitmq_management,rabbitmq_peer_discovery_k8s].
   rabbitmq.conf: |
       listeners.tcp.default = {{ amqp_port }}
-      # To allow custom configs like vm_memory_high_watermark define it via custom_configurations in data.yaml 
+      # To allow custom configs like vm_memory_high_watermark define it via custom_configurations in data.yaml
       {% if custom_configurations is defined %}
       {% for item in custom_configurations %}
-      {{ item.name }}                  = {{ item.value }} 
+      {{ item.name }}                  = {{ item.value }}
       {% endfor %}
       {% endif %}
       ## Cluster formation. See http://www.rabbitmq.com/cluster-formation.html to learn more.
@@ -59,7 +60,7 @@ data:
       queue_master_locator=min-masters
       ## See http://www.rabbitmq.com/access-control.html#loopback-users
       loopback_users.guest = false
-   
+
 ---
 apiVersion: apps/v1
 kind: StatefulSet
@@ -83,7 +84,7 @@ spec:
       terminationGracePeriodSeconds: 10
       containers:
       - name: {{ rabbitmq_service_name }}
-{% if data.use_local_image_registry is undefined or data.use_local_image_registry is sameas true %}
+{% if data.use_local_image_registry is undefined or (data.use_local_image_registry | bool) %}
         image: {{ image_registry_address }}/{{ data.image_path }}
 {% else %}
         image: {{ data.image_path }}

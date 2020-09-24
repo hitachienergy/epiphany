@@ -1,3 +1,4 @@
+---
 - name: Verify storage configuration
   assert:
     that: "not ({{ groups['postgresql'] | length }} == 0 and data.database.address is not defined)"
