@@ -18,8 +18,12 @@
         loop_var: data
       loop: "{{ _enabled_applications }}"
       vars:
-        # Application must be explicitly enabled to be included
+        _defined: >-
+          {{ specification.applications | selectattr('enabled', 'defined') | list }}
+
+        _undefined: >-
+          {{ specification.applications | selectattr('enabled', 'undefined') | list }}
+
+        # Respect user's conscious decisions, otherwise enable by default
         _enabled_applications: >-
-          {{ specification.applications | selectattr('enabled', 'defined')
-                                        | selectattr('enabled')
-                                        | list }}
+          {{ (_defined | selectattr('enabled') | list) + _undefined }}
