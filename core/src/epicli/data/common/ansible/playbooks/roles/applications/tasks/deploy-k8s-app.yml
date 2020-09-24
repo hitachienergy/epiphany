@@ -8,19 +8,60 @@
 - name: Deploy application
   vars:
     deployment_tmp_dir: "{{ deployment_tmp_root_dir }}/{{ app_dir_name }}"
+
+  no_log: true  # everything executed here is considered sensitive
+
   always:
     - &cleanup
-      name: Remove temporary directory
-      file:
-        path: "{{ deployment_tmp_dir }}"
-        state: absent
-  block:
-    - *cleanup  # to make sure there is no extra garbage inside the directory
+      name: Make sure sensitive data is removed from facts
+      set_fact:
+        rendered_templates: []
+        concatenated_templates: null
+        encrypted_templates: null
 
-    - name: Create directory for deployment files
-      file:
-        path: "{{ deployment_tmp_dir }}"
-        state: directory
+  rescue:
+    # This is handy after an error occurs
+    # The reason for employing encryption here is that rendered templates may contain sensitive data
+    # To decrypt and examine, run:
+    #  ansible-vault view ./debug.yml
+    - name: Encrypt and save templates (debug)
+      when:
+        - concatenated_templates is defined
+        - concatenated_templates | length > 0
+      block:
+        - name: Encrypt concatenated templates
+          command: ansible-vault encrypt_string --stdin-name output
+          args:
+            # For security reasons we do not store rendered templates on local hdd/ssd drives
+            stdin: "{{ concatenated_templates }}"
+          environment:
+            ANSIBLE_VAULT_PASSWORD_FILE: "{{ vault_tmp_file_location }}"
+          register: encrypted_templates
+          ignore_errors: true
+
+        - name: Save encrypted templates
+          when: encrypted_templates is success
+          block:
+            - name: Create temporary directory
+              file:
+                path: "{{ deployment_tmp_dir }}"
+                state: directory
+
+            - name: Save encrypted templates into a file
+              copy:
+                dest: "{{ deployment_tmp_dir }}/debug.yml"
+                # To be able to successfully parse yaml payload we need to remove the custom "!vault" tag
+                content: >-
+                  {{ (encrypted_templates.stdout | regex_replace('!vault', '') | from_yaml).output }}
+                decrypt: false
+
+    - name: Print original error and fail
+      fail:
+        msg: "{{ ansible_failed_result }}"
+      no_log: false  # needed for displaying what went wrong
+
+  block:
+    - *cleanup
 
     - name: Find all template files
       find:
@@ -28,20 +69,33 @@
         patterns: "*.yml.j2"
         recurse: false
       register: find_template_files
-      no_log: true  # improve log readability
 
-    - name: Render templates
-      template:
-        dest: "{{ deployment_tmp_dir }}/{{ item }}"
-        src: "{{ app_dir_name }}/{{ item }}.j2"
-        mode: u=rw,go=  # may contain secrets
-      # Extract paths and drop .j2 extensions
+    - name: Render all templates and keep contents in facts (temporarily)
+      set_fact:
+        rendered_templates: >-
+          {{ rendered_templates + [lookup('template', item)] }}
       loop: >-
-        {{ find_template_files.files | map(attribute='path')
-                                     | map('basename')
-                                     | map('splitext')
-                                     | map('first')
-                                     | sort }}
+        {{ find_template_files.files | map(attribute='path') | sort }}
+
+    - name: Parse, cleanup and concatenate templates
+      set_fact:
+        # 1. Parse all yaml documents
+        # 2. Remove all empty documents
+        # 3. Render all non-empty documents
+        # 4. Concatenate all non-empty documents into a single multi-document string
+        concatenated_templates: >-
+          {{ rendered_templates | map('from_yaml_all')
+                                | map('select')
+                                | map('list')
+                                | flatten
+                                | map('to_nice_yaml', indent=2)
+                                | join(_newline ~ '---' ~ _newline) }}
+      vars:
+        # This helps overcoming jinja2 limitations
+        _newline: "\n"
 
     - name: Deploy k8s resources
-      command: kubectl apply -f {{ deployment_tmp_dir }}
+      command: kubectl apply -f-
+      args:
+        # For security reasons we do not store rendered templates on local hdd/ssd drives
+        stdin: "{{ concatenated_templates }}"
