@@ -1,6 +1,10 @@
 # {{ ansible_managed }}
 [Unit]
-After=network.target
+Description=HAProxy Load Balancer
+After=network-online.target
+After=rsyslog.service
+Requires=rsyslog.service
+Wants=network-online.target
 
 [Service]
 Type=forking
