@@ -1,7 +1,4 @@
 ---
-- name: Include gathering facts tasks
-  include_tasks: set_facts.yml
-
 - name: Check if {{ pid_file }} file exists
   stat:
     path: "{{ pid_file }}"
@@ -10,29 +7,44 @@
     get_mime: false
   register: autossh_pid_file_stat
   vars:
-    pid_file: "{{ k8s_api_server.autossh_pid_file_path }}"
+    pid_file: "{{ autossh_pid_file_path }}"
 
-- name: Close SSH tunnel to K8s master
+- name: Close SSH tunnel to {{ssh_tunnel_ip}}:{{ssh_tunnel_port}}
   when: autossh_pid_file_stat.stat.exists
   block:
-    - name: Close SSH tunnel to K8s master
+    - name: Close SSH tunnel to {{ssh_tunnel_ip}}:{{ssh_tunnel_port}}
       # kill autossh (ssh is child process), $AUTOSSH_PIDFILE is auto-removed
       shell: |-
         AUTOSSH_PID=$(<$AUTOSSH_PIDFILE)
-        echo "Processes to kill:"
-        pstree -p "$AUTOSSH_PID"
-        kill "$AUTOSSH_PID"
+        PID_PROCESS_NAME=$(ps -q $AUTOSSH_PID -o comm=)
+        if [ "$PID_PROCESS_NAME" == "autossh" ]; then
+          echo "Processes to kill:"
+          pstree -p "$AUTOSSH_PID"
+          kill "$AUTOSSH_PID"
+        else
+          echo "autossh process from PID file not found ($AUTOSSH_PID)"
+          exit 3
+        fi
       register: shell_output
+      changed_when: shell_output.rc != 3
+      failed_when: shell_output.rc not in [0, 3]
       environment:
-        AUTOSSH_PIDFILE: "{{ k8s_api_server.autossh_pid_file_path }}"
+        AUTOSSH_PIDFILE: "{{ autossh_pid_file_path }}"
 
     - name: Print shell output
       debug:
         var: shell_output.stdout_lines
 
-- name: Assert port {{ k8s_api_server_port }} is free
+    # autossh leaves PID file when killed with SIGKILL
+    - name: Clean up orphaned PID file
+      file:
+        state: absent
+        path: "{{ autossh_pid_file_path }}"
+      when: shell_output.rc == 3
+
+- name: Assert port {{ ssh_tunnel_port }} is free
   wait_for:
-    port: "{{ k8s_api_server_port }}"
+    port: "{{ ssh_tunnel_port }}"
     state: stopped
     timeout: 5
-    msg: Port {{ k8s_api_server_port }} is already in use
+    msg: Port {{ ssh_tunnel_port }} is already in use

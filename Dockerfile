@@ -24,7 +24,7 @@ COPY --from=build-epicli-wheel /src/core/src/epicli/dist/ /epicli/
 
 RUN apt-get update \
     && apt-get install --no-install-recommends -y \
-        autossh curl gcc jq libffi-dev make musl-dev openssh-client procps psmisc ruby-full sudo tar unzip vim \
+        autossh curl gcc jq libcap2-bin libffi-dev make musl-dev openssh-client procps psmisc ruby-full sudo tar unzip vim \
 \
     && echo "Installing helm binary ..." \
     && curl -fsSLO https://get.helm.sh/helm-v${HELM_VERSION}-linux-amd64.tar.gz \
@@ -36,6 +36,8 @@ RUN apt-get update \
     && chmod +x ./kubectl \
     && mv ./kubectl /usr/local/bin/kubectl \
     && kubectl version --client \
+\
+    && setcap 'cap_net_bind_service=+ep' /usr/bin/ssh \
 \
     && gem install \
         rake rspec_junit_formatter serverspec \

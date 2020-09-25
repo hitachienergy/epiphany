@@ -1,0 +1,13 @@
+---
+- name: Set helm autossh log and pid files
+  set_fact:
+    autossh_log_file_path: /tmp/autossh-helm-repository-tunnel.log
+    autossh_pid_file_path: /tmp/autossh-helm-repository-tunnel.pid
+
+- name: Set helm repository secure port
+  set_fact:
+    ssh_tunnel_port: 80
+
+- name: Set IP of the repository (from inventory)
+  set_fact:
+    ssh_tunnel_ip: "{{ hostvars[groups.repository[0]].ansible_host }}"
