@@ -27,12 +27,22 @@
       debug:
         var: shell_output.stdout_lines
   rescue:
-    - name: Removing PID after failing to close the autossh process
-      # if we fail to kill autossh we might have an $AUTOSSH_PIDFILE file
-      # but no process, so lets remove it and continue
+    # if we fail to kill autossh we might have an $AUTOSSH_PIDFILE file
+    # but no process, so lets check if the PID is not from any
+    # autossh process and if not remove it.
+    - name: Get PID process name
+      shell: |-
+        AUTOSSH_PID=$(<$AUTOSSH_PIDFILE)
+        ps -p $AUTOSSH_PID -o comm= || true
+      register: shell_output
+      environment:
+        AUTOSSH_PIDFILE: "{{ autossh_pid_file_path }}"
+
+    - name: Clean up PID file after failing to close the autossh process
       file:
         state: absent
         path: "{{ autossh_pid_file_path }}"
+      when: '"autossh" not in shell_output.stdout'
 
 - name: Assert port {{ ssh_tunnel_port }} is free
   wait_for:
