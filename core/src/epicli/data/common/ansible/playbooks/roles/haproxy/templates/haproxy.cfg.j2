@@ -31,6 +31,7 @@ defaults
 frontend {{ front.name }}
     {%- if front.https is defined and front.https == True %}
     mode tcp
+    option tcplog
     bind *:{{ front.port }} ssl {% for cert_name in haproxy_certs_names.files %}crt {{ cert_name.path }} {% endfor %}
     {%- else %}
     bind *:{{ front.port }}

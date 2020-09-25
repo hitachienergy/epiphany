@@ -1,14 +1,19 @@
 # {{ ansible_managed }}
 [Unit]
-After=network.target
+Description=HAProxy Load Balancer
+After=network-online.target
+After=rsyslog.service
+Requires=rsyslog.service
+Wants=network-online.target
 
 [Service]
 Type=forking
 WorkingDirectory={{ haproxy_dir }}
-ExecStart={{ runc_binary }} run --detach {{ haproxy_service }}
+ExecStart={{ runc_binary }} run --detach --pid-file /run/{{ haproxy_service }}.pid {{ haproxy_service }}
 ExecReload={{ runc_binary }} kill {{ haproxy_service }} SIGUSR2
-ExecStop={{ runc_binary }} kill {{ haproxy_service }} SIGUSR1
 ExecStopPost={{ runc_binary }} delete {{ haproxy_service }}
+PIDFile=/run/{{ haproxy_service }}.pid
+Restart=always
 
 [Install]
 WantedBy=multi-user.target
