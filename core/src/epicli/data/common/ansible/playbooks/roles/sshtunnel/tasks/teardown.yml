@@ -16,33 +16,31 @@
       # kill autossh (ssh is child process), $AUTOSSH_PIDFILE is auto-removed
       shell: |-
         AUTOSSH_PID=$(<$AUTOSSH_PIDFILE)
-        echo "Processes to kill:"
-        pstree -p "$AUTOSSH_PID"
-        kill "$AUTOSSH_PID"
+        PID_PROCESS_NAME=$(ps -q $AUTOSSH_PID -o comm=)
+        if [ "$PID_PROCESS_NAME" == "autossh" ]; then
+          echo "Processes to kill:"
+          pstree -p "$AUTOSSH_PID"
+          kill "$AUTOSSH_PID"
+        else
+          echo "autossh process from PID file not found ($AUTOSSH_PID)"
+          exit 3
+        fi
       register: shell_output
+      changed_when: shell_output.rc != 3
+      failed_when: shell_output.rc not in [0, 3]
       environment:
         AUTOSSH_PIDFILE: "{{ autossh_pid_file_path }}"
 
     - name: Print shell output
       debug:
         var: shell_output.stdout_lines
-  rescue:
-    # if we fail to kill autossh we might have an $AUTOSSH_PIDFILE file
-    # but no process, so lets check if the PID is not from any
-    # autossh process and if not remove it.
-    - name: Get PID process name
-      shell: |-
-        AUTOSSH_PID=$(<$AUTOSSH_PIDFILE)
-        ps -p $AUTOSSH_PID -o comm= || true
-      register: shell_output
-      environment:
-        AUTOSSH_PIDFILE: "{{ autossh_pid_file_path }}"
 
-    - name: Clean up PID file after failing to close the autossh process
+    # autossh leaves PID file when killed with SIGKILL
+    - name: Clean up orphaned PID file
       file:
         state: absent
         path: "{{ autossh_pid_file_path }}"
-      when: '"autossh" not in shell_output.stdout'
+      when: shell_output.rc == 3
 
 - name: Assert port {{ ssh_tunnel_port }} is free
   wait_for:
