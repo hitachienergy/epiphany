@@ -23,4 +23,5 @@ class APIProxy:
                 machine_doc = select_first(self.config_docs,
                                            lambda x: x.kind == 'infrastructure/machine' and x.name == machine)
                 result.append(AnsibleHostModel(machine_doc.specification.hostname, machine_doc.specification.ip))
+        result.sort(key=lambda x: x.name, reverse=False)
         return result
