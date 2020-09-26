@@ -11,7 +11,7 @@ class APIProxy:
         credentials = self.cluster_model.specification.cloud.credentials
         self.session = boto3.session.Session(aws_access_key_id=credentials.key,
                                              aws_secret_access_key=credentials.secret,
-                                             region_name=self.cluster_model.specification.cloud.region)        
+                                             region_name=self.cluster_model.specification.cloud.region)
 
     def __enter__(self):
         return self
@@ -51,6 +51,7 @@ class APIProxy:
                 result.append(AnsibleHostModel(instance.public_dns_name, instance.public_ip_address))
             else:
                 result.append(AnsibleHostModel(instance.private_dns_name, instance.private_ip_address))
+        result.sort(key=lambda x: x.name, reverse=False)
         return result
 
     def get_image_id(self, os_full_name):
