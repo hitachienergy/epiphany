@@ -1,4 +1,4 @@
-## Centralized logging setup
+# Centralized logging setup
 
 For centralized logging Epiphany uses [OpenDistro for Elasticsearch](https://opendistro.github.io/for-elasticsearch/).
 In order to enable centralized logging, be sure that `count` property for `logging` feature is greater than 0 in your configuration manifest.
@@ -19,7 +19,8 @@ specification:
     ...
 ```
 
-### Default feature mapping for logging:
+## Default feature mapping for logging
+
 ```yaml
     ...
     logging:
@@ -50,7 +51,8 @@ specification:
     logs: /var/log/elasticsearch
 ```
 
-### How to export Elasticsearch data to csv format
+## How to export Elasticsearch data to csv format
+
 Since v0.8 Epiphany provide posibility to export data from Elasticsearch to CSV using Logstash *(logstash-oss v7.8.1*) along with *logstash-input-elasticsearch (v4.6.2)* and *logstash-output-csv (v3.0.8)* plugin.
 
 To install Logstash in your cluster add **logstash** to feature mapping for *logging, opendistro_for_elasticsearch* or *elasticsearch* group.
@@ -75,14 +77,16 @@ For non-production environment you can easly disable it by adding new line:
 `ssl_options[:verify] = false` right after other ssl_options definitions in file:  
 `/usr/share/logstash/vendor/bundle/jruby/2.5.0/gems/logstash-input-elasticsearch-4.6.2/lib/logstash/inputs/elasticsearch.rb`
 
-### How to add multiline support for Filebeat logs
+## How to add multiline support for Filebeat logs
+
 In order to properly handle multilines in files harvested by Filebeat you have to provide `multiline` definition in the configuration manifest. Using the following code you will be able to specify which lines are part of a single event.
 
 By default postgresql block is provided, you can use it as example:  
 ```yaml
   postgresql_input:
     multiline:
-      pattern: '^\d{4}-\d{2}-\d{2} '
+      pattern: >-
+        '^\d{4}-\d{2}-\d{2} '
       negate: true
       match: after
 ```
