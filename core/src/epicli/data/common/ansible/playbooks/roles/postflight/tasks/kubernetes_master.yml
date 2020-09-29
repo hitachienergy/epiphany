@@ -1,10 +1,10 @@
 ---
-- name: POSTFLIGHT | Remove local kubeconfig file
+- name: Remove local kubeconfig file
   delegate_to: localhost
   become: false
   run_once: true
   file:
-    path: "{{ inventory_dir }}/kubeconfig"
+    path: "{{ kubeconfig.local }}"
     state: absent
   when:
     # If "kubernetes_master" group is non-empty then we assume the "kubeconfig" file comes

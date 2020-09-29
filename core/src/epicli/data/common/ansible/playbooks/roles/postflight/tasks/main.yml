@@ -1,4 +1,4 @@
 ---
-- name: POSTFLIGHT | Handle cleanups after kubernetes_master role is done
+- name: Handle cleanups after kubernetes_master role is done
   include_tasks:
     file: kubernetes_master.yml
