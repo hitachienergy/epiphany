@@ -13,9 +13,6 @@
     - import_role:
         name: kubernetes_common
         tasks_from: main
-    - import_role:
-        name: kubernetes_master
-        tasks_from: copy-kubeconfig
   environment:
     KUBECONFIG: "{{ kubeconfig.remote }}"
 
@@ -28,11 +25,3 @@
     - import_role:
         name: kubernetes_promote
         tasks_from: update-kubelet
-
-- hosts: kubernetes_node
-  become: true
-  become_method: sudo
-  post_tasks:
-    - import_role:
-        name: kubernetes_master
-        tasks_from: remove-kubeconfig
