@@ -1,7 +1,18 @@
 ---
-- hosts: helm
-  become: true
-  become_method: sudo
-  become_flags: --login
+- hosts: 127.0.0.1
+  gather_facts: false
+  connection: local
+  become: false
   roles:
-    - helm
+    - role: helm
+      when:
+        - groups.helm is defined
+        - groups.helm | length > 0
+        - groups.repository is defined
+        - groups.repository | length > 0
+  environment:
+    # The "inventory_dir" fact cannot be used here.
+    # Documentation (https://docs.ansible.com/ansible/latest/inventory/implicit_localhost.html) states:
+    # - The inventory_file and inventory_dir magic variables are not available for the implicit localhost as they are dependent on each inventory host.
+    # TODO: https://github.com/epiphany-platform/epiphany/issues/1650
+    KUBECONFIG: "{{ vault_location }}/../kubeconfig"

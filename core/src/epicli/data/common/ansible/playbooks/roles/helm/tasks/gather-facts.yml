@@ -1,8 +1,0 @@
----
-- name: Produce final list of hosts to deploy Helm chart sources on
-  set_fact:
-    target_repository_hostnames: >-
-      {{ groups.helm | difference(available_masters) | union([resolved_repository_hostname]) | unique }}
-  vars:
-    available_masters: >-
-      {{ groups.kubernetes_master | default([]) }}
