@@ -8,14 +8,13 @@
   become_method: sudo
   pre_tasks:
     - import_role:
-        name: kubernetes_master
-        tasks_from: noop  # just to include role vars
-    - import_role:
         name: docker
         tasks_from: main
     - import_role:
         name: kubernetes_common
         tasks_from: main
+  vars_files:
+    - roles/kubernetes_master/vars/main.yml
   environment:
     KUBECONFIG: "{{ kubeconfig.remote }}"
 

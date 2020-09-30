@@ -1,3 +1,0 @@
----
-# This task file is only here to allow including vars from kubernetes_master role without
-# the need for actually executing any tasks.
