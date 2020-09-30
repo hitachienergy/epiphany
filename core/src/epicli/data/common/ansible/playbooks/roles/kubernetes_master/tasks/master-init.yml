@@ -52,21 +52,6 @@
     name: kubernetes_common
     tasks_from: configure-kubelet
 
-- name: Create .kube
-  file:
-    path: /home/{{ admin_user.name }}/.kube
-    state: directory
-    owner: "{{ admin_user.name }}"
-    group: "{{ admin_user.name }}"
-
-- name: Create .kube/config
-  copy:
-    src: /etc/kubernetes/admin.conf
-    dest: /home/{{ admin_user.name }}/.kube/config
-    remote_src: yes
-    owner: "{{ admin_user.name }}"
-    group: "{{ admin_user.name }}"
-
 - name: Configure RBAC
   include_tasks: rbac.yml
 

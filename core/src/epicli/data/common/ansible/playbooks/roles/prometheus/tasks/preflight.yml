@@ -6,19 +6,11 @@
 #  delegate_to: "{{ master_hostname }}"
 #
 #- name: apply rolebinding to k8s for prometheus
-#  become: yes
-#  become_user: "{{ admin_user.name }}"
-#  environment:
-#    KUBECONFIG: "/home/{{ admin_user.name }}/.kube/config"
 #  shell: "kubectl apply -f /home/{{ admin_user.name }}/k8s-rolebinding.yml"
 #  run_once: true
 #  delegate_to: "{{ master_hostname }}"
 #
 #- name: Get kubernetes bearer token for prometheus
-#  become: yes
-#  become_user: "{{ admin_user.name }}"
-#  environment:
-#    KUBECONFIG: "/home/{{ admin_user.name }}/.kube/config"
 #  shell: kubectl describe secret $(kubectl get secrets --namespace=default | grep prometheus | awk '{print $1}') --namespace=default | grep -E '^token' | awk '{print $2}' | head -1
 #  register: kube_token
 #  delegate_to: "{{ master_hostname }}"

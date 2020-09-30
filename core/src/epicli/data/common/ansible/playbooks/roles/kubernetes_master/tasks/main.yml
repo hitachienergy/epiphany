@@ -36,7 +36,7 @@
   register: apiserver_certificate_info
 
 - name: Regenerate apiserver certificates
-  when: kubernetes_common.automation_designated_master != inventory_hostname or not is_first_deployment 
+  when: kubernetes_common.automation_designated_master != inventory_hostname or not is_first_deployment
 # It's almost always necessary to regenerate apiserver certificates for designated and non-designated masters
 # because of a few points:
 # a. Update certificates for old clusters have to be supported
@@ -48,8 +48,8 @@
         update:
           apiServer:
             certSANs: >-
-              {{ (groups['kubernetes_master'] | map('extract', hostvars, ['ansible_default_ipv4', 'address']) | list) 
-              + (groups['kubernetes_master'] | map('extract', hostvars, ['ansible_host']) | list) 
+              {{ (groups['kubernetes_master'] | map('extract', hostvars, ['ansible_default_ipv4', 'address']) | list)
+              + (groups['kubernetes_master'] | map('extract', hostvars, ['ansible_host']) | list)
               + [ 'localhost', '127.0.0.1' ] | unique }}
       include_role:
         name: kubernetes_common
@@ -63,7 +63,7 @@
 # See https://kubernetes.io/docs/tasks/administer-cluster/kubeadm/kubeadm-certs/#manual-certificate-renewal
 - name: Update apiserver certificate expiration date
   when: not (specification.advanced.certificates.renew | bool)
-  block:  
+  block:
     - name: Regenerate apiserver certificate with previous expiration value
       vars:
         certificates_renewal_list:
@@ -90,7 +90,7 @@
   when: specification.advanced.certificates.renew | bool
   vars:
     valid_days: "{{ specification.advanced.certificates.expiration_days }}"
-    restart_services: 
+    restart_services:
       - docker
   include_tasks: generate-certificates.yml
 
