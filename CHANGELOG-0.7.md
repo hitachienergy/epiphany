@@ -1,5 +1,11 @@
 # Changelog 0.7
 
+## [0.7.2] 2020-10-02
+
+### Fixed
+
+- [#1705](https://github.com/epiphany-platform/epiphany/issues/1705) - [RHEL/CentOS] epicli fails on downloading requirements - Docker CE repo not available
+
 ## [0.7.1] 2020-08-12
 
 ### Added
