@@ -114,19 +114,20 @@ filebeat.inputs:
 
   processors:
     - add_docker_metadata:
+        labels.dedot: false
     - rename:
         fields:
-          - from: docker.container.labels.io.kubernetes.container.name
+          - from: container.labels.io.kubernetes.container.name
             to: kubernetes.container.name
-          - from: docker.container.labels.io.kubernetes.pod.name
+          - from: container.labels.io.kubernetes.pod.name
             to: kubernetes.pod.name
-          - from: docker.container.labels.io.kubernetes.pod.namespace
+          - from: container.labels.io.kubernetes.pod.namespace
             to: kubernetes.namespace
         ignore_missing: true
         fail_on_error: true
     - drop_fields:
         fields:
-          - docker # Drop all fields added by 'add_docker_metadata' that were not renamed
+          - container # Drop all fields added by 'add_docker_metadata' that were not renamed
 {% endif %}
 
 # ============================== Filebeat modules ==============================
