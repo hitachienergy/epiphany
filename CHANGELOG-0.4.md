@@ -4,6 +4,7 @@
 
 ### Fixed
 
+- [#1705](https://github.com/epiphany-platform/epiphany/issues/1705) - [RHEL/CentOS] epicli fails on downloading requirements - Docker CE repo not available
 - [#1507](https://github.com/epiphany-platform/epiphany/issues/1507) - v0.4 Terraform returning an error during deployments on Azure ("A retryable error occurred.")
 - [#1350](https://github.com/epiphany-platform/epiphany/issues/1350) - Cannot deploy a non-k8s cluster with load\_balancer vm
 
