@@ -7,20 +7,30 @@
     group: elasticsearch
     mode: u=rwx,go=
 
-- name: Create Elasticsearch configuration file
+- name: Provide jvm configuration file
+  template:
+    src: jvm.options.j2
+    dest: /etc/elasticsearch/jvm.options
+    owner: elasticsearch
+    group: root
+    mode: ug=rw,o=
+  register: change_jvm_config
+
+- name: Provide Elasticsearch configuration file
   template:
     src: elasticsearch.yml.j2
     dest: /etc/elasticsearch/elasticsearch.yml
     owner: elasticsearch
     group: root
-    mode: 0644
+    mode: ug=rw,o=
   register: change_config
 
 - name: Restart elasticsearch service
   systemd:
     name: elasticsearch
     state: restarted
-  when: change_config.changed
+  when:
+    - change_config.changed or change_jvm_config.changed
 
 - name: Enable and start elasticsearch service
   systemd:
