@@ -2,18 +2,19 @@
 
 This document describes the Security Groups layout which is used to deploy Epiphany Platform in AWS or Azure. You will find the default configuration here, as well as examples of adding own rules. 
 
-## Contents
+## Table of Contents
 
 - [Security groups created by default](#security-groups-created-by-default)
 - [Setting own security groups](#setting-own-security-groups)
 - [Example](#example)
 
-### Security groups created by default
+## Security groups created by default
 
 By default Epiphany is creating security groups required to handle communication by all components (like postgress/rabbitmq etc). This enables the smooth communication between all of them. List of all security groups and related services are described [here](https://github.com/epiphany-platform/epiphany/blob/develop/core/src/epicli/data/aws/defaults/infrastructure/).
 
 Rules description:
-```
+
+```yaml
 - name:                       "Name of the rule"
   description:                "Short rule description"
   priority:                   "Rule priority; which rules should be considered as first-used basing on lowest number"
@@ -28,7 +29,8 @@ Rules description:
 
 Lets look into example of Prometheus machine setup, and rules required to allow connection from other network into Prometheus host.
 The rule:
-```
+
+```yaml
 - name: prometheus
   description: Allow connection to Prometheus
   priority: 302
@@ -40,19 +42,23 @@ The rule:
   source_address_prefix: "10.1.0.0/20"
   destination_address_prefix: "0.0.0.0/0"
 ```
+
 As we see, on this example, we are seting new rule name "prometheus", with priority 302, which is allowing accesses from local network "10.1.0.0/20" into Prometheus application host on port 9090. Note, that here we set dest "0.0.0.0/0" address and source 10.1.0.0/20, as those are the default configurations in Epiphany used if noone specify others. This might be adjusted in case you're using difrent addresses. 
 
 
-### Setting own security groups
+## Setting own security groups
+
 Sometimes, there is a need to set additional security rules for some application which we're deploying in epiphany kubernetes cluster. Than, we need to stick into following rules:
 - Whenever we want to add new rule - for example open port "222", we should *COPY* all current roles into our deployment .yaml file, and at the end, add the rule which we want.
+
 - Each component has his own rule-set, so we need to be very carefull where we're putting them.
 - After adding new rules, and infra part is done (terraform), we can go into terraform build directory and check if fiiles contain our port definition.
 
-###### Example
+**Example:**
+
 Please check bellow example, how to setup basic epiphany cluster in AWS with 1 master, 2 nodes, and open accesses to all hosts on port 10051 from monitoring network.
 
-```
+```yaml
 kind: epiphany-cluster
 name: default
 provider: aws
