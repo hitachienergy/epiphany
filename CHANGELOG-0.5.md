@@ -1,9 +1,10 @@
 # Changelog 0.5
 
-## [0.5.5] 2020-XX-XX
+## [0.5.5] 2020-10-02
 
 ### Fixed
 
+- [#1705](https://github.com/epiphany-platform/epiphany/issues/1705) - [RHEL/CentOS] epicli fails on downloading requirements - Docker CE repo not available
 - [#1506](https://github.com/epiphany-platform/epiphany/issues/1506) - v0.5 Terraform returning an error during deployments on Azure ("A retryable error occurred.")
 - [#1350](https://github.com/epiphany-platform/epiphany/issues/1350) - Cannot deploy a non-k8s cluster with load\_balancer vm
 
