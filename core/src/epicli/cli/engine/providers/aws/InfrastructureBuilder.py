@@ -85,7 +85,7 @@ class InfrastructureBuilder(Step):
 
             for security_group in security_groups_to_create:
                 for rule in autoscaling_group.specification.security.rules:
-                    if self.rule_exists_in_list(security_group.specification.rules, rule) == False:
+                    if not self.rule_exists_in_list(security_group.specification.rules, rule):
                         security_group.specification.rules.append(rule)
 
             launch_configuration = self.get_launch_configuration(autoscaling_group, component_key,

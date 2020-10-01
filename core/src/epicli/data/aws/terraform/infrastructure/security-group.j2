@@ -39,6 +39,5 @@ resource "aws_security_group" "{{ specification.name }}" {
     cidr_blocks = ["{{ rule.destination_address_prefix }}"]
   {%- endif %}
   }
-
 {%- endfor %}
 }
