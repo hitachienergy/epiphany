@@ -21,7 +21,7 @@
       loop: "{{ system_charts_dir_list.files }}"
 
     - name: Generate index.yaml file
-      shell: helm repo index {{ specification.apache_epirepo_path }}/helm-charts/system/ --url {{ repository_url }}/helm-charts/system
+      shell: helm repo index {{ specification.apache_epirepo_path }}/helm-charts/system/ --url http://localhost/epirepo/helm-charts/system
       args:
         executable: /bin/bash
 

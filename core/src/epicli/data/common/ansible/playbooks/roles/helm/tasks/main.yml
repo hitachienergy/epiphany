@@ -1,48 +1,42 @@
 ---
-- import_tasks: gather-facts.yml
+
+- name: Check system index file existence
+  uri:
+    url: http://localhost/epirepo/helm-charts/system/index.yaml
+    method: HEAD
+  register: uri_index_test
+      # fail with error if status is unexpected
+  failed_when: uri_index_test.status not in [200, 404]
 
 - name: Deploy the "system" Helm charts
-  when: inventory_hostname == target_repository_hostnames[0]  # execute on the main repository host only
   block:
     - name: Check if Helm chart repo already exists
-      shell: |
-        helm repo list | grep {{ helm_chart_repo_name }}
+      shell: helm repo list | grep -w "{{ helm_chart_repo_name }}"
       register: helm_repo_list
       failed_when: (helm_repo_list.rc != 0 and not 'no repositories' in helm_repo_list.stderr)
                    or helm_repo_list.rc > 1
 
-    - name: "Check if files exist in {{ specification.apache_epirepo_path }}/helm-charts/system"
-      find:
-        paths: "{{ specification.apache_epirepo_path }}/helm-charts/system"
-      register: helm_charts_files_number
+    - name: Get Helm charts list from repo before update
+      shell: helm search repo {{ helm_chart_repo_name }} --output json | jq -r '.[].name'
+      register: helm_charts_list_before_update
+      failed_when: (helm_charts_list_before_update.rc != 0 and not 'no repositories' in helm_charts_list_before_update.stderr)
+                   or helm_charts_list_before_update.rc > 1
 
-    - name: Add Helm chart repo and install charts
-      when: helm_charts_files_number.matched > 1
-      block:
-        - name: Get Helm charts list from repo before update
-          shell: |
-            helm search repo {{ helm_chart_repo_name }} --output json | jq -r '.[].name'
-          register: helm_charts_list_before_update
+    - name: "Add {{ helm_chart_repo_name }} Helm repository from url http://localhost/epirepo"
+      shell: helm repo add {{ helm_chart_repo_name }} http://localhost/epirepo/helm-charts/system
+      when: helm_chart_repo_name not in helm_repo_list.stdout
 
-        - name: "Add {{ helm_chart_repo_name }} Helm repository from url {{ repository_url }}"
-          shell: |
-            helm repo add {{ helm_chart_repo_name }} {{ repository_url }}/helm-charts/system
-          when:
-            - helm_chart_repo_name not in helm_repo_list.stdout
+    - name: Update Helm repo
+      shell: helm repo update
 
-        - name: Update Helm repo
-          shell: |
-            helm repo update
+    - name: Get Helm charts list from repo after update
+      shell: helm search repo {{ helm_chart_repo_name }} --output json | jq -r '.[].name'
+      register: helm_charts_list_after_update
 
-        - name: Get Helm charts list from repo after update
-          shell: |
-            helm search repo {{ helm_chart_repo_name }} --output json | jq -r '.[].name'
-          register: helm_charts_list_after_update
-
-        - name: Delete Helm charts not present in repository
-          shell: |
-            helm delete {{ chart_subname }} --purge
-          vars:
-            chart_subname: "{{ item.split('/')[1] }}"
-          loop: "{{ helm_charts_list_before_update.stdout_lines }}"
-          when: item not in helm_charts_list_after_update.stdout_lines
+    - name: Delete Helm charts not present in repository
+      shell: helm delete {{ chart_subname }} --purge
+      vars:
+        chart_subname: "{{ item.split('/')[1] }}"
+      loop: "{{ helm_charts_list_before_update.stdout_lines }}"
+      when: item not in helm_charts_list_after_update.stdout_lines
+  when: uri_index_test.status == 200 # whole block of code is supposed to be executed only if system charts exist

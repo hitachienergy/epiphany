@@ -7,11 +7,6 @@
   set_fact:
     api_server_address: "https://{{ master_hostname }}:6443"
 
-- name: Set Kubernetes credentials
-  import_role:
-    name: kubernetes_master
-    tasks_from: copy-kubeconfig
-
 - name: Apply rolebinding to K8s for Prometheus
   become: false
   command: "kubectl apply -f {{ role_path }}/files/k8s-rolebinding.yml"
