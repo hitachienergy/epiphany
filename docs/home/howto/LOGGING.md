@@ -90,5 +90,5 @@ By default postgresql block is provided, you can use it as example:
       negate: true
       match: after
 ```
-Currently supported inputs: `common_input`,`postgresql_input`,`docker_input`  
+Currently supported inputs: `common_input`,`postgresql_input`,`container_input`  
 More details about multiline options you can find in the [official documentation](https://www.elastic.co/guide/en/beats/filebeat/current/multiline-examples.html)

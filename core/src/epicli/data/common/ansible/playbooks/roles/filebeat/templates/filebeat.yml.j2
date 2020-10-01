@@ -102,12 +102,13 @@ filebeat.inputs:
 # K8s metadata are fetched from Docker labels to not make Filebeat on worker nodes dependent on K8s master
 # since Filebeat should start even if K8s master is not available.
 
-- type: docker
+- type: container
   enabled: true
-  containers.ids: "*"
-  {% if specification.docker_input.multiline is defined -%}
+  paths:
+    - /var/lib/docker/containers/*/*.log
+  {% if specification.container_input.multiline is defined -%}
   multiline:
-  {% for k, v in specification.docker_input.multiline.items() %}
+  {% for k, v in specification.container_input.multiline.items() %}
   {{ k }}: {{ v }}
   {% endfor %}
   {% endif %}
