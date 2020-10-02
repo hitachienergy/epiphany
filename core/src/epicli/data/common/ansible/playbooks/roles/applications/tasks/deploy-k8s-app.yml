@@ -63,6 +63,18 @@
   block:
     - *cleanup
 
+    - name: Decide if internal docker registry will be used
+      set_fact:
+        use_epiphany_image_registry: >-
+          {{ (not _k8s_as_cloud_service) and _use_local_image_registry }}
+      vars:
+        # Be extra paranoid
+        _k8s_as_cloud_service: >-
+          {{ k8s_as_cloud_service | bool }}
+        # Enable by default
+        _use_local_image_registry: >-
+          {{ (data.use_local_image_registry is undefined) or (data.use_local_image_registry | bool) }}
+
     - name: Find all template files
       find:
         path: "{{ role_path }}/templates/{{ app_dir_name }}/"

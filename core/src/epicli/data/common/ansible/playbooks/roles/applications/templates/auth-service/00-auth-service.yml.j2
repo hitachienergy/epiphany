@@ -173,7 +173,7 @@ spec:
             weight: 100
       initContainers:
       - name: "{{ auth_service_name }}-init"
-{% if data.use_local_image_registry is undefined or (data.use_local_image_registry | bool) %}
+{% if use_epiphany_image_registry %}
         image: {{ image_registry_address }}/{{ data.image_path }}
 {% else %}
         image: {{ data.image_path }}
@@ -241,7 +241,7 @@ spec:
               name: "{{ auth_service_name }}-db"
         - name: X509_CA_BUNDLE
           value: "/var/run/secrets/kubernetes.io/serviceaccount/ca.crt"
-{% if data.use_local_image_registry is undefined or (data.use_local_image_registry | bool) %}
+{% if use_epiphany_image_registry %}
         image: {{ image_registry_address }}/{{ data.image_path }}
 {% else %}
         image: {{ data.image_path }}
