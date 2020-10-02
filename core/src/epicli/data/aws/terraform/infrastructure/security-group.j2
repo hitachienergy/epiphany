@@ -15,33 +15,29 @@ resource "aws_security_group" "{{ specification.name }}" {
   name        = "{{ specification.name }}"
   vpc_id      = "${aws_vpc.{{ specification.vpc_name }}.id}"
 
-
   tags = {
       cluster_name = "{{ specification.cluster_name }}"
       cluster_version = "{{ version }}"
-  }   
-
+  }
 {% for rule in specification.rules %}
-
 {%- if rule.direction | lower in ["inbound", "ingress"] %}
- ingress {
+  ingress {
 {%- else %}
- egress {
+  egress {
 {%- endif %}
-   {%- if rule.protocol | lower in ["all", "*", "-1"] %}
+    description = "{{loop.index}} - {{rule.description}}"
+  {%- if rule.protocol | lower in ["all", "*", "-1"] %}
     protocol    = -1
-   {%- else %}
+  {%- else %}
     protocol    = "{{ rule.protocol | lower }}"
-   {%- endif %}
+  {%- endif %}
     from_port   = {{ rule.destination_port_range }}
     to_port     = {{ rule.destination_port_range }}
-{%- if rule.direction | lower in ["inbound", "ingress"] %}
- cidr_blocks = ["{{ rule.source_address_prefix }}"]
-{%- else %}
- cidr_blocks = ["{{ rule.destination_address_prefix }}"]
-{%- endif %}
-
-}
+  {%- if rule.direction | lower in ["inbound", "ingress"] %}
+    cidr_blocks = ["{{ rule.source_address_prefix }}"]
+  {%- else %}
+    cidr_blocks = ["{{ rule.destination_address_prefix }}"]
+  {%- endif %}
+  }
 {%- endfor %}
-
 }

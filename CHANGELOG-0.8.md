@@ -15,6 +15,7 @@
 - [#1225](https://github.com/epiphany-platform/epiphany/issues/1225) - Add OS_PATCHING.md with information about patching RHEL OS
 - [#1656](https://github.com/epiphany-platform/epiphany/issues/1656) - Run Helm tasks from Epiphany container
 - [#1640](https://github.com/epiphany-platform/epiphany/issues/1640) - Added separate machine for repository and changed helm to use localhost address
+- [#1640](https://github.com/epiphany-platform/epiphany/issues/1673) - Added Node Exporter as DaemonSet for Kubernetes as Cloud Service
 
 ### Updated
 
@@ -39,3 +40,4 @@
 
 - Repository machine was introduced (ref #1640)
 - Change cluster configuration manifest in order to be compatible with changes in #1640 [example] (https://github.com/epiphany-platform/epiphany/blob/develop/core/src/epicli/data/common/defaults/epiphany-cluster.yml)
+- Filebeat renamed fields in 7.0, see [here](https://www.elastic.co/guide/en/beats/libbeat/current/breaking-changes-7.0.html#_field_name_changes). The `source` field was removed and replaced with `log.file.path`.

@@ -109,8 +109,6 @@ specification:
         access: Allow
         protocol: "*"
         source_port_range: "*"
-        destination_from_port: 0
-        destination_to_port: 65536
         destination_port_range: "0"
         source_address_prefix: "10.1.1.0/24"
         destination_address_prefix: "0.0.0.0/0"
@@ -121,8 +119,6 @@ specification:
         access: Allow
         protocol: "*"
         source_port_range: "*"
-        destination_from_port: 0
-        destination_to_port: 65536
         destination_port_range: "0"
         source_address_prefix: "10.1.4.0/24"
         destination_address_prefix: "0.0.0.0/0"
@@ -133,8 +129,6 @@ specification:
         access: Allow
         protocol: "*"
         source_port_range: "*"
-        destination_from_port: 0
-        destination_to_port: 65536
         destination_port_range: "0"
         source_address_prefix: "10.1.2.0/24"
         destination_address_prefix: "0.0.0.0/0"
@@ -165,8 +159,6 @@ specification:
   #      access: Allow
   #      protocol: "*"
   #      source_port_range: "*"
-  #      destination_from_port: 0
-  #      destination_to_port: 65536
   #      destination_port_range: "0"
   #      source_address_prefix: "10.1.4.0/24"
   #      destination_address_prefix: "0.0.0.0/0"
@@ -216,8 +208,6 @@ specification:
         access: Allow
         protocol: "*"
         source_port_range: "*"
-        destination_from_port: 0
-        destination_to_port: 65536
         destination_port_range: "0"
         source_address_prefix: "10.1.1.0/24"
         destination_address_prefix: "0.0.0.0/0"
@@ -228,8 +218,6 @@ specification:
         access: Allow
         protocol: "*"
         source_port_range: "*"
-        destination_from_port: 0
-        destination_to_port: 65536
         destination_port_range: "0"
         source_address_prefix: "10.1.4.0/24"
         destination_address_prefix: "0.0.0.0/0"
@@ -240,8 +228,6 @@ specification:
         access: Allow
         protocol: "*"
         source_port_range: "*"
-        destination_from_port: 0
-        destination_to_port: 65536
         destination_port_range: "0"
         source_address_prefix: "10.1.2.0/24"
         destination_address_prefix: "0.0.0.0/0"
@@ -351,8 +337,6 @@ specification:
         access: Allow
         protocol: "*"
         source_port_range: "*"
-        destination_from_port: 0
-        destination_to_port: 65536
         destination_port_range: "0"
         source_address_prefix: "10.1.4.0/24"
         destination_address_prefix: "0.0.0.0/0"
@@ -363,8 +347,6 @@ specification:
         access: Allow
         protocol: "*"
         source_port_range: "*"
-        destination_from_port: 0
-        destination_to_port: 65536
         destination_port_range: "0"
         source_address_prefix: "10.1.1.0/24"
         destination_address_prefix: "0.0.0.0/0"
@@ -375,8 +357,6 @@ specification:
         #   access: Allow
         #   protocol: "*"
         #   source_port_range: "*"
-        #   destination_from_port: 0
-        #   destination_to_port: 65536
         #   destination_port_range: "0"
         #   source_address_prefix: "10.1.2.0/24"
         #   destination_address_prefix: "0.0.0.0/0"
@@ -534,8 +514,6 @@ specification:
         access: Allow
         protocol: "*"
         source_port_range: "*"
-        destination_from_port: 0
-        destination_to_port: 65536
         destination_port_range: "0"
         source_address_prefix: "10.1.1.0/24"
         destination_address_prefix: "0.0.0.0/0"
@@ -546,8 +524,6 @@ specification:
       #  access: Allow
       #  protocol: "*"
       #  source_port_range: "*"
-      #  destination_from_port: 0
-      #  destination_to_port: 65536
       #  destination_port_range: "0"
       #  source_address_prefix: "10.1.2.0/24"
       #  destination_address_prefix: "0.0.0.0/0"
@@ -745,8 +721,6 @@ specification:
         access: Allow
         protocol: "*"
         source_port_range: "*"
-        destination_from_port: 0
-        destination_to_port: 65536
         destination_port_range: "0"
         source_address_prefix: "10.1.1.0/24"
         destination_address_prefix: "0.0.0.0/0"
@@ -777,8 +751,6 @@ specification:
   #      access: Allow
   #      protocol: "*"
   #      source_port_range: "*"
-  #      destination_from_port: 0
-  #      destination_to_port: 65536
   #      destination_port_range: "0"
   #      source_address_prefix: "10.1.4.0/24"
   #      destination_address_prefix: "0.0.0.0/0"

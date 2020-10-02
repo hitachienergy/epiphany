@@ -6,10 +6,7 @@ specification:
   name: SET_BY_AUTOMATION
   protocol: SET_BY_AUTOMATION
   description: SET_BY_AUTOMATION
-  access: SET_BY_AUTOMATION
-  priority: SET_BY_AUTOMATION
   direction: SET_BY_AUTOMATION
-  source_port_range: SET_BY_AUTOMATION
   destination_port_range: SET_BY_AUTOMATION
   source_address_prefix: SET_BY_AUTOMATION
   destination_address_prefix: SET_BY_AUTOMATION
