@@ -93,7 +93,7 @@ download_file() {
 	[[ ! -f $dest_path ]] || remove_file "$dest_path"
 
 	echol "Downloading file: $file"
-	
+
 	wget --no-verbose --directory-prefix="$dest_dir" "$file_url" ||
 		exit_with_error "Command failed: wget --no-verbose --directory-prefix=\"$dest_dir\" \"$file_url\""
 }
@@ -284,6 +284,14 @@ is_package_installed() {
 }
 
 # params: <repo_id>
+is_repo_available() {
+	local repo_id="$1"
+
+	echol "Checking if '$repo_id' repo is available"
+	yum -q --disablerepo=* --enablerepo="$repo_id" repoinfo > /dev/null # returns 1 when 'Error 404 - Not Found'
+}
+
+# params: <repo_id>
 is_repo_enabled() {
 	local repo_id="$1"
 
@@ -342,6 +350,14 @@ remove_installed_packages() {
 		done
 		remove_file "$installed_packages_list_file"
 	fi
+}
+
+# params: <command to execute>
+run_cmd() {
+	local cmd_arr=("$@")
+
+	echol "Executing: ${cmd_arr[*]}"
+	"${cmd_arr[@]}" || exit_with_error "Command failed: ${cmd_arr[*]}"
 }
 
 usage() {
@@ -482,6 +498,16 @@ enable_repo "$REPO_ID"
 
 # --- Add repos ---
 
+DOCKER_CE_FALLBACK_REPO_CONF=$(cat <<'EOF'
+[docker-ce-stable-fallback]
+name=Docker CE Stable - fallback centos/7/x86_64/stable
+baseurl=https://download.docker.com/linux/centos/7/x86_64/stable
+enabled=1
+gpgcheck=1
+gpgkey=https://download.docker.com/linux/centos/gpg
+EOF
+)
+
 ELASTIC_6_REPO_CONF=$(cat <<'EOF'
 [elastic-6]
 name=Elastic repository for 6.x packages
@@ -586,6 +612,11 @@ EOF
 )
 
 add_repo 'docker-ce' 'https://download.docker.com/linux/centos/docker-ce.repo'
+# occasionally docker-ce repo (at https://download.docker.com/linux/centos/7Server/x86_64/stable) is unavailable
+if ! is_repo_available "docker-ce-stable"; then
+	disable_repo "docker-ce-stable"
+	add_repo_as_file 'docker-ce-stable-fallback' "$DOCKER_CE_FALLBACK_REPO_CONF"
+fi
 add_repo_as_file 'elastic-6' "$ELASTIC_6_REPO_CONF"
 add_repo_as_file 'elasticsearch-7' "$ELASTICSEARCH_7_REPO_CONF"
 add_repo_as_file 'elasticsearch-curator-5' "$ELASTICSEARCH_CURATOR_REPO_CONF"
@@ -603,7 +634,7 @@ if ! is_package_installed 'epel-release'; then
 	install_package 'https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm' 'epel-release'
 fi
 
-echol "Executing: yum -y makecache fast" && yum -y makecache fast
+run_cmd yum -y makecache fast
 
 # --- Download packages ---
 
