@@ -1,0 +1,51 @@
+---
+
+- name: Prepare configuration and upgrade/install Node-Exporter's Helm chart
+  vars:
+    # Handling "undefined", "null", "empty" and "boolean" values all at once.
+    disable_helm_chart_bool: "{{ specification.disable_helm_chart | default(false, true) | bool }}"
+
+    # Handling "undefined", "null" and "empty" values all at once.
+    helm_chart_values_bool: "{{ specification.helm_chart_values | default(false) | ternary(true, false) }}"
+
+  delegate_to: localhost
+  become: false
+  run_once: true
+  when: not disable_helm_chart_bool
+  block:
+    - name: Set Node-Exporter's Chart file name to install
+      set_fact:
+        exporter_chart_file_name: "{{ specification.files.node_exporter_helm_chart_file_name }}"
+
+    - name: Download Node-Exporter's Chart File
+      include_role:
+        name: download
+        tasks_from: download_file
+      vars:
+        file_name: "{{ exporter_chart_file_name }}"
+        repository_url: http://localhost/epirepo
+
+    - when: helm_chart_values_bool
+    # IF `helm_chart_values`
+      block:
+        - name: Copy Node-Exporter's Helm chart's custom configuration to file
+          copy:
+            content: "{{ specification.helm_chart_values }}"
+            dest: "{{ download_directory }}/{{ specification.helm_chart_name }}_values.yaml"
+
+        - name: Install Node-Exporter's Helm chart (with custom values.yaml)
+          delegate_to: localhost
+          shell: |
+            helm upgrade --install \
+              -f {{ download_directory }}/{{ specification.helm_chart_name }}_values.yaml \
+              {{ specification.helm_chart_name }} \
+              {{ download_directory }}/{{ exporter_chart_file_name }}
+
+    - when: not helm_chart_values_bool
+    # ELSE
+      block:
+        - name: Install Node-Exporter's Helm chart (with default values.yaml)
+          shell: |
+            helm upgrade --install \
+              {{ specification.helm_chart_name }} \
+              {{ download_directory }}/{{ exporter_chart_file_name }}

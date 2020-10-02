@@ -9,6 +9,7 @@ specification:
     name: operations # YOUR-ADMIN-USERNAME
     key_path: /user/.ssh/epiphany-operations/id_rsa # YOUR-SSH-KEY-PATH
   cloud:
+    k8s_as_cloud_service: False
     use_public_ips: False # When not using public IPs you have to provide connectivity via private IPs (VPN)
   components:
     repository:

@@ -1,11 +1,28 @@
 ---
-- name: Set master hostname variable
-  set_fact:
-    master_hostname: "{{ groups['kubernetes_master'] | first }}"
+- name: Set facts for "classic epiphany k8s"
+  when: k8s_as_cloud_service is defined and not k8s_as_cloud_service
+  block:
+    - name: Set master hostname variable
+      set_fact:
+        master_hostname: "{{ groups['kubernetes_master'] | first }}"
 
-- name: Set api server address variable
-  set_fact:
-    api_server_address: "https://{{ master_hostname }}:6443"
+    - name: Set api server address variable
+      set_fact:
+        api_server_address: "https://{{ master_hostname }}:6443"
+
+- name: Set facts for "k8s as cloud service"
+  when: k8s_as_cloud_service is defined and k8s_as_cloud_service
+  block:
+    - name: Get api server address from "k8s as cloud service"
+      become: false
+      command: "kubectl config view -o jsonpath='{.clusters[0].cluster.server}'"
+      register: cluster_api_server_address
+      run_once: true
+      delegate_to: localhost
+
+    - name: Set api server address variable
+      set_fact:
+        api_server_address: "{{ cluster_api_server_address.stdout }}"
 
 - name: Apply rolebinding to K8s for Prometheus
   become: false
