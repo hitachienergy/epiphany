@@ -1,0 +1,234 @@
+---
+
+###################### Filebeat's Custom Values for Helm Chart #######################
+# You can find the full configuration reference here:
+# https://www.elastic.co/guide/en/beats/filebeat/index.html
+
+filebeatConfig:
+  filebeat.yml: |
+    filebeat.inputs:
+    - type: log
+      enabled: true
+{% if specification.common_input.multiline is defined %}
+      multiline:
+{% for k, v in specification.common_input.multiline.items() %}
+        {{ k }}: {{ v }}
+{% endfor %}
+{% endif %}
+      paths:
+        - /var/log/audit/audit.log
+        - /var/log/auth.log
+        - /var/log/firewalld
+{% if 'haproxy' in group_names %}
+        - /var/log/haproxy.log
+{% endif %}
+{% if 'kafka' in group_names %}
+        - /var/log/kafka/server.log
+{% endif %}
+        - /var/log/messages
+        - /var/log/secure
+        - /var/log/syslog
+
+{# -------------------------- PostgreSQL input -------------------------- #}
+
+{% if 'postgresql' in group_names %}
+{# configuration based on postgresql module #}
+    - type: log
+      enabled: true
+      paths:
+        - /var/log/postgresql/*.log*
+      exclude_files: [".gz$"]
+{% if specification.postgresql_input.multiline is defined %}
+      multiline:
+{% for k, v in specification.postgresql_input.multiline.items() %}
+        {{ k }}: {{ v }}
+{% endfor %}
+{% endif %}
+{% endif %}
+
+{# -------------------------- Kubernetes input -------------------------- #}
+
+{% if 'kubernetes_master' in group_names or 'kubernetes_node' in group_names %}
+    - type: docker
+      enabled: true
+      containers.ids: "*"
+{% if specification.docker_input.multiline is defined %}
+      multiline:
+{% for k, v in specification.docker_input.multiline.items() %}
+        {{ k }}: {{ v }}
+{% endfor %}
+{% endif %}
+
+      processors:
+        - add_docker_metadata:
+        - rename:
+            fields:
+              - from: docker.container.labels.io.kubernetes.container.name
+                to: kubernetes.container.name
+              - from: docker.container.labels.io.kubernetes.pod.name
+                to: kubernetes.pod.name
+              - from: docker.container.labels.io.kubernetes.pod.namespace
+                to: kubernetes.namespace
+            ignore_missing: true
+            fail_on_error: true
+        - drop_fields:
+            fields:
+              - docker
+{% endif %}
+
+{# -------------------------- Filebeat modules -------------------------- #}
+
+    filebeat.config.modules:
+      path: ${path.config}/modules.d/*.yml
+      reload.enabled: false
+
+{# -------------------------- Elasticsearch template setting -------------------------- #}
+
+    setup.template.settings:
+      index.number_of_shards: 3
+
+{# -------------------------- Index Lifecycle Management (ILM) -------------------------- #}
+
+    setup.ilm.enabled: false
+
+{# -------------------------- Elasticsearch output ------------------------------ #}
+
+    output.elasticsearch:
+{#  # Array of hosts to connect to #}
+{% if groups['logging'] is defined %}
+      hosts:
+      {% for host in groups['logging'] -%}
+      - "https://{{hostvars[host]['ansible_hostname']}}:9200"
+      {% endfor %}
+
+{# Protocol - either `http` (default) or `https`. #}
+      protocol: "https"
+      ssl.verification_mode: none
+      username: logstash
+      password: logstash
+{% else %}
+      hosts: []
+{% endif %}
+
+{# -------------------------- Processors ------------------------------ #}
+
+    processors:
+      - add_cloud_metadata: ~
+
+#=============================== DaemonSet configuration =========================
+
+extraVolumeMounts: []
+  # - name: extras
+  #   mountPath: /usr/share/extras
+  #   readOnly: true
+
+extraVolumes: []
+  # - name: extras
+  #   emptyDir: {}
+
+extraContainers: ""
+# - name: dummy-init
+#   image: busybox
+#   command: ['echo', 'hey']
+
+extraInitContainers: []
+# - name: dummy-init
+#   image: busybox
+#   command: ['echo', 'hey']
+
+envFrom: []
+# - configMapRef:
+#     name: configmap-name
+
+# Root directory where Filebeat will write data to in order to persist registry data across pod restarts (file position and other metadata).
+hostPathRoot: /var/lib
+hostNetworking: true
+image: "docker.elastic.co/beats/filebeat-oss"
+imageTag: "7.9.2"
+imagePullPolicy: "IfNotPresent"
+imagePullSecrets: []
+
+livenessProbe:
+  exec:
+    command:
+      - sh
+      - -c
+      - |
+        #!/usr/bin/env bash -e
+        curl --fail 127.0.0.1:5066
+  failureThreshold: 3
+  initialDelaySeconds: 10
+  periodSeconds: 10
+  timeoutSeconds: 5
+
+readinessProbe:
+  exec:
+    command:
+      - sh
+      - -c
+      - |
+        #!/usr/bin/env bash -e
+        filebeat test output
+  failureThreshold: 3
+  initialDelaySeconds: 10
+  periodSeconds: 10
+  timeoutSeconds: 5
+
+# Whether this chart should self-manage its service account, role, and associated role binding.
+managedServiceAccount: true
+
+# additionals labels
+labels: {}
+
+podAnnotations: {}
+  # iam.amazonaws.com/role: es-cluster
+
+# Various pod security context settings. Bear in mind that many of these have an impact on Filebeat functioning properly.
+#
+# - User that the container will execute as. Typically necessary to run as root (0) in order to properly collect host container logs.
+# - Whether to execute the Filebeat containers as privileged containers. Typically not necessarily unless running within environments such as OpenShift.
+podSecurityContext:
+  runAsUser: 0
+  privileged: false
+
+resources:
+  requests:
+    cpu: "100m"
+    memory: "100Mi"
+  limits:
+    cpu: "1000m"
+    memory: "200Mi"
+
+# Custom service account override that the pod will use
+serviceAccount: ""
+
+# Annotations to add to the ServiceAccount that is created if the serviceAccount value isn't set.
+serviceAccountAnnotations: {}
+  # eks.amazonaws.com/role-arn: arn:aws:iam::111111111111:role/k8s.clustername.namespace.serviceaccount
+
+# A list of secrets and their paths to mount inside the pod
+# This is useful for mounting certificates for security other sensitive values
+secretMounts: []
+#  - name: filebeat-certificates
+#    secretName: filebeat-certificates
+#    path: /usr/share/filebeat/certs
+
+# How long to wait for Filebeat pods to stop gracefully
+terminationGracePeriod: 30
+
+tolerations: []
+
+nodeSelector: {}
+
+affinity: {}
+
+# This is the PriorityClass settings as defined in
+# https://kubernetes.io/docs/concepts/configuration/pod-priority-preemption/#priorityclass
+priorityClassName: ""
+
+updateStrategy: RollingUpdate
+
+# Override various naming aspects of this chart
+# Only edit these if you know what you're doing
+nameOverride: ""
+fullnameOverride: ""
