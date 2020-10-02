@@ -60,6 +60,29 @@ scrape_configs:
       - __meta_kubernetes_namespace
       - __meta_kubernetes_service_name
       - __meta_kubernetes_endpoint_port_name
+	  
+# Scrape config for node exporters in "k8s as cloud service"
+
+{% if k8s_as_cloud_service is defined and k8s_as_cloud_service %}
+  - job_name: 'kubernetes-node-exporters'
+    kubernetes_sd_configs:
+    - role: endpoints
+      api_server: "{{ api_server_address }}"
+      tls_config:
+        insecure_skip_verify: true
+      bearer_token: "{{ bearer_token }}"
+    tls_config:
+      insecure_skip_verify: true
+    bearer_token: "{{ bearer_token }}"
+    relabel_configs:
+    - source_labels: 
+	  - __meta_kubernetes_endpoints_name
+      regex: 'node-exporter'
+      action: keep
+    - source_labels:
+      - __meta_kubernetes_endpoint_node_name
+      target_label: instance
+{% endif %}
 
 # Scrape config for nodes (kubelet).
 

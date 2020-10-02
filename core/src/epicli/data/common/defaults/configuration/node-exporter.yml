@@ -2,6 +2,14 @@ kind: configuration/node-exporter
 title: "Node exporter"
 name: default
 specification:
+  helm_chart_name: node-exporter
+  disable_helm_chart: false
+  helm_chart_values:
+    service:
+      port: 9100
+      targetPort: 9100 
+  files:
+    node_exporter_helm_chart_file_name: node-exporter-1.1.2.tgz
   enabled_collectors:
     - conntrack
     - diskstats

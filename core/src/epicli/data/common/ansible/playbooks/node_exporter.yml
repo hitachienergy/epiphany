@@ -8,3 +8,5 @@
   become_method: sudo
   roles:
     - node_exporter
+  environment:
+    KUBECONFIG: "{{ kubeconfig.local }}"
