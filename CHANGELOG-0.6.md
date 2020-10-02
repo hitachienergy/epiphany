@@ -1,9 +1,10 @@
 # Changelog 0.6
 
-## [0.6.1] 2020-XX-XX
+## [0.6.1] 2020-10-02
 
 ### Fixed
 
+- [#1705](https://github.com/epiphany-platform/epiphany/issues/1705) - [RHEL/CentOS] epicli fails on downloading requirements - Docker CE repo not available
 - [#1505](https://github.com/epiphany-platform/epiphany/issues/1505) - v0.6 Terraform returning an error during deployments on Azure ("A retryable error occurred.")
 - [#1154](https://github.com/epiphany-platform/epiphany/issues/1154) - Node exporter is not installed on logging vms
 - [#1183](https://github.com/epiphany-platform/epiphany/issues/1183) - Task 'Check if /etc/kubernetes/admin.conf file exists' fails when kubernetes\_master.count = 0
