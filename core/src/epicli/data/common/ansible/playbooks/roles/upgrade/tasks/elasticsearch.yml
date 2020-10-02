@@ -4,32 +4,26 @@
     manager: auto
   when: ansible_facts.packages is undefined
 
-- name: Test if Elasticsearch package is installed
+- name: Assert elasticsearch-oss package is installed
   assert:
     that: ansible_facts.packages['elasticsearch-oss'] is defined
-       or ansible_facts.packages['opendistroforelasticsearch'] is defined
-    fail_msg: Elasticsearch package not found, nothing to update
+    fail_msg: elasticsearch-oss package not found, nothing to update
     quiet: true
 
-- name: Set installed Elasticsearch package name as fact
-  set_fact:
-    elasticsearch_installed_package: >-
-      {{ 'elasticsearch-oss' if (ansible_facts.packages['elasticsearch-oss'] is defined)
-                             else 'opendistroforelasticsearch' }}
-
-- name: Update only if installed package == elasticsearch-oss
+- name: Update elasticsearch-oss if installed version < 7 # v7 is installed by opendistro_for_elasticsearch role
+  when:
+    - ansible_facts.packages['elasticsearch-oss'] is defined
+    - ansible_facts.packages['elasticsearch-oss'][0].version is version('7.0.0', '<')
+    - specification.elasticsearch_version is version('7.0.0', '<')
   block:
     - name: Print Elasticsearch versions
       debug:
         msg:
-          - "Installed version: {{ ansible_facts.packages[elasticsearch_installed_package][0].version }}"
+          - "Installed version: {{ ansible_facts.packages['elasticsearch-oss'][0].version }}"
           - "Target version: {{ specification.elasticsearch_version }}"
 
     - name: Update Elasticsearch
       import_role:
         name: elasticsearch
       when:
-        - specification.elasticsearch_version
-          is version(ansible_facts.packages[elasticsearch_installed_package][0].version, '>=')
-  when:
-    - elasticsearch_installed_package == 'elasticsearch-oss'
+        - specification.elasticsearch_version is version(ansible_facts.packages['elasticsearch-oss'][0].version, '>=')
