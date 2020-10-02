@@ -102,31 +102,33 @@ filebeat.inputs:
 # K8s metadata are fetched from Docker labels to not make Filebeat on worker nodes dependent on K8s master
 # since Filebeat should start even if K8s master is not available.
 
-- type: docker
+- type: container
   enabled: true
-  containers.ids: "*"
-  {% if specification.docker_input.multiline is defined -%}
+  paths:
+    - /var/lib/docker/containers/*/*.log
+  {% if specification.container_input.multiline is defined -%}
   multiline:
-  {% for k, v in specification.docker_input.multiline.items() %}
+  {% for k, v in specification.container_input.multiline.items() %}
   {{ k }}: {{ v }}
   {% endfor %}
   {% endif %}
 
   processors:
     - add_docker_metadata:
+        labels.dedot: false
     - rename:
         fields:
-          - from: docker.container.labels.io.kubernetes.container.name
+          - from: container.labels.io.kubernetes.container.name
             to: kubernetes.container.name
-          - from: docker.container.labels.io.kubernetes.pod.name
+          - from: container.labels.io.kubernetes.pod.name
             to: kubernetes.pod.name
-          - from: docker.container.labels.io.kubernetes.pod.namespace
+          - from: container.labels.io.kubernetes.pod.namespace
             to: kubernetes.namespace
         ignore_missing: true
         fail_on_error: true
     - drop_fields:
         fields:
-          - docker # Drop all fields added by 'add_docker_metadata' that were not renamed
+          - container # Drop all fields added by 'add_docker_metadata' that were not renamed
 {% endif %}
 
 # ============================== Filebeat modules ==============================
