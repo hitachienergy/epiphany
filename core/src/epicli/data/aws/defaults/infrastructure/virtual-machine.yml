@@ -33,55 +33,39 @@ specification:
     rules:
      - name: ssh
        description: Allow SSH
-       priority: 101
        direction: Inbound
-       access: Allow
        protocol: Tcp
-       source_port_range: "*"
        destination_port_range: "22"
        source_address_prefix: "0.0.0.0/0"
        destination_address_prefix: "0.0.0.0/0"
      - name: node_exporter
        description: Allow node_exporter traffic
-       priority: 302
        direction: Inbound
-       access: Allow
        protocol: Tcp
-       source_port_range: "*"
        destination_port_range: "9100"
        source_address_prefix: "10.1.0.0/20"
        destination_address_prefix: "0.0.0.0/0"
      - name: image_registry
        description: Allow image registry traffic
-       priority: 303
        direction: Inbound
-       access: Allow
        protocol: Tcp
-       source_port_range: "*"
        destination_port_range: "80"
        source_address_prefix: "10.1.0.0/20"
        destination_address_prefix: "0.0.0.0/0"
      - name: package_repository
        description: Allow package repository traffic
-       priority: 304
        direction: Inbound
-       access: Allow
        protocol: Tcp
-       source_port_range: "*"
        destination_port_range: "5000"
        source_address_prefix: "10.1.0.0/20"
        destination_address_prefix: "0.0.0.0/0"
      - name: out
        description: Allow out
-       priority: 101
        direction: Egress
-       access: Allow
        protocol: "all"
-       source_port_range: "*"
        destination_port_range: "0"
        source_address_prefix: "0.0.0.0/0"
        destination_address_prefix: "0.0.0.0/0"
-
 ---
 kind: infrastructure/virtual-machine
 title: "Virtual Machine Infra"
@@ -96,21 +80,15 @@ specification:
     rules:
      - name: ssh
        description: Allow SSH
-       priority: 101
        direction: Inbound
-       access: Allow
        protocol: Tcp
-       source_port_range: "*"
        destination_port_range: "22"
        source_address_prefix: "0.0.0.0/0"
        destination_address_prefix: "0.0.0.0/0"
      - name: node_exporter
        description: Allow node_exporter traffic
-       priority: 302
        direction: Inbound
-       access: Allow
        protocol: Tcp
-       source_port_range: "*"
        destination_port_range: "9100"
        source_address_prefix: "10.1.0.0/20"
        destination_address_prefix: "0.0.0.0/0"
@@ -128,61 +106,43 @@ specification:
     rules:
      - name: ssh
        description: Allow SSH
-       priority: 101
        direction: Inbound
-       access: Allow
        protocol: Tcp
-       source_port_range: "*"
        destination_port_range: "22"
        source_address_prefix: "0.0.0.0/0"
        destination_address_prefix: "0.0.0.0/0"
      - name: node_exporter
        description: Allow node_exporter traffic
-       priority: 302
        direction: Inbound
-       access: Allow
        protocol: Tcp
-       source_port_range: "*"
        destination_port_range: "9100"
        source_address_prefix: "10.1.0.0/20"
        destination_address_prefix: "0.0.0.0/0"
      - name: rabbitmq
        description: Allow rabbitmq traffic
-       priority: 303
        direction: Inbound
-       access: Allow
        protocol: Tcp
-       source_port_range: "*"
        destination_port_range: "5672"
        source_address_prefix: "10.1.0.0/20"
        destination_address_prefix: "0.0.0.0/0"
      - name: rabbitmq_clustering_1
        description: Allow rabbitmq clustering traffic 1
-       priority: 304
        direction: Inbound
-       access: Allow
        protocol: Tcp
-       source_port_range: "*"
        destination_port_range: "4369"
        source_address_prefix: "10.1.8.0/24"
        destination_address_prefix: "0.0.0.0/0"
      - name: rabbitmq_clustering_1
        description: Allow rabbitmq clustering traffic 2
-       priority: 305
        direction: Inbound
-       access: Allow
        protocol: Tcp
-       source_port_range: "*"
        destination_port_range: "25672"
        source_address_prefix: "10.1.8.0/24"
        destination_address_prefix: "0.0.0.0/0"
      - name: out
        description: Allow out
-       priority: 101
        direction: Egress
-       access: Allow
        protocol: "all"
-       source_port_range: "*"
        destination_port_range: "0"
        source_address_prefix: "0.0.0.0/0"
        destination_address_prefix: "0.0.0.0/0"
@@ -200,41 +160,29 @@ specification:
     rules:
      - name: ssh
        description: Allow ssh traffic
-       priority: 101
        direction: Inbound
-       access: Allow
        protocol: Tcp
-       source_port_range: "*"
        destination_port_range: "22"
        source_address_prefix: "0.0.0.0/0"
        destination_address_prefix: "0.0.0.0/0"
      - name: node_exporter
        description: Allow node_exporter traffic
-       priority: 302
        direction: Inbound
-       access: Allow
        protocol: Tcp
-       source_port_range: "*"
        destination_port_range: "9100"
        source_address_prefix: "10.1.0.0/20"
        destination_address_prefix: "0.0.0.0/0"
      - name: haproxy_exporter
        description: Allow haproxy_exporter traffic
-       priority: 302
        direction: Inbound
-       access: Allow
        protocol: Tcp
-       source_port_range: "*"
        destination_port_range: "9101"
        source_address_prefix: "10.1.0.0/20"
        destination_address_prefix: "0.0.0.0/0"
      - name: out
        description: Allow out
-       priority: 101
        direction: Egress
-       access: Allow
        protocol: "all"
-       source_port_range: "*"
        destination_port_range: "0"
        source_address_prefix: "0.0.0.0/0"
        destination_address_prefix: "0.0.0.0/0"
@@ -251,89 +199,57 @@ specification:
     rules:
      - name: ssh
        description: Allow ssh traffic
-       priority: 101
        direction: Inbound
-       access: Allow
        protocol: Tcp
-       source_port_range: "*"
        destination_port_range: "22"
        source_address_prefix: "0.0.0.0/0"
        destination_address_prefix: "0.0.0.0/0"
      - name: repository
        description: Allow repository traffic
-       priority: 302
        direction: Inbound
-       access: Allow
        protocol: Tcp
-       source_port_range: "*"
        destination_port_range: "80"
        source_address_prefix: "10.1.0.0/20"
        destination_address_prefix: "0.0.0.0/0"
      - name: node_exporter
        description: Allow node_exporter traffic
-       priority: 302
        direction: Inbound
-       access: Allow
        protocol: Tcp
-       source_port_range: "*"
        destination_port_range: "9100"
        source_address_prefix: "10.1.0.0/20"
        destination_address_prefix: "0.0.0.0/0"
      - name: subnet-traffic
        description: Allow subnet traffic
-       priority: 102
        direction: Inbound
-       access: Allow
        protocol: ALL
-       source_port_range: "*"
-       destination_from_port: 0
-       destination_to_port: 65536
        destination_port_range: "0"
        source_address_prefix: "10.1.1.0/24"
        destination_address_prefix: "0.0.0.0/0"
      - name: monitoring-traffic
        description: Allow monitoring subnet traffic
-       priority: 102
        direction: Inbound
-       access: Allow
        protocol: ALL
-       source_port_range: "*"
-       destination_from_port: 0
-       destination_to_port: 65536
        destination_port_range: "0"
        source_address_prefix: "10.1.4.0/24"
        destination_address_prefix: "0.0.0.0/0"
      - name: node-subnet-traffic
        description: Allow node subnet traffic
-       priority: 102
        direction: Inbound
-       access: Allow
        protocol: ALL
-       source_port_range: "*"
-       destination_from_port: 0
-       destination_to_port: 65536
        destination_port_range: "0"
        source_address_prefix: "10.1.2.0/24"
        destination_address_prefix: "0.0.0.0/0"
      - name: node2-subnet-traffic
        description: Allow node subnet traffic
-       priority: 102
        direction: Inbound
-       access: Allow
        protocol: ALL
-       source_port_range: "*"
-       destination_from_port: 0
-       destination_to_port: 65536
        destination_port_range: "0"
        source_address_prefix: "10.1.4.0/24"
        destination_address_prefix: "0.0.0.0/0"
      - name: out
        description: Allow out
-       priority: 101
        direction: Egress
-       access: Allow
        protocol: "all"
-       source_port_range: "*"
        destination_port_range: "0"
        source_address_prefix: "0.0.0.0/0"
        destination_address_prefix: "0.0.0.0/0"
@@ -350,67 +266,43 @@ specification:
     rules:
      - name: ssh
        description: Allow ssh traffic
-       priority: 101
        direction: Inbound
-       access: Allow
        protocol: Tcp
-       source_port_range: "*"
        destination_port_range: "22"
        source_address_prefix: "0.0.0.0/0"
        destination_address_prefix: "0.0.0.0/0"
      - name: node_exporter
        description: Allow node_exporter traffic
-       priority: 302
        direction: Inbound
-       access: Allow
        protocol: Tcp
-       source_port_range: "*"
        destination_port_range: "9100"
        source_address_prefix: "10.1.0.0/20"
        destination_address_prefix: "0.0.0.0/0"
      - name: subnet-traffic
        description: Allow master subnet traffic
-       priority: 102
        direction: Inbound
-       access: Allow
        protocol: ALL
-       source_port_range: "*"
-       destination_from_port: 0
-       destination_to_port: 65536
        destination_port_range: "0"
        source_address_prefix: "10.1.1.0/24"
        destination_address_prefix: "0.0.0.0/0"
      - name: monitoring-traffic
        description: Allow monitoring subnet traffic
-       priority: 102
        direction: Inbound
-       access: Allow
        protocol: ALL
-       source_port_range: "*"
-       destination_from_port: 0
-       destination_to_port: 65536
        destination_port_range: "0"
        source_address_prefix: "10.1.4.0/24"
        destination_address_prefix: "0.0.0.0/0"
      - name: node-subnet-traffic
        description: Allow node subnet traffic
-       priority: 102
        direction: Inbound
-       access: Allow
        protocol: ALL
-       source_port_range: "*"
-       destination_from_port: 0
-       destination_to_port: 65536
        destination_port_range: "0"
        source_address_prefix: "10.1.2.0/24"
        destination_address_prefix: "0.0.0.0/0"
      - name: out
        description: Allow out
-       priority: 101
        direction: Egress
-       access: Allow
        protocol: "all"
-       source_port_range: "*"
        destination_port_range: "0"
        source_address_prefix: "0.0.0.0/0"
        destination_address_prefix: "0.0.0.0/0"
@@ -425,127 +317,85 @@ specification:
     rules:
      - name: ssh
        description: Allow SSH
-       priority: 101
        direction: Inbound
-       access: Allow
        protocol: Tcp
-       source_port_range: "*"
        destination_port_range: "22"
        source_address_prefix: "0.0.0.0/0"
        destination_address_prefix: "0.0.0.0/0"
      - name: node_exporter
        description: Allow node_exporter traffic
-       priority: 302
        direction: Inbound
-       access: Allow
        protocol: Tcp
-       source_port_range: "*"
        destination_port_range: "9100"
        source_address_prefix: "10.1.0.0/20"
        destination_address_prefix: "0.0.0.0/0"
      - name: kafka_exporter
        description: Allow kafka exporter traffic
-       priority: 303
        direction: Inbound
-       access: Allow
        protocol: Tcp
-       source_port_range: "*"
        destination_port_range: "9308"
        source_address_prefix: "10.1.0.0/20"
        destination_address_prefix: "0.0.0.0/0"
      - name: zookeeper1
        description: Allow Zookeeper 1
-       priority: 102
        direction: Inbound
-       access: Allow
        protocol: "Tcp"
-       source_port_range: "*"
        destination_port_range: "3888"
        source_address_prefix: "10.1.0.0/20"
        destination_address_prefix: "0.0.0.0/0"
      - name: zookeeper2
        description: Allow Zookeeper 2
-       priority: 103
        direction: Inbound
-       access: Allow
        protocol: "Tcp"
-       source_port_range: "*"
        destination_port_range: "2888"
        source_address_prefix: "10.1.0.0/20"
        destination_address_prefix: "0.0.0.0/0"
      - name: zookeeper_client
        description: Allow Zookeeper Client
-       priority: 104
        direction: Inbound
-       access: Allow
        protocol: "Tcp"
-       source_port_range: "*"
        destination_port_range: "2181"
        source_address_prefix: "10.1.0.0/20"
        destination_address_prefix: "0.0.0.0/0"
      - name: kafka_client_9092
        description: Allow Kafka Client
-       priority: 105
        direction: Inbound
-       access: Allow
        protocol: "Tcp"
-       source_port_range: "*"
        destination_port_range: "9092"
        source_address_prefix: "10.1.0.0/20"
        destination_address_prefix: "0.0.0.0/0"
      - name: kafka_ssl_client_9093
        description: Allow Kafka SSL Client
-       priority: 105
        direction: Inbound
-       access: Allow
        protocol: "Tcp"
-       source_port_range: "*"
        destination_port_range: "9093"
        source_address_prefix: "10.1.0.0/20"
        destination_address_prefix: "0.0.0.0/0"
      - name: monitoring-traffic
        description: Allow monitoring subnet traffic
-       priority: 102
        direction: Inbound
-       access: Allow
        protocol: ALL
-       source_port_range: "*"
-       destination_from_port: 0
-       destination_to_port: 65536
        destination_port_range: "0"
        source_address_prefix: "10.1.4.0/24"
        destination_address_prefix: "0.0.0.0/0"
      - name: kubernetes-traffic
        description: Allow Kubernetes subnet traffic
-       priority: 102
        direction: Inbound
-       access: Allow
        protocol: ALL
-       source_port_range: "*"
-       destination_from_port: 0
-       destination_to_port: 65536
        destination_port_range: "0"
        source_address_prefix: "10.1.1.0/24"
        destination_address_prefix: "0.0.0.0/0"
      - name: kubernetes-traffic2
        description: Allow Kubernetes subnet traffic
-       priority: 102
        direction: Inbound
-       access: Allow
        protocol: ALL
-       source_port_range: "*"
-       destination_from_port: 0
-       destination_to_port: 65536
        destination_port_range: "0"
        source_address_prefix: "10.1.2.0/24"
        destination_address_prefix: "0.0.0.0/0"
      - name: out
        description: Allow out
-       priority: 101
        direction: Egress
-       access: Allow
        protocol: "all"
-       source_port_range: "*"
        destination_port_range: "0"
        source_address_prefix: "0.0.0.0/0"
        destination_address_prefix: "0.0.0.0/0"
@@ -560,51 +410,36 @@ specification:
     rules:
      - name: ssh
        description: Allow SSH
-       priority: 101
        direction: Inbound
-       access: Allow
        protocol: Tcp
-       source_port_range: "*"
        destination_port_range: "22"
        source_address_prefix: "0.0.0.0/0"
        destination_address_prefix: "0.0.0.0/0"
      - name: node_exporter
        description: Allow node_exporter traffic
-       priority: 302
        direction: Inbound
-       access: Allow
        protocol: Tcp
-       source_port_range: "*"
        destination_port_range: "9100"
        source_address_prefix: "10.1.0.0/20"
        destination_address_prefix: "0.0.0.0/0"
      - name: prometheus
        description: Allow connection to Prometheus
-       priority: 302
        direction: Inbound
-       access: Allow
        protocol: Tcp
-       source_port_range: "*"
        destination_port_range: "9090"
        source_address_prefix: "10.1.0.0/20"
        destination_address_prefix: "0.0.0.0/0"
      - name: grafana
        description: Allow connection to Grafana
-       priority: 302
        direction: Inbound
-       access: Allow
        protocol: Tcp
-       source_port_range: "*"
        destination_port_range: "3000"
        source_address_prefix: "10.1.0.0/20"
        destination_address_prefix: "0.0.0.0/0"
      - name: out
        description: Allow out
-       priority: 101
        direction: Egress
-       access: Allow
        protocol: "all"
-       source_port_range: "*"
        destination_port_range: "0"
        source_address_prefix: "0.0.0.0/0"
        destination_address_prefix: "0.0.0.0/0"
@@ -619,65 +454,43 @@ specification:
     rules:
      - name: ssh
        description: Allow SSH
-       priority: 101
        direction: Inbound
-       access: Allow
        protocol: Tcp
-       source_port_range: "*"
        destination_port_range: "22"
        source_address_prefix: "0.0.0.0/0"
        destination_address_prefix: "0.0.0.0/0"
      - name: node_exporter
        description: Allow node_exporter traffic
-       priority: 302
        direction: Inbound
-       access: Allow
        protocol: Tcp
-       source_port_range: "*"
        destination_port_range: "9100"
        source_address_prefix: "10.1.0.0/20"
        destination_address_prefix: "0.0.0.0/0"
      - name: out
        description: Allow out
-       priority: 101
        direction: Egress
-       access: Allow
        protocol: "all"
-       source_port_range: "*"
        destination_port_range: "0"
        source_address_prefix: "0.0.0.0/0"
        destination_address_prefix: "0.0.0.0/0"
      - name: kubernetes-traffic
        description: Allow Kubernetes subnet traffic
-       priority: 102
        direction: Inbound
-       access: Allow
        protocol: ALL
-       source_port_range: "*"
-       destination_from_port: 0
-       destination_to_port: 65536
        destination_port_range: "0"
        source_address_prefix: "10.1.1.0/24"
        destination_address_prefix: "0.0.0.0/0"
      - name: kubernetes-traffic2
        description: Allow Kubernetes subnet traffic
-       priority: 102
        direction: Inbound
-       access: Allow
        protocol: ALL
-       source_port_range: "*"
-       destination_from_port: 0
-       destination_to_port: 65536
        destination_port_range: "0"
        source_address_prefix: "10.1.2.0/24"
        destination_address_prefix: "0.0.0.0/0"
      - name: postgres_clustering
        description: Allow Postgres clustering traffic
-       priority: 305
        direction: Inbound
-       access: Allow
        protocol: Tcp
-       source_port_range: "*"
        destination_port_range: "5432"
        source_address_prefix: "10.1.6.0/24"
        destination_address_prefix: "0.0.0.0/0"
@@ -692,61 +505,43 @@ specification:
     rules:
      - name: ssh
        description: Allow SSH
-       priority: 101
        direction: Inbound
-       access: Allow
        protocol: Tcp
-       source_port_range: "*"
        destination_port_range: "22"
        source_address_prefix: "0.0.0.0/0"
        destination_address_prefix: "0.0.0.0/0"
      - name: node_exporter
        description: Allow node_exporter traffic
-       priority: 302
        direction: Inbound
-       access: Allow
        protocol: Tcp
-       source_port_range: "*"
        destination_port_range: "9100"
        source_address_prefix: "10.1.0.0/20"
        destination_address_prefix: "0.0.0.0/0"
      - name: Elastic
        description: Allow Elastic
-       priority: 105
        direction: Inbound
-       access: Allow
        protocol: "Tcp"
-       source_port_range: "*"
        destination_port_range: "9200"
        source_address_prefix: "10.1.0.0/20"
        destination_address_prefix: "0.0.0.0/0"
      - name: Elastic2
        description: Allow Elastic
-       priority: 105
        direction: Inbound
-       access: Allow
        protocol: "Tcp"
-       source_port_range: "*"
        destination_port_range: "9300"
        source_address_prefix: "10.1.0.0/20"
        destination_address_prefix: "0.0.0.0/0"
      - name: Kibana
        description: Allow Kibana
-       priority: 105
        direction: Inbound
-       access: Allow
        protocol: "Tcp"
-       source_port_range: "*"
        destination_port_range: "5601"
        source_address_prefix: "10.1.0.0/20"
        destination_address_prefix: "0.0.0.0/0"
      - name: out
        description: Allow out
-       priority: 101
        direction: Egress
-       access: Allow
        protocol: "all"
-       source_port_range: "*"
        destination_port_range: "0"
        source_address_prefix: "0.0.0.0/0"
        destination_address_prefix: "0.0.0.0/0"
@@ -762,33 +557,22 @@ specification:
     rules:
      - name: ssh
        description: Allow SSH
-       priority: 101
        direction: Inbound
-       access: Allow
        protocol: Tcp
-       source_port_range: "*"
        destination_port_range: "22"
        source_address_prefix: "0.0.0.0/0"
        destination_address_prefix: "0.0.0.0/0"
      - name: ignite_traffic
        description: Allow traffic to Apache Ignite cluster
-       priority: 302
        direction: Inbound
-       access: Allow
        protocol: ALL
-       source_port_range: "*"
-       destination_from_port: 8080
-       destination_to_port: 48300
        destination_port_range: "0"
        source_address_prefix: "10.1.0.0/20"
        destination_address_prefix: "10.1.0.0/20"
      - name: out
        description: Allow out
-       priority: 101
        direction: Egress
-       access: Allow
        protocol: "all"
-       source_port_range: "*"
        destination_port_range: "0"
        source_address_prefix: "0.0.0.0/0"
        destination_address_prefix: "0.0.0.0/0"
@@ -805,43 +589,29 @@ specification:
     rules:
      - name: ssh
        description: Allow ssh traffic
-       priority: 101
        direction: Inbound
-       access: Allow
        protocol: Tcp
-       source_port_range: "*"
        destination_port_range: "22"
        source_address_prefix: "0.0.0.0/0"
        destination_address_prefix: "0.0.0.0/0"
      - name: repository
        description: Allow repository traffic
-       priority: 302
        direction: Inbound
-       access: Allow
        protocol: Tcp
-       source_port_range: "*"
        destination_port_range: "80"
        source_address_prefix: "10.1.0.0/20"
        destination_address_prefix: "0.0.0.0/0"
      - name: subnet-traffic
        description: Allow subnet traffic
-       priority: 102
        direction: Inbound
-       access: Allow
        protocol: ALL
-       source_port_range: "*"
-       destination_from_port: 0
-       destination_to_port: 65536
        destination_port_range: "0"
        source_address_prefix: "10.1.1.0/24"
        destination_address_prefix: "0.0.0.0/0"
      - name: out
        description: Allow out
-       priority: 101
        direction: Egress
-       access: Allow
        protocol: "all"
-       source_port_range: "*"
        destination_port_range: "0"
        source_address_prefix: "0.0.0.0/0"
        destination_address_prefix: "0.0.0.0/0"       

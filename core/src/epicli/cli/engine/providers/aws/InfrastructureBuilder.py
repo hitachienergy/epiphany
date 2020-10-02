@@ -84,7 +84,9 @@ class InfrastructureBuilder(Step):
             autoscaling_group = self.get_autoscaling_group(component_key, component_value, subnets_to_create, asg_index)
 
             for security_group in security_groups_to_create:
-                security_group.specification.rules += autoscaling_group.specification.security.rules
+                for rule in autoscaling_group.specification.security.rules:
+                    if not self.rule_exists_in_list(security_group.specification.rules, rule):
+                        security_group.specification.rules.append(rule)
 
             launch_configuration = self.get_launch_configuration(autoscaling_group, component_key,
                                                                  security_groups_to_create)
@@ -230,14 +232,10 @@ class InfrastructureBuilder(Step):
                 if rule_defined is None:
                     rule = self.get_config_or_default(self.docs, 'infrastructure/security-group-rule')
                     rule.specification.name = 'sg-rule-nfs-default-from-'+subnet.specification.name
+                    rule.specification.description = 'NFS inbound for '+subnet.specification.name
                     rule.specification.direction = 'ingress'
                     rule.specification.protocol = 'tcp'
-                    rule.specification.description = 'NFS inbound for '+subnet.specification.name
-                    rule.specification.access = 'Allow'
-
-                    rule.specification.source_port_range = -1
                     rule.specification.destination_port_range = 2049
-
                     rule.specification.source_address_prefix = subnet.specification.cidr_block
                     rule.specification.destination_address_prefix = '*'
                     security_group.specification.rules.append(rule.specification)
@@ -287,3 +285,14 @@ class InfrastructureBuilder(Step):
                                                       machine_selector)
 
         return model_with_defaults
+
+    @staticmethod
+    def rule_exists_in_list(rule_list, rule_to_check):
+        for rule in rule_list:
+            if (rule.direction.lower()                  == rule_to_check.direction.lower() and
+               rule.protocol.lower()                    == rule_to_check.protocol.lower() and
+               rule.destination_port_range.lower()      == rule_to_check.destination_port_range.lower() and
+               rule.source_address_prefix.lower()       == rule_to_check.source_address_prefix.lower() and
+               rule.destination_address_prefix.lower()  == rule_to_check.destination_address_prefix.lower()):
+                return True
+        return False
