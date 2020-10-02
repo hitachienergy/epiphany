@@ -103,3 +103,8 @@
   lineinfile:
     path: "/home/{{ admin_user.name }}/.bashrc"
     line: source <(kubectl completion bash)
+
+- name: Include Helm binary installation
+  include_role:
+    name: helm
+    tasks_from: install-bin
