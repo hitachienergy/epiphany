@@ -2,13 +2,6 @@ kind: configuration/opendistro-for-elasticsearch
 title: OpenDistro for Elasticsearch Config
 name: default
 specification:
-  versions:
-    RedHat:
-      elasticsearch_oss: "7.8.0"
-      opendistro: "1.9.0*"
-    Debian:
-      elasticsearch_oss: "7.8.0"
-      opendistro: "1.9.0*"
   cluster_name: EpiphanyElastic
   clustered: True
   paths:
