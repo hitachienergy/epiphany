@@ -2,6 +2,6 @@
 - name: Install Open Distro for Elasticsearch packages
   apt:
     name:
-      - elasticsearch-oss={{ specification.versions[ansible_os_family].elasticsearch_oss }}
+      - elasticsearch-oss={{ versions[ansible_os_family].elasticsearch_oss }}
     state: present
   register: install_elasticsearch_package
