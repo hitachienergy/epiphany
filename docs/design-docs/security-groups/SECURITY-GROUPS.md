@@ -20,7 +20,7 @@ Rules description:
   description:                "Short rule description"
   direction:                  "Inbound || Egress" - which direction are you allowing rule"
   protocol:                   "TCP || UDP" - which protocol should be used for connections"
-  destination_port_range:     "Destination prot"
+  destination_port_range:     "Destination port"
   source_address_prefix:      "Source network address"
   destination_address_prefix: "Destination network address"
 ```
