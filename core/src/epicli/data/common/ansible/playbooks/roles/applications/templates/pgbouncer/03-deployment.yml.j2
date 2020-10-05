@@ -18,7 +18,7 @@ spec:
     spec:
       containers:
         - name: pgbouncer
-{% if data.use_local_image_registry is undefined or (data.use_local_image_registry | bool) %}
+{% if use_epiphany_image_registry %}
           image: {{ image_registry_address }}/{{ data.image_path }}
 {% else %}
           image: {{ data.image_path }}
@@ -50,7 +50,7 @@ spec:
               subPath: users.txt
       initContainers:
         - name: pgbouncer-init
-{% if data.use_local_image_registry is undefined or (data.use_local_image_registry | bool) %}
+{% if use_epiphany_image_registry %}
           image: {{ image_registry_address }}/{{ data.init_image_path }}
 {% else %}
           image: {{ data.init_image_path }}

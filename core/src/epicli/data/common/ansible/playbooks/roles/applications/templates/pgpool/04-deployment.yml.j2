@@ -23,7 +23,7 @@ spec:
 {% endfor %}
       containers:
         - name: pgpool
-{% if data.use_local_image_registry is undefined or (data.use_local_image_registry | bool) %}
+{% if use_epiphany_image_registry %}
           image: {{ image_registry_address }}/{{ data.image.path }}
 {% else %}
           image: {{ data.image.path }}
@@ -94,7 +94,7 @@ spec:
       initContainers:
 {#      pgpool-init container creates/synchronizes pool_passwd file, users with passwords are fetched directly from PostgreSQL server #}
         - name: pgpool-init
-{% if data.use_local_image_registry is undefined or (data.use_local_image_registry | bool) %}
+{% if use_epiphany_image_registry %}
           image: {{ image_registry_address }}/{{ data.image.path }}
 {% else %}
           image: {{ data.image.path }}
