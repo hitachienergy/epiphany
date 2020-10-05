@@ -14,7 +14,7 @@
   when:
     - groups['kibana'][0] is defined
 
-- name: Include auditd configuration tasks 
+- name: Include auditd configuration tasks
   include_tasks: configure-auditd.yml
 
 - name: Include filebeat configuration tasks

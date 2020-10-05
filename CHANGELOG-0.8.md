@@ -16,7 +16,7 @@
 - [#1656](https://github.com/epiphany-platform/epiphany/issues/1656) - Run Helm tasks from Epiphany container
 - [#1640](https://github.com/epiphany-platform/epiphany/issues/1640) - Added separate machine for repository and changed helm to use localhost address
 - [#1640](https://github.com/epiphany-platform/epiphany/issues/1673) - Added Node Exporter as DaemonSet for "Kubernetes as Cloud Service"
-- [#1640](https://github.com/epiphany-platform/epiphany/issues/1670) - Added Filebeat as DaemonSet for "Kubernetes as Cloud Service"
+- [#1670](https://github.com/epiphany-platform/epiphany/issues/1670) - Added Filebeat as DaemonSet for "Kubernetes as Cloud Service"
 
 ### Updated
 
