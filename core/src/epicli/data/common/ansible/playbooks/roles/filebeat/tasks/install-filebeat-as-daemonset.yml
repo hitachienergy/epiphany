@@ -29,7 +29,7 @@
 
     - name: Install Filebeat using custom Helm chart (custom-chart-values.j2)
       delegate_to: localhost
-      shell: |
+      command: |
         helm upgrade --install \
           -f {{ download_directory }}/custom-chart-values.yml \
           {{ specification.helm_chart_name }} \
