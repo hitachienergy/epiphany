@@ -22,21 +22,15 @@
         file_name: "{{ exporter_chart_file_name }}"
         repository_url: http://localhost/epirepo
 
-    - name: Install Filebeat as DaemonSet using custom config file
-      block:
-        - name: Set Helm chart values from custom configuration
-          set_fact:
-            _helm_chart_values: "{{ lookup('template', '../templates/custom-chart-values.j2') }}"
+    - name: Copy configuration Helm chart file (custom-chart-values.j2)
+      template:
+        dest: "{{ download_directory }}/custom-chart-values.yml"
+        src: custom-chart-values.yml.j2
 
-        - name: Copy Filebeat's Helm chart's custom configuration to file
-          copy:
-            content: "{{ _helm_chart_values }}"
-            dest: "{{ download_directory }}/{{ specification.helm_chart_name }}_values.yaml"
-
-        - name: Install Filebeat's Helm chart (with custom values.yaml)
-          delegate_to: localhost
-          shell: |
-            helm upgrade --install \
-              -f {{ download_directory }}/{{ specification.helm_chart_name }}_values.yaml \
-              {{ specification.helm_chart_name }} \
-              {{ download_directory }}/{{ exporter_chart_file_name }}
+    - name: Install Filebeat using custom Helm chart (custom-chart-values.j2)
+      delegate_to: localhost
+      shell: |
+        helm upgrade --install \
+          -f {{ download_directory }}/custom-chart-values.yml \
+          {{ specification.helm_chart_name }} \
+          {{ download_directory }}/{{ exporter_chart_file_name }}
