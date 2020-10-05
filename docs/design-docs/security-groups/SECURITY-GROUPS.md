@@ -18,11 +18,9 @@ Rules description:
 ```yaml
 - name:                       "Name of the rule"
   description:                "Short rule description"
-  priority:                   "Rule priority; which rules should be considered as first-used basing on lowest number"
   direction:                  "Inbound || Egress" - which direction are you allowing rule"
-  access:                     "Allow || Deny" - whenever rule should allow connections or block"
   protocol:                   "TCP || UDP" - which protocol should be used for connections"
-  destination_port_range:     "Destination prot ranges"
+  destination_port_range:     "Destination prot"
   source_address_prefix:      "Source network address"
   destination_address_prefix: "Destination network address"
 ```
@@ -31,14 +29,13 @@ Lets look into example of Prometheus machine setup, and rules required to allow 
 The rule:
 
 ```yaml
-- name: prometheus
-  description: Allow connection to Prometheus
-  priority: 302
-  direction: Inbound
-  access: Allow
-  destination_port_range: "9090"
-  source_address_prefix: "10.1.0.0/20"
-  destination_address_prefix: "0.0.0.0/0"
+     - name: nrpe-agent-port
+       description: Allow access all hosts on port 5666 where nagios agent is running.
+       direction: Inbound
+       protocol: Tcp
+       destination_port_range: "5666"
+       source_address_prefix: "10.1.4.0/24"
+       destination_address_prefix: "0.0.0.0/0"
 ```
 
 In the above example, we are setting new rule name "prometheus", with priority 302, which is allowing accesses from local network "10.1.0.0/20" into Prometheus application host on port 9090. Note, that here we set dest "0.0.0.0/0" address and source 10.1.0.0/20, as those are the default configurations in Epiphany used if noone specify others. This might be adjusted in case you're using different addresses. 
@@ -171,11 +168,11 @@ specification:
        source_address_prefix: "0.0.0.0/0"
        destination_address_prefix: "0.0.0.0/0"
      # New Rule
-     - name: master_prometheus port
-       description: Allow monitoring subnet, to access all hosts on port 10051.
+     - name: nrpe-agent-port
+       description: Allow access all hosts on port 5666 where nagios agent is running.
        direction: Inbound
        protocol: Tcp
-       destination_port_range: "10051"
+       destination_port_range: "5666"
        source_address_prefix: "10.1.4.0/24"
        destination_address_prefix: "0.0.0.0/0"
 ---
@@ -232,11 +229,11 @@ specification:
        source_address_prefix: "0.0.0.0/0"
        destination_address_prefix: "0.0.0.0/0"
      # New Rule
-     - name: node_prometheus_port
-       description: Allow monitoring subnet, to access all hosts on port 10051.
+     - name: nrpe-agent-port
+       description: Allow access all hosts on port 5666 where nagios agent is running.
        direction: Inbound
        protocol: Tcp
-       destination_port_range: "10051"
+       destination_port_range: "5666"
        source_address_prefix: "10.1.4.0/24"
        destination_address_prefix: "0.0.0.0/0"
 ```
