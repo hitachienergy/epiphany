@@ -4,11 +4,11 @@ This document describes the Security Groups layout which is used to deploy Epiph
 
 ## Table of Contents
 
-- [Security groups created by default](#security-groups-created-by-default-in-aws)
-- [Setting own security groups](#setting-own-security-groups-in-aws)
-- [Example](#example-in-aws)
+- [AWS - Security groups created by default](#aws-security-groups-created-by-default)
+- [AWS - Setting own security groups](#aws-setting-own-security-groups)
+- [AWS - Example](#aws-example)
 
-## Security groups created by default in AWS
+## AWS Security groups created by default
 
 By default Epiphany is creating security groups required to handle communication by all components (like postgress/rabbitmq etc). This enables the smooth communication between all of them. List of all security groups and related services are described [here](https://github.com/epiphany-platform/epiphany/blob/develop/core/src/epicli/data/aws/defaults/infrastructure/).
 Please note, that whenever you want to add a new rule, you need to copy all default rules from mentioned above url.
@@ -41,7 +41,7 @@ The rule:
 In the above example, we are setting new rule name "prometheus", with priority 302, which is allowing accesses from local network "10.1.0.0/20" into Prometheus application host on port 9090. Note, that here we set dest "0.0.0.0/0" address and source 10.1.0.0/20, as those are the default configurations in Epiphany used if noone specify others. This might be adjusted in case you're using different addresses. 
 
 
-## Setting own security groups in AWS
+## AWS Setting own security groups
 
 Sometimes, there is a need to set additional security rules for some application which we're deploying in epiphany kubernetes cluster. Than, we need to stick into following rules:
 - Whenever we want to add new rule - for example open port "222", we should *COPY* all current roles into our deployment .yaml file, and at the end, add the rule which we want.
@@ -49,7 +49,7 @@ Sometimes, there is a need to set additional security rules for some application
 - Each component has his own rule-set, so we need to be very carefull where we're putting them.
 - After adding new rules, and infra part is done (terraform), we can go into terraform build directory and check if fiiles contain our port definition.
 
-**Example in AWS:**
+##AWS Example##
 
 Please check bellow example, how to setup basic epiphany cluster in AWS with 1 master, 2 nodes, mandatory repository machine, and open accesses to all hosts on port 10051 from monitoring network.
 
