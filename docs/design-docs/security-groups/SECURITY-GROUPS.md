@@ -6,7 +6,8 @@ This document describes the Security Groups layout which is used to deploy Epiph
 
 - [AWS - Security groups created by default](#aws-security-groups-created-by-default)
 - [AWS - Setting own security groups](#aws-setting-own-security-groups)
-- [AWS - Example](#aws-example)
+- [Azure - Security groups created by default - TODO]
+- [Azure - Setting own security groups - TODO]
 
 ## AWS Security groups created by default
 
@@ -49,7 +50,7 @@ Sometimes, there is a need to set additional security rules for some application
 - Each component has his own rule-set, so we need to be very carefull where we're putting them.
 - After adding new rules, and infra part is done (terraform), we can go into terraform build directory and check if fiiles contain our port definition.
 
-##AWS Example##
+**AWS Example**
 
 Please check bellow example, how to setup basic epiphany cluster in AWS with 1 master, 2 nodes, mandatory repository machine, and open accesses to all hosts on port 10051 from monitoring network.
 
