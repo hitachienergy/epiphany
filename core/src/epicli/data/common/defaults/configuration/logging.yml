@@ -9,5 +9,5 @@ specification:
     repo: /var/lib/elasticsearch-snapshots
     logs: /var/log/elasticsearch
   # JVM settings
-  init_heap_space: -Xms1g
-  max_heap_space: -Xmx1g
+  init_heap_size: -Xms1g
+  max_heap_size: -Xmx1g
