@@ -21,5 +21,4 @@
 
 - name: Include configuration tasks
   include_tasks: configure-es.yml
-  vars:
-    current_group_name: "opendistro_for_elasticsearch"
+
