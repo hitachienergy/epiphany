@@ -3,12 +3,12 @@
 - name: Install Open Distro for Elasticsearch packages
   yum:
     name:
-      - opendistro-alerting-{{ specification.versions[ansible_os_family].opendistro }}
-      - opendistro-index-management-{{ specification.versions[ansible_os_family].opendistro }}
-      - opendistro-job-scheduler-{{ specification.versions[ansible_os_family].opendistro }}
-      - opendistro-performance-analyzer-{{ specification.versions[ansible_os_family].opendistro }}
-      - opendistro-security-{{ specification.versions[ansible_os_family].opendistro }}
-      - opendistro-sql-{{ specification.versions[ansible_os_family].opendistro }}
+      - opendistro-alerting-{{ versions[ansible_os_family].opendistro }}
+      - opendistro-index-management-{{ versions[ansible_os_family].opendistro }}
+      - opendistro-job-scheduler-{{ versions[ansible_os_family].opendistro }}
+      - opendistro-performance-analyzer-{{ versions[ansible_os_family].opendistro }}
+      - opendistro-security-{{ versions[ansible_os_family].opendistro }}
+      - opendistro-sql-{{ versions[ansible_os_family].opendistro }}
     update_cache: yes
     state: present
   register: install_elasticsearch_package

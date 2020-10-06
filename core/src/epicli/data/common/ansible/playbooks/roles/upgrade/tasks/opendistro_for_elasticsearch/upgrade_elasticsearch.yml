@@ -46,6 +46,11 @@
     name: opendistro_for_elasticsearch
     tasks_from: install-es-{{ ansible_os_family }}.yml
 
+- name: Include configuration tasks
+  include_role:
+    name: opendistro_for_elasticsearch
+    tasks_from: configure-es.yml
+
 - name: Open Distro for Elasticsearch - plugins | Upgrade
   include_tasks: opendistro_for_elasticsearch/upgrade_plugins.yml
 

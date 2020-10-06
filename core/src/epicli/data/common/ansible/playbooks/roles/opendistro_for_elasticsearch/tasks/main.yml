@@ -19,5 +19,7 @@
 - name: Include opendistro-* plugins installation task
   include_tasks: "install-opendistro-{{ ansible_os_family }}.yml"
 
-- name: Include configuration tasks in a context of {{ current_group_name }}
+- name: Include configuration tasks
   include_tasks: configure-es.yml
+  vars:
+    current_group_name: "opendistro_for_elasticsearch"
