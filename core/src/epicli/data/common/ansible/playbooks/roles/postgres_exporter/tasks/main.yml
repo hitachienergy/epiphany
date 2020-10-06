@@ -73,7 +73,7 @@
     dest: /opt/postgres_exporter/queries.yaml
     owner: postgres_exporter
     group: postgres_exporter
-    mode: ug=rw,o=
+    mode: ug=rw,o=r
 
 - name: Configure systemd to use postgres-exporter service
   systemd:
