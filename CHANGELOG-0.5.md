@@ -1,6 +1,6 @@
 # Changelog 0.5
 
-## [0.5.5] 2020-10-06
+## [0.5.5] 2020-10-07
 
 ### Fixed
 
@@ -8,6 +8,7 @@
 - [#1506](https://github.com/epiphany-platform/epiphany/issues/1506) - v0.5 Terraform returning an error during deployments on Azure ("A retryable error occurred.")
 - [#1350](https://github.com/epiphany-platform/epiphany/issues/1350) - Cannot deploy a non-k8s cluster with load\_balancer vm
 - [#922](https://github.com/epiphany-platform/epiphany/issues/922) - [RHEL/CentOS] Elasticsearch v6 stops working after epicli upgrade
+- [#1742](https://github.com/epiphany-platform/epiphany/issues/1742) - [RHEL/CentOS] epicli apply may fail on task 'postgresql : Install pgaudit package'
 
 ## [0.5.4] 2020-04-14
 
