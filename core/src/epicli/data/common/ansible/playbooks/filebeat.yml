@@ -9,3 +9,5 @@
   become_method: sudo
   roles:
     - filebeat
+  environment:
+    KUBECONFIG: "{{ kubeconfig.local }}"

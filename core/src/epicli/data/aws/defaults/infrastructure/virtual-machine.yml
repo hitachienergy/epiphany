@@ -473,6 +473,13 @@ specification:
        destination_port_range: "0"
        source_address_prefix: "0.0.0.0/0"
        destination_address_prefix: "0.0.0.0/0"
+     - name: postgres_exporter
+       description: Allow postgres exporter traffic
+       direction: Inbound
+       protocol: Tcp
+       destination_port_range: "9187"
+       source_address_prefix: "10.1.0.0/20"
+       destination_address_prefix: "0.0.0.0/0"
      - name: kubernetes-traffic
        description: Allow Kubernetes subnet traffic
        direction: Inbound

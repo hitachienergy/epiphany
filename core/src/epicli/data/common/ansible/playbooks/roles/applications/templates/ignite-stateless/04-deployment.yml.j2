@@ -22,7 +22,7 @@ spec:
       containers:
         # Custom Ignite pod name.
       - name: ignite-node
-{% if data.use_local_image_registry is undefined or (data.use_local_image_registry | bool) %}
+{% if use_epiphany_image_registry %}
         image: {{ image_registry_address }}/{{ data.image_path }}
 {% else %}
         image: {{ data.image_path }}
