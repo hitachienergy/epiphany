@@ -36,6 +36,7 @@
 - [#1659](https://github.com/epiphany-platform/epiphany/issues/1659) - epicli upgrade fails on Ubuntu on downgrading kubernetes-cni package
 - [#1681](https://github.com/epiphany-platform/epiphany/issues/1681) - Node exporter does not work after the upgrade
 - [#1705](https://github.com/epiphany-platform/epiphany/issues/1705) - [RHEL/CentOS] epicli fails on downloading requirements - Docker CE repo not available
+- [#922](https://github.com/epiphany-platform/epiphany/issues/922) - [RHEL/CentOS] Elasticsearch v6 stops working after epicli upgrade
 
 ### Breaking changes
 
