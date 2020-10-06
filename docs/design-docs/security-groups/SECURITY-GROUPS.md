@@ -3,16 +3,20 @@
 This document describes the Security Groups layout which is used to deploy Epiphany Platform in AWS or Azure. You will find the default configuration here, as well as examples of adding own rules or changing existing ones.
 
 ## Table of Contents
-
+- [AWS - Security diagram](#aws-security-groups-diagram)
 - [AWS - Security groups created by default](#aws-security-groups-created-by-default)
 - [AWS - Setting own security groups](#aws-setting-own-security-groups)
 - [Azure - Security groups created by default - TODO]
 - [Azure - Setting own security groups - TODO]
 
+## AWS Security groups diagram
+![](../AWS/aws_cluster_setup.svg)
+
 ## AWS Security groups created by default
 
-By default Epiphany is creating security groups required to handle communication by all components (like postgress/rabbitmq etc). This enables the smooth communication between all of them. List of all security groups and related services are described [here](https://github.com/epiphany-platform/epiphany/blob/develop/core/src/epicli/data/aws/defaults/infrastructure/).
+By default Epiphany is creating security groups required to handle communication by all components (like postgress/rabbitmq etc). As per defaults, Epiphany creates a subnet per component and  each subnet has its own of security group, with rules that allow communication between them. This enables the smooth communication between all components. List of all security groups and related services are described [here](https://github.com/epiphany-platform/epiphany/blob/develop/core/src/epicli/data/aws/defaults/infrastructure/virtual-machine.yml). Please check our [security document](https://github.com/epiphany-platform/epiphany/blob/develop/docs/home/SECURITY.md) too.
 Please note, that whenever you want to add a new rule, you need to copy all default rules from mentioned above url.
+
 
 Rules description:
 
