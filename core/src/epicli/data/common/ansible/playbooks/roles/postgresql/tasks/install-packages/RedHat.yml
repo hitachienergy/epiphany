@@ -27,11 +27,18 @@
 
 # --- extensions ---
 
+- name: Get information about installed packages as facts
+  package_facts:
+    manager: auto
+  when: ansible_facts.packages is undefined
+
 - name: Install pgaudit package
   yum:
     name:
-      - pgaudit12_10
+      - pgaudit12_10-1.2.0 # cannot install 1.2.2-1 due to dependency conflict, see issue #1742
     state: present
   when:
     - specification.extensions.pgaudit.enabled is defined
     - specification.extensions.pgaudit.enabled
+    - (ansible_facts.packages['pgaudit12_10'] is undefined or
+       ansible_facts.packages['pgaudit12_10'][0].version is version('1.2.0', '<='))
