@@ -13,7 +13,7 @@
 - name: Update elasticsearch-oss if installed version < 7 # v7 is installed by opendistro_for_elasticsearch role
   when:
     - ansible_facts.packages['elasticsearch-oss'] is defined
-    - ansible_facts.packages['elasticsearch-oss'][0].version is version('7', '<')
+    - ansible_facts.packages['elasticsearch-oss'][0].version is version('7.0.0', '<')
     - specification.elasticsearch_version is version('7.0.0', '<')
   block:
     - name: Print Elasticsearch versions
