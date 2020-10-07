@@ -78,7 +78,7 @@ perl-libs # for vim
 perl-Pod-Perldoc # for vim
 perl-Pod-Simple # for vim
 perl-Pod-Usage # for vim
-pgaudit12_10
+pgaudit12_10-1.2.0
 pgbouncer-1.10.*
 policycoreutils-python # for container-selinux
 pyldb # for cifs-utils
