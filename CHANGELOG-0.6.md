@@ -1,6 +1,6 @@
 # Changelog 0.6
 
-## [0.6.1] 2020-10-02
+## [0.6.1] 2020-10-07
 
 ### Fixed
 
@@ -9,6 +9,7 @@
 - [#1154](https://github.com/epiphany-platform/epiphany/issues/1154) - Node exporter is not installed on logging vms
 - [#1183](https://github.com/epiphany-platform/epiphany/issues/1183) - Task 'Check if /etc/kubernetes/admin.conf file exists' fails when kubernetes\_master.count = 0
 - [#1350](https://github.com/epiphany-platform/epiphany/issues/1350) - Cannot deploy a non-k8s cluster with load\_balancer vm
+- [#922](https://github.com/epiphany-platform/epiphany/issues/922) - [RHEL/CentOS] Elasticsearch v6 stops working after epicli upgrade
 
 ## [0.6.0] 2020-04-06
 
