@@ -3,7 +3,7 @@ import copy
 
 from cli.version import VERSION
 from cli.helpers.Step import Step
-from cli.helpers.build_saver import get_ansible_path, get_ansible_path_for_build, get_ansible_vault_path, MANIFEST_FILE_NAME
+from cli.helpers.build_saver import get_ansible_path, get_ansible_path_for_build, get_ansible_vault_path
 from cli.helpers.doc_list_helpers import select_first, select_single, ExpectedSingleResultException
 from cli.helpers.naming_helpers import to_feature_name, to_role_name
 from cli.helpers.ObjDict import ObjDict
@@ -30,7 +30,7 @@ class AnsibleVarsGenerator(Step):
         elif inventory_upgrade != None and inventory_creator == None:
             self.cluster_model = inventory_upgrade.cluster_model
             self.config_docs = load_all_documents_from_folder('common', 'defaults/configuration')
-            self.manifest_docs = self.get_manifest_docs()
+            self.manifest_docs = inventory_upgrade.manifest_docs
         else:
             raise Exception('Invalid AnsibleVarsGenerator configuration')
 
@@ -167,14 +167,6 @@ class AnsibleVarsGenerator(Step):
         cluster_model = copy.copy(self.cluster_model)
         self.clear_object(cluster_model, 'credentials')
         return cluster_model
-
-    def get_manifest_docs(self):
-        path_to_manifest = os.path.join(self.inventory_upgrade.build_dir, MANIFEST_FILE_NAME)
-        if not os.path.isfile(path_to_manifest):
-            raise Exception('No manifest.yml inside the build folder')
-
-        manifest_docs = load_yamls_file(path_to_manifest)
-        return manifest_docs
 
     def get_shared_config_from_manifest(self):
         # Reuse shared config from existing manifest

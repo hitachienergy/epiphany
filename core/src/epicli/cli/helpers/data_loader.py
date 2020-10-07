@@ -17,6 +17,7 @@ DATA_FOLDER_PATH = (
     if os.path.exists(DATA_FOLDER_PATH_SYSTEM)
     else DATA_FOLDER_PATH_LOCAL
 )
+MANIFEST_FILE_NAME = 'manifest.yml'
 
 Types = namedtuple('FileType', 'DEFAULT VALIDATION TERRAFORM ANSIBLE')
 types = Types(DEFAULT='defaults',
@@ -81,3 +82,10 @@ def load_all_documents_from_folder(provider, directory):
         documents = load_file_from_path(script_dir, filename, None, None)
         docs += documents
     return docs
+
+def load_manifest_docs(build_dir):
+    path_to_manifest = os.path.join(build_dir, MANIFEST_FILE_NAME)
+    if not os.path.isfile(path_to_manifest):
+        raise Exception('No manifest.yml inside the build folder')
+
+    return load_yamls_file(path_to_manifest)
