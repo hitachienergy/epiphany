@@ -5,4 +5,5 @@
       - elasticsearch-oss-{{ specification.elasticsearch_version }}
     update_cache: yes
     state: present
+    exclude: elasticsearch-oss-7* # v7 is installed by opendistro_for_elasticsearch role
   register: install_elasticsearch_package
