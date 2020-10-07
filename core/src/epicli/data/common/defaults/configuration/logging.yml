@@ -2,19 +2,11 @@ kind: configuration/logging
 title: Logging Config
 name: default
 specification:
-  versions:
-    RedHat:
-      elasticsearch_oss: "7.8.0"
-      opendistro: "1.9.0*"
-    Debian:
-      elasticsearch_oss: "7.8.0"
-      opendistro: "1.9.0*"
   cluster_name: EpiphanyElastic
   clustered: True
-  # Credentials needed for upgrade Open Distro for Elasticsearch cluster
-  es_user: admin
-  es_password: admin
   paths:
     data: /var/lib/elasticsearch
     repo: /var/lib/elasticsearch-snapshots
     logs: /var/log/elasticsearch
+  jvm_options:
+    Xmx: 1g # see https://www.elastic.co/guide/en/elasticsearch/reference/7.9/heap-size.html

@@ -91,7 +91,6 @@
     - import_role:
         name: upgrade
         tasks_from: elasticsearch
-      when: ansible_os_family == 'Debian' # TODO: Fix issue #922 for RedHat
 
 - hosts: elasticsearch_curator
   become: true

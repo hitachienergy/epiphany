@@ -6,3 +6,5 @@
   become_method: sudo
   roles:
     - opendistro_for_elasticsearch
+  vars:
+    current_group_name: "opendistro_for_elasticsearch"

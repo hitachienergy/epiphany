@@ -8,3 +8,5 @@ specification:
     data: /var/lib/elasticsearch
     repo: /var/lib/elasticsearch-snapshots
     logs: /var/log/elasticsearch
+  jvm_options:
+    Xmx: 1g # see https://www.elastic.co/guide/en/elasticsearch/reference/7.9/heap-size.html
