@@ -8,6 +8,5 @@ specification:
     data: /var/lib/elasticsearch
     repo: /var/lib/elasticsearch-snapshots
     logs: /var/log/elasticsearch
-  # JVM settings
-  init_heap_size: -Xms1g
-  max_heap_size: -Xmx1g
+  jvm_options:
+    Xmx: 1g # see https://www.elastic.co/guide/en/elasticsearch/reference/7.9/heap-size.html
