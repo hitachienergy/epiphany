@@ -21,8 +21,9 @@
 # Xms represents the initial size of total heap space
 # Xmx represents the maximum size of total heap space
 
-{{ specification.init_heap_size }}
-{{ specification.max_heap_size }}
+{# Xms = Xmx by purpose, must be equal #}
+-Xms{{ specification.jvm_options.Xmx }}
+-Xmx{{ specification.jvm_options.Xmx }}
 
 ################################################################
 ## Expert settings
