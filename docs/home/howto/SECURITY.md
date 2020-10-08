@@ -379,7 +379,7 @@ that right now can be configured manually according to Hashicorp Vault [document
 
 At the moment only installation on Kubernetes Master is supported, but we are also planning separate installation with no
 other components. Also at this moment we are not providing clustered option for Vault deployment, but this will be part
-of the future releases.
+of the future releases. For multi-master (HA) Kubernetes, Vault is not installed.
 
 Below you can find sample configuration for Vault with description of all options.
 
