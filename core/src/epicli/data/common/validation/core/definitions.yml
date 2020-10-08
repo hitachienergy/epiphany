@@ -27,7 +27,8 @@ version:
   default: '0.4.2'
   examples:
   - 0.4.2
-  pattern: ^((\d+\.)(\d+\.)(\d))$
+  - 0.8.0rc1
+  pattern: ^((\d+\.)(\d+\.)(\d+)(rc\d+)?)$
 unvalidated_specification:
   type:
     - 'object'
