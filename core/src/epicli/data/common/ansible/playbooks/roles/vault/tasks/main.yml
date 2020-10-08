@@ -39,6 +39,7 @@
     - specification.vault_enabled
     - k8s_as_cloud_service is defined
     - not k8s_as_cloud_service
+    - groups.kubernetes_master | length == 1
   block:
     - name: Create Vault system group
       group:
