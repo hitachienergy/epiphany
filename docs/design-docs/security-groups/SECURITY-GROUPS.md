@@ -5,18 +5,18 @@ This document describes the Security Groups layout which is used to deploy Epiph
 ## Table of Contents
 - [Introduction](#introduction)
 - [Setting own security groups](#setting-own-security-groups)
-- [Security diagram](#azure-security-groups-diagram)
+- [Security diagram](#ecurity-groups-diagram)
 - [Azure security groups](#azure-security-groups)
 - [Azure Security groups full yaml file](#azure-security-groups-full-yaml-file)
 - [AWS Security groups](#aws-security-groups)
-- [AWS Setting groups full yaml file](#aws-setting-own-security-groups)
+- [AWS Security groups full yaml file](#aws-setting-groups-full-yaml-file)
 
 
 ## Introduction
-By default Epiphany platform is creating security groups required to handle communication by all components (like postgress/rabbitmq etc). As per defaults, Epiphany creates a subnet per component and  each subnet has its own of security group, with rules that allow communication between them. This enables the smooth communication between all components. Please check our [security document](https://github.com/epiphany-platform/epiphany/blob/develop/docs/home/SECURITY.md) too. Be aware, that whenever you want to add a new rule, you need to copy all default rules from mentioned above url. That this document is splited into two parts: AWS and Azure. The reason why we do that, is that there are diffrent values in AWS and AZure, when setting the security rules.
+By default Epiphany platform is creating security groups required to handle communication by all components (like postgress/rabbitmq etc). As per defaults, Epiphany creates a subnet per component and  each subnet has its own of security group, with rules that allow communication between them. This enables the smooth communication between all components. Please check our [security document](https://github.com/epiphany-platform/epiphany/blob/develop/docs/home/SECURITY.md) too. *Be aware, that whenever you want to add a new rule, you need to copy all default rules from mentioned above url*. That this document is splited into two parts: AWS and Azure. The reason why we do that, is that there are diffrent values in AWS and AZure, when setting the security rules.
 
 ## Setting own security groups
-Sometimes, there is a need to set additional security rules for some application which we're deploying in epiphany kubernetes cluster. Than, we need to stick into following rules:
+Sometimes, there is a need to set additional security rules for application which we're deploying in epiphany kubernetes cluster. Than, we need to stick into following rules:
 - Whenever we want to add new rule - for example open port "X", we should *COPY* all current roles into our deployment .yaml file, and at the end, add the rule which we want.
 - Each component has his own rule-set, so we need to be very carefull where we're putting them.
 - After coping, we can also modify existing default security groups.
@@ -61,7 +61,7 @@ The rule:
 ```
 
 ## Azure Security groups full yaml file
-
+To deploy previously mentioned rule, we need to setup a complete YAML configuraiton file. Bellow example shows how this file should looks like. In this configuration we set simple setup of epiphany with 2nodes and 1 master vm in Azure.
 ```yaml
 kind: epiphany-cluster
 name: default
@@ -75,7 +75,7 @@ specification:
     key_path:  /workspaces/epiphany/core/src/epicli/clusters/keys/abb_rsa
   cloud:
     region: West Europe
-    subscription_name: PGGA-Epiphany-Dev
+    subscription_name: PUT_SUBSCRIPTION_NAME_HERE
     use_public_ips: true
     use_service_principal: true
     network:
@@ -211,7 +211,6 @@ specification:
 ## AWS Security groups
 List of all security groups and related services in AWS are described [here](https://github.com/epiphany-platform/epiphany/blob/develop/core/src/epicli/data/aws/defaults/infrastructure/virtual-machine.yml).
 
-## AWS Setting own security groups
 Rules description:
 ```yaml
 - name:                       "Name of the rule"
@@ -238,7 +237,7 @@ The rule:
 
 
 ## AWS Setting groups full yaml file
-Please check bellow example, how to setup basic epiphany cluster in AWS with 1 master, 2 nodes, mandatory repository machine, and open accesses to all hosts on port 10051 from monitoring network.
+Please check bellow example, how to setup basic epiphany cluster in AWS with 1 master, 2 nodes, mandatory repository machine, and open accesses to all hosts on port 5666 from monitoring network.
 
 ```yaml
 kind: epiphany-cluster
