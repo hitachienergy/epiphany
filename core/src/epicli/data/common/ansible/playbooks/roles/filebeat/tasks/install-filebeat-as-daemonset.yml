@@ -22,12 +22,12 @@
         file_name: "{{ exporter_chart_file_name }}"
         repository_url: http://localhost/epirepo
 
-    - name: Copy configuration Helm chart file (custom-chart-values.j2)
+    - name: Copy configuration Helm chart file (custom-chart-values.yml.j2)
       template:
         dest: "{{ download_directory }}/custom-chart-values.yml"
         src: custom-chart-values.yml.j2
 
-    - name: Install Filebeat using custom Helm chart (custom-chart-values.j2)
+    - name: Install Filebeat using custom Helm chart (custom-chart-values.yml)
       delegate_to: localhost
       command: |
         helm upgrade --install \
