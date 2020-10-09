@@ -26,7 +26,7 @@
 
     - import_role:
         name: filebeat
-        tasks_from: install-filebeat
+        tasks_from: install-filebeat-as-system-service
 
     - import_role:
         name: filebeat

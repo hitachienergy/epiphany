@@ -3,10 +3,11 @@ import shutil
 
 from cli.helpers.Step import Step
 from cli.helpers.Config import Config
-from cli.helpers.build_saver import MANIFEST_FILE_NAME, TERRAFORM_OUTPUT_DIR
+from cli.helpers.build_saver import TERRAFORM_OUTPUT_DIR
 from cli.helpers.data_loader import load_yamls_file
 from cli.helpers.doc_list_helpers import select_single
 from cli.engine.terraform.TerraformRunner import TerraformRunner
+from cli.helpers.data_loader import load_manifest_docs
 
 class DeleteEngine(Step):
     def __init__(self, input_data):
@@ -21,11 +22,7 @@ class DeleteEngine(Step):
         super().__exit__(exc_type, exc_value, traceback)
 
     def delete(self):
-        path_to_manifest = os.path.join(self.build_directory, MANIFEST_FILE_NAME)
-        if not os.path.isfile(path_to_manifest):
-            raise Exception('No manifest.yml inside the build folder')
-
-        docs = load_yamls_file(path_to_manifest)
+        docs = load_manifest_docs(self.build_directory)
         cluster_model = select_single(docs, lambda x: x.kind == 'epiphany-cluster')
         
         if cluster_model.provider == 'any':
