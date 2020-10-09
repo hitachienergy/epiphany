@@ -1,7 +1,15 @@
 ---
 # Ansible playbook that installs Hashicorp Vault
-- hosts: vault
+# Installing Vault on multi-master K8s is not supported so install only on the first host
+- hosts: >-
+    {{ 'vault[0]' if (groups.kubernetes_master is defined and
+                      groups.vault is defined and
+                      groups.vault | intersect(groups.kubernetes_master)) else
+      'vault' }}
   become: true
   become_method: sudo
   roles:
-    - vault
+    - role: vault
+      when:
+        - specification.vault_enabled
+        - k8s_as_cloud_service is undefined or not k8s_as_cloud_service

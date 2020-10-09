@@ -11,7 +11,7 @@ spec:
   - Egress
   egress:
   - to:
-    {% for server in groups['vault'] %}- ipBlock:
+    {% for server in ansible_play_hosts_all %}- ipBlock:
         cidr: {{ hostvars[server]['ansible_default_ipv4']['address'] }}/32
     {% endfor %}ports:
     - protocol: TCP
