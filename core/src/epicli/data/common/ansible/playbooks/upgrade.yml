@@ -117,7 +117,7 @@
         name: upgrade
         tasks_from: opendistro_for_elasticsearch
       vars:
-        current_group_name: logging
+        current_group_name: "logging"
 
 - hosts: opendistro_for_elasticsearch
   become: true
@@ -127,6 +127,8 @@
     - import_role:
         name: upgrade
         tasks_from: opendistro_for_elasticsearch
+      vars:
+        current_group_name: "opendistro_for_elasticsearch"
 
 - hosts: kibana
   become: true
