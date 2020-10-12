@@ -433,6 +433,9 @@ To prepare infrastructure we will use AzBI module to create resource group, vnet
   epicli --auto-approve apply --file='/tmp/shared/epi.yml' --vault-password='secret'
   ```
   This will install PosgreSQL on one of machines and configure pgbouncer, pgpool and additional services to manage database connections.
-  Please make sure you disable applications that you don't need. Also you can enable standard Epiphany services like kafka or rabbitmq, by increasing number of virtual machines in the basic infrastructure config and assigning them to Epiphany components you want to use.
-  If you would like to deploy custom resources into managed Kubernetes, then standard kubeconfig yaml document can be found inside the shared state file (you should be able to use vendor tools as well to get it).  
+  
+  Please make sure you disable applications that you don't need. Also, you can enable standard Epiphany services like kafka or rabbitmq, by increasing number of virtual machines in the basic infrastructure config and assigning them to Epiphany components you want to use.
+  
+  If you would like to deploy custom resources into managed Kubernetes, then standard kubeconfig yaml document can be found inside the shared state file (you should be able to use vendor tools as well to get it). 
+  
   We highly recommend using the `Ingress` resource in Kubernetes to allow access to web applications inside the cluster. Since it's managed Kubernetes and fully supported by the cloud platform, the classic HAProxy load-balancer solution seems to be deprecated here.
