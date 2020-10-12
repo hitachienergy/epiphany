@@ -95,7 +95,7 @@ To prepare infrastructure we will use AzBI module to create resource group, vnet
 ### Install Epiphany
 
 * Create Epiphany cluster config file in `/tmp/shared/epi.yml` to for `epicli` tool: 
-  ```shell
+  ```yaml
   kind: epiphany-cluster
   title: Epiphany cluster Config
   name: your-cluster-name # <----- make unified with other places and build directory name
