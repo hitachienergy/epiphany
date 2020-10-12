@@ -21,14 +21,14 @@
       include_vars:
         file: roles/kibana/defaults/main.yml
 
-    - name: Kibana | Print versions
-      debug:
-        msg:
-          - "Installed version: {{ ansible_facts.packages['opendistroforelasticsearch-kibana'][0].version }}"
-          - "Target version: {{ specification.versions[ansible_os_family].opendistro }}"
+- name: Kibana | Print versions
+  debug:
+    msg:
+      - "Installed version: {{ ansible_facts.packages['opendistroforelasticsearch-kibana'][0].version }}"
+      - "Target version: {{ versions[ansible_os_family].opendistro }}"
 
-    - name: Kibana | Upgrade
-      import_role:
-        name: kibana
-      when:
-        - specification.versions[ansible_os_family].opendistro is version(ansible_facts.packages['opendistroforelasticsearch-kibana'][0].version, '>')
+- name: Kibana | Upgrade
+  import_role:
+    name: kibana
+  when:
+    - versions[ansible_os_family].opendistro is version(ansible_facts.packages['opendistroforelasticsearch-kibana'][0].version, '>')
