@@ -240,7 +240,7 @@ To prepare infrastructure we will use AzBI module to create resource group, vnet
                   when: replication
     extensions:
       pgaudit:
-        enabled: no
+        enabled: false
         shared_preload_libraries:
           - pgaudit
         config_file_parameters:
@@ -255,7 +255,7 @@ To prepare infrastructure we will use AzBI module to create resource group, vnet
           pgaudit.log_statement_once: 'off'
           pgaudit.log_parameter: 'on'
       pgbouncer:
-        enabled: no
+        enabled: false
       replication:
         enabled: false
         replication_user_name: epi_repmgr
