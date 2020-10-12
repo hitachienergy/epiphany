@@ -392,7 +392,7 @@ To prepare infrastructure we will use AzBI module to create resource group, vnet
               reserved_connections = 1
             pool_hba_conf: autoconfigured
         - name: pgbouncer
-          enabled: false
+          enabled: true
           image_path: brainsam/pgbouncer:1.12
           init_image_path: bitnami/pgpool:4.1.1-debian-10-r29
           use_local_image_registry: false
