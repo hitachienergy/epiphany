@@ -107,3 +107,5 @@
 
 - [Maintenance](./howto/MAINTENANCE.md)
   - [Verification of service state](./howto/MAINTENANCE.md#verification-of-service-state)
+
+- [Modules](./howto/modules.md)
