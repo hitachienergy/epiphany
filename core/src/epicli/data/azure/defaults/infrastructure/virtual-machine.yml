@@ -770,6 +770,8 @@ title: "Virtual Machine Infra"
 provider: azure
 name: repository-machine
 specification:
+  storage_os_disk:
+    disk_size_gb: 64
   size: Standard_DS1_v2
   security:
     rules:
