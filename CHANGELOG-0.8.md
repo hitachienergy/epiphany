@@ -17,6 +17,7 @@
 - [#1640](https://github.com/epiphany-platform/epiphany/issues/1640) - Added separate machine for repository and changed helm to use localhost address
 - [#1673](https://github.com/epiphany-platform/epiphany/issues/1673) - Added Node Exporter as DaemonSet for "Kubernetes as Cloud Service"
 - [#1670](https://github.com/epiphany-platform/epiphany/issues/1670) - Added Filebeat as DaemonSet for "Kubernetes as Cloud Service"
+- [#1696](https://github.com/epiphany-platform/epiphany/issues/1696) - Document installation of Epiphany using AzBI and AzKS modules
 
 ### Updated
 
