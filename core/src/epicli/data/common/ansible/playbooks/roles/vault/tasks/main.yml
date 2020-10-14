@@ -34,12 +34,7 @@
     dest: /tmp/vault_helm_chart_values.yaml
   when: vault_helm_chart_values_bool
 
-- name: Install and configure Hashicorp Vault if enabled and no cloud service is used
-  when:
-    - specification.vault_enabled
-    - k8s_as_cloud_service is defined
-    - not k8s_as_cloud_service
-    - groups.kubernetes_master | length == 1
+- name: Install and configure Hashicorp Vault
   block:
     - name: Create Vault system group
       group:

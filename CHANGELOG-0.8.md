@@ -1,5 +1,11 @@
 # Changelog 0.8
 
+## [0.8.0] 2020-10-XX
+
+### Fixed
+
+- [#1754](https://github.com/epiphany-platform/epiphany/issues/1754) - Fix Vault installation for setup without K8s
+
 ## [0.8.0rc1] 2020-10-08
 
 ### Added
