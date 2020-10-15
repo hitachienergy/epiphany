@@ -5,6 +5,7 @@
 ### Fixed
 
 - [#1754](https://github.com/epiphany-platform/epiphany/issues/1754) - Fix Vault installation for setup without K8s
+- [#1640](https://github.com/epiphany-platform/epiphany/issues/1640) - Default disk size for repository machine increased to 64 GB (AWS and Azure)
 
 ## [0.8.0rc1] 2020-10-08
 

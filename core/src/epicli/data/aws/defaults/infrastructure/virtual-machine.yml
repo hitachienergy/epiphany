@@ -628,6 +628,9 @@ title: "Virtual Machine Infra"
 provider: aws
 name: repository-machine
 specification:
+  disks:
+    root:
+      volume_size: 64
   size: t2.medium
   security:
     rules:
