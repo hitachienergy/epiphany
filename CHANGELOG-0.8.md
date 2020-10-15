@@ -6,6 +6,10 @@
 
 - [#1754](https://github.com/epiphany-platform/epiphany/issues/1754) - Fix Vault installation for setup without K8s
 
+### Updated
+
+- [#1719](https://github.com/epiphany-platform/epiphany/issues/1719) - Upgrade Open Distro for Elasticsearch to v1.10.1 and elasticsearch-oss to v7.9.1
+
 ## [0.8.0rc1] 2020-10-08
 
 ### Added
