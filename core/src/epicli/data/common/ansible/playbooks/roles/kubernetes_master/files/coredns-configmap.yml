@@ -1,5 +1,5 @@
 # Based on https://github.com/kubernetes/kubernetes/blob/v1.18.6/cluster/addons/dns/coredns/coredns.yaml.in
-# with hosts plugin added
+# Hosts plugin added and addon manager label removed since in epiphany we do not use addon manager
 
 apiVersion: v1
 kind: ConfigMap

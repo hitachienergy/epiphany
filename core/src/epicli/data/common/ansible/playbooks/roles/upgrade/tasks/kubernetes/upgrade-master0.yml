@@ -100,7 +100,7 @@
 - name: k8s/master0 | Customize CoreDNS for latest Kubernetes ({{ version }})
   include_tasks: upgrade-coredns.yml
   when:
-    - upgrade_to_final_version
+    - version is version('1.17.4', '>=')
 
 - name: Upgrade CNI plugin (deployment then local pod)
   when:
