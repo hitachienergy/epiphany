@@ -107,6 +107,7 @@
     - import_role:
         name: upgrade
         tasks_from: filebeat
+      when: groups.logging is defined # do not upgrade if there is legacy Elasticsearch (v6)
 
 - hosts: logging
   become: true
