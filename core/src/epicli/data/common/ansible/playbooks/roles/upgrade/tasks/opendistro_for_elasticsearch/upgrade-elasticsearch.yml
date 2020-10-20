@@ -13,6 +13,11 @@
     delay: 10
   when: elasticsearch_state.changed == true
 
+- name: Open Distro for Elasticsearch | Get Xmx value from /etc/elasticsearch/jvm.options
+  command: grep -oP '(?<=^-Xmx)\d+[kKmMgG]?' /etc/elasticsearch/jvm.options
+  register: grep_es_xmx
+  changed_when: false
+
 - name: Open Distro for Elasticsearch | Disable shard allocation for the cluster
   uri:
     url: https://{{ ansible_default_ipv4.address | default(ansible_all_ipv4_addresses[0]) }}:{{ es_http_port }}/_cluster/settings
@@ -41,25 +46,29 @@
     name: elasticsearch
     state: stopped
 
-- name: Open Distro for Elasticsearch | Rolling Upgrade of the Elasticsearch
+- name: Open Distro for Elasticsearch | Include Elasticsearch installation tasks
   include_role:
     name: opendistro_for_elasticsearch
     tasks_from: install-es-{{ ansible_os_family }}.yml
 
-- name: Include configuration tasks
+- name: Open Distro for Elasticsearch | Include Elasticsearch configuration tasks
   include_role:
     name: opendistro_for_elasticsearch
     tasks_from: configure-es.yml
+  vars:
+    context: upgrade
+    jvm_options:
+      xmx: "{{ grep_es_xmx.stdout_lines | last }}"
 
-- name: Open Distro for Elasticsearch - plugins | Upgrade
-  include_tasks: opendistro_for_elasticsearch/upgrade_plugins.yml
+- name: Open Distro for Elasticsearch | Include upgrade plugins tasks
+  include_tasks: opendistro_for_elasticsearch/upgrade-plugins.yml
 
-- name: Open Distro for Elasticsearch | Start elasticsearch service
+- name: Open Distro for Elasticsearch | Restart elasticsearch service
   systemd:
     name: elasticsearch
     state: restarted
-    enabled: yes
-    daemon_reload: yes
+    daemon_reload: yes # opendistro-performance-analyzer provides opendistro-performance-analyzer.service
+  when: install_opendistro_packages.changed
 
 - name: Open Distro for Elasticsearch | Wait for elasticsearch node to come back up
   wait_for:

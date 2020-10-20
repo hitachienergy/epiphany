@@ -20,8 +20,8 @@
       - "Installed version: {{ ansible_facts.packages['elasticsearch-oss'][0].version }}"
       - "Target version: {{ versions[ansible_os_family].elasticsearch_oss }}"
 
-- name: Open Distro for Elasticsearch | Upgrade elasticsearch-oss
-  include_tasks: opendistro_for_elasticsearch/upgrade_elasticsearch.yml
+- name: Open Distro for Elasticsearch | Upgrade Elasticsearch and ODFE plugins
+  include_tasks: opendistro_for_elasticsearch/upgrade-elasticsearch.yml
   vars:
     es_http_port: 9200
     es_transport_port: 9300

@@ -21,4 +21,3 @@
 
 - name: Include configuration tasks
   include_tasks: configure-es.yml
-

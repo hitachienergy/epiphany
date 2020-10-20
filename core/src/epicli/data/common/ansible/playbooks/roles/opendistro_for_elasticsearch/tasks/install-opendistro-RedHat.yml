@@ -11,4 +11,4 @@
       - opendistro-sql-{{ versions[ansible_os_family].opendistro }}
     update_cache: yes
     state: present
-  register: install_elasticsearch_package
+  register: install_opendistro_packages
