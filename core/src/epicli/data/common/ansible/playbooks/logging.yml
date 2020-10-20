@@ -1,7 +1,4 @@
 ---
-- hosts: all
-  tasks: [ ]
-
 - hosts: logging
   become: true
   become_method: sudo

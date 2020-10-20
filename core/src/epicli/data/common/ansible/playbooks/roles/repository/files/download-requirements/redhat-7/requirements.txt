@@ -67,7 +67,7 @@ opendistro-job-scheduler-1.10.1*
 opendistro-performance-analyzer-1.10.1*
 opendistro-security-1.10.1*
 opendistro-sql-1.10.1*
-opendistroforelasticsearch-kibana-1.10.1
+opendistroforelasticsearch-kibana-1.10.1*
 openssl
 perl # for vim
 perl-Getopt-Long # for vim
