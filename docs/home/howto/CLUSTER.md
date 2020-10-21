@@ -296,7 +296,7 @@ To setup the cluster do the following steps from the provisioning machine:
 
 For RHEL and CentOS, Epiphany currently supports only images with RAW partitioning and attached to standard RHEL repositories. For more details, refer to [Azure documentation](https://docs.microsoft.com/en-us/azure/virtual-machines/workloads/redhat/redhat-images#rhel-7-image-types).
 
-It means that actually for Azure Cloud Epiphany supports Red Hat 7.6 - 7.7 and CentOS 7.6 - 7.8 Versions (with RAW partitioning and attached to RHEL repositories).
+It means that actually for Azure Cloud Epiphany supports RHEL 7.6 - 7.7 and CentOS 7.6 - 7.8 versions (with RAW partitioning and attached to standard repositories).
 List of supported images will be extended in next releases.
 
 Example config for Red Hat:
