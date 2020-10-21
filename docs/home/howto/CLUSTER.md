@@ -294,9 +294,7 @@ To setup the cluster do the following steps from the provisioning machine:
 
 ### Note for RHEL / CentOS Azure images
 
-Depending on your requirements you may need to create cluster based on Red Hat family (RHEL/CentOS) system. Be aware that Epiphany supports only images with RAW partitioning, and attached to standard RHEL repositories. Please read this article for more details:
-
-https://docs.microsoft.com/en-us/azure/virtual-machines/workloads/redhat/redhat-images#rhel-7-image-types
+For RHEL and CentOS, Epiphany currently supports only images with RAW partitioning and attached to standard RHEL repositories. For more details, refer to [Azure documentation](https://docs.microsoft.com/en-us/azure/virtual-machines/workloads/redhat/redhat-images#rhel-7-image-types).
 
 It means that actually for Azure Cloud Epiphany supports Red Hat 7.6 - 7.7 and CentOS 7.6 - 7.8 Versions (with RAW partitioning and attached to RHEL repositories).
 List of supported images will be extended in next releases.
