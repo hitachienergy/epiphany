@@ -37,9 +37,3 @@
   when: versions[ansible_os_family].elasticsearch_oss is version(ansible_facts.packages['elasticsearch-oss'][0].version, '>')
      or (versions[ansible_os_family].elasticsearch_oss is version(ansible_facts.packages['elasticsearch-oss'][0].version, '==')
          and stat_upgrade_state_file.stat.exists)
-
-- name: Open Distro for Elasticsearch | Remove upgrade state file
-  become: true
-  file:
-    path: "{{ opendistro_for_elasticsearch.upgrade_state_file_path }}"
-    state: absent

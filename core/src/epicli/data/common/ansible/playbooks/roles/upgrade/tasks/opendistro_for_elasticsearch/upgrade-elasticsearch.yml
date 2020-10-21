@@ -126,3 +126,9 @@
   until: cluster_health.json.status == 'yellow' or cluster_health.json.status == 'green'
   retries: 10
   delay: 15
+
+- name: Open Distro for Elasticsearch | Remove upgrade state file
+  become: true
+  file:
+    path: "{{ opendistro_for_elasticsearch.upgrade_state_file_path }}"
+    state: absent
