@@ -96,6 +96,7 @@
   - [Stateless setup](/docs/home/howto/DATABASES.md#how-to-start-working-with-apache-ignite-stateless-setup)
 - [#831](https://github.com/epiphany-platform/epiphany/issues/831) - Build artifacts encryption (Kubernetes config) using ansible vault
   - [epicli asks for password](/docs/home/howto/SECURITY.md#how-to-run-epicli-with-password)
+- [#1773](https://github.com/epiphany-platform/epiphany/issues/1773) - Document Azure supported images
 
 ### Changed
 
