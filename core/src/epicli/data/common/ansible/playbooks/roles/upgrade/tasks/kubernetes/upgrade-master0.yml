@@ -96,11 +96,11 @@
   include_tasks: utils/wait.yml
 
 # 'kubeadm upgrade apply' overwrites Epiphany's customized CoreDNS so we patch it again.
-# This task should be run each time K8s is upgraded to the latest version.
-- name: k8s/master0 | Customize CoreDNS for latest Kubernetes ({{ version }})
+# This task restores 'hosts' plugin and should be run each time K8s was upgraded in order to support "--wait-for-pods" epicli feature (issue #1218).
+- name: k8s/master0 | Customize CoreDNS
   include_tasks: upgrade-coredns.yml
   when:
-    - upgrade_to_final_version
+    - version is version('1.17.4', '>=') # Epiphany v0.6.0+
 
 - name: Upgrade CNI plugin (deployment then local pod)
   when:

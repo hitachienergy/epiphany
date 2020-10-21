@@ -7,6 +7,7 @@
 - [#1754](https://github.com/epiphany-platform/epiphany/issues/1754) - Fix Vault installation for setup without K8s
 - [#1640](https://github.com/epiphany-platform/epiphany/issues/1640) - Default disk size for repository machine increased to 64 GB (AWS and Azure)
 - [#1774](https://github.com/epiphany-platform/epiphany/issues/1774) - [epicli upgrade] Filebeat stops working when legacy Elasticsearch (v6) is used for storing logs
+- [#1775](https://github.com/epiphany-platform/epiphany/issues/1775) - [epicli upgrade] Cannot upgrade Epiphany cluster in version 0.6.x when using "--wait-for-pods" flag.
 
 ### Updated
 
