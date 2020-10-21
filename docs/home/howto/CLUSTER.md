@@ -299,7 +299,7 @@ For RHEL and CentOS, Epiphany currently supports only images with RAW partitioni
 It means that actually for Azure Cloud Epiphany supports RHEL 7.6 - 7.7 and CentOS 7.6 - 7.8 versions (with RAW partitioning and attached to standard repositories).
 List of supported images will be extended in next releases.
 
-Example config for Red Hat:
+Example config for RHEL:
 
 ```yaml
 kind: infrastructure/virtual-machine
