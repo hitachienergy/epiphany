@@ -1,21 +1,13 @@
-# Security Groups layout information
+# Security Groups
 
 This document describes the Security Groups layout which is used to deploy Epiphany Platform in AWS or Azure. You will find the default configuration here, as well as examples of adding own rules or changing existing ones.
 
-## Table of Contents
-- [Introduction](#introduction)
-- [Setting own security groups](#setting-own-security-groups)
-- [Security diagram](#ecurity-groups-diagram)
-- [Azure security groups](#azure-security-groups)
-- [Azure Security groups full yaml file](#azure-security-groups-full-yaml-file)
-- [AWS Security groups](#aws-security-groups)
-- [AWS Security groups full yaml file](#aws-setting-groups-full-yaml-file)
-
-
 ## Introduction
+
 By default Epiphany platform is creating security groups required to handle communication by all components (like postgress/rabbitmq etc). As per defaults, Epiphany creates a subnet per component and  each subnet has its own of security group, with rules that allow communication between them. This enables the smooth communication between all components. Please check our [security document](https://github.com/epiphany-platform/epiphany/blob/develop/docs/home/SECURITY.md) too. *Be aware, that whenever you want to add a new rule, you need to copy all default rules from mentioned above url*. That this document is splited into two parts: AWS and Azure. The reason why we do that, is that there are diffrent values in AWS and AZure, when setting the security rules.
 
 ## Setting own security groups
+
 Sometimes, there is a need to set additional security rules for application which we're deploying in epiphany kubernetes cluster. Than, we need to stick into following rules:
 - Whenever we want to add new rule - for example open port "X", we should *COPY* all current roles into our deployment .yaml file, and at the end, add the rule which we want.
 - Each component has his own rule-set, so we need to be very carefull where we're putting them.
@@ -23,12 +15,13 @@ Sometimes, there is a need to set additional security rules for application whic
 - After adding new rules, and infra part is done (terraform), we can go into terraform build directory and check if fiiles contain our port definition.
 
 ## Security groups diagram
+
 Check bellow security diagram, which show how security groups are related to other components. This is example of AWS architecutre, but in Azure should be almost the same.
 ![](../AWS/aws_cluster_setup.svg)
 
 ## Azure Security groups
-List of all security groups and related services in Azure  are described [here](https://github.com/epiphany-platform/epiphany/blob/develop/core/src/epicli/data/azure/defaults/infrastructure/virtual-machine.yml).
 
+List of all security groups and related services in Azure are described [here](https://github.com/epiphany-platform/epiphany/blob/develop/core/src/epicli/data/azure/defaults/infrastructure/virtual-machine.yml).
 
 Rules description:
 ```yaml
@@ -61,6 +54,7 @@ The rule:
 ```
 
 ## Azure Security groups full yaml file
+
 To deploy previously mentioned rule, we need to setup a complete YAML configuraiton file. Bellow example shows how this file should looks like. In this configuration we set simple setup of epiphany with 2nodes and 1 master vm in Azure.
 ```yaml
 kind: epiphany-cluster
@@ -207,8 +201,8 @@ specification:
         estination_address_prefix: "0.0.0.0/0"
 ```
 
-
 ## AWS Security groups
+
 List of all security groups and related services in AWS are described [here](https://github.com/epiphany-platform/epiphany/blob/develop/core/src/epicli/data/aws/defaults/infrastructure/virtual-machine.yml).
 
 Rules description:
@@ -235,8 +229,8 @@ The rule:
        destination_address_prefix: "0.0.0.0/0"
 ```
 
-
 ## AWS Setting groups full yaml file
+
 Please check bellow example, how to setup basic epiphany cluster in AWS with 1 master, 2 nodes, mandatory repository machine, and open accesses to all hosts on port 5666 from monitoring network.
 
 ```yaml

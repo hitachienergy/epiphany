@@ -4,6 +4,7 @@
 
 ### Added
 
+- [#1322](https://github.com/epiphany-platform/epiphany/issues/1322) - Add proper documentation how to define additional security rules for AWS/Azure
 - [#1773](https://github.com/epiphany-platform/epiphany/issues/1773) - Document Azure supported images
 
 ### Fixed

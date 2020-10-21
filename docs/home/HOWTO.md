@@ -109,4 +109,13 @@
 - [Maintenance](./howto/MAINTENANCE.md)
   - [Verification of service state](./howto/MAINTENANCE.md#verification-of-service-state)
 
+- [Security Groups](./howto/SECURITY_GROUPS.md)
+  - [Introduction](./howto/SECURITY_GROUPS.md#introduction)
+  - [Setting own security groups](./howto/SECURITY_GROUPS.md#setting-own-security-groups)
+  - [Security diagram](./howto/SECURITY_GROUPS.md#security-groups-diagram)
+  - [Azure security groups](./howto/SECURITY_GROUPS.md#azure-security-groups)
+  - [Azure Security groups full yaml file](./howto/SECURITY_GROUPS.md#azure-security-groups-full-yaml-file)
+  - [AWS Security groups](./howto/SECURITY_GROUPS.md#aws-security-groups)
+  - [AWS Security groups full yaml file](./howto/SECURITY_GROUPS.md#aws-setting-groups-full-yaml-file)
+
 - [Modules](./howto/modules.md)
