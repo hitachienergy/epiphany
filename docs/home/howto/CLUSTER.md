@@ -506,6 +506,34 @@ specification:
 
 *Note: After defining a new component you might also need to define aditional configurations for virtual machines and security rules depending on what you are trying to achieve.*
 
+## Note for Azure Users
+
+Depending on your requirements you may need to create cluster based on Red Hat familly (RHEL/CentOS) system. Be aware that Epiphany supports only images with RAW partitioning, please read this article for more details:
+
+https://docs.microsoft.com/en-us/azure/virtual-machines/workloads/redhat/redhat-images#rhel-7-image-types
+
+It means that for Azure Cloud Epiphany supports RedHat 7.6 - 7.7 and CentOS 7.6 - 7.8 Major Versions (with RAW partitionig)
+
+Example config for Red Hat:
+
+```
+specification:
+  storage_image_reference:
+    publisher: RedHat
+    offer: RHEL
+    sku: 7-RAW
+    version: "7.7.2019090418"
+```
+Example config for CentOS:
+```
+specification:
+  storage_image_reference:
+    publisher: OpenLogic
+    offer: CentOS
+    sku: "7_8"
+    version: "7.8.2020100700"
+```
+
 ## How to scale or cluster components
 
 ---
