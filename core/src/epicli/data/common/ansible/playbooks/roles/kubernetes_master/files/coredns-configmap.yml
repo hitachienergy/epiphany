@@ -1,5 +1,5 @@
 # Based on https://github.com/kubernetes/kubernetes/blob/v1.18.6/cluster/addons/dns/coredns/coredns.yaml.in
-# Hosts plugin added, value in label for addon manager changed from "EnsureExists" to "Reconcile" in order to stick to original state of CoreDNS addon
+# Hosts plugin added
 
 apiVersion: v1
 kind: ConfigMap
