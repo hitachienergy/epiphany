@@ -2,6 +2,10 @@
 
 ## [0.8.0] 2020-10-XX
 
+### Added
+
+- [#1773](https://github.com/epiphany-platform/epiphany/issues/1773) - Document Azure supported images
+
 ### Fixed
 
 - [#1754](https://github.com/epiphany-platform/epiphany/issues/1754) - Fix Vault installation for setup without K8s
