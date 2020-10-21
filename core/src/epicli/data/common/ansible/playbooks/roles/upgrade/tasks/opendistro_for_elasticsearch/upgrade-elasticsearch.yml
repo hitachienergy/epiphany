@@ -1,4 +1,10 @@
 ---
+- name: Open Distro for Elasticsearch | Create upgrade state file
+  become: true
+  file:
+    path: "{{ opendistro_for_elasticsearch.upgrade_state_file_path }}"
+    state: touch
+
 - name: Open Distro for Elasticsearch | Ensure elasticsearch service is running
   systemd:
     name: elasticsearch

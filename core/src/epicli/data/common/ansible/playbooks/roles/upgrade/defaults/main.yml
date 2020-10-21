@@ -1,0 +1,4 @@
+---
+
+opendistro_for_elasticsearch:
+  upgrade_state_file_path: /etc/elasticsearch/epicli-upgrade-started.state
