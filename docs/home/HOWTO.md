@@ -14,6 +14,7 @@
   - [How to create an Epiphany cluster on existing infrastructure](./howto/CLUSTER.md#how-to-create-an-epiphany-cluster-on-existing-infrastructure)
   - [How to create an Epiphany cluster on existing airgapped infrastructure](./howto/CLUSTER.md#how-to-create-an-epiphany-cluster-on-existing-airgapped-infrastructure)
   - [How to create an Epiphany cluster on a cloud provider](./howto/CLUSTER.md#how-to-create-an-epiphany-cluster-on-a-cloud-provider)
+    - [Note for RHEL / CentOS Azure images](./howto/CLUSTER.md#note-for-rhel--centos-azure-images)
   - [How to delete an Epiphany cluster on a cloud provider](./howto/CLUSTER.md#how-to-delete-an-epiphany-cluster-on-a-cloud-provider)
   - [Single machine cluster](./howto/CLUSTER.md#single-machine-cluster)
   - [How to create custom cluster components](./howto/CLUSTER.md#how-to-create-custom-cluster-components)

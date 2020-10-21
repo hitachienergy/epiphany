@@ -15,6 +15,7 @@
 - [#1438](https://github.com/epiphany-platform/epiphany/pull/1438) - Rename Terraform plugin vendor in VSCode recommendations
 - [#1413](https://github.com/epiphany-platform/epiphany/issues/1413) - Set protocol for Vault only in one place in configuration
 - [#1423](https://github.com/epiphany-platform/epiphany/issues/1423) - Error reading generated service principal
+- [#1773](https://github.com/epiphany-platform/epiphany/issues/1773) - Document Azure supported images
 
 ### Updated
 
