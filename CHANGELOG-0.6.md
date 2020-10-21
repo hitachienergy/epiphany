@@ -15,6 +15,8 @@
 
 ### Added
 
+- [#1773](https://github.com/epiphany-platform/epiphany/issues/1773) - Document Azure supported images
+
 #### General
 
 - [#986](https://github.com/epiphany-platform/epiphany/issues/986) - Add vim to Epicli container and devcontainer
