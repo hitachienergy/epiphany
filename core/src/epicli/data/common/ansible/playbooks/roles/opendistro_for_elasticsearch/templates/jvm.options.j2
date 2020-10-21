@@ -78,3 +78,8 @@
 
 # JDK 9+ GC logging
 9-:-Xlog:gc*,gc+age=trace,safepoint:file=/var/log/elasticsearch/gc.log:utctime,pid,tags:filecount=32,filesize=64m
+
+## OpenDistro Performance Analyzer
+-Dclk.tck=100
+-Djdk.attach.allowAttachSelf=true
+-Djava.security.policy=file:///usr/share/elasticsearch/plugins/opendistro_performance_analyzer/pa_config/es_security.policy

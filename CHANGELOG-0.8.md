@@ -5,12 +5,18 @@
 ### Added
 
 - [#1322](https://github.com/epiphany-platform/epiphany/issues/1322) - Add proper documentation how to define additional security rules for AWS/Azure
+- [#1773](https://github.com/epiphany-platform/epiphany/issues/1773) - Document Azure supported images
 
 ### Fixed
 
 - [#1754](https://github.com/epiphany-platform/epiphany/issues/1754) - Fix Vault installation for setup without K8s
 - [#1640](https://github.com/epiphany-platform/epiphany/issues/1640) - Default disk size for repository machine increased to 64 GB (AWS and Azure)
 - [#1774](https://github.com/epiphany-platform/epiphany/issues/1774) - [epicli upgrade] Filebeat stops working when legacy Elasticsearch (v6) is used for storing logs
+- [#1775](https://github.com/epiphany-platform/epiphany/issues/1775) - [epicli upgrade] Cannot upgrade Epiphany cluster in version 0.6.x when using "--wait-for-pods" flag.
+
+### Updated
+
+- [#1719](https://github.com/epiphany-platform/epiphany/issues/1719) - Upgrade Open Distro for Elasticsearch to v1.10.1 and elasticsearch-oss to v7.9.1
 
 ## [0.8.0rc1] 2020-10-08
 

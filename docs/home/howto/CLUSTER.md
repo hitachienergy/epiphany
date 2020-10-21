@@ -292,6 +292,35 @@ To setup the cluster do the following steps from the provisioning machine:
     epicli apply -f newcluster.yml
     ```
 
+### Note for RHEL / CentOS Azure images
+
+For RHEL and CentOS, Epiphany currently supports only images with RAW partitioning and attached to standard RHEL repositories. For more details, refer to [Azure documentation](https://docs.microsoft.com/en-us/azure/virtual-machines/workloads/redhat/redhat-images#rhel-7-image-types).
+
+It means that actually for Azure Cloud Epiphany supports RHEL 7.6 - 7.7 and CentOS 7.6 - 7.8 versions (with RAW partitioning and attached to standard repositories).
+List of supported images will be extended in next releases.
+
+Example config for RHEL:
+
+```yaml
+kind: infrastructure/virtual-machine
+specification:
+  storage_image_reference:
+    publisher: RedHat
+    offer: RHEL
+    sku: "7-RAW"
+    version: "7.7.2019090418"
+```
+Example config for CentOS:
+```yaml
+kind: infrastructure/virtual-machine
+specification:
+  storage_image_reference:
+    publisher: OpenLogic
+    offer: CentOS
+    sku: "7_8"
+    version: "7.8.2020100700"
+```
+
 ## How to delete an Epiphany cluster on a cloud provider
 
 Epicli has a delete command to remove a cluster from a cloud provider (AWS, Azure). With Epicli run the following:

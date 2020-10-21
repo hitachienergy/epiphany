@@ -33,7 +33,7 @@ docker-ce-cli-18.09.9
 ebtables
 elasticsearch-curator-5.8.1
 elasticsearch-oss-6.8.5 # for elasticsearch role
-elasticsearch-oss-7.8.0 # for opendistroforelasticsearch & logging roles
+elasticsearch-oss-7.9.1 # for opendistroforelasticsearch & logging roles
 erlang-21.3.8.7
 ethtool
 filebeat-7.8.1
@@ -62,13 +62,13 @@ net-tools
 nfs-utils
 nmap-ncat
 # Open Distro for Elasticsearch plugins are installed individually to not download them twice in different versions (as dependencies of opendistroforelasticsearch package)
-opendistro-alerting-1.9.0*
-opendistro-index-management-1.9.0*
-opendistro-job-scheduler-1.9.0*
-opendistro-performance-analyzer-1.9.0*
-opendistro-security-1.9.0*
-opendistro-sql-1.9.0*
-opendistroforelasticsearch-kibana-1.9.0
+opendistro-alerting-1.10.1*
+opendistro-index-management-1.10.1*
+opendistro-job-scheduler-1.10.1*
+opendistro-performance-analyzer-1.10.1*
+opendistro-security-1.10.1*
+opendistro-sql-1.10.1*
+opendistroforelasticsearch-kibana-1.10.1*
 openssl
 perl # for vim
 perl-Getopt-Long # for vim

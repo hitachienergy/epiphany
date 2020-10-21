@@ -9,6 +9,7 @@
 
 - name: Provide jvm configuration file
   template:
+    backup: yes
     src: jvm.options.j2
     dest: /etc/elasticsearch/jvm.options
     owner: elasticsearch
@@ -18,6 +19,7 @@
 
 - name: Provide Elasticsearch configuration file
   template:
+    backup: yes
     src: elasticsearch.yml.j2
     dest: /etc/elasticsearch/elasticsearch.yml
     owner: elasticsearch
