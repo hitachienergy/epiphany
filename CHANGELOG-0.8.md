@@ -2,6 +2,10 @@
 
 ## [0.8.0] 2020-10-XX
 
+### Added
+
+- [#1322](https://github.com/epiphany-platform/epiphany/issues/1322) - Add proper documentation how to define additional security rules for AWS/Azure
+
 ### Fixed
 
 - [#1754](https://github.com/epiphany-platform/epiphany/issues/1754) - Fix Vault installation for setup without K8s
