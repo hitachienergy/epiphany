@@ -8,6 +8,10 @@
 - [#1640](https://github.com/epiphany-platform/epiphany/issues/1640) - Default disk size for repository machine increased to 64 GB (AWS and Azure)
 - [#1774](https://github.com/epiphany-platform/epiphany/issues/1774) - [epicli upgrade] Filebeat stops working when legacy Elasticsearch (v6) is used for storing logs
 
+### Updated
+
+- [#1719](https://github.com/epiphany-platform/epiphany/issues/1719) - Upgrade Open Distro for Elasticsearch to v1.10.1 and elasticsearch-oss to v7.9.1
+
 ## [0.8.0rc1] 2020-10-08
 
 ### Added

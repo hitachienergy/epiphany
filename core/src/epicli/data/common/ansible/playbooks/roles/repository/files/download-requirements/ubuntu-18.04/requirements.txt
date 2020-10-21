@@ -14,7 +14,7 @@ docker-ce-cli 5:18.09
 ebtables
 elasticsearch-curator 5.8.1
 elasticsearch-oss 6.8.5 # for elasticsearch role
-elasticsearch-oss 7.8.0 # for opendistroforelasticsearch & logging roles
+elasticsearch-oss 7.9.1 # for opendistroforelasticsearch & logging roles
 erlang-nox
 ethtool
 filebeat 7.8.1
@@ -33,13 +33,13 @@ logstash-oss 1:7.8.1
 netcat
 net-tools
 nfs-common
-opendistro-alerting 1.9.0
-opendistro-index-management 1.9.0
-opendistro-job-scheduler 1.9.0
-opendistro-performance-analyzer 1.9.0
-opendistro-security 1.9.0
-opendistro-sql 1.9.0
-opendistroforelasticsearch-kibana 1.9.0
+opendistro-alerting 1.10.1
+opendistro-index-management 1.10.1
+opendistro-job-scheduler 1.10.1
+opendistro-performance-analyzer 1.10.1
+opendistro-security 1.10.1
+opendistro-sql 1.10.1
+opendistroforelasticsearch-kibana 1.10.1
 openjdk-8-jre-headless
 openssl
 postgresql-10

@@ -1,9 +1,6 @@
 ---
-  - hosts: all
-    tasks: [ ]  
-  
-  - hosts: logging
-    become: true
-    become_method: sudo
-    roles:
-      - logging
+- hosts: logging
+  become: true
+  become_method: sudo
+  roles:
+    - logging

@@ -27,4 +27,4 @@
     es_transport_port: 9300
   when:
     - "versions[ansible_os_family].elasticsearch_oss
-      is version(ansible_facts.packages['elasticsearch-oss'][0].version, '>')"
+      is version(ansible_facts.packages['elasticsearch-oss'][0].version, '>=')"

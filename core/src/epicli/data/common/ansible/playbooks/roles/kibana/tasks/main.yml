@@ -1,9 +1,17 @@
 ---
+- name: Load defaults from opendistro_for_elasticsearch role
+  include_vars:
+    file: roles/opendistro_for_elasticsearch/defaults/main.yml
+    name: opendistro_for_elasticsearch_defaults
+
 - name: Include Kibana package installation task
   include_tasks: "{{ ansible_os_family }}.yml"
+  vars:
+    kibana_package_version: "{{ opendistro_for_elasticsearch_defaults.versions[ansible_os_family].opendistro }}"
 
 - name: Update Kibana configuration file
   template:
+    backup: yes
     src: kibana.yml.j2
     dest: /etc/kibana/kibana.yml
     owner: kibana
@@ -32,11 +40,11 @@
     port: 5601
     delay: 5
 
-- name: Wait for kibana to be ready
+- name: Wait for Kibana to be ready
   uri:
-    url: http://{{ ansible_default_ipv4.address | default(ansible_all_ipv4_addresses[0]) }}:5601/api/kibana/settings
+    url: http://{{ ansible_default_ipv4.address | default(ansible_all_ipv4_addresses[0]) }}:5601/api/status
     method: GET
   register: response
   until: "'kbn_name' in response and response.status == 200"
-  retries: 60
-  delay: 5
+  retries: 120
+  delay: 2

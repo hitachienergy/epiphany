@@ -2,9 +2,4 @@ kind: configuration/kibana
 title: "Kibana"
 name: default
 specification:
-  versions:
-    RedHat:
-      opendistro: "1.9.0"
-    Debian:
-      opendistro: "1.9.0"
   kibana_log_dir: /var/log/kibana
