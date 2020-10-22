@@ -59,6 +59,7 @@
 
 - [#1191](https://github.com/epiphany-platform/epiphany/issues/1191) - Automatic Hashicorp Vault Agent installation, configuration and Kubernetes - Hashicorp Vault integration
 - [#1190](https://github.com/epiphany-platform/epiphany/issues/1190) - Automatic Hashicorp Vault installation and configuration
+- [#1773](https://github.com/epiphany-platform/epiphany/issues/1773) - Document Azure supported images
 
 ### General
 
