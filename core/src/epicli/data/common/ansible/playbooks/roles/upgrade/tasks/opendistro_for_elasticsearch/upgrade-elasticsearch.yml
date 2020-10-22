@@ -34,7 +34,7 @@
     body_format: json
     body: '{"persistent":{"cluster.routing.allocation.enable": "primaries"}}'
   register: response_allocation_primaries
-  until: response_allocation_primaries.json.acknowledged == true
+  until: response_allocation_primaries.json.acknowledged is defined and response_allocation_primaries.json.acknowledged == true
   retries: 10
   delay: 20
 
@@ -96,7 +96,7 @@
     url_password: "{{ specification.es_password }}"
     validate_certs: no
   register: cluster_health
-  until: cluster_health.json.status == 'yellow' or cluster_health.json.status == 'green'
+  until: cluster_health.json.status is defined and cluster_health.json.status in ['yellow', 'green']
   retries: 10
   delay: 15
 
@@ -110,7 +110,7 @@
     body_format: json
     body: '{"persistent":{"cluster.routing.allocation.enable": null}}'
   register: response
-  until: response.json.acknowledged == true
+  until: response.json.acknowledged is defined and response.json.acknowledged == true
   retries: 10
   delay: 15
 
@@ -123,7 +123,7 @@
     validate_certs: no
     return_content: yes
   register: cluster_health
-  until: cluster_health.json.status == 'yellow' or cluster_health.json.status == 'green'
+  until: cluster_health.json.status is defined and cluster_health.json.status in ['yellow', 'green']
   retries: 10
   delay: 15
 
