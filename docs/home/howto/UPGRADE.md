@@ -132,14 +132,14 @@ Before upgrade procedure make sure you have a data backup!
 
 ---
 
-In Epiphany v0.8.0 we provided upgrade elasticsearch-oss package to v7.8.0 and opendistro-* plugins package to v1.9.0.
+In Epiphany v0.8.0 we provided upgrade elasticsearch-oss package to v7.9.1 and opendistro-* plugins package to v1.10.1.
 Upgrade will be performed automatically when the upgrade procedure detects your logging, opendistro_for_elasticsearch or kibana hosts.
-Upgrade of elasticsearch-oss package using API calls (GET, PUT, POST) so before you start with upgrade procedure please make sure that you provided correct credentials:
+Upgrade of elasticsearch-oss package uses API calls (GET, PUT, POST) so before starting the upgrade please make sure that you provided correct credentials:
 ```shell
 specification.es_user
 specification.es_password
 ```
-Both are accessible in opendistro_for_elasticsearch role defaults (`/core/src/epicli/data/common/ansible/playbooks/roles/opendistro_for_elasticsearch/defaults/main.yml`)
+Both are accessible via the defaults of `opendistro_for_elasticsearch` role (`/usr/local/epicli/data/common/ansible/playbooks/roles/opendistro_for_elasticsearch/defaults/main.yml`).
 
 ## Node exporter upgrade
 

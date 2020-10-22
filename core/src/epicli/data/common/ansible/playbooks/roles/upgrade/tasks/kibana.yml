@@ -8,8 +8,7 @@
 # This condition has been added to not fail when 'epicli upgrade' is run for Epiphany v0.4 cluster.
 # We cannot upgrade Kibana to v7 having Elasticsearch v6.
 - name: Upgrade Kibana
-  when:
-    - ansible_facts.packages['kibana-oss'] is undefined
+  when: ansible_facts.packages['kibana-oss'] is undefined
   block:
     - name: Kibana | Assert that opendistroforelasticsearch-kibana package is installed
       assert:
@@ -26,15 +25,15 @@
       include_vars:
         file: roles/kibana/defaults/main.yml
 
-- name: Kibana | Print versions
-  debug:
-    msg:
-      - "Installed version: {{ ansible_facts.packages['opendistroforelasticsearch-kibana'][0].version }}"
-      - "Target version: {{ opendistro_for_elasticsearch_defaults.versions[ansible_os_family].opendistro }}"
+    - name: Kibana | Print versions
+      debug:
+        msg:
+          - "Installed version: {{ ansible_facts.packages['opendistroforelasticsearch-kibana'][0].version }}"
+          - "Target version: {{ opendistro_for_elasticsearch_defaults.versions[ansible_os_family].opendistro }}"
 
-- name: Kibana | Upgrade
-  import_role:
-    name: kibana
-  when:
-    - opendistro_for_elasticsearch_defaults.versions[ansible_os_family].opendistro
-      is version(ansible_facts.packages['opendistroforelasticsearch-kibana'][0].version, '>=')
+    - name: Kibana | Upgrade
+      import_role:
+        name: kibana
+      when:
+        - opendistro_for_elasticsearch_defaults.versions[ansible_os_family].opendistro
+          is version(ansible_facts.packages['opendistroforelasticsearch-kibana'][0].version, '>=')

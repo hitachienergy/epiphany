@@ -1,4 +1,10 @@
 ---
+- name: Open Distro for Elasticsearch | Create upgrade state file
+  become: true
+  file:
+    path: "{{ opendistro_for_elasticsearch.upgrade_state_file_path }}"
+    state: touch
+
 - name: Open Distro for Elasticsearch | Ensure elasticsearch service is running
   systemd:
     name: elasticsearch
@@ -13,6 +19,11 @@
     delay: 10
   when: elasticsearch_state.changed == true
 
+- name: Open Distro for Elasticsearch | Get Xmx value from /etc/elasticsearch/jvm.options
+  command: grep -oP '(?<=^-Xmx)\d+[kKmMgG]?' /etc/elasticsearch/jvm.options
+  register: grep_es_xmx
+  changed_when: false
+
 - name: Open Distro for Elasticsearch | Disable shard allocation for the cluster
   uri:
     url: https://{{ ansible_default_ipv4.address | default(ansible_all_ipv4_addresses[0]) }}:{{ es_http_port }}/_cluster/settings
@@ -23,7 +34,7 @@
     body_format: json
     body: '{"persistent":{"cluster.routing.allocation.enable": "primaries"}}'
   register: response_allocation_primaries
-  until: response_allocation_primaries.json.acknowledged == true
+  until: response_allocation_primaries.json.acknowledged is defined and response_allocation_primaries.json.acknowledged == true
   retries: 10
   delay: 20
 
@@ -41,25 +52,29 @@
     name: elasticsearch
     state: stopped
 
-- name: Open Distro for Elasticsearch | Rolling Upgrade of the Elasticsearch
+- name: Open Distro for Elasticsearch | Include Elasticsearch installation tasks
   include_role:
     name: opendistro_for_elasticsearch
     tasks_from: install-es-{{ ansible_os_family }}.yml
 
-- name: Include configuration tasks
+- name: Open Distro for Elasticsearch | Include Elasticsearch configuration tasks
   include_role:
     name: opendistro_for_elasticsearch
     tasks_from: configure-es.yml
+  vars:
+    context: upgrade
+    jvm_options:
+      xmx: "{{ grep_es_xmx.stdout_lines | last }}"
 
-- name: Open Distro for Elasticsearch - plugins | Upgrade
-  include_tasks: opendistro_for_elasticsearch/upgrade_plugins.yml
+- name: Open Distro for Elasticsearch | Include upgrade plugins tasks
+  include_tasks: opendistro_for_elasticsearch/upgrade-plugins.yml
 
-- name: Open Distro for Elasticsearch | Start elasticsearch service
+- name: Open Distro for Elasticsearch | Restart elasticsearch service
   systemd:
     name: elasticsearch
     state: restarted
-    enabled: yes
-    daemon_reload: yes
+    daemon_reload: yes # opendistro-performance-analyzer provides opendistro-performance-analyzer.service
+  when: install_opendistro_packages.changed
 
 - name: Open Distro for Elasticsearch | Wait for elasticsearch node to come back up
   wait_for:
@@ -81,7 +96,7 @@
     url_password: "{{ specification.es_password }}"
     validate_certs: no
   register: cluster_health
-  until: cluster_health.json.status == 'yellow' or cluster_health.json.status == 'green'
+  until: cluster_health.json.status is defined and cluster_health.json.status in ['yellow', 'green']
   retries: 10
   delay: 15
 
@@ -95,7 +110,7 @@
     body_format: json
     body: '{"persistent":{"cluster.routing.allocation.enable": null}}'
   register: response
-  until: response.json.acknowledged == true
+  until: response.json.acknowledged is defined and response.json.acknowledged == true
   retries: 10
   delay: 15
 
@@ -108,6 +123,12 @@
     validate_certs: no
     return_content: yes
   register: cluster_health
-  until: cluster_health.json.status == 'yellow' or cluster_health.json.status == 'green'
+  until: cluster_health.json.status is defined and cluster_health.json.status in ['yellow', 'green']
   retries: 10
   delay: 15
+
+- name: Open Distro for Elasticsearch | Remove upgrade state file
+  become: true
+  file:
+    path: "{{ opendistro_for_elasticsearch.upgrade_state_file_path }}"
+    state: absent

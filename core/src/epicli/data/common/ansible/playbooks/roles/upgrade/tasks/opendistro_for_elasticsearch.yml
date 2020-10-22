@@ -20,11 +20,20 @@
       - "Installed version: {{ ansible_facts.packages['elasticsearch-oss'][0].version }}"
       - "Target version: {{ versions[ansible_os_family].elasticsearch_oss }}"
 
-- name: Open Distro for Elasticsearch | Upgrade elasticsearch-oss
-  include_tasks: opendistro_for_elasticsearch/upgrade_elasticsearch.yml
+# If state file exists it means the previous run failed
+- name: Open Distro for Elasticsearch | Check if upgrade state file exists
+  stat:
+    path: "{{ opendistro_for_elasticsearch.upgrade_state_file_path }}"
+    get_attributes: false
+    get_checksum: false
+    get_mime: false
+  register: stat_upgrade_state_file
+
+- name: Open Distro for Elasticsearch | Upgrade Elasticsearch and ODFE plugins
+  include_tasks: opendistro_for_elasticsearch/upgrade-elasticsearch.yml
   vars:
     es_http_port: 9200
     es_transport_port: 9300
-  when:
-    - "versions[ansible_os_family].elasticsearch_oss
-      is version(ansible_facts.packages['elasticsearch-oss'][0].version, '>=')"
+  when: versions[ansible_os_family].elasticsearch_oss is version(ansible_facts.packages['elasticsearch-oss'][0].version, '>')
+     or (versions[ansible_os_family].elasticsearch_oss is version(ansible_facts.packages['elasticsearch-oss'][0].version, '==')
+         and stat_upgrade_state_file.stat.exists)

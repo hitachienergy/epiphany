@@ -10,4 +10,4 @@
       - opendistro-security={{ versions[ansible_os_family].opendistro }}
       - opendistro-sql={{ versions[ansible_os_family].opendistro }}
     state: present
-  register: install_elasticsearch_package
+  register: install_opendistro_packages

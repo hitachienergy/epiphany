@@ -1,4 +1,6 @@
 ---
+# This file is meant to be also used by upgrade role
+
 - name: Ensure snapshot folder exists
   file:
     path: "{{ specification.paths.repo }}/"
@@ -16,6 +18,10 @@
     group: root
     mode: ug=rw,o=
   register: change_jvm_config
+  vars:
+    xmx: >-
+      {{ jvm_options.xmx if (context is defined and context == 'upgrade') else
+         specification.jvm_options.Xmx }}
 
 - name: Provide Elasticsearch configuration file
   template:
@@ -31,8 +37,10 @@
   systemd:
     name: elasticsearch
     state: restarted
-  when:
-    - change_config.changed or change_jvm_config.changed
+  when: change_config.changed
+     or change_jvm_config.changed
+     or install_elasticsearch_package.changed
+     or (install_opendistro_packages is defined and install_opendistro_packages.changed)
 
 - name: Enable and start elasticsearch service
   systemd:
