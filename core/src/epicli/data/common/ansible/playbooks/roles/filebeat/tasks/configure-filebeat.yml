@@ -8,6 +8,8 @@
   register: modify_filebeat_yml
 
 - name: Set Filebeat to be started after Docker
+  when: (groups['kubernetes_master'] is defined and inventory_hostname in groups['kubernetes_master'])
+     or (groups['kubernetes_node'] is defined and inventory_hostname in groups['kubernetes_node'])
   block:
     - name: Create directory (filebeat.service.d)
       file:
@@ -22,14 +24,11 @@
 
     - name: Run systemctl daemon-reload
       systemd:
-        name: filebeat
         daemon_reload: true
       when: modify_filebeat_unit_dependencies.changed
 
-  when: (groups['kubernetes_master'] is defined and inventory_hostname in groups['kubernetes_master'])
-     or (groups['kubernetes_node'] is defined and inventory_hostname in groups['kubernetes_node'])
-
 - name: Start/restart and enable filebeat service
+  when: groups.logging[0] is defined
   block:
     - name: Enable auditd module
       command: filebeat modules enable auditd
@@ -43,6 +42,7 @@
       when: modify_filebeat_yml.changed
          or modify_filebeat_unit_dependencies.changed
          or enable_module.changed
+         or install_filebeat_package.changed
 
     - name: Enable and start filebeat service
       systemd:
@@ -50,18 +50,18 @@
         state: started
         enabled: true
 
-    - name: Verify filebeat is running
-      command: systemctl is-active filebeat
-      changed_when: false
+    - name: Wait for filebeat service to be running
+      service_facts:
+      until:
+        - ansible_facts.services['filebeat.service'].state is defined
+        - ansible_facts.services['filebeat.service'].state == "running"
       retries: 10
       delay: 1
-      register: result
-      until: result is succeeded
-  when: groups['logging'][0] is defined
+      no_log: true  # to reduce log output
 
 - name: Stop and disable filebeat service
   systemd:
     name: filebeat
     state: stopped
     enabled: false
-  when: groups['logging'][0] is undefined
+  when: groups.logging[0] is undefined

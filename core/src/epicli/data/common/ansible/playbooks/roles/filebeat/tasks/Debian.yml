@@ -1,17 +1,19 @@
+---
 - name: Install filebeat package
   apt:
     name:
-      - filebeat={{ specification.filebeat_version }}
-    update_cache: yes
+      - filebeat={{ filebeat_version }}
+    update_cache: true
     state: present
+  register: install_filebeat_package
 
 - name: Install auditd package
   apt:
     name:
       - auditd
-    update_cache: yes
+    update_cache: true
     state: present
-  register: result
-  retries: 3 # Installing auditd sometimes fails in post-inst: https://bugs.launchpad.net/ubuntu/+source/auditd/+bug/1848330
+  register: install_auditd_package
+  until: install_auditd_package is success
+  retries: 3  # Installing auditd sometimes fails in post-inst: https://bugs.launchpad.net/ubuntu/+source/auditd/+bug/1848330
   delay: 1
-  until: result is succeeded

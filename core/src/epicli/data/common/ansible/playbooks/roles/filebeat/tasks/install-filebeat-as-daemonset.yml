@@ -1,25 +1,22 @@
 ---
-
 - name: Prepare configuration and upgrade/install Helm chart
   vars:
     # Handling "undefined", "null", "empty" and "boolean" values all at once.
     disable_helm_chart_bool: "{{ specification.disable_helm_chart | default(false, true) | bool }}"
 
+  when: not disable_helm_chart_bool
+
   delegate_to: localhost
   become: false
   run_once: true
-  when: not disable_helm_chart_bool
-  block:
-    - name: Set Filebeat's Chart file name to install
-      set_fact:
-        exporter_chart_file_name: "{{ specification.files.filebeat_helm_chart_file_name }}"
 
+  block:
     - name: Download Filebeat's Chart File
       include_role:
         name: download
         tasks_from: download_file
       vars:
-        file_name: "{{ exporter_chart_file_name }}"
+        file_name: "{{ filebeat_helm_chart_file_name }}"
         repository_url: http://localhost/epirepo
 
     - name: Copy configuration Helm chart file (custom-chart-values.yml.j2)
@@ -28,9 +25,8 @@
         src: custom-chart-values.yml.j2
 
     - name: Install Filebeat using custom Helm chart (custom-chart-values.yml)
-      delegate_to: localhost
       command: |
         helm upgrade --install \
           -f {{ download_directory }}/custom-chart-values.yml \
           {{ specification.helm_chart_name }} \
-          {{ download_directory }}/{{ exporter_chart_file_name }}
+          {{ download_directory }}/{{ filebeat_helm_chart_file_name }}
