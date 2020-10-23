@@ -28,7 +28,10 @@ specification:
       serviceSubnet: 10.96.0.0/12
       plugin: flannel # valid options: calico, flannel, canal (due to lack of support for calico on Azure - use canal)
     imageRepository: k8s.gcr.io
-    certificatesDir: /etc/kubernetes/pki
+    certificates:
+      location: /etc/kubernetes/pki
+      expiration_days: 365
+      renew: false
     etcd_args:
       encrypted: yes
 

@@ -2,6 +2,10 @@
 
 ## [0.5.5] 2020-10-07
 
+### Added
+
+- [#1302](https://github.com/epiphany-platform/epiphany/issues/1302) - Ability to update control plane certificates expiration date
+
 ### Fixed
 
 - [#1705](https://github.com/epiphany-platform/epiphany/issues/1705) - [RHEL/CentOS] epicli fails on downloading requirements - Docker CE repo not available
