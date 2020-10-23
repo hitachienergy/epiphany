@@ -1,5 +1,5 @@
 specification:
   kafka_var:
-    version: 2.3.1
+    version: 2.6.0
     scala:
       version: 2.12
