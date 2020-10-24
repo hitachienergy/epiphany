@@ -12,6 +12,7 @@ from cli.helpers.build_saver import copy_files_recursively
 
 class PrepareEngine(Step):
     PREPARE_PATH = DATA_FOLDER_PATH + '/common/ansible/playbooks/roles/repository/files/download-requirements'
+    CHARTS_PATH = DATA_FOLDER_PATH + '/common/ansible/playbooks/roles/helm_charts/files/system'
 
     def __init__(self, input_data):
         super().__init__(__name__)
@@ -26,8 +27,11 @@ class PrepareEngine(Step):
 
     def prepare(self):
         prepare_src = os.path.join(self.PREPARE_PATH, self.os)
+        charts_src = self.CHARTS_PATH
         skopeo_src = os.path.join(dirname(dirname(inspect.getfile(os))), 'skopeo_linux')
+
         prepare_dst = os.path.join(Config().output_dir, 'prepare_scripts')
+        charts_dst = os.path.join(prepare_dst, 'charts', 'system')
 
         if not os.path.exists(prepare_src):
             supported_os = os.listdir(self.PREPARE_PATH)
@@ -38,6 +42,7 @@ class PrepareEngine(Step):
 
         # copy files to output dir
         copy_files_recursively(prepare_src, prepare_dst)
+        copy_files_recursively(charts_src, charts_dst)
         shutil.copy(skopeo_src, prepare_dst)
 
         # make sure the scripts and skopeo are executable
