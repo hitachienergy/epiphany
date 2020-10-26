@@ -1,4 +1,5 @@
 ---
+system_chart_namespace: system-charts
 system_chart_repo_name: system-charts
 system_chart_repo_path: /charts/system
 # Use custom repository or use ssh tunnel for Helm
