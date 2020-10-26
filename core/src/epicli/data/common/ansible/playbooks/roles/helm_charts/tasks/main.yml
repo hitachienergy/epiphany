@@ -9,12 +9,12 @@
   block:
     - name: Create Helm charts directory
       file:
-        path: "{{ specification.apache_epirepo_path }}/helm-charts"
+        path: "{{ specification.apache_epirepo_path }}/charts"
         state: directory
         mode: u=rwx,go=rx
 
     - name: Copy Helm charts to repository server
       copy:
         src: "./"
-        dest: "{{ specification.apache_epirepo_path }}/helm-charts"
+        dest: "{{ specification.apache_epirepo_path }}/charts"
         mode: u=rwx,go=rx

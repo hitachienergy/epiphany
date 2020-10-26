@@ -19,7 +19,7 @@
 - name: Remove Helm charts from epirepo
   file:
     state: absent
-    path: "{{ apache_epirepo_path }}/helm-charts"
+    path: "{{ apache_epirepo_path }}/charts"
   when:
     - specification.teardown.remove.helm_charts is defined
     - specification.teardown.remove.helm_charts
