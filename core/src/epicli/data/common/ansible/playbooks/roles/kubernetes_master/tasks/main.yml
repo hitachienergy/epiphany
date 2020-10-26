@@ -7,7 +7,7 @@
   when: specification.advanced.certificates.renew | bool
   vars:
     valid_days: "{{ specification.advanced.certificates.expiration_days }}"
-    restart_services: 
+    restart_services:
       - docker
   include_tasks: generate-certificates.yml
 
