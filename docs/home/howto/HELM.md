@@ -1,78 +1,59 @@
-## Helm charts in repository
+## Helm "system" chart repository
 
+Epiphany provides helm repository for internal usage inside our ansible codebase. Currently only the "system" repository is available, but it's not designed to be used by regular users. __In fact, regular users must not reuse it for any purpose.__
 
-System Helm charts are stored in the following location:
+Epiphany developers can find it inside this location `roles/helm_charts/files/system`. To add a chart to the repository it's enough just to put unarchived chart directory tree inside the location (in a separate directory) and re-run `epcli apply`.
 
-`roles/helm_charts/files/system`
+When the `repository` ansible role is run it copies all unarchived charts to the repository host, creates standard helm `index.yaml` and serves all this data from Apache HTTP server.
 
-There is also dedicated Helm charts location for users
+## Installing helm releases from the "system" repository charts
 
-`roles/helm_charts/files/user`
+Epiphany developers can reuse the "system" repository from any place inside the ansible codebase. Moreover, it's a responsibility of a particular role to call the `helm upgrade --install` command.
 
-- Currently user part has no automation implemented. It will need some additional "options" via epi client but it needs discussion with wider audience about the needs.
+Of course, there is a hepler task file that can be reused for that purpose `roles/helm/tasks/install-system-chart.yml`. __It's only responsible for installing already existing "system" helm charts from the "system" repository.__
 
-Implementator/developer maintain system path content.
-All chart should be added in directories (not archived)
-
-Repository role is responsible for retrieving mentioned Helm charts. It copies all the directories, archive them (`.tgz`), generates helm index file and serve in apache server.
-
-
-
-## Installing Helm charts from repository
-
-Installation of particular Helm charts is performed in separate role. Each other particular role that needs to install Helm chart has to trigger separate single helm chart installation task:
-`roles/helm/tasks/install-chart.yml`
-
-
-
-Single Helm installation task is responsible for installing already existing charts from repository.
-
-It is possible to overwrite chart values within the specification config.
-Single helm chart task expects 3 parameters to be passed:
+This helper task expects such parameters/facts:
 
 ```yaml
-    disable_helm_chart:
-    helm_chart_name: 
-    helm_chart_values:
+- set_fact:
+    disable_helm_chart: <boolean>
+    helm_chart_name: <string>
+    helm_chart_values: <map>
+    helm_release_name: <string>
 ```
 
-Example usage:
+- `disable_helm_chart` set to `true` causes helm release to be removed (`helm delete --purge`)
+- `helm_chart_values` it's a standard yaml map, values defined there replace default config of the chart (`values.yaml`).
 
-```yaml
----
-- name: Set Helm chart values from custom configuration
-  set_fact:
-    _helm_chart_values: "{{ specification.helm_chart_values }}"
-  when: specification.helm_chart_values is defined
-- name: Set Helm chart name from custom configuration
-  set_fact:
-    _helm_chart_name: "{{ specification.helm_chart_name }}"
-  when: specification.helm_chart_name is defined
-- name: Set Helm chart disable flag from custom configuration
-  set_fact:
-    _disable_helm_chart: "{{ specification.disable_helm_chart }}"
-  when: specification.disable_helm_chart is defined
-- name: Mychart
-  include_role:
-    name: helm
-    tasks_from: install-chart
-  vars:
-    disable_helm_chart: "{{ _disable_helm_chart }}"
-    helm_chart_name: "{{ _helm_chart_name }}"
-    helm_chart_values:  "{{ _helm_chart_values }}"
-```
+Our standard practice is to place those values inside the `specification` document of the role that deploys the helm release in Kubernetes.
 
 Example config:
 
 ```yaml
-kind: configuration/helm-mychart
-title: "Helm mychart"
+kind: configuration/<mykind-used-by-myrole>
 name: default
 specification:
   helm_chart_name: mychart
+  helm_release_name: myrelease
   disable_helm_chart: false
   helm_chart_values:
     service:
       port: 8080
     nameOverride: mychart_custom_name
 ```
+
+Example usage:
+
+```yaml
+- name: Mychart
+  include_role:
+    name: helm
+    tasks_from: install-system-chart
+  vars:
+    disable_helm_chart: "{{ specification.disable_helm_chart | default(false, true) }}"
+    helm_chart_name: "{{ specification.helm_chart_name }}"
+    helm_release_name: "{{ specification.helm_release_name }}"
+    helm_chart_values: "{{ specification.helm_chart_values }}"
+```
+
+__By default all installed helm "system" releases are deployed inside the `system-charts` namespace in Kubernetes.__
