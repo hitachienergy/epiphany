@@ -1,4 +1,5 @@
 ---
+# {{ ansible_managed }}
 
 ###################### Filebeat's Custom Values for Helm Chart #######################
 # You can find the full configuration reference here:
@@ -144,7 +145,7 @@ envFrom: []
 hostPathRoot: /var/lib
 hostNetworking: true
 image: "docker.elastic.co/beats/filebeat-oss"
-imageTag: "7.9.2"
+imageTag: "{{ filebeat_version }}"
 imagePullPolicy: "IfNotPresent"
 imagePullSecrets: []
 
@@ -152,10 +153,8 @@ livenessProbe:
   exec:
     command:
       - sh
-      - -c
-      - |
-        #!/usr/bin/env bash -e
-        curl --fail 127.0.0.1:5066
+      - -ec
+      - curl --fail 127.0.0.1:5066
   failureThreshold: 3
   initialDelaySeconds: 10
   periodSeconds: 10
@@ -165,10 +164,8 @@ readinessProbe:
   exec:
     command:
       - sh
-      - -c
-      - |
-        #!/usr/bin/env bash -e
-        filebeat test output
+      - -ec
+      - filebeat test output
   failureThreshold: 3
   initialDelaySeconds: 10
   periodSeconds: 10

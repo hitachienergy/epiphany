@@ -14,13 +14,15 @@
   debug:
     msg:
       - "Installed version: {{ ansible_facts.packages['filebeat'][0].version }}"
-      - "Target version: {{ specification.filebeat_version }}"
+      - "Target version: {{ filebeat_version }}"
 
 - name: Update Filebeat
+  when:
+    - filebeat_version is version(ansible_facts.packages['filebeat'][0].version, '>=')
   block:
     - name: Filebeat | Backup configuration file (filebeat.yml)
       copy:
-        remote_src: yes
+        remote_src: true
         src: /etc/filebeat/filebeat.yml
         dest: /etc/filebeat/filebeat.yml.bak_{{ ansible_facts.packages['filebeat'][0].version }}
 
@@ -35,5 +37,3 @@
     - import_role:
         name: filebeat
         tasks_from: configure-filebeat
-  when:
-    - specification.filebeat_version is version(ansible_facts.packages['filebeat'][0].version, '>=')

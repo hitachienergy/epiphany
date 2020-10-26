@@ -20,7 +20,7 @@ Note that versions are default versions and can be changed in certain cases thro
 | Elasticsearch Curator OSS | 5.8.1   | https://github.com/elastic/curator                    | https://github.com/elastic/curator/blob/master/LICENSE.txt       |
 | Opendistro for Elasticsearch  | 1.10.1   | https://opendistro.github.io/for-elasticsearch/  | [Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0)  |
 | Opendistro for Elasticsearch Kibana  | 1.10.1   | https://opendistro.github.io/for-elasticsearch-docs/docs/kibana/  | [Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0)  |
-| Filebeat                  | 7.8.1   | https://github.com/elastic/beats                      | [Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0) |
+| Filebeat                  | 7.9.2   | https://github.com/elastic/beats                      | [Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0) |
 | Logstash OSS              | 7.8.1   | https://github.com/elastic/logstash                   | [Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0) |
 | Prometheus                | 2.10.0  | https://github.com/prometheus/prometheus              | [Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0) |
 | Grafana                   | 6.2.5   | https://github.com/grafana/grafana                    | [Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0) |

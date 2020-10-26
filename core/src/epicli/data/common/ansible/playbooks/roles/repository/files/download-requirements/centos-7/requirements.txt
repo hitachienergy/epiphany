@@ -36,7 +36,7 @@ elasticsearch-oss-6.8.5 # for elasticsearch role
 elasticsearch-oss-7.9.1 # for opendistroforelasticsearch & logging roles
 erlang-21.3.8.7
 ethtool
-filebeat-7.8.1
+filebeat-7.9.2
 firewalld
 fontconfig # for grafana
 fping

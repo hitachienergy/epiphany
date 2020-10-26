@@ -1,21 +1,20 @@
 ---
-
 - name: Include installation tasks for Filebeat as System Service for "classic epiphany cluster"
   include_tasks: install-filebeat-as-system-service.yml
 
 - name: Include installation tasks for Filebeat as DaemonSet for "k8s as cloud service"
-  when: k8s_as_cloud_service is defined and k8s_as_cloud_service
   include_tasks: install-filebeat-as-daemonset.yml
+  when: k8s_as_cloud_service is defined and k8s_as_cloud_service
+
+- name: Include auditd configuration tasks
+  include_tasks: configure-auditd.yml
 
 - name: Set value for setup.kibana.host
   set_fact:
     setup_kibana_host: >-
-      {{ hostvars[groups['kibana'][0]].ansible_default_ipv4.address + ':5601' }}
+      {{ hostvars[groups.kibana[0]].ansible_default_ipv4.address ~ ':5601' }}
   when:
-    - groups['kibana'][0] is defined
-
-- name: Include auditd configuration tasks
-  include_tasks: configure-auditd.yml
+    - groups.kibana[0] is defined
 
 - name: Include filebeat configuration tasks
   include_tasks: configure-filebeat.yml

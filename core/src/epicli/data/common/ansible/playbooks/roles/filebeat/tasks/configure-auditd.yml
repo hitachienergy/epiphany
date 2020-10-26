@@ -10,22 +10,27 @@
 - name: Start/restart and enable auditd service
   block:
     - name: Restart auditd service
-      shell: >-
-        service auditd restart
-      args:
-        warn: false
+      systemd:
+        name: auditd
+        state: restarted
       register: result
-      retries: 3 # to avoid error "job for auditd.service failed because a timeout was exceeded"
+      until: result is success
+      retries: 3  # to avoid error "job for auditd.service failed because a timeout was exceeded"
       delay: 1
-      until: result is succeeded
       when: modify_audit_epi_rules.changed
+         or install_auditd_package.changed
 
     - name: Enable and start auditd service
-      service:
+      systemd:
         name: auditd
         state: started
         enabled: true
 
-    - name: Verify auditd is running
-      command: systemctl is-active auditd
-      changed_when: false
+    - name: Wait for auditd service to be running
+      service_facts:
+      until:
+        - ansible_facts.services['auditd.service'].state is defined
+        - ansible_facts.services['auditd.service'].state == "running"
+      retries: 10
+      delay: 1
+      no_log: true  # to reduce log output
