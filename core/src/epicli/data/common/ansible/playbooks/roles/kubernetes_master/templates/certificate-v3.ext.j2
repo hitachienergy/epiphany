@@ -1,0 +1,5 @@
+keyUsage = critical, digitalSignature, keyEncipherment
+extendedKeyUsage = {{ item.0.kind | join(',') }}
+{% if item.1.stdout %}
+subjectAltName = {{ item.1.stdout }}
+{% endif %}
