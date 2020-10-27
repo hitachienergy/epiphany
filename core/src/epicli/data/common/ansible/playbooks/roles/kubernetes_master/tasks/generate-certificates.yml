@@ -154,7 +154,7 @@
         owner: root
         group: root
         mode: u=rw
-      with_items: "{{ certificates_opt_mapping }}"
+      loop: "{{ certificates_opt_mapping }}"
 
     - name: Remove csr and ext directories
       file:
