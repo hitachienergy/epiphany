@@ -193,7 +193,7 @@
     - name: Restart systemd services
       when: restart_services is defined and (restart_services | difference(['docker', 'kubelet']) | length == 0)
       block:
-        - name: Restart
+        - name: Restart services
           systemd:
             name: "{{ item }}"
             state: restarted
