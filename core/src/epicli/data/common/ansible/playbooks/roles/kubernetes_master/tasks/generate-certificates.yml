@@ -51,7 +51,8 @@
           when:
             - certificates_renewal_list is defined
             - item.name in certificates_renewal_list
-          with_items: "{{ _certificates_opt_mapping }}"
+          loop: "{{ _certificates_opt_mapping }}"
+
         - set_fact:
             certificates_opt_mapping: "{{ _certificates_opt_mapping }}"
           when: certificates_renewal_list is not defined
