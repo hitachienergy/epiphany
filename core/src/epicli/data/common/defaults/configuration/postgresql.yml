@@ -60,6 +60,12 @@ specification:
                 value: 34
                 comment: number of WAL files held for standby servers
                 when: replication
+          - name: Standby Servers # ignored on master server
+            parameters:
+              - name: hot_standby
+                value: 'on'
+                comment: must be 'on' for repmgr needs, ignored on primary but recommended in case primary becomes standby
+                when: replication
   extensions:
     pgaudit:
       enabled: no
