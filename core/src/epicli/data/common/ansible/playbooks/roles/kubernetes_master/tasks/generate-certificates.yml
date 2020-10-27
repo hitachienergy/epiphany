@@ -122,7 +122,7 @@
       args:
         chdir: "{{ specification.advanced.certificates.location }}"
       register: csr_info
-      with_items: "{{ certificates_opt_mapping }}"
+      loop: "{{ certificates_opt_mapping }}"
 
     - name: Generate extension files
       template:
