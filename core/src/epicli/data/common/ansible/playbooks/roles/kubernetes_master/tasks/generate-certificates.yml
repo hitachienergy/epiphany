@@ -66,6 +66,7 @@
             src: "{{ specification.advanced.certificates.location }}/"
             dest: "{{ backup_dir }}"
           delegate_to: "{{ inventory_hostname }}"
+
         - name: Copy .conf files with embedded certificates
           copy:
             src: "/etc/kubernetes/{{ item }}"
