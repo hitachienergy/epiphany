@@ -73,9 +73,8 @@
         - "{{ specification.advanced.certificates.location }}/ext"
 
     - name: Generate new CSR
-      shell: kubeadm alpha certs renew all --csr-only --csr-dir=csr
+      command: kubeadm alpha certs renew all --csr-only --csr-dir=csr
       args:
-        executable: /bin/bash
         chdir: "{{ specification.advanced.certificates.location }}"
 
     # ansible openssl modules and openssl tool behave different, extensions file is necessary for openssl
@@ -87,7 +86,6 @@
           -in csr/{{ item.name }}.csr \
           | sed '1,3d;s/ Address//g;s/^[[:blank:]]*//;s/[[:blank:]]*$//'
       args:
-        executable: /bin/bash
         chdir: "{{ specification.advanced.certificates.location }}"
       register: csr_info
       with_items: "{{ certificates_opt_mapping }}"
@@ -101,11 +99,15 @@
         - "{{ csr_info.results }}"
 
     - name: Create signed certificates
-      shell: |-
-        openssl x509 -req -days {{ valid_days }} -in csr/{{ item.name }}.csr -extfile ext/{{ item.name }}.ext \
-          -CA {{ item.parent_ca }}.crt -CAkey {{ item.parent_ca }}.key -CAcreateserial -out {{ item.target }}.crt
+      command: |-
+        openssl x509 -req -days {{ valid_days }} \
+          -in csr/{{ item.name }}.csr \
+          -extfile ext/{{ item.name }}.ext \
+          -CA {{ item.parent_ca }}.crt \
+          -CAkey {{ item.parent_ca }}.key \
+          -CAcreateserial \
+          -out {{ item.target }}.crt
       args:
-        executable: /bin/bash
         chdir: "{{ specification.advanced.certificates.location }}"
       with_items: "{{ certificates_opt_mapping }}"
 
@@ -116,7 +118,7 @@
         dest: "{{ item.target }}.key"
         owner: root
         group: root
-        mode: '0600'
+        mode: u=rw
       with_items: "{{ certificates_opt_mapping }}"
 
     - name: Remove csr and ext directories

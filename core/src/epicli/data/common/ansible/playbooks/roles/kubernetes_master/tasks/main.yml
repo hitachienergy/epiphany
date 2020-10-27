@@ -29,9 +29,8 @@
         - import_tasks: master-join.yml
 
 - name: Collect current apiserver certificate 'not_after' date by openssl
-  shell: openssl x509 -enddate -noout -in apiserver.crt
+  command: openssl x509 -enddate -noout -in apiserver.crt
   args:
-    executable: /bin/bash
     chdir: "{{ specification.advanced.certificates.location }}"
   register: apiserver_certificate_info
 
