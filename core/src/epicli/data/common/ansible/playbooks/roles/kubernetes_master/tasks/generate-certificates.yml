@@ -87,7 +87,7 @@
         owner: root
         group: root
         mode: u=rw
-      with_items:
+      loop:
         - "{{ specification.advanced.certificates.location }}/csr"
         - "{{ specification.advanced.certificates.location }}/ext"
 
