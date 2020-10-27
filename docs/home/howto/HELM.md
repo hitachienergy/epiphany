@@ -56,4 +56,4 @@ Example usage:
     helm_chart_values: "{{ specification.helm_chart_values }}"
 ```
 
-__By default all installed helm "system" releases are deployed inside the `system-charts` namespace in Kubernetes.__
+__By default all installed helm "system" releases are deployed inside the `epi-charts` namespace in Kubernetes.__
