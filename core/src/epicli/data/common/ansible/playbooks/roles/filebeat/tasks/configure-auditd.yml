@@ -10,8 +10,11 @@
 - name: Start/restart and enable auditd service
   block:
     - name: Restart auditd service
-      systemd:
+      # In general this cannot be "systemd" module because auditd is often configured
+      # with "RefuseManualStop=yes" inside its unit file.
+      service:
         name: auditd
+        use: service
         state: restarted
       register: result
       until: result is success
