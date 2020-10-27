@@ -144,7 +144,7 @@
           -out {{ item.target }}.crt
       args:
         chdir: "{{ specification.advanced.certificates.location }}"
-      with_items: "{{ certificates_opt_mapping }}"
+      loop: "{{ certificates_opt_mapping }}"
 
     - name: Copy keys to certificates location and ensure that permissions are strict
       copy:
