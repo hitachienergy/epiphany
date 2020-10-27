@@ -142,7 +142,7 @@
         chdir: "{{ specification.advanced.certificates.location }}"
       with_items: "{{ certificates_opt_mapping }}"
 
-    - name: Copy keys to pki location and ensure that permissions are strict
+    - name: Copy keys to certificates location and ensure that permissions are strict
       copy:
         src: "{{ specification.advanced.certificates.location }}/csr/{{ item.target }}.key"
         remote_src: true
