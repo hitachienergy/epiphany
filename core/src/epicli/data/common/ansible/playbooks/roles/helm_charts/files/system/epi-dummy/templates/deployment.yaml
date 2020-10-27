@@ -1,14 +1,14 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "dummy.fullname" . }}
+  name: {{ include "epi-dummy.fullname" . }}
   labels:
-    {{- include "dummy.labels" . | nindent 4 }}
+    {{- include "epi-dummy.labels" . | nindent 4 }}
 spec:
   replicas: {{ .Values.replicaCount }}
   selector:
     matchLabels:
-      {{- include "dummy.selectorLabels" . | nindent 6 }}
+      {{- include "epi-dummy.selectorLabels" . | nindent 6 }}
   template:
     metadata:
     {{- with .Values.podAnnotations }}
@@ -16,7 +16,7 @@ spec:
         {{- toYaml . | nindent 8 }}
     {{- end }}
       labels:
-        {{- include "dummy.selectorLabels" . | nindent 8 }}
+        {{- include "epi-dummy.selectorLabels" . | nindent 8 }}
     spec:
       {{- with .Values.imagePullSecrets }}
       imagePullSecrets:
@@ -27,7 +27,7 @@ spec:
       volumes:
         - name: config
           configMap:
-            name: {{ include "dummy.fullname" . }}
+            name: {{ include "epi-dummy.fullname" . }}
       containers:
         - name: {{ .Chart.Name }}
           securityContext:
