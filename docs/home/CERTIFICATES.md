@@ -2,7 +2,7 @@
 
 ## TLS certificates in a cluster
 
-It's possible to regenerate kubernetes control plane certificates with epiphany.
+It's possible to regenerate Kubernetes control plane certificates with Epiphany.
 To do so, additional configuration should be specified.
 
 ```yaml
