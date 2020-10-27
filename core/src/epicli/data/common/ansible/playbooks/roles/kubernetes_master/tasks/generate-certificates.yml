@@ -160,7 +160,7 @@
       file:
         path: "{{ specification.advanced.certificates.location }}/{{ item }}"
         state: absent
-      with_items:
+      loop:
         - csr
         - ext
 
