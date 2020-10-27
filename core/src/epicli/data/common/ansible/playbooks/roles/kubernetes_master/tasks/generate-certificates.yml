@@ -197,7 +197,7 @@
           systemd:
             name: "{{ item }}"
             state: restarted
-          with_items: "{{ restart_services }}"
+          loop: "{{ services_to_restart }}"
 
         - name: Wait until cluster is available
           environment:
