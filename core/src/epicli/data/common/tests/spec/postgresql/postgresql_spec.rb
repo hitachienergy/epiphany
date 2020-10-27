@@ -313,7 +313,7 @@ if replicated
     if os[:family] == 'redhat'
       describe 'Checking PostgreSQL config files for secondary node' do
         let(:disable_sudo) { false }
-        describe command("cat /var/lib/pgsql/10/data/postgresql.conf | grep hot_standby") do
+        describe command("cat /var/lib/pgsql/10/data/postgresql-epiphany.conf | grep hot_standby") do
           its(:stdout) { should match /^hot_standby = on/ }
           its(:exit_status) { should eq 0 }
         end
@@ -326,7 +326,7 @@ if replicated
     elsif os[:family] == 'ubuntu'
       describe 'Checking PostgreSQL config files for secondary node' do
         let(:disable_sudo) { false }
-        describe command("cat /etc/postgresql/10/main/postgresql.conf | grep hot_standby") do
+        describe command("cat /etc/postgresql/10/main/postgresql-epiphany.conf | grep hot_standby") do
           its(:stdout) { should match /^hot_standby = on/ }
           its(:exit_status) { should eq 0 }
         end
@@ -340,7 +340,7 @@ if replicated
 
     describe 'Checking the state of replica nodes' do
       let(:disable_sudo) { false }
-      describe command("su - postgres -c \"psql -t -c 'SELECT status, conninfo  from pg_stat_wal_receiver;'\"") do
+      describe command("su - postgres -c \"psql -t -c 'SELECT status, conninfo FROM pg_stat_wal_receiver;'\"") do
         its(:stdout) { should match /\bstreaming\b/ }
         its(:stdout) { should match /\buser=#{replication_user}\b/ }
         its(:exit_status) { should eq 0 }

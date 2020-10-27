@@ -118,20 +118,26 @@ name: default
 specification:
   config_file:
     parameter_groups:
-    ...
-    # Block below is optional, you can use it to override default values
-    - name: REPLICATION
-      subgroups:
-        - name: Sending Server(s)
-          parameters:
-            - name: max_wal_senders
-              value: 10 # default value
-              comment: maximum number of simultaneously running WAL sender processes
-              when: replication # default value
-            - name: wal_keep_segments
-              value: 34 # default value
-              comment: number of WAL files held for standby servers
-              when: replication
+      ...
+      # This block is optional, you can use it to override default values
+      - name: REPLICATION
+        subgroups:
+          - name: Sending Server(s)
+            parameters:
+              - name: max_wal_senders
+                value: 10 # default value
+                comment: maximum number of simultaneously running WAL sender processes
+                when: replication # default value
+              - name: wal_keep_segments
+                value: 34 # default value
+                comment: number of WAL files held for standby servers
+                when: replication
+          - name: Standby Servers
+            parameters:
+              - name: hot_standby
+                value: 'on' # default value
+                comment: capability to run read-only queries on standby server
+                when: replication
   extensions:
     ...
     replication:
@@ -178,18 +184,26 @@ title: PostgreSQL
 specification:
   config_file:
     parameter_groups:
-    # Block below is optional, you can use it to override default values
-    - name: REPLICATION
-      subgroups:
-        - name: Sending Server(s)
-          parameters:
-            - name: max_wal_senders
-              value: 10 # default value
-              comment: maximum number of simultaneously running WAL sender processes
-            - name: wal_keep_segments
-              value: 34 # default value
-              comment: number of WAL files held for standby servers
-    ...
+      ...
+      # This block is optional, you can use it to override default values
+      - name: REPLICATION
+        subgroups:
+          - name: Sending Server(s)
+            parameters:
+              - name: max_wal_senders
+                value: 10 # default value
+                comment: maximum number of simultaneously running WAL sender processes
+                when: replication
+              - name: wal_keep_segments
+                value: 34 # default value
+                comment: number of WAL files held for standby servers
+                when: replication
+          - name: Standby Servers
+            parameters:
+              - name: hot_standby
+                value: 'on' # default value
+                comment: must be 'on' for repmgr needs, ignored on primary but recommended in case primary becomes standby
+                when: replication
   extensions:
     ...
     replication:
@@ -201,7 +215,7 @@ specification:
       use_repmgr: true
       repmgr_database: repmgr
       shared_preload_libraries:
-      - repmgr
+        - repmgr
 ```
 If `enabled` is set to `yes` in `replication`, then Epiphany will automatically create cluster of primary and secondary server
 with replication user with name and password specified in data.yaml. This is only possible for configurations containing two
@@ -283,19 +297,19 @@ provider: aws
 name: default
 specification:
   applications:
-  [...]
+  ...
 
 ## --- pgpool ---
 
   - name: pgpool
     enabled: yes
-    [...]
+    ...
     namespace: postgres-pool
     service:
       name: pgpool
       port: 5432
     replicas: 3
-    [...]
+    ...
     resources: # Adjust to your configuration, see https://www.pgpool.net/docs/41/en/html/resource-requiremente.html
       limits:
         # cpu: 900m # Set according to your env
@@ -336,7 +350,7 @@ specification:
 
   - name: pgbouncer
     enabled: yes
-    [...]
+    ...
     namespace: postgres-pool
     service:
       name: pgbouncer
@@ -426,7 +440,7 @@ For example, having 2 pods (with MAX_CLIENT_CONN = 150) allows for up to 300 cli
 ```yaml
     pgbouncer:
       env:
-        [...]
+        ...
         MAX_CLIENT_CONN: 150
         DEFAULT_POOL_SIZE: 25
         RESERVE_POOL_SIZE: 25
