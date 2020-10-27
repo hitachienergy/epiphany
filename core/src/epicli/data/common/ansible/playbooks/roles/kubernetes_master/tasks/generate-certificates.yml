@@ -72,7 +72,7 @@
             src: "/etc/kubernetes/{{ item }}"
             dest: "{{ backup_dir }}"
             remote_src: true
-          with_items:
+          loop:
             - admin.conf
             - controller-manager.conf
             - scheduler.conf
