@@ -48,7 +48,9 @@
       block:
         - set_fact:
             certificates_opt_mapping: "{{ certificates_opt_mapping | default([]) + [item] }}"
-          when: certificates_renewal_list is defined and item.name in certificates_renewal_list
+          when:
+            - certificates_renewal_list is defined
+            - item.name in certificates_renewal_list
           with_items: "{{ _certificates_opt_mapping }}"
         - set_fact:
             certificates_opt_mapping: "{{ _certificates_opt_mapping }}"
