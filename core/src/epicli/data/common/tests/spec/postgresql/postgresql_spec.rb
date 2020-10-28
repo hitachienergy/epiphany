@@ -473,31 +473,31 @@ end
 if replicated && (listInventoryHosts("postgresql")[1].include? host_inventory['hostname'])
   describe 'Cleaning up' do
     it "Delegating drop table query to master node" do
-      Net::SSH.start(listInventoryIPs("postgresql")[0], ENV['user'], keys: [ENV['keypath']], :keys_only => TRUE) do|ssh|
+      Net::SSH.start(listInventoryIPs("postgresql")[0], ENV['user'], keys: [ENV['keypath']], :keys_only => true) do|ssh|
         result = ssh.exec!("sudo su - postgres -c \"psql -t -c 'DROP TABLE serverspec_test.test;'\" 2>&1")
         expect(result).to match 'DROP TABLE'
       end
     end
     it "Delegating drop table query to master node", :if => pgbouncer_enabled  do
-      Net::SSH.start(listInventoryIPs("postgresql")[0], ENV['user'], keys: [ENV['keypath']], :keys_only => TRUE) do|ssh|
+      Net::SSH.start(listInventoryIPs("postgresql")[0], ENV['user'], keys: [ENV['keypath']], :keys_only => true) do|ssh|
         result = ssh.exec!("sudo su - postgres -c \"psql -t -c 'DROP TABLE serverspec_test.pgbtest;'\" 2>&1")
         expect(result).to match 'DROP TABLE'
       end
     end
     it "Delegating drop schema query to master node" do
-      Net::SSH.start(listInventoryIPs("postgresql")[0], ENV['user'], keys: [ENV['keypath']], :keys_only => TRUE) do|ssh|
+      Net::SSH.start(listInventoryIPs("postgresql")[0], ENV['user'], keys: [ENV['keypath']], :keys_only => true) do|ssh|
         result = ssh.exec!("sudo su - postgres -c \"psql -t -c 'DROP SCHEMA serverspec_test;'\" 2>&1")
         expect(result).to match 'DROP SCHEMA'
       end
     end
     it "Delegating drop user query to master node", :if => pgbouncer_enabled do
-      Net::SSH.start(listInventoryIPs("postgresql")[0], ENV['user'], keys: [ENV['keypath']], :keys_only => TRUE) do|ssh|
+      Net::SSH.start(listInventoryIPs("postgresql")[0], ENV['user'], keys: [ENV['keypath']], :keys_only => true) do|ssh|
         result = ssh.exec!("sudo su - postgres -c \"psql -t -c 'DROP USER #{pg_user};'\" 2>&1")
         expect(result).to match 'DROP ROLE'
       end
     end
     it "Removing test user from userlist.txt", :if => pgbouncer_enabled do
-      Net::SSH.start(listInventoryIPs("postgresql")[0], ENV['user'], keys: [ENV['keypath']], :keys_only => TRUE) do|ssh|
+      Net::SSH.start(listInventoryIPs("postgresql")[0], ENV['user'], keys: [ENV['keypath']], :keys_only => true) do|ssh|
         result = ssh.exec!("sudo su - -c \"sed -i '/#{pg_pass}/d' /etc/pgbouncer/userlist.txt && cat /etc/pgbouncer/userlist.txt\" 2>&1")
         expect(result).not_to match "#{pg_pass}"
       end
