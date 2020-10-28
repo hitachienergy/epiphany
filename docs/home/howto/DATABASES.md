@@ -505,9 +505,9 @@ to one described below.
 
 old value | new value |
 --- | --- |
-specification.replication.enabled | specification.extensions.enabled |
-specification.replication.user | specification.extensions.replication_user_name |
-specification.replication.password | specification.extensions.replication_user_password |
+specification.replication.enabled | specification.extensions.replication.enabled |
+specification.replication.user | specification.extensions.replication.replication_user_name |
+specification.replication.password | specification.extensions.replication.replication_user_password |
 specification.replication.max_wal_senders | defined in subgroups section |
 specification.replication.wal_keep_segments | defined in subgroups section |
 
