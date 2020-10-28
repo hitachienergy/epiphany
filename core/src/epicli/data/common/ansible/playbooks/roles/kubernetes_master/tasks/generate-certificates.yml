@@ -193,7 +193,9 @@
           - 'key'
 
     - name: Restart systemd services
-      when: restart_services is defined and (restart_services | difference(['docker', 'kubelet']) | length == 0)
+      when:
+        - restart_services is defined
+        - restart_services | difference(['docker', 'kubelet']) | length == 0
       block:
         - name: Restart services
           systemd:
