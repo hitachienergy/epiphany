@@ -46,11 +46,16 @@
   block:
     - name: Create certificates_opt_mapping fact
       block:
-        - set_fact:
+        - name: Set non-default certificates_opt_mapping fact value
+          set_fact:
             certificates_opt_mapping: "{{ certificates_opt_mapping | default([]) + [item] }}"
-          when: certificates_renewal_list is defined and item.name in certificates_renewal_list
-          with_items: "{{ _certificates_opt_mapping }}"
-        - set_fact:
+          when:
+            - certificates_renewal_list is defined
+            - item.name in certificates_renewal_list
+          loop: "{{ _certificates_opt_mapping }}"
+
+        - name: Set default certificates_opt_mapping fact value
+          set_fact:
             certificates_opt_mapping: "{{ _certificates_opt_mapping }}"
           when: certificates_renewal_list is not defined
 
@@ -68,7 +73,7 @@
         owner: root
         group: root
         mode: u=rw
-      with_items:
+      loop:
         - "{{ specification.advanced.certificates.location }}/csr"
         - "{{ specification.advanced.certificates.location }}/ext"
 
@@ -88,15 +93,13 @@
       args:
         chdir: "{{ specification.advanced.certificates.location }}"
       register: csr_info
-      with_items: "{{ certificates_opt_mapping }}"
+      loop: "{{ certificates_opt_mapping }}"
 
     - name: Generate extension files
       template:
         src: certificate-v3.ext.j2
         dest: "{{ specification.advanced.certificates.location }}/ext/{{ item.0.name }}.ext"
-      with_together:
-        - "{{ certificates_opt_mapping }}"
-        - "{{ csr_info.results }}"
+      loop: "{{ certificates_opt_mapping|zip(csr_info.results)|list }}"
 
     - name: Create signed certificates
       command: |-
@@ -109,9 +112,9 @@
           -out {{ item.target }}.crt
       args:
         chdir: "{{ specification.advanced.certificates.location }}"
-      with_items: "{{ certificates_opt_mapping }}"
+      loop: "{{ certificates_opt_mapping }}"
 
-    - name: Copy keys to pki location and ensure that permissions are strict
+    - name: Copy keys to certificates location and ensure that permissions are strict
       copy:
         src: "{{ specification.advanced.certificates.location }}/csr/{{ item.name }}.key"
         remote_src: yes
@@ -119,13 +122,13 @@
         owner: root
         group: root
         mode: u=rw
-      with_items: "{{ certificates_opt_mapping }}"
+      loop: "{{ certificates_opt_mapping }}"
 
     - name: Remove csr and ext directories
       file:
         path: "{{ specification.advanced.certificates.location }}/{{ item }}"
         state: absent
-      with_items:
+      loop:
         - csr
         - ext
 
@@ -154,29 +157,34 @@
           controller-manager.conf: "system:kube-controller-manager"
       command: |
         kubectl config set-credentials {{ conf_account_mapping[item] }} \
-        --client-key {{ specification.advanced.certificates.location }}/{{ item }}.key \
-        --client-certificate {{ specification.advanced.certificates.location }}/{{ item }}.crt --embed-certs
-      with_items: "{{ conf_certificates }}"
+          --client-key {{ item }}.key \
+          --client-certificate {{ item }}.crt --embed-certs
+      args:
+        chdir: "{{ specification.advanced.certificates.location }}"
+      loop: "{{ conf_certificates }}"
 
     - name: Remove conf certificates
       file:
-        path: "{{ specification.advanced.certificates.location }}/{{ item.0 }}.{{ item.1 }}"
+        path: "{{ specification.advanced.certificates.location }}/{{ item }}"
         state: absent
-      with_nested:
-        - - 'admin.conf'
-          - 'scheduler.conf'
-          - 'controller-manager.conf'
-        - - 'crt'
-          - 'key'
+      loop:
+        - 'admin.conf.crt'
+        - 'admin.conf.key'
+        - 'scheduler.conf.crt'
+        - 'scheduler.conf.key'
+        - 'controller-manager.conf.crt'
+        - 'controller-manager.conf.key'
 
     - name: Restart systemd services
-      when: restart_services is defined and (restart_services | difference(['docker', 'kubelet']) | length == 0)
+      when:
+        - services_to_restart is defined
+        - services_to_restart | difference(['docker', 'kubelet']) | length == 0
       block:
-        - name: Restart
+        - name: Restart services
           systemd:
             name: "{{ item }}"
             state: restarted
-          with_items: "{{ restart_services }}"
+          loop: "{{ services_to_restart }}"
 
         - name: Wait until cluster is available
           command: kubectl cluster-info
