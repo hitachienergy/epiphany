@@ -106,7 +106,7 @@
           -subj "{{ item.value }}"
       args:
         chdir: "{{ specification.advanced.certificates.location }}"
-      with_dict:
+      loop:
         # https://kubernetes.io/docs/setup/best-practices/certificates/#configure-certificates-for-user-accounts
         - key: admin.conf
           value: /O=system:masters/CN=kubernetes-admin
