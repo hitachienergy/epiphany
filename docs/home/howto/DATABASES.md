@@ -94,7 +94,7 @@ PgBouncer listens on standard port 6432. Basic configuration is just template, w
 
 PgBouncer can be also installed (together with Pgpool) in K8s cluster. See [How to set up PgBouncer, PgPool and PostgreSQL parameters](#how-to-set-up-pgbouncer-pgpool-and-postgresql-parameters).
 
-## How to setup PostgreSQL HA replication with repmgr cluster
+## How to set up PostgreSQL HA replication with repmgr cluster
 
 This component can be used as a part of PostgreSQL clustering configured by Epiphany. In order to configure PostgreSQL HA 
 replication, add to your data.yaml a block similar to the one below to core section:
@@ -480,12 +480,17 @@ DROP EXTENSION IF EXISTS pgaudit;
 
 ## How to configure PostgreSQL replication
 
+#### Note
+
+This feature is deprecated and will be removed.
+Use [PostgreSQL HA replication with repmgr](#how-to-set-up-postgresql-ha-replication-with-repmgr-cluster) instead.
+
 #### Attention
 
 In version 0.6.0 because of delivering full HA for PostgreSQL we needed to change configuration for PostgreSQL native
 replication.
 
-You need to change old configuration file from the one visible below:
+You need to change old configuration file from the one like this:
 
 ```yaml
 kind: configuration/postgresql
