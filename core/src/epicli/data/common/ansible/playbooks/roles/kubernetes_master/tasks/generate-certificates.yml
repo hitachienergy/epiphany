@@ -46,14 +46,16 @@
   block:
     - name: Set certificates_opt_mapping fact
       block:
-        - set_fact:
+        - name: Set non-default certificates_opt_mapping fact value
+          set_fact:
             certificates_opt_mapping: "{{ certificates_opt_mapping | default([]) + [item] }}"
           when:
             - certificates_renewal_list is defined
             - item.name in certificates_renewal_list
           loop: "{{ _certificates_opt_mapping }}"
 
-        - set_fact:
+        - name: Set default certificates_opt_mapping fact value
+          set_fact:
             certificates_opt_mapping: "{{ _certificates_opt_mapping }}"
           when: certificates_renewal_list is not defined
 
