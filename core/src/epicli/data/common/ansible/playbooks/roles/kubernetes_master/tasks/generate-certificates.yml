@@ -1,0 +1,217 @@
+---
+- name: Generate certificates block
+  vars:
+    # https://kubernetes.io/docs/setup/best-practices/certificates/#all-certificates
+    _certificates_opt_mapping:
+      - name: admin.conf
+        kind: ['clientAuth']
+        target: admin.conf
+        parent_ca: ca
+      - name: apiserver-etcd-client
+        kind: ['clientAuth']
+        target: apiserver-etcd-client
+        parent_ca: etcd/ca
+      - name: apiserver-kubelet-client
+        kind: ['clientAuth']
+        target: apiserver-kubelet-client
+        parent_ca: ca
+      - name: apiserver
+        kind: ['serverAuth']
+        target: apiserver
+        parent_ca: ca
+      - name: controller-manager.conf
+        kind: ['clientAuth']
+        target: controller-manager.conf
+        parent_ca: ca
+      - name: etcd-healthcheck-client
+        kind: ['clientAuth']
+        target: etcd/healthcheck-client
+        parent_ca: etcd/ca
+      - name: etcd-peer
+        kind: ['serverAuth', 'clientAuth']
+        target: etcd/peer
+        parent_ca: etcd/ca
+      - name: etcd-server
+        kind: ['serverAuth', 'clientAuth']
+        target: etcd/server
+        parent_ca: etcd/ca
+      - name: front-proxy-client
+        kind: ['clientAuth']
+        target: front-proxy-client
+        parent_ca: front-proxy-ca
+      - name: scheduler.conf
+        kind: ['clientAuth']
+        target: scheduler.conf
+        parent_ca: ca
+  block:
+    - name: Set certificates_opt_mapping fact
+      block:
+        - name: Set non-default certificates_opt_mapping fact value
+          set_fact:
+            certificates_opt_mapping: "{{ certificates_opt_mapping | default([]) + [item] }}"
+          when:
+            - certificates_renewal_list is defined
+            - item.name in certificates_renewal_list
+          loop: "{{ _certificates_opt_mapping }}"
+
+        - name: Set default certificates_opt_mapping fact value
+          set_fact:
+            certificates_opt_mapping: "{{ _certificates_opt_mapping }}"
+          when: certificates_renewal_list is not defined
+
+    - name: Set backup_dir fact
+      set_fact:
+        backup_dir: >-
+          {{ specification.advanced.certificates.location | regex_replace('\\/$', '') }}-backup-{{ ansible_date_time.iso8601_basic_short }}
+
+    - name: Copy old certificates
+      block:
+        - name: Copy {{ specification.advanced.certificates.location }}
+          synchronize:
+            src: "{{ specification.advanced.certificates.location }}/"
+            dest: "{{ backup_dir }}"
+          delegate_to: "{{ inventory_hostname }}"
+
+        - name: Copy .conf files with embedded certificates
+          copy:
+            src: "/etc/kubernetes/{{ item }}"
+            dest: "{{ backup_dir }}"
+            remote_src: true
+          loop:
+            - admin.conf
+            - controller-manager.conf
+            - scheduler.conf
+
+    - name: Ensure necessary directories exist
+      file:
+        path: "{{ item }}"
+        state: directory
+        owner: root
+        group: root
+        mode: u=rw
+      loop:
+        - "{{ specification.advanced.certificates.location }}/csr"
+        - "{{ specification.advanced.certificates.location }}/ext"
+
+    - name: Generate CSR for kubeadm-managed certificates
+      command: kubeadm alpha certs renew all --csr-only --csr-dir=csr
+      args:
+        chdir: "{{ specification.advanced.certificates.location }}"
+
+    - name: Generate CSR for embedded .conf certificates
+      command: |-
+        openssl req -nodes -newkey rsa:2048 \
+          -keyout csr/{{ item.key }}.key \
+          -out csr/{{ item.key }}.csr \
+          -subj "{{ item.value }}"
+      args:
+        chdir: "{{ specification.advanced.certificates.location }}"
+      loop:
+        # https://kubernetes.io/docs/setup/best-practices/certificates/#configure-certificates-for-user-accounts
+        - key: admin.conf
+          value: /O=system:masters/CN=kubernetes-admin
+        - key: scheduler.conf
+          value: /CN=system:kube-scheduler
+        - key: controller-manager.conf
+          value: /CN=system:kube-controller-manager
+
+    # ansible openssl modules and openssl tool behave different, extensions file is necessary for openssl
+    # https://github.com/openssl/openssl/issues/10458
+    - name: Register SAN extension for all csr files
+      shell: |-
+        openssl req -text -noout \
+          -reqopt no_subject,no_header,no_version,no_serial,no_signame,no_validity,no_issuer,no_pubkey,no_sigdump,no_aux \
+          -in csr/{{ item.target }}.csr \
+          | sed '1,3d;s/ Address//g;s/^[[:blank:]]*//;s/[[:blank:]]*$//'
+      args:
+        chdir: "{{ specification.advanced.certificates.location }}"
+      register: csr_info
+      loop: "{{ certificates_opt_mapping }}"
+
+    - name: Generate extension files
+      template:
+        src: certificate-v3.ext.j2
+        dest: "{{ specification.advanced.certificates.location }}/ext/{{ item.0.name }}.ext"
+      loop: "{{ certificates_opt_mapping|zip(csr_info.results)|list }}"
+
+    - name: Create signed certificates
+      command: |-
+        openssl x509 -req \
+          -days {{ valid_days }} \
+          -in csr/{{ item.target }}.csr \
+          -extfile ext/{{ item.name }}.ext \
+          -CA {{ item.parent_ca }}.crt \
+          -CAkey {{ item.parent_ca }}.key \
+          -CAcreateserial \
+          -out {{ item.target }}.crt
+      args:
+        chdir: "{{ specification.advanced.certificates.location }}"
+      loop: "{{ certificates_opt_mapping }}"
+
+    - name: Copy keys to certificates location and ensure that permissions are strict
+      copy:
+        src: "{{ specification.advanced.certificates.location }}/csr/{{ item.target }}.key"
+        remote_src: true
+        dest: "{{ specification.advanced.certificates.location }}/{{ item.target }}.key"
+        owner: root
+        group: root
+        mode: u=rw
+      loop: "{{ certificates_opt_mapping }}"
+
+    - name: Remove csr and ext directories
+      file:
+        path: "{{ specification.advanced.certificates.location }}/{{ item }}"
+        state: absent
+      loop:
+        - csr
+        - ext
+
+    - name: Update .conf files with embedded certs
+      environment:
+        KUBECONFIG: "/etc/kubernetes/{{ item.key }}"
+      command: |-
+        kubectl config set-credentials {{ item.value }} \
+          --client-key {{ item.key }}.key \
+          --client-certificate {{ item.key }}.crt \
+          --embed-certs
+      args:
+        chdir: "{{ specification.advanced.certificates.location }}"
+      loop:
+        - key: admin.conf
+          value: kubernetes-admin
+        - key: scheduler.conf
+          value: system:kube-scheduler
+        - key: controller-manager.conf
+          value: system:kube-controller-manager
+
+    - name: Remove .conf certificates
+      file:
+        path: "{{ specification.advanced.certificates.location }}/{{ item }}"
+        state: absent
+      loop:
+        - 'admin.conf.crt'
+        - 'admin.conf.key'
+        - 'scheduler.conf.crt'
+        - 'scheduler.conf.key'
+        - 'controller-manager.conf.crt'
+        - 'controller-manager.conf.key'
+
+    - name: Restart systemd services
+      when:
+        - services_to_restart is defined
+        - services_to_restart | difference(['docker', 'kubelet']) | length == 0
+      block:
+        - name: Restart services
+          systemd:
+            name: "{{ item }}"
+            state: restarted
+          loop: "{{ services_to_restart }}"
+
+        - name: Wait until cluster is available
+          environment:
+            KUBECONFIG: /etc/kubernetes/admin.conf
+          command: kubectl cluster-info
+          retries: 50
+          delay: 1
+          register: result
+          until: result is succeeded and "running" in result.stdout
