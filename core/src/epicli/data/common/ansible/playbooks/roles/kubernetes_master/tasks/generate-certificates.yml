@@ -108,10 +108,12 @@
         chdir: "{{ specification.advanced.certificates.location }}"
       with_dict:
         # https://kubernetes.io/docs/setup/best-practices/certificates/#configure-certificates-for-user-accounts
-        admin.conf: /O=system:masters/CN=kubernetes-admin
-        scheduler.conf: /CN=system:kube-scheduler
-        controller-manager.conf: /CN=system:kube-controller-manager
-
+        - key: admin.conf
+          value: /O=system:masters/CN=kubernetes-admin
+        - key: scheduler.conf
+          value: /CN=system:kube-scheduler
+        - key: controller-manager.conf
+          value: /CN=system:kube-controller-manager
 
     # ansible openssl modules and openssl tool behave different, extensions file is necessary for openssl
     # https://github.com/openssl/openssl/issues/10458
@@ -130,9 +132,7 @@
       template:
         src: certificate-v3.ext.j2
         dest: "{{ specification.advanced.certificates.location }}/ext/{{ item.0.name }}.ext"
-      with_together:
-        - "{{ certificates_opt_mapping }}"
-        - "{{ csr_info.results }}"
+      loop: "{{ certificates_opt_mapping|zip(csr_info.results)|list }}"
 
     - name: Create signed certificates
       command: |-
@@ -176,21 +176,25 @@
           --embed-certs
       args:
         chdir: "{{ specification.advanced.certificates.location }}"
-      with_dict:
-        admin.conf: "kubernetes-admin"
-        scheduler.conf: "system:kube-scheduler"
-        controller-manager.conf: "system:kube-controller-manager"
+      loop:
+        - key: admin.conf
+          value: kubernetes-admin
+        - key: scheduler.conf
+          value: system:kube-scheduler
+        - key: controller-manager.conf
+          value: system:kube-controller-manager
 
     - name: Remove .conf certificates
       file:
-        path: "{{ specification.advanced.certificates.location }}/{{ item.0 }}.{{ item.1 }}"
+        path: "{{ specification.advanced.certificates.location }}/{{ item }}"
         state: absent
-      with_nested:
-        - - 'admin.conf'
-          - 'scheduler.conf'
-          - 'controller-manager.conf'
-        - - 'crt'
-          - 'key'
+      loop:
+        - 'admin.conf.crt'
+        - 'admin.conf.key'
+        - 'scheduler.conf.crt'
+        - 'scheduler.conf.key'
+        - 'controller-manager.conf.crt'
+        - 'controller-manager.conf.key'
 
     - name: Restart systemd services
       when:
