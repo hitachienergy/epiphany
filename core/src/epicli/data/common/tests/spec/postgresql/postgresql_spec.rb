@@ -507,7 +507,7 @@ end
 
 ### Tests for PGAudit
 
-if pgaudit_enabled
+if pgaudit_enabled && countInventoryHosts("logging") > 0
 
   if !replicated || (replicated && (listInventoryHosts("postgresql")[1].include? host_inventory['hostname']))
 
