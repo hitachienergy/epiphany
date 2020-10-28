@@ -45,7 +45,7 @@ To verify that, navigate to `/var/lib/kubelet/` and check `config.yaml` file, wh
 
 ## CA certificates rotation
 
-This part cannot be done by Epiphany. Refer to official kubernetes [documentation](https://kubernetes.io/docs/tasks/tls/manual-rotation-of-ca-certificates/) to perform this task.
+This part cannot be done by Epiphany. Refer to official Kubernetes [documentation](https://kubernetes.io/docs/tasks/tls/manual-rotation-of-ca-certificates/) to perform this task.
 
 ## References
 
