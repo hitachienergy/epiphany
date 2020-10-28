@@ -18,6 +18,8 @@ pgaudit_enabled = readDataYaml("configuration/postgresql")["specification"]["ext
 pg_user = 'testuser'
 pg_pass = 'testpass'
 
+pg_config_file_booleans = { "true" => "(?:on|true|yes|1)", "false" => "(?:off|false|no|0)" }
+
 def queryForCreating
   describe 'Checking if it is possible to create a test schema' do
     let(:disable_sudo) { false }
@@ -231,6 +233,21 @@ if replicated
         its(:exit_status) { should eq 0 }
       end
     end
+
+    describe 'Check hot_standby setting in postgresql-epiphany.conf file' do
+      let(:disable_sudo) { false }
+      if os[:family] == 'redhat'
+        describe command("grep -Eio '^hot_standby\s*=[^#]*' /var/lib/pgsql/10/data/postgresql-epiphany.conf") do
+          its(:exit_status) { should eq 0 }
+          its(:stdout) { should match /^hot_standby\s*=\s*#{pg_config_file_booleans["true"]}/i }
+        end
+      elsif os[:family] == 'ubuntu'
+        describe command("grep -Eio '^hot_standby\s*=[^#]*' /etc/postgresql/10/main/postgresql-epiphany.conf") do
+          its(:exit_status) { should eq 0 }
+          its(:stdout) { should match /^hot_standby\s*=\s*#{pg_config_file_booleans["true"]}/i }
+        end
+      end
+    end
   end
 
   if primary.include? host_inventory['hostname']
@@ -311,12 +328,8 @@ if replicated
 
   elsif secondary.include? host_inventory['hostname']
     if os[:family] == 'redhat'
-      describe 'Checking PostgreSQL config files for secondary node' do
+      describe 'Checking PostgreSQL files for secondary node' do
         let(:disable_sudo) { false }
-        describe command("cat /var/lib/pgsql/10/data/postgresql-epiphany.conf | grep hot_standby") do
-          its(:stdout) { should match /^hot_standby = on/ }
-          its(:exit_status) { should eq 0 }
-        end
         describe file('/var/lib/pgsql/.pgpass') do
           it { should exist }
           it { should be_readable }
@@ -324,12 +337,8 @@ if replicated
         end
       end
     elsif os[:family] == 'ubuntu'
-      describe 'Checking PostgreSQL config files for secondary node' do
+      describe 'Checking PostgreSQL files for secondary node' do
         let(:disable_sudo) { false }
-        describe command("cat /etc/postgresql/10/main/postgresql-epiphany.conf | grep hot_standby") do
-          its(:stdout) { should match /^hot_standby = on/ }
-          its(:exit_status) { should eq 0 }
-        end
         describe file('/var/lib/postgresql/.pgpass') do
           it { should exist }
           it { should be_readable }
