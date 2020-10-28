@@ -2,7 +2,7 @@
 
 ## TLS certificates in a cluster
 
-It's possible to regenerate kubernetes control plane certificates with epiphany.
+It's possible to regenerate Kubernetes control plane certificates with Epiphany.
 To do so, additional configuration should be specified.
 
 ```yaml
@@ -45,7 +45,7 @@ To verify that, navigate to `/var/lib/kubelet/` and check `config.yaml` file, wh
 
 ## CA certificates rotation
 
-This part cannot be done by epiphany. Refer to official kubernetes [documentation](https://kubernetes.io/docs/tasks/tls/manual-rotation-of-ca-certificates/) to perform this task.
+This part cannot be done by Epiphany. Refer to official kubernetes [documentation](https://kubernetes.io/docs/tasks/tls/manual-rotation-of-ca-certificates/) to perform this task.
 
 ## References
 

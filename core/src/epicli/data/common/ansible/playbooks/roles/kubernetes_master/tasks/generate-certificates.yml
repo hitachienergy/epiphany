@@ -48,8 +48,11 @@
       block:
         - set_fact:
             certificates_opt_mapping: "{{ certificates_opt_mapping | default([]) + [item] }}"
-          when: certificates_renewal_list is defined and item.name in certificates_renewal_list
-          with_items: "{{ _certificates_opt_mapping }}"
+          when:
+            - certificates_renewal_list is defined
+            - item.name in certificates_renewal_list
+          loop: "{{ _certificates_opt_mapping }}"
+
         - set_fact:
             certificates_opt_mapping: "{{ _certificates_opt_mapping }}"
           when: certificates_renewal_list is not defined
@@ -66,12 +69,13 @@
             src: "{{ specification.advanced.certificates.location }}/"
             dest: "{{ backup_dir }}"
           delegate_to: "{{ inventory_hostname }}"
+
         - name: Copy .conf files with embedded certificates
           copy:
             src: "/etc/kubernetes/{{ item }}"
             dest: "{{ backup_dir }}"
             remote_src: true
-          with_items:
+          loop:
             - admin.conf
             - controller-manager.conf
             - scheduler.conf
@@ -83,7 +87,7 @@
         owner: root
         group: root
         mode: u=rw
-      with_items:
+      loop:
         - "{{ specification.advanced.certificates.location }}/csr"
         - "{{ specification.advanced.certificates.location }}/ext"
 
@@ -118,7 +122,7 @@
       args:
         chdir: "{{ specification.advanced.certificates.location }}"
       register: csr_info
-      with_items: "{{ certificates_opt_mapping }}"
+      loop: "{{ certificates_opt_mapping }}"
 
     - name: Generate extension files
       template:
@@ -140,9 +144,9 @@
           -out {{ item.target }}.crt
       args:
         chdir: "{{ specification.advanced.certificates.location }}"
-      with_items: "{{ certificates_opt_mapping }}"
+      loop: "{{ certificates_opt_mapping }}"
 
-    - name: Copy keys to pki location and ensure that permissions are strict
+    - name: Copy keys to certificates location and ensure that permissions are strict
       copy:
         src: "{{ specification.advanced.certificates.location }}/csr/{{ item.target }}.key"
         remote_src: true
@@ -150,13 +154,13 @@
         owner: root
         group: root
         mode: u=rw
-      with_items: "{{ certificates_opt_mapping }}"
+      loop: "{{ certificates_opt_mapping }}"
 
     - name: Remove csr and ext directories
       file:
         path: "{{ specification.advanced.certificates.location }}/{{ item }}"
         state: absent
-      with_items:
+      loop:
         - csr
         - ext
 
@@ -189,11 +193,11 @@
     - name: Restart systemd services
       when: restart_services is defined and (restart_services | difference(['docker', 'kubelet']) | length == 0)
       block:
-        - name: Restart
+        - name: Restart services
           systemd:
             name: "{{ item }}"
             state: restarted
-          with_items: "{{ restart_services }}"
+          loop: "{{ services_to_restart }}"
 
         - name: Wait until cluster is available
           environment:
