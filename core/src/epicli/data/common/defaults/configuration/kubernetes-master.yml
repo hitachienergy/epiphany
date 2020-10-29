@@ -32,7 +32,7 @@ specification:
     imageRepository: k8s.gcr.io
     certificates:
       location: /etc/kubernetes/pki
-      expiration_days: 365
+      expiration_days: 365 # values greater than 24855 are not recommended
       renew: false
     etcd_args:
       encrypted: yes

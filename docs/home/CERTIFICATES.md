@@ -22,6 +22,14 @@ Parameters (optional):
 1. expiration_days - days to expire in, default value is `365`
 2. renew - whether to renew certificates or not, default value is `false`
 
+---
+**NOTE**
+
+Usage of values greater than 24855 for `expiration_days` is possible but not recommended.
+For more information see [discussion](https://groups.google.com/g/mailing.openssl.users/c/3kK_f0ywCZQ) about that.
+
+---
+
 When `epicly apply` executes, if `renew` option is set to `true`, following certificates will be renewed with expiration period defined by `expiration_days`:
 
 1. admin.conf
