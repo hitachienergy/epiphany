@@ -22,7 +22,7 @@
                                                      and specification.extensions[parameter.when].enabled) %}
 {#         use of 'parameter_value' is workaround since we don't have Jinja's {% do %} statement enabled (required to update dictionaries) #}
 {%         set parameter_value = parameter.value %}
-{%         if parameter.name == 'shared_preload_libraries' and parameter.value == 'SET_BY_AUTOMATION' %}
+{%         if parameter.name == 'shared_preload_libraries' and parameter.value|upper in ['AUTOCONFIGURED', 'SET_BY_AUTOMATION'] %}
 {%           set shared_preload_libraries = [] %}
 {#           shared_preload_libraries from runtime, including those that were set outside Epiphany managed config #}
 {%           if runtime_shared_preload_libraries is defined and runtime_shared_preload_libraries %}

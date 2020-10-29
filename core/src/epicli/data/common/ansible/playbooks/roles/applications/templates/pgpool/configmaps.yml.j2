@@ -7,7 +7,7 @@ metadata:
     app: pgpool
   namespace: {{ data.namespace }}
 data:
-{% if data.pgpool.env.PGPOOL_BACKEND_NODES is undefined or data.pgpool.env.PGPOOL_BACKEND_NODES == 'SET_BY_AUTOMATION' %}
+{% if data.pgpool.env.PGPOOL_BACKEND_NODES is undefined or data.pgpool.env.PGPOOL_BACKEND_NODES|upper in ['AUTOCONFIGURED', 'SET_BY_AUTOMATION'] %}
   PGPOOL_BACKEND_NODES: "{% for node in groups['postgresql'] %}{{ loop.index0 }}:{{ hostvars[groups['postgresql'][loop.index0]].ansible_hostname }}:5432{% if not loop.last %},{% endif %}{% endfor %}"
 {% else %}
   PGPOOL_BACKEND_NODES: "{{ data.pgpool.env.PGPOOL_BACKEND_NODES }}"
@@ -259,7 +259,7 @@ data:
 
     # - Backend Connection Settings -
 
-{% if data.pgpool.env.PGPOOL_BACKEND_NODES is undefined or data.pgpool.env.PGPOOL_BACKEND_NODES == 'SET_BY_AUTOMATION' %}
+{% if data.pgpool.env.PGPOOL_BACKEND_NODES is undefined or data.pgpool.env.PGPOOL_BACKEND_NODES|upper in ['AUTOCONFIGURED', 'SET_BY_AUTOMATION'] %}
 {%   for node in groups['postgresql'] %}
     backend_hostname{{ loop.index0 }} = '{{ hostvars[groups['postgresql'][loop.index0]].ansible_hostname }}'
                                       # Host name or IP address to connect to for backend {{ loop.index0 }}
@@ -829,7 +829,7 @@ data:
     # TYPE   DATABASE        USER{% for n in range(data.pgpool.env.PGPOOL_SR_CHECK_USER|length) %}{{" "}}{% endfor %}ADDRESS             METHOD
     host     all             {{ data.pgpool.env.PGPOOL_SR_CHECK_USER }}    127.0.0.1/32        trust
 
-{% if data.pgpool.pool_hba_conf is defined and data.pgpool.pool_hba_conf and data.pgpool.pool_hba_conf != 'SET_BY_AUTOMATION' %}
+{% if data.pgpool.pool_hba_conf is defined and data.pgpool.pool_hba_conf and data.pgpool.pool_hba_conf|upper not in ['AUTOCONFIGURED', 'SET_BY_AUTOMATION'] %}
     # Records from Epiphany configuration
     {{ data.pgpool.pool_hba_conf | indent(4) }}
 {% else %}

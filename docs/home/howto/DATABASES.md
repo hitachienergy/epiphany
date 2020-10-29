@@ -306,7 +306,7 @@ specification:
     pgpool:
       # https://github.com/bitnami/bitnami-docker-pgpool#configuration + https://github.com/bitnami/bitnami-docker-pgpool#environment-variables
       env:
-        PGPOOL_BACKEND_NODES: SET_BY_AUTOMATION # you can use custom value like '0:pg-node-1:5432,1:pg-node-2:5432'
+        PGPOOL_BACKEND_NODES: autoconfigured # you can use custom value like '0:pg-node-1:5432,1:pg-node-2:5432'
         # Postgres users
         PGPOOL_POSTGRES_USERNAME: epi_pgpool_postgres_admin # with SUPERUSER role to use connection slots reserved for superusers for K8s liveness probes, also for user synchronization
         PGPOOL_SR_CHECK_USER: epi_pgpool_sr_check # with pg_monitor role, for streaming replication checks and health checks
@@ -330,7 +330,7 @@ specification:
         connection_life_time = 600
         reserved_connections = 1
       # https://www.pgpool.net/docs/41/en/html/auth-pool-hba-conf.html
-      pool_hba_conf: SET_BY_AUTOMATION
+      pool_hba_conf: autoconfigured
 
 ## --- pgbouncer ---
 
