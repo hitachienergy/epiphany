@@ -1,5 +1,11 @@
 # Changelog 0.7
 
+## [0.7.3] 2020-xx-xx
+
+### Added
+
+- [#1302](https://github.com/epiphany-platform/epiphany/issues/1302) - Ability to update control plane certificates expiration date
+
 ## [0.7.2] 2020-10-07
 
 ### Fixed
