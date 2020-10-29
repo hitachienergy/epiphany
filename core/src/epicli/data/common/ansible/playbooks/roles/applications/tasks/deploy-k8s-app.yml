@@ -84,6 +84,11 @@
           register: encrypted_templates
           ignore_errors: true
 
+        - name: Write stderr to logs when encryption failed
+          when: encrypted_templates is failure
+          debug: var=encrypted_templates.stderr
+          no_log: false  # needed for displaying what went wrong
+
         - name: Save encrypted templates into {{ deployment_tmp_root_dir }}/{{ app_dir_name }}/debug.yml
           when: encrypted_templates is success
           copy:
