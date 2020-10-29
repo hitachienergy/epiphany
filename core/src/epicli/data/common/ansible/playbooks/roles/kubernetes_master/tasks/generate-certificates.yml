@@ -63,7 +63,7 @@
       synchronize:
         src: "{{ specification.advanced.certificates.location }}/"
         dest: >-
-          "{{ specification.advanced.certificates.location | regex_replace('\\/$', '') }}-backup-{{ ansible_date_time.iso8601_basic_short }}"
+          {{ specification.advanced.certificates.location | regex_replace('\\/$', '') }}-backup-{{ ansible_date_time.iso8601_basic_short }}
       delegate_to: "{{ inventory_hostname }}"
 
     - name: Ensure necessary directories exist
