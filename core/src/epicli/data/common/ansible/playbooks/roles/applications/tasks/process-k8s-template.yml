@@ -1,0 +1,36 @@
+---
+# This task file is supposed to be executed in a loop via `include_tasks`
+
+- name: Process jinja2/yaml k8s template
+  block:
+    - name: Try rendering template '{{ template_path }}'
+      set_fact:
+        processed_template: >-
+          {{ lookup('template', template_path) }}
+
+  rescue:
+    - name: Save original ansible_failed_result in a fact for later use
+      set_fact:
+        failed_result: "{{ ansible_failed_result }}"
+
+    - name: Fallback and load raw template '{{ template_path }}'
+      set_fact:
+        processed_template: >-
+          {{ lookup('file', template_path) }}
+
+    - name: Re-raise original error
+      fail:
+        msg: "{{ failed_result }}"
+
+  always:
+    - name: Append processed template '{{ template_path }}'
+      set_fact:
+        "{{ output_fact_name }}": >-
+          {{ hostvars[inventory_hostname][output_fact_name] ~ _newline ~ processed_template }}
+      vars:
+        # This helps overcoming jinja2 limitations
+        _newline: "\n"
+
+    - name: Make sure sensitive data is removed from facts
+      set_fact:
+        processed_template: null
