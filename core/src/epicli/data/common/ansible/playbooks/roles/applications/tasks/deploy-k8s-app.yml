@@ -22,44 +22,6 @@
         encrypted_templates: ""
         failed_result: null
 
-  rescue:
-    - name: Save original ansible_failed_result in a fact for later use
-      set_fact:
-        failed_result: "{{ ansible_failed_result }}"
-
-    # This is handy after an error occurs
-    # The reason for employing encryption here is that rendered templates may contain sensitive data
-    # To decrypt and examine, run:
-    #  ansible-vault view ./debug.yml
-    - name: Encrypt and save templates (debug)
-      when:
-        - concatenated_templates is defined
-        - concatenated_templates | length > 0
-      block:
-        - name: Encrypt concatenated templates
-          command: ansible-vault encrypt_string --stdin-name output
-          args:
-            # For security reasons we do not store rendered templates on local hdd/ssd drives
-            stdin: "{{ concatenated_templates }}"
-          environment:
-            ANSIBLE_VAULT_PASSWORD_FILE: "{{ vault_tmp_file_location }}"
-          register: encrypted_templates
-          ignore_errors: true
-
-        - name: Save encrypted templates into {{ deployment_tmp_root_dir }}/{{ app_dir_name }}/debug.yml
-          when: encrypted_templates is success
-          copy:
-            dest: "{{ deployment_tmp_root_dir }}/{{ app_dir_name }}/debug.yml"
-            # To be able to successfully parse yaml payload we need to remove the custom "!vault" tag
-            content: >-
-              {{ (encrypted_templates.stdout | regex_replace('!vault', '') | from_yaml).output }}
-            decrypt: false
-
-    - name: Print original error and fail
-      fail:
-        msg: "{{ failed_result }}"
-      no_log: false  # needed for displaying what went wrong
-
   block:
     - *cleanup-facts
 
@@ -97,6 +59,44 @@
       args:
         # For security reasons we do not store rendered templates on local hdd/ssd drives
         stdin: "{{ concatenated_templates }}"
+
+  rescue:
+    - name: Save original ansible_failed_result in a fact for later use
+      set_fact:
+        failed_result: "{{ ansible_failed_result }}"
+
+    # This is handy after an error occurs
+    # The reason for employing encryption here is that rendered templates may contain sensitive data
+    # To decrypt and examine, run:
+    #  ansible-vault view ./debug.yml
+    - name: Encrypt and save templates (debug)
+      when:
+        - concatenated_templates is defined
+        - concatenated_templates | length > 0
+      block:
+        - name: Encrypt concatenated templates
+          command: ansible-vault encrypt_string --stdin-name output
+          args:
+            # For security reasons we do not store rendered templates on local hdd/ssd drives
+            stdin: "{{ concatenated_templates }}"
+          environment:
+            ANSIBLE_VAULT_PASSWORD_FILE: "{{ vault_tmp_file_location }}"
+          register: encrypted_templates
+          ignore_errors: true
+
+        - name: Save encrypted templates into {{ deployment_tmp_root_dir }}/{{ app_dir_name }}/debug.yml
+          when: encrypted_templates is success
+          copy:
+            dest: "{{ deployment_tmp_root_dir }}/{{ app_dir_name }}/debug.yml"
+            # To be able to successfully parse yaml payload we need to remove the custom "!vault" tag
+            content: >-
+              {{ (encrypted_templates.stdout | regex_replace('!vault', '') | from_yaml).output }}
+            decrypt: false
+
+    - name: Print original error and fail
+      fail:
+        msg: "{{ failed_result }}"
+      no_log: false  # needed for displaying what went wrong
 
 - name: Remove temporary directory (app)
   file:
