@@ -1,1 +1,40 @@
-$ref: '#/definitions/unvalidated_specification'
+"$id": "#/specification"
+title: "K8s specification schema"
+description: "K8s specification schema"
+type: object
+properties:
+  advanced:
+    type: object
+    properties:
+      certificates:
+        type: object
+        properties:
+          location:
+            title: location schema
+            "$id": "#/properties/specification/properties/advanced/properties/certificates/properties/location"
+            description: |-
+              Where the certificates should be stored
+            type: string
+            default: /etc/kubernetes/pki
+            examples:
+            - /etc/kubernetes/pki
+          expiration_days:
+            title: expiration_days schema
+            "$id": "#/properties/specification/properties/advanced/properties/certificates/properties/expiration_days"
+            description: |-
+              Days to make certificate be valid for.
+              For more explanation about the limit navigate to
+              https://groups.google.com/g/mailing.openssl.users/c/3kK_f0ywCZQ.
+            type: integer
+            minimum: 1
+            maximum: 24855
+            default: 365
+          renew:
+            title: renew schema
+            "$id": "#/properties/specification/properties/advanced/properties/certificates/properties/renew"
+            description: |-
+              Whether to renew certificates or not
+            type: boolean
+            default: false
+            examples:
+            - false
