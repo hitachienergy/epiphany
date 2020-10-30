@@ -29,9 +29,8 @@
         - import_tasks: master-join.yml
 
 - name: Collect current apiserver certificate 'not_after' date by openssl
-  shell: openssl x509 -enddate -noout -in apiserver.crt
+  command: openssl x509 -enddate -noout -in apiserver.crt
   args:
-    executable: /bin/bash
     chdir: "{{ specification.advanced.certificates.location }}"
   register: apiserver_certificate_info
 
@@ -90,7 +89,7 @@
   when: specification.advanced.certificates.renew | bool
   vars:
     valid_days: "{{ specification.advanced.certificates.expiration_days }}"
-    restart_services:
+    services_to_restart:
       - docker
   include_tasks: generate-certificates.yml
 
