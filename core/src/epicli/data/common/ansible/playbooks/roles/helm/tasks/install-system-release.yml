@@ -50,6 +50,13 @@
 
       when: helm_chart_values_bool
 
+      always:
+        - name: Make sure sensitive data is removed from facts
+          set_fact:
+            rendered_values: ""
+            encrypted_values: ""
+            failed_result: null
+
       block:
         - name: Render 'values' into a fact
           set_fact:
