@@ -25,6 +25,14 @@
         - import_tasks: etcd-encryption.yml
           when: specification.advanced.etcd_args.encrypted
 
+- name: Regenerate all certificates
+  when: specification.advanced.certificates.renew | bool
+  vars:
+    valid_days: "{{ specification.advanced.certificates.expiration_days }}"
+    services_to_restart:
+      - docker
+  include_tasks: generate-certificates.yml
+
 - import_tasks: master-untaint.yml
 
 - include_tasks: "{{ specification.provider }}/kubernetes-storage.yml"
