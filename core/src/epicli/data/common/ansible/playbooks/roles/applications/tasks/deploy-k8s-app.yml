@@ -5,63 +5,25 @@
       - deployment_tmp_root_dir is defined
       - app_dir_name is defined
 
-- name: Deploy application
-  vars:
-    deployment_tmp_dir: "{{ deployment_tmp_root_dir }}/{{ app_dir_name }}"
+- name: Create temporary directory (app)
+  file:
+    path: "{{ deployment_tmp_root_dir }}/{{ app_dir_name }}"
+    state: directory
 
-  no_log: true  # everything executed here is considered sensitive
+- name: Deploy application
+  # Everything executed here is considered sensitive
+  no_log: true
 
   always:
-    - &cleanup
+    - &cleanup-facts
       name: Make sure sensitive data is removed from facts
       set_fact:
-        rendered_templates: []
-        concatenated_templates: null
-        encrypted_templates: null
-
-  rescue:
-    # This is handy after an error occurs
-    # The reason for employing encryption here is that rendered templates may contain sensitive data
-    # To decrypt and examine, run:
-    #  ansible-vault view ./debug.yml
-    - name: Encrypt and save templates (debug)
-      when:
-        - concatenated_templates is defined
-        - concatenated_templates | length > 0
-      block:
-        - name: Encrypt concatenated templates
-          command: ansible-vault encrypt_string --stdin-name output
-          args:
-            # For security reasons we do not store rendered templates on local hdd/ssd drives
-            stdin: "{{ concatenated_templates }}"
-          environment:
-            ANSIBLE_VAULT_PASSWORD_FILE: "{{ vault_tmp_file_location }}"
-          register: encrypted_templates
-          ignore_errors: true
-
-        - name: Save encrypted templates
-          when: encrypted_templates is success
-          block:
-            - name: Create temporary directory
-              file:
-                path: "{{ deployment_tmp_dir }}"
-                state: directory
-
-            - name: Save encrypted templates into {{ deployment_tmp_dir }}/debug.yml
-              copy:
-                dest: "{{ deployment_tmp_dir }}/debug.yml"
-                # To be able to successfully parse yaml payload we need to remove the custom "!vault" tag
-                content: >-
-                  {{ (encrypted_templates.stdout | regex_replace('!vault', '') | from_yaml).output }}
-                decrypt: false
-
-    - name: Print original error and fail
-      fail:
-        msg: "{{ ansible_failed_result }}"
-      no_log: false  # needed for displaying what went wrong
+        concatenated_templates: ""
+        encrypted_templates: ""
+        failed_result: null
 
   block:
-    - *cleanup
+    - *cleanup-facts
 
     - name: Decide if internal docker registry will be used
       set_fact:
@@ -82,32 +44,67 @@
         recurse: false
       register: find_template_files
 
-    - name: Render all templates and keep contents in facts (temporarily)
-      set_fact:
-        rendered_templates: >-
-          {{ rendered_templates + [lookup('template', item)] }}
+    - name: Render or load templates
+      include_tasks: process-k8s-template.yml
+      vars:
+        output_fact_name: concatenated_templates
+      loop_control:
+        # Please do not use 'vars: { template_path: "{{ item }}" }', it is not going to work!
+        loop_var: template_path
       loop: >-
         {{ find_template_files.files | map(attribute='path') | sort }}
-
-    - name: Parse, cleanup and concatenate templates
-      set_fact:
-        # 1. Parse all yaml documents
-        # 2. Remove all empty documents
-        # 3. Render all non-empty documents
-        # 4. Concatenate all non-empty documents into a single multi-document string
-        concatenated_templates: >-
-          {{ rendered_templates | map('from_yaml_all')
-                                | map('select')
-                                | map('list')
-                                | flatten
-                                | map('to_nice_yaml', indent=2)
-                                | join(_newline ~ '---' ~ _newline) }}
-      vars:
-        # This helps overcoming jinja2 limitations
-        _newline: "\n"
 
     - name: Deploy k8s resources
       command: kubectl apply -f-
       args:
         # For security reasons we do not store rendered templates on local hdd/ssd drives
         stdin: "{{ concatenated_templates }}"
+
+  rescue:
+    - name: Save original ansible_failed_result in a fact for later use
+      set_fact:
+        failed_result: "{{ ansible_failed_result }}"
+
+    # This is handy after an error occurs
+    # The reason for employing encryption here is that rendered templates may contain sensitive data
+    # To decrypt and examine, run:
+    #  ansible-vault view ./debug.yml
+    - name: Encrypt and save templates (debug)
+      when:
+        - concatenated_templates is defined
+        - concatenated_templates | length > 0
+      block:
+        - name: Encrypt concatenated templates
+          command: ansible-vault encrypt_string --stdin-name concatenated_templates
+          args:
+            # For security reasons we do not store rendered templates on local hdd/ssd drives
+            stdin: "{{ concatenated_templates }}"
+          environment:
+            ANSIBLE_VAULT_PASSWORD_FILE: "{{ vault_tmp_file_location }}"
+          register: encrypted_templates
+          ignore_errors: true
+
+        - name: Write stderr to logs when encryption failed
+          when: encrypted_templates is failure
+          debug:
+             var: encrypted_templates.stderr_lines
+          no_log: false  # needed for displaying what went wrong
+
+        - name: Save encrypted templates into {{ deployment_tmp_root_dir }}/{{ app_dir_name }}/debug.yml
+          when: encrypted_templates is success
+          copy:
+            dest: "{{ deployment_tmp_root_dir }}/{{ app_dir_name }}/debug.yml"
+            # To be able to successfully parse yaml payload we need to remove the custom "!vault" tag
+            content: >-
+              {{ (encrypted_templates.stdout | regex_replace('!vault', '') | from_yaml).concatenated_templates }}
+            decrypt: false
+
+    - name: Print original error and fail
+      fail:
+        msg: "{{ failed_result }}"
+      no_log: false  # needed for displaying what went wrong
+
+- name: Remove temporary directory (app)
+  file:
+    path: "{{ deployment_tmp_root_dir }}/{{ app_dir_name }}"
+    state: absent

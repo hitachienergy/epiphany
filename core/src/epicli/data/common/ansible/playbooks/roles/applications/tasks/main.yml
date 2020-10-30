@@ -3,14 +3,15 @@
   when:
     - specification.applications is defined
     - specification.applications | length > 0
-  always:
-    - name: Remove temporary directory (root)
-      file:
-        path: "{{ deployment_tmp_root_dir }}"
-        state: absent
   block:
     - name: Wait until cluster is available
       include_tasks: wait-for-cluster.yml
+
+    - &cleanup
+      name: Remove temporary directory (root)
+      file:
+        path: "{{ deployment_tmp_root_dir }}"
+        state: absent
 
     - name: Include applications
       include_tasks: applications/{{ data.name }}/main.yml
@@ -27,3 +28,5 @@
         # Respect user's conscious decisions, otherwise enable by default
         _enabled_applications: >-
           {{ (_defined | selectattr('enabled') | list) + _undefined }}
+
+    - *cleanup
