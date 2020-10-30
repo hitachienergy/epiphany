@@ -45,7 +45,7 @@ Example usage:
 - name: Mychart
   include_role:
     name: helm
-    tasks_from: install-system-release
+    tasks_from: install-system-release.yml
   vars:
     helm_chart_name: "{{ specification.helm_chart_name }}"
     helm_release_name: "{{ specification.helm_release_name }}"
@@ -53,3 +53,15 @@ Example usage:
 ```
 
 __By default all installed helm "system" releases are deployed inside the `epi-charts` namespace in Kubernetes.__
+
+## Removing "system" helm releases
+
+To delete helm releases `roles/helm/tasks/delete-system-release.yml` can be used. For example:
+
+```yaml
+- include_role:
+    name: helm
+    tasks_from: delete-system-release.yml
+  vars:
+    helm_release_name: myrelease
+```
