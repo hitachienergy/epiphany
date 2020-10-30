@@ -25,7 +25,7 @@ Parameters (optional):
 ---
 **NOTE**
 
-Usage of values greater than 24855 for `expiration_days` is possible but not recommended.
+Usage of values greater than 24855 for `expiration_days` is not possible.
 For more information see [discussion](https://groups.google.com/g/mailing.openssl.users/c/3kK_f0ywCZQ) about that.
 
 ---
