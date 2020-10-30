@@ -10,19 +10,17 @@ When the `repository` ansible role is run it copies all unarchived charts to the
 
 Epiphany developers can reuse the "system" repository from any place inside the ansible codebase. Moreover, it's a responsibility of a particular role to call the `helm upgrade --install` command.
 
-Of course, there is a hepler task file that can be reused for that purpose `roles/helm/tasks/install-system-chart.yml`. __It's only responsible for installing already existing "system" helm charts from the "system" repository.__
+Of course, there is a hepler task file that can be reused for that purpose `roles/helm/tasks/install-system-release.yml`. __It's only responsible for installing already existing "system" helm charts from the "system" repository.__
 
 This helper task expects such parameters/facts:
 
 ```yaml
 - set_fact:
-    disable_helm_chart: <boolean>
     helm_chart_name: <string>
     helm_chart_values: <map>
     helm_release_name: <string>
 ```
 
-- `disable_helm_chart` set to `true` causes helm release to be removed (`helm delete --purge`)
 - `helm_chart_values` it's a standard yaml map, values defined there replace default config of the chart (`values.yaml`).
 
 Our standard practice is to place those values inside the `specification` document of the role that deploys the helm release in Kubernetes.
@@ -35,7 +33,6 @@ name: default
 specification:
   helm_chart_name: mychart
   helm_release_name: myrelease
-  disable_helm_chart: false
   helm_chart_values:
     service:
       port: 8080
@@ -48,9 +45,8 @@ Example usage:
 - name: Mychart
   include_role:
     name: helm
-    tasks_from: install-system-chart
+    tasks_from: install-system-release
   vars:
-    disable_helm_chart: "{{ specification.disable_helm_chart | default(false, true) }}"
     helm_chart_name: "{{ specification.helm_chart_name }}"
     helm_release_name: "{{ specification.helm_release_name }}"
     helm_chart_values: "{{ specification.helm_chart_values }}"
