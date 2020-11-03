@@ -42,11 +42,6 @@ networking:
   podSubnet: "10.244.0.0/16"
   serviceSubnet: {{ specification.advanced.networking.serviceSubnet }}
 
-{% if custom_image_registry_address|length == 0 %}
 imageRepository: {{ image_registry_address }}/{{ specification.advanced.imageRepository }}
-{% else %}
-imageRepository: {{ custom_image_registry_address }}/{{ specification.advanced.imageRepository }}
-{% endif %}
 
 certificatesDir: {{ specification.advanced.certificates.location }}
-
