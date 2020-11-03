@@ -1,0 +1,33 @@
+---
+# expects:
+# - registered_masters
+
+- name: Extract kubernetes server version
+  when: (registered_masters[0] is defined) and (inventory_hostname == registered_masters[0])
+  block:
+    - name: Collect server version of running kubernetes
+      command: |
+        kubectl version \
+          --output yaml
+      register: kubectl_version_yaml
+      changed_when: false
+
+    - name: Extract kubernetes server version
+      set_fact:
+        kubectl_server_version: >-
+          {{ (kubectl_version_yaml.stdout | from_yaml).serverVersion }}
+
+- name: Proxy server version information from kubectl
+  set_fact:
+    server_version_major: >-
+      {%- if (registered_masters[0] is defined) and (hostvars[registered_masters[0]].kubectl_server_version.major is defined) -%}
+        {{ hostvars[registered_masters[0]].kubectl_server_version.major }}
+      {%- else -%}
+        {{ 0 }}
+      {%- endif -%}
+    server_version_minor: >-
+      {%- if (registered_masters[0] is defined) and (hostvars[registered_masters[0]].kubectl_server_version.minor is defined) -%}
+        {{ hostvars[registered_masters[0]].kubectl_server_version.minor }}
+      {%- else -%}
+        {{ 0 }}
+      {%- endif -%}

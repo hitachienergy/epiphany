@@ -4,26 +4,44 @@
   become: false
   run_once: true
   block:
-    - assert:
-        that: not promote_to_ha or (((server_version_major | int) >= 1) and ((server_version_minor | int) >= 17))
-        fail_msg: "When promote_to_ha is enabled, kubernetes version must be 1.17 or newer (please upgrade your legacy cluster first)."
+    - name: "{{ _fail_msg }}"
+      assert:
+        that: not promote_to_ha or ((server_version_major | int) > 1) or ((server_version_major | int) == 1) and ((server_version_minor | int) >= 17)
+        fail_msg: "{{ _fail_msg }}"
+      vars:
+        _fail_msg: "When promote_to_ha is enabled, kubernetes version must be 1.17 or newer (please upgrade your legacy cluster first)."
 
-    - assert:
+    - name: "{{ _fail_msg }}"
+      assert:
         that: not promote_to_ha or use_ha_control_plane
-        fail_msg: "When promote_to_ha is enabled, use_ha_control_plane must be enabled as well."
+        fail_msg: "{{ _fail_msg }}"
+      vars:
+        _fail_msg: "When promote_to_ha is enabled, use_ha_control_plane must be enabled as well."
 
-    - assert:
+    - name: "{{ _fail_msg }}"
+      assert:
         that: not promote_to_ha or ((available_masters | length) == 1)
-        fail_msg: "When promote_to_ha is enabled, control plane must contain exactly one master."
+        fail_msg: "{{ _fail_msg }}"
+      vars:
+        _fail_msg: "When promote_to_ha is enabled, control plane must contain exactly one master."
 
-    - assert:
+    - name: "{{ _fail_msg }}"
+      assert:
         that: not (((registered_masters | length) > 0) and ((control_plane_endpoint | length) == 0) and use_ha_control_plane) or promote_to_ha
-        fail_msg: "When kubernetes is not HA yet and use_ha_control_plane is enabled, promote_to_ha must be enabled to force promotion."
+        fail_msg: "{{ _fail_msg }}"
+      vars:
+        _fail_msg: "When kubernetes is not HA yet and use_ha_control_plane is enabled, promote_to_ha must be enabled to force promotion."
 
-    - assert:
+    - name: "{{ _fail_msg }}"
+      assert:
         that: not (((registered_masters | length) > 0) and control_plane_endpoint.startswith('localhost')) or use_ha_control_plane
-        fail_msg: "When kubernetes is HA already, use_ha_control_plane must be enabled (downgrade is not supported)."
+        fail_msg: "{{ _fail_msg }}"
+      vars:
+        _fail_msg: "When kubernetes is HA already, use_ha_control_plane must be enabled (downgrade is not supported)."
 
-    - assert:
+    - name: "{{ _fail_msg }}"
+      assert:
         that: use_ha_control_plane or not ((available_masters | length) > 1)
-        fail_msg: "When use_ha_control_plane is disabled, number of masters must not be bigger than one."
+        fail_msg: "{{ _fail_msg }}"
+      vars:
+        _fail_msg: "When use_ha_control_plane is disabled, number of masters must not be bigger than one."

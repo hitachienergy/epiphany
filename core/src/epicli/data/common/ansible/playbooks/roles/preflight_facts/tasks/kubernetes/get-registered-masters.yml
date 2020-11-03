@@ -1,0 +1,45 @@
+---
+- name: Collect available masters
+  set_fact:
+    available_masters: >-
+      {{ groups.kubernetes_master | default([]) }}
+
+- name: Decide if current node is a master
+  when: inventory_hostname in available_masters
+  block:
+    - name: Check if kubeconfig file exists
+      stat:
+        path: "{{ ansible_env.KUBECONFIG }}"
+        get_attributes: false
+        get_checksum: false
+        get_mime: false
+      register: stat_kubeconfig
+
+    - name: Get list of all master nodes
+      when: stat_kubeconfig.stat.exists
+      command: |
+        kubectl get nodes \
+          --selector={{ selector }} \
+          --output=jsonpath={{ jsonpath }}
+      vars:
+        selector: >-
+          'node-role.kubernetes.io/master'
+        jsonpath: >-
+          '{range .items[*]}{.metadata.name}{"\n"}{end}'
+      register: kubectl_get_master_nodes
+      changed_when: false
+
+    - name: Decide if current node is a master
+      set_fact:
+        master_already_joined: >-
+          {{ stat_kubeconfig.stat.exists and (kubectl_get_master_nodes.stdout_lines is defined)
+                                         and (inventory_hostname in kubectl_get_master_nodes.stdout_lines) }}
+
+- name: Collect registered masters
+  set_fact:
+    registered_masters: >-
+      {{ available_masters | map('extract', hostvars, ['master_already_joined'])
+                           | zip(available_masters)
+                           | selectattr(0)
+                           | map(attribute=1)
+                           | list }}

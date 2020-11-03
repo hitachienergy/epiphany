@@ -1,0 +1,38 @@
+---
+# expects:
+# - registered_masters
+# - hostvars[registered_masters[0]].repository_hostname
+# - ipv4_address_to_inventory_hostname_map
+# - custom_repository_url
+# - repository_url
+
+# requires:
+# - ipv4_address_to_inventory_hostname_map
+
+- name: PREFLIGHT_FACTS | Decide what should be repository url
+  set_fact:
+    preflight_facts: >-
+      {{ preflight_facts | default({}) | combine(set_fact, recursive=true) }}
+  vars:
+    _use_repository_hostname: >-
+      {{ (registered_masters[0] is defined) and (hostvars[registered_masters[0]].repository_hostname is defined)
+                                            and (hostvars[registered_masters[0]].repository_hostname in ipv4_address_to_inventory_hostname_map) }}
+    _use_custom_repository_url: >-
+      {{ custom_repository_url | default(false) | ternary(true, false) }}
+
+    _reconstruct_repository_url: >-
+      {{ (not _use_custom_repository_url) and _use_repository_hostname }}
+
+    _repository_url: >-
+      {{ ( 'http://' ~ hostvars[registered_masters[0]].repository_hostname ~ '/epirepo' ) if _reconstruct_repository_url else repository_url }}
+
+    _repository_hostname: >-
+      {{ _repository_url | urlsplit('hostname') }}
+
+    _resolved_repository_hostname: >-
+      {{ ipv4_address_to_inventory_hostname_map[_repository_hostname] | default(_repository_hostname) }}
+
+    set_fact:
+      repository_url: "{{ _repository_url }}"
+      repository_hostname: "{{ _repository_hostname }}"
+      resolved_repository_hostname: "{{ _resolved_repository_hostname }}"
