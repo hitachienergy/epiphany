@@ -6,6 +6,10 @@
 
 - [#1302](https://github.com/epiphany-platform/epiphany/issues/1302) - Ability to update control plane certificates expiration date
 
+### Fixed
+
+- [#1372](https://github.com/epiphany-platform/epiphany/issues/1372) - Epicli does not create PostgreSQL SET\_BY\_AUTOMATION values correctly
+
 ## [0.6.1] 2020-10-14
 
 ### Fixed
