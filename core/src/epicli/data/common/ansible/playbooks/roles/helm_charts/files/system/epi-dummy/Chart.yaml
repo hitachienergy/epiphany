@@ -1,6 +1,6 @@
 apiVersion: v2
 name: epi-dummy
-description: A Helm chart for Kubernetes
+description: A dummy haproxy-based chart for testing purposes
 
 # A chart can be either an 'application' or a 'library' chart.
 #

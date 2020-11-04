@@ -1,16 +1,16 @@
 ## Helm "system" chart repository
 
-Epiphany provides helm repository for internal usage inside our ansible codebase. Currently only the "system" repository is available, but it's not designed to be used by regular users. __In fact, regular users must not reuse it for any purpose.__
+Epiphany provides Helm repository for internal usage inside our Ansible codebase. Currently only the "system" repository is available, but it's not designed to be used by regular users. __In fact, regular users must not reuse it for any purpose.__
 
 Epiphany developers can find it inside this location `roles/helm_charts/files/system`. To add a chart to the repository it's enough just to put unarchived chart directory tree inside the location (in a separate directory) and re-run `epcli apply`.
 
-When the `repository` ansible role is run it copies all unarchived charts to the repository host, creates standard helm `index.yaml` and serves all this data from Apache HTTP server.
+When the `repository` Ansible role is run it copies all unarchived charts to the repository host, creates Helm repository (`index.yaml`) and serves all these files from Apache HTTP server.
 
-## Installing helm releases from the "system" repository charts
+## Installing Helm charts from the "system" repository
 
-Epiphany developers can reuse the "system" repository from any place inside the ansible codebase. Moreover, it's a responsibility of a particular role to call the `helm upgrade --install` command.
+Epiphany developers can reuse the "system" repository from any place inside the Ansible codebase. Moreover, it's a responsibility of a particular role to call the `helm upgrade --install` command.
 
-Of course, there is a hepler task file that can be reused for that purpose `roles/helm/tasks/install-system-release.yml`. __It's only responsible for installing already existing "system" helm charts from the "system" repository.__
+There is a helpler task file that can be reused for that purpose `roles/helm/tasks/install-system-release.yml`. __It's only responsible for installing already existing "system" Helm charts from the "system" repository.__
 
 This helper task expects such parameters/facts:
 
@@ -21,9 +21,9 @@ This helper task expects such parameters/facts:
     helm_release_name: <string>
 ```
 
-- `helm_chart_values` it's a standard yaml map, values defined there replace default config of the chart (`values.yaml`).
+- `helm_chart_values` is a standard yaml map, values defined there replace default config of the chart (`values.yaml`).
 
-Our standard practice is to place those values inside the `specification` document of the role that deploys the helm release in Kubernetes.
+Our standard practice is to place those values inside the `specification` document of the role that deploys the Helm release in Kubernetes.
 
 Example config:
 
@@ -52,11 +52,11 @@ Example usage:
     helm_chart_values: "{{ specification.helm_chart_values }}"
 ```
 
-__By default all installed helm "system" releases are deployed inside the `epi-charts` namespace in Kubernetes.__
+__By default all installed "system" Helm releases are deployed inside the `epi-charts` namespace in Kubernetes.__
 
-## Removing "system" helm releases
+## Uninstalling "system" Helm releases
 
-To delete helm releases `roles/helm/tasks/delete-system-release.yml` can be used. For example:
+To uninstall Helm release `roles/helm/tasks/delete-system-release.yml` can be used. For example:
 
 ```yaml
 - include_role:

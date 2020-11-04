@@ -1,5 +1,5 @@
 ---
-- name: Check if system Helm repo index exists
+- name: Check if index file exists for system Helm repo
   uri:
     url: "{{ system_chart_repo_url }}/index.yaml"
     method: HEAD

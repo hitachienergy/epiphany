@@ -9,6 +9,7 @@ metadata:
 spec:
   containers:
     - name: wget
+      # NOTE: We do not have busybox image in epirepo, so this test will not work in offline mode.
       image: busybox
       command: ['wget']
       args: ['{{ include "epi-dummy.fullname" . }}:{{ .Values.service.port }}']

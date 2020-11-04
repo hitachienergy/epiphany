@@ -7,7 +7,7 @@
 # requires:
 # - helm_release_name
 
-- name: Delete Helm release '{{ helm_release_name }}'
+- name: Uninstall Helm release '{{ helm_release_name }}'
 
   delegate_to: localhost
   become: false
@@ -15,4 +15,4 @@
 
   environment: { KUBECONFIG: "{{ vault_location }}/../kubeconfig" }
 
-  command: helm -n {{ system_chart_namespace }} delete {{ helm_release_name }}
+  command: helm -n {{ system_chart_namespace }} uninstall {{ helm_release_name }}
