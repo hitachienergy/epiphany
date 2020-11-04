@@ -1,0 +1,117 @@
+---
+# This file is meant to be used by other roles
+
+# expects:
+# - helm_chart_name
+# - helm_release_name
+# - helm_chart_values
+
+# requires:
+# - helm_chart_name
+# - helm_release_name
+
+- name: Prepare configuration and upgrade/install Helm chart
+  vars:
+    # Handling "undefined", "null" and "empty" values all at once.
+    helm_chart_values_bool: "{{ helm_chart_values | default(false) | ternary(true, false) }}"
+
+  delegate_to: localhost
+  become: false
+  run_once: true
+
+  environment: { KUBECONFIG: "{{ vault_location }}/../kubeconfig" }
+
+  block:
+    - name: Ensure namespace '{{ system_chart_namespace }}' for system charts exists
+      command: kubectl create namespace {{ system_chart_namespace }}
+      register: command_kubectl_create_namespace
+      failed_when:
+        - command_kubectl_create_namespace is failure
+        - not ("already exists" in command_kubectl_create_namespace.stderr)
+      changed_when:
+        - command_kubectl_create_namespace is success
+
+    - name: Upgrade/Install Helm release '{{ helm_release_name }}' (default values)
+      when: not helm_chart_values_bool
+      command: |
+        helm -n {{ system_chart_namespace }} upgrade --install \
+          {{ helm_release_name }} \
+          {{ system_chart_repo_name }}/{{ helm_chart_name }}
+
+    - name: Remove temporary directory
+      when: helm_chart_values_bool
+      file:
+        path: "{{ vault_location }}/helm/{{ helm_release_name }}"
+        state: absent
+
+    - name: Upgrade/Install Helm release (custom values)
+      # Everything executed here is considered sensitive
+      no_log: true
+
+      when: helm_chart_values_bool
+
+      always:
+        - name: Make sure sensitive data is removed from facts
+          set_fact:
+            rendered_values: ""
+            encrypted_values: ""
+            failed_result: null
+
+      block:
+        - name: Render 'values' into a fact
+          set_fact:
+            rendered_values: "{{ helm_chart_values | to_nice_yaml }}"
+
+        - name: Upgrade/Install Helm release '{{ helm_release_name }}'
+          command: |
+            helm -n {{ system_chart_namespace }} upgrade --install \
+              {{ helm_release_name }} \
+              {{ system_chart_repo_name }}/{{ helm_chart_name }} \
+              -f-
+          args:
+            stdin: "{{ rendered_values }}"
+
+      rescue:
+        - name: Save original ansible_failed_result in a fact for later use
+          set_fact:
+            failed_result: "{{ ansible_failed_result }}"
+
+        # This is handy after an error occurs
+        # The reason for employing encryption here is that rendered values may contain sensitive data
+        # To decrypt and examine, run:
+        #  ansible-vault view ./debug.yml
+        - name: Encrypt 'values'
+          command: ansible-vault encrypt_string --stdin-name rendered_values
+          args:
+            # For security reasons we do not store 'values' on local hdd/ssd drives
+            stdin: "{{ rendered_values }}"
+          environment:
+            ANSIBLE_VAULT_PASSWORD_FILE: "{{ vault_tmp_file_location }}"
+          register: encrypted_values
+          ignore_errors: true
+
+        - name: Write stderr to logs when encryption failed
+          when: encrypted_values is failure
+          debug:
+            var: encrypted_values.stderr_lines
+          no_log: false  # needed for displaying what went wrong
+
+        - name: Create temporary directory
+          when: encrypted_values is success
+          file:
+            path: "{{ vault_location }}/helm/{{ helm_release_name }}"
+            state: directory
+
+        - name: Save encrypted values into {{ vault_location }}/helm/{{ helm_release_name }}/debug.yml
+          when: encrypted_values is success
+          copy:
+            dest: "{{ vault_location }}/helm/{{ helm_release_name }}/debug.yml"
+            # To be able to successfully parse yaml payload we need to remove the custom "!vault" tag
+            content: >-
+              {{ (encrypted_values.stdout | regex_replace('!vault', '') | from_yaml).rendered_values }}
+            decrypt: false
+
+        - name: Print original error and fail
+          fail:
+            msg: "{{ failed_result }}"
+          no_log: false  # needed for displaying what went wrong

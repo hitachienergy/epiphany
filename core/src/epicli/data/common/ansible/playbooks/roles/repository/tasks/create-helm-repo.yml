@@ -6,11 +6,14 @@
 
 - name: Get list of directories for system Helm charts
   find:
-    paths: "{{ specification.apache_epirepo_path }}/helm-charts/system"
+    paths: "{{ specification.apache_epirepo_path }}/charts/system"
     file_type: directory
   register: system_charts_dir_list
 
 - name: Prepare files for Helm chart repository
+  when:
+    - not custom_repository_url
+    - system_charts_dir_list.matched > 0
   block:
     - name: Create compressed archives of Helm charts directories
       archive:
@@ -21,15 +24,10 @@
       loop: "{{ system_charts_dir_list.files }}"
 
     - name: Generate index.yaml file
-      shell: helm repo index {{ specification.apache_epirepo_path }}/helm-charts/system/ --url http://localhost/epirepo/helm-charts/system
-      args:
-        executable: /bin/bash
+      command: helm repo index {{ specification.apache_epirepo_path }}/charts/system/
 
     - name: Remove Helm charts directories
       file:
         path: "{{ item.path }}"
         state: absent
       loop: "{{ system_charts_dir_list.files }}"
-  when:
-    - not custom_repository_url
-    - system_charts_dir_list.matched > 0

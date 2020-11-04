@@ -1,1 +1,6 @@
-helm_chart_repo_name: system-charts
+---
+system_chart_namespace: epi-charts
+system_chart_repo_name: system-charts
+system_chart_repo_path: /charts/system
+# Use custom repository or use ssh tunnel for Helm
+system_chart_repo_url: "{{ (custom_repository_url | default('http://localhost/epirepo', true)) ~ system_chart_repo_path }}"

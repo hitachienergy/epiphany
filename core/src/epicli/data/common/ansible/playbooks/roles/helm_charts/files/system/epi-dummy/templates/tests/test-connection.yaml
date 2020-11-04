@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: "{{ include "epi-dummy.fullname" . }}-test-connection"
+  labels:
+    {{- include "epi-dummy.labels" . | nindent 4 }}
+  annotations:
+    "helm.sh/hook": test-success
+spec:
+  containers:
+    - name: wget
+      # NOTE: We do not have busybox image in epirepo, so this test will not work in offline mode.
+      image: busybox
+      command: ['wget']
+      args: ['{{ include "epi-dummy.fullname" . }}:{{ .Values.service.port }}']
+  restartPolicy: Never
