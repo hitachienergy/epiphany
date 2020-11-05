@@ -24,11 +24,11 @@ Note that versions are default versions and can be changed in certain cases thro
 | Logstash OSS              | 7.8.1   | https://github.com/elastic/logstash                   | [Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0) |
 | Prometheus                | 2.10.0  | https://github.com/prometheus/prometheus              | [Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0) |
 | Grafana                   | 6.2.5   | https://github.com/grafana/grafana                    | [Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0) |
-| node_exporter             | 1.0.1  | https://github.com/prometheus/node_exporter           | [Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0) |
+| node_exporter             | 1.0.1  | https://github.com/prometheus/node_exporter            | [Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0) |
 | kafka_exporter            | 1.2.0   | https://github.com/danielqsj/kafka_exporter           | [Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0) |
 | haproxy_exporter          | 0.10.0  | https://github.com/prometheus/haproxy_exporter        | [Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0) |
 | jmx_exporter              | 0.12.0  | https://github.com/prometheus/jmx_exporter            | [Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0) |
-| PostgresSQL               | 10      | https://www.postgresql.org/                           | https://opensource.org/licenses/postgresql                        |
+| PostgreSQL                | 10      | https://www.postgresql.org/                           | https://opensource.org/licenses/postgresql                        |
 | HAProxy                   | 2.2.2   | https://www.haproxy.org/                              | [GNU General Public License 2.0](https://www.gnu.org/licenses/old-licenses/gpl-2.0.html) |
 | PGAudit                   | 1.2.2   | https://github.com/pgaudit/pgaudit                    | [PostgreSQL license](http://www.postgresql.org/about/licence/)    |
 | PGBouncer                 | 1.10.0  | https://github.com/pgbouncer/pgbouncer                | [ISC License](https://opensource.org/licenses/isc)                |
@@ -37,10 +37,10 @@ Note that versions are default versions and can be changed in certain cases thro
 | alertmanager              | 0.17.0  | https://github.com/prometheus/alertmanager            | [Apache License 2.0](https://github.com/prometheus/alertmanager/blob/master/LICENSE) |
 | ignite                    | 2.5.0   | https://github.com/apache/ignite                      | [Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0) |
 | Apache2                   | 2.4.29  | https://httpd.apache.org/                             | [Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0) |
-| Hasicorp Vault                   | 1.4.0  | https://httpd.apache.org/                             | [Mozilla Public License 2.0](https://github.com/hashicorp/vault/blob/master/LICENSE) |
-| Hasicorp Vault Helm Chart                  | 0.4.0  | https://httpd.apache.org/                             | [Mozilla Public License 2.0](https://github.com/hashicorp/vault-helm/blob/master/LICENSE.md) |
-| Bitnami Node-Exporter Helm Chart           | 1.1.2   | https://github.com/bitnami/charts                    | [Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0) |
-| Filebeat Helm Chart           | 7.9.2   | https://github.com/elastic/helm-charts                   | [Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0) |
+| Hashicorp Vault            | 1.4.0   | https://github.com/hashicorp/vault                    | [Mozilla Public License 2.0](https://github.com/hashicorp/vault/blob/master/LICENSE) |
+| Hashicorp Vault Helm Chart | 0.4.0   | https://github.com/hashicorp/vault-helm               | [Mozilla Public License 2.0](https://github.com/hashicorp/vault-helm/blob/master/LICENSE.md) |
+| Bitnami Node-Exporter Helm Chart | 1.1.2   | https://github.com/bitnami/charts                    | [Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0) |
+| Filebeat Helm Chart       | 7.9.2   | https://github.com/elastic/helm-charts                   | [Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0) |
 
 ## Epicli binary dependencies
 
