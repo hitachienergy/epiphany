@@ -8,6 +8,7 @@
 
 - [#1273](https://github.com/epiphany-platform/epiphany/issues/1273) - PostgreSQL replication with repmgr: hot_standby not set in config file
 - [#1792](https://github.com/epiphany-platform/epiphany/issues/1792) - Not possible to debug failures in applications role
+- [#1835](https://github.com/epiphany-platform/epiphany/issues/1835) - Automated tests may give false negative result for PGAudit
 
 ### Updated
 
