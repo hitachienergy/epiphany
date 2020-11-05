@@ -37,7 +37,7 @@ Note that versions are default versions and can be changed in certain cases thro
 | alertmanager              | 0.17.0  | https://github.com/prometheus/alertmanager            | [Apache License 2.0](https://github.com/prometheus/alertmanager/blob/master/LICENSE) |
 | ignite                    | 2.5.0   | https://github.com/apache/ignite                      | [Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0) |
 | Apache2                   | 2.4.29  | https://httpd.apache.org/                             | [Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0) |
-| Hasicorp Vault            | 1.4.0   | https://github.com/hashicorp/vault                    | [Mozilla Public License 2.0](https://github.com/hashicorp/vault/blob/master/LICENSE) |
+| Hashicorp Vault            | 1.4.0   | https://github.com/hashicorp/vault                    | [Mozilla Public License 2.0](https://github.com/hashicorp/vault/blob/master/LICENSE) |
 | Hashicorp Vault Helm Chart | 0.4.0   | https://github.com/hashicorp/vault-helm               | [Mozilla Public License 2.0](https://github.com/hashicorp/vault-helm/blob/master/LICENSE.md) |
 | Bitnami Node-Exporter Helm Chart | 1.1.2   | https://github.com/bitnami/charts                    | [Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0) |
 | Filebeat Helm Chart       | 7.9.2   | https://github.com/elastic/helm-charts                   | [Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0) |
