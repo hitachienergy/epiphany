@@ -515,12 +515,12 @@ if pgaudit_enabled && countInventoryHosts("logging") > 0
 
   if !replicated || (replicated && (listInventoryHosts("postgresql")[1].include? host_inventory['hostname']))
 
-    def get_elasticsearch_query(message_pattern:, size:, with_sort: true)
+    def get_elasticsearch_query(message_pattern:, size: 20, with_sort: true)
       query_template = {
         _source: [ 'message', '@timestamp' ],
         query: {
           query_string: {
-            query: "log.file.path:(\\/var\\/log\\/postgresql\\/postgresql\\-10\\-main.log OR \\/var\\/log\\/postgresql\\/postgresql.log) AND message:#{message_pattern}"
+            query: "log.file.path:(\\/var\\/log\\/postgresql\\/postgresql\\-10\\-main.log OR \\/var\\/log\\/postgresql\\/postgresql.log) AND message:#{message_pattern} AND @timestamp:[now-30m TO now]"
           }
         },
         size: size
@@ -533,11 +533,11 @@ if pgaudit_enabled && countInventoryHosts("logging") > 0
       MultiJson.dump(query_template, pretty: true)
     end
 
-    def get_query_command_with_retries(json_query:, wait_for_pattern:, retries: 600, elasticsearch: ELASTICSEARCH)
+    def get_query_command_with_retries(json_query:, min_doc_hits:, retries: 600, elasticsearch: ELASTICSEARCH)
       command = <<~COMMAND
         for i in {1..#{retries}}; do
           if curl -k -s -u admin:admin 'https://#{elasticsearch[:host]}:#{elasticsearch[:api_port]}/_search?pretty=true' -H 'Content-Type: application/json' -d '#{json_query}'
-             | grep -z '#{wait_for_pattern}'; then
+             | jq --exit-status --monochrome-output '. | select(.hits.total.value >= #{min_doc_hits})'; then
             echo 'READY'; break;
           else
             echo 'WAITING'; sleep 1;
@@ -549,8 +549,8 @@ if pgaudit_enabled && countInventoryHosts("logging") > 0
     end
 
     describe 'Check if Elasticsearch logs contain queries from PostrgeSQL database' do
-      query = get_elasticsearch_query(message_pattern: 'serverspec*', size: 20)
-      command = get_query_command_with_retries(json_query: query, wait_for_pattern: 'DROP SCHEMA serverspec_test;')
+      query = get_elasticsearch_query(message_pattern: 'serverspec_test*')
+      command = get_query_command_with_retries(json_query: query, min_doc_hits: 11)
       describe command(command) do
         its(:stdout) { should match /CREATE SCHEMA serverspec_test/ }
         its(:stdout) { should match /CREATE TABLE serverspec_test\.test/ }
@@ -562,8 +562,8 @@ if pgaudit_enabled && countInventoryHosts("logging") > 0
     end
 
     describe 'Check if Elasticsearch logs contain queries executed with PGBouncer', :if => pgbouncer_enabled do
-      query = get_elasticsearch_query(message_pattern: pg_user, size: 20)
-      command = get_query_command_with_retries(json_query: query, wait_for_pattern: "DROP USER #{pg_user};")
+      query = get_elasticsearch_query(message_pattern: pg_user)
+      command = get_query_command_with_retries(json_query: query, min_doc_hits: 6)
       describe command(command.squish) do
         its(:stdout) { should match /GRANT ALL ON SCHEMA serverspec_test to #{pg_user}/ }
         its(:stdout) { should match /GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA serverspec_test to #{pg_user}/ }
@@ -576,7 +576,7 @@ if pgaudit_enabled && countInventoryHosts("logging") > 0
     end
 
     describe 'Check support for multiline messages' do
-      query = get_elasticsearch_query(message_pattern: "\"ADD COLUMN city text\"", size: 5)
+      query = get_elasticsearch_query(message_pattern: "\"ADD COLUMN city text\"")
       describe command("curl -k -u admin:admin 'https://#{ELASTICSEARCH[:host]}:#{ELASTICSEARCH[:api_port]}/_search?pretty=true' -H 'Content-Type: application/json' -d '#{query.squish}'") do
         its(:stdout) { should match /ALTER TABLE serverspec_test\.test.*\\n\\t.*ADD COLUMN id.*\\n\\t.*ADD COLUMN name.*\\n\\t.*ADD COLUMN city.*\\n\\t.*ADD COLUMN description/ }
         its(:exit_status) { should eq 0 }
