@@ -1,0 +1,40 @@
+---
+# expects:
+# - registered_masters
+
+- name: Extract control plane endpoint and repository hostname from ClusterConfiguration
+  when: (registered_masters[0] is defined) and (inventory_hostname == registered_masters[0])
+  block:
+    - name: Collect live kubeadm ClusterConfiguration object if available
+      command: |
+        kubectl get configmap kubeadm-config \
+          --namespace=kube-system \
+          --output=yaml
+      register: kubeadm_config_yaml
+      changed_when: false
+
+    - name: Extract ClusterConfiguration or MasterConfiguration from kubeadm-config ConfigMap
+      set_fact:
+        ClusterConfiguration: >-
+          {%- if 'ClusterConfiguration' in data -%}
+            {{ data.ClusterConfiguration | from_yaml }}
+          {%- elif 'MasterConfiguration' in data -%}
+            {{ data.MasterConfiguration | from_yaml }}
+          {%- endif -%}
+      vars:
+        data: >-
+          {{ (kubeadm_config_yaml.stdout | from_yaml).data }}
+
+    - name: Extract control plane endpoint and repository hostname from ClusterConfiguration
+      set_fact:
+        control_plane_endpoint: >-
+          {{ ClusterConfiguration.controlPlaneEndpoint | default('') }}
+        repository_hostname: >-
+          {{ ( 'http://' ~ ClusterConfiguration.imageRepository ) | urlsplit('hostname') }}
+
+- name: Proxy control_plane_endpoint fact
+  set_fact:
+    control_plane_endpoint: >-
+      {%- if registered_masters[0] is defined -%}
+        {{ hostvars[registered_masters[0]].control_plane_endpoint }}
+      {%- endif -%}

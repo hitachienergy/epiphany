@@ -7,12 +7,13 @@
     - include_role:
         name: sshtunnel
         tasks_from: "{{ item }}.yml"
-      when:
-        - groups.repository is defined
-        - groups.repository | length > 0
       loop:
         - set_facts_helm
         - teardown
+      when:
+        - groups.repository is defined
+        - groups.repository | length > 0
+        - not (custom_image_registry_address | default(false, true))
   module_defaults:
     shell:
       executable: /bin/bash

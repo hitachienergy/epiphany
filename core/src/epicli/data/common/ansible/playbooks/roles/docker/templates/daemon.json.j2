@@ -1,8 +1,5 @@
 {
-  {% if custom_image_registry_address|length == 0 %}
   "insecure-registries" : ["{{ image_registry_address }}"],
-  {% endif %}
-
 
   "log-driver": "json-file",
   "log-opts": {

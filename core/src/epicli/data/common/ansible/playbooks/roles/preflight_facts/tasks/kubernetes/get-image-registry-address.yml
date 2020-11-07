@@ -1,0 +1,38 @@
+---
+# expects:
+# - registered_masters
+# - hostvars[registered_masters[0]].repository_hostname
+# - ipv4_address_to_inventory_hostname_map
+# - custom_image_registry_address
+# - image_registry_address
+
+# requires:
+# - ipv4_address_to_inventory_hostname_map
+
+- name: PREFLIGHT_FACTS | Decide what should be image registry address
+  set_fact:
+    preflight_facts: >-
+      {{ preflight_facts | default({}) | combine(set_fact, recursive=true) }}
+  vars:
+    _use_repository_hostname: >-
+      {{ (registered_masters[0] is defined) and (hostvars[registered_masters[0]].repository_hostname is defined)
+                                            and (hostvars[registered_masters[0]].repository_hostname in ipv4_address_to_inventory_hostname_map) }}
+    _use_custom_image_registry_address: >-
+      {{ custom_image_registry_address | default(false) | ternary(true, false) }}
+
+    _reconstruct_image_registry_address: >-
+      {{ (not _use_custom_image_registry_address) and _use_repository_hostname }}
+
+    _image_registry_address: >-
+      {{ ( hostvars[registered_masters[0]].repository_hostname ~ ':5000' ) if _reconstruct_image_registry_address else image_registry_address }}
+
+    _image_registry_hostname: >-
+      {{ ( 'http://' ~ _image_registry_address ) | urlsplit('hostname') }}
+
+    _resolved_image_registry_hostname: >-
+      {{ ipv4_address_to_inventory_hostname_map[_image_registry_hostname] | default(_image_registry_hostname) }}
+
+    set_fact:
+      image_registry_address: "{{ _image_registry_address }}"
+      image_registry_hostname: "{{ _image_registry_hostname }}"
+      resolved_image_registry_hostname: "{{ _resolved_image_registry_hostname }}"
