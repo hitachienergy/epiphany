@@ -1,0 +1,48 @@
+---
+# This is required for handling cases where we switch docker image registry for the whole cluster,
+# like for example when we move from custom image registry to offline-mode image registry
+
+- name: Update 'imageRepository' field in kubeadm configmap
+  when: kubernetes_common.automation_designated_master == inventory_hostname
+  block:
+    - include_tasks: extend-kubeadm-config.yml
+      vars:
+        update:
+          imageRepository: "{{ image_registry_address }}/k8s.gcr.io"
+
+    - include_tasks: update-in-cluster-config.yml
+
+- name: Find all static-pod manifests
+  find:
+    paths: /etc/kubernetes/manifests/
+    patterns: '*.yaml'
+  register: find_static_pod_manifests
+  no_log: true  # reduce log size
+
+- name: Update 'image' fields in all static-pods
+  include_tasks: update-image-registry/update-static-pod.yml
+  loop_control:
+    loop_var: static_pod_manifest_path
+  loop: >-
+    {{ find_static_pod_manifests.files | map(attribute='path') | list }}
+
+- name: Update 'image' fields in kube-system resources (excluding pods)
+  when: kubernetes_common.automation_designated_master == inventory_hostname
+  block:
+    - name: Find kube-system resources (daemonsets, deployments, statefulsets)
+      command: |
+        kubectl get daemonsets,deployments,statefulsets \
+          --namespace kube-system \
+          --output json
+      register: command_kubectl_get_resources
+      until: command_kubectl_get_resources is success
+      retries: 30
+      delay: 2
+      no_log: true  # reduce log size
+
+    - name: Update 'image' fields in discovered kube-system resources
+      include_tasks: update-image-registry/update-system-resource.yml
+      loop_control:
+        loop_var: kube_system_resource_document
+      loop: >-
+        {{ (command_kubectl_get_resources.stdout | from_json)['items'] }}

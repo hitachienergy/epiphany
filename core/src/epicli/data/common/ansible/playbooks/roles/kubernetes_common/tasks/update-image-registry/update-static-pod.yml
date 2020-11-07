@@ -1,0 +1,44 @@
+---
+# requires:
+# - image_registry_address
+# - static_pod_manifest_path
+
+- name: Slurp static-pod's manifest {{ static_pod_manifest_path }}
+  slurp:
+    path: "{{ static_pod_manifest_path }}"
+  register: slurp_static_pod_manifest
+
+- name: In-place-update static pod's manifest {{ static_pod_manifest_path }}
+  copy:
+    dest: "{{ static_pod_manifest_path }}"
+    content: |
+      {{ _document | combine(_update, recursive=true) }}
+
+  # Skip if there is no change
+  when: _containers_updated != _containers
+
+  vars:
+    # Parse manifest's content
+    _document: >-
+      {{ slurp_static_pod_manifest.content | b64decode | from_yaml }}
+
+    _containers: >-
+      {{ _document.spec.containers }}
+
+    # Update image urls in all containers (there are no init containers)
+    _containers_updated: >-
+      {%- set output = [] -%}
+      {%- for container in _containers -%}
+        {%- set url = ( 'https://' ~ container.image ) | urlsplit -%}
+        {{-
+          output.append(container | combine({
+            "image": image_registry_address ~ url.path,
+          }, recursive=true))
+        -}}
+      {%- endfor -%}
+      {{- output -}}
+
+    _update:
+      spec:
+        containers: >-
+          {{ _containers_updated }}

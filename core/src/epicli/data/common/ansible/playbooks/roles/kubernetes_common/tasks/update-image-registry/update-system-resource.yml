@@ -1,0 +1,65 @@
+---
+# requires:
+# - image_registry_address
+# - kube_system_resource_document
+
+- name: In-place-update kube-system resource {{ kube_system_resource_document.metadata.name }}
+  command: |
+    kubectl replace \
+      --namespace kube-system \
+      -f-
+  args:
+    stdin: >-
+      {{ kube_system_resource_document | combine(_update1, recursive=true)
+                                       | combine(_update2, recursive=true)
+                                       | to_nice_yaml }}
+
+  # Skip if there is no change
+  when: _containers_updated != _containers or _init_containers_updated != _init_containers
+
+  vars:
+    _containers: >-
+      {{ kube_system_resource_document.spec.template.spec.containers }}
+
+    # Update image urls in all containers
+    _containers_updated: >-
+      {%- set output = [] -%}
+      {%- for container in _containers -%}
+        {%- set url = ( 'https://' ~ container.image ) | urlsplit -%}
+        {{-
+          output.append(container | combine({
+            "image": image_registry_address ~ url.path,
+          }, recursive=true))
+        -}}
+      {%- endfor -%}
+      {{- output -}}
+
+    _update1:
+      spec:
+        template:
+          spec:
+            containers: >-
+              {{ _containers_updated }}
+
+    _init_containers: >-
+      {{ kube_system_resource_document.spec.template.spec.initContainers | default([]) }}
+
+    # Update image urls in all init containers
+    _init_containers_updated: >-
+      {%- set output = [] -%}
+      {%- for container in _init_containers -%}
+        {%- set url = ( 'https://' ~ container.image ) | urlsplit -%}
+        {{-
+          output.append(container | combine({
+            "image": image_registry_address ~ url.path,
+          }, recursive=true))
+        -}}
+      {%- endfor -%}
+      {{- output -}}
+
+    _update2:
+      spec:
+        template:
+          spec:
+            initContainers: >-
+              {{ _init_containers_updated | default(_init_containers, true) }}
