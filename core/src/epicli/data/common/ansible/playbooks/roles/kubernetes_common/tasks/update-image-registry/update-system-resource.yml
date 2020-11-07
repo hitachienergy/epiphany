@@ -3,7 +3,7 @@
 # - image_registry_address
 # - kube_system_resource_document
 
-- name: In-place-update kube-system resource {{ kube_system_resource_document.metadata.name }}
+- name: In-place-update kube-system resource '{{ kube_system_resource_document.metadata.name }}'
   command: |
     kubectl replace \
       --namespace kube-system \

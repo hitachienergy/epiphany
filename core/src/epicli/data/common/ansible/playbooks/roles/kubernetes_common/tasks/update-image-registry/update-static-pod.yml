@@ -3,12 +3,12 @@
 # - image_registry_address
 # - static_pod_manifest_path
 
-- name: Slurp static-pod's manifest {{ static_pod_manifest_path }}
+- name: Slurp static pod manifest '{{ static_pod_manifest_path }}'
   slurp:
     path: "{{ static_pod_manifest_path }}"
   register: slurp_static_pod_manifest
 
-- name: In-place-update static pod's manifest {{ static_pod_manifest_path }}
+- name: In-place-update static pod manifest '{{ static_pod_manifest_path }}'
   copy:
     dest: "{{ static_pod_manifest_path }}"
     content: |
