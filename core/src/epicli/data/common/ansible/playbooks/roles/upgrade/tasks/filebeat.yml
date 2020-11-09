@@ -16,7 +16,7 @@
       - "Installed version: {{ ansible_facts.packages['filebeat'][0].version }}"
       - "Target version: {{ filebeat_version }}"
 
-- name: Update Filebeat
+- name: Update Filebeat as system service
   when:
     - filebeat_version is version(ansible_facts.packages['filebeat'][0].version, '>=')
   block:
@@ -37,3 +37,16 @@
     - import_role:
         name: filebeat
         tasks_from: configure-filebeat
+
+- name: Reinstall Filebeat as DaemonSet from default to custom namespace for "k8s as cloud service"
+  when: k8s_as_cloud_service is defined and k8s_as_cloud_service
+  block:
+    - name: Include uninstall task for Filebeat as DaemonSet in default namespace for "k8s as cloud service"
+      include_role:
+        name: filebeat
+        tasks_from: uninstall-filebeat-as-daemonset.yml
+
+    - name: Include install task for Filebeat as DaemonSet in custom namespace for "k8s as cloud service"
+      include_role:
+        name: filebeat
+        tasks_from: install-filebeat-as-daemonset.yml

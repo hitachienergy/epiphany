@@ -1,0 +1,11 @@
+---
+
+- name: Uninstall Helm release "{{ specification.helm_chart_name }}"
+
+  delegate_to: localhost
+  become: false
+  run_once: true
+
+  environment: { KUBECONFIG: "{{ vault_location }}/../kubeconfig" }
+
+  command: helm uninstall {{ specification.helm_chart_name }}

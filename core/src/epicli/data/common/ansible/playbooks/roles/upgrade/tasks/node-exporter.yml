@@ -90,3 +90,16 @@
         enabled: true
         name: "{{ exporter.service.name }}.service"
         state: started
+
+- name: Reinstall Node Exporter as DaemonSet from default to custom namespace for "k8s as cloud service"
+  when: k8s_as_cloud_service is defined and k8s_as_cloud_service
+  block:
+    - name: Include uninstall task for Node Exporter as DaemonSet in default namespace for "k8s as cloud service"
+      include_role:
+        name: node_exporter
+        tasks_from: uninstall-node-exporter-as-daemonset.yml
+
+    - name: Include install task for Node Exporter as DaemonSet in custom namespace for "k8s as cloud service"
+      include_role:
+        name: node_exporter
+        tasks_from: install-node-exporter-as-daemonset.yml
