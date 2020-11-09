@@ -1,6 +1,6 @@
 ---
 
-- name: Uninstall Helm release "{{ filebeat_helm_chart_file_name }}"
+- name: Uninstall Helm release "{{ specification.helm_chart_name }}"
 
   delegate_to: localhost
   become: false
@@ -8,4 +8,4 @@
 
   environment: { KUBECONFIG: "{{ vault_location }}/../kubeconfig" }
 
-  command: helm uninstall {{ filebeat_helm_chart_file_name }}
+  command: helm uninstall {{ specification.helm_chart_name }}
