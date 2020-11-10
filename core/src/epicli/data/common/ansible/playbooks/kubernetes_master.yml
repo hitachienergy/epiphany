@@ -39,10 +39,8 @@
   become_method: sudo
   tasks:
     - import_role:
-        name: kubernetes_common
+        name: kubernetes_master
         tasks_from: update-image-registry
-  vars_files:
-    - roles/kubernetes_master/vars/main.yml
   environment:
     KUBECONFIG: "{{ kubeconfig.remote }}"
 

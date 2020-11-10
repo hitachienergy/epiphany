@@ -5,12 +5,16 @@
 - name: Update 'imageRepository' field in kubeadm configmap
   when: kubernetes_common.automation_designated_master == inventory_hostname
   block:
-    - include_tasks: extend-kubeadm-config.yml
+    - include_role:
+        name: kubernetes_common
+        tasks_from: extend-kubeadm-config
       vars:
         update:
           imageRepository: "{{ image_registry_address }}/k8s.gcr.io"
 
-    - include_tasks: update-in-cluster-config.yml
+    - include_role:
+        name: kubernetes_common
+        tasks_from: update-in-cluster-config
 
 - name: Find all static-pod manifests
   find:
