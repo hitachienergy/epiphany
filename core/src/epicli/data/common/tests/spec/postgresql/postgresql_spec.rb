@@ -537,7 +537,7 @@ if pgaudit_enabled && countInventoryHosts("logging") > 0
       command = <<~COMMAND
         for i in {1..#{retries}}; do
           if curl -k -s -u admin:admin 'https://#{elasticsearch[:host]}:#{elasticsearch[:api_port]}/_search?pretty=true' -H 'Content-Type: application/json' -d '#{json_query}'
-             | jq --exit-status --monochrome-output '. | select(.hits.total.value >= #{min_doc_hits})'; then
+             | jq --exit-status '. | select(.hits.total.value >= #{min_doc_hits})'; then
             echo 'READY'; break;
           else
             echo 'WAITING'; sleep 1;
