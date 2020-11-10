@@ -130,10 +130,17 @@
     - name: Clone node from primary and register
       when: is_node_already_registered.stdout == ""
       block:
+        # Ubuntu specific: there are two systemd unit files: postgresql.service (service for managing all clusters
+        # on system) and postgresql@.service (service template for clusters). The latter is 'PartOf' the former.
+        # Ansible seems to not wait for dependent service to be stopped so we need to stop both to avoid error
+        # from 'repmgr standby clone'.
         - name: Stop postgresql service
-          service:
-            name: "{{ pg_service_name[ansible_os_family] }}"
+          systemd:
+            name: "{{ item }}"
             state: stopped
+          loop:
+            - "{{ pg_service_name[ansible_os_family] }}"
+            - "{{ pg_instantiated_service_name[ansible_os_family] }}"
 
         - name: Clone node with repmgr
           become_user: postgres
@@ -144,7 +151,7 @@
             -d {{ specification.extensions.replication.repmgr_database }} -p 5432 --force
 
         - name: Start postgresql service
-          service:
+          systemd:
             name: "{{ pg_service_name[ansible_os_family] }}"
             state: started
 
@@ -154,7 +161,7 @@
             {{ repmgr_bindir[ansible_os_family] }}/repmgr standby register --upstream-node-id 1 --force
 
         - name: Restart repmgrd service
-          service:
+          systemd:
             name: "{{ repmgr_service_name[ansible_os_family] }}"
             state: restarted
 

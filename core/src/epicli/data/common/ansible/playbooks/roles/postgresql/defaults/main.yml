@@ -3,6 +3,10 @@ pg_service_name:
   RedHat: postgresql-10
   Debian: postgresql
 
+pg_instantiated_service_name:
+  RedHat: null
+  Debian: postgresql@10-main
+
 pg_config_dir:
   RedHat: /var/lib/pgsql/10/data
   Debian: /etc/postgresql/10/main
