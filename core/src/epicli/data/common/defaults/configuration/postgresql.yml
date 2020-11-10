@@ -121,7 +121,7 @@ specification:
       # to have multiple unique filenames per day when dateext option is set
           dateformat -%Y%m%dH%H
       }
-      /var/log/postgresql/pgbouncer.log {
+      /var/log/pgbouncer/pgbouncer.log {
           missingok
           notifempty
           sharedscripts
