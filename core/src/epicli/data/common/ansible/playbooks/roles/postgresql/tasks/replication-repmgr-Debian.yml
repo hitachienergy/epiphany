@@ -84,9 +84,7 @@
         {{ repmgr_bindir[ansible_os_family] }}/repmgr cluster show -f {{ repmgr_config_dir[ansible_os_family] }}/repmgr.conf | grep -i {{ inventory_hostname }} | grep -v standby
       changed_when: false
       register: is_primary_already_registered
-      failed_when: is_primary_already_registered.rc == 2
-      args:
-        executable: /bin/bash
+      failed_when: is_primary_already_registered.rc not in [0, 1]
 
     - name: Register primary node
       when: is_primary_already_registered.stdout == ""
@@ -113,9 +111,7 @@
         {{ repmgr_bindir[ansible_os_family] }}/repmgr cluster show -f {{ repmgr_config_dir[ansible_os_family] }}/repmgr.conf | grep -i {{ inventory_hostname }}
       changed_when: false
       register: is_node_already_registered
-      failed_when: is_node_already_registered.rc == 2
-      args:
-        executable: /bin/bash
+      failed_when: is_node_already_registered.rc not in [0, 1]
 
     - name: Clone node from primary and register
       when: is_node_already_registered.stdout == ""
@@ -150,12 +146,10 @@
         {{ repmgr_bindir[ansible_os_family] }}/repmgr cluster show -f {{ repmgr_config_dir[ansible_os_family] }}/repmgr.conf | grep -i 'not attached to its upstream node'
       changed_when: false
       register: is_node_not_attached
-      failed_when: is_node_not_attached.rc == 2
-      args:
-        executable: /bin/bash
+      failed_when: is_node_not_attached.rc not in [0, 1]
 
     - name: Attach active standby to current primary node
       become_user: postgres
       shell: "{{ repmgr_bindir[ansible_os_family] }}/repmgr standby -f {{ repmgr_config_dir[ansible_os_family] }}/repmgr.conf follow"
       when:
-        - not is_node_not_attached.stdout == ""
+        - is_node_not_attached.stdout | length > 0
