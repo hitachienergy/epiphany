@@ -1,6 +1,6 @@
 ---
-# This is required for handling cases where we switch docker image registry for the whole cluster,
-# like for example when we move from custom image registry to offline-mode image registry
+# This is required for handling cases where we change docker image registry for the whole cluster
+# (for example when we move from custom image registry to offline-mode image registry)
 
 - name: Update 'imageRepository' field in kubeadm configmap
   when: kubernetes_common.automation_designated_master == inventory_hostname
