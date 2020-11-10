@@ -87,14 +87,6 @@
   when:
     - groups['postgresql'][0] == inventory_hostname
 
-- name: Restart postgresql service
-  service:
-    name: "{{ pg_service_name[ansible_os_family] }}"
-    state: restarted
-  when:
-    - groups['postgresql'][0] == inventory_hostname
-    - is_master_already_registered.stdout == ""
-
 - name: Register primary node
   become_user: postgres
   shell: "{{ repmgr_bindir[ansible_os_family] }}/repmgr primary register -f {{ repmgr_config_dir[ansible_os_family] }}/repmgr.conf
@@ -183,10 +175,3 @@
   when:
     - groups['postgresql'][1] == inventory_hostname
     - not is_node_not_attached.stdout == ""
-
-# --- All nodes ---
-
-- name: Restart repmgrd service
-  service:
-    name: "{{ repmgr_service_name[ansible_os_family] }}"
-    state: restarted
