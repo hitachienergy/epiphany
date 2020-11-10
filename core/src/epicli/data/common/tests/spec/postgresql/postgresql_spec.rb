@@ -1,11 +1,15 @@
 require 'spec_helper'
 require 'net/ssh'
+require 'ruby_utils' # adds squish to String
+require 'multi_json'
 
 postgresql_host = '127.0.0.1'
 postgresql_default_port = 5432
 pgbouncer_default_port = 6432
-elasticsearch_host = listInventoryHosts("logging")[0]
-elasticsearch_api_port = 9200
+ELASTICSEARCH = { # must be global until we introduce modules
+  host: listInventoryHosts("logging")[0],
+  api_port: 9200
+}
 replicated = readDataYaml("configuration/postgresql")["specification"]["extensions"]["replication"]["enabled"]
 replication_user = readDataYaml("configuration/postgresql")["specification"]["extensions"]["replication"]["replication_user_name"]
 replication_password = readDataYaml("configuration/postgresql")["specification"]["extensions"]["replication"]["replication_user_password"]
@@ -18,7 +22,7 @@ pgaudit_enabled = readDataYaml("configuration/postgresql")["specification"]["ext
 pg_user = 'testuser'
 pg_pass = 'testpass'
 
-pg_config_file_booleans = { "true" => "(?:on|true|yes|1)", "false" => "(?:off|false|no|0)" }
+pg_config_file_booleans = { "true": "(?:on|true|yes|1)", "false": "(?:off|false|no|0)" }
 
 def queryForCreating
   describe 'Checking if it is possible to create a test schema' do
@@ -239,12 +243,12 @@ if replicated
       if os[:family] == 'redhat'
         describe command("grep -Eio '^hot_standby\s*=[^#]*' /var/lib/pgsql/10/data/postgresql-epiphany.conf") do
           its(:exit_status) { should eq 0 }
-          its(:stdout) { should match /^hot_standby\s*=\s*#{pg_config_file_booleans["true"]}/i }
+          its(:stdout) { should match /^hot_standby\s*=\s*#{pg_config_file_booleans[:true]}/i }
         end
       elsif os[:family] == 'ubuntu'
         describe command("grep -Eio '^hot_standby\s*=[^#]*' /etc/postgresql/10/main/postgresql-epiphany.conf") do
           its(:exit_status) { should eq 0 }
-          its(:stdout) { should match /^hot_standby\s*=\s*#{pg_config_file_booleans["true"]}/i }
+          its(:stdout) { should match /^hot_standby\s*=\s*#{pg_config_file_booleans[:true]}/i }
         end
       end
     end
@@ -511,8 +515,43 @@ if pgaudit_enabled && countInventoryHosts("logging") > 0
 
   if !replicated || (replicated && (listInventoryHosts("postgresql")[1].include? host_inventory['hostname']))
 
-    describe 'Checking if the Elasticsearch logs contain queries from the PostrgeSQL database' do
-      describe command("for i in {1..600}; do if curl -k -s -u admin:admin 'https://#{elasticsearch_host}:#{elasticsearch_api_port}/_search?pretty=true' -H 'Content-Type: application/json' -d '{\"size\":100,\"_source\":{\"includes\":\"message\"},\"query\":{\"bool\":{\"must\":[{\"bool\":{\"should\":[{\"match_phrase\":{\"log.file.path\":\"/var/log/postgresql/postgresql-10-main.log\"}},{\"match_phrase\":{\"log.file.path\":\"/var/log/postgresql/postgresql.log\"}}],\"minimum_should_match\":1}}],\"filter\":{\"query_string\":{\"query\":\"*serverspec*\"}}}}}' | grep -z \"DROP SCHEMA\"; then echo 'READY'; break; else echo 'WAITING'; sleep 1; fi; done") do
+    def get_elasticsearch_query(message_pattern:, size: 20, with_sort: true)
+      query_template = {
+        _source: [ 'message', '@timestamp' ],
+        query: {
+          query_string: {
+            query: "log.file.path:(\\/var\\/log\\/postgresql\\/postgresql\\-10\\-main.log OR \\/var\\/log\\/postgresql\\/postgresql.log) AND message:#{message_pattern} AND @timestamp:[now-30m TO now]"
+          }
+        },
+        size: size
+      }
+      sort_clause = {
+        sort: { '@timestamp': { unmapped_type: 'date' } }
+      }
+      query_template.merge!(sort_clause) if with_sort
+      # convert hash to json
+      MultiJson.dump(query_template, pretty: true)
+    end
+
+    def get_query_command_with_retries(json_query:, min_doc_hits:, retries: 600, elasticsearch: ELASTICSEARCH)
+      command = <<~COMMAND
+        for i in {1..#{retries}}; do
+          if curl -k -s -u admin:admin 'https://#{elasticsearch[:host]}:#{elasticsearch[:api_port]}/_search?pretty=true' -H 'Content-Type: application/json' -d '#{json_query}'
+             | jq --exit-status '. | select(.hits.total.value >= #{min_doc_hits})'; then
+            echo 'READY'; break;
+          else
+            echo 'WAITING'; sleep 1;
+          fi;
+        done
+      COMMAND
+      # convert to one-liner
+      command.squish
+    end
+
+    describe 'Check if Elasticsearch logs contain queries from PostrgeSQL database' do
+      query = get_elasticsearch_query(message_pattern: 'serverspec_test*')
+      command = get_query_command_with_retries(json_query: query, min_doc_hits: 11)
+      describe command(command) do
         its(:stdout) { should match /CREATE SCHEMA serverspec_test/ }
         its(:stdout) { should match /CREATE TABLE serverspec_test\.test/ }
         its(:stdout) { should match /INSERT INTO serverspec_test\.test/ }
@@ -522,8 +561,10 @@ if pgaudit_enabled && countInventoryHosts("logging") > 0
       end
     end
 
-    describe 'Checking if the Elasticsearch logs contain queries executed with PGBouncer', :if => pgbouncer_enabled do
-      describe command("for i in {1..600}; do if curl -k -s -u admin:admin 'https://#{elasticsearch_host}:#{elasticsearch_api_port}/_search?pretty=true' -H 'Content-Type: application/json' -d '{\"size\":100,\"_source\":{\"includes\":\"message\"},\"query\":{\"bool\":{\"must\":[{\"bool\":{\"should\":[{\"match_phrase\":{\"log.file.path\":\"/var/log/postgresql/postgresql-10-main.log\"}},{\"match_phrase\":{\"log.file.path\":\"/var/log/postgresql/postgresql.log\"}}],\"minimum_should_match\":1}}],\"filter\":{\"query_string\":{\"query\":\"*#{pg_user}*\"}}}}}' | grep -z \"DROP USER\"; then echo 'READY'; break; else echo 'WAITING'; sleep 1; fi; done") do
+    describe 'Check if Elasticsearch logs contain queries executed with PGBouncer', :if => pgbouncer_enabled do
+      query = get_elasticsearch_query(message_pattern: pg_user)
+      command = get_query_command_with_retries(json_query: query, min_doc_hits: 6)
+      describe command(command.squish) do
         its(:stdout) { should match /GRANT ALL ON SCHEMA serverspec_test to #{pg_user}/ }
         its(:stdout) { should match /GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA serverspec_test to #{pg_user}/ }
         its(:stdout) { should match /CREATE TABLE serverspec_test\.pgbtest/ }
@@ -534,8 +575,9 @@ if pgaudit_enabled && countInventoryHosts("logging") > 0
       end
     end
 
-    describe 'Checking support for multiline messages' do
-      describe command("curl -k -u admin:admin 'https://#{elasticsearch_host}:#{elasticsearch_api_port}/_search?pretty=true' -H 'Content-Type: application/json' -d '{\"size\":100,\"_source\":{\"includes\":\"message\"},\"query\":{\"bool\":{\"must\":[{\"bool\":{\"should\":[{\"match_phrase\":{\"log.file.path\":\"/var/log/postgresql/postgresql-10-main.log\"}},{\"match_phrase\":{\"log.file.path\":\"/var/log/postgresql/postgresql.log\"}}],\"minimum_should_match\":1}}],\"filter\":{\"query_string\":{\"query\":\"ADD AND COLUMN\"}}}}}'") do
+    describe 'Check support for multiline messages' do
+      query = get_elasticsearch_query(message_pattern: "\"ADD COLUMN city text\"")
+      describe command("curl -k -u admin:admin 'https://#{ELASTICSEARCH[:host]}:#{ELASTICSEARCH[:api_port]}/_search?pretty=true' -H 'Content-Type: application/json' -d '#{query.squish}'") do
         its(:stdout) { should match /ALTER TABLE serverspec_test\.test.*\\n\\t.*ADD COLUMN id.*\\n\\t.*ADD COLUMN name.*\\n\\t.*ADD COLUMN city.*\\n\\t.*ADD COLUMN description/ }
         its(:exit_status) { should eq 0 }
       end
