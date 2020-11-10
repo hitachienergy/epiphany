@@ -56,8 +56,21 @@
     owner: postgres
     group: postgres
     mode: u=rw,g=,o=
+  register: template_repmgr_conf
   vars:
     node_id: "{{ (groups.postgresql.index(inventory_hostname) + 1) }}"
+
+# On Ubuntu config file location is not set by package (see https://repmgr.org/docs/4.0/packages-debian-ubuntu.html).
+# Create symlink to allow using repmgr commands without specifying config file location (which is custom).
+# See https://repmgr.org/docs/4.0/configuration-file.html
+- name: Create symlink /etc/repmgr.conf
+  file:
+    src: "{{ template_repmgr_conf.dest }}"
+    dest: /etc/repmgr.conf
+    state: link
+    owner: postgres
+    group: postgres
+  when: template_repmgr_conf.dest != '/etc/repmgr.conf'
 
 # For repmgr installed from Ubuntu package additional configuration is required before repmgrd is started as daemon
 - name: Set repmgr.conf file in /etc/default/repmgrd
