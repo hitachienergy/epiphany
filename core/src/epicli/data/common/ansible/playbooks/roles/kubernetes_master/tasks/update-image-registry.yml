@@ -1,6 +1,6 @@
 ---
 # This is required for handling cases where we change docker image registry for the whole cluster
-# (for example when we move from custom image registry to offline-mode image registry)
+# (for example when we move from custom image registry to offline-mode image registry).
 
 - name: Update 'imageRepository' field in kubeadm configmap
   when: kubernetes_common.automation_designated_master == inventory_hostname
@@ -10,18 +10,20 @@
         tasks_from: extend-kubeadm-config
       vars:
         update:
-          imageRepository: "{{ image_registry_address }}/k8s.gcr.io"
+          imageRepository: "{{ image_registry_address }}/{{ specification.advanced.imageRepository }}"
 
     - include_role:
         name: kubernetes_common
         tasks_from: update-in-cluster-config
 
+# An alternative method would be to use `kubeadm init phase control-plane all --config /etc/kubeadm/kubeadm-config.yml`,
+# which is in fact correctly updating static pods. We have decided though that direct patching is simpler and we can prevent
+# unnecessary executions of the `kubeadm init phase ...` command.
 - name: Find all static-pod manifests
   find:
     paths: /etc/kubernetes/manifests/
     patterns: '*.yaml'
   register: find_static_pod_manifests
-  no_log: true  # reduce log size
 
 - name: Update 'image' fields in all static-pods
   include_tasks: update-image-registry/update-static-pod.yml
@@ -33,6 +35,9 @@
 - name: Update 'image' fields in kube-system resources (excluding pods)
   when: kubernetes_common.automation_designated_master == inventory_hostname
   block:
+    # It seems to be the easiest method to find all resources in kube-system and then just patch them directly.
+    # An alternative would be to use `kubeadm upgrade apply --config /etc/kubeadm/kubeadm-config.yml`,
+    # but we had no good results using it.
     - name: Find kube-system resources (daemonsets, deployments, statefulsets)
       command: |
         kubectl get daemonsets,deployments,statefulsets \
@@ -42,7 +47,6 @@
       until: command_kubectl_get_resources is success
       retries: 30
       delay: 2
-      no_log: true  # reduce log size
 
     - name: Update 'image' fields in discovered kube-system resources
       include_tasks: update-image-registry/update-system-resource.yml

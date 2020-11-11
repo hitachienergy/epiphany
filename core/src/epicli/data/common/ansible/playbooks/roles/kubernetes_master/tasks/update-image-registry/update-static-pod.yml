@@ -11,11 +11,12 @@
 - name: In-place-update static pod manifest '{{ static_pod_manifest_path }}'
   copy:
     dest: "{{ static_pod_manifest_path }}"
+    mode: u=rw,go=
     content: |
-      {{ _document | combine(_update, recursive=true) }}
+      {{ _document | combine(_containers_patch, recursive=true) | to_nice_yaml(indent=2) }}
 
   # Skip if there is no change
-  when: _containers_updated != _containers
+  when: _updated_containers != _containers
 
   vars:
     # Parse manifest's content
@@ -26,10 +27,10 @@
       {{ _document.spec.containers }}
 
     # Update image urls in all containers (there are no init containers)
-    _containers_updated: >-
+    _updated_containers: >-
       {%- set output = [] -%}
       {%- for container in _containers -%}
-        {%- set url = ( 'https://' ~ container.image ) | urlsplit -%}
+        {%- set url = ( 'none://' ~ container.image ) | urlsplit -%}
         {{-
           output.append(container | combine({
             "image": image_registry_address ~ url.path,
@@ -38,7 +39,7 @@
       {%- endfor -%}
       {{- output -}}
 
-    _update:
+    _containers_patch:
       spec:
         containers: >-
-          {{ _containers_updated }}
+          {{ _updated_containers }}
