@@ -27,5 +27,6 @@
 - name: Render /etc/kubeadm/kubeadm-config.yml
   copy:
     dest: /etc/kubeadm/kubeadm-config.yml
+    mode: u=rw,go=
     content: >-
       {{ kubeadm_config | to_nice_yaml }}
