@@ -9,3 +9,4 @@
   until: upload_config is succeeded
   retries: 30
   delay: 10
+  changed_when: true

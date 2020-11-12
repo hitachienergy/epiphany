@@ -30,7 +30,7 @@
         control_plane_endpoint: >-
           {{ ClusterConfiguration.controlPlaneEndpoint | default('') }}
         repository_hostname: >-
-          {{ ( 'http://' ~ ClusterConfiguration.imageRepository ) | urlsplit('hostname') }}
+          {{ ( 'none://' ~ ClusterConfiguration.imageRepository ) | urlsplit('hostname') }}
 
 - name: Proxy control_plane_endpoint fact
   set_fact:

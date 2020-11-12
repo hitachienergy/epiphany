@@ -1,0 +1,66 @@
+---
+# requires:
+# - image_registry_address
+# - kube_system_resource_document
+
+- name: Update in-place kube-system resource '{{ kube_system_resource_document.metadata.name }}'
+  # We can safely use "replace" here instead of "apply" because we operate on complete documents
+  command: |
+    kubectl replace \
+      --namespace kube-system \
+      -f-
+  args:
+    stdin: >-
+      {{ kube_system_resource_document | combine(_containers_patch, recursive=true)
+                                       | combine(_init_containers_patch, recursive=true)
+                                       | to_nice_yaml(indent=2) }}
+
+  # Skip if there is no change
+  when: _updated_containers != _containers or _updated_init_containers != _init_containers
+
+  vars:
+    _containers: >-
+      {{ kube_system_resource_document.spec.template.spec.containers }}
+
+    # Update image urls in all containers
+    _updated_containers: >-
+      {%- set output = [] -%}
+      {%- for container in _containers -%}
+        {%- set url = ( 'none://' ~ container.image ) | urlsplit -%}
+        {{-
+          output.append(container | combine({
+            "image": image_registry_address ~ url.path,
+          }, recursive=true))
+        -}}
+      {%- endfor -%}
+      {{- output -}}
+
+    _containers_patch:
+      spec:
+        template:
+          spec:
+            containers: >-
+              {{ _updated_containers }}
+
+    _init_containers: >-
+      {{ kube_system_resource_document.spec.template.spec.initContainers | default([]) }}
+
+    # Update image urls in all init containers
+    _updated_init_containers: >-
+      {%- set output = [] -%}
+      {%- for container in _init_containers -%}
+        {%- set url = ( 'none://' ~ container.image ) | urlsplit -%}
+        {{-
+          output.append(container | combine({
+            "image": image_registry_address ~ url.path,
+          }, recursive=true))
+        -}}
+      {%- endfor -%}
+      {{- output -}}
+
+    _init_containers_patch:
+      spec:
+        template:
+          spec:
+            initContainers: >-
+              {{ _updated_init_containers | default(_init_containers, true) }}

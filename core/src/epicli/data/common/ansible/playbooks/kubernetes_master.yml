@@ -37,6 +37,16 @@
 - hosts: kubernetes_master
   become: true
   become_method: sudo
+  tasks:
+    - import_role:
+        name: kubernetes_master
+        tasks_from: update-image-registry
+  environment:
+    KUBECONFIG: "{{ kubeconfig.remote }}"
+
+- hosts: kubernetes_master
+  become: true
+  become_method: sudo
   post_tasks:
     - import_role:
         name: kubernetes_master

@@ -27,7 +27,7 @@
       {{ ( hostvars[registered_masters[0]].repository_hostname ~ ':5000' ) if _reconstruct_image_registry_address else image_registry_address }}
 
     _image_registry_hostname: >-
-      {{ ( 'http://' ~ _image_registry_address ) | urlsplit('hostname') }}
+      {{ ( 'none://' ~ _image_registry_address ) | urlsplit('hostname') }}
 
     _resolved_image_registry_hostname: >-
       {{ ipv4_address_to_inventory_hostname_map[_image_registry_hostname] | default(_image_registry_hostname) }}
