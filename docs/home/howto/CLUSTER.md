@@ -191,7 +191,7 @@ The repository and image registry implementation must be compatible with already
 
 *Note. You can switch between custom repository/registry and offline/online installation methods. Keep in mind this will cause "imageRegistry" change in Kubernetes which in turn may cause short downtime.*
 
-By default Epiphany creates "repository" virtual machine in cloud environments. When custom repository and registry are used there is no need for additional empty VM.
+By default Epiphany creates "repository" virtual machine for cloud environments. When custom repository and registry are used there is no need for additional empty VM.
 The following config snippet can illustrate how to mitigate this problem:
 
 ```yaml
