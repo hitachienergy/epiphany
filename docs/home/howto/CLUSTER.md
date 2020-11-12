@@ -197,39 +197,21 @@ The following config snippet can illustrate how to mitigate this problem:
 ```yaml
 kind: epiphany-cluster
 title: Epiphany cluster Config
+provider: <provider>
 name: default
 specification:
-  name: <cluster-name>
-  prefix: <resource-prefix>
-  admin_user:
-    key_path: <local-rsa-key-location>
-    name: ubuntu
-  cloud:
-    region: <region-name>
-    subscription_name: <subscription-name>
-    use_service_principal: false
-    use_public_ips: true
+  ...
   components:
     repository:
       count: 0
     kubernetes_master:
-      count: 3
+      count: 1
     kubernetes_node:
       count: 2
-    postgresql:
-      count: 1
-    logging:
-      count: 0
-    monitoring:
-      count: 0
-    kafka:
-      count: 0
-    load_balancer:
-      count: 0
-provider: azure
 ---
 kind: configuration/feature-mapping
 title: "Feature mapping to roles"
+provider: <provider>
 name: default
 specification:
   roles_mapping:
@@ -243,16 +225,14 @@ specification:
       - filebeat
       - firewall
       - vault
-provider: azure
 ---
 kind: configuration/shared-config
 title: Shared configuration that will be visible to all roles
+provider: <provider>
 name: default
 specification:
   custom_image_registry_address: "<public-ip-address>:5000"
   custom_repository_url: "http://<public-ip-address>:8080/epirepo"
-  use_ha_control_plane: true
-provider: azure
 ```
 
 1. Disable "repository" component:
