@@ -231,8 +231,8 @@ title: Shared configuration that will be visible to all roles
 provider: <provider>
 name: default
 specification:
-  custom_image_registry_address: "<public-ip-address>:5000"
-  custom_repository_url: "http://<public-ip-address>:8080/epirepo"
+  custom_image_registry_address: "<ip-address>:5000"
+  custom_repository_url: "http://<ip-address>:8080/epirepo"
 ```
 
 1. Disable "repository" component:
