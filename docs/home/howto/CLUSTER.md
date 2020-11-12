@@ -191,6 +191,88 @@ The repository and image registry implementation must be compatible with already
 
 *Note. You can switch between custom repository/registry and offline/online installation methods. Keep in mind this will cause "imageRegistry" change in Kubernetes which in turn may cause short downtime.*
 
+Epiphany by default creates "repository" virtual nachine in cloud environments. When custom repository and registry are used there is no need for additional empty virtual machine.
+The following config snippet can illustrate how to mitigate this problem:
+
+```yaml
+kind: epiphany-cluster
+title: Epiphany cluster Config
+name: default
+specification:
+  name: <cluster-name>
+  prefix: <resource-prefix>
+  admin_user:
+    key_path: <local-rsa-key-location>
+    name: ubuntu
+  cloud:
+    region: <region-name>
+    subscription_name: <subscription-name>
+    use_service_principal: false
+    use_public_ips: true
+  components:
+    repository:
+      count: 0
+    kubernetes_master:
+      count: 3
+    kubernetes_node:
+      count: 2
+    postgresql:
+      count: 1
+    logging:
+      count: 0
+    monitoring:
+      count: 0
+    kafka:
+      count: 0
+    load_balancer:
+      count: 0
+provider: azure
+---
+kind: configuration/feature-mapping
+title: "Feature mapping to roles"
+name: default
+specification:
+  roles_mapping:
+    kubernetes_master:
+      - repository
+      - image-registry
+      - kubernetes-master
+      - helm
+      - applications
+      - node-exporter
+      - filebeat
+      - firewall
+      - vault
+provider: azure
+---
+kind: configuration/shared-config
+title: Shared configuration that will be visible to all roles
+name: default
+specification:
+  custom_image_registry_address: "<public-ip-address>:5000"
+  custom_repository_url: "http://<public-ip-address>:8080/epirepo"
+  use_ha_control_plane: true
+provider: azure
+```
+
+1. Disable "repository" component:
+   ```yaml
+   repository:
+     count: 0
+   ```
+2. Prepend "kubernetes\_master" mapping (or any other mapping if you don't deploy Kubernetes) with:
+   ```yaml
+   kubernetes_master:
+     - repository
+     - image-registry
+   ```
+3. Specify custom repository/registry in `configuration/shared-config`:
+   ```yaml
+   specification:
+     custom_image_registry_address: "<ip-address>:5000"
+     custom_repository_url: "http://<ip-address>:8080/epirepo"
+   ```
+
 ## How to create an Epiphany cluster on a cloud provider
 
 Epicli has the ability to setup a cluster on one of the following cloud providers:
