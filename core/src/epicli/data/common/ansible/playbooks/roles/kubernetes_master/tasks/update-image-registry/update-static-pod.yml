@@ -8,7 +8,7 @@
     path: "{{ static_pod_manifest_path }}"
   register: slurp_static_pod_manifest
 
-- name: In-place-update static pod manifest '{{ static_pod_manifest_path }}'
+- name: Update in-place static pod manifest '{{ static_pod_manifest_path }}'
   copy:
     dest: "{{ static_pod_manifest_path }}"
     mode: u=rw,go=

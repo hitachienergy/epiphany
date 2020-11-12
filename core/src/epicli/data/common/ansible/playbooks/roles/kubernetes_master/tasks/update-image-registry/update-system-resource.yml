@@ -3,7 +3,7 @@
 # - image_registry_address
 # - kube_system_resource_document
 
-- name: In-place-update kube-system resource '{{ kube_system_resource_document.metadata.name }}'
+- name: Update in-place kube-system resource '{{ kube_system_resource_document.metadata.name }}'
   # We can safely use "replace" here instead of "apply" because we operate on complete documents
   command: |
     kubectl replace \

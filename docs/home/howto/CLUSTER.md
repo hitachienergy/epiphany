@@ -166,9 +166,9 @@ To setup the cluster do the following steps:
 
     This will create the inventory for Ansible based on the component/machine definitions made inside the `newcluster.yml` and let Absible deploy it. Note that the `--no-infra` is important since it tells Epicli to skip the Terraform part. The `--offline-requirements` tells Epicli it is an airgapped installation and to use the  `/requirementsoutput/` requirements folder prepared in steps 1 and 2 as source for all requirements.
 
-## How to create an Epiphany cluster using custom system repository and docker image registry
+## How to create an Epiphany cluster using custom system repository and Docker image registry
 
-Epiphany has the ability to use external repository and image registry during `epicli apply ...` execution.
+Epiphany has the ability to use external repository and image registry during `epicli apply` execution.
 
 Custom urls need to be specified inside the `configuration/shared-config` document, for example:
 
@@ -180,13 +180,12 @@ specification:
   custom_image_registry_address: "10.50.2.1:5000"
   custom_repository_url: "http://10.50.2.1:8080/epirepo"
   use_ha_control_plane: true
-  promote_to_ha: false
 ```
 
-The repository and image registry implementation must be compatible with already existing ansible code:
+The repository and image registry implementation must be compatible with already existing Ansible code:
 
-- the repository data (apt or yum packages) is served from Apache2 HTTP server exactly as structured in the offline package
-- the image registry data is loaded into and served from standard docker registry implementation
+- the repository data (including apt or yum repository) is served from HTTP server and structured exactly as in the offline package
+- the image registry data is loaded into and served from standard Docker registry implementation
 
 *Note. If both custom repository/registry and offline installation are configured then the custom repository/registry is preferred.*
 
