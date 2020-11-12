@@ -151,18 +151,18 @@ that for replication only replication user with limited permissions is used for 
 
 If one of database nodes has been recovered to desired state you may want to re-attach it to database cluster. Execute these steps on node which will be attached as standby:
 
-1). Clone data from current primary node:
+1. Clone data from current primary node:
 
 ```bash
-repmgr -h current_primary_address -U epi_repmgr_admin -d epi_repmgr standby clone -F
+repmgr standby clone -h CURRENT_PRIMARY_ADDRESS -U epi_repmgr_admin -d epi_repmgr --force
 ```
 
-2). Register node as standby
+2. Register node as standby
 
 ```bash
-repmgr -f /etc/repmgr/10/repmgr.conf standby register
+repmgr standby register
 ```
-You may use option --force if this node was registered in cluster before.
+You may use option --force if the node was registered in cluster before.
 For more options see repmgr manual:
 https://repmgr.org/docs/4.0/repmgr-standby-register.html
 
@@ -170,25 +170,25 @@ https://repmgr.org/docs/4.0/repmgr-standby-register.html
 
 For some reason you may want to switchover database nodes (promote standby to primary and demote existing primary to standby).
 
-1). Configure passwordless comunication for postgres user between database nodes using ssh key.
+1. Configure passwordless SSH comunication for postgres user between database nodes.
 
-2). Test and tun inistial login between nodes to authenticate host (if host authentication is enabled)
+2. Test and run initial login between nodes to authenticate host (if host authentication is enabled).
 
-### Execute commands listed below on actual slave node:
+Execute commands listed below on actual standby node
 
-3). Confirm that standby you want to promote is registered in repmgr cluster:
-
-```bash
-repmgr -f /etc/repmgr/10/repmgr.conf cluster show
-```
-
-4). Run command:
+3. Confirm that standby you want to promote is registered in repmgr cluster:
 
 ```bash
-repmgr -f /etc/repmgr/10/repmgr.conf standby switchover
+repmgr cluster show
 ```
 
-5). Run command from step 3 and check status. For more details or troubleshooting see repmgr manual:
+4. Run switchover:
+
+```bash
+repmgr standby switchover
+```
+
+5. Run command from step 3 and check status. For more details or troubleshooting see repmgr manual:
 https://repmgr.org/docs/4.0/repmgr-standby-switchover.html
 
 ## How to set up PgBouncer, Pgpool and PostgreSQL parameters
