@@ -93,17 +93,6 @@ filebeat.inputs:
   {{ k }}: {{ v }}
   {% endfor %}
   {% endif %}
-- type: log
-  enabled: true
-  paths:
-    - /var/log/pgbouncer/*.log*
-  exclude_files: [".gz$"]
-  {% if specification.pgbouncer_input.multiline is defined -%}
-  multiline:
-  {% for k, v in specification.pgbouncer_input.multiline.items() %}
-  {{ k }}: {{ v }}
-  {% endfor %}
-  {% endif %}
 {% endif %}
 
 {% if 'kubernetes_master' in group_names or 'kubernetes_node' in group_names %}
