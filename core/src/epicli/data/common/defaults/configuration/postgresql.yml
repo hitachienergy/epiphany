@@ -121,16 +121,3 @@ specification:
       # to have multiple unique filenames per day when dateext option is set
           dateformat -%Y%m%dH%H
       }
-      /var/log/pgbouncer/pgbouncer.log {
-          missingok
-          notifempty
-          sharedscripts
-          copytruncate
-          size 10M
-          daily
-          create 0640 pgbouncer pgbouncer
-          nodateext
-          postrotate
-          /bin/kill -HUP cat /run/pgbouncer/pgbouncer.pid 2>/dev/null 2> /dev/null || true
-          endscript
-      }
