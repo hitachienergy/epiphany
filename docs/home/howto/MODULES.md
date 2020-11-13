@@ -2,20 +2,20 @@
 
 ## Introduction
 
-In version 0.8 of Epiphany we are introducing modules. Modularisation of Epiphany environment will result in:
+In version 0.8 of Epiphany we are introducing modules. Modularization of Epiphany environment will result in:
 
 * smaller code bases for separate areas,
 * simpler and faster test process,
-* interchangeability of elements providing similar functionality (eg.: different kubernetes providers),
+* interchangeability of elements providing similar functionality (eg.: different Kubernetes providers),
 * faster and more focused release cycle.
 
 Those and multiple other factors (eg.: readability, reliability) influence this direction of changes.
 
 ## User point of view
 
-From user point of view there will be no significant changes in the nearest future as it will be still possible to install Epiphany "classic way" so with single `epicli` configuration using whole codebase as monolith.
+From a user point of view, there will be no significant changes in the nearest future as it will be still possible to install Epiphany "classic way" so with a single `epicli` configuration using a whole codebase as a monolith.
 
-For those who want to play with new features, or will need newly introduced possibilities, there will be short transition period which we consider as kind of "preview stage". In this period there will be need to run each module separately by hand in following order:
+For those who want to play with new features, or will need newly introduced possibilities, there will be a short transition period which we consider as a kind of "preview stage". In this period there will be a need to run each module separately by hand in the following order:
 
 * moduleA init
 * moduleA plan
@@ -29,32 +29,32 @@ Init, plan and apply phases explanation you'll find in next sections of this doc
 
 ## New scenarios
 
-In 0.8 we introduce possibility to use AKS or EKS as kubernetes providers. That is introduced with modules mechanism, so we introduced first four modules:
+In 0.8 we introduce the possibility to use AKS or EKS as Kubernetes providers. That is introduced with modules mechanism, so we introduced the first four modules:
 
 * [Azure Basic Infrastructure](https://github.com/epiphany-platform/m-azure-basic-infrastructure) (AzBI) module
 * [Azure AKS](https://github.com/epiphany-platform/m-azure-kubernetes-service) (AzKS) module
 * [AWS Basic Infrastructure](https://github.com/epiphany-platform/m-aws-basic-infrastructure) (AwsBI) module
 * [AWS EKS](https://github.com/epiphany-platform/m-aws-kubernetes-service) (AwsKS) module
 
-Those 4 modules with the Classic Epiphany used with `any` provider allow change of on-prem kubernetes cluster with managed kubernetes services.
+Those 4 modules with the Classic Epiphany used with `any` provider allow change of on-prem Kubernetes cluster with managed Kubernetes services.
 
 As it might be already visible there are 2 paths provided:
 
 * Azure related, using AzBI and AzKS modules,
 * AWS related, using AwsBI and AwsKS modules.
 
-Those "... Basic Infrastructure" modules are responsible to provide basic cloud resources (eg.: resource groups, virtual networks, subnets, virtual machines, network security rules, routing, ect.) which will be used by next modules. So in this case, those are "... KS modules" meant to provide managed kubernetes services. They use resources provided by basic infrastructure modules (eg.: subnets or resource groups) and instantiate managed kubernetes services provided by cloud providers. Last element in both those cloud provider related paths is Classic Epiphany installed on top of resources provided by those modules using `any` provider.
+Those "... Basic Infrastructure" modules are responsible to provide basic cloud resources (eg.: resource groups, virtual networks, subnets, virtual machines, network security rules, routing, ect.) which will be used by next modules. So in this case, those are "... KS modules" meant to provide managed Kubernetes services. They use resources provided by basic infrastructure modules (eg.: subnets or resource groups) and instantiate managed Kubernetes services provided by cloud providers. The last element in both those cloud provider related paths is Classic Epiphany installed on top of resources provided by those modules using `any` provider.
 
 ## Hands-on
 
-In each module, we provided a guide on how to use module. Please refer:
+In each module, we provided a guide on how to use the module. Please refer:
 
 * [Azure Basic Infrastructure](https://github.com/epiphany-platform/m-azure-basic-infrastructure/blob/develop/README.md) (AzBI) module
 * [Azure AKS](https://github.com/epiphany-platform/m-azure-kubernetes-service/blob/develop/README.md) (AzKS) module
 * [AWS Basic Infrastructure](https://github.com/epiphany-platform/m-aws-basic-infrastructure/blob/develop/README.md) (AwsBI) module
 * [AWS EKS](https://github.com/epiphany-platform/m-aws-kubernetes-service/blob/develop/README.md) (AwsKS) module
 
-After deployment of EKS or AKS you can perform Epiphany installation on top of it.
+After deployment of EKS or AKS, you can perform Epiphany installation on top of it.
 
 ### Install Epiphany on top of AzKS or AwsKS
 
@@ -411,10 +411,10 @@ AWS:
   epicli --auto-approve apply --file='/tmp/shared/epi.yml' --vault-password='secret'
   ```
 
-  This will install PosgreSQL on one of machines and configure PgBouncer, Pgpool and additional services to manage database connections.
+  This will install PostgreSQL on one of the machines and configure PgBouncer, Pgpool and additional services to manage database connections.
 
-  Please make sure you disable applications that you don't need. Also, you can enable standard Epiphany services like Kafka or RabbitMQ, by increasing number of virtual machines in the basic infrastructure config and assigning them to Epiphany components you want to use.
+  Please make sure you disable applications that you don't need. Also, you can enable standard Epiphany services like Kafka or RabbitMQ, by increasing the number of virtual machines in the basic infrastructure config and assigning them to Epiphany components you want to use.
 
-  If you would like to deploy custom resources into managed Kubernetes, then standard kubeconfig yaml document can be found inside the shared state file (you should be able to use vendor tools as well to get it).
+  If you would like to deploy custom resources into managed Kubernetes, then the standard kubeconfig yaml document can be found inside the shared state file (you should be able to use vendor tools as well to get it).
 
   We highly recommend using the `Ingress` resource in Kubernetes to allow access to web applications inside the cluster. Since it's managed Kubernetes and fully supported by the cloud platform, the classic HAProxy load-balancer solution seems to be deprecated here.
