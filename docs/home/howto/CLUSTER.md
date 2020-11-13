@@ -191,6 +191,68 @@ The repository and image registry implementation must be compatible with already
 
 *Note. You can switch between custom repository/registry and offline/online installation methods. Keep in mind this will cause "imageRegistry" change in Kubernetes which in turn may cause short downtime.*
 
+By default Epiphany creates "repository" virtual machine for cloud environments. When custom repository and registry are used there is no need for additional empty VM.
+The following config snippet can illustrate how to mitigate this problem:
+
+```yaml
+kind: epiphany-cluster
+title: Epiphany cluster Config
+provider: <provider>
+name: default
+specification:
+  ...
+  components:
+    repository:
+      count: 0
+    kubernetes_master:
+      count: 1
+    kubernetes_node:
+      count: 2
+---
+kind: configuration/feature-mapping
+title: "Feature mapping to roles"
+provider: <provider>
+name: default
+specification:
+  roles_mapping:
+    kubernetes_master:
+      - repository
+      - image-registry
+      - kubernetes-master
+      - helm
+      - applications
+      - node-exporter
+      - filebeat
+      - firewall
+      - vault
+---
+kind: configuration/shared-config
+title: Shared configuration that will be visible to all roles
+provider: <provider>
+name: default
+specification:
+  custom_image_registry_address: "<ip-address>:5000"
+  custom_repository_url: "http://<ip-address>:8080/epirepo"
+```
+
+1. Disable "repository" component:
+   ```yaml
+   repository:
+     count: 0
+   ```
+2. Prepend "kubernetes\_master" mapping (or any other mapping if you don't deploy Kubernetes) with:
+   ```yaml
+   kubernetes_master:
+     - repository
+     - image-registry
+   ```
+3. Specify custom repository/registry in `configuration/shared-config`:
+   ```yaml
+   specification:
+     custom_image_registry_address: "<ip-address>:5000"
+     custom_repository_url: "http://<ip-address>:8080/epirepo"
+   ```
+
 ## How to create an Epiphany cluster on a cloud provider
 
 Epicli has the ability to setup a cluster on one of the following cloud providers:
