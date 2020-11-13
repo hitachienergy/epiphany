@@ -4,8 +4,8 @@ Epicli has the ability to setup a cluster on infrastructure provided by you. The
 
 *Note. Hardware requirements are not listed since this dependends on use-case, component configuration etc.*
 
-1. The cluster machines/vm`s are connected by a network or virtual network of some sorts and can communicate which each other and have access to the internet.
-2. The cluster machines/vm`s are running one of the following Linux distributions:
+1. The cluster machines/vm's are connected by a network or virtual network of some sorts and can communicate which each other and have access to the internet.
+2. The cluster machines/vm's are running one of the following Linux distributions:
     - RedHat 7.6+ and < 8
     - CentOS 7.6+ and < 8
     - Ubuntu 18.04
