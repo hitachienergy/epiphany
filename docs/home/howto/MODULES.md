@@ -2,7 +2,7 @@
 
 ## Introduction
 
-In version 0.8 of Epiphany we are introducing modules. Modularization of Epiphany environment will result in:
+In version 0.8 of Epiphany we introduced modules. Modularization of Epiphany environment will result in:
 
 * smaller code bases for separate areas,
 * simpler and faster test process,
@@ -29,21 +29,21 @@ Init, plan and apply phases explanation you'll find in next sections of this doc
 
 ## New scenarios
 
-In 0.8 we introduce the possibility to use AKS or EKS as Kubernetes providers. That is introduced with modules mechanism, so we introduced the first four modules:
+In 0.8 we offer the possibility to use AKS or EKS as Kubernetes providers. That is introduced with modules mechanism, so we launched the first four modules:
 
 * [Azure Basic Infrastructure](https://github.com/epiphany-platform/m-azure-basic-infrastructure) (AzBI) module
 * [Azure AKS](https://github.com/epiphany-platform/m-azure-kubernetes-service) (AzKS) module
 * [AWS Basic Infrastructure](https://github.com/epiphany-platform/m-aws-basic-infrastructure) (AwsBI) module
 * [AWS EKS](https://github.com/epiphany-platform/m-aws-kubernetes-service) (AwsKS) module
 
-Those 4 modules with the Classic Epiphany used with `any` provider allow change of on-prem Kubernetes cluster with managed Kubernetes services.
+Those 4 modules together with the classic Epiphany used with `any` provider allow replacing of on-prem Kubernetes cluster with managed Kubernetes services.
 
 As it might be already visible there are 2 paths provided:
 
 * Azure related, using AzBI and AzKS modules,
 * AWS related, using AwsBI and AwsKS modules.
 
-Those "... Basic Infrastructure" modules are responsible to provide basic cloud resources (eg.: resource groups, virtual networks, subnets, virtual machines, network security rules, routing, ect.) which will be used by next modules. So in this case, those are "... KS modules" meant to provide managed Kubernetes services. They use resources provided by basic infrastructure modules (eg.: subnets or resource groups) and instantiate managed Kubernetes services provided by cloud providers. The last element in both those cloud provider related paths is Classic Epiphany installed on top of resources provided by those modules using `any` provider.
+Those "... Basic Infrastructure" modules are responsible to provide basic cloud resources (eg.: resource groups, virtual networks, subnets, virtual machines, network security rules, routing, ect.) which will be used by next modules. So in this case, those are "... KS modules" meant to provide managed Kubernetes services. They use resources provided by basic infrastructure modules (eg.: subnets or resource groups) and instantiate managed Kubernetes services provided by cloud providers. The last element in both those cloud provider related paths is classic Epiphany installed on top of resources provided by those modules using `any` provider.
 
 ## Hands-on
 
@@ -81,9 +81,9 @@ AWS:
     name: your-cluster-name # <----- make unified with other places and build directory name
     admin_user:
       name: operations # <----- make sure os-user is correct
-      key_path: /tmp/shared/vms_rsa # <----- use generated keyfile
+      key_path: /tmp/shared/vms_rsa # <----- use generated key file
     cloud:
-      k8s_as_cloud_service: true # <----- make sure that flag is set, as it indicates usage of AKS service
+      k8s_as_cloud_service: true # <----- make sure that flag is set, as it indicates usage of a managed Kubernetes service
     components:
       repository:
         count: 1
