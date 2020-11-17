@@ -104,7 +104,7 @@
     name: "{{ pg_service_name[ansible_os_family] }}"
     enabled: yes
 
-- name: Configure logrotate
+- name: Configure postgresql logrotate
   block:
     - name: Remove logrotate configuration provided by 'postgresql-common' package
       file:
@@ -112,15 +112,13 @@
         state: absent
       when: ansible_os_family == 'Debian'
 
-    - name: Create logrotate configuration file
+    - name: Create postgresql logrotate configuration file
       template:
-        src: logrotate.conf.j2
+        src: logrotate-postgresql.conf.j2
         dest: /etc/logrotate.d/postgresql
         owner: root
         group: root
         mode: 0644
-  when:
-    - specification.logrotate.config is defined
 
 - name: Set up replication
   include_tasks: replication-{{ ansible_os_family }}.yml

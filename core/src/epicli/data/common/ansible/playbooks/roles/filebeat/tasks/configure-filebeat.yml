@@ -1,6 +1,12 @@
 ---
 # This file is meant to be also used by upgrade playbook
 
+- name: Load defaults from postgresql role
+  include_vars:
+    file: roles/postgresql/defaults/main.yml
+    name: postgresql_defaults
+  when: "'postgresql' in group_names"
+
 - name: Copy configuration file (filebeat.yml)
   template:
     dest: /etc/filebeat/filebeat.yml

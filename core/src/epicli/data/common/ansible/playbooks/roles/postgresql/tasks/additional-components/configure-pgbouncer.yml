@@ -19,6 +19,14 @@
     create: yes
     backup: yes
 
+- name: Create pgbouncer logrotate configuration file
+  template:
+    src: logrotate-pgbouncer.conf.j2
+    dest: /etc/logrotate.d/pgbouncer
+    owner: root
+    group: root
+    mode: u=rw,go=r
+
 - name: Enable pgbouncer service
   systemd:
     name: pgbouncer

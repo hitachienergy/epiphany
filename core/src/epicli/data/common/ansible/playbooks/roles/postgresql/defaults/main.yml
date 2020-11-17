@@ -30,3 +30,17 @@ repmgr_service_name:
 repmgr_config_dir:
   RedHat: /etc/repmgr/10
   Debian: /etc/postgresql/10/main
+
+pgbouncer:
+  logfile:
+    RedHat: /var/log/pgbouncer/pgbouncer.log
+    Debian: /var/log/postgresql/pgbouncer.log
+  pidfile:
+    RedHat: /var/run/pgbouncer/pgbouncer.pid
+    Debian: /var/run/postgresql/pgbouncer.pid
+  user:
+    RedHat: pgbouncer
+    Debian: postgres
+  group:
+    RedHat: pgbouncer
+    Debian: postgres
