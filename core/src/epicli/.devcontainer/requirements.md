@@ -46,13 +46,14 @@ The main reasons for this 2-way approach:
 
 ## How to update package license info and documentation
 
-1. Updated the ```license.py``` by running the following from the project root in your devcontainer:
+1. Update the ```license.py``` by running the following from the project root in your devcontainer:
 
     ```shell
-    python gen-licenses.py your-github-pac
+    python gen-licenses.py YOUR-GITHUB-PAT
     ```
 
-    For obtaining a Github Personal Access Code check [here.](https://help.github.com/en/github/authenticating-to-github/creating-a-personal-access-token-for-the-command-line).
+    For obtaining a GitHub Personal Access Token, check [here.](https://help.github.com/en/github/authenticating-to-github/creating-a-personal-access-token-for-the-command-line).
+    Only `public_repo` scope is required.
 
     This will also generate a ```DEPENDENCIES.md``` file with a table containing all packages and licensing information.
 
