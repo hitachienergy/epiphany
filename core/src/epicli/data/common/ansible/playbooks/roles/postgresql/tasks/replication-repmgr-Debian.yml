@@ -1,41 +1,25 @@
 ---
+# --- Configure users ---
 
-- name: Add user to sudoers file
+- name: Add postgres user to sudoers file
   lineinfile:
     path: /etc/sudoers
     line: 'postgres ALL=(ALL:ALL) NOPASSWD: /bin/systemctl start postgresql, /bin/systemctl stop postgresql, /bin/systemctl restart postgresql, /bin/systemctl reload postgresql'
     validate: 'visudo -cf %s'
 
-- name: Enable repmgrd in /etc/default/repmgrd
-  replace:
-    path: /etc/default/repmgrd
-    regexp: "^[#]?REPMGRD_ENABLED=no"
-    replace: "REPMGRD_ENABLED=yes"
-
-- name: Set repmgrd path to config file in /etc/default/repmgrd
-  replace:
-    path: /etc/default/repmgrd
-    regexp: "^#REPMGRD_CONF=\"/path/to/repmgr.conf\""
-    replace: "REPMGRD_CONF=\"{{ repmgr_config_dir[ansible_os_family] }}/repmgr.conf\""
-
-- name: Add or update super user in postgresql
+- name: Create super user in postgresql
   become_user: postgres
   postgresql_user:
     user: "{{ specification.extensions.replication.priviledged_user_name }}"
     password: "{{ specification.extensions.replication.priviledged_user_password }}"
     role_attr_flags: LOGIN,SUPERUSER
 
-- name: Add or update replication user to postgresql
+- name: Create replication user in postgresql
   become_user: postgres
   postgresql_user:
     user: "{{ specification.extensions.replication.replication_user_name }}"
     password: "{{ specification.extensions.replication.replication_user_password }}"
     role_attr_flags: LOGIN,REPLICATION
-
-- name: Add replication user to pg_hba.conf
-  lineinfile:
-    path: /etc/postgresql/10/main/pg_hba.conf
-    line: "host    replication     {{ specification.extensions.replication.replication_user_name }}     0.0.0.0/0            md5"
 
 - name: Create pgpass file
   template:
@@ -43,7 +27,27 @@
     dest: /var/lib/postgresql/.pgpass
     owner: postgres
     group: postgres
-    mode: 0600
+    mode: u=rw,g=,o=
+
+- name: Add replication user to pg_hba.conf
+  lineinfile:
+    path: /etc/postgresql/10/main/pg_hba.conf
+    line: "host    replication     {{ specification.extensions.replication.replication_user_name }}      0.0.0.0/0               md5"
+  register: modify_pg_hba_conf
+
+- name: Restart postgresql service
+  systemd:
+    name: "{{ pg_service_name[ansible_os_family] }}"
+    state: restarted
+  when: modify_pg_hba_conf.changed
+
+# --- Configure repmgr ---
+
+- name: Create database for repmgr
+  become_user: postgres
+  postgresql_db:
+    name: "{{ specification.extensions.replication.repmgr_database }}"
+    owner: "{{ specification.extensions.replication.replication_user_name }}"
 
 - name: Create repmgr config file
   template:
@@ -51,135 +55,127 @@
     dest: "{{ repmgr_config_dir[ansible_os_family] }}/repmgr.conf"
     owner: postgres
     group: postgres
-    mode: 0600
+    mode: u=rw,g=,o=
+  register: template_repmgr_conf
   vars:
     node_id: "{{ (groups.postgresql.index(inventory_hostname) + 1) }}"
 
-- name: Create directory for db backup
+# On Ubuntu config file location is not set by package (see https://repmgr.org/docs/4.0/packages-debian-ubuntu.html).
+# Create symlink to allow using repmgr commands without specifying config file location (which is custom).
+# See https://repmgr.org/docs/4.0/configuration-file.html
+- name: Create symlink /etc/repmgr.conf
   file:
-    path: /dbbackup/{{ inventory_hostname }}/backup/
-    state: directory
+    src: "{{ template_repmgr_conf.dest }}"
+    dest: /etc/repmgr.conf
+    state: link
     owner: postgres
     group: postgres
+  when: template_repmgr_conf.dest != '/etc/repmgr.conf'
 
-- name: Create a new database for repmgr
-  become_user: postgres
-  postgresql_db:
-    name: "{{ specification.extensions.replication.repmgr_database }}"
-    owner: "{{ specification.extensions.replication.replication_user_name }}"
+# For repmgr installed from Ubuntu package additional configuration is required before repmgrd is started as daemon
+- name: Set repmgr.conf file in /etc/default/repmgrd
+  replace:
+    path: /etc/default/repmgrd
+    regexp: "^#REPMGRD_CONF=\"/path/to/repmgr.conf\""
+    replace: "REPMGRD_CONF=\"{{ repmgr_config_dir[ansible_os_family] }}/repmgr.conf\""
 
-# Master:
-- name: Check if master is already registered in repmgr
-  become_user: postgres
-  shell: >-
-    set -o pipefail &&
-    {{ repmgr_bindir[ansible_os_family] }}/repmgr cluster show -f {{ repmgr_config_dir[ansible_os_family] }}/repmgr.conf | grep -i {{ inventory_hostname }} | grep -v standby
-  changed_when: false
-  register: is_master_already_registered
-  failed_when: is_master_already_registered.rc == 2
-  args:
-    executable: /bin/bash
-  when:
-    - groups['postgresql'][0] == inventory_hostname
+- name: Enable repmgrd in /etc/default/repmgrd
+  replace:
+    path: /etc/default/repmgrd
+    regexp: "^[#]?REPMGRD_ENABLED=no"
+    replace: "REPMGRD_ENABLED=yes"
 
-- name: Restart postgresql service
-  service:
-    name: "{{ pg_service_name[ansible_os_family] }}"
-    state: restarted
-  when:
-    - groups['postgresql'][0] == inventory_hostname
-    - is_master_already_registered.stdout == ""
+# --- Configure primary node ---
 
-- name: Restart repmgrd service
-  service:
-    name: "{{ repmgr_service_name[ansible_os_family] }}"
-    state: restarted
-  when:
-    - groups['postgresql'][0] == inventory_hostname
-    - is_master_already_registered.stdout == ""
+- name: Tasks to run only on primary node
+  when: groups.postgresql[0] == inventory_hostname
+  block:
+    - name: Check if primary node is already registered in repmgr cluster
+      become_user: postgres
+      shell: >-
+        set -o pipefail &&
+        {{ repmgr_bindir[ansible_os_family] }}/repmgr cluster show | grep -iw {{ inventory_hostname }} | grep -vw standby
+      changed_when: false
+      register: is_primary_already_registered
+      failed_when: is_primary_already_registered.rc not in [0, 1]
 
-- name: Register primary with repmgr
-  become_user: postgres
-  shell: "{{ repmgr_bindir[ansible_os_family] }}/repmgr primary register -f {{ repmgr_config_dir[ansible_os_family] }}/repmgr.conf
-    --force --superuser={{ specification.extensions.replication.priviledged_user_name }}"
-  when:
-    - groups['postgresql'][0] == inventory_hostname
-    - is_master_already_registered.stdout == ""
+    - name: Register primary node
+      when: is_primary_already_registered.stdout == ""
+      block:
+        - name: Register primary node
+          become_user: postgres
+          command: >-
+            {{ repmgr_bindir[ansible_os_family] }}/repmgr primary register
+            --superuser={{ specification.extensions.replication.priviledged_user_name }} --force
 
-# Slave:
-- name: Check if node is already registered in repmgr
-  become_user: postgres
-  shell: >-
-    set -o pipefail &&
-    {{ repmgr_bindir[ansible_os_family] }}/repmgr cluster show -f {{ repmgr_config_dir[ansible_os_family] }}/repmgr.conf | grep -i {{ inventory_hostname }}
-  changed_when: false
-  register: is_node_already_registered
-  failed_when: is_node_already_registered.rc == 2
-  args:
-    executable: /bin/bash
-  when:
-    - groups['postgresql'][1] == inventory_hostname
+        - name: Restart repmgrd service
+          service:
+            name: "{{ repmgr_service_name[ansible_os_family] }}"
+            state: restarted
 
-- name: Stop postgresql service
-  service:
-    name: "{{ pg_service_name[ansible_os_family] }}"
-    state: stopped
-  when:
-    - groups['postgresql'][1] == inventory_hostname
-    - is_node_already_registered.stdout == ""
+# --- Configure standby node ---
 
-- name: Clone content with repmgr
-  become_user: postgres
-  shell: "{{ repmgr_bindir[ansible_os_family] }}/repmgr -h {{ hostvars[groups['postgresql'][0]]['ansible_default_ipv4']['address'] }} -U {{ specification.extensions.replication.priviledged_user_name }} -d {{ specification.extensions.replication.repmgr_database }} -p 5432 -F standby clone"
-  when:
-    - groups['postgresql'][1] == inventory_hostname
-    - is_node_already_registered.stdout == ""
+- name: Tasks to run only on standby node
+  when: groups.postgresql[1] == inventory_hostname
+  block:
+    - name: Check if node is already registered in repmgr cluster
+      become_user: postgres
+      shell: >-
+        set -o pipefail &&
+        {{ repmgr_bindir[ansible_os_family] }}/repmgr cluster show | grep -iw {{ inventory_hostname }}
+      changed_when: false
+      register: is_node_already_registered
+      failed_when: is_node_already_registered.rc not in [0, 1]
 
-- name: Start postgresql service
-  service:
-    name: "{{ pg_service_name[ansible_os_family] }}"
-    state: started
-  when:
-    - groups['postgresql'][1] == inventory_hostname
-    - is_node_already_registered.stdout == ""
+    - name: Clone node from primary and register
+      when: is_node_already_registered.stdout == ""
+      block:
+        # Ubuntu specific: there are two systemd unit files: postgresql.service (service for managing all clusters
+        # on system) and postgresql@.service (service template for clusters). The latter is 'PartOf' the former.
+        # Ansible seems to not wait for dependent service to be stopped so we need to stop both to avoid error
+        # from 'repmgr standby clone'.
+        - name: Stop postgresql service
+          systemd:
+            name: "{{ item }}"
+            state: stopped
+          loop:
+            - "{{ pg_service_name[ansible_os_family] }}"
+            - "{{ pg_instantiated_service_name[ansible_os_family] }}"
 
-- name: Restart repmgrd service
-  service:
-    name: "{{ repmgr_service_name[ansible_os_family] }}"
-    state: restarted
-  when:
-    - groups['postgresql'][1] == inventory_hostname
-    - is_node_already_registered.stdout == ""
+        - name: Clone node with repmgr
+          become_user: postgres
+          command: >-
+            {{ repmgr_bindir[ansible_os_family] }}/repmgr standby clone
+            -h {{ hostvars[groups.postgresql[0]].ansible_default_ipv4.address }}
+            -U {{ specification.extensions.replication.priviledged_user_name }}
+            -d {{ specification.extensions.replication.repmgr_database }} -p 5432 --force
 
-- name: Register node with repmgr
-  become_user: postgres
-  shell: "{{ repmgr_bindir[ansible_os_family] }}/repmgr standby -F -f {{ repmgr_config_dir[ansible_os_family] }}/repmgr.conf --upstream-conninfo='host={{ hostvars[groups['postgresql'][0]]['ansible_default_ipv4']['address'] }}, user={{ specification.extensions.replication.replication_user_name }}, dbname={{ specification.extensions.replication.repmgr_database }}, connect_timeout=2' --upstream-node-id 1 register"
-  when:
-    - groups['postgresql'][1] == inventory_hostname
-    - is_node_already_registered.stdout == ""
+        - name: Start postgresql service
+          systemd:
+            name: "{{ pg_service_name[ansible_os_family] }}"
+            state: started
 
-- name: Check if node is not attached to repmgr
-  become_user: postgres
-  shell: >-
-    set -o pipefail &&
-    {{ repmgr_bindir[ansible_os_family] }}/repmgr cluster show -f {{ repmgr_config_dir[ansible_os_family] }}/repmgr.conf | grep -i 'not attached to its upstream node'
-  changed_when: false
-  register: is_node_not_attached
-  failed_when: is_node_not_attached.rc == 2
-  args:
-    executable: /bin/bash
-  when:
-    - groups['postgresql'][1] == inventory_hostname
+        - name: Register node with repmgr
+          become_user: postgres
+          command: >-
+            {{ repmgr_bindir[ansible_os_family] }}/repmgr standby register --upstream-node-id 1 --force
 
-- name: Rejoin node with repmgr
-  become_user: postgres
-  shell: "{{ repmgr_bindir[ansible_os_family] }}/repmgr standby -f {{ repmgr_config_dir[ansible_os_family] }}/repmgr.conf follow"
-  when:
-    - groups['postgresql'][1] == inventory_hostname
-    - not is_node_not_attached.stdout == ""
+        - name: Restart repmgrd service
+          systemd:
+            name: "{{ repmgr_service_name[ansible_os_family] }}"
+            state: restarted
 
-# All
-- name: Restart repmgrd service
-  service:
-    name: "{{ repmgr_service_name[ansible_os_family] }}"
-    state: restarted
+    - name: Check if node is not attached to repmgr
+      become_user: postgres
+      shell: >-
+        set -o pipefail &&
+        {{ repmgr_bindir[ansible_os_family] }}/repmgr cluster show | grep -i 'not attached to its upstream node'
+      changed_when: false
+      register: is_node_not_attached
+      failed_when: is_node_not_attached.rc not in [0, 1]
+
+    - name: Attach active standby to current primary node
+      become_user: postgres
+      command: "{{ repmgr_bindir[ansible_os_family] }}/repmgr standby follow"
+      when:
+        - is_node_not_attached.stdout | length > 0
