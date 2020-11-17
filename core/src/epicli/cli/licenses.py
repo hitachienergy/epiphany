@@ -5,7 +5,7 @@
 LICENSES = [
     {
         "Name": "adal",
-        "Version": "1.2.4",
+        "Version": "1.2.5",
         "Summary": "Note: This library is already replaced by MSAL Python, available here: https://pypi.org/project/msal/ .ADAL Python remains available here as a legacy. The ADAL for Python library makes it easy for python application to authenticate to Azure Active Directory (AAD) in order to access AAD protected web resources.",
         "Home-page": "https://github.com/AzureAD/azure-activedirectory-library-for-python",
         "Author": "Microsoft Corporation",
@@ -15,7 +15,7 @@ LICENSES = [
     },
     {
         "Name": "ansible",
-        "Version": "2.8.8",
+        "Version": "2.8.17",
         "Summary": "Radically simple IT automation",
         "Home-page": "https://ansible.com/",
         "Author": "Ansible, Inc.",
@@ -42,7 +42,7 @@ LICENSES = [
     },
     {
         "Name": "argcomplete",
-        "Version": "1.11.1",
+        "Version": "1.12.1",
         "Summary": "Bash tab completion for argparse",
         "Home-page": "https://github.com/kislyuk/argcomplete",
         "Author": "Andrey Kislyuk",
@@ -53,7 +53,7 @@ LICENSES = [
     },
     {
         "Name": "attrs",
-        "Version": "19.3.0",
+        "Version": "20.2.0",
         "Summary": "Classes Without Boilerplate",
         "Home-page": "https://www.attrs.org/",
         "Author": "Hynek Schlawack",
@@ -105,7 +105,7 @@ LICENSES = [
     },
     {
         "Name": "azure-cli-telemetry",
-        "Version": "1.0.4",
+        "Version": "1.0.6",
         "Summary": "Microsoft Azure CLI Telemetry Package",
         "Home-page": "https://github.com/Azure/azure-cli",
         "Author": "Microsoft Corporation",
@@ -138,7 +138,7 @@ LICENSES = [
     },
     {
         "Name": "azure-core",
-        "Version": "1.7.0",
+        "Version": "1.8.2",
         "Summary": "Microsoft Azure Core Library for Python",
         "Home-page": "https://github.com/Azure/azure-sdk-for-python/tree/master/sdk/core/azure-core",
         "Author": "Microsoft Corporation",
@@ -157,7 +157,7 @@ LICENSES = [
     },
     {
         "Name": "azure-datalake-store",
-        "Version": "0.0.48",
+        "Version": "0.0.51",
         "Summary": "Azure Data Lake Store Filesystem Client Library for Python",
         "Home-page": "https://github.com/Azure/azure-data-lake-store-python",
         "Author": "Microsoft Corporation",
@@ -769,7 +769,7 @@ LICENSES = [
     },
     {
         "Name": "azure-mgmt-redis",
-        "Version": "7.0.0rc1",
+        "Version": "7.0.0rc2",
         "Summary": "Microsoft Azure Redis Cache Management Client Library for Python",
         "Home-page": "https://github.com/Azure/azure-sdk-for-python",
         "Author": "Microsoft Corporation",
@@ -923,7 +923,7 @@ LICENSES = [
     },
     {
         "Name": "azure-multiapi-storage",
-        "Version": "0.3.5",
+        "Version": "0.3.7",
         "Summary": "Microsoft Azure Storage Client Library for Python with multi API version support.",
         "Home-page": "https://github.com/Azure/azure-multiapi-storage-python",
         "Author": "Microsoft Corporation",
@@ -967,7 +967,7 @@ LICENSES = [
     },
     {
         "Name": "bcrypt",
-        "Version": "3.1.7",
+        "Version": "3.2.0",
         "Summary": "Modern password hashing for your software and your servers",
         "Home-page": "https://github.com/pyca/bcrypt/",
         "Author": "The Python Cryptographic Authority developers",
@@ -978,7 +978,7 @@ LICENSES = [
     },
     {
         "Name": "boto3",
-        "Version": "1.14.19",
+        "Version": "1.16.10",
         "Summary": "The AWS SDK for Python",
         "Home-page": "https://github.com/boto/boto3",
         "Author": "Amazon Web Services",
@@ -989,7 +989,7 @@ LICENSES = [
     },
     {
         "Name": "botocore",
-        "Version": "1.17.19",
+        "Version": "1.19.10",
         "Summary": "Low-level, data-driven core of boto 3.",
         "Home-page": "https://github.com/boto/botocore",
         "Author": "Amazon Web Services",
@@ -1008,7 +1008,7 @@ LICENSES = [
     },
     {
         "Name": "cffi",
-        "Version": "1.14.0",
+        "Version": "1.14.3",
         "Summary": "Foreign Function Interface for Python calling C code.",
         "Home-page": "http://cffi.readthedocs.org",
         "Author": "Armin Rigo, Maciej Fijalkowski",
@@ -1027,7 +1027,7 @@ LICENSES = [
     },
     {
         "Name": "colorama",
-        "Version": "0.4.3",
+        "Version": "0.4.4",
         "Summary": "Cross-platform colored terminal text.",
         "Home-page": "https://github.com/tartley/colorama",
         "Author": "Jonathan Hartley",
@@ -1044,15 +1044,7 @@ LICENSES = [
         "Author": "The cryptography developers",
         "License": "Other",
         "License URL": "https://api.github.com/repos/pyca/cryptography/license",
-        "License repo": "This software is made available under the terms of *either* of the licenses\nfound in LICENSE.APACHE or LICENSE.BSD. Contributions to cryptography are made\nunder the terms of *both* these licenses.\n\nThe code used in the OpenSSL locking callback and OS random engine is derived\nfrom CPython, and is licensed under the terms of the PSF License Agreement.\n"
-    },
-    {
-        "Name": "docutils",
-        "Version": "0.15.2",
-        "Summary": "Docutils -- Python Documentation Utilities",
-        "Home-page": "http://docutils.sourceforge.net/",
-        "Author": "David Goodger",
-        "License": "public domain, Python, 2-Clause BSD, GPL 3 (see COPYING.txt)"
+        "License repo": "This software is made available under the terms of *either* of the licenses\nfound in LICENSE.APACHE or LICENSE.BSD. Contributions to cryptography are made\nunder the terms of *both* these licenses.\n\nThe code used in the OS random engine is derived from CPython, and is licensed\nunder the terms of the PSF License Agreement.\n"
     },
     {
         "Name": "fabric",
@@ -1082,10 +1074,10 @@ LICENSES = [
     },
     {
         "Name": "importlib-metadata",
-        "Version": "1.7.0",
+        "Version": "2.0.0",
         "Summary": "Read metadata from Python packages",
         "Home-page": "http://importlib-metadata.readthedocs.io/",
-        "Author": "Barry Warsaw",
+        "Author": "Jason R. Coombs",
         "License": "Apache Software License"
     },
     {
@@ -1213,7 +1205,7 @@ LICENSES = [
     },
     {
         "Name": "msrest",
-        "Version": "0.6.17",
+        "Version": "0.6.19",
         "Summary": "AutoRest swagger generator Python client runtime.",
         "Home-page": "https://github.com/Azure/msrest-for-python",
         "Author": "Microsoft Corporation",
@@ -1246,7 +1238,7 @@ LICENSES = [
     },
     {
         "Name": "paramiko",
-        "Version": "2.7.1",
+        "Version": "2.7.2",
         "Summary": "SSH2 protocol library",
         "Home-page": "https://github.com/paramiko/paramiko/",
         "Author": "Jeff Forcier",
@@ -1257,7 +1249,7 @@ LICENSES = [
     },
     {
         "Name": "pkginfo",
-        "Version": "1.5.0.1",
+        "Version": "1.6.1",
         "Summary": "Query metadatdata from sdists / bdists / installed packages.",
         "Home-page": "https://code.launchpad.net/~tseaver/pkginfo/trunk",
         "Author": "Tres Seaver, Agendaless Consulting",
@@ -1265,7 +1257,7 @@ LICENSES = [
     },
     {
         "Name": "portalocker",
-        "Version": "1.7.0",
+        "Version": "1.7.1",
         "Summary": "Wraps the portalocker recipe for easy usage",
         "Home-page": "https://github.com/WoLpH/portalocker",
         "Author": "Rick van Hattem",
@@ -1281,11 +1273,11 @@ LICENSES = [
         "Author": "Eli Bendersky",
         "License": "Other",
         "License URL": "https://api.github.com/repos/eliben/pycparser/license",
-        "License repo": "pycparser -- A C parser in Python\n\nCopyright (c) 2008-2017, Eli Bendersky\nAll rights reserved.\n\nRedistribution and use in source and binary forms, with or without modification,\nare permitted provided that the following conditions are met:\n\n* Redistributions of source code must retain the above copyright notice, this \n  list of conditions and the following disclaimer.\n* Redistributions in binary form must reproduce the above copyright notice, \n  this list of conditions and the following disclaimer in the documentation \n  and/or other materials provided with the distribution.\n* Neither the name of Eli Bendersky nor the names of its contributors may \n  be used to endorse or promote products derived from this software without \n  specific prior written permission.\n\nTHIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS \"AS IS\" AND \nANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED \nWARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE \nDISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE \nLIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR \nCONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE \nGOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) \nHOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT \nLIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT \nOF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.\n"
+        "License repo": "pycparser -- A C parser in Python\n\nCopyright (c) 2008-2020, Eli Bendersky\nAll rights reserved.\n\nRedistribution and use in source and binary forms, with or without modification,\nare permitted provided that the following conditions are met:\n\n* Redistributions of source code must retain the above copyright notice, this \n  list of conditions and the following disclaimer.\n* Redistributions in binary form must reproduce the above copyright notice, \n  this list of conditions and the following disclaimer in the documentation \n  and/or other materials provided with the distribution.\n* Neither the name of Eli Bendersky nor the names of its contributors may \n  be used to endorse or promote products derived from this software without \n  specific prior written permission.\n\nTHIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS \"AS IS\" AND \nANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED \nWARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE \nDISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE \nLIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR \nCONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE \nGOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) \nHOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT \nLIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT \nOF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.\n"
     },
     {
         "Name": "Pygments",
-        "Version": "2.6.1",
+        "Version": "2.7.2",
         "Summary": "Pygments is a syntax highlighting package written in Python.",
         "Home-page": "https://pygments.org/",
         "Author": "Georg Brandl",
@@ -1323,7 +1315,7 @@ LICENSES = [
     },
     {
         "Name": "pyrsistent",
-        "Version": "0.16.0",
+        "Version": "0.17.3",
         "Summary": "Persistent/Functional/Immutable data structures",
         "Home-page": "http://github.com/tobgu/pyrsistent/",
         "Author": "Tobias Gustafsson",
@@ -1342,7 +1334,7 @@ LICENSES = [
     },
     {
         "Name": "python-json-logger",
-        "Version": "0.1.11",
+        "Version": "2.0.1",
         "Summary": "A python library adding a json log formatter",
         "Home-page": "http://github.com/madzak/python-json-logger",
         "Author": "Zakaria Zajac",
@@ -1391,15 +1383,15 @@ LICENSES = [
     },
     {
         "Name": "ruamel.yaml.clib",
-        "Version": "0.2.0",
+        "Version": "0.2.2",
         "Summary": "C version of reader, parser and emitter for ruamel.yaml derived from libyaml",
-        "Home-page": "https://bitbucket.org/ruamel/yaml.clib",
+        "Home-page": "https://sourceforge.net/p/ruamel-yaml-clib/code/ci/default/tree",
         "Author": "Anthon van der Neut",
         "License": "MIT"
     },
     {
         "Name": "ruamel.yaml",
-        "Version": "0.16.10",
+        "Version": "0.16.12",
         "Summary": "ruamel.yaml is a YAML parser/emitter that supports roundtrip preservation of comments, seq/map flow style, and map key order",
         "Home-page": "https://sourceforge.net/p/ruamel-yaml/code/ci/default/tree",
         "Author": "Anthon van der Neut",
@@ -1418,7 +1410,7 @@ LICENSES = [
     },
     {
         "Name": "scp",
-        "Version": "0.13.2",
+        "Version": "0.13.3",
         "Summary": "scp module for paramiko",
         "Home-page": "https://github.com/jbardin/scp.py",
         "Author": "James Bardin",
@@ -1456,7 +1448,7 @@ LICENSES = [
         "Author": "Pahaz Blinov",
         "License": "MIT License",
         "License URL": "https://api.github.com/repos/pahaz/sshtunnel/license",
-        "License repo": "Copyright (c) 2014-2019 Pahaz Blinov\n\nPermission is hereby granted, free of charge, to any person obtaining a copy\nof this software and associated documentation files (the \"Software\"), to deal\nin the Software without restriction, including without limitation the rights\nto use, copy, modify, merge, publish, distribute, sublicense, and/or sell\ncopies of the Software, and to permit persons to whom the Software is\nfurnished to do so, subject to the following conditions:\n\nThe above copyright notice and this permission notice shall be included in\nall copies or substantial portions of the Software.\n\nTHE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR\nIMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,\nFITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE\nAUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER\nLIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,\nOUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN\nTHE SOFTWARE.\n\n",
+        "License repo": "Copyright (c) 2014-2019 Pahaz White\n\nPermission is hereby granted, free of charge, to any person obtaining a copy\nof this software and associated documentation files (the \"Software\"), to deal\nin the Software without restriction, including without limitation the rights\nto use, copy, modify, merge, publish, distribute, sublicense, and/or sell\ncopies of the Software, and to permit persons to whom the Software is\nfurnished to do so, subject to the following conditions:\n\nThe above copyright notice and this permission notice shall be included in\nall copies or substantial portions of the Software.\n\nTHE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR\nIMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,\nFITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE\nAUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER\nLIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,\nOUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN\nTHE SOFTWARE.\n\n",
         "License text": "MIT License\n\nCopyright (c) [year] [fullname]\n\nPermission is hereby granted, free of charge, to any person obtaining a copy\nof this software and associated documentation files (the \"Software\"), to deal\nin the Software without restriction, including without limitation the rights\nto use, copy, modify, merge, publish, distribute, sublicense, and/or sell\ncopies of the Software, and to permit persons to whom the Software is\nfurnished to do so, subject to the following conditions:\n\nThe above copyright notice and this permission notice shall be included in all\ncopies or substantial portions of the Software.\n\nTHE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR\nIMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,\nFITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE\nAUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER\nLIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,\nOUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE\nSOFTWARE.\n"
     },
     {
@@ -1483,7 +1475,7 @@ LICENSES = [
     },
     {
         "Name": "urllib3",
-        "Version": "1.25.9",
+        "Version": "1.25.11",
         "Summary": "HTTP library with thread-safe connection pooling, file post, and more.",
         "Home-page": "https://urllib3.readthedocs.io/",
         "Author": "Andrey Petrov",
@@ -1532,7 +1524,7 @@ LICENSES = [
     },
     {
         "Name": "zipp",
-        "Version": "3.1.0",
+        "Version": "3.4.0",
         "Summary": "Backport of pathlib-compatible object wrapper for zip files",
         "Home-page": "https://github.com/jaraco/zipp",
         "Author": "Jason R. Coombs",
