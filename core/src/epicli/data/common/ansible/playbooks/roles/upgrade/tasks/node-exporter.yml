@@ -1,4 +1,12 @@
 ---
+- name: Node Exporter | Include defaults from node_exporter role
+  include_vars:
+    file: roles/node_exporter/defaults/main.yml
+
+- name: Node Exporter | Include specification vars from node_exporter role
+  include_vars:
+    file: roles/node_exporter/vars/main.yml
+
 - name: Node Exporter as DaemonSet | Get information about helm releases
   delegate_to: localhost
   become: false
@@ -26,14 +34,6 @@
 - name: Node Exporter as System Service | Populate service facts
   service_facts:
   when: ansible_facts.services is undefined
-
-- name: Node Exporter as System Service | Include defaults from node_exporter role
-  include_vars:
-    file: roles/node_exporter/defaults/main.yml
-
-- name: Node Exporter as System Service | Include specification vars from node_exporter role
-  include_vars:
-    file: roles/node_exporter/vars/main.yml
 
 - name: Node Exporter as System Service | Test if node exporter service is configured
   assert:
