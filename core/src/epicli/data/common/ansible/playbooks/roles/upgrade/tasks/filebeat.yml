@@ -1,26 +1,50 @@
 ---
-- name: Filebeat | Get information about installed packages as facts
+- name: Filebeat as DaemonSet | Get information about helm releases
+  delegate_to: localhost
+  become: false
+  run_once: true
+  environment: { KUBECONFIG: "{{ vault_location }}/../kubeconfig" }
+  command: helm list
+  register: check_filebeat_release
+
+- name: Reinstall Filebeat as DaemonSet from default namespace to custom namespace for "k8s as cloud service"
+  when:
+    - specification.helm_chart_name in check_filebeat_release.stdout
+    - k8s_as_cloud_service is defined
+    - k8s_as_cloud_service
+  block: 
+    - name: Include uninstall task for Filebeat as DaemonSet in default namespace for "k8s as cloud service"
+      include_role:
+        name: filebeat
+        tasks_from: uninstall-filebeat-as-daemonset.yml
+
+    - name: Include install task for Filebeat as DaemonSet in custom namespace for "k8s as cloud service"
+      include_role:
+        name: filebeat
+        tasks_from: install-filebeat-as-daemonset.yml
+
+- name: Filebeat as System Service | Get information about installed packages as facts
   package_facts:
     manager: auto
   when: ansible_facts.packages is undefined
 
-- name: Filebeat | Test if filebeat package is installed
+- name: Filebeat as System Service | Test if filebeat package is installed
   assert:
     that: ansible_facts.packages['filebeat'] is defined
     fail_msg: filebeat package not found, nothing to update
     quiet: true
 
-- name: Filebeat | Print versions
+- name: Filebeat as System Service | Print versions
   debug:
     msg:
       - "Installed version: {{ ansible_facts.packages['filebeat'][0].version }}"
       - "Target version: {{ filebeat_version }}"
 
-- name: Update Filebeat as system service
+- name: Update Filebeat as System Service
   when:
     - filebeat_version is version(ansible_facts.packages['filebeat'][0].version, '>=')
   block:
-    - name: Filebeat | Backup configuration file (filebeat.yml)
+    - name: Filebeat as System Service | Backup configuration file (filebeat.yml)
       copy:
         remote_src: true
         src: /etc/filebeat/filebeat.yml
@@ -37,16 +61,3 @@
     - import_role:
         name: filebeat
         tasks_from: configure-filebeat
-
-- name: Reinstall Filebeat as DaemonSet from default to custom namespace for "k8s as cloud service"
-  when: k8s_as_cloud_service is defined and k8s_as_cloud_service
-  block:
-    - name: Include uninstall task for Filebeat as DaemonSet in default namespace for "k8s as cloud service"
-      include_role:
-        name: filebeat
-        tasks_from: uninstall-filebeat-as-daemonset.yml
-
-    - name: Include install task for Filebeat as DaemonSet in custom namespace for "k8s as cloud service"
-      include_role:
-        name: filebeat
-        tasks_from: install-filebeat-as-daemonset.yml
