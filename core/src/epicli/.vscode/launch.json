@@ -10,7 +10,6 @@
             "request": "launch",
             "program": "${workspaceFolder}/cli/epicli.py",
             "cwd": "${workspaceFolder}",
-            "pythonPath": "${config:python.pythonPath}",
             "env": { "PYTHONPATH": "${workspaceFolder}" },
             "console": "integratedTerminal",
             "args": ["apply", "-f", "${workspaceFolder}/clusters/YOUR_DATA_YAML.yml"]
@@ -25,10 +24,9 @@
             "request": "launch",
             "module": "pytest",
             "cwd": "${workspaceFolder}",
-            "pythonPath": "${config:python.pythonPath}",
             "env": { "PYTHONPATH": "${workspaceFolder}" },
             "console": "integratedTerminal",
             "args": ["${workspaceFolder}/tests/", "--junitxml=${workspaceFolder}/tests/results/unit_test_results.xml"]
         }
-    ]	
+    ]
 }
