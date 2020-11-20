@@ -5,17 +5,21 @@
   run_once: true
   environment: { KUBECONFIG: "{{ vault_location }}/../kubeconfig" }
   command: helm list --output json
-  register: helm_list_releases
+  register: helm_list
 
-- name: Check if exist filebeat release in default namespace, if exist set the filebeat release name
+- name: Check if filebeat release exist in default namespace and set facts
   set_fact:
-    filebeat_release_name: "{{ item.name }}"
-  when: item.name == specification.helm_chart_name
-  with_items: "{{ (helm_list_releases.stdout|from_json) }}"
+    filebeat_release_exists: >-
+      {{ _names | ternary(true, false) }}
+  vars:
+    _names: >-
+      {{ helm_list.stdout|from_json | map(attribute='name')
+                  | select('eq', specification.helm_chart_name)
+                  | list }}
 
 - name: Reinstall Filebeat as DaemonSet from default namespace to custom namespace for "k8s as cloud service"
   when:
-    - filebeat_release_name is defined
+    - filebeat_release_exists
     - k8s_as_cloud_service is defined
     - k8s_as_cloud_service
   block: 
