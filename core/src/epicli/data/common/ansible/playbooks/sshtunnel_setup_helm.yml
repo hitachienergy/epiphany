@@ -13,7 +13,7 @@
       when:
         - groups.repository is defined
         - groups.repository | length > 0
-        - not (custom_image_registry_address | default(false, true))
+        - not (custom_repository_url | default(false, true))
   module_defaults:
     shell:
       executable: /bin/bash
