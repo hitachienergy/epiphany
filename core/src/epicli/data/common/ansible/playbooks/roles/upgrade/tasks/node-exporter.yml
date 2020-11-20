@@ -12,12 +12,18 @@
   become: false
   run_once: true
   environment: { KUBECONFIG: "{{ vault_location }}/../kubeconfig" }
-  command: helm list
-  register: check_node_exporter_release
+  command: helm list --output json
+  register: helm_list_releases
+
+- name: Check if exist node exporter release in default namespace, if exist set the node exporter release name
+  set_fact:
+    node_exporter_release_name: "{{ item.name }}"
+  when: item.name == specification.helm_chart_name
+  with_items: "{{ (helm_list_releases.stdout|from_json) }}"
 
 - name: Reinstall Node Exporter as DaemonSet from default namespace to custom namespace for "k8s as cloud service"
   when:
-    - specification.helm_chart_name in check_node_exporter_release.stdout
+    - node_exporter_release_name is defined
     - k8s_as_cloud_service is defined
     - k8s_as_cloud_service
   block: 
