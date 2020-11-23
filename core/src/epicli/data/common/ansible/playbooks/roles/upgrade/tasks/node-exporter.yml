@@ -7,24 +7,25 @@
   include_vars:
     file: roles/node_exporter/vars/main.yml
 
-- name: Node Exporter as DaemonSet | Get information about helm releases
+- name: Node Exporter as DaemonSet | Prepare fact about helm release
   delegate_to: localhost
   become: false
   run_once: true
-  environment: { KUBECONFIG: "{{ vault_location }}/../kubeconfig" }
-  command: helm list --output json
-  register: helm_list
+  block:
+    - name: Get information about helm releases
+      command: helm list --output json
+      register: helm_list
 
-- name: Check if node exporter release exist in default namespace and set facts
-  set_fact:
-    node_exporter_release_exists: >-
-      {{ _names | ternary(true, false) }}
-  vars:
-    _names: >-
-      {{ helm_list.stdout | from_json 
-                          | map(attribute='name')
-                          | select('==', specification.helm_chart_name)
-                          | list }}
+    - name: Check if node exporter release exist in default namespace and set fact
+      set_fact:
+        node_exporter_release_exists: >-
+          {{ _names | ternary(true, false) }}
+      vars:
+        _names: >-
+          {{ helm_list.stdout | from_json 
+                              | map(attribute='name')
+                              | select('==', specification.helm_chart_name)
+                              | list }}
 
 - name: Reinstall Node Exporter as DaemonSet from default namespace to custom namespace for "k8s as cloud service"
   when:
