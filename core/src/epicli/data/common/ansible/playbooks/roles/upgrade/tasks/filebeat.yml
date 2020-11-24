@@ -1,26 +1,62 @@
 ---
-- name: Filebeat | Get information about installed packages as facts
+- name: Filebeat as DaemonSet | Prepare fact about helm release
+  delegate_to: localhost
+  become: false
+  run_once: true
+  block:
+    - name: Get information about helm releases
+      command: helm list --output json
+      register: helm_list
+
+    - name: Check if filebeat release exist in default namespace and set fact
+      set_fact:
+        filebeat_release_exists: >-
+          {{ _names | ternary(true, false) }}
+      vars:
+        _names: >-
+          {{ helm_list.stdout | from_json 
+                              | map(attribute='name')
+                              | select('==', specification.helm_chart_name)
+                              | list }}
+
+- name: Reinstall Filebeat as DaemonSet from default namespace to custom namespace for "k8s as cloud service"
+  when:
+    - filebeat_release_exists
+    - k8s_as_cloud_service is defined
+    - k8s_as_cloud_service
+  block: 
+    - name: Include uninstall task for Filebeat as DaemonSet in default namespace for "k8s as cloud service"
+      include_role:
+        name: filebeat
+        tasks_from: uninstall-filebeat-as-daemonset.yml
+
+    - name: Include install task for Filebeat as DaemonSet in custom namespace for "k8s as cloud service"
+      include_role:
+        name: filebeat
+        tasks_from: install-filebeat-as-daemonset.yml
+
+- name: Filebeat as System Service | Get information about installed packages as facts
   package_facts:
     manager: auto
   when: ansible_facts.packages is undefined
 
-- name: Filebeat | Test if filebeat package is installed
+- name: Filebeat as System Service | Test if filebeat package is installed
   assert:
     that: ansible_facts.packages['filebeat'] is defined
     fail_msg: filebeat package not found, nothing to update
     quiet: true
 
-- name: Filebeat | Print versions
+- name: Filebeat as System Service | Print versions
   debug:
     msg:
       - "Installed version: {{ ansible_facts.packages['filebeat'][0].version }}"
       - "Target version: {{ filebeat_version }}"
 
-- name: Update Filebeat
+- name: Update Filebeat as System Service
   when:
     - filebeat_version is version(ansible_facts.packages['filebeat'][0].version, '>=')
   block:
-    - name: Filebeat | Backup configuration file (filebeat.yml)
+    - name: Filebeat as System Service | Backup configuration file (filebeat.yml)
       copy:
         remote_src: true
         src: /etc/filebeat/filebeat.yml

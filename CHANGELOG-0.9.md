@@ -11,6 +11,7 @@
 - [#1835](https://github.com/epiphany-platform/epiphany/issues/1835) - Automated tests may give false negative result for PGAudit
 - [#1409](https://github.com/epiphany-platform/epiphany/issues/1409) - custom_image_registry_address setting is not implemented
 - [#1280](https://github.com/epiphany-platform/epiphany/issues/1280) - [RHEL] Pgpool not showing Replication State
+- [#1833](https://github.com/epiphany-platform/epiphany/issues/1833) - DaemonSets of Node Exporter and Filebeat deploy in default namespace
 
 ### Updated
 

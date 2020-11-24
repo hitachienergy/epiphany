@@ -1,8 +1,4 @@
 ---
-- name: Node Exporter | Populate service facts
-  service_facts:
-  when: ansible_facts.services is undefined
-
 - name: Node Exporter | Include defaults from node_exporter role
   include_vars:
     file: roles/node_exporter/defaults/main.yml
@@ -11,32 +7,72 @@
   include_vars:
     file: roles/node_exporter/vars/main.yml
 
-- name: Node Exporter | Test if node exporter service is configured
+- name: Node Exporter as DaemonSet | Prepare fact about helm release
+  delegate_to: localhost
+  become: false
+  run_once: true
+  block:
+    - name: Get information about helm releases
+      command: helm list --output json
+      register: helm_list
+
+    - name: Check if node exporter release exist in default namespace and set fact
+      set_fact:
+        node_exporter_release_exists: >-
+          {{ _names | ternary(true, false) }}
+      vars:
+        _names: >-
+          {{ helm_list.stdout | from_json 
+                              | map(attribute='name')
+                              | select('==', specification.helm_chart_name)
+                              | list }}
+
+- name: Reinstall Node Exporter as DaemonSet from default namespace to custom namespace for "k8s as cloud service"
+  when:
+    - node_exporter_release_exists
+    - k8s_as_cloud_service is defined
+    - k8s_as_cloud_service
+  block: 
+    - name: Include uninstall task for Node Exporter as DaemonSet in default namespace for "k8s as cloud service"
+      include_role:
+        name: node_exporter
+        tasks_from: uninstall-node-exporter-as-daemonset.yml
+
+    - name: Include install task for Node Exporter as DaemonSet in custom namespace for "k8s as cloud service"
+      include_role:
+        name: node_exporter
+        tasks_from: install-node-exporter-as-daemonset.yml
+
+- name: Node Exporter as System Service | Populate service facts
+  service_facts:
+  when: ansible_facts.services is undefined
+
+- name: Node Exporter as System Service | Test if node exporter service is configured
   assert:
     that: "'{{ exporter.service.name }}.service' in ansible_facts.services"
     fail_msg: "{{ exporter.service.name }} service is not found"
     quiet: true
 
-- name: Node Exporter | Set exporter_file_name fact
+- name: Node Exporter as System Service | Set exporter_file_name fact
   set_fact:
     exporter_file_name: "node_exporter-{{ exporter.version }}.linux-amd64.tar.gz"
 
-- name: Node Exporter | Collect version
+- name: Node Exporter as System Service | Collect version
   shell: >-
     /opt/node_exporter/node_exporter --version 2>&1
   register: exporter_current_version_out
 
-- name: Node Exporter | Set exporter_current_version fact
+- name: Node Exporter as System Service | Set exporter_current_version fact
   set_fact:
     exporter_current_version: "{{ exporter_current_version_out.stdout_lines[0] | regex_replace('^.*version ([0-9.]+) .*$', '\\1') }}"
 
-- name: Node Exporter | Print version
+- name: Node Exporter as System Service | Print version
   debug:
     msg:
       - "Installed version: {{ exporter_current_version }}"
       - "Target version: {{ exporter.version }}"
 
-- name: Node Exporter | Upgrade block
+- name: Node Exporter as System Service | Upgrade block
   when: exporter.version != exporter_current_version
   block:
     - name: Node Exporter | Download binaries
@@ -46,17 +82,17 @@
       vars:
         file_name: "{{ exporter_file_name }}"
 
-    - name: Node Exporter | Stop exporter
+    - name: Node Exporter as System Service | Stop exporter
       systemd:
         name: "{{ exporter.service.name }}.service"
         state: stopped
 
-    - name: Node Exporter | Remove /opt/node_exporter directory
+    - name: Node Exporter as System Service | Remove /opt/node_exporter directory
       file:
         path: /opt/node_exporter
         state: absent
 
-    - name: Node Exporter | Create empty /opt/node_exporter directory
+    - name: Node Exporter as System Service | Create empty /opt/node_exporter directory
       file:
         path: /opt/node_exporter
         owner: root
@@ -64,7 +100,7 @@
         mode: '0750'
         state: directory
 
-    - name: Node Exporter | Unpack binary
+    - name: Node Exporter as System Service | Unpack binary
       unarchive:
         remote_src: true
         src: "{{ download_directory }}/{{ exporter_file_name }}"
@@ -76,7 +112,7 @@
         group: node_exporter
       check_mode: false
 
-    - name: Node Exporter | Update systemd service configuration
+    - name: Node Exporter as System Service | Update systemd service configuration
       template:
         src: roles/node_exporter/templates/prometheus-node-exporter.service.j2
         dest: "/etc/systemd/system/{{ exporter.service.name }}.service"
@@ -84,7 +120,7 @@
         group: root
         mode: '0644'
 
-    - name: Node Exporter | Start exporter
+    - name: Node Exporter as System Service | Start exporter
       systemd:
         daemon_reload: true
         enabled: true

@@ -108,6 +108,8 @@
         name: upgrade
         tasks_from: filebeat
       when: groups.logging is defined # do not upgrade if there is legacy Elasticsearch (v6)
+  environment:
+    KUBECONFIG: "{{ kubeconfig.local }}"
 
 - hosts: logging
   become: true
@@ -165,3 +167,5 @@
     - import_role:
         name: upgrade
         tasks_from: node-exporter
+  environment:
+    KUBECONFIG: "{{ kubeconfig.local }}"

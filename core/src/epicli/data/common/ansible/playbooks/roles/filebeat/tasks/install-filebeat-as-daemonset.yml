@@ -26,7 +26,7 @@
 
     - name: Install Filebeat using custom Helm chart (custom-chart-values.yml)
       command: |
-        helm upgrade --install \
+        helm -n {{ logging_chart_namespace }} upgrade --install \
           -f {{ download_directory }}/custom-chart-values.yml \
           {{ specification.helm_chart_name }} \
-          {{ download_directory }}/{{ filebeat_helm_chart_file_name }}
+          {{ download_directory }}/{{ filebeat_helm_chart_file_name }} --create-namespace

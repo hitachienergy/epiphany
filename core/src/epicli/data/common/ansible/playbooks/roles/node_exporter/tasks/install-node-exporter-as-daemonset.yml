@@ -36,16 +36,16 @@
         - name: Install Node-Exporter's Helm chart (with custom values.yaml)
           delegate_to: localhost
           shell: |
-            helm upgrade --install \
+            helm -n {{ monitoring_chart_namespace }} upgrade --install \
               -f {{ download_directory }}/{{ specification.helm_chart_name }}_values.yaml \
               {{ specification.helm_chart_name }} \
-              {{ download_directory }}/{{ exporter_chart_file_name }}
+              {{ download_directory }}/{{ exporter_chart_file_name }} --create-namespace
 
     - when: not helm_chart_values_bool
     # ELSE
       block:
         - name: Install Node-Exporter's Helm chart (with default values.yaml)
           shell: |
-            helm upgrade --install \
+            helm -n {{ monitoring_chart_namespace }} upgrade --install \
               {{ specification.helm_chart_name }} \
-              {{ download_directory }}/{{ exporter_chart_file_name }}
+              {{ download_directory }}/{{ exporter_chart_file_name }} --create-namespace

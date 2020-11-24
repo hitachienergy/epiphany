@@ -1,0 +1,9 @@
+---
+
+- name: Uninstall Helm release "{{ specification.helm_chart_name }}"
+
+  delegate_to: localhost
+  become: false
+  run_once: true
+
+  command: helm uninstall {{ specification.helm_chart_name }}
