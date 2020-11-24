@@ -114,5 +114,34 @@ LICENSES = """ + json.dumps(all_deps_data, indent=4)
     with open(path, 'w') as file:
         file.write(dependancies_content)
 
+     # Write dependencies.xml for BDS scan
+    dependencies_content = """
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<components xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">"""
+
+    count = 1
+    for dep in all_deps_data: 
+        dep_name = dep['Name']
+        dep_version = dep['Version']
+        dep_website = dep['Home-page']
+        dep_license = dep['License']
+        dependencies_content = dependencies_content + f"""
+	<component>
+		<id>{count}</id>
+		<name>{dep_name}</name>
+		<version>{dep_version}</version>
+		<license>{dep_license}</license>
+		<url>{dep_website}</url>
+		<source></source>
+	</component>"""
+        count=count+1
+
+    dependencies_content = dependencies_content + """
+</components>
+"""
+    path = os.path.join(os.path.dirname(__file__), 'dependencies.xml')
+    with open(path, 'w') as file:
+        file.write(dependencies_content)
+
 if __name__ == '__main__':
     _main()
