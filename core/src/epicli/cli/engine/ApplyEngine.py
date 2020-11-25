@@ -118,7 +118,7 @@ class ApplyEngine(Step):
                 if prev_master_count > next_master_count:
                     raise Exception("ControlPlane downscale is not supported yet. Please revert your 'kubernetes_master' count to previous value or increase it to scale up Kubernetes.")
 
-    def assert_constant_os_family(self):
+    def assert_consistent_os_family(self):
         # Before this issue https://github.com/epiphany-platform/epiphany/issues/195 gets resolved,
         # we are forced to do assertion here.
 
@@ -170,7 +170,7 @@ class ApplyEngine(Step):
 
         save_manifest([*self.input_docs, *self.infrastructure_docs], self.cluster_model.specification.name)
 
-        self.assert_constant_os_family()
+        self.assert_consistent_os_family()
 
         if not (self.skip_infrastructure or self.is_provider_any(self.cluster_model)):
             # Generate terraform templates
