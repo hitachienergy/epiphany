@@ -14,6 +14,7 @@
 - [#1833](https://github.com/epiphany-platform/epiphany/issues/1833) - DaemonSets of Node Exporter and Filebeat deploy in default namespace
 - [#1872](https://github.com/epiphany-platform/epiphany/issues/1872) - pythonPath in launch.json is not supported
 - [#1868](https://github.com/epiphany-platform/epiphany/issues/1868) - Repository host runs Ubuntu on Azure/RHEL cluster
+- [#1875](https://github.com/epiphany-platform/epiphany/issues/1875) - epicli upgrade fails when there is no kubernetes_master group in inventory
 
 ### Updated
 
