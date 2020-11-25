@@ -96,29 +96,12 @@ def _main() -> None:
     with open(path, 'w') as file:
         file.write(licenses_content)
 
-     # Write components table to be pasted into 'COMPONENTS.md'
+     # Write components table to be pasted into 'COMPONENTS.md' and dependencies.xml for BDS scan
     dependencies_listing_content = textwrap.dedent("""\
     | Component | Version | Repo/Website | License |
     | --------- | ------- | ------------ | ------- |
     """)
 
-    for dep in all_deps_data: 
-        dep_name = dep['Name']
-        dep_version = dep['Version']
-        dep_website = dep['Home-page']
-        dep_license = dep['License']
-        if 'License URL' in dep:
-            dep_license_url = dep['License URL']
-            dep_line = f'| {dep_name} | {dep_version} | {dep_website} | [{dep_license}]({dep_license_url}) |\n'
-        else:
-            dep_line = f'| {dep_name} | {dep_version} | {dep_website} | {dep_license} |\n'
-        dependencies_listing_content = dependencies_listing_content + dep_line
-
-    path = os.path.join(os.path.dirname(__file__), 'DEPENDENCIES.md')
-    with open(path, 'w') as file:
-        file.write(dependencies_listing_content)
-
-     # Write dependencies.xml for BDS scan
     dependencies_content = """\
     <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
     <components xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">"""
@@ -129,6 +112,14 @@ def _main() -> None:
         dep_version = dep['Version']
         dep_website = dep['Home-page']
         dep_license = dep['License']
+
+        if 'License URL' in dep:
+            dep_license_url = dep['License URL']
+            dep_line = f'| {dep_name} | {dep_version} | {dep_website} | [{dep_license}]({dep_license_url}) |\n'
+        else:
+            dep_line = f'| {dep_name} | {dep_version} | {dep_website} | {dep_license} |\n'
+        dependencies_listing_content = dependencies_listing_content + dep_line
+
         dependencies_content = dependencies_content + f"""
         <component>
             <id>{count}</id>
@@ -139,6 +130,10 @@ def _main() -> None:
             <source></source>
         </component>"""
         count=count+1
+
+    path = os.path.join(os.path.dirname(__file__), 'DEPENDENCIES.md')
+    with open(path, 'w') as file:
+        file.write(dependencies_listing_content)
 
     dependencies_content = dependencies_content + """
     </components>
