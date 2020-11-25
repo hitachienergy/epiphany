@@ -10,14 +10,20 @@
             "request": "launch",
             "program": "${workspaceFolder}/cli/epicli.py",
             "cwd": "${workspaceFolder}",
-            "pythonPath": "${config:python.pythonPath}",
             "env": { "PYTHONPATH": "${workspaceFolder}" },
             "console": "integratedTerminal",
-            "args": ["apply", "-f", "${workspaceFolder}/clusters/YOUR_DATA_YAML.yml"]
-            // "args": ["apply", "-f", "${workspaceFolder}/clusters/YOUR_DATA_YAML.yml", "--offline-requirements", "${workspaceFolder}/downloads/epirepo"]
-            // "args": ["delete", "-b", "${workspaceFolder}/clusters/build/dir"]
-            // "args": ["init", "-p", "PROVIDER", "-n", "NAME"]
-            // "args": ["test", "-b", "${workspaceFolder}/clusters/build/dir"]
+            // "args": ["--debug", "1", "apply", "-f", "${workspaceFolder}/clusters/<YOUR_CONFIG>.yml"]
+            // "args": ["--help"]
+            "args": ["apply", "-f", "${workspaceFolder}/clusters/<YOUR_CONFIG>.yml"]
+            // "args": ["apply", "-f", "${workspaceFolder}/clusters/<YOUR_CONFIG>.yml", "--vault-password", "<ANSIBLE_VAULT_PASSWORD>"]
+            // "args": ["apply", "-f", "${workspaceFolder}/clusters/<YOUR_CONFIG>.yml", "--offline-requirements", "${workspaceFolder}/downloads/epirepo"]
+            // "args": ["delete", "-b", "${workspaceFolder}/clusters/build/<DIR>"]
+            // "args": ["init", "-p", "<PROVIDER>", "-n", "<NAME>"]
+            // "args": ["init", "-p", "<PROVIDER>", "-n", "<NAME>", "--full"]
+            // "args": ["prepare", "--os", "<OS>"]
+            // "args": ["test", "-b", "${workspaceFolder}/clusters/build/<DIR>"]
+            // "args": ["test", "-b", "${workspaceFolder}/clusters/build/<DIR>", "-g", "<TEST_GROUP>"]
+            // "args": ["upgrade", "-b", "${workspaceFolder}/clusters/build/<DIR>"]
         },
         {
             "name": "unit tests",
@@ -25,10 +31,9 @@
             "request": "launch",
             "module": "pytest",
             "cwd": "${workspaceFolder}",
-            "pythonPath": "${config:python.pythonPath}",
             "env": { "PYTHONPATH": "${workspaceFolder}" },
             "console": "integratedTerminal",
             "args": ["${workspaceFolder}/tests/", "--junitxml=${workspaceFolder}/tests/results/unit_test_results.xml"]
         }
-    ]	
+    ]
 }
