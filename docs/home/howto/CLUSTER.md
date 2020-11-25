@@ -56,12 +56,12 @@ Enable for CentOS on Azure:
    ```yaml
    repository:
      count: 1
-     machine: repository-machine-rhel
+     machine: repository-machine-centos
    ```
 2. Add repository VM definition to main config file:
    ```yaml
    kind: infrastructure/virtual-machine
-   name: repository-machine-rhel
+   name: repository-machine-centos
    provider: azure
    based_on: repository-machine
    specification:
@@ -78,13 +78,13 @@ Enable for CentOS on AWS:
    ```yaml
    repository:
      count: 1
-     machine: repository-machine-rhel
+     machine: repository-machine-centos
    ```
 2. Add repository VM definition to main config file:
    ```yaml
    kind: infrastructure/virtual-machine
    title: Virtual Machine Infra
-   name: repository-machine-rhel
+   name: repository-machine-centos
    provider: aws
    based_on: repository-machine
    specification:
