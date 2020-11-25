@@ -8,6 +8,7 @@ from itertools import dropwhile, takewhile
 from functools import reduce
 from typing import Set, List, Dict
 import pkg_resources
+import textwrap
 
 
 def get_dependencies_from_requirements() -> Set[str]:
@@ -83,36 +84,63 @@ def _main() -> None:
             all_deps_data.append(data)
 
     # Write licenses 'cli/licenses.py'
-    licenses_content = """
-# This is a generated file so don`t change this manually. 
-# To re-generate run 'python gen-licenses.py' from the project root.
+    licenses_content = """\
+    # This is a generated file so don`t change this manually. 
+    # To re-generate run 'python gen-licenses.py' from the project root.
 
-LICENSES = """ + json.dumps(all_deps_data, indent=4)
+    LICENSES = """
+
+    licenses_content = textwrap.dedent(licenses_content) + json.dumps(all_deps_data, indent=4)
 
     path = os.path.join(os.path.dirname(__file__), 'cli/licenses.py')
     with open(path, 'w') as file:
         file.write(licenses_content)
 
-     # Write components table to be pasted into 'COMPONENTS.md'
-    dependancies_content = """
-| Component | Version | Repo/Website | License |
-| --------- | ------- | ------------ | ------- |
-"""   
+     # Write components table to be pasted into 'COMPONENTS.md' and dependencies.xml for BDS scan
+    dependencies_listing_content = textwrap.dedent("""\
+    | Component | Version | Repo/Website | License |
+    | --------- | ------- | ------------ | ------- |
+    """)
+
+    dependencies_content = """\
+    <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+    <components xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">"""
+
+    count = 1
     for dep in all_deps_data: 
         dep_name = dep['Name']
         dep_version = dep['Version']
         dep_website = dep['Home-page']
         dep_license = dep['License']
+
         if 'License URL' in dep:
             dep_license_url = dep['License URL']
             dep_line = f'| {dep_name} | {dep_version} | {dep_website} | [{dep_license}]({dep_license_url}) |\n'
         else:
             dep_line = f'| {dep_name} | {dep_version} | {dep_website} | {dep_license} |\n'
-        dependancies_content = dependancies_content + dep_line
+        dependencies_listing_content = dependencies_listing_content + dep_line
+
+        dependencies_content = dependencies_content + f"""
+        <component>
+            <id>{count}</id>
+            <name>{dep_name}</name>
+            <version>{dep_version}</version>
+            <license>{dep_license}</license>
+            <url>{dep_website}</url>
+            <source></source>
+        </component>"""
+        count=count+1
 
     path = os.path.join(os.path.dirname(__file__), 'DEPENDENCIES.md')
     with open(path, 'w') as file:
-        file.write(dependancies_content)
+        file.write(dependencies_listing_content)
+
+    dependencies_content = dependencies_content + """
+    </components>
+    """
+    path = os.path.join(os.path.dirname(__file__), 'dependencies.xml')
+    with open(path, 'w') as file:
+        file.write(textwrap.dedent(dependencies_content))
 
 if __name__ == '__main__':
     _main()
