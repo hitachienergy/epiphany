@@ -10,7 +10,7 @@ assignees: ''
 **Describe the bug**
 A clear and concise description of what the bug is.
 
-**To Reproduce**
+**How to reproduce**
 Steps to reproduce the behavior:
 1. execute `epicli init ... (with params)`
 2. edit config file 
@@ -22,11 +22,9 @@ A clear and concise description of what you expected to happen.
 **Config files**
 If applicable, add config files to help explain your problem.
 
-**OS (please complete the following information):**
- - OS: [e.g. RHEL7]
-
-**Cloud Environment (please complete the following information):**
- - Cloud Provider [e.g. MS Azure]
+**Environment**
+- Cloud provider: [AWS | Azure | Any]
+- OS: [e.g. Ubuntu 18.04.4 LTS, you can use `cat /etc/os-release`]
 
 **Additional context**
 Add any other context about the problem here.
