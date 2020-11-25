@@ -103,14 +103,14 @@ class AnsibleInventoryUpgrade(Step):
 
         # repository & image_registry roles added in v0.4.0
         repository = self.get_role(new_inventory, 'repository')
-        if repository == None:
+        if repository is None:
             raise Exception('repository group not found in inventory. '
                             'Your deployment may not be supported by this version of Epiphany. '
                             'You may try to use older version first.')
 
         # add image_registry if not present
         image_registry = self.get_role(new_inventory, 'image_registry')
-        if image_registry == None:
+        if image_registry is None:
             hosts = [AnsibleHostModel(repository.hosts[0].name, repository.hosts[0].ip)]
             new_inventory.append(AnsibleInventoryItem('image_registry', hosts))
 
