@@ -46,7 +46,6 @@ Enable for RHEL on AWS:
    provider: aws
    based_on: repository-machine
    specification:
-     size: t3.small
      os_full_name: RHEL-7.8_HVM_GA-20200225-x86_64-1-Hourly2-GP2
    ```
 
@@ -88,7 +87,6 @@ Enable for CentOS on AWS:
    provider: aws
    based_on: repository-machine
    specification:
-     size: t3.small
      os_full_name: "CentOS 7.8.2003 x86_64"
    ```
 
