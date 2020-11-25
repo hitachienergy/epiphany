@@ -11,6 +11,7 @@
     - [Note about PostgreSQL preflight check](./howto/PREREQUISITES.md#note-about-postgresql-preflight-check)
 
 - [Epiphany cluster](./howto/CLUSTER.md)
+  - [How to enable/disable Epiphany repository VM](./howto/CLUSTER.md#how-to-enabledisable-epiphany-repository-vm)
   - [How to create an Epiphany cluster on existing infrastructure](./howto/CLUSTER.md#how-to-create-an-epiphany-cluster-on-existing-infrastructure)
   - [How to create an Epiphany cluster on existing airgapped infrastructure](./howto/CLUSTER.md#how-to-create-an-epiphany-cluster-on-existing-airgapped-infrastructure)
   - [How to create an Epiphany cluster using custom system repository and Docker image registry](./howto/CLUSTER.md#how-to-create-an-epiphany-cluster-using-custom-system-repository-and-docker-image-registry)

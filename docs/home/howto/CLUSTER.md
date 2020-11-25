@@ -1,3 +1,109 @@
+## How to enable/disable Epiphany repository VM
+
+Enable for Ubuntu (default):
+
+1. Enable "repository" component:
+   ```yaml
+   repository:
+     count: 1
+   ```
+
+Enable for RHEL on Azure:
+
+1. Enable "repository" component:
+   ```yaml
+   repository:
+     count: 1
+     machine: repository-machine-rhel
+   ```
+2. Add repository VM definition to main config file:
+   ```yaml
+   kind: infrastructure/virtual-machine
+   name: repository-machine-rhel
+   provider: azure
+   based_on: repository-machine
+   specification:
+     storage_image_reference:
+       publisher: RedHat
+       offer: RHEL
+       sku: 7-RAW
+       version: "7.7.2019090418"
+   ```
+
+Enable for RHEL on AWS:
+
+1. Enable "repository" component:
+   ```yaml
+   repository:
+     count: 1
+     machine: repository-machine-rhel
+   ```
+2. Add repository VM definition to main config file:
+   ```yaml
+   kind: infrastructure/virtual-machine
+   title: Virtual Machine Infra
+   name: repository-machine-rhel
+   provider: aws
+   based_on: repository-machine
+   specification:
+     os_full_name: RHEL-7.8_HVM_GA-20200225-x86_64-1-Hourly2-GP2
+   ```
+
+Enable for CentOS on Azure:
+
+1. Enable "repository" component:
+   ```yaml
+   repository:
+     count: 1
+     machine: repository-machine-centos
+   ```
+2. Add repository VM definition to main config file:
+   ```yaml
+   kind: infrastructure/virtual-machine
+   name: repository-machine-centos
+   provider: azure
+   based_on: repository-machine
+   specification:
+     storage_image_reference:
+       publisher: OpenLogic
+       offer: CentOS
+       sku: "7_8"
+       version: "7.8.2020100700"
+   ```
+
+Enable for CentOS on AWS:
+
+1. Enable "repository" component:
+   ```yaml
+   repository:
+     count: 1
+     machine: repository-machine-centos
+   ```
+2. Add repository VM definition to main config file:
+   ```yaml
+   kind: infrastructure/virtual-machine
+   title: Virtual Machine Infra
+   name: repository-machine-centos
+   provider: aws
+   based_on: repository-machine
+   specification:
+     os_full_name: "CentOS 7.8.2003 x86_64"
+   ```
+
+Disable:
+
+1. Disable "repository" component:
+   ```yaml
+   repository:
+     count: 0
+   ```
+2. Prepend "kubernetes\_master" mapping (or any other mapping if you don't deploy Kubernetes) with:
+   ```yaml
+   kubernetes_master:
+     - repository
+     - image-registry
+   ```
+
 ## How to create an Epiphany cluster on existing infrastructure
 
 Epicli has the ability to setup a cluster on infrastructure provided by you. These can be either bare metal machines or VM's and should meet the following requirements:

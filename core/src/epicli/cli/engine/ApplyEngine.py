@@ -4,7 +4,7 @@ from ansible.parsing.dataloader import DataLoader
 from ansible.inventory.manager import InventoryManager
 
 from cli.helpers.Step import Step
-from cli.helpers.doc_list_helpers import select_single
+from cli.helpers.doc_list_helpers import select_single, select_all
 from cli.helpers.build_saver import save_manifest, get_inventory_path
 from cli.helpers.yaml_helpers import safe_load_all
 from cli.helpers.Log import Log
@@ -116,7 +116,50 @@ class ApplyEngine(Step):
                 next_master_count = int(components['kubernetes_master']['count'])
 
                 if prev_master_count > next_master_count:
-                    raise Exception("ControlPlane downscale is not supported yet. Please revert your 'kubernetes_master' count to previous value or increase it to scale up kubernetes.")
+                    raise Exception("ControlPlane downscale is not supported yet. Please revert your 'kubernetes_master' count to previous value or increase it to scale up Kubernetes.")
+
+    def assert_consistent_os_family(self):
+        # Before this issue https://github.com/epiphany-platform/epiphany/issues/195 gets resolved,
+        # we are forced to do assertion here.
+
+        def _get_os_indicator(vm_doc):
+            expected_indicators = {
+                "ubuntu": "ubuntu",
+                "rhel": "redhat",
+                "redhat": "redhat",
+                "centos": "centos",
+            }
+            if vm_doc.provider == "azure":
+                # Example image offers:
+                # - UbuntuServer
+                # - RHEL
+                # - CentOS
+                for indicator in expected_indicators:
+                    if indicator in vm_doc.specification.storage_image_reference.offer.lower():
+                        return expected_indicators[indicator]
+            if vm_doc.provider == "aws":
+                # Example public/official AMI names:
+                # - ubuntu/images/hvm-ssd/ubuntu-bionic-18.04-amd64-server-20200611
+                # - RHEL-7.8_HVM_GA-20200225-x86_64-1-Hourly2-GP2
+                # - CentOS 7.8.2003 x86_64
+                for indicator in expected_indicators:
+                    if indicator in vm_doc.specification.os_full_name.lower():
+                        return expected_indicators[indicator]
+            # When name is completely custom we just skip the check
+            return None
+
+        virtual_machine_docs = select_all(
+            self.infrastructure_docs,
+            lambda x: x.kind == 'infrastructure/virtual-machine',
+        )
+
+        os_indicators = {
+            _get_os_indicator(vm_doc)
+            for vm_doc in virtual_machine_docs
+        }
+
+        if len(os_indicators) > 1:
+            raise Exception("Detected mixed Linux distros in config, Epirepo will not work properly. Please inspect your config manifest. Forgot to define repository VM document?")
 
     def apply(self):
         self.process_input_docs()
@@ -126,6 +169,8 @@ class ApplyEngine(Step):
         self.process_infrastructure_docs()
 
         save_manifest([*self.input_docs, *self.infrastructure_docs], self.cluster_model.specification.name)
+
+        self.assert_consistent_os_family()
 
         if not (self.skip_infrastructure or self.is_provider_any(self.cluster_model)):
             # Generate terraform templates
@@ -144,7 +189,7 @@ class ApplyEngine(Step):
         docs = [*self.configuration_docs, *self.infrastructure_docs]
 
         # Save docs to manifest file
-        save_manifest(docs, self.cluster_model.specification.name)   
+        save_manifest(docs, self.cluster_model.specification.name)
 
         # Run Ansible to provision infrastructure
         if not(self.skip_config):
