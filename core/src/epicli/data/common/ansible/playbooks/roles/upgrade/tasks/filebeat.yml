@@ -1,4 +1,9 @@
 ---
+- name: Filebeat | Load defaults from filebat role
+  include_vars:
+    file: roles/filebeat/defaults/main.yml
+    name: filebeat_defaults
+
 - name: Filebeat as DaemonSet | Prepare fact about helm release
   delegate_to: localhost
   become: false
@@ -16,7 +21,7 @@
         _names: >-
           {{ helm_list.stdout | from_json 
                               | map(attribute='name')
-                              | select('==', specification.helm_chart_name)
+                              | select('==', filebeat_defaults.filebeat_helm_chart_name)
                               | list }}
 
 - name: Reinstall Filebeat as DaemonSet from default namespace to custom namespace for "k8s as cloud service"
