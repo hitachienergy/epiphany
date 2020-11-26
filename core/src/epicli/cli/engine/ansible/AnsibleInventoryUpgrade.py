@@ -101,25 +101,18 @@ class AnsibleInventoryUpgrade(Step):
         merge_objdict(default_cluster_model, self.cluster_model)
         self.cluster_model = default_cluster_model
 
-        # Check if repo roles are present and if not add them
-        master = self.get_role(new_inventory, 'kubernetes_master')
-        if master == None:
-            raise Exception('No kubernetes_master to use as repository')
-        master_node = master.hosts[0]
-
-        # add image_registry
-        image_registry = self.get_role(new_inventory, 'image_registry')
-        if image_registry == None:
-            hosts = []
-            hosts.append(AnsibleHostModel(master_node.name, master_node.ip))
-            new_inventory.append(AnsibleInventoryItem('image_registry', hosts))
-
-        # add repository
+        # repository & image_registry roles added in v0.4.0
         repository = self.get_role(new_inventory, 'repository')
-        if repository == None:
-            hosts = []
-            hosts.append(AnsibleHostModel(master_node.name, master_node.ip))
-            new_inventory.append(AnsibleInventoryItem('repository', hosts))
+        if repository is None:
+            raise Exception('repository group not found in inventory. '
+                            'Your deployment may not be supported by this version of Epiphany. '
+                            'You may try to use older version first.')
+
+        # add image_registry if not present
+        image_registry = self.get_role(new_inventory, 'image_registry')
+        if image_registry is None:
+            hosts = [AnsibleHostModel(repository.hosts[0].name, repository.hosts[0].ip)]
+            new_inventory.append(AnsibleInventoryItem('image_registry', hosts))
 
         # save new inventory
         save_inventory(new_inventory, self.cluster_model, self.build_dir)
