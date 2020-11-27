@@ -2,7 +2,6 @@ kind: configuration/node-exporter
 title: "Node exporter"
 name: default
 specification:
-  helm_chart_name: node-exporter
   disable_helm_chart: false
   helm_chart_values:
     service:

@@ -1,5 +1,5 @@
 ---
-- name: Filebeat | Load defaults from filebat role
+- name: Filebeat | Load defaults from filebeat role
   include_vars:
     file: roles/filebeat/defaults/main.yml
     name: filebeat_defaults
