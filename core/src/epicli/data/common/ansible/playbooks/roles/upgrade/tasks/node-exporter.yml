@@ -8,10 +8,13 @@
   include_vars:
     file: roles/node_exporter/vars/main.yml
 
-- name: Node Exporter as DaemonSet | Prepare fact about helm release
+- name: Node Exporter as DaemonSet | Prepare fact about helm release and reinstall daemonset if release exists
   delegate_to: localhost
   become: false
   run_once: true
+  when:
+    - k8s_as_cloud_service is defined
+    - k8s_as_cloud_service
   block:
     - name: Get information about helm releases
       command: helm list --output json
@@ -28,21 +31,19 @@
                               | select('==', exporter_defaults.node_exporter_helm_chart_name)
                               | list }}
 
-- name: Reinstall Node Exporter as DaemonSet from default namespace to custom namespace for "k8s as cloud service"
-  when:
-    - node_exporter_release_exists
-    - k8s_as_cloud_service is defined
-    - k8s_as_cloud_service
-  block: 
-    - name: Include uninstall task for Node Exporter as DaemonSet in default namespace for "k8s as cloud service"
-      include_role:
-        name: node_exporter
-        tasks_from: uninstall-node-exporter-as-daemonset.yml
+    - name: Reinstall Node Exporter as DaemonSet from default namespace to custom namespace for "k8s as cloud service"
+      when:
+        - node_exporter_release_exists
+      block: 
+        - name: Include uninstall task for Node Exporter as DaemonSet in default namespace for "k8s as cloud service"
+          include_role:
+            name: node_exporter
+            tasks_from: uninstall-node-exporter-as-daemonset.yml
 
-    - name: Include install task for Node Exporter as DaemonSet in custom namespace for "k8s as cloud service"
-      include_role:
-        name: node_exporter
-        tasks_from: install-node-exporter-as-daemonset.yml
+        - name: Include install task for Node Exporter as DaemonSet in custom namespace for "k8s as cloud service"
+          include_role:
+            name: node_exporter
+            tasks_from: install-node-exporter-as-daemonset.yml
 
 - name: Node Exporter as System Service | Populate service facts
   service_facts:
