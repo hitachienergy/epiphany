@@ -121,6 +121,8 @@
         owner: root
         group: root
         mode: '0644'
+      vars:
+        exporter_service_description: "{{ exporter_defaults.exporter.service.description }}"
 
     - name: Node Exporter as System Service | Start exporter
       systemd:
