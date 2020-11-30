@@ -1,4 +1,4 @@
-- name: Install Rabitmq packages
+- name: Install Rabbitmq packages
   apt: 
     name:
       - init-system-helpers

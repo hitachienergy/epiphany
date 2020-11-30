@@ -47,7 +47,7 @@ python-pip
 python-psycopg2
 python-selinux
 python-setuptools
-rabbitmq-server 3.8.3
+rabbitmq-server 3.8.9
 smbclient
 samba-common
 smbclient
@@ -203,7 +203,7 @@ brainsam/pgbouncer:1.12
 # TODO remove?
 jboss/keycloak:4.8.3.Final
 jboss/keycloak:9.0.0
-rabbitmq:3.8.3
+rabbitmq:3.8.9
 # K8s upgrade
 ## v1.14.6
 k8s.gcr.io/kube-apiserver:v1.14.6

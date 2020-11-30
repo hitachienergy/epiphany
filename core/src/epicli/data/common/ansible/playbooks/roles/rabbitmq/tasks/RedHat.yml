@@ -3,6 +3,8 @@
     name:
       - socat
       - logrotate
-      - erlang-21.3.* # order matters, check RabbitMQ/Erlang version compatibility matrix before modification
-      - rabbitmq-server-3.8.3
+      # order matters, check RabbitMQ/Erlang version compatibility matrix before modification
+      # https://www.rabbitmq.com/which-erlang.html#compatibility-matrix
+      - erlang-23.*
+      - rabbitmq-server-3.8.9
     state: present
