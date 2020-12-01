@@ -2,15 +2,19 @@
 - name: Node Exporter | Include defaults from node_exporter role
   include_vars:
     file: roles/node_exporter/defaults/main.yml
+    name: exporter_defaults
 
 - name: Node Exporter | Include specification vars from node_exporter role
   include_vars:
     file: roles/node_exporter/vars/main.yml
 
-- name: Node Exporter as DaemonSet | Prepare fact about helm release
+- name: Node Exporter as DaemonSet | Prepare fact about helm release and reinstall daemonset if release exists
   delegate_to: localhost
   become: false
   run_once: true
+  when:
+    - k8s_as_cloud_service is defined
+    - k8s_as_cloud_service
   block:
     - name: Get information about helm releases
       command: helm list --output json
@@ -24,24 +28,22 @@
         _names: >-
           {{ helm_list.stdout | from_json 
                               | map(attribute='name')
-                              | select('==', specification.helm_chart_name)
+                              | select('==', exporter_defaults.node_exporter_helm_chart_name)
                               | list }}
 
-- name: Reinstall Node Exporter as DaemonSet from default namespace to custom namespace for "k8s as cloud service"
-  when:
-    - node_exporter_release_exists
-    - k8s_as_cloud_service is defined
-    - k8s_as_cloud_service
-  block: 
-    - name: Include uninstall task for Node Exporter as DaemonSet in default namespace for "k8s as cloud service"
-      include_role:
-        name: node_exporter
-        tasks_from: uninstall-node-exporter-as-daemonset.yml
+    - name: Reinstall Node Exporter as DaemonSet from default namespace to dedicated namespace for "k8s as cloud service"
+      when:
+        - node_exporter_release_exists
+      block: 
+        - name: Include uninstall task for Node Exporter as DaemonSet in default namespace for "k8s as cloud service"
+          include_role:
+            name: node_exporter
+            tasks_from: uninstall-node-exporter-as-daemonset.yml
 
-    - name: Include install task for Node Exporter as DaemonSet in custom namespace for "k8s as cloud service"
-      include_role:
-        name: node_exporter
-        tasks_from: install-node-exporter-as-daemonset.yml
+        - name: Include install task for Node Exporter as DaemonSet in dedicated namespace for "k8s as cloud service"
+          include_role:
+            name: node_exporter
+            tasks_from: install-node-exporter-as-daemonset.yml
 
 - name: Node Exporter as System Service | Populate service facts
   service_facts:
@@ -49,13 +51,13 @@
 
 - name: Node Exporter as System Service | Test if node exporter service is configured
   assert:
-    that: "'{{ exporter.service.name }}.service' in ansible_facts.services"
-    fail_msg: "{{ exporter.service.name }} service is not found"
+    that: "'{{ exporter_defaults.exporter.service.name }}.service' in ansible_facts.services"
+    fail_msg: "{{ exporter_defaults.exporter.service.name }} service is not found"
     quiet: true
 
 - name: Node Exporter as System Service | Set exporter_file_name fact
   set_fact:
-    exporter_file_name: "node_exporter-{{ exporter.version }}.linux-amd64.tar.gz"
+    exporter_file_name: "node_exporter-{{ exporter_defaults.exporter.version }}.linux-amd64.tar.gz"
 
 - name: Node Exporter as System Service | Collect version
   shell: >-
@@ -70,10 +72,10 @@
   debug:
     msg:
       - "Installed version: {{ exporter_current_version }}"
-      - "Target version: {{ exporter.version }}"
+      - "Target version: {{ exporter_defaults.exporter.version }}"
 
 - name: Node Exporter as System Service | Upgrade block
-  when: exporter.version != exporter_current_version
+  when: exporter_defaults.exporter.version != exporter_current_version
   block:
     - name: Node Exporter | Download binaries
       include_role:
@@ -84,7 +86,7 @@
 
     - name: Node Exporter as System Service | Stop exporter
       systemd:
-        name: "{{ exporter.service.name }}.service"
+        name: "{{ exporter_defaults.exporter.service.name }}.service"
         state: stopped
 
     - name: Node Exporter as System Service | Remove /opt/node_exporter directory
@@ -115,14 +117,16 @@
     - name: Node Exporter as System Service | Update systemd service configuration
       template:
         src: roles/node_exporter/templates/prometheus-node-exporter.service.j2
-        dest: "/etc/systemd/system/{{ exporter.service.name }}.service"
+        dest: "/etc/systemd/system/{{ exporter_defaults.exporter.service.name }}.service"
         owner: root
         group: root
         mode: '0644'
+      vars:
+        exporter_service_description: "{{ exporter_defaults.exporter.service.description }}"
 
     - name: Node Exporter as System Service | Start exporter
       systemd:
         daemon_reload: true
         enabled: true
-        name: "{{ exporter.service.name }}.service"
+        name: "{{ exporter_defaults.exporter.service.name }}.service"
         state: started

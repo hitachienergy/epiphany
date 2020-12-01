@@ -2,7 +2,6 @@ kind: configuration/filebeat
 title: Filebeat
 name: default
 specification:
-  helm_chart_name: filebeat
   disable_helm_chart: false
   postgresql_input:
     multiline:

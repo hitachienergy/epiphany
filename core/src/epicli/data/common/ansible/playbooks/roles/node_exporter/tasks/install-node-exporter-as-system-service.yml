@@ -57,6 +57,8 @@
     owner: root
     group: root
     mode: u=rw,g=r,o=r
+  vars:
+    exporter_service_description: "{{ exporter.service.description }}"
 
 - name: Configure systemd to use node_exporter service
   systemd:

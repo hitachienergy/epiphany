@@ -4,5 +4,6 @@ exporter:
   service:
     description: "Service that runs Prometheus Node Exporter"
     name: prometheus-node-exporter
-# Use custom namespace for monitoring charts such as node exporter in case of k8s as cloud service.
+node_exporter_helm_chart_name: node-exporter
+# Use dedicated namespace for monitoring charts such as node exporter in case of k8s as cloud service.
 monitoring_chart_namespace: epi-monitoring

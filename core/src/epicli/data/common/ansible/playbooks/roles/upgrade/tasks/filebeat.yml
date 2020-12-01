@@ -1,8 +1,16 @@
 ---
-- name: Filebeat as DaemonSet | Prepare fact about helm release
+- name: Filebeat | Load defaults from filebeat role
+  include_vars:
+    file: roles/filebeat/defaults/main.yml
+    name: filebeat_defaults
+
+- name: Filebeat as DaemonSet | Prepare fact about helm release and reinstall daemonset if release exists
   delegate_to: localhost
   become: false
   run_once: true
+  when:
+    - k8s_as_cloud_service is defined
+    - k8s_as_cloud_service
   block:
     - name: Get information about helm releases
       command: helm list --output json
@@ -16,24 +24,22 @@
         _names: >-
           {{ helm_list.stdout | from_json 
                               | map(attribute='name')
-                              | select('==', specification.helm_chart_name)
+                              | select('==', filebeat_defaults.filebeat_helm_chart_name)
                               | list }}
 
-- name: Reinstall Filebeat as DaemonSet from default namespace to custom namespace for "k8s as cloud service"
-  when:
-    - filebeat_release_exists
-    - k8s_as_cloud_service is defined
-    - k8s_as_cloud_service
-  block: 
-    - name: Include uninstall task for Filebeat as DaemonSet in default namespace for "k8s as cloud service"
-      include_role:
-        name: filebeat
-        tasks_from: uninstall-filebeat-as-daemonset.yml
+    - name: Reinstall Filebeat as DaemonSet from default namespace to dedicated namespace for "k8s as cloud service"
+      when:
+        - filebeat_release_exists
+      block: 
+        - name: Include uninstall task for Filebeat as DaemonSet in default namespace for "k8s as cloud service"
+          include_role:
+            name: filebeat
+            tasks_from: uninstall-filebeat-as-daemonset.yml
 
-    - name: Include install task for Filebeat as DaemonSet in custom namespace for "k8s as cloud service"
-      include_role:
-        name: filebeat
-        tasks_from: install-filebeat-as-daemonset.yml
+        - name: Include install task for Filebeat as DaemonSet in dedicated namespace for "k8s as cloud service"
+          include_role:
+            name: filebeat
+            tasks_from: install-filebeat-as-daemonset.yml
 
 - name: Filebeat as System Service | Get information about installed packages as facts
   package_facts:

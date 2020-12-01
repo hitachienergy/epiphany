@@ -28,5 +28,5 @@
       command: |
         helm -n {{ logging_chart_namespace }} upgrade --install \
           -f {{ download_directory }}/custom-chart-values.yml \
-          {{ specification.helm_chart_name }} \
+          {{ filebeat_helm_chart_name }} \
           {{ download_directory }}/{{ filebeat_helm_chart_file_name }} --create-namespace

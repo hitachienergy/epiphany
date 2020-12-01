@@ -31,14 +31,14 @@
         - name: Copy Node-Exporter's Helm chart's custom configuration to file
           copy:
             content: "{{ specification.helm_chart_values }}"
-            dest: "{{ download_directory }}/{{ specification.helm_chart_name }}_values.yaml"
+            dest: "{{ download_directory }}/{{ node_exporter_helm_chart_name }}_values.yaml"
 
         - name: Install Node-Exporter's Helm chart (with custom values.yaml)
           delegate_to: localhost
           shell: |
             helm -n {{ monitoring_chart_namespace }} upgrade --install \
-              -f {{ download_directory }}/{{ specification.helm_chart_name }}_values.yaml \
-              {{ specification.helm_chart_name }} \
+              -f {{ download_directory }}/{{ node_exporter_helm_chart_name }}_values.yaml \
+              {{ node_exporter_helm_chart_name }} \
               {{ download_directory }}/{{ exporter_chart_file_name }} --create-namespace
 
     - when: not helm_chart_values_bool
@@ -47,5 +47,5 @@
         - name: Install Node-Exporter's Helm chart (with default values.yaml)
           shell: |
             helm -n {{ monitoring_chart_namespace }} upgrade --install \
-              {{ specification.helm_chart_name }} \
+              {{ node_exporter_helm_chart_name }} \
               {{ download_directory }}/{{ exporter_chart_file_name }} --create-namespace
