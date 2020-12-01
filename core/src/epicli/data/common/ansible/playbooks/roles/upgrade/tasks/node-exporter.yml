@@ -22,7 +22,7 @@
           {{ _names | ternary(true, false) }}
       vars:
         _names: >-
-          {{ helm_list.stdout | from_json 
+          {{ helm_list.stdout | from_json
                               | map(attribute='name')
                               | select('==', specification.helm_chart_name)
                               | list }}
@@ -32,7 +32,7 @@
     - node_exporter_release_exists
     - k8s_as_cloud_service is defined
     - k8s_as_cloud_service
-  block: 
+  block:
     - name: Include uninstall task for Node Exporter as DaemonSet in default namespace for "k8s as cloud service"
       include_role:
         name: node_exporter
