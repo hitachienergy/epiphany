@@ -20,6 +20,7 @@
 
 - [#1770](https://github.com/epiphany-platform/epiphany/issues/1770) - Upgrade Filebeat to the latest version (7.9.2)
 - [#1848](https://github.com/epiphany-platform/epiphany/issues/1848) - Update Ansible to v2.8.17
+- [#1854](https://github.com/epiphany-platform/epiphany/issues/1854) - Upgrade component to the latest version: RabbitMQ
 
 ### Breaking changes
 

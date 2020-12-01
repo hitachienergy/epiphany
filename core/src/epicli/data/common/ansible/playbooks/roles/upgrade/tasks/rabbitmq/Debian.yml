@@ -1,5 +1,5 @@
 ---
-- name: Install Rabbitmq packages
+- name: RabbitMQ | Update packages
   apt:
     name:
       - erlang-nox=1:23.1.*
