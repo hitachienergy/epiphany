@@ -1,5 +1,11 @@
 # Changelog 0.8
 
+## [0.8.1] 202X-XX-XX
+
+### Fixed
+
+- [#1875](https://github.com/epiphany-platform/epiphany/issues/1875) - epicli upgrade fails when there is no kubernetes_master group in inventory
+
 ## [0.8.0] 2020-10-22
 
 ### Added
