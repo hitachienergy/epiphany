@@ -3,7 +3,7 @@
     name:
       - init-system-helpers
       - socat
-      - erlang-nox
+      - erlang-nox=1:23.1-1
       - adduser
       - logrotate
       - rabbitmq-server
