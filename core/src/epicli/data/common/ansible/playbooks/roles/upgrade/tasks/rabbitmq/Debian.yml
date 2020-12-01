@@ -2,11 +2,9 @@
 - name: Install Rabbitmq packages
   apt:
     name:
-      - init-system-helpers
-      - socat
       - erlang-nox=1:23.1*
-      - adduser
-      - logrotate
       - rabbitmq-server=3.8.9*
     update_cache: yes
     state: present
+  notify:
+    - Restart RabbitMQ service

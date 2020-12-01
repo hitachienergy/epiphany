@@ -1,0 +1,9 @@
+---
+- name: RabbitMQ | Update packages
+  yum:
+    name:
+      - erlang-23.1.*
+      - rabbitmq-server-3.8.9
+    state: present
+  notify:
+    - Restart RabbitMQ service
