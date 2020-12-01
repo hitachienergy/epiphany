@@ -15,7 +15,7 @@ ebtables
 elasticsearch-curator 5.8.1
 elasticsearch-oss 6.8.5 # for elasticsearch role
 elasticsearch-oss 7.9.1 # for opendistroforelasticsearch & logging roles
-erlang-nox 1:23.1 # must be compatible with rabbitmq version
+erlang-nox 1:23.1.4 # must be compatible with rabbitmq version
 ethtool
 filebeat 7.9.2
 firewalld

@@ -13,10 +13,8 @@ wget -qO - https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key add -
 echo "deb http://apt.kubernetes.io/ kubernetes-xenial main" | tee /etc/apt/sources.list.d/kubernetes.list
 
 wget -qO - https://github.com/rabbitmq/signing-keys/releases/download/2.0/rabbitmq-release-signing-key.asc | apt-key add -
-echo "deb https://dl.bintray.com/rabbitmq/debian bionic main" | tee /etc/apt/sources.list.d/rabbitmq.list
-
-wget -O- https://packages.erlang-solutions.com/ubuntu/erlang_solutions.asc | apt-key add -
-echo "deb https://packages.erlang-solutions.com/ubuntu bionic contrib" | tee -a /etc/apt/sources.list.d/rabbitmq.list
+echo "deb http://dl.bintray.com/rabbitmq-erlang/debian bionic erlang-23.x" | tee /etc/apt/sources.list.d/erlang-21.x.list
+echo "deb https://dl.bintray.com/rabbitmq/debian bionic main" | tee -a /etc/apt/sources.list.d/rabbitmq.list
 
 wget -qO -  https://download.docker.com/linux/ubuntu/gpg | apt-key add -
 echo "deb [arch=amd64] https://download.docker.com/linux/ubuntu bionic stable" | tee /etc/apt/sources.list.d/docker-ce.list

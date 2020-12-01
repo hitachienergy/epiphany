@@ -2,7 +2,7 @@
 - name: Install Rabbitmq packages
   apt:
     name:
-      - erlang-nox=1:23.1*
+      - erlang-nox=1:23.1.*
       - rabbitmq-server=3.8.9*
     update_cache: yes
     state: present
