@@ -2,9 +2,9 @@ kind: configuration/rabbitmq
 title: "RabbitMQ"
 name: default
 specification:
-  version: 3.8.3
   rabbitmq_user: rabbitmq
   rabbitmq_group: rabbitmq
+  stop_service: false
 
   logrotate_period: weekly
   logrotate_number: 10

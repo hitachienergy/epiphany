@@ -1,0 +1,16 @@
+---
+- name: RabbitMQ | Install packages
+  apt:
+    name:
+      - init-system-helpers
+      - socat
+      - erlang-eldap=1:23.1.*
+      - erlang-inets=1:23.1.*
+      - erlang-os-mon=1:23.1.*
+      - erlang-public-key=1:23.1.*
+      - erlang-ssl=1:23.1.*
+      - adduser
+      - logrotate
+      - rabbitmq-server=3.8.9*
+    update_cache: yes
+    state: present

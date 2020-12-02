@@ -1,0 +1,2 @@
+---
+cookie_file: /var/lib/rabbitmq/.erlang.cookie

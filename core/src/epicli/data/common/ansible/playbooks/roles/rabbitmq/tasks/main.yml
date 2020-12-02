@@ -1,20 +1,31 @@
 ---
 - include_tasks: "set-variables.yml"
 
-- include_tasks: "{{ ansible_os_family }}.yml"
+- include_tasks: "install-packages-{{ ansible_os_family | lower }}.yml"
 
 - include_tasks: "set-erlang-cookie.yml"
-  when: is_clustered and groups['rabbitmq'] | length > 1
+  when:
+    - is_clustered
+    - inventory_hostname == rabbitmq_master
+
+# Cookie is updated on master in previous step
+- include_tasks: "update-erlang-cookie.yml"
+  when:
+    - is_clustered
+    - inventory_hostname != rabbitmq_master
 
 - include_tasks: "configure-rabbitmq.yml"
-
-- include_tasks: "enable-and-start-service.yml"
 
 - include_tasks: "set-logrotate.yml"
 
 - include_tasks: "set-ulimits.yml"
 
+# Skip any configuration when service is stopped
 - include_tasks: "join-cluster.yml"
-  when: is_clustered and groups['rabbitmq'] | length > 1
+  when:
+    - is_clustered
+    - inventory_hostname != rabbitmq_master
+    - not stop_rabbitmq_service
 
 - include_tasks: "configure-policies.yml"
+  when: not stop_rabbitmq_service

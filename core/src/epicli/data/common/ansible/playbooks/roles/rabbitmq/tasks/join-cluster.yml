@@ -1,18 +1,12 @@
 ---
-- name: Retrieve RabbitMQ master
-  set_fact:
-    rabbitmq_master: "{{ groups['rabbitmq'][0] }}"
-
-- name: Stop rabbitmq
+- name: RabbitMQ | Stop application
   become: yes
   command: rabbitmqctl stop_app
-  when: rabbitmq_master != inventory_hostname
 
-- name: Add node to cluster
+- name: RabbitMQ | Add node to cluster
   become: yes
   command: rabbitmqctl join_cluster rabbit@{{ rabbitmq_master.split('.')[0] }}
-  when: rabbitmq_master != inventory_hostname
 
-- name: Start rabbitmq
+- name: RabbitMQ | Start application
   become: yes
   command: rabbitmqctl start_app

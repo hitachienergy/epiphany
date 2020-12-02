@@ -1,0 +1,15 @@
+---
+- name: RabbitMQ | Update erlang cookie
+  template:
+    src: erlang-cookie.j2
+    dest: /var/lib/rabbitmq/.erlang.cookie
+    owner: "{{ specification.rabbitmq_user }}"
+    group: "{{ specification.rabbitmq_group }}"
+    mode: "u=r"
+  register: cookie
+
+- name: RabbitMQ | Restart service
+  when: cookie.changed
+  service:
+    name: rabbitmq-server
+    state: restarted
