@@ -4,13 +4,13 @@
     name:
       - init-system-helpers
       - socat
-      - erlang-eldap=1:23.1.*
-      - erlang-inets=1:23.1.*
-      - erlang-os-mon=1:23.1.*
-      - erlang-public-key=1:23.1.*
-      - erlang-ssl=1:23.1.*
+      - erlang-eldap={{ versions.debian.erlang }}
+      - erlang-inets={{ versions.debian.erlang }}
+      - erlang-os-mon={{ versions.debian.erlang }}
+      - erlang-public-key={{ versions.debian.erlang }}
+      - erlang-ssl={{ versions.debian.erlang }}
       - adduser
       - logrotate
-      - rabbitmq-server=3.8.9*
+      - rabbitmq-server={{ versions.debian.rabbitmq }}
     update_cache: yes
     state: present

@@ -5,6 +5,6 @@
       - socat
       - logrotate
       # order matters, check RabbitMQ/Erlang version compatibility matrix before modification
-      - erlang-23.1.*
-      - rabbitmq-server-3.8.9
+      - erlang-{{ versions.redhat.erlang }}
+      - rabbitmq-server-{{ versions.redhat.rabbitmq }}
     state: present
