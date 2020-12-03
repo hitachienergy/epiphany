@@ -40,7 +40,7 @@
     enabled: true
     state: restarted
 
-- name: RabbitMQ | Stop service for manual certificates configuration
+- name: RabbitMQ | Stop service for manual configuration of certificates
   when: stop_rabbitmq_service
   service:
     name: rabbitmq-server
