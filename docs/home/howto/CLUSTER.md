@@ -774,7 +774,7 @@ Then when applying the changed configuration using Epicli additional VM's will b
 - rabbitmq: At the moment downscaling is not supported, there is the known
 [issue](https://github.com/epiphany-platform/epiphany/issues/1578).
 If instance count is changed, then additional RabbitMQ nodes will be added or removed.
-Note that clustering requires changes in the `configuration/rabbitmq` configuration:
+Note that clustering requires a change in the `configuration/rabbitmq` document:
 
   ```yaml
   kind: configuration/rabbitmq
