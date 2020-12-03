@@ -182,7 +182,7 @@ Automatic encryption of storage on Azure is not yet supported by Epiphany. Guide
 
 ## How to use TLS/SSL certificate with RabbitMQ
 
-To configure RabbitMQ SSL/TLS support in Epiphany you need to set `custom_configurations` in Epiphany configuration file and you need to
+To configure RabbitMQ TLS support in Epiphany you need to set `custom_configurations` in the configuration file and
 manually create certificate with common CA according to documentation on your RabbitMQ machines:
 
 https://www.rabbitmq.com/ssl.html#manual-certificate-generation
