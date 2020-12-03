@@ -4,7 +4,6 @@
     name:
       - socat
       - logrotate
-      # order matters, check RabbitMQ/Erlang version compatibility matrix before modification
       - erlang-{{ versions.redhat.erlang }}
       - rabbitmq-server-{{ versions.redhat.rabbitmq }}
     state: present
