@@ -248,7 +248,7 @@ specification:
 
 Right now RabbitMQ configuration is available only for standalone machines. Please be
 careful about boolean values as they need to be double quoted and written in lowercase form.
-Otherwise it will fail RabbitMQ startup.
+Otherwise RabbitMQ startup will fail.
 
 ## How to enable AWS disk encryption
 
