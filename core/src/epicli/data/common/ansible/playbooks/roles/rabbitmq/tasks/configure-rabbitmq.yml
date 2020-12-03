@@ -8,7 +8,7 @@
     mode: "u=rw,go=r"
   register: config_file_stat
 
-- name: RabbitMQ | Copy default default env config file
+- name: RabbitMQ | Copy rabbitmq-env.conf file
   template:
     src: rabbitmq-env.conf.j2
     dest: /etc/rabbitmq/rabbitmq-env.conf
