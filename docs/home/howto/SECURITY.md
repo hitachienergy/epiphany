@@ -203,7 +203,7 @@ with `stop_service` set to `false`
 
 ---
 
-There are `custom_configurations` settings part in Epiphany, that extends RabbitMQ configuration
+There is `custom_configurations` setting in Epiphany that extends RabbitMQ configuration
 with the custom one. Also it can be used to perform TLS configuration of RabbitMQ.
 To customize RabbitMQ configuration you need to pass list of attributes in format:
 
