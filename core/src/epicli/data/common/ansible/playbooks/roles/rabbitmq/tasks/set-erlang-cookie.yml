@@ -1,9 +1,9 @@
 ---
-- name: RabbitMQ master | Set is_cookie_user_defined fact
+- name: Set is_cookie_user_defined fact
   set_fact:
     is_cookie_user_defined: "{{ specification.cluster.cookie | default('') | length > 0 }}"
 
-- name: RabbitMQ master | Set cookie fact for all hosts if it's defined by user
+- name: Set cookie fact for all hosts if it's defined by user
   when: is_cookie_user_defined
   set_fact:
     erlang_cookie: "{{ specification.cluster.cookie }}"
@@ -11,30 +11,30 @@
   delegate_facts: true
   loop: "{{ ansible_play_hosts }}"
 
-- name: RabbitMQ master | Set cookie fact for all hosts it it's not defined by user
+- name: Set cookie fact for all hosts it it's not defined by user
   when: not is_cookie_user_defined
   block:
-    - name: RabbitMQ master | Check if .erlang.cookie file exists
+    - name: Check if .erlang.cookie file exists
       stat:
         path: "{{ cookie_file }}"
       register: cookie_file_stat
 
-    - name: RabbitMQ master | Set cookie fact for all hosts from file if exists
+    - name: Set cookie fact for all hosts from file if exists
       when: cookie_file_stat.stat.exists | bool
       block:
-        - name: RabbitMQ master | Load cookie file data
+        - name: Load cookie file data
           slurp:
             src: "{{ cookie_file }}"
           register: cookie_file_data
 
-        - name: RabbitMQ master | Set cookie fact for all hosts from file if exists
+        - name: Set cookie fact for all hosts from file if exists
           set_fact:
             erlang_cookie: "{{ cookie_file_data.content | b64decode | trim }}"
           delegate_to: "{{ item }}"
           delegate_facts: true
           loop: "{{ ansible_play_hosts }}"
 
-    - name: RabbitMQ master | Generate cookie if it's not defined by user and cookie file doesn't exist
+    - name: Generate cookie if it's not defined by user and cookie file doesn't exist
       when: not (cookie_file_stat.stat.exists | bool)
       set_fact:
         erlang_cookie: "{{ lookup('password', '/dev/null length=15 chars=ascii_letters') }}"

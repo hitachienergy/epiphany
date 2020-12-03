@@ -1,12 +1,12 @@
 ---
-- name: RabbitMQ | Stop application
+- name: Stop application
   become: yes
   command: rabbitmqctl stop_app
 
-- name: RabbitMQ | Add node to cluster
+- name: Add node to cluster
   become: yes
   command: rabbitmqctl join_cluster rabbit@{{ rabbitmq_master.split('.')[0] }}
 
-- name: RabbitMQ | Start application
+- name: Start application
   become: yes
   command: rabbitmqctl start_app

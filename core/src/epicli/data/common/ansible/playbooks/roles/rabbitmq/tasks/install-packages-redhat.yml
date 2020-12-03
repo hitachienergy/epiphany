@@ -1,5 +1,5 @@
 ---
-- name: RabbitMQ | Install packages
+- name: Install packages
   yum:
     name:
       - socat

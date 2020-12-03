@@ -1,5 +1,5 @@
 ---
-- name: RabbitMQ | Set logrotate config
+- name: Set logrotate config
   template:
     src: logrotate-config.j2
     dest: /etc/logrotate.d/rabbitmq-server

@@ -1,5 +1,5 @@
 ---
-- name: RabbitMQ | Update erlang cookie
+- name: Update erlang cookie
   template:
     src: erlang-cookie.j2
     dest: /var/lib/rabbitmq/.erlang.cookie
@@ -8,7 +8,7 @@
     mode: "u=r"
   register: cookie
 
-- name: RabbitMQ | Restart service
+- name: Restart service
   when: cookie.changed
   service:
     name: rabbitmq-server

@@ -1,5 +1,5 @@
 ---
-- name: RabbitMQ | Set facts
+- name: Set facts
   set_fact:
     rabbitmq_use_longname: "{{ specification.rabbitmq_use_longname | default(true) | bool }}"
     amqp_port: "{{ specification.amqp_port | default(5672) }}"

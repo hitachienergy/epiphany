@@ -1,5 +1,5 @@
 ---
-- name: RabbitMQ | Configure system settings, file descriptors and number of threads
+- name: Configure system settings, file descriptors and number of threads
   pam_limits:
     domain: "{{ specification.rabbitmq_user }}"
     limit_type: "{{ item.limit_type }}"

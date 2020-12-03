@@ -1,5 +1,5 @@
 ---
-- name: RabbitMQ | Copy default config file
+- name: Copy default config file
   template:
     src: rabbitmq-server.j2
     dest: /etc/rabbitmq/rabbitmq.conf
@@ -8,7 +8,7 @@
     mode: "u=rw,go=r"
   register: config_file_stat
 
-- name: RabbitMQ | Copy rabbitmq-env.conf file
+- name: Copy rabbitmq-env.conf file
   template:
     src: rabbitmq-env.conf.j2
     dest: /etc/rabbitmq/rabbitmq-env.conf
@@ -17,13 +17,13 @@
     mode: "u=rw,go=r"
   register: env_file_stat
 
-- name: RabbitMQ | Symlink bin to sbin (for plugins installation)
+- name: Symlink bin to sbin (for plugins installation)
   file:
     src: /usr/lib/rabbitmq/bin
     dest: /usr/lib/rabbitmq/sbin
     state: link
 
-- name: RabbitMQ | Enable plugins that were installed
+- name: Enable plugins that were installed
   rabbitmq_plugin:
     names: "{{ item }}"
     prefix: /usr/lib/rabbitmq
@@ -31,7 +31,7 @@
     new_only: no
   loop: "{{ rabbitmq_plugins }}"
 
-- name: RabbitMQ | Restart service
+- name: Restart service
   when:
     - config_file_stat.changed or env_file_stat.changed
     - not stop_rabbitmq_service
@@ -40,7 +40,7 @@
     enabled: true
     state: restarted
 
-- name: RabbitMQ | Stop service for manual configuration of certificates
+- name: Stop service for manual configuration of certificates
   when: stop_rabbitmq_service
   service:
     name: rabbitmq-server
