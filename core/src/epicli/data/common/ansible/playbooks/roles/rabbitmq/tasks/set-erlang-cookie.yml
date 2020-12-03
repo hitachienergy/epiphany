@@ -4,7 +4,7 @@
     is_cookie_user_defined: "{{ specification.cluster.cookie | default('') | length > 0 }}"
 
 - name: RabbitMQ master | Set cookie fact for all hosts if it's defined by user
-  when: is_cookie_user_defined | bool
+  when: is_cookie_user_defined
   set_fact:
     erlang_cookie: "{{ specification.cluster.cookie }}"
   delegate_to: "{{ item }}"
