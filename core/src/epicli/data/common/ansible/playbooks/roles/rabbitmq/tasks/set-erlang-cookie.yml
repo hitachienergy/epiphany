@@ -35,7 +35,7 @@
           loop: "{{ ansible_play_hosts }}"
 
     - name: Generate cookie if it's not defined by user and cookie file doesn't exist
-      when: not (cookie_file_stat.stat.exists | bool)
+      when: not cookie_file_stat.stat.exists
       set_fact:
         erlang_cookie: "{{ lookup('password', '/dev/null length=15 chars=ascii_letters') }}"
       delegate_to: "{{ item }}"
