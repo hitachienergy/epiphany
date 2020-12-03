@@ -5,7 +5,7 @@
     dest: /var/lib/rabbitmq/.erlang.cookie
     owner: "{{ specification.rabbitmq_user }}"
     group: "{{ specification.rabbitmq_group }}"
-    mode: "u=r"
+    mode: u=r,go=
   register: cookie
 
 - name: Restart service

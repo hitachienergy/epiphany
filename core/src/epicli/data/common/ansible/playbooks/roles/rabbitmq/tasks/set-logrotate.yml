@@ -5,5 +5,5 @@
     dest: /etc/logrotate.d/rabbitmq-server
     owner: root
     group: root
-    mode: "u=rw,go=r"
+    mode: u=rw,go=r
   tags: ["rabbitmq", "rabbitmq-logrotate"]

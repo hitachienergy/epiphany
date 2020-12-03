@@ -5,7 +5,7 @@
     dest: /etc/rabbitmq/rabbitmq.conf
     owner: root
     group: root
-    mode: "u=rw,go=r"
+    mode: u=rw,go=r
   register: config_file_stat
 
 - name: Copy rabbitmq-env.conf file
@@ -14,7 +14,7 @@
     dest: /etc/rabbitmq/rabbitmq-env.conf
     owner: root
     group: root
-    mode: "u=rw,go=r"
+    mode: u=rw,go=r
   register: env_file_stat
 
 - name: Symlink bin to sbin (for plugins installation)
