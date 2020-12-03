@@ -34,14 +34,14 @@
 - name: Restart service
   when:
     - config_file_stat.changed or env_file_stat.changed
-    - not stop_rabbitmq_service
+    - not (specification.stop_service | bool)
   service:
     name: rabbitmq-server
     enabled: true
     state: restarted
 
 - name: Stop service for manual configuration of certificates
-  when: stop_rabbitmq_service
+  when: specification.stop_service | bool
   service:
     name: rabbitmq-server
     state: stopped
