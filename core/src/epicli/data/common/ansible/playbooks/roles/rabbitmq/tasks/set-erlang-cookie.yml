@@ -12,7 +12,7 @@
   loop: "{{ ansible_play_hosts }}"
 
 - name: RabbitMQ master | Set cookie fact for all hosts it it's not defined by user
-  when: not (is_cookie_user_defined | bool)
+  when: not is_cookie_user_defined
   block:
     - name: RabbitMQ master | Check if .erlang.cookie file exists
       stat:
