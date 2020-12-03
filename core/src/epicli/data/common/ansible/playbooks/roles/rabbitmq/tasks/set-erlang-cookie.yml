@@ -20,7 +20,7 @@
       register: cookie_file_stat
 
     - name: Set cookie fact for all hosts from file if exists
-      when: cookie_file_stat.stat.exists | bool
+      when: cookie_file_stat.stat.exists
       block:
         - name: Load cookie file data
           slurp:
