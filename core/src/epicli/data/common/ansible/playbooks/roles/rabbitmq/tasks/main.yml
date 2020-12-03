@@ -28,4 +28,6 @@
     - not stop_rabbitmq_service
 
 - include_tasks: "configure-policies.yml"
-  when: not stop_rabbitmq_service
+  when:
+    - not stop_rabbitmq_service
+    - inventory_hostname == rabbitmq_master
