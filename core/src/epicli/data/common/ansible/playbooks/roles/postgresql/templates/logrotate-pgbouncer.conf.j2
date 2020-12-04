@@ -1,0 +1,18 @@
+# {{ ansible_managed }}
+
+{{ pgbouncer.logfile[ansible_os_family] }} {
+    missingok
+    copytruncate
+    # delaycompress is for Filebeat
+    delaycompress
+    compress
+    notifempty
+    sharedscripts
+    create 0640 {{ pgbouncer.user[ansible_os_family] }} {{ pgbouncer.group[ansible_os_family] }}
+    nodateext
+    {{ specification.logrotate.pgbouncer.period }}
+    rotate {{ specification.logrotate.pgbouncer.rotations }}
+    postrotate
+        /bin/kill -HUP `cat {{ pgbouncer.pidfile[ansible_os_family] }} 2>/dev/null` 2> /dev/null || true
+    endscript
+}

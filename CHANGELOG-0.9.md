@@ -4,6 +4,8 @@
 
 ### Added
 
+- [#921](https://github.com/epiphany-platform/epiphany/issues/921) - Implement log rotation for PgBouncer
+
 ### Fixed
 
 - [#1273](https://github.com/epiphany-platform/epiphany/issues/1273) - PostgreSQL replication with repmgr: hot_standby not set in config file

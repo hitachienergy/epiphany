@@ -97,6 +97,9 @@ specification:
       shared_preload_libraries:
         - repmgr
   logrotate:
+    pgbouncer:
+      period: weekly
+      rotations: 5
     # Configuration partly based on /etc/logrotate.d/postgresql-common provided by 'postgresql-common' package from Ubuntu repo.
       # PostgreSQL from Ubuntu repo:
         # By default 'logging_collector' is disabled, so 'log_directory' parameter is ignored.
@@ -105,19 +108,19 @@ specification:
         # By default 'logging_collector' is enabled and there is up to 7 files named 'daily' (e.g. postgresql-Wed.log)
         # and thus they can be overwritten by built-in log facility to provide rotation.
     # To have similar configuration for both distros (with logrotate), 'log_filename' parameter is modified.
-    config: |-
+    postgresql: |-
       /var/log/postgresql/postgresql*.log {
           maxsize 10M
           daily
           rotate 6
           copytruncate
-      # delaycompress is for Filebeat
+          # delaycompress is for Filebeat
           delaycompress
           compress
           notifempty
           missingok
           su root root
           nomail
-      # to have multiple unique filenames per day when dateext option is set
+          # to have multiple unique filenames per day when dateext option is set
           dateformat -%Y%m%dH%H
       }
