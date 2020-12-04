@@ -1,6 +1,5 @@
 ---
 - name: Stop application
-  become: true
   command: rabbitmqctl stop_app
 
 - name: Add node to cluster
