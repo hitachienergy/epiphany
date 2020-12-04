@@ -12,7 +12,7 @@
     file: roles/rabbitmq/defaults/main.yml
 
 - name: RabbitMQ | Offline upgrade
-  when: rabbitmq_version_current.stdout != rabbitmq_version
+  when: rabbitmq_version_current.stdout != versions.general
   block:
     - name: RabbitMQ | Stop nodes
       when: inventory_hostname != rabbitmq_master
