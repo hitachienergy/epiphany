@@ -2,7 +2,6 @@
 - name: Install packages
   yum:
     name:
-      - socat
       - logrotate
       - erlang-{{ versions.redhat.erlang }}
       - rabbitmq-server-{{ versions.redhat.rabbitmq }}

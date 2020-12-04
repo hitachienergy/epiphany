@@ -98,7 +98,6 @@ samba-client
 samba-client-libs # for samba-client
 samba-common
 samba-libs # for cifs-utils
-socat
 sysstat
 tar
 telnet

@@ -2,15 +2,12 @@
 - name: Install packages
   apt:
     name:
-      - init-system-helpers
-      - socat
+      - logrotate
       - erlang-eldap={{ versions.debian.erlang }}
       - erlang-inets={{ versions.debian.erlang }}
       - erlang-os-mon={{ versions.debian.erlang }}
       - erlang-public-key={{ versions.debian.erlang }}
       - erlang-ssl={{ versions.debian.erlang }}
-      - adduser
-      - logrotate
       - rabbitmq-server={{ versions.debian.rabbitmq }}
     update_cache: yes
     state: present
