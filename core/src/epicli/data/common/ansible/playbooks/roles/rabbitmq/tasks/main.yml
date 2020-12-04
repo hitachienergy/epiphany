@@ -30,4 +30,6 @@
     - not (specification.stop_service | bool)
 
 - include_tasks: "configure-policies.yml"
-  when: not (specification.stop_service | bool)
+  when:
+    - not (specification.stop_service | bool)
+    - inventory_hostname == rabbitmq_master

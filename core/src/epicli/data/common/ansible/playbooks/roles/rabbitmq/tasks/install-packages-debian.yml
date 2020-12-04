@@ -9,5 +9,5 @@
       - erlang-public-key={{ versions.debian.erlang }}
       - erlang-ssl={{ versions.debian.erlang }}
       - rabbitmq-server={{ versions.debian.rabbitmq }}
-    update_cache: yes
+    update_cache: true
     state: present
