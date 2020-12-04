@@ -1,5 +1,5 @@
 ---
-- name: Copy default config file
+- name: Copy rabbitmq.conf file
   template:
     src: rabbitmq-server.j2
     dest: /etc/rabbitmq/rabbitmq.conf
