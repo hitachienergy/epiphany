@@ -33,7 +33,7 @@ ebtables
 elasticsearch-curator-5.8.1
 elasticsearch-oss-6.8.5 # for elasticsearch role
 elasticsearch-oss-7.9.1 # for opendistroforelasticsearch & logging roles
-erlang-21.3.8.7
+erlang-23.1.4 # must be compatible with rabbitmq version
 ethtool
 filebeat-7.9.2
 firewalld
@@ -86,7 +86,7 @@ python-psycopg2
 python-setuptools
 python-slip-dbus # for firewalld
 quota # for nfs-utils
-rabbitmq-server-3.8.3
+rabbitmq-server-3.8.9
 rh-haproxy18
 rh-haproxy18-haproxy-syspaths
 postgresql10-server
@@ -95,7 +95,6 @@ samba-client
 samba-client-libs # for samba-client
 samba-common
 samba-libs # for cifs-utils
-socat
 sysstat
 tar
 telnet
@@ -174,7 +173,7 @@ brainsam/pgbouncer:1.12
 # TODO remove?
 jboss/keycloak:4.8.3.Final
 jboss/keycloak:9.0.0
-rabbitmq:3.8.3
+rabbitmq:3.8.9
 # K8s upgrade
 ## v1.14.6
 k8s.gcr.io/kube-apiserver:v1.14.6
