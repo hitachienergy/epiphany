@@ -7,5 +7,4 @@
   command: rabbitmqctl join_cluster rabbit@{{ rabbitmq_master.split('.')[0] }}
 
 - name: Start application
-  become: true
   command: rabbitmqctl start_app
