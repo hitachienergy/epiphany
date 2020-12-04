@@ -152,3 +152,20 @@ Before upgrade procedure make sure you have a data backup and you are familiar w
 
 Starting from Epiphany v0.8.0 it's possible to upgrade node exporter to v1.0.1.
 Upgrade will be performed automatically when the upgrade procedure detects node exporter hosts.
+
+## RabbitMQ upgrade
+
+---
+**NOTE**
+
+Before upgrade procedure make sure you have a data backup.
+Check that the node or cluster is in a good state: no alarms are in effect,
+no ongoing queue synchronisation operations and the system is otherwise under a reasonable load.
+For more information visit RabbitMQ [site](https://www.rabbitmq.com/upgrade.html).
+
+---
+
+With the latest Epiphany version it's possible to upgrade RabbitMQ to v3.8.9.
+It requires Erlang system packages upgrade that is done automatically to v23.1.4.
+Upgrade is performed in offline mode after stopping all RabbitMQ nodes.
+[Rolling upgrade](https://www.rabbitmq.com/upgrade.html#rolling-upgrades) is not supported by Epiphany but can be performed manually.
