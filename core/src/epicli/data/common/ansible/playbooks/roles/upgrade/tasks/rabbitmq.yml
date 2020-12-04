@@ -30,7 +30,6 @@
       vars:
         _packages:
           Debian:
-            - logrotate
             - erlang-eldap={{ versions.debian.erlang }}
             - erlang-inets={{ versions.debian.erlang }}
             - erlang-os-mon={{ versions.debian.erlang }}
@@ -38,7 +37,6 @@
             - erlang-ssl={{ versions.debian.erlang }}
             - rabbitmq-server={{ versions.debian.rabbitmq }}
           RedHat:
-            - logrotate
             - erlang-{{ versions.redhat.erlang }}
             - rabbitmq-server-{{ versions.redhat.rabbitmq }}
 
