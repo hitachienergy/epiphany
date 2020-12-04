@@ -1,0 +1,13 @@
+---
+- name: Install packages
+  apt:
+    name:
+      - logrotate
+      - erlang-eldap={{ versions.debian.erlang }}
+      - erlang-inets={{ versions.debian.erlang }}
+      - erlang-os-mon={{ versions.debian.erlang }}
+      - erlang-public-key={{ versions.debian.erlang }}
+      - erlang-ssl={{ versions.debian.erlang }}
+      - rabbitmq-server={{ versions.debian.rabbitmq }}
+    update_cache: true
+    state: present
