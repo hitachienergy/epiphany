@@ -1,0 +1,51 @@
+---
+- name: RabbitMQ | Set rabbitmq_master fact
+  set_fact:
+    rabbitmq_master: "{{ groups['rabbitmq'][0] }}"
+
+- name: RabbitMQ | Check version
+  command: rabbitmqctl version
+  register: rabbitmq_version_current
+
+- name: RabbitMQ | Include defaults from node_exporter role
+  include_vars:
+    file: roles/rabbitmq/defaults/main.yml
+
+- name: RabbitMQ | Offline upgrade
+  when: rabbitmq_version_current.stdout != rabbitmq_version
+  block:
+    - name: RabbitMQ | Stop nodes
+      when: inventory_hostname != rabbitmq_master
+      command: rabbitmqctl stop_app
+
+    - name: RabbitMQ | Stop master
+      when: inventory_hostname == rabbitmq_master
+      command: rabbitmqctl stop_app
+
+    - name: RabbitMQ | Upgrade packages
+      package:
+        name: "{{ _packages[ansible_os_family] }}"
+        update_cache: yes
+        state: present
+      vars:
+        _packages:
+          Debian:
+            - logrotate
+            - erlang-eldap={{ versions.debian.erlang }}
+            - erlang-inets={{ versions.debian.erlang }}
+            - erlang-os-mon={{ versions.debian.erlang }}
+            - erlang-public-key={{ versions.debian.erlang }}
+            - erlang-ssl={{ versions.debian.erlang }}
+            - rabbitmq-server={{ versions.debian.rabbitmq }}
+          RedHat:
+            - logrotate
+            - erlang-{{ versions.redhat.erlang }}
+            - rabbitmq-server-{{ versions.redhat.rabbitmq }}
+
+    - name: RabbitMQ | Start master
+      when: inventory_hostname == rabbitmq_master
+      command: rabbitmqctl start_app
+
+    - name: RabbitMQ | Start nodes
+      when: inventory_hostname != rabbitmq_master
+      command: rabbitmqctl start_app
