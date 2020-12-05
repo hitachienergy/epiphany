@@ -4,10 +4,10 @@ name: default
 specification:
 
   kafka_var:
-    version: 2.3.1
+    version: 2.6.0
     scala:
       version: 2.12
-    file_name: "kafka_2.12-2.3.1.tgz"
+    file_name: "kafka_2.12-2.6.0.tgz"
     enabled: True
     admin: kafka
     admin_pwd: epiphany
@@ -73,6 +73,12 @@ specification:
     conf_dir: /opt/kafka/config
     data_dir: /var/lib/kafka
     log_dir: /var/log/kafka
+    socket_settings:
+      network_threads: 3 # The number of threads handling network requests
+      io_threads: 8 # The number of threads doing disk I/O
+      send_buffer_bytes: 102400 # The send buffer (SO_SNDBUF) used by the socket server
+      receive_buffer_bytes: 102400 # The receive buffer (SO_RCVBUF) used by the socket server      
+      request_max_bytes: 104857600 # The maximum size of a request that the socket server will accept (protection against OOM)
 
   zookeeper_set_acl: false
   zookeeper_hosts: "{{ groups['zookeeper']|join(':2181,') }}:2181"
