@@ -6,6 +6,7 @@ specification:
     enabled: True
     admin: kafka
     admin_pwd: epiphany
+    # javax_net_debug: all # uncomment to activate debugging, other debug options: https://colinpaice.blog/2020/04/05/using-java-djavax-net-debug-to-examine-data-flows-including-tls/
     security:
       ssl:
         enabled: False
