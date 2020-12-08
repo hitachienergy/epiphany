@@ -16,11 +16,15 @@
   block:
     - name: RabbitMQ | Stop nodes
       when: inventory_hostname != rabbitmq_master
-      command: rabbitmqctl stop_app
+      service:
+        name: rabbitmq-server
+        state: stopped
 
     - name: RabbitMQ | Stop master
       when: inventory_hostname == rabbitmq_master
-      command: rabbitmqctl stop_app
+      service:
+        name: rabbitmq-server
+        state: stopped
 
     - name: RabbitMQ | Upgrade packages
       package:
@@ -42,8 +46,26 @@
 
     - name: RabbitMQ | Start master
       when: inventory_hostname == rabbitmq_master
-      command: rabbitmqctl start_app
+      service:
+        name: rabbitmq-server
+        enabled: true
+        state: started
 
     - name: RabbitMQ | Start nodes
       when: inventory_hostname != rabbitmq_master
-      command: rabbitmqctl start_app
+      block:
+        - name: RabbitMQ | Ensure that service is started
+          service:
+            name: rabbitmq-server
+            enabled: true
+            state: started
+
+        - name: RabbitMQ | Stop an app on the node
+          command: rabbitmqctl stop_app
+
+        - name: RabbitMQ | Join a node to the cluster
+          command: rabbitmqctl join_cluster rabbit@{{ rabbitmq_master.split('.')[0] }}
+
+        - name: RabbitMQ | Start an app on the node
+          when: inventory_hostname != rabbitmq_master
+          command: rabbitmqctl start_app
