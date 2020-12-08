@@ -22,6 +22,7 @@
 
 - [#1770](https://github.com/epiphany-platform/epiphany/issues/1770) - Upgrade Filebeat to the latest version (7.9.2)
 - [#1848](https://github.com/epiphany-platform/epiphany/issues/1848) - Update Ansible to v2.8.17
+- [#1137](https://github.com/epiphany-platform/epiphany/issues/1137) - Upgrade Kafka to 2.6.0
 
 ### Breaking changes
 
