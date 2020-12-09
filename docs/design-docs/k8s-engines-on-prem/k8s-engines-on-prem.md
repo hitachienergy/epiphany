@@ -79,9 +79,9 @@ supported:
 
 ### 3.4. RESULTS
 
-asciinema casts:
-- [rke-centos](https://asciinema.org/a/377770)
-- [rke-ubuntu](https://asciinema.org/a/377769)
+asciinema casts (reload page if cast doesn't work):
+- [rke-centos](https://asciinema.org/a/378121)
+- [rke-ubuntu](https://asciinema.org/a/378120)
 - [rke-ubuntu-in-azure](https://asciinema.org/a/377768)
 
 #### 3.4.1 UBUNTU
@@ -200,7 +200,7 @@ supported:
 
 ### 4.4 RESULTS
 
-asciinema casts:
+asciinema casts (reload page if cast doesn't work):
 - [kubespray-centos](https://asciinema.org/a/377774)
 - [kubespray-ubuntu](https://asciinema.org/a/377775)
 - [kubespray-ubuntu-in-azure](https://asciinema.org/a/377776)
@@ -310,7 +310,7 @@ calico is only supported via "addon" [here](https://github.com/kubermatic/kubeon
 
 ### 5.4 RESULTS
 
-asciinema casts:
+asciinema casts (reload page if cast doesn't work):
 - [kubeone-centos](https://asciinema.org/a/377771)
 - [kubeone-ubuntu](https://asciinema.org/a/377772)
 - [kubeone-ubuntu-in-azure](https://asciinema.org/a/377773)
