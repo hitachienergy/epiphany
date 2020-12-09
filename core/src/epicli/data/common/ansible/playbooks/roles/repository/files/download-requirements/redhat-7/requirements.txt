@@ -27,8 +27,8 @@ container-selinux
 cri-tools-1.13.0
 curl
 dejavu-sans-fonts # for grafana
-docker-ce-18.09.9
-docker-ce-cli-18.09.9
+docker-ce-19.03.14
+docker-ce-cli-19.03.14
 ebtables
 elasticsearch-curator-5.8.1
 elasticsearch-oss-6.8.5 # for elasticsearch role
