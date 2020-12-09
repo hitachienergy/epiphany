@@ -17,6 +17,7 @@
 - [#1872](https://github.com/epiphany-platform/epiphany/issues/1872) - pythonPath in launch.json is not supported
 - [#1868](https://github.com/epiphany-platform/epiphany/issues/1868) - Repository host runs Ubuntu on Azure/RHEL cluster
 - [#1875](https://github.com/epiphany-platform/epiphany/issues/1875) - epicli upgrade fails when there is no kubernetes_master group in inventory
+- [#1884](https://github.com/epiphany-platform/epiphany/issues/1884) - Prometheus is not able to scrape metrics from AKS/EKS nodes
 
 ### Updated
 
