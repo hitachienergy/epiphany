@@ -81,11 +81,11 @@ filebeat.inputs:
 # Filebeat postgresql module doesn't support custom log_line_prefix (without patching), see https://discuss.elastic.co/t/filebeats-with-postgresql-module-custom-log-line-prefix/204457
 # Dedicated configuration to handle log messages spanning multiple lines.
 
-{# configuration based on postgresql module #}
+{# postgresql only #}
 - type: log
   enabled: true
   paths:
-    - /var/log/postgresql/*.log*
+    - /var/log/postgresql/postgresql*.log*
   exclude_files: [".gz$"]
   {% if specification.postgresql_input.multiline is defined -%}
   multiline:
@@ -94,10 +94,12 @@ filebeat.inputs:
   {% endfor %}
   {% endif %}
 
+{# postgresql extensions - logs without multiline entries #}
 - type: log
   enabled: true
   paths:
     - {{ postgresql_defaults.pgbouncer.logfile[ansible_os_family] }}*
+    - /var/log/postgresql/repmgr.log*
   exclude_files: [".gz$"]
 {% endif %}
 
