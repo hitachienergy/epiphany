@@ -8,12 +8,13 @@
   include_tasks: zookeeper/preflight-check.yml
 
 - name: Get installed Zookeeper's version
-  shell: ls -la /opt/zookeeper | grep -oP '\d+\.\d+\.\d+'
-  register: zookeeper_version_installed
+  stat:
+    path: /opt/zookeeper
+  register: linked_zookeeper
 
 - name: Set installed Zookeeper version as fact
   set_fact:
-    before_upgrade_zookeeper_version: "{{ zookeeper_version_installed.stdout }}"
+    before_upgrade_zookeeper_version: "{{ linked_zookeeper.stat.lnk_target | regex_search('[\\d+]\\.[\\d+]\\.[\\d+]') }}"
 
 - name: Upgrade Zookeeper if newer version is available
   block:

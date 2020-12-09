@@ -61,6 +61,7 @@
     use_regex: yes
   register: snapshot_exists
 
+# From 3.5.5 version, ZooKeeper is not able to start when no snapshot files present, what is valid scenario in 3.4.X version. Empty snapshot downloaded from Zookeeper's Jira ticket. 
 - name: Copy empty snapshot if not exists
   copy:
     dest: "{{ zookeeper_defaults.zookeeper_data_dir }}/version-2" 
