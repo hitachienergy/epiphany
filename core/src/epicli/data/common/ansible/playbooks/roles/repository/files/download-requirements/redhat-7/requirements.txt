@@ -27,8 +27,8 @@ container-selinux
 cri-tools-1.13.0
 curl
 dejavu-sans-fonts # for grafana
-docker-ce-18.09.9
-docker-ce-cli-18.09.9
+docker-ce-19.03.14
+docker-ce-cli-19.03.14
 ebtables
 elasticsearch-curator-5.8.1
 elasticsearch-oss-6.8.5 # for elasticsearch role
@@ -144,8 +144,8 @@ kubernetes-cni-0.8.6-0
 
 [files]
 https://github.com/prometheus/haproxy_exporter/releases/download/v0.10.0/haproxy_exporter-0.10.0.linux-amd64.tar.gz
-https://repo1.maven.org/maven2/io/prometheus/jmx/jmx_prometheus_javaagent/0.12.0/jmx_prometheus_javaagent-0.12.0.jar
-https://archive.apache.org/dist/kafka/2.3.1/kafka_2.12-2.3.1.tgz
+https://repo1.maven.org/maven2/io/prometheus/jmx/jmx_prometheus_javaagent/0.14.0/jmx_prometheus_javaagent-0.14.0.jar
+https://archive.apache.org/dist/kafka/2.6.0/kafka_2.12-2.6.0.tgz
 https://github.com/danielqsj/kafka_exporter/releases/download/v1.2.0/kafka_exporter-1.2.0.linux-amd64.tar.gz
 https://github.com/prometheus/node_exporter/releases/download/v1.0.1/node_exporter-1.0.1.linux-amd64.tar.gz
 https://github.com/prometheus/prometheus/releases/download/v2.10.0/prometheus-2.10.0.linux-amd64.tar.gz
