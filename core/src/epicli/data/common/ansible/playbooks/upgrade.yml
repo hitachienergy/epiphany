@@ -142,6 +142,15 @@
         name: upgrade
         tasks_from: kibana
 
+- hosts: zookeeper
+  serial: 1
+  become: true
+  become_method: sudo
+  tasks:
+    - import_role:
+        name: upgrade
+        tasks_from: zookeeper
+
 - hosts: kafka
   serial: 1
   become: true

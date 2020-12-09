@@ -1,0 +1,28 @@
+---
+- name: Include defaults from zookeeper role
+  include_vars:
+    file: roles/zookeeper/defaults/main.yml
+    name: zookeeper_defaults
+
+- name: Include pre-flight checks
+  include_tasks: zookeeper/preflight-check.yml
+
+- name: Get installed Zookeeper's version
+  shell: ls -la /opt/zookeeper | grep -oP '\d+\.\d+\.\d+'
+  register: zookeeper_version_installed
+
+- name: Set installed Zookeeper version as fact
+  set_fact:
+    before_upgrade_zookeeper_version: "{{ zookeeper_version_installed.stdout }}"
+
+- name: Upgrade Zookeeper if newer version is available
+  block:
+    - name: Stop Zookeeper service
+      service:
+        name: zookeeper
+        state: stopped
+
+    - name: Include upgrade Zookeeper task
+      include_tasks: zookeeper/install-upgrade.yml
+  when:
+    - before_upgrade_zookeeper_version is version( zookeeper_defaults.zookeeper_version, '<' )

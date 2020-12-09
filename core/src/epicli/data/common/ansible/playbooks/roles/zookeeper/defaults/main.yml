@@ -1,5 +1,8 @@
 ---
 
+zookeeper_version: 3.5.8
+zookeeper_bin_filename: "apache-zookeeper-3.5.8-bin.tar.gz"
+
 zookeeper_hosts: "{{ groups['zookeeper'] }}"
 
 zookeeper_data_dir: /var/lib/zookeeper

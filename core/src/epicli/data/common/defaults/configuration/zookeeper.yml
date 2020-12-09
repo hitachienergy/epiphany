@@ -1,6 +1,4 @@
 kind: configuration/zookeeper
 title: "Zookeeper"
 name: default
-specification:
-  version: 3.4.12
-  file_name: "zookeeper-3.4.12.tar.gz"
+specification: {}
