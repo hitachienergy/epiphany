@@ -19,6 +19,7 @@
 - [#1875](https://github.com/epiphany-platform/epiphany/issues/1875) - epicli upgrade fails when there is no kubernetes_master group in inventory
 - [#1834](https://github.com/epiphany-platform/epiphany/issues/1834) - Kafka - Disable debug logging and make this option configurable
 - [#1888](https://github.com/epiphany-platform/epiphany/issues/1888) - epicli upgrade of cluster created by Epiphany v0.5 may fail
+- [#1884](https://github.com/epiphany-platform/epiphany/issues/1884) - Prometheus is not able to scrape metrics from AKS/EKS nodes
 
 ### Updated
 
