@@ -6,6 +6,7 @@
 - name: RabbitMQ | Check version
   command: rabbitmqctl version
   register: rabbitmq_version_current
+  changed_when: false
 
 - name: RabbitMQ | Include defaults from node_exporter role
   include_vars:
