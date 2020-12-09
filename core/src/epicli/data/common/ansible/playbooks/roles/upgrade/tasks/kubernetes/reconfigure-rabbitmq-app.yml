@@ -7,8 +7,9 @@
   block:
     - name: after-patching | Get rabbitmq namespace
       shell: |-
-        kubectl get statefulsets.apps --all-namespaces -o=jsonpath='{range .items[*]}{.metadata.namespace}{"\t"}{.spec.template.spec.containers[].image}{"\n"}{end}'|
-        awk '/rabbitmq/ {print $1}'
+        kubectl get statefulsets.apps --all-namespaces \
+          -o=jsonpath='{range .items[*]}{.metadata.namespace}{"\t"}{.spec.template.spec.containers[].image}{"\n"}{end}' \
+        | awk '/rabbitmq/ {print $1}'
       changed_when: false
       register: rabbit_mq_namespace
       args:

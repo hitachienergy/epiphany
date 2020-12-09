@@ -1,0 +1,72 @@
+---
+- name: RabbitMQ | Set rabbitmq_master fact
+  set_fact:
+    rabbitmq_master: "{{ groups['rabbitmq'][0] }}"
+
+- name: RabbitMQ | Check version
+  command: rabbitmqctl version
+  register: rabbitmq_version_current
+  changed_when: false
+
+- name: RabbitMQ | Include defaults from node_exporter role
+  include_vars:
+    file: roles/rabbitmq/defaults/main.yml
+
+- name: RabbitMQ | Offline upgrade
+  when: rabbitmq_version_current.stdout != versions.general
+  block:
+    - name: RabbitMQ | Stop nodes
+      when: inventory_hostname != rabbitmq_master
+      service:
+        name: rabbitmq-server
+        state: stopped
+
+    - name: RabbitMQ | Stop master
+      when: inventory_hostname == rabbitmq_master
+      service:
+        name: rabbitmq-server
+        state: stopped
+
+    - name: RabbitMQ | Upgrade packages
+      package:
+        name: "{{ _packages[ansible_os_family] }}"
+        update_cache: yes
+        state: present
+      vars:
+        _packages:
+          Debian:
+            - erlang-eldap={{ versions.debian.erlang }}
+            - erlang-inets={{ versions.debian.erlang }}
+            - erlang-os-mon={{ versions.debian.erlang }}
+            - erlang-public-key={{ versions.debian.erlang }}
+            - erlang-ssl={{ versions.debian.erlang }}
+            - rabbitmq-server={{ versions.debian.rabbitmq }}
+          RedHat:
+            - erlang-{{ versions.redhat.erlang }}
+            - rabbitmq-server-{{ versions.redhat.rabbitmq }}
+
+    - name: RabbitMQ | Start master
+      when: inventory_hostname == rabbitmq_master
+      service:
+        name: rabbitmq-server
+        enabled: true
+        state: started
+
+    - name: RabbitMQ | Start nodes
+      when: inventory_hostname != rabbitmq_master
+      block:
+        - name: RabbitMQ | Ensure that service is started
+          service:
+            name: rabbitmq-server
+            enabled: true
+            state: started
+
+        - name: RabbitMQ | Stop an app on the node
+          command: rabbitmqctl stop_app
+
+        - name: RabbitMQ | Join a node to the cluster
+          command: rabbitmqctl join_cluster rabbit@{{ rabbitmq_master.split('.')[0] }}
+
+        - name: RabbitMQ | Start an app on the node
+          when: inventory_hostname != rabbitmq_master
+          command: rabbitmqctl start_app
