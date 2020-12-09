@@ -9,10 +9,10 @@
 
 - name: Set master exists flag
   set_fact:
-    does_k8s_exists: "(groups['kubernetes_master'] | default([])) | length > 0"
+    does_k8s_exist: "{{ (groups['kubernetes_master'] | default([]) | length > 0) or k8s_as_cloud_service }}"
 
 - name: Configure kubernetes monitoring
-  when: does_k8s_exists
+  when: does_k8s_exist
   include_tasks:
     file: configure-k8s-apps-monitoring.yml
     apply:
@@ -33,7 +33,7 @@
 
 - name: "Check if Alertmanager is enabled"
   set_fact:
-    is_alertmanager_enabled: "{{ specification.alerts.alertmanager.enable == True and (specification.alerts.alertmanager.config.receivers | length>0 ) }}"
+    is_alertmanager_enabled: "{{ specification.alerts.alertmanager.enable|bool and (specification.alerts.alertmanager.config.receivers | length>0 ) }}"
 
 - include: install.yml
   become: true
