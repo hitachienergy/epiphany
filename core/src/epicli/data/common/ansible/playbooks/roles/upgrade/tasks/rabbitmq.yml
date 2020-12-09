@@ -8,7 +8,7 @@
   register: rabbitmq_version_current
   changed_when: false
 
-- name: RabbitMQ | Include defaults from node_exporter role
+- name: RabbitMQ | Include defaults from rabbitmq role
   include_vars:
     file: roles/rabbitmq/defaults/main.yml
 
