@@ -38,9 +38,6 @@
       when: not cookie_file_stat.stat.exists
       set_fact:
         erlang_cookie: "{{ lookup('password', '/dev/null length=15 chars=ascii_letters') }}"
-      delegate_to: "{{ item }}"
-      delegate_facts: true
-      loop: "{{ ansible_play_hosts }}"
 
 # Cookie must be applied on master first 
 - include_tasks: "update-erlang-cookie.yml"

@@ -1,8 +1,4 @@
 ---
-- name: RabbitMQ | Set rabbitmq_master fact
-  set_fact:
-    rabbitmq_master: "{{ groups['rabbitmq'][0] }}"
-
 - name: RabbitMQ | Check version
   command: rabbitmqctl version
   register: rabbitmq_version_current
@@ -11,6 +7,15 @@
 - name: RabbitMQ | Include defaults from rabbitmq role
   include_vars:
     file: roles/rabbitmq/defaults/main.yml
+
+- name: RabbitMQ | Include specification vars from rabbitmq role
+  include_vars:
+    file: roles/rabbitmq/vars/main.yml
+
+- name: RabbitMQ | Set facts
+  set_fact:
+    rabbitmq_master: "{{ groups['rabbitmq'][0] }}"
+    long_names: "{% if specification.rabbitmq_use_longname|bool %}--longnames{% else %}{% endif %}"
 
 - name: RabbitMQ | Offline upgrade
   when: rabbitmq_version_current.stdout != versions.general
@@ -62,11 +67,11 @@
             state: started
 
         - name: RabbitMQ | Stop an app on the node
-          command: rabbitmqctl stop_app
+          command: rabbitmqctl {{ long_names }} stop_app
 
         - name: RabbitMQ | Join a node to the cluster
-          command: rabbitmqctl join_cluster rabbit@{{ rabbitmq_master.split('.')[0] }}
+          command: rabbitmqctl {{ long_names }} join_cluster rabbit@{{ rabbitmq_master }}
 
         - name: RabbitMQ | Start an app on the node
           when: inventory_hostname != rabbitmq_master
-          command: rabbitmqctl start_app
+          command: rabbitmqctl {{ long_names }} start_app

@@ -1,7 +1,8 @@
 ---
-- name: Set rabbitmq_master fact
+- name: Set facts
   set_fact:
     rabbitmq_master: "{{ groups['rabbitmq'][0] }}"
+    long_names: "{% if specification.rabbitmq_use_longname|bool %}--longnames{% else %}{% endif %}"
 
 - include_tasks: "install-packages-{{ ansible_os_family | lower }}.yml"
 
@@ -9,6 +10,13 @@
   when:
     - specification.cluster.is_clustered | bool
     - inventory_hostname == rabbitmq_master
+
+- name: Set erlang_cookie fact for nodes
+  when:
+    - specification.cluster.is_clustered | bool
+    - inventory_hostname != rabbitmq_master
+  set_fact:
+    erlang_cookie: "{{ hostvars[rabbitmq_master]['erlang_cookie'] }}"
 
 # Cookie is updated on master in previous step
 - include_tasks: "update-erlang-cookie.yml"
