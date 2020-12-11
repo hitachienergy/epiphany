@@ -2,4 +2,4 @@
 # This role is designed to be called as meta-dependency.
 
 - name: Load preflight facts
-  include_vars: "{{ vault_location }}/../preflight_facts.yml"
+  include_vars: "{{ facts_file_path }}"
