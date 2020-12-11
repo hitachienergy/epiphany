@@ -1,14 +1,14 @@
 # ON-PREM KUBERNETES AUTOMATION RESEARCH RESULTS
 
-## 1. KOPS
+## 1. KOPS [link](https://github.com/kubernetes/kops)
 
 - cannot be used, because it's cloud-exclusive
 
-## 2. KUBICORN
+## 2. KUBICORN [link](https://github.com/kubicorn/kubicorn)
 
 - cannot be used, because it's cloud-exclusive
 
-## 3. RKE [https://github.com/rancher/rke](https://github.com/rancher/rke)
+## 3. RKE [link](https://github.com/rancher/rke)
 
 ### 3.1 DESIGN
 
@@ -119,7 +119,7 @@ CONS:
 - no script for downloading docker images and building docker registry automatically
 - provides its own docker images
 
-## 4. KUBESPRAY [https://github.com/kubernetes-sigs/kubespray](https://github.com/kubernetes-sigs/kubespray)
+## 4. KUBESPRAY [link](https://github.com/kubernetes-sigs/kubespray)
 
 ### 4.1 DESIGN
 
@@ -238,7 +238,7 @@ CONS:
 - bad documentation (I needed couple of hours of reading ansible code to understand what is going on)
 - does not extract kubeconfig automatically
 
-## 5. KUBEONE [https://github.com/kubermatic/kubeone](https://github.com/kubermatic/kubeone)
+## 5. KUBEONE [link](https://github.com/kubermatic/kubeone)
 
 ### 5.1 DESIGN
 
