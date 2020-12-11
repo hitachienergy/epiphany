@@ -1,0 +1,216 @@
+# Deployments with memory request
+
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  name: memory-stress-1g-with-request
+spec:
+  replicas: 0
+  selector:
+    matchLabels:
+      app: memory-stress-1G
+  template:
+    metadata:
+      labels:
+        app: memory-stress-1G
+        group: memory-stress
+    spec:
+      containers:
+      - name: memory-stress-1g
+        image: polinux/stress
+        command:
+        - stress
+        args:
+        - --vm
+        - "1"
+        - --vm-bytes
+        - 1G
+        - --vm-keep
+        - --vm-hang
+        - "1"
+        resources:
+          requests:
+            memory: 1Gi
+---
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  name: memory-stress-100m-with-request
+spec:
+  replicas: 0
+  selector:
+    matchLabels:
+      app: memory-stress-100M
+  template:
+    metadata:
+      labels:
+        app: memory-stress-100M
+        group: memory-stress
+    spec:
+      containers:
+      - name: memory-stress-100m
+        image: polinux/stress
+        command:
+        - stress
+        args:
+        - --vm
+        - "1"
+        - --vm-bytes
+        - 100M
+        - --vm-keep
+        - --vm-hang
+        - "1"
+        resources:
+          requests:
+            memory: 100Mi
+---
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  name: memory-stress-10m-with-request
+spec:
+  replicas: 0
+  selector:
+    matchLabels:
+      app: memory-stress-10M
+  template:
+    metadata:
+      labels:
+        app: memory-stress-10M
+        group: memory-stress
+    spec:
+      containers:
+      - name: memory-stress-10m
+        image: polinux/stress
+        command:
+        - stress
+        args:
+        - --vm
+        - "1"
+        - --vm-bytes
+        - 10M
+        - --vm-keep
+        - --vm-hang
+        - "1"
+        resources:
+          requests:
+            memory: 10Mi
+---
+# Deployments without memory request
+
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  name: memory-stress-1g-no-request
+spec:
+  replicas: 0
+  selector:
+    matchLabels:
+      app: memory-stress-1G-no-request
+  template:
+    metadata:
+      labels:
+        app: memory-stress-1G-no-request
+        group: memory-stress
+    spec:
+      containers:
+      - name: memory-stress-1g-no-request
+        image: polinux/stress
+        command:
+        - stress
+        args:
+        - --vm
+        - "1"
+        - --vm-bytes
+        - 1G
+        - --vm-keep
+        - --vm-hang
+        - "1"
+---
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  name: memory-stress-100m-no-request
+spec:
+  replicas: 0
+  selector:
+    matchLabels:
+      app: memory-stress-100M-no-request
+  template:
+    metadata:
+      labels:
+        app: memory-stress-100M-no-request
+        group: memory-stress
+    spec:
+      containers:
+      - name: memory-stress-100m-no-request
+        image: polinux/stress
+        command:
+        - stress
+        args:
+        - --vm
+        - "1"
+        - --vm-bytes
+        - 100M
+        - --vm-keep
+        - --vm-hang
+        - "1"
+---
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  name: memory-stress-10m-no-request
+spec:
+  replicas: 0
+  selector:
+    matchLabels:
+      app: memory-stress-10M-no-request
+  template:
+    metadata:
+      labels:
+        app: memory-stress-10M-no-request
+        group: memory-stress
+    spec:
+      containers:
+      - name: memory-stress-10m-no-request
+        image: polinux/stress
+        command:
+        - stress
+        args:
+        - --vm
+        - "1"
+        - --vm-bytes
+        - 10M
+        - --vm-keep
+        - --vm-hang
+        - "1"
+---
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  name: memory-stress-1m-no-request
+spec:
+  replicas: 0
+  selector:
+    matchLabels:
+      app: memory-stress-1M-no-request
+  template:
+    metadata:
+      labels:
+        app: memory-stress-1M-no-request
+        group: memory-stress
+    spec:
+      containers:
+      - name: memory-stress-1m-no-request
+        image: polinux/stress
+        command:
+        - stress
+        args:
+        - --vm
+        - "1"
+        - --vm-bytes
+        - 1M
+        - --vm-keep
+        - --vm-hang
+        - "1"
+---
