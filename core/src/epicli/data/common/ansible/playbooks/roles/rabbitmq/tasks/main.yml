@@ -1,8 +1,7 @@
 ---
-- name: Set facts
+- name: Set rabbitmq_master fact
   set_fact:
     rabbitmq_master: "{{ groups['rabbitmq'][0] }}"
-    long_names: "{% if specification.rabbitmq_use_longname|bool %}--longnames{% else %}{% endif %}"
 
 - include_tasks: "install-packages-{{ ansible_os_family | lower }}.yml"
 
