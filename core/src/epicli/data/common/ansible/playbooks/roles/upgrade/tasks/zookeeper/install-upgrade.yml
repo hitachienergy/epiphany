@@ -1,5 +1,6 @@
 ---
 
+# This task can be reused from zookeeper role. Rememeber about it in near future. We should refactor zookeeper role and split some code into smaller pieces.
 - name: Download Zookeeper binaries
   include_role:
     name: download
