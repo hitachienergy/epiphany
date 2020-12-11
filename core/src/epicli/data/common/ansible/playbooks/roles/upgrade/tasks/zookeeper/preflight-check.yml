@@ -2,6 +2,9 @@
   - name: Check if Zookeeper is installed in default location
     stat:
       path: /opt/zookeeper/bin/zkServer.sh
+      get_attributes: false
+      get_checksum: false
+      get_mime: false
     register: zookeeper_exec_file
 
   - name: Assert Zookeeper location

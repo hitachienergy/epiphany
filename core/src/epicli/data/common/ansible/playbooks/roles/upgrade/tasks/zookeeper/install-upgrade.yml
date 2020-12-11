@@ -41,13 +41,15 @@
     state: link
     src: /opt/zookeeper-{{ zookeeper_defaults.zookeeper_version }}
     force: yes
+  register: new_symbolic_link
 
 - name: Remove previous version binaries
   file:
     path: /opt/zookeeper-{{ before_upgrade_zookeeper_version }}
     state: absent
-
-- name: Improve Zookeeper service and run zookeeper service using symbolic link instead of versioned path
+  when: new_symbolic_link.changed
+    
+- name: Reconfigure Zookeeper service to use symbolic link
   lineinfile:
     path: /lib/systemd/system/zookeeper.service
     state: present
@@ -57,8 +59,7 @@
 - name: Check if any snapshots exists in data dir what is necessary in order to run zookeeper after upgrade
   find:
     paths: "{{ zookeeper_defaults.zookeeper_data_dir }}/version-2"
-    patterns: 'snapshot*.'
-    use_regex: yes
+    patterns: "snapshot.*"
   register: snapshot_exists
 
 # From 3.5.5 version, ZooKeeper is not able to start when no snapshot files present, what is valid scenario in 3.4.X version. Empty snapshot downloaded from Zookeeper's Jira ticket. 
