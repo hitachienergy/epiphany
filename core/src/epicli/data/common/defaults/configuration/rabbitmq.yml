@@ -11,7 +11,7 @@ specification:
   ulimit_open_files: 65535
 
   amqp_port: 5672
-  rabbitmq_use_longname: true
+  rabbitmq_use_longname: false
   rabbitmq_policies: []
   rabbitmq_plugins: []
   custom_configurations: []

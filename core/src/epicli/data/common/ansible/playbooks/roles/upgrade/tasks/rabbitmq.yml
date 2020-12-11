@@ -70,7 +70,7 @@
           command: rabbitmqctl {{ long_names }} stop_app
 
         - name: RabbitMQ | Join a node to the cluster
-          command: rabbitmqctl {{ long_names }} join_cluster rabbit@{{ rabbitmq_master }}
+          command: rabbitmqctl {{ long_names }} join_cluster rabbit@{{ rabbitmq_master.split('.')[0] }}
 
         - name: RabbitMQ | Start an app on the node
           when: inventory_hostname != rabbitmq_master

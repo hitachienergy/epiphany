@@ -3,7 +3,7 @@
   command: rabbitmqctl {{ long_names }} stop_app
 
 - name: Add node to cluster
-  command: rabbitmqctl {{ long_names }} join_cluster rabbit@{{ rabbitmq_master }}
+  command: rabbitmqctl {{ long_names }} join_cluster rabbit@{{ rabbitmq_master.split('.')[0] }}
 
 - name: Start application
   command: rabbitmqctl {{ long_names }} start_app
