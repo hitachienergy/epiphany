@@ -140,6 +140,7 @@
       copy:
         src: "{{ item }}"
         dest: "{{ grafana_data_dir }}/dashboards/{{ item | basename }}"
+        mode: ug=rw,o=
       with_fileglob:
         - "{{ _tmp_dashboards.path }}/*"
         - "{{ grafana_dashboards_dir }}/*.json"

@@ -5,6 +5,7 @@
   file:
     path: "{{ grafana_api_keys_dir }}/{{ inventory_hostname }}"
     state: directory
+    mode: u=rwx,go=
 
 - name: Check api key list
   uri:
@@ -37,5 +38,6 @@
     dest: "{{ grafana_api_keys_dir }}/{{ inventory_hostname }}/{{ item.item.name }}.key"
     content: "{{ item.json.key }}"
     backup: false
+    mode: u=rw,go=
   when: item.json is defined
   loop: "{{ new_api_keys.results }}"

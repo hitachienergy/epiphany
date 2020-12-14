@@ -6,6 +6,7 @@
     recurse: true
     owner: root
     group: grafana
+    mode: ug=rwx,o=
   loop:
     - /etc/grafana/datasources
     - /etc/grafana/provisioning/datasources
@@ -16,7 +17,7 @@
     dest: /etc/grafana/grafana.ini
     owner: root
     group: grafana
-    mode: u=rw,g=r,o=
+    mode: ug=rw,o=
   notify: restart grafana
   no_log: true
 
@@ -26,7 +27,7 @@
     dest: "{{ grafana_auth.ldap.config_file | default('/etc/grafana/ldap.toml') }}"
     owner: root
     group: grafana
-    mode: u=rw,g=r,o=
+    mode: ug=rw,o=
   when:
     - "'ldap' in grafana_auth"
     - "'enabled' not in grafana_auth.ldap or grafana_auth.ldap.enabled"
@@ -40,7 +41,7 @@
     recurse: true
     owner: grafana
     group: grafana
-    mode: u=rwx,go=rx
+    mode: ug=rwx,o=
   with_items:
     - "{{ grafana_logs_dir }}"
     - "{{ grafana_data_dir }}/dashboards"
