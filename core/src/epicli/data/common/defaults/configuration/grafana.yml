@@ -2,7 +2,6 @@ kind: configuration/grafana
 title: "Grafana"
 name: default
 specification:
-  version: 6.2.5
   grafana_logs_dir: "/var/log/grafana"
   grafana_data_dir: "/var/lib/grafana"
   grafana_address: "0.0.0.0"

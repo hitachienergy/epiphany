@@ -1,5 +1,5 @@
 ---
-grafana_version: "{{ specification.version }}"
+grafana_version: 7.3.5
 
 # Should we use the provisioning capability when possible (provisioning require grafana >= 5.0)
 grafana_use_provisioning: "{{ specification.grafana_use_provisioning }}"
@@ -93,4 +93,3 @@ grafana_api_keys: "{{ specification.grafana_api_keys }}"
 grafana_api_keys_dir: "{{ lookup('env', 'HOME') }}/grafana/keys"
 
 grafana_environment: {}
-
