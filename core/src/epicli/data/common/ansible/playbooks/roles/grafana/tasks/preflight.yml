@@ -37,7 +37,7 @@
     msg: "Boolean variables in grafana_datasources shouldn't be passed as strings. Please remove unneeded apostrophes."
   when: ( item.isDefault is defined and item.isDefault is string ) or
         ( item.basicAuth is defined and item.basicAuth is string )
-  with_items: "{{ grafana_datasources }}"
+  loop: "{{ grafana_datasources }}"
 
 - name: Fail on bad database configuration
   fail:
@@ -61,7 +61,7 @@
     msg: "Check grafana_api_keys. The role can only be one of the following values: Viewer, Editor or Admin."
   when:
     - item.role not in ['Viewer', 'Editor', 'Admin']
-  with_items: "{{ grafana_api_keys }}"
+  loop: "{{ grafana_api_keys }}"
 
 - name: Fail when grafana_ldap isn't set when grafana_auth.ldap is
   fail:
@@ -86,11 +86,11 @@
 
 - name: Make sure etc/grafana/ssl/ exists
   file:
-    path: '/etc/grafana/ssl/'
-    state: 'directory'
-    owner: 'root'
-    group: 'root'
-    mode: '0755'
+    path: /etc/grafana/ssl/
+    state: directory
+    owner: root
+    group: root
+    mode: u=rwx,go=rx
 
 - name: Generate self signed SSL certificates
   command: >
@@ -104,4 +104,4 @@
       -keyout /etc/grafana/ssl/grafana_key.key
       -out /etc/grafana/ssl/grafana_cert.pem
   args:
-    creates: '/etc/grafana/ssl/grafana_cert.pem'
+    creates: /etc/grafana/ssl/grafana_cert.pem

@@ -1,6 +1,5 @@
 ---
-
-- include: preflight.yml
+- include_tasks: preflight.yml
   tags:
     - grafana_install
     - grafana_configure
@@ -8,17 +7,15 @@
     - grafana_notifications
     - grafana_dashboards
 
-- include: install.yml
-  become: true
+- include_tasks: install.yml
   tags:
     - grafana_install
 
-- include: configure.yml
-  become: true
+- include_tasks: configure.yml
   tags:
     - grafana_configure
 
-- include: plugins.yml
+- include_tasks: plugins.yml
   when: grafana_plugins != []
   tags:
     - grafana_configure
@@ -45,20 +42,20 @@
     - grafana_dashboards
     - grafana_run
 
-- include: api_keys.yml
+- include_tasks: api_keys.yml
   when: grafana_api_keys | length > 0
   tags:
     - grafana_configure
     - grafana_run
 
-- include: datasources.yml
+- include_tasks: datasources.yml
   when: grafana_datasources != []
   tags:
     - grafana_configure
     - grafana_datasources
     - grafana_run
 
-- include: notifications.yml
+- include_tasks: notifications.yml
   when: grafana_alert_notifications | length > 0
   tags:
     - grafana_configure
@@ -66,19 +63,19 @@
     - grafana_run
 
 - name: "Check if there are any dashboards in {{ grafana_dashboards_dir }}"
+  delegate_to: localhost
   become: false
+  run_once: true
   find:
     paths: "{{ grafana_dashboards_dir }}"
     patterns: '*.json'
-  delegate_to: localhost
-  run_once: true
   register: found_dashboards
   tags:
     - grafana_configure
     - grafana_dashboards
     - grafana_run
 
-- include: dashboards.yml
+- include_tasks: dashboards.yml
   when: grafana_dashboards | length > 0 or found_dashboards.matched > 0
   tags:
     - grafana_configure
