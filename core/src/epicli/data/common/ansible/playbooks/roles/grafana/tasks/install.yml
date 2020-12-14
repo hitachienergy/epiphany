@@ -12,10 +12,5 @@
     _packages:
       Debian:
         - grafana={{ grafana_version }}
-        - apt-transport-https
-        - adduser
-        - ca-certificates
-        - libfontconfig
-        - gnupg2
       RedHat:
         - grafana-{{ grafana_version }}
