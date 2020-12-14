@@ -6,13 +6,6 @@
       - grafana_database is mapping
       - grafana_security is mapping
 
-- name: Fail on unsupported system architectures
-  fail:
-    msg: "Sorry grafana doesn't support {{ ansible_architecture }} on this OS family ({{ ansible_os_family }}). Exiting."
-  when:
-    - ansible_architecture != "x86_64"
-    - not ( ansible_architecture in ['armv6l', 'armv7l'] and ansible_os_family == 'Debian' )
-
 - name: Fail when datasources aren't configured when dashboards are set to be installed
   fail:
     msg: "You need to specify datasources for dashboards!!!"
@@ -33,9 +26,13 @@
 - name: Fail on incorrect variable types in datasource definitions
   fail:
     msg: "Boolean variables in grafana_datasources shouldn't be passed as strings. Please remove unneeded apostrophes."
-  when: ( item.isDefault is defined and item.isDefault is string ) or
-        ( item.basicAuth is defined and item.basicAuth is string )
-  loop: "{{ grafana_datasources }}"
+  when:
+    - _isDefault + _basicAuth
+  vars:
+    _isDefault: >-
+      {{ grafana_datasources | map(attribute='isDefault') | select('string') | list }}
+    _basicAuth: >-
+      {{ grafana_datasources | map(attribute='basicAuth') | select('string') | list }}
 
 - name: Fail on bad database configuration
   fail:
@@ -58,8 +55,10 @@
   fail:
     msg: "Check grafana_api_keys. The role can only be one of the following values: Viewer, Editor or Admin."
   when:
-    - item.role not in ['Viewer', 'Editor', 'Admin']
-  loop: "{{ grafana_api_keys }}"
+    - _unknown_roles
+  vars:
+    _unknown_roles: >-
+      {{ grafana_api_keys | map(attribute='role') | reject('in', ["Viewer", "Editor", "Admin"]) | list }}
 
 - name: Fail when grafana_ldap isn't set when grafana_auth.ldap is
   fail:
