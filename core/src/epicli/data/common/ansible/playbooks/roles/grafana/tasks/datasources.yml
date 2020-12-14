@@ -1,21 +1,5 @@
 ---
-- name: Ensure datasources exist (via API)
-  when: not grafana_use_provisioning
-  grafana_datasource:
-    grafana_url: "{{ grafana_api_url }}"
-    grafana_user: "{{ grafana_security.admin_user }}"
-    grafana_password: "{{ grafana_security.admin_password }}"
-    name: "{{ item.name }}"
-    url: "{{ item.url }}"
-    ds_type: "{{ item.type }}"
-    access: "{{ item.access | default(omit) }}"
-    is_default: "{{ item.isDefault | default(omit) }}"
-    basic_auth_user: "{{ item.basicAuthUser | default(omit) }}"
-    basic_auth_password: "{{ item.basicAuthPassword | default(omit) }}"
-  loop: "{{ grafana_datasources }}"
-
 - name: Create/Update datasources file (provisioning)
-  when: grafana_use_provisioning
   copy:
     dest: /etc/grafana/provisioning/datasources/ansible.yml
     content: |

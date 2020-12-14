@@ -1,9 +1,6 @@
 ---
 grafana_version: 7.3.5
 
-# Should we use the provisioning capability when possible (provisioning require grafana >= 5.0)
-grafana_use_provisioning: "{{ specification.grafana_use_provisioning }}"
-
 # Should the provisioning be kept synced. If true, previous provisioned objects will be removed if not referenced anymore.
 grafana_provisioning_synced: "{{ specification.grafana_provisioning_synced }}"
 
