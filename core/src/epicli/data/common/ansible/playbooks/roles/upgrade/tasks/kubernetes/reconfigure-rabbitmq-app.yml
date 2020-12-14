@@ -3,27 +3,22 @@
   include_tasks: utils/patch-statefulset.yml
   vars:
     image_regexp: 'rabbitmq:.*'
-- name: Delete rabbitmq pods after patching
-  block:
-    - name: after-patching | Get rabbitmq namespace
-      shell: |-
-        kubectl get statefulsets.apps --all-namespaces \
-          -o=jsonpath='{range .items[*]}{.metadata.namespace}{"\t"}{.spec.template.spec.containers[].image}{"\n"}{end}' \
-        | awk '/rabbitmq/ {print $1}'
-      changed_when: false
-      register: rabbit_mq_namespace
-      args:
-        executable: /bin/bash
-    - name: after-patching | Get rabbitmq pod names
-      command: kubectl get pod -n {{ rabbit_mq_namespace.stdout }} -o=jsonpath='{range .items[*]}{.metadata.name}{"\n"}'
-      changed_when: false
-      register: rabbit_mq_pod_names
-      when:
-        - not rabbit_mq_namespace.stdout == ""
-    - name: after-patching | Delete rabbitmq pods
-      command: kubectl delete pod --namespace {{ rabbit_mq_namespace.stdout }} {{ item }}
-      changed_when: false
-      loop: "{{ rabbit_mq_pod_names.stdout_lines }}"
-      when:
-        - not rabbit_mq_namespace.stdout == ""
-        - not rabbit_mq_pod_names.stdout == ""
+
+- command: kubectl get statefulsets --all-namespaces --output json
+  register: command_get_statefulsets
+  changed_when: false
+
+- command: kubectl delete pods --namespace {{ item }} --all
+  loop: "{{ _namespaces }}"
+  when: _namespaces | length > 0
+  vars:
+    _namespaces: >-
+      {%- set output = [] -%}
+      {%- for item in (command_get_statefulsets.stdout | from_json)["items"] -%}
+        {%- for container in item.spec.template.spec.containers -%}
+          {%- if '/rabbitmq:' in container.image -%}
+            {{- output.append(item.metadata.namespace) -}}
+          {%- endif -%}
+        {%- endfor -%}
+      {%- endfor -%}
+      {{- output | unique -}}
