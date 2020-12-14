@@ -3,8 +3,6 @@
   service:
     name: grafana-server
     state: restarted
-  tags:
-    - grafana_run
 
 - name: Set privileges on provisioned dashboards
   file:
