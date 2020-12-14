@@ -1,8 +1,4 @@
 ---
-- name: RabbitMQ | Set rabbitmq_master fact
-  set_fact:
-    rabbitmq_master: "{{ groups['rabbitmq'][0] }}"
-
 - name: RabbitMQ | Check version
   command: rabbitmqctl version
   register: rabbitmq_version_current
@@ -11,6 +7,10 @@
 - name: RabbitMQ | Include defaults from rabbitmq role
   include_vars:
     file: roles/rabbitmq/defaults/main.yml
+
+- name: RabbitMQ | Set rabbitmq_master fact
+  set_fact:
+    rabbitmq_master: "{{ groups['rabbitmq'][0] }}"
 
 - name: RabbitMQ | Offline upgrade
   when: rabbitmq_version_current.stdout != versions.general
