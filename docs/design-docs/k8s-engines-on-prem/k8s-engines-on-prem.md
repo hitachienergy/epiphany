@@ -1,5 +1,9 @@
 # ON-PREM KUBERNETES AUTOMATION RESEARCH RESULTS
 
+definitions:
+- "offline mode": an Epiphany-style offline mode, which provides and serves all system packages (rpm, deb), all docker images and all other extra files
+- "airgapped mode": provides and serves all docker images that are required for running Kubernetes cluster (this removes the need for pulling from external registries)
+
 ## 1. KOPS [link](https://github.com/kubernetes/kops)
 
 - cannot be used, because it's cloud-exclusive
@@ -63,9 +67,10 @@ kube-system     pod/rke-network-plugin-deploy-job-xzrwp        0/1     Completed
 
 ### 3.2 OFFLINE / AIR-GAPPED
 
-- not fully supported / automated (but easy to implement)
+- (in the sense of the definition above) not fully supported / automated (but easy to implement)
 - the list of required docker images can be obtained via `rke -q config -s`
-- user needs to provide on-prem docker-registry
+- user needs to provide docker-registry for airgapped mode [link](https://rancher.com/docs/rancher/v2.x/en/installation/other-installation-methods/air-gap/prepare-nodes/#5-set-up-a-private-docker-registry)
+- it is up to the user to install docker on all cluster nodes
 - no linux system packages (except for docker-ce with dependencies) are required / installed
 
 ### 3.3 CNI PLUGINS
@@ -178,7 +183,7 @@ kube-system   pod/nodelocaldns-tjwfr                           1/1     Running  
 
 ### 4.2 OFFLINE / AIR-GAPPED
 
-- not fully supported / automated
+- (in the sense of the definition above) not fully supported / automated [link](https://github.com/kubernetes-sigs/kubespray/blob/master/docs/offline-environment.md#offline-environment)
 - docker images and binary files (kubeadm, kubectl, ...) can be downloaded automatically
 - the "download procedure" requires exising 2-node online cluster (sic!)
 - the "download procedure" fails if there is no "/etc/kubernetes/" folder present on the machines (sic!)
@@ -296,9 +301,9 @@ kube-system   pod/node-local-dns-vsjpb                          1/1     Running 
 
 ### 5.2 OFFLINE / AIR-GAPPED
 
-- not fully supported / automated (but provides at least a script to download docker images)
+- (in the sense of the definition above) not fully supported / automated (but provides at least a script to download docker images) [link](https://docs.kubermatic.com/kubermatic/v2.14/advanced/offline_mode/)
 - user needs to provide on-prem docker-registry
-- user needs to take care about system packages
+- user needs to take care of system packages
 
 ### 5.3 CNI PLUGINS
 
