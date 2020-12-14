@@ -22,15 +22,13 @@
   fail:
     msg: "Please specify grafana admin user (grafana_security.admin_user)"
   when:
-    - grafana_security.admin_user == '' or
-      grafana_security.admin_user is not defined
+    - grafana_security.admin_user is undefined or grafana_security.admin_user | length == 0
 
 - name: Fail when grafana admin password isn't set
   fail:
     msg: "Please specify grafana admin password (grafana_security.admin_password)"
   when:
-    - grafana_security.admin_password == '' or
-      grafana_security.admin_password is not defined
+    - grafana_security.admin_password is undefined or grafana_security.admin_password | length == 0
 
 - name: Fail on incorrect variable types in datasource definitions
   fail:
