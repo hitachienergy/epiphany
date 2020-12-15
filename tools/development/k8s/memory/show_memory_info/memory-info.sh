@@ -4,7 +4,7 @@
 # Tested with Kubernetes: 1.11
 
 # This script reproduces what the kubelet does to calculate 'memory.available' relative to root cgroup.
-# It also calculates and shows other memory related info that helps you choose values
+# It also calculates and shows other memory related info which helps you choose values
 # for kubelet configuration parameters (e.g. kubeReserved and systemReserved)
 
 # The value for 'memory.available' is derived from the cgroupfs instead of tools like free.
