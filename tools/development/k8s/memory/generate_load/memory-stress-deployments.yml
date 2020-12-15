@@ -4,6 +4,8 @@ kind: Deployment
 apiVersion: apps/v1
 metadata:
   name: memory-stress-1g-with-request
+  labels:
+    group: memory-stress
 spec:
   replicas: 0
   selector:
@@ -13,7 +15,6 @@ spec:
     metadata:
       labels:
         app: memory-stress-1G
-        group: memory-stress
     spec:
       containers:
       - name: memory-stress-1g
@@ -36,6 +37,8 @@ kind: Deployment
 apiVersion: apps/v1
 metadata:
   name: memory-stress-100m-with-request
+  labels:
+    group: memory-stress
 spec:
   replicas: 0
   selector:
@@ -45,7 +48,6 @@ spec:
     metadata:
       labels:
         app: memory-stress-100M
-        group: memory-stress
     spec:
       containers:
       - name: memory-stress-100m
@@ -68,6 +70,8 @@ kind: Deployment
 apiVersion: apps/v1
 metadata:
   name: memory-stress-10m-with-request
+  labels:
+    group: memory-stress
 spec:
   replicas: 0
   selector:
@@ -77,7 +81,6 @@ spec:
     metadata:
       labels:
         app: memory-stress-10M
-        group: memory-stress
     spec:
       containers:
       - name: memory-stress-10m
@@ -102,6 +105,8 @@ kind: Deployment
 apiVersion: apps/v1
 metadata:
   name: memory-stress-1g-no-request
+  labels:
+    group: memory-stress
 spec:
   replicas: 0
   selector:
@@ -111,7 +116,6 @@ spec:
     metadata:
       labels:
         app: memory-stress-1G-no-request
-        group: memory-stress
     spec:
       containers:
       - name: memory-stress-1g-no-request
@@ -131,6 +135,8 @@ kind: Deployment
 apiVersion: apps/v1
 metadata:
   name: memory-stress-100m-no-request
+  labels:
+    group: memory-stress
 spec:
   replicas: 0
   selector:
@@ -140,7 +146,6 @@ spec:
     metadata:
       labels:
         app: memory-stress-100M-no-request
-        group: memory-stress
     spec:
       containers:
       - name: memory-stress-100m-no-request
@@ -160,6 +165,8 @@ kind: Deployment
 apiVersion: apps/v1
 metadata:
   name: memory-stress-10m-no-request
+  labels:
+    group: memory-stress
 spec:
   replicas: 0
   selector:
@@ -169,7 +176,6 @@ spec:
     metadata:
       labels:
         app: memory-stress-10M-no-request
-        group: memory-stress
     spec:
       containers:
       - name: memory-stress-10m-no-request
@@ -189,6 +195,8 @@ kind: Deployment
 apiVersion: apps/v1
 metadata:
   name: memory-stress-1m-no-request
+  labels:
+    group: memory-stress
 spec:
   replicas: 0
   selector:
@@ -198,7 +206,6 @@ spec:
     metadata:
       labels:
         app: memory-stress-1M-no-request
-        group: memory-stress
     spec:
       containers:
       - name: memory-stress-1m-no-request
