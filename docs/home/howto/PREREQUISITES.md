@@ -47,7 +47,7 @@ For setting up en Epicli development environment please refer to this dedicated 
 
 ### Hostnames requirements
 
-Epiphany installation is only supported on machines that are following advised by [freedesktop hostname](https://www.freedesktop.org/software/systemd/man/hostname.html) rule - only of 7-bit ASCII lower-case characters without spaces or dots, with the format allowed for DNS domain name labels. In case of other hostnames the Epiphany deployment will fail.
+Epiphany deployment is only supported on machines compliant with [freedesktop hostname](https://www.freedesktop.org/software/systemd/man/hostname.html) recommendation: string consists only of 7-bit ASCII lower-case characters without spaces or dots, with the format allowed for DNS domain name labels. Otherwise, the deployment will fail.
 
 ### Note for Windows users
 
