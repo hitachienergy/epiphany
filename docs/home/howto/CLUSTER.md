@@ -106,7 +106,7 @@ Disable:
 
 ## How to create an Epiphany cluster on existing infrastructure
 
-*Please read first prerequisistes related to [hostnames requirements](./PREREQUISITES.md#hostnames-requirements).*
+*Please read first prerequisites related to [hostnames requirements](./PREREQUISITES.md#hostnames-requirements).*
 
 Epicli has the ability to setup a cluster on infrastructure provided by you. These can be either bare metal machines or VM's and should meet the following requirements:
 
@@ -181,7 +181,7 @@ To setup the cluster do the following steps from the provisioning machine:
 
 ## How to create an Epiphany cluster on existing airgapped infrastructure
 
-*Please read first prerequisistes related to [hostnames requirements](./PREREQUISITES.md#hostnames-requirements).*
+*Please read first prerequisites related to [hostnames requirements](./PREREQUISITES.md#hostnames-requirements).*
 
 Epicli has the ability to setup a cluster on airgapped infrastructure provided by you. These can be either bare metal machines or VM's and should meet the following requirements:
 
@@ -365,7 +365,7 @@ specification:
 
 ## How to create an Epiphany cluster on a cloud provider
 
-*Please read first prerequisistes related to [hostnames requirements](./PREREQUISITES.md#hostnames-requirements).*
+*Please read first prerequisites related to [hostnames requirements](./PREREQUISITES.md#hostnames-requirements).*
 
 Epicli has the ability to setup a cluster on one of the following cloud providers:
 
@@ -532,7 +532,7 @@ From the defined cluster build folder it will take the information needed to rem
 
 ## Single machine cluster
 
-*Please read first prerequisistes related to [hostnames requirements](./PREREQUISITES.md#hostnames-requirements).*
+*Please read first prerequisites related to [hostnames requirements](./PREREQUISITES.md#hostnames-requirements).*
 
 ---
 **NOTE**
