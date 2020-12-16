@@ -23,7 +23,7 @@ specification:
   # Security
   grafana_security:
     admin_user: admin
-    admin_password: "PLEASE_CHANGE_THIS_PASSWORD"
+    admin_password: "YOUR_PASSWORD"
   ...
 ```
 
