@@ -187,7 +187,7 @@ Epicli has the ability to setup a cluster on airgapped infrastructure provided b
 
 *Note. Hardware requirements are not listed since this dependends on use-case, component configuration etc.*
 
-1. The airgapped cluster machines/vm's are connected by a network or virtual network of some sorts and can communicate which each other.
+1. The airgapped cluster machines/VMs are connected by a network or virtual network of some sorts and can communicate which each other.
 2. The airgapped cluster machines/vm`s are running one of the following Linux distributions:
     - RedHat 7.6+ and < 8
     - CentOS 7.6+ and < 8
