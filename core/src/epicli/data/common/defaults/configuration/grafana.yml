@@ -31,7 +31,7 @@ specification:
   # Security
   grafana_security:
     admin_user: admin
-    admin_password: "admin"
+    admin_password: "PLEASE_CHANGE_THIS_PASSWORD"
   #  secret_key: ""
   #  login_remember_days: 7
   #  cookie_username: grafana_user
