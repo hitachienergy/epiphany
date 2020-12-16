@@ -45,6 +45,10 @@ For setting up en Epicli development environment please refer to this dedicated 
 
 ## Important notes
 
+### Hostnames requirements
+
+Epiphany installation is only supported on machines that are following advised by [freedesktop hostname](https://www.freedesktop.org/software/systemd/man/hostname.html) rule - only of 7-bit ASCII lower-case characters without spaces or dots, with the format allowed for DNS domain name labels. In case of other hostnames the Epiphany deployment will fail.
+
 ### Note for Windows users
 
 - Watch out for the line endings conversion. By default Git for Windows sets `core.autocrlf=true`. Mounting such files with Docker results in `^M` end-of-line character in the config files.

@@ -106,6 +106,8 @@ Disable:
 
 ## How to create an Epiphany cluster on existing infrastructure
 
+*Please read first prerequisistes related to [hostnames requirements](./PREREQUISITES.md#hostnames-requirements).*
+
 Epicli has the ability to setup a cluster on infrastructure provided by you. These can be either bare metal machines or VM's and should meet the following requirements:
 
 *Note. Hardware requirements are not listed since this dependends on use-case, component configuration etc.*
@@ -179,11 +181,13 @@ To setup the cluster do the following steps from the provisioning machine:
 
 ## How to create an Epiphany cluster on existing airgapped infrastructure
 
+*Please read first prerequisistes related to [hostnames requirements](./PREREQUISITES.md#hostnames-requirements).*
+
 Epicli has the ability to setup a cluster on airgapped infrastructure provided by you. These can be either bare metal machines or VM's and should meet the following requirements:
 
 *Note. Hardware requirements are not listed since this dependends on use-case, component configuration etc.*
 
-1. The airgapped cluster machines/vm`s are connected by a network or virtual network of some sorts and can communicate which each other:
+1. The airgapped cluster machines/vm`s are connected by a network or virtual network of some sorts and can communicate which each other.
 2. The airgapped cluster machines/vm`s are running one of the following Linux distributions:
     - RedHat 7.6+ and < 8
     - CentOS 7.6+ and < 8
@@ -361,6 +365,8 @@ specification:
 
 ## How to create an Epiphany cluster on a cloud provider
 
+*Please read first prerequisistes related to [hostnames requirements](./PREREQUISITES.md#hostnames-requirements).*
+
 Epicli has the ability to setup a cluster on one of the following cloud providers:
 
 - Azure
@@ -525,6 +531,8 @@ Epicli has a delete command to remove a cluster from a cloud provider (AWS, Azur
 From the defined cluster build folder it will take the information needed to remove the resources from the cloud provider.
 
 ## Single machine cluster
+
+*Please read first prerequisistes related to [hostnames requirements](./PREREQUISITES.md#hostnames-requirements).*
 
 ---
 **NOTE**
