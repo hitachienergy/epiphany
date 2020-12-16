@@ -10,7 +10,7 @@ Group={{ zookeeper_group }}
 {% if exporter.stat.exists %}
 Environment="SERVER_JVMFLAGS=-javaagent:{{ prometheus_jmx_path }}={{ prometheus_jmx_exporter_web_listen_port }}:{{ prometheus_jmx_config }}"
 {% endif %}
-ExecStart={{zookeeper_install_dir}}/bin/zkServer.sh start-foreground
+ExecStart=/opt/zookeeper/bin/zkServer.sh start-foreground
 Restart=always
 RestartSec=3
 
