@@ -12,9 +12,22 @@ TODO
 
 ## How to setup default admin password and user in Grafana
 
-To use other default user than admin/admin created automatically after Grafana installation please follow official Grafana 
-documentation accessible at https://grafana.com/docs/grafana/latest/installation/configuration/#security address. You can also find
-there other useful configuration options for Grafana security.
+Prior to setup Grafana, please setup in your configuration yaml new password and/or name for your admin user. If not, default
+"admin" user will be used with the default password "PLEASE_CHANGE_THIS_PASSWORD".
+
+```yaml
+kind: configuration/grafana
+specification:
+  ...
+  # Variables correspond to ones in grafana.ini configuration file
+  # Security
+  grafana_security:
+    admin_user: admin
+    admin_password: "YOUR_PASSWORD"
+  ...
+```
+
+More information about Grafana security you can find at https://grafana.com/docs/grafana/latest/installation/configuration/#security address.
 
 ## Import and create of Grafana dashboards
 
