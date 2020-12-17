@@ -13,7 +13,7 @@ TODO
 ## How to setup default admin password and user in Grafana
 
 Prior to setup Grafana please setup in your configuration yaml new password and/or name for your admin user. If not dafault
-admin user will be used with default password PLEASE_CHANGE_THIS_PASSWORD.
+"admin" user will be used with the default password "PLEASE_CHANGE_THIS_PASSWORD".
 
 ```yaml
 kind: configuration/grafana
