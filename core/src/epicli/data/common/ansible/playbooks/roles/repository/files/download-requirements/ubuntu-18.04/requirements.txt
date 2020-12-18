@@ -23,6 +23,20 @@ erlang-os-mon 1:23.1.4
 erlang-public-key 1:23.1.4
 erlang-ssl 1:23.1.4
 
+# additional dependencies required to fix https://github.com/epiphany-platform/epiphany/issues/1920
+erlang-asn1 1:23.1.4
+erlang-base-hipe 1:23.1.4
+erlang-crypto 1:23.1.4
+erlang-ftp 1:23.1.4
+erlang-mnesia 1:23.1.4
+erlang-parsetools 1:23.1.4
+erlang-runtime-tools 1:23.1.4
+erlang-snmp 1:23.1.4
+erlang-syntax-tools 1:23.1.4
+erlang-tftp 1:23.1.4
+erlang-tools 1:23.1.4
+erlang-xmerl 1:23.1.4
+
 ethtool
 filebeat 7.9.2
 firewalld
