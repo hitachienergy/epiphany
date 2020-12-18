@@ -1,0 +1,21 @@
+---
+
+- name: Decide if internal docker registry will be used
+  set_fact:
+    use_epiphany_image_registry: >-
+      {{ (not _k8s_as_cloud_service) and _use_local_image_registry }}
+  vars:
+    # Be extra paranoid
+    _k8s_as_cloud_service: >-
+      {{ k8s_as_cloud_service | bool }}
+    # Enable by default
+    _use_local_image_registry: >-
+      {{ (data.use_local_image_registry is undefined) or (data.use_local_image_registry | bool) }}
+
+- name: Init istio operator
+  command: "istioctl operator init --hub {{ image_registry_address }}/istio --watchedNamespaces={{ data.namespaces.watched | join(',') }} --operatorNamespace={{ data.namespaces.operator }} --istioNamespace={{ data.namespaces.istio }}"
+  when: use_epiphany_image_registry
+
+- name: Init istio operator
+  command: "istioctl operator init --watchedNamespaces={{ data.namespaces.watched | join(',') }} --operatorNamespace={{ data.namespaces.operator }} --istioNamespace={{ data.namespaces.istio }}"
+  when: not use_epiphany_image_registry

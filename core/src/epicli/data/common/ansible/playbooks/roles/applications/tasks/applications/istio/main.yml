@@ -1,0 +1,9 @@
+---
+
+- name: Deploy Istio operator
+  include_tasks: deploy-istio-operator.yml
+
+- name: Deploy Istio
+  include_tasks: deploy-k8s-app.yml
+  vars:
+    app_dir_name: "{{ data.name }}"

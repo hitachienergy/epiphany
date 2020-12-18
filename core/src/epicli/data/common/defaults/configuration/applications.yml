@@ -169,3 +169,18 @@ specification:
         DEFAULT_POOL_SIZE: 25
         RESERVE_POOL_SIZE: 25
         POOL_MODE: transaction
+
+## --- istio ---
+
+  - name: istio
+    enabled: yes
+    namespaces:
+      operator: istio-operator # namespace where operator will be deployed
+      watched: # namespaces which operator will watch
+        - istio-operator-resource1
+        - istio-operator-resource2
+      istio: istio-system # namespace where istio control plane will be deployed
+    use_local_image_registry: true
+    istio_spec:
+      profile: default # Check all possibilites https://istio.io/latest/docs/setup/additional-setup/config-profiles/
+      name: istiocontrolplane

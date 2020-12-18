@@ -1,0 +1,7 @@
+{% for namespace in data.namespaces.watched %}
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: {{ namespace }}
+{% endfor %}
