@@ -3,11 +3,27 @@
   apt:
     name:
       - logrotate
+
       - erlang-eldap={{ versions.debian.erlang }}
       - erlang-inets={{ versions.debian.erlang }}
       - erlang-os-mon={{ versions.debian.erlang }}
       - erlang-public-key={{ versions.debian.erlang }}
       - erlang-ssl={{ versions.debian.erlang }}
+
+      # Additional dependencies required to fix https://github.com/epiphany-platform/epiphany/issues/1920
+      - erlang-asn1={{ versions.debian.erlang }}
+      - erlang-base-hipe={{ versions.debian.erlang }}
+      - erlang-crypto={{ versions.debian.erlang }}
+      - erlang-ftp={{ versions.debian.erlang }}
+      - erlang-mnesia={{ versions.debian.erlang }}
+      - erlang-parsetools={{ versions.debian.erlang }}
+      - erlang-runtime-tools={{ versions.debian.erlang }}
+      - erlang-snmp={{ versions.debian.erlang }}
+      - erlang-syntax-tools={{ versions.debian.erlang }}
+      - erlang-tftp={{ versions.debian.erlang }}
+      - erlang-tools={{ versions.debian.erlang }}
+      - erlang-xmerl={{ versions.debian.erlang }}
+
       - rabbitmq-server={{ versions.debian.rabbitmq }}
     update_cache: true
     state: present
