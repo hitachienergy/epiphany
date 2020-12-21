@@ -19,3 +19,4 @@
 - name: Init istio operator
   command: "istioctl operator init --watchedNamespaces={{ data.namespaces.watched | join(',') }} --operatorNamespace={{ data.namespaces.operator }} --istioNamespace={{ data.namespaces.istio }}"
   when: not use_epiphany_image_registry
+  

@@ -5,3 +5,10 @@ kind: Namespace
 metadata:
   name: {{ namespace }}
 {% endfor %}
+{% if data.namespaces.istio not in data.namespaces.watched %}
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: {{ data.namespaces.istio }}
+{% endif %}
