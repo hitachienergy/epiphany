@@ -5,6 +5,8 @@
 ### Added
 
 - [#921](https://github.com/epiphany-platform/epiphany/issues/921) - Implement log rotation for PgBouncer
+- [#1911](https://github.com/epiphany-platform/epiphany/issues/1911) - Implement ability to deploy Istio
+
 
 ### Fixed
 

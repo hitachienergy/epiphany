@@ -173,14 +173,13 @@ specification:
 ## --- istio ---
 
   - name: istio
-    enabled: yes
+    enabled: false
+    use_local_image_registry: true
     namespaces:
       operator: istio-operator # namespace where operator will be deployed
-      watched: # namespaces which operator will watch
-        - istio-operator-resource1
-        - istio-operator-resource2
+      watched: # list of namespaces which operator will watch
+        - istio-system
       istio: istio-system # namespace where istio control plane will be deployed
-    use_local_image_registry: true
     istio_spec:
       profile: default # Check all possibilites https://istio.io/latest/docs/setup/additional-setup/config-profiles/
       name: istiocontrolplane
