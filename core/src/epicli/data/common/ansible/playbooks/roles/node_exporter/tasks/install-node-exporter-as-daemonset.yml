@@ -23,7 +23,7 @@
         tasks_from: download_file
       vars:
         file_name: "{{ exporter_chart_file_name }}"
-        repository_url: http://localhost/epirepo
+        repository_url: "{{ custom_repository_url | default('http://localhost/epirepo', true) }}"
 
     - when: helm_chart_values_bool
     # IF `helm_chart_values`
