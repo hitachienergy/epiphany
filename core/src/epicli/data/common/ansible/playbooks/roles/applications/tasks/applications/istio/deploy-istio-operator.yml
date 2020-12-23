@@ -13,9 +13,13 @@
       {{ (data.use_local_image_registry is undefined) or (data.use_local_image_registry | bool) }}
 
 - name: Init istio operator
-  command: "istioctl operator init --hub {{ image_registry_address }}/istio --watchedNamespaces={{ data.namespaces.watched | join(',') }} --operatorNamespace={{ data.namespaces.operator }} --istioNamespace={{ data.namespaces.istio }}"
-  when: use_epiphany_image_registry
-
-- name: Init istio operator
-  command: "istioctl operator init --watchedNamespaces={{ data.namespaces.watched | join(',') }} --operatorNamespace={{ data.namespaces.operator }} --istioNamespace={{ data.namespaces.istio }}"
-  when: not use_epiphany_image_registry
+  command: istioctl operator init {{ init_args | join(' ') }}
+  vars:
+    _common_args:
+      - --istioNamespace={{ data.namespaces.istio }}
+      - --operatorNamespace={{ data.namespaces.operator }}
+      - --watchedNamespaces={{ data.namespaces.watched | join(',') }}
+    _hub_arg: --hub={{ image_registry_address }}/istio
+    init_args: >-
+      {{ _common_args + [ _hub_arg ] if (use_epiphany_image_registry) else
+         _common_args }}
