@@ -66,9 +66,17 @@ filebeatConfig:
             fields:
               - from: docker.container.labels.io.kubernetes.container.name
                 to: kubernetes.container.name
+              - from: container.labels.io_kubernetes_container_name
+                to: kubernetes.container.name
+
               - from: docker.container.labels.io.kubernetes.pod.name
                 to: kubernetes.pod.name
+              - from: container.labels.io_kubernetes_pod_name
+                to: kubernetes.pod.name
+
               - from: docker.container.labels.io.kubernetes.pod.namespace
+                to: kubernetes.namespace
+              - from: container.labels.io_kubernetes_pod_namespace
                 to: kubernetes.namespace
             ignore_missing: true
             fail_on_error: true
