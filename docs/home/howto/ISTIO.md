@@ -28,7 +28,7 @@ specification:
       operator: istio-operator # namespace where operator will be deployed
       watched: # list of namespaces which operator will watch
         - istio-system
-      istio: istio-system # namespace where istio control plane will be deployed
+      istio: istio-system # namespace where Istio control plane will be deployed
     istio_spec:
       profile: default # Check all possibilites https://istio.io/latest/docs/setup/additional-setup/config-profiles/
       name: istiocontrolplane
@@ -47,7 +47,7 @@ kubectl label namespace default istio-injection=enabled
 
 Once the proper namespaces are labeled and Istio is deployed, you can deploy your applications or restart existing ones.
 
-You may need to make the application accessible from outside of your Kubernetes cluster. An Istio Gateway which was deployed using default profile is used for this purpose. Define the the ingress gateway deploying gateway and virtual service specification. The gateway specification describes the L4-L6 properties of a load balancer and the virtual service specification describe the L7 properties of a load balancer.
+You may need to make an application accessible from outside of your Kubernetes cluster. An Istio Gateway which was deployed using default profile is used for this purpose. Define the ingress gateway deploying gateway and virtual service specification. The gateway specification describes the L4-L6 properties of a load balancer and the virtual service specification describes the L7 properties of a load balancer.
 
 Example of the gateway and virtual service specification (You have to adapt the entire specification to the application):
 
