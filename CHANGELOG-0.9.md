@@ -21,6 +21,7 @@
 - [#1888](https://github.com/epiphany-platform/epiphany/issues/1888) - epicli upgrade of cluster created by Epiphany v0.5 may fail
 - [#1884](https://github.com/epiphany-platform/epiphany/issues/1884) - Prometheus is not able to scrape metrics from AKS/EKS nodes
 - [#1887](https://github.com/epiphany-platform/epiphany/issues/1887) - epicli upgrade of cluster created by Epiphany v0.6 fails on "Store preflight facts" task
+- [#1866](https://github.com/epiphany-platform/epiphany/issues/1866) - No logs from K8s apps in Elasticsearch
 
 ### Updated
 
