@@ -39,7 +39,7 @@ Using this configuration file, controller will detect Istio Operator resource in
 
 ### How to set up service mesh for an application
 
-The default Istio installation use automcatic sidecar injection. You need to label the namespace where application will be hosted:
+The default Istio installation uses automcatic sidecar injection. You need to label the namespace where application will be hosted:
 
 ```bash
 kubectl label namespace default istio-injection=enabled
