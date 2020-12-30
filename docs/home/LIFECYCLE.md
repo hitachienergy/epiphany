@@ -1,4 +1,14 @@
-# Epiphany platform lifecycle
+# Release policy
+
+Epiphany Platform uses [semantic versioning](https://semver.org/).  
+Example:  
+Major release - 0.x.x  
+Minor release - 0.2.x  
+Patch release - 0.2.1  
+Pre-release - 0.3.0rc1
+
+Currently, we supporting quarterly minor releases. These minor releases also include patch releases.
+# Epiphany Platform lifecycle
 
 | Epiphany version | Release date | Latest version | Release date | End of support |
 | ----------------------| --------------- | -------------|--------------------|--------------- |
@@ -12,3 +22,5 @@
 | 0.9.x | est. 2 Jan 2020 | 0.9.0 | est. 2 Jan 2020 | est. 1 Jan 2022 |
 
 ![lifecycle](../assets/images/lifecycle.png)
+
+source: [LIFECYCLE_GANTT.md](LIFECYCLE_GANTT.md)
