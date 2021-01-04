@@ -17,7 +17,7 @@
         tasks_from: download_file
       vars:
         file_name: "{{ filebeat_helm_chart_file_name }}"
-        repository_url: http://localhost/epirepo
+        repository_url: "{{ custom_repository_url | default('http://localhost/epirepo', true) }}"
 
     - name: Copy configuration Helm chart file (custom-chart-values.yml.j2)
       template:

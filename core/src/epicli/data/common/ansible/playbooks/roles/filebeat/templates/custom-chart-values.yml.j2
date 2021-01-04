@@ -20,10 +20,10 @@ filebeatConfig:
         - /var/log/audit/audit.log
         - /var/log/auth.log
         - /var/log/firewalld
-{% if 'haproxy' in group_names %}
+{% if 'haproxy' in groups %}
         - /var/log/haproxy.log
 {% endif %}
-{% if 'kafka' in group_names %}
+{% if 'kafka' in groups %}
         - /var/log/kafka/server.log
 {% endif %}
         - /var/log/messages
@@ -32,7 +32,7 @@ filebeatConfig:
 
 {# -------------------------- PostgreSQL input -------------------------- #}
 
-{% if 'postgresql' in group_names %}
+{% if 'postgresql' in groups %}
 {# configuration based on postgresql module #}
     - type: log
       enabled: true
@@ -49,7 +49,7 @@ filebeatConfig:
 
 {# -------------------------- Kubernetes input -------------------------- #}
 
-{% if 'kubernetes_master' in group_names or 'kubernetes_node' in group_names %}
+{% if (k8s_as_cloud_service is defined and k8s_as_cloud_service) or ('kubernetes_master' in groups or 'kubernetes_node' in groups) %}
     - type: docker
       enabled: true
       containers.ids: "*"
@@ -66,9 +66,17 @@ filebeatConfig:
             fields:
               - from: docker.container.labels.io.kubernetes.container.name
                 to: kubernetes.container.name
+              - from: container.labels.io_kubernetes_container_name
+                to: kubernetes.container.name
+
               - from: docker.container.labels.io.kubernetes.pod.name
                 to: kubernetes.pod.name
+              - from: container.labels.io_kubernetes_pod_name
+                to: kubernetes.pod.name
+
               - from: docker.container.labels.io.kubernetes.pod.namespace
+                to: kubernetes.namespace
+              - from: container.labels.io_kubernetes_pod_namespace
                 to: kubernetes.namespace
             ignore_missing: true
             fail_on_error: true
