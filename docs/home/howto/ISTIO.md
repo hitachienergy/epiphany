@@ -1,6 +1,6 @@
 ## Istio
 
-Open source platform which allows you to run service mesh for distributed microservice architecture. It allows to connect, manage and run secure connections between microservices and brings a lot of features such as load balancing, monitoring and service-to-service authentication without any changes in service code. Read more about Istio [here](https://istio.io/latest/docs/concepts/what-is-istio/).
+Open source platform which allows you to run service mesh for distributed microservice architecture. It allows to connect, manage and run secure connections between microservices and brings lots of features such as load balancing, monitoring and service-to-service authentication without any changes in service code. Read more about Istio [here](https://istio.io/latest/docs/concepts/what-is-istio/).
 
 ### Installing Istio
 

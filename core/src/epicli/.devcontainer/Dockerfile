@@ -38,7 +38,7 @@ RUN chmod +x /config-pre.sh \
     && kubectl version --client \
     && echo "Installing istioctl binary ..." \
     && curl -fsSLO https://github.com/istio/istio/releases/download/${ISTIOCTL_VERSION}/istioctl-${ISTIOCTL_VERSION}-linux-amd64.tar.gz \
-    && tar -xzof istioctl-${ISTIOCTL_VERSION}-linux-amd64.tar.gz -C /usr/local/bin \
+    && tar -xzof istioctl-${ISTIOCTL_VERSION}-linux-amd64.tar.gz -C /usr/local/bin istioctl \
     && rm istioctl-${ISTIOCTL_VERSION}-linux-amd64.tar.gz \
     && chmod +x /usr/local/bin/istioctl \
 \
