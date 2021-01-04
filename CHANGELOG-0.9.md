@@ -30,6 +30,7 @@
 - [#1137](https://github.com/epiphany-platform/epiphany/issues/1137) - Upgrade Kafka to 2.6.0
 - [#1855](https://github.com/epiphany-platform/epiphany/issues/1855) - Upgrade Docker to v19.03.14
 - [#1853](https://github.com/epiphany-platform/epiphany/issues/1853) - Upgrade Zookeeper to 3.5.8
+- [#1860](https://github.com/epiphany-platform/epiphany/issues/1860) - Upgrade Grafana (7.3.5)
 
 ### Breaking changes
 
