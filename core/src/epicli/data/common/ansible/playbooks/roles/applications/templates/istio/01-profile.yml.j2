@@ -1,0 +1,14 @@
+---
+apiVersion: install.istio.io/v1alpha1
+kind: IstioOperator
+metadata:
+  namespace: {{ data.namespaces.watched[0] }}
+  name: {{ data.istio_spec.name }}
+spec:
+  profile: {{ data.istio_spec.profile }}
+{% if use_epiphany_image_registry %}
+  hub: {{ image_registry_address }}/istio
+{% endif %}
+  values:
+    global:
+      istioNamespace: {{ data.namespaces.istio }}
