@@ -1,32 +1,16 @@
 ---
-
 - name: Remove conflicting grafana packages
   package:
     name: grafana-data
     state: absent
-  register: _old_grafana_pkgs
 
-- name: Install dependencies for Debian family
+- name: Install Grafana with dependencies
   package:
-    name: "{{ item }}"
+    name: "{{ _packages[ansible_os_family] }}"
     state: present
-  loop:
-    - apt-transport-https
-    - adduser
-    - ca-certificates
-    - libfontconfig
-    - gnupg2
-  when: ansible_os_family == "Debian"
-
-#TODO: this is a quick workaround, we should tackle versioning in a smarter way
-- name: Install Grafana
-  package:
-    name: "grafana-{{ grafana_version }}"
-    state: present
-  when: ansible_os_family == "RedHat"
-
-- name: Install Grafana
-  package:
-    name: "grafana={{ grafana_version }}"
-    state: present
-  when: ansible_os_family == "Debian"
+  vars:
+    _packages:
+      Debian:
+        - grafana={{ grafana_version }}
+      RedHat:
+        - grafana-{{ grafana_version }}

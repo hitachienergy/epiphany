@@ -5,39 +5,36 @@
       - grafana_server is mapping
       - grafana_database is mapping
       - grafana_security is mapping
-
-- name: Fail on unsupported system architectures
-  fail:
-    msg: "Sorry grafana doesn't support {{ ansible_architecture }} on this OS family ({{ ansible_os_family }}). Exiting."
-  when:
-    - ansible_architecture != "x86_64"
-    - not ( ansible_architecture in ['armv6l', 'armv7l'] and ansible_os_family == 'Debian' )
+      - grafana_dashboards is sequence
+      - grafana_datasources is sequence
 
 - name: Fail when datasources aren't configured when dashboards are set to be installed
   fail:
-    msg: "You need to specify datasources for dashboards!!!"
+    msg: "You need to specify datasources for dashboards!"
   when: grafana_dashboards != [] and grafana_datasources == []
 
 - name: Fail when grafana admin user isn't set
   fail:
     msg: "Please specify grafana admin user (grafana_security.admin_user)"
   when:
-    - grafana_security.admin_user == '' or
-      grafana_security.admin_user is not defined
+    - grafana_security.admin_user is undefined or grafana_security.admin_user | length == 0
 
 - name: Fail when grafana admin password isn't set
   fail:
     msg: "Please specify grafana admin password (grafana_security.admin_password)"
   when:
-    - grafana_security.admin_password == '' or
-      grafana_security.admin_password is not defined
+    - grafana_security.admin_password is undefined or grafana_security.admin_password | length == 0
 
 - name: Fail on incorrect variable types in datasource definitions
   fail:
     msg: "Boolean variables in grafana_datasources shouldn't be passed as strings. Please remove unneeded apostrophes."
-  when: ( item.isDefault is defined and item.isDefault is string ) or
-        ( item.basicAuth is defined and item.basicAuth is string )
-  with_items: "{{ grafana_datasources }}"
+  when:
+    - _isDefault + _basicAuth
+  vars:
+    _isDefault: >-
+      {{ grafana_datasources | map(attribute='isDefault') | select('string') | list }}
+    _basicAuth: >-
+      {{ grafana_datasources | map(attribute='basicAuth') | select('string') | list }}
 
 - name: Fail on bad database configuration
   fail:
@@ -60,8 +57,10 @@
   fail:
     msg: "Check grafana_api_keys. The role can only be one of the following values: Viewer, Editor or Admin."
   when:
-    - item.role not in ['Viewer', 'Editor', 'Admin']
-  with_items: "{{ grafana_api_keys }}"
+    - _unknown_roles
+  vars:
+    _unknown_roles: >-
+      {{ grafana_api_keys | map(attribute='role') | reject('in', ["Viewer", "Editor", "Admin"]) | list }}
 
 - name: Fail when grafana_ldap isn't set when grafana_auth.ldap is
   fail:
@@ -69,13 +68,6 @@
   when:
     - "'ldap' in grafana_auth"
     - grafana_ldap is not defined or ('servers' not in grafana_ldap or 'group_mappings' not in grafana_ldap)
-
-- name: Force grafana_use_provisioning to false if grafana_version is < 5.0 ( grafana_version is set to '{{ grafana_version }}' )
-  set_fact:
-    grafana_use_provisioning: false
-  when:
-    - grafana_version != 'latest'
-    - grafana_version is version_compare('5.0', '<')
 
 - name: Fail if grafana_port is lower than 1024 and grafana_cap_net_bind_service is not true
   fail:
@@ -86,11 +78,11 @@
 
 - name: Make sure etc/grafana/ssl/ exists
   file:
-    path: '/etc/grafana/ssl/'
-    state: 'directory'
-    owner: 'root'
-    group: 'root'
-    mode: '0755'
+    path: /etc/grafana/ssl/
+    state: directory
+    owner: root
+    group: root
+    mode: u=rwx,go=rx
 
 - name: Generate self signed SSL certificates
   command: >
@@ -104,4 +96,4 @@
       -keyout /etc/grafana/ssl/grafana_key.key
       -out /etc/grafana/ssl/grafana_cert.pem
   args:
-    creates: '/etc/grafana/ssl/grafana_cert.pem'
+    creates: /etc/grafana/ssl/grafana_cert.pem
