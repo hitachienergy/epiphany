@@ -82,6 +82,7 @@ Find more information using table of contents below - especially the [How-to gui
   - [Security](docs/home/SECURITY.md)
   - [Troubleshooting](docs/home/TROUBLESHOOTING.md)
   - [Changelog](CHANGELOG.md)
+  - [Release policy and lifecycle](docs/home/LIFECYCLE.md)
 - Architecture
   - [Logical View](docs/architecture/logical-view.md)
   - [Process View](docs/architecture/process-view.md)
