@@ -5,6 +5,14 @@
 
 - include_tasks: "install-packages-{{ ansible_os_family | lower }}.yml"
 
+# NOTE: rabbitmqctl start_app, stop_app, join_cluster commands do NOT work when rabbitmq-server instance is down
+- name: Ensure rabbitmq-server service is running
+  systemd:
+    name: rabbitmq-server
+    state: started
+  when:
+    - not (specification.stop_service | bool)
+
 - include_tasks: "set-erlang-cookie.yml"
   when:
     - specification.cluster.is_clustered | bool
