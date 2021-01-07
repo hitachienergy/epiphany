@@ -1,0 +1,33 @@
+---
+- name: Install Java package
+  package:
+    name: "{{ _packages[ansible_os_family] }}"
+    state: present
+  vars:
+    _packages:
+      Debian:
+        - openjdk-8-jre-headless
+      RedHat:
+        - java-1.8.0-openjdk-headless
+
+- name: Find default java binary
+  command: which java
+  register: command_which_java
+  changed_when: false
+
+- name: Get absolute path of the default java binary
+  stat:
+    path: "{{ command_which_java.stdout_lines[0] }}"
+    get_attributes: false
+    get_checksum: false
+    get_mime: false
+    follow: false
+  register: stat_java
+
+- name: Compute ignite_java_home fact
+  set_fact:
+    ignite_java_home: >-
+      {{ stat_java.stat.islnk | default(false)
+                              | ternary(stat_java.stat.lnk_source, stat_java.stat.path)
+                              | dirname
+                              | dirname }}
