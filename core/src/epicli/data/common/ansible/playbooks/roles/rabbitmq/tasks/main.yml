@@ -9,6 +9,7 @@
 - name: Ensure rabbitmq-server service is running
   service:
     name: rabbitmq-server
+    enabled: true
     state: started
   when:
     - not (specification.stop_service | bool)
