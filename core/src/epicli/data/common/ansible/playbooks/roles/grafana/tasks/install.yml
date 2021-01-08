@@ -14,3 +14,12 @@
         - grafana={{ grafana_version }}
       RedHat:
         - grafana-{{ grafana_version }}
+
+- name: Recursively chown /etc/grafana (fix permissions)
+  file:
+    path: /etc/grafana
+    state: directory
+    owner: root
+    group: grafana
+    mode: ug+rw,o=
+    recurse: true

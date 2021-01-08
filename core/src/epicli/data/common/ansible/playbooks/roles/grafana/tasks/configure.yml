@@ -3,13 +3,36 @@
   file:
     path: "{{ item }}"
     state: directory
-    recurse: true
     owner: root
     group: grafana
     mode: ug=rwx,o=
   loop:
     - /etc/grafana/datasources
     - /etc/grafana/provisioning/datasources
+    - /etc/grafana/ssl
+
+- name: Generate self signed SSL certificates
+  command: >
+    openssl req
+      -new
+      -newkey rsa:4096
+      -days 365
+      -nodes
+      -x509
+      -subj "/C=US/ST=NY/L=NY/O=NA/CN=localhost"
+      -keyout /etc/grafana/ssl/grafana_key.key
+      -out /etc/grafana/ssl/grafana_cert.pem
+  args:
+    creates: /etc/grafana/ssl/grafana_cert.pem
+
+- name: Ensure grafana ssl directory permissions are correct
+  file:
+    path: /etc/grafana/ssl
+    state: directory
+    owner: root
+    group: grafana
+    mode: ug+rw,o=
+    recurse: true
 
 - name: Create grafana main configuration file
   template:
@@ -38,7 +61,6 @@
   file:
     path: "{{ item }}"
     state: directory
-    recurse: true
     owner: grafana
     group: grafana
     mode: ug=rwx,o=
