@@ -1,5 +1,5 @@
 ---
-ignite_version: 2.7.6
+ignite_version: 2.9.1
 ignite_file_name: apache-ignite-{{ ignite_version }}-bin.zip
 
 ignite_ports_from_ephemeral_range: # strings are required
