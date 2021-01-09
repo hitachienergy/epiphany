@@ -7,8 +7,10 @@ After=network.target
 Type=simple
 User=ignite
 Group=ignite
-Environment="JAVA_HOME={{ ignite_java_home }}"
+DynamicUser=false
+StateDirectory=ignite
 WorkingDirectory=/opt/ignite
+Environment="JAVA_HOME={{ ignite_java_home }}"
 ExecStart=/opt/ignite/bin/ignite.sh
 Restart=on-failure
 
