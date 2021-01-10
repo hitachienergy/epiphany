@@ -179,6 +179,15 @@
         name: upgrade
         tasks_from: rabbitmq
 
+- hosts: ignite
+  serial: 1
+  become: true
+  become_method: sudo
+  tasks:
+    - import_role:
+        name: upgrade
+        tasks_from: ignite
+
 - hosts: haproxy
   become: true
   become_method: sudo
