@@ -55,25 +55,32 @@ class AnsibleVarsGenerator(Step):
             dump(clean_cluster_model, stream)
 
         if self.is_upgrade_run:
-            # For upgrade at this point we don't need any of other roles then
-            # common, upgrade, repository, image_registry, haproxy and node_exporter.
-            # - commmon is already provisioned from the cluster model constructed from the inventory.
-            # - upgrade should not require any additional config
+            # For upgrade at this point we don't need any of other roles than common, repository, image_registry and node_exporter.
+            # - commmon is already provisioned from the cluster model constructed from the inventory
+            # - (if possible) upgrade should not require any additional config
             # roles in the list below are provisioned for upgrade from defaults
-            enabled_roles = ['repository', 'image_registry', 'haproxy', 'node_exporter']
+            roles_with_defaults = ['repository', 'image_registry', 'node_exporter']
+            # In a special cases (like haproxy), where user specifies majority of the config, it's easier (and less awkward)
+            # to re-render config templates instead of modifying (for example with regular expressions) no-longer-compatible config files.
+            roles_with_manifest = ['haproxy']
         else:
-            enabled_roles = self.inventory_creator.get_enabled_roles()
+            roles_with_defaults = self.inventory_creator.get_enabled_roles()
+            roles_with_manifest = []  # applies only to upgrades
 
-        for role in enabled_roles:
+        for role in roles_with_defaults:
             kind = 'configuration/' + to_feature_name(role)
 
             document = select_first(self.config_docs, lambda x: x.kind == kind)
             if document is None:
                 self.logger.warn('No config document for enabled role: ' + role)
                 continue
-
             document.specification['provider'] = self.cluster_model.provider
+
             self.write_role_vars(ansible_dir, role, document)
+
+        for role in roles_with_manifest:
+            kind = 'configuration/' + to_feature_name(role)
+
             self.write_role_manifest_vars(ansible_dir, role, kind)
 
         self.populate_group_vars(ansible_dir)
@@ -92,11 +99,6 @@ class AnsibleVarsGenerator(Step):
             self.roles_with_generated_vars.append(to_role_name(role))
 
     def write_role_manifest_vars(self, ansible_dir, role, kind):
-        enabled_kinds = {"configuration/haproxy", "configuration/node-exporter"}
-
-        if kind not in enabled_kinds:
-            return  # skip
-
         try:
             cluster_model = select_single(self.manifest_docs, lambda x: x.kind == 'epiphany-cluster')
         except ExpectedSingleResultException:
