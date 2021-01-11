@@ -44,4 +44,5 @@
   when: specification.stop_service | bool
   service:
     name: rabbitmq-server
+    enabled: false
     state: stopped
