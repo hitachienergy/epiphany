@@ -4,7 +4,10 @@
 
 - name: Include installation tasks for Filebeat as DaemonSet for "k8s as cloud service"
   include_tasks: install-filebeat-as-daemonset.yml
-  when: k8s_as_cloud_service is defined and k8s_as_cloud_service
+  when: 
+      - k8s_as_cloud_service is defined
+      - k8s_as_cloud_service
+      - groups.logging is defined
 
 - name: Include auditd configuration tasks
   include_tasks: configure-auditd.yml
