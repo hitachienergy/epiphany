@@ -180,7 +180,6 @@
         tasks_from: rabbitmq
 
 - hosts: ignite
-  serial: 1
   become: true
   become_method: sudo
   tasks:

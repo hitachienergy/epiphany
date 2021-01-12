@@ -73,3 +73,5 @@
   loop: "{{ specification.enabled_plugins | default([]) }}"
   notify:
     - Restart Ignite service
+
+- meta: flush_handlers

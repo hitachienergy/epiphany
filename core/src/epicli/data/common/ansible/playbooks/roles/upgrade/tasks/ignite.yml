@@ -30,6 +30,7 @@
           - "Installed version: {{ _ignite_version }}"
           - "Target version: {{ _ignite_defaults.ignite_version }}"
 
+    # NOTE: non-commercial Ignite does not support rolling upgrades (downtime is always expected).
     - name: Ignite | Stop and upgrade
       when:
         - _ignite_defaults.ignite_version is version(_ignite_version, '>')
