@@ -44,3 +44,5 @@
           import_role:
             name: ignite
             vars_from: manifest
+
+        - meta: flush_handlers
