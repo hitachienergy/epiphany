@@ -50,6 +50,7 @@
     group: ignite
     mode: ug=rw,o=
   notify:
+    - Reload SystemD daemon
     - Start Ignite service
 
 - name: Create config file
