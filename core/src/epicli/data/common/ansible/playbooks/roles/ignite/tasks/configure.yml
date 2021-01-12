@@ -42,6 +42,14 @@
     _ip_discovery_list: >-
       {{ lookup('template', 'ip-discovery.xml.j2') }}
 
+- name: Ensure /var/lib/ignite/ directory exists
+  file:
+    path: /var/lib/ignite/
+    state: directory
+    owner: ignite
+    group: ignite
+    mode: ug=rwx,o=
+
 - name: Create systemd service
   template:
     dest: /etc/systemd/system/ignite.service
