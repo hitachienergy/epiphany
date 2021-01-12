@@ -62,7 +62,7 @@ class AnsibleVarsGenerator(Step):
             roles_with_defaults = ['repository', 'image_registry', 'node_exporter']
             # In a special cases (like haproxy), where user specifies majority of the config, it's easier (and less awkward)
             # to re-render config templates instead of modifying (for example with regular expressions) no-longer-compatible config files.
-            roles_with_manifest = ['haproxy']
+            roles_with_manifest = ['haproxy', 'ignite']
         else:
             roles_with_defaults = self.inventory_creator.get_enabled_roles()
             roles_with_manifest = []  # applies only to upgrades

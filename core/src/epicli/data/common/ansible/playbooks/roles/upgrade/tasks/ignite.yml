@@ -42,3 +42,4 @@
         - name: Ignite | Upgrade
           import_role:
             name: ignite
+            vars_from: manifest
