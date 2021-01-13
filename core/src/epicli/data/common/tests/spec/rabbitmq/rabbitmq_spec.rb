@@ -6,7 +6,7 @@ rabbitmq_port =  readDataYaml("configuration/rabbitmq")["specification"]["amqp_p
 rabbitmq_node_port = rabbitmq_port + 20000
 rabbitmq_api_port = 15672
 clustered = readDataYaml("configuration/rabbitmq")["specification"]["cluster"]["is_clustered"]
-version = readDataYaml("configuration/rabbitmq")["specification"]["version"]
+version = readYaml(getBuildDirPath() + "ansible/roles/rabbitmq/defaults/main.yml")[0]["versions"]["general"]
 user = 'testuser' + SecureRandom.hex(5)
 pass = SecureRandom.hex
 
