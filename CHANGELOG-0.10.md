@@ -6,7 +6,7 @@
 
 ### Fixed
 
-- [#1881](https://github.com/epiphany-platform/epiphany/issues/#1881) - epicli: wrong informations in help messages
+- [#1881](https://github.com/epiphany-platform/epiphany/issues/1881) - epicli: wrong informations in help messages
 
 ### Updated
 
