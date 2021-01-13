@@ -101,7 +101,7 @@ spec:
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
- namespace: your_application_namespace
+ namespace: <your_application_namespace>
  name: allow-istio-communication
 spec:
   podSelector: {}
