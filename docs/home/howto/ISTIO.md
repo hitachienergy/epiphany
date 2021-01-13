@@ -94,3 +94,22 @@ spec:
           number: 8000
         host: httpbin
 ```
+
+:warning: Pay attention to the network policy in Your cluster if CNI plugin is used which support network policy such as Calico or Canal. In this case You need to setup secure network policies for inter-microservice communication and communication between enovy proxy and istio control plane in the namespace where Your application is running. You can also just apply the following network policy:
+
+```yaml
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+ namespace: your_application_namespace
+ name: allow-istio-communication
+spec:
+  podSelector: {}
+  egress:
+  - {}
+  ingress:
+  - {}
+  policyTypes:
+  - Egress
+  - Ingress
+```
