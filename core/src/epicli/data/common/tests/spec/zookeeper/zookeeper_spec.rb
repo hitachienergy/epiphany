@@ -17,11 +17,11 @@ end
 describe 'Checking if the ports are open' do
 
   # checking port for client connections
-  describe port(zookeeper_client_port) do 
-    let(:disable_sudo) { false }  
+  describe port(zookeeper_client_port) do
+    let(:disable_sudo) { false }
     it { should be_listening }
   end
- 
+
   # checking port for follower connections to the leader
   describe command("if /opt/zookeeper/bin/zkServer.sh status | grep 'Mode: leader'; then netstat -tunl | grep #{zookeeper_peer_port}; else echo 'not leader'; fi") do
     its(:stdout) { should match /#{zookeeper_peer_port}|not leader/ }
@@ -33,7 +33,7 @@ describe 'Checking if the ports are open' do
     its(:stdout) { should match /#{zookeeper_leader_port}|standalone/ }
     its(:exit_status) { should eq 0 }
   end
-end  
+end
 
 describe 'Checking if ZooKeeper user exists' do
   describe group('zookeeper') do
@@ -65,7 +65,7 @@ describe 'Checking ZooKeeper status' do
     its(:stdout) { should match /Mode: leader|Mode: follower|Mode: standalone/ }
     its(:stdout) { should_not match /Error contacting service. It is probably not running./ }
   end
-end  
+end
 
 describe 'Checking if it is possible to list down and count all the active brokers' do
   describe command("echo 'ls /brokers/ids' | /opt/zookeeper/bin/zkCli.sh -server #{zookeeper_host}:#{zookeeper_client_port}") do
@@ -76,10 +76,10 @@ describe 'Checking if it is possible to list down and count all the active broke
   describe command("echo 'dump' | curl -s telnet://#{zookeeper_host}:#{zookeeper_client_port} | grep brokers") do
     its(:stdout) { should match /\/brokers\/ids\/\d+/ } # pattern: /brokers/ids/0
     its(:exit_status) { should eq 0 }
-  end  
+  end
   describe command("echo 'dump' | curl -s telnet://#{zookeeper_host}:#{zookeeper_client_port} | grep -c brokers") do
     it "is expected to be equal" do
-      expect(subject.stdout.to_i).to eq countInventoryHosts("kafka")  
-    end  
+      expect(subject.stdout.to_i).to eq countInventoryHosts("kafka")
+    end
   end
 end
