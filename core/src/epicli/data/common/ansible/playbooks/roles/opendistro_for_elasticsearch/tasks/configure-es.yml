@@ -1,6 +1,5 @@
 ---
 # This file is meant to be also used by upgrade role
-
 - name: Ensure snapshot folder exists
   file:
     path: "{{ specification.paths.repo }}/"
@@ -47,3 +46,84 @@
     name: elasticsearch
     state: started
     enabled: yes
+
+
+- name: Set helper facts
+  set_fact:
+    elasticsearch_endpoint: >-
+      https://{{ ansible_default_ipv4.address }}:9200
+  vars:
+    uri_template: &uri
+      client_cert: /etc/elasticsearch/kirk.pem
+      client_key: /etc/elasticsearch/kirk-key.pem
+      validate_certs: false
+      body_format: json
+
+- name: Check if default admin user exists
+  uri:
+    <<: *uri
+    url: "{{ elasticsearch_endpoint }}/_opendistro/_security/api/internalusers/admin"
+    method: GET
+    status_code: [200, 404]
+  register: admin_check_response
+  until: admin_check_response is success
+  retries: 12
+  delay: 5
+  run_once: true
+
+- name: Set OpenDistro admin password
+  uri:
+    <<: *uri
+    url: "{{ elasticsearch_endpoint }}/_opendistro/_security/api/internalusers/"
+    method: PATCH
+    status_code: [200]
+    body:
+      - op: "replace"
+        path: "/admin"
+        value:
+          password: "{{ specification.admin_password }}"
+          reserved: "true"
+          backend_roles:
+            - "admin"
+          description: "Admin user"
+  register: uri_response
+  until: uri_response is success
+  retries: 3
+  delay: 5
+  run_once: true
+  when: admin_check_response.status == 200
+
+- name: Set OpenDistro kibanaserver password
+  uri:
+    <<: *uri
+    url: "{{ elasticsearch_endpoint }}/_opendistro/_security/api/internalusers/"
+    method: PATCH
+    status_code: [200]
+    body:
+      - op: "replace"
+        path: "/kibanaserver"
+        value:
+          password: "{{ specification.kibanaserver_password }}"
+          reserved: "true"
+          backend_roles:
+            - "admin"
+          description: "Kibana server user"
+  register: uri_response
+  until: uri_response is success
+  retries: 3
+  delay: 5
+  run_once: true
+  when: admin_check_response.status == 200
+
+- name: Remove OpenDistro demo users
+  uri:
+    <<: *uri
+    url: "{{ elasticsearch_endpoint }}/_opendistro/_security/api/internalusers/{{ item }}"
+    method: DELETE
+    status_code: [200, 404]
+  register: uri_response
+  until: uri_response is success
+  retries: 3
+  delay: 5
+  run_once: true
+  loop: "{{ specification.demo_users_to_remove }}"
