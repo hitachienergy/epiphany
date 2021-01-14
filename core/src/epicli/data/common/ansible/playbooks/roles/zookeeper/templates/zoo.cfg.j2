@@ -1,5 +1,9 @@
-# 0 is unlimited
-maxClientCnxns=0
+# {{ ansible_managed }}
+
+# ========================= Epiphany built-in settings =========================
+
+# ---  Based on zoo_sample.cfg ---
+
 # The number of milliseconds of each tick
 tickTime=2000
 # The number of ticks that the initial
@@ -8,13 +12,24 @@ initLimit=10
 # The number of ticks that can pass between
 # sending a request and getting an acknowledgement
 syncLimit=5
-# the directory where the snapshot is stored.
+# The directory where the snapshot is stored
 dataDir={{ zookeeper_data_dir }}
-# the port at which the clients will connect
+# The port at which the clients will connect
 clientPort=2181
-# the directory where the transaction logs are stored.
+
+# --- Added by Epiphany team ---
+
+# The directory where the transaction logs are stored
 dataLogDir={{ zookeeper_log_dir }}
 
 {% for host in zookeeper_hosts %}
 server.{{loop.index}}={{ host }}:2888:3888
 {% endfor %}
+
+{% if specification.static_config_file.configurable_block is defined
+  and specification.static_config_file.configurable_block is string
+  and specification.static_config_file.configurable_block | length > 0 %}
+# =============== Settings from Epiphany configuration/zookeeper ===============
+
+{{ specification.static_config_file.configurable_block }}
+{% endif %}
