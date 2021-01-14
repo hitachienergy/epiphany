@@ -9,3 +9,9 @@ specification:
       # may make to a single member of the ZooKeeper ensemble. This is used to prevent certain classes of DoS attacks,
       # including file descriptor exhaustion. The default is 60. Setting this to 0 removes the limit.
       maxClientCnxns=0
+
+      # The address the embedded Jetty server listens on. Defaults to 0.0.0.0.
+      admin.serverAddress=127.0.0.1
+
+      # The port the embedded Jetty server listens on. Defaults to 8080.
+      admin.serverPort=8008
