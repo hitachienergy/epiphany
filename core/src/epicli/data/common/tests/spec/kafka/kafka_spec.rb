@@ -29,7 +29,7 @@ describe 'Checking if the ports are open' do
     let(:disable_sudo) { false }
     it { should be_listening }
   end
-end  
+end
 
 describe 'Listing down all the active brokers' do
   describe command("echo 'ls /brokers/ids' | /opt/kafka/bin/zookeeper-shell.sh #{zookeeper_host}:#{zookeeper_client_port}") do
@@ -70,7 +70,7 @@ describe 'Checking the possibility of creating a topic, producing and consuming 
     end
   end
 
-  describe 'Checking if consumer process is ready' do 
+  describe 'Checking if consumer process is ready' do
     describe command("for i in {1..10}; do if /opt/kafka/bin/kafka-consumer-groups.sh --bootstrap-server #{kafka_host}:#{kafka_port} --group TESTGROUP --describe \
       | grep #{topic_name}; then echo 'READY'; break; else echo 'WAITING'; sleep 0.5; fi; done;") do
       its(:stdout) { should match /#{topic_name}/ }
@@ -79,12 +79,12 @@ describe 'Checking the possibility of creating a topic, producing and consuming 
   end
 
   10.times do |i|
-    describe "Sending message #{i+1} from producer" do 
+    describe "Sending message #{i+1} from producer" do
       describe command("echo '#{message} #{i+1}' | /opt/kafka/bin/kafka-console-producer.sh --broker-list #{kafka_host}:#{kafka_port} --topic #{topic_name}") do
         its(:exit_status) { should eq 0 }
       end
     end
-    describe 'Checking if the consumer output contains the message that was produced' do 
+    describe 'Checking if the consumer output contains the message that was produced' do
       describe command("cat /tmp/#{topic_name}.txt") do
         its(:stdout) { should match /^#{message} #{i+1}$/ }
       end
@@ -95,7 +95,7 @@ describe 'Checking the possibility of creating a topic, producing and consuming 
     describe command("/opt/kafka/bin/kafka-topics.sh --list --zookeeper #{zookeeper_host}:#{zookeeper_client_port}") do
       its(:stdout) { should match /#{topic_name}/ }
     end
-  end  
+  end
 
   describe 'Cleaning up' do
     describe command("/opt/kafka/bin/kafka-topics.sh --delete --zookeeper #{zookeeper_host}:#{zookeeper_client_port} --topic #{topic_name}") do
@@ -111,5 +111,5 @@ describe 'Checking the possibility of creating a topic, producing and consuming 
     describe command("kill -9 $(ps aux | grep -i 'kafka.tools.ConsoleConsumer' | grep '#{topic_name}' | grep -v 'grep' | awk '{print $2}')") do
       its(:exit_status) { should eq 0 }
     end
-  end  
+  end
 end
