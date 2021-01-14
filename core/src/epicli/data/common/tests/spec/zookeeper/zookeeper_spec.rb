@@ -18,18 +18,20 @@ describe 'Checking if the ports are open' do
 
   # checking port for client connections
   describe port(zookeeper_client_port) do
-    let(:disable_sudo) { false }
+    let(:disable_sudo) { false } # required for RHEL
     it { should be_listening }
   end
 
   # checking port for follower connections to the leader
   describe command("if /opt/zookeeper/bin/zkServer.sh status | grep 'Mode: leader'; then netstat -tunl | grep #{zookeeper_peer_port}; else echo 'not leader'; fi") do
+    let(:disable_sudo) { false }
     its(:stdout) { should match /#{zookeeper_peer_port}|not leader/ }
     its(:exit_status) { should eq 0 }
   end
 
   # checking port for leader election
   describe command("if /opt/zookeeper/bin/zkServer.sh status | grep 'Mode: standalone'; then echo 'standalone'; else netstat -tunl | grep #{zookeeper_leader_port}; fi") do
+    let(:disable_sudo) { false }
     its(:stdout) { should match /#{zookeeper_leader_port}|standalone/ }
     its(:exit_status) { should eq 0 }
   end
@@ -62,6 +64,8 @@ end
 
 describe 'Checking ZooKeeper status' do
   describe command('/opt/zookeeper/bin/zkServer.sh status 2>&1') do
+    let(:disable_sudo) { false }
+    let(:sudo_options) { '-u zookeeper' }
     its(:stdout) { should match /Mode: leader|Mode: follower|Mode: standalone/ }
     its(:stdout) { should_not match /Error contacting service. It is probably not running./ }
   end
@@ -69,6 +73,8 @@ end
 
 describe 'Checking if it is possible to list down and count all the active brokers' do
   describe command("echo 'ls /brokers/ids' | /opt/zookeeper/bin/zkCli.sh -server #{zookeeper_host}:#{zookeeper_client_port}") do
+    let(:disable_sudo) { false }
+    let(:sudo_options) { '-u zookeeper' }
     its(:stdout) { should match /Welcome to ZooKeeper!/ }
     its(:stdout) { should match /\[(\d+(\,\s)?)+\]/ } # pattern: [0, 1, 2, 3 ...]
     its(:exit_status) { should eq 0 }
