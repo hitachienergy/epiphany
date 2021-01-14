@@ -10,6 +10,10 @@
 
 - [#1372](https://github.com/epiphany-platform/epiphany/issues/1372) - Epicli does not create PostgreSQL SET\_BY\_AUTOMATION values correctly
 
+### Updated
+
+- [#1966](https://github.com/epiphany-platform/epiphany/issues/1966) - Upgrade Elasticsearch Curator to v5.8.3
+
 ## [0.6.1] 2020-10-14
 
 ### Fixed
