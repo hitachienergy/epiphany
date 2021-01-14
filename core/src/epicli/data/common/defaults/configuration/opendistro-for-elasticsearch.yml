@@ -3,15 +3,18 @@ title: OpenDistro for Elasticsearch Config
 name: default
 specification:
   cluster_name: EpiphanyElastic
+  clustered: True
   admin_password: PASSWORD_TO_CHANGE
   kibanaserver_password: PASSWORD_TO_CHANGE
+  kibanaserver_user_active: false
+  logstash_password: PASSWORD_TO_CHANGE
+  logstash_user_active: false
   demo_users_to_remove:
-    - kibanaserver
-    - kibanaro
-    - logstash
-    - readall
-    - snapshotrestore
-  clustered: True
+  - kibanaro
+  - readall
+  - snapshotrestore
+  - logstash
+  - kibanaserver
   paths:
     data: /var/lib/elasticsearch
     repo: /var/lib/elasticsearch-snapshots

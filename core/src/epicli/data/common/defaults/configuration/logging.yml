@@ -4,6 +4,15 @@ name: default
 specification:
   cluster_name: EpiphanyElastic
   clustered: True
+  admin_password: PASSWORD_TO_CHANGE
+  kibanaserver_password: PASSWORD_TO_CHANGE
+  kibanaserver_user_active: true
+  logstash_password: PASSWORD_TO_CHANGE
+  logstash_user_active: true
+  demo_users_to_remove:
+  - kibanaro
+  - readall
+  - snapshotrestore
   paths:
     data: /var/lib/elasticsearch
     repo: /var/lib/elasticsearch-snapshots

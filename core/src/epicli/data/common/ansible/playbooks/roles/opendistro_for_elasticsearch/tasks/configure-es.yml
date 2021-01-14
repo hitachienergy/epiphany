@@ -93,6 +93,19 @@
   run_once: true
   when: admin_check_response.status == 200
 
+- name: Check if default kibanaserver user exists
+  uri:
+    <<: *uri
+    url: "{{ elasticsearch_endpoint }}/_opendistro/_security/api/internalusers/kibanaserver"
+    method: GET
+    status_code: [200]
+  register: kibanaserver_check_response
+  until: kibanaserver_check_response is success
+  retries: 12
+  delay: 5
+  run_once: true
+  when: specification.kibanaserver_user_active
+
 - name: Set OpenDistro kibanaserver password
   uri:
     <<: *uri
@@ -105,15 +118,48 @@
         value:
           password: "{{ specification.kibanaserver_password }}"
           reserved: "true"
-          backend_roles:
-            - "admin"
           description: "Kibana server user"
   register: uri_response
   until: uri_response is success
   retries: 3
   delay: 5
   run_once: true
-  when: admin_check_response.status == 200
+  when: specification.kibanaserver_user_active
+  
+- name: Check if default kibanaserver user exists
+  uri:
+    <<: *uri
+    url: "{{ elasticsearch_endpoint }}/_opendistro/_security/api/internalusers/logstash"
+    method: GET
+    status_code: [200]
+  register: logstash_check_response
+  until: logstash_check_response is success
+  retries: 12
+  delay: 5
+  run_once: true
+  when: specification.logstash_user_active
+
+- name: Set OpenDistro logstash password
+  uri:
+    <<: *uri
+    url: "{{ elasticsearch_endpoint }}/_opendistro/_security/api/internalusers/"
+    method: PATCH
+    status_code: [200]
+    body:
+      - op: "replace"
+        path: "/logstash"
+        value:
+          password: "{{ specification.logstash_password }}"
+          reserved: "true"
+          backend_roles:
+            - "logstash"
+          description: "Logstash user"
+  register: uri_response
+  until: uri_response is success
+  retries: 3
+  delay: 5
+  run_once: true
+  when: specification.logstash_user_active
 
 - name: Remove OpenDistro demo users
   uri:
