@@ -30,10 +30,11 @@
 - [#1770](https://github.com/epiphany-platform/epiphany/issues/1770) - Upgrade Filebeat to the latest version (7.9.2)
 - [#1848](https://github.com/epiphany-platform/epiphany/issues/1848) - Update Ansible to v2.8.17
 - [#1854](https://github.com/epiphany-platform/epiphany/issues/1854) - Upgrade RabbitMQ to the latest version (3.8.9)
-- [#1137](https://github.com/epiphany-platform/epiphany/issues/1137) - Upgrade Kafka to 2.6.0
+- [#1137](https://github.com/epiphany-platform/epiphany/issues/1137) - Upgrade Kafka to v2.6.0
 - [#1855](https://github.com/epiphany-platform/epiphany/issues/1855) - Upgrade Docker to v19.03.14
-- [#1853](https://github.com/epiphany-platform/epiphany/issues/1853) - Upgrade Zookeeper to 3.5.8
-- [#1860](https://github.com/epiphany-platform/epiphany/issues/1860) - Upgrade Grafana (7.3.5)
+- [#1853](https://github.com/epiphany-platform/epiphany/issues/1853) - Upgrade Zookeeper to v3.5.8
+- [#1860](https://github.com/epiphany-platform/epiphany/issues/1860) - Upgrade Grafana to v7.3.5
+- [#1955](https://github.com/epiphany-platform/epiphany/issues/1955) - Upgrade Elasticsearch Curator to v5.8.3
 
 ### Breaking changes
 

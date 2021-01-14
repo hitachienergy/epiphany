@@ -30,7 +30,7 @@ dejavu-sans-fonts # for grafana
 docker-ce-19.03.14
 docker-ce-cli-19.03.14
 ebtables
-elasticsearch-curator-5.8.1
+elasticsearch-curator-5.8.3
 elasticsearch-oss-6.8.5 # for elasticsearch role
 elasticsearch-oss-7.9.1 # for opendistroforelasticsearch & logging roles
 erlang-23.1.4 # must be compatible with rabbitmq version
