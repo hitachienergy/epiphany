@@ -7,29 +7,29 @@ zookeeper_client_port = 2181
 zookeeper_peer_port = 2888
 zookeeper_leader_port = 3888
 
-describe 'Checking if ZooKeeper service is running' do
+describe 'Check if ZooKeeper service is running' do
   describe service('zookeeper') do
     it { should be_enabled }
     it { should be_running }
   end
 end
 
-describe 'Checking if the ports are open' do
+describe 'Check if the ports are open' do
 
-  # checking port for client connections
+  # check port for client connections
   describe port(zookeeper_client_port) do
     let(:disable_sudo) { false } # required for RHEL
     it { should be_listening }
   end
 
-  # checking port for follower connections to the leader
+  # check port for follower connections to the leader
   describe command("if /opt/zookeeper/bin/zkServer.sh status | grep 'Mode: leader'; then netstat -tunl | grep #{zookeeper_peer_port}; else echo 'not leader'; fi") do
     let(:disable_sudo) { false }
     its(:stdout) { should match /#{zookeeper_peer_port}|not leader/ }
     its(:exit_status) { should eq 0 }
   end
 
-  # checking port for leader election
+  # check port for leader election
   describe command("if /opt/zookeeper/bin/zkServer.sh status | grep 'Mode: standalone'; then echo 'standalone'; else netstat -tunl | grep #{zookeeper_leader_port}; fi") do
     let(:disable_sudo) { false }
     its(:stdout) { should match /#{zookeeper_leader_port}|standalone/ }
@@ -37,7 +37,7 @@ describe 'Checking if the ports are open' do
   end
 end
 
-describe 'Checking if ZooKeeper user exists' do
+describe 'Check if ZooKeeper user exists' do
   describe group('zookeeper') do
     it { should exist }
   end
@@ -53,7 +53,7 @@ describe 'Checking if ZooKeeper user exists' do
   end
 end
 
-describe 'Checking if ZooKeeper is healthy' do
+describe 'Check if ZooKeeper is healthy' do
   describe command("echo 'stat' | curl -s telnet://#{zookeeper_host}:#{zookeeper_client_port}") do
     its(:stdout) { should match /Zookeeper version/ }
   end
@@ -62,7 +62,7 @@ describe 'Checking if ZooKeeper is healthy' do
   end
 end
 
-describe 'Checking ZooKeeper status' do
+describe 'Check ZooKeeper status' do
   describe command('/opt/zookeeper/bin/zkServer.sh status 2>&1') do
     let(:disable_sudo) { false }
     let(:sudo_options) { '-u zookeeper' }
@@ -71,7 +71,7 @@ describe 'Checking ZooKeeper status' do
   end
 end
 
-describe 'Checking if it is possible to list down and count all the active brokers' do
+describe 'Check if it is possible to list down and count all the active brokers' do
   describe command("echo 'ls /brokers/ids' | /opt/zookeeper/bin/zkCli.sh -server #{zookeeper_host}:#{zookeeper_client_port}") do
     let(:disable_sudo) { false }
     let(:sudo_options) { '-u zookeeper' }
