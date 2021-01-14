@@ -14,7 +14,7 @@ Note that versions are default versions and can be changed in certain cases thro
 | Docker-ce             | 18.09   | https://github.com/docker/docker-ce/                  | [Apache License](https://www.apache.org/licenses/LICENSE-1.0)     |
 | KeyCloak              | 4.8.3   | https://github.com/keycloak/keycloak                  | [Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0) |
 | Elasticsearch         | 6.8.5   | https://github.com/elastic/elasticsearch              | https://github.com/elastic/elasticsearch/blob/master/LICENSE.txt  |
-| Elasticsearch Curator | 5.8.1   | https://github.com/elastic/curator                    | https://github.com/elastic/curator/blob/master/LICENSE.txt        |
+| Elasticsearch Curator | 5.8.3   | https://github.com/elastic/curator                    | https://github.com/elastic/curator/blob/master/LICENSE.txt        |
 | Kibana                | 6.5.4   | https://github.com/elastic/kibana                     | https://github.com/elastic/kibana/blob/master/LICENSE.txt         |
 | Filebeat              | 6.8.5   | https://github.com/elastic/beats/tree/6.8             | [Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0) |
 | Prometheus            | 2.10.0  | https://github.com/prometheus/prometheus              | [Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0) |

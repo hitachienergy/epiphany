@@ -1,5 +1,11 @@
 # Changelog 0.5
 
+## [0.5.7] 2021-XX-XX
+
+### Updated
+
+- [#1970](https://github.com/epiphany-platform/epiphany/issues/1970) - Upgrade Elasticsearch Curator to v5.8.3
+
 ## [0.5.6] 2020-11-04
 
 ### Added
