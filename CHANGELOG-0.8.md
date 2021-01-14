@@ -7,6 +7,10 @@
 - [#1875](https://github.com/epiphany-platform/epiphany/issues/1875) - epicli upgrade fails when there is no kubernetes_master group in inventory
 - [#1884](https://github.com/epiphany-platform/epiphany/issues/1884) - Prometheus is not able to scrape metrics from AKS/EKS nodes
 
+### Updated
+
+- [#1964](https://github.com/epiphany-platform/epiphany/issues/1964) - Upgrade Elasticsearch Curator to v5.8.3
+
 ## [0.8.0] 2020-10-22
 
 ### Added
