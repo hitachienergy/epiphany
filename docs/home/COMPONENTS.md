@@ -17,7 +17,7 @@ Note that versions are default versions and can be changed in certain cases thro
 | Docker-ce                 | 18.09   | https://github.com/docker/docker-ce/                  | [Apache License](https://www.apache.org/licenses/LICENSE-1.0)     |
 | KeyCloak                  | 9.0.0   | https://github.com/keycloak/keycloak                  | [Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0) |
 | Elasticsearch OSS         | 7.6.1   | https://github.com/elastic/elasticsearch              | https://github.com/elastic/elasticsearch/blob/master/LICENSE.txt  |
-| Elasticsearch Curator OSS | 5.8.1   | https://github.com/elastic/curator                    | https://github.com/elastic/curator/blob/master/LICENSE.txt        |
+| Elasticsearch Curator OSS | 5.8.3   | https://github.com/elastic/curator                    | https://github.com/elastic/curator/blob/master/LICENSE.txt        |
 | Kibana                    | 6.5.4   | https://github.com/elastic/kibana                     | https://github.com/elastic/kibana/blob/master/LICENSE.txt         |
 | Opendistro for Elasticsearch  | 1.3.0   | https://opendistro.github.io/for-elasticsearch/  | [Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0)  |
 | Opendistro for Elasticsearch Kibana  | 1.3.0   | https://opendistro.github.io/for-elasticsearch-docs/docs/kibana/  | [Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0)  |
