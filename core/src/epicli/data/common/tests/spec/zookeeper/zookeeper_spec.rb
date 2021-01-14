@@ -6,6 +6,7 @@ zookeeper_host = 'localhost'
 zookeeper_client_port = 2181
 zookeeper_peer_port = 2888
 zookeeper_leader_port = 3888
+zookeeper_admin_server_port = 8080
 
 describe 'Check if ZooKeeper service is running' do
   describe service('zookeeper') do
@@ -35,6 +36,12 @@ describe 'Check if the ports are open' do
     its(:stdout) { should match /#{zookeeper_leader_port}|standalone/ }
     its(:exit_status) { should eq 0 }
   end
+
+  # check port for AdminServer
+  describe port(zookeeper_admin_server_port) do
+    let(:disable_sudo) { false } # required for RHEL
+    it { should be_listening }
+  end
 end
 
 describe 'Check if ZooKeeper user exists' do
@@ -54,11 +61,11 @@ describe 'Check if ZooKeeper user exists' do
 end
 
 describe 'Check if ZooKeeper is healthy' do
-  describe command("echo 'stat' | curl -s telnet://#{zookeeper_host}:#{zookeeper_client_port}") do
-    its(:stdout) { should match /Zookeeper version/ }
+  describe command("curl http://localhost:#{zookeeper_admin_server_port}/commands/stat") do
+    its(:stdout_as_json) { should include('error' => nil) }
   end
-  describe command("echo 'ruok' | curl -s telnet://#{zookeeper_host}:#{zookeeper_client_port}") do
-    its(:stdout) { should match /imok/ }
+  describe command("curl http://localhost:#{zookeeper_admin_server_port}/commands/ruok") do
+    its(:stdout_as_json) { should include('error' => nil) }
   end
 end
 
@@ -79,11 +86,11 @@ describe 'Check if it is possible to list down and count all the active brokers'
     its(:stdout) { should match /\[(\d+(\,\s)?)+\]/ } # pattern: [0, 1, 2, 3 ...]
     its(:exit_status) { should eq 0 }
   end
-  describe command("echo 'dump' | curl -s telnet://#{zookeeper_host}:#{zookeeper_client_port} | grep brokers") do
+  describe command("curl -s http://localhost:#{zookeeper_admin_server_port}/commands/dump | grep brokers") do
     its(:stdout) { should match /\/brokers\/ids\/\d+/ } # pattern: /brokers/ids/0
     its(:exit_status) { should eq 0 }
   end
-  describe command("echo 'dump' | curl -s telnet://#{zookeeper_host}:#{zookeeper_client_port} | grep -c brokers") do
+  describe command("curl -s http://localhost:#{zookeeper_admin_server_port}/commands/dump | grep -c brokers") do
     it "is expected to be equal" do
       expect(subject.stdout.to_i).to eq countInventoryHosts("kafka")
     end
