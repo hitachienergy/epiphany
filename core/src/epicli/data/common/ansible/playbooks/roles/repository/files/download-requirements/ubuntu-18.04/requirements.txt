@@ -12,7 +12,7 @@ curl
 docker-ce 5:18.09
 docker-ce-cli 5:18.09
 ebtables
-elasticsearch-curator 5.8.1
+elasticsearch-curator 5.8.3
 elasticsearch-oss 6.8.5
 elasticsearch-oss 7.3.2
 erlang-nox
@@ -154,7 +154,6 @@ https://github.com/prometheus/alertmanager/releases/download/v0.17.0/alertmanage
 https://github.com/prometheus/haproxy_exporter/releases/download/v0.10.0/haproxy_exporter-0.10.0.linux-amd64.tar.gz
 https://github.com/prometheus/node_exporter/releases/download/v0.16.0/node_exporter-0.16.0.linux-amd64.tar.gz
 https://github.com/prometheus/prometheus/releases/download/v2.10.0/prometheus-2.10.0.linux-amd64.tar.gz
-https://packages.elastic.co/curator/5/debian9/pool/main/e/elasticsearch-curator/elasticsearch-curator_5.5.4_amd64.deb
 https://archive.apache.org/dist/ignite/2.7.6/apache-ignite-2.7.6-bin.zip
 
 [images]
