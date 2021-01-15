@@ -78,3 +78,12 @@ describe 'Check ZooKeeper status' do
     its(:stdout) { should_not match /Error contacting service. It is probably not running./ }
   end
 end
+
+describe 'Check ZooKeeper client' do
+  describe command("echo 'quit' | /opt/zookeeper/bin/zkCli.sh -server #{zookeeper_host}:#{zookeeper_client_port}") do
+    let(:disable_sudo) { false }
+    let(:sudo_options) { '-u zookeeper' }
+    its(:stdout) { should match /Welcome to ZooKeeper!/ }
+    its(:exit_status) { should eq 0 }
+  end
+end
