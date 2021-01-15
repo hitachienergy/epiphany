@@ -78,22 +78,3 @@ describe 'Check ZooKeeper status' do
     its(:stdout) { should_not match /Error contacting service. It is probably not running./ }
   end
 end
-
-describe 'Check if it is possible to list down and count all the active brokers' do
-  describe command("echo 'ls /brokers/ids' | /opt/zookeeper/bin/zkCli.sh -server #{zookeeper_host}:#{zookeeper_client_port}") do
-    let(:disable_sudo) { false }
-    let(:sudo_options) { '-u zookeeper' }
-    its(:stdout) { should match /Welcome to ZooKeeper!/ }
-    its(:stdout) { should match /\[(\d+(\,\s)?)+\]/ } # pattern: [0, 1, 2, 3 ...]
-    its(:exit_status) { should eq 0 }
-  end
-  describe command("curl -s http://localhost:#{zookeeper_admin_server_port}/commands/dump | grep brokers") do
-    its(:stdout) { should match /\/brokers\/ids\/\d+/ } # pattern: /brokers/ids/0
-    its(:exit_status) { should eq 0 }
-  end
-  describe command("curl -s http://localhost:#{zookeeper_admin_server_port}/commands/dump | grep -c brokers") do
-    it "is expected to be equal" do
-      expect(subject.stdout.to_i).to eq countInventoryHosts("kafka")
-    end
-  end
-end
