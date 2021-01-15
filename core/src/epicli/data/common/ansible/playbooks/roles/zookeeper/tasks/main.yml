@@ -105,7 +105,7 @@
 
 - name: Configure Zookeeper
   template:
-    src: zoo.j2
+    src: zoo.cfg.j2
     dest: "{{ zookeeper_install_dir }}/conf/zoo.cfg"
     owner: "{{ zookeeper_user }}"
     group: "{{ zookeeper_group }}"
