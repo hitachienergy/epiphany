@@ -1,11 +1,11 @@
 require 'spec_helper'
+require_relative '../zookeeper/zookeeper_helpers'
 
 kafka_host = '$(hostname)'
 kafka_port = 9092
 zookeeper_host = 'localhost'
 zookeeper_client_port = 2181
-# TODO: read zookeeper_admin_server_port with: grep -Po '(?<=^admin\.serverPort=)\d+' /opt/zookeeper/conf/zoo.cfg
-zookeeper_admin_server_port = 8008
+zookeeper_admin_server_port = get_zookeeper_admin_server_port
 
 describe 'Check if Kafka service is running' do
   describe service('kafka') do
