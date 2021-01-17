@@ -1,0 +1,22 @@
+[tool.poetry]
+name = "epiphany-devcon"
+version = "0.10.0"
+description = "Epiphany Dev Container"
+authors = ["Epiphany Platform"]
+
+[tool.poetry.dependencies]
+python = "^3.7"
+pyyaml = "*"
+jinja2 = "*"
+boto3 = "*"
+jsonschema = "*"
+python-json-logger = "*"
+ansible = "==2.8.17"
+terraform-bin = "*"
+azure-cli = "==2.8.0"
+skopeo-bin = "*"
+"ruamel.yaml" = "*"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
