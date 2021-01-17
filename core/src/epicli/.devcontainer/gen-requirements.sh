@@ -1,3 +1,3 @@
-# Script that will generate requirements.txt from Pipfile.
-pipenv lock -r --pre > requirements.txt  
-sed -i '1,2d' requirements.txt  
+#!/usr/bin/env bash
+# Generate requirements.txt from poetry.lock.
+poetry export --no-interaction --format=requirements.txt --without-hashes --output=./requirements.txt
