@@ -27,6 +27,18 @@
         name: rabbitmq-server
         state: stopped
 
+    # The following task was added to solve issue #1975.
+    # Till v0.9.0 the default for specification.rabbitmq_use_longname was 'true'.
+    # On Ubuntu initscript of rabbitmq-server package starts rabbitmq-server.service automatically
+    # so this task has to be run before upgrading packages.
+    - name: RabbitMQ | Disable long node names in /etc/rabbitmq/rabbitmq-env.conf
+      lineinfile:
+        path: /etc/rabbitmq/rabbitmq-env.conf
+        regexp: '^RABBITMQ_USE_LONGNAME='
+        line: RABBITMQ_USE_LONGNAME=false
+        backup: true
+      when: ansible_hostname == ansible_fqdn
+
     - name: RabbitMQ | Upgrade packages
       package:
         name: "{{ _packages[ansible_os_family] }}"
@@ -41,7 +53,7 @@
             - erlang-public-key={{ versions.debian.erlang }}
             - erlang-ssl={{ versions.debian.erlang }}
 
-            # Additional dependencies required to fix https://github.com/epiphany-platform/epiphany/issues/1920
+            # Additional dependencies required to fix issue #1920
             - erlang-asn1={{ versions.debian.erlang }}
             - erlang-base-hipe={{ versions.debian.erlang }}
             - erlang-crypto={{ versions.debian.erlang }}
