@@ -6,3 +6,4 @@
 - name: Install and configure OpenDistro for Elasticsearch
   import_role:
     name: opendistro_for_elasticsearch
+    vars_from: no-vars
