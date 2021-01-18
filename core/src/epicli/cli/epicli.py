@@ -134,13 +134,20 @@ Terraform : 1..4 map to the following Terraform verbosity levels:
 
 def init_parser(subparsers):
     sub_parser = subparsers.add_parser('init', description='Creates configuration file in working directory.')
-    sub_parser.add_argument('-p', '--provider', dest='provider', choices=['aws', 'azure', 'any'], default='any',
+    optional = sub_parser._action_groups.pop()
+    required = sub_parser.add_argument_group('required arguments')
+
+    #required
+    required.add_argument('-p', '--provider', dest='provider', choices=['aws', 'azure', 'any'], default='any',
                             type=str,
                             required=True, help='One of the supported providers: azure|aws|any')
-    sub_parser.add_argument('-n', '--name', dest='name', type=str, required=True,
+    required.add_argument('-n', '--name', dest='name', type=str, required=True,
                             help='Name of the cluster.')
+
+    #optional
     sub_parser.add_argument('--full', dest='full_config', action="store_true",
                             help='Use this flag if you want to create verbose configuration file.')
+    sub_parser._action_groups.append(optional)
 
     def run_init(args):
         Config().output_dir = os.getcwd()
@@ -153,8 +160,15 @@ def init_parser(subparsers):
 
 def prepare_parser(subparsers):
     sub_parser = subparsers.add_parser('prepare', description='Creates a folder with all prerequisites to setup the offline requirements to install a cluster offline.')
-    sub_parser.add_argument('--os', type=str, required=True, dest='os', choices=['ubuntu-18.04', 'redhat-7', 'centos-7'],
+    optional = sub_parser._action_groups.pop()
+    required = sub_parser.add_argument_group('required arguments')
+
+    #required
+    required.add_argument('--os', type=str, required=True, dest='os', choices=['ubuntu-18.04', 'redhat-7', 'centos-7'],
                             help='The OS to prepare the offline requirements for: ubuntu-18.04|redhat-7|centos-7')
+
+    #optional
+    sub_parser._action_groups.append(optional)
 
     def run_prepare(args):
         adjust_paths_from_output_dir()
@@ -166,23 +180,29 @@ def prepare_parser(subparsers):
 
 def apply_parser(subparsers):
     sub_parser = subparsers.add_parser('apply', description='Applies configuration from file.')
-    sub_parser.add_argument('-f', '--file', dest='file', type=str,
+    optional = sub_parser._action_groups.pop()
+    required = sub_parser.add_argument_group('required arguments')
+
+    #required
+    required.add_argument('-f', '--file', dest='file', type=str, required=True,
                             help='File with infrastructure/configuration definitions to use.')
-    sub_parser.add_argument('--no-infra', dest='no_infra', action="store_true",
+
+    #optional
+    optional.add_argument('--no-infra', dest='no_infra', action="store_true",
                             help='''Skip terraform infrastructure provisioning. 
                             Use this when you already have infrastructure available and only want to run the 
                             Ansible role provisioning.''')
-    sub_parser.add_argument('--skip-config', dest='skip_config', action="store_true",
+    optional.add_argument('--skip-config', dest='skip_config', action="store_true",
                             help='''Skip Ansible role provisioning.
                             Use this when you need to create cloud infrastructure and apply manual changes before
                             you want to run the Ansible role provisioning.''')                         
-    sub_parser.add_argument('--offline-requirements', dest='offline_requirements', type=str,
+    optional.add_argument('--offline-requirements', dest='offline_requirements', type=str,
                             help='Path to the folder with pre-prepared offline requirements.')    
-    sub_parser.add_argument('--vault-password', dest='vault_password', type=str,
+    optional.add_argument('--vault-password', dest='vault_password', type=str,
                             help='Password that will be used to encrypt build artifacts.')
-    # developer options
-    sub_parser.add_argument('--profile-ansible-tasks', dest='profile_ansible_tasks', action="store_true",
-                            help='Enable Ansible profile_tasks plugin for timing tasks.')
+    optional.add_argument('--profile-ansible-tasks', dest='profile_ansible_tasks', action="store_true",
+                            help='Enable Ansible profile_tasks plugin for timing tasks. (developer/debug option)')
+    sub_parser._action_groups.append(optional)
 
     def run_apply(args):
         adjust_paths_from_file(args)
@@ -195,8 +215,15 @@ def apply_parser(subparsers):
 
 def delete_parser(subparsers):
     sub_parser = subparsers.add_parser('delete', description='Delete a cluster from build artifacts.')
-    sub_parser.add_argument('-b', '--build', dest='build_directory', type=str, required=True,
+    optional = sub_parser._action_groups.pop()
+    required = sub_parser.add_argument_group('required arguments')
+
+    #required
+    required.add_argument('-b', '--build', dest='build_directory', type=str, required=True,
                             help='Absolute path to directory with build artifacts.')
+
+    #optional
+    sub_parser._action_groups.append(optional)
 
     def run_delete(args):
         if not query_yes_no('Do you really want to delete your cluster?'):
@@ -211,15 +238,21 @@ def delete_parser(subparsers):
 def upgrade_parser(subparsers):
     sub_parser = subparsers.add_parser('upgrade',
                                        description='Upgrades common and K8s components of an existing Epiphany Platform cluster.')
-    sub_parser.add_argument('-b', '--build', dest='build_directory', type=str, required=True,
+    optional = sub_parser._action_groups.pop()
+    required = sub_parser.add_argument_group('required arguments')
+
+    #required
+    required.add_argument('-b', '--build', dest='build_directory', type=str, required=True,
                             help='Absolute path to directory with build artifacts.')
-    sub_parser.add_argument('--wait-for-pods', dest='wait_for_pods', action="store_true",
-                            help="Waits for all pods to be in the 'Ready' state before proceeding to the next step of the K8s upgrade.")
-    sub_parser.add_argument('--offline-requirements', dest='offline_requirements', type=str, required=False,
+
+    #optional
+    optional.add_argument('--offline-requirements', dest='offline_requirements', type=str, required=False,
                             help='Path to the folder with pre-prepared offline requirements.')
-    # developer options
-    sub_parser.add_argument('--profile-ansible-tasks', dest='profile_ansible_tasks', action="store_true",
-                            help='Enable Ansible profile_tasks plugin for timing tasks.')
+    optional.add_argument('--wait-for-pods', dest='wait_for_pods', action="store_true",
+                            help="Waits for all pods to be in the 'Ready' state before proceeding to the next step of the K8s upgrade.")
+    optional.add_argument('--profile-ansible-tasks', dest='profile_ansible_tasks', action="store_true",
+                            help='Enable Ansible profile_tasks plugin for timing tasks. (developer/debug option)')
+    sub_parser._action_groups.append(optional)
 
     def run_upgrade(args):
         adjust_paths_from_build(args)
@@ -231,11 +264,18 @@ def upgrade_parser(subparsers):
 
 def test_parser(subparsers):
     sub_parser = subparsers.add_parser('test', description='Test a cluster from build artifacts.')
-    sub_parser.add_argument('-b', '--build', dest='build_directory', type=str, required=True,
+    optional = sub_parser._action_groups.pop()
+    required = sub_parser.add_argument_group('required arguments')
+
+    #required
+    required.add_argument('-b', '--build', dest='build_directory', type=str, required=True,
                             help='Absolute path to directory with build artifacts.')
+
+    #optional
     group_list = '{' + ', '.join(SpecCommand.get_spec_groups()) + '}'
-    sub_parser.add_argument('-g', '--group', choices=SpecCommand.get_spec_groups(), default='all', action='store', dest='group', required=False, metavar=group_list,
+    optional.add_argument('-g', '--group', choices=SpecCommand.get_spec_groups(), default='all', action='store', dest='group', required=False, metavar=group_list,
                             help='Group of tests to be run, e.g. kafka.')
+    sub_parser._action_groups.append(optional)
 
     def run_test(args):
         experimental_query()
@@ -259,7 +299,7 @@ def validate_parser(subparsers):
         with ApplyEngine(args) as engine:
             return engine.validate()
 
-    sub_parser.set_defaults(func=run_validate)    
+    sub_parser.set_defaults(func=run_validate)
 '''
 
 
@@ -268,11 +308,18 @@ def backup_parser(subparsers):
 
     sub_parser = subparsers.add_parser('backup',
                                        description='Create backup of cluster components.')
-    sub_parser.add_argument('-f', '--file', dest='file', type=str, required=True,
+    optional = sub_parser._action_groups.pop()
+    required = sub_parser.add_argument_group('required arguments')
+
+    #required
+    required.add_argument('-f', '--file', dest='file', type=str, required=True,
                             help='Backup configuration definition file to use.')
-    sub_parser.add_argument('-b', '--build', dest='build_directory', type=str, required=True,
+    required.add_argument('-b', '--build', dest='build_directory', type=str, required=True,
                             help='Absolute path to directory with build artifacts.',
                             default=None)
+
+    #optional
+    sub_parser._action_groups.append(optional)
 
     def run_backup(args):
         adjust_paths_from_file(args)
@@ -287,11 +334,18 @@ def recovery_parser(subparsers):
 
     sub_parser = subparsers.add_parser('recovery',
                                        description='Recover from existing backup.')
-    sub_parser.add_argument('-f', '--file', dest='file', type=str, required=True,
+    optional = sub_parser._action_groups.pop()
+    required = sub_parser.add_argument_group('required arguments')
+
+    #required
+    required.add_argument('-f', '--file', dest='file', type=str, required=True,
                             help='Recovery configuration definition file to use.')
-    sub_parser.add_argument('-b', '--build', dest='build_directory', type=str, required=True,
+    required.add_argument('-b', '--build', dest='build_directory', type=str, required=True,
                             help='Absolute path to directory with build artifacts.',
                             default=None)
+
+    #optional
+    sub_parser._action_groups.append(optional)
 
     def run_recovery(args):
         if not query_yes_no('Do you really want to perform recovery?'):
