@@ -1,4 +1,6 @@
-#!/bin/bash
+#!/usr/bin/env bash
+
+set -o errexit
 
 if ls /usr/local/share/ca-certificates/*.crt 1> /dev/null 2>&1; then
   pattern="/usr/local/share/ca-certificates/*.crt"
@@ -15,7 +17,7 @@ if ls /usr/local/share/ca-certificates/*.crt 1> /dev/null 2>&1; then
     chmod 644 $f
     pip config set global.cert $f
     pip config list
-  else 
+  else
     f="${files[0]}"
     echo "Setting PIP cert $f"
     pip config set global.cert $f
@@ -25,4 +27,3 @@ if ls /usr/local/share/ca-certificates/*.crt 1> /dev/null 2>&1; then
 else
   echo "No cert/ca-bundle to setup"
 fi
-
