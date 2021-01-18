@@ -253,6 +253,13 @@ specification:
        destination_port_range: "0"
        source_address_prefix: "0.0.0.0/0"
        destination_address_prefix: "0.0.0.0/0"
+     - name: load-balacner-subnet-traffic
+       description: Allow load-balancer subnet traffic
+       direction: Inbound
+       protocol: ALL
+       destination_port_range: "0"
+       source_address_prefix: "10.1.7.0/24"
+       destination_address_prefix: "0.0.0.0/0"
 ---
 kind: infrastructure/virtual-machine
 title: "Virtual Machine Infra"
@@ -305,6 +312,13 @@ specification:
        protocol: "all"
        destination_port_range: "0"
        source_address_prefix: "0.0.0.0/0"
+       destination_address_prefix: "0.0.0.0/0"
+     - name: load-balacner-subnet-traffic
+       description: Allow load-balancer subnet traffic
+       direction: Inbound
+       protocol: ALL
+       destination_port_range: "0"
+       source_address_prefix: "10.1.7.0/24"
        destination_address_prefix: "0.0.0.0/0"
 ---
 kind: infrastructure/virtual-machine
