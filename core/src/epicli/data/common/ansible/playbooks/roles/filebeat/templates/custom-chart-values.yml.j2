@@ -114,7 +114,7 @@ filebeatConfig:
       protocol: "https"
       ssl.verification_mode: none
       username: logstash
-      password: logstash
+      password: {{ specification.logstash_password }}
 {% else %}
       hosts: []
 {% endif %}
