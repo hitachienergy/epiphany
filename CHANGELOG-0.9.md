@@ -43,3 +43,5 @@
 ### Breaking changes
 
 ### Known issues
+
+- [#1979](https://github.com/epiphany-platform/epiphany/issues/1979) - RabbitMQ fails on upgrade when there are multiple non-clustered nodes
