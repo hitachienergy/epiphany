@@ -253,7 +253,7 @@ specification:
        destination_port_range: "0"
        source_address_prefix: "0.0.0.0/0"
        destination_address_prefix: "0.0.0.0/0"
-     - name: load-balacner-subnet-traffic
+     - name: load-balancer-subnet-traffic
        description: Allow load-balancer subnet traffic
        direction: Inbound
        protocol: ALL
@@ -313,7 +313,7 @@ specification:
        destination_port_range: "0"
        source_address_prefix: "0.0.0.0/0"
        destination_address_prefix: "0.0.0.0/0"
-     - name: load-balacner-subnet-traffic
+     - name: load-balancer-subnet-traffic
        description: Allow load-balancer subnet traffic
        direction: Inbound
        protocol: ALL
