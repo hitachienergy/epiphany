@@ -36,6 +36,12 @@
 - [#1860](https://github.com/epiphany-platform/epiphany/issues/1860) - Upgrade Grafana to v7.3.5
 - [#1955](https://github.com/epiphany-platform/epiphany/issues/1955) - Upgrade Elasticsearch Curator to v5.8.3
 
+### Deprecated
+
+- Elasticsearch OSS v6 (feature name: `elasticsearch`), succesor: Elasticsearch OSS v7 (feature name: `opendistro-for-elasticsearch`). It may be removed in the next major release.
+
 ### Breaking changes
 
 ### Known issues
+
+- [#1979](https://github.com/epiphany-platform/epiphany/issues/1979) - RabbitMQ fails on upgrade when there are multiple non-clustered nodes
