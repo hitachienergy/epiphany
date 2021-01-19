@@ -58,9 +58,10 @@
 
     - name: Wait for filebeat service to be running
       service_facts:
+      register: service_facts
       until:
-        - ansible_facts.services['filebeat.service'].state is defined
-        - ansible_facts.services['filebeat.service'].state == "running"
+        - service_facts.ansible_facts.services['filebeat.service'].state is defined
+        - service_facts.ansible_facts.services['filebeat.service'].state == "running"
       retries: 10
       delay: 1
       no_log: true  # to reduce log output
