@@ -1,0 +1,10 @@
+- name: Copy common alerting rules
+  copy:
+    src: "prometheus/rules/common.rules"
+    dest: /etc/prometheus/rules/
+    validate: /usr/local/bin/promtool check rules %s
+    owner: prometheus
+    group: prometheus
+    mode: u=rw,go=
+  when: specification.alert_rules.common | bool
+  notify: Reload Prometheus

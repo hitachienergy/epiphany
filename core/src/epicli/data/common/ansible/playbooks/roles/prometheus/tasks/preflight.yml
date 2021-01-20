@@ -87,6 +87,3 @@
   shell: systemctl --version | awk '$1 == "systemd" {print $2}'
   changed_when: false
   register: prometheus_systemd_version
-  tags:
-    - skip_ansible_lint
-

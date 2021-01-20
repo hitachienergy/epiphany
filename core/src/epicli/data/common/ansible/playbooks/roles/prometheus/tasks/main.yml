@@ -1,11 +1,8 @@
 ---
-
 - name: Get systemd version
   shell: systemctl --version | awk '$1 == "systemd" {print $2}'
   changed_when: false
   register: prometheus_systemd_version
-  tags:
-    - skip_ansible_lint
 
 - name: Set master exists flag
   set_fact:
@@ -18,78 +15,46 @@
     apply:
       environment:
         KUBECONFIG: "{{ kubeconfig.local }}"
-      tags:
-        - kubernetes
-  tags:
-    - kubernetes
 
 - name: Gather variables for each operating system
   include_vars: "{{ item }}"
   with_first_found:
     - "{{ ansible_distribution | lower }}.yml"
     - "{{ ansible_os_family | lower }}.yml"
-  tags:
-    - always
 
 - name: "Check if Alertmanager is enabled"
   set_fact:
-    is_alertmanager_enabled: "{{ specification.alerts.alertmanager.enable|bool and (specification.alerts.alertmanager.config.receivers | length>0 ) }}"
+    is_alertmanager_enabled: "{{ specification.alertmanager.enable|bool and (specification.alertmanager.config.receivers | length>0 ) }}"
 
-- include: install.yml
-  become: true
-  tags:
-    - install
+- name: Include install
+  include_tasks: install.yml
 
-- include: configure.yml
-  become: true
-  tags:
-    - configure
+- name: Include configure
+  include_tasks: configure.yml
 
-- name: Create alerting rules
-  template:
-    src: "alert.rules.j2"
-    dest: "{{ specification.config_directory }}/rules/{{ item.name }}.rules"
-    owner: root
-    group: prometheus
-    mode: 0640
-    validate: "/usr/local/bin/promtool check rules %s"
-  with_items:
-    - "{{ specification.alerts.rules }}"
-  notify:
-    - restart prometheus
+- name: Include provide-rules
+  include_tasks: provide-rules.yml
 
-- include: install-alertmanager.yml
-  become: true
-  when:
-    - is_alertmanager_enabled
-  tags:
-    - install
+- name: Include install-alertmanager
+  include_tasks: install-alertmanager.yml
+  when: is_alertmanager_enabled
 
-- include: configure-alertmanager.yml
-  become: true
-  tags:
-    - configure
-  when:
-    - is_alertmanager_enabled
-  notify:
-    - restart alertmanager
+- name: Include configure-alertmanager
+  include_tasks: configure-alertmanager.yml
+  when: is_alertmanager_enabled
 
-- name: ensure prometheus service is started and enabled
-  become: true
+- name: Flush handlers
+  meta: flush_handlers
+
+- name: Ensure Prometheus service is started and enabled
   systemd:
     name: prometheus
     state: started
     enabled: true
-  tags:
-    - run
 
-- name: ensure alertmanager service is started and enabled
-  become: true
+- name: Ensure alertmanager service is started and enabled
   systemd:
     name: alertmanager
     state: started
     enabled: true
-  when:
-    - is_alertmanager_enabled
-  tags:
-    - run
+  when: is_alertmanager_enabled

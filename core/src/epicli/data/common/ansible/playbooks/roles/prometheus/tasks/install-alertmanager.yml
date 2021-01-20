@@ -1,7 +1,7 @@
 ---
 - name: Set Prometheus file name to install
   set_fact:
-    binary_file_name: "{{ specification.alerts.alertmanager.file_name }}"
+    binary_file_name: "{{ specification.alertmanager.file_name }}"
 
 - name: Download Prometheus binaries
   include_role:
@@ -10,7 +10,7 @@
   vars:
     file_name: "{{ binary_file_name }}"
 
-- name: Unpack AlertManager binary
+- name: Unpack Alertmanager binary
   become: true
   unarchive:
     remote_src: yes
@@ -18,26 +18,26 @@
     dest: "/usr/local/bin"
     creates: "/usr/local/bin/alertmanager"
     extra_opts: [--strip-components=1]
-    mode: 0755
-    owner: root
+    mode: u=rwx,go=rx
+    owner: prometheus
     group: prometheus
   check_mode: false
   notify:
-    - restart prometheus
+    - Restart Prometheus
 
-- name: Create alertmanager data directory
+- name: Create Alertmanager data directory
   file:
     path: /var/lib/prometheus/alertmanager
     state: directory
     owner: prometheus
     group: prometheus
 
-- name: Create alertmanager systemd service unit
+- name: Create Alertmanager systemd service unit
   template:
     src: alertmanager.service.j2
     dest: /etc/systemd/system/alertmanager.service
     owner: root
     group: root
-    mode: 0644
+    mode: u=rx,go=r
   notify:
-    - restart prometheus
+    - Restart Prometheus

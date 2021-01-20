@@ -19,103 +19,20 @@
     state: directory
     owner: prometheus
     group: prometheus
-    mode: 0755
+    mode: u=rwx,g=rx,o=rx
 
-- name: create prometheus configuration directories
+- name: Create Prometheus configuration directories
   file:
     path: "{{ item }}"
     state: directory
-    owner: root
+    owner: prometheus
     group: prometheus
-    mode: 0750
+    mode: u=rwx,g=rx,o=
   with_items:
     - "{{ specification.config_directory }}"
     - "{{ specification.config_directory }}/conf.d"
     - "{{ specification.config_directory }}/rules"
     - "{{ specification.config_directory }}/file_sd"
-
-# - name: Ensure download directory exists
-#   become: false
-#   file:
-#     path: "{{ specification.download_directory }}/prometheus_binaries"
-#     state: directory
-#   delegate_to: localhost
-
-# # TODO: Checking prometheus
-# - name: Download Prometheus binary to local folder
-#   become: false
-#   get_url:
-#     url: "{{ specification.download_urls[ansible_architecture] }}"
-#     dest: "{{ specification.download_directory }}/prometheus.tar.gz"
-#     validate_certs: "{{ validate_certs | bool}}"
-#   register: _download_archive
-#   until: _download_archive is succeeded
-#   retries: 5
-#   delay: 2
-#   delegate_to: localhost
-
-# - name: Get sha512 sum of archive
-#   become: false
-#   stat:
-#     path: "{{ specification.download_directory }}/prometheus.tar.gz"
-#     checksum_algorithm: sha512
-#     get_checksum: yes
-#   register: prometheus_download_stat
-#   delegate_to: localhost
-
-# - name: Display sha of archive
-#   debug:
-#     msg: "Prometheus SHA512: {{ prometheus_download_stat.stat.checksum }}"
-
-# - name: Verify sha512 of archive before installation.
-#   fail:
-#     msg: "File checksum is not correct."
-#   when: prometheus_download_stat.stat.checksum not in specification.download_shas
-
-# - name: Unpack Prometheus binary
-#   become: false
-#   unarchive:
-#     src: "{{ specification.download_directory }}/prometheus.tar.gz"
-#     dest: "{{ specification.download_directory }}/prometheus_binaries"
-#     creates: "{{ specification.download_directory }}/prometheus_binaries/prometheus"
-#     extra_opts: [--strip-components=1]
-#   delegate_to: localhost
-#   check_mode: false
-
-# - name: Propagate Prometheus and promtool binaries
-#   copy:
-#     src: "{{ specification.download_directory }}/prometheus_binaries/{{ item }}"
-#     dest: "/usr/local/bin/{{ item }}"
-#     mode: 0755
-#     owner: root
-#     group: prometheus
-#   with_items:
-#     - prometheus
-#     - promtool
-#   check_mode: false
-#   notify:
-#     - restart prometheus
-
-# - name: Propagate console libraries templates
-#   copy:
-#     src: "{{ specification.download_directory }}/prometheus_binaries/{{ item }}"
-#     dest: "{{ specification.config_directory }}/{{ item }}/"
-#     mode: 0755
-#   with_items:
-#      - console_libraries
-#      - consoles
-#   check_mode: false
-#   notify:
-#     - restart prometheus
-
-# - name: Remove prometheus binaries from old location
-#   file:
-#     path: "{{ item }}"
-#     state: absent
-#   with_items:
-#     - /opt/prometheus/prometheus
-#     - /opt/prometheus/promtool
-#     - /opt/prometheus
 
 - name: Set Prometheus file name to install
   set_fact:
@@ -139,12 +56,12 @@
     dest: "/usr/local/bin"
     creates: "/usr/local/bin/prometheus"
     extra_opts: [--strip-components=1]
-    mode: 0755
-    owner: root
+    mode: u=rwx,go=rx
+    owner: prometheus
     group: prometheus
   check_mode: false
   notify:
-    - restart prometheus
+    - Restart Prometheus
 
 - name: Create systemd service unit
   template:
@@ -152,6 +69,6 @@
     dest: /etc/systemd/system/prometheus.service
     owner: root
     group: root
-    mode: 0644
+    mode: u=rw,go=r
   notify:
-    - restart prometheus
+    - Restart Prometheus

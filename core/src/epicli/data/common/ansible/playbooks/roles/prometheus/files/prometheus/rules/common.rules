@@ -1,0 +1,26 @@
+groups:
+- name: common.rules
+  rules:
+  - alert: CPU utilization has exceeded 80% over last 15 minutes.
+    labels:
+      severity: critical
+    expr: 100 - (avg by (instance) (irate(node_cpu_seconds_total{job="node",mode="idle"}[5m])) * 100) > 80
+    for: 15m
+
+  - alert: Disk usage is above 80%
+    labels:
+      severity: warning
+    expr: ((node_filesystem_avail_bytes* 100) / node_filesystem_size_bytes) < 20
+    for: 1m
+
+  - alert: Server memory has been used in more than 80% during last 15 minutes.
+    labels:
+      severity: warning
+    expr: (sum by (instance) (node_memory_MemTotal_bytes) - sum by (instance)(node_memory_MemFree_bytes + node_memory_Buffers_bytes + node_memory_Cached_bytes) ) / sum by (instance)(node_memory_MemTotal_bytes) * 100 > 80
+    for: 15m
+
+  - alert: Disk will run out of space in less than 48h
+    labels:
+      severity: warning
+    expr: predict_linear(node_filesystem_free_bytes{job="node"}[1h], 48 * 3600) < 0
+    for: 1m

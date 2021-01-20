@@ -1,21 +1,17 @@
 ---
-- name: restart prometheus
-  become: true
+- name: Restart Prometheus
   systemd:
     daemon_reload: true
     name: prometheus
     state: restarted
 
-- name: reload prometheus
-  become: true
+- name: Reload Prometheus
   systemd:
     name: prometheus
     state: reloaded
 
-- name: restart alertmanager
-  become: true
+- name: Restart Alertmanager
   systemd:
     daemon_reload: true
     name: alertmanager
     state: restarted
-

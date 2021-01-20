@@ -3,7 +3,7 @@
 
 - hosts: all
   gather_facts: yes
-  tasks: [ ]  
+  tasks: [ ]
 
 - hosts: prometheus
   become: true
