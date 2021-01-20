@@ -23,7 +23,7 @@ Our aim here is to take an existing Epiphany cluster, patch worker nodes and per
 
 ## Procedure
 
-Ansible will sequentially (rolling update) reconfigure `docker` and `kubelet` services on each worker node.
+Ansible will sequentially (rolling update but **without waiting for pods to be `Ready`**) reconfigure `docker` and `kubelet` services on each worker node.
 
 When there are any changes found in config files, ansible will (for each worker node):
 
@@ -31,7 +31,7 @@ When there are any changes found in config files, ansible will (for each worker 
 
 2. Stop docker and kubelet services.
 
-3. Reconfigure docker and kubelet services with the systemd cgroup setting.
+3. Reconfigure docker and kubelet services to use `systemd` cgroup driver.
 
 4. Reboot.
 

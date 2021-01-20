@@ -8,4 +8,4 @@ case "$CHOICE" in
   *) exit ;;
 esac
 
-exec ansible-playbook -vv main.yml
+ansible-playbook -vv main.yml
