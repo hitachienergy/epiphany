@@ -77,4 +77,3 @@
     path: /opt/zookeeper-{{ before_upgrade_zookeeper_version }}
     state: absent
   when: before_upgrade_zookeeper_version != zookeeper_defaults.zookeeper_version
-  
