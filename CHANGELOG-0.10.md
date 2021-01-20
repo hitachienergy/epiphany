@@ -7,6 +7,7 @@
 ### Fixed
 
 - [#1881](https://github.com/epiphany-platform/epiphany/issues/1881) - epicli: wrong informations in help messages
+- [#1959](https://github.com/epiphany-platform/epiphany/issues/1959) - Network traffic not allowed from load balancer's subnet to Kubernetes's subnet in AWS
 
 ### Updated
 
