@@ -42,10 +42,9 @@ class AnsibleConfigFileCreator(Step):
                 self.ansible_config_file_settings[section][key] = value
 
     def process_ansible_options(self):
-        callback_whitelist = []
         if self.ansible_options['profile_tasks']:
-            callback_whitelist = ['profile_tasks']
-        self.add_setting('defaults', 'callback_whitelist', callback_whitelist)
+            self.add_setting('defaults', 'callback_whitelist', ['profile_tasks'])
+        self.add_setting('defaults', 'interpreter_python', 'auto_legacy_silent')
         self.add_setting('defaults', 'allow_world_readable_tmpfiles', 'true')  # workaround for delegate_to with become_user
 
     def create(self):
