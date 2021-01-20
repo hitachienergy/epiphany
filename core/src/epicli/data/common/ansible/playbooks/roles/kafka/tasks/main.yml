@@ -9,7 +9,7 @@
 - include_tasks: setup-kafka.yml
 
 # - include_tasks: verify-kafka.yml # todo change testing kafka to bash or remove it? (since we test it using serverspec)
- 
+
 - include_tasks: metrics.yml
   when: exporter.stat.exists
 

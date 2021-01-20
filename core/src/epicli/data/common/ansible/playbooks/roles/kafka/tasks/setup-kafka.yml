@@ -27,7 +27,7 @@
 
 - name: Set Kafka file name to install
   set_fact:
-    kafka_file_name: "{{ specification.kafka_var.file_name }}"
+    kafka_file_name: "{{ kafka_bin_filename }}"
 
 - name: Download Kafka binaries
   include_role:
@@ -36,56 +36,28 @@
   vars:
     file_name: "{{ kafka_file_name }}"
 
-# - name: Check for Kafka package
-#   stat:
-#     path: "/tmp/kafka_{{ specification.kafka_var.scala.version }}-{{ specification.kafka_var.version }}.tgz"
-#   register: kafka_check
-
-# - name: Fetch Kafka binary package
-#   get_url:
-#     url: "https://archive.apache.org/dist/kafka/{{ specification.kafka_var.version }}/kafka_{{ specification.kafka_var.scala.version }}-{{ specification.kafka_var.version }}.tgz"
-#     dest: "/tmp/kafka_{{ specification.kafka_var.scala.version }}-{{ specification.kafka_var.version }}.tgz"
-#     validate_certs: "{{ validate_certs | bool }}"
-#   when: not kafka_check.stat.exists
-
-# - name: Get sha512 sum of archive
-#   stat:
-#     path: "/tmp/kafka_{{ specification.kafka_var.scala.version }}-{{ specification.kafka_var.version }}.tgz"
-#     checksum_algorithm: sha512
-#     get_checksum: yes
-#   register: kafka_download_stat
-
-# - name: Display sha of archive
-#   debug:
-#     msg: "Kafka SHA512: {{ kafka_download_stat.stat.checksum }}"
-
-# - name: Verify sha512 of archive before installation
-#   fail:
-#     msg: "File checksum is not correct."
-#   when: kafka_download_stat.stat.checksum != specification.kafka_var.sha
-
 - name: Add Kafka's bin dir to the PATH
   copy:
     content: "export PATH=$PATH:/opt/kafka/bin"
     dest: "/etc/profile.d/kafka_path.sh"
-    mode: 0755
+    mode: u=rwx,g=rx,o=rx
 
 - name: Check for Kafka package
   stat:
-    path: /opt/kafka_{{ specification.kafka_var.scala.version }}-{{ specification.kafka_var.version }}/bin/kafka-server-start.sh
+    path: /opt/kafka_{{ scala_version }}-{{ kafka_version }}/bin/kafka-server-start.sh
   register: kafka_package
 
 - name: Uncompress the Kafka tar
   unarchive:
     remote_src: yes
-    creates: /opt/kafka_{{ specification.kafka_var.scala.version }}-{{ specification.kafka_var.version }}
+    creates: /opt/kafka_{{ scala_version }}-{{ kafka_version }}
     src: "{{ download_directory }}/{{ kafka_file_name }}"
     dest: /opt
   when: not kafka_package.stat.exists
 
 - name: Change ownership on kafka directory.
   file:
-    path: /opt/kafka_{{ specification.kafka_var.scala.version }}-{{ specification.kafka_var.version }}
+    path: /opt/kafka_{{ scala_version }}-{{ kafka_version }}
     state: directory
     owner: kafka
     group: kafka
@@ -94,14 +66,14 @@
   file:
     dest: /opt/kafka
     state: link
-    src: /opt/kafka_{{ specification.kafka_var.scala.version }}-{{ specification.kafka_var.version }}
+    src: /opt/kafka_{{ scala_version }}-{{ kafka_version }}
 
 - name: Create systemd config
   template:
     dest: /etc/systemd/system/kafka.service
     owner: root
     group: root
-    mode: 0644
+    mode: u=rw,g=r,o=r
     src: kafka.service.j2
   notify:
     - restart kafka
@@ -115,7 +87,7 @@
     state: directory
     owner: "{{ specification.kafka_var.user }}"
     group: "{{ specification.kafka_var.group }}"
-    mode: 0755
+    mode: u=rwx,g=rx,o=rx
 
 - name: Remove lost+found in the datadir
   file:
@@ -128,7 +100,7 @@
     state: directory
     owner: "{{ specification.kafka_var.user }}"
     group: "{{ specification.kafka_var.group }}"
-    mode: 0755
+    mode: u=rwx,g=rx,o=rx
 
 - name: Create /etc/kafka directory
   file:
@@ -146,7 +118,7 @@
     dest: "{{ specification.kafka_var.conf_dir }}/log4j.properties"
     owner: "{{ specification.kafka_var.user }}"
     group: "{{ specification.kafka_var.group }}"
-    mode: 0644
+    mode: u=rw,g=r,o=r
     src: log4j.properties
   notify:
     - restart kafka
@@ -164,7 +136,7 @@
     owner: "{{ specification.kafka_var.user }}"
     group: "{{ specification.kafka_var.group }}"
     # Was 0640
-    mode: 0644
+    mode: u=rw,g=r,o=r
     src: server.properties.j2
   notify:
     - restart kafka
@@ -174,14 +146,14 @@
     dest: /etc/logrotate.d/kafka
     owner: root
     group: root
-    mode: 0644
+    mode: u=rw,g=r,o=r
     src: logrotate.conf.j2
 
 - name: configure system settings, file descriptors and number of threads for kafka
   pam_limits:
     domain: "{{ specification.kafka_var.user }}"
-    limit_type: "{{item.limit_type}}"
-    limit_item: "{{item.limit_item}}"
+    limit_type: "{{ item.limit_type }}"
+    limit_item: "{{ item.limit_item }}"
     value: "{{item.value}}"
   with_items:
     - { limit_type: '-', limit_item: 'nofile', value: 128000 }
