@@ -21,6 +21,14 @@ Our aim here is to take an existing Epiphany cluster, patch worker nodes and per
 
 2. Run `sh apply.sh`.
 
+## Rollback
+
+Ansible will replace back `systemd` driver with `cgroupfs` driver.
+
+1. Copy your cluster's `inventory` file to this directory.
+
+2. Run `sh rollback.sh`.
+
 ## Procedure
 
 Ansible will sequentially (rolling update but **without waiting for pods to be `Ready`**) reconfigure `docker` and `kubelet` services on each worker node.

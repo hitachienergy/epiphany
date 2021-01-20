@@ -9,14 +9,10 @@
   serial: 1
   environment:
     KUBECONFIG: /etc/kubernetes/admin.conf
+  vars:
+    old_cgroup_driver: cgroupfs
+    new_cgroup_driver: systemd
   tasks:
-    - name: Define cgroup drivers
-      set_fact:
-        old_cgroup_driver: >-
-          {{ old_cgroup_driver | default('cgroupfs') }}
-        new_cgroup_driver: >-
-          {{ new_cgroup_driver | default('systemd') }}
-
     # PROCESS KUBELET CONFIG
 
     - name: Read /var/lib/kubelet/kubeadm-flags.env
@@ -100,7 +96,7 @@
           copy:
             dest: /etc/docker/daemon.json
             content: |
-              {{ etc_docker_daemon_json.output }}
+              {{ etc_docker_daemon_json.output | to_nice_json(indent=2) }}
             mode: preserve
 
         # REBOOT
