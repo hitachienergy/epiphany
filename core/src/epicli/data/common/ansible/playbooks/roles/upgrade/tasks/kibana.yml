@@ -31,6 +31,19 @@
           - "Installed version: {{ ansible_facts.packages['opendistroforelasticsearch-kibana'][0].version }}"
           - "Target version: {{ opendistro_for_elasticsearch_defaults.versions[ansible_os_family].opendistro }}"
 
+    - name: Kibana | Slurp kibana config file
+      slurp:
+        src: /etc/kibana/kibana.yml
+      register: _kibana_config_yml
+
+    - name: Set kibana.yml content as fact
+      set_fact:
+        _kibana_exisitng_config: "{{ _kibana_config_yml.content | b64decode | from_yaml }}"
+
+    - name: Set kibana existing password
+      set_fact:
+        _kibanaserver_exisitng_password: "{{ _kibana_exisitng_config['elasticsearch.password'] }}"
+
     - name: Kibana | Upgrade
       import_role:
         name: kibana
