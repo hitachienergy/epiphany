@@ -1,0 +1,4 @@
+- name: RabbitMQ | Check Debian package version
+  command: dpkg-query --showformat='${Version}' --show rabbitmq-server
+  register: rabbitmq_version_current
+  changed_when: false
