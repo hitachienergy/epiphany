@@ -25,14 +25,22 @@
   register: grep_es_xmx
   changed_when: false
 
+- name: Set helper facts
+  set_fact:
+    elasticsearch_endpoint: >-
+      https://{{ ansible_default_ipv4.address }}:9200
+  vars:
+    uri_template: &uri
+      client_cert: /etc/elasticsearch/kirk.pem
+      client_key: /etc/elasticsearch/kirk-key.pem
+      validate_certs: false
+      body_format: json
+
 - name: Open Distro for Elasticsearch | Disable shard allocation for the cluster
   uri:
+    <<: *uri
     url: https://{{ ansible_default_ipv4.address | default(ansible_all_ipv4_addresses[0]) }}:{{ es_http_port }}/_cluster/settings
     method: PUT
-    url_username: "{{ specification.es_user }}"
-    url_password: "{{ specification.es_password }}"
-    validate_certs: no
-    body_format: json
     body: '{"persistent":{"cluster.routing.allocation.enable": "primaries"}}'
   register: response_allocation_primaries
   until: response_allocation_primaries.json.acknowledged is defined and response_allocation_primaries.json.acknowledged == true
@@ -41,11 +49,9 @@
 
 - name: Open Distro for Elasticsearch | Perform a synced flush
   uri:
+    <<: *uri
     url: https://{{ ansible_default_ipv4.address | default(ansible_all_ipv4_addresses[0]) }}:{{ es_http_port }}/_flush/synced
     method: POST
-    url_username: "{{ specification.es_user }}"
-    url_password: "{{ specification.es_password }}"
-    validate_certs: no
     status_code: "200, 409"
 
 - name: Open Distro for Elasticsearch | Stop elasticsearch service
@@ -91,11 +97,9 @@
 
 - name: Open Distro for Elasticsearch | Wait for 'yellow' or 'green' cluster health status
   uri:
+    <<: *uri
     url: https://{{ ansible_default_ipv4.address | default(ansible_all_ipv4_addresses[0]) }}:{{ es_http_port }}/_cluster/health
     method: GET
-    url_username: "{{ specification.es_user }}"
-    url_password: "{{ specification.es_password }}"
-    validate_certs: no
   register: cluster_health
   until: cluster_health.json.status is defined and cluster_health.json.status in ['yellow', 'green']
   retries: 10
@@ -103,12 +107,9 @@
 
 - name: Open Distro for Elasticsearch | Enable shard allocation for the cluster
   uri:
+    <<: *uri
     url: https://{{ ansible_default_ipv4.address | default(ansible_all_ipv4_addresses[0]) }}:{{ es_http_port }}/_cluster/settings
     method: PUT
-    url_username: "{{ specification.es_user }}"
-    url_password: "{{ specification.es_password }}"
-    validate_certs: no
-    body_format: json
     body: '{"persistent":{"cluster.routing.allocation.enable": null}}'
   register: response
   until: response.json.acknowledged is defined and response.json.acknowledged == true
@@ -117,11 +118,9 @@
 
 - name: Open Distro for Elasticsearch | Wait for 'yellow' or 'green' cluster health status
   uri:
+    <<: *uri
     url: https://{{ ansible_default_ipv4.address | default(ansible_all_ipv4_addresses[0]) }}:{{ es_http_port }}/_cluster/health
     method: GET
-    url_username: "{{ specification.es_user }}"
-    url_password: "{{ specification.es_password }}"
-    validate_certs: no
     return_content: yes
   register: cluster_health
   until: cluster_health.json.status is defined and cluster_health.json.status in ['yellow', 'green']
