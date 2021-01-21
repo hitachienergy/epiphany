@@ -68,6 +68,19 @@
         src: /etc/filebeat/filebeat.yml
         dest: /etc/filebeat/filebeat.yml.bak_{{ ansible_facts.packages['filebeat'][0].version }}
 
+    - name: Slurp filebeat config file
+      slurp:
+        src: /etc/filebeat/filebeat.yml
+      register: _filebeat_config_yml
+
+    - name: Set filebeat.yml content as fact
+      set_fact:
+        _filebeat_exisitng_config: "{{ _filebeat_config_yml.content | b64decode | from_yaml }}"
+
+    - name: Set filebeat existing password
+      set_fact:
+        _filebeat_exisitng_password: "{{ _filebeat_exisitng_config['output.elasticsearch'].password }}"
+
     - import_role:
         name: filebeat
         tasks_from: install-filebeat-as-system-service

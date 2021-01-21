@@ -238,7 +238,12 @@ setup.ilm.enabled: false
 #   #host: "localhost:5601"
 # {% endif %}
 #   username: logstash
-#   password: {{ specification.logstash_password }}
+#
+# {%- if specification is defined and specification.logstash_password is defined %}
+#  password: {{ specification.logstash_password }}
+# {% else %}
+#  password: {{ _filebeat_exisitng_password }}
+# {% endif %}
 
   # Kibana Space ID
   # ID of the Kibana Space into which the dashboards should be loaded. By default,
@@ -277,7 +282,11 @@ output.elasticsearch:
   protocol: "https"
   ssl.verification_mode: none
   username: logstash
+{% if specification is defined and specification.logstash_password is defined %}
   password: {{ specification.logstash_password }}
+{% else %}
+  password: {{ _filebeat_exisitng_password }}
+{% endif %}
 {% else %}
   hosts: []
   # Protocol - either `http` (default) or `https`.
