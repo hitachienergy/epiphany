@@ -1,0 +1,79 @@
+---
+
+# Some tasks in this file are the same as in zookeeper role. It should be refactored (with splitting code into separate files) in order to reuse common tasks here.
+- name: Download Zookeeper binaries
+  include_role:
+    name: download
+    tasks_from: download_file
+  vars:
+    file_name: "{{ zookeeper_defaults.zookeeper_bin_filename }}"
+
+- name: Create Zookeeper directories
+  become: yes
+  file:
+    path: "/opt/zookeeper-{{ zookeeper_defaults.zookeeper_version }}"
+    recurse: yes
+    owner: "{{ zookeeper_defaults.zookeeper_user }}"
+    group: "{{ zookeeper_defaults.zookeeper_group }}"
+    mode: u=rwx,g=rx,o=rx
+    state: directory
+
+- name: Uncompress Zookeeper installation file
+  unarchive:
+    remote_src: yes
+    src: "{{ download_directory }}/{{ zookeeper_defaults.zookeeper_bin_filename }}"
+    dest: /opt/zookeeper-{{ zookeeper_defaults.zookeeper_version }}
+    creates: "/opt/zookeeper-{{ zookeeper_defaults.zookeeper_version }}/bin"
+    extra_opts: [--strip-components=1]
+    mode: u=rwx,g=rx,o=rx
+    owner: "{{ zookeeper_defaults.zookeeper_user }}"
+    group: "{{ zookeeper_defaults.zookeeper_group }}"
+
+- name: Copy configuration from previous version
+  copy:
+    remote_src: yes
+    src: /opt/zookeeper/conf/
+    dest: /opt/zookeeper-{{ zookeeper_defaults.zookeeper_version }}/conf
+    mode: preserve
+
+- name: Link /opt/zookeeper to recently installed version
+  file:
+    dest: /opt/zookeeper
+    state: link
+    src: /opt/zookeeper-{{ zookeeper_defaults.zookeeper_version }}
+    force: yes
+    
+- name: Reconfigure Zookeeper service to use symbolic link
+  lineinfile:
+    path: /lib/systemd/system/zookeeper.service
+    state: present
+    regexp: '^ExecStart=/opt/zookeeper-.*'
+    line: "ExecStart=/opt/zookeeper/bin/zkServer.sh start-foreground"
+
+- name: Check if any snapshots exists in data dir what is necessary in order to run zookeeper after upgrade
+  find:
+    paths: "{{ zookeeper_defaults.zookeeper_data_dir }}/version-2"
+    patterns: "snapshot.*"
+  register: snapshot_exists
+
+# From 3.5.5 version, ZooKeeper is not able to start when no snapshot files present, what is valid scenario in 3.4.X version. Empty snapshot downloaded from Zookeeper's Jira ticket. 
+- name: Copy empty snapshot if not exists
+  copy:
+    dest: "{{ zookeeper_defaults.zookeeper_data_dir }}/version-2" 
+    src: roles/zookeeper/files/snapshot.0
+    mode: u=rw,g=r,o=r
+    owner: "{{ zookeeper_defaults.zookeeper_user }}"
+    group: "{{ zookeeper_defaults.zookeeper_group }}"
+  when: snapshot_exists.matched == 0
+
+- name: Start Zookeeper service
+  systemd:
+    name: zookeeper
+    state: started
+    daemon-reload: yes
+
+- name: Remove previous version binaries
+  file:
+    path: /opt/zookeeper-{{ before_upgrade_zookeeper_version }}
+    state: absent
+  when: before_upgrade_zookeeper_version != zookeeper_defaults.zookeeper_version

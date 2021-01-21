@@ -140,6 +140,16 @@
         name: upgrade
         tasks_from: kibana
 
+- hosts: zookeeper
+  serial: 1
+  become: true
+  become_method: sudo
+  tasks:
+    - import_role:
+        name: upgrade
+        tasks_from: zookeeper
+      vars: { lock_file: /var/tmp/zookeeper-upgrade-in-progress.flag }
+
 - hosts: kafka
   serial: 1
   become: true
