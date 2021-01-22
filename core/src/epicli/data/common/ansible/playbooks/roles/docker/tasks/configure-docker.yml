@@ -1,21 +1,7 @@
 ---
-- name: Ensure directory exists
-  file:
-    path: /etc/docker
-    state: directory
-    mode: u=rwx,go=rx
+- include_tasks: update-daemon-config.yml
 
-- name: Copy configuration file (daemon.json)
-  template:
-    src: daemon.json.j2
-    dest: /etc/docker/daemon.json
-    mode: u=rw,go=r
-  notify: Restart Docker
-
-- name: Restart Docker before verification  # to apply new configuration (reload is not enough)
-  meta: flush_handlers
-
-- name: Start Docker
+- name: Enable and ensure Docker is started
   systemd:
     name: docker
     state: started

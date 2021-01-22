@@ -1,0 +1,38 @@
+---
+- name: Ensure directory /etc/docker/ exists
+  file:
+    path: /etc/docker/
+    state: directory
+    mode: u=rwx,go=rx
+
+- name: Stat configuration file (daemon.json)
+  stat:
+    path: /etc/docker/daemon.json
+    get_attributes: false
+    get_checksum: false
+    get_mime: false
+  register: stat_daemon_json
+
+- name: Read configuration file (daemon.json)
+  slurp:
+    path: /etc/docker/daemon.json
+  register: slurp_daemon_json
+  when:
+    - stat_daemon_json.stat.exists
+
+- name: Copy configuration file (daemon.json)
+  template:
+    dest: /etc/docker/daemon.json
+    src: daemon.json.j2
+    mode: u=rw,go=r
+  register: template_daemon_json
+  vars:
+    _previous_config: >-
+      {{ (slurp_daemon_json.content | b64decode | from_json) if (slurp_daemon_json is defined) else {} }}
+
+- name: Restart Docker
+  systemd:
+    name: docker
+    state: restarted
+  when:
+    - template_daemon_json.changed
