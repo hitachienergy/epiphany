@@ -1,0 +1,87 @@
+---
+- name: Add ignite group
+  group:
+    name: ignite
+    state: present
+
+- name: Add ignite user
+  user:
+    name: ignite
+    group: ignite
+    state: present
+
+- name: Check if Ignite in current version exists
+  stat:
+    path: /opt/ignite  # this should be a symlink
+    get_attributes: false
+    get_checksum: false
+    get_mime: false
+    follow: false
+  register: stat_ignite_dir
+
+- name: Install Ignite
+  when: stat_ignite_dir.stat.lnk_source is undefined
+     or stat_ignite_dir.stat.lnk_source != _ignite_dest_path
+  vars:
+    _ignite_dest_path: /opt/ignite_{{ ignite_version }}
+  block:
+    - name: Download Ignite archive
+      include_role:
+        name: download
+        tasks_from: download_file
+      vars:
+        file_name: "{{ ignite_file_name }}"
+
+    - name: Get file list in the archive
+      unarchive:
+        dest: /tmp/
+        src: "{{ download_directory }}/{{ ignite_file_name }}"
+        remote_src: true
+        list_files: true
+      register: unarchive_list_files
+      changed_when: false
+      check_mode: true  # check mode works only for zip files (to be extracted via unzip)
+
+    - name: Decompress Ignite
+      vars:
+        _archive_root_dir: >-
+          {{ (unarchive_list_files.files | sort | first).rstrip('/') }}
+      always:
+        - &cleanup
+          name: Delete temporary destination
+          file:
+            dest: /tmp/{{ _archive_root_dir }}
+            state: absent
+      block:
+        - name: Create destination directory
+          file:
+            dest: "{{ _ignite_dest_path }}"
+            state: directory
+            owner: ignite
+            group: ignite
+            mode: ug=rwx,o=
+
+        - *cleanup
+
+        # This is here to aid unarchive module in achieving idempotence.
+        - name: Create temporary destination
+          file:
+            dest: /tmp/{{ _archive_root_dir }}
+            src: "{{ _ignite_dest_path }}"
+            state: link
+
+        # Files are extracted via symlink to destination directory without copy/move operation.
+        - name: Decompress {{ ignite_file_name }}
+          unarchive:
+            dest: /tmp/
+            src: "{{ download_directory }}/{{ ignite_file_name }}"
+            remote_src: true
+            owner: ignite
+            group: ignite
+            creates: "{{ _ignite_dest_path }}/bin/ignite.sh"
+
+        - name: Link /opt/ignite to {{ _ignite_dest_path }}/
+          file:
+            dest: /opt/ignite
+            src: "{{ _ignite_dest_path }}"
+            state: link

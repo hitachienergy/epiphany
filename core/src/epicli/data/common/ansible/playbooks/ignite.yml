@@ -2,8 +2,8 @@
 # Ansible playbook for installing Apache Ignite
 
 - hosts: repository
-  gather_facts: yes
-  tasks: [ ]  
+  gather_facts: true
+  tasks: []
 
 - hosts: ignite
   become: true
