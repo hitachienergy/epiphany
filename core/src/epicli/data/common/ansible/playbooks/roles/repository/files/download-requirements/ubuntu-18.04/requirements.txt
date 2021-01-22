@@ -199,7 +199,7 @@ https://github.com/prometheus/alertmanager/releases/download/v0.17.0/alertmanage
 https://github.com/prometheus/haproxy_exporter/releases/download/v0.10.0/haproxy_exporter-0.10.0.linux-amd64.tar.gz
 https://github.com/prometheus/node_exporter/releases/download/v1.0.1/node_exporter-1.0.1.linux-amd64.tar.gz
 https://github.com/prometheus/prometheus/releases/download/v2.10.0/prometheus-2.10.0.linux-amd64.tar.gz
-https://archive.apache.org/dist/ignite/2.7.6/apache-ignite-2.7.6-bin.zip
+https://archive.apache.org/dist/ignite/2.9.1/apache-ignite-2.9.1-bin.zip
 https://releases.hashicorp.com/vault/1.4.0/vault_1.4.0_linux_amd64.zip
 https://get.helm.sh/helm-v3.2.0-linux-amd64.tar.gz
 https://github.com/hashicorp/vault-helm/archive/v0.4.0.tar.gz

@@ -1,0 +1,113 @@
+---
+# This experimental playbook is meant to be used as a workaround.
+
+- hosts: kubernetes_master:kubernetes_node
+  gather_facts: true
+  tasks: []
+
+- hosts: kubernetes_node
+  serial: 1
+  environment:
+    KUBECONFIG: /etc/kubernetes/admin.conf
+  vars:
+    old_cgroup_driver: cgroupfs
+    new_cgroup_driver: systemd
+  tasks:
+    # PROCESS KUBELET CONFIG
+
+    - name: Read /var/lib/kubelet/kubeadm-flags.env
+      slurp:
+        path: /var/lib/kubelet/kubeadm-flags.env
+      register: slurp_var_lib_kubelet_kubeadm_flags_env
+
+    - name: Process /var/lib/kubelet/kubeadm-flags.env
+      set_fact:
+        var_lib_kubelet_kubeadm_flags_env:
+          output: "{{ _output }}"
+          changed: "{{ _output != _input }}"
+      vars:
+        _input: >-
+          {{ slurp_var_lib_kubelet_kubeadm_flags_env.content | b64decode }}
+        _output: >-
+          {{ _input.replace('--cgroup-driver=' ~ old_cgroup_driver, '--cgroup-driver=' ~ new_cgroup_driver) }}
+
+    # PROCESS DOCKER CONFIG
+
+    - name: Read /etc/docker/daemon.json
+      slurp:
+        path: /etc/docker/daemon.json
+      register: slurp_etc_docker_daemon_json
+
+    - name: Process /etc/docker/daemon.json
+      set_fact:
+        etc_docker_daemon_json:
+          output: "{{ _output }}"
+          changed: "{{ _output['exec-opts'] != _exec_opts }}"
+      vars:
+        _input: >-
+          {{ slurp_etc_docker_daemon_json.content | b64decode | from_json }}
+
+        _exec_opts: >-
+          {{ _input['exec-opts'] | default([]) }}
+
+        _update:
+          exec-opts: >-
+            {{ _exec_opts | difference(['native.cgroupdriver=' ~ old_cgroup_driver]) | union(['native.cgroupdriver=' ~ new_cgroup_driver]) }}
+
+        _output: >-
+          {{ _input | combine(_update, recursive=true) }}
+
+    # >>> PLEASE BE SURE YOU WANT THIS! <<<
+
+    - name: Perform dangerous operations
+      when: var_lib_kubelet_kubeadm_flags_env.changed or etc_docker_daemon_json.changed
+      block:
+        # DISABLE SCHEDULING
+
+        - name: Drain {{ inventory_hostname }}
+          delegate_to: "{{ groups.kubernetes_master[0] }}"
+          command: |
+            kubectl drain {{ inventory_hostname }} --ignore-daemonsets
+
+        # RECONFIGURE KUBELET
+
+        - name: Stop kubelet
+          systemd:
+            name: kubelet
+            state: stopped
+            enabled: true
+
+        - name: Write /var/lib/kubelet/kubeadm-flags.env
+          copy:
+            dest: /var/lib/kubelet/kubeadm-flags.env
+            content: |
+              {{ var_lib_kubelet_kubeadm_flags_env.output }}
+            mode: preserve
+
+        # RECONFIGURE DOCKER
+
+        - name: Stop docker
+          systemd:
+            name: docker
+            state: stopped
+            enabled: true
+
+        - name: Write /etc/docker/daemon.json
+          copy:
+            dest: /etc/docker/daemon.json
+            content: |
+              {{ etc_docker_daemon_json.output | to_nice_json(indent=2) }}
+            mode: preserve
+
+        # REBOOT
+
+        - name: Reboot {{ inventory_hostname }}
+          reboot:
+            reboot_timeout: 600  # seconds
+
+        # ENABLE SCHEDULING
+
+        - name: Uncordon {{ inventory_hostname }}
+          delegate_to: "{{ groups.kubernetes_master[0] }}"
+          command: |
+            kubectl uncordon {{ inventory_hostname }}

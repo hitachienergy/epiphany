@@ -1,0 +1,84 @@
+---
+- name: Get effective value of net.ipv4.ip_local_reserved_ports
+  slurp:
+    path: /proc/sys/net/ipv4/ip_local_reserved_ports
+  register: slurp_ip_local_reserved_ports
+
+- name: Reserve ports from ephemeral range
+  when: _computed_ports != _reserved_ports
+  sysctl:
+    name: net.ipv4.ip_local_reserved_ports
+    state: present
+    sysctl_set: true
+    reload: true
+    value: "{{ _computed_ports | join(_separator) }}"
+  vars:
+    _computed_ports: >-
+      {{ (_reserved_ports + ignite_ports_from_ephemeral_range) | select
+                                                               | unique
+                                                               | sort }}
+    _reserved_ports: >-
+      {{ (slurp_ip_local_reserved_ports.content | b64decode | trim).split(_separator) | select
+                                                                                      | unique
+                                                                                      | sort }}
+    _separator: ","
+
+- name: Append block to /opt/ignite/bin/include/functions.sh
+  blockinfile:
+    path: /opt/ignite/bin/include/functions.sh
+    marker: "# {mark} ANSIBLE MANAGED BLOCK"
+    insertafter: EOF
+    backup: true
+    block: "{{ block_to_append_to_ignite_functions_script }}"
+    owner: ignite
+    group: ignite
+    mode: ug=rwx,o=
+
+- name: Prepare Ignite configuration
+  set_fact:
+    ignite_configuration: >-
+      {{ specification.config | replace('IP_LIST_PLACEHOLDER', _ip_discovery_list) }}
+  vars:
+    _ip_discovery_list: >-
+      {{ lookup('template', 'ip-discovery.xml.j2') }}
+
+- name: Ensure /var/lib/ignite/ directory exists
+  file:
+    path: /var/lib/ignite/
+    state: directory
+    owner: ignite
+    group: ignite
+    mode: ug=rwx,o=
+
+- name: Create systemd service
+  template:
+    dest: /etc/systemd/system/ignite.service
+    src: ignite.service.j2
+    owner: ignite
+    group: ignite
+    mode: ug=rw,o=
+  notify:
+    - Reload SystemD daemon
+    - Start Ignite service
+
+- name: Create config file
+  template:
+    dest: /opt/ignite/config/default-config.xml
+    src: default-config.xml.j2
+    owner: ignite
+    group: ignite
+    mode: ug=rw,o=
+  notify:
+    - Restart Ignite service
+
+- name: Copy Ignite enabled plugins
+  copy:
+    dest: /opt/ignite/libs
+    src: /opt/ignite/libs/optional/{{ item }}
+    remote_src: true
+    owner: ignite
+    group: ignite
+    mode: preserve
+  loop: "{{ specification.enabled_plugins | default([]) }}"
+  notify:
+    - Restart Ignite service

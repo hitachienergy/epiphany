@@ -1,0 +1,15 @@
+---
+- name: Reload SystemD daemon
+  systemd:
+    daemon_reload: true
+
+- name: Start Ignite service
+  systemd:
+    name: ignite
+    state: started
+    enabled: true
+
+- name: Restart Ignite service
+  systemd:
+    name: ignite
+    state: restarted
