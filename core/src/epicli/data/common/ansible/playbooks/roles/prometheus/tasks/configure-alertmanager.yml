@@ -6,7 +6,6 @@
     force: true
     owner: prometheus
     group: prometheus
-    mode: u=rx,g=r,o=
+    mode: u=rx,go=r
   notify:
-#    - Reload Prometheus
     - Restart Alertmanager

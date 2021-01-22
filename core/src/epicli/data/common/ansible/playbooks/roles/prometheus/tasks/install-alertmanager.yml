@@ -22,8 +22,6 @@
     owner: prometheus
     group: prometheus
   check_mode: false
-  notify:
-    - Restart Prometheus
 
 - name: Create Alertmanager data directory
   file:
@@ -38,6 +36,6 @@
     dest: /etc/systemd/system/alertmanager.service
     owner: root
     group: root
-    mode: u=rx,go=r
+    mode: u=rw,go=r
   notify:
-    - Restart Prometheus
+    - Restart Alertmanager

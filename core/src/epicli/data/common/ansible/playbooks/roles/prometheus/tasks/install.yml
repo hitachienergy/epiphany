@@ -60,8 +60,6 @@
     owner: prometheus
     group: prometheus
   check_mode: false
-  notify:
-    - Restart Prometheus
 
 - name: Create systemd service unit
   template:
