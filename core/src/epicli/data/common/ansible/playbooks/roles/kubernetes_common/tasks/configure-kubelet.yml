@@ -5,12 +5,16 @@
   file:
     path: /etc/systemd/system/kubelet.service.d
     state: directory
+    owner: root
+    group: root
     mode: u=rwx,go=rx
 
 - name: Copy kubelet configuration file (11-cgroup.conf)
   template:
     dest: /etc/systemd/system/kubelet.service.d/11-cgroup.conf
     src: 11-cgroup.conf.j2
+    owner: root
+    group: root
     mode: u=rw,g=r,o=
   register: kubelet_cgroup_conf
 
@@ -26,6 +30,8 @@
       template:
         dest: /var/lib/kubelet/config.yaml
         src: config.yaml.j2
+        owner: root
+        group: root
         mode: u=rw,g=r,o=
         backup: true
       register: apply_kubelet_custom_config

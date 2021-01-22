@@ -3,6 +3,8 @@
   file:
     path: /etc/docker/
     state: directory
+    owner: root
+    group: root
     mode: u=rwx,go=rx
 
 - name: Stat configuration file (daemon.json)
@@ -24,6 +26,8 @@
   template:
     dest: /etc/docker/daemon.json
     src: daemon.json.j2
+    owner: root
+    group: root
     mode: u=rw,go=r
   register: template_daemon_json
   vars:

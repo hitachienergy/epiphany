@@ -58,6 +58,8 @@
         dest: /var/lib/kubelet/kubeadm-flags.env
         content: |
           {{ var_lib_kubelet_kubeadm_flags_env.output }}
+        owner: root
+        group: root
         mode: preserve
 
     - name: k8s/cgroups | Write /etc/docker/daemon.json
@@ -65,6 +67,8 @@
         dest: /etc/docker/daemon.json
         content: |
           {{ etc_docker_daemon_json.output | to_nice_json(indent=2) }}
+        owner: root
+        group: root
         mode: preserve
 
     - name: k8s/cgroups | Restart kubelet and docker
