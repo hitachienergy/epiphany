@@ -28,7 +28,7 @@
   register: template_daemon_json
   vars:
     _previous_config: >-
-      {{ (slurp_daemon_json.content | b64decode | from_json) if (slurp_daemon_json is defined) else {} }}
+      {{ (slurp_daemon_json.content | b64decode | from_json) if (slurp_daemon_json.content is defined) else {} }}
 
 - name: Restart Docker
   systemd:
