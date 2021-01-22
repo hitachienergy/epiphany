@@ -1,0 +1,48 @@
+---
+- name: Ignite | Populate service facts
+  service_facts:
+  when: ansible_facts.service is undefined
+  no_log: true
+
+- name: Ignite | Stat /opt/ignite
+  stat:
+    path: /opt/ignite
+    get_attributes: false
+    get_checksum: false
+    get_mime: false
+    follow: false
+  register: stat_opt_ignite
+
+- name: Ignite | Compare versions and upgrade
+  when:
+    - ansible_facts.services["ignite.service"] is defined
+    - stat_opt_ignite.stat.exists
+    - stat_opt_ignite.stat.islnk | default(false)
+  vars:
+    _ignite_defaults:
+      ignite_version: 2.9.1
+    _ignite_version: >-
+      {{ stat_opt_ignite.stat.lnk_source.split('_') | last }}
+  block:
+    - name: Ignite | Print versions
+      debug:
+        msg:
+          - "Installed version: {{ _ignite_version }}"
+          - "Target version: {{ _ignite_defaults.ignite_version }}"
+
+    # NOTE: non-commercial Ignite does not support rolling upgrades (downtime is always expected).
+    - name: Ignite | Stop and upgrade
+      when:
+        - _ignite_defaults.ignite_version is version(_ignite_version, '>')
+      block:
+        - name: Ignite | Stop service
+          systemd:
+            name: ignite
+            state: stopped
+
+        - name: Ignite | Upgrade
+          import_role:
+            name: ignite
+            vars_from: manifest
+
+        - meta: flush_handlers

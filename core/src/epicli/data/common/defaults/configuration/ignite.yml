@@ -2,8 +2,6 @@ kind: configuration/ignite
 title: "Apache Ignite stateful installation"
 name: default
 specification:
-  version: 2.7.6
-  file_name: apache-ignite-2.7.6-bin.zip
   enabled_plugins:
   - ignite-rest-http
   config: |
@@ -60,7 +58,7 @@ specification:
               <property name="ipFinder">
                 <bean class="org.apache.ignite.spi.discovery.tcp.ipfinder.vm.TcpDiscoveryVmIpFinder">
                   <property name="addresses">
-                  IP_LIST_PLACEHOLDER
+    IP_LIST_PLACEHOLDER
                   </property>
                 </bean>
               </property>

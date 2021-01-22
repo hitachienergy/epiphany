@@ -1,3 +1,4 @@
+# {{ ansible_managed }}
 [Unit]
 Description=Apache Ignite Server
 After=network.target
@@ -5,7 +6,11 @@ After=network.target
 [Service]
 Type=simple
 User=ignite
+Group=ignite
+DynamicUser=false
+StateDirectory=ignite
 WorkingDirectory=/opt/ignite
+Environment="JAVA_HOME={{ ignite_java_home }}"
 ExecStart=/opt/ignite/bin/ignite.sh
 Restart=on-failure
 
