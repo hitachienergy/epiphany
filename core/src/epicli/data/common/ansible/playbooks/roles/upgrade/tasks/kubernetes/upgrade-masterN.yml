@@ -39,8 +39,8 @@
 - name: k8s/masterN | Upgrade Docker  # this may restart Docker daemon
   include_tasks: docker.yml
 
-- name: k8s/masterN | Reload kubelet and docker
-  include_tasks: utils/reload-kubelet-and-docker.yml
+- name: k8s/masterN | Restart kubelet and docker
+  include_tasks: utils/restart-kubelet-and-docker.yml
 
 - name: k8s/masterN | Wait for cluster's readiness
   include_tasks: utils/wait.yml

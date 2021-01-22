@@ -131,8 +131,8 @@
 - name: k8s/master0 | Upgrade Docker  # this may restart Docker daemon
   include_tasks: docker.yml
 
-- name: k8s/master0 | Reload kubelet and docker
-  include_tasks: utils/reload-kubelet-and-docker.yml
+- name: k8s/master0 | Restart kubelet and docker
+  include_tasks: utils/restart-kubelet-and-docker.yml
 
 - name: k8s/master0 | Uncordon master - mark master as schedulable
   include_tasks: utils/uncordon.yml
