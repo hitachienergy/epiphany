@@ -1,5 +1,5 @@
 kind: configuration/opendistro-for-elasticsearch
-title: OpenDistro for Elasticsearch Config
+title: Open Distro for Elasticsearch Config
 name: default
 specification:
   cluster_name: EpiphanyElastic

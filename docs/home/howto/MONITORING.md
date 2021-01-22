@@ -206,9 +206,91 @@ This filter pattern can now be used to query the Elasticsearch indices.
 
 By default Kibana adjusts the UTC time in `@timestamp` to the browser's local timezone. This can be changed in `Management` > `Advanced Settings` > `Timezone for date formatting`.
 
-## How to configure default user password to Kibana - Open Distro and Open Distro for Elasticsearch
+## How to configure default user password to Kibana - Open Distro and Open Distro for Elasticsearch and Filebeat
 
-To configure default user and password please follow documentation accessible at this: https://aws.amazon.com/blogs/opensource/change-passwords-open-distro-for-elasticsearch/ address.
+To configure admin password for Kibana - Open Distro and Open Distro for Elasticsearch you need to follow the procedure below.
+There are separated procedures for Open Distro and for Logging role as most of the times in clean Open Distro installation users:
+kibanaserver and logstash are not required to be present.
+
+### Open Distro for Elasticsearch
+
+By default Epiphany removes all demo users from except admin user in Open Distro role. Those users are listed in section 
+demo_users_to_remove in configuration/opendistro-for-elasticsearch. If you want to leave kibanaserver user (needed by default 
+Epiphany installation of Kibana) or logstash (needed by default Epiphany installation of Filebeat) you need to remove each specific
+user from demo_users_to_remove list and to perform configuration by Epiphany kibanaserver_user_active to true for kibanaserver user or
+logstash_user_active for logstash user. We strongly advice to set different passwords for admin and kibanaserver or logstash user. To 
+change admin password please change value under admin_password key, for kibanaserver and logstash change respectively values under keys
+kibanaserver_password and logstash_password.
+
+```yaml
+kind: configuration/opendistro-for-elasticsearch
+title: Open Distro for Elasticsearch Config
+name: default
+specification:
+  ...
+  admin_password: PASSWORD_TO_CHANGE
+  kibanaserver_password: PASSWORD_TO_CHANGE
+  kibanaserver_user_active: false
+  logstash_password: PASSWORD_TO_CHANGE
+  logstash_user_active: false
+  demo_users_to_remove:
+  - kibanaro
+  - readall
+  - snapshotrestore
+  - logstash
+  - kibanaserver
+```
+
+### Logging role
+
+#### - Logging role
+
+By default Epiphany removes users that are listed in section demo_users_to_remove in configuration/opendistro-for-elasticsearch. If you
+want to leave kibanaserver user (needed by default Epiphany installation of Kibana) or logstash (needed by default Epiphany installation of
+Filebeat) you need to remove each specific user from demo_users_to_remove list and to perform configuration by Epiphany
+kibanaserver_user_active to true for kibanaserver user or logstash_user_active for logstash user. We strongly advice to set different
+passwords for admin and kibanaserver or logstash user. To change admin password please change value under admin_password key, for
+kibanaserver and logstash change respectively values under keys kibanaserver_password and logstash_password.
+
+```yaml
+kind: configuration/logging
+title: Logging Config
+name: default
+specification:
+  ...
+  admin_password: PASSWORD_TO_CHANGE
+  kibanaserver_password: PASSWORD_TO_CHANGE
+  kibanaserver_user_active: true
+  logstash_password: PASSWORD_TO_CHANGE
+  logstash_user_active: true
+  demo_users_to_remove:
+  - kibanaro
+  - readall
+  - snapshotrestore
+```
+
+#### - Kibana role
+
+```yaml
+kind: configuration/kibana
+title: "Kibana"
+name: default
+specification:
+  ...
+  kibanaserver_password: PASSWORD_TO_CHANGE
+```
+
+#### - Filebeat role
+
+```yaml
+kind: configuration/filebeat
+title: Filebeat
+name: default
+specification:
+  ...
+  logstash_password: PASSWORD_TO_CHANGE
+```
+
 
 # Azure
 
