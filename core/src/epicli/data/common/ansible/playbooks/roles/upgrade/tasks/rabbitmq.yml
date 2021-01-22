@@ -5,7 +5,7 @@
   changed_when: false
 
 - name: RabbitMQ | Register cluster status output
-  shell: rabbitmqctl cluster_status --formatter json
+  command: rabbitmqctl cluster_status --formatter json
   register: rabbitmq_cluster_status
   changed_when: false
   run_once: true
