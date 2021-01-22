@@ -1,11 +1,12 @@
 ---
-- include_tasks: "rabbitmq/check-version-{{ ansible_os_family | lower }}.yml"
+- name: RabbitMQ | Register status output
+  command: rabbitmqctl status --formatter json
+  register: rabbitmq_status
+  changed_when: false
 
-# There is no simple way to check if nodes are clustered
-# so the number of running nodes is checked
-- name: RabbitMQ | Check cluster running nodes
-  shell: rabbitmqctl cluster_status | sed -n '/Running\ Nodes/,/Versions/{//!p;}'
-  register: rabbitmq_running_nodes
+- name: RabbitMQ | Register cluster status output
+  shell: rabbitmqctl cluster_status --formatter json
+  register: rabbitmq_cluster_status
   changed_when: false
   run_once: true
 
@@ -16,10 +17,15 @@
 - name: RabbitMQ | Set facts
   set_fact:
     rabbitmq_master: "{{ groups['rabbitmq'][0] }}"
-    is_clustered: "{{ rabbitmq_running_nodes.stdout_lines | select | list | length > 1 }}"
+    rabbitmq_version_current: "{{ (rabbitmq_status.stdout | from_json).rabbitmq_version }}"
+    is_clustered: "{{ (rabbitmq_cluster_status.stdout | from_json).running_nodes | length > 1 }}"
+
+- name: RabbitMQ | Print variable values
+  debug:
+    msg: "is_clustered: {{ is_clustered }}; rabbitmq_version_current: {{ rabbitmq_version_current }}"
 
 - name: RabbitMQ | Offline upgrade
-  when: not rabbitmq_version_current.stdout.startswith(versions.general)
+  when: rabbitmq_version_current is version(versions.general, '<=')
   block:
     - name: RabbitMQ | Stop nodes
       when: inventory_hostname != rabbitmq_master

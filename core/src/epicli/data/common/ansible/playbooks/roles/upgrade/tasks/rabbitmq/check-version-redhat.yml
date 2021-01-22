@@ -1,4 +1,0 @@
-- name: RabbitMQ | Check RedHat package version
-  shell: yum list rabbitmq-server | tail -1 | awk '{print $2}'
-  register: rabbitmq_version_current
-  changed_when: false
