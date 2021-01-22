@@ -1,7 +1,7 @@
 ---
-- name: RabbitMQ | Register status output
-  command: rabbitmqctl status --formatter json
-  register: rabbitmq_status
+- name: RabbitMQ | Register version output
+  command: rabbitmq-diagnostics server_version
+  register: rabbitmq_version
   changed_when: false
 
 - name: RabbitMQ | Register cluster status output
@@ -17,7 +17,7 @@
 - name: RabbitMQ | Set facts
   set_fact:
     rabbitmq_master: "{{ groups['rabbitmq'][0] }}"
-    rabbitmq_version_current: "{{ (rabbitmq_status.stdout | from_json).rabbitmq_version }}"
+    rabbitmq_version_current: "{{ rabbitmq_version.stdout_lines[1] }}"
     is_clustered: "{{ (rabbitmq_cluster_status.stdout | from_json).running_nodes | length > 1 }}"
 
 - name: RabbitMQ | Print variable values
