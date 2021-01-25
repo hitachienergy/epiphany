@@ -11,6 +11,7 @@
 - [#2049](https://github.com/epiphany-platform/epiphany/issues/2049) - Elasticsearch-curator installation fails on RedHat
 - [#2131](https://github.com/epiphany-platform/epiphany/issues/2131) - [RedHat/CentOS] Erlang package versions specified in requirements are missing in external repository
 - [#2166](https://github.com/epiphany-platform/epiphany/issues/2166) - Replace Bintray repository
+- [#2012](https://github.com/epiphany-platform/epiphany/issues/2012) - Patch cgroup drivers (switch to systemd)
 
 ## [0.9.0] 2021-01-19
 
