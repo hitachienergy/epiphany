@@ -3,17 +3,19 @@
 
 - name: Install Docker packages
   package:
-    name: "{{ packages[ansible_os_family] }}"
+    name: "{{ _packages[ansible_os_family] }}"
     state: present
   vars:
-    packages:
-      RedHat:
-      - containerd.io
-      - docker-ce-cli-{{ docker_version.RedHat }}
-      - docker-ce-{{ docker_version.RedHat }}
+    _packages:
       Debian:
-      - containerd.io
-      - docker-ce-cli={{ docker_version.Debian }}
-      - docker-ce={{ docker_version.Debian }}
+        - containerd.io
+        - docker-ce-cli={{ docker_version.Debian }}
+        - docker-ce={{ docker_version.Debian }}
+      RedHat:
+        - containerd.io
+        - docker-ce-cli-{{ docker_version.RedHat }}
+        - docker-ce-{{ docker_version.RedHat }}
+  module_defaults:
+    yum: { lock_timeout: 300 }
 
 - include_tasks: configure-docker.yml
