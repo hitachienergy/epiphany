@@ -24,9 +24,22 @@
   debug:
     msg: "is_clustered: {{ is_clustered }}; rabbitmq_version_current: {{ rabbitmq_version_current }}"
 
+- name: Check for upgrade flag file
+  stat:
+    path: "{{ lock_file }}"
+    get_attributes: false
+    get_checksum: false
+    get_mime: false
+  register: lock_file_status
+
 - name: RabbitMQ | Offline upgrade
-  when: rabbitmq_version_current is version(versions.general, '<=')
+  when: lock_file_status.stat.exists or rabbitmq_version_current is version(versions.general, '<')
   block:
+    - name: Create upgrade flag file
+      file:
+        path: "{{ lock_file }}"
+        state: touch
+
     - name: RabbitMQ | Stop nodes
       when: inventory_hostname != rabbitmq_master
       service:
@@ -113,3 +126,8 @@
 
             - name: RabbitMQ | Start an app on the node
               command: rabbitmqctl start_app
+
+- name: Remove RabbitMQ upgrade flag file
+  file:
+    path: "{{ lock_file }}"
+    state: absent
