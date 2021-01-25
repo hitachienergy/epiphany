@@ -228,10 +228,10 @@ title: Open Distro for Elasticsearch Config
 name: default
 specification:
   ...
-  admin_password: PASSWORD_TO_CHANGE
-  kibanaserver_password: PASSWORD_TO_CHANGE
+  admin_password: YOUR_PASSWORD
+  kibanaserver_password: YOUR_PASSWORD
   kibanaserver_user_active: false
-  logstash_password: PASSWORD_TO_CHANGE
+  logstash_password: YOUR_PASSWORD
   logstash_user_active: false
   demo_users_to_remove:
   - kibanaro
@@ -258,10 +258,10 @@ title: Logging Config
 name: default
 specification:
   ...
-  admin_password: PASSWORD_TO_CHANGE
-  kibanaserver_password: PASSWORD_TO_CHANGE
+  admin_password: YOUR_PASSWORD
+  kibanaserver_password: YOUR_PASSWORD
   kibanaserver_user_active: true
-  logstash_password: PASSWORD_TO_CHANGE
+  logstash_password: YOUR_PASSWORD
   logstash_user_active: true
   demo_users_to_remove:
   - kibanaro
@@ -281,7 +281,7 @@ title: "Kibana"
 name: default
 specification:
   ...
-  kibanaserver_password: PASSWORD_TO_CHANGE
+  kibanaserver_password: YOUR_PASSWORD
 ```
 
 #### - Filebeat role
@@ -296,7 +296,7 @@ title: Filebeat
 name: default
 specification:
   ...
-  logstash_password: PASSWORD_TO_CHANGE
+  logstash_password: YOUR_PASSWORD
 ```
 
 ### Upgrade of Elasticsearch, Kibana and Filebeat
