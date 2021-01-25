@@ -1,4 +1,10 @@
 ---
+- name: Wait for yum lock to be released
+  yum:
+    list: installed
+  module_defaults:
+    yum: { lock_timeout: 300 }
+
 - name: Set SELinux in permissive mode until the machine is rebooted
   command: setenforce 0
   failed_when: false
