@@ -1,5 +1,15 @@
 ---
 # This file is meant to be also used by upgrade playbook
 
-- name: Install Elasticsearch Curator ({{ ansible_os_family }})
-  include_tasks: "{{ ansible_os_family }}.yml"
+- name: Install Elasticsearch-Curator package
+  package:
+    name: "{{ _packages[ansible_os_family] }}"
+    state: present
+  vars:
+    _packages:
+      Debian:
+        - elasticsearch-curator={{ specification.curator_version }}
+      RedHat:
+        - elasticsearch-curator-{{ specification.curator_version }}
+  module_defaults:
+    yum: { lock_timeout: 300 }
