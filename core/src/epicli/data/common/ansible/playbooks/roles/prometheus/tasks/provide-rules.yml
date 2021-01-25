@@ -8,3 +8,66 @@
     mode: u=rw,go=
   when: specification.alert_rules.common | bool
   notify: Reload Prometheus
+
+- name: Copy Prometheus alerting rules
+  copy:
+    src: "prometheus/rules/prometheus.rules"
+    dest: /etc/prometheus/rules/
+    validate: /usr/local/bin/promtool check rules %s
+    owner: prometheus
+    group: prometheus
+    mode: u=rw,go=
+  when: specification.alert_rules.prometheus | bool
+  notify: Reload Prometheus
+
+- name: Copy node alerting rules
+  copy:
+    src: "prometheus/rules/node.rules"
+    dest: /etc/prometheus/rules/
+    validate: /usr/local/bin/promtool check rules %s
+    owner: prometheus
+    group: prometheus
+    mode: u=rw,go=
+  when:
+  - groups.kubernetes_node[0] is defined
+  - specification.alert_rules.node | bool
+  notify: Reload Prometheus
+
+- name: Copy container alerting rules
+  copy:
+    src: "prometheus/rules/container.rules"
+    dest: /etc/prometheus/rules/
+    validate: /usr/local/bin/promtool check rules %s
+    owner: prometheus
+    group: prometheus
+    mode: u=rw,go=
+  when:
+    - groups.kubernetes_node[0] is defined
+    - specification.alert_rules.container | bool
+  notify: Reload Prometheus
+
+- name: Copy Kafka alerting rules
+  copy:
+    src: prometheus/rules/kafka.rules
+    dest: /etc/prometheus/rules/
+    validate: /usr/local/bin/promtool check rules %s
+    owner: prometheus
+    group: prometheus
+    mode: u=rw,go=
+  when:
+    - groups.kafka[0] is defined
+    - specification.alert_rules.kafka | bool
+  notify: Reload Prometheus
+
+- name: Copy Postgresql alerting rules
+  copy:
+    src: prometheus/rules/postgresql.rules
+    dest: /etc/prometheus/rules/
+    validate: /usr/local/bin/promtool check rules %s
+    owner: prometheus
+    group: prometheus
+    mode: u=rw,go=
+  when:
+    - groups.postgresql[0] is defined
+    - specification.alert_rules.postgresql | bool
+  notify: Reload Prometheus

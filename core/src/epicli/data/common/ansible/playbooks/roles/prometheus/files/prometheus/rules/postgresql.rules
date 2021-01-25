@@ -1,0 +1,83 @@
+groups:
+- name: postgresql.rules
+  rules:
+  - alert: PostgresNotResponding
+    expr: pg_exporter_last_scrape_error == 1
+    for: 5m
+    labels:
+      severity: critical
+    annotations:
+      summary: 'Postgresql server is down'
+      description: 'Postgresql has not been responding for the past 5 minutes on {{ $labels.instance }}'
+
+  - alert: PostgresqlDown
+    expr: pg_up == 0
+    for: 5m
+    labels:
+      severity: critical
+    annotations:
+      summary: 'Postgresql down (instance {{ $labels.instance }})'
+      description: 'Postgresql instance is down\n  VALUE = {{ $value }}\n  LABELS: {{ $labels }}'
+
+  - alert: PostgresqlExporterError
+    expr: pg_exporter_last_scrape_error > 0
+    for: 5m
+    labels:
+      severity: warning
+    annotations:
+      summary: 'Postgresql exporter error (instance {{ $labels.instance }})'
+      description: 'Postgresql exporter is showing errors. A query may be buggy in query.yaml\n  VALUE = {{ $value }}\n  LABELS: {{ $labels }}'
+
+  - alert: PostgresqlDeadLocks
+    expr: rate(pg_stat_database_deadlocks{datname!~'template.*|postgres'}[3m]) > 0
+    for: 5m
+    labels:
+      severity: warning
+    annotations:
+      summary: 'Postgresql dead locks (instance {{ $labels.instance }})'
+      description: 'Postgresql has dead-locks\n  VALUE = {{ $value }}\n  LABELS: {{ $labels }}'
+
+  - alert: PostgresqlHighRollbackRate
+    expr: rate(pg_stat_database_xact_rollback{datname!~'template.*'}[3m]) / rate(pg_stat_database_xact_commit{datname!~'template.*'}[3m]) > 0.02
+    for: 5m
+    labels:
+      severity: warning
+    annotations:
+      summary: 'Postgresql high rollback rate (instance {{ $labels.instance }})'
+      description: 'Ratio of transactions being aborted compared to committed is > 2 %\n  VALUE = {{ $value }}\n  LABELS: {{ $labels }}'
+
+  - alert: PostgresqlTooManyLocksAcquired
+    expr: ((sum (pg_locks_count)) / (pg_settings_max_locks_per_transaction * pg_settings_max_connections)) > 0.20
+    for: 5m
+    labels:
+      severity: critical
+    annotations:
+      summary: 'Postgresql too many locks acquired (instance {{ $labels.instance }})'
+      description: 'Too many locks acquired on the database. If this alert happens frequently, we may need to increase the postgres setting max_locks_per_transaction.\n  VALUE = {{ $value }}\n  LABELS: {{ $labels }}'
+
+  - alert: PostgresqlSlowQueries
+    expr: avg(rate(pg_stat_activity_max_tx_duration{datname!~'template.*'}[2m])) by (datname) > 2 * 60
+    for: 2m
+    labels:
+      severity: warning
+    annotations:
+      summary: 'Postgresql high number of queries per second {{ $labels.cluster }} for database {{ $labels.datname }}'
+      description: 'Postgresql high number of queries per second on {{ $labels.cluster }} for database {{ $labels.datname }} with a value of {{ $value }}'
+
+  - alert: PostgresqlQPS
+    expr: avg(irate(pg_stat_database_xact_commit{datname!~'template.*'}[5m]) + irate(pg_stat_database_xact_rollback{datname!~'template.*'}[5m])) by (datname) > 100
+    for: 5m
+    labels:
+      severity: warning
+    annotations:
+      summary: 'Postgresql high number of queries per second {{ $labels.cluster }} for database {{ $labels.datname }}'
+      description: 'Postgresql high number of queries per second on {{ $labels.cluster }} for database {{ $labels.datname }} with a value of {{ $value }}'
+
+  - alert: PostgresqlCacheHitRatio
+    expr: avg(rate(pg_stat_database_blks_hit{datname!~"template.*"}[5m]) / (rate(pg_stat_database_blks_hit{datname!~"template.*"}[5m]) + rate(pg_stat_database_blks_read{datname!~"template.*"}[5m]))) by (datname) < 0.98
+    for: 5m
+    labels:
+      severity: warning
+    annotations:
+      summary: 'Postgresql low cache hit rate on {{ $labels.cluster }} for database {{ $labels.datname }}'
+      description: 'Postgresql low on cache hit rate on {{ $labels.cluster }} for database {{ $labels.datname }} with a value of {{ $value }}'
