@@ -5,7 +5,7 @@
       - postgresql-10
       - postgresql-contrib-10
       - python-psycopg2 # required for postresql ansible management
-    update_cache: yes
+    update_cache: true
     state: present
 
 # --- extensions ---
@@ -15,7 +15,6 @@
     name:
       - pgbouncer
     state: present
-    update_cache: yes
   when:
     - specification.extensions.pgbouncer.enabled is defined
     - specification.extensions.pgbouncer.enabled
@@ -25,7 +24,6 @@
     name:
       - postgresql-10-repmgr
     state: present
-    update_cache: yes
   when:
     - specification.extensions.replication.use_repmgr is defined
     - specification.extensions.replication.use_repmgr
