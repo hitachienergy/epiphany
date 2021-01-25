@@ -52,6 +52,8 @@ class AnsibleVarsGenerator(Step):
         cluster_config_file_path = os.path.join(ansible_dir, 'roles', 'common', 'vars', 'main.yml')
         clean_cluster_model = self.get_clean_cluster_model()
         with open(cluster_config_file_path, 'w') as stream:
+            if 'name' in clean_cluster_model:
+                del clean_cluster_model['name']  # reserved word in ansible!
             dump(clean_cluster_model, stream)
 
         if self.is_upgrade_run:
@@ -93,6 +95,8 @@ class AnsibleVarsGenerator(Step):
         vars_file_path = os.path.join(vars_dir, vars_file_name)
 
         with open(vars_file_path, 'w') as stream:
+            if 'name' in document:
+                del document['name']  # reserved word in ansible!
             dump(document, stream)
 
         if vars_file_name == 'main.yml':
