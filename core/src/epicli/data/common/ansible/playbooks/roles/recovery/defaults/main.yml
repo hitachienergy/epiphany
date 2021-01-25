@@ -1,6 +1,6 @@
 ---
 recovery_dir: /epibackup
 recovery_source_dir: "{{ recovery_dir }}/mounted"
-recovery_source_host: "{{ resolved_repository_hostname | default(groups.repository.0) }}"
+recovery_source_host: "{{ groups.repository[0] if (custom_repository_url | default(false)) else (resolved_repository_hostname | default(groups.repository[0])) }}"
 elasticsearch_snapshot_repository_name: epiphany
 elasticsearch_snapshot_repository_location: /var/lib/elasticsearch-snapshots
