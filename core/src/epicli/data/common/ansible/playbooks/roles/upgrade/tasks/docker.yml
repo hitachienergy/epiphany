@@ -33,6 +33,8 @@
 # Remove Docker in version < 18.09 on RedHat before installing v18.09 to avoid package conflict error like below
 # 'file /usr/bin/docker from install of docker-ce-cli-1:18.09.9-3.el7.x86_64 conflicts with file from package docker-ce-17.03.2.ce-1.el7.centos.x86_64'
 - name: Remove Docker in version < 18.09 (RedHat)
+  module_defaults:
+    yum: { lock_timeout: 300 }
   block:
     - name: Get information about installed packages as facts
       package_facts:
@@ -41,12 +43,12 @@
     - name: Remove docker-ce and docker-ce-selinux
       block:
         - name: Remove docker-ce
-          package:
+          yum:
             name: docker-ce-{{ ansible_facts.packages['docker-ce'][0].version }}
             state: absent
 
         - name: Remove docker-ce-selinux
-          package:
+          yum:
             name: docker-ce-selinux-{{ ansible_facts.packages['docker-ce-selinux'][0].version }}
             state: absent
           when: "'docker-ce-selinux' in ansible_facts.packages"
