@@ -39,6 +39,7 @@
       file:
         path: "{{ lock_file }}"
         state: touch
+        mode: u=rw,g=r,o=
 
     - name: RabbitMQ | Stop nodes
       when: inventory_hostname != rabbitmq_master

@@ -42,7 +42,7 @@
     state: link
     src: /opt/zookeeper-{{ zookeeper_defaults.zookeeper_version }}
     force: yes
-    
+
 - name: Reconfigure Zookeeper service to use symbolic link
   lineinfile:
     path: /lib/systemd/system/zookeeper.service
@@ -59,7 +59,7 @@
 # From 3.5.5 version, ZooKeeper is not able to start when no snapshot files present, what is valid scenario in 3.4.X version. Empty snapshot downloaded from Zookeeper's Jira ticket. 
 - name: Copy empty snapshot if not exists
   copy:
-    dest: "{{ zookeeper_defaults.zookeeper_data_dir }}/version-2" 
+    dest: "{{ zookeeper_defaults.zookeeper_data_dir }}/version-2"
     src: roles/zookeeper/files/snapshot.0
     mode: u=rw,g=r,o=r
     owner: "{{ zookeeper_defaults.zookeeper_user }}"

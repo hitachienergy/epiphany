@@ -4,6 +4,7 @@
   file:
     path: "{{ opendistro_for_elasticsearch.upgrade_state_file_path }}"
     state: touch
+    mode: u=rw,g=r,o=
 
 - name: Open Distro for Elasticsearch | Ensure elasticsearch service is running
   systemd:
