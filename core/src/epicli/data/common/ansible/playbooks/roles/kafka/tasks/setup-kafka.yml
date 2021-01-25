@@ -119,9 +119,6 @@
     owner: "{{ specification.kafka_var.user }}"
     group: "{{ specification.kafka_var.group }}"
     mode: 0644
-    src: log4j.properties
-  notify:
-    - restart kafka
 
 - name: Generate certificate
   include_tasks: generate-certificates.yml

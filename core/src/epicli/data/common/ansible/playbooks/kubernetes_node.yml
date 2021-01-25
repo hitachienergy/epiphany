@@ -3,6 +3,18 @@
   gather_facts: true
   tasks: []
 
+- hosts: kubernetes_master
+  become: true
+  become_method: sudo
+  pre_tasks:
+    - import_role:
+        name: kubernetes_common
+        tasks_from: gather-facts
+  vars_files:
+    - roles/kubernetes_master/vars/main.yml
+  environment:
+    KUBECONFIG: "{{ kubeconfig.remote }}"
+
 - hosts: kubernetes_node
   become: true
   become_method: sudo

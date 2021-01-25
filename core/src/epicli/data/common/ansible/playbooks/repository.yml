@@ -1,5 +1,5 @@
 ---
 # This playbook is empty by purpose, just to enable repository role in configuration/feature-mapping
 # to populate defaults/configuration to Ansible vars
-- hosts: []
+- hosts: "!all"
   tasks: []

@@ -58,7 +58,8 @@ Note that versions are default versions and can be changed in certain cases thro
 | Component | Version | Repo/Website | License |
 | --------- | ------- | ------------ | ------- |
 | adal | 1.2.5 | https://github.com/AzureAD/azure-activedirectory-library-for-python | [Other](https://api.github.com/repos/azuread/azure-activedirectory-library-for-python/license) |
-| ansible | 2.8.17 | https://ansible.com/ | GPLv3+ |
+| ansible-base | 2.10.5 | https://ansible.com/ | GPLv3+ |
+| ansible | 2.10.5 | https://ansible.com/ | GPLv3+ |
 | antlr4-python3-runtime | 4.7.2 | http://www.antlr.org | BSD |
 | applicationinsights | 0.11.9 | https://github.com/Microsoft/ApplicationInsights-Python | [MIT License](https://api.github.com/repos/microsoft/applicationinsights-python/license) |
 | argcomplete | 1.12.2 | https://github.com/kislyuk/argcomplete | [Apache License 2.0](https://api.github.com/repos/kislyuk/argcomplete/license) |
@@ -147,14 +148,14 @@ Note that versions are default versions and can be changed in certain cases thro
 | azure-storage-blob | 1.5.0 | https://github.com/Azure/azure-storage-python | [MIT License](https://api.github.com/repos/azure/azure-storage-python/license) |
 | azure-storage-common | 1.4.2 | https://github.com/Azure/azure-storage-python | [MIT License](https://api.github.com/repos/azure/azure-storage-python/license) |
 | bcrypt | 3.2.0 | https://github.com/pyca/bcrypt/ | [Apache License 2.0](https://api.github.com/repos/pyca/bcrypt/license) |
-| boto3 | 1.16.56 | https://github.com/boto/boto3 | [Apache License 2.0](https://api.github.com/repos/boto/boto3/license) |
-| botocore | 1.19.56 | https://github.com/boto/botocore | [Apache License 2.0](https://api.github.com/repos/boto/botocore/license) |
+| boto3 | 1.16.57 | https://github.com/boto/boto3 | [Apache License 2.0](https://api.github.com/repos/boto/boto3/license) |
+| botocore | 1.19.57 | https://github.com/boto/botocore | [Apache License 2.0](https://api.github.com/repos/boto/botocore/license) |
 | certifi | 2020.12.5 | https://certifiio.readthedocs.io/en/latest/ | MPL-2.0 |
 | cffi | 1.14.4 | http://cffi.readthedocs.org | MIT |
 | chardet | 4.0.0 | https://github.com/chardet/chardet | [GNU Lesser General Public License v2.1](https://api.github.com/repos/chardet/chardet/license) |
 | colorama | 0.4.4 | https://github.com/tartley/colorama | [BSD 3-Clause "New" or "Revised" License](https://api.github.com/repos/tartley/colorama/license) |
 | cryptography | 2.9.2 | https://github.com/pyca/cryptography | [Other](https://api.github.com/repos/pyca/cryptography/license) |
-| fabric | 2.5.0 | http://fabfile.org | BSD |
+| fabric | 2.6.0 | http://fabfile.org | BSD |
 | humanfriendly | 8.2 | https://humanfriendly.readthedocs.io | MIT |
 | idna | 2.10 | https://github.com/kjd/idna | [BSD 3-Clause "New" or "Revised" License](https://api.github.com/repos/kjd/idna/license) |
 | importlib-metadata | 1.7.0 | http://importlib-metadata.readthedocs.io/ | Apache Software License |
@@ -174,7 +175,9 @@ Note that versions are default versions and can be changed in certain cases thro
 | msrest | 0.6.19 | https://github.com/Azure/msrest-for-python | [MIT License](https://api.github.com/repos/azure/msrest-for-python/license) |
 | msrestazure | 0.6.4 | https://github.com/Azure/msrestazure-for-python | [MIT License](https://api.github.com/repos/azure/msrestazure-for-python/license) |
 | oauthlib | 3.1.0 | https://github.com/oauthlib/oauthlib | [BSD 3-Clause "New" or "Revised" License](https://api.github.com/repos/oauthlib/oauthlib/license) |
+| packaging | 20.8 | https://github.com/pypa/packaging | [Other](https://api.github.com/repos/pypa/packaging/license) |
 | paramiko | 2.7.2 | https://github.com/paramiko/paramiko/ | [GNU Lesser General Public License v2.1](https://api.github.com/repos/paramiko/paramiko/license) |
+| pathlib2 | 2.3.5 | https://github.com/mcmtroffaes/pathlib2 | [MIT License](https://api.github.com/repos/mcmtroffaes/pathlib2/license) |
 | pkginfo | 1.7.0 | https://code.launchpad.net/~tseaver/pkginfo/trunk | MIT |
 | portalocker | 1.7.1 | https://github.com/WoLpH/portalocker | [Other](https://api.github.com/repos/wolph/portalocker/license) |
 | pycparser | 2.20 | https://github.com/eliben/pycparser | [Other](https://api.github.com/repos/eliben/pycparser/license) |
@@ -182,11 +185,12 @@ Note that versions are default versions and can be changed in certain cases thro
 | PyJWT | 1.7.1 | http://github.com/jpadilla/pyjwt | [MIT License](https://api.github.com/repos/jpadilla/pyjwt/license) |
 | PyNaCl | 1.4.0 | https://github.com/pyca/pynacl/ | [Apache License 2.0](https://api.github.com/repos/pyca/pynacl/license) |
 | pyOpenSSL | 19.1.0 | https://pyopenssl.org/ | Apache License, Version 2.0 |
+| pyparsing | 2.4.7 | https://github.com/pyparsing/pyparsing/ | [MIT License](https://api.github.com/repos/pyparsing/pyparsing/license) |
 | pyrsistent | 0.17.3 | http://github.com/tobgu/pyrsistent/ | [MIT License](https://api.github.com/repos/tobgu/pyrsistent/license) |
 | python-dateutil | 2.8.1 | https://dateutil.readthedocs.io | Dual License |
 | python-json-logger | 2.0.1 | http://github.com/madzak/python-json-logger | [BSD 2-Clause "Simplified" License](https://api.github.com/repos/madzak/python-json-logger/license) |
 | pytz | 2019.1 | http://pythonhosted.org/pytz | MIT |
-| PyYAML | 5.3.1 | https://github.com/yaml/pyyaml | [MIT License](https://api.github.com/repos/yaml/pyyaml/license) |
+| PyYAML | 5.4.1 | https://pyyaml.org/ | MIT |
 | requests-oauthlib | 1.3.0 | https://github.com/requests/requests-oauthlib | [ISC License](https://api.github.com/repos/requests/requests-oauthlib/license) |
 | requests | 2.25.1 | https://requests.readthedocs.io | Apache 2.0 |
 | ruamel.yaml.clib | 0.2.2 | https://sourceforge.net/p/ruamel-yaml-clib/code/ci/default/tree | MIT |
