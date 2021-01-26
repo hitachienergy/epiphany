@@ -29,16 +29,14 @@
 # > and update plugin state directly (without contacting the node).
 # > Such changes will only have an effect on next node start.
 - name: Enable plugins that were installed
+  when: specification.rabbitmq_plugins
   rabbitmq_plugin:
-    names: "{{ _plugins | join(',') }}"
+    names: "{{ specification.rabbitmq_plugins | join(',') }}"
     prefix: /usr/lib/rabbitmq
     state: enabled
     new_only: true
     broker_state: offline
   register: rabbitmq_plugins
-  vars:
-    _plugins: >-
-      {{ specification.rabbitmq_plugins | select | list }}
 
 - name: Restart service
   when:
