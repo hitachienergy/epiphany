@@ -3,7 +3,7 @@
 You are strongly advised use encrypted over unencrypted communication between Epiphany components where possible. Please consider
 this during planning your Epiphany deployment and configuration.
 
-We strongly advise to change default passwords wherever Epiphany configuration let you to do this.
+We strongly advise to change default passwords wherever Epiphany configuration let you do so.
 
 We strongly advise to use antivirus/antimalware software wherever possible to prevent risks. Please consider this during planning
 your Epiphany deployment and test if Epiphany components are installing correctly with making necessary changes in settings of your
