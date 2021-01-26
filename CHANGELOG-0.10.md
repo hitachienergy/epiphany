@@ -11,6 +11,8 @@
 - [#1959](https://github.com/epiphany-platform/epiphany/issues/1959) - Network traffic not allowed from load balancer's subnet to Kubernetes's subnet in AWS
 - [#1991](https://github.com/epiphany-platform/epiphany/issues/1991) - When custom repo is used backup/recovery stops working
 - [#1908](https://github.com/epiphany-platform/epiphany/issues/1908) - Research why Epiphany nodes hang when memory is overcommited
+- [#1979](https://github.com/epiphany-platform/epiphany/issues/1979) - RabbitMQ fails on upgrade when 2 nodes are specified that are not clustered
+- [#1984](https://github.com/epiphany-platform/epiphany/issues/1984) - RabbitMQ 3.7.10 fails on upgrade to 3.8.9: 'rabbitmqctl version' command not found
 
 ### Updated
 

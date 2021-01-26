@@ -26,7 +26,7 @@
           {{ _names | ternary(true, false) }}
       vars:
         _names: >-
-          {{ helm_list.stdout | from_json 
+          {{ helm_list.stdout | from_json
                               | map(attribute='name')
                               | select('==', exporter_defaults.node_exporter_helm_chart_name)
                               | list }}
@@ -34,7 +34,7 @@
     - name: Reinstall Node Exporter as DaemonSet from default namespace to dedicated namespace for "k8s as cloud service"
       when:
         - node_exporter_release_exists
-      block: 
+      block:
         - name: Include uninstall task for Node Exporter as DaemonSet in default namespace for "k8s as cloud service"
           include_role:
             name: node_exporter

@@ -178,6 +178,7 @@
     - import_role:
         name: upgrade
         tasks_from: rabbitmq
+      vars: { lock_file: /var/tmp/rabbitmq-upgrade-in-progress.flag }
 
 - hosts: ignite
   become: true

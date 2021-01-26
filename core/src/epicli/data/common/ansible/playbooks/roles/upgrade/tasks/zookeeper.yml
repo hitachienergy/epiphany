@@ -33,6 +33,7 @@
       file:
         path: "{{ lock_file }}"
         state: touch
+        mode: u=rw,g=r,o=
 
     - name: Stop Zookeeper service
       service:

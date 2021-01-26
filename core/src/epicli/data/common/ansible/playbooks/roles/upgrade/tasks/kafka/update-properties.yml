@@ -1,13 +1,13 @@
 ---
 - name: Check if current_kafka_version property is defined
   shell: >-
-    set -o pipefail && 
+    set -o pipefail &&
     grep "^CURRENT_KAFKA_VERSION" /opt/kafka/config/server.properties
   register: current_kafka_version_property
   failed_when:
     - result.rc == 2
   changed_when: False
-  args: 
+  args:
     executable: /bin/bash
 
 - name: Add current_kafka_version property
