@@ -1,23 +1,4 @@
 ---
-#- name: deploy rolebinding file to server for prometheus
-#  copy:
-#    src: k8s-rolebinding.yml
-#    dest: "/home/{{ admin_user.name }}/k8s-rolebinding.yml"
-#  delegate_to: "{{ master_hostname }}"
-#
-#- name: apply rolebinding to k8s for prometheus
-#  shell: "kubectl apply -f /home/{{ admin_user.name }}/k8s-rolebinding.yml"
-#  run_once: true
-#  delegate_to: "{{ master_hostname }}"
-#
-#- name: Get kubernetes bearer token for prometheus
-#  shell: kubectl describe secret $(kubectl get secrets --namespace=default | grep prometheus | awk '{print $1}') --namespace=default | grep -E '^token' | awk '{print $2}' | head -1
-#  register: kube_token
-#  delegate_to: "{{ master_hostname }}"
-#  run_once: true
-#  tags: debug
-
-
 - name: Check if extra config flags are duplicating ansible variables
   fail:
     msg: "Detected duplicate configuration entry. Please check your ansible variables and role README.md."
@@ -42,17 +23,6 @@
     msg: "Whooops. You are duplicating configuration. Please look at your prometheus_config_flags_extra and check against other variables in defaults/main.yml"
   with_items: [ 'storage.tsdb.retention', 'storage.tsdb.path', 'storage.local.retention', 'storage.local.path', 'config.file', 'web.listen-address', 'web.external-url' ]
   when: item in prometheus_config_flags_extra.keys()
-
-#- name: Get all file_sd files from scrape_configs
-#  set_fact:
-#    file_sd_files: "{{ prometheus_scrape_configs | json_query('[*][].file_sd_configs[*][].files[]') }}"
-
-#- name: Fail when file_sd targets are not defined in scrape_configs
-#  fail:
-#    msg: "Oh, snap! `{{ item.key }}` couldn't be found in you scrape configs. Please ensure you provided all targets from prometheus_targets in prometheus_scrape_configs"
-#  when: not prometheus_config_dir + "/file_sd/" + item.key + ".yml" in file_sd_files
-#  #  when: not item | basename | splitext | difference(['.yml']) | join('') in prometheus_targets.keys()
-#  with_dict: "{{ prometheus_targets }}"
 
 - block:
     - name: Get latest release
@@ -87,6 +57,3 @@
   shell: systemctl --version | awk '$1 == "systemd" {print $2}'
   changed_when: false
   register: prometheus_systemd_version
-  tags:
-    - skip_ansible_lint
-
