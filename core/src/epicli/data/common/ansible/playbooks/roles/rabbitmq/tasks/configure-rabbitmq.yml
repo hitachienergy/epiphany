@@ -23,17 +23,24 @@
     dest: /usr/lib/rabbitmq/sbin
     state: link
 
+# RabbitMQ documentation (https://www.rabbitmq.com/rabbitmq-plugins.8.html) states:
+# > If rabbitmq-plugins is used on the same host as the target node,
+# > --offline can be specified to make rabbitmq-plugins resolve
+# > and update plugin state directly (without contacting the node).
+# > Such changes will only have an effect on next node start.
 - name: Enable plugins that were installed
+  when: specification.rabbitmq_plugins
   rabbitmq_plugin:
-    names: "{{ item }}"
+    names: "{{ specification.rabbitmq_plugins | join(',') }}"
     prefix: /usr/lib/rabbitmq
     state: enabled
-    new_only: no
-  loop: "{{ specification.rabbitmq_plugins }}"
+    new_only: true
+    broker_state: offline
+  register: rabbitmq_plugins
 
 - name: Restart service
   when:
-    - config_file_stat.changed or env_file_stat.changed
+    - config_file_stat.changed or env_file_stat.changed or rabbitmq_plugins.changed
     - not (specification.stop_service | bool)
   service:
     name: rabbitmq-server
