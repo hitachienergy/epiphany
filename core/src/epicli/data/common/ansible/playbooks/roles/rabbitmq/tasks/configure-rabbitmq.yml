@@ -25,11 +25,14 @@
 
 - name: Enable plugins that were installed
   rabbitmq_plugin:
-    names: "{{ item }}"
+    names: "{{ _plugins | join(',') }}"
     prefix: /usr/lib/rabbitmq
     state: enabled
-    new_only: no
-  loop: "{{ specification.rabbitmq_plugins }}"
+    new_only: true
+    broker_state: offline
+  vars:
+    _plugins: >-
+      {{ specification.rabbitmq_plugins | select | map('trim') | list }}
 
 - name: Restart service
   when:
