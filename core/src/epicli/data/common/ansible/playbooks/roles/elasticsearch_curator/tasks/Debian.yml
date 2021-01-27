@@ -1,6 +1,0 @@
-- name: Install elasticsearch-curator package
-  apt:
-    name:
-      - elasticsearch-curator={{ specification.curator_version }}
-    update_cache: yes
-    state: present

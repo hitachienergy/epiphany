@@ -1,7 +1,0 @@
----
-- name: Install Kibana package
-  yum:
-    name:
-      - opendistroforelasticsearch-kibana-{{ kibana_package_version }}
-    update_cache: yes
-    state: present
