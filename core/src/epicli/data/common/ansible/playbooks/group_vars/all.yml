@@ -8,3 +8,6 @@ image_registry_address: "{{ custom_image_registry_address | default(local_image_
 kubeconfig:
   local: "{{ inventory_dir }}/kubeconfig"
   remote: /etc/kubernetes/admin.conf
+
+# https://github.com/ansible/ansible/issues/57189
+yum_lock_timeout: 300

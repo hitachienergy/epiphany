@@ -1,6 +1,16 @@
 ---
-- name: Install logstash-oss
-  include_tasks: "{{ ansible_os_family }}.yml"
+- name: Install Logstash package
+  package:
+    name: "{{ _packages[ansible_os_family] }}"
+    state: present
+  vars:
+    _packages:
+      Debian:
+        - logstash-oss={{ versions[ansible_os_family] }}
+      RedHat:
+        - logstash-oss-{{ versions[ansible_os_family] }}
+  module_defaults:
+    yum: { lock_timeout: "{{ yum_lock_timeout }}" }
 
 - name: Ensure Logstash is disabled
   systemd:

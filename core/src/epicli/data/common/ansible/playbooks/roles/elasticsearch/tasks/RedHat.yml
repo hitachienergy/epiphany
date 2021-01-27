@@ -1,9 +1,10 @@
+---
 - name: Install Elasticsearch package
   yum:
     name:
       - java-1.8.0-openjdk-headless
       - elasticsearch-oss-{{ specification.elasticsearch_version }}
-    update_cache: yes
+    update_cache: true
     state: present
     exclude: elasticsearch-oss-7* # v7 is installed by opendistro_for_elasticsearch role
   register: install_elasticsearch_package

@@ -6,7 +6,11 @@
 
 # Common main as the entry point
 
-- include_tasks: "{{ ansible_os_family }}.yml"
+- name: Execute OS-specific tasks (common)
+  block:
+    - include_tasks: "{{ ansible_os_family }}.yml"
+  module_defaults:
+    yum: { lock_timeout: "{{ yum_lock_timeout }}" }
 
 - name: Print environment variables
   debug:

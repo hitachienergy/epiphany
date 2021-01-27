@@ -8,3 +8,5 @@
     allow_downgrade: true
     disable_excludes: kubernetes
     state: present
+  module_defaults:
+    yum: { lock_timeout: "{{ yum_lock_timeout }}" }

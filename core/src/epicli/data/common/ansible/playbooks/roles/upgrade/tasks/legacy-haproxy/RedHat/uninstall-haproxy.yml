@@ -8,3 +8,5 @@
       - rh-haproxy18-runtime
     update_cache: true
     state: absent
+  module_defaults:
+    yum: { lock_timeout: "{{ yum_lock_timeout }}" }

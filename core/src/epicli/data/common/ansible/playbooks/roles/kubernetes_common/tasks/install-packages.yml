@@ -1,12 +1,38 @@
 ---
 - name: Install Storage packages
   package:
-    name: "{{ item }}"
-    update_cache: true
+    name: "{{ _packages[ansible_os_family] }}"
     state: present
-  loop:
-    - cifs-utils
-    - samba-client
-    - samba-common
+  vars:
+    _packages:
+      Debian:
+        - cifs-utils
+        - samba-client
+        - samba-common
+        - nfs-common
+      RedHat:
+        - cifs-utils
+        - samba-client
+        - samba-common
+        - nfs-utils
+  module_defaults:
+    yum: { lock_timeout: "{{ yum_lock_timeout }}" }
 
-- include_tasks: "install-packages-{{ ansible_os_family }}.yml"
+- name: Install Kubernetes packages
+  package:
+    name: "{{ _packages[ansible_os_family] }}"
+    state: present
+  vars:
+    _packages:
+      Debian:
+        - kubelet={{ specification.version }}-00
+        - kubectl={{ specification.version }}-00
+        - kubeadm={{ specification.version }}-00
+        - kubernetes-cni={{ specification.cni_version }}-00
+      RedHat:
+        - kubelet-{{ specification.version }}-0
+        - kubectl-{{ specification.version }}-0
+        - kubeadm-{{ specification.version }}-0
+        - kubernetes-cni-{{ specification.cni_version }}-0
+  module_defaults:
+    yum: { lock_timeout: "{{ yum_lock_timeout }}" }
