@@ -17,7 +17,7 @@
       RedHat:
         - opendistroforelasticsearch-kibana-{{ _kibana_version }}
   module_defaults:
-    yum: { lock_timeout: 300 }
+    yum: { lock_timeout: "{{ yum_lock_timeout }}" }
 
 - name: Update Kibana configuration file
   template:

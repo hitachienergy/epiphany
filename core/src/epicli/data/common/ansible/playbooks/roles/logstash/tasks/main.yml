@@ -10,7 +10,7 @@
       RedHat:
         - logstash-oss-{{ versions[ansible_os_family] }}
   module_defaults:
-    yum: { lock_timeout: 300 }
+    yum: { lock_timeout: "{{ yum_lock_timeout }}" }
 
 - name: Ensure Logstash is disabled
   systemd:

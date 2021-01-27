@@ -3,7 +3,7 @@
   yum:
     list: installed
   module_defaults:
-    yum: { lock_timeout: 300 }
+    yum: { lock_timeout: "{{ yum_lock_timeout }}" }
 
 - name: Set SELinux in permissive mode until the machine is rebooted
   command: setenforce 0

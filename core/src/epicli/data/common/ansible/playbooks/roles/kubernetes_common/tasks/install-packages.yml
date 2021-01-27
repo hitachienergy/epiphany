@@ -16,7 +16,7 @@
         - samba-common
         - nfs-utils
   module_defaults:
-    yum: { lock_timeout: 300 }
+    yum: { lock_timeout: "{{ yum_lock_timeout }}" }
 
 - name: Install Kubernetes packages
   package:
@@ -35,4 +35,4 @@
         - kubeadm-{{ specification.version }}-0
         - kubernetes-cni-{{ specification.cni_version }}-0
   module_defaults:
-    yum: { lock_timeout: 300 }
+    yum: { lock_timeout: "{{ yum_lock_timeout }}" }

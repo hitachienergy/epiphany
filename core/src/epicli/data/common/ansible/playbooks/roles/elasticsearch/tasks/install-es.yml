@@ -19,4 +19,4 @@
   block:
     - include_tasks: "{{ ansible_os_family }}.yml"
   module_defaults:
-    yum: { lock_timeout: 300 }
+    yum: { lock_timeout: "{{ yum_lock_timeout }}" }

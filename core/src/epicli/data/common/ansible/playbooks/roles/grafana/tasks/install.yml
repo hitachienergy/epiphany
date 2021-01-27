@@ -15,7 +15,7 @@
       RedHat:
         - grafana-{{ grafana_version }}
   module_defaults:
-    yum: { lock_timeout: 300 }
+    yum: { lock_timeout: "{{ yum_lock_timeout }}" }
 
 - name: Recursively chown /etc/grafana (fix permissions)
   file:

@@ -22,7 +22,7 @@
       RedHat:
         - java-1.8.0-openjdk-headless
   module_defaults:
-    yum: { lock_timeout: 300 }
+    yum: { lock_timeout: "{{ yum_lock_timeout }}" }
 
 - name: Check if jmx exporter is available
   stat:

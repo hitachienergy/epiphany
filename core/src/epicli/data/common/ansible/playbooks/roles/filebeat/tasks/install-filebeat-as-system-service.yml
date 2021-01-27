@@ -13,7 +13,7 @@
         - filebeat-{{ filebeat_version }}
   register: install_filebeat_package
   module_defaults:
-    yum: { lock_timeout: 300 }
+    yum: { lock_timeout: "{{ yum_lock_timeout }}" }
 
 - name: Install Auditd package
   package:
@@ -30,4 +30,4 @@
   retries: 3  # Installing auditd sometimes fails in post-inst: https://bugs.launchpad.net/ubuntu/+source/auditd/+bug/1848330
   delay: 1
   module_defaults:
-    yum: { lock_timeout: 300 }
+    yum: { lock_timeout: "{{ yum_lock_timeout }}" }

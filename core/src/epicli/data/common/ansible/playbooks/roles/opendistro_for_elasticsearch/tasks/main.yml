@@ -25,7 +25,7 @@
         - elasticsearch-oss-{{ versions[ansible_os_family].elasticsearch_oss }}
   register: install_elasticsearch_package
   module_defaults:
-    yum: { lock_timeout: 300 }
+    yum: { lock_timeout: "{{ yum_lock_timeout }}" }
 
 # NOTE: Keep in mind compatibility matrix for Open Distro https://opendistro.github.io/for-elasticsearch-docs/docs/install/plugins/#plugin-compatibility
 - name: Install opendistro-* packages
@@ -50,7 +50,7 @@
         - opendistro-sql-{{ versions[ansible_os_family].opendistro }}
   register: install_opendistro_packages
   module_defaults:
-    yum: { lock_timeout: 300 }
+    yum: { lock_timeout: "{{ yum_lock_timeout }}" }
 
 - name: Include configuration tasks
   include_tasks: configure-es.yml

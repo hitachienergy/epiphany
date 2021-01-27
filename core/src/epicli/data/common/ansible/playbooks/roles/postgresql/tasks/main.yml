@@ -3,7 +3,7 @@
   block:
     - include_tasks: "install-packages/{{ ansible_os_family }}.yml"
   module_defaults:
-    yum: { lock_timeout: 300 }
+    yum: { lock_timeout: "{{ yum_lock_timeout }}" }
 
 - name: Include configuration tasks
   include_tasks: configure-postgresql.yml

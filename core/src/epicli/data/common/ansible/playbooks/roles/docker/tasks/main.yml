@@ -16,6 +16,6 @@
         - docker-ce-cli-{{ docker_version.RedHat }}
         - docker-ce-{{ docker_version.RedHat }}
   module_defaults:
-    yum: { lock_timeout: 300 }
+    yum: { lock_timeout: "{{ yum_lock_timeout }}" }
 
 - include_tasks: configure-docker.yml

@@ -7,4 +7,4 @@
     disable_excludes: kubernetes
     state: present
   module_defaults:
-    yum: { lock_timeout: 300 }
+    yum: { lock_timeout: "{{ yum_lock_timeout }}" }
