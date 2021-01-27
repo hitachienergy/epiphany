@@ -1,5 +1,33 @@
 ---
 # This file is meant to be also used by upgrade playbook
 
-- name: Install Filebeat ({{ ansible_os_family }})
-  include_tasks: "{{ ansible_os_family }}.yml"
+- name: Install Filebeat package
+  package:
+    name: "{{ _packages[ansible_os_family] }}"
+    state: present
+  vars:
+    _packages:
+      Debian:
+        - filebeat={{ filebeat_version }}
+      RedHat:
+        - filebeat-{{ filebeat_version }}
+  register: install_filebeat_package
+  module_defaults:
+    yum: { lock_timeout: "{{ yum_lock_timeout }}" }
+
+- name: Install Auditd package
+  package:
+    name: "{{ _packages[ansible_os_family] }}"
+    state: present
+  vars:
+    _packages:
+      Debian:
+        - auditd
+      RedHat:
+        - audit
+  register: install_auditd_package
+  until: install_auditd_package is success
+  retries: 3  # Installing auditd sometimes fails in post-inst: https://bugs.launchpad.net/ubuntu/+source/auditd/+bug/1848330
+  delay: 1
+  module_defaults:
+    yum: { lock_timeout: "{{ yum_lock_timeout }}" }

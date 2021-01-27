@@ -1,6 +1,9 @@
 ---
-- name: Include installation tasks ({{ ansible_os_family }})
-  include_tasks: "{{ ansible_os_family }}/install-firewall.yml"
+- name: Execute OS-specific tasks (firewall)
+  block:
+    - include_tasks: "{{ ansible_os_family }}/install-firewall.yml"
+  module_defaults:
+    yum: { lock_timeout: "{{ yum_lock_timeout }}" }
 
 - name: Include configuration tasks
   include_tasks: configure-firewall.yml
