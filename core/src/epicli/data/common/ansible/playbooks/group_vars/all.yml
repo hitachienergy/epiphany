@@ -5,9 +5,9 @@ repository_url: "{{ custom_repository_url | default(local_repository_url, true) 
 local_image_registry: "{{ groups.image_registry[0] }}:5000"
 image_registry_address: "{{ custom_image_registry_address | default(local_image_registry, true) }}"
 
-# https://github.com/ansible/ansible/issues/57189
-yum_lock_timeout: 300
-
 kubeconfig:
   local: "{{ inventory_dir }}/kubeconfig"
   remote: /etc/kubernetes/admin.conf
+
+# https://github.com/ansible/ansible/issues/57189
+yum_lock_timeout: 300
