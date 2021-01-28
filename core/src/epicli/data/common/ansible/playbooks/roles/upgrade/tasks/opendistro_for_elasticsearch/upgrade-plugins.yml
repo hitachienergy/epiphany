@@ -15,4 +15,4 @@
 - name: Open Distro for Elasticsearch - plugins | Upgrade opendistro-* packages
   include_role:
     name: opendistro_for_elasticsearch
-    tasks_from: install-opendistro-{{ ansible_os_family }}.yml
+    tasks_from: install-opendistro.yml
