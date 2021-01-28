@@ -66,11 +66,11 @@ class TerraformRunner(Step):
 
             if 'subscriptionId' in sp:
                 # Set active subscription if sp contains it.
-                self.logger.info(f"subscriptionId from sp file: {sp['subscriptionId']}")
+                self.logger.debug(f"subscriptionId from sp file: {sp['subscriptionId']}")
                 apiproxy.set_active_subscribtion(sp['subscriptionId'])
                 arm_subscription_id = ""
                 if "/" in sp['subscriptionId']:
-                    self.logger.info(f"WARN Slash detected in the subscription name {sp['subscriptionId']}. Will parse the ID and use it instead")
+                    self.logger.debug(f"WARN Slash detected in the subscription name {sp['subscriptionId']}. Will parse the ID and use it instead")
                     arm_subscription_id = [x['id'] for x in subscription if x['name'] == sp['subscriptionId']][0]
                 else:
                     arm_subscription_id = sp['subscriptionId']
