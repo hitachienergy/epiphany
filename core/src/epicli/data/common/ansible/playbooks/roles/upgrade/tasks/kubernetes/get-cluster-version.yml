@@ -3,9 +3,12 @@
   shell: >-
     set -o pipefail &&
     kubectl version --short -o json | jq --raw-output '.serverVersion.gitVersion'
-  register: cluster_version
   args:
     executable: /bin/bash
+  register: cluster_version
+  until: cluster_version is success
+  retries: 60
+  delay: 5
   changed_when: false
 
 - name: Set cluster version as fact
