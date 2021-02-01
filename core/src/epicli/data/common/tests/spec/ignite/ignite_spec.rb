@@ -64,7 +64,8 @@ end
 def checkJDBCconnection
   describe 'Checking JDBC connection' do
     describe command("echo \"SELECT 2 + 2 * 2 as RESULT ;\" | /opt/ignite/bin/sqlline.sh -u jdbc:ignite:thin://127.0.0.1/") do
-      its(:stdout) { should match /\b6\b/ }    
+      let(:disable_sudo) { false }
+      its(:stdout) { should match /\b6\b/ }
       its(:exit_status) { should eq 0 }
     end
   end
@@ -73,8 +74,9 @@ end
 def createTable
   describe 'Checking if it is possible to create a test table' do
     describe command("echo \"CREATE TABLE EPI_TEST_TABLE (id int, name varchar, PRIMARY KEY (id)) WITH \\\"CACHE_NAME=#{$cacheName}-ddl\\\";\" | /opt/ignite/bin/sqlline.sh -u jdbc:ignite:thin://127.0.0.1/ 2>&1") do
+      let(:disable_sudo) { false }
       its(:stdout) { should match /No rows affected/ }
-      its(:stdout) { should_not match /Error/ }    
+      its(:stdout) { should_not match /Error/ }
       its(:exit_status) { should eq 0 }
     end
   end
@@ -83,8 +85,9 @@ end
 def insertValuesIntoTable
   describe 'Checking if it is possible to insert values into the test table' do
     describe command("echo \"INSERT INTO EPI_TEST_TABLE(id, name) values (1, 'SUCCESS');\" | /opt/ignite/bin/sqlline.sh -u jdbc:ignite:thin://127.0.0.1/ 2>&1") do
+      let(:disable_sudo) { false }
       its(:stdout) { should match /1 row affected/ }
-      its(:stdout) { should_not match /Error/ }    
+      its(:stdout) { should_not match /Error/ }
       its(:exit_status) { should eq 0 }
     end
   end
@@ -93,9 +96,10 @@ end
 def selectValuesFromTable
   describe 'Checking if it is possible to select values from the test table' do
     describe command("echo \"SELECT id, name FROM EPI_TEST_TABLE;\" | /opt/ignite/bin/sqlline.sh -u jdbc:ignite:thin://127.0.0.1/ 2>&1") do
+      let(:disable_sudo) { false }
       its(:stdout) { should match /1 row selected/ }
       its(:stdout) { should match /SUCCESS/ }
-      its(:stdout) { should_not match /Error/ }    
+      its(:stdout) { should_not match /Error/ }
       its(:exit_status) { should eq 0 }
     end
   end
@@ -113,12 +117,13 @@ end
 def dropTable
   describe 'Checking if it is possible to drop the test table' do
     describe command("echo \"DROP TABLE IF EXISTS EPI_TEST_TABLE;\" | /opt/ignite/bin/sqlline.sh -u jdbc:ignite:thin://127.0.0.1/ 2>&1") do
+      let(:disable_sudo) { false }
       its(:stdout) { should match /No rows affected/ }
-      its(:stdout) { should_not match /Error/ }    
+      its(:stdout) { should_not match /Error/ }
       its(:exit_status) { should eq 0 }
     end
   end
-end  
+end
 
 describe 'Checking if Ignite service is running' do
   describe service('ignite') do
@@ -135,7 +140,7 @@ describe 'Checking if the ports are open' do
   describe port($ignite_rest_api_port) do
     it { should be_listening }
   end
-end 
+end
 
 nodes =  listInventoryHosts("ignite")
 
