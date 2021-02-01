@@ -13,44 +13,9 @@
     - { limit_type: 'soft', limit_item: 'memlock', value: unlimited }
     - { limit_type: 'hard', limit_item: 'memlock', value: unlimited }
 
-- name: Install elasticsearch-oss packages
-  package:
-    name: "{{ _packages[ansible_os_family] }}"
-    state: present
-  vars:
-    _packages:
-      Debian:
-        - elasticsearch-oss={{ versions[ansible_os_family].elasticsearch_oss }}
-      RedHat:
-        - elasticsearch-oss-{{ versions[ansible_os_family].elasticsearch_oss }}
-  register: install_elasticsearch_package
-  module_defaults:
-    yum: { lock_timeout: "{{ yum_lock_timeout }}" }
+- include_tasks: install-es.yml
 
-# NOTE: Keep in mind compatibility matrix for Open Distro https://opendistro.github.io/for-elasticsearch-docs/docs/install/plugins/#plugin-compatibility
-- name: Install opendistro-* packages
-  package:
-    name: "{{ _packages[ansible_os_family] }}"
-    state: present
-  vars:
-    _packages:
-      Debian:
-        - opendistro-alerting={{ versions[ansible_os_family].opendistro }}
-        - opendistro-index-management={{ versions[ansible_os_family].opendistro }}
-        - opendistro-job-scheduler={{ versions[ansible_os_family].opendistro }}
-        - opendistro-performance-analyzer={{ versions[ansible_os_family].opendistro }}
-        - opendistro-security={{ versions[ansible_os_family].opendistro }}
-        - opendistro-sql={{ versions[ansible_os_family].opendistro }}
-      RedHat:
-        - opendistro-alerting-{{ versions[ansible_os_family].opendistro }}
-        - opendistro-index-management-{{ versions[ansible_os_family].opendistro }}
-        - opendistro-job-scheduler-{{ versions[ansible_os_family].opendistro }}
-        - opendistro-performance-analyzer-{{ versions[ansible_os_family].opendistro }}
-        - opendistro-security-{{ versions[ansible_os_family].opendistro }}
-        - opendistro-sql-{{ versions[ansible_os_family].opendistro }}
-  register: install_opendistro_packages
-  module_defaults:
-    yum: { lock_timeout: "{{ yum_lock_timeout }}" }
+- include_tasks: install-opendistro.yml
 
 - name: Include configuration tasks
   include_tasks: configure-es.yml

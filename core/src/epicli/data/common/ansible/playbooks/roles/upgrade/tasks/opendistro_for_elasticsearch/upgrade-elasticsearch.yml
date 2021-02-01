@@ -56,7 +56,7 @@
 - name: Open Distro for Elasticsearch | Include Elasticsearch installation tasks
   include_role:
     name: opendistro_for_elasticsearch
-    tasks_from: install-es-{{ ansible_os_family }}.yml
+    tasks_from: install-es.yml
 
 - name: Open Distro for Elasticsearch | Include Elasticsearch configuration tasks
   include_role:
