@@ -1,0 +1,134 @@
+---
+- name: RabbitMQ | Register version output
+  command: rabbitmq-diagnostics server_version
+  register: rabbitmq_version
+  changed_when: false
+
+- name: RabbitMQ | Register cluster status output
+  command: rabbitmqctl cluster_status --formatter json
+  register: rabbitmq_cluster_status
+  changed_when: false
+  run_once: true
+
+- name: RabbitMQ | Include defaults from rabbitmq role
+  include_vars:
+    file: roles/rabbitmq/defaults/main.yml
+
+- name: RabbitMQ | Set facts
+  set_fact:
+    rabbitmq_master: "{{ groups['rabbitmq'][0] }}"
+    rabbitmq_version_current: "{{ rabbitmq_version.stdout_lines[1] }}"
+    is_clustered: "{{ (rabbitmq_cluster_status.stdout | from_json).running_nodes | length > 1 }}"
+
+- name: RabbitMQ | Print variable values
+  debug:
+    msg: "is_clustered: {{ is_clustered }}; rabbitmq_version_current: {{ rabbitmq_version_current }}"
+
+- name: RabbitMQ | Check for upgrade flag file
+  stat:
+    path: "{{ lock_file }}"
+    get_attributes: false
+    get_checksum: false
+    get_mime: false
+  register: lock_file_status
+
+- name: RabbitMQ | Offline upgrade
+  when: lock_file_status.stat.exists or rabbitmq_version_current is version(versions.general, '<')
+  block:
+    - name: RabbitMQ | Create upgrade flag file
+      file:
+        path: "{{ lock_file }}"
+        state: touch
+        mode: u=rw,g=r,o=
+
+    - name: RabbitMQ | Stop nodes
+      when: inventory_hostname != rabbitmq_master
+      service:
+        name: rabbitmq-server
+        enabled: false
+        state: stopped
+
+    - name: RabbitMQ | Stop master
+      when: inventory_hostname == rabbitmq_master
+      service:
+        name: rabbitmq-server
+        enabled: false
+        state: stopped
+
+    # The following task was added to solve issue #1975.
+    # Till v0.9.0 the default for specification.rabbitmq_use_longname was 'true'.
+    # On Ubuntu initscript of rabbitmq-server package starts rabbitmq-server.service automatically
+    # so this task has to be run before upgrading packages.
+    - name: RabbitMQ | Disable long node names in /etc/rabbitmq/rabbitmq-env.conf
+      lineinfile:
+        path: /etc/rabbitmq/rabbitmq-env.conf
+        regexp: '^RABBITMQ_USE_LONGNAME='
+        line: RABBITMQ_USE_LONGNAME=false
+        backup: true
+      when: ansible_hostname == ansible_fqdn
+
+    - name: RabbitMQ | Upgrade packages
+      package:
+        name: "{{ _packages[ansible_os_family] }}"
+        update_cache: yes
+        state: present
+      vars:
+        _packages:
+          Debian:
+            - erlang-eldap={{ versions.debian.erlang }}
+            - erlang-inets={{ versions.debian.erlang }}
+            - erlang-os-mon={{ versions.debian.erlang }}
+            - erlang-public-key={{ versions.debian.erlang }}
+            - erlang-ssl={{ versions.debian.erlang }}
+
+            # Additional dependencies required to fix issue #1920
+            - erlang-asn1={{ versions.debian.erlang }}
+            - erlang-base-hipe={{ versions.debian.erlang }}
+            - erlang-crypto={{ versions.debian.erlang }}
+            - erlang-ftp={{ versions.debian.erlang }}
+            - erlang-mnesia={{ versions.debian.erlang }}
+            - erlang-parsetools={{ versions.debian.erlang }}
+            - erlang-runtime-tools={{ versions.debian.erlang }}
+            - erlang-snmp={{ versions.debian.erlang }}
+            - erlang-syntax-tools={{ versions.debian.erlang }}
+            - erlang-tftp={{ versions.debian.erlang }}
+            - erlang-tools={{ versions.debian.erlang }}
+            - erlang-xmerl={{ versions.debian.erlang }}
+
+            - rabbitmq-server={{ versions.debian.rabbitmq }}
+          RedHat:
+            - erlang-{{ versions.redhat.erlang }}
+            - rabbitmq-server-{{ versions.redhat.rabbitmq }}
+
+    - name: RabbitMQ | Start master
+      when: inventory_hostname == rabbitmq_master
+      service:
+        name: rabbitmq-server
+        enabled: true
+        state: started
+
+    - name: RabbitMQ | Start nodes
+      when: inventory_hostname != rabbitmq_master
+      block:
+        - name: RabbitMQ | Ensure that service is started
+          service:
+            name: rabbitmq-server
+            enabled: true
+            state: started
+
+        - name: RabbitMQ | Join nodes to the cluster
+          when: is_clustered
+          block:
+            - name: RabbitMQ | Stop an app on the node
+              command: rabbitmqctl stop_app
+
+            - name: RabbitMQ | Join a node to the cluster
+              command: rabbitmqctl join_cluster rabbit@{{ rabbitmq_master.split('.')[0] }}
+
+            - name: RabbitMQ | Start an app on the node
+              command: rabbitmqctl start_app
+
+- name: RabbitMQ | Remove upgrade flag file
+  file:
+    path: "{{ lock_file }}"
+    state: absent
