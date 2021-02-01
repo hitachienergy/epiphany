@@ -1,9 +1,8 @@
 ---
-- name: Add RabbitMQ policies
+- name: Add policies
   rabbitmq_policy:
     name: "{{ item.name }}"
     pattern: "{{ item.pattern }}"
     tags: "{{ item.definitions }}"
     state: present
   loop: "{{ specification.rabbitmq_policies }}"
-  when: groups['rabbitmq'][0] == inventory_hostname
