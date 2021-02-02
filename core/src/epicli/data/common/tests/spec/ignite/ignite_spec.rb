@@ -74,6 +74,7 @@ end
 def createTable
   describe 'Checking if it is possible to create a test table' do
     describe command("echo \"CREATE TABLE EPI_TEST_TABLE (id int, name varchar, PRIMARY KEY (id)) WITH \\\"CACHE_NAME=#{$cacheName}-ddl\\\";\" | /opt/ignite/bin/sqlline.sh -u jdbc:ignite:thin://127.0.0.1/ 2>&1") do
+      let(:disable_sudo) { false }
       its(:stdout) { should match /No rows affected/ }
       its(:stdout) { should_not match /Error/ }
       its(:exit_status) { should eq 0 }
