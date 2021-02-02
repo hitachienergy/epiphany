@@ -97,7 +97,7 @@ def callIgniteDeploymentTests
   end
 
   describe 'Checking if it is possible to select values from the test table using JDBC connection inside pods' do
-    describe command("for pod in $(kubectl get pods --namespace=#{service_namespace} --no-headers --field-selector=status.phase=Running -o custom-columns=':metadata.name'); do kubectl exec $pod -n=ignite -- bash -c \"echo 'SELECT name FROM EPI_TEST_TABLE;' | /opt/ignite/apache-ignite/bin/sqlline.sh -u jdbc:ignite:thin://127.0.0.1/ 2>&1\"; done") do
+    describe command("for pod in $(kubectl get pods --namespace=#{service_namespace} --no-headers --field-selector=status.phase=Running -o custom-columns=':metadata.name'); do kubectl exec $pod -n=ignite -- bash -c 'echo \"SELECT name FROM EPI_TEST_TABLE;\" | $IGNITE_HOME/bin/sqlline.sh -u jdbc:ignite:thin://127.0.0.1/ 2>&1'; done") do
     its(:stdout) { should match /(.*1 row selected.*){#{service_replicas}}/m }
     its(:stdout) { should match /(.*SUCCESS.*){#{service_replicas}}/m }
     its(:stdout) { should_not match /Error/ }
