@@ -13,32 +13,17 @@
 
 # Merge LV homelv as early as possible (when a user logs in, /home is in use and cannot be unmounted).
 
-bootcmd:
+bootcmd:  # frequency: always
 # NOTE: Failure of a command neither stops the boot process nor next cloud-init modules.
-# Merge LV homelv into rootlv, then remove homelv.
+
+  # Create files earlier than defined by the default order to reuse common code
+  - cloud-init single --name write_files
+  # Merge LV homelv into rootlv, then remove homelv
   - - bash
     - -ce
     - |
-      append_unique_line_to_file() {
-        local line="${1}"
-        local file_path="${2}"
-
-        if ! { test -f "$file_path" && grep -q -Fx "$line" "$file_path"; }; then
-          run_shell_cmd "echo $line >> $file_path"
-        fi
-      }
-
-      echo_info() {
-        echo "info: ${*}"
-      }
-
-      get_enabled_services() {
-        systemctl list-unit-files --type service --state enabled --no-legend --no-pager | awk '{print $1}'
-      }
-
-      get_non_masked_services() {
-        systemctl list-unit-files --type service --no-legend --no-pager | grep -vw 'masked' | awk '{print $1}'
-      }
+      # shellcheck disable=SC1091
+      source /usr/local/sbin/epiphany-lvm-merge-core-functions.sh
 
       mask_service() {
         local service="${1}"
@@ -50,84 +35,18 @@ bootcmd:
         fi
       }
 
-      merge_logical_volumes() {
-        local lv_name="${1}"
-        local target_lv_name="${2}"
-        local mount_point="${3}"
-        local state_file_path="${4}"
-
-        local lv_path=/dev/mapper/rootvg-${lv_name}  # must correspond to the entry in /etc/fstab
-        local target_lv_path=/dev/mapper/rootvg-${target_lv_name}
-        local target_lv_mount_point=/${target_lv_name}-tmp-mnt  # do not use any location that may be a mount point such as /mnt or /tmp
-
-        if lvs -o lv_name --noheadings | grep -q -w "$lv_name"; then
-          if ! test -f "$state_file_path"; then
-            run_cmd touch "$state_file_path"
-          fi
-          if findmnt --source "$lv_path" --target "$mount_point" > /dev/null; then
-            echo_info "Found LV $lv_path mounted on $mount_point"
-            echo_info "Will try to merge it into '${target_lv_name}'"
-            run_cmd mount -v -o remount,ro "$mount_point"  # remount as read-only
-            run_cmd mkdir -p "$target_lv_mount_point"
-            run_cmd mount -v "$target_lv_path" "$target_lv_mount_point"
-            run_cmd cp -ax "$mount_point" "$target_lv_mount_point"
-            run_cmd umount -v "$mount_point"
-          fi
-          run_cmd sed -i "\|^${lv_path}[[:space:]]|d" /etc/fstab  # remove
-          run_cmd systemctl daemon-reload  # to update mount units (systemd-fstab-generator)
-          if lvs "$lv_path" -o lv_active --noheadings | grep -q -w 'active'; then
-            run_cmd lvchange -v --activate n "$lv_path"  # deactivate
-          fi
-          run_cmd lvremove -v "$lv_path"
-        fi
-        # cleanups
-        if findmnt --target "$target_lv_mount_point" > /dev/null; then
-          run_cmd umount -v "$target_lv_mount_point"
-        fi
-        if test -d "$target_lv_mount_point"; then
-          run_cmd rmdir "$target_lv_mount_point"
-        fi
-        if test -f "$state_file_path"; then
-          run_cmd rm -f "$state_file_path"
-        fi
-      }
-
-      # Prints string in format that can be reused as shell input escaping non-printable characters
-      print_as_shell_input() {
-        local -a escaped=()
-        for arg in "$@"; do
-          escaped+=( "$(printf '%q' "$arg")" )
-        done
-        if (( ${#escaped[@]} > 0 )); then
-          printf '%s\n' "${escaped[*]}"
-        fi
-      }
-
-      # Runs command as array with printing it, doesn't support commands with shell operators (such as pipe or redirection)
-      run_cmd() {
-        local -a cmd_arr=("$@")
-        echo "run:" "$(print_as_shell_input "${cmd_arr[@]}")"
-        "${cmd_arr[@]}"
-      }
-
-      # Runs command as string with printing it, supports commands with shell operators (such as pipe or redirection).
-      # Note: eval constructs command by concatenating all arguments, quotes have to be escaped.
-      run_shell_cmd() {
-        local cmd_str="${*}"
-        echo "run: $cmd_str"
-        eval "$cmd_str"
-      }
-
       save_enabled_services() {
         local output_file_path="${1}"
+
         run_shell_cmd "get_enabled_services > $output_file_path"
       }
 
+      # Stops service if exists
       stop_service() {
         local service="${1}"
         local registry_file_path="${2}"
 
-        if grep -q -Fx "$service" <(get_enabled_services); then
+        if grep -q -Fx "$service" <(get_all_services); then
           append_unique_line_to_file "$service" "$registry_file_path"
           run_cmd systemctl stop "$service"
         fi
@@ -136,18 +55,22 @@ bootcmd:
       # --- main ---
 
       main() {
-        # do not use location under mount point to be merged (such as /var) since it is temporarily remounted as read-only
+        # Do not use location under mount point to be merged (such as /var) since it is temporarily remounted as read-only
         local work_dir_path=/root/epiphany-lvm-merge
-        local state_file_path=${work_dir_path}/bootcmd.homelv-started.state
+        local lock_file_name=merge-homelv.uncompleted.state
+
         export LVM_SUPPRESS_FD_WARNINGS=1  # to avoid warnings like 'File descriptor 5 (pipe:[19905]) leaked on lvs invocation'
-        if lvs -o lv_name --noheadings | grep -q -w 'homelv' || test -f "$state_file_path"; then
-          run_cmd mkdir -p "$work_dir_path"
-          run_cmd merge_logical_volumes 'homelv' 'rootlv' '/home' "$state_file_path"
+        if lvs -o lv_name --noheadings | grep -q -w 'homelv' || test -f "${work_dir_path}/${lock_file_name}"; then
+          # this mount point is temporary, do not use any location that may be a mount point such as /mnt or /tmp
+          local rootlv_aux_mount_point=${work_dir_path}/rootlv-tmp-mnt
+          mount_logical_volume_to_directory '/dev/mapper/rootvg-rootlv' "$rootlv_aux_mount_point"
+          run_cmd merge_logical_volumes 'homelv' 'rootlv' '/home' "$rootlv_aux_mount_point" "$lock_file_name" "$work_dir_path"
+          unmount_directory "$rootlv_aux_mount_point" 1  # with directory removal
         fi
 
         # Optimization for varlv volume
         if lvs -o lv_name --noheadings | grep -q -w 'varlv'; then
-         run_cmd mkdir -p "$work_dir_path"
+          test -d "$work_dir_path" || run_cmd mkdir -p "$work_dir_path"
           # Save list of enabled services to file in order to start temporarily disabled ones later
           local enabled_services_dump_path=${work_dir_path}/bootcmd.enabled-services.dump
           if ! test -f "$enabled_services_dump_path"; then
@@ -168,7 +91,7 @@ bootcmd:
 
       main
 
-write_files:
+write_files:  # frequency: once-per-instance
   - path: /etc/systemd/system/epiphany-lvm-merge.service
     content: |
       [Unit]
@@ -219,6 +142,19 @@ write_files:
         run_shell_cmd "$(printf '%s\n' "${cmd_arr[@]}")"
       }
 
+      append_unique_line_to_file() {
+        local line="${1}"
+        local file_path="${2}"
+
+        if ! { test -f "$file_path" && grep -q -Fx "$line" "$file_path"; }; then
+          run_shell_cmd "echo $(print_array_as_shell_escaped_string "$line") >> $file_path"
+        fi
+      }
+
+      create_directory() {
+        test -d "${1}" || run_cmd mkdir -p "${1}"
+      }
+
       echo_info() {
         echo "info: ${*}"
       }
@@ -240,8 +176,31 @@ write_files:
         fi
       }
 
+      get_enabled_services() {
+        systemctl list-unit-files --type service --state enabled --no-legend --no-pager | awk '{print $1}'
+      }
+
+      get_non_masked_services() {
+        systemctl list-unit-files --type service --no-legend --no-pager | grep -vw 'masked' | awk '{print $1}'
+      }
+
       get_running_services() {
         systemctl list-units --type=service --state=running --no-legend --no-pager | awk '{print $1}'
+      }
+
+      get_service_triggers() {
+        local service="${1}"
+
+        local output
+        output="$(systemctl show -p TriggeredBy "$service")"  # should return single line (space separated list)
+        # example output: TriggeredBy=systemd-udevd-control.socket systemd-udevd-kernel.socket
+        output="${output#*=}"  # remove 'TriggeredBy='
+        local -a triggers
+        # 'readarray -d' is not available in bash 4.2
+        IFS=' '; read -a triggers -r <<< "$output" #  after this command IFS resets back to its previous value
+        if (( ${#triggers[@]} > 0 )); then
+          printf '%s\n' "${triggers[@]}"
+        fi
       }
 
       get_shell_escaped_array() {
@@ -263,7 +222,7 @@ write_files:
         local mount_point="${2}"
 
         if ! findmnt --target "$mount_point" > /dev/null; then
-          run_cmd mkdir -p "$mount_point"
+          create_directory "$mount_point"
           run_cmd mount -v "$lv_path" "$mount_point"
         fi
       }
@@ -278,7 +237,7 @@ write_files:
         done
       }
 
-      # Returns new array
+      # Note: returns new array
       remove_item_from_array() {
         local item_to_remove="${1}"
         shift
@@ -347,6 +306,7 @@ write_files:
         run_cmd_with_retries $retries systemctl start "${services[@]}"
       }
 
+      # Note: doesn't test if services exist
       stop_services() {
         local registry_file_path="${1}"  # stores list of services that are stopped by this function
         shift
@@ -477,20 +437,20 @@ write_files:
         fi
       }
 
-      # Gets services that currently use files under a mount point or should be stopped
+      # Gets services (with triggers) that currently use files under a mount point or should be stopped explicitly
       get_services_to_stop() {
         local mount_point="${1}"
         local apply_exclusions="${2:-1}"  # 1 -> true
         local apply_filtering="${3:-1}"
 
-        local -a pids_to_stop services_to_stop
+        local -a pids_to_stop services_to_stop=()
         # get PIDs that use files under mount point
         readarray -t pids_to_stop < <(lsof -t "${mount_point}")
         if (( ${#pids_to_stop[@]} > 0 )); then
           # shellcheck disable=SC2009
           readarray -t services_to_stop < \
-            <(ps -o 'unit' --no-headers --pid "${pids_to_stop[@]}" | sort --ignore-case | uniq)
-          if (( apply_filtering )) && (( ${#services_to_stop[@]} > 0 )); then
+            <(ps -o unit --no-headers --pid "${pids_to_stop[@]}" | sort --ignore-case | uniq)
+          if (( apply_filtering )); then
             readarray -t services_to_stop < <(grep '\.service$' <(printf '%s\n' "${services_to_stop[@]}"))
           fi
         fi
@@ -508,12 +468,12 @@ write_files:
           for service in "${additional_services_to_stop[@]}"; do
             service="${service}.service"
             if grep -q -w 'running' <(systemctl show -p SubState "$service") \
-            && ! is_in_array "$service" "${services_to_stop[@]}"; then
-              services_to_stop+=("$service")
+            && { (( ${#services_to_stop[@]} == 0 )) || ! is_in_array "$service" "${services_to_stop[@]}"; }; then
+              services_to_stop+=( "$service" )
             fi
           done
         fi
-        if (( apply_exclusions )); then
+        if (( apply_exclusions )) && (( ${#services_to_stop[@]} > 0 )); then
           # it seems it's safer to wait for kdump to exit than stopping it
           local -a excluded_services=(epiphany-lvm-merge kdump sshd)
           for service in "${excluded_services[@]}"; do
@@ -523,19 +483,23 @@ write_files:
             fi
           done
         fi
-        # some services after stopping are activated by sockets
-        local -A sockets_to_stop  # sockets_to_stop[<service_name>]="<socket_1> [socket_2]"
-        sockets_to_stop[dbus]="dbus"  # bash does not support multi-dimensional arrays
-        sockets_to_stop[systemd-udevd]="systemd-udevd-control systemd-udevd-kernel"
-        for service in "${!sockets_to_stop[@]}"; do
-          if is_in_array "${service}.service" "${services_to_stop[@]}"; then
-            for socket in ${sockets_to_stop["$service"]}; do  # do not use quotes here
-              if grep -q -w 'running' <(systemctl show -p SubState "${socket}.socket"); then
-                services_to_stop+=("${socket}.socket")
-              fi
-            done
-          fi
-        done
+        # some services after stopping may be activated by triggers (such as sockets or timers)
+        if (( ${#services_to_stop[@]} > 0 )); then
+          local -a triggers_to_stop
+          for service in "${services_to_stop[@]}"; do
+            readarray -t triggers_to_stop < <(get_service_triggers "$service")
+            if (( ${#triggers_to_stop[@]} > 0 )); then
+              for trigger in "${triggers_to_stop[@]}"; do
+                if ! is_in_array "$trigger" "${services_to_stop[@]}"; then
+                  if grep -q -w 'active' <(systemctl show -p ActiveState "$trigger"); then
+                    services_to_stop+=( "$trigger" )
+                  fi
+                fi
+              done
+            fi
+          done
+        fi
+
         if (( ${#services_to_stop[@]} > 0 )); then
           printf '%s\n' "${services_to_stop[@]}" | sort --ignore-case
         fi
@@ -546,16 +510,17 @@ write_files:
         local target_lv_name="${2}"
         local mount_point="${3}"
         local target_lv_mount_point="${4}"
+        local lock_file_name="${5}"
+        local work_dir_path="${6}"
 
-        local lv_path=/dev/mapper/rootvg-${lv_name}  # must correspond to the entry in /etc/fstab
-        local state_file_path=/var/tmp/epiphany-lvm-merge-${lv_name}-started.state
-        # do not use location under mount point to be merged such as /var since it is temporarily remounted as read-only
-        local stopped_services_registry_file_path=/root/epiphany-lvm-merge.${lv_name}.stopped-services.tmp-changes
+        local lv_path="/dev/mapper/rootvg-${lv_name}"  # must correspond to the entry in /etc/fstab
+        local lock_file_path="${work_dir_path}/${lock_file_name}"
+        local stopped_services_registry_file_path="${work_dir_path}/merge-${lv_name}.stopped-services.tmp-changes"
 
         export LVM_SUPPRESS_FD_WARNINGS=1
         if lvs "$lv_path" > /dev/null; then
-          if ! test -f "$state_file_path"; then
-            run_cmd touch "$state_file_path"
+          if ! test -f "$lock_file_path"; then
+            run_cmd touch "$lock_file_path"
           fi
           if findmnt --source "$lv_path" --target "$mount_point" > /dev/null; then
             echo_info "Found LV $lv_path mounted on $mount_point"
@@ -590,7 +555,7 @@ write_files:
           fi
         fi
         # cleanup
-        remove_files_if_exist "$stopped_services_registry_file_path" "$state_file_path"
+        remove_files_if_exist "$stopped_services_registry_file_path" "$lock_file_path"
       }
 
       restore_disabled_services() {
@@ -651,47 +616,50 @@ write_files:
         local work_dir_path=/root/epiphany-lvm-merge
 
         local -A volumes_to_merge
-        # homelv is already merged by bootcmd
+        # homelv is already merged by bootcmd module
         # usrlv will be not merged because it requires reboot
         volumes_to_merge[optlv]=/opt
         volumes_to_merge[tmplv]=/tmp
         volumes_to_merge[varlv]=/var
 
-        # If this file exists it means the process was started but not completed
-        local state_flag_file=${work_dir_path}/uncompleted
+        # if this file exists it means the process was started but not completed
+        local state_flag_file="${work_dir_path}/epiphany-lvm-merge.uncompleted.state"
 
         if ! lvs -o lv_name --noheadings | grep -qw -f <(printf '%s\n' "${!volumes_to_merge[@]}") \
-        && ! test -f $state_flag_file; then
+        && ! test -f "$state_flag_file"; then
           echo "*** Nothing to do, exiting"
-          exit 0
+          return
         fi
 
-        run_cmd mkdir -p "$work_dir_path"
-        test -f $state_flag_file || run_cmd touch $state_flag_file
+        create_directory "$work_dir_path"
+        test -f "$state_flag_file" || run_cmd touch "$state_flag_file"
 
         # wait until cloud-init is done
         run_cmd cloud-init status --wait
 
         # this mount point is temporary, do not use any location that may be a mount point such as /mnt or /tmp
-        local rootlv_aux_mount_point=${work_dir_path}/rootlv-mnt
-        run_cmd mount_logical_volume_to_directory '/dev/mapper/rootvg-rootlv' "$rootlv_aux_mount_point"
+        local rootlv_aux_mount_point="${work_dir_path}/rootlv-tmp-mnt"
+        mount_logical_volume_to_directory '/dev/mapper/rootvg-rootlv' "$rootlv_aux_mount_point"
 
         # merge volumes
         local -a volumes_in_order  # merge varlv as the last to save time
         readarray -t volumes_in_order < <(printf '%s\n' "${!volumes_to_merge[@]}" | sort)
+        local lock_file_name
         for volume in "${volumes_in_order[@]}"; do
-          run_cmd merge_logical_volumes "$volume" 'rootlv' "${volumes_to_merge[$volume]}" "$rootlv_aux_mount_point"
+          lock_file_name="merge-${volume}.uncompleted.state"
+          run_cmd merge_logical_volumes "$volume" 'rootlv' "${volumes_to_merge[$volume]}" "$rootlv_aux_mount_point" \
+                                        "$lock_file_name" "$work_dir_path"
         done
 
         run_cmd extend_logical_volume_to_use_free_space 'rootvg' 'rootlv'
 
-        # these files are created using cloud-init (module bootcmd)
-        local enabled_services_dump_path=${work_dir_path}/bootcmd.enabled-services.dump
-        local masked_services_registry_path=${work_dir_path}/bootcmd.masked-services.tmp-changes
-        local stopped_services_registry_path=${work_dir_path}/bootcmd.stopped-services.tmp-changes
+        # these files are created at previous stage (bootcmd module)
+        local enabled_services_dump_path="${work_dir_path}/bootcmd.enabled-services.dump"
+        local masked_services_registry_path="${work_dir_path}/bootcmd.masked-services.tmp-changes"
+        local stopped_services_registry_path="${work_dir_path}/bootcmd.stopped-services.tmp-changes"
 
-        restore_disabled_services $enabled_services_dump_path $masked_services_registry_path
-        restore_stopped_services $stopped_services_registry_path
+        restore_disabled_services "$enabled_services_dump_path" "$masked_services_registry_path"
+        restore_stopped_services "$stopped_services_registry_path"
 
         # cleanups
         unmount_directory "$rootlv_aux_mount_point" 1  # with directory removal
@@ -706,7 +674,6 @@ write_files:
 
       main
 
-# runcmd only runs during the first boot
-runcmd:
+runcmd:  # frequency: once-per-instance
   - systemctl enable epiphany-lvm-merge
   - systemctl start --no-block epiphany-lvm-merge
