@@ -20,7 +20,9 @@ bootcmd:  # frequency: always
   - cloud-init single --name write_files
   # Merge LV homelv into rootlv, then remove homelv
   - - bash
-    - -ce
+    - -ceu
+    - -o
+    - pipefail
     - |
       # shellcheck disable=SC1091
       source /usr/local/sbin/epiphany-lvm-merge-core-functions.sh
@@ -38,54 +40,56 @@ bootcmd:  # frequency: always
       save_enabled_services() {
         local output_file_path="${1}"
 
-        run_shell_cmd "get_enabled_services > $output_file_path"
-      }
-
-      # Stops service if exists
-      stop_service() {
-        local service="${1}"
-        local registry_file_path="${2}"
-
-        if grep -q -Fx "$service" <(get_all_services); then
-          append_unique_line_to_file "$service" "$registry_file_path"
-          run_cmd systemctl stop "$service"
-        fi
+        run_shell_cmd "get_services_in_state 'enabled' > $output_file_path"
       }
 
       # --- main ---
 
       main() {
-        # Do not use location under mount point to be merged (such as /var) since it is temporarily remounted as read-only
+        # Do not use location under mount point to be merged (such as /var) since it is temporarily remounted as read-only.
         local work_dir_path=/root/epiphany-lvm-merge
         local lock_file_name=merge-homelv.uncompleted.state
 
         export LVM_SUPPRESS_FD_WARNINGS=1  # to avoid warnings like 'File descriptor 5 (pipe:[19905]) leaked on lvs invocation'
+
         if lvs -o lv_name --noheadings | grep -q -w 'homelv' || test -f "${work_dir_path}/${lock_file_name}"; then
-          # this mount point is temporary, do not use any location that may be a mount point such as /mnt or /tmp
+          # This mount point is temporary, do not use any location that may be a mount point (such as /mnt or /tmp).
           local rootlv_aux_mount_point=${work_dir_path}/rootlv-tmp-mnt
           mount_logical_volume_to_directory '/dev/mapper/rootvg-rootlv' "$rootlv_aux_mount_point"
           run_cmd merge_logical_volumes 'homelv' 'rootlv' '/home' "$rootlv_aux_mount_point" "$lock_file_name" "$work_dir_path"
           unmount_directory "$rootlv_aux_mount_point" 1  # with directory removal
         fi
 
-        # Optimization for varlv volume
         if lvs -o lv_name --noheadings | grep -q -w 'varlv'; then
-          test -d "$work_dir_path" || run_cmd mkdir -p "$work_dir_path"
-          # Save list of enabled services to file in order to start temporarily disabled ones later
+          create_directory "$work_dir_path"
+
+          # Save list of enabled services to file in order to start temporarily disabled ones later.
           local enabled_services_dump_path=${work_dir_path}/bootcmd.enabled-services.dump
           if ! test -f "$enabled_services_dump_path"; then
             save_enabled_services "$enabled_services_dump_path"
           fi
-          # Disable kdump service if not started yet to save time in later part. It starts even when disabled so masking is used.
+
+          # Disable kdump service only if not started yet to save time in later part. It starts even when disabled so masking is used.
           local masked_services_registry_path=${work_dir_path}/bootcmd.masked-services.tmp-changes
-          if grep -q -Fx 'kdump.service' \
-          <(systemctl list-units --type=service --state=inactive --all --no-legend --no-pager | awk '{print $1}'); then
+          if grep -q -Fx 'kdump.service' <(get_services_in_state 'inactive'); then
             mask_service 'kdump.service' "$masked_services_registry_path"
             run_cmd systemctl show 'kdump.service' -p LoadState,SubState
           fi
+
+          # Stop services if active (they have to be stopped early - before problematic files are created)
+          # and postpone their start by masking.
+          # crond.service is stopped to prevent starting anacron (run-parts /etc/cron.hourly) which uses /var/spool/anacron by session-1.scope
           # sssd.service is stopped because it causes issue on RHEL 8 due to caching local users in /var/lib/sss/mc/passwd
+          local -a services_to_postpone=(crond sssd)
           local stopped_services_registry_path=${work_dir_path}/bootcmd.stopped-services.tmp-changes
-          stop_service 'sssd.service' "$stopped_services_registry_path"
+          for service in "${services_to_postpone[@]}"; do
+            service="${service}.service"
+            if grep -q -Fx "$service" <(get_services_in_state 'active'); then
+              append_unique_line_to_file "$service" "$stopped_services_registry_path"
+              run_cmd systemctl stop "$service"
+            fi
+            mask_service "$service" "$masked_services_registry_path"
+          done
         fi
       }
 
@@ -176,16 +180,8 @@ write_files:  # frequency: once-per-instance
         fi
       }
 
-      get_enabled_services() {
-        systemctl list-unit-files --type service --state enabled --no-legend --no-pager | awk '{print $1}'
-      }
-
       get_non_masked_services() {
         systemctl list-unit-files --type service --no-legend --no-pager | grep -vw 'masked' | awk '{print $1}'
-      }
-
-      get_running_services() {
-        systemctl list-units --type=service --state=running --no-legend --no-pager | awk '{print $1}'
       }
 
       get_service_triggers() {
@@ -201,6 +197,25 @@ write_files:  # frequency: once-per-instance
         if (( ${#triggers[@]} > 0 )); then
           printf '%s\n' "${triggers[@]}"
         fi
+      }
+
+      get_services_in_state() {
+        local state="${1}"
+
+        case $state in
+          active | exited | failed | running)
+            systemctl list-units --type service --state "$state" --no-legend --no-pager | awk '{print $1}'
+            ;;
+          enabled | masked)
+            systemctl list-unit-files --type service --state "$state" --no-legend --no-pager | awk '{print $1}'
+            ;;
+          dead | inactive)  #  require '--all'
+            systemctl list-units --type service --all --state "$state" --no-legend --no-pager | awk '{print $1}'
+            ;;
+          *)
+            return 65  # unsupported value
+            ;;
+        esac
       }
 
       get_shell_escaped_array() {
@@ -430,7 +445,8 @@ write_files:  # frequency: once-per-instance
 
         local -a services_to_start
         if test -f "$stopped_services_registry_file_path"; then
-          readarray -t services_to_start < <(grep -Fxv -f <(get_running_services) "$stopped_services_registry_file_path")
+          readarray -t services_to_start < \
+            <(grep -Fxv -f <(get_services_in_state 'active') "$stopped_services_registry_file_path")
         fi
         if (( ${#services_to_start[@]} > 0 )); then
           printf '%s\n' "${services_to_start[@]}" | sort --ignore-case
@@ -580,9 +596,7 @@ write_files:  # frequency: once-per-instance
                 run_cmd_with_retries 3 systemctl start "${services_to_start[@]}"
               fi
             fi
-            run_cmd rm -f "$enabled_services_dump_path"
           fi
-          run_cmd rm -f "$masked_services_registry_file_path"
         fi
       }
 
@@ -591,11 +605,12 @@ write_files:  # frequency: once-per-instance
 
         if test -f "$stopped_services_registry_file_path"; then
           local -a services_to_start
-          readarray -t services_to_start < "$stopped_services_registry_file_path"
+          # filter out already started
+          readarray -t services_to_start < \
+            <(get_services_in_state 'active' | grep -Fxv -f - "$stopped_services_registry_file_path")
           if (( ${#services_to_start[@]} > 0 )); then
             run_cmd_with_retries 3 systemctl start "${services_to_start[@]}"
           fi
-          run_cmd rm -f "$stopped_services_registry_file_path"
         fi
       }
 
@@ -663,7 +678,9 @@ write_files:  # frequency: once-per-instance
 
         # cleanups
         unmount_directory "$rootlv_aux_mount_point" 1  # with directory removal
-        remove_files_if_exist "$state_flag_file"
+        remove_files_if_exist "$enabled_services_dump_path" "$masked_services_registry_path" "$state_flag_file" \
+                              "$stopped_services_registry_path"
+
         run_cmd rmdir "$work_dir_path"
 
         run_cmd systemctl disable epiphany-lvm-merge.service  # disable itself
