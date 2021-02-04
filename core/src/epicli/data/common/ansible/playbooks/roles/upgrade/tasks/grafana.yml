@@ -1,0 +1,28 @@
+---
+- name: Grafana | Get information about installed packages as facts
+  package_facts:
+    manager: auto
+  when: ansible_facts.packages is undefined
+
+- name: Upgrade Grafana
+  when: ansible_facts.packages['grafana'] is defined
+  vars:
+    grafana_defaults:
+      # Unfortunately grafana_version in role defaults refers to the "specification" document which we cannot really use here.
+      # Next future upgrade will unhardcode this value.
+      grafana_version: 7.3.5
+  block:
+    - name: Grafana | Print versions
+      debug:
+        msg:
+          - "Installed version: {{ ansible_facts.packages['grafana'][0].version }}"
+          - "Target version: {{ grafana_defaults.grafana_version }}"
+
+    # Since we do not manage custom resources like plugins (it's up to the user), upgrading grafana by just installing new binary is considered complete here.
+    # https://grafana.com/docs/grafana/latest/installation/upgrading/
+    - name: Grafana | Upgrade
+      import_role:
+        name: grafana
+        tasks_from: install
+      when:
+        - grafana_defaults.grafana_version is version(ansible_facts.packages['grafana'][0].version, '>')
