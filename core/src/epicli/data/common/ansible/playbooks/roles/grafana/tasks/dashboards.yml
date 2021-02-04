@@ -15,11 +15,11 @@
       get_url:
         url: https://grafana.com/api/dashboards/{{ item.dashboard_id }}/revisions/{{ item.revision_id }}/download
         dest: "{{ tmp_dashboards.path }}/{{ item.dashboard_id }}.json"
-        register: result
-        until: result is success
-        retries: 5
-        delay: 2
-        loop: "{{ grafana_dashboards }}"
+      register: result
+      until: result is success
+      retries: 5
+      delay: 2
+      loop: "{{ grafana_dashboards }}"
 
     # As noted in [1] an exported dashboard replaces the exporter's datasource
     # name with a representative name, something like 'DS_GRAPHITE'. The name
@@ -63,7 +63,6 @@
 - name: Update dashboards
   block:
     - name: Create/Update dashboards file (provisioning)
-      become: true
       copy:
         dest: /etc/grafana/provisioning/dashboards/ansible.yml
         content: |
@@ -95,10 +94,10 @@
         src: "{{ item }}"
         dest: "{{ grafana_data_dir }}/dashboards/{{ item | basename }}"
       with_fileglob:
-        - "{{ _tmp_dashboards.path }}/*"
         - "{{ tmp_dashboards.path }}/*.json"
+        - "{{ grafana_dashboards_dir }}/*.json"
       register: dashboards_copied
-      notify: "provisioned dashboards changed"
+      notify: provisioned dashboards changed
 
     - name: Get dashboard lists
       set_fact:
