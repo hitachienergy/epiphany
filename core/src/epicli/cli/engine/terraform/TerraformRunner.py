@@ -68,12 +68,10 @@ class TerraformRunner(Step):
                 # Set active subscription if sp contains it.
                 self.logger.debug(f"subscriptionId from sp file: {sp['subscriptionId']}")
                 apiproxy.set_active_subscribtion(sp['subscriptionId'])
-                arm_subscription_id = ""
+                arm_subscription_id = sp['subscriptionId']
                 if "/" in sp['subscriptionId']:
                     self.logger.debug(f"WARN Slash detected in the subscription name {sp['subscriptionId']}. Will parse the ID and use it instead")
-                    arm_subscription_id = [x['id'] for x in subscription if x['name'] == sp['subscriptionId']][0]
-                else:
-                    arm_subscription_id = sp['subscriptionId']
+                    arm_subscription_id = next((_sub['id'] for _sub in subscription if _sub['name'] == sp['subscriptionId']), None)
                 self.new_env['ARM_SUBSCRIPTION_ID'] = arm_subscription_id
             else:
                 # No subscriptionId in sp.yml so use the default one from Azure SP login.
