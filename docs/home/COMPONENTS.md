@@ -23,7 +23,7 @@ Note that versions are default versions and can be changed in certain cases thro
 | Filebeat                  | 7.8.1   | https://github.com/elastic/beats                      | [Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0) |
 | Logstash OSS              | 7.8.1   | https://github.com/elastic/logstash                   | [Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0) |
 | Prometheus                | 2.10.0  | https://github.com/prometheus/prometheus              | [Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0) |
-| Grafana                   | 6.2.5   | https://github.com/grafana/grafana                    | [Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0) |
+| Grafana                   | 7.3.5   | https://github.com/grafana/grafana                    | [Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0) |
 | node_exporter             | 1.0.1  | https://github.com/prometheus/node_exporter            | [Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0) |
 | kafka_exporter            | 1.2.0   | https://github.com/danielqsj/kafka_exporter           | [Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0) |
 | haproxy_exporter          | 0.10.0  | https://github.com/prometheus/haproxy_exporter        | [Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0) |
