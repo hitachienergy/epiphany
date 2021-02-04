@@ -95,6 +95,14 @@
 - name: k8s/master0 | Wait for cluster's readiness
   include_tasks: utils/wait.yml
 
+# Even though cluster is seen as ready here, the next task may occasionally fail with error like
+# "Error from server (NotFound): the server could not find the requested resource".
+# The following task prevents this issue.
+- name: k8s/master0 | Refresh api-resources cache
+  shell: kubectl api-resources --cached=false > /dev/null
+  when:
+    - version is version('1.18', '<')
+
 # 'kubeadm upgrade apply' overwrites Epiphany's customized CoreDNS so we patch it again.
 # This task restores 'hosts' plugin and should be run each time K8s was upgraded in order to support "--wait-for-pods" epicli feature (issue #1218).
 - name: k8s/master0 | Customize CoreDNS

@@ -7,12 +7,14 @@
 - [#1875](https://github.com/epiphany-platform/epiphany/issues/1875) - epicli upgrade fails when there is no kubernetes_master group in inventory
 - [#1884](https://github.com/epiphany-platform/epiphany/issues/1884) - Prometheus is not able to scrape metrics from AKS/EKS nodes
 - [#1908](https://github.com/epiphany-platform/epiphany/issues/1908) - Research why Epiphany nodes hang when memory is overcommited
+- [#1888](https://github.com/epiphany-platform/epiphany/issues/1888) - epicli upgrade of cluster created by Epiphany v0.5 may fail
 
 ### Updated
 
 - [#1964](https://github.com/epiphany-platform/epiphany/issues/1964) - Upgrade Elasticsearch Curator to v5.8.3
 - [#1919](https://github.com/epiphany-platform/epiphany/issues/1919) - Upgrade Kafka to v2.6.0
 - [#1926](https://github.com/epiphany-platform/epiphany/issues/1926) - Upgrade Zookeeper to v3.5.8
+- [#1855](https://github.com/epiphany-platform/epiphany/issues/1855) - Upgrade Docker to v19.03.14
 
 ## [0.8.0] 2020-10-22
 

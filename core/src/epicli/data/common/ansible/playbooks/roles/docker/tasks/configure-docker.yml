@@ -16,4 +16,5 @@
 - name: Verify logging driver  # 'json-file' is needed for K8s metadata in Filebeat and log rotation
   assert:
     that: "'json-file' in docker_log_driver.stdout"
-    msg: "Unexpected logging driver, docker_log_driver.stdout: '{{ docker_log_driver.stdout }}'"
+    fail_msg: "Unexpected logging driver, docker_log_driver.stdout: '{{ docker_log_driver.stdout }}'"
+    quiet: true

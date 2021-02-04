@@ -11,6 +11,6 @@ docker_daemon_defaults:
     # The maximum number of log files that can be present.
     max-file: "2"  # must be a string
 
-docker_version: 
-  Debian: "5:18.09.*"
-  RedHat: "18.09.*"
+docker_version:
+  Debian: "5:19.03.14*" # * is needed to match a version such as '5:19.03.14~3-0~ubuntu-bionic'
+  RedHat: "19.03.14"
