@@ -1,0 +1,12 @@
+---
+cookie_file: /var/lib/rabbitmq/.erlang.cookie
+# check RabbitMQ/Erlang version compatibility matrix before modification
+versions:
+  general: 3.8.9 # required for upgrade
+  # packages
+  debian:
+    erlang: 1:23.1.*
+    rabbitmq: 3.8.9*
+  redhat:
+    erlang: 23.1.*
+    rabbitmq: 3.8.9
