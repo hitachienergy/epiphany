@@ -131,8 +131,15 @@
 - name: k8s/master0 | Upgrade Docker  # this may restart Docker daemon
   include_tasks: docker.yml
 
-- name: k8s/master0 | Reload kubelet and docker
-  include_tasks: utils/reload-kubelet-and-docker.yml
+# This is considered a bugfix for existing clusters created prior Epiphany v0.10.x and after v0.5.x.
+- name: k8s/master0 | Replace cgroupfs driver with systemd driver
+  include_tasks: patch-cgroup-driver.yml
+  vars: { _requires_restart: false }  # it will be properly restarted anyways
+  when:
+    - upgrade_to_final_version
+
+- name: k8s/master0 | Restart kubelet and docker
+  include_tasks: utils/restart-kubelet-and-docker.yml
 
 - name: k8s/master0 | Uncordon master - mark master as schedulable
   include_tasks: utils/uncordon.yml
