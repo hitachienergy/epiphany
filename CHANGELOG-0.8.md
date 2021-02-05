@@ -6,6 +6,7 @@
 
 - [#1875](https://github.com/epiphany-platform/epiphany/issues/1875) - epicli upgrade fails when there is no kubernetes_master group in inventory
 - [#1884](https://github.com/epiphany-platform/epiphany/issues/1884) - Prometheus is not able to scrape metrics from AKS/EKS nodes
+- [#1888](https://github.com/epiphany-platform/epiphany/issues/1888) - epicli upgrade of cluster created by Epiphany v0.5 may fail
 
 ### Updated
 
@@ -13,6 +14,7 @@
 - [#1919](https://github.com/epiphany-platform/epiphany/issues/1919) - Upgrade Kafka to v2.6.0
 - [#1926](https://github.com/epiphany-platform/epiphany/issues/1926) - Upgrade Zookeeper to v3.5.8
 - [#1854](https://github.com/epiphany-platform/epiphany/issues/1854) - Upgrade RabbitMQ to v3.8.9
+- [#1855](https://github.com/epiphany-platform/epiphany/issues/1855) - Upgrade Docker to v19.03.14
 
 ## [0.8.0] 2020-10-22
 
