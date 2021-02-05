@@ -5,6 +5,7 @@
 ### Added
 
 - [#1798](https://github.com/epiphany-platform/epiphany/issues/1798) - Additional alerts for Prometheus
+- [#1355](https://github.com/epiphany-platform/epiphany/issues/1355) - Updating cloud based OS images - configuration required for Azure RHEL LVM images
 
 ### Fixed
 
