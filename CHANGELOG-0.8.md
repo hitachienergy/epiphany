@@ -15,6 +15,7 @@
 - [#1964](https://github.com/epiphany-platform/epiphany/issues/1964) - Upgrade Elasticsearch Curator to v5.8.3
 - [#1919](https://github.com/epiphany-platform/epiphany/issues/1919) - Upgrade Kafka to v2.6.0
 - [#1926](https://github.com/epiphany-platform/epiphany/issues/1926) - Upgrade Zookeeper to v3.5.8
+- [#1949](https://github.com/epiphany-platform/epiphany/issues/1949) - Upgrade Grafana to v7.3.5
 - [#1855](https://github.com/epiphany-platform/epiphany/issues/1855) - Upgrade Docker to v19.03.14
 
 ## [0.8.0] 2020-10-22

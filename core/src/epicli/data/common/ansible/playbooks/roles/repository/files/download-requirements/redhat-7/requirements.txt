@@ -40,7 +40,7 @@ firewalld
 fontconfig # for grafana
 fping
 gnutls # for cifs-utils
-grafana-6.2.5
+grafana-7.3.5
 gssproxy # for nfs-utils
 htop
 iftop
