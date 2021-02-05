@@ -12,8 +12,8 @@ echo "deb https://packages.grafana.com/oss/deb stable main" | tee /etc/apt/sourc
 wget -qO - https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key add -
 echo "deb http://apt.kubernetes.io/ kubernetes-xenial main" | tee /etc/apt/sources.list.d/kubernetes.list
 
-wget -qO - https://github.com/rabbitmq/signing-keys/releases/download/2.0/rabbitmq-release-signing-key.asc | apt-key add -
-echo "deb http://dl.bintray.com/rabbitmq-erlang/debian bionic erlang-21.x" | tee /etc/apt/sources.list.d/erlang-21.x.list
+wget -qO - https://dl.bintray.com/rabbitmq/Keys/rabbitmq-release-signing-key.asc | apt-key add -
+echo "deb http://dl.bintray.com/rabbitmq-erlang/debian bionic erlang-23.x" | tee /etc/apt/sources.list.d/erlang-23.x.list
 echo "deb https://dl.bintray.com/rabbitmq/debian bionic main" | tee /etc/apt/sources.list.d/rabbitmq.list
 
 wget -qO -  https://download.docker.com/linux/ubuntu/gpg | apt-key add -

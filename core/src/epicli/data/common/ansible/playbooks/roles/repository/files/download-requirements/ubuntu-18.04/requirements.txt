@@ -15,7 +15,28 @@ ebtables
 elasticsearch-curator 5.8.3
 elasticsearch-oss 6.8.5 # for elasticsearch role
 elasticsearch-oss 7.9.1 # for opendistroforelasticsearch & logging roles
-erlang-nox
+
+# erlang packages must be compatible with rabbitmq version
+erlang-eldap 1:23.1.4
+erlang-inets 1:23.1.4
+erlang-os-mon 1:23.1.4
+erlang-public-key 1:23.1.4
+erlang-ssl 1:23.1.4
+
+# additional dependencies required to fix https://github.com/epiphany-platform/epiphany/issues/1920
+erlang-asn1 1:23.1.4
+erlang-base-hipe 1:23.1.4
+erlang-crypto 1:23.1.4
+erlang-ftp 1:23.1.4
+erlang-mnesia 1:23.1.4
+erlang-parsetools 1:23.1.4
+erlang-runtime-tools 1:23.1.4
+erlang-snmp 1:23.1.4
+erlang-syntax-tools 1:23.1.4
+erlang-tftp 1:23.1.4
+erlang-tools 1:23.1.4
+erlang-xmerl 1:23.1.4
+
 ethtool
 filebeat 7.8.1
 firewalld
@@ -47,7 +68,7 @@ python-pip
 python-psycopg2
 python-selinux
 python-setuptools
-rabbitmq-server 3.8.3
+rabbitmq-server 3.8.9
 smbclient
 samba-common
 smbclient
@@ -202,7 +223,7 @@ brainsam/pgbouncer:1.12
 # TODO remove?
 jboss/keycloak:4.8.3.Final
 jboss/keycloak:9.0.0
-rabbitmq:3.8.3
+rabbitmq:3.8.9
 # K8s upgrade
 ## v1.14.6
 k8s.gcr.io/kube-apiserver:v1.14.6
