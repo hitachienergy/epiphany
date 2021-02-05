@@ -42,7 +42,7 @@ filebeat 7.8.1
 firewalld
 fping
 gnupg2
-grafana 6.2.5
+grafana 7.3.5
 haproxy
 htop
 iftop

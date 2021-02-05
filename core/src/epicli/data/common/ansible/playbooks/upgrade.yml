@@ -140,6 +140,15 @@
         name: upgrade
         tasks_from: kibana
 
+- hosts: grafana
+  become: true
+  become_method: sudo
+  serial: 1
+  tasks:
+    - import_role:
+        name: upgrade
+        tasks_from: grafana
+
 - hosts: zookeeper
   serial: 1
   become: true
