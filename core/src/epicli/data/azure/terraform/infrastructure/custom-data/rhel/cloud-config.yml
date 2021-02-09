@@ -408,6 +408,26 @@ write_files:  # frequency: once-per-instance
         fi
       }
 
+      verify_started_services() {
+        local stopped_services_registry_file_path=${1}
+
+        if [ -f "$stopped_services_registry_file_path" ]; then
+          local -a failed_services=()
+          local output
+          output=$(get_services_in_state 'failed')
+          [ -z "$output" ] || readarray -t failed_services <<< "$output"
+          if (( ${#failed_services[@]} > 0 )); then
+            readarray -t failed_services < \
+              <(grep -Fx -f <(printf '%s\n' "${failed_services[@]}") "$stopped_services_registry_file_path")
+          fi
+          if (( ${#failed_services[@]} > 0 )); then
+            echo "ERROR: found service(s) in failed state"
+            printf '%s\n' "${failed_services[@]}"
+            return 1
+          fi
+        fi
+      }
+
       wait_for_files_to_be_closed() {
         local mount_point=${1}
         local timeout=${2}
@@ -633,6 +653,7 @@ write_files:  # frequency: once-per-instance
           [ -z "$output" ] || readarray -t services_to_start <<< "$output"
           if (( ${#services_to_start[@]} > 0 )); then
             start_services "${services_to_start[@]}"
+            verify_started_services "$stopped_services_registry_file_path"
           fi
         fi
         # cleanup
@@ -757,7 +778,9 @@ write_files:  # frequency: once-per-instance
         local stopped_services_registry_path="${work_dir_path}/bootcmd.stopped-services.tmp-changes"
 
         restore_disabled_services "$enabled_services_dump_path" "$masked_services_registry_path"
+        verify_started_services "$masked_services_registry_path"
         restore_stopped_services "$stopped_services_registry_path"
+        verify_started_services "$stopped_services_registry_path"
 
         # cleanups
         unmount_directory "$rootlv_aux_mount_point" 1  # with directory removal
