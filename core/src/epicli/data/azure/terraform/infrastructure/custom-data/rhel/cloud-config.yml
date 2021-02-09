@@ -497,13 +497,8 @@ write_files:  # frequency: once-per-instance
         local lv_name=${2}
 
         local lv_path=/dev/mapper/${vg_name}-${lv_name}
-        local free_space
-        free_space=$(vgs "$vg_name" -o free --noheadings)  # this may get a string, e.g. '<51.02g'
-        if [[ $free_space != 0 ]]; then
-          run_cmd lvextend --extents +100%FREE -v "$lv_path"
-        fi
-        # grow FS, it's safe to run this many times
-        run_cmd xfs_growfs "$lv_path"
+        # with --resizefs flag it's safe to run this many times
+        run_cmd lvextend --extents +100%FREE --nofsck --resizefs -v "$lv_path"  # --nofsck because FS is mounted
       }
 
       get_services_to_start() {
@@ -735,21 +730,10 @@ write_files:  # frequency: once-per-instance
         volumes_to_merge[tmplv]=/tmp
         volumes_to_merge[varlv]=/var
 
-        # if this file exists it means the process was started but not completed
-        local state_flag_file="${work_dir_path}/epiphany-lvm-merge.uncompleted.state"
-
-        if ! lvs -o lv_name --noheadings --readonly | grep -qw -f <(printf '%s\n' "${!volumes_to_merge[@]}") \
-        && ! [ -f "$state_flag_file" ]; then
-          echo "*** Nothing to do, exiting"
-          return
-        fi
-
         # Use dedicated TMPDIR to avoid errors such as 'cannot create temp file for here-document: Read-only file system'.
         # Here-strings in bash are implemented via temporary files.
         create_directory "$work_dir_path/tmp"  # create working dir with tmp subdir in one call
         export TMPDIR="$work_dir_path/tmp"
-
-        [ -f "$state_flag_file" ] || run_cmd touch "$state_flag_file"
 
         # wait until cloud-init is done
         run_cmd cloud-init status --wait
@@ -784,8 +768,7 @@ write_files:  # frequency: once-per-instance
 
         # cleanups
         unmount_directory "$rootlv_aux_mount_point" 1  # with directory removal
-        remove_files_if_exist "$enabled_services_dump_path" "$masked_services_registry_path" "$state_flag_file" \
-                              "$stopped_services_registry_path"
+        remove_files_if_exist "$enabled_services_dump_path" "$masked_services_registry_path" "$stopped_services_registry_path"
 
         remove_empty_dirs "$work_dir_path/tmp" "$work_dir_path"
 
