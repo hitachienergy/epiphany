@@ -1,5 +1,5 @@
 from cli.helpers.Step import Step
-from cli.helpers.build_saver import save_terraform_file, get_terraform_path, remove_files_with_extension
+from cli.helpers.build_saver import save_terraform_file, get_terraform_path, remove_files_matching_glob
 from cli.helpers.data_loader import load_template_file, types
 
 
@@ -13,7 +13,7 @@ class TerraformTemplateGenerator(Step):
     def run(self):
         terraform_output_dir = get_terraform_path(self.cluster_model.specification.name)
         # Remove generated .tf files (not tfstate).
-        remove_files_with_extension(terraform_output_dir, '.tf')
+        remove_files_matching_glob(terraform_output_dir, '*.tf')
 
         templates = filter(lambda x: x.kind != 'infrastructure/custom-data', self.infrastructure)
         for idx, doc in enumerate(templates):

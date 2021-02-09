@@ -1,5 +1,5 @@
 from cli.helpers.Step import Step
-from cli.helpers.build_saver import copy_file, get_terraform_path, remove_files_with_extension
+from cli.helpers.build_saver import copy_file, get_terraform_path, remove_files_matching_glob
 from cli.helpers.data_loader import types, get_provider_subdir_path
 from pathlib import Path
 
@@ -13,7 +13,8 @@ class TerraformFileCopier(Step):
 
     def run(self):
         terraform_output_dir = get_terraform_path(self.cluster_model.specification.name)
-        remove_files_with_extension(terraform_output_dir, '.yml')
+        # '*.yml' would remove cli.helpers.build_saver.SP_FILE_NAME
+        remove_files_matching_glob(terraform_output_dir, 'cloud-config.yml')
 
         files = filter(lambda x: x.kind == 'infrastructure/custom-data', self.infrastructure)
         for doc in files:

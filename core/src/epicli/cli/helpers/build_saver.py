@@ -7,6 +7,7 @@ from distutils import dir_util
 from cli.helpers.data_loader import load_template_file, types
 from cli.helpers.yaml_helpers import dump_all, dump
 from cli.helpers.Config import Config
+from pathlib import Path
 
 TERRAFORM_OUTPUT_DIR = 'terraform/'
 MANIFEST_FILE_NAME = 'manifest.yml'
@@ -51,11 +52,9 @@ def save_ansible_config_file(ansible_config_file_settings, ansible_config_file_p
     save_to_file(ansible_config_file_path, content)
 
 
-def remove_files_with_extension(dir_path, extension):
-    files = os.listdir(dir_path)
-    for file in files:
-        if file.endswith(extension):
-            os.remove(os.path.join(dir_path, file))
+def remove_files_matching_glob(dir_path, pattern):
+    for file in Path(dir_path).glob(pattern):
+        file.unlink()
 
 
 def save_terraform_file(content, cluster_name, filename):
