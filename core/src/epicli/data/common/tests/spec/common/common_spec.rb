@@ -7,13 +7,14 @@ provider = readDataYaml("epiphany-cluster")["provider"]
 
 if provider == 'azure' and os[:family] == 'redhat' and lvm_installed?
   describe 'Check LVM logical volumes' do
-    let(:disable_sudo) { false }
-    describe command("lvs -o lv_name --noheadings") do
+    describe command("lvs -o lv_name --noheadings --readonly") do
+      let(:disable_sudo) { false }
       its(:exit_status) { should eq 0 }
-      its(:stdout) { should_not match /\bhomelv$/ }
-      its(:stdout) { should_not match /\boptlv$/ }
-      its(:stdout) { should_not match /\btmplv$/ }
-      its(:stdout) { should_not match /\bvarlv$/ }
+      # command output has extra whitespace characters so do not use regexp anchors
+      its(:stdout) { should_not match /\bhomelv\b/ }
+      its(:stdout) { should_not match /\boptlv\b/ }
+      its(:stdout) { should_not match /\btmplv\b/ }
+      its(:stdout) { should_not match /\bvarlv\b/ }
     end
   end
 
