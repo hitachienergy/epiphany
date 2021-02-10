@@ -10,6 +10,7 @@
 - [#1888](https://github.com/epiphany-platform/epiphany/issues/1888) - epicli upgrade of cluster created by Epiphany v0.5 may fail
 - [#2002](https://github.com/epiphany-platform/epiphany/issues/2002) - Do not install Filebeat when there is no Elasticsearch
 - [#2042](https://github.com/epiphany-platform/epiphany/issues/2042) - PostgreSQL replication with repmgr: hot_standby not set in config file
+- [#2041](https://github.com/epiphany-platform/epiphany/issues/2042) - Pgpool not showing Replication State on RedHat
 
 ### Updated
 
