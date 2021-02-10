@@ -18,6 +18,8 @@ pgaudit_enabled = readDataYaml("configuration/postgresql")["specification"]["ext
 pg_user = 'testuser'
 pg_pass = 'testpass'
 
+pg_config_file_booleans = { "true" => "(?:on|true|yes|1)", "false" => "(?:off|false|no|0)" }
+
 def queryForCreating
   describe 'Checking if it is possible to create a test schema' do
     let(:disable_sudo) { false }
@@ -231,6 +233,21 @@ if replicated
         its(:exit_status) { should eq 0 }
       end
     end
+
+    describe 'Check hot_standby setting in postgresql-epiphany.conf file' do
+      let(:disable_sudo) { false }
+      if os[:family] == 'redhat'
+        describe command("grep -Eio '^hot_standby\s*=[^#]*' /var/lib/pgsql/10/data/postgresql-epiphany.conf") do
+          its(:exit_status) { should eq 0 }
+          its(:stdout) { should match /^hot_standby\s*=\s*#{pg_config_file_booleans["true"]}/i }
+        end
+      elsif os[:family] == 'ubuntu'
+        describe command("grep -Eio '^hot_standby\s*=[^#]*' /etc/postgresql/10/main/postgresql-epiphany.conf") do
+          its(:exit_status) { should eq 0 }
+          its(:stdout) { should match /^hot_standby\s*=\s*#{pg_config_file_booleans["true"]}/i }
+        end
+      end
+    end
   end
 
   if primary.include? host_inventory['hostname']
@@ -311,12 +328,8 @@ if replicated
 
   elsif secondary.include? host_inventory['hostname']
     if os[:family] == 'redhat'
-      describe 'Checking PostgreSQL config files for secondary node' do
+      describe 'Checking PostgreSQL files for secondary node' do
         let(:disable_sudo) { false }
-        describe command("cat /var/lib/pgsql/10/data/postgresql.conf | grep hot_standby") do
-          its(:stdout) { should match /^hot_standby = on/ }
-          its(:exit_status) { should eq 0 }
-        end
         describe file('/var/lib/pgsql/.pgpass') do
           it { should exist }
           it { should be_readable }
@@ -324,12 +337,8 @@ if replicated
         end
       end
     elsif os[:family] == 'ubuntu'
-      describe 'Checking PostgreSQL config files for secondary node' do
+      describe 'Checking PostgreSQL files for secondary node' do
         let(:disable_sudo) { false }
-        describe command("cat /etc/postgresql/10/main/postgresql.conf | grep hot_standby") do
-          its(:stdout) { should match /^hot_standby = on/ }
-          its(:exit_status) { should eq 0 }
-        end
         describe file('/var/lib/postgresql/.pgpass') do
           it { should exist }
           it { should be_readable }
@@ -340,7 +349,7 @@ if replicated
 
     describe 'Checking the state of replica nodes' do
       let(:disable_sudo) { false }
-      describe command("su - postgres -c \"psql -t -c 'SELECT status, conninfo  from pg_stat_wal_receiver;'\"") do
+      describe command("su - postgres -c \"psql -t -c 'SELECT status, conninfo FROM pg_stat_wal_receiver;'\"") do
         its(:stdout) { should match /\bstreaming\b/ }
         its(:stdout) { should match /\buser=#{replication_user}\b/ }
         its(:exit_status) { should eq 0 }
@@ -464,31 +473,31 @@ end
 if replicated && (listInventoryHosts("postgresql")[1].include? host_inventory['hostname'])
   describe 'Cleaning up' do
     it "Delegating drop table query to master node" do
-      Net::SSH.start(listInventoryIPs("postgresql")[0], ENV['user'], keys: [ENV['keypath']], :keys_only => TRUE) do|ssh|
+      Net::SSH.start(listInventoryIPs("postgresql")[0], ENV['user'], keys: [ENV['keypath']], :keys_only => true) do|ssh|
         result = ssh.exec!("sudo su - postgres -c \"psql -t -c 'DROP TABLE serverspec_test.test;'\" 2>&1")
         expect(result).to match 'DROP TABLE'
       end
     end
     it "Delegating drop table query to master node", :if => pgbouncer_enabled  do
-      Net::SSH.start(listInventoryIPs("postgresql")[0], ENV['user'], keys: [ENV['keypath']], :keys_only => TRUE) do|ssh|
+      Net::SSH.start(listInventoryIPs("postgresql")[0], ENV['user'], keys: [ENV['keypath']], :keys_only => true) do|ssh|
         result = ssh.exec!("sudo su - postgres -c \"psql -t -c 'DROP TABLE serverspec_test.pgbtest;'\" 2>&1")
         expect(result).to match 'DROP TABLE'
       end
     end
     it "Delegating drop schema query to master node" do
-      Net::SSH.start(listInventoryIPs("postgresql")[0], ENV['user'], keys: [ENV['keypath']], :keys_only => TRUE) do|ssh|
+      Net::SSH.start(listInventoryIPs("postgresql")[0], ENV['user'], keys: [ENV['keypath']], :keys_only => true) do|ssh|
         result = ssh.exec!("sudo su - postgres -c \"psql -t -c 'DROP SCHEMA serverspec_test;'\" 2>&1")
         expect(result).to match 'DROP SCHEMA'
       end
     end
     it "Delegating drop user query to master node", :if => pgbouncer_enabled do
-      Net::SSH.start(listInventoryIPs("postgresql")[0], ENV['user'], keys: [ENV['keypath']], :keys_only => TRUE) do|ssh|
+      Net::SSH.start(listInventoryIPs("postgresql")[0], ENV['user'], keys: [ENV['keypath']], :keys_only => true) do|ssh|
         result = ssh.exec!("sudo su - postgres -c \"psql -t -c 'DROP USER #{pg_user};'\" 2>&1")
         expect(result).to match 'DROP ROLE'
       end
     end
     it "Removing test user from userlist.txt", :if => pgbouncer_enabled do
-      Net::SSH.start(listInventoryIPs("postgresql")[0], ENV['user'], keys: [ENV['keypath']], :keys_only => TRUE) do|ssh|
+      Net::SSH.start(listInventoryIPs("postgresql")[0], ENV['user'], keys: [ENV['keypath']], :keys_only => true) do|ssh|
         result = ssh.exec!("sudo su - -c \"sed -i '/#{pg_pass}/d' /etc/pgbouncer/userlist.txt && cat /etc/pgbouncer/userlist.txt\" 2>&1")
         expect(result).not_to match "#{pg_pass}"
       end
@@ -498,7 +507,7 @@ end
 
 ### Tests for PGAudit
 
-if pgaudit_enabled
+if pgaudit_enabled && countInventoryHosts("logging") > 0
 
   if !replicated || (replicated && (listInventoryHosts("postgresql")[1].include? host_inventory['hostname']))
 
