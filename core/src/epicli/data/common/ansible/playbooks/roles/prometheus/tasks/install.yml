@@ -12,6 +12,7 @@
     shell: "/usr/sbin/nologin"
     group: prometheus
     createhome: false
+    home: "{{ specification.storage.data_directory }}"
 
 - name: Create Prometheus data directory
   file:
