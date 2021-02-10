@@ -91,15 +91,6 @@
     - is_master_already_registered.stdout == ""
 
 # Slave:
-- name: Turn on hot_standby
-  replace:
-    path: "{{ pg_config_dir[ansible_os_family] }}/postgresql.conf"
-    regexp: "^#hot_standby = on"
-    replace: "hot_standby = on"
-    backup: yes
-  when:
-    - groups['postgresql'][1] == inventory_hostname
-
 - name: Check if node is already registered in repmgr
   become_user: postgres
   shell: >-
