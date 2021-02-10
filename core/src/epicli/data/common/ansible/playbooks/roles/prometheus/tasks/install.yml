@@ -30,7 +30,6 @@
     mode: u=rwx,g=rx,o=
   with_items:
     - "{{ specification.config_directory }}"
-    - "{{ specification.config_directory }}/conf.d"
     - "{{ specification.config_directory }}/rules"
     - "{{ specification.config_directory }}/file_sd"
 
