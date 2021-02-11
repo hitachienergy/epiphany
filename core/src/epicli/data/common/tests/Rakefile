@@ -72,7 +72,6 @@ namespace :spec do
       task_name = group + ':' + host
       RSpec::Core::RakeTask.new(task_name) do |t|
         ENV['TARGET_HOST'] = host
-        ENV['TEST_ENV_NUMBER'] = "-" + groups[group][host]
         puts "Testing " + task_name
         t.pattern = "spec/#{group}/*_spec.rb"
         t.fail_on_error = true  # to detect RuntimeError (when error occured outside of example)
