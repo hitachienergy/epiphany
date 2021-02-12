@@ -18,3 +18,14 @@ A clear and concise description of any alternative solutions or features you've 
 
 **Additional context**
 Add any other context or screenshots about the feature request here.
+
+---
+
+**DoD checklist**
+
+* [ ] Changelog updated
+* [ ] COMPONENTS.md updated / doesn't need to be updated
+* [ ] Feature has automated tests
+* [ ] Automated tests passed (no regression)
+* [ ] Idempotency tested
+* [ ] Documentation added / updated / doesn't need to be updated
