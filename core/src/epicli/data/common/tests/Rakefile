@@ -72,12 +72,12 @@ namespace :spec do
       task_name = group + ':' + host
       RSpec::Core::RakeTask.new(task_name) do |t|
         ENV['TARGET_HOST'] = host
-		ENV['TEST_ENV_NUMBER'] = "-" + groups[group][host]
         puts "Testing " + task_name
         t.pattern = "spec/#{group}/*_spec.rb"
-        t.fail_on_error = false
-        t.rspec_opts = "--format documentation --format RspecJunitFormatter  \
-        --out " + ENV['spec_output'] + Time.now.strftime("%Y-%m-%d_%H-%M-%S") + "_#{group}_#{groups[group][host]}.xml"
+        t.fail_on_error = true  # to detect RuntimeError (when error occured outside of example)
+        t.rspec_opts = "--format documentation --format RspecJunitFormatter " \
+                       "--out " + ENV['spec_output'] +
+                                  Time.now.strftime("%Y-%m-%d_%H-%M-%S") + "_#{group}_#{groups[group][host]}.xml"
        end
     end
   end
