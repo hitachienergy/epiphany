@@ -36,7 +36,9 @@ Add any other context about the problem here.
 **DoD checklist**
 
 * [ ] Changelog updated (if affected version was released)
+* [ ] COMPONENTS.md updated / doesn't need to be updated
 * [ ] Automated tests passed (no regression)
 * [ ] Case covered by automated test (if possible)
 * [ ] Idempotency tested
 * [ ] Documentation updated / doesn't need to be updated
+* [ ] All conversations in PR resolved

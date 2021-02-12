@@ -29,3 +29,6 @@ Add any other context or screenshots about the feature request here.
 * [ ] Automated tests passed (no regression)
 * [ ] Idempotency tested
 * [ ] Documentation added / updated / doesn't need to be updated
+* [ ] All conversations in PR resolved
+* [ ] Solution meets requirements and is done according to design doc
+* [ ] Usage compliant with license
