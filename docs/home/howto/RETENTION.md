@@ -11,7 +11,7 @@ TODO
 
 ## Kafka
 
-There are two types of retention policies that can be configured on the broker or topic levels: based on time or size.
+There are two types of retention policies that can be configured at the broker or topic levels: based on time or size.
 Epiphany defines the same default value for broker size retention policy as in Kafka configured, -1, which means that no
 size limit is applied.
 
