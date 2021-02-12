@@ -53,6 +53,8 @@
   block:
     - name: Test curator_cli commands for new cron jobs with --dry-run
       command: "{{ curator_test_cmd }}"
+      environment:
+        LANG: en_US.UTF-8  # required for RHEL 7
       changed_when: false
       failed_when: false
       register: result
