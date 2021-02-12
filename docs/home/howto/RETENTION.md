@@ -1,5 +1,5 @@
 An Epiphany cluster has a number of components which log, collect and retain data. To make sure that these do not exceed
-the usable storage of the machines there running on the following configurations are available.
+the usable storage of the machines they running on, the following configurations are available.
 
 ## Elasticsearch
 
