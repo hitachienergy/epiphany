@@ -1,6 +1,6 @@
 - name: Copy common alerting rules
   copy:
-    src: "prometheus/rules/common.rules"
+    src: prometheus/rules/common.rules
     dest: /etc/prometheus/rules/
     validate: /usr/local/bin/promtool check rules %s
     owner: prometheus
@@ -11,7 +11,7 @@
 
 - name: Copy Prometheus alerting rules
   copy:
-    src: "prometheus/rules/prometheus.rules"
+    src: prometheus/rules/prometheus.rules
     dest: /etc/prometheus/rules/
     validate: /usr/local/bin/promtool check rules %s
     owner: prometheus
@@ -22,7 +22,7 @@
 
 - name: Copy node alerting rules
   copy:
-    src: "prometheus/rules/node.rules"
+    src: prometheus/rules/node.rules
     dest: /etc/prometheus/rules/
     validate: /usr/local/bin/promtool check rules %s
     owner: prometheus
@@ -35,7 +35,7 @@
 
 - name: Copy container alerting rules
   copy:
-    src: "prometheus/rules/container.rules"
+    src: prometheus/rules/container.rules
     dest: /etc/prometheus/rules/
     validate: /usr/local/bin/promtool check rules %s
     owner: prometheus
