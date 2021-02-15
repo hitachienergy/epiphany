@@ -3,6 +3,8 @@
   set_fact:
     current_group_name: "logging"
 
+
+# This workaround solves an issue that improper values in logging role are overridden by values from open distro role.
 - name: Install and configure OpenDistro for Elasticsearch
   import_role:
     name: opendistro_for_elasticsearch
