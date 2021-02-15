@@ -206,7 +206,7 @@ This filter pattern can now be used to query the Elasticsearch indices.
 
 By default Kibana adjusts the UTC time in `@timestamp` to the browser's local timezone. This can be changed in `Management` > `Advanced Settings` > `Timezone for date formatting`.
 
-## How to configure default user password to Kibana - Open Distro and Open Distro for Elasticsearch and Filebeat
+## How to configure default user passwords for Kibana - Open Distro, Open Distro for Elasticsearch and Filebeat
 
 To configure admin password for Kibana - Open Distro and Open Distro for Elasticsearch you need to follow the procedure below.
 There are separated procedures for Open Distro and for Logging role as most of the times in clean Open Distro installation users:
