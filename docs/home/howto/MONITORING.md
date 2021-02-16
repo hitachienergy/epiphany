@@ -213,13 +213,11 @@ There are separate procedures for `opendistro-for-elasticsearch` role and `loggi
 
 ### Open Distro for Elasticsearch
 
-By default Epiphany removes all demo users from except admin user in Open Distro role. Those users are listed in section 
-demo_users_to_remove in configuration/opendistro-for-elasticsearch. If you want to leave kibanaserver user (needed by default 
-Epiphany installation of Kibana) or logstash (needed by default Epiphany installation of Filebeat) you need to remove each specific
-user from demo_users_to_remove list and to perform configuration by Epiphany kibanaserver_user_active to true for kibanaserver user or
-logstash_user_active for logstash user. We strongly advice to set different passwords for admin and kibanaserver or logstash user. To 
-change admin password please change value under admin_password key, for kibanaserver and logstash change respectively values under keys
-kibanaserver_password and logstash_password.
+By default Epiphany removes all demo users except `admin` user. Those users are listed in
+`demo_users_to_remove` section of `configuration/opendistro-for-elasticsearch` doc. If you want to keep `kibanaserver` user (needed by default 
+Epiphany installation of Kibana) you need to remove it from `demo_users_to_remove` list and set `kibanaserver_user_active` to `true` in order to change the default password. We strongly advice to set different password for each user. To 
+change `admin` user's password change value for `admin_password` key. For `kibanaserver` and `logstash` change values for 
+`kibanaserver_password` and `logstash_password` keys respectively.
 
 ```yaml
 kind: configuration/opendistro-for-elasticsearch
