@@ -66,6 +66,7 @@
         <<: *uri
         url: "{{ elasticsearch_endpoint }}/_opendistro/_security/api/internalusers/admin"
         method: GET
+        # 404 code is used there as someone can remove admin user on its own.
         status_code: [200, 404]
       register: admin_check_response
       until: admin_check_response is success
