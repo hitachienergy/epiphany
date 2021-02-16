@@ -171,7 +171,7 @@
         status_code: [200, 404]
       register: uri_response
       until: uri_response is success
-      retries: 3
-      delay: 5
+      retries: 15
+      delay: 1
       run_once: true
       loop: "{{ specification.demo_users_to_remove }}"
