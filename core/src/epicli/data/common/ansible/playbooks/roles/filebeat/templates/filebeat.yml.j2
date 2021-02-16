@@ -239,7 +239,7 @@ setup.ilm.enabled: false
 # {% endif %}
 #   username: logstash
 #
-# {%- if specification is defined and specification.logstash_password is defined %}
+# {%- if specification.logstash_password is defined %}
 #  password: {{ specification.logstash_password }}
 # {% else %}
 #  password: {{ _filebeat_exisitng_password }}
