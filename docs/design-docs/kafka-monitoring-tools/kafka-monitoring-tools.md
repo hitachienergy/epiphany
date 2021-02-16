@@ -70,7 +70,7 @@
 - Managing and monitoring Kafka cluster (not possible to view consumer offset :warning:)
 - Possible to track resource utilization for brokers, topics, and partitions, query cluster state, to view the status of partitions, to monitor server capacity (i.e. CPU, network IO, etc.)
 - Anomaly Detection and self-healing and rebalancing
-- Possibility to set up alerts
+- No possibility to set up alerts
 - UI as seperated component [link](https://github.com/linkedin/cruise-control-ui)
 - It can use metrics reporter from LinkedIn (necessary to add jar file to kafka lib directory) but it is also possible to uses Prometheus for metric aggregation
 
@@ -79,12 +79,14 @@
 - Opensource project, Apache-2.0 License
 - Provides consumer lag checking as a service without the need for specifying thresholds. It monitors committed offsets for all consumers and calculates the status of those consumers on demand
 - It does not monitor anything related to the health of the brokers
+- Possibility to set up alerts
 
 ## 11. KAFKA DROP 3 [link](https://github.com/obsidiandynamics/kafdrop)
 
 - Opensource project, Apache-2.0 License, reboot of Kafdrop 2.x
 - Monitoring tool (including view consumer offset)
 - Out of the box UI
+- No possibility to set up alerts
 
 ## 12. KAFKA MONITOR [link](https://github.com/linkedin/kafka-monitor)
 
@@ -93,6 +95,7 @@
 - It plays a role as a passive observer and reports what it observes (broker availability, produce/consume latency, etc) by emitting metrics. In other words, it pretends to be a Kafka user and keeps reporting metrics from the user's PoV
 - It is more a load generation and reporting tool
 - UI does not exist
+- No possibility to set up alerts
 
 ## 13. OTHERS
 
