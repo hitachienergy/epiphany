@@ -282,7 +282,7 @@ output.elasticsearch:
   protocol: "https"
   ssl.verification_mode: none
   username: logstash
-{% if specification is defined and specification.logstash_password is defined %}
+{% if specification.logstash_password is defined %}
   password: {{ specification.logstash_password }}
 {% else %}
   password: {{ _filebeat_exisitng_password }}
