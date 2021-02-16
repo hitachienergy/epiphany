@@ -32,7 +32,7 @@ elasticsearch.hosts:
 
 elasticsearch.ssl.verificationMode: none
 elasticsearch.username: kibanaserver
-{% if specification is defined and specification.kibanaserver_password is defined %}
+{% if specification.kibanaserver_password is defined %}
 elasticsearch.password: {{ specification.kibanaserver_password }}
 {% else %}
 elasticsearch.password: {{ _kibanaserver_exisitng_password }}
