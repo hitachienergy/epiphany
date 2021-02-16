@@ -128,7 +128,7 @@
       run_once: true
       when: specification.kibanaserver_user_active
       
-    - name: Check if default kibanaserver user exists
+    - name: Check if default logstash user exists
       uri:
         <<: *uri
         url: "{{ elasticsearch_endpoint }}/_opendistro/_security/api/internalusers/logstash"
