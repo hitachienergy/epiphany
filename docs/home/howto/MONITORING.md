@@ -280,9 +280,8 @@ specification:
 
 #### - Filebeat role
 
-To set password of logstash user that is used by Filebeat for communication with Open Distro Elasticsearch backend please set value under
-key logstash_password in configuration/kibana like in the example specified below. For this moment there is no possibility to specify
-a different user name than logstash for Filebeat and Open Distro Elasticsearch backend.
+To set password of `logstash` user, which is used by Filebeat for communication with Open Distro Elasticsearch backend, change value for `logstash_password` key in `configuration/filebeat` doc like in the example below. For this moment there is no possibility to specify
+a different user name than `logstash` for Filebeat and Open Distro Elasticsearch backend.
 
 ```yaml
 kind: configuration/filebeat
