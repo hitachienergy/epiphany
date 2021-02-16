@@ -90,8 +90,8 @@
               description: "Admin user"
       register: uri_response
       until: uri_response is success
-      retries: 3
-      delay: 5
+      retries: 15
+      delay: 1
       run_once: true
       when: admin_check_response.status == 200
 
