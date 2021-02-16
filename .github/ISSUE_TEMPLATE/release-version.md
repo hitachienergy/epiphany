@@ -29,3 +29,4 @@ assignees: ''
 * [ ] `docker pull` command from the release description tested
 * [ ] Version bumped to the next in develop branch (in version.txt.py)
 * [ ] Changelog for the next version created in develop branch
+* [ ] Releases updated in ZenHub
