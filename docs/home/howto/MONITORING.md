@@ -294,7 +294,7 @@ specification:
 
 ### Upgrade of Elasticsearch, Kibana and Filebeat
 
-During upgrade Epiphany is taking kibanaserver (for Kibana) and logstash user (for Filebeat) passwords and will reapply them to upgraded configuration of Filebeat and Kibana. Epiphany upgrade of Open Distro, Kibana and Filebeat will fail if kibanaserver and logstash usernames were changed in configuration of Kibana and Filebeat and on Open Distro for Elasticsearch.
+During upgrade Epiphany takes `kibanaserver` (for Kibana) and `logstash` (for Filebeat) user passwords and re-applies them to upgraded configuration of Filebeat and Kibana. Epiphany upgrade of Open Distro, Kibana or Filebeat will fail if `kibanaserver` or `logstash` usernames were changed in configuration of Kibana, Filebeat or Open Distro for Elasticsearch.
 
 # Azure
 
