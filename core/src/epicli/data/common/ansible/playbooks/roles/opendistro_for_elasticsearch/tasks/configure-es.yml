@@ -103,8 +103,8 @@
         status_code: [200]
       register: kibanaserver_check_response
       until: kibanaserver_check_response is success
-      retries: 12
-      delay: 5
+      retries: 60
+      delay: 1
       run_once: true
       when: specification.kibanaserver_user_active
 
