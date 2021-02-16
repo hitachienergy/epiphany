@@ -37,7 +37,9 @@ Add any other context about the problem here.
 
 * [ ] Changelog updated (if affected version was released)
 * [ ] COMPONENTS.md updated / doesn't need to be updated
-* [ ] Automated tests passed (no regression)
+* [ ] Automated tests passed (QA pipelines)
+  * [ ] apply
+  * [ ] upgrade
 * [ ] Case covered by automated test (if possible)
 * [ ] Idempotency tested
 * [ ] Documentation updated / doesn't need to be updated

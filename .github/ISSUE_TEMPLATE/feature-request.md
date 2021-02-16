@@ -26,7 +26,9 @@ Add any other context or screenshots about the feature request here.
 * [ ] Changelog updated
 * [ ] COMPONENTS.md updated / doesn't need to be updated
 * [ ] Feature has automated tests
-* [ ] Automated tests passed (no regression)
+* [ ] Automated tests passed (QA pipelines)
+  * [ ] apply
+  * [ ] upgrade
 * [ ] Idempotency tested
 * [ ] Documentation added / updated / doesn't need to be updated
 * [ ] All conversations in PR resolved
