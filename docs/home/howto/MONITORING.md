@@ -266,9 +266,8 @@ specification:
 
 #### - Kibana role
 
-To set password of kibanaserver user that is used by Kibana for communication with Open Distro Elasticsearch backend please set value under 
-key kibanaserver_password in configuration/kibana like in the example specified below. For this moment there is no possibility to specify
-a different user name than kibanaserver for Kibana and Open Distro Elasticsearch backend.
+To set password of `kibanaserver` user, which is used by Kibana for communication with Open Distro Elasticsearch backend, change value for `kibanaserver_password` key in `configuration/kibana` doc like in the example below. For this moment there is no possibility to specify
+a different user name than `kibanaserver` for Kibana and Open Distro Elasticsearch backend.
 
 ```yaml
 kind: configuration/kibana
