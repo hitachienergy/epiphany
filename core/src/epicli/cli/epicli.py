@@ -120,6 +120,8 @@ Terraform : 1..4 map to the following Terraform verbosity levels:
         config.offline_requirements = args.offline_requirements
     if 'wait_for_pods' in args and not args.wait_for_pods is None:
         config.wait_for_pods = args.wait_for_pods
+    if 'upgrade_components' in args and not args.upgrade_components is None:
+        config.upgrade_components = args.upgrade_components
     config.debug = args.debug
     config.auto_approve = args.auto_approve
 
@@ -252,6 +254,8 @@ def upgrade_parser(subparsers):
                             help="Waits for all pods to be in the 'Ready' state before proceeding to the next step of the K8s upgrade.")
     optional.add_argument('--profile-ansible-tasks', dest='profile_ansible_tasks', action="store_true",
                             help='Enable Ansible profile_tasks plugin for timing tasks. (developer/debug option)')
+    optional.add_argument('--upgrade-components', dest='upgrade_components', type=str, required=False,
+                            help='Provides list of components for upgrade')
     sub_parser._action_groups.append(optional)
 
     def run_upgrade(args):
