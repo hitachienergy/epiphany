@@ -4,7 +4,7 @@
 
 - Commercial feature, only trial version for free
 - Out of the box UI
-- Managing and monitoring Kafka cluster (including view constomer offset)
+- Managing and monitoring Kafka cluster (including view consumer offset)
 - Possibility to set up alerts
 - Detailed documentation, lots of tutorials, blog articles and a wide community
 - All-in-one solution with additional features through Confluent Platform/Cloud
@@ -14,7 +14,7 @@
 - Commercial feature, only trial version for free
 - Out of the box UI
 - Deliver monitoring of Kafka data pipelines
-- Managing and monitoring Kafka cluster (including view constomer offset)
+- Managing and monitoring Kafka cluster (including view consumer offset)
 - Possibility to set up alerts
 - Smaller community, fewer articles and tutorials around Lenses compared to the Control Center
 
@@ -24,14 +24,14 @@
 - ChatOps integrations
 - Out of the box UI
 - Built-in anomaly detection, threshold, and heartbeat alerts
-- Managing and monitoring Kafka cluster (including view constomer offset)
+- Managing and monitoring Kafka cluster (including view consumer offset)
 - Possibility to set up alerts
 
 ## 4. DATADOG KAFKA [link](https://www.datadoghq.com)
 
 - Commercial feature, only trial version for free
 - Out of the box Kafka monitoring dashboards
-- Monitoring tool (including view constomer offset). Displays key metrics for Kafka brokers, producers, consumers and Apache Zookeeper. Less focused on cluster state
+- Monitoring tool (including view consumer offset). Displays key metrics for Kafka brokers, producers, consumers and Apache Zookeeper. Less focused on cluster state
 - Possibility to set up alerts
 
 ## 5. CLOUDERA MANAGER  [link](https://www.cloudera.com/)
@@ -43,7 +43,7 @@
 
 - Commercial feature, only trial version for free
 - Out of the box UI
-- Monitoring tool (including view constomer offset)
+- Monitoring tool (including view consumer offset)
 - Poor documentation
 - In latest changelogs, only support for kafka 2.1 mentioned
 - Some of opensource projects looks much more better that this one
@@ -60,14 +60,14 @@
 ## 8. YAHOO CLUSTER MANAGER [link](https://github.com/yahoo/CMAK)
 
 - Opensource project, Apache-2.0 License
-- Managing and monitoring Kafka cluster (including view constomer offset)
+- Managing and monitoring Kafka cluster (including view consumer offset)
 - Out of the box UI
 - No possibility to set up alerts
 
 ## 9. LINKEDIN CRUISE CONTROL [link](https://github.com/linkedin/cruise-control)
 
 - Opensource project, BSD 2-Clause "Simplified" License
-- Managing and monitoring Kafka cluster (not possible to view constomer offset :warning:)
+- Managing and monitoring Kafka cluster (not possible to view consumer offset :warning:)
 - Possible to track resource utilization for brokers, topics, and partitions, query cluster state, to view the status of partitions, to monitor server capacity (i.e. CPU, network IO, etc.)
 - Anomaly Detection and self-healing and rebalancing
 - Possibility to set up alerts
@@ -83,7 +83,7 @@
 ## 11. KAFKA DROP 3 [link](https://github.com/obsidiandynamics/kafdrop)
 
 - Opensource project, Apache-2.0 License, reboot of Kafdrop 2.x
-- Monitoring tool (including view constomer offset)
+- Monitoring tool (including view consumer offset)
 - Out of the box UI
 
 ## 12. KAFKA MONITOR [link](https://github.com/linkedin/kafka-monitor)
