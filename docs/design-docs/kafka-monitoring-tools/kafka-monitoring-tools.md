@@ -89,7 +89,7 @@
 ## 12. KAFKA MONITOR [link](https://github.com/linkedin/kafka-monitor)
 
 - Opensource project, Apache-2.0 License
-- Kafka monitor is a framework to implement and execute long-running kafka system tests in a real cluster
+- Kafka monitor is a framework to implement and execute long-running Kafka system tests in a real cluster
 - It plays a role as a passive observer and reports what it observes (broker availability, produce/consume latency, etc) by emitting metrics. In other words, it pretends to be a Kafka user and keeps reporting metrics from the user's PoV
 - It is more a load generation and reporting tool
 - UI does not exist
@@ -115,9 +115,9 @@ In real scenarios, based on some use cases and opinions from internal teams:
 - JMX Exporter is used in order to get some standard broker's metrics such as cpu, memory utilization and so on
 - Problems with the administration of the leader election are reported
 
-If it is possible to pay for a commercial license. Confluent, Lenses and Sematext offer more rich functionality compared to the other monitoring tools and they are really similar.
+If it is possible to pay for a commercial license, Confluent, Lenses and Sematext offer more rich functionality compared to the other monitoring tools and they are very similar.
 
 As far as the open source project is considered:
-- LinkedIn Cruise Control looks like the winner. Provides not only managing and monitoring kafka cluster but also some extra features such as rebalancing, anomaly detection or self-healing
-- Yahoo cluster manager looks like good competitor but only for managing and monitoring kafka cluster. However in compare to Cruise Control, during the installation I met some issues and I was not able to recieve some consumer data and a few issues are already reported in official repository related to my problem [link](https://github.com/yahoo/CMAK/issues/641). I would not recommend this tools since it looks like the project does not have good spirit of open source software
-- LinkedIn Burrow looks like good additional tool for LinkedIn Cruise Control if we would like to have consumer lag checking service instead of kafka exporter plugin which cause some outstanding issues
+- LinkedIn Cruise Control looks like the winner. Provides not only managing and monitoring Kafka cluster but also some extra features such as rebalancing, anomaly detection or self-healing
+- Yahoo Cluster Manager looks like good competitor but only for managing and monitoring Kafka cluster. However in compare to Cruise Control, during the installation I met some issues and I was not able to recieve some consumer data and a few issues are already reported in official repository related to my problem [link](https://github.com/yahoo/CMAK/issues/641). I would not recommend this tools since it looks like the project does not have good spirit of open source software
+- LinkedIn Burrow looks like good additional tool for LinkedIn Cruise Control if we would like to have consumer lag checking service instead of Kafka exporter plugin which cause some outstanding issues
