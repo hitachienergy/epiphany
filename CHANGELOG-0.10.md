@@ -4,6 +4,7 @@
 
 ### Added
 
+- [#1798](https://github.com/epiphany-platform/epiphany/issues/1798) - Additional alerts for Prometheus
 ### Fixed
 
 - [#1870](https://github.com/epiphany-platform/epiphany/issues/1870) - Do not install Filebeat when there is no Elasticsearch
