@@ -209,8 +209,7 @@ By default Kibana adjusts the UTC time in `@timestamp` to the browser's local ti
 ## How to configure default user passwords for Kibana - Open Distro, Open Distro for Elasticsearch and Filebeat
 
 To configure admin password for Kibana - Open Distro and Open Distro for Elasticsearch you need to follow the procedure below.
-There are separated procedures for Open Distro and for Logging role as most of the times in clean Open Distro installation users:
-kibanaserver and logstash are not required to be present.
+There are separate procedures for `opendistro-for-elasticsearch` role and `logging` role since most of the times for `opendistro-for-elasticsearch`, `kibanaserver` and `logstash` users are not required to be present.
 
 ### Open Distro for Elasticsearch
 
