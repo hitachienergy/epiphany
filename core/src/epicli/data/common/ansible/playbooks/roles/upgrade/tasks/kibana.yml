@@ -39,10 +39,12 @@
     - name: Set kibana.yml content as fact
       set_fact:
         _kibana_exisitng_config: "{{ _kibana_config_yml.content | b64decode | from_yaml }}"
+      no_log: true
 
     - name: Set kibana existing password
       set_fact:
         _kibanaserver_exisitng_password: "{{ _kibana_exisitng_config['elasticsearch.password'] }}"
+      no_log: true
 
     - name: Kibana | Upgrade
       import_role:

@@ -76,10 +76,12 @@
     - name: Set filebeat.yml content as fact
       set_fact:
         _filebeat_exisitng_config: "{{ _filebeat_config_yml.content | b64decode | from_yaml }}"
+      no_log: true
 
     - name: Set filebeat existing password
       set_fact:
         _filebeat_exisitng_password: "{{ _filebeat_exisitng_config['output.elasticsearch'].password }}"
+      no_log: true
 
     - import_role:
         name: filebeat
