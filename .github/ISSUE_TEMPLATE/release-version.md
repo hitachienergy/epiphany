@@ -12,7 +12,7 @@ assignees: ''
 * [ ] Default OS cloud images updated
 * [ ] Support branch created
 * [ ] CI pipelines for support branch created
-* All automated tests passed
+* All automated tests passed (QA pipelines)
   * [ ] Standard apply (new cluster)
   * [ ] Standard apply (existing cluster)
   * [ ] Upgrade for V-1
