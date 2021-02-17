@@ -203,6 +203,6 @@ Prerequisites: Epiphany cluster on Azure with at least a single VM with `elastic
 
 3. On **remote** host, open proxy to the dashboard `kubectl proxy`
 
-4. Now on your **local** machine navigate to `http://localhost:8001/api/v1/namespaces/kube-system/services/https:kubernetes-dashboard:/proxy/#!/overview?namespace=default`
+4. Now on your **local** machine navigate to `http://localhost:8001/api/v1/namespaces/kubernetes-dashboard/services/https:kubernetes-dashboard:/proxy/`
 
 5. When prompted to put in credentials, use admin token from the previous point.
