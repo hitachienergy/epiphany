@@ -8,6 +8,7 @@ createrepo
 deltarpm # for createrepo
 httpd
 httpd-tools # for httpd
+libxml2 # for libxml2-python
 libxml2-python # for createrepo
 mailcap # for httpd
 mod_ssl # for httpd

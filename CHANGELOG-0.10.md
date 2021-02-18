@@ -5,6 +5,7 @@
 ### Added
 
 - [#1798](https://github.com/epiphany-platform/epiphany/issues/1798) - Additional alerts for Prometheus
+
 ### Fixed
 
 - [#1870](https://github.com/epiphany-platform/epiphany/issues/1870) - Do not install Filebeat when there is no Elasticsearch
@@ -15,6 +16,7 @@
 - [#1979](https://github.com/epiphany-platform/epiphany/issues/1979) - RabbitMQ fails on upgrade when 2 nodes are specified that are not clustered
 - [#1984](https://github.com/epiphany-platform/epiphany/issues/1984) - RabbitMQ 3.7.10 fails on upgrade to 3.8.9: 'rabbitmqctl version' command not found
 - [#1824](https://github.com/epiphany-platform/epiphany/issues/1824) - offline installation fails with error 'yum lockfile is held by another process' (Azure/RHEL)
+- [#2069](https://github.com/epiphany-platform/epiphany/issues/2069) - [CentOS] epicli fails on task [repository : Create epirepo repository]
 
 ### Updated
 
