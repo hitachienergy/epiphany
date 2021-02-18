@@ -21,6 +21,7 @@
 - [#1862](https://github.com/epiphany-platform/epiphany/issues/1862) - Upgrade Ignite (2.9.1)
 - [#1952](https://github.com/epiphany-platform/epiphany/issues/1952) - Upgrade ansible to 2.10.x
 - [#1864](https://github.com/epiphany-platform/epiphany/issues/1864) - Upgrade Hashicorp Vault (1.6.1), Vault Helm Chart (0.9.0), Vault-k8s (0.7.0)
+- [#2072](https://github.com/epiphany-platform/epiphany/issues/2072) - Remove old ARM references.
 
 ### Breaking changes
 
