@@ -4,6 +4,11 @@
     file: roles/opendistro_for_elasticsearch/defaults/main.yml
     name: opendistro_for_elasticsearch_defaults
 
+- name: Load variables from logging role
+  include_vars:
+    file: roles/logging/vars/main.yml
+    name: opendistro_for_logging_vars
+
 - name: Install Kibana package
   package:
     name: "{{ _packages[ansible_os_family] }}"

@@ -3,7 +3,6 @@ title: Filebeat
 name: default
 specification:
   disable_helm_chart: false
-  logstash_password: PASSWORD_TO_CHANGE
   postgresql_input:
     multiline:
       pattern: >-
