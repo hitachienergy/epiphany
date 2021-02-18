@@ -242,10 +242,9 @@ specification:
 
 #### - Logging role
 
-By default Epiphany removes users that are listed in `demo_users_to_remove` section of 
-`configuration/opendistro-for-elasticsearch` doc. By default, `kibanaserver` user (needed by default Epiphany installation of Kibana) and `logstash` (needed by default Epiphany installation of
-Filebeat) are not removed. If you want to perform configuration by Epiphany, set `kibanaserver_user_active` to `true` for `kibanaserver` user or
-`logstash_user_active` for `logstash` user. For `logging` role, those settings are already set to `true` by default. We strongly advice to set different password for each user. To change `admin` user's password change value for `admin_password` key. For `kibanaserver` and `logstash` change values for `kibanaserver_password` and `logstash_password` keys respectively. Please remember to also change passwords accordingly in configuration of Filebeat and Kibana.
+By default Epiphany removes users that are listed in `demo_users_to_remove` section of `configuration/opendistro-for-elasticsearch` doc. By default, 
+`kibanaserver` user (needed by default Epiphany installation of Kibana) and `logstash` (needed by default Epiphany installation of Filebeat) are not 
+removed. If you want to perform configuration by Epiphany, set `kibanaserver_user_active` to `true` for `kibanaserver` user or `logstash_user_active` for `logstash` user. For `logging` role, those settings are already set to `true` by default. We strongly advice to set different password for each user. To change `admin` user's password change value for `admin_password` key. For `kibanaserver` and `logstash` change values for `kibanaserver_password` and `logstash_password` keys respectively. Changes from logging role will be propagated to Kibana and Filebeat configuration.
 
 ```yaml
 kind: configuration/logging
@@ -266,31 +265,13 @@ specification:
 
 #### - Kibana role
 
-To set password of `kibanaserver` user, which is used by Kibana for communication with Open Distro Elasticsearch backend, change value for `kibanaserver_password` key in `configuration/kibana` doc like in the example below. For this moment there is no possibility to specify
-a different user name than `kibanaserver` for Kibana and Open Distro Elasticsearch backend.
-
-```yaml
-kind: configuration/kibana
-title: "Kibana"
-name: default
-specification:
-  ...
-  kibanaserver_password: YOUR_PASSWORD
-```
+To set password of `kibanaserver` user, which is used by Kibana for communication with Open Distro Elasticsearch backend follow the procedure 
+described in [Logging role](#-logging-role).
 
 #### - Filebeat role
 
-To set password of `logstash` user, which is used by Filebeat for communication with Open Distro Elasticsearch backend, change value for `logstash_password` key in `configuration/filebeat` doc like in the example below. For this moment there is no possibility to specify
-a different user name than `logstash` for Filebeat and Open Distro Elasticsearch backend.
-
-```yaml
-kind: configuration/filebeat
-title: Filebeat
-name: default
-specification:
-  ...
-  logstash_password: YOUR_PASSWORD
-```
+To set password of `logstash` user, which is used by Filebeat for communication with Open Distro Elasticsearch backend follow the procedure described 
+in  [Logging role](#-logging-role).
 
 ### Upgrade of Elasticsearch, Kibana and Filebeat
 
