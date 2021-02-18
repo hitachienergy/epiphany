@@ -9,7 +9,7 @@
 - Detailed documentation, lots of tutorials, blog articles and a wide community
 - All-in-one solution with additional features through Confluent Platform/Cloud
 
-## 2. LENSES [link](https://github.com/kubicorn/kubicorn)
+## 2. LENSES [link](https://lenses.io/usecases/kafka-monitoring/)
 
 - Commercial feature, only trial version for free
 - Out of the box UI
