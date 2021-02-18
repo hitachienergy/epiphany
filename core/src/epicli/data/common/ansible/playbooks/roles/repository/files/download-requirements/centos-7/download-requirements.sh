@@ -672,7 +672,7 @@ remove_added_repos "$YUM_CONFIG_BACKUP_FILE_PATH"
 echol "Restoring /etc/yum.repos.d/*.repo from: $YUM_CONFIG_BACKUP_FILE_PATH"
 echol "Executing: tar --extract --verbose --file $YUM_CONFIG_BACKUP_FILE_PATH"
 if tar --extract --verbose --file "$YUM_CONFIG_BACKUP_FILE_PATH" --directory /etc/yum.repos.d \
-		--strip-components=2 etc/yum.repos.d/*.repo; then
+		--strip-components=2 'etc/yum.repos.d/*.repo'; then
 	echol "Restored: yum repositories"
 else
 	exit_with_error "Extracting tar failed: $YUM_CONFIG_BACKUP_FILE_PATH"
