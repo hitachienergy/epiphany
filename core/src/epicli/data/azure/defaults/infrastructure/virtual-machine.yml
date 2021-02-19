@@ -12,7 +12,7 @@ specification:
   tags: []
   os_type: linux
   size: Standard_DS1_v2
-  use_custom_data: SET_BY_AUTOMATION
+  use_cloud_init_custom_data: SET_BY_AUTOMATION
   storage_image_reference:
     publisher: Canonical
     offer: UbuntuServer

@@ -35,7 +35,7 @@ class InfrastructureBuilder(Step):
         shared_storage = self.get_storage_share_config()
         infrastructure.append(shared_storage)
 
-        custom_data = self.get_custom_data()
+        cloud_init_custom_data = self.get_cloud_init_custom_data()
 
         for component_key, component_value in self.cluster_model.specification.components.items():
             vm_count = component_value['count']
@@ -46,7 +46,7 @@ class InfrastructureBuilder(Step):
             # So get it here and pass it allong.
             vm_config = self.get_virtual_machine(component_value, self.cluster_model, self.docs)
             # Set property that controls cloud-init.
-            vm_config.specification['use_custom_data'] = custom_data.specification.enabled
+            vm_config.specification['use_cloud_init_custom_data'] = cloud_init_custom_data.specification.enabled
 
             # If there are no security groups Ansible provisioning will fail because
             # SSH is not allowed then with public IPs on Azure.
@@ -125,9 +125,9 @@ class InfrastructureBuilder(Step):
 
         first_vm_doc = select_first(infrastructure, lambda x: x.kind == 'infrastructure/virtual-machine')
         if first_vm_doc is not None:
-            custom_data.specification['os_distribution'] = get_os_distro_normalized(first_vm_doc)
+            cloud_init_custom_data.specification['os_distribution'] = get_os_distro_normalized(first_vm_doc)
 
-        infrastructure.append(custom_data)
+        infrastructure.append(cloud_init_custom_data)
 
         return infrastructure
 
@@ -216,10 +216,10 @@ class InfrastructureBuilder(Step):
             vm.specification.availability_set_name = availability_set.specification.name
         return vm
 
-    def get_custom_data(self):
-        custom_data = self.get_config_or_default(self.docs, 'infrastructure/custom-data')
-        custom_data.specification.name = 'cloud-config.yml'
-        return custom_data
+    def get_cloud_init_custom_data(self):
+        cloud_init_custom_data = self.get_config_or_default(self.docs, 'infrastructure/cloud-init-custom-data')
+        cloud_init_custom_data.specification.file_name = 'cloud-config.yml'
+        return cloud_init_custom_data
 
     @staticmethod
     def get_config_or_default(docs, kind):

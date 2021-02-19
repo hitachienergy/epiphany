@@ -16,10 +16,10 @@ class TerraformFileCopier(Step):
         # '*.yml' would remove cli.helpers.build_saver.SP_FILE_NAME
         remove_files_matching_glob(terraform_output_dir, 'cloud-config.yml')
 
-        files = filter(lambda x: x.kind == 'infrastructure/custom-data', self.infrastructure)
+        files = filter(lambda x: x.kind == 'infrastructure/cloud-init-custom-data', self.infrastructure)
         for doc in files:
             if doc.specification.enabled:
-                file_name = doc.specification.name
+                file_name = doc.specification.file_name
                 src_path = Path(get_provider_subdir_path(types.TERRAFORM, doc.provider)) / doc.kind / \
                     doc.specification.os_distribution / file_name
                 if Path(src_path).is_file():

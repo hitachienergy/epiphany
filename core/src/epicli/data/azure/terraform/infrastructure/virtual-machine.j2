@@ -30,7 +30,7 @@ resource "azurerm_virtual_machine" "{{ specification.name }}" {
     {%- if specification.os_type == "windows" %}
     admin_password = "{{ specification.admin_password }}"
     {%- endif %}
-    {%- if specification.storage_image_reference.offer == "RHEL" and specification.use_custom_data %}
+    {%- if specification.storage_image_reference.offer == "RHEL" and specification.use_cloud_init_custom_data %}
     custom_data = "${file("${path.module}/cloud-config.yml")}"
     {%- endif %}
   }

@@ -15,7 +15,7 @@ class TerraformTemplateGenerator(Step):
         # Remove generated .tf files (not tfstate).
         remove_files_matching_glob(terraform_output_dir, '*.tf')
 
-        templates = filter(lambda x: x.kind != 'infrastructure/custom-data', self.infrastructure)
+        templates = filter(lambda x: x.kind != 'infrastructure/cloud-init-custom-data', self.infrastructure)
         for idx, doc in enumerate(templates):
             if doc.kind != 'epiphany-cluster':
                 terraform_file_name = '{:03d}'.format(idx) + '_' + doc.specification.name + ".tf"
