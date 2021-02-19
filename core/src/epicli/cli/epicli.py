@@ -122,6 +122,7 @@ Terraform : 1..4 map to the following Terraform verbosity levels:
         config.wait_for_pods = args.wait_for_pods
     if 'upgrade_components' in args and not args.upgrade_components is None:
         config.upgrade_components = args.upgrade_components
+    config.upgrade_all = True if args.upgrade_all == 'true' else False
     config.debug = args.debug
     config.auto_approve = args.auto_approve
 
@@ -256,6 +257,8 @@ def upgrade_parser(subparsers):
                             help='Enable Ansible profile_tasks plugin for timing tasks. (developer/debug option)')
     optional.add_argument('--upgrade-components', dest='upgrade_components', type=str, required=False,
                             help='Provides list of components for upgrade')
+    optional.add_argument('--upgrade-all', dest='upgrade_all', action="store_false",
+                            help='Provides a flag to indicate all components to be processed during upgrade')
     sub_parser._action_groups.append(optional)
 
     def run_upgrade(args):

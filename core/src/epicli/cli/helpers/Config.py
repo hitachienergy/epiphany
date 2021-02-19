@@ -22,6 +22,7 @@ class Config:
             self._offline_requirements = ''
             self._wait_for_pods = False
             self._upgrade_components = []
+            self._upgrade_all = False
             self._vault_password_location = os.path.join(expanduser("~"), '.epicli/vault.cfg')
 
         @property
@@ -150,6 +151,15 @@ class Config:
         def upgrade_components(self, upgrade_components):
             #if not upgrade_components is False:
             self._upgrade_components = list(upgrade_components.replace(" ", "").split(","))
+
+        @property
+        def upgrade_all(self):
+            return self._upgrade_all
+
+        @upgrade_all.setter
+        def upgrade_all(self, upgrade_all):
+            if not upgrade_all is None:
+                self._upgrade_all = upgrade_all
 
     instance = None
 

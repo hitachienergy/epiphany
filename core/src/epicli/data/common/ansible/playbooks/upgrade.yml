@@ -1,6 +1,16 @@
 ---
 # Ansible playbook for upgrading common and K8s components
 
+- name: Fail when upgrade_components is empty list and upgrade_all is False
+  hosts: localhost
+  gather_facts: no
+  tasks:
+    - debug:
+        msg: "--upgrade-components or --upgrade-all flag has to be set"
+      failed_when:
+        - upgrade_components|length == 0
+        - not upgrade_all
+
 - hosts: all
   become: true
   become_method: sudo
@@ -22,7 +32,7 @@
         name: upgrade
         tasks_from: kubernetes/gather-static-facts
       run_once: true
-      when: ('upgrade_components is defined and "kubernetes_master" in upgrade_components') or upgrade_components is not defined
+      when: ('"kubernetes_master" in upgrade_components') or upgrade_all
   environment:
     KUBECONFIG: "{{ kubeconfig.remote }}"
 
@@ -34,7 +44,7 @@
     - import_role:
         name: upgrade
         tasks_from: image-registry
-      when: ('upgrade_components is defined and "kubernetes_master" in upgrade_components') or upgrade_components is not defined
+      when: ('"kubernetes_master" in upgrade_components') or upgrade_all
   environment:
     KUBECONFIG: "{{ kubeconfig.remote }}"
 
@@ -47,7 +57,7 @@
         name: upgrade
         tasks_from: kubernetes
       vars: { ver: "1.15.10", cni_ver: "0.7.5", upgrade_to_final_version: false }
-      when: ('upgrade_components is defined and "kubernetes_master" in upgrade_components') or upgrade_components is not defined
+      when: ('"kubernetes_master" in upgrade_components') or upgrade_all
   environment:
     KUBECONFIG: "{{ kubeconfig.remote }}"
 
@@ -60,7 +70,7 @@
         name: upgrade
         tasks_from: kubernetes
       vars: { ver: "1.16.7", cni_ver: "0.7.5", upgrade_to_final_version: false }
-      when: ('upgrade_components is defined and "kubernetes_master" in upgrade_components') or upgrade_components is not defined
+      when: ('"kubernetes_master" in upgrade_components') or upgrade_all
   environment:
     KUBECONFIG: "{{ kubeconfig.remote }}"
 
@@ -73,7 +83,7 @@
         name: upgrade
         tasks_from: kubernetes
       vars: { ver: "1.17.7", cni_ver: "0.8.6", cni_in_kubelet: true, upgrade_to_final_version: false }
-      when: ('upgrade_components is defined and "kubernetes_master" in upgrade_components') or upgrade_components is not defined
+      when: ('"kubernetes_master" in upgrade_components') or upgrade_all
   environment:
     KUBECONFIG: "{{ kubeconfig.remote }}"
 
@@ -86,7 +96,7 @@
         name: upgrade
         tasks_from: kubernetes
       vars: { ver: "1.18.6", cni_ver: "0.8.6", upgrade_to_final_version: true }
-      when: ('upgrade_components is defined and "kubernetes_master" in upgrade_components') or upgrade_components is not defined
+      when: ('"kubernetes_master" in upgrade_components') or upgrade_all
   environment:
     KUBECONFIG: "{{ kubeconfig.remote }}"
 
@@ -97,7 +107,7 @@
     - import_role:
         name: upgrade
         tasks_from: elasticsearch
-      when: ('upgrade_components is defined and "elasticsearch" in upgrade_components') or upgrade_components is not defined
+      when: ('"elasticsearch" in upgrade_components') or upgrade_all
 
 - hosts: elasticsearch_curator
   become: true
@@ -106,7 +116,7 @@
     - import_role:
         name: upgrade
         tasks_from: elasticsearch-curator
-      when: ('upgrade_components is defined and "elasticsearch" in upgrade_components') or upgrade_components is not defined
+      when: ('"elasticsearch" in upgrade_components') or upgrade_all
 
 - hosts: filebeat
   become: true
@@ -117,7 +127,7 @@
         tasks_from: filebeat
       when: 
         - groups.logging is defined # do not upgrade if there is legacy Elasticsearch (v6)
-        - ('upgrade_components is defined and "filebeat" in upgrade_components') or upgrade_components is not defined
+        - ('"filebeat" in upgrade_components') or upgrade_all
   environment:
     KUBECONFIG: "{{ kubeconfig.local }}"
 
@@ -131,7 +141,7 @@
         tasks_from: opendistro_for_elasticsearch
       vars:
         current_group_name: "logging"
-      when: ('upgrade_components is defined and "logging" in upgrade_components') or upgrade_components is not defined
+      when: ('"logging" in upgrade_components') or upgrade_all
 
 - hosts: opendistro_for_elasticsearch
   become: true
@@ -143,7 +153,7 @@
         tasks_from: opendistro_for_elasticsearch
       vars:
         current_group_name: "opendistro_for_elasticsearch"
-      when: ('upgrade_components is defined and "opendistro_for_elasticsearch" in upgrade_components') or upgrade_components is not defined
+      when: ('"opendistro_for_elasticsearch" in upgrade_components') or upgrade_all
 
 - hosts: kibana
   become: true
@@ -153,7 +163,7 @@
     - import_role:
         name: upgrade
         tasks_from: kibana
-      when: ('upgrade_components is defined and "kibana" in upgrade_components') or upgrade_components is not defined
+      when: ('"kibana" in upgrade_components') or upgrade_all
 
 - hosts: grafana
   become: true
@@ -163,7 +173,7 @@
     - import_role:
         name: upgrade
         tasks_from: grafana
-      when: ('upgrade_components is defined and "grafana" in upgrade_components') or upgrade_components is not defined
+      when: ('"grafana" in upgrade_components') or upgrade_all
 
 - hosts: zookeeper
   serial: 1
@@ -174,7 +184,7 @@
         name: upgrade
         tasks_from: zookeeper
       vars: { lock_file: /var/tmp/zookeeper-upgrade-in-progress.flag }
-      when: ('upgrade_components is defined and "zookeeper" in upgrade_components') or upgrade_components is not defined
+      when: ('"zookeeper" in upgrade_components') or upgrade_all
 
 - hosts: kafka
   serial: 1
@@ -185,7 +195,7 @@
         name: upgrade
         tasks_from: kafka
       vars: { lock_file: /var/tmp/kafka-upgrade-in-progress.flag }
-      when: ('upgrade_components is defined and "kafka" in upgrade_components') or upgrade_components is not defined
+      when: ('"kafka" in upgrade_components') or upgrade_all
 
 - hosts: rabbitmq
   become: true
@@ -195,7 +205,7 @@
         name: upgrade
         tasks_from: rabbitmq
       vars: { lock_file: /var/tmp/rabbitmq-upgrade-in-progress.flag }
-      when: ('upgrade_components is defined and "rabbitmq" in upgrade_components') or upgrade_components is not defined
+      when: ('"rabbitmq" in upgrade_components') or upgrade_all
 
 - hosts: ignite
   become: true
@@ -204,7 +214,7 @@
     - import_role:
         name: upgrade
         tasks_from: ignite
-      when: ('upgrade_components is defined and "ignite" in upgrade_components') or upgrade_components is not defined
+      when: ('"ignite" in upgrade_components') or upgrade_all
 
 - hosts: haproxy
   become: true
@@ -213,7 +223,7 @@
     - import_role:
         name: upgrade
         tasks_from: load_balancer
-      when: ('upgrade_components is defined and "load_balancer" in upgrade_components') or upgrade_components is not defined
+      when: ('"load_balancer" in upgrade_components') or upgrade_all
 
 - hosts: node_exporter
   become: true
@@ -222,6 +232,6 @@
     - import_role:
         name: upgrade
         tasks_from: node-exporter
-      when: ('upgrade_components is defined and "node_exporter" in upgrade_components') or upgrade_components is not defined
+      when: ('"node-exporter" in upgrade_components') or upgrade_all
   environment:
     KUBECONFIG: "{{ kubeconfig.local }}"
