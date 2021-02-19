@@ -134,7 +134,7 @@ class AnsibleVarsGenerator(Step):
         main_vars['is_upgrade_run'] = self.is_upgrade_run
         main_vars['roles_with_generated_vars'] = sorted(self.roles_with_generated_vars)
         main_vars['upgrade_components'] = Config().upgrade_components
-        main_vars['upgrade_all'] = Config().upgrade_components
+        main_vars['upgrade_all'] = Config().upgrade_all
 
         if self.is_upgrade_run:
             shared_config_doc = self.get_shared_config_from_manifest()
