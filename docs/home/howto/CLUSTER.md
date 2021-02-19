@@ -491,14 +491,16 @@ To setup the cluster do the following steps from the provisioning machine:
     epicli apply -f newcluster.yml
     ```
 
-### Note for RHEL / CentOS Azure images
+### Note for RHEL Azure images
 
-For RHEL and CentOS, Epiphany currently supports only images with RAW partitioning and attached to standard RHEL repositories. For more details, refer to [Azure documentation](https://docs.microsoft.com/en-us/azure/virtual-machines/workloads/redhat/redhat-images#rhel-7-image-types).
+Epiphany currently supports RHEL 7 RAW and LVM partitioned images attached to standard RHEL repositories. For more details, refer to [Azure documentation](https://docs.microsoft.com/en-us/azure/virtual-machines/workloads/redhat/redhat-images#rhel-7-image-types).
 
-It means that actually for Azure Cloud Epiphany supports RHEL 7.6 - 7.7 and CentOS 7.6 - 7.8 versions (with RAW partitioning and attached to standard repositories).
-List of supported images will be extended in next releases.
+For LVM partitioned images, Epiphany uses cloud-init custom data in order to merge small logical volumes (`homelv`, `optlv`, `tmplv` and `varlv`)
+into the `rootlv` and extends it (with underlying filesystem) by the current free space in its volume group.
+The `usrlv` LV, which has 10G, is not merged since it would require a reboot. The merging is required to deploy a cluster,
+however, [it can be disabled](#how-to-disable-merging-lvm-logical-volumes) for troubleshooting since it performs some administrative tasks (such as remounting filesystems or restarting services).
 
-Example config for RHEL:
+Example config:
 
 ```yaml
 kind: infrastructure/virtual-machine
@@ -509,15 +511,34 @@ specification:
     sku: "7-RAW"
     version: "7.7.2019090418"
 ```
-Example config for CentOS:
+
+### Note for CentOS Azure images
+
+Epiphany currently supports only CentOS 7 images with RAW partitioning, which means that LVM images cannot be used.
+
+Example config:
+
 ```yaml
 kind: infrastructure/virtual-machine
 specification:
   storage_image_reference:
     publisher: OpenLogic
     offer: CentOS
-    sku: "7_8"
-    version: "7.8.2020100700"
+    sku: 7_9-gen2
+    version: "7.9.2021020401"
+```
+
+### How to disable merging LVM logical volumes
+
+In order to not merge logical volumes (for troubleshooting), use the following doc:
+
+```yaml
+kind: infrastructure/cloud-init-custom-data
+title: cloud-init user-data
+provider: azure
+name: default
+specification:
+  enabled: false
 ```
 
 ## How to delete an Epiphany cluster on a cloud provider
