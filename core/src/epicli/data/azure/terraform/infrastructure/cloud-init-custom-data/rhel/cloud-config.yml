@@ -492,7 +492,7 @@ write_files:  # frequency: once-per-instance
       # shellcheck disable=SC1091
       source /usr/local/sbin/epiphany-lvm-merge-helper-functions.sh
 
-      extend_logical_volume_to_use_free_space() {
+      extend_logical_volume_by_free_space() {
         local vg_name=${1}
         local lv_name=${2}
 
@@ -754,7 +754,7 @@ write_files:  # frequency: once-per-instance
                                         "$lock_file_name" "$work_dir_path"
         done
 
-        run_cmd extend_logical_volume_to_use_free_space 'rootvg' 'rootlv'
+        run_cmd extend_logical_volume_by_free_space 'rootvg' 'rootlv'
 
         # these files are created at previous stage (bootcmd module)
         local enabled_services_dump_path="${work_dir_path}/bootcmd.enabled-services.dump"
