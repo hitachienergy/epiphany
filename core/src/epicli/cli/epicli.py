@@ -120,9 +120,12 @@ Terraform : 1..4 map to the following Terraform verbosity levels:
         config.offline_requirements = args.offline_requirements
     if 'wait_for_pods' in args and not args.wait_for_pods is None:
         config.wait_for_pods = args.wait_for_pods
-    if 'upgrade_components' in args and not args.upgrade_components is None:
+    if 'upgrade_components' in args and args.upgrade_components:
         config.upgrade_components = args.upgrade_components
-    config.upgrade_all = True if args.upgrade_all == 'true' else False
+    if 'upgrade_all' in args and not args.upgrade_all is None:
+        config.upgrade_all = args.upgrade_all
+    if (config.upgrade_components is None or not config.upgrade_components) and config.upgrade_all == False and 'upgrade' in arguments:
+        raise Exception(f'Provided --upgrade-components list is empty and --upgrade-all set to False. Set one of these options.')
     config.debug = args.debug
     config.auto_approve = args.auto_approve
 
@@ -257,7 +260,7 @@ def upgrade_parser(subparsers):
                             help='Enable Ansible profile_tasks plugin for timing tasks. (developer/debug option)')
     optional.add_argument('--upgrade-components', dest='upgrade_components', type=str, required=False,
                             help='Provides list of components for upgrade')
-    optional.add_argument('--upgrade-all', dest='upgrade_all', action="store_false",
+    optional.add_argument('--upgrade-all', dest='upgrade_all', action="store_true",
                             help='Provides a flag to indicate all components to be processed during upgrade')
     sub_parser._action_groups.append(optional)
 
