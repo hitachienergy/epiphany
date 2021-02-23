@@ -34,7 +34,8 @@ if provider == 'azure' and os[:family] == 'redhat' and lvm_installed?
     end
   end
 
-  describe 'Check substate of kdump service' do
+  # Image 7-RAW:7.7.2019090418 has no 'crashkernel' parameter configured so kdump.service fails
+  describe 'Check substate of kdump service', :if => host_inventory['platform_version'].to_f > 7.7 do
     describe command("systemctl show kdump.service -p SubState") do
       its(:exit_status) { should eq 0 }
       its(:stdout) { should contain "SubState=exited" }
