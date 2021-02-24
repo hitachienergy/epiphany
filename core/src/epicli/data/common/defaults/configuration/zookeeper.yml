@@ -1,4 +1,18 @@
 kind: configuration/zookeeper
 title: "Zookeeper"
 name: default
-specification: {}
+specification:
+  static_config_file:
+    # This block is injected to $ZOOCFGDIR/zoo.cfg
+    configurable_block: |
+      # Limits the number of concurrent connections (at the socket level) that a single client, identified by IP address,
+      # may make to a single member of the ZooKeeper ensemble. This is used to prevent certain classes of DoS attacks,
+      # including file descriptor exhaustion. The default is 60. Setting this to 0 removes the limit.
+      maxClientCnxns=0
+      # --- AdminServer configuration ---
+      # By default the AdminServer is enabled. Disabling it will cause automated test failures.
+      admin.enableServer=true
+      # The address the embedded Jetty server listens on. Defaults to 0.0.0.0.
+      admin.serverAddress=127.0.0.1
+      # The port the embedded Jetty server listens on. Defaults to 8080.
+      admin.serverPort=8008
