@@ -107,7 +107,7 @@ Things like on the list below are there as well, but usually such smaller projec
 
 ## 14. CONCLUSIONS
 
-Currently in Epiphany monitoring and getting metrics from Kafka are based one:
+Currently in Epiphany monitoring and getting metrics from Kafka are based on:
 - Kafka Exporter [link](https://github.com/danielqsj/kafka_exporter)
 - JMX Exporter [link](https://github.com/prometheus/jmx_exporter)
 - Prometheus [link](https://prometheus.io/)
@@ -116,11 +116,10 @@ Currently in Epiphany monitoring and getting metrics from Kafka are based one:
 In real scenarios, based on some use cases and opinions from internal teams:
 - Kafka Exporter is used in order to get consumer offset and lag
 - JMX Exporter is used in order to get some standard broker's metrics such as cpu, memory utilization and so on
-- Problems with the administration of the leader election are reported
 
 If it is possible to pay for a commercial license, Confluent, Lenses and Sematext offer more rich functionality compared to the other monitoring tools and they are very similar.
 
 As far as the open source project is considered:
 - LinkedIn Cruise Control looks like the winner. Provides not only managing and monitoring Kafka cluster but also some extra features such as rebalancing, anomaly detection or self-healing
-- Yahoo Cluster Manager looks like good competitor but only for managing and monitoring Kafka cluster. However in compare to Cruise Control, during the installation I met some issues and I was not able to recieve some consumer data and a few issues are already reported in official repository related to my problem [link](https://github.com/yahoo/CMAK/issues/641). I would not recommend this tools since it looks like the project does not have good spirit of open source software
-- LinkedIn Burrow looks like good additional tool for LinkedIn Cruise Control if we would like to have consumer lag checking service instead of Kafka exporter plugin which cause some outstanding issues
+- Yahoo Cluster Manager looks like good competitor but only for managing and monitoring Kafka cluster. However in compare to Cruise Control, during the installation some issues were met and it was not able to recieve some consumer data and a few issues are already reported in official repository related to the problem [link](https://github.com/yahoo/CMAK/issues/641). The project does not have good spirit of open source software at all.
+- LinkedIn Burrow looks like good additional tool for LinkedIn Cruise Control when it comes to consumer lag checking service and can be used instead of Kafka exporter plugin which cause some outstanding issues
