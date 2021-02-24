@@ -15,11 +15,11 @@
       command: mv /etc/cron.daily/rhui-update-client /var/tmp/rhui-update-client
       when: stat_rhui_update_client_to_bypass.stat.exists
 
-- name: Wait for yum lock to be released
-  yum:
-    list: installed
-  module_defaults:
-    yum: { lock_timeout: "{{ yum_lock_timeout }}" }
+- name: Wait for yum lock to be released  # do not use 'yum' module with 'list' here since it requires yum-utils package
+  wait_for:
+    path: /var/run/yum.pid
+    state: absent
+    timeout: "{{ yum_lock_timeout }}"
 
 - name: Set SELinux in permissive mode until the machine is rebooted
   command: setenforce 0
