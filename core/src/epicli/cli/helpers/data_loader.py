@@ -57,7 +57,7 @@ def load_yaml_file(path_to_file):
 
 def load_yamls_file(path_to_file):
     with open(path_to_file, 'r') as stream:
-        return safe_load_all(stream)         
+        return safe_load_all(stream)
 
 
 def load_template_file(file_type, provider, kind):
@@ -83,9 +83,20 @@ def load_all_documents_from_folder(provider, directory):
         docs += documents
     return docs
 
+
 def load_manifest_docs(build_dir):
     path_to_manifest = os.path.join(build_dir, MANIFEST_FILE_NAME)
     if not os.path.isfile(path_to_manifest):
         raise Exception('No manifest.yml inside the build folder')
 
     return load_yamls_file(path_to_manifest)
+
+
+def get_data_dir_path():
+    script_dir = os.path.dirname(__file__)
+    directory_path = os.path.join(script_dir, DATA_FOLDER_PATH)
+    return os.path.abspath(directory_path)
+
+
+def get_provider_subdir_path(file_type, provider):
+    return os.path.join(get_data_dir_path(), provider, file_type)

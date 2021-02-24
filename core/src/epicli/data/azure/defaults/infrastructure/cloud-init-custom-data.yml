@@ -1,0 +1,8 @@
+kind: infrastructure/cloud-init-custom-data
+title: cloud-init user-data
+provider: azure
+name: default
+specification:
+  file_name: SET_BY_AUTOMATION
+  os_distribution: SET_BY_AUTOMATION
+  enabled: true
