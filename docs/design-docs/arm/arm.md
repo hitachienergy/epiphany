@@ -26,7 +26,8 @@ Have 2 big disadvanges from the start:
 2. Does not require additional input but this will lead to code duplication in the ```repository``` role as we need to maintain ```download-requirements.sh``` for each OS and architecture then.
 
 
-That is why I opt for an approach where we don't add any architecture flag or new additional OS. The architecture we can handle on the code level and on the OS level only the ```requirements.txt``` might be different for each as indicated by initial research [here.](./centos-arm-analysis.md).
+That is why I opt for an approach where we don't add any architecture flag or new additional OS. The architecture we can handle on the code level and on the OS level only the ```requirements.txt``` might be different for each as indicated by initial research [here](./centos-arm-analysis.md).
+
 
 
 ## Changes required
@@ -80,7 +81,8 @@ Based on ```ansible_architecture``` fact.
 
 ### Artitecture support for each component/role
 
-As per current requirements not every Epiphany component is required to support ARM and there might be cases that a component/role can't support ARM as indicated by initial research [here.](./centos-arm-analysis.md).
+As per current requirements not every Epiphany component is required to support ARM and there might be cases that a component/role can't support ARM as indicated by initial research [here](./centos-arm-analysis.md).
+
 
 
 Thats why every component/role should be marked which architecture it supports. Maybe something in ```<rolename>/defaults/main.yml``` like:
