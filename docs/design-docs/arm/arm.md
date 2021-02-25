@@ -82,7 +82,7 @@ Thats why every component/role should be marked which architecture it supports. 
 supported_architectures:
   - all ?
   - x86_64
-  - aarch64
+  - arm64
 ```
 
 We can assume the role/component will support everyting if ```all``` is defined or if ```supported_architectures``` is not present.
@@ -90,3 +90,29 @@ We can assume the role/component will support everyting if ```all``` is defined 
 ### Pre-flight check
 
 The ```preflight``` should be expended to check if all the components/roles we want to install from the inventory actually support the architecture we want to use. We should be able todo this with the definition from the above point. This way we will make sure people can only install components on ARM which we actually support.
+
+### Pre-flight check
+
+The ```preflight``` should be expended to check if all the components/roles we want to install from the inventory actually support the architecture we want to use. We should be able todo this with the definition from the above point. This way we will make sure people can only install components on ARM which we actually support.
+
+### Replace Skopeo with Crane
+
+Currently we use [Skopeo](https://github.com/containers/skopeo) to download the image requirements. Skopeo however has the following issues with newer versions:
+
+- No support anymore for universal Go binaries. Each OS would need to have each own build version
+- Sketchy support for ARM64
+
+That is why we should replace it with [Crane](https://github.com/google/go-containerregistry/blob/main/cmd/crane/README.md).
+
+1. This tool can do the same as Skopeo:
+
+```bash
+./skopeo --insecure-policy copy docker://kubernetesui/dashboard:v2.0.3 docker-archive:skopeodashboard:v2.0.3
+./crane export --insecure kubernetesui/dashboard:v2.0.3 "cranedashboard:v2.0.3"
+```
+
+The above will produce the same Docker image package.
+
+2. Supports the universal cross distro binairy.
+4. Has support for both ARM64 and x86_64
+3. Has official pre-build binaries unlike Skopeo: https://github.com/google/go-containerregistry/releases/tag/v0.4.0
