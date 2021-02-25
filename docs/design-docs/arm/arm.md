@@ -70,7 +70,8 @@ Based on ```ansible_architecture```.
 
 ### Artitecture support for each component/role
 
-As per current requirements not every Epiphany component is required to support ARM and there might be cases that a component/role can`t support ARM as indicated by initial research [here.](./centos-arm-analysis.md).
+As per current requirements not every Epiphany component is required to support ARM and there might be cases that a component/role can't support ARM as indicated by initial research [here.](./centos-arm-analysis.md).
+
 
 Thats why every component/role should be marked which architecture it supports. Maybe something in ```<rolename>/defaults/main.yml``` like:
 
