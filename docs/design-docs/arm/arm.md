@@ -98,10 +98,6 @@ We can assume the role/component will support everything if ```all``` is defined
 The ```preflight``` should be expanded to check if all the components/roles we want to install from the inventory actually support the architecture we want to use. We should be able to do this with the definition from the above point. This way we will make sure people can only install components on ARM which we actually support.
 
 
-### Pre-flight check
-
-The ```preflight``` should be expended to check if all the components/roles we want to install from the inventory actually support the architecture we want to use. We should be able todo this with the definition from the above point. This way we will make sure people can only install components on ARM which we actually support.
-
 ### Replace Skopeo with Crane
 
 Currently we use [Skopeo](https://github.com/containers/skopeo) to download the image requirements. Skopeo however has the following issues with newer versions:
