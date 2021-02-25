@@ -120,6 +120,7 @@ That is why we should replace it with [Crane](https://github.com/google/go-conta
 
 The above will produce the same Docker image package.
 
-2. Supports the universal cross distro binairy.
+2. Supports the universal cross distro binary.
+
 4. Has support for both ARM64 and x86_64
 3. Has official pre-build binaries unlike Skopeo: https://github.com/google/go-containerregistry/releases/tag/v0.4.0
