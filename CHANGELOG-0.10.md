@@ -19,6 +19,7 @@
 - [#1824](https://github.com/epiphany-platform/epiphany/issues/1824) - offline installation fails with error 'yum lockfile is held by another process' (Azure/RHEL)
 - [#2069](https://github.com/epiphany-platform/epiphany/issues/2069) - [CentOS] epicli fails on task [repository : Create epirepo repository]
 - [#2066](https://github.com/epiphany-platform/epiphany/issues/2066) - [CentOS] download-requirements.sh fails on extracting tar with backed up repos
+- [#2067](https://github.com/epiphany-platform/epiphany/issues/2067) - [CentOS] epicli fails on task "repository : Wait for yum lock to be released" on CentOS Minimal
 
 ### Updated
 
