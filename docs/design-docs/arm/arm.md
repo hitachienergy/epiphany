@@ -23,7 +23,8 @@ Have 2 big disadvanges from the start:
 1. Will require an additional input which makes things more confusing as they will need supply not only the OS but also Architecture for (offline) install. This should not be needed as we can detect the architecture we are working on, on all required levels.
 2. Does not require additional input but this will lead to code duplication in the ```requirements``` role as we need to maintain ```download-requirements.sh``` for each OS and architecture then.
 
-That is why I opt for an approach where we don`t add any architecture flag or new additional OS. The architecture we can handle on the code level and on the OS level only the ```requirements.txt``` might be different for each as indicated by initial research [here.](./centos-arm-analysis.md).
+That is why I opt for an approach where we don't add any architecture flag or new additional OS. The architecture we can handle on the code level and on the OS level only the ```requirements.txt``` might be different for each as indicated by initial research [here.](./centos-arm-analysis.md).
+
 
 ## Changes required
 
