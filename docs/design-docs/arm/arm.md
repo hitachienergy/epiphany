@@ -49,7 +49,8 @@ Hence we should make a requirements.txt for each architecture we want to support
 The ```download-requirements.sh``` script should be able to figure out which one to select based on the output of:
 
 ```shell
-uname -a
+uname -i
+
 ```
 
 or
