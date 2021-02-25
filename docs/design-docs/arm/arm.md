@@ -95,7 +95,8 @@ We can assume the role/component will support everything if ```all``` is defined
 
 ### Pre-flight check
 
-The ```preflight``` should be expended to check if all the components/roles we want to install from the inventory actually support the architecture we want to use. We should be able todo this with the definition from the above point. This way we will make sure people can only install components on ARM which we actually support.
+The ```preflight``` should be expanded to check if all the components/roles we want to install from the inventory actually support the architecture we want to use. We should be able to do this with the definition from the above point. This way we will make sure people can only install components on ARM which we actually support.
+
 
 ### Pre-flight check
 
