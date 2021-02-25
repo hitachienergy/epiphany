@@ -90,7 +90,8 @@ supported_architectures:
   - arm64
 ```
 
-We can assume the role/component will support everyting if ```all``` is defined or if ```supported_architectures``` is not present.
+We can assume the role/component will support everything if ```all``` is defined or if ```supported_architectures``` is not present.
+
 
 ### Pre-flight check
 
