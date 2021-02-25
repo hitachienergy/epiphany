@@ -10,7 +10,8 @@ This document outlines an aproach to add (partial) ARM support to Epicli. Not fi
 - Centos 7 as operating system
 - "any" provider as we do not want to provide ARM infrastructure on any cloud providers yet through Terraform
 
-- Epiphany components: K8s, Kafka, ELK, Grafana, Prometheus, Kibana, HAProxy, Keycloak, PostgreSQL
+- Epiphany components: K8s, Kafka, ELK, Grafana, Prometheus, Kibana, HAProxy, Keycloak, PostgreSQL, Docker (local image registry)
+
 
 ## Approach
 
@@ -22,7 +23,8 @@ The 2 high level approaches that have been opted so far:
 Have 2 big disadvanges from the start:
 
 1. Will require an additional input which makes things more confusing as they will need supply not only the OS but also Architecture for (offline) install. This should not be needed as we can detect the architecture we are working on, on all required levels.
-2. Does not require additional input but this will lead to code duplication in the ```requirements``` role as we need to maintain ```download-requirements.sh``` for each OS and architecture then.
+2. Does not require additional input but this will lead to code duplication in the ```repository``` role as we need to maintain ```download-requirements.sh``` for each OS and architecture then.
+
 
 That is why I opt for an approach where we don't add any architecture flag or new additional OS. The architecture we can handle on the code level and on the OS level only the ```requirements.txt``` might be different for each as indicated by initial research [here.](./centos-arm-analysis.md).
 
@@ -35,6 +37,7 @@ In the repository role we need to change the download of the requirements to sup
 
 - Some components/roles might not have packages/binaries/containers that support ARM
 - Some filenames for binaries will be different per architecture
+- Some package repositories will have different URLs per architecture
 
 Hence we should make a requirements.txt for each architecture we want to support, for example:
 
@@ -46,7 +49,8 @@ Hence we should make a requirements.txt for each architecture we want to support
 The ```download-requirements.sh``` script should be able to figure out which one to select based on the output of:
 
 ```shell
-uname -a
+uname -i
+
 ```
 
 or
@@ -59,16 +63,19 @@ As fallback we could just use ```requirements.txt``` and asume its ```x86_64```.
 
 ### Download role
 
-In the download role, which is used to download plain files from the repository, we should add support for filenames with aliases for different architectures:
+In the download role, which is used to download plain files from the repository, we should add support for filename patterns and automatically look for current architecture (optionally with regex based suffix like `linux[_-]amd64\.(tar\.gz|tar|zip)`):
+
 
 For example select between:
 
 - haproxy_exporter-0.12.0.linux-```x86_64```.tar.gz
 - haproxy_exporter-0.12.0.linux-```arm64```.tar.gz
 
-Based on ```ansible_architecture```.
+Based on ```ansible_architecture``` fact.
 
-**Note that this should be optional as some packages don't require the use of an alias like Java bases ones for example.**
+
+**Note that this should be optional as some filenames do not contain architecture like Java based packages for example.**
+
 
 
 ### Artitecture support for each component/role
@@ -85,15 +92,13 @@ supported_architectures:
   - arm64
 ```
 
-We can assume the role/component will support everyting if ```all``` is defined or if ```supported_architectures``` is not present.
+We can assume the role/component will support everything if ```all``` is defined or if ```supported_architectures``` is not present.
+
 
 ### Pre-flight check
 
-The ```preflight``` should be expended to check if all the components/roles we want to install from the inventory actually support the architecture we want to use. We should be able todo this with the definition from the above point. This way we will make sure people can only install components on ARM which we actually support.
+The ```preflight``` should be expanded to check if all the components/roles we want to install from the inventory actually support the architecture we want to use. We should be able to do this with the definition from the above point. This way we will make sure people can only install components on ARM which we actually support.
 
-### Pre-flight check
-
-The ```preflight``` should be expended to check if all the components/roles we want to install from the inventory actually support the architecture we want to use. We should be able todo this with the definition from the above point. This way we will make sure people can only install components on ARM which we actually support.
 
 ### Replace Skopeo with Crane
 
@@ -113,6 +118,7 @@ That is why we should replace it with [Crane](https://github.com/google/go-conta
 
 The above will produce the same Docker image package.
 
-2. Supports the universal cross distro binairy.
+2. Supports the universal cross distro binary.
+
 4. Has support for both ARM64 and x86_64
 3. Has official pre-build binaries unlike Skopeo: https://github.com/google/go-containerregistry/releases/tag/v0.4.0
