@@ -13,6 +13,7 @@
 - [#2166](https://github.com/epiphany-platform/epiphany/issues/2166) - Replace Bintray repository
 - [#2012](https://github.com/epiphany-platform/epiphany/issues/2012) - Patch cgroup drivers (switch to systemd)
 - [#1824](https://github.com/epiphany-platform/epiphany/issues/1824) - offline installation fails with error 'yum lockfile is held by another process' (Azure/RHEL)
+- [#2067](https://github.com/epiphany-platform/epiphany/issues/2067) - [CentOS] epicli fails on task "repository : Wait for yum lock to be released" on CentOS Minimal
 
 ## [0.9.0] 2021-01-19
 
