@@ -1,4 +1,4 @@
-# Epiphany Platform backup design document
+# Epiphany Platform ARM design document
 
 Affected version: 0.10.x/0.11.x
 
