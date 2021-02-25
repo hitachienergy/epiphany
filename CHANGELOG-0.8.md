@@ -23,6 +23,7 @@
 - [#2042](https://github.com/epiphany-platform/epiphany/issues/2042) - PostgreSQL replication with repmgr: hot_standby not set in config file
 - [#2041](https://github.com/epiphany-platform/epiphany/issues/2042) - Pgpool not showing Replication State on RedHat
 - [#1824](https://github.com/epiphany-platform/epiphany/issues/1824) - offline installation fails with error 'yum lockfile is held by another process' (Azure/RHEL)
+- [#2067](https://github.com/epiphany-platform/epiphany/issues/2067) - [CentOS] epicli fails on task "repository : Wait for yum lock to be released" on CentOS Minimal
 
 ### Updated
 

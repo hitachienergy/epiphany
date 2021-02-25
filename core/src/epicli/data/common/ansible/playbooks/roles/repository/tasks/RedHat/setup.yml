@@ -1,9 +1,25 @@
 ---
-- name: Wait for yum lock to be released
-  yum:
-    list: installed
-  module_defaults:
-    yum: { lock_timeout: "{{ yum_lock_timeout }}" }
+# Bypass yum run by /etc/cron.daily/rhui-update-client on Azure to avoid error 'yum lockfile is held by another process'
+- name: Bypass /etc/cron.daily/rhui-update-client
+  when: specification.provider in ['azure', 'any']  # any for AzBI module
+  block:
+    - name: Check if /etc/cron.daily/rhui-update-client file exists
+      stat:
+        path: /etc/cron.daily/rhui-update-client
+        get_attributes: false
+        get_checksum: false
+        get_mime: false
+      register: stat_rhui_update_client_to_bypass
+
+    - name: Bypass /etc/cron.daily/rhui-update-client by moving to temporary location  # it's restored in teardown
+      command: mv /etc/cron.daily/rhui-update-client /var/tmp/rhui-update-client
+      when: stat_rhui_update_client_to_bypass.stat.exists
+
+- name: Wait for yum lock to be released  # do not use 'yum' module with 'list' here since it requires yum-utils package
+  wait_for:
+    path: /var/run/yum.pid
+    state: absent
+    timeout: "{{ yum_lock_timeout }}"
 
 - name: Set SELinux in permissive mode until the machine is rebooted
   command: setenforce 0
