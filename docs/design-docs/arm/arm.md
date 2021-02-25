@@ -35,7 +35,8 @@ In the repository role we need to change the download of the requirements to sup
 - Some components/roles might not have packages/binaries/containers that support ARM
 - Some filenames for binaries will be different per architecture
 
-Hense we should make a requirements.txt for each architecture we want to support, for example:
+Hence we should make a requirements.txt for each architecture we want to support, for example:
+
 
 - requirements_x86_64.txt (Should be the default and present)
 - requirements_aarch64.txt
