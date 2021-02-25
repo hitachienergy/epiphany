@@ -72,7 +72,8 @@ For example select between:
 
 Based on ```ansible_architecture```.
 
-**Note that this should be optional as some packages don't require the use of an alias like Java bases ones for example.**
+**Note that this should be optional as some filenames do not contain architecture like Java based packages for example.**
+
 
 
 ### Artitecture support for each component/role
