@@ -70,7 +70,8 @@ For example select between:
 - haproxy_exporter-0.12.0.linux-```x86_64```.tar.gz
 - haproxy_exporter-0.12.0.linux-```arm64```.tar.gz
 
-Based on ```ansible_architecture```.
+Based on ```ansible_architecture``` fact.
+
 
 **Note that this should be optional as some filenames do not contain architecture like Java based packages for example.**
 
