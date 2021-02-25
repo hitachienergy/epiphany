@@ -40,7 +40,8 @@ Hence we should make a requirements.txt for each architecture we want to support
 
 
 - requirements_x86_64.txt (Should be the default and present)
-- requirements_aarch64.txt
+- requirements_arm64.txt
+
 
 The ```download-requirements.sh``` script should be able to figure out which one to select based on the output of:
 
