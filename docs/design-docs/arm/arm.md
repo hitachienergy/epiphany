@@ -62,7 +62,7 @@ In the download role, which is used to download plain files from the repository,
 
 For example select between:
 
-- haproxy_exporter-0.12.0.linux-```amd64```.tar.gz
+- haproxy_exporter-0.12.0.linux-```x86_64```.tar.gz
 - haproxy_exporter-0.12.0.linux-```arm64```.tar.gz
 
 Based on ```ansible_architecture```.
