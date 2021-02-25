@@ -8,7 +8,8 @@ This document outlines an aproach to add (partial) ARM support to Epicli. Not fi
 
 - ARMv8/ARM64 architecture
 - Centos 7 as operating system
-- "any" provider as we do not want to provide ARM infrastructure on any cloud providers jet through Terraform
+- "any" provider as we do not want to provide ARM infrastructure on any cloud providers yet through Terraform
+
 - Epiphany components: K8s, Kafka, ELK, Grafana, Prometheus, Kibana, HAProxy, Keycloak, PostgreSQL
 
 ## Approach
