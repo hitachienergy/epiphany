@@ -63,7 +63,8 @@ As fallback we could just use ```requirements.txt``` and asume its ```x86_64```.
 
 ### Download role
 
-In the download role, which is used to download plain files from the repository, we should add support for filenames with aliases for different architectures:
+In the download role, which is used to download plain files from the repository, we should add support for filename patterns and automatically look for current architecture (optionally with regex based suffix like `linux[_-]amd64\.(tar\.gz|tar|zip)`):
+
 
 For example select between:
 
