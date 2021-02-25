@@ -37,6 +37,7 @@ In the repository role we need to change the download of the requirements to sup
 
 - Some components/roles might not have packages/binaries/containers that support ARM
 - Some filenames for binaries will be different per architecture
+- Some package repositories will have different URLs per architecture
 
 Hence we should make a requirements.txt for each architecture we want to support, for example:
 
