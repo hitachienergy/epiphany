@@ -25,6 +25,8 @@ types = Types(DEFAULT='defaults',
               TERRAFORM='terraform',
               ANSIBLE='ansible')
 
+CRANE_X86_64_BIN_PATH = DATA_FOLDER_PATH + '/common/ansible/playbooks/roles/repository/files/crane/crane_x86_64'
+
 
 def load_yaml_obj(file_type, provider, kind):
     script_dir = os.path.dirname(__file__)

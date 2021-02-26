@@ -28,9 +28,9 @@
         src: "download-requirements/{{ download_script_subdir }}/"
         dest: /tmp/epi-download-requirements
 
-    - name: Copy skopeo binary to repository host
+    - name: Copy crane binary to repository host
       copy:
-        src: /tmp/skopeo_linux
+        src: /tmp/crane_x86_64
         dest: /tmp/epi-download-requirements
         mode: a+x
 
