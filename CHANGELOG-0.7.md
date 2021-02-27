@@ -9,6 +9,7 @@
 ### Updated
 
 - [#1965](https://github.com/epiphany-platform/epiphany/issues/1965) - Upgrade Elasticsearch Curator to v5.8.3
+- [#1927](https://github.com/epiphany-platform/epiphany/issues/1927) - Upgrade Zookeeper to v3.5.8
 
 ## [0.7.2] 2020-10-07
 

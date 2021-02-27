@@ -1,5 +1,4 @@
 ---
-# Zookeeper tasks - resides on masters
 
 - name: Create Zookeeper group
   group:
@@ -30,19 +29,18 @@
     path: "{{ prometheus_jmx_path }}"
   register: exporter
 
-- name: Set zookeeper variable with version name
+- name: Set Zookeeper variable with version name
   set_fact:
-    zookeeper_name: "zookeeper-{{ specification.version }}"
+    zookeeper_name: "zookeeper-{{ zookeeper_version }}"
   changed_when: false
 
-- name: Set zookeeper install dir for {{ zookeeper_name }}
+- name: Set Zookeeper install dir for {{ zookeeper_name }}
   set_fact:
     zookeeper_install_dir: "/opt/{{ zookeeper_name }}"
-  changed_when: false
 
 - name: Set Zookeeper file name to install
   set_fact:
-    zookeeper_file_name: "{{ specification.file_name }}"
+    zookeeper_file_name: "{{ zookeeper_bin_filename }}"
 
 - name: Download Zookeeper binaries
   include_role:
@@ -58,7 +56,7 @@
     recurse: yes
     owner: "{{ zookeeper_user }}"
     group: "{{ zookeeper_group }}"
-    mode: 0750
+    mode: u=rwx,g=rx,o=
     state: directory
   with_items:
   - "{{ zookeeper_install_dir }}"
@@ -71,7 +69,7 @@
     dest: "{{ zookeeper_install_dir }}"
     creates: "{{ zookeeper_install_dir }}/bin"
     extra_opts: [--strip-components=1]
-    mode: 0755
+    mode: u=rwx,g=rx,o=rx
     owner: "{{ zookeeper_user }}"
     group: "{{ zookeeper_group }}"
   check_mode: false
@@ -88,7 +86,7 @@
     - "{{ zookeeper_install_dir }}/conf"
     - "/etc/zookeeper/conf"
 
-- name: Create zookeeper service
+- name: Create Zookeeper service
   template:
     src: zookeeper.service.j2
     dest: /lib/systemd/system/zookeeper.service
@@ -107,7 +105,7 @@
 
 - name: Configure Zookeeper
   template:
-    src: zoo.j2
+    src: zoo.cfg.j2
     dest: "{{ zookeeper_install_dir }}/conf/zoo.cfg"
     owner: "{{ zookeeper_user }}"
     group: "{{ zookeeper_group }}"
@@ -116,14 +114,11 @@
 - name: Link /opt/zookeeper to the right version
   file: path=/opt/zookeeper state=link src="{{ zookeeper_install_dir }}"
 
-# - name: Link /etc/zookeeper/conf to /opt/zookeeper/config
-#   file: path=/etc/zookeeper/conf state=link src=/opt/zookeeper/conf
-
 - name: Add Zookeeper's bin dir to the PATH
   copy:
     content: "export PATH=$PATH:/opt/zookeeper/bin"
     dest: "/etc/profile.d/zookeeper_path.sh"
-    mode: 0755
+    mode: u=rwx,g=rx,o=rx
 
 - name: Update the log4j config with saner production values
   template:
@@ -145,4 +140,3 @@
 
 - include_tasks: metrics.yml
   when: exporter.stat.exists
-
