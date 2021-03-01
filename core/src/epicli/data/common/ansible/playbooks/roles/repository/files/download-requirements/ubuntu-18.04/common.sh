@@ -42,14 +42,14 @@ download_image() {
 
 	#[[ ! -f $dst_image ]] || remove_file "$dst_image"
 	if [[ -f ${dst_image} ]]; then
-            echo "Image: "${dst_image}" already exists. Skipping..."
-        else
-	    local tmp_file=$(mktemp)
-	    echo "Downloading image: $1"
-	    echo "Skopeo command is: ./skopeo_linux --insecure-policy copy docker://${image_name} docker-archive:${dst_image}:${repository}:${tag}"
-	    # use temporary file for downloading to be safe from sudden interruptions (network, ctrl+c)
-	    ./skopeo_linux --insecure-policy copy docker://${image_name} docker-archive:${tmp_file}:${repository}:${tag} && chmod 644 ${tmp_file} && mv ${tmp_file} ${dst_image}
-        fi
+		echo "Image: "${dst_image}" already exists. Skipping..."
+	else
+		local tmp_file=$(mktemp)
+		echo "Downloading image: $1"
+		echo "Crane command is: ./crane_x86_64 pull --insecure --format=legacy ${image_name} ${dst_image}"
+		# use temporary file for downloading to be safe from sudden interruptions (network, ctrl+c)
+		./crane_x86_64 pull --insecure --format=legacy ${image_name} ${tmp_file} && chmod 644 ${tmp_file} && mv ${tmp_file} ${dst_image}
+	fi
 }
 
 # params: <file_url> <dest_dir>

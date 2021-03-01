@@ -145,11 +145,11 @@ else
     cat -n <<< "${images}"
 
     printf "\n"
-    # download images using skopeo
+    # download images using crane
     while IFS= read -r image_name; do
         download_image "${image_name}" "${dst_dir_images}"
         if [ $? != 0 ]; then
-            echo "Skopeo download error, retrying..."
+            echo "Crane download error, retrying..."
             download_image "${image_name}" "${dst_dir_images}"
         fi
     done <<< "${images}"

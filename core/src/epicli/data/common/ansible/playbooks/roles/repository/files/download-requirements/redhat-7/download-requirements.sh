@@ -114,12 +114,12 @@ download_image() {
 	else
 		# use temporary file for downloading to be safe from sudden interruptions (network, ctrl+c)
 		local tmp_file_path=$(mktemp)
-		local skopeo_cmd="$SKOPEO_BIN --insecure-policy copy docker://$image_name docker-archive:$tmp_file_path:$repository:$tag"
+		local crane_cmd="$CRANE_BIN  pull --insecure --format=legacy ${image_name} ${tmp_file}"
 		echol "Downloading image: $image"
 		# try twice to avoid random error on Azure: "pinging docker registry returned: Get https://k8s.gcr.io/v2/: net/http: TLS handshake timeout"
-		{ $skopeo_cmd && chmod 644 $tmp_file_path && mv $tmp_file_path $dest_path; } ||
-		{ echol "Second try:" && $skopeo_cmd && chmod 644 $tmp_file_path && mv $tmp_file_path $dest_path; } ||
-			exit_with_error "skopeo failed, command was: $skopeo_cmd && chmod 644 $tmp_file_path && mv $tmp_file_path $dest_path"
+		{ $crane_cmd && chmod 644 $tmp_file_path && mv $tmp_file_path $dest_path; } ||
+		{ echol "Second try:" && $crane_cmd && chmod 644 $tmp_file_path && mv $tmp_file_path $dest_path; } ||
+			exit_with_error "crane failed, command was: $crane_cmd && chmod 644 $tmp_file_path && mv $tmp_file_path $dest_path"
 	fi
 }
 
@@ -405,7 +405,7 @@ readonly SCRIPT_FILE_NAME=$(basename $0)
 readonly LOG_FILE_NAME=${SCRIPT_FILE_NAME/sh/log}
 readonly LOG_FILE_PATH="$SCRIPT_DIR/$LOG_FILE_NAME"
 readonly YUM_CONFIG_BACKUP_FILE_PATH="$SCRIPT_DIR/${SCRIPT_FILE_NAME}-yum-repos-backup-tmp-do-not-remove.tar"
-readonly SKOPEO_BIN="$SCRIPT_DIR/skopeo_linux"
+readonly CRANE_BIN="$SCRIPT_DIR/crane_x86_64"
 readonly INSTALLED_PACKAGES_FILE_PATH="$SCRIPT_DIR/${SCRIPT_FILE_NAME}-installed-packages-list-do-not-remove.tmp"
 readonly PID_FILE_PATH=/var/run/${SCRIPT_FILE_NAME/sh/pid}
 
@@ -414,8 +414,8 @@ readonly PID_FILE_PATH=/var/run/${SCRIPT_FILE_NAME/sh/pid}
 [ $EUID -eq 0 ] || { echo "You have to run as root" && exit 1; }
 
 [[ -f $REQUIREMENTS_FILE_PATH ]] || exit_with_error "File not found: $REQUIREMENTS_FILE_PATH"
-[[ -f $SKOPEO_BIN ]] || exit_with_error "File not found: $SKOPEO_BIN"
-[[ -x $SKOPEO_BIN ]] || exit_with_error "$SKOPEO_BIN have to be executable"
+[[ -f $CRANE_BIN ]] || exit_with_error "File not found: $CRANE_BIN"
+[[ -x $CRANE_BIN ]] || exit_with_error "$CRANE_BIN have to be executable"
 
 # --- Want to have only one instance for Ansible ---
 
