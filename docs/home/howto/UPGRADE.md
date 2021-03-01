@@ -109,17 +109,11 @@ To upgrade the cluster components run the following steps:
 
 The `epicli upgrade` command had an additional flags:
 -  `--wait-for-pods`. When this flag is added, the Kubernetes upgrade will wait until all pods are in the **ready** state before proceding. This can be usefull when a zero downtime upgrade is required. **Note: that this can also cause the upgrade to hang indefinitely.**
-- `--upgrade-components`. Specify comma separated component names so the upgrade procedure will only process specific ones. List cannot be empty, otherwise execution will fail. If --upgrade-all flag is provided as well - this one is ignored.
+- `--upgrade-components`. Specify comma separated component names so the upgrade procedure will only process specific ones. List cannot be empty, otherwise execution will fail. By default upgrade will process all components if this parameter is not provided 
    Example:
    ```shell
    epicli upgrade -b /buildoutput/ --upgrade-components "kafka,filebeat"
    ```
-- `--upgrade-all`. Flag that indicates that upgrade procedure will process all the components. It takes precedence over --upgrade-components flag. Default value is False.
-   Example:
-   ```shell
-   epicli upgrade -b /buildoutput/ --upgrade-all
-   ```
--  `--upgrade-all` or `--upgrade-components` has to be provided. If none of them is set - execution will fail.
 
 ## How to upgrade Kafka
 
