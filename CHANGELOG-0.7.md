@@ -5,11 +5,11 @@
 ### Added
 
 - [#1302](https://github.com/epiphany-platform/epiphany/issues/1302) - Ability to update control plane certificates expiration date
-- [#1934](https://github.com/epiphany-platform/epiphany/issues/1934) - Backported Rabbitmq upgrade to v3.8.9
 
 ### Updated
 
 - [#1965](https://github.com/epiphany-platform/epiphany/issues/1965) - Upgrade Elasticsearch Curator to v5.8.3
+- [#1934](https://github.com/epiphany-platform/epiphany/issues/1934) - Backported Rabbitmq upgrade to v3.8.9
 
 ## [0.7.2] 2020-10-07
 
