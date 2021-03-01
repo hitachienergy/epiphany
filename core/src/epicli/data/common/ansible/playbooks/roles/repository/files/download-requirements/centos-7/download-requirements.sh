@@ -114,7 +114,7 @@ download_image() {
 	else
 		# use temporary file for downloading to be safe from sudden interruptions (network, ctrl+c)
 		local tmp_file_path=$(mktemp)
-		local crane_cmd="$CRANE_BIN  pull --insecure --format=legacy ${image_name} ${tmp_file}"
+		local crane_cmd="$CRANE_BIN  pull --insecure --format=legacy ${image_name} ${tmp_file_path}"
 		echol "Downloading image: $image"
 		# try twice to avoid random error on Azure: "pinging docker registry returned: Get https://k8s.gcr.io/v2/: net/http: TLS handshake timeout"
 		{ $crane_cmd && chmod 644 $tmp_file_path && mv $tmp_file_path $dest_path; } ||
