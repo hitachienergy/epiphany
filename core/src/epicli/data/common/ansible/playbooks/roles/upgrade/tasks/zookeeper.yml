@@ -1,0 +1,50 @@
+---
+- name: Include defaults from zookeeper role
+  include_vars:
+    file: roles/zookeeper/defaults/main.yml
+    name: zookeeper_defaults
+
+- name: Include pre-flight checks
+  include_tasks: zookeeper/preflight-check.yml
+
+- name: Get installed Zookeeper's version
+  stat:
+    path: /opt/zookeeper
+    get_attributes: false
+    get_checksum: false
+    get_mime: false
+  register: linked_zookeeper
+
+- name: Set installed Zookeeper version as fact
+  set_fact:
+    before_upgrade_zookeeper_version: "{{ linked_zookeeper.stat.lnk_target | regex_search('\\d+\\.\\d+\\.\\d+') }}"
+
+- name: Check for upgrade flag file
+  stat:
+    path: "{{ lock_file }}"
+    get_attributes: false
+    get_checksum: false
+    get_mime: false
+  register: lock_file_status
+
+- name: Upgrade Zookeeper if newer version is available
+  block:
+    - name: Create upgrade flag file
+      file:
+        path: "{{ lock_file }}"
+        state: touch
+
+    - name: Stop Zookeeper service
+      service:
+        name: zookeeper
+        state: stopped
+
+    - name: Include upgrade Zookeeper task
+      include_tasks: zookeeper/install-upgrade.yml
+  when:
+    - lock_file_status.stat.exists or before_upgrade_zookeeper_version is version( zookeeper_defaults.zookeeper_version, '<' )
+
+- name: Remove Zookeeper upgrade flag file
+  file:
+    path: "{{ lock_file }}"
+    state: absent

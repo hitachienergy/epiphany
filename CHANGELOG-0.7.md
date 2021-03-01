@@ -9,6 +9,7 @@
 ### Updated
 
 - [#1965](https://github.com/epiphany-platform/epiphany/issues/1965) - Upgrade Elasticsearch Curator to v5.8.3
+- [#1927](https://github.com/epiphany-platform/epiphany/issues/1927) - Upgrade Zookeeper to v3.5.8
 - [#1934](https://github.com/epiphany-platform/epiphany/issues/1934) - Backported Rabbitmq upgrade to v3.8.9
 
 ## [0.7.2] 2020-10-07
