@@ -2,16 +2,10 @@ kind: configuration/kafka
 title: "Kafka"
 name: default
 specification:
-
   kafka_var:
-    version: 2.3.1
-    scala:
-      version: 2.12
-    file_name: "kafka_2.12-2.3.1.tgz"
     enabled: True
     admin: kafka
     admin_pwd: epiphany
-
     security:
       ssl:
         enabled: False
@@ -25,12 +19,10 @@ specification:
             keystore: PasswordToChange
             truststore: PasswordToChange
             key: PasswordToChange
-
         endpoint_identification_algorithm: HTTPS
         client_auth: required
       encrypt_at_rest: False
       inter_broker_protocol: PLAINTEXT
-
       authorization:
         enabled: False
         authorizer_class_name: kafka.security.auth.SimpleAclAuthorizer
@@ -41,13 +33,11 @@ specification:
         users:
           - name: test_user
             topic: test_topic
-
       authentication:
         enabled: False
         authentication_method: certificates
         sasl_mechanism_inter_broker_protocol:
         sasl_enabled_mechanisms: PLAIN
-
     sha: "b28e81705e30528f1abb6766e22dfe9dae50b1e1e93330c880928ff7a08e6b38ee71cbfc96ec14369b2dfd24293938702cab422173c8e01955a9d1746ae43f98"
     port: 9092
     min_insync_replicas: 1 # Minimum number of replicas (ack write)
@@ -66,20 +56,21 @@ specification:
     jmx_opts:
     max_incremental_fetch_session_cache_slots: 1000
     controlled_shutdown_enable: true
-
     group: kafka
     user: kafka
-
     conf_dir: /opt/kafka/config
     data_dir: /var/lib/kafka
     log_dir: /var/log/kafka
-
+    socket_settings:
+      network_threads: 3 # The number of threads handling network requests
+      io_threads: 8 # The number of threads doing disk I/O
+      send_buffer_bytes: 102400 # The send buffer (SO_SNDBUF) used by the socket server
+      receive_buffer_bytes: 102400 # The receive buffer (SO_RCVBUF) used by the socket server      
+      request_max_bytes: 104857600 # The maximum size of a request that the socket server will accept (protection against OOM)
   zookeeper_set_acl: false
   zookeeper_hosts: "{{ groups['zookeeper']|join(':2181,') }}:2181"
-
   jmx_exporter_user: jmx-exporter
   jmx_exporter_group: jmx-exporter
-
   prometheus_jmx_path: /opt/jmx-exporter/jmx_prometheus_javaagent.jar
   prometheus_jmx_exporter_web_listen_port: 7071
   prometheus_jmx_config: /opt/kafka/config/jmx-kafka.config.yml
