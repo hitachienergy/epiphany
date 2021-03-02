@@ -148,10 +148,7 @@ class Config:
 
         @upgrade_components.setter
         def upgrade_components(self, upgrade_components):
-            #if not upgrade_components is False:
-            self._upgrade_components = list(upgrade_components.split(","))
-            if ' ' in str(self._upgrade_components):
-                raise Exception(f'Provided --upgrade-components contains space as a parameter.')
+            self._upgrade_components = upgrade_components
 
     instance = None
 

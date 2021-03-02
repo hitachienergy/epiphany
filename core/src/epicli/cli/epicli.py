@@ -121,7 +121,6 @@ Terraform : 1..4 map to the following Terraform verbosity levels:
     if 'wait_for_pods' in args and not args.wait_for_pods is None:
         config.wait_for_pods = args.wait_for_pods
     if 'upgrade_components' in args and args.upgrade_components:
-        args.upgrade_components = args.upgrade_components.replace(" ", "").lower()
         config.upgrade_components = args.upgrade_components
         if args.upgrade_components == '' and 'upgrade' in arguments:
             raise Exception(f'Provided --upgrade-components list is empty.')
@@ -246,6 +245,20 @@ def upgrade_parser(subparsers):
     optional = sub_parser._action_groups.pop()
     required = sub_parser.add_argument_group('required arguments')
 
+    component_list = ['kubernetes', 'kafka', 'elasticsearch', 'filebeat', 'logging', 'opendistro_for_elasticsearch', 
+                      'kibana', 'grafana', 'zookeeper', 'rabbitmq', 'ignite', 'load_balancer', 'node_exporter']
+    def comma_seperated_type(choices):
+        """Return a function that splits and checks comma-separated values."""
+        def splitarg(arg):
+            values = arg.replace(' ','').split(',')
+            for value in values:
+                if value not in choices:
+                    raise argparse.ArgumentTypeError(
+                        'invalid choice: {!r} (choose from {})'
+                        .format(value, ', '.join(map(repr, choices))))
+            return values
+        return splitarg
+
     #required
     required.add_argument('-b', '--build', dest='build_directory', type=str, required=True,
                             help='Absolute path to directory with build artifacts.')
@@ -257,10 +270,8 @@ def upgrade_parser(subparsers):
                             help="Waits for all pods to be in the 'Ready' state before proceeding to the next step of the K8s upgrade.")
     optional.add_argument('--profile-ansible-tasks', dest='profile_ansible_tasks', action="store_true",
                             help='Enable Ansible profile_tasks plugin for timing tasks. (developer/debug option)')
-    optional.add_argument('--upgrade-components', dest='upgrade_components', type=str, required=False,
-                            help='Provides list of components for upgrade')
-    optional.add_argument('--upgrade-all', dest='upgrade_all', action="store_true",
-                            help='Provides a flag to indicate all components to be processed during upgrade')
+    optional.add_argument('--upgrade-components', dest='upgrade_components', type=comma_seperated_type(component_list), required=False,
+                            help='Provides comma seperated list of components for upgrade selected from the following: [' + ','.join(map(str, component_list)) + ']')
     sub_parser._action_groups.append(optional)
 
     def run_upgrade(args):
