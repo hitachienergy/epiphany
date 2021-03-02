@@ -28,6 +28,7 @@
 - [#1952](https://github.com/epiphany-platform/epiphany/issues/1952) - Upgrade ansible to 2.10.x
 - [#1864](https://github.com/epiphany-platform/epiphany/issues/1864) - Upgrade Hashicorp Vault (1.6.1), Vault Helm Chart (0.9.0), Vault-k8s (0.7.0)
 - [#2029](https://github.com/epiphany-platform/epiphany/issues/2029) - Remove old ARM references.
+- [#2090](https://github.com/epiphany-platform/epiphany/issues/2090) - Change download mirror to Ignite binary
 
 ### Breaking changes
 
