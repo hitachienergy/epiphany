@@ -18,8 +18,8 @@ specification:
         file_name: keycloak-4.8.3.Final.tar # TODO Remove?
       - name: "jboss/keycloak:9.0.0"
         file_name: keycloak-9.0.0.tar
-      - name: "rabbitmq:3.7.10"
-        file_name: rabbitmq-3.7.10.tar
+      - name: "rabbitmq:3.8.9"
+        file_name: rabbitmq-3.8.9.tar
       - name: "apacheignite/ignite:2.5.0"
         file_name: ignite-2.5.0.tar
       - name: "kubernetesui/dashboard:v2.0.0-beta8"

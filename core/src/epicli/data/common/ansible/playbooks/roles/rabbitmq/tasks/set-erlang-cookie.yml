@@ -1,8 +1,46 @@
 ---
-- include_tasks: "cookie-setup/master.yml"
-  when:
-    - groups['rabbitmq'][0] == inventory_hostname
+- name: Set is_cookie_user_defined fact
+  set_fact:
+    is_cookie_user_defined: "{{ specification.cluster.cookie | default('') | length > 0 }}"
 
-- include_tasks: "cookie-setup/nodes.yml"
-  when:
-    - groups['rabbitmq'][0] != inventory_hostname
+- name: Set cookie fact for all hosts if it's defined by user
+  when: is_cookie_user_defined
+  set_fact:
+    erlang_cookie: "{{ specification.cluster.cookie }}"
+  delegate_to: "{{ item }}"
+  delegate_facts: true
+  loop: "{{ ansible_play_hosts }}"
+  no_log: true
+
+- name: Set cookie fact for all hosts it it's not defined by user
+  when: not is_cookie_user_defined
+  block:
+    - name: Check if .erlang.cookie file exists
+      stat:
+        path: "{{ cookie_file }}"
+      register: cookie_file_stat
+
+    - name: Set cookie fact for all hosts from file if exists
+      when: cookie_file_stat.stat.exists
+      block:
+        - name: Load cookie file data
+          slurp:
+            src: "{{ cookie_file }}"
+          register: cookie_file_data
+
+        - name: Set cookie fact for all hosts from file if exists
+          set_fact:
+            erlang_cookie: "{{ cookie_file_data.content | b64decode | trim }}"
+          delegate_to: "{{ item }}"
+          delegate_facts: true
+          loop: "{{ ansible_play_hosts }}"
+          no_log: true
+
+    - name: Generate cookie if it's not defined by user and cookie file doesn't exist
+      when: not cookie_file_stat.stat.exists
+      set_fact:
+        erlang_cookie: "{{ lookup('password', '/dev/null length=15 chars=ascii_letters') }}"
+      no_log: true
+
+# Cookie must be applied on master first
+- include_tasks: "update-erlang-cookie.yml"

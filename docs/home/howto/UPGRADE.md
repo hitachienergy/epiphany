@@ -111,3 +111,20 @@ Upgrading Kafka could be different for every Kafka release, please refer to [Apa
 ZooKeeper redundancy is also recommended, since service restart is required during upgrade - it can cause ZooKeeper unavailability. Having at **least two ZooKeeper services** in *ZooKeepers ensemble* you can upgrade one and then start with the rest **one by one**.
 
 More detailed information about ZooKeeper you can find in  [ZooKeeper documentation](https://cwiki.apache.org/confluence/display/ZOOKEEPER).
+
+## RabbitMQ upgrade
+
+---
+**NOTE**
+
+Before upgrade procedure make sure you have a data backup.
+Check that the node or cluster is in a good state: no alarms are in effect,
+no ongoing queue synchronisation operations and the system is otherwise under a reasonable load.
+For more information visit RabbitMQ [site](https://www.rabbitmq.com/upgrade.html).
+
+---
+
+With the latest Epiphany version it's possible to upgrade RabbitMQ to v3.8.9.
+It requires Erlang system packages upgrade that is done automatically to v23.1.4.
+Upgrade is performed in offline mode after stopping all RabbitMQ nodes.
+[Rolling upgrade](https://www.rabbitmq.com/upgrade.html#rolling-upgrades) is not supported by Epiphany and it is advised not to use this approach when Erlang needs to be upgraded.

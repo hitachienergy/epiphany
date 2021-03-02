@@ -1,8 +1,0 @@
-- name: Install Rabbitmq packages
-  yum:
-    name:
-      - socat
-      - logrotate
-      - erlang-21.3.* # order matters, check RabbitMQ/Erlang version compatibility matrix before modification
-      - rabbitmq-server-3.7.10
-    state: present

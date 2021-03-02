@@ -13,6 +13,7 @@
 ### Updated
 
 - [#1966](https://github.com/epiphany-platform/epiphany/issues/1966) - Upgrade Elasticsearch Curator to v5.8.3
+- [#1935](https://github.com/epiphany-platform/epiphany/issues/1935) - Upgrade Rabbitmq to v3.8.9
 
 ## [0.6.1] 2020-10-14
 

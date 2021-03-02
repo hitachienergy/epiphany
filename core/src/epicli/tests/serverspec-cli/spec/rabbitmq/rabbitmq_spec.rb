@@ -6,6 +6,7 @@ rabbitmq_port =  readDataYaml("configuration/rabbitmq")["specification"]["amqp_p
 rabbitmq_node_port = rabbitmq_port + 20000
 rabbitmq_api_port = 15672
 clustered = readDataYaml("configuration/rabbitmq")["specification"]["cluster"]["is_clustered"]
+version = readYaml(getBuildDirPath() + "ansible/roles/rabbitmq/defaults/main.yml")[0]["versions"]["general"]
 user = 'testuser' + SecureRandom.hex(5)
 pass = SecureRandom.hex
 
@@ -123,26 +124,33 @@ if plugins.include? "rabbitmq_management"
     describe port(rabbitmq_api_port) do
       it { should be_listening }
     end
-  end  
- 
+  end
+
+  def rabbitmq_use_longname?
+    cmd = "grep -Po '(?<=^RABBITMQ_USE_LONGNAME=)\\w+' /etc/rabbitmq/rabbitmq-env.conf"
+    result = Specinfra.backend.run_command(cmd)
+    return result.stdout.chomp.downcase == "true"
+  end
+
   describe 'Checking nodes health using RabbitMQ API' do
     let(:disable_sudo) { false }
     if clustered
-      listInventoryHosts("rabbitmq").each do |val|
-        val = val.split(".")[0]
-        describe command("curl -o /dev/null -s -w '%{http_code}' -u #{user}:#{pass} #{rabbitmq_host}:#{rabbitmq_api_port}/api/healthchecks/node/rabbit@#{val}") do
+      listInventoryHosts("rabbitmq").each do |hostname|
+        hostname = hostname.split(".")[0] unless rabbitmq_use_longname?
+        describe command("curl -o /dev/null -s -w '%{http_code}' -u #{user}:#{pass} #{rabbitmq_host}:#{rabbitmq_api_port}/api/healthchecks/node/rabbit@#{hostname}") do
           it "is expected to be equal" do
             expect(subject.stdout.to_i).to eq 200
           end
         end
-        describe command("curl -u #{user}:#{pass} #{rabbitmq_host}:#{rabbitmq_api_port}/api/healthchecks/node/rabbit@#{val}") do
+        describe command("curl -u #{user}:#{pass} #{rabbitmq_host}:#{rabbitmq_api_port}/api/healthchecks/node/rabbit@#{hostname}") do
           its(:stdout_as_json) { should include('status' => /ok/) }
           its(:stdout_as_json) { should_not include('status' => /failed/) }
           its(:exit_status) { should eq 0 }
         end
       end
     else
-      describe command("curl -o /dev/null -s -w '%{http_code}' -u #{user}:#{pass} #{rabbitmq_host}:#{rabbitmq_api_port}/api/healthchecks/node/rabbit@#{host_inventory['hostname']}") do
+      hostname = rabbitmq_use_longname? ? host_inventory['fqdn'] : host_inventory['hostname']
+      describe command("curl -o /dev/null -s -w '%{http_code}' -u #{user}:#{pass} #{rabbitmq_host}:#{rabbitmq_api_port}/api/healthchecks/node/rabbit@#{hostname}") do
         it "is expected to be equal" do
           expect(subject.stdout.to_i).to eq 200
         end
