@@ -250,7 +250,7 @@ def upgrade_parser(subparsers):
     def comma_seperated_type(choices):
         """Return a function that splits and checks comma-separated values."""
         def splitarg(arg):
-            values = arg.replace(' ','').split(',')
+            values = arg.replace(' ','').lower().split(',')
             for value in values:
                 if value not in choices:
                     raise argparse.ArgumentTypeError(
