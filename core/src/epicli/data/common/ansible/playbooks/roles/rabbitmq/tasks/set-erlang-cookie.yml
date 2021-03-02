@@ -10,6 +10,7 @@
   delegate_to: "{{ item }}"
   delegate_facts: true
   loop: "{{ ansible_play_hosts }}"
+  no_log: true
 
 - name: Set cookie fact for all hosts it it's not defined by user
   when: not is_cookie_user_defined
@@ -33,11 +34,13 @@
           delegate_to: "{{ item }}"
           delegate_facts: true
           loop: "{{ ansible_play_hosts }}"
+          no_log: true
 
     - name: Generate cookie if it's not defined by user and cookie file doesn't exist
       when: not cookie_file_stat.stat.exists
       set_fact:
         erlang_cookie: "{{ lookup('password', '/dev/null length=15 chars=ascii_letters') }}"
+      no_log: true
 
 # Cookie must be applied on master first 
 - include_tasks: "update-erlang-cookie.yml"
