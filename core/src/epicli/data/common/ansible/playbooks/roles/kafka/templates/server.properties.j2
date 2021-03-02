@@ -65,19 +65,19 @@ listeners=PLAINTEXT://{{ ansible_default_ipv4.address }}:{{ specification.kafka_
 #listener.security.protocol.map=PLAINTEXT:PLAINTEXT,SSL:SSL,SASL_PLAINTEXT:SASL_PLAINTEXT,SASL_SSL:SASL_SSL
 
 # The number of threads handling network requests
-num.network.threads=3
+num.network.threads={{ specification.kafka_var.socket_settings.network_threads }}
 
 # The number of threads doing disk I/O
-num.io.threads=8
+num.io.threads={{ specification.kafka_var.socket_settings.io_threads }}
 
 # The send buffer (SO_SNDBUF) used by the socket server
-socket.send.buffer.bytes=102400
+socket.send.buffer.bytes={{ specification.kafka_var.socket_settings.send_buffer_bytes }}
 
 # The receive buffer (SO_RCVBUF) used by the socket server
-socket.receive.buffer.bytes=102400
+socket.receive.buffer.bytes={{ specification.kafka_var.socket_settings.receive_buffer_bytes }}
 
 # The maximum size of a request that the socket server will accept (protection against OOM)
-socket.request.max.bytes=104857600
+socket.request.max.bytes={{ specification.kafka_var.socket_settings.request_max_bytes }}
 
 ############################# Security #########################################
 

@@ -1,7 +1,7 @@
 ---
 - name: Set Kafka installation file name as fact
   set_fact:
-    kafka_installation_file_name: "kafka_{{ specification.kafka_var.scala.version }}-{{ specification.kafka_var.version }}.tgz"
+    kafka_installation_file_name: "kafka_{{ scala_version }}-{{ kafka_version }}.tgz"
 
 - name: Download Kafka binaries
   include_role:
@@ -18,7 +18,7 @@
 
 - name: Change ownership on kafka directory
   file:
-    path: /opt/kafka_{{ specification.kafka_var.scala.version }}-{{ specification.kafka_var.version }}
+    path: /opt/kafka_{{ scala_version }}-{{ kafka_version }}
     state: directory
     owner: kafka
     group: kafka
@@ -27,19 +27,19 @@
   copy:
     remote_src: yes
     src: /opt/kafka/config/
-    dest: /opt/kafka_{{ specification.kafka_var.scala.version }}-{{ specification.kafka_var.version }}/config
+    dest: /opt/kafka_{{ scala_version }}-{{ kafka_version }}/config
     mode: preserve
 
 - name: Link /opt/kafka to recently installed version
   file:
     dest: /opt/kafka
     state: link
-    src: /opt/kafka_{{ specification.kafka_var.scala.version }}-{{ specification.kafka_var.version }}
+    src: /opt/kafka_{{ scala_version }}-{{ kafka_version }}
     force: yes
 
 - name: Remove previous version binaries
   file:
-    path: /opt/kafka_{{ specification.kafka_var.scala.version }}-{{ before_upgrade_kafka_version }}
+    path: /opt/kafka_{{ scala_version }}-{{ before_upgrade_kafka_version }}
     state: absent
 
 - name: Get log.dirs property

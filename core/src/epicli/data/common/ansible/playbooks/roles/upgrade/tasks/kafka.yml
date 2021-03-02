@@ -44,7 +44,7 @@
     - name: Include set Kafka version tasks
       include_tasks: kafka/set-updated-version.yml
   when:
-    - lock_file_status.stat.exists or before_upgrade_kafka_version is version( specification.kafka_var.version, '<' )
+    - lock_file_status.stat.exists or before_upgrade_kafka_version is version( kafka_version, '<' )
 
 - name: Remove Kafka upgrade flag file
   file:
