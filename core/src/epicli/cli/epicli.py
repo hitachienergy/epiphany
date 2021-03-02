@@ -122,8 +122,6 @@ Terraform : 1..4 map to the following Terraform verbosity levels:
         config.wait_for_pods = args.wait_for_pods
     if 'upgrade_components' in args and args.upgrade_components:
         config.upgrade_components = args.upgrade_components
-        if args.upgrade_components == '' and 'upgrade' in arguments:
-            raise Exception(f'Provided --upgrade-components list is empty.')
     config.debug = args.debug
     config.auto_approve = args.auto_approve
 
