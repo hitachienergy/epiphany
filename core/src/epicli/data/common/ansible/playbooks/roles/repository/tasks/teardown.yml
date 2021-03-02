@@ -22,7 +22,7 @@
       register: stat_rhui_update_client_to_restore
 
     - name: Restore /etc/cron.daily/rhui-update-client
-      command: /var/tmp/rhui-update-client mv /etc/cron.daily/rhui-update-client
+      command: mv /var/tmp/rhui-update-client /etc/cron.daily/rhui-update-client
       when: stat_rhui_update_client_to_restore.stat.exists
 
 - name: Remove epirepo packages directory
