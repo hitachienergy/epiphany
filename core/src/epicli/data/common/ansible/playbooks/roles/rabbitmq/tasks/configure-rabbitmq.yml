@@ -1,52 +1,49 @@
 ---
-- name: Set variable with SSL/TLS to enabled false
-  set_fact: is_ssl_enabled="false"
-  changed_when: false
-
-- name: Check if variable with SSL/TLS should be set to true
-  set_fact: is_ssl_enabled="{{ specification.custom_configurations | selectattr('name','equalto','listeners.ssl.default') | list | length > 0 }}"
-  changed_when: false
-  when: specification.custom_configurations | length > 0
-
-- name: rabbitmq default file
+- name: Copy rabbitmq.conf file
   template:
     src: rabbitmq-server.j2
     dest: /etc/rabbitmq/rabbitmq.conf
     owner: root
     group: root
-    mode: 0644
-  register: config_changed
+    mode: u=rw,go=r
+  register: config_file_stat
 
-- name: default settings for RabbitMQ AMQP server
+- name: Copy rabbitmq-env.conf file
   template:
     src: rabbitmq-env.conf.j2
     dest: /etc/rabbitmq/rabbitmq-env.conf
     owner: root
     group: root
-    mode: 0644
-  register: env_settings_changed
+    mode: u=rw,go=r
+  register: env_file_stat
 
-- name: Symlink RabbitMQ bin to sbin(for install plugins)
+- name: Symlink bin to sbin (for plugins installation)
   file:
     src: /usr/lib/rabbitmq/bin
     dest: /usr/lib/rabbitmq/sbin
     state: link
 
 - name: Enable plugins that were installed
+  when: specification.rabbitmq_plugins
   rabbitmq_plugin:
-    names: "{{ item }}"
+    names: "{{ specification.rabbitmq_plugins | join(',') }}"
     prefix: /usr/lib/rabbitmq
     state: enabled
-    new_only: no
-  with_items: "{{ specification.rabbitmq_plugins }}"
+    new_only: true
+  register: rabbitmq_plugins
 
-- name: Restart RabbitMQ
-  service: name=rabbitmq-server state=restarted
+- name: Restart service
   when:
-    - config_changed.changed or env_settings_changed.changed
-    - not is_ssl_enabled
+    - config_file_stat.changed or env_file_stat.changed or rabbitmq_plugins.changed
+    - not (specification.stop_service | bool)
+  service:
+    name: rabbitmq-server
+    enabled: true
+    state: restarted
 
-- name: Stop RabbitMQ for manual certificates configuration
-  service: name=rabbitmq-server state=stopped
-  when:
-     - is_ssl_enabled
+- name: Stop service for manual configuration of certificates
+  when: specification.stop_service | bool
+  service:
+    name: rabbitmq-server
+    enabled: false
+    state: stopped

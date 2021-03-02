@@ -182,8 +182,8 @@ Automatic encryption of storage on Azure is not yet supported by Epiphany. Guide
 
 ## How to use TLS/SSL certificate with RabbitMQ
 
-To configure RabbitMQ SSL/TLS support in Epiphany you need to set `custom_configurations` in Epiphany configuration file and you need to 
-manually create certificate with common CA according to documentation on your RabbitMQ machines: 
+To configure RabbitMQ TLS support in Epiphany you need to set `custom_configurations` in the configuration file and
+manually create certificate with common CA according to documentation on your RabbitMQ machines:
 
 https://www.rabbitmq.com/ssl.html#manual-certificate-generation
 
@@ -191,10 +191,21 @@ or:
 
 https://www.rabbitmq.com/ssl.html#automated-certificate-generation
 
-If in `custom_configurations` parameter `listeners.ssl.default` is set then RabbitMQ will be installed and stopped to allow you to perform manual actions required to create server certificates with CA certificate.
+If `stop_service` parameter in `configuration/rabbitmq` is set to `true`,
+then RabbitMQ will be installed and stopped to allow manual actions
+that are required to copy or generate TLS certificates.
 
-`custom_configurations` are settings in Epiphany, that are to extend RabbitMQ configuration with your custom one. We can also use this to 
-perform TLS configuration of RabbitMQ. To add custom configuration to RabbitMQ configuration you need to pass list of attributes in format:
+---
+**NOTE**
+
+To complete installation it's required to execute `epicli apply` the second time
+with `stop_service` set to `false`
+
+---
+
+There is `custom_configurations` setting in Epiphany that extends RabbitMQ configuration
+with the custom one. Also, it can be used to perform TLS configuration of RabbitMQ.
+To customize RabbitMQ configuration you need to pass a list of parameters in the following format:
 
 -name: rabbitmq.configuration.parameter
  value: rabbitmq.configuration.value
@@ -235,8 +246,8 @@ specification:
 
 ```
 
-Right now RabbitMQ configuration is available only for standalone machines. Also please be carreful about boolean values as they need to be double quoted 
-and written in lowercase form as this will RabbitMQ startup fail.
+Please be careful about boolean values as they need to be double quoted
+and written in lowercase form. Otherwise RabbitMQ startup will fail.
 
 ## How to enable AWS disk encryption
 

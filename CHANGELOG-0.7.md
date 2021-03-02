@@ -11,6 +11,7 @@
 - [#1965](https://github.com/epiphany-platform/epiphany/issues/1965) - Upgrade Elasticsearch Curator to v5.8.3
 - [#1927](https://github.com/epiphany-platform/epiphany/issues/1927) - Upgrade Zookeeper to v3.5.8
 - [#1921](https://github.com/epiphany-platform/epiphany/issues/1921) - Upgrade Kafka to v2.6.0
+- [#1934](https://github.com/epiphany-platform/epiphany/issues/1934) - Upgrade Rabbitmq to v3.8.9
 
 ## [0.7.2] 2020-10-07
 
