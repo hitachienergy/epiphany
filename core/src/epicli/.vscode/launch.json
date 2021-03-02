@@ -24,7 +24,7 @@
             // "args": ["test", "-b", "${workspaceFolder}/clusters/build/<DIR>"]
             // "args": ["test", "-b", "${workspaceFolder}/clusters/build/<DIR>", "-g", "<TEST_GROUP>"]
             // "args": ["upgrade", "-b", "${workspaceFolder}/clusters/build/<DIR>"]
-	    // "args": ["upgrade", "-b", "${workspaceFolder}/clusters/build/<DIR>","--upgrade-components","kafka,ignite"]
+            // "args": ["upgrade", "-b", "${workspaceFolder}/clusters/build/<DIR>","--upgrade-components","kafka,ignite"]
         },
         {
             "name": "unit tests",
