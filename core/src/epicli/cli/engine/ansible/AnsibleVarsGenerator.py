@@ -133,6 +133,7 @@ class AnsibleVarsGenerator(Step):
         main_vars['wait_for_pods'] = Config().wait_for_pods
         main_vars['is_upgrade_run'] = self.is_upgrade_run
         main_vars['roles_with_generated_vars'] = sorted(self.roles_with_generated_vars)
+        main_vars['upgrade_components'] = Config().upgrade_components
 
         if self.is_upgrade_run:
             shared_config_doc = self.get_shared_config_from_manifest()
