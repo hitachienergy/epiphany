@@ -478,7 +478,6 @@ def dump_debug_info():
         dump_external_debug_info('ANSIBLE CONFIG', ['ansible-config', 'dump'])
         dump_external_debug_info('ANSIBLE-VAULT VERSION', ['ansible-vault', '--version'])
         dump_external_debug_info('TERRAFORM VERSION', ['terraform', '--version'])
-        dump_external_debug_info('SKOPEO VERSION', ['skopeo', '--version'])
         dump_external_debug_info('RUBY VERSION', ['ruby', '--version'])
         dump_external_debug_info('RUBY GEM VERSION', ['gem', '--version'])
         dump_external_debug_info('RUBY INSTALLED GEMS', ['gem', 'query', '--local'])
