@@ -6,7 +6,7 @@
 | ------------- |:-------------:|:-----:|-----:|
 | apr | + |  | + |
 | apr-util | + |  | + |
-| centos-logos | + | | + |
+| centos-logos | + | | ? |
 | createrepo | + | | + |
 | deltarpm | + | | + |
 | httpd | + | | + |
@@ -20,13 +20,13 @@
 | yum-utils | + | | + |
 | audit | + | | + |
 | bash-completion | + | | + |
-| c-ares | + | | + |
+| c-ares | + | | --- |
 | ca-certificates | + | | + |
 | cifs-utils | + | | + |
 | conntrack-tools | + | | + |
 | containerd.io | + | | + |
-| container-selinux | + | | + |
-| cri-tools-1.13.0 | + | | + |
+| container-selinux | + | | ? |
+| cri-tools-1.13.0 | + | | ? |
 | curl | + | | + |
 | dejavu-sans-fonts | + | | + |
 | docker-ce-19.03.14 | + | | + |
@@ -60,7 +60,7 @@
 | logstash-oss-7.8.1 | + | | + |
 | net-tools | + | | + |
 | nfs-utils | + | | + |
-| nmap-ncat | + | | + |
+| nmap-ncat | + | | ? |
 | opendistro-alerting-1.10.1* | + | | + |
 | opendistro-index-management-1.10.1* | + | | + |
 | opendistro-job-scheduler-1.10.1* | + | | + |
@@ -75,18 +75,18 @@
 | perl-Pod-Perldoc | + | | + |
 | perl-Pod-Simple | + | | + |
 | perl-Pod-Usage | + | | + |
-| pgaudit12_10 | + | | + |
+| pgaudit12_10 | + | | --- |
 | pgbouncer-1.10.* | --- | | --- |
 | pyldb | + | | + |
 | python-firewall | + | | + |
 | python-kitchen | + | | + |
 | python-lxml | + | | + |
 | python-psycopg2 | + | | + |
-| python-setuptools | + | | + |
+| python-setuptools | + | | ? |
 | python-slip-dbus | + | | + |
-| python-ipaddress | + | | + |
-| python-backports | + | | + |
-| quota | + | | + |
+| python-ipaddress | + | | ? |
+| python-backports | + | | ? |
+| quota | + | | ? |
 | rabbitmq-server-3.8.9 | + | | + |
 | rh-haproxy18 | --- | | --- |
 | rh-haproxy18-haproxy-syspaths | --- | | --- |
@@ -110,9 +110,9 @@
 | yum-plugin-versionlock | + | | + |
 | yum-utils | + | | + |
 | rsync | + | | + |
-| kubeadm-1.17.4 | + | | + |
-| kubectl-1.17.4 | + | | + |
-| kubelet-1.17.4 | + | | + |
+| kubeadm-1.18.6 | + | | + |
+| kubectl-1.18.6 | + | | + |
+| kubelet-1.18.6 | + | | + |
 | kubernetes-cni-0.8.6-0 | + | | + |
 |  |  |  |  |
 
