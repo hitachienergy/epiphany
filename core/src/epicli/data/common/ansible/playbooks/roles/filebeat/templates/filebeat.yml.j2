@@ -1,3 +1,4 @@
+#jinja2: lstrip_blocks: True
 # {{ ansible_managed }}
 ###################### Filebeat Configuration File #######################
 
@@ -18,11 +19,11 @@ filebeat.inputs:
 #--- Common group ---
 - type: log
   enabled: true
-  {% if specification.common_input.multiline is defined -%}
+  {% if specification.common_input.multiline is defined %}
   multiline:
-  {% for k, v in specification.common_input.multiline.items() %}
-  {{ k }}: {{ v }}
-  {% endfor %}
+    {% for k, v in specification.common_input.multiline.items() %}
+    {{ k }}: {{ v }}
+    {% endfor %}
   {% endif %}
 
   # Paths that should be crawled and fetched. Glob based paths.
@@ -30,12 +31,12 @@ filebeat.inputs:
 #   - /var/log/audit/audit.log
     - /var/log/auth.log
     - /var/log/firewalld
-{% if 'haproxy' in group_names %}
+    {% if 'haproxy' in group_names %}
     - /var/log/haproxy.log
-{% endif %}
-{% if 'kafka' in group_names %}
+    {% endif %}
+    {% if 'kafka' in group_names %}
     - /var/log/kafka/server.log
-{% endif %}
+    {% endif %}
     - /var/log/messages
     - /var/log/secure
     - /var/log/syslog
@@ -87,11 +88,11 @@ filebeat.inputs:
   paths:
     - /var/log/postgresql/postgresql*.log*
   exclude_files: [".gz$"]
-  {% if specification.postgresql_input.multiline is defined -%}
+  {% if specification.postgresql_input.multiline is defined %}
   multiline:
-  {% for k, v in specification.postgresql_input.multiline.items() %}
-  {{ k }}: {{ v }}
-  {% endfor %}
+    {% for k, v in specification.postgresql_input.multiline.items() %}
+    {{ k }}: {{ v }}
+    {% endfor %}
   {% endif %}
 
 {# postgresql extensions - logs without multiline entries #}
@@ -114,11 +115,11 @@ filebeat.inputs:
   enabled: true
   paths:
     - /var/lib/docker/containers/*/*.log
-  {% if specification.container_input.multiline is defined -%}
+  {% if specification.container_input.multiline is defined %}
   multiline:
-  {% for k, v in specification.container_input.multiline.items() %}
-  {{ k }}: {{ v }}
-  {% endfor %}
+    {% for k, v in specification.container_input.multiline.items() %}
+    {{ k }}: {{ v }}
+    {% endfor %}
   {% endif %}
 
   processors:
@@ -178,7 +179,7 @@ setup.template.settings:
 # These settings control loading the sample dashboards to the Kibana index. Loading
 # the dashboards is disabled by default and can be enabled either by setting the
 # options here or by using the `setup` command.
-#setup.dashboards.enabled: false
+setup.dashboards.enabled: false
 
 # The URL from where to download the dashboards archive. By default this URL
 # has a value which is computed based on the Beat name and version. For released
@@ -226,23 +227,35 @@ setup.ilm.enabled: false
 
 # Starting with Beats version 6.0.0, the dashboards are loaded via the Kibana API.
 # This requires a Kibana endpoint configuration.
-# setup.kibana:
+setup.kibana:
 
-#   # Kibana Host
-#   # Scheme and port can be left out and will be set to the default (http and 5601)
-#   # In case you specify and additional path, the scheme is required: http://localhost:5601/path
-#   # IPv6 addresses should always be defined as: https://[2001:db8::1]:5601
-# {% if setup_kibana_host is defined %}
-#   host: "{{ setup_kibana_host }}"
-# {% else %}
-#   #host: "localhost:5601"
-# {% endif %}
-#   username: logstash
-# {%- if opendistro_for_logging_vars.specification.logstash_password is defined %}
-#  password: {{ opendistro_for_logging_vars.specification.logstash_password }}
-# {% else %}
-#  password: {{ _filebeat_exisitng_password }}
-# {% endif %}
+  # Kibana Host
+  # Scheme and port can be left out and will be set to the default (http and 5601)
+  # In case you specify and additional path, the scheme is required: http://localhost:5601/path
+  # IPv6 addresses should always be defined as: https://[2001:db8::1]:5601
+{% if context is undefined or context != 'upgrade' %}
+  {# mode: apply #}
+  {% if setup_kibana_host is defined %}
+  host: {{ setup_kibana_host }}
+  username: kibanaserver
+  password: {{ "'%s'" % opendistro_for_logging_vars.specification.kibanaserver_password | replace("'","''") }}
+  {% else %}
+  #host: "localhost:5601"
+  {% endif %}
+{% else %}
+  {# mode: upgrade #}
+  {% if existing_setup_kibana.host is defined %}
+  host: {{ existing_setup_kibana.host }}
+  {% else %}
+  #host: "localhost:5601"
+  {% endif %}
+  {% if existing_setup_kibana.username is defined %}
+  username: {{ existing_setup_kibana.username }}
+  {% endif %}
+  {% if existing_setup_kibana.password is defined %}
+  password: {{ "'%s'" % existing_setup_kibana.password | replace("'","''") }}
+  {% endif %}
+{% endif %}
 
   # Kibana Space ID
   # ID of the Kibana Space into which the dashboards should be loaded. By default,
@@ -267,31 +280,31 @@ setup.ilm.enabled: false
 # Configure what output to use when sending the data collected by the beat.
 # Default Elasticsearch output is array of 'logging' hosts. If not exist, 'hosts' remains empty to manual configuration.
 
-#-------------------------- Elasticsearch output ------------------------------
+# ---------------------------- Elasticsearch Output ----------------------------
 output.elasticsearch:
   # Array of hosts to connect to.
-{% if groups['logging'] is defined %}
+{% if groups.logging is defined %}
   hosts:
-    # Logging hosts:
-    {% for host in groups['logging'] -%}
-    - "https://{{hostvars[host]['ansible_hostname']}}:9200"
-    {% endfor %}
+  {% for host in groups.logging %}
+    - "https://{{ hostvars[host]['ansible_hostname'] }}:9200"
+  {% endfor %}
 
-  # Protocol - either `http` (default) or `https`.
-  protocol: "https"
-  ssl.verification_mode: none
+  # Authentication credentials - either API key or username/password.
   username: logstash
-{% if opendistro_for_logging_vars.specification.logstash_password is defined %}
-  password: {{ opendistro_for_logging_vars.specification.logstash_password }}
-{% else %}
-  password: {{ _filebeat_exisitng_password }}
-{% endif %}
+  {% if context is undefined or context != 'upgrade' %}
+  password: {{ "'%s'" % opendistro_for_logging_vars.specification.logstash_password | replace("'","''") }}
+  {% else %}
+  password: {{ "'%s'" % existing_output_es_password | replace("'","''") }}
+  {% endif %}
+
+  # Controls the verification of certificates.
+  ssl.verification_mode: none
 {% else %}
   hosts: []
+
   # Protocol - either `http` (default) or `https`.
   #protocol: "https"
 
-  #ssl.verification_mode: none
   # Authentication credentials - either API key or username/password.
   #api_key: "id:api_key"
   #username: "elastic"

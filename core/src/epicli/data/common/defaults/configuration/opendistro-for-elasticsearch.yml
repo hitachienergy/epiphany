@@ -3,7 +3,7 @@ title: Open Distro for Elasticsearch Config
 name: default
 specification:
   cluster_name: EpiphanyElastic
-  clustered: True
+  clustered: true
   admin_password: PASSWORD_TO_CHANGE
   kibanaserver_password: PASSWORD_TO_CHANGE
   kibanaserver_user_active: false

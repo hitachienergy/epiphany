@@ -4,7 +4,7 @@
     file: roles/filebeat/defaults/main.yml
     name: filebeat_defaults
 
-- name: Filebeat as DaemonSet | Prepare fact about helm release and reinstall daemonset if release exists
+- name: Filebeat on k8s | Prepare fact about helm release and reinstall daemonset if release exists
   delegate_to: localhost
   become: false
   run_once: true
@@ -12,11 +12,11 @@
     - k8s_as_cloud_service is defined
     - k8s_as_cloud_service
   block:
-    - name: Get information about helm releases
+    - name: Filebeat on k8s | Get information about helm releases
       command: helm list --output json
       register: helm_list
 
-    - name: Check if filebeat release exist in default namespace and set fact
+    - name: Filebeat on k8s | Check if filebeat release exist in default namespace and set fact
       set_fact:
         filebeat_release_exists: >-
           {{ _names | ternary(true, false) }}
@@ -27,61 +27,47 @@
                               | select('==', filebeat_defaults.filebeat_helm_chart_name)
                               | list }}
 
-    - name: Reinstall Filebeat as DaemonSet from default namespace to dedicated namespace for "k8s as cloud service"
+    - name: Filebeat on k8s | Reinstall Filebeat as DaemonSet from default namespace to dedicated
       when:
         - filebeat_release_exists
       block:
-        - name: Include uninstall task for Filebeat as DaemonSet in default namespace for "k8s as cloud service"
+        - name: Filebeat on k8s | Include uninstall task for Filebeat in default namespace
           include_role:
             name: filebeat
             tasks_from: uninstall-filebeat-as-daemonset.yml
 
-        - name: Include install task for Filebeat as DaemonSet in dedicated namespace for "k8s as cloud service"
+        - name: Filebeat on k8s | Include install task for Filebeat in dedicated namespace
           include_role:
             name: filebeat
             tasks_from: install-filebeat-as-daemonset.yml
 
-- name: Filebeat as System Service | Get information about installed packages as facts
+- name: Filebeat as OS service | Get information about installed packages as facts
   package_facts:
     manager: auto
   when: ansible_facts.packages is undefined
 
-- name: Filebeat as System Service | Test if filebeat package is installed
+- name: Filebeat as OS service | Test if filebeat package is installed
   assert:
     that: ansible_facts.packages['filebeat'] is defined
     fail_msg: filebeat package not found, nothing to update
     quiet: true
 
-- name: Filebeat as System Service | Print versions
+- name: Filebeat as OS service | Print versions
   debug:
     msg:
       - "Installed version: {{ ansible_facts.packages['filebeat'][0].version }}"
       - "Target version: {{ filebeat_version }}"
 
-- name: Update Filebeat as System Service
+- name: Update Filebeat as OS service
   when:
     - filebeat_version is version(ansible_facts.packages['filebeat'][0].version, '>=')
   block:
-    - name: Filebeat as System Service | Backup configuration file (filebeat.yml)
+    - name: Filebeat as OS service | Backup configuration file (filebeat.yml)
       copy:
         remote_src: true
         src: /etc/filebeat/filebeat.yml
         dest: /etc/filebeat/filebeat.yml.bak_{{ ansible_facts.packages['filebeat'][0].version }}
-
-    - name: Slurp filebeat config file
-      slurp:
-        src: /etc/filebeat/filebeat.yml
-      register: _filebeat_config_yml
-
-    - name: Set filebeat.yml content as fact
-      set_fact:
-        _filebeat_exisitng_config: "{{ _filebeat_config_yml.content | b64decode | from_yaml }}"
-      no_log: true
-
-    - name: Set filebeat existing password
-      set_fact:
-        _filebeat_exisitng_password: "{{ _filebeat_exisitng_config['output.elasticsearch'].password }}"
-      no_log: true
+        mode: u=rw,go=
 
     - import_role:
         name: filebeat
@@ -91,6 +77,23 @@
         name: filebeat
         tasks_from: configure-auditd
 
+    - name: Filebeat as OS service | Slurp /etc/filebeat/filebeat.yml
+      slurp:
+        src: /etc/filebeat/filebeat.yml
+      register: _filebeat_config_yml
+      no_log: true
+
+    - name: Filebeat as OS service | Set filebeat.yml content as fact
+      set_fact:
+        _filebeat_existing_config: "{{ _filebeat_config_yml.content | b64decode | from_yaml }}"
+      no_log: true
+
     - import_role:
         name: filebeat
         tasks_from: configure-filebeat
+      vars:
+        context: upgrade
+        existing_output_es_password: >-
+          {{ _filebeat_existing_config['output.elasticsearch'].password }}
+        existing_setup_kibana: >-
+          {{ _filebeat_existing_config['setup.kibana'] | default({}) }}

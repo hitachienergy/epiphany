@@ -4,11 +4,6 @@
     file: roles/opendistro_for_elasticsearch/defaults/main.yml
     name: opendistro_for_elasticsearch_defaults
 
-- name: Load variables from logging role
-  include_vars:
-    file: roles/logging/vars/main.yml
-    name: opendistro_for_logging_vars
-
 - name: Install Kibana package
   package:
     name: "{{ _packages[ansible_os_family] }}"
@@ -24,6 +19,24 @@
   module_defaults:
     yum: { lock_timeout: "{{ yum_lock_timeout }}" }
 
+- name: Include logging configuration tasks
+  include_tasks: setup-logging.yml
+
+- name: Load variables from logging/opendistro_for_elasticsearch role
+  when: context is undefined or context != "upgrade"
+  block:
+    - name: Load variables from logging role
+      include_vars:
+        file: roles/logging/vars/main.yml
+        name: opendistro_for_logging_vars
+      when: "'logging' in group_names"
+
+    - name: Load variables from opendistro_for_elasticsearch role
+      include_vars:
+        file: roles/opendistro_for_elasticsearch/vars/main.yml
+        name: opendistro_for_data_vars
+      when: "'opendistro_for_elasticsearch' in group_names"
+
 - name: Update Kibana configuration file
   template:
     backup: yes
@@ -31,11 +44,8 @@
     dest: /etc/kibana/kibana.yml
     owner: kibana
     group: root
-    mode: 0644
+    mode: u=rw,go=
   register: change_config
-
-- name: Include logging configuration tasks
-  include_tasks: setup-logging.yml
 
 - name: Restart Kibana service
   systemd:

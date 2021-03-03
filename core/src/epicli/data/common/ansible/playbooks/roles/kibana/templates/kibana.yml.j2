@@ -24,7 +24,7 @@ elasticsearch.hosts:
   - "https://{{hostvars[host]['ansible_hostname']}}:9200"
   {% endfor %}
 {% elif 'opendistro_for_elasticsearch' in group_names %}
-  # Opendistro (data) hosts:
+  # Data hosts:
   {% for host in groups['opendistro_for_elasticsearch'] %}
   - "https://{{hostvars[host]['ansible_hostname']}}:9200"
   {% endfor %}
@@ -32,12 +32,23 @@ elasticsearch.hosts:
 
 elasticsearch.ssl.verificationMode: none
 elasticsearch.username: kibanaserver
-{% if opendistro_for_logging_vars.specification.kibanaserver_password is defined %}
-elasticsearch.password: {{ opendistro_for_logging_vars.specification.kibanaserver_password }}
-{% else %}
-elasticsearch.password: {{ _kibanaserver_exisitng_password }}
+{% set password = 'kibanaserver' %}
+{% if context is undefined or context != 'upgrade' -%}
+  {# mode: apply -#}
+  {% if 'logging' in group_names -%}
+    {% set password = opendistro_for_logging_vars.specification.kibanaserver_password -%}
+  {% elif 'opendistro_for_elasticsearch' in group_names -%}
+    {% set password = opendistro_for_data_vars.specification.kibanaserver_password -%}
+  {% endif %}
+{% else -%}
+  {# mode: upgrade -#}
+  {% set password = existing_es_password %}
 {% endif %}
+elasticsearch.password: {{ "'%s'" % password | replace("'","''") }}
 elasticsearch.requestHeadersWhitelist: ["securitytenant","Authorization"]
+
+# Enables you to specify a file where Kibana stores log output.
+logging.dest: {{ specification.kibana_log_dir }}/kibana.log
 
 opendistro_security.multitenancy.enabled: true
 opendistro_security.multitenancy.tenants.preferred: ["Private", "Global"]

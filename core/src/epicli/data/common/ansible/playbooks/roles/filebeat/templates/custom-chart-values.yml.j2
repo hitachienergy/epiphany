@@ -103,18 +103,18 @@ filebeatConfig:
 {# -------------------------- Elasticsearch output ------------------------------ #}
 
     output.elasticsearch:
-{#  # Array of hosts to connect to #}
+{#    Array of hosts to connect to #}
 {% if groups['logging'] is defined %}
       hosts:
       {% for host in groups['logging'] -%}
       - "https://{{hostvars[host]['ansible_hostname']}}:9200"
       {% endfor %}
 
-{# Protocol - either `http` (default) or `https`. #}
-      protocol: "https"
-      ssl.verification_mode: none
       username: logstash
-      password: {{ specification.logstash_password }}
+      password: {{ "'%s'" % opendistro_for_logging_vars.specification.logstash_password | replace("'","''") }}
+
+{#    Controls the verification of certificates #}
+      ssl.verification_mode: none
 {% else %}
       hosts: []
 {% endif %}

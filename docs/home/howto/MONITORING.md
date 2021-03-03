@@ -136,7 +136,7 @@ Grafana is a multi-platform open source analytics and interactive visualization 
 ## How to setup default admin password and user in Grafana
 
 Prior to setup Grafana, please setup in your configuration yaml new password and/or name for your admin user. If not, default
-"admin" user will be used with the default password "PLEASE_CHANGE_THIS_PASSWORD".
+"admin" user will be used with the default password "PASSWORD_TO_CHANGE".
 
 ```yaml
 kind: configuration/grafana
@@ -209,42 +209,21 @@ By default Kibana adjusts the UTC time in `@timestamp` to the browser's local ti
 ## How to configure default user passwords for Kibana - Open Distro, Open Distro for Elasticsearch and Filebeat
 
 To configure admin password for Kibana - Open Distro and Open Distro for Elasticsearch you need to follow the procedure below.
-There are separate procedures for `opendistro-for-elasticsearch` role and `logging` role since most of the times for `opendistro-for-elasticsearch`, `kibanaserver` and `logstash` users are not required to be present.
+There are separate procedures for `logging` and `opendistro-for-elasticsearch` roles since most of the times for `opendistro-for-elasticsearch`, `kibanaserver` and `logstash` users are not required to be present.
 
-### Open Distro for Elasticsearch
-
-By default Epiphany removes all demo users except `admin` user. Those users are listed in
-`demo_users_to_remove` section of `configuration/opendistro-for-elasticsearch` doc. If you want to keep `kibanaserver` user (needed by default 
-Epiphany installation of Kibana) you need to remove it from `demo_users_to_remove` list and set `kibanaserver_user_active` to `true` in order to change the default password. We strongly advice to set different password for each user. To 
-change `admin` user's password change value for `admin_password` key. For `kibanaserver` and `logstash` change values for 
-`kibanaserver_password` and `logstash_password` keys respectively.
-
-```yaml
-kind: configuration/opendistro-for-elasticsearch
-title: Open Distro for Elasticsearch Config
-name: default
-specification:
-  ...
-  admin_password: YOUR_PASSWORD
-  kibanaserver_password: YOUR_PASSWORD
-  kibanaserver_user_active: false
-  logstash_password: YOUR_PASSWORD
-  logstash_user_active: false
-  demo_users_to_remove:
-  - kibanaro
-  - readall
-  - snapshotrestore
-  - logstash
-  - kibanaserver
-```
-
-### Logging role
+### Logging component
 
 #### - Logging role
 
-By default Epiphany removes users that are listed in `demo_users_to_remove` section of `configuration/opendistro-for-elasticsearch` doc. By default, 
-`kibanaserver` user (needed by default Epiphany installation of Kibana) and `logstash` (needed by default Epiphany installation of Filebeat) are not 
-removed. If you want to perform configuration by Epiphany, set `kibanaserver_user_active` to `true` for `kibanaserver` user or `logstash_user_active` for `logstash` user. For `logging` role, those settings are already set to `true` by default. We strongly advice to set different password for each user. To change `admin` user's password change value for `admin_password` key. For `kibanaserver` and `logstash` change values for `kibanaserver_password` and `logstash_password` keys respectively. Changes from logging role will be propagated to Kibana and Filebeat configuration.
+By default Epiphany removes users that are listed in `demo_users_to_remove` section of `configuration/logging` doc.
+By default, `kibanaserver` user (needed by default Epiphany installation of Kibana) and `logstash` (needed by default Epiphany
+installation of Filebeat) are not removed. If you want to perform configuration by Epiphany, set `kibanaserver_user_active` to `true`
+for `kibanaserver` user or `logstash_user_active` for `logstash` user. For `logging` role, those settings are already set to `true` by default.
+We strongly advice to set different password for each user.
+
+To change `admin` user's password, change value for `admin_password` key. For `kibanaserver` and `logstash`, change values
+for `kibanaserver_password` and `logstash_password` keys respectively. Changes from logging role will be propagated to Kibana
+and Filebeat configuration.
 
 ```yaml
 kind: configuration/logging
@@ -272,6 +251,35 @@ described in [Logging role](#-logging-role).
 
 To set password of `logstash` user, which is used by Filebeat for communication with Open Distro Elasticsearch backend follow the procedure described 
 in  [Logging role](#-logging-role).
+
+### Open Distro for Elasticsearch component
+
+By default Epiphany removes all demo users except `admin` user. Those users are listed in `demo_users_to_remove` section
+of `configuration/opendistro-for-elasticsearch` doc. If you want to keep `kibanaserver` user (needed by default Epiphany installation of Kibana),
+you need to remove it from `demo_users_to_remove` list and set `kibanaserver_user_active` to `true` in order to change the default password.
+We strongly advice to set different password for each user.
+
+To change `admin` user's password, change value for `admin_password` key. For `kibanaserver` and `logstash`, change values for `kibanaserver_password`
+and `logstash_password` keys respectively.
+
+```yaml
+kind: configuration/opendistro-for-elasticsearch
+title: Open Distro for Elasticsearch Config
+name: default
+specification:
+  ...
+  admin_password: YOUR_PASSWORD
+  kibanaserver_password: YOUR_PASSWORD
+  kibanaserver_user_active: false
+  logstash_password: YOUR_PASSWORD
+  logstash_user_active: false
+  demo_users_to_remove:
+  - kibanaro
+  - readall
+  - snapshotrestore
+  - logstash
+  - kibanaserver
+```
 
 ### Upgrade of Elasticsearch, Kibana and Filebeat
 
