@@ -781,5 +781,5 @@ write_files:  # frequency: once-per-instance
       main
 
 runcmd:  # frequency: once-per-instance
-  - systemctl enable epiphany-lvm-merge
+  - systemctl enable epiphany-lvm-merge  # auto-start after unexpected reboot if uncompleted
   - systemctl start --no-block epiphany-lvm-merge
