@@ -56,3 +56,18 @@
 - import_role:
     name: preflight_facts
     tasks_from: assert
+
+- name: Wait for epiphany-lvm-merge.service to finish  # to avoid 'Read-only file system' error
+  when: ansible_os_family == "RedHat"
+  block:
+    - name: Check if epiphany-lvm-merge.service exists  # exists only on Azure
+      service_facts: null
+
+    - name: Wait for epiphany-lvm-merge.service to finish
+      when:
+        - ansible_facts.services['epiphany-lvm-merge.service'] is defined
+        - ansible_facts.services['epiphany-lvm-merge.service'].status != "disabled"
+      wait_for:  # at the end service disables itself so symlink is removed
+        path: /etc/systemd/system/default.target.wants/epiphany-lvm-merge.service
+        state: absent
+        timeout: 300
