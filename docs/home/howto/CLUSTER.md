@@ -215,7 +215,7 @@ To setup the cluster do the following steps:
 
     - download-requirements.sh
     - requirements.txt
-    - skopeo_linux
+    - crane_x86_64
 
 2. The scripts in the `prepare_scripts` will be used to download all requirements. To do that copy the `prepare_scripts` folder over to the requirements machine and run the following command:
 

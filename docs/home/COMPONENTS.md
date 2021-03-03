@@ -50,7 +50,7 @@ Note that versions are default versions and can be changed in certain cases thro
 | Terraform                 | 0.12.6  | https://www.terraform.io/                             | [Mozilla Public License 2.0](https://github.com/hashicorp/terraform/blob/master/LICENSE) |
 | Terraform AzureRM provider | 1.38.0  | https://github.com/terraform-providers/terraform-provider-azurerm | [Mozilla Public License 2.0](https://github.com/terraform-providers/terraform-provider-azurerm/blob/master/LICENSE) |
 | Terraform AWS provider    | 2.26    | https://github.com/terraform-providers/terraform-provider-aws | [Mozilla Public License 2.0](https://github.com/terraform-providers/terraform-provider-aws/blob/master/LICENSE) |
-| Skopeo                    | 0.1.40-dev  | https://github.com/containers/skopeo              | [Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0) |
+| Crane                     | 0.4.1  | https://github.com/google/go-containerregistry/tree/main/cmd/crane     | [Apache License 2.0](https://github.com/google/go-containerregistry/blob/main/LICENSE) |
 
 ## Epicli Python dependencies
 
