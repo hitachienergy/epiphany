@@ -23,6 +23,7 @@ deplist="${script_path}/.dependencies"
 logfile="${script_path}/log"
 download_cmd="apt-get download"
 add_repos="${script_path}/add-repositories.sh"
+crane_bin="$script_path/crane"
 
 # to download everything, add "--recurse" flag but then you will get much more packages (e.g. 596 vs 319)
 deplist_cmd() {
@@ -66,7 +67,8 @@ shopt -u nullglob
 # add 3rd party repositories
 . ${add_repos}
 
-# parse the input file, separete by tags: [packages], [files], [images]
+# parse the input file, separete by tags: [crane], [packages], [files], [images]
+crane=$(awk '/^$/ || /^#/ {next}; /\[crane\]/ {f=1; next}; /^\[/ {f=0}; f {print $0}' "${input_file}")
 packages=$(awk '/^$/ || /^#/ {next}; /\[packages\]/ {f=1; next}; /^\[/ {f=0}; f {print $0}' "${input_file}")
 files=$(awk '/^$/ || /^#/ {next}; /\[files\]/ {f=1; next}; /^\[/ {f=0}; f {print $0}' "${input_file}")
 images=$(awk '/^$/ || /^#/ {next}; /\[images\]/ {f=1; next}; /^\[/ {f=0}; f {print $0}' "${input_file}")
@@ -77,6 +79,23 @@ printf "\n"
 find "$script_path" -type f -wholename "${deplist}" -mmin +15 -exec rm "${deplist}" \;
 # clear list of cached dependencies if requirements.txt was recently edited
 find "$script_path" -type f -wholename "$input_file" -mmin -1 -exec rm "${deplist}" \;
+
+# CRANE
+if [[ -z "${crane}" ]] || [ $(wc -l <<< "${crane}") -ne 1 ] ; then
+    exit_with_error "Crane binary download path undefined or more then one download paths defined"
+else
+    file=$(head -n 1 <<< "${crane}")
+    echol "Downloading crane from: ${file}"
+    download_file "${file}" "${script_path}"
+    filename=${file##*/}
+    echol "Unpacking crane from: ${filename}"
+    tar -xf "${filename}" "crane" --overwrite
+    remove_file "$filename"
+    [[ -f $crane_bin ]] || exit_with_error "File not found: $CRANE_BIN"
+    [[ -x $crane_bin ]] || exit_with_error "$CRANE_BIN have to be executable"
+fi
+
+printf "\n"
 
 # PACKAGES
 # if dependency list doesn't exist or is zero size then resolve dependency and store them in a deplist file

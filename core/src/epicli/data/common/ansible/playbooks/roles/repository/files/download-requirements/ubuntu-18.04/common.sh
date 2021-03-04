@@ -46,9 +46,9 @@ download_image() {
 	else
 		local tmp_file=$(mktemp)
 		echo "Downloading image: $1"
-		echo "Crane command is: ./crane pull --insecure --format=legacy ${image_name} ${dst_image}"
+		echo "Crane command is: ${crane_bin} pull --insecure --format=legacy ${image_name} ${dst_image}"
 		# use temporary file for downloading to be safe from sudden interruptions (network, ctrl+c)
-		./crane pull --insecure --format=legacy ${image_name} ${tmp_file} && chmod 644 ${tmp_file} && mv ${tmp_file} ${dst_image}
+		 ${crane_bin} pull --insecure --format=legacy ${image_name} ${tmp_file} && chmod 644 ${tmp_file} && mv ${tmp_file} ${dst_image}
 	fi
 }
 
