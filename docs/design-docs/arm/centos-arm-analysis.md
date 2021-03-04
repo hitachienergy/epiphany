@@ -120,17 +120,17 @@
 
 | Name        | ARM Supported           |  Info  | Required |
 | ------------- |:-------------:|:-----:|-----:|
-| https://github.com/prometheus/haproxy_exporter/releases/download/v0.10.0/haproxy_exporter-0.10.0.linux-armv7.tar.gz | + | dedicated package | + |
+| https://github.com/prometheus/haproxy_exporter/releases/download/v0.10.0/haproxy_exporter-0.10.0.linux-arm64.tar.gz | + | dedicated package | + |
 | https://repo1.maven.org/maven2/io/prometheus/jmx/jmx_prometheus_javaagent/0.14.0/jmx_prometheus_javaagent-0.14.0.jar | + | jar | + |
 | https://archive.apache.org/dist/kafka/2.6.0/kafka_2.12-2.6.0.tgz | + | shell scripts + jar libraries | + |
-| https://github.com/danielqsj/kafka_exporter/releases/download/v1.2.0/kafka_exporter-1.2.0.linux-armv7.tar.gz | + | dedicated package | + |
-| https://github.com/prometheus/node_exporter/releases/download/v1.0.1/node_exporter-1.0.1.linux-armv7.tar.gz | + | dedicated package | + |
-| https://github.com/prometheus/prometheus/releases/download/v2.10.0/prometheus-2.10.0.linux-armv7.tar.gz | + | dedicated package | + |
-| https://github.com/prometheus/alertmanager/releases/download/v0.17.0/alertmanager-0.17.0.linux-armv7.tar.gz | + | dedicated package | + |
+| https://github.com/danielqsj/kafka_exporter/releases/download/v1.2.0/kafka_exporter-1.2.0.linux-arm64.tar.gz | + | dedicated package | + |
+| https://github.com/prometheus/node_exporter/releases/download/v1.0.1/node_exporter-1.0.1.linux-arm64.tar.gz | + | dedicated package | + |
+| https://github.com/prometheus/prometheus/releases/download/v2.10.0/prometheus-2.10.0.linux-arm64.tar.gz | + | dedicated package | + |
+| https://github.com/prometheus/alertmanager/releases/download/v0.17.0/alertmanager-0.17.0.linux-arm64.tar.gz | + | dedicated package | + |
 | https://archive.apache.org/dist/zookeeper/zookeeper-3.5.8/apache-zookeeper-3.5.8-bin.tar.gz | + | shell scripts + jar libraries | --- |
 | https://archive.apache.org/dist/ignite/2.9.1/apache-ignite-2.9.1-bin.zip | + | shell scripts + jar libraries | --- |
-| https://releases.hashicorp.com/vault/1.6.1/vault_1.6.1_linux_arm.zip | + | dedicated package | --- |
-| https://get.helm.sh/helm-v3.2.0-linux-arm.tar.gz | + | dedicated package | --- |
+| https://releases.hashicorp.com/vault/1.6.1/vault_1.6.1_linux_arm64.zip | + | dedicated package | --- |
+| https://get.helm.sh/helm-v3.2.0-linux-arm64.tar.gz | + | dedicated package | --- |
 | https://github.com/hashicorp/vault-helm/archive/v0.9.0.tar.gz | + | yaml files | --- |
 | https://github.com/wrouesnel/postgres_exporter/releases/download/v0.8.0/postgres_exporter_v0.8.0_linux-amd64.tar.gz | --- |  | + |
 | https://charts.bitnami.com/bitnami/node-exporter-1.1.2.tgz | + | yaml files | + |
@@ -208,20 +208,20 @@ https://docs.docker.com/docker-for-mac/multi-arch/
 
 | Component name | Roles |
 | ------------- |-------------:|
-| Kubernetes | kubernetes-master <br> kubernetes-node <br> helm <br> applications <br> node-exporter <br> vault |
+| Repository | repository <br> image-registry <br> node-exporter <br> firewall <br> filebeat <br> docker |
+| Kubernetes | kubernetes-master <br> kubernetes-node <br> applications <br> node-exporter <br> haproxy_runc <br> kubernetes_common |
 | Kafka | zookeeper <br> jmx-exporter <br> kafka <br> kafka-exporter <br> node-exporter |
-| ELK (Logging) | logging <br> elasticsearch <br> elasticsearch_curator <br> logstash <br> kibana <br> grafana <br> node-exporter |
-| Prometheus | prometheus <br> exporters <br>|
+| ELK (Logging) | logging <br> elasticsearch <br> elasticsearch_curator <br> logstash <br> kibana  <br> node-exporter |
 | Exporters | node-exporter <br> kafka-exporter <br> jmx-exporter <br> haproxy-exporter <br> postgres-exporter |
 | PostgreSQL | postgresql <br> postgres-exporter <br> node-exporter |
 | Keycloak | applications |
 | RabbitMQ | rabbitmq <br> node-exporter |
+| HAProxy | haproxy <br> haproxy-exporter <br> node-exporter <br> haproxy_runc <br> |
+| Monitoring | prometheus <br> grafana <br> node-exporter |
 |  |  |
 
 Except above table, components require following roles to be checked:
 
- - repository
- - image_registry
  - upgrade
  - backup
  - download
