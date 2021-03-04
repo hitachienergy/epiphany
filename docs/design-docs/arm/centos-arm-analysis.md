@@ -202,3 +202,29 @@ https://github.com/keycloak/keycloak-containers/
 https://catalog.redhat.com/software/containers/ubi8/ubi-minimal/5c359a62bed8bd75a2c3fba8?architecture=arm64&container-tabs=overview
 
 https://docs.docker.com/docker-for-mac/multi-arch/
+
+
+# Components to roles mapping
+
+| Component name | Roles |
+| ------------- |-------------:|
+| Kubernetes | kubernetes-master <br> kubernetes-node <br> helm <br> applications <br> node-exporter <br> vault |
+| Kafka | zookeeper <br> jmx-exporter <br> kafka <br> kafka-exporter <br> node-exporter |
+| ELK (Logging) | logging <br> elasticsearch <br> elasticsearch_curator <br> logstash <br> kibana <br> grafana <br> node-exporter |
+| Prometheus | prometheus <br> exporters <br>|
+| Exporters | node-exporter <br> kafka-exporter <br> jmx-exporter <br> haproxy-exporter <br> postgres-exporter |
+| PostgreSQL | postgresql <br> postgres-exporter <br> node-exporter |
+| Keycloak | applications |
+| RabbitMQ | rabbitmq <br> node-exporter |
+|  |  |
+
+Except above table, components require following roles to be checked:
+
+ - repository
+ - image_registry
+ - upgrade
+ - backup
+ - download
+ - firewall
+ - filebeat
+ - recovery (n/a kubernetes)
