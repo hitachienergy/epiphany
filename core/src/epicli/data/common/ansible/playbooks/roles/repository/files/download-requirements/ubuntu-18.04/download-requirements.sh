@@ -44,7 +44,7 @@ if [[ ! -f /etc/apt/sources.list ]]; then
 fi
 
 # install prerequisites which might be missing
-apt install -y wget gpg curl
+apt install -y wget gpg curl tar
 
 # some quick sanity check
 echol "Dependency list: ${deplist}"
