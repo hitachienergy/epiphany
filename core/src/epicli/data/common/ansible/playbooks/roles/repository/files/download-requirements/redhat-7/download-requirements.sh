@@ -405,7 +405,7 @@ readonly SCRIPT_FILE_NAME=$(basename $0)
 readonly LOG_FILE_NAME=${SCRIPT_FILE_NAME/sh/log}
 readonly LOG_FILE_PATH="$SCRIPT_DIR/$LOG_FILE_NAME"
 readonly YUM_CONFIG_BACKUP_FILE_PATH="$SCRIPT_DIR/${SCRIPT_FILE_NAME}-yum-repos-backup-tmp-do-not-remove.tar"
-readonly CRANE_BIN="$SCRIPT_DIR/crane_x86_64"
+readonly CRANE_BIN="$SCRIPT_DIR/crane"
 readonly INSTALLED_PACKAGES_FILE_PATH="$SCRIPT_DIR/${SCRIPT_FILE_NAME}-installed-packages-list-do-not-remove.tmp"
 readonly PID_FILE_PATH=/var/run/${SCRIPT_FILE_NAME/sh/pid}
 
