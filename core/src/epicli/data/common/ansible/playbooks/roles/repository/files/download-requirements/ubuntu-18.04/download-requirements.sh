@@ -89,10 +89,10 @@ else
     download_file "${file}" "${script_path}"
     filename=${file##*/}
     echol "Unpacking crane from: ${filename}"
-    tar -xf "${filename}" "crane" --overwrite
-    remove_file "$filename"
-    [[ -f $crane_bin ]] || exit_with_error "File not found: $CRANE_BIN"
-    [[ -x $crane_bin ]] || exit_with_error "$CRANE_BIN have to be executable"
+    tar -xf "${script_path}/${filename}" "crane" --overwrite
+    remove_file "${script_path}/$filename"
+    [[ -f $crane_bin ]] || exit_with_error "File not found: $crane_bin"
+    [[ -x $crane_bin ]] || exit_with_error "$crane_bin have to be executable"
 fi
 
 printf "\n"
