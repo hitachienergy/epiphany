@@ -24,7 +24,7 @@
 
 - name: "Check if Alertmanager is enabled"
   set_fact:
-    is_alertmanager_enabled: "{{ specification.alertmanager.enable|bool and (specification.alertmanager.config.receivers | length>0 ) }}"
+    is_alertmanager_enabled: "{{ specification.alertmanager.enable | bool and (specification.alertmanager.config.receivers | length>0 ) }}"
 
 - name: Include install
   include_tasks: install.yml
@@ -32,16 +32,17 @@
 - name: Include configure
   include_tasks: configure.yml
 
-- name: Include provide-rules
-  include_tasks: provide-rules.yml
+- name: Include tasks if Alertmanager is enabled
+  block:
+  - name: Include provide-rules 
+    include_tasks: provide-rules.yml
 
-- name: Include install-alertmanager
-  include_tasks: install-alertmanager.yml
-  when: is_alertmanager_enabled
-
-- name: Include configure-alertmanager
-  include_tasks: configure-alertmanager.yml
-  when: is_alertmanager_enabled
+  - name: Include install-alertmanager
+    include_tasks: install-alertmanager.yml
+  
+  - name: Include configure-alertmanager
+    include_tasks: configure-alertmanager.yml
+  when: is_alertmanager_enabled | bool
 
 - name: Flush handlers
   meta: flush_handlers

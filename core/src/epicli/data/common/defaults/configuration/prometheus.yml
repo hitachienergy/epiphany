@@ -2,27 +2,18 @@ kind: configuration/prometheus
 title: "Prometheus"
 name: default
 specification:
-  alert_rules:
-    common: true
-    container: false
-    kafka: false
-    node: false
-    postgresql: false
-    prometheus: false
-  version: 2.10.0
-  file_name: "prometheus-2.10.0.linux-amd64.tar.gz"
   config_directory: "/etc/prometheus"
   storage:
     data_directory: "/var/lib/prometheus"
-  config_flags:                                                                   # Parameters that Prometheus service will be started with.
-    - "--config.file=/etc/prometheus/prometheus.yml"                              # Directory should be the same as "config_directory"
-    - "--storage.tsdb.path=/var/lib/prometheus"                                   # Directory should be the same as "storage.data_directory"
-    - "--storage.tsdb.retention.time=180d"                                        # Data retention time for metrics
-    - "--storage.tsdb.retention.size=20GB"                                        # Data retention size for metrics
-    - "--web.console.libraries=/etc/prometheus/console_libraries"                 # Directory should be the same as "config_directory"
-    - "--web.console.templates=/etc/prometheus/consoles"                          # Directory should be the same as "config_directory"
-    - "--web.listen-address=0.0.0.0:9090"                                         # Address that Prometheus console will be available
-    - "--web.enable-admin-api"                                                    # Enables administrative HTTP API
+  config_flags:                                                            # Parameters that Prometheus service will be started with.
+    - "--config.file=/etc/prometheus/prometheus.yml"                       # Directory should be the same as "config_directory"
+    - "--storage.tsdb.path=/var/lib/prometheus"                            # Directory should be the same as "storage.data_directory"
+    - "--storage.tsdb.retention.time=180d"                                 # Data retention time for metrics
+    - "--storage.tsdb.retention.size=20GB"                                 # Data retention size for metrics
+    - "--web.console.libraries=/etc/prometheus/console_libraries"          # Directory should be the same as "config_directory"
+    - "--web.console.templates=/etc/prometheus/consoles"                   # Directory should be the same as "config_directory"
+    - "--web.listen-address=0.0.0.0:9090"                                  # Address that Prometheus console will be available
+    - "--web.enable-admin-api"                                             # Enables administrative HTTP API
   metrics_path: "/metrics"
   scrape_interval : "15s"
   scrape_timeout: "10s"
@@ -31,24 +22,29 @@ specification:
   remote_read: []
   alertmanager:
     enable: false # To make Alertmanager working, you have to enable it and define receivers and routes
-    file_name: "alertmanager-0.17.0.linux-amd64.tar.gz"
-    version: 0.17.0
-    config: # Configuration for Alertmanager, it will be passed to Alertmanager service.
+    alert_rules:
+      common: true
+      container: false
+      kafka: false
+      node: false
+      postgresql: false
+      prometheus: false
+    # config: # Configuration for Alertmanager, it will be passed to Alertmanager service.
       # Full list of configuration fields https://prometheus.io/docs/alerting/configuration/
-      global:
+    # global:
         # resolve_timeout: 5m
         # smtp_from: "alert@test.com"
         # smtp_smarthost: "smtp-url:smtp-port"
         # smtp_auth_username: "your-smtp-user@domain.com"
         # smtp_auth_password: "your-smtp-password"
         # smtp_require_tls: True
-      route:
-        group_by: ['alertname']
-        group_wait: 10s
-        group_interval: 10s
-        repeat_interval: 1h
-      # receiver: 'email' # Default receiver, change if another is set to default
-        routes: # Example routes, names need to match 'name' field of receiver
+      # route:
+        # group_by: ['alertname']
+        # group_wait: 10s
+        # group_interval: 10s
+        # repeat_interval: 1h
+        # receiver: 'email' # Default receiver, change if another is set to default
+        # routes: # Example routes, names need to match 'name' field of receiver
           # - match_re:
           #     severity: critical
           #   receiver: opsgenie
@@ -64,8 +60,7 @@ specification:
           # - match_re:
           #      severity: warning|critical
           #   receiver: email
-
-      receivers: # example configuration for receivers # api_url: https://prometheus.io/docs/alerting/configuration/#receiver
+      # receivers: # example configuration for receivers # api_url: https://prometheus.io/docs/alerting/configuration/#receiver
         # - name: 'email'
         #   email_configs:
         #     - to: "test@domain.com"

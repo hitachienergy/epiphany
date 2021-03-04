@@ -6,7 +6,7 @@
     owner: prometheus
     group: prometheus
     mode: u=rw,go=
-  when: specification.alert_rules.common | bool
+  when: specification.alertmanager.alert_rules.common | bool
   notify: Reload Prometheus
 
 - name: Copy Prometheus alerting rules
@@ -17,7 +17,7 @@
     owner: prometheus
     group: prometheus
     mode: u=rw,go=
-  when: specification.alert_rules.prometheus | bool
+  when: specification.alertmanager.alert_rules.prometheus | bool
   notify: Reload Prometheus
 
 - name: Copy node alerting rules
@@ -30,7 +30,7 @@
     mode: u=rw,go=
   when:
   - groups.kubernetes_node[0] is defined
-  - specification.alert_rules.node | bool
+  - specification.alertmanager.alert_rules.node | bool
   notify: Reload Prometheus
 
 - name: Copy container alerting rules
@@ -43,7 +43,7 @@
     mode: u=rw,go=
   when:
     - groups.kubernetes_node[0] is defined
-    - specification.alert_rules.container | bool
+    - specification.alertmanager.alert_rules.container | bool
   notify: Reload Prometheus
 
 - name: Copy Kafka alerting rules
@@ -56,7 +56,7 @@
     mode: u=rw,go=
   when:
     - groups.kafka[0] is defined
-    - specification.alert_rules.kafka | bool
+    - specification.alertmanager.alert_rules.kafka | bool
   notify: Reload Prometheus
 
 - name: Copy Postgresql alerting rules
@@ -69,5 +69,5 @@
     mode: u=rw,go=
   when:
     - groups.postgresql[0] is defined
-    - specification.alert_rules.postgresql | bool
+    - specification.alertmanager.alert_rules.postgresql | bool
   notify: Reload Prometheus

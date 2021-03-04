@@ -3,6 +3,7 @@
 Prometheus:
 
 - [How to enable provided Prometheus rules](#how-to-enable-provided-prometheus-rules)
+- [How to enable Alertmanager](#how-to-enable-alertmanager)
 - [How to configure scalable Prometheus setup](#how-to-configure-scalable-prometheus-setup)
 
 Grafana:
@@ -58,6 +59,42 @@ specification:
 ```
 
 For more information about how to setup Prometheus alerting rules, refer to [the official website](https://prometheus.io/docs/prometheus/latest/configuration/alerting_rules/).
+
+## How to enable Alertmanager
+
+Epiphany provides Alertmanager configuration via configuration manifest. To see default configuration please refer to [default Prometheus configuration file](https://github.com/epiphany-platform/epiphany/blob/develop/core/src/epicli/data/common/defaults/configuration/prometheus.yml).  
+To enable Alertmanager you have to modify configuration manifest:
+
+1. Enable Alermanager
+2. Enable desired alerting rules
+2. Provide at least one receiver
+
+Example:  
+
+```yaml
+...
+specification:
+...
+  alertmanager:
+    enable: true
+    alert_rules:
+      common: true
+      container: false
+      kafka: false
+      node: false
+      postgresql: false
+      prometheus: false
+...
+    config:
+      route:
+        receiver: 'email'
+      receivers:
+        - name: 'email'
+          email_configs:
+            - to: "test@domain.com"
+```
+
+For more details about Alertmanager configuration please refer to [the official documentation](https://prometheus.io/docs/alerting/latest/configuration/)
 
 ## How to configure scalable Prometheus setup
 
