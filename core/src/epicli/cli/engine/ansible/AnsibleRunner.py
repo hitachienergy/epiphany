@@ -14,7 +14,7 @@ from cli.helpers.build_saver import (get_inventory_path, get_inventory_path_for_
     get_ansible_path, get_ansible_path_for_build, get_ansible_config_file_path, get_ansible_config_file_path_for_build,
     copy_files_recursively)
 from cli.helpers.naming_helpers import to_role_name
-from cli.helpers.data_loader import DATA_FOLDER_PATH, CRANE_X86_64_BIN_PATH
+from cli.helpers.data_loader import DATA_FOLDER_PATH
 from cli.helpers.Config import Config
 
 
@@ -53,10 +53,6 @@ class AnsibleRunner(Step):
 
         shutil.rmtree(ansible_dir, ignore_errors=True)
         copy_files_recursively(AnsibleRunner.ANSIBLE_PLAYBOOKS_PATH, ansible_dir)
-
-        # copy crane so Ansible can move it to the repositry machine
-        if not Config().offline_requirements:
-            shutil.copy(CRANE_X86_64_BIN_PATH, '/tmp')
 
     def pre_flight(self, inventory_path):
         self.logger.info('Checking connection to each machine')

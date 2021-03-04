@@ -28,12 +28,6 @@
         src: "download-requirements/{{ download_script_subdir }}/"
         dest: /tmp/epi-download-requirements
 
-    - name: Copy crane binary to repository host
-      copy:
-        src: /tmp/crane_x86_64
-        dest: /tmp/epi-download-requirements
-        mode: a+x
-
     - name: Make download script executable
       file:
         dest: /tmp/epi-download-requirements/download-requirements.sh
