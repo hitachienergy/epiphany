@@ -87,10 +87,11 @@ else
     file=$(head -n 1 <<< "${crane}")
     echol "Downloading crane from: ${file}"
     download_file "${file}" "${script_path}"
-    filename="${script_path}/${file##*/}"
-    echol "Unpacking crane from: ${filename}"
-    tar -xf "${filename}" "crane" --overwrite
-    remove_file "$filename"
+    tar_path="${script_path}/${file##*/}"
+    bin_path="${script_path}/crane"
+    echol "Unpacking crane from ${tar_path} to ${bin_path}"
+    tar -xf "${tar_path}" --directory ${script_path} "crane" --overwrite
+    remove_file "${tar_path}"
     [[ -f $crane_bin ]] || exit_with_error "File not found: $crane_bin"
     [[ -x $crane_bin ]] || exit_with_error "$crane_bin has to be executable"
 fi
