@@ -1,0 +1,9 @@
+---
+- name: Check if {{ docker_image }} image is not tagged with "epiphanyplatform"
+  command: docker images -q {{ docker_image }}
+  register: image_check
+  changed_when: false
+
+- name: Tag {{ docker_image }} image with "epiphanyplatform"
+  when: image_check.stdout | length == 0
+  command: docker tag {{ docker_image | replace('epiphanyplatform', 'quay.io/coreos') }} {{ docker_image }}

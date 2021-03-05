@@ -7,7 +7,7 @@
     - inventory_hostname in target_image_registry_hostnames
   block:
     - name: Check if Docker is installed
-      shell: docker --version
+      command: docker --version
       register: check_docker
       failed_when:
         - check_docker.rc not in [0, 127] # 127 means command not found
@@ -42,34 +42,52 @@
         docker_image: "{{ specification.registry_image }}"
 
     - name: Check if registry is running
-      become: yes
-      shell: docker ps | grep registry:2 | cat
+      become: true
+      command: docker ps -q -f 'ancestor=registry:2' -f 'status=running'
       register: regitry_up_check
-      check_mode: no
+      changed_when: false
 
     # todo run registry with SSL - generate/copy certs, mount it to registry container
     - name: Run registry
-      become: yes
-      shell: >-
+      become: true
+      command: >-
         docker run -d -e REGISTRY_HTTP_ADDR=0.0.0.0:5000 -p 5000:5000 --restart=always
         --name epiphany-registry {{ specification.registry_image.name }}
       when: regitry_up_check.stdout | length == 0
 
-    - name: Load generic images to registry
-      include_tasks: load-image.yml
+    - name: Load generic and current version images
       vars:
         docker_image: "{{ item }}"
-      loop: "{{ specification.images_to_load.generic }}"
+      include_tasks: load-image.yml
+      loop: "{{ specification.images_to_load.generic + specification.images_to_load.current }}"
 
-    - name: Load current version images to registry
-      include_tasks: load-image.yml
+    - name: Push generic and current version images to registry
       vars:
         docker_image: "{{ item }}"
-      loop: "{{ specification.images_to_load.current }}"
+      include_tasks: push-image.yml
+      loop: "{{ specification.images_to_load.generic + specification.images_to_load.current }}"
 
     - name: Load legacy version images to registry when upgrading
-      include_tasks: load-image.yml
-      vars:
-        docker_image: "{{ item }}"
-      loop: "{{ specification.images_to_load.legacy }}"
       when: is_upgrade_run
+      block:
+        - name: Load legacy version images
+          vars:
+            docker_image: "{{ item }}"
+          include_tasks: load-image.yml
+          loop: "{{ specification.images_to_load.legacy }}"
+
+        # installations before v0.10.0 have no "epiphanyplatform" flannel images
+        # that were changed due to replacement Skopeo with Crane
+        - name: Tag legacy flannel images
+          vars:
+            docker_image: "{{ item }}"
+          include_tasks: tag-flannel-images.yml
+          loop:
+            - epiphanyplatform/flannel:v0.11.0-amd64
+            - epiphanyplatform/flannel:v0.11.0
+
+        - name: Push legacy version images to registry
+          vars:
+            docker_image: "{{ item }}"
+          include_tasks: push-image.yml
+          loop: "{{ specification.images_to_load.legacy }}"
