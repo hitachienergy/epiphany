@@ -414,8 +414,6 @@ readonly PID_FILE_PATH=/var/run/${SCRIPT_FILE_NAME/sh/pid}
 [ $EUID -eq 0 ] || { echo "You have to run as root" && exit 1; }
 
 [[ -f $REQUIREMENTS_FILE_PATH ]] || exit_with_error "File not found: $REQUIREMENTS_FILE_PATH"
-[[ -f $CRANE_BIN ]] || exit_with_error "File not found: $CRANE_BIN"
-[[ -x $CRANE_BIN ]] || exit_with_error "$CRANE_BIN have to be executable"
 
 # --- Want to have only one instance for Ansible ---
 
@@ -447,6 +445,7 @@ echo $$ > $PID_FILE_PATH || exit_with_error "Command failed: echo $$ > $PID_FILE
 
 # Requirements are grouped using sections: [packages-repo-prereqs], [packages], [files], [images]
 get_requirements_from_group 'REPO_PREREQ_PACKAGES' 'packages-repo-prereqs' "$REQUIREMENTS_FILE_PATH"
+get_requirements_from_group 'CRANE'                'crane'                 "$REQUIREMENTS_FILE_PATH"
 get_requirements_from_group 'PACKAGES'             'packages'              "$REQUIREMENTS_FILE_PATH"
 get_requirements_from_group 'FILES'                'files'                 "$REQUIREMENTS_FILE_PATH"
 get_requirements_from_group 'IMAGES'               'images'                "$REQUIREMENTS_FILE_PATH"
@@ -472,11 +471,28 @@ fi
 # --- Install required packages unless present ---
 
 # repos can be enabled or disabled using the yum-config-manager command, which is provided by yum-utils package
-for package in 'yum-utils' 'wget' 'curl'; do
+for package in 'yum-utils' 'wget' 'curl' 'tar'; do
 	if ! is_package_installed "$package"; then
 		install_package "$package"
 	fi
 done
+
+# --- Download and setup Crane for downloading images ---
+
+if [[ -z "${CRANE}" ]] || [ $(wc -l <<< "${CRANE}") -ne 1 ] ; then
+    exit_with_error "Crane binary download path undefined or more then one download paths defined"
+else
+    file=$(head -n 1 <<< "${CRANE}")
+    echol "Downloading crane from: ${file}"
+    download_file "${file}" "${SCRIPT_DIR}"
+    tar_path="${SCRIPT_DIR}/${file##*/}"
+    bin_path="${SCRIPT_DIR}/crane"
+    echol "Unpacking crane from ${tar_path} to ${bin_path}"
+    tar -xf "${tar_path}" --directory ${SCRIPT_DIR} "crane" --overwrite
+    remove_file "${tar_path}"
+	[[ -f $CRANE_BIN ]] || exit_with_error "File not found: $CRANE_BIN"
+	[[ -x $CRANE_BIN ]] || exit_with_error "$CRANE_BIN has to be executable"
+fi
 
 # --- Enable RHEL repos ---
 
