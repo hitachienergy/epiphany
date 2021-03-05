@@ -74,7 +74,7 @@
         name: upgrade
         tasks_from: kubernetes
       vars: { ver: "1.17.7", cni_ver: "0.8.6", cni_in_kubelet: true, upgrade_to_final_version: false }
-     when: "'kubernetes' in upgrade_components or upgrade_components|length == 0"
+      when: "'kubernetes' in upgrade_components or upgrade_components|length == 0"
   environment:
     KUBECONFIG: "{{ kubeconfig.remote }}"
 
