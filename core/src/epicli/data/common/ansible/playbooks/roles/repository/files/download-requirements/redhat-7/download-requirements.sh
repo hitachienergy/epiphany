@@ -480,7 +480,7 @@ done
 # --- Download and setup Crane for downloading images ---
 
 if [[ -z "${CRANE}" ]] || [ $(wc -l <<< "${CRANE}") -ne 1 ] ; then
-    exit_with_error "Crane binary download path undefined or more then one download paths defined"
+    exit_with_error "Crane binary download path undefined or more then one download path defined"
 else
     file=$(head -n 1 <<< "${CRANE}")
     echol "Downloading crane from: ${file}"

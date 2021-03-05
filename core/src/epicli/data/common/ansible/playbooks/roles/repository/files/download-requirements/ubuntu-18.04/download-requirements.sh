@@ -82,7 +82,7 @@ find "$script_path" -type f -wholename "$input_file" -mmin -1 -exec rm "${deplis
 
 # CRANE
 if [[ -z "${crane}" ]] || [ $(wc -l <<< "${crane}") -ne 1 ] ; then
-    exit_with_error "Crane binary download path undefined or more then one download paths defined"
+    exit_with_error "Crane binary download path undefined or more then one download path defined"
 else
     file=$(head -n 1 <<< "${crane}")
     echol "Downloading crane from: ${file}"
