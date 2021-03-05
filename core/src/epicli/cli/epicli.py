@@ -243,9 +243,9 @@ def upgrade_parser(subparsers):
     optional = sub_parser._action_groups.pop()
     required = sub_parser.add_argument_group('required arguments')
 
-    component_list = ['kubernetes', 'kafka', 'elasticsearch', 'filebeat', 'logging', 'opendistro_for_elasticsearch', 
-                      'kibana', 'grafana', 'zookeeper', 'rabbitmq', 'ignite', 'load_balancer', 'node_exporter']
-    def comma_seperated_type(choices):
+    component_list = sorted(['kubernetes', 'kafka', 'elasticsearch', 'filebeat', 'logging', 'opendistro_for_elasticsearch',
+                      'kibana', 'grafana', 'zookeeper', 'rabbitmq', 'ignite', 'load_balancer', 'node_exporter'])
+    def comma_separated_type(choices):
         """Return a function that splits and checks comma-separated values."""
         def splitarg(arg):
             values = arg.replace(' ','').lower().split(',')
@@ -268,8 +268,8 @@ def upgrade_parser(subparsers):
                             help="Waits for all pods to be in the 'Ready' state before proceeding to the next step of the K8s upgrade.")
     optional.add_argument('--profile-ansible-tasks', dest='profile_ansible_tasks', action="store_true",
                             help='Enable Ansible profile_tasks plugin for timing tasks. (developer/debug option)')
-    optional.add_argument('--upgrade-components', dest='upgrade_components', type=comma_seperated_type(component_list), required=False,
-                            help='Provides comma seperated list of components for upgrade selected from the following: [' + ','.join(map(str, component_list)) + ']')
+    optional.add_argument('--upgrade-components', dest='upgrade_components', type=comma_separated_type(component_list), required=False,
+                            help='Provides comma separated list of components for upgrade selected from the following: [' + ', '.join(map(str, component_list)) + ']')
     sub_parser._action_groups.append(optional)
 
     def run_upgrade(args):

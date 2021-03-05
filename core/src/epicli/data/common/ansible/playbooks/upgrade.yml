@@ -22,7 +22,7 @@
         name: upgrade
         tasks_from: kubernetes/gather-static-facts
       run_once: true
-      when: ('"kubernetes" in upgrade_components') or upgrade_components|length == 0
+      when: "'kubernetes' in upgrade_components or upgrade_components|length == 0"
   environment:
     KUBECONFIG: "{{ kubeconfig.remote }}"
 
@@ -34,7 +34,7 @@
     - import_role:
         name: upgrade
         tasks_from: image-registry
-      when: ('"kubernetes" in upgrade_components') or upgrade_components|length == 0
+      when: "'kubernetes' in upgrade_components or upgrade_components|length == 0"
   environment:
     KUBECONFIG: "{{ kubeconfig.remote }}"
 
@@ -47,7 +47,7 @@
         name: upgrade
         tasks_from: kubernetes
       vars: { ver: "1.15.10", cni_ver: "0.7.5", upgrade_to_final_version: false }
-      when: ('"kubernetes" in upgrade_components') or upgrade_components|length == 0
+      when: "'kubernetes' in upgrade_components or upgrade_components|length == 0"
   environment:
     KUBECONFIG: "{{ kubeconfig.remote }}"
 
@@ -60,7 +60,7 @@
         name: upgrade
         tasks_from: kubernetes
       vars: { ver: "1.16.7", cni_ver: "0.7.5", upgrade_to_final_version: false }
-      when: ('"kubernetes" in upgrade_components') or upgrade_components|length == 0
+      when: "'kubernetes' in upgrade_components or upgrade_components|length == 0"
   environment:
     KUBECONFIG: "{{ kubeconfig.remote }}"
 
@@ -73,7 +73,7 @@
         name: upgrade
         tasks_from: kubernetes
       vars: { ver: "1.17.7", cni_ver: "0.8.6", cni_in_kubelet: true, upgrade_to_final_version: false }
-      when: ('"kubernetes" in upgrade_components') or upgrade_components|length == 0
+     when: "'kubernetes' in upgrade_components or upgrade_components|length == 0"
   environment:
     KUBECONFIG: "{{ kubeconfig.remote }}"
 
@@ -86,7 +86,7 @@
         name: upgrade
         tasks_from: kubernetes
       vars: { ver: "1.18.6", cni_ver: "0.8.6", upgrade_to_final_version: true }
-      when: ('"kubernetes" in upgrade_components') or upgrade_components|length == 0
+      when: "'kubernetes' in upgrade_components or upgrade_components|length == 0"
   environment:
     KUBECONFIG: "{{ kubeconfig.remote }}"
 
@@ -97,7 +97,7 @@
     - import_role:
         name: upgrade
         tasks_from: elasticsearch
-      when: ('"elasticsearch" in upgrade_components') or upgrade_components|length == 0
+      when: "'elasticsearch' in upgrade_components or upgrade_components|length == 0"
 
 - hosts: elasticsearch_curator
   become: true
@@ -106,7 +106,7 @@
     - import_role:
         name: upgrade
         tasks_from: elasticsearch-curator
-      when: ('"elasticsearch" in upgrade_components') or upgrade_components|length == 0
+      when: "'elasticsearch' in upgrade_components or upgrade_components|length == 0"
 
 - hosts: filebeat
   become: true
@@ -117,7 +117,7 @@
         tasks_from: filebeat
       when: 
         - groups.logging is defined # do not upgrade if there is legacy Elasticsearch (v6)
-        - ('"filebeat" in upgrade_components') or upgrade_components|length == 0
+        - "'filebeat' in upgrade_components or upgrade_components|length == 0"
   environment:
     KUBECONFIG: "{{ kubeconfig.local }}"
 
@@ -131,7 +131,7 @@
         tasks_from: opendistro_for_elasticsearch
       vars:
         current_group_name: "logging"
-      when: ('"logging" in upgrade_components') or upgrade_components|length == 0
+      when: "'logging' in upgrade_components or upgrade_components|length == 0"
 
 - hosts: opendistro_for_elasticsearch
   become: true
@@ -143,7 +143,7 @@
         tasks_from: opendistro_for_elasticsearch
       vars:
         current_group_name: "opendistro_for_elasticsearch"
-      when: ('"opendistro_for_elasticsearch" in upgrade_components') or upgrade_components|length == 0
+      when: "'opendistro_for_elasticsearch' in upgrade_components or upgrade_components|length == 0"
 
 - hosts: kibana
   become: true
@@ -153,7 +153,7 @@
     - import_role:
         name: upgrade
         tasks_from: kibana
-      when: ('"kibana" in upgrade_components') or upgrade_components|length == 0
+      when: "'kibana' in upgrade_components or upgrade_components|length == 0"
 
 - hosts: grafana
   become: true
@@ -163,7 +163,7 @@
     - import_role:
         name: upgrade
         tasks_from: grafana
-      when: ('"grafana" in upgrade_components') or upgrade_components|length == 0
+      when: "'grafana' in upgrade_components or upgrade_components|length == 0"
 
 - hosts: zookeeper
   serial: 1
@@ -174,7 +174,7 @@
         name: upgrade
         tasks_from: zookeeper
       vars: { lock_file: /var/tmp/zookeeper-upgrade-in-progress.flag }
-      when: ('"zookeeper" in upgrade_components') or upgrade_components|length == 0
+      when: "'zookeeper' in upgrade_components or upgrade_components|length == 0"
 
 - hosts: kafka
   serial: 1
@@ -185,7 +185,7 @@
         name: upgrade
         tasks_from: kafka
       vars: { lock_file: /var/tmp/kafka-upgrade-in-progress.flag }
-      when: ('"kafka" in upgrade_components') or upgrade_components|length == 0
+      when: "'kafka' in upgrade_components or upgrade_components|length == 0"
 
 - hosts: rabbitmq
   become: true
@@ -195,7 +195,7 @@
         name: upgrade
         tasks_from: rabbitmq
       vars: { lock_file: /var/tmp/rabbitmq-upgrade-in-progress.flag }
-      when: ('"rabbitmq" in upgrade_components') or upgrade_components|length == 0
+      when: "'rabbitmq' in upgrade_components or upgrade_components|length == 0"
 
 - hosts: ignite
   become: true
@@ -204,7 +204,7 @@
     - import_role:
         name: upgrade
         tasks_from: ignite
-      when: ('"ignite" in upgrade_components') or upgrade_components|length == 0
+      when: "'ignite' in upgrade_components or upgrade_components|length == 0"
 
 - hosts: haproxy
   become: true
@@ -213,7 +213,7 @@
     - import_role:
         name: upgrade
         tasks_from: load_balancer
-      when: ('"load_balancer" in upgrade_components') or upgrade_components|length == 0
+      when: "'load_balancer' in upgrade_components or upgrade_components|length == 0"
 
 - hosts: node_exporter
   become: true
@@ -222,6 +222,6 @@
     - import_role:
         name: upgrade
         tasks_from: node-exporter
-      when: ('"node_exporter" in upgrade_components') or upgrade_components|length == 0
+      when: "'node_exporter' in upgrade_components or upgrade_components|length == 0"
   environment:
     KUBECONFIG: "{{ kubeconfig.local }}"
