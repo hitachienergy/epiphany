@@ -473,8 +473,8 @@ else
     echol "Unpacking crane from ${tar_path} to ${bin_path}"
     tar -xf "${tar_path}" --directory ${SCRIPT_DIR} "crane" --overwrite
     remove_file "${tar_path}"
-	[[ -f $CRANE_BIN ]] || exit_with_error "File not found: $CRANE_BIN"
-	[[ -x $CRANE_BIN ]] || exit_with_error "$CRANE_BIN has to be executable"
+    [[ -f $CRANE_BIN ]] || exit_with_error "File not found: $CRANE_BIN"
+    [[ -x $CRANE_BIN ]] || exit_with_error "$CRANE_BIN has to be executable"
 fi
 
 # --- Enable OS repos ---
