@@ -8,7 +8,7 @@
     group: elasticsearch
     mode: u=rwx,go=
 
-- name: Provide jvm configuration file
+- name: Provide JVM configuration file
   template:
     backup: yes
     src: jvm.options.j2
@@ -48,17 +48,16 @@
     enabled: yes
 
 - name: Change default users
-  when: not (context is defined and context == 'upgrade')
-  block: 
+  when: context is undefined or context != 'upgrade'
+  block:
     - name: Set helper facts
       set_fact:
-        elasticsearch_endpoint: >-
-          https://{{ ansible_default_ipv4.address }}:9200
+        elasticsearch_endpoint: https://{{ ansible_default_ipv4.address }}:9200
       vars:
         uri_template: &uri
           client_cert: /etc/elasticsearch/kirk.pem
           client_key: /etc/elasticsearch/kirk-key.pem
-          validate_certs: false
+          validate_certs: false  # because demo certificates are self-signed
           body_format: json
 
     - name: Check if default admin user exists
@@ -128,7 +127,7 @@
       delay: 1
       run_once: true
       when: specification.kibanaserver_user_active
-      
+
     - name: Check if default logstash user exists
       uri:
         <<: *uri

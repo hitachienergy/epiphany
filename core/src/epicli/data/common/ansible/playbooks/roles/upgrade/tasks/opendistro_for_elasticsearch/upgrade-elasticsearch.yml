@@ -1,34 +1,36 @@
 ---
-- name: Open Distro for Elasticsearch | Create upgrade state file
+- name: ODFE | Create upgrade state file
   become: true
   file:
     path: "{{ opendistro_for_elasticsearch.upgrade_state_file_path }}"
     state: touch
     mode: u=rw,g=r,o=
 
-- name: Open Distro for Elasticsearch | Ensure elasticsearch service is running
+- name: ODFE | Ensure elasticsearch service is running
   systemd:
     name: elasticsearch
     enabled: yes
     state: started
   register: elasticsearch_state
 
-- name: Open Distro for Elasticsearch | Wait for elasticsearch service to start up
+# TODO: Get all configurable values (such as host and ports) from /etc/elasticsearch/elasticsearch.yml #2128
+
+- name: ODFE | Wait for elasticsearch service to start up
   wait_for:
     port: "{{ es_transport_port }}"
     host: "{{ ansible_default_ipv4.address | default(ansible_all_ipv4_addresses[0]) }}"
     delay: 10
   when: elasticsearch_state.changed == true
 
-- name: Open Distro for Elasticsearch | Get Xmx value from /etc/elasticsearch/jvm.options
+- name: ODFE | Get Xmx value from /etc/elasticsearch/jvm.options
   command: grep -oP '(?<=^-Xmx)\d+[kKmMgG]?' /etc/elasticsearch/jvm.options
   register: grep_es_xmx
   changed_when: false
 
-- name: Set helper facts
+- name: ODFE | Set helper facts
   set_fact:
     elasticsearch_endpoint: >-
-      https://{{ ansible_default_ipv4.address }}:9200
+      https://{{ ansible_default_ipv4.address | default(ansible_all_ipv4_addresses[0]) }}:{{ es_http_port }}
   vars:
     uri_template: &uri
       client_cert: /etc/elasticsearch/kirk.pem
@@ -36,10 +38,10 @@
       validate_certs: false
       body_format: json
 
-- name: Open Distro for Elasticsearch | Disable shard allocation for the cluster
+- name: ODFE | Disable shard allocation for the cluster
   uri:
     <<: *uri
-    url: https://{{ ansible_default_ipv4.address | default(ansible_all_ipv4_addresses[0]) }}:{{ es_http_port }}/_cluster/settings
+    url: "{{ elasticsearch_endpoint }}/_cluster/settings"
     method: PUT
     body: '{"persistent":{"cluster.routing.allocation.enable": "primaries"}}'
   register: response_allocation_primaries
@@ -47,24 +49,24 @@
   retries: 10
   delay: 20
 
-- name: Open Distro for Elasticsearch | Perform a synced flush
+- name: ODFE | Perform a synced flush
   uri:
     <<: *uri
-    url: https://{{ ansible_default_ipv4.address | default(ansible_all_ipv4_addresses[0]) }}:{{ es_http_port }}/_flush/synced
+    url: "{{ elasticsearch_endpoint }}/_flush/synced"
     method: POST
     status_code: "200, 409"
 
-- name: Open Distro for Elasticsearch | Stop elasticsearch service
+- name: ODFE | Stop elasticsearch service
   systemd:
     name: elasticsearch
     state: stopped
 
-- name: Open Distro for Elasticsearch | Include Elasticsearch installation tasks
+- name: ODFE | Include Elasticsearch installation tasks
   include_role:
     name: opendistro_for_elasticsearch
     tasks_from: install-es.yml
 
-- name: Open Distro for Elasticsearch | Include Elasticsearch configuration tasks
+- name: ODFE | Include Elasticsearch configuration tasks
   include_role:
     name: opendistro_for_elasticsearch
     tasks_from: configure-es.yml
@@ -73,42 +75,42 @@
     jvm_options:
       xmx: "{{ grep_es_xmx.stdout_lines | last }}"
 
-- name: Open Distro for Elasticsearch | Include upgrade plugins tasks
+- name: ODFE | Include upgrade plugins tasks
   include_tasks: opendistro_for_elasticsearch/upgrade-plugins.yml
 
-- name: Open Distro for Elasticsearch | Restart elasticsearch service
+- name: ODFE | Restart elasticsearch service
   systemd:
     name: elasticsearch
     state: restarted
     daemon_reload: yes # opendistro-performance-analyzer provides opendistro-performance-analyzer.service
   when: install_opendistro_packages.changed
 
-- name: Open Distro for Elasticsearch | Wait for elasticsearch node to come back up
+- name: ODFE | Wait for elasticsearch node to come back up
   wait_for:
     port: "{{ es_transport_port }}"
     host: "{{ ansible_default_ipv4.address | default(ansible_all_ipv4_addresses[0]) }}"
     delay: 10
 
-- name: Open Distro for Elasticsearch | Wait for elasticsearch http to come back up
+- name: ODFE | Wait for elasticsearch http to come back up
   wait_for:
     port: "{{ es_http_port }}"
     host: "{{ ansible_default_ipv4.address | default(ansible_all_ipv4_addresses[0]) }}"
     delay: 5
 
-- name: Open Distro for Elasticsearch | Wait for 'yellow' or 'green' cluster health status
+- name: ODFE | Wait for 'yellow' or 'green' cluster health status
   uri:
     <<: *uri
-    url: https://{{ ansible_default_ipv4.address | default(ansible_all_ipv4_addresses[0]) }}:{{ es_http_port }}/_cluster/health
+    url: "{{ elasticsearch_endpoint }}/_cluster/health"
     method: GET
   register: cluster_health
   until: cluster_health.json.status is defined and cluster_health.json.status in ['yellow', 'green']
   retries: 10
   delay: 15
 
-- name: Open Distro for Elasticsearch | Enable shard allocation for the cluster
+- name: ODFE | Enable shard allocation for the cluster
   uri:
     <<: *uri
-    url: https://{{ ansible_default_ipv4.address | default(ansible_all_ipv4_addresses[0]) }}:{{ es_http_port }}/_cluster/settings
+    url: "{{ elasticsearch_endpoint }}/_cluster/settings"
     method: PUT
     body: '{"persistent":{"cluster.routing.allocation.enable": null}}'
   register: response
@@ -116,10 +118,10 @@
   retries: 10
   delay: 15
 
-- name: Open Distro for Elasticsearch | Wait for 'yellow' or 'green' cluster health status
+- name: ODFE | Wait for 'yellow' or 'green' cluster health status
   uri:
     <<: *uri
-    url: https://{{ ansible_default_ipv4.address | default(ansible_all_ipv4_addresses[0]) }}:{{ es_http_port }}/_cluster/health
+    url: "{{ elasticsearch_endpoint }}/_cluster/health"
     method: GET
     return_content: yes
   register: cluster_health
@@ -127,7 +129,7 @@
   retries: 10
   delay: 15
 
-- name: Open Distro for Elasticsearch | Remove upgrade state file
+- name: ODFE | Remove upgrade state file
   become: true
   file:
     path: "{{ opendistro_for_elasticsearch.upgrade_state_file_path }}"
