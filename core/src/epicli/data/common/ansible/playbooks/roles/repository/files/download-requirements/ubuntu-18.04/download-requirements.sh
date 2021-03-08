@@ -88,9 +88,9 @@ else
     echol "Downloading crane from: ${file}"
     download_file "${file}" "${script_path}"
     tar_path="${script_path}/${file##*/}"
-    bin_path="${script_path}/crane"
-    echol "Unpacking crane from ${tar_path} to ${bin_path}"
+    echol "Unpacking crane from ${tar_path} to ${crane_bin}"
     tar -xf "${tar_path}" --directory ${script_path} "crane" --overwrite
+    chmod +x "${crane_bin}"
     remove_file "${tar_path}"
     [[ -f $crane_bin ]] || exit_with_error "File not found: $crane_bin"
     [[ -x $crane_bin ]] || exit_with_error "$crane_bin has to be executable"
