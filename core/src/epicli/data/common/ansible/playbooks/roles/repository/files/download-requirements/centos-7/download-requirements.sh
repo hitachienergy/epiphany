@@ -469,9 +469,9 @@ else
     echol "Downloading crane from: ${file}"
     download_file "${file}" "${SCRIPT_DIR}"
     tar_path="${SCRIPT_DIR}/${file##*/}"
-    bin_path="${SCRIPT_DIR}/crane"
-    echol "Unpacking crane from ${tar_path} to ${bin_path}"
+    echol "Unpacking crane from ${tar_path} to ${CRANE_BIN}"
     tar -xf "${tar_path}" --directory ${SCRIPT_DIR} "crane" --overwrite
+	chmod +x "${CRANE_BIN}"
     remove_file "${tar_path}"
     [[ -f $CRANE_BIN ]] || exit_with_error "File not found: $CRANE_BIN"
     [[ -x $CRANE_BIN ]] || exit_with_error "$CRANE_BIN has to be executable"
