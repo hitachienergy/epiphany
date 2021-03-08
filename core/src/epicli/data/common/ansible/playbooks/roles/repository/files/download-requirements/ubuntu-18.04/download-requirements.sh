@@ -23,7 +23,7 @@ deplist="${script_path}/.dependencies"
 logfile="${script_path}/log"
 download_cmd="apt-get download"
 add_repos="${script_path}/add-repositories.sh"
-crane_bin="$script_path/crane"
+crane_bin="${script_path}/crane"
 
 # to download everything, add "--recurse" flag but then you will get much more packages (e.g. 596 vs 319)
 deplist_cmd() {
