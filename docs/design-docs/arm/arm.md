@@ -13,11 +13,12 @@ This document outlines an aproach to add (partial) ARM support to Epicli. The re
     1. Kubernetes
     2. Kafka
     3. HAProxy
-    5. Keycloak
-    6. PostgreSQL
+    5. Keycloak (This is the only deployment we need to support from the ```applications``` role)
+    6. PostgreSQL (Would only be used by keycloak and does not needs to support a single deployment)
     7. RabbitMQ
-    8. Logging
-    9. Monitoring
+    8. Logging (ELK + filebeat)
+    9. Monitoring (Prometheus + Grafana + Exporters)
+  Initial research [here](./centos-arm-analysis.md) shows additional information about available packages and effected roles for each component.
 
 ## Approach
 
