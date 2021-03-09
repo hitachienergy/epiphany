@@ -29,7 +29,7 @@ describe 'Checking Prometheus directories and files' do
   describe file('/etc/prometheus') do
     it { should exist }
     it { should be_a_directory }
-    it { should be_owned_by 'root' }
+    it { should be_owned_by 'prometheus' }
     it { should be_grouped_into 'prometheus' }
   end
   describe file("/etc/prometheus/prometheus.yml") do

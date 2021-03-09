@@ -141,7 +141,6 @@ ruamel.yaml==0.16.12
 s3transfer==0.3.4
 scp==0.13.3
 six==1.15.0; python_version >= "3.6" and python_full_version < "3.0.0" or python_full_version >= "3.5.0" and python_version < "4" and python_version >= "3.6"
-skopeo-bin==1.0.3
 sshtunnel==0.1.5
 tabulate==0.8.7
 terraform-bin==1.0.1

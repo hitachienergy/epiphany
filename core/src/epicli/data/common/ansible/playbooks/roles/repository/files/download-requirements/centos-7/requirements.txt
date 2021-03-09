@@ -8,6 +8,7 @@ createrepo
 deltarpm # for createrepo
 httpd
 httpd-tools # for httpd
+libxml2 # for libxml2-python
 libxml2-python # for createrepo
 mailcap # for httpd
 mod_ssl # for httpd
@@ -191,8 +192,11 @@ k8s.gcr.io/coredns:1.3.1
 k8s.gcr.io/etcd:3.3.10
 k8s.gcr.io/pause:3.1
 coredns/coredns:1.5.0
-quay.io/coreos/flannel:v0.11.0-amd64
-quay.io/coreos/flannel:v0.11.0
+# Old v1 repos not compatible with Crane. Pulling from epiphanyplatform/flannel as workarround.
+#quay.io/coreos/flannel:v0.11.0-amd64 
+#quay.io/coreos/flannel:v0.11.0
+epiphanyplatform/flannel:v0.11.0-amd64
+epiphanyplatform/flannel:v0.11.0
 calico/cni:v3.8.1
 calico/kube-controllers:v3.8.1
 calico/node:v3.8.1
@@ -221,8 +225,11 @@ k8s.gcr.io/kube-proxy:v1.17.4
 k8s.gcr.io/coredns:1.6.5
 k8s.gcr.io/etcd:3.4.3-0
 k8s.gcr.io/pause:3.1
-quay.io/coreos/flannel:v0.11.0-amd64
-quay.io/coreos/flannel:v0.11.0
+# Old v1 repos not compatible with Crane. Pulling from epiphanyplatform/flannel as workarround.
+#quay.io/coreos/flannel:v0.11.0-amd64 
+#quay.io/coreos/flannel:v0.11.0
+epiphanyplatform/flannel:v0.11.0-amd64
+epiphanyplatform/flannel:v0.11.0
 calico/cni:v3.11.2
 calico/cni:v3.12.0
 calico/kube-controllers:v3.11.2

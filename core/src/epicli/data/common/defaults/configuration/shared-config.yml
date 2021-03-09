@@ -7,12 +7,6 @@ specification:
   download_directory: /tmp # directory where files and images will be stored just before installing/loading
   vault_location: '' # if empty "BUILD DIRECTORY/vault" will be used
   vault_tmp_file_location: SET_BY_AUTOMATION
-  architecture_map:
-    i386: '386'
-    x86_64: 'amd64'
-    aarch64: 'arm64'
-    armv7l: 'armv7'
-    armv6l: 'armv6'
   supported_os:
     - name: RedHat
       comparison_operator: "=="

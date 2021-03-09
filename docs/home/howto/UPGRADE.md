@@ -87,7 +87,7 @@ To upgrade the cluster components run the following steps:
 
     - download-requirements.sh
     - requirements.txt
-    - skopeo_linux
+    - crane_x86_64
 
 2. The scripts in the `prepare_scripts` will be used to download all requirements. To do that copy the `prepare_scripts` folder over to the requirements machine and run the following command:
 
@@ -107,7 +107,13 @@ To upgrade the cluster components run the following steps:
 
 ### Additional parameters
 
-The `epicli upgrade` command had an additional flag `--wait-for-pods`. When this flag is added, the Kubernetes upgrade will wait until all pods are in the **ready** state before proceding. This can be usefull when a zero downtime upgrade is required. **Note: that this can also cause the upgrade to hang indefinitely.**
+The `epicli upgrade` command has additional flags:
+-  `--wait-for-pods`. When this flag is added, the Kubernetes upgrade will wait until all pods are in the **ready** state before proceding. This can be usefull when a zero downtime upgrade is required. **Note: that this can also cause the upgrade to hang indefinitely.**
+- `--upgrade-components`. Specify comma separated component names so the upgrade procedure will only process specific ones. List cannot be empty, otherwise execution will fail. By default upgrade will process all components if this parameter is not provided 
+   Example:
+   ```shell
+   epicli upgrade -b /buildoutput/ --upgrade-components "kafka,filebeat"
+   ```
 
 ## How to upgrade Kafka
 
