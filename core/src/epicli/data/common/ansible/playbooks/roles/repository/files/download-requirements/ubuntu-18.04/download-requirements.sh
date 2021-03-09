@@ -89,7 +89,7 @@ else
     download_file "${file}" "${script_path}"
     tar_path="${script_path}/${file##*/}"
     echol "Unpacking crane from ${tar_path} to ${crane_bin}"
-    tar -xf "${tar_path}" --directory ${script_path} "crane" --overwrite
+    tar -xzf "${tar_path}" --directory ${script_path} "crane" --overwrite
     chmod +x "${crane_bin}"
     remove_file "${tar_path}"
     [[ -f $crane_bin ]] || exit_with_error "File not found: $crane_bin"
