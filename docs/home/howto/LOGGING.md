@@ -52,14 +52,14 @@ specification:
 ```
 ## How to manage Opendistro for Elasticsearch data
 
-Elasticsearch stores data using JSON documents, and an Index is a collection of documents. As in every database it's crutial to correctly maintain data in this one. It's almost impossible to deliver database configuration which will fit to every type of project and data stored in. Epiphany deploys preconfigured Opendistro Elasticsearch, but this configuration may not meet user requirements. Before going to production configuration shoud be tailor to project needs. All configuration tips and tricks are available in [official documentation](https://opendistro.github.io/for-elasticsearch-docs/).
+Elasticsearch stores data using JSON documents, and an Index is a collection of documents. As in every database it's crutial to correctly maintain data in this one. It's almost impossible to deliver database configuration which will fit to every type of project and data stored in. Epiphany deploys preconfigured Opendistro Elasticsearch, but this configuration may not meet user requirements. Before going to production configuration shoud be tailor to the project needs. All configuration tips and tricks are available in [official documentation](https://opendistro.github.io/for-elasticsearch-docs/).
 
-The main and most importand decisions to take before you deploy cluster are:
+The main and most important decisions to take before you deploy cluster are:
 
 1) How many Nodes are needed
 2) How big machines and/or storage data disks need to be used
 
-These parameters are defined in yaml file and it's important to create big enough cluster.
+These parameters are defined in yaml file and it's important to create a big enough cluster.
 
 ```
 specification:
@@ -76,7 +76,7 @@ specification:
 
 If it's required to have Elasticsearch which works in cluster formation configuration, except setting up more than one machine in yaml config file please acquaint dedicated support [article](https://opendistro.github.io/for-elasticsearch-docs/docs/elasticsearch/cluster/) and adjust Elasticseach configuration file.
 
-At this moment Opendistro for Elasticsearch does not support [ILM](https://www.elastic.co/guide/en/elasticsearch/reference/current/index-lifecycle-management.html) (like it was in OSS Elasticsearch), log rotation is possible only by configuration created in Index State Management.
+At this moment Opendistro for Elasticsearch does not support plugin similar to [ILM](https://www.elastic.co/guide/en/elasticsearch/reference/current/index-lifecycle-management.html), log rotation is possible only by configuration created in Index State Management.
 
 `ISM - Index State Management` - is a plugin that provides users and administrative panel to monitor the indices and apply policies at different index stages. ISM lets users automate periodic, administrative operations by triggering them besed on index age, size, or number of documents. Using the ISM plugin, can define policies that automatically handle index rollovers or deletions. ISM is installed with Opendistro by default - user does not have to enable this.
 Official documentation is available in [Opendistro for Elasticsearch website](https://opendistro.github.io/for-elasticsearch-docs/docs/im/ism/).
