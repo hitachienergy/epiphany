@@ -92,7 +92,7 @@ download_file() {
 	# so we remove existing file to overwrite it, to be optimized
 	[[ ! -f $dest_path ]] || remove_file "$dest_path"
 
-	echol "Downloading file: $file"
+	echol "Downloading file: $file_url"
 
 	wget --no-verbose --directory-prefix="$dest_dir" "$file_url" ||
 		exit_with_error "Command failed: wget --no-verbose --directory-prefix=\"$dest_dir\" \"$file_url\""
@@ -405,7 +405,7 @@ readonly SCRIPT_FILE_NAME=$(basename $0)
 readonly LOG_FILE_NAME=${SCRIPT_FILE_NAME/sh/log}
 readonly LOG_FILE_PATH="$SCRIPT_DIR/$LOG_FILE_NAME"
 readonly YUM_CONFIG_BACKUP_FILE_PATH="$SCRIPT_DIR/${SCRIPT_FILE_NAME}-yum-repos-backup-tmp-do-not-remove.tar"
-readonly CRANE_BIN="$SCRIPT_DIR/crane_x86_64"
+readonly CRANE_BIN="$SCRIPT_DIR/crane"
 readonly INSTALLED_PACKAGES_FILE_PATH="$SCRIPT_DIR/${SCRIPT_FILE_NAME}-installed-packages-list-do-not-remove.tmp"
 readonly PID_FILE_PATH=/var/run/${SCRIPT_FILE_NAME/sh/pid}
 
@@ -414,8 +414,6 @@ readonly PID_FILE_PATH=/var/run/${SCRIPT_FILE_NAME/sh/pid}
 [ $EUID -eq 0 ] || { echo "You have to run as root" && exit 1; }
 
 [[ -f $REQUIREMENTS_FILE_PATH ]] || exit_with_error "File not found: $REQUIREMENTS_FILE_PATH"
-[[ -f $CRANE_BIN ]] || exit_with_error "File not found: $CRANE_BIN"
-[[ -x $CRANE_BIN ]] || exit_with_error "$CRANE_BIN have to be executable"
 
 # --- Want to have only one instance for Ansible ---
 
@@ -447,6 +445,7 @@ echo $$ > $PID_FILE_PATH || exit_with_error "Command failed: echo $$ > $PID_FILE
 
 # Requirements are grouped using sections: [packages-repo-prereqs], [packages], [files], [images]
 get_requirements_from_group 'REPO_PREREQ_PACKAGES' 'packages-repo-prereqs' "$REQUIREMENTS_FILE_PATH"
+get_requirements_from_group 'CRANE'                'crane'                 "$REQUIREMENTS_FILE_PATH"
 get_requirements_from_group 'PACKAGES'             'packages'              "$REQUIREMENTS_FILE_PATH"
 get_requirements_from_group 'FILES'                'files'                 "$REQUIREMENTS_FILE_PATH"
 get_requirements_from_group 'IMAGES'               'images'                "$REQUIREMENTS_FILE_PATH"
@@ -472,11 +471,26 @@ fi
 # --- Install required packages unless present ---
 
 # repos can be enabled or disabled using the yum-config-manager command, which is provided by yum-utils package
-for package in 'yum-utils' 'wget' 'curl'; do
+for package in 'yum-utils' 'wget' 'curl' 'tar'; do
 	if ! is_package_installed "$package"; then
 		install_package "$package"
 	fi
 done
+
+# --- Download and setup Crane for downloading images ---
+
+if [[ -z "${CRANE}" ]] || [ $(wc -l <<< "${CRANE}") -ne 1 ] ; then
+    exit_with_error "Crane binary download path undefined or more than one download path defined"
+else
+    file_url=$(head -n 1 <<< "${CRANE}")
+    echol "Downloading crane from: ${file_url}"
+    download_file "${file_url}" "${SCRIPT_DIR}"
+    tar_path="${SCRIPT_DIR}/${file_url##*/}"
+    echol "Unpacking crane from ${tar_path} to ${CRANE_BIN}"
+    run_cmd tar -xzf "${tar_path}" --directory "${SCRIPT_DIR}" "crane" --overwrite
+    [[ -x "${CRANE_BIN}" ]] || run_cmd chmod +x "${CRANE_BIN}"
+    remove_file "${tar_path}"
+fi
 
 # --- Enable RHEL repos ---
 

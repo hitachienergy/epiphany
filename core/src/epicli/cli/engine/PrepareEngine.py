@@ -5,7 +5,7 @@ import shutil
 from  os.path import dirname
 
 from cli.helpers.Step import Step
-from cli.helpers.data_loader import DATA_FOLDER_PATH, CRANE_X86_64_BIN_PATH
+from cli.helpers.data_loader import DATA_FOLDER_PATH
 from cli.helpers.Config import Config
 from cli.helpers.build_saver import copy_files_recursively
 
@@ -39,10 +39,8 @@ class PrepareEngine(Step):
         # copy files to output dir
         copy_files_recursively(prepare_src, prepare_dst)
         copy_files_recursively(charts_src, charts_dst)
-        shutil.copy(CRANE_X86_64_BIN_PATH, prepare_dst)
 
-        # make sure the scripts and crane are executable
-        self.make_file_executable(os.path.join(prepare_dst, 'crane_x86_64'))
+        # make sure the scripts are executable
         self.make_file_executable(os.path.join(prepare_dst, 'download-requirements.sh'))
 
         self.logger.info(f'Prepared files for downloading the offline requirements in: {prepare_dst}')
