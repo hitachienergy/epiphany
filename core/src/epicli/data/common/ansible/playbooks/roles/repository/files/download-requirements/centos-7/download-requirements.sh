@@ -470,8 +470,8 @@ else
     download_file "${file}" "${SCRIPT_DIR}"
     tar_path="${SCRIPT_DIR}/${file##*/}"
     echol "Unpacking crane from ${tar_path} to ${CRANE_BIN}"
-    tar -xf "${tar_path}" --directory ${SCRIPT_DIR} "crane" --overwrite
-    chmod +x "${CRANE_BIN}"
+    run_cmd tar -xzf "${tar_path}" --directory "${SCRIPT_DIR}" "crane" --overwrite
+    [[ -x "${CRANE_BIN}" ]] || run_cmd chmod +x "${CRANE_BIN}"
     remove_file "${tar_path}"
 fi
 
