@@ -1,16 +1,23 @@
 # Epiphany Platform ARM design document
 
-Affected version: 0.10.x/0.11.x
+Affected version: 0.11.x
 
 ## Goals
 
-This document outlines an aproach to add (partial) ARM support to Epicli. Not finalized requirements so far:
+This document outlines an aproach to add (partial) ARM support to Epicli. The requirments:
 
 - ARMv8/ARM64 architecture
-- Centos 7 as operating system
+- Centos 7
 - "any" provider as we do not want to provide ARM infrastructure on any cloud providers yet through Terraform
-- Epiphany components: K8s, Kafka, ELK, Grafana, Prometheus, Kibana, HAProxy, Keycloak, PostgreSQL, Docker (local image registry)
-
+- Epiphany components needed ordered by priority:
+    1. Kubernetes
+    2. Kafka
+    3. HAProxy
+    5. Keycloak
+    6. PostgreSQL
+    7. RabbitMQ
+    8. Logging
+    9. Monitoring
 
 ## Approach
 
@@ -48,14 +55,6 @@ The ```download-requirements.sh``` script should be able to figure out which one
 uname -i
 
 ```
-
-or
-
-```shell
-arch
-```
-
-As fallback we could just use ```requirements.txt``` and asume its ```x86_64```.
 
 ### Download role
 
