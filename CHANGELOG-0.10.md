@@ -7,7 +7,6 @@
 - [#1798](https://github.com/epiphany-platform/epiphany/issues/1798) - Additional alerts for Prometheus
 - [#1355](https://github.com/epiphany-platform/epiphany/issues/1355) - Updating cloud based OS images - configuration required for Azure RHEL LVM images
 - [#2081](https://github.com/epiphany-platform/epiphany/issues/2081) - Replace Skopeo with Crane
-- [#2099](https://github.com/epiphany-platform/epiphany/issues/2099) - Remove the Crane binary from the repo
 
 ### Fixed
 
