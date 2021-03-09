@@ -75,7 +75,7 @@ download_file() {
 	    remove_file "$dest_path"
 	fi
 
-	echol "Downloading file: $file"
+	echol "Downloading file: $file_url"
 
 	# --no-use-server-timestamps - we don't use --timestamping and we need to expire files somehow 
 	# --continue - don't download the same file multiple times, gracefully skip if file is fully downloaded	

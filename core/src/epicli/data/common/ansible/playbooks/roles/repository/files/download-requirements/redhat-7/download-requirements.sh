@@ -92,7 +92,7 @@ download_file() {
 	# so we remove existing file to overwrite it, to be optimized
 	[[ ! -f $dest_path ]] || remove_file "$dest_path"
 
-	echol "Downloading file: $file"
+	echol "Downloading file: $file_url"
 
 	wget --no-verbose --directory-prefix="$dest_dir" "$file_url" ||
 		exit_with_error "Command failed: wget --no-verbose --directory-prefix=\"$dest_dir\" \"$file_url\""
