@@ -84,10 +84,10 @@ find "$script_path" -type f -wholename "$input_file" -mmin -1 -exec rm "${deplis
 if [[ -z "${crane}" ]] || [ $(wc -l <<< "${crane}") -ne 1 ] ; then
     exit_with_error "Crane binary download path undefined or more than one download path defined"
 else
-    file=$(head -n 1 <<< "${crane}")
-    echol "Downloading crane from: ${file}"
-    download_file "${file}" "${script_path}"
-    tar_path="${script_path}/${file##*/}"
+    file_url=$(head -n 1 <<< "${crane}")
+    echol "Downloading crane from: ${file_url}"
+    download_file "${file_url}" "${script_path}"
+    tar_path="${script_path}/${file_url##*/}"
     echol "Unpacking crane from ${tar_path} to ${crane_bin}"
     tar -xzf "${tar_path}" --directory ${script_path} "crane" --overwrite
     chmod +x "${crane_bin}"
