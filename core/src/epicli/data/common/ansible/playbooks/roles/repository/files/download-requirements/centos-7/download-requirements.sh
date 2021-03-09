@@ -465,10 +465,10 @@ done
 if [[ -z "${CRANE}" ]] || [ $(wc -l <<< "${CRANE}") -ne 1 ] ; then
     exit_with_error "Crane binary download path undefined or more than one download path defined"
 else
-    file=$(head -n 1 <<< "${CRANE}")
-    echol "Downloading crane from: ${file}"
-    download_file "${file}" "${SCRIPT_DIR}"
-    tar_path="${SCRIPT_DIR}/${file##*/}"
+    file_url=$(head -n 1 <<< "${CRANE}")
+    echol "Downloading crane from: ${file_url}"
+    download_file "${file_url}" "${SCRIPT_DIR}"
+    tar_path="${SCRIPT_DIR}/${file_url##*/}"
     echol "Unpacking crane from ${tar_path} to ${CRANE_BIN}"
     run_cmd tar -xzf "${tar_path}" --directory "${SCRIPT_DIR}" "crane" --overwrite
     [[ -x "${CRANE_BIN}" ]] || run_cmd chmod +x "${CRANE_BIN}"
