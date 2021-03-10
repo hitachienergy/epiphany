@@ -571,9 +571,9 @@ enable_repo 'extras'
 
 # --- Add repos ---
 
-DOCKER_CE_FALLBACK_REPO_CONF=$(cat <<'EOF'
-[docker-ce-stable-fallback]
-name=Docker CE Stable - fallback centos/7/x86_64/stable
+DOCKER_CE_PATCHED_REPO_CONF=$(cat <<'EOF'
+[docker-ce-stable-patched]
+name=Docker CE Stable - patched centos/7/x86_64/stable
 baseurl=https://download.docker.com/linux/centos/7/x86_64/stable
 enabled=1
 gpgcheck=1
@@ -684,11 +684,13 @@ gpgkey=https://packagecloud.io/rabbitmq/rabbitmq-server/gpgkey
 EOF
 )
 
-add_repo 'docker-ce' 'https://download.docker.com/linux/centos/docker-ce.repo'
-# occasionally docker-ce repo (at https://download.docker.com/linux/centos/7Server/x86_64/stable) is unavailable
-if ! is_repo_available "docker-ce-stable"; then
-	disable_repo "docker-ce-stable"
-	add_repo_as_file 'docker-ce-stable-fallback' "$DOCKER_CE_FALLBACK_REPO_CONF"
+# Official Docker CE repository, added with https://download.docker.com/linux/centos/docker-ce.repo,
+# has broken URL (https://download.docker.com/linux/centos/7Server/x86_64/stable) for longer time.
+# So direct (patched) link is used first if available.
+add_repo_as_file 'docker-ce-stable-patched' "$DOCKER_CE_PATCHED_REPO_CONF"
+if ! is_repo_available "docker-ce-stable-patched"; then
+	disable_repo "docker-ce-stable-patched"
+	add_repo 'docker-ce' 'https://download.docker.com/linux/centos/docker-ce.repo'
 fi
 add_repo_as_file 'elastic-6' "$ELASTIC_6_REPO_CONF"
 add_repo_as_file 'elasticsearch-7' "$ELASTICSEARCH_7_REPO_CONF"
