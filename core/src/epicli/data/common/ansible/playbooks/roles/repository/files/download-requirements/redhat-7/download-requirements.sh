@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-# VERSION 1.0.4
+# VERSION 1.0.5
 
 # NOTE: You can run only one instance of this script, new instance kills the previous one
 #       This limitation is for Ansible
@@ -34,8 +34,12 @@ add_repo_as_file() {
 		echol "Adding repository: $repo_id"
 		cat <<< "$config_file_content" > "/etc/yum.repos.d/$config_file_name" ||
 			exit_with_error "Function add_repo_as_file failed for repo: $repo_id"
-		# to accept import of GPG keys
-		yum -y repolist > /dev/null || exit_with_error "Command failed: yum -y repolist"
+		local -a gpg_key_urls
+		IFS=" " read -r -a gpg_key_urls \
+			<<< "$(grep -i --only-matching --perl-regexp '(?<=^gpgkey=)http[^#\n]+' <<< "$config_file_content")"
+		if (( ${#gpg_key_urls[@]} > 0 )); then
+			import_repo_gpg_keys "${gpg_key_urls[@]}"
+		fi
 	fi
 }
 
@@ -256,6 +260,15 @@ get_unique_array() {
 	eval $result_var_name='("${array[@]}")'
 }
 
+# params: <url(s)>
+import_repo_gpg_keys() {
+	local urls=("$@")
+
+	for url in "${urls[@]}"; do
+		run_cmd_with_retries rpm --import "$url" 30
+	done
+}
+
 # params: <package_name_or_url> [package_name]
 install_package() {
 	local package_name_or_url="$1"
@@ -352,12 +365,56 @@ remove_installed_packages() {
 	fi
 }
 
-# params: <command to execute>
+# Runs command as array with printing it, doesn't support commands with shell operators (such as pipe or redirection)
+# params: <command to execute> [--no-exit-on-error]
 run_cmd() {
-	local cmd_arr=("$@")
+	local -a cmd_arr=("$@")
 
-	echol "Executing: ${cmd_arr[*]}"
-	"${cmd_arr[@]}" || exit_with_error "Command failed: ${cmd_arr[*]}"
+	local exit_on_error=1
+	if [[ ${cmd_arr[-1]} == '--no-exit-on-error' ]]; then
+		exit_on_error=0
+		cmd_arr=( "${cmd_arr[@]:0:$# - 1}" )  # remove last item
+	fi
+
+	local escaped_string return_code
+	escaped_string=$(_print_array_as_shell_escaped_string "${cmd_arr[@]}")
+	echol "Executing: ${escaped_string}"
+	"${cmd_arr[@]}"; return_code=$?
+	if (( return_code != 0 )) && (( exit_on_error )); then
+		exit_with_error "Command failed: ${escaped_string}"
+	else
+		return $return_code
+	fi
+}
+
+# Runs command with retries, doesn't support commands with shell operators (such as pipe or redirection)
+# params: <command to execute> <retries>
+run_cmd_with_retries() {
+	# pop 'retries' argument
+	local retries="${!#}"  # get last argument (indirect expansion)
+	set -- "${@:1:$#-1}"  # set new values of arguments
+
+	local -a cmd_arr=("$@")
+	( # sub-shell is used to limit scope for 'set +e'
+		set +e
+		trap - ERR  # disable global trap locally
+		for ((i=0; i <= retries; i++)); do
+			run_cmd "${cmd_arr[@]}" '--no-exit-on-error'
+			return_code=$?
+			if (( return_code == 0 )); then
+				break
+			elif (( i < retries )); then
+				sleep 1
+				echol "retrying ($(( i+1 ))/${retries})"
+			else
+				echol "ERROR: all attempts failed"
+				local escaped_string
+				escaped_string=$(_print_array_as_shell_escaped_string "${cmd_arr[@]}")
+				exit_with_error "Command failed: ${escaped_string}"
+			fi
+		done
+		return $return_code
+	)
 }
 
 usage() {
@@ -366,7 +423,39 @@ usage() {
 	[ -z "$1" ] || exit "$1"
 }
 
+validate_bash_version() {
+	local major_version=${BASH_VERSINFO[0]}
+	local minor_version=${BASH_VERSINFO[1]}
+	local required_version=(4 2)  # (minor major)
+	if (( major_version < ${required_version[0]} )) || (( minor_version < ${required_version[1]} )); then
+		exit_with_error "This script requires Bash version ${required_version[0]}.${required_version[1]} or higher."
+	fi
+}
+
+# === Helper functions (in alphabetical order) ===
+
+_get_shell_escaped_array() {
+	if (( $# > 0 )); then
+		printf '%q\n' "$@"
+	fi
+}
+
+# Prints string in format that can be reused as shell input (escapes non-printable characters)
+_print_array_as_shell_escaped_string() {
+	local output
+	output=$(_get_shell_escaped_array "$@")
+	local -a escaped=()
+	if [ -n "$output" ]; then
+		readarray -t escaped <<< "$output"
+	fi
+	if (( ${#escaped[@]} > 0 )); then
+		printf '%s\n' "${escaped[*]}"
+	fi
+}
+
 # === Start ===
+
+validate_bash_version
 
 [ $# -gt 0 ] || usage 1 >&2
 readonly START_TIME=$(date +%s)
