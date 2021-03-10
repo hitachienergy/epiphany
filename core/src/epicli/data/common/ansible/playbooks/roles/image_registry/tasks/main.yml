@@ -84,8 +84,8 @@
             docker_image: "{{ item }}"
           include_tasks: tag-flannel-images.yml
           loop:
-            - epiphanyplatform/flannel:v0.11.0-amd64
-            - epiphanyplatform/flannel:v0.11.0
+            - quay.io/coreos/flannel:v0.11.0-amd64
+            - quay.io/coreos/flannel:v0.11.0
 
         - name: Push legacy version images to registry
           vars:
