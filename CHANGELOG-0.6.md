@@ -5,6 +5,7 @@
 ### Added
 
 - [#1302](https://github.com/epiphany-platform/epiphany/issues/1302) - Ability to update control plane certificates expiration date
+- [#2115](https://github.com/epiphany-platform/epiphany/issues/2115) - Epicli hangs on importing GPG keys for kubernetes repository on RHEL
 
 ### Fixed
 
