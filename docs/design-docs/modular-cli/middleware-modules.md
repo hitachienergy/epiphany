@@ -15,7 +15,7 @@ There are following requirements for modules:
 ### Components
 1. Docker – infrastructure modules are created as Docker containers so far so this approach should continue
 2. Ansible – we do have tons of ansible code which could be potentially reused. Ansible is also a _de facto_ industry standard for software provisioning, configuration management, and application deployment.
-3. Ansible-runner – do to need of automation we should use ansible-runner application which is a wrapper for ansible commands (i.e.: ansible-playbook) and provides good code level integration features (i.e.: passing of variables to playbook, extracting logs, RC and facts cache). It is originally used in AWX.
+3. Ansible-runner – due to need of automation we should use ansible-runner application which is a wrapper for ansible commands (i.e.: ansible-playbook) and provides good code level integration features (i.e.: passing of variables to playbook, extracting logs, RC and facts cache). It is originally used in AWX.
 4. E-structures – we started to use e-structures library to simplify interoperability between modules.
 5. Ansible Roles – we need to introduce more loosely coupled ansible code while extracting it from main epiphany code repository. To achieve it we need to utilize ansible roles in “ansible galaxy” way, which means each role should be separately developed, tested and versioned. To coordinate multiple roles between they should be connected in a modules single playbook. 
       
