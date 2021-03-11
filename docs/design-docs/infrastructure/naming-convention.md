@@ -11,10 +11,6 @@ In general resource name should match following schema:
 
 `<prefix>-<resource_type>-<index>`
 
-or
-
-`<prefix>-<vm_group>-<resource_type>-<index>` when resource name is related to VM group.
-
 ## Prefix
 
 Epiphany modules are developed in the way that allows user specify a prefix for created resources. This approach gives
@@ -24,12 +20,9 @@ with a dash `-` as a delimiter.
 | Type | Required | Description | Examples |
 | ---- | -------- | ----------- | -------- |
 | Owner | yes | The name of the person or team which resource belongs to | epiphany |
-| Application or service name | yes | Name of the application, workload, or service that the resource is a part of | kafka, ignite, opendistro |
+| Application or service name | no | Name of the application, workload, or service that the resource is a part of | kafka, ignite, opendistro |
 | Environment | no | The stage of the development lifecycle for the workload that the resource supports | prod, dev, qa |
-
-## VM group
-
-The name of VM group that resource is created for. Required only for the basic infrastructure modules.
+| VM group | no | The name of VM group that resource is created for | group-0 |
 
 ## Resource type
 
