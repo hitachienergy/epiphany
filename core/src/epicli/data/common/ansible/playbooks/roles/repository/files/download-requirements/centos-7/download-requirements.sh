@@ -38,8 +38,10 @@ add_repo_as_file() {
 		IFS=" " read -r -a gpg_key_urls \
 			<<< "$(grep -i --only-matching --perl-regexp '(?<=^gpgkey=)http[^#\n]+' <<< "$config_file_content")"
 		if (( ${#gpg_key_urls[@]} > 0 )); then
-			import_repo_gpg_keys "${gpg_key_urls[@]}"
+			import_repo_gpg_keys "${gpg_key_urls[@]}" 3
 		fi
+		# to accept import of repo's GPG key (for repo_gpgcheck=1)
+		yum -y repolist > /dev/null || exit_with_error "Command failed: yum -y repolist"
 	fi
 }
 
@@ -243,12 +245,13 @@ get_unique_array() {
 	eval $result_var_name='("${array[@]}")'
 }
 
-# params: <url(s)>
+# params: <url(s)> <retries>
 import_repo_gpg_keys() {
-	local urls=("$@")
+	local retries=${!#} # get last arg
+	local urls=( "${@:1:$# - 1}" )  # remove last arg
 
 	for url in "${urls[@]}"; do
-		run_cmd_with_retries rpm --import "$url" 30
+		run_cmd_with_retries rpm --import "$url" "$retries"
 	done
 }
 
@@ -351,7 +354,7 @@ remove_installed_packages() {
 # Runs command as array with printing it, doesn't support commands with shell operators (such as pipe or redirection)
 # params: <command to execute> [--no-exit-on-error]
 run_cmd() {
-	local -a cmd_arr=("$@")
+	local cmd_arr=("$@")
 
 	local exit_on_error=1
 	if [[ ${cmd_arr[-1]} == '--no-exit-on-error' ]]; then
@@ -374,10 +377,10 @@ run_cmd() {
 # params: <command to execute> <retries>
 run_cmd_with_retries() {
 	# pop 'retries' argument
-	local retries="${!#}"  # get last argument (indirect expansion)
-	set -- "${@:1:$#-1}"  # set new values of arguments
+	local retries=${!#}  # get last arg (indirect expansion)
+	set -- "${@:1:$#-1}"  # set new "$@"
 
-	local -a cmd_arr=("$@")
+	local cmd_arr=("$@")
 	( # sub-shell is used to limit scope for 'set +e'
 		set +e
 		trap - ERR  # disable global trap locally
@@ -427,7 +430,7 @@ _get_shell_escaped_array() {
 _print_array_as_shell_escaped_string() {
 	local output
 	output=$(_get_shell_escaped_array "$@")
-	local -a escaped=()
+	local escaped=()
 	if [ -n "$output" ]; then
 		readarray -t escaped <<< "$output"
 	fi
