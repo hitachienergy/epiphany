@@ -21,7 +21,8 @@ dst_dir_files="${dst_dir}/files"
 dst_dir_images="${dst_dir}/images"
 deplist="${script_path}/.dependencies"
 logfile="${script_path}/log"
-download_cmd="apt-get download"
+retries="3"
+download_cmd="run_cmd_with_retries $retries apt-get download"
 add_repos="${script_path}/add-repositories.sh"
 crane_bin="${script_path}/crane"
 
@@ -125,7 +126,11 @@ echol "Packages to be downloaded:"
 cat -n "${deplist}"
 
 # download dependencies (apt-get sandboxing warning when running as root are harmless)
-cd $dst_dir_packages && xargs --no-run-if-empty --arg-file=${deplist} --delimiter='\n' ${download_cmd} | tee -a ${logfile}
+export -f run_cmd_with_retries
+export -f run_cmd
+export -f print_array_as_shell_escaped_string
+export -f get_shell_escaped_array
+cd $dst_dir_packages && xargs --no-run-if-empty --arg-file=${deplist} --delimiter='\n' -I{} bash -c "${download_cmd} {}" | tee -a ${logfile}
 cd $script_path
 
 printf "\n"
