@@ -666,24 +666,24 @@ EOF
 )
 
 RABBITMQ_ERLANG_REPO_CONF=$(cat <<'EOF'
-[rabbitmq_erlang]
-name=rabbitmq_erlang
-baseurl=https://packagecloud.io/rabbitmq/erlang/el/7/$basearch
-repo_gpgcheck=1
+[rabbitmq-erlang]
+name=rabbitmq-erlang
+baseurl=https://dl.bintray.com/rabbitmq-erlang/rpm/erlang/23/el/7
 gpgcheck=1
+gpgkey=https://dl.bintray.com/rabbitmq/Keys/rabbitmq-release-signing-key.asc
+repo_gpgcheck=1
 enabled=1
-gpgkey=https://packagecloud.io/rabbitmq/erlang/gpgkey
 EOF
 )
 
 RABBITMQ_SERVER_REPO_CONF=$(cat <<'EOF'
-[rabbitmq_rabbitmq-server]
-name=rabbitmq_rabbitmq-server
-baseurl=https://packagecloud.io/rabbitmq/rabbitmq-server/el/7/$basearch
-repo_gpgcheck=1
+[bintray-rabbitmq-server]
+name=bintray-rabbitmq-rpm
+baseurl=https://dl.bintray.com/rabbitmq/rpm/rabbitmq-server/v3.8.x/el/7/
 gpgcheck=1
+gpgkey=https://dl.bintray.com/rabbitmq/Keys/rabbitmq-release-signing-key.asc
+repo_gpgcheck=1
 enabled=1
-gpgkey=https://packagecloud.io/rabbitmq/rabbitmq-server/gpgkey
 EOF
 )
 
@@ -702,8 +702,8 @@ add_repo_as_file 'grafana' "$GRAFANA_REPO_CONF"
 add_repo_as_file 'kubernetes' "$KUBERNETES_REPO_CONF"
 add_repo_as_file 'opendistroforelasticsearch' "$OPENDISTRO_REPO_CONF"
 add_repo_as_file 'postgresql-10' "$POSTGRESQL_REPO_CONF"
-add_repo_as_file 'rabbitmq_erlang' "$RABBITMQ_ERLANG_REPO_CONF"
-add_repo_as_file 'rabbitmq_rabbitmq-server' "$RABBITMQ_SERVER_REPO_CONF"
+add_repo_as_file 'rabbitmq-erlang' "$RABBITMQ_ERLANG_REPO_CONF"
+add_repo_as_file 'bintray-rabbitmq-rpm' "$RABBITMQ_SERVER_REPO_CONF"
 add_repo_from_script 'https://dl.2ndquadrant.com/default/release/get/10/rpm'
 disable_repo '2ndquadrant-dl-default-release-pg10-debug'
 
