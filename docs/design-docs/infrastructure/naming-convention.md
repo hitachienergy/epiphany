@@ -11,6 +11,10 @@ In general resource name should match following schema:
 
 `<prefix>-<resource_type>-<index>`
 
+or
+
+`<prefix>-<vm_group>-<resource_type>-<index>` when resource name is related to VM group.
+
 ## Prefix
 
 Epiphany modules are developed in the way that allows user specify a prefix for created resources. This approach gives
