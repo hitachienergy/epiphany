@@ -36,7 +36,7 @@
 
 - name: Set Prometheus file name to install
   set_fact:
-    binary_file_name: "{{ specification.file_name }}"
+    binary_file_name: "{{ prometheus_filename }}"
 
 - name: Package
   debug: msg="{{ binary_file_name }}"

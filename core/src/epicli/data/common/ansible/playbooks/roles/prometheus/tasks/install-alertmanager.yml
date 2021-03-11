@@ -1,9 +1,9 @@
 ---
-- name: Set Prometheus file name to install
+- name: Set Alertmanager file name to install
   set_fact:
-    binary_file_name: "{{ specification.alertmanager.file_name }}"
+    binary_file_name: "{{ alertmanager_filename }}"
 
-- name: Download Prometheus binaries
+- name: Download Alertmanager binaries
   include_role:
     name: download
     tasks_from: download_file
