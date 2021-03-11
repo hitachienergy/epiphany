@@ -27,6 +27,10 @@ with a dash `-` as a delimiter.
 | Application or service name | yes | Name of the application, workload, or service that the resource is a part of | kafka, ignite, opendistro |
 | Environment | no | The stage of the development lifecycle for the workload that the resource supports | prod, dev, qa |
 
+## VM group
+
+The name of VM group that resource is created for. Required only for the basic infrastructure modules.
+
 ## Resource type
 
 Resource type is a short name of resource that is going to be created. Examples:
