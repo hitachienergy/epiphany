@@ -1,0 +1,11 @@
+---
+- name: Push image to local registry
+  become: true
+  vars:
+    new_image_tag: "{{ image_registry_address }}/{{ docker_image.name }}"
+  block:
+    - name: Tag {{ docker_image.name }} image with {{ new_image_tag }}
+      command: docker tag {{ docker_image.name }} {{ new_image_tag }}
+
+    - name: Push {{ docker_image.name }} image to registry
+      command: docker push {{ new_image_tag }}
