@@ -4,7 +4,7 @@ Affected version: 0.11.x
 
 ## Goals
 
-This document outlines an aproach to add (partial) ARM support to Epicli. The requirments:
+This document outlines an aproach to add (partial) ARM support to Epicli. The requirements:
 
 - ARMv8/ARM64 architecture
 - Centos 7
