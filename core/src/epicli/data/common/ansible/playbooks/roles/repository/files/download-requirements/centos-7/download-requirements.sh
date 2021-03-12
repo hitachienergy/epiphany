@@ -351,6 +351,32 @@ remove_installed_packages() {
 	fi
 }
 
+remove_yum_cache_for_untracked_repos() {
+	local basearch releasever
+	basearch=$(uname --machine)
+	releasever=$(rpm -q --provides "$(rpm -q --whatprovides 'system-release(releasever)')" | grep "system-release(releasever)" | cut -d ' ' -f 3)
+	local cachedir find_output
+	cachedir=$(grep --only-matching --perl-regexp '(?<=^cachedir=)[^#\n]+' /etc/yum.conf)
+	cachedir="${cachedir/\$basearch/$basearch}"
+	cachedir="${cachedir/\$releasever/$releasever}"
+	find_output=$(find "$cachedir" -mindepth 1 -maxdepth 1 -type d -exec basename '{}' ';')
+	local -a repos_with_cache=()
+	if [ -n "$find_output" ]; then
+		readarray -t repos_with_cache <<< "$find_output"
+	fi
+	local all_repos_output
+	all_repos_output=$(yum repolist -v all | grep --only-matching --perl-regexp '(?<=^Repo-id)[^/]+' | sed -e 's/^[[:space:]:]*//')
+	local -a all_repos=()
+	readarray -t all_repos <<< "$all_repos_output"
+	if (( ${#repos_with_cache[@]} > 0 )); then
+		for cached_repo in "${repos_with_cache[@]}"; do
+			if ! _in_array "$cached_repo" "${all_repos[@]}"; then
+				run_cmd rm -rf "$cachedir/$cached_repo"
+			fi
+		done
+	fi
+}
+
 # Runs command as array with printing it, doesn't support commands with shell operators (such as pipe or redirection)
 # params: <command to execute> [--no-exit-on-error]
 run_cmd() {
@@ -424,6 +450,15 @@ _get_shell_escaped_array() {
 	if (( $# > 0 )); then
 		printf '%q\n' "$@"
 	fi
+}
+
+# params: <value to test> <array>
+_in_array() {
+	local value=${1}
+	shift
+	local array=( "$@" )
+
+	(( ${#array[@]} > 0 )) && printf '%s\n' "${array[@]}" | grep -q -Fx "$value"
 }
 
 # Prints string in format that can be reused as shell input (escapes non-printable characters)
@@ -718,6 +753,9 @@ fi
 if ! is_package_installed 'epel-release'; then
 	install_package 'https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm' 'epel-release'
 fi
+
+# clean metadata for upgrades (when the same package can be downloaded from changed repo)
+run_cmd remove_yum_cache_for_untracked_repos
 
 run_cmd yum -y makecache fast
 
