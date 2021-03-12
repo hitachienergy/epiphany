@@ -137,8 +137,7 @@ download_packages() {
 
 	if [[ -n $packages ]]; then
 		# when using --archlist=x86_64 yumdownloader (yum-utils-1.1.31-52) also downloads i686 packages
-		yumdownloader --quiet --archlist=x86_64 --exclude='*i686' --destdir="$dest_dir" $packages ||
-			exit_with_error "yumdownloader failed for: $packages"
+		run_cmd_with_retries yumdownloader --quiet --archlist=x86_64 --exclude='*i686' --destdir="$dest_dir" $packages 3
 	fi
 }
 
@@ -351,6 +350,32 @@ remove_installed_packages() {
 	fi
 }
 
+remove_yum_cache_for_untracked_repos() {
+	local basearch releasever
+	basearch=$(uname --machine)
+	releasever=$(rpm -q --provides "$(rpm -q --whatprovides 'system-release(releasever)')" | grep "system-release(releasever)" | cut -d ' ' -f 3)
+	local cachedir find_output
+	cachedir=$(grep --only-matching --perl-regexp '(?<=^cachedir=)[^#\n]+' /etc/yum.conf)
+	cachedir="${cachedir/\$basearch/$basearch}"
+	cachedir="${cachedir/\$releasever/$releasever}"
+	find_output=$(find "$cachedir" -mindepth 1 -maxdepth 1 -type d -exec basename '{}' ';')
+	local -a repos_with_cache=()
+	if [ -n "$find_output" ]; then
+		readarray -t repos_with_cache <<< "$find_output"
+	fi
+	local all_repos_output
+	all_repos_output=$(yum repolist -v all | grep --only-matching --perl-regexp '(?<=^Repo-id)[^/]+' | sed -e 's/^[[:space:]:]*//')
+	local -a all_repos=()
+	readarray -t all_repos <<< "$all_repos_output"
+	if (( ${#repos_with_cache[@]} > 0 )); then
+		for cached_repo in "${repos_with_cache[@]}"; do
+			if ! _in_array "$cached_repo" "${all_repos[@]}"; then
+				run_cmd rm -rf "$cachedir/$cached_repo"
+			fi
+		done
+	fi
+}
+
 # Runs command as array with printing it, doesn't support commands with shell operators (such as pipe or redirection)
 # params: <command to execute> [--no-exit-on-error]
 run_cmd() {
@@ -424,6 +449,15 @@ _get_shell_escaped_array() {
 	if (( $# > 0 )); then
 		printf '%q\n' "$@"
 	fi
+}
+
+# params: <value to test> <array>
+_in_array() {
+	local value=${1}
+	shift
+	local array=( "$@" )
+
+	(( ${#array[@]} > 0 )) && printf '%s\n' "${array[@]}" | grep -q -Fx "$value"
 }
 
 # Prints string in format that can be reused as shell input (escapes non-printable characters)
@@ -652,24 +686,25 @@ EOF
 )
 
 RABBITMQ_ERLANG_REPO_CONF=$(cat <<'EOF'
-[rabbitmq_erlang]
-name=rabbitmq_erlang
-baseurl=https://packagecloud.io/rabbitmq/erlang/el/7/$basearch
-repo_gpgcheck=1
+[rabbitmq-erlang]
+name=rabbitmq-erlang
+baseurl=https://dl.bintray.com/rabbitmq-erlang/rpm/erlang/23/el/7
 gpgcheck=1
+gpgkey=https://dl.bintray.com/rabbitmq/Keys/rabbitmq-release-signing-key.asc
+repo_gpgcheck=1
 enabled=1
-gpgkey=https://packagecloud.io/rabbitmq/erlang/gpgkey
+deltarpm_percentage=0
 EOF
 )
 
 RABBITMQ_SERVER_REPO_CONF=$(cat <<'EOF'
-[rabbitmq_rabbitmq-server]
-name=rabbitmq_rabbitmq-server
-baseurl=https://packagecloud.io/rabbitmq/rabbitmq-server/el/7/$basearch
-repo_gpgcheck=1
+[bintray-rabbitmq-server]
+name=bintray-rabbitmq-rpm
+baseurl=https://dl.bintray.com/rabbitmq/rpm/rabbitmq-server/v3.8.x/el/7/
 gpgcheck=1
+gpgkey=https://dl.bintray.com/rabbitmq/Keys/rabbitmq-release-signing-key.asc
+repo_gpgcheck=1
 enabled=1
-gpgkey=https://packagecloud.io/rabbitmq/rabbitmq-server/gpgkey
 EOF
 )
 
@@ -688,8 +723,8 @@ add_repo_as_file 'grafana' "$GRAFANA_REPO_CONF"
 add_repo_as_file 'kubernetes' "$KUBERNETES_REPO_CONF"
 add_repo_as_file 'opendistroforelasticsearch' "$OPENDISTRO_REPO_CONF"
 add_repo_as_file 'postgresql-10' "$POSTGRESQL_REPO_CONF"
-add_repo_as_file 'rabbitmq_erlang' "$RABBITMQ_ERLANG_REPO_CONF"
-add_repo_as_file 'rabbitmq_rabbitmq-server' "$RABBITMQ_SERVER_REPO_CONF"
+add_repo_as_file 'rabbitmq-erlang' "$RABBITMQ_ERLANG_REPO_CONF"
+add_repo_as_file 'bintray-rabbitmq-rpm' "$RABBITMQ_SERVER_REPO_CONF"
 add_repo_from_script 'https://dl.2ndquadrant.com/default/release/get/10/rpm'
 
 # -> Software Collections (SCL) https://wiki.centos.org/AdditionalResources/Repositories/SCL
@@ -703,6 +738,9 @@ fi
 if ! is_package_installed 'epel-release'; then
 	install_package 'https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm' 'epel-release'
 fi
+
+# clean metadata for upgrades (when the same package can be downloaded from changed repo)
+run_cmd remove_yum_cache_for_untracked_repos
 
 run_cmd yum -y makecache fast
 

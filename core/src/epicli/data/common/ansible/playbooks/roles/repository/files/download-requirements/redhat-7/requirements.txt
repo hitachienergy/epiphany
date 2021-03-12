@@ -33,7 +33,7 @@ ebtables
 elasticsearch-curator-5.8.3
 elasticsearch-oss-6.8.5
 elasticsearch-oss-7.3.2 # Open Distro for Elasticsearch
-erlang-23.1.4 # must be compatible with rabbitmq version
+erlang-23.1.5 # must be compatible with rabbitmq version
 ethtool
 filebeat-6.8.5 # actually it's filebeat-oss
 firewalld
