@@ -137,8 +137,7 @@ download_packages() {
 
 	if [[ -n $packages ]]; then
 		# when using --archlist=x86_64 yumdownloader (yum-utils-1.1.31-52) also downloads i686 packages
-		yumdownloader --quiet --archlist=x86_64 --exclude='*i686' --destdir="$dest_dir" $packages ||
-			exit_with_error "yumdownloader failed for: $packages"
+		run_cmd_with_retries yumdownloader --quiet --archlist=x86_64 --exclude='*i686' --destdir="$dest_dir" $packages 3
 	fi
 }
 
@@ -708,6 +707,7 @@ gpgcheck=1
 gpgkey=https://dl.bintray.com/rabbitmq/Keys/rabbitmq-release-signing-key.asc
 repo_gpgcheck=1
 enabled=1
+deltarpm_percentage=0
 EOF
 )
 
@@ -756,10 +756,8 @@ fi
 
 # clean metadata for upgrades (when the same package can be downloaded from changed repo)
 run_cmd remove_yum_cache_for_untracked_repos
-run_cmd yum -y clean all
-run_cmd yum -y makecache
 
-# run_cmd yum -y makecache fast
+run_cmd yum -y makecache fast
 
 # --- Download packages ---
 
