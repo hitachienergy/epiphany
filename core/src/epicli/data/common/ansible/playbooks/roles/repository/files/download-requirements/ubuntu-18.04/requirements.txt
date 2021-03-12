@@ -19,26 +19,27 @@ elasticsearch-curator 5.8.3
 elasticsearch-oss 6.8.5 # for elasticsearch role
 elasticsearch-oss 7.9.1 # for opendistroforelasticsearch & logging roles
 
-# erlang packages must be compatible with rabbitmq version
-erlang-eldap 1:23.1.4
-erlang-inets 1:23.1.4
-erlang-os-mon 1:23.1.4
-erlang-public-key 1:23.1.4
-erlang-ssl 1:23.1.4
-
-# additional dependencies required to fix https://github.com/epiphany-platform/epiphany/issues/1920
-erlang-asn1 1:23.1.4
-erlang-base-hipe 1:23.1.4
-erlang-crypto 1:23.1.4
-erlang-ftp 1:23.1.4
-erlang-mnesia 1:23.1.4
-erlang-parsetools 1:23.1.4
-erlang-runtime-tools 1:23.1.4
-erlang-snmp 1:23.1.4
-erlang-syntax-tools 1:23.1.4
-erlang-tftp 1:23.1.4
-erlang-tools 1:23.1.4
-erlang-xmerl 1:23.1.4
+# Erlang packages must be compatible with RabbitMQ version.
+# Metapackages such as erlang and erlang-nox must only be used
+# with apt version pinning. They do not pin their dependency versions.
+# List based on: https://www.rabbitmq.com/install-debian.html#installing-erlang-package
+erlang-asn1 1:23.1.5
+erlang-base 1:23.1.5
+erlang-crypto 1:23.1.5
+erlang-eldap 1:23.1.5
+erlang-ftp 1:23.1.5
+erlang-inets 1:23.1.5
+erlang-mnesia 1:23.1.5
+erlang-os-mon 1:23.1.5
+erlang-parsetools 1:23.1.5
+erlang-public-key 1:23.1.5
+erlang-runtime-tools 1:23.1.5
+erlang-snmp 1:23.1.5
+erlang-ssl 1:23.1.5
+erlang-syntax-tools 1:23.1.5
+erlang-tftp 1:23.1.5
+erlang-tools 1:23.1.5
+erlang-xmerl 1:23.1.5
 
 ethtool
 filebeat 7.9.2
