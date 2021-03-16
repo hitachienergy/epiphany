@@ -26,8 +26,8 @@ Enable for RHEL on Azure:
      storage_image_reference:
        publisher: RedHat
        offer: RHEL
-       sku: 7-RAW
-       version: "7.7.2019090418"
+       sku: 7-LVM
+       version: "7.9.2020111202"
    ```
 
 Enable for RHEL on AWS:
@@ -492,9 +492,9 @@ To setup the cluster do the following steps from the provisioning machine:
 
 ### Note for RHEL Azure images
 
-Epiphany currently supports RHEL 7 RAW and LVM partitioned images attached to standard RHEL repositories. For more details, refer to [Azure documentation](https://docs.microsoft.com/en-us/azure/virtual-machines/workloads/redhat/redhat-images#rhel-7-image-types).
+Epiphany currently supports RHEL 7 LVM partitioned images attached to standard RHEL repositories. For more details, refer to [Azure documentation](https://docs.microsoft.com/en-us/azure/virtual-machines/workloads/redhat/redhat-images#rhel-7-image-types).
 
-For LVM partitioned images, Epiphany uses cloud-init custom data in order to merge small logical volumes (`homelv`, `optlv`, `tmplv` and `varlv`)
+Epiphany uses cloud-init custom data in order to merge small logical volumes (`homelv`, `optlv`, `tmplv` and `varlv`)
 into the `rootlv` and extends it (with underlying filesystem) by the current free space in its volume group.
 The `usrlv` LV, which has 10G, is not merged since it would require a reboot. The merging is required to deploy a cluster,
 however, [it can be disabled](#how-to-disable-merging-lvm-logical-volumes) for troubleshooting since it performs some administrative tasks (such as remounting filesystems or restarting services).
@@ -507,8 +507,8 @@ specification:
   storage_image_reference:
     publisher: RedHat
     offer: RHEL
-    sku: "7-RAW"
-    version: "7.7.2019090418"
+    sku: "7-LVM"
+    version: "7.9.2020111202"
 ```
 
 ### Note for CentOS Azure images
