@@ -70,4 +70,4 @@ examples/**/obj/
 
 .python.venv/
 
-/docs/design-docs/modular-cli/cpt-tests/runs/infrastructure-and-kafka/shared/
+/docs/design-docs/modularization/cpt-tests/runs/infrastructure-and-kafka/shared/
