@@ -521,15 +521,16 @@ readonly ADD_NOARCH_REPOSITORIES="$SCRIPT_DIR/add-repositories-noarch.sh"
 #arch
 readonly ARCH=$(uname -m)
 echol "Detected arch: ${ARCH}"
-if [ "${ARCH}" != "x86_64" ] && [ "${ARCH}" != "aarch64" ]; then
-	exit_with_error "Arch ${ARCH} unsupported"
-fi
 readonly REQUIREMENTS_FILE_PATH="$SCRIPT_DIR/requirements_$ARCH.txt"
 readonly ADD_ARCH_REPOSITORIES="$SCRIPT_DIR/add-repositories-$ARCH.sh"
 
 # --- Checks ---
 
 [ $EUID -eq 0 ] || { echo "You have to run as root" && exit 1; }
+
+if [ "${ARCH}" != "x86_64" ] && [ "${ARCH}" != "aarch64" ]; then
+	exit_with_error "Arch ${ARCH} unsupported"
+fi
 
 [[ -f $REQUIREMENTS_FILE_PATH ]] || exit_with_error "File not found: $REQUIREMENTS_FILE_PATH"
 
