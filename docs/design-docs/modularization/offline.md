@@ -113,3 +113,27 @@ Each module contains “requirements” section in its configuration, but there 
 * Main issue with options 1, 2 and 3 is that it would only work for containers and binaries but not OS packages as these are dependent on the targeted OS version and installation. This is something we cannot foresee or bundle for.
 * Options 4 and 5 will introduce possibly a bit of a mess related to each module managing downloads on its own. Also upgrade process in offline mode might be problematic due to burden related to provide new versions for each module separately.
 * Option 6 sounds like most flexible one.
+
+## Export
+
+Its visible in offline scenarios that "export" process is as important as "download" process. For offline scenarios "export" has to cover following elements: 
+ * downloaded images
+ * downloaded binaries
+ * downloaded OS packages
+ * defined modules images
+ * e command line app
+ * e environment configuration
+
+All those elements have to be packaged to archive to be transferred to the clusters Repository machine.  
+
+## Import
+
+After all elements are packaged and transferred to Repository machine they have to be imported into Repository. It is current impression that repository module would be responsible for import operation. 
+
+## Summary
+
+In this document we provide high level definition how to approach offline installation and upgrade. Current understanding is: 
+ * each module provide list of it's requirements
+ * separate module collects those and downloads required elements
+ * the same separate module exports all artefacts into archive
+ * after the archive is transferred, repository module imports its content
