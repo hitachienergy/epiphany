@@ -81,3 +81,8 @@ download_file() {
 	# --continue - don't download the same file multiple times, gracefully skip if file is fully downloaded	
 	wget --no-use-server-timestamps --continue --show-progress --prefer-family=IPv4 --directory-prefix="${dest_dir}" "${file_url}"
 }
+
+# to download everything, add "--recurse" flag but then you will get much more packages (e.g. 596 vs 319)
+deplist_cmd() {
+    apt-cache depends --no-recommends --no-suggests --no-conflicts --no-breaks --no-replaces --no-enhances --no-pre-depends $1
+}

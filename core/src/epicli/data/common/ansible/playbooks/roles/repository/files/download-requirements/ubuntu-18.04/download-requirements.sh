@@ -8,13 +8,7 @@ if [[ $# -lt 1 ]]; then
   exit
 fi
 
-if [[ "$EUID" -ne 0 ]]; then
-  echo "err: this script must be run as root"
-  exit
-fi
-
 script_path="$( cd "$(dirname "$0")" ; pwd -P )"
-input_file="${script_path}/requirements.txt"
 dst_dir=$(readlink -m $1) # beautify input path - remove double slashes if occurs
 dst_dir_packages="${dst_dir}/packages"
 dst_dir_files="${dst_dir}/files"
@@ -25,13 +19,22 @@ download_cmd="apt-get download"
 add_repos="${script_path}/add-repositories.sh"
 crane_bin="${script_path}/crane"
 
-# to download everything, add "--recurse" flag but then you will get much more packages (e.g. 596 vs 319)
-deplist_cmd() {
-    apt-cache depends --no-recommends --no-suggests --no-conflicts --no-breaks --no-replaces --no-enhances --no-pre-depends $1
-}
-
 # source common functions
 . "${script_path}/common.sh"
+
+# arch
+arch=$(uname -m)
+echol "Detected arch: ${arch}"
+if [ "${arch}" != "x86_64" ]; then
+	exit_with_error "Arch ${arch} unsupported"
+fi
+input_file="${script_path}/requirements_${arch}.txt"
+
+# checks
+
+[ $EUID -eq 0 ] || { echo "You have to run as root" && exit 1; }
+
+[[ -f $input_file ]] || exit_with_error "File not found: $input_file"
 
 repos_backup_file="/tmp/epi-repository-setup-scripts/enable-system-repos.sh"
 # restore system repositories in case they're missing if ansible role gets interrupted
@@ -65,6 +68,7 @@ done
 shopt -u nullglob
 
 # add 3rd party repositories
+# TODO: See if we need to split this up to support different architectures
 . ${add_repos}
 
 # parse the input file, separete by tags: [crane], [packages], [files], [images]
