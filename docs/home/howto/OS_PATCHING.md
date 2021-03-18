@@ -28,7 +28,7 @@ This document will help you decide how you should patch your OS. This is not a s
 
 For Epiphany v0.10 we recommend the following image (AMI):  
 
-- RHEL: `RHEL-7.8_HVM_GA-20200225-x86_64-1-Hourly2-GP2` (kernel 3.10.0-1127.el7.x86_64),
+- RHEL: `RHEL-7.9_HVM-20210208-x86_64-0-Hourly2-GP2` (kernel 3.10.0-1160.15.2.el7.x86_64),
 - Ubuntu: `ubuntu-bionic-18.04-amd64-server-20200611` (kernel 5.3.0-1028-aws).
 
 Note: For different supported OS versions this guide may be useful as well.
