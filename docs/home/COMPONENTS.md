@@ -16,10 +16,10 @@ Note that versions are default versions and can be changed in certain cases thro
 | RabbitMQ                   | 3.8.9    | https://github.com/rabbitmq/rabbitmq-server           | [Mozilla Public License](https://www.mozilla.org/en-US/MPL/)      |
 | Docker CE                  | 19.03.14 | https://github.com/docker/docker-ce/                  | [Apache License](https://www.apache.org/licenses/LICENSE-1.0)     |
 | KeyCloak                   | 9.0.0    | https://github.com/keycloak/keycloak                  | [Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0) |
-| Elasticsearch OSS          | 7.9.1    | https://github.com/elastic/elasticsearch              | https://github.com/elastic/elasticsearch/blob/master/LICENSE.txt  |
+| Elasticsearch OSS          | 7.10.2    | https://github.com/elastic/elasticsearch              | https://github.com/elastic/elasticsearch/blob/master/LICENSE.txt  |
 | Elasticsearch Curator OSS  | 5.8.3    | https://github.com/elastic/curator                    | https://github.com/elastic/curator/blob/master/LICENSE.txt        |
-| Opendistro for Elasticsearch          | 1.10.1   | https://opendistro.github.io/for-elasticsearch/                  | [Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0) |
-| Opendistro for Elasticsearch Kibana   | 1.10.1   | https://opendistro.github.io/for-elasticsearch-docs/docs/kibana/ | [Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0) |
+| Opendistro for Elasticsearch          | 1.13.*   | https://opendistro.github.io/for-elasticsearch/                  | [Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0) |
+| Opendistro for Elasticsearch Kibana   | 1.13.1   | https://opendistro.github.io/for-elasticsearch-docs/docs/kibana/ | [Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0) |
 | Filebeat                   | 7.9.2    | https://github.com/elastic/beats                      | [Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0) |
 | Filebeat Helm Chart        | 7.9.2    | https://github.com/elastic/helm-charts                | [Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0) |
 | Logstash OSS               | 7.8.1    | https://github.com/elastic/logstash                   | [Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0) |
