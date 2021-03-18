@@ -499,6 +499,8 @@ into the `rootlv` and extends it (with underlying filesystem) by the current fre
 The `usrlv` LV, which has 10G, is not merged since it would require a reboot. The merging is required to deploy a cluster,
 however, [it can be disabled](#how-to-disable-merging-lvm-logical-volumes) for troubleshooting since it performs some administrative tasks (such as remounting filesystems or restarting services).
 
+NOTE: RHEL 7 LVM images require at least 64 GB for OS disk.
+
 Example config:
 
 ```yaml
@@ -509,11 +511,13 @@ specification:
     offer: RHEL
     sku: "7-LVM"
     version: "7.9.2020111202"
+  storage_os_disk:
+    disk_size_gb: 64
 ```
 
 ### Note for CentOS Azure images
 
-Epiphany currently supports only CentOS 7 images with RAW partitioning, which means that LVM images cannot be used.
+Epiphany supports CentOS 7 images with RAW partitioning (recommended) and LVM as well.
 
 Example config:
 
