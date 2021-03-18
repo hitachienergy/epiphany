@@ -67,8 +67,8 @@ Enable for CentOS on Azure:
      storage_image_reference:
        publisher: OpenLogic
        offer: CentOS
-       sku: "7_8"
-       version: "7.8.2020100700"
+       sku: "7_9"
+       version: "7.9.2021020400"
    ```
 
 Enable for CentOS on AWS:
@@ -87,7 +87,7 @@ Enable for CentOS on AWS:
    provider: aws
    based_on: repository-machine
    specification:
-     os_full_name: "CentOS 7.8.2003 x86_64"
+     os_full_name: "CentOS 7.9.2009 x86_64"
    ```
 
 Disable:
@@ -527,8 +527,8 @@ specification:
   storage_image_reference:
     publisher: OpenLogic
     offer: CentOS
-    sku: 7_9-gen2
-    version: "7.9.2021020401"
+    sku: "7_9"
+    version: "7.9.2021020400"
 ```
 
 ### How to disable merging LVM logical volumes
