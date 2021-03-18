@@ -25,10 +25,17 @@ crane_bin="${script_path}/crane"
 # arch
 arch=$(uname -m)
 echol "Detected arch: ${arch}"
-if [ "${arch}" != "x86_64" ]; then
-	exit_with_error "Arch ${arch} unsupported"
-fi
 input_file="${script_path}/requirements_${arch}.txt"
+case $arch in
+x86_64)
+	docker_platform="linux/amd64"
+	;;
+
+*)
+	exit_with_error "Arch ${arch} unsupported"
+	;;
+esac
+echol "Docker platform: ${docker_platform}"
 
 # checks
 

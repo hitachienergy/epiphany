@@ -53,7 +53,7 @@ download_image() {
 		echo "Downloading image: $1"
 		echo "Crane command is: ${crane_bin} pull --insecure --format=legacy ${image_name} ${dst_image}"
 		# use temporary file for downloading to be safe from sudden interruptions (network, ctrl+c)
-		 ${crane_bin} pull --insecure --format=legacy ${image_name} ${tmp_file} && chmod 644 ${tmp_file} && mv ${tmp_file} ${dst_image}
+		 ${crane_bin} pull --insecure --platform=${docker_platform} --format=legacy ${image_name} ${tmp_file} && chmod 644 ${tmp_file} && mv ${tmp_file} ${dst_image}
 	fi
 }
 
