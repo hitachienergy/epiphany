@@ -32,7 +32,7 @@
 - [#1864](https://github.com/epiphany-platform/epiphany/issues/1864) - Upgrade Hashicorp Vault (1.6.1), Vault Helm Chart (0.9.0), Vault-k8s (0.7.0)
 - [#2029](https://github.com/epiphany-platform/epiphany/issues/2029) - Remove old ARM references.
 - [#1901](https://github.com/epiphany-platform/epiphany/issues/1901) - Make Epiphany upgrades selective (Kafka). Added new parameter for epicli (--upgrade-components)
-- [#2080](https://github.com/epiphany-platform/epiphany/issues/2080) - Update RHEL image in CI pipelines and documentations to the current latest 7.9 version
+- [#2080](https://github.com/epiphany-platform/epiphany/issues/2080) - Update RHEL images in CI pipelines and documentation to the current latest 7.9 version
 
 ### Breaking changes
 
