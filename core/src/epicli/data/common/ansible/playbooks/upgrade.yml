@@ -166,7 +166,9 @@
         name: upgrade
         tasks_from: zookeeper
       vars: { lock_file: /var/tmp/zookeeper-upgrade-in-progress.flag }
-      when: "'zookeeper' in upgrade_components or upgrade_components|length == 0"
+      when: 
+        - "'zookeeper' in upgrade_components or upgrade_components|length == 0"
+        - ansible_architecture != "aarch64"
 
 - hosts: kafka
   serial: 1
@@ -196,7 +198,9 @@
     - import_role:
         name: upgrade
         tasks_from: ignite
-      when: "'ignite' in upgrade_components or upgrade_components|length == 0"
+      when: 
+        - "'ignite' in upgrade_components or upgrade_components|length == 0"
+        - ansible_architecture != "aarch64"
 
 - hosts: haproxy
   become: true

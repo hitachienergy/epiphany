@@ -9,4 +9,5 @@
   become: true
   become_method: sudo
   roles:
-    - zookeeper
+    - role: zookeeper
+      when: ansible_architecture != "aarch64"
