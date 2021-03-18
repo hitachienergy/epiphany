@@ -120,7 +120,7 @@ download_image() {
 	else
 		# use temporary file for downloading to be safe from sudden interruptions (network, ctrl+c)
 		local tmp_file_path=$(mktemp)
-		local crane_cmd="$CRANE_BIN  pull --insecure --format=legacy ${image_name} ${tmp_file_path}"
+		local crane_cmd="$CRANE_BIN  pull --insecure --platform=${DOCKER_PLATFORM} --format=legacy ${image_name} ${tmp_file_path}"
 		echol "Downloading image: $image"
 		# try twice to avoid random error on Azure: "pinging docker registry returned: Get https://k8s.gcr.io/v2/: net/http: TLS handshake timeout"
 		{ $crane_cmd && chmod 644 $tmp_file_path && mv $tmp_file_path $dest_path; } ||
@@ -540,14 +540,24 @@ readonly ARCH=$(uname -m)
 echol "Detected arch: ${ARCH}"
 readonly REQUIREMENTS_FILE_PATH="$SCRIPT_DIR/requirements_$ARCH.txt"
 readonly ADD_ARCH_REPOSITORIES="$SCRIPT_DIR/add-repositories-$ARCH.sh"
+case $ARCH in
+x86_64)
+	readonly DOCKER_PLATFORM="linux/amd64"
+	;;
+
+aarch64)
+	readonly DOCKER_PLATFORM="linux/arm64"
+	;;
+
+*)
+	exit_with_error "Arch ${ARCH} unsupported"
+	;;
+esac
+echol "Docker platform: ${DOCKER_PLATFORM}"
 
 # --- Checks ---
 
 [ $EUID -eq 0 ] || { echo "You have to run as root" && exit 1; }
-
-if [ "${ARCH}" != "x86_64" ]; then
-	exit_with_error "Arch ${ARCH} unsupported"
-fi
 
 [[ -f $REQUIREMENTS_FILE_PATH ]] || exit_with_error "File not found: $REQUIREMENTS_FILE_PATH"
 
