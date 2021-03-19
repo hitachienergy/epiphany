@@ -126,11 +126,7 @@ echol "Packages to be downloaded:"
 cat -n "${deplist}"
 
 # download dependencies (apt-get sandboxing warning when running as root are harmless)
-export -f run_cmd_with_retries
-export -f run_cmd
-export -f print_array_as_shell_escaped_string
-export -f get_shell_escaped_array
-cd $dst_dir_packages && xargs --no-run-if-empty --arg-file=${deplist} --delimiter='\n' -I{} bash -c "${download_cmd} {}" | tee -a ${logfile}
+cd $dst_dir_packages && xargs --no-run-if-empty --arg-file=${deplist} --delimiter='\n' -I{} bash -c ". ${script_path}/common.sh && ${download_cmd} {}" | tee -a ${logfile}
 cd $script_path
 
 printf "\n"
