@@ -168,7 +168,6 @@
       vars: { lock_file: /var/tmp/zookeeper-upgrade-in-progress.flag }
       when: 
         - "'zookeeper' in upgrade_components or upgrade_components|length == 0"
-        - ansible_architecture != "aarch64"
 
 - hosts: kafka
   serial: 1
