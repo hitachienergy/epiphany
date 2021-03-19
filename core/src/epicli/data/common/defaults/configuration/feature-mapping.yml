@@ -19,8 +19,6 @@ specification:
       enabled: yes
     - name: opendistro-for-elasticsearch
       enabled: yes
-    - name: elasticsearch
-      enabled: yes
     - name: elasticsearch-curator
       enabled: yes
     - name: kibana
