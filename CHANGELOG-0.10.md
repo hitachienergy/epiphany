@@ -33,7 +33,9 @@
 - [#2029](https://github.com/epiphany-platform/epiphany/issues/2029) - Remove old ARM references.
 - [#1901](https://github.com/epiphany-platform/epiphany/issues/1901) - Make Epiphany upgrades selective (Kafka). Added new parameter for epicli (--upgrade-components)
 - [#2080](https://github.com/epiphany-platform/epiphany/issues/2080) - Update RHEL images in CI pipelines and documentation to the current latest 7.9 version
+- [#1859](https://github.com/epiphany-platform/epiphany/issues/1859) - Upgrade Open Distro for Elasticsearch to v1.13.x and elasticsearch-oss to v7.10.2
 
 ### Breaking changes
+- Feature name: `elasticsearch` removed in favor of feature name: `opendistro-for-elasticsearch`.
 
 ### Known issues

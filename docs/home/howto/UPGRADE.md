@@ -135,7 +135,7 @@ Before upgrade procedure make sure you have a data backup!
 
 ---
 
-In Epiphany v0.8.0 we provided upgrade elasticsearch-oss package to v7.9.1 and opendistro-* plugins package to v1.10.1.
+In Epiphany v0.10.0 we provided upgrade elasticsearch-oss package to v7.10.2 and opendistro-* plugins package to v1.13.*.
 Upgrade will be performed automatically when the upgrade procedure detects your logging, opendistro_for_elasticsearch or kibana hosts.
 Upgrade of elasticsearch-oss package uses API calls (GET, PUT, POST) so before starting the upgrade please make sure that you provided correct credentials:
 ```shell
