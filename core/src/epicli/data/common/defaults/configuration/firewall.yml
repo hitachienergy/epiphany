@@ -19,10 +19,6 @@ specification:
       enabled: true
       ports:
         - 22/tcp
-    elasticsearch:
-      enabled: true
-      ports:
-        - 9200/tcp
     grafana:
       enabled: true
       ports:
