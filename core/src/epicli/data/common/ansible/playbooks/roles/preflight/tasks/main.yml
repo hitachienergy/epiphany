@@ -1,4 +1,6 @@
 ---
+- include_tasks: check-user.yml
+
 - include_tasks: check-os.yml
 
 - name: Check if existing PostgreSQL needs to be migrated to distribution installed from PostgreSQL repository
