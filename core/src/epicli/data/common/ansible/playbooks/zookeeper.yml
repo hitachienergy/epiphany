@@ -11,3 +11,4 @@
   roles:
     - role: zookeeper
       when: ansible_architecture != "aarch64"
+

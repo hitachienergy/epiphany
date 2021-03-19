@@ -4,3 +4,4 @@
   vars:
     app_dir_name: "{{ data.name }}"
   when: ansible_architecture != "aarch64"
+
