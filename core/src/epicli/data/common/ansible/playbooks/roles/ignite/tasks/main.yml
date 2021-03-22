@@ -1,8 +1,9 @@
 ---
 
 - name: Install java, ignite and configure 
-  block:
-    - include_tasks: install-java.yml
-    - include_tasks: install-ignite.yml
-    - include_tasks: configure.yml
+  - include_tasks: install-java.yml
+  
+  - include_tasks: install-ignite.yml
+
+  - include_tasks: configure.yml
 

@@ -9,5 +9,5 @@
   become: true
   become_method: sudo
   roles:
-    - role: zookeeper
+    - zookeeper
 

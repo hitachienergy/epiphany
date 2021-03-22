@@ -7,17 +7,16 @@ block:
 
   - name: Copy Helm chart sources (to repository hosts only)
     when: inventory_hostname == target_repository_hostnames[0]  # execute on the main repository host only
-    block:
-      - name: Create Helm charts directory
-        file:
-          path: "{{ specification.apache_epirepo_path }}/charts"
-          state: directory
-          mode: u=rwx,go=rx
+    - name: Create Helm charts directory
+      file:
+        path: "{{ specification.apache_epirepo_path }}/charts"
+        state: directory
+        mode: u=rwx,go=rx
 
-      - name: Copy Helm charts to repository server
-        copy:
-          src: "./"
-          dest: "{{ specification.apache_epirepo_path }}/charts"
-          mode: u=rwx,go=rx
+    - name: Copy Helm charts to repository server
+      copy:
+        src: "./"
+        dest: "{{ specification.apache_epirepo_path }}/charts"
+        mode: u=rwx,go=rx
 
 
