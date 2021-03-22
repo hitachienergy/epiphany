@@ -2,7 +2,7 @@
 - name: Check if index file exists for system Helm repo
   uri:
     url: "{{ system_chart_repo_url }}/index.yaml"
-  method: HEAD
+    method: HEAD
   register: uri_index_test
   # Fail with error if status is unexpected
   failed_when: uri_index_test.status not in [200, 404]
@@ -15,6 +15,5 @@
       register: command_helm_repo_add
       changed_when: not ("already exists with the same configuration" in command_helm_repo_add.stdout)
 
-     - name: Update Helm repo cache
+    - name: Update Helm repo cache
       command: helm repo update
-

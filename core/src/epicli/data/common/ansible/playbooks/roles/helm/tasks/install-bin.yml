@@ -38,4 +38,3 @@
         dest: "/usr/local/sbin/helm"
         state: link
       when: ansible_os_family == "RedHat"
-
