@@ -8,6 +8,7 @@
 - [#1355](https://github.com/epiphany-platform/epiphany/issues/1355) - Updating cloud based OS images - configuration required for Azure RHEL LVM images
 - [#2081](https://github.com/epiphany-platform/epiphany/issues/2081) - Replace Skopeo with Crane
 - [#1323](https://github.com/epiphany-platform/epiphany/issues/1323) - Documentation how to handle data in Opendistro for Elasticsearch
+- [#2118](https://github.com/epiphany-platform/epiphany/issues/2118) - Block the install of unsupported components/roles on arm64
 
 ### Fixed
 
