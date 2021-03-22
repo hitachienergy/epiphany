@@ -18,4 +18,4 @@ block:
 
       - name: Update Helm repo cache
         command: helm repo update
-when: ansible_architecture != "aarch64"
+

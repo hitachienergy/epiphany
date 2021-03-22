@@ -199,7 +199,6 @@
         tasks_from: ignite
       when: 
         - "'ignite' in upgrade_components or upgrade_components|length == 0"
-        - ansible_architecture != "aarch64"
 
 - hosts: haproxy
   become: true

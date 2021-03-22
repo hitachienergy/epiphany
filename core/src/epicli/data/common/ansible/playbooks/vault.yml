@@ -13,4 +13,3 @@
       when:
         - specification.vault_enabled
         - k8s_as_cloud_service is undefined or not k8s_as_cloud_service
-        - ansible_architecture != "aarch64"

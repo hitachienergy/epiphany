@@ -19,4 +19,5 @@ block:
           src: "./"
           dest: "{{ specification.apache_epirepo_path }}/charts"
           mode: u=rwx,go=rx
-when: ansible_architecture != "aarch64"
+
+

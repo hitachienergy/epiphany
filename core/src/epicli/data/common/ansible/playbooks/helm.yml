@@ -10,7 +10,6 @@
         - groups.helm | length > 0
         - groups.repository is defined
         - groups.repository | length > 0
-        - ansible_architecture != "aarch64"
   environment:
     # The "inventory_dir" fact cannot be used here.
     # Documentation (https://docs.ansible.com/ansible/latest/inventory/implicit_localhost.html) states:
