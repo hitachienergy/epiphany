@@ -1,0 +1,22 @@
+---
+- name: Check if user has passwordless root privileges through sudo
+  command: sudo -n -u root test -w /etc/sudoers
+  changed_when: false
+  failed_when: test_privileges.rc not in [0, 1]
+  register: test_privileges
+  # Disable warning: "Consider using 'become', 'become_method', and 'become_user' rather than running sudo".
+  # sudo used by purpose, for 'become', 'failed_when' is ignored when sudo requires password and task fails
+  # with short message: "Missing sudo password".
+  args:
+    warn: false
+
+- name: Assert root privileges
+  assert:
+    that: test_privileges.rc == 0
+    fail_msg: >-
+      Privileges test failed. Remote user ({{ ansible_user }}) must be able to run commands as root through sudo
+      without password.
+      {% if test_privileges.stderr_lines | count -%}
+      stderr_lines: {{ test_privileges.stderr_lines }}
+      {%- endif -%}
+    success_msg: User privileges passed

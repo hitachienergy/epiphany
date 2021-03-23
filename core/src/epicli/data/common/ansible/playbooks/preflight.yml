@@ -3,8 +3,7 @@
 
 - hosts: all
   gather_facts: yes
-  become: true
-  become_method: sudo
+  become: false  # user may be not added to sudoers
   roles:
     - preflight
   environment:
