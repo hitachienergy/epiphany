@@ -25,6 +25,7 @@
 - [#2115](https://github.com/epiphany-platform/epiphany/issues/2115) - Epicli hangs on importing GPG keys for kubernetes repository on RHEL
 - [#2121](https://github.com/epiphany-platform/epiphany/issues/2121) - [RedHat/CentOS] Erlang package versions specified in requirements are missing in external repository
 - [#2068](https://github.com/epiphany-platform/epiphany/issues/2068) - Preflight role requires sudoer user
+- [#2136](https://github.com/epiphany-platform/epiphany/issues/2136) - Replace Bintray repository
 
 ### Updated
 
