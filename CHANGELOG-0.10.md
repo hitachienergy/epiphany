@@ -36,6 +36,7 @@
 - [#1901](https://github.com/epiphany-platform/epiphany/issues/1901) - Make Epiphany upgrades selective (Kafka). Added new parameter for epicli (--upgrade-components)
 - [#2080](https://github.com/epiphany-platform/epiphany/issues/2080) - Update RHEL images in CI pipelines and documentation to the current latest 7.9 version
 - [#1859](https://github.com/epiphany-platform/epiphany/issues/1859) - Upgrade Open Distro for Elasticsearch to v1.13.x and elasticsearch-oss to v7.10.2
+- [#2142](https://github.com/epiphany-platform/epiphany/issues/2142) - Update Ubuntu 18.04-LTS images to the latest version
 
 ### Breaking changes
 - Feature name: `elasticsearch` removed in favor of feature name: `opendistro-for-elasticsearch`.
