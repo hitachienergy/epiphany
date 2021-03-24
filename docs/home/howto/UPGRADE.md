@@ -87,7 +87,6 @@ To upgrade the cluster components run the following steps:
 
     - download-requirements.sh
     - requirements.txt
-    - skopeo_linux
 
 2. The scripts in the `prepare_scripts` will be used to download all requirements. To do that copy the `prepare_scripts` folder over to the requirements machine and run the following command:
 
@@ -107,7 +106,13 @@ To upgrade the cluster components run the following steps:
 
 ### Additional parameters
 
-The `epicli upgrade` command had an additional flag `--wait-for-pods`. When this flag is added, the Kubernetes upgrade will wait until all pods are in the **ready** state before proceding. This can be usefull when a zero downtime upgrade is required. **Note: that this can also cause the upgrade to hang indefinitely.**
+The `epicli upgrade` command has additional flags:
+-  `--wait-for-pods`. When this flag is added, the Kubernetes upgrade will wait until all pods are in the **ready** state before proceding. This can be usefull when a zero downtime upgrade is required. **Note: that this can also cause the upgrade to hang indefinitely.**
+- `--upgrade-components`. Specify comma separated component names so the upgrade procedure will only process specific ones. List cannot be empty, otherwise execution will fail. By default upgrade will process all components if this parameter is not provided 
+   Example:
+   ```shell
+   epicli upgrade -b /buildoutput/ --upgrade-components "kafka,filebeat"
+   ```
 
 ## How to upgrade Kafka
 
@@ -130,7 +135,7 @@ Before upgrade procedure make sure you have a data backup!
 
 ---
 
-In Epiphany v0.8.0 we provided upgrade elasticsearch-oss package to v7.9.1 and opendistro-* plugins package to v1.10.1.
+In Epiphany v0.10.0 we provided upgrade elasticsearch-oss package to v7.10.2 and opendistro-* plugins package to v1.13.*.
 Upgrade will be performed automatically when the upgrade procedure detects your logging, opendistro_for_elasticsearch or kibana hosts.
 Upgrade of elasticsearch-oss package uses API calls (GET, PUT, POST) so before starting the upgrade please make sure that you provided correct credentials:
 ```shell

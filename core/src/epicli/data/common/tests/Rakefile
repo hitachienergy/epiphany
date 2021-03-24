@@ -26,7 +26,8 @@ unless ENV['spec_output']
 end
 
 groups = {}
-hosts  = []
+all_hosts = {}
+ungrouped_hosts = {}
 current_group = nil
 
 File::open(ENV['inventory']) do |f|
@@ -39,14 +40,22 @@ File::open(ENV['inventory']) do |f|
     if line =~ /^\[([^\]]+)\]/
       current_group = $1
     elsif line =~ /(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})/ # regex for IP address
+      host_ip = $1
+      host_name = line.split.first
       if current_group
         groups[current_group] ||= {}
-        groups[current_group][$1] = line.split.first
+        groups[current_group][host_ip] = host_name  # e.g. "zookeeper"=>{"192.168.0.1"=>"vm-01.localdomain"}
       else
-        hosts << $1
+        ungrouped_hosts[host_ip] = host_name
       end
+      all_hosts[host_ip] ||= host_name
     end
   end
+end
+
+# Add hosts for 'common' group (not present in inventory)
+if all_hosts.length
+  groups['common'] = all_hosts
 end
 
 groups.keys.each do |group|
@@ -72,12 +81,12 @@ namespace :spec do
       task_name = group + ':' + host
       RSpec::Core::RakeTask.new(task_name) do |t|
         ENV['TARGET_HOST'] = host
-		ENV['TEST_ENV_NUMBER'] = "-" + groups[group][host]
         puts "Testing " + task_name
         t.pattern = "spec/#{group}/*_spec.rb"
-        t.fail_on_error = false
-        t.rspec_opts = "--format documentation --format RspecJunitFormatter  \
-        --out " + ENV['spec_output'] + Time.now.strftime("%Y-%m-%d_%H-%M-%S") + "_#{group}_#{groups[group][host]}.xml"
+        t.fail_on_error = true  # to detect RuntimeError (when error occured outside of example)
+        t.rspec_opts = "--format documentation --format RspecJunitFormatter " \
+                       "--out " + ENV['spec_output'] +
+                                  Time.now.strftime("%Y-%m-%d_%H-%M-%S") + "_#{group}_#{groups[group][host]}.xml"
        end
     end
   end

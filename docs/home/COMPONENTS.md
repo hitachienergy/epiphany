@@ -16,10 +16,10 @@ Note that versions are default versions and can be changed in certain cases thro
 | RabbitMQ                   | 3.8.9    | https://github.com/rabbitmq/rabbitmq-server           | [Mozilla Public License](https://www.mozilla.org/en-US/MPL/)      |
 | Docker CE                  | 19.03.14 | https://github.com/docker/docker-ce/                  | [Apache License](https://www.apache.org/licenses/LICENSE-1.0)     |
 | KeyCloak                   | 9.0.0    | https://github.com/keycloak/keycloak                  | [Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0) |
-| Elasticsearch OSS          | 7.9.1    | https://github.com/elastic/elasticsearch              | https://github.com/elastic/elasticsearch/blob/master/LICENSE.txt  |
+| Elasticsearch OSS          | 7.10.2    | https://github.com/elastic/elasticsearch              | https://github.com/elastic/elasticsearch/blob/master/LICENSE.txt  |
 | Elasticsearch Curator OSS  | 5.8.3    | https://github.com/elastic/curator                    | https://github.com/elastic/curator/blob/master/LICENSE.txt        |
-| Opendistro for Elasticsearch          | 1.10.1   | https://opendistro.github.io/for-elasticsearch/                  | [Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0) |
-| Opendistro for Elasticsearch Kibana   | 1.10.1   | https://opendistro.github.io/for-elasticsearch-docs/docs/kibana/ | [Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0) |
+| Opendistro for Elasticsearch          | 1.13.x   | https://opendistro.github.io/for-elasticsearch/                  | [Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0) |
+| Opendistro for Elasticsearch Kibana   | 1.13.1   | https://opendistro.github.io/for-elasticsearch-docs/docs/kibana/ | [Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0) |
 | Filebeat                   | 7.9.2    | https://github.com/elastic/beats                      | [Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0) |
 | Filebeat Helm Chart        | 7.9.2    | https://github.com/elastic/helm-charts                | [Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0) |
 | Logstash OSS               | 7.8.1    | https://github.com/elastic/logstash                   | [Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0) |
@@ -43,7 +43,6 @@ Note that versions are default versions and can be changed in certain cases thro
 | Hashicorp Vault Helm Chart | 0.4.0    | https://github.com/hashicorp/vault-helm               | [Mozilla Public License 2.0](https://github.com/hashicorp/vault-helm/blob/master/LICENSE.md) |
 | Istio                      | 1.8.1    | https://github.com/istio/istio                        | [Apache License 2.0](https://github.com/istio/istio/blob/master/LICENSE) |
 
-
 ## Epicli binary dependencies
 
 | Component                 | Version | Repo/Website                                          | License                                                           |
@@ -51,7 +50,7 @@ Note that versions are default versions and can be changed in certain cases thro
 | Terraform                 | 0.12.6  | https://www.terraform.io/                             | [Mozilla Public License 2.0](https://github.com/hashicorp/terraform/blob/master/LICENSE) |
 | Terraform AzureRM provider | 1.38.0  | https://github.com/terraform-providers/terraform-provider-azurerm | [Mozilla Public License 2.0](https://github.com/terraform-providers/terraform-provider-azurerm/blob/master/LICENSE) |
 | Terraform AWS provider    | 2.26    | https://github.com/terraform-providers/terraform-provider-aws | [Mozilla Public License 2.0](https://github.com/terraform-providers/terraform-provider-aws/blob/master/LICENSE) |
-| Skopeo                    | 0.1.40-dev  | https://github.com/containers/skopeo              | [Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0) |
+| Crane                     | 0.4.1  | https://github.com/google/go-containerregistry/tree/main/cmd/crane     | [Apache License 2.0](https://github.com/google/go-containerregistry/blob/main/LICENSE) |
 
 ## Epicli Python dependencies
 
@@ -198,7 +197,6 @@ Note that versions are default versions and can be changed in certain cases thro
 | s3transfer | 0.3.4 | https://github.com/boto/s3transfer | [Apache License 2.0](https://api.github.com/repos/boto/s3transfer/license) |
 | scp | 0.13.3 | https://github.com/jbardin/scp.py | [Other](https://api.github.com/repos/jbardin/scp.py/license) |
 | six | 1.15.0 | https://github.com/benjaminp/six | [MIT License](https://api.github.com/repos/benjaminp/six/license) |
-| skopeo-bin | 1.0.3 | https://github.com/epiphany-platform/skopeo-bin | [Apache License 2.0](https://api.github.com/repos/epiphany-platform/skopeo-bin/license) |
 | sshtunnel | 0.1.5 | https://github.com/pahaz/sshtunnel | [MIT License](https://api.github.com/repos/pahaz/sshtunnel/license) |
 | tabulate | 0.8.7 | https://github.com/astanin/python-tabulate | [MIT License](https://api.github.com/repos/astanin/python-tabulate/license) |
 | terraform-bin | 1.0.1 | https://github.com/epiphany-platform/terraform-bin | [Apache License 2.0](https://api.github.com/repos/epiphany-platform/terraform-bin/license) |

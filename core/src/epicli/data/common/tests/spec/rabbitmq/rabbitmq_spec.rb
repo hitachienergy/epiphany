@@ -137,6 +137,7 @@ if plugins.include? "rabbitmq_management"
   def rabbitmq_use_longname?
     cmd = "grep -Po '(?<=^RABBITMQ_USE_LONGNAME=)\\w+' /etc/rabbitmq/rabbitmq-env.conf"
     result = Specinfra.backend.run_command(cmd)
+    raise(result.stderr) if (result.failure? and !result.stderr.empty?)
     return result.stdout.chomp.downcase == "true"
   end
 

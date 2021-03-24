@@ -1,0 +1,58 @@
+groups:
+- name: kafka.rules
+  rules:
+  - alert: UnderReplicatedPartitions
+    expr: kafka_server_replicamanager_underreplicatedpartitions > 0
+    for: 10s
+    labels:
+      severity: warning
+    annotations:
+      summary: 'Kafka under replicated partitions'
+      description: 'There are {{ $value }} under replicated partitions on {{ $labels.kubernetes_pod_name }}'
+
+  - alert: AbnormalControllerState
+    expr: sum(kafka_controller_kafkacontroller_activecontrollercount) != 1
+    for: 10s
+    labels:
+      severity: warning
+    annotations:
+      summary: 'Kafka abnormal controller state'
+      description: 'There are {{ $value }} active controllers in the cluster'
+
+  - alert: OfflinePartitions
+    expr: sum(kafka_controller_kafkacontroller_offlinepartitionscount) > 0
+    for: 10s
+    labels:
+      severity: warning
+    annotations:
+      summary: 'Kafka offline partitions'
+      description: 'One or more partitions have no leader'
+
+  - alert: UnderMinIsrPartitionCount
+    expr: kafka_server_replicamanager_underminisrpartitioncount > 0
+    for: 10s
+    labels:
+      severity: warning
+    annotations:
+      summary: 'Kafka under min ISR partitions'
+      description: 'There are {{ $value }} partitions under the min ISR on {{ $labels.kubernetes_pod_name }}'
+
+  - alert: OfflineLogDirectoryCount
+    expr: kafka_log_logmanager_offlinelogdirectorycount > 0
+    for: 10s
+    labels:
+      severity: warning
+    annotations:
+      summary: 'Kafka offline log directories'
+      description: 'There are {{ $value }} offline log directories on {{ $labels.kubernetes_pod_name }}'
+
+- name: KafkaConsumerLag
+  rules:
+  - alert: Kafka consumers are lagging more than 100 messages over last 15 minutes.
+    labels:
+      severity: critical
+    expr: sum by(consumergroup) (kafka_consumergroup_lag) > 100
+    for: 15m
+    annotations:
+      summary: 'Consumer group lag is too big'
+      description: 'Consumer group {{ $labels.consumergroup}} lag is too big ({{ $value }}) on topic {{ $labels.topic }}/partition {{ $labels.partition }}'

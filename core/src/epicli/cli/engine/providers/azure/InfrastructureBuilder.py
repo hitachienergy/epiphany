@@ -1,5 +1,4 @@
 import os
-import uuid
 from copy import deepcopy
 
 from cli.helpers.Step import Step
@@ -9,6 +8,7 @@ from cli.helpers.doc_list_helpers import select_first
 from cli.helpers.data_loader import load_yaml_obj, types
 from cli.helpers.config_merger import merge_with_defaults
 from cli.helpers.objdict_helpers import objdict_to_dict, dict_to_objdict
+from cli.helpers.os_images import get_os_distro_normalized
 from cli.version import VERSION
 
 class InfrastructureBuilder(Step):
@@ -35,6 +35,8 @@ class InfrastructureBuilder(Step):
         shared_storage = self.get_storage_share_config()
         infrastructure.append(shared_storage)
 
+        cloud_init_custom_data = self.get_cloud_init_custom_data()
+
         for component_key, component_value in self.cluster_model.specification.components.items():
             vm_count = component_value['count']
             if vm_count < 1:
@@ -43,6 +45,8 @@ class InfrastructureBuilder(Step):
             # The vm config also contains some other stuff we use for network and security config.
             # So get it here and pass it allong.
             vm_config = self.get_virtual_machine(component_value, self.cluster_model, self.docs)
+            # Set property that controls cloud-init.
+            vm_config.specification['use_cloud_init_custom_data'] = cloud_init_custom_data.specification.enabled
 
             # If there are no security groups Ansible provisioning will fail because
             # SSH is not allowed then with public IPs on Azure.
@@ -118,6 +122,12 @@ class InfrastructureBuilder(Step):
                 vm = self.get_vm(component_key, component_value, vm_config, availability_set,
                                  network_interface.specification.name, index)
                 infrastructure.append(vm)
+
+        first_vm_doc = select_first(infrastructure, lambda x: x.kind == 'infrastructure/virtual-machine')
+        if first_vm_doc is not None:
+            cloud_init_custom_data.specification['os_distribution'] = get_os_distro_normalized(first_vm_doc)
+
+        infrastructure.append(cloud_init_custom_data)
 
         return infrastructure
 
@@ -205,6 +215,11 @@ class InfrastructureBuilder(Step):
         if availability_set is not None:
             vm.specification.availability_set_name = availability_set.specification.name
         return vm
+
+    def get_cloud_init_custom_data(self):
+        cloud_init_custom_data = self.get_config_or_default(self.docs, 'infrastructure/cloud-init-custom-data')
+        cloud_init_custom_data.specification.file_name = 'cloud-config.yml'
+        return cloud_init_custom_data
 
     @staticmethod
     def get_config_or_default(docs, kind):

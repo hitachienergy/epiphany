@@ -23,6 +23,7 @@ deplist="${script_path}/.dependencies"
 logfile="${script_path}/log"
 download_cmd="apt-get download"
 add_repos="${script_path}/add-repositories.sh"
+crane_bin="${script_path}/crane"
 
 # to download everything, add "--recurse" flag but then you will get much more packages (e.g. 596 vs 319)
 deplist_cmd() {
@@ -44,7 +45,7 @@ if [[ ! -f /etc/apt/sources.list ]]; then
 fi
 
 # install prerequisites which might be missing
-apt install -y wget gpg curl
+apt install -y wget gpg curl tar
 
 # some quick sanity check
 echol "Dependency list: ${deplist}"
@@ -66,7 +67,8 @@ shopt -u nullglob
 # add 3rd party repositories
 . ${add_repos}
 
-# parse the input file, separete by tags: [packages], [files], [images]
+# parse the input file, separete by tags: [crane], [packages], [files], [images]
+crane=$(awk '/^$/ || /^#/ {next}; /\[crane\]/ {f=1; next}; /^\[/ {f=0}; f {print $0}' "${input_file}")
 packages=$(awk '/^$/ || /^#/ {next}; /\[packages\]/ {f=1; next}; /^\[/ {f=0}; f {print $0}' "${input_file}")
 files=$(awk '/^$/ || /^#/ {next}; /\[files\]/ {f=1; next}; /^\[/ {f=0}; f {print $0}' "${input_file}")
 images=$(awk '/^$/ || /^#/ {next}; /\[images\]/ {f=1; next}; /^\[/ {f=0}; f {print $0}' "${input_file}")
@@ -77,6 +79,24 @@ printf "\n"
 find "$script_path" -type f -wholename "${deplist}" -mmin +15 -exec rm "${deplist}" \;
 # clear list of cached dependencies if requirements.txt was recently edited
 find "$script_path" -type f -wholename "$input_file" -mmin -1 -exec rm "${deplist}" \;
+
+# CRANE
+if [[ -z "${crane}" ]] || [ $(wc -l <<< "${crane}") -ne 1 ] ; then
+    exit_with_error "Crane binary download path undefined or more than one download path defined"
+else
+    file_url=$(head -n 1 <<< "${crane}")
+    echol "Downloading crane from: ${file_url}"
+    download_file "${file_url}" "${script_path}"
+    tar_path="${script_path}/${file_url##*/}"
+    echol "Unpacking crane from ${tar_path} to ${crane_bin}"
+    tar -xzf "${tar_path}" --directory ${script_path} "crane" --overwrite
+    chmod +x "${crane_bin}"
+    remove_file "${tar_path}"
+    [[ -f $crane_bin ]] || exit_with_error "File not found: $crane_bin"
+    [[ -x $crane_bin ]] || exit_with_error "$crane_bin has to be executable"
+fi
+
+printf "\n"
 
 # PACKAGES
 # if dependency list doesn't exist or is zero size then resolve dependency and store them in a deplist file
@@ -145,11 +165,11 @@ else
     cat -n <<< "${images}"
 
     printf "\n"
-    # download images using skopeo
+    # download images using crane
     while IFS= read -r image_name; do
         download_image "${image_name}" "${dst_dir_images}"
         if [ $? != 0 ]; then
-            echo "Skopeo download error, retrying..."
+            echo "Crane download error, retrying..."
             download_image "${image_name}" "${dst_dir_images}"
         fi
     done <<< "${images}"

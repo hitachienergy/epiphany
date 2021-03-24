@@ -1,0 +1,14 @@
+---
+supported_oses:
+  - name: CentOS
+    version:
+      min: 7.6
+      max: 7.9
+  - name: RedHat
+    version:
+      min: 7.6
+      max: 7.9
+  - name: Ubuntu
+    version:
+      min: 18.04
+      max: 18.04

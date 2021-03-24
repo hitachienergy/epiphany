@@ -54,10 +54,6 @@ class AnsibleRunner(Step):
         shutil.rmtree(ansible_dir, ignore_errors=True)
         copy_files_recursively(AnsibleRunner.ANSIBLE_PLAYBOOKS_PATH, ansible_dir)
 
-        # copy skopeo so Ansible can move it to the repositry machine
-        if not Config().offline_requirements:
-            shutil.copy(os.path.join(dirname(dirname(inspect.getfile(os))), 'skopeo_linux'), '/tmp')
-
     def pre_flight(self, inventory_path):
         self.logger.info('Checking connection to each machine')
         self.ansible_command.run_task_with_retries(inventory=inventory_path,

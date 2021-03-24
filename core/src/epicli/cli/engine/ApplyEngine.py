@@ -8,11 +8,13 @@ from cli.helpers.doc_list_helpers import select_single, select_all
 from cli.helpers.build_saver import save_manifest, get_inventory_path
 from cli.helpers.yaml_helpers import safe_load_all
 from cli.helpers.Log import Log
+from cli.helpers.os_images import get_os_distro_normalized
 from cli.engine.providers.provider_class_loader import provider_class_loader
 from cli.engine.schema.DefaultMerger import DefaultMerger
 from cli.engine.schema.SchemaValidator import SchemaValidator
 from cli.engine.schema.ConfigurationAppender import ConfigurationAppender
 from cli.engine.terraform.TerraformTemplateGenerator import TerraformTemplateGenerator
+from cli.engine.terraform.TerraformFileCopier import TerraformFileCopier
 from cli.engine.terraform.TerraformRunner import TerraformRunner
 from cli.engine.ansible.AnsibleRunner import AnsibleRunner
 
@@ -122,39 +124,13 @@ class ApplyEngine(Step):
         # Before this issue https://github.com/epiphany-platform/epiphany/issues/195 gets resolved,
         # we are forced to do assertion here.
 
-        def _get_os_indicator(vm_doc):
-            expected_indicators = {
-                "ubuntu": "ubuntu",
-                "rhel": "redhat",
-                "redhat": "redhat",
-                "centos": "centos",
-            }
-            if vm_doc.provider == "azure":
-                # Example image offers:
-                # - UbuntuServer
-                # - RHEL
-                # - CentOS
-                for indicator in expected_indicators:
-                    if indicator in vm_doc.specification.storage_image_reference.offer.lower():
-                        return expected_indicators[indicator]
-            if vm_doc.provider == "aws":
-                # Example public/official AMI names:
-                # - ubuntu/images/hvm-ssd/ubuntu-bionic-18.04-amd64-server-20200611
-                # - RHEL-7.8_HVM_GA-20200225-x86_64-1-Hourly2-GP2
-                # - CentOS 7.8.2003 x86_64
-                for indicator in expected_indicators:
-                    if indicator in vm_doc.specification.os_full_name.lower():
-                        return expected_indicators[indicator]
-            # When name is completely custom we just skip the check
-            return None
-
         virtual_machine_docs = select_all(
             self.infrastructure_docs,
             lambda x: x.kind == 'infrastructure/virtual-machine',
         )
 
         os_indicators = {
-            _get_os_indicator(vm_doc)
+            get_os_distro_normalized(vm_doc)
             for vm_doc in virtual_machine_docs
         }
 
@@ -176,6 +152,10 @@ class ApplyEngine(Step):
             # Generate terraform templates
             with TerraformTemplateGenerator(self.cluster_model, self.infrastructure_docs) as template_generator:
                 template_generator.run()
+
+            # Copy cloud-config.yml since it contains bash code which can't be templated easily (requires {% raw %}...{% endraw %})
+            with TerraformFileCopier(self.cluster_model, self.infrastructure_docs) as file_copier:
+                file_copier.run()
 
             # Run Terraform to create infrastructure
             with TerraformRunner(self.cluster_model, self.configuration_docs) as tf_runner:

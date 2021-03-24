@@ -15,6 +15,9 @@ python-kitchen # for createrepo
 redhat-logos # for httpd
 yum-utils
 
+[crane]
+https://github.com/google/go-containerregistry/releases/download/v0.4.1/go-containerregistry_Linux_x86_64.tar.gz
+
 [packages]
 audit # for docker-ce
 bash-completion
@@ -31,9 +34,8 @@ docker-ce-19.03.14
 docker-ce-cli-19.03.14
 ebtables
 elasticsearch-curator-5.8.3
-elasticsearch-oss-6.8.5 # for elasticsearch role
-elasticsearch-oss-7.9.1 # for opendistroforelasticsearch & logging roles
-erlang-23.1.4 # must be compatible with rabbitmq version
+elasticsearch-oss-7.10.2 # for opendistroforelasticsearch & logging roles
+erlang-23.1.5 # must be compatible with rabbitmq version
 ethtool
 filebeat-7.9.2
 firewalld
@@ -61,13 +63,13 @@ net-tools
 nfs-utils
 nmap-ncat
 # Open Distro for Elasticsearch plugins are installed individually to not download them twice in different versions (as dependencies of opendistroforelasticsearch package)
-opendistro-alerting-1.10.1*
-opendistro-index-management-1.10.1*
-opendistro-job-scheduler-1.10.1*
-opendistro-performance-analyzer-1.10.1*
-opendistro-security-1.10.1*
-opendistro-sql-1.10.1*
-opendistroforelasticsearch-kibana-1.10.1*
+opendistro-alerting-1.13.1*
+opendistro-index-management-1.13.1*
+opendistro-job-scheduler-1.13.0*
+opendistro-performance-analyzer-1.13.0*
+opendistro-security-1.13.1*
+opendistro-sql-1.13.0*
+opendistroforelasticsearch-kibana-1.13.1*
 openssl
 perl # for vim
 perl-Getopt-Long # for vim
@@ -188,8 +190,11 @@ k8s.gcr.io/coredns:1.3.1
 k8s.gcr.io/etcd:3.3.10
 k8s.gcr.io/pause:3.1
 coredns/coredns:1.5.0
-quay.io/coreos/flannel:v0.11.0-amd64
-quay.io/coreos/flannel:v0.11.0
+# Old v1 repos not compatible with Crane. Pulling from epiphanyplatform/flannel as workarround.
+#quay.io/coreos/flannel:v0.11.0-amd64 
+#quay.io/coreos/flannel:v0.11.0
+epiphanyplatform/flannel:v0.11.0-amd64
+epiphanyplatform/flannel:v0.11.0
 calico/cni:v3.8.1
 calico/kube-controllers:v3.8.1
 calico/node:v3.8.1
@@ -218,8 +223,11 @@ k8s.gcr.io/kube-proxy:v1.17.4
 k8s.gcr.io/coredns:1.6.5
 k8s.gcr.io/etcd:3.4.3-0
 k8s.gcr.io/pause:3.1
-quay.io/coreos/flannel:v0.11.0-amd64
-quay.io/coreos/flannel:v0.11.0
+# Old v1 repos not compatible with Crane. Pulling from epiphanyplatform/flannel as workarround.
+#quay.io/coreos/flannel:v0.11.0-amd64 
+#quay.io/coreos/flannel:v0.11.0
+epiphanyplatform/flannel:v0.11.0-amd64
+epiphanyplatform/flannel:v0.11.0
 calico/cni:v3.11.2
 calico/cni:v3.12.0
 calico/kube-controllers:v3.11.2

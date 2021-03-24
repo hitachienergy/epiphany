@@ -7,6 +7,7 @@ from distutils import dir_util
 from cli.helpers.data_loader import load_template_file, types
 from cli.helpers.yaml_helpers import dump_all, dump
 from cli.helpers.Config import Config
+from pathlib import Path
 
 TERRAFORM_OUTPUT_DIR = 'terraform/'
 MANIFEST_FILE_NAME = 'manifest.yml'
@@ -51,13 +52,9 @@ def save_ansible_config_file(ansible_config_file_settings, ansible_config_file_p
     save_to_file(ansible_config_file_path, content)
 
 
-# method cleans generated .tf files (not tfstate)
-def clear_terraform_templates(cluster_name):
-    terraform_dir = get_terraform_path(cluster_name)
-    files = os.listdir(terraform_dir)
-    for file in files:
-        if file.endswith(".tf"):
-            os.remove(os.path.join(terraform_dir, file))
+def remove_files_matching_glob(dir_path, pattern):
+    for file in Path(dir_path).glob(pattern):
+        file.unlink()
 
 
 def save_terraform_file(content, cluster_name, filename):
@@ -91,13 +88,13 @@ def get_inventory_path(cluster_name):
 def get_inventory_path_for_build(build_directory):
     build_version = check_build_output_version(build_directory)
     inventory =  os.path.join(build_directory, INVENTORY_FILE_NAME)
-    if build_version == BUILD_EPICLI: 
+    if build_version == BUILD_EPICLI:
         return inventory
-    if build_version == BUILD_LEGACY: 
+    if build_version == BUILD_LEGACY:
         files = [f for f in listdir(inventory) if isfile(join(inventory, f))]
         if len(files) != 1:
             raise Exception(f'Not a valid legacy build directory.')
-        return join(inventory, files[0]) 
+        return join(inventory, files[0])
 
 
 def get_ansible_config_file_path(cluster_name):
@@ -117,7 +114,7 @@ def check_build_output_version(build_directory):
     # if manifest is in the build root/inventory we are dealing with post 0.3.0
     if os.path.exists(manifest_path) and not os.path.isdir(manifest_path):
         return BUILD_EPICLI
-    
+
     # if manifest is in root/inventory/.... we are dealing with pre 0.3.0
     if os.path.exists(manifest_path) and os.path.isdir(manifest_path):
         return BUILD_LEGACY
@@ -149,7 +146,7 @@ def get_ansible_path_for_build(build_directory):
     ansible_dir = os.path.join(build_directory, ANSIBLE_OUTPUT_DIR)
     if not os.path.exists(ansible_dir):
         os.makedirs(ansible_dir)
-    return ansible_dir    
+    return ansible_dir
 
 def copy_files_recursively(src, dst):
     distutils.dir_util.copy_tree(src, dst)

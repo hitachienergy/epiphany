@@ -1,3 +1,6 @@
+[crane]
+https://github.com/google/go-containerregistry/releases/download/v0.4.1/go-containerregistry_Linux_x86_64.tar.gz
+
 [packages]
 adduser
 apt-transport-https
@@ -13,29 +16,29 @@ docker-ce 5:19.03.14
 docker-ce-cli 5:19.03.14
 ebtables
 elasticsearch-curator 5.8.3
-elasticsearch-oss 6.8.5 # for elasticsearch role
-elasticsearch-oss 7.9.1 # for opendistroforelasticsearch & logging roles
+elasticsearch-oss 7.10.2 # for opendistroforelasticsearch & logging roles
 
-# erlang packages must be compatible with rabbitmq version
-erlang-eldap 1:23.1.4
-erlang-inets 1:23.1.4
-erlang-os-mon 1:23.1.4
-erlang-public-key 1:23.1.4
-erlang-ssl 1:23.1.4
-
-# additional dependencies required to fix https://github.com/epiphany-platform/epiphany/issues/1920
-erlang-asn1 1:23.1.4
-erlang-base-hipe 1:23.1.4
-erlang-crypto 1:23.1.4
-erlang-ftp 1:23.1.4
-erlang-mnesia 1:23.1.4
-erlang-parsetools 1:23.1.4
-erlang-runtime-tools 1:23.1.4
-erlang-snmp 1:23.1.4
-erlang-syntax-tools 1:23.1.4
-erlang-tftp 1:23.1.4
-erlang-tools 1:23.1.4
-erlang-xmerl 1:23.1.4
+# Erlang packages must be compatible with RabbitMQ version.
+# Metapackages such as erlang and erlang-nox must only be used
+# with apt version pinning. They do not pin their dependency versions.
+# List based on: https://www.rabbitmq.com/install-debian.html#installing-erlang-package
+erlang-asn1 1:23.1.5
+erlang-base 1:23.1.5
+erlang-crypto 1:23.1.5
+erlang-eldap 1:23.1.5
+erlang-ftp 1:23.1.5
+erlang-inets 1:23.1.5
+erlang-mnesia 1:23.1.5
+erlang-os-mon 1:23.1.5
+erlang-parsetools 1:23.1.5
+erlang-public-key 1:23.1.5
+erlang-runtime-tools 1:23.1.5
+erlang-snmp 1:23.1.5
+erlang-ssl 1:23.1.5
+erlang-syntax-tools 1:23.1.5
+erlang-tftp 1:23.1.5
+erlang-tools 1:23.1.5
+erlang-xmerl 1:23.1.5
 
 ethtool
 filebeat 7.9.2
@@ -53,13 +56,13 @@ logstash-oss 1:7.8.1
 netcat
 net-tools
 nfs-common
-opendistro-alerting 1.10.1
-opendistro-index-management 1.10.1
-opendistro-job-scheduler 1.10.1
-opendistro-performance-analyzer 1.10.1
-opendistro-security 1.10.1
-opendistro-sql 1.10.1
-opendistroforelasticsearch-kibana 1.10.1
+opendistro-alerting 1.13.1
+opendistro-index-management 1.13.1
+opendistro-job-scheduler 1.13.0
+opendistro-performance-analyzer 1.13.0
+opendistro-security 1.13.1
+opendistro-sql 1.13.0
+opendistroforelasticsearch-kibana 1.13.1
 openjdk-8-jre-headless
 openssl
 postgresql-10
@@ -236,8 +239,11 @@ k8s.gcr.io/coredns:1.3.1
 k8s.gcr.io/etcd:3.3.10
 k8s.gcr.io/pause:3.1
 coredns/coredns:1.5.0
-quay.io/coreos/flannel:v0.11.0-amd64
-quay.io/coreos/flannel:v0.11.0
+# Old v1 repos not compatible with Crane. Pulling from epiphanyplatform/flannel as workarround.
+#quay.io/coreos/flannel:v0.11.0-amd64 
+#quay.io/coreos/flannel:v0.11.0
+epiphanyplatform/flannel:v0.11.0-amd64
+epiphanyplatform/flannel:v0.11.0
 calico/cni:v3.8.1
 calico/kube-controllers:v3.8.1
 calico/node:v3.8.1
@@ -266,8 +272,11 @@ k8s.gcr.io/kube-proxy:v1.17.4
 k8s.gcr.io/coredns:1.6.5
 k8s.gcr.io/etcd:3.4.3-0
 k8s.gcr.io/pause:3.1
-quay.io/coreos/flannel:v0.11.0-amd64
-quay.io/coreos/flannel:v0.11.0
+# Old v1 repos not compatible with Crane. Pulling from epiphanyplatform/flannel as workarround.
+#quay.io/coreos/flannel:v0.11.0-amd64 
+#quay.io/coreos/flannel:v0.11.0
+epiphanyplatform/flannel:v0.11.0-amd64
+epiphanyplatform/flannel:v0.11.0
 calico/cni:v3.11.2
 calico/cni:v3.12.0
 calico/kube-controllers:v3.11.2
