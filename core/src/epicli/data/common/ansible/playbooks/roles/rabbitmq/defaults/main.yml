@@ -10,4 +10,3 @@ versions:
   redhat:
     erlang_filename: erlang-23.1.5-1.el7.x86_64.rpm
     rabbitmq: 3.8.9
-repository_url: test
