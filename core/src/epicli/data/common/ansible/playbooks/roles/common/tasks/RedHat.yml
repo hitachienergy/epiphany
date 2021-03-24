@@ -33,6 +33,7 @@
       - net-tools
       - openssl
       - python-setuptools
+      - python2-cryptography
       - rsync
       - sysstat
       - tar

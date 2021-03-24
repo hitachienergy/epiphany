@@ -163,6 +163,9 @@ python3-jmespath
 # for vim, issue #869
 libpython3.6
 
+# for Ansible (certificate modules)
+python-cryptography
+
 # K8s upgrade v1.14 (the oldest version supported by Epiphany, Epiphany >= v0.4.4 && < v0.6.0)
 kubeadm 1.14.6
 kubectl 1.14.6
