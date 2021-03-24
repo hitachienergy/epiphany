@@ -144,6 +144,7 @@ kubernetes-cni-0.7.5-0
 kubernetes-cni-0.8.6-0
 
 [files]
+# Github repository for erlang rpm is used since packagecloud repository is limited to a certain number of packages and erlang package from erlang-solution repository is much more complex and bigger
 https://github.com/rabbitmq/erlang-rpm/releases/download/v23.1.5/erlang-23.1.5-1.el7.x86_64.rpm
 https://github.com/prometheus/haproxy_exporter/releases/download/v0.10.0/haproxy_exporter-0.10.0.linux-amd64.tar.gz
 https://repo1.maven.org/maven2/io/prometheus/jmx/jmx_prometheus_javaagent/0.14.0/jmx_prometheus_javaagent-0.14.0.jar
