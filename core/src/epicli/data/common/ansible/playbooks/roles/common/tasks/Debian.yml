@@ -30,7 +30,6 @@
       - net-tools
       - netcat
       - openssl
-      - python-cryptography
       - python-setuptools
       - rsync
       - software-properties-common
