@@ -3,7 +3,15 @@
   set_fact:
     current_group_name: "logging"
 
+- name: Load vars into variable
+  include_vars:
+    file: roles/logging/vars/main.yml
+    name: logging_vars
+  run_once: true
+  no_log: true  # contains sensitive data
+
 - name: Install and configure OpenDistro for Elasticsearch
   import_role:
     name: opendistro_for_elasticsearch
-    vars_from: ""  # to not override vars
+  vars:
+    specification: "{{ logging_vars.specification }}"  # to override opendistro_for_elasticsearch specification
