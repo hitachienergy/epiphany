@@ -95,7 +95,7 @@
 
             - rabbitmq-server={{ versions.debian.rabbitmq }}
           RedHat:
-            - erlang-{{ versions.redhat.erlang }}
+            - "{{ repository_url }}/files/{{ versions.redhat.erlang_filename }}"
             - rabbitmq-server-{{ versions.redhat.rabbitmq }}
 
     - name: RabbitMQ | Start master
