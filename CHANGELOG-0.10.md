@@ -8,7 +8,7 @@
 - [#1355](https://github.com/epiphany-platform/epiphany/issues/1355) - Updating cloud based OS images - configuration required for Azure RHEL LVM images
 - [#2081](https://github.com/epiphany-platform/epiphany/issues/2081) - Replace Skopeo with Crane
 - [#1323](https://github.com/epiphany-platform/epiphany/issues/1323) - Documentation how to handle data in Opendistro for Elasticsearch
-- [#1789](https://github.com/epiphany-platform/epiphany/issues/1789) - [Ubuntu] Add retry feature for failed commands in download-requirements.sh
+- [#1789](https://github.com/epiphany-platform/epiphany/issues/1789) - [Ubuntu] Add retry feature for downloading packages in download-requirements.sh
 
 ### Fixed
 
