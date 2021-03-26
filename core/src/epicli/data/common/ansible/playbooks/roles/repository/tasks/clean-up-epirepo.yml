@@ -14,7 +14,7 @@
         - vars
 
 # TODO: Do not remove files present in requirements.txt
-- name: Remove {{ apache_epirepo_path }} directory
+- name: Remove directories in {{ apache_epirepo_path }}
   file:
     state: absent
     path: "{{ apache_epirepo_path }}/{{ item }}"
@@ -58,3 +58,5 @@
         path: "{{ item.path }}"
         state: absent
       loop: "{{ files_to_delete.files }}"
+      loop_control:
+        label: "{{ item.path }}"
