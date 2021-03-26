@@ -26,8 +26,8 @@ Enable for RHEL on Azure:
      storage_image_reference:
        publisher: RedHat
        offer: RHEL
-       sku: 7-RAW
-       version: "7.7.2019090418"
+       sku: 7-LVM
+       version: "7.9.2020111202"
    ```
 
 Enable for RHEL on AWS:
@@ -46,7 +46,7 @@ Enable for RHEL on AWS:
    provider: aws
    based_on: repository-machine
    specification:
-     os_full_name: RHEL-7.8_HVM_GA-20200225-x86_64-1-Hourly2-GP2
+     os_full_name: RHEL-7.9_HVM-20210208-x86_64-0-Hourly2-GP2
    ```
 
 Enable for CentOS on Azure:
@@ -67,8 +67,8 @@ Enable for CentOS on Azure:
      storage_image_reference:
        publisher: OpenLogic
        offer: CentOS
-       sku: "7_8"
-       version: "7.8.2020100700"
+       sku: "7_9"
+       version: "7.9.2021020400"
    ```
 
 Enable for CentOS on AWS:
@@ -87,7 +87,7 @@ Enable for CentOS on AWS:
    provider: aws
    based_on: repository-machine
    specification:
-     os_full_name: "CentOS 7.8.2003 x86_64"
+     os_full_name: "CentOS 7.9.2009 x86_64"
    ```
 
 Disable:
@@ -106,20 +106,22 @@ Disable:
 
 ## How to create an Epiphany cluster on existing infrastructure
 
-*Please read first prerequisites related to [hostnames requirements](./PREREQUISITES.md#hostnames-requirements).*
+*Please read first prerequisites related to [hostname requirements](./PREREQUISITES.md#hostname-requirements).*
 
-Epicli has the ability to setup a cluster on infrastructure provided by you. These can be either bare metal machines or VM's and should meet the following requirements:
+Epicli has the ability to setup a cluster on infrastructure provided by you. These can be either bare metal machines or VMs and should meet the following requirements:
 
 *Note. Hardware requirements are not listed since this dependends on use-case, component configuration etc.*
 
-1. The cluster machines/vm's are connected by a network or virtual network of some sorts and can communicate which each other and have access to the internet.
-2. The cluster machines/vm's are running one of the following Linux distributions:
+1. The cluster machines/VMs are connected by a network (or virtual network of some sorts) and can communicate with each other
+and at least one of them (with `repository` role) has Internet access in order to download dependencies.
+If there is no Internet access, you can use [air gap feature (offline mode)](#how-to-create-an-epiphany-cluster-on-existing-air-gapped-infrastructure).
+2. The cluster machines/VMs are running one of the following Linux distributions:
     - RedHat 7.6+ and < 8
     - CentOS 7.6+ and < 8
     - Ubuntu 18.04
-   Other distributions/version might work but are un-tested.
-3. The cluster machines/vm`s are should be accessible through SSH with a set of SSH keys you provide and configure on each machine yourself.
-4. A provisioning machine that:
+3. The cluster machines/VMs are accessible through SSH with a set of SSH keys you provide and configure on each machine yourself (key-based authentication).
+4. The user used for SSH connection (`admin_user`) has passwordless root privileges through `sudo`.
+5. A provisioning machine that:
     - Has access to the SSH keys
     - Is on the same network as your cluster machines
     - Has Epicli running.
@@ -179,25 +181,26 @@ To setup the cluster do the following steps from the provisioning machine:
 
     This will create the inventory for Ansible based on the component/machine definitions made inside the `newcluster.yml` and let Absible deploy it. Note that the `--no-infra` is important since it tells Epicli to skip the Terraform part.
 
-## How to create an Epiphany cluster on existing airgapped infrastructure
+## How to create an Epiphany cluster on existing air-gapped infrastructure
 
-*Please read first prerequisites related to [hostnames requirements](./PREREQUISITES.md#hostnames-requirements).*
+*Please read first prerequisites related to [hostname requirements](./PREREQUISITES.md#hostname-requirements).*
 
-Epicli has the ability to setup a cluster on airgapped infrastructure provided by you. These can be either bare metal machines or VM's and should meet the following requirements:
+Epicli has the ability to set up a cluster on air-gapped infrastructure provided by you. These can be either bare metal machines
+or VMs and should meet the following requirements:
 
 *Note. Hardware requirements are not listed since this dependends on use-case, component configuration etc.*
 
-1. The airgapped cluster machines/VMs are connected by a network or virtual network of some sorts and can communicate which each other.
-2. The airgapped cluster machines/vm`s are running one of the following Linux distributions:
+1. The air-gapped cluster machines/VMs are connected by a network or virtual network of some sorts and can communicate with each other.
+2. The air-gapped cluster machines/VMs are running one of the following Linux distributions:
     - RedHat 7.6+ and < 8
     - CentOS 7.6+ and < 8
     - Ubuntu 18.04
-   Other distributions/version might work but are un-tested.
-3. The airgapped cluster machines/vm`s should be accessible through SSH with a set of SSH keys you provide and configure on each machine yourself.
-2. A requirements machine that:
-    - Runs the same distribution as the airgapped cluster machines/vm`s (RedHat 7, CentOS 7, Ubuntu 18.04)
+3. The cluster machines/VMs are accessible through SSH with a set of SSH keys you provide and configure on each machine yourself (key-based authentication).
+4. The user used for SSH connection (`admin_user`) has passwordless root privileges through `sudo`.
+5. A requirements machine that:
+    - Runs the same distribution as the air-gapped cluster machines/VMs (RedHat 7, CentOS 7, Ubuntu 18.04)
     - Has access to the internet.
-3. A provisioning machine that:
+6. A provisioning machine that:
     - Has access to the SSH keys
     - Is on the same network as your cluster machines
     - Has Epicli running.
@@ -273,7 +276,7 @@ To setup the cluster do the following steps:
     epicli apply -f newcluster.yml --no-infra --offline-requirements /requirementsoutput/
     ```
 
-    This will create the inventory for Ansible based on the component/machine definitions made inside the `newcluster.yml` and let Absible deploy it. Note that the `--no-infra` is important since it tells Epicli to skip the Terraform part. The `--offline-requirements` tells Epicli it is an airgapped installation and to use the  `/requirementsoutput/` requirements folder prepared in steps 1 and 2 as source for all requirements.
+    This will create the inventory for Ansible based on the component/machine definitions made inside the `newcluster.yml` and let Absible deploy it. Note that the `--no-infra` is important since it tells Epicli to skip the Terraform part. The `--offline-requirements` tells Epicli it is an air-gapped installation and to use the  `/requirementsoutput/` requirements folder prepared in steps 1 and 2 as source for all requirements.
 
 ## How to create an Epiphany cluster using custom system repository and Docker image registry
 
@@ -364,14 +367,14 @@ specification:
 
 ## How to create an Epiphany cluster on a cloud provider
 
-*Please read first prerequisites related to [hostnames requirements](./PREREQUISITES.md#hostnames-requirements).*
+*Please read first prerequisites related to [hostname requirements](./PREREQUISITES.md#hostname-requirements).*
 
 Epicli has the ability to setup a cluster on one of the following cloud providers:
 
 - Azure
 - AWS
 
-Under the hood it uses [Terraform](https://www.terraform.io/) to create the virtual infrastructure before it applies our [Anisble](https://www.ansible.com/) playbooks to provision the VM's.
+Under the hood it uses [Terraform](https://www.terraform.io/) to create the virtual infrastructure before it applies our [Anisble](https://www.ansible.com/) playbooks to provision the VMs.
 
 You need the following prerequisites:
 
@@ -492,12 +495,14 @@ To setup the cluster do the following steps from the provisioning machine:
 
 ### Note for RHEL Azure images
 
-Epiphany currently supports RHEL 7 RAW and LVM partitioned images attached to standard RHEL repositories. For more details, refer to [Azure documentation](https://docs.microsoft.com/en-us/azure/virtual-machines/workloads/redhat/redhat-images#rhel-7-image-types).
+Epiphany currently supports RHEL 7 LVM partitioned images attached to standard RHEL repositories. For more details, refer to [Azure documentation](https://docs.microsoft.com/en-us/azure/virtual-machines/workloads/redhat/redhat-images#rhel-7-image-types).
 
-For LVM partitioned images, Epiphany uses cloud-init custom data in order to merge small logical volumes (`homelv`, `optlv`, `tmplv` and `varlv`)
+Epiphany uses cloud-init custom data in order to merge small logical volumes (`homelv`, `optlv`, `tmplv` and `varlv`)
 into the `rootlv` and extends it (with underlying filesystem) by the current free space in its volume group.
 The `usrlv` LV, which has 10G, is not merged since it would require a reboot. The merging is required to deploy a cluster,
 however, [it can be disabled](#how-to-disable-merging-lvm-logical-volumes) for troubleshooting since it performs some administrative tasks (such as remounting filesystems or restarting services).
+
+NOTE: RHEL 7 LVM images require at least 64 GB for OS disk.
 
 Example config:
 
@@ -507,13 +512,15 @@ specification:
   storage_image_reference:
     publisher: RedHat
     offer: RHEL
-    sku: "7-RAW"
-    version: "7.7.2019090418"
+    sku: "7-LVM"
+    version: "7.9.2020111202"
+  storage_os_disk:
+    disk_size_gb: 64
 ```
 
 ### Note for CentOS Azure images
 
-Epiphany currently supports only CentOS 7 images with RAW partitioning, which means that LVM images cannot be used.
+Epiphany supports CentOS 7 images with RAW partitioning (recommended) and LVM as well.
 
 Example config:
 
@@ -523,8 +530,8 @@ specification:
   storage_image_reference:
     publisher: OpenLogic
     offer: CentOS
-    sku: 7_9-gen2
-    version: "7.9.2021020401"
+    sku: "7_9"
+    version: "7.9.2021020400"
 ```
 
 ### How to disable merging LVM logical volumes
@@ -552,7 +559,7 @@ From the defined cluster build folder it will take the information needed to rem
 
 ## Single machine cluster
 
-*Please read first prerequisites related to [hostnames requirements](./PREREQUISITES.md#hostnames-requirements).*
+*Please read first prerequisites related to [hostname requirements](./PREREQUISITES.md#hostname-requirements).*
 
 ---
 **NOTE**
@@ -864,7 +871,7 @@ Epiphany can promote / convert older single-master clusters to HA mode (since v0
     promote_to_ha: false
   ```
 
-<em>Note: it is not supported yet to reverse HA promotion.</em>
+*Note: It is not supported yet to reverse HA promotion.*
 
 Epiphany can scale-up existing HA clusters (including ones that were promoted). To achieve that, it is required that:
 
@@ -889,7 +896,7 @@ Epiphany can scale-up existing HA clusters (including ones that were promoted). 
 
 - the regular epcli apply cycle must be executed
 
-<em>Note: it is not supported yet to scale-down clusters (master count cannot be decreased).</em>
+*Note: It is not supported yet to scale-down clusters (master count cannot be decreased).*
 
 ## Build artifacts
 

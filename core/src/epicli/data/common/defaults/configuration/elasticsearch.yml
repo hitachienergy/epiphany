@@ -1,5 +1,0 @@
-kind: configuration/elasticsearch
-title: Elasticsearch Config
-name: default
-specification:
-  elasticsearch_version: "6.8.5"

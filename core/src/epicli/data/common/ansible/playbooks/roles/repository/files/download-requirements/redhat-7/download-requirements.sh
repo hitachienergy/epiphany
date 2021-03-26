@@ -624,7 +624,7 @@ fi
 # About rhel-7-server-extras-rpms: https://access.redhat.com/solutions/3418891
 
 ON_PREM_REPO_ID='rhel-7-server-extras-rpms'
-REPO_ID_PATTERN="$ON_PREM_REPO_ID|rhui-REGION-rhel-server-extras|rhui-rhel-7-server-rhui-extras-rpms" # on-prem|AWS|Azure
+REPO_ID_PATTERN="$ON_PREM_REPO_ID|rhui-rhel-7-server-rhui-extras-rpms|rhui-REGION-rhel-server-extras|rhel-7-server-rhui-extras-rpms" # on-prem|Azure|AWS7.8|AWS7.9
 find_rhel_repo_id 'REPO_ID' "$ON_PREM_REPO_ID" "$REPO_ID_PATTERN"
 enable_repo "$REPO_ID"
 
@@ -632,7 +632,7 @@ enable_repo "$REPO_ID"
 # About rhel-server-rhscl-7-rpms: https://access.redhat.com/solutions/472793
 
 ON_PREM_REPO_ID='rhel-server-rhscl-7-rpms'
-REPO_ID_PATTERN="$ON_PREM_REPO_ID|rhui-REGION-rhel-server-rhscl|rhui-rhel-server-rhui-rhscl-7-rpms" # on-prem|AWS|Azure
+REPO_ID_PATTERN="$ON_PREM_REPO_ID|rhui-rhel-server-rhui-rhscl-7-rpms|rhui-REGION-rhel-server-rhscl|rhel-server-rhui-rhscl-7-rpms" # on-prem|Azure|AWS7.8|AWS7.9
 find_rhel_repo_id 'REPO_ID' "$ON_PREM_REPO_ID" "$REPO_ID_PATTERN"
 enable_repo "$REPO_ID"
 
@@ -729,25 +729,14 @@ gpgkey=https://download.postgresql.org/pub/repos/yum/RPM-GPG-KEY-PGDG
 EOF
 )
 
-RABBITMQ_ERLANG_REPO_CONF=$(cat <<'EOF'
-[rabbitmq-erlang]
-name=rabbitmq-erlang
-baseurl=https://dl.bintray.com/rabbitmq-erlang/rpm/erlang/23/el/7
-gpgcheck=1
-gpgkey=https://dl.bintray.com/rabbitmq/Keys/rabbitmq-release-signing-key.asc
-repo_gpgcheck=1
-enabled=1
-deltarpm_percentage=0
-EOF
-)
-
 RABBITMQ_SERVER_REPO_CONF=$(cat <<'EOF'
-[bintray-rabbitmq-server]
-name=bintray-rabbitmq-rpm
-baseurl=https://dl.bintray.com/rabbitmq/rpm/rabbitmq-server/v3.8.x/el/7/
+[rabbitmq-server]
+name=rabbitmq-rpm
+baseurl=https://packagecloud.io/rabbitmq/rabbitmq-server/el/7/$basearch
 gpgcheck=1
-gpgkey=https://dl.bintray.com/rabbitmq/Keys/rabbitmq-release-signing-key.asc
+gpgkey=https://packagecloud.io/rabbitmq/rabbitmq-server/gpgkey
 repo_gpgcheck=1
+sslcacert=/etc/pki/tls/certs/ca-bundle.crt
 enabled=1
 EOF
 )
@@ -767,7 +756,6 @@ add_repo_as_file 'grafana' "$GRAFANA_REPO_CONF"
 add_repo_as_file 'kubernetes' "$KUBERNETES_REPO_CONF"
 add_repo_as_file 'opendistroforelasticsearch' "$OPENDISTRO_REPO_CONF"
 add_repo_as_file 'postgresql-10' "$POSTGRESQL_REPO_CONF"
-add_repo_as_file 'rabbitmq-erlang' "$RABBITMQ_ERLANG_REPO_CONF"
 add_repo_as_file 'bintray-rabbitmq-rpm' "$RABBITMQ_SERVER_REPO_CONF"
 add_repo_from_script 'https://dl.2ndquadrant.com/default/release/get/10/rpm'
 disable_repo '2ndquadrant-dl-default-release-pg10-debug'
