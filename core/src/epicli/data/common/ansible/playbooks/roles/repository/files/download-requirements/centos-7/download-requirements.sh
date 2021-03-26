@@ -517,12 +517,13 @@ readonly YUM_CONFIG_BACKUP_FILE_PATH="$SCRIPT_DIR/${SCRIPT_FILE_NAME}-yum-repos-
 readonly CRANE_BIN="$SCRIPT_DIR/crane"
 readonly INSTALLED_PACKAGES_FILE_PATH="$SCRIPT_DIR/${SCRIPT_FILE_NAME}-installed-packages-list-do-not-remove.tmp"
 readonly PID_FILE_PATH=/var/run/${SCRIPT_FILE_NAME/sh/pid}
-readonly ADD_REPOSITORIES="$SCRIPT_DIR/add-repositories.sh"
+readonly ADD_NOARCH_REPOSITORIES="$SCRIPT_DIR/add-repositories-noarch.sh"
 
 #arch
 readonly ARCH=$(uname -m)
 echol "Detected arch: ${ARCH}"
 readonly REQUIREMENTS_FILE_PATH="$SCRIPT_DIR/requirements_$ARCH.txt"
+readonly ADD_ARCH_REPOSITORIES="$SCRIPT_DIR/add-repositories-$ARCH.sh"
 case $ARCH in
 x86_64)
 	readonly DOCKER_PLATFORM="linux/amd64"
@@ -628,8 +629,11 @@ enable_repo 'extras'
 
 # --- Add repos ---
 
-# TODO: See if we need to split this up to support different architectures
-. ${ADD_REPOSITORIES}
+# noarch repositories
+. ${ADD_NOARCH_REPOSITORIES}
+
+# arch specific repositories
+. ${ADD_ARCH_REPOSITORIES}
 
 # -> Software Collections (SCL) https://wiki.centos.org/AdditionalResources/Repositories/SCL
 if ! is_package_installed 'centos-release-scl'; then

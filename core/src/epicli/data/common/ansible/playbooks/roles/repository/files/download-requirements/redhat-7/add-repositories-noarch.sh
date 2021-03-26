@@ -118,6 +118,4 @@ add_repo_as_file 'grafana' "$GRAFANA_REPO_CONF"
 add_repo_as_file 'kubernetes' "$KUBERNETES_REPO_CONF"
 add_repo_as_file 'opendistroforelasticsearch' "$OPENDISTRO_REPO_CONF"
 add_repo_as_file 'postgresql-10' "$POSTGRESQL_REPO_CONF"
-add_repo_as_file 'bintray-rabbitmq-rpm' "$RABBITMQ_SERVER_REPO_CONF"
-add_repo_from_script 'https://dl.2ndquadrant.com/default/release/get/10/rpm'
-disable_repo '2ndquadrant-dl-default-release-pg10-debug'
+add_repo_as_file 'rabbitmq' "$RABBITMQ_SERVER_REPO_CONF"
