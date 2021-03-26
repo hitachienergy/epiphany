@@ -53,6 +53,9 @@
     - not custom_repository_url
     - inventory_hostname in target_repository_hostnames
 
+- include_tasks: clean-up-epirepo.yml
+  when: is_upgrade_run
+
 - name: |-
     Copy requirements for offline installation to repository host, this can take a long time
     Destination: {{ specification.apache_epirepo_path }}
