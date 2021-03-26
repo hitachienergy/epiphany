@@ -1,0 +1,26 @@
+---
+- name: Check whether OS is supported
+  vars:
+    select_distro: >-
+      {{ supported_oses | selectattr("name", "equalto", ansible_distribution) | list }}
+  block:
+    - name: Check whether OS distribution is supported
+      assert:
+        that: select_distro | count > 0
+        fail_msg: >-
+          Your OS distribution doesn't meet requirements.
+          One of the following is required: {{ supported_oses | map(attribute='name') | join(', ') }}
+        success_msg: OS distribution check passed
+
+    - name: Check whether OS version is supported
+      assert:
+        that:
+          - ansible_distribution_version is version(distro.version.max, '<=')
+          - ansible_distribution_version is version(distro.version.min, '>=')
+        fail_msg: >-
+          Your {{ ansible_distribution }} version doesn't meet requirements.
+          Unmet condition: version {{ '== ' + distro.version.min|string if distro.version.min == distro.version.max
+                                 else '>= ' + distro.version.min|string + ' and <= ' + distro.version.max|string }}
+        success_msg: OS version check passed
+      vars:
+        distro: "{{ select_distro[0] }}"

@@ -533,13 +533,12 @@ readonly YUM_CONFIG_BACKUP_FILE_PATH="$SCRIPT_DIR/${SCRIPT_FILE_NAME}-yum-repos-
 readonly CRANE_BIN="$SCRIPT_DIR/crane"
 readonly INSTALLED_PACKAGES_FILE_PATH="$SCRIPT_DIR/${SCRIPT_FILE_NAME}-installed-packages-list-do-not-remove.tmp"
 readonly PID_FILE_PATH=/var/run/${SCRIPT_FILE_NAME/sh/pid}
-readonly ADD_NOARCH_REPOSITORIES="$SCRIPT_DIR/add-repositories-noarch.sh"
+readonly ADD_REPOSITORIES="$SCRIPT_DIR/add-repositories.sh"
 
 #arch
 readonly ARCH=$(uname -m)
 echol "Detected arch: ${ARCH}"
 readonly REQUIREMENTS_FILE_PATH="$SCRIPT_DIR/requirements_$ARCH.txt"
-readonly ADD_ARCH_REPOSITORIES="$SCRIPT_DIR/add-repositories-$ARCH.sh"
 case $ARCH in
 x86_64)
 	readonly DOCKER_PLATFORM="linux/amd64"
@@ -644,7 +643,7 @@ fi
 # About rhel-7-server-extras-rpms: https://access.redhat.com/solutions/3418891
 
 ON_PREM_REPO_ID='rhel-7-server-extras-rpms'
-REPO_ID_PATTERN="$ON_PREM_REPO_ID|rhui-REGION-rhel-server-extras|rhui-rhel-7-server-rhui-extras-rpms" # on-prem|AWS|Azure
+REPO_ID_PATTERN="$ON_PREM_REPO_ID|rhui-rhel-7-server-rhui-extras-rpms|rhui-REGION-rhel-server-extras|rhel-7-server-rhui-extras-rpms" # on-prem|Azure|AWS7.8|AWS7.9
 find_rhel_repo_id 'REPO_ID' "$ON_PREM_REPO_ID" "$REPO_ID_PATTERN"
 enable_repo "$REPO_ID"
 
@@ -652,17 +651,14 @@ enable_repo "$REPO_ID"
 # About rhel-server-rhscl-7-rpms: https://access.redhat.com/solutions/472793
 
 ON_PREM_REPO_ID='rhel-server-rhscl-7-rpms'
-REPO_ID_PATTERN="$ON_PREM_REPO_ID|rhui-REGION-rhel-server-rhscl|rhui-rhel-server-rhui-rhscl-7-rpms" # on-prem|AWS|Azure
+REPO_ID_PATTERN="$ON_PREM_REPO_ID|rhui-rhel-server-rhui-rhscl-7-rpms|rhui-REGION-rhel-server-rhscl|rhel-server-rhui-rhscl-7-rpms" # on-prem|Azure|AWS7.8|AWS7.9
 find_rhel_repo_id 'REPO_ID' "$ON_PREM_REPO_ID" "$REPO_ID_PATTERN"
 enable_repo "$REPO_ID"
 
 # --- Add repos ---
 
-# noarch repositories
-. ${ADD_NOARCH_REPOSITORIES}
-
-# arch specific repositories
-. ${ADD_ARCH_REPOSITORIES}
+# TODO: See if we need to split this up to support different architectures
+. ${ADD_REPOSITORIES}
 
 # some packages are from EPEL repo
 if ! is_package_installed 'epel-release'; then

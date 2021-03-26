@@ -1,5 +1,8 @@
 ---
 - include_tasks: kubernetes.yml
+  args:
+    apply:
+      become: true
 
 # When upgrading cluster created by Epiphany v0.6, the preflight_facts.yml may exist and be owned by root.
 - name: Check if owner of preflight_facts.yml has to be changed

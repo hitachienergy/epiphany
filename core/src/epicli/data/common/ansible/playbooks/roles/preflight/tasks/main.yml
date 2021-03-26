@@ -1,36 +1,14 @@
 ---
-- name: Set is OS supported to false
-  set_fact:
-     is_os_supported: false
-  changed_when: false
+- include_tasks: check-user.yml
 
-- name: Check if OS is supported
-  set_fact:
-     is_os_supported: true
-  loop: "{{ supported_os }}"
-  when:
-    - ansible_distribution == item.name
-    - ansible_distribution_version is version(item.version, item.comparison_operator)
-
-- name: List of supported OSes
-  set_fact:
-     message_supported_oeses: "{% for item in supported_os %} {{ item.name }} {{ item.comparison_operator }} {{ item.version }}{%- if not loop.last -%},{% endif %}{% endfor %}"
-  loop: "{{ supported_os }}"
-  changed_when: false
-
-- name: Check OS version
-  assert:
-    that: is_os_supported
-    fail_msg: "Your operating system [{{ ansible_distribution  }} - {{ ansible_distribution_version }}] version and distribution doesn't meet system requirements.
-              Distributions meetings requirements are: {{ message_supported_oeses }}"
-    success_msg:  "Operating system [{{ ansible_distribution  }} - {{ ansible_distribution_version }}] version and distribution meet system requirements."
+- include_tasks: check-os.yml
 
 - name: Check if existing PostgreSQL needs to be migrated to distribution installed from PostgreSQL repository
   block:
 
   - name: Check if PostgreSQL has been installed from Software Collections repository
     command:  rpm -q rh-postgresql10-postgresql-server
-    failed_when: 
+    failed_when:
       - rpm_status.rc != 0
       - rpm_status.stdout.find('is not installed') == -1
     changed_when: no
