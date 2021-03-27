@@ -22,6 +22,8 @@
       {{ jvm_options.xmx if (context is defined and context == 'upgrade') else
          specification.jvm_options.Xmx }}
 
+- include_tasks: generate-certs.yml
+
 - name: Provide Elasticsearch configuration file
   template:
     backup: yes

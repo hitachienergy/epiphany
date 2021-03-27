@@ -8,6 +8,43 @@ versions:
   Debian:
     elasticsearch_oss: "7.10.2"
     opendistro: "1.13.*"
+certificates:
+  dirs:
+    certs: /etc/elasticsearch
+    ca_key: /etc/elasticsearch/private
+    csr: /etc/elasticsearch/csr
+  files:
+    common:
+      subject: &common-subject
+        O: Epiphany
+        OU: R&D
+    root_ca:
+      cert:
+        filename: epiphany-root-ca.pem
+        selfsigned_not_after: 20311231235959Z  # relative time, such as '+3650d', is NOT idempotent
+        subject:
+          <<: *common-subject
+          CN: Epiphany ODFE Root CA
+      key:
+        filename: epiphany-root-ca-key.pem
+    admin:
+      cert:
+        filename: epiphany-admin.pem
+        ownca_not_after: 20311231235959Z  # relative time, such as '+3650d', is NOT idempotent
+        subject:
+          <<: *common-subject
+          CN: Epiphany Admin
+      key:
+        filename: epiphany-admin-key.pem
+    node:
+      cert:
+        filename: epiphany-node-{{ ansible_hostname }}.pem
+        ownca_not_after: 20311231235959Z  # relative time, such as '+3650d', is NOT idempotent
+        subject:
+          <<: *common-subject
+          CN: "{{ ansible_nodename }}"
+      key:
+        filename: epiphany-node-{{ ansible_hostname }}-key.pem
 specification:
   es_user: admin
   es_password: admin
