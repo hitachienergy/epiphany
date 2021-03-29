@@ -2,8 +2,8 @@
 
 DOCKER_CE_PATCHED_REPO_CONF=$(cat <<'EOF'
 [docker-ce-stable-patched]
-name=Docker CE Stable - patched centos/7/x86_64/stable
-baseurl=https://download.docker.com/linux/centos/7/x86_64/stable
+name=Docker CE Stable - patched centos/7/$basearch/stable
+baseurl=https://download.docker.com/linux/centos/7/$basearch/stable
 enabled=1
 gpgcheck=1
 gpgkey=https://download.docker.com/linux/centos/gpg
@@ -60,7 +60,7 @@ EOF
 KUBERNETES_REPO_CONF=$(cat <<'EOF'
 [kubernetes]
 name=Kubernetes
-baseurl=https://packages.cloud.google.com/yum/repos/kubernetes-el7-x86_64
+baseurl=https://packages.cloud.google.com/yum/repos/kubernetes-el7-$basearch
 enabled=1
 gpgcheck=1
 repo_gpgcheck=1
