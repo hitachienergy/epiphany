@@ -23,6 +23,16 @@
          specification.jvm_options.Xmx }}
 
 - include_tasks: generate-certs.yml
+  when: context is undefined or context != 'upgrade'
+      or (context is defined and context == 'upgrade' and certs_info.root_ca.cert.demo is defined and certs_info.root_ca.cert.demo)
+
+- name: Fetch admin dn from config file and replace with custom one if kirk exist
+  set_fact:
+    _admin_dn: >-
+      {{ _admin_dn|default([]) + [item.replace( item, certificates.files.admin.cert.dn ) if "kirk" in item else item] }}
+  loop: >-
+    {{ certs_info.admin.dn }}
+  when: context is defined and context == 'upgrade' and certs_info.admin.dn is defined
 
 - name: Provide Elasticsearch configuration file
   template:
@@ -33,6 +43,19 @@
     group: root
     mode: ug=rw,o=
   register: change_config
+  vars:
+   root_ca_cert_filename: >-
+           {{ certs_info.root_ca.cert.filename if (context is defined and context == 'upgrade' and certs_info.root_ca.cert.demo is defined and certs_info.root_ca.cert.demo is not true) else
+              certificates.files.root_ca.cert.filename }}
+    node_cert_filename: >-
+           {{ certs_info.node.cert.filename if (context is defined and context == 'upgrade' certs_info.root_ca.cert.demo is defined and certs_info.root_ca.cert.demo is not true) else
+              certificates.files.node.cert.filename }}
+    node_key_filename: >-
+           {{ certs_info.node.key.filename if (context is defined and context == 'upgrade' certs_info.root_ca.cert.demo is defined and certs_info.root_ca.cert.demo is not true) else
+              certificates.files.node.key.filename }}
+    admin_dn: >-
+           {{ _admin_dn if (context is defined and context == 'upgrade') else
+              certificates.files.admin.cert.dn }}
 
 - name: Restart elasticsearch service
   systemd:

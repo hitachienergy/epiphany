@@ -4,8 +4,8 @@
     state: directory
     path: "{{ certificates.dirs.ca_key }}"
     owner: root
-    group: root
-    mode: u=rwx,go=
+    group: elasticsearch
+    mode: ug=rwx,o=
 
 # csr files are kept only for idempotency
 - name: Create directory for CSR files
@@ -13,8 +13,8 @@
     state: directory
     path: "{{ certificates.dirs.csr }}"
     owner: root
-    group: root
-    mode: u=rwx,go=r
+    group: elasticsearch
+    mode: ug=rwx,o=
 
 - name: Generate keys and certificates on first node
   when: inventory_hostname == ansible_play_hosts_all[0]
@@ -24,21 +24,21 @@
     community.crypto.openssl_privatekey:
       size: 2048  # based on ODFE docs
       type: RSA
-      mode: u=rw,go=
+      mode: u=rw,go=r
       owner: root
-      group: root
+      group: elasticsearch
       format: pkcs8
     community.crypto.openssl_csr:
-      mode: u=rw,go=
+      mode: u=rw,go=r
       owner: root
-      group: root
+      group: elasticsearch
       use_common_name_for_san: false
     community.crypto.x509_certificate:
       selfsigned_digest: sha256
       ownca_digest: sha256
       mode: u=rw,go=r
       owner: root
-      group: root
+      group: elasticsearch
   block:
     # --- Generate CA root certificate ---
 
@@ -124,13 +124,13 @@
   module_defaults:
     copy:
       owner: root
-      group: root
+      group: elasticsearch
   block:
     - name: Copy CA private key to other hosts
       copy:
         content: "{{ _key.privatekey }}"
         dest: "{{ _key.filename }}"
-        mode: u=rw,go=
+        mode: u=rw,go=r
       no_log: true
       vars:
         _key: "{{ hostvars[ansible_play_hosts_all[0]].ca_key }}"
@@ -147,7 +147,7 @@
       copy:
         content: "{{ _key.privatekey }}"
         dest: "{{ _key.filename }}"
-        mode: u=rw,go=
+        mode: u=rw,go=r
       no_log: true
       vars:
         _key: "{{ hostvars[ansible_play_hosts_all[0]].admin_key }}"
@@ -168,9 +168,9 @@
     format: pkcs8
     size: 2048
     type: RSA
-    mode: u=rw,go=
+    mode: u=rw,go=r
     owner: root
-    group: root
+    group: elasticsearch
     return_content: false
   no_log: true
   register: node_key
@@ -196,9 +196,9 @@
     extended_key_usage_critical: true
     subjectAltName: "{{ _dns_list + [ 'IP:' + ansible_default_ipv4.address ] }}"
     use_common_name_for_san: false
-    mode: u=rw,go=
+    mode: u=rw,go=r
     owner: root
-    group: root
+    group: elasticsearch
   register: node_csr
   vars:
     _unique_names: "{{ [ansible_hostname, ansible_nodename, ansible_fqdn] | unique }}"
@@ -216,5 +216,5 @@
     ownca_digest: sha256
     mode: u=rw,go=r
     owner: root
-    group: root
+    group: elasticsearch
   register: node_crt

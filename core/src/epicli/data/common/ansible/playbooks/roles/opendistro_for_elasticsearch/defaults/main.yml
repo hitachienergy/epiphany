@@ -34,6 +34,7 @@ certificates:
         subject:
           <<: *common-subject
           CN: Epiphany Admin
+        dn: CN=Epiphany Admin,OU=r&d,O=client,L=test,C=pl
       key:
         filename: epiphany-admin-key.pem
     node:
