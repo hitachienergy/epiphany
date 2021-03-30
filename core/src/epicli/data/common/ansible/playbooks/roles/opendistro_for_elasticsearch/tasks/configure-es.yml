@@ -13,54 +13,67 @@
     backup: yes
     src: jvm.options.j2
     dest: /etc/elasticsearch/jvm.options
-    owner: elasticsearch
-    group: root
+    owner: root
+    group: elasticsearch
     mode: ug=rw,o=
   register: change_jvm_config
   vars:
-    xmx: >-
-      {{ jvm_options.xmx if (context is defined and context == 'upgrade') else
-         specification.jvm_options.Xmx }}
+    xmx: "{{ is_upgrade_run | ternary(jvm_options.xmx, specification.jvm_options.Xmx) }}"
 
-- include_tasks: generate-certs.yml
-  when: context is undefined or context != 'upgrade'
-      or (context is defined and context == 'upgrade' and certs_info.root_ca.cert.demo is defined and certs_info.root_ca.cert.demo)
+- name: Generate certificates
+  when: not is_upgrade_run  # in upgrade mode certs are required at early stage and should be already generated
+  block:
+    # Install requirements for Ansible certificate modules
+    - include_role:
+        name: certificate
+        tasks_from: install-packages.yml
 
-- name: Fetch admin dn from config file and replace with custom one if kirk exist
-  set_fact:
-    _admin_dn: >-
-      {{ _admin_dn|default([]) + [item.replace( item, certificates.files.admin.cert.dn ) if "kirk" in item else item] }}
-  loop: >-
-    {{ certs_info.admin.dn }}
-  when: context is defined and context == 'upgrade' and certs_info.admin.dn is defined
+    - include_tasks: generate-certs.yml
 
 - name: Provide Elasticsearch configuration file
   template:
     backup: yes
     src: elasticsearch.yml.j2
     dest: /etc/elasticsearch/elasticsearch.yml
-    owner: elasticsearch
-    group: root
+    owner: root
+    group: elasticsearch
     mode: ug=rw,o=
   register: change_config
   vars:
-   root_ca_cert_filename: >-
-           {{ certs_info.root_ca.cert.filename if (context is defined and context == 'upgrade' and certs_info.root_ca.cert.demo is defined and certs_info.root_ca.cert.demo is not true) else
-              certificates.files.root_ca.cert.filename }}
+    root_ca_cert_filename: >-
+      {{ existing_es_config.certs.root_ca.cert.filename if (is_upgrade_run and not existing_es_config.certs.root_ca.is_demo_cert) else
+         certificates.files.root_ca.cert.filename }}
     node_cert_filename: >-
-           {{ certs_info.node.cert.filename if (context is defined and context == 'upgrade' certs_info.root_ca.cert.demo is defined and certs_info.root_ca.cert.demo is not true) else
-              certificates.files.node.cert.filename }}
+      {{ existing_es_config.certs.node.cert.filename if (is_upgrade_run and not existing_es_config.certs.root_ca.is_demo_cert) else
+         certificates.files.node.cert.filename }}
     node_key_filename: >-
-           {{ certs_info.node.key.filename if (context is defined and context == 'upgrade' certs_info.root_ca.cert.demo is defined and certs_info.root_ca.cert.demo is not true) else
-              certificates.files.node.key.filename }}
+      {{ existing_es_config.certs.node.key.filename if (is_upgrade_run and not existing_es_config.certs.root_ca.is_demo_cert) else
+         certificates.files.node.key.filename }}
+    _epiphany_admin_dn: "CN={{ certificates.files.admin.cert.subject.CN }},OU={{ certificates.files.admin.cert.subject.OU }},\
+                         O={{ certificates.files.admin.cert.subject.O }}"  # order matters
     admin_dn: >-
-           {{ _admin_dn if (context is defined and context == 'upgrade') else
-              certificates.files.admin.cert.dn }}
+      {{ existing_es_config.certs.admin_dn_without_demo_user if (is_upgrade_run and existing_es_config.certs.admin_dn_without_demo_user|count > 0) else
+         [ _epiphany_admin_dn ] }}
+    _epiphany_nodes_dn: >-
+      {%- if specification.clustered -%}
+        {%- set nodes_to_iterate = ansible_play_hosts_all -%}
+      {%- else -%}
+        {%- set nodes_to_iterate = [ inventory_hostname ] -%}
+      {%- endif -%}
+      {%- for node in nodes_to_iterate -%}
+        {%- if loop.first -%}[{%- endif -%}
+          'CN={{ hostvars[node].ansible_nodename }},OU={{ certificates.files.node.cert.subject.OU }},O={{ certificates.files.node.cert.subject.O }}'
+        {%- if not loop.last -%},{%- else -%}]{%- endif -%}
+      {%- endfor -%}
+    nodes_dn: >-
+      {{ existing_es_config.certs.nodes_dn if (is_upgrade_run and not existing_es_config.certs.root_ca.is_demo_cert) else
+         _epiphany_nodes_dn }}
 
 - name: Restart elasticsearch service
   systemd:
     name: elasticsearch
     state: restarted
+  register: restart_elasticsearch
   when: change_config.changed
      or change_jvm_config.changed
      or install_elasticsearch_package.changed
@@ -73,16 +86,22 @@
     enabled: yes
 
 - name: Change default users
-  when: context is undefined or context != 'upgrade'
+  when: not is_upgrade_run
   block:
+    - name: Wait for elasticsearch service to start up
+      when: restart_elasticsearch.changed
+      wait_for:
+        port: 9200
+        host: "{{ ansible_default_ipv4.address | default(ansible_all_ipv4_addresses[0]) }}"
+
     - name: Set helper facts
       set_fact:
         elasticsearch_endpoint: https://{{ ansible_default_ipv4.address }}:9200
       vars:
         uri_template: &uri
-          client_cert: /etc/elasticsearch/kirk.pem
-          client_key: /etc/elasticsearch/kirk-key.pem
-          validate_certs: false  # because demo certificates are self-signed
+          client_cert: "{{ certificates.dirs.certs }}/{{ certificates.files.admin.cert.filename }}"
+          client_key:  "{{ certificates.dirs.certs }}/{{ certificates.files.admin.key.filename }}"
+          validate_certs: false
           body_format: json
 
     - name: Check if default admin user exists

@@ -138,12 +138,19 @@ Before upgrade procedure make sure you have a data backup!
 In Epiphany v0.10.0 we provided upgrade elasticsearch-oss package to v7.10.2 and opendistro-\* plugins package to v1.13.\*.
 Upgrade will be performed automatically when the upgrade procedure detects your `logging`, `opendistro_for_elasticsearch` or `kibana` hosts.
 
-Upgrade of elasticsearch-oss package uses API calls (GET, PUT, POST) so before starting the upgrade please make sure that you provided correct credentials:
+Upgrade of Elasticsearch uses API calls (GET, PUT, POST) which requires an admin TLS certificate. By defult,
+Epiphany generates self-signed certificate for this purpose but if you use your own admin certificate, you have to
+provide its location. To do that, edit the following settings changing paths and setting `active` to `true`.
+
 ```shell
-specification.es_user
-specification.es_password
+upgrade_config:
+  custom_admin_certificate:
+    cert_path: /etc/elasticsearch/custom-admin.pem
+    key_path: /etc/elasticsearch/custom-admin-key.pem
+    active: false
 ```
-Both are accessible via the defaults of `opendistro_for_elasticsearch` role (`/usr/local/epicli/data/common/ansible/playbooks/roles/opendistro_for_elasticsearch/defaults/main.yml`).
+
+They are accessible via the defaults of `opendistro_for_elasticsearch` role (`/usr/local/epicli/data/common/ansible/playbooks/roles/opendistro_for_elasticsearch/defaults/main.yml`).
 
 ## Node exporter upgrade
 

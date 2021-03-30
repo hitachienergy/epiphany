@@ -13,48 +13,97 @@
     state: started
   register: elasticsearch_state
 
-# TODO: Get all configurable values (such as host and ports) from /etc/elasticsearch/elasticsearch.yml #2128
-
+# TODO: Get host from /etc/elasticsearch/elasticsearch.yml
 - name: ODFE | Wait for elasticsearch service to start up
+  when: elasticsearch_state.changed == true
   wait_for:
     port: "{{ es_transport_port }}"
     host: "{{ ansible_default_ipv4.address | default(ansible_all_ipv4_addresses[0]) }}"
-    delay: 10
-  when: elasticsearch_state.changed == true
+    delay: 5
 
 - name: ODFE | Get Xmx value from /etc/elasticsearch/jvm.options
   command: grep -oP '(?<=^-Xmx)\d+[kKmMgG]?' /etc/elasticsearch/jvm.options
   register: grep_es_xmx
   changed_when: false
 
-- name: ODFE | Set helper facts
+- name: ODFE | Load existing elasticsearch.yml
+  slurp:
+    src: /etc/elasticsearch/elasticsearch.yml
+  register: _existing_es_config_file
+
+- name: ODFE | Decode and parse elasticsearch.yml
+  set_fact:
+    _existing_es_config: "{{ _existing_es_config_file.content | b64decode | from_yaml }}"
+
+# --- We need admin certificate for passwordless access to API ---
+
+# Install requirements for Ansible certificate modules
+- include_role:
+    name: certificate
+    tasks_from: install-packages.yml
+
+- name: Get information on root-ca certificate
+  community.crypto.x509_certificate_info:
+    path: /etc/elasticsearch/{{ _existing_es_config['opendistro_security.ssl.transport.pemtrustedcas_filepath'] }}
+  register: _root_ca_info
+
+- name: ODFE | Check if demo certificates are in use
+  set_fact:
+    _is_demo_cert_in_use: "{{ 'True' if _root_ca_info.subject.commonName == 'Example Com Inc. Root CA' else 'False' }}"
+
+- name: ODFE | Include tasks that generete Epiphany certificates  # they may be renewed
+  include_role:
+    name: opendistro_for_elasticsearch
+    tasks_from: generate-certs.yml
+  register: generate_certs
+  when: _is_demo_cert_in_use
+     or _root_ca_info.subject.commonName == 'Epiphany Managed ODFE Root CA'
+
+- name: ODFE | Set API endpoint
   set_fact:
     elasticsearch_endpoint: >-
       https://{{ ansible_default_ipv4.address | default(ansible_all_ipv4_addresses[0]) }}:{{ es_http_port }}
   vars:
-    uri_template: &uri
-      client_cert: /etc/elasticsearch/kirk.pem
-      client_key: /etc/elasticsearch/kirk-key.pem
-      validate_certs: false
+    uri_task_template: &uri
       body_format: json
+      validate_certs: false
 
-- name: ODFE | Disable shard allocation for the cluster
-  uri:
-    <<: *uri
-    url: "{{ elasticsearch_endpoint }}/_cluster/settings"
-    method: PUT
-    body: '{"persistent":{"cluster.routing.allocation.enable": "primaries"}}'
-  register: response_allocation_primaries
-  until: response_allocation_primaries.json.acknowledged is defined and response_allocation_primaries.json.acknowledged == true
-  retries: 10
-  delay: 20
+# TODO: Implement case for custom admin cert (non-demo and non-epiphany) when not '_is_demo_cert_in_use'.
+# For now we use workaround for this (upgrade_config.custom_admin_certificate).
+- name: ODFE | Set API access facts
+  set_fact:
+    uri_client_cert: >-
+      {{ (certificates.dirs.certs, certificates.files.admin.cert.filename) | path_join if (generate_certs is not skipped) else
+         upgrade_config.custom_admin_certificate.cert_path }}
+    uri_client_key: >-
+      {{ (certificates.dirs.certs, certificates.files.admin.key.filename) | path_join if (generate_certs is not skipped) else
+         upgrade_config.custom_admin_certificate.key_path }}
+  when: generate_certs is not skipped
+     or upgrade_config.custom_admin_certificate.active
 
-- name: ODFE | Perform a synced flush
-  uri:
-    <<: *uri
-    url: "{{ elasticsearch_endpoint }}/_flush/synced"
-    method: POST
-    status_code: "200, 409"
+- name: Pre-upgrade tasks
+  module_defaults:
+    uri:
+      client_cert: "{{ uri_client_cert | default(omit) }}"
+      client_key:  "{{ uri_client_key  | default(omit) }}"
+  block:
+    - name: ODFE | Disable shard allocation for the cluster
+      uri:
+        <<: *uri
+        url: "{{ elasticsearch_endpoint }}/_cluster/settings"
+        method: PUT
+        body: '{"persistent":{"cluster.routing.allocation.enable": "primaries"}}'
+      register: response_allocation_primaries
+      until: response_allocation_primaries.json.acknowledged is defined and response_allocation_primaries.json.acknowledged == true
+      retries: 10
+      delay: 20
+
+    - name: ODFE | Perform a synced flush
+      uri:
+        <<: *uri
+        url: "{{ elasticsearch_endpoint }}/_flush/synced"
+        method: POST
+        status_code: "200, 409"
 
 - name: ODFE | Stop elasticsearch service
   systemd:
@@ -66,47 +115,37 @@
     name: opendistro_for_elasticsearch
     tasks_from: install-es.yml
 
-- name: Load existing config file
-  slurp:
-    src: /etc/elasticsearch/elasticsearch.yml
-  register: _existing_configuration
-
-- name: Decode and format to yaml config file
-  set_fact:
-    _input_data: "{{ _existing_configuration.content | b64decode | from_yaml }}"  
-
-- name: Get information on root-ca certificate
-  community.crypto.x509_certificate_info:
-    path: /etc/elasticsearch/{{ _input_data['opendistro_security.ssl.transport.pemtrustedcas_filepath'] }}
-  register: _root_ca_info
-
 - name: ODFE | Include Elasticsearch configuration tasks
   include_role:
     name: opendistro_for_elasticsearch
     tasks_from: configure-es.yml
   vars:
-    context: upgrade
     jvm_options:
       xmx: "{{ grep_es_xmx.stdout_lines | last }}"
     specification:
-      cluster_name: "{{ _input_data['cluster.name'] }}"
-      clustered: "{{ 'True' if _input_data['discovery.seed_hosts'] | length > 1 else 'False' }}"
+      cluster_name: "{{ _existing_es_config['cluster.name'] }}"
+      clustered: "{{ 'True' if _existing_es_config['discovery.seed_hosts'] | length > 1 else 'False' }}"
       paths:
-        data: "{{ _input_data['path.data'] }}"
-        repo: "{{ _input_data['path.repo'] }}"
-        logs: "{{ _input_data['path.logs'] }}"
-    certs_info:
-      root_ca: 
-        cert: 
-          demo: "{{ 'True' if _root_ca_info.subject.commonName == 'Example Com Inc. Root CA' else 'False' }}"
-          filename: "{{ _input_data['opendistro_security.ssl.transport.pemtrustedcas_filepath'] }}"
-      node:
-        cert:
-          filename: "{{ _input_data['opendistro_security.ssl.transport.pemcert_filepath'] }}"
-        key:
-          filename: "{{ _input_data['opendistro_security.ssl.transport.pemkey_filepath'] }}"
-      admin:
-        dn: "{{ _input_data['opendistro_security.authcz.admin_dn'] }}"
+        data: "{{ _existing_es_config['path.data'] }}"
+        repo: "{{ _existing_es_config['path.repo'] }}"
+        logs: "{{ _existing_es_config['path.logs'] }}"
+      opendistro_security:
+        ssl:
+          transport:
+            enforce_hostname_verification: "{{ _existing_es_config['opendistro_security.ssl.transport.enforce_hostname_verification'] }}"
+    existing_es_config:
+      certs:
+        admin_dn_without_demo_user: >-
+          {{ _existing_es_config['opendistro_security.authcz.admin_dn'] | reject('search', 'CN=kirk,OU=client,O=client,L=test') | list }}
+        node:
+          cert:
+            filename: "{{ _existing_es_config['opendistro_security.ssl.transport.pemcert_filepath'] }}"
+          key:
+            filename: "{{ _existing_es_config['opendistro_security.ssl.transport.pemkey_filepath'] }}"
+        nodes_dn: "{{ _existing_es_config['opendistro_security.nodes_dn'] | default([]) }}"
+        root_ca:
+          filename: "{{ _existing_es_config['opendistro_security.ssl.transport.pemtrustedcas_filepath'] }}"
+          is_demo_cert: "{{ _is_demo_cert_in_use }}"
 
 - name: ODFE | Include upgrade plugins tasks
   include_tasks: opendistro_for_elasticsearch/upgrade-plugins.yml
@@ -122,45 +161,50 @@
   wait_for:
     port: "{{ es_transport_port }}"
     host: "{{ ansible_default_ipv4.address | default(ansible_all_ipv4_addresses[0]) }}"
-    delay: 10
+    delay: 5
 
 - name: ODFE | Wait for elasticsearch http to come back up
   wait_for:
     port: "{{ es_http_port }}"
     host: "{{ ansible_default_ipv4.address | default(ansible_all_ipv4_addresses[0]) }}"
-    delay: 5
 
-- name: ODFE | Wait for 'yellow' or 'green' cluster health status
-  uri:
-    <<: *uri
-    url: "{{ elasticsearch_endpoint }}/_cluster/health"
-    method: GET
-  register: cluster_health
-  until: cluster_health.json.status is defined and cluster_health.json.status in ['yellow', 'green']
-  retries: 10
-  delay: 15
+- name: Post upgrade tasks
+  module_defaults:
+    uri:
+      client_cert: "{{ uri_client_cert | default(omit) }}"
+      client_key:  "{{ uri_client_key  | default(omit) }}"
+  block:
+    - name: ODFE | Wait for 'yellow' or 'green' cluster health status
+      uri:
+        <<: *uri
+        url: "{{ elasticsearch_endpoint }}/_cluster/health"
+        method: GET
+      register: cluster_health
+      until: cluster_health.json.status is defined and cluster_health.json.status in ['yellow', 'green']
+      retries: 30
+      delay: 5
 
-- name: ODFE | Enable shard allocation for the cluster
-  uri:
-    <<: *uri
-    url: "{{ elasticsearch_endpoint }}/_cluster/settings"
-    method: PUT
-    body: '{"persistent":{"cluster.routing.allocation.enable": null}}'
-  register: response
-  until: response.json.acknowledged is defined and response.json.acknowledged == true
-  retries: 10
-  delay: 15
+    - name: ODFE | Enable shard allocation for the cluster
+      uri:
+        <<: *uri
+        url: "{{ elasticsearch_endpoint }}/_cluster/settings"
+        method: PUT
+        body: '{"persistent":{"cluster.routing.allocation.enable": null}}'
+      register: response
+      until: response.json.acknowledged is defined and response.json.acknowledged == true
+      retries: 30
+      delay: 5
 
-- name: ODFE | Wait for 'yellow' or 'green' cluster health status
-  uri:
-    <<: *uri
-    url: "{{ elasticsearch_endpoint }}/_cluster/health"
-    method: GET
-    return_content: yes
-  register: cluster_health
-  until: cluster_health.json.status is defined and cluster_health.json.status in ['yellow', 'green']
-  retries: 10
-  delay: 15
+    - name: ODFE | Wait for 'yellow' or 'green' cluster health status
+      uri:
+        <<: *uri
+        url: "{{ elasticsearch_endpoint }}/_cluster/health"
+        method: GET
+        return_content: yes
+      register: cluster_health
+      until: cluster_health.json.status is defined and cluster_health.json.status in ['yellow', 'green']
+      retries: 30
+      delay: 5
 
 - name: ODFE | Remove upgrade state file
   become: true

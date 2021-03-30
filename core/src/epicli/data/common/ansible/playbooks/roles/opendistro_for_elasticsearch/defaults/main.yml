@@ -24,34 +24,29 @@ certificates:
         selfsigned_not_after: 20311231235959Z  # relative time, such as '+3650d', is NOT idempotent
         subject:
           <<: *common-subject
-          CN: Epiphany ODFE Root CA
+          CN: Epiphany Managed ODFE Root CA
       key:
         filename: epiphany-root-ca-key.pem
     admin:
       cert:
         filename: epiphany-admin.pem
-        ownca_not_after: 20311231235959Z  # relative time, such as '+3650d', is NOT idempotent
+        ownca_not_after: 20221231235959Z  # relative time, such as '+3650d', is NOT idempotent
         subject:
           <<: *common-subject
           CN: Epiphany Admin
-        dn: CN=Epiphany Admin,OU=r&d,O=client,L=test,C=pl
       key:
         filename: epiphany-admin-key.pem
     node:
       cert:
-        filename: epiphany-node-{{ ansible_hostname }}.pem
+        filename: epiphany-node-{{ ansible_nodename }}.pem
         ownca_not_after: 20311231235959Z  # relative time, such as '+3650d', is NOT idempotent
         subject:
           <<: *common-subject
           CN: "{{ ansible_nodename }}"
       key:
-        filename: epiphany-node-{{ ansible_hostname }}-key.pem
-specification:
-  es_user: admin
-  es_password: admin
-  cluster_name: EpiphanyElastic
-  clustered: True
-  paths:
-    data: /var/lib/elasticsearch
-    repo: /var/lib/elasticsearch-snapshots
-    logs: /var/log/elasticsearch
+        filename: epiphany-node-{{ ansible_nodename }}-key.pem
+upgrade_config:
+  custom_admin_certificate:
+    cert_path: /etc/elasticsearch/custom-admin.pem
+    key_path: /etc/elasticsearch/custom-admin-key.pem
+    active: false

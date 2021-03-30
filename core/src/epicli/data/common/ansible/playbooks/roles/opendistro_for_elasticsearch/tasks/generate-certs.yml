@@ -5,7 +5,7 @@
     path: "{{ certificates.dirs.ca_key }}"
     owner: root
     group: elasticsearch
-    mode: ug=rwx,o=
+    mode: u=rwx,g=rx,o=  # elasticsearch.service requires 'rx' for group
 
 # csr files are kept only for idempotency
 - name: Create directory for CSR files
@@ -14,7 +14,7 @@
     path: "{{ certificates.dirs.csr }}"
     owner: root
     group: elasticsearch
-    mode: ug=rwx,o=
+    mode: u=rwx,g=rx,o=  # CSR file doesn't contain private key
 
 - name: Generate keys and certificates on first node
   when: inventory_hostname == ansible_play_hosts_all[0]
@@ -24,19 +24,19 @@
     community.crypto.openssl_privatekey:
       size: 2048  # based on ODFE docs
       type: RSA
-      mode: u=rw,go=r
+      mode: u=rw,go=
       owner: root
       group: elasticsearch
       format: pkcs8
     community.crypto.openssl_csr:
-      mode: u=rw,go=r
+      mode: u=rw,g=r,o=
       owner: root
       group: elasticsearch
       use_common_name_for_san: false
     community.crypto.x509_certificate:
       selfsigned_digest: sha256
       ownca_digest: sha256
-      mode: u=rw,go=r
+      mode: u=rw,g=r,o=
       owner: root
       group: elasticsearch
   block:
@@ -130,7 +130,7 @@
       copy:
         content: "{{ _key.privatekey }}"
         dest: "{{ _key.filename }}"
-        mode: u=rw,go=r
+        mode: u=rw,go=
       no_log: true
       vars:
         _key: "{{ hostvars[ansible_play_hosts_all[0]].ca_key }}"
@@ -139,7 +139,7 @@
       copy:
         content: "{{ _crt.certificate }}"
         dest: "{{ _crt.filename }}"
-        mode: u=rw,go=r
+        mode: u=rw,g=r,o=
       vars:
         _crt: "{{ hostvars[ansible_play_hosts_all[0]].ca_crt }}"
 
@@ -147,7 +147,7 @@
       copy:
         content: "{{ _key.privatekey }}"
         dest: "{{ _key.filename }}"
-        mode: u=rw,go=r
+        mode: u=rw,go=
       no_log: true
       vars:
         _key: "{{ hostvars[ansible_play_hosts_all[0]].admin_key }}"
@@ -156,7 +156,7 @@
       copy:
         content: "{{ _crt.certificate }}"
         dest: "{{ _crt.filename }}"
-        mode: u=rw,go=r
+        mode: u=rw,g=r,o=
       vars:
         _crt: "{{ hostvars[ansible_play_hosts_all[0]].admin_crt }}"
 
@@ -168,7 +168,7 @@
     format: pkcs8
     size: 2048
     type: RSA
-    mode: u=rw,go=r
+    mode: u=rw,g=r,o=  # elasticsearch.service requires 'r' for group
     owner: root
     group: elasticsearch
     return_content: false
@@ -196,14 +196,14 @@
     extended_key_usage_critical: true
     subjectAltName: "{{ _dns_list + [ 'IP:' + ansible_default_ipv4.address ] }}"
     use_common_name_for_san: false
-    mode: u=rw,go=r
+    mode: u=rw,g=r,o=
     owner: root
     group: elasticsearch
   register: node_csr
   vars:
-    _unique_names: "{{ [ansible_hostname, ansible_nodename, ansible_fqdn] | unique }}"
+    _unique_hostnames: "{{ [ansible_hostname, ansible_nodename, ansible_fqdn] | unique }}"
     _dns_list: >-
-      {{ ['DNS'] | zip_longest(_unique_names, fillvalue='DNS') | map('join', ':') }}
+      {{ ['DNS'] | zip_longest(_unique_hostnames, fillvalue='DNS') | map('join', ':') }}
 
 - name: Generate node certificate
   community.crypto.x509_certificate:
