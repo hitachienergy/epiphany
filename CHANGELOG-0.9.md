@@ -30,6 +30,7 @@
 - [#1884](https://github.com/epiphany-platform/epiphany/issues/1884) - Prometheus is not able to scrape metrics from AKS/EKS nodes
 - [#1887](https://github.com/epiphany-platform/epiphany/issues/1887) - epicli upgrade of cluster created by Epiphany v0.6 fails on "Store preflight facts" task
 - [#1866](https://github.com/epiphany-platform/epiphany/issues/1866) - No logs from K8s apps in Elasticsearch
+- [#2166](https://github.com/epiphany-platform/epiphany/issues/2166) - Replace Bintray repository
 
 ### Updated
 
@@ -41,6 +42,7 @@
 - [#1853](https://github.com/epiphany-platform/epiphany/issues/1853) - Upgrade Zookeeper to v3.5.8
 - [#1860](https://github.com/epiphany-platform/epiphany/issues/1860) - Upgrade Grafana to v7.3.5
 - [#1955](https://github.com/epiphany-platform/epiphany/issues/1955) - Upgrade Elasticsearch Curator to v5.8.3
+
 
 ### Deprecated
 

@@ -559,25 +559,15 @@ gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-PGDG
 EOF
 )
 
-RABBITMQ_ERLANG_REPO_CONF=$(cat <<'EOF'
-[rabbitmq_erlang]
-name=rabbitmq_erlang
-baseurl=https://packagecloud.io/rabbitmq/erlang/el/7/$basearch
-repo_gpgcheck=1
-gpgcheck=1
-enabled=1
-gpgkey=https://packagecloud.io/rabbitmq/erlang/gpgkey
-EOF
-)
-
 RABBITMQ_SERVER_REPO_CONF=$(cat <<'EOF'
-[rabbitmq_rabbitmq-server]
-name=rabbitmq_rabbitmq-server
+[rabbitmq-server]
+name=rabbitmq-rpm
 baseurl=https://packagecloud.io/rabbitmq/rabbitmq-server/el/7/$basearch
-repo_gpgcheck=1
 gpgcheck=1
-enabled=1
 gpgkey=https://packagecloud.io/rabbitmq/rabbitmq-server/gpgkey
+repo_gpgcheck=1
+sslcacert=/etc/pki/tls/certs/ca-bundle.crt
+enabled=1
 EOF
 )
 
@@ -594,7 +584,6 @@ add_repo_as_file 'grafana' "$GRAFANA_REPO_CONF"
 add_repo_as_file 'kubernetes' "$KUBERNETES_REPO_CONF"
 add_repo_as_file 'opendistroforelasticsearch' "$OPENDISTRO_REPO_CONF"
 add_repo_as_file 'postgresql-10' "$POSTGRESQL_REPO_CONF"
-add_repo_as_file 'rabbitmq_erlang' "$RABBITMQ_ERLANG_REPO_CONF"
 add_repo_as_file 'rabbitmq_rabbitmq-server' "$RABBITMQ_SERVER_REPO_CONF"
 add_repo_from_script 'https://dl.2ndquadrant.com/default/release/get/10/rpm'
 disable_repo '2ndquadrant-dl-default-release-pg10-debug'
