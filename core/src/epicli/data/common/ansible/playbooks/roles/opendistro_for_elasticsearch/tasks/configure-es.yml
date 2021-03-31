@@ -1,6 +1,5 @@
 ---
 # This file is meant to be also used by upgrade role
-
 - name: Ensure snapshot folder exists
   file:
     path: "{{ specification.paths.repo }}/"
@@ -9,34 +8,72 @@
     group: elasticsearch
     mode: u=rwx,go=
 
-- name: Provide jvm configuration file
+- name: Provide JVM configuration file
   template:
     backup: yes
     src: jvm.options.j2
     dest: /etc/elasticsearch/jvm.options
-    owner: elasticsearch
-    group: root
+    owner: root
+    group: elasticsearch
     mode: ug=rw,o=
   register: change_jvm_config
   vars:
-    xmx: >-
-      {{ jvm_options.xmx if (context is defined and context == 'upgrade') else
-         specification.jvm_options.Xmx }}
+    xmx: "{{ is_upgrade_run | ternary(jvm_options.xmx, specification.jvm_options.Xmx) }}"
+
+- name: Generate certificates
+  when: not is_upgrade_run  # in upgrade mode certs are required at early stage and should be already generated
+  block:
+    # Install requirements for Ansible certificate modules
+    - include_role:
+        name: certificate
+        tasks_from: install-packages.yml
+
+    - include_tasks: generate-certs.yml
 
 - name: Provide Elasticsearch configuration file
   template:
     backup: yes
     src: elasticsearch.yml.j2
     dest: /etc/elasticsearch/elasticsearch.yml
-    owner: elasticsearch
-    group: root
+    owner: root
+    group: elasticsearch
     mode: ug=rw,o=
   register: change_config
+  vars:
+    root_ca_cert_filename: >-
+      {{ existing_es_config.certs.root_ca.cert.filename if (is_upgrade_run and not existing_es_config.certs.root_ca.is_demo_cert) else
+         certificates.files.root_ca.cert.filename }}
+    node_cert_filename: >-
+      {{ existing_es_config.certs.node.cert.filename if (is_upgrade_run and not existing_es_config.certs.root_ca.is_demo_cert) else
+         certificates.files.node.cert.filename }}
+    node_key_filename: >-
+      {{ existing_es_config.certs.node.key.filename if (is_upgrade_run and not existing_es_config.certs.root_ca.is_demo_cert) else
+         certificates.files.node.key.filename }}
+    _epiphany_admin_dn: "CN={{ certificates.files.admin.cert.subject.CN }},OU={{ certificates.files.admin.cert.subject.OU }},\
+                         O={{ certificates.files.admin.cert.subject.O }}"  # order matters
+    admin_dn: >-
+      {{ existing_es_config.certs.admin_dn_without_demo_user if (is_upgrade_run and existing_es_config.certs.admin_dn_without_demo_user|count > 0) else
+         [ _epiphany_admin_dn ] }}
+    _epiphany_nodes_dn: >-
+      {%- if specification.clustered -%}
+        {%- set nodes_to_iterate = ansible_play_hosts_all -%}
+      {%- else -%}
+        {%- set nodes_to_iterate = [ inventory_hostname ] -%}
+      {%- endif -%}
+      {%- for node in nodes_to_iterate -%}
+        {%- if loop.first -%}[{%- endif -%}
+          'CN={{ hostvars[node].ansible_nodename }},OU={{ certificates.files.node.cert.subject.OU }},O={{ certificates.files.node.cert.subject.O }}'
+        {%- if not loop.last -%},{%- else -%}]{%- endif -%}
+      {%- endfor -%}
+    nodes_dn: >-
+      {{ existing_es_config.certs.nodes_dn if (is_upgrade_run and not existing_es_config.certs.root_ca.is_demo_cert) else
+         _epiphany_nodes_dn }}
 
 - name: Restart elasticsearch service
   systemd:
     name: elasticsearch
     state: restarted
+  register: restart_elasticsearch
   when: change_config.changed
      or change_jvm_config.changed
      or install_elasticsearch_package.changed
@@ -47,3 +84,138 @@
     name: elasticsearch
     state: started
     enabled: yes
+
+- name: Change default users
+  when: not is_upgrade_run
+  block:
+    - name: Wait for elasticsearch service to start up
+      when: restart_elasticsearch.changed
+      wait_for:
+        port: 9200
+        host: "{{ ansible_default_ipv4.address | default(ansible_all_ipv4_addresses[0]) }}"
+
+    - name: Set helper facts
+      set_fact:
+        elasticsearch_endpoint: https://{{ ansible_default_ipv4.address }}:9200
+      vars:
+        uri_template: &uri
+          client_cert: "{{ certificates.dirs.certs }}/{{ certificates.files.admin.cert.filename }}"
+          client_key:  "{{ certificates.dirs.certs }}/{{ certificates.files.admin.key.filename }}"
+          validate_certs: false
+          body_format: json
+
+    - name: Check if default admin user exists
+      uri:
+        <<: *uri
+        url: "{{ elasticsearch_endpoint }}/_opendistro/_security/api/internalusers/admin"
+        method: GET
+        # 404 code is used there as someone can remove admin user on its own.
+        status_code: [200, 404]
+      register: admin_check_response
+      until: admin_check_response is success
+      retries: 60
+      delay: 1
+      run_once: true
+
+    - name: Set OpenDistro admin password
+      uri:
+        <<: *uri
+        url: "{{ elasticsearch_endpoint }}/_opendistro/_security/api/internalusers/"
+        method: PATCH
+        status_code: [200]
+        body:
+          - op: "replace"
+            path: "/admin"
+            value:
+              password: "{{ specification.admin_password }}"
+              reserved: "true"
+              backend_roles:
+                - "admin"
+              description: "Admin user"
+      register: uri_response
+      until: uri_response is success
+      retries: 15
+      delay: 1
+      run_once: true
+      when: admin_check_response.status == 200
+
+    - name: Check if default kibanaserver user exists
+      uri:
+        <<: *uri
+        url: "{{ elasticsearch_endpoint }}/_opendistro/_security/api/internalusers/kibanaserver"
+        method: GET
+        status_code: [200]
+      register: kibanaserver_check_response
+      until: kibanaserver_check_response is success
+      retries: 60
+      delay: 1
+      run_once: true
+      when: specification.kibanaserver_user_active
+
+    - name: Set OpenDistro kibanaserver password
+      uri:
+        <<: *uri
+        url: "{{ elasticsearch_endpoint }}/_opendistro/_security/api/internalusers/"
+        method: PATCH
+        status_code: [200]
+        body:
+          - op: "replace"
+            path: "/kibanaserver"
+            value:
+              password: "{{ specification.kibanaserver_password }}"
+              reserved: "true"
+              description: "Kibana server user"
+      register: uri_response
+      until: uri_response is success
+      retries: 15
+      delay: 1
+      run_once: true
+      when: specification.kibanaserver_user_active
+
+    - name: Check if default logstash user exists
+      uri:
+        <<: *uri
+        url: "{{ elasticsearch_endpoint }}/_opendistro/_security/api/internalusers/logstash"
+        method: GET
+        status_code: [200]
+      register: logstash_check_response
+      until: logstash_check_response is success
+      retries: 60
+      delay: 1
+      run_once: true
+      when: specification.logstash_user_active
+
+    - name: Set OpenDistro logstash password
+      uri:
+        <<: *uri
+        url: "{{ elasticsearch_endpoint }}/_opendistro/_security/api/internalusers/"
+        method: PATCH
+        status_code: [200]
+        body:
+          - op: "replace"
+            path: "/logstash"
+            value:
+              password: "{{ specification.logstash_password }}"
+              reserved: "true"
+              backend_roles:
+                - "logstash"
+              description: "Logstash user"
+      register: uri_response
+      until: uri_response is success
+      retries: 3
+      delay: 5
+      run_once: true
+      when: specification.logstash_user_active
+
+    - name: Remove OpenDistro demo users
+      uri:
+        <<: *uri
+        url: "{{ elasticsearch_endpoint }}/_opendistro/_security/api/internalusers/{{ item }}"
+        method: DELETE
+        status_code: [200, 404]
+      register: uri_response
+      until: uri_response is success
+      retries: 15
+      delay: 1
+      run_once: true
+      loop: "{{ specification.demo_users_to_remove }}"

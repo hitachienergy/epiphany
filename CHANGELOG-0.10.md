@@ -28,6 +28,7 @@
 - [#2068](https://github.com/epiphany-platform/epiphany/issues/2068) - Preflight role requires sudoer user
 - [#2136](https://github.com/epiphany-platform/epiphany/issues/2136) - Replace Bintray repository
 - [#2161](https://github.com/epiphany-platform/epiphany/issues/2161) - Running out of disk space during upgrade from v0.6 and v0.7 where the default disks are 32GB
+- [#1844](https://github.com/epiphany-platform/epiphany/issues/1844) - Default password in Open Distro for Elasticsearch, Filebeat, Kibana and Grafana
 
 ### Updated
 

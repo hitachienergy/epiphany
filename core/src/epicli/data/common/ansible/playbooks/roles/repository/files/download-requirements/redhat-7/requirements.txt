@@ -80,12 +80,15 @@ pgaudit12_10
 pgbouncer-1.10.*
 policycoreutils-python # for container-selinux
 pyldb # for cifs-utils
+python-cffi # for python2-cryptography
 python-firewall # for firewalld
 python-kitchen # for yum-utils
 python-lxml # for java-1.8.0-openjdk-headless
 python-psycopg2
+python-pycparser # for python2-cryptography
 python-setuptools
 python-slip-dbus # for firewalld
+python2-cryptography # for Ansible (certificate modules)
 quota # for nfs-utils
 rabbitmq-server-3.8.9
 rh-haproxy18
