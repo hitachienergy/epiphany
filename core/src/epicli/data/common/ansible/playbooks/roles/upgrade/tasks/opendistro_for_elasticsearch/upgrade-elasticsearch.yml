@@ -194,7 +194,8 @@
             filename: "{{ _existing_es_config['opendistro_security.ssl.transport.pemkey_filepath'] }}"
         nodes_dn: "{{ _existing_es_config['opendistro_security.nodes_dn'] | default([]) }}"
         root_ca:
-          filename: "{{ _existing_es_config['opendistro_security.ssl.transport.pemtrustedcas_filepath'] }}"
+          cert:
+            filename: "{{ _existing_es_config['opendistro_security.ssl.transport.pemtrustedcas_filepath'] }}"
           is_demo_cert: "{{ _is_demo_cert_in_use }}"
 
 - name: ODFE | Include upgrade plugins tasks
