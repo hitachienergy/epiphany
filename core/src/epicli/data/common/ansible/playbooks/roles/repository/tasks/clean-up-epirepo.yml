@@ -1,0 +1,62 @@
+---
+# This file is used only for upgrade mode to free disk space
+
+- name: Load vars from old manifest
+  include_vars:
+    file: "{{ lookup('first_found', params) }}"
+    name: old_manifest
+  vars:
+    params:
+      files:
+        - manifest.yml
+        - main.yml
+      paths:
+        - vars
+
+# TODO: Do not remove files present in requirements.txt
+- name: Remove directories in {{ apache_epirepo_path }}
+  file:
+    state: absent
+    path: "{{ apache_epirepo_path }}/{{ item }}"
+  loop:
+    - files
+    - images
+    - packages
+  vars:
+    apache_epirepo_path: "{{ old_manifest.specification.apache_epirepo_path | default('/var/www/html/epirepo') }}"
+
+# Only for epicli < 0.7
+- name: Remove leftovers from /tmp
+  block:
+    - name: Find leftovers in /tmp
+      find:
+        paths: /tmp
+        patterns:
+          - keycloak*.tar
+          - ignite*.tar
+          - etcd*.tar
+          - node*.tar
+          - dashboard*.tar
+          - cni*.tar
+          - kube-apiserver*.tar
+          - rabbitmq*.tar
+          - kube-controller-manager*.tar
+          - pgpool*.tar
+          - kube-proxy*.tar
+          - pod2daemon-flexvol*.tar
+          - kube-scheduler*.tar
+          - flannel*.tar
+          - kube-controllers*.tar
+          - coredns*.tar
+          - metrics-scraper*.tar
+          - registry*.tar
+          - pgbouncer*.tar
+      register: files_to_delete
+
+    - name: Remove leftovers from /tmp
+      file:
+        path: "{{ item.path }}"
+        state: absent
+      loop: "{{ files_to_delete.files }}"
+      loop_control:
+        label: "{{ item.path }}"
