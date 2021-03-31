@@ -177,7 +177,7 @@
       clustered: "{{ 'True' if _existing_es_config['discovery.seed_hosts'] | length > 1 else 'False' }}"
       paths:
         data: "{{ _existing_es_config['path.data'] }}"
-        repo: "{{ _existing_es_config['path.repo'] }}"
+        repo: "{{ _existing_es_config['path.repo'] | default('/var/lib/elasticsearch-snapshots') }}"  # absent in Epiphany v0.6 thus we use default
         logs: "{{ _existing_es_config['path.logs'] }}"
       opendistro_security:
         ssl:
