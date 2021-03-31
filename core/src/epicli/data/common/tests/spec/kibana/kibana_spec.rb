@@ -1,7 +1,9 @@
 require 'spec_helper'
 
-kibana_default_port = 5601
+elasticsearch_admin_password = readDataYaml("configuration/logging")["specification"]["admin_password"]
 elasticsearch_api_port = 9200
+kibana_default_port = 5601
+kibanaserver_password = readDataYaml("configuration/logging")["specification"]["kibanaserver_password"]
 
 describe 'Checking if Kibana package is installed' do
   describe package('opendistroforelasticsearch-kibana') do
@@ -52,7 +54,7 @@ end
 listInventoryHosts("logging").each do |val|
   describe 'Checking the connection to the Elasticsearch hosts' do
     let(:disable_sudo) { false }
-    describe command("curl -k -u admin:admin -o /dev/null -s -w '%{http_code}' https://#{val}:#{elasticsearch_api_port}") do
+    describe command("curl -k -u admin:#{elasticsearch_admin_password} -o /dev/null -s -w '%{http_code}' https://#{val}:#{elasticsearch_api_port}") do
       it "is expected to be equal" do
         expect(subject.stdout.to_i).to eq 200
       end
@@ -60,19 +62,23 @@ listInventoryHosts("logging").each do |val|
   end
 end
 
-describe 'Checking Kibana app HTTP status code' do
-  let(:disable_sudo) { false }
-  describe command("curl -u admin:admin -o /dev/null -s -w '%{http_code}' http://$(hostname):#{kibana_default_port}/app/kibana") do
-    it "is expected to be equal" do
-      expect(subject.stdout.to_i).to eq 200
+listInventoryHosts("kibana").each do |val|
+  describe 'Checking Kibana app HTTP status code' do
+    let(:disable_sudo) { false }
+    describe command("curl -u admin:#{kibanaserver_password} -o /dev/null -s -w '%{http_code}' http://#{val}:#{kibana_default_port}/app/kibana") do
+      it "is expected to be equal" do
+        expect(subject.stdout.to_i).to eq 200
+      end
     end
   end
 end
 
-describe 'Checking Kibana health' do
-  let(:disable_sudo) { false }
-  describe command("curl http://$(hostname):#{kibana_default_port}/api/status") do
-    its(:stdout_as_json) { should include('status' => include('overall' => include('state' => 'green'))) }
-    its(:exit_status) { should eq 0 }
+listInventoryHosts("kibana").each do |val|
+  describe 'Checking Kibana health' do
+    let(:disable_sudo) { false }
+    describe command("curl http://#{val}:#{kibana_default_port}/api/status") do
+      its(:stdout_as_json) { should include('status' => include('overall' => include('state' => 'green'))) }
+      its(:exit_status) { should eq 0 }
+    end
   end
 end
