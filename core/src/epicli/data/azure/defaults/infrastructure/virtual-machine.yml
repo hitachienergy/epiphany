@@ -17,7 +17,7 @@ specification:
     publisher: Canonical
     offer: UbuntuServer
     sku: 18.04-LTS
-    version: "18.04.202006101" # Never put latest on anything! Need to always pin the version number but testing we can get away with it
+    version: "18.04.202103151" # Never put latest on anything! Need to always pin the version number but testing we can get away with it
   storage_os_disk:
     delete_on_termination: false
     managed: false
