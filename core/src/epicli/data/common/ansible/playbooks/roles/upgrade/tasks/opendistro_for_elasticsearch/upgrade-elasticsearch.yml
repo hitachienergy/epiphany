@@ -81,11 +81,61 @@
   when: generate_certs is not skipped
      or upgrade_config.custom_admin_certificate.active
 
+# Here we have new certificates (when generated) but they may be not configured yet, which requires updating config file and restarting service.
+# For clustered nodes it's recommended to disable shard allocation for the cluster before restarting node (https://www.elastic.co/guide/en/elasticsearch/reference/current/restart-cluster.html#restart-cluster-rolling).
+
+- name: ODFE | Test API access using non-demo certificate
+  uri:
+    <<: *uri
+    client_cert: "{{ uri_client_cert | default(omit) }}"
+    client_key:  "{{ uri_client_key  | default(omit) }}"
+    url: "{{ elasticsearch_endpoint }}"
+    method: GET
+  register: test_api_access
+  failed_when: false
+  until: test_api_access.status == 200
+  retries: 1
+  delay: 1
+
+- name: ODFE | Test API access using demo certificate
+  when:
+    - _is_demo_cert_in_use
+    - test_api_access.status != 200
+  uri:
+    <<: *uri
+    client_cert: /etc/elasticsearch/kirk.pem
+    client_key: /etc/elasticsearch/kirk-key.pem
+    url: "{{ elasticsearch_endpoint }}"
+    method: GET
+  register: test_api_access_using_demo_cert
+  failed_when: false
+  until: test_api_access_using_demo_cert.status == 200
+  retries: 1
+  delay: 1
+
+- name: Fail with informative message
+  debug:
+    msg:
+      - Accessing API at {{ elasticsearch_endpoint }} failed.
+      - It looks like you use custom certificates.
+      - Refer to "Open Distro for Elasticsearch upgrade" section of How-To docs.
+  when:
+    - generate_certs is skipped
+    - test_api_access.status != 200
+    - test_api_access_using_demo_cert is skipped or test_api_access_using_demo_cert.status != 200
+
 - name: Pre-upgrade tasks
+  when: test_api_access.status == 200 or (test_api_access_using_demo_cert is not skipped and test_api_access_using_demo_cert.status == 200)
   module_defaults:
     uri:
-      client_cert: "{{ uri_client_cert | default(omit) }}"
-      client_key:  "{{ uri_client_key  | default(omit) }}"
+      client_cert: >-
+        {{ uri_client_cert | default(omit) if (test_api_access_using_demo_cert is skipped
+                                               or test_api_access_using_demo_cert.status != 200) else
+           '/etc/elasticsearch/kirk.pem' }}
+      client_key: >-
+        {{ uri_client_key | default(omit) if (test_api_access_using_demo_cert is skipped
+                                              or test_api_access_using_demo_cert.status != 200) else
+           '/etc/elasticsearch/kirk-key.pem' }}
   block:
     - name: ODFE | Disable shard allocation for the cluster
       uri:
@@ -95,8 +145,8 @@
         body: '{"persistent":{"cluster.routing.allocation.enable": "primaries"}}'
       register: response_allocation_primaries
       until: response_allocation_primaries.json.acknowledged is defined and response_allocation_primaries.json.acknowledged == true
-      retries: 10
-      delay: 20
+      retries: 20
+      delay: 10
 
     - name: ODFE | Perform a synced flush
       uri:
