@@ -18,7 +18,7 @@
     mode: ug=rw,o=
   register: change_jvm_config
   vars:
-    xmx: "{{ is_upgrade_run | ternary(jvm_options.xmx, specification.jvm_options.Xmx) }}"
+    xmx: "{{ is_upgrade_run | ternary(jvm_options.xmx) }}"
 
 - name: Generate certificates
   when: not is_upgrade_run  # in upgrade mode certs are required at early stage and should be already generated
