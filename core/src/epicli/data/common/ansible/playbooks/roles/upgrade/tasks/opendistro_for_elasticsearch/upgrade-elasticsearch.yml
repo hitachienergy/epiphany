@@ -105,7 +105,7 @@
   delay: 1
 
 - name: ODFE | Test API access using demo certificate
-  when: _is_demo_cert_in_use.https
+  when: _is_demo_cert_in_use.http
   uri:
     <<: *uri
     client_cert: /etc/elasticsearch/kirk.pem
@@ -189,7 +189,7 @@
         ca_certs:
           http:
             cert_file: "{{ _existing_es_config['opendistro_security.ssl.http.pemtrustedcas_filepath'] }}"
-            is_demo_cert: "{{ _is_demo_cert_in_use.https }}"
+            is_demo_cert: "{{ _is_demo_cert_in_use.http }}"
           transport:
             cert_file: "{{ _existing_es_config['opendistro_security.ssl.transport.pemtrustedcas_filepath'] }}"
             is_demo_cert: "{{ _is_demo_cert_in_use.transport }}"
