@@ -82,14 +82,17 @@ pgaudit12_10
 pgbouncer-1.10.*
 policycoreutils-python # for container-selinux
 pyldb # for cifs-utils
+python-cffi # for python2-cryptography
 python-firewall # for firewalld
 python-kitchen # for yum-utils
 python-lxml # for java-1.8.0-openjdk-headless
 python-psycopg2
+python-pycparser # for python2-cryptography
 python-setuptools
 python-slip-dbus # for firewalld
 python-ipaddress
 python-backports
+python2-cryptography # for Ansible (certificate modules)
 quota # for nfs-utils
 rabbitmq-server-3.8.9
 rh-haproxy18
@@ -181,8 +184,6 @@ brainsam/pgbouncer:1.12
 istio/pilot:1.8.1
 istio/proxyv2:1.8.1
 istio/operator:1.8.1
-# TODO remove?
-jboss/keycloak:4.8.3.Final
 jboss/keycloak:9.0.0
 rabbitmq:3.8.9
 # K8s upgrade

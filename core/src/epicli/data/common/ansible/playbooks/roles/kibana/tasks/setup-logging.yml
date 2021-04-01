@@ -18,11 +18,6 @@
     group: kibana
     mode: 0644
 
-- name: Add log location
-  lineinfile:
-    path: /etc/kibana/kibana.yml
-    line: "logging.dest: {{ specification.kibana_log_dir }}/kibana.log"
-
 - name: Copy logrotate config
   template:
     dest: /etc/logrotate.d/kibana

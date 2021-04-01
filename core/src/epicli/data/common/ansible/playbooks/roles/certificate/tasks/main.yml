@@ -1,0 +1,4 @@
+---
+# This role allows to use Ansible certificate modules
+
+- include_tasks: install-packages.yml

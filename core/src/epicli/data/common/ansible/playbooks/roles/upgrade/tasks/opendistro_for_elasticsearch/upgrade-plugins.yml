@@ -1,5 +1,5 @@
 ---
-- name: Open Distro for Elasticsearch - plugins | Assert that opendistro-* packages are installed
+- name: ODFE plugins | Assert that opendistro-* packages are installed
   assert:
     that: ansible_facts.packages['{{ item }}'] is defined
     fail_msg: "Missing package to upgrade: {{ item }}"
@@ -12,7 +12,7 @@
     - opendistro-security
     - opendistro-sql
 
-- name: Open Distro for Elasticsearch - plugins | Upgrade opendistro-* packages
+- name: ODFE plugins | Upgrade opendistro-* packages
   include_role:
     name: opendistro_for_elasticsearch
     tasks_from: install-opendistro.yml
