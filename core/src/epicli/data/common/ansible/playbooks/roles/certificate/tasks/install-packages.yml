@@ -1,0 +1,13 @@
+---
+- name: Install requirements for Ansible certificate modules
+  package:
+    name: "{{ _packages[ansible_os_family] }}"
+    state: present
+  vars:
+    _packages:  # see docs of 'community.crypto.x509_certificate' module
+      Debian:
+        - python-cryptography
+      RedHat:
+        - python2-cryptography
+  module_defaults:
+    yum: { lock_timeout: "{{ yum_lock_timeout }}" }

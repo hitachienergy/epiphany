@@ -1,134 +1,259 @@
 ---
-- name: Open Distro for Elasticsearch | Create upgrade state file
+- name: ODFE | Create upgrade state file
   become: true
   file:
     path: "{{ opendistro_for_elasticsearch.upgrade_state_file_path }}"
     state: touch
     mode: u=rw,g=r,o=
 
-- name: Open Distro for Elasticsearch | Ensure elasticsearch service is running
+- name: ODFE | Ensure elasticsearch service is running
   systemd:
     name: elasticsearch
     enabled: yes
     state: started
   register: elasticsearch_state
 
-- name: Open Distro for Elasticsearch | Wait for elasticsearch service to start up
+# TODO: Get host from /etc/elasticsearch/elasticsearch.yml
+- name: ODFE | Wait for elasticsearch service to start up
+  when: elasticsearch_state.changed == true
   wait_for:
     port: "{{ es_transport_port }}"
     host: "{{ ansible_default_ipv4.address | default(ansible_all_ipv4_addresses[0]) }}"
-    delay: 10
-  when: elasticsearch_state.changed == true
+    delay: 5
 
-- name: Open Distro for Elasticsearch | Get Xmx value from /etc/elasticsearch/jvm.options
+- name: ODFE | Get Xmx value from /etc/elasticsearch/jvm.options
   command: grep -oP '(?<=^-Xmx)\d+[kKmMgG]?' /etc/elasticsearch/jvm.options
   register: grep_es_xmx
   changed_when: false
 
-- name: Open Distro for Elasticsearch | Disable shard allocation for the cluster
-  uri:
-    url: https://{{ ansible_default_ipv4.address | default(ansible_all_ipv4_addresses[0]) }}:{{ es_http_port }}/_cluster/settings
-    method: PUT
-    url_username: "{{ specification.es_user }}"
-    url_password: "{{ specification.es_password }}"
-    validate_certs: no
-    body_format: json
-    body: '{"persistent":{"cluster.routing.allocation.enable": "primaries"}}'
-  register: response_allocation_primaries
-  until: response_allocation_primaries.json.acknowledged is defined and response_allocation_primaries.json.acknowledged == true
-  retries: 10
-  delay: 20
+- name: ODFE | Load existing elasticsearch.yml
+  slurp:
+    src: /etc/elasticsearch/elasticsearch.yml
+  register: _existing_es_config_file
 
-- name: Open Distro for Elasticsearch | Perform a synced flush
-  uri:
-    url: https://{{ ansible_default_ipv4.address | default(ansible_all_ipv4_addresses[0]) }}:{{ es_http_port }}/_flush/synced
-    method: POST
-    url_username: "{{ specification.es_user }}"
-    url_password: "{{ specification.es_password }}"
-    validate_certs: no
-    status_code: "200, 409"
+- name: ODFE | Decode and parse elasticsearch.yml
+  set_fact:
+    _existing_es_config: "{{ _existing_es_config_file.content | b64decode | from_yaml }}"
 
-- name: Open Distro for Elasticsearch | Stop elasticsearch service
+# --- We need admin certificate for passwordless access to API ---
+
+# Install requirements for Ansible certificate modules
+- include_role:
+    name: certificate
+    tasks_from: install-packages.yml
+
+- name: Get information on root-ca certificate
+  community.crypto.x509_certificate_info:
+    path: /etc/elasticsearch/{{ _existing_es_config['opendistro_security.ssl.transport.pemtrustedcas_filepath'] }}
+  register: _root_ca_info
+
+- name: ODFE | Check if demo or epiphany certificates are in use
+  set_fact:
+    _is_demo_cert_in_use: "{{ 'True' if _root_ca_info.subject.commonName == 'Example Com Inc. Root CA' else 'False' }}"
+    _is_epiphany_cert_in_use: "{{ 'True' if _root_ca_info.subject.commonName == 'Epiphany Managed ODFE Root CA' else 'False' }}"
+
+- name: ODFE | Set API endpoint
+  set_fact:
+    elasticsearch_endpoint: >-
+      https://{{ ansible_default_ipv4.address | default(ansible_all_ipv4_addresses[0]) }}:{{ es_http_port }}
+  vars:
+    uri_task_template: &uri
+      body_format: json
+      validate_certs: false
+
+# TODO: Implement case for custom admin cert (non-demo and non-epiphany) when not '_is_epiphany_cert_in_use'.
+# For now we use workaround for this (upgrade_config.custom_admin_certificate).
+- name: ODFE | Set API access facts
+  set_fact:
+    uri_client_cert: >-
+      {{ (certificates.dirs.certs, certificates.files.admin.cert.filename) | path_join if _is_epiphany_cert_in_use else
+         upgrade_config.custom_admin_certificate.cert_path }}
+    uri_client_key: >-
+      {{ (certificates.dirs.certs, certificates.files.admin.key.filename) | path_join if _is_epiphany_cert_in_use else
+         upgrade_config.custom_admin_certificate.key_path }}
+  when: _is_epiphany_cert_in_use
+     or upgrade_config.custom_admin_certificate.active
+
+# For clustered nodes it's recommended to disable shard allocation for the cluster before restarting node (https://www.elastic.co/guide/en/elasticsearch/reference/current/restart-cluster.html#restart-cluster-rolling).
+
+- name: ODFE | Test API access using custom certificate
+  when: not _is_demo_cert_in_use
+  uri:
+    <<: *uri
+    client_cert: "{{ uri_client_cert | default(omit) }}"
+    client_key:  "{{ uri_client_key  | default(omit) }}"
+    url: "{{ elasticsearch_endpoint }}"
+    method: GET
+  register: test_api_access_using_custom_cert
+  failed_when: false
+  until: test_api_access_using_custom_cert.status == 200
+  retries: 3
+  delay: 1
+
+- name: ODFE | Test API access using demo certificate
+  when: _is_demo_cert_in_use
+  uri:
+    <<: *uri
+    client_cert: /etc/elasticsearch/kirk.pem
+    client_key: /etc/elasticsearch/kirk-key.pem
+    url: "{{ elasticsearch_endpoint }}"
+    method: GET
+  register: test_api_access_using_demo_cert
+  failed_when: false
+  until: test_api_access_using_demo_cert.status == 200
+  retries: 3
+  delay: 1
+
+- name: Fail with informative message
+  fail:
+    msg:
+      - Accessing API at {{ elasticsearch_endpoint }} failed.
+      - It looks like you use custom certificates.
+      - Please refer to "Open Distro for Elasticsearch upgrade" section of How-To docs.
+  when:
+    - (test_api_access_using_custom_cert is not skipped and test_api_access_using_custom_cert.status != 200) or
+      (test_api_access_using_demo_cert is not skipped and test_api_access_using_demo_cert.status != 200)
+
+- name: Pre-upgrade tasks
+  when: (test_api_access_using_custom_cert is not skipped and test_api_access_using_custom_cert.status == 200) or
+        (test_api_access_using_demo_cert is not skipped and test_api_access_using_demo_cert.status == 200)
+  module_defaults:
+    uri:
+      client_cert: >-
+        {{ uri_client_cert | default(omit) if (test_api_access_using_demo_cert is skipped
+                                               or test_api_access_using_demo_cert.status != 200) else
+           '/etc/elasticsearch/kirk.pem' }}
+      client_key: >-
+        {{ uri_client_key | default(omit) if (test_api_access_using_demo_cert is skipped
+                                              or test_api_access_using_demo_cert.status != 200) else
+           '/etc/elasticsearch/kirk-key.pem' }}
+  block:
+    - name: ODFE | Disable shard allocation for the cluster
+      uri:
+        <<: *uri
+        url: "{{ elasticsearch_endpoint }}/_cluster/settings"
+        method: PUT
+        body: '{"persistent":{"cluster.routing.allocation.enable": "primaries"}}'
+      register: response_allocation_primaries
+      until: response_allocation_primaries.json.acknowledged is defined and response_allocation_primaries.json.acknowledged == true
+      retries: 20
+      delay: 10
+
+    - name: ODFE | Perform a synced flush
+      uri:
+        <<: *uri
+        url: "{{ elasticsearch_endpoint }}/_flush/synced"
+        method: POST
+        status_code: "200, 409"
+
+- name: ODFE | Stop elasticsearch service
   systemd:
     name: elasticsearch
     state: stopped
 
-- name: Open Distro for Elasticsearch | Include Elasticsearch installation tasks
+- name: ODFE | Include Elasticsearch installation tasks
   include_role:
     name: opendistro_for_elasticsearch
     tasks_from: install-es.yml
 
-- name: Open Distro for Elasticsearch | Include Elasticsearch configuration tasks
+- name: ODFE | Include Elasticsearch configuration tasks
   include_role:
     name: opendistro_for_elasticsearch
     tasks_from: configure-es.yml
   vars:
-    context: upgrade
     jvm_options:
       xmx: "{{ grep_es_xmx.stdout_lines | last }}"
+    specification:
+      cluster_name: "{{ _existing_es_config['cluster.name'] }}"
+      clustered: "{{ 'True' if _existing_es_config['discovery.seed_hosts'] | length > 1 else 'False' }}"
+      paths:
+        data: "{{ _existing_es_config['path.data'] }}"
+        repo: "{{ _existing_es_config['path.repo'] | default('/var/lib/elasticsearch-snapshots') }}"  # absent in Epiphany v0.6 thus we use default
+        logs: "{{ _existing_es_config['path.logs'] }}"
+      opendistro_security:
+        ssl:
+          transport:
+            enforce_hostname_verification: "{{ _existing_es_config['opendistro_security.ssl.transport.enforce_hostname_verification'] }}"
+    existing_es_config:
+      certs:
+        admin_dn: >-
+          {{ _existing_es_config['opendistro_security.authcz.admin_dn'] | list }}
+        node:
+          cert:
+            filename: "{{ _existing_es_config['opendistro_security.ssl.transport.pemcert_filepath'] }}"
+          key:
+            filename: "{{ _existing_es_config['opendistro_security.ssl.transport.pemkey_filepath'] }}"
+        nodes_dn: "{{ _existing_es_config['opendistro_security.nodes_dn'] | default([]) }}"
+        root_ca:
+          cert:
+            filename: "{{ _existing_es_config['opendistro_security.ssl.transport.pemtrustedcas_filepath'] }}"
 
-- name: Open Distro for Elasticsearch | Include upgrade plugins tasks
+- name: ODFE | Include upgrade plugins tasks
   include_tasks: opendistro_for_elasticsearch/upgrade-plugins.yml
 
-- name: Open Distro for Elasticsearch | Restart elasticsearch service
+- name: ODFE | Restart elasticsearch service
   systemd:
     name: elasticsearch
     state: restarted
     daemon_reload: yes # opendistro-performance-analyzer provides opendistro-performance-analyzer.service
   when: install_opendistro_packages.changed
 
-- name: Open Distro for Elasticsearch | Wait for elasticsearch node to come back up
+- name: ODFE | Wait for elasticsearch node to come back up
   wait_for:
     port: "{{ es_transport_port }}"
     host: "{{ ansible_default_ipv4.address | default(ansible_all_ipv4_addresses[0]) }}"
-    delay: 10
+    delay: 5
 
-- name: Open Distro for Elasticsearch | Wait for elasticsearch http to come back up
+- name: ODFE | Wait for elasticsearch http to come back up
   wait_for:
     port: "{{ es_http_port }}"
     host: "{{ ansible_default_ipv4.address | default(ansible_all_ipv4_addresses[0]) }}"
-    delay: 5
 
-- name: Open Distro for Elasticsearch | Wait for 'yellow' or 'green' cluster health status
-  uri:
-    url: https://{{ ansible_default_ipv4.address | default(ansible_all_ipv4_addresses[0]) }}:{{ es_http_port }}/_cluster/health
-    method: GET
-    url_username: "{{ specification.es_user }}"
-    url_password: "{{ specification.es_password }}"
-    validate_certs: no
-  register: cluster_health
-  until: cluster_health.json.status is defined and cluster_health.json.status in ['yellow', 'green']
-  retries: 10
-  delay: 15
+- name: Post upgrade tasks
+  module_defaults:
+    uri:
+      client_cert: >-
+        {{ uri_client_cert | default(omit) if (test_api_access_using_demo_cert is skipped
+                                               or test_api_access_using_demo_cert.status != 200) else
+           '/etc/elasticsearch/kirk.pem' }}
+      client_key: >-
+        {{ uri_client_key | default(omit) if (test_api_access_using_demo_cert is skipped
+                                              or test_api_access_using_demo_cert.status != 200) else
+           '/etc/elasticsearch/kirk-key.pem' }}
+  block:
+    - name: ODFE | Wait for 'yellow' or 'green' cluster health status
+      uri:
+        <<: *uri
+        url: "{{ elasticsearch_endpoint }}/_cluster/health"
+        method: GET
+      register: cluster_health
+      until: cluster_health.json.status is defined and cluster_health.json.status in ['yellow', 'green']
+      retries: 30
+      delay: 5
 
-- name: Open Distro for Elasticsearch | Enable shard allocation for the cluster
-  uri:
-    url: https://{{ ansible_default_ipv4.address | default(ansible_all_ipv4_addresses[0]) }}:{{ es_http_port }}/_cluster/settings
-    method: PUT
-    url_username: "{{ specification.es_user }}"
-    url_password: "{{ specification.es_password }}"
-    validate_certs: no
-    body_format: json
-    body: '{"persistent":{"cluster.routing.allocation.enable": null}}'
-  register: response
-  until: response.json.acknowledged is defined and response.json.acknowledged == true
-  retries: 10
-  delay: 15
+    - name: ODFE | Enable shard allocation for the cluster
+      uri:
+        <<: *uri
+        url: "{{ elasticsearch_endpoint }}/_cluster/settings"
+        method: PUT
+        body: '{"persistent":{"cluster.routing.allocation.enable": null}}'
+      register: response
+      until: response.json.acknowledged is defined and response.json.acknowledged == true
+      retries: 30
+      delay: 5
 
-- name: Open Distro for Elasticsearch | Wait for 'yellow' or 'green' cluster health status
-  uri:
-    url: https://{{ ansible_default_ipv4.address | default(ansible_all_ipv4_addresses[0]) }}:{{ es_http_port }}/_cluster/health
-    method: GET
-    url_username: "{{ specification.es_user }}"
-    url_password: "{{ specification.es_password }}"
-    validate_certs: no
-    return_content: yes
-  register: cluster_health
-  until: cluster_health.json.status is defined and cluster_health.json.status in ['yellow', 'green']
-  retries: 10
-  delay: 15
+    - name: ODFE | Wait for 'yellow' or 'green' cluster health status
+      uri:
+        <<: *uri
+        url: "{{ elasticsearch_endpoint }}/_cluster/health"
+        method: GET
+        return_content: yes
+      register: cluster_health
+      until: cluster_health.json.status is defined and cluster_health.json.status in ['yellow', 'green']
+      retries: 30
+      delay: 5
 
-- name: Open Distro for Elasticsearch | Remove upgrade state file
+- name: ODFE | Remove upgrade state file
   become: true
   file:
     path: "{{ opendistro_for_elasticsearch.upgrade_state_file_path }}"

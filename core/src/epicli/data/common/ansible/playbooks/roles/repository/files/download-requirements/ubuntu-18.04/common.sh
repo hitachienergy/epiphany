@@ -86,3 +86,54 @@ download_file() {
 deplist_cmd() {
     apt-cache depends --no-recommends --no-suggests --no-conflicts --no-breaks --no-replaces --no-enhances --no-pre-depends $1
 }
+
+get_shell_escaped_array() {
+    if (( $# > 0 )); then
+      printf '%q\n' "$@"
+    fi
+}
+
+print_array_as_shell_escaped_string() {
+    local output
+    output=$(get_shell_escaped_array "$@")
+    local -a escaped=()
+    if [ -n "$output" ]; then
+      readarray -t escaped <<< "$output"
+    fi
+    if (( ${#escaped[@]} > 0 )); then
+      printf '%s\n' "${escaped[*]}"
+    fi
+}
+
+run_cmd() {
+    local -a cmd_arr=("$@")
+
+    local output
+    output=$(print_array_as_shell_escaped_string "${cmd_arr[@]}")
+    echo "run:" "$output"
+    "${cmd_arr[@]}"
+}
+
+run_cmd_with_retries() {
+    local retries=${1}
+    shift
+    local -a cmd_arr=("$@")
+
+    ( # sub-shell is used to limit scope for 'set +e'
+      set +e
+      trap - ERR  # disable global trap locally
+      for ((i=0; i <= retries; i++)); do
+        run_cmd "${cmd_arr[@]}"
+        return_code=$?
+        if (( return_code == 0 )); then
+          break
+        elif (( i < retries )); then
+          sleep 1
+          echo "retrying ($(( i+1 ))/${retries})"
+        else
+          echo "ERROR: all attempts failed"
+        fi
+      done
+      return $return_code
+    )
+}

@@ -7,10 +7,22 @@
     name: postgresql_defaults
   when: "'postgresql' in group_names"
 
+# Do not select Kibana configured to use ES deployed by 'opendistro_for_elasticsearch' role
+- name: Set value for setup.kibana.host
+  set_fact:
+    setup_kibana_host: >-
+      {{ hostvars[groups.kibana|intersect(groups.logging)|first]['ansible_hostname'] }}
+  when:
+    - context is undefined or context != 'upgrade'
+    - groups.kibana[0] is defined
+    - groups.logging is defined
+    - groups.kibana | intersect(groups.logging) | length
+
 - name: Copy configuration file (filebeat.yml)
   template:
     dest: /etc/filebeat/filebeat.yml
     src: filebeat.yml.j2
+    mode: u=rw,go=
   register: modify_filebeat_yml
 
 - name: Set Filebeat to be started after Docker

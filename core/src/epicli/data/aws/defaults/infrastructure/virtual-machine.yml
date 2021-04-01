@@ -14,7 +14,7 @@ specification:
   tags:
     - version: 0.4.2
   size: t2.micro
-  os_full_name: "ubuntu/images/hvm-ssd/ubuntu-bionic-18.04-amd64-server-20200611"
+  os_full_name: "ubuntu/images/hvm-ssd/ubuntu-bionic-18.04-amd64-server-20210323"
   os_type: linux
   ebs_optimized: false
   disks:
