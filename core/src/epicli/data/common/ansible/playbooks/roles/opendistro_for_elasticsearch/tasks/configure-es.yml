@@ -41,18 +41,18 @@
   register: change_config
   vars:
     root_ca_cert_filename: >-
-      {{ existing_es_config.certs.root_ca.cert.filename if (is_upgrade_run and not existing_es_config.certs.root_ca.is_demo_cert) else
+      {{ existing_es_config.certs.root_ca.cert.filename if is_upgrade_run else
          certificates.files.root_ca.cert.filename }}
     node_cert_filename: >-
-      {{ existing_es_config.certs.node.cert.filename if (is_upgrade_run and not existing_es_config.certs.root_ca.is_demo_cert) else
+      {{ existing_es_config.certs.node.cert.filename if is_upgrade_run else
          certificates.files.node.cert.filename }}
     node_key_filename: >-
-      {{ existing_es_config.certs.node.key.filename if (is_upgrade_run and not existing_es_config.certs.root_ca.is_demo_cert) else
+      {{ existing_es_config.certs.node.key.filename if is_upgrade_run else
          certificates.files.node.key.filename }}
     _epiphany_admin_dn: "CN={{ certificates.files.admin.cert.subject.CN }},OU={{ certificates.files.admin.cert.subject.OU }},\
                          O={{ certificates.files.admin.cert.subject.O }}"  # order matters
     admin_dn: >-
-      {{ existing_es_config.certs.admin_dn_without_demo_user if (is_upgrade_run and existing_es_config.certs.admin_dn_without_demo_user|count > 0) else
+      {{ existing_es_config.certs.admin_dn if is_upgrade_run else
          [ _epiphany_admin_dn ] }}
     _epiphany_nodes_dn: >-
       {%- if specification.clustered -%}
@@ -66,7 +66,7 @@
         {%- if not loop.last -%},{%- else -%}]{%- endif -%}
       {%- endfor -%}
     nodes_dn: >-
-      {{ existing_es_config.certs.nodes_dn if (is_upgrade_run and not existing_es_config.certs.root_ca.is_demo_cert) else
+      {{ existing_es_config.certs.nodes_dn if is_upgrade_run else
          _epiphany_nodes_dn }}
 
 - name: Restart elasticsearch service

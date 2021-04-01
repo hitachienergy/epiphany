@@ -47,17 +47,10 @@
     path: /etc/elasticsearch/{{ _existing_es_config['opendistro_security.ssl.transport.pemtrustedcas_filepath'] }}
   register: _root_ca_info
 
-- name: ODFE | Check if demo certificates are in use
+- name: ODFE | Check if demo or epiphany certificates are in use
   set_fact:
     _is_demo_cert_in_use: "{{ 'True' if _root_ca_info.subject.commonName == 'Example Com Inc. Root CA' else 'False' }}"
-
-- name: ODFE | Include tasks that generete Epiphany certificates  # they may be renewed
-  include_role:
-    name: opendistro_for_elasticsearch
-    tasks_from: generate-certs.yml
-  register: generate_certs
-  when: _is_demo_cert_in_use
-     or _root_ca_info.subject.commonName == 'Epiphany Managed ODFE Root CA'
+    _is_epiphany_cert_in_use: "{{ 'True' if _root_ca_info.subject.commonName == 'Epiphany Managed ODFE Root CA' else 'False' }}"
 
 - name: ODFE | Set API endpoint
   set_fact:
@@ -68,24 +61,72 @@
       body_format: json
       validate_certs: false
 
-# TODO: Implement case for custom admin cert (non-demo and non-epiphany) when not '_is_demo_cert_in_use'.
+# TODO: Implement case for custom admin cert (non-demo and non-epiphany) when not '_is_epiphany_cert_in_use'.
 # For now we use workaround for this (upgrade_config.custom_admin_certificate).
 - name: ODFE | Set API access facts
   set_fact:
     uri_client_cert: >-
-      {{ (certificates.dirs.certs, certificates.files.admin.cert.filename) | path_join if (generate_certs is not skipped) else
+      {{ (certificates.dirs.certs, certificates.files.admin.cert.filename) | path_join if _is_epiphany_cert_in_use else
          upgrade_config.custom_admin_certificate.cert_path }}
     uri_client_key: >-
-      {{ (certificates.dirs.certs, certificates.files.admin.key.filename) | path_join if (generate_certs is not skipped) else
+      {{ (certificates.dirs.certs, certificates.files.admin.key.filename) | path_join if _is_epiphany_cert_in_use else
          upgrade_config.custom_admin_certificate.key_path }}
-  when: generate_certs is not skipped
+  when: _is_epiphany_cert_in_use
      or upgrade_config.custom_admin_certificate.active
 
+# For clustered nodes it's recommended to disable shard allocation for the cluster before restarting node (https://www.elastic.co/guide/en/elasticsearch/reference/current/restart-cluster.html#restart-cluster-rolling).
+
+- name: ODFE | Test API access using custom certificate
+  when: not _is_demo_cert_in_use
+  uri:
+    <<: *uri
+    client_cert: "{{ uri_client_cert | default(omit) }}"
+    client_key:  "{{ uri_client_key  | default(omit) }}"
+    url: "{{ elasticsearch_endpoint }}"
+    method: GET
+  register: test_api_access_using_custom_cert
+  failed_when: false
+  until: test_api_access_using_custom_cert.status == 200
+  retries: 3
+  delay: 1
+
+- name: ODFE | Test API access using demo certificate
+  when: _is_demo_cert_in_use
+  uri:
+    <<: *uri
+    client_cert: /etc/elasticsearch/kirk.pem
+    client_key: /etc/elasticsearch/kirk-key.pem
+    url: "{{ elasticsearch_endpoint }}"
+    method: GET
+  register: test_api_access_using_demo_cert
+  failed_when: false
+  until: test_api_access_using_demo_cert.status == 200
+  retries: 3
+  delay: 1
+
+- name: Fail with informative message
+  fail:
+    msg:
+      - Accessing API at {{ elasticsearch_endpoint }} failed.
+      - It looks like you use custom certificates.
+      - Please refer to "Open Distro for Elasticsearch upgrade" section of How-To docs.
+  when:
+    - (test_api_access_using_custom_cert is not skipped and test_api_access_using_custom_cert.status != 200) or
+      (test_api_access_using_demo_cert is not skipped and test_api_access_using_demo_cert.status != 200)
+
 - name: Pre-upgrade tasks
+  when: (test_api_access_using_custom_cert is not skipped and test_api_access_using_custom_cert.status == 200) or
+        (test_api_access_using_demo_cert is not skipped and test_api_access_using_demo_cert.status == 200)
   module_defaults:
     uri:
-      client_cert: "{{ uri_client_cert | default(omit) }}"
-      client_key:  "{{ uri_client_key  | default(omit) }}"
+      client_cert: >-
+        {{ uri_client_cert | default(omit) if (test_api_access_using_demo_cert is skipped
+                                               or test_api_access_using_demo_cert.status != 200) else
+           '/etc/elasticsearch/kirk.pem' }}
+      client_key: >-
+        {{ uri_client_key | default(omit) if (test_api_access_using_demo_cert is skipped
+                                              or test_api_access_using_demo_cert.status != 200) else
+           '/etc/elasticsearch/kirk-key.pem' }}
   block:
     - name: ODFE | Disable shard allocation for the cluster
       uri:
@@ -95,8 +136,8 @@
         body: '{"persistent":{"cluster.routing.allocation.enable": "primaries"}}'
       register: response_allocation_primaries
       until: response_allocation_primaries.json.acknowledged is defined and response_allocation_primaries.json.acknowledged == true
-      retries: 10
-      delay: 20
+      retries: 20
+      delay: 10
 
     - name: ODFE | Perform a synced flush
       uri:
@@ -127,7 +168,7 @@
       clustered: "{{ 'True' if _existing_es_config['discovery.seed_hosts'] | length > 1 else 'False' }}"
       paths:
         data: "{{ _existing_es_config['path.data'] }}"
-        repo: "{{ _existing_es_config['path.repo'] }}"
+        repo: "{{ _existing_es_config['path.repo'] | default('/var/lib/elasticsearch-snapshots') }}"  # absent in Epiphany v0.6 thus we use default
         logs: "{{ _existing_es_config['path.logs'] }}"
       opendistro_security:
         ssl:
@@ -135,8 +176,8 @@
             enforce_hostname_verification: "{{ _existing_es_config['opendistro_security.ssl.transport.enforce_hostname_verification'] }}"
     existing_es_config:
       certs:
-        admin_dn_without_demo_user: >-
-          {{ _existing_es_config['opendistro_security.authcz.admin_dn'] | reject('search', 'CN=kirk,OU=client,O=client,L=test') | list }}
+        admin_dn: >-
+          {{ _existing_es_config['opendistro_security.authcz.admin_dn'] | list }}
         node:
           cert:
             filename: "{{ _existing_es_config['opendistro_security.ssl.transport.pemcert_filepath'] }}"
@@ -144,8 +185,8 @@
             filename: "{{ _existing_es_config['opendistro_security.ssl.transport.pemkey_filepath'] }}"
         nodes_dn: "{{ _existing_es_config['opendistro_security.nodes_dn'] | default([]) }}"
         root_ca:
-          filename: "{{ _existing_es_config['opendistro_security.ssl.transport.pemtrustedcas_filepath'] }}"
-          is_demo_cert: "{{ _is_demo_cert_in_use }}"
+          cert:
+            filename: "{{ _existing_es_config['opendistro_security.ssl.transport.pemtrustedcas_filepath'] }}"
 
 - name: ODFE | Include upgrade plugins tasks
   include_tasks: opendistro_for_elasticsearch/upgrade-plugins.yml
@@ -171,8 +212,14 @@
 - name: Post upgrade tasks
   module_defaults:
     uri:
-      client_cert: "{{ uri_client_cert | default(omit) }}"
-      client_key:  "{{ uri_client_key  | default(omit) }}"
+      client_cert: >-
+        {{ uri_client_cert | default(omit) if (test_api_access_using_demo_cert is skipped
+                                               or test_api_access_using_demo_cert.status != 200) else
+           '/etc/elasticsearch/kirk.pem' }}
+      client_key: >-
+        {{ uri_client_key | default(omit) if (test_api_access_using_demo_cert is skipped
+                                              or test_api_access_using_demo_cert.status != 200) else
+           '/etc/elasticsearch/kirk-key.pem' }}
   block:
     - name: ODFE | Wait for 'yellow' or 'green' cluster health status
       uri:

@@ -29,6 +29,7 @@
 - [#2136](https://github.com/epiphany-platform/epiphany/issues/2136) - Replace Bintray repository
 - [#2161](https://github.com/epiphany-platform/epiphany/issues/2161) - Running out of disk space during upgrade from v0.6 and v0.7 where the default disks are 32GB
 - [#1844](https://github.com/epiphany-platform/epiphany/issues/1844) - Default password in Open Distro for Elasticsearch, Filebeat, Kibana and Grafana
+- [#2128](https://github.com/epiphany-platform/epiphany/issues/2128) - [upgrade] Configuration in elasticsearch.yml is overwritten
 
 ### Updated
 
@@ -43,6 +44,6 @@
 - [#2142](https://github.com/epiphany-platform/epiphany/issues/2142) - Update Ubuntu 18.04-LTS images to the latest version
 
 ### Breaking changes
-- Feature name: `elasticsearch` removed in favor of feature name: `opendistro-for-elasticsearch`.
+- Feature `elasticsearch` removed in favor of `opendistro-for-elasticsearch`.
 
 ### Known issues
