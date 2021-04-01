@@ -21,7 +21,3 @@ specification:
     logs: /var/log/elasticsearch
   jvm_options:
     Xmx: 1g # see https://www.elastic.co/guide/en/elasticsearch/reference/7.9/heap-size.html
-  opendistro_security:
-    ssl:
-      transport:
-        enforce_hostname_verification: true

@@ -98,15 +98,16 @@ cluster.initial_master_nodes: [{% for host in groups[current_group_name] %}"{{ho
 
 ######## Start OpenDistro for Elasticsearch Security Demo Configuration ########
 # WARNING: revise all the lines below before you go into production
-opendistro_security.ssl.transport.pemcert_filepath: {{ node_cert_filename }}
-opendistro_security.ssl.transport.pemkey_filepath: {{ node_key_filename }}
-opendistro_security.ssl.transport.pemtrustedcas_filepath: {{ root_ca_cert_filename }}
-opendistro_security.ssl.transport.enforce_hostname_verification: {{ specification.opendistro_security.ssl.transport.enforce_hostname_verification | lower }}
+opendistro_security.ssl.transport.pemcert_filepath: {{ node_certs.transport.cert_file }}
+opendistro_security.ssl.transport.pemkey_filepath: {{ node_certs.transport.key_file }}
+opendistro_security.ssl.transport.pemtrustedcas_filepath: {{ ca_certs.transport.cert_file }}
+opendistro_security.ssl.transport.enforce_hostname_verification: {{ ssl.transport.enforce_hostname_verification | lower }}
 opendistro_security.ssl.http.enabled: true
-opendistro_security.ssl.http.pemcert_filepath: {{ node_cert_filename }}
-opendistro_security.ssl.http.pemkey_filepath: {{ node_key_filename }}
-opendistro_security.ssl.http.pemtrustedcas_filepath: {{ root_ca_cert_filename }}
-opendistro_security.allow_unsafe_democertificates: true  # TODO: move (backup) demo cert files after package installation, then it could be set to 'false'
+opendistro_security.ssl.http.pemcert_filepath: {{ node_certs.http.cert_file }}
+opendistro_security.ssl.http.pemkey_filepath: {{ node_certs.http.key_file }}
+opendistro_security.ssl.http.pemtrustedcas_filepath: {{ ca_certs.http.cert_file }}
+{# 'allow_unsafe_democertificates: true' needed for rolling upgrade. If set to 'false' and demo cert files are present, then service fails #}
+opendistro_security.allow_unsafe_democertificates: true
 opendistro_security.allow_default_init_securityindex: true
 opendistro_security.authcz.admin_dn:
 {% for dn in admin_dn %}

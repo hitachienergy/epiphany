@@ -40,19 +40,36 @@
     mode: ug=rw,o=
   register: change_config
   vars:
-    root_ca_cert_filename: >-
-      {{ existing_es_config.certs.root_ca.cert.filename if (is_upgrade_run and not existing_es_config.certs.root_ca.is_demo_cert) else
-         certificates.files.root_ca.cert.filename }}
-    node_cert_filename: >-
-      {{ existing_es_config.certs.node.cert.filename if (is_upgrade_run and not existing_es_config.certs.root_ca.is_demo_cert) else
-         certificates.files.node.cert.filename }}
-    node_key_filename: >-
-      {{ existing_es_config.certs.node.key.filename if (is_upgrade_run and not existing_es_config.certs.root_ca.is_demo_cert) else
-         certificates.files.node.key.filename }}
+    ca_certs:
+      http:
+        cert_file: >-
+          {{ existing_es_config.certs.ca_certs.http.cert_file if (is_upgrade_run and not existing_es_config.certs.ca_certs.http.is_demo_cert) else
+             certificates.files.root_ca.cert.filename }}
+      transport:
+        # for upgrade demo cert is preserved by purpose to handle rolling upgrade, TODO: use combo CA cert (2 in 1 file), then in second pass limit to single
+        cert_file: >-
+          {{ existing_es_config.certs.ca_certs.transport.cert_file if (is_upgrade_run) else
+             certificates.files.root_ca.cert.filename }}
+    node_certs:
+      http:
+        cert_file: >-
+          {{ existing_es_config.certs.node_certs.http.cert_file if (is_upgrade_run and not existing_es_config.certs.ca_certs.http.is_demo_cert) else
+            certificates.files.node.cert.filename }}
+        key_file: >-
+          {{ existing_es_config.certs.node_certs.http.key_file if (is_upgrade_run and not existing_es_config.certs.ca_certs.http.is_demo_cert) else
+            certificates.files.node.key.filename }}
+      transport:
+        cert_file: >-
+          {{ existing_es_config.certs.node_certs.transport.cert_file if (is_upgrade_run) else
+             certificates.files.node.cert.filename }}
+        key_file: >-
+          {{ existing_es_config.certs.node_certs.transport.key_file if (is_upgrade_run) else
+             certificates.files.node.key.filename }}
     _epiphany_admin_dn: "CN={{ certificates.files.admin.cert.subject.CN }},OU={{ certificates.files.admin.cert.subject.OU }},\
                          O={{ certificates.files.admin.cert.subject.O }}"  # order matters
+    # for upgrade admin is preserved by purpose to handle rolling upgrade
     admin_dn: >-
-      {{ existing_es_config.certs.admin_dn_without_demo_user if (is_upgrade_run and existing_es_config.certs.admin_dn_without_demo_user|count > 0) else
+      {{ existing_es_config.certs.admin_dn if (is_upgrade_run) else
          [ _epiphany_admin_dn ] }}
     _epiphany_nodes_dn: >-
       {%- if specification.clustered -%}
@@ -66,8 +83,13 @@
         {%- if not loop.last -%},{%- else -%}]{%- endif -%}
       {%- endfor -%}
     nodes_dn: >-
-      {{ existing_es_config.certs.nodes_dn if (is_upgrade_run and not existing_es_config.certs.root_ca.is_demo_cert) else
+      {{ existing_es_config.certs.nodes_dn if (is_upgrade_run and existing_es_config.certs.nodes_dn|count > 0) else
          _epiphany_nodes_dn }}
+    ssl:
+      transport:
+        enforce_hostname_verification: >-
+          {{ existing_es_config.certs.ssl.transport.enforce_hostname_verification if (is_upgrade_run) else
+             'true' }}
 
 - name: Restart elasticsearch service
   systemd:
