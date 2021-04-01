@@ -1,6 +1,6 @@
 # Changelog 0.10
 
-## [0.10.0] YYYY-MM-DD
+## [0.10.0] 2021-04-01
 
 ### Added
 
@@ -47,3 +47,5 @@
 - Feature `elasticsearch` removed in favor of `opendistro-for-elasticsearch`.
 
 ### Known issues
+
+- [#2115](https://github.com/epiphany-platform/epiphany/issues/2115) - [RHEL/CentOS] epicli may hang or fail on importing GPG keys for Kubernetes rpm repository
