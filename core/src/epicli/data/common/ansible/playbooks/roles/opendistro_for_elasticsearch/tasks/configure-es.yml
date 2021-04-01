@@ -69,7 +69,8 @@
                          O={{ certificates.files.admin.cert.subject.O }}"  # order matters
     # for upgrade admin is preserved by purpose to handle rolling upgrade
     admin_dn: >-
-      {{ existing_es_config.certs.admin_dn if (is_upgrade_run) else
+      {{ existing_es_config.certs.admin_dn                                 if (is_upgrade_run and not existing_es_config.certs.ca_certs.http.is_demo_cert) else
+         existing_es_config.certs.admin_dn | union([ _epiphany_admin_dn ]) if (is_upgrade_run and     existing_es_config.certs.ca_certs.http.is_demo_cert) else
          [ _epiphany_admin_dn ] }}
     _epiphany_nodes_dn: >-
       {%- if specification.clustered -%}
