@@ -6,6 +6,10 @@
     state: touch
     mode: u=rw,g=r,o=
 
+- name: Open Distro for Elasticsearch | Include defaults from opendistro_for_elasticsearch role
+  include_vars:
+    file: roles/opendistro_for_elasticsearch/defaults/main.yml
+
 - name: ODFE | Ensure elasticsearch service is running
   systemd:
     name: elasticsearch
@@ -37,10 +41,10 @@
 
 # --- We need admin certificate for passwordless access to API ---
 
-  # Install requirements for Ansible certificate modules
+# Install requirements for Ansible certificate modules
 - include_role:
-    name: certificate
-    tasks_from: install-packages.yml
+   name: certificate
+   tasks_from: install-packages.yml
 
 - name: Get information on root-ca certificate
   community.crypto.x509_certificate_info:
