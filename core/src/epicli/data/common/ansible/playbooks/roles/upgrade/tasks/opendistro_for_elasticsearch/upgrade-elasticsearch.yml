@@ -6,10 +6,6 @@
     state: touch
     mode: u=rw,g=r,o=
 
-- name: Open Distro for Elasticsearch | Include defaults from opendistro_for_elasticsearch role
-  include_vars:
-    file: roles/opendistro_for_elasticsearch/defaults/main.yml
-
 - name: ODFE | Ensure elasticsearch service is running
   systemd:
     name: elasticsearch
