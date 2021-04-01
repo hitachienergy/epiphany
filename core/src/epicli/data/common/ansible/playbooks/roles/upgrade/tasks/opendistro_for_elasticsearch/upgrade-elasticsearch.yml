@@ -39,8 +39,8 @@
 
 # Install requirements for Ansible certificate modules
 - include_role:
-   name: certificate
-   tasks_from: install-packages.yml
+    name: certificate
+    tasks_from: install-packages.yml
 
 - name: Get information on root-ca certificate
   community.crypto.x509_certificate_info:
@@ -212,8 +212,14 @@
 - name: Post upgrade tasks
   module_defaults:
     uri:
-      client_cert: "{{ uri_client_cert | default(omit) }}"
-      client_key:  "{{ uri_client_key  | default(omit) }}"
+      client_cert: >-
+        {{ uri_client_cert | default(omit) if (test_api_access_using_demo_cert is skipped
+                                               or test_api_access_using_demo_cert.status != 200) else
+           '/etc/elasticsearch/kirk.pem' }}
+      client_key: >-
+        {{ uri_client_key | default(omit) if (test_api_access_using_demo_cert is skipped
+                                              or test_api_access_using_demo_cert.status != 200) else
+           '/etc/elasticsearch/kirk-key.pem' }}
   block:
     - name: ODFE | Wait for 'yellow' or 'green' cluster health status
       uri:
