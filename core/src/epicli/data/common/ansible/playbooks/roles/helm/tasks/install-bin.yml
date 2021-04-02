@@ -14,7 +14,7 @@
     name: download
     tasks_from: download_newest_file
   vars:
-    archive_name_regexp: "{{ archive_regexp }}"
+    archive_name_regexp: "{{ helm_archive_regexp }}"
     validate_certs: false
 
 - name: Create versioned destination directory for Helm binary
