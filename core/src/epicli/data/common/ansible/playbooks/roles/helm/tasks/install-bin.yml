@@ -1,5 +1,5 @@
 ---
-- name: Set archive regex for x86_64
+- name: Set helm binary archive regex for x86_64
   set_fact:
     archive_regexp: "^helm-v([0-9.]+)-linux-amd64.tar.gz$"
   when: ansible_architecture == "x86_64"
