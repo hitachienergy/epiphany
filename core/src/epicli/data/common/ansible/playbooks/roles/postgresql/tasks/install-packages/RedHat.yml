@@ -17,6 +17,7 @@
   when:
     - specification.extensions.pgbouncer.enabled is defined
     - specification.extensions.pgbouncer.enabled
+    - ansible_architecture == "x86_64"
 
 - name: Install repmgr
   block:
@@ -34,6 +35,7 @@
   when:
     - specification.extensions.replication.use_repmgr is defined
     - specification.extensions.replication.use_repmgr
+    - ansible_architecture == "x86_64"
 
 # --- extensions ---
 
