@@ -561,7 +561,7 @@ EOF
 
 RABBITMQ_SERVER_REPO_CONF=$(cat <<'EOF'
 [rabbitmq-server]
-name=rabbitmq-rpm
+name=rabbitmq-server
 baseurl=https://packagecloud.io/rabbitmq/rabbitmq-server/el/7/$basearch
 gpgcheck=1
 gpgkey=https://packagecloud.io/rabbitmq/rabbitmq-server/gpgkey
@@ -584,7 +584,7 @@ add_repo_as_file 'grafana' "$GRAFANA_REPO_CONF"
 add_repo_as_file 'kubernetes' "$KUBERNETES_REPO_CONF"
 add_repo_as_file 'opendistroforelasticsearch' "$OPENDISTRO_REPO_CONF"
 add_repo_as_file 'postgresql-10' "$POSTGRESQL_REPO_CONF"
-add_repo_as_file 'rabbitmq_rabbitmq-server' "$RABBITMQ_SERVER_REPO_CONF"
+add_repo_as_file 'rabbitmq-server' "$RABBITMQ_SERVER_REPO_CONF"
 add_repo_from_script 'https://dl.2ndquadrant.com/default/release/get/10/rpm'
 disable_repo '2ndquadrant-dl-default-release-pg10-debug'
 
