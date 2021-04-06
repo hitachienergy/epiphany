@@ -1,0 +1,9 @@
+---
+- name: Install packages
+  yum:
+    name:
+      - logrotate
+      - erlang-{{ versions.redhat.erlang }}
+      - rabbitmq-server-{{ versions.redhat.rabbitmq }}
+    update_cache: true
+    state: present

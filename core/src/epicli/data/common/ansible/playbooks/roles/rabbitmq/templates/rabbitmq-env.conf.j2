@@ -1,4 +1,14 @@
-RABBITMQ_USE_LONGNAME={{ specification.rabbitmq_use_longname }}
+# {{ ansible_managed }}
+
+{% if specification.rabbitmq_use_longname|lower == 'autoconfigured' %}
+{%   if ansible_nodename == ansible_hostname %}
+RABBITMQ_USE_LONGNAME=false
+{%   else %}
+RABBITMQ_USE_LONGNAME=true
+{%   endif %}
+{% else %}
+RABBITMQ_USE_LONGNAME={{ specification.rabbitmq_use_longname | lower }}
+{% endif %}
 
 # Specifies new style config file location
 CONFIG_FILE=/etc/rabbitmq/rabbitmq.conf

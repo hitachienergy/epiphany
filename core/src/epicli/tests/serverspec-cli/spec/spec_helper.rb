@@ -1,5 +1,6 @@
-require 'serverspec'
 require 'net/ssh'
+require 'pathname'
+require 'serverspec'
 require 'yaml'
 
 set :backend, :ssh
@@ -51,6 +52,11 @@ set :shell, '/bin/bash'
     return counter
   end
 
+  def getBuildDirPath()
+    pn = Pathname.new(ENV['inventory'])
+    return pn.dirname
+  end
+
   def hostInGroups?(role)
     file = File.open(ENV['inventory'], "rb")
     input = file.read
@@ -70,6 +76,14 @@ set :shell, '/bin/bash'
       datayaml << ruby
     end
     return datayaml.select {|x| x["kind"] == kind }[0]
+  end
+
+  def readYaml(path)
+    docs = []
+    YAML.load_stream(File.read path) do |ruby|
+      docs << ruby
+    end
+    return docs
   end
 
   def listInventoryHosts(role)
