@@ -1,20 +1,10 @@
 ---
-- name: Set helm binary archive regex for x86_64
-  set_fact:
-    helm_archive_regexp: "^helm-v([0-9.]+)-linux-amd64.tar.gz$"
-  when: ansible_architecture == "x86_64"
-
-- name: Set helm binary archive regex for aarch64
-  set_fact:
-    helm_archive_regexp: "^helm-v([0-9.]+)-linux-arm64.tar.gz$"
-  when: ansible_architecture == "aarch64"
-
 - name: Download the newest Helm binary package from the epirepo
   import_role:
     name: download
     tasks_from: download_newest_file
   vars:
-    archive_name_regexp: "{{ helm_archive_regexp }}"
+    archive_name_regexp: "{{ helm_archive_regexp[ansible_architecture] }}"
     validate_certs: false
 
 - name: Create versioned destination directory for Helm binary
