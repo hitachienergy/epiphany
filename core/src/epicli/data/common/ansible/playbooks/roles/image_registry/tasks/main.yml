@@ -71,8 +71,7 @@
       vars:
         docker_image: "{{ item }}"
       include_tasks: load-image.yml
-      loop: "{{ generic_current_images }}"
-      when: generic_current_images is iterable
+      loop: "{{ generic_and_current_images }}"
 
     - name: Push generic and current version images to registry
       vars:
