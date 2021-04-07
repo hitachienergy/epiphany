@@ -5,6 +5,7 @@
 ### Added
 
 - [#1302](https://github.com/epiphany-platform/epiphany/issues/1302) - Ability to update control plane certificates expiration date
+- [#2163](https://github.com/epiphany-platform/epiphany/issues/2163) - Replace Bintray repository
 
 ### Fixed
 
