@@ -6,7 +6,7 @@
 
 - name: Set helm binary archive regex for aarch64
   set_fact:
-    archive_regexp: "^helm-v([0-9.]+)-linux-arm64.tar.gz$"
+    helm_archive_regexp: "^helm-v([0-9.]+)-linux-arm64.tar.gz$"
   when: ansible_architecture == "aarch64"
 
 - name: Download the newest Helm binary package from the epirepo
