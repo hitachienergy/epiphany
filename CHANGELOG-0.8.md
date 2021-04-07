@@ -5,7 +5,7 @@
 ### Fixed
 
 - [#2049](https://github.com/epiphany-platform/epiphany/issues/2049) - Elasticsearch-curator installation fails on RedHat
-- [#2166](https://github.com/epiphany-platform/epiphany/issues/2165) - Replace Bintray repository
+- [#2165](https://github.com/epiphany-platform/epiphany/issues/2165) - Replace Bintray repository
 
 ## [0.8.1] 2021-02-10
 
