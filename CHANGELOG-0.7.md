@@ -2,6 +2,10 @@
 
 ## [0.7.3] 2020-xx-xx
 
+### Fixed
+
+- [#2164](https://github.com/epiphany-platform/epiphany/issues/2164) - Replace Bintray repository
+
 ### Added
 
 - [#1302](https://github.com/epiphany-platform/epiphany/issues/1302) - Ability to update control plane certificates expiration date
