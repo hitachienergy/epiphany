@@ -40,12 +40,9 @@
     canal_arch: "amd64"
   when: ansible_architecture == "x86_64"
 
-- name: Set canal architecture for aarch64
-  set_fact:
-    canal_arch: "arm64"
-  when: ansible_architecture == "aarch64"
-
 - name: Include Canal deployment tasks
   include_tasks: deployments/deploy-template.yml
   vars:
+    canal_arch: "{{ global_architecture_alias[ansible_architecture] }}"
     file_name: canal.yml.j2
+
