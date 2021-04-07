@@ -40,7 +40,7 @@ echol "Docker platform: ${docker_platform}"
 
 # checks
 
-[ $EUID -eq 0 ] || { echo "You have to run as root" && exit 1; }
+[ $EUID -eq 0 ] || { echo "You have to run as root"; exit 1; }
 
 [[ -f $input_file ]] || exit_with_error "File not found: $input_file"
 
