@@ -335,6 +335,32 @@ remove_installed_packages() {
 	fi
 }
 
+remove_yum_cache_for_untracked_repos() {
+	local basearch releasever
+	basearch=$(uname --machine)
+	releasever=$(rpm -q --provides "$(rpm -q --whatprovides 'system-release(releasever)')" | grep "system-release(releasever)" | cut -d ' ' -f 3)
+	local cachedir find_output
+	cachedir=$(grep --only-matching --perl-regexp '(?<=^cachedir=)[^#\n]+' /etc/yum.conf)
+	cachedir="${cachedir/\$basearch/$basearch}"
+	cachedir="${cachedir/\$releasever/$releasever}"
+	find_output=$(find "$cachedir" -mindepth 1 -maxdepth 1 -type d -exec basename '{}' ';')
+	local -a repos_with_cache=()
+	if [ -n "$find_output" ]; then
+		readarray -t repos_with_cache <<< "$find_output"
+	fi
+	local all_repos_output
+	all_repos_output=$(yum repolist -v all | grep --only-matching --perl-regexp '(?<=^Repo-id)[^/]+' | sed -e 's/^[[:space:]:]*//')
+	local -a all_repos=()
+	readarray -t all_repos <<< "$all_repos_output"
+	if (( ${#repos_with_cache[@]} > 0 )); then
+		for cached_repo in "${repos_with_cache[@]}"; do
+			if ! _in_array "$cached_repo" "${all_repos[@]}"; then
+				run_cmd rm -rf "$cachedir/$cached_repo"
+			fi
+		done
+	fi
+}
+
 # params: <command to execute>
 run_cmd() {
 	local cmd_arr=("$@")
@@ -347,6 +373,15 @@ usage() {
 	echo "usage: ./$(basename $0) <downloads_dir>"
 	echo "       ./$(basename $0) /tmp/downloads"
 	[ -z "$1" ] || exit "$1"
+}
+
+# params: <value to test> <array>
+_in_array() {
+	local value=${1}
+	shift
+	local array=( "$@" )
+
+	(( ${#array[@]} > 0 )) && printf '%s\n' "${array[@]}" | grep -q -Fx "$value"
 }
 
 # === Start ===
@@ -599,6 +634,8 @@ fi
 if ! is_package_installed 'epel-release'; then
 	install_package 'https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm' 'epel-release'
 fi
+
+run_cmd remove_yum_cache_for_untracked_repos
 
 run_cmd yum -y makecache fast
 
