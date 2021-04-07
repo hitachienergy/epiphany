@@ -55,11 +55,10 @@
         --name epiphany-registry {{ specification.registry_image.name }}
       when: regitry_up_check.stdout | length == 0
 
-    - name: Set images for x86_64
+    - name: Set images to load
       set_fact:
-        generic_current_images: "{{ specification.images_to_load.x86_64.generic + specification.images_to_load.x86_64.current }}"
-        legacy_images: "{{ specification.images_to_load.x86_64.legacy }}"
-      when: ansible_architecture == "x86_64"
+        generic_and_current_images: "{{ specification.images_to_load[ansible_architecture].generic + specification.images_to_load[ansible_architecture].current }}"
+        legacy_images: "{{ specification.images_to_load[ansible_architecture].legacy }}"
 
     - name: Set images for aarch64
       set_fact:
