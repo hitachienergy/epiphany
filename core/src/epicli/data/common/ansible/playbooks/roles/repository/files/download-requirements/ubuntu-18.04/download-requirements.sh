@@ -26,7 +26,7 @@ crane_bin="${script_path}/crane"
 # arch
 arch=$(uname -m)
 echol "Detected arch: ${arch}"
-input_file="${script_path}/requirements_${arch}.txt"
+input_file="${script_path}/requirements.${arch}.txt"
 case $arch in
 x86_64)
 	docker_platform="linux/amd64"
