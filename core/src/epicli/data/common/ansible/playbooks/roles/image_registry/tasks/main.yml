@@ -89,7 +89,7 @@
             docker_image: "{{ item }}"
           include_tasks: load-image.yml
           loop: "{{ legacy_images }}"
-          when: legacy_images is iterable
+          when: legacy_images | count > 0
 
         # installations before v0.10.0 have no "epiphanyplatform" flannel images
         # that were changed due to replacement Skopeo with Crane
