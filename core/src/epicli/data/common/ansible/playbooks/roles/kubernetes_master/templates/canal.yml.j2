@@ -3437,7 +3437,7 @@ subjects:
 kind: DaemonSet
 apiVersion: apps/v1
 metadata:
-  name: canal
+  name: canal-amd64
   namespace: kube-system
   labels:
     k8s-app: canal
@@ -3467,8 +3467,6 @@ spec:
                     operator: In
                     values:
                       - amd64
-      nodeSelector:
-        kubernetes.io/os: linux
       hostNetwork: true
       tolerations:
         # Make sure canal gets scheduled on all nodes.
@@ -3699,7 +3697,7 @@ spec:
 kind: DaemonSet
 apiVersion: apps/v1
 metadata:
-  name: canal
+  name: canal-arm64
   namespace: kube-system
   labels:
     k8s-app: canal
@@ -3729,8 +3727,6 @@ spec:
                     operator: In
                     values:
                       - arm64
-      nodeSelector:
-        kubernetes.io/os: linux
       hostNetwork: true
       tolerations:
         # Make sure canal gets scheduled on all nodes.
