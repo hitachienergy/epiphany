@@ -516,13 +516,13 @@ readonly YUM_CONFIG_BACKUP_FILE_PATH="$SCRIPT_DIR/${SCRIPT_FILE_NAME}-yum-repos-
 readonly CRANE_BIN="$SCRIPT_DIR/crane"
 readonly INSTALLED_PACKAGES_FILE_PATH="$SCRIPT_DIR/${SCRIPT_FILE_NAME}-installed-packages-list-do-not-remove.tmp"
 readonly PID_FILE_PATH=/var/run/${SCRIPT_FILE_NAME/sh/pid}
-readonly ADD_MULTIARCH_REPOSITORIES_SCRIPT="$SCRIPT_DIR/add-repositories.multiarch.sh"
+readonly ADD_MULTIARCH_REPOSITORIES_SCRIPT="${SCRIPT_DIR}/add-repositories.multiarch.sh"
 
 #arch
 readonly ARCH=$(uname -m)
 echol "Detected arch: ${ARCH}"
-readonly REQUIREMENTS_FILE_PATH="$SCRIPT_DIR/requirements.$ARCH.txt"
-readonly ADD_ARCH_REPOSITORIES_SCRIPT="$SCRIPT_DIR/add-repositories.$ARCH.sh"
+readonly REQUIREMENTS_FILE_PATH="${SCRIPT_DIR}/requirements.${ARCH}.txt"
+readonly ADD_ARCH_REPOSITORIES_SCRIPT="${SCRIPT_DIR}/add-repositories.${ARCH}.sh"
 case $ARCH in
 x86_64)
 	readonly DOCKER_PLATFORM="linux/amd64"
