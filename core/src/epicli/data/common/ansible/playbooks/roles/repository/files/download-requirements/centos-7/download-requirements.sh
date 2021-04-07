@@ -122,7 +122,7 @@ download_image() {
 	else
 		# use temporary file for downloading to be safe from sudden interruptions (network, ctrl+c)
 		local tmp_file_path=$(mktemp)
-		local crane_cmd="$CRANE_BIN  pull --insecure --format=legacy ${image_name} ${tmp_file_path}"
+		local crane_cmd="$CRANE_BIN  pull --insecure --platform=${DOCKER_PLATFORM} --format=legacy ${image_name} ${tmp_file_path}"
 		echol "Downloading image: $image"
 		{ run_cmd_with_retries $crane_cmd $retries && chmod 644 $tmp_file_path && mv $tmp_file_path $dest_path; } ||
 		exit_with_error "crane failed, command was: $crane_cmd && chmod 644 $tmp_file_path && mv $tmp_file_path $dest_path"
@@ -138,7 +138,7 @@ download_packages() {
 
 	if [[ -n $packages ]]; then
 		# when using --archlist=x86_64 yumdownloader (yum-utils-1.1.31-52) also downloads i686 packages
-		run_cmd_with_retries yumdownloader --quiet --archlist=x86_64 --exclude='*i686' --destdir="$dest_dir" $packages $retries
+		run_cmd_with_retries yumdownloader --quiet --archlist="$ARCH" --exclude='*i686' --destdir="$dest_dir" $packages $retries
 	fi
 }
 
@@ -171,7 +171,7 @@ get_package_dependencies_with_arch() {
 	# $1 reserved for result
 	local package="$2"
 
-	local query_output=$(repoquery --requires --resolve --queryformat '%{name}.%{arch}' --archlist=x86_64,noarch "$package") ||
+	local query_output=$(repoquery --requires --resolve --queryformat '%{name}.%{arch}' --archlist=$ARCH,noarch "$package") ||
 		exit_with_error "repoquery failed for dependencies of package: $package with exit code: $?, output was: $query_output"
 
 	if [[ -z $query_output ]]; then
@@ -189,7 +189,7 @@ get_package_with_version_arch() {
 	# $1 reserved for result
 	local package="$2"
 
-	local query_output=$(repoquery --queryformat '%{ui_nevra}' --archlist=x86_64,noarch "$package") ||
+	local query_output=$(repoquery --queryformat '%{ui_nevra}' --archlist=$ARCH,noarch "$package") ||
 		exit_with_error "repoquery failed for package: $package with exit code: $?, output was: $query_output"
 
 	# yumdownloader doesn't set error code if repoquery returns empty output
@@ -510,7 +510,6 @@ readonly REPO_PREREQ_PACKAGES_DIR="$PACKAGES_DIR/repo-prereqs"
 readonly SCRIPT_DIR="$(dirname $(readlink -f $0))" # want absolute path
 
 # files
-readonly REQUIREMENTS_FILE_PATH="$SCRIPT_DIR/requirements.txt"
 readonly SCRIPT_FILE_NAME=$(basename $0)
 readonly LOG_FILE_NAME=${SCRIPT_FILE_NAME/sh/log}
 readonly LOG_FILE_PATH="$SCRIPT_DIR/$LOG_FILE_NAME"
@@ -518,6 +517,27 @@ readonly YUM_CONFIG_BACKUP_FILE_PATH="$SCRIPT_DIR/${SCRIPT_FILE_NAME}-yum-repos-
 readonly CRANE_BIN="$SCRIPT_DIR/crane"
 readonly INSTALLED_PACKAGES_FILE_PATH="$SCRIPT_DIR/${SCRIPT_FILE_NAME}-installed-packages-list-do-not-remove.tmp"
 readonly PID_FILE_PATH=/var/run/${SCRIPT_FILE_NAME/sh/pid}
+readonly ADD_MULTIARCH_REPOSITORIES_SCRIPT="${SCRIPT_DIR}/add-repositories.multiarch.sh"
+
+#arch
+readonly ARCH=$(uname -m)
+echol "Detected arch: ${ARCH}"
+readonly REQUIREMENTS_FILE_PATH="${SCRIPT_DIR}/requirements.${ARCH}.txt"
+readonly ADD_ARCH_REPOSITORIES_SCRIPT="${SCRIPT_DIR}/add-repositories.${ARCH}.sh"
+case $ARCH in
+x86_64)
+	readonly DOCKER_PLATFORM="linux/amd64"
+	;;
+
+aarch64)
+	readonly DOCKER_PLATFORM="linux/arm64"
+	;;
+
+*)
+	exit_with_error "Arch ${ARCH} unsupported"
+	;;
+esac
+echol "Docker platform: ${DOCKER_PLATFORM}"
 
 # --- Checks ---
 
@@ -609,127 +629,11 @@ enable_repo 'extras'
 
 # --- Add repos ---
 
-DOCKER_CE_PATCHED_REPO_CONF=$(cat <<'EOF'
-[docker-ce-stable-patched]
-name=Docker CE Stable - patched centos/7/x86_64/stable
-baseurl=https://download.docker.com/linux/centos/7/x86_64/stable
-enabled=1
-gpgcheck=1
-gpgkey=https://download.docker.com/linux/centos/gpg
-EOF
-)
+# noarch repositories
+. ${ADD_MULTIARCH_REPOSITORIES_SCRIPT}
 
-ELASTIC_6_REPO_CONF=$(cat <<'EOF'
-[elastic-6]
-name=Elastic repository for 6.x packages
-baseurl=https://artifacts.elastic.co/packages/oss-6.x/yum
-gpgcheck=1
-gpgkey=https://artifacts.elastic.co/GPG-KEY-elasticsearch
-enabled=1
-autorefresh=1
-type=rpm-md
-EOF
-)
-
-ELASTICSEARCH_7_REPO_CONF=$(cat <<'EOF'
-[elasticsearch-7.x]
-name=Elasticsearch repository for 7.x packages
-baseurl=https://artifacts.elastic.co/packages/oss-7.x/yum
-gpgcheck=1
-gpgkey=https://artifacts.elastic.co/GPG-KEY-elasticsearch
-enabled=1
-autorefresh=1
-type=rpm-md
-EOF
-)
-
-ELASTICSEARCH_CURATOR_REPO_CONF=$(cat <<'EOF'
-[curator-5]
-name=CentOS/RHEL 7 repository for Elasticsearch Curator 5.x packages
-baseurl=https://packages.elastic.co/curator/5/centos/7
-gpgcheck=1
-gpgkey=https://packages.elastic.co/GPG-KEY-elasticsearch
-enabled=1
-EOF
-)
-
-GRAFANA_REPO_CONF=$(cat <<'EOF'
-[grafana]
-name=grafana
-baseurl=https://packages.grafana.com/oss/rpm
-repo_gpgcheck=1
-enabled=1
-gpgcheck=1
-gpgkey=https://packages.grafana.com/gpg.key
-sslverify=1
-sslcacert=/etc/pki/tls/certs/ca-bundle.crt
-EOF
-)
-
-KUBERNETES_REPO_CONF=$(cat <<'EOF'
-[kubernetes]
-name=Kubernetes
-baseurl=https://packages.cloud.google.com/yum/repos/kubernetes-el7-x86_64
-enabled=1
-gpgcheck=1
-repo_gpgcheck=1
-gpgkey=https://packages.cloud.google.com/yum/doc/yum-key.gpg https://packages.cloud.google.com/yum/doc/rpm-package-key.gpg
-EOF
-)
-
-OPENDISTRO_REPO_CONF=$(cat <<'EOF'
-[opendistroforelasticsearch-artifacts-repo]
-name=Release RPM artifacts of OpenDistroForElasticsearch
-baseurl=https://d3g5vo6xdbdb9a.cloudfront.net/yum/noarch/
-enabled=1
-gpgkey=https://d3g5vo6xdbdb9a.cloudfront.net/GPG-KEY-opendistroforelasticsearch
-gpgcheck=1
-repo_gpgcheck=1
-autorefresh=1
-type=rpm-md
-EOF
-)
-
-POSTGRESQL_REPO_CONF=$(cat <<'EOF'
-[pgdg10]
-name=PostgreSQL 10 for RHEL/CentOS $releasever - $basearch
-baseurl=https://download.postgresql.org/pub/repos/yum/10/redhat/rhel-$releasever-$basearch
-enabled=1
-gpgcheck=1
-gpgkey=https://download.postgresql.org/pub/repos/yum/RPM-GPG-KEY-PGDG
-EOF
-)
-
-RABBITMQ_SERVER_REPO_CONF=$(cat <<'EOF'
-[rabbitmq-server]
-name=rabbitmq-rpm
-baseurl=https://packagecloud.io/rabbitmq/rabbitmq-server/el/7/$basearch
-gpgcheck=1
-gpgkey=https://packagecloud.io/rabbitmq/rabbitmq-server/gpgkey
-repo_gpgcheck=1
-sslcacert=/etc/pki/tls/certs/ca-bundle.crt
-enabled=1
-EOF
-)
-
-# Official Docker CE repository, added with https://download.docker.com/linux/centos/docker-ce.repo,
-# has broken URL (https://download.docker.com/linux/centos/7Server/x86_64/stable) for longer time.
-# So direct (patched) link is used first if available.
-add_repo_as_file 'docker-ce-stable-patched' "$DOCKER_CE_PATCHED_REPO_CONF"
-if ! is_repo_available "docker-ce-stable-patched"; then
-	disable_repo "docker-ce-stable-patched"
-	add_repo 'docker-ce' 'https://download.docker.com/linux/centos/docker-ce.repo'
-fi
-add_repo_as_file 'elastic-6' "$ELASTIC_6_REPO_CONF"
-add_repo_as_file 'elasticsearch-7' "$ELASTICSEARCH_7_REPO_CONF"
-add_repo_as_file 'elasticsearch-curator-5' "$ELASTICSEARCH_CURATOR_REPO_CONF"
-add_repo_as_file 'grafana' "$GRAFANA_REPO_CONF"
-add_repo_as_file 'kubernetes' "$KUBERNETES_REPO_CONF"
-add_repo_as_file 'opendistroforelasticsearch' "$OPENDISTRO_REPO_CONF"
-add_repo_as_file 'postgresql-10' "$POSTGRESQL_REPO_CONF"
-add_repo_as_file 'bintray-rabbitmq-rpm' "$RABBITMQ_SERVER_REPO_CONF"
-add_repo_from_script 'https://dl.2ndquadrant.com/default/release/get/10/rpm'
-disable_repo '2ndquadrant-dl-default-release-pg10-debug'
+# arch specific repositories
+. ${ADD_ARCH_REPOSITORIES_SCRIPT}
 
 # -> Software Collections (SCL) https://wiki.centos.org/AdditionalResources/Repositories/SCL
 if ! is_package_installed 'centos-release-scl'; then
