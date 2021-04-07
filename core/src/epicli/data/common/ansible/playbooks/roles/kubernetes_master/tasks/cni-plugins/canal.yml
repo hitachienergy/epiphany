@@ -35,11 +35,6 @@
         state: reloaded
       when: ansible_facts.services["NetworkManager.service"].state == "running"
 
-- name: Set canal architecture for x86_64
-  set_fact:
-    canal_arch: "amd64"
-  when: ansible_architecture == "x86_64"
-
 - name: Include Canal deployment tasks
   include_tasks: deployments/deploy-template.yml
   vars:
