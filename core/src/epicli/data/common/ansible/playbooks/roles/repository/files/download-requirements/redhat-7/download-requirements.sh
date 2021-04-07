@@ -768,7 +768,7 @@ fi
 # clean metadata for upgrades (when the same package can be downloaded from changed repo)
 run_cmd remove_yum_cache_for_untracked_repos
 
-run_cmd yum -y makecache fast
+run_cmd_with_retries yum -y makecache fast 3
 
 # --- Download packages ---
 
