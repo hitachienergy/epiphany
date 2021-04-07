@@ -522,7 +522,7 @@ readonly ADD_NOARCH_REPOSITORIES="$SCRIPT_DIR/add-repositories-noarch.sh"
 #arch
 readonly ARCH=$(uname -m)
 echol "Detected arch: ${ARCH}"
-readonly REQUIREMENTS_FILE_PATH="$SCRIPT_DIR/requirements_$ARCH.txt"
+readonly REQUIREMENTS_FILE_PATH="$SCRIPT_DIR/requirements.$ARCH.txt"
 readonly ADD_ARCH_REPOSITORIES="$SCRIPT_DIR/add-repositories-$ARCH.sh"
 case $ARCH in
 x86_64)
