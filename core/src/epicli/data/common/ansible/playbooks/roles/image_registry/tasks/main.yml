@@ -78,8 +78,7 @@
       vars:
         docker_image: "{{ item }}"
       include_tasks: push-image.yml
-      loop: "{{ generic_current_images }}"
-      when: generic_current_images is iterable
+      loop: "{{ generic_and_current_images }}"
 
     - name: Load legacy version images to registry when upgrading
       when: is_upgrade_run
