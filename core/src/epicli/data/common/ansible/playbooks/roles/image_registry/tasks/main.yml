@@ -104,4 +104,4 @@
             docker_image: "{{ item }}"
           include_tasks: push-image.yml
           loop: "{{ legacy_images }}"
-          when: legacy_images is iterable
+          when: legacy_images | count > 0
