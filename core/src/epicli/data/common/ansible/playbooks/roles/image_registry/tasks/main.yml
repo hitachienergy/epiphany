@@ -60,12 +60,6 @@
         generic_and_current_images: "{{ specification.images_to_load[ansible_architecture].generic + specification.images_to_load[ansible_architecture].current }}"
         legacy_images: "{{ specification.images_to_load[ansible_architecture].legacy }}"
 
-    - name: Set images for aarch64
-      set_fact:
-        generic_current_images: "{{ specification.images_to_load.aarch64.generic + specification.images_to_load.aarch64.current }}"
-        legacy_images: "{{ specification.images_to_load.aarch64.legacy }}"
-      when: ansible_architecture == "aarch64"
-
     - name: Load generic and current version images
       vars:
         docker_image: "{{ item }}"
