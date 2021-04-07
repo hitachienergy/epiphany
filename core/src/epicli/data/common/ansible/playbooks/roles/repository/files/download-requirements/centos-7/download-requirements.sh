@@ -517,7 +517,7 @@ readonly YUM_CONFIG_BACKUP_FILE_PATH="$SCRIPT_DIR/${SCRIPT_FILE_NAME}-yum-repos-
 readonly CRANE_BIN="$SCRIPT_DIR/crane"
 readonly INSTALLED_PACKAGES_FILE_PATH="$SCRIPT_DIR/${SCRIPT_FILE_NAME}-installed-packages-list-do-not-remove.tmp"
 readonly PID_FILE_PATH=/var/run/${SCRIPT_FILE_NAME/sh/pid}
-readonly ADD_NOARCH_REPOSITORIES="$SCRIPT_DIR/add-repositories-noarch.sh"
+readonly ADD_NOARCH_REPOSITORIES_SCRIPT="$SCRIPT_DIR/add-repositories-noarch.sh"
 
 #arch
 readonly ARCH=$(uname -m)
