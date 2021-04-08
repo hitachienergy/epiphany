@@ -93,7 +93,7 @@ download_file() {
 
 	local file_name=$(basename "$file_url")
 	local dest_path="$dest_dir/$file_name"
-	local retries="3"
+	local retries=3
 
 	# wget with --timestamping sometimes failes on AWS with ERROR 403: Forbidden
 	# so we remove existing file to overwrite it, to be optimized
@@ -115,7 +115,7 @@ download_image() {
 	local tag=${splited_image[1]}
 	local repo_basename=$(basename -- "$repository")
 	local dest_path="${dest_dir}/${repo_basename}-${tag}.tar"
-	local retries="3"
+	local retries=3
 
 	if [[ -f $dest_path ]]; then
 		echol "Image file: "$dest_path" already exists. Skipping..."
@@ -134,7 +134,7 @@ download_packages() {
 	local dest_dir="$1"
 	shift
 	local packages="$@"
-	local retries="3"
+	local retries=3
 
 	if [[ -n $packages ]]; then
 		# when using --archlist=x86_64 yumdownloader (yum-utils-1.1.31-52) also downloads i686 packages

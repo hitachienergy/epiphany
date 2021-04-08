@@ -44,7 +44,7 @@ download_image() {
 	local tag=${splited_image[1]}
 	local repo_basename=$(basename -- "$repository")
 	local dst_image="${dest_dir}/${repo_basename}-${tag}.tar"
-	local retries="3"
+	local retries=3
 
 	#[[ ! -f $dst_image ]] || remove_file "$dst_image"
 	if [[ -f ${dst_image} ]]; then
@@ -65,7 +65,7 @@ download_file() {
 
 	local file_name=$(basename "$file_url")
 	local dest_path="$dest_dir/$file_name"
-	local retries="3"
+	local retries=3
 
 	# wget with --timestamping sometimes failes on AWS with ERROR 403: Forbidden
 	# so we remove existing file to overwrite it
