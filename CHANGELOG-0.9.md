@@ -5,6 +5,8 @@
 ### Fixed
 
 - [#2049](https://github.com/epiphany-platform/epiphany/issues/2049) - Elasticsearch-curator installation fails on RedHat
+- [#2131](https://github.com/epiphany-platform/epiphany/issues/2131) - [RedHat/CentOS] Erlang package versions specified in requirements are missing in external repository
+- [#2166](https://github.com/epiphany-platform/epiphany/issues/2166) - Replace Bintray repository
 
 ## [0.9.0] 2021-01-19
 
@@ -30,7 +32,6 @@
 - [#1884](https://github.com/epiphany-platform/epiphany/issues/1884) - Prometheus is not able to scrape metrics from AKS/EKS nodes
 - [#1887](https://github.com/epiphany-platform/epiphany/issues/1887) - epicli upgrade of cluster created by Epiphany v0.6 fails on "Store preflight facts" task
 - [#1866](https://github.com/epiphany-platform/epiphany/issues/1866) - No logs from K8s apps in Elasticsearch
-- [#2166](https://github.com/epiphany-platform/epiphany/issues/2166) - Replace Bintray repository
 
 ### Updated
 
