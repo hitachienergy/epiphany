@@ -19,6 +19,14 @@
 - [#1966](https://github.com/epiphany-platform/epiphany/issues/1966) - Upgrade Elasticsearch Curator to v5.8.3
 - [#1935](https://github.com/epiphany-platform/epiphany/issues/1935) - Upgrade Rabbitmq to v3.8.9
 
+### Known Issues
+
+Following issues still exist in version 0.6.x but do not prevent upgrade to newer versions. 
+
+- [#1075](https://github.com/epiphany-platform/epiphany/issues/1075) - K8s HA installation timed out on task "Join master to ControlPlane"
+- [#1129](https://github.com/epiphany-platform/epiphany/issues/1129) - Cluster networking issues using calico plugin - NodePort service not always responding
+- [#2014](https://github.com/epiphany-platform/epiphany/issues/2014) - Patch cgroup drivers (switch to systemd)
+
 ## [0.6.1] 2020-10-14
 
 ### Fixed
