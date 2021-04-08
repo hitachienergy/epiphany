@@ -360,10 +360,46 @@ run_cmd() {
 	"${cmd_arr[@]}" || exit_with_error "Command failed: ${cmd_arr[*]}"
 }
 
+remove_yum_cache_for_untracked_repos() {
+	local basearch releasever
+	basearch=$(uname --machine)
+	releasever=$(rpm -q --provides "$(rpm -q --whatprovides 'system-release(releasever)')" | grep "system-release(releasever)" | cut -d ' ' -f 3)
+	local cachedir find_output
+	cachedir=$(grep --only-matching --perl-regexp '(?<=^cachedir=)[^#\n]+' /etc/yum.conf)
+	cachedir="${cachedir/\$basearch/$basearch}"
+	cachedir="${cachedir/\$releasever/$releasever}"
+	find_output=$(find "$cachedir" -mindepth 1 -maxdepth 1 -type d -exec basename '{}' ';')
+	local -a repos_with_cache=()
+	if [ -n "$find_output" ]; then
+		readarray -t repos_with_cache <<< "$find_output"
+	fi
+	local all_repos_output
+	all_repos_output=$(yum repolist -v all | grep --only-matching --perl-regexp '(?<=^Repo-id)[^/]+' | sed -e 's/^[[:space:]:]*//')
+	local -a all_repos=()
+	readarray -t all_repos <<< "$all_repos_output"
+	if (( ${#repos_with_cache[@]} > 0 )); then
+		for cached_repo in "${repos_with_cache[@]}"; do
+			if ! _in_array "$cached_repo" "${all_repos[@]}"; then
+				run_cmd rm -rf "$cachedir/$cached_repo"
+			fi
+		done
+	fi
+}
+
 usage() {
 	echo "usage: ./$(basename $0) <downloads_dir>"
 	echo "       ./$(basename $0) /tmp/downloads"
 	[ -z "$1" ] || exit "$1"
+}
+
+# === Helper function===
+
+_in_array() {
+	local value=${1}
+	shift
+	local array=( "$@" )
+
+	(( ${#array[@]} > 0 )) && printf '%s\n' "${array[@]}" | grep -q -Fx "$value"
 }
 
 # === Start ===
@@ -601,13 +637,14 @@ EOF
 )
 
 RABBITMQ_SERVER_REPO_CONF=$(cat <<'EOF'
-[rabbitmq_rabbitmq-server]
-name=rabbitmq_rabbitmq-server
+[rabbitmq-server]
+name=rabbitmq-server
 baseurl=https://packagecloud.io/rabbitmq/rabbitmq-server/el/7/$basearch
-repo_gpgcheck=1
 gpgcheck=1
-enabled=1
 gpgkey=https://packagecloud.io/rabbitmq/rabbitmq-server/gpgkey
+repo_gpgcheck=1
+sslcacert=/etc/pki/tls/certs/ca-bundle.crt
+enabled=1
 EOF
 )
 
@@ -624,8 +661,7 @@ add_repo_as_file 'grafana' "$GRAFANA_REPO_CONF"
 add_repo_as_file 'kubernetes' "$KUBERNETES_REPO_CONF"
 add_repo_as_file 'opendistroforelasticsearch' "$OPENDISTRO_REPO_CONF"
 add_repo_as_file 'postgresql-10' "$POSTGRESQL_REPO_CONF"
-add_repo_as_file 'rabbitmq_erlang' "$RABBITMQ_ERLANG_REPO_CONF"
-add_repo_as_file 'rabbitmq_rabbitmq-server' "$RABBITMQ_SERVER_REPO_CONF"
+add_repo_as_file 'rabbitmq-server' "$RABBITMQ_SERVER_REPO_CONF"
 add_repo_from_script 'https://dl.2ndquadrant.com/default/release/get/10/rpm'
 disable_repo '2ndquadrant-dl-default-release-pg10-debug'
 
@@ -633,6 +669,9 @@ disable_repo '2ndquadrant-dl-default-release-pg10-debug'
 if ! is_package_installed 'epel-release'; then
 	install_package 'https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm' 'epel-release'
 fi
+
+# clean metadata for upgrades (when the same package can be downloaded from changed repo)
+run_cmd remove_yum_cache_for_untracked_repos
 
 run_cmd yum -y makecache fast
 
