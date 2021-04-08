@@ -26,7 +26,7 @@ crane_bin="${script_path}/crane"
 # arch
 arch=$(uname -m)
 echol "Detected arch: ${arch}"
-input_file="${script_path}/requirements_${arch}.txt"
+input_file="${script_path}/requirements.${arch}.txt"
 case $arch in
 x86_64)
 	docker_platform="linux/amd64"
@@ -40,7 +40,7 @@ echol "Docker platform: ${docker_platform}"
 
 # checks
 
-[ $EUID -eq 0 ] || { echo "You have to run as root" && exit 1; }
+[ $EUID -eq 0 ] || { echo "You have to run as root"; exit 1; }
 
 [[ -f $input_file ]] || exit_with_error "File not found: $input_file"
 

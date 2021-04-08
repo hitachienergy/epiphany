@@ -55,31 +55,22 @@
         --name epiphany-registry {{ specification.registry_image.name }}
       when: regitry_up_check.stdout | length == 0
 
-    - name: Set images for x86_64
+    - name: Set images to load
       set_fact:
-        generic_current_images: "{{ specification.images_to_load.x86_64.generic + specification.images_to_load.x86_64.current }}"
-        legacy_images: "{{ specification.images_to_load.x86_64.legacy }}"
-      when: ansible_architecture == "x86_64"
-
-    - name: Set images for aarch64
-      set_fact:
-        generic_current_images: "{{ specification.images_to_load.aarch64.generic + specification.images_to_load.aarch64.current }}"
-        legacy_images: "{{ specification.images_to_load.aarch64.legacy }}"
-      when: ansible_architecture == "aarch64"
+        generic_and_current_images: "{{ specification.images_to_load[ansible_architecture].generic + specification.images_to_load[ansible_architecture].current }}"
+        legacy_images: "{{ specification.images_to_load[ansible_architecture].legacy }}"
 
     - name: Load generic and current version images
       vars:
         docker_image: "{{ item }}"
       include_tasks: load-image.yml
-      loop: "{{ generic_current_images }}"
-      when: generic_current_images is iterable
+      loop: "{{ generic_and_current_images }}"
 
     - name: Push generic and current version images to registry
       vars:
         docker_image: "{{ item }}"
       include_tasks: push-image.yml
-      loop: "{{ generic_current_images }}"
-      when: generic_current_images is iterable
+      loop: "{{ generic_and_current_images }}"
 
     - name: Load legacy version images to registry when upgrading
       when: is_upgrade_run
@@ -89,7 +80,7 @@
             docker_image: "{{ item }}"
           include_tasks: load-image.yml
           loop: "{{ legacy_images }}"
-          when: legacy_images is iterable
+          when: legacy_images | count > 0
 
         # installations before v0.10.0 have no "epiphanyplatform" flannel images
         # that were changed due to replacement Skopeo with Crane
@@ -107,4 +98,4 @@
             docker_image: "{{ item }}"
           include_tasks: push-image.yml
           loop: "{{ legacy_images }}"
-          when: legacy_images is iterable
+          when: legacy_images | count > 0
