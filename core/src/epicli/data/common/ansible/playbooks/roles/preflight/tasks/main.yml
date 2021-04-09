@@ -4,20 +4,25 @@
 - name: Set is_arch_supported fact to true
   set_fact:
      is_arch_supported: true
-  changed_when: true
 
-- name: Set is is_arch_supported fact to false if needed roles are not present in supported list of components
+- name: Set is arch_components fact with list of supported components
+  set_fact:
+     arch_components: "{{ group_names | difference(supported_architecture[ansible_architecture]) }}"
+  when: supported_architecture[ansible_architecture] is defined
+
+- name: Set is_arch_supported fact to false if needed roles are not present in list of supported components
   set_fact:
      is_arch_supported: false
-     arch_components: "{{ group_names | difference(supported_architecture[ansible_architecture]) }}"
   when:
-    - group_names | difference(supported_architecture[ansible_architecture]) | length > 0
+    - supported_architecture[ansible_architecture] is defined
+    - arch_components | length > 0
 
 - name: Check architecture
   assert:
     that: is_arch_supported
     fail_msg: "Your architecture {{ ansible_architecture }} is not supported by following components in inventory -> {{ arch_components }}."
     success_msg: "Your architecture {{ ansible_architecture }} is supported by all components in inventory."
+  when: supported_architecture[ansible_architecture] is defined
 
 - include_tasks: check-os.yml
 
