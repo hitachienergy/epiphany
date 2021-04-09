@@ -2,6 +2,10 @@
 
 ## [0.9.1] 2021-XX-XX
 
+### Added
+
+- [#2192](https://github.com/epiphany-platform/epiphany/issues/2192) - Support for RHEL 7.9 images
+
 ### Fixed
 
 - [#2049](https://github.com/epiphany-platform/epiphany/issues/2049) - Elasticsearch-curator installation fails on RedHat
