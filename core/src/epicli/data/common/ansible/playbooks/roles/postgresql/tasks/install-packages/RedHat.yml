@@ -7,37 +7,33 @@
     update_cache: true
     state: present
 
-# --- additional components ---
+# --- extensions ---
 
-- name: Install pgbouncer package
-  yum:
-    name:
-      - pgbouncer
-    state: present
-  when:
-    - specification.extensions.pgbouncer.enabled is defined
-    - specification.extensions.pgbouncer.enabled
-    - ansible_architecture == "x86_64"
-
-- name: Install repmgr
+- name: Install pgbouncer and repmgr packages
+  when: ansible_architecture == "x86_64"
   block:
-    - name: install repmgr package
+    - name: Install pgbouncer package
       yum:
         name:
-          - repmgr10-4.0.6
+          - pgbouncer
         state: present
+      when:
+        - specification.extensions.pgbouncer.enabled | default(false)
 
-    - name: Create repmgr symlink
-      file:
-        src: "{{ repmgr_pg_bindir[ansible_os_family] }}/repmgr"
-        dest: "/usr/bin/repmgr"
-        state: link
-  when:
-    - specification.extensions.replication.use_repmgr is defined
-    - specification.extensions.replication.use_repmgr
-    - ansible_architecture == "x86_64"
+    - name: Install repmgr
+      when: specification.extensions.replication.enabled | default(false)
+      block:
+        - name: install repmgr package
+          yum:
+            name:
+              - repmgr10-4.0.6
+            state: present
 
-# --- extensions ---
+        - name: Create repmgr symlink
+          file:
+            src: "{{ repmgr_pg_bindir[ansible_os_family] }}/repmgr"
+            dest: "/usr/bin/repmgr"
+            state: link
 
 - name: Install pgaudit package
   yum:
@@ -45,5 +41,4 @@
       - pgaudit12_10
     state: present
   when:
-    - specification.extensions.pgaudit.enabled is defined
-    - specification.extensions.pgaudit.enabled
+    - specification.extensions.pgaudit.enabled | default(false)
