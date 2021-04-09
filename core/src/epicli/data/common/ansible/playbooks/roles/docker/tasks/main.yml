@@ -8,6 +8,7 @@
   vars:
     packages:
       RedHat:
+      - containerd.io
       - docker-ce-cli-{{ docker_version.RedHat }}
       - docker-ce-{{ docker_version.RedHat }}
       Debian:

@@ -1,10 +1,11 @@
 # Changelog 0.7
 
-## [0.7.3] 2020-xx-xx
+## [0.7.3] 202X-xx-xx
 
 ### Fixed
 
 - [#2164](https://github.com/epiphany-platform/epiphany/issues/2164) - Replace Bintray repository
+- [#1888](https://github.com/epiphany-platform/epiphany/issues/1888) - epicli upgrade of cluster created by Epiphany v0.5 may fail
 
 ### Added
 
@@ -16,6 +17,7 @@
 - [#1927](https://github.com/epiphany-platform/epiphany/issues/1927) - Upgrade Zookeeper to v3.5.8
 - [#1921](https://github.com/epiphany-platform/epiphany/issues/1921) - Upgrade Kafka to v2.6.0
 - [#1934](https://github.com/epiphany-platform/epiphany/issues/1934) - Upgrade Rabbitmq to v3.8.9
+- [#1905](https://github.com/epiphany-platform/epiphany/issues/1905) - Upgrade Docker to v19.03.14
 
 ## [0.7.2] 2020-10-07
 
