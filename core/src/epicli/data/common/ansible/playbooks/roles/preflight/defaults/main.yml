@@ -12,3 +12,6 @@ supported_oses:
     version:
       min: 18.04
       max: 18.04
+supported_architecture:
+  - name: aarch64
+    components: []

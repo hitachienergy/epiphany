@@ -7,8 +7,5 @@ specification:
   download_directory: /tmp # directory where files and images will be stored just before installing/loading
   vault_location: '' # if empty "BUILD DIRECTORY/vault" will be used
   vault_tmp_file_location: SET_BY_AUTOMATION
-  supported_architecture:
-    - name: aarch64
-      components: []
   use_ha_control_plane: False
   promote_to_ha: False

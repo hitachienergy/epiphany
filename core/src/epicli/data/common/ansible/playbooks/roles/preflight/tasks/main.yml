@@ -1,31 +1,24 @@
 ---
 - include_tasks: check-user.yml
 
-- name: Set is architecture supported to true
+- name: Set is_arch_supported fact to true
   set_fact:
      is_arch_supported: true
   changed_when: true
 
-- name: Set is architecture supported to false if needed roles are not present in supported list of components
+- name: Set is is_arch_supported fact to false if needed roles are not present in supported list of components
   set_fact:
      is_arch_supported: false
-  with_nested:
-    - "{{ supported_architecture }}"
-    - "{{ group_names }}"
+  loop: "{{ supported_architecture }}"
   when:
-    - item[1] not in item[0].components
-    - item[0].name == ansible_architecture
+    - group_names | difference(item.components) | length > 0
+    - item.name == ansible_architecture
 
 - name: Check architecture
   assert:
     that: is_arch_supported
-    fail_msg: "Your architecture {{ ansible_architecture  }} is not supported by all components in inventory."
-    success_msg: "Your architecture {{ ansible_architecture  }} is supported by all components in inventory."
-
-- name: Set is OS supported to false
-  set_fact:
-     is_os_supported: false
-  changed_when: false
+    fail_msg: "Your architecture {{ ansible_architecture }} is not supported by all components in inventory."
+    success_msg: "Your architecture {{ ansible_architecture }} is supported by all components in inventory."
 
 - include_tasks: check-os.yml
 
