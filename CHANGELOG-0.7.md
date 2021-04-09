@@ -10,6 +10,7 @@
 ### Added
 
 - [#1302](https://github.com/epiphany-platform/epiphany/issues/1302) - Ability to update control plane certificates expiration date
+- [#2190](https://github.com/epiphany-platform/epiphany/issues/2190) - Support for RHEL 7.9 images
 
 ### Updated
 
