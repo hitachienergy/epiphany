@@ -9,15 +9,14 @@
 - name: Set is is_arch_supported fact to false if needed roles are not present in supported list of components
   set_fact:
      is_arch_supported: false
-  loop: "{{ supported_architecture }}"
+     arch_components: "{{ group_names | difference(supported_architecture[ansible_architecture]) }}"
   when:
-    - group_names | difference(item.components) | length > 0
-    - item.name == ansible_architecture
+    - group_names | difference(supported_architecture[ansible_architecture]) | length > 0
 
 - name: Check architecture
   assert:
     that: is_arch_supported
-    fail_msg: "Your architecture {{ ansible_architecture }} is not supported by all components in inventory."
+    fail_msg: "Your architecture {{ ansible_architecture }} is not supported by following components in inventory -> {{ arch_components }}."
     success_msg: "Your architecture {{ ansible_architecture }} is supported by all components in inventory."
 
 - include_tasks: check-os.yml
