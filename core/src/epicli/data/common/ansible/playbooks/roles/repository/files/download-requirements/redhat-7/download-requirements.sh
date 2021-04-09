@@ -520,7 +520,7 @@ done
 # About rhel-7-server-extras-rpms: https://access.redhat.com/solutions/3418891
 
 ON_PREM_REPO_ID='rhel-7-server-extras-rpms'
-REPO_ID_PATTERN="$ON_PREM_REPO_ID|rhui-REGION-rhel-server-extras|rhui-rhel-7-server-rhui-extras-rpms" # on-prem|AWS|Azure
+REPO_ID_PATTERN="$ON_PREM_REPO_ID|rhui-rhel-7-server-rhui-extras-rpms|rhui-REGION-rhel-server-extras|rhel-7-server-rhui-extras-rpms" # on-prem|Azure|AWS7.8|AWS7.9
 find_rhel_repo_id 'REPO_ID' "$ON_PREM_REPO_ID" "$REPO_ID_PATTERN"
 enable_repo "$REPO_ID"
 
@@ -528,7 +528,7 @@ enable_repo "$REPO_ID"
 # About rhel-server-rhscl-7-rpms: https://access.redhat.com/solutions/472793
 
 ON_PREM_REPO_ID='rhel-server-rhscl-7-rpms'
-REPO_ID_PATTERN="$ON_PREM_REPO_ID|rhui-REGION-rhel-server-rhscl|rhui-rhel-server-rhui-rhscl-7-rpms" # on-prem|AWS|Azure
+REPO_ID_PATTERN="$ON_PREM_REPO_ID|rhui-rhel-server-rhui-rhscl-7-rpms|rhui-REGION-rhel-server-rhscl|rhel-server-rhui-rhscl-7-rpms" # on-prem|Azure|AWS7.8|AWS7.9
 find_rhel_repo_id 'REPO_ID' "$ON_PREM_REPO_ID" "$REPO_ID_PATTERN"
 enable_repo "$REPO_ID"
 
