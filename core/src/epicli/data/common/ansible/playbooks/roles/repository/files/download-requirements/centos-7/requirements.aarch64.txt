@@ -78,8 +78,7 @@ perl-libs # for vim
 perl-Pod-Perldoc # for vim
 perl-Pod-Simple # for vim
 perl-Pod-Usage # for vim
-#pgaudit12_10
-#pgbouncer-1.10.*
+pgaudit12_10
 policycoreutils-python # for container-selinux
 pyldb # for cifs-utils
 python-firewall # for firewalld
@@ -94,8 +93,7 @@ quota # for nfs-utils
 #rabbitmq-server-3.8.9
 #rh-haproxy18
 #rh-haproxy18-haproxy-syspaths
-#postgresql10-server
-#repmgr10-4.0.6
+postgresql10-server
 samba-client
 samba-client-libs # for samba-client
 samba-common
@@ -154,7 +152,7 @@ registry:2
 hashicorp/vault-k8s:0.7.0
 vault:1.6.1
 # applications
-#jboss/keycloak:9.0.0
+epiphanyplatform/keycloak:9.0.0
 rabbitmq:3.8.9
 # K8s
 ## v1.18.6

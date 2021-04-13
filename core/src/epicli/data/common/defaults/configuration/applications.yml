@@ -57,7 +57,7 @@ specification:
 
   - name: auth-service # requires PostgreSQL to be installed in cluster
     enabled: false
-    image_path: jboss/keycloak:9.0.0
+    image_path: epiphanyplatform/keycloak:9.0.0
     use_local_image_registry: true
     #image_pull_secret_name: regcred
     service:
