@@ -11,6 +11,7 @@
 - [#2112](https://github.com/epiphany-platform/epiphany/issues/2112) - [ARM64] Add arm64 support to 'postgresql' component
 - [#2113](https://github.com/epiphany-platform/epiphany/issues/2113) - [ARM64] Add arm64 support to 'applications' Ansible role to install 'Keycloak'
 - [#2117](https://github.com/epiphany-platform/epiphany/issues/2117) - [ARM64] Add arm64 support to 'monitoring' component
+- [#2118](https://github.com/epiphany-platform/epiphany/issues/2118) - [ARM64] Block the install of unsupported components/roles on arm64
 
 ### Fixed
 

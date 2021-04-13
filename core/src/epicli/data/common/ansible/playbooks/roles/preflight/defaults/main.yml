@@ -20,13 +20,6 @@ unsupported_roles:
   - distro: Ubuntu
     arch: aarch64
     roles:
-      - repository
-      - kafka
-      - firewall
-      - image_registry
-      - kubernetes_master
-      - kubernetes_node
-      - helm
       - logging
       - elasticsearch_curator
       - opendistro_for_elasticsearch
@@ -38,14 +31,11 @@ unsupported_roles:
       - grafana
       - node_exporter
       - jmx_exporter
-      - zookeeper
       - rabbitmq
       - kafka_exporter
       - postgresql
       - postgres_exporter
-      - haproxy
       - haproxy_exporter
-      - vault
       - applications
       - ignite
   - distro: CentOS
@@ -54,13 +44,6 @@ unsupported_roles:
   - distro: CentOS
     arch: aarch64
     roles:
-      - repository
-      - kafka
-      - firewall
-      - image_registry
-      - kubernetes_master
-      - kubernetes_node
-      - helm
       - logging
       - elasticsearch_curator
       - opendistro_for_elasticsearch
@@ -72,14 +55,11 @@ unsupported_roles:
       - grafana
       - node_exporter
       - jmx_exporter
-      - zookeeper
       - rabbitmq
       - kafka_exporter
       - postgresql
       - postgres_exporter
-      - haproxy
       - haproxy_exporter
-      - vault
       - applications
       - ignite
   - distro: RedHat
@@ -88,13 +68,6 @@ unsupported_roles:
   - distro: RedHat
     arch: aarch64
     roles:
-      - repository
-      - kafka
-      - firewall
-      - image_registry
-      - kubernetes_master
-      - kubernetes_node
-      - helm
       - logging
       - elasticsearch_curator
       - opendistro_for_elasticsearch
@@ -106,13 +79,10 @@ unsupported_roles:
       - grafana
       - node_exporter
       - jmx_exporter
-      - zookeeper
       - rabbitmq
       - kafka_exporter
       - postgresql
       - postgres_exporter
-      - haproxy
       - haproxy_exporter
-      - vault
       - applications
       - ignite

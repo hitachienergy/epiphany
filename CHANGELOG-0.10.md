@@ -9,7 +9,6 @@
 - [#2081](https://github.com/epiphany-platform/epiphany/issues/2081) - Replace Skopeo with Crane
 - [#1323](https://github.com/epiphany-platform/epiphany/issues/1323) - Documentation how to handle data in Opendistro for Elasticsearch
 - [#1789](https://github.com/epiphany-platform/epiphany/issues/1789) - [Ubuntu] Add retry feature for downloading packages in download-requirements.sh
-- [#2118](https://github.com/epiphany-platform/epiphany/issues/2118) - Block the install of unsupported components/roles on arm64
 
 ### Fixed
 
