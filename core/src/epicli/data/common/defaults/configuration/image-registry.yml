@@ -9,7 +9,7 @@ specification:
   images_to_load:
     x86_64:
       generic:
-        - name: "jboss/keycloak:9.0.0"
+        - name: "epiphanyplatform/keycloak:9.0.0"
           file_name: keycloak-9.0.0.tar
         - name: "rabbitmq:3.8.9"
           file_name: rabbitmq-3.8.9.tar
@@ -188,8 +188,8 @@ specification:
           file_name: pod2daemon-flexvol-v3.15.0.tar
     aarch64:
       generic:
-        #- name: "jboss/keycloak:9.0.0"
-        #  file_name: keycloak-9.0.0.tar
+        - name: "epiphanyplatform/keycloak:9.0.0"
+          file_name: keycloak-9.0.0.tar
         - name: "rabbitmq:3.8.9"
           file_name: rabbitmq-3.8.9.tar
         - name: "kubernetesui/dashboard:v2.0.3"

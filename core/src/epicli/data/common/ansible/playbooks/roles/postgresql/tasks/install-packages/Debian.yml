@@ -10,23 +10,24 @@
 
 # --- extensions ---
 
-- name: Install pgbouncer package
-  apt:
-    name:
-      - pgbouncer
-    state: present
-  when:
-    - specification.extensions.pgbouncer.enabled is defined
-    - specification.extensions.pgbouncer.enabled
+- name: Install pgbouncer and repmgr packages
+  when: ansible_architecture == "x86_64"
+  block:
+    - name: Install pgbouncer package
+      apt:
+        name:
+          - pgbouncer
+        state: present
+      when:
+        - specification.extensions.pgbouncer.enabled | default(false)
 
-- name: Install repmgr package
-  apt:
-    name:
-      - postgresql-10-repmgr
-    state: present
-  when:
-    - specification.extensions.replication.use_repmgr is defined
-    - specification.extensions.replication.use_repmgr
+    - name: Install repmgr package
+      apt:
+        name:
+          - postgresql-10-repmgr
+        state: present
+      when:
+        - specification.extensions.replication.enabled | default(false)
 
 - name: Install pgaudit package
   apt:
@@ -34,5 +35,4 @@
       - postgresql-10-pgaudit
     state: present
   when:
-    - specification.extensions.pgaudit.enabled is defined
-    - specification.extensions.pgaudit.enabled
+    - specification.extensions.pgaudit.enabled | default(false)
