@@ -57,7 +57,7 @@
 
 - name: Node Exporter as System Service | Set exporter_file_name fact
   set_fact:
-    exporter_file_name: "node_exporter-{{ exporter_defaults.exporter.version }}.linux-amd64.tar.gz"
+    exporter_file_name: "{{ exporter_defaults.exporter.service.file_name[ansible_architecture] }}"
 
 - name: Node Exporter as System Service | Collect version
   shell: >-

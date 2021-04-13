@@ -3,9 +3,7 @@ title: "Kafka exporter"
 name: default
 specification:
   description: "Service that runs Kafka Exporter"
-  version: 1.2.0
-  file_name: "kafka_exporter-1.2.0.linux-amd64.tar.gz"
-  
+
   web_listen_port: "9308"
   config_flags:
     - "--web.listen-address=:9308" # Address to listen on for web interface and telemetry.

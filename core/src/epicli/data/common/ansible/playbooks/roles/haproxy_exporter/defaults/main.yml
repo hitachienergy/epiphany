@@ -1,0 +1,4 @@
+haproxy_exporter:
+  file_name:
+    x86_64: "haproxy_exporter-0.10.0.linux-amd64.tar.gz"
+    aarch64: "haproxy_exporter-0.10.0.linux-arm64.tar.gz"
