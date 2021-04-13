@@ -1,0 +1,77 @@
+---
+# A standalone version of this procedure can be found in tools/development/k8s/memory/patch_cgroup_driver/.
+# It has been reported that Epiphany behaves unstable with high resource utilization, this patch seems to be fixing these problems.
+
+# K8s documentation (https://kubernetes.io/docs/setup/production-environment/container-runtimes/#cgroup-drivers) states:
+# > A single cgroup manager simplifies the view of what resources are being allocated and will by default have a more consistent view of the available and in-use resources.
+# > When there are two cgroup managers on a system, you end up with two views of those resources.
+# > In the field, people have reported cases where nodes that are configured to use cgroupfs for the kubelet and Docker,
+# > but systemd for the rest of the processes, become unstable under resource pressure.
+
+- name: k8s/cgroups | Read /var/lib/kubelet/kubeadm-flags.env
+  slurp:
+    path: /var/lib/kubelet/kubeadm-flags.env
+  register: slurp_var_lib_kubelet_kubeadm_flags_env
+
+- name: k8s/cgroups | Process /var/lib/kubelet/kubeadm-flags.env
+  set_fact:
+    var_lib_kubelet_kubeadm_flags_env:
+      output: "{{ _output }}"
+      changed: "{{ _output != _input }}"
+  vars:
+    _input: >-
+      {{ slurp_var_lib_kubelet_kubeadm_flags_env.content | b64decode }}
+    _output: >-
+      {{ _input.replace('--cgroup-driver=cgroupfs', '--cgroup-driver=systemd') }}
+
+- name: k8s/cgroups | Read /etc/docker/daemon.json
+  slurp:
+    path: /etc/docker/daemon.json
+  register: slurp_etc_docker_daemon_json
+
+- name: k8s/cgroups | Process /etc/docker/daemon.json
+  set_fact:
+    etc_docker_daemon_json:
+      output: "{{ _output }}"
+      changed: "{{ _output['exec-opts'] != _exec_opts }}"
+  vars:
+    _input: >-
+      {{ slurp_etc_docker_daemon_json.content | b64decode | from_json }}
+    
+    _exec_opts: >-
+      {{ _input['exec-opts'] | default([]) }}
+    
+    _update:
+      exec-opts: >-
+        {{ _exec_opts | difference(['native.cgroupdriver=cgroupfs']) | union(['native.cgroupdriver=systemd']) }}
+    
+    _output: >-
+      {{ _input | combine(_update, recursive=true) }}
+
+- name: k8s/cgroups | Perform cgroup driver patching (switch to systemd)
+  when: var_lib_kubelet_kubeadm_flags_env.changed or etc_docker_daemon_json.changed
+  block:
+    # At this point we assume that currently processed node has been drained already.
+
+    - name: k8s/cgroups | Write /var/lib/kubelet/kubeadm-flags.env
+      copy:
+        dest: /var/lib/kubelet/kubeadm-flags.env
+        content: |
+          {{ var_lib_kubelet_kubeadm_flags_env.output }}
+        owner: root
+        group: root
+        mode: preserve
+
+    - name: k8s/cgroups | Write /etc/docker/daemon.json
+      copy:
+        dest: /etc/docker/daemon.json
+        content: |
+          {{ etc_docker_daemon_json.output | to_nice_json(indent=2) }}
+        owner: root
+        group: root
+        mode: preserve
+
+    - name: k8s/cgroups | Restart kubelet and docker
+      include_tasks: utils/restart-kubelet-and-docker.yml
+      when:
+        - (_requires_restart is undefined) or _requires_restart

@@ -1,8 +1,15 @@
 ---
-docker_logging:
-  log_opts:
-    max_file_size: 10m # The maximum size of the log before it is rolled. A positive integer plus a modifier representing the unit of measure (k, m, or g)
-    max_files: 2       # The maximum number of log files that can be present
+docker_daemon_defaults:
+  exec-opts:
+    - native.cgroupdriver=systemd
+  insecure-registries:
+    - "{{ image_registry_address }}"
+  log-driver: json-file
+  log-opts:
+    # The maximum size of the log before it is rolled. A positive integer plus a modifier representing the unit of measure (k, m, or g).
+    max-size: 10m
+    # The maximum number of log files that can be present.
+    max-file: "2"  # must be a string
 
 docker_version: 
   Debian: "5:19.03.14*" # * is needed to match a version such as '5:19.03.14~3-0~ubuntu-bionic'
