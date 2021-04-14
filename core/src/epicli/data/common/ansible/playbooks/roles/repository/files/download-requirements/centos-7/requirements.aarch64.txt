@@ -42,7 +42,7 @@ firewalld
 fontconfig # for grafana
 fping
 gnutls # for cifs-utils
-#grafana-7.3.5
+grafana-7.3.5
 gssproxy # for nfs-utils
 htop
 iftop
@@ -142,7 +142,7 @@ https://archive.apache.org/dist/zookeeper/zookeeper-3.5.8/apache-zookeeper-3.5.8
 https://releases.hashicorp.com/vault/1.6.1/vault_1.6.1_linux_arm64.zip
 https://get.helm.sh/helm-v3.2.0-linux-arm64.tar.gz
 https://github.com/hashicorp/vault-helm/archive/v0.9.0.tar.gz
-#https://github.com/wrouesnel/postgres_exporter/releases/download/v0.8.0/postgres_exporter_v0.8.0_linux-amd64.tar.gz
+https://github.com/prometheus-community/postgres_exporter/releases/download/v0.9.0/postgres_exporter-0.9.0.linux-arm64.tar.gz
 https://charts.bitnami.com/bitnami/node-exporter-1.1.2.tgz
 https://helm.elastic.co/helm/filebeat/filebeat-7.9.2.tgz
 
