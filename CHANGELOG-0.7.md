@@ -7,6 +7,7 @@
 - [#2164](https://github.com/epiphany-platform/epiphany/issues/2164) - Replace Bintray repository
 - [#1888](https://github.com/epiphany-platform/epiphany/issues/1888) - epicli upgrade of cluster created by Epiphany v0.5 may fail
 - [#1908](https://github.com/epiphany-platform/epiphany/issues/1908) - Research why Epiphany nodes hang when memory is overcommited
+- [#2067](https://github.com/epiphany-platform/epiphany/issues/2067) - [CentOS] epicli fails on task "repository : Wait for yum lock to be released" on CentOS Minimal
 
 ### Added
 
