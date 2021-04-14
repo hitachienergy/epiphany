@@ -10,6 +10,7 @@
 - [#2111](https://github.com/epiphany-platform/epiphany/issues/2111) - [ARM64] Add arm64 support to 'load_balancer' component
 - [#2112](https://github.com/epiphany-platform/epiphany/issues/2112) - [ARM64] Add arm64 support to 'postgresql' component
 - [#2113](https://github.com/epiphany-platform/epiphany/issues/2113) - [ARM64] Add arm64 support to 'applications' Ansible role to install 'Keycloak'
+- [#2116](https://github.com/epiphany-platform/epiphany/issues/2116) - [ARM64] Add arm64 support to 'logging' component
 
 ### Fixed
 
