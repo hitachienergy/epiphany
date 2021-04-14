@@ -15,7 +15,7 @@
 
 - name: Set Kafka Exporter file name to install
   set_fact:
-    exporter_file_name: "{{ specification.file_name }}"
+    exporter_file_name: "{{ kafka_exporter.file_name[ansible_architecture] }}"
 
 - name: Download Kafka Exporter binaries
   include_role:

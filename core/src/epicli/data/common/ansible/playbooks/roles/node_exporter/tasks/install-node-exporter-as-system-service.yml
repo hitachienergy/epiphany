@@ -16,7 +16,7 @@
 
 - name: Set Node Exporter file name to install
   set_fact:
-    exporter_file_name: "node_exporter-{{ exporter.version }}.linux-amd64.tar.gz"
+    exporter_file_name: "{{ exporter.service.file_name[ansible_architecture] }}"
 
 - name: Download Node Exporter binaries
   include_role:
