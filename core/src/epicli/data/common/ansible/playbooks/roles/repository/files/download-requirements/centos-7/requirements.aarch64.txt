@@ -35,10 +35,9 @@ dejavu-sans-fonts # for grafana
 docker-ce-19.03.14
 docker-ce-cli-19.03.14
 ebtables
-#elasticsearch-curator-5.8.3
-#elasticsearch-oss-7.10.2 # for opendistroforelasticsearch & logging roles
+elasticsearch-oss-7.10.2 # for opendistroforelasticsearch & logging roles
 ethtool
-#filebeat-7.9.2
+filebeat-7.9.2
 firewalld
 fontconfig # for grafana
 fping
@@ -64,13 +63,13 @@ net-tools
 nfs-utils
 nmap-ncat
 # Open Distro for Elasticsearch plugins are installed individually to not download them twice in different versions (as dependencies of opendistroforelasticsearch package)
-#opendistro-alerting-1.13.1*
-#opendistro-index-management-1.13.1*
-#opendistro-job-scheduler-1.13.0*
-#opendistro-performance-analyzer-1.13.0*
-#opendistro-security-1.13.1*
-#opendistro-sql-1.13.0*
-#opendistroforelasticsearch-kibana-1.13.1*
+opendistro-alerting-1.13.1*
+opendistro-index-management-1.13.1*
+opendistro-job-scheduler-1.13.0*
+opendistro-performance-analyzer-1.13.0*
+opendistro-security-1.13.1*
+opendistro-sql-1.13.0*
+opendistroforelasticsearch-kibana-1.13.1*
 openssl
 perl # for vim
 perl-Getopt-Long # for vim
@@ -81,14 +80,17 @@ perl-Pod-Usage # for vim
 pgaudit12_10
 policycoreutils-python # for container-selinux
 pyldb # for cifs-utils
+python-cffi # for python2-cryptography
 python-firewall # for firewalld
 python-kitchen # for yum-utils
 python-lxml # for java-1.8.0-openjdk-headless
 python-psycopg2
+python-pycparser # for python2-cryptography
 python-setuptools
 python-slip-dbus # for firewalld
 python-ipaddress
 python-backports
+python2-cryptography # for Ansible (certificate modules)
 quota # for nfs-utils
 #rabbitmq-server-3.8.9
 #rh-haproxy18
