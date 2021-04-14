@@ -1,5 +1,13 @@
 ---
 prometheus_external_labels:
   environment: "{{ ansible_fqdn }}"
-prometheus_filename: "prometheus-2.10.0.linux-amd64.tar.gz"
-alertmanager_filename: "alertmanager-0.17.0.linux-amd64.tar.gz"
+
+prometheus:
+  file_name:
+    x86_64: "prometheus-2.10.0.linux-amd64.tar.gz"
+    aarch64: "prometheus-2.10.0.linux-arm64.tar.gz"
+
+alertmanager:
+  file_name:
+    x86_64: "alertmanager-0.17.0.linux-amd64.tar.gz"
+    aarch64: "alertmanager-0.17.0.linux-arm64.tar.gz"

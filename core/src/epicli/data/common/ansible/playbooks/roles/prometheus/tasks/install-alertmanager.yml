@@ -1,7 +1,7 @@
 ---
 - name: Set Alertmanager file name to install
   set_fact:
-    binary_file_name: "{{ alertmanager_filename }}"
+    binary_file_name: "{{ alertmanager.file_name[ansible_architecture] }}"
 
 - name: Download Alertmanager binaries
   include_role:
