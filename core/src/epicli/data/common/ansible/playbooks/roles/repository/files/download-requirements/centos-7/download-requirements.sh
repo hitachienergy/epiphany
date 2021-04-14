@@ -625,6 +625,8 @@ fi
 
 # -> CentOS-7 - Extras # for container-selinux and centos-release-scl packages
 enable_repo 'extras'
+# -> CentOS-7 - Base # for python dependencies
+enable_repo 'base'
 
 # --- Add repos ---
 
