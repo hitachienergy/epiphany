@@ -25,7 +25,7 @@
 
 - name: Set Postgres Exporter file name to install
   set_fact:
-    exporter_file_name: "postgres_exporter_v{{ exporter.version }}_linux-amd64.tar.gz"
+    exporter_file_name: "{{ exporter.file_name[ansible_architecture] }}"
 
 - name: Download Postgres Exporter binaries
   include_role:
