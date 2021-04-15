@@ -20,6 +20,16 @@ unsupported_roles:
   - distro: Ubuntu
     arch: aarch64
     roles:
+      - repository
+      - kafka
+      - firewall
+      - image_registry
+      - kubernetes_master
+      - kubernetes_node
+      - helm
+      - zookeeper
+      - haproxy
+      - vault
       - logging
       - elasticsearch_curator
       - opendistro_for_elasticsearch
@@ -38,6 +48,7 @@ unsupported_roles:
       - haproxy_exporter
       - applications
       - ignite
+
   - distro: CentOS
     arch: x86_64
     roles: []  # all supported
@@ -68,6 +79,16 @@ unsupported_roles:
   - distro: RedHat
     arch: aarch64
     roles:
+      - repository
+      - kafka
+      - firewall
+      - image_registry
+      - kubernetes_master
+      - kubernetes_node
+      - helm
+      - zookeeper
+      - haproxy
+      - vault
       - logging
       - elasticsearch_curator
       - opendistro_for_elasticsearch
