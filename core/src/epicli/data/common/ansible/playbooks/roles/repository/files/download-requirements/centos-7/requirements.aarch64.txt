@@ -71,6 +71,7 @@ opendistro-security-1.13.1*
 opendistro-sql-1.13.0*
 opendistroforelasticsearch-kibana-1.13.1*
 openssl
+unixODBC # for erlang
 perl # for vim
 perl-Getopt-Long # for vim
 perl-libs # for vim
@@ -92,7 +93,7 @@ python-ipaddress
 python-backports
 python2-cryptography # for Ansible (certificate modules)
 quota # for nfs-utils
-#rabbitmq-server-3.8.9
+rabbitmq-server-3.8.9
 #rh-haproxy18
 #rh-haproxy18-haproxy-syspaths
 postgresql10-server
@@ -129,7 +130,7 @@ kubernetes-cni-0.8.6-0
 
 [files]
 # Github repository for erlang rpm is used since packagecloud repository is limited to a certain number of versions and erlang package from erlang-solutions repository is much more complex and bigger
-#https://github.com/rabbitmq/erlang-rpm/releases/download/v23.1.5/erlang-23.1.5-1.el7.x86_64.rpm
+https://packages.erlang-solutions.com/erlang/rpm/centos/7/aarch64/esl-erlang_23.1.5-1~centos~7_arm64.rpm
 https://github.com/prometheus/haproxy_exporter/releases/download/v0.10.0/haproxy_exporter-0.10.0.linux-arm64.tar.gz
 https://repo1.maven.org/maven2/io/prometheus/jmx/jmx_prometheus_javaagent/0.14.0/jmx_prometheus_javaagent-0.14.0.jar
 https://archive.apache.org/dist/kafka/2.6.0/kafka_2.12-2.6.0.tgz
