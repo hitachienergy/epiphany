@@ -13,6 +13,9 @@
     yum: { lock_timeout: "{{ yum_lock_timeout }}" }
 
 - name: Ensure Logstash is disabled
+  # There is no systemd service for CentOS
+  # https://discuss.elastic.co/t/logstash-service-unit-not-found-centos-7/138446
+  when: ansible_distribution != 'CentOS'
   systemd:
     name: logstash
     enabled: no
