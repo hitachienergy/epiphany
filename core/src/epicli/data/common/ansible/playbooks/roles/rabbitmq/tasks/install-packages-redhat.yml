@@ -3,7 +3,7 @@
   yum:
     name:
       - logrotate
-      - "{{ repository_url }}/files/{{ versions.redhat.erlang_filename }}"
+      - "{{ repository_url }}/files/{{ versions.redhat.erlang_filename[ansible_architecture] }}"
       - rabbitmq-server-{{ versions.redhat.rabbitmq }}
     update_cache: true
     state: present
