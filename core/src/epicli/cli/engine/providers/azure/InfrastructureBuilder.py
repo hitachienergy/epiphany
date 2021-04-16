@@ -236,6 +236,6 @@ class InfrastructureBuilder(Step):
                                                                  x.name == machine_selector)
         if model_with_defaults is None:
             model_with_defaults = merge_with_defaults(cluster_model.provider, 'infrastructure/virtual-machine',
-                                                      machine_selector)
+                                                      machine_selector, docs)
 
         return model_with_defaults
