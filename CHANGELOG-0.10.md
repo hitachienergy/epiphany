@@ -1,6 +1,6 @@
 # Changelog 0.10
 
-## [0.10.0] YYYY-MM-DD
+## [0.10.0] 2021-04-01
 
 ### Added
 
@@ -8,6 +8,7 @@
 - [#1355](https://github.com/epiphany-platform/epiphany/issues/1355) - Updating cloud based OS images - configuration required for Azure RHEL LVM images
 - [#2081](https://github.com/epiphany-platform/epiphany/issues/2081) - Replace Skopeo with Crane
 - [#1323](https://github.com/epiphany-platform/epiphany/issues/1323) - Documentation how to handle data in Opendistro for Elasticsearch
+- [#1789](https://github.com/epiphany-platform/epiphany/issues/1789) - [Ubuntu] Add retry feature for downloading packages in download-requirements.sh
 
 ### Fixed
 
@@ -25,6 +26,10 @@
 - [#2115](https://github.com/epiphany-platform/epiphany/issues/2115) - Epicli hangs on importing GPG keys for kubernetes repository on RHEL
 - [#2121](https://github.com/epiphany-platform/epiphany/issues/2121) - [RedHat/CentOS] Erlang package versions specified in requirements are missing in external repository
 - [#2068](https://github.com/epiphany-platform/epiphany/issues/2068) - Preflight role requires sudoer user
+- [#2136](https://github.com/epiphany-platform/epiphany/issues/2136) - Replace Bintray repository
+- [#2161](https://github.com/epiphany-platform/epiphany/issues/2161) - Running out of disk space during upgrade from v0.6 and v0.7 where the default disks are 32GB
+- [#1844](https://github.com/epiphany-platform/epiphany/issues/1844) - Default password in Open Distro for Elasticsearch, Filebeat, Kibana and Grafana
+- [#2128](https://github.com/epiphany-platform/epiphany/issues/2128) - [upgrade] Configuration in elasticsearch.yml is overwritten
 
 ### Updated
 
@@ -39,6 +44,8 @@
 - [#2142](https://github.com/epiphany-platform/epiphany/issues/2142) - Update Ubuntu 18.04-LTS images to the latest version
 
 ### Breaking changes
-- Feature name: `elasticsearch` removed in favor of feature name: `opendistro-for-elasticsearch`.
+- Feature `elasticsearch` removed in favor of `opendistro-for-elasticsearch`.
 
 ### Known issues
+
+- [#2115](https://github.com/epiphany-platform/epiphany/issues/2115) - [RHEL/CentOS] epicli may hang or fail on importing GPG keys for Kubernetes rpm repository

@@ -1,9 +1,6 @@
 ---
-
 - name: Uninstall Helm release "{{ filebeat_helm_chart_name }}"
-
+  command: helm uninstall {{ filebeat_helm_chart_name }}
   delegate_to: localhost
   become: false
   run_once: true
-
-  command: helm uninstall {{ filebeat_helm_chart_name }}

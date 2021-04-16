@@ -8,7 +8,8 @@ postgresql_default_port = 5432
 pgbouncer_default_port = 6432
 ELASTICSEARCH = { # must be global until we introduce modules
   host: listInventoryHosts("logging")[0],
-  api_port: 9200
+  api_port: 9200,
+  admin_password: readDataYaml("configuration/logging")["specification"]["admin_password"]
 }
 replicated = readDataYaml("configuration/postgresql")["specification"]["extensions"]["replication"]["enabled"]
 replication_user = readDataYaml("configuration/postgresql")["specification"]["extensions"]["replication"]["replication_user_name"]
@@ -536,7 +537,7 @@ if pgaudit_enabled && countInventoryHosts("logging") > 0
     def get_query_command_with_retries(json_query:, min_doc_hits:, retries: 600, elasticsearch: ELASTICSEARCH)
       command = <<~COMMAND
         for i in {1..#{retries}}; do
-          if curl -k -s -u admin:admin 'https://#{elasticsearch[:host]}:#{elasticsearch[:api_port]}/_search?pretty=true' -H 'Content-Type: application/json' -d '#{json_query}'
+          if curl -k -s -u admin:#{elasticsearch[:admin_password]} 'https://#{elasticsearch[:host]}:#{elasticsearch[:api_port]}/_search?pretty=true' -H 'Content-Type: application/json' -d '#{json_query}'
              | jq --exit-status '. | select(.hits.total.value >= #{min_doc_hits})'; then
             echo 'READY'; break;
           else
@@ -577,7 +578,7 @@ if pgaudit_enabled && countInventoryHosts("logging") > 0
 
     describe 'Check support for multiline messages' do
       query = get_elasticsearch_query(message_pattern: "\"ADD COLUMN city text\"")
-      describe command("curl -k -u admin:admin 'https://#{ELASTICSEARCH[:host]}:#{ELASTICSEARCH[:api_port]}/_search?pretty=true' -H 'Content-Type: application/json' -d '#{query.squish}'") do
+      describe command("curl -k -u admin:#{ELASTICSEARCH[:admin_password]} 'https://#{ELASTICSEARCH[:host]}:#{ELASTICSEARCH[:api_port]}/_search?pretty=true' -H 'Content-Type: application/json' -d '#{query.squish}'") do
         its(:stdout) { should match /ALTER TABLE serverspec_test\.test.*\\n\\t.*ADD COLUMN id.*\\n\\t.*ADD COLUMN name.*\\n\\t.*ADD COLUMN city.*\\n\\t.*ADD COLUMN description/ }
         its(:exit_status) { should eq 0 }
       end

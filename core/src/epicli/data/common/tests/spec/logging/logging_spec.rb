@@ -1,7 +1,8 @@
 require 'spec_helper'
 
-elasticsearch_rest_api_port = 9200
+elasticsearch_admin_password = readDataYaml("configuration/logging")["specification"]["admin_password"]
 elasticsearch_communication_port = 9300
+elasticsearch_rest_api_port = 9200
 
 describe 'Checking if Elasticsearch service is running' do
   describe service('elasticsearch') do
@@ -40,12 +41,12 @@ describe 'Checking if the ports are open' do
   describe port(elasticsearch_communication_port) do
     it { should be_listening }
   end
-end 
+end
 
 listInventoryHosts("logging").each do |val|
   describe 'Checking Elasticsearch nodes status codes' do
     let(:disable_sudo) { false }
-    describe command("curl -k -u admin:admin -o /dev/null -s -w '%{http_code}' https://#{val}:#{elasticsearch_rest_api_port}") do
+    describe command("curl -k -u admin:#{elasticsearch_admin_password} -o /dev/null -s -w '%{http_code}' https://#{val}:#{elasticsearch_rest_api_port}") do
       it "is expected to be equal" do
         expect(subject.stdout.to_i).to eq 200
       end
@@ -53,11 +54,13 @@ listInventoryHosts("logging").each do |val|
   end
 end
 
-describe 'Checking Elasticsearch health' do
-  let(:disable_sudo) { false }
-  describe command("curl -k -u admin:admin https://$(hostname):#{elasticsearch_rest_api_port}/_cluster/health?pretty=true") do
-    its(:stdout_as_json) { should include('status' => /green|yellow/) }
-    its(:stdout_as_json) { should include('number_of_nodes' => countInventoryHosts("logging")) }
-    its(:exit_status) { should eq 0 }
+listInventoryHosts("logging").each do |val|
+  describe 'Checking Elasticsearch health' do
+    let(:disable_sudo) { false }
+    describe command("curl -k -u admin:#{elasticsearch_admin_password} https://#{val}:#{elasticsearch_rest_api_port}/_cluster/health?pretty=true") do
+      its(:stdout_as_json) { should include('status' => /green|yellow/) }
+      its(:stdout_as_json) { should include('number_of_nodes' => countInventoryHosts("logging")) }
+      its(:exit_status) { should eq 0 }
+    end
   end
 end

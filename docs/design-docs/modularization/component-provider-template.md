@@ -1,6 +1,6 @@
 # Context
 
-This design document presents findings on what are important pieces of modules communication it Dockerized Custom Modules approach described [here](./modularization-approaches.md). 
+This design document presents findings on what are important pieces of modules communication in Dockerized Custom Modules approach described [here](./modularization-approaches.md). 
 
 # Plan 
 
@@ -8,7 +8,7 @@ Idea is to have something running and working mimicking real world modules. I us
 
 # Dependencies problem
 
-First definition of modules [here](https://github.com/mkyc/epiphany-wrapper-poc-repo/blob/master/v1.yaml) in example presented here: 
+First [list of modules](https://github.com/mkyc/epiphany-wrapper-poc-repo/blob/master/v1.yaml) is presented here: 
 
 ```
 version: v1
