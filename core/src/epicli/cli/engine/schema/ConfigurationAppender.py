@@ -44,7 +44,7 @@ class ConfigurationAppender(Step):
                     config = select_first(configuration_docs, lambda
                         x: x.kind == 'configuration/' + feature_key and x.name == config_selector)
                 if config is None:
-                    config = merge_with_defaults('common', 'configuration/' + feature_key, config_selector)
+                    config = merge_with_defaults('common', 'configuration/' + feature_key, config_selector, self.input_docs)
                     self.logger.info("Adding: " + config.kind)
                     append_config(config)
 
