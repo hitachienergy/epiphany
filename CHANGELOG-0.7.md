@@ -1,5 +1,11 @@
 # Changelog 0.7
 
+## [0.7.4] 2021-xx-xx
+
+### Fixed
+
+- [#2042](https://github.com/epiphany-platform/epiphany/issues/2042) - PostgreSQL replication with repmgr: hot_standby not set in config file
+
 ## [0.7.3] 2021-04-15
 
 ### Fixed
