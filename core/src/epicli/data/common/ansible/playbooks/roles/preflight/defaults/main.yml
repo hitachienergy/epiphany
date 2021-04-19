@@ -55,24 +55,7 @@ unsupported_roles:
   - distro: CentOS
     arch: aarch64
     roles:
-      - logging
-      - elasticsearch_curator
-      - opendistro_for_elasticsearch
-      - elasticsearch
-      - kibana
-      - filebeat
-      - logstash
-      - prometheus
-      - grafana
-      - node_exporter
-      - jmx_exporter
-      - rabbitmq
-      - kafka_exporter
-      - postgresql
-      - postgres_exporter
-      - haproxy_exporter
-      - applications
-      - ignite
+      - vault
   - distro: RedHat
     arch: x86_64
     roles: []  # all supported
