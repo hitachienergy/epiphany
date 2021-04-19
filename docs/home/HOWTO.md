@@ -74,7 +74,7 @@
 - [Databases](./howto/DATABASES.md)
   - [How to migrate from PostgreSQL installed from Software Collections to installed from PostgreSQL repository](./howto/DATABASES.md#how-to-migrate-from-postgresql-installed-from-software-collections-to-installed-from-postgresql-repository)
   - [How to configure PostgreSQL](./howto/DATABASES.md#how-to-configure-postgresql)
-  - [How to configure PostgreSQL replication](./howto/DATABASES.md#how-to-configure-postgresql-replication)
+  - [How to configure PostgreSQL replication](./howto/DATABASES.md#how-to-set-up-postgresql-ha-replication-with-repmgr-cluster)
   - [How to set up PostgreSQL connection pooling](./howto/DATABASES.md#how-to-set-up-postgresql-connection-pooling)
   - [How to register database standby in repmgr cluster](./howto/DATABASES.md#how-to-register-database-standby-in-repmgr-cluster)
   - [How to switchover database nodes](./howto/DATABASES.md#how-to-switchover-database-nodes)
