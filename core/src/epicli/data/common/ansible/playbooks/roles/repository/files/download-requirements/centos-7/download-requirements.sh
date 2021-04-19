@@ -93,6 +93,7 @@ download_file() {
 
 	local file_name=$(basename "$file_url")
 	local dest_path="$dest_dir/$file_name"
+	local retries=3
 
 	# wget with --timestamping sometimes failes on AWS with ERROR 403: Forbidden
 	# so we remove existing file to overwrite it, to be optimized
@@ -100,7 +101,7 @@ download_file() {
 
 	echol "Downloading file: $file_url"
 
-	wget --no-verbose --directory-prefix="$dest_dir" "$file_url" ||
+	run_cmd_with_retries wget --no-verbose --directory-prefix="$dest_dir" "$file_url" $retries ||
 		exit_with_error "Command failed: wget --no-verbose --directory-prefix=\"$dest_dir\" \"$file_url\""
 }
 
@@ -114,6 +115,7 @@ download_image() {
 	local tag=${splited_image[1]}
 	local repo_basename=$(basename -- "$repository")
 	local dest_path="${dest_dir}/${repo_basename}-${tag}.tar"
+	local retries=3
 
 	if [[ -f $dest_path ]]; then
 		echol "Image file: "$dest_path" already exists. Skipping..."
@@ -122,10 +124,8 @@ download_image() {
 		local tmp_file_path=$(mktemp)
 		local crane_cmd="$CRANE_BIN  pull --insecure --platform=${DOCKER_PLATFORM} --format=legacy ${image_name} ${tmp_file_path}"
 		echol "Downloading image: $image"
-		# try twice to avoid random error on Azure: "pinging docker registry returned: Get https://k8s.gcr.io/v2/: net/http: TLS handshake timeout"
-		{ $crane_cmd && chmod 644 $tmp_file_path && mv $tmp_file_path $dest_path; } ||
-		{ echol "Second try:" && $crane_cmd && chmod 644 $tmp_file_path && mv $tmp_file_path $dest_path; } ||
-			exit_with_error "crane failed, command was: $crane_cmd && chmod 644 $tmp_file_path && mv $tmp_file_path $dest_path"
+		{ run_cmd_with_retries $crane_cmd $retries && chmod 644 $tmp_file_path && mv $tmp_file_path $dest_path; } ||
+		exit_with_error "crane failed, command was: $crane_cmd && chmod 644 $tmp_file_path && mv $tmp_file_path $dest_path"
 	fi
 }
 
@@ -134,10 +134,11 @@ download_packages() {
 	local dest_dir="$1"
 	shift
 	local packages="$@"
+	local retries=3
 
 	if [[ -n $packages ]]; then
 		# when using --archlist=x86_64 yumdownloader (yum-utils-1.1.31-52) also downloads i686 packages
-		run_cmd_with_retries yumdownloader --quiet --archlist="$ARCH" --exclude='*i686' --destdir="$dest_dir" $packages 3
+		run_cmd_with_retries yumdownloader --quiet --archlist="$ARCH" --exclude='*i686' --destdir="$dest_dir" $packages $retries
 	fi
 }
 
@@ -651,7 +652,7 @@ fi
 # clean metadata for upgrades (when the same package can be downloaded from changed repo)
 run_cmd remove_yum_cache_for_untracked_repos
 
-run_cmd yum -y makecache fast
+run_cmd_with_retries yum -y makecache fast 3
 
 # --- Download packages ---
 
