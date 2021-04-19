@@ -1,5 +1,11 @@
 # Changelog 0.7
 
+## [0.7.4] 2021-xx-xx
+
+### Updated
+
+- [#1860](https://github.com/epiphany-platform/epiphany/issues/1860) - Upgrade Grafana to v7.3.5
+
 ## [0.7.3] 2021-04-15
 
 ### Fixed
@@ -21,7 +27,6 @@
 - [#1921](https://github.com/epiphany-platform/epiphany/issues/1921) - Upgrade Kafka to v2.6.0
 - [#1934](https://github.com/epiphany-platform/epiphany/issues/1934) - Upgrade Rabbitmq to v3.8.9
 - [#1905](https://github.com/epiphany-platform/epiphany/issues/1905) - Upgrade Docker to v19.03.14
-- [#1860](https://github.com/epiphany-platform/epiphany/issues/1860) - Upgrade Grafana to v7.3.5
 
 ## [0.7.2] 2020-10-07
 
