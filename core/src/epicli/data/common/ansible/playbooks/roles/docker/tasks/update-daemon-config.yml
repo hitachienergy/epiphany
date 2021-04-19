@@ -1,0 +1,90 @@
+---
+- name: Stat /etc/docker/daemon.json
+  stat:
+    path: /etc/docker/daemon.json
+    get_attributes: false
+    get_checksum: false
+    get_mime: false
+  register: stat_etc_docker_daemon_json
+
+- name: Read /etc/docker/daemon.json
+  slurp:
+    path: /etc/docker/daemon.json
+  register: slurp_etc_docker_daemon_json
+  when:
+    - stat_etc_docker_daemon_json.stat.exists
+
+- name: Process /etc/docker/daemon.json
+  set_fact:
+    etc_docker_daemon_json:
+      output: "{{ _output }}"
+      changed: "{{ _changed }}"
+      reload: "{{ _reload }}"
+      restart: "{{ _restart }}"
+  vars:
+    # To detect changes we cannot use defaults as inputs here.
+    _input: >-
+      {{ (slurp_etc_docker_daemon_json.content | b64decode | from_json)
+         if slurp_etc_docker_daemon_json.content is defined else
+         {} }}
+
+    # This role is used directly during both "apply" and "upgrade" runs.
+    # In the case of "upgrade" we have to accept what we find on the target machine and
+    # make corrections to "exec-opts" later in a separate procedure (inside the "upgrade" role).
+    # In the case of "apply" it is just fine to overwrite the whole document with defaults.
+    _output: >-
+      {{ (docker_daemon_defaults | dict2items
+                                 | rejectattr('key', '==', 'exec-opts')
+                                 | list
+                                 | items2dict
+                                 | combine(_input, recursive=true))
+         if is_upgrade_run else
+         docker_daemon_defaults }}
+
+    _changed: >-
+      {{ _output != _input }}
+
+    # Restart is too much to handle changes to "insecure-registries".
+    _reload: >-
+      {{ _changed and (not _restart) }}
+
+    # Reload is not enough to handle changes to "exec-opts".
+    _restart: >-
+      {{ _changed and (_input['exec-opts'] | default([]) != _output['exec-opts'] | default([])) }}
+
+- name: Write config and reload/restart Docker
+  when:
+    - etc_docker_daemon_json.changed
+  block:
+    - name: Ensure directory /etc/docker/ exists
+      file:
+        path: /etc/docker/
+        state: directory
+        owner: root
+        group: root
+        mode: u=rwx,go=rx
+
+    # NOTE: Previously a "template" task was used here instead, but
+    #       it has proven to provide insufficient idempotency (unnecessary docker restarts).
+    - name: Write /etc/docker/daemon.json
+      copy:
+        dest: /etc/docker/daemon.json
+        content: |
+          {{ etc_docker_daemon_json.output | to_nice_json(indent=2) }}
+        owner: root
+        group: root
+        mode: u=rw,go=r
+
+    - name: Reload Docker
+      systemd:
+        name: docker
+        state: reloaded
+      when:
+        - etc_docker_daemon_json.reload
+
+    - name: Restart Docker
+      systemd:
+        name: docker
+        state: restarted
+      when:
+        - etc_docker_daemon_json.restart

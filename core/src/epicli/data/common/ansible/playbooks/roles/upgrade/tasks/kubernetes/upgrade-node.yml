@@ -2,8 +2,15 @@
 - name: k8s/node | Drain node in preparation for maintenance
   include_tasks: utils/drain.yml
 
-- name: k8s/node | Upgrade Docker # this may restart Docker daemon
+- name: k8s/node | Upgrade Docker  # this may restart Docker daemon
   include_tasks: docker.yml
+
+# This is considered a bugfix for existing clusters created prior Epiphany v0.10.x and after v0.5.x.
+- name: k8s/node | Replace cgroupfs driver with systemd driver
+  include_tasks: patch-cgroup-driver.yml
+  vars: { _requires_restart: true }
+  when:
+    - upgrade_to_final_version
 
 - name: Upgrade packages and perform upgrade
   block:
