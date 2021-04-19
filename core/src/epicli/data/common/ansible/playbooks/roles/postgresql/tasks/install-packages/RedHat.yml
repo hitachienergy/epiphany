@@ -4,7 +4,7 @@
     name:
       - postgresql10-server
       - python-psycopg2 # required for postresql ansible management
-    update_cache: yes
+    update_cache: true
     state: present
 
 # --- additional components ---
@@ -14,7 +14,6 @@
     name:
       - pgbouncer
     state: present
-    update_cache: yes
   when:
     - specification.extensions.pgbouncer.enabled is defined
     - specification.extensions.pgbouncer.enabled
@@ -26,7 +25,6 @@
         name:
           - repmgr10-4.0.6
         state: present
-        update_cache: yes
 
     - name: Create repmgr symlink
       file:

@@ -6,8 +6,14 @@
 
 - name: Install the latest version of ca-certificates package
   yum:
-    name: ca-certificates
+    name:
+      - ca-certificates
+    update_cache: true
     state: latest
+  register: result
+  retries: 3
+  delay: 1
+  until: result is succeeded
 
 - name: Install RedHat family packages
   yum:
@@ -36,7 +42,6 @@
       - vim
       - yum-utils
       - yum-versionlock
-    update_cache: yes
     state: present
   register: result
   retries: 3

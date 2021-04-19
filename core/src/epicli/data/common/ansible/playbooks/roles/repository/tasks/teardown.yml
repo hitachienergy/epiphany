@@ -8,6 +8,23 @@
     - name: Disable epirepo
       shell: /tmp/epi-repository-setup-scripts/disable-epirepo-client.sh
 
+- name: Restore /etc/cron.daily/rhui-update-client
+  when:
+    - ansible_os_family == "RedHat"
+    - specification.provider in ['azure', 'any']  # any for AzBI module
+  block:
+    - name: Check if /var/tmp/rhui-update-client file exists
+      stat:
+        path: /var/tmp/rhui-update-client
+        get_attributes: false
+        get_checksum: false
+        get_mime: false
+      register: stat_rhui_update_client_to_restore
+
+    - name: Restore /etc/cron.daily/rhui-update-client
+      command: mv /var/tmp/rhui-update-client /etc/cron.daily/rhui-update-client
+      when: stat_rhui_update_client_to_restore.stat.exists
+
 - name: Remove epirepo packages directory
   file:
     state: absent

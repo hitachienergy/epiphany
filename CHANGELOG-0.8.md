@@ -1,5 +1,12 @@
 # Changelog 0.8
 
+## [0.8.3] 2021-xx-xx
+
+### Fixed
+
+- [#1824](https://github.com/epiphany-platform/epiphany/issues/1824) - offline installation fails with error 'yum lockfile is held by another process' (Azure/RHEL)
+- [#2067](https://github.com/epiphany-platform/epiphany/issues/2067) - [CentOS] epicli fails on task "repository : Wait for yum lock to be released" on CentOS Minimal
+
 ## [0.8.2] 2021-04-13
 
 ### Added
