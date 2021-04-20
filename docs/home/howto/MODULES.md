@@ -239,7 +239,6 @@ AWS:
         replication_user_password: PASSWORD_TO_CHANGE
         priviledged_user_name: epi_repmgr_admin
         priviledged_user_password: PASSWORD_TO_CHANGE
-        use_repmgr: true
         repmgr_database: epi_repmgr
         shared_preload_libraries:
           - repmgr
