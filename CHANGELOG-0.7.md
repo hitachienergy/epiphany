@@ -6,6 +6,10 @@
 
 - [#2042](https://github.com/epiphany-platform/epiphany/issues/2042) - PostgreSQL replication with repmgr: hot_standby not set in config file
 
+### Updated
+
+- [#1860](https://github.com/epiphany-platform/epiphany/issues/1860) - Upgrade Grafana to v7.3.5
+
 ## [0.7.3] 2021-04-15
 
 ### Fixed

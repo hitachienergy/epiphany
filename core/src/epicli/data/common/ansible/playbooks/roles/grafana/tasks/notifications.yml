@@ -6,8 +6,8 @@
     password: "{{ grafana_security.admin_password }}"
     force_basic_auth: true
     return_content: true
-  no_log: true
   register: alert_notifications
+  no_log: true
 
 - name: Create grafana alert notification channels
   uri:
@@ -18,6 +18,6 @@
     method: POST
     body_format: json
     body: "{{ item | to_json }}"
-  with_items: "{{ grafana_alert_notifications }}"
+  when: alert_notifications.json | selectattr('name', '==', item.name) | length == 0
+  loop: "{{ grafana_alert_notifications }}"
   no_log: true
-  when: ((alert_notifications['json'] | selectattr("name", "equalto", item['name'])) | list) | length == 0

@@ -1,7 +1,7 @@
 ---
 - hosts: all
-  gather_facts: yes
-  tasks: [ ]  
+  gather_facts: true
+  tasks: []
 
 - hosts: grafana
   become: true
