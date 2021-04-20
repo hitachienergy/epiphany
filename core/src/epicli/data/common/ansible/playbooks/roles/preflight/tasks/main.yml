@@ -11,6 +11,13 @@
     fail_msg: "Your architecture {{ ansible_architecture }} is not supported at {{ ansible_distribution }} by following components in inventory -> {{ unsupported_components_checklist }}."
     success_msg: "Your architecture {{ ansible_architecture }} is supported at {{ ansible_distribution }} by all components in inventory."
 
+- name: Include application vars from applications role
+  include_vars:
+    file: roles/applications/vars/main.yml
+    name: k8s_apps
+  when:
+    - not is_upgrade_run # only for 'apply'
+
 - name: Check if enabled applications are supported by the architecture
   assert:
     that: _unsupported_enabled_apps | length == 0
@@ -18,30 +25,40 @@
     success_msg: "All enabled applications are supported by {{ _k8s_arch }}"
   vars:
     _k8s_arch: >-
-      "{{ hostvars[groups['kubernetes_master'][0]]['ansible_architecture'] }}"
+      {{ hostvars[groups['kubernetes_master'][0]]['ansible_architecture'] }}
     _defined: >-
-      {{ specification.applications | selectattr('enabled', 'defined') | list }}
+      {{ k8s_apps.specification.applications | selectattr('enabled', 'defined') | list }}
     _undefined: >-
-      {{ specification.applications | selectattr('enabled', 'undefined') | list }}
+      {{ k8s_apps.specification.applications | selectattr('enabled', 'undefined') | list }}
     _enabled_apps: >-
-      {{ ((_defined | selectattr('enabled') | list) + _undefined) | list }}
+      {{ (_defined | selectattr('enabled') | list) + _undefined }}
     _unsupported_enabled_apps: "{{ _enabled_apps | selectattr('name', 'in', unsupported_apps[_k8s_arch]) | list }}"
   run_once: true
   delegate_to: localhost
   when:
+    - not is_upgrade_run # only for apply
     - groups.kubernetes_master is defined
     - groups.kubernetes_master | length > 0
 
-- name: Fail if PostgreSQL extentions and architecture are not compatible
-  fail:
-    msg: "PgBouncer and Repmgr extensions are not supported by ARM and cannot be installed"
+- name: Include postgresql vars from postgresql role
+  include_vars:
+    file: roles/postgresql/vars/main.yml
+    name: postgresql
+  when:
+    - not is_upgrade_run # only for 'apply'
+
+- name: Check if PostgreSQL extentions and architecture are not compatible
+  assert:
+    that: not (postgresql.specification.extensions.pgbouncer.enabled | default(false) or postgresql.specification.extensions.replication.enabled | default(false))
+    fail_msg: "PgBouncer and Repmgr extensions are not supported by ARM and cannot be installed"
+    success_msg: "All enabled PostgreSQL extensions are supported by ARM"
   run_once: true
   delegate_to: localhost
   when:
+    - not is_upgrade_run # only for 'apply'
     - groups.postgresql is defined
     - groups.postgresql | length > 0
     - hostvars[groups['postgresql'][0]]['ansible_architecture'] == "aarch64"
-    - specification.extensions.pgbouncer.enabled | default(false) or specification.extensions.replication.enabled | default(false)
 
 - include_tasks: check-os.yml
 
