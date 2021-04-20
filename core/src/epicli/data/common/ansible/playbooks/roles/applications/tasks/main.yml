@@ -13,20 +13,29 @@
         path: "{{ deployment_tmp_root_dir }}"
         state: absent
 
+    - name: Set _enabled_applications fact
+      set_fact:
+        # Respect user's conscious decisions, otherwise enable by default if supported by architecture
+        _enabled_applications: >-
+          {{ ((_defined | selectattr('enabled') | list) + _undefined) | list }}
+      vars:
+        _defined: >-
+          {{ specification.applications | selectattr('enabled', 'defined') | list }}
+        _undefined: >-
+          {{ specification.applications | selectattr('enabled', 'undefined') | list }}
+
+    - name: Check that unsupported applications are not enabled
+      fail:
+        msg: "{{ _unsupported_enabled_apps | join(', ') }} applications are not supported by ARM and cannot be installed"
+      vars:
+        _unsupported_enabled_apps: {{ _enabled_applications | selectattr('name', 'in', unsupported_apps[k8s_arch] | list }}
+      when:
+        - _unsupported_enabled_apps | length > 0
+
     - name: Include applications
       include_tasks: applications/{{ data.name }}/main.yml
       loop_control:
         loop_var: data
       loop: "{{ _enabled_applications }}"
-      vars:
-        _defined: >-
-          {{ specification.applications | selectattr('enabled', 'defined') | list }}
-
-        _undefined: >-
-          {{ specification.applications | selectattr('enabled', 'undefined') | list }}
-
-        # Respect user's conscious decisions, otherwise enable by default if supported by architecture
-        _enabled_applications: >-
-          {{ ((_defined | selectattr('enabled') | list) + _undefined) | rejectattr('name', 'in', unsupported_apps[k8s_arch]) | list }}
 
     - *cleanup
