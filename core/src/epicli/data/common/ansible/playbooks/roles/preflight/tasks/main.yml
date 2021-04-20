@@ -8,7 +8,7 @@
 - name: Check if components are supported by the architecture
   assert:
     that: unsupported_components_checklist | length == 0
-    fail_msg: "Your architecture {{ ansible_architecture }} is not supported at {{ ansible_distribution }} by following components in inventory -> {{ unsupported_components_checklist }}."
+    fail_msg: "Your architecture {{ ansible_architecture }} is not supported at {{ ansible_distribution }} by following components in inventory -> {{ unsupported_components_checklist }}. Additionally please check feature-mapping if the component is neccessary https://github.com/epiphany-platform/epiphany/blob/develop/docs/home/howto/CLUSTER.md#how-to-create-custom-cluster-components and remove if not applicable"
     success_msg: "Your architecture {{ ansible_architecture }} is supported at {{ ansible_distribution }} by all components in inventory."
 
 - include_tasks: check-os.yml
