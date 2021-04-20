@@ -19,5 +19,3 @@
     # - The inventory_file and inventory_dir magic variables are not available for the implicit localhost as they are dependent on each inventory host.
     # TODO: https://github.com/epiphany-platform/epiphany/issues/1650
     KUBECONFIG: "{{ vault_location }}/../kubeconfig"
-  vars:
-    k8s_arch: "{{ hostvars[groups['kubernetes_master'][0]]['ansible_architecture'] }}"

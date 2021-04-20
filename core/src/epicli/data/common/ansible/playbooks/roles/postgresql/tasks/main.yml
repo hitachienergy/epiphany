@@ -1,11 +1,4 @@
 ---
-- name: Fail if extentions and architecture are not compatible
-  fail:
-    msg: "PgBouncer and Repmgr extensions are not supported by ARM and cannot be installed"
-  when:
-    - ansible_architecture == "aarch64"
-    - specification.extensions.pgbouncer.enabled | default(false) or specification.extensions.replication.enabled | default(false)
-
 - name: Execute OS-specific package installation (postgresql)
   block:
     - include_tasks: "install-packages/{{ ansible_os_family }}.yml"
