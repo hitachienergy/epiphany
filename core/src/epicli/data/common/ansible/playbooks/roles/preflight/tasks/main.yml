@@ -11,7 +11,7 @@
     fail_msg: "Your architecture {{ ansible_architecture }} is not supported at {{ ansible_distribution }} by following components in inventory -> {{ unsupported_components_checklist }}."
     success_msg: "Your architecture {{ ansible_architecture }} is supported at {{ ansible_distribution }} by all components in inventory."
 
-- name: Check if enabled applications are supported by the architecture
+- name: Check if enabled applications are supported for the architecture
   block:
     - name: Include application vars from applications role
       include_vars:
