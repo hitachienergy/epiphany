@@ -21,8 +21,8 @@
     - name: Check if enabled applications are supported for the architecture
       assert:
         that: _unsupported_enabled_apps | length == 0
-        fail_msg: "Following application(s) are not supported by {{ _k8s_arch }} and cannot be installed: {{ _unsupported_enabled_apps | map(attribute='name') | join(', ') }}"
-        success_msg: "All enabled applications are supported by {{ _k8s_arch }}"
+        fail_msg: "Following application(s) are not supported for {{ _k8s_arch }} and cannot be installed: {{ _unsupported_enabled_apps | map(attribute='name') | join(', ') }}"
+        success_msg: "All enabled applications are supported for {{ _k8s_arch }}"
       vars:
         _k8s_arch: >-
           {{ hostvars[groups['kubernetes_master'][0]]['ansible_architecture'] }}
