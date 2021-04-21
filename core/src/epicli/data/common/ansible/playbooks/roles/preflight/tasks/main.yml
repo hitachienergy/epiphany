@@ -18,7 +18,7 @@
         file: roles/applications/vars/main.yml
         name: k8s_apps
 
-    - name: Check if enabled applications are supported by the architecture
+    - name: Check if enabled applications are supported for the architecture
       assert:
         that: _unsupported_enabled_apps | length == 0
         fail_msg: "Following application(s) are not supported by {{ _k8s_arch }} and cannot be installed: {{ _unsupported_enabled_apps | map(attribute='name') | join(', ') }}"
