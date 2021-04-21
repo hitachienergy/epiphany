@@ -51,8 +51,8 @@
     - name: Check if PostgreSQL extentions and architecture are not compatible
       assert:
         that: not (postgresql.specification.extensions.pgbouncer.enabled | default(false) or postgresql.specification.extensions.replication.enabled | default(false))
-        fail_msg: "PgBouncer and Repmgr extensions are not supported by ARM and cannot be installed"
-        success_msg: "All enabled PostgreSQL extensions are supported by ARM"
+        fail_msg: "PgBouncer and Repmgr extensions are not supported for ARM and cannot be installed"
+        success_msg: "All enabled PostgreSQL extensions are supported for ARM"
   run_once: true
   delegate_to: localhost
   when:
