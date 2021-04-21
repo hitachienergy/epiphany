@@ -33,7 +33,7 @@ systemctl stop postgresql
 tar -cf backup.tar /var/opt/rh/rh-postgresql10/lib/pgsql/data/
 ```
 
-But any other tool that will provide you reliable backup that will prevent you from data loss can be chosen.
+Note that any other tool that will provide you reliable backup that will prevent you from data loss can be chosen.
 
 3). Create new directory for your PostgreSQL with command:
 
@@ -71,7 +71,7 @@ chown -R postgres:postgres -R /var/lib/pgsql
 
 1).  Ensure that you have downloaded package that name stars with postgresql10-server. Refer to documentation about airgapped 
 installation HOWTO.md(https://github.com/epiphany-platform/epiphany/blob/develop/docs/home/howto/CLUSTER.md#how-to-create-an-epiphany-cluster-on-existing-airgapped-infrastructure)
-for more details. If package doesn't exist re-run download-requirements.sh script again.
+for more details. If package doesn't exist, re-run download-requirements.sh script again.
 
 ## How to configure PostgreSQL
 
@@ -87,7 +87,7 @@ Then configure database server using psql according to your needs and
 ## How to set up PostgreSQL connection pooling
 
 PostgreSQL connection pooling in Epiphany is served by PgBouncer application. This might be added as a feature if needed.
-Simplest configuration runs PGBouncer on PostgreSQL master node. This needs to be enabled in configuration yaml file:
+The simplest configuration runs PGBouncer on PostgreSQL master node. This needs to be enabled in configuration yaml file:
 
 ```yaml
 kind: configuration/postgresql
@@ -105,7 +105,7 @@ PgBouncer can be also installed (together with Pgpool) in K8s cluster. See [How 
 ## How to set up PostgreSQL HA replication with repmgr cluster
 
 This component can be used as a part of PostgreSQL clustering configured by Epiphany. In order to configure PostgreSQL HA 
-replication, add to your data.yaml a block similar to the one below to core section:
+replication, add to your configuration file a block similar to the one below to core section:
 
 ```yaml
 ---
@@ -149,15 +149,15 @@ specification:
         - repmgr
 ```
 If `enabled` is set to `yes` in `replication`, then Epiphany will automatically create cluster of primary and secondary server
-with replication user with name and password specified in data.yaml. This is only possible for configurations containing two
+with replication user with name and password specified in configuration file. This is only possible for configurations containing two
 PostgreSQL servers.
 
-Priviledged user is used to perform full backup of primary instance and replicate this at the beginning to secondary node. After 
+Privileged user is used to perform full backup of primary instance and replicate this at the beginning to secondary node. After
 that for replication only replication user with limited permissions is used for WAL replication.
 
 ## How to register database standby in repmgr cluster
 
-If one of database nodes has been recovered to desired state you may want to re-attach it to database cluster. Execute these steps on node which will be attached as standby:
+If one of database nodes has been recovered to desired state, you may want to re-attach it to database cluster. Execute these steps on node which will be attached as standby:
 
 1. Clone data from current primary node:
 
@@ -178,7 +178,7 @@ https://repmgr.org/docs/4.0/repmgr-standby-register.html
 
 For some reason you may want to switchover database nodes (promote standby to primary and demote existing primary to standby).
 
-1. Configure passwordless SSH comunication for postgres user between database nodes.
+1. Configure passwordless SSH communication for postgres user between database nodes.
 
 2. Test and run initial login between nodes to authenticate host (if host authentication is enabled).
 
@@ -221,7 +221,7 @@ PostgreSQL: resources management | https://www.postgresql.org/docs/10/runtime-co
 **NOTE**
 
 PgBouncer and Pgpool Docker images are not supported for ARM.
-If these applications are enabled in configuration, they will not be deployed on ARM.
+If these applications are enabled in configuration, installation will fail.
 
 ---
 
@@ -318,9 +318,9 @@ specification:
 
 ### Default setup - main parameters
 
-This chapter describes the default setup and main parameters responsible for the perfomance limitations.
+This chapter describes the default setup and main parameters responsible for the performance limitations.
 The limitations can be divided into 3 layers: resource usage, connection limits and query caching.
-All of the configuration parameters can be modified in the configuration yaml file.
+All the configuration parameters can be modified in the configuration yaml file.
 
 #### Resource usage
 
@@ -396,12 +396,12 @@ reserved_connections = 1
 ```
 
 Each pod can handle up to 32 concurrent connections but one is [reserved](https://www.pgpool.net/docs/41/en/html/runtime-config-connection.html#GUC-NUM-INIT-CHILDREN).
-This means that the 32th connection from a client will be refused.
+This means that the 32nd connection from a client will be refused.
 Keep in mind that canceling a query creates another connection to PostgreSQL, thus, a query cannot be canceled if all the connections are in use.
 Furthermore, for each pod, one connection slot must be available for K8s health checks.
-Hence the real number of available concurrent connections is 30 per pod.
+Hence, the real number of available concurrent connections is 30 per pod.
 
-If you need more active concurrent connections, you can increase the number of pods (`replicas`) but the total number of allowed concurrent connections should not exceed the value defined by PostgreSQL parameters: (`max_connections` - `superuser_reserved_connections`).
+If you need more active concurrent connections, you can increase the number of pods (`replicas`), but the total number of allowed concurrent connections should not exceed the value defined by PostgreSQL parameters: (`max_connections` - `superuser_reserved_connections`).
 
 In order to change Pgpool settings (defined in pgpool.conf), you can edit `pgpool_conf_content_to_append` section:
 
@@ -532,7 +532,7 @@ specification.replication.password | specification.extensions.replication.replic
 specification.replication.max_wal_senders | defined in subgroups section |
 specification.replication.wal_keep_segments | defined in subgroups section |
 
-In order to configure PostgreSQL replication, add to your data.yaml a block similar to the one below to core section:
+In order to configure PostgreSQL replication, add to your configuration file a block similar to the one below to core section:
 
 ```yaml
 kind: configuration/postgresql
@@ -573,7 +573,7 @@ specification:
 ```
 
 If `enabled` is set to `yes` in `replication`, then Epiphany will automatically create cluster of primary and secondary server
-with replication user with name and password specified in data.yaml. This is only possible for configurations containing two
+with replication user with name and password specified in configuration file. This is only possible for configurations containing two
 PostgreSQL servers.
 
 ## How to start working with OpenDistro for Elasticsearch
@@ -612,7 +612,7 @@ specification:
 
 Result of this configuration will be one or more independent nodes of OpenDistro.
 
-By default Kibana is deployed only for `logging` component. If you want to deploy Kibana for `opendistro_for_elasticsearch` you have to modify feature mapping. Use below configuration in your manifest.
+By default, Kibana is deployed only for `logging` component. If you want to deploy Kibana for `opendistro_for_elasticsearch` you have to modify feature mapping. Use below configuration in your manifest.
 ```yaml
 kind: configuration/feature-mapping
 title: "Feature mapping to roles"
