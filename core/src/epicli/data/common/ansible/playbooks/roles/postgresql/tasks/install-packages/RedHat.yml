@@ -21,7 +21,6 @@
         - specification.extensions.pgbouncer.enabled | default(false)
 
     - name: Install repmgr
-      when: specification.extensions.replication.enabled | default(false)
       block:
         - name: install repmgr package
           yum:
@@ -34,6 +33,9 @@
             src: "{{ repmgr_pg_bindir[ansible_os_family] }}/repmgr"
             dest: "/usr/bin/repmgr"
             state: link
+      when:
+        - specification.extensions.replication.use_repmgr is defined
+        - specification.extensions.replication.use_repmgr
 
 - name: Install pgaudit package
   yum:

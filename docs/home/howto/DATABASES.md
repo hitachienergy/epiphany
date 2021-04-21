@@ -143,6 +143,7 @@ specification:
       replication_user_password: PASSWORD_TO_CHANGE
       priviledged_user_name: your_priviledged_user_name
       priviledged_user_password: PASSWORD_TO_CHANGE
+      use_repmgr: true
       repmgr_database: repmgr
       shared_preload_libraries:
         - repmgr
@@ -497,7 +498,7 @@ DROP EXTENSION IF EXISTS pgaudit;
 
 #### Note
 
-Native PostgreSQL replication is deprecated and removed.
+This feature is deprecated and will be removed.
 Use [PostgreSQL HA replication with repmgr](#how-to-set-up-postgresql-ha-replication-with-repmgr-cluster) instead.
 
 #### Attention
@@ -566,6 +567,7 @@ specification:
       enabled: true
       replication_user_name: your_postgresql_replication_user
       replication_user_password: your_postgresql_replication_password
+      use_repmgr: false
       shared_preload_libraries: []
     ...
 ```
