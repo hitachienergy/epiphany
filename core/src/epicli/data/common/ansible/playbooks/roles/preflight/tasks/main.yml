@@ -48,7 +48,7 @@
         file: roles/postgresql/vars/main.yml
         name: postgresql
 
-    - name: Check if PostgreSQL extentions and architecture are not compatible
+    - name: Check if PostgreSQL extensions are supported for ARM architecture
       assert:
         that: not (postgresql.specification.extensions.pgbouncer.enabled | default(false) or postgresql.specification.extensions.replication.enabled | default(false))
         fail_msg: "PgBouncer and Repmgr extensions are not supported for ARM and cannot be installed"
