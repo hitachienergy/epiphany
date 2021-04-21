@@ -13,6 +13,16 @@ supported_oses:
       min: 18.04
       max: 18.04
 
+# The list of unsupported K8s applications per architecture
+unsupported_apps:
+  x86_64: []
+  aarch64:
+    - ignite-stateless
+    - istio
+    - pgbouncer
+    - pgpool
+    - rabbitmq
+
 unsupported_roles:
   - distro: Ubuntu
     arch: x86_64

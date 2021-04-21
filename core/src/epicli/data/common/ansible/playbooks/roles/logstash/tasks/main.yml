@@ -1,24 +1,33 @@
 ---
-- name: Install Logstash package
+- name: Install OS packages
   package:
     name: "{{ _packages[ansible_os_family] }}"
     state: present
   vars:
     _packages:
+      # Bundled with ElasticSearch OpenJDK 15 doesn't work correctly with Logstash
+      # as there are startup options that are deprecated in OpenJDK 15 such as UseConcMarkSweepGC
       Debian:
+        - openjdk-8-jre-headless
         - logstash-oss={{ versions[ansible_os_family] }}
       RedHat:
+        - java-1.8.0-openjdk-headless
         - logstash-oss-{{ versions[ansible_os_family] }}
   module_defaults:
     yum: { lock_timeout: "{{ yum_lock_timeout }}" }
 
+- name: Populate service facts
+  service_facts:
+
+- name: Create logstash systemd service
+  command: /usr/share/logstash/bin/system-install /etc/logstash/startup.options systemd
+  when:
+    - "'logstash.service' not in ansible_facts.services"
+
 - name: Ensure Logstash is disabled
-  # There is no systemd service for CentOS
-  # https://discuss.elastic.co/t/logstash-service-unit-not-found-centos-7/138446
-  when: ansible_distribution != 'CentOS'
   systemd:
     name: logstash
-    enabled: no
+    enabled: false
     state: stopped
 
 - name: Provide logstash-export.conf template file

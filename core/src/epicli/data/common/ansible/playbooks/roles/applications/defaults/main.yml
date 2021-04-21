@@ -2,11 +2,3 @@
 postgresql_database_port: "5432"
 default_namespace: "default"
 deployment_tmp_root_dir: "{{ vault_location }}/applications"
-unsupported_apps:
-  x86_64: []
-  aarch64:
-    - ignite-stateless
-    - istio
-    - pgbouncer
-    - pgpool
-    - rabbitmq
