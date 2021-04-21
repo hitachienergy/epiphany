@@ -40,6 +40,7 @@
     - not is_upgrade_run # only for apply
     - groups.kubernetes_master is defined
     - groups.kubernetes_master | length > 0
+    - "'applications' in roles_with_generated_vars" # there is a case with disabled applications by custom feature mapping
 
 - name: Check if PostgreSQL extentions and architecture are not compatible
   block:
