@@ -22,7 +22,7 @@
 - name: Create logstash systemd service
   command: /usr/share/logstash/bin/system-install /etc/logstash/startup.options systemd
   when:
-    - "'logstash' not in services"
+    - "'logstash.service' not in ansible_facts.services"
 
 - name: Ensure Logstash is disabled
   systemd:
