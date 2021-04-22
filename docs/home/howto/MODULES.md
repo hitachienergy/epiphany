@@ -269,7 +269,7 @@ AWS:
     applications:
       - name: ignite-stateless
         enabled: false
-        image_path: "apacheignite/ignite:2.5.0"
+        image_path: "epiphanyplatform/ignite:2.9.1"
         use_local_image_registry: false
         namespace: ignite
         service:

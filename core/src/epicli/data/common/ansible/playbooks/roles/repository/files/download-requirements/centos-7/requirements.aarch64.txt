@@ -155,6 +155,7 @@ registry:2
 hashicorp/vault-k8s:0.7.0
 vault:1.6.1
 # applications
+epiphanyplatform/ignite:2.9.1
 epiphanyplatform/keycloak:9.0.0
 rabbitmq:3.8.9
 # K8s
