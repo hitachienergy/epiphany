@@ -1,24 +1,32 @@
 require 'spec_helper'
 
-elasticsearch_admin_password = readDataYaml("configuration/logging")["specification"]["admin_password"]
-elasticsearch_api_port = 9200
-kibana_api_port = 5601
-kibanaserver_password = readDataYaml("configuration/logging")["specification"]["kibanaserver_password"]
+# Configurable passwords for ES users were introduced in v0.10.0.
+# For testing upgrades, we use default passwords for now but they should be read from filebeat.yml (remote host).
+es_logstash_user_password  = readDataYaml("configuration/logging")["specification"]["logstash_password"] || "logstash"
+es_logstash_user_is_active = readDataYaml("configuration/logging")["specification"]["logstash_user_active"]
+es_logstash_user_is_active = true if es_logstash_user_is_active.nil?
 
-describe 'Checking if Filebeat package is installed' do
+es_kibanaserver_user_password  = readDataYaml("configuration/logging")["specification"]["kibanaserver_password"] || "kibanaserver"
+es_kibanaserver_user_is_active = readDataYaml("configuration/logging")["specification"]["kibanaserver_user_active"]
+es_kibanaserver_user_is_active = true if es_kibanaserver_user_is_active.nil?
+
+es_api_port     = 9200
+kibana_api_port = 5601
+
+describe 'Check if filebeat package is installed' do
   describe package('filebeat') do
     it { should be_installed }
   end
 end
 
-describe 'Checking if Filebeat service is running' do
+describe 'Check if filebeat service is running' do
   describe service('filebeat') do
     it { should be_enabled }
     it { should be_running }
   end
 end
 
-describe 'Checking Filebeat directories and config files' do
+describe 'Check Filebeat directories and config files' do
   let(:disable_sudo) { false }
   describe file('/etc/filebeat') do
     it { should exist }
@@ -31,7 +39,7 @@ describe 'Checking Filebeat directories and config files' do
 end
 
 if hostInGroups?("kubernetes_master") || hostInGroups?("kubernetes_node")
-  describe 'Checking extra configuration for master/worker roles - setting Filebeat to be started after Docker' do
+  describe 'Check extra configuration for master/worker roles - setting Filebeat to be started after Docker' do
     describe file("/etc/systemd/system/filebeat.service.d/extra-dependencies.conf") do
       it { should exist }
       it { should be_a_file }
@@ -40,23 +48,28 @@ if hostInGroups?("kubernetes_master") || hostInGroups?("kubernetes_node")
   end
 end
 
-listInventoryHosts("logging").each do |val|
-  describe 'Checking the connection to the Elasticsearch hosts' do
-    let(:disable_sudo) { false }
-    describe command("curl -k -u admin:#{elasticsearch_admin_password} -o /dev/null -s -w '%{http_code}' https://#{val}:#{elasticsearch_api_port}") do
-      it "is expected to be equal" do
-        expect(subject.stdout.to_i).to eq 200
+if es_logstash_user_is_active
+  listInventoryHosts("logging").each do |val|
+    describe 'Check the connection to the Elasticsearch hosts' do
+      let(:disable_sudo) { false }
+      describe command("curl -k -u logstash:#{es_logstash_user_password} -o /dev/null -s -w '%{http_code}' https://#{val}:#{es_api_port}") do
+        it "is expected to be equal" do
+          expect(subject.stdout.to_i).to eq 200
+        end
       end
     end
   end
 end
 
-listInventoryHosts("kibana").each do |val|
-  describe 'Checking the connection to the Kibana endpoint' do
-    let(:disable_sudo) { false }
-    describe command("curl -u admin:#{kibanaserver_password} -o /dev/null -s -w '%{http_code}' http://#{val}:#{kibana_api_port}/app/kibana") do
-      it "is expected to be equal" do
-        expect(subject.stdout.to_i).to eq 200
+# This test is for optional (manual) command 'filebeat setup --dashboards' (loads Kibana dashboards)
+if es_kibanaserver_user_is_active
+  listInventoryHosts("kibana").each do |val|
+    describe 'Check the connection to the Kibana endpoint' do
+      let(:disable_sudo) { false }
+      describe command("curl -u kibanaserver:#{es_kibanaserver_user_password} -o /dev/null -s -w '%{http_code}' http://#{val}:#{kibana_api_port}/app/kibana") do
+        it "is expected to be equal" do
+          expect(subject.stdout.to_i).to eq 200
+        end
       end
     end
   end
