@@ -173,7 +173,7 @@ registry:2
 hashicorp/vault-k8s:0.7.0
 vault:1.6.1
 # applications
-apacheignite/ignite:2.9.1
+epiphanyplatform/ignite:2.9.1
 bitnami/pgpool:4.1.1-debian-10-r29
 brainsam/pgbouncer:1.12
 # istio
@@ -193,7 +193,7 @@ k8s.gcr.io/etcd:3.3.10
 k8s.gcr.io/pause:3.1
 coredns/coredns:1.5.0
 # Old v1 repos not compatible with Crane. Pulling from epiphanyplatform/flannel as workarround.
-#quay.io/coreos/flannel:v0.11.0-amd64 
+#quay.io/coreos/flannel:v0.11.0-amd64
 #quay.io/coreos/flannel:v0.11.0
 epiphanyplatform/flannel:v0.11.0-amd64
 epiphanyplatform/flannel:v0.11.0
@@ -226,7 +226,7 @@ k8s.gcr.io/coredns:1.6.5
 k8s.gcr.io/etcd:3.4.3-0
 k8s.gcr.io/pause:3.1
 # Old v1 repos not compatible with Crane. Pulling from epiphanyplatform/flannel as workarround.
-#quay.io/coreos/flannel:v0.11.0-amd64 
+#quay.io/coreos/flannel:v0.11.0-amd64
 #quay.io/coreos/flannel:v0.11.0
 epiphanyplatform/flannel:v0.11.0-amd64
 epiphanyplatform/flannel:v0.11.0
