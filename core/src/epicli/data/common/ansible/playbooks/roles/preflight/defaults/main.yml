@@ -17,11 +17,9 @@ supported_oses:
 unsupported_apps:
   x86_64: []
   aarch64:
-    - ignite-stateless
     - istio
     - pgbouncer
     - pgpool
-    - rabbitmq
 
 unsupported_roles:
   - distro: Ubuntu
