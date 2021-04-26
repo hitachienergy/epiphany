@@ -10,10 +10,10 @@
 
 - name: k8s | Check if upgrade from current K8s version is supported
   assert:
-    that: cluster_version is version('v1.14.6', '>=')
+    that: cluster_version is version('v1.17.7', '>=')
     fail_msg: >-
       Your Kubernetes version ({{ cluster_version }}) is not supported by this version of Epiphany which requires
-      at least version 1.14.6 (Epiphany v0.4.4). For more information, refer to the documentation.
+      at least version 1.17.7 (Epiphany v0.7.0). For more information, refer to the documentation.
     quiet: true
   when:
     - groups.kubernetes_master[0] == inventory_hostname
