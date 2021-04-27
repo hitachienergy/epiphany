@@ -22,6 +22,7 @@
 ### Updated
 
 - [#2117](https://github.com/epiphany-platform/epiphany/issues/2117) - [AMD64/ARM64] Postgres exporter updated to version 0.9.0
+- [#2116](https://github.com/epiphany-platform/epiphany/issues/2116) - Logstash updated to version 7.12.0
 
 ### Breaking changes
 

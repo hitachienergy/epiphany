@@ -52,7 +52,7 @@ iftop
 jq
 libfontconfig1
 logrotate
-logstash-oss 1:7.8.1
+logstash-oss 1:7.12.0
 netcat
 net-tools
 nfs-common
