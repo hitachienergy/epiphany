@@ -7,7 +7,7 @@ alertmanager_host = 'localhost'
 alertmanager_port = 9093
 kubelet_port = 10250
 
-describe 'Checking if Prometheus user exists' do
+describe 'Check if Prometheus user exists' do
   describe group('prometheus') do
     it { should exist }
   end
@@ -18,7 +18,7 @@ describe 'Checking if Prometheus user exists' do
   end
 end
 
-describe 'Checking Prometheus directories and files' do
+describe 'Check Prometheus directories and files' do
   let(:disable_sudo) { false }
   describe file('/var/lib/prometheus') do
     it { should exist }
@@ -29,7 +29,9 @@ describe 'Checking Prometheus directories and files' do
   describe file('/etc/prometheus') do
     it { should exist }
     it { should be_a_directory }
-    it { should be_owned_by 'prometheus' }
+    # Tests should pass also when run after 'epicli upgrade'. In v0.10.0 the owner has been changed from 'root' to 'prometheus'
+    # thus we accept both owners here as workaround but this should be unified (after adding upgrade for Prometheus).
+    it { should be_owned_by('prometheus').or be_owned_by('root') }
     it { should be_grouped_into 'prometheus' }
   end
   describe file("/etc/prometheus/prometheus.yml") do
@@ -39,21 +41,21 @@ describe 'Checking Prometheus directories and files' do
   end
 end
 
-describe 'Checking if Prometheus service is running' do
+describe 'Check if Prometheus service is running' do
   describe service('prometheus') do
     it { should be_enabled }
     it { should be_running }
   end
 end
 
-describe 'Checking if the ports are open' do
+describe 'Check if the ports are open' do
   describe port(prometheus_port) do
     let(:disable_sudo) { false }
     it { should be_listening }
   end
-end 
+end
 
-describe 'Checking Prometheus health' do
+describe 'Check Prometheus health' do
   describe command("curl -o /dev/null -s -w '%{http_code}' #{prometheus_host}:#{prometheus_port}/graph") do
     it "is expected to be equal" do
       expect(subject.stdout.to_i).to eq 200
@@ -67,7 +69,7 @@ describe 'Checking Prometheus health' do
   end
 end
 
-describe 'Checking if Prometheus is serving metrics about itself' do
+describe 'Check if Prometheus is serving metrics about itself' do
     describe command("curl -o /dev/null -s -w '%{http_code}' #{prometheus_host}:#{prometheus_port}/metrics") do
       it "is expected to be equal" do
         expect(subject.stdout.to_i).to eq 200
@@ -79,16 +81,16 @@ describe 'Checking if Prometheus is serving metrics about itself' do
   end
 
 
-describe 'Checking configuration files for Node exporter' do
+describe 'Check configuration files for Node exporter' do
     listInventoryHosts("node_exporter").each do |val|
         describe command("ls /etc/prometheus/file_sd") do
         let(:disable_sudo) { false }
         its(:stdout) { should match /node-#{val}.yml/ }
         end
     end
-end 
+end
 
-describe 'Checking connection to Node Exporter hosts' do
+describe 'Check connection to Node Exporter hosts' do
     listInventoryHosts("node_exporter").each do |val|
         let(:disable_sudo) { false }
         describe command("curl -o /dev/null -s -w '%{http_code}' $(grep -oP \"(?<=targets: \\\[\').*(?=\'\\\])\" /etc/prometheus/file_sd/node-#{val}.yml)/metrics") do
@@ -97,18 +99,18 @@ describe 'Checking connection to Node Exporter hosts' do
           end
         end
     end
-end 
+end
 
-describe 'Checking configuration files for HAProxy Exporter' do
+describe 'Check configuration files for HAProxy Exporter' do
     listInventoryHosts("haproxy_exporter").each do |val|
         describe command("ls /etc/prometheus/file_sd") do
         let(:disable_sudo) { false }
         its(:stdout) { should match /haproxy-exporter-#{val}.yml/ }
         end
     end
-end 
+end
 
-describe 'Checking connection to HAProxy Exporter hosts' do
+describe 'Check connection to HAProxy Exporter hosts' do
     listInventoryHosts("haproxy_exporter").each do |val|
         let(:disable_sudo) { false }
         describe command("curl -o /dev/null -s -w '%{http_code}' $(grep -oP \"(?<=targets: \\\[\').*(?=\'\\\])\" /etc/prometheus/file_sd/haproxy-exporter-#{val}.yml)/metrics") do
@@ -117,9 +119,9 @@ describe 'Checking connection to HAProxy Exporter hosts' do
           end
         end
     end
-end 
+end
 
-describe 'Checking configuration files for JMX Exporter' do
+describe 'Check configuration files for JMX Exporter' do
     listInventoryHosts("jmx_exporter").each do |val|
         describe command("ls /etc/prometheus/file_sd") do
         let(:disable_sudo) { false }
@@ -127,9 +129,9 @@ describe 'Checking configuration files for JMX Exporter' do
         its(:stdout) { should match /zookeeper-jmx-#{val}.yml/ }
         end
     end
-end 
+end
 
-describe 'Checking connection to JMX Exporter hosts' do
+describe 'Check connection to JMX Exporter hosts' do
     listInventoryHosts("jmx_exporter").each do |val|
         let(:disable_sudo) { false }
         describe command("curl -o /dev/null -s -w '%{http_code}' $(grep -oP \"(?<=targets: \\\[\').*(?=\'\\\])\" /etc/prometheus/file_sd/kafka-jmx-#{val}.yml)/metrics") do
@@ -143,18 +145,18 @@ describe 'Checking connection to JMX Exporter hosts' do
         end
       end
     end
-end 
+end
 
-describe 'Checking configuration files for Kafka Exporter hosts' do
+describe 'Check configuration files for Kafka Exporter hosts' do
     listInventoryHosts("kafka_exporter").each do |val|
         describe command("ls /etc/prometheus/file_sd") do
         let(:disable_sudo) { false }
         its(:stdout) { should match /kafka-exporter-#{val}.yml/ }
         end
     end
-end 
+end
 
-describe 'Checking connection to Kafka Exporter hosts' do
+describe 'Check connection to Kafka Exporter hosts' do
     listInventoryHosts("kafka_exporter").each do |val|
         let(:disable_sudo) { false }
         describe command("curl -o /dev/null -s -w '%{http_code}' $(grep -oP \"(?<=targets: \\\[\').*(?=\'\\\])\" /etc/prometheus/file_sd/kafka-exporter-#{val}.yml)/metrics") do
@@ -163,9 +165,9 @@ describe 'Checking connection to Kafka Exporter hosts' do
           end
         end
     end
-end 
+end
 
-describe 'Checking connection to Kubernetes API server' do
+describe 'Check connection to Kubernetes API server' do
     listInventoryHosts("kubernetes_master").each do |val|
         let(:disable_sudo) { false }
         describe command("curl -o /dev/null -s -w '%{http_code}' -k -H \"Authorization: Bearer $(grep -A 6 kubernetes-apiservers /etc/prometheus/prometheus.yml \
@@ -175,9 +177,9 @@ describe 'Checking connection to Kubernetes API server' do
           end
         end
     end
-end 
+end
 
-describe 'Checking connection to Kubernetes cAdvisor' do
+describe 'Check connection to Kubernetes cAdvisor' do
     let(:disable_sudo) { false }
     listInventoryHosts("kubernetes_master").each do |val_m|
         describe command("curl -o /dev/null -s -w '%{http_code}' -k -H \"Authorization: Bearer $(grep -A 6 kubernetes-cadvisor /etc/prometheus/prometheus.yml \
@@ -197,7 +199,7 @@ describe 'Checking connection to Kubernetes cAdvisor' do
     end
 end
 
-describe 'Checking connection to Kubernetes nodes' do
+describe 'Check connection to Kubernetes nodes' do
     let(:disable_sudo) { false }
     listInventoryHosts("kubernetes_master").each do |val_m|
         describe command("curl -o /dev/null -s -w '%{http_code}' -k -H \"Authorization: Bearer $(grep -A 6 kubernetes-nodes /etc/prometheus/prometheus.yml \
@@ -222,7 +224,7 @@ end
 
 # if readDataYaml["monitoring"]["alerts"]["enable"] == true
 
-#   describe 'Checking Alertmanager directories and files' do
+#   describe 'Check Alertmanager directories and files' do
 #     let(:disable_sudo) { false }
 #     describe file('/var/lib/prometheus/alertmanager') do
 #       it { should exist }
@@ -243,7 +245,7 @@ end
 #     end
 #   end
 
-#   describe 'Checking if Alertmanager service is enabled' do
+#   describe 'Check if Alertmanager service is enabled' do
 #     describe service('alertmanager') do
 #       it { should be_enabled }
 #     end
@@ -257,7 +259,7 @@ end
 #       end
 #     end 
 
-#   describe 'Checking if it is possible to create a rule checking if node is up' do
+#   describe 'Check if it is possible to create a rule checking if node is up' do
 #     describe command("cp -p /etc/prometheus/rules/UpDown.rules /etc/prometheus/rules/TEST_RULE.rules && sed -i 's/UpDown/TEST_RULE/g; s/down/up/g; s/== 0/== 1/g; \
 #     s/10s/1s/g' /etc/prometheus/rules/TEST_RULE.rules && systemctl restart prometheus") do
 #         let(:disable_sudo) { false }
@@ -283,20 +285,20 @@ end
 
 #   if readDataYaml["monitoring"]["alerts"]["handlers"]["mail"]["enable"] == true
 
-#     describe 'Checking if the ports are open' do
+#     describe 'Check if the ports are open' do
 #       describe port(alertmanager_port) do
 #         let(:disable_sudo) { false }
 #         it { should be_listening }
 #       end
 #     end 
 
-#     describe 'Checking if Alertmanager service is running' do
+#     describe 'Check if Alertmanager service is running' do
 #       describe service('alertmanager') do
 #         it { should be_running }
 #       end
 #     end
 
-#     describe 'Checking Alertmanager health' do
+#     describe 'Check Alertmanager health' do
 #       describe command("curl -o /dev/null -s -w '%{http_code}' #{alertmanager_host}:#{alertmanager_port}") do
 #         it "is expected to be equal" do
 #           expect(subject.stdout.to_i).to eq 200
@@ -313,7 +315,7 @@ end
 #       end
 #     end
 
-#     describe 'Checking if it is possible to send an alert' do
+#     describe 'Check if it is possible to send an alert' do
 #       describe command("curl -XPOST -d '[{\"labels\":{\"alertname\":\"TEST ALERT\", \"severity\":\"critical\"}}]' #{alertmanager_host}:#{alertmanager_port}/api/v1/alerts") do
 #         its(:stdout_as_json) { should include('status' => 'success') }
 #       end
