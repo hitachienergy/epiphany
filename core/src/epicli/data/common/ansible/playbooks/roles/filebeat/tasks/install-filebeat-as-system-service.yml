@@ -8,9 +8,9 @@
   vars:
     _packages:
       Debian:
-        - filebeat={{ filebeat_version }}
+        - filebeat={{ specification.filebeat_version }}
       RedHat:
-        - filebeat-{{ filebeat_version }}
+        - filebeat-{{ specification.filebeat_version }}
   register: install_filebeat_package
   module_defaults:
     yum: { lock_timeout: "{{ yum_lock_timeout }}" }
