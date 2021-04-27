@@ -26,7 +26,7 @@
   wait_for:
     port: "{{ es_transport_port }}"
     host: "{{ es_host if (es_host is not regex('^_.+_$')) else '0.0.0.0' }}"  # 0.0.0.0 means any IP
-  when: elasticsearch_state.changed == true
+  when: elasticsearch_state.changed
 
 # This block requires elasticsearch service to be running
 - name: Get host address when special value is used  # e.g. '_site_'
