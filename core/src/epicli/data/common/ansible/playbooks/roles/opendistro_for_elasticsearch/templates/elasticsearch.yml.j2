@@ -14,13 +14,13 @@
 #
 # Use a descriptive name for your cluster:
 #
-cluster.name: {{specification.cluster_name}}
+cluster.name: {{ specification.cluster_name }}
 #
 # ------------------------------------ Node ------------------------------------
 #
 # Use a descriptive name for the node:
 #
-node.name: {{ansible_hostname}}
+node.name: {{ ansible_hostname }}
 #
 # Add custom attributes to the node:
 #
@@ -30,15 +30,15 @@ node.name: {{ansible_hostname}}
 #
 # Path to directory where to store the data (separate multiple locations by comma):
 #
-path.data: {{specification.paths.data}}
+path.data: {{ specification.paths.data }}
 #
 # Path to directory where the shared storage should be mounted:
 #
-path.repo: {{specification.paths.repo}}
+path.repo: {{ specification.paths.repo }}
 #
 # Path to log files:
 #
-path.logs: {{specification.paths.logs}}
+path.logs: {{ specification.paths.logs }}
 #
 # ----------------------------------- Memory -----------------------------------
 #
@@ -56,11 +56,15 @@ path.logs: {{specification.paths.logs}}
 #
 # Set the bind address to a specific IP (IPv4 or IPv6):
 #
-network.host: {{ansible_hostname}}
+network.host: {{ ansible_hostname }}
 #
 # Set a custom port for HTTP:
 #
-#http.port: 9200
+{# defaults to range but we want static port #}
+http.port: {{ ports.http }}
+#
+{# defaults to range but we want static port #}
+transport.port: {{ ports.transport }}
 #
 # For more information, consult the network module documentation.
 #

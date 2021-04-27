@@ -27,7 +27,7 @@
       - iftop
       - jq
       - logrotate
-      - net-tools
+      - net-tools  # required by Ansible (module listen_ports_facts)
       - netcat
       - openssl
       - python-setuptools

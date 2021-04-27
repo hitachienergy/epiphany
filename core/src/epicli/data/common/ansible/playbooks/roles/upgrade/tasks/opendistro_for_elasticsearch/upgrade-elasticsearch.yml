@@ -13,27 +13,32 @@
     state: started
   register: elasticsearch_state
 
-# TODO: Get host from /etc/elasticsearch/elasticsearch.yml
+# Sets 'existing_config' fact
+- include_tasks: utils/get-config-from-files.yml
+
+- name: ODFE | Set common facts
+  set_fact:
+    es_host:           "{{ existing_config.main['network.host']   | default('_local_') }}"
+    es_http_port:      "{{ existing_config.main['http.port']      | default(ports.http) }}"
+    es_transport_port: "{{ existing_config.main['transport.port'] | default(ports.transport) }}"
+
 - name: ODFE | Wait for elasticsearch service to start up
-  when: elasticsearch_state.changed == true
   wait_for:
     port: "{{ es_transport_port }}"
-    host: "{{ ansible_default_ipv4.address | default(ansible_all_ipv4_addresses[0]) }}"
-    delay: 5
+    host: "{{ es_host if (es_host is not regex('^_.+_$')) else '0.0.0.0' }}"  # 0.0.0.0 means any IP
+  when: elasticsearch_state.changed
 
-- name: ODFE | Get Xmx value from /etc/elasticsearch/jvm.options
-  command: grep -oP '(?<=^-Xmx)\d+[kKmMgG]?' /etc/elasticsearch/jvm.options
-  register: grep_es_xmx
-  changed_when: false
+# This block requires elasticsearch service to be running
+- name: Get host address when special value is used  # e.g. '_site_'
+  when: es_host is regex('^_.+_$')
+  block:
+    - name: Gather facts on listening ports
+      community.general.listen_ports_facts:
 
-- name: ODFE | Load existing elasticsearch.yml
-  slurp:
-    src: /etc/elasticsearch/elasticsearch.yml
-  register: _existing_es_config_file
-
-- name: ODFE | Decode and parse elasticsearch.yml
-  set_fact:
-    _existing_es_config: "{{ _existing_es_config_file.content | b64decode | from_yaml }}"
+    - name: Get host address based on transport port
+      set_fact:
+        es_host: "{{ ansible_facts.tcp_listen | selectattr('port', '==', es_transport_port|int)
+                                              | map(attribute='address') | reject('match', '::') | first }}"
 
 # --- We need admin certificate for passwordless access to API ---
 
@@ -44,7 +49,7 @@
 
 - name: Get information on root-ca certificate
   community.crypto.x509_certificate_info:
-    path: /etc/elasticsearch/{{ _existing_es_config['opendistro_security.ssl.transport.pemtrustedcas_filepath'] }}
+    path: /etc/elasticsearch/{{ existing_config.main['opendistro_security.ssl.transport.pemtrustedcas_filepath'] }}
   register: _root_ca_info
 
 - name: ODFE | Check if demo or epiphany certificates are in use
@@ -55,7 +60,7 @@
 - name: ODFE | Set API endpoint
   set_fact:
     elasticsearch_endpoint: >-
-      https://{{ ansible_default_ipv4.address | default(ansible_all_ipv4_addresses[0]) }}:{{ es_http_port }}
+      https://{{ es_host }}:{{ es_http_port }}
   vars:
     uri_task_template: &uri
       body_format: json
@@ -161,32 +166,31 @@
     name: opendistro_for_elasticsearch
     tasks_from: configure-es.yml
   vars:
-    jvm_options:
-      xmx: "{{ grep_es_xmx.stdout_lines | last }}"
+    jvm_options: "{{ existing_config.jvm_options }}"
     specification:
-      cluster_name: "{{ _existing_es_config['cluster.name'] }}"
-      clustered: "{{ 'True' if _existing_es_config['discovery.seed_hosts'] | length > 1 else 'False' }}"
+      cluster_name: "{{ existing_config.main['cluster.name'] }}"
+      clustered: "{{ 'True' if existing_config.main['discovery.seed_hosts'] | length > 1 else 'False' }}"
       paths:
-        data: "{{ _existing_es_config['path.data'] }}"
-        repo: "{{ _existing_es_config['path.repo'] | default('/var/lib/elasticsearch-snapshots') }}"  # absent in Epiphany v0.6 thus we use default
-        logs: "{{ _existing_es_config['path.logs'] }}"
+        data: "{{ existing_config.main['path.data'] }}"
+        repo: "{{ existing_config.main['path.repo'] | default('/var/lib/elasticsearch-snapshots') }}"  # absent in Epiphany v0.6 thus we use default
+        logs: "{{ existing_config.main['path.logs'] }}"
       opendistro_security:
         ssl:
           transport:
-            enforce_hostname_verification: "{{ _existing_es_config['opendistro_security.ssl.transport.enforce_hostname_verification'] }}"
+            enforce_hostname_verification: "{{ existing_config.main['opendistro_security.ssl.transport.enforce_hostname_verification'] }}"
     existing_es_config:
       certs:
         admin_dn: >-
-          {{ _existing_es_config['opendistro_security.authcz.admin_dn'] | list }}
+          {{ existing_config.main['opendistro_security.authcz.admin_dn'] | list }}
         node:
           cert:
-            filename: "{{ _existing_es_config['opendistro_security.ssl.transport.pemcert_filepath'] }}"
+            filename: "{{ existing_config.main['opendistro_security.ssl.transport.pemcert_filepath'] }}"
           key:
-            filename: "{{ _existing_es_config['opendistro_security.ssl.transport.pemkey_filepath'] }}"
-        nodes_dn: "{{ _existing_es_config['opendistro_security.nodes_dn'] | default([]) }}"
+            filename: "{{ existing_config.main['opendistro_security.ssl.transport.pemkey_filepath'] }}"
+        nodes_dn: "{{ existing_config.main['opendistro_security.nodes_dn'] | default([]) }}"
         root_ca:
           cert:
-            filename: "{{ _existing_es_config['opendistro_security.ssl.transport.pemtrustedcas_filepath'] }}"
+            filename: "{{ existing_config.main['opendistro_security.ssl.transport.pemtrustedcas_filepath'] }}"
 
 - name: ODFE | Include upgrade plugins tasks
   include_tasks: opendistro_for_elasticsearch/upgrade-plugins.yml
@@ -201,13 +205,12 @@
 - name: ODFE | Wait for elasticsearch node to come back up
   wait_for:
     port: "{{ es_transport_port }}"
-    host: "{{ ansible_default_ipv4.address | default(ansible_all_ipv4_addresses[0]) }}"
-    delay: 5
+    host: "{{ es_host }}"
 
 - name: ODFE | Wait for elasticsearch http to come back up
   wait_for:
     port: "{{ es_http_port }}"
-    host: "{{ ansible_default_ipv4.address | default(ansible_all_ipv4_addresses[0]) }}"
+    host: "{{ es_host }}"
 
 - name: Post upgrade tasks
   module_defaults:

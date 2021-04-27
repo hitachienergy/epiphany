@@ -1,6 +1,6 @@
 ---
-host_ip: "{{ ansible_default_ipv4.address | default(ansible_all_ipv4_addresses[0]) }}"
-# Required and used for upgrade Open Distro for Elasticsearch cluster:
+# === Used in apply and upgrade modes ===
+
 versions:
   RedHat:
     elasticsearch_oss: "7.10.2"
@@ -45,6 +45,12 @@ certificates:
           CN: "{{ ansible_nodename }}"
       key:
         filename: epiphany-node-{{ ansible_nodename }}-key.pem
+ports:
+  http:      9200  # defaults to range but we want static port
+  transport: 9300  # defaults to range but we want static port
+
+# === Used in upgrade mode ===
+
 upgrade_config:
   custom_admin_certificate:
     cert_path: /etc/elasticsearch/custom-admin.pem
