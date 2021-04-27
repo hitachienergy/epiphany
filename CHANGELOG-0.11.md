@@ -8,8 +8,6 @@
 
 ### Fixed
 
-- [#2098](https://github.com/epiphany-platform/epiphany/issues/2098) - The default values can't be changed in cluster config file for virtual machine
-
 ### Updated
 
 ### Breaking changes
