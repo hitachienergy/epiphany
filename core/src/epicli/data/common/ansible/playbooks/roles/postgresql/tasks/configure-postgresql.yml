@@ -80,17 +80,6 @@
     backup: yes
   register: change_postgresql_conf
 
-# Placed here to avoid errors in log due to nonexistent directory
-- name: Create directory for archiving WAL files
-  file:
-    path: /dbbackup/{{ inventory_hostname }}/backup/
-    state: directory
-    owner: postgres
-    group: postgres
-  when:
-    - specification.extensions.replication.enabled is defined
-    - specification.extensions.replication.enabled | bool
-
 - name: Restart postgresql service
   systemd:
     name: "{{ pg_service_name[ansible_os_family] }}"
@@ -121,26 +110,30 @@
         mode: 0644
 
 - name: Set up replication
-  include_tasks: replication-{{ ansible_os_family }}.yml
   when:
-    - specification.extensions.replication.enabled is defined
-    - specification.extensions.replication.enabled
-    - specification.extensions.replication.use_repmgr is defined
-    - not specification.extensions.replication.use_repmgr
+    - ansible_architecture == "x86_64"
+    - specification.extensions.replication.enabled | default(false)
+  block:
+    # Placed here to avoid errors in log due to nonexistent directory
+    - name: Create directory for archiving WAL files
+      file:
+        path: /dbbackup/{{ inventory_hostname }}/backup/
+        state: directory
+        owner: postgres
+        group: postgres
 
-- name: Set up replication with repmgr
-  include_tasks: replication-repmgr-{{ ansible_os_family }}.yml
-  when:
-    - specification.extensions.replication.enabled is defined
-    - specification.extensions.replication.enabled
-    - specification.extensions.replication.use_repmgr is defined
-    - specification.extensions.replication.use_repmgr
+    - name: Set up replication
+      include_tasks: replication-{{ ansible_os_family }}.yml
+
+    - name: Set up replication with repmgr
+      include_tasks: replication-repmgr-{{ ansible_os_family }}.yml
+
 
 - name: Include PgBouncer configuration tasks
   include_tasks: additional-components/configure-pgbouncer.yml
   when:
-    - specification.extensions.pgbouncer.enabled is defined
-    - specification.extensions.pgbouncer.enabled
+    - ansible_architecture == "x86_64"
+    - specification.extensions.pgbouncer.enabled | default(false)
     - groups['postgresql'][0] == inventory_hostname
 
 - name: Set up Pgpool if enabled

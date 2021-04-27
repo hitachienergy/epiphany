@@ -54,7 +54,7 @@ download_image() {
 		echo "Downloading image: $1"
 		echo "Crane command is: ${crane_bin} pull --insecure --format=legacy ${image_name} ${dst_image}"
 		# use temporary file for downloading to be safe from sudden interruptions (network, ctrl+c)
-		run_cmd_with_retries $retries ${crane_bin} pull --insecure --format=legacy ${image_name} ${tmp_file} && chmod 644 ${tmp_file} && mv ${tmp_file} ${dst_image}
+		run_cmd_with_retries $retries ${crane_bin} pull --insecure --platform=${docker_platform} --format=legacy ${image_name} ${tmp_file} && chmod 644 ${tmp_file} && mv ${tmp_file} ${dst_image}
 	fi
 }
 
@@ -82,6 +82,11 @@ download_file() {
 	# --no-use-server-timestamps - we don't use --timestamping and we need to expire files somehow 
 	# --continue - don't download the same file multiple times, gracefully skip if file is fully downloaded	
 	run_cmd_with_retries $retries wget --no-use-server-timestamps --continue --show-progress --prefer-family=IPv4 --directory-prefix="${dest_dir}" "${file_url}"
+}
+
+# to download everything, add "--recurse" flag but then you will get much more packages (e.g. 596 vs 319)
+deplist_cmd() {
+    apt-cache depends --no-recommends --no-suggests --no-conflicts --no-breaks --no-replaces --no-enhances --no-pre-depends $1
 }
 
 get_shell_escaped_array() {

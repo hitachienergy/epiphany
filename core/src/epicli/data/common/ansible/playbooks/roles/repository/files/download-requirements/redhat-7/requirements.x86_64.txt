@@ -1,223 +1,167 @@
+# Put this file in the same directory as download script
+
+[packages-repo-prereqs]
+apr # for httpd
+apr-util # for httpd
+createrepo
+deltarpm # for createrepo
+httpd
+httpd-tools # for httpd
+mailcap # for httpd
+mod_ssl # for httpd
+python-chardet # for createrepo
+python-deltarpm # for createrepo
+python-kitchen # for createrepo
+redhat-logos # for httpd
+yum-utils
+
 [crane]
 https://github.com/google/go-containerregistry/releases/download/v0.4.1/go-containerregistry_Linux_x86_64.tar.gz
 
 [packages]
-adduser
-apt-transport-https
-auditd
+audit # for docker-ce
 bash-completion
-build-essential
+c-ares # for pgbouncer
 ca-certificates
 cifs-utils
+conntrack-tools # for kubelet
 containerd.io
-cri-tools 1.13.0
+container-selinux
+cri-tools-1.13.0
 curl
-docker-ce 5:19.03.14
-docker-ce-cli 5:19.03.14
+dejavu-sans-fonts # for grafana
+docker-ce-19.03.14
+docker-ce-cli-19.03.14
 ebtables
-elasticsearch-curator 5.8.3
-elasticsearch-oss 7.10.2 # for opendistroforelasticsearch & logging roles
-
-# Erlang packages must be compatible with RabbitMQ version.
-# Metapackages such as erlang and erlang-nox must only be used
-# with apt version pinning. They do not pin their dependency versions.
-# List based on: https://www.rabbitmq.com/install-debian.html#installing-erlang-package
-erlang-asn1 1:23.1.5
-erlang-base 1:23.1.5
-erlang-crypto 1:23.1.5
-erlang-eldap 1:23.1.5
-erlang-ftp 1:23.1.5
-erlang-inets 1:23.1.5
-erlang-mnesia 1:23.1.5
-erlang-os-mon 1:23.1.5
-erlang-parsetools 1:23.1.5
-erlang-public-key 1:23.1.5
-erlang-runtime-tools 1:23.1.5
-erlang-snmp 1:23.1.5
-erlang-ssl 1:23.1.5
-erlang-syntax-tools 1:23.1.5
-erlang-tftp 1:23.1.5
-erlang-tools 1:23.1.5
-erlang-xmerl 1:23.1.5
-
+elasticsearch-curator-5.8.3
+elasticsearch-oss-7.10.2 # for opendistroforelasticsearch & logging roles
 ethtool
-filebeat 7.9.2
+filebeat-7.9.2
 firewalld
+fontconfig # for grafana
 fping
-gnupg2
-grafana 7.3.5
-haproxy
+gnutls # for cifs-utils
+grafana-7.3.5
+gssproxy # for nfs-utils
 htop
 iftop
+ipset # for firewalld
+java-1.8.0-openjdk-headless
+javapackages-tools # for java-1.8.0-openjdk-headless
 jq
-libfontconfig1
+libini_config # for nfs-utils
+libselinux-python
+libsemanage-python
+libX11 # for grafana
+libxcb # for grafana
+libXcursor # for grafana
+libXt # for grafana
 logrotate
-logstash-oss 1:7.8.1
-netcat
+logstash-oss-7.8.1
 net-tools
-nfs-common
-opendistro-alerting 1.13.1
-opendistro-index-management 1.13.1
-opendistro-job-scheduler 1.13.0
-opendistro-performance-analyzer 1.13.0
-opendistro-security 1.13.1
-opendistro-sql 1.13.0
-opendistroforelasticsearch-kibana 1.13.1
-openjdk-8-jre-headless
+nfs-utils
+nmap-ncat
+# Open Distro for Elasticsearch plugins are installed individually to not download them twice in different versions (as dependencies of opendistroforelasticsearch package)
+opendistro-alerting-1.13.1*
+opendistro-index-management-1.13.1*
+opendistro-job-scheduler-1.13.0*
+opendistro-performance-analyzer-1.13.0*
+opendistro-security-1.13.1*
+opendistro-sql-1.13.0*
+opendistroforelasticsearch-kibana-1.13.1*
 openssl
-postgresql-10
-python-pip
+perl # for vim
+perl-Getopt-Long # for vim
+perl-libs # for vim
+perl-Pod-Perldoc # for vim
+perl-Pod-Simple # for vim
+perl-Pod-Usage # for vim
+pgaudit12_10
+pgbouncer-1.10.*
+policycoreutils-python # for container-selinux
+pyldb # for cifs-utils
+python-cffi # for python2-cryptography
+python-firewall # for firewalld
+python-kitchen # for yum-utils
+python-lxml # for java-1.8.0-openjdk-headless
 python-psycopg2
-python-selinux
+python-pycparser # for python2-cryptography
 python-setuptools
-rabbitmq-server 3.8.9
-smbclient
+python-slip-dbus # for firewalld
+python2-cryptography # for Ansible (certificate modules)
+quota # for nfs-utils
+rabbitmq-server-3.8.9
+rh-haproxy18
+rh-haproxy18-haproxy-syspaths
+postgresql10-server
+repmgr10-4.0.6
+samba-client
+samba-client-libs # for samba-client
 samba-common
-smbclient
-software-properties-common
-sshpass
+samba-libs # for cifs-utils
 sysstat
 tar
 telnet
 tmux
+urw-base35-fonts # for grafana
 unzip
-vim
+vim-common # for vim
+vim-enhanced
+wget
+xorg-x11-font-utils # for grafana
+xorg-x11-server-utils # for grafana
+yum-plugin-versionlock
+yum-utils
 
 # to make remote-to-remote "synchronize" work in ansible
 rsync
 
-# for curl, issue #869
-libcurl4
-
-# for openjdk-8-jre-headless
-libnss3
-libcups2
-libavahi-client3
-libavahi-common3
-libjpeg8
-libfontconfig1
-libxtst6
-fontconfig-config
-
-python-apt
-
-# for python-selinux
-python
-python2.7
-python-minimal
-python2.7-minimal
-
-# for build-essential
-gcc
-gcc-7
-g++
-g++-7
-dpkg-dev
-libc6-dev
-cpp
-cpp-7
-libgcc-7-dev
-binutils
-gcc-8-base
-
-# for rabbit/erlang
-libodbc1
-
-# for air-gap repo installation
-apache2
-apache2-bin
-apache2-utils
-
-# for jq
-libjq1
-
-# for gnupg2
-gnupg
-gpg
-gpg-agent
-
-# for azure
-smbclient
-samba-libs
-libsmbclient
-
-# for postgres
-postgresql-client-10
-postgresql-10-pgaudit
-postgresql-10-repmgr 4.0.6
-postgresql-common
-pgbouncer 1.10.*
-
-# for firewalld
-ipset
-libipset3
-python3-decorator
-python3-selinux
-python3-slip
-python3-slip-dbus
-# for ansible module postgresql_query in role postgres-exporter
-libpq5
-python3-psycopg2
-python3-jmespath
-
-# for vim, issue #869
-libpython3.6
-
-# for Ansible (certificate modules)
-python-cryptography
-
-# for python-cryptography
-python-asn1crypto
-python-cffi-backend
-python-enum34
-python-idna
-python-ipaddress
-python-six
-
 # K8s upgrade v1.14 (the oldest version supported by Epiphany, Epiphany >= v0.4.4 && < v0.6.0)
-kubeadm 1.14.6
-kubectl 1.14.6
-kubelet 1.14.6
+kubeadm-1.14.6
+kubectl-1.14.6
+kubelet-1.14.6
 # K8s upgrade v1.15 (transitional version)
-kubeadm 1.15.10
-kubectl 1.15.10
-kubelet 1.15.10
+kubeadm-1.15.10
+kubectl-1.15.10
+kubelet-1.15.10
 # K8s upgrade v1.16 (transitional version)
-kubeadm 1.16.7
-kubectl 1.16.7
-kubelet 1.16.7
+kubeadm-1.16.7
+kubectl-1.16.7
+kubelet-1.16.7
 # K8s upgrade v1.17.4 (Epiphany >= v0.6.0 && < v0.7.0)
-kubeadm 1.17.4
-kubectl 1.17.4
-kubelet 1.17.4
+kubeadm-1.17.4
+kubectl-1.17.4
+kubelet-1.17.4
 # K8s upgrade v1.17.7 (Epiphany v0.7.0), see https://github.com/kubernetes/release/pull/1375
-kubeadm 1.17.7-00
-kubectl 1.17.7-00
-kubelet 1.17.7-00
+kubeadm-1.17.7-0
+kubectl-1.17.7-0
+kubelet-1.17.7-0
 # K8s upgrade v1.18.6 (Epiphany >= v0.7.1)
-kubeadm 1.18.6
-kubectl 1.18.6
-kubelet 1.18.6
+kubeadm-1.18.6
+kubectl-1.18.6
+kubelet-1.18.6
 
 # Kubernetes Generic
-kubernetes-cni 0.7.5-00
+kubernetes-cni-0.7.5-0
 # kubernetes-cni-0.8.6-0 since K8s v1.18.6
-kubernetes-cni 0.8.6-00
+kubernetes-cni-0.8.6-0
 
 [files]
+# Github repository for erlang rpm is used since packagecloud repository is limited to a certain number of versions and erlang package from erlang-solutions repository is much more complex and bigger
+https://github.com/rabbitmq/erlang-rpm/releases/download/v23.1.5/erlang-23.1.5-1.el7.x86_64.rpm
+https://github.com/prometheus/haproxy_exporter/releases/download/v0.10.0/haproxy_exporter-0.10.0.linux-amd64.tar.gz
 https://repo1.maven.org/maven2/io/prometheus/jmx/jmx_prometheus_javaagent/0.14.0/jmx_prometheus_javaagent-0.14.0.jar
 https://archive.apache.org/dist/kafka/2.6.0/kafka_2.12-2.6.0.tgz
-https://archive.apache.org/dist/zookeeper/zookeeper-3.5.8/apache-zookeeper-3.5.8-bin.tar.gz
 https://github.com/danielqsj/kafka_exporter/releases/download/v1.2.0/kafka_exporter-1.2.0.linux-amd64.tar.gz
-https://github.com/prometheus/alertmanager/releases/download/v0.17.0/alertmanager-0.17.0.linux-amd64.tar.gz
-https://github.com/prometheus/haproxy_exporter/releases/download/v0.10.0/haproxy_exporter-0.10.0.linux-amd64.tar.gz
 https://github.com/prometheus/node_exporter/releases/download/v1.0.1/node_exporter-1.0.1.linux-amd64.tar.gz
 https://github.com/prometheus/prometheus/releases/download/v2.10.0/prometheus-2.10.0.linux-amd64.tar.gz
+https://github.com/prometheus/alertmanager/releases/download/v0.17.0/alertmanager-0.17.0.linux-amd64.tar.gz
+https://archive.apache.org/dist/zookeeper/zookeeper-3.5.8/apache-zookeeper-3.5.8-bin.tar.gz
 https://archive.apache.org/dist/ignite/2.9.1/apache-ignite-2.9.1-bin.zip
 https://releases.hashicorp.com/vault/1.6.1/vault_1.6.1_linux_amd64.zip
 https://get.helm.sh/helm-v3.2.0-linux-amd64.tar.gz
 https://github.com/hashicorp/vault-helm/archive/v0.9.0.tar.gz
-https://github.com/wrouesnel/postgres_exporter/releases/download/v0.8.0/postgres_exporter_v0.8.0_linux-amd64.tar.gz
+https://github.com/prometheus-community/postgres_exporter/releases/download/v0.9.0/postgres_exporter-0.9.0.linux-amd64.tar.gz
 https://charts.bitnami.com/bitnami/node-exporter-1.1.2.tgz
 https://helm.elastic.co/helm/filebeat/filebeat-7.9.2.tgz
 
@@ -236,7 +180,7 @@ brainsam/pgbouncer:1.12
 istio/pilot:1.8.1
 istio/proxyv2:1.8.1
 istio/operator:1.8.1
-jboss/keycloak:9.0.0
+epiphanyplatform/keycloak:9.0.0
 rabbitmq:3.8.9
 # K8s upgrade
 ## v1.14.6

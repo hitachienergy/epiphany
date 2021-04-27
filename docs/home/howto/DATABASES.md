@@ -7,6 +7,14 @@ Collections, but are supported by PostgreSQL installed from official PostgreSQL 
 
 ### PostgreSQL servers
 
+---
+**NOTE**
+
+PgBouncer and replication (Repmgr) extensions are not supported on ARM and these components will not be installed
+even if enabled in configuration.
+
+---
+
 0). Check if package rh-postgresql10-postgresql-server is installed. You can check this with command:
 
 ```bash
@@ -209,7 +217,15 @@ PostgreSQL: resources management | https://www.postgresql.org/docs/10/runtime-co
 
 ### Installing PgBouncer and Pgpool
 
-PgBouncer and Pgpool are provided as K8s deployments. By default they are not installed. To deploy them you need to add "configuration/applications" document to your configuration yaml file, similar to the example below (`enabled` flags must be set as `true`):
+---
+**NOTE**
+
+PgBouncer and Pgpool Docker images are not supported for ARM.
+If these applications are enabled in configuration, they will not be deployed on ARM.
+
+---
+
+PgBouncer and Pgpool are provided as K8s deployments. By default, they are not installed. To deploy them you need to add "configuration/applications" document to your configuration yaml file, similar to the example below (`enabled` flags must be set as `true`):
 
 ```yaml
 ---
