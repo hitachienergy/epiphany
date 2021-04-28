@@ -14,7 +14,7 @@ def merge_with_defaults(provider, feature_kind, config_selector, docs):
         default_doc = select_first(files, lambda x: x.name == 'default')
         if default_config is not None:
             merge_objdict(default_doc, default_config)
-        default_config['version'] = VERSION
-        merge_objdict(default_config, config_spec)
-        return default_config
+        merge_objdict(default_doc, config_spec)
+        default_doc['version'] = VERSION
+        return default_doc
     return config_spec
