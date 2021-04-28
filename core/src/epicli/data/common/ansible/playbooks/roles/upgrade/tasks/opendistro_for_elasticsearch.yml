@@ -31,10 +31,6 @@
 
 - name: Open Distro for Elasticsearch | Upgrade Elasticsearch and ODFE plugins
   include_tasks: opendistro_for_elasticsearch/upgrade-elasticsearch.yml
-  vars:
-    # TODO: Get ports from /etc/elasticsearch/elasticsearch.yml
-    es_http_port: 9200
-    es_transport_port: 9300
   when:  versions[ansible_os_family].elasticsearch_oss is version(ansible_facts.packages['elasticsearch-oss'][0].version, '>')
      or (versions[ansible_os_family].elasticsearch_oss is version(ansible_facts.packages['elasticsearch-oss'][0].version, '==')
          and stat_upgrade_state_file.stat.exists)
