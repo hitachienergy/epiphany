@@ -48,14 +48,12 @@ unsupported_roles:
       - haproxy_exporter
       - applications
       - ignite
-
   - distro: CentOS
     arch: x86_64
     roles: []  # all supported
   - distro: CentOS
     arch: aarch64
-    roles:
-      - vault
+    roles: []
   - distro: RedHat
     arch: x86_64
     roles: []  # all supported
