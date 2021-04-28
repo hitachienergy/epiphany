@@ -1,17 +1,20 @@
 require 'spec_helper'
 
-elasticsearch_admin_password = readDataYaml("configuration/logging")["specification"]["admin_password"]
-elasticsearch_communication_port = 9300
-elasticsearch_rest_api_port = 9200
+# Configurable passwords for ES users were introduced in v0.10.0.
+# For testing upgrades, we use the default password for now but we may switch to TLS auth (after task #2129).
+es_admin_password = readDataYaml("configuration/logging")["specification"]["admin_password"] || "admin"
 
-describe 'Checking if Elasticsearch service is running' do
+es_rest_api_port  = 9200
+es_transport_port = 9300
+
+describe 'Check if Elasticsearch service is running' do
   describe service('elasticsearch') do
     it { should be_enabled }
     it { should be_running }
   end
 end
 
-describe 'Checking if Elasticsearch user exists' do
+describe 'Check if elasticsearch user exists' do
   describe group('elasticsearch') do
     it { should exist }
   end
@@ -21,7 +24,7 @@ describe 'Checking if Elasticsearch user exists' do
   end
 end
 
-describe 'Checking Elasticsearch directories and config files' do
+describe 'Check Elasticsearch directories and config files' do
   let(:disable_sudo) { false }
   describe file('/etc/elasticsearch') do
     it { should exist }
@@ -33,20 +36,20 @@ describe 'Checking Elasticsearch directories and config files' do
   end
 end
 
-describe 'Checking if the ports are open' do
+describe 'Check if the ports are open' do
   let(:disable_sudo) { false }
-  describe port(elasticsearch_rest_api_port) do
+  describe port(es_rest_api_port) do
     it { should be_listening }
   end
-  describe port(elasticsearch_communication_port) do
+  describe port(es_transport_port) do
     it { should be_listening }
   end
 end
 
 listInventoryHosts("logging").each do |val|
-  describe 'Checking Elasticsearch nodes status codes' do
+  describe 'Check Elasticsearch nodes status codes' do
     let(:disable_sudo) { false }
-    describe command("curl -k -u admin:#{elasticsearch_admin_password} -o /dev/null -s -w '%{http_code}' https://#{val}:#{elasticsearch_rest_api_port}") do
+    describe command("curl -k -u admin:#{es_admin_password} -o /dev/null -s -w '%{http_code}' https://#{val}:#{es_rest_api_port}") do
       it "is expected to be equal" do
         expect(subject.stdout.to_i).to eq 200
       end
@@ -55,9 +58,9 @@ listInventoryHosts("logging").each do |val|
 end
 
 listInventoryHosts("logging").each do |val|
-  describe 'Checking Elasticsearch health' do
+  describe 'Check Elasticsearch health' do
     let(:disable_sudo) { false }
-    describe command("curl -k -u admin:#{elasticsearch_admin_password} https://#{val}:#{elasticsearch_rest_api_port}/_cluster/health?pretty=true") do
+    describe command("curl -k -u admin:#{es_admin_password} https://#{val}:#{es_rest_api_port}/_cluster/health?pretty=true") do
       its(:stdout_as_json) { should include('status' => /green|yellow/) }
       its(:stdout_as_json) { should include('number_of_nodes' => countInventoryHosts("logging")) }
       its(:exit_status) { should eq 0 }
