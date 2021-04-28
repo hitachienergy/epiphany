@@ -5,13 +5,10 @@
     state: present
   vars:
     _packages:
-      # Bundled with ElasticSearch OpenJDK 15 doesn't work correctly with Logstash
-      # as there are startup options that are deprecated in OpenJDK 15 such as UseConcMarkSweepGC
+      # Logstash is installed with bundled JDK
       Debian:
-        - openjdk-8-jre-headless
         - logstash-oss={{ versions[ansible_os_family] }}
       RedHat:
-        - java-1.8.0-openjdk-headless
         - logstash-oss-{{ versions[ansible_os_family] }}
   module_defaults:
     yum: { lock_timeout: "{{ yum_lock_timeout }}" }
