@@ -7,7 +7,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 Reference for actual cluster component versions can be found [here](docs/home/COMPONENTS.md)
 
-- [CHANGELOG-1.0.x](./CHANGELOG-1.0.md)
+- [CHANGELOG-1.0.x](CHANGELOG-1.0.md)
+- [CHANGELOG-0.10.x](CHANGELOG-0.10.md)
 - [CHANGELOG-0.9.x](./CHANGELOG-0.9.md)
 - [CHANGELOG-0.8.x](./CHANGELOG-0.8.md)
 - [CHANGELOG-0.7.x](./CHANGELOG-0.7.md)
