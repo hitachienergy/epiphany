@@ -1,5 +1,11 @@
 # Changelog 0.10
 
+## [1.0.0] 2021-xx-xx
+
+### Fixed
+
+- [#2262](https://github.com/epiphany-platform/epiphany/issues/2262) - [Ubuntu] elasticsearch-curator in version 5.8.3 is not available from APT repo
+
 ## [0.10.0] 2021-04-01
 
 ### Added
