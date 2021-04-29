@@ -157,7 +157,7 @@
 | https://github.com/prometheus/alertmanager/releases/download/v0.17.0/alertmanager-0.17.0.linux-arm64.tar.gz | + | dedicated package | + |
 | https://archive.apache.org/dist/zookeeper/zookeeper-3.5.8/apache-zookeeper-3.5.8-bin.tar.gz | + | shell scripts + jar libraries | --- |
 | https://archive.apache.org/dist/ignite/2.9.1/apache-ignite-2.9.1-bin.zip | + | shell scripts + jar libraries | --- |
-| https://releases.hashicorp.com/vault/1.6.1/vault_1.6.1_linux_arm64.zip | + | dedicated package | --- |
+| https://releases.hashicorp.com/vault/1.7.0/vault_1.7.0_linux_arm64.zip | + | dedicated package | --- |
 | https://get.helm.sh/helm-v3.2.0-linux-arm64.tar.gz | + | dedicated package | --- |
 | https://github.com/hashicorp/vault-helm/archive/v0.9.0.tar.gz | + | yaml files | --- |
 | https://github.com/wrouesnel/postgres_exporter/releases/download/v0.8.0/postgres_exporter_v0.8.0_linux-amd64.tar.gz | --- |  | + |
@@ -175,7 +175,7 @@
 | kubernetesui/metrics-scraper:v1.0.4 | + |  | + |
 | registry:2 | + |  |  |
 | hashicorp/vault-k8s:0.7.0 | --- | https://hub.docker.com/r/moikot/vault-k8s / custom build | --- |
-| vault:1.6.1 | + |  | --- |
+| vault:1.7.0 | + |  | --- |
 | apacheignite/ignite:2.9.1 | --- | https://github.com/apache/ignite/tree/master/docker/apache-ignite / custom build | --- |
 | bitnami/pgpool:4.1.1-debian-10-r29 | --- |  | --- |
 | brainsam/pgbouncer:1.12 | --- |  | --- |
