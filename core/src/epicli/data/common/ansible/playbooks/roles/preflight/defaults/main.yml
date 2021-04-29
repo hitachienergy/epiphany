@@ -61,7 +61,8 @@ unsupported_roles:
     roles: []  # all supported
   - distro: CentOS
     arch: aarch64
-    roles: []
+    roles:
+      - elasticsearch_curator
   - distro: RedHat
     arch: x86_64
     roles: []  # all supported
