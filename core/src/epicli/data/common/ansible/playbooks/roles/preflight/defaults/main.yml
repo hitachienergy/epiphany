@@ -12,3 +12,88 @@ supported_oses:
     version:
       min: 18.04
       max: 18.04
+
+# The list of unsupported K8s applications per architecture
+unsupported_apps:
+  x86_64: []
+  aarch64:
+    - istio
+    - pgbouncer
+    - pgpool
+
+unsupported_roles:
+  - distro: Ubuntu
+    arch: x86_64
+    roles: []  # all supported
+  - distro: Ubuntu
+    arch: aarch64
+    roles:
+      - repository
+      - kafka
+      - firewall
+      - image_registry
+      - kubernetes_master
+      - kubernetes_node
+      - helm
+      - zookeeper
+      - haproxy
+      - vault
+      - logging
+      - elasticsearch_curator
+      - opendistro_for_elasticsearch
+      - elasticsearch
+      - kibana
+      - filebeat
+      - logstash
+      - prometheus
+      - grafana
+      - node_exporter
+      - jmx_exporter
+      - rabbitmq
+      - kafka_exporter
+      - postgresql
+      - postgres_exporter
+      - haproxy_exporter
+      - applications
+      - ignite
+  - distro: CentOS
+    arch: x86_64
+    roles: []  # all supported
+  - distro: CentOS
+    arch: aarch64
+    roles:
+      - elasticsearch_curator
+  - distro: RedHat
+    arch: x86_64
+    roles: []  # all supported
+  - distro: RedHat
+    arch: aarch64
+    roles:
+      - repository
+      - kafka
+      - firewall
+      - image_registry
+      - kubernetes_master
+      - kubernetes_node
+      - helm
+      - zookeeper
+      - haproxy
+      - vault
+      - logging
+      - elasticsearch_curator
+      - opendistro_for_elasticsearch
+      - elasticsearch
+      - kibana
+      - filebeat
+      - logstash
+      - prometheus
+      - grafana
+      - node_exporter
+      - jmx_exporter
+      - rabbitmq
+      - kafka_exporter
+      - postgresql
+      - postgres_exporter
+      - haproxy_exporter
+      - applications
+      - ignite

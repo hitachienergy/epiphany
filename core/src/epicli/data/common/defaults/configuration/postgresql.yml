@@ -68,7 +68,7 @@ specification:
                 when: replication
   extensions:
     pgaudit:
-      enabled: no
+      enabled: false
       shared_preload_libraries:
         - pgaudit
       config_file_parameters:
@@ -85,7 +85,7 @@ specification:
         pgaudit.log_statement_once: 'off' # same as default
         pgaudit.log_parameter: 'on' # default is 'off'
     pgbouncer:
-      enabled: no
+      enabled: false
     replication:
       enabled: false
       replication_user_name: epi_repmgr

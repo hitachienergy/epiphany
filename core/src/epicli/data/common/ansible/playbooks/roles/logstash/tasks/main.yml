@@ -1,10 +1,11 @@
 ---
-- name: Install Logstash package
+- name: Install OS packages
   package:
     name: "{{ _packages[ansible_os_family] }}"
     state: present
   vars:
     _packages:
+      # Logstash is installed with bundled JDK
       Debian:
         - logstash-oss={{ versions[ansible_os_family] }}
       RedHat:
@@ -12,10 +13,18 @@
   module_defaults:
     yum: { lock_timeout: "{{ yum_lock_timeout }}" }
 
+- name: Populate service facts
+  service_facts:
+
+- name: Create logstash systemd service
+  command: /usr/share/logstash/bin/system-install /etc/logstash/startup.options systemd
+  when:
+    - "'logstash.service' not in ansible_facts.services"
+
 - name: Ensure Logstash is disabled
   systemd:
     name: logstash
-    enabled: no
+    enabled: false
     state: stopped
 
 - name: Provide logstash-export.conf template file

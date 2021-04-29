@@ -11,3 +11,9 @@ kubeconfig:
 
 # https://github.com/ansible/ansible/issues/57189
 yum_lock_timeout: 300
+
+global_architecture_alias:
+  x86_64: amd64
+  aarch64: arm64
+
+

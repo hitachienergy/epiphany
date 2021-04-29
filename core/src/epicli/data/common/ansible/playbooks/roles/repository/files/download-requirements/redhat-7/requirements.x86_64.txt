@@ -57,7 +57,7 @@ libxcb # for grafana
 libXcursor # for grafana
 libXt # for grafana
 logrotate
-logstash-oss-7.8.1
+logstash-oss-7.12.0
 net-tools
 nfs-utils
 nmap-ncat
@@ -160,8 +160,8 @@ https://archive.apache.org/dist/zookeeper/zookeeper-3.5.8/apache-zookeeper-3.5.8
 https://archive.apache.org/dist/ignite/2.9.1/apache-ignite-2.9.1-bin.zip
 https://releases.hashicorp.com/vault/1.6.1/vault_1.6.1_linux_amd64.zip
 https://get.helm.sh/helm-v3.2.0-linux-amd64.tar.gz
-https://github.com/hashicorp/vault-helm/archive/v0.9.0.tar.gz
-https://github.com/wrouesnel/postgres_exporter/releases/download/v0.8.0/postgres_exporter_v0.8.0_linux-amd64.tar.gz
+https://github.com/hashicorp/vault-helm/archive/v0.11.0.tar.gz
+https://github.com/prometheus-community/postgres_exporter/releases/download/v0.9.0/postgres_exporter-0.9.0.linux-amd64.tar.gz
 https://charts.bitnami.com/bitnami/node-exporter-1.1.2.tgz
 https://helm.elastic.co/helm/filebeat/filebeat-7.9.2.tgz
 
@@ -170,17 +170,17 @@ haproxy:2.2.2-alpine
 kubernetesui/dashboard:v2.0.3
 kubernetesui/metrics-scraper:v1.0.4
 registry:2
-hashicorp/vault-k8s:0.7.0
+hashicorp/vault-k8s:0.10.0
 vault:1.6.1
 # applications
-apacheignite/ignite:2.9.1
+epiphanyplatform/ignite:2.9.1
 bitnami/pgpool:4.1.1-debian-10-r29
 brainsam/pgbouncer:1.12
 # istio
 istio/pilot:1.8.1
 istio/proxyv2:1.8.1
 istio/operator:1.8.1
-jboss/keycloak:9.0.0
+epiphanyplatform/keycloak:9.0.0
 rabbitmq:3.8.9
 # K8s upgrade
 ## v1.14.6
@@ -193,7 +193,7 @@ k8s.gcr.io/etcd:3.3.10
 k8s.gcr.io/pause:3.1
 coredns/coredns:1.5.0
 # Old v1 repos not compatible with Crane. Pulling from epiphanyplatform/flannel as workarround.
-#quay.io/coreos/flannel:v0.11.0-amd64 
+#quay.io/coreos/flannel:v0.11.0-amd64
 #quay.io/coreos/flannel:v0.11.0
 epiphanyplatform/flannel:v0.11.0-amd64
 epiphanyplatform/flannel:v0.11.0
@@ -226,7 +226,7 @@ k8s.gcr.io/coredns:1.6.5
 k8s.gcr.io/etcd:3.4.3-0
 k8s.gcr.io/pause:3.1
 # Old v1 repos not compatible with Crane. Pulling from epiphanyplatform/flannel as workarround.
-#quay.io/coreos/flannel:v0.11.0-amd64 
+#quay.io/coreos/flannel:v0.11.0-amd64
 #quay.io/coreos/flannel:v0.11.0
 epiphanyplatform/flannel:v0.11.0-amd64
 epiphanyplatform/flannel:v0.11.0
