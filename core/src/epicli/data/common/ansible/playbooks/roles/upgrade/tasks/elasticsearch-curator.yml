@@ -10,15 +10,20 @@
     fail_msg: elasticsearch-curator package not found, nothing to update
     quiet: true
 
+- name: Include defaults from elasticsearch_curator role
+  include_vars:
+    file: roles/elasticsearch_curator/defaults/main.yml
+    name: curator_defaults
+
 - name: Print elasticsearch-curator versions
   debug:
     msg:
       - "Installed version: {{ ansible_facts.packages['elasticsearch-curator'][0].version }}"
-      - "Target version: {{ specification.curator_version }}"
+      - "Target version: {{ curator_defaults.curator_version }}"
 
 - name: Update elasticsearch-curator package
-  import_role:
+  include_role:
     name: elasticsearch_curator
-    tasks_from: install-es-curator # update only package and do not change configured cron jobs
+    tasks_from: install-es-curator-{{ ansible_os_family }}  # update only package and do not change configured cron jobs
   when:
-    - specification.curator_version is version(ansible_facts.packages['elasticsearch-curator'][0].version, '>')
+    - curator_defaults.curator_version is version(ansible_facts.packages['elasticsearch-curator'][0].version, '>')

@@ -35,7 +35,7 @@
 
 - name: Set Prometheus file name to install
   set_fact:
-    binary_file_name: "{{ prometheus_filename }}"
+    binary_file_name: "{{ prometheus.file_name[ansible_architecture] }}"
 
 - name: Package
   debug: msg="{{ binary_file_name }}"

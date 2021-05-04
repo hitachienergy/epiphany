@@ -3,37 +3,38 @@
 [packages-repo-prereqs]
 apr # for httpd
 apr-util # for httpd
+centos-logos
 createrepo
 deltarpm # for createrepo
 httpd
 httpd-tools # for httpd
+libxml2 # for libxml2-python
+libxml2-python # for createrepo
 mailcap # for httpd
 mod_ssl # for httpd
 python-chardet # for createrepo
 python-deltarpm # for createrepo
 python-kitchen # for createrepo
-redhat-logos # for httpd
 yum-utils
 
 [crane]
-https://github.com/google/go-containerregistry/releases/download/v0.4.1/go-containerregistry_Linux_x86_64.tar.gz
+https://github.com/google/go-containerregistry/releases/download/v0.4.1/go-containerregistry_Linux_arm64.tar.gz
 
 [packages]
 audit # for docker-ce
 bash-completion
-c-ares # for pgbouncer
+#c-ares # for pgbouncer
 ca-certificates
 cifs-utils
 conntrack-tools # for kubelet
 containerd.io
 container-selinux
-cri-tools-1.13.0
+#cri-tools-1.13.0
 curl
 dejavu-sans-fonts # for grafana
 docker-ce-19.03.14
 docker-ce-cli-19.03.14
 ebtables
-elasticsearch-curator-5.8.3
 elasticsearch-oss-7.10.2 # for opendistroforelasticsearch & logging roles
 ethtool
 filebeat-7.9.2
@@ -57,7 +58,7 @@ libxcb # for grafana
 libXcursor # for grafana
 libXt # for grafana
 logrotate
-logstash-oss-7.8.1
+logstash-oss-7.12.0
 net-tools
 nfs-utils
 nmap-ncat
@@ -70,6 +71,7 @@ opendistro-security-1.13.1*
 opendistro-sql-1.13.0*
 opendistroforelasticsearch-kibana-1.13.1*
 openssl
+unixODBC # for erlang
 perl # for vim
 perl-Getopt-Long # for vim
 perl-libs # for vim
@@ -77,7 +79,6 @@ perl-Pod-Perldoc # for vim
 perl-Pod-Simple # for vim
 perl-Pod-Usage # for vim
 pgaudit12_10
-pgbouncer-1.10.*
 policycoreutils-python # for container-selinux
 pyldb # for cifs-utils
 python-cffi # for python2-cryptography
@@ -88,13 +89,14 @@ python-psycopg2
 python-pycparser # for python2-cryptography
 python-setuptools
 python-slip-dbus # for firewalld
+python-ipaddress
+python-backports
 python2-cryptography # for Ansible (certificate modules)
 quota # for nfs-utils
 rabbitmq-server-3.8.9
-rh-haproxy18
-rh-haproxy18-haproxy-syspaths
+#rh-haproxy18
+#rh-haproxy18-haproxy-syspaths
 postgresql10-server
-repmgr10-4.0.6
 samba-client
 samba-client-libs # for samba-client
 samba-common
@@ -116,10 +118,6 @@ yum-utils
 # to make remote-to-remote "synchronize" work in ansible
 rsync
 
-# K8s upgrade v1.17.7 (Epiphany v0.7.0), see https://github.com/kubernetes/release/pull/1375
-kubeadm-1.17.7-0
-kubectl-1.17.7-0
-kubelet-1.17.7-0
 # K8s upgrade v1.18.6 (Epiphany >= v0.7.1)
 kubeadm-1.18.6
 kubectl-1.18.6
@@ -132,20 +130,20 @@ kubernetes-cni-0.8.6-0
 
 [files]
 # Github repository for erlang rpm is used since packagecloud repository is limited to a certain number of versions and erlang package from erlang-solutions repository is much more complex and bigger
-https://github.com/rabbitmq/erlang-rpm/releases/download/v23.1.5/erlang-23.1.5-1.el7.x86_64.rpm
-https://github.com/prometheus/haproxy_exporter/releases/download/v0.10.0/haproxy_exporter-0.10.0.linux-amd64.tar.gz
+https://packages.erlang-solutions.com/erlang/rpm/centos/7/aarch64/esl-erlang_23.1.5-1~centos~7_arm64.rpm
+https://github.com/prometheus/haproxy_exporter/releases/download/v0.10.0/haproxy_exporter-0.10.0.linux-arm64.tar.gz
 https://repo1.maven.org/maven2/io/prometheus/jmx/jmx_prometheus_javaagent/0.14.0/jmx_prometheus_javaagent-0.14.0.jar
 https://archive.apache.org/dist/kafka/2.6.0/kafka_2.12-2.6.0.tgz
-https://github.com/danielqsj/kafka_exporter/releases/download/v1.2.0/kafka_exporter-1.2.0.linux-amd64.tar.gz
-https://github.com/prometheus/node_exporter/releases/download/v1.0.1/node_exporter-1.0.1.linux-amd64.tar.gz
-https://github.com/prometheus/prometheus/releases/download/v2.10.0/prometheus-2.10.0.linux-amd64.tar.gz
-https://github.com/prometheus/alertmanager/releases/download/v0.17.0/alertmanager-0.17.0.linux-amd64.tar.gz
+https://github.com/danielqsj/kafka_exporter/releases/download/v1.2.0/kafka_exporter-1.2.0.linux-arm64.tar.gz
+https://github.com/prometheus/node_exporter/releases/download/v1.0.1/node_exporter-1.0.1.linux-arm64.tar.gz
+https://github.com/prometheus/prometheus/releases/download/v2.10.0/prometheus-2.10.0.linux-arm64.tar.gz
+https://github.com/prometheus/alertmanager/releases/download/v0.17.0/alertmanager-0.17.0.linux-arm64.tar.gz
 https://archive.apache.org/dist/zookeeper/zookeeper-3.5.8/apache-zookeeper-3.5.8-bin.tar.gz
 https://archive.apache.org/dist/ignite/2.9.1/apache-ignite-2.9.1-bin.zip
-https://releases.hashicorp.com/vault/1.6.1/vault_1.6.1_linux_amd64.zip
-https://get.helm.sh/helm-v3.2.0-linux-amd64.tar.gz
-https://github.com/hashicorp/vault-helm/archive/v0.9.0.tar.gz
-https://github.com/wrouesnel/postgres_exporter/releases/download/v0.8.0/postgres_exporter_v0.8.0_linux-amd64.tar.gz
+https://releases.hashicorp.com/vault/1.6.1/vault_1.6.1_linux_arm64.zip
+https://get.helm.sh/helm-v3.2.0-linux-arm64.tar.gz
+https://github.com/hashicorp/vault-helm/archive/v0.11.0.tar.gz
+https://github.com/prometheus-community/postgres_exporter/releases/download/v0.9.0/postgres_exporter-0.9.0.linux-arm64.tar.gz
 https://charts.bitnami.com/bitnami/node-exporter-1.1.2.tgz
 https://helm.elastic.co/helm/filebeat/filebeat-7.9.2.tgz
 
@@ -154,33 +152,13 @@ haproxy:2.2.2-alpine
 kubernetesui/dashboard:v2.0.3
 kubernetesui/metrics-scraper:v1.0.4
 registry:2
-hashicorp/vault-k8s:0.7.0
+hashicorp/vault-k8s:0.10.0
 vault:1.6.1
 # applications
-apacheignite/ignite:2.9.1
-bitnami/pgpool:4.1.1-debian-10-r29
-brainsam/pgbouncer:1.12
-# istio
-istio/pilot:1.8.1
-istio/proxyv2:1.8.1
-istio/operator:1.8.1
-jboss/keycloak:9.0.0
+epiphanyplatform/ignite:2.9.1
+epiphanyplatform/keycloak:9.0.0
 rabbitmq:3.8.9
-# K8s upgrade
-## v1.17.7
-k8s.gcr.io/kube-apiserver:v1.17.7
-k8s.gcr.io/kube-controller-manager:v1.17.7
-k8s.gcr.io/kube-scheduler:v1.17.7
-k8s.gcr.io/kube-proxy:v1.17.7
-k8s.gcr.io/coredns:1.6.5
-k8s.gcr.io/etcd:3.4.3-0
-k8s.gcr.io/pause:3.1
-quay.io/coreos/flannel:v0.12.0-amd64
-quay.io/coreos/flannel:v0.12.0
-calico/cni:v3.15.0
-calico/kube-controllers:v3.15.0
-calico/node:v3.15.0
-calico/pod2daemon-flexvol:v3.15.0
+# K8s
 ## v1.18.6
 k8s.gcr.io/kube-apiserver:v1.18.6
 k8s.gcr.io/kube-controller-manager:v1.18.6
@@ -189,7 +167,7 @@ k8s.gcr.io/kube-proxy:v1.18.6
 k8s.gcr.io/coredns:1.6.7
 k8s.gcr.io/etcd:3.4.3-0
 k8s.gcr.io/pause:3.2
-quay.io/coreos/flannel:v0.12.0-amd64
+quay.io/coreos/flannel:v0.12.0-arm64
 quay.io/coreos/flannel:v0.12.0
 calico/cni:v3.15.0
 calico/kube-controllers:v3.15.0
