@@ -243,8 +243,22 @@ def upgrade_parser(subparsers):
     optional = sub_parser._action_groups.pop()
     required = sub_parser.add_argument_group('required arguments')
 
-    component_list = sorted(['kubernetes', 'kafka', 'filebeat', 'logging', 'opendistro_for_elasticsearch',
-                      'kibana', 'grafana', 'zookeeper', 'rabbitmq', 'ignite', 'load_balancer', 'node_exporter'])
+    component_list = sorted([
+        'elasticsearch_curator',
+        'filebeat',
+        'grafana',
+        'ignite',
+        'kafka',
+        'kibana',
+        'kubernetes',
+        'load_balancer',
+        'logging',
+        'node_exporter',
+        'opendistro_for_elasticsearch',
+        'rabbitmq',
+        'zookeeper',
+        ])
+
     def comma_separated_type(choices):
         """Return a function that splits and checks comma-separated values."""
         def splitarg(arg):
