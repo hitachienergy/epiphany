@@ -212,11 +212,7 @@ policy to already existing policies by assigning them to policy in Index Managem
 
 ## How to export Kibana reports to CSV format
 
-<<<<<<< HEAD
 Since v1.0 Epiphany provides the possibility to export reports from Kibana to CSV, PNG or PDF using the Open Distro for
-=======
-Since v0.10 Epiphany provides possibility to export reports from Kibana to CSV, PNG or PDF using the Open Distro for
->>>>>>> fbf0db34 (Small improvments, text formatting)
 Elasticsearch Kibana reports feature.
 
 Check more details about the plugin and how to export reports in the
@@ -225,18 +221,15 @@ Check more details about the plugin and how to export reports in the
 `Note: Currently in Open Distro for Elasticsearch Kibana the following plugins are installed and enabled by default: security, alerting, anomaly detection, index management, query workbench, notebooks, reports, alerting, gantt chart plugins.`
 
 You can easily check enabled default plugins for Kibana using the following command on the logging machine:
-<<<<<<< HEAD
 `./bin/kibana-plugin list` in Kibana directory.
-=======
-`./bin/kibana-plugin list` in Kibana directory.  
->>>>>>> fbf0db34 (Small improvments, text formatting)
 
 ## How to export Elasticsearch data to CSV format
 
 Since v0.8 Epiphany provides the possibility to export data from Elasticsearch to CSV using Logstash *(logstash-oss)* along
 with *logstash-input-elasticsearch* and *logstash-output-csv* plugins.
 
-To install Logstash in your cluster add logstash to feature mapping for logging, opendistro_for_elasticsearch or *elasticsearch* group.
+To install Logstash in your cluster add **logstash** to feature mapping for *logging, opendistro_for_elasticsearch* or *
+elasticsearch* group.
 
 ---
 **NOTE**
@@ -263,7 +256,9 @@ installation.
 Run Logstash to export data:  
 `/usr/share/logstash/bin/logstash -f /etc/logstash/logstash-export.conf`
 
-More details about configuration of [input](https://www.elastic.co/guide/en/logstash/current/plugins-inputs-elasticsearch.html) and [output](https://www.elastic.co/guide/en/logstash/current/plugins-outputs-csv.html) plugins.
+More details about configuration
+of [input](https://www.elastic.co/guide/en/logstash/current/plugins-inputs-elasticsearch.html)
+and [output](https://www.elastic.co/guide/en/logstash/current/plugins-outputs-csv.html) plugins.
 
 ---
 **NOTE**
