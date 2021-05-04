@@ -3,6 +3,8 @@
 **Note: Due to recent changes in Epiphany source code, Support Policy and to keep Semantic Versioning standards we decided to increase Epiphany Major version.
 Version 0.10 won't be supported anymore. Instead, we introduced version 1.0 which includes all changes from version 0.10.**
 
+❗❗ **Please switch to v1.0.x** ❗❗
+
 ## [0.10.0] 2021-04-01
 
 ### Added
