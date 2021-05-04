@@ -1,5 +1,8 @@
 # Changelog 0.10
 
+**Note: Due to recent changes in Epiphany source code, Support Policy and to keep Semantic Versioning standards we decided to increase Epiphany Major version.
+Version 0.10 won't be supported anymore. Instead, we introduced version 1.0 which includes all changes from version 0.10.**
+
 ## [0.10.0] 2021-04-01
 
 ### Added
@@ -44,6 +47,7 @@
 - [#2142](https://github.com/epiphany-platform/epiphany/issues/2142) - Update Ubuntu 18.04-LTS images to the latest version
 
 ### Breaking changes
+
 - Feature `elasticsearch` removed in favor of `opendistro-for-elasticsearch`.
 
 ### Known issues
