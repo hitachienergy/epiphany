@@ -210,7 +210,7 @@ PUT _template/template_01
 After applying this policy, every new index created under this one will apply to it. There is also possibility to apply
 policy to already existing policies by assigning them to policy in Index Management Kibana panel.
 
-## How to Kibana reports to CSV format
+## How to export Kibana reports to CSV format
 
 <<<<<<< HEAD
 Since v1.0 Epiphany provides the possibility to export reports from Kibana to CSV, PNG or PDF using the Open Distro for
@@ -263,9 +263,7 @@ installation.
 Run Logstash to export data:  
 `/usr/share/logstash/bin/logstash -f /etc/logstash/logstash-export.conf`
 
-More details about configuration
-of [input](https://www.elastic.co/guide/en/logstash/current/plugins-inputs-elasticsearch.html)
-and [output](https://www.elastic.co/guide/en/logstash/current/plugins-outputs-csv.html) plugins.
+More details about configuration of [input](https://www.elastic.co/guide/en/logstash/current/plugins-inputs-elasticsearch.html) and [output](https://www.elastic.co/guide/en/logstash/current/plugins-outputs-csv.html) plugins.
 
 ---
 **NOTE**
@@ -276,14 +274,6 @@ Elasticsearch. For non-production environment you can easily disable it by addin
 `ssl_options[:verify] = false` right after other ssl_options definitions in file:
 
 `/usr/share/logstash/vendor/bundle/jruby/2.5.0/gems/logstash-input-elasticsearch-*/lib/logstash/inputs/elasticsearch.rb`
-
-Check more details about configuration of input plugin in the
-[documentation](https://www.elastic.co/guide/en/logstash/current/plugins-inputs-elasticsearch.html)
-
-Check more details about configuration of output plugin in the
-[documentation](https://www.elastic.co/guide/en/logstash/current/plugins-outputs-csv.html)
-
-`Note: Currently input plugin doesn't officialy support skipping certificate validation for secure connection to Elasticsearch.`
 
 ---
 
