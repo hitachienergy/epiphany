@@ -1,0 +1,7 @@
+---
+# This file is meant to be also used by upgrade playbook
+
+- name: Install elasticsearch-curator package
+  apt:
+    deb: "{{ repository_url }}/files/{{ curator_package.filename.Debian }}"
+    state: present

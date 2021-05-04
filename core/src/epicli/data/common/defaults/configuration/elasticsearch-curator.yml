@@ -2,7 +2,6 @@ kind: configuration/elasticsearch-curator
 title: Elasticsearch Curator
 name: default
 specification:
-  curator_version: "5.8.3"
   delete_indices_cron_jobs:
     - description: Delete indices older than N days
       cron:

@@ -3,9 +3,6 @@
 wget -qO - https://artifacts.elastic.co/GPG-KEY-elasticsearch | apt-key add -
 echo "deb https://artifacts.elastic.co/packages/oss-6.x/apt stable main" | tee /etc/apt/sources.list.d/elastic-6.x.list
 
-wget -qO - https://packages.elastic.co/GPG-KEY-elasticsearch | apt-key add -
-echo "deb [arch=amd64] https://packages.elastic.co/curator/5/debian stable main" | tee /etc/apt/sources.list.d/elastic-curator-6.x.list
-
 wget -qO - https://packages.grafana.com/gpg.key | apt-key add -
 echo "deb https://packages.grafana.com/oss/deb stable main" | tee /etc/apt/sources.list.d/grafana.list
 
