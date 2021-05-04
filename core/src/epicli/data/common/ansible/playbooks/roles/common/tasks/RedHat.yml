@@ -30,7 +30,7 @@
       - libsemanage-python
       - logrotate
       - nc
-      - net-tools
+      - net-tools  # required by Ansible (module listen_ports_facts)
       - openssl
       - python-setuptools
       - rsync

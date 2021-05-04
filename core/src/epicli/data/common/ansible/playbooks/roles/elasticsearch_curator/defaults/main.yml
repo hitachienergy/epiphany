@@ -1,5 +1,7 @@
 ---
-specification:
-  curator_version: "5.8.3" # used by upgrade playbook
+curator_package:
+  filename:
+    Debian: elasticsearch-curator_5.8.3_amd64.deb
+curator_version: "5.8.3" # also used by upgrade playbook
 
 elasticsearch_host_ip: "{{ ansible_default_ipv4.address | default(ansible_all_ipv4_addresses[0]) }}"

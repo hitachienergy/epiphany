@@ -237,4 +237,3 @@
     - component_vars.specification.extensions.replication.enabled
     - component_vars.specification.extensions.replication.use_repmgr is defined
     - component_vars.specification.extensions.replication.use_repmgr
-    

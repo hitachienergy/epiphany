@@ -1,0 +1,5 @@
+---
+vault:
+  file_name:
+    x86_64: vault_1.7.0_linux_amd64.zip
+    aarch64: vault_1.7.0_linux_arm64.zip
