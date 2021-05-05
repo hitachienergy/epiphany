@@ -25,6 +25,7 @@
 - [#2244](https://github.com/epiphany-platform/epiphany/issues/2244) - [Upgrade] Elasticsearch settings hard-coded instead of read from existing configuration file
 - [#2247](https://github.com/epiphany-platform/epiphany/issues/2247) - [Upgrade] Automated tests fail when run after upgrade
 - [#2262](https://github.com/epiphany-platform/epiphany/issues/2262) - [Ubuntu] elasticsearch-curator in version 5.8.3 is not available from APT repo
+- [#2233](https://github.com/epiphany-platform/epiphany/issues/2233) - Filebeat communication error in AKS
 
 
 ### Updated
