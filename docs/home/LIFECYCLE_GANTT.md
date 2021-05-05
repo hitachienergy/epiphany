@@ -20,16 +20,16 @@ section 0.8.x
 0.8.x support cycle     :active, 2020-10-22, 2021-10-01
 section 0.9.x
 0.9.x support cycle      :active, 2021-01-19, 2022-01-01
-section 0.10.x
-0.10.x support cycle (LTS - 3 years)    :crit, 2021-04-01, 2024-04-01
-section 0.11.x
-0.11.x - 6 months     :active, 2021-06-30, 2021-12-30
-section 0.12.x
-0.12.x - 6 months     :active, 2021-09-30, 2022-03-30
-section 0.13.x
-0.13.x - 6 months     :active, 2021-12-30, 2022-06-30
-section 0.14.x
-0.14.x support cycle (LTS - 3 years)     :crit, 2022-03-30, 2025-03-30
+section 1.0.x
+1.0.x support cycle (LTS - 3 years)    :crit, 2021-04-01, 2024-04-01
+section 1.1.x
+1.1.x - 6 months     :active, 2021-06-30, 2021-12-30
+section 1.2.x
+1.2.x - 6 months     :active, 2021-09-30, 2022-03-30
+section 1.3.x
+1.3.x - 6 months     :active, 2021-12-30, 2022-06-30
+section 2.0.x
+2.0.x support cycle (LTS - 3 years)     :crit, 2022-03-30, 2025-03-30
 ```
 
 This is a source for the image used in [LIFECYCLE.md](LIFECYCLE.md) file.
