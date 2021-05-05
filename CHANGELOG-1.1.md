@@ -18,6 +18,7 @@
 - [#2225](https://github.com/epiphany-platform/epiphany/issues/2225) - [ARM64] Add arm64 support for RabbitMQ and Ignite K8s applications
 - [#2241](https://github.com/epiphany-platform/epiphany/issues/2241) - [ARM64] Add arm64 support to 'vault' component
 - [#2243](https://github.com/epiphany-platform/epiphany/issues/2243) - Configure Elasticsearch to use static (single) ports instead of ranges
+- [#1914](https://github.com/epiphany-platform/epiphany/issues/1914) - Default plugins in Open Distro for Elasticsearch Kibana documented
 
 ### Fixed
 

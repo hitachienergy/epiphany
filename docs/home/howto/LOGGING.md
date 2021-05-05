@@ -210,9 +210,22 @@ PUT _template/template_01
 After applying this policy, every new index created under this one will apply to it. There is also possibility to apply
 policy to already existing policies by assigning them to policy in Index Management Kibana panel.
 
+## How to export Kibana reports to CSV format
+
+Since v1.0 Epiphany provides the possibility to export reports from Kibana to CSV, PNG or PDF using the Open Distro for
+Elasticsearch Kibana reports feature.
+
+Check more details about the plugin and how to export reports in the
+[documentation](https://opendistro.github.io/for-elasticsearch-docs/docs/kibana/reporting)  
+
+`Note: Currently in Open Distro for Elasticsearch Kibana the following plugins are installed and enabled by default: security, alerting, anomaly detection, index management, query workbench, notebooks, reports, alerting, gantt chart plugins.`
+
+You can easily check enabled default plugins for Kibana using the following command on the logging machine:
+`./bin/kibana-plugin list` in Kibana directory.
+
 ## How to export Elasticsearch data to CSV format
 
-Since v0.8 Epiphany provides possibility to export data from Elasticsearch to CSV using Logstash *(logstash-oss)* along
+Since v0.8 Epiphany provides the possibility to export data from Elasticsearch to CSV using Logstash *(logstash-oss)* along
 with *logstash-input-elasticsearch* and *logstash-output-csv* plugins.
 
 To install Logstash in your cluster add **logstash** to feature mapping for *logging, opendistro_for_elasticsearch* or *
