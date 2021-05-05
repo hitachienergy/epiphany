@@ -565,4 +565,5 @@ specification:
 
 ### ```Azure``` provider
 
-```Azure``` does not have ```arm64```  support jet.
+```Azure``` does not have ```arm64``` support jet.
+
