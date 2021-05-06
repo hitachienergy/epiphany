@@ -1,0 +1,9 @@
+---
+# This file is meant to be also used by upgrade playbook
+
+- name: Install elasticsearch-curator package
+  yum:
+    name: elasticsearch-curator-{{ curator_version }}
+    state: present
+  module_defaults:
+    yum: { lock_timeout: "{{ yum_lock_timeout }}" }
