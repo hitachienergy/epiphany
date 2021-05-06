@@ -19,8 +19,8 @@ specification:
           file_name: dashboard-v2.0.3.tar
         - name: "kubernetesui/metrics-scraper:v1.0.4"
           file_name: metrics-scraper-v1.0.4.tar
-        - name: "vault:1.6.1"
-          file_name: vault-1.6.1.tar
+        - name: "vault:1.7.0"
+          file_name: vault-1.7.0.tar
         - name: "hashicorp/vault-k8s:0.10.0"
           file_name: vault-k8s-0.10.0.tar
         - name: "istio/proxyv2:1.8.1"
@@ -107,8 +107,8 @@ specification:
           file_name: dashboard-v2.0.3.tar
         - name: "kubernetesui/metrics-scraper:v1.0.4"
           file_name: metrics-scraper-v1.0.4.tar
-        - name: "vault:1.6.1"
-          file_name: vault-1.6.1.tar
+        - name: "vault:1.7.0"
+          file_name: vault-1.7.0.tar
         - name: "hashicorp/vault-k8s:0.10.0"
           file_name: vault-k8s-0.10.0.tar
       current:

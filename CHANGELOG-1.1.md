@@ -1,6 +1,6 @@
-# Changelog 0.11
+# Changelog 1.1
 
-## [0.11.0] YYYY-MM-DD
+## [1.1.0] YYYY-MM-DD
 
 ### Added
 
@@ -18,6 +18,7 @@
 - [#2225](https://github.com/epiphany-platform/epiphany/issues/2225) - [ARM64] Add arm64 support for RabbitMQ and Ignite K8s applications
 - [#2241](https://github.com/epiphany-platform/epiphany/issues/2241) - [ARM64] Add arm64 support to 'vault' component
 - [#2243](https://github.com/epiphany-platform/epiphany/issues/2243) - Configure Elasticsearch to use static (single) ports instead of ranges
+- [#1914](https://github.com/epiphany-platform/epiphany/issues/1914) - Default plugins in Open Distro for Elasticsearch Kibana documented
 
 ### Fixed
 
@@ -25,13 +26,14 @@
 - [#2244](https://github.com/epiphany-platform/epiphany/issues/2244) - [Upgrade] Elasticsearch settings hard-coded instead of read from existing configuration file
 - [#2247](https://github.com/epiphany-platform/epiphany/issues/2247) - [Upgrade] Automated tests fail when run after upgrade
 - [#2262](https://github.com/epiphany-platform/epiphany/issues/2262) - [Ubuntu] elasticsearch-curator in version 5.8.3 is not available from APT repo
+- [#2233](https://github.com/epiphany-platform/epiphany/issues/2233) - Filebeat communication error in AKS
 
 
 ### Updated
 
 - [#2144](https://github.com/epiphany-platform/epiphany/issues/2144) - Update Epiphany support policy matrix
 - [#2117](https://github.com/epiphany-platform/epiphany/issues/2117) - [AMD64/ARM64] Postgres exporter updated to version 0.9.0
-- [#2241](https://github.com/epiphany-platform/epiphany/issues/2241) - [AMD64/ARM64] Vault (k8s) updated to version 0.10.0 and helm chart with vault updated to version 0.11.0
+- [#2241](https://github.com/epiphany-platform/epiphany/issues/2241) - [AMD64/ARM64] Vault (k8s) updated to version 0.10.0, helm chart with Vault updated to version 0.11.0 and Hashicorp Vault updated to version 1.7.0
 - [#2116](https://github.com/epiphany-platform/epiphany/issues/2116) - [AMD64/ARM64] Logstash updated to version 7.12.0
 
 ### Breaking changes
