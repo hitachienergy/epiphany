@@ -12,7 +12,6 @@ curl
 docker-ce 5:19.03.14
 docker-ce-cli 5:19.03.14
 ebtables
-elasticsearch-curator 5.8.3
 elasticsearch-oss 6.8.5
 elasticsearch-oss 7.3.2
 
@@ -201,6 +200,8 @@ https://archive.apache.org/dist/ignite/2.7.6/apache-ignite-2.7.6-bin.zip
 https://releases.hashicorp.com/vault/1.4.0/vault_1.4.0_linux_amd64.zip
 https://get.helm.sh/helm-v3.2.0-linux-amd64.tar.gz
 https://github.com/hashicorp/vault-helm/archive/v0.4.0.tar.gz
+# Switched from APT repo because there was only one (the latest) version available (issue #2275)
+https://packages.elastic.co/curator/5/debian9/pool/main/e/elasticsearch-curator/elasticsearch-curator_5.8.3_amd64.deb
 
 [images]
 kubernetesui/dashboard:v2.0.3
