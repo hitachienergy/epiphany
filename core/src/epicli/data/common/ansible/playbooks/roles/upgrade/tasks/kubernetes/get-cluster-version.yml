@@ -1,10 +1,6 @@
 ---
 - name: Get cluster version
-  shell: >-
-    set -o pipefail &&
-    kubectl version --short -o json | jq --raw-output '.serverVersion.gitVersion'
-  args:
-    executable: /bin/bash
+  command: kubectl version --output yaml
   register: cluster_version
   until: cluster_version is success
   retries: 60
@@ -13,4 +9,5 @@
 
 - name: Set cluster version as fact
   set_fact:
-    cluster_version: "{{ cluster_version.stdout }}"
+    cluster_version: >-
+      {{ (cluster_version.stdout | from_yaml).serverVersion.gitVersion }}

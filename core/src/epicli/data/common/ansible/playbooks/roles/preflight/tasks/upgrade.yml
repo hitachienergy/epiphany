@@ -1,0 +1,21 @@
+---
+- name: Check if upgrade from current K8s version is supported
+  block:
+    - name: Get K8s cluster version
+      command: kubectl version --output yaml
+      register: cluster_version
+      changed_when: false
+
+    - name: k8s | Check if upgrade from current K8s version is supported
+      assert:
+        that: "'{{ (cluster_version.stdout | from_yaml).serverVersion.gitVersion }}' is version('v1.17.7', '>=')"
+        fail_msg: >-
+          Your Kubernetes version ({{ cluster_version }}) is not supported by this version of Epiphany which requires
+          at least version 1.17.7 (Epiphany v0.7.0). For more information, refer to the documentation.
+        quiet: true
+  run_once: true
+  delegate_to: "{{ groups.kubernetes_master[0] }}"
+  when:
+    - "'kubernetes' in upgrade_components or upgrade_components|length == 0" # K8s is going to be upgraded
+    - groups.kubernetes_master is defined
+    - groups.kubernetes_master | length > 0

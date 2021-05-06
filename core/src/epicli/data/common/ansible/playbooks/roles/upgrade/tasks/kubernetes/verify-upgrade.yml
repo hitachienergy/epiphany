@@ -20,12 +20,8 @@
     - name: k8s/verify | Verify kubectl version
       block:
         - name: k8s/verify | Get kubectl version
-          shell: |-
-            set -o pipefail &&
-            kubectl version --client --short -o json | jq --raw-output '.clientVersion.gitVersion'
+          command: kubectl version --client --short
           register: kubectl_version
-          args: &args
-            executable: /bin/bash
           changed_when: false
 
         - name: k8s/verify | Verify kubectl version
@@ -57,7 +53,8 @@
         - version in node_status_and_version.stdout
       retries: 30 # 1min
       delay: 2
-      args: *args
+      args:
+        executable: /bin/bash
       changed_when: false
 
     - name: k8s/verify | Verify node status
