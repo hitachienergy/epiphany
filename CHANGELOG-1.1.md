@@ -28,13 +28,16 @@
 - [#2262](https://github.com/epiphany-platform/epiphany/issues/2262) - [Ubuntu] elasticsearch-curator in version 5.8.3 is not available from APT repo
 - [#2233](https://github.com/epiphany-platform/epiphany/issues/2233) - Filebeat communication error in AKS
 
-
 ### Updated
 
 - [#2144](https://github.com/epiphany-platform/epiphany/issues/2144) - Update Epiphany support policy matrix
 - [#2117](https://github.com/epiphany-platform/epiphany/issues/2117) - [AMD64/ARM64] Postgres exporter updated to version 0.9.0
 - [#2241](https://github.com/epiphany-platform/epiphany/issues/2241) - [AMD64/ARM64] Vault (k8s) updated to version 0.10.0, helm chart with Vault updated to version 0.11.0 and Hashicorp Vault updated to version 1.7.0
 - [#2116](https://github.com/epiphany-platform/epiphany/issues/2116) - [AMD64/ARM64] Logstash updated to version 7.12.0
+
+### Deprecated
+
+- [#2179](https://github.com/epiphany-platform/epiphany/issues/2179) - Remove un-used images, files and packages used only for deprecated Epiphany installations (< 0.7.0)
 
 ### Breaking changes
 
