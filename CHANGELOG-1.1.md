@@ -27,7 +27,7 @@
 - [#2247](https://github.com/epiphany-platform/epiphany/issues/2247) - [Upgrade] Automated tests fail when run after upgrade
 - [#2262](https://github.com/epiphany-platform/epiphany/issues/2262) - [Ubuntu] elasticsearch-curator in version 5.8.3 is not available from APT repo
 - [#2233](https://github.com/epiphany-platform/epiphany/issues/2233) - Filebeat communication error in AKS
-
+- [#2291](https://github.com/epiphany-platform/epiphany/issues/2291) - PostgreSQL automated tests fail when run on a single machine
 
 ### Updated
 
