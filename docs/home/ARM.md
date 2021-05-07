@@ -36,7 +36,7 @@ Besides making sure that the selected providers, operating systems, components a
 ***Notes***
 
 - For the ```postgresql``` component the ```pgpool``` and ```pgbouncer``` extensions for load-balancing and replication are not jet supported on ```arm64```. These should be disabled in the ```postgressql``` and ```applications``` configurations.
-- While not defined in any of the component configurations, the ```elasticsearch_curator``` role us currently not supported on ```arm64``` and should be removed from the ```feature-mapping``` configuration if defined.
+- While not defined in any of the component configurations, the ```elasticsearch_curator``` role is currently not supported on ```arm64``` and should be removed from the ```feature-mapping``` configuration if defined.
 
 ### Applications
 
