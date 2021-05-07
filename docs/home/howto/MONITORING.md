@@ -187,6 +187,8 @@ List of monitoring components - so called exporters:
 
 When dashboard creation or import succeeds you will see it on your dashboard list.
 
+`Note: Depends on the dashboards which rely on variouse variables, in order to visualize the data it is necessary to generate traffic to the components which are monitored`
+
 # Kibana
 
 Kibana is an free and open frontend application that sits on top of the Elastic Stack, providing search and data visualization capabilities for data indexed in Elasticsearch. For more informations about Kibana please refer to [the official website](https://www.elastic.co/what-is/kibana).
