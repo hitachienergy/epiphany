@@ -19,6 +19,7 @@
 - [#2241](https://github.com/epiphany-platform/epiphany/issues/2241) - [ARM64] Add arm64 support to 'vault' component
 - [#2035](https://github.com/epiphany-platform/epiphany/issues/2035) - [ARM64] Create documentation
 - [#2243](https://github.com/epiphany-platform/epiphany/issues/2243) - Configure Elasticsearch to use static (single) ports instead of ranges
+- [#1914](https://github.com/epiphany-platform/epiphany/issues/1914) - Default plugins in Open Distro for Elasticsearch Kibana documented
 
 ### Fixed
 
@@ -26,6 +27,8 @@
 - [#2244](https://github.com/epiphany-platform/epiphany/issues/2244) - [Upgrade] Elasticsearch settings hard-coded instead of read from existing configuration file
 - [#2247](https://github.com/epiphany-platform/epiphany/issues/2247) - [Upgrade] Automated tests fail when run after upgrade
 - [#2262](https://github.com/epiphany-platform/epiphany/issues/2262) - [Ubuntu] elasticsearch-curator in version 5.8.3 is not available from APT repo
+- [#2233](https://github.com/epiphany-platform/epiphany/issues/2233) - Filebeat communication error in AKS
+- [#2291](https://github.com/epiphany-platform/epiphany/issues/2291) - PostgreSQL automated tests fail when run on a single machine
 
 ### Updated
 
