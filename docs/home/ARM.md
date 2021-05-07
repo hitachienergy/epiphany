@@ -1,6 +1,6 @@
 # ARM
 
-From Epiphany 1.1.0 preliminary support for the ```arm64``` architecture was added. As the ```arm64``` architecture is relatively new to the datacenter at the time of writing only a subset of providers, operating system, components and applications are supported. Support will be extended in the future when there is a need for it.
+From Epiphany v1.1.0 preliminary support for the ```arm64``` architecture was added. As the ```arm64``` architecture is relatively new to the datacenter at the time of writing only a subset of providers, operating system, components and applications are supported. Support will be extended in the future when there is a need for it.
 
 ## Support
 
