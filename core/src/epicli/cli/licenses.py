@@ -1,5 +1,5 @@
 # This is a generated file so don`t change this manually. 
-# To re-generate run 'python gen-dependency-info.py 'GitHub PAC' ' from the project root.
+# To re-generate run 'python gen-dependency-info.py <GitHub_PAT>' from the project root.
 
 LICENSES = [
     {
