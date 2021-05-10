@@ -10,7 +10,7 @@ Besides making sure that the selected providers, operating systems, components a
 
 ### Providers
 
-| Providers | CentOS 7.x | RedHat 7.x | Ubuntu 18.04 |
+| Provider | CentOS 7.x | RedHat 7.x | Ubuntu 18.04 |
 | - | - | - | - |
 | Any | :heavy_check_mark: | :x: | :x: |
 | AWS | :heavy_check_mark: | :x: | :x: |
@@ -35,12 +35,12 @@ Besides making sure that the selected providers, operating systems, components a
 
 ***Notes***
 
-- For the ```postgresql``` component the ```pgpool``` and ```pgbouncer``` extensions for load-balancing and replication are not jet supported on ```arm64```. These should be disabled in the ```postgressql``` and ```applications``` configurations.
+- For the ```postgresql``` component the ```pgpool``` and ```pgbouncer``` extensions for load-balancing and replication are not yet supported on ```arm64```. These should be disabled in the ```postgressql``` and ```applications``` configurations.
 - While not defined in any of the component configurations, the ```elasticsearch_curator``` role is currently not supported on ```arm64``` and should be removed from the ```feature-mapping``` configuration if defined.
 
 ### Applications
 
-| Applications | Supported |
+| Application | Supported |
 | - | - |
 | ignite-stateless | :heavy_check_mark: |
 | rabbitmq | :heavy_check_mark: |
@@ -290,8 +290,8 @@ specification:
 
 ### ```AWS``` provider
 
-- Important is to specify the right ```arm64``` machine type for component which can be found [here](https://aws.amazon.com/ec2/instance-types/a1/).
-- Important is to specify the right ```arm64``` OS image which currently is only ```CentOS 7.9.2009 aarch64```.
+- Important is to specify the correct ```arm64``` machine type for component which can be found [here](https://aws.amazon.com/ec2/instance-types/a1/).
+- Important is to specify the correct ```arm64``` OS image which currently is only ```CentOS 7.9.2009 aarch64```.
 
 ```yaml
 ---
@@ -565,5 +565,5 @@ specification:
 
 ### ```Azure``` provider
 
-```Azure``` does not have ```arm64``` support jet.
+```Azure``` does not have ```arm64``` support yet.
 
