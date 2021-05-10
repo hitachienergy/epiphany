@@ -15,11 +15,8 @@
       state: stopped
     when:
       - groups['postgresql'][0] == inventory_hostname
-  when: 
-    - component_vars.specification.extensions.replication.enabled is defined
-    - component_vars.specification.extensions.replication.enabled
-    - component_vars.specification.extensions.replication.use_repmgr is defined
-    - component_vars.specification.extensions.replication.use_repmgr
+  when:
+    - component_vars.specification.extensions.replication.enabled | default(false)
 
 - name: Copy and restore backup files
   # Running on primary or only node
@@ -36,7 +33,7 @@
         artifacts:
           - "{{ snapshot_path  }}"
           - "{{ snapshot_path  }}.sha1"
-    
+
     - name: Verify snapshot checksum
       import_tasks: common/verify_snapshot_checksum.yml
 
@@ -54,7 +51,7 @@
         dest: "/var/tmp/postgresql_restore_source/"
         src: "{{ recovery_dir }}/{{ snapshot_path | basename }}"
         remote_src: true
-      
+
     - name: Cache existing configuration files
       block:
         - name: List existing configuration files
@@ -79,7 +76,7 @@
       file:
         path: "{{ pg_data_dir[ansible_os_family] }}/"
         state: absent
-    
+
     - name: Initialize database (RedHat)
       block:
       - name: Ensure that data directory exists
@@ -100,7 +97,7 @@
       command: "/usr/lib/postgresql/10/bin/initdb -D {{ pg_data_dir[ansible_os_family] }}"
       when:
         - ansible_os_family == 'Debian'
-      
+
     - name: Copy cached config files
       copy:
         src: "/var/tmp/postgresql_temp_config/"
@@ -118,7 +115,7 @@
       become: yes
       become_user: postgres
       command: "psql -f /var/tmp/postgresql_restore_source/data/database_dump.sql postgres"
-      
+
     - name: Configure repmgr
       #Repmgr on primary node
       block:
@@ -133,16 +130,13 @@
           name: "{{ repmgr_service_name[ansible_os_family] }}"
           state: started
       when:
-        - component_vars.specification.extensions.replication.enabled is defined
-        - component_vars.specification.extensions.replication.enabled
-        - component_vars.specification.extensions.replication.use_repmgr is defined
-        - component_vars.specification.extensions.replication.use_repmgr
+        - component_vars.specification.extensions.replication.enabled | default(false)
 
     - name: Remove created temporary files
       file:
         path: "{{ item }}"
         state: absent
-      loop: 
+      loop:
         - "/var/tmp/postgresql_restore_source/"
         - "/var/tmp/postgresql_temp_config/"
         - "{{ recovery_dir }}/{{ snapshot_path | basename }}"
@@ -156,13 +150,13 @@
       service:
         name: "{{ pg_service_name[ansible_os_family] }}"
         state: stopped
-    
+
     - name: Create temporary directory
       file:
         path: "/var/tmp/postgresql_temp_config"
         state: directory
         mode: 0666
-      
+
     - name: Cache existing configuration files
       block:
         - name: search for existing configuration files (RedHat)
@@ -177,19 +171,19 @@
             dest: "/var/tmp/postgresql_temp_config/"
             remote_src: yes
           loop: "{{ config_files.stdout_lines|flatten(levels=1) }}"
-    
+
     - name: Delete existing data directory before cloning from primary node
       file:
         path: "{{ pg_data_dir[ansible_os_family] }}/"
         state: absent
-    
+
     - name: Ensure that data directory exists (RedHat) #This needs to be check pn RedHat family sytems since not always location is created by init
       file:
         path: "{{ pg_data_dir[ansible_os_family] }}/"
         state: directory
         owner: postgres
         group: postgres
-      when: 
+      when:
         - ansible_os_family == 'RedHat'
 
     - name: Clone content from primary node using repmgr
@@ -208,7 +202,7 @@
       service:
         name: "{{ pg_service_name[ansible_os_family] }}"
         state: restarted
-    
+
     - name: Register secondary node to repmgr cluster
       become_user: postgres
       shell: "{{ repmgr_bindir[ansible_os_family] }}/repmgr -f {{ repmgr_config_dir[ansible_os_family] }}/repmgr.conf standby register -F"
@@ -222,10 +216,7 @@
       become_user: postgres
       shell: "{{ repmgr_bindir[ansible_os_family] }}/repmgr -f {{ repmgr_config_dir[ansible_os_family] }}/repmgr.conf standby follow -F"
   when:
-    - component_vars.specification.extensions.replication.enabled is defined
-    - component_vars.specification.extensions.replication.enabled
-    - component_vars.specification.extensions.replication.use_repmgr is defined
-    - component_vars.specification.extensions.replication.use_repmgr
+    - component_vars.specification.extensions.replication.enabled | default(false)
     - groups['postgresql'][1] == inventory_hostname
 
 - name: Restart repmgrd service
@@ -233,7 +224,4 @@
     name: "{{ repmgr_service_name[ansible_os_family] }}"
     state: restarted
   when:
-    - component_vars.specification.extensions.replication.enabled is defined
-    - component_vars.specification.extensions.replication.enabled
-    - component_vars.specification.extensions.replication.use_repmgr is defined
-    - component_vars.specification.extensions.replication.use_repmgr
+    - component_vars.specification.extensions.replication.enabled | default(false)
