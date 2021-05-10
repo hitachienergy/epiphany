@@ -12,7 +12,6 @@ curl
 docker-ce 5:19.03.14
 docker-ce-cli 5:19.03.14
 ebtables
-elasticsearch-curator 5.8.3
 elasticsearch-oss 6.8.5 # for elasticsearch role
 elasticsearch-oss 7.9.1 # for opendistroforelasticsearch & logging roles
 
@@ -207,6 +206,8 @@ https://github.com/hashicorp/vault-helm/archive/v0.4.0.tar.gz
 https://github.com/wrouesnel/postgres_exporter/releases/download/v0.8.0/postgres_exporter_v0.8.0_linux-amd64.tar.gz
 https://charts.bitnami.com/bitnami/node-exporter-1.1.2.tgz
 https://helm.elastic.co/helm/filebeat/filebeat-7.9.2.tgz
+# Switched from APT repo because there was only one (the latest) version available (issue #2262)
+https://packages.elastic.co/curator/5/debian9/pool/main/e/elasticsearch-curator/elasticsearch-curator_5.8.3_amd64.deb
 
 [images]
 haproxy:2.2.2-alpine

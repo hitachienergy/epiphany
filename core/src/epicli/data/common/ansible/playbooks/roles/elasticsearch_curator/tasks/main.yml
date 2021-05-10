@@ -1,6 +1,6 @@
 ---
-- name: Include installation tasks
-  include_tasks: install-es-curator.yml
+- name: Include installation task
+  include_tasks: install-es-curator-{{ ansible_os_family }}.yml
 
 - name: Include configuration tasks
   include_tasks: configure-cron-jobs.yml
