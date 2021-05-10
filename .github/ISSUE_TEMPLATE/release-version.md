@@ -12,7 +12,7 @@ assignees: ''
 * [ ] Default OS cloud images updated
 * [ ] Support branch created
 * [ ] CI pipelines for support branch created
-* All automated tests passed (QA pipelines)
+* All automated tests passed (QA pipelines):
   * [ ] Standard apply (new cluster)
   * [ ] Standard apply (existing cluster)
   * [ ] Upgrade for V-1
@@ -23,10 +23,14 @@ assignees: ''
   * [ ] Promote k8s to HA apply
   * [ ] Single machine apply
   * [ ] Offline mode apply
-* [ ] Changelog updated (release date, known issues, breaking changes, deprecations)
+* Changelog:
+  * [ ] Changelog updated (release date, known issues, breaking changes, deprecations)
+  * [ ] Changelog for the next version created in develop branch
+* Documentation:
+  * [ ] Updated LIFECYCLE.md & LIFECYCLE_GANTT.md
+  * [ ] Updated TESTING.md
 * [ ] Release pipeline performed
 * [ ] GitHub release exists with correct content (links)
 * [ ] `docker pull` command from the release description tested
 * [ ] Version bumped to the next in develop branch (in version.txt.py)
-* [ ] Changelog for the next version created in develop branch
 * [ ] Releases updated in ZenHub
