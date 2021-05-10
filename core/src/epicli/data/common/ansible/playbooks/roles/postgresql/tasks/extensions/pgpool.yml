@@ -1,5 +1,7 @@
 ---
-- name: Create PostgreSQL users for Pgpool
+# PgPool is configured only if such K8s application is enbled
+
+- name: Extensions | Create PostgreSQL users for Pgpool
   become_user: postgres
   postgresql_user:
     user: "{{ item.user }}"
@@ -18,7 +20,7 @@
       password: "{{ pgpool.secrets.pgpool_sr_check_password }}"
       role_attr_flags: LOGIN
 
-- name: Grant pg_monitor role to {{ pgpool.env.PGPOOL_SR_CHECK_USER }} user
+- name: Extensions | Grant pg_monitor role to {{ pgpool.env.PGPOOL_SR_CHECK_USER }} user
   become_user: postgres
   postgresql_membership:
     group: pg_monitor
