@@ -1,6 +1,6 @@
 # ARM
 
-From Epiphany 1.1.0 preliminary support for the ```arm64``` architecture was added. As the ```arm64``` architecture is relatively new to the datacenter at the time of writing only a subset of providers, operating system, components and applications are supported. Support will be extended in the future when there is a need for it.
+From Epiphany v1.1.0 preliminary support for the ```arm64``` architecture was added. As the ```arm64``` architecture is relatively new to the datacenter at the time of writing only a subset of providers, operating system, components and applications are supported. Support will be extended in the future when there is a need for it.
 
 ## Support
 
@@ -36,7 +36,7 @@ Besides making sure that the selected providers, operating systems, components a
 ***Notes***
 
 - For the ```postgresql``` component the ```pgpool``` and ```pgbouncer``` extensions for load-balancing and replication are not jet supported on ```arm64```. These should be disabled in the ```postgressql``` and ```applications``` configurations.
-- While not defined in any of the component configurations, the ```elasticsearch_curator``` role us currently not supported on ```arm64``` and should be removed from the ```feature-mapping``` configuration if defined.
+- While not defined in any of the component configurations, the ```elasticsearch_curator``` role is currently not supported on ```arm64``` and should be removed from the ```feature-mapping``` configuration if defined.
 
 ### Applications
 
