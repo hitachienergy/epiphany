@@ -16,13 +16,10 @@
 
 # - {{ subgroup.name }} -
 
-{%       for parameter in subgroup.parameters if (parameter.when is undefined
-                                                        or (parameter.when
-                                                            and specification.extensions[parameter.when].enabled is defined
-                                                            and specification.extensions[parameter.when].enabled))
-                                                    and (ansible_architecture != "aarch64"
-                                                        or parameter.when is undefined
-                                                        or parameter.when not in ["replication", "pgbouncer"]) %}
+{%       for parameter in subgroup.parameters if parameter.when is undefined
+                                                 or (parameter.when
+                                                     and specification.extensions[parameter.when].enabled is defined
+                                                     and specification.extensions[parameter.when].enabled) %}
 {#         use of 'parameter_value' is workaround since we don't have Jinja's {% do %} statement enabled (required to update dictionaries) #}
 {%         set parameter_value = parameter.value %}
 {%         if parameter.name == 'shared_preload_libraries' and parameter.value|lower == 'autoconfigured' %}
@@ -46,10 +43,6 @@
                                                         | map(attribute='shared_preload_libraries')
                                                         | list | flatten %}
 {%             set shared_preload_libraries = (shared_preload_libraries | difference(disabled_extensions_libraries)) + enabled_extensions_libraries %}
-{%             if ansible_architecture == "aarch64" %}
-{#               disable shared libraries unsupported by ARM #}
-{%               set shared_preload_libraries = shared_preload_libraries | difference(["repmgr"]) %}
-{%             endif %}
 {%           endif %}
 {%           if shared_preload_libraries %}
 {%             set parameter_value = "'" + shared_preload_libraries | unique | join(',') + "'" %}
