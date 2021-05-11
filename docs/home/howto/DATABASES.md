@@ -157,10 +157,10 @@ specification:
     ...
     replication:
       enabled: true
-      replication_user_name: your_priviledged_user_name
+      replication_user_name: your_privileged_user_name
       replication_user_password: PASSWORD_TO_CHANGE
-      priviledged_user_name: your_priviledged_user_name
-      priviledged_user_password: PASSWORD_TO_CHANGE
+      privileged_user_name: your_privileged_user_name
+      privileged_user_password: PASSWORD_TO_CHANGE
       use_repmgr: true
       repmgr_database: repmgr
       shared_preload_libraries:

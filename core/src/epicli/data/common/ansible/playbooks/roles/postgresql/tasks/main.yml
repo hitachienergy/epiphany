@@ -1,4 +1,20 @@
 ---
+- name: Set facts
+  set_fact:
+    enabled_extensions: >-
+      {{ (_defined_extensions | selectattr('config.enabled') | list) + _undefined_extensions }}
+  vars:
+    _defined_extensions: >-
+      {{ specification.extensions
+          | dict2items(key_name='name', value_name='config')
+          | selectattr('config.enabled', 'defined')
+          | list }}
+    _undefined_extensions: >-
+      {{ specification.extensions
+          | dict2items(key_name='name', value_name='config')
+          | selectattr('config.enabled', 'undefined')
+          | list }}
+
 - name: Install OS-specific packages
   package:
     name: "{{ _packages[ansible_os_family] }}"
@@ -8,18 +24,19 @@
       Debian:
         - postgresql-10
         - postgresql-contrib-10
-        - python-psycopg2 # required for postresql ansible management
+        - python-psycopg2 # required for postgresql ansible management
       RedHat:
         - postgresql10-server
-        - python-psycopg2 # required for postresql ansible management
+        - python-psycopg2 # required for postgresql ansible management
   module_defaults:
     yum: { lock_timeout: "{{ yum_lock_timeout }}" }
 
-- name: Ensure that postgresql service is running and enabled
-  systemd:
-    name: pg_service_name[ansible_os_family]
-    state: started
-    enabled: true
+# Extension packages need to be installed first to be able to process PostgreSQL config
+- name: Install extension packages
+  include_tasks: extensions/{{ data.name }}/packages.yml
+  loop_control:
+    loop_var: data
+  loop: "{{ enabled_extensions }}"
 
 - name: Create directory /var/log/postgresql
   # The same permissions as for PG installed on RHEL from Software Collections (different on Ubuntu)
@@ -34,11 +51,11 @@
   block:
     - name: Check initialization status (RedHat)
       stat:
-        path: "{{ pg_config_dir[ansible_os_family] }}/pg_hba.conf"
+        path: "{{ pg.config_dir[ansible_os_family] }}/pg_hba.conf"
       register: pg_hba_conf_stat
 
     - name: Initialize database (RedHat)
-      command: /usr/pgsql-10/bin/postgresql-10-setup initdb {{ pg_service_name[ansible_os_family] }}
+      command: /usr/pgsql-10/bin/postgresql-10-setup initdb {{ pg.service_name[ansible_os_family] }}
       when:
         - not pg_hba_conf_stat.stat.exists
   when:
@@ -46,7 +63,7 @@
 
 - name: Change pg_hba.conf
   replace:
-    path: "{{ pg_config_dir[ansible_os_family] }}/pg_hba.conf"
+    path: "{{ pg.config_dir[ansible_os_family] }}/pg_hba.conf"
     regexp: '^host\s+all\s+all\s+127\.0\.0\.1/32\s+(?:ident|md5)$'
     replace: 'host    all             all             0.0.0.0/0               md5'
     backup: true
@@ -55,21 +72,33 @@
 # Used in postgresql-epiphany.conf.j2
 - name: Set runtime_shared_preload_libraries fact
   block:
+    - name: Collect facts about system services
+      service_facts:
+      register: services_state
+
     - name: Get PostgreSQL settings
       become: true
       become_user: postgres
+      vars:
+        _service: "{{ pg.service_name[ansible_os_family] }}.service"
+        _state: "{{ ansible_facts.services[_service] }}"
       postgresql_info:
         filter: settings
       register: postgresql_info
+      when:
+        - "_service|string in ansible_facts.services"
+        - "_state|string == 'started'"
 
     - name: Set runtime_shared_preload_libraries fact
       set_fact:
         runtime_shared_preload_libraries: "{{ postgresql_info.settings.shared_preload_libraries.setting }}"
+      when:
+        - postgresql_info.settings is defined
 
 - name: Create Epiphany managed configuration sub-file
   template:
     src: postgresql-epiphany.conf.j2
-    dest: "{{ pg_config_dir[ansible_os_family] }}/postgresql-epiphany.conf"
+    dest: "{{ pg.config_dir[ansible_os_family] }}/postgresql-epiphany.conf"
     owner: postgres
     group: postgres
     mode: u=rw,g=,o=
@@ -77,7 +106,7 @@
 
 - name: Change postgresql.conf
   lineinfile:
-    path: "{{ pg_config_dir[ansible_os_family] }}/postgresql.conf"
+    path: "{{ pg.config_dir[ansible_os_family] }}/postgresql.conf"
     line: "include = 'postgresql-epiphany.conf'	# Epiphany managed configuration that overrides above settings"
     insertafter: '^#include ' # insert line after the last 'include' to override all settings
     firstmatch: false
@@ -86,11 +115,17 @@
 
 - name: Restart postgresql service if configuration changed
   systemd:
-    name: "{{ pg_service_name[ansible_os_family] }}"
+    name: "{{ pg.service_name[ansible_os_family] }}"
     state: restarted
   when: change_pg_hba_conf
     or change_postgresql_epiphany_conf
     or change_postgresql_conf
+
+# This is a separate task as service restart runs not each time
+- name: Enable postgresql service
+  systemd:
+    name: "{{ pg.service_name[ansible_os_family] }}"
+    enabled: true
 
 - name: Configure postgresql logrotate
   block:
@@ -109,25 +144,12 @@
         mode: u=rw,g=r,o=r
 
 - name: Include extensions
-  include_tasks: extensions/{{ data.name }}.yml
+  include_tasks: extensions/{{ data.name }}/extension.yml
   loop_control:
     loop_var: data
-  loop: "{{ _enabled_extensions }}"
-  vars:
-    _defined: >-
-      {{ postgresql.specification.extensions
-          | dict2items(key_name='name', value_name='config')
-          | selectattr('config.enabled', 'defined')
-          | list }}
-    _undefined: >-
-      {{ postgresql.specification.extensions
-          | dict2items(key_name='name', value_name='config')
-          | selectattr('config.enabled', 'undefined')
-          | list }}
-    _enabled_extensions: >-
-      {{ (_defined | selectattr('config.enabled') | list) + _undefined }}
+  loop: "{{ enabled_extensions }}"
 
-# PgPool is configured only if such K8s application is enbled
+# PgPool is configured only if such K8s application is enabled
 - name: Extensions | Set up PgPool
   block:
     - name: Extensions | Include PgPool vars from applications role
@@ -138,7 +160,7 @@
         - "'applications' in roles_with_generated_vars"
 
     - name: Extensions | Include PgPool setup tasks
-      include_tasks: extensions/pgpool.yml
+      include_tasks: extensions/pgpool/extension.yml
       vars:
         pgpool: >-
           {{ applications_role_config.specification.applications | default([])

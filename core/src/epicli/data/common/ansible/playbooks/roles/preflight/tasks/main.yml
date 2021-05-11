@@ -23,7 +23,7 @@
         fail_msg: >-
           The following components in inventory are not supported for {{ architecture }} architecture on {{ os_distro }} OS:
           {{ unsupported_components_checklist | join(', ') }}.
-          If the components are not neccessary, you may remove them from the feature-mapping
+          If the components are not necessary, you may remove them from the feature-mapping
           (see https://github.com/epiphany-platform/epiphany/blob/develop/docs/home/howto/CLUSTER.md#how-to-create-custom-cluster-components).
         success_msg: All components supported for {{ architecture }} architecture
 
@@ -37,7 +37,9 @@
     - name: Check if enabled applications are supported for the architecture
       assert:
         that: _unsupported_enabled_apps | length == 0
-        fail_msg: "Following application(s) are not supported for {{ _k8s_arch }} and cannot be installed: {{ _unsupported_enabled_apps | map(attribute='name') | join(', ') }}"
+        fail_msg: >-
+          Following application(s) are not supported for {{ _k8s_arch }} and cannot be installed:
+            {{ _unsupported_enabled_apps | map(attribute='name') | join(', ') }}
         success_msg: "All enabled applications are supported for {{ _k8s_arch }}"
       vars:
         _k8s_arch: >-
@@ -68,8 +70,10 @@
     - name: Check if PostgreSQL extensions are supported for the architecture
       assert:
         that: _unsupported_enabled_extensions | length == 0
-        fail_msg: "PgBouncer and Repmgr extensions are not supported for ARM and cannot be installed"
-        success_msg: "All enabled PostgreSQL extensions are supported for ARM"
+        fail_msg: >-
+          {{ unsupported_postgres_extensions[_pg_arch] | join(', ') }} extensions are not supported for {{ _pg_arch }}
+            and cannot be installed
+        success_msg: "All enabled PostgreSQL extensions are supported for current architecture"
       vars:
         _pg_arch: >-
           {{ hostvars[groups['postgresql'][0]]['ansible_architecture'] }}
