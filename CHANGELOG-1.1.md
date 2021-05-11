@@ -36,6 +36,10 @@
 - [#2241](https://github.com/epiphany-platform/epiphany/issues/2241) - [AMD64/ARM64] Vault (k8s) updated to version 0.10.0, helm chart with Vault updated to version 0.11.0 and Hashicorp Vault updated to version 1.7.0
 - [#2116](https://github.com/epiphany-platform/epiphany/issues/2116) - [AMD64/ARM64] Logstash updated to version 7.12.0
 
+### Deprecated
+
+- [#2237](https://github.com/epiphany-platform/epiphany/issues/2237) - Support only one replication type for PostgreSQL (with repmgr)
+
 ### Breaking changes
 
 ### Known issues
