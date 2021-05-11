@@ -200,6 +200,7 @@ or VMs and should meet the following requirements:
 5. A requirements machine that:
     - Runs the same distribution as the air-gapped cluster machines/VMs (RedHat 7, CentOS 7, Ubuntu 18.04)
     - Has access to the internet.
+   If you dont have access to a similar machine/VM with internet access you can also try and download the requiments with a Docker container. More information [here](./CLUSTER.md#downloading-offline-requirements-with-a-docker-container).
 6. A provisioning machine that:
     - Has access to the SSH keys
     - Is on the same network as your cluster machines
@@ -1020,3 +1021,77 @@ specification:
   managed: true
 provider: azure
 ```
+
+## Downloading offline requirements with a Docker container
+
+This paragraph describes how to use a Docker container to download the requirements for airgapped/offline installations. At this time we don't offically support this and we still recommand using a full distribution which is the same as the air-gapped cluster machines/VMs.
+
+A few points:
+- This only describes how to setup the the Docker containers for downloading. The rest of the steps are similar as in the paragraph [here](./CLUSTER.md#how-to-create-an-epiphany-cluster-on-existing-air-gapped-infrastructure).
+- Main reason why you might want to give this a try is to download ```arm64``` architecture requirements on a ```x86_64``` machine. More information on the current state of ```arm64``` support can be found [here](./../ARM.md#arm).
+
+### Ubuntu 18.04
+
+For Ubuntu you can use the following command to launch a container:
+
+```shell
+docker run -v /shared_folder:/home <--platform linux/amd64 or --platform linux/arm64> --rm -it ubuntu:18.04
+```
+
+As the ```ubuntu:18.04``` image is multi-arch you can include ```--platform linux/amd64``` or ```--platform linux/arm64``` to run the container as the specified architecture. The ```/share_folder``` should be a folder on your local machine containing the requirement scripts.
+
+When you are inside the container run the following commands to prepare for the running of the ```download-requirements.sh``` script:
+
+```shell
+apt-get update # update the package manager
+apt-get install sudo # install sudo so we can make the download-requirements.sh executable and run it as root
+sudo chmod +x /home/download-requirements.sh # make the requirements script executable
+```
+
+After this you should be able to run the ```download-requirements.sh``` from the ```home``` folder.
+
+### RedHat 7.x
+
+For RedHat you can use the following command to launch a container:
+
+```shell
+docker run -v /shared_folder:/home <--platform linux/amd64 or --platform linux/arm64> --rm -it registry.access.redhat.com/ubi7/ubi:7.9
+```
+
+As the ```registry.access.redhat.com/ubi7/ubi:7.9``` image is multi-arch you can include ```--platform linux/amd64``` or ```--platform linux/arm64``` to run the container as the specified architecture. The ```/share_folder``` should be a folder on your local machine containing the requirement scripts.
+
+For running the ```download-requirements.sh``` script you will need a RedHat developer subscription to register the running container and make sure you can access to offical Redhat repos for the packages needed. More information on getting this free subscribtion [here](https://developers.redhat.com/articles/getting-red-hat-developer-subscription-what-rhel-users-need-know).
+
+When you are inside the container run the following commands to prepare for the running of the ```download-requirements.sh``` script:
+
+```shell
+subscription-manager register # will ask for you credentials of your RedHat developer subscription and setup the container
+subscription-manager attach --auto # will enable the RedHat offical repositories
+chmod +x /home/download-requirements.sh # make the requirements script executable
+```
+
+After this you should be able to run the ```download-requirements.sh```  from the ```home``` folder.
+
+### CentOS 7.x
+
+For CentOS you can use the following command to launch a container:
+
+arm64:
+```shell
+docker run -v /shared_folder:/home --platform linux/arm64 --rm -it arm64v8/centos:7.9.2009
+```
+
+x86_64:
+```shell
+docker run -v /shared_folder:/home --platform linux/amd64 --rm -it amd64/centos:7.9.2009
+```
+
+The ```/share_folder``` should be a folder on your local machine containing the requirement scripts.
+
+When you are inside the container run the following commands to prepare for the running of the ```download-requirements.sh``` script:
+
+```shell
+chmod +x /home/download-requirements.sh # make the requirements script executable
+```
+
+After this you should be able to run the ```download-requirements.sh```  from the ```home``` folder.
