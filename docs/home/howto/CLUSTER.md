@@ -1024,7 +1024,7 @@ provider: azure
 
 ## Downloading offline requirements with a Docker container
 
-This paragraph describes how to use a Docker container to download the requirements for airgapped/offline installations. At this time we don't offically support this and we still recommand using a full distribution which is the same as the air-gapped cluster machines/VMs.
+This paragraph describes how to use a Docker container to download the requirements for air-gapped/offline installations. At this time we don't officially support this and we still recommend using a full distribution which is the same as the air-gapped cluster machines/VMs.
 
 A few points:
 - This only describes how to setup the the Docker containers for downloading. The rest of the steps are similar as in the paragraph [here](./CLUSTER.md#how-to-create-an-epiphany-cluster-on-existing-air-gapped-infrastructure).
