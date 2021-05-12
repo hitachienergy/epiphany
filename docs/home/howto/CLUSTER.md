@@ -1038,7 +1038,7 @@ For Ubuntu you can use the following command to launch a container:
 docker run -v /shared_folder:/home <--platform linux/amd64 or --platform linux/arm64> --rm -it ubuntu:18.04
 ```
 
-As the ```ubuntu:18.04``` image is multi-arch you can include ```--platform linux/amd64``` or ```--platform linux/arm64``` to run the container as the specified architecture. The ```/share_folder``` should be a folder on your local machine containing the requirement scripts.
+As the ```ubuntu:18.04``` image is multi-arch you can include ```--platform linux/amd64``` or ```--platform linux/arm64``` to run the container as the specified architecture. The ```/shared_folder``` should be a folder on your local machine containing the required scripts.
 
 When you are inside the container run the following commands to prepare for the running of the ```download-requirements.sh``` script:
 
