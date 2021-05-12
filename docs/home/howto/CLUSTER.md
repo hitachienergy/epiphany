@@ -1027,7 +1027,7 @@ provider: azure
 This paragraph describes how to use a Docker container to download the requirements for air-gapped/offline installations. At this time we don't officially support this and we still recommend using a full distribution which is the same as the air-gapped cluster machines/VMs.
 
 A few points:
-- This only describes how to setup the the Docker containers for downloading. The rest of the steps are similar as in the paragraph [here](./CLUSTER.md#how-to-create-an-epiphany-cluster-on-existing-air-gapped-infrastructure).
+- This only describes how to setup the Docker containers for downloading. The rest of the steps are similar as in the paragraph [here](./CLUSTER.md#how-to-create-an-epiphany-cluster-on-existing-air-gapped-infrastructure).
 - Main reason why you might want to give this a try is to download ```arm64``` architecture requirements on a ```x86_64``` machine. More information on the current state of ```arm64``` support can be found [here](./../ARM.md#arm).
 
 ### Ubuntu 18.04
