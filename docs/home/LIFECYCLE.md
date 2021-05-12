@@ -17,7 +17,7 @@ Versions will be released every quarter (except the quarter when the LTS version
 
 ## Long-term Support (LTS)
 
-The LTS version will be released once a year and will be supported for up to 3 years. During support time, patch releases will be made to the LTS version.
+The LTS version will be released once a year and will be supported for up to 3 years. During support time, patch releases will be made to the LTS version. The patch version will be released immediately after critical bug fix, in case of minor issues the patch version will be released along with other releases (quarterly).
 
 | Epiphany version | Release date | Latest version | Release date | End of support |
 | ----------------------| --------------- | -------------|--------------------|--------------- |
@@ -29,11 +29,11 @@ The LTS version will be released once a year and will be supported for up to 3 y
 | 0.7.x | 1 Jul 2020 | 0.7.3 | 15 Apr 2021 | 30 Jun 2021 |
 | 0.8.x | 22 Oct 2020 | 0.8.2 | 13 Apr 2021 | est. 30 Sep 2021 |
 | 0.9.x | 19 Jan 2021 | 0.9.1 | 22 Apr 2021 | est. 30 Dec 2021 |
-| 0.10.x LTS| 01 Apr 2021 | 0.10.0 | 01 Apr 2021 | 01 Apr 2024 |
-| 0.11.x STS| est. 30 Jun 2021 | - | - | est. 30 Dec 2021 |
-| 0.12.x STS| est. 30 Sep 2021 | - | -  | est. 30 Mar 2021 |
-| 0.13.x STS| est. 30 Dec 2021 | - | - | est. 30 Jun 2022 |
-| 0.14.x LTS| est. 01 Apr 2022 | - | - | est. 01 Apr 2025 |
+| 1.0.x LTS| 01 Apr 2021 | 0.10.0 | 01 Apr 2021 | 01 Apr 2024 |
+| 1.1.x STS| est. 30 Jun 2021 | - | - | est. 30 Dec 2021 |
+| 1.2.x STS| est. 30 Sep 2021 | - | - | est. 30 Mar 2021 |
+| 1.3.x STS| est. 30 Dec 2021 | - | - | est. 30 Jun 2022 |
+| 2.0.x LTS| est. 01 Apr 2022 | - | - | est. 01 Apr 2025 |
 
 ![lifecycle](../assets/images/lifecycle.png)
 
