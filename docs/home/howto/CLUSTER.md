@@ -1086,7 +1086,7 @@ x86_64:
 docker run -v /shared_folder:/home --platform linux/amd64 --rm -it amd64/centos:7.9.2009
 ```
 
-The ```/share_folder``` should be a folder on your local machine containing the requirement scripts.
+The ```/shared_folder``` should be a folder on your local machine containing the requirement scripts.
 
 When you are inside the container run the following commands to prepare for the running of the ```download-requirements.sh``` script:
 
