@@ -13,7 +13,7 @@ jsonschema = "*"
 python-json-logger = "*"
 ansible = "==2.10.5"
 terraform-bin = "*"
-azure-cli = "==2.8.0"
+azure-cli = "==2.23.0"
 "ruamel.yaml" = "*"
 
 [build-system]

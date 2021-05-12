@@ -1,10 +1,10 @@
 # This is a generated file so don`t change this manually. 
-# To re-generate run 'python gen-licenses.py' from the project root.
+# To re-generate run 'python gen-dependency-info.py <GitHub_PAT>' from the project root.
 
 LICENSES = [
     {
         "Name": "adal",
-        "Version": "1.2.5",
+        "Version": "1.2.7",
         "Summary": "Note: This library is already replaced by MSAL Python, available here: https://pypi.org/project/msal/ .ADAL Python remains available here as a legacy. The ADAL for Python library makes it easy for python application to authenticate to Azure Active Directory (AAD) in order to access AAD protected web resources.",
         "Home-page": "https://github.com/AzureAD/azure-activedirectory-library-for-python",
         "Author": "Microsoft Corporation",
@@ -14,7 +14,7 @@ LICENSES = [
     },
     {
         "Name": "ansible-base",
-        "Version": "2.10.5",
+        "Version": "2.10.9",
         "Summary": "Radically simple IT automation",
         "Home-page": "https://ansible.com/",
         "Author": "Ansible, Inc.",
@@ -38,7 +38,7 @@ LICENSES = [
     },
     {
         "Name": "applicationinsights",
-        "Version": "0.11.9",
+        "Version": "0.11.10",
         "Summary": "This project extends the Application Insights API surface to support Python.",
         "Home-page": "https://github.com/Microsoft/ApplicationInsights-Python",
         "Author": "Microsoft",
@@ -49,7 +49,7 @@ LICENSES = [
     },
     {
         "Name": "argcomplete",
-        "Version": "1.12.2",
+        "Version": "1.12.3",
         "Summary": "Bash tab completion for argparse",
         "Home-page": "https://github.com/kislyuk/argcomplete",
         "Author": "Andrey Kislyuk",
@@ -60,15 +60,23 @@ LICENSES = [
     },
     {
         "Name": "attrs",
-        "Version": "20.3.0",
+        "Version": "21.1.0",
         "Summary": "Classes Without Boilerplate",
         "Home-page": "https://www.attrs.org/",
         "Author": "Hynek Schlawack",
         "License": "MIT"
     },
     {
+        "Name": "azure-appconfiguration",
+        "Version": "1.1.1",
+        "Summary": "Microsoft App Configuration Data Library for Python",
+        "Home-page": "https://github.com/Azure/azure-sdk-for-python/tree/master/sdk/appconfiguration/azure-appconfiguration",
+        "Author": "Microsoft Corporation",
+        "License": "MIT License"
+    },
+    {
         "Name": "azure-batch",
-        "Version": "9.0.0",
+        "Version": "10.0.0",
         "Summary": "Microsoft Azure Batch Client Library for Python",
         "Home-page": "https://github.com/Azure/azure-sdk-for-python",
         "Author": "Microsoft Corporation",
@@ -78,31 +86,9 @@ LICENSES = [
         "License text": "MIT License\n\nCopyright (c) [year] [fullname]\n\nPermission is hereby granted, free of charge, to any person obtaining a copy\nof this software and associated documentation files (the \"Software\"), to deal\nin the Software without restriction, including without limitation the rights\nto use, copy, modify, merge, publish, distribute, sublicense, and/or sell\ncopies of the Software, and to permit persons to whom the Software is\nfurnished to do so, subject to the following conditions:\n\nThe above copyright notice and this permission notice shall be included in all\ncopies or substantial portions of the Software.\n\nTHE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR\nIMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,\nFITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE\nAUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER\nLIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,\nOUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE\nSOFTWARE.\n"
     },
     {
-        "Name": "azure-cli-command-modules-nspkg",
-        "Version": "2.0.3",
-        "Summary": "Microsoft Azure CLI Command Modules Namespace Package",
-        "Home-page": "https://github.com/Azure/azure-cli",
-        "Author": "Microsoft Corporation",
-        "License": "MIT License",
-        "License URL": "https://api.github.com/repos/azure/azure-cli/license",
-        "License repo": "MIT License\n\nCopyright (c) 2016 Microsoft Corporation\n\nPermission is hereby granted, free of charge, to any person obtaining a copy\nof this software and associated documentation files (the \"Software\"), to deal\nin the Software without restriction, including without limitation the rights\nto use, copy, modify, merge, publish, distribute, sublicense, and/or sell\ncopies of the Software, and to permit persons to whom the Software is\nfurnished to do so, subject to the following conditions:\n\nThe above copyright notice and this permission notice shall be included in all\ncopies or substantial portions of the Software.\n\nTHE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR\nIMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,\nFITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE\nAUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER\nLIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,\nOUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE\nSOFTWARE.\n",
-        "License text": "MIT License\n\nCopyright (c) [year] [fullname]\n\nPermission is hereby granted, free of charge, to any person obtaining a copy\nof this software and associated documentation files (the \"Software\"), to deal\nin the Software without restriction, including without limitation the rights\nto use, copy, modify, merge, publish, distribute, sublicense, and/or sell\ncopies of the Software, and to permit persons to whom the Software is\nfurnished to do so, subject to the following conditions:\n\nThe above copyright notice and this permission notice shall be included in all\ncopies or substantial portions of the Software.\n\nTHE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR\nIMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,\nFITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE\nAUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER\nLIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,\nOUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE\nSOFTWARE.\n"
-    },
-    {
         "Name": "azure-cli-core",
-        "Version": "2.8.0",
+        "Version": "2.23.0",
         "Summary": "Microsoft Azure Command-Line Tools Core Module",
-        "Home-page": "https://github.com/Azure/azure-cli",
-        "Author": "Microsoft Corporation",
-        "License": "MIT License",
-        "License URL": "https://api.github.com/repos/azure/azure-cli/license",
-        "License repo": "MIT License\n\nCopyright (c) 2016 Microsoft Corporation\n\nPermission is hereby granted, free of charge, to any person obtaining a copy\nof this software and associated documentation files (the \"Software\"), to deal\nin the Software without restriction, including without limitation the rights\nto use, copy, modify, merge, publish, distribute, sublicense, and/or sell\ncopies of the Software, and to permit persons to whom the Software is\nfurnished to do so, subject to the following conditions:\n\nThe above copyright notice and this permission notice shall be included in all\ncopies or substantial portions of the Software.\n\nTHE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR\nIMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,\nFITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE\nAUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER\nLIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,\nOUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE\nSOFTWARE.\n",
-        "License text": "MIT License\n\nCopyright (c) [year] [fullname]\n\nPermission is hereby granted, free of charge, to any person obtaining a copy\nof this software and associated documentation files (the \"Software\"), to deal\nin the Software without restriction, including without limitation the rights\nto use, copy, modify, merge, publish, distribute, sublicense, and/or sell\ncopies of the Software, and to permit persons to whom the Software is\nfurnished to do so, subject to the following conditions:\n\nThe above copyright notice and this permission notice shall be included in all\ncopies or substantial portions of the Software.\n\nTHE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR\nIMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,\nFITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE\nAUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER\nLIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,\nOUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE\nSOFTWARE.\n"
-    },
-    {
-        "Name": "azure-cli-nspkg",
-        "Version": "3.0.4",
-        "Summary": "Microsoft Azure CLI Namespace Package",
         "Home-page": "https://github.com/Azure/azure-cli",
         "Author": "Microsoft Corporation",
         "License": "MIT License",
@@ -123,7 +109,7 @@ LICENSES = [
     },
     {
         "Name": "azure-cli",
-        "Version": "2.8.0",
+        "Version": "2.23.0",
         "Summary": "Microsoft Azure Command-Line Tools",
         "Home-page": "https://github.com/Azure/azure-cli",
         "Author": "Microsoft Corporation",
@@ -134,7 +120,7 @@ LICENSES = [
     },
     {
         "Name": "azure-common",
-        "Version": "1.1.26",
+        "Version": "1.1.27",
         "Summary": "Microsoft Azure Client Library for Python (Common)",
         "Home-page": "https://github.com/Azure/azure-sdk-for-python",
         "Author": "Microsoft Corporation",
@@ -145,7 +131,7 @@ LICENSES = [
     },
     {
         "Name": "azure-core",
-        "Version": "1.10.0",
+        "Version": "1.13.0",
         "Summary": "Microsoft Azure Core Library for Python",
         "Home-page": "https://github.com/Azure/azure-sdk-for-python/tree/master/sdk/core/azure-core",
         "Author": "Microsoft Corporation",
@@ -164,7 +150,7 @@ LICENSES = [
     },
     {
         "Name": "azure-datalake-store",
-        "Version": "0.0.51",
+        "Version": "0.0.52",
         "Summary": "Azure Data Lake Store Filesystem Client Library for Python",
         "Home-page": "https://github.com/Azure/azure-data-lake-store-python",
         "Author": "Microsoft Corporation",
@@ -193,6 +179,22 @@ LICENSES = [
         "License URL": "https://api.github.com/repos/azure/azure-sdk-for-python/license",
         "License repo": "The MIT License (MIT)\n\nCopyright (c) 2016 Microsoft\n\nPermission is hereby granted, free of charge, to any person obtaining a copy\nof this software and associated documentation files (the \"Software\"), to deal\nin the Software without restriction, including without limitation the rights\nto use, copy, modify, merge, publish, distribute, sublicense, and/or sell\ncopies of the Software, and to permit persons to whom the Software is\nfurnished to do so, subject to the following conditions:\n\nThe above copyright notice and this permission notice shall be included in all\ncopies or substantial portions of the Software.\n\nTHE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR\nIMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,\nFITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE\nAUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER\nLIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,\nOUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE\nSOFTWARE.\n",
         "License text": "MIT License\n\nCopyright (c) [year] [fullname]\n\nPermission is hereby granted, free of charge, to any person obtaining a copy\nof this software and associated documentation files (the \"Software\"), to deal\nin the Software without restriction, including without limitation the rights\nto use, copy, modify, merge, publish, distribute, sublicense, and/or sell\ncopies of the Software, and to permit persons to whom the Software is\nfurnished to do so, subject to the following conditions:\n\nThe above copyright notice and this permission notice shall be included in all\ncopies or substantial portions of the Software.\n\nTHE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR\nIMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,\nFITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE\nAUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER\nLIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,\nOUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE\nSOFTWARE.\n"
+    },
+    {
+        "Name": "azure-identity",
+        "Version": "1.5.0",
+        "Summary": "Microsoft Azure Identity Library for Python",
+        "Home-page": "https://github.com/Azure/azure-sdk-for-python/tree/master/sdk/identity/azure-identity",
+        "Author": "Microsoft Corporation",
+        "License": "MIT License"
+    },
+    {
+        "Name": "azure-keyvault-administration",
+        "Version": "4.0.0b3",
+        "Summary": "Microsoft Azure Key Vault Administration Client Library for Python",
+        "Home-page": "https://github.com/Azure/azure-sdk-for-python/tree/master/sdk/keyvault/azure-keyvault-administration",
+        "Author": "Microsoft Corporation",
+        "License": "MIT License"
     },
     {
         "Name": "azure-keyvault",
@@ -229,7 +231,7 @@ LICENSES = [
     },
     {
         "Name": "azure-mgmt-apimanagement",
-        "Version": "0.1.0",
+        "Version": "0.2.0",
         "Summary": "Microsoft Azure API Management Client Library for Python",
         "Home-page": "https://github.com/Azure/azure-sdk-for-python",
         "Author": "Microsoft Corporation",
@@ -240,7 +242,7 @@ LICENSES = [
     },
     {
         "Name": "azure-mgmt-appconfiguration",
-        "Version": "0.4.0",
+        "Version": "1.0.1",
         "Summary": "Microsoft Azure App Configuration Management Client Library for Python",
         "Home-page": "https://github.com/Azure/azure-sdk-for-python",
         "Author": "Microsoft Corporation",
@@ -262,7 +264,7 @@ LICENSES = [
     },
     {
         "Name": "azure-mgmt-authorization",
-        "Version": "0.52.0",
+        "Version": "0.61.0",
         "Summary": "Microsoft Azure Authorization Management Client Library for Python",
         "Home-page": "https://github.com/Azure/azure-sdk-for-python",
         "Author": "Microsoft Corporation",
@@ -295,7 +297,7 @@ LICENSES = [
     },
     {
         "Name": "azure-mgmt-billing",
-        "Version": "0.2.0",
+        "Version": "1.0.0",
         "Summary": "Microsoft Azure Billing Client Library for Python",
         "Home-page": "https://github.com/Azure/azure-sdk-for-python",
         "Author": "Microsoft Corporation",
@@ -306,7 +308,7 @@ LICENSES = [
     },
     {
         "Name": "azure-mgmt-botservice",
-        "Version": "0.2.0",
+        "Version": "0.3.0",
         "Summary": "Microsoft Azure Bot Service Client Library for Python",
         "Home-page": "https://github.com/Azure/azure-sdk-for-python",
         "Author": "Microsoft Corporation",
@@ -317,7 +319,7 @@ LICENSES = [
     },
     {
         "Name": "azure-mgmt-cdn",
-        "Version": "4.1.0rc1",
+        "Version": "11.0.0",
         "Summary": "Microsoft Azure CDN Management Client Library for Python",
         "Home-page": "https://github.com/Azure/azure-sdk-for-python",
         "Author": "Microsoft Corporation",
@@ -328,7 +330,7 @@ LICENSES = [
     },
     {
         "Name": "azure-mgmt-cognitiveservices",
-        "Version": "6.2.0",
+        "Version": "6.3.0",
         "Summary": "Microsoft Azure Cognitive Services Management Client Library for Python",
         "Home-page": "https://github.com/Azure/azure-sdk-for-python",
         "Author": "Microsoft Corporation",
@@ -339,7 +341,7 @@ LICENSES = [
     },
     {
         "Name": "azure-mgmt-compute",
-        "Version": "12.1.0",
+        "Version": "20.0.0",
         "Summary": "Microsoft Azure Compute Management Client Library for Python",
         "Home-page": "https://github.com/Azure/azure-sdk-for-python",
         "Author": "Microsoft Corporation",
@@ -372,7 +374,7 @@ LICENSES = [
     },
     {
         "Name": "azure-mgmt-containerregistry",
-        "Version": "3.0.0rc13",
+        "Version": "3.0.0rc17",
         "Summary": "Microsoft Azure Container Registry Client Library for Python",
         "Home-page": "https://github.com/Azure/azure-sdk-for-python",
         "Author": "Microsoft Corporation",
@@ -383,7 +385,7 @@ LICENSES = [
     },
     {
         "Name": "azure-mgmt-containerservice",
-        "Version": "9.0.1",
+        "Version": "11.1.0",
         "Summary": "Microsoft Azure Container Service Management Client Library for Python",
         "Home-page": "https://github.com/Azure/azure-sdk-for-python",
         "Author": "Microsoft Corporation",
@@ -394,7 +396,7 @@ LICENSES = [
     },
     {
         "Name": "azure-mgmt-core",
-        "Version": "1.0.0",
+        "Version": "1.2.2",
         "Summary": "Microsoft Azure Management Core Library for Python",
         "Home-page": "https://github.com/Azure/azure-sdk-for-python/tree/master/sdk/core/azure-mgmt-core",
         "Author": "Microsoft Corporation",
@@ -402,8 +404,19 @@ LICENSES = [
     },
     {
         "Name": "azure-mgmt-cosmosdb",
-        "Version": "0.14.0",
+        "Version": "6.2.0",
         "Summary": "Microsoft Azure Cosmos DB Management Client Library for Python",
+        "Home-page": "https://github.com/Azure/azure-sdk-for-python",
+        "Author": "Microsoft Corporation",
+        "License": "MIT License",
+        "License URL": "https://api.github.com/repos/azure/azure-sdk-for-python/license",
+        "License repo": "The MIT License (MIT)\n\nCopyright (c) 2016 Microsoft\n\nPermission is hereby granted, free of charge, to any person obtaining a copy\nof this software and associated documentation files (the \"Software\"), to deal\nin the Software without restriction, including without limitation the rights\nto use, copy, modify, merge, publish, distribute, sublicense, and/or sell\ncopies of the Software, and to permit persons to whom the Software is\nfurnished to do so, subject to the following conditions:\n\nThe above copyright notice and this permission notice shall be included in all\ncopies or substantial portions of the Software.\n\nTHE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR\nIMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,\nFITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE\nAUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER\nLIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,\nOUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE\nSOFTWARE.\n",
+        "License text": "MIT License\n\nCopyright (c) [year] [fullname]\n\nPermission is hereby granted, free of charge, to any person obtaining a copy\nof this software and associated documentation files (the \"Software\"), to deal\nin the Software without restriction, including without limitation the rights\nto use, copy, modify, merge, publish, distribute, sublicense, and/or sell\ncopies of the Software, and to permit persons to whom the Software is\nfurnished to do so, subject to the following conditions:\n\nThe above copyright notice and this permission notice shall be included in all\ncopies or substantial portions of the Software.\n\nTHE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR\nIMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,\nFITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE\nAUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER\nLIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,\nOUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE\nSOFTWARE.\n"
+    },
+    {
+        "Name": "azure-mgmt-databoxedge",
+        "Version": "0.2.0",
+        "Summary": "Microsoft Azure Databoxedge Management Client Library for Python",
         "Home-page": "https://github.com/Azure/azure-sdk-for-python",
         "Author": "Microsoft Corporation",
         "License": "MIT License",
@@ -446,7 +459,7 @@ LICENSES = [
     },
     {
         "Name": "azure-mgmt-datamigration",
-        "Version": "0.1.0",
+        "Version": "4.1.0",
         "Summary": "Microsoft Azure Data Migration Client Library for Python",
         "Home-page": "https://github.com/Azure/azure-sdk-for-python",
         "Author": "Microsoft Corporation",
@@ -479,7 +492,7 @@ LICENSES = [
     },
     {
         "Name": "azure-mgmt-dns",
-        "Version": "2.1.0",
+        "Version": "8.0.0",
         "Summary": "Microsoft Azure DNS Management Client Library for Python",
         "Home-page": "https://github.com/Azure/azure-sdk-for-python",
         "Author": "Microsoft Corporation",
@@ -490,7 +503,7 @@ LICENSES = [
     },
     {
         "Name": "azure-mgmt-eventgrid",
-        "Version": "2.2.0",
+        "Version": "3.0.0rc9",
         "Summary": "Microsoft Azure EventGrid Management Client Library for Python",
         "Home-page": "https://github.com/Azure/azure-sdk-for-python",
         "Author": "Microsoft Corporation",
@@ -501,7 +514,7 @@ LICENSES = [
     },
     {
         "Name": "azure-mgmt-eventhub",
-        "Version": "4.0.0",
+        "Version": "4.1.0",
         "Summary": "Microsoft Azure EventHub Management Client Library for Python",
         "Home-page": "https://github.com/Azure/azure-sdk-for-python",
         "Author": "Microsoft Corporation",
@@ -512,7 +525,7 @@ LICENSES = [
     },
     {
         "Name": "azure-mgmt-hdinsight",
-        "Version": "1.4.0",
+        "Version": "2.2.0",
         "Summary": "Microsoft Azure HDInsight Management Client Library for Python",
         "Home-page": "https://github.com/Azure/azure-sdk-for-python",
         "Author": "Microsoft Corporation",
@@ -534,7 +547,7 @@ LICENSES = [
     },
     {
         "Name": "azure-mgmt-iotcentral",
-        "Version": "3.0.0",
+        "Version": "4.1.0",
         "Summary": "Microsoft Azure IoTCentral Management Client Library for Python",
         "Home-page": "https://github.com/Azure/azure-sdk-for-python",
         "Author": "Microsoft Corporation",
@@ -567,8 +580,8 @@ LICENSES = [
     },
     {
         "Name": "azure-mgmt-keyvault",
-        "Version": "2.2.0",
-        "Summary": "Microsoft Azure Key Vault Management Client Library for Python",
+        "Version": "9.0.0",
+        "Summary": "Microsoft Azure Keyvault Management Client Library for Python",
         "Home-page": "https://github.com/Azure/azure-sdk-for-python",
         "Author": "Microsoft Corporation",
         "License": "MIT License",
@@ -589,7 +602,7 @@ LICENSES = [
     },
     {
         "Name": "azure-mgmt-loganalytics",
-        "Version": "0.6.0",
+        "Version": "8.0.0",
         "Summary": "Microsoft Azure Log Analytics Management Client Library for Python",
         "Home-page": "https://github.com/Azure/azure-sdk-for-python",
         "Author": "Microsoft Corporation",
@@ -633,7 +646,7 @@ LICENSES = [
     },
     {
         "Name": "azure-mgmt-marketplaceordering",
-        "Version": "0.2.1",
+        "Version": "1.1.0",
         "Summary": "Microsoft Azure Market Place Ordering Client Library for Python",
         "Home-page": "https://github.com/Azure/azure-sdk-for-python",
         "Author": "Microsoft Corporation",
@@ -644,7 +657,7 @@ LICENSES = [
     },
     {
         "Name": "azure-mgmt-media",
-        "Version": "2.2.0",
+        "Version": "3.1.0",
         "Summary": "Microsoft Azure Media Services Client Library for Python",
         "Home-page": "https://github.com/Azure/azure-sdk-for-python",
         "Author": "Microsoft Corporation",
@@ -655,7 +668,7 @@ LICENSES = [
     },
     {
         "Name": "azure-mgmt-monitor",
-        "Version": "0.9.0",
+        "Version": "2.0.0",
         "Summary": "Microsoft Azure Monitor Client Library for Python",
         "Home-page": "https://github.com/Azure/azure-sdk-for-python",
         "Author": "Microsoft Corporation",
@@ -677,7 +690,7 @@ LICENSES = [
     },
     {
         "Name": "azure-mgmt-netapp",
-        "Version": "0.8.0",
+        "Version": "2.0.0",
         "Summary": "Microsoft Azure NetApp Files Management Client Library for Python",
         "Home-page": "https://github.com/Azure/azure-sdk-for-python",
         "Author": "Microsoft Corporation",
@@ -688,7 +701,7 @@ LICENSES = [
     },
     {
         "Name": "azure-mgmt-network",
-        "Version": "10.2.0",
+        "Version": "18.0.0",
         "Summary": "Microsoft Azure Network Management Client Library for Python",
         "Home-page": "https://github.com/Azure/azure-sdk-for-python",
         "Author": "Microsoft Corporation",
@@ -710,7 +723,7 @@ LICENSES = [
     },
     {
         "Name": "azure-mgmt-policyinsights",
-        "Version": "0.4.0",
+        "Version": "0.5.0",
         "Summary": "Microsoft Azure Policy Insights Client Library for Python",
         "Home-page": "https://github.com/Azure/azure-sdk-for-python",
         "Author": "Microsoft Corporation",
@@ -732,7 +745,7 @@ LICENSES = [
     },
     {
         "Name": "azure-mgmt-rdbms",
-        "Version": "2.2.0",
+        "Version": "8.1.0b4",
         "Summary": "Microsoft Azure RDBMS Management Client Library for Python",
         "Home-page": "https://github.com/Azure/azure-sdk-for-python",
         "Author": "Microsoft Corporation",
@@ -754,7 +767,7 @@ LICENSES = [
     },
     {
         "Name": "azure-mgmt-recoveryservicesbackup",
-        "Version": "0.6.0",
+        "Version": "0.11.0",
         "Summary": "Microsoft Azure Recovery Services Backup Management Client Library for Python",
         "Home-page": "https://github.com/Azure/azure-sdk-for-python",
         "Author": "Microsoft Corporation",
@@ -809,7 +822,7 @@ LICENSES = [
     },
     {
         "Name": "azure-mgmt-resource",
-        "Version": "10.0.0",
+        "Version": "12.1.0",
         "Summary": "Microsoft Azure Resource Management Client Library for Python",
         "Home-page": "https://github.com/Azure/azure-sdk-for-python",
         "Author": "Microsoft Corporation",
@@ -820,7 +833,7 @@ LICENSES = [
     },
     {
         "Name": "azure-mgmt-search",
-        "Version": "2.1.0",
+        "Version": "8.0.0",
         "Summary": "Microsoft Azure Search Management Client Library for Python",
         "Home-page": "https://github.com/Azure/azure-sdk-for-python",
         "Author": "Microsoft Corporation",
@@ -831,7 +844,7 @@ LICENSES = [
     },
     {
         "Name": "azure-mgmt-security",
-        "Version": "0.4.1",
+        "Version": "0.6.0",
         "Summary": "Microsoft Azure Security Center Management Client Library for Python",
         "Home-page": "https://github.com/Azure/azure-sdk-for-python",
         "Author": "Microsoft Corporation",
@@ -853,7 +866,7 @@ LICENSES = [
     },
     {
         "Name": "azure-mgmt-servicefabric",
-        "Version": "0.4.0",
+        "Version": "0.5.0",
         "Summary": "Microsoft Azure Service Fabric Management Client Library for Python",
         "Home-page": "https://github.com/Azure/azure-sdk-for-python",
         "Author": "Microsoft Corporation",
@@ -863,8 +876,19 @@ LICENSES = [
         "License text": "MIT License\n\nCopyright (c) [year] [fullname]\n\nPermission is hereby granted, free of charge, to any person obtaining a copy\nof this software and associated documentation files (the \"Software\"), to deal\nin the Software without restriction, including without limitation the rights\nto use, copy, modify, merge, publish, distribute, sublicense, and/or sell\ncopies of the Software, and to permit persons to whom the Software is\nfurnished to do so, subject to the following conditions:\n\nThe above copyright notice and this permission notice shall be included in all\ncopies or substantial portions of the Software.\n\nTHE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR\nIMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,\nFITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE\nAUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER\nLIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,\nOUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE\nSOFTWARE.\n"
     },
     {
+        "Name": "azure-mgmt-servicefabricmanagedclusters",
+        "Version": "1.0.0",
+        "Summary": "Microsoft Azure Servicefabricmanagedclusters Management Client Library for Python",
+        "Home-page": "https://github.com/Azure/azure-sdk-for-python",
+        "Author": "Microsoft Corporation",
+        "License": "MIT License",
+        "License URL": "https://api.github.com/repos/azure/azure-sdk-for-python/license",
+        "License repo": "The MIT License (MIT)\n\nCopyright (c) 2016 Microsoft\n\nPermission is hereby granted, free of charge, to any person obtaining a copy\nof this software and associated documentation files (the \"Software\"), to deal\nin the Software without restriction, including without limitation the rights\nto use, copy, modify, merge, publish, distribute, sublicense, and/or sell\ncopies of the Software, and to permit persons to whom the Software is\nfurnished to do so, subject to the following conditions:\n\nThe above copyright notice and this permission notice shall be included in all\ncopies or substantial portions of the Software.\n\nTHE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR\nIMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,\nFITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE\nAUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER\nLIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,\nOUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE\nSOFTWARE.\n",
+        "License text": "MIT License\n\nCopyright (c) [year] [fullname]\n\nPermission is hereby granted, free of charge, to any person obtaining a copy\nof this software and associated documentation files (the \"Software\"), to deal\nin the Software without restriction, including without limitation the rights\nto use, copy, modify, merge, publish, distribute, sublicense, and/or sell\ncopies of the Software, and to permit persons to whom the Software is\nfurnished to do so, subject to the following conditions:\n\nThe above copyright notice and this permission notice shall be included in all\ncopies or substantial portions of the Software.\n\nTHE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR\nIMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,\nFITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE\nAUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER\nLIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,\nOUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE\nSOFTWARE.\n"
+    },
+    {
         "Name": "azure-mgmt-signalr",
-        "Version": "0.3.0",
+        "Version": "0.4.0",
         "Summary": "Microsoft Azure SignalR Client Library for Python",
         "Home-page": "https://github.com/Azure/azure-sdk-for-python",
         "Author": "Microsoft Corporation",
@@ -875,7 +899,7 @@ LICENSES = [
     },
     {
         "Name": "azure-mgmt-sql",
-        "Version": "0.18.0",
+        "Version": "0.26.0",
         "Summary": "Microsoft Azure SQL Management Client Library for Python",
         "Home-page": "https://github.com/Azure/azure-sdk-for-python",
         "Author": "Microsoft Corporation",
@@ -897,8 +921,19 @@ LICENSES = [
     },
     {
         "Name": "azure-mgmt-storage",
-        "Version": "11.0.0",
+        "Version": "17.1.0",
         "Summary": "Microsoft Azure Storage Management Client Library for Python",
+        "Home-page": "https://github.com/Azure/azure-sdk-for-python",
+        "Author": "Microsoft Corporation",
+        "License": "MIT License",
+        "License URL": "https://api.github.com/repos/azure/azure-sdk-for-python/license",
+        "License repo": "The MIT License (MIT)\n\nCopyright (c) 2016 Microsoft\n\nPermission is hereby granted, free of charge, to any person obtaining a copy\nof this software and associated documentation files (the \"Software\"), to deal\nin the Software without restriction, including without limitation the rights\nto use, copy, modify, merge, publish, distribute, sublicense, and/or sell\ncopies of the Software, and to permit persons to whom the Software is\nfurnished to do so, subject to the following conditions:\n\nThe above copyright notice and this permission notice shall be included in all\ncopies or substantial portions of the Software.\n\nTHE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR\nIMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,\nFITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE\nAUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER\nLIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,\nOUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE\nSOFTWARE.\n",
+        "License text": "MIT License\n\nCopyright (c) [year] [fullname]\n\nPermission is hereby granted, free of charge, to any person obtaining a copy\nof this software and associated documentation files (the \"Software\"), to deal\nin the Software without restriction, including without limitation the rights\nto use, copy, modify, merge, publish, distribute, sublicense, and/or sell\ncopies of the Software, and to permit persons to whom the Software is\nfurnished to do so, subject to the following conditions:\n\nThe above copyright notice and this permission notice shall be included in all\ncopies or substantial portions of the Software.\n\nTHE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR\nIMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,\nFITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE\nAUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER\nLIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,\nOUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE\nSOFTWARE.\n"
+    },
+    {
+        "Name": "azure-mgmt-synapse",
+        "Version": "0.6.0",
+        "Summary": "Microsoft Azure Synapse Management Client Library for Python",
         "Home-page": "https://github.com/Azure/azure-sdk-for-python",
         "Author": "Microsoft Corporation",
         "License": "MIT License",
@@ -919,7 +954,7 @@ LICENSES = [
     },
     {
         "Name": "azure-mgmt-web",
-        "Version": "0.46.0",
+        "Version": "2.0.0",
         "Summary": "Microsoft Azure Web Apps Management Client Library for Python",
         "Home-page": "https://github.com/Azure/azure-sdk-for-python",
         "Author": "Microsoft Corporation",
@@ -930,7 +965,7 @@ LICENSES = [
     },
     {
         "Name": "azure-multiapi-storage",
-        "Version": "0.3.7",
+        "Version": "0.6.2",
         "Summary": "Microsoft Azure Storage Client Library for Python with multi API version support.",
         "Home-page": "https://github.com/Azure/azure-multiapi-storage-python",
         "Author": "Microsoft Corporation",
@@ -951,17 +986,6 @@ LICENSES = [
         "License text": "MIT License\n\nCopyright (c) [year] [fullname]\n\nPermission is hereby granted, free of charge, to any person obtaining a copy\nof this software and associated documentation files (the \"Software\"), to deal\nin the Software without restriction, including without limitation the rights\nto use, copy, modify, merge, publish, distribute, sublicense, and/or sell\ncopies of the Software, and to permit persons to whom the Software is\nfurnished to do so, subject to the following conditions:\n\nThe above copyright notice and this permission notice shall be included in all\ncopies or substantial portions of the Software.\n\nTHE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR\nIMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,\nFITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE\nAUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER\nLIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,\nOUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE\nSOFTWARE.\n"
     },
     {
-        "Name": "azure-storage-blob",
-        "Version": "1.5.0",
-        "Summary": "Microsoft Azure Storage Blob Client Library for Python",
-        "Home-page": "https://github.com/Azure/azure-storage-python",
-        "Author": "Microsoft Corporation",
-        "License": "MIT License",
-        "License URL": "https://api.github.com/repos/azure/azure-storage-python/license",
-        "License repo": "The MIT License (MIT)\n\nCopyright (c) 2017 Microsoft\n\nPermission is hereby granted, free of charge, to any person obtaining a copy\nof this software and associated documentation files (the \"Software\"), to deal\nin the Software without restriction, including without limitation the rights\nto use, copy, modify, merge, publish, distribute, sublicense, and/or sell\ncopies of the Software, and to permit persons to whom the Software is\nfurnished to do so, subject to the following conditions:\n\nThe above copyright notice and this permission notice shall be included in all\ncopies or substantial portions of the Software.\n\nTHE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR\nIMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,\nFITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE\nAUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER\nLIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,\nOUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE\nSOFTWARE.",
-        "License text": "MIT License\n\nCopyright (c) [year] [fullname]\n\nPermission is hereby granted, free of charge, to any person obtaining a copy\nof this software and associated documentation files (the \"Software\"), to deal\nin the Software without restriction, including without limitation the rights\nto use, copy, modify, merge, publish, distribute, sublicense, and/or sell\ncopies of the Software, and to permit persons to whom the Software is\nfurnished to do so, subject to the following conditions:\n\nThe above copyright notice and this permission notice shall be included in all\ncopies or substantial portions of the Software.\n\nTHE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR\nIMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,\nFITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE\nAUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER\nLIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,\nOUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE\nSOFTWARE.\n"
-    },
-    {
         "Name": "azure-storage-common",
         "Version": "1.4.2",
         "Summary": "Microsoft Azure Storage Common Client Library for Python",
@@ -970,6 +994,39 @@ LICENSES = [
         "License": "MIT License",
         "License URL": "https://api.github.com/repos/azure/azure-storage-python/license",
         "License repo": "The MIT License (MIT)\n\nCopyright (c) 2017 Microsoft\n\nPermission is hereby granted, free of charge, to any person obtaining a copy\nof this software and associated documentation files (the \"Software\"), to deal\nin the Software without restriction, including without limitation the rights\nto use, copy, modify, merge, publish, distribute, sublicense, and/or sell\ncopies of the Software, and to permit persons to whom the Software is\nfurnished to do so, subject to the following conditions:\n\nThe above copyright notice and this permission notice shall be included in all\ncopies or substantial portions of the Software.\n\nTHE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR\nIMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,\nFITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE\nAUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER\nLIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,\nOUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE\nSOFTWARE.",
+        "License text": "MIT License\n\nCopyright (c) [year] [fullname]\n\nPermission is hereby granted, free of charge, to any person obtaining a copy\nof this software and associated documentation files (the \"Software\"), to deal\nin the Software without restriction, including without limitation the rights\nto use, copy, modify, merge, publish, distribute, sublicense, and/or sell\ncopies of the Software, and to permit persons to whom the Software is\nfurnished to do so, subject to the following conditions:\n\nThe above copyright notice and this permission notice shall be included in all\ncopies or substantial portions of the Software.\n\nTHE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR\nIMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,\nFITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE\nAUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER\nLIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,\nOUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE\nSOFTWARE.\n"
+    },
+    {
+        "Name": "azure-synapse-accesscontrol",
+        "Version": "0.5.0",
+        "Summary": "Microsoft Azure Synapse AccessControl Client Library for Python",
+        "Home-page": "https://github.com/Azure/azure-sdk-for-python",
+        "Author": "Microsoft Corporation",
+        "License": "MIT License",
+        "License URL": "https://api.github.com/repos/azure/azure-sdk-for-python/license",
+        "License repo": "The MIT License (MIT)\n\nCopyright (c) 2016 Microsoft\n\nPermission is hereby granted, free of charge, to any person obtaining a copy\nof this software and associated documentation files (the \"Software\"), to deal\nin the Software without restriction, including without limitation the rights\nto use, copy, modify, merge, publish, distribute, sublicense, and/or sell\ncopies of the Software, and to permit persons to whom the Software is\nfurnished to do so, subject to the following conditions:\n\nThe above copyright notice and this permission notice shall be included in all\ncopies or substantial portions of the Software.\n\nTHE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR\nIMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,\nFITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE\nAUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER\nLIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,\nOUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE\nSOFTWARE.\n",
+        "License text": "MIT License\n\nCopyright (c) [year] [fullname]\n\nPermission is hereby granted, free of charge, to any person obtaining a copy\nof this software and associated documentation files (the \"Software\"), to deal\nin the Software without restriction, including without limitation the rights\nto use, copy, modify, merge, publish, distribute, sublicense, and/or sell\ncopies of the Software, and to permit persons to whom the Software is\nfurnished to do so, subject to the following conditions:\n\nThe above copyright notice and this permission notice shall be included in all\ncopies or substantial portions of the Software.\n\nTHE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR\nIMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,\nFITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE\nAUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER\nLIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,\nOUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE\nSOFTWARE.\n"
+    },
+    {
+        "Name": "azure-synapse-artifacts",
+        "Version": "0.6.0",
+        "Summary": "Microsoft Azure Synapse Artifacts Client Library for Python",
+        "Home-page": "https://github.com/Azure/azure-sdk-for-python",
+        "Author": "Microsoft Corporation",
+        "License": "MIT License",
+        "License URL": "https://api.github.com/repos/azure/azure-sdk-for-python/license",
+        "License repo": "The MIT License (MIT)\n\nCopyright (c) 2016 Microsoft\n\nPermission is hereby granted, free of charge, to any person obtaining a copy\nof this software and associated documentation files (the \"Software\"), to deal\nin the Software without restriction, including without limitation the rights\nto use, copy, modify, merge, publish, distribute, sublicense, and/or sell\ncopies of the Software, and to permit persons to whom the Software is\nfurnished to do so, subject to the following conditions:\n\nThe above copyright notice and this permission notice shall be included in all\ncopies or substantial portions of the Software.\n\nTHE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR\nIMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,\nFITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE\nAUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER\nLIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,\nOUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE\nSOFTWARE.\n",
+        "License text": "MIT License\n\nCopyright (c) [year] [fullname]\n\nPermission is hereby granted, free of charge, to any person obtaining a copy\nof this software and associated documentation files (the \"Software\"), to deal\nin the Software without restriction, including without limitation the rights\nto use, copy, modify, merge, publish, distribute, sublicense, and/or sell\ncopies of the Software, and to permit persons to whom the Software is\nfurnished to do so, subject to the following conditions:\n\nThe above copyright notice and this permission notice shall be included in all\ncopies or substantial portions of the Software.\n\nTHE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR\nIMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,\nFITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE\nAUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER\nLIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,\nOUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE\nSOFTWARE.\n"
+    },
+    {
+        "Name": "azure-synapse-spark",
+        "Version": "0.2.0",
+        "Summary": "Microsoft Azure Synapse Spark Client Library for Python",
+        "Home-page": "https://github.com/Azure/azure-sdk-for-python",
+        "Author": "Microsoft Corporation",
+        "License": "MIT License",
+        "License URL": "https://api.github.com/repos/azure/azure-sdk-for-python/license",
+        "License repo": "The MIT License (MIT)\n\nCopyright (c) 2016 Microsoft\n\nPermission is hereby granted, free of charge, to any person obtaining a copy\nof this software and associated documentation files (the \"Software\"), to deal\nin the Software without restriction, including without limitation the rights\nto use, copy, modify, merge, publish, distribute, sublicense, and/or sell\ncopies of the Software, and to permit persons to whom the Software is\nfurnished to do so, subject to the following conditions:\n\nThe above copyright notice and this permission notice shall be included in all\ncopies or substantial portions of the Software.\n\nTHE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR\nIMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,\nFITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE\nAUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER\nLIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,\nOUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE\nSOFTWARE.\n",
         "License text": "MIT License\n\nCopyright (c) [year] [fullname]\n\nPermission is hereby granted, free of charge, to any person obtaining a copy\nof this software and associated documentation files (the \"Software\"), to deal\nin the Software without restriction, including without limitation the rights\nto use, copy, modify, merge, publish, distribute, sublicense, and/or sell\ncopies of the Software, and to permit persons to whom the Software is\nfurnished to do so, subject to the following conditions:\n\nThe above copyright notice and this permission notice shall be included in all\ncopies or substantial portions of the Software.\n\nTHE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR\nIMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,\nFITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE\nAUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER\nLIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,\nOUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE\nSOFTWARE.\n"
     },
     {
@@ -985,7 +1042,7 @@ LICENSES = [
     },
     {
         "Name": "boto3",
-        "Version": "1.16.57",
+        "Version": "1.17.67",
         "Summary": "The AWS SDK for Python",
         "Home-page": "https://github.com/boto/boto3",
         "Author": "Amazon Web Services",
@@ -996,7 +1053,7 @@ LICENSES = [
     },
     {
         "Name": "botocore",
-        "Version": "1.19.57",
+        "Version": "1.20.67",
         "Summary": "Low-level, data-driven core of boto 3.",
         "Home-page": "https://github.com/boto/botocore",
         "Author": "Amazon Web Services",
@@ -1015,7 +1072,7 @@ LICENSES = [
     },
     {
         "Name": "cffi",
-        "Version": "1.14.4",
+        "Version": "1.14.5",
         "Summary": "Foreign Function Interface for Python calling C code.",
         "Home-page": "http://cffi.readthedocs.org",
         "Author": "Armin Rigo, Maciej Fijalkowski",
@@ -1045,7 +1102,7 @@ LICENSES = [
     },
     {
         "Name": "cryptography",
-        "Version": "2.9.2",
+        "Version": "3.3.2",
         "Summary": "cryptography is a package which provides cryptographic recipes and primitives to Python developers.",
         "Home-page": "https://github.com/pyca/cryptography",
         "Author": "The cryptography developers",
@@ -1063,7 +1120,7 @@ LICENSES = [
     },
     {
         "Name": "humanfriendly",
-        "Version": "8.2",
+        "Version": "9.1",
         "Summary": "Human friendly output for text interfaces using Python",
         "Home-page": "https://humanfriendly.readthedocs.io",
         "Author": "Peter Odding",
@@ -1117,7 +1174,7 @@ LICENSES = [
     },
     {
         "Name": "Jinja2",
-        "Version": "2.11.2",
+        "Version": "2.11.3",
         "Summary": "A very fast and expressive template engine.",
         "Home-page": "https://palletsprojects.com/p/jinja/",
         "Author": "Armin Ronacher",
@@ -1168,7 +1225,7 @@ LICENSES = [
     },
     {
         "Name": "knack",
-        "Version": "0.7.1",
+        "Version": "0.8.1",
         "Summary": "A Command-Line Interface framework",
         "Home-page": "https://github.com/microsoft/knack",
         "Author": "Microsoft Corporation",
@@ -1195,15 +1252,14 @@ LICENSES = [
     },
     {
         "Name": "msal-extensions",
-        "Version": "0.1.3",
+        "Version": "0.3.0",
         "Summary": "UNKNOWN",
         "Home-page": "UNKNOWN",
-        "Author": "UNKNOWN",
         "License": "UNKNOWN"
     },
     {
         "Name": "msal",
-        "Version": "1.0.0",
+        "Version": "1.11.0",
         "Summary": "The Microsoft Authentication Library (MSAL) for Python library enables your app to access the Microsoft Cloud by supporting authentication of users with Microsoft Azure Active Directory accounts (AAD) and Microsoft Accounts (MSA) using industry standard OAuth2 and OpenID Connect.",
         "Home-page": "https://github.com/AzureAD/microsoft-authentication-library-for-python",
         "Author": "Microsoft Corporation",
@@ -1213,7 +1269,7 @@ LICENSES = [
     },
     {
         "Name": "msrest",
-        "Version": "0.6.19",
+        "Version": "0.6.21",
         "Summary": "AutoRest swagger generator Python client runtime.",
         "Home-page": "https://github.com/Azure/msrest-for-python",
         "Author": "Microsoft Corporation",
@@ -1246,7 +1302,7 @@ LICENSES = [
     },
     {
         "Name": "packaging",
-        "Version": "20.8",
+        "Version": "20.9",
         "Summary": "Core utilities for Python packages",
         "Home-page": "https://github.com/pypa/packaging",
         "Author": "Donald Stufft and individual contributors",
@@ -1295,6 +1351,17 @@ LICENSES = [
         "License repo": "PYTHON SOFTWARE FOUNDATION LICENSE VERSION 2\n--------------------------------------------\n\n1. This LICENSE AGREEMENT is between the Python Software Foundation\n(\"PSF\"), and the Individual or Organization (\"Licensee\") accessing and\notherwise using this software (\"Python\") in source or binary form and\nits associated documentation.\n\n2. Subject to the terms and conditions of this License Agreement, PSF hereby\ngrants Licensee a nonexclusive, royalty-free, world-wide license to reproduce,\nanalyze, test, perform and/or display publicly, prepare derivative works,\ndistribute, and otherwise use Python alone or in any derivative version,\nprovided, however, that PSF's License Agreement and PSF's notice of copyright,\ni.e., \"Copyright (c) 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010\nPython Software Foundation; All Rights Reserved\" are retained in Python alone or\nin any derivative version prepared by Licensee.\n\n3. In the event Licensee prepares a derivative work that is based on\nor incorporates Python or any part thereof, and wants to make\nthe derivative work available to others as provided herein, then\nLicensee hereby agrees to include in any such work a brief summary of\nthe changes made to Python.\n\n4. PSF is making Python available to Licensee on an \"AS IS\"\nbasis.  PSF MAKES NO REPRESENTATIONS OR WARRANTIES, EXPRESS OR\nIMPLIED.  BY WAY OF EXAMPLE, BUT NOT LIMITATION, PSF MAKES NO AND\nDISCLAIMS ANY REPRESENTATION OR WARRANTY OF MERCHANTABILITY OR FITNESS\nFOR ANY PARTICULAR PURPOSE OR THAT THE USE OF PYTHON WILL NOT\nINFRINGE ANY THIRD PARTY RIGHTS.\n\n5. PSF SHALL NOT BE LIABLE TO LICENSEE OR ANY OTHER USERS OF PYTHON\nFOR ANY INCIDENTAL, SPECIAL, OR CONSEQUENTIAL DAMAGES OR LOSS AS\nA RESULT OF MODIFYING, DISTRIBUTING, OR OTHERWISE USING PYTHON,\nOR ANY DERIVATIVE THEREOF, EVEN IF ADVISED OF THE POSSIBILITY THEREOF.\n\n6. This License Agreement will automatically terminate upon a material\nbreach of its terms and conditions.\n\n7. Nothing in this License Agreement shall be deemed to create any\nrelationship of agency, partnership, or joint venture between PSF and\nLicensee.  This License Agreement does not grant permission to use PSF\ntrademarks or trade name in a trademark sense to endorse or promote\nproducts or services of Licensee, or any third party.\n\n8. By copying, installing or otherwise using Python, Licensee\nagrees to be bound by the terms and conditions of this License\nAgreement.\n\n"
     },
     {
+        "Name": "psutil",
+        "Version": "5.8.0",
+        "Summary": "Cross-platform lib for process and system monitoring in Python.",
+        "Home-page": "https://github.com/giampaolo/psutil",
+        "Author": "Giampaolo Rodola",
+        "License": "BSD 3-Clause \"New\" or \"Revised\" License",
+        "License URL": "https://api.github.com/repos/giampaolo/psutil/license",
+        "License repo": "BSD 3-Clause License\n\nCopyright (c) 2009, Jay Loden, Dave Daeschler, Giampaolo Rodola'\nAll rights reserved.\n\nRedistribution and use in source and binary forms, with or without modification,\nare permitted provided that the following conditions are met:\n\n * Redistributions of source code must retain the above copyright notice, this\n   list of conditions and the following disclaimer.\n\n * Redistributions in binary form must reproduce the above copyright notice,\n   this list of conditions and the following disclaimer in the documentation\n   and/or other materials provided with the distribution.\n\n * Neither the name of the psutil authors nor the names of its contributors\n   may be used to endorse or promote products derived from this software without\n   specific prior written permission.\n\nTHIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS \"AS IS\" AND\nANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED\nWARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE\nDISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR\nANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES\n(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;\nLOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON\nANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT\n(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS\nSOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.\n",
+        "License text": "BSD 3-Clause License\n\nCopyright (c) [year], [fullname]\nAll rights reserved.\n\nRedistribution and use in source and binary forms, with or without\nmodification, are permitted provided that the following conditions are met:\n\n1. Redistributions of source code must retain the above copyright notice, this\n   list of conditions and the following disclaimer.\n\n2. Redistributions in binary form must reproduce the above copyright notice,\n   this list of conditions and the following disclaimer in the documentation\n   and/or other materials provided with the distribution.\n\n3. Neither the name of the copyright holder nor the names of its\n   contributors may be used to endorse or promote products derived from\n   this software without specific prior written permission.\n\nTHIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS \"AS IS\"\nAND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE\nIMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE\nDISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE\nFOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL\nDAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR\nSERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER\nCAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,\nOR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE\nOF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.\n"
+    },
+    {
         "Name": "pycparser",
         "Version": "2.20",
         "Summary": "C parser in Python",
@@ -1306,7 +1373,7 @@ LICENSES = [
     },
     {
         "Name": "Pygments",
-        "Version": "2.7.4",
+        "Version": "2.9.0",
         "Summary": "Pygments is a syntax highlighting package written in Python.",
         "Home-page": "https://pygments.org/",
         "Author": "Georg Brandl",
@@ -1336,7 +1403,7 @@ LICENSES = [
     },
     {
         "Name": "pyOpenSSL",
-        "Version": "19.1.0",
+        "Version": "20.0.1",
         "Summary": "Python wrapper module around the OpenSSL library",
         "Home-page": "https://pyopenssl.org/",
         "Author": "The pyOpenSSL developers",
@@ -1428,7 +1495,7 @@ LICENSES = [
     },
     {
         "Name": "ruamel.yaml",
-        "Version": "0.16.12",
+        "Version": "0.17.4",
         "Summary": "ruamel.yaml is a YAML parser/emitter that supports roundtrip preservation of comments, seq/map flow style, and map key order",
         "Home-page": "https://sourceforge.net/p/ruamel-yaml/code/ci/default/tree",
         "Author": "Anthon van der Neut",
@@ -1436,7 +1503,7 @@ LICENSES = [
     },
     {
         "Name": "s3transfer",
-        "Version": "0.3.4",
+        "Version": "0.4.2",
         "Summary": "An Amazon S3 Transfer Manager",
         "Home-page": "https://github.com/boto/s3transfer",
         "Author": "Amazon Web Services",
@@ -1456,8 +1523,19 @@ LICENSES = [
         "License repo": "# This library is free software; you can redistribute it and/or\n# modify it under the terms of the GNU Lesser General Public\n# License as published by the Free Software Foundation; either\n# version 2.1 of the License, or (at your option) any later version.\n#\n# This library is distributed in the hope that it will be useful,\n# but WITHOUT ANY WARRANTY; without even the implied warranty of\n# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU\n# Lesser General Public License for more details.\n#\n# You should have received a copy of the GNU Lesser General Public\n# License along with this library; if not, write to the Free Software\n# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA\n\n"
     },
     {
+        "Name": "semver",
+        "Version": "2.13.0",
+        "Summary": "Python helper for Semantic Versioning (http://semver.org/)",
+        "Home-page": "https://github.com/python-semver/python-semver",
+        "Author": "Kostiantyn Rybnikov",
+        "License": "BSD 3-Clause \"New\" or \"Revised\" License",
+        "License URL": "https://api.github.com/repos/python-semver/python-semver/license",
+        "License repo": "Copyright (c) 2013, Konstantine Rybnikov\nAll rights reserved.\n\nRedistribution and use in source and binary forms, with or without modification,\nare permitted provided that the following conditions are met:\n\n  Redistributions of source code must retain the above copyright notice, this\n  list of conditions and the following disclaimer.\n\n  Redistributions in binary form must reproduce the above copyright notice, this\n  list of conditions and the following disclaimer in the documentation and/or\n  other materials provided with the distribution.\n\n  Neither the name of the {organization} nor the names of its\n  contributors may be used to endorse or promote products derived from\n  this software without specific prior written permission.\n\nTHIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS \"AS IS\" AND\nANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED\nWARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE\nDISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR\nANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES\n(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;\nLOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON\nANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT\n(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS\nSOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.\n",
+        "License text": "BSD 3-Clause License\n\nCopyright (c) [year], [fullname]\nAll rights reserved.\n\nRedistribution and use in source and binary forms, with or without\nmodification, are permitted provided that the following conditions are met:\n\n1. Redistributions of source code must retain the above copyright notice, this\n   list of conditions and the following disclaimer.\n\n2. Redistributions in binary form must reproduce the above copyright notice,\n   this list of conditions and the following disclaimer in the documentation\n   and/or other materials provided with the distribution.\n\n3. Neither the name of the copyright holder nor the names of its\n   contributors may be used to endorse or promote products derived from\n   this software without specific prior written permission.\n\nTHIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS \"AS IS\"\nAND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE\nIMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE\nDISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE\nFOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL\nDAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR\nSERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER\nCAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,\nOR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE\nOF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.\n"
+    },
+    {
         "Name": "six",
-        "Version": "1.15.0",
+        "Version": "1.16.0",
         "Summary": "Python 2 and 3 compatibility utilities",
         "Home-page": "https://github.com/benjaminp/six",
         "Author": "Benjamin Peterson",
@@ -1479,7 +1557,7 @@ LICENSES = [
     },
     {
         "Name": "tabulate",
-        "Version": "0.8.7",
+        "Version": "0.8.9",
         "Summary": "Pretty-print tabular data",
         "Home-page": "https://github.com/astanin/python-tabulate",
         "Author": "Sergey Astanin",
@@ -1501,15 +1579,15 @@ LICENSES = [
     },
     {
         "Name": "typing-extensions",
-        "Version": "3.7.4.3",
+        "Version": "3.10.0.0",
         "Summary": "Backported and Experimental Type Hints for Python 3.5+",
         "Home-page": "https://github.com/python/typing/blob/master/typing_extensions/README.rst",
-        "Author": "Guido van Rossum, Jukka Lehtosalo, Lukasz Langa, Michael Lee",
+        "Author": "Guido van Rossum, Jukka Lehtosalo, \u0141ukasz Langa, Michael Lee",
         "License": "PSF"
     },
     {
         "Name": "urllib3",
-        "Version": "1.26.2",
+        "Version": "1.26.4",
         "Summary": "HTTP library with thread-safe connection pooling, file post, and more.",
         "Home-page": "https://urllib3.readthedocs.io/",
         "Author": "Andrey Petrov",
@@ -1558,7 +1636,7 @@ LICENSES = [
     },
     {
         "Name": "zipp",
-        "Version": "3.4.0",
+        "Version": "3.4.1",
         "Summary": "Backport of pathlib-compatible object wrapper for zip files",
         "Home-page": "https://github.com/jaraco/zipp",
         "Author": "Jason R. Coombs",
