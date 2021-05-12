@@ -200,7 +200,7 @@ or VMs and should meet the following requirements:
 5. A requirements machine that:
     - Runs the same distribution as the air-gapped cluster machines/VMs (RedHat 7, CentOS 7, Ubuntu 18.04)
     - Has access to the internet.
-   If you dont have access to a similar machine/VM with internet access you can also try and download the requiments with a Docker container. More information [here](./CLUSTER.md#downloading-offline-requirements-with-a-docker-container).
+   If you don't have access to a similar machine/VM with internet access you can also try and download the requiments with a Docker container. More information [here](./CLUSTER.md#downloading-offline-requirements-with-a-docker-container).
 6. A provisioning machine that:
     - Has access to the SSH keys
     - Is on the same network as your cluster machines
