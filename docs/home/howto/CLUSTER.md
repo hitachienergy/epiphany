@@ -1060,7 +1060,7 @@ docker run -v /shared_folder:/home <--platform linux/amd64 or --platform linux/a
 
 As the ```registry.access.redhat.com/ubi7/ubi:7.9``` image is multi-arch you can include ```--platform linux/amd64``` or ```--platform linux/arm64``` to run the container as the specified architecture. The ```/shared_folder``` should be a folder on your local machine containing the requirement scripts.
 
-For running the ```download-requirements.sh``` script you will need a RedHat developer subscription to register the running container and make sure you can access to offical Redhat repos for the packages needed. More information on getting this free subscribtion [here](https://developers.redhat.com/articles/getting-red-hat-developer-subscription-what-rhel-users-need-know).
+For running the ```download-requirements.sh``` script you will need a RedHat developer subscription to register the running container and make sure you can access to official Redhat repos for the packages needed. More information on getting this free subscription [here](https://developers.redhat.com/articles/getting-red-hat-developer-subscription-what-rhel-users-need-know).
 
 When you are inside the container run the following commands to prepare for the running of the ```download-requirements.sh``` script:
 
