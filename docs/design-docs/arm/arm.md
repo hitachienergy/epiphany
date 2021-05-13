@@ -1,6 +1,6 @@
 # Epiphany Platform ARM design document
 
-Affected version: 0.11.x
+Affected version: 1.1.x
 
 ## Goals
 

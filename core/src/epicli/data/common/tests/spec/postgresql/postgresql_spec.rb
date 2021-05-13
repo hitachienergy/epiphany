@@ -5,21 +5,27 @@ require 'multi_json'
 
 postgresql_host = '127.0.0.1'
 postgresql_default_port = 5432
-pgbouncer_default_port = 6432
+pgbouncer_default_port  = 6432
+
+config_docs = Hash.new
+for kind in ['logging', 'postgresql']
+  config_docs[kind.to_sym] = readDataYaml("configuration/#{kind}")
+end
+
 ELASTICSEARCH = { # must be global until we introduce modules
   host: listInventoryHosts("logging")[0],
   api_port: 9200,
-  admin_password: readDataYaml("configuration/logging")["specification"]["admin_password"]
+  admin_password: !config_docs[:logging].nil? ? config_docs[:logging]["specification"]["admin_password"] : nil
 }
-replicated = readDataYaml("configuration/postgresql")["specification"]["extensions"]["replication"]["enabled"]
-replication_user = readDataYaml("configuration/postgresql")["specification"]["extensions"]["replication"]["replication_user_name"]
-replication_password = readDataYaml("configuration/postgresql")["specification"]["extensions"]["replication"]["replication_user_password"]
-use_repmgr = readDataYaml("configuration/postgresql")["specification"]["extensions"]["replication"]["use_repmgr"]
-max_wal_senders = readDataYaml("configuration/postgresql")["specification"]["config_file"]["parameter_groups"].detect {|i| i["name"] == 'REPLICATION'}["subgroups"].detect {|i| i["name"] == "Sending Server(s)"}["parameters"].detect {|i| i["name"] == "max_wal_senders"}["value"]
-wal_keep_segments = readDataYaml("configuration/postgresql")["specification"]["config_file"]["parameter_groups"].detect {|i| i["name"] == 'REPLICATION'}["subgroups"].detect {|i| i["name"] == "Sending Server(s)"}["parameters"].detect {|i| i["name"] == "wal_keep_segments"}["value"]
 
-pgbouncer_enabled = readDataYaml("configuration/postgresql")["specification"]["extensions"]["pgbouncer"]["enabled"]
-pgaudit_enabled = readDataYaml("configuration/postgresql")["specification"]["extensions"]["pgaudit"]["enabled"]
+replicated =           config_docs[:postgresql]["specification"]["extensions"]["replication"]["enabled"]
+replication_user =     config_docs[:postgresql]["specification"]["extensions"]["replication"]["replication_user_name"]
+replication_password = config_docs[:postgresql]["specification"]["extensions"]["replication"]["replication_user_password"]
+use_repmgr =           config_docs[:postgresql]["specification"]["extensions"]["replication"]["use_repmgr"]
+max_wal_senders =      config_docs[:postgresql]["specification"]["config_file"]["parameter_groups"].detect {|i| i["name"] == 'REPLICATION'}["subgroups"].detect {|i| i["name"] == "Sending Server(s)"}["parameters"].detect {|i| i["name"] == "max_wal_senders"}["value"]
+wal_keep_segments =    config_docs[:postgresql]["specification"]["config_file"]["parameter_groups"].detect {|i| i["name"] == 'REPLICATION'}["subgroups"].detect {|i| i["name"] == "Sending Server(s)"}["parameters"].detect {|i| i["name"] == "wal_keep_segments"}["value"]
+pgbouncer_enabled =    config_docs[:postgresql]["specification"]["extensions"]["pgbouncer"]["enabled"]
+pgaudit_enabled =      config_docs[:postgresql]["specification"]["extensions"]["pgaudit"]["enabled"]
 pg_user = 'testuser'
 pg_pass = 'testpass'
 
