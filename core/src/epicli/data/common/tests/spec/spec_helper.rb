@@ -75,6 +75,7 @@ set :shell, '/bin/bash'
     YAML.load_stream(File.read path) do |ruby|
       datayaml << ruby
     end
+    # returns nil if kind not found
     return datayaml.select {|x| x["kind"] == kind }[0]
   end
 

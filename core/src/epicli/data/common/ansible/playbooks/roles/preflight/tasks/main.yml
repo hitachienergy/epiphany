@@ -4,7 +4,7 @@
 - name: Check if components are supported for architecture
   vars:
     architecture: "{{ hostvars[groups.all[0]]['ansible_architecture'] }}"
-    os_distro:    "{{ hostvars[groups.all[0]]['ansible_distribution'] }}"
+    os_distro: "{{ hostvars[groups.all[0]]['ansible_distribution'] }}"
   block:
     - name: Set unsupported_components_checklist fact
       delegate_to: localhost
@@ -38,22 +38,21 @@
 
 - name: Check if existing PostgreSQL needs to be migrated to distribution installed from PostgreSQL repository
   block:
-  - name: Check if PostgreSQL has been installed from Software Collections repository
-    command:  rpm -q rh-postgresql10-postgresql-server
-    failed_when:
-      - rpm_status.rc != 0
-      - rpm_status.stdout.find('is not installed') == -1
-    changed_when: no
-    register: rpm_status
+    - name: Check if PostgreSQL has been installed from Software Collections repository
+      command: rpm -q rh-postgresql10-postgresql-server
+      failed_when:
+        - rpm_status.rc != 0
+        - rpm_status.stdout.find('is not installed') == -1
+      changed_when: false
+      register: rpm_status
 
-  # TODO: Add link to PostgreSQL migration from Software Collections to PostgreSQL installation from PostgreSQL repository
-  - name: Validate if PostgreSQL has been installed from Software Collections repository
-    assert:
-      that: rpm_status.stdout.find('is not installed') != -1
-      fail_msg: "You have not supported PostgreSQL installed from Software Collections repository, please migrate it according to procedure described at:
-                 https://github.com/epiphany-platform/epiphany/blob/v0.6/docs/home/howto/PREREQUISITES.md#note-about-postgresql-preflight-check"
-      success_msg:  "PostgresSQL installation is supported"
-      quiet: true
+    - name: Validate if PostgreSQL has been installed from Software Collections repository
+      assert:
+        that: rpm_status.stdout.find('is not installed') != -1
+        fail_msg: |-
+          You have not supported PostgreSQL installed from Software Collections repository, please migrate it according to procedure described at:
+          https://github.com/epiphany-platform/epiphany/blob/develop/docs/home/howto/PREREQUISITES.md#note-about-postgresql-preflight-check
+        success_msg: "PostgresSQL installation is supported"
   when:
     - ansible_os_family == "RedHat"
     - "'postgresql' in groups"
@@ -77,7 +76,7 @@
       when:
         - ansible_facts.services['epiphany-lvm-merge.service'] is defined
         - ansible_facts.services['epiphany-lvm-merge.service'].status != "disabled"
-      wait_for:  # at the end service disables itself so symlink is removed
+      wait_for: # at the end service disables itself so symlink is removed
         path: /etc/systemd/system/default.target.wants/epiphany-lvm-merge.service
         state: absent
         timeout: 300

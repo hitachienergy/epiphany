@@ -30,22 +30,39 @@
     - groups.kubernetes_master | length > 0
     - "'applications' in roles_with_generated_vars" # there is a case with disabled applications by custom feature mapping
 
-- name: Check if PostgreSQL extentions and architecture are not compatible
+- name: Check if PostgreSQL extentions and architecture are compatible
   block:
     - name: Include postgresql vars from postgresql role
       include_vars:
         file: roles/postgresql/vars/main.yml
         name: postgresql
 
-    - name: Check if PostgreSQL extensions are supported for ARM architecture
+    - name: Check if PostgreSQL extensions are supported for the architecture
       assert:
-        that: not (postgresql.specification.extensions.pgbouncer.enabled | default(false) or postgresql.specification.extensions.replication.enabled | default(false))
-        fail_msg: "PgBouncer and Repmgr extensions are not supported for ARM and cannot be installed"
-        success_msg: "All enabled PostgreSQL extensions are supported for ARM"
-        quiet: true
+        that: _unsupported_enabled_extensions | length == 0
+        fail_msg: >-
+          {{ unsupported_postgres_extensions[_pg_arch] | join(', ') }} extensions are not supported for {{ _pg_arch }}
+            and cannot be installed
+        success_msg: "All enabled PostgreSQL extensions are supported for current architecture"
+      vars:
+        _pg_arch: >-
+          {{ hostvars[groups['postgresql'][0]]['ansible_architecture'] }}
+        _defined: >-
+          {{ postgresql.specification.extensions
+            | dict2items(key_name='name', value_name='config')
+            | selectattr('config.enabled', 'defined')
+            | list }}
+        _undefined: >-
+          {{ postgresql.specification.extensions
+            | dict2items(key_name='name', value_name='config')
+            | selectattr('config.enabled', 'undefined')
+            | list }}
+        _enabled_extensions: >-
+          {{ (_defined | selectattr('config.enabled') | list) + _undefined }}
+        _unsupported_enabled_extensions: >-
+          {{ _enabled_extensions | selectattr('name', 'in', unsupported_postgres_extensions[_pg_arch]) | list }}
   run_once: true
   delegate_to: localhost
   when:
     - groups.postgresql is defined
     - groups.postgresql | length > 0
-    - hostvars[groups['postgresql'][0]]['ansible_architecture'] == "aarch64"

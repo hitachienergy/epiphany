@@ -1,0 +1,7 @@
+---
+- name: Extensions | PgBouncer | Install OS packages
+  package:
+    name: pgbouncer
+    state: present
+  module_defaults:
+    yum: { lock_timeout: "{{ yum_lock_timeout }}" }

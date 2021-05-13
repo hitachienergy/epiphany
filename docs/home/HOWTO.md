@@ -27,6 +27,8 @@
   - [Build artifacts](./howto/CLUSTER.md#build-artifacts)
   - [Kafka replication and partition setting](./howto/CLUSTER.md#kafka-replication-and-partition-setting)
   - [RabbitMQ installation and setting](./howto/CLUSTER.md#rabbitmq-installation-and-setting)
+  - [How to use Azure availability sets](./howto/CLUSTER.md#how-to-use-azure-availability-sets)
+  - [Downloading offline requirements with a Docker container](./howto/CLUSTER.md#downloading-offline-requirements-with-a-docker-container)
 
 - [Monitoring](./howto/MONITORING.md)
   - [How to configure Prometheus alerts](./howto/MONITORING.md#how-to-configure-prometheus-alerts)

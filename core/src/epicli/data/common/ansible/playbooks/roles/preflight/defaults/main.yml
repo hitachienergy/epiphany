@@ -97,3 +97,9 @@ unsupported_roles:
       - haproxy_exporter
       - applications
       - ignite
+
+unsupported_postgres_extensions:
+  x86_64: []
+  aarch64:
+    - replication
+    - pgbouncer

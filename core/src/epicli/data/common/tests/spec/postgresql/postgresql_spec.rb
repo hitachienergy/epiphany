@@ -5,21 +5,26 @@ require 'multi_json'
 
 postgresql_host = '127.0.0.1'
 postgresql_default_port = 5432
-pgbouncer_default_port = 6432
+pgbouncer_default_port  = 6432
+
+config_docs = Hash.new
+for kind in ['logging', 'postgresql']
+  config_docs[kind.to_sym] = readDataYaml("configuration/#{kind}")
+end
+
 ELASTICSEARCH = { # must be global until we introduce modules
   host: listInventoryHosts("logging")[0],
   api_port: 9200,
-  admin_password: readDataYaml("configuration/logging")["specification"]["admin_password"]
+  admin_password: !config_docs[:logging].nil? ? config_docs[:logging]["specification"]["admin_password"] : nil
 }
-replicated = readDataYaml("configuration/postgresql")["specification"]["extensions"]["replication"]["enabled"]
-replication_user = readDataYaml("configuration/postgresql")["specification"]["extensions"]["replication"]["replication_user_name"]
-replication_password = readDataYaml("configuration/postgresql")["specification"]["extensions"]["replication"]["replication_user_password"]
-use_repmgr = readDataYaml("configuration/postgresql")["specification"]["extensions"]["replication"]["use_repmgr"]
-max_wal_senders = readDataYaml("configuration/postgresql")["specification"]["config_file"]["parameter_groups"].detect {|i| i["name"] == 'REPLICATION'}["subgroups"].detect {|i| i["name"] == "Sending Server(s)"}["parameters"].detect {|i| i["name"] == "max_wal_senders"}["value"]
-wal_keep_segments = readDataYaml("configuration/postgresql")["specification"]["config_file"]["parameter_groups"].detect {|i| i["name"] == 'REPLICATION'}["subgroups"].detect {|i| i["name"] == "Sending Server(s)"}["parameters"].detect {|i| i["name"] == "wal_keep_segments"}["value"]
 
-pgbouncer_enabled = readDataYaml("configuration/postgresql")["specification"]["extensions"]["pgbouncer"]["enabled"]
-pgaudit_enabled = readDataYaml("configuration/postgresql")["specification"]["extensions"]["pgaudit"]["enabled"]
+replicated =           config_docs[:postgresql]["specification"]["extensions"]["replication"]["enabled"]
+replication_user =     config_docs[:postgresql]["specification"]["extensions"]["replication"]["replication_user_name"]
+replication_password = config_docs[:postgresql]["specification"]["extensions"]["replication"]["replication_user_password"]
+max_wal_senders =      config_docs[:postgresql]["specification"]["config_file"]["parameter_groups"].detect {|i| i["name"] == 'REPLICATION'}["subgroups"].detect {|i| i["name"] == "Sending Server(s)"}["parameters"].detect {|i| i["name"] == "max_wal_senders"}["value"]
+wal_keep_segments =    config_docs[:postgresql]["specification"]["config_file"]["parameter_groups"].detect {|i| i["name"] == 'REPLICATION'}["subgroups"].detect {|i| i["name"] == "Sending Server(s)"}["parameters"].detect {|i| i["name"] == "wal_keep_segments"}["value"]
+pgbouncer_enabled =    config_docs[:postgresql]["specification"]["extensions"]["pgbouncer"]["enabled"]
+pgaudit_enabled =      config_docs[:postgresql]["specification"]["extensions"]["pgaudit"]["enabled"]
 pg_user = 'testuser'
 pg_pass = 'testpass'
 
@@ -125,7 +130,7 @@ describe 'Checking if PostgreSQL service is running' do
   end
 end
 
-if replicated && use_repmgr
+if replicated
   describe 'Checking if repmgr service is running' do
     if os[:family] == 'redhat'
       describe service('repmgr10') do
@@ -224,33 +229,31 @@ if replicated
   primary = listInventoryHosts("postgresql")[0]
   secondary = listInventoryHosts("postgresql")[1]
 
-  if use_repmgr
-    describe 'Displaying information about each registered node in the replication cluster' do
-      let(:disable_sudo) { false }
-      describe command("su - postgres -c \"repmgr -f /etc/postgresql/10/main/repmgr.conf cluster show\""), :if => os[:family] == 'ubuntu' do
-        its(:stdout) { should match /primary.*\*.*running/ }
-        its(:stdout) { should match /standby.*running/ }
-        its(:exit_status) { should eq 0 }
-      end
-      describe command("su - postgres -c \"repmgr -f /etc/repmgr/10/repmgr.conf cluster show\""), :if => os[:family] == 'redhat' do
-        its(:stdout) { should match /primary.*\*.*running/ }
-        its(:stdout) { should match /standby.*running/ }
-        its(:exit_status) { should eq 0 }
-      end
+  describe 'Displaying information about each registered node in the replication cluster' do
+    let(:disable_sudo) { false }
+    describe command("su - postgres -c \"repmgr -f /etc/postgresql/10/main/repmgr.conf cluster show\""), :if => os[:family] == 'ubuntu' do
+      its(:stdout) { should match /primary.*\*.*running/ }
+      its(:stdout) { should match /standby.*running/ }
+      its(:exit_status) { should eq 0 }
     end
+    describe command("su - postgres -c \"repmgr -f /etc/repmgr/10/repmgr.conf cluster show\""), :if => os[:family] == 'redhat' do
+      its(:stdout) { should match /primary.*\*.*running/ }
+      its(:stdout) { should match /standby.*running/ }
+      its(:exit_status) { should eq 0 }
+    end
+  end
 
-    describe 'Check hot_standby setting in postgresql-epiphany.conf file' do
-      let(:disable_sudo) { false }
-      if os[:family] == 'redhat'
-        describe command("grep -Eio '^hot_standby\s*=[^#]*' /var/lib/pgsql/10/data/postgresql-epiphany.conf") do
-          its(:exit_status) { should eq 0 }
-          its(:stdout) { should match /^hot_standby\s*=\s*#{pg_config_file_booleans[:true]}/i }
-        end
-      elsif os[:family] == 'ubuntu'
-        describe command("grep -Eio '^hot_standby\s*=[^#]*' /etc/postgresql/10/main/postgresql-epiphany.conf") do
-          its(:exit_status) { should eq 0 }
-          its(:stdout) { should match /^hot_standby\s*=\s*#{pg_config_file_booleans[:true]}/i }
-        end
+  describe 'Check hot_standby setting in postgresql-epiphany.conf file' do
+    let(:disable_sudo) { false }
+    if os[:family] == 'redhat'
+      describe command("grep -Eio '^hot_standby\s*=[^#]*' /var/lib/pgsql/10/data/postgresql-epiphany.conf") do
+        its(:exit_status) { should eq 0 }
+        its(:stdout) { should match /^hot_standby\s*=\s*#{pg_config_file_booleans[:true]}/i }
+      end
+    elsif os[:family] == 'ubuntu'
+      describe command("grep -Eio '^hot_standby\s*=[^#]*' /etc/postgresql/10/main/postgresql-epiphany.conf") do
+        its(:exit_status) { should eq 0 }
+        its(:stdout) { should match /^hot_standby\s*=\s*#{pg_config_file_booleans[:true]}/i }
       end
     end
   end
