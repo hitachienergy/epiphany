@@ -1,5 +1,11 @@
 # Changelog 1.0
 
+## [1.0.1] 2021-XX-XX
+
+### Fixed
+
+- [#2319]https://github.com/epiphany-platform/epiphany/issues/2319 - [RHEL/Azure] RHUI client certificate expired for RHEL 7-LVM images
+
 ## [1.0.0] 2021-05-07
 
 ### Fixed
