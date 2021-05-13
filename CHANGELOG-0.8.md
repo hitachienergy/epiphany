@@ -7,6 +7,7 @@
 - [#1824](https://github.com/epiphany-platform/epiphany/issues/1824) - offline installation fails with error 'yum lockfile is held by another process' (Azure/RHEL)
 - [#2067](https://github.com/epiphany-platform/epiphany/issues/2067) - [CentOS] epicli fails on task "repository : Wait for yum lock to be released" on CentOS Minimal
 - [#2262](https://github.com/epiphany-platform/epiphany/issues/2262) - [Ubuntu] elasticsearch-curator in version 5.8.3 is not available from APT repo
+- [#2313](https://github.com/epiphany-platform/epiphany/issues/2313) - [RHEL/Azure] RHUI client certificate expired for RHEL 7-RAW images
 
 ## [0.8.2] 2021-04-13
 
