@@ -1,4 +1,6 @@
 ---
+# This file is meant to be also used by upgrade role
+
 - name: Create directory for CA private key
   file:
     state: directory
@@ -160,7 +162,7 @@
       vars:
         _crt: "{{ hostvars[ansible_play_hosts_all[0]].admin_crt }}"
 
-# --- Generate node certificates (each node has its own) ---
+# --- Generate node certificate (each node has its own) ---
 
 - name: Generate private key for node certificate
   community.crypto.openssl_privatekey:
