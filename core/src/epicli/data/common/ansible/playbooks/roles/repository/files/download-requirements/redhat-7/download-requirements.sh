@@ -505,6 +505,11 @@ else
 	fi
 fi
 
+# Fix for RHUI client certificate expiration [Epiphany issue #2314]
+if is_repo_enabled "rhui-microsoft-azure-rhel"; then
+    yum update -y --disablerepo='*' --enablerepo='rhui-microsoft-azure-rhel*'
+fi
+
 # --- Install required packages unless present ---
 
 # repos can be enabled or disabled using the yum-config-manager command, which is provided by yum-utils package
