@@ -7,6 +7,7 @@
 - [#2042](https://github.com/epiphany-platform/epiphany/issues/2042) - PostgreSQL replication with repmgr: hot_standby not set in config file
 - [#1280](https://github.com/epiphany-platform/epiphany/issues/1280) - [RHEL] Pgpool not showing Replication State
 - [#2262](https://github.com/epiphany-platform/epiphany/issues/2262) - [Ubuntu] elasticsearch-curator in version 5.8.3 is not available from APT repo
+- [#2314](https://github.com/epiphany-platform/epiphany/issues/2314) - [RHEL/Azure] RHUI client certificate expired for RHEL 7-RAW images
 
 ### Updated
 
