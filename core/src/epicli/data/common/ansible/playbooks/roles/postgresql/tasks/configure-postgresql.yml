@@ -30,11 +30,6 @@
   when:
     - ansible_os_family == 'RedHat'
 
-- name: Enable postgresql service
-  systemd:
-    name: "{{ pg_service_name[ansible_os_family] }}"
-    enabled: yes
-
 - name: Change pg_hba.conf
   replace:
     path: "{{ pg_config_dir[ansible_os_family] }}/pg_hba.conf"
@@ -85,6 +80,17 @@
     backup: yes
   register: change_postgresql_conf
 
+# Placed here to avoid errors in log due to nonexistent directory
+- name: Create directory for archiving WAL files
+  file:
+    path: /dbbackup/{{ inventory_hostname }}/backup/
+    state: directory
+    owner: postgres
+    group: postgres
+  when:
+    - specification.extensions.replication.enabled is defined
+    - specification.extensions.replication.enabled | bool
+
 - name: Restart postgresql service
   systemd:
     name: "{{ pg_service_name[ansible_os_family] }}"
@@ -93,6 +99,11 @@
      or change_postgresql_epiphany_conf
      or change_postgresql_conf
 
+- name: Enable postgresql service
+  systemd:
+    name: "{{ pg_service_name[ansible_os_family] }}"
+    enabled: yes
+
 - name: Configure logrotate
   block:
     - name: Remove logrotate configuration provided by 'postgresql-common' package
@@ -100,6 +111,7 @@
         path: /etc/logrotate.d/postgresql-common
         state: absent
       when: ansible_os_family == 'Debian'
+
     - name: Create logrotate configuration file
       template:
         src: logrotate.conf.j2
@@ -112,7 +124,7 @@
 
 - name: Set up replication
   include_tasks: replication-{{ ansible_os_family }}.yml
-  when: 
+  when:
     - specification.extensions.replication.enabled is defined
     - specification.extensions.replication.enabled
     - specification.extensions.replication.use_repmgr is defined
@@ -120,7 +132,7 @@
 
 - name: Set up replication with repmgr
   include_tasks: replication-repmgr-{{ ansible_os_family }}.yml
-  when: 
+  when:
     - specification.extensions.replication.enabled is defined
     - specification.extensions.replication.enabled
     - specification.extensions.replication.use_repmgr is defined

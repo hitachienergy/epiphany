@@ -47,13 +47,6 @@
   vars:
     node_id: "{{ (groups.postgresql.index(inventory_hostname) + 1) }}"
 
-- name: Create directory for db backup
-  file:
-    path: /dbbackup/{{ inventory_hostname }}/backup/
-    state: directory
-    owner: postgres
-    group: postgres
-
 - name: Create a new database for repmgr
   become_user: postgres
   postgresql_db:
