@@ -10,7 +10,7 @@
 - name: Check if database is running on node0 database server
   become: true
   become_user: postgres
-  command: "{{ repmgr_pg_bindir[ansible_os_family] }}/pg_isready"
+  command: "{{ repmgr.pg_bindir[ansible_os_family] }}/pg_isready"
   register: node0
   ignore_errors: True
   when: groups['postgresql'][0] == inventory_hostname
@@ -38,12 +38,12 @@
   - name: Search for config files to back up
     shell: "find *.conf"
     args:
-      chdir: "{{ pg_config_dir[ansible_os_family] }}"
+      chdir: "{{ pg.config_dir[ansible_os_family] }}"
     register: config_files
 
   - name: Copy config files into temporary location
     copy:
-      src: "{{ pg_config_dir[ansible_os_family] }}/{{ item }}"
+      src: "{{ pg.config_dir[ansible_os_family] }}/{{ item }}"
       dest: "/var/tmp/{{ snapshot_name  }}/configs"
       remote_src: yes
     loop: "{{ config_files.stdout_lines|flatten(levels=1) }}"

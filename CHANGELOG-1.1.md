@@ -41,6 +41,10 @@
 - [#2116](https://github.com/epiphany-platform/epiphany/issues/2116) - [AMD64/ARM64] Logstash updated to version 7.12.0
 - [#2297](https://github.com/epiphany-platform/epiphany/issues/2297) - Update Python dependencies to solve some of the security alerts.
 
+### Deprecated
+
+- [#2237](https://github.com/epiphany-platform/epiphany/issues/2237) - Support only one replication type for PostgreSQL (with repmgr)
+
 ### Breaking changes
 
 ### Known issues
