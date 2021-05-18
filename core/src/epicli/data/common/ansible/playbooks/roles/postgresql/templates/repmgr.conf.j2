@@ -4,8 +4,8 @@ conninfo='host={{ ansible_default_ipv4.address }} user={{ specification.extensio
 data_directory='{{ pg.data_dir[ansible_os_family] }}'
 
 failover=automatic
-promote_command='{{ repmgr.pg_bindir[ansible_os_family] }}/repmgr standby promote -f {{ repmgr.config_dir[ansible_os_family] }}/repmgr.conf --log-to-file'
-follow_command='{{ repmgr.pg_bindir[ansible_os_family] }}/repmgr standby follow -f {{ repmgr.config_dir[ansible_os_family] }}/repmgr.conf --log-to-file --upstream-node-id=%n'
+promote_command='{{ repmgr.pg_bindir[ansible_os_family] }}/repmgr standby promote --log-to-file'
+follow_command='{{ repmgr.pg_bindir[ansible_os_family] }}/repmgr standby follow --log-to-file --upstream-node-id=%n'
 monitoring_history=yes
 monitor_interval_secs=10
 

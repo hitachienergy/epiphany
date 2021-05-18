@@ -9,7 +9,9 @@
     - name: Check if enabled applications are supported for the architecture
       assert:
         that: _unsupported_enabled_apps | length == 0
-        fail_msg: "Following application(s) are not supported for {{ _k8s_arch }} and cannot be installed: {{ _unsupported_enabled_apps | map(attribute='name') | join(', ') }}"
+        fail_msg: >-
+          Following application(s) are not supported for {{ _k8s_arch }} and cannot be installed:
+            {{ _unsupported_enabled_apps | map(attribute='name') | join(', ') }}
         success_msg: "All enabled applications are supported for {{ _k8s_arch }}"
         quiet: true
       vars:
@@ -30,7 +32,7 @@
     - groups.kubernetes_master | length > 0
     - "'applications' in roles_with_generated_vars" # there is a case with disabled applications by custom feature mapping
 
-- name: Check if PostgreSQL extentions and architecture are compatible
+- name: PostgreSQL checks
   block:
     - name: Include postgresql vars from postgresql role
       include_vars:
@@ -61,6 +63,13 @@
           {{ (_defined | selectattr('config.enabled') | list) + _undefined }}
         _unsupported_enabled_extensions: >-
           {{ _enabled_extensions | selectattr('name', 'in', unsupported_postgres_extensions[_pg_arch]) | list }}
+
+    - name: Check the number of PostgreSQL hosts for Repmgr
+      when: postgresql.specification.extensions.replication.enabled | default(false)
+      assert:
+        that: groups.postgresql | length <= 2
+        fail_msg: "Max number of PostgreSQL hosts with enabled replication is 2"
+        success_msg: "The number of PostgreSQL hosts is correct"
   run_once: true
   delegate_to: localhost
   when:
