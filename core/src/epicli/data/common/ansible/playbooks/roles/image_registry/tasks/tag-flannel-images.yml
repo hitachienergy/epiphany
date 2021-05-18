@@ -1,9 +1,0 @@
----
-- name: Check if legacy flannel image is not tagged as {{ docker_image }}
-  command: docker images -q {{ docker_image }}
-  register: image_check
-  changed_when: false
-
-- name: Tag "epiphanyplatform" image with "quay.io/coreos"
-  when: image_check.stdout | length == 0
-  command: docker tag {{ docker_image | replace('quay.io/coreos', 'epiphanyplatform') }} {{ docker_image }}

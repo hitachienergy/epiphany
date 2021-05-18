@@ -47,32 +47,6 @@
     - import_role:
         name: upgrade
         tasks_from: kubernetes
-      vars: { ver: "1.15.10", cni_ver: "0.7.5", upgrade_to_final_version: false }
-      when: "'kubernetes' in upgrade_components or upgrade_components|length == 0"
-  environment:
-    KUBECONFIG: "{{ kubeconfig.remote }}"
-
-- hosts: kubernetes_master:kubernetes_node
-  serial: 1
-  become: true
-  become_method: sudo
-  tasks:
-    - import_role:
-        name: upgrade
-        tasks_from: kubernetes
-      vars: { ver: "1.16.7", cni_ver: "0.7.5", upgrade_to_final_version: false }
-      when: "'kubernetes' in upgrade_components or upgrade_components|length == 0"
-  environment:
-    KUBECONFIG: "{{ kubeconfig.remote }}"
-
-- hosts: kubernetes_master:kubernetes_node
-  serial: 1
-  become: true
-  become_method: sudo
-  tasks:
-    - import_role:
-        name: upgrade
-        tasks_from: kubernetes
       vars: { ver: "1.17.7", cni_ver: "0.8.6", cni_in_kubelet: true, upgrade_to_final_version: false }
       when: "'kubernetes' in upgrade_components or upgrade_components|length == 0"
   environment:
@@ -107,7 +81,7 @@
     - import_role:
         name: upgrade
         tasks_from: filebeat
-      when: 
+      when:
         - groups.logging is defined # do not upgrade if there is legacy Elasticsearch (v6)
         - "'filebeat' in upgrade_components or upgrade_components|length == 0"
   environment:

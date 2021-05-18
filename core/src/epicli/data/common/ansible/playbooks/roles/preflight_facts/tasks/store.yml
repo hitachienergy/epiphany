@@ -4,35 +4,6 @@
     apply:
       become: true
 
-# When upgrading cluster created by Epiphany v0.6, the preflight_facts.yml may exist and be owned by root.
-- name: Check if owner of preflight_facts.yml has to be changed
-  delegate_to: localhost
-  become: false
-  run_once: true
-  block:
-    - name: Get properties of preflight_facts.yml file
-      stat:
-        path: "{{ facts_file_path }}"
-        get_attributes: false
-        get_checksum: false
-        get_mime: false
-      register: stat_facts_file
-
-    - name: Get local user
-      command: whoami
-      register: command_whoami
-      changed_when: false
-      when: stat_facts_file.stat.exists
-
-- include_tasks: fix-facts-file-ownership.yml
-  run_once: true
-  vars:
-    current_local_user: "{{ command_whoami.stdout }}"
-  when:
-    - stat_facts_file.stat.pw_name is defined
-    - stat_facts_file.stat.pw_name != current_local_user
-    - stat_facts_file.stat.mode != '0640' or not stat_facts_file.stat.writeable
-
 - name: Store preflight facts
   delegate_to: localhost
   become: false

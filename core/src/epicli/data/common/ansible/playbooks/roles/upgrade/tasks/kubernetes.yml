@@ -8,16 +8,6 @@
     - name: k8s | Include get-cluster-version.yml
       import_tasks: kubernetes/get-cluster-version.yml # sets cluster_version
 
-- name: k8s | Check if upgrade from current K8s version is supported
-  assert:
-    that: cluster_version is version('v1.14.6', '>=')
-    fail_msg: >-
-      Your Kubernetes version ({{ cluster_version }}) is not supported by this version of Epiphany which requires
-      at least version 1.14.6 (Epiphany v0.4.4). For more information, refer to the documentation.
-    quiet: true
-  when:
-    - groups.kubernetes_master[0] == inventory_hostname
-
 - name: k8s | Include get-kubelet-version.yml
   import_tasks: kubernetes/get-kubelet-version.yml # sets kubelet_version
   delegate_to: "{{ groups.kubernetes_master[0] }}"
