@@ -290,9 +290,9 @@ class InfrastructureBuilder(Step):
             manifest_vm_config = select_first(manifest_docs, lambda x: x.name == machine_selector and x.kind == 'infrastructure/virtual-machine')
             manifest_first_config = select_first(manifest_docs, lambda x: x.kind == 'infrastructure/virtual-machine')
             if manifest_vm_config  is not None:
-                model_with_defaults.specification.storage_image_reference = dict_to_objdict(deepcopy(manifest_vm_config.specification.storage_image_reference))
+                model_with_defaults.specification.os_full_name = manifest_vm_config.specification.os_full_name
             else:
-                model_with_defaults.specification.storage_image_reference = dict_to_objdict(deepcopy(manifest_first_config.specification.storage_image_reference))
+                model_with_defaults.specification.os_full_name = manifest_first_config.specification.os_full_name
 
         return model_with_defaults
 

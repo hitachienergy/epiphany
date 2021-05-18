@@ -101,10 +101,9 @@ class ApplyEngine(Step):
         # We ask here if we want to preserve the OS base image to avoid Terraform issues with the re-apply
         if self.manifest_docs:
             manifest_cluster_model = select_single(self.manifest_docs, lambda x: x.kind == 'epiphany-cluster')
-            if manifest_cluster_model.version != VERSION and manifest_cluster_model.provider != 'any':
-                self.preserve_os = query_yes_no("""You are about to re-apply a configuration with a different version of Epiphany then the cluster was originally created with.
-This version might try and apply different OS images for your virtual machines which might cause issues and/or data loss.
-Do you want to preserve the OS images used during the first cluster creation?""" )
+            if manifest_cluster_model.provider != 'any':
+                self.preserve_os = query_yes_no("""You are about to re-apply a configuration. This action might try to apply a different OS image to your virtual machines which might result data loss and/or other issues.
+Do you want to preserve the original OS image used during the clusters creation?""")
 
     def assert_no_master_downscale(self):
         components = self.cluster_model.specification.components
