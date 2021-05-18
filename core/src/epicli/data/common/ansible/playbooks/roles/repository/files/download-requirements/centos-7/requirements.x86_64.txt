@@ -23,7 +23,7 @@ https://github.com/google/go-containerregistry/releases/download/v0.4.1/go-conta
 [packages]
 audit # for docker-ce
 bash-completion
-c-ares # for pgbouncer
+#c-ares # for pgbouncer
 ca-certificates
 cifs-utils
 conntrack-tools # for kubelet
@@ -79,7 +79,7 @@ perl-Pod-Perldoc # for vim
 perl-Pod-Simple # for vim
 perl-Pod-Usage # for vim
 pgaudit15_13
-pgbouncer-1.10.*
+#pgbouncer-1.10.*
 policycoreutils-python # for container-selinux
 pyldb # for cifs-utils
 python-cffi # for python2-cryptography
