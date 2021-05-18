@@ -82,17 +82,6 @@
           loop: "{{ legacy_images }}"
           when: legacy_images | count > 0
 
-        # installations before v0.10.0 have no "epiphanyplatform" flannel images
-        # that were changed due to replacement Skopeo with Crane
-        # following task can be considered for removal after the end of v0.6 support
-        - name: Tag legacy flannel images
-          vars:
-            docker_image: "{{ item }}"
-          include_tasks: tag-flannel-images.yml
-          loop:
-            - quay.io/coreos/flannel:v0.11.0-amd64
-            - quay.io/coreos/flannel:v0.11.0
-
         - name: Push legacy version images to registry
           vars:
             docker_image: "{{ item }}"

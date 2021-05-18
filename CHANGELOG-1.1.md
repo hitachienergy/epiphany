@@ -43,6 +43,7 @@
 
 ### Deprecated
 
+- [#2179](https://github.com/epiphany-platform/epiphany/issues/2179) - Remove un-used images, files and packages used only for deprecated Epiphany installations (< 0.7.0)
 - [#2237](https://github.com/epiphany-platform/epiphany/issues/2237) - Support only one replication type for PostgreSQL (with repmgr)
 
 ### Breaking changes

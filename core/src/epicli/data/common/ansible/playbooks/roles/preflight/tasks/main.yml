@@ -26,79 +26,15 @@
           If the components are not necessary, you may remove them from the feature-mapping
           (see https://github.com/epiphany-platform/epiphany/blob/develop/docs/home/howto/CLUSTER.md#how-to-create-custom-cluster-components).
         success_msg: All components supported for {{ architecture }} architecture
-
-- name: Check if enabled applications are supported for the architecture
-  block:
-    - name: Include application vars from applications role
-      include_vars:
-        file: roles/applications/vars/main.yml
-        name: k8s_apps
-
-    - name: Check if enabled applications are supported for the architecture
-      assert:
-        that: _unsupported_enabled_apps | length == 0
-        fail_msg: >-
-          Following application(s) are not supported for {{ _k8s_arch }} and cannot be installed:
-            {{ _unsupported_enabled_apps | map(attribute='name') | join(', ') }}
-        success_msg: "All enabled applications are supported for {{ _k8s_arch }}"
-      vars:
-        _k8s_arch: >-
-          {{ hostvars[groups['kubernetes_master'][0]]['ansible_architecture'] }}
-        _defined: >-
-          {{ k8s_apps.specification.applications | selectattr('enabled', 'defined') | list }}
-        _undefined: >-
-          {{ k8s_apps.specification.applications | selectattr('enabled', 'undefined') | list }}
-        _enabled_apps: >-
-          {{ (_defined | selectattr('enabled') | list) + _undefined }}
-        _unsupported_enabled_apps: >-
-          {{ _enabled_apps | selectattr('name', 'in', unsupported_apps[_k8s_arch]) | list }}
-  run_once: true
-  delegate_to: localhost
-  when:
-    - not is_upgrade_run # only for apply
-    - groups.kubernetes_master is defined
-    - groups.kubernetes_master | length > 0
-    - "'applications' in roles_with_generated_vars" # there is a case with disabled applications by custom feature mapping
-
-- name: Check if PostgreSQL extentions and architecture are compatible
-  block:
-    - name: Include postgresql vars from postgresql role
-      include_vars:
-        file: roles/postgresql/vars/main.yml
-        name: postgresql
-
-    - name: Check if PostgreSQL extensions are supported for the architecture
-      assert:
-        that: _unsupported_enabled_extensions | length == 0
-        fail_msg: >-
-          {{ unsupported_postgres_extensions[_pg_arch] | join(', ') }} extensions are not supported for {{ _pg_arch }}
-            and cannot be installed
-        success_msg: "All enabled PostgreSQL extensions are supported for current architecture"
-      vars:
-        _pg_arch: >-
-          {{ hostvars[groups['postgresql'][0]]['ansible_architecture'] }}
-        _defined: >-
-          {{ postgresql.specification.extensions
-            | dict2items(key_name='name', value_name='config')
-            | selectattr('config.enabled', 'defined')
-            | list }}
-        _undefined: >-
-          {{ postgresql.specification.extensions
-            | dict2items(key_name='name', value_name='config')
-            | selectattr('config.enabled', 'undefined')
-            | list }}
-        _enabled_extensions: >-
-          {{ (_defined | selectattr('config.enabled') | list) + _undefined }}
-        _unsupported_enabled_extensions: >-
-          {{ _enabled_extensions | selectattr('name', 'in', unsupported_postgres_extensions[_pg_arch]) | list }}
-  run_once: true
-  delegate_to: localhost
-  when:
-    - not is_upgrade_run # only for 'apply'
-    - groups.postgresql is defined
-    - groups.postgresql | length > 0
+        quiet: true
 
 - include_tasks: check-os.yml
+
+- include_tasks: apply.yml
+  when: not is_upgrade_run
+
+- include_tasks: upgrade.yml
+  when: is_upgrade_run
 
 - name: Check if existing PostgreSQL needs to be migrated to distribution installed from PostgreSQL repository
   block:
