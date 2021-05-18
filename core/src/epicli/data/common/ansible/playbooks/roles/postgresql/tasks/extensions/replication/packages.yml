@@ -6,8 +6,8 @@
   vars:
     _packages:
       Debian:
-        - postgresql-10-repmgr
+        - postgresql-13-repmgr
       RedHat:
-        - repmgr10-4.0.6
+        - repmgr13
   module_defaults:
     yum: { lock_timeout: "{{ yum_lock_timeout }}" }

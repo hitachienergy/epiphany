@@ -76,7 +76,7 @@ perl-libs # for vim
 perl-Pod-Perldoc # for vim
 perl-Pod-Simple # for vim
 perl-Pod-Usage # for vim
-pgaudit12_10
+pgaudit15_13
 pgbouncer-1.10.*
 policycoreutils-python # for container-selinux
 pyldb # for cifs-utils
@@ -93,8 +93,8 @@ quota # for nfs-utils
 rabbitmq-server-3.8.9
 rh-haproxy18
 rh-haproxy18-haproxy-syspaths
-postgresql10-server
-repmgr10-4.0.6
+postgresql13-server
+repmgr13
 samba-client
 samba-client-libs # for samba-client
 samba-common
@@ -174,8 +174,8 @@ hashicorp/vault-k8s:0.10.0
 vault:1.7.0
 # applications
 epiphanyplatform/ignite:2.9.1
-bitnami/pgpool:4.1.1-debian-10-r29
-brainsam/pgbouncer:1.12
+bitnami/pgpool:4.2.2
+bitnami/pgbouncer:1.15.0
 # istio
 istio/pilot:1.8.1
 istio/proxyv2:1.8.1
