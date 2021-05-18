@@ -2,6 +2,7 @@
 - name: Check if upgrade from current K8s version is supported
   block:
     - name: Get K8s cluster version
+      become: true
       command: kubectl version --output yaml
       register: cluster_version
       changed_when: false
