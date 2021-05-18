@@ -1,34 +1,34 @@
 ---
 pg:
   service_name:
-    RedHat: postgresql-10
+    RedHat: postgresql-13
     Debian: postgresql
   instantiated_service_name:
     RedHat: null
-    Debian: postgresql@10-main
+    Debian: postgresql@13-main
   base_dir:
     RedHat: /var/lib/pgsql
     Debian: /var/lib/postgresql
   config_dir:
-    RedHat: /var/lib/pgsql/10/data
-    Debian: /etc/postgresql/10/main
+    RedHat: /var/lib/pgsql/13/data
+    Debian: /etc/postgresql/13/main
   data_dir:
-    RedHat: /var/lib/pgsql/10/data
-    Debian: /var/lib/postgresql/10/main
+    RedHat: /var/lib/pgsql/13/data
+    Debian: /var/lib/postgresql/13/main
 
 repmgr:
   bindir:
-    RedHat: /usr/pgsql-10/bin
+    RedHat: /usr/pgsql-13/bin
     Debian: /usr/bin
   pg_bindir:
-    RedHat: /usr/pgsql-10/bin
-    Debian: /usr/lib/postgresql/10/bin
+    RedHat: /usr/pgsql-13/bin
+    Debian: /usr/lib/postgresql/13/bin
   service_name:
-    RedHat: repmgr10
+    RedHat: repmgr13
     Debian: repmgrd
   config_dir:
-    RedHat: /etc/repmgr/10
-    Debian: /etc/postgresql/10/main
+    RedHat: /etc/repmgr/13
+    Debian: /etc/postgresql/13/main
 
 pgbouncer:
   logfile:

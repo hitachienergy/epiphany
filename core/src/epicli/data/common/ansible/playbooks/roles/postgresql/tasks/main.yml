@@ -22,11 +22,11 @@
   vars:
     _packages:
       Debian:
-        - postgresql-10
-        - postgresql-contrib-10
+        - postgresql-13
+        - postgresql-contrib-13
         - python-psycopg2 # required for postgresql ansible management
       RedHat:
-        - postgresql10-server
+        - postgresql13-server
         - python-psycopg2 # required for postgresql ansible management
   module_defaults:
     yum: { lock_timeout: "{{ yum_lock_timeout }}" }
@@ -38,14 +38,16 @@
     loop_var: data
   loop: "{{ enabled_extensions }}"
 
-- name: Create directory /var/log/postgresql
-  # The same permissions as for PG installed on RHEL from Software Collections (different on Ubuntu)
+- name: Create directories and ensure correct permissions
   file:
-    path: /var/log/postgresql
+    path: "{{ item }}"
     state: directory
     owner: postgres
     group: postgres
     mode: u=rwx,g=,o=
+  loop:
+    - /var/log/postgresql
+    - "{{ pg.data_dir[ansible_os_family] }}" # Permissions should be u=rwx (0700) or u=rwx,g=rx (0750)
 
 - name: RedHat | Initialize database
   block:
@@ -55,17 +57,19 @@
       register: pg_hba_conf_stat
 
     - name: Initialize database (RedHat)
-      command: /usr/pgsql-10/bin/postgresql-10-setup initdb {{ pg.service_name[ansible_os_family] }}
+      command: /usr/pgsql-13/bin/postgresql-13-setup initdb {{ pg.service_name[ansible_os_family] }}
       when:
         - not pg_hba_conf_stat.stat.exists
   when:
     - ansible_os_family == 'RedHat'
 
-- name: Change pg_hba.conf
-  replace:
-    path: "{{ pg.config_dir[ansible_os_family] }}/pg_hba.conf"
-    regexp: '^host\s+all\s+all\s+127\.0\.0\.1/32\s+(?:ident|md5)$'
-    replace: 'host    all             all             0.0.0.0/0               md5'
+- name: Copy pg_hba.conf
+  template:
+    src: pg_hba.conf.j2
+    dest: "{{ pg.config_dir[ansible_os_family] }}/pg_hba.conf"
+    owner: postgres
+    group: postgres
+    mode: u=rw,g=,o=
     backup: true
   register: change_pg_hba_conf
 
@@ -104,12 +108,13 @@
     mode: u=rw,g=,o=
   register: change_postgresql_epiphany_conf
 
-- name: Change postgresql.conf
-  lineinfile:
-    path: "{{ pg.config_dir[ansible_os_family] }}/postgresql.conf"
-    line: "include = 'postgresql-epiphany.conf'	# Epiphany managed configuration that overrides above settings"
-    insertafter: '^#include ' # insert line after the last 'include' to override all settings
-    firstmatch: false
+- name: Copy postgresql.conf
+  copy:
+    src: postgresql.conf
+    dest: "{{ pg.config_dir[ansible_os_family] }}/postgresql.conf"
+    owner: postgres
+    group: postgres
+    mode: u=rw,g=,o=
     backup: true
   register: change_postgresql_conf
 
