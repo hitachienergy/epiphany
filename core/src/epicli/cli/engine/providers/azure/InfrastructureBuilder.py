@@ -12,7 +12,7 @@ from cli.helpers.os_images import get_os_distro_normalized
 from cli.version import VERSION
 
 class InfrastructureBuilder(Step):
-    def __init__(self, docs):
+    def __init__(self, docs, manifest_docs=[], preserve_os=False):
         super().__init__(__name__)
         self.cluster_model = select_single(docs, lambda x: x.kind == 'epiphany-cluster')
         self.cluster_name = self.cluster_model.specification.name.lower()
@@ -22,6 +22,8 @@ class InfrastructureBuilder(Step):
         self.use_network_security_groups = self.cluster_model.specification.cloud.network.use_network_security_groups
         self.use_public_ips = self.cluster_model.specification.cloud.use_public_ips
         self.docs = docs
+        self.manifest_docs = manifest_docs
+        self.preserve_os = preserve_os
 
     def run(self):
         infrastructure = []
@@ -44,7 +46,7 @@ class InfrastructureBuilder(Step):
 
             # The vm config also contains some other stuff we use for network and security config.
             # So get it here and pass it allong.
-            vm_config = self.get_virtual_machine(component_value, self.cluster_model, self.docs)
+            vm_config = self.get_virtual_machine(component_value, self.cluster_model, self.docs, self.manifest_docs, self.preserve_os)
             # Set property that controls cloud-init.
             vm_config.specification['use_cloud_init_custom_data'] = cloud_init_custom_data.specification.enabled
 
@@ -230,12 +232,20 @@ class InfrastructureBuilder(Step):
         return config
 
     @staticmethod
-    def get_virtual_machine(component_value, cluster_model, docs):
+    def get_virtual_machine(component_value, cluster_model, docs, manifest_docs, preserve_os):
         machine_selector = component_value.machine
         model_with_defaults = select_first(docs, lambda x: x.kind == 'infrastructure/virtual-machine' and
                                                                  x.name == machine_selector)
         if model_with_defaults is None:
             model_with_defaults = merge_with_defaults(cluster_model.provider, 'infrastructure/virtual-machine',
                                                       machine_selector, docs)
+
+        if manifest_docs and preserve_os:
+            manifest_vm_config = select_first(manifest_docs, lambda x: x.name == machine_selector and x.kind == 'infrastructure/virtual-machine')
+            manifest_first_config = select_first(manifest_docs, lambda x: x.kind == 'infrastructure/virtual-machine')
+            if manifest_vm_config  is not None:
+                model_with_defaults.specification.storage_image_reference = dict_to_objdict(deepcopy(manifest_vm_config.specification.storage_image_reference))
+            else:
+                model_with_defaults.specification.storage_image_reference = dict_to_objdict(deepcopy(manifest_first_config.specification.storage_image_reference))
 
         return model_with_defaults

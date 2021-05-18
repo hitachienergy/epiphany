@@ -5,7 +5,8 @@ from ansible.inventory.manager import InventoryManager
 
 from cli.helpers.Step import Step
 from cli.helpers.doc_list_helpers import select_single, select_all
-from cli.helpers.build_saver import save_manifest, get_inventory_path
+from cli.helpers.build_saver import save_manifest, get_inventory_path, get_manifest_path, get_build_path
+from cli.helpers.data_loader import load_manifest_docs
 from cli.helpers.yaml_helpers import safe_load_all
 from cli.helpers.Log import Log
 from cli.helpers.os_images import get_os_distro_normalized
@@ -17,6 +18,8 @@ from cli.engine.terraform.TerraformTemplateGenerator import TerraformTemplateGen
 from cli.engine.terraform.TerraformFileCopier import TerraformFileCopier
 from cli.engine.terraform.TerraformRunner import TerraformRunner
 from cli.engine.ansible.AnsibleRunner import AnsibleRunner
+from cli.helpers.query_yes_no import query_yes_no
+from cli.version import VERSION
 
 
 class ApplyEngine(Step):
@@ -31,6 +34,8 @@ class ApplyEngine(Step):
         self.input_docs = []
         self.configuration_docs = []
         self.infrastructure_docs = []
+        self.manifest_docs = []
+        self.preserve_os = False
 
     def __enter__(self):
         return self
@@ -61,9 +66,12 @@ class ApplyEngine(Step):
             schema_validator.run()
 
     def process_infrastructure_docs(self):
+        # Load any posible existing manifest docs
+        self.load_manifest_docs()
+
         # Build the infrastructure docs
         with provider_class_loader(self.cluster_model.provider, 'InfrastructureBuilder')(
-                self.input_docs) as infrastructure_builder:
+                self.input_docs, self.manifest_docs, self.preserve_os) as infrastructure_builder:
             self.infrastructure_docs = infrastructure_builder.run()
 
         # Validate infrastructure documents
@@ -84,16 +92,19 @@ class ApplyEngine(Step):
                 [*self.configuration_docs, *self.infrastructure_docs]) as config_collector:
             config_collector.run()
 
-    def validate(self):
-        self.process_input_docs()
+    def load_manifest_docs(self):
+        path_to_manifest = get_manifest_path(self.cluster_model.specification.name)
+        if os.path.isfile(path_to_manifest):
+            self.manifest_docs = load_manifest_docs(get_build_path(self.cluster_model.specification.name))
 
-        self.process_configuration_docs()
-
-        self.process_infrastructure_docs()
-
-        save_manifest([*self.input_docs, *self.configuration_docs, *self.infrastructure_docs], self.cluster_model.specification.name)
-
-        return 0
+        # If we can load manifest docs it means we are re-applying the config.
+        # We ask here if we want to preserve the OS base image to avoid Terraform issues with the re-apply
+        if self.manifest_docs:
+            manifest_cluster_model = select_single(self.manifest_docs, lambda x: x.kind == 'epiphany-cluster')
+            if manifest_cluster_model.version != VERSION and manifest_cluster_model.provider != 'any':
+                self.preserve_os = query_yes_no("""You are about to re-apply a configuration with a different version of Epiphany then the cluster was originally created with.
+This version might try and apply different OS images for your virtual machines which might cause issues and/or data loss.
+Do you want to preserve the OS images used during the first cluster creation?""" )
 
     def assert_no_master_downscale(self):
         components = self.cluster_model.specification.components
