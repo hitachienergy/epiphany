@@ -244,7 +244,7 @@ class InfrastructureBuilder(Step):
 
             preserve_os_image = False
             if not self.preserve_os_images:
-                preserve_os_image = query_yes_no(f"""You are about to apply a different OS image for the '{machine_selector}' VM definition. This might lead to data loss and/or other issues.
+                preserve_os_image = query_yes_no(f"""You are about to re-apply a different OS image for the '{machine_selector}' VM definition. This might lead to data loss and/or other issues.
 Do you want to preserve the original OS image for VM definition '{machine_selector}'?""")
                 print("")
                 if preserve_os_image:
