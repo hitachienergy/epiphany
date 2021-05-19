@@ -1,5 +1,17 @@
 ---
 # Actions taken only when replication with repmgr is enabled
+- name: Add postgres user to sudoers file
+  lineinfile:
+    path: /etc/sudoers
+    line: >-
+      postgres ALL=(ALL:ALL) NOPASSWD:
+      /bin/systemctl start {{ pg.service_name[ansible_os_family] }},
+      /bin/systemctl stop {{ pg.service_name[ansible_os_family] }},
+      /bin/systemctl restart {{ pg.service_name[ansible_os_family] }},
+      /bin/systemctl reload {{ pg.service_name[ansible_os_family] }},
+      {{ repmgr.bindir[ansible_os_family] }}/repmgr standby follow
+    validate: 'visudo -cf %s'
+
 - name: Stop repmgr service
   block:
   - name: Stop repmgr on standby node
@@ -213,8 +225,10 @@
         state: started
 
     - name: Rejoin secondary node to repmgr cluster
+      become: true
       become_user: postgres
-      shell: "{{ repmgr.bindir[ansible_os_family] }}/repmgr -f {{ repmgr.config_dir[ansible_os_family] }}/repmgr.conf standby follow -F"
+      become_method: sudo
+      command: "{{ repmgr.bindir[ansible_os_family] }}/repmgr standby follow"
   when:
     - component_vars.specification.extensions.replication.enabled | default(false)
     - groups['postgresql'][1] == inventory_hostname
