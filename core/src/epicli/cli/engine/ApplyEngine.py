@@ -18,7 +18,6 @@ from cli.engine.terraform.TerraformTemplateGenerator import TerraformTemplateGen
 from cli.engine.terraform.TerraformFileCopier import TerraformFileCopier
 from cli.engine.terraform.TerraformRunner import TerraformRunner
 from cli.engine.ansible.AnsibleRunner import AnsibleRunner
-from cli.helpers.query_yes_no import query_yes_no
 from cli.version import VERSION
 
 
@@ -35,7 +34,6 @@ class ApplyEngine(Step):
         self.configuration_docs = []
         self.infrastructure_docs = []
         self.manifest_docs = []
-        self.preserve_os = False
 
     def __enter__(self):
         return self
@@ -71,7 +69,7 @@ class ApplyEngine(Step):
 
         # Build the infrastructure docs
         with provider_class_loader(self.cluster_model.provider, 'InfrastructureBuilder')(
-                self.input_docs, self.manifest_docs, self.preserve_os) as infrastructure_builder:
+                self.input_docs, self.manifest_docs) as infrastructure_builder:
             self.infrastructure_docs = infrastructure_builder.run()
 
         # Validate infrastructure documents
@@ -96,14 +94,6 @@ class ApplyEngine(Step):
         path_to_manifest = get_manifest_path(self.cluster_model.specification.name)
         if os.path.isfile(path_to_manifest):
             self.manifest_docs = load_manifest_docs(get_build_path(self.cluster_model.specification.name))
-
-        # If we can load manifest docs it means we are re-applying the config.
-        # We ask here if we want to preserve the OS base image to avoid Terraform issues with the re-apply
-        if self.manifest_docs:
-            manifest_cluster_model = select_single(self.manifest_docs, lambda x: x.kind == 'epiphany-cluster')
-            if manifest_cluster_model.provider != 'any':
-                self.preserve_os = query_yes_no("""You are about to re-apply a configuration. This action might try to apply a different OS image to your virtual machines which might result data loss and/or other issues.
-Do you want to preserve the original OS image used during the clusters creation?""")
 
     def assert_no_master_downscale(self):
         components = self.cluster_model.specification.components
