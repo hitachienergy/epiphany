@@ -13,9 +13,12 @@
   lineinfile:
     path: /etc/sudoers
     line: >-
-      'postgres ALL=(ALL:ALL) NOPASSWD: /bin/systemctl start postgresql,
-      /bin/systemctl stop postgresql, /bin/systemctl restart postgresql,
-      /bin/systemctl reload postgresql'
+      postgres ALL=(ALL:ALL) NOPASSWD:
+      /bin/systemctl start {{ pg.service_name[ansible_os_family] }},
+      /bin/systemctl stop {{ pg.service_name[ansible_os_family] }},
+      /bin/systemctl restart {{ pg.service_name[ansible_os_family] }},
+      /bin/systemctl reload {{ pg.service_name[ansible_os_family] }},
+      {{ repmgr.bindir[ansible_os_family] }}/repmgr standby follow
     validate: 'visudo -cf %s'
 
 - name: Extensions | Repmgr | Create super user in postgresql
@@ -200,11 +203,10 @@
       failed_when: is_node_not_attached.rc not in [0, 1]
 
     - name: Extensions | Repmgr | Attach active standby to current primary node
+      become: true
       become_user: postgres
-      command: >-
-        {{ repmgr.bindir[ansible_os_family] }}/repmgr standby
-          -f {{ repmgr.config_dir[ansible_os_family] }}/repmgr.conf
-          follow
+      become_method: sudo
+      command: "{{ repmgr.bindir[ansible_os_family] }}/repmgr standby follow"
       when:
         - is_node_not_attached.stdout | length > 0
 
