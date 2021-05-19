@@ -138,7 +138,7 @@ class InfrastructureBuilder(Step):
         return efs_config
 
     def get_autoscaling_group(self, component_key, component_value, subnets_to_create, index):
-        autoscaling_group = dict_to_objdict(deepcopy(self.get_virtual_machine(component_value, self.cluster_model, self.docs, self.manifest_docs, False)))
+        autoscaling_group = dict_to_objdict(deepcopy(self.get_virtual_machine(component_value)))
         autoscaling_group.specification.cluster_name = self.cluster_name
         autoscaling_group.specification.name = resource_name(self.cluster_prefix, self.cluster_name, 'asg' + '-' + str(index), component_key)
         autoscaling_group.specification.count = component_value.count
