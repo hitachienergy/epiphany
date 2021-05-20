@@ -21,6 +21,7 @@
 - [#2243](https://github.com/epiphany-platform/epiphany/issues/2243) - Configure Elasticsearch to use static (single) ports instead of ranges
 - [#1914](https://github.com/epiphany-platform/epiphany/issues/1914) - Default plugins in Open Distro for Elasticsearch Kibana documented
 - [#2082](https://github.com/epiphany-platform/epiphany/issues/2082) - Check possibility of downloading packages for offline installation on different architecture than targeted one
+- [#2129](https://github.com/epiphany-platform/epiphany/issues/2129) - [Upgrade] Add migration from ODFE demo certificates to generated ones
 
 ### Fixed
 

@@ -1,0 +1,43 @@
+---
+# For clustered nodes it's recommended to disable shard allocation for the cluster before restarting a node.
+# See https://www.elastic.co/guide/en/elasticsearch/reference/current/restart-cluster.html#restart-cluster-rolling
+
+# required vars:
+# - es_api.url
+# - es_api.cert_path
+# - es_api.key_path
+
+- name: Disable shard allocation for the cluster and perform synced flush
+  module_defaults:
+    uri:
+      client_cert: "{{ es_api.cert_path }}"
+      client_key:  "{{ es_api.key_path }}"
+      validate_certs: false
+      body_format: json
+  block:
+    # It's safe to run this task many times regardless of the state
+    - name: ODFE | Disable shard allocation for the cluster
+      uri:
+        url: "{{ es_api.url }}/_cluster/settings"
+        method: PUT
+        body: '{"persistent":{"cluster.routing.allocation.enable": "primaries"}}'
+      register: response_allocation_primaries
+      until:
+        - response_allocation_primaries.json.acknowledged is defined
+        - response_allocation_primaries.json.acknowledged
+      retries: 30
+      delay: 1
+
+    # Synced-flush speeds up shard recovery. It's deprecated and will be removed in ES 8.0.
+    # Synced flush operations that fail due to pending indexing operations are listed in response body, although the request itself still returns 200 OK status.
+    # If there are failures, reissue the request.
+    - name: ODFE | Perform a synced flush
+      uri:
+        url: "{{ es_api.url }}/_flush/synced"
+        method: POST
+      register: response_flush
+      until:
+        - response_flush.json._shards is defined
+        - response_flush.json._shards.failed == 0
+      retries: 120  # up to 54 observed while testing on AWS
+      delay: 1
