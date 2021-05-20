@@ -4,9 +4,9 @@ Components of control plane such as controller manager or scheduler use endpoint
 
 Package `leaderelection.go` is used for leader election process which leverages above Kubernetes endpoint resource as some sort of `LOCK` primitive to prevent any follower to create the same endpoint in this same Namespace.
 
-## Leader election for pod
+## Leader election for pods
 
-As far as leader election for pod is considered there are possible a few solutions:
+As far as leader election for pods is considered there are possible a few solutions:
 
 1. Since Kubernetes introduced in 1.14 version (March, 2019) `coordination.k8s.io` group API, it is possible to create in the cluster lease object which can hold the lock for the set of pods. It is necessary to implement a simple code into the application using package `leaderelection.go` in order to handle the leader election mechanism.
 
