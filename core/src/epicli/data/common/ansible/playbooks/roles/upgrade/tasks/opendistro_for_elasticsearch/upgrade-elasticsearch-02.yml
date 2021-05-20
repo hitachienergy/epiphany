@@ -73,17 +73,16 @@
   vars:
     daemon_reload: true # opendistro-performance-analyzer provides opendistro-performance-analyzer.service
     target_inventory_hostname: "{{ inventory_hostname }}"
-    expected_status: [ yellow, green ]  # 'green' may not be possible until shard allocation is re-enabled
 
 # Post-upgrade tasks
 
 - include_tasks: opendistro_for_elasticsearch/utils/enable-shard-allocation.yml
   when: es_clustered
 
-- include_tasks: opendistro_for_elasticsearch/utils/wait-for-cluster-status.yml
-  vars:
-    # do not require 'green' status by purpose since we don't check initial status before starting the upgrade
-    expected_status: [ 'green', 'yellow' ]
+# Do not require 'green' status by purpose since we don't check initial status before starting the upgrade.
+# For 'green' at least 2 nodes must be already upgraded.
+- include_tasks:
+    file: opendistro_for_elasticsearch/utils/{{ es_clustered | ternary('wait-for-shard-allocation', 'wait-for-cluster-status') }}.yml
 
 - name: ODFE | Remove dual root CA temporary file
   file:

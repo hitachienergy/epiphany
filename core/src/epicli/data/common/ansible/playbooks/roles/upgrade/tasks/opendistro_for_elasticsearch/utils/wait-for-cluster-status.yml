@@ -11,9 +11,6 @@
   uri:
     url: "{{ es_api.url }}/_cluster/health"
     method: GET
-    client_cert: "{{ es_api.cert_path }}"
-    client_key:  "{{ es_api.key_path }}"
-    validate_certs: false
   register: cluster_health
   until:
     - cluster_health.json.status is defined
