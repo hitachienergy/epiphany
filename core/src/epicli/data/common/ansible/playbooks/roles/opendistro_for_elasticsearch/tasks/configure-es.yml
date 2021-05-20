@@ -94,6 +94,9 @@
          _epiphany_nodes_dn }}
     opendistro_security_allow_unsafe_democertificates: "{{ certificates.files.demo.opendistro_security.allow_unsafe_democertificates }}"
 
+    http_port:      "{{ is_upgrade_run | ternary(existing_es_config['http.port'],      ports.http) }}"
+    transport_port: "{{ is_upgrade_run | ternary(existing_es_config['transport.port'], ports.transport) }}"
+
 # When 'opendistro_security.allow_unsafe_democertificates' is set to 'false' all demo certificate files must be removed,
 # otherwise elasticsearch service doesn't start.
 # For apply mode, demo certificate files are removed based only on their names. For upgrade mode,

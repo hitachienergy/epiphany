@@ -62,10 +62,10 @@ network.host: {{ ansible_hostname }}
 # Set a custom port for HTTP:
 #
 {# defaults to range but we want static port #}
-http.port: {{ ports.http }}
+http.port: {{ http_port }}
 #
 {# defaults to range but we want static port #}
-transport.port: {{ ports.transport }}
+transport.port: {{ transport_port }}
 #
 # For more information, consult the network module documentation.
 #
