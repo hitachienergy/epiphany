@@ -427,6 +427,7 @@ To setup the cluster do the following steps from the provisioning machine:
         key: aws_key
         secret: aws_secret
       use_public_ips: false
+      os_image: default
     ```
 
     The [region](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Concepts.RegionsAndAvailabilityZones.html) lets you chose the most optimal place to deploy your cluster. The `key` and `secret` are needed by Terraform and can be generated in the AWS console. More information about that [here](https://docs.aws.amazon.com/general/latest/gr/aws-sec-cred-types.html#access-keys-and-secret-access-keys)
@@ -439,6 +440,7 @@ To setup the cluster do the following steps from the provisioning machine:
       subscription_name: Subscribtion_name
       use_service_principal: false
       use_public_ips: false
+      os_image: default
     ```
 
     The [region](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Concepts.RegionsAndAvailabilityZones.html) lets you chose the most optimal place to deploy your cluster. The `subscription_name` is the Azure subscribtion under which you want to deploy the cluster.
@@ -464,7 +466,16 @@ To setup the cluster do the following steps from the provisioning machine:
 
     Epicli will read this file and automaticly use it for authentication for resource creation and management.
 
-    For both `aws`and `azure` there is a `use_public_ips` tag. When this is true the VM's will also have a direct inferface to the internet. While this is easy for setting up a cluster for testing it should not be used in production. A VPN setup should be used which we will document in a different section (TODO).
+    For both `aws`and `azure`here the following cloud attributes overlap:
+    - `use_public_ips`: When this is true the VM's will also have a direct inferface to the internet. While this is easy for setting up a cluster for testing it should not be used in production. A VPN setup should be used which we will document in a different section (TODO).
+    - `os_image`: This attribute lets you more easily select Epiphany team validated and tested OS images. When one is selected it will be applied to **every** `infrastructure/virtual-machine` document in the cluster regardless of user defined ones.
+                  The following values are accepted:
+                  - `default`: The default value when generating a new configuration which will result in the use of user defined `infrastructure/virtual-machine` documents.
+                  - `ubuntu-18.04-x86_64`: Applies the latest validated and tested Ubuntu 18.04 image to all `infrastructure/virtual-machine` documents on `x86_64` on Azure and AWS.
+                  - `redhat-7-x86_64`: Applies the latest validated and tested RedHat 7.x image to all `infrastructure/virtual-machine` documents on `x86_64` on Azure and AWS.
+                  - `centos-7-x86_64`: Applies the latest validated and tested CentOS 7.x image to all `infrastructure/virtual-machine` documents on `x86_64` on Azure and AWS.
+                  - `centos-7-arm64`: Applies the latest validated and tested CentOS 7.x image to all `infrastructure/virtual-machine` documents on `arm64` on AWS. Azure currently does support `arm64`.
+                  The images which will be used for these values will be updated and tested on regular basis.
 
 4. Define the components you want to install:
 

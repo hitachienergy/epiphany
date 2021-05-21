@@ -251,10 +251,21 @@ class InfrastructureBuilder(Step):
         machine_selector = component_value.machine
         model_with_defaults = select_first(self.docs, lambda x: x.kind == 'infrastructure/virtual-machine' and
                                                                  x.name == machine_selector)
+        
+        # Merge with defaults
         if model_with_defaults is None:
             model_with_defaults = merge_with_defaults(self.cluster_model.provider, 'infrastructure/virtual-machine',
                                                       machine_selector, self.docs)
 
+        # Check if we have a cluster-config OS image defined that we want to apply cluster wide.
+        cloud_os_image_defaults = self.get_config_or_default(self.docs, 'Infrastructure/cloud-os-image-defaults')
+        cloud_image = self.cluster_model.specification.cloud.os_image
+        if cloud_image != 'default':
+            if not hasattr(cloud_os_image_defaults.specification, cloud_image):
+                raise NotImplementedError(f'"{cloud_image}" is unsupported for "{self.cluster_model.provider}" provider.')
+            model_with_defaults.specification.os_full_name = cloud_os_image_defaults.specification[cloud_image]
+
+        # finally check if we are trying to re-apply a configuration.
         if self.manifest_docs:
             manifest_vm_config = select_first(self.manifest_docs, lambda x: x.name == machine_selector and x.kind == 'infrastructure/virtual-machine')
             manifest_firstvm_config = select_first(self.manifest_docs, lambda x: x.kind == 'infrastructure/virtual-machine')
