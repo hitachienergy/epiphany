@@ -467,8 +467,8 @@ To setup the cluster do the following steps from the provisioning machine:
     Epicli will read this file and automaticly use it for authentication for resource creation and management.
 
     For both `aws`and `azure`here the following cloud attributes overlap:
-    - `use_public_ips`: When this is true the VM's will also have a direct inferface to the internet. While this is easy for setting up a cluster for testing it should not be used in production. A VPN setup should be used which we will document in a different section (TODO).
-    - `os_image`: This attribute lets you more easily select Epiphany team validated and tested OS images. When one is selected it will be applied to **every** `infrastructure/virtual-machine` document in the cluster regardless of user defined ones.
+    - `use_public_ips`: When `true`, the VMs will also have a direct interface to the internet. While this is easy for setting up a cluster for testing it should not be used in production. A VPN setup should be used which we will document in a different section (TODO).
+    - `os_image`: Lets you more easily select Epiphany team validated and tested OS images. When one is selected, it will be applied to **every** `infrastructure/virtual-machine` document in the cluster regardless of user defined ones.
                   The following values are accepted:
                   - `default`: Applies user defined `infrastructure/virtual-machine` documents when generating a new configuration.
                   - `ubuntu-18.04-x86_64`: Applies the latest validated and tested Ubuntu 18.04 image to all `infrastructure/virtual-machine` documents on `x86_64` on Azure and AWS.
