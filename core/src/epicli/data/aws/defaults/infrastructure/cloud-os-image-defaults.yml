@@ -6,3 +6,4 @@ specification:
   redhat-7-x86_64: RHEL-7.9_HVM-20210208-x86_64-0-Hourly2-GP2
   centos-7-x86_64: CentOS 7.9.2009 x86_64
   centos-7-arm64: CentOS 7.9.2009 aarch64
+  
