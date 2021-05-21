@@ -1,4 +1,4 @@
-kind: Infrastructure/cloud-os-image-defaults
+kind: infrastructure/cloud-os-image-defaults
 title: "Cloud OS Image Defaults"
 name: default
 specification:

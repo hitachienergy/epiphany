@@ -235,7 +235,7 @@ class InfrastructureBuilder(Step):
                                                       machine_selector, self.docs)
 
         # Check if we have a cluster-config OS image defined that we want to apply cluster wide.
-        cloud_os_image_defaults = self.get_config_or_default(self.docs, 'Infrastructure/cloud-os-image-defaults')
+        cloud_os_image_defaults = self.get_config_or_default(self.docs, 'infrastructure/cloud-os-image-defaults')
         cloud_image = self.cluster_model.specification.cloud.os_image
         if cloud_image != 'default':
             if not hasattr(cloud_os_image_defaults.specification, cloud_image):
