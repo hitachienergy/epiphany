@@ -128,39 +128,72 @@
       owner: root
       group: elasticsearch
   block:
+    - name: Get certificate files from the first host
+      slurp:
+        src: "{{ item }}"
+      delegate_to: "{{ ansible_play_hosts_all[0] }}"
+      register: slurp_certs
+      no_log: true
+      when: hostvars[ansible_play_hosts_all[0]].ca_key is undefined  # first host skipped (on re-run)
+      loop:
+        - "{{ certificates.dirs.ca_key }}/{{ certificates.files.root_ca.key.filename }}"
+        - "{{ certificates.dirs.certs }}/{{ certificates.files.root_ca.cert.filename }}"
+        - "{{ certificates.dirs.certs }}/{{ certificates.files.admin.key.filename }}"
+        - "{{ certificates.dirs.certs }}/{{ certificates.files.admin.cert.filename }}"
+
     - name: Copy CA private key to other hosts
       copy:
-        content: "{{ _key.privatekey }}"
-        dest: "{{ _key.filename }}"
+        content: "{{ _content }}"
+        dest:    "{{ certificates.dirs.ca_key }}/{{ certificates.files.root_ca.key.filename }}"
         mode: u=rw,go=
       no_log: true
       vars:
-        _key: "{{ hostvars[ansible_play_hosts_all[0]].ca_key }}"
+        _content: >-
+          {%- if hostvars[ansible_play_hosts_all[0]].ca_key.privatekey is defined -%}
+            {{ hostvars[ansible_play_hosts_all[0]].ca_key.privatekey }}
+          {%- else -%}
+            {{ slurp_certs.results[0].content | b64decode }}
+          {%- endif -%}
 
     - name: Copy root CA to other hosts
       copy:
-        content: "{{ _crt.certificate }}"
-        dest: "{{ _crt.filename }}"
+        content: "{{ _content }}"
+        dest:    "{{ certificates.dirs.certs }}/{{ certificates.files.root_ca.cert.filename }}"
         mode: u=rw,g=r,o=
       vars:
-        _crt: "{{ hostvars[ansible_play_hosts_all[0]].ca_crt }}"
+        _content: >-
+          {%- if hostvars[ansible_play_hosts_all[0]].ca_crt.certificate is defined -%}
+            {{ hostvars[ansible_play_hosts_all[0]].ca_crt.certificate }}
+          {%- else -%}
+            {{ slurp_certs.results[1].content | b64decode }}
+          {%- endif -%}
 
     - name: Copy admin private key to other hosts
       copy:
-        content: "{{ _key.privatekey }}"
-        dest: "{{ _key.filename }}"
+        content: "{{ _content }}"
+        dest:    "{{ certificates.dirs.certs }}/{{ certificates.files.admin.key.filename }}"
         mode: u=rw,go=
       no_log: true
       vars:
-        _key: "{{ hostvars[ansible_play_hosts_all[0]].admin_key }}"
+        _content: >-
+          {%- if hostvars[ansible_play_hosts_all[0]].admin_key.privatekey is defined -%}
+            {{ hostvars[ansible_play_hosts_all[0]].admin_key.privatekey }}
+          {%- else -%}
+            {{ slurp_certs.results[2].content | b64decode }}
+          {%- endif -%}
 
     - name: Copy admin certificate to other hosts
       copy:
-        content: "{{ _crt.certificate }}"
-        dest: "{{ _crt.filename }}"
+        content: "{{ _content }}"
+        dest:    "{{ certificates.dirs.certs }}/{{ certificates.files.admin.cert.filename }}"
         mode: u=rw,g=r,o=
       vars:
-        _crt: "{{ hostvars[ansible_play_hosts_all[0]].admin_crt }}"
+        _content: >-
+          {%- if hostvars[ansible_play_hosts_all[0]].admin_crt.certificate is defined -%}
+            {{ hostvars[ansible_play_hosts_all[0]].admin_crt.certificate }}
+          {%- else -%}
+            {{ slurp_certs.results[3].content | b64decode }}
+          {%- endif -%}
 
 # --- Generate node certificate (each node has its own) ---
 
@@ -212,8 +245,8 @@
     path: "{{ certificates.dirs.certs }}/{{ certificates.files.node.cert.filename }}"
     csr_path: "{{ node_csr.filename }}"
     provider: ownca
-    ownca_path: "{{ hostvars[ansible_play_hosts_all[0]].ca_crt.filename }}"
-    ownca_privatekey_path: "{{ hostvars[ansible_play_hosts_all[0]].ca_key.filename }}"
+    ownca_path: "{{ certificates.dirs.certs }}/{{ certificates.files.root_ca.cert.filename }}"
+    ownca_privatekey_path: "{{ certificates.dirs.ca_key }}/{{ certificates.files.root_ca.key.filename }}"
     ownca_not_after: "{{ certificates.files.node.cert.ownca_not_after }}"
     ownca_digest: sha256
     mode: u=rw,go=r
