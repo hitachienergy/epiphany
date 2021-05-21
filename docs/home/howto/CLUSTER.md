@@ -474,7 +474,7 @@ To setup the cluster do the following steps from the provisioning machine:
                   - `ubuntu-18.04-x86_64`: Applies the latest validated and tested Ubuntu 18.04 image to all `infrastructure/virtual-machine` documents on `x86_64` on Azure and AWS.
                   - `redhat-7-x86_64`: Applies the latest validated and tested RedHat 7.x image to all `infrastructure/virtual-machine` documents on `x86_64` on Azure and AWS.
                   - `centos-7-x86_64`: Applies the latest validated and tested CentOS 7.x image to all `infrastructure/virtual-machine` documents on `x86_64` on Azure and AWS.
-                  - `centos-7-arm64`: Applies the latest validated and tested CentOS 7.x image to all `infrastructure/virtual-machine` documents on `arm64` on AWS. Azure currently does support `arm64`.
+                  - `centos-7-arm64`: Applies the latest validated and tested CentOS 7.x image to all `infrastructure/virtual-machine` documents on `arm64` on AWS. Azure currently doesn't support `arm64`.
                   The images which will be used for these values will be updated and tested on regular basis.
 
 4. Define the components you want to install:
