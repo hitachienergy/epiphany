@@ -470,7 +470,7 @@ To setup the cluster do the following steps from the provisioning machine:
     - `use_public_ips`: When this is true the VM's will also have a direct inferface to the internet. While this is easy for setting up a cluster for testing it should not be used in production. A VPN setup should be used which we will document in a different section (TODO).
     - `os_image`: This attribute lets you more easily select Epiphany team validated and tested OS images. When one is selected it will be applied to **every** `infrastructure/virtual-machine` document in the cluster regardless of user defined ones.
                   The following values are accepted:
-                  - `default`: The default value when generating a new configuration which will result in the use of user defined `infrastructure/virtual-machine` documents.
+                  - `default`: Applies user defined `infrastructure/virtual-machine` documents when generating a new configuration.
                   - `ubuntu-18.04-x86_64`: Applies the latest validated and tested Ubuntu 18.04 image to all `infrastructure/virtual-machine` documents on `x86_64` on Azure and AWS.
                   - `redhat-7-x86_64`: Applies the latest validated and tested RedHat 7.x image to all `infrastructure/virtual-machine` documents on `x86_64` on Azure and AWS.
                   - `centos-7-x86_64`: Applies the latest validated and tested CentOS 7.x image to all `infrastructure/virtual-machine` documents on `x86_64` on Azure and AWS.
