@@ -11,7 +11,7 @@
         that: _unsupported_enabled_apps | length == 0
         fail_msg: >-
           Following application(s) are not supported for {{ _k8s_arch }} and cannot be installed:
-            {{ _unsupported_enabled_apps | map(attribute='name') | join(', ') }}
+            {{ _unsupported_enabled_apps | map(attribute='name') | list | join(', ') }}
         success_msg: "All enabled applications are supported for {{ _k8s_arch }}"
         quiet: true
       vars:
@@ -43,8 +43,8 @@
       assert:
         that: _unsupported_enabled_extensions | length == 0
         fail_msg: >-
-          {{ unsupported_postgres_extensions[_pg_arch] | join(', ') }} extensions are not supported for {{ _pg_arch }}
-            and cannot be installed
+          {{ _unsupported_enabled_extensions | map(attribute='name') | list | join(', ') }} extensions are not supported
+            for {{ _pg_arch }} and cannot be installed
         success_msg: "All enabled PostgreSQL extensions are supported for current architecture"
       vars:
         _pg_arch: >-

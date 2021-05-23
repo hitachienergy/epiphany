@@ -143,9 +143,11 @@ libsmbclient
 # for postgres
 postgresql-client-13
 postgresql-13-pgaudit
-postgresql-13-repmgr
+postgresql-13-repmgr 5.2.1
 postgresql-common
+postgresql-client-common
 pgbouncer 1.15.*
+pgdg-keyring
 
 # for firewalld
 ipset

@@ -9,7 +9,7 @@
 
 # --- Configure users ---
 
-- name: Extensions | Repmgr | Add postgres user to sudoers file
+- name: Extensions | Repmgr | Add 'postgres' user to sudoers file
   lineinfile:
     path: /etc/sudoers
     line: >-
@@ -21,19 +21,22 @@
       {{ repmgr.bindir[ansible_os_family] }}/repmgr standby follow
     validate: 'visudo -cf %s'
 
-- name: Extensions | Repmgr | Create super user in postgresql
+- name: Extensions | Repmgr | Create replication and super users in PostgreSQL
   become_user: postgres
+  vars:
+    _users:
+      - user: "{{ specification.extensions.replication.privileged_user_name }}"
+        password: "{{ specification.extensions.replication.privileged_user_password }}"
+        role_attr_flags: LOGIN,SUPERUSER
+      - user: "{{ specification.extensions.replication.replication_user_name }}"
+        password: "{{ specification.extensions.replication.replication_user_password }}"
+        role_attr_flags: LOGIN,REPLICATION
   postgresql_user:
-    user: "{{ specification.extensions.replication.privileged_user_name }}"
-    password: "{{ specification.extensions.replication.privileged_user_password }}"
-    role_attr_flags: LOGIN,SUPERUSER
-
-- name: Extensions | Repmgr | Create replication user in postgresql
-  become_user: postgres
-  postgresql_user:
-    user: "{{ specification.extensions.replication.replication_user_name }}"
-    password: "{{ specification.extensions.replication.replication_user_password }}"
-    role_attr_flags: LOGIN,REPLICATION
+    user: "{{ item.user }}"
+    password: "{{ item.password }}"
+    role_attr_flags: "{{ item.role_attr_flags }}"
+  no_log: true
+  loop: "{{ _users }}"
 
 - name: Extensions | Repmgr | Create pgpass file
   template:
@@ -69,49 +72,51 @@
   vars:
     node_id: "{{ pg_repmgr_node_id }}"
 
-## On Ubuntu config file location is not set by package (see https://repmgr.org/docs/4.0/packages-debian-ubuntu.html).
-## Create symlink to allow using repmgr commands without specifying config file location (which is custom).
-## See https://repmgr.org/docs/4.0/configuration-file.html
-#- name: Extensions | Repmgr | Debian specific tasks
-#  when: ansible_os_family == 'Debian'
-#  block:
-#    - name: Extensions | Repmgr | Create symlink /etc/repmgr.conf
-#      file:
-#        src: "{{ template_repmgr_conf.dest }}"
-#        dest: /etc/repmgr.conf
-#        state: link
-#        owner: postgres
-#        group: postgres
-#      when: template_repmgr_conf.dest != '/etc/repmgr.conf'
-#
-#    # For repmgr installed from Ubuntu package additional configuration is required before repmgrd is started as daemon
-#    - name: Extensions | Repmgr | Set repmgr.conf file in /etc/default/repmgrd
-#      replace:
-#        path: /etc/default/repmgrd
-#        regexp: "^#REPMGRD_CONF=\"/path/to/repmgr.conf\""
-#        replace: "REPMGRD_CONF=\"{{ repmgr.config_dir[ansible_os_family] }}/repmgr.conf\""
-#
-#    - name: Extensions | Repmgr | Enable repmgrd in /etc/default/repmgrd
-#      replace:
-#        path: /etc/default/repmgrd
-#        regexp: "^[#]?REPMGRD_ENABLED=no"
-#        replace: "REPMGRD_ENABLED=yes"
+# On Ubuntu config file location is not set by package (see https://repmgr.org/docs/5.2/packages-debian-ubuntu.html).
+# Create symlink to allow using repmgr commands without specifying config file location (which is custom).
+# See https://repmgr.org/docs/5.2/configuration-file.html
+- name: Extensions | Repmgr | Debian specific tasks
+  when: ansible_os_family == 'Debian'
+  block:
+    - name: Extensions | Repmgr | Create symlink /etc/repmgr.conf
+      file:
+        src: "{{ template_repmgr_conf.dest }}"
+        dest: /etc/repmgr.conf
+        state: link
+        owner: postgres
+        group: postgres
+      when: template_repmgr_conf.dest != '/etc/repmgr.conf'
+
+    # For repmgr installed from Ubuntu package additional configuration is required before repmgrd is started as daemon
+    - name: Extensions | Repmgr | Set repmgr.conf file in /etc/default/repmgrd
+      replace:
+        path: /etc/default/repmgrd
+        regexp: "^#REPMGRD_CONF=\"/path/to/repmgr.conf\""
+        replace: "REPMGRD_CONF=\"{{ repmgr.config_dir[ansible_os_family] }}/repmgr.conf\""
+
+    - name: Extensions | Repmgr | Enable repmgrd in /etc/default/repmgrd
+      replace:
+        path: /etc/default/repmgrd
+        regexp: "^[#]?REPMGRD_ENABLED=no"
+        replace: "REPMGRD_ENABLED=yes"
 
 - name: Extensions | Repmgr | Check cluster status
   become_user: postgres
   command: "{{ repmgr.bindir[ansible_os_family] }}/repmgr cluster show --csv"
   register: pg_cluster_status
-  # 25 means there is an error with at least one registered node
-  # sometimes 'repmgr cluster show' returns 25 code with empty stderr and no explaination
-  failed_when: pg_cluster_status.rc not in [0, 25] or pg_cluster_status.stdout_lines|length > groups.postgresql|length
+  changed_when: false
+  failed_when: false
+  no_log: true
 
-# There is a preflight check that no more than 2 cluster nodes are supported
+# 1. There is a preflight check that no more than 2 cluster nodes are supported
+# 2. rc = 25 means that there is an error with at least one registered node
+#    sometimes 'repmgr cluster show' returns 25 code with empty stderr and no explanation
 - name: Extensions | Repmgr | Set 'pg_is_clustered' fact
   set_fact:
-    pg_is_clustered: "{{ pg_cluster_status.stdout_lines | length }} == 2"
+    pg_is_clustered: "{{ pg_cluster_status.rc in [0, 25] and pg_cluster_status.stdout_lines | length  > 1 }}"
 
 - name: Extensions | Repmgr | Configure PostgreSQL cluster
-  when: not pg_is_clustered
+  when: not pg_is_clustered|bool
   vars:
     pg_node_primary: "{{ groups.postgresql[0] }}" # the first node in the group is primary
   block:
@@ -173,7 +178,7 @@
         enabled: true
 
 - name: Extensions | Repmgr | Check already configured cluster
-  when: pg_is_clustered
+  when: pg_is_clustered|bool
   block:
     - name: Extensions | Repmgr | Search for a primary node
       become_user: postgres
@@ -190,16 +195,13 @@
       block:
         - name: Extensions | Repmgr | Check if node is not attached to repmgr
           become_user: postgres
-          shell: >-
-            set -o pipefail &&
-            {{ repmgr.bindir[ansible_os_family] }}/repmgr cluster show
-              | grep -i 'not attached to its upstream node'
+          command: "{{ repmgr.bindir[ansible_os_family] }}/repmgr cluster show"
           changed_when: false
-          register: is_node_not_attached
-          failed_when: is_node_not_attached.rc not in [0, 1]
+          register: pg_cluster_status
+          failed_when: pg_cluster_status.rc not in [0, 25]
 
         - name: Extensions | Repmgr | Attach active standby to current primary node
-          when: is_node_not_attached.stdout | length > 0
+          when: "'not attached to its upstream node' in pg_cluster_status.stdout|lower"
           become: true
           become_user: postgres
           become_method: sudo

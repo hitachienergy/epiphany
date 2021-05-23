@@ -98,7 +98,7 @@ rabbitmq-server-3.8.9
 rh-haproxy18
 rh-haproxy18-haproxy-syspaths
 postgresql13-server
-repmgr13
+repmgr13-5.2.1
 samba-client
 samba-client-libs # for samba-client
 samba-common

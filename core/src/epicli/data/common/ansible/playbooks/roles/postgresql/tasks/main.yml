@@ -1,5 +1,5 @@
 ---
-- name: Set facts
+- name: Set 'enabled_extensions' fact
   set_fact:
     enabled_extensions: >-
       {{ (_defined_extensions | selectattr('config.enabled') | list) + _undefined_extensions }}
@@ -22,6 +22,9 @@
   vars:
     _packages:
       Debian:
+        - postgresql-client-common
+        - postgresql-common
+        - postgresql-client-13
         - postgresql-13
         - postgresql-contrib-13
         - python-psycopg2 # required for postgresql ansible management
@@ -33,104 +36,93 @@
 
 # Extension packages need to be installed first to be able to process PostgreSQL config
 - name: Install extension packages
-  include_tasks: extensions/{{ data.name }}/packages.yml
+  include_tasks: extensions/{{ extension.name }}/packages.yml
   loop_control:
-    loop_var: data
+    loop_var: extension
   loop: "{{ enabled_extensions }}"
 
 - name: Create directories and ensure correct permissions
   file:
-    path: "{{ item }}"
+    path: "{{ path }}"
     state: directory
     owner: postgres
     group: postgres
     mode: u=rwx,g=,o=
+  loop_control:
+    loop_var: path
   loop:
     - /var/log/postgresql
     - "{{ pg.data_dir[ansible_os_family] }}" # Permissions should be u=rwx (0700) or u=rwx,g=rx (0750)
 
 - name: RedHat | Initialize database
+  when: ansible_os_family == 'RedHat'
   block:
-    - name: Check initialization status (RedHat)
+    - name: RedHat | Check initialization status
       stat:
         path: "{{ pg.config_dir[ansible_os_family] }}/pg_hba.conf"
       register: pg_hba_conf_stat
 
-    - name: Initialize database (RedHat)
+    - name: RedHat | Initialize database
+      when: not pg_hba_conf_stat.stat.exists
       command: /usr/pgsql-13/bin/postgresql-13-setup initdb {{ pg.service_name[ansible_os_family] }}
-      when:
-        - not pg_hba_conf_stat.stat.exists
-  when:
-    - ansible_os_family == 'RedHat'
 
-- name: Copy pg_hba.conf
-  template:
-    src: pg_hba.conf.j2
-    dest: "{{ pg.config_dir[ansible_os_family] }}/pg_hba.conf"
-    owner: postgres
-    group: postgres
-    mode: u=rw,g=,o=
-    backup: true
-  register: change_pg_hba_conf
+- name: Ensure that postgresql service is started
+  block:
+    - name: Ensure that postgresql service is started
+      systemd:
+        name: "{{ pg.service_name[ansible_os_family] }}"
+        state: started
+        enabled: true
+
+    - &check-debian-service
+      name: Debian | Check that the main service is started
+      when: ansible_os_family == 'Debian'
+      systemd:
+        name: "{{ pg.instantiated_service_name[ansible_os_family] }}"
+        state: started
+        enabled: true
 
 # Used in postgresql-epiphany.conf.j2
 - name: Set runtime_shared_preload_libraries fact
   block:
-    - name: Collect facts about system services
-      service_facts:
-      register: services_state
-
     - name: Get PostgreSQL settings
       become: true
       become_user: postgres
-      vars:
-        _service: "{{ pg.service_name[ansible_os_family] }}.service"
-        _state: "{{ ansible_facts.services[_service] }}"
       postgresql_info:
         filter: settings
       register: postgresql_info
-      when:
-        - "_service|string in ansible_facts.services"
-        - "_state|string == 'started'"
 
     - name: Set runtime_shared_preload_libraries fact
       set_fact:
         runtime_shared_preload_libraries: "{{ postgresql_info.settings.shared_preload_libraries.setting }}"
-      when:
-        - postgresql_info.settings is defined
 
-- name: Create Epiphany managed configuration sub-file
+- name: Copy PostgreSQL configuration files
+  vars:
+    _files:
+      - pg_hba.conf
+      - postgresql-epiphany.conf
+      - postgresql.conf
   template:
-    src: postgresql-epiphany.conf.j2
-    dest: "{{ pg.config_dir[ansible_os_family] }}/postgresql-epiphany.conf"
-    owner: postgres
-    group: postgres
-    mode: u=rw,g=,o=
-  register: change_postgresql_epiphany_conf
-
-- name: Copy postgresql.conf
-  copy:
-    src: postgresql.conf
-    dest: "{{ pg.config_dir[ansible_os_family] }}/postgresql.conf"
+    src: "{{ file_name }}.j2"
+    dest: "{{ pg.config_dir[ansible_os_family] }}/{{ file_name }}"
     owner: postgres
     group: postgres
     mode: u=rw,g=,o=
     backup: true
-  register: change_postgresql_conf
+  loop_control:
+    loop_var: file_name
+  loop: "{{ _files }}"
+  register: change_pg_config
 
 - name: Restart postgresql service if configuration changed
-  systemd:
-    name: "{{ pg.service_name[ansible_os_family] }}"
-    state: restarted
-  when: change_pg_hba_conf
-    or change_postgresql_epiphany_conf
-    or change_postgresql_conf
+  block:
+    - name: Restart postgresql service if configuration changed
+      systemd:
+        name: "{{ pg.service_name[ansible_os_family] }}"
+        state: restarted
 
-# This is a separate task as service restart runs not each time
-- name: Enable postgresql service
-  systemd:
-    name: "{{ pg.service_name[ansible_os_family] }}"
-    enabled: true
+    - *check-debian-service
+  when: (change_pg_config.results | map(attribute='changed') | list) is any
 
 - name: Configure postgresql logrotate
   block:

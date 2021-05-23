@@ -8,6 +8,6 @@
       Debian:
         - postgresql-13-repmgr
       RedHat:
-        - repmgr13
+        - repmgr13-5.2.1
   module_defaults:
     yum: { lock_timeout: "{{ yum_lock_timeout }}" }

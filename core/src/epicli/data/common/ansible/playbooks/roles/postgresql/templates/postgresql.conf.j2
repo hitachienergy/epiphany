@@ -1,3 +1,4 @@
+# {{ ansible_managed }}
 # -----------------------------
 # PostgreSQL configuration file
 # -----------------------------
@@ -38,7 +39,7 @@
 # The default values of these variables are driven from the -D command-line
 # option or PGDATA environment variable, represented here as ConfigDir.
 
-#data_directory = 'ConfigDir'		# use data in another directory
+data_directory = '{{ pg.data_dir[ansible_os_family] }}'		# use data in another directory
 					# (change requires restart)
 #hba_file = 'ConfigDir/pg_hba.conf'	# host-based authentication file
 					# (change requires restart)
