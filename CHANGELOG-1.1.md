@@ -22,6 +22,7 @@
 - [#1914](https://github.com/epiphany-platform/epiphany/issues/1914) - Default plugins in Open Distro for Elasticsearch Kibana documented
 - [#2082](https://github.com/epiphany-platform/epiphany/issues/2082) - Check possibility of downloading packages for offline installation on different architecture than targeted one
 - [#2232](https://github.com/epiphany-platform/epiphany/issues/2232) - Documentation added for spike about leader election for pods
+- [#2129](https://github.com/epiphany-platform/epiphany/issues/2129) - [Upgrade] Add migration from ODFE demo certificates to generated ones
 
 ### Fixed
 
@@ -33,6 +34,7 @@
 - [#2291](https://github.com/epiphany-platform/epiphany/issues/2291) - PostgreSQL automated tests fail when run on a single machine
 - [#2215](https://github.com/epiphany-platform/epiphany/issues/2215) - Grafana does not show metrics from kafka and haproxy exporters
 - [#2318](https://github.com/epiphany-platform/epiphany/issues/2318) - [RHEL/Azure] RHUI client certificate expired for RHEL 7-LVM images
+- [#2332](https://github.com/epiphany-platform/epiphany/issues/2332) - [Elasticsearch] Error when having multiple VMs and non-clustered mode
 
 ### Updated
 

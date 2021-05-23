@@ -1,0 +1,13 @@
+---
+# If state file exists, it means upgrade has been started by the previous play and should be continued
+- name: ODFE | Check if upgrade state file exists
+  stat:
+    path: "{{ opendistro_for_elasticsearch.upgrade_state_file_path }}"
+    get_attributes: false
+    get_checksum: false
+    get_mime: false
+  register: stat_upgrade_state_file
+
+- name: ODFE | Upgrade Elasticsearch and ODFE plugins (part 2/2)
+  include_tasks: opendistro_for_elasticsearch/upgrade-elasticsearch-02.yml
+  when: stat_upgrade_state_file.stat.exists
