@@ -1,7 +1,7 @@
 ---
-- name: Extensions | Repmgr | RedHat | Create repmgr symlink
+- name: Extensions | Repmgr | RedHat | Create Repmgr symlink
   file:
-    src: "{{ repmgr.pg_bindir['RedHat'] }}/repmgr"
+    src: "{{ pg.bindir['RedHat'] }}/repmgr"
     dest: "/usr/bin/repmgr"
     state: link
   when:
@@ -46,22 +46,15 @@
     group: postgres
     mode: u=rw,g=,o=
 
-# --- Configure repmgr ---
+# --- Configure Repmgr ---
 
-- name: Extensions | Repmgr | Create database for repmgr
+- name: Extensions | Repmgr | Create database for Repmgr
   become_user: postgres
   postgresql_db:
     name: "{{ specification.extensions.replication.repmgr_database }}"
     owner: "{{ specification.extensions.replication.replication_user_name }}"
 
-# Node id is a constant value independent on order in Ansible host group
-- name: Extensions | Repmgr | Set node id
-  set_fact:
-    pg_repmgr_node_id: >-
-      {{ pg_repmgr_node_id | default(groups.postgresql.index(inventory_hostname) + 1) }}
-    cacheable: true
-
-- name: Extensions | Repmgr | Create repmgr config file
+- name: Extensions | Repmgr | Create Repmgr config file
   template:
     src: repmgr.conf.j2
     dest: "{{ repmgr.config_dir[ansible_os_family] }}/repmgr.conf"
@@ -70,10 +63,10 @@
     mode: u=rw,g=,o=
   register: template_repmgr_conf
   vars:
-    node_id: "{{ pg_repmgr_node_id }}"
+    node_id: "{{ pg_node_id }}"
 
 # On Ubuntu config file location is not set by package (see https://repmgr.org/docs/5.2/packages-debian-ubuntu.html).
-# Create symlink to allow using repmgr commands without specifying config file location (which is custom).
+# Create symlink to allow using Repmgr commands without specifying config file location (which is custom).
 # See https://repmgr.org/docs/5.2/configuration-file.html
 - name: Extensions | Repmgr | Debian specific tasks
   when: ansible_os_family == 'Debian'
@@ -87,7 +80,7 @@
         group: postgres
       when: template_repmgr_conf.dest != '/etc/repmgr.conf'
 
-    # For repmgr installed from Ubuntu package additional configuration is required before repmgrd is started as daemon
+    # For Repmgr installed from Ubuntu package additional configuration is required before repmgrd is started as daemon
     - name: Extensions | Repmgr | Set repmgr.conf file in /etc/default/repmgrd
       replace:
         path: /etc/default/repmgrd
@@ -135,9 +128,9 @@
         # on system) and postgresql@.service (service template for clusters). The latter is 'PartOf' the former.
         # Ansible seems to not wait for dependent service to be stopped so we need to stop both to avoid error
         # from 'repmgr standby clone'.
-        - name: Extensions | Repmgr | Stop postgresql service
+        - name: Extensions | Repmgr | Stop PostgreSQL service
           systemd:
-            name: "{{ item }}"
+            name: "{{ service_name }}"
             state: stopped
           vars:
             _services:
@@ -146,9 +139,11 @@
                 - "{{ pg.instantiated_service_name['Debian'] }}"
               RedHat:
                 - "{{ pg.service_name['RedHat'] }}"
+          loop_control:
+            loop_var: service_name
           loop: "{{ _services[ansible_os_family] }}"
 
-        - name: Extensions | Repmgr | Clone standby node with repmgr
+        - name: Extensions | Repmgr | Clone standby node with Repmgr
           become_user: postgres
           command: >-
             {{ repmgr.bindir[ansible_os_family] }}/repmgr standby clone
@@ -156,12 +151,12 @@
               -U {{ specification.extensions.replication.privileged_user_name }}
               -d {{ specification.extensions.replication.repmgr_database }} -p 5432 --force
 
-        - name: Extensions | Repmgr | Start postgresql service
+        - name: Extensions | Repmgr | Start PostgreSQL service
           systemd:
             name: "{{ pg.service_name[ansible_os_family] }}"
             state: started
 
-        - name: Extensions | Repmgr | Register node with repmgr
+        - name: Extensions | Repmgr | Register node with Repmgr
           become_user: postgres
           command: >-
             {{ repmgr.bindir[ansible_os_family] }}/repmgr standby register --force
@@ -171,7 +166,7 @@
                   connect_timeout=2'
               --upstream-node-id 1
 
-    - name: Extensions | Repmgr | Restart and enable repmgr service
+    - name: Extensions | Repmgr | Restart and enable Repmgr service
       systemd:
         name: "{{ repmgr.service_name[ansible_os_family] }}"
         state: restarted
@@ -193,7 +188,7 @@
     - name: Extensions | Repmgr | Tasks to run only on standby node
       when: pg_node_primary_found.stdout != inventory_hostname
       block:
-        - name: Extensions | Repmgr | Check if node is not attached to repmgr
+        - name: Extensions | Repmgr | Check if node is not attached to Repmgr
           become_user: postgres
           command: "{{ repmgr.bindir[ansible_os_family] }}/repmgr cluster show"
           changed_when: false
@@ -202,7 +197,5 @@
 
         - name: Extensions | Repmgr | Attach active standby to current primary node
           when: "'not attached to its upstream node' in pg_cluster_status.stdout|lower"
-          become: true
           become_user: postgres
-          become_method: sudo
           command: "{{ repmgr.bindir[ansible_os_family] }}/repmgr standby follow"

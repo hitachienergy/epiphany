@@ -2,18 +2,28 @@
 - name: Set 'enabled_extensions' fact
   set_fact:
     enabled_extensions: >-
-      {{ (_defined_extensions | selectattr('config.enabled') | list) + _undefined_extensions }}
+      {{ _defined_enabled_extensions + _undefined_extensions }}
   vars:
-    _defined_extensions: >-
+    _defined_enabled_extensions: >-
       {{ specification.extensions
           | dict2items(key_name='name', value_name='config')
           | selectattr('config.enabled', 'defined')
+          | selectattr('config.enabled')
+          | map(attribute='name')
           | list }}
     _undefined_extensions: >-
       {{ specification.extensions
           | dict2items(key_name='name', value_name='config')
           | selectattr('config.enabled', 'undefined')
+          | map(attribute='name')
           | list }}
+
+# Node id is a constant value independent on order in Ansible host group
+- name: Set 'pg_node_id' fact
+  set_fact:
+    pg_node_id: >-
+      {{ pg_node_id | default(groups.postgresql.index(inventory_hostname) + 1) }}
+    cacheable: true
 
 - name: Install OS-specific packages
   package:
@@ -27,16 +37,16 @@
         - postgresql-client-13
         - postgresql-13
         - postgresql-contrib-13
-        - python-psycopg2 # required for postgresql ansible management
+        - python-psycopg2 # required for PostgreSQL ansible management
       RedHat:
         - postgresql13-server
-        - python-psycopg2 # required for postgresql ansible management
+        - python-psycopg2 # required for PostgreSQL ansible management
   module_defaults:
     yum: { lock_timeout: "{{ yum_lock_timeout }}" }
 
 # Extension packages need to be installed first to be able to process PostgreSQL config
 - name: Install extension packages
-  include_tasks: extensions/{{ extension.name }}/packages.yml
+  include_tasks: extensions/{{ extension }}/packages.yml
   loop_control:
     loop_var: extension
   loop: "{{ enabled_extensions }}"
@@ -63,12 +73,15 @@
       register: pg_hba_conf_stat
 
     - name: RedHat | Initialize database
+      become_user: postgres
       when: not pg_hba_conf_stat.stat.exists
-      command: /usr/pgsql-13/bin/postgresql-13-setup initdb {{ pg.service_name[ansible_os_family] }}
+      command: "{{ pg.bindir[ansible_os_family] }}/initdb"
+      environment:
+        PGDATA: "{{ pg.data_dir[ansible_os_family] }}"
 
-- name: Ensure that postgresql service is started
+- name: Ensure that PostgreSQL service is started
   block:
-    - name: Ensure that postgresql service is started
+    - name: Ensure that PostgreSQL service is started
       systemd:
         name: "{{ pg.service_name[ansible_os_family] }}"
         state: started
@@ -86,7 +99,6 @@
 - name: Set runtime_shared_preload_libraries fact
   block:
     - name: Get PostgreSQL settings
-      become: true
       become_user: postgres
       postgresql_info:
         filter: settings
@@ -114,9 +126,9 @@
   loop: "{{ _files }}"
   register: change_pg_config
 
-- name: Restart postgresql service if configuration changed
+- name: Restart PostgreSQL service if configuration changed
   block:
-    - name: Restart postgresql service if configuration changed
+    - name: Restart PostgreSQL service if configuration changed
       systemd:
         name: "{{ pg.service_name[ansible_os_family] }}"
         state: restarted
@@ -124,7 +136,7 @@
     - *check-debian-service
   when: (change_pg_config.results | map(attribute='changed') | list) is any
 
-- name: Configure postgresql logrotate
+- name: Configure PostgreSQL logrotate
   block:
     - name: Remove logrotate configuration provided by 'postgresql-common' package
       file:
@@ -132,7 +144,7 @@
         state: absent
       when: ansible_os_family == 'Debian'
 
-    - name: Create postgresql logrotate configuration file
+    - name: Create PostgreSQL logrotate configuration file
       template:
         src: logrotate-postgresql.conf.j2
         dest: /etc/logrotate.d/postgresql
@@ -141,9 +153,9 @@
         mode: u=rw,g=r,o=r
 
 - name: Include extensions
-  include_tasks: extensions/{{ data.name }}/extension.yml
+  include_tasks: extensions/{{ extension }}/extension.yml
   loop_control:
-    loop_var: data
+    loop_var: extension
   loop: "{{ enabled_extensions }}"
 
 # PgPool is configured only if such K8s application is enabled
@@ -169,4 +181,4 @@
                                                                  | default({}) }}
       when:
         - pgpool.env is defined
-        - groups['postgresql'][0] == inventory_hostname
+        - pg_node_id|int == 1

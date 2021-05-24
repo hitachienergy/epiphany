@@ -3,7 +3,7 @@
 == Requirements
 
 * Internet connection
-* General molecule link:https://molecule.readthedocs.io/en/latest/installation.html[dependencies]
+* Molecule link:https://molecule.readthedocs.io/en/latest/installation.html[dependencies]
 * Docker
 * ansible-lint
 
@@ -25,6 +25,7 @@ molecule test -s <scenario-name>
 ----
 
 === Separate steps
+
 [source:bash]
 ----
 molecule lint -s <scenario-name>

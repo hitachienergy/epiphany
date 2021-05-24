@@ -1,5 +1,8 @@
 ---
 pg:
+  bindir:
+    RedHat: /usr/pgsql-13/bin
+    Debian: /usr/lib/postgresql/13/bin
   service_name:
     RedHat: postgresql-13
     Debian: postgresql
@@ -20,9 +23,6 @@ repmgr:
   bindir:
     RedHat: /usr/pgsql-13/bin
     Debian: /usr/bin
-  pg_bindir:
-    RedHat: /usr/pgsql-13/bin
-    Debian: /usr/lib/postgresql/13/bin
   service_name:
     RedHat: repmgr13
     Debian: repmgrd

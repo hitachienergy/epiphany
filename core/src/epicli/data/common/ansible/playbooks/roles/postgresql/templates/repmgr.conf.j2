@@ -4,14 +4,14 @@ conninfo='host={{ ansible_default_ipv4.address }} user={{ specification.extensio
 data_directory='{{ pg.data_dir[ansible_os_family] }}'
 
 failover=automatic
-promote_command='{{ repmgr.pg_bindir[ansible_os_family] }}/repmgr standby promote --log-to-file'
-follow_command='{{ repmgr.pg_bindir[ansible_os_family] }}/repmgr standby follow --log-to-file --upstream-node-id=%n'
+promote_command='{{ pg.bindir[ansible_os_family] }}/repmgr standby promote --log-to-file'
+follow_command='{{ pg.bindir[ansible_os_family] }}/repmgr standby follow --log-to-file --upstream-node-id=%n'
 monitoring_history=yes
 monitor_interval_secs=10
 
 log_file='/var/log/postgresql/repmgr.log'
 
-pg_bindir='{{ repmgr.pg_bindir[ansible_os_family] }}/'
+pg_bindir='{{ pg.bindir[ansible_os_family] }}/'
 service_start_command='sudo /bin/systemctl start {{ pg.service_name[ansible_os_family] }}'
 service_stop_command='sudo /bin/systemctl stop {{ pg.service_name[ansible_os_family] }}'
 service_restart_command='sudo /bin/systemctl restart {{ pg.service_name[ansible_os_family] }}'
