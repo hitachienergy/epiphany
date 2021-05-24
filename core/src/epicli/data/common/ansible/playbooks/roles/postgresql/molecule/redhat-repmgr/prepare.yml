@@ -1,0 +1,6 @@
+---
+- name: Converge
+  hosts: postgresql
+  tasks:
+    - name: Add repositories for dependencies downloading
+      script: ../add-repos-redhat.sh

@@ -1,0 +1,45 @@
+---
+dependency:
+  enabled: false
+lint: ansible-lint --exclude molecule
+driver:
+  name: docker
+platforms:
+  - name: instance-1
+    groups:
+      - postgresql
+    image: geerlingguy/docker-ubuntu1804-ansible:python2
+    pre_build_image: true
+    capabilities:
+      - SYS_ADMIN
+    command: /lib/systemd/systemd
+    tmpfs:
+      - /run
+      - /tmp
+    volumes:
+      - /sys/fs/cgroup:/sys/fs/cgroup:ro
+  - name: instance-2
+    groups:
+      - postgresql
+    image: geerlingguy/docker-ubuntu1804-ansible:python2
+    pre_build_image: true
+    capabilities:
+      - SYS_ADMIN
+    command: /lib/systemd/systemd
+    tmpfs:
+      - /run
+      - /tmp
+    volumes:
+      - /sys/fs/cgroup:/sys/fs/cgroup:ro
+provisioner:
+  name: ansible
+  playbooks:
+    prepare: prepare.yml
+    converge: converge.yml
+    verify: verify.yml
+  inventory:
+    group_vars:
+      postgresql:
+        ansible_python_interpreter: /usr/bin/python2
+verifier:
+  name: ansible
