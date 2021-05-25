@@ -27,5 +27,5 @@ This represents the current status on: 05-25-2021
 
 ## Missing for Modules
 
-1: Currently the Azure BI module does not have a way to inplement security groups per subnets with rules configuration
-2: Both BI modules currently only gives a default configuration, which makes it hard to create a full component layout for a full cluster.
+1. Currently the Azure BI module does not have a way to inplement security groups per subnets with rules configuration
+2. Both BI modules currently only gives a default configuration, which makes it hard to create a full component layout for a full cluster.
