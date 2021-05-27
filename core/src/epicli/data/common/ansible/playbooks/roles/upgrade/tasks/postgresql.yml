@@ -1,24 +1,6 @@
 ---
 - name: PostgreSQL | Upgrade
   block:
-    # remove
-    - name: PostgreSQL | Install OS-specific packages
-      package:
-        name: "{{ _packages[ansible_os_family] }}"
-        state: present
-      vars:
-        _packages:
-          Debian:
-            - postgresql-client-common
-            - postgresql-common
-            - postgresql-client-13
-            - postgresql-13
-            - postgresql-contrib-13
-          RedHat:
-            - postgresql13-server
-      module_defaults:
-        yum: { lock_timeout: "{{ yum_lock_timeout }}" }
-
     - name: PostgreSQL | Include vars from 'postgresql' role
       include_vars:
         file: roles/postgresql/defaults/main.yml
@@ -33,19 +15,22 @@
         file: postgresql/vars.yml
         name: old_version
 
-    # remove
-    - name: PostgreSQL | Start and enable new PostgreSQL service
+    # To be able to gather information
+    - name: PostgreSQL | Ensure that old PostgreSQL service is started and enabled
       systemd:
-        name: "{{ old_version.pg.service_name[ansible_os_family] }}"
+        name: "{{ service_name }}"
         state: started
         enabled: true
-
-    # remove
-    - name: PostgreSQL | Start and enable new PostgreSQL service
-      systemd:
-        name: "{{ old_version.pg.instantiated_service_name[ansible_os_family] }}"
-        state: started
-        enabled: true
+      vars:
+        _services:
+          Debian:
+            - "{{ old_version.pg.service_name['Debian'] }}"
+            - "{{ old_version.pg.instantiated_service_name['Debian'] }}"
+          RedHat:
+            - "{{ old_version.pg.service_name['RedHat'] }}"
+      loop_control:
+        loop_var: service_name
+      loop: "{{ _services[ansible_os_family] }}"
 
     # TODO: check module output when a few clusters installed
     - name: PostgreSQL | Get settings
@@ -197,6 +182,11 @@
             - pgaudit15_13
       module_defaults:
         yum: { lock_timeout: "{{ yum_lock_timeout }}" }
+
+    - name: PostgreSQL | Remove new data directory
+      file:
+        path: "{{ new_version.pg.data_dir[ansible_os_family] }}"
+        state: absent
 
     - name: PostgreSQL | Start and enable old PostgreSQL service
       systemd:
