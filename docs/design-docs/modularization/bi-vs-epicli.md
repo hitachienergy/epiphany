@@ -14,7 +14,7 @@ This represents the current status on: 05-25-2021
 | | Private subnets | :heavy_exclamation_mark: | :heavy_exclamation_mark: | :heavy_check_mark: | :heavy_check_mark: |
 | | Public subnets | :heavy_exclamation_mark: | :heavy_exclamation_mark: | :heavy_check_mark: | :heavy_check_mark: |
 | | Security groups with rules | :heavy_check_mark: | :heavy_check_mark: | :x: | :heavy_check_mark: |
-| | Possibility for bastian host | :x: | :x: | :heavy_check_mark: | :heavy_check_mark: |
+| | Possibility for Bastion host | :x: | :x: | :heavy_check_mark: | :heavy_check_mark: |
 | | Possibility to connect to other infra (EKS, AKS) | :x: | :x: | :heavy_check_mark: | :heavy_check_mark: |
 | VM | "Groups" with similar configuration | :heavy_check_mark: | :heavy_exclamation_mark: | :heavy_check_mark: | :heavy_check_mark: |
 | | Data disks | :x: | :x: | :heavy_check_mark: | :heavy_check_mark: |
