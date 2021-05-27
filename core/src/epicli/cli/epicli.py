@@ -255,6 +255,7 @@ def upgrade_parser(subparsers):
         'logging',
         'node_exporter',
         'opendistro_for_elasticsearch',
+        'postgresql',
         'rabbitmq',
         'zookeeper',
         ])

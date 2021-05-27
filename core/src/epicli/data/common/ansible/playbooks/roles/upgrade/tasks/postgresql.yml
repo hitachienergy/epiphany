@@ -1,0 +1,210 @@
+---
+- name: PostgreSQL | Upgrade
+  block:
+    # remove
+    - name: PostgreSQL | Install OS-specific packages
+      package:
+        name: "{{ _packages[ansible_os_family] }}"
+        state: present
+      vars:
+        _packages:
+          Debian:
+            - postgresql-client-common
+            - postgresql-common
+            - postgresql-client-13
+            - postgresql-13
+            - postgresql-contrib-13
+          RedHat:
+            - postgresql13-server
+      module_defaults:
+        yum: { lock_timeout: "{{ yum_lock_timeout }}" }
+
+    - name: PostgreSQL | Include vars from 'postgresql' role
+      include_vars:
+        file: roles/postgresql/defaults/main.yml
+
+    - name: PostgreSQL | Include new version default variables
+      include_vars:
+        file: roles/postgresql/defaults/main.yml
+        name: new_version
+
+    - name: PostgreSQL | Include old version default variables
+      include_vars:
+        file: postgresql/vars.yml
+        name: old_version
+
+    # remove
+    - name: PostgreSQL | Start and enable new PostgreSQL service
+      systemd:
+        name: "{{ old_version.pg.service_name[ansible_os_family] }}"
+        state: started
+        enabled: true
+
+    # remove
+    - name: PostgreSQL | Start and enable new PostgreSQL service
+      systemd:
+        name: "{{ old_version.pg.instantiated_service_name[ansible_os_family] }}"
+        state: started
+        enabled: true
+
+    # TODO: check module output when a few clusters installed
+    - name: PostgreSQL | Get settings
+      become_user: postgres
+      postgresql_info:
+        filter: version,settings
+      register: postgresql_info
+
+    # TODO: version as variable
+    - name: PostgreSQL | Check that current version is 10
+      assert:
+        that:
+          - postgresql_info.version.major|int == 10
+        fail_msg: Source PostgreSQL version is not found
+        success_msg: Current PostgreSQL version is expected
+        quiet: true
+
+    - name: PostgreSQL | Stop old PostgreSQL service
+      systemd:
+        name: "{{ service_name }}"
+        state: stopped
+      vars:
+        _services:
+          Debian:
+            - "{{ old_version.pg.service_name['Debian'] }}"
+            - "{{ old_version.pg.instantiated_service_name['Debian'] }}"
+          RedHat:
+            - "{{ old_version.pg.service_name['RedHat'] }}"
+      loop_control:
+        loop_var: service_name
+      loop: "{{ _services[ansible_os_family] }}"
+
+    - name: PostgreSQL | Extensions | PgAudit | Install OS packages
+      when: "'pgaudit' in postgresql_info.settings.shared_preload_libraries.setting"
+      package:
+        name: "{{ _packages[ansible_os_family] }}"
+        state: present
+      vars:
+        _packages:
+          Debian:
+            - postgresql-13-pgaudit
+          RedHat:
+            - pgaudit15_13
+      module_defaults:
+        yum: { lock_timeout: "{{ yum_lock_timeout }}" }
+
+    - name: PostgreSQL | Install OS-specific packages
+      package:
+        name: "{{ _packages[ansible_os_family] }}"
+        state: present
+      vars:
+        _packages:
+          Debian:
+            - postgresql-client-common
+            - postgresql-common
+            - postgresql-client-13
+            - postgresql-13
+            - postgresql-contrib-13
+          RedHat:
+            - postgresql13-server
+      module_defaults:
+        yum: { lock_timeout: "{{ yum_lock_timeout }}" }
+
+    - name: PostgreSQL | Ensure that new data directory has correct permissions
+      file:
+        path: "{{ new_version.pg.data_dir[ansible_os_family] }}"
+        state: directory
+        owner: postgres
+        group: postgres
+        mode: u=rwx,g=,o= # Permissions should be u=rwx (0700) or u=rwx,g=rx (0750)
+
+    - name: PostgreSQL | RedHat | Initialize database
+      become_user: postgres
+      when: ansible_os_family == 'RedHat'
+      command: "{{ new_version.pg.bindir[ansible_os_family] }}/initdb"
+      environment:
+        PGDATA: "{{ new_version.pg.data_dir[ansible_os_family] }}"
+
+    - name: PostgreSQL | Copy PostgreSQL configuration files
+      vars:
+        _files:
+          - pg_hba.conf
+          - postgresql-epiphany.conf
+          - postgresql.conf
+      template:
+        src: "roles/postgresql/templates/{{ file_name }}.j2"
+        dest: "{{ new_version.pg.config_dir[ansible_os_family] }}/{{ file_name }}"
+        owner: postgres
+        group: postgres
+        mode: u=rw,g=,o=
+        backup: true
+      loop_control:
+        loop_var: file_name
+      loop: "{{ _files }}"
+
+    # TODO: check p.8 from https://www.postgresql.org/docs/13/pgupgrade.html
+
+    # TODO check the doc about performance notes - https://www.postgresql.org/docs/13/pgupgrade.html
+    - name: PostgreSQL | Run pg_upgrade
+      become_user: postgres
+      command: >-
+        {{ new_version.pg.bindir[ansible_os_family] }}/pg_upgrade
+          --old-datadir {{ old_version.pg.data_dir[ansible_os_family] }}
+          --new-datadir {{ new_version.pg.data_dir[ansible_os_family] }}
+          --old-bindir {{ old_version.pg.bindir[ansible_os_family] }}
+          --new-bindir {{ new_version.pg.bindir[ansible_os_family] }}
+          -o ' -c config_file={{ old_version.pg.config_dir[ansible_os_family] }}/postgresql.conf'
+          -O ' -c config_file={{ new_version.pg.config_dir[ansible_os_family] }}/postgresql.conf'
+      args:
+        chdir: /var/log/postgresql
+
+    - name: PostgreSQL | Start and enable new PostgreSQL service
+      systemd:
+        name: "{{ new_version.pg.service_name[ansible_os_family] }}"
+        state: started
+        enabled: true
+
+    - name: PostgreSQL | Disable old PostgreSQL service
+      systemd:
+        name: "{{ service_name }}"
+        state: stopped
+      vars:
+        _services:
+          Debian:
+            - "{{ old_version.pg.service_name['Debian'] }}"
+            - "{{ old_version.pg.instantiated_service_name['Debian'] }}"
+          RedHat:
+            - "{{ old_version.pg.service_name['RedHat'] }}"
+      loop_control:
+        loop_var: service_name
+      loop: "{{ _services[ansible_os_family] }}"
+
+
+    # TODO: check the doc about following steps - https://www.postgresql.org/docs/13/pgupgrade.html
+  rescue:
+    - name: PostgreSQL | Remove OS-specific packages
+      package:
+        name: "{{ _packages[ansible_os_family] }}"
+        state: absent
+      vars:
+        _packages:
+          Debian:
+            - postgresql-client-13
+            - postgresql-13
+            - postgresql-contrib-13
+            - postgresql-13-pgaudit
+          RedHat:
+            - postgresql13-server
+            - pgaudit15_13
+      module_defaults:
+        yum: { lock_timeout: "{{ yum_lock_timeout }}" }
+
+    - name: PostgreSQL | Start and enable old PostgreSQL service
+      systemd:
+        name: "{{ old_version.pg.service_name[ansible_os_family] }}"
+        state: started
+        enabled: true
+
+    - name: PostgreSQL | Fail upgrade with a note
+      debug:
+        msg: PostgreSQL upgrade failed, please check logs
+      failed_when: true
