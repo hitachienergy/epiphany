@@ -276,7 +276,7 @@ class InfrastructureBuilder(Step):
             if model_with_defaults.specification.os_full_name == manifest_firstvm_config.specification.os_full_name:
                 return model_with_defaults
 
-            self.logger.warning(f"Currently we don`t support changing of OS images with AWS autoscaling groups. Preserving the existing OS image used for VM definition '{machine_selector}'")
+            self.logger.warning(f"Re-applying a different OS image might lead to data loss and/or other issues. Preserving the existing OS image used for VM definition '{machine_selector}'.")
 
             if manifest_vm_config  is not None:
                 model_with_defaults.specification.os_full_name = manifest_vm_config.specification.os_full_name

@@ -24,7 +24,6 @@ class InfrastructureBuilder(Step):
         self.use_public_ips = self.cluster_model.specification.cloud.use_public_ips
         self.docs = docs
         self.manifest_docs = manifest_docs
-        self.preserve_os_images = False
 
     def run(self):
         infrastructure = []
@@ -253,21 +252,12 @@ class InfrastructureBuilder(Step):
             if model_with_defaults.specification.storage_image_reference == manifest_firstvm_config.specification.storage_image_reference:
                 return model_with_defaults
 
-            preserve_os_image = False
-            if not self.preserve_os_images:
-                preserve_os_image = query_yes_no(f"""You are about to re-apply a different OS image for the '{machine_selector}' VM definition. This might lead to data loss and/or other issues.
-More information about possible issues of re-applying an OS image can be found here: https://github.com/epiphany-platform/epiphany/blob/develop/docs/home/howto/UPGRADE.md#run-apply-after-upgrade
-Do you want to preserve the original OS image for VM definition '{machine_selector}'?""")
-                print("")
-                if preserve_os_image:
-                    self.preserve_os_images = query_yes_no("""Do you want to preserve the OS images for all other VM definitions in your cluster?""")
-                    print("")
+            self.logger.warning(f"Re-applying a different OS image might lead to data loss and/or other issues. Preserving the existing OS image used for VM definition '{machine_selector}'.")
 
-            if preserve_os_image or self.preserve_os_images:
-                if manifest_vm_config  is not None:
-                    model_with_defaults.specification.storage_image_reference = dict_to_objdict(deepcopy(manifest_vm_config.specification.storage_image_reference))
-                else:
-                    model_with_defaults.specification.storage_image_reference = dict_to_objdict(deepcopy(manifest_firstvm_config.specification.storage_image_reference))
+            if manifest_vm_config  is not None:
+                model_with_defaults.specification.storage_image_reference = dict_to_objdict(deepcopy(manifest_vm_config.specification.storage_image_reference))
+            else:
+                model_with_defaults.specification.storage_image_reference = dict_to_objdict(deepcopy(manifest_firstvm_config.specification.storage_image_reference))
 
         return model_with_defaults
 
