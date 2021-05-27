@@ -124,6 +124,7 @@ The `epicli upgrade` command has additional flags:
 ###  Run *apply* after *upgrade*
 
 Currently Epiphany does not fully support apply after upgrade. There is a possibility to re-apply configuration from newer version of Epicli but this needs some manual work from Administrator. Re-apply on already upgraded cluster needs to be called with `--no-infra` option to skip Terraform part of configuration.
+If apply after upgrade is run with `--no-infra` the used system images from the older Epiphany version are preserved to prevent the destruction of the VM`s.
 If you plan modify any infrastructure unit (eg. add Kubernetes Node) you need to create machine by yourself and attach it into configuration yaml. While running `epicli apply...` on already upgraded cluster you should use config yamls generated in newer version of Epiphany and apply changes you had in older one.
 If the cluster is upgraded to version 0.8 or newer you need also add additional feature mapping for repository role as shown on example below:
 
