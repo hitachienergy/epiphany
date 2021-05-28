@@ -14,7 +14,7 @@ specification:
     credentials:
       key: XXXX-XXXX-XXXX
       secret: XXXXXXXXXXXXXXXX
-    os_image: default
+    default_os_image: default
   components:
     repository:
       count: 1

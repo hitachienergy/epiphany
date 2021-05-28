@@ -20,7 +20,7 @@ specification:
       secret: DADFAFHCJHCAUYEAk
     network:
       use_network_security_groups: True
-    os_image: default
+    default_os_image: default
   components:
     kubernetes_master:
       count: 1

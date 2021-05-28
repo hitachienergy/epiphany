@@ -235,10 +235,10 @@ class InfrastructureBuilder(Step):
 
         # Check if we have a cluster-config OS image defined that we want to apply cluster wide.
         cloud_os_image_defaults = self.get_config_or_default(self.docs, 'infrastructure/cloud-os-image-defaults')
-        cloud_image = self.cluster_model.specification.cloud.os_image
+        cloud_image = self.cluster_model.specification.cloud.default_os_image
         if cloud_image != 'default':
             if not hasattr(cloud_os_image_defaults.specification, cloud_image):
-                raise NotImplementedError(f'os_image "{cloud_image}" is unsupported for "{self.cluster_model.provider}" provider.')
+                raise NotImplementedError(f'default_os_image "{cloud_image}" is unsupported for "{self.cluster_model.provider}" provider.')
             model_with_defaults.specification.storage_image_reference = dict_to_objdict(deepcopy(cloud_os_image_defaults.specification[cloud_image]))
 
         # finally check if we are trying to re-apply a configuration.
