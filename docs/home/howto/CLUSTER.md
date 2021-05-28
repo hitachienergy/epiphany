@@ -427,7 +427,7 @@ To setup the cluster do the following steps from the provisioning machine:
         key: aws_key
         secret: aws_secret
       use_public_ips: false
-      os_image: default
+      default_os_image: default
     ```
 
     The [region](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Concepts.RegionsAndAvailabilityZones.html) lets you chose the most optimal place to deploy your cluster. The `key` and `secret` are needed by Terraform and can be generated in the AWS console. More information about that [here](https://docs.aws.amazon.com/general/latest/gr/aws-sec-cred-types.html#access-keys-and-secret-access-keys)
@@ -440,7 +440,7 @@ To setup the cluster do the following steps from the provisioning machine:
       subscription_name: Subscribtion_name
       use_service_principal: false
       use_public_ips: false
-      os_image: default
+      default_os_image: default
     ```
 
     The [region](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Concepts.RegionsAndAvailabilityZones.html) lets you chose the most optimal place to deploy your cluster. The `subscription_name` is the Azure subscribtion under which you want to deploy the cluster.
@@ -468,7 +468,7 @@ To setup the cluster do the following steps from the provisioning machine:
 
     For both `aws`and `azure` the following cloud attributes overlap:
     - `use_public_ips`: When `true`, the VMs will also have a direct interface to the internet. While this is easy for setting up a cluster for testing, it should not be used in production. A VPN setup should be used which we will document in a different section (TODO).
-    - `os_image`: Lets you more easily select Epiphany team validated and tested OS images. When one is selected, it will be applied to **every** `infrastructure/virtual-machine` document in the cluster regardless of user defined ones.
+    - `default_os_image`: Lets you more easily select Epiphany team validated and tested OS images. When one is selected, it will be applied to **every** `infrastructure/virtual-machine` document in the cluster regardless of user defined ones.
                   The following values are accepted:
                   - `default`: Applies user defined `infrastructure/virtual-machine` documents when generating a new configuration.
                   - `ubuntu-18.04-x86_64`: Applies the latest validated and tested Ubuntu 18.04 image to all `infrastructure/virtual-machine` documents on `x86_64` on Azure and AWS.
