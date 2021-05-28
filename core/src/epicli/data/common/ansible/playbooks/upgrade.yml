@@ -196,7 +196,10 @@
   become: true
   become_method: sudo
   tasks:
-    - import_role:
+    - include_role:
         name: upgrade
         tasks_from: postgresql
       when: "'postgresql' in upgrade_components or upgrade_components|length == 0"
+  vars:
+    pg_old_version: '10'
+    pg_new_version: '13'
