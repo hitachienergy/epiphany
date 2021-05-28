@@ -238,7 +238,7 @@ class InfrastructureBuilder(Step):
         cloud_image = self.cluster_model.specification.cloud.os_image
         if cloud_image != 'default':
             if not hasattr(cloud_os_image_defaults.specification, cloud_image):
-                raise NotImplementedError(f'"{cloud_image}" is unsupported for "{self.cluster_model.provider}" provider.')
+                raise NotImplementedError(f'os_image "{cloud_image}" is unsupported for "{self.cluster_model.provider}" provider.')
             model_with_defaults.specification.storage_image_reference = dict_to_objdict(deepcopy(cloud_os_image_defaults.specification[cloud_image]))
 
         # finally check if we are trying to re-apply a configuration.
