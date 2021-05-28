@@ -104,6 +104,17 @@ properties:
             default: false
             examples:
             - true
+      default_os_image:
+        type: string
+        title: Set the latest cloud OS image verified for use by the Epiphany team for this Epiphany version.
+        default: 'default'
+        examples:
+        - default
+        - ubuntu-18.04-x86_64
+        - redhat-7-x86_64
+        - centos-7-x86_64
+        - centos-7-arm64
+        pattern: ^(default|ubuntu-18.04-x86_64|redhat-7-x86_64|centos-7-x86_64|centos-7-arm64)$
   components:
     "$id": "#/properties/components"
     type: object
