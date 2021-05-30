@@ -4,7 +4,6 @@
 usage() {
 	echo "usage: ./$(basename $0) <download_dir>"
 	echo "       ./$(basename $0) /tmp/downloads"
-	[ -z "$1" ] || exit "$1"
 }
 
 echol() {
@@ -34,7 +33,6 @@ create_directory() {
 }
 
 # params: <image_name> <dest_dir>
-# todo: skip on existing (maybe when checksum is correct?)
 download_image() {
 	local image_name="$1"
 	local dest_dir="$2"
@@ -46,7 +44,6 @@ download_image() {
 	local dst_image="${dest_dir}/${repo_basename}-${tag}.tar"
 	local retries=3
 
-	#[[ ! -f $dst_image ]] || remove_file "$dst_image"
 	if [[ -f ${dst_image} ]]; then
 		echo "Image: "${dst_image}" already exists. Skipping..."
 	else
@@ -62,9 +59,12 @@ download_image() {
 download_file() {
 	local file_url="$1"
 	local dest_dir="$2"
+	if [[ ${3-} ]]; then
+		local new_filename="$3"
+	fi
 
 	local file_name=$(basename "$file_url")
-	local dest_path="$dest_dir/$file_name"
+	local dest_path="${dest_dir}/${file_name}"
 	local retries=3
 
 	# wget with --timestamping sometimes failes on AWS with ERROR 403: Forbidden
@@ -72,16 +72,20 @@ download_file() {
 
 	# remove old files to force redownload after a while
 	# just a precaution so --continue won't append and corrupt files localy if file is updated on server without name change
-	if [[ $(find ${dest_path} -mmin +60 -print) ]]; then
-	    echol "File ${dest_path} older than 1h, redownloading..."
+	if [[ -f $dest_path && $(find "$dest_path" -mmin +60 -print) ]]; then
+	    echol "File $dest_path older than 1h, redownloading..."
 	    remove_file "$dest_path"
 	fi
 
-	echol "Downloading file: $file_url"
-
 	# --no-use-server-timestamps - we don't use --timestamping and we need to expire files somehow 
 	# --continue - don't download the same file multiple times, gracefully skip if file is fully downloaded	
-	run_cmd_with_retries $retries wget --no-use-server-timestamps --continue --show-progress --prefer-family=IPv4 --directory-prefix="${dest_dir}" "${file_url}"
+	if [[ ${new_filename-} ]]; then
+		echol "Downloading file: $file_url as $new_filename"
+		run_cmd_with_retries $retries wget --no-use-server-timestamps --continue --show-progress --prefer-family=IPv4 "${file_url}" -O "${dest_dir}/${new_filename}"
+	else
+		echol "Downloading file: $file_url"
+		run_cmd_with_retries $retries wget --no-use-server-timestamps --continue --show-progress --prefer-family=IPv4 --directory-prefix="${dest_dir}" "${file_url}"
+	fi
 }
 
 # to download everything, add "--recurse" flag but then you will get much more packages (e.g. 596 vs 319)
@@ -96,8 +100,7 @@ get_shell_escaped_array() {
 }
 
 print_array_as_shell_escaped_string() {
-    local output
-    output=$(get_shell_escaped_array "$@")
+    local output=$(get_shell_escaped_array "$@")
     local -a escaped=()
     if [ -n "$output" ]; then
       readarray -t escaped <<< "$output"
@@ -109,10 +112,8 @@ print_array_as_shell_escaped_string() {
 
 run_cmd() {
     local -a cmd_arr=("$@")
-
-    local output
-    output=$(print_array_as_shell_escaped_string "${cmd_arr[@]}")
-    echo "run:" "$output"
+    local output=$(print_array_as_shell_escaped_string "${cmd_arr[@]}")
+    echo "Running command:" "$output"
     "${cmd_arr[@]}"
 }
 
@@ -120,7 +121,6 @@ run_cmd_with_retries() {
     local retries=${1}
     shift
     local -a cmd_arr=("$@")
-
     ( # sub-shell is used to limit scope for 'set +e'
       set +e
       trap - ERR  # disable global trap locally
