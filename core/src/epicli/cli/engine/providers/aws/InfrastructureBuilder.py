@@ -16,13 +16,14 @@ from cli.version import VERSION
 
 
 class InfrastructureBuilder(Step):
-    def __init__(self, docs):
+    def __init__(self, docs, manifest_docs=[]):
         super().__init__(__name__)
         self.cluster_model = select_single(docs, lambda x: x.kind == 'epiphany-cluster')
         self.cluster_name = self.cluster_model.specification.name.lower()
         self.cluster_prefix = self.cluster_model.specification.prefix.lower()
         self.use_network_security_groups = self.cluster_model.specification.cloud.network.use_network_security_groups
         self.docs = docs
+        self.manifest_docs = manifest_docs
 
     def run(self):
         infrastructure = []
@@ -136,7 +137,7 @@ class InfrastructureBuilder(Step):
         return efs_config
 
     def get_autoscaling_group(self, component_key, component_value, subnets_to_create, index):
-        autoscaling_group = dict_to_objdict(deepcopy(self.get_virtual_machine(component_value, self.cluster_model, self.docs)))
+        autoscaling_group = dict_to_objdict(deepcopy(self.get_virtual_machine(component_value)))
         autoscaling_group.specification.cluster_name = self.cluster_name
         autoscaling_group.specification.name = resource_name(self.cluster_prefix, self.cluster_name, 'asg' + '-' + str(index), component_key)
         autoscaling_group.specification.count = component_value.count
@@ -245,6 +246,44 @@ class InfrastructureBuilder(Step):
             rules.append(objdict_to_dict(rule))
         security_group.specification.rules = rules
 
+    def get_virtual_machine(self, component_value):
+        machine_selector = component_value.machine
+        model_with_defaults = select_first(self.docs, lambda x: x.kind == 'infrastructure/virtual-machine' and
+                                                                 x.name == machine_selector)
+
+        # Merge with defaults
+        if model_with_defaults is None:
+            model_with_defaults = merge_with_defaults(self.cluster_model.provider, 'infrastructure/virtual-machine',
+                                                      machine_selector, self.docs)
+
+        # Check if we have a cluster-config OS image defined that we want to apply cluster wide.
+        cloud_os_image_defaults = self.get_config_or_default(self.docs, 'infrastructure/cloud-os-image-defaults')
+        cloud_image = self.cluster_model.specification.cloud.default_os_image
+        if cloud_image != 'default':
+            if not hasattr(cloud_os_image_defaults.specification, cloud_image):
+                raise NotImplementedError(f'default_os_image "{cloud_image}" is unsupported for "{self.cluster_model.provider}" provider.')
+            model_with_defaults.specification.os_full_name = cloud_os_image_defaults.specification[cloud_image]
+
+        # finally check if we are trying to re-apply a configuration.
+        if self.manifest_docs:
+            manifest_vm_config = select_first(self.manifest_docs, lambda x: x.name == machine_selector and x.kind == 'infrastructure/virtual-machine')
+            manifest_firstvm_config = select_first(self.manifest_docs, lambda x: x.kind == 'infrastructure/virtual-machine')
+
+            if manifest_vm_config  is not None and model_with_defaults.specification.os_full_name == manifest_vm_config.specification.os_full_name:
+                return model_with_defaults
+
+            if model_with_defaults.specification.os_full_name == manifest_firstvm_config.specification.os_full_name:
+                return model_with_defaults
+
+            self.logger.warning(f"Re-applying a different OS image might lead to data loss and/or other issues. Preserving the existing OS image used for VM definition '{machine_selector}'.")
+
+            if manifest_vm_config  is not None:
+                model_with_defaults.specification.os_full_name = manifest_vm_config.specification.os_full_name
+            else:
+                model_with_defaults.specification.os_full_name = manifest_firstvm_config.specification.os_full_name
+
+        return model_with_defaults
+
     @staticmethod
     def efs_add_mount_target_config(efs_config, subnet):
         target = select_first(efs_config.specification.mount_targets,
@@ -274,17 +313,6 @@ class InfrastructureBuilder(Step):
             config = load_yaml_obj(types.DEFAULT, 'aws', kind)
             config['version'] = VERSION
         return config
-
-    @staticmethod
-    def get_virtual_machine(component_value, cluster_model, docs):
-        machine_selector = component_value.machine
-        model_with_defaults = select_first(docs, lambda x: x.kind == 'infrastructure/virtual-machine' and
-                                                                 x.name == machine_selector)
-        if model_with_defaults is None:
-            model_with_defaults = merge_with_defaults(cluster_model.provider, 'infrastructure/virtual-machine',
-                                                      machine_selector)
-
-        return model_with_defaults
 
     @staticmethod
     def rule_exists_in_list(rule_list, rule_to_check):
