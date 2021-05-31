@@ -4,7 +4,8 @@
 
 ### Fixed
 
-- [#2319]https://github.com/epiphany-platform/epiphany/issues/2319 - [RHEL/Azure] RHUI client certificate expired for RHEL 7-LVM images
+- [#2319](https://github.com/epiphany-platform/epiphany/issues/2319) - [RHEL/Azure] RHUI client certificate expired for RHEL 7-LVM images
+- [#2233](https://github.com/epiphany-platform/epiphany/issues/2233) - Filebeat communication error in AKS
 
 ## [1.0.0] 2021-05-07
 
