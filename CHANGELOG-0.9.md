@@ -5,6 +5,7 @@
 ### Fixed
 
 - [#2233](https://github.com/epiphany-platform/epiphany/issues/2233) - Filebeat communication error in AKS
+- [#2098](https://github.com/epiphany-platform/epiphany/issues/2098) - The default values can't be changed in cluster config file for virtual machine
 
 ## [0.9.2] 2021-05-14
 
