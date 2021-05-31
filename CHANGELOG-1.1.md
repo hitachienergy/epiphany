@@ -35,6 +35,7 @@
 - [#2215](https://github.com/epiphany-platform/epiphany/issues/2215) - Grafana does not show metrics from kafka and haproxy exporters
 - [#2318](https://github.com/epiphany-platform/epiphany/issues/2318) - [RHEL/Azure] RHUI client certificate expired for RHEL 7-LVM images
 - [#2332](https://github.com/epiphany-platform/epiphany/issues/2332) - [Elasticsearch] Error when having multiple VMs and non-clustered mode
+- [#1576](https://github.com/epiphany-platform/epiphany/issues/1576) - [Kafka] Incorrect number of brokers/queues available after scaling up/down
 
 ### Updated
 
