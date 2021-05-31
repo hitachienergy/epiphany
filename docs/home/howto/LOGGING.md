@@ -227,4 +227,3 @@ specification:
   cloud:
     k8s_as_cloud_service: true
 ```
-
