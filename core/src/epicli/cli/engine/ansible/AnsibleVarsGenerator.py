@@ -61,7 +61,7 @@ class AnsibleVarsGenerator(Step):
             # - commmon is already provisioned from the cluster model constructed from the inventory
             # - (if possible) upgrade should not require any additional config
             # roles in the list below are provisioned for upgrade from defaults
-            roles_with_defaults = ['repository', 'image_registry', 'node_exporter']
+            roles_with_defaults = ['repository', 'image_registry', 'node_exporter', 'postgresql']
             # In a special cases (like haproxy), where user specifies majority of the config, it's easier (and less awkward)
             # to re-render config templates instead of modifying (for example with regular expressions) no-longer-compatible config files.
             roles_with_manifest = ['haproxy', 'ignite', 'repository']

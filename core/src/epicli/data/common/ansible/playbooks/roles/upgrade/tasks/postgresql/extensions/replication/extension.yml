@@ -1,0 +1,109 @@
+---
+# Documentation: https://repmgr.org/docs/current/upgrading-repmgr-extension.html#UPGRADING-MAJOR-VERSION#
+# Compatibility matrix: https://repmgr.org/docs/current/install-requirements.html#INSTALL-COMPATIBILITY-MATRIX
+
+# Expects:
+#   - all vars from 'postgresql' upgrade
+#   - pg_service_names [dict] (list for each supported OS family)
+
+- name: PostgreSQL | Extensions | Repmgr | Ensure that old service is started
+  systemd:
+    name: "{{ old_version.repmgr.service_name[ansible_os_family] }}"
+    state: started
+
+- name: PostgreSQL | Extensions | Repmgr | Search for a primary node
+  become_user: postgres
+  shell: |-
+    set -o pipefail && \
+    {{ old_version.repmgr.bindir[ansible_os_family] }}/repmgr cluster show \
+      | awk 'BEGIN{FS="|"} {gsub(/ /,""); if ($3 == "primary") print $2}'
+  changed_when: false
+  register: pg_node_primary_found
+  failed_when: pg_node_primary_found.rc != 0 or pg_node_primary_found.stdout == ""
+  delegate_to: "{{ groups.postgresql[0] }}"
+  run_once: true
+
+- name: PostgreSQL | Extensions | Repmgr | Stop Repmgr service
+  systemd:
+    name: "{{ old_version.repmgr.service_name[ansible_os_family] }}"
+    state: stopped
+    enabled: false
+
+- name: PostgreSQL | Extensions | Repmgr | Install OS packages
+  package:
+    name: "{{ _packages[ansible_os_family] }}"
+    state: present
+  vars:
+    _packages:
+      Debian:
+        - postgresql-13-repmgr
+      RedHat:
+        - repmgr13-5.2.1
+  module_defaults:
+    yum: { lock_timeout: "{{ yum_lock_timeout }}" }
+
+- name: PostgreSQL | Extensions | Repmgr | Restart PostgreSQL service
+  systemd:
+    name: "{{ service_name }}"
+    state: restarted
+    daemon_reload: true
+  loop_control:
+    loop_var: service_name
+  loop: "{{ pg_service_names[ansible_os_family] }}"
+
+- name: PostgreSQL | Extensions | Repmgr | Update Repmgr config before start
+  block:
+    # In previous versions there is no cacheable facts to get node id
+    # So it's taken from current config file
+    - name: PostgreSQL | Extensions | Repmgr | Get current node id and refister appropriate variable
+      command: >-
+        sed -n "/^node_id/s/^node_id=//p" "{{ old_version.repmgr.config_dir[ansible_os_family] }}/repmgr.conf"
+      register: pg_node_id
+
+    #- name: PostgreSQL | Extensions | Repmgr | S
+    #  set_fact:
+    #    node_id: "{{ lookup('ini', 'node_id type=properties file=' + old_version.repmgr.config_dir[ansible_os_family] + '/repmgr.conf') }}"
+    #  vars:
+    #    lookup_string: "node_id type=properties file={{ old_version.repmgr.config_dir[ansible_os_family] }}/repmgr.conf"
+    
+    - name: PostgreSQL | Extensions | Repmgr | Replace Repmgr config file
+      template:
+        src: postgresql/repmgr.conf.j2
+        dest: "{{ old_version.repmgr.config_dir[ansible_os_family] }}/repmgr.conf"
+        owner: postgres
+        group: postgres
+        mode: u=rw,g=,o=
+      vars:
+        node_id: "{{ pg_node_id.stdout }}"
+        pg_datadir: "{{ old_version.pg.data_dir[ansible_os_family] }}"
+        pg_bindir: "{{ new_version.pg.bindir[ansible_os_family] }}"
+        pg_service_name: "{{ old_version.pg.service_name[ansible_os_family] }}"
+
+#- name: PostgreSQL | Extensions | Repmgr | Restart Repmgr service
+#  systemd:
+#    name: "{{ new_version.repmgr.service_name[ansible_os_family] }}"
+#    state: restarted
+
+# TODO: needed?
+- name: Create a symbolic link
+  file:
+    src: "{{ new_version.pg.bindir[ansible_os_family] }}/repmgr"
+    dest: /bin/repmgr
+    owner: root
+    group: root
+    state: link
+
+# ALTER EXTENSION repmgr UPDATE
+- name: PostgreSQL | Extensions | Repmgr | Update extension
+  when: inventory_hostname == pg_node_primary_found.stdout
+  become_user: postgres
+  postgresql_ext:
+    db: "{{ specification.extensions.replication.repmgr_database }}"
+    name: repmgr
+    version: latest
+
+- name: PostgreSQL | Extensions | Repmgr | Restart and enable Repmgr service
+  systemd:
+    name: "{{ new_version.repmgr.service_name[ansible_os_family] }}"
+    state: started
+    enabled: true

@@ -5,7 +5,7 @@
   block:
     - name: PostgreSQL | Include vars from 'postgresql' role
       include_vars:
-        file: roles/postgresql/defaults/main.yml
+        file: roles/postgresql/vars/main.yml
 
     - name: PostgreSQL | Include new version default variables
       include_vars:
@@ -60,6 +60,16 @@
         fail_msg:    PostgreSQL cluster in version '{{ pg_old_version }}' not found
         success_msg: PostgreSQL cluster in version '{{ pg_old_version }}' found
         quiet: true
+    
+    - name: PostgreSQL | Extensions | Repmgr | Include upgrade tasks
+      include_tasks: postgresql/extensions/replication/extension.yml
+      vars:
+        pg_service_names:
+          Debian:
+            - "{{ old_version.pg.service_name['Debian'] }}"
+            - "{{ old_version.pg.instantiated_service_name['Debian'] }}"
+          RedHat:
+            - "{{ old_version.pg.service_name['RedHat'] }}"
 
     # TODO: check on RHEL if it's ok to stop service later - use the same task as for Ubuntu
     - name: PostgreSQL | Stop old PostgreSQL service
@@ -220,21 +230,22 @@
 
   # TODO: check the doc about following steps - https://www.postgresql.org/docs/13/pgupgrade.html
   rescue:
-    - name: PostgreSQL | Rollback | Remove OS-specific packages
-      package:
-        name: "{{ _packages[ansible_os_family] }}"
-        state: absent
-      vars:
-        _packages:
-          Debian:
-            - postgresql-client-13
-            - postgresql-13
-            - postgresql-13-pgaudit
-          RedHat:
-            - postgresql13-server
-            - pgaudit15_13
-      module_defaults:
-        yum: { lock_timeout: "{{ yum_lock_timeout }}" }
+    #- name: PostgreSQL | Remove OS-specific packages
+    #  package:
+    #    name: "{{ _packages[ansible_os_family] }}"
+    #    state: absent
+    #  vars:
+    #    _packages:
+    #      Debian:
+    #        - postgresql-client-13
+    #        - postgresql-13
+    #        - postgresql-contrib-13
+    #        - postgresql-13-pgaudit
+    #      RedHat:
+    #        - postgresql13-server
+    #        - pgaudit15_13
+    #  module_defaults:
+    #    yum: { lock_timeout: "{{ yum_lock_timeout }}" }
 
     - name: PostgreSQL | Rollback | Remove new data directory
       file:
