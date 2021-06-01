@@ -21,7 +21,7 @@
       {{ repmgr.bindir[ansible_os_family] }}/repmgr standby follow
     validate: 'visudo -cf %s'
 
-- name: Extensions | Repmgr | Create replication and super users in PostgreSQL
+- name: Extensions | Repmgr | Create super user and replication user in PostgreSQL
   become_user: postgres
   vars:
     _users:
