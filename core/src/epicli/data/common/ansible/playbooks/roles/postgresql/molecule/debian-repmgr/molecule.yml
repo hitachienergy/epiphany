@@ -36,7 +36,7 @@ provisioner:
   playbooks:
     prepare: prepare.yml
     converge: converge.yml
-    verify: verify.yml
+    verify: ../verify-repmgr.yml
   inventory:
     group_vars:
       postgresql:

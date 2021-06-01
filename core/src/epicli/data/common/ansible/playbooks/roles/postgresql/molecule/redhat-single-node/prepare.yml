@@ -1,5 +1,5 @@
 ---
-- name: Converge
+- name: Prepare
   hosts: postgresql
   tasks:
     - name: Add repositories for dependencies downloading

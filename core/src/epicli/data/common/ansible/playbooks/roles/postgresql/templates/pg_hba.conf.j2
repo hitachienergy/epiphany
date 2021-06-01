@@ -93,6 +93,6 @@ local   replication     all                                     peer
 host    replication     all             127.0.0.1/32            scram-sha-256
 host    replication     all             ::1/128                 scram-sha-256
 
-{% if specification.extensions.replication.enabled | default(False) %}
+{% if specification.extensions.replication.enabled | default(false) %}
 host    replication     {{ specification.extensions.replication.replication_user_name }}      0.0.0.0/0               scram-sha-256
 {% endif %}

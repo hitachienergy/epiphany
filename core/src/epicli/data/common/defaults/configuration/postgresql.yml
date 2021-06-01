@@ -40,6 +40,17 @@ specification:
               - name: wal_level
                 value: replica
                 when: replication
+          # Changes to archive_mode require a full PostgreSQL server restart,
+          # while archive_command changes can be applied via a normal configuration reload.
+          # See https://repmgr.org/docs/repmgr.html#CONFIGURATION-POSTGRESQL
+          - name: Archiving
+            parameters:
+              - name: archive_mode
+                value: 'on'
+                when: replication
+              - name: archive_command
+                value: "'/bin/true'"
+                when: replication
       - name: REPLICATION
         subgroups:
           - name: Sending Server(s)

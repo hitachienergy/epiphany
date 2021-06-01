@@ -106,7 +106,7 @@
 #    sometimes 'repmgr cluster show' returns 25 code with empty stderr and no explanation
 - name: Extensions | Repmgr | Set 'pg_is_clustered' fact
   set_fact:
-    pg_is_clustered: "{{ pg_cluster_status.rc in [0, 25] and pg_cluster_status.stdout_lines | length  > 1 }}"
+    pg_is_clustered: "{{ pg_cluster_status.rc in [0, 25] and pg_cluster_status.stdout_lines | length > 1 }}"
 
 - name: Extensions | Repmgr | Configure PostgreSQL cluster
   when: not pg_is_clustered|bool
