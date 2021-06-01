@@ -6,15 +6,13 @@
     - name: Include common tasks
       include_tasks: verify-common.yml
 
-    - name: Verify that Repmgr service exists, enabled and running
+    # status is reported as 'unknown', so not checked
+    - name: Verify that Repmgr service exists and running
       vars:
         _services:
-          Debian: repmgrd
-          RedHat: repmgr13
+          Debian: repmgrd.service
+          RedHat: repmgr13.service
       assert:
         that:
-          - "{{ ansible_facts.services
-                | selectattr('name', 'equalto', _services[ansible_os_family])
-                | selectattr('state', 'equalto', 'running')
-                | selectattr('status', 'equalto', 'enabled')
-                | length== 1 }}"
+          - "{{ _services[ansible_os_family] in ansible_facts.services }}"
+          - "{{ ansible_facts.services[_services[ansible_os_family]].state == 'running' }}"
