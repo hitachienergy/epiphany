@@ -36,7 +36,6 @@
         - postgresql-common
         - postgresql-client-13
         - postgresql-13
-        - postgresql-contrib-13
         - python-psycopg2 # required for PostgreSQL ansible management
       RedHat:
         - postgresql13-server
