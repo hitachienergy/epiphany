@@ -109,7 +109,7 @@
     pg_is_clustered: "{{ pg_cluster_status.rc in [0, 25] and pg_cluster_status.stdout_lines | length  > 1 }}"
 
 - name: Extensions | Repmgr | Configure PostgreSQL cluster
-  when: not pg_is_clustered|bool
+  when: not pg_is_clustered
   vars:
     pg_node_primary: "{{ groups.postgresql[0] }}" # the first node in the group is primary
   block:
