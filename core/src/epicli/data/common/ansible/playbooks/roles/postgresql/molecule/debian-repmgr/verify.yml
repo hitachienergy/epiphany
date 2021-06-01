@@ -29,7 +29,7 @@
 
         - name: Ensure that postgresql@13-main service is started and enabled
           systemd:
-            name: postgresql
+            name: postgresql@13-main
             enabled: true
           register: svc_main_status
 
