@@ -173,7 +173,7 @@
         enabled: true
 
 - name: Extensions | Repmgr | Check already configured cluster
-  when: pg_is_clustered|bool
+  when: pg_is_clustered
   block:
     - name: Extensions | Repmgr | Search for a primary node
       become_user: postgres
