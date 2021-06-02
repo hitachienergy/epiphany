@@ -107,7 +107,7 @@ filebeatConfig:
 {% if groups['logging'] is defined %}
       hosts:
       {% for host in groups['logging'] -%}
-      - "https://{{hostvars[host]['ansible_hostname']}}:9200"
+      - "https://{{hostvars[host]['ansible_default_ipv4']['address']}}:9200"
       {% endfor %}
 
 {# Protocol - either `http` (default) or `https`. #}
@@ -182,7 +182,7 @@ readinessProbe:
 # Whether this chart should self-manage its service account, role, and associated role binding.
 managedServiceAccount: true
 
-# additionals labels
+# additional labels
 labels: {}
 
 podAnnotations: {}
