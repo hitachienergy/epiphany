@@ -107,7 +107,7 @@ filebeatConfig:
 {% if groups['logging'] is defined %}
       hosts:
       {% for host in groups['logging'] -%}
-      - "https://{{hostvars[host]['ansible_default_ipv4']['address']}}:9200"eedsed
+      - "https://{{hostvars[host]['ansible_default_ipv4']['address']}}:9200"
       {% endfor %}
 
 {# Protocol - either `http` (default) or `https`. #}
