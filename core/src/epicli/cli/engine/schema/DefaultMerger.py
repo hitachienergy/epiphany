@@ -29,7 +29,10 @@ class DefaultMerger(Step):
             merged_parent['version'] = VERSION
             merge_objdict(merged_parent, doc)
             return merged_parent
+        default_config = select_first(self.docs, lambda x: x.name == 'default' and x.kind == doc.kind)
         default_doc = select_first(files, lambda x: x.name == 'default')
+        if default_config is not None:
+            merge_objdict(default_doc, default_config)
         default_doc['version'] = VERSION
         merge_objdict(default_doc, doc)
         return default_doc

@@ -1,5 +1,11 @@
 # Changelog 0.8
 
+## [0.8.4] 2021-0x.xx
+
+### Fixed
+
+- [#2098](https://github.com/epiphany-platform/epiphany/issues/2098) - The default values can't be changed in cluster config file for virtual machine
+
 ## [0.8.3] 2021-05-17
 
 ### Fixed
