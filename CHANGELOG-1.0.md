@@ -4,8 +4,9 @@
 
 ### Fixed
 
-- [#2319]https://github.com/epiphany-platform/epiphany/issues/2319 - [RHEL/Azure] RHUI client certificate expired for RHEL 7-LVM images
+- [#2319](https://github.com/epiphany-platform/epiphany/issues/2319) - [RHEL/Azure] RHUI client certificate expired for RHEL 7-LVM images
 - [#2098](https://github.com/epiphany-platform/epiphany/issues/2098) - The default values can't be changed in cluster config file for virtual machine
+- [#2233](https://github.com/epiphany-platform/epiphany/issues/2233) - Filebeat communication error in AKS
 
 # Added
 
