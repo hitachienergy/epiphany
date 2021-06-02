@@ -1,3 +1,5 @@
+# {{ ansible_managed }}
+
 node_id={{ node_id }}
 node_name={{ inventory_hostname }}
 conninfo='host={{ ansible_default_ipv4.address }} user={{ specification.extensions.replication.replication_user_name }} dbname={{ specification.extensions.replication.repmgr_database }} connect_timeout=2'
