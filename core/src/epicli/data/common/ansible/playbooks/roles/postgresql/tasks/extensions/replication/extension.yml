@@ -93,13 +93,16 @@
         regexp: "^[#]?REPMGRD_ENABLED=no"
         replace: "REPMGRD_ENABLED=yes"
 
-- name: Extensions | Repmgr | Check cluster status
+- name: Extensions | Repmgr | Get cluster status
   become_user: postgres
   command: "{{ repmgr.bindir[ansible_os_family] }}/repmgr cluster show --csv"
   register: pg_cluster_status
   changed_when: false
-  failed_when: false
-  no_log: true
+  failed_when:
+    # rc = 25 means that there is an error with at least one registered node
+    - pg_cluster_status.rc not in [0, 25]
+    # do not fail when Repmgr is not initialized yet
+    - pg_cluster_status.stderr is not search("relation \"repmgr.nodes\" does not exist")
 
 # 1. There is a preflight check that no more than 2 cluster nodes are supported
 # 2. rc = 25 means that there is an error with at least one registered node
