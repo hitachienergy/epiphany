@@ -40,6 +40,14 @@ specification:
               - name: wal_level
                 value: replica
                 when: replication
+          - name: Archiving
+            parameters:
+            - name: archive_mode
+              value: on
+              when: replication
+            - name: archive_command
+              value: "'/bin/true'"
+              when: replication
       - name: REPLICATION
         subgroups:
           - name: Sending Server(s)

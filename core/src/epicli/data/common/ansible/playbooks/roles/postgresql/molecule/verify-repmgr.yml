@@ -7,7 +7,7 @@
       include_tasks: verify-common.yml
 
     # status is reported as 'unknown', so not checked
-    - name: Verify that Repmgr service exists and running
+    - name: Verify that Repmgr service exists and is running
       vars:
         _services:
           Debian: repmgrd.service
