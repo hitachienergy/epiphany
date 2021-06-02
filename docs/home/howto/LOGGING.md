@@ -175,7 +175,7 @@ PUT _template/template_01
 ```
 After applying this policy every new index created under this one will apply to it. There is also possibility to apply policy to already existing policies by assigning them to policy in Index Management Kibana panel.
 
-## How to export Elasticsearch data to CVS format
+## How to export Elasticsearch data to CSV format
 
 Since v0.8 Epiphany provide posibility to export data from Elasticsearch to CSV using Logstash *(logstash-oss v7.8.1*) along with *logstash-input-elasticsearch (v4.6.2)* and *logstash-output-csv (v3.0.8)* plugin.
 
