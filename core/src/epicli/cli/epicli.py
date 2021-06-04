@@ -93,9 +93,6 @@ Terraform : 1..4 map to the following Terraform verbosity levels:
     upgrade_parser(subparsers)
     delete_parser(subparsers)
     test_parser(subparsers)
-    '''
-    validate_parser(subparsers)
-    '''
     backup_parser(subparsers)
     recovery_parser(subparsers)
 
@@ -244,23 +241,6 @@ def test_parser(subparsers):
             return engine.test()
 
     sub_parser.set_defaults(func=run_test)
-
-
-'''
-def validate_parser(subparsers):
-    sub_parser = subparsers.add_parser('verify', description='Validates the configuration from file by executing a dry '
-                                                             'run without changing the physical '
-                                                             'infrastructure/configuration')
-    sub_parser.add_argument('-f', '--file', dest='file', type=str,
-                            help='File with infrastructure/configuration definitions to use.')
-
-    def run_validate(args):
-        adjust_paths_from_file(args)
-        with ApplyEngine(args) as engine:
-            return engine.validate()
-
-    sub_parser.set_defaults(func=run_validate)    
-'''
 
 
 def backup_parser(subparsers):
