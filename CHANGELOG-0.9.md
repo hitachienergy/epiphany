@@ -2,6 +2,10 @@
 
 ## [0.9.3] 2021-0x-xx
 
+### Added
+
+- [#2288](https://github.com/epiphany-platform/epiphany/issues/2288) - Allow to preserve OS images when run 'epicli apply' for existing cluster
+
 ### Fixed
 
 - [#2233](https://github.com/epiphany-platform/epiphany/issues/2233) - Filebeat communication error in AKS

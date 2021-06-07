@@ -84,6 +84,10 @@ def get_build_path(cluster_name):
     return build_dir
 
 
+def get_manifest_path(cluster_name):
+    return os.path.join(get_build_path(cluster_name), MANIFEST_FILE_NAME)
+
+
 def get_inventory_path(cluster_name):
     return os.path.join(get_build_path(cluster_name), INVENTORY_FILE_NAME)
 
