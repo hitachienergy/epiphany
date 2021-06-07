@@ -2,6 +2,10 @@
 
 ## [0.8.4] 2021-0x.xx
 
+### Added
+
+- [#2288](https://github.com/epiphany-platform/epiphany/issues/2288) - Allow to preserve OS images when run 'epicli apply' for existing cluster
+
 ### Fixed
 
 - [#2098](https://github.com/epiphany-platform/epiphany/issues/2098) - The default values can't be changed in cluster config file for virtual machine

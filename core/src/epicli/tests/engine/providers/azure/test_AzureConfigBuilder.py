@@ -68,7 +68,7 @@ def test_get_public_ip_should_set_proper_values_to_model():
     component_value = dict_to_objdict({
         'machine': 'kubernetes-master-machine'
     })
-    vm_config = builder.get_virtual_machine(component_value, cluster_model, [])
+    vm_config = builder.get_virtual_machine(component_value)
 
     actual = builder.get_public_ip('kubernetes_master', component_value, vm_config, 1)
 
@@ -84,7 +84,7 @@ def test_get_network_interface_should_set_proper_values_to_model():
     component_value = dict_to_objdict({
         'machine': 'kubernetes-master-machine'
     })
-    vm_config = builder.get_virtual_machine(component_value, cluster_model, [])
+    vm_config = builder.get_virtual_machine(component_value)
 
     actual = builder.get_network_interface(
                                 'kubernetes_master',
@@ -119,6 +119,7 @@ def get_cluster_model(address_pool='10.22.0.0/22', cluster_name='EpiphanyTestClu
     cluster_model = dict_to_objdict({
         'kind': 'epiphany-cluster',
         'provider': 'azure',
+        'name': 'default',
         'specification': {
             'name': cluster_name,
             'prefix': 'prefix',
