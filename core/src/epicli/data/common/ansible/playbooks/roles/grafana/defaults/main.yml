@@ -72,8 +72,11 @@ grafana_image_storage: "{{ specification.grafana_image_storage }}"
 # Plugins from https://grafana.com/plugins
 grafana_plugins: "{{ specification.grafana_plugins }}"
 
-# Dashboards from https://grafana.com/dashboards
+# Default dashboards predefined and available in offline mode
 grafana_dashboards: "{{ specification.grafana_dashboards }}"
+
+# Dashboards from https://grafana.com/dashboards. Only for online mode
+get_grafana_dashboards: "{{ specification.get_grafana_dashboards }}"
 
 grafana_dashboards_dir: "{{ specification.grafana_dashboards_dir }}"
 
