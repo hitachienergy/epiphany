@@ -6,8 +6,8 @@
   vars:
     _packages:
       Debian:
-        - postgresql-10-pgaudit
+        - postgresql-13-pgaudit
       RedHat:
-        - pgaudit12_10
+        - pgaudit15_13
   module_defaults:
     yum: { lock_timeout: "{{ yum_lock_timeout }}" }

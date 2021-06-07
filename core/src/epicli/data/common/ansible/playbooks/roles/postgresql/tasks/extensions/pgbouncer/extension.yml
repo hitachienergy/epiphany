@@ -20,6 +20,7 @@
         path: /etc/pgbouncer/userlist.txt
         line: '"postgres" "*"'
         create: true
+        mode: u=rw,g=,o=
         backup: true
 
     - name: Extensions | PgBouncer | Create pgbouncer logrotate configuration file

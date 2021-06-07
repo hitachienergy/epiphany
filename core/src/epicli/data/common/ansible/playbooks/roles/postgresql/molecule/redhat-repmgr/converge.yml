@@ -1,0 +1,16 @@
+---
+- name: Converge
+  hosts: postgresql
+  become: true
+  become_method: sudo
+  tasks:
+    - name: Include 'configuration/postgresql' variables
+      include_vars:
+        file: ../vars-repmgr.yml
+
+    - name: Include postgresql role
+      include_role:
+        name: postgresql
+      vars:
+        yum_lock_timeout: 300 # https://github.com/ansible/ansible/issues/57189
+        roles_with_generated_vars: [ ] # don't execute PgPool related tasks
