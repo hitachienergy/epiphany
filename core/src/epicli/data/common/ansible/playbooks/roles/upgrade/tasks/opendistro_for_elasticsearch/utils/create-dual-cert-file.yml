@@ -1,0 +1,18 @@
+---
+# required vars:
+# - certs_to_concatenate
+# - target_path
+
+- name: ODFE | Read certificates to concatenate
+  slurp:
+    src: "{{ item }}"
+  register: _files
+  loop: "{{ certs_to_concatenate }}"
+
+- name: ODFE | Create dual root CA transitional file for migration
+  copy:
+    dest: "{{ target_path }}"
+    content: "{{ _files.results | map(attribute='content') | map('b64decode') | join('') }}"
+    mode: u=rw,g=r,o=
+    owner: root
+    group: elasticsearch

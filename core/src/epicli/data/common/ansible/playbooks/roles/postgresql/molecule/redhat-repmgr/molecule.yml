@@ -36,6 +36,6 @@ provisioner:
   playbooks:
     prepare: prepare.yml
     converge: converge.yml
-    verify: verify.yml
+    verify: ../verify-repmgr.yml
 verifier:
   name: ansible

@@ -36,7 +36,6 @@
         - postgresql-common
         - postgresql-client-13
         - postgresql-13
-        - postgresql-contrib-13
         - python-psycopg2 # required for PostgreSQL ansible management
       RedHat:
         - postgresql13-server
@@ -79,21 +78,20 @@
       environment:
         PGDATA: "{{ pg.data_dir[ansible_os_family] }}"
 
-- name: Ensure that PostgreSQL service is started
+- name: Start and enable PostgreSQL service
   block:
-    - name: Ensure that PostgreSQL service is started
+    - name: Start and enable PostgreSQL service
       systemd:
         name: "{{ pg.service_name[ansible_os_family] }}"
         state: started
         enabled: true
 
-    - &check-debian-service
-      name: Debian | Check that the main service is started
+    - &ensure-debian-child-service-started
+      name: Debian | Ensure that instantiated service started
       when: ansible_os_family == 'Debian'
       systemd:
         name: "{{ pg.instantiated_service_name[ansible_os_family] }}"
         state: started
-        enabled: true
 
 # Used in postgresql-epiphany.conf.j2
 - name: Set runtime_shared_preload_libraries fact
@@ -133,7 +131,7 @@
         name: "{{ pg.service_name[ansible_os_family] }}"
         state: restarted
 
-    - *check-debian-service
+    - *ensure-debian-child-service-started
   when: (change_pg_config.results | map(attribute='changed') | list) is any
 
 - name: Configure PostgreSQL logrotate

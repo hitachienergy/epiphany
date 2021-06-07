@@ -1,7 +1,7 @@
 ---
 # Sets facts on existing configuration
 
-- name: ODFE | Load existing elasticsearch.yml
+- name: ODFE | Load /etc/elasticsearch/elasticsearch.yml
   slurp:
     src: /etc/elasticsearch/elasticsearch.yml
   register: _elasticsearch_yml
@@ -16,4 +16,4 @@
     existing_config:
       main: "{{ _elasticsearch_yml.content | b64decode | from_yaml }}"
       jvm_options:
-        xmx: "{{ _grep_xmx.stdout_lines | last }}"
+        Xmx: "{{ _grep_xmx.stdout_lines | last }}"

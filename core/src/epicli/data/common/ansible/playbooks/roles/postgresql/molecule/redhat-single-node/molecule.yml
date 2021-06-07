@@ -23,6 +23,6 @@ provisioner:
   playbooks:
     prepare: prepare.yml
     converge: converge.yml
-    verify: verify.yml
+    verify: ../verify-single-node.yml
 verifier:
   name: ansible

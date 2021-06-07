@@ -21,7 +21,7 @@
       {{ repmgr.bindir[ansible_os_family] }}/repmgr standby follow
     validate: 'visudo -cf %s'
 
-- name: Extensions | Repmgr | Create replication and super users in PostgreSQL
+- name: Extensions | Repmgr | Create super user and replication user in PostgreSQL
   become_user: postgres
   vars:
     _users:
@@ -93,23 +93,26 @@
         regexp: "^[#]?REPMGRD_ENABLED=no"
         replace: "REPMGRD_ENABLED=yes"
 
-- name: Extensions | Repmgr | Check cluster status
+- name: Extensions | Repmgr | Get cluster status
   become_user: postgres
   command: "{{ repmgr.bindir[ansible_os_family] }}/repmgr cluster show --csv"
   register: pg_cluster_status
   changed_when: false
-  failed_when: false
-  no_log: true
+  failed_when:
+    # rc = 25 means that there is an error with at least one registered node
+    - pg_cluster_status.rc not in [0, 25]
+    # do not fail when Repmgr is not initialized yet
+    - pg_cluster_status.stderr is not search("relation \"repmgr.nodes\" does not exist")
 
 # 1. There is a preflight check that no more than 2 cluster nodes are supported
 # 2. rc = 25 means that there is an error with at least one registered node
 #    sometimes 'repmgr cluster show' returns 25 code with empty stderr and no explanation
 - name: Extensions | Repmgr | Set 'pg_is_clustered' fact
   set_fact:
-    pg_is_clustered: "{{ pg_cluster_status.rc in [0, 25] and pg_cluster_status.stdout_lines | length  > 1 }}"
+    pg_is_clustered: "{{ pg_cluster_status.rc in [0, 25] and pg_cluster_status.stdout_lines | length > 1 }}"
 
 - name: Extensions | Repmgr | Configure PostgreSQL cluster
-  when: not pg_is_clustered|bool
+  when: not pg_is_clustered
   vars:
     pg_node_primary: "{{ groups.postgresql[0] }}" # the first node in the group is primary
   block:
@@ -173,7 +176,7 @@
         enabled: true
 
 - name: Extensions | Repmgr | Check already configured cluster
-  when: pg_is_clustered|bool
+  when: pg_is_clustered
   block:
     - name: Extensions | Repmgr | Search for a primary node
       become_user: postgres

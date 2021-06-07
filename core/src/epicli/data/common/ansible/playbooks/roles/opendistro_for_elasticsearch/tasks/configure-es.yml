@@ -1,5 +1,6 @@
 ---
 # This file is meant to be also used by upgrade role
+
 - name: Ensure snapshot folder exists
   file:
     path: "{{ specification.paths.repo }}/"
@@ -18,7 +19,7 @@
     mode: ug=rw,o=
   register: change_jvm_config
   vars:
-    xmx: "{{ is_upgrade_run | ternary(jvm_options.xmx, specification.jvm_options.Xmx) }}"
+    xmx: "{{ specification.jvm_options.Xmx }}"
 
 - name: Generate certificates
   when: not is_upgrade_run  # in upgrade mode certs are required at early stage and should be already generated
@@ -40,20 +41,43 @@
     mode: ug=rw,o=
   register: change_config
   vars:
-    root_ca_cert_filename: >-
-      {{ existing_es_config.certs.root_ca.cert.filename if is_upgrade_run else
-         certificates.files.root_ca.cert.filename }}
-    node_cert_filename: >-
-      {{ existing_es_config.certs.node.cert.filename if is_upgrade_run else
-         certificates.files.node.cert.filename }}
-    node_key_filename: >-
-      {{ existing_es_config.certs.node.key.filename if is_upgrade_run else
-         certificates.files.node.key.filename }}
-    _epiphany_admin_dn: "CN={{ certificates.files.admin.cert.subject.CN }},OU={{ certificates.files.admin.cert.subject.OU }},\
-                         O={{ certificates.files.admin.cert.subject.O }}"  # order matters
+    node_cert_filename:
+      http: >-
+        {{ existing_es_config['opendistro_security.ssl.http.pemcert_filepath'] if (is_upgrade_run) else
+           certificates.files.node.cert.filename }}
+      transport: >-
+        {{ existing_es_config['opendistro_security.ssl.transport.pemcert_filepath'] if (is_upgrade_run) else
+           certificates.files.node.cert.filename }}
+    node_key_filename:
+      http: >-
+        {{ existing_es_config['opendistro_security.ssl.http.pemkey_filepath'] if (is_upgrade_run) else
+           certificates.files.node.key.filename }}
+      transport: >-
+        {{ existing_es_config['opendistro_security.ssl.transport.pemkey_filepath'] if (is_upgrade_run) else
+           certificates.files.node.key.filename }}
+    root_ca_cert_filename:
+      http: >-
+        {{ existing_es_config['opendistro_security.ssl.http.pemtrustedcas_filepath'] if (is_upgrade_run) else
+           certificates.files.root_ca.cert.filename }}
+      transport: >-
+        {{ existing_es_config['opendistro_security.ssl.transport.pemtrustedcas_filepath'] if (is_upgrade_run) else
+           certificates.files.root_ca.cert.filename }}
+    _epiphany_subjects:
+      admin: "{{ certificates.files.admin.cert.subject }}"
+      node:  "{{ certificates.files.node.cert.subject }}"
+    _epiphany_dn_attributes:
+      admin: "{{ certificates.dn_attributes_order | intersect(_epiphany_subjects.admin.keys()) }}"
+      node:  "{{ certificates.dn_attributes_order | intersect(_epiphany_subjects.node.keys()) }}"
+    _epiphany_DNs:
+      admin: >-
+        {{ _epiphany_dn_attributes.admin | zip(_epiphany_dn_attributes.admin | map('extract', _epiphany_subjects.admin))
+                                         | map('join','=') | join(',') }}
+      node: >-
+        {{ _epiphany_dn_attributes.node | zip(_epiphany_dn_attributes.node | map('extract', _epiphany_subjects.node))
+                                        | map('join','=') | join(',') }}
     admin_dn: >-
-      {{ existing_es_config.certs.admin_dn if is_upgrade_run else
-         [ _epiphany_admin_dn ] }}
+      {{ existing_es_config['opendistro_security.authcz.admin_dn'] if (is_upgrade_run) else
+         [ _epiphany_DNs.admin ] }}
     _epiphany_nodes_dn: >-
       {%- if specification.clustered -%}
         {%- set nodes_to_iterate = ansible_play_hosts_all -%}
@@ -62,12 +86,26 @@
       {%- endif -%}
       {%- for node in nodes_to_iterate -%}
         {%- if loop.first -%}[{%- endif -%}
-          'CN={{ hostvars[node].ansible_nodename }},OU={{ certificates.files.node.cert.subject.OU }},O={{ certificates.files.node.cert.subject.O }}'
+          '{{ _epiphany_DNs.node.split(',') | map('regex_replace', '^CN=.+$', 'CN=' + hostvars[node].ansible_nodename) | join(',') }}'
         {%- if not loop.last -%},{%- else -%}]{%- endif -%}
       {%- endfor -%}
     nodes_dn: >-
-      {{ existing_es_config.certs.nodes_dn if is_upgrade_run else
+      {{ existing_es_config['opendistro_security.nodes_dn'] if (is_upgrade_run) else
          _epiphany_nodes_dn }}
+    opendistro_security_allow_unsafe_democertificates: "{{ certificates.files.demo.opendistro_security.allow_unsafe_democertificates }}"
+
+    http_port:      "{{ is_upgrade_run | ternary(existing_es_config['http.port'],      ports.http) }}"
+    transport_port: "{{ is_upgrade_run | ternary(existing_es_config['transport.port'], ports.transport) }}"
+
+# When 'opendistro_security.allow_unsafe_democertificates' is set to 'false' all demo certificate files must be removed,
+# otherwise elasticsearch service doesn't start.
+# For apply mode, demo certificate files are removed based only on their names. For upgrade mode,
+# public key fingerprints are checked to protect against unintentional deletion (what takes additional time).
+
+# Remove demo certificate files
+- include_tasks:
+    file: "{{ is_upgrade_run | ternary('remove-known-demo-certs.yml', 'remove-demo-certs.yml') }}"
+  when: not certificates.files.demo.opendistro_security.allow_unsafe_democertificates
 
 - name: Restart elasticsearch service
   systemd:
