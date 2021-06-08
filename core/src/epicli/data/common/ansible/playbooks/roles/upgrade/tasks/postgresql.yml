@@ -30,6 +30,7 @@
         success_msg: PostgreSQL cluster in version '{{ pg_old_version }}' found
         quiet: true
     
+    # TODO: temporarily commented
     #- name: PostgreSQL | Extensions | Repmgr | Include upgrade tasks
     #  include_tasks: postgresql/extensions/replication/extension.yml
     #  vars:
@@ -61,40 +62,39 @@
 
     # Step: Initialize the new PostgreSQL cluster (on Ubuntu done automatically)
 
+    # This value is default but set explicitly to avoid errors
+    - name: PostgreSQL | RedHat | Ensure that new data directory has correct permissions
+      file:
+        path: "{{ new_version.pg.data_dir[ansible_os_family] }}"
+        state: directory
+        owner: postgres
+        group: postgres
+        mode: u=rwx,g=,o= # Permissions should be u=rwx (0700) or u=rwx,g=rx (0750)
+
     - name: PostgreSQL | RedHat | Initialize database
       when: ansible_os_family == 'RedHat'
-      block:
-        - name: PostgreSQL | RedHat | Ensure that new data directory has correct permissions
-          file:
-            path: "{{ new_version.pg.data_dir[ansible_os_family] }}"
-            state: directory
-            owner: postgres
-            group: postgres
-            mode: u=rwx,g=,o= # Permissions should be u=rwx (0700) or u=rwx,g=rx (0750)
-
-        - name: PostgreSQL | RedHat | Initialize database
-          command: "{{ new_version.pg.bindir[ansible_os_family] }}/initdb"
-          become_user: postgres
-          environment:
-            PGDATA: "{{ new_version.pg.data_dir[ansible_os_family] }}"
+      command: "{{ new_version.pg.bindir[ansible_os_family] }}/initdb"
+      become_user: postgres
+      environment:
+        PGDATA: "{{ new_version.pg.data_dir[ansible_os_family] }}"
 
     # Step: Install custom shared object files
     - name: Gather facts on packages
       package_facts:
 
-    - name: PostgreSQL | Extensions | PgAudit | Install package
-      when: _packages.old[ansible_os_family] in ansible_facts.packages
+    - name: PostgreSQL | Extensions | PgAudit | Install new package
+      # when: "'pgaudit' not in ansible_facts.packages | join"
+      when: "ansible_facts.packages | join is match('_regex[ansible_os_family]')"
       package:
-        name: "{{ _packages.new[ansible_os_family] }}"
+        name: "{{ _packages[ansible_os_family] }}"
         state: present
       vars:
+        _regex:
+          Debian: "postgresql-{{ pg_old_version }}-pgaudit"
+          Redhat: "pgaudit*_{{ pg_old_version }}"
         _packages:
-          new:
-            Debian: postgresql-13-pgaudit
-            RedHat: pgaudit15_13
-          old:
-            Debian: postgresql-10-pgaudit
-            RedHat: pgaudit12_10
+          Debian: postgresql-13-pgaudit
+          RedHat: pgaudit15_13
       module_defaults:
         yum: { lock_timeout: "{{ yum_lock_timeout }}" }
 
@@ -124,7 +124,7 @@
           - pg_hba.conf
           - postgresql-epiphany.conf
           - postgresql.conf
-        pg: "{{ new_version.pg }}"
+        pg: "{{ new_version.pg }}" # used in postgresql.conf
       template:
         src: "roles/postgresql/templates/{{ file_name }}.j2"
         dest: "{{ new_version.pg.config_dir[ansible_os_family] }}/{{ file_name }}"
@@ -151,8 +151,7 @@
       args:
         chdir: /var/log/postgresql  # to have logs in this dir
       vars:
-        # TODO: ask @to-bar why it's done so
-        new_version_config_dir: "{{ new_version.pg.config_dir[ansible_os_family] }}"
+        new_version_config_dir: "{{ new_version.pg.config_dir[ansible_os_family] }}" # to make the line above shorter
 
     # Prevent old service from starting to avoid accidental starting by the parent service and standard port conflict
     - name: PostgreSQL | Mask old PostgreSQL service
