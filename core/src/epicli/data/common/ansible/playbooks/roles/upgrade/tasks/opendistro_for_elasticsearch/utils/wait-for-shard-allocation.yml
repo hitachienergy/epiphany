@@ -3,18 +3,20 @@
 # - es_api.url
 # - es_api.cert_path
 # - es_api.key_path
-# - expected_status (type: list, e.g. [ 'green', 'yellow' ])
 
-- name: ODFE | Wait for '{{ expected_status | join("' or '") }}' cluster health status
+- name: ODFE | Wait for the cluster to finish shard allocation
   uri:
     url: "{{ es_api.url }}/_cluster/health"
+    method: GET
     client_cert: "{{ es_api.cert_path }}"
     client_key:  "{{ es_api.key_path }}"
-    method: GET
     validate_certs: false
   register: cluster_health
   until:
     - cluster_health.json.status is defined
-    - cluster_health.json.status in expected_status
-  retries: 120
+    - cluster_health.json.status == 'green' or
+      (cluster_health.json.status == 'yellow' and
+       cluster_health.json.initializing_shards == 0 and
+       cluster_health.json.relocating_shards == 0)
+  retries: 180
   delay: 1

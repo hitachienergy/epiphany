@@ -5,8 +5,9 @@
 # A) Parallel part (all nodes at the same time) - THIS FILE
 #    1. Assert API access using demo cert (done in pre-migration part)
 #    2. Generate Epiphany certs           (done in pre-migration part)
-#    3. Create dual root CA file for the migration (demo + Epiphany root CAs concatenated), needed temporarily
-#    4. Patch the following properties in existing elasticsearch.yml:
+#    3. Save cluster status to file       (done in pre-migration part)
+#    4. Create dual root CA file for the migration (demo + Epiphany root CAs concatenated), needed temporarily
+#    5. Patch the following properties in existing elasticsearch.yml:
 #       a) opendistro_security.authcz.admin_dn - add Epiphany admin cert
 #       b) opendistro_security.nodes_dn        - by default not present, add all Epiphany node certs
 #       c) opendistro_security.ssl.http.pemtrustedcas_filepath      - replace demo root CA with the dual root CA file

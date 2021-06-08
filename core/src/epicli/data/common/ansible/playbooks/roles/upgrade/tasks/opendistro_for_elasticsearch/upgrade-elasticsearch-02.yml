@@ -73,17 +73,29 @@
   vars:
     daemon_reload: true # opendistro-performance-analyzer provides opendistro-performance-analyzer.service
     target_inventory_hostname: "{{ inventory_hostname }}"
-    expected_status: [ yellow, green ]  # 'green' may not be possible until shard allocation is re-enabled
 
 # Post-upgrade tasks
 
-- include_tasks: opendistro_for_elasticsearch/utils/enable-shard-allocation.yml
+- name: Re-enable shard allocation
   when: es_clustered
+  block:
+    - include_tasks: opendistro_for_elasticsearch/utils/enable-shard-allocation.yml
 
+    - include_tasks: opendistro_for_elasticsearch/utils/wait-for-shard-allocation.yml
+
+# Read cluster health status from before the upgrade
+- name: Load upgrade state file
+  slurp:
+    src: "{{ opendistro_for_elasticsearch.upgrade_state_file_path }}"
+  register: slurp_upgrade_state_file
+
+# Verify cluster status
 - include_tasks: opendistro_for_elasticsearch/utils/wait-for-cluster-status.yml
+  when: not es_clustered or
+        (es_clustered and inventory_hostname == ansible_play_hosts_all[-1])  # for 'green' status at least 2 nodes must be already upgraded
   vars:
-    # do not require 'green' status by purpose since we don't check initial status before starting the upgrade
-    expected_status: [ 'green', 'yellow' ]
+    initial_status: "{{ (slurp_upgrade_state_file.content | b64decode | from_json)['status'] }}"
+    expected_status: "{{ [ initial_status, 'green'] | unique }}"
 
 - name: ODFE | Remove dual root CA temporary file
   file:
