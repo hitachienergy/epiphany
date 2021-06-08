@@ -134,8 +134,16 @@
     # Was 0640
     mode: 0644
     src: server.properties.j2
+  register: create_server_properties
   notify:
     - restart kafka
+
+- name: Delete meta.properties
+  become: true
+  file:
+    path: "{{ specification.kafka_var.data_dir }}/meta.properties"
+    state: absent
+  when: create_server_properties.changed
 
 - name: Copy logrotate config
   template:
