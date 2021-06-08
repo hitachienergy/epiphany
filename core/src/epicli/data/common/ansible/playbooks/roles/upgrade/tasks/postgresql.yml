@@ -58,7 +58,7 @@
           RedHat:
             - postgresql13-server
       module_defaults:
-        yum: { lock_timeout: "{{ yum_lock_timeout }}" } # TODO: check if this works for 'package' module
+        yum: { lock_timeout: "{{ yum_lock_timeout }}" }
 
     # Step: Initialize the new PostgreSQL cluster (on Ubuntu done automatically)
 
