@@ -50,17 +50,17 @@ add_repo_from_script() {
 	local script_url="$1"
 
 	echol "Running: curl $script_url | bash"
-	curl $script_url | bash
+	curl "$script_url" | bash
 }
 
 # params: <backup_file_path> <path_1_to_backup1> ... [path_N_to_backup]
 backup_files() {
 	local backup_file_path="$1"
 	shift
-	local paths_to_backup="$@"
+	local paths_to_backup=("$@")
 
 	# --directory='/' is for tar --verify
-	tar --create --verbose --verify --directory="/" --file="$backup_file_path" $paths_to_backup
+	tar --create --verbose --verify --directory="/" --file="$backup_file_path" "$paths_to_backup"
 }
 
 # params: <dir_path>
@@ -79,30 +79,40 @@ create_directory() {
 disable_repo() {
 	local repo_id="$1"
 
-	if yum repolist enabled | grep --quiet "$repo_id"; then
+	if [[ $(yum repolist enabled | grep --quiet "$repo_id") ]]; then
 		echol "Disabling repository: $repo_id"
 		yum-config-manager --disable "$repo_id" ||
 			exit_with_error "Command failed: yum-config-manager --disable \"$repo_id\""
 	fi
 }
 
-# params: <file_url> <dest_dir>
+# params: <file_url> <dest_dir> <new_filename> # $3 not required
 download_file() {
 	local file_url="$1"
 	local dest_dir="$2"
 
-	local file_name=$(basename "$file_url")
-	local dest_path="$dest_dir/$file_name"
+	if [[ ${3-} ]]; then
+		local file_name=$3
+	else
+		local file_name=$(basename "$file_url")
+	fi
+
+	local dest_path="${dest_dir}/${file_name}"
 	local retries=3
 
-	# wget with --timestamping sometimes failes on AWS with ERROR 403: Forbidden
-	# so we remove existing file to overwrite it, to be optimized
-	[[ ! -f $dest_path ]] || remove_file "$dest_path"
-
-	echol "Downloading file: $file_url"
-
-	run_cmd_with_retries wget --no-verbose --directory-prefix="$dest_dir" "$file_url" $retries ||
-		exit_with_error "Command failed: wget --no-verbose --directory-prefix=\"$dest_dir\" \"$file_url\""
+	if [[ -f $dest_path ]]; then
+		echo "$file_name already exists. Skipping..."
+	else
+		if [[ ${3-} ]]; then
+			echol "Downloading file: $file_url as $file_name"
+			run_cmd_with_retries wget --quiet --directory-prefix="$dest_dir" "$file_url" -O "$dest_path" $retries || \
+			exit_with_error "Command failed: wget --no-verbose --directory-prefix=$dest_dir $file_url $retries"
+		else
+			echol "Downloading file: $file_url"
+			run_cmd_with_retries wget --quiet --directory-prefix="$dest_dir" "$file_url" $retries ||	\
+			exit_with_error "Command failed: wget --no-verbose --directory-prefix=$dest_dir $file_url $retries"
+		fi
+	fi
 }
 
 # params: <image_name> <dest_dir>
@@ -118,7 +128,7 @@ download_image() {
 	local retries=3
 
 	if [[ -f $dest_path ]]; then
-		echol "Image file: "$dest_path" already exists. Skipping..."
+		echol "Image file: $dest_path already exists. Skipping..."
 	else
 		# use temporary file for downloading to be safe from sudden interruptions (network, ctrl+c)
 		local tmp_file_path=$(mktemp)
@@ -133,12 +143,12 @@ download_image() {
 download_packages() {
 	local dest_dir="$1"
 	shift
-	local packages="$@"
+	local packages=("$@")
 	local retries=3
 
 	if [[ -n $packages ]]; then
 		# when using --archlist=x86_64 yumdownloader (yum-utils-1.1.31-52) also downloads i686 packages
-		run_cmd_with_retries yumdownloader --quiet --archlist="$ARCH" --exclude='*i686' --destdir="$dest_dir" $packages $retries
+		run_cmd_with_retries yumdownloader --quiet --archlist="$ARCH" --exclude='*i686' --destdir="$dest_dir" "$packages" $retries
 	fi
 }
 
@@ -154,10 +164,12 @@ echol() {
 enable_repo() {
 	local repo_id="$1"
 
-	if ! yum repolist enabled | grep --quiet "$repo_id"; then
+	if ! yum repolist enabled | grep "$repo_id"; then
 		echol "Enabling repository: $repo_id"
 		yum-config-manager --enable "$repo_id" ||
 			exit_with_error "Command failed: yum-config-manager --enable \"$repo_id\""
+	else
+		echol "Repository $repo_id already enabled"
 	fi
 }
 
@@ -176,7 +188,7 @@ get_package_dependencies_with_arch() {
 
 	if [[ -z $query_output ]]; then
 		echol "No dependencies found for package: $package"
-	elif grep --ignore-case --perl-regexp '\b(?<!-)error(?!-)\b' <<< "$query_output"; then
+	elif [[ $(grep --ignore-case --perl-regexp '\b(?<!-)error(?!-)\b' <<< "$query_output") ]]; then
 		exit_with_error "repoquery failed for dependencies of package: $package, output was: $query_output"
 	fi
 
@@ -189,12 +201,12 @@ get_package_with_version_arch() {
 	# $1 reserved for result
 	local package="$2"
 
-	local query_output=$(repoquery --queryformat '%{ui_nevra}' --archlist=$ARCH,noarch "$package") ||
+	local query_output=$(repoquery --queryformat '%{ui_nevra}' --archlist="$ARCH",noarch "$package") ||
 		exit_with_error "repoquery failed for package: $package with exit code: $?, output was: $query_output"
 
 	# yumdownloader doesn't set error code if repoquery returns empty output
 	[[ -n $query_output ]] || exit_with_error "repoquery failed: package $package not found"
-	if grep --ignore-case --perl-regexp '\b(?<!-)error(?!-)\b' <<< "$query_output"; then
+	if [[ $(grep --ignore-case --perl-regexp '\b(?<!-)error(?!-)\b' <<< "$query_output") ]]; then
 		exit_with_error "repoquery failed for package: $package, output was: $query_output"
 	else
 		echol "Found: $query_output"
@@ -215,7 +227,7 @@ get_packages_with_version_arch() {
 		packages_with_version_arch+=("$QUERY_OUTPUT")
 	done
 
-	eval $result_var_name='("${packages_with_version_arch[@]}")'
+	eval "$result_var_name"='("${packages_with_version_arch[@]}")'
 }
 
 # params: <result_var> <group_name> <requirements_file_path>
@@ -223,14 +235,20 @@ get_requirements_from_group() {
 	# $1 reserved for result
 	local group_name="$2"
 	local requirements_file_path="$3"
-
 	local all_requirements=$(grep --only-matching '^[^#]*' "$requirements_file_path" | sed -e 's/[[:space:]]*$//')
-	local requirements_from_group=$(awk "/^$/ {next}; /\[${group_name}\]/ {f=1; next}; /^\[/ {f=0}; f {print \$0}" <<< "$all_requirements") ||
-		exit_with_error "Function get_requirements_from_group failed for group: $group_name"
+	
+	if [[ $group_name == "files" ]]; then
+		local requirements_from_group=$(awk "/^$/ {next}; /\[${group_name}\]/ {f=1; f=2; next}; /^\[/ {f=0}; f {print \$0}" <<< "$all_requirements") ||
+			exit_with_error "Function get_requirements_from_group failed for group: $group_name"
+	else
+		local requirements_from_group=$(awk "/^$/ {next}; /\[${group_name}\]/ {f=1; next}; /^\[/ {f=0}; f {print \$0}" <<< "$all_requirements") ||
+			exit_with_error "Function get_requirements_from_group failed for group: $group_name"
+	fi
 
 	[[ -n $requirements_from_group ]] || echol "No requirements found for group: $group_name"
 
-	eval $1='$requirements_from_group'
+	eval "$1"='$requirements_from_group'
+	
 }
 
 # params: <result_var> <array>
@@ -242,7 +260,7 @@ get_unique_array() {
 	# filter out duplicates
 	array=($(echo "${array[@]}" | tr ' ' '\n' | sort -u | tr '\n' ' '))
 
-	eval $result_var_name='("${array[@]}")'
+	eval "$result_var_name"='("${array[@]}")'
 }
 
 # params: <url(s)> <retries>
@@ -260,10 +278,10 @@ install_package() {
 	local package_name_or_url="$1"
 	local package_name="$1"
 
-	[ $# -gt 1 ] && package_name="$2"
+	[[ $# -gt 1 ]] && package_name="$2"
 
 	echol "Installing package: $package_name"
-	if yum install -y "$package_name_or_url"; then
+	if [[ $(yum install -y "$package_name_or_url") ]]; then
 		echo "$package_name" >> "$INSTALLED_PACKAGES_FILE_PATH"
 	else
 		exit_with_error "Command failed: yum install -y \"$package_name_or_url\""
@@ -274,7 +292,7 @@ install_package() {
 is_package_installed() {
 	local package="$1"
 
-	if rpm --query --quiet "$package"; then
+	if rpm --query "$package"; then
 		echol "Package $package already installed"
 		return 0
 	else
@@ -294,7 +312,7 @@ is_repo_available() {
 is_repo_enabled() {
 	local repo_id="$1"
 
-	if yum repolist | grep --quiet "$repo_id"; then
+	if [[ $(yum repolist | grep --quiet "$repo_id") ]]; then
 		echol "Repository $repo_id already enabled"
 		return 0
 	else
@@ -306,7 +324,7 @@ is_repo_enabled() {
 remove_package() {
 	local package="$1"
 
-	if rpm --query --quiet "$package"; then
+	if [[ $(rpm --query --quiet "$package") ]]; then
 		echol "Removing package: $package"
 		yum remove -y "$package" || exit_with_error "Command failed: yum remove -y \"$package\""
 	fi
@@ -343,7 +361,7 @@ remove_file() {
 remove_installed_packages() {
 	local installed_packages_list_file="$1"
 
-	if [ -f "$installed_packages_list_file" ]; then
+	if [[ -f "$installed_packages_list_file" ]]; then
 		for package in $(cat $installed_packages_list_file | sort --unique); do
 			remove_package "$package"
 		done
@@ -361,7 +379,7 @@ remove_yum_cache_for_untracked_repos() {
 	cachedir="${cachedir/\$releasever/$releasever}"
 	find_output=$(find "$cachedir" -mindepth 1 -maxdepth 1 -type d -exec basename '{}' ';')
 	local -a repos_with_cache=()
-	if [ -n "$find_output" ]; then
+	if [[ -n "$find_output" ]]; then
 		readarray -t repos_with_cache <<< "$find_output"
 	fi
 	local all_repos_output
@@ -430,16 +448,17 @@ run_cmd_with_retries() {
 }
 
 usage() {
+	echo -e "Please provide exact one argument \n"
 	echo "usage: ./$(basename $0) <downloads_dir>"
 	echo "       ./$(basename $0) /tmp/downloads"
-	[ -z "$1" ] || exit "$1"
+	exit 1
 }
 
 validate_bash_version() {
 	local major_version=${BASH_VERSINFO[0]}
 	local minor_version=${BASH_VERSINFO[1]}
 	local required_version=(4 2)  # (minor major)
-	if (( major_version < ${required_version[0]} )) || (( minor_version < ${required_version[1]} )); then
+	if (( major_version < required_version[0] )) || (( minor_version < required_version[1] )); then
 		exit_with_error "This script requires Bash version ${required_version[0]}.${required_version[1]} or higher."
 	fi
 }
@@ -466,7 +485,7 @@ _print_array_as_shell_escaped_string() {
 	local output
 	output=$(_get_shell_escaped_array "$@")
 	local escaped=()
-	if [ -n "$output" ]; then
+	if [[ -n "$output" ]]; then
 		readarray -t escaped <<< "$output"
 	fi
 	if (( ${#escaped[@]} > 0 )); then
@@ -478,7 +497,10 @@ _print_array_as_shell_escaped_string() {
 
 validate_bash_version
 
-[ $# -gt 0 ] || usage 1 >&2
+if [[ $# -ne 1 ]]; then
+	usage
+fi
+
 readonly START_TIME=$(date +%s)
 
 # --- Parse arguments ---
@@ -510,7 +532,7 @@ readonly REPO_PREREQ_PACKAGES_DIR="$PACKAGES_DIR/repo-prereqs"
 readonly SCRIPT_DIR="$(dirname $(readlink -f $0))" # want absolute path
 
 # files
-readonly SCRIPT_FILE_NAME=$(basename $0)
+readonly SCRIPT_FILE_NAME=$(basename "$0")
 readonly LOG_FILE_NAME=${SCRIPT_FILE_NAME/sh/log}
 readonly LOG_FILE_PATH="$SCRIPT_DIR/$LOG_FILE_NAME"
 readonly YUM_CONFIG_BACKUP_FILE_PATH="$SCRIPT_DIR/${SCRIPT_FILE_NAME}-yum-repos-backup-tmp-do-not-remove.tar"
@@ -547,29 +569,29 @@ echol "Docker platform: ${DOCKER_PLATFORM}"
 
 # --- Want to have only one instance for Ansible ---
 
-if [ -f $PID_FILE_PATH ]; then
-	readonly PID_FROM_FILE=$(cat $PID_FILE_PATH 2> /dev/null)
-	if [[ -n $PID_FROM_FILE ]] && kill -0 $PID_FROM_FILE > /dev/null 2>&1; then
-		echol "Found running process with pid: $PID_FROM_FILE, cmd: $(ps -p $PID_FROM_FILE -o cmd=)"
-		if ps -p $PID_FROM_FILE -o cmd= | grep --quiet $SCRIPT_FILE_NAME; then
+if [[ -f "$PID_FILE_PATH" ]]; then
+	readonly PID_FROM_FILE=$(cat "$PID_FILE_PATH" 2> /dev/null)
+	if [[ -n $PID_FROM_FILE ]] && kill -0 "$PID_FROM_FILE" > /dev/null 2>&1; then
+		echol "Found running process with pid: $PID_FROM_FILE, cmd: $(ps -p "$PID_FROM_FILE" -o cmd=)"
+		if [[ $(ps -p "$PID_FROM_FILE" -o cmd= | grep --quiet "$SCRIPT_FILE_NAME") ]]; then
 			echol "Killing old instance using SIGTERM"
-			kill -s SIGTERM $PID_FROM_FILE # try gracefully
-			if sleep 3 && kill -0 $PID_FROM_FILE > /dev/null 2>&1; then
+			kill -s SIGTERM "$PID_FROM_FILE" # try gracefully
+			if [[ $(sleep 3 && kill -0 "$PID_FROM_FILE" > /dev/null 2>&1) ]]; then
 				echol "Still running, killing old instance using SIGKILL"
-				kill -s SIGKILL $PID_FROM_FILE # forcefully
+				kill -s SIGKILL "$PID_FROM_FILE" # forcefully
 			fi
 		else
-			remove_file $PID_FILE_PATH
+			remove_file "$PID_FILE_PATH"
 			exit_with_error "Process with pid: $PID_FILE_PATH seems to be not an instance of this script"
 		fi
 	else
 		echol "Process with pid: $PID_FROM_FILE not found"
 	fi
-	remove_file $PID_FILE_PATH
+	remove_file "$PID_FILE_PATH"
 fi
 
 echol "PID is: $$, creating file: $PID_FILE_PATH"
-echo $$ > $PID_FILE_PATH || exit_with_error "Command failed: echo $$ > $PID_FILE_PATH"
+echo $$ > "$PID_FILE_PATH" || exit_with_error "Command failed: echo $$ > $PID_FILE_PATH"
 
 # --- Parse requirements file ---
 
@@ -584,14 +606,14 @@ get_requirements_from_group 'IMAGES'               'images'                "$REQ
 
 # --- Backup yum repositories ---
 
-if [ -f "$YUM_CONFIG_BACKUP_FILE_PATH" ]; then
+if [[ -f "$YUM_CONFIG_BACKUP_FILE_PATH" ]]; then
 	echol "Backup aleady exists: $YUM_CONFIG_BACKUP_FILE_PATH"
 else
 	echol "Backuping /etc/yum.repos.d/ to $YUM_CONFIG_BACKUP_FILE_PATH"
-	if backup_files "$YUM_CONFIG_BACKUP_FILE_PATH" '/etc/yum.repos.d/'; then
+	if [[ $(backup_files "$YUM_CONFIG_BACKUP_FILE_PATH" '/etc/yum.repos.d/') ]]; then
 		echol "Backup done"
 	else
-		if [ -f "$YUM_CONFIG_BACKUP_FILE_PATH" ]; then
+		if [[ -f "$YUM_CONFIG_BACKUP_FILE_PATH" ]]; then
 			remove_file "$YUM_CONFIG_BACKUP_FILE_PATH"
 		fi
 		exit_with_error "Backup of yum repositories failed"
@@ -601,7 +623,8 @@ fi
 # --- Install required packages unless present ---
 
 # repos can be enabled or disabled using the yum-config-manager command, which is provided by yum-utils package
-for package in 'yum-utils' 'wget' 'curl' 'tar'; do
+prerequisites=(wget yum-utils curl tar)
+for package in ${prerequisites[@]}; do
 	if ! is_package_installed "$package"; then
 		install_package "$package"
 	fi
@@ -612,17 +635,21 @@ done
 if [[ -z "${CRANE}" ]] || [ $(wc -l <<< "${CRANE}") -ne 1 ] ; then
     exit_with_error "Crane binary download path undefined or more than one download path defined"
 else
-    file_url=$(head -n 1 <<< "${CRANE}")
-    echol "Downloading crane from: ${file_url}"
-    download_file "${file_url}" "${SCRIPT_DIR}"
-    tar_path="${SCRIPT_DIR}/${file_url##*/}"
-    echol "Unpacking crane from ${tar_path} to ${CRANE_BIN}"
-    run_cmd tar -xzf "${tar_path}" --directory "${SCRIPT_DIR}" "crane" --overwrite
-    [[ -x "${CRANE_BIN}" ]] || run_cmd chmod +x "${CRANE_BIN}"
-    remove_file "${tar_path}"
+	if [[ -e $CRANE_BIN ]]; then
+        echol "Crane binary already exists"
+	else
+		file_url=$(head -n 1 <<< "${CRANE}")
+		echol "Downloading crane from: ${file_url}"
+		download_file "${file_url}" "${SCRIPT_DIR}"
+		tar_path="${SCRIPT_DIR}/${file_url##*/}"
+		echol "Unpacking crane from ${tar_path} to ${CRANE_BIN}"
+		run_cmd tar -xzf "${tar_path}" --directory "${SCRIPT_DIR}" "crane" --overwrite
+		[[ -x "${CRANE_BIN}" ]] || run_cmd chmod +x "${CRANE_BIN}"
+		remove_file "${tar_path}"
+	fi
 fi
 
-# --- Enable OS repos ---
+# --- Enable CentOS repos ---
 
 # -> CentOS-7 - Extras # for container-selinux and centos-release-scl packages
 enable_repo 'extras'
@@ -631,11 +658,11 @@ enable_repo 'base'
 
 # --- Add repos ---
 
-# noarch repositories
-. ${ADD_MULTIARCH_REPOSITORIES_SCRIPT}
+# # noarch repositories
+# . "${ADD_MULTIARCH_REPOSITORIES_SCRIPT}"
 
-# arch specific repositories
-. ${ADD_ARCH_REPOSITORIES_SCRIPT}
+# # arch specific repositories
+# . "${ADD_ARCH_REPOSITORIES_SCRIPT}"
 
 # -> Software Collections (SCL) https://wiki.centos.org/AdditionalResources/Repositories/SCL
 if ! is_package_installed 'centos-release-scl'; then
@@ -712,8 +739,8 @@ remove_added_repos "$YUM_CONFIG_BACKUP_FILE_PATH"
 
 echol "Restoring /etc/yum.repos.d/*.repo from: $YUM_CONFIG_BACKUP_FILE_PATH"
 echol "Executing: tar --extract --verbose --file $YUM_CONFIG_BACKUP_FILE_PATH"
-if tar --extract --verbose --file "$YUM_CONFIG_BACKUP_FILE_PATH" --directory /etc/yum.repos.d \
-		--strip-components=2 'etc/yum.repos.d/*.repo'; then
+if [[ $(tar --extract --verbose --file "$YUM_CONFIG_BACKUP_FILE_PATH" --directory /etc/yum.repos.d \
+		--strip-components=2 'etc/yum.repos.d/*.repo') ]]; then
 	echol "Restored: yum repositories"
 else
 	exit_with_error "Extracting tar failed: $YUM_CONFIG_BACKUP_FILE_PATH"
@@ -723,9 +750,27 @@ fi
 
 create_directory "$FILES_DIR"
 
-for file in $FILES; do
-	download_file "$file" "$FILES_DIR"
-done
+if [[ -z "$FILES" ]]; then
+    echol "No files to download"
+else
+    # list of all files that will be downloaded
+    echol "Files to be downloaded:"
+    cat -n <<< "${FILES}"
+
+    printf "\n"
+    
+    while IFS=' ' read -r url new_filename; do
+        # download files,  skip if exists, check if new filename is provided
+        if [[ -z $new_filename ]]; then
+            download_file "$url" "$FILES_DIR"
+        elif [[ $new_filename = *" "* ]]; then
+            echol "ERROR: wrong new filename for file: "
+            echol "$url"
+        else
+            download_file "$url" "$FILES_DIR" "$new_filename"
+        fi
+    done <<< "$FILES"
+fi
 
 # === Images ===
 
@@ -745,4 +790,4 @@ remove_file "$PID_FILE_PATH"
 
 readonly END_TIME=$(date +%s)
 
-echol "$(basename $0) finished, execution time: $(date -u -d @$((END_TIME-START_TIME)) +'%Hh:%Mm:%Ss')"
+echol "$SCRIPT_FILE_NAME finished, execution time: $(date -u -d @$((END_TIME-START_TIME)) +'%Hh:%Mm:%Ss')"

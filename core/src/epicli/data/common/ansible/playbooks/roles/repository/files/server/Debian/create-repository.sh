@@ -54,8 +54,4 @@ else
   cd "${epi_repo_server_path}/packages" && /tmp/epi-repository-setup-scripts/dpkg-scanpackages -m . | gzip -9c > Packages.gz && cd "${script_path}"
 fi
 
-if [[ -z $(which systemctl) ]]; then
-  service apache2 start
-else
-  systemctl start apache2
-fi
+systemctl start apache2

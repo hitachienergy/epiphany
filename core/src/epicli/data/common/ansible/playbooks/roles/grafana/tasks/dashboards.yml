@@ -93,7 +93,7 @@
 
 - name: Register previously copied dashboards
   find:
-    paths: 
+    paths:
       - "{{ grafana_data_dir }}/dashboards"
     hidden: true
     patterns:
@@ -103,7 +103,7 @@
 
 - name: Register provided dashboards
   find:
-    paths: 
+    paths:
       - "{{ tmp_dashboards.path }}/"
     hidden: true
     patterns:
@@ -128,7 +128,7 @@
     dashboards_copied_list: "{{ dashboards_copied.results | map(attribute='dest') | list }}"
   when: grafana_provisioning_synced
 
-- name: Remove old dashboards not mentioned in configuration manifest 
+- name: Remove old dashboards not mentioned in configuration manifest
   file:
     path: "{{ item }}"
     state: absent

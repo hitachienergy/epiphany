@@ -8,9 +8,8 @@ script_path="$( cd "$(dirname "$0")" ; pwd -P )"
 # source common functions
 . "${script_path}/common.sh"
 
-if [[ $# -lt 1 ]]; then
-  usage
-  exit
+if [[ $# -ne 1 ]]; then
+	usage
 fi
 
 dst_dir=$(readlink -m $1) # beautify input path - remove double slashes if occurs

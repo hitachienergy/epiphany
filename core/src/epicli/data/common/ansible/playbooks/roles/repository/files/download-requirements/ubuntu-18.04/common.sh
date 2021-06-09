@@ -2,8 +2,10 @@
 
 
 usage() {
-	echo "usage: ./$(basename $0) <download_dir>"
+	echo -e "Please provide exact one argument \n"
+	echo "usage: ./$(basename $0) <downloads_dir>"
 	echo "       ./$(basename $0) /tmp/downloads"
+	exit 1
 }
 
 echol() {
@@ -55,7 +57,7 @@ download_image() {
 	fi
 }
 
-# params: <file_url> <dest_dir>
+# params: <file_url> <dest_dir> <new_filename>
 download_file() {
 	local file_url="$1"
 	local dest_dir="$2"
