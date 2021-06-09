@@ -12,6 +12,9 @@ if [[ $# -ne 1 ]]; then
 	usage
 fi
 
+readonly START_TIME=$(date +%s)
+
+script_file_name=$(basename "$0")
 dst_dir=$(readlink -m $1) # beautify input path - remove double slashes if occurs
 dst_dir_packages="${dst_dir}/packages"
 dst_dir_files="${dst_dir}/files"
@@ -22,8 +25,6 @@ retries="3"
 download_cmd="run_cmd_with_retries $retries apt-get download"
 add_repos="${script_path}/add-repositories.sh"
 crane_bin="${script_path}/crane"
-
-echol "\nScript started date: $(date +%F\ %H:%M:%S)\n"
 
 # arch
 arch=$(uname -m)
@@ -221,4 +222,4 @@ for i in /etc/apt/sources.list.d/*.list.bak; do
 done
 shopt -u nullglob
 
-echol "\nScript ended date: $(date +%F\ %H:%M:%S)"
+echol "$script_file_name finished, execution time: $(date -u -d @$((END_TIME-START_TIME)) +'%Hh:%Mm:%Ss')"

@@ -164,7 +164,7 @@ echol() {
 enable_repo() {
 	local repo_id="$1"
 
-	if ! yum repolist enabled | grep "$repo_id"; then
+	if ! yum repolist enabled | grep --quiet "$repo_id"; then
 		echol "Enabling repository: $repo_id"
 		yum-config-manager --enable "$repo_id" ||
 			exit_with_error "Command failed: yum-config-manager --enable \"$repo_id\""
@@ -192,7 +192,7 @@ get_package_dependencies_with_arch() {
 		exit_with_error "repoquery failed for dependencies of package: $package, output was: $query_output"
 	fi
 
-	eval $1='($query_output)'
+	eval "$1"='($query_output)'
 }
 
 # desc: get full package name with version and architecture
@@ -236,7 +236,7 @@ get_requirements_from_group() {
 	local group_name="$2"
 	local requirements_file_path="$3"
 	local all_requirements=$(grep --only-matching '^[^#]*' "$requirements_file_path" | sed -e 's/[[:space:]]*$//')
-	
+
 	if [[ $group_name == "files" ]]; then
 		local requirements_from_group=$(awk "/^$/ {next}; /\[${group_name}\]/ {f=1; f=2; next}; /^\[/ {f=0}; f {print \$0}" <<< "$all_requirements") ||
 			exit_with_error "Function get_requirements_from_group failed for group: $group_name"
@@ -248,7 +248,6 @@ get_requirements_from_group() {
 	[[ -n $requirements_from_group ]] || echol "No requirements found for group: $group_name"
 
 	eval "$1"='$requirements_from_group'
-	
 }
 
 # params: <result_var> <array>
@@ -292,7 +291,7 @@ install_package() {
 is_package_installed() {
 	local package="$1"
 
-	if rpm --query "$package"; then
+	if rpm --query --quiet "$package"; then
 		echol "Package $package already installed"
 		return 0
 	else
@@ -569,7 +568,7 @@ echol "Docker platform: ${DOCKER_PLATFORM}"
 
 # --- Want to have only one instance for Ansible ---
 
-if [[ -f "$PID_FILE_PATH" ]]; then
+if [[ -f $PID_FILE_PATH ]]; then
 	readonly PID_FROM_FILE=$(cat "$PID_FILE_PATH" 2> /dev/null)
 	if [[ -n $PID_FROM_FILE ]] && kill -0 "$PID_FROM_FILE" > /dev/null 2>&1; then
 		echol "Found running process with pid: $PID_FROM_FILE, cmd: $(ps -p "$PID_FROM_FILE" -o cmd=)"
@@ -658,11 +657,11 @@ enable_repo 'base'
 
 # --- Add repos ---
 
-# # noarch repositories
-# . "${ADD_MULTIARCH_REPOSITORIES_SCRIPT}"
+# noarch repositories
+. "${ADD_MULTIARCH_REPOSITORIES_SCRIPT}"
 
-# # arch specific repositories
-# . "${ADD_ARCH_REPOSITORIES_SCRIPT}"
+# arch specific repositories
+. "${ADD_ARCH_REPOSITORIES_SCRIPT}"
 
 # -> Software Collections (SCL) https://wiki.centos.org/AdditionalResources/Repositories/SCL
 if ! is_package_installed 'centos-release-scl'; then
@@ -758,7 +757,7 @@ else
     cat -n <<< "${FILES}"
 
     printf "\n"
-    
+
     while IFS=' ' read -r url new_filename; do
         # download files,  skip if exists, check if new filename is provided
         if [[ -z $new_filename ]]; then
