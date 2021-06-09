@@ -14,7 +14,7 @@
 
     - name: PostgreSQL | Include old version default variables
       include_vars:
-        file: postgresql/vars.yml
+        file: vars/postgresql.yml
         name: old_version
 
     - name: PostgreSQL | Get PostgreSQL version from data directory
@@ -26,10 +26,10 @@
       assert:
         that:
           - slurp_pg_version['content'] | b64decode | trim is version(pg_old_version, '==')
-        fail_msg:    PostgreSQL cluster in version '{{ pg_old_version }}' not found
+        fail_msg: PostgreSQL cluster in version '{{ pg_old_version }}' not found
         success_msg: PostgreSQL cluster in version '{{ pg_old_version }}' found
         quiet: true
-    
+
     # TODO: temporarily commented
     #- name: PostgreSQL | Extensions | Repmgr | Include upgrade tasks
     #  include_tasks: postgresql/extensions/replication/extension.yml
@@ -43,7 +43,8 @@
 
     # Step: Install the new PostgreSQL binaries
 
-    # Automatically creates 'main' cluster and starts postgresql services
+    # Ubuntu: automatically creates 'main' cluster and starts postgresql services
+    # RHEL/CentOS: cluster name is empty, service is not started
     - name: PostgreSQL | Install PostgreSQL packages
       package:
         name: "{{ _packages[ansible_os_family] }}"
@@ -82,8 +83,8 @@
     - name: Gather facts on packages
       package_facts:
 
-    - name: PostgreSQL | Extensions | PgAudit | Install new package
-      # when: "'pgaudit' not in ansible_facts.packages | join"
+    - name: PostgreSQL | Extensions | PgAudit | Install new package for PostgreSQL {{ pg_new_version }}
+      # when: "'pgaudit' in ansible_facts.packages | join"
       when: "ansible_facts.packages | join is match('_regex[ansible_os_family]')"
       package:
         name: "{{ _packages[ansible_os_family] }}"
@@ -101,19 +102,87 @@
     # Step: Adjust authentication
     # TODO: check if needed
 
-    # Step: Stop both servers
-    - name: PostgreSQL | Stop PostgreSQL services
-      systemd:
-        name: "{{ service_name }}"
-        state: stopped
-      loop_control:
-        loop_var: service_name
-      loop:
-        - "{{ old_version.pg.service_name[ansible_os_family] }}"  # the same name for both versions
-        - "{{ old_version.pg.instantiated_service_name[ansible_os_family] }}"
-        - "{{ new_version.pg.instantiated_service_name[ansible_os_family] }}"
+    # Step: Stop all servers
+    # Standby nodes have to be stopped first. Check p.8 from https://www.postgresql.org/docs/13/pgupgrade.html
+
+    - name: Set 'pg_is_repmgr_used' fact
+      vars:
+        _regex:
+          Debian: "postgresql-{{ pg_old_version }}-repmgr"
+          Redhat: "repmgr{{ pg_old_version }}-*"
+      set_fact:
+        pg_is_repmgr_used: "{{ ansible_facts.packages | join is match(_regex[ansible_os_family]) }}"
+
+    - name: PostgreSQL | Get primary node
+      when: pg_is_repmgr_used
+      shell: |-
+        set -o pipefail && \
+          {{ old_version.repmgr.bindir[ansible_os_family] }}/repmgr cluster show \
+          | awk 'BEGIN{FS="|"} {gsub(/ /,""); if ($3 == "primary") print $2}'
+      changed_when: false
+      register: pg_primary_found
+      failed_when: pg_node_primary_found.rc != 0 or pg_node_primary_found.stdout == ""
+      delegate_to: "{{ groups.postgresql[0] }}"
+      run_once: true
+
+    - name: PostgreSQL | Set 'pg_primary_node' fact
+      set_fact:
+        pg_primary_node: "{{ pg_primary_found.stdout | default (groups.postgresql[0]) }}"
+
+    - name: PostgreSQL | Stop PostgreSQL services on standby nodes
+      when: inventory_hostname != pg_primary_node
+      <<: &stop_pg_services
+        systemd:
+          name: "{{ service_name }}"
+          state: stopped
+        loop_control:
+          loop_var: service_name
+        loop:
+          - "{{ old_version.pg.service_name[ansible_os_family] }}"  # the same name for both versions
+          - "{{ old_version.pg.instantiated_service_name[ansible_os_family] }}"
+          - "{{ new_version.pg.instantiated_service_name[ansible_os_family] }}"
+
+    - name: PostgreSQL | Stop PostgreSQL services on primary node
+      when: inventory_hostname == pg_primary_node
+      <<: *stop_pg_services
 
     # Step: Prepare for standby server upgrades (TODO: check p.8 from https://www.postgresql.org/docs/13/pgupgrade.html)
+
+    - name: PostgreSQL | Extensions | Repmgr | Prepare for standby server upgrades
+      # when: "'repmgr' in ansible_facts.packages | join"
+      when: pg_is_repmgr_used
+      block:
+        - name: PostgreSQL | Extensions | Repmgr | Get latest checkpoint location
+          shell: |-
+            set -o pipefail && \
+              | {{ old_version.pg.bindir }}/pg_controldata -D {{ old_version.pg.data_dir }}
+              | awk 'BEGIN{FS=":"} {gsub(/ /,""); if (tolower($1) == "latestcheckpointlocation") print $2}'
+          changed_when: false
+          register: pg_checkpoint
+
+        - name: PostgreSQL | Extensions | Repmgr | Assert that latest checkpoint location values match for all hosts
+          assert:
+            that: hostvars[pg_host]['pg_checkpoint'].stdout == pg_checkpoint.stdout
+            fail_msg: "Latest checkpoint location mismatch on hosts {{ inventory_hostname }} and {{ pg_host }}"
+            quiet: true
+          loop_control:
+            loop_var: pg_host
+          loop: "{{ groups.postgresql }}"
+          run_once: true
+
+        - name: PostgreSQL | Extensions | Repmgr | Install new package for PostgreSQL {{ pg_new_version }}
+          package:
+            name: "{{ _packages[ansible_os_family] }}"
+            state: present
+          vars:
+            _packages:
+              # TODO: we control extension version for RHEL/CentOS but not for Ubuntu
+              # Should be the same for all OS distributions? (the same for PgAudit)
+              # If the latest version is installed, pg_new_version can be used here not to change it each version upgrade
+              Debian: postgresql-13-repmgr
+              RedHat: repmgr13-5.2.1
+          module_defaults:
+            yum: { lock_timeout: "{{ yum_lock_timeout }}" }
 
     # Step: Run pg_upgrade
 
@@ -137,7 +206,8 @@
       loop: "{{ _files }}"
 
     # TODO check the doc about performance notes - https://www.postgresql.org/docs/13/pgupgrade.html
-    - name: PostgreSQL | Run pg_upgrade
+    - name: PostgreSQL | Run pg_upgrade for primary node
+      when: inventory_hostname == pg_primary_node
       become_user: postgres
       command: >-
         {{ new_version.pg.bindir[ansible_os_family] }}/pg_upgrade
@@ -153,6 +223,13 @@
       vars:
         new_version_config_dir: "{{ new_version.pg.config_dir[ansible_os_family] }}" # to make the line above shorter
 
+    # Step: Upgrade standby servers
+    - name: PostgreSQL | Upgrade standby servers
+      when: inventory_hostname == pg_primary_node
+      # TODO
+
+    # TODO: check post-upgrade processing
+
     # Prevent old service from starting to avoid accidental starting by the parent service and standard port conflict
     - name: PostgreSQL | Mask old PostgreSQL service
       systemd:
@@ -164,6 +241,7 @@
         name: "{{ new_version.pg.service_name[ansible_os_family] }}"
         state: started
         enabled: true
+
 
   # TODO: check the doc about following steps - https://www.postgresql.org/docs/13/pgupgrade.html
   rescue:
@@ -195,16 +273,12 @@
         state: started
         enabled: true
         masked: false
-      vars:
-        _services:
-          Debian:
-            - "{{ old_version.pg.service_name['Debian'] }}"
-            - "{{ old_version.pg.instantiated_service_name['Debian'] }}"
-          RedHat:
-            - "{{ old_version.pg.service_name['RedHat'] }}"
       loop_control:
         loop_var: service_name
-      loop: "{{ _services[ansible_os_family] }}"
+      loop:
+        - "{{ old_version.pg.service_name[ansible_os_family] }}"  # the same name for both versions
+        - "{{ old_version.pg.instantiated_service_name[ansible_os_family] }}"
+        - "{{ new_version.pg.instantiated_service_name[ansible_os_family] }}"
 
     - name: PostgreSQL | Fail upgrade with a note
       debug:
