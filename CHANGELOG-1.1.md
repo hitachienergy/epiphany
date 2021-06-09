@@ -24,6 +24,7 @@
 - [#2232](https://github.com/epiphany-platform/epiphany/issues/2232) - Documentation added for spike about leader election for pods
 - [#2129](https://github.com/epiphany-platform/epiphany/issues/2129) - [Upgrade] Add migration from ODFE demo certificates to generated ones
 - [#2288](https://github.com/epiphany-platform/epiphany/issues/2288) - Allow to preserve OS images when run 'epicli apply' for existing cluster
+- [#127](https://github.com/epiphany-platform/epiphany/issues/127)   - Add predefined Grafana dashboards for both offline/online mode
 
 ### Fixed
 
