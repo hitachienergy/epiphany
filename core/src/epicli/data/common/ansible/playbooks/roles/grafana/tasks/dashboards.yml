@@ -30,6 +30,7 @@
       vars:
         file_name: "grafana_dashboard_{{ item.dashboard_id }}.json"
         download_directory: "{{ tmp_dashboards.path }}/{{ item.dashboard_id }}.json"
+        force: true # to keep indepotency (avoid HTTP Error 304: Not Modified)
       loop: "{{ grafana_dashboards }}"
       when: grafana_dashboards != []
 
@@ -72,55 +73,64 @@
       changed_when: false
       loop: "{{ get_grafana_dashboards | union(grafana_dashboards) | unique | list }}"
 
-    - name: Create/Update dashboards file (provisioning)
-      copy:
-        dest: /etc/grafana/provisioning/dashboards/ansible.yml
-        content: |
-          apiVersion: 1
-          providers:
-           - name: 'default'
-             orgId: 1
-             folder: ''
-             type: file
-             options:
-               path: "{{ grafana_data_dir }}/dashboards"
-        backup: false
-        owner: root
-        group: grafana
-        mode: u=rw,g=r,o=
-      notify: restart grafana
+- name: Create/Update dashboards file (provisioning)
+  copy:
+    dest: /etc/grafana/provisioning/dashboards/ansible.yml
+    content: |
+      apiVersion: 1
+      providers:
+        - name: 'default'
+          orgId: 1
+          folder: ''
+          type: file
+          options:
+            path: "{{ grafana_data_dir }}/dashboards"
+    backup: false
+    owner: root
+    group: grafana
+    mode: u=rw,g=r,o=
+  notify: restart grafana
 
-    - name: Register previously copied dashboards
-      find:
-        paths: "{{ grafana_data_dir }}/dashboards"
-        hidden: true
-        patterns:
-          - "*.json"
-      register: dashboards_present
-      when: grafana_provisioning_synced
+- name: Register previously copied dashboards
+  find:
+    paths: 
+      - "{{ grafana_data_dir }}/dashboards"
+    hidden: true
+    patterns:
+      - "*.json"
+  register: dashboards_present
+  when: grafana_provisioning_synced
 
-    - name: Import Grafana dashboards
-      copy:
-        src: "{{ item }}"
-        dest: "{{ grafana_data_dir }}/dashboards/{{ item | basename }}"
-        mode: ug=rw,o=
-        owner: grafana
-        group: grafana
-      with_fileglob:
-        - "{{ tmp_dashboards.path }}/*.json"
-        - "{{ grafana_dashboards_dir }}/*.json"
-      register: dashboards_copied
-      notify: provisioned dashboards changed
+- name: Register provided dashboards
+  find:
+    paths: 
+      - "{{ tmp_dashboards.path }}/"
+    hidden: true
+    patterns:
+      - "*.json"
+  register: dashboards_provided
 
-    - name: Get Grafana dashboard lists
-      set_fact:
-        dashboards_present_list: "{{ dashboards_present.files | map(attribute='path') | list }}"
-        dashboards_copied_list: "{{ dashboards_copied.results | map(attribute='dest') | list }}"
-      when: grafana_provisioning_synced
+- name: Copy Grafana dashboards to target directory
+  copy:
+    remote_src: true
+    src: "{{ item }}"
+    dest: "{{ grafana_data_dir }}/dashboards/{{ item | basename }}"
+    mode: ug=rw,o=
+    owner: root
+    group: grafana
+  loop: "{{ dashboards_provided.files | map(attribute='path') | list }}"
+  register: dashboards_copied
+  notify: provisioned dashboards changed
 
-    - name: Remove Grafana dashboards not present on deployer machine (synchronize)
-      file:
-        path: "{{ item }}"
-        state: absent
-      loop: "{{ dashboards_present_list | difference(dashboards_copied_list) }}"
-      when: grafana_provisioning_synced
+- name: Get Grafana dashboard lists
+  set_fact:
+    dashboards_present_list: "{{ dashboards_present.files | map(attribute='path') | list }}"
+    dashboards_copied_list: "{{ dashboards_copied.results | map(attribute='dest') | list }}"
+  when: grafana_provisioning_synced
+
+- name: Remove old dashboards not mentioned in configuration manifest 
+  file:
+    path: "{{ item }}"
+    state: absent
+  loop: "{{ dashboards_present_list | difference(dashboards_copied_list) }}"
+  when: grafana_provisioning_synced

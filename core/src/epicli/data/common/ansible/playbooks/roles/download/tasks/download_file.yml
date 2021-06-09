@@ -4,6 +4,7 @@
     url: "{{ url | default(repository_url + '/files/' + file_name) }}"   
     dest: "{{ download_directory }}"
     validate_certs: "{{ validate_certs }}"
+    force: "{{ force | default(false) }}"
   register: get_url_result
   until: "'OK' in get_url_result.msg or 'file already exists' in get_url_result.msg"
   retries: "{{ retries | default(3) }}"
