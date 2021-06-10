@@ -8,14 +8,14 @@ script_path="$( cd "$(dirname "$0")" ; pwd -P )"
 # source common functions
 . "${script_path}/common.sh"
 
-if [[ $# -ne 1 ]]; then
+if [[ $# -lt 1 ]]; then
 	usage
 fi
 
 readonly START_TIME=$(date +%s)
 
 script_file_name=$(basename "$0")
-dst_dir=$(readlink -m $1) # beautify input path - remove double slashes if occurs
+dst_dir=$(readlink -m "$1") # beautify input path - remove double slashes if occurs
 dst_dir_packages="${dst_dir}/packages"
 dst_dir_files="${dst_dir}/files"
 dst_dir_images="${dst_dir}/images"
@@ -221,5 +221,7 @@ for i in /etc/apt/sources.list.d/*.list.bak; do
 		mv "$i" "${i::-4}"
 done
 shopt -u nullglob
+
+readonly END_TIME=$(date +%s)
 
 echol "$script_file_name finished, execution time: $(date -u -d @$((END_TIME-START_TIME)) +'%Hh:%Mm:%Ss')"

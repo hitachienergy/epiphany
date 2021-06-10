@@ -148,7 +148,7 @@ download_packages() {
 
 	if [[ -n $packages ]]; then
 		# when using --archlist=x86_64 yumdownloader (yum-utils-1.1.31-52) also downloads i686 packages
-		run_cmd_with_retries yumdownloader --quiet --archlist="$ARCH" --exclude='*i686' --destdir="$dest_dir" "$packages" $retries
+		run_cmd_with_retries yumdownloader --quiet --archlist="$ARCH" --exclude='*i686' --destdir="$dest_dir" $packages $retries
 	fi
 }
 
@@ -185,14 +185,15 @@ find_rhel_repo_id() {
 	local rhel_on_prem_repo_id="$2"
 	local pattern="$3"
 	local repo_id
-
-	if [[ $(yum repolist all | grep -E --quiet "$pattern") ]]; then
+	echol "Pattern: $pattern"
+	if [[ $(yum repolist all | grep -E "$pattern") ]]; then
 		repo_id=$(yum repolist all | grep -E --only-matching "$pattern")
+		echol "Found repos id: $repo_id"
 	else
 		exit_with_error "RHEL yum repository not found, pattern was: $pattern"
 	fi
 
-	eval $1='$repo_id'
+	eval "$1"='$repo_id'
 }
 
 # params: <result_var> <package>
@@ -200,7 +201,7 @@ get_package_dependencies_with_arch() {
 	# $1 reserved for result
 	local package="$2"
 
-	local query_output=$(repoquery --requires --resolve --queryformat '%{name}.%{arch}' --archlist=$ARCH,noarch "$package") ||
+	local query_output=$(repoquery --requires --resolve --queryformat '%{name}.%{arch}' --archlist="${ARCH},noarch" "$package") ||
 		exit_with_error "repoquery failed for dependencies of package: $package with exit code: $?, output was: $query_output"
 
 	if [[ -z $query_output ]]; then
@@ -218,7 +219,7 @@ get_package_with_version_arch() {
 	# $1 reserved for result
 	local package="$2"
 
-	local query_output=$(repoquery --queryformat '%{ui_nevra}' --archlist="$ARCH",noarch "$package") ||
+	local query_output=$(repoquery --queryformat '%{ui_nevra}' --archlist="${ARCH},noarch" "$package") ||
 		exit_with_error "repoquery failed for package: $package with exit code: $?, output was: $query_output"
 
 	# yumdownloader doesn't set error code if repoquery returns empty output
@@ -229,7 +230,7 @@ get_package_with_version_arch() {
 		echol "Found: $query_output"
 	fi
 
-	eval $1='$query_output'
+	eval "$1"='$query_output'
 }
 
 # params: <result_var> <packages_array>
@@ -464,9 +465,9 @@ run_cmd_with_retries() {
 }
 
 usage() {
-	echo -e "Please provide exact one argument \n"
-	echo "usage: ./$(basename $0) <downloads_dir>"
-	echo "       ./$(basename $0) /tmp/downloads"
+	echo "usage:         ./$(basename $0) <downloads_dir>"
+	echo "               ./$(basename $0) /tmp/downloads"
+	echo "(optional)     ./$(basename $0) /tmp/downloads --no-logfile"
 	exit 1
 }
 
@@ -513,7 +514,7 @@ _print_array_as_shell_escaped_string() {
 
 validate_bash_version
 
-if [[ $# -ne 1 ]]; then
+if [[ $# -lt 1 ]]; then
 	usage
 fi
 
@@ -524,16 +525,16 @@ readonly START_TIME=$(date +%s)
 POSITIONAL_ARGS=()
 CREATE_LOGFILE='yes'
 while [[ $# -gt 0 ]]; do
-case $1 in
-	--no-logfile)
-	CREATE_LOGFILE='no'
-	shift # past argument
-	;;
-	*) # unknown option
-	POSITIONAL_ARGS+=("$1") # save it in an array for later
-	shift
-	;;
-esac
+	case $1 in
+		--no-logfile)
+		CREATE_LOGFILE='no'
+		shift # past argument
+		;;
+		*) # unknown option
+		POSITIONAL_ARGS+=("$1") # save it in an array for later
+		shift
+		;;
+	esac
 done
 set -- "${POSITIONAL_ARGS[@]}" # restore positional arguments
 
@@ -541,20 +542,20 @@ set -- "${POSITIONAL_ARGS[@]}" # restore positional arguments
 
 # dirs
 readonly DOWNLOADS_DIR="$1" # root directory for downloads
-readonly FILES_DIR="$DOWNLOADS_DIR/files"
-readonly PACKAGES_DIR="$DOWNLOADS_DIR/packages"
-readonly IMAGES_DIR="$DOWNLOADS_DIR/images"
-readonly REPO_PREREQ_PACKAGES_DIR="$PACKAGES_DIR/repo-prereqs"
+readonly FILES_DIR="${DOWNLOADS_DIR}/files"
+readonly PACKAGES_DIR="${DOWNLOADS_DIR}/packages"
+readonly IMAGES_DIR="${DOWNLOADS_DIR}/images"
+readonly REPO_PREREQ_PACKAGES_DIR="${PACKAGES_DIR}/repo-prereqs"
 readonly SCRIPT_DIR="$(dirname $(readlink -f $0))" # want absolute path
 
 # files
 readonly SCRIPT_FILE_NAME=$(basename "$0")
-readonly LOG_FILE_NAME=${SCRIPT_FILE_NAME/sh/log}
-readonly LOG_FILE_PATH="$SCRIPT_DIR/$LOG_FILE_NAME"
-readonly YUM_CONFIG_BACKUP_FILE_PATH="$SCRIPT_DIR/${SCRIPT_FILE_NAME}-yum-repos-backup-tmp-do-not-remove.tar"
-readonly CRANE_BIN="$SCRIPT_DIR/crane"
-readonly INSTALLED_PACKAGES_FILE_PATH="$SCRIPT_DIR/${SCRIPT_FILE_NAME}-installed-packages-list-do-not-remove.tmp"
-readonly PID_FILE_PATH=/var/run/${SCRIPT_FILE_NAME/sh/pid}
+readonly LOG_FILE_NAME="${SCRIPT_FILE_NAME}/log"
+readonly LOG_FILE_PATH="${SCRIPT_DIR}/${LOG_FILE_NAME}"
+readonly YUM_CONFIG_BACKUP_FILE_PATH="${SCRIPT_DIR}/${SCRIPT_FILE_NAME}-yum-repos-backup-tmp-do-not-remove.tar"
+readonly CRANE_BIN="${SCRIPT_DIR}/crane"
+readonly INSTALLED_PACKAGES_FILE_PATH="${SCRIPT_DIR}/${SCRIPT_FILE_NAME}-installed-packages-list-do-not-remove.tmp"
+readonly PID_FILE_PATH="/var/run/${SCRIPT_FILE_NAME}.pid"
 readonly ADD_MULTIARCH_REPOSITORIES_SCRIPT="${SCRIPT_DIR}/add-repositories.multiarch.sh"
 
 #arch
@@ -691,10 +692,10 @@ enable_repo "$REPO_ID"
 # --- Add repos ---
 
 # noarch repositories
-. "${ADD_MULTIARCH_REPOSITORIES_SCRIPT}"
+. "$ADD_MULTIARCH_REPOSITORIES_SCRIPT"
 
 # arch specific repositories
-. "${ADD_ARCH_REPOSITORIES_SCRIPT}"
+. "$ADD_ARCH_REPOSITORIES_SCRIPT"
 
 # some packages are from EPEL repo
 if ! is_package_installed 'epel-release'; then

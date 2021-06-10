@@ -1,15 +1,15 @@
+#!/bin/bash
 # this file is just a bunch of functions meant to be called from other scripts
 
 
 usage() {
-	echo -e "Please provide exact one argument \n"
-	echo "usage: ./$(basename $0) <downloads_dir>"
-	echo "       ./$(basename $0) /tmp/downloads"
+	echo "usage:         ./$(basename "$0") <downloads_dir>"
+	echo "               ./$(basename "$0") /tmp/downloads"
 	exit 1
 }
 
 echol() {
-	echo -e "$1" | tee --append $logfile
+	echo -e "$1" | tee --append "$logfile"
 }
 
 exit_with_error() {
