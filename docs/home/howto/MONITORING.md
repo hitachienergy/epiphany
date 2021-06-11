@@ -158,10 +158,10 @@ Epiphany uses Grafana for monitoring data visualization. Epiphany installation c
 
 ### Creating dashboards
 
-You can create your own dashboards [Grafana getting started](http://docs.grafana.org/guides/getting_started/) page will help you with it.
+You can create your own dashboards [Grafana getting started](https://grafana.com/docs/grafana/latest/getting-started/getting-started/) page will help you with it.
 Knowledge of Prometheus will be really helpful when creating diagrams since it use [PromQL](https://prometheus.io/docs/prometheus/latest/querying/basics/) to fetch data.
 
-### Importing dashboards
+### Importing dashboards via Grafana GUI
 
 There are also many ready to take [Grafana dashboards](https://grafana.com/dashboards) created by community - remember to check license before importing any of those dashboards.
 To import existing dashboard:
@@ -171,6 +171,38 @@ To import existing dashboard:
 3. Enter dashboard id or load json file with dashboard definition
 4. Select datasource for dashboard - you should select `Prometheus`.
 5. Click `Import`
+
+### Importing dashboards via configuration manifest
+
+In order to pull Grafana dashboard from official website during epicli execution, you have to provide dashboard_id, revision_id, datasource in your manifest:
+
+```yaml
+kind: configuration/grafana
+specification:
+  ...
+  get_grafana_dashboards:
+    - dashboard_id: '4271'
+      revision_id: '3'
+      datasource: 'Prometheus'
+```
+
+### Enabling predefined Grafana dashboards
+
+Since v1.1.0 Epiphany provides predefined Grafana dashboards. These dashboards are available in online and offline deployment modes.
+To enable particular Grafana dashboard, generate configuration manifest with `--full` argument and uncomment desired dashboards:
+
+```yaml
+kind: configuration/grafana
+specification:
+  ...
+  grafana_dashboards:
+  # Kubernetes cluster monitoring (via Prometheus)
+    - dashboard_id: '315'
+      datasource: 'Prometheus'
+  # Node Exporter Server Metrics
+    - dashboard_id: '405'
+      datasource: 'Prometheus'
+```
 
 ### Components used for monitoring
 
@@ -188,6 +220,7 @@ List of monitoring components - so called exporters:
 When dashboard creation or import succeeds you will see it on your dashboard list.
 
 `Note: For some dashboards, there is no data to visualize until there is traffic activity for the monitored component.
+
 
 # Kibana
 

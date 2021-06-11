@@ -70,7 +70,6 @@
         path: "{{ tmp_dashboards.path }}/{{ item.dashboard_id }}.json"
         regexp: '"(?:\${)?DS_[A-Z0-9_-]+(?:})?"'
         replace: '"{{ item.datasource }}"'
-      changed_when: false
       loop: "{{ get_grafana_dashboards | union(grafana_dashboards) | unique | list }}"
 
 - name: Create/Update dashboards file (provisioning)
@@ -99,7 +98,7 @@
     patterns:
       - "*.json"
   register: dashboards_present
-  when: grafana_provisioning_synced
+  when: grafana_provisioning_synced | bool
 
 - name: Register provided dashboards
   find:
@@ -126,11 +125,11 @@
   set_fact:
     dashboards_present_list: "{{ dashboards_present.files | map(attribute='path') | list }}"
     dashboards_copied_list: "{{ dashboards_copied.results | map(attribute='dest') | list }}"
-  when: grafana_provisioning_synced
+  when: grafana_provisioning_synced | bool
 
 - name: Remove old dashboards not mentioned in configuration manifest
   file:
     path: "{{ item }}"
     state: absent
   loop: "{{ dashboards_present_list | difference(dashboards_copied_list) }}"
-  when: grafana_provisioning_synced
+  when: grafana_provisioning_synced | bool

@@ -143,7 +143,7 @@ download_image() {
 download_packages() {
 	local dest_dir="$1"
 	shift
-	local packages=("$@")
+	local packages="$@"
 	local retries=3
 
 	if [[ -n $packages ]]; then
@@ -168,8 +168,6 @@ enable_repo() {
 		echol "Enabling repository: $repo_id"
 		yum-config-manager --enable "$repo_id" ||
 			exit_with_error "Command failed: yum-config-manager --enable \"$repo_id\""
-	else
-		echol "Repository $repo_id already enabled"
 	fi
 }
 
@@ -185,15 +183,14 @@ find_rhel_repo_id() {
 	local rhel_on_prem_repo_id="$2"
 	local pattern="$3"
 	local repo_id
-	echol "Pattern: $pattern"
-	if [[ $(yum repolist all | grep -E "$pattern") ]]; then
-		repo_id=$(yum repolist all | grep -E --only-matching "$pattern")
-		echol "Found repos id: $repo_id"
+
+	if yum repolist all | egrep --quiet "$pattern"; then
+		repo_id=$(yum repolist all | egrep --only-matching "$pattern")
 	else
 		exit_with_error "RHEL yum repository not found, pattern was: $pattern"
 	fi
 
-	eval "$1"='$repo_id'
+	eval $1='$repo_id'
 }
 
 # params: <result_var> <package>
@@ -201,16 +198,16 @@ get_package_dependencies_with_arch() {
 	# $1 reserved for result
 	local package="$2"
 
-	local query_output=$(repoquery --requires --resolve --queryformat '%{name}.%{arch}' --archlist="${ARCH},noarch" "$package") ||
+	local query_output=$(repoquery --requires --resolve --queryformat '%{name}.%{arch}' --archlist=$ARCH,noarch "$package") ||
 		exit_with_error "repoquery failed for dependencies of package: $package with exit code: $?, output was: $query_output"
 
 	if [[ -z $query_output ]]; then
 		echol "No dependencies found for package: $package"
-	elif [[ $(grep --ignore-case --perl-regexp '\b(?<!-)error(?!-)\b' <<< "$query_output") ]]; then
+	elif grep --ignore-case --perl-regexp '\b(?<!-)error(?!-)\b' <<< "$query_output"; then
 		exit_with_error "repoquery failed for dependencies of package: $package, output was: $query_output"
 	fi
 
-	eval "$1"='($query_output)'
+	eval $1='($query_output)'
 }
 
 # desc: get full package name with version and architecture
@@ -219,18 +216,18 @@ get_package_with_version_arch() {
 	# $1 reserved for result
 	local package="$2"
 
-	local query_output=$(repoquery --queryformat '%{ui_nevra}' --archlist="${ARCH},noarch" "$package") ||
+	local query_output=$(repoquery --queryformat '%{ui_nevra}' --archlist=$ARCH,noarch "$package") ||
 		exit_with_error "repoquery failed for package: $package with exit code: $?, output was: $query_output"
 
 	# yumdownloader doesn't set error code if repoquery returns empty output
 	[[ -n $query_output ]] || exit_with_error "repoquery failed: package $package not found"
-	if [[ $(grep --ignore-case --perl-regexp '\b(?<!-)error(?!-)\b' <<< "$query_output") ]]; then
+	if grep --ignore-case --perl-regexp '\b(?<!-)error(?!-)\b' <<< "$query_output"; then
 		exit_with_error "repoquery failed for package: $package, output was: $query_output"
 	else
 		echol "Found: $query_output"
 	fi
 
-	eval "$1"='$query_output'
+	eval $1='$query_output'
 }
 
 # params: <result_var> <packages_array>
@@ -245,7 +242,7 @@ get_packages_with_version_arch() {
 		packages_with_version_arch+=("$QUERY_OUTPUT")
 	done
 
-	eval "$result_var_name"='("${packages_with_version_arch[@]}")'
+	eval $result_var_name='("${packages_with_version_arch[@]}")'
 }
 
 # params: <result_var> <group_name> <requirements_file_path>
@@ -265,7 +262,7 @@ get_requirements_from_group() {
 
 	[[ -n $requirements_from_group ]] || echol "No requirements found for group: $group_name"
 
-	eval "$1"='$requirements_from_group'
+	eval $1='$requirements_from_group'
 }
 
 # params: <result_var> <array>
@@ -277,7 +274,7 @@ get_unique_array() {
 	# filter out duplicates
 	array=($(echo "${array[@]}" | tr ' ' '\n' | sort -u | tr '\n' ' '))
 
-	eval "$result_var_name"='("${array[@]}")'
+	eval $result_var_name='("${array[@]}")'
 }
 
 # params: <url(s)> <retries>
@@ -295,10 +292,10 @@ install_package() {
 	local package_name_or_url="$1"
 	local package_name="$1"
 
-	[[ $# -gt 1 ]] && package_name="$2"
+	[ $# -gt 1 ] && package_name="$2"
 
 	echol "Installing package: $package_name"
-	if [[ $(yum install -y "$package_name_or_url") ]]; then
+	if yum install -y "$package_name_or_url"; then
 		echo "$package_name" >> "$INSTALLED_PACKAGES_FILE_PATH"
 	else
 		exit_with_error "Command failed: yum install -y \"$package_name_or_url\""
@@ -329,7 +326,7 @@ is_repo_available() {
 is_repo_enabled() {
 	local repo_id="$1"
 
-	if [[ $(yum repolist | grep --quiet "$repo_id") ]]; then
+	if yum repolist | grep --quiet "$repo_id"; then
 		echol "Repository $repo_id already enabled"
 		return 0
 	else
@@ -341,7 +338,7 @@ is_repo_enabled() {
 remove_package() {
 	local package="$1"
 
-	if [[ $(rpm --query --quiet "$package") ]]; then
+	if rpm --query --quiet "$package"; then
 		echol "Removing package: $package"
 		yum remove -y "$package" || exit_with_error "Command failed: yum remove -y \"$package\""
 	fi
@@ -378,7 +375,7 @@ remove_file() {
 remove_installed_packages() {
 	local installed_packages_list_file="$1"
 
-	if [[ -f "$installed_packages_list_file" ]]; then
+	if [ -f "$installed_packages_list_file" ]; then
 		for package in $(cat $installed_packages_list_file | sort --unique); do
 			remove_package "$package"
 		done
@@ -396,7 +393,7 @@ remove_yum_cache_for_untracked_repos() {
 	cachedir="${cachedir/\$releasever/$releasever}"
 	find_output=$(find "$cachedir" -mindepth 1 -maxdepth 1 -type d -exec basename '{}' ';')
 	local -a repos_with_cache=()
-	if [[ -n "$find_output" ]]; then
+	if [ -n "$find_output" ]; then
 		readarray -t repos_with_cache <<< "$find_output"
 	fi
 	local all_repos_output
@@ -475,7 +472,7 @@ validate_bash_version() {
 	local major_version=${BASH_VERSINFO[0]}
 	local minor_version=${BASH_VERSINFO[1]}
 	local required_version=(4 2)  # (minor major)
-	if (( major_version < required_version[0] )) || (( minor_version < required_version[1] )); then
+	if (( major_version < ${required_version[0]} )) || (( minor_version < ${required_version[1]} )); then
 		exit_with_error "This script requires Bash version ${required_version[0]}.${required_version[1]} or higher."
 	fi
 }
@@ -502,7 +499,7 @@ _print_array_as_shell_escaped_string() {
 	local output
 	output=$(_get_shell_escaped_array "$@")
 	local escaped=()
-	if [[ -n "$output" ]]; then
+	if [ -n "$output" ]; then
 		readarray -t escaped <<< "$output"
 	fi
 	if (( ${#escaped[@]} > 0 )); then
@@ -550,7 +547,7 @@ readonly SCRIPT_DIR="$(dirname $(readlink -f $0))" # want absolute path
 
 # files
 readonly SCRIPT_FILE_NAME=$(basename "$0")
-readonly LOG_FILE_NAME="${SCRIPT_FILE_NAME}/log"
+readonly LOG_FILE_NAME="${SCRIPT_FILE_NAME}.log"
 readonly LOG_FILE_PATH="${SCRIPT_DIR}/${LOG_FILE_NAME}"
 readonly YUM_CONFIG_BACKUP_FILE_PATH="${SCRIPT_DIR}/${SCRIPT_FILE_NAME}-yum-repos-backup-tmp-do-not-remove.tar"
 readonly CRANE_BIN="${SCRIPT_DIR}/crane"
@@ -586,29 +583,29 @@ echol "Docker platform: ${DOCKER_PLATFORM}"
 
 # --- Want to have only one instance for Ansible ---
 
-if [[ -f $PID_FILE_PATH ]]; then
-	readonly PID_FROM_FILE=$(cat "$PID_FILE_PATH" 2> /dev/null)
-	if [[ -n $PID_FROM_FILE ]] && kill -0 "$PID_FROM_FILE" > /dev/null 2>&1; then
-		echol "Found running process with pid: $PID_FROM_FILE, cmd: $(ps -p "$PID_FROM_FILE" -o cmd=)"
-		if [[ $(ps -p "$PID_FROM_FILE" -o cmd= | grep --quiet "$SCRIPT_FILE_NAME") ]]; then
+if [ -f $PID_FILE_PATH ]; then
+	readonly PID_FROM_FILE=$(cat $PID_FILE_PATH 2> /dev/null)
+	if [[ -n $PID_FROM_FILE ]] && kill -0 $PID_FROM_FILE > /dev/null 2>&1; then
+		echol "Found running process with pid: $PID_FROM_FILE, cmd: $(ps -p $PID_FROM_FILE -o cmd=)"
+		if ps -p $PID_FROM_FILE -o cmd= | grep --quiet $SCRIPT_FILE_NAME; then
 			echol "Killing old instance using SIGTERM"
-			kill -s SIGTERM "$PID_FROM_FILE" # try gracefully
-			if [[ $(sleep 3 && kill -0 "$PID_FROM_FILE" > /dev/null 2>&1) ]]; then
+			kill -s SIGTERM $PID_FROM_FILE # try gracefully
+			if sleep 3 && kill -0 $PID_FROM_FILE > /dev/null 2>&1; then
 				echol "Still running, killing old instance using SIGKILL"
-				kill -s SIGKILL "$PID_FROM_FILE" # forcefully
+				kill -s SIGKILL $PID_FROM_FILE # forcefully
 			fi
 		else
-			remove_file "$PID_FILE_PATH"
+			remove_file $PID_FILE_PATH
 			exit_with_error "Process with pid: $PID_FILE_PATH seems to be not an instance of this script"
 		fi
 	else
 		echol "Process with pid: $PID_FROM_FILE not found"
 	fi
-	remove_file "$PID_FILE_PATH"
+	remove_file $PID_FILE_PATH
 fi
 
 echol "PID is: $$, creating file: $PID_FILE_PATH"
-echo $$ > "$PID_FILE_PATH" || exit_with_error "Command failed: echo $$ > $PID_FILE_PATH"
+echo $$ > $PID_FILE_PATH || exit_with_error "Command failed: echo $$ > $PID_FILE_PATH"
 
 # --- Parse requirements file ---
 
@@ -623,14 +620,14 @@ get_requirements_from_group 'IMAGES'               'images'                "$REQ
 
 # --- Backup yum repositories ---
 
-if [[ -f "$YUM_CONFIG_BACKUP_FILE_PATH" ]]; then
+if [ -f "$YUM_CONFIG_BACKUP_FILE_PATH" ]; then
 	echol "Backup aleady exists: $YUM_CONFIG_BACKUP_FILE_PATH"
 else
 	echol "Backuping /etc/yum.repos.d/ to $YUM_CONFIG_BACKUP_FILE_PATH"
-	if [[ $(backup_files "$YUM_CONFIG_BACKUP_FILE_PATH" '/etc/yum.repos.d/') ]]; then
+	if backup_files "$YUM_CONFIG_BACKUP_FILE_PATH" '/etc/yum.repos.d/'; then
 		echol "Backup done"
 	else
-		if [[ -f "$YUM_CONFIG_BACKUP_FILE_PATH" ]]; then
+		if [ -f "$YUM_CONFIG_BACKUP_FILE_PATH" ]; then
 			remove_file "$YUM_CONFIG_BACKUP_FILE_PATH"
 		fi
 		exit_with_error "Backup of yum repositories failed"
@@ -645,8 +642,7 @@ fi
 # --- Install required packages unless present ---
 
 # repos can be enabled or disabled using the yum-config-manager command, which is provided by yum-utils package
-prerequisites=(wget yum-utils curl tar)
-for package in ${prerequisites[@]}; do
+for package in 'yum-utils' 'wget' 'curl' 'tar'; do
 	if ! is_package_installed "$package"; then
 		install_package "$package"
 	fi
@@ -692,10 +688,10 @@ enable_repo "$REPO_ID"
 # --- Add repos ---
 
 # noarch repositories
-. "$ADD_MULTIARCH_REPOSITORIES_SCRIPT"
+. ${ADD_MULTIARCH_REPOSITORIES_SCRIPT}
 
 # arch specific repositories
-. "$ADD_ARCH_REPOSITORIES_SCRIPT"
+. ${ADD_ARCH_REPOSITORIES_SCRIPT}
 
 # some packages are from EPEL repo
 if ! is_package_installed 'epel-release'; then
@@ -765,8 +761,8 @@ remove_added_repos "$YUM_CONFIG_BACKUP_FILE_PATH"
 
 echol "Restoring /etc/yum.repos.d/*.repo from: $YUM_CONFIG_BACKUP_FILE_PATH"
 echol "Executing: tar --extract --verbose --file $YUM_CONFIG_BACKUP_FILE_PATH"
-if [[ $(tar --extract --verbose --file "$YUM_CONFIG_BACKUP_FILE_PATH" --directory /etc/yum.repos.d \
-		--strip-components=2 'etc/yum.repos.d/*.repo') ]]; then
+if tar --extract --verbose --file "$YUM_CONFIG_BACKUP_FILE_PATH" --directory /etc/yum.repos.d \
+		--strip-components=2 'etc/yum.repos.d/*.repo'; then
 	echol "Restored: yum repositories"
 else
 	exit_with_error "Extracting tar failed: $YUM_CONFIG_BACKUP_FILE_PATH"
