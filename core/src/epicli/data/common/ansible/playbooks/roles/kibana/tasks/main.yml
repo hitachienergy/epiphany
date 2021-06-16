@@ -1,21 +1,14 @@
 ---
-- name: Load defaults from opendistro_for_elasticsearch role
-  include_vars:
-    file: roles/opendistro_for_elasticsearch/defaults/main.yml
-    name: opendistro_for_elasticsearch_defaults
-
 - name: Install Kibana package
   package:
     name: "{{ _packages[ansible_os_family] }}"
     state: present
   vars:
-    _kibana_version: >-
-      {{ opendistro_for_elasticsearch_defaults.versions[ansible_os_family].opendistro }}
     _packages:
       Debian:
-        - opendistroforelasticsearch-kibana={{ _kibana_version }}
+        - opendistroforelasticsearch-kibana={{ kibana_version[ansible_os_family] }}
       RedHat:
-        - opendistroforelasticsearch-kibana-{{ _kibana_version }}
+        - opendistroforelasticsearch-kibana-{{ kibana_version[ansible_os_family] }}
   module_defaults:
     yum: { lock_timeout: "{{ yum_lock_timeout }}" }
 
