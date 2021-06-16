@@ -94,7 +94,7 @@ rabbitmq-server-3.8.9
 rh-haproxy18
 rh-haproxy18-haproxy-syspaths
 postgresql10-server
-repmgr10-4.0.6
+repmgr10-5.2.1
 samba-client
 samba-client-libs # for samba-client
 samba-common

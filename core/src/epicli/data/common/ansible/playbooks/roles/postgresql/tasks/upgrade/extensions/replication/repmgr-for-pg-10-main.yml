@@ -1,0 +1,42 @@
+---
+- name: repmgr for PG 10 | Load default variables for upgrade
+  include_vars:
+    file: defaults/upgrade.yml
+
+- name: repmgr for PG 10 | Get information about installed packages as facts
+  package_facts:
+    manager: auto
+  when: ansible_facts.packages is undefined
+
+- when: ansible_facts.packages[repmgr_package_name] is defined
+  vars:
+    repmgr_package_name: "{{ pg_10.repmgr.package_name[ansible_os_family] }}"
+    installed_version: "{{ ansible_facts.packages[repmgr_package_name][0].version }}"
+    target_version: "{{ repmgr.version[ansible_os_family] }}"
+  block:
+    - name: repmgr for PG 10 | Print repmgr versions
+      debug:
+        msg:
+          - "Installed version: {{ installed_version }}"
+          - "Target version: {{ target_version }}"
+
+    # If state file exists it means the previous run failed
+    - name: repmgr for PG 10 | Check if upgrade state file exists
+      stat:
+        path: "{{ upgrade.repmgr.upgrade_state_file_path }}"
+        get_attributes: false
+        get_checksum: false
+        get_mime: false
+      register: stat_upgrade_state_file
+
+    - name: repmgr for PG 10 | Upgrade repmgr
+      include_tasks: upgrade/extensions/replication/repmgr-for-PG-10-upgrade.yml
+      when: target_version is version(installed_version, '>')
+         or stat_upgrade_state_file.stat.exists
+      vars:
+        pg_service_names:
+          Debian:
+            - "{{ pg_10.pg.service_name['Debian'] }}"
+            - "{{ pg_10.pg.instantiated_service_name['Debian'] }}"
+          RedHat:
+            - "{{ pg_10.pg.service_name['RedHat'] }}"
