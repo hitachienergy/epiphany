@@ -29,7 +29,14 @@ class AnsibleVarsGenerator(Step):
             self.config_docs = [self.cluster_model] + inventory_creator.config_docs
         elif inventory_upgrade != None and inventory_creator == None:
             self.cluster_model = inventory_upgrade.cluster_model
-            self.config_docs = load_all_documents_from_folder('common', 'defaults/configuration')
+            self.config_docs = []
+            defaults = load_all_documents_from_folder('common', 'defaults/configuration')
+            for default in defaults:
+                config_doc = select_first(inventory_upgrade.config_docs, lambda x: x.kind == default.kind)
+                if config_doc == None:
+                    self.config_docs.append(default)
+                else:
+                    self.config_docs.append(config_doc)
             self.manifest_docs = inventory_upgrade.manifest_docs
         else:
             raise Exception('Invalid AnsibleVarsGenerator configuration')
@@ -57,17 +64,13 @@ class AnsibleVarsGenerator(Step):
             dump(clean_cluster_model, stream)
 
         if self.is_upgrade_run:
-            # For upgrade at this point we don't need any of other roles than common, repository, image_registry and node_exporter.
+            # For upgrade we always need common, repository, image_registry and node_exporter.
             # - commmon is already provisioned from the cluster model constructed from the inventory
-            # - (if possible) upgrade should not require any additional config
-            # roles in the list below are provisioned for upgrade from defaults
             roles_with_defaults = ['repository', 'image_registry', 'node_exporter']
-            # In a special cases (like haproxy), where user specifies majority of the config, it's easier (and less awkward)
-            # to re-render config templates instead of modifying (for example with regular expressions) no-longer-compatible config files.
-            roles_with_manifest = ['haproxy', 'ignite', 'repository']
+            # now lets add any external configs we want to load
+            roles_with_defaults = [*roles_with_defaults, *self.inventory_upgrade.get_new_config_roles()]
         else:
             roles_with_defaults = self.inventory_creator.get_enabled_roles()
-            roles_with_manifest = []  # applies only to upgrades
 
         for role in roles_with_defaults:
             kind = 'configuration/' + to_feature_name(role)
@@ -79,11 +82,6 @@ class AnsibleVarsGenerator(Step):
             document.specification['provider'] = self.cluster_model.provider
 
             self.write_role_vars(ansible_dir, role, document)
-
-        for role in roles_with_manifest:
-            kind = 'configuration/' + to_feature_name(role)
-
-            self.write_role_manifest_vars(ansible_dir, role, kind)
 
         self.populate_group_vars(ansible_dir)
 
@@ -101,28 +99,6 @@ class AnsibleVarsGenerator(Step):
 
         if vars_file_name == 'main.yml':
             self.roles_with_generated_vars.append(to_role_name(role))
-
-    def write_role_manifest_vars(self, ansible_dir, role, kind):
-        try:
-            cluster_model = select_single(self.manifest_docs, lambda x: x.kind == 'epiphany-cluster')
-        except ExpectedSingleResultException:
-            return  # skip
-
-        document = select_first(self.manifest_docs, lambda x: x.kind == kind)
-        if document is None:
-            # If there is no document provided by the user, then fallback to defaults
-            document = load_yaml_obj(types.DEFAULT, 'common', kind)
-            # Inject the required "version" attribute
-            document['version'] = VERSION
-
-        # Copy the "provider" value from the cluster model
-        document['provider'] = cluster_model['provider']
-
-        # Merge the document with defaults
-        with DefaultMerger([document]) as doc_merger:
-            document = doc_merger.run()[0]
-
-        self.write_role_vars(ansible_dir, role, document, vars_file_name='manifest.yml')
 
     def populate_group_vars(self, ansible_dir):
         main_vars = ObjDict()

@@ -19,7 +19,6 @@ class UpgradeEngine(Step):
         self.file = getattr(input_data, 'file', "")
         self.backup_build_dir = ''
         self.ansible_command = AnsibleCommand()
-
         self.input_docs = []
 
     def __enter__(self):
@@ -81,12 +80,12 @@ class UpgradeEngine(Step):
         # backup existing build
         self.backup_build()
 
-        # Get the input docs.
+        # Load possible input docs
         self.process_input_docs()
 
         # Run Ansible to upgrade infrastructure
         with AnsibleRunner(build_dir=self.build_dir, backup_build_dir=self.backup_build_dir,
-                           ansible_options=self.ansible_options) as ansible_runner:
+                           ansible_options=self.ansible_options, config_docs=self.input_docs) as ansible_runner:
             ansible_runner.upgrade()
 
         return 0
