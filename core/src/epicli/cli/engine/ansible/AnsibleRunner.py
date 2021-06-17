@@ -22,10 +22,11 @@ class AnsibleRunner(Step):
     ANSIBLE_PLAYBOOKS_PATH = DATA_FOLDER_PATH + '/common/ansible/playbooks/'
 
     def __init__(self, cluster_model=None, config_docs=None, build_dir=None, backup_build_dir=None,
-                 ansible_options=None):
+                 ansible_options=None, input_docs=None):
         super().__init__(__name__)
         self.cluster_model = cluster_model
         self.config_docs = config_docs
+        self.input_docs = input_docs
         self.build_dir = build_dir
         self.backup_build_dir = backup_build_dir
         self.ansible_options = ansible_options
