@@ -24,7 +24,6 @@
 - [#2232](https://github.com/epiphany-platform/epiphany/issues/2232) - Documentation added for spike about leader election for pods
 - [#2129](https://github.com/epiphany-platform/epiphany/issues/2129) - [Upgrade] Add migration from ODFE demo certificates to generated ones
 - [#2288](https://github.com/epiphany-platform/epiphany/issues/2288) - Allow to preserve OS images when run 'epicli apply' for existing cluster
-- [#2127](https://github.com/epiphany-platform/epiphany/issues/2127) - Allow to specify configuration to be used in upgrade mode
 
 ### Fixed
 
