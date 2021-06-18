@@ -69,8 +69,12 @@ class AnsibleVarsGenerator(Step):
             roles_with_defaults = ['repository', 'image_registry', 'node_exporter']
             # now lets add any external configs we want to load
             roles_with_defaults = [*roles_with_defaults, *self.inventory_upgrade.get_new_config_roles()]
+            # In a special cases (like haproxy), where user specifies majority of the config, it's easier (and less awkward)
+            # to re-render config templates instead of modifying (for example with regular expressions) no-longer-compatible config files.
+            roles_with_manifest = ['haproxy', 'ignite', 'repository']   
         else:
             roles_with_defaults = self.inventory_creator.get_enabled_roles()
+            roles_with_manifest = [] # applies only to upgrades
 
         for role in roles_with_defaults:
             kind = 'configuration/' + to_feature_name(role)
@@ -82,6 +86,11 @@ class AnsibleVarsGenerator(Step):
             document.specification['provider'] = self.cluster_model.provider
 
             self.write_role_vars(ansible_dir, role, document)
+
+        for role in roles_with_manifest:
+            kind = 'configuration/' + to_feature_name(role)
+
+            self.write_role_manifest_vars(ansible_dir, role, kind)            
 
         self.populate_group_vars(ansible_dir)
 
@@ -99,6 +108,28 @@ class AnsibleVarsGenerator(Step):
 
         if vars_file_name == 'main.yml':
             self.roles_with_generated_vars.append(to_role_name(role))
+
+    def write_role_manifest_vars(self, ansible_dir, role, kind):
+        try:
+            cluster_model = select_single(self.manifest_docs, lambda x: x.kind == 'epiphany-cluster')
+        except ExpectedSingleResultException:
+            return  # skip
+
+        document = select_first(self.manifest_docs, lambda x: x.kind == kind)
+        if document is None:
+            # If there is no document provided by the user, then fallback to defaults
+            document = load_yaml_obj(types.DEFAULT, 'common', kind)
+            # Inject the required "version" attribute
+            document['version'] = VERSION
+
+        # Copy the "provider" value from the cluster model
+        document['provider'] = cluster_model['provider']
+
+        # Merge the document with defaults
+        with DefaultMerger([document]) as doc_merger:
+            document = doc_merger.run()[0]
+
+        self.write_role_vars(ansible_dir, role, document, vars_file_name='manifest.yml')
 
     def populate_group_vars(self, ansible_dir):
         main_vars = ObjDict()
