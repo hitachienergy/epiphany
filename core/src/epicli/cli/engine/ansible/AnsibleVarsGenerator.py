@@ -90,7 +90,7 @@ class AnsibleVarsGenerator(Step):
         for role in roles_with_manifest:
             kind = 'configuration/' + to_feature_name(role)
 
-            self.write_role_manifest_vars(ansible_dir, role, kind)            
+            self.write_role_manifest_vars(ansible_dir, role, kind)
 
         self.populate_group_vars(ansible_dir)
 
