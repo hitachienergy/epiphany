@@ -174,13 +174,13 @@ To import existing dashboard:
 
 ### Importing dashboards via configuration manifest
 
-In order to pull Grafana dashboard from official website during epicli execution, you have to provide dashboard_id, revision_id, datasource in your manifest:
+In order to pull a dashboard from official Grafana website during epicli execution, you have to provide dashboard_id, revision_id and datasource in your manifest:
 
 ```yaml
 kind: configuration/grafana
 specification:
   ...
-  get_grafana_dashboards:
+  grafana_online_dashboards:
     - dashboard_id: '4271'
       revision_id: '3'
       datasource: 'Prometheus'
@@ -195,7 +195,7 @@ To enable particular Grafana dashboard, generate configuration manifest with `--
 kind: configuration/grafana
 specification:
   ...
-  grafana_dashboards:
+  grafana_external_dashboards:
   # Kubernetes cluster monitoring (via Prometheus)
     - dashboard_id: '315'
       datasource: 'Prometheus'

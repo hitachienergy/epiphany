@@ -51,7 +51,7 @@ specification:
   #  log_queries: ""
 
   # Default dashboards predefined and available in online & offline mode
-  grafana_dashboards: []
+  grafana_external_dashboards: []
     #   # Kubernetes cluster monitoring (via Prometheus)
     # - dashboard_id: '315'
     #   datasource: 'Prometheus'
@@ -81,7 +81,7 @@ specification:
     #   datasource: 'Prometheus'
 
   # Get dashboards from https://grafana.com/dashboards. Only for online mode
-  get_grafana_dashboards: []
+  grafana_online_dashboards: []
     # - dashboard_id: '4271'
     #   revision_id: '3'
     #   datasource: 'Prometheus'

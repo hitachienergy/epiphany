@@ -60,7 +60,7 @@ backup_files() {
 	local paths_to_backup=("$@")
 
 	# --directory='/' is for tar --verify
-	tar --create --verbose --verify --directory="/" --file="$backup_file_path" "$paths_to_backup"
+	tar --create --verbose --verify --directory="/" --file="$backup_file_path" "${paths_to_backup[@]}"
 }
 
 # params: <dir_path>
@@ -79,14 +79,14 @@ create_directory() {
 disable_repo() {
 	local repo_id="$1"
 
-	if [[ $(yum repolist enabled | grep --quiet "$repo_id") ]]; then
+	if yum repolist enabled | grep --quiet "$repo_id"; then
 		echol "Disabling repository: $repo_id"
 		yum-config-manager --disable "$repo_id" ||
 			exit_with_error "Command failed: yum-config-manager --disable \"$repo_id\""
 	fi
 }
 
-# params: <file_url> <dest_dir> <new_filename> # $3 not required
+# params: <file_url> <dest_dir> [new_filename]
 download_file() {
 	local file_url="$1"
 	local dest_dir="$2"
@@ -94,24 +94,21 @@ download_file() {
 	if [[ ${3-} ]]; then
 		local file_name=$3
 	else
-		local file_name=$(basename "$file_url")
+		local file_name
+		file_name=$(basename "$file_url")
 	fi
 
 	local dest_path="${dest_dir}/${file_name}"
 	local retries=3
 
-	if [[ -f $dest_path ]]; then
-		echo "$file_name already exists. Skipping..."
+	if [[ ${3-} ]]; then
+		echol "Downloading file: $file_url as $file_name"
+		run_cmd_with_retries wget --quiet --directory-prefix="$dest_dir" "$file_url" -O "$dest_path" $retries || \
+		exit_with_error "Command failed: wget --no-verbose --directory-prefix=$dest_dir $file_url $retries"
 	else
-		if [[ ${3-} ]]; then
-			echol "Downloading file: $file_url as $file_name"
-			run_cmd_with_retries wget --quiet --directory-prefix="$dest_dir" "$file_url" -O "$dest_path" $retries || \
-			exit_with_error "Command failed: wget --no-verbose --directory-prefix=$dest_dir $file_url $retries"
-		else
-			echol "Downloading file: $file_url"
-			run_cmd_with_retries wget --quiet --directory-prefix="$dest_dir" "$file_url" $retries ||	\
-			exit_with_error "Command failed: wget --no-verbose --directory-prefix=$dest_dir $file_url $retries"
-		fi
+		echol "Downloading file: $file_url"
+		run_cmd_with_retries wget --quiet --directory-prefix="$dest_dir" "$file_url" $retries ||	\
+		exit_with_error "Command failed: wget --no-verbose --directory-prefix=$dest_dir $file_url $retries"
 	fi
 }
 
@@ -445,9 +442,8 @@ run_cmd_with_retries() {
 }
 
 usage() {
-	echo "usage:         ./$(basename $0) <downloads_dir>"
-	echo "               ./$(basename $0) /tmp/downloads"
-	echo "(optional)     ./$(basename $0) /tmp/downloads --no-logfile"
+	echo "usage:         ./$(basename $0) <downloads_dir> [--no-logfile]"
+	echo "example:       ./$(basename $0) /tmp/downloads"
 	exit 1
 }
 
@@ -495,7 +491,7 @@ _print_array_as_shell_escaped_string() {
 validate_bash_version
 
 if [[ $# -lt 1 ]]; then
-	usage
+	usage >&2
 fi
 
 readonly START_TIME=$(date +%s)
@@ -522,20 +518,20 @@ set -- "${POSITIONAL_ARGS[@]}" # restore positional arguments
 
 # dirs
 readonly DOWNLOADS_DIR="$1" # root directory for downloads
-readonly FILES_DIR="$DOWNLOADS_DIR/files"
-readonly PACKAGES_DIR="$DOWNLOADS_DIR/packages"
-readonly IMAGES_DIR="$DOWNLOADS_DIR/images"
-readonly REPO_PREREQ_PACKAGES_DIR="$PACKAGES_DIR/repo-prereqs"
+readonly FILES_DIR="${DOWNLOADS_DIR}/files"
+readonly PACKAGES_DIR="${DOWNLOADS_DIR}/packages"
+readonly IMAGES_DIR="${DOWNLOADS_DIR}/images"
+readonly REPO_PREREQ_PACKAGES_DIR="${PACKAGES_DIR}/repo-prereqs"
 readonly SCRIPT_DIR="$(dirname $(readlink -f $0))" # want absolute path
 
 # files
-readonly SCRIPT_FILE_NAME=$(basename $0)
-readonly LOG_FILE_NAME=${SCRIPT_FILE_NAME/sh/log}
-readonly LOG_FILE_PATH="$SCRIPT_DIR/$LOG_FILE_NAME"
-readonly YUM_CONFIG_BACKUP_FILE_PATH="$SCRIPT_DIR/${SCRIPT_FILE_NAME}-yum-repos-backup-tmp-do-not-remove.tar"
-readonly CRANE_BIN="$SCRIPT_DIR/crane"
-readonly INSTALLED_PACKAGES_FILE_PATH="$SCRIPT_DIR/${SCRIPT_FILE_NAME}-installed-packages-list-do-not-remove.tmp"
-readonly PID_FILE_PATH=/var/run/${SCRIPT_FILE_NAME/sh/pid}
+readonly SCRIPT_FILE_NAME=$(basename "$0")
+readonly LOG_FILE_NAME="${SCRIPT_FILE_NAME}.log"
+readonly LOG_FILE_PATH="${SCRIPT_DIR}/${LOG_FILE_NAME}"
+readonly YUM_CONFIG_BACKUP_FILE_PATH="${SCRIPT_DIR}/${SCRIPT_FILE_NAME}-yum-repos-backup-tmp-do-not-remove.tar"
+readonly CRANE_BIN="${SCRIPT_DIR}/crane"
+readonly INSTALLED_PACKAGES_FILE_PATH="${SCRIPT_DIR}/${SCRIPT_FILE_NAME}-installed-packages-list-do-not-remove.tmp"
+readonly PID_FILE_PATH="/var/run/${SCRIPT_FILE_NAME}.pid"
 readonly ADD_MULTIARCH_REPOSITORIES_SCRIPT="${SCRIPT_DIR}/add-repositories.multiarch.sh"
 
 #arch
@@ -631,7 +627,7 @@ done
 if [[ -z "${CRANE}" ]] || [ $(wc -l <<< "${CRANE}") -ne 1 ] ; then
     exit_with_error "Crane binary download path undefined or more than one download path defined"
 else
-	if [[ -e $CRANE_BIN ]]; then
+	if [[ -x $CRANE_BIN ]]; then
         echol "Crane binary already exists"
 	else
 		file_url=$(head -n 1 <<< "${CRANE}")
@@ -755,7 +751,7 @@ else
     printf "\n"
 
     while IFS=' ' read -r url new_filename; do
-        # download files,  skip if exists, check if new filename is provided
+        # download files, skip if exists, check if new filename is provided
         if [[ -z $new_filename ]]; then
             download_file "$url" "$FILES_DIR"
         elif [[ $new_filename = *" "* ]]; then

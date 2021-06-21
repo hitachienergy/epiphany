@@ -34,4 +34,4 @@
 
 - name: Include dashboards tasks
   include_tasks: dashboards.yml
-  when: (get_grafana_dashboards != []) or (grafana_dashboards != [])
+  when: (grafana_online_dashboards != []) or (grafana_external_dashboards != [])

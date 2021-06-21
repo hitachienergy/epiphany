@@ -4,7 +4,7 @@
 
 usage() {
 	echo "usage:         ./$(basename "$0") <downloads_dir>"
-	echo "               ./$(basename "$0") /tmp/downloads"
+	echo "example:       ./$(basename "$0") /tmp/downloads"
 	exit 1
 }
 
@@ -57,7 +57,7 @@ download_image() {
 	fi
 }
 
-# params: <file_url> <dest_dir> <new_filename>
+# params: <file_url> <dest_dir> [new_filename]
 download_file() {
 	local file_url="$1"
 	local dest_dir="$2"
@@ -65,7 +65,8 @@ download_file() {
 		local new_filename="$3"
 	fi
 
-	local file_name=$(basename "$file_url")
+	local file_name
+	file_name=$(basename "$file_url")
 	local dest_path="${dest_dir}/${file_name}"
 	local retries=3
 

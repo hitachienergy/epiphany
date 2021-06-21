@@ -13,10 +13,12 @@ if [[ "$is_offline_mode" == "true" ]]; then
       mv $apt_repo_path ${apt_repo_path}.bak
   fi
 
-  [[ $(dpkg -l | grep  "^ii  libdpkg-perl\s") ]] || echo "Package libdpkg-perl not found, installing..."  && \
-  dpkg -i "${epi_repo_server_path}/packages/libdpkg-perl*.deb"
-  retval=$?
-  [[ $retval -eq "0" ]] || echo "Exiting.." && exit "$retval"; echo $?
+  if ! dpkg -l | grep -q "^ii  libdpkg-perl\s"; then 
+    echo "Package libdpkg-perl not found, installing..."
+    dpkg -i "${epi_repo_server_path}/packages/libdpkg-perl*.deb"
+    retval=$?
+    [[ $retval -eq "0" ]] || echo "Exiting.." && exit "$retval"
+  fi
 
   echo "Generating repository metadata..."
   cd "${epi_repo_server_path}/packages" && /tmp/epi-repository-setup-scripts/dpkg-scanpackages -m . | gzip -9c > Packages.gz && cd "${script_path}"
