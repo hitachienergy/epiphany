@@ -53,10 +53,19 @@
     - not custom_repository_url
     - inventory_hostname in target_repository_hostnames
 
+- include_tasks: check-whether-to-run-download.yml  # sets 'stat_flag_file'
+  when:
+    - not offline_mode
+    - not custom_repository_url
+    - inventory_hostname in target_repository_hostnames
+
 - include_tasks: clean-up-epirepo.yml
   when:
     - is_upgrade_run
     - inventory_hostname in target_repository_hostnames
+    - custom_repository_url or
+      offline_mode or
+      not stat_flag_file.stat.exists  # do not clean up when skipping download
 
 - name: |-
     Copy requirements for offline installation to repository host, this can take a long time
@@ -78,6 +87,7 @@
     - not offline_mode
     - not custom_repository_url
     - inventory_hostname in target_repository_hostnames
+    - not stat_flag_file.stat.exists
 
 - name: Set up repositories
   include_tasks: "{{ ansible_os_family }}/setup.yml"
