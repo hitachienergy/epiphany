@@ -104,7 +104,7 @@ fi
 if [[ -z "${crane}" || $(wc -l <<< "${crane}") -ne 1 ]] ; then
     exit_with_error "Crane binary download path undefined or more than one download path defined"
 else
-    if [[ -e $crane_bin ]]; then
+    if [[ -x $crane_bin ]]; then
         echol "Crane binary already exists"
     else
         file_url=$(head -n 1 <<< "${crane}")
@@ -169,12 +169,11 @@ else
     printf "\n"
     # download files using wget
     while IFS=' ' read -r file new_filename; do
-        # download files,  skip if exists, check if new filename is provided
+        # download files, check if new filename is provided
         if [[ -z $new_filename ]]; then
             download_file "$file" "$dst_dir_files"
         elif [[ $new_filename = *" "* ]]; then
-            echol "ERROR: wrong new filename for file: "
-            echol "$file"
+            exit_with_error "wrong new filename for file: $file"
         else
             download_file "$file" "$dst_dir_files" "$new_filename"
         fi
@@ -218,7 +217,7 @@ done
 # restore masked custom repositories to their original names
 shopt -s nullglob
 for i in /etc/apt/sources.list.d/*.list.bak; do
-		mv "$i" "${i::-4}"
+    mv "$i" "${i::-4}"
 done
 shopt -u nullglob
 

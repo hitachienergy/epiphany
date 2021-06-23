@@ -103,7 +103,8 @@ get_shell_escaped_array() {
 }
 
 print_array_as_shell_escaped_string() {
-    local output=$(get_shell_escaped_array "$@")
+    local output
+    output=$(get_shell_escaped_array "$@")
     local -a escaped=()
     if [ -n "$output" ]; then
       readarray -t escaped <<< "$output"
@@ -115,7 +116,8 @@ print_array_as_shell_escaped_string() {
 
 run_cmd() {
     local -a cmd_arr=("$@")
-    local output=$(print_array_as_shell_escaped_string "${cmd_arr[@]}")
+    local output
+    output=$(print_array_as_shell_escaped_string "${cmd_arr[@]}")
     echo "Running command:" "$output"
     "${cmd_arr[@]}"
 }

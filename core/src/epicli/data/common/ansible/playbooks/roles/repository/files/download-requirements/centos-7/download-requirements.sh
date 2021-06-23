@@ -751,12 +751,11 @@ else
     printf "\n"
 
     while IFS=' ' read -r url new_filename; do
-        # download files, skip if exists, check if new filename is provided
+        # download files, check if new filename is provided
         if [[ -z $new_filename ]]; then
             download_file "$url" "$FILES_DIR"
         elif [[ $new_filename = *" "* ]]; then
-            echol "ERROR: wrong new filename for file: "
-            echol "$url"
+            exit_with_error "wrong new filename for file: $url"
         else
             download_file "$url" "$FILES_DIR" "$new_filename"
         fi
