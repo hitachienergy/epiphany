@@ -25,7 +25,7 @@
 
     - name: Copy files for downloading requirements to repository host
       copy:
-        src: "download-requirements/{{ download_script_subdir }}/"
+        src: download-requirements/{{ download_script_subdir }}/
         dest: /tmp/epi-download-requirements
 
     - name: Make download script executable
@@ -40,14 +40,14 @@
 
 - name: Copy repository client configuration scripts
   copy:
-    src: "client/{{ ansible_os_family }}/"
-    dest: "/tmp/epi-repository-setup-scripts"
+    src: client/{{ ansible_os_family }}/
+    dest: /tmp/epi-repository-setup-scripts
     mode: a+x
 
 - name: Copy repository server configuration scripts
   copy:
-    src: "server/{{ ansible_os_family }}/"
-    dest: "/tmp/epi-repository-setup-scripts"
+    src: server/{{ ansible_os_family }}/
+    dest: /tmp/epi-repository-setup-scripts
     mode: a+x
   when:
     - not custom_repository_url
@@ -66,6 +66,9 @@
     - custom_repository_url or
       offline_mode or
       not stat_flag_file.stat.exists  # do not clean up when skipping download
+  vars:
+    _requirements_file_path: download-requirements/{{ download_script_subdir }}/requirements.{{ ansible_architecture }}.txt
+    requirements_file_lines: "{{ lookup('file', _requirements_file_path).split('\n') }}"
 
 - name: |-
     Copy requirements for offline installation to repository host, this can take a long time
