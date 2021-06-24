@@ -38,6 +38,7 @@
 - [#2332](https://github.com/epiphany-platform/epiphany/issues/2332) - [Elasticsearch] Error when having multiple VMs and non-clustered mode
 - [#1576](https://github.com/epiphany-platform/epiphany/issues/1576) - [Kafka] Incorrect number of brokers/queues available after scaling up/down
 - [#2381](https://github.com/epiphany-platform/epiphany/issues/2381) - Kibana fails to upgrade from epicli v1.0 to v1.1 (version comparison issue)
+- [#2345](https://github.com/epiphany-platform/epiphany/issues/2345) - CoreDNS requires restart after scaling up nodes to be able to resolve new hostnames
 
 ### Updated
 
