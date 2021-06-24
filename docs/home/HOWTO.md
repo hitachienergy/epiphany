@@ -127,3 +127,11 @@
   - [AWS Security groups full yaml file](./howto/SECURITY_GROUPS.md#aws-setting-groups-full-yaml-file)
 
 - [Modules](./howto/MODULES.md)
+
+- [Repository](./howto/REPOSITORY.md)
+  - [Introduction](./howto/REPOSITORY.md#introduction)
+  - [Repository steps and lifecycle](./howto/REPOSITORY.md#repository-steps-and-lifecycle)
+  - [Troubleshooting](./howto/REPOSITORY.md#troubleshooting)
+    - [Downloading requirements progression and logging](./howto/REPOSITORY.md#downloading-requirements-progression-and-logging)
+    - [Re-downloading requirements](./howto/REPOSITORY.md#re-downloading-requirements)
+    - [Restoring system repositories](./howto/REPOSITORY.md#restoring-system-repositories)
