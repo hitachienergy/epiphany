@@ -70,5 +70,9 @@
 - name: Patch CoreDNS
   include_tasks: patch-coredns.yml
 
+# TODO: Restart conditionally (only when /etc/hosts was updated) or check whether newer CoreDNS would solve issue #2345
+- name: Restart CoreDNS pods
+  command: kubectl rollout restart deployment coredns --namespace kube-system
+
 - name: Apply Kubernetes Dashboard
   include_tasks: apply-dashboard.yml
