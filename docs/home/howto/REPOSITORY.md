@@ -81,5 +81,8 @@ If during the component installation an issue will arrise (installation or conne
 To restore the original repository setup on a machine, you can execute the following scripts:
 
 ```shell
+# Re-enable system repositories
 /tmp/epi-repository-setup-scripts/enable-system-repos.sh
+# Disable epirepo
+/tmp/epi-repository-setup-scripts/disable-epirepo-client.sh
 ```
