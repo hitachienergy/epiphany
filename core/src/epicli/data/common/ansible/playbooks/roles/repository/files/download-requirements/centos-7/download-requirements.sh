@@ -50,17 +50,17 @@ add_repo_from_script() {
 	local script_url="$1"
 
 	echol "Running: curl $script_url | bash"
-	curl $script_url | bash
+	curl "$script_url" | bash
 }
 
 # params: <backup_file_path> <path_1_to_backup1> ... [path_N_to_backup]
 backup_files() {
 	local backup_file_path="$1"
 	shift
-	local paths_to_backup="$@"
+	local paths_to_backup=("$@")
 
 	# --directory='/' is for tar --verify
-	tar --create --verbose --verify --directory="/" --file="$backup_file_path" $paths_to_backup
+	tar --create --verbose --verify --directory="/" --file="$backup_file_path" "${paths_to_backup[@]}"
 }
 
 # params: <dir_path>
@@ -86,23 +86,30 @@ disable_repo() {
 	fi
 }
 
-# params: <file_url> <dest_dir>
+# params: <file_url> <dest_dir> [new_filename]
 download_file() {
 	local file_url="$1"
 	local dest_dir="$2"
 
-	local file_name=$(basename "$file_url")
-	local dest_path="$dest_dir/$file_name"
+	if [[ ${3-} ]]; then
+		local file_name=$3
+	else
+		local file_name
+		file_name=$(basename "$file_url")
+	fi
+
+	local dest_path="${dest_dir}/${file_name}"
 	local retries=3
 
-	# wget with --timestamping sometimes failes on AWS with ERROR 403: Forbidden
-	# so we remove existing file to overwrite it, to be optimized
-	[[ ! -f $dest_path ]] || remove_file "$dest_path"
-
-	echol "Downloading file: $file_url"
-
-	run_cmd_with_retries wget --no-verbose --directory-prefix="$dest_dir" "$file_url" $retries ||
-		exit_with_error "Command failed: wget --no-verbose --directory-prefix=\"$dest_dir\" \"$file_url\""
+	if [[ ${3-} ]]; then
+		echol "Downloading file: $file_url as $file_name"
+		run_cmd_with_retries wget --quiet --directory-prefix="$dest_dir" "$file_url" -O "$dest_path" $retries || \
+		exit_with_error "Command failed: wget --no-verbose --directory-prefix=$dest_dir $file_url $retries"
+	else
+		echol "Downloading file: $file_url"
+		run_cmd_with_retries wget --quiet --directory-prefix="$dest_dir" "$file_url" $retries ||	\
+		exit_with_error "Command failed: wget --no-verbose --directory-prefix=$dest_dir $file_url $retries"
+	fi
 }
 
 # params: <image_name> <dest_dir>
@@ -118,7 +125,7 @@ download_image() {
 	local retries=3
 
 	if [[ -f $dest_path ]]; then
-		echol "Image file: "$dest_path" already exists. Skipping..."
+		echol "Image file: $dest_path already exists. Skipping..."
 	else
 		# use temporary file for downloading to be safe from sudden interruptions (network, ctrl+c)
 		local tmp_file_path=$(mktemp)
@@ -223,10 +230,15 @@ get_requirements_from_group() {
 	# $1 reserved for result
 	local group_name="$2"
 	local requirements_file_path="$3"
-
 	local all_requirements=$(grep --only-matching '^[^#]*' "$requirements_file_path" | sed -e 's/[[:space:]]*$//')
-	local requirements_from_group=$(awk "/^$/ {next}; /\[${group_name}\]/ {f=1; next}; /^\[/ {f=0}; f {print \$0}" <<< "$all_requirements") ||
-		exit_with_error "Function get_requirements_from_group failed for group: $group_name"
+
+	if [[ $group_name == "files" ]]; then
+		local requirements_from_group=$(awk "/^$/ {next}; /\[${group_name}\]/ {f=1; f=2; next}; /^\[/ {f=0}; f {print \$0}" <<< "$all_requirements") ||
+			exit_with_error "Function get_requirements_from_group failed for group: $group_name"
+	else
+		local requirements_from_group=$(awk "/^$/ {next}; /\[${group_name}\]/ {f=1; next}; /^\[/ {f=0}; f {print \$0}" <<< "$all_requirements") ||
+			exit_with_error "Function get_requirements_from_group failed for group: $group_name"
+	fi
 
 	[[ -n $requirements_from_group ]] || echol "No requirements found for group: $group_name"
 
@@ -430,9 +442,9 @@ run_cmd_with_retries() {
 }
 
 usage() {
-	echo "usage: ./$(basename $0) <downloads_dir>"
-	echo "       ./$(basename $0) /tmp/downloads"
-	[ -z "$1" ] || exit "$1"
+	echo "usage:         ./$(basename $0) <downloads_dir> [--no-logfile]"
+	echo "example:       ./$(basename $0) /tmp/downloads"
+	exit 1
 }
 
 validate_bash_version() {
@@ -478,7 +490,10 @@ _print_array_as_shell_escaped_string() {
 
 validate_bash_version
 
-[ $# -gt 0 ] || usage 1 >&2
+if [[ $# -lt 1 ]]; then
+	usage >&2
+fi
+
 readonly START_TIME=$(date +%s)
 
 # --- Parse arguments ---
@@ -486,16 +501,16 @@ readonly START_TIME=$(date +%s)
 POSITIONAL_ARGS=()
 CREATE_LOGFILE='yes'
 while [[ $# -gt 0 ]]; do
-case $1 in
-	--no-logfile)
-	CREATE_LOGFILE='no'
-	shift # past argument
-	;;
-	*) # unknown option
-	POSITIONAL_ARGS+=("$1") # save it in an array for later
-	shift
-	;;
-esac
+	case $1 in
+		--no-logfile)
+		CREATE_LOGFILE='no'
+		shift # past argument
+		;;
+		*) # unknown option
+		POSITIONAL_ARGS+=("$1") # save it in an array for later
+		shift
+		;;
+	esac
 done
 set -- "${POSITIONAL_ARGS[@]}" # restore positional arguments
 
@@ -503,20 +518,20 @@ set -- "${POSITIONAL_ARGS[@]}" # restore positional arguments
 
 # dirs
 readonly DOWNLOADS_DIR="$1" # root directory for downloads
-readonly FILES_DIR="$DOWNLOADS_DIR/files"
-readonly PACKAGES_DIR="$DOWNLOADS_DIR/packages"
-readonly IMAGES_DIR="$DOWNLOADS_DIR/images"
-readonly REPO_PREREQ_PACKAGES_DIR="$PACKAGES_DIR/repo-prereqs"
+readonly FILES_DIR="${DOWNLOADS_DIR}/files"
+readonly PACKAGES_DIR="${DOWNLOADS_DIR}/packages"
+readonly IMAGES_DIR="${DOWNLOADS_DIR}/images"
+readonly REPO_PREREQ_PACKAGES_DIR="${PACKAGES_DIR}/repo-prereqs"
 readonly SCRIPT_DIR="$(dirname $(readlink -f $0))" # want absolute path
 
 # files
-readonly SCRIPT_FILE_NAME=$(basename $0)
-readonly LOG_FILE_NAME=${SCRIPT_FILE_NAME/sh/log}
-readonly LOG_FILE_PATH="$SCRIPT_DIR/$LOG_FILE_NAME"
-readonly YUM_CONFIG_BACKUP_FILE_PATH="$SCRIPT_DIR/${SCRIPT_FILE_NAME}-yum-repos-backup-tmp-do-not-remove.tar"
-readonly CRANE_BIN="$SCRIPT_DIR/crane"
-readonly INSTALLED_PACKAGES_FILE_PATH="$SCRIPT_DIR/${SCRIPT_FILE_NAME}-installed-packages-list-do-not-remove.tmp"
-readonly PID_FILE_PATH=/var/run/${SCRIPT_FILE_NAME/sh/pid}
+readonly SCRIPT_FILE_NAME=$(basename "$0")
+readonly LOG_FILE_NAME="${SCRIPT_FILE_NAME}.log"
+readonly LOG_FILE_PATH="${SCRIPT_DIR}/${LOG_FILE_NAME}"
+readonly YUM_CONFIG_BACKUP_FILE_PATH="${SCRIPT_DIR}/${SCRIPT_FILE_NAME}-yum-repos-backup-tmp-do-not-remove.tar"
+readonly CRANE_BIN="${SCRIPT_DIR}/crane"
+readonly INSTALLED_PACKAGES_FILE_PATH="${SCRIPT_DIR}/${SCRIPT_FILE_NAME}-installed-packages-list-do-not-remove.tmp"
+readonly PID_FILE_PATH="/var/run/${SCRIPT_FILE_NAME}.pid"
 readonly ADD_MULTIARCH_REPOSITORIES_SCRIPT="${SCRIPT_DIR}/add-repositories.multiarch.sh"
 
 #arch
@@ -612,17 +627,21 @@ done
 if [[ -z "${CRANE}" ]] || [ $(wc -l <<< "${CRANE}") -ne 1 ] ; then
     exit_with_error "Crane binary download path undefined or more than one download path defined"
 else
-    file_url=$(head -n 1 <<< "${CRANE}")
-    echol "Downloading crane from: ${file_url}"
-    download_file "${file_url}" "${SCRIPT_DIR}"
-    tar_path="${SCRIPT_DIR}/${file_url##*/}"
-    echol "Unpacking crane from ${tar_path} to ${CRANE_BIN}"
-    run_cmd tar -xzf "${tar_path}" --directory "${SCRIPT_DIR}" "crane" --overwrite
-    [[ -x "${CRANE_BIN}" ]] || run_cmd chmod +x "${CRANE_BIN}"
-    remove_file "${tar_path}"
+	if [[ -x $CRANE_BIN ]]; then
+        echol "Crane binary already exists"
+	else
+		file_url=$(head -n 1 <<< "${CRANE}")
+		echol "Downloading crane from: ${file_url}"
+		download_file "${file_url}" "${SCRIPT_DIR}"
+		tar_path="${SCRIPT_DIR}/${file_url##*/}"
+		echol "Unpacking crane from ${tar_path} to ${CRANE_BIN}"
+		run_cmd tar -xzf "${tar_path}" --directory "${SCRIPT_DIR}" "crane" --overwrite
+		[[ -x "${CRANE_BIN}" ]] || run_cmd chmod +x "${CRANE_BIN}"
+		remove_file "${tar_path}"
+	fi
 fi
 
-# --- Enable OS repos ---
+# --- Enable CentOS repos ---
 
 # -> CentOS-7 - Extras # for container-selinux and centos-release-scl packages
 enable_repo 'extras'
@@ -636,7 +655,6 @@ enable_repo 'base'
 
 # arch specific repositories
 . ${ADD_ARCH_REPOSITORIES_SCRIPT}
-
 # -> Software Collections (SCL) https://wiki.centos.org/AdditionalResources/Repositories/SCL
 if ! is_package_installed 'centos-release-scl'; then
 	# from extras repo
@@ -723,9 +741,26 @@ fi
 
 create_directory "$FILES_DIR"
 
-for file in $FILES; do
-	download_file "$file" "$FILES_DIR"
-done
+if [[ -z "$FILES" ]]; then
+    echol "No files to download"
+else
+    # list of all files that will be downloaded
+    echol "Files to be downloaded:"
+    cat -n <<< "${FILES}"
+
+    printf "\n"
+
+    while IFS=' ' read -r url new_filename; do
+        # download files, check if new filename is provided
+        if [[ -z $new_filename ]]; then
+            download_file "$url" "$FILES_DIR"
+        elif [[ $new_filename = *" "* ]]; then
+            exit_with_error "wrong new filename for file: $url"
+        else
+            download_file "$url" "$FILES_DIR" "$new_filename"
+        fi
+    done <<< "$FILES"
+fi
 
 # === Images ===
 
@@ -745,4 +780,4 @@ remove_file "$PID_FILE_PATH"
 
 readonly END_TIME=$(date +%s)
 
-echol "$(basename $0) finished, execution time: $(date -u -d @$((END_TIME-START_TIME)) +'%Hh:%Mm:%Ss')"
+echol "$SCRIPT_FILE_NAME finished, execution time: $(date -u -d @$((END_TIME-START_TIME)) +'%Hh:%Mm:%Ss')"

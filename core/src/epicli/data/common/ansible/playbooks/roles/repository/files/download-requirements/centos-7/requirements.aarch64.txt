@@ -146,6 +146,31 @@ https://github.com/hashicorp/vault-helm/archive/v0.11.0.tar.gz
 https://github.com/prometheus-community/postgres_exporter/releases/download/v0.9.0/postgres_exporter-0.9.0.linux-arm64.tar.gz
 https://charts.bitnami.com/bitnami/node-exporter-1.1.2.tgz
 https://helm.elastic.co/helm/filebeat/filebeat-7.9.2.tgz
+## Grafana Dashboards <url> <new filename>
+# Kubernetes Cluster
+https://grafana.com/api/dashboards/7249/revisions/1/download grafana_dashboard_7249.json
+# Kubernetes cluster monitoring (via Prometheus)
+https://grafana.com/api/dashboards/315/revisions/3/download grafana_dashboard_315.json
+# Node Exporter for Prometheus
+https://grafana.com/api/dashboards/11074/revisions/9/download grafana_dashboard_11074.json
+# Node Exporter Server Metrics
+https://grafana.com/api/dashboards/405/revisions/8/download grafana_dashboard_405.json
+# Postgres Overview
+https://grafana.com/api/dashboards/455/revisions/2/download grafana_dashboard_455.json
+# PostgreSQL Database
+https://grafana.com/api/dashboards/9628/revisions/7/download grafana_dashboard_9628.json
+# RabbitMQ Monitoring
+https://grafana.com/api/dashboards/4279/revisions/4/download grafana_dashboard_4279.json
+# Node Exporter Full
+https://grafana.com/api/dashboards/1860/revisions/23/download grafana_dashboard_1860.json
+# Kafka Exporter Overview
+https://grafana.com/api/dashboards/7589/revisions/5/download grafana_dashboard_7589.json
+# HAproxy Servers | HAproxy
+https://grafana.com/api/dashboards/367/revisions/3/download grafana_dashboard_367.json
+# Docker and Host Monitoring w/ Prometheus
+https://grafana.com/api/dashboards/179/revisions/5/download grafana_dashboard_179.json
+# Kubernetes pod and cluster monitoring (via Prometheus)
+https://grafana.com/api/dashboards/6663/revisions/1/download grafana_dashboard_6663.json
 
 [images]
 haproxy:2.2.2-alpine

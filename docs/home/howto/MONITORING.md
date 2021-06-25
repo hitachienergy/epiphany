@@ -156,14 +156,15 @@ More information about Grafana security you can find at https://grafana.com/docs
 
 Epiphany uses Grafana for monitoring data visualization. Epiphany installation creates Prometheus datasource in Grafana, so the only additional step you have to do is to create your dashboard.
 
+There are also many ready to take [Grafana dashboards](https://grafana.com/dashboards) created by community - remember to check license before importing any of those dashboards.
+
 ### Creating dashboards
 
-You can create your own dashboards [Grafana getting started](http://docs.grafana.org/guides/getting_started/) page will help you with it.
+You can create your own dashboards [Grafana getting started](https://grafana.com/docs/grafana/latest/getting-started/getting-started/) page will help you with it.
 Knowledge of Prometheus will be really helpful when creating diagrams since it use [PromQL](https://prometheus.io/docs/prometheus/latest/querying/basics/) to fetch data.
 
-### Importing dashboards
+### Importing dashboards via Grafana GUI
 
-There are also many ready to take [Grafana dashboards](https://grafana.com/dashboards) created by community - remember to check license before importing any of those dashboards.
 To import existing dashboard:
 
 1. If you have found dashboard that suits your needs you can import it directly to Grafana going to menu item `Dashboards/Manage` in your Grafana web page.
@@ -171,6 +172,44 @@ To import existing dashboard:
 3. Enter dashboard id or load json file with dashboard definition
 4. Select datasource for dashboard - you should select `Prometheus`.
 5. Click `Import`
+
+### Importing dashboards via configuration manifest
+
+In order to pull a dashboard from official Grafana website during epicli execution, you have to provide dashboard_id, revision_id and datasource in your configuration manifest.
+
+Example:
+
+```yaml
+kind: configuration/grafana
+specification:
+  ...
+  grafana_online_dashboards:
+    - dashboard_id: '4271'
+      revision_id: '3'
+      datasource: 'Prometheus'
+```
+
+### Enabling predefined Grafana dashboards
+
+Since v1.1.0 Epiphany provides predefined Grafana dashboards. These dashboards are available in online and offline deployment modes.
+To enable particular Grafana dashboard, refer to [default Grafana configuration file](https://github.com/epiphany-platform/epiphany/blob/develop/core/src/epicli/data/common/defaults/configuration/grafana.yml), copy `kind: configuration/grafana` section to your configuration manifest and uncomment desired dashboards.
+
+Example:
+
+```yaml
+kind: configuration/grafana
+specification:
+  ...
+  grafana_external_dashboards:
+  # Kubernetes cluster monitoring (via Prometheus)
+    - dashboard_id: '315'
+      datasource: 'Prometheus'
+  # Node Exporter Server Metrics
+    - dashboard_id: '405'
+      datasource: 'Prometheus'
+```
+
+*Note: The above link points to develop branch. Please choose the right branch that suits to Epiphany version you are using.*
 
 ### Components used for monitoring
 
@@ -187,7 +226,7 @@ List of monitoring components - so called exporters:
 
 When dashboard creation or import succeeds you will see it on your dashboard list.
 
-`Note: For some dashboards, there is no data to visualize until there is traffic activity for the monitored component.
+*Note: For some dashboards, there is no data to visualize until there is traffic activity for the monitored component.*
 
 # Kibana
 
