@@ -122,3 +122,13 @@
 
 - name: Include logrotate configuration tasks
   include_tasks: configure-logrotate.yml
+
+- name: Create Epiphany directories
+  file:
+    path: "{{ item.path }}"
+    state: directory
+    mode: "{{ item.mode | default('u=rwx,go=rx') }}"
+    owner: root
+    group: root
+  loop:
+    - { path: /var/lib/epiphany }

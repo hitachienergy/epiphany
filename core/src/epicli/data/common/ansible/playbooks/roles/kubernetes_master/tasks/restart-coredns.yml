@@ -1,0 +1,42 @@
+---
+- name: Check if CoreDNS known hosts file exists
+  stat:
+    path: /var/lib/epiphany/{{ coredns_vars.known_hosts_file_name }}
+    get_attributes: false
+    get_checksum: false
+    get_mime: false
+  register: stat_coredns_known_hosts
+
+- name: Compare hosts files
+  when: stat_coredns_known_hosts.stat.exists
+  block:
+    - name: Slurp CoreDNS known hosts file
+      slurp:
+        src: /var/lib/epiphany/{{ coredns_vars.known_hosts_file_name }}
+      register: slurp_coredns_known_hosts
+
+    - name: Slurp /etc/hosts
+      slurp:
+        src: /etc/hosts
+      register: slurp_etc_hosts
+
+    - name: Check if hosts files differ
+      set_fact:
+        hosts_files_differ: >-
+          {{ etc_hosts_lines | symmetric_difference(coredns_known_hosts_lines) | count > 0 }}
+      vars:
+        etc_hosts_lines: "{{ (slurp_etc_hosts.content | b64decode).split('\n') }}"
+        coredns_known_hosts_lines: "{{ (slurp_coredns_known_hosts.content | b64decode).split('\n') }}"
+
+- name: Restart CoreDNS pods
+  command: kubectl rollout restart deployment coredns --namespace kube-system
+  register: restart_coredns_deployment
+  when: not stat_coredns_known_hosts.stat.exists or hosts_files_differ
+
+- name: Copy /etc/hosts to /var/lib/epiphany/{{ coredns_vars.known_hosts_file_name }}
+  copy:
+    src: /etc/hosts
+    dest: /var/lib/epiphany/{{ coredns_vars.known_hosts_file_name }}
+    remote_src: yes
+    mode: preserve
+  when: restart_coredns_deployment.changed
