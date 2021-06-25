@@ -66,7 +66,8 @@ If for some reason the download requirement step fails and you want to restart, 
 
 This directory holds all the files beeing downloaded and removing it makes sure that there are no locks anymore or temperary files which might interfere with the restarted download progress.
 
-If you want to re-download the requirements but the process finished succesfully before you might need to remove the following file:
+If you want to re-download the requirements but the process finished successfully before, you might need to remove the following file:
+
 
 ```shell
 /tmp/epi-download-requirements/download-requirements-done.flag
