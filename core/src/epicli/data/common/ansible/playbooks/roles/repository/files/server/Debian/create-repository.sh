@@ -15,9 +15,12 @@ if [[ "$is_offline_mode" == "true" ]]; then
 
   if ! dpkg -l | grep -q "^ii  libdpkg-perl\s"; then 
     echo "Package libdpkg-perl not found, installing..."
-    dpkg -i "${epi_repo_server_path}/packages/libdpkg-perl*.deb"
+    dpkg -i "${epi_repo_server_path}"/packages/libdpkg-perl*.deb
     retval=$?
-    [[ $retval -eq "0" ]] || echo "Exiting.." && exit "$retval"
+    if [[ $retval -ne "0" ]]; then
+      echo "Exiting.."
+      exit "$retval"
+    fi
   fi
 
   echo "Generating repository metadata..."
