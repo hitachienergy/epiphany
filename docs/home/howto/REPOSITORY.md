@@ -28,7 +28,6 @@ Below the lifecycle of the Epiphany repository:
 
 6. Stop Epiphany repository (optionally removing data)
 
-
 ## Troubleshooting
 
 ### Downloading requirements progression and logging
@@ -36,7 +35,6 @@ Below the lifecycle of the Epiphany repository:
 *Note: This will only cover [online clusters](./CLUSTER.md#how-to-create-an-epiphany-cluster-on-existing-infrastructure)*
 
 Downloading requirements is one of the most sensitive steps in deploying a new cluster because lots of resources are being downloaded from various sources.
-
 
 When you see the following output from epicli, requirements are being downloaded:
 
@@ -47,9 +45,7 @@ INFO cli.engine.ansible.AnsibleCommand - You can check progress on repository ho
 
 As noted this process can take a long time depending on the connection and as downloading requirements is being done by a shell script, the ```Ansible``` process cannot return any realtime information.
 
-
 To view the progress during the downloading (realtime output from the logs), one can SSH into the repository machine and run:
-
 
 ```shell
 journalctl -f -t download-requirements.sh
@@ -73,13 +69,11 @@ This directory holds all the files being downloaded and removing it makes sure t
 
 If you want to re-download the requirements but the process finished successfully before, you might need to remove the following file:
 
-
 ```shell
 /tmp/epi-download-requirements/download-requirements-done.flag
 ```
 
 When this file is present and it isn't older than defined amount of time (2 hours by default), it enforces skipping re-downloading requirements.
-
 
 ### Restoring system repositories
 
