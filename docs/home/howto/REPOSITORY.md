@@ -18,7 +18,6 @@ Below the lifecycle of the Epiphany repository:
 2. Set up Epiphany repository (create `epirepo` and start HTTP server)
 3. For all cluster machines:
    - Back up and disable system package repositories
-
    - Enable the Epiphany repository
 4. Install Epiphany components
 5. For all cluster machines:
