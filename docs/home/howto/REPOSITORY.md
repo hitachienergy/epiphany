@@ -69,7 +69,7 @@ If for some reason the download requirement step fails and you want to restart, 
 /var/www/html/epirepo
 ```
 
-This directory holds all the files beeing downloaded and removing it makes sure that there are no locks anymore or temperary files which might interfere with the restarted download progress.
+This directory holds all the files being downloaded and removing it makes sure that there are no corrupted or temporary files which might interfere with the restarted download process.
 
 If you want to re-download the requirements but the process finished successfully before, you might need to remove the following file:
 
