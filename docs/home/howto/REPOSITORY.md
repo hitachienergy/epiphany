@@ -72,7 +72,8 @@ If you want to re-download the requirements but the process finished succesfully
 /tmp/epi-download-requirements/download-requirements-done.flag
 ```
 
-When this file is present it enforces skiping re-downloading requirements for a defined amount of time (default 2 hours).
+When this file is present and it isn't older than defined amount of time (2 hours by default), it enforces skipping re-downloading requirements.
+
 
 ### Restoring system repositories
 
