@@ -1,11 +1,15 @@
 ---
-- include_tasks: preflight.yml
+- name: Include preflight tasks
+  include_tasks: preflight.yml
 
-- include_tasks: install.yml
+- name: Include install tasks
+  include_tasks: install.yml
 
-- include_tasks: configure.yml
+- name: Include configure tasks
+  include_tasks: configure.yml
 
-- include_tasks: plugins.yml
+- name: Include plugins tasks
+  include_tasks: plugins.yml
   when: grafana_plugins != []
 
 - name: Restart grafana before configuring datasources and dashboards
@@ -16,13 +20,18 @@
     host: "{{ grafana_address }}"
     port: "{{ grafana_port }}"
 
-- include_tasks: api_keys.yml
+- name: Include api keys tasks
+  include_tasks: api_keys.yml
   when: grafana_api_keys | length > 0
 
-- include_tasks: datasources.yml
+- name: Include datasources tasks
+  include_tasks: datasources.yml
   when: grafana_datasources != []
 
-- include_tasks: notifications.yml
+- name: Include notifications tasks
+  include_tasks: notifications.yml
   when: grafana_alert_notifications | length > 0
 
-- include_tasks: dashboards.yml
+- name: Include dashboards tasks
+  include_tasks: dashboards.yml
+  when: (grafana_online_dashboards != []) or (grafana_external_dashboards != [])

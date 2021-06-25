@@ -8,7 +8,7 @@ spec:
             ephemeral-storage: 2Mi
         volumeMounts:
         - name: hosts-volume
-          mountPath: /etc/hosts
+          mountPath: /etc/hosts-mounted
           readOnly: true
       volumes:
       - name: hosts-volume
