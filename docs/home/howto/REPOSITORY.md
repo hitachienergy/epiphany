@@ -38,7 +38,7 @@ Below the lifecycle of the Epiphany repository:
 Downloading requirements is one of the most sensitive steps in deploying a new cluster because lots of resources are being downloaded from various sources.
 
 
-When you see the following output from Epicli requirements are beeing downloaded:
+When you see the following output from epicli, requirements are being downloaded:
 
 ```shell
 INFO cli.engine.ansible.AnsibleCommand - TASK [repository : Run download-requirements script, this can take a long time
