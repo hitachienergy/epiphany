@@ -45,7 +45,8 @@ INFO cli.engine.ansible.AnsibleCommand - TASK [repository : Run download-require
 INFO cli.engine.ansible.AnsibleCommand - You can check progress on repository host with: journalctl -f -t download-requirements.sh] ***
 ```
 
-As noted this process can take a long time depending on the connection and as downloading requirements is beeing done by a shell script the ```Ansible``` process cannot return any realtime information.
+As noted this process can take a long time depending on the connection and as downloading requirements is being done by a shell script, the ```Ansible``` process cannot return any realtime information.
+
 
 As stated to view the progress during the downloading one can SSH into the repository machine and run:
 
