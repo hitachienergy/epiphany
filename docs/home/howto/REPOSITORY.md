@@ -76,7 +76,7 @@ When this file is present it enforces skiping re-downloading requirements for a 
 
 ### Restoring system repositories
 
-If during the component installation an issue will arrise (installation or connection issue E.g) it might be the case that the cluster machines are left in a state where step 5 of the repository lifecycle is not run. This will leave the machines with a broken repository setup making re-running ```epicli apply``` imposible as noted in issue [#2324](https://github.com/epiphany-platform/epiphany/issues/2324)
+If during the component installation an issue will arise (e.g. network issue), it might be the case that the cluster machines are left in a state where step 5 of the repository lifecycle is not run. This will leave the machines with a broken repository setup making re-running ```epicli apply``` impossible as noted in issue [#2324](https://github.com/epiphany-platform/epiphany/issues/2324).
 
 To restore the original repository setup on a machine, you can execute the following scripts:
 
