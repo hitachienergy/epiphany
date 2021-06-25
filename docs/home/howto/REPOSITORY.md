@@ -48,7 +48,8 @@ INFO cli.engine.ansible.AnsibleCommand - You can check progress on repository ho
 As noted this process can take a long time depending on the connection and as downloading requirements is being done by a shell script, the ```Ansible``` process cannot return any realtime information.
 
 
-As stated to view the progress during the downloading one can SSH into the repository machine and run:
+To view the progress during the downloading (realtime output from the logs), one can SSH into the repository machine and run:
+
 
 ```shell
 journalctl -f -t download-requirements.sh
