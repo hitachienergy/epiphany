@@ -23,7 +23,8 @@ Below the lifecycle of the Epiphany repository:
 5. For all cluster machines:
    - Disable the Epiphany repository
    - Restore backup of system package repositories
-4. Teardown Epiphany repository
+6. Stop Epiphany repository (optionally removing data)
+
 
 ## Troubleshooting
 
