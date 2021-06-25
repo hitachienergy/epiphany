@@ -78,7 +78,7 @@ When this file is present it enforces skiping re-downloading requirements for a 
 
 If during the component installation an issue will arrise (installation or connection issue E.g) it might be the case that the cluster machines are left in a state where step 5 of the repository lifecycle is not run. This will leave the machines with a broken repository setup making re-running ```epicli apply``` imposible as noted in issue [#2324](https://github.com/epiphany-platform/epiphany/issues/2324)
 
-To work arround this issue for now one can execute the following script on every cluster machine to restore the original repository setup:
+To restore the original repository setup on a machine, you can execute the following scripts:
 
 ```shell
 /tmp/epi-repository-setup-scripts/enable-system-repos.sh
