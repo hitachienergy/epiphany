@@ -17,7 +17,8 @@ Below the lifecycle of the Epiphany repository:
 1. Download requirements (This can be automatic for [online cluster](./CLUSTER.md#how-to-create-an-epiphany-cluster-on-existing-infrastructure) or manual for an [airgapped cluster](./CLUSTER.md#how-to-create-an-epiphany-cluster-on-existing-air-gapped-infrastructure). )
 2. Setup Epiphany repository
 3. For all cluster machines:
-   - Backup and disable system package repositories
+   - Back up and disable system package repositories
+
    - Enable the Epiphany repository
 4. Install Epiphany components
 5. For all cluster machines:
