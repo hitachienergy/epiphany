@@ -54,8 +54,6 @@ As stated to view the progress during the downloading one can SSH into the repos
 journalctl -f -t download-requirements.sh
 ```
 
-To show the realtime output from the logs.
-
 If for some reason the download-requirements fails you can also always check the log afterwards on the repository machine here:
 
 ```shell
