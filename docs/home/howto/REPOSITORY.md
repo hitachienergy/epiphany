@@ -31,7 +31,8 @@ Below the lifecycle of the Epiphany repository:
 
 *Note: This will only cover [online clusters](./CLUSTER.md#how-to-create-an-epiphany-cluster-on-existing-infrastructure)*
 
-Downloading requirements is one of the most sensitive steps in deploying a new cluster because lots of resources are beeing downloaded from various repositories and sources.
+Downloading requirements is one of the most sensitive steps in deploying a new cluster because lots of resources are being downloaded from various sources.
+
 
 When you see the following output from Epicli requirements are beeing downloaded:
 
