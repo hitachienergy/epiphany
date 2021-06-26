@@ -795,13 +795,14 @@ Epiphany has the ability to automaticly scale and cluster certain components on 
 
 Then when applying the changed configuration using Epicli additional VM's will be spawned and configured or removed. The following components support scaling/clustering:
 
+- repository: In standard Epiphany deployment only one repository machine is required. Scaling up the repository component will create a new standalone VM. Scaling down will remove it in LIFO order (Last In, First Out). However even if you create more then one VM, by default all other components will use the first one.
 - kubernetes_master: When increased this will setup additional control plane nodes, but in the case of non-ha k8s cluster, existing control plane node must be promoted first. At the moment there is [no ability](https://github.com/epiphany-platform/epiphany/issues/1579) to downscale.
 - kubernetes_node: When increased this will setup additional nodes with `kubernetes_master`. There is [no ability](https://github.com/epiphany-platform/epiphany/issues/1580) to downscale.
 - ignite
 - kafka: When changed this will setup or remove additional nodes for the Kafka cluster. Note that there is an [issue](https://github.com/epiphany-platform/epiphany/issues/1576) that needs to be fixed before scaling usage.
-- load_balancer
+- load_balancer - Scaling up the load_balancer component will create a new standalone VM. Scaling down will remove it in LIFO order (Last In, First Out).
 - logging: Sometimes it works, but often there is an [issue](https://github.com/epiphany-platform/epiphany/issues/1575) with Kibana installation that needs to be resoved
-- monitoring
+- monitoring - Scaling up the monitoring component will create a new standalone VM. Scaling down will remove it in LIFO order (Last In, First Out).
 - opendistro_for_elasticsearch: Works the same as `logging` component, without issues if there is no `kibana` part in feature mapping configuration.
 - postgresql: At the moment does not work correctly, there is an [issue](https://github.com/epiphany-platform/epiphany/issues/1577). When changed this will setup or remove additional nodes for Postgresql. Note that extra nodes can only be setup to do replication by adding the following additional `configuration/postgresql` configuration:
 
