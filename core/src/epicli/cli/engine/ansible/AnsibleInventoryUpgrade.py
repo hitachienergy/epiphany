@@ -15,11 +15,12 @@ from cli.helpers.data_loader import load_manifest_docs
 
 
 class AnsibleInventoryUpgrade(Step):
-    def __init__(self, build_dir, backup_build_dir):
+    def __init__(self, build_dir, backup_build_dir, config_docs):
         super().__init__(__name__)
         self.build_dir = build_dir
         self.backup_build_dir = backup_build_dir
         self.cluster_model = None
+        self.config_docs = config_docs 
         self.manifest_docs = []
 
     def __enter__(self):
@@ -45,6 +46,13 @@ class AnsibleInventoryUpgrade(Step):
         role = self.get_role(inventory, role_name)
         if role != None:
             role.role = new_role_name
+
+    def get_new_config_roles(self):
+        roles = []
+        for doc in self.config_docs:
+            if "configuration/" in doc.kind:
+                roles.append(doc.kind.replace('configuration/', ''))
+        return roles
 
     def upgrade(self):
         inventory_path = get_inventory_path_for_build(self.backup_build_dir)  
