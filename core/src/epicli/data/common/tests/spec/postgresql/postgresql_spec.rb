@@ -14,9 +14,14 @@ end
 
 ELASTICSEARCH = { # must be global until we introduce modules
   host: listInventoryHosts("logging")[0],
-  api_port: 9200,
-  admin_password: !config_docs[:logging].nil? ? config_docs[:logging]["specification"]["admin_password"] : nil
+  api_port: 9200
 }
+
+if !ELASTICSEARCH[:host].nil?
+  # Configurable passwords for ES users were introduced in v0.10.0.
+  # For testing upgrades, we use the default password for now but we're going to switch to TLS auth.
+  ELASTICSEARCH[:admin_password] = config_docs[:logging]["specification"]["admin_password"] || "admin"
+end
 
 replicated =           config_docs[:postgresql]["specification"]["extensions"]["replication"]["enabled"]
 replication_user =     config_docs[:postgresql]["specification"]["extensions"]["replication"]["replication_user_name"]
