@@ -14,9 +14,14 @@ end
 
 ELASTICSEARCH = { # must be global until we introduce modules
   host: listInventoryHosts("logging")[0],
-  api_port: 9200,
-  admin_password: !config_docs[:logging].nil? ? config_docs[:logging]["specification"]["admin_password"] : nil
+  api_port: 9200
 }
+
+if !ELASTICSEARCH[:host].nil?
+  # Configurable passwords for ES users were introduced in v0.10.0.
+  # For testing upgrades, we use the default password for now but we're going to switch to TLS auth.
+  ELASTICSEARCH[:admin_password] = config_docs[:logging]["specification"]["admin_password"] || "admin"
+end
 
 replicated =           config_docs[:postgresql]["specification"]["extensions"]["replication"]["enabled"]
 replication_user =     config_docs[:postgresql]["specification"]["extensions"]["replication"]["replication_user_name"]
@@ -554,7 +559,8 @@ if pgaudit_enabled && countInventoryHosts("logging") > 0
 
     describe 'Check if Elasticsearch logs contain queries from PostrgeSQL database' do
       query = get_elasticsearch_query(message_pattern: 'serverspec_test*')
-      command = get_query_command_with_retries(json_query: query, min_doc_hits: 11)
+      min_doc_hits = pgbouncer_enabled ? 11 : 6
+      command = get_query_command_with_retries(json_query: query, min_doc_hits: min_doc_hits)
       describe command(command) do
         its(:stdout) { should match /CREATE SCHEMA serverspec_test/ }
         its(:stdout) { should match /CREATE TABLE serverspec_test\.test/ }
