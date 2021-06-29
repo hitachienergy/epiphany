@@ -559,7 +559,8 @@ if pgaudit_enabled && countInventoryHosts("logging") > 0
 
     describe 'Check if Elasticsearch logs contain queries from PostrgeSQL database' do
       query = get_elasticsearch_query(message_pattern: 'serverspec_test*')
-      command = get_query_command_with_retries(json_query: query, min_doc_hits: 11)
+      min_doc_hits = pgbouncer_enabled ? 11 : 6
+      command = get_query_command_with_retries(json_query: query, min_doc_hits: min_doc_hits)
       describe command(command) do
         its(:stdout) { should match /CREATE SCHEMA serverspec_test/ }
         its(:stdout) { should match /CREATE TABLE serverspec_test\.test/ }
