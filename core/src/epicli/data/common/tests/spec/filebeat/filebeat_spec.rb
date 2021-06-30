@@ -1,5 +1,11 @@
 require 'spec_helper'
 
+# Skip tests if there is no 'logging' component
+if countInventoryHosts("logging") < 1
+  puts 'Skipping Filebeat tests since "logging" component not found in inventory.'
+  exit 0
+end
+
 # Configurable passwords for ES users were introduced in v0.10.0.
 # For testing upgrades, we use default passwords for now but they should be read from filebeat.yml (remote host).
 es_logstash_user_password  = readDataYaml("configuration/logging")["specification"]["logstash_password"] || "logstash"
