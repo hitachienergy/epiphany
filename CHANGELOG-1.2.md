@@ -8,6 +8,8 @@
 
 ### Fixed
 
+- [#2406](https://github.com/epiphany-platform/epiphany/issues/2406) - [Upgrade] [Filebeat] All settings for multiline feature are lost after upgrade
+
 ### Updated
 
 ### Deprecated
