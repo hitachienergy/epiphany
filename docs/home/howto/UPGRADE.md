@@ -255,3 +255,31 @@ With the latest Epiphany version it's possible to upgrade RabbitMQ to v3.8.9.
 It requires Erlang system packages upgrade that is done automatically to v23.1.4.
 Upgrade is performed in offline mode after stopping all RabbitMQ nodes.
 [Rolling upgrade](https://www.rabbitmq.com/upgrade.html#rolling-upgrades) is not supported by Epiphany and it is advised not to use this approach when Erlang needs to be upgraded.
+
+## Kubernetes upgrade
+
+---
+**NOTE**
+
+If the cluster to be upgraded has the Istio control plane application deployed you will run into issues when trying to upgrade the cluster.
+The default [profiles](https://istio.io/latest/docs/setup/additional-setup/config-profiles/) we currently support for installing Istio only deploy a single replica for the control services with a `PodDisruptionBudgets` value of 0. This will results in the following error while its draining a these pods during an upgrade:
+
+```shell
+Cannot evict pod as it would violate the pods disruption budget.
+```
+
+As we currently dont support any kind of advanced configuration of the Istio control plane components outside of the default profiles we need to scale up all components manually before the upgrade. This can be done with the following command:
+
+```shell
+kubectl scale deploy -n istio-system --replicas=2 --all 
+```
+
+After the upgrade, the deployements can be scaled down to there original capacity:
+
+```shell
+kubectl scale deploy -n istio-system --replicas=1 --all 
+```
+
+**Note: The ```istio-system``` namespace value is the default value and should be set to whatever is being used in the Istio application configuration.**
+
+---
