@@ -101,8 +101,7 @@ spec:
 {% endif %}
           command: ["/bin/sh", "-c"]
           args: 
-            - set -x;
-              /epiphany/scripts/init_pool_passwd_file.sh;
+            - /epiphany/scripts/init_pool_passwd_file.sh;
               cp /epiphany/bitnami/pgpool/conf/pgpool.conf /opt/bitnami/pgpool/conf/ || echo "Error while copying pgpool.conf";
               cp /epiphany/bitnami/pgpool/conf/pool_hba.conf /opt/bitnami/pgpool/conf/ || echo "Error while copying pool_hba.conf";
           envFrom:
