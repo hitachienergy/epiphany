@@ -261,7 +261,7 @@ Upgrade is performed in offline mode after stopping all RabbitMQ nodes.
 ---
 **NOTE**
 
-If the cluster to be upgraded has the Istio control plane application deployed you will run into issues when trying to upgrade the cluster.
+If the K8s cluster that is going to be upgraded has the Istio control plane application deployed You can run into issues.
 The default [profiles](https://istio.io/latest/docs/setup/additional-setup/config-profiles/) we currently support for installing Istio only deploy a single replica for the control services with a `PodDisruptionBudgets` value of 0. This will results in the following error while its draining a these pods during an upgrade:
 
 ```shell
