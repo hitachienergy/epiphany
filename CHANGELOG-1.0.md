@@ -8,6 +8,7 @@
 - [#2098](https://github.com/epiphany-platform/epiphany/issues/2098) - The default values can't be changed in cluster config file for virtual machine
 - [#2233](https://github.com/epiphany-platform/epiphany/issues/2233) - Filebeat communication error in AKS
 - [#2406](https://github.com/epiphany-platform/epiphany/issues/2406) - [Upgrade] [Filebeat] All settings for multiline feature are lost after upgrade
+- [#1576](https://github.com/epiphany-platform/epiphany/issues/1576) - [Kafka] Incorrect number of brokers/queues available after scaling up/down
 
 # Added
 
