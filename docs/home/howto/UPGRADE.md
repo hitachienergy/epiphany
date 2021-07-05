@@ -274,7 +274,7 @@ As we currently don't support any kind of advanced configuration of the Istio co
 kubectl scale deploy -n istio-system --replicas=2 --all 
 ```
 
-After the upgrade, the deployements can be scaled down to there original capacity:
+After the upgrade, the deployements can be scaled down to the original capacity:
 
 ```shell
 kubectl scale deploy -n istio-system --replicas=1 --all 
