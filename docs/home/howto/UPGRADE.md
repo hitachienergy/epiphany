@@ -268,7 +268,7 @@ The default [profiles](https://istio.io/latest/docs/setup/additional-setup/confi
 Cannot evict pod as it would violate the pods disruption budget.
 ```
 
-As we currently dont support any kind of advanced configuration of the Istio control plane components outside of the default profiles we need to scale up all components manually before the upgrade. This can be done with the following command:
+As we currently don't support any kind of advanced configuration of the Istio control plane components outside of the default profiles we need to scale up all components manually before the upgrade. This can be done with the following command:
 
 ```shell
 kubectl scale deploy -n istio-system --replicas=2 --all 
