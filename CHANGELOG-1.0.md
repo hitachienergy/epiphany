@@ -7,6 +7,7 @@
 - [#2319](https://github.com/epiphany-platform/epiphany/issues/2319) - [RHEL/Azure] RHUI client certificate expired for RHEL 7-LVM images
 - [#2098](https://github.com/epiphany-platform/epiphany/issues/2098) - The default values can't be changed in cluster config file for virtual machine
 - [#2233](https://github.com/epiphany-platform/epiphany/issues/2233) - Filebeat communication error in AKS
+- [#2406](https://github.com/epiphany-platform/epiphany/issues/2406) - [Upgrade] [Filebeat] All settings for multiline feature are lost after upgrade
 
 # Added
 
@@ -19,4 +20,3 @@
 - [#2262](https://github.com/epiphany-platform/epiphany/issues/2262) - [Ubuntu] elasticsearch-curator in version 5.8.3 is not available from APT repo
 - [#2259](https://github.com/epiphany-platform/epiphany/issues/2259) - [Upgrade] Automated tests fail when run after upgrade
 - [#2292](https://github.com/epiphany-platform/epiphany/issues/2292) - PostgreSQL automated tests fail when run on a single machine
-
