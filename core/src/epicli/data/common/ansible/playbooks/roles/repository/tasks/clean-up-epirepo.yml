@@ -13,17 +13,58 @@
       paths:
         - vars
 
-# TODO: Do not remove files present in requirements.txt
-- name: Remove directories in {{ apache_epirepo_path }}
+- name: Set fact on epirepo directory path
+  set_fact:
+    _apache_epirepo_path: "{{ old_manifest.specification.apache_epirepo_path | default('/var/www/html/epirepo') }}"
+
+- name: Get list of files in epirepo
+  find:
+    paths:
+      - "{{ item }}"
+    hidden: true
+  register: files_in_epirepo
+  loop:  # loop used by purpose to have separated results
+    - "{{ _apache_epirepo_path }}/files"
+    - "{{ _apache_epirepo_path }}/images"
+
+- name: Remove old files from epirepo
   file:
     state: absent
-    path: "{{ apache_epirepo_path }}/{{ item }}"
-  loop:
-    - files
-    - images
-    - packages
+    path: "{{ _apache_epirepo_path }}/files/{{ item }}"
   vars:
-    apache_epirepo_path: "{{ old_manifest.specification.apache_epirepo_path | default('/var/www/html/epirepo') }}"
+    files_found: "{{ files_in_epirepo.results[0].files | map(attribute='path') | map('basename') }}"
+    files_to_preserve: "{{ requirements_file_lines | select('match', 'https?://')
+                                                   | map('regex_replace', '\\s+#.*$', '')
+                                                   | map('trim')
+                                                   | map('regex_replace', '^.+[/\\s](?P<filename>[\\S]+)$', '\\g<filename>') }}"
+    files_to_remove: "{{ files_found | difference(files_to_preserve) }}"
+  loop: "{{ files_to_remove }}"
+
+- name: Load variables from "image_registry" role  # generated also in upgrade mode
+  include_vars:
+    file: roles/image_registry/vars/main.yml
+    name: image_registry_vars
+
+- name: Remove old images from epirepo
+  file:
+    state: absent
+    path: "{{ _apache_epirepo_path }}/images/{{ item }}"
+  vars:
+    images_found: "{{ files_in_epirepo.results[1].files | map(attribute='path') | map('basename') }}"
+    images_to_load: "{{ image_registry_vars.specification.images_to_load[ansible_architecture] }}"
+    images_to_preserve: "{{ images_to_load | json_query('*[].file_name') + [ image_registry_vars.specification.registry_image.file_name ] }}"
+    # images to remove since they may have the same filename but different content (e.g. jboss/keycloak vs epiphanyplatform/keycloak),
+    # to be optimized (checksums)
+    replaced_images: "{{ images_to_load | json_query('*[]') | selectattr('name', 'match', 'epiphanyplatform/')
+                                                            | map(attribute='file_name') }}"
+    images_to_remove: "{{ images_found | difference(images_to_preserve) + replaced_images }}"
+  loop: "{{ images_to_remove }}"
+
+# Remove all packages since it's not so easy to determine filenames based on the requirements file.
+- name: Remove all packages from epirepo
+  file:
+    state: absent
+    path: "{{ _apache_epirepo_path }}/packages"
 
 # Only for epicli < 0.7
 - name: Remove leftovers from /tmp
