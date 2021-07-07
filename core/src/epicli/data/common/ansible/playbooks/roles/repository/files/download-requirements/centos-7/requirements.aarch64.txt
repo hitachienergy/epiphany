@@ -181,7 +181,7 @@ hashicorp/vault-k8s:0.10.0
 vault:1.7.0
 # applications
 epiphanyplatform/ignite:2.9.1
-epiphanyplatform/keycloak:9.0.0
+epiphanyplatform/keycloak:14.0.0
 rabbitmq:3.8.9
 # K8s
 ## v1.18.6
