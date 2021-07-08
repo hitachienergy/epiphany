@@ -51,7 +51,7 @@
     path: "{{ _apache_epirepo_path }}/images/{{ item }}"
   vars:
     images_found: "{{ files_in_epirepo.results[1].files | map(attribute='path') | map('basename') }}"
-    images_to_load: "{{ image_registry_vars.specification.images_to_load[ansible_architecture] }}"
+    images_to_load: "{{ image_registry_vars.specification.images_to_load }}"
     images_to_preserve: "{{ images_to_load | json_query('*[].file_name') + [ image_registry_vars.specification.registry_image.file_name ] }}"
     # images to remove since they may have the same filename but different content (e.g. jboss/keycloak vs epiphanyplatform/keycloak),
     # to be optimized (checksums)

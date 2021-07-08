@@ -67,7 +67,7 @@
       offline_mode or
       not stat_flag_file.stat.exists  # do not clean up when skipping download
   vars:
-    _requirements_file_path: download-requirements/{{ download_script_subdir }}/requirements.{{ ansible_architecture }}.txt
+    _requirements_file_path: download-requirements/{{ download_script_subdir }}/requirements.txt
     requirements_file_lines: "{{ lookup('file', _requirements_file_path).split('\n') }}"
 
 - name: |-
