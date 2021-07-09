@@ -9,6 +9,8 @@
 - [#2233](https://github.com/epiphany-platform/epiphany/issues/2233) - Filebeat communication error in AKS
 - [#2406](https://github.com/epiphany-platform/epiphany/issues/2406) - [Upgrade] [Filebeat] All settings for multiline feature are lost after upgrade
 - [#1576](https://github.com/epiphany-platform/epiphany/issues/1576) - [Kafka] Incorrect number of brokers/queues available after scaling up/down
+- [#2345](https://github.com/epiphany-platform/epiphany/issues/2345) - CoreDNS requires restart after scaling up nodes to be able to resolve new hostnames
+- [#2360](https://github.com/epiphany-platform/epiphany/issues/2360) - [Upgrade] epicli may fail after re-running
 
 # Added
 
