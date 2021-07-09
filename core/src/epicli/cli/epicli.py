@@ -273,6 +273,8 @@ def upgrade_parser(subparsers):
                             help='Absolute path to directory with build artifacts.')
 
     #optional
+    optional.add_argument('-f', '--file', dest='file', type=str, required=False,
+                            help='File with upgraded configuration definitions to use for the components to be upgraded.')
     optional.add_argument('--offline-requirements', dest='offline_requirements', type=str, required=False,
                             help='Path to the folder with pre-prepared offline requirements.')
     optional.add_argument('--wait-for-pods', dest='wait_for_pods', action="store_true",

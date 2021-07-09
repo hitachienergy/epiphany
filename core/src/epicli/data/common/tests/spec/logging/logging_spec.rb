@@ -1,7 +1,7 @@
 require 'spec_helper'
 
 # Configurable passwords for ES users were introduced in v0.10.0.
-# For testing upgrades, we use the default password for now but we may switch to TLS auth (after task #2129).
+# For testing upgrades, we use the default password for now but we're going to switch to TLS auth.
 es_admin_password = readDataYaml("configuration/logging")["specification"]["admin_password"] || "admin"
 
 es_rest_api_port  = 9200

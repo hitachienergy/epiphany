@@ -13,7 +13,7 @@
     setup_kibana_host: >-
       {{ hostvars[groups.kibana|intersect(groups.logging)|first]['ansible_hostname'] }}
   when:
-    - context is undefined or context != 'upgrade'
+    - not is_upgrade_run
     - groups.kibana[0] is defined
     - groups.logging is defined
     - groups.kibana | intersect(groups.logging) | length

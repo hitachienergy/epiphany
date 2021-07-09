@@ -233,7 +233,7 @@ setup.kibana:
   # Scheme and port can be left out and will be set to the default (http and 5601)
   # In case you specify and additional path, the scheme is required: http://localhost:5601/path
   # IPv6 addresses should always be defined as: https://[2001:db8::1]:5601
-{% if context is undefined or context != 'upgrade' %}
+{% if not is_upgrade_run %}
   {# mode: apply #}
   {% if setup_kibana_host is defined %}
   host: {{ setup_kibana_host }}
@@ -291,7 +291,7 @@ output.elasticsearch:
 
   # Authentication credentials - either API key or username/password.
   username: logstash
-  {% if context is undefined or context != 'upgrade' %}
+  {% if not is_upgrade_run %}
   password: {{ "'%s'" % opendistro_for_logging_vars.specification.logstash_password | replace("'","''") }}
   {% else %}
   password: {{ "'%s'" % existing_output_es_password | replace("'","''") }}

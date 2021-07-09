@@ -6,6 +6,9 @@ import re
 from cli.helpers.Step import Step
 from cli.engine.ansible.AnsibleCommand import AnsibleCommand
 from cli.engine.ansible.AnsibleRunner import AnsibleRunner
+from cli.helpers.yaml_helpers import safe_load_all
+from cli.engine.schema.DefaultMerger import DefaultMerger
+from cli.engine.schema.SchemaValidator import SchemaValidator
 
 
 class UpgradeEngine(Step):
@@ -13,8 +16,10 @@ class UpgradeEngine(Step):
         super().__init__(__name__)
         self.build_dir = input_data.build_directory
         self.ansible_options = {'profile_tasks': getattr(input_data, 'profile_ansible_tasks', False)}
+        self.file = getattr(input_data, 'file', "")
         self.backup_build_dir = ''
         self.ansible_command = AnsibleCommand()
+        self.input_docs = []
 
     def __enter__(self):
         super().__enter__()
@@ -23,12 +28,39 @@ class UpgradeEngine(Step):
     def __exit__(self, exc_type, exc_value, traceback):
         super().__exit__(exc_type, exc_value, traceback)
 
+    def process_input_docs(self):
+        # Check if we have input to load
+        if not self.file:
+            return
+
+        # Load the user input YAML docs from the input file.
+        if os.path.isabs(self.file):
+            path_to_load = self.file
+        else:
+            path_to_load = os.path.join(os.getcwd(), self.file)
+        user_file_stream = open(path_to_load, 'r')
+        self.input_docs = safe_load_all(user_file_stream)    
+
+        # Some basic checking on the input document(s)
+        if len(self.input_docs) == 0:
+            raise Exception('No documents in input file.')            
+        if not hasattr(self.input_docs[0], 'provider'):      
+            raise Exception('Input document does not have a provider.')  
+
+        # Merge the input docs with defaults
+        with DefaultMerger(self.input_docs) as doc_merger:
+            self.input_docs = doc_merger.run()
+
+        # Validate input documents
+        with SchemaValidator(self.input_docs[0].provider, self.input_docs) as schema_validator:
+            schema_validator.run()
+
     def get_backup_dirs(self):
         result = []
         for d in os.listdir(self.build_dir):
             bd = os.path.join(self.build_dir, d)
             if os.path.isdir(bd) and re.match(r'backup_\d', d): result.append(bd)
-        return result        
+        return result
 
     def backup_build(self):
         # check if there are backup dirs and if so take the latest to work with.
@@ -48,9 +80,12 @@ class UpgradeEngine(Step):
         # backup existing build
         self.backup_build()
 
+        # Load possible input docs
+        self.process_input_docs()
+
         # Run Ansible to upgrade infrastructure
         with AnsibleRunner(build_dir=self.build_dir, backup_build_dir=self.backup_build_dir,
-                           ansible_options=self.ansible_options) as ansible_runner:
+                           ansible_options=self.ansible_options, config_docs=self.input_docs) as ansible_runner:
             ansible_runner.upgrade()
 
-        return 0      
+        return 0
