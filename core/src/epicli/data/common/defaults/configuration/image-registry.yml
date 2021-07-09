@@ -30,8 +30,8 @@ specification:
         - name: "istio/operator:1.8.1"
           file_name: operator-1.8.1.tar
         # postgres
-        - name: bitnami/pgpool:4.2.3
-          file_name: pgpool-4.2.3.tar
+        - name: bitnami/pgpool:4.2.2
+          file_name: pgpool-4.2.2.tar
         - name: bitnami/pgbouncer:1.15.0
           file_name: pgbouncer-1.15.0.tar
       current:
