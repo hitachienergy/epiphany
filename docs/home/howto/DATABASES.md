@@ -564,8 +564,8 @@ specification:
 ```
 
 **Default installation will be clustered** - it means, using a configuration like above, Elasticsearch cluster with 2
-instances will be created. In order to configure the non-clustered installation of more than one node modify
-configuration for Open Distro adding:
+instances will be created. Option to configure the non-clustered installation of more than one node modify
+configuration for Open Distro is not supported.
 
 ```yaml
 kind: configuration/opendistro-for-elasticsearch
@@ -573,10 +573,7 @@ title: OpenDistro for Elasticsearch Config
 name: default
 specification:
   cluster_name: EpiphanyElastic
-  clustered: False
 ```
-
-Result of this configuration will be one or more independent nodes of OpenDistro.
 
 By default, Kibana is deployed only for `logging` component. If you want to deploy Kibana
 for `opendistro_for_elasticsearch` you have to modify feature mapping. Use below configuration in your manifest.
