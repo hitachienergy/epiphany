@@ -1,0 +1,30 @@
+---
+# required vars:
+# - es_transport_port
+# - es_http_port
+# - target_inventory_hostname
+# - hostvars[target_inventory_hostname].es_host
+# - hostvars[target_inventory_hostname].es_node_name
+
+# optional vars:
+# - daemon_reload
+# - skip_waiting_for_status
+
+- name: ODFE | Restart elasticsearch service
+  systemd:
+    name: elasticsearch
+    state: restarted
+    daemon_reload: "{{ daemon_reload | default(omit) }}"
+
+- name: ODFE | Wait for Elasticsearch transport port to become available
+  wait_for:
+    port: "{{ es_transport_port }}"
+    host: "{{ hostvars[target_inventory_hostname].es_host }}"
+
+- name: ODFE | Wait for Elasticsearch http port to become available
+  wait_for:
+    port: "{{ es_http_port }}"
+    host: "{{ hostvars[target_inventory_hostname].es_host }}"
+
+- include_tasks: wait-for-node-to-join.yml
+  when: not (skip_waiting_for_node | default(False))

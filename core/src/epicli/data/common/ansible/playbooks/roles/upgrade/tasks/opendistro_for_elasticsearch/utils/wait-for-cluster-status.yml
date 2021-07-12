@@ -1,0 +1,28 @@
+---
+# required vars:
+# - es_api.url
+# - es_api.cert_path
+# - es_api.key_path
+# - expected_status (type: list, e.g. [ 'green', 'yellow' ])
+
+- name: ODFE | Wait for '{{ expected_status | join("' or '") }}' cluster health status
+  uri:
+    url: "{{ es_api.url }}/_cluster/health"
+    client_cert: "{{ es_api.cert_path }}"
+    client_key:  "{{ es_api.key_path }}"
+    method: GET
+    validate_certs: false
+  register: cluster_health
+  until:
+    - cluster_health.json.status is defined
+    - cluster_health.json.status in expected_status
+  # It's difficult to determine universal value for retries since it depends on many factors (including hardware).
+  # In article (https://www.toptal.com/ansible/update-elastic-stack-ansible-playbooks) author wrote:
+  #   After a node service restart, the cluster can take a long time to return to green.
+  #   That’s the reason for the lines retries: 500 and delay: 15. It means we will wait 125 minutes (500 x 15 seconds)
+  #   for the cluster to return to green. You might need to adjust that if your nodes hold a really huge amount of data.
+  #   For the majority of cases, it is way more than enough.
+  # We decided to start with ~ 60 min. We observed additional delay between retries on cloud (~ 1s).
+  # Calculation: 60 min = 3600 s / 2 [delay] / 2 [additional delay (SSH / REST API)] = 900
+  retries: 900
+  delay: 2

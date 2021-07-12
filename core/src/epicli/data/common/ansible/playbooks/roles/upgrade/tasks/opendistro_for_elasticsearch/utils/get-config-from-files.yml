@@ -1,0 +1,19 @@
+---
+# Sets facts on existing configuration
+
+- name: ODFE | Load /etc/elasticsearch/elasticsearch.yml
+  slurp:
+    src: /etc/elasticsearch/elasticsearch.yml
+  register: _elasticsearch_yml
+
+- name: ODFE | Get Xmx value from /etc/elasticsearch/jvm.options
+  command: grep -oP '(?<=^-Xmx)\d+[kKmMgG]?' /etc/elasticsearch/jvm.options
+  register: _grep_xmx
+  changed_when: false
+
+- name: ODFE | Set existing configuration facts
+  set_fact:
+    existing_config:
+      main: "{{ _elasticsearch_yml.content | b64decode | from_yaml }}"
+      jvm_options:
+        Xmx: "{{ _grep_xmx.stdout_lines | last }}"

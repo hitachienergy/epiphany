@@ -1,0 +1,13 @@
+---
+# This file is meant to be used only for apply mode
+
+- name: Remove demo certificate files from {{ certificates.dirs.certs }}
+  file:
+    path: "{{ (certificates.dirs.certs, item) | path_join }}"
+    state: absent
+  loop:
+    - "{{ certificates.files.demo.admin.cert }}"
+    - "{{ certificates.files.demo.admin.key }}"
+    - "{{ certificates.files.demo.node.cert }}"
+    - "{{ certificates.files.demo.node.key }}"
+    - "{{ certificates.files.demo.root_ca.cert }}"
