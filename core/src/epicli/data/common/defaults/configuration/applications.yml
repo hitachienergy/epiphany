@@ -78,7 +78,7 @@ specification:
   - name: pgpool # this service requires PostgreSQL to be installed in cluster
     enabled: false
     image:
-      path: bitnami/pgpool:4.2.3
+      path: bitnami/pgpool:4.2.2
       debug: false # ref: https://github.com/bitnami/minideb-extras/#turn-on-bash-debugging
     use_local_image_registry: true
     namespace: postgres-pool
@@ -119,16 +119,13 @@ specification:
         PGPOOL_ADMIN_USERNAME: epi_pgpool_admin # Pgpool administrator (local pcp user)
         PGPOOL_ENABLE_LOAD_BALANCING: true # set to 'false' if there is no replication
         PGPOOL_MAX_POOL: 4
-        PGPOOL_CHILD_LIFE_TIME: 0
         PGPOOL_POSTGRES_PASSWORD_FILE: /opt/bitnami/pgpool/secrets/pgpool_postgres_password
         PGPOOL_SR_CHECK_PASSWORD_FILE: /opt/bitnami/pgpool/secrets/pgpool_sr_check_password
         PGPOOL_ADMIN_PASSWORD_FILE: /opt/bitnami/pgpool/secrets/pgpool_admin_password
-        PGPOOLKEYFILE: /opt/bitnami/pgpool/secrets/pgpool_sha_encryption_key
       secrets:
         pgpool_postgres_password: PASSWORD_TO_CHANGE
         pgpool_sr_check_password: PASSWORD_TO_CHANGE
         pgpool_admin_password: PASSWORD_TO_CHANGE
-        pgpool_sha_encryption_key: PASSWORD_TO_CHANGE  # used only if SCRAM SHA-256 passwords encryption enabled
       # https://www.pgpool.net/docs/41/en/html/runtime-config.html
       pgpool_conf_content_to_append: |
         #------------------------------------------------------------------------------
@@ -137,7 +134,7 @@ specification:
         # num_init_children = 32
         connection_life_time = 900
         reserved_connections = 1
-      # https://www.pgpool.net/docs/42/en/html/runtime-config-connection.html
+      # https://www.pgpool.net/docs/41/en/html/auth-pool-hba-conf.html
       pool_hba_conf: autoconfigured
 
 ## --- pgbouncer ---
@@ -145,7 +142,7 @@ specification:
   - name: pgbouncer
     enabled: false
     image_path: bitnami/pgbouncer:1.15.0
-    init_image_path: bitnami/pgpool:4.2.3 #TODO: make reference to pgpool section
+    init_image_path: bitnami/pgpool:4.2.2 #TODO: make reference to pgpool section
     use_local_image_registry: true
     namespace: postgres-pool
     service:
