@@ -76,10 +76,10 @@ spec:
             - name: pgpool-passwords
               mountPath: /opt/bitnami/pgpool/secrets/pgpool_admin_password
               subPath: pgpool_admin_password
-            - name: pgpool-config-dir
+            - name: pgpool-config-files
               mountPath: /opt/bitnami/pgpool/conf/pgpool.conf
               subPath: pgpool.conf
-            - name: pgpool-config-dir
+            - name: pgpool-config-files
               mountPath: /opt/bitnami/pgpool/conf/pool_hba.conf
               subPath: pool_hba.conf
             - name: pgpool-shared-init-dir
@@ -99,12 +99,8 @@ spec:
 {% else %}
           image: {{ data.image.path }}
 {% endif %}
-          command: ["/bin/sh", "-c"]
-          args: 
-            - set -x;
-              /epiphany/scripts/init_pool_passwd_file.sh;
-              cp /epiphany/bitnami/pgpool/conf/pgpool.conf /opt/bitnami/pgpool/conf/ || echo "Error while copying pgpool.conf";
-              cp /epiphany/bitnami/pgpool/conf/pool_hba.conf /opt/bitnami/pgpool/conf/ || echo "Error while copying pool_hba.conf";
+          command:
+            - /epiphany/scripts/init_pool_passwd_file.sh
           envFrom:
             - configMapRef:
                 name: pgpool-container-env
@@ -117,14 +113,6 @@ spec:
               subPath: pgpool_postgres_password
             - name: pgpool-shared-init-dir
               mountPath: /epiphany/shared_dir
-            - name: pgpool-config-files
-              mountPath: /epiphany/bitnami/pgpool/conf/pgpool.conf
-              subPath: pgpool.conf
-            - name: pgpool-config-files
-              mountPath: /epiphany/bitnami/pgpool/conf/pool_hba.conf
-              subPath: pool_hba.conf
-            - name: pgpool-config-dir
-              mountPath: /opt/bitnami/pgpool/conf
       volumes:
         - name: pgpool-init-scripts
           configMap:
@@ -133,8 +121,6 @@ spec:
         - name: pgpool-config-files
           configMap:
             name: pgpool-config-files
-        - name: pgpool-config-dir
-          emptyDir: {}
         - name: pgpool-passwords
           secret:
             secretName: pgpool-passwords
