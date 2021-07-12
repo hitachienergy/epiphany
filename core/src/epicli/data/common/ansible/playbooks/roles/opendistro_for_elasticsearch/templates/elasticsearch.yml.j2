@@ -75,7 +75,8 @@ transport.port: {{ transport_port }}
 # Pass an initial list of hosts to perform discovery when this node is started:
 # The default list of hosts is ["127.0.0.1", "[::1]"]
 #
-{% if specification.clustered %}
+
+{% if groups['opendistro_for_elasticsearch'] | length > 1 -%}
 discovery.seed_hosts: [{% for host in groups[current_group_name] %}"{{hostvars[host]['ansible_default_ipv4']['address']}}"{%- if not loop.last -%},{% endif %}{% endfor %}]
 {% else %}
 discovery.seed_hosts: ["{{ ansible_default_ipv4.address | default(ansible_all_ipv4_addresses[0]) }}"]
@@ -83,10 +84,11 @@ discovery.seed_hosts: ["{{ ansible_default_ipv4.address | default(ansible_all_ip
 #
 # Bootstrap the cluster using an initial set of master-eligible nodes:
 #
+
 {% if is_upgrade_run | default(False) %}
 cluster.initial_master_nodes: []
 {% else %}
-  {% if specification.clustered %}
+  {% if groups['opendistro_for_elasticsearch'] | length > 1 %}
 cluster.initial_master_nodes: [{% for host in groups[current_group_name] %}"{{hostvars[host]['ansible_hostname']}}"{%- if not loop.last -%},{% endif %}{% endfor %}]
   {% else %}
 cluster.initial_master_nodes: ["{{ ansible_hostname }}"]
