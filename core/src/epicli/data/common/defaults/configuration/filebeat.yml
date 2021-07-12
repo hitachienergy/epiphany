@@ -2,6 +2,10 @@ kind: configuration/filebeat
 title: Filebeat
 name: default
 specification:
+  kibana:
+    dashboards:
+      index: 'filebeat-*'
+      enable: 'auto'
   disable_helm_chart: false
   postgresql_input:
     multiline:

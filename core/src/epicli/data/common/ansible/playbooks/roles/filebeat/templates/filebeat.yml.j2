@@ -179,12 +179,20 @@ setup.template.settings:
 # These settings control loading the sample dashboards to the Kibana index. Loading
 # the dashboards is disabled by default and can be enabled either by setting the
 # options here or by using the `setup` command.
-setup.dashboards.enabled: true
+{% if specification.kibana.dashboards.enable == 'auto' %}
+    {% if groups.kibana is defined %}
+        setup.dashboards.enabled: true
+    {% else %}
+        setup.dashboards.enabled: false
+    {% endif %}
+{% else %}
+    setup.dashboards.enabled: "{{ specification.kibana.dashboards.enable }}"
+{% endif %}
 
 # The Elasticsearch index name.
 # This setting overwrites the index name defined in the dashboards and index pattern.
 # Example: "testbeat-*"
-setup.dashboards.index: "filebeat-*"
+setup.dashboards.index: "{{ specification.kibana.dashboards.index }}"
 
 # The URL from where to download the dashboards archive. By default this URL
 # has a value which is computed based on the Beat name and version. For released
