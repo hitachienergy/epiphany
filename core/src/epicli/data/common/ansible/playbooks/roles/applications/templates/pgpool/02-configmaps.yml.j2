@@ -31,7 +31,7 @@ metadata:
 data:
   init_pool_passwd_file.sh: |
     #!/bin/bash
-    
+
     set -o errexit
     set -o nounset
     set -o pipefail
@@ -160,11 +160,11 @@ data:
     echo "==> Started: $0"
 
     generate_pcp_conf_file() {
-        echo "Generating pcp.conf file for Pgpool admin user (${PGPOOL_ADMIN_USERNAME})..."
-        local passwd
+      echo "Generating pcp.conf file for Pgpool admin user (${PGPOOL_ADMIN_USERNAME})..."
+      local passwd
 
-        passwd=$(pg_md5 "$PGPOOL_ADMIN_PASSWORD")
-        cat >>"$PGPOOL_PCP_CONF_FILE"<<EOF
+      passwd=$(pg_md5 "$PGPOOL_ADMIN_PASSWORD")
+      cat >>"$PGPOOL_PCP_CONF_FILE"<<EOF
     $PGPOOL_ADMIN_USERNAME:$passwd
     EOF
     }
@@ -177,24 +177,20 @@ data:
 
   init_pcppass.sh: |
     #!/bin/bash
-    
-    set -x
+
     set -o errexit
     set -o nounset
     set -o pipefail
 
     echo "==> Started: $0"
 
-    echo "Generating .pcppass file for Pgpool admin user (${PGPOOL_ADMIN_USERNAME})..."
+    echo "Generating $HOME/.pcppass file for Pgpool admin user (${PGPOOL_ADMIN_USERNAME})..."
 
-    PCPPASSFILE=$(mktemp /tmp/.pcppass-XXXXX)
-    export PCPPASSFILE
-
-    cat >>"${PCPPASSFILE}"<<EOF
+    cat >>"$HOME/.pcppass"<<EOF
     localhost:*:${PGPOOL_ADMIN_USERNAME}:${PGPOOL_ADMIN_PASSWORD}
     EOF
 
-    chmod 600 $PCPPASSFILE
+    chmod 600 $HOME/.pcppass
 
     echo "==> Completed: $0"
 
@@ -861,15 +857,6 @@ data:
     # parameters require a server shutdown and restart to take effect.
 
     #------------------------------------------------------------------------------
-    # BACKEND CLUSTERING MODE
-    # Choose one of: 'streaming_replication', 'native_replication',
-    #       'logical_replication', 'slony', 'raw' or 'snapshot_isolation'
-    # (change requires restart)
-    #------------------------------------------------------------------------------
-
-    backend_clustering_mode = 'streaming_replication'
-
-    #------------------------------------------------------------------------------
     # CONNECTIONS
     #------------------------------------------------------------------------------
 
@@ -1060,8 +1047,6 @@ data:
 
     log_connections = off
                                       # Log connections
-    log_disconnections = off
-                                      # Log disconnections
     log_hostname = off
                                       # Hostname will be shown in ps status
                                       # and in logs if connections are logged
@@ -1141,6 +1126,14 @@ data:
                                       # to be issued at the end of a session
                                       # The default is 'ABORT; DISCARD ALL'
     reset_query_list = 'ABORT; DISCARD ALL'
+
+
+    #------------------------------------------------------------------------------
+    # REPLICATION MODE
+    #------------------------------------------------------------------------------
+
+    replication_mode = off
+
 
     #------------------------------------------------------------------------------
     # LOAD BALANCING MODE
@@ -1396,7 +1389,7 @@ data:
                                       # Default is on.
                                       # (change requires restart)
 
-    relcache_query_target = primary     # Target node to send relcache queries. Default is master (primary) node.
+    relcache_query_target = master     # Target node to send relcache queries. Default is master (primary) node.
                                       # If load_balance_node is specified, queries will be sent to load balance node.
     #------------------------------------------------------------------------------
     # IN MEMORY QUERY MEMORY CACHE
@@ -1473,5 +1466,5 @@ data:
 {% else %}
     # Default configuration
     # TYPE   DATABASE        USER                   ADDRESS             METHOD
-    host     all             all                    all                 {{ postgresql_role_config.specification.configuration.password_encryption }}
+    host     all             all                    all                 md5
 {% endif %}

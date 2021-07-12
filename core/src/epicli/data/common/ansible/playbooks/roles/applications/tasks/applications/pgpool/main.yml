@@ -1,9 +1,4 @@
 ---
-- name: Include vars from Postgresql role
-  include_vars:
-    file: roles/postgresql/vars/main.yml
-    name: postgresql_role_config
-
 - name: Deploy Pgpool
   include_tasks: deploy-k8s-app.yml
   vars:
