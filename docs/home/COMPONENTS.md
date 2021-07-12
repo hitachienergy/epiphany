@@ -36,7 +36,7 @@ Note that versions are default versions and can be changed in certain cases thro
 | PgAudit                    | 1.5.0    | https://github.com/pgaudit/pgaudit                    | [PostgreSQL license](http://www.postgresql.org/about/licence/)    |
 | PgBouncer                  | 1.10.0   | https://github.com/pgbouncer/pgbouncer                | [ISC License](https://opensource.org/licenses/isc)                |
 | Repmgr                     | 5.2.1    | https://github.com/2ndQuadrant/repmgr                 | [GNU General Public License 3.0](https://github.com/EnterpriseDB/repmgr/blob/master/LICENSE) |
-| PgPool                     | 4.2.2    | https://www.pgpool.net/                               | [License](https://www.pgpool.net/mediawiki/index.php/pgpool-II_License) |
+| PgPool                     | 4.2.3    | https://www.pgpool.net/                               | [License](https://www.pgpool.net/mediawiki/index.php/pgpool-II_License) |
 | Alertmanager               | 0.17.0   | https://github.com/prometheus/alertmanager            | [Apache License 2.0](https://github.com/prometheus/alertmanager/blob/master/LICENSE) |
 | Apache Ignite              | 2.9.1    | https://github.com/apache/ignite                      | [Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0) |
 | Apache2                    | 2.4.29   | https://httpd.apache.org/                             | [Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0) |

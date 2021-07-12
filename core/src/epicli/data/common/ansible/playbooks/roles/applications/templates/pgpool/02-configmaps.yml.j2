@@ -31,7 +31,6 @@ metadata:
 data:
   init_pool_passwd_file.sh: |
     #!/bin/bash
-    
     set -o errexit
     set -o nounset
     set -o pipefail
@@ -160,11 +159,11 @@ data:
     echo "==> Started: $0"
 
     generate_pcp_conf_file() {
-        echo "Generating pcp.conf file for Pgpool admin user (${PGPOOL_ADMIN_USERNAME})..."
-        local passwd
+      echo "Generating pcp.conf file for Pgpool admin user (${PGPOOL_ADMIN_USERNAME})..."
+      local passwd
 
-        passwd=$(pg_md5 "$PGPOOL_ADMIN_PASSWORD")
-        cat >>"$PGPOOL_PCP_CONF_FILE"<<EOF
+      passwd=$(pg_md5 "$PGPOOL_ADMIN_PASSWORD")
+      cat >>"$PGPOOL_PCP_CONF_FILE"<<EOF
     $PGPOOL_ADMIN_USERNAME:$passwd
     EOF
     }
@@ -177,8 +176,6 @@ data:
 
   init_pcppass.sh: |
     #!/bin/bash
-    
-    set -x
     set -o errexit
     set -o nounset
     set -o pipefail

@@ -161,8 +161,19 @@
   include_vars:
     file: roles/applications/vars/main.yml
     name: applications_role_config
+  when:
+        - "'applications' in roles_with_generated_vars"
 
 - name: Extensions | Set up PgPool
+  vars:
+        pgpool: >-
+          {{ applications_role_config.specification.applications | default([])
+                                                                 | selectattr("name", "equalto", "pgpool")
+                                                                 | selectattr('enabled')
+                                                                 | map(attribute='pgpool')
+                                                                 | list
+                                                                 | first
+                                                                 | default({}) }}        
   block:
     - name: Extensions | Set up PgPool | Ascertain primary node
       become_user: postgres
@@ -172,16 +183,7 @@
     
     - name: Extensions | Include PgPool setup tasks
       include_tasks: extensions/pgpool/extension.yml
-      vars:
-        pgpool: >-
-          {{ applications_role_config.specification.applications | default([])
-                                                                 | selectattr("name", "equalto", "pgpool")
-                                                                 | selectattr('enabled')
-                                                                 | map(attribute='pgpool')
-                                                                 | list
-                                                                 | first
-                                                                 | default({}) }}
       when: 
         - not in_recovery_state.in_recovery
   when:
-    - applications_role_config.specification.applications | selectattr("name", "equalto", "pgpool") | selectattr('enabled')
+    - pgpool.keys()|length > 0
