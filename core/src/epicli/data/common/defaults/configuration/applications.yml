@@ -123,7 +123,7 @@ specification:
         PGPOOL_POSTGRES_PASSWORD_FILE: /opt/bitnami/pgpool/secrets/pgpool_postgres_password
         PGPOOL_SR_CHECK_PASSWORD_FILE: /opt/bitnami/pgpool/secrets/pgpool_sr_check_password
         PGPOOL_ADMIN_PASSWORD_FILE: /opt/bitnami/pgpool/secrets/pgpool_admin_password
-        PGPOOL_ENCRYPTION_KEY_FILE: /opt/bitnami/pgpool/secrets/pgpool_sha_encryption_key
+        PGPOOLKEYFILE: /opt/bitnami/pgpool/secrets/pgpool_sha_encryption_key
       secrets:
         pgpool_postgres_password: PASSWORD_TO_CHANGE
         pgpool_sr_check_password: PASSWORD_TO_CHANGE

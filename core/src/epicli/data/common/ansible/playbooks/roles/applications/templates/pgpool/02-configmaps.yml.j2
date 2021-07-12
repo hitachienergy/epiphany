@@ -280,6 +280,7 @@ data:
     export PGPOOL_POSTGRES_CUSTOM_PASSWORDS="${PGPOOL_POSTGRES_CUSTOM_PASSWORDS:-}"
     export PGPOOL_AUTO_FAILBACK="${PGPOOL_AUTO_FAILBACK:-no}"
     export PGPOOL_BACKEND_APPLICATION_NAMES="${PGPOOL_BACKEND_APPLICATION_NAMES:-}"
+    export PGPOOLKEYFILE="${PGPOOLKEYFILE}"
 
     # SSL
     export PGPOOL_ENABLE_TLS="${PGPOOL_ENABLE_TLS:-no}"
@@ -508,7 +509,7 @@ data:
 
         is_boolean_yes "$PGPOOL_ENABLE_LDAP" && authentication="pam pamservice=pgpool"
         if is_boolean_yes "$PGPOOL_ENABLE_POOL_PASSWD"; then
-            postgres_auth_line="host     all             ${PGPOOL_POSTGRES_USERNAME}       all         md5"
+            postgres_auth_line="host     all             ${PGPOOL_POSTGRES_USERNAME}       all         {{ postgresql_role_config.specification.configuration.password_encryption }}"
         fi
         if [[ -n "$PGPOOL_SR_CHECK_USER" ]]; then
             sr_check_auth_line="host     all             ${PGPOOL_SR_CHECK_USER}       all         trust"
@@ -741,7 +742,7 @@ data:
 
             pg_enc --update-pass \
                    --config-file=/opt/bitnami/pgpool/conf/pgpool.conf \
-                   --enc-key=$(cat $PGPOOL_ENCRYPTION_KEY_FILE) \
+                   --enc-key=$(cat $PGPOOLKEYFILE) \
                    --username=$PGPOOL_POSTGRES_USERNAME $(cat $PGPOOL_POSTGRES_PASSWORD_FILE)
 
         else
