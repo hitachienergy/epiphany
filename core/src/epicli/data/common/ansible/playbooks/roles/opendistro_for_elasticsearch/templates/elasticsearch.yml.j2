@@ -84,7 +84,6 @@ discovery.seed_hosts: ["{{ ansible_default_ipv4.address | default(ansible_all_ip
 #
 # Bootstrap the cluster using an initial set of master-eligible nodes:
 #
-
 {% if is_upgrade_run | default(False) %}
 cluster.initial_master_nodes: []
 {% else %}
