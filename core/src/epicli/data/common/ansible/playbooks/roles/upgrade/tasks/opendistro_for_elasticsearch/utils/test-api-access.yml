@@ -1,0 +1,19 @@
+---
+# required vars:
+# - es_api.cert_path
+# - es_api.cert_type
+# - es_api.key_path
+# - es_api.url
+
+- name: ODFE | Test API access using {{ es_api.cert_type }} certificate
+  uri:
+    client_cert: "{{ es_api.cert_path }}"
+    client_key:  "{{ es_api.key_path }}"
+    url:         "{{ es_api.url }}"
+    method: GET
+    validate_certs: false
+  failed_when: false
+  register: test_api_access
+  until:    test_api_access.status == 200
+  retries: 3
+  delay: 1
