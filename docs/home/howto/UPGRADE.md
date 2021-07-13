@@ -183,6 +183,14 @@ specification:
 ...
 ```
 
+### Kubernetes applications
+
+To upgrade applications on Kubernetes to desired version after `epicli upgrade` you have to:
+- change the image version in `image_path` value (see [the default configuration](https://github.com/epiphany-platform/epiphany/blob/develop/core/src/epicli/data/common/defaults/configuration/applications.yml)) in your configuration manifest
+- run `epicli apply`
+
+*Note: The above link points to develop branch. Please choose the right branch that suits to Epiphany version you are using.*
+
 ## How to upgrade Kafka
 
 ### Kafka upgrade

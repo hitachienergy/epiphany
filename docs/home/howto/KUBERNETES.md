@@ -1,3 +1,21 @@
+# Kubernetes
+
+## Kubernetes applications - overview
+
+Currently, Epiphany provides the following predefined applications which may be deployed with epicli:
+
+- ignite
+- rabbitmq
+- auth-service (Keycloak)
+- pgpool
+- pgbouncer
+- istio
+
+All of them has [default configuration](https://github.com/epiphany-platform/epiphany/blob/develop/core/src/epicli/data/common/defaults/configuration/applications.yml). The common parameters are: name, enabled, namespace, image_path and use_local_image_registry.  
+If you set `use_local_image_registry` to `false` in configuration manifest, you have to provide a valid docker image path in `image_path`. Kubernetes will try to pull image from `image_path` value externally.  
+To see what version of the application image is in local image registry please refer to [components list](../COMPONENTS.md).
+
+*Note: The above link points to develop branch. Please choose the right branch that suits to Epiphany version you are using.*
 
 ## How to expose service through HA Proxy load balancer
 
