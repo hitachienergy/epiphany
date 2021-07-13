@@ -1,5 +1,4 @@
 ---
-host_ip: "{{ ansible_default_ipv4.address | default(ansible_all_ipv4_addresses[0]) }}"
 # This file is meant to be also used by upgrade role
 
 versions:
