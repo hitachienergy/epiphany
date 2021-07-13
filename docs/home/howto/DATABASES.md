@@ -564,8 +564,7 @@ specification:
 ```
 
 **Default installation will be clustered** - it means, using a configuration like above, Elasticsearch cluster with 2
-instances will be created. Option to configure the non-clustered installation of more than one node modify
-configuration for Open Distro is not supported.
+instances will be created. Option to configure the non-clustered installation of more than one node for Open Distro is not supported.
 
 ```yaml
 kind: configuration/opendistro-for-elasticsearch
