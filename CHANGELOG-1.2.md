@@ -11,6 +11,7 @@
 
 - [#2406](https://github.com/epiphany-platform/epiphany/issues/2406) - [Upgrade] [Filebeat] All settings for multiline feature are lost after upgrade
 - [#2380](https://github.com/epiphany-platform/epiphany/issues/2380) - Unable to drain nodes with Istio application enabled due to PodDisruptionBudgets
+- [#2332](https://github.com/epiphany-platform/epiphany/issues/2332) - [Elasticsearch] Error when having multiple VMs and non-clustered mode
 
 ### Updated
 
