@@ -75,7 +75,6 @@ transport.port: {{ transport_port }}
 # Pass an initial list of hosts to perform discovery when this node is started:
 # The default list of hosts is ["127.0.0.1", "[::1]"]
 #
-
 {% if groups[current_group_name] | length > 1 -%}
 discovery.seed_hosts: [{% for host in groups[current_group_name] %}"{{hostvars[host]['ansible_default_ipv4']['address']}}"{%- if not loop.last -%},{% endif %}{% endfor %}]
 {% else %}
