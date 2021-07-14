@@ -1,6 +1,8 @@
 ---
 # Upgrade procedure based on steps from: https://www.postgresql.org/docs/13/pgupgrade.html
 
+# TODO: preflight check if there is enough disk space to clone PG data
+
 - name: PostgreSQL | Upgrade
   block:
     - name: PostgreSQL | Include vars from 'postgresql' role
@@ -30,17 +32,6 @@
         success_msg: PostgreSQL cluster in version '{{ pg_old_version }}' found
         quiet: true
 
-    # TODO: temporarily commented
-    #- name: PostgreSQL | Extensions | Repmgr | Include upgrade tasks
-    #  include_tasks: postgresql/extensions/replication/extension.yml
-    #  vars:
-    #    pg_service_names:
-    #      Debian:
-    #        - "{{ old_version.pg.service_name['Debian'] }}"
-    #        - "{{ old_version.pg.instantiated_service_name['Debian'] }}"
-    #      RedHat:
-    #        - "{{ old_version.pg.service_name['RedHat'] }}"
-
     # Step: Install the new PostgreSQL binaries
 
     # Ubuntu: automatically creates 'main' cluster and starts postgresql services
@@ -54,10 +45,10 @@
           Debian:
             - postgresql-client-common
             - postgresql-common
-            - postgresql-client-13
-            - postgresql-13
+            - "postgresql-client-{{ pg_new_version }}"
+            - "postgresql-{{ pg_new_version }}"
           RedHat:
-            - postgresql13-server
+            - "postgresql{{ pg_new_version }}-server"
       module_defaults:
         yum: { lock_timeout: "{{ yum_lock_timeout }}" }
 
@@ -83,24 +74,11 @@
     - name: Gather facts on packages
       package_facts:
 
-    - name: PostgreSQL | Extensions | PgAudit | Install new package for PostgreSQL {{ pg_new_version }}
-      # when: "'pgaudit' in ansible_facts.packages | join"
-      when: "ansible_facts.packages | join is match('_regex[ansible_os_family]')"
-      package:
-        name: "{{ _packages[ansible_os_family] }}"
-        state: present
-      vars:
-        _regex:
-          Debian: "postgresql-{{ pg_old_version }}-pgaudit"
-          Redhat: "pgaudit*_{{ pg_old_version }}"
-        _packages:
-          Debian: postgresql-13-pgaudit
-          RedHat: pgaudit15_13
-      module_defaults:
-        yum: { lock_timeout: "{{ yum_lock_timeout }}" }
+    - name: PostgreSQL | Extensions | PgAudit | Include upgrade tasks
+      include_tasks: postgresql/extensions/pgaudit.yml
 
     # Step: Adjust authentication
-    # TODO: check if needed
+    # TODO: check if needed (probably no as there is a "peer" authentication in pg_hba.conf)
 
     # Step: Stop all servers
     # Standby nodes have to be stopped first. Check p.8 from https://www.postgresql.org/docs/13/pgupgrade.html
@@ -179,8 +157,8 @@
               # TODO: we control extension version for RHEL/CentOS but not for Ubuntu
               # Should be the same for all OS distributions? (the same for PgAudit)
               # If the latest version is installed, pg_new_version can be used here not to change it each version upgrade
-              Debian: postgresql-13-repmgr
-              RedHat: repmgr13-5.2.1
+              Debian: "postgresql-{{ pg_new_version }}-repmgr"
+              RedHat: "repmgr{{ pg_new_version }}-5.2.1"
           module_defaults:
             yum: { lock_timeout: "{{ yum_lock_timeout }}" }
 
@@ -205,30 +183,40 @@
         loop_var: file_name
       loop: "{{ _files }}"
 
-    # TODO check the doc about performance notes - https://www.postgresql.org/docs/13/pgupgrade.html
-    - name: PostgreSQL | Run pg_upgrade for primary node
-      when: inventory_hostname == pg_primary_node
-      become_user: postgres
-      command: >-
-        {{ new_version.pg.bindir[ansible_os_family] }}/pg_upgrade
-          --old-datadir {{ old_version.pg.data_dir[ansible_os_family] }}
-          --new-datadir {{ new_version.pg.data_dir[ansible_os_family] }}
-          --old-bindir {{ old_version.pg.bindir[ansible_os_family] }}
-          --new-bindir {{ new_version.pg.bindir[ansible_os_family] }}
-          --old-options '-c config_file={{ old_version.pg.config_dir[ansible_os_family] }}/postgresql.conf'
-          --new-options '-c config_file={{ new_version_config_dir }}/postgresql.conf -c hba_file={{ new_version_config_dir }}/pg_hba.conf'
-          --socketdir /var/run/postgresql
-      args:
-        chdir: /var/log/postgresql  # to have logs in this dir
-      vars:
-        new_version_config_dir: "{{ new_version.pg.config_dir[ansible_os_family] }}" # to make the line above shorter
+    # TODO: use --check before running upgrade
 
-    # Step: Upgrade standby servers
-    - name: PostgreSQL | Upgrade standby servers
+    # TODO check the doc about performance notes - https://www.postgresql.org/docs/13/pgupgrade.html, --jobs for example
+    - name: PostgreSQL | Upgrade primary node
       when: inventory_hostname == pg_primary_node
-      # TODO
+      block:
+        - name: PostgreSQL | Run pg_upgrade
+          become_user: postgres
+          command: >-
+            {{ new_version.pg.bindir[ansible_os_family] }}/pg_upgrade
+              --old-datadir {{ old_version.pg.data_dir[ansible_os_family] }}
+              --new-datadir {{ new_version.pg.data_dir[ansible_os_family] }}
+              --old-bindir {{ old_version.pg.bindir[ansible_os_family] }}
+              --new-bindir {{ new_version.pg.bindir[ansible_os_family] }}
+              --old-options '-c config_file={{ old_version.pg.config_dir[ansible_os_family] }}/postgresql.conf'
+              --new-options '-c config_file={{ new_version_config_dir }}/postgresql.conf -c hba_file={{ new_version_config_dir }}/pg_hba.conf'
+              --socketdir /var/run/postgresql
+          args:
+            chdir: /var/log/postgresql  # to have logs in this dir
+          vars:
+            new_version_config_dir: "{{ new_version.pg.config_dir[ansible_os_family] }}" # to make the line above shorter
 
-    # TODO: check post-upgrade processing
+        - name: PostgreSQL | Start and enable new PostgreSQL service
+          systemd:
+            name: "{{ new_version.pg.service_name[ansible_os_family] }}"
+            state: started
+            enabled: true
+
+        - name: Extensions | Repmgr | Register primary node
+          become_user: postgres
+          command: >-
+            {{ repmgr.bindir[ansible_os_family] }}/repmgr primary register
+              --superuser={{ specification.extensions.replication.privileged_user_name }}
+              --force
 
     # Prevent old service from starting to avoid accidental starting by the parent service and standard port conflict
     - name: PostgreSQL | Mask old PostgreSQL service
@@ -236,12 +224,35 @@
         name: "{{ old_version.pg.instantiated_service_name[ansible_os_family] }}"
         masked: true
 
-    - name: PostgreSQL | Start and enable new PostgreSQL service
-      systemd:
-        name: "{{ new_version.pg.service_name[ansible_os_family] }}"
-        state: started
-        enabled: true
+    # Step: Upgrade standby servers
+    - name: PostgreSQL | Upgrade standby servers (clone standby node from primary and register)
+      when: inventory_hostname != pg_primary_node
+      block:
+        - name: Extensions | Repmgr | Clone standby node with Repmgr
+          become_user: postgres
+          command: >-
+            {{ new_version.repmgr.bindir[ansible_os_family] }}/repmgr standby clone
+              -h {{ pg_primary_node }}
+              -U {{ specification.extensions.replication.privileged_user_name }}
+              -d {{ specification.extensions.replication.repmgr_database }} -p 5432 --force
 
+        - name: PostgreSQL | Start and enable new PostgreSQL service
+          systemd:
+            name: "{{ pg.service_name[ansible_os_family] }}"
+            state: started
+            enabled: true
+
+        - name: Extensions | Repmgr | Register node with Repmgr
+          become_user: postgres
+          command: >-
+            {{ repmgr.bindir[ansible_os_family] }}/repmgr standby register --force
+              --upstream-conninfo='host={{ pg_primary_node }},
+                  user={{ specification.extensions.replication.replication_user_name }},
+                  dbname={{ specification.extensions.replication.repmgr_database }},
+                  connect_timeout=2'
+              --upstream-node-id 1
+
+    # TODO: check post-upgrade processing
 
   # TODO: check the doc about following steps - https://www.postgresql.org/docs/13/pgupgrade.html
   rescue:
@@ -252,13 +263,14 @@
     #  vars:
     #    _packages:
     #      Debian:
-    #        - postgresql-client-13
-    #        - postgresql-13
-    #        - postgresql-contrib-13
-    #        - postgresql-13-pgaudit
+    #        - "postgresql-client-{{ pg_new_version }}"
+    #        - "postgresql-{{ pg_new_version }}"
+    #        - "postgresql-{{ pg_new_version }}-pgaudit"
+    #        - "postgresql-{{ pg_new_version }}-repmgr"
     #      RedHat:
-    #        - postgresql13-server
-    #        - pgaudit15_13
+    #        - "postgresql{{ pg_new_version }}-server"
+    #        - "pgaudit15_{{ pg_new_version }}"
+    #        - "repmgr{{ pg_new_version }}-5.2.1"
     #  module_defaults:
     #    yum: { lock_timeout: "{{ yum_lock_timeout }}" }
 
