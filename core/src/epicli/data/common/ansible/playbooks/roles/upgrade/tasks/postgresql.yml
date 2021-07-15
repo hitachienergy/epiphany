@@ -85,7 +85,7 @@
       vars:
         _regex:
           Debian: "postgresql-{{ pg_old_version }}-repmgr"
-          Redhat: "repmgr{{ pg_old_version }}-*"
+          RedHat: "repmgr{{ pg_old_version }}-*"
       set_fact:
         pg_is_repmgr_used: "{{ ansible_facts.packages | join is match(_regex[ansible_os_family]) }}"
 
@@ -183,10 +183,12 @@
 
     # TODO: use --check before running upgrade
 
-    # TODO check the doc about performance notes - https://www.postgresql.org/docs/13/pgupgrade.html, --jobs for example
     - name: PostgreSQL | Upgrade primary node
       when: inventory_hostname == pg_primary_node
       block:
+        # --link is not used to be able to access old cluster once the new one is started after the upgrade
+        # there is a preflight check to confirm that available disk space is enough
+        # --clone is not used as only Btrfs and XFS file systems are supported for the current version
         - name: PostgreSQL | Run pg_upgrade
           become_user: postgres
           command: >-
@@ -198,6 +200,7 @@
               --old-options '-c config_file={{ old_version.pg.config_dir[ansible_os_family] }}/postgresql.conf'
               --new-options '-c config_file={{ new_version_config_dir }}/postgresql.conf -c hba_file={{ new_version_config_dir }}/pg_hba.conf'
               --socketdir /var/run/postgresql
+              --jobs {{ ansible_processor_vcpus }}
           args:
             chdir: /var/log/postgresql  # to have logs in this dir
           vars:
@@ -210,9 +213,10 @@
             enabled: true
 
         - name: Extensions | Repmgr | Register primary node
+          when: pg_is_repmgr_used
           become_user: postgres
           command: >-
-            {{ repmgr.bindir[ansible_os_family] }}/repmgr primary register
+            {{ new_version.repmgr.bindir[ansible_os_family] }}/repmgr primary register
               --superuser={{ specification.extensions.replication.privileged_user_name }}
               --force
 

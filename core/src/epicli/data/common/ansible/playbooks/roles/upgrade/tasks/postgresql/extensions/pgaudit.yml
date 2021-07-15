@@ -1,16 +1,16 @@
 ---
 - name: PostgreSQL | Extensions | PgAudit | Install new package for PostgreSQL {{ pg_new_version }}
-    # when: "'pgaudit' in ansible_facts.packages | join"
-    when: "ansible_facts.packages | join is match('_regex[ansible_os_family]')"
-    package:
-      name: "{{ _packages[ansible_os_family] }}"
-      state: present
-    vars:
-      _regex:
-        Debian: "postgresql-{{ pg_old_version }}-pgaudit"
-        Redhat: "pgaudit*_{{ pg_old_version }}"
-      _packages:
-        Debian: "postgresql-{{ pg_new_version }}-pgaudit"
-        RedHat: "pgaudit15_{{ pg_new_version }}"
-    module_defaults:
-      yum: { lock_timeout: "{{ yum_lock_timeout }}" }
+  # when: "'pgaudit' in ansible_facts.packages | join"
+  when: "ansible_facts.packages | join is match('_regex[ansible_os_family]')"
+  package:
+    name: "{{ _packages[ansible_os_family] }}"
+    state: present
+  vars:
+    _regex:
+      Debian: "postgresql-{{ pg_old_version }}-pgaudit"
+      Redhat: "pgaudit*_{{ pg_old_version }}"
+    _packages:
+      Debian: "postgresql-{{ pg_new_version }}-pgaudit"
+      RedHat: "pgaudit15_{{ pg_new_version }}"
+  module_defaults:
+    yum: { lock_timeout: "{{ yum_lock_timeout }}" }
