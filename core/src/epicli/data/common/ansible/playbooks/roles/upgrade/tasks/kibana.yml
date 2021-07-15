@@ -16,24 +16,20 @@
         fail_msg: opendistroforelasticsearch-kibana package not found, nothing to upgrade
         quiet: true
 
-    - name: Kibana | Load defaults from opendistro_for_elasticsearch role
-      include_vars:
-        file: roles/opendistro_for_elasticsearch/defaults/main.yml
-        name: opendistro_for_elasticsearch_defaults
-
-    - name: Kibana | Include defaults from kibana role
+    - name: Kibana | Load defaults from kibana role
       include_vars:
         file: roles/kibana/defaults/main.yml
+        name: kibana_defaults
 
     - name: Kibana | Print versions
       debug:
         msg:
           - "Installed version: {{ ansible_facts.packages['opendistroforelasticsearch-kibana'][0].version }}"
-          - "Target version: {{ opendistro_for_elasticsearch_defaults.versions[ansible_os_family].opendistro }}"
+          - "Target version: {{ kibana_defaults.kibana_version[ansible_os_family] }}"
 
     - name: Upgrade Kibana
       when:
-        - opendistro_for_elasticsearch_defaults.versions[ansible_os_family].opendistro
+        - kibana_defaults.kibana_version[ansible_os_family]
           is version(ansible_facts.packages['opendistroforelasticsearch-kibana'][0].version, '>=')
       block:
         - name: Kibana | Slurp /etc/kibana/kibana.yml
