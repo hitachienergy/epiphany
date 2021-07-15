@@ -15,6 +15,8 @@
 
 ### Updated
 
+- [#1797](https://github.com/epiphany-platform/epiphany/issues/1797) - Upgrade Keycloak to v14.0.0
+
 ### Deprecated
 
 ### Breaking changes

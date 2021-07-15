@@ -183,6 +183,15 @@ specification:
 ...
 ```
 
+### Kubernetes applications
+
+To upgrade applications on Kubernetes to the desired version after `epicli upgrade` you have to:
+- generate new configuration manifest using `epicli init`
+- in case of generating minimal configuration manifest (without --full argument), copy and paste [the default configuration](https://github.com/epiphany-platform/epiphany/blob/develop/core/src/epicli/data/common/defaults/configuration/applications.yml) into it
+- run `epicli apply`
+
+*Note: The above link points to develop branch. Please choose the right branch that suits to Epiphany version you are using.*
+
 ## How to upgrade Kafka
 
 ### Kafka upgrade
