@@ -180,7 +180,7 @@ brainsam/pgbouncer:1.12
 istio/pilot:1.8.1
 istio/proxyv2:1.8.1
 istio/operator:1.8.1
-jboss/keycloak:9.0.0
+epiphanyplatform/keycloak:14.0.0
 rabbitmq:3.8.9
 # K8s upgrade
 ## v1.14.6
