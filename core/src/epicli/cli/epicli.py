@@ -288,6 +288,8 @@ def upgrade_parser(subparsers):
     sub_parser._action_groups.append(optional)
 
     def run_upgrade(args):
+        if not query_yes_no('Has backup been done?', default='no'):
+            return 0
         adjust_paths_from_build(args)
         with UpgradeEngine(args) as engine:
             return engine.upgrade()

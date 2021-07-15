@@ -29,20 +29,21 @@
         name: postgres
 
     - name: Get filesystem info for PostgreSQL data directory
+      become: true
       shell: |-
         set -o pipefail && \
-        df {{ postgres.pg.data_dir[ansible_os_family] }} \
+        df {{ postgres.pg.base_dir[ansible_os_family] }} \
           | awk 'NR==1{for (i=1; i<=NF; i++) if (tolower($i) == "filesystem" ){dev=i; break}} NR==2{print $dev}'
       changed_when: false
       register: pg_data_disk
 
-    name: Ensure that free space on {{ pg_data_disk.stdout }} is grater than 50%
-    assert:
-      that: mount.size_available > mount.size_total|float * 0.5
-      fail_msg: PostgreSQL disk space has reached 50% threshold
-      quiet: true
-    vars:
-      mount: "{{ ansible_mounts | selectattr('device','equalto', pg_data_disk.stdout) | list | first }}"
+    - name: Ensure that free space on {{ pg_data_disk.stdout }} is grater than 50%
+      assert:
+        that: mount.size_available > mount.size_total|float * 0.5
+        fail_msg: PostgreSQL disk space has reached 50% threshold
+        quiet: true
+      vars:
+        mount: "{{ ansible_mounts | selectattr('device','equalto', pg_data_disk.stdout) | list | first }}"
   when:
     - "'postgresql' in upgrade_components or upgrade_components|length == 0" # PostgreSQL is going to be upgraded
     - groups.postgresql is defined
