@@ -20,3 +20,31 @@
     - "'kubernetes' in upgrade_components or upgrade_components|length == 0" # K8s is going to be upgraded
     - groups.kubernetes_master is defined
     - groups.kubernetes_master | length > 0
+
+- name: Check available disk space for PostgreSQL
+  block:
+    - name: Include defaults from 'postgresql' role
+      include_vars:
+        file: roles/postgresql/defaults/main.yml
+        name: postgres
+
+    - name: Get filesystem info for PostgreSQL data directory
+      shell: |-
+        set -o pipefail && \
+        df {{ postgres.pg.data_dir[ansible_os_family] }} \
+          | awk 'NR==1{for (i=1; i<=NF; i++) if (tolower($i) == "filesystem" ){dev=i; break}} NR==2{print $dev}'
+      changed_when: false
+      register: pg_data_disk
+
+    name: Ensure that free space on {{ pg_data_disk.stdout }} is grater than 50%
+    assert:
+      that: mount.size_available > mount.size_total|float * 0.5
+      fail_msg: PostgreSQL disk space has reached 50% threshold
+      quiet: true
+    vars:
+      mount: "{{ ansible_mounts | selectattr('device','equalto', pg_data_disk.stdout) | list | first }}"
+  when:
+    - "'postgresql' in upgrade_components or upgrade_components|length == 0" # PostgreSQL is going to be upgraded
+    - groups.postgresql is defined
+    - groups.postgresql | length > 0
+    - "'postgresql' in group_names" # run only on PostgreSQL hosts

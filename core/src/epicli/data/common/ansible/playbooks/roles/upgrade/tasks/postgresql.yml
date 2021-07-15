@@ -1,8 +1,6 @@
 ---
 # Upgrade procedure based on steps from: https://www.postgresql.org/docs/13/pgupgrade.html
 
-# TODO: preflight check if there is enough disk space to clone PG data
-
 - name: PostgreSQL | Upgrade
   block:
     - name: PostgreSQL | Include vars from 'postgresql' role
@@ -95,7 +93,7 @@
       when: pg_is_repmgr_used
       shell: |-
         set -o pipefail && \
-          {{ old_version.repmgr.bindir[ansible_os_family] }}/repmgr cluster show \
+        {{ old_version.repmgr.bindir[ansible_os_family] }}/repmgr cluster show \
           | awk 'BEGIN{FS="|"} {gsub(/ /,""); if ($3 == "primary") print $2}'
       changed_when: false
       register: pg_primary_found
@@ -133,7 +131,7 @@
         - name: PostgreSQL | Extensions | Repmgr | Get latest checkpoint location
           shell: |-
             set -o pipefail && \
-              | {{ old_version.pg.bindir }}/pg_controldata -D {{ old_version.pg.data_dir }}
+            {{ old_version.pg.bindir }}/pg_controldata -D {{ old_version.pg.data_dir }} \
               | awk 'BEGIN{FS=":"} {gsub(/ /,""); if (tolower($1) == "latestcheckpointlocation") print $2}'
           changed_when: false
           register: pg_checkpoint
