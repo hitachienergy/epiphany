@@ -75,9 +75,6 @@
     - name: PostgreSQL | Extensions | PgAudit | Include upgrade tasks
       include_tasks: postgresql/extensions/pgaudit.yml
 
-    # Step: Adjust authentication
-    # TODO: check if needed (probably no as there is a "peer" authentication in pg_hba.conf)
-
     # Step: Stop all servers
     # Standby nodes have to be stopped first. Check p.8 from https://www.postgresql.org/docs/13/pgupgrade.html
 
@@ -181,8 +178,6 @@
         loop_var: file_name
       loop: "{{ _files }}"
 
-    # TODO: use --check before running upgrade
-
     - name: PostgreSQL | Upgrade primary node
       when: inventory_hostname == pg_primary_node
       block:
@@ -191,18 +186,53 @@
         # --clone is not used as only Btrfs and XFS file systems are supported for the current version
         - name: PostgreSQL | Run pg_upgrade
           become_user: postgres
-          command: >-
-            {{ new_version.pg.bindir[ansible_os_family] }}/pg_upgrade
-              --old-datadir {{ old_version.pg.data_dir[ansible_os_family] }}
-              --new-datadir {{ new_version.pg.data_dir[ansible_os_family] }}
-              --old-bindir {{ old_version.pg.bindir[ansible_os_family] }}
-              --new-bindir {{ new_version.pg.bindir[ansible_os_family] }}
-              --old-options '-c config_file={{ old_version.pg.config_dir[ansible_os_family] }}/postgresql.conf'
-              --new-options '-c config_file={{ new_version_config_dir }}/postgresql.conf -c hba_file={{ new_version_config_dir }}/pg_hba.conf'
-              --socketdir /var/run/postgresql
-              --jobs {{ ansible_processor_vcpus }}
-          args:
-            chdir: /var/log/postgresql  # to have logs in this dir
+          block:
+            # This check is not in the 'preflight' as at that stage new version is not available
+            # Checks:
+            #   * cluster versions
+            #   * database user is the install user
+            #   * database connection settings
+            #   * prepared transactions
+            #   * system-defined composite types in user tables
+            #   * reg* data types in user tables
+            #   * contrib/isn with bigint-passing mismatch
+            #   * tables WITH OIDS
+            #   *  invalid "sql_identifier" user columns
+            #   * presence of required libraries
+            #   * database user is the install user
+            #   * prepared transactions
+            #   * new cluster tablespace directories
+            - name: PostgreSQL | Run pg_upgrade with --check
+              command: >-
+                {{ new_version.pg.bindir[ansible_os_family] }}/pg_upgrade
+                  --old-datadir {{ old_version.pg.data_dir[ansible_os_family] }}
+                  --new-datadir {{ new_version.pg.data_dir[ansible_os_family] }}
+                  --old-bindir {{ old_version.pg.bindir[ansible_os_family] }}
+                  --new-bindir {{ new_version.pg.bindir[ansible_os_family] }}
+                  --old-options '-c config_file={{ old_version.pg.config_dir[ansible_os_family] }}/postgresql.conf'
+                  --new-options '-c config_file={{ new_version_config_dir }}/postgresql.conf -c hba_file={{ new_version_config_dir }}/pg_hba.conf'
+                  --socketdir /var/run/postgresql
+                  --jobs {{ ansible_processor_vcpus }}
+                  --check
+              register: pg_upgrade_check
+
+            - name: PostgreSQL | Print pg_upgrade check output
+              debug:
+                var: pg_upgrade_check.stdout_lines
+
+            - name: PostgreSQL | Run pg_upgrade
+              command: >-
+                {{ new_version.pg.bindir[ansible_os_family] }}/pg_upgrade
+                  --old-datadir {{ old_version.pg.data_dir[ansible_os_family] }}
+                  --new-datadir {{ new_version.pg.data_dir[ansible_os_family] }}
+                  --old-bindir {{ old_version.pg.bindir[ansible_os_family] }}
+                  --new-bindir {{ new_version.pg.bindir[ansible_os_family] }}
+                  --old-options '-c config_file={{ old_version.pg.config_dir[ansible_os_family] }}/postgresql.conf'
+                  --new-options '-c config_file={{ new_version_config_dir }}/postgresql.conf -c hba_file={{ new_version_config_dir }}/pg_hba.conf'
+                  --socketdir /var/run/postgresql
+                  --jobs {{ ansible_processor_vcpus }}
+              args:
+                chdir: /var/log/postgresql  # to have logs in this dir
           vars:
             new_version_config_dir: "{{ new_version.pg.config_dir[ansible_os_family] }}" # to make the line above shorter
 
@@ -292,7 +322,6 @@
       loop:
         - "{{ old_version.pg.service_name[ansible_os_family] }}"  # the same name for both versions
         - "{{ old_version.pg.instantiated_service_name[ansible_os_family] }}"
-        - "{{ new_version.pg.instantiated_service_name[ansible_os_family] }}"
 
     - name: PostgreSQL | Fail upgrade with a note
       debug:

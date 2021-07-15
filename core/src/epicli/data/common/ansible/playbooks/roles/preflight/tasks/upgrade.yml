@@ -44,6 +44,26 @@
         quiet: true
       vars:
         mount: "{{ ansible_mounts | selectattr('device','equalto', pg_data_disk.stdout) | list | first }}"
+
+    - name: Ensure that PostgreSQL data directory doesn't exist or is not empty
+      block:
+        - name: Get PostgreSQL data directory stat information
+          stat:
+            path: "{{ postgres.pg.data_dir[ansible_os_family] }}"
+          register: pg_data_dir
+
+        - name: Get PostgreSQL data directory content
+          when: pg_data_dir.stat.exists
+          find:
+            paths: "{{ postgres.pg.data_dir[ansible_os_family] }}"
+          register: pg_data_dir_files
+
+        - name: Ensure that PostgreSQL data directory doesn't exist or is not empty
+          assert:
+            that: not pg_data_dir.stat.exists or pg_data_dir_files.matched == 0
+            fail_msg: >-
+              PostgreSQL data directory {{ postgres.pg.data_dir[ansible_os_family] }} doesn't exist or is not empty
+            quiet: true
   when:
     - "'postgresql' in upgrade_components or upgrade_components|length == 0" # PostgreSQL is going to be upgraded
     - groups.postgresql is defined
