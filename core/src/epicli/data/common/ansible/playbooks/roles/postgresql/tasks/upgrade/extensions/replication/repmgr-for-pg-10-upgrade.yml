@@ -87,7 +87,7 @@
   block:
     - name: repmgr for PG 10 | Get node id
       command: >-
-        sed -n "/^node_id/s/^node_id=//p" "{{ pg_10.repmgr.config_dir[ansible_os_family] }}/repmgr.conf"
+        grep -Po '(?<=^node_id=)\d+' "{{ pg_10.repmgr.config_dir[ansible_os_family] }}/repmgr.conf"
       register: pg_node_id
       changed_when: false
 
