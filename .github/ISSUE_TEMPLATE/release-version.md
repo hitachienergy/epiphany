@@ -29,6 +29,7 @@ assignees: ''
 * Documentation:
   * [ ] Updated LIFECYCLE.md & LIFECYCLE_GANTT.md
   * [ ] Updated TESTING.md
+  * [ ] Updated Testing Scenarios list
 * [ ] Release pipeline performed
 * [ ] GitHub release exists with correct content (links)
 * [ ] `docker pull` command from the release description tested

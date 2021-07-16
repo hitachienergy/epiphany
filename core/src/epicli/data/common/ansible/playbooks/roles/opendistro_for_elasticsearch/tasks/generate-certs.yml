@@ -20,8 +20,6 @@
 
 - name: Generate keys and certificates on first node
   when: inventory_hostname == ansible_play_hosts_all[0]
-  vars:
-    return_content: "{{ true if (ansible_play_hosts_all | count > 1) else false }}"  # to copy it to other nodes
   module_defaults:
     community.crypto.openssl_privatekey:
       size: 2048  # based on ODFE docs
@@ -47,8 +45,7 @@
     - name: Generate private key for root CA
       community.crypto.openssl_privatekey:
         path: "{{ certificates.dirs.ca_key }}/{{ certificates.files.root_ca.key.filename }}"
-        return_content: "{{ return_content }}"
-      no_log: true
+        return_content: false
       register: ca_key
 
     - name: Generate CSR for root CA  # based on ODFE demo cert (root-ca.pem)
@@ -75,7 +72,7 @@
         privatekey_path: "{{ ca_key.filename }}"
         provider: selfsigned
         selfsigned_not_after: "{{ certificates.files.root_ca.cert.selfsigned_not_after }}"
-        return_content: "{{ return_content }}"
+        return_content: false
       register: ca_crt
 
     # --- Generate admin certificate ---
@@ -84,8 +81,7 @@
       community.crypto.openssl_privatekey:
         path: "{{ certificates.dirs.certs }}/{{ certificates.files.admin.key.filename }}"
         format: pkcs8  # specified explicitly since this format is required
-        return_content: "{{ return_content }}"
-      no_log: true
+        return_content: false
       register: admin_key
 
     - name: Generate CSR for admin certificate  # based on ODFE demo cert (kirk.pem)
@@ -116,7 +112,7 @@
         ownca_path: "{{ ca_crt.filename }}"
         ownca_privatekey_path: "{{ ca_key.filename }}"
         ownca_not_after: "{{ certificates.files.admin.cert.ownca_not_after }}"
-        return_content: "{{ return_content }}"
+        return_content: false
       register: admin_crt
 
 - name: Copy common files to other hosts
@@ -128,39 +124,44 @@
       owner: root
       group: elasticsearch
   block:
+    - name: Get certificate files from the first host
+      slurp:
+        src: "{{ item }}"
+      delegate_to: "{{ ansible_play_hosts_all[0] }}"
+      register: slurp_certs
+      no_log: true  # sensitive data
+      loop:
+        - "{{ certificates.dirs.ca_key }}/{{ certificates.files.root_ca.key.filename }}"
+        - "{{ certificates.dirs.certs }}/{{ certificates.files.root_ca.cert.filename }}"
+        - "{{ certificates.dirs.certs }}/{{ certificates.files.admin.key.filename }}"
+        - "{{ certificates.dirs.certs }}/{{ certificates.files.admin.cert.filename }}"
+
     - name: Copy CA private key to other hosts
       copy:
-        content: "{{ _key.privatekey }}"
-        dest: "{{ _key.filename }}"
+        content: "{{ slurp_certs.results[0].content | b64decode }}"
+        dest:    "{{ certificates.dirs.ca_key }}/{{ certificates.files.root_ca.key.filename }}"
         mode: u=rw,go=
-      no_log: true
-      vars:
-        _key: "{{ hostvars[ansible_play_hosts_all[0]].ca_key }}"
+      no_log: true  # sensitive data
 
     - name: Copy root CA to other hosts
       copy:
-        content: "{{ _crt.certificate }}"
-        dest: "{{ _crt.filename }}"
+        content: "{{ slurp_certs.results[1].content | b64decode }}"
+        dest:    "{{ certificates.dirs.certs }}/{{ certificates.files.root_ca.cert.filename }}"
         mode: u=rw,g=r,o=
-      vars:
-        _crt: "{{ hostvars[ansible_play_hosts_all[0]].ca_crt }}"
 
     - name: Copy admin private key to other hosts
       copy:
-        content: "{{ _key.privatekey }}"
-        dest: "{{ _key.filename }}"
+        content: "{{ slurp_certs.results[2].content | b64decode }}"
+        dest:    "{{ certificates.dirs.certs }}/{{ certificates.files.admin.key.filename }}"
         mode: u=rw,go=
-      no_log: true
-      vars:
-        _key: "{{ hostvars[ansible_play_hosts_all[0]].admin_key }}"
+      no_log: true  # sensitive data
 
     - name: Copy admin certificate to other hosts
       copy:
-        content: "{{ _crt.certificate }}"
-        dest: "{{ _crt.filename }}"
+        content: "{{ slurp_certs.results[3].content | b64decode }}"
+        dest:    "{{ certificates.dirs.certs }}/{{ certificates.files.admin.cert.filename }}"
         mode: u=rw,g=r,o=
-      vars:
-        _crt: "{{ hostvars[ansible_play_hosts_all[0]].admin_crt }}"
+      no_log: true  # sensitive data
 
 # --- Generate node certificate (each node has its own) ---
 
@@ -174,7 +175,6 @@
     owner: root
     group: elasticsearch
     return_content: false
-  no_log: true
   register: node_key
 
 - name: Generate CSR for node certificate  # based on ODFE demo cert (esnode.pem)
@@ -212,11 +212,10 @@
     path: "{{ certificates.dirs.certs }}/{{ certificates.files.node.cert.filename }}"
     csr_path: "{{ node_csr.filename }}"
     provider: ownca
-    ownca_path: "{{ hostvars[ansible_play_hosts_all[0]].ca_crt.filename }}"
-    ownca_privatekey_path: "{{ hostvars[ansible_play_hosts_all[0]].ca_key.filename }}"
+    ownca_path: "{{ certificates.dirs.certs }}/{{ certificates.files.root_ca.cert.filename }}"
+    ownca_privatekey_path: "{{ certificates.dirs.ca_key }}/{{ certificates.files.root_ca.key.filename }}"
     ownca_not_after: "{{ certificates.files.node.cert.ownca_not_after }}"
     ownca_digest: sha256
     mode: u=rw,go=r
     owner: root
     group: elasticsearch
-  register: node_crt

@@ -85,6 +85,10 @@ def get_inventory_path(cluster_name):
     return os.path.join(get_build_path(cluster_name), INVENTORY_FILE_NAME)
 
 
+def get_manifest_path(cluster_name):
+    return os.path.join(get_build_path(cluster_name), MANIFEST_FILE_NAME)
+
+
 def get_inventory_path_for_build(build_directory):
     build_version = check_build_output_version(build_directory)
     inventory =  os.path.join(build_directory, INVENTORY_FILE_NAME)
