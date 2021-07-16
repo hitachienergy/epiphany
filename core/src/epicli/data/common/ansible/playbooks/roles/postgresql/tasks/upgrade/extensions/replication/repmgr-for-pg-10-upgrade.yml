@@ -11,23 +11,10 @@
     state: touch
     mode: u=rw,g=r,o=
 
-# The upgrade flow masks and unmasks repmgr service so assert it isn't initially masked
-- name: repmgr for PG 10 | Populate service facts
-  service_facts:
-
-- name: repmgr for PG 10 | Assert repmgr service is not masked
-  assert:
-    that: ansible_facts.services[_full_service_name].status != 'masked'
-    fail_msg: "Unexpected state: service {{ _full_service_name }} is masked"
-    quiet: true
-  vars:
-    _full_service_name: "{{ pg_10.repmgr.service_name[ansible_os_family] + '.service' }}"
-
-- name: repmgr for PG 10 | Ensure repmgr service is started
-  systemd:
-    name: "{{ pg_10.repmgr.service_name[ansible_os_family] }}"
-    state: started
-    masked: false  # for re-run after failure
+- name: repmgr for PG 10 | Load postgresql role manifest
+  include_vars:
+    file: manifest.yml
+    name: postgresql_manifest
 
 - name: repmgr for PG 10 | Search for primary node
   become_user: postgres
@@ -49,11 +36,11 @@
     name: "{{ pg_10.repmgr.service_name[ansible_os_family] }}"
     state: stopped
 
-# Step: Mask repmgrd service to prevent packages from prematurely restarting repmgr service
-- name: repmgr for PG 10 | Mask repmgr service
+# Step: Disable repmgr service to prevent packages from prematurely restarting repmgr
+- name: repmgr for PG 10 | Disable repmgr service
   systemd:
     name: "{{ pg_10.repmgr.service_name[ansible_os_family] }}"
-    masked: true
+    enabled: false
 
 # Step: Install repmgr packages
 
@@ -117,19 +104,17 @@
         pg_data_dir: "{{ pg_10.pg.data_dir[ansible_os_family] }}"
         pg_service_name: "{{ pg_10.pg.service_name[ansible_os_family] }}"
         repmgr_service_name: "{{ pg_10.repmgr.service_name[ansible_os_family] }}"
-        # TODO: Get specification from manifest
         specification:
           extensions:
             replication:
-              replication_user_name: epi_repmgr
-              repmgr_database: epi_repmgr
+              replication_user_name: "{{ postgresql_manifest.specification.extensions.replication.replication_user_name }}"
+              repmgr_database:       "{{ postgresql_manifest.specification.extensions.replication.repmgr_database }}"
 
 # Step: Execute 'ALTER EXTENSION repmgr UPDATE' (on primary only)
 - name: repmgr for PG 10 | Update extension
   become_user: postgres
   postgresql_query:
-    # TODO: Get epi_repmgr from manifest
-    db: "{{ specification.extensions.replication.repmgr_database | default('epi_repmgr') }}"
+    db: "{{ postgresql_manifest.specification.extensions.replication.repmgr_database }}"
     query: ALTER EXTENSION repmgr UPDATE
   when: inventory_hostname == find_pg_primary_node.stdout
 
@@ -137,7 +122,6 @@
 - name: repmgr for PG 10 | Re-enable repmgr service
   systemd:
     name: "{{ pg_10.repmgr.service_name[ansible_os_family] }}"
-    masked: false
     enabled: true
 
 # Step: Start repmgr service
@@ -145,3 +129,8 @@
   systemd:
     name: "{{ pg_10.repmgr.service_name[ansible_os_family] }}"
     state: started
+
+- name: repmgr for PG 10 | Remove upgrade state file
+  file:
+    path: "{{ upgrade.repmgr.upgrade_state_file_path }}"
+    state: absent
