@@ -5,7 +5,7 @@ specification:
   kibana:
     dashboards:
       index: 'filebeat-*'
-      enable: 'auto'
+      enabled: 'auto'
   disable_helm_chart: false
   postgresql_input:
     multiline:

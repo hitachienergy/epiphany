@@ -302,3 +302,19 @@ specification:
   cloud:
     k8s_as_cloud_service: true
 ```
+
+## How to use default Kibana dashboards
+
+Default Filebeat configuration sets this option to 'auto'. In this case if Kibana service exists it will be enabled - false otherwise.
+Other possible values are True and False.
+
+Default configuration:
+```
+specification:
+  kibana:
+    dashboards:
+      enabled: 'auto'
+      index: 'filebeat-*'
+```
+
+Setting this option to True and not providing Kibana will result in a Filebeat crash.
