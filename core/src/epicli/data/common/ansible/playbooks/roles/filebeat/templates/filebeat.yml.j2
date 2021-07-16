@@ -180,7 +180,6 @@ setup.template.settings:
 # the dashboards is disabled by default and can be enabled either by setting the
 # options here or by using the `setup` command.
 {% set dashboards_enabled = is_upgrade_run | ternary(specification.kibana.dashboards.enabled | default(False), specification.kibana.dashboards.enabled) %}
-
 {% if dashboards_enabled == 'auto' %}
   {% if groups.kibana is defined and groups.kibana | length > 0 %}
 setup.dashboards.enabled: true
@@ -188,7 +187,7 @@ setup.dashboards.enabled: true
 setup.dashboards.enabled: false
   {% endif %}
 {% else %}
-setup.dashboards.enabled: "{{ dashboards_enabled }}"
+setup.dashboards.enabled: "{{ dashboards_enabled | lower }}"
 {% endif %}
 
 # The Elasticsearch index name.
