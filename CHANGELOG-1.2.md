@@ -4,6 +4,7 @@
 
 ### Added
 
+- [#126](https://github.com/epiphany-platform/epiphany/issues/126) - Added default Kibana dashboards
 - [#2127](https://github.com/epiphany-platform/epiphany/issues/2127) - Allow to specify configuration to be used in upgrade mode
 - [#2397](https://github.com/epiphany-platform/epiphany/issues/2397) - Restart CoreDNS pods conditionally
 
@@ -16,6 +17,7 @@
 ### Updated
 
 - [#1797](https://github.com/epiphany-platform/epiphany/issues/1797) - Upgrade Keycloak to v14.0.0
+- [#2074](https://github.com/epiphany-platform/epiphany/issues/2074) - Upgrade repmgr to 5.2.1
 
 ### Deprecated
 

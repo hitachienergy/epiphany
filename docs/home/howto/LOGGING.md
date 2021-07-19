@@ -302,3 +302,20 @@ specification:
   cloud:
     k8s_as_cloud_service: true
 ```
+
+## How to use default Kibana dashboards
+
+It is possible to configure `setup.dashboards.enabled` and `setup.dashboards.index` Filebeat settings using `specification.kibana.dashboards` key in `configuration/filebeat` doc.
+When `specification.kibana.dashboards.enabled` is set to `auto`, the corresponding setting in Filebeat configuration file will be set to `true` only if Kibana is configured to be present on the host.
+Other possible values are `true` and `false`.
+
+Default configuration:
+```
+specification:
+  kibana:
+    dashboards:
+      enabled: auto
+      index: filebeat-*
+```
+
+Note: Setting `specification.kibana.dashboards.enabled` to `true` not providing Kibana will result in a Filebeat crash.
