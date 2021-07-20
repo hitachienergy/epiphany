@@ -6,9 +6,9 @@
   vars:
     _packages:
       Debian:
-        - postgresql-13-repmgr={{ repmgr.version.Debian + '-*' }}
-        - repmgr-common={{ repmgr.version.Debian + '-*' }}
+        - "{{ repmgr.package_name.Debian }}={{ repmgr.version.Debian + '-*' }}"
+        - "repmgr-common={{ repmgr.version.Debian + '-*' }}"
       RedHat:
-        - repmgr13-{{ repmgr.version.RedHat }}
+        - "{{ repmgr.package_name.RedHat }}-{{ repmgr.version.RedHat }}"
   module_defaults:
     yum: { lock_timeout: "{{ yum_lock_timeout }}" }

@@ -2,26 +2,23 @@
 # Documentation: https://repmgr.org/docs/5.2/upgrading-repmgr-extension.html#UPGRADING-MAJOR-VERSION#
 # Compatibility: https://repmgr.org/docs/5.2/install-requirements.html#INSTALL-COMPATIBILITY-MATRIX
 
-# Expects:
-#   - pg_service_names [dict] (list for each OS family)
-
-- name: repmgr for PG 10 | Create upgrade state file
+- name: repmgr for PG {{ pg_old_version }} | Create upgrade state file
   file:
-    path: "{{ upgrade.repmgr.upgrade_state_file_path }}"
+    path: "{{ old_version.repmgr.upgrade_state_file_path }}"
     state: touch
     mode: u=rw,g=r,o=
 
-- name: repmgr for PG 10 | Load postgresql role manifest
+- name: repmgr for PG {{ pg_old_version }} | Load postgresql role manifest
   include_vars:
     file: manifest.yml
     name: postgresql_manifest
 
-- name: repmgr for PG 10 | Search for primary node
+- name: repmgr for PG {{ pg_old_version }} | Search for primary node
   become_user: postgres
   # command prints primary node name (hostname)
   shell: |-
     set -o pipefail && \
-    {{ pg_10.repmgr.bin_dir[ansible_os_family] }}/repmgr cluster show \
+    {{ old_version.repmgr.bin_dir[ansible_os_family] }}/repmgr cluster show \
       | awk 'BEGIN{FS="|"} {gsub(/ /,""); if ($3 == "primary") print $2}'
   changed_when: false
   register: find_pg_primary_node
@@ -31,15 +28,15 @@
     executable: /bin/bash
 
 # Step: Stop repmgr service
-- name: repmgr for PG 10 | Stop repmgr service
+- name: repmgr for PG {{ pg_old_version }} | Stop repmgr service
   systemd:
-    name: "{{ pg_10.repmgr.service_name[ansible_os_family] }}"
+    name: "{{ old_version.repmgr.service_name[ansible_os_family] }}"
     state: stopped
 
 # Step: Disable repmgr service to prevent packages from prematurely restarting repmgr
-- name: repmgr for PG 10 | Disable repmgr service
+- name: repmgr for PG {{ pg_old_version }} | Disable repmgr service
   systemd:
-    name: "{{ pg_10.repmgr.service_name[ansible_os_family] }}"
+    name: "{{ old_version.repmgr.service_name[ansible_os_family] }}"
     enabled: false
 
 # Step: Install repmgr packages
@@ -47,7 +44,7 @@
 # On Ubuntu there is dependent 'repmgr-common' package.
 # apt module doesn't support --allow-downgrades (see https://github.com/ansible/ansible/issues/29451)
 # so we keep installed version if it's newer.
-- name: repmgr for PG 10 | Set target version for repmgr-common package
+- name: repmgr for PG {{ pg_old_version }} | Set target version for repmgr-common package
   set_fact:
     repmgr_common_target_version: >-
       {{ _installed_version is version(target_version, '>') | ternary(_installed_version, target_version + '-*') }}
@@ -57,7 +54,7 @@
   vars:
     _installed_version: "{{ ansible_facts.packages['repmgr-common'][0].version }}"
 
-- name: repmgr for PG 10 | Install repmgr package(s)
+- name: repmgr for PG {{ pg_old_version }} | Install repmgr package(s)
   package:
     name: "{{ _packages[ansible_os_family] }}"
     state: present
@@ -65,7 +62,7 @@
     _packages:
       Debian:
         - "{{ repmgr_package_name }}={{ target_version + '-*' }}"
-        - repmgr-common={{ repmgr_common_target_version | default(target_version + '-*') }}
+        - "repmgr-common={{ repmgr_common_target_version | default(target_version + '-*') }}"
       RedHat:
         - "{{ repmgr_package_name }}-{{ target_version }}"
   module_defaults:
@@ -73,37 +70,39 @@
 
 # Step: systemctl daemon-reload
 # Step: Restart PostgreSQL
-- name: repmgr for PG 10 | Restart PostgreSQL service
+- name: repmgr for PG {{ pg_old_version }} | Restart PostgreSQL service
   systemd:
     name: "{{ service_name }}"
     state: restarted
     daemon_reload: true
   loop_control:
     loop_var: service_name
-  loop: "{{ pg_service_names[ansible_os_family] }}"
+  loop:
+    - "{{ old_version.pg.service_name[ansible_os_family] }}"  # the same name for both versions
+    - "{{ old_version.pg.instantiated_service_name[ansible_os_family] }}"
 
 # Step: Update config file
 - name: Update repmgr config file
   block:
-    - name: repmgr for PG 10 | Get node id
+    - name: repmgr for PG {{ pg_old_version }} | Get node id
       command: >-
-        grep -Po '(?<=^node_id=)\d+' "{{ pg_10.repmgr.config_dir[ansible_os_family] }}/repmgr.conf"
+        grep -Po '(?<=^node_id=)\d+' "{{ old_version.repmgr.config_dir[ansible_os_family] }}/repmgr.conf"
       register: pg_node_id
       changed_when: false
 
-    - name: repmgr for PG 10 | Replace repmgr config file
+    - name: repmgr for PG {{ pg_old_version }} | Replace repmgr config file
       template:
         src: repmgr.conf.j2
-        dest: "{{ pg_10.repmgr.config_dir[ansible_os_family] }}/repmgr.conf"
+        dest: "{{ old_version.repmgr.config_dir[ansible_os_family] }}/repmgr.conf"
         owner: postgres
         group: postgres
         mode: u=rw,g=,o=
       vars:
         node_id: "{{ pg_node_id.stdout }}"
-        pg_bin_dir: "{{ pg_10.pg.bin_dir[ansible_os_family] }}"
-        pg_data_dir: "{{ pg_10.pg.data_dir[ansible_os_family] }}"
-        pg_service_name: "{{ pg_10.pg.service_name[ansible_os_family] }}"
-        repmgr_service_name: "{{ pg_10.repmgr.service_name[ansible_os_family] }}"
+        pg_bin_dir: "{{ old_version.pg.bin_dir[ansible_os_family] }}"
+        pg_data_dir: "{{ old_version.pg.data_dir[ansible_os_family] }}"
+        pg_service_name: "{{ old_version.pg.service_name[ansible_os_family] }}"
+        repmgr_service_name: "{{ old_version.repmgr.service_name[ansible_os_family] }}"
         specification:
           extensions:
             replication:
@@ -111,7 +110,7 @@
               repmgr_database:       "{{ postgresql_manifest.specification.extensions.replication.repmgr_database }}"
 
 # Step: Execute 'ALTER EXTENSION repmgr UPDATE' (on primary only)
-- name: repmgr for PG 10 | Update extension
+- name: repmgr for PG {{ pg_old_version }} | Update extension
   become_user: postgres
   postgresql_query:
     db: "{{ postgresql_manifest.specification.extensions.replication.repmgr_database }}"
@@ -119,18 +118,18 @@
   when: inventory_hostname == find_pg_primary_node.stdout
 
 # Step: Re-enable repmgr service
-- name: repmgr for PG 10 | Re-enable repmgr service
+- name: repmgr for PG {{ pg_old_version }} | Re-enable repmgr service
   systemd:
-    name: "{{ pg_10.repmgr.service_name[ansible_os_family] }}"
+    name: "{{ old_version.repmgr.service_name[ansible_os_family] }}"
     enabled: true
 
 # Step: Start repmgr service
-- name: repmgr for PG 10 | Start repmgr service
+- name: repmgr for PG {{ pg_old_version }} | Start repmgr service
   systemd:
-    name: "{{ pg_10.repmgr.service_name[ansible_os_family] }}"
+    name: "{{ old_version.repmgr.service_name[ansible_os_family] }}"
     state: started
 
-- name: repmgr for PG 10 | Remove upgrade state file
+- name: repmgr for PG {{ pg_old_version }} | Remove upgrade state file
   file:
-    path: "{{ upgrade.repmgr.upgrade_state_file_path }}"
+    path: "{{ old_version.repmgr.upgrade_state_file_path }}"
     state: absent

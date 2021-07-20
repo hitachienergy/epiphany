@@ -47,15 +47,15 @@
     group: postgres
     mode: u=rw,g=,o=
 
-# --- Configure Repmgr ---
+# --- Configure repmgr ---
 
-- name: Extensions | repmgr | Create database for Repmgr
+- name: Extensions | repmgr | Create database for repmgr
   become_user: postgres
   postgresql_db:
     name: "{{ specification.extensions.replication.repmgr_database }}"
     owner: "{{ specification.extensions.replication.replication_user_name }}"
 
-- name: Extensions | repmgr | Create Repmgr config file
+- name: Extensions | repmgr | Create repmgr config file
   template:
     src: repmgr.conf.j2
     dest: "{{ repmgr.config_dir[ansible_os_family] }}/repmgr.conf"
@@ -71,7 +71,7 @@
     repmgr_service_name: "{{ repmgr.service_name[ansible_os_family] }}"
 
 # On Ubuntu config file location is not set by package (see https://repmgr.org/docs/5.2/packages-debian-ubuntu.html).
-# Create symlink to allow using Repmgr commands without specifying config file location (which is custom).
+# Create symlink to allow using repmgr commands without specifying config file location (which is custom).
 # See https://repmgr.org/docs/5.2/configuration-file.html
 - name: Extensions | repmgr | Debian specific tasks
   when: ansible_os_family == 'Debian'
@@ -85,7 +85,7 @@
         group: postgres
       when: template_repmgr_conf.dest != '/etc/repmgr.conf'
 
-    # For Repmgr installed from Ubuntu package additional configuration is required before repmgrd is started as daemon
+    # For repmgr installed from Ubuntu package additional configuration is required before repmgrd is started as daemon
     - name: Extensions | repmgr | Set repmgr.conf file in /etc/default/repmgrd
       replace:
         path: /etc/default/repmgrd
@@ -106,22 +106,22 @@
   failed_when:
     # rc = 25 means that there is an error with at least one registered node
     - pg_cluster_status.rc not in [0, 25]
-    # do not fail when Repmgr is not initialized yet
+    # do not fail when repmgr is not initialized yet
     - pg_cluster_status.stderr is not search("relation \"repmgr.nodes\" does not exist")
 
 # 1. There is a preflight check that no more than 2 cluster nodes are supported
 # 2. rc = 25 means that there is an error with at least one registered node
 #    sometimes 'repmgr cluster show' returns 25 code with empty stderr and no explanation
-- name: Extensions | Repmgr | Set 'pg_is_clustered' fact
+- name: Extensions | repmgr | Set 'pg_is_clustered' fact
   set_fact:
     pg_is_clustered: "{{ pg_cluster_status.rc in [0, 25] and pg_cluster_status.stdout_lines | length > 1 }}"
 
-- name: Extensions | Repmgr | Configure PostgreSQL cluster
+- name: Extensions | repmgr | Configure PostgreSQL cluster
   when: not pg_is_clustered
   vars:
     pg_node_primary: "{{ groups.postgresql[0] }}" # the first node in the group is primary
   block:
-    - name: Extensions | Repmgr | Register primary node
+    - name: Extensions | repmgr | Register primary node
       when: pg_node_primary == inventory_hostname
       become_user: postgres
       command: >-
@@ -146,7 +146,7 @@
             - "{{ pg.service_name[ansible_os_family] }}"
             - "{{ pg.instantiated_service_name[ansible_os_family] }}"
 
-        - name: Extensions | repmgr | Clone standby node with Repmgr
+        - name: Extensions | repmgr | Clone standby node with repmgr
           become_user: postgres
           command: >-
             {{ repmgr.bin_dir[ansible_os_family] }}/repmgr standby clone
@@ -159,7 +159,7 @@
             name: "{{ pg.service_name[ansible_os_family] }}"
             state: started
 
-        - name: Extensions | repmgr | Register node with Repmgr
+        - name: Extensions | repmgr | Register node with repmgr
           become_user: postgres
           command: >-
             {{ repmgr.bin_dir[ansible_os_family] }}/repmgr standby register --force

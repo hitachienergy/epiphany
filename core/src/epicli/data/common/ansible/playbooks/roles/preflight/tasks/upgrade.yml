@@ -46,6 +46,8 @@
         mount: "{{ ansible_mounts | selectattr('device','equalto', pg_data_disk.stdout) | list | first }}"
 
     - name: Ensure that PostgreSQL data directory doesn't exist or is not empty
+      become: true
+      become_user: postgres
       block:
         - name: Get PostgreSQL data directory stat information
           stat:

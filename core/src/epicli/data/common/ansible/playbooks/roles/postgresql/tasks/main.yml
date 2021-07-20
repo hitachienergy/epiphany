@@ -74,7 +74,7 @@
     - name: RedHat | Initialize database
       become_user: postgres
       when: not pg_hba_conf_stat.stat.exists
-      command: "{{ pg.bindir[ansible_os_family] }}/initdb"
+      command: "{{ pg.bin_dir[ansible_os_family] }}/initdb"
       environment:
         PGDATA: "{{ pg.data_dir[ansible_os_family] }}"
 
