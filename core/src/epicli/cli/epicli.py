@@ -214,6 +214,9 @@ def upgrade_parser(subparsers):
                             help="Waits for all pods to be in the 'Ready' state before proceeding to the next step of the K8s upgrade.")
     sub_parser.add_argument('--offline-requirements', dest='offline_requirements', type=str, required=False,
                             help='Path to the folder with pre-prepared offline requirements.')
+    sub_parser.add_argument('-f', '--file', dest='file', type=str, required=False,
+                            help='File with upgraded configuration definitions to use for the components to be upgraded.')
+
     # developer options
     sub_parser.add_argument('--profile-ansible-tasks', dest='profile_ansible_tasks', action="store_true",
                             help='Enable Ansible profile_tasks plugin for timing tasks.')

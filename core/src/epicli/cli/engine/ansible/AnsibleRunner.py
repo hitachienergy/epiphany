@@ -142,7 +142,7 @@ class AnsibleRunner(Step):
         self.copy_resources()
 
         # upgrade inventory
-        inventory_upgrade = AnsibleInventoryUpgrade(self.build_dir, self.backup_build_dir)
+        inventory_upgrade = AnsibleInventoryUpgrade(self.build_dir, self.backup_build_dir, self.config_docs)
         inventory_upgrade.upgrade()
 
         # create ansible.cfg
