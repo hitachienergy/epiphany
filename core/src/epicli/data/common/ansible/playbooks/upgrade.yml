@@ -236,5 +236,7 @@
   tasks:
     - include_role:
         name: postgresql
-        tasks_from: upgrade/extensions/replication/repmgr-for-PG-10-main
+        tasks_from: upgrade/extensions/replication/repmgr-main
+      vars:
+        pg_version: 10
       when: "'postgresql' in upgrade_components or upgrade_components|length == 0"
