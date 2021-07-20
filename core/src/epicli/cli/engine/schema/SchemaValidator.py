@@ -7,13 +7,13 @@ from cli.helpers.doc_list_helpers import select_single
 
 
 class SchemaValidator(Step):
-    def __init__(self, cluster_model, validation_docs):
+    def __init__(self, provider, validation_docs):
         super().__init__(__name__)
-        self.cluster_model = cluster_model
+        self.provider = provider
         self.validation_docs = validation_docs
 
-        base = load_yaml_obj(types.VALIDATION, self.cluster_model.provider, 'core/base')
-        self.definitions = load_yaml_obj(types.VALIDATION, self.cluster_model.provider, 'core/definitions')
+        base = load_yaml_obj(types.VALIDATION, self.provider, 'core/base')
+        self.definitions = load_yaml_obj(types.VALIDATION, self.provider, 'core/definitions')
 
         self.base_schema = dict_to_objdict(deepcopy(base))
         self.base_schema['definitions'] = self.definitions
@@ -35,7 +35,7 @@ class SchemaValidator(Step):
     def run_for_individual_documents(self):
         for doc in self.validation_docs:
             # Load document schema
-            schema = load_yaml_obj(types.VALIDATION, self.cluster_model.provider, doc.kind)
+            schema = load_yaml_obj(types.VALIDATION, self.provider, doc.kind)
 
             # Include "definitions"
             schema['definitions'] = self.definitions
@@ -57,7 +57,7 @@ class SchemaValidator(Step):
         for doc in self.validation_docs:
             self.logger.info(f'Validating: {doc.kind}')
             schema = self.get_base_schema(doc.kind)
-            schema['properties']['specification'] = load_yaml_obj(types.VALIDATION, self.cluster_model.provider, doc.kind)
+            schema['properties']['specification'] = load_yaml_obj(types.VALIDATION, self.provider, doc.kind)
             if hasattr(schema['properties']["specification"], '$ref'):
                 if schema['properties']["specification"]['$ref'] == '#/definitions/unvalidated_specification':
                     self.logger.warn('No specification validation for ' + doc.kind)

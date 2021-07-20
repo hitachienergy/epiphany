@@ -57,7 +57,7 @@ class ApplyEngine(Step):
             raise Exception('No cluster model defined in input YAML file')
 
         # Validate input documents
-        with SchemaValidator(self.cluster_model, self.input_docs) as schema_validator:
+        with SchemaValidator(self.cluster_model.provider, self.input_docs) as schema_validator:
             schema_validator.run()
 
     def process_infrastructure_docs(self):
@@ -70,7 +70,7 @@ class ApplyEngine(Step):
             self.infrastructure_docs = infrastructure_builder.run()
 
         # Validate infrastructure documents
-        with SchemaValidator(self.cluster_model, self.infrastructure_docs) as schema_validator:
+        with SchemaValidator(self.cluster_model.provider, self.infrastructure_docs) as schema_validator:
             schema_validator.run()
 
     def process_configuration_docs(self):
@@ -79,7 +79,7 @@ class ApplyEngine(Step):
             self.configuration_docs = config_appender.run()
 
         # Validate configuration documents
-        with SchemaValidator(self.cluster_model, self.configuration_docs) as schema_validator:
+        with SchemaValidator(self.cluster_model.provider, self.configuration_docs) as schema_validator:
             schema_validator.run()
 
     def collect_infrastructure_config(self):
