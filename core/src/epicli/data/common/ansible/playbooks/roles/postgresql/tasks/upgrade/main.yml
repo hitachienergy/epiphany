@@ -38,6 +38,11 @@
       include_vars:
         file: vars/main.yml
 
+    - name: PostgreSQL | Include manifest from 'postgresql' role
+      include_vars:
+        file: vars/manifest.yml
+        name: manifest
+
     - name: PostgreSQL | Include new version default variables
       include_vars:
         file: defaults/main.yml
@@ -96,14 +101,14 @@
 
     # Step: Adjust authentication
 
-    - name: PostgreSQL | Extensions | repmgr | Update pgpass file with specified values
-      when: pg_is_repmgr_used
-      template:
-        src: pgpass-repmgr.j2
-        dest: "{{ new_version.pg.base_dir[ansible_os_family] }}/.pgpass"
-        owner: postgres
-        group: postgres
-        mode: u=rw,g=,o=
+    #- name: PostgreSQL | Extensions | repmgr | Update pgpass file with specified values
+    #  when: pg_is_repmgr_used
+    #  template:
+    #    src: pgpass-repmgr.j2
+    #    dest: "{{ new_version.pg.base_dir[ansible_os_family] }}/.pgpass"
+    #    owner: postgres
+    #    group: postgres
+    #    mode: u=rw,g=,o=
 
     # Step: Stop all servers
     # Standby nodes have to be stopped after primary. Check p.8 from https://www.postgresql.org/docs/13/pgupgrade.html
@@ -145,6 +150,14 @@
               - postgresql-epiphany.conf
               - postgresql.conf
             pg: "{{ new_version.pg }}" # used in postgresql.conf
+            # Values from manifest are used when it's not possible to do changes after 'apply'
+            # such as disabling extensions
+            specification:
+              extensions:
+                pgaudit:
+                  enabled: "{{ manifest.specification.extensions.pgaudit.enabled }}"
+                replication:
+                  enabled: "{{ manifest.specification.extensions.replication.enabled }}"
           template:
             src: "roles/postgresql/templates/{{ file_name }}.j2"
             dest: "{{ new_version.pg.config_dir[ansible_os_family] }}/{{ file_name }}"
@@ -250,12 +263,6 @@
           when: pg_is_repmgr_used
           include_tasks: ./extensions/replication/pg-new/repmgr-register-primary.yml
 
-    # Prevent old service from starting to avoid accidental starting by the parent service and standard port conflict
-    - name: PostgreSQL | Mask old PostgreSQL service
-      systemd:
-        name: "{{ old_version.pg.instantiated_service_name[ansible_os_family] }}"
-        masked: true
-
     # Step: Upgrade standby servers
     - name: PostgreSQL | Upgrade standby servers (clone standby node from primary and register)
       when:
@@ -263,50 +270,76 @@
         - pg_is_repmgr_used
       include_tasks: ./extensions/replication/pg-new/repmgr-register-standby.yml
 
+    # Prevent old service from starting to avoid accidental starting by the parent service and standard port conflict
+    - name: PostgreSQL | Mask old PostgreSQL service
+      systemd:
+        name: "{{ old_version.pg.instantiated_service_name[ansible_os_family] }}"
+        masked: true
+
+    - name: PostgreSQL | Extensions | repmgr | RedHat | Update repmgr symlink
+      file:
+        src: "{{ new_version.repmgr.bin_dir.RedHat }}/repmgr"
+        dest: "/usr/bin/repmgr"
+        state: link
+      when:
+        - ansible_os_family == 'RedHat'
+        - pg_ispg_is_repmgr_used
+
     # Step: Reverting to old cluster
-    #rescue:
-    #- name: PostgreSQL | Remove OS-specific packages
-    #  package:
-    #    name: "{{ _packages[ansible_os_family] }}"
-    #    state: absent
-    #  vars:
-    #    _packages:
-    #      Debian:
-    #        - "postgresql-client-{{ new_version.pg.version }}"
-    #        - "postgresql-{{ new_version.pg.version }}"
-    #        - "postgresql-{{ new_version.pg.version }}-pgaudit"
-    #        - "postgresql-{{ new_version.pg.version }}-repmgr"
-    #      RedHat:
-    #        - "postgresql{{ new_version.pg.version }}-server"
-    #        - "pgaudit15_{{ new_version.pg.version }}"
-    #        - "repmgr{{ new_version.pg.version }}-5.2.1"
-    #  module_defaults:
-    #    yum: { lock_timeout: "{{ yum_lock_timeout }}" }
+    rescue:
+    - name: PostgreSQL | Rollback | Remove OS-specific packages
+      package:
+        name: "{{ _packages[ansible_os_family] }}"
+        state: absent
+      vars:
+        _packages:
+          Debian:
+            - "postgresql-client-{{ new_version.pg.version }}"
+            - "postgresql-{{ new_version.pg.version }}"
+            - "{{ new_version.pgaudit.package_name.Debian }}"
+            - "{{ new_version.repmgr.package_name.Debian }}"
+          RedHat:
+            - "postgresql{{ new_version.pg.version }}-server"
+            - "{{ new_version.pgaudit.package_name.Debian }}"
+            - "{{ new_version.repmgr.package_name.RedHat }}"
+      module_defaults:
+        yum: { lock_timeout: "{{ yum_lock_timeout }}" }
 
-    #- name: PostgreSQL | Rollback | Remove new data directory
-    #  file:
-    #    path: "{{ new_version.pg.data_dir[ansible_os_family] }}"
-    #    state: absent
+    - name: PostgreSQL | Rollback | Remove new data directory
+      file:
+        path: "{{ new_version.pg.data_dir[ansible_os_family] }}"
+        state: absent
 
-    #- name: PostgreSQL | Rollback | Start and enable old PostgreSQL service on primary node
-    #  when: inventory_hostname == pg_primary_node
-    #  <<: &start_pg_services
-    #    systemd:
-    #      name: "{{ service_name }}"
-    #      state: started
-    #      enabled: true
-    #      masked: false
-    #    loop_control:
-    #     loop_var: service_name
-    #    loop:
-    #      - "{{ old_version.pg.service_name[ansible_os_family] }}"  # the same name for both versions
-    #      - "{{ old_version.pg.instantiated_service_name[ansible_os_family] }}"
+    - name: PostgreSQL | Rollback | Extensions | repmgr | RedHat | Update repmgr symlink
+      file:
+        src: "{{ old_version.repmgr.bin_dir.RedHat }}/repmgr"
+        dest: "/usr/bin/repmgr"
+        state: link
+      when:
+        - ansible_os_family == 'RedHat'
+        - pg_ispg_is_repmgr_used
 
-    #- name: PostgreSQL | Rollback | Start and enable old PostgreSQL service on standby nodes
-    #  when: inventory_hostname != pg_primary_node
-    #  <<: *start_pg_services
+    - name: PostgreSQL | Rollback | Start and enable PostgreSQL {{ old_version.pg.version }} service on primary node
+      when: (inventory_hostname == pg_primary_node and pg_is_repmgr_used) or not pg_is_repmgr_used
+      <<: &start_pg_services
+        systemd:
+          name: "{{ service_name }}"
+          state: started
+          enabled: true
+          masked: false
+        loop_control:
+         loop_var: service_name
+        loop:
+          - "{{ old_version.pg.service_name[ansible_os_family] }}"  # the same name for both versions
+          - "{{ old_version.pg.instantiated_service_name[ansible_os_family] }}"
 
-    #- name: PostgreSQL | Fail upgrade with a note
-    #  debug:
-    #    msg: PostgreSQL upgrade failed, please check logs
-    #  failed_when: true
+    - name: PostgreSQL | Rollback | Start and enable PostgreSQL {{ old_version.pg.version }} service on standby nodes
+      when:
+       - inventory_hostname != pg_primary_node
+       - pg_is_repmgr_used
+      <<: *start_pg_services
+
+    - name: PostgreSQL | Fail upgrade with a note
+      debug:
+        msg: PostgreSQL upgrade failed, please check logs
+      failed_when: true
