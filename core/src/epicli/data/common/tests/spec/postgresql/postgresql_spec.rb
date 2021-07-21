@@ -236,14 +236,17 @@ if replicated
 
   describe 'Display information about each registered node in the replication cluster' do
     let(:disable_sudo) { false }
-    describe command("su - postgres -c \"repmgr -f /etc/postgresql/10/main/repmgr.conf cluster show\""), :if => os[:family] == 'ubuntu' do
+    describe command("su - postgres -c \"repmgr cluster show\"") do
       its(:stdout) { should match /primary.*\*.*running/ }
       its(:stdout) { should match /standby.*running/ }
       its(:exit_status) { should eq 0 }
     end
-    describe command("su - postgres -c \"repmgr -f /etc/repmgr/10/repmgr.conf cluster show\""), :if => os[:family] == 'redhat' do
-      its(:stdout) { should match /primary.*\*.*running/ }
-      its(:stdout) { should match /standby.*running/ }
+  end
+
+  describe 'Check repmgrd is running on each node in the cluster' do
+    let(:disable_sudo) { false }
+    describe command("su - postgres -c \"repmgr service status\"") do
+      its(:stdout) { should_not match /not running/ }
       its(:exit_status) { should eq 0 }
     end
   end
