@@ -89,17 +89,17 @@
     # Step: Install custom shared object files
 
     - name: PostgreSQL | Extensions | PgAudit | Include pakage(s) installation tasks
-      include_tasks: roles/postgresql/tasks/upgrade/extensions/pgaudit/packages.yml
+      include_tasks: ./extensions/pgaudit/packages.yml
 
     - name: PostgreSQL | Extensions | repmgr | Include pakage(s) installation tasks
-      include_tasks: roles/postgresql/tasks/upgrade/extensions/replication/pg-new/packages.yml
+      include_tasks: ./extensions/replication/pg-new/packages.yml
 
     # Step: Adjust authentication
 
     - name: PostgreSQL | Extensions | repmgr | Update pgpass file with specified values
       when: pg_is_repmgr_used
       template:
-        src: roles/postgresql/templates/pgpass-repmgr.j2
+        src: pgpass-repmgr.j2
         dest: "{{ new_version.pg.base_dir[ansible_os_family] }}/.pgpass"
         owner: postgres
         group: postgres
@@ -131,7 +131,7 @@
 
     - name: PostgreSQL | Extensions | repmgr | Prepare for standby server upgrades
       when: pg_is_repmgr_used
-      include_tasks: roles/postgresql/tasks/upgrade/extensions/replication/pg-new/repmgr-checkpoint-location.yml
+      include_tasks: ./extensions/replication/pg-new/repmgr-checkpoint-location.yml
 
     # Step: Run pg_upgrade
 
@@ -158,7 +158,7 @@
 
         - name: PostgreSQL | Extensions | repmgr | Copy configuration file
           when: pg_is_repmgr_used
-          include_tasks: roles/postgresql/tasks/upgrade/extensions/replication/pg-new/repmgr-conf.yml
+          include_tasks: ./extensions/replication/pg-new/repmgr-conf.yml
 
     - name: PostgreSQL | Upgrade primary node
       when: (inventory_hostname == pg_primary_node and pg_is_repmgr_used) or not pg_is_repmgr_used
@@ -248,7 +248,7 @@
 
         - name: PostgreSQL | Extensions | repmgr | Register primary node
           when: pg_is_repmgr_used
-          include_tasks: roles/postgresql/tasks/upgrade/extensions/replication/pg-new/repmgr-register-primary.yml
+          include_tasks: ./extensions/replication/pg-new/repmgr-register-primary.yml
 
     # Prevent old service from starting to avoid accidental starting by the parent service and standard port conflict
     - name: PostgreSQL | Mask old PostgreSQL service
@@ -261,7 +261,7 @@
       when:
         - inventory_hostname != pg_primary_node
         - pg_is_repmgr_used
-      include_tasks: roles/postgresql/tasks/upgrade/extensions/replication/pg-new/repmgr-register-standby.yml
+      include_tasks: ./extensions/replication/pg-new/repmgr-register-standby.yml
 
     # Step: Reverting to old cluster
     #rescue:

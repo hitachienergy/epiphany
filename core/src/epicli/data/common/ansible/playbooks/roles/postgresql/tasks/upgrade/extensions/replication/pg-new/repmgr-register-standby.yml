@@ -6,6 +6,8 @@
       -h {{ pg_primary_node }}
       -U {{ specification.extensions.replication.privileged_user_name }}
       -d {{ specification.extensions.replication.repmgr_database }} -p 5432 --force
+  register: repmgr_standby_clone
+  changed_when: repmgr_standby_clone.rc == 0
 
 - name: PostgreSQL | Start and enable new PostgreSQL service
   systemd:
@@ -22,3 +24,5 @@
           dbname={{ specification.extensions.replication.repmgr_database }},
           connect_timeout=2'
       --upstream-node-id 1
+  register: repmgr_standby_register
+  changed_when: repmgr_standby_register.rc == 0

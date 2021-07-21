@@ -7,9 +7,9 @@
   vars:
     _packages:
       Debian:
-        - "{{new_version.repmgr.package_name.Debian}}={{ new_version.repmgr.version.Debian + '-*' }}"
+        - "{{ new_version.repmgr.package_name.Debian }}={{ new_version.repmgr.version.Debian + '-*' }}"
         - "repmgr-common={{ new_version.repmgr.version.Debian + '-*' }}"
       RedHat:
-        - "{{new_version.repmgr.package_name.RedHat}}-{{ new_version.repmgr.version.RedHat }}"
+        - "{{ new_version.repmgr.package_name.RedHat }}-{{ new_version.repmgr.version.RedHat }}"
   module_defaults:
     yum: { lock_timeout: "{{ yum_lock_timeout }}" }
