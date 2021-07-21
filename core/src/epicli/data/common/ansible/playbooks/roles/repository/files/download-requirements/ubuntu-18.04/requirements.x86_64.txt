@@ -141,11 +141,12 @@ samba-libs
 libsmbclient
 
 # for postgres
-postgresql-client-10
-postgresql-10-pgaudit
-postgresql-10-repmgr 4.0.6
-postgresql-common
 pgbouncer 1.10.*
+postgresql-10-pgaudit
+postgresql-10-repmgr 5.2.1
+postgresql-client-10
+postgresql-common
+repmgr-common 5.2.1
 
 # for firewalld
 ipset

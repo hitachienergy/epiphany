@@ -131,4 +131,4 @@
     owner: root
     group: root
   loop:
-    - { path: /var/lib/epiphany }
+    - { path: /var/lib/epiphany/upgrade/state }

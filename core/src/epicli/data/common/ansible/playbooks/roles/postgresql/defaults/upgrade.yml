@@ -26,23 +26,11 @@ repmgr:
   config_dir:
     Debian: /etc/postgresql/10/main
     RedHat: /etc/repmgr/10
+  package_name:
+    Debian: postgresql-10-repmgr
+    RedHat: repmgr10
   service_name:
     Debian: repmgrd
     RedHat: repmgr10
-  version:
-    Debian: "5.2.1"
-    RedHat: "5.2.1"
-
-pgbouncer:
-  group:
-    Debian: postgres
-    RedHat: pgbouncer
-  logfile:
-    Debian: /var/log/postgresql/pgbouncer.log
-    RedHat: /var/log/pgbouncer/pgbouncer.log
-  pidfile:
-    Debian: /var/run/postgresql/pgbouncer.pid
-    RedHat: /var/run/pgbouncer/pgbouncer.pid
-  user:
-    Debian: postgres
-    RedHat: pgbouncer
+  upgrade:
+    state_file_path: /var/lib/epiphany/upgrade/state/repmgr.uncompleted
