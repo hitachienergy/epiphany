@@ -52,7 +52,7 @@ class BackupRecoveryEngineBase(Step):
         self.input_docs = load_yamls_file(self.file)
 
         # Validate input documents
-        with SchemaValidator(self.cluster_model, self.input_docs) as schema_validator:
+        with SchemaValidator(self.cluster_model.provider, self.input_docs) as schema_validator:
             schema_validator.run_for_individual_documents()
 
         # Merge the input docs with defaults

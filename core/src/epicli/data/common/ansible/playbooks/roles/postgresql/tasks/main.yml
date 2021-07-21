@@ -74,7 +74,7 @@
     - name: RedHat | Initialize database
       become_user: postgres
       when: not pg_hba_conf_stat.stat.exists
-      command: "{{ pg.bindir[ansible_os_family] }}/initdb"
+      command: "{{ pg.bin_dir[ansible_os_family] }}/initdb"
       environment:
         PGDATA: "{{ pg.data_dir[ansible_os_family] }}"
 
@@ -164,7 +164,7 @@
       postgresql_info:
         filter: in_recovery
       register: in_recovery_state
-    
+
     - name: Extensions | Set up PgPool | Create configuration
       block:
         - name: Extensions | Include PgPool vars from applications role
@@ -185,7 +185,7 @@
                                                                      | list
                                                                      | first
                                                                      | default({}) }}
-      when: 
+      when:
         - not in_recovery_state.in_recovery
   when:
     - pgpool.env is defined

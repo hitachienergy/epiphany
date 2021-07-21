@@ -4,6 +4,11 @@
     file: roles/filebeat/defaults/main.yml
     name: filebeat_defaults
 
+- name: Filebeat | Load filebeat role manifest
+  include_vars:
+    file: roles/filebeat/vars/manifest.yml
+    name: filebeat_manifest
+
 - name: Filebeat on k8s | Prepare fact about helm release and reinstall daemonset if release exists
   delegate_to: localhost
   become: false
@@ -92,8 +97,10 @@
         name: filebeat
         tasks_from: configure-filebeat
       vars:
-        context: upgrade
         existing_output_es_password: >-
           {{ _filebeat_existing_config['output.elasticsearch'].password }}
         existing_setup_kibana: >-
           {{ _filebeat_existing_config['setup.kibana'] | default({}) }}
+        # To provide settings for multiline feature (e.g. specification.postgresql_input.multiline)
+        specification: >-
+          {{ filebeat_manifest.specification }}

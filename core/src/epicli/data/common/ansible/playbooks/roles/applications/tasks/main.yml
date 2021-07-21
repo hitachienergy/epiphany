@@ -15,6 +15,7 @@
 
     - name: Include applications
       include_tasks: applications/{{ data.name }}/main.yml
+      no_log: true # Do not log provided credentials
       loop_control:
         loop_var: data
       loop: "{{ _enabled_applications }}"

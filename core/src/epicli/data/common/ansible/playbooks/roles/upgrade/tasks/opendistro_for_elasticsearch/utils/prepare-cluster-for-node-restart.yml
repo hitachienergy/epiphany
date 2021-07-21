@@ -28,16 +28,26 @@
       retries: 30
       delay: 1
 
-    # Synced-flush speeds up shard recovery. It's deprecated and will be removed in ES 8.0.
-    # Synced flush operations that fail due to pending indexing operations are listed in response body, although the request itself still returns 200 OK status.
-    # If there are failures, reissue the request.
-    - name: ODFE | Perform a synced flush
-      uri:
-        url: "{{ es_api.url }}/_flush/synced"
-        method: POST
-      register: response_flush
-      until:
-        - response_flush.json._shards is defined
-        - response_flush.json._shards.failed == 0
-      retries: 120  # up to 54 observed while testing on AWS
-      delay: 1
+    # Synced flush speeds up shard recovery however it's optional.
+    # https://www.elastic.co/guide/en/elasticsearch/reference/7.10/rolling-upgrades.html#_upgrading_your_cluster
+    # Synced flush is deprecated (flush has the same effect as synced flush on Elasticsearch >= 7.6) and will be removed in ES 8.0.
+    # Since synced flush fails under a large volume of incoming data (e.g. increased log level) it's replaced by flush.
+    # In epicli 0.7.x there is ES 7.3.2 but this step is optional.
+    - name: Handle flush failure
+      block:
+        - name: ODFE | Perform a synced flush (optional step)
+          uri:
+            url: "{{ es_api.url }}/_flush"
+            method: POST
+          register: response_flush
+          until:
+            - response_flush.json._shards is defined
+            - response_flush.json._shards.failed == 0
+          retries: 120
+          delay: 1
+      rescue:
+        - name: ODFE | Print warning
+          debug:
+            msg:
+              - "WARNING: flush command failed"
+              - "{{ response_flush }}"

@@ -1,13 +1,14 @@
 ---
-- name: Extensions | Repmgr | Install OS packages
+- name: Extensions | repmgr | Install repmgr package(s)
   package:
     name: "{{ _packages[ansible_os_family] }}"
     state: present
   vars:
     _packages:
       Debian:
-        - postgresql-13-repmgr
+        - postgresql-13-repmgr={{ repmgr.version.Debian + '-*' }}
+        - repmgr-common={{ repmgr.version.Debian + '-*' }}
       RedHat:
-        - repmgr13-5.2.1
+        - repmgr13-{{ repmgr.version.RedHat }}
   module_defaults:
     yum: { lock_timeout: "{{ yum_lock_timeout }}" }

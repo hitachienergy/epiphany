@@ -28,8 +28,6 @@
       loop: "{{ ansible_play_hosts_all }}"
       loop_control:
         loop_var: target_inventory_hostname
-      vars:
-        expected_status: [ yellow, green ]  # 'green' may not be possible until shard allocation is re-enabled
 
     # Patch elasticsearch.yml to use Epiphany node cert (all hosts)
 
@@ -80,16 +78,12 @@
       loop: "{{ ansible_play_hosts_all }}"
       loop_control:
         loop_var: target_inventory_hostname
-      vars:
-        expected_status: [ yellow, green ]  # 'green' may not be possible until shard allocation is re-enabled
 
     # Re-enable shard allocation
     - include_tasks: utils/enable-shard-allocation.yml
 
-    # Wait for green/yellow cluster status
-    - include_tasks: utils/wait-for-cluster-status.yml
-      vars:
-        expected_status: [ yellow, green ]  # for 'green' all nodes must be already upgraded
+    # Wait for shard allocation (for 'green' status at least 2 nodes must be already upgraded)
+    - include_tasks: utils/wait-for-shard-allocation.yml
 
     # Test API access using Epiphany admin cert (all nodes)
     - include_tasks:

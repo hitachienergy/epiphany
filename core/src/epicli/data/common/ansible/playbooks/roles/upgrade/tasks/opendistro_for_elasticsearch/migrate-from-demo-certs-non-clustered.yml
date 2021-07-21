@@ -51,7 +51,7 @@
     file: utils/restart-node.yml
   vars:
     target_inventory_hostname: "{{ inventory_hostname }}"
-    skip_waiting_for_status: true  # because after restart demo certificate stops working
+    skip_waiting_for_node: true  # because after restart demo certificate stops working
 
 # Test API access using Epiphany admin cert
 - include_tasks:

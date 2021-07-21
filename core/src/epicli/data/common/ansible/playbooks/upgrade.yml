@@ -229,3 +229,14 @@
       when: "'node_exporter' in upgrade_components or upgrade_components|length == 0"
   environment:
     KUBECONFIG: "{{ kubeconfig.local }}"
+
+- hosts: postgresql
+  become: true
+  become_method: sudo
+  tasks:
+    - include_role:
+        name: postgresql
+        tasks_from: upgrade/extensions/replication/repmgr-main
+      vars:
+        pg_version: 10
+      when: "'postgresql' in upgrade_components or upgrade_components|length == 0"

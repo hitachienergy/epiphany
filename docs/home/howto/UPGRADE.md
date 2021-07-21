@@ -124,6 +124,7 @@ The `epicli upgrade` command has additional flags:
 ###  Run *apply* after *upgrade*
 
 Currently Epiphany does not fully support apply after upgrade. There is a possibility to re-apply configuration from newer version of Epicli but this needs some manual work from Administrator. Re-apply on already upgraded cluster needs to be called with `--no-infra` option to skip Terraform part of configuration.
+If `apply` after `upgrade` is run with `--no-infra`,  the used system images from the older Epiphany version are preserved to prevent the destruction of the VMs.
 If you plan modify any infrastructure unit (eg. add Kubernetes Node) you need to create machine by yourself and attach it into configuration yaml. While running `epicli apply...` on already upgraded cluster you should use config yamls generated in newer version of Epiphany and apply changes you had in older one.
 If the cluster is upgraded to version 0.8 or newer you need also add additional feature mapping for repository role as shown on example below:
 
@@ -181,6 +182,15 @@ specification:
     - image-registry  # add image-registry here
 ...
 ```
+
+### Kubernetes applications
+
+To upgrade applications on Kubernetes to the desired version after `epicli upgrade` you have to:
+- generate new configuration manifest using `epicli init`
+- in case of generating minimal configuration manifest (without --full argument), copy and paste [the default configuration](https://github.com/epiphany-platform/epiphany/blob/develop/core/src/epicli/data/common/defaults/configuration/applications.yml) into it
+- run `epicli apply`
+
+*Note: The above link points to develop branch. Please choose the right branch that suits to Epiphany version you are using.*
 
 ## How to upgrade Kafka
 
@@ -254,3 +264,31 @@ With the latest Epiphany version it's possible to upgrade RabbitMQ to v3.8.9.
 It requires Erlang system packages upgrade that is done automatically to v23.1.4.
 Upgrade is performed in offline mode after stopping all RabbitMQ nodes.
 [Rolling upgrade](https://www.rabbitmq.com/upgrade.html#rolling-upgrades) is not supported by Epiphany and it is advised not to use this approach when Erlang needs to be upgraded.
+
+## Kubernetes upgrade
+
+---
+**NOTE**
+
+If the K8s cluster that is going to be upgraded has the Istio control plane application deployed You can run into issues.
+The default [profiles](https://istio.io/latest/docs/setup/additional-setup/config-profiles/) we currently support for installing Istio only deploy a single replica for the control services with a `PodDisruptionBudgets` value of 0. This will results in the following error while its draining a these pods during an upgrade:
+
+```shell
+Cannot evict pod as it would violate the pods disruption budget.
+```
+
+As we currently don't support any kind of advanced configuration of the Istio control plane components outside of the default profiles we need to scale up all components manually before the upgrade. This can be done with the following command:
+
+```shell
+kubectl scale deploy -n istio-system --replicas=2 --all 
+```
+
+After the upgrade, the deployements can be scaled down to the original capacity:
+
+```shell
+kubectl scale deploy -n istio-system --replicas=1 --all 
+```
+
+**Note: The ```istio-system``` namespace value is the default value and should be set to whatever is being used in the Istio application configuration.**
+
+---

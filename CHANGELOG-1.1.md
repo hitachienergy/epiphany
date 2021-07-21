@@ -1,6 +1,6 @@
 # Changelog 1.1
 
-## [1.1.0] YYYY-MM-DD
+## [1.1.0rc1] 2021-06-18
 
 ### Added
 
@@ -23,6 +23,9 @@
 - [#2082](https://github.com/epiphany-platform/epiphany/issues/2082) - Check possibility of downloading packages for offline installation on different architecture than targeted one
 - [#2232](https://github.com/epiphany-platform/epiphany/issues/2232) - Documentation added for spike about leader election for pods
 - [#2129](https://github.com/epiphany-platform/epiphany/issues/2129) - [Upgrade] Add migration from ODFE demo certificates to generated ones
+- [#2288](https://github.com/epiphany-platform/epiphany/issues/2288) - Allow to preserve OS images when run 'epicli apply' for existing cluster
+- [#2388](https://github.com/epiphany-platform/epiphany/issues/2388) - Document troubleshooting during failed epicli run
+- [#127](https://github.com/epiphany-platform/epiphany/issues/127)   - Add predefined Grafana dashboards for both offline/online modes
 
 ### Fixed
 
@@ -35,6 +38,10 @@
 - [#2215](https://github.com/epiphany-platform/epiphany/issues/2215) - Grafana does not show metrics from kafka and haproxy exporters
 - [#2318](https://github.com/epiphany-platform/epiphany/issues/2318) - [RHEL/Azure] RHUI client certificate expired for RHEL 7-LVM images
 - [#2332](https://github.com/epiphany-platform/epiphany/issues/2332) - [Elasticsearch] Error when having multiple VMs and non-clustered mode
+- [#1576](https://github.com/epiphany-platform/epiphany/issues/1576) - [Kafka] Incorrect number of brokers/queues available after scaling up/down
+- [#2381](https://github.com/epiphany-platform/epiphany/issues/2381) - Kibana fails to upgrade from epicli v1.0 to v1.1 (version comparison issue)
+- [#2345](https://github.com/epiphany-platform/epiphany/issues/2345) - CoreDNS requires restart after scaling up nodes to be able to resolve new hostnames
+- [#2360](https://github.com/epiphany-platform/epiphany/issues/2360) - [Upgrade] epicli may fail after re-running
 
 ### Updated
 
@@ -43,6 +50,7 @@
 - [#2241](https://github.com/epiphany-platform/epiphany/issues/2241) - [AMD64/ARM64] Vault (k8s) updated to version 0.10.0, helm chart with Vault updated to version 0.11.0 and Hashicorp Vault updated to version 1.7.0
 - [#2116](https://github.com/epiphany-platform/epiphany/issues/2116) - [AMD64/ARM64] Logstash updated to version 7.12.0
 - [#2297](https://github.com/epiphany-platform/epiphany/issues/2297) - Update Python dependencies to solve some of the security alerts.
+- [#2362](https://github.com/epiphany-platform/epiphany/issues/2362) - Update Python dependencies to solve more of the security alerts.
 
 ### Deprecated
 

@@ -1,0 +1,18 @@
+---
+- name: ODFE | Get size of upgrade state file
+  stat:
+    path: "{{ opendistro_for_elasticsearch.upgrade_state_file_path }}"
+    get_attributes: false
+    get_checksum: false
+    get_mime: false
+  register: stat_upgrade_state_file
+
+- name: Get cluster health and save to file
+  when: stat_upgrade_state_file.stat.size == 0  # don't overwrite the status on re-run
+  block:
+    - include_tasks: get-cluster-health.yml
+
+    - name: ODFE | Save cluster health to upgrade state file
+      copy:
+        content: "{{ cluster_health.json }}"
+        dest: "{{ opendistro_for_elasticsearch.upgrade_state_file_path }}"
