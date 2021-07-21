@@ -1,0 +1,21 @@
+---
+# WTF
+- name: PostgreSQL | Extensions | repmgr | Alter super user and replication user in PostgreSQL
+  become_user: postgres
+  vars:
+    _users:
+      - user: "{{ specification.extensions.replication.privileged_user_name }}"
+        password: "{{ specification.extensions.replication.privileged_user_password }}"
+      - user: "{{ specification.extensions.replication.replication_user_name }}"
+        password: "{{ specification.extensions.replication.replication_user_password }}"
+  postgresql_query:
+    query: "ALTER USER {{ item.user }} WITH PASSWORD '{{ item.password }}'"
+  loop: "{{ _users }}"
+  no_log: true
+
+- name: PostgreSQL | Extensions | repmgr | Register primary node
+  become_user: postgres
+  command: >-
+    {{ new_version.repmgr.bin_dir[ansible_os_family] }}/repmgr primary register
+      --superuser={{ specification.extensions.replication.privileged_user_name }}
+      --force

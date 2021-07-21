@@ -4,7 +4,7 @@
     manager: auto
   when: ansible_facts.packages is undefined
 
-- name: PostgreSQL | Extensions | PgAudit | Install new package for PostgreSQL {{ pg_new_version }}
+- name: PostgreSQL | Extensions | PgAudit | Install new package(s) for PostgreSQL {{ pg_new_version }}
   when: ansible_facts.packages[old_version.pgaudit.package_name[ansible_os_family]] is defined
   package:
     name: "{{ _packages[ansible_os_family] }}"
