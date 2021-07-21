@@ -20,6 +20,7 @@ pg:
   service_name:
     Debian: postgresql
     RedHat: postgresql-10
+  version: 10
 
 pgaudit:
   package_name:

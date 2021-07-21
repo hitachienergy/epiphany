@@ -241,8 +241,6 @@
         name: postgresql
         tasks_from: upgrade/extensions/replication/repmgr-main
       when: "'postgresql' in upgrade_components or upgrade_components|length == 0"
-  vars:
-    pg_version: '10'
 
 # play 2/2: upgrade postgresql
 - hosts: postgresql
@@ -253,6 +251,3 @@
         name: postgresql
         tasks_from: upgrade/main
       when: "'postgresql' in upgrade_components or upgrade_components|length == 0"
-  vars:
-    pg_old_version: '10'
-    pg_new_version: '13'

@@ -1,6 +1,10 @@
 ---
 # Upgrade procedure based on steps from: https://www.postgresql.org/docs/13/pgupgrade.html
 
+# There are a few preflight checks, so upgrade will not start when:
+#   * new PostgreSQL version is installed
+#   * old PostgreSQL version doesn't exist
+
 - name: PostgreSQL | Get information about installed packages as facts
   package_facts:
     manager: auto
@@ -44,19 +48,6 @@
         file: defaults/upgrade.yml
         name: old_version
 
-    - name: PostgreSQL | Get PostgreSQL version from data directory
-      slurp:
-        src: "{{ old_version.pg.data_dir[ansible_os_family] }}/PG_VERSION"
-      register: slurp_pg_version
-
-    - name: PostgreSQL | Assert PostgreSQL cluster in version {{ pg_old_version }} is present
-      assert:
-        that:
-          - slurp_pg_version['content'] | b64decode | trim is version(pg_old_version, '==')
-        fail_msg: PostgreSQL cluster in version '{{ pg_old_version }}' not found
-        success_msg: PostgreSQL cluster in version '{{ pg_old_version }}' found
-        quiet: true
-
     # Step: Install the new PostgreSQL binaries
 
     # Ubuntu: automatically creates 'main' cluster and starts postgresql services
@@ -70,10 +61,10 @@
           Debian:
             - postgresql-client-common
             - postgresql-common
-            - "postgresql-client-{{ pg_new_version }}"
-            - "postgresql-{{ pg_new_version }}"
+            - "postgresql-client-{{ new_version.pg.version }}"
+            - "postgresql-{{ new_version.pg.version }}"
           RedHat:
-            - "postgresql{{ pg_new_version }}-server"
+            - "postgresql{{ new_version.pg.version }}-server"
       module_defaults:
         yum: { lock_timeout: "{{ yum_lock_timeout }}" }
 
@@ -281,14 +272,14 @@
     #  vars:
     #    _packages:
     #      Debian:
-    #        - "postgresql-client-{{ pg_new_version }}"
-    #        - "postgresql-{{ pg_new_version }}"
-    #        - "postgresql-{{ pg_new_version }}-pgaudit"
-    #        - "postgresql-{{ pg_new_version }}-repmgr"
+    #        - "postgresql-client-{{ new_version.pg.version }}"
+    #        - "postgresql-{{ new_version.pg.version }}"
+    #        - "postgresql-{{ new_version.pg.version }}-pgaudit"
+    #        - "postgresql-{{ new_version.pg.version }}-repmgr"
     #      RedHat:
-    #        - "postgresql{{ pg_new_version }}-server"
-    #        - "pgaudit15_{{ pg_new_version }}"
-    #        - "repmgr{{ pg_new_version }}-5.2.1"
+    #        - "postgresql{{ new_version.pg.version }}-server"
+    #        - "pgaudit15_{{ new_version.pg.version }}"
+    #        - "repmgr{{ new_version.pg.version }}-5.2.1"
     #  module_defaults:
     #    yum: { lock_timeout: "{{ yum_lock_timeout }}" }
 
