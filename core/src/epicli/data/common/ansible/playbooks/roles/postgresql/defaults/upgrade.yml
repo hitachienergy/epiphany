@@ -39,4 +39,5 @@ repmgr:
   service_name:
     Debian: repmgrd
     RedHat: repmgr10
-  upgrade_state_file_path: /var/lib/epiphany/upgrade/state/repmgr.uncompleted
+  upgrade:
+    state_file_path: /var/lib/epiphany/upgrade/state/repmgr.uncompleted
