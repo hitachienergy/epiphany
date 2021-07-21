@@ -33,6 +33,7 @@
       - net-tools  # required by Ansible (module listen_ports_facts)
       - openssl
       - python-setuptools
+      - rh-python36
       - rsync
       - sysstat
       - tar

@@ -113,6 +113,15 @@ xorg-x11-server-utils # for grafana
 yum-plugin-versionlock
 yum-utils
 
+# python3
+iso-codes
+redhat-rpm-config
+rh-python36-python-libs
+rh-python36-python-devel
+rh-python36-python-setuptools
+rh-python36-python-virtualenv
+rh-python36
+
 # to make remote-to-remote "synchronize" work in ansible
 rsync
 
