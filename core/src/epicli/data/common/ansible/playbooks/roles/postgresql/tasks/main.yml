@@ -34,7 +34,7 @@
 - name: Set 'pg_node_id' fact
   set_fact:
     pg_node_id: >-
-      {{ repmgr_pg_node_id.stdout | default(groups.postgresql.index(inventory_hostname) + 1) }}
+      {{ repmgr_conf.stat.exists | ternary(repmgr_pg_node_id.stdout, groups.postgresql.index(inventory_hostname) + 1) }}
 
 - name: Install OS-specific packages
   package:
