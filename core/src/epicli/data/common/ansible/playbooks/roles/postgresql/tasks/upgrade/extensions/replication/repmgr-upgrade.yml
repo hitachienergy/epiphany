@@ -68,6 +68,14 @@
   module_defaults:
     yum: { lock_timeout: "{{ yum_lock_timeout }}" }
 
+# Step: Update /etc/default/repmgrd
+- name: repmgr for PG {{ pg_version }} | Set 'daemonize=false' option in /etc/default/repmgrd
+  lineinfile:
+    path: /etc/default/repmgrd
+    regexp: ^[#]?REPMGRD_OPTS=
+    line: REPMGRD_OPTS="--daemonize=false"
+  when: ansible_os_family == 'Debian'
+
 # Step: systemctl daemon-reload
 # Step: Restart PostgreSQL
 - name: repmgr for PG {{ pg_version }} | Restart PostgreSQL service
