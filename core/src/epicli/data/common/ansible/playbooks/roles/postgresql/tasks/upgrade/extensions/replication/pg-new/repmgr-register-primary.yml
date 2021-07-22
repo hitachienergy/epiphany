@@ -1,5 +1,5 @@
 ---
-# WTF
+# Done so as after an upgrade there is no possibility to log in
 - name: PostgreSQL | Extensions | repmgr | Alter super user and replication user in PostgreSQL
   become_user: postgres
   vars:
