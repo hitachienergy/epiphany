@@ -64,9 +64,9 @@ class AnsibleVarsGenerator(Step):
             dump(clean_cluster_model, stream)
 
         if self.is_upgrade_run:
-            # For upgrade we always need common, repository, image_registry and node_exporter.
-            # - commmon is already provisioned from the cluster model constructed from the inventory
-            roles_with_defaults = ['repository', 'image_registry', 'node_exporter']
+            # For upgrade we always need common, repository, image_registry, node_exporter and postgresql.
+            # - common is already provisioned from the cluster model constructed from the inventory
+            roles_with_defaults = ['repository', 'image_registry', 'node_exporter', 'postgresql']
             # now lets add any external configs we want to load
             roles_with_defaults = [*roles_with_defaults, *self.inventory_upgrade.get_new_config_roles()]
             # In a special cases (like haproxy), where user specifies majority of the config, it's easier (and less awkward)
