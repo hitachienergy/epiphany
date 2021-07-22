@@ -53,7 +53,7 @@ def main():
     parser.add_argument('--validate-certs', choices=['true', 'false'], default='true', action='store',
                         dest='validate_certs',
                         help='''[Experimental]: Disables certificate checks for certain Ansible operations
-which might have issues behind proxies (https://github.com/ansible/ansible/issues/32750). 
+which might have issues behind proxies (https://github.com/ansible/ansible/issues/32750).
 Should NOT be used in production for security reasons.''')
     parser.add_argument('--auto-approve', dest='auto_approve', action="store_true",
                         help='Auto approve any user input queries asked by Epicli')
@@ -174,7 +174,7 @@ def prepare_parser(subparsers):
         with PrepareEngine(args) as engine:
             return engine.prepare()
 
-    sub_parser.set_defaults(func=run_prepare)       
+    sub_parser.set_defaults(func=run_prepare)
 
 
 def apply_parser(subparsers):
@@ -188,15 +188,15 @@ def apply_parser(subparsers):
 
     #optional
     optional.add_argument('--no-infra', dest='no_infra', action="store_true",
-                            help='''Skip terraform infrastructure provisioning. 
-                            Use this when you already have infrastructure available and only want to run the 
+                            help='''Skip terraform infrastructure provisioning.
+                            Use this when you already have infrastructure available and only want to run the
                             Ansible role provisioning.''')
     optional.add_argument('--skip-config', dest='skip_config', action="store_true",
                             help='''Skip Ansible role provisioning.
                             Use this when you need to create cloud infrastructure and apply manual changes before
-                            you want to run the Ansible role provisioning.''')                         
+                            you want to run the Ansible role provisioning.''')
     optional.add_argument('--offline-requirements', dest='offline_requirements', type=str,
-                            help='Path to the folder with pre-prepared offline requirements.')    
+                            help='Path to the folder with pre-prepared offline requirements.')
     optional.add_argument('--vault-password', dest='vault_password', type=str,
                             help='Password that will be used to encrypt build artifacts.')
     optional.add_argument('--profile-ansible-tasks', dest='profile_ansible_tasks', action="store_true",
@@ -287,6 +287,8 @@ def upgrade_parser(subparsers):
     sub_parser._action_groups.append(optional)
 
     def run_upgrade(args):
+        if not query_yes_no('Has backup been done?', default='no'):
+            return 0
         adjust_paths_from_build(args)
         with UpgradeEngine(args) as engine:
             return engine.upgrade()
@@ -404,7 +406,7 @@ def adjust_paths_from_build(args):
         Config().output_dir = os.path.split(args.build_directory)[0]
 
 def ensure_vault_password_is_set(args):
-    vault_password = args.vault_password 
+    vault_password = args.vault_password
     if vault_password is None:
         vault_password = prompt_for_password("Provide password to encrypt vault: ")
 
@@ -436,20 +438,20 @@ def dump_debug_info():
 
         timestr = time.strftime("%Y%m%d-%H%M%S")
         dump_path = os.getcwd() + f'/epicli_error_{timestr}.dump'
-        dump_file = open(dump_path, 'w') 
+        dump_file = open(dump_path, 'w')
 
         dump_file.write('*****EPICLI VERSION******\n')
         dump_file.write(f'{VERSION}')
 
         dump_file.write('\n\n*****EPICLI ARGS******\n')
-        dump_file.write(' '.join([*['epicli'], *sys.argv[1:]]))        
+        dump_file.write(' '.join([*['epicli'], *sys.argv[1:]]))
 
         dump_file.write('\n\n*****EPICLI CONFIG******\n')
         for attr in config.__dict__:
             if attr.startswith('_'):
                 dump_file.write('%s = %r\n' % (attr[1:], getattr(config, attr)))
 
-        dump_file.write('\n\n*****SYSTEM******\n')      
+        dump_file.write('\n\n*****SYSTEM******\n')
         system_data = {
             'platform':platform.system(),
             'release':platform.release(),
@@ -464,12 +466,12 @@ def dump_debug_info():
         dump_file.write(json.dumps(dict(os.environ), indent=2))
 
         dump_file.write('\n\n*****PYTHON******\n')
-        dump_file.write(f'python_version: {platform.python_version()}\n') 
-        dump_file.write(f'python_build: {platform.python_build()}\n')  
+        dump_file.write(f'python_version: {platform.python_version()}\n')
+        dump_file.write(f'python_build: {platform.python_build()}\n')
         dump_file.write(f'python_revision: {platform.python_revision()}\n')
-        dump_file.write(f'python_compiler: {platform.python_compiler()}\n')    
-        dump_file.write(f'python_branch: {platform.python_branch()}\n')    
-        dump_file.write(f'python_implementation: {platform.python_implementation()}\n')  
+        dump_file.write(f'python_compiler: {platform.python_compiler()}\n')
+        dump_file.write(f'python_branch: {platform.python_branch()}\n')
+        dump_file.write(f'python_implementation: {platform.python_implementation()}\n')
 
         dump_external_debug_info('ANSIBLE VERSION', ['ansible', '--version'])
         dump_external_debug_info('ANSIBLE CONFIG', ['ansible-config', 'dump'])
@@ -481,7 +483,7 @@ def dump_debug_info():
 
         dump_file.write('\n\n*****LOG******\n')
         log_path = os.path.join(get_output_path(), config.log_file)
-        dump_file.writelines([l for l in open(log_path).readlines()]) 
+        dump_file.writelines([l for l in open(log_path).readlines()])
     finally:
         dump_file.close()
         logger.info(f'Error dump has been written to: {dump_path}')
