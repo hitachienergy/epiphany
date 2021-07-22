@@ -70,5 +70,8 @@
 - name: Patch CoreDNS
   include_tasks: patch-coredns.yml
 
+- name: Restart CoreDNS
+  include_tasks: restart-coredns.yml
+
 - name: Apply Kubernetes Dashboard
   include_tasks: apply-dashboard.yml

@@ -19,3 +19,12 @@
     patch:
       content: "{{ coredns_deployment_patch | to_json }}"
       type: strategic
+
+# When CoreDNS is patched, pods are restarted so there is no need to run 'Restart CoreDNS pods' task
+- name: Copy /etc/hosts to /var/lib/epiphany/{{ coredns_vars.known_hosts_file_name }}
+  copy:
+    src: /etc/hosts
+    dest: /var/lib/epiphany/{{ coredns_vars.known_hosts_file_name }}
+    remote_src: yes
+    mode: preserve
+  when: kubectl_patch.changed

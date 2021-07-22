@@ -427,6 +427,7 @@ To setup the cluster do the following steps from the provisioning machine:
         key: aws_key
         secret: aws_secret
       use_public_ips: false
+      default_os_image: default
     ```
 
     The [region](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Concepts.RegionsAndAvailabilityZones.html) lets you chose the most optimal place to deploy your cluster. The `key` and `secret` are needed by Terraform and can be generated in the AWS console. More information about that [here](https://docs.aws.amazon.com/general/latest/gr/aws-sec-cred-types.html#access-keys-and-secret-access-keys)
@@ -439,6 +440,7 @@ To setup the cluster do the following steps from the provisioning machine:
       subscription_name: Subscribtion_name
       use_service_principal: false
       use_public_ips: false
+      default_os_image: default
     ```
 
     The [region](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Concepts.RegionsAndAvailabilityZones.html) lets you chose the most optimal place to deploy your cluster. The `subscription_name` is the Azure subscribtion under which you want to deploy the cluster.
@@ -464,7 +466,16 @@ To setup the cluster do the following steps from the provisioning machine:
 
     Epicli will read this file and automaticly use it for authentication for resource creation and management.
 
-    For both `aws`and `azure` there is a `use_public_ips` tag. When this is true the VM's will also have a direct inferface to the internet. While this is easy for setting up a cluster for testing it should not be used in production. A VPN setup should be used which we will document in a different section (TODO).
+    For both `aws`and `azure` the following cloud attributes overlap:
+    - `use_public_ips`: When `true`, the VMs will also have a direct interface to the internet. While this is easy for setting up a cluster for testing, it should not be used in production. A VPN setup should be used which we will document in a different section (TODO).
+    - `default_os_image`: Lets you more easily select Epiphany team validated and tested OS images. When one is selected, it will be applied to **every** `infrastructure/virtual-machine` document in the cluster regardless of user defined ones.
+                  The following values are accepted:
+                  - `default`: Applies user defined `infrastructure/virtual-machine` documents when generating a new configuration.
+                  - `ubuntu-18.04-x86_64`: Applies the latest validated and tested Ubuntu 18.04 image to all `infrastructure/virtual-machine` documents on `x86_64` on Azure and AWS.
+                  - `redhat-7-x86_64`: Applies the latest validated and tested RedHat 7.x image to all `infrastructure/virtual-machine` documents on `x86_64` on Azure and AWS.
+                  - `centos-7-x86_64`: Applies the latest validated and tested CentOS 7.x image to all `infrastructure/virtual-machine` documents on `x86_64` on Azure and AWS.
+                  - `centos-7-arm64`: Applies the latest validated and tested CentOS 7.x image to all `infrastructure/virtual-machine` documents on `arm64` on AWS. Azure currently doesn't support `arm64`.
+                  The images which will be used for these values will be updated and tested on regular basis.
 
 4. Define the components you want to install:
 
@@ -784,13 +795,14 @@ Epiphany has the ability to automaticly scale and cluster certain components on 
 
 Then when applying the changed configuration using Epicli additional VM's will be spawned and configured or removed. The following components support scaling/clustering:
 
+- repository: In standard Epiphany deployment only one repository machine is required. Scaling up the repository component will create a new standalone VM. Scaling down will remove it in LIFO order (Last In, First Out). However even if you create more then one VM, by default all other components will use the first one.
 - kubernetes_master: When increased this will setup additional control plane nodes, but in the case of non-ha k8s cluster, existing control plane node must be promoted first. At the moment there is [no ability](https://github.com/epiphany-platform/epiphany/issues/1579) to downscale.
 - kubernetes_node: When increased this will setup additional nodes with `kubernetes_master`. There is [no ability](https://github.com/epiphany-platform/epiphany/issues/1580) to downscale.
 - ignite
 - kafka: When changed this will setup or remove additional nodes for the Kafka cluster. Note that there is an [issue](https://github.com/epiphany-platform/epiphany/issues/1576) that needs to be fixed before scaling usage.
-- load_balancer
+- load_balancer - Scaling up the load_balancer component will create a new standalone VM. Scaling down will remove it in LIFO order (Last In, First Out).
 - logging: Sometimes it works, but often there is an [issue](https://github.com/epiphany-platform/epiphany/issues/1575) with Kibana installation that needs to be resoved
-- monitoring
+- monitoring - Scaling up the monitoring component will create a new standalone VM. Scaling down will remove it in LIFO order (Last In, First Out).
 - opendistro_for_elasticsearch: Works the same as `logging` component, without issues if there is no `kibana` part in feature mapping configuration.
 - postgresql: At the moment does not work correctly, there is an [issue](https://github.com/epiphany-platform/epiphany/issues/1577). When changed this will setup or remove additional nodes for Postgresql. Note that extra nodes can only be setup to do replication by adding the following additional `configuration/postgresql` configuration:
 

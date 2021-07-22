@@ -11,6 +11,7 @@ specification:
   cloud:
     k8s_as_cloud_service: False
     use_public_ips: False # When not using public IPs you have to provide connectivity via private IPs (VPN)
+    default_os_image: default
   components:
     repository:
       count: 1

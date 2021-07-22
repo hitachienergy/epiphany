@@ -28,7 +28,8 @@ version:
   examples:
   - 0.4.2
   - 0.8.0rc1
-  pattern: ^((\d+\.)(\d+\.)(\d+)(rc\d+)?)$
+  - 1.2.0dev
+  pattern: ^((\d+\.)(\d+\.)(\d+)(rc\d+|dev)?)$
 unvalidated_specification:
   type:
     - 'object'

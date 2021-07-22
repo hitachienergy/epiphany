@@ -5,7 +5,7 @@ cni_plugin_vars:
     canal: k8s-app=canal
     flannel: app=flannel
 
-epiphany_manifests_dir: /etc/epiphany/manifests
+epiphany_k8s_manifests_dir: /etc/epiphany/manifests
 
 # The default values below were chosen as a compromise between node stability when available resources are low
 # and utilization (costs) to support even SMALL size VMs and may need to be adjusted depending on your environment.
@@ -24,3 +24,6 @@ kubelet_custom_config:
   systemReserved:
     cpu: 50m
     memory: 768Mi # based on RedHat 7.5 on Standard_DS1_v2 Azure VM with =~ 30 pods
+
+coredns_vars:
+  known_hosts_file_name: coredns-known-hosts

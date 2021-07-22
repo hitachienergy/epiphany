@@ -15,7 +15,7 @@ Note that versions are default versions and can be changed in certain cases thro
 | Zookeeper                  | 3.5.8    | https://github.com/apache/zookeeper                   | [Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0) |
 | RabbitMQ                   | 3.8.9    | https://github.com/rabbitmq/rabbitmq-server           | [Mozilla Public License](https://www.mozilla.org/en-US/MPL/)      |
 | Docker CE                  | 19.03.14 | https://github.com/docker/docker-ce/                  | [Apache License](https://www.apache.org/licenses/LICENSE-1.0)     |
-| KeyCloak                   | 9.0.0    | https://github.com/keycloak/keycloak                  | [Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0) |
+| KeyCloak                   | 14.0.0    | https://github.com/keycloak/keycloak                  | [Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0) |
 | Elasticsearch OSS          | 7.10.2   | https://github.com/elastic/elasticsearch              | https://github.com/elastic/elasticsearch/blob/master/LICENSE.txt  |
 | Elasticsearch Curator OSS  | 5.8.3    | https://github.com/elastic/curator                    | https://github.com/elastic/curator/blob/master/LICENSE.txt        |
 | Opendistro for Elasticsearch          | 1.13.x   | https://opendistro.github.io/for-elasticsearch/                  | [Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0) |
@@ -35,7 +35,7 @@ Note that versions are default versions and can be changed in certain cases thro
 | HAProxy                    | 2.2.2    | https://www.haproxy.org/                              | [GNU General Public License 2.0](https://www.gnu.org/licenses/old-licenses/gpl-2.0.html) |
 | PgAudit                    | 1.5.0    | https://github.com/pgaudit/pgaudit                    | [PostgreSQL license](http://www.postgresql.org/about/licence/)    |
 | PgBouncer                  | 1.10.0   | https://github.com/pgbouncer/pgbouncer                | [ISC License](https://opensource.org/licenses/isc)                |
-| Repmgr                     | 5.2.1    | https://github.com/2ndQuadrant/repmgr                 | [GNU General Public License 3.0](https://github.com/EnterpriseDB/repmgr/blob/master/LICENSE) |
+| repmgr                     | 5.2.1    | https://github.com/EnterpriseDB/repmgr                | [GNU General Public License 3.0](https://github.com/EnterpriseDB/repmgr/blob/master/LICENSE) |
 | PgPool                     | 4.2.2    | https://www.pgpool.net/                               | [License](https://www.pgpool.net/mediawiki/index.php/pgpool-II_License) |
 | Alertmanager               | 0.17.0   | https://github.com/prometheus/alertmanager            | [Apache License 2.0](https://github.com/prometheus/alertmanager/blob/master/LICENSE) |
 | Apache Ignite              | 2.9.1    | https://github.com/apache/ignite                      | [Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0) |
@@ -216,3 +216,20 @@ Note that versions are default versions and can be changed in certain cases thro
 | websocket-client | 0.56.0 | https://github.com/websocket-client/websocket-client.git | BSD |
 | xmltodict | 0.12.0 | https://github.com/martinblech/xmltodict | [MIT License](https://api.github.com/repos/martinblech/xmltodict/license) |
 | zipp | 3.4.1 | https://github.com/jaraco/zipp | [MIT License](https://api.github.com/repos/jaraco/zipp/license) |
+
+## Predefined Grafana dashboards
+
+| Dashboard name | Dashboard ID | Repo/Website | License |
+| --------- | ------- | ------------ | ------- |
+| Kubernetes Cluster | 7249 | https://grafana.com/grafana/dashboards/7249 | None |
+| Kubernetes cluster monitoring (via Prometheus) | 315 | https://grafana.com/grafana/dashboards/315 | [MIT License](https://github.com/instrumentisto/grafana-dashboard-kubernetes-prometheus/blob/master/LICENSE.md) |
+| 1 Node Exporter for Prometheus Dashboard EN v20201010 | 11074 | https://grafana.com/grafana/dashboards/11074 | [Apache License 2.0](https://github.com/starsliao/Prometheus/blob/master/LICENSE) |
+| Node Exporter Server Metrics | 405 | https://grafana.com/grafana/dashboards/405 | None |
+| Postgres Overview | 455 | https://grafana.com/grafana/dashboards/455 | None |
+| PostgreSQL Database | 9628 | https://grafana.com/grafana/dashboards/9628 | [Apache License 2.0](https://github.com/lstn/misc-grafana-dashboards/blob/master/LICENSE) |
+| RabbitMQ Monitoring | 4279 | https://grafana.com/grafana/dashboards/4279 | [MIT License](https://github.com/kbudde/rabbitmq_exporter/blob/main/LICENSE) |
+| Node Exporter Full | 1860 | https://grafana.com/grafana/dashboards/1860 | [LGPL-3.0 License](https://github.com/rfrail3/grafana-dashboards/blob/master/LICENSE) |
+| Kafka Exporter Overview | 7589 | https://grafana.com/grafana/dashboards/7589 | [Apache License 2.0](https://github.com/danielqsj/kafka_exporter/blob/master/LICENSE) |
+| HAproxy Servers \| HAproxy | 367 | https://grafana.com/grafana/dashboards/367 | None |
+| Docker and Host Monitoring w/ Prometheus | 179 | https://grafana.com/grafana/dashboards/179 | [MIT License](https://github.com/vegasbrianc/prometheus/blob/master/LICENSE) |
+| Kubernetes pod and cluster monitoring (via Prometheus) | 6663 | https://grafana.com/grafana/dashboards/6663 | None |

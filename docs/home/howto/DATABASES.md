@@ -113,12 +113,12 @@ PgBouncer can be also installed (together with PgPool) in K8s cluster.
 See [How to set up PgBouncer, PgPool and PostgreSQL parameters](#how-to-set-up-pgbouncer-pgpool-and-postgresql-parameters)
 .
 
-## How to set up PostgreSQL HA replication with Repmgr cluster
+## How to set up PostgreSQL HA replication with repmgr cluster
 
 ---
 **NOTE**
 
-Replication (Repmgr) extension is not supported on ARM.
+Replication (repmgr) extension is not supported on ARM.
 
 ---
 
@@ -161,14 +161,13 @@ specification:
       replication_user_password: PASSWORD_TO_CHANGE
       privileged_user_name: your_privileged_user_name
       privileged_user_password: PASSWORD_TO_CHANGE
-      use_repmgr: true
       repmgr_database: repmgr
       shared_preload_libraries:
         - repmgr
     ...
 ```
 
-If `enabled` is set to `yes` for `replication` extension, Epiphany will automatically create a cluster of primary and
+If `enabled` is set to `true` for `replication` extension, Epiphany will automatically create a cluster of primary and
 secondary server with replication user with name and password specified in configuration file. This is only possible for
 configurations containing two PostgreSQL servers.
 
@@ -192,8 +191,8 @@ repmgr standby clone -h CURRENT_PRIMARY_ADDRESS -U epi_repmgr_admin -d epi_repmg
 repmgr standby register
 ```
 
-You may use option --force if the node was registered in cluster before. For more options see repmgr manual:
-https://repmgr.org/docs/4.0/repmgr-standby-register.html
+You may use option --force if the node was registered in cluster before. For more options, see repmgr manual:
+https://repmgr.org/docs/5.2/repmgr-standby-register.html
 
 ## How to switchover database nodes
 
@@ -218,8 +217,8 @@ repmgr cluster show
 repmgr standby switchover
 ```
 
-5. Run command from step 3 and check status. For more details or troubleshooting see repmgr manual:
-   https://repmgr.org/docs/4.0/repmgr-standby-switchover.html
+5. Run command from step 3 and check status. For more details or troubleshooting, see repmgr manual:
+   https://repmgr.org/docs/5.2/repmgr-standby-switchover.html
 
 ## How to set up PgBouncer, PgPool and PostgreSQL parameters
 
@@ -533,12 +532,6 @@ DROP EXTENSION IF EXISTS pgaudit;
 PostgreSQL native replication is now deprecated and removed.
 Use [PostgreSQL HA replication with repmgr](#how-to-set-up-postgresql-ha-replication-with-repmgr-cluster) instead.
 
-#### Attention
-
-If `enabled` property is set to `yes` for `replication` extension, Epiphany will automatically create cluster of primary
-and secondary servers with replication user specified configuration file. This is only possible for configurations
-containing two PostgreSQL servers.
-
 ## How to start working with OpenDistro for Elasticsearch
 
 OpenDistro for Elasticsearch
@@ -563,9 +556,7 @@ specification:
       count: 2
 ```
 
-**Default installation will be clustered** - it means, using a configuration like above, Elasticsearch cluster with 2
-instances will be created. In order to configure the non-clustered installation of more than one node modify
-configuration for Open Distro adding:
+**Installation with more than one node will be always clustered** - Option to configure the non-clustered installation of more than one node for Open Distro is not supported.
 
 ```yaml
 kind: configuration/opendistro-for-elasticsearch
@@ -573,10 +564,7 @@ title: OpenDistro for Elasticsearch Config
 name: default
 specification:
   cluster_name: EpiphanyElastic
-  clustered: False
 ```
-
-Result of this configuration will be one or more independent nodes of OpenDistro.
 
 By default, Kibana is deployed only for `logging` component. If you want to deploy Kibana
 for `opendistro_for_elasticsearch` you have to modify feature mapping. Use below configuration in your manifest.
