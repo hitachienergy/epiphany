@@ -75,19 +75,19 @@
               PostgreSQL data directory {{ pg_new.pg.data_dir[ansible_os_family] }} exists and is not empty
             quiet: true
 
-        - name: Ensure that PostgreSQL cluster in version {{ pg_old.version }} is present
+        - name: Ensure that PostgreSQL cluster in version {{ pg_old.pg.version }} is present
           block:
             - name: Get PostgreSQL version from data directory
               slurp:
-                src: "{{ old_version.pg.data_dir[ansible_os_family] }}/PG_VERSION"
+                src: "{{ pg_old.pg.data_dir[ansible_os_family] }}/PG_VERSION"
               register: slurp_pg_version
 
-            - name: Ensure that PostgreSQL cluster in version {{ pg_old.version }} is present
+            - name: Ensure that PostgreSQL cluster in version {{ pg_old.pg.version }} is present
               assert:
                 that:
-                  - slurp_pg_version['content'] | b64decode | trim is version(pg_old.version, '==')
-                fail_msg: PostgreSQL cluster in version '{{ pg_old.version }}' not found
-                success_msg: PostgreSQL cluster in version '{{ pg_old.version }}' found
+                  - slurp_pg_version['content'] | b64decode | trim is version(pg_old.pg.version, '==')
+                fail_msg: PostgreSQL cluster in version '{{ pg_old.pg.version }}' not found
+                success_msg: PostgreSQL cluster in version '{{ pg_old.pg.version }}' found
                 quiet: true
   when:
     - "'postgresql' in upgrade_components or upgrade_components|length == 0" # PostgreSQL is going to be upgraded

@@ -239,7 +239,7 @@
   tasks:
     - include_role:
         name: postgresql
-        tasks_from: upgrade/extensions/replication/repmgr-main
+        tasks_from: upgrade/extensions/replication/pg-old/repmgr-main
       when: "'postgresql' in upgrade_components or upgrade_components|length == 0"
 
 # play 2/2: upgrade postgresql

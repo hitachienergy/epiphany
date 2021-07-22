@@ -1,7 +1,8 @@
 ---
 dependency:
   enabled: false
-lint: ansible-lint --exclude molecule
+# linter's project dir is changed to avoid issues with include_tasks
+lint: ansible-lint --project-dir=../.. roles/postgresql --exclude roles/postgresql/molecule
 driver:
   name: docker
 platforms:
