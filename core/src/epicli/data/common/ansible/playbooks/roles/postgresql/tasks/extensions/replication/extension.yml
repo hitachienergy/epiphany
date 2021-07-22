@@ -18,8 +18,7 @@
       /bin/systemctl restart {{ pg.service_name[ansible_os_family] }},
       /bin/systemctl reload {{ pg.service_name[ansible_os_family] }},
       /bin/systemctl start {{ repmgr.service_name[ansible_os_family] }},
-      /bin/systemctl stop {{ repmgr.service_name[ansible_os_family] }},
-      {{ repmgr.bin_dir[ansible_os_family] }}/repmgr standby follow
+      /bin/systemctl stop {{ repmgr.service_name[ansible_os_family] }}
     validate: 'visudo -cf %s'
 
 - name: Extensions | repmgr | Create super user in postgresql
@@ -94,18 +93,25 @@
         group: postgres
       when: template_repmgr_conf.dest != '/etc/repmgr.conf'
 
-    # For repmgr installed from Ubuntu package additional configuration is required before repmgrd is started as daemon
+    # For repmgr installed from Ubuntu package additional configuration is required before repmgrd is started as daemon,
+    # see https://repmgr.org/docs/5.2/repmgrd-daemon.html#REPMGRD-CONFIGURATION-DEBIAN-UBUNTU
     - name: Extensions | repmgr | Set repmgr.conf file in /etc/default/repmgrd
       replace:
         path: /etc/default/repmgrd
-        regexp: "^#REPMGRD_CONF=\"/path/to/repmgr.conf\""
-        replace: "REPMGRD_CONF=\"{{ repmgr.config_dir[ansible_os_family] }}/repmgr.conf\""
+        regexp: ^#REPMGRD_CONF=\"/path/to/repmgr.conf\"
+        replace: REPMGRD_CONF="{{ repmgr.config_dir[ansible_os_family] }}/repmgr.conf"
 
     - name: Extensions | repmgr | Enable repmgrd in /etc/default/repmgrd
       replace:
         path: /etc/default/repmgrd
-        regexp: "^[#]?REPMGRD_ENABLED=no"
-        replace: "REPMGRD_ENABLED=yes"
+        regexp: ^[#]?REPMGRD_ENABLED=no
+        replace: REPMGRD_ENABLED=yes
+
+    - name: Extensions | repmgr | Set 'daemonize=false' option in /etc/default/repmgrd
+      lineinfile:
+        path: /etc/default/repmgrd
+        regexp: ^[#]?REPMGRD_OPTS=
+        line: REPMGRD_OPTS="--daemonize=false"
 
 # --- Configure primary node ---
 
