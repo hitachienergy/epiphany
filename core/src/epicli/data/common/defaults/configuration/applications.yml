@@ -161,11 +161,12 @@ specification:
         memory: 128Mi
     pgbouncer:
       env:
-        DB_HOST: pgpool.postgres-pool.svc.cluster.local #pgpool service name
+        DB_HOST: pgpool.postgres-pool.svc.cluster.local
         DB_LISTEN_PORT: 5432
-        LISTEN_ADDR: "*"
         LISTEN_PORT: 5432
-        AUTH_FILE: "/etc/pgbouncer/auth/users.txt"
+        LISTEN_ADDR: 0.0.0.0
+        CONFIG_FILE: /opt/bitnami/pgbouncer/conf/pgbouncer.ini
+        AUTH_FILE: /opt/bitnami/pgbouncer/conf/userlist.txt
         AUTH_TYPE: md5
         MAX_CLIENT_CONN: 150
         DEFAULT_POOL_SIZE: 25
