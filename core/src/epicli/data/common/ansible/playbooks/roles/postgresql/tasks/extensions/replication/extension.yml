@@ -99,7 +99,7 @@
       replace:
         path: /etc/default/repmgrd
         regexp: ^#REPMGRD_CONF=\"/path/to/repmgr.conf\"
-        replace: REPMGRD_CONF=\"{{ repmgr.config_dir[ansible_os_family] }}/repmgr.conf\"
+        replace: REPMGRD_CONF="{{ repmgr.config_dir[ansible_os_family] }}/repmgr.conf"
 
     - name: Extensions | repmgr | Enable repmgrd in /etc/default/repmgrd
       replace:
