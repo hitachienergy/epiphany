@@ -21,7 +21,6 @@
       /bin/systemctl stop {{ repmgr.service_name[ansible_os_family] }}
     validate: 'visudo -cf %s'
 
-
 - name: Extensions | repmgr | Create super user and replication user in PostgreSQL
   become_user: postgres
   vars:
@@ -64,15 +63,15 @@
     mode: u=rw,g=,o=
   register: template_repmgr_conf
   vars:
-    node_id: "{{ (groups.postgresql.index(inventory_hostname) + 1) }}"
+    node_id: "{{ pg_node_id }}"
     pg_bin_dir: "{{ pg.bin_dir[ansible_os_family] }}"
     pg_data_dir: "{{ pg.data_dir[ansible_os_family] }}"
     pg_service_name: "{{ pg.service_name[ansible_os_family] }}"
     repmgr_service_name: "{{ repmgr.service_name[ansible_os_family] }}"
 
-# On Ubuntu config file location is not set by package (see https://repmgr.org/docs/4.0/packages-debian-ubuntu.html).
+# On Ubuntu config file location is not set by package (see https://repmgr.org/docs/5.2/packages-debian-ubuntu.html).
 # Create symlink to allow using repmgr commands without specifying config file location (which is custom).
-# See https://repmgr.org/docs/4.0/configuration-file.html
+# See https://repmgr.org/docs/5.2/configuration-file.html
 - name: Extensions | repmgr | Debian specific tasks
   when: ansible_os_family == 'Debian'
   block:
@@ -147,16 +146,11 @@
           systemd:
             name: "{{ service_name }}"
             state: stopped
-          vars:
-            _services:
-              Debian:
-                - "{{ pg.service_name['Debian'] }}"
-                - "{{ pg.instantiated_service_name['Debian'] }}"
-              RedHat:
-                - "{{ pg.service_name['RedHat'] }}"
           loop_control:
             loop_var: service_name
-          loop: "{{ _services[ansible_os_family] }}"
+          loop:
+            - "{{ pg.service_name[ansible_os_family] }}"
+            - "{{ pg.instantiated_service_name[ansible_os_family] }}"
 
         - name: Extensions | repmgr | Clone standby node with repmgr
           become_user: postgres
