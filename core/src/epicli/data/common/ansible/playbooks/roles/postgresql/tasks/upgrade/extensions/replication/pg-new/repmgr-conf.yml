@@ -1,0 +1,20 @@
+---
+- name: PostgreSQL | Extensions | repmgr | Get node id
+  command: >-
+    grep -Po '(?<=^node_id=)\d+' "{{ old_version.repmgr.config_dir[ansible_os_family] }}/repmgr.conf"
+  register: pg_node_id
+  changed_when: false
+
+- name: PostgreSQL | Extensions | repmgr | Copy configuration file
+  template:
+    src: roles/postgresql/templates/repmgr.conf.j2
+    dest: "{{ new_version.repmgr.config_dir[ansible_os_family] }}/repmgr.conf"
+    owner: postgres
+    group: postgres
+    mode: u=rw,g=,o=
+  vars:
+    node_id: "{{ pg_node_id.stdout }}"
+    pg_bin_dir: "{{ new_version.pg.bin_dir[ansible_os_family] }}"
+    pg_data_dir: "{{ new_version.pg.data_dir[ansible_os_family] }}"
+    pg_service_name: "{{ new_version.pg.service_name[ansible_os_family] }}"
+    repmgr_service_name: "{{ new_version.repmgr.service_name[ansible_os_family] }}"
