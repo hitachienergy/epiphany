@@ -36,7 +36,7 @@ pg_pass = 'testpass'
 pg_config_file_booleans = { "true": "(?:on|true|yes|1)", "false": "(?:off|false|no|0)" }
 
 def queryForCreating
-  describe 'Checking if it is possible to create a test schema' do
+  describe 'Check if it is possible to create a test schema' do
     let(:disable_sudo) { false }
     describe command("su - postgres -c \"psql -t -c 'CREATE SCHEMA serverspec_test;'\"") do
       its(:stdout) { should match /^CREATE SCHEMA$/ }
@@ -44,7 +44,7 @@ def queryForCreating
     end
   end
 
-  describe 'Checking if it is possible to create a test table' do
+  describe 'Check if it is possible to create a test table' do
     let(:disable_sudo) { false }
     describe command("su - postgres -c \"psql -t -c 'CREATE TABLE serverspec_test.test (col varchar(20));'\"") do
       its(:stdout) { should match /^CREATE TABLE$/ }
@@ -52,7 +52,7 @@ def queryForCreating
     end
   end
 
-  describe 'Checking if it is possible to insert values into the test table' do
+  describe 'Check if it is possible to insert values into the test table' do
     let(:disable_sudo) { false }
     describe command("su - postgres -c \"psql -t -c \\\"INSERT INTO serverspec_test.test (col) values ('SUCCESS');\\\"\"") do
       its(:stdout) { should match /^INSERT 0 1$/ }
@@ -62,7 +62,7 @@ def queryForCreating
 end
 
 def queryForSelecting
-  describe 'Checking if it is possible to select values from the test table' do
+  describe 'Check if it is possible to select values from the test table' do
     let(:disable_sudo) { false }
     describe command("su - postgres -c \"psql -t -c 'SELECT * from serverspec_test.test;'\"") do
       its(:stdout) { should match /\bSUCCESS\b/ }
@@ -72,7 +72,7 @@ def queryForSelecting
 end
 
 def queryForAlteringTable
-  describe 'Altering table with multiline command to verify multiline messages support' do
+  describe 'Alter table with multiline command to verify multiline messages support' do
     let(:disable_sudo) { false }
     describe command("su - postgres -c psql <<SQL
     ALTER TABLE serverspec_test.test
@@ -88,7 +88,7 @@ SQL") do
 end
 
 def queryForDropping
-  describe 'Checking if it is possible to drop the test table' do
+  describe 'Check if it is possible to drop the test table' do
     let(:disable_sudo) { false }
     describe command("su - postgres -c \"psql -t -c 'DROP TABLE serverspec_test.test;'\"") do
       its(:stdout) { should match /^DROP TABLE$/ }
@@ -96,7 +96,7 @@ def queryForDropping
     end
   end
 
-  describe 'Checking if it is possible to drop the test schema' do
+  describe 'Check if it is possible to drop the test schema' do
     let(:disable_sudo) { false }
     describe command("su - postgres -c \"psql -t -c 'DROP SCHEMA serverspec_test CASCADE;'\"") do
       its(:stdout) { should match /^DROP SCHEMA$/ }
@@ -109,7 +109,7 @@ end
 # https://bugzilla.redhat.com/show_bug.cgi?id=1073481
 # Must first run the 'systemctl status' command to be able to view the service status withe the 'is-active' command.
 
-describe 'Checking PostgreSQL service status' do
+describe 'Check PostgreSQL service status' do
   if os[:family] == 'redhat'
     describe command("systemctl status postgresql-13 > /dev/null") do
       its(:exit_status) { should eq 0 }
@@ -121,7 +121,7 @@ describe 'Checking PostgreSQL service status' do
   end
 end
 
-describe 'Checking if PostgreSQL service is running' do
+describe 'Check if PostgreSQL service is running' do
   if os[:family] == 'redhat'
     describe service('postgresql-13') do
       it { should be_enabled }
@@ -136,7 +136,7 @@ describe 'Checking if PostgreSQL service is running' do
 end
 
 if replicated
-  describe 'Checking if repmgr service is running' do
+  describe 'Check if repmgr service is running' do
     if os[:family] == 'redhat'
       describe service('repmgr13') do
         it { should be_enabled }
@@ -152,7 +152,7 @@ if replicated
 end
 
 if os[:family] == 'redhat'
-  describe 'Checking PostgreSQL directories and config files' do
+  describe 'Check PostgreSQL directories and config files' do
     let(:disable_sudo) { false }
     describe file('/var/lib/pgsql/13/data') do
       it { should exist }
@@ -175,7 +175,7 @@ if os[:family] == 'redhat'
     end
   end
 elsif os[:family] == 'ubuntu'
-  describe 'Checking PostgreSQL directories and config files' do
+  describe 'Check PostgreSQL directories and config files' do
     let(:disable_sudo) { false }
     describe file('/etc/postgresql/13/main') do
       it { should exist }
@@ -199,7 +199,7 @@ elsif os[:family] == 'ubuntu'
   end
 end
 
-describe 'Checking if the ports are open' do
+describe 'Check if the ports are open' do
   let(:disable_sudo) { false }
   describe port(postgresql_default_port) do
     it { should be_listening }
@@ -207,7 +207,7 @@ describe 'Checking if the ports are open' do
 end
 
 if os[:family] == 'ubuntu'
-  describe 'Checking if PostgreSQL is ready' do
+  describe 'Check if PostgreSQL is ready' do
     describe command("pg_isready") do
       its(:stdout) { should match /postgresql:#{postgresql_default_port} - accepting connections/ }
       its(:exit_status) { should eq 0 }
@@ -215,7 +215,7 @@ if os[:family] == 'ubuntu'
   end
 end
 
-describe 'Checking if it is possible to connect to PostgreSQL database' do
+describe 'Check if it is possible to connect to PostgreSQL database' do
   let(:disable_sudo) { false }
   describe command("su - postgres -c \"psql -t -c 'SELECT 2+2;'\"") do
     its(:stdout) { should match /4/ }
@@ -234,16 +234,19 @@ if replicated
   primary = listInventoryHosts("postgresql")[0]
   secondary = listInventoryHosts("postgresql")[1]
 
-  describe 'Displaying information about each registered node in the replication cluster' do
+  describe 'Display information about each registered node in the replication cluster' do
     let(:disable_sudo) { false }
-    describe command("su - postgres -c \"repmgr -f /etc/postgresql/13/main/repmgr.conf cluster show\""), :if => os[:family] == 'ubuntu' do
+    describe command("su - postgres -c \"repmgr cluster show\"") do
       its(:stdout) { should match /primary.*\*.*running/ }
       its(:stdout) { should match /standby.*running/ }
       its(:exit_status) { should eq 0 }
     end
-    describe command("su - postgres -c \"repmgr -f /etc/repmgr/13/repmgr.conf cluster show\""), :if => os[:family] == 'redhat' do
-      its(:stdout) { should match /primary.*\*.*running/ }
-      its(:stdout) { should match /standby.*running/ }
+  end
+
+  describe 'Check repmgrd is running on each node in the cluster' do
+    let(:disable_sudo) { false }
+    describe command("su - postgres -c \"repmgr service status\"") do
+      its(:stdout) { should_not match /not running/ }
       its(:exit_status) { should eq 0 }
     end
   end
@@ -265,7 +268,7 @@ if replicated
 
   if primary.include? host_inventory['hostname']
     if os[:family] == 'redhat'
-      describe 'Checking PostgreSQL config files for master node' do
+      describe 'Check PostgreSQL config files for master node' do
         let(:disable_sudo) { false }
         describe command("cat /var/lib/pgsql/13/data/postgresql-epiphany.conf | grep wal_level") do
           its(:stdout) { should match /^wal_level = replica/ }
@@ -291,7 +294,7 @@ if replicated
         end
       end
     elsif os[:family] == 'ubuntu'
-      describe 'Checking PostgreSQL config files for master node' do
+      describe 'Check PostgreSQL config files for master node' do
         let(:disable_sudo) { false }
         describe command("cat /etc/postgresql/13/main/postgresql-epiphany.conf | grep wal_level") do
           its(:stdout) { should match /^wal_level = replica/ }
@@ -318,7 +321,7 @@ if replicated
       end
     end
 
-    describe 'Checking the status of master node' do
+    describe 'Check the status of master node' do
       let(:disable_sudo) { false }
       describe command("su - postgres -c \"psql -t -c 'SELECT usename, state from pg_stat_replication;'\"") do
         its(:stdout) { should match /\bstreaming\b/ }
@@ -327,7 +330,7 @@ if replicated
       end
     end
 
-    describe 'Checking recovery status of master node' do
+    describe 'Check recovery status of master node' do
       let(:disable_sudo) { false }
       describe command("su - postgres -c \"psql -t -c 'SELECT pg_is_in_recovery();'\"") do
         its(:stdout) { should match /\bf\b/ }
@@ -341,7 +344,7 @@ if replicated
 
   elsif secondary.include? host_inventory['hostname']
     if os[:family] == 'redhat'
-      describe 'Checking PostgreSQL files for secondary node' do
+      describe 'Check PostgreSQL files for secondary node' do
         let(:disable_sudo) { false }
         describe file('/var/lib/pgsql/.pgpass') do
           it { should exist }
@@ -350,7 +353,7 @@ if replicated
         end
       end
     elsif os[:family] == 'ubuntu'
-      describe 'Checking PostgreSQL files for secondary node' do
+      describe 'Check PostgreSQL files for secondary node' do
         let(:disable_sudo) { false }
         describe file('/var/lib/postgresql/.pgpass') do
           it { should exist }
@@ -360,7 +363,7 @@ if replicated
       end
     end
 
-    describe 'Checking the state of replica nodes' do
+    describe 'Check the state of replica nodes' do
       let(:disable_sudo) { false }
       describe command("su - postgres -c \"psql -t -c 'SELECT status, conninfo FROM pg_stat_wal_receiver;'\"") do
         its(:stdout) { should match /\bstreaming\b/ }
@@ -369,7 +372,7 @@ if replicated
       end
     end
 
-    describe 'Checking recovery status of replica node' do
+    describe 'Check recovery status of replica node' do
       let(:disable_sudo) { false }
       describe command("su - postgres -c \"psql -t -c 'SELECT pg_is_in_recovery();'\"") do
         its(:stdout) { should match /\bt\b/ }
@@ -388,14 +391,14 @@ if pgbouncer_enabled
 
   if listInventoryHosts("postgresql")[0].include? host_inventory['hostname']
 
-    describe 'Checking if PGBouncer service is running' do
+    describe 'Check if PGBouncer service is running' do
       describe service('pgbouncer') do
         it { should be_enabled }
         it { should be_running }
       end
     end
 
-    describe 'Creating a test user' do
+    describe 'Create a test user' do
       let(:disable_sudo) { false }
       describe command("su - postgres -c \"psql -t -c \\\"CREATE USER #{pg_user} WITH PASSWORD '#{pg_pass}';\\\"\" 2>&1") do
         its(:stdout) { should match /^CREATE ROLE$/ }
@@ -403,14 +406,14 @@ if pgbouncer_enabled
       end
     end
 
-    describe 'Adding user to userlist.txt' do
+    describe 'Add user to userlist.txt' do
       let(:disable_sudo) { false }
       describe command("echo \\\"#{pg_user}\\\" \\\"#{pg_pass}\\\" >> /etc/pgbouncer/userlist.txt && systemctl restart pgbouncer") do
         its(:exit_status) { should eq 0 }
       end
     end
 
-    describe 'Granting privileges on schema to user' do
+    describe 'Grant privileges on schema to user' do
       let(:disable_sudo) { false }
       describe command("su - postgres -c \"psql -t -c 'GRANT ALL ON SCHEMA serverspec_test to #{pg_user}; GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA serverspec_test to #{pg_user};'\" 2>&1") do
         its(:stdout) { should match /^GRANT$/ }
@@ -418,7 +421,7 @@ if pgbouncer_enabled
       end
     end
 
-    describe 'Creating a test table' do
+    describe 'Create a test table' do
       let(:disable_sudo) { false }
       describe command("psql -h #{postgresql_host} -p #{pgbouncer_default_port} -U #{pg_user} postgres -c 'CREATE TABLE serverspec_test.pgbtest (col varchar(20));' 2>&1") do
         its(:stdout) { should match /^CREATE TABLE$/ }
@@ -426,7 +429,7 @@ if pgbouncer_enabled
       end
     end
 
-    describe 'Inserting values into the test table' do
+    describe 'Insert values into the test table' do
       let(:disable_sudo) { false }
       describe command("psql -h #{postgresql_host} -p #{pgbouncer_default_port} -U #{pg_user} postgres -c \"INSERT INTO serverspec_test.pgbtest (col) values ('PGBSUCCESS');\" 2>&1") do
         its(:stdout) { should match /^INSERT 0 1$/ }
@@ -434,7 +437,7 @@ if pgbouncer_enabled
       end
     end
 
-    describe 'Selecting values from the test table' do
+    describe 'Select values from the test table' do
       let(:disable_sudo) { false }
       describe command("psql -h #{postgresql_host} -p #{pgbouncer_default_port} -U #{pg_user} postgres -c 'SELECT col from serverspec_test.pgbtest;' 2>&1") do
         its(:stdout) { should match /\bPGBSUCCESS\b/ }
@@ -446,7 +449,7 @@ if pgbouncer_enabled
 
   if replicated || (listInventoryHosts("postgresql")[0].include? host_inventory['hostname'])
 
-    describe 'Selecting values from test tables' do
+    describe 'Select values from test tables' do
       let(:disable_sudo) { false }
       describe command("PGPASSWORD=#{pg_pass} psql -h #{postgresql_host} -p #{postgresql_default_port} -U #{pg_user} postgres -c 'SELECT * from serverspec_test.test;' 2>&1") do
         its(:stdout) { should match /\bSUCCESS\b/ }
@@ -468,7 +471,7 @@ if !replicated
   queryForDropping
 
   if pgbouncer_enabled
-    describe 'Dropping test user' do
+    describe 'Drop test user' do
       let(:disable_sudo) { false }
       describe command("su - postgres -c \"psql -t -c 'DROP USER #{pg_user};'\" 2>&1") do
         its(:stdout) { should match /^DROP ROLE$/ }
@@ -484,32 +487,32 @@ if !replicated
 end
 
 if replicated && (listInventoryHosts("postgresql")[1].include? host_inventory['hostname'])
-  describe 'Cleaning up' do
-    it "Delegating drop table query to master node" do
+  describe 'Clean up' do
+    it "Delegate drop table query to master node" do
       Net::SSH.start(listInventoryIPs("postgresql")[0], ENV['user'], keys: [ENV['keypath']], :keys_only => true) do|ssh|
         result = ssh.exec!("sudo su - postgres -c \"psql -t -c 'DROP TABLE serverspec_test.test;'\" 2>&1")
         expect(result).to match 'DROP TABLE'
       end
     end
-    it "Delegating drop table query to master node", :if => pgbouncer_enabled  do
+    it "Delegate drop table query to master node", :if => pgbouncer_enabled  do
       Net::SSH.start(listInventoryIPs("postgresql")[0], ENV['user'], keys: [ENV['keypath']], :keys_only => true) do|ssh|
         result = ssh.exec!("sudo su - postgres -c \"psql -t -c 'DROP TABLE serverspec_test.pgbtest;'\" 2>&1")
         expect(result).to match 'DROP TABLE'
       end
     end
-    it "Delegating drop schema query to master node" do
+    it "Delegate drop schema query to master node" do
       Net::SSH.start(listInventoryIPs("postgresql")[0], ENV['user'], keys: [ENV['keypath']], :keys_only => true) do|ssh|
         result = ssh.exec!("sudo su - postgres -c \"psql -t -c 'DROP SCHEMA serverspec_test;'\" 2>&1")
         expect(result).to match 'DROP SCHEMA'
       end
     end
-    it "Delegating drop user query to master node", :if => pgbouncer_enabled do
+    it "Delegate drop user query to master node", :if => pgbouncer_enabled do
       Net::SSH.start(listInventoryIPs("postgresql")[0], ENV['user'], keys: [ENV['keypath']], :keys_only => true) do|ssh|
         result = ssh.exec!("sudo su - postgres -c \"psql -t -c 'DROP USER #{pg_user};'\" 2>&1")
         expect(result).to match 'DROP ROLE'
       end
     end
-    it "Removing test user from userlist.txt", :if => pgbouncer_enabled do
+    it "Remove test user from userlist.txt", :if => pgbouncer_enabled do
       Net::SSH.start(listInventoryIPs("postgresql")[0], ENV['user'], keys: [ENV['keypath']], :keys_only => true) do|ssh|
         result = ssh.exec!("sudo su - -c \"sed -i '/#{pg_pass}/d' /etc/pgbouncer/userlist.txt && cat /etc/pgbouncer/userlist.txt\" 2>&1")
         expect(result).not_to match "#{pg_pass}"
