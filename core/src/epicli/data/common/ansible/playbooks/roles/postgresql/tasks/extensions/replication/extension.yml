@@ -8,7 +8,7 @@
 
 # --- Configure users ---
 
-- name: Extensions | repmgr | Add 'postgres' user to sudoers file
+- name: Extensions | repmgr | Add postgres user to sudoers file
   lineinfile:
     path: /etc/sudoers
     line: >-
@@ -142,7 +142,7 @@
         # on system) and postgresql@.service (service template for clusters). The latter is 'PartOf' the former.
         # Ansible seems to not wait for dependent service to be stopped so we need to stop both to avoid error
         # from 'repmgr standby clone'.
-        - name: Extensions | repmgr | Stop PostgreSQL service
+        - name: Extensions | repmgr | Stop postgresql service
           systemd:
             name: "{{ service_name }}"
             state: stopped
