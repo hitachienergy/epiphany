@@ -18,8 +18,7 @@
       /bin/systemctl restart {{ pg.service_name[ansible_os_family] }},
       /bin/systemctl reload {{ pg.service_name[ansible_os_family] }},
       /bin/systemctl start {{ repmgr.service_name[ansible_os_family] }},
-      /bin/systemctl stop {{ repmgr.service_name[ansible_os_family] }},
-      {{ repmgr.bin_dir[ansible_os_family] }}/repmgr standby follow
+      /bin/systemctl stop {{ repmgr.service_name[ansible_os_family] }}
     validate: 'visudo -cf %s'
 
 - name: Extensions | repmgr | Create super user in postgresql

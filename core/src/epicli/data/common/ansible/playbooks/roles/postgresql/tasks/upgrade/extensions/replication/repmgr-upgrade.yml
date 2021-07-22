@@ -79,8 +79,7 @@
       /bin/systemctl restart {{ upgrade_defaults.pg.service_name[ansible_os_family] }},
       /bin/systemctl reload {{ upgrade_defaults.pg.service_name[ansible_os_family] }},
       /bin/systemctl start {{ upgrade_defaults.repmgr.service_name[ansible_os_family] }},
-      /bin/systemctl stop {{ upgrade_defaults.repmgr.service_name[ansible_os_family] }},
-      {{ upgrade_defaults.repmgr.bin_dir[ansible_os_family] }}/repmgr standby follow
+      /bin/systemctl stop {{ upgrade_defaults.repmgr.service_name[ansible_os_family] }}
     validate: 'visudo -cf %s'
 
 # Step: Update /etc/default/repmgrd
