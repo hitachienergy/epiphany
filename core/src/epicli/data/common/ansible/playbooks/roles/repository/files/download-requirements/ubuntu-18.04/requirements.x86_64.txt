@@ -143,7 +143,7 @@ libsmbclient
 # for postgres
 pgbouncer 1.15.*
 pgdg-keyring
-postgresql-13-pgaudit
+postgresql-13-pgaudit 1.5.0
 postgresql-10-repmgr 5.2.1
 postgresql-13-repmgr 5.2.1
 postgresql-client-13
