@@ -13,7 +13,7 @@ data:
   PGBOUNCER_LISTEN_ADDRESS: '{{ data.pgbouncer.env.LISTEN_ADDR }}'
   PGBOUNCER_PORT: '{{ data.pgbouncer.env.LISTEN_PORT }}'
   PGBOUNCER_AUTH_FILE: '{{ data.pgbouncer.env.AUTH_FILE }}'
-  PGBOUNCER_AUTH_TYPE: '{{ data.pgbouncer.env.AUTH_TYPE }}'
+  PGBOUNCER_AUTH_TYPE: '{{ postgresql_role_config.specification.configuration.password_encryption }}'
   MAX_CLIENT_CONN: '{{ data.pgbouncer.env.MAX_CLIENT_CONN }}'
   DEFAULT_POOL_SIZE: '{{ data.pgbouncer.env.DEFAULT_POOL_SIZE }}'
   RESERVE_POOL_SIZE: '{{ data.pgbouncer.env.RESERVE_POOL_SIZE }}'
@@ -320,7 +320,7 @@ data:
     pool_mode = {{ data.pgbouncer.env.POOL_MODE }}
     listen_port = {{ data.pgbouncer.env.LISTEN_PORT }}
     listen_addr = {{ data.pgbouncer.env.LISTEN_ADDR }}
-    auth_type = {{ data.pgbouncer.env.AUTH_TYPE }}
+    auth_type = {{ postgresql_role_config.specification.configuration.password_encryption }}
     auth_file = {{ data.pgbouncer.env.AUTH_FILE }}
     max_client_conn = {{ data.pgbouncer.env.MAX_CLIENT_CONN }}
     default_pool_size = {{ data.pgbouncer.env.DEFAULT_POOL_SIZE }}
