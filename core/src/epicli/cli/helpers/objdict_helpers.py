@@ -32,6 +32,12 @@ def merge_objdict(to_merge, extend_by):
         if key in to_merge:
             if isinstance(to_merge[key], ObjDict):
                 merge_objdict(to_merge[key], val)
+            elif isinstance(to_merge[key], list):
+                for m_i in to_merge[key]:   
+                    for e_i in val:
+                        if m_i['name'] == e_i['name']:
+                            merge_objdict(m_i, e_i)
+                            break
             else:
                 to_merge[key] = val
         else:
