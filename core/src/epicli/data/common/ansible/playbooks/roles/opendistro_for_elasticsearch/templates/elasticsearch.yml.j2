@@ -1,3 +1,4 @@
+#jinja2: lstrip_blocks: True
 # {{ ansible_managed }}
 # ======================== Elasticsearch Configuration =========================
 #
@@ -74,7 +75,7 @@ transport.port: {{ transport_port }}
 # Pass an initial list of hosts to perform discovery when this node is started:
 # The default list of hosts is ["127.0.0.1", "[::1]"]
 #
-{% if specification.clustered -%}
+{% if groups[current_group_name] | length > 1 -%}
 discovery.seed_hosts: [{% for host in groups[current_group_name] %}"{{hostvars[host]['ansible_default_ipv4']['address']}}"{%- if not loop.last -%},{% endif %}{% endfor %}]
 {% else %}
 discovery.seed_hosts: ["{{ ansible_default_ipv4.address | default(ansible_all_ipv4_addresses[0]) }}"]
@@ -82,10 +83,14 @@ discovery.seed_hosts: ["{{ ansible_default_ipv4.address | default(ansible_all_ip
 #
 # Bootstrap the cluster using an initial set of master-eligible nodes:
 #
-{% if specification.clustered -%}
-cluster.initial_master_nodes: [{% for host in groups[current_group_name] %}"{{hostvars[host]['ansible_hostname']}}"{%- if not loop.last -%},{% endif %}{% endfor %}]
+{% if is_upgrade_run | default(False) %}
+cluster.initial_master_nodes: []
 {% else %}
+  {% if groups[current_group_name] | length > 1 %}
+cluster.initial_master_nodes: [{% for host in groups[current_group_name] %}"{{hostvars[host]['ansible_hostname']}}"{%- if not loop.last -%},{% endif %}{% endfor %}]
+  {% else %}
 cluster.initial_master_nodes: ["{{ ansible_hostname }}"]
+  {% endif %}
 {% endif %}
 #
 # For more information, consult the discovery and cluster formation module documentation.
@@ -122,9 +127,9 @@ opendistro_security.authcz.admin_dn:
 {% endfor %}
 {% if nodes_dn | count > 0 %}
 opendistro_security.nodes_dn:
-{%   for dn in nodes_dn %}
+  {% for dn in nodes_dn %}
   - '{{ dn }}'
-{%   endfor %}
+  {% endfor %}
 {% endif %}
 
 opendistro_security.audit.type: internal_elasticsearch

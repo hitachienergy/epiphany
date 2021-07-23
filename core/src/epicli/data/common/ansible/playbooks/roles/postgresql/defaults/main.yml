@@ -1,45 +1,48 @@
 ---
 pg:
-  bindir:
-    RedHat: /usr/pgsql-13/bin
-    Debian: /usr/lib/postgresql/13/bin
-  service_name:
-    RedHat: postgresql-13
-    Debian: postgresql
-  instantiated_service_name:
-    RedHat: null
-    Debian: postgresql@13-main
   base_dir:
-    RedHat: /var/lib/pgsql
     Debian: /var/lib/postgresql
+    RedHat: /var/lib/pgsql
+  bin_dir:
+    Debian: /usr/lib/postgresql/13/bin
+    RedHat: /usr/pgsql-13/bin
   config_dir:
-    RedHat: /var/lib/pgsql/13/data
     Debian: /etc/postgresql/13/main
-  data_dir:
     RedHat: /var/lib/pgsql/13/data
+  data_dir:
     Debian: /var/lib/postgresql/13/main
+    RedHat: /var/lib/pgsql/13/data
+  instantiated_service_name:
+    Debian: postgresql@13-main
+    RedHat: null
+  service_name:
+    Debian: postgresql
+    RedHat: postgresql-13
 
 repmgr:
-  bindir:
-    RedHat: /usr/pgsql-13/bin
+  bin_dir:
     Debian: /usr/bin
-  service_name:
-    RedHat: repmgr13
-    Debian: repmgrd
+    RedHat: /usr/pgsql-13/bin
   config_dir:
-    RedHat: /etc/repmgr/13
     Debian: /etc/postgresql/13/main
+    RedHat: /etc/repmgr/13
+  service_name:
+    Debian: repmgrd
+    RedHat: repmgr13
+  version:
+    Debian: "5.2.1"
+    RedHat: "5.2.1"
 
 pgbouncer:
-  logfile:
-    RedHat: /var/log/pgbouncer/pgbouncer.log
-    Debian: /var/log/postgresql/pgbouncer.log
-  pidfile:
-    RedHat: /var/run/pgbouncer/pgbouncer.pid
-    Debian: /var/run/postgresql/pgbouncer.pid
-  user:
-    RedHat: pgbouncer
-    Debian: postgres
   group:
-    RedHat: pgbouncer
     Debian: postgres
+    RedHat: pgbouncer
+  logfile:
+    Debian: /var/log/postgresql/pgbouncer.log
+    RedHat: /var/log/pgbouncer/pgbouncer.log
+  pidfile:
+    Debian: /var/run/postgresql/pgbouncer.pid
+    RedHat: /var/run/pgbouncer/pgbouncer.pid
+  user:
+    Debian: postgres
+    RedHat: pgbouncer

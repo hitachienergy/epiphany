@@ -1,0 +1,20 @@
+---
+# required vars:
+# - es_api.url
+# - es_api.cert_path
+# - es_api.key_path
+# - target_inventory_hostname
+# - hostvars[target_inventory_hostname].es_node_name
+
+- name: ODFE | Wait for Elasticsearch node to join the cluster
+  uri:
+    url: "{{ es_api.url }}/_cat/nodes?h=name"
+    method: GET
+    client_cert: "{{ es_api.cert_path }}"
+    client_key:  "{{ es_api.key_path }}"
+    validate_certs: false
+    return_content: true
+  register: cluster_nodes
+  until: hostvars[target_inventory_hostname].es_node_name in cluster_nodes.content.split()
+  retries: 60
+  delay: 1

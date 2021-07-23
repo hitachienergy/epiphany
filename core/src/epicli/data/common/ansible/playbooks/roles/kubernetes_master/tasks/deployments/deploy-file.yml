@@ -4,7 +4,7 @@
 - name: Ensure that directory for files exists
   become: true
   file:
-    path: "{{ epiphany_manifests_dir }}"
+    path: "{{ epiphany_k8s_manifests_dir }}"
     state: directory
     owner: root
     group: root
@@ -12,7 +12,7 @@
 
 - name: Upload and apply file
   vars:
-    dest_path: "{{ epiphany_manifests_dir }}/{{ file_name | basename }}"
+    dest_path: "{{ epiphany_k8s_manifests_dir }}/{{ file_name | basename }}"
   block:
     - name: Upload {{ file_name }} file
       become: true

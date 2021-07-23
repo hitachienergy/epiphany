@@ -1,0 +1,21 @@
+---
+# download-requirements-done.flag file is used to avoid re-downloading requirements (to save time)
+# this is to be optimized in the future
+
+- name: Check if flag file exists
+  stat:
+    path: /tmp/epi-download-requirements/download-requirements-done.flag
+  register: stat_flag_file
+
+- name: Remove download-requirements-done.flag file if expired
+  file:
+    path: /tmp/epi-download-requirements/download-requirements-done.flag
+    state: absent
+  when:
+    - stat_flag_file.stat.exists
+    - (ansible_date_time.epoch|int - stat_flag_file.stat.mtime) > (60 * specification.download_done_flag_expire_minutes)
+
+- name: Check whether to run download script
+  stat:
+    path: /tmp/epi-download-requirements/download-requirements-done.flag
+  register: stat_flag_file

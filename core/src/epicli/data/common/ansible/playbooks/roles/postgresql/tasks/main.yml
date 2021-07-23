@@ -18,12 +18,23 @@
           | map(attribute='name')
           | list }}
 
+- name: Check if repmgr.conf exists
+  stat:
+    path: "{{ repmgr.config_dir[ansible_os_family] }}/repmgr.conf"
+  register: repmgr_conf
+
+- name: Get node id
+  when: repmgr_conf.stat.exists
+  command: >-
+    grep -Po '(?<=^node_id=)\d+' "{{ repmgr.config_dir[ansible_os_family] }}/repmgr.conf"
+  register: repmgr_pg_node_id
+  changed_when: false
+
 # Node id is a constant value independent on order in Ansible host group
 - name: Set 'pg_node_id' fact
   set_fact:
     pg_node_id: >-
-      {{ pg_node_id | default(groups.postgresql.index(inventory_hostname) + 1) }}
-    cacheable: true
+      {{ repmgr_conf.stat.exists | ternary(repmgr_pg_node_id.stdout, groups.postgresql.index(inventory_hostname) + 1) }}
 
 - name: Install OS-specific packages
   package:
@@ -74,7 +85,7 @@
     - name: RedHat | Initialize database
       become_user: postgres
       when: not pg_hba_conf_stat.stat.exists
-      command: "{{ pg.bindir[ansible_os_family] }}/initdb"
+      command: "{{ pg.bin_dir[ansible_os_family] }}/initdb"
       environment:
         PGDATA: "{{ pg.data_dir[ansible_os_family] }}"
 

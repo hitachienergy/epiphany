@@ -50,17 +50,47 @@ specification:
   #  max_open_conn: ""
   #  log_queries: ""
 
-  # Dashboards from https://grafana.com/dashboards
-  grafana_dashboards: []
-  #  - dashboard_id: '4271'
-  #    revision_id: '3'
-  #    datasource: 'Prometheus'
-  #  - dashboard_id: '1860'
-  #    revision_id: '4'
-  #    datasource: 'Prometheus'
-  #  - dashboard_id: '358'
-  #    revision_id: '1'
-  #    datasource: 'Prometheus'
+  # Default dashboards predefined and available in online & offline mode
+  grafana_external_dashboards: []
+    #   # Kubernetes cluster monitoring (via Prometheus)
+    # - dashboard_id: '315'
+    #   datasource: 'Prometheus'
+    #   # Node Exporter Server Metrics
+    # - dashboard_id: '405'
+    #   datasource: 'Prometheus'
+    #   # Postgres Overview
+    # - dashboard_id: '455'
+    #   datasource: 'Prometheus'
+    #   # Node Exporter Full
+    # - dashboard_id: '1860'
+    #   datasource: 'Prometheus'
+    #   # RabbitMQ Monitoring
+    # - dashboard_id: '4279'
+    #   datasource: 'Prometheus'
+    #   # Kubernetes Cluster
+    # - dashboard_id: '7249'
+    #   datasource: 'Prometheus'
+    #   # Kafka Exporter Overview
+    # - dashboard_id: '7589'
+    #   datasource: 'Prometheus'
+    #   # PostgreSQL Database
+    # - dashboard_id: '9628'
+    #   datasource: 'Prometheus'
+    #   # 1 Node Exporter for Prometheus Dashboard EN v20201010
+    # - dashboard_id: '11074'
+    #   datasource: 'Prometheus'
+
+  # Get dashboards from https://grafana.com/dashboards. Only for online mode
+  grafana_online_dashboards: []
+    # - dashboard_id: '4271'
+    #   revision_id: '3'
+    #   datasource: 'Prometheus'
+    # - dashboard_id: '1860'
+    #   revision_id: '4'
+    #   datasource: 'Prometheus'
+    # - dashboard_id: '358'
+    #   revision_id: '1'
+    #   datasource: 'Prometheus'
 
   # Deployer local folder with dashboard definitions in .json format
   grafana_dashboards_dir: "dashboards" # Replace with your dashboard directory if you have dashboards to include

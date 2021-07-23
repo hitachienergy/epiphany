@@ -29,7 +29,14 @@ class AnsibleVarsGenerator(Step):
             self.config_docs = [self.cluster_model] + inventory_creator.config_docs
         elif inventory_upgrade != None and inventory_creator == None:
             self.cluster_model = inventory_upgrade.cluster_model
-            self.config_docs = load_all_documents_from_folder('common', 'defaults/configuration')
+            self.config_docs = []
+            defaults = load_all_documents_from_folder('common', 'defaults/configuration')
+            for default in defaults:
+                config_doc = select_first(inventory_upgrade.config_docs, lambda x: x.kind == default.kind)
+                if config_doc == None:
+                    self.config_docs.append(default)
+                else:
+                    self.config_docs.append(config_doc)
             self.manifest_docs = inventory_upgrade.manifest_docs
         else:
             raise Exception('Invalid AnsibleVarsGenerator configuration')
@@ -57,17 +64,17 @@ class AnsibleVarsGenerator(Step):
             dump(clean_cluster_model, stream)
 
         if self.is_upgrade_run:
-            # For upgrade at this point we don't need any of other roles than common, repository, image_registry and node_exporter.
+            # For upgrade we always need common, repository, image_registry and node_exporter.
             # - commmon is already provisioned from the cluster model constructed from the inventory
-            # - (if possible) upgrade should not require any additional config
-            # roles in the list below are provisioned for upgrade from defaults
             roles_with_defaults = ['repository', 'image_registry', 'node_exporter']
+            # now lets add any external configs we want to load
+            roles_with_defaults = [*roles_with_defaults, *self.inventory_upgrade.get_new_config_roles()]
             # In a special cases (like haproxy), where user specifies majority of the config, it's easier (and less awkward)
             # to re-render config templates instead of modifying (for example with regular expressions) no-longer-compatible config files.
-            roles_with_manifest = ['haproxy', 'ignite', 'repository']
+            roles_with_manifest = ['filebeat', 'haproxy', 'ignite', 'postgresql', 'repository']
         else:
             roles_with_defaults = self.inventory_creator.get_enabled_roles()
-            roles_with_manifest = []  # applies only to upgrades
+            roles_with_manifest = [] # applies only to upgrades
 
         for role in roles_with_defaults:
             kind = 'configuration/' + to_feature_name(role)

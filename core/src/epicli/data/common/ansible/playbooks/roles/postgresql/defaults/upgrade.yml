@@ -1,0 +1,36 @@
+---
+pg:
+  base_dir:
+    Debian: /var/lib/postgresql
+    RedHat: /var/lib/pgsql
+  bin_dir:
+    Debian: /usr/lib/postgresql/10/bin
+    RedHat: /usr/pgsql-10/bin
+  config_dir:
+    Debian: /etc/postgresql/10/main
+    RedHat: /var/lib/pgsql/10/data
+  data_dir:
+    Debian: /var/lib/postgresql/10/main
+    RedHat: /var/lib/pgsql/10/data
+  instantiated_service_name:
+    Debian: postgresql@10-main
+    RedHat: null
+  service_name:
+    Debian: postgresql
+    RedHat: postgresql-10
+
+repmgr:
+  bin_dir:
+    Debian: /usr/bin
+    RedHat: /usr/pgsql-10/bin
+  config_dir:
+    Debian: /etc/postgresql/10/main
+    RedHat: /etc/repmgr/10
+  package_name:
+    Debian: postgresql-10-repmgr
+    RedHat: repmgr10
+  service_name:
+    Debian: repmgrd
+    RedHat: repmgr10
+  upgrade:
+    state_file_path: /var/lib/epiphany/upgrade/state/repmgr.uncompleted
