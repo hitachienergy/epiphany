@@ -104,7 +104,7 @@ Or when running from a Docker image (upper and lowercase are needed because of a
 
 This note relates only to CentOS and RedHat installations.
 
-To prevent installation failure of PostgreSQL 10 server it's validated in preflight mode if previous
+To prevent installation failure of PostgreSQL server it's validated in preflight mode if previous
 installation was done from official PostgreSQL repository. If it's installed from Software Collections,
 Epiphany deployment will fail in preflight mode. For more details refer to [How to migrate from PostgreSQL installed from Software Collections to installed from PostgreSQL repository](./DATABASES.md#how-to-migrate-from-postgresql-installed-from-software-collections-to-installed-from-postgresql-repository)
 
