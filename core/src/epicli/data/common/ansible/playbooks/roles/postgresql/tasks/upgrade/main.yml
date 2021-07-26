@@ -235,8 +235,10 @@
                     msg: >-
 
                       **************************************
-                      Check {{ _pg_upgrade_log_file }} on host {{ pg_primary_node }} for upgrade results
-                      If pg_upgrade generated any .sql files, run them
+                      Check {{ _pg_upgrade_log_file }} on host {{ pg_primary_node }} for upgrade results.
+                      If pg_upgrade generated any .sql files, run them.
+                      For more information, refer to PostgreSQL docs (`Post-upgrade processing` section):
+                      https://www.postgresql.org/docs/13/pgupgrade.html.
                       **************************************
 
                 - name: PostgreSQL | Create a log file with pg_upgrade result
