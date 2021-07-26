@@ -13,8 +13,8 @@
     group: postgres
     mode: u=rw,g=,o=
   vars:
-    node_id: "{{ pg_node_id.stdout }}"
-    pg_bin_dir: "{{ new_version.pg.bin_dir[ansible_os_family] }}"
-    pg_data_dir: "{{ new_version.pg.data_dir[ansible_os_family] }}"
-    pg_service_name: "{{ new_version.pg.service_name[ansible_os_family] }}"
-    repmgr_service_name: "{{ new_version.repmgr.service_name[ansible_os_family] }}"
+    _node_id: "{{ pg_node_id.stdout }}"
+    _pg_bin_dir: "{{ new_version.pg.bin_dir[ansible_os_family] }}"
+    _pg_data_dir: "{{ new_version.pg.data_dir[ansible_os_family] }}"
+    _pg_service_name: "{{ new_version.pg.service_name[ansible_os_family] }}"
+    _repmgr_service_name: "{{ new_version.repmgr.service_name[ansible_os_family] }}"

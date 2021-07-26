@@ -195,7 +195,8 @@
                   --old-bindir {{ old_version.pg.bin_dir[ansible_os_family] }}
                   --new-bindir {{ new_version.pg.bin_dir[ansible_os_family] }}
                   --old-options '-c config_file={{ old_version.pg.config_dir[ansible_os_family] }}/postgresql.conf'
-                  --new-options '-c config_file={{ new_version_config_dir }}/postgresql.conf -c hba_file={{ new_version_config_dir }}/pg_hba.conf'
+                  --new-options '-c config_file={{ _new_version_config_dir }}/postgresql.conf
+                                 -c hba_file={{ _new_version_config_dir }}/pg_hba.conf'
                   --socketdir /var/run/postgresql
                   --jobs {{ ansible_processor_vcpus }}
                   --check
@@ -213,8 +214,8 @@
                   --old-bindir {{ old_version.pg.bin_dir[ansible_os_family] }}
                   --new-bindir {{ new_version.pg.bin_dir[ansible_os_family] }}
                   --old-options '-c config_file={{ old_version.pg.config_dir[ansible_os_family] }}/postgresql.conf'
-                  --new-options '-c config_file={{ new_version_config_dir }}/postgresql.conf
-                                 -c hba_file={{ new_version_config_dir }}/pg_hba.conf'
+                  --new-options '-c config_file={{ _new_version_config_dir }}/postgresql.conf
+                                 -c hba_file={{ _new_version_config_dir }}/pg_hba.conf'
                   --socketdir /var/run/postgresql
                   --jobs {{ ansible_processor_vcpus }}
               register: pg_upgrade_run
@@ -223,7 +224,7 @@
 
             - name: PostgreSQL | Extend log information
               vars:
-                pg_upgrade_log_file: >-
+                _pg_upgrade_log_file: >-
                   /var/log/postgresql/pg-upgrade-{{ ansible_date_time.iso8601_basic_short | replace('T','-') }}.log
               block:
                 - name: PostgreSQL | Print a note to check upgrade results
@@ -231,16 +232,16 @@
                     msg: >-
 
                       **************************************
-                      Check {{ pg_upgrade_log_file }} on host {{ pg_primary_node }} for upgrade results
+                      Check {{ _pg_upgrade_log_file }} on host {{ pg_primary_node }} for upgrade results
                       If pg_upgrade generated any .sql files, run them
                       **************************************
 
                 - name: PostgreSQL | Create a log file with pg_upgrade result
                   copy:
                     content: "{{ pg_upgrade_run.stdout }}"
-                    dest: "{{ pg_upgrade_log_file }}"
+                    dest: "{{ _pg_upgrade_log_file }}"
           vars:
-            new_version_config_dir: "{{ new_version.pg.config_dir[ansible_os_family] }}" # to make command shorter
+            _new_version_config_dir: "{{ new_version.pg.config_dir[ansible_os_family] }}" # to make command shorter
 
         - name: PostgreSQL | Start and enable new PostgreSQL service
           systemd:
