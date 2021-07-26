@@ -9,11 +9,10 @@
   register: repmgr_standby_clone
   changed_when: repmgr_standby_clone.rc == 0
 
-- name: PostgreSQL | Start and enable new PostgreSQL service
+- name: PostgreSQL | Start PostgreSQL {{ new_version.pg.version }} service
   systemd:
     name: "{{ pg.service_name[ansible_os_family] }}"
     state: started
-    enabled: true
 
 - name: Extensions | repmgr | Register node with repmgr
   become_user: postgres
