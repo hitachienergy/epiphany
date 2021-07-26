@@ -10,10 +10,6 @@
     manager: auto
   when: ansible_facts.packages is undefined
 
-- name: PostgreSQL | Set 'pg_is_repmgr_used' fact
-  set_fact:
-    pg_is_repmgr_used: ansible_facts.packages[old_version.repmgr.package_name[ansible_os_family]] is defined
-
 - name: PostgreSQL | Include vars from 'postgresql' role
   include_vars:
     file: vars/main.yml
@@ -32,6 +28,12 @@
   include_vars:
     file: defaults/upgrade.yml
     name: old_version
+
+# Disabling extensions is not supported, so these values are taken from manifest
+- name: PostgreSQL | Set 'pg_is_repmgr_used' fact
+  set_fact:
+    pg_is_pgaudit_used: manifest.specification.extensions.pgaudit.enabled
+    pg_is_repmgr_used: manifest.specification.extensions.replication.enabled
 
 - name: PostgreSQL | Get primary node
   when: pg_is_repmgr_used
