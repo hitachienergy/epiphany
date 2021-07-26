@@ -1,5 +1,5 @@
 ---
-- name: PostgreSQL | Extensions | repmgr | Install new package(s) for PostgreSQL {{ new_version.pg.version }}
+- name: PostgreSQL | Extensions | repmgr | Install package(s) for PostgreSQL {{ new_version.pg.version }}
   when: pg_is_repmgr_used
   package:
     name: "{{ _packages[ansible_os_family] }}"
