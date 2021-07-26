@@ -132,7 +132,7 @@
 
     # Step: Run pg_upgrade
 
-    # TODO: check if we should copy other files from pg.config_dir (such as pg_ctl.conf or pg_ident.conf)
+    # Process the same configuration files as for 'apply'
     - name: PostgreSQL | Copy configuration files
       block:
         - name: PostgreSQL | Copy configuration files
