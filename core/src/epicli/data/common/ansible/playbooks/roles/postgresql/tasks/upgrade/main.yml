@@ -12,6 +12,7 @@
 - name: PostgreSQL | Include vars from 'postgresql' role
   include_vars:
     file: vars/main.yml
+    name: upgrade_vars
 
 - name: PostgreSQL | Include manifest from 'postgresql' role
   include_vars:

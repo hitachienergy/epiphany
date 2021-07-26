@@ -18,3 +18,5 @@
     _pg_data_dir: "{{ new_version.pg.data_dir[ansible_os_family] }}"
     _pg_service_name: "{{ new_version.pg.service_name[ansible_os_family] }}"
     _repmgr_service_name: "{{ new_version.repmgr.service_name[ansible_os_family] }}"
+    _replication_user_name: "{{ upgrade_vars.specification.extensions.replication.replication_user_name }}"
+    _repmgr_database: "{{ upgrade_vars.specification.extensions.replication.repmgr_database }}"

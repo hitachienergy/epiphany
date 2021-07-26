@@ -39,6 +39,11 @@
   loop: "{{ _users }}"
 
 - name: Extensions | repmgr | Create pgpass file
+  vars:
+    _replication_user_name: "{{ specification.extensions.replication.replication_user_name }}"
+    _replication_user_password: "{{ specification.extensions.replication.replication_user_password }}"
+    _privileged_user_name: "{{ specification.extensions.replication.privileged_user_name }}"
+    _privileged_user_password: "{{ specification.extensions.replication.privileged_user_password }}"
   template:
     src: pgpass-repmgr.j2
     dest: "{{ pg.base_dir[ansible_os_family] }}/.pgpass"
@@ -68,6 +73,8 @@
     _pg_data_dir: "{{ pg.data_dir[ansible_os_family] }}"
     _pg_service_name: "{{ pg.service_name[ansible_os_family] }}"
     _repmgr_service_name: "{{ repmgr.service_name[ansible_os_family] }}"
+    _replication_user_name: "{{ specification.extensions.replication.replication_user_name }}"
+    _repmgr_database: "{{ specification.extensions.replication.repmgr_database }}"
 
 # On Ubuntu config file location is not set by package (see https://repmgr.org/docs/5.2/packages-debian-ubuntu.html).
 # Create symlink to allow using repmgr commands without specifying config file location (which is custom).

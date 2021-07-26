@@ -2,8 +2,8 @@
 
 node_id={{ _node_id }}
 node_name={{ inventory_hostname }}
-conninfo='host={{ ansible_default_ipv4.address }} user={{ specification.extensions.replication.replication_user_name }} dbname={{ specification.extensions.replication.repmgr_database }} connect_timeout=2'
-data_directory='{{ pg_data_dir }}'
+conninfo='host={{ ansible_default_ipv4.address }} user={{ _replication_user_name }} dbname={{ _repmgr_database }} connect_timeout=2'
+data_directory='{{ _pg_data_dir }}'
 
 failover=automatic
 promote_command='{{ _pg_bin_dir }}/repmgr standby promote --log-to-file'
