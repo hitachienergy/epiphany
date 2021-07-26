@@ -232,21 +232,17 @@
 
 # === postgresql ===
 
-# play 1/2: upgrade repmgr
 - hosts: postgresql
   become: true
   become_method: sudo
   tasks:
+    # step 1: upgrade repmgr
     - include_role:
         name: postgresql
         tasks_from: upgrade/extensions/replication/pg-old/repmgr-main
       when: "'postgresql' in upgrade_components or upgrade_components|length == 0"
 
-# play 2/2: upgrade postgresql
-- hosts: postgresql
-  become: true
-  become_method: sudo
-  tasks:
+    # step 2: upgrade postgresql
     - include_role:
         name: postgresql
         tasks_from: upgrade/main
