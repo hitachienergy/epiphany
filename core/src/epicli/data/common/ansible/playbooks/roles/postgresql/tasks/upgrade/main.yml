@@ -127,7 +127,7 @@
 
     - name: PostgreSQL | Extensions | repmgr | Prepare for standby server upgrades
       when: pg_is_repmgr_used
-      include_tasks: roles/postgresql/tasks/upgrade/extensions/replication/pg-new/repmgr-checkpoint-location.yml
+      include_tasks: roles/postgresql/tasks/upgrade/extensions/replication/pg-new/repmgr-assert-checkpoint-location.yml
 
     # Step: Run pg_upgrade
 
