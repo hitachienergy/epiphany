@@ -63,11 +63,11 @@
     mode: u=rw,g=,o=
   register: template_repmgr_conf
   vars:
-    node_id: "{{ pg_node_id }}"
-    pg_bin_dir: "{{ pg.bin_dir[ansible_os_family] }}"
-    pg_data_dir: "{{ pg.data_dir[ansible_os_family] }}"
-    pg_service_name: "{{ pg.service_name[ansible_os_family] }}"
-    repmgr_service_name: "{{ repmgr.service_name[ansible_os_family] }}"
+    _node_id: "{{ pg_node_id }}"
+    _pg_bin_dir: "{{ pg.bin_dir[ansible_os_family] }}"
+    _pg_data_dir: "{{ pg.data_dir[ansible_os_family] }}"
+    _pg_service_name: "{{ pg.service_name[ansible_os_family] }}"
+    _repmgr_service_name: "{{ repmgr.service_name[ansible_os_family] }}"
 
 # On Ubuntu config file location is not set by package (see https://repmgr.org/docs/5.2/packages-debian-ubuntu.html).
 # Create symlink to allow using repmgr commands without specifying config file location (which is custom).
@@ -125,10 +125,10 @@
 - name: Extensions | repmgr | Configure PostgreSQL cluster
   when: not pg_is_clustered
   vars:
-    pg_node_primary: "{{ groups.postgresql[0] }}" # the first node in the group is primary
+    _pg_node_primary: "{{ groups.postgresql[0] }}" # the first node in the group is primary
   block:
     - name: Extensions | repmgr | Register primary node
-      when: pg_node_primary == inventory_hostname
+      when: _pg_node_primary == inventory_hostname
       become_user: postgres
       command: >-
         {{ repmgr.bin_dir[ansible_os_family] }}/repmgr primary register
@@ -136,7 +136,7 @@
           --force
 
     - name: Extensions | repmgr | Clone standby node from primary and register
-      when: pg_node_primary != inventory_hostname
+      when: _pg_node_primary != inventory_hostname
       block:
         # Ubuntu specific: there are two systemd unit files: postgresql.service (service for managing all clusters
         # on system) and postgresql@.service (service template for clusters). The latter is 'PartOf' the former.

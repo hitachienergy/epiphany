@@ -47,12 +47,10 @@
 - name: repmgr for PG {{ upgrade_defaults.pg.version }} | Set target version for repmgr-common package
   set_fact:
     repmgr_common_target_version: >-
-      {{ _installed_version is version(target_version, '>') | ternary(_installed_version, target_version + '-*') }}
+      {{ _installed_version is version(_target_version, '>') | ternary(_installed_version, _target_version + '-*') }}
   when:
     - ansible_os_family == 'Debian'
     - ansible_facts.packages['repmgr-common'] is defined
-  vars:
-    _installed_version: "{{ ansible_facts.packages['repmgr-common'][0].version }}"
 
 - name: repmgr for PG {{ upgrade_defaults.pg.version }} | Install repmgr package(s)
   package:
@@ -61,10 +59,10 @@
   vars:
     _packages:
       Debian:
-        - "{{ repmgr_package_name }}={{ target_version + '-*' }}"
-        - repmgr-common={{ repmgr_common_target_version | default(target_version + '-*') }}
+        - "{{ _repmgr_package_name }}={{ _target_version + '-*' }}"
+        - repmgr-common={{ repmgr_common_target_version | default(_target_version + '-*') }}
       RedHat:
-        - "{{ repmgr_package_name }}-{{ target_version }}"
+        - "{{ _repmgr_package_name }}-{{ _target_version }}"
   module_defaults:
     yum: { lock_timeout: "{{ yum_lock_timeout }}" }
 
@@ -122,11 +120,11 @@
         group: postgres
         mode: u=rw,g=,o=
       vars:
-        node_id: "{{ pg_node_id.stdout }}"
-        pg_bin_dir: "{{ upgrade_defaults.pg.bin_dir[ansible_os_family] }}"
-        pg_data_dir: "{{ upgrade_defaults.pg.data_dir[ansible_os_family] }}"
-        pg_service_name: "{{ upgrade_defaults.pg.service_name[ansible_os_family] }}"
-        repmgr_service_name: "{{ upgrade_defaults.repmgr.service_name[ansible_os_family] }}"
+        _node_id: "{{ pg_node_id.stdout }}"
+        _pg_bin_dir: "{{ upgrade_defaults.pg.bin_dir[ansible_os_family] }}"
+        _pg_data_dir: "{{ upgrade_defaults.pg.data_dir[ansible_os_family] }}"
+        _pg_service_name: "{{ upgrade_defaults.pg.service_name[ansible_os_family] }}"
+        _repmgr_service_name: "{{ upgrade_defaults.repmgr.service_name[ansible_os_family] }}"
         specification:
           extensions:
             replication:

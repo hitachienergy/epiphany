@@ -12,9 +12,9 @@
 - name: Run upgrade if needed
   when: ansible_facts.packages[repmgr_package_name] is defined
   vars:
-    repmgr_package_name: "{{ upgrade_defaults.repmgr.package_name[ansible_os_family] }}"
-    installed_version: "{{ ansible_facts.packages[repmgr_package_name][0].version }}"
-    target_version: "{{ repmgr.version[ansible_os_family] }}"
+    _repmgr_package_name: "{{ upgrade_defaults.repmgr.package_name[ansible_os_family] }}"
+    _installed_version: "{{ ansible_facts.packages[repmgr_package_name][0].version }}"
+    _target_version: "{{ repmgr.version[ansible_os_family] }}"
   block:
     - name: repmgr for PG {{ upgrade_defaults.pg.version }} | Print repmgr versions
       debug:
