@@ -1,18 +1,25 @@
 ---
 - name: PostgreSQL | Extensions | repmgr | Get latest checkpoint location of primary node
-  become_user: postgres
-  shell: |-
-    set -o pipefail && \
-    {{ old_version.pg.bin_dir[ansible_os_family] }}/pg_controldata -D {{ old_version.pg.data_dir[ansible_os_family] }} \
-      | awk 'BEGIN{FS=":"} {gsub(/ /,""); if (tolower($1) == "latestcheckpointlocation") print $2}'
   delegate_to: "{{ pg_primary_node }}"
+  register: pg_checkpoint_primary
   run_once: true
-  changed_when: false
-  register: pg_checkpoint
+  <<: &get_checkpoint_location
+    become_user: postgres
+    shell: |-
+      set -o pipefail && \
+      {{ old_version.pg.bin_dir[ansible_os_family] }}/pg_controldata -D {{ old_version.pg.data_dir[ansible_os_family] }} \
+        | awk 'BEGIN{FS=":"} {gsub(/ /,""); if (tolower($1) == "latestcheckpointlocation") print $2}'
+    changed_when: false
 
 - name: PostgreSQL | Extensions | repmgr | Assert that latest checkpoint location values are the same
   when: inventory_hostname != pg_primary_node
-  assert:
-    that: hostvars[inventory_hostname]['pg_checkpoint'].stdout == pg_checkpoint.stdout
-    fail_msg: "Latest checkpoint location mismatch on hosts {{ inventory_hostname }} and {{ pg_primary_node }}"
-    quiet: true
+  block:
+    - name: PostgreSQL | Extensions | repmgr | Get latest checkpoint location of current node
+      register: pg_checkpoint_current
+    <<: *get_checkpoint_location
+
+    - name: PostgreSQL | Extensions | repmgr | Assert that latest checkpoint location values are the same
+      assert:
+        that: pg_checkpoint_current.stdout == pg_checkpoint_primary.stdout
+        fail_msg: "Latest checkpoint location mismatch on hosts {{ inventory_hostname }} and {{ pg_primary_node }}"
+        quiet: true
