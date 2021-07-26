@@ -44,6 +44,7 @@
       | awk 'BEGIN{FS="|"} {gsub(/ /,""); if ($3 == "primary") print $2}'
   changed_when: false
   register: pg_node_primary_found
+  # when there are two primary nodes (after failover) rc is non-zero
   failed_when: pg_node_primary_found.rc != 0 or pg_node_primary_found.stdout == ""
   delegate_to: "{{ groups.postgresql[0] }}"
   run_once: true
