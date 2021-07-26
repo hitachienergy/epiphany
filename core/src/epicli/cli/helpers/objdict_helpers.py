@@ -1,4 +1,5 @@
 from cli.helpers.ObjDict import ObjDict
+from cli.helpers.doc_list_helpers import select_all
 from copy import deepcopy
 
 
@@ -33,11 +34,27 @@ def merge_objdict(to_merge, extend_by):
             if isinstance(to_merge[key], ObjDict):
                 merge_objdict(to_merge[key], val)
             elif isinstance(to_merge[key], list):
-                for m_i in to_merge[key]:   
-                    for e_i in val:
-                        if m_i['name'] == e_i['name']:
-                            merge_objdict(m_i, e_i)
-                            break
+                count_to_merge = select_all(to_merge[key], lambda x: hasattr(x, 'name'))
+                count_extend_by = select_all(val, lambda x: hasattr(x, 'name'))
+                if len(count_to_merge) == len(to_merge[key]) and len(count_extend_by) == len(val):
+                    for m_i in to_merge[key]:
+                        name_default = m_i['name']
+                        count = select_all(to_merge[key], lambda x: x['name'] == name_default)
+                        if len(count) > 1:
+                            raise Exception(f'`name` field with value `"{name_default}"` occurs multiple times in list `"{key}"` in default definition.')
+                        for e_i in val:
+                            name_extend = e_i['name']
+                            count = select_all(val, lambda x: x['name'] == name_extend)
+                            if len(count) > 1:
+                                raise Exception(f'`name` field with value `"{name_extend}"` occurs multiple times in list `"{key}"` in input definition.')
+                            if name_default == name_extend:
+                                merge_objdict(m_i, e_i)
+                            else:
+                                count = select_all(to_merge[key], lambda x: x['name'] == name_extend)
+                                if len(count) == 0:
+                                    to_merge[key].append(e_i)
+                else:
+                    to_merge[key] = val
             else:
                 to_merge[key] = val
         else:
