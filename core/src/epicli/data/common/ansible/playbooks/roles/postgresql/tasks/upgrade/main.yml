@@ -282,7 +282,7 @@
 
   # Step: Reverting to old cluster
   rescue:
-    - name: PostgreSQL | Rollback | Remove OS-specific packages
+    - name: PostgreSQL | Rollback | Remove PG {{ new_version.pg.version }} related packages
       package:
         name: "{{ _packages[ansible_os_family] }}"
         state: absent
