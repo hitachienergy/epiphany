@@ -304,6 +304,5 @@
       <<: *start_pg_services
 
     - name: PostgreSQL | Fail upgrade with a note
-      debug:
+      fail:
         msg: PostgreSQL upgrade failed, please check logs
-      failed_when: true
