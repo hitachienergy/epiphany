@@ -74,6 +74,20 @@
     - name: PostgreSQL | Extensions | repmgr | Include pakage(s) installation tasks
       include_tasks: roles/postgresql/tasks/upgrade/extensions/replication/pg-new/packages.yml
 
+    # Step: Adjust authentication
+    - name: PostgreSQL | Extensions | repmgr | Update pgpass file
+      vars:
+        _replication_user_name: "{{ upgrade_vars.specification.extensions.replication.replication_user_name }}"
+        _replication_user_password: "{{ upgrade_vars.specification.extensions.replication.replication_user_password }}"
+        _privileged_user_name: "{{ upgrade_vars.specification.extensions.replication.privileged_user_name }}"
+        _privileged_user_password: "{{ upgrade_vars.specification.extensions.replication.privileged_user_password }}"
+      template:
+        src: pgpass-repmgr.j2
+        dest: "{{ new_version.pg.base_dir[ansible_os_family] }}/.pgpass"
+        owner: postgres
+        group: postgres
+        mode: u=rw,g=,o=
+
     # Step: Stop all servers
     # Standby nodes have to be stopped after primary. Check p.8 from https://www.postgresql.org/docs/13/pgupgrade.html
 
@@ -113,15 +127,16 @@
               - pg_hba.conf
               - postgresql-epiphany.conf
               - postgresql.conf
-            pg: "{{ new_version.pg }}" # used in postgresql.conf
-            # Values from manifest are used when it's not possible to do changes after 'apply'
-            # such as disabling extensions
-            specification:
+            _pg_data_dir: "{{ new_version.pg.data_dir[ansible_os_family] }}" # used in postgresql.conf
+            _extensions:
               extensions:
                 pgaudit:
                   enabled: "{{ manifest.specification.extensions.pgaudit.enabled }}"
                 replication:
                   enabled: "{{ manifest.specification.extensions.replication.enabled }}"
+            # Values from manifest are used when it's not possible to do changes after 'apply'
+            # such as enabling/disabling extensions
+            _specification: "{{ upgrade_vars.specification | combine(_extensions, recursive=True) }}"
           template:
             src: "roles/postgresql/templates/{{ file_name }}.j2"
             dest: "{{ new_version.pg.config_dir[ansible_os_family] }}/{{ file_name }}"

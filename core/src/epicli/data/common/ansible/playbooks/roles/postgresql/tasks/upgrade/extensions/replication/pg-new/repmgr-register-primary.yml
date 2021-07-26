@@ -11,6 +11,7 @@
   postgresql_query:
     query: "ALTER USER {{ item.user }} WITH PASSWORD '{{ item.password }}'"
   loop: "{{ _users }}"
+  run_once: true
   no_log: true
 
 - name: PostgreSQL | Extensions | repmgr | Register primary node

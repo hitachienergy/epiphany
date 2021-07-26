@@ -125,11 +125,8 @@
         _pg_data_dir: "{{ upgrade_defaults.pg.data_dir[ansible_os_family] }}"
         _pg_service_name: "{{ upgrade_defaults.pg.service_name[ansible_os_family] }}"
         _repmgr_service_name: "{{ upgrade_defaults.repmgr.service_name[ansible_os_family] }}"
-        specification:
-          extensions:
-            replication:
-              replication_user_name: "{{ postgresql_manifest.specification.extensions.replication.replication_user_name }}"
-              repmgr_database: "{{ postgresql_manifest.specification.extensions.replication.repmgr_database }}"
+        _replication_user_name: "{{ postgresql_manifest.specification.extensions.replication.replication_user_name }}"
+        _repmgr_database: "{{ postgresql_manifest.specification.extensions.replication.repmgr_database }}"
 
 # Step: Execute 'ALTER EXTENSION repmgr UPDATE' (on primary only)
 - name: repmgr for PG {{ upgrade_defaults.pg.version }} | Update extension
