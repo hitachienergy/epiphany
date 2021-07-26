@@ -51,7 +51,7 @@
     # Step: Initialize the new PostgreSQL cluster (on Ubuntu done automatically)
 
     # This value is default but set explicitly to avoid errors
-    - name: PostgreSQL | RedHat | Ensure that PG {{ new_version.pg.version }} data directory has correct permissions
+    - name: PostgreSQL | Ensure that PG {{ new_version.pg.version }} data directory has correct permissions
       file:
         path: "{{ new_version.pg.data_dir[ansible_os_family] }}"
         state: directory
