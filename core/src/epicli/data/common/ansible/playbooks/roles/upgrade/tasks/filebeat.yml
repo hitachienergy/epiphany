@@ -99,6 +99,8 @@
       vars:
         existing_output_es_password: >-
           {{ _filebeat_existing_config['output.elasticsearch'].password }}
+        existing_setup_dashboards: >-
+          {{ _filebeat_existing_config['setup.dashboards'] | default({}) }}
         existing_setup_kibana: >-
           {{ _filebeat_existing_config['setup.kibana'] | default({}) }}
         # To provide settings for multiline feature (e.g. specification.postgresql_input.multiline)
