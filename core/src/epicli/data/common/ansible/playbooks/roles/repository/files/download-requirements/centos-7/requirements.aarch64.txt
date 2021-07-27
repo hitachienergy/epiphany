@@ -114,6 +114,7 @@ xorg-x11-font-utils # for grafana
 xorg-x11-server-utils # for grafana
 yum-plugin-versionlock
 yum-utils
+python3-3.6.8
 
 # to make remote-to-remote "synchronize" work in ansible
 rsync
