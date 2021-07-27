@@ -140,7 +140,8 @@ smbclient
 samba-libs
 libsmbclient
 
-# for postgres
+# postgres related packages
+# if version is not specified, it's not related to postgres version and the latest is used
 pgbouncer 1.15.*
 pgdg-keyring
 postgresql-13-pgaudit 1.5.0
