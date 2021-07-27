@@ -13,6 +13,16 @@
     file: manifest.yml
     name: postgresql_manifest
 
+# repmgr was introduced with epicli v0.6 but the following symlink was added in v0.7 so this task is to ensure it exists
+- name: repmgr for PG {{ pg_version }} | Debian | Ensure symlink to config file exists
+  file:
+    src: "{{ upgrade_defaults.repmgr.config_dir[ansible_os_family] }}/repmgr.conf"
+    dest: /etc/repmgr.conf
+    state: link
+    owner: postgres
+    group: postgres
+  when: ansible_os_family == 'Debian'
+
 - name: repmgr for PG {{ pg_version }} | Search for primary node
   become_user: postgres
   # command prints primary node name (hostname)
