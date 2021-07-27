@@ -110,12 +110,6 @@
       when: (inventory_hostname == pg_primary_node and pg_is_repmgr_used) or not pg_is_repmgr_used
       <<: *stop_pg_services
 
-    # Step: Prepare for standby server upgrades
-
-    - name: PostgreSQL | Extensions | repmgr | Prepare for standby server upgrades
-      when: pg_is_repmgr_used
-      include_tasks: roles/postgresql/tasks/upgrade/extensions/replication/pg-new/repmgr-assert-checkpoint-location.yml
-
     # Step: Run pg_upgrade
 
     # Process the same configuration files as for 'apply'
@@ -230,7 +224,7 @@
 
                 - name: PostgreSQL | Create a log file with pg_upgrade result
                   copy:
-                    content: "{{ pg_upgrade_run.stdout }}"
+                    content: "{{ pg_upgrade_run.stdout_lines }}"
                     dest: "{{ _pg_upgrade_log_file }}"
           vars:
             _new_version_config_dir: "{{ new_version.pg.config_dir[ansible_os_family] }}" # to make command shorter
