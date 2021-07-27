@@ -8,8 +8,8 @@ specification:
     file_name: registry-2.tar
   images_to_load:
     generic:
-      - name: "jboss/keycloak:9.0.0"
-        file_name: keycloak-9.0.0.tar
+      - name: "epiphanyplatform/keycloak:14.0.0"
+        file_name: keycloak-14.0.0.tar
       - name: "rabbitmq:3.8.9"
         file_name: rabbitmq-3.8.9.tar
       - name: "apacheignite/ignite:2.9.1"

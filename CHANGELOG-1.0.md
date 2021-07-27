@@ -1,5 +1,11 @@
 # Changelog 1.0
 
+## [1.0.2] 2021-xx-xx
+
+### Updated
+
+- [#1797](https://github.com/epiphany-platform/epiphany/issues/1797) - Upgrade Keycloak to v14.0.0
+
 ## [1.0.1] 2021-07-16
 
 ### Fixed
@@ -13,7 +19,7 @@
 - [#2360](https://github.com/epiphany-platform/epiphany/issues/2360) - [Upgrade] epicli may fail after re-running
 - [#2381](https://github.com/epiphany-platform/epiphany/issues/2381) - Kibana fails to upgrade from epicli v1.0 to v1.1 (version comparison issue)
 
-# Added
+### Added
 
 - [#2288](https://github.com/epiphany-platform/epiphany/issues/2288) - Allow to preserve OS images when run 'epicli apply' for existing cluster
 - [#2127](https://github.com/epiphany-platform/epiphany/issues/2127) - Allow to specify configuration to be used in upgrade mode
