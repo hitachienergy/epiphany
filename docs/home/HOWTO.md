@@ -69,8 +69,8 @@
   - [PostgreSQL upgrade](./howto/UPGRADE.md#postgresql-upgrade)
 
 - [Security](./howto/SECURITY.md)
-  - [How to add/remove additional users to/from OS](./howto/SECURITY.md#how-to-add/remove-additional-users-to/from-OS)
-  - [How to enable/disable Epiphany service user](./howto/SECURITY.md#how-to-enable/disable-Epiphany-service-user)
+  - [How to add/remove additional users to/from OS](./howto/SECURITY.md#how-to-addremove-additional-users-tofrom-os)
+  - [How to enable/disable Epiphany service user](./howto/SECURITY.md#how-to-enabledisable-epiphany-service-user)
   - [How to use TLS/SSL certificate with HA Proxy](./howto/SECURITY.md#how-to-use-tlsssl-certificate-with-ha-proxy)
   - [How to use TLS/SSL certificate with RabbitMQ](./howto/SECURITY.md#how-to-use-tlsssl-certificate-with-rabbitmq)
   - [How to use TLS/SSL with Kafka](./howto/SECURITY.md#how-to-use-tlsssl-with-kafka)
