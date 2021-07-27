@@ -1,6 +1,7 @@
+import pytest
+
 from cli.helpers.objdict_helpers import merge_objdict, dict_to_objdict, objdict_to_dict
 from cli.helpers.ObjDict import ObjDict
-
 from collections import OrderedDict
 
 
@@ -108,13 +109,141 @@ def test_dict_merge_updates_value_when_same_key_exists():
     assert base.field2 == 'val'
 
 
-def test_dict_merge_replaces_list_when_same_key_exists():
+def test_dict_merge_replaces_nonnamed_list_when_same_key_exists():
     base = dict_to_objdict({'field1': 'test1', 'list': ['base1', 'base2', 'base3']})
     extend_by = dict_to_objdict({'list': ['replaced1', 'replaced2']})
     merge_objdict(base, extend_by)
 
     assert base.field1 == 'test1'
     assert base.list == ['replaced1', 'replaced2']
+
+
+def test_dict_merge_updates_named_list_when_same_name_key_exists():
+    base = dict_to_objdict({
+        'field1': 'test1', 
+        'list': [
+            {
+                'name': 'test1',
+                'value': 'base1'
+            },
+            {
+                'name': 'test2',
+                'value': 'base2'
+            }    
+        ]
+    })
+    extend_by = dict_to_objdict({
+        'list': [
+            {
+                'name': 'test2',
+                'value': 'base_new'
+            }            
+        ]
+    })
+    merge_objdict(base, extend_by)
+
+    assert base.field1 == 'test1'
+    assert base.list == [
+            {
+                'name': 'test1',
+                'value': 'base1'
+            },
+            {
+                'name': 'test2',
+                'value': 'base_new'
+            }]
+
+
+def test_dict_merge_extends_named_list_with_new_key():
+    base = dict_to_objdict({
+        'field1': 'test1', 
+        'list': [
+            {
+                'name': 'test1',
+                'value': 'base1'
+            },
+            {
+                'name': 'test2',
+                'value': 'base2'
+            }    
+        ]
+    })
+    extend_by = dict_to_objdict({
+        'list': [
+            {
+                'name': 'test3',
+                'value': 'extend3'
+            }            
+        ]
+    })
+    merge_objdict(base, extend_by)
+
+    assert base.field1 == 'test1'
+    assert base.list == [
+            {
+                'name': 'test1',
+                'value': 'base1'
+            },
+            {
+                'name': 'test2',
+                'value': 'base2'
+            },
+            {
+                'name': 'test3',
+                'value': 'extend3'
+            }]
+
+
+def test_dict_merge_asserts_on_base_named_list_with_duplicate_key():
+    base = dict_to_objdict({
+        'field1': 'test1', 
+        'list': [
+            {
+                'name': 'test1',
+                'value': 'base1'
+            },
+            {
+                'name': 'test1',
+                'value': 'base2'
+            }    
+        ]
+    })
+    extend_by = dict_to_objdict({
+        'list': [
+            {
+                'name': 'test3',
+                'value': 'extend3'
+            }            
+        ]
+    })
+    with pytest.raises(Exception) as e_info:
+        merge_objdict(base, extend_by)
+
+
+def test_dict_merge_asserts_on_extend_named_list_with_duplicate_key():
+    base = dict_to_objdict({
+        'field1': 'test1', 
+        'list': [
+            {
+                'name': 'test1',
+                'value': 'base1'
+            }  
+        ]
+    })
+    extend_by = dict_to_objdict({
+        'list': [
+            {
+                'name': 'test2',
+                'value': 'extend2'
+            },
+            {
+                'name': 'test2',
+                'value': 'extend3'
+            }             
+        ]
+    })
+    with pytest.raises(Exception) as e_info:
+        merge_objdict(base, extend_by)
 
 
 def test_dict_merge_updates_nested_object():
