@@ -140,12 +140,16 @@
         repmgr_database: "{{ postgresql_manifest.specification.extensions.replication.repmgr_database }}"
         repmgr_service_name: "{{ upgrade_defaults.repmgr.service_name[ansible_os_family] }}"
 
-# Step: Execute 'ALTER EXTENSION repmgr UPDATE' (on primary only)
+# Step: Execute 'ALTER EXTENSION repmgr UPDATE' (on primary only).
+# On standby it fails with error "cannot execute ALTER EXTENSION in a read-only transaction".
 - name: repmgr for PG {{ pg_version }} | primary | Update extension
   become_user: postgres
-  postgresql_query:
+  postgresql_ext:
+    name: repmgr
     db: "{{ postgresql_manifest.specification.extensions.replication.repmgr_database }}"
-    query: ALTER EXTENSION repmgr UPDATE
+    version: "{{ _split_version[0] }}.{{ _split_version[1] }}"
+  vars:
+    _split_version: "{{ repmgr.version[ansible_os_family].split('.') }}"
   when: inventory_hostname == find_pg_primary_node.stdout
 
 # Wait for repmgr version propagation to standby
