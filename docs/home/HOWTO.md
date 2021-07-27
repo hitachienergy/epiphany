@@ -7,7 +7,6 @@
     - [Note for Windows users](./howto/PREREQUISITES.md#note-for-windows-users)
     - [Note about proxies](./howto/PREREQUISITES.md#note-about-proxies)
     - [Note about custom CA certificates](./howto/PREREQUISITES.md#note-about-custom-ca-certificates)
-    - [Note about PostgreSQL preflight check](./howto/PREREQUISITES.md#note-about-postgresql-preflight-check)
 
 - [Epiphany cluster](./howto/CLUSTER.md)
   - [How to enable/disable Epiphany repository VM](./howto/CLUSTER.md#how-to-enabledisable-epiphany-repository-vm)
