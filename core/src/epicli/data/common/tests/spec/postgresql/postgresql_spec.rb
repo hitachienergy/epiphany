@@ -27,7 +27,7 @@ replicated =           config_docs[:postgresql]["specification"]["extensions"]["
 replication_user =     config_docs[:postgresql]["specification"]["extensions"]["replication"]["replication_user_name"]
 replication_password = config_docs[:postgresql]["specification"]["extensions"]["replication"]["replication_user_password"]
 max_wal_senders =      config_docs[:postgresql]["specification"]["config_file"]["parameter_groups"].detect {|i| i["name"] == 'REPLICATION'}["subgroups"].detect {|i| i["name"] == "Sending Server(s)"}["parameters"].detect {|i| i["name"] == "max_wal_senders"}["value"]
-wal_keep_segments =    config_docs[:postgresql]["specification"]["config_file"]["parameter_groups"].detect {|i| i["name"] == 'REPLICATION'}["subgroups"].detect {|i| i["name"] == "Sending Server(s)"}["parameters"].detect {|i| i["name"] == "wal_keep_segments"}["value"]
+wal_keep_size =    config_docs[:postgresql]["specification"]["config_file"]["parameter_groups"].detect {|i| i["name"] == 'REPLICATION'}["subgroups"].detect {|i| i["name"] == "Sending Server(s)"}["parameters"].detect {|i| i["name"] == "wal_keep_size"}["value"]
 pgbouncer_enabled =    config_docs[:postgresql]["specification"]["extensions"]["pgbouncer"]["enabled"]
 pgaudit_enabled =      config_docs[:postgresql]["specification"]["extensions"]["pgaudit"]["enabled"]
 pg_user = 'testuser'
@@ -278,8 +278,8 @@ if replicated
           its(:stdout) { should match /^max_wal_senders = #{max_wal_senders}/ }
           its(:exit_status) { should eq 0 }
         end
-        describe command("cat /var/lib/pgsql/13/data/postgresql-epiphany.conf | grep wal_keep_segments") do
-          its(:stdout) { should match /^wal_keep_segments = #{wal_keep_segments}/ }
+        describe command("cat /var/lib/pgsql/13/data/postgresql-epiphany.conf | grep wal_keep_size") do
+          its(:stdout) { should match /^wal_keep_size = #{wal_keep_size}/ }
           its(:exit_status) { should eq 0 }
         end
         describe command("su - postgres -c \"psql -t -c '\\du'\" | grep #{replication_user}") do
@@ -304,8 +304,8 @@ if replicated
           its(:stdout) { should match /^max_wal_senders = #{max_wal_senders}/ }
           its(:exit_status) { should eq 0 }
         end
-        describe command("cat /etc/postgresql/13/main/postgresql-epiphany.conf | grep wal_keep_segments") do
-          its(:stdout) { should match /^wal_keep_segments = #{wal_keep_segments}/ }
+        describe command("cat /etc/postgresql/13/main/postgresql-epiphany.conf | grep wal_keep_size") do
+          its(:stdout) { should match /^wal_keep_size = #{wal_keep_size}/ }
           its(:exit_status) { should eq 0 }
         end
         describe command("su - postgres -c \"psql -t -c '\\du'\" | grep #{replication_user}") do
