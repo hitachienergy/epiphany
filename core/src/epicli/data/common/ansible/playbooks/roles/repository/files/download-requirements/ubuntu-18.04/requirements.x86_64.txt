@@ -15,7 +15,8 @@ curl
 docker-ce 5:19.03.14
 docker-ce-cli 5:19.03.14
 ebtables
-elasticsearch-oss 7.10.2 # for opendistroforelasticsearch & logging roles
+# for opendistroforelasticsearch & logging roles
+elasticsearch-oss 7.10.2
 
 # Erlang packages must be compatible with RabbitMQ version.
 # Metapackages such as erlang and erlang-nox must only be used
