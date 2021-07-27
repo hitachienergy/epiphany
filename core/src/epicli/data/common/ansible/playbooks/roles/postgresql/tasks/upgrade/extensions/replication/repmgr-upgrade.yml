@@ -131,12 +131,25 @@
         repmgr_service_name: "{{ upgrade_defaults.repmgr.service_name[ansible_os_family] }}"
 
 # Step: Execute 'ALTER EXTENSION repmgr UPDATE' (on primary only)
-- name: repmgr for PG {{ pg_version }} | Update extension
+- name: repmgr for PG {{ pg_version }} | primary | Update extension
   become_user: postgres
   postgresql_query:
     db: "{{ postgresql_manifest.specification.extensions.replication.repmgr_database }}"
     query: ALTER EXTENSION repmgr UPDATE
   when: inventory_hostname == find_pg_primary_node.stdout
+
+# Wait for repmgr version propagation to standby
+- name: repmgr for PG {{ pg_version }} | standby | Wait for repmgr version sync with primary
+  become_user: postgres
+  postgresql_query:
+    db: "{{ postgresql_manifest.specification.extensions.replication.repmgr_database }}"
+    query: SELECT installed_version FROM pg_available_extensions WHERE name = 'repmgr'
+  register: query_repmgr_version
+  # 'installed_version' keeps only major version (e.g. '5.2')
+  until: repmgr.version[ansible_os_family] is match(query_repmgr_version.query_result | json_query('[0].installed_version'))
+  retries: 10
+  delay: 1
+  when: inventory_hostname != find_pg_primary_node.stdout
 
 # Step: Re-enable repmgr service
 - name: repmgr for PG {{ pg_version }} | Re-enable repmgr service
