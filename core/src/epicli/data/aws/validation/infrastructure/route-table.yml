@@ -1,1 +1,4 @@
-$ref: '#/definitions/unvalidated_specification'
+"$id": "#/specification"
+title: "Route-table specification schema"
+description: "Route-table specification schema"
+type: object

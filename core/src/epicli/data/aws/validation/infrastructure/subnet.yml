@@ -1,1 +1,4 @@
-$ref: '#/definitions/unvalidated_specification'
+"$id": "#/specification"
+title: "Subnet specification schema"
+description: "Subnet specification schema"
+type: object

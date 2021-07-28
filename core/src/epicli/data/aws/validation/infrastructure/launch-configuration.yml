@@ -1,1 +1,4 @@
-$ref: '#/definitions/unvalidated_specification'
+"$id": "#/specification"
+title: "Launch-configuration specification schema"
+description: "Launch-configuration specification schema"
+type: object
