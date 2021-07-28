@@ -13,6 +13,16 @@
     file: manifest.yml
     name: postgresql_manifest
 
+# repmgr was introduced with epicli v0.6 but the following symlink was added in v0.7 so this task is to ensure it exists
+- name: repmgr for PG {{ pg_version }} | Debian | Ensure symlink to config file exists
+  file:
+    src: "{{ upgrade_defaults.repmgr.config_dir[ansible_os_family] }}/repmgr.conf"
+    dest: /etc/repmgr.conf
+    state: link
+    owner: postgres
+    group: postgres
+  when: ansible_os_family == 'Debian'
+
 - name: repmgr for PG {{ pg_version }} | Search for primary node
   become_user: postgres
   # command prints primary node name (hostname)
@@ -126,20 +136,34 @@
         pg_bin_dir: "{{ upgrade_defaults.pg.bin_dir[ansible_os_family] }}"
         pg_data_dir: "{{ upgrade_defaults.pg.data_dir[ansible_os_family] }}"
         pg_service_name: "{{ upgrade_defaults.pg.service_name[ansible_os_family] }}"
+        replication_user_name: "{{ postgresql_manifest.specification.extensions.replication.replication_user_name }}"
+        repmgr_database: "{{ postgresql_manifest.specification.extensions.replication.repmgr_database }}"
         repmgr_service_name: "{{ upgrade_defaults.repmgr.service_name[ansible_os_family] }}"
-        specification:
-          extensions:
-            replication:
-              replication_user_name: "{{ postgresql_manifest.specification.extensions.replication.replication_user_name }}"
-              repmgr_database:       "{{ postgresql_manifest.specification.extensions.replication.repmgr_database }}"
 
-# Step: Execute 'ALTER EXTENSION repmgr UPDATE' (on primary only)
-- name: repmgr for PG {{ pg_version }} | Update extension
+# Step: Execute 'ALTER EXTENSION repmgr UPDATE' (on primary only).
+# On standby it fails with error "cannot execute ALTER EXTENSION in a read-only transaction".
+- name: repmgr for PG {{ pg_version }} | primary | Update extension
+  become_user: postgres
+  postgresql_ext:
+    name: repmgr
+    db: "{{ postgresql_manifest.specification.extensions.replication.repmgr_database }}"
+    version: "{{ _split_version[0] }}.{{ _split_version[1] }}"
+  vars:
+    _split_version: "{{ repmgr.version[ansible_os_family].split('.') }}"
+  when: inventory_hostname == find_pg_primary_node.stdout
+
+# Wait for repmgr version propagation to standby
+- name: repmgr for PG {{ pg_version }} | standby | Wait for repmgr version sync with primary
   become_user: postgres
   postgresql_query:
     db: "{{ postgresql_manifest.specification.extensions.replication.repmgr_database }}"
-    query: ALTER EXTENSION repmgr UPDATE
-  when: inventory_hostname == find_pg_primary_node.stdout
+    query: SELECT installed_version FROM pg_available_extensions WHERE name = 'repmgr'
+  register: query_repmgr_version
+  # 'installed_version' keeps only major version (e.g. '5.2')
+  until: repmgr.version[ansible_os_family] is match(query_repmgr_version.query_result | json_query('[0].installed_version'))
+  retries: 10
+  delay: 1
+  when: inventory_hostname != find_pg_primary_node.stdout
 
 # Step: Re-enable repmgr service
 - name: repmgr for PG {{ pg_version }} | Re-enable repmgr service
