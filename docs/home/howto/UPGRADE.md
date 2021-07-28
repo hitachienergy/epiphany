@@ -91,7 +91,13 @@ Your airgapped existing cluster should meet the following requirements:
     - Has access to the build output from when the cluster was first created.
     - Is on the same network as your cluster machines
     - Has Epicli 0.4.2 or up running.
-      *Note. To run Epicli check the [Prerequisites](./PREREQUISITES.md)*
+
+---
+**NOTE**
+
+To run Epicli check the [Prerequisites](./PREREQUISITES.md)
+
+---
 
 #### Start the offline upgrade
 
@@ -162,34 +168,34 @@ kind: epiphany-cluster
 name: clustername
 provider: azure
 specification:
-    admin_user:
-        key_path: /path/to/id_rsa
-        name: operations
-    components:
-        repository:
-            count: 0  # Set repository to 0 since it's introduced in v0.8
-        kafka:
-            count: 1
-        kubernetes_master:
-            count: 1
-        kubernetes_node:
-            count: 2
-        load_balancer:
-            count: 1
-        logging:
-            count: 1
-        monitoring:
-            count: 1
-        postgresql:
-            count: 1
-        rabbitmq:
-            count: 0
-        ignite:
-            count: 0
-        opendistro_for_elasticsearch:
-            count: 0
-    name: clustername
-    prefix: 'prefix'
+  admin_user:
+    key_path: /path/to/id_rsa
+    name: operations
+  components:
+    repository:
+      count: 0  # Set repository to 0 since it's introduced in v0.8
+    kafka:
+      count: 1
+    kubernetes_master:
+      count: 1
+    kubernetes_node:
+      count: 2
+    load_balancer:
+      count: 1
+    logging:
+      count: 1
+    monitoring:
+      count: 1
+    postgresql:
+      count: 1
+    rabbitmq:
+      count: 0
+    ignite:
+      count: 0
+    opendistro_for_elasticsearch:
+      count: 0
+  name: clustername
+  prefix: 'prefix'
 title: Epiphany cluster Config
 ---
 kind: configuration/feature-mapping
@@ -197,17 +203,17 @@ title: Feature mapping to roles
 provider: azure
 name: default
 specification:
-    roles_mapping:
-        kubernetes_master:
-            - kubernetes-master
-            - helm
-            - applications
-            - node-exporter
-            - filebeat
-            - firewall
-            - vault
-            - repository      # add repository here
-            - image-registry  # add image-registry here
+  roles_mapping:
+    kubernetes_master:
+      - kubernetes-master
+      - helm
+      - applications
+      - node-exporter
+      - filebeat
+      - firewall
+      - vault
+      - repository      # add repository here
+      - image-registry  # add image-registry here
 ...
 ```
 
@@ -263,7 +269,7 @@ Upgrade of Elasticsearch uses API calls (GET, PUT, POST) which requires an admin
 generates self-signed certificates for this purpose but if you use your own, you have to provide the admin certificate's
 location. To do that, edit the following settings changing `cert_path` and `key_path`.
 
-```shell
+```yaml
 logging:
   upgrade_config:
     custom_admin_certificate:
@@ -373,11 +379,10 @@ Upgrade procedure is based on an [PostgreSQL documentation](https://www.postgres
 requires downtime as there is a need to stop old service(s) and start new one(s).
 
 There is a possibility to provide a custom configuration for upgrade with `epicli upgrade -f`, and there are a few
-limitations related to specifying parameters there:
+limitations related to specifying parameters for upgrade:
 
-- If there were non-default values for `specification.config_file`
-  or `specification.extensions.pgaudit.config_file_parameters`, they have to be used again not to be overwritten by
-  defaults.
+- If there were non-default values provided for installation (`epicli apply`), they have to be used again not to be
+  overwritten by defaults.
 
 - `wal_keep_segments` parameter for replication is replaced
   by [wal_keep_size](https://www.postgresql.org/docs/13/runtime-config-replication.html#GUC-WAL-KEEP-SIZE) with a
@@ -388,7 +393,7 @@ limitations related to specifying parameters there:
   via a normal configuration reload. See [documentation](https://repmgr.org/docs/repmgr.html#CONFIGURATION-POSTGRESQL).
 
 - There is no possibility to disable an extension after installation, so `specification.extensions.*.enabled: false`
-  value will be ignored if it was set to `true` during installation (`epicli apply`).
+  value will be ignored during upgrade if it was set to `true` during installation.
 
 #### Post-upgrade processing
 
