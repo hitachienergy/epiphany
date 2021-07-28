@@ -64,7 +64,7 @@ opendistro-sql 1.13.0
 opendistroforelasticsearch-kibana 1.13.1
 openjdk-8-jre-headless
 openssl
-postgresql-10
+postgresql-13
 python-pip
 python-psycopg2
 python-selinux
@@ -141,10 +141,13 @@ samba-libs
 libsmbclient
 
 # for postgres
-pgbouncer 1.10.*
-postgresql-10-pgaudit
+pgbouncer 1.15.*
+pgdg-keyring
+postgresql-13-pgaudit
 postgresql-10-repmgr 5.2.1
-postgresql-client-10
+postgresql-13-repmgr 5.2.1
+postgresql-client-13
+postgresql-client-common
 postgresql-common
 repmgr-common 5.2.1
 
@@ -241,8 +244,8 @@ hashicorp/vault-k8s:0.10.0
 vault:1.7.0
 # applications
 epiphanyplatform/ignite:2.9.1
-bitnami/pgpool:4.1.1-debian-10-r29
-brainsam/pgbouncer:1.12
+bitnami/pgpool:4.2.2
+bitnami/pgbouncer:1.15.0
 # istio
 istio/pilot:1.8.1
 istio/proxyv2:1.8.1

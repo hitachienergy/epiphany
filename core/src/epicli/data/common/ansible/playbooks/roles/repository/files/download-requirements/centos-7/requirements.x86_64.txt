@@ -23,7 +23,7 @@ https://github.com/google/go-containerregistry/releases/download/v0.4.1/go-conta
 [packages]
 audit # for docker-ce
 bash-completion
-c-ares # for pgbouncer
+#c-ares # for pgbouncer
 ca-certificates
 cifs-utils
 conntrack-tools # for kubelet
@@ -78,8 +78,10 @@ perl-libs # for vim
 perl-Pod-Perldoc # for vim
 perl-Pod-Simple # for vim
 perl-Pod-Usage # for vim
-pgaudit12_10
-pgbouncer-1.10.*
+pgaudit15_13
+# should be uncommented in the task #2076
+# absent in configured repository, but latest version requires python3 binary
+#pgbouncer-1.10.*
 policycoreutils-python # for container-selinux
 pyldb # for cifs-utils
 python-cffi # for python2-cryptography
@@ -97,8 +99,9 @@ quota # for nfs-utils
 rabbitmq-server-3.8.9
 rh-haproxy18
 rh-haproxy18-haproxy-syspaths
-postgresql10-server
+postgresql13-server
 repmgr10-5.2.1
+repmgr13-5.2.1
 samba-client
 samba-client-libs # for samba-client
 samba-common
@@ -187,8 +190,8 @@ hashicorp/vault-k8s:0.10.0
 vault:1.7.0
 # applications
 epiphanyplatform/ignite:2.9.1
-bitnami/pgpool:4.1.1-debian-10-r29
-brainsam/pgbouncer:1.12
+bitnami/pgpool:4.2.2
+bitnami/pgbouncer:1.15.0
 # istio
 istio/pilot:1.8.1
 istio/proxyv2:1.8.1

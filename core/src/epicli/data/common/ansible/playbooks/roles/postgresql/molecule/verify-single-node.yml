@@ -1,0 +1,7 @@
+---
+- name: Verify
+  hosts: postgresql
+  gather_facts: true
+  tasks:
+    - name: Include common tasks
+      include_tasks: verify-common.yml

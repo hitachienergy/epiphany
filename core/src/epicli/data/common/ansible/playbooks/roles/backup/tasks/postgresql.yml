@@ -10,7 +10,7 @@
 - name: Check if database is running on node0 database server
   become: true
   become_user: postgres
-  command: "{{ repmgr.pg_bindir[ansible_os_family] }}/pg_isready"
+  command: "{{ pg.bindir[ansible_os_family] }}/pg_isready"
   register: node0
   ignore_errors: True
   when: groups['postgresql'][0] == inventory_hostname
