@@ -1,1 +1,4 @@
-$ref: '#/definitions/unvalidated_specification'
+"$id": "#/specification"
+title: "Virtual-machine specification schema"
+description: "Virtual-machine specification schema"
+type: object

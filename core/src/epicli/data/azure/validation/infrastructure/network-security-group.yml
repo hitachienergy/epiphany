@@ -1,1 +1,4 @@
-$ref: '#/definitions/unvalidated_specification'
+"$id": "#/specification"
+title: "Network-security-group specification schema"
+description: "Network-security-group specification schema"
+type: object

@@ -7,6 +7,7 @@
 - [#126](https://github.com/epiphany-platform/epiphany/issues/126) - Added default Kibana dashboards
 - [#2127](https://github.com/epiphany-platform/epiphany/issues/2127) - Allow to specify configuration to be used in upgrade mode
 - [#2397](https://github.com/epiphany-platform/epiphany/issues/2397) - Restart CoreDNS pods conditionally
+- [#195](https://github.com/epiphany-platform/epiphany/issues/195) - Epicli configuration Validation lvl 2
 
 ### Fixed
 
