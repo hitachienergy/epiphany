@@ -2,3 +2,7 @@
 title: "Helm specification schema"
 description: "Helm specification schema"
 type: object
+properties:
+  apache_epirepo_path:
+    type: string
+  

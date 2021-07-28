@@ -2,3 +2,9 @@
 title: "Zookeeper specification schema"
 description: "Zookeeper specification schema"
 type: object
+properties:
+  static_config_file:
+    type: object
+    properties:
+      configurable_block:
+        type: string

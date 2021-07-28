@@ -2,3 +2,18 @@
 title: "Shared-config specification schema"
 description: "Shared-config specification schema"
 type: object
+properties:
+  custom_repository_url:
+    type: string
+  custom_image_registry_address:
+    type: string
+  download_directory:
+    type: string
+  vault_location:
+    type: string
+  vault_tmp_file_location:
+    type: string
+  use_ha_control_plane:
+    type: boolean
+  promote_to_ha:
+    type: boolean

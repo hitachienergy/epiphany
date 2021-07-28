@@ -2,3 +2,55 @@
 title: "Haproxy specification schema"
 description: "Haproxy specification schema"
 type: object
+properties:
+  logs_max_days:
+    type: integer
+  self_signed_certificate_name:
+    type: string
+  self_signed_private_key_name:
+    type: string
+  self_signed_concatenated_cert_name:
+    type: string
+  haproxy_log_path:
+    type: string
+  stats:
+    type: object
+    properties:
+      enable:
+        type: boolean
+      bind_address:
+        type: string
+      uri:
+        type: string
+      user:
+        type: string
+      password:
+        type: string
+  frontend:
+    type: array
+    items:
+      type: object
+      properties:
+        name:
+          type: string
+        port:
+          type: integer
+        https:
+          type: boolean
+        backend:
+          type: array
+          items:
+            type: string
+  backend:
+    type: array
+    items:
+      type: object
+      properties:
+        name:
+          type: string
+        server_groups:
+          type: array
+          items:
+            type: string
+        port:
+          type: integer

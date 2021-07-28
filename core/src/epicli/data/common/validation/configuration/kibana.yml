@@ -1,4 +1,7 @@
 "$id": "#/specification"
-title: "Application specification schema"
-description: "Application specification schema"
+title: "Kibana specification schema"
+description: "Kibana specification schema"
 type: object
+properties:
+  kibana_log_dir:
+    type: string

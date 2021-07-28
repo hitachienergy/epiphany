@@ -1,4 +1,15 @@
 "$id": "#/specification"
-title: "Application specification schema"
-description: "Application specification schema"
+title: "Jmx-exporter specification schema"
+description: "Jmx-exporter specification schema"
 type: object
+properties:
+  file_name:
+    type: string
+  jmx_path:
+    type: string
+  jmx_jars_directory:
+    type: string
+  jmx_exporter_user:
+    type: string
+  jmx_exporter_group:
+    type: string

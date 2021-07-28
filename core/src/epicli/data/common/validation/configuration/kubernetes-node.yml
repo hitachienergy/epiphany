@@ -1,4 +1,11 @@
 "$id": "#/specification"
-title: "Application specification schema"
-description: "Application specification schema"
+title: "K8s-nodes specification schema"
+description: "K8s-nodes specification schema"
 type: object
+properties:
+  version:
+    type: string
+  cni_version:
+    type: string
+  node_labels:
+    type: string

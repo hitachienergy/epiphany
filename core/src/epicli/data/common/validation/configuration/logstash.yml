@@ -1,4 +1,4 @@
 "$id": "#/specification"
-title: "Application specification schema"
-description: "Application specification schema"
+title: "Logstash specification schema"
+description: "Logstash specification schema"
 type: object

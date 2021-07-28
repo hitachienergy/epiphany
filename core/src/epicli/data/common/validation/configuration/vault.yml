@@ -2,3 +2,99 @@
 title: "Vault specification schema"
 description: "Vault specification schema"
 type: object
+properties:
+  vault_enabled:
+    type: boolean
+  vault_system_user:
+    type: string
+  vault_system_group:
+    type: string
+  enable_vault_audit_logs:
+    type: boolean
+  enable_vault_ui:
+    type: boolean
+  vault_script_autounseal:
+    type: boolean
+  vault_script_autoconfiguration:
+    type: boolean
+  tls_disable:
+    type: boolean
+  kubernetes_integration:
+    type: boolean
+  kubernetes_configuration:
+    type: boolean
+  kubernetes_namespace:
+    type: string
+  enable_vault_kubernetes_authentication:
+    type: boolean
+  app_secret_path:
+    type: string
+  revoke_root_token:
+    type: boolean
+  secret_mount_path:
+    type: string
+  vault_token_cleanup:
+    type: boolean
+  vault_install_dir:
+    type: string
+  vault_log_level:
+    type: string
+  override_existing_vault_users:
+    type: boolean
+  certificate_name:
+    type: string
+  private_key_name:
+    type: string
+  selfsigned_certificate:
+    type: object
+    properties:
+      country:
+        type: string
+      state:
+        type: string
+      city:
+        type: string
+      company:
+        type: string
+      common_name:
+        type: string
+  vault_tls_valid_days:
+    type: integer
+  vault_users:
+    type: array
+    items:
+      type: object
+      properties:
+        name:
+          type: string
+        policy:
+          type: string
+  files:
+    type: object
+    properties:
+      vault_helm_chart_file_name:
+        type: string
+  vault_helm_chart_values:
+    type: object
+    properties:
+      injector:
+        type: object
+        properties:
+          image:
+            type: object
+            properties:
+              repository:
+                type: string
+          agentImage:
+            type: object
+            properties:
+              repository:
+                type: string
+      server:
+        type: object
+        properties:
+          image:
+            type: object
+            properties:
+              repository:
+                type: string

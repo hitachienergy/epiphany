@@ -1,4 +1,167 @@
 "$id": "#/specification"
-title: "Application specification schema"
-description: "Application specification schema"
+title: "Kafka specification schema"
+description: "Kafka specification schema"
 type: object
+properties:
+  kafka_var:
+    type: object
+    properties:
+      enabled:
+        type: boolean
+      admin:
+        type: string
+      admin_pwd:
+        type: string
+      javax_net_debug:
+        type: string
+      security:
+        type: object
+        properties:
+          ssl:
+            type: object
+            properties:
+              enabled:
+                type: boolean
+              port:
+                type: integer
+              server:
+                type: object
+                properties:
+                  local_cert_download_path:
+                    type: string
+                  keystore_location:
+                    type: string
+                  truststore_location:
+                    type: string
+                  cert_validity:
+                    type: integer
+                  passwords:
+                    type: object
+                    properties:
+                      keystore:
+                        type: string
+                      truststore:
+                        type: string
+                      key:
+                        type: string
+              endpoint_identification_algorithm:
+                type: string
+              client_auth:
+                type: string
+          encrypt_at_rest:
+            type: boolean
+          inter_broker_protocol:
+            type: string
+          authorization:
+            type: object
+            properties:
+              enabled:
+                type: boolean
+              authorizer_class_name:
+                type: string
+              allow_everyone_if_no_acl_found:
+                type: boolean
+              super_users:
+                type: array
+                items:
+                  type: string
+              users:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    name:
+                      type: string
+                    topic:
+                      type: string
+          authentication:
+            type: object
+            properties:
+              enabled:
+                type: boolean
+              authentication_method:
+                type: string
+              sasl_mechanism_inter_broker_protocol:
+                type: 'null'
+              sasl_enabled_mechanisms:
+                type: string
+      sha:
+        type: string
+      port:
+        type: integer
+      min_insync_replicas:
+        type: integer
+      default_replication_factor:
+        type: integer
+      offsets_topic_replication_factor:
+        type: integer
+      num_recovery_threads_per_data_dir:
+        type: integer
+      num_replica_fetchers:
+        type: integer
+      replica_fetch_max_bytes:
+        type: integer
+      replica_socket_receive_buffer_bytes:
+        type: integer
+      partitions:
+        type: integer
+      log_retention_hours:
+        type: integer
+      log_retention_bytes:
+        type: integer
+      offset_retention_minutes:
+        type: integer
+      heap_opts:
+        type: string
+      opts:
+        type: string
+      jmx_opts:
+        type: 'null'
+      max_incremental_fetch_session_cache_slots:
+        type: integer
+      controlled_shutdown_enable:
+        type: boolean
+      group:
+        type: string
+      user:
+        type: string
+      conf_dir:
+        type: string
+      data_dir:
+        type: string
+      log_dir:
+        type: string
+      socket_settings:
+        type: object
+        properties:
+          network_threads:
+            type: integer
+          io_threads:
+            type: integer
+          send_buffer_bytes:
+            type: integer
+          receive_buffer_bytes:
+            type: integer
+          request_max_bytes:
+            type: integer
+  zookeeper_set_acl:
+    type: boolean
+  zookeeper_hosts:
+    type: string
+  jmx_exporter_user:
+    type: string
+  jmx_exporter_group:
+    type: string
+  prometheus_jmx_path:
+    type: string
+  prometheus_jmx_exporter_web_listen_port:
+    type: integer
+  prometheus_jmx_config:
+    type: string
+  prometheus_config_dir:
+    type: string
+  prometheus_kafka_jmx_file_sd_labels:
+    type: object
+    properties:
+      job:
+        type: string
