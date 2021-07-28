@@ -1,9 +1,8 @@
-from jsonschema import validate
+from jsonschema import validate, Draft7Validator
 from cli.helpers.data_loader import load_yaml_obj, types
 from cli.helpers.objdict_helpers import objdict_to_dict, dict_to_objdict
 from cli.helpers.Step import Step
 from copy import deepcopy
-from cli.helpers.doc_list_helpers import select_single
 
 
 class SchemaValidator(Step):
@@ -46,8 +45,10 @@ class SchemaValidator(Step):
                     self.logger.warn('No specification validation for ' + doc.kind)
 
             # Assert the schema
+            schema_dic = objdict_to_dict(schema)
             try:
-                validate(instance=objdict_to_dict(doc), schema=objdict_to_dict(schema))
+                Draft7Validator.check_schema(schema_dic)
+                validate(instance=objdict_to_dict(doc), schema=schema_dic)
             except Exception as e:
                 self.logger.error(f'Failed validating: {doc.kind}')
                 self.logger.error(e)
@@ -61,8 +62,10 @@ class SchemaValidator(Step):
             if hasattr(schema['properties']["specification"], '$ref'):
                 if schema['properties']["specification"]['$ref'] == '#/definitions/unvalidated_specification':
                     self.logger.warn('No specification validation for ' + doc.kind)
+            schema_dic = objdict_to_dict(schema)
             try:
-                validate(instance=objdict_to_dict(doc), schema=objdict_to_dict(schema))
+                Draft7Validator.check_schema(schema_dic)
+                validate(instance=objdict_to_dict(doc), schema=schema_dic)
             except Exception as e:
                 self.logger.error(f'Failed validating: {doc.kind}')
                 self.logger.error(e)
