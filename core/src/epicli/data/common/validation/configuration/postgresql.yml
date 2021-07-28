@@ -35,8 +35,6 @@ properties:
                           type: string
                         when:
                           type: string
-                          enum:
-                          - replication
   extensions:
     type: object
     properties:

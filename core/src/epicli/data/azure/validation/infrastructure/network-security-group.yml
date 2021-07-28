@@ -20,14 +20,10 @@ properties:
           type: string
         access:
           type: string
-          enum:
-          - Allow
         protocol:
           type: string
         source_port_range:
           type: string
-          enum:
-          - "*"
         destination_port_range:
           type: string
         source_address_prefix:

@@ -6,7 +6,7 @@ properties:
   name:
     type: string
   count:
-    type: string
+    type: integer
   subnet_names:
     type: array
     items:
@@ -81,22 +81,11 @@ properties:
               type: string
             direction:
               type: string
-              enum:
-              - Inbound
-              - Egress
             protocol:
               type: string
-              enum:
-              - Tcp
-              - all
             destination_port_range:
               type: string
             source_address_prefix:
               type: string
-              enum:
-              - 0.0.0.0/0
-              - 10.1.0.0/20
             destination_address_prefix:
               type: string
-              enum:
-              - 0.0.0.0/0
