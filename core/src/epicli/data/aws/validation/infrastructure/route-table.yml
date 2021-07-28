@@ -2,3 +2,21 @@
 title: "Route-table specification schema"
 description: "Route-table specification schema"
 type: object
+properties:
+  name:
+    type: string
+  vpc_name:
+    type: string
+  route:
+    type: object
+    properties:
+      cidr_block:
+        type: string
+      gateway_name:
+        type: string
+  tag:
+    type: array
+    items:
+      type: string
+  cluster_name:
+    type: string

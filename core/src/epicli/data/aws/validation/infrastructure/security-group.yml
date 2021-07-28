@@ -2,3 +2,37 @@
 title: "Security-group specification schema"
 description: "Security-group specification schema"
 type: object
+properties:
+  vpc_name:
+    type: string
+  name:
+    type: string
+  cidr_block:
+    type: string
+  rules:
+    type: array
+    items:
+      type: object
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+        direction:
+          type: string
+          enum:
+          - Inbound
+        protocol:
+          type: string
+          enum:
+          - Tcp
+        destination_port_range:
+          type: string
+        source_address_prefix:
+          type: string
+        destination_address_prefix:
+          type: string
+          enum:
+          - 0.0.0.0/0
+  cluster_name:
+    type: string

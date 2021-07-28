@@ -2,3 +2,29 @@
 title: "Launch-configuration specification schema"
 description: "Launch-configuration specification schema"
 type: object
+properties:
+  name:
+    type: string
+  image_id:
+    type: string
+  size:
+    type: string
+  key_name:
+    type: string
+  disks:
+    type: string
+  ebs_optimized:
+    type: string
+  associate_public_ip:
+    type: string
+  security_groups:
+    type: array
+    items:
+      type: object
+      properties:
+        name:
+          type: string
+        cluster_name:
+          type: string
+  enable_monitoring:
+    type: boolean
