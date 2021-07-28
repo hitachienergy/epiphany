@@ -2,3 +2,35 @@
 title: "Network-security-group specification schema"
 description: "Network-security-group specification schema"
 type: object
+properties:
+  name:
+    type: string
+  rules:
+    type: array
+    items:
+      type: object
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+        priority:
+          type: integer
+        direction:
+          type: string
+        access:
+          type: string
+          enum:
+          - Allow
+        protocol:
+          type: string
+        source_port_range:
+          type: string
+          enum:
+          - "*"
+        destination_port_range:
+          type: string
+        source_address_prefix:
+          type: string
+        destination_address_prefix:
+          type: string

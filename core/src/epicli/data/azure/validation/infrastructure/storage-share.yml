@@ -2,3 +2,10 @@
 title: "Storage-share specification schema"
 description: "Storage-share specification schema"
 type: object
+properties:
+  name:
+    type: string
+  storage_account_name:
+    type: string
+  quota:
+    type: integer

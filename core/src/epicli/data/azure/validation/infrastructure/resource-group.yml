@@ -2,3 +2,8 @@
 title: "Resource-group specification schema"
 description: "Resource-group specification schema"
 type: object
+properties:
+  name:
+    type: string
+  region:
+    type: string

@@ -2,3 +2,10 @@
 title: "Subnet specification schema"
 description: "Subnet specification schema"
 type: object
+properties:
+  name:
+    type: string
+  address_prefix:
+    type: string
+  security_group_name:
+    type: string
