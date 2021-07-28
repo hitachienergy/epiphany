@@ -1,1 +1,4 @@
-$ref: '#/definitions/unvalidated_specification'
+"$id": "#/specification"
+title: "Firewall specification schema"
+description: "Firewall specification schema"
+type: object

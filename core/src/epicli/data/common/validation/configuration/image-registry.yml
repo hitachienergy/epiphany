@@ -1,1 +1,4 @@
-$ref: '#/definitions/unvalidated_specification'
+"$id": "#/specification"
+title: "Image-registry specification schema"
+description: "Image-registry specification schema"
+type: object

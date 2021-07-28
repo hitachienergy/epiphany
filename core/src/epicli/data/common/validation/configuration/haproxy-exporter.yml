@@ -1,1 +1,4 @@
-$ref: '#/definitions/unvalidated_specification'
+"$id": "#/specification"
+title: "Haproxy-exporter specification schema"
+description: "Haproxy-exporter specification schema"
+type: object

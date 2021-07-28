@@ -1,1 +1,4 @@
-$ref: '#/definitions/unvalidated_specification'
+"$id": "#/specification"
+title: "Prometheus specification schema"
+description: "Prometheus specification schema"
+type: object

@@ -1,1 +1,4 @@
-$ref: '#/definitions/unvalidated_specification'
+"$id": "#/specification"
+title: "Vault specification schema"
+description: "Vault specification schema"
+type: object

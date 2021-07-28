@@ -1,1 +1,4 @@
-$ref: '#/definitions/unvalidated_specification'
+"$id": "#/specification"
+title: "Node-exporter specification schema"
+description: "Node-exporter specification schema"
+type: object

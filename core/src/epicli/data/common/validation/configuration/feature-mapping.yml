@@ -1,1 +1,4 @@
-$ref: '#/definitions/unvalidated_specification'
+"$id": "#/specification"
+title: "Feature-mapping specification schema"
+description: "Feature-mapping specification schema"
+type: object

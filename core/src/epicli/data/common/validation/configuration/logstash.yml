@@ -1,1 +1,4 @@
-$ref: '#/definitions/unvalidated_specification'
+"$id": "#/specification"
+title: "Application specification schema"
+description: "Application specification schema"
+type: object

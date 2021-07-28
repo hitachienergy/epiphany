@@ -1,1 +1,4 @@
-$ref: '#/definitions/unvalidated_specification'
+"$id": "#/specification"
+title: "Zookeeper specification schema"
+description: "Zookeeper specification schema"
+type: object

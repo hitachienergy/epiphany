@@ -1,1 +1,4 @@
-$ref: '#/definitions/unvalidated_specification'
+"$id": "#/specification"
+title: "Opendistro-for-elasticsearch specification schema"
+description: "Opendistro-for-elasticsearch specification schema"
+type: object
