@@ -8,6 +8,6 @@ properties:
   allocation_method:
     type: string
   idle_timeout_in_minutes:
-    type: string
+    type: integer
   sku:
     type: string

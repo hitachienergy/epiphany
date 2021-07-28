@@ -6,7 +6,7 @@ properties:
   name:
     type: string
   use_network_security_groups:
-    type: string
+    type: boolean
   security_group_name:
     type: string
   ip_configuration_name:
@@ -14,8 +14,8 @@ properties:
   subnet_name:
     type: string
   use_public_ip:
-    type: string
+    type: boolean
   public_ip_name:
     type: string
   enable_accelerated_networking:
-    type: string
+    type: boolean
