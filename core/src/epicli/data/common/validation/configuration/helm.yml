@@ -5,4 +5,3 @@ type: object
 properties:
   apache_epirepo_path:
     type: string
-  
