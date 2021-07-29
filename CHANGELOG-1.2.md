@@ -8,7 +8,6 @@
 - [#2127](https://github.com/epiphany-platform/epiphany/issues/2127) - Allow to specify configuration to be used in upgrade mode
 - [#2397](https://github.com/epiphany-platform/epiphany/issues/2397) - Restart CoreDNS pods conditionally
 - [#195](https://github.com/epiphany-platform/epiphany/issues/195) - Basic configuration type and schema validation
-- [#2434](https://github.com/epiphany-platform/epiphany/issues/2434) - Python 3 installation
 
 ### Fixed
 
@@ -24,5 +23,9 @@
 ### Deprecated
 
 ### Breaking changes
+
+- [#195](https://github.com/epiphany-platform/epiphany/issues/195) - Basic configuration type and schema validation
+  yes|no defined boolean values in the input schema will no longer be allowed as jsonschema used for validation requires
+  true|false for booleans. The yes|no values need to be changed to true|false respectively.
 
 ### Known issues
