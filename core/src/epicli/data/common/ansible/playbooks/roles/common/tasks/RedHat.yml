@@ -33,6 +33,7 @@
       - net-tools  # required by Ansible (module listen_ports_facts)
       - openssl
       - python-setuptools
+      - python3
       - rsync
       - sysstat
       - tar
@@ -42,7 +43,6 @@
       - vim
       - yum-utils
       - yum-versionlock
-      - python3
     state: present
   register: result
   retries: 3
