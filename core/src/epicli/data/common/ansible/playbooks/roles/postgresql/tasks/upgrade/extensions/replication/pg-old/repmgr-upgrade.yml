@@ -13,6 +13,16 @@
     file: manifest.yml
     name: postgresql_manifest
 
+# repmgr was introduced with epicli v0.6 but the following symlink was added in v0.7 so this task is to ensure it exists
+- name: repmgr for PG {{ upgrade_defaults.pg.version }} | Debian | Ensure symlink to config file exists
+  file:
+    src: "{{ upgrade_defaults.repmgr.config_dir[ansible_os_family] }}/repmgr.conf"
+    dest: /etc/repmgr.conf
+    state: link
+    owner: postgres
+    group: postgres
+  when: ansible_os_family == 'Debian'
+
 - name: repmgr for PG {{ upgrade_defaults.pg.version }} | Search for primary node
   become_user: postgres
   # command prints primary node name (hostname)
@@ -48,6 +58,8 @@
   set_fact:
     repmgr_common_target_version: >-
       {{ _installed_version is version(_target_version, '>') | ternary(_installed_version, _target_version + '-*') }}
+  vars:
+    _installed_version: "{{ ansible_facts.packages['repmgr-common'][0].version }}"
   when:
     - ansible_os_family == 'Debian'
     - ansible_facts.packages['repmgr-common'] is defined
@@ -66,7 +78,7 @@
   module_defaults:
     yum: { lock_timeout: "{{ yum_lock_timeout }}" }
 
-- name: repmgr for PG {{ pg_version }} | Update postgres user in sudoers file
+- name: repmgr for PG {{ upgrade_defaults.pg.version }} | Update postgres user in sudoers file
   lineinfile:
     path: /etc/sudoers
     regexp: "^postgres ALL=\\(ALL:ALL\\) NOPASSWD:"
@@ -81,7 +93,7 @@
     validate: 'visudo -cf %s'
 
 # Step: Update /etc/default/repmgrd
-- name: repmgr for PG {{ pg_version }} | Set 'daemonize=false' option in /etc/default/repmgrd
+- name: repmgr for PG {{ upgrade_defaults.pg.version }} | Set 'daemonize=false' option in /etc/default/repmgrd
   lineinfile:
     path: /etc/default/repmgrd
     regexp: ^[#]?REPMGRD_OPTS=
@@ -124,17 +136,34 @@
         _pg_bin_dir: "{{ upgrade_defaults.pg.bin_dir[ansible_os_family] }}"
         _pg_data_dir: "{{ upgrade_defaults.pg.data_dir[ansible_os_family] }}"
         _pg_service_name: "{{ upgrade_defaults.pg.service_name[ansible_os_family] }}"
-        _repmgr_service_name: "{{ upgrade_defaults.repmgr.service_name[ansible_os_family] }}"
         _replication_user_name: "{{ postgresql_manifest.specification.extensions.replication.replication_user_name }}"
         _repmgr_database: "{{ postgresql_manifest.specification.extensions.replication.repmgr_database }}"
+        _repmgr_service_name: "{{ upgrade_defaults.repmgr.service_name[ansible_os_family] }}"
 
-# Step: Execute 'ALTER EXTENSION repmgr UPDATE' (on primary only)
-- name: repmgr for PG {{ upgrade_defaults.pg.version }} | Update extension
+# Step: Execute 'ALTER EXTENSION repmgr UPDATE' (on primary only).
+# On standby it fails with error "cannot execute ALTER EXTENSION in a read-only transaction".
+- name: repmgr for PG {{ upgrade_defaults.pg.version }} | primary | Update extension
+  become_user: postgres
+  postgresql_ext:
+    name: repmgr
+    db: "{{ postgresql_manifest.specification.extensions.replication.repmgr_database }}"
+    version: "{{ _split_version[0] }}.{{ _split_version[1] }}"
+  vars:
+    _split_version: "{{ repmgr.version[ansible_os_family].split('.') }}"
+  when: inventory_hostname == find_pg_primary_node.stdout
+
+# Wait for repmgr version propagation to standby
+- name: repmgr for PG {{ upgrade_defaults.pg.version }} | standby | Wait for repmgr version sync with primary
   become_user: postgres
   postgresql_query:
     db: "{{ postgresql_manifest.specification.extensions.replication.repmgr_database }}"
-    query: ALTER EXTENSION repmgr UPDATE
-  when: inventory_hostname == find_pg_primary_node.stdout
+    query: SELECT installed_version FROM pg_available_extensions WHERE name = 'repmgr'
+  register: query_repmgr_version
+  # 'installed_version' keeps only major version (e.g. '5.2')
+  until: repmgr.version[ansible_os_family] is match(query_repmgr_version.query_result | json_query('[0].installed_version'))
+  retries: 10
+  delay: 1
+  when: inventory_hostname != find_pg_primary_node.stdout
 
 # Step: Re-enable repmgr service
 - name: repmgr for PG {{ upgrade_defaults.pg.version }} | Re-enable repmgr service

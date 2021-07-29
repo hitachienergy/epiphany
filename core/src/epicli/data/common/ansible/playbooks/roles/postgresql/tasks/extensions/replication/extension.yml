@@ -72,13 +72,13 @@
     _pg_bin_dir: "{{ pg.bin_dir[ansible_os_family] }}"
     _pg_data_dir: "{{ pg.data_dir[ansible_os_family] }}"
     _pg_service_name: "{{ pg.service_name[ansible_os_family] }}"
-    _repmgr_service_name: "{{ repmgr.service_name[ansible_os_family] }}"
     _replication_user_name: "{{ specification.extensions.replication.replication_user_name }}"
     _repmgr_database: "{{ specification.extensions.replication.repmgr_database }}"
+    _repmgr_service_name: "{{ repmgr.service_name[ansible_os_family] }}"
 
 # On Ubuntu config file location is not set by package (see https://repmgr.org/docs/5.2/packages-debian-ubuntu.html).
 # Create symlink to allow using repmgr commands without specifying config file location (which is custom).
-# See https://repmgr.org/docs/5.2/configuration-file.html
+# See https://repmgr.org/docs/5.2/configuration-file.html#CONFIGURATION-FILE-LOCATION
 - name: Extensions | repmgr | Debian specific tasks
   when: ansible_os_family == 'Debian'
   block:

@@ -9,7 +9,8 @@
       /bin/systemctl stop {{ pg.service_name[ansible_os_family] }},
       /bin/systemctl restart {{ pg.service_name[ansible_os_family] }},
       /bin/systemctl reload {{ pg.service_name[ansible_os_family] }},
-      {{ repmgr.bin_dir[ansible_os_family] }}/repmgr standby follow
+      /bin/systemctl start {{ repmgr.service_name[ansible_os_family] }},
+      /bin/systemctl stop {{ repmgr.service_name[ansible_os_family] }}
     validate: 'visudo -cf %s'
 
 - name: Stop repmgr service
