@@ -52,3 +52,18 @@ def remove_value(d, value):
             else:
                 if value == v:
                     del d[k]
+
+
+def replace_yesno_with_booleans(d):
+    if isinstance(d, list):
+        for dd in d:
+            replace_yesno_with_booleans(dd)
+    elif isinstance(d, ObjDict):
+        for key, val in d.items():
+            if isinstance(d[key], str):
+                if val == 'yes':        
+                    d[key] = True
+                if val == 'no':             
+                    d[key] = False
+            else:      
+                replace_yesno_with_booleans(d[key])

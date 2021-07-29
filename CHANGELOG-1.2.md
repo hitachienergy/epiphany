@@ -15,6 +15,7 @@
 - [#2406](https://github.com/epiphany-platform/epiphany/issues/2406) - [Upgrade] [Filebeat] All settings for multiline feature are lost after upgrade
 - [#2380](https://github.com/epiphany-platform/epiphany/issues/2380) - Unable to drain nodes with Istio application enabled due to PodDisruptionBudgets
 - [#2332](https://github.com/epiphany-platform/epiphany/issues/2332) - [Elasticsearch] Error when having multiple VMs and non-clustered mode
+- [#2425](https://github.com/epiphany-platform/epiphany/issues/2425) - Feature-mapping - 'enabled: no' do nothing
 
 ### Updated
 
@@ -24,9 +25,5 @@
 ### Deprecated
 
 ### Breaking changes
-
-- [#195](https://github.com/epiphany-platform/epiphany/issues/195) - Basic configuration type and schema validation
-  yes|no defined boolean values in the input schema will no longer be allowed as jsonschema used for validation requires
-  true|false for booleans. The yes|no values need to be changed to true|false respectively.
 
 ### Known issues
