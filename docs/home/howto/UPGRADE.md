@@ -399,7 +399,7 @@ limitations related to specifying parameters for upgrade:
 
 As p.13 of an [PostgreSQL documentation](https://www.postgresql.org/docs/13/pgupgrade.html) states there might be some
 scripts generated after an upgrade. There is no clear description in which cases and what location they are created, so
-please check logs after an upgrade to see if additional steps required
+please check logs after an upgrade to see if additional steps required.
 
 #### Old PostgreSQL data removal
 
