@@ -1,1 +1,9 @@
-$ref: '#/definitions/unvalidated_specification'
+"$id": "#/specification"
+title: "Vnet specification schema"
+description: "Vnet specification schema"
+type: object
+properties:
+  name:
+    type: string
+  address_space:
+    type: string

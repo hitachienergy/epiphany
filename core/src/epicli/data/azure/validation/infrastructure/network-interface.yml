@@ -1,1 +1,21 @@
-$ref: '#/definitions/unvalidated_specification'
+"$id": "#/specification"
+title: "Network-interface specification schema"
+description: "Network-interface specification schema"
+type: object
+properties:
+  name:
+    type: string
+  use_network_security_groups:
+    type: boolean
+  security_group_name:
+    type: string
+  ip_configuration_name:
+    type: string
+  subnet_name:
+    type: string
+  use_public_ip:
+    type: boolean
+  public_ip_name:
+    type: string
+  enable_accelerated_networking:
+    type: boolean

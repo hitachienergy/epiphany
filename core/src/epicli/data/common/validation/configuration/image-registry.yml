@@ -1,1 +1,72 @@
-$ref: '#/definitions/unvalidated_specification'
+"$id": "#/specification"
+title: "Image-registry specification schema"
+description: "Image-registry specification schema"
+type: object
+properties:
+  description:
+    type: string
+  registry_image:
+    type: object
+    properties:
+      name:
+        type: string
+      file_name:
+        type: string
+  images_to_load:
+    type: object
+    properties:
+      x86_64:
+        type: object
+        properties:
+          generic:
+            type: array
+            items:
+              type: object
+              properties:
+                name:
+                  type: string
+                file_name:
+                  type: string
+          current:
+            type: array
+            items:
+              type: object
+              properties:
+                name:
+                  type: string
+                file_name:
+                  type: string
+          legacy:
+            type: array
+            items:
+              type: object
+              properties:
+                name:
+                  type: string
+                file_name:
+                  type: string
+      aarch64:
+        type: object
+        properties:
+          generic:
+            type: array
+            items:
+              type: object
+              properties:
+                name:
+                  type: string
+                file_name:
+                  type: string
+          current:
+            type: array
+            items:
+              type: object
+              properties:
+                name:
+                  type: string
+                file_name:
+                  type: string
+          legacy:
+            type: array
+            items:
+              items: {}

@@ -1,1 +1,7 @@
-$ref: '#/definitions/unvalidated_specification'
+"$id": "#/specification"
+title: "Helm specification schema"
+description: "Helm specification schema"
+type: object
+properties:
+  apache_epirepo_path:
+    type: string

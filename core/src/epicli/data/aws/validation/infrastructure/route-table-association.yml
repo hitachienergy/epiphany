@@ -1,1 +1,11 @@
-$ref: '#/definitions/unvalidated_specification'
+"$id": "#/specification"
+title: "Route-table-association specification schema"
+description: "Route-table-association specification schema"
+type: object
+properties:
+  name:
+    type: string
+  subnet_name:
+    type: string
+  route_table_name:
+    type: string
