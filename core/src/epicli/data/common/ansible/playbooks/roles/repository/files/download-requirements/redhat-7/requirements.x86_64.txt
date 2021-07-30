@@ -96,7 +96,7 @@ rabbitmq-server-3.8.9
 rh-haproxy18
 rh-haproxy18-haproxy-syspaths
 postgresql13-server
-repmgr10-5.2.1 # used to upgrade only repmgr
+repmgr10-5.2.1 # used to upgrade repmgr first
 repmgr13-5.2.1
 samba-client
 samba-client-libs # for samba-client
