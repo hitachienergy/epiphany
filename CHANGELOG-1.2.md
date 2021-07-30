@@ -16,6 +16,7 @@
 - [#2380](https://github.com/epiphany-platform/epiphany/issues/2380) - Unable to drain nodes with Istio application enabled due to PodDisruptionBudgets
 - [#2332](https://github.com/epiphany-platform/epiphany/issues/2332) - [Elasticsearch] Error when having multiple VMs and non-clustered mode
 - [#2425](https://github.com/epiphany-platform/epiphany/issues/2425) - Feature-mapping - 'enabled: no' do nothing
+- [#2449](https://github.com/epiphany-platform/epiphany/issues/2449) - [Grafana] Unable to add Grafana repository
 
 ### Updated
 
