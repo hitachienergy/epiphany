@@ -132,10 +132,10 @@
 - name: Extensions | repmgr | Configure PostgreSQL cluster
   when: not pg_is_clustered
   vars:
-    _pg_node_primary: "{{ groups.postgresql[0] }}" # the first node in the group is primary
+    _pg_primary_node: "{{ groups.postgresql[0] }}" # the first node in the group is primary
   block:
     - name: Extensions | repmgr | Register primary node
-      when: _pg_node_primary == inventory_hostname
+      when: _pg_primary_node == inventory_hostname
       become_user: postgres
       command: >-
         {{ repmgr.bin_dir[ansible_os_family] }}/repmgr primary register
@@ -143,7 +143,7 @@
           --force
 
     - name: Extensions | repmgr | Clone standby node from primary and register
-      when: _pg_node_primary != inventory_hostname
+      when: _pg_primary_node != inventory_hostname
       block:
         # Ubuntu specific: there are two systemd unit files: postgresql.service (service for managing all clusters
         # on system) and postgresql@.service (service template for clusters). The latter is 'PartOf' the former.
