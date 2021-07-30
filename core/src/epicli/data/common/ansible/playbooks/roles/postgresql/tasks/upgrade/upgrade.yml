@@ -126,9 +126,9 @@
             _extensions:
               extensions:
                 pgaudit:
-                  enabled: "{{ manifest.specification.extensions.pgaudit.enabled }}"
+                  enabled: "{{ pg_is_pgaudit_used }}"
                 replication:
-                  enabled: "{{ manifest.specification.extensions.replication.enabled }}"
+                  enabled: "{{ pg_is_repmgr_used }}"
             # Values from manifest are used when it's not possible to do changes after 'apply'
             # such as enabling/disabling extensions
             _specification: "{{ upgrade_vars.specification | combine(_extensions, recursive=True) }}"
