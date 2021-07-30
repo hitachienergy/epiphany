@@ -217,7 +217,7 @@
                     msg: >-
 
                       **************************************
-                      Check {{ _pg_upgrade_log_file }} on host {{ pg_primary_node }} for upgrade results.
+                      Check {{ _pg_upgrade_log_file }} on host {{ inventory_hostname }} for upgrade results.
                       If pg_upgrade generated any .sql files, run them.
                       For more information, refer to PostgreSQL docs (`Post-upgrade processing` section):
                       https://www.postgresql.org/docs/13/pgupgrade.html.
