@@ -25,16 +25,16 @@ see [Run apply after upgrade](./UPGRADE.md#run-apply-after-upgrade) chapter for 
 
 Note about upgrade from pre-0.8 Epiphany:
 
-- If you run upgrade from version older than 0.8 you should make sure that you've got enough disk space on master (which
+- If you need to upgrade a cluster deployed with `epicli` in version earlier than 0.8, you should make sure that you've got enough disk space on master (which
   is used as repository) host. If you didn't extend OS disk on master during deployment process, you probably have only
-  32 GB disk which is not enough to properly upgrade cluster (we recommend 50 GB). Before you run upgrade please extend
-  os disks on master machine according to cloud provider
+  32 GB disk which is not enough to properly upgrade cluster (we recommend at least 64 GB). Before you run upgrade, please extend
+  OS disk on master machine according to cloud provider
   documentation: [AWS](https://aws.amazon.com/premiumsupport/knowledge-center/expand-root-ebs-linux/)
   , [Azure](https://docs.microsoft.com/en-us/azure/virtual-machines/linux/expand-disks).
 
 - If you use logging-machine(s) already in your cluster, it's necessary to scale up those machines before running
   upgrade to ensure you've got enough resources to run ELK stack in newer version. We recommend to use at least DS2_v2
-  Azure size (2 CPUs, 7 GB RAM) machine, or it's equivalent on AWS and on-prem installations. It's very related to
+  Azure size (2 CPUs, 7 GB RAM) machine, or its equivalent on AWS and on-prem installations. It's very related to
   amount of data you'll store inside. Please see [logging](./LOGGING.md) documentation for more details.
 
 ### Online upgrade
@@ -76,7 +76,7 @@ perform the upgrade of the components.
 Your airgapped existing cluster should meet the following requirements:
 
 1. The airgapped cluster machines/vm`s are connected by a network or virtual network of some sorts and can communicate
-   which each other:
+   with each other:
 2. The airgapped cluster machines/vm`s are **upgraded** to the following versions:
     - RedHat 7.6
     - CentOS 7.6
@@ -95,7 +95,7 @@ Your airgapped existing cluster should meet the following requirements:
 ---
 **NOTE**
 
-To run Epicli check the [Prerequisites](./PREREQUISITES.md)
+Before running `epicli`, check the [Prerequisites](./PREREQUISITES.md)
 
 ---
 
@@ -115,7 +115,7 @@ To upgrade the cluster components run the following steps:
     - download-requirements.sh
     - requirements.txt
 
-2. The scripts in the `prepare_scripts` will be used to download all requirements. To do that copy the `prepare_scripts`
+2. The scripts in the `prepare_scripts` will be used to download all requirements. To do that, copy the `prepare_scripts`
    folder over to the requirements machine and run the following command:
 
     ```shell
@@ -332,7 +332,7 @@ Before K8s version upgrade make sure that deprecated API versions are not used:
 If the K8s cluster that is going to be upgraded has the Istio control plane application deployed, issues can occur. The
 default [profiles](https://istio.io/latest/docs/setup/additional-setup/config-profiles/) we currently support for
 installing Istio only deploy a single replica for the control services with a `PodDisruptionBudgets` value of 0. This
-will result in the following error while its draining a these pods during an upgrade:
+will result in the following error while draining pods during an upgrade:
 
 ```shell
 Cannot evict pod as it would violate the pods disruption budget.
@@ -375,7 +375,7 @@ With the latest Epiphany version it's possible to upgrade PostgreSQL to v13 with
 
 #### Upgrade
 
-Upgrade procedure is based on an [PostgreSQL documentation](https://www.postgresql.org/docs/13/pgupgrade.html) and
+Upgrade procedure is based on [PostgreSQL documentation](https://www.postgresql.org/docs/13/pgupgrade.html) and
 requires downtime as there is a need to stop old service(s) and start new one(s).
 
 There is a possibility to provide a custom configuration for upgrade with `epicli upgrade -f`, and there are a few
@@ -385,11 +385,11 @@ limitations related to specifying parameters for upgrade:
   overwritten by defaults.
 
 - `wal_keep_segments` parameter for replication is replaced
-  by [wal_keep_size](https://www.postgresql.org/docs/13/runtime-config-replication.html#GUC-WAL-KEEP-SIZE) with a
+  by [wal_keep_size](https://www.postgresql.org/docs/13/runtime-config-replication.html#GUC-WAL-KEEP-SIZE) with the
   default value of 500 MB. Previous parameter is not supported.
 
 - `archive_command` parameter for replication was set to `/bin/true` by default. It was planned to disable archiving,
-  but changes to `archive_mode` require a full PostgreSQL server restart, while archive_command changes can be applied
+  but changes to `archive_mode` require a full PostgreSQL server restart, while `archive_command` changes can be applied
   via a normal configuration reload. See [documentation](https://repmgr.org/docs/repmgr.html#CONFIGURATION-POSTGRESQL).
 
 - There is no possibility to disable an extension after installation, so `specification.extensions.*.enabled: false`
@@ -399,7 +399,7 @@ limitations related to specifying parameters for upgrade:
 
 As p.13 of an [PostgreSQL documentation](https://www.postgresql.org/docs/13/pgupgrade.html) states there might be some
 scripts generated after an upgrade. There is no clear description in which cases and what location they are created, so
-please check logs after an upgrade to see if additional steps required.
+please check logs after the upgrade to see if additional steps are required.
 
 #### Old PostgreSQL data removal
 
