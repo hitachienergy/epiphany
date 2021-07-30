@@ -1,11 +1,12 @@
 ---
 # Upgrade procedure based on steps from: https://www.postgresql.org/docs/13/pgupgrade.html
 
-# Disabling extensions is not supported, so these values are taken from manifest
+# Disabling extensions is not supported, so these values are taken by check whether related packages are installed
+# It's possible to take these values from manifest, but as it can be overwritten, values are based on packages
 - name: PostgreSQL | Set 'pg_is_repmgr_used' fact
   set_fact:
-    pg_is_pgaudit_used: manifest.specification.extensions.pgaudit.enabled
-    pg_is_repmgr_used: manifest.specification.extensions.replication.enabled
+    pg_is_pgaudit_used: ansible_facts.packages[old_version.pgaudit.package_name[ansible_os_family]] is defined
+    pg_is_repmgr_used: ansible_facts.packages[old_version.repmgr.package_name[ansible_os_family]] is defined
 
 - name: PostgreSQL | Get primary node
   when: pg_is_repmgr_used
@@ -91,7 +92,7 @@
     # Step: Stop all servers
     # Standby nodes have to be stopped after primary. Check p.8 from https://www.postgresql.org/docs/13/pgupgrade.html
 
-    - name: PostgreSQL | Stop PostgreSQL services on standby nodes
+    - name: PostgreSQL | Stop PostgreSQL services on primary node
       when: (pg_is_repmgr_used and inventory_hostname == pg_primary_node) or not pg_is_repmgr_used
       <<: &stop_pg_services
         systemd:
@@ -104,7 +105,7 @@
           - "{{ old_version.pg.instantiated_service_name[ansible_os_family] }}"
           - "{{ new_version.pg.instantiated_service_name[ansible_os_family] }}"
 
-    - name: PostgreSQL | Stop PostgreSQL services on primary node
+    - name: PostgreSQL | Stop PostgreSQL services on standby nodes
       when:
         - pg_is_repmgr_used
         - inventory_hostname != pg_primary_node
