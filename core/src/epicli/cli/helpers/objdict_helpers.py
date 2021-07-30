@@ -63,7 +63,7 @@ def replace_yesno_with_booleans(d):
             if isinstance(d[key], str):
                 if val == 'yes':        
                     d[key] = True
-                if val == 'no':             
+                elif val == 'no':             
                     d[key] = False
             else:      
                 replace_yesno_with_booleans(d[key])
