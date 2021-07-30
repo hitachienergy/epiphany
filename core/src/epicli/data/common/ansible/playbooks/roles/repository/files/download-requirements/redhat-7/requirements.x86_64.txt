@@ -89,6 +89,7 @@ python-pycparser # for python2-cryptography
 python-setuptools
 python-slip-dbus # for firewalld
 python2-cryptography # for Ansible (certificate modules)
+python3-3.6.8
 quota # for nfs-utils
 rabbitmq-server-3.8.9
 rh-haproxy18

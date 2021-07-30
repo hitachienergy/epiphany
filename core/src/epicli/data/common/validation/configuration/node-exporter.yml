@@ -1,1 +1,50 @@
-$ref: '#/definitions/unvalidated_specification'
+"$id": "#/specification"
+title: "Node-exporter specification schema"
+description: "Node-exporter specification schema"
+type: object
+properties:
+  disable_helm_chart:
+    type: boolean
+  helm_chart_values:
+    type: object
+    properties:
+      service:
+        type: object
+        properties:
+          port:
+            type: integer
+          targetPort:
+            type: integer
+  files:
+    type: object
+    properties:
+      node_exporter_helm_chart_file_name:
+        type: string
+  enabled_collectors:
+    type: array
+    items:
+      type: string
+  config_flags:
+    type: array
+    items:
+      type: string
+  web_listen_port:
+    type: string
+  web_listen_address:
+    type: string
+  config_for_prometheus:
+    type: object
+    properties:
+      exporter_listen_port:
+        type: string
+      prometheus_config_dir:
+        type: string
+      file_sd_labels:
+        type: array
+        items:
+          type: object
+          properties:
+            label:
+              type: string
+            value:
+              type: string

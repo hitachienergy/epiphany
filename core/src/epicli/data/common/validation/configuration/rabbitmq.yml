@@ -1,1 +1,38 @@
-$ref: '#/definitions/unvalidated_specification'
+"$id": "#/specification"
+title: "Rabbitmq specification schema"
+description: "Rabbitmq specification schema"
+type: object
+properties:
+  rabbitmq_user:
+    type: string
+  rabbitmq_group:
+    type: string
+  stop_service:
+    type: boolean
+  logrotate_period:
+    type: string
+  logrotate_number:
+    type: integer
+  ulimit_open_files:
+    type: integer
+  amqp_port:
+    type: integer
+  rabbitmq_use_longname:
+    type: string
+  rabbitmq_policies:
+    type: array
+    items:
+      items: {}
+  rabbitmq_plugins:
+    type: array
+    items:
+      items: {}
+  custom_configurations:
+    type: array
+    items:
+      items: {}
+  cluster:
+    type: object
+    properties:
+      is_clustered:
+        type: boolean
