@@ -68,10 +68,10 @@
 
     # Step: Install custom shared object files
 
-    - name: PostgreSQL | Extensions | PgAudit | Include pakage(s) installation tasks
+    - name: PostgreSQL | Extensions | PgAudit | Include package(s) installation tasks
       include_tasks: roles/postgresql/tasks/upgrade/extensions/pgaudit/packages.yml
 
-    - name: PostgreSQL | Extensions | repmgr | Include pakage(s) installation tasks
+    - name: PostgreSQL | Extensions | repmgr | Include package(s) installation tasks
       include_tasks: roles/postgresql/tasks/upgrade/extensions/replication/pg-new/packages.yml
 
     # Step: Adjust authentication
