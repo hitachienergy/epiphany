@@ -92,9 +92,7 @@
     # Standby nodes have to be stopped after primary. Check p.8 from https://www.postgresql.org/docs/13/pgupgrade.html
 
     - name: PostgreSQL | Stop PostgreSQL services on standby nodes
-      when:
-        - inventory_hostname != pg_primary_node
-        - pg_is_repmgr_used
+      when: (pg_is_repmgr_used and inventory_hostname == pg_primary_node) or not pg_is_repmgr_used
       <<: &stop_pg_services
         systemd:
           name: "{{ service_name }}"
@@ -107,7 +105,9 @@
           - "{{ new_version.pg.instantiated_service_name[ansible_os_family] }}"
 
     - name: PostgreSQL | Stop PostgreSQL services on primary node
-      when: (inventory_hostname == pg_primary_node and pg_is_repmgr_used) or not pg_is_repmgr_used
+      when:
+        - pg_is_repmgr_used
+        - inventory_hostname != pg_primary_node
       <<: *stop_pg_services
 
     # Step: Run pg_upgrade
@@ -147,7 +147,7 @@
           include_tasks: roles/postgresql/tasks/upgrade/extensions/replication/pg-new/repmgr-conf.yml
 
     - name: PostgreSQL | Upgrade primary node
-      when: (inventory_hostname == pg_primary_node and pg_is_repmgr_used) or not pg_is_repmgr_used
+      when: (pg_is_repmgr_used and inventory_hostname == pg_primary_node) or not pg_is_repmgr_used
       block:
         # --link is not used to be able to access old cluster once the new one is started after the upgrade
         # there is a preflight check to confirm that available disk space is enough
@@ -241,8 +241,8 @@
     # Step: Upgrade standby servers
     - name: PostgreSQL | Upgrade standby servers (clone standby node from primary and register)
       when:
-        - inventory_hostname != pg_primary_node
         - pg_is_repmgr_used
+        - inventory_hostname != pg_primary_node
       include_tasks: roles/postgresql/tasks/upgrade/extensions/replication/pg-new/repmgr-register-standby.yml
 
     - name: PostgreSQL | Enable PostgreSQL {{ new_version.pg.version }} service
@@ -256,8 +256,8 @@
         dest: "/usr/bin/repmgr"
         state: link
       when:
-        - ansible_os_family == 'RedHat'
         - pg_is_repmgr_used
+        - ansible_os_family == 'RedHat'
 
   # Step: Reverting to old cluster
   rescue:
@@ -290,11 +290,11 @@
         dest: "/usr/bin/repmgr"
         state: link
       when:
-        - ansible_os_family == 'RedHat'
         - pg_is_repmgr_used
+        - ansible_os_family == 'RedHat'
 
     - name: PostgreSQL | Rollback | Start and enable PostgreSQL {{ old_version.pg.version }} service on primary node
-      when: (inventory_hostname == pg_primary_node and pg_is_repmgr_used) or not pg_is_repmgr_used
+      when: (pg_is_repmgr_used and inventory_hostname == pg_primary_node) or not pg_is_repmgr_used
       <<: &start_pg_services
         systemd:
           name: "{{ service_name }}"
@@ -308,8 +308,8 @@
 
     - name: PostgreSQL | Rollback | Start and enable PostgreSQL {{ old_version.pg.version }} service on standby nodes
       when:
-        - inventory_hostname != pg_primary_node
         - pg_is_repmgr_used
+        - inventory_hostname != pg_primary_node
       <<: *start_pg_services
 
     - name: PostgreSQL | Fail upgrade with a note
