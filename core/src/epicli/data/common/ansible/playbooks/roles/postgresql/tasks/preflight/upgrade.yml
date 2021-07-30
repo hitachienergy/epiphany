@@ -21,8 +21,7 @@
       become: true
       shell: |-
         set -o pipefail && \
-        df {{ pg_new.pg.base_dir[ansible_os_family] }} \
-          | awk 'NR==1{for (i=1; i<=NF; i++) if (tolower($i) == "filesystem" ){dev=i; break}} NR==2{print $dev}'
+        df --output=source {{ pg_new.pg.base_dir[ansible_os_family] }} | tail -1
       changed_when: false
       register: pg_data_disk
 
