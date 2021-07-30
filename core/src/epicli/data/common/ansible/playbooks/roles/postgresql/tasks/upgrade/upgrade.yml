@@ -231,9 +231,17 @@
             _new_version_config_dir: "{{ new_version.pg.config_dir[ansible_os_family] }}" # to make command shorter
 
         - name: PostgreSQL | Start PostgreSQL {{ new_version.pg.version }} service
-          systemd:
-            name: "{{ new_version.pg.service_name[ansible_os_family] }}"
-            state: started
+          block:
+            - name: PostgreSQL | Start PostgreSQL {{ new_version.pg.version }} service
+              systemd:
+                name: "{{ new_version.pg.service_name[ansible_os_family] }}"
+                state: started
+
+            - name: PostgreSQL | Debian | Ensure that instantiated PostgreSQL {{ new_version.pg.version }} service started
+              when: ansible_os_family == 'Debian'
+              systemd:
+                name: "{{ new_version.pg.instantiated_service_name[ansible_os_family] }}"
+                state: started
 
         - name: PostgreSQL | Extensions | repmgr | Register primary node
           when: pg_is_repmgr_used
