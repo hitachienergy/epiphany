@@ -109,7 +109,7 @@ def test_dict_merge_updates_value_when_same_key_exists():
     assert base.field2 == 'val'
 
 
-def test_dict_merge_replaces_nonnamed_list_when_same_key_exists():
+def test_dict_merge_replaces_list_of_strings_when_same_key_exists():
     base = dict_to_objdict({'field1': 'test1', 'list': ['base1', 'base2', 'base3']})
     extend_by = dict_to_objdict({'list': ['replaced1', 'replaced2']})
     merge_objdict(base, extend_by)
