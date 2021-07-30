@@ -18,7 +18,6 @@
   register: pg_primary_node_found
   # when there are two primary nodes (after failover) rc is non-zero
   failed_when: pg_primary_node_found.rc != 0 or pg_primary_node_found.stdout == ""
-  delegate_to: "{{ groups.postgresql[0] }}"
   run_once: true
 
 # 'pg_primary_node' fact should be available for upgrade and rollback
@@ -76,6 +75,7 @@
 
     # Step: Adjust authentication
     - name: PostgreSQL | Extensions | repmgr | Update pgpass file
+      when: pg_is_repmgr_used
       vars:
         _replication_user_name: "{{ upgrade_vars.specification.extensions.replication.replication_user_name }}"
         _replication_user_password: "{{ upgrade_vars.specification.extensions.replication.replication_user_password }}"
