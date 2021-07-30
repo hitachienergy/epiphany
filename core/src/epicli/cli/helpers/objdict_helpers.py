@@ -28,31 +28,36 @@ def objdict_to_dict(something):
     return _nested_dict_to_dict(something, src_class=dict, dst_class=dict)  # ObjDict is a subclass of dict
 
 
+def is_named_list(l):
+    count = select_all(l, lambda x: hasattr(x, 'name'))
+    return len(count) == len(l)
+
+
+def check_duplicate_in_named_list(l, key, value, type):
+        count = select_all(l, lambda x: x['name'] == value)
+        if len(count) > 1:
+            raise Exception(f'`name` field with value `"{value}"` occurs multiple times in list `"{key}"` in {type} definition.')
+
+
 def merge_objdict(to_merge, extend_by):
     for key, val in extend_by.items():
         if key in to_merge:
             if isinstance(to_merge[key], ObjDict):
                 merge_objdict(to_merge[key], val)
             elif isinstance(to_merge[key], list):
-                count_to_merge = select_all(to_merge[key], lambda x: hasattr(x, 'name'))
-                count_extend_by = select_all(val, lambda x: hasattr(x, 'name'))
-                if len(count_to_merge) == len(to_merge[key]) and len(count_extend_by) == len(val):
+                if is_named_list(to_merge[key]) and is_named_list(val):
                     for m_i in to_merge[key]:
                         name_default = m_i['name']
-                        count = select_all(to_merge[key], lambda x: x['name'] == name_default)
-                        if len(count) > 1:
-                            raise Exception(f'`name` field with value `"{name_default}"` occurs multiple times in list `"{key}"` in default definition.')
+                        check_duplicate_in_named_list(to_merge[key], key, name_default, 'default')     
                         for e_i in val:
                             name_extend = e_i['name']
-                            count = select_all(val, lambda x: x['name'] == name_extend)
-                            if len(count) > 1:
-                                raise Exception(f'`name` field with value `"{name_extend}"` occurs multiple times in list `"{key}"` in input definition.')
+                            check_duplicate_in_named_list(val, key, name_extend, 'input')
                             if name_default == name_extend:
                                 merge_objdict(m_i, e_i)
-                            else:
-                                count = select_all(to_merge[key], lambda x: x['name'] == name_extend)
-                                if len(count) == 0:
-                                    to_merge[key].append(e_i)
+                            #else:
+                            #    count = select_all(to_merge[key], lambda x: x['name'] == name_extend)
+                            #    if len(count) == 0:
+                            #        to_merge[key].append(e_i)
                 else:
                     to_merge[key] = val
             else:
