@@ -54,10 +54,10 @@ def merge_objdict(to_merge, extend_by):
                             check_duplicate_in_named_list(val, key, name_extend, 'input')
                             if name_default == name_extend:
                                 merge_objdict(m_i, e_i)
-                            #else:
-                            #    count = select_all(to_merge[key], lambda x: x['name'] == name_extend)
-                            #    if len(count) == 0:
-                            #        to_merge[key].append(e_i)
+                            else:
+                                count = select_all(to_merge[key], lambda x: x['name'] == name_extend)
+                                if len(count) == 0:
+                                    to_merge[key].append(e_i)
                 else:
                     to_merge[key] = val
             else:
