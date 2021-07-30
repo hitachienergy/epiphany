@@ -24,7 +24,7 @@
 # 'pg_primary_node' fact should be available for upgrade and rollback
 - name: PostgreSQL | Set 'pg_primary_node' fact
   set_fact:
-    pg_primary_node: "{{ pg_primary_found.stdout | default (groups.postgresql[0]) }}"
+    pg_primary_node: "{{ pg_primary_node_found.stdout | default('') }}"
 
 - name: PostgreSQL | Upgrade
   block:
