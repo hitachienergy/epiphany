@@ -39,30 +39,41 @@ def check_duplicate_in_named_list(l, key, value, type):
             raise Exception(f'`name` field with value `"{value}"` occurs multiple times in list `"{key}"` in {type} definition.')
 
 
+def merge_list(to_merge, extend_by, key):
+        if is_named_list(to_merge[key]) and is_named_list(extend_by):
+            # Merge lists as named lists
+            for m_i in to_merge[key]:
+                check_duplicate_in_named_list(to_merge[key], key, m_i['name'], 'default')     
+                for e_i in extend_by:
+                    check_duplicate_in_named_list(extend_by, key, e_i['name'], 'input')
+                    if m_i['name'] == e_i['name']:
+                        merge_objdict(m_i, e_i)
+                    else:
+                        count = select_all(to_merge[key], lambda x: x['name'] == e_i['name'])
+                        if len(count) == 0:
+                            to_merge[key].append(e_i)
+        else:
+            # No named list so just overwrite lists from with the source
+            to_merge[key] = extend_by
+
+
 def merge_objdict(to_merge, extend_by):
     for key, val in extend_by.items():
         if key in to_merge:
-            if isinstance(to_merge[key], ObjDict):
+            if isinstance(to_merge[key], ObjDict) and isinstance(val, ObjDict):
+                # Dealing with 2 ObjDicts so recursively merge
                 merge_objdict(to_merge[key], val)
-            elif isinstance(to_merge[key], list):
-                if is_named_list(to_merge[key]) and is_named_list(val):
-                    for m_i in to_merge[key]:
-                        name_default = m_i['name']
-                        check_duplicate_in_named_list(to_merge[key], key, name_default, 'default')     
-                        for e_i in val:
-                            name_extend = e_i['name']
-                            check_duplicate_in_named_list(val, key, name_extend, 'input')
-                            if name_default == name_extend:
-                                merge_objdict(m_i, e_i)
-                            else:
-                                count = select_all(to_merge[key], lambda x: x['name'] == name_extend)
-                                if len(count) == 0:
-                                    to_merge[key].append(e_i)
-                else:
-                    to_merge[key] = val
-            else:
+            elif isinstance(to_merge[key], list) and isinstance(val, list):
+                # Dealing with 2 lists
+                merge_list(to_merge, val, key)
+            elif type(to_merge[key]) == type(val):
+                # Dealing with 2 base fields (integer, boolean, string ..etc) so overwrite from source to defaults
                 to_merge[key] = val
+            else:
+                # If we come here we are dealing with 2 different types we cannot merge so throw exception.
+                raise Exception(f'Types of key `"{key}"` are different: {type(to_merge[key])}, {type(val)}. Unable to merge.')
         else:
+            # Field not known in defaults so just add it. Might be extra config used by projects.
             to_merge[key] = val
 
 
