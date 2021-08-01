@@ -1,6 +1,6 @@
 import pytest
 
-from cli.helpers.objdict_helpers import merge_objdict, dict_to_objdict, objdict_to_dict
+from cli.helpers.objdict_helpers import dict_to_objdict, objdict_to_dict, is_named_list, check_duplicate_in_named_list, merge_objdict
 from cli.helpers.ObjDict import ObjDict
 from collections import OrderedDict
 
@@ -91,6 +91,51 @@ def test_objdict_to_dict():
     assert converted['field1']['field2']['field3']['field4'] == 'val'
 
 
+def test_list_is_named_list():
+    l = dict_to_objdict({
+        'list': [
+            {
+                'name': 'name1',
+                'value': 'value1'
+            },
+            {
+                'name': 'name2',
+                'value': 'value2'
+            }             
+        ]
+    })
+
+    assert is_named_list(l['list'])
+
+
+def test_list_is_not_named_list():
+    l = dict_to_objdict({
+        'list': [
+            'entry1',
+            'entry2'           
+        ]
+    })
+
+    assert is_named_list(l['list']) == False
+
+
+def test_check_assert_in_duplicate_in_named_list():
+    l = dict_to_objdict({
+        'list': [
+            {
+                'name': 'name1',
+                'value': 'value1'
+            },
+            {
+                'name': 'name1',
+                'value': 'value2'
+            }             
+        ]
+    })
+    with pytest.raises(Exception) as e_info:
+        check_duplicate_in_named_list(l['list'])
+
+
 def test_dict_merge_adds_key_when_is_missing():
     base = dict_to_objdict({'field1': 'test1', 'field2': 'val'})
     extend_by = dict_to_objdict({'field3': 'test3', 'field4': 'test4'})
@@ -107,6 +152,53 @@ def test_dict_merge_updates_value_when_same_key_exists():
 
     assert base.field1 == 'test22'
     assert base.field2 == 'val'
+
+
+def test_dict_merge_asserts_on_different_types():
+    base = dict_to_objdict({
+        'field1': 'test1' # string type
+    })
+    extend_by = dict_to_objdict({
+        'field1': 1 # integer type
+    })
+    with pytest.raises(Exception) as e_info:
+        merge_objdict(base, extend_by)    
+
+
+def test_dict_merge_updates_nested_object():
+    base = dict_to_objdict({'field1': 'test1',
+            'complex1':
+                {'nested_field1': 'nested_val1',
+                 'nested_field2': 'nested_val2'}
+            })
+    extend_by = dict_to_objdict({'complex1':
+                     {'nested_field1': 'nested_val3',
+                      'nested_field2': 'nested_val4'}
+                 })
+    merge_objdict(base, extend_by)
+
+    assert base.field1 == 'test1'
+    assert base.complex1.nested_field1 == 'nested_val3'
+    assert base.complex1.nested_field2 == 'nested_val4'
+
+
+def test_dict_merge_add_field_to_nested_object():
+    base = dict_to_objdict({'field1': 'test1',
+            'complex1':
+                {'nested_field1': 'nested_val1',
+                 'nested_field2': 'nested_val2'}
+            })
+    extend_by = dict_to_objdict({'complex1':
+                     {'nested_field1': 'nested_val3',
+                      'nested_field2': 'nested_val4',
+                      'nested_field3': 'nested_val5'}
+                 })
+    merge_objdict(base, extend_by)
+
+    assert base.field1 == 'test1'
+    assert base.complex1.nested_field1 == 'nested_val3'
+    assert base.complex1.nested_field2 == 'nested_val4'
+    assert base.complex1.nested_field3 == 'nested_val5'
 
 
 def test_dict_merge_replaces_list_of_strings_when_same_key_exists():
@@ -244,39 +336,3 @@ def test_dict_merge_asserts_on_extend_named_list_with_duplicate_key():
     })
     with pytest.raises(Exception) as e_info:
         merge_objdict(base, extend_by)
-
-
-def test_dict_merge_updates_nested_object():
-    base = dict_to_objdict({'field1': 'test1',
-            'complex1':
-                {'nested_field1': 'nested_val1',
-                 'nested_field2': 'nested_val2'}
-            })
-    extend_by = dict_to_objdict({'complex1':
-                     {'nested_field1': 'nested_val3',
-                      'nested_field2': 'nested_val4'}
-                 })
-    merge_objdict(base, extend_by)
-
-    assert base.field1 == 'test1'
-    assert base.complex1.nested_field1 == 'nested_val3'
-    assert base.complex1.nested_field2 == 'nested_val4'
-
-
-def test_dict_merge_add_field_to_nested_object():
-    base = dict_to_objdict({'field1': 'test1',
-            'complex1':
-                {'nested_field1': 'nested_val1',
-                 'nested_field2': 'nested_val2'}
-            })
-    extend_by = dict_to_objdict({'complex1':
-                     {'nested_field1': 'nested_val3',
-                      'nested_field2': 'nested_val4',
-                      'nested_field3': 'nested_val5'}
-                 })
-    merge_objdict(base, extend_by)
-
-    assert base.field1 == 'test1'
-    assert base.complex1.nested_field1 == 'nested_val3'
-    assert base.complex1.nested_field2 == 'nested_val4'
-    assert base.complex1.nested_field3 == 'nested_val5'
