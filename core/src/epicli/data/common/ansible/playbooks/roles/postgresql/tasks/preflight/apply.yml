@@ -32,10 +32,3 @@
           {{ (_defined | selectattr('config.enabled') | list) + _undefined }}
         _unsupported_enabled_extensions: >-
           {{ _enabled_extensions | selectattr('name', 'in', unsupported_postgres_extensions[_pg_arch]) | list }}
-
-    - name: Check the number of PostgreSQL hosts for replication
-      when: postgresql.specification.extensions.replication.enabled | default(false)
-      assert:
-        that: groups.postgresql | length == 2
-        fail_msg: The supported number of PostgreSQL hosts with enabled replication is 2  # TODO: issue 2346
-        success_msg: The number of PostgreSQL hosts is correct
