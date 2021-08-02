@@ -1,0 +1,48 @@
+---
+# There are a few preflight checks, so upgrade will not start when:
+#   * old PostgreSQL version doesn't exist
+#   * cluster is not healthy when repmgr is used
+#   * free disk space is less than 50%
+
+- name: PostgreSQL | Get information about installed packages as facts
+  package_facts:
+    manager: auto
+  when: ansible_facts.packages is undefined
+
+- name: PostgreSQL | Include vars from 'postgresql' role
+  include_vars:
+    file: vars/main.yml
+    name: upgrade_vars
+
+- name: PostgreSQL | Include manifest from 'postgresql' role
+  include_vars:
+    file: vars/manifest.yml
+    name: manifest
+
+- name: PostgreSQL | Include new version default variables
+  include_vars:
+    file: defaults/main.yml
+    name: new_version
+
+- name: PostgreSQL | Include old version default variables
+  include_vars:
+    file: defaults/upgrade.yml
+    name: old_version
+
+- name: PostgreSQL | Check if PostgreSQL {{ new_version.pg.version }} data directory exists or is empty
+  become: true
+  block:
+    - name: PostgreSQL | Get PostgreSQL {{ new_version.pg.version }} data directory stat information
+      stat:
+        path: "{{ new_version.pg.data_dir[ansible_os_family] }}"
+      register: pg_data_dir
+
+    - name: PostgreSQL | Gather statistics about PostgreSQL {{ new_version.pg.version }} data directory content
+      when: pg_data_dir.stat.exists
+      find:
+        paths: "{{ new_version.pg.data_dir[ansible_os_family] }}"
+      register: pg_data_dir_files
+
+- name: PostgreSQL | Include upgrade tasks
+  when: not pg_data_dir.stat.exists or pg_data_dir_files.matched == 0
+  include_tasks: roles/postgresql/tasks/upgrade/upgrade.yml

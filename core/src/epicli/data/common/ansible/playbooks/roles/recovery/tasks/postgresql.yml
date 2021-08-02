@@ -9,7 +9,8 @@
       /bin/systemctl stop {{ pg.service_name[ansible_os_family] }},
       /bin/systemctl restart {{ pg.service_name[ansible_os_family] }},
       /bin/systemctl reload {{ pg.service_name[ansible_os_family] }},
-      {{ repmgr.bindir[ansible_os_family] }}/repmgr standby follow
+      /bin/systemctl start {{ repmgr.service_name[ansible_os_family] }},
+      /bin/systemctl stop {{ repmgr.service_name[ansible_os_family] }}
     validate: 'visudo -cf %s'
 
 - name: Stop repmgr service
@@ -134,7 +135,7 @@
       - name: Register primary node in repmgr
         become: yes
         become_user: postgres
-        shell: "{{ repmgr.bindir[ansible_os_family] }}/repmgr -f {{ repmgr.config_dir[ansible_os_family] }}/repmgr.conf
+        shell: "{{ repmgr.bin_dir[ansible_os_family] }}/repmgr -f {{ repmgr.config_dir[ansible_os_family] }}/repmgr.conf
         --force --superuser={{ component_vars.specification.extensions.replication.privileged_user_name }} primary register -F"
 
       - name: Start repmgr on primary node
@@ -200,7 +201,7 @@
 
     - name: Clone content from primary node using repmgr
       become_user: postgres
-      shell: "{{ repmgr.bindir[ansible_os_family] }}/repmgr -f {{ repmgr.config_dir[ansible_os_family] }}/repmgr.conf -h {{ hostvars[groups['postgresql'][0]]['ansible_default_ipv4']['address'] }} -U {{ component_vars.specification.extensions.replication.privileged_user_name }} -d {{ component_vars.specification.extensions.replication.repmgr_database }} -p 5432 -F standby clone"
+      shell: "{{ repmgr.bin_dir[ansible_os_family] }}/repmgr -f {{ repmgr.config_dir[ansible_os_family] }}/repmgr.conf -h {{ hostvars[groups['postgresql'][0]]['ansible_default_ipv4']['address'] }} -U {{ component_vars.specification.extensions.replication.privileged_user_name }} -d {{ component_vars.specification.extensions.replication.repmgr_database }} -p 5432 -F standby clone"
 
     - name: Copy cached config files back to database configuration location
       copy:
@@ -217,7 +218,7 @@
 
     - name: Register secondary node to repmgr cluster
       become_user: postgres
-      shell: "{{ repmgr.bindir[ansible_os_family] }}/repmgr -f {{ repmgr.config_dir[ansible_os_family] }}/repmgr.conf standby register -F"
+      shell: "{{ repmgr.bin_dir[ansible_os_family] }}/repmgr -f {{ repmgr.config_dir[ansible_os_family] }}/repmgr.conf standby register -F"
 
     - name: Start repmgr service
       service:
@@ -228,7 +229,7 @@
       become: true
       become_user: postgres
       become_method: sudo
-      command: "{{ repmgr.bindir[ansible_os_family] }}/repmgr standby follow"
+      command: "{{ repmgr.bin_dir[ansible_os_family] }}/repmgr standby follow"
   when:
     - component_vars.specification.extensions.replication.enabled | default(false)
     - groups['postgresql'][1] == inventory_hostname
