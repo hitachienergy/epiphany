@@ -32,6 +32,19 @@ platforms:
       - /tmp
     volumes:
       - /sys/fs/cgroup:/sys/fs/cgroup:ro
+  - name: instance-3
+    groups:
+      - postgresql
+    image: geerlingguy/docker-ubuntu1804-ansible:python2
+    pre_build_image: true
+    capabilities:
+      - SYS_ADMIN
+    command: /lib/systemd/systemd
+    tmpfs:
+      - /run
+      - /tmp
+    volumes:
+      - /sys/fs/cgroup:/sys/fs/cgroup:ro
 provisioner:
   name: ansible
   playbooks:
