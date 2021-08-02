@@ -4,10 +4,10 @@
   become_user: postgres
   vars:
     _users:
-      - user: "{{ specification.extensions.replication.privileged_user_name }}"
-        password: "{{ specification.extensions.replication.privileged_user_password }}"
-      - user: "{{ specification.extensions.replication.replication_user_name }}"
-        password: "{{ specification.extensions.replication.replication_user_password }}"
+      - user: "{{ upgrade_vars.specification.extensions.replication.privileged_user_name }}"
+        password: "{{ upgrade_vars.specification.extensions.replication.privileged_user_password }}"
+      - user: "{{ upgrade_vars.specification.extensions.replication.replication_user_name }}"
+        password: "{{ upgrade_vars.specification.extensions.replication.replication_user_password }}"
   postgresql_query:
     query: "ALTER USER {{ item.user }} WITH PASSWORD '{{ item.password }}'"
   loop: "{{ _users }}"
@@ -18,7 +18,7 @@
   become_user: postgres
   command: >-
     {{ new_version.repmgr.bin_dir[ansible_os_family] }}/repmgr primary register
-      --superuser={{ specification.extensions.replication.privileged_user_name }}
+      --superuser={{ upgrade_vars.specification.extensions.replication.privileged_user_name }}
       --force
   register: repmgr_primary_register
   changed_when: repmgr_primary_register.rc == 0
