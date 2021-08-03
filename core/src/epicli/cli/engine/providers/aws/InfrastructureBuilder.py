@@ -236,7 +236,7 @@ class InfrastructureBuilder(Step):
                     rule.specification.description = 'NFS inbound for '+subnet.specification.name
                     rule.specification.direction = 'ingress'
                     rule.specification.protocol = 'tcp'
-                    rule.specification.destination_port_range = 2049
+                    rule.specification.destination_port_range = "2049"
                     rule.specification.source_address_prefix = subnet.specification.cidr_block
                     rule.specification.destination_address_prefix = '*'
                     security_group.specification.rules.append(rule.specification)

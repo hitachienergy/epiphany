@@ -78,23 +78,32 @@ properties:
         type: string
       log_queries:
         type: string
-  grafana_external_dashboards:
+  grafana_dashboards:
     type: array
     items:
-      type: object
-      properties:
-        dashboard_id:
-          type: string
-        datasource:
-          type: string
-  grafana_online_dashboards:
-    type: array
-    items:
-      type: object
+    - type: object
       properties:
         dashboard_id:
           type: string
         revision_id:
+          type: string
+        datasource:
+          type: string
+    - type: object
+      properties:
+        dashboard_id:
+          type: string
+        revision_id:
+          type: string
+        datasource:
+          type: string
+    - type: object
+      properties:
+        dashboard_id:
+          type: string
+        revision_id:
+          type: string
+        datasource:
           type: string
   grafana_dashboards_dir:
     type: string
@@ -176,13 +185,13 @@ properties:
           search_base_dns:
             type: array
             items:
-              type: string
+            - type: string
           group_search_filter:
             type: string
           group_search_base_dns:
             type: array
             items:
-              type: string
+            - type: string
           attributes:
             type: object
             properties:
@@ -199,7 +208,7 @@ properties:
       group_mappings:
         type: array
         items:
-          type: object
+        - type: object
           properties:
             name:
               type: string
@@ -208,7 +217,34 @@ properties:
             groups:
               type: array
               items:
-                type: object
+              - type: object
+                properties:
+                  group_dn:
+                    type: string
+                  org_role:
+                    type: string
+              - type: object
+                properties:
+                  group_dn:
+                    type: string
+                  org_role:
+                    type: string
+              - type: object
+                properties:
+                  group_dn:
+                    type: string
+                  org_role:
+                    type: string
+        - type: object
+          properties:
+            name:
+              type: string
+            id:
+              type: integer
+            groups:
+              type: array
+              items:
+              - type: object
                 properties:
                   group_dn:
                     type: string
@@ -299,19 +335,20 @@ properties:
       provider:
         type: string
       key_file:
-        type: string
+        type: 'null'
       bucket:
-        type: string
+        type: 'null'
       path:
-        type: string
+        type: 'null'
   grafana_plugins:
     type: array
     items:
-      type: string
+    - type: string
+    - type: string
   grafana_alert_notifications:
     type: array
     items:
-      type: object
+    - type: object
       properties:
         name:
           type: string
@@ -327,7 +364,7 @@ properties:
   grafana_datasources:
     type: array
     items:
-      type: object
+    - type: object
       properties:
         name:
           type: string
@@ -359,7 +396,19 @@ properties:
   grafana_api_keys:
     type: array
     items:
-      type: object
+    - type: object
+      properties:
+        name:
+          type: string
+        role:
+          type: string
+    - type: object
+      properties:
+        name:
+          type: string
+        role:
+          type: string
+    - type: object
       properties:
         name:
           type: string
