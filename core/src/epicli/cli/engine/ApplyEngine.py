@@ -73,8 +73,9 @@ class ApplyEngine(Step):
                 self.input_docs, self.manifest_docs) as infrastructure_builder:
             self.infrastructure_docs = infrastructure_builder.run()
 
-        # Validate infrastructure documents
-        with SchemaValidator(self.cluster_model.provider, self.infrastructure_docs) as schema_validator:
+        # Validate cluster input document.
+        # Other documents might need more processing (SET_BY_AUTOMATION) so will be validated at a later stage.
+        with SchemaValidator(self.cluster_model.provider, [self.cluster_model]) as schema_validator:
             schema_validator.run()
 
     def process_configuration_docs(self):

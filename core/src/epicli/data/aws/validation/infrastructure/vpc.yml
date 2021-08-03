@@ -1,1 +1,17 @@
-$ref: '#/definitions/unvalidated_specification'
+"$id": "#/specification"
+title: "Vpc specification schema"
+description: "Vpc specification schema"
+type: object
+properties:
+  name:
+    type: string
+  address_pool:
+    type: string
+  instance_tenancy:
+    type: string
+  enable_dns_support:
+    type: boolean
+  enable_dns_hostnames:
+    type: boolean
+  cluster_name:
+    type: string

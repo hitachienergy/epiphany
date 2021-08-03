@@ -1,1 +1,27 @@
-$ref: '#/definitions/unvalidated_specification'
+"$id": "#/specification"
+title: "Repository specification schema"
+description: "Repository specification schema"
+type: object
+properties:
+  description:
+    type: string
+  download_done_flag_expire_minutes:
+    type: integer
+  apache_epirepo_path:
+    type: string
+  teardown:
+    type: object
+    properties:
+      disable_http_server:
+        type: boolean
+      remove:
+        type: object
+        properties:
+          files:
+            type: boolean
+          helm_charts:
+            type: boolean
+          images:
+            type: boolean
+          packages:
+            type: boolean

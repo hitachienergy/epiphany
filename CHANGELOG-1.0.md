@@ -2,9 +2,17 @@
 
 ## [1.0.2] 2021-xx-xx
 
+### Added
+
+- [#195](https://github.com/epiphany-platform/epiphany/issues/195) - Basic configuration type and schema validation
+
 ### Updated
 
 - [#1797](https://github.com/epiphany-platform/epiphany/issues/1797) - Upgrade Keycloak to v14.0.0
+
+### Fixed
+
+- [#2425](https://github.com/epiphany-platform/epiphany/issues/2425) - Feature-mapping - 'enabled: no' do nothing
 
 ## [1.0.1] 2021-07-16
 
