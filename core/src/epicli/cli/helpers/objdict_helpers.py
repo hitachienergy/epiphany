@@ -72,7 +72,7 @@ def merge_objdict(to_merge, extend_by):
                 to_merge[key] = val
             else:
                 # If we come here we are dealing with 2 different types we cannot merge so throw exception.
-                raise Exception(f'Types of key `"{key}"` are different: {type(to_merge[key])}, {type(val)}. Unable to merge.')
+                raise Exception(f'Types of key "{key}" are different: {type(to_merge[key])}, {type(val)}. Unable to merge.')
         else:
             # Field not known in defaults so just add it. Might be extra config used by projects.
             to_merge[key] = val
