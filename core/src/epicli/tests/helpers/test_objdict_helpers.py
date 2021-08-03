@@ -119,7 +119,7 @@ def test_list_is_not_named_list():
     assert is_named_list(l['list']) == False
 
 
-def test_check_assert_in_duplicate_in_named_list():
+def test_assert_unique_names_in_named_list():
     l = dict_to_objdict({
         'list': [
             {
