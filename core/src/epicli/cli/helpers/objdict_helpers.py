@@ -68,7 +68,7 @@ def merge_objdict(to_merge, extend_by):
                 # Dealing with 2 lists
                 merge_list(to_merge, val, key)
             elif type(to_merge[key]) == type(val):
-                # Dealing with 2 base fields (integer, boolean, string ..etc) so overwrite from source to defaults
+                # Dealing with 2 basic types (integer, boolean, string, etc.) so replace
                 to_merge[key] = val
             else:
                 # If we come here we are dealing with 2 different types we cannot merge so throw exception.
