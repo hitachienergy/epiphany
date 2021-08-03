@@ -1,6 +1,6 @@
 import pytest
 
-from cli.helpers.objdict_helpers import dict_to_objdict, objdict_to_dict, is_named_list, check_duplicate_in_named_list, merge_objdict
+from cli.helpers.objdict_helpers import dict_to_objdict, objdict_to_dict, is_named_list, assert_duplicate_names_in_named_list, merge_objdict
 from cli.helpers.ObjDict import ObjDict
 from collections import OrderedDict
 
@@ -124,7 +124,7 @@ def test_list_is_not_named_list():
     assert is_named_list(l['list']) == False
 
 
-def test_assert_unique_names_in_named_list():
+def test_assert_duplicate_names_in_named_list():
     l = dict_to_objdict({
         'list': [
             {
@@ -138,7 +138,7 @@ def test_assert_unique_names_in_named_list():
         ]
     })
     with pytest.raises(Exception) as e_info:
-        check_duplicate_in_named_list(l['list'])
+        assert_duplicate_names_in_named_list(l['list'], 'list', input)
 
 
 def test_dict_merge_adds_key_when_is_missing():

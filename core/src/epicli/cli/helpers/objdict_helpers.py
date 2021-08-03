@@ -1,6 +1,7 @@
 from cli.helpers.ObjDict import ObjDict
 from cli.helpers.doc_list_helpers import select_all
 from copy import deepcopy
+from collections.abc import Iterable
 
 
 def _nested_dict_to_dict(something, *, src_class, dst_class):
@@ -29,32 +30,37 @@ def objdict_to_dict(something):
 
 
 def is_named_list(l):
-    return all(hasattr(x, 'name') for x in l)
+    return isinstance(l, Iterable) and all(hasattr(x, 'name') for x in l)
 
 
-def check_duplicate_in_named_list(l, key, value, type):
-        count = select_all(l, lambda x: x['name'] == value)
-        if len(count) > 1:
-            raise Exception(f'`name` field with value `"{value}"` occurs multiple times in list `"{key}"` in {type} definition.')
+def assert_duplicate_names_in_named_list(list, key, type): 
+    all_names = [x["name"] for x in list] 
+    for name in all_names: 
+        if all_names.count(name) > 1: 
+            raise Exception( f'"name" field with value "{name}" occurs multiple times in list "{key}" in {type} definition.' )
 
 
 # to_merge is passed by reference, item under key is updated, extended or replaced 
 def merge_list(to_merge, extend_by, key):
-        if is_named_list(to_merge[key]) and is_named_list(extend_by):
-            # Merge lists as named lists
-            for m_i in to_merge[key]:
-                check_duplicate_in_named_list(to_merge[key], key, m_i['name'], 'default')     
-                for e_i in extend_by:
-                    check_duplicate_in_named_list(extend_by, key, e_i['name'], 'input')
-                    if m_i['name'] == e_i['name']:
-                        merge_objdict(m_i, e_i)
-                    else:
-                        count = select_all(to_merge[key], lambda x: x['name'] == e_i['name'])
-                        if len(count) == 0:
-                            to_merge[key].append(e_i)
-        else:
-            # No named list so just replace item
-            to_merge[key] = extend_by
+    if is_named_list(to_merge[key]) and is_named_list(extend_by):
+        # check for duplicates items in to_merge and extend_by
+        assert_duplicate_names_in_named_list(to_merge[key], key, 'default')    
+        assert_duplicate_names_in_named_list(extend_by, key, 'input')
+
+        # Merge possible matched objects from extend_by to to_merge
+        for m_i in to_merge[key]:   
+            count = select_all(extend_by, lambda x: x['name'] == m_i['name'])
+            if len(count) == 1:
+                merge_objdict(m_i, count[0])
+
+        # Add non-matched objects from extend_by to to_merge. Might be extra config used by projects.
+        for e_i in extend_by:   
+            count = select_all(to_merge[key], lambda x: x['name'] == e_i['name'])
+            if len(count) == 0:
+                to_merge[key].append(e_i)
+    else:
+        # No named list so just replace item
+        to_merge[key] = extend_by
 
 
 def merge_objdict(to_merge, extend_by):
