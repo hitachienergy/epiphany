@@ -54,7 +54,7 @@ def merge_list(to_merge, extend_by, key):
                         if len(count) == 0:
                             to_merge[key].append(e_i)
         else:
-            # No named list so just overwrite lists from with the source
+            # No named list so just replace item
             to_merge[key] = extend_by
 
 
