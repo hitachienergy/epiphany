@@ -8,6 +8,12 @@ script_path="$( cd "$(dirname "$0")" ; pwd -P )"
 # source common functions
 . "${script_path}/common.sh"
 
+CONNECTION_CHECK_ENABLED="yes"
+CREATE_LOGFILE="yes"
+LOG_FILE_PATH="${script_path}/log"
+
+. "${script_path}/common/common_functions.sh"
+
 if [[ $# -lt 1 ]]; then
 	usage
 fi
@@ -20,7 +26,6 @@ dst_dir_packages="${dst_dir}/packages"
 dst_dir_files="${dst_dir}/files"
 dst_dir_images="${dst_dir}/images"
 deplist="${script_path}/.dependencies"
-logfile="${script_path}/log"
 retries="3"
 download_cmd="run_cmd_with_retries $retries apt-get download"
 add_repos="${script_path}/add-repositories.sh"
@@ -108,6 +113,9 @@ else
         echol "Crane binary already exists"
     else
         file_url=$(head -n 1 <<< "${crane}")
+
+        check_connection wget $file_url
+
         echol "Downloading crane from: $file_url"
         download_file "$file_url" "$script_path"
         tar_path="${script_path}/${file_url##*/}"
@@ -150,8 +158,10 @@ else
     echol "Packages to be downloaded:"
     cat -n "$deplist"
 
+    check_connection apt
+
     # download dependencies (apt-get sandboxing warning when running as root are harmless)
-    cd "$dst_dir_packages" && xargs --no-run-if-empty --arg-file="$deplist" --delimiter='\n' -I{} bash -c ". ${script_path}/common.sh && ${download_cmd} {}" | tee -a "${logfile}"
+    cd "$dst_dir_packages" && xargs --no-run-if-empty --arg-file="$deplist" --delimiter='\n' -I{} bash -c ". ${script_path}/common.sh && ${download_cmd} {}" | tee -a "${LOG_FILE_PATH}"
     cd "$script_path"
 fi
 

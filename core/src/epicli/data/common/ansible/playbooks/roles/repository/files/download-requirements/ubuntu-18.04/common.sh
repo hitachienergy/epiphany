@@ -8,15 +8,6 @@ usage() {
 	exit 1
 }
 
-echol() {
-	echo -e "$1" | tee --append "$logfile"
-}
-
-exit_with_error() {
-	echol "ERROR: $1"
-	exit 1
-}
-
 # params: <file_path>
 remove_file() {
 	local file_path="$1"
