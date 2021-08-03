@@ -39,7 +39,7 @@ def check_duplicate_in_named_list(l, key, value, type):
             raise Exception(f'`name` field with value `"{value}"` occurs multiple times in list `"{key}"` in {type} definition.')
 
 
-#Note: We pas to_merge by reference using key to update/extend entries.
+# to_merge is passed by reference, item under key is updated, extended or replaced 
 def merge_list(to_merge, extend_by, key):
         if is_named_list(to_merge[key]) and is_named_list(extend_by):
             # Merge lists as named lists
