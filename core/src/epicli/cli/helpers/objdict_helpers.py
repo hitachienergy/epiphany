@@ -29,8 +29,7 @@ def objdict_to_dict(something):
 
 
 def is_named_list(l):
-    count = select_all(l, lambda x: hasattr(x, 'name'))
-    return len(count) == len(l)
+    return all(hasattr(x, 'name') for x in l)
 
 
 def check_duplicate_in_named_list(l, key, value, type):
