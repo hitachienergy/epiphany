@@ -1,1 +1,10 @@
-$ref: '#/definitions/unvalidated_specification'
+"$id": "#/specification"
+title: "Machine specification schema"
+description: "Machine specification schema"
+specification:
+  type: object
+  properties:
+    hostname:
+      type: string
+    ip:
+      type: string

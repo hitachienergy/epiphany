@@ -1,5 +1,15 @@
 # Changelog 1.1
 
+## [1.1.1] 2021-0X-XX
+
+### Added
+
+- [#195](https://github.com/epiphany-platform/epiphany/issues/195) - Basic configuration type and schema validation
+
+### Fixed
+
+- [#2425](https://github.com/epiphany-platform/epiphany/issues/2425) - Feature-mapping - 'enabled: no' do nothing
+
 ## [1.1.0] 2021-06-30
 
 ### Added

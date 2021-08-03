@@ -25,6 +25,7 @@ Add any other context or screenshots about the feature request here.
 
 * [ ] Changelog updated
 * [ ] COMPONENTS.md updated / doesn't need to be updated
+* [ ] Schema updated / doesn't need to be updated
 * [ ] Feature has automated tests
 * [ ] Automated tests passed (QA pipelines)
   * [ ] apply

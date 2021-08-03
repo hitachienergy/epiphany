@@ -1,1 +1,199 @@
-$ref: '#/definitions/unvalidated_specification'
+"$id": "#/specification"
+title: "Firewall specification schema"
+description: "Firewall specification schema"
+type: object
+properties:
+  Debian:
+    type: object
+    properties:
+      install_firewalld:
+        type: boolean
+  firewall_service_enabled:
+    type: boolean
+  apply_configuration:
+    type: boolean
+  managed_zone_name:
+    type: string
+  rules:
+    type: object
+    properties:
+      applications:
+        type: object
+        properties:
+          enabled:
+            type: boolean
+          ports:
+            type: array
+            items:
+              type: string
+      common:
+        type: object
+        properties:
+          enabled:
+            type: boolean
+          ports:
+            type: array
+            items:
+              type: string
+      grafana:
+        type: object
+        properties:
+          enabled:
+            type: boolean
+          ports:
+            type: array
+            items:
+              type: string
+      haproxy:
+        type: object
+        properties:
+          enabled:
+            type: boolean
+          ports:
+            type: array
+            items:
+              type: string
+      haproxy_exporter:
+        type: object
+        properties:
+          enabled:
+            type: boolean
+          ports:
+            type: array
+            items:
+              type: string
+      ignite:
+        type: object
+        properties:
+          enabled:
+            type: boolean
+          ports:
+            type: array
+            items:
+              type: string
+      image_registry:
+        type: object
+        properties:
+          enabled:
+            type: boolean
+          ports:
+            type: array
+            items:
+              type: string
+      jmx_exporter:
+        type: object
+        properties:
+          enabled:
+            type: boolean
+          ports:
+            type: array
+            items:
+              type: string
+      kafka:
+        type: object
+        properties:
+          enabled:
+            type: boolean
+          ports:
+            type: array
+            items:
+              type: string
+      kafka_exporter:
+        type: object
+        properties:
+          enabled:
+            type: boolean
+          ports:
+            type: array
+            items:
+              type: string
+      kibana:
+        type: object
+        properties:
+          enabled:
+            type: boolean
+          ports:
+            type: array
+            items:
+              type: string
+      kubernetes_master:
+        type: object
+        properties:
+          enabled:
+            type: boolean
+          ports:
+            type: array
+            items:
+              type: string
+      kubernetes_node:
+        type: object
+        properties:
+          enabled:
+            type: boolean
+          ports:
+            type: array
+            items:
+              type: string
+      logging:
+        type: object
+        properties:
+          enabled:
+            type: boolean
+          ports:
+            type: array
+            items:
+              type: string
+      node_exporter:
+        type: object
+        properties:
+          enabled:
+            type: boolean
+          ports:
+            type: array
+            items:
+              type: string
+      opendistro_for_elasticsearch:
+        type: object
+        properties:
+          enabled:
+            type: boolean
+          ports:
+            type: array
+            items:
+              type: string
+      postgresql:
+        type: object
+        properties:
+          enabled:
+            type: boolean
+          ports:
+            type: array
+            items:
+              type: string
+      prometheus:
+        type: object
+        properties:
+          enabled:
+            type: boolean
+          ports:
+            type: array
+            items:
+              type: string
+      rabbitmq:
+        type: object
+        properties:
+          enabled:
+            type: boolean
+          ports:
+            type: array
+            items:
+              type: string
+      zookeeper:
+        type: object
+        properties:
+          enabled:
+            type: boolean
+          ports:
+            type: array
+            items:
+              type: string

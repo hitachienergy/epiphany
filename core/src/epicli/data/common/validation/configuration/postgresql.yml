@@ -1,1 +1,106 @@
-$ref: '#/definitions/unvalidated_specification'
+"$id": "#/specification"
+title: "Postgresql specification schema"
+description: "Postgresql specification schema"
+type: object
+properties:
+  config_file:
+    type: object
+    properties:
+      parameter_groups:
+        type: array
+        items:
+          type: object
+          properties:
+            name:
+              type: string
+            subgroups:
+              type: array
+              items:
+                type: object
+                properties:
+                  name:
+                    type: string
+                  parameters:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        name:
+                          type: string
+                        value:
+                          type:
+                          - string
+                          - integer
+                        comment:
+                          type: string
+                        when:
+                          type: string
+  extensions:
+    type: object
+    properties:
+      pgaudit:
+        type: object
+        properties:
+          enabled:
+            type: boolean
+          shared_preload_libraries:
+            type: array
+            items:
+              type: string
+          config_file_parameters:
+            type: object
+            properties:
+              log_connections:
+                type: string
+              log_disconnections:
+                type: string
+              log_statement:
+                type: string
+              log_line_prefix:
+                type: string
+              pgaudit.log:
+                type: string
+              pgaudit.log_catalog:
+                type: string
+              pgaudit.log_relation:
+                type: string
+              pgaudit.log_statement_once:
+                type: string
+              pgaudit.log_parameter:
+                type: string
+      pgbouncer:
+        type: object
+        properties:
+          enabled:
+            type: boolean
+      replication:
+        type: object
+        properties:
+          enabled:
+            type: boolean
+          replication_user_name:
+            type: string
+          replication_user_password:
+            type: string
+          privileged_user_name:
+            type: string
+          privileged_user_password:
+            type: string
+          repmgr_database:
+            type: string
+          shared_preload_libraries:
+            type: array
+            items:
+              type: string
+  logrotate:
+    type: object
+    properties:
+      pgbouncer:
+        type: object
+        properties:
+          period:
+            type: string
+          rotations:
+            type: integer
+      postgresql:
+        type: string
