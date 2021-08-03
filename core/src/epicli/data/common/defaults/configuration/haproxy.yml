@@ -17,7 +17,7 @@ specification:
   frontend:
     - name: https_front
       port: 443
-      https: yes
+      https: true
       backend:
       - http_back1
   backend: # example backend config below
