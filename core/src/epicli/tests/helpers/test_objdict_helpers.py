@@ -111,8 +111,13 @@ def test_list_is_named_list():
 def test_list_is_not_named_list():
     l = dict_to_objdict({
         'list': [
-            'entry1',
-            'entry2'           
+            {
+                'name': 'name1',
+                'value': 'value1'
+            },
+            {
+                'value': 'value2'
+            }             
         ]
     })
 
