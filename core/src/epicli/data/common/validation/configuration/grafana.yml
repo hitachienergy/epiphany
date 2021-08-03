@@ -1,1 +1,376 @@
-$ref: '#/definitions/unvalidated_specification'
+"$id": "#/specification"
+title: "Grafana specification schema"
+description: "Grafana specification schema"
+type: object
+properties:
+  grafana_logs_dir:
+    type: string
+  grafana_data_dir:
+    type: string
+  grafana_address:
+    type: string
+  grafana_port:
+    type: integer
+  grafana_provisioning_synced:
+    type: boolean
+  grafana_url:
+    type: string
+  grafana_server:
+    type: object
+    properties:
+      protocol:
+        type: string
+      enforce_domain:
+        type: boolean
+      socket:
+        type: string
+      cert_key:
+        type: string
+      cert_file:
+        type: string
+      enable_gzip:
+        type: boolean
+      static_root_path:
+        type: string
+      router_logging:
+        type: boolean
+  grafana_security:
+    type: object
+    properties:
+      admin_user:
+        type: string
+      admin_password:
+        type: string
+      secret_key:
+        type: string
+      login_remember_days:
+        type: integer
+      cookie_username:
+        type: string
+      cookie_remember_name:
+        type: string
+      disable_gravatar:
+        type: boolean
+      data_source_proxy_whitelist:
+        type: 'null'
+  grafana_database:
+    type: object
+    properties:
+      type:
+        type: string
+      host:
+        type: string
+      name:
+        type: string
+      user:
+        type: string
+      password:
+        type: string
+      url:
+        type: string
+      ssl_mode:
+        type: string
+      path:
+        type: string
+      max_idle_conn:
+        type: integer
+      max_open_conn:
+        type: string
+      log_queries:
+        type: string
+  grafana_external_dashboards:
+    type: array
+    items:
+      type: object
+      properties:
+        dashboard_id:
+          type: string
+        datasource:
+          type: string
+  grafana_online_dashboards:
+    type: array
+    items:
+      type: object
+      properties:
+        dashboard_id:
+          type: string
+        revision_id:
+          type: string
+  grafana_dashboards_dir:
+    type: string
+  grafana_welcome_email_on_sign_up:
+    type: boolean
+  grafana_users:
+    type: object
+    properties:
+      allow_sign_up:
+        type: boolean
+      allow_org_create:
+        type: boolean
+      auto_assign_org:
+        type: boolean
+      auto_assign_org_role:
+        type: string
+      login_hint:
+        type: string
+      default_theme:
+        type: string
+      external_manage_link_url:
+        type: string
+      external_manage_link_name:
+        type: string
+      external_manage_info:
+        type: string
+  grafana_auth:
+    type: object
+    properties:
+      disable_login_form:
+        type: boolean
+      disable_signout_menu:
+        type: boolean
+      anonymous:
+        type: object
+        properties:
+          org_name:
+            type: string
+          org_role:
+            type: string
+      ldap:
+        type: object
+        properties:
+          config_file:
+            type: string
+          allow_sign_up:
+            type: boolean
+      basic:
+        type: object
+        properties:
+          enabled:
+            type: boolean
+  grafana_ldap:
+    type: object
+    properties:
+      verbose_logging:
+        type: boolean
+      servers:
+        type: object
+        properties:
+          host:
+            type: string
+          port:
+            type: integer
+          use_ssl:
+            type: boolean
+          start_tls:
+            type: boolean
+          ssl_skip_verify:
+            type: boolean
+          root_ca_cert:
+            type: string
+          bind_dn:
+            type: string
+          bind_password:
+            type: string
+          search_filter:
+            type: string
+          search_base_dns:
+            type: array
+            items:
+              type: string
+          group_search_filter:
+            type: string
+          group_search_base_dns:
+            type: array
+            items:
+              type: string
+          attributes:
+            type: object
+            properties:
+              name:
+                type: string
+              surname:
+                type: string
+              username:
+                type: string
+              member_of:
+                type: string
+              email:
+                type: string
+      group_mappings:
+        type: array
+        items:
+          type: object
+          properties:
+            name:
+              type: string
+            id:
+              type: integer
+            groups:
+              type: array
+              items:
+                type: object
+                properties:
+                  group_dn:
+                    type: string
+                  org_role:
+                    type: string
+  grafana_session:
+    type: object
+    properties:
+      provider:
+        type: string
+      provider_config:
+        type: string
+  grafana_analytics:
+    type: object
+    properties:
+      reporting_enabled:
+        type: boolean
+      google_analytics_ua_id:
+        type: string
+  grafana_smtp:
+    type: object
+    properties:
+      host:
+        type: string
+      user:
+        type: string
+      password:
+        type: string
+      from_address:
+        type: string
+  grafana_alerting:
+    type: object
+    properties:
+      execute_alerts:
+        type: boolean
+      error_or_timeout:
+        type: string
+      nodata_or_nullvalues:
+        type: string
+      concurrent_render_limit:
+        type: integer
+  grafana_log:
+    type: object
+    properties:
+      mode:
+        type: string
+      level:
+        type: string
+  grafana_metrics:
+    type: object
+    properties:
+      interval_seconds:
+        type: integer
+      graphite:
+        type: object
+        properties:
+          address:
+            type: string
+          prefix:
+            type: string
+  grafana_tracing:
+    type: object
+    properties:
+      address:
+        type: string
+      always_included_tag:
+        type: string
+      sampler_type:
+        type: string
+      sampler_param:
+        type: integer
+  grafana_snapshots:
+    type: object
+    properties:
+      external_enabled:
+        type: boolean
+      external_snapshot_url:
+        type: string
+      external_snapshot_name:
+        type: string
+      snapshot_remove_expired:
+        type: boolean
+      snapshot_TTL_days:
+        type: integer
+  grafana_image_storage:
+    type: object
+    properties:
+      provider:
+        type: string
+      key_file:
+        type: string
+      bucket:
+        type: string
+      path:
+        type: string
+  grafana_plugins:
+    type: array
+    items:
+      type: string
+  grafana_alert_notifications:
+    type: array
+    items:
+      type: object
+      properties:
+        name:
+          type: string
+        type:
+          type: string
+        isDefault:
+          type: boolean
+        settings:
+          type: object
+          properties:
+            addresses:
+              type: string
+  grafana_datasources:
+    type: array
+    items:
+      type: object
+      properties:
+        name:
+          type: string
+        type:
+          type: string
+        access:
+          type: string
+        url:
+          type: string
+        basicAuth:
+          type: boolean
+        basicAuthUser:
+          type: string
+        basicAuthPassword:
+          type: string
+        isDefault:
+          type: boolean
+        editable:
+          type: boolean
+        jsonData:
+          type: object
+          properties:
+            tlsAuth:
+              type: boolean
+            tlsAuthWithCACert:
+              type: boolean
+            tlsSkipVerify:
+              type: boolean
+  grafana_api_keys:
+    type: array
+    items:
+      type: object
+      properties:
+        name:
+          type: string
+        role:
+          type: string
+  grafana_logging:
+    type: object
+    properties:
+      log_rotate:
+        type: boolean
+      daily_rotate:
+        type: boolean
+      max_days:
+        type: integer

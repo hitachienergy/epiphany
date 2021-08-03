@@ -1,1 +1,15 @@
-$ref: '#/definitions/unvalidated_specification'
+"$id": "#/specification"
+title: "Subnet specification schema"
+description: "Subnet specification schema"
+type: object
+properties:
+  name:
+    type: string
+  vpc_name:
+    type: string
+  cidr_block:
+    type: string
+  cluster_name:
+    type: string
+  availability_zone:
+    type: string

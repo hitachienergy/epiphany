@@ -44,19 +44,6 @@ enabled=1
 EOF
 )
 
-GRAFANA_REPO_CONF=$(cat <<'EOF'
-[grafana]
-name=grafana
-baseurl=https://packages.grafana.com/oss/rpm
-repo_gpgcheck=1
-enabled=1
-gpgcheck=1
-gpgkey=https://packages.grafana.com/gpg.key
-sslverify=1
-sslcacert=/etc/pki/tls/certs/ca-bundle.crt
-EOF
-)
-
 KUBERNETES_REPO_CONF=$(cat <<'EOF'
 [kubernetes]
 name=Kubernetes
@@ -114,7 +101,6 @@ fi
 add_repo_as_file 'elastic-6' "$ELASTIC_6_REPO_CONF"
 add_repo_as_file 'elasticsearch-7' "$ELASTICSEARCH_7_REPO_CONF"
 add_repo_as_file 'elasticsearch-curator-5' "$ELASTICSEARCH_CURATOR_REPO_CONF"
-add_repo_as_file 'grafana' "$GRAFANA_REPO_CONF"
 add_repo_as_file 'kubernetes' "$KUBERNETES_REPO_CONF"
 add_repo_as_file 'opendistroforelasticsearch' "$OPENDISTRO_REPO_CONF"
 add_repo_as_file 'postgresql-13' "$POSTGRESQL_REPO_CONF"

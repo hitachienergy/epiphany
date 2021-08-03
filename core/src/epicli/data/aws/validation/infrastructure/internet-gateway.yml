@@ -1,1 +1,15 @@
-$ref: '#/definitions/unvalidated_specification'
+"$id": "#/specification"
+title: "Internet-gateway specification schema"
+description: "Internet-gateway specification schema"
+type: object
+properties:
+  name:
+    type: string
+  vpc_name:
+    type: string
+  cluster_name:
+    type: string
+  tag:
+    type: array
+    items:
+      type: string
