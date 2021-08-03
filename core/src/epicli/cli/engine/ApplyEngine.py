@@ -61,7 +61,7 @@ class ApplyEngine(Step):
 
         # Validate cluster input document.
         # Other documents might need more processing (SET_BY_AUTOMATION) so will be validated at a later stage.
-        with SchemaValidator(self.cluster_model.provider, [self.cluster_model]) as schema_validator:
+        with SchemaValidator(self.cluster_model, [self.cluster_model]) as schema_validator:
             schema_validator.run()
 
     def process_infrastructure_docs(self):
