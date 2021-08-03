@@ -20,7 +20,7 @@ specification:
     - ignite-kubernetes # required to work on K8s
     - ignite-rest-http
 
-# Abstract these configs to seperate default files and add
+# Abstract these configs to separate default files and add
 # the ability to add custom application roles.
 
 ## --- rabbitmq ---
@@ -78,7 +78,7 @@ specification:
   - name: pgpool # this service requires PostgreSQL to be installed in cluster
     enabled: false
     image:
-      path: bitnami/pgpool:4.1.1-debian-10-r29
+      path: bitnami/pgpool:4.2.2
       debug: false # ref: https://github.com/bitnami/minideb-extras/#turn-on-bash-debugging
     use_local_image_registry: true
     namespace: postgres-pool
@@ -141,9 +141,8 @@ specification:
 
   - name: pgbouncer
     enabled: false
-    #https://github.com/brainsam/pgbouncer/tree/release/1.12
-    image_path: brainsam/pgbouncer:1.12
-    init_image_path: bitnami/pgpool:4.1.1-debian-10-r29 #TODO: make reference to pgpool section
+    image_path: bitnami/pgbouncer:1.15.0
+    init_image_path: bitnami/pgpool:4.2.2 #TODO: make reference to pgpool section
     use_local_image_registry: true
     namespace: postgres-pool
     service:
@@ -181,5 +180,5 @@ specification:
         - istio-system
       istio: istio-system # namespace where istio control plane will be deployed
     istio_spec:
-      profile: default # Check all possibilites https://istio.io/latest/docs/setup/additional-setup/config-profiles/
+      profile: default # Check all possibilities https://istio.io/latest/docs/setup/additional-setup/config-profiles/
       name: istiocontrolplane

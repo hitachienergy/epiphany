@@ -21,7 +21,9 @@
 ### Updated
 
 - [#1797](https://github.com/epiphany-platform/epiphany/issues/1797) - Upgrade Keycloak to v14.0.0
+- [#1861](https://github.com/epiphany-platform/epiphany/issues/1861) - Upgrade PostgreSQL to v13
 - [#2074](https://github.com/epiphany-platform/epiphany/issues/2074) - Upgrade repmgr to 5.2.1
+- [#2077](https://github.com/epiphany-platform/epiphany/issues/2077) - Upgrade PgAudit to 1.5.0
 
 ### Deprecated
 

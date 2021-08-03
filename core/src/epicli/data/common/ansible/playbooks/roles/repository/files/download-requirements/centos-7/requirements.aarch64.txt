@@ -77,7 +77,7 @@ perl-libs # for vim
 perl-Pod-Perldoc # for vim
 perl-Pod-Simple # for vim
 perl-Pod-Usage # for vim
-pgaudit12_10
+pgaudit15_13-1.5.0
 policycoreutils-python # for container-selinux
 pyldb # for cifs-utils
 python-cffi # for python2-cryptography
@@ -96,7 +96,7 @@ quota # for nfs-utils
 rabbitmq-server-3.8.9
 #rh-haproxy18
 #rh-haproxy18-haproxy-syspaths
-postgresql10-server
+postgresql13-server
 samba-client
 samba-client-libs # for samba-client
 samba-common

@@ -1,23 +1,23 @@
 # {{ ansible_managed }}
 
-node_id={{ node_id }}
+node_id={{ _node_id }}
 node_name={{ inventory_hostname }}
-conninfo='host={{ ansible_default_ipv4.address }} user={{ replication_user_name }} dbname={{ repmgr_database }} connect_timeout=2'
-data_directory='{{ pg_data_dir }}'
+conninfo='host={{ ansible_default_ipv4.address }} user={{ _replication_user_name }} dbname={{ _repmgr_database }} connect_timeout=2'
+data_directory='{{ _pg_data_dir }}'
 
 failover=automatic
-promote_command='{{ pg_bin_dir }}/repmgr standby promote --log-to-file'
-follow_command='{{ pg_bin_dir }}/repmgr standby follow --log-to-file --upstream-node-id=%n'
+promote_command='{{ _pg_bin_dir }}/repmgr standby promote --log-to-file'
+follow_command='{{ _pg_bin_dir }}/repmgr standby follow --log-to-file --upstream-node-id=%n'
 monitoring_history=yes
 monitor_interval_secs=10
 
 log_file='/var/log/postgresql/repmgr.log'
 
-pg_bindir='{{ pg_bin_dir }}/'
-service_start_command='sudo /bin/systemctl start {{ pg_service_name }}'
-service_stop_command='sudo /bin/systemctl stop {{ pg_service_name }}'
-service_restart_command='sudo /bin/systemctl restart {{ pg_service_name }}'
-service_reload_command='sudo /bin/systemctl reload {{ pg_service_name }}'
+pg_bindir='{{ _pg_bin_dir }}/'
+service_start_command='sudo /bin/systemctl start {{ _pg_service_name }}'
+service_stop_command='sudo /bin/systemctl stop {{ _pg_service_name }}'
+service_restart_command='sudo /bin/systemctl restart {{ _pg_service_name }}'
+service_reload_command='sudo /bin/systemctl reload {{ _pg_service_name }}'
 
-repmgrd_service_start_command='sudo /bin/systemctl start {{ repmgr_service_name }}'
-repmgrd_service_stop_command='sudo /bin/systemctl stop {{ repmgr_service_name }}'
+repmgrd_service_start_command='sudo /bin/systemctl start {{ _repmgr_service_name }}'
+repmgrd_service_stop_command='sudo /bin/systemctl stop {{ _repmgr_service_name }}'

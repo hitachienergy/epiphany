@@ -230,13 +230,20 @@
   environment:
     KUBECONFIG: "{{ kubeconfig.local }}"
 
+# === postgresql ===
+
 - hosts: postgresql
   become: true
   become_method: sudo
   tasks:
+    # step 1: upgrade repmgr
     - include_role:
         name: postgresql
-        tasks_from: upgrade/extensions/replication/repmgr-main
-      vars:
-        pg_version: 10
+        tasks_from: upgrade/extensions/replication/pg-old/repmgr-main
+      when: "'postgresql' in upgrade_components or upgrade_components|length == 0"
+
+    # step 2: upgrade postgresql
+    - include_role:
+        name: postgresql
+        tasks_from: upgrade/main
       when: "'postgresql' in upgrade_components or upgrade_components|length == 0"
