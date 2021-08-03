@@ -371,6 +371,7 @@ Before upgrade procedure, make sure you have a data backup.
 With the latest Epiphany version it's possible to upgrade PostgreSQL to v13 with new extension versions:
 
 - PgAudit v1.5.0
+- PgBouncer v1.15.0
 - repmgr v5.2.1
 
 #### Upgrade
@@ -397,7 +398,7 @@ limitations related to specifying parameters for upgrade:
 
 #### Post-upgrade processing
 
-As p.13 of an [PostgreSQL documentation](https://www.postgresql.org/docs/13/pgupgrade.html) states there might be some
+As p.13 of [PostgreSQL documentation](https://www.postgresql.org/docs/13/pgupgrade.html) states there might be some
 scripts generated after an upgrade. There is no clear description in which cases and what location they are created, so
 please check logs after the upgrade to see if additional steps are required.
 

@@ -46,6 +46,7 @@ repmgr:
     RedHat: "5.2.1"
 
 pgbouncer:
+  base_dir: /etc/pgbouncer
   group:
     Debian: postgres
     RedHat: pgbouncer
@@ -58,3 +59,6 @@ pgbouncer:
   user:
     Debian: postgres
     RedHat: pgbouncer
+  version:
+    Debian: "1.15.0"
+    RedHat: "1.15.0"
