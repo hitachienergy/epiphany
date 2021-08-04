@@ -51,7 +51,7 @@ def assert_unique_names_in_named_list(list, key, type):
 # to_merge is passed by reference, item under key is updated, extended or replaced 
 def merge_list(to_merge, extend_by, key):
     if is_named_list(to_merge[key]) and is_named_list(extend_by):
-        # check for duplicates items in to_merge and extend_by
+        # ensure all items have unique names in to_merge and extend_by
         assert_unique_names_in_named_list(to_merge[key], key, 'default')    
         assert_unique_names_in_named_list(extend_by, key, 'input')
 
