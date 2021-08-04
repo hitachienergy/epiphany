@@ -4,6 +4,14 @@ from copy import deepcopy
 from collections.abc import Iterable
 
 
+class DuplicatesInNamedListException(Exception):
+    pass
+
+
+class TypeMismatchException(Exception):
+    pass
+
+
 def _nested_dict_to_dict(something, *, src_class, dst_class):
     if isinstance(something, src_class):
         return dst_class(
@@ -33,19 +41,19 @@ def is_named_list(l):
     return isinstance(l, Iterable) and all(hasattr(x, 'name') for x in l)
 
 
-def assert_duplicate_names_in_named_list(list, key, type): 
+def assert_unique_names_in_named_list(list, key, type): 
     all_names = [x["name"] for x in list] 
     for name in all_names: 
         if all_names.count(name) > 1: 
-            raise Exception( f'"name" field with value "{name}" occurs multiple times in list "{key}" in {type} definition.' )
+            raise DuplicatesInNamedListException( f'"name" field with value "{name}" occurs multiple times in list "{key}" in {type} definition.' )
 
 
 # to_merge is passed by reference, item under key is updated, extended or replaced 
 def merge_list(to_merge, extend_by, key):
     if is_named_list(to_merge[key]) and is_named_list(extend_by):
         # check for duplicates items in to_merge and extend_by
-        assert_duplicate_names_in_named_list(to_merge[key], key, 'default')    
-        assert_duplicate_names_in_named_list(extend_by, key, 'input')
+        assert_unique_names_in_named_list(to_merge[key], key, 'default')    
+        assert_unique_names_in_named_list(extend_by, key, 'input')
 
         # Merge possible matched objects from extend_by to to_merge
         for m_i in to_merge[key]:   
@@ -77,7 +85,7 @@ def merge_objdict(to_merge, extend_by):
                 to_merge[key] = val
             else:
                 # If we come here we are dealing with 2 different types we cannot merge so throw exception.
-                raise Exception(f'Types of key "{key}" are different: {type(to_merge[key])}, {type(val)}. Unable to merge.')
+                raise TypeMismatchException(f'Types of key "{key}" are different: {type(to_merge[key])}, {type(val)}. Unable to merge.')
         else:
             # Field not known in defaults so just add it. Might be extra config used by projects.
             to_merge[key] = val

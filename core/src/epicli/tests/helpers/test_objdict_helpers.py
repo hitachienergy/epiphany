@@ -1,6 +1,6 @@
 import pytest
 
-from cli.helpers.objdict_helpers import dict_to_objdict, objdict_to_dict, is_named_list, assert_duplicate_names_in_named_list, merge_objdict
+from cli.helpers.objdict_helpers import dict_to_objdict, objdict_to_dict, is_named_list, assert_unique_names_in_named_list, merge_objdict, DuplicatesInNamedListException, TypeMismatchException
 from cli.helpers.ObjDict import ObjDict
 from collections import OrderedDict
 
@@ -124,7 +124,7 @@ def test_list_is_not_named_list():
     assert is_named_list(l['list']) == False
 
 
-def test_assert_duplicate_names_in_named_list():
+def test_assert_unique_names_in_named_list():
     l = dict_to_objdict({
         'list': [
             {
@@ -137,8 +137,8 @@ def test_assert_duplicate_names_in_named_list():
             }             
         ]
     })
-    with pytest.raises(Exception) as e_info:
-        assert_duplicate_names_in_named_list(l['list'], 'list', 'input')
+    with pytest.raises(DuplicatesInNamedListException):
+        assert_unique_names_in_named_list(l['list'], 'list', 'input')
 
 
 def test_dict_merge_adds_key_when_is_missing():
@@ -166,7 +166,7 @@ def test_dict_merge_asserts_on_different_types():
     extend_by = dict_to_objdict({
         'field1': 1 # integer type
     })
-    with pytest.raises(Exception) as e_info:
+    with pytest.raises(TypeMismatchException):
         merge_objdict(base, extend_by)    
 
 
@@ -313,7 +313,7 @@ def test_dict_merge_asserts_on_base_named_list_with_duplicate_key():
             }            
         ]
     })
-    with pytest.raises(Exception) as e_info:
+    with pytest.raises(DuplicatesInNamedListException):
         merge_objdict(base, extend_by)
 
 
@@ -339,5 +339,5 @@ def test_dict_merge_asserts_on_extend_named_list_with_duplicate_key():
             }             
         ]
     })
-    with pytest.raises(Exception) as e_info:
+    with pytest.raises(DuplicatesInNamedListException):
         merge_objdict(base, extend_by)
