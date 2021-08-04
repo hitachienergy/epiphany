@@ -21,7 +21,6 @@
       /bin/systemctl stop {{ repmgr.service_name[ansible_os_family] }}
     validate: 'visudo -cf %s'
 
-
 - name: Extensions | repmgr | Create super user and replication user in PostgreSQL
   become_user: postgres
   vars:
@@ -40,6 +39,11 @@
   loop: "{{ _users }}"
 
 - name: Extensions | repmgr | Create pgpass file
+  vars:
+    _replication_user_name: "{{ specification.extensions.replication.replication_user_name }}"
+    _replication_user_password: "{{ specification.extensions.replication.replication_user_password }}"
+    _privileged_user_name: "{{ specification.extensions.replication.privileged_user_name }}"
+    _privileged_user_password: "{{ specification.extensions.replication.privileged_user_password }}"
   template:
     src: pgpass-repmgr.j2
     dest: "{{ pg.base_dir[ansible_os_family] }}/.pgpass"
@@ -64,15 +68,17 @@
     mode: u=rw,g=,o=
   register: template_repmgr_conf
   vars:
-    node_id: "{{ (groups.postgresql.index(inventory_hostname) + 1) }}"
-    pg_bin_dir: "{{ pg.bin_dir[ansible_os_family] }}"
-    pg_data_dir: "{{ pg.data_dir[ansible_os_family] }}"
-    pg_service_name: "{{ pg.service_name[ansible_os_family] }}"
-    repmgr_service_name: "{{ repmgr.service_name[ansible_os_family] }}"
+    _node_id: "{{ pg_node_id }}"
+    _pg_bin_dir: "{{ pg.bin_dir[ansible_os_family] }}"
+    _pg_data_dir: "{{ pg.data_dir[ansible_os_family] }}"
+    _pg_service_name: "{{ pg.service_name[ansible_os_family] }}"
+    _replication_user_name: "{{ specification.extensions.replication.replication_user_name }}"
+    _repmgr_database: "{{ specification.extensions.replication.repmgr_database }}"
+    _repmgr_service_name: "{{ repmgr.service_name[ansible_os_family] }}"
 
-# On Ubuntu config file location is not set by package (see https://repmgr.org/docs/4.0/packages-debian-ubuntu.html).
+# On Ubuntu config file location is not set by package (see https://repmgr.org/docs/5.2/packages-debian-ubuntu.html).
 # Create symlink to allow using repmgr commands without specifying config file location (which is custom).
-# See https://repmgr.org/docs/4.0/configuration-file.html
+# See https://repmgr.org/docs/5.2/configuration-file.html#CONFIGURATION-FILE-LOCATION
 - name: Extensions | repmgr | Debian specific tasks
   when: ansible_os_family == 'Debian'
   block:
@@ -126,10 +132,10 @@
 - name: Extensions | repmgr | Configure PostgreSQL cluster
   when: not pg_is_clustered
   vars:
-    pg_node_primary: "{{ groups.postgresql[0] }}" # the first node in the group is primary
+    _pg_primary_node: "{{ groups.postgresql[0] }}" # the first node in the group is primary
   block:
     - name: Extensions | repmgr | Register primary node
-      when: pg_node_primary == inventory_hostname
+      when: _pg_primary_node == inventory_hostname
       become_user: postgres
       command: >-
         {{ repmgr.bin_dir[ansible_os_family] }}/repmgr primary register
@@ -137,7 +143,7 @@
           --force
 
     - name: Extensions | repmgr | Clone standby node from primary and register
-      when: pg_node_primary != inventory_hostname
+      when: _pg_primary_node != inventory_hostname
       block:
         # Ubuntu specific: there are two systemd unit files: postgresql.service (service for managing all clusters
         # on system) and postgresql@.service (service template for clusters). The latter is 'PartOf' the former.
@@ -147,16 +153,11 @@
           systemd:
             name: "{{ service_name }}"
             state: stopped
-          vars:
-            _services:
-              Debian:
-                - "{{ pg.service_name['Debian'] }}"
-                - "{{ pg.instantiated_service_name['Debian'] }}"
-              RedHat:
-                - "{{ pg.service_name['RedHat'] }}"
           loop_control:
             loop_var: service_name
-          loop: "{{ _services[ansible_os_family] }}"
+          loop:
+            - "{{ pg.service_name[ansible_os_family] }}"
+            - "{{ pg.instantiated_service_name[ansible_os_family] }}"
 
         - name: Extensions | repmgr | Clone standby node with repmgr
           become_user: postgres

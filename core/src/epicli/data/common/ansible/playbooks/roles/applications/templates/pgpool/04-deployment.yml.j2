@@ -76,9 +76,6 @@ spec:
             - name: pgpool-passwords
               mountPath: /opt/bitnami/pgpool/secrets/pgpool_admin_password
               subPath: pgpool_admin_password
-            - name: pgpool-passwords
-              mountPath: /opt/bitnami/pgpool/secrets/pgpool_sha_encryption_key
-              subPath: pgpool_sha_encryption_key
             - name: pgpool-config-dir
               mountPath: /opt/bitnami/pgpool/conf/pgpool.conf
               subPath: pgpool.conf

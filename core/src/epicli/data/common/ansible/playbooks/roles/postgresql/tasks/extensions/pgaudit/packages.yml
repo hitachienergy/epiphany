@@ -5,9 +5,7 @@
     state: present
   vars:
     _packages:
-      Debian:
-        - postgresql-13-pgaudit
-      RedHat:
-        - pgaudit15_13
+      Debian: "{{ pgaudit.package_name.Debian }}={{ pgaudit.version.Debian + '-*' }}"
+      RedHat: "{{ pgaudit.package_name.RedHat }}-{{ pgaudit.version.RedHat }}"
   module_defaults:
     yum: { lock_timeout: "{{ yum_lock_timeout }}" }

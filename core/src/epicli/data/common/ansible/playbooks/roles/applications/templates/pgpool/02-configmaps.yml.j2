@@ -277,7 +277,6 @@ data:
     export PGPOOL_POSTGRES_CUSTOM_PASSWORDS="${PGPOOL_POSTGRES_CUSTOM_PASSWORDS:-}"
     export PGPOOL_AUTO_FAILBACK="${PGPOOL_AUTO_FAILBACK:-no}"
     export PGPOOL_BACKEND_APPLICATION_NAMES="${PGPOOL_BACKEND_APPLICATION_NAMES:-}"
-    export PGPOOLKEYFILE="${PGPOOLKEYFILE}"
 
     # SSL
     export PGPOOL_ENABLE_TLS="${PGPOOL_ENABLE_TLS:-no}"
@@ -499,14 +498,14 @@ data:
     #   None
     #########################
     pgpool_create_pghba() {
-        local authentication={{ postgresql_role_config.specification.configuration.password_encryption }}
+        local authentication=md5
         local postgres_auth_line=""
         local sr_check_auth_line=""
         info "Generating pg_hba.conf file..."
 
         is_boolean_yes "$PGPOOL_ENABLE_LDAP" && authentication="pam pamservice=pgpool"
         if is_boolean_yes "$PGPOOL_ENABLE_POOL_PASSWD"; then
-            postgres_auth_line="host     all             ${PGPOOL_POSTGRES_USERNAME}       all         {{ postgresql_role_config.specification.configuration.password_encryption }}"
+            postgres_auth_line="host     all             ${PGPOOL_POSTGRES_USERNAME}       all         md5"
         fi
         if [[ -n "$PGPOOL_SR_CHECK_USER" ]]; then
             sr_check_auth_line="host     all             ${PGPOOL_SR_CHECK_USER}       all         trust"
@@ -710,7 +709,7 @@ data:
     # Returns:
     #   None
     #########################
-    pgpool_generate_password_file_md5() {
+    pgpool_generate_password_file() {
         if is_boolean_yes "$PGPOOL_ENABLE_POOL_PASSWD"; then
             info "Generating password file for local authentication..."
 
@@ -731,32 +730,6 @@ data:
         else
             info "Skip generating password file due to PGPOOL_ENABLE_POOL_PASSWD = no"
         fi
-    }
-
-    pgpool_generate_password_file_sha() {
-        if is_boolean_yes "$PGPOOL_ENABLE_POOL_PASSWD"; then
-            info "Generating password file for local authentication..."
-
-            pg_enc --update-pass \
-                   --config-file=/opt/bitnami/pgpool/conf/pgpool.conf \
-                   --enc-key=$(cat $PGPOOLKEYFILE) \
-                   --username=$PGPOOL_POSTGRES_USERNAME $(cat $PGPOOL_POSTGRES_PASSWORD_FILE)
-
-        else
-            info "Skip generating password file due to PGPOOL_ENABLE_POOL_PASSWD = no"
-        fi
-    }
-
-    pgpool_generate_password_file() {
-        if [ {{ postgresql_role_config.specification.configuration.password_encryption }} == "md5" ]
-        then
-            pgpool_generate_password_file_md5
-        elif [ {{ postgresql_role_config.specification.configuration.password_encryption }} == "scram-sha-256" ]
-        then
-            pgpool_generate_password_file_sha
-        else
-            echo "Provided not supported parameter password_encryption"
-        fi  
     }
 
     ########################
@@ -1470,5 +1443,5 @@ data:
 {% else %}
     # Default configuration
     # TYPE   DATABASE        USER                   ADDRESS             METHOD
-    host     all             all                    all                 {{ postgresql_role_config.specification.configuration.password_encryption }}
+    host     all             all                    all                 md5
 {% endif %}

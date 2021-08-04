@@ -18,6 +18,15 @@ pg:
   service_name:
     Debian: postgresql
     RedHat: postgresql-13
+  version: 13
+
+pgaudit:
+  package_name:
+    Debian: postgresql-13-pgaudit
+    RedHat: pgaudit15_13
+  version:
+    Debian: "1.5.0"
+    RedHat: "1.5.0"
 
 repmgr:
   bin_dir:
@@ -26,6 +35,9 @@ repmgr:
   config_dir:
     Debian: /etc/postgresql/13/main
     RedHat: /etc/repmgr/13
+  package_name:
+    Debian: postgresql-13-repmgr
+    RedHat: repmgr13
   service_name:
     Debian: repmgrd
     RedHat: repmgr13

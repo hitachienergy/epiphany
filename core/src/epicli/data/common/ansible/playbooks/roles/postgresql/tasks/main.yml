@@ -119,6 +119,8 @@
 
 - name: Copy PostgreSQL configuration files
   vars:
+    _specification: "{{ specification }}"
+    _pg_data_dir: "{{ pg.data_dir[ansible_os_family] }}" # used in postgresql.conf
     _files:
       - pg_hba.conf
       - postgresql-epiphany.conf

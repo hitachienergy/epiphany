@@ -16,10 +16,12 @@
 
 ### Updated
 
-- [#2075](https://github.com/epiphany-platform/epiphany/issues/2075) - Upgrade of pgpool
-- [#2076](https://github.com/epiphany-platform/epiphany/issues/2076) - Upgrade of PgBouncer [Kubernetes]
+- [#2075](https://github.com/epiphany-platform/epiphany/issues/2075) - Upgrade of Pgpool to v4.2.3
+- [#2076](https://github.com/epiphany-platform/epiphany/issues/2076) - Upgrade of PgBouncer [Kubernetes] to v1.15.0
 - [#1797](https://github.com/epiphany-platform/epiphany/issues/1797) - Upgrade Keycloak to v14.0.0
+- [#1861](https://github.com/epiphany-platform/epiphany/issues/1861) - Upgrade PostgreSQL to v13
 - [#2074](https://github.com/epiphany-platform/epiphany/issues/2074) - Upgrade repmgr to 5.2.1
+- [#2077](https://github.com/epiphany-platform/epiphany/issues/2077) - Upgrade PgAudit to 1.5.0
 
 ### Deprecated
 
