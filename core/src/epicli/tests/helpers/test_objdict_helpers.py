@@ -138,7 +138,7 @@ def test_assert_duplicate_names_in_named_list():
         ]
     })
     with pytest.raises(Exception) as e_info:
-        assert_duplicate_names_in_named_list(l['list'], 'list', input)
+        assert_duplicate_names_in_named_list(l['list'], 'list', 'input')
 
 
 def test_dict_merge_adds_key_when_is_missing():
