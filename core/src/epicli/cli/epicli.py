@@ -420,7 +420,7 @@ def ensure_vault_password_is_cleaned():
         os.remove(Config().vault_password_location)
 
 
-def total_run_time():
+def log_total_run_time():
     logger = Log('run_time')
     passed_time = format_time(time.time()-start_time)
     logger.info(f'Total run time: {passed_time}')
