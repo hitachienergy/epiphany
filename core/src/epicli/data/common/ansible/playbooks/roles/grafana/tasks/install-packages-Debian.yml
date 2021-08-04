@@ -1,0 +1,5 @@
+---
+- name: Install Grafana with dependencies
+  apt:
+    deb: "{{ _package_url }}"
+    state: present

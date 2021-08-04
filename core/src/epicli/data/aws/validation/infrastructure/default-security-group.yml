@@ -1,1 +1,28 @@
-$ref: '#/definitions/unvalidated_specification'
+"$id": "#/specification"
+title: "Default-security-group specification schema"
+description: "Default-security-group specification schema"
+type: object
+properties:
+  name:
+    type: string
+  vpc_name:
+    type: string
+  rules:
+    type: array
+    items:
+      type: object
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+        direction:
+          type: string
+        protocol:
+          type: string
+        destination_port_range:
+          type: string
+        source_address_prefix:
+          type: string
+        destination_address_prefix:
+          type: string

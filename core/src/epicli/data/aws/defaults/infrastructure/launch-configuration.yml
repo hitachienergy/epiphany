@@ -12,6 +12,3 @@ specification:
   associate_public_ip: SET_BY_AUTOMATION
   security_groups: [] # SET_BY_AUTOMATION
   enable_monitoring: true
-
-
-

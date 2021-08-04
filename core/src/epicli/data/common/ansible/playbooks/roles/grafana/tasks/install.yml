@@ -4,18 +4,9 @@
     name: grafana-data
     state: absent
 
-- name: Install Grafana with dependencies
-  package:
-    name: "{{ _packages[ansible_os_family] }}"
-    state: present
+- include_tasks: install-packages-{{ ansible_os_family }}.yml
   vars:
-    _packages:
-      Debian:
-        - grafana={{ grafana_version }}
-      RedHat:
-        - grafana-{{ grafana_version }}
-  module_defaults:
-    yum: { lock_timeout: "{{ yum_lock_timeout }}" }
+    _package_url: "{{ repository_url }}/files/{{ grafana_package.filename[ansible_os_family][ansible_architecture] }}"
 
 - name: Recursively chown /etc/grafana (fix permissions)
   file:

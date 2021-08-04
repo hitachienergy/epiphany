@@ -1,1 +1,11 @@
-$ref: '#/definitions/unvalidated_specification'
+"$id": "#/specification"
+title: "Ignite specification schema"
+description: "Ignite specification schema"
+type: object
+properties:
+  enabled_plugins:
+    type: array
+    items:
+      type: string
+  config:
+    type: string
