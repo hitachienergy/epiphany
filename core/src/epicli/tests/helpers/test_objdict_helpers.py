@@ -317,7 +317,7 @@ def test_dict_merge_asserts_on_base_named_list_with_duplicate_name():
         merge_objdict(base, extend_by)
 
 
-def test_dict_merge_asserts_on_extend_named_list_with_duplicate_key():
+def test_dict_merge_asserts_on_extend_named_list_with_duplicate_name():
     base = dict_to_objdict({
         'field1': 'test1', 
         'list': [
