@@ -428,7 +428,7 @@ def log_total_run_time():
 
 def exit_handler():
     ensure_vault_password_is_cleaned()
-    total_run_time()
+    log_total_run_time()
  
 
 def dump_debug_info():
