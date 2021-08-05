@@ -22,6 +22,8 @@
       shell: |-
         set -o pipefail && \
         df --output=source {{ pg_new.pg.base_dir[ansible_os_family] }} | tail -1
+      args:
+        executable: /bin/bash
       changed_when: false
       register: pg_data_disk
 

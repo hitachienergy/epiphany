@@ -9,6 +9,22 @@ sudo -u postgres -i
 Then configure database server using psql according to your needs and
 [PostgreSQL documentation](https://www.postgresql.org/docs/).
 
+## PostgreSQL passwords encryption
+
+Epiphany sets up MD5 password encryption by default. Although PostgreSQL since version 10 is able to use SCRAM SHA-256 password encryption, Epiphany does support this encryption only for one-node Postgresql configuration. HA components like pgbouncer and pgpool are not able to refresh users/passwords list while this encryption is enabled. So those components can be used only with MD5 passwords.
+
+However this parameter may be set up as showed below:
+
+```yaml
+kind: configuration/postgresql
+title: PostgreSQL
+name: default
+specification:
+  configuration:
+    password_encryption: md5  # md5 or scram-sha-256
+```
+We do not recommend to change this option especially on running database, since this require to encrypt again all passwords.
+
 ## How to set up PostgreSQL connection pooling
 
 ---
@@ -63,35 +79,36 @@ specification:
     parameter_groups:
       ...
       # This block is optional, you can use it to override default values
-      - name: REPLICATION
-        subgroups:
-          - name: Sending Server(s)
-            parameters:
-              - name: max_wal_senders
-                value: 10 # default value
-                comment: maximum number of simultaneously running WAL sender processes
-                when: replication
-              - name: wal_keep_segments
-                value: 34 # default value
-                comment: number of WAL files held for standby servers
-                when: replication
-          - name: Standby Servers
-            parameters:
-              - name: hot_standby
-                value: 'on' # default value
-                comment: must be 'on' for repmgr needs, ignored on primary but recommended in case primary becomes standby
-                when: replication
+    - name: REPLICATION
+      subgroups:
+      - name: Sending Server(s)
+        parameters:
+        - name: max_wal_senders
+          value: 10
+          comment: maximum number of simultaneously running WAL sender processes
+          when: replication
+        - name: wal_keep_size
+          value: 500
+          comment: the size of WAL files held for standby servers (MB)
+          when: replication
+      - name: Standby Servers
+        parameters:
+        - name: hot_standby
+          value: on
+          comment: must be 'on' for repmgr needs, ignored on primary but recommended
+            in case primary becomes standby
+          when: replication
   extensions:
     ...
     replication:
       enabled: true
-      replication_user_name: your_privileged_user_name
+      replication_user_name: epi_repmgr
       replication_user_password: PASSWORD_TO_CHANGE
-      privileged_user_name: your_privileged_user_name
+      privileged_user_name: epi_repmgr_admin
       privileged_user_password: PASSWORD_TO_CHANGE
-      repmgr_database: repmgr
+      repmgr_database: epi_repmgr
       shared_preload_libraries:
-        - repmgr
+      - repmgr
     ...
 ```
 
@@ -192,7 +209,7 @@ specification:
 ## --- pgpool ---
 
   - name: pgpool
-    enabled: yes
+    enabled: true
     ...
     namespace: postgres-pool
     service:
@@ -200,7 +217,7 @@ specification:
       port: 5432
     replicas: 3
     ...
-    resources: # Adjust to your configuration, see https://www.pgpool.net/docs/41/en/html/resource-requiremente.html
+    resources: # Adjust to your configuration, see https://www.pgpool.net/docs/42/en/html/resource-requiremente.html
       limits:
         # cpu: 900m # Set according to your env
         memory: 176Mi
@@ -216,8 +233,9 @@ specification:
         PGPOOL_SR_CHECK_USER: epi_pgpool_sr_check # with pg_monitor role, for streaming replication checks and health checks
         # ---
         PGPOOL_ADMIN_USERNAME: epi_pgpool_admin # Pgpool administrator (local pcp user)
-        PGPOOL_ENABLE_LOAD_BALANCING: yes # set to 'no' if there is no replication
+        PGPOOL_ENABLE_LOAD_BALANCING: false # set to 'false' if there is no replication
         PGPOOL_MAX_POOL: 4
+        PGPOOL_CHILD_LIFE_TIME: 0
         PGPOOL_POSTGRES_PASSWORD_FILE: /opt/bitnami/pgpool/secrets/pgpool_postgres_password
         PGPOOL_SR_CHECK_PASSWORD_FILE: /opt/bitnami/pgpool/secrets/pgpool_sr_check_password
         PGPOOL_ADMIN_PASSWORD_FILE: /opt/bitnami/pgpool/secrets/pgpool_admin_password
@@ -225,7 +243,7 @@ specification:
         pgpool_postgres_password: PASSWORD_TO_CHANGE
         pgpool_sr_check_password: PASSWORD_TO_CHANGE
         pgpool_admin_password: PASSWORD_TO_CHANGE
-      # https://www.pgpool.net/docs/41/en/html/runtime-config.html
+      # https://www.pgpool.net/docs/42/en/html/runtime-config.html
       pgpool_conf_content_to_append: |
         #------------------------------------------------------------------------------
         # CUSTOM SETTINGS (appended by Epiphany to override defaults)
@@ -239,7 +257,7 @@ specification:
 ## --- pgbouncer ---
 
   - name: pgbouncer
-    enabled: yes
+    enabled: true
     ...
     namespace: postgres-pool
     service:
@@ -257,10 +275,10 @@ specification:
       env:
         DB_HOST: pgpool.postgres-pool.svc.cluster.local # pgpool service name
         DB_LISTEN_PORT: 5432
-        LISTEN_ADDR: "*"
+        LISTEN_ADDR: 0.0.0.0
         LISTEN_PORT: 5432
-        AUTH_FILE: "/etc/pgbouncer/auth/users.txt"
-        AUTH_TYPE: md5
+        CONFIG_FILE: /opt/bitnami/pgbouncer/conf/pgbouncer.ini
+        AUTH_FILE: /opt/bitnami/pgbouncer/conf/userlist.txt
         MAX_CLIENT_CONN: 150
         DEFAULT_POOL_SIZE: 25
         RESERVE_POOL_SIZE: 25
