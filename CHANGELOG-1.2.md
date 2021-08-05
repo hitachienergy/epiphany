@@ -22,6 +22,7 @@
 
 - [#1797](https://github.com/epiphany-platform/epiphany/issues/1797) - Upgrade Keycloak to v14.0.0
 - [#2074](https://github.com/epiphany-platform/epiphany/issues/2074) - Upgrade repmgr to 5.2.1
+- [#2074](https://github.com/epiphany-platform/epiphany/issues/2074) - Upgrade Docker-CE to v20.10.8
 
 ### Deprecated
 
