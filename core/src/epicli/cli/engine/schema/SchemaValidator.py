@@ -60,9 +60,13 @@ class SchemaValidator(Step):
 
     def run(self):
         for doc in self.validation_docs:
-            self.logger.info(f'Validating: {doc.kind}')
             schema = self.get_base_schema(doc.kind)
             schema['properties']['specification'] = load_yaml_obj(types.VALIDATION, self.cluster_model.provider, doc.kind)
+            if hasattr(doc["specification"], 'name'):
+                name = doc["specification"]["name"]
+                self.logger.info(f'Validating: {doc.kind} - {name}')
+            else:
+                self.logger.info(f'Validating: {doc.kind}')            
             if hasattr(schema['properties']["specification"], '$ref'):
                 if schema['properties']["specification"]['$ref'] == '#/definitions/unvalidated_specification':
                     self.logger.warn('No specification validation for ' + doc.kind)

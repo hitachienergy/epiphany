@@ -20,6 +20,7 @@ from cli.engine.UpgradeEngine import UpgradeEngine
 from cli.engine.TestEngine import TestEngine
 from cli.helpers.Log import Log
 from cli.helpers.Config import Config
+from cli.helpers.time_helpers import format_time
 from cli.version import VERSION
 from cli.licenses import LICENSES
 from cli.helpers.query_yes_no import query_yes_no
@@ -27,6 +28,7 @@ from cli.helpers.input_query import prompt_for_password
 from cli.helpers.build_saver import save_to_file, get_output_path
 from cli.engine.spec.SpecCommand import SpecCommand
 
+start_time = time.time()
 
 def main():
     config = Config()
@@ -415,8 +417,15 @@ def ensure_vault_password_is_cleaned():
         os.remove(Config().vault_password_location)
 
 
+def log_total_run_time():
+    logger = Log('run_time')
+    passed_time = format_time(time.time()-start_time)
+    logger.info(f'Total run time: {passed_time}')
+
+
 def exit_handler():
     ensure_vault_password_is_cleaned()
+    log_total_run_time()
 
 
 def dump_debug_info():
