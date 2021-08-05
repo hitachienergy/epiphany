@@ -1,1 +1,97 @@
-$ref: '#/definitions/unvalidated_specification'
+"$id": "#/specification"
+title: "Virtual-machine specification schema"
+description: "Virtual-machine specification schema"
+type: object
+properties:
+  name:
+    type: string
+  admin_username:
+    type: string
+  admin_password:
+    type: string
+  public_key:
+    type: string
+  network_interface_name:
+    type: string
+  availability_set_name:
+    type: string
+  tags:
+    type: array
+    items:
+      items: {}
+  os_type:
+    type: string
+  size:
+    type: string
+  use_cloud_init_custom_data:
+    type: boolean
+  storage_image_reference:
+    type: object
+    properties:
+      publisher:
+        type: string
+      offer:
+        type: string
+      sku:
+        type: string
+      version:
+        type: string
+  storage_os_disk:
+    type: object
+    properties:
+      delete_on_termination:
+        type: boolean
+      managed:
+        type: boolean
+      caching:
+        type: string
+      create_option:
+        type: string
+      disk_size_gb:
+        type: integer
+      managed_disk_type:
+        type: string
+  network_interface:
+    type: object
+    properties:
+      enable_accelerated_networking:
+        type: boolean
+      private_ip:
+        type: 'null'
+      public_ip:
+        type: object
+        properties:
+          allocation_method:
+            type: string
+          idle_timeout_in_minutes:
+            type: integer
+          sku:
+            type: string
+  security:
+    type: object
+    properties:
+      rules:
+        type: array
+        items:
+          type: object
+          properties:
+            name:
+              type: string
+            description:
+              type: string
+            priority:
+              type: integer
+            direction:
+              type: string
+            access:
+              type: string
+            protocol:
+              type: string
+            source_port_range:
+              type: string
+            destination_port_range:
+              type: string
+            source_address_prefix:
+              type: string
+            destination_address_prefix:
+              type: string

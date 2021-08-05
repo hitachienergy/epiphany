@@ -1,9 +1,8 @@
-from jsonschema import validate
+from jsonschema import validate, Draft7Validator
 from cli.helpers.data_loader import load_yaml_obj, types
-from cli.helpers.objdict_helpers import objdict_to_dict, dict_to_objdict
+from cli.helpers.objdict_helpers import objdict_to_dict, dict_to_objdict, replace_yesno_with_booleans
 from cli.helpers.Step import Step
 from copy import deepcopy
-from cli.helpers.doc_list_helpers import select_single
 
 
 class SchemaValidator(Step):
@@ -32,6 +31,16 @@ class SchemaValidator(Step):
         schema.properties.kind.pattern = '^(' + kind + ')$'
         return schema
 
+    def validate_document(self, doc, schema):
+        try:
+            replace_yesno_with_booleans(doc)
+            Draft7Validator.check_schema(schema)
+            validate(instance=objdict_to_dict(doc), schema=schema)
+        except Exception as e:
+            self.logger.error(f'Failed validating: {doc.kind}')
+            self.logger.error(e)
+            raise Exception('Schema validation error, see the error above.')        
+
     def run_for_individual_documents(self):
         for doc in self.validation_docs:
             # Load document schema
@@ -46,12 +55,8 @@ class SchemaValidator(Step):
                     self.logger.warn('No specification validation for ' + doc.kind)
 
             # Assert the schema
-            try:
-                validate(instance=objdict_to_dict(doc), schema=objdict_to_dict(schema))
-            except Exception as e:
-                self.logger.error(f'Failed validating: {doc.kind}')
-                self.logger.error(e)
-                raise Exception('Schema validation error, see the error above.')
+            schema_dict = objdict_to_dict(schema)
+            self.validate_document(doc, schema_dict)
 
     def run(self):
         for doc in self.validation_docs:
@@ -61,9 +66,5 @@ class SchemaValidator(Step):
             if hasattr(schema['properties']["specification"], '$ref'):
                 if schema['properties']["specification"]['$ref'] == '#/definitions/unvalidated_specification':
                     self.logger.warn('No specification validation for ' + doc.kind)
-            try:
-                validate(instance=objdict_to_dict(doc), schema=objdict_to_dict(schema))
-            except Exception as e:
-                self.logger.error(f'Failed validating: {doc.kind}')
-                self.logger.error(e)
-                raise Exception('Schema validation error, see the error above.')
+            schema_dict = objdict_to_dict(schema)
+            self.validate_document(doc, schema_dict)

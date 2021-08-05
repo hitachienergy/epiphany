@@ -43,7 +43,6 @@ firewalld
 fontconfig # for grafana
 fping
 gnutls # for cifs-utils
-grafana-7.3.5
 gssproxy # for nfs-utils
 htop
 iftop
@@ -95,6 +94,7 @@ python-slip-dbus # for firewalld
 python-ipaddress
 python-backports
 python2-cryptography # for Ansible (certificate modules)
+python3-3.6.8
 quota # for nfs-utils
 rabbitmq-server-3.8.9
 rh-haproxy18
@@ -138,13 +138,19 @@ kubernetes-cni-0.7.5-0
 kubernetes-cni-0.8.6-0
 
 [files]
+# --- Packages ---
 # Github repository for erlang rpm is used since packagecloud repository is limited to a certain number of versions and erlang package from erlang-solutions repository is much more complex and bigger
 https://github.com/rabbitmq/erlang-rpm/releases/download/v23.1.5/erlang-23.1.5-1.el7.x86_64.rpm
+# Grafana package is not downloaded from repository since it was not reliable (issue #2449)
+https://dl.grafana.com/oss/release/grafana-7.3.5-1.x86_64.rpm
+# --- Exporters ---
 https://github.com/prometheus/haproxy_exporter/releases/download/v0.10.0/haproxy_exporter-0.10.0.linux-amd64.tar.gz
 https://repo1.maven.org/maven2/io/prometheus/jmx/jmx_prometheus_javaagent/0.14.0/jmx_prometheus_javaagent-0.14.0.jar
-https://archive.apache.org/dist/kafka/2.6.0/kafka_2.12-2.6.0.tgz
 https://github.com/danielqsj/kafka_exporter/releases/download/v1.2.0/kafka_exporter-1.2.0.linux-amd64.tar.gz
 https://github.com/prometheus/node_exporter/releases/download/v1.0.1/node_exporter-1.0.1.linux-amd64.tar.gz
+https://github.com/prometheus-community/postgres_exporter/releases/download/v0.9.0/postgres_exporter-0.9.0.linux-amd64.tar.gz
+# --- Misc ---
+https://archive.apache.org/dist/kafka/2.6.0/kafka_2.12-2.6.0.tgz
 https://github.com/prometheus/prometheus/releases/download/v2.10.0/prometheus-2.10.0.linux-amd64.tar.gz
 https://github.com/prometheus/alertmanager/releases/download/v0.17.0/alertmanager-0.17.0.linux-amd64.tar.gz
 https://archive.apache.org/dist/zookeeper/zookeeper-3.5.8/apache-zookeeper-3.5.8-bin.tar.gz
@@ -152,10 +158,10 @@ https://archive.apache.org/dist/ignite/2.9.1/apache-ignite-2.9.1-bin.zip
 https://releases.hashicorp.com/vault/1.7.0/vault_1.7.0_linux_amd64.zip
 https://get.helm.sh/helm-v3.2.0-linux-amd64.tar.gz
 https://github.com/hashicorp/vault-helm/archive/v0.11.0.tar.gz
-https://github.com/prometheus-community/postgres_exporter/releases/download/v0.9.0/postgres_exporter-0.9.0.linux-amd64.tar.gz
-https://charts.bitnami.com/bitnami/node-exporter-1.1.2.tgz
+# --- Helm charts ---
 https://helm.elastic.co/helm/filebeat/filebeat-7.9.2.tgz
-## Grafana Dashboards <url> <new filename>
+https://charts.bitnami.com/bitnami/node-exporter-1.1.2.tgz
+# --- Grafana Dashboards <url> <new filename> ---
 # Kubernetes Cluster
 https://grafana.com/api/dashboards/7249/revisions/1/download grafana_dashboard_7249.json
 # Kubernetes cluster monitoring (via Prometheus)
