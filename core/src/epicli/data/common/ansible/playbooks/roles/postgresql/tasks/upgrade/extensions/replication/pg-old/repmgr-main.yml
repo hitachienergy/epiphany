@@ -32,6 +32,6 @@
       register: stat_upgrade_state_file
 
     - name: repmgr for PG {{ upgrade_defaults.pg.version }} | Upgrade repmgr
-      include_tasks: roles/postgresql/tasks/upgrade/extensions/replication/repmgr-upgrade.yml
+      include_tasks: roles/postgresql/tasks/upgrade/extensions/replication/pg-old/repmgr-upgrade.yml
       when: _target_version is version(_installed_version, '>')
-        or stat_upgrade_state_file.stat.exists
+         or stat_upgrade_state_file.stat.exists
