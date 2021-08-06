@@ -183,8 +183,7 @@
                   --old-bindir {{ old_version.pg.bin_dir[ansible_os_family] }}
                   --new-bindir {{ new_version.pg.bin_dir[ansible_os_family] }}
                   --old-options '-c config_file={{ old_version.pg.config_dir[ansible_os_family] }}/postgresql.conf'
-                  --new-options '-c config_file={{ _new_version_config_dir }}/postgresql.conf
-                                 -c hba_file={{ _new_version_config_dir }}/pg_hba.conf'
+                  --new-options '-c config_file={{ _new_version_config_dir }}/postgresql.conf -c hba_file={{ _new_version_config_dir }}/pg_hba.conf'
                   --socketdir /var/run/postgresql
                   --jobs {{ ansible_processor_vcpus }}
                   --check
@@ -202,8 +201,7 @@
                   --old-bindir {{ old_version.pg.bin_dir[ansible_os_family] }}
                   --new-bindir {{ new_version.pg.bin_dir[ansible_os_family] }}
                   --old-options '-c config_file={{ old_version.pg.config_dir[ansible_os_family] }}/postgresql.conf'
-                  --new-options '-c config_file={{ _new_version_config_dir }}/postgresql.conf
-                                 -c hba_file={{ _new_version_config_dir }}/pg_hba.conf'
+                  --new-options '-c config_file={{ _new_version_config_dir }}/postgresql.conf -c hba_file={{ _new_version_config_dir }}/pg_hba.conf'
                   --socketdir /var/run/postgresql
                   --jobs {{ ansible_processor_vcpus }}
               register: pg_upgrade_run
