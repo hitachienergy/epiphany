@@ -14,6 +14,7 @@ cri-tools 1.13.0
 curl
 docker-ce 5:20.10.8
 docker-ce-cli 5:20.10.8
+docker-ce-rootless-extras 5:20.10.8
 ebtables
 elasticsearch-oss 7.10.2 # for opendistroforelasticsearch & logging roles
 
