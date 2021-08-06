@@ -156,6 +156,9 @@
         # also with file copying there is an ability to create new data directory not on the same file system
         - name: PostgreSQL | Run pg_upgrade
           become_user: postgres
+          module_defaults:
+            command:
+              chdir: /var/log/postgresql  # to have pg_upgrade logs in this dir
           block:
             # This check is not in the 'preflight' as at that stage new version is not available
             # Checks:
@@ -204,8 +207,6 @@
                   --socketdir /var/run/postgresql
                   --jobs {{ ansible_processor_vcpus }}
               register: pg_upgrade_run
-              args:
-                chdir: /var/log/postgresql  # to have logs in this dir
 
             - name: PostgreSQL | Extend log information
               vars:
