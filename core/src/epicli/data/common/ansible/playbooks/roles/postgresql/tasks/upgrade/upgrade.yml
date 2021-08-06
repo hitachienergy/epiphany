@@ -59,8 +59,18 @@
         group: postgres
         mode: u=rwx,g=,o= # Permissions should be u=rwx (0700) or u=rwx,g=rx (0750)
 
-    - name: PostgreSQL | RedHat | Initialize database
-      when: ansible_os_family == 'RedHat'
+    # Database doesn't initialize automatically during second run (after rollback)
+    - name: PostgreSQL | Ubuntu | Check if database is initialized
+      when: ansible_os_family != 'RedHat'
+      stat:
+        path: "{{ new_version.pg.data_dir[ansible_os_family] }}/PG_VERSION"
+        get_attributes: false
+        get_checksum: false
+        get_mime: false
+      register: stat_pg_version_file
+
+    - name: PostgreSQL | Initialize database
+      when: ansible_os_family == 'RedHat' or not stat_pg_version_file.stat.exists
       command: "{{ new_version.pg.bin_dir[ansible_os_family] }}/initdb"
       become_user: postgres
       environment:
