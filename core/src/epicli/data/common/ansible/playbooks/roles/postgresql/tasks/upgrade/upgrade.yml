@@ -317,6 +317,13 @@
         - pg_is_repmgr_used
         - ansible_os_family == 'RedHat'
 
+    - name: PostgreSQL | Rollback | Extensions | repmgr | Ubuntu | Update symlink to config file
+      file:
+        src: "{{ old_version.repmgr.config_dir[ansible_os_family] }}/repmgr.conf"
+        dest: /etc/repmgr.conf
+        state: link
+      when: ansible_os_family == 'Debian'
+
     - name: PostgreSQL | Rollback | Start and enable PostgreSQL {{ old_version.pg.version }} service on primary node
       when: (pg_is_repmgr_used and inventory_hostname == pg_primary_node) or not pg_is_repmgr_used
       <<: &start_pg_services
