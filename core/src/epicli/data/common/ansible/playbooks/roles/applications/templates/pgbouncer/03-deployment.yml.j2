@@ -46,8 +46,14 @@ spec:
             failureThreshold: 6
           volumeMounts:
             - name: pgpool-shared-init-dir
-              mountPath: /etc/pgbouncer/auth/users.txt
-              subPath: users.txt
+              mountPath: /bitnami/pgbouncer/conf/userlist.txt
+              subPath: userlist.txt
+            - name: pgbouncer-config-files
+              mountPath: /bitnami/pgbouncer/conf/pgbouncer.ini
+              subPath: pgbouncer.ini
+            - name: pgbouncer-init-scripts
+              mountPath: /opt/bitnami/scripts/libpgbouncer.sh
+              subPath: libpgbouncer.sh
       initContainers:
         - name: pgbouncer-init
 {% if use_epiphany_image_registry %}
@@ -55,7 +61,8 @@ spec:
 {% else %}
           image: {{ data.init_image_path }}
 {% endif %}
-          command:
+          command: ["/bin/sh", "-c"]
+          args:
             - /epiphany/scripts/init_users_passwd_file.sh
           envFrom:
             - configMapRef:
@@ -73,6 +80,9 @@ spec:
           configMap:
             name: pgbouncer-init-scripts
             defaultMode: 0755
+        - name: pgbouncer-config-files
+          configMap:
+            name: pgbouncer-config-files
         - name: pgpool-passwords
           secret:
             secretName: pgpool-passwords

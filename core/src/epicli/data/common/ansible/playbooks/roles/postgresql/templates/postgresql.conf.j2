@@ -89,7 +89,7 @@ max_connections = 100			# (change requires restart)
 # - Authentication -
 
 #authentication_timeout = 1min		# 1s-600s
-password_encryption = scram-sha-256		# md5 or scram-sha-256
+password_encryption = {{ specification.configuration.password_encryption }}		# md5 or scram-sha-256
 #db_user_namespace = off
 
 # GSSAPI using Kerberos
