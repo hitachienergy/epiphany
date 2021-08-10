@@ -60,7 +60,7 @@
         mode: u=rwx,g=,o= # Permissions should be u=rwx (0700) or u=rwx,g=rx (0750)
 
     # Database doesn't initialize automatically during second run (after rollback)
-    - name: PostgreSQL | Ubuntu | Check if database is initialized
+    - name: PostgreSQL | Debian | Check if database is initialized
       when: ansible_os_family != 'RedHat'
       stat:
         path: "{{ new_version.pg.data_dir[ansible_os_family] }}/PG_VERSION"
@@ -317,7 +317,7 @@
         - pg_is_repmgr_used
         - ansible_os_family == 'RedHat'
 
-    - name: PostgreSQL | Rollback | Extensions | repmgr | Ubuntu | Update symlink to config file
+    - name: PostgreSQL | Rollback | Extensions | repmgr | Debian | Update symlink to config file
       file:
         src: "{{ old_version.repmgr.config_dir[ansible_os_family] }}/repmgr.conf"
         dest: /etc/repmgr.conf
