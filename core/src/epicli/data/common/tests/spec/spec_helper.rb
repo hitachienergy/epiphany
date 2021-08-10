@@ -118,3 +118,13 @@ set :shell, '/bin/bash'
     end
     return list
   end
+
+  def upgradeRun?
+    all_group_vars_file_path = getBuildDirPath() + "ansible/group_vars/all.yml"
+    docs = readYaml(all_group_vars_file_path)
+    return docs[0]["is_upgrade_run"]
+  end
+
+  def getRoleDirPath(role)
+    return getBuildDirPath() + "ansible/roles" + role
+  end

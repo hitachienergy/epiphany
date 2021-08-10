@@ -27,9 +27,21 @@ replicated =           config_docs[:postgresql]["specification"]["extensions"]["
 replication_user =     config_docs[:postgresql]["specification"]["extensions"]["replication"]["replication_user_name"]
 replication_password = config_docs[:postgresql]["specification"]["extensions"]["replication"]["replication_user_password"]
 max_wal_senders =      config_docs[:postgresql]["specification"]["config_file"]["parameter_groups"].detect {|i| i["name"] == 'REPLICATION'}["subgroups"].detect {|i| i["name"] == "Sending Server(s)"}["parameters"].detect {|i| i["name"] == "max_wal_senders"}["value"]
-wal_keep_size =    config_docs[:postgresql]["specification"]["config_file"]["parameter_groups"].detect {|i| i["name"] == 'REPLICATION'}["subgroups"].detect {|i| i["name"] == "Sending Server(s)"}["parameters"].detect {|i| i["name"] == "wal_keep_size"}["value"]
 pgbouncer_enabled =    config_docs[:postgresql]["specification"]["extensions"]["pgbouncer"]["enabled"]
 pgaudit_enabled =      config_docs[:postgresql]["specification"]["extensions"]["pgaudit"]["enabled"]
+
+if upgradeRun?
+  spec_doc = readYaml(getRoleDirPath("postgresql") + "vars/main.yml")[0]
+else
+  spec_doc = config_docs[:postgresql]
+end
+
+# In PG 10 there was 'wal_keep_segments'
+wal_keep_size = spec_doc["specification"]["config_file"]["parameter_groups"].detect {|i| i["name"] == 'REPLICATION'}\
+  ["subgroups"].detect{|i| i["name"] == "Sending Server(s)"}["parameters"].detect {|i| i["name"] == "wal_keep_size"}["value"]
+# Setting added in Epiphany v1.2
+password_encryption = spec_doc["specification"]["configuration"]["password_encryption"]
+
 pg_user = 'testuser'
 pg_pass = 'testpass'
 
@@ -208,6 +220,7 @@ end
 
 if os[:family] == 'ubuntu'
   describe 'Check if PostgreSQL is ready' do
+    let(:disable_sudo) { false }
     describe command("pg_isready") do
       its(:stdout) { should match /postgresql:#{postgresql_default_port} - accepting connections/ }
       its(:exit_status) { should eq 0 }
@@ -313,7 +326,7 @@ if replicated
           its(:stdout) { should match /Replication/ }
           its(:exit_status) { should eq 0 }
         end
-        describe command("cat /etc/postgresql/13/main/pg_hba.conf | grep replication | grep md5") do
+        describe command("cat /etc/postgresql/13/main/pg_hba.conf | grep replication | grep #{password_encryption}") do
           its(:stdout) { should match /#{replication_user}/ }
           its(:stdout) { should match /replication/ }
           its(:exit_status) { should eq 0 }
