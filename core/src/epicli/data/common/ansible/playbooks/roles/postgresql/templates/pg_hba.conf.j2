@@ -85,15 +85,15 @@
 # "local" is for Unix domain socket connections only
 local   all             all                                     peer
 # IPv4 connections:
-host    all             all             0.0.0.0/0               {{ specification.configuration.password_encryption }}
+host    all             all             0.0.0.0/0               {{ _specification.configuration.password_encryption }}
 # IPv6 local connections:
-host    all             all             ::1/128                 {{ specification.configuration.password_encryption }}
+host    all             all             ::1/128                 {{ _specification.configuration.password_encryption }}
 # Allow replication connections from localhost, by a user with the
 # replication privilege.
 local   replication     all                                     peer
-host    replication     all             127.0.0.1/32            {{ specification.configuration.password_encryption }}
-host    replication     all             ::1/128                 {{ specification.configuration.password_encryption }}
+host    replication     all             127.0.0.1/32            {{ _specification.configuration.password_encryption }}
+host    replication     all             ::1/128                 {{ _specification.configuration.password_encryption }}
 
 {% if _specification.extensions.replication.enabled | default(false) %}
-host    replication     {{ _specification.extensions.replication.replication_user_name }}      0.0.0.0/0               {{ specification.configuration.password_encryption }}
+host    replication     {{ _specification.extensions.replication.replication_user_name }}      0.0.0.0/0               {{ _specification.configuration.password_encryption }}
 {% endif %}
