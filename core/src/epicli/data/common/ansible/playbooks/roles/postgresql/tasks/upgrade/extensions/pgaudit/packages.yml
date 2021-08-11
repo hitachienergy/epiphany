@@ -1,6 +1,5 @@
 ---
 - name: PostgreSQL | Extensions | PgAudit | Install package(s) for PostgreSQL {{ new_version.pg.version }}
-  when: pg_is_pgaudit_used
   package:
     name: "{{ _packages[ansible_os_family] }}"
     state: present

@@ -88,9 +88,15 @@
 
     - name: PostgreSQL | Extensions | PgAudit | Include package(s) installation tasks
       include_tasks: roles/postgresql/tasks/upgrade/extensions/pgaudit/packages.yml
+      when: pg_is_pgaudit_used
 
-    - name: PostgreSQL | Extensions | repmgr | Include package(s) installation tasks
-      include_tasks: roles/postgresql/tasks/upgrade/extensions/replication/pg-new/packages.yml
+    - name: Stop and disable repmgr service then install new package(s)
+      when: pg_is_repmgr_used
+      block:
+        - include_tasks: roles/postgresql/tasks/upgrade/extensions/replication/pg-new/repmgr-stop-and-disable-service.yml
+
+        - name: PostgreSQL | Extensions | repmgr | Include package(s) installation tasks
+          include_tasks: roles/postgresql/tasks/upgrade/extensions/replication/pg-new/packages.yml
 
     # Step: Adjust authentication
     - name: PostgreSQL | Extensions | repmgr | Update pgpass file
@@ -290,6 +296,10 @@
       when:
         - pg_is_repmgr_used
         - ansible_os_family == 'RedHat'
+
+    # Start and enable repmgr service
+    - include_tasks: roles/postgresql/tasks/upgrade/extensions/replication/pg-new/repmgr-start-and-enable-service.yml
+      when: pg_is_repmgr_used
 
   # Step: Reverting to old cluster
   rescue:
