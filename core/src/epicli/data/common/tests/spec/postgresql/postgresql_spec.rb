@@ -300,7 +300,7 @@ if replicated
           its(:stdout) { should match /Replication/ }
           its(:exit_status) { should eq 0 }
         end
-        describe command("cat /var/lib/pgsql/13/data/pg_hba.conf | grep replication | grep md5") do
+        describe command("cat /var/lib/pgsql/13/data/pg_hba.conf | grep replication | grep #{password_encryption}") do
           its(:stdout) { should match /#{replication_user}/ }
           its(:stdout) { should match /replication/ }
           its(:exit_status) { should eq 0 }
