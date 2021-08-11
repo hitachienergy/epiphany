@@ -221,7 +221,7 @@ end
 if os[:family] == 'ubuntu'
   describe 'Check if PostgreSQL is ready' do
     let(:disable_sudo) { false }
-    describe command("pg_isready") do
+    describe command("su - postgres -c \"pg_isready\"") do
       its(:stdout) { should match /postgresql:#{postgresql_default_port} - accepting connections/ }
       its(:exit_status) { should eq 0 }
     end
