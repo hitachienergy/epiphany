@@ -287,7 +287,7 @@ if replicated
           its(:stdout) { should match /^wal_level = replica/ }
           its(:exit_status) { should eq 0 }
         end
-        describe command("cat /var/lib/pgsql13/data/postgresql-epiphany.conf | grep max_wal_senders") do
+        describe command("cat /var/lib/pgsql/13/data/postgresql-epiphany.conf | grep max_wal_senders") do
           its(:stdout) { should match /^max_wal_senders = #{max_wal_senders}/ }
           its(:exit_status) { should eq 0 }
         end
