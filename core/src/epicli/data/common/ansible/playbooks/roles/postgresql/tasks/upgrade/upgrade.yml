@@ -3,10 +3,18 @@
 
 # Disabling extensions is not supported, so these values are taken by check whether related packages are installed
 # It's possible to take these values from manifest, but as it can be overwritten, values are based on packages
-- name: PostgreSQL | Set 'pg_is_repmgr_used' fact
+- name: PostgreSQL | Set facts on installed extensions
   set_fact:
-    pg_is_pgaudit_used: ansible_facts.packages[old_version.pgaudit.package_name[ansible_os_family]] is defined
-    pg_is_repmgr_used: ansible_facts.packages[old_version.repmgr.package_name[ansible_os_family]] is defined
+    pg_is_pgaudit_used: "{{ ansible_facts.packages.keys() | intersect(_packages.pgaudit) | count > 0 }}"
+    pg_is_repmgr_used:  "{{ ansible_facts.packages.keys() | intersect(_packages.repmgr)  | count > 0 }}"
+  vars:
+    _packages:
+      pgaudit:
+        - "{{ old_version.pgaudit.package_name[ansible_os_family] }}"
+        - "{{ new_version.pgaudit.package_name[ansible_os_family] }}"
+      repmgr:
+        - "{{ old_version.repmgr.package_name[ansible_os_family] }}"
+        - "{{ new_version.repmgr.package_name[ansible_os_family] }}"
 
 - name: PostgreSQL | Get primary node
   when: pg_is_repmgr_used
