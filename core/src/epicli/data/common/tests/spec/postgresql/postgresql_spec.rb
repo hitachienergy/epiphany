@@ -589,7 +589,7 @@ if pgaudit_enabled && countInventoryHosts("logging") > 0
 
     describe 'Check if Elasticsearch logs contain queries executed with PGBouncer', :if => pgbouncer_enabled do
       query = get_elasticsearch_query(message_pattern: pg_user)
-      command = get_query_command_with_retries(json_query: query, min_doc_hits: 6)
+      command = get_query_command_with_retries(json_query: query, min_doc_hits: 7)
       describe command(command.squish) do
         its(:stdout) { should match /GRANT ALL ON SCHEMA serverspec_test to #{pg_user}/ }
         its(:stdout) { should match /GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA serverspec_test to #{pg_user}/ }
