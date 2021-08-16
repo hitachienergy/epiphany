@@ -196,7 +196,7 @@ hashicorp/vault-k8s:0.10.0
 vault:1.7.0
 # applications
 epiphanyplatform/ignite:2.9.1
-bitnami/pgpool:4.2.2
+bitnami/pgpool:4.2.3
 bitnami/pgbouncer:1.15.0
 # istio
 istio/pilot:1.8.1

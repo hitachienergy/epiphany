@@ -170,35 +170,33 @@
   loop: "{{ enabled_extensions }}"
 
 # PgPool is configured only if such K8s application is enabled
+- name: Extensions | Include PgPool vars from applications role
+  include_vars:
+    file: roles/applications/vars/main.yml
+    name: applications_role_config
+  when:
+        - "'applications' in roles_with_generated_vars"
+
 - name: Extensions | Set up PgPool
+  vars:
+        pgpool: >-
+          {{ applications_role_config.specification.applications | default([])
+                                                                 | selectattr("name", "equalto", "pgpool")
+                                                                 | selectattr('enabled')
+                                                                 | map(attribute='pgpool')
+                                                                 | list
+                                                                 | first
+                                                                 | default({}) }}        
   block:
-    - name: Extensions | Set up PgPool | Determine primary node
+    - name: Extensions | Set up PgPool | Ascertain primary node
       become_user: postgres
       postgresql_info:
         filter: in_recovery
       register: in_recovery_state
-
-    - name: Extensions | Set up PgPool | Create configuration
-      block:
-        - name: Extensions | Include PgPool vars from applications role
-          include_vars:
-            file: roles/applications/vars/main.yml
-            name: applications_role_config
-          when:
-            - "'applications' in roles_with_generated_vars"
-
-        - name: Extensions | Include PgPool setup tasks
-          include_tasks: extensions/pgpool/extension.yml
-          vars:
-            pgpool: >-
-              {{ applications_role_config.specification.applications | default([])
-                                                                     | selectattr("name", "equalto", "pgpool")
-                                                                     | selectattr('enabled')
-                                                                     | map(attribute='pgpool')
-                                                                     | list
-                                                                     | first
-                                                                     | default({}) }}
-      when:
+    
+    - name: Extensions | Include PgPool setup tasks
+      include_tasks: extensions/pgpool/extension.yml
+      when: 
         - not in_recovery_state.in_recovery
   when:
-    - pgpool.env is defined
+    - pgpool.keys()|length > 0

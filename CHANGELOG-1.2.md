@@ -9,6 +9,7 @@
 - [#2397](https://github.com/epiphany-platform/epiphany/issues/2397) - Restart CoreDNS pods conditionally
 - [#195](https://github.com/epiphany-platform/epiphany/issues/195) - Basic configuration type and schema validation
 - [#2434](https://github.com/epiphany-platform/epiphany/issues/2434) - Python 3 installation
+- [#2346](https://github.com/epiphany-platform/epiphany/issues/2346) - Allow more than 2 PostgreSQL nodes installation with repmgr
 
 ### Fixed
 
@@ -20,6 +21,8 @@
 
 ### Updated
 
+- [#2075](https://github.com/epiphany-platform/epiphany/issues/2075) - Upgrade of Pgpool to v4.2.3
+- [#2076](https://github.com/epiphany-platform/epiphany/issues/2076) - Upgrade of PgBouncer [Kubernetes] to v1.15.0
 - [#1797](https://github.com/epiphany-platform/epiphany/issues/1797) - Upgrade Keycloak to v14.0.0
 - [#1861](https://github.com/epiphany-platform/epiphany/issues/1861) - Upgrade PostgreSQL to v13
 - [#2074](https://github.com/epiphany-platform/epiphany/issues/2074) - Upgrade repmgr to v5.2.1

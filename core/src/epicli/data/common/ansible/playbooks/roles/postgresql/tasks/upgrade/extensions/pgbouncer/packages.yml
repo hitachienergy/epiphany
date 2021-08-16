@@ -1,6 +1,5 @@
 ---
 - name: Extensions | PgBouncer | Install package(s)
-  when: pg_is_pgbouncer_used
   package:
     name: "{{ _packages[ansible_os_family] }}"
     state: present
