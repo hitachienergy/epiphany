@@ -235,6 +235,9 @@
 - hosts: postgresql
   become: true
   become_method: sudo
+  module_defaults:
+    shell:
+      executable: /bin/bash
   tasks:
     # step 1: upgrade repmgr
     - include_role:
