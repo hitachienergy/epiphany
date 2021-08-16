@@ -11,6 +11,12 @@
 
 - name: PostgreSQL | Start PostgreSQL {{ new_version.pg.version }} service
   block:
+    - name: PostgreSQL | Debian | Mask {{ old_version.pg.instantiated_service_name.Debian }} service to avoid port conflict
+      when: ansible_os_family == 'Debian'
+      systemd:
+        name: "{{ old_version.pg.instantiated_service_name[ansible_os_family] }}"
+        masked: true
+
     - name: PostgreSQL | Start PostgreSQL {{ new_version.pg.version }} service
       systemd:
         name: "{{ new_version.pg.service_name[ansible_os_family] }}"
