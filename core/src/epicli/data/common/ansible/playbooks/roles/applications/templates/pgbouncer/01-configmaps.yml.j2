@@ -7,16 +7,15 @@ metadata:
     app: pgbouncer
   namespace: {{ data.namespace }}
 data:
-  PGBOUNCER_CONF_FILE: '{{ data.pgbouncer.env.CONFIG_FILE }}'
-  POSTGRESQL_HOST: '{{ data.pgbouncer.env.DB_HOST }}'
-  POSTGRESQL_PORT: '{{ data.pgbouncer.env.DB_LISTEN_PORT }}'
-  PGBOUNCER_LISTEN_ADDRESS: '{{ data.pgbouncer.env.LISTEN_ADDR }}'
-  PGBOUNCER_PORT: '{{ data.pgbouncer.env.LISTEN_PORT }}'
-  PGBOUNCER_AUTH_FILE: '{{ data.pgbouncer.env.AUTH_FILE }}'
-  MAX_CLIENT_CONN: '{{ data.pgbouncer.env.MAX_CLIENT_CONN }}'
+  PGBOUNCER_AUTH_FILE: '/opt/bitnami/pgbouncer/conf/userlist.txt'
+  PGBOUNCER_CONF_FILE: '/opt/bitnami/pgbouncer/conf/pgbouncer.ini'
+  POSTGRESQL_HOST: 'pgpool.postgres-pool.svc.cluster.local'
+  POSTGRESQL_PORT: '5432'
   DEFAULT_POOL_SIZE: '{{ data.pgbouncer.env.DEFAULT_POOL_SIZE }}'
-  RESERVE_POOL_SIZE: '{{ data.pgbouncer.env.RESERVE_POOL_SIZE }}'
+  MAX_CLIENT_CONN: '{{ data.pgbouncer.env.MAX_CLIENT_CONN }}'
   POOL_MODE: '{{ data.pgbouncer.env.POOL_MODE }}'
+  RESERVE_POOL_SIZE: '{{ data.pgbouncer.env.RESERVE_POOL_SIZE }}'
+  RESERVE_POOL_SIZE: '{{ data.pgbouncer.env.RESERVE_POOL_SIZE }}'
 
 ---
 apiVersion: v1
@@ -169,9 +168,6 @@ data:
             fi
         fi
 
-        check_allowed_port PGBOUNCER_PORT
-        check_ip_value PGBOUNCER_LISTEN_ADDRESS
-
         [[ "$error_code" -eq 0 ]] || exit "$error_code"
     }
 
@@ -312,14 +308,14 @@ data:
     # Lines starting with “;” or “#” are taken as comments and ignored.
     # The characters “;” and “#” are not recognized when they appear later in the line.
     [databases]
-    * = host='{{ data.pgbouncer.env.DB_HOST }}' port='{{ data.pgbouncer.env.DB_LISTEN_PORT }}'
+    * = host=pgpool.postgres-pool.svc.cluster.local port=5432
 
     [pgbouncer]
     pool_mode = {{ data.pgbouncer.env.POOL_MODE }}
-    listen_port = {{ data.pgbouncer.env.LISTEN_PORT }}
-    listen_addr = {{ data.pgbouncer.env.LISTEN_ADDR }}
+    listen_port = 5432
+    listen_addr = 0.0.0.0
     auth_type = md5
-    auth_file = {{ data.pgbouncer.env.AUTH_FILE }}
+    auth_file = /opt/bitnami/pgbouncer/conf/userlist.txt
     max_client_conn = {{ data.pgbouncer.env.MAX_CLIENT_CONN }}
     default_pool_size = {{ data.pgbouncer.env.DEFAULT_POOL_SIZE }}
     reserve_pool_size = {{ data.pgbouncer.env.RESERVE_POOL_SIZE }}

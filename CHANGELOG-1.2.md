@@ -21,7 +21,7 @@
 
 ### Updated
 
-- [#2075](https://github.com/epiphany-platform/epiphany/issues/2075) - Upgrade of Pgpool to v4.2.3
+- [#2075](https://github.com/epiphany-platform/epiphany/issues/2075) - Upgrade of Pgpool to v4.2.4
 - [#2076](https://github.com/epiphany-platform/epiphany/issues/2076) - Upgrade of PgBouncer [Kubernetes] to v1.15.0
 - [#1797](https://github.com/epiphany-platform/epiphany/issues/1797) - Upgrade Keycloak to v14.0.0
 - [#1861](https://github.com/epiphany-platform/epiphany/issues/1861) - Upgrade PostgreSQL to v13

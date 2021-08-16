@@ -40,7 +40,7 @@ end
 wal_keep_size = spec_doc["specification"]["config_file"]["parameter_groups"].detect {|i| i["name"] == 'REPLICATION'}\
   ["subgroups"].detect{|i| i["name"] == "Sending Server(s)"}["parameters"].detect {|i| i["name"] == "wal_keep_size"}["value"]
 # Setting added in Epiphany v1.2
-password_encryption = spec_doc["specification"]["configuration"]["password_encryption"]
+password_encryption = 'md5'
 
 pg_user = 'testuser'
 pg_pass = 'testpass'

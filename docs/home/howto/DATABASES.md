@@ -11,19 +11,8 @@ Then configure database server using psql according to your needs and
 
 ## PostgreSQL passwords encryption
 
-Epiphany sets up MD5 password encryption by default. Although PostgreSQL since version 10 is able to use SCRAM SHA-256 password encryption, Epiphany does support this encryption only for one-node Postgresql configuration. HA components like pgbouncer and pgpool are not able to refresh users/passwords list while this encryption is enabled. So those components can be used only with MD5 passwords.
-
-However this parameter may be set up as showed below:
-
-```yaml
-kind: configuration/postgresql
-title: PostgreSQL
-name: default
-specification:
-  configuration:
-    password_encryption: md5  # md5 or scram-sha-256
-```
-We do not recommend to change this option especially on running database, since this require to encrypt again all passwords.
+Epiphany sets up MD5 password encryption. Although PostgreSQL since version 10 is able to use SCRAM-SHA-256 password encryption, Epiphany does not support this encryption method since recommended production configuration uses more than one database host with HA configuration (repmgr) cooperating with PgBouncer and Pgpool. Pgpool is not able to parse SCRAM-SHA-256 hashes list while this encryption is enabled. Due to limited Pgpool authentication options, it is not possible to maintain the [pool_passwd file](https://www.pgpool.net/docs/42/en/html/auth-methods.html#AUTH-SCRAM) securely, hence it is also not possible to establish a secure connection between components.
+For this reason, MD5 password encryption is set up and this is not configurable in Epiphany.
 
 ## How to set up PostgreSQL connection pooling
 
@@ -94,7 +83,7 @@ specification:
       - name: Standby Servers
         parameters:
         - name: hot_standby
-          value: on
+          value: 'on'
           comment: must be 'on' for repmgr needs, ignored on primary but recommended
             in case primary becomes standby
           when: replication
@@ -273,12 +262,6 @@ specification:
         memory: 128Mi
     pgbouncer:
       env:
-        DB_HOST: pgpool.postgres-pool.svc.cluster.local # pgpool service name
-        DB_LISTEN_PORT: 5432
-        LISTEN_ADDR: 0.0.0.0
-        LISTEN_PORT: 5432
-        CONFIG_FILE: /opt/bitnami/pgbouncer/conf/pgbouncer.ini
-        AUTH_FILE: /opt/bitnami/pgbouncer/conf/userlist.txt
         MAX_CLIENT_CONN: 150
         DEFAULT_POOL_SIZE: 25
         RESERVE_POOL_SIZE: 25

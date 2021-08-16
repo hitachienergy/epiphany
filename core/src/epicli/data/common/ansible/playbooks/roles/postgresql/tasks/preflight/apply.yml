@@ -33,34 +33,3 @@
         _unsupported_enabled_extensions: >-
           {{ _enabled_extensions | selectattr('name', 'in', unsupported_postgres_extensions[_pg_arch]) | list }}
 
-    - name: Check PostgreSQL password encryption support for applications
-      block:
-        - name: Include applications vars from applications role
-          include_vars:
-            file: roles/applications/vars/main.yml
-            name: applications_role_config
-
-        - name: Read and assert applications configuration
-          when: k8s_pgpool.keys()|length > 0 or k8s_pgbouncer.keys()|length > 0
-          assert:
-            that: postgresql.specification.configuration.password_encryption == "md5"
-            fail_msg: >-
-              {{ postgresql.specification.configuration.password_encryption }} password encryption is not supported with PostgreSQL HA configuration,
-              please use "md5" password encryption.
-          vars:
-            k8s_pgpool: >-
-              {{ applications_role_config.specification.applications | default([])
-                                                                    | selectattr("name", "equalto", "pgpool")
-                                                                    | selectattr('enabled')
-                                                                    | map(attribute='pgpool')
-                                                                    | list
-                                                                    | first
-                                                                    | default({}) }}
-            k8s_pgbouncer: >-
-              {{ applications_role_config.specification.applications | default([])
-                                                                    | selectattr("name", "equalto", "pgbouncer")
-                                                                    | selectattr('enabled')
-                                                                    | map(attribute='pgbouncer')
-                                                                    | list
-                                                                    | first
-                                                                    | default({}) }}
