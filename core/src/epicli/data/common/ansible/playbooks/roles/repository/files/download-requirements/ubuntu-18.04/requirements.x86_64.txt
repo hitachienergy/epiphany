@@ -142,7 +142,7 @@ libsmbclient
 
 # postgres related packages
 # if version is not specified, it's not related to postgres version and the latest is used
-pgbouncer 1.15.0
+pgbouncer 1.16.0
 pgdg-keyring
 postgresql-13-pgaudit 1.5.0
 postgresql-10-repmgr 5.2.1

@@ -60,5 +60,5 @@ pgbouncer:
     Debian: postgres
     RedHat: pgbouncer
   version:
-    Debian: "1.15.0"
-    RedHat: "1.15.0"
+    Debian: "1.16.0"
+    RedHat: "1.16.0"
