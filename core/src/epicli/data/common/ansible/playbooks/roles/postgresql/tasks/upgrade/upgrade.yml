@@ -7,7 +7,7 @@
   set_fact:
     pg_is_pgaudit_used: "{{ ansible_facts.packages.keys() | intersect(_packages.pgaudit) | count > 0 }}"
     pg_is_repmgr_used: "{{ ansible_facts.packages.keys() | intersect(_packages.repmgr)  | count > 0 }}"
-    pg_is_pgbouncer_used: ansible_facts.packages.pgbouncer is defined # package name is the same for all versions
+    pg_is_pgbouncer_used: "{{ ansible_facts.packages.pgbouncer is defined }}" # package name is the same for all versions
   vars:
     _packages:
       pgaudit:
