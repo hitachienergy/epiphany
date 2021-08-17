@@ -27,7 +27,7 @@
 - [#1861](https://github.com/epiphany-platform/epiphany/issues/1861) - Upgrade PostgreSQL to v13
 - [#2074](https://github.com/epiphany-platform/epiphany/issues/2074) - Upgrade repmgr to v5.2.1
 - [#2077](https://github.com/epiphany-platform/epiphany/issues/2077) - Upgrade PgAudit to v1.5.0
-- [#2453](https://github.com/epiphany-platform/epiphany/issues/2453) - Upgrade of PgBouncer to v1.16.0 [standalone]
+- [#2453](https://github.com/epiphany-platform/epiphany/issues/2453) - Upgrade PgBouncer to v1.16.0 [standalone]
 
 ### Deprecated
 
