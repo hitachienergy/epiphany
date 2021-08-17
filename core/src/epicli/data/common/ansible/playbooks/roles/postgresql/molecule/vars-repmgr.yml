@@ -2,6 +2,8 @@
 kind: configuration/postgresql
 title: PostgreSQL
 specification:
+  configuration:
+    password_encryption: md5  # md5 or scram-sha-256
   config_file:
     parameter_groups:
       - name: CONNECTIONS AND AUTHENTICATION
