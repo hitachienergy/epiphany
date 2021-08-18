@@ -8,7 +8,7 @@ script_path="$( cd "$(dirname "$0")" ; pwd -P )"
 # source common functions
 . "${script_path}/common.sh"
 
-CONNECTION_CHECK_ENABLED="yes"
+internet_access_checks_enabled="yes"
 CREATE_LOGFILE="yes"
 LOG_FILE_PATH="${script_path}/log"
 

@@ -8,9 +8,9 @@
 set -euo pipefail
 
 # set variables needed by common_functions
-readonly CONNECTION_CHECK_ENABLED="yes"
-readonly SCRIPT_PATH="$(readlink -f $(dirname $0))"
-. "${SCRIPT_PATH}/common/common_functions.sh"
+readonly internet_access_checks_enabled="yes"
+readonly script_path="$(readlink -f $(dirname $0))"
+. "${script_path}/common/common_functions.sh"
 
 # === Functions (in alphabetical order) ===
 
@@ -648,7 +648,7 @@ else
 	else
 		file_url=$(head -n 1 <<< "${CRANE}")
 
-        check_connection wget $file_url
+		check_connection wget $file_url
 
 		echol "Downloading crane from: ${file_url}"
 		download_file "${file_url}" "${SCRIPT_DIR}"
