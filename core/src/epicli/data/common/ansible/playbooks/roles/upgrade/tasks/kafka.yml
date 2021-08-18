@@ -2,6 +2,7 @@
 - name: Include defaults from kafka role
   include_vars:
     file: roles/kafka/defaults/main.yml
+    name: kafka_defaults
 
 - name: Include pre-flight checks
   include_tasks: kafka/preflight-check.yml
@@ -11,12 +12,14 @@
     set -o pipefail &&
     /opt/kafka/bin/kafka-server-start.sh --version | grep Commit | grep -oP '^\d+\.\d+\.\d+'
   register: result
-  args:
-    executable: /bin/bash
 
-- name: Set installed Kafka version as fact
+- name: Set common facts
   set_fact:
-    before_upgrade_kafka_version: "{{ result.stdout }}"
+    kafka_version:
+      old: "{{ result.stdout }}"
+      new: "{{ kafka_defaults.kafka_version }}"
+    scala_version: "{{ kafka_defaults.scala_version }}"
+    kafka_bin_filename: "{{ kafka_defaults.kafka_bin_filename }}"
 
 - name: Check for upgrade flag file
   stat:
@@ -44,7 +47,7 @@
     - name: Include set Kafka version tasks
       include_tasks: kafka/set-updated-version.yml
   when:
-    - lock_file_status.stat.exists or before_upgrade_kafka_version is version( kafka_version, '<' )
+    - lock_file_status.stat.exists or kafka_version.old is version( kafka_version.new, '<' )
 
 - name: Remove Kafka upgrade flag file
   file:

@@ -184,6 +184,9 @@
   serial: 1
   become: true
   become_method: sudo
+  module_defaults:
+    shell:
+      executable: /bin/bash
   tasks:
     - import_role:
         name: upgrade
