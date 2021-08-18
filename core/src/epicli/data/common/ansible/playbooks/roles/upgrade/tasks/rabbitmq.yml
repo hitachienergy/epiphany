@@ -13,6 +13,7 @@
 - name: RabbitMQ | Include defaults from rabbitmq role
   include_vars:
     file: roles/rabbitmq/defaults/main.yml
+    name: rabbitmq_defaults
 
 - name: RabbitMQ | Set facts
   set_fact:
@@ -33,7 +34,9 @@
   register: lock_file_status
 
 - name: RabbitMQ | Offline upgrade
-  when: lock_file_status.stat.exists or rabbitmq_version_current is version(versions.general, '<')
+  vars:
+    _versions: "{{ rabbitmq_defaults.versions }}"
+  when: lock_file_status.stat.exists or rabbitmq_version_current is version(_versions.general, '<')
   block:
     - name: RabbitMQ | Create upgrade flag file
       file:
@@ -75,28 +78,28 @@
       vars:
         _packages:
           Debian:
-            - erlang-asn1={{ versions.debian.erlang }}
-            - erlang-base={{ versions.debian.erlang }}
-            - erlang-crypto={{ versions.debian.erlang }}
-            - erlang-eldap={{ versions.debian.erlang }}
-            - erlang-ftp={{ versions.debian.erlang }}
-            - erlang-inets={{ versions.debian.erlang }}
-            - erlang-mnesia={{ versions.debian.erlang }}
-            - erlang-os-mon={{ versions.debian.erlang }}
-            - erlang-parsetools={{ versions.debian.erlang }}
-            - erlang-public-key={{ versions.debian.erlang }}
-            - erlang-runtime-tools={{ versions.debian.erlang }}
-            - erlang-snmp={{ versions.debian.erlang }}
-            - erlang-ssl={{ versions.debian.erlang }}
-            - erlang-syntax-tools={{ versions.debian.erlang }}
-            - erlang-tftp={{ versions.debian.erlang }}
-            - erlang-tools={{ versions.debian.erlang }}
-            - erlang-xmerl={{ versions.debian.erlang }}
+            - erlang-asn1={{ _versions.debian.erlang }}
+            - erlang-base={{ _versions.debian.erlang }}
+            - erlang-crypto={{ _versions.debian.erlang }}
+            - erlang-eldap={{ _versions.debian.erlang }}
+            - erlang-ftp={{ _versions.debian.erlang }}
+            - erlang-inets={{ _versions.debian.erlang }}
+            - erlang-mnesia={{ _versions.debian.erlang }}
+            - erlang-os-mon={{ _versions.debian.erlang }}
+            - erlang-parsetools={{ _versions.debian.erlang }}
+            - erlang-public-key={{ _versions.debian.erlang }}
+            - erlang-runtime-tools={{ _versions.debian.erlang }}
+            - erlang-snmp={{ _versions.debian.erlang }}
+            - erlang-ssl={{ _versions.debian.erlang }}
+            - erlang-syntax-tools={{ _versions.debian.erlang }}
+            - erlang-tftp={{ _versions.debian.erlang }}
+            - erlang-tools={{ _versions.debian.erlang }}
+            - erlang-xmerl={{ _versions.debian.erlang }}
 
-            - rabbitmq-server={{ versions.debian.rabbitmq }}
+            - rabbitmq-server={{ _versions.debian.rabbitmq }}
           RedHat:
-            - "{{ repository_url }}/files/{{ versions.redhat.erlang_filename }}"
-            - rabbitmq-server-{{ versions.redhat.rabbitmq }}
+            - "{{ repository_url }}/files/{{ _versions.redhat.erlang_filename }}"
+            - rabbitmq-server-{{ _versions.redhat.rabbitmq }}
 
     - name: RabbitMQ | Start master
       when: inventory_hostname == rabbitmq_master
