@@ -37,5 +37,3 @@
          and stat_upgrade_state_file.stat.exists)
   vars:
     _target_version: "{{ odfe_defaults.versions[ansible_os_family].elasticsearch_oss }}"
-    certificates: "{{ odfe_defaults.certificates }}"
-    ports: "{{ odfe_defaults.ports }}"

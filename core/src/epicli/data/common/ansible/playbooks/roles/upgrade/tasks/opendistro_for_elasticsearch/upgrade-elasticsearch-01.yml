@@ -20,9 +20,10 @@
 
 - name: ODFE | Set common facts
   set_fact:
+    certificates:      "{{ odfe_defaults.certificates }}"
     es_host:           "{{ existing_config.main['network.host']   | default('_local_') }}"
-    es_http_port:      "{{ existing_config.main['http.port']      | default(ports.http) }}"
-    es_transport_port: "{{ existing_config.main['transport.port'] | default(ports.transport) }}"
+    es_http_port:      "{{ existing_config.main['http.port']      | default(odfe_defaults.ports.http) }}"
+    es_transport_port: "{{ existing_config.main['transport.port'] | default(odfe_defaults.ports.transport) }}"
     es_clustered:      "{{ (existing_config.main['discovery.seed_hosts'] | length > 1) | ternary(True, False) }}"
     es_node_name:      "{{ existing_config.main['node.name'] }}"
 
