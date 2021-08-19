@@ -9,7 +9,6 @@
         name: upgrade
         tasks_from: common
 
-# image_registry is enabled for repository via feature mapping
 - hosts: image_registry
   become: true
   become_method: sudo
