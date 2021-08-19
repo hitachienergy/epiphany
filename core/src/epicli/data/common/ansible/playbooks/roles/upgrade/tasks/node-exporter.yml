@@ -102,7 +102,7 @@
         path: /opt/node_exporter
         owner: root
         group: node_exporter
-        mode: '0750'
+        mode: u=rwx,g=rx,o=
         state: directory
 
     - name: Node Exporter as System Service | Unpack binary
@@ -112,7 +112,7 @@
         dest: /opt/node_exporter
         creates: /opt/node_exporter/node_exporter
         extra_opts: [--strip-components=1]
-        mode: '0755'
+        mode: u=rwx,go=rx
         owner: root
         group: node_exporter
       check_mode: false
@@ -123,7 +123,7 @@
         dest: /etc/systemd/system/{{ exporter_defaults.exporter.service.name }}.service
         owner: root
         group: root
-        mode: '0644'
+        mode: u=rw,go=r
       vars:
         exporter_service_description: "{{ exporter_defaults.exporter.service.description }}"
 
