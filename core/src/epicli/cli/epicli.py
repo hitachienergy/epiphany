@@ -245,6 +245,7 @@ def upgrade_parser(subparsers):
         'filebeat',
         'grafana',
         'ignite',
+        'image_registry',
         'kafka',
         'kibana',
         'kubernetes',

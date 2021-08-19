@@ -15,6 +15,7 @@
   tasks:
     - import_role:
         name: docker
+      when: "'image_registry' in upgrade_components or upgrade_components|length == 0"
 
 - hosts: kubernetes_master
   become: true
