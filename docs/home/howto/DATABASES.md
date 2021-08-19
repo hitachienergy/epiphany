@@ -30,6 +30,8 @@ We do not recommend to change this option especially on running database, since 
 ---
 **NOTE**
 
+**This is a deprecated feature that will be removed in the next release.**
+
 PgBouncer extension is not supported on ARM.
 
 ---
