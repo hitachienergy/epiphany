@@ -11,7 +11,7 @@ Then configure database server using psql according to your needs and
 
 ## PostgreSQL passwords encryption
 
-Epiphany sets up MD5 password encryption. Although PostgreSQL since version 10 is able to use SCRAM-SHA-256 password encryption, Epiphany does not support this encryption method since recommended production configuration uses more than one database host with HA configuration (repmgr) cooperating with PgBouncer and Pgpool. Pgpool is not able to parse SCRAM-SHA-256 hashes list while this encryption is enabled. Due to limited Pgpool authentication options, it is not possible to refresh the [pool_passwd file](https://www.pgpool.net/docs/42/en/html/auth-methods.html#AUTH-SCRAM) file automatically, hence it is also not possible to establish a secure connection between components.
+Epiphany sets up MD5 password encryption. Although PostgreSQL since version 10 is able to use SCRAM-SHA-256 password encryption, Epiphany does not support this encryption method since recommended production configuration uses more than one database host with HA configuration (repmgr) cooperating with PgBouncer and Pgpool. Pgpool is not able to parse SCRAM-SHA-256 hashes list while this encryption is enabled. Due to limited Pgpool authentication options, it is not possible to refresh the [pool_passwd](https://www.pgpool.net/docs/42/en/html/auth-methods.html#AUTH-SCRAM) file automatically.
 For this reason, MD5 password encryption is set up and this is not configurable in Epiphany.
 
 ## How to set up PostgreSQL connection pooling
