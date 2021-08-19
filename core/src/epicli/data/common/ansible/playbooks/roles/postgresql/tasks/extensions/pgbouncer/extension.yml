@@ -7,22 +7,30 @@
         name: pgbouncer
         state: started
 
-    - name: Extensions | PgBouncer | Copy configuration files
-      vars:
-        _files:
-          - pgbouncer.ini
-          - userlist.txt
-      template:
-        src: "{{ file_name }}.j2"
-        dest: "{{ pgbouncer.base_dir }}/{{ file_name }}"
-        owner: "{{ pgbouncer.user[ansible_os_family] }}"
-        group: "{{ pgbouncer.group[ansible_os_family] }}"
+    - name: Extensions | PgBouncer | Change pgbouncer configuration
+      lineinfile:
+        path: /etc/pgbouncer/pgbouncer.ini
+        regexp: "^postgres = host="
+        line: postgres = host=127.0.0.1 port=5432 dbname=postgres
+        insertafter: '\[databases\]'
+        backup: true
+      register: db_connection_line
+
+    - name: Extensions | PgBouncer | Change pool mode
+      lineinfile:
+        path: /etc/pgbouncer/pgbouncer.ini
+        regexp: '^pool_mode ='
+        line: "pool_mode = transaction"
+      register: db_pool_mode_line
+
+    - name: Extensions | PgBouncer | Change pgbouncer users configuration
+      lineinfile:
+        path: /etc/pgbouncer/userlist.txt
+        line: '"postgres" "*"'
+        create: true
         mode: u=rw,g=,o=
         backup: true
-      loop_control:
-        loop_var: file_name
-      loop: "{{ _files }}"
-      register: change_pgbouncer_config
+      register: db_user_line
 
     - name: Extensions | PgBouncer | Create logrotate configuration file
       template:
@@ -33,7 +41,7 @@
         mode: u=rw,go=r
 
     - name: Extensions | PgBouncer | Restart systemd service
-      when: (change_pgbouncer_config.results | map(attribute='changed') | list) is any
+      when: db_connection_line.changed or db_pool_mode_line.changed or db_user_line.changed
       systemd:
         name: pgbouncer
         state: restarted
