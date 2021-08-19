@@ -29,6 +29,8 @@
         line: '"postgres" "*"'
         create: true
         mode: u=rw,g=,o=
+        owner: "{{ pgbouncer.user[ansible_os_family] }}"
+        group: "{{ pgbouncer.group[ansible_os_family] }}"
         backup: true
       register: db_user_line
 

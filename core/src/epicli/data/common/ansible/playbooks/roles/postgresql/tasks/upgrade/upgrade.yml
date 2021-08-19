@@ -91,9 +91,15 @@
       include_tasks: roles/postgresql/tasks/upgrade/extensions/pgaudit/packages.yml
       when: pg_is_pgaudit_used
 
-    - name: PostgreSQL | Extensions | PgBouncer | Include package(s) installation tasks
-      include_tasks: roles/postgresql/tasks/upgrade/extensions/pgbouncer/packages.yml
+    - name: PostgreSQL | Extensions | PgBouncer | Upgrade
       when: pg_is_pgbouncer_used
+      block:
+        - include_tasks: roles/postgresql/tasks/upgrade/extensions/pgbouncer/packages.yml
+
+        - name: Extensions | PgBouncer | Ensure that systemd service is started
+          systemd:
+            name: pgbouncer
+            state: started
 
     - name: Stop and disable repmgr service then install new package(s)
       when: pg_is_repmgr_used
