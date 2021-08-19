@@ -9,8 +9,8 @@ metadata:
 data:
   PGBOUNCER_AUTH_FILE: '/opt/bitnami/pgbouncer/conf/userlist.txt'
   PGBOUNCER_CONF_FILE: '/opt/bitnami/pgbouncer/conf/pgbouncer.ini'
-  POSTGRESQL_HOST: 'pgpool.postgres-pool.svc.cluster.local'
-  POSTGRESQL_PORT: '5432'
+  POSTGRESQL_HOST: '{{ data.pgbouncer.env.DB_HOST }}'
+  POSTGRESQL_PORT: '{{ data.pgbouncer.env.DB_LISTEN_PORT }}'
   DEFAULT_POOL_SIZE: '{{ data.pgbouncer.env.DEFAULT_POOL_SIZE }}'
   MAX_CLIENT_CONN: '{{ data.pgbouncer.env.MAX_CLIENT_CONN }}'
   POOL_MODE: '{{ data.pgbouncer.env.POOL_MODE }}'
@@ -308,7 +308,7 @@ data:
     # Lines starting with “;” or “#” are taken as comments and ignored.
     # The characters “;” and “#” are not recognized when they appear later in the line.
     [databases]
-    * = host=pgpool.postgres-pool.svc.cluster.local port=5432
+    * = host='{{ data.pgbouncer.env.DB_HOST }}' port='{{ data.pgbouncer.env.DB_LISTEN_PORT }}'
 
     [pgbouncer]
     pool_mode = {{ data.pgbouncer.env.POOL_MODE }}
