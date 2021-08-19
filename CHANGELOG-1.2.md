@@ -31,6 +31,9 @@
 
 ### Deprecated
 
+- PgBouncer standalone installation will be removed in the next release.
+
+
 ### Breaking changes
 
 ### Known issues

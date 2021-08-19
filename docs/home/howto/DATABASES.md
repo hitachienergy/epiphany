@@ -30,8 +30,6 @@ We do not recommend to change this option especially on running database, since 
 ---
 **NOTE**
 
-**This is a deprecated feature that will be removed in the next release.**
-
 PgBouncer extension is not supported on ARM.
 
 ---
@@ -168,6 +166,13 @@ repmgr standby switchover
    https://repmgr.org/docs/5.2/repmgr-standby-switchover.html
 
 ## How to set up PgBouncer, PgPool and PostgreSQL parameters
+
+---
+**NOTE**
+
+PgBouncer standalone installation is deprecated and will be removed in the next release.
+
+---
 
 This section describes how to set up connection pooling and load balancing for highly available PostgreSQL cluster. The
 default configuration provided by Epiphany is meant for midrange class systems but can be customized to scale up or to
