@@ -50,8 +50,9 @@
 - [#2117](https://github.com/epiphany-platform/epiphany/issues/2117) - [AMD64/ARM64] Postgres exporter updated to version 0.9.0
 - [#2241](https://github.com/epiphany-platform/epiphany/issues/2241) - [AMD64/ARM64] Vault (k8s) updated to version 0.10.0, helm chart with Vault updated to version 0.11.0 and Hashicorp Vault updated to version 1.7.0
 - [#2116](https://github.com/epiphany-platform/epiphany/issues/2116) - [AMD64/ARM64] Logstash updated to version 7.12.0
-- [#2297](https://github.com/epiphany-platform/epiphany/issues/2297) - Update Python dependencies to solve some of the security alerts.
-- [#2362](https://github.com/epiphany-platform/epiphany/issues/2362) - Update Python dependencies to solve more of the security alerts.
+- [#2297](https://github.com/epiphany-platform/epiphany/issues/2297) - Update Python dependencies to solve some security alerts
+- [#2362](https://github.com/epiphany-platform/epiphany/issues/2362) - Update Python dependencies to solve more of the security alerts
+- [#2457](https://github.com/epiphany-platform/epiphany/issues/2457) - Upgrade Docker-CE to v20.10.8
 
 ### Deprecated
 
