@@ -103,7 +103,7 @@
           enabled: >-
             {{ _filebeat_existing_config['setup.dashboards.enabled'] | default(False) }}
           index: >-
-            {{ _filebeat_existing_config['setup.dashboards.index'] | default(None) }}
+            {{ _filebeat_existing_config['setup.dashboards.index'] | default("null") }}
         existing_setup_kibana: >-
           {{ _filebeat_existing_config['setup.kibana'] | default({}) }}
         # To provide settings for multiline feature (e.g. specification.postgresql_input.multiline)
