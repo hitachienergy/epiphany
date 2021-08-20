@@ -194,7 +194,7 @@ setup.dashboards.enabled: {{ dashboards_enabled | lower }}
 # This setting overwrites the index name defined in the dashboards and index pattern.
 # Example: "testbeat-*"
 {% if is_upgrade_run %}
-  {% set dashboards_index = 'filebeat-*' if (existing_setup_dashboards.index == None) else existing_setup_dashboards.index %}
+  {% set dashboards_index = 'filebeat-*' if (existing_setup_dashboards.index == 'null') else existing_setup_dashboards.index %}
 {% else %}
   {% set dashboards_index = specification.kibana.dashboards.index %}
 {% endif %}
