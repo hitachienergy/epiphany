@@ -142,7 +142,7 @@ libsmbclient
 
 # postgres related packages
 # if version is not specified, it's not related to postgres version and the latest is used
-pgbouncer 1.15.*
+pgbouncer 1.16.*
 pgdg-keyring
 postgresql-13-pgaudit 1.5.0
 postgresql-10-repmgr 5.2.1
@@ -252,7 +252,7 @@ vault:1.7.0
 # applications
 epiphanyplatform/ignite:2.9.1
 bitnami/pgpool:4.2.4
-bitnami/pgbouncer:1.15.0
+bitnami/pgbouncer:1.16.0
 # istio
 istio/pilot:1.8.1
 istio/proxyv2:1.8.1

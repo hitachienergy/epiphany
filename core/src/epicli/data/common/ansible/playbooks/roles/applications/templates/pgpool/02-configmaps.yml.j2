@@ -7,6 +7,7 @@ metadata:
     app: pgpool
   namespace: {{ data.namespace }}
 data:
+  PCPPASSFILE: '/tmp/.pcppass'
 {% if data.pgpool.env.PGPOOL_BACKEND_NODES is undefined or data.pgpool.env.PGPOOL_BACKEND_NODES|lower == 'autoconfigured' %}
   PGPOOL_BACKEND_NODES: "{% for node in groups['postgresql'] %}{{ loop.index0 }}:{{ hostvars[groups['postgresql'][loop.index0]].ansible_hostname }}:5432{% if not loop.last %},{% endif %}{% endfor %}"
 {% else %}
@@ -183,9 +184,6 @@ data:
     echo "==> Started: $0"
 
     echo "Generating .pcppass file for Pgpool admin user (${PGPOOL_ADMIN_USERNAME})..."
-
-    PCPPASSFILE=$(mktemp /tmp/.pcppass-XXXXX)
-    export PCPPASSFILE
 
     cat >>"${PCPPASSFILE}"<<EOF
     localhost:*:${PGPOOL_ADMIN_USERNAME}:${PGPOOL_ADMIN_PASSWORD}
