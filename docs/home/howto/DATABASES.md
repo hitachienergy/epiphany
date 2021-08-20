@@ -27,6 +27,10 @@ We do not recommend to change this option especially on running database, since 
 
 ## How to set up PostgreSQL connection pooling
 
+PostgreSQL connection pooling in Epiphany is served by PgBouncer application. It is available as Kubernetes `ClusterIP` or standalone package.
+The [Kubernetes based installation](#how-to-set-up-pgbouncer-pgpool-and-postgresql-parameters) works together with PgPool so it supports PostgreSQL HA setup.
+The standalone installation (described below) is deprecated and **will be removed** in the next release.
+
 ---
 **NOTE**
 
@@ -34,9 +38,7 @@ PgBouncer extension is not supported on ARM.
 
 ---
 
-PostgreSQL connection pooling in Epiphany is served by PgBouncer application. This might be added as a feature if
-needed. The simplest configuration runs PgBouncer on PostgreSQL master node. This needs to be enabled in configuration
-yaml file:
+PgBouncer is installed only on PostgreSQL primary node. This needs to be enabled in configuration yaml file:
 
 ```yaml
 kind: configuration/postgresql
@@ -49,13 +51,7 @@ specification:
 ```
 
 PgBouncer listens on standard port 6432. Basic configuration is just template, with very limited access to database.
-This is because security
-reasons. [Configuration needs to be tailored according component documentation and stick to security rules and best practices](http://www.pgbouncer.org/)
-.
-
-PgBouncer can be also installed (together with PgPool) in K8s cluster.
-See [How to set up PgBouncer, PgPool and PostgreSQL parameters](#how-to-set-up-pgbouncer-pgpool-and-postgresql-parameters)
-.
+This is because of security reasons. [Configuration needs to be tailored according component documentation and stick to security rules and best practices](http://www.pgbouncer.org/).
 
 ## How to set up PostgreSQL HA replication with repmgr cluster
 
@@ -166,13 +162,6 @@ repmgr standby switchover
    https://repmgr.org/docs/5.2/repmgr-standby-switchover.html
 
 ## How to set up PgBouncer, PgPool and PostgreSQL parameters
-
----
-**NOTE**
-
-PgBouncer standalone installation is deprecated and will be removed in the next release.
-
----
 
 This section describes how to set up connection pooling and load balancing for highly available PostgreSQL cluster. The
 default configuration provided by Epiphany is meant for midrange class systems but can be customized to scale up or to
