@@ -2,6 +2,19 @@
 - name: Extensions | configure PgBouncer
   when: groups.postgresql[0] == inventory_hostname
   block:
+    # Avoid wrong process identification as interpreted script is used
+    # See https://chris-lamb.co.uk/posts/start-stop-daemon-exec-vs-startas
+    - name: Extensions | PgBouncer | Debian | Change daemon start stop option from 'exec' to 'startas'
+      when: ansible_os_family == 'Debian'
+      lineinfile:
+        path: /etc/init.d/pgbouncer
+        regexp: "^SSD="
+        line: 'SSD="start-stop-daemon --pidfile $PIDFILE --startas $DAEMON --quiet"'
+
+    - name: Extensions | PgBouncer | Force systemd to reread configs
+      systemd:
+        daemon_reload: true
+
     - name: Extensions | PgBouncer | Ensure that systemd service is started
       systemd:
         name: pgbouncer
@@ -19,7 +32,7 @@
     - name: Extensions | PgBouncer | Change pool mode
       lineinfile:
         path: /etc/pgbouncer/pgbouncer.ini
-        regexp: '^pool_mode ='
+        regexp: "^pool_mode ="
         line: "pool_mode = transaction"
       register: db_pool_mode_line
 
