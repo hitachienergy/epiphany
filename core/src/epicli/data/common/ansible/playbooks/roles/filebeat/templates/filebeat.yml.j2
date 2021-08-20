@@ -179,7 +179,7 @@ setup.template.settings:
 # These settings control loading the sample dashboards to the Kibana index. Loading
 # the dashboards is disabled by default and can be enabled either by setting the
 # options here or by using the `setup` command.
-{% set dashboards_enabled = is_upgrade_run | ternary(specification.kibana.dashboards.enabled | default(False), specification.kibana.dashboards.enabled) %}
+{% set dashboards_enabled = is_upgrade_run | ternary(existing_setup_dashboards.enabled | default(False), specification.kibana.dashboards.enabled) %}
 {% if dashboards_enabled == 'auto' %}
   {% if groups.kibana is defined and groups.kibana | length > 0 %}
 setup.dashboards.enabled: true

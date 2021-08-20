@@ -60,8 +60,8 @@
       opendistro_security.ssl.transport.pemtrustedcas_filepath: >-
         {{ _old['opendistro_security.ssl.transport.pemtrustedcas_filepath'] | replace(_dual_root_ca_filename, _epiphany_root_ca_filename) }}
 
-      http.port:      "{{ _old['http.port']      | default(ports.http) }}"
-      transport.port: "{{ _old['transport.port'] | default(ports.transport) }}"
+      http.port:      "{{ _old['http.port']      | default(odfe_defaults.ports.http) }}"
+      transport.port: "{{ _old['transport.port'] | default(odfe_defaults.ports.transport) }}"
 
     existing_es_config: "{{ _old | combine(_updated_existing_config) }}"
 
