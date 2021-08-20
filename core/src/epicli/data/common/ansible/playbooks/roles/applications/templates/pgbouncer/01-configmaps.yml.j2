@@ -11,10 +11,10 @@ data:
   PGBOUNCER_CONF_FILE: '/opt/bitnami/pgbouncer/conf/pgbouncer.ini'
   POSTGRESQL_HOST: '{{ data.pgbouncer.env.DB_HOST }}'
   POSTGRESQL_PORT: '{{ data.pgbouncer.env.DB_LISTEN_PORT }}'
-  DEFAULT_POOL_SIZE: '{{ data.pgbouncer.env.DEFAULT_POOL_SIZE }}'
   MAX_CLIENT_CONN: '{{ data.pgbouncer.env.MAX_CLIENT_CONN }}'
-  POOL_MODE: '{{ data.pgbouncer.env.POOL_MODE }}'
+  DEFAULT_POOL_SIZE: '{{ data.pgbouncer.env.DEFAULT_POOL_SIZE }}'
   RESERVE_POOL_SIZE: '{{ data.pgbouncer.env.RESERVE_POOL_SIZE }}'
+  POOL_MODE: '{{ data.pgbouncer.env.POOL_MODE }}'
 
 ---
 apiVersion: v1
