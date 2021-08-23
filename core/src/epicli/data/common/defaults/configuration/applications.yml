@@ -78,7 +78,7 @@ specification:
   - name: pgpool # this service requires PostgreSQL to be installed in cluster
     enabled: false
     image:
-      path: bitnami/pgpool:4.2.3
+      path: bitnami/pgpool:4.2.4
       debug: false # ref: https://github.com/bitnami/minideb-extras/#turn-on-bash-debugging
     use_local_image_registry: true
     namespace: postgres-pool
@@ -142,8 +142,8 @@ specification:
 
   - name: pgbouncer
     enabled: false
-    image_path: bitnami/pgbouncer:1.15.0
-    init_image_path: bitnami/pgpool:4.2.3
+    image_path: bitnami/pgbouncer:1.16.0
+    init_image_path: bitnami/pgpool:4.2.4
     use_local_image_registry: true
     namespace: postgres-pool
     service:
@@ -161,10 +161,6 @@ specification:
       env:
         DB_HOST: pgpool.postgres-pool.svc.cluster.local
         DB_LISTEN_PORT: 5432
-        LISTEN_PORT: 5432
-        LISTEN_ADDR: 0.0.0.0
-        CONFIG_FILE: /opt/bitnami/pgbouncer/conf/pgbouncer.ini
-        AUTH_FILE: /opt/bitnami/pgbouncer/conf/userlist.txt
         MAX_CLIENT_CONN: 150
         DEFAULT_POOL_SIZE: 25
         RESERVE_POOL_SIZE: 25
