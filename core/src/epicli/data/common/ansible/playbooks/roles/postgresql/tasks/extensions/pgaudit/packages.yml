@@ -1,5 +1,5 @@
 ---
-- name: Extensions | PgAudit | Install OS packages
+- name: Extensions | PgAudit | Install package(s)
   package:
     name: "{{ _packages[ansible_os_family] }}"
     state: present
