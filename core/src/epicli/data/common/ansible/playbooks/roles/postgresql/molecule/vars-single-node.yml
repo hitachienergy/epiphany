@@ -83,7 +83,7 @@ specification:
         pgaudit.log_statement_once: off
         pgaudit.log_parameter: on
     pgbouncer:
-      enabled: false
+      enabled: true
     replication:
       enabled: false
       replication_user_name: epi_repmgr
