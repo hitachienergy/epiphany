@@ -73,6 +73,7 @@ specification:
   size: Standard_DS2_v2
   security:
     rules:
+      - _merge_mode: 'merge'
       - name: subnet-traffic
         description: Allow subnet traffic
         priority: 201
@@ -142,6 +143,7 @@ specification:
   size: Standard_DS1_v2
   security:
     rules:
+      - _merge_mode: 'merge'
       - name: subnet-traffic
         description: Allow master subnet traffic
         priority: 201
@@ -181,6 +183,7 @@ specification:
   size: Standard_DS2_v2
   security:
     rules:
+      - _merge_mode: 'merge'
       - name: kafka_exporter
         description: Allow kafka exporter traffic
         priority: 201
@@ -280,6 +283,7 @@ specification:
   size: Standard_DS2_v2
   security:
     rules:
+      - _merge_mode: 'merge'
       - name: rabbitmq
         description: Allow rabbitmq traffic
         priority: 201
@@ -299,6 +303,7 @@ specification:
   size: Standard_DS1_v2
   security:
     rules:
+      - _merge_mode: 'merge'
       - name: prometheus
         description: Allow connection to Prometheus
         priority: 201
@@ -328,6 +333,7 @@ specification:
   size: Standard_DS1_v2
   security:
     rules:
+      - _merge_mode: 'merge'
       - name: postgres_exporter
         description: Allow postgres exporter traffic
         priority: 201
@@ -367,6 +373,7 @@ specification:
   size: Standard_DS2_v2
   security:
     rules:
+      - _merge_mode: 'merge'
       - name: Elastic
         description: Allow Elastic
         priority: 201
@@ -406,6 +413,7 @@ specification:
   size: Standard_DS1_v2
   security:
     rules:
+      - _merge_mode: 'merge'
       - name: haproxy_exporter
         description: Allow haproxy_exporter traffic
         priority: 201
@@ -426,6 +434,7 @@ specification:
   size: Standard_DS1_v2
   security:
     rules:
+      - _merge_mode: 'merge'
       - name: vnet_traffic
         description: Allow vnet traffic
         priority: 300
@@ -445,6 +454,7 @@ specification:
   size: Standard_DS3_v2
   security:
     rules:
+      - _merge_mode: 'merge'
       - name: subnet-traffic
         description: Allow subnet traffic
         priority: 201
@@ -496,6 +506,7 @@ specification:
   size: Standard_DS1_v2
   security:
     rules:
+      - _merge_mode: 'merge'
       - name: repository
         description: Allow repository traffic
         priority: 205

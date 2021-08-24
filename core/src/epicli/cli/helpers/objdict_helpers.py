@@ -1,5 +1,5 @@
 from cli.helpers.ObjDict import ObjDict
-from cli.helpers.doc_list_helpers import select_all, select_first
+from cli.helpers.doc_list_helpers import select_first
 from copy import deepcopy
 from collections.abc import Iterable
 
@@ -46,7 +46,7 @@ def is_named_list(l):
 
 
 def assert_unique_names_in_named_list(list, key, type): 
-    all_names = [x["name"] for x in list] 
+    all_names = [x["name"] for x in list if hasattr(x, 'name')] 
     for name in all_names: 
         if all_names.count(name) > 1: 
             raise DuplicatesInNamedListException( f'"name" field with value "{name}" occurs multiple times in list "{key}" in {type} definition.' )
@@ -61,25 +61,26 @@ def merge_list(to_merge, extend_by, key):
             merge_mode = 'overwrite'
         else:
             merge_mode = merge_mode_obj['_merge_mode']
-            extend_by.remove(merge_mode_obj)
 
         # ensure all items have unique names in to_merge and extend_by
         assert_unique_names_in_named_list(to_merge[key], key, 'default')    
         assert_unique_names_in_named_list(extend_by, key, 'input')            
 
         if merge_mode == 'overwrite': # "overwrite" list
-            to_merge[key] = extend_by          
+            to_merge[key] = [x for x in extend_by if hasattr(x, 'name')]
         elif merge_mode == 'merge':  # "merge" lists
             # Merge possible matched objects from extend_by to to_merge
-            for m_i in to_merge[key]:   
-                count = select_all(extend_by, lambda x: x['name'] == m_i['name'])
-                if len(count) == 1:
-                    merge_objdict(m_i, count[0])
+            for m_i in to_merge[key]:
+                matches = [x for x in extend_by if hasattr(x, 'name') and x['name'] == m_i['name']] 
+                if len(matches) == 1:
+                    merge_objdict(m_i, matches[0])
 
             # Add non-matched objects from extend_by to to_merge. Might be extra config used by projects.
-            for e_i in extend_by:   
-                count = select_all(to_merge[key], lambda x: x['name'] == e_i['name'])
-                if len(count) == 0:
+            for e_i in extend_by:
+                if hasattr(e_i, '_merge_mode'):
+                    continue
+                matches = [x for x in to_merge[key] if x['name'] == e_i['name']]
+                if len(matches) == 0:
                     to_merge[key].append(e_i)
         else:
             raise UnknownMergeModeException( f'Unknown _merge_mode defined: "{merge_mode}" for list "{key}".' )
