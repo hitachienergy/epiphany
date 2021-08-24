@@ -7,7 +7,7 @@
   lineinfile:
     path: /opt/kafka/config/server.properties
     regexp: "^inter.broker.protocol.version"
-    line: "inter.broker.protocol.version={{ kafka_version }}"
+    line: "inter.broker.protocol.version={{ kafka_version.new }}"
 
 - name: Start kafka service
   systemd:

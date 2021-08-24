@@ -13,12 +13,13 @@
 - name: ODFE | Include defaults from opendistro_for_elasticsearch role
   include_vars:
     file: roles/opendistro_for_elasticsearch/defaults/main.yml
+    name: odfe_defaults
 
 - name: ODFE | Print elasticsearch-oss versions
   debug:
     msg:
       - "Installed version: {{ ansible_facts.packages['elasticsearch-oss'][0].version }}"
-      - "Target version: {{ versions[ansible_os_family].elasticsearch_oss }}"
+      - "Target version: {{ odfe_defaults.versions[ansible_os_family].elasticsearch_oss }}"
 
 # If state file exists it means the previous run failed
 - name: ODFE | Check if upgrade state file exists
@@ -31,6 +32,8 @@
 
 - name: ODFE | Upgrade Elasticsearch and ODFE plugins (part 1/2)
   include_tasks: opendistro_for_elasticsearch/upgrade-elasticsearch-01.yml
-  when:  versions[ansible_os_family].elasticsearch_oss is version(ansible_facts.packages['elasticsearch-oss'][0].version, '>')
-     or (versions[ansible_os_family].elasticsearch_oss is version(ansible_facts.packages['elasticsearch-oss'][0].version, '==')
+  when:  _target_version is version(ansible_facts.packages['elasticsearch-oss'][0].version, '>')
+     or (_target_version is version(ansible_facts.packages['elasticsearch-oss'][0].version, '==')
          and stat_upgrade_state_file.stat.exists)
+  vars:
+    _target_version: "{{ odfe_defaults.versions[ansible_os_family].elasticsearch_oss }}"

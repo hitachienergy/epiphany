@@ -9,6 +9,14 @@
         name: upgrade
         tasks_from: common
 
+- hosts: image_registry
+  become: true
+  become_method: sudo
+  tasks:
+    - import_role:
+        name: docker
+      when: "'image_registry' in upgrade_components or upgrade_components|length == 0"
+
 - hosts: kubernetes_master
   become: true
   become_method: sudo
@@ -184,6 +192,9 @@
   serial: 1
   become: true
   become_method: sudo
+  module_defaults:
+    shell:
+      executable: /bin/bash
   tasks:
     - import_role:
         name: upgrade
