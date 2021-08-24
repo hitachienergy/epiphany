@@ -1,5 +1,5 @@
 from cli.helpers.ObjDict import ObjDict
-from cli.helpers.doc_list_helpers import select_all
+from cli.helpers.doc_list_helpers import select_all, select_first
 from copy import deepcopy
 from collections.abc import Iterable
 
@@ -9,6 +9,10 @@ class DuplicatesInNamedListException(Exception):
 
 
 class TypeMismatchException(Exception):
+    pass
+
+
+class UnknownMergeModeException(Exception):
     pass
 
 
@@ -38,7 +42,7 @@ def objdict_to_dict(something):
 
 
 def is_named_list(l):
-    return isinstance(l, Iterable) and all(hasattr(x, 'name') for x in l)
+    return isinstance(l, Iterable) and all(hasattr(x, 'name') or hasattr(x, '_merge_mode') for x in l)
 
 
 def assert_unique_names_in_named_list(list, key, type): 
@@ -51,21 +55,34 @@ def assert_unique_names_in_named_list(list, key, type):
 # to_merge is passed by reference, item under key is updated, extended or replaced 
 def merge_list(to_merge, extend_by, key):
     if is_named_list(to_merge[key]) and is_named_list(extend_by):
+        # check if merge strategy is present
+        merge_mode_obj = select_first(extend_by, lambda x: hasattr(x, '_merge_mode'))
+        if merge_mode_obj == None: # None defined so use 'overwrite' by default
+            merge_mode = 'overwrite'
+        else:
+            merge_mode = merge_mode_obj['_merge_mode']
+            extend_by.remove(merge_mode_obj)
+
         # ensure all items have unique names in to_merge and extend_by
         assert_unique_names_in_named_list(to_merge[key], key, 'default')    
-        assert_unique_names_in_named_list(extend_by, key, 'input')
+        assert_unique_names_in_named_list(extend_by, key, 'input')            
 
-        # Merge possible matched objects from extend_by to to_merge
-        for m_i in to_merge[key]:   
-            count = select_all(extend_by, lambda x: x['name'] == m_i['name'])
-            if len(count) == 1:
-                merge_objdict(m_i, count[0])
+        if merge_mode == 'overwrite': # "overwrite" list
+            to_merge[key] = extend_by          
+        elif merge_mode == 'merge':  # "merge" lists
+            # Merge possible matched objects from extend_by to to_merge
+            for m_i in to_merge[key]:   
+                count = select_all(extend_by, lambda x: x['name'] == m_i['name'])
+                if len(count) == 1:
+                    merge_objdict(m_i, count[0])
 
-        # Add non-matched objects from extend_by to to_merge. Might be extra config used by projects.
-        for e_i in extend_by:   
-            count = select_all(to_merge[key], lambda x: x['name'] == e_i['name'])
-            if len(count) == 0:
-                to_merge[key].append(e_i)
+            # Add non-matched objects from extend_by to to_merge. Might be extra config used by projects.
+            for e_i in extend_by:   
+                count = select_all(to_merge[key], lambda x: x['name'] == e_i['name'])
+                if len(count) == 0:
+                    to_merge[key].append(e_i)
+        else:
+            raise UnknownMergeModeException( f'Unknown _merge_mode defined: "{merge_mode}" for list "{key}".' )
     else:
         # No named list so just replace item
         to_merge[key] = extend_by

@@ -1,6 +1,6 @@
 import pytest
 
-from cli.helpers.objdict_helpers import dict_to_objdict, objdict_to_dict, is_named_list, assert_unique_names_in_named_list, merge_objdict, DuplicatesInNamedListException, TypeMismatchException
+from cli.helpers.objdict_helpers import dict_to_objdict, objdict_to_dict, is_named_list, assert_unique_names_in_named_list, merge_objdict, DuplicatesInNamedListException, TypeMismatchException, UnknownMergeModeException
 from cli.helpers.ObjDict import ObjDict
 from collections import OrderedDict
 
@@ -215,43 +215,7 @@ def test_dict_merge_replaces_list_of_strings_when_same_key_exists():
     assert base.list == ['replaced1', 'replaced2']
 
 
-def test_dict_merge_updates_named_list_when_same_name_key_exists():
-    base = dict_to_objdict({
-        'field1': 'test1', 
-        'list': [
-            {
-                'name': 'test1',
-                'value': 'base1'
-            },
-            {
-                'name': 'test2',
-                'value': 'base2'
-            }    
-        ]
-    })
-    extend_by = dict_to_objdict({
-        'list': [
-            {
-                'name': 'test2',
-                'value': 'base_new'
-            }            
-        ]
-    })
-    merge_objdict(base, extend_by)
-
-    assert base.field1 == 'test1'
-    assert base.list == [
-            {
-                'name': 'test1',
-                'value': 'base1'
-            },
-            {
-                'name': 'test2',
-                'value': 'base_new'
-            }]
-
-
-def test_dict_merge_extends_named_list_with_new_key():
+def test_dict_overwrite_named_list_in_undefined_merge_mode():
     base = dict_to_objdict({
         'field1': 'test1', 
         'list': [
@@ -278,6 +242,115 @@ def test_dict_merge_extends_named_list_with_new_key():
     assert base.field1 == 'test1'
     assert base.list == [
             {
+                'name': 'test3',
+                'value': 'extend3'
+            }  ]
+
+
+def test_dict_overwrite_named_list_in_overwrite_mode():
+    base = dict_to_objdict({
+        'field1': 'test1', 
+        'list': [
+            {
+                'name': 'test1',
+                'value': 'base1'
+            },
+            {
+                'name': 'test2',
+                'value': 'base2'
+            }    
+        ]
+    })
+    extend_by = dict_to_objdict({
+        'list': [
+            {
+                '_merge_mode': 'overwrite'
+            },
+            {
+                'name': 'test3',
+                'value': 'extend3'
+            }            
+        ]
+    })
+    merge_objdict(base, extend_by)
+
+    assert base.field1 == 'test1'
+    assert base.list == [
+            {
+                'name': 'test3',
+                'value': 'extend3'
+            }  ]
+
+
+def test_dict_merge_updates_named_list_when_same_name_key_exists_in_merge_mode():
+    base = dict_to_objdict({
+        'field1': 'test1', 
+        'list': [
+            {
+                'name': 'test1',
+                'value': 'base1'
+            },
+            {
+                'name': 'test2',
+                'value': 'base2'
+            }    
+        ]
+    })
+    extend_by = dict_to_objdict({
+        'list': [
+            {
+                '_merge_mode': 'merge'
+            },
+            {
+                'name': 'test2',
+                'value': 'base_new'
+            }            
+        ]
+    })
+    merge_objdict(base, extend_by)
+
+    assert base.field1 == 'test1'
+    assert base.list == [
+            {
+                'name': 'test1',
+                'value': 'base1'
+            },
+            {
+                'name': 'test2',
+                'value': 'base_new'
+            }]
+
+
+def test_dict_merge_extends_named_list_with_new_key_in_merge_mode():
+    base = dict_to_objdict({
+        'field1': 'test1', 
+        'list': [
+            {
+                'name': 'test1',
+                'value': 'base1'
+            },
+            {
+                'name': 'test2',
+                'value': 'base2'
+            }    
+        ]
+    })
+    extend_by = dict_to_objdict({
+        'list': [
+            {
+                '_merge_mode': 'merge'
+            },
+            {
+                'name': 'test3',
+                'value': 'extend3'
+            }            
+        ]
+    })
+    merge_objdict(base, extend_by)
+
+    assert base.field1 == 'test1'
+    assert base.list == [
+            {
                 'name': 'test1',
                 'value': 'base1'
             },
@@ -291,9 +364,8 @@ def test_dict_merge_extends_named_list_with_new_key():
             }]
 
 
-def test_dict_merge_asserts_on_base_named_list_with_duplicate_name():
+def test_dict_merge_asserts_on_base_named_list_with_duplicate_name_in_merge_mode():
     base = dict_to_objdict({
-        'field1': 'test1', 
         'list': [
             {
                 'name': 'test1',
@@ -307,6 +379,9 @@ def test_dict_merge_asserts_on_base_named_list_with_duplicate_name():
     })
     extend_by = dict_to_objdict({
         'list': [
+            {
+                '_merge_mode': 'merge'
+            },
             {
                 'name': 'test3',
                 'value': 'extend3'
@@ -317,9 +392,8 @@ def test_dict_merge_asserts_on_base_named_list_with_duplicate_name():
         merge_objdict(base, extend_by)
 
 
-def test_dict_merge_asserts_on_extend_named_list_with_duplicate_name():
+def test_dict_merge_asserts_on_extend_named_list_with_duplicate_name_in_merge_mode():
     base = dict_to_objdict({
-        'field1': 'test1', 
         'list': [
             {
                 'name': 'test1',
@@ -329,6 +403,9 @@ def test_dict_merge_asserts_on_extend_named_list_with_duplicate_name():
     })
     extend_by = dict_to_objdict({
         'list': [
+            {
+                '_merge_mode': 'merge'
+            },
             {
                 'name': 'test2',
                 'value': 'extend2'
@@ -340,4 +417,28 @@ def test_dict_merge_asserts_on_extend_named_list_with_duplicate_name():
         ]
     })
     with pytest.raises(DuplicatesInNamedListException):
+        merge_objdict(base, extend_by)
+
+
+def test_dict_merge_asserts_on_unknown_merge_mode():
+    base = dict_to_objdict({
+        'list': [
+            {
+                'name': 'test1',
+                'value': 'base1'
+            }  
+        ]
+    })
+    extend_by = dict_to_objdict({
+        'list': [
+            {
+                '_merge_mode': 'unknown' # Unknown merge mode
+            },
+            {
+                'name': 'test2',
+                'value': 'extend2'
+            },        
+        ]
+    })
+    with pytest.raises(UnknownMergeModeException):
         merge_objdict(base, extend_by)
