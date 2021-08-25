@@ -21,9 +21,9 @@ Epiphany uses a concept called **named lists** in the configuration YAML. Every 
 
 By default, a **named list** inside your configuration it will completely overwrite the defaults that Epiphany provides. This behaviour is on purpose so when you, for example, define a list of users for Kafka inside your configuration it completely overwrite the users defined in the [Kafka defaults.](https://github.com/epiphany-platform/epiphany/blob/9ff9bb266cd6addf309059a8a5e7a48835daafc3/core/src/epicli/data/common/defaults/configuration/kafka.yml#L34).
 
-In some cases however you don`t want to overwrite a **named list**. A good example would be the [application configurations.](https://github.com/epiphany-platform/epiphany/blob/develop/core/src/epicli/data/common/defaults/configuration/applications.yml)
+In some cases however you don't want to overwrite a **named list**. A good example would be the [application configurations.](https://github.com/epiphany-platform/epiphany/blob/develop/core/src/epicli/data/common/defaults/configuration/applications.yml)
 
-You don`t want to re-define every entry just to make sure Epiphany has all default entries needed by the Ansible automation. That is where the ```_merge``` metadata tag comes in. It will let you define if you want to ```overwrite``` or ```merge``` sa **named list** by setting it to ```true``` or ```false```.
+You don't want to re-define every entry just to make sure Epiphany has all default entries needed by the Ansible automation. That is where the ```_merge``` metadata tag comes in. It will let you define if you want to ```overwrite``` or ```merge``` sa **named list** by setting it to ```true``` or ```false```.
 
 For example you want to enable the ```auth-service``` application. Instead of defining the whole ```configuration/applications``` configuration you can do the following:
 
