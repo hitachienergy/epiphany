@@ -12,10 +12,6 @@ class TypeMismatchException(Exception):
     pass
 
 
-class UnknownMergeModeException(Exception):
-    pass
-
-
 def _nested_dict_to_dict(something, *, src_class, dst_class):
     if isinstance(something, src_class):
         return dst_class(
@@ -42,7 +38,7 @@ def objdict_to_dict(something):
 
 
 def is_named_list(l):
-    return isinstance(l, Iterable) and all(hasattr(x, 'name') or hasattr(x, '_merge_mode') for x in l)
+    return isinstance(l, Iterable) and all(hasattr(x, 'name') or hasattr(x, '_merge') for x in l)
 
 
 def assert_unique_names_in_named_list(list, key, type): 
@@ -55,20 +51,21 @@ def assert_unique_names_in_named_list(list, key, type):
 # to_merge is passed by reference, item under key is updated, extended or replaced 
 def merge_list(to_merge, extend_by, key):
     if is_named_list(to_merge[key]) and is_named_list(extend_by):
-        # check if merge strategy is present
-        merge_mode_obj = select_first(extend_by, lambda x: hasattr(x, '_merge_mode'))
-        if merge_mode_obj == None: # None defined so use 'overwrite' by default
-            merge_mode = 'overwrite'
+        # check merge strategy if present
+        merge_value = select_first(extend_by, lambda x: hasattr(x, '_merge'))
+        if merge_value == None: # None defined so overwrite list by default
+            merge = False
         else:
-            merge_mode = merge_mode_obj['_merge_mode']
+            if isinstance(merge_value['_merge'], bool):
+                merge = merge_value['_merge']
+            else:
+                raise AttributeError(f'_merge value for list "{key}" is not a boolean.')
 
         # ensure all items have unique names in to_merge and extend_by
         assert_unique_names_in_named_list(to_merge[key], key, 'default')    
         assert_unique_names_in_named_list(extend_by, key, 'input')            
 
-        if merge_mode == 'overwrite': # "overwrite" list
-            to_merge[key] = [x for x in extend_by if hasattr(x, 'name')]
-        elif merge_mode == 'merge':  # "merge" lists
+        if merge:  # merge lists
             # Merge possible matched objects from extend_by to to_merge
             for m_i in to_merge[key]:
                 matches = [x for x in extend_by if hasattr(x, 'name') and x['name'] == m_i['name']] 
@@ -77,13 +74,13 @@ def merge_list(to_merge, extend_by, key):
 
             # Add non-matched objects from extend_by to to_merge. Might be extra config used by projects.
             for e_i in extend_by:
-                if hasattr(e_i, '_merge_mode'):
+                if hasattr(e_i, '_merge'):
                     continue
                 matches = [x for x in to_merge[key] if x['name'] == e_i['name']]
                 if len(matches) == 0:
                     to_merge[key].append(e_i)
         else:
-            raise UnknownMergeModeException( f'Unknown _merge_mode defined: "{merge_mode}" for list "{key}".' )
+            to_merge[key] = [x for x in extend_by if hasattr(x, 'name')]
     else:
         # No named list so just replace item
         to_merge[key] = extend_by
