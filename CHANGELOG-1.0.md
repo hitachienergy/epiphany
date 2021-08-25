@@ -5,6 +5,7 @@
 ### Updated
 
 - [#1797](https://github.com/epiphany-platform/epiphany/issues/1797) - Upgrade Keycloak to v14.0.0
+- [#2457](https://github.com/epiphany-platform/epiphany/issues/2457) - Upgrade Docker-CE to v20.10.8
 
 ## [1.0.1] 2021-07-16
 
