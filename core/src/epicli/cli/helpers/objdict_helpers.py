@@ -55,11 +55,10 @@ def merge_list(to_merge, extend_by, key):
         merge_value = select_first(extend_by, lambda x: hasattr(x, '_merge'))
         if merge_value == None: # None defined so overwrite list by default
             merge = False
+        elif isinstance(merge_value['_merge'], bool):
+            merge = merge_value['_merge']
         else:
-            if isinstance(merge_value['_merge'], bool):
-                merge = merge_value['_merge']
-            else:
-                raise AttributeError(f'_merge value for list "{key}" is not a boolean.')
+            raise AttributeError(f'_merge value for list "{key}" is not a boolean.')
 
         # ensure all items have unique names in to_merge and extend_by
         assert_unique_names_in_named_list(to_merge[key], key, 'default')    
