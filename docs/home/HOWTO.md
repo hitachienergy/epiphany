@@ -135,3 +135,6 @@
     - [Downloading requirements progression and logging](./howto/REPOSITORY.md#downloading-requirements-progression-and-logging)
     - [Re-downloading requirements](./howto/REPOSITORY.md#re-downloading-requirements)
     - [Restoring system repositories](./howto/REPOSITORY.md#restoring-system-repositories)
+
+- [Schema](./howto/SCHEMA.md)
+  - [Elasticsearch](./howto/SCHEMA.md#named-lists)
