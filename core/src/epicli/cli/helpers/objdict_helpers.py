@@ -41,14 +41,14 @@ def is_named_list(l):
     return isinstance(l, Iterable) and all(hasattr(x, 'name') or hasattr(x, '_merge') for x in l)
 
 
-def assert_unique_names_in_named_list(list, key, type): 
-    all_names = [x["name"] for x in list if hasattr(x, 'name')] 
-    for name in all_names: 
-        if all_names.count(name) > 1: 
+def assert_unique_names_in_named_list(list, key, type):
+    all_names = [x["name"] for x in list if hasattr(x, 'name')]
+    for name in all_names:
+        if all_names.count(name) > 1:
             raise DuplicatesInNamedListException( f'"name" field with value "{name}" occurs multiple times in list "{key}" in {type} definition.' )
 
 
-# to_merge is passed by reference, item under key is updated, extended or replaced 
+# to_merge is passed by reference, item under key is updated, extended or replaced
 def merge_list(to_merge, extend_by, key):
     if is_named_list(to_merge[key]) and is_named_list(extend_by):
         # check merge strategy if present
@@ -61,13 +61,13 @@ def merge_list(to_merge, extend_by, key):
             raise AttributeError(f'_merge value for list "{key}" is not a boolean.')
 
         # ensure all items have unique names in to_merge and extend_by
-        assert_unique_names_in_named_list(to_merge[key], key, 'default')    
-        assert_unique_names_in_named_list(extend_by, key, 'input')            
+        assert_unique_names_in_named_list(to_merge[key], key, 'default')
+        assert_unique_names_in_named_list(extend_by, key, 'input')
 
         if merge:  # merge lists
             # Merge possible matched objects from extend_by to to_merge
             for m_i in to_merge[key]:
-                matches = [x for x in extend_by if hasattr(x, 'name') and x['name'] == m_i['name']] 
+                matches = [x for x in extend_by if hasattr(x, 'name') and x['name'] == m_i['name']]
                 if len(matches) == 1:
                     merge_objdict(m_i, matches[0])
 
@@ -128,9 +128,9 @@ def replace_yesno_with_booleans(d):
     elif isinstance(d, ObjDict):
         for key, val in d.items():
             if isinstance(d[key], str):
-                if val == 'yes':        
+                if val == 'yes':
                     d[key] = True
-                elif val == 'no':             
+                elif val == 'no':
                     d[key] = False
-            else:      
+            else:
                 replace_yesno_with_booleans(d[key])
