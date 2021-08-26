@@ -20,7 +20,7 @@ By default, a **named list** in your configuration file will completely overwrit
 
 In some cases, however, you don't want to overwrite a **named list**. A good example would be the [application configurations](https://github.com/epiphany-platform/epiphany/blob/v1.0.1/core/src/epicli/data/common/defaults/configuration/applications.yml).
 
-You don't want to re-define every entry just to make sure Epiphany has all default entries needed by the Ansible automation. That is where the ```_merge``` metadata tag comes in. It will let you define if you want to ```overwrite``` or ```merge``` sa **named list** by setting it to ```true``` or ```false```.
+You don't want to re-define every item just to make sure Epiphany has all default items needed by the Ansible automation. That is where the ```_merge``` metadata tag comes in. It will let you define whether you want to ```overwrite``` or ```merge``` a **named list** by setting it to ```true``` or ```false```.
 
 For example you want to enable the ```auth-service``` application. Instead of defining the whole ```configuration/applications``` configuration you can do the following:
 
