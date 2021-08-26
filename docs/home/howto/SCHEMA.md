@@ -2,7 +2,7 @@
 
 ### Named lists
 
-Epiphany uses a concept called **named lists** in the configuration YAML. Every entry in a **named lists**  list will have a ```name``` field to identify it and make it unique for merge operations:
+Epiphany uses a concept called **named lists** in the configuration YAML. Every item in a **named list**  has the ```name``` key to identify it and make it unique for merge operation:
 
 ```yaml
 ...
