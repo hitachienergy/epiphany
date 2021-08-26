@@ -1,5 +1,5 @@
 from cli.helpers.ObjDict import ObjDict
-from cli.helpers.doc_list_helpers import select_all
+from cli.helpers.doc_list_helpers import select_first
 from copy import deepcopy
 from collections.abc import Iterable
 
@@ -38,34 +38,48 @@ def objdict_to_dict(something):
 
 
 def is_named_list(l):
-    return isinstance(l, Iterable) and all(hasattr(x, 'name') for x in l)
+    return isinstance(l, Iterable) and all(hasattr(x, 'name') or hasattr(x, '_merge') for x in l)
 
 
-def assert_unique_names_in_named_list(list, key, type): 
-    all_names = [x["name"] for x in list] 
-    for name in all_names: 
-        if all_names.count(name) > 1: 
+def assert_unique_names_in_named_list(list, key, type):
+    all_names = [x["name"] for x in list if hasattr(x, 'name')]
+    for name in all_names:
+        if all_names.count(name) > 1:
             raise DuplicatesInNamedListException( f'"name" field with value "{name}" occurs multiple times in list "{key}" in {type} definition.' )
 
 
-# to_merge is passed by reference, item under key is updated, extended or replaced 
+# to_merge is passed by reference, item under key is updated, extended or replaced
 def merge_list(to_merge, extend_by, key):
     if is_named_list(to_merge[key]) and is_named_list(extend_by):
+        # check merge strategy if present
+        merge_value = select_first(extend_by, lambda x: hasattr(x, '_merge'))
+        if merge_value == None: # None defined so overwrite list by default
+            merge = False
+        elif isinstance(merge_value['_merge'], bool):
+            merge = merge_value['_merge']
+        else:
+            raise AttributeError(f'_merge value for list "{key}" is not a boolean.')
+
         # ensure all items have unique names in to_merge and extend_by
-        assert_unique_names_in_named_list(to_merge[key], key, 'default')    
+        assert_unique_names_in_named_list(to_merge[key], key, 'default')
         assert_unique_names_in_named_list(extend_by, key, 'input')
 
-        # Merge possible matched objects from extend_by to to_merge
-        for m_i in to_merge[key]:   
-            count = select_all(extend_by, lambda x: x['name'] == m_i['name'])
-            if len(count) == 1:
-                merge_objdict(m_i, count[0])
+        if merge:  # merge lists
+            # Merge possible matched objects from extend_by to to_merge
+            for m_i in to_merge[key]:
+                matches = [x for x in extend_by if hasattr(x, 'name') and x['name'] == m_i['name']]
+                if len(matches) == 1:
+                    merge_objdict(m_i, matches[0])
 
-        # Add non-matched objects from extend_by to to_merge. Might be extra config used by projects.
-        for e_i in extend_by:   
-            count = select_all(to_merge[key], lambda x: x['name'] == e_i['name'])
-            if len(count) == 0:
-                to_merge[key].append(e_i)
+            # Add non-matched objects from extend_by to to_merge. Might be extra config used by projects.
+            for e_i in extend_by:
+                if hasattr(e_i, '_merge'):
+                    continue
+                matches = [x for x in to_merge[key] if x['name'] == e_i['name']]
+                if len(matches) == 0:
+                    to_merge[key].append(e_i)
+        else:
+            to_merge[key] = [x for x in extend_by if hasattr(x, 'name')]
     else:
         # No named list so just replace item
         to_merge[key] = extend_by
@@ -114,9 +128,9 @@ def replace_yesno_with_booleans(d):
     elif isinstance(d, ObjDict):
         for key, val in d.items():
             if isinstance(d[key], str):
-                if val == 'yes':        
+                if val == 'yes':
                     d[key] = True
-                elif val == 'no':             
+                elif val == 'no':
                     d[key] = False
-            else:      
+            else:
                 replace_yesno_with_booleans(d[key])

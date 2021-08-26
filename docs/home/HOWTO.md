@@ -125,3 +125,7 @@
   - [AWS Security groups full yaml file](./howto/SECURITY_GROUPS.md#aws-setting-groups-full-yaml-file)
 
 - [Modules](./howto/MODULES.md)
+
+- [Configuration file](./howto/CONFIGURATION_FILE.md)
+  - [Named lists](./howto/CONFIGURATION_FILE.md#named-lists)
+
