@@ -16,7 +16,7 @@ Epiphany uses a concept called **named lists** in the configuration YAML. Every 
 ...
 ```
 
-By default, a **named list** inside your configuration it will completely overwrite the defaults that Epiphany provides. This behaviour is on purpose so when you, for example, define a list of users for Kafka inside your configuration it completely overwrite the users defined in the [Kafka defaults.](https://github.com/epiphany-platform/epiphany/blob/9ff9bb266cd6addf309059a8a5e7a48835daafc3/core/src/epicli/data/common/defaults/configuration/kafka.yml#L34).
+By default, a **named list** in your configuration file will completely overwrite the defaults that Epiphany provides. This behaviour is on purpose so when you, for example, define a list of users for Kafka inside your configuration it completely overwrites the users defined in the [Kafka defaults](https://github.com/epiphany-platform/epiphany/blob/9ff9bb266cd6addf309059a8a5e7a48835daafc3/core/src/epicli/data/common/defaults/configuration/kafka.yml#L34).
 
 In some cases, however, you don't want to overwrite a **named list**. A good example would be the [application configurations](https://github.com/epiphany-platform/epiphany/blob/v1.0.1/core/src/epicli/data/common/defaults/configuration/applications.yml).
 
