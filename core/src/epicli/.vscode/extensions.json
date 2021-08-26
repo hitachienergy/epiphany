@@ -3,7 +3,7 @@
         "ms-vscode-remote.remote-containers",
         "ms-python.python",
         "littlefoxteam.vscode-python-test-adapter",
-        "vscoss.vscode-ansible",
+        "redhat.ansible",
         "wholroyd.jinja",
         "redhat.vscode-yaml",
         "hashicorp.terraform",
