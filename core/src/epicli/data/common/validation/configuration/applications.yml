@@ -224,6 +224,8 @@ properties:
                   type: boolean
                 PGPOOL_MAX_POOL:
                   type: integer
+                PGPOOL_CHILD_LIFE_TIME:
+                  type: integer
                 PGPOOL_POSTGRES_PASSWORD_FILE:
                   type: string
                 PGPOOL_SR_CHECK_PASSWORD_FILE:

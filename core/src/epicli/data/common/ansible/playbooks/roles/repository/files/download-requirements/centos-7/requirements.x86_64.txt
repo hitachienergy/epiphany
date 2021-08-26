@@ -80,8 +80,6 @@ perl-Pod-Perldoc # for vim
 perl-Pod-Simple # for vim
 perl-Pod-Usage # for vim
 pgaudit15_13-1.5.0
-# should be uncommented in the task #2076
-# absent in configured repository, but latest version requires python3 binary
 pgbouncer-1.16.0
 policycoreutils-python # for container-selinux
 pyldb # for cifs-utils
