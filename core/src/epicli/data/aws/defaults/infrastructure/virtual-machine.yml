@@ -64,6 +64,7 @@ specification:
   os_type: linux
   security:
     rules:
+     - _merge: true
      - name: rabbitmq
        description: Allow rabbitmq traffic
        direction: Inbound
@@ -97,6 +98,7 @@ specification:
   os_type: linux
   security:
     rules:
+     - _merge: true
      - name: haproxy_exporter
        description: Allow haproxy_exporter traffic
        direction: Inbound
@@ -115,6 +117,7 @@ specification:
   mount_efs: true
   security:
     rules:
+     - _merge: true
      - name: repository
        description: Allow repository traffic
        direction: Inbound
@@ -168,6 +171,7 @@ specification:
   mount_efs: true
   security:
     rules:
+     - _merge: true
      - name: subnet-traffic
        description: Allow master subnet traffic
        direction: Inbound
@@ -205,6 +209,7 @@ specification:
   size: t3.medium
   security:
     rules:
+     - _merge: true
      - name: kafka_exporter
        description: Allow kafka exporter traffic
        direction: Inbound
@@ -277,6 +282,7 @@ specification:
   size: t3.medium
   security:
     rules:
+     - _merge: true
      - name: prometheus
        description: Allow connection to Prometheus
        direction: Inbound
@@ -300,6 +306,7 @@ specification:
   size: t3.medium
   security:
     rules:
+     - _merge: true
      - name: postgres_exporter
        description: Allow postgres exporter traffic
        direction: Inbound
@@ -337,6 +344,7 @@ specification:
   size: t3.large
   security:
     rules:
+     - _merge: true
      - name: Elastic
        description: Allow Elastic
        direction: Inbound
@@ -367,6 +375,7 @@ specification:
   size: t3.medium
   security:
     rules:
+     - _merge: true
      - name: ignite_traffic
        description: Allow traffic to Apache Ignite cluster
        direction: Inbound
@@ -385,6 +394,7 @@ specification:
   mount_efs: true
   security:
     rules:
+     - _merge: true
      - name: repository
        description: Allow repository traffic
        direction: Inbound
@@ -411,6 +421,7 @@ specification:
   size: t2.medium
   security:
     rules:
+     - _merge: true
      - name: repository
        description: Allow repository traffic
        direction: Inbound

@@ -135,3 +135,6 @@
     - [Downloading requirements progression and logging](./howto/REPOSITORY.md#downloading-requirements-progression-and-logging)
     - [Re-downloading requirements](./howto/REPOSITORY.md#re-downloading-requirements)
     - [Restoring system repositories](./howto/REPOSITORY.md#restoring-system-repositories)
+
+- [Configuration file](./howto/CONFIGURATION_FILE.md)
+  - [Named lists](./howto/CONFIGURATION_FILE.md#named-lists)
