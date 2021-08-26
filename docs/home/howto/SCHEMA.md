@@ -7,15 +7,12 @@ Epiphany uses a concept called **named lists** in the configuration YAML. Every 
 ```yaml
 ...
   list:
-  - name: entry1
-    property1: property1
-    property2: property2
-  - name: entry2
-    property1: property1
-    property2: property2
-  - name: entry3
-    property1: property1
-    property2: property2
+  - name: item1
+    property1: value1
+    property2: value2
+  - name: item2
+    property1: value3
+    property2: value4
 ...
 ```
 
