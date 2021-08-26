@@ -1,28 +1,53 @@
 ---
 - name: Extensions | configure PgBouncer
-  when: groups['postgresql'][0] == inventory_hostname
+  when: groups.postgresql[0] == inventory_hostname
   block:
+    # Avoid wrong process identification as interpreted script is used
+    # See https://chris-lamb.co.uk/posts/start-stop-daemon-exec-vs-startas
+    - name: Extensions | PgBouncer | Debian | Change daemon start stop option from 'exec' to 'startas'
+      when: ansible_os_family == 'Debian'
+      lineinfile:
+        path: /etc/init.d/pgbouncer
+        regexp: "^SSD="
+        line: 'SSD="start-stop-daemon --pidfile $PIDFILE --startas $DAEMON --quiet"'
+
+    - name: Extensions | PgBouncer | Force systemd to reread configs
+      systemd:
+        daemon_reload: true
+
+    - name: Extensions | PgBouncer | Ensure that systemd service is started
+      systemd:
+        name: pgbouncer
+        state: started
+
     - name: Extensions | PgBouncer | Change pgbouncer configuration
       lineinfile:
         path: /etc/pgbouncer/pgbouncer.ini
-        insertafter: '\[databases\]'
+        regexp: "^postgres = host="
         line: postgres = host=127.0.0.1 port=5432 dbname=postgres
+        insertafter: '\[databases\]'
         backup: true
+      register: db_connection_line
 
     - name: Extensions | PgBouncer | Change pool mode
       lineinfile:
         path: /etc/pgbouncer/pgbouncer.ini
-        regexp: '^pool_mode ='
+        regexp: "^pool_mode ="
         line: "pool_mode = transaction"
+      register: db_pool_mode_line
 
     - name: Extensions | PgBouncer | Change pgbouncer users configuration
       lineinfile:
         path: /etc/pgbouncer/userlist.txt
         line: '"postgres" "*"'
         create: true
+        mode: u=rw,g=,o=
+        owner: "{{ pgbouncer.user[ansible_os_family] }}"
+        group: "{{ pgbouncer.group[ansible_os_family] }}"
         backup: true
+      register: db_user_line
 
-    - name: Extensions | PgBouncer | Create pgbouncer logrotate configuration file
+    - name: Extensions | PgBouncer | Create logrotate configuration file
       template:
         src: logrotate-pgbouncer.conf.j2
         dest: /etc/logrotate.d/pgbouncer
@@ -30,8 +55,13 @@
         group: root
         mode: u=rw,go=r
 
-    - name: Extensions | PgBouncer | Restart and enable pgbouncer service
+    - name: Extensions | PgBouncer | Restart systemd service
+      when: db_connection_line.changed or db_pool_mode_line.changed or db_user_line.changed
       systemd:
         name: pgbouncer
         state: restarted
+
+    - name: Extensions | PgBouncer | Ensure that systemd service is enabled
+      systemd:
+        name: pgbouncer
         enabled: true

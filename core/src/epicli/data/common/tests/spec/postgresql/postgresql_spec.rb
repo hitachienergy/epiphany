@@ -27,9 +27,21 @@ replicated =           config_docs[:postgresql]["specification"]["extensions"]["
 replication_user =     config_docs[:postgresql]["specification"]["extensions"]["replication"]["replication_user_name"]
 replication_password = config_docs[:postgresql]["specification"]["extensions"]["replication"]["replication_user_password"]
 max_wal_senders =      config_docs[:postgresql]["specification"]["config_file"]["parameter_groups"].detect {|i| i["name"] == 'REPLICATION'}["subgroups"].detect {|i| i["name"] == "Sending Server(s)"}["parameters"].detect {|i| i["name"] == "max_wal_senders"}["value"]
-wal_keep_segments =    config_docs[:postgresql]["specification"]["config_file"]["parameter_groups"].detect {|i| i["name"] == 'REPLICATION'}["subgroups"].detect {|i| i["name"] == "Sending Server(s)"}["parameters"].detect {|i| i["name"] == "wal_keep_segments"}["value"]
 pgbouncer_enabled =    config_docs[:postgresql]["specification"]["extensions"]["pgbouncer"]["enabled"]
 pgaudit_enabled =      config_docs[:postgresql]["specification"]["extensions"]["pgaudit"]["enabled"]
+
+if upgradeRun?
+  spec_doc = readYaml(getRoleDirPath("postgresql") + "vars/main.yml")[0]
+else
+  spec_doc = config_docs[:postgresql]
+end
+
+# In PG 10 there was 'wal_keep_segments'
+wal_keep_size = spec_doc["specification"]["config_file"]["parameter_groups"].detect {|i| i["name"] == 'REPLICATION'}\
+  ["subgroups"].detect{|i| i["name"] == "Sending Server(s)"}["parameters"].detect {|i| i["name"] == "wal_keep_size"}["value"]
+# Setting added in Epiphany v1.2
+password_encryption = 'md5'
+
 pg_user = 'testuser'
 pg_pass = 'testpass'
 
@@ -111,7 +123,7 @@ end
 
 describe 'Check PostgreSQL service status' do
   if os[:family] == 'redhat'
-    describe command("systemctl status postgresql-10 > /dev/null") do
+    describe command("systemctl status postgresql-13 > /dev/null") do
       its(:exit_status) { should eq 0 }
     end
   elsif os[:family] == 'ubuntu'
@@ -123,7 +135,7 @@ end
 
 describe 'Check if PostgreSQL service is running' do
   if os[:family] == 'redhat'
-    describe service('postgresql-10') do
+    describe service('postgresql-13') do
       it { should be_enabled }
       it { should be_running }
     end
@@ -138,7 +150,7 @@ end
 if replicated
   describe 'Check if repmgr service is running' do
     if os[:family] == 'redhat'
-      describe service('repmgr10') do
+      describe service('repmgr13') do
         it { should be_enabled }
         it { should be_running }
       end
@@ -154,21 +166,21 @@ end
 if os[:family] == 'redhat'
   describe 'Check PostgreSQL directories and config files' do
     let(:disable_sudo) { false }
-    describe file('/var/lib/pgsql/10/data') do
+    describe file('/var/lib/pgsql/13/data') do
       it { should exist }
       it { should be_a_directory }
     end
-    describe file("/var/lib/pgsql/10/data/pg_hba.conf") do
+    describe file("/var/lib/pgsql/13/data/pg_hba.conf") do
       it { should exist }
       it { should be_a_file }
       it { should be_readable }
      end
-    describe file("/var/lib/pgsql/10/data/postgresql.conf") do
+    describe file("/var/lib/pgsql/13/data/postgresql.conf") do
       it { should exist }
       it { should be_a_file }
       it { should be_readable }
     end
-    describe file("/var/lib/pgsql/10/data/postgresql-epiphany.conf") do
+    describe file("/var/lib/pgsql/13/data/postgresql-epiphany.conf") do
       it { should exist }
       it { should be_a_file }
       it { should be_readable }
@@ -177,21 +189,21 @@ if os[:family] == 'redhat'
 elsif os[:family] == 'ubuntu'
   describe 'Check PostgreSQL directories and config files' do
     let(:disable_sudo) { false }
-    describe file('/etc/postgresql/10/main') do
+    describe file('/etc/postgresql/13/main') do
       it { should exist }
       it { should be_a_directory }
     end
-    describe file("/etc/postgresql/10/main/pg_hba.conf") do
+    describe file("/etc/postgresql/13/main/pg_hba.conf") do
       it { should exist }
       it { should be_a_file }
       it { should be_readable }
      end
-    describe file("/etc/postgresql/10/main/postgresql.conf") do
+    describe file("/etc/postgresql/13/main/postgresql.conf") do
       it { should exist }
       it { should be_a_file }
       it { should be_readable }
     end
-    describe file("/etc/postgresql/10/main/postgresql-epiphany.conf") do
+    describe file("/etc/postgresql/13/main/postgresql-epiphany.conf") do
       it { should exist }
       it { should be_a_file }
       it { should be_readable }
@@ -208,7 +220,8 @@ end
 
 if os[:family] == 'ubuntu'
   describe 'Check if PostgreSQL is ready' do
-    describe command("pg_isready") do
+    let(:disable_sudo) { false }
+    describe command("su - postgres -c \"pg_isready\"") do
       its(:stdout) { should match /postgresql:#{postgresql_default_port} - accepting connections/ }
       its(:exit_status) { should eq 0 }
     end
@@ -254,12 +267,12 @@ if replicated
   describe 'Check hot_standby setting in postgresql-epiphany.conf file' do
     let(:disable_sudo) { false }
     if os[:family] == 'redhat'
-      describe command("grep -Eio '^hot_standby\s*=[^#]*' /var/lib/pgsql/10/data/postgresql-epiphany.conf") do
+      describe command("grep -Eio '^hot_standby\s*=[^#]*' /var/lib/pgsql/13/data/postgresql-epiphany.conf") do
         its(:exit_status) { should eq 0 }
         its(:stdout) { should match /^hot_standby\s*=\s*#{pg_config_file_booleans[:true]}/i }
       end
     elsif os[:family] == 'ubuntu'
-      describe command("grep -Eio '^hot_standby\s*=[^#]*' /etc/postgresql/10/main/postgresql-epiphany.conf") do
+      describe command("grep -Eio '^hot_standby\s*=[^#]*' /etc/postgresql/13/main/postgresql-epiphany.conf") do
         its(:exit_status) { should eq 0 }
         its(:stdout) { should match /^hot_standby\s*=\s*#{pg_config_file_booleans[:true]}/i }
       end
@@ -270,16 +283,16 @@ if replicated
     if os[:family] == 'redhat'
       describe 'Check PostgreSQL config files for master node' do
         let(:disable_sudo) { false }
-        describe command("cat /var/lib/pgsql/10/data/postgresql-epiphany.conf | grep wal_level") do
+        describe command("cat /var/lib/pgsql/13/data/postgresql-epiphany.conf | grep wal_level") do
           its(:stdout) { should match /^wal_level = replica/ }
           its(:exit_status) { should eq 0 }
         end
-        describe command("cat /var/lib/pgsql/10/data/postgresql-epiphany.conf | grep max_wal_senders") do
+        describe command("cat /var/lib/pgsql/13/data/postgresql-epiphany.conf | grep max_wal_senders") do
           its(:stdout) { should match /^max_wal_senders = #{max_wal_senders}/ }
           its(:exit_status) { should eq 0 }
         end
-        describe command("cat /var/lib/pgsql/10/data/postgresql-epiphany.conf | grep wal_keep_segments") do
-          its(:stdout) { should match /^wal_keep_segments = #{wal_keep_segments}/ }
+        describe command("cat /var/lib/pgsql/13/data/postgresql-epiphany.conf | grep wal_keep_size") do
+          its(:stdout) { should match /^wal_keep_size = #{wal_keep_size}/ }
           its(:exit_status) { should eq 0 }
         end
         describe command("su - postgres -c \"psql -t -c '\\du'\" | grep #{replication_user}") do
@@ -287,7 +300,7 @@ if replicated
           its(:stdout) { should match /Replication/ }
           its(:exit_status) { should eq 0 }
         end
-        describe command("cat /var/lib/pgsql/10/data/pg_hba.conf | grep replication | grep md5") do
+        describe command("cat /var/lib/pgsql/13/data/pg_hba.conf | grep replication | grep #{password_encryption}") do
           its(:stdout) { should match /#{replication_user}/ }
           its(:stdout) { should match /replication/ }
           its(:exit_status) { should eq 0 }
@@ -296,16 +309,16 @@ if replicated
     elsif os[:family] == 'ubuntu'
       describe 'Check PostgreSQL config files for master node' do
         let(:disable_sudo) { false }
-        describe command("cat /etc/postgresql/10/main/postgresql-epiphany.conf | grep wal_level") do
+        describe command("cat /etc/postgresql/13/main/postgresql-epiphany.conf | grep wal_level") do
           its(:stdout) { should match /^wal_level = replica/ }
           its(:exit_status) { should eq 0 }
         end
-        describe command("cat /etc/postgresql/10/main/postgresql-epiphany.conf | grep max_wal_senders") do
+        describe command("cat /etc/postgresql/13/main/postgresql-epiphany.conf | grep max_wal_senders") do
           its(:stdout) { should match /^max_wal_senders = #{max_wal_senders}/ }
           its(:exit_status) { should eq 0 }
         end
-        describe command("cat /etc/postgresql/10/main/postgresql-epiphany.conf | grep wal_keep_segments") do
-          its(:stdout) { should match /^wal_keep_segments = #{wal_keep_segments}/ }
+        describe command("cat /etc/postgresql/13/main/postgresql-epiphany.conf | grep wal_keep_size") do
+          its(:stdout) { should match /^wal_keep_size = #{wal_keep_size}/ }
           its(:exit_status) { should eq 0 }
         end
         describe command("su - postgres -c \"psql -t -c '\\du'\" | grep #{replication_user}") do
@@ -313,7 +326,7 @@ if replicated
           its(:stdout) { should match /Replication/ }
           its(:exit_status) { should eq 0 }
         end
-        describe command("cat /etc/postgresql/10/main/pg_hba.conf | grep replication | grep md5") do
+        describe command("cat /etc/postgresql/13/main/pg_hba.conf | grep replication | grep #{password_encryption}") do
           its(:stdout) { should match /#{replication_user}/ }
           its(:stdout) { should match /replication/ }
           its(:exit_status) { should eq 0 }
@@ -532,7 +545,7 @@ if pgaudit_enabled && countInventoryHosts("logging") > 0
         _source: [ 'message', '@timestamp' ],
         query: {
           query_string: {
-            query: "log.file.path:(\\/var\\/log\\/postgresql\\/postgresql\\-10\\-main.log OR \\/var\\/log\\/postgresql\\/postgresql.log) AND message:#{message_pattern} AND @timestamp:[now-30m TO now]"
+            query: "log.file.path:(\\/var\\/log\\/postgresql\\/postgresql\\-13\\-main.log OR \\/var\\/log\\/postgresql\\/postgresql.log) AND message:#{message_pattern} AND @timestamp:[now-30m TO now]"
           }
         },
         size: size
@@ -576,7 +589,7 @@ if pgaudit_enabled && countInventoryHosts("logging") > 0
 
     describe 'Check if Elasticsearch logs contain queries executed with PGBouncer', :if => pgbouncer_enabled do
       query = get_elasticsearch_query(message_pattern: pg_user)
-      command = get_query_command_with_retries(json_query: query, min_doc_hits: 6)
+      command = get_query_command_with_retries(json_query: query, min_doc_hits: 7)
       describe command(command.squish) do
         its(:stdout) { should match /GRANT ALL ON SCHEMA serverspec_test to #{pg_user}/ }
         its(:stdout) { should match /GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA serverspec_test to #{pg_user}/ }

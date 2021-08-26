@@ -1,0 +1,37 @@
+---
+- name: Load default variables for repmgr upgrade
+  include_vars:
+    file: defaults/upgrade.yml
+    name: upgrade_defaults
+
+- name: Get information about installed packages as facts
+  package_facts:
+    manager: auto
+  when: ansible_facts.packages is undefined
+
+- name: Run upgrade if needed
+  when: ansible_facts.packages[_repmgr_package_name] is defined
+  vars:
+    _repmgr_package_name: "{{ upgrade_defaults.repmgr.package_name[ansible_os_family] }}"
+    _installed_version: "{{ ansible_facts.packages[_repmgr_package_name][0].version }}"
+    _target_version: "{{ repmgr.version[ansible_os_family] }}"
+  block:
+    - name: repmgr for PG {{ upgrade_defaults.pg.version }} | Print repmgr versions
+      debug:
+        msg:
+          - "Installed version: {{ _installed_version }}"
+          - "Target version: {{ _target_version }}"
+
+    # If state file exists it means the previous run failed
+    - name: repmgr for PG {{ upgrade_defaults.pg.version }} | Check if upgrade state file exists
+      stat:
+        path: "{{ upgrade_defaults.repmgr.upgrade.state_file_path }}"
+        get_attributes: false
+        get_checksum: false
+        get_mime: false
+      register: stat_upgrade_state_file
+
+    - name: repmgr for PG {{ upgrade_defaults.pg.version }} | Upgrade repmgr
+      include_tasks: roles/postgresql/tasks/upgrade/extensions/replication/pg-old/repmgr-upgrade.yml
+      when: _target_version is version(_installed_version, '>')
+         or stat_upgrade_state_file.stat.exists

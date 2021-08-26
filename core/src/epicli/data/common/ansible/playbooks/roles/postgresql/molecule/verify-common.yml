@@ -1,0 +1,50 @@
+---
+- name: Gather facts on services
+  service_facts:
+
+# status is reported as 'unknown', so not checked
+- name: Verify that postgresql service exists and is running
+  vars:
+    _services:
+      Debian: postgresql@13-main.service
+      RedHat: postgresql-13.service
+  assert:
+    that:
+      - "{{ _services[ansible_os_family] in ansible_facts.services }}"
+      - "{{ ansible_facts.services[_services[ansible_os_family]].state == 'running' }}"
+
+# PgBouncer is installed only on one of nodes
+- name: Verify that pgbouncer service exists and is running
+  delegate_to: groups.postgresql[0]
+  run_once: true
+  assert:
+    that:
+      - "{{ 'pgbouncer.service' in ansible_facts.services }}"
+      - "{{ ansible_facts.services['pgbouncer.service'].state == 'running' }}"
+
+# required for 'listen_ports_facts' module
+- name: Ensure net-tools package is installed
+  package:
+    name: net-tools
+    state: present
+
+- name: Gather facts on listening ports
+  listen_ports_facts:
+
+- name: Verify PostgreSQL port
+  assert:
+    that:
+      - "{{ ansible_facts.tcp_listen
+            | selectattr('port', 'equalto', 5432)
+            | selectattr('address', 'equalto', '0.0.0.0')
+            | length == 1 }}"
+
+- name: Verify PgBouncer port
+  delegate_to: groups.postgresql[0]
+  run_once: true
+  assert:
+    that:
+      - "{{ ansible_facts.tcp_listen
+            | selectattr('port', 'equalto', 6432)
+            | selectattr('address', 'equalto', '127.0.0.1')
+            | length == 1 }}"

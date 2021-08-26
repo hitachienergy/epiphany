@@ -1,0 +1,14 @@
+---
+- name: Start and enable repmgr service
+  vars:
+    _service_name: "{{ new_version.repmgr.service_name[ansible_os_family] }}"
+  block:
+    - name: PostgreSQL | Extensions | repmgr | Start {{ _service_name }} service
+      systemd:
+        name: "{{ _service_name }}"
+        state: started
+
+    - name: PostgreSQL | Extensions | repmgr | Enable {{ _service_name }} service
+      systemd:
+        name: "{{ _service_name }}"
+        enabled: true

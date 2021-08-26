@@ -69,9 +69,19 @@ EOF
 )
 
 POSTGRESQL_REPO_CONF=$(cat <<'EOF'
-[pgdg10]
-name=PostgreSQL 10 for RHEL/CentOS $releasever - $basearch
-baseurl=https://download.postgresql.org/pub/repos/yum/10/redhat/rhel-$releasever-$basearch
+[pgdg13]
+name=PostgreSQL 13 for RHEL/CentOS $releasever - $basearch
+baseurl=https://download.postgresql.org/pub/repos/yum/13/redhat/rhel-$releasever-$basearch
+enabled=1
+gpgcheck=1
+gpgkey=https://download.postgresql.org/pub/repos/yum/RPM-GPG-KEY-PGDG
+EOF
+)
+
+POSTGRESQL_COMMON_REPO_CONF=$(cat <<'EOF'
+[pgdg-common]
+name=PostgreSQL common for RHEL/CentOS $releasever - $basearch
+baseurl=https://download.postgresql.org/pub/repos/yum/common/redhat/rhel-$releasever-$basearch
 enabled=1
 gpgcheck=1
 gpgkey=https://download.postgresql.org/pub/repos/yum/RPM-GPG-KEY-PGDG
@@ -103,5 +113,6 @@ add_repo_as_file 'elasticsearch-7' "$ELASTICSEARCH_7_REPO_CONF"
 add_repo_as_file 'elasticsearch-curator-5' "$ELASTICSEARCH_CURATOR_REPO_CONF"
 add_repo_as_file 'kubernetes' "$KUBERNETES_REPO_CONF"
 add_repo_as_file 'opendistroforelasticsearch' "$OPENDISTRO_REPO_CONF"
-add_repo_as_file 'postgresql-10' "$POSTGRESQL_REPO_CONF"
+add_repo_as_file 'postgresql-13' "$POSTGRESQL_REPO_CONF"
+add_repo_as_file 'postgresql-common' "$POSTGRESQL_COMMON_REPO_CONF" # for pgbouncer
 add_repo_as_file 'rabbitmq' "$RABBITMQ_SERVER_REPO_CONF"

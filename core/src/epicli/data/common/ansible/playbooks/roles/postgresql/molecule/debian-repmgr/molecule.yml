@@ -1,0 +1,38 @@
+---
+dependency:
+  enabled: false
+# linter's project dir is changed to avoid issues with include_tasks
+lint: ansible-lint --project-dir=../.. roles/postgresql --exclude roles/postgresql/molecule
+driver:
+  name: docker
+platforms:
+  - name: instance-1
+    <<: &instance
+      groups:
+        - postgresql
+      image: geerlingguy/docker-ubuntu1804-ansible:python2
+      pre_build_image: true
+      capabilities:
+        - SYS_ADMIN
+      command: /lib/systemd/systemd
+      tmpfs:
+        - /run
+        - /tmp
+      volumes:
+        - /sys/fs/cgroup:/sys/fs/cgroup:ro
+  - name: instance-2
+    <<: *instance
+  - name: instance-3
+    <<: *instance
+provisioner:
+  name: ansible
+  playbooks:
+    prepare: prepare.yml
+    converge: converge.yml
+    verify: ../verify-repmgr.yml
+  inventory:
+    group_vars:
+      postgresql:
+        ansible_python_interpreter: /usr/bin/python2
+verifier:
+  name: ansible

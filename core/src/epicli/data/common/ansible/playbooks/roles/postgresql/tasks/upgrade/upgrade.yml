@@ -1,0 +1,378 @@
+---
+# Upgrade procedure based on steps from: https://www.postgresql.org/docs/13/pgupgrade.html
+
+# Disabling extensions is not supported, so these values are taken by check whether related packages are installed
+# It's possible to take these values from manifest, but as it can be overwritten, values are based on packages
+- name: PostgreSQL | Set facts on installed extensions
+  set_fact:
+    pg_is_pgaudit_used: "{{ ansible_facts.packages.keys() | intersect(_packages.pgaudit) | count > 0 }}"
+    pg_is_repmgr_used: "{{ ansible_facts.packages.keys() | intersect(_packages.repmgr)  | count > 0 }}"
+    pg_is_pgbouncer_used: "{{ ansible_facts.packages.pgbouncer is defined }}" # package name is the same for all versions
+  vars:
+    _packages:
+      pgaudit:
+        - "{{ old_version.pgaudit.package_name[ansible_os_family] }}"
+        - "{{ new_version.pgaudit.package_name[ansible_os_family] }}"
+      repmgr:
+        - "{{ old_version.repmgr.package_name[ansible_os_family] }}"
+        - "{{ new_version.repmgr.package_name[ansible_os_family] }}"
+
+- name: PostgreSQL | Get primary node
+  when: pg_is_repmgr_used
+  become_user: postgres
+  shell: |-
+    set -o pipefail && \
+    {{ old_version.repmgr.bin_dir[ansible_os_family] }}/repmgr cluster show \
+      | awk 'BEGIN{FS="|"} {gsub(/ /,""); if ($3 == "primary") print $2}'
+  changed_when: false
+  register: pg_primary_node_found
+  # when there are two primary nodes (after failover) rc is non-zero
+  failed_when: pg_primary_node_found.rc != 0 or pg_primary_node_found.stdout == ""
+  run_once: true
+
+# 'pg_primary_node' fact should be available for upgrade and rollback
+- name: PostgreSQL | Set 'pg_primary_node' fact
+  set_fact:
+    pg_primary_node: "{{ pg_primary_node_found.stdout | default('') }}"
+
+- name: PostgreSQL | Upgrade
+  block:
+    # Step: Install the new PostgreSQL binaries
+
+    # Ubuntu: automatically creates 'main' cluster and starts postgresql services
+    # RHEL/CentOS: cluster name is empty, service is not started
+    - name: PostgreSQL | Install package(s)
+      package:
+        name: "{{ _packages[ansible_os_family] }}"
+        state: present
+      vars:
+        _packages:
+          Debian:
+            - postgresql-client-common
+            - postgresql-common
+            - "postgresql-client-{{ new_version.pg.version }}"
+            - "postgresql-{{ new_version.pg.version }}"
+          RedHat:
+            - "postgresql{{ new_version.pg.version }}-server"
+      module_defaults:
+        yum: { lock_timeout: "{{ yum_lock_timeout }}" }
+
+    # Step: Initialize the new PostgreSQL cluster (on Ubuntu done automatically)
+
+    # This value is default but set explicitly to avoid errors
+    - name: PostgreSQL | Ensure that PG {{ new_version.pg.version }} data directory has correct permissions
+      file:
+        path: "{{ new_version.pg.data_dir[ansible_os_family] }}"
+        state: directory
+        owner: postgres
+        group: postgres
+        mode: u=rwx,g=,o= # Permissions should be u=rwx (0700) or u=rwx,g=rx (0750)
+
+    # Database doesn't initialize automatically during second run (after rollback)
+    - name: PostgreSQL | Debian | Check if database is initialized
+      when: ansible_os_family != 'RedHat'
+      stat:
+        path: "{{ new_version.pg.data_dir[ansible_os_family] }}/PG_VERSION"
+        get_attributes: false
+        get_checksum: false
+        get_mime: false
+      register: stat_pg_version_file
+
+    - name: PostgreSQL | Initialize database
+      when: ansible_os_family == 'RedHat' or not stat_pg_version_file.stat.exists
+      command: "{{ new_version.pg.bin_dir[ansible_os_family] }}/initdb"
+      become_user: postgres
+      environment:
+        PGDATA: "{{ new_version.pg.data_dir[ansible_os_family] }}"
+
+    # Step: Install custom shared object files
+
+    - name: PostgreSQL | Extensions | PgAudit | Include package(s) installation tasks
+      include_tasks: roles/postgresql/tasks/upgrade/extensions/pgaudit/packages.yml
+      when: pg_is_pgaudit_used
+
+    - name: PostgreSQL | Extensions | PgBouncer | Upgrade
+      when: pg_is_pgbouncer_used
+      block:
+        - include_tasks: roles/postgresql/tasks/upgrade/extensions/pgbouncer/packages.yml
+
+        - name: Extensions | PgBouncer | Ensure that systemd service is started
+          systemd:
+            name: pgbouncer
+            state: started
+
+    - name: Stop and disable repmgr service then install new package(s)
+      when: pg_is_repmgr_used
+      block:
+        - include_tasks: roles/postgresql/tasks/upgrade/extensions/replication/pg-new/repmgr-stop-and-disable-service.yml
+
+        - name: PostgreSQL | Extensions | repmgr | Include package(s) installation tasks
+          include_tasks: roles/postgresql/tasks/upgrade/extensions/replication/pg-new/packages.yml
+
+    # Step: Adjust authentication
+    - name: PostgreSQL | Extensions | repmgr | Update pgpass file
+      when: pg_is_repmgr_used
+      vars:
+        _replication_user_name: "{{ upgrade_vars.specification.extensions.replication.replication_user_name }}"
+        _replication_user_password: "{{ upgrade_vars.specification.extensions.replication.replication_user_password }}"
+        _privileged_user_name: "{{ upgrade_vars.specification.extensions.replication.privileged_user_name }}"
+        _privileged_user_password: "{{ upgrade_vars.specification.extensions.replication.privileged_user_password }}"
+      template:
+        src: pgpass-repmgr.j2
+        dest: "{{ new_version.pg.base_dir[ansible_os_family] }}/.pgpass"
+        owner: postgres
+        group: postgres
+        mode: u=rw,g=,o=
+
+    # Step: Stop all servers
+    # Standby nodes have to be stopped after primary. Check p.8 from https://www.postgresql.org/docs/13/pgupgrade.html
+
+    - name: PostgreSQL | Stop PostgreSQL services on primary node
+      when: (pg_is_repmgr_used and inventory_hostname == pg_primary_node) or not pg_is_repmgr_used
+      <<: &stop_pg_services
+        systemd:
+          name: "{{ service_name }}"
+          state: stopped
+        loop_control:
+          loop_var: service_name
+        loop:
+          - "{{ old_version.pg.service_name[ansible_os_family] }}"  # the same name for both versions
+          - "{{ old_version.pg.instantiated_service_name[ansible_os_family] }}"
+          - "{{ new_version.pg.instantiated_service_name[ansible_os_family] }}"
+
+    - name: PostgreSQL | Stop PostgreSQL services on standby nodes
+      when:
+        - pg_is_repmgr_used
+        - inventory_hostname != pg_primary_node
+      <<: *stop_pg_services
+
+    # Step: Run pg_upgrade
+
+    # Process the same configuration files as for 'apply'
+    - name: PostgreSQL | Copy configuration files
+      block:
+        - name: PostgreSQL | Copy configuration files
+          vars:
+            _files:
+              - pg_hba.conf
+              - postgresql-epiphany.conf
+              - postgresql.conf
+            _pg_data_dir: "{{ new_version.pg.data_dir[ansible_os_family] }}" # used in postgresql.conf
+            _extensions:
+              extensions:
+                pgaudit:
+                  enabled: "{{ pg_is_pgaudit_used }}"
+                replication:
+                  enabled: "{{ pg_is_repmgr_used }}"
+            # Values from manifest are used when it's not possible to do changes after 'apply'
+            # such as enabling/disabling extensions
+            _specification: "{{ upgrade_vars.specification | combine(_extensions, recursive=True) }}"
+          template:
+            src: "roles/postgresql/templates/{{ file_name }}.j2"
+            dest: "{{ new_version.pg.config_dir[ansible_os_family] }}/{{ file_name }}"
+            owner: postgres
+            group: postgres
+            mode: u=rw,g=,o=
+            backup: true
+          loop_control:
+            loop_var: file_name
+          loop: "{{ _files }}"
+
+        - name: PostgreSQL | Extensions | repmgr | Copy configuration file
+          when: pg_is_repmgr_used
+          include_tasks: roles/postgresql/tasks/upgrade/extensions/replication/pg-new/repmgr-conf.yml
+
+    - name: PostgreSQL | Upgrade primary node
+      when: (pg_is_repmgr_used and inventory_hostname == pg_primary_node) or not pg_is_repmgr_used
+      block:
+        # --link is not used to be able to access old cluster once the new one is started after the upgrade
+        # there is a preflight check to confirm that available disk space is enough
+        # --clone is not used as only Btrfs and XFS file systems are supported for the current version
+        # also with file copying there is an ability to create new data directory not on the same file system
+        - name: PostgreSQL | Run pg_upgrade
+          become_user: postgres
+          module_defaults:
+            command:
+              chdir: /var/log/postgresql  # to have pg_upgrade logs in this dir
+          block:
+            # This check is not in the 'preflight' as at that stage new version is not available
+            # Checks:
+            #   * cluster versions
+            #   * database user is the install user
+            #   * database connection settings
+            #   * prepared transactions
+            #   * system-defined composite types in user tables
+            #   * reg* data types in user tables
+            #   * contrib/isn with bigint-passing mismatch
+            #   * tables WITH OIDS
+            #   * invalid "sql_identifier" user columns
+            #   * presence of required libraries
+            #   * database user is the install user
+            #   * prepared transactions
+            #   * new cluster tablespace directories
+            - name: PostgreSQL | Run pg_upgrade with --check
+              command: >-
+                {{ new_version.pg.bin_dir[ansible_os_family] }}/pg_upgrade
+                  --old-datadir {{ old_version.pg.data_dir[ansible_os_family] }}
+                  --new-datadir {{ new_version.pg.data_dir[ansible_os_family] }}
+                  --old-bindir {{ old_version.pg.bin_dir[ansible_os_family] }}
+                  --new-bindir {{ new_version.pg.bin_dir[ansible_os_family] }}
+                  --old-options '-c config_file={{ old_version.pg.config_dir[ansible_os_family] }}/postgresql.conf'
+                  --new-options '-c config_file={{ _new_version_config_dir }}/postgresql.conf -c hba_file={{ _new_version_config_dir }}/pg_hba.conf'
+                  --socketdir /var/run/postgresql
+                  --jobs {{ ansible_processor_vcpus }}
+                  --check
+              register: pg_upgrade_check
+
+            - name: PostgreSQL | Print pg_upgrade check output
+              debug:
+                var: pg_upgrade_check.stdout_lines
+
+            - name: PostgreSQL | Run pg_upgrade
+              command: >-
+                {{ new_version.pg.bin_dir[ansible_os_family] }}/pg_upgrade
+                  --old-datadir {{ old_version.pg.data_dir[ansible_os_family] }}
+                  --new-datadir {{ new_version.pg.data_dir[ansible_os_family] }}
+                  --old-bindir {{ old_version.pg.bin_dir[ansible_os_family] }}
+                  --new-bindir {{ new_version.pg.bin_dir[ansible_os_family] }}
+                  --old-options '-c config_file={{ old_version.pg.config_dir[ansible_os_family] }}/postgresql.conf'
+                  --new-options '-c config_file={{ _new_version_config_dir }}/postgresql.conf -c hba_file={{ _new_version_config_dir }}/pg_hba.conf'
+                  --socketdir /var/run/postgresql
+                  --jobs {{ ansible_processor_vcpus }}
+              register: pg_upgrade_run
+
+            - name: PostgreSQL | Extend log information
+              vars:
+                _pg_upgrade_log_file: >-
+                  /var/log/postgresql/pg-upgrade-{{ ansible_date_time.iso8601_basic_short | replace('T','-') }}.log
+              block:
+                - name: PostgreSQL | Print a note to check upgrade results
+                  debug:
+                    msg: >-
+
+                      **************************************
+                      Check {{ _pg_upgrade_log_file }} on host {{ inventory_hostname }} for upgrade results.
+                      If pg_upgrade generated any .sql files, run them.
+                      For more information, refer to PostgreSQL docs (`Post-upgrade processing` section):
+                      https://www.postgresql.org/docs/13/pgupgrade.html.
+                      **************************************
+
+                - name: PostgreSQL | Create a log file with pg_upgrade result
+                  copy:
+                    content: "{{ pg_upgrade_run.stdout_lines }}"
+                    dest: "{{ _pg_upgrade_log_file }}"
+          vars:
+            _new_version_config_dir: "{{ new_version.pg.config_dir[ansible_os_family] }}" # to make command shorter
+
+        - name: PostgreSQL | Start PostgreSQL {{ new_version.pg.version }} service
+          block:
+            - name: PostgreSQL | Debian | Mask {{ old_version.pg.instantiated_service_name.Debian }} service to avoid port conflict
+              when: ansible_os_family == 'Debian'
+              systemd:
+                name: "{{ old_version.pg.instantiated_service_name[ansible_os_family] }}"
+                masked: true
+
+            - name: PostgreSQL | Start PostgreSQL {{ new_version.pg.version }} service
+              systemd:
+                name: "{{ new_version.pg.service_name[ansible_os_family] }}"
+                state: started
+
+            - name: PostgreSQL | Debian | Ensure that instantiated PostgreSQL {{ new_version.pg.version }} service started
+              when: ansible_os_family == 'Debian'
+              systemd:
+                name: "{{ new_version.pg.instantiated_service_name[ansible_os_family] }}"
+                state: started
+
+        - name: PostgreSQL | Extensions | repmgr | Register primary node
+          when: pg_is_repmgr_used
+          include_tasks: roles/postgresql/tasks/upgrade/extensions/replication/pg-new/repmgr-register-primary.yml
+
+    # Step: Upgrade standby servers
+    - name: PostgreSQL | Upgrade standby servers (clone standby node from primary and register)
+      when:
+        - pg_is_repmgr_used
+        - inventory_hostname != pg_primary_node
+      include_tasks: roles/postgresql/tasks/upgrade/extensions/replication/pg-new/repmgr-register-standby.yml
+
+    - name: PostgreSQL | Enable PostgreSQL {{ new_version.pg.version }} service
+      systemd:
+        name: "{{ new_version.pg.service_name[ansible_os_family] }}"
+        enabled: true
+
+    - name: PostgreSQL | Extensions | repmgr | RedHat | Update repmgr symlink
+      file:
+        src: "{{ new_version.repmgr.bin_dir.RedHat }}/repmgr"
+        dest: "/usr/bin/repmgr"
+        state: link
+      when:
+        - pg_is_repmgr_used
+        - ansible_os_family == 'RedHat'
+
+    # Start and enable repmgr service
+    - include_tasks: roles/postgresql/tasks/upgrade/extensions/replication/pg-new/repmgr-start-and-enable-service.yml
+      when: pg_is_repmgr_used
+
+  # Step: Reverting to old cluster
+  rescue:
+    - name: PostgreSQL | Rollback | Remove PG {{ new_version.pg.version }} related packages
+      package:
+        name: "{{ _packages[ansible_os_family] }}"
+        state: absent
+      vars:
+        _packages:
+          Debian:
+            - "postgresql-client-{{ new_version.pg.version }}"
+            - "postgresql-{{ new_version.pg.version }}"
+            - "{{ new_version.pgaudit.package_name.Debian }}"
+            - "{{ new_version.repmgr.package_name.Debian }}"
+          RedHat:
+            - "postgresql{{ new_version.pg.version }}-server"
+            - "{{ new_version.pgaudit.package_name.Debian }}"
+            - "{{ new_version.repmgr.package_name.RedHat }}"
+      module_defaults:
+        yum: { lock_timeout: "{{ yum_lock_timeout }}" }
+
+    - name: PostgreSQL | Rollback | Remove PG {{ new_version.pg.version }} data directory
+      file:
+        path: "{{ new_version.pg.data_dir[ansible_os_family] }}"
+        state: absent
+
+    - name: PostgreSQL | Rollback | Extensions | repmgr | RedHat | Update repmgr symlink
+      file:
+        src: "{{ old_version.repmgr.bin_dir.RedHat }}/repmgr"
+        dest: "/usr/bin/repmgr"
+        state: link
+      when:
+        - pg_is_repmgr_used
+        - ansible_os_family == 'RedHat'
+
+    - name: PostgreSQL | Rollback | Extensions | repmgr | Debian | Update symlink to config file
+      file:
+        src: "{{ old_version.repmgr.config_dir[ansible_os_family] }}/repmgr.conf"
+        dest: /etc/repmgr.conf
+        state: link
+      when: ansible_os_family == 'Debian'
+
+    - name: PostgreSQL | Rollback | Start and enable PostgreSQL {{ old_version.pg.version }} service on primary node
+      when: (pg_is_repmgr_used and inventory_hostname == pg_primary_node) or not pg_is_repmgr_used
+      <<: &start_pg_services
+        systemd:
+          name: "{{ service_name }}"
+          state: started
+          enabled: true
+          masked: false
+        loop_control:
+          loop_var: service_name
+        loop:
+          - "{{ old_version.pg.service_name[ansible_os_family] }}"  # the same name for both versions
+          - "{{ old_version.pg.instantiated_service_name[ansible_os_family] }}"
+
+    - name: PostgreSQL | Rollback | Start and enable PostgreSQL {{ old_version.pg.version }} service on standby nodes
+      when:
+        - pg_is_repmgr_used
+        - inventory_hostname != pg_primary_node
+      <<: *start_pg_services
+
+    - name: PostgreSQL | Fail upgrade with a note
+      fail:
+        msg: PostgreSQL upgrade failed, please check logs

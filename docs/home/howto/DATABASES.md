@@ -1,75 +1,3 @@
-## How to migrate from PostgreSQL installed from Software Collections to installed from PostgreSQL repository
-
-This operation is only required for RedHat/CentOS installations with PostgreSQL 10 installed from Software Collections.
-
-This change is required due to additional modules added by Epiphany that are not supported by PostgreSQL installed from
-Software Collections, but are supported by PostgreSQL installed from official PostgreSQL repository. That's why
-PostgreSQL 10 installed from RedHat/CentOS Software Collections needs to be replaced with PostgreSQL 10 installed from
-PostgreSQL repository.
-
-### PostgreSQL servers
-
-0). Check if package rh-postgresql10-postgresql-server is installed. You can check this with command:
-
-```bash
-rpm -qa | grep rh-postgresql10-postgresql-server
-```
-
-1). Stop instance of PostgreSQL installed from Software Collections database with command:
-
-```bash
-systemctl stop postgresql
-```
-
-2). Prepare backup of your PostgreSQL data directory - e.g. with tar command:
-
-```bash
-tar -cf backup.tar /var/opt/rh/rh-postgresql10/lib/pgsql/data/
-```
-
-Note that any other tool that will provide you reliable backup that will prevent you from data loss can be chosen.
-
-3). Create new directory for your PostgreSQL with command:
-
-```bash
-mkdir -p /var/lib/pgsql/10/data/
-```
-
-4). Copy/move content of whole data folder to previously created directory:
-
-```bash
-cp -R /var/opt/rh/rh-postgresql10/lib/pgsql/data/* /var/lib/pgsql/10/data/
-```
-
-5). Remove unnecessary packages with command:
-
-```bash
-yum erase rh-postgresql10-postgresql-server rh-postgresql10-postgresql-contrib rh-postgresql10-postgresql \
-rh-postgresql10-postgresql-libs \
-rh-postgresql10-runtime yum erase postgresql10-libs
-```
-
-6). Change ownership of folder /var/lib/pgsql/ and all folders below to user and group postgres with command:
-
-```bash
-chown -R postgres:postgres -R /var/lib/pgsql
-```
-
-7). Provide configuration to PostgreSQL component with Epiphany configuration. Please refer to Epiphany HOWTO.md for
-more details.
-
-### Online mode - Repository server
-
-1). Ensure that on repository server file /tmp/epi-download-requirements/download-requirements-done.flag doesn't exist
-to force downloading new packages.
-
-### Offline mode - machine to which you want to download packages for airgapped deployment:
-
-1). Ensure that you have downloaded package that name stars with postgresql10-server. Refer to documentation about
-airgapped installation
-HOWTO.md(https://github.com/epiphany-platform/epiphany/blob/develop/docs/home/howto/CLUSTER.md#how-to-create-an-epiphany-cluster-on-existing-airgapped-infrastructure)
-for more details. If package doesn't exist, re-run download-requirements.sh script again.
-
 ## How to configure PostgreSQL
 
 To configure PostgreSQL, login to server using ssh and switch to `postgres` user with command:
@@ -81,7 +9,16 @@ sudo -u postgres -i
 Then configure database server using psql according to your needs and
 [PostgreSQL documentation](https://www.postgresql.org/docs/).
 
+## PostgreSQL passwords encryption
+
+Epiphany sets up MD5 password encryption. Although PostgreSQL since version 10 is able to use SCRAM-SHA-256 password encryption, Epiphany does not support this encryption method since recommended production configuration uses more than one database host with HA configuration (repmgr) cooperating with PgBouncer and Pgpool. Pgpool is not able to parse SCRAM-SHA-256 hashes list while this encryption is enabled. Due to limited Pgpool authentication options, it is not possible to refresh the [pool_passwd](https://www.pgpool.net/docs/42/en/html/auth-methods.html#AUTH-SCRAM) file automatically.
+For this reason, MD5 password encryption is set up and this is not configurable in Epiphany.
+
 ## How to set up PostgreSQL connection pooling
+
+PostgreSQL connection pooling in Epiphany is served by PgBouncer application. It is available as Kubernetes `ClusterIP` or standalone package.
+The [Kubernetes based installation](#how-to-set-up-pgbouncer-pgpool-and-postgresql-parameters) works together with PgPool so it supports PostgreSQL HA setup.
+The standalone installation (described below) is deprecated and **will be removed** in the next release.
 
 ---
 **NOTE**
@@ -90,9 +27,7 @@ PgBouncer extension is not supported on ARM.
 
 ---
 
-PostgreSQL connection pooling in Epiphany is served by PgBouncer application. This might be added as a feature if
-needed. The simplest configuration runs PgBouncer on PostgreSQL master node. This needs to be enabled in configuration
-yaml file:
+PgBouncer is installed only on PostgreSQL primary node. This needs to be enabled in configuration yaml file:
 
 ```yaml
 kind: configuration/postgresql
@@ -105,13 +40,7 @@ specification:
 ```
 
 PgBouncer listens on standard port 6432. Basic configuration is just template, with very limited access to database.
-This is because security
-reasons. [Configuration needs to be tailored according component documentation and stick to security rules and best practices](http://www.pgbouncer.org/)
-.
-
-PgBouncer can be also installed (together with PgPool) in K8s cluster.
-See [How to set up PgBouncer, PgPool and PostgreSQL parameters](#how-to-set-up-pgbouncer-pgpool-and-postgresql-parameters)
-.
+This is because of security reasons. [Configuration needs to be tailored according component documentation and stick to security rules and best practices](http://www.pgbouncer.org/).
 
 ## How to set up PostgreSQL HA replication with repmgr cluster
 
@@ -135,35 +64,36 @@ specification:
     parameter_groups:
       ...
       # This block is optional, you can use it to override default values
-      - name: REPLICATION
-        subgroups:
-          - name: Sending Server(s)
-            parameters:
-              - name: max_wal_senders
-                value: 10 # default value
-                comment: maximum number of simultaneously running WAL sender processes
-                when: replication
-              - name: wal_keep_segments
-                value: 34 # default value
-                comment: number of WAL files held for standby servers
-                when: replication
-          - name: Standby Servers
-            parameters:
-              - name: hot_standby
-                value: 'on' # default value
-                comment: must be 'on' for repmgr needs, ignored on primary but recommended in case primary becomes standby
-                when: replication
+    - name: REPLICATION
+      subgroups:
+      - name: Sending Server(s)
+        parameters:
+        - name: max_wal_senders
+          value: 10
+          comment: maximum number of simultaneously running WAL sender processes
+          when: replication
+        - name: wal_keep_size
+          value: 500
+          comment: the size of WAL files held for standby servers (MB)
+          when: replication
+      - name: Standby Servers
+        parameters:
+        - name: hot_standby
+          value: 'on'
+          comment: must be 'on' for repmgr needs, ignored on primary but recommended
+            in case primary becomes standby
+          when: replication
   extensions:
     ...
     replication:
       enabled: true
-      replication_user_name: your_privileged_user_name
+      replication_user_name: epi_repmgr
       replication_user_password: PASSWORD_TO_CHANGE
-      privileged_user_name: your_privileged_user_name
+      privileged_user_name: epi_repmgr_admin
       privileged_user_password: PASSWORD_TO_CHANGE
-      repmgr_database: repmgr
+      repmgr_database: epi_repmgr
       shared_preload_libraries:
-        - repmgr
+      - repmgr
     ...
 ```
 
@@ -264,7 +194,7 @@ specification:
 ## --- pgpool ---
 
   - name: pgpool
-    enabled: yes
+    enabled: true
     ...
     namespace: postgres-pool
     service:
@@ -272,7 +202,7 @@ specification:
       port: 5432
     replicas: 3
     ...
-    resources: # Adjust to your configuration, see https://www.pgpool.net/docs/41/en/html/resource-requiremente.html
+    resources: # Adjust to your configuration, see https://www.pgpool.net/docs/42/en/html/resource-requiremente.html
       limits:
         # cpu: 900m # Set according to your env
         memory: 176Mi
@@ -288,8 +218,9 @@ specification:
         PGPOOL_SR_CHECK_USER: epi_pgpool_sr_check # with pg_monitor role, for streaming replication checks and health checks
         # ---
         PGPOOL_ADMIN_USERNAME: epi_pgpool_admin # Pgpool administrator (local pcp user)
-        PGPOOL_ENABLE_LOAD_BALANCING: yes # set to 'no' if there is no replication
+        PGPOOL_ENABLE_LOAD_BALANCING: false # set to 'false' if there is no replication
         PGPOOL_MAX_POOL: 4
+        PGPOOL_CHILD_LIFE_TIME: 0
         PGPOOL_POSTGRES_PASSWORD_FILE: /opt/bitnami/pgpool/secrets/pgpool_postgres_password
         PGPOOL_SR_CHECK_PASSWORD_FILE: /opt/bitnami/pgpool/secrets/pgpool_sr_check_password
         PGPOOL_ADMIN_PASSWORD_FILE: /opt/bitnami/pgpool/secrets/pgpool_admin_password
@@ -297,7 +228,7 @@ specification:
         pgpool_postgres_password: PASSWORD_TO_CHANGE
         pgpool_sr_check_password: PASSWORD_TO_CHANGE
         pgpool_admin_password: PASSWORD_TO_CHANGE
-      # https://www.pgpool.net/docs/41/en/html/runtime-config.html
+      # https://www.pgpool.net/docs/42/en/html/runtime-config.html
       pgpool_conf_content_to_append: |
         #------------------------------------------------------------------------------
         # CUSTOM SETTINGS (appended by Epiphany to override defaults)
@@ -311,7 +242,7 @@ specification:
 ## --- pgbouncer ---
 
   - name: pgbouncer
-    enabled: yes
+    enabled: true
     ...
     namespace: postgres-pool
     service:
@@ -327,12 +258,8 @@ specification:
         memory: 128Mi
     pgbouncer:
       env:
-        DB_HOST: pgpool.postgres-pool.svc.cluster.local # pgpool service name
+        DB_HOST: pgpool.postgres-pool.svc.cluster.local
         DB_LISTEN_PORT: 5432
-        LISTEN_ADDR: "*"
-        LISTEN_PORT: 5432
-        AUTH_FILE: "/etc/pgbouncer/auth/users.txt"
-        AUTH_TYPE: md5
         MAX_CLIENT_CONN: 150
         DEFAULT_POOL_SIZE: 25
         RESERVE_POOL_SIZE: 25

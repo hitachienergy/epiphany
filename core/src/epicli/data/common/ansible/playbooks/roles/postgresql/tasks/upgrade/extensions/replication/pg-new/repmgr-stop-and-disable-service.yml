@@ -1,0 +1,14 @@
+---
+- name: Stop and disable repmgr service
+  vars:
+    _service_name: "{{ old_version.repmgr.service_name[ansible_os_family] }}"
+  block:
+    - name: PostgreSQL | Extensions | repmgr | Stop {{ _service_name }} service
+      systemd:
+        name: "{{ _service_name }}"
+        state: stopped
+
+    - name: PostgreSQL | Extensions | repmgr | Disable {{ _service_name }} service
+      systemd:
+        name: "{{ _service_name }}"
+        enabled: false

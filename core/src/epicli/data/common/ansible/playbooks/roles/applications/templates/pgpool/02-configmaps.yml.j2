@@ -7,6 +7,7 @@ metadata:
     app: pgpool
   namespace: {{ data.namespace }}
 data:
+  PCPPASSFILE: '/tmp/.pcppass'
 {% if data.pgpool.env.PGPOOL_BACKEND_NODES is undefined or data.pgpool.env.PGPOOL_BACKEND_NODES|lower == 'autoconfigured' %}
   PGPOOL_BACKEND_NODES: "{% for node in groups['postgresql'] %}{{ loop.index0 }}:{{ hostvars[groups['postgresql'][loop.index0]].ansible_hostname }}:5432{% if not loop.last %},{% endif %}{% endfor %}"
 {% else %}
@@ -31,7 +32,6 @@ metadata:
 data:
   init_pool_passwd_file.sh: |
     #!/bin/bash
-
     set -o errexit
     set -o nounset
     set -o pipefail
@@ -177,20 +177,49 @@ data:
 
   init_pcppass.sh: |
     #!/bin/bash
-
     set -o errexit
     set -o nounset
     set -o pipefail
 
     echo "==> Started: $0"
 
-    echo "Generating $HOME/.pcppass file for Pgpool admin user (${PGPOOL_ADMIN_USERNAME})..."
+    echo "Generating .pcppass file for Pgpool admin user (${PGPOOL_ADMIN_USERNAME})..."
 
-    cat >>"$HOME/.pcppass"<<EOF
+    cat >>"${PCPPASSFILE}"<<EOF
     localhost:*:${PGPOOL_ADMIN_USERNAME}:${PGPOOL_ADMIN_PASSWORD}
     EOF
 
-    chmod 600 $HOME/.pcppass
+    chmod 600 $PCPPASSFILE
+
+    echo "==> Completed: $0"
+
+{# --- libpgpool.sh --- #}
+
+  replace_config_files.sh: |
+    #!/bin/bash
+    #
+    # Copy config files into /opt/bitnami/pgpool/conf/
+
+    set -o errexit
+    set -o nounset
+    set -o pipefail
+
+    overwrite_file() {
+      local -r filename=${1:?filename is missing}
+
+      echo "Overwriting '${filename}' file..."
+      if cp "/epiphany/bitnami/pgpool/conf/${filename}" "/opt/bitnami/pgpool/conf/${filename}"; then
+        echo "Done!"
+      else
+        echo "ERROR: Did not overwrite '${filename}' file"
+        exit 1
+      fi
+    }
+
+    echo "==> Started: $0"
+
+    overwrite_file pgpool.conf
+    overwrite_file pool_hba.conf
 
     echo "==> Completed: $0"
 
@@ -222,6 +251,15 @@ data:
     # signal. If you edit the file on a running system, you have to SIGHUP the
     # server for the changes to take effect, or use "pgpool reload". Some
     # parameters require a server shutdown and restart to take effect.
+
+    #------------------------------------------------------------------------------
+    # BACKEND CLUSTERING MODE
+    # Choose one of: 'streaming_replication', 'native_replication',
+    #       'logical_replication', 'slony', 'raw' or 'snapshot_isolation'
+    # (change requires restart)
+    #------------------------------------------------------------------------------
+
+    backend_clustering_mode = 'streaming_replication'
 
     #------------------------------------------------------------------------------
     # CONNECTIONS
@@ -414,6 +452,8 @@ data:
 
     log_connections = off
                                       # Log connections
+    log_disconnections = off
+                                      # Log disconnections
     log_hostname = off
                                       # Hostname will be shown in ps status
                                       # and in logs if connections are logged
@@ -493,14 +533,6 @@ data:
                                       # to be issued at the end of a session
                                       # The default is 'ABORT; DISCARD ALL'
     reset_query_list = 'ABORT; DISCARD ALL'
-
-
-    #------------------------------------------------------------------------------
-    # REPLICATION MODE
-    #------------------------------------------------------------------------------
-
-    replication_mode = off
-
 
     #------------------------------------------------------------------------------
     # LOAD BALANCING MODE
@@ -756,7 +788,7 @@ data:
                                       # Default is on.
                                       # (change requires restart)
 
-    relcache_query_target = master     # Target node to send relcache queries. Default is master (primary) node.
+    relcache_query_target = primary     # Target node to send relcache queries. Default is master (primary) node.
                                       # If load_balance_node is specified, queries will be sent to load balance node.
     #------------------------------------------------------------------------------
     # IN MEMORY QUERY MEMORY CACHE
@@ -826,6 +858,7 @@ data:
     # Built-in record
     # TYPE   DATABASE        USER{% for n in range(data.pgpool.env.PGPOOL_SR_CHECK_USER|length) %}{{" "}}{% endfor %}ADDRESS             METHOD
     host     all             {{ data.pgpool.env.PGPOOL_SR_CHECK_USER }}    127.0.0.1/32        trust
+    local    postgres        {{ data.pgpool.env.PGPOOL_POSTGRES_USERNAME }}                    trust
 
 {% if data.pgpool.pool_hba_conf is defined and data.pgpool.pool_hba_conf and data.pgpool.pool_hba_conf|lower != 'autoconfigured' %}
     # Records from Epiphany configuration

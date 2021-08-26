@@ -356,3 +356,53 @@ kubectl scale deploy -n istio-system --replicas=1 --all
 Istio application configuration.**
 
 ---
+
+### PostgreSQL upgrade
+
+---
+**NOTE**
+
+Before upgrade procedure, make sure you have a data backup.
+
+---
+
+#### Versions
+
+With the latest Epiphany version it's possible to upgrade PostgreSQL to v13 with new extension versions:
+
+- PgAudit v1.5.0
+- PgBouncer v1.16.0
+- repmgr v5.2.1
+
+#### Upgrade
+
+Upgrade procedure is based on [PostgreSQL documentation](https://www.postgresql.org/docs/13/pgupgrade.html) and
+requires downtime as there is a need to stop old service(s) and start new one(s).
+
+There is a possibility to provide a custom configuration for upgrade with `epicli upgrade -f`, and there are a few
+limitations related to specifying parameters for upgrade:
+
+- If there were non-default values provided for installation (`epicli apply`), they have to be used again not to be
+  overwritten by defaults.
+
+- `wal_keep_segments` parameter for replication is replaced
+  by [wal_keep_size](https://www.postgresql.org/docs/13/runtime-config-replication.html#GUC-WAL-KEEP-SIZE) with the
+  default value of 500 MB. Previous parameter is not supported.
+
+- `archive_command` parameter for replication was set to `/bin/true` by default. It was planned to disable archiving,
+  but changes to `archive_mode` require a full PostgreSQL server restart, while `archive_command` changes can be applied
+  via a normal configuration reload. See [documentation](https://repmgr.org/docs/repmgr.html#CONFIGURATION-POSTGRESQL).
+
+- There is no possibility to disable an extension after installation, so `specification.extensions.*.enabled: false`
+  value will be ignored during upgrade if it was set to `true` during installation.
+
+#### Post-upgrade processing
+
+As p.13 of [PostgreSQL documentation](https://www.postgresql.org/docs/13/pgupgrade.html) states there might be some
+scripts generated after an upgrade. There is no clear description in which cases and what location they are created, so
+please check logs after the upgrade to see if additional steps are required.
+
+#### Old PostgreSQL data removal
+
+For safety Epiphany does not remove old PostgreSQL data. This is a user responsibility to identify if data is ready to
+be removed and take care about that.

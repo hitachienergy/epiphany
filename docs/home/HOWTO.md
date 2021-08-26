@@ -7,7 +7,6 @@
     - [Note for Windows users](./howto/PREREQUISITES.md#note-for-windows-users)
     - [Note about proxies](./howto/PREREQUISITES.md#note-about-proxies)
     - [Note about custom CA certificates](./howto/PREREQUISITES.md#note-about-custom-ca-certificates)
-    - [Note about PostgreSQL preflight check](./howto/PREREQUISITES.md#note-about-postgresql-preflight-check)
 
 - [Epiphany cluster](./howto/CLUSTER.md)
   - [How to enable/disable Epiphany repository VM](./howto/CLUSTER.md#how-to-enabledisable-epiphany-repository-vm)
@@ -67,6 +66,7 @@
   - [Node exporter upgrade](./howto/UPGRADE.md#node-exporter-upgrade)
   - [RabbitMQ upgrade](./howto/UPGRADE.md#rabbitmq-upgrade)
   - [Kubernetes upgrade](./howto/UPGRADE.md#kubernetes-upgrade)
+  - [PostgreSQL upgrade](./howto/UPGRADE.md#postgresql-upgrade)
 
 - [Security](./howto/SECURITY.md)
   - [How to add/remove additional users to/from OS](./howto/SECURITY.md#how-to-addremove-additional-users-tofrom-os)

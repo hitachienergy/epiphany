@@ -20,7 +20,7 @@ specification:
     - ignite-kubernetes # required to work on K8s
     - ignite-rest-http
 
-# Abstract these configs to seperate default files and add
+# Abstract these configs to separate default files and add
 # the ability to add custom application roles.
 
 ## --- rabbitmq ---
@@ -78,7 +78,7 @@ specification:
   - name: pgpool # this service requires PostgreSQL to be installed in cluster
     enabled: false
     image:
-      path: bitnami/pgpool:4.1.1-debian-10-r29
+      path: bitnami/pgpool:4.2.4
       debug: false # ref: https://github.com/bitnami/minideb-extras/#turn-on-bash-debugging
     use_local_image_registry: true
     namespace: postgres-pool
@@ -119,6 +119,7 @@ specification:
         PGPOOL_ADMIN_USERNAME: epi_pgpool_admin # Pgpool administrator (local pcp user)
         PGPOOL_ENABLE_LOAD_BALANCING: true # set to 'false' if there is no replication
         PGPOOL_MAX_POOL: 4
+        PGPOOL_CHILD_LIFE_TIME: 0
         PGPOOL_POSTGRES_PASSWORD_FILE: /opt/bitnami/pgpool/secrets/pgpool_postgres_password
         PGPOOL_SR_CHECK_PASSWORD_FILE: /opt/bitnami/pgpool/secrets/pgpool_sr_check_password
         PGPOOL_ADMIN_PASSWORD_FILE: /opt/bitnami/pgpool/secrets/pgpool_admin_password
@@ -134,16 +135,15 @@ specification:
         # num_init_children = 32
         connection_life_time = 900
         reserved_connections = 1
-      # https://www.pgpool.net/docs/41/en/html/auth-pool-hba-conf.html
+      # https://www.pgpool.net/docs/42/en/html/runtime-config-connection.html
       pool_hba_conf: autoconfigured
 
 ## --- pgbouncer ---
 
   - name: pgbouncer
     enabled: false
-    #https://github.com/brainsam/pgbouncer/tree/release/1.12
-    image_path: brainsam/pgbouncer:1.12
-    init_image_path: bitnami/pgpool:4.1.1-debian-10-r29 #TODO: make reference to pgpool section
+    image_path: bitnami/pgbouncer:1.16.0
+    init_image_path: bitnami/pgpool:4.2.4
     use_local_image_registry: true
     namespace: postgres-pool
     service:
@@ -159,12 +159,8 @@ specification:
         memory: 128Mi
     pgbouncer:
       env:
-        DB_HOST: pgpool.postgres-pool.svc.cluster.local #pgpool service name
+        DB_HOST: pgpool.postgres-pool.svc.cluster.local
         DB_LISTEN_PORT: 5432
-        LISTEN_ADDR: "*"
-        LISTEN_PORT: 5432
-        AUTH_FILE: "/etc/pgbouncer/auth/users.txt"
-        AUTH_TYPE: md5
         MAX_CLIENT_CONN: 150
         DEFAULT_POOL_SIZE: 25
         RESERVE_POOL_SIZE: 25
@@ -181,5 +177,5 @@ specification:
         - istio-system
       istio: istio-system # namespace where istio control plane will be deployed
     istio_spec:
-      profile: default # Check all possibilites https://istio.io/latest/docs/setup/additional-setup/config-profiles/
+      profile: default # Check all possibilities https://istio.io/latest/docs/setup/additional-setup/config-profiles/
       name: istiocontrolplane

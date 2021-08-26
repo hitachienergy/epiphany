@@ -1,19 +1,40 @@
 ---
-- name: Set facts
+- name: Set 'enabled_extensions' fact
   set_fact:
     enabled_extensions: >-
-      {{ (_defined_extensions | selectattr('config.enabled') | list) + _undefined_extensions }}
+      {{ _defined_enabled_extensions + _undefined_extensions }}
   vars:
-    _defined_extensions: >-
+    _defined_enabled_extensions: >-
       {{ specification.extensions
           | dict2items(key_name='name', value_name='config')
           | selectattr('config.enabled', 'defined')
+          | selectattr('config.enabled')
+          | map(attribute='name')
           | list }}
     _undefined_extensions: >-
       {{ specification.extensions
           | dict2items(key_name='name', value_name='config')
           | selectattr('config.enabled', 'undefined')
+          | map(attribute='name')
           | list }}
+
+- name: Check if repmgr.conf exists
+  stat:
+    path: "{{ repmgr.config_dir[ansible_os_family] }}/repmgr.conf"
+  register: repmgr_conf
+
+- name: Get node id
+  when: repmgr_conf.stat.exists
+  command: >-
+    grep -Po '(?<=^node_id=)\d+' "{{ repmgr.config_dir[ansible_os_family] }}/repmgr.conf"
+  register: repmgr_pg_node_id
+  changed_when: false
+
+# Node id is a constant value independent on order in Ansible host group
+- name: Set 'pg_node_id' fact
+  set_fact:
+    pg_node_id: >-
+      {{ repmgr_conf.stat.exists | ternary(repmgr_pg_node_id.stdout, groups.postgresql.index(inventory_hostname) + 1) }}
 
 - name: Install OS-specific packages
   package:
@@ -22,112 +43,111 @@
   vars:
     _packages:
       Debian:
-        - postgresql-10
-        - postgresql-contrib-10
-        - python-psycopg2 # required for postgresql ansible management
+        - postgresql-client-common
+        - postgresql-common
+        - postgresql-client-13
+        - postgresql-13
+        - python-psycopg2 # required for PostgreSQL ansible management
       RedHat:
-        - postgresql10-server
-        - python-psycopg2 # required for postgresql ansible management
+        - postgresql13-server
+        - python-psycopg2 # required for PostgreSQL ansible management
   module_defaults:
     yum: { lock_timeout: "{{ yum_lock_timeout }}" }
 
 # Extension packages need to be installed first to be able to process PostgreSQL config
 - name: Install extension packages
-  include_tasks: extensions/{{ data.name }}/packages.yml
+  include_tasks: extensions/{{ extension }}/packages.yml
   loop_control:
-    loop_var: data
+    loop_var: extension
   loop: "{{ enabled_extensions }}"
 
-- name: Create directory /var/log/postgresql
-  # The same permissions as for PG installed on RHEL from Software Collections (different on Ubuntu)
+- name: Create directories and ensure correct permissions
   file:
-    path: /var/log/postgresql
+    path: "{{ path }}"
     state: directory
     owner: postgres
     group: postgres
     mode: u=rwx,g=,o=
+  loop_control:
+    loop_var: path
+  loop:
+    - /var/log/postgresql
+    - "{{ pg.data_dir[ansible_os_family] }}" # Permissions should be u=rwx (0700) or u=rwx,g=rx (0750)
 
 - name: RedHat | Initialize database
+  when: ansible_os_family == 'RedHat'
   block:
-    - name: Check initialization status (RedHat)
+    - name: RedHat | Check initialization status
       stat:
         path: "{{ pg.config_dir[ansible_os_family] }}/pg_hba.conf"
       register: pg_hba_conf_stat
 
-    - name: Initialize database (RedHat)
-      command: /usr/pgsql-10/bin/postgresql-10-setup initdb {{ pg.service_name[ansible_os_family] }}
-      when:
-        - not pg_hba_conf_stat.stat.exists
-  when:
-    - ansible_os_family == 'RedHat'
+    - name: RedHat | Initialize database
+      become_user: postgres
+      when: not pg_hba_conf_stat.stat.exists
+      command: "{{ pg.bin_dir[ansible_os_family] }}/initdb"
+      environment:
+        PGDATA: "{{ pg.data_dir[ansible_os_family] }}"
 
-- name: Change pg_hba.conf
-  replace:
-    path: "{{ pg.config_dir[ansible_os_family] }}/pg_hba.conf"
-    regexp: '^host\s+all\s+all\s+127\.0\.0\.1/32\s+(?:ident|md5)$'
-    replace: 'host    all             all             0.0.0.0/0               md5'
-    backup: true
-  register: change_pg_hba_conf
+- name: Start and enable PostgreSQL service
+  block:
+    - name: Start and enable PostgreSQL service
+      systemd:
+        name: "{{ pg.service_name[ansible_os_family] }}"
+        state: started
+        enabled: true
+
+    - &ensure-debian-child-service-started
+      name: Debian | Ensure that instantiated service started
+      when: ansible_os_family == 'Debian'
+      systemd:
+        name: "{{ pg.instantiated_service_name[ansible_os_family] }}"
+        state: started
 
 # Used in postgresql-epiphany.conf.j2
 - name: Set runtime_shared_preload_libraries fact
   block:
-    - name: Collect facts about system services
-      service_facts:
-      register: services_state
-
     - name: Get PostgreSQL settings
-      become: true
       become_user: postgres
-      vars:
-        _service: "{{ pg.service_name[ansible_os_family] }}.service"
-        _state: "{{ ansible_facts.services[_service] }}"
       postgresql_info:
         filter: settings
       register: postgresql_info
-      when:
-        - "_service|string in ansible_facts.services"
-        - "_state|string == 'started'"
 
     - name: Set runtime_shared_preload_libraries fact
       set_fact:
         runtime_shared_preload_libraries: "{{ postgresql_info.settings.shared_preload_libraries.setting }}"
-      when:
-        - postgresql_info.settings is defined
 
-- name: Create Epiphany managed configuration sub-file
+- name: Copy PostgreSQL configuration files
+  vars:
+    _specification: "{{ specification }}"
+    _pg_data_dir: "{{ pg.data_dir[ansible_os_family] }}" # used in postgresql.conf
+    _files:
+      - pg_hba.conf
+      - postgresql-epiphany.conf
+      - postgresql.conf
   template:
-    src: postgresql-epiphany.conf.j2
-    dest: "{{ pg.config_dir[ansible_os_family] }}/postgresql-epiphany.conf"
+    src: "{{ file_name }}.j2"
+    dest: "{{ pg.config_dir[ansible_os_family] }}/{{ file_name }}"
     owner: postgres
     group: postgres
     mode: u=rw,g=,o=
-  register: change_postgresql_epiphany_conf
-
-- name: Change postgresql.conf
-  lineinfile:
-    path: "{{ pg.config_dir[ansible_os_family] }}/postgresql.conf"
-    line: "include = 'postgresql-epiphany.conf'	# Epiphany managed configuration that overrides above settings"
-    insertafter: '^#include ' # insert line after the last 'include' to override all settings
-    firstmatch: false
     backup: true
-  register: change_postgresql_conf
+  loop_control:
+    loop_var: file_name
+  loop: "{{ _files }}"
+  register: change_pg_config
 
-- name: Restart postgresql service if configuration changed
-  systemd:
-    name: "{{ pg.service_name[ansible_os_family] }}"
-    state: restarted
-  when: change_pg_hba_conf
-    or change_postgresql_epiphany_conf
-    or change_postgresql_conf
+- name: Restart PostgreSQL service if configuration changed
+  block:
+    - name: Restart PostgreSQL service if configuration changed
+      systemd:
+        name: "{{ pg.service_name[ansible_os_family] }}"
+        state: restarted
 
-# This is a separate task as service restart runs not each time
-- name: Enable postgresql service
-  systemd:
-    name: "{{ pg.service_name[ansible_os_family] }}"
-    enabled: true
+    - *ensure-debian-child-service-started
+  when: (change_pg_config.results | map(attribute='changed') | list) is any
 
-- name: Configure postgresql logrotate
+- name: Configure PostgreSQL logrotate
   block:
     - name: Remove logrotate configuration provided by 'postgresql-common' package
       file:
@@ -135,7 +155,7 @@
         state: absent
       when: ansible_os_family == 'Debian'
 
-    - name: Create postgresql logrotate configuration file
+    - name: Create PostgreSQL logrotate configuration file
       template:
         src: logrotate-postgresql.conf.j2
         dest: /etc/logrotate.d/postgresql
@@ -144,24 +164,21 @@
         mode: u=rw,g=r,o=r
 
 - name: Include extensions
-  include_tasks: extensions/{{ data.name }}/extension.yml
+  include_tasks: extensions/{{ extension }}/extension.yml
   loop_control:
-    loop_var: data
+    loop_var: extension
   loop: "{{ enabled_extensions }}"
 
 # PgPool is configured only if such K8s application is enabled
-- name: Extensions | Set up PgPool
-  block:
-    - name: Extensions | Include PgPool vars from applications role
-      include_vars:
-        file: roles/applications/vars/main.yml
-        name: applications_role_config
-      when:
+- name: Extensions | Include PgPool vars from applications role
+  include_vars:
+    file: roles/applications/vars/main.yml
+    name: applications_role_config
+  when:
         - "'applications' in roles_with_generated_vars"
 
-    - name: Extensions | Include PgPool setup tasks
-      include_tasks: extensions/pgpool/extension.yml
-      vars:
+- name: Extensions | Set up PgPool
+  vars:
         pgpool: >-
           {{ applications_role_config.specification.applications | default([])
                                                                  | selectattr("name", "equalto", "pgpool")
@@ -169,7 +186,17 @@
                                                                  | map(attribute='pgpool')
                                                                  | list
                                                                  | first
-                                                                 | default({}) }}
-      when:
-        - pgpool.env is defined
-        - groups['postgresql'][0] == inventory_hostname
+                                                                 | default({}) }}        
+  block:
+    - name: Extensions | Set up PgPool | Ascertain primary node
+      become_user: postgres
+      postgresql_info:
+        filter: in_recovery
+      register: in_recovery_state
+    
+    - name: Extensions | Include PgPool setup tasks
+      include_tasks: extensions/pgpool/extension.yml
+      when: 
+        - not in_recovery_state.in_recovery
+  when:
+    - pgpool.keys()|length > 0

@@ -1,0 +1,65 @@
+---
+- name: Include main defaults from 'postgresql' role
+  include_vars:
+    file: roles/postgresql/defaults/main.yml
+    name: pg_new
+
+- name: Include upgrade defaults from 'postgresql' role
+  include_vars:
+    file: roles/postgresql/defaults/upgrade.yml
+    name: pg_old
+
+# included to check if repmgr is used
+- name: Include manifest from 'postgresql' role
+  include_vars:
+    file: roles/postgresql/vars/manifest.yml
+    name: pg_manifest
+
+- name: Check available disk space for PostgreSQL
+  block:
+    - name: Get filesystem info for PostgreSQL data directory
+      become: true
+      shell: |-
+        set -o pipefail && \
+        df --output=source {{ pg_new.pg.base_dir[ansible_os_family] }} | tail -1
+      args:
+        executable: /bin/bash
+      changed_when: false
+      register: pg_data_disk
+
+    - name: Ensure that free space on {{ pg_data_disk.stdout }} is greater than 50%
+      assert:
+        that: mount.size_available > mount.size_total|float * 0.5
+        fail_msg: PostgreSQL disk space has reached 50% threshold
+        quiet: true
+      vars:
+        mount: "{{ ansible_mounts | selectattr('device','equalto', pg_data_disk.stdout) | list | first }}"
+
+- name: Ensure that PostgreSQL cluster in version {{ pg_old.pg.version }} is present
+  block:
+    - name: Get PostgreSQL version from data directory
+      become: true
+      slurp:
+        src: "{{ pg_old.pg.data_dir[ansible_os_family] }}/PG_VERSION"
+      register: slurp_pg_version
+
+    - name: Ensure that PostgreSQL cluster in version {{ pg_old.pg.version }} is present
+      assert:
+        that:
+          - slurp_pg_version['content'] | b64decode | trim is version(pg_old.pg.version, '==')
+        fail_msg: PostgreSQL cluster in version '{{ pg_old.pg.version }}' not found
+        success_msg: PostgreSQL cluster in version '{{ pg_old.pg.version }}' found
+        quiet: true
+
+- name: Verify that PostgreSQL {{ pg_old.pg.version }} cluster is healthy
+  when: pg_manifest.specification.extensions.replication.enabled
+  become: true
+  become_user: postgres
+  # when there are two primary nodes (after failover) rc is non-zero
+  command: |-
+    {{ pg_old.repmgr.bin_dir[ansible_os_family] }}/repmgr \
+      -f {{ pg_old.repmgr.config_dir[ansible_os_family] }}/repmgr.conf \
+      cluster show --csv
+  changed_when: false
+  delegate_to: "{{ groups.postgresql[0] }}"
+  run_once: true

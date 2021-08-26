@@ -31,12 +31,12 @@ Note that versions are default versions and can be changed in certain cases thro
 | HAProxy Exporter           | 0.10.0   | https://github.com/prometheus/haproxy_exporter        | [Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0) |
 | JMX Exporter               | 0.12.0   | https://github.com/prometheus/jmx_exporter            | [Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0) |
 | Postgres Exporter          | 0.9.0    | https://github.com/prometheus-community/postgres_exporter | [Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0) |
-| PostgreSQL                 | 10       | https://www.postgresql.org/                           | https://opensource.org/licenses/postgresql                        |
+| PostgreSQL                 | 13       | https://www.postgresql.org/                           | [PostgreSQL license](http://www.postgresql.org/about/licence/)    |
 | HAProxy                    | 2.2.2    | https://www.haproxy.org/                              | [GNU General Public License 2.0](https://www.gnu.org/licenses/old-licenses/gpl-2.0.html) |
-| PGAudit                    | 1.2.2    | https://github.com/pgaudit/pgaudit                    | [PostgreSQL license](http://www.postgresql.org/about/licence/)    |
-| PgBouncer                  | 1.10.0   | https://github.com/pgbouncer/pgbouncer                | [ISC License](https://opensource.org/licenses/isc)                |
+| PgAudit                    | 1.5.0    | https://github.com/pgaudit/pgaudit                    | [PostgreSQL license](http://www.postgresql.org/about/licence/)    |
+| PgBouncer                  | 1.16.0   | https://github.com/pgbouncer/pgbouncer                | [ISC License](https://opensource.org/licenses/isc)                |
 | repmgr                     | 5.2.1    | https://github.com/EnterpriseDB/repmgr                | [GNU General Public License 3.0](https://github.com/EnterpriseDB/repmgr/blob/master/LICENSE) |
-| PGPool                     | 4.1.1    | https://www.pgpool.net/                               | [License](https://www.pgpool.net/mediawiki/index.php/pgpool-II_License) |
+| Pgpool                     | 4.2.4    | https://www.pgpool.net/                               | [License](https://www.pgpool.net/mediawiki/index.php/pgpool-II_License) |
 | Alertmanager               | 0.17.0   | https://github.com/prometheus/alertmanager            | [Apache License 2.0](https://github.com/prometheus/alertmanager/blob/master/LICENSE) |
 | Apache Ignite              | 2.9.1    | https://github.com/apache/ignite                      | [Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0) |
 | Apache2                    | 2.4.29   | https://httpd.apache.org/                             | [Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0) |
