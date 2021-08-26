@@ -136,5 +136,5 @@
     - [Re-downloading requirements](./howto/REPOSITORY.md#re-downloading-requirements)
     - [Restoring system repositories](./howto/REPOSITORY.md#restoring-system-repositories)
 
-- [Schema](./howto/SCHEMA.md)
-  - [Elasticsearch](./howto/SCHEMA.md#named-lists)
+- [Configuration file](./howto/CONFIGURATION_FILE.md)
+  - [Named lists](./howto/CONFIGURATION_FILE.md#named-lists)

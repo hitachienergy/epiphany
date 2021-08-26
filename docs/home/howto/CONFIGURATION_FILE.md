@@ -1,4 +1,4 @@
-## Inheritance
+## Configuration file
 
 ### Named lists
 
