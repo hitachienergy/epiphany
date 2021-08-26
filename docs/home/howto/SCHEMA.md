@@ -36,4 +36,4 @@ specification:
     enabled: true
 ```
 
-The ```_merge``` entry with ```true``` will tell Epicli to merge the application list and only change the ```enabled: true``` entry inside the ```auth-service``` and take the rests of the [configuration/applications]((https://github.com/epiphany-platform/epiphany/blob/develop/core/src/epicli/data/common/defaults/configuration/applications.yml)) configuration from the defaults.
+The ```_merge``` item with ```true``` will tell epicli to merge the application list and only change the ```enabled: true``` setting inside the ```auth-service``` and take the rests of the [configuration/applications]((https://github.com/epiphany-platform/epiphany/blob/v1.0.1/core/src/epicli/data/common/defaults/configuration/applications.yml)) configuration from the defaults.
