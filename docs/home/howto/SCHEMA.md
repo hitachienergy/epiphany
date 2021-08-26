@@ -1,4 +1,4 @@
-## Schema
+## Inheritance
 
 ### Named lists
 
