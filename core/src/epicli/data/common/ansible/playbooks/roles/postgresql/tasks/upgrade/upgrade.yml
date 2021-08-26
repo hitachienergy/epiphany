@@ -337,21 +337,22 @@
         path: "{{ new_version.pg.data_dir[ansible_os_family] }}"
         state: absent
 
-    - name: PostgreSQL | Rollback | Extensions | repmgr | RedHat | Update repmgr symlink
-      file:
-        src: "{{ old_version.repmgr.bin_dir.RedHat }}/repmgr"
-        dest: "/usr/bin/repmgr"
-        state: link
-      when:
-        - pg_is_repmgr_used
-        - ansible_os_family == 'RedHat'
+    - name: Restore repmgr symlinks
+      when: pg_is_repmgr_used
+      block:
+        - name: PostgreSQL | Rollback | Extensions | repmgr | RedHat | Update repmgr symlink
+          file:
+            src: "{{ old_version.repmgr.bin_dir.RedHat }}/repmgr"
+            dest: "/usr/bin/repmgr"
+            state: link
+          when: ansible_os_family == 'RedHat'
 
-    - name: PostgreSQL | Rollback | Extensions | repmgr | Debian | Update symlink to config file
-      file:
-        src: "{{ old_version.repmgr.config_dir[ansible_os_family] }}/repmgr.conf"
-        dest: /etc/repmgr.conf
-        state: link
-      when: ansible_os_family == 'Debian'
+        - name: PostgreSQL | Rollback | Extensions | repmgr | Debian | Update symlink to config file
+          file:
+            src: "{{ old_version.repmgr.config_dir[ansible_os_family] }}/repmgr.conf"
+            dest: /etc/repmgr.conf
+            state: link
+          when: ansible_os_family == 'Debian'
 
     - name: PostgreSQL | Rollback | Start and enable PostgreSQL {{ old_version.pg.version }} service on primary node
       when: (pg_is_repmgr_used and inventory_hostname == pg_primary_node) or not pg_is_repmgr_used
