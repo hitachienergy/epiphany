@@ -8,7 +8,8 @@
 		"samuelcolvin.jinjahtml",
 		"redhat.vscode-yaml",
 		"mauve.terraform",
-		"davidanson.vscode-markdownlint"
+		"davidanson.vscode-markdownlint",
+		"timonwong.shellcheck",
 	],
 	"settings": {
 		"python.pythonPath": "/usr/local/bin/python"
