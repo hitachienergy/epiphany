@@ -143,7 +143,7 @@ class InfrastructureBuilder(Step):
         autoscaling_group.specification.name = resource_name(self.cluster_prefix, self.cluster_name, 'asg' + '-' + str(index), component_key)
         autoscaling_group.specification.count = component_value.count
         autoscaling_group.specification.subnet_names = [s.specification.name for s in subnets_to_create]
-        autoscaling_group.specification.availability_zones = list(set([s.specification.availability_zone for s in subnets_to_create]))
+        autoscaling_group.specification.availability_zones = [s.specification.availability_zone for s in subnets_to_create]
         autoscaling_group.specification.tags.append({'cluster_name': self.cluster_name})
         autoscaling_group.specification.tags.append({component_key: ''})
         return autoscaling_group
