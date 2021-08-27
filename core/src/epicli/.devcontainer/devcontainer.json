@@ -13,6 +13,9 @@
         // Python
         "ms-python.python",
         "littlefoxteam.vscode-python-test-adapter",
+        // Ruby
+        "rebornix.Ruby",
+        "castwide.solargraph",
         // Shell
         "timonwong.shellcheck",
         // Terraform
