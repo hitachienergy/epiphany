@@ -29,7 +29,7 @@ deplist="${script_path}/.dependencies"
 retries="3"
 download_cmd="run_cmd_with_retries $retries apt-get download"
 add_repos="${script_path}/add-repositories.sh"
-crane_bin="${script_path}/crane"
+export CRANE_BIN="${script_path}/crane"
 
 # arch
 arch=$(uname -m)
@@ -90,6 +90,9 @@ shopt -u nullglob
 # TODO: See if we need to split this up to support different architectures
 . "${add_repos}"
 
+check_connection apt $(ls /etc/apt/sources.list.d)
+apt update
+
 # parse the input file, separete by tags: [crane], [packages], [files], [images]
 crane=$(awk '/^$/ || /^#/ {next}; /\[crane\]/ {f=1; next}; /^\[/ {f=0}; f {print $0}' "${input_file}")
 packages=$(awk '/^$/ || /^#/ {next}; /\[packages\]/ {f=1; next}; /^\[/ {f=0}; f {print $0}' "${input_file}")
@@ -109,7 +112,7 @@ fi
 if [[ -z "${crane}" || $(wc -l <<< "${crane}") -ne 1 ]] ; then
     exit_with_error "Crane binary download path undefined or more than one download path defined"
 else
-    if [[ -x $crane_bin ]]; then
+    if [[ -x $CRANE_BIN ]]; then
         echol "Crane binary already exists"
     else
         file_url=$(head -n 1 <<< "${crane}")
@@ -119,16 +122,18 @@ else
         echol "Downloading crane from: $file_url"
         download_file "$file_url" "$script_path"
         tar_path="${script_path}/${file_url##*/}"
-        echol "Unpacking crane from $tar_path to $crane_bin"
+        echol "Unpacking crane from $tar_path to $CRANE_BIN"
         tar -xzf "$tar_path" --directory "$script_path" "crane" --overwrite
-        chmod +x "$crane_bin"
+        chmod +x "$CRANE_BIN"
         remove_file "$tar_path"
-        [[ -f $crane_bin ]] || exit_with_error "File not found: $crane_bin"
-        [[ -x $crane_bin ]] || exit_with_error "$crane_bin has to be executable"
+        [[ -f $CRANE_BIN ]] || exit_with_error "File not found: $CRANE_BIN"
+        [[ -x $CRANE_BIN ]] || exit_with_error "$CRANE_BIN has to be executable"
     fi
 fi
 
 printf "\n"
+
+check_connection crane $(for image in $images; do splitted=(${image//:/ }); echo "${splitted[0]}"; done)
 
 # PACKAGES
 # if dependency list doesn't exist or is zero size then resolve dependency and store them in a deplist file
@@ -157,8 +162,6 @@ if [[ -z $deplist ]]; then
 else
     echol "Packages to be downloaded:"
     cat -n "$deplist"
-
-    check_connection apt
 
     # download dependencies (apt-get sandboxing warning when running as root are harmless)
     cd "$dst_dir_packages" && xargs --no-run-if-empty --arg-file="$deplist" --delimiter='\n' -I{} bash -c ". ${script_path}/common.sh && ${download_cmd} {}" | tee -a "${LOG_FILE_PATH}"

@@ -534,11 +534,11 @@ readonly REPO_PREREQ_PACKAGES_DIR="${PACKAGES_DIR}/repo-prereqs"
 readonly SCRIPT_DIR="$(dirname $(readlink -f $0))" # want absolute path
 
 # files
+export CRANE_BIN="${SCRIPT_DIR}/crane"
 readonly SCRIPT_FILE_NAME=$(basename "$0")
 readonly LOG_FILE_NAME="${SCRIPT_FILE_NAME}.log"
 readonly LOG_FILE_PATH="${SCRIPT_DIR}/${LOG_FILE_NAME}"
 readonly YUM_CONFIG_BACKUP_FILE_PATH="${SCRIPT_DIR}/${SCRIPT_FILE_NAME}-yum-repos-backup-tmp-do-not-remove.tar"
-readonly CRANE_BIN="${SCRIPT_DIR}/crane"
 readonly INSTALLED_PACKAGES_FILE_PATH="${SCRIPT_DIR}/${SCRIPT_FILE_NAME}-installed-packages-list-do-not-remove.tmp"
 readonly PID_FILE_PATH="/var/run/${SCRIPT_FILE_NAME}.pid"
 readonly ADD_MULTIARCH_REPOSITORIES_SCRIPT="${SCRIPT_DIR}/add-repositories.multiarch.sh"
@@ -608,7 +608,7 @@ get_requirements_from_group 'IMAGES'               'images'                "$REQ
 
 # --- Backup yum repositories ---
 
-check_connection yum
+check_connection yum $(yum repolist --quiet | tail -n +2 | cut -d' ' -f1 | cut -d'/' -f1)
 
 if [ -f "$YUM_CONFIG_BACKUP_FILE_PATH" ]; then
 	echol "Backup aleady exists: $YUM_CONFIG_BACKUP_FILE_PATH"
@@ -789,6 +789,8 @@ else
 fi
 
 # === Images ===
+
+check_connection crane $(for image in $IMAGES; do splitted=(${image//:/ }); echo "${splitted[0]}"; done)
 
 create_directory "$IMAGES_DIR"
 
