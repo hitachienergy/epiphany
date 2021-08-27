@@ -9,5 +9,6 @@
         "hashicorp.terraform",
         "davidanson.vscode-markdownlint",
         "timonwong.shellcheck",
+        "shardulm94.trailing-spaces",
     ]
 }

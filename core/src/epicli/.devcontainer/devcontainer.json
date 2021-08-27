@@ -10,6 +10,7 @@
         "mauve.terraform",
         "davidanson.vscode-markdownlint",
         "timonwong.shellcheck",
+        "shardulm94.trailing-spaces",
     ],
     "settings": {
         "python.pythonPath": "/usr/local/bin/python"
