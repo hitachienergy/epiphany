@@ -58,24 +58,24 @@ Note that versions are default versions and can be changed in certain cases thro
 | Component | Version | Repo/Website | License |
 | --------- | ------- | ------------ | ------- |
 | adal | 1.2.7 | https://github.com/AzureAD/azure-activedirectory-library-for-python | [Other](https://api.github.com/repos/azuread/azure-activedirectory-library-for-python/license) |
-| ansible-base | 2.10.9 | https://ansible.com/ | GPLv3+ |
+| ansible-base | 2.10.10 | https://ansible.com/ | GPLv3+ |
 | ansible | 2.10.5 | https://ansible.com/ | GPLv3+ |
 | antlr4-python3-runtime | 4.7.2 | http://www.antlr.org | BSD |
 | applicationinsights | 0.11.10 | https://github.com/Microsoft/ApplicationInsights-Python | [MIT License](https://api.github.com/repos/microsoft/applicationinsights-python/license) |
 | argcomplete | 1.12.3 | https://github.com/kislyuk/argcomplete | [Apache License 2.0](https://api.github.com/repos/kislyuk/argcomplete/license) |
-| attrs | 21.1.0 | https://www.attrs.org/ | MIT |
+| attrs | 21.2.0 | https://www.attrs.org/ | MIT |
 | azure-appconfiguration | 1.1.1 | https://github.com/Azure/azure-sdk-for-python/tree/master/sdk/appconfiguration/azure-appconfiguration | MIT License |
 | azure-batch | 10.0.0 | https://github.com/Azure/azure-sdk-for-python | [MIT License](https://api.github.com/repos/azure/azure-sdk-for-python/license) |
 | azure-cli-core | 2.23.0 | https://github.com/Azure/azure-cli | [MIT License](https://api.github.com/repos/azure/azure-cli/license) |
 | azure-cli-telemetry | 1.0.6 | https://github.com/Azure/azure-cli | [MIT License](https://api.github.com/repos/azure/azure-cli/license) |
 | azure-cli | 2.23.0 | https://github.com/Azure/azure-cli | [MIT License](https://api.github.com/repos/azure/azure-cli/license) |
 | azure-common | 1.1.27 | https://github.com/Azure/azure-sdk-for-python | [MIT License](https://api.github.com/repos/azure/azure-sdk-for-python/license) |
-| azure-core | 1.13.0 | https://github.com/Azure/azure-sdk-for-python/tree/master/sdk/core/azure-core | MIT License |
+| azure-core | 1.14.0 | https://github.com/Azure/azure-sdk-for-python/tree/master/sdk/core/azure-core | MIT License |
 | azure-cosmos | 3.2.0 | https://github.com/Azure/azure-documentdb-python | [MIT License](https://api.github.com/repos/azure/azure-documentdb-python/license) |
 | azure-datalake-store | 0.0.52 | https://github.com/Azure/azure-data-lake-store-python | [Other](https://api.github.com/repos/azure/azure-data-lake-store-python/license) |
 | azure-functions-devops-build | 0.0.22 | https://github.com/Azure/azure-functions-devops-build | [MIT License](https://api.github.com/repos/azure/azure-functions-devops-build/license) |
 | azure-graphrbac | 0.60.0 | https://github.com/Azure/azure-sdk-for-python | [MIT License](https://api.github.com/repos/azure/azure-sdk-for-python/license) |
-| azure-identity | 1.5.0 | https://github.com/Azure/azure-sdk-for-python/tree/master/sdk/identity/azure-identity | MIT License |
+| azure-identity | 1.6.0 | https://github.com/Azure/azure-sdk-for-python/tree/master/sdk/identity/azure-identity | MIT License |
 | azure-keyvault-administration | 4.0.0b3 | https://github.com/Azure/azure-sdk-for-python/tree/master/sdk/keyvault/azure-keyvault-administration | MIT License |
 | azure-keyvault | 1.1.0 | https://github.com/Azure/azure-sdk-for-python | [MIT License](https://api.github.com/repos/azure/azure-sdk-for-python/license) |
 | azure-loganalytics | 0.1.0 | https://github.com/Azure/azure-sdk-for-python | [MIT License](https://api.github.com/repos/azure/azure-sdk-for-python/license) |
@@ -154,11 +154,10 @@ Note that versions are default versions and can be changed in certain cases thro
 | azure-synapse-artifacts | 0.6.0 | https://github.com/Azure/azure-sdk-for-python | [MIT License](https://api.github.com/repos/azure/azure-sdk-for-python/license) |
 | azure-synapse-spark | 0.2.0 | https://github.com/Azure/azure-sdk-for-python | [MIT License](https://api.github.com/repos/azure/azure-sdk-for-python/license) |
 | bcrypt | 3.2.0 | https://github.com/pyca/bcrypt/ | [Apache License 2.0](https://api.github.com/repos/pyca/bcrypt/license) |
-| boto3 | 1.17.67 | https://github.com/boto/boto3 | [Apache License 2.0](https://api.github.com/repos/boto/boto3/license) |
-| botocore | 1.20.67 | https://github.com/boto/botocore | [Apache License 2.0](https://api.github.com/repos/boto/botocore/license) |
-| certifi | 2020.12.5 | https://certifiio.readthedocs.io/en/latest/ | MPL-2.0 |
+| boto3 | 1.17.85 | https://github.com/boto/boto3 | [Apache License 2.0](https://api.github.com/repos/boto/boto3/license) |
+| botocore | 1.20.85 | https://github.com/boto/botocore | [Apache License 2.0](https://api.github.com/repos/boto/botocore/license) |
+| certifi | 2021.5.30 | https://certifiio.readthedocs.io/en/latest/ | MPL-2.0 |
 | cffi | 1.14.5 | http://cffi.readthedocs.org | MIT |
-| chardet | 4.0.0 | https://github.com/chardet/chardet | [GNU Lesser General Public License v2.1](https://api.github.com/repos/chardet/chardet/license) |
 | colorama | 0.4.4 | https://github.com/tartley/colorama | [BSD 3-Clause "New" or "Revised" License](https://api.github.com/repos/tartley/colorama/license) |
 | cryptography | 3.3.2 | https://github.com/pyca/cryptography | [Other](https://api.github.com/repos/pyca/cryptography/license) |
 | fabric | 2.6.0 | http://fabfile.org | BSD |
@@ -168,19 +167,19 @@ Note that versions are default versions and can be changed in certain cases thro
 | invoke | 1.5.0 | http://docs.pyinvoke.org | BSD |
 | isodate | 0.6.0 | https://github.com/gweis/isodate/ | BSD |
 | javaproperties | 0.5.1 | https://github.com/jwodder/javaproperties | [MIT License](https://api.github.com/repos/jwodder/javaproperties/license) |
-| Jinja2 | 2.11.3 | https://palletsprojects.com/p/jinja/ | BSD-3-Clause |
+| Jinja2 | 3.0.1 | https://palletsprojects.com/p/jinja/ | BSD-3-Clause |
 | jmespath | 0.10.0 | https://github.com/jmespath/jmespath.py | [Other](https://api.github.com/repos/jmespath/jmespath.py/license) |
 | jsmin | 2.2.2 | https://github.com/tikitu/jsmin/ | [MIT License](https://api.github.com/repos/tikitu/jsmin/license) |
 | jsondiff | 1.2.0 | https://github.com/ZoomerAnalytics/jsondiff | [MIT License](https://api.github.com/repos/zoomeranalytics/jsondiff/license) |
 | jsonschema | 3.2.0 | https://github.com/Julian/jsonschema | [MIT License](https://api.github.com/repos/julian/jsonschema/license) |
-| knack | 0.8.1 | https://github.com/microsoft/knack | [MIT License](https://api.github.com/repos/microsoft/knack/license) |
-| MarkupSafe | 1.1.1 | https://palletsprojects.com/p/markupsafe/ | BSD-3-Clause |
+| knack | 0.8.2 | https://github.com/microsoft/knack | [MIT License](https://api.github.com/repos/microsoft/knack/license) |
+| MarkupSafe | 2.0.1 | https://palletsprojects.com/p/markupsafe/ | BSD-3-Clause |
 | mock | 4.0.3 | http://mock.readthedocs.org/en/latest/ | UNKNOWN |
 | msal-extensions | 0.3.0 | UNKNOWN | UNKNOWN |
-| msal | 1.11.0 | https://github.com/AzureAD/microsoft-authentication-library-for-python | [Other](https://api.github.com/repos/azuread/microsoft-authentication-library-for-python/license) |
+| msal | 1.12.0 | https://github.com/AzureAD/microsoft-authentication-library-for-python | [Other](https://api.github.com/repos/azuread/microsoft-authentication-library-for-python/license) |
 | msrest | 0.6.21 | https://github.com/Azure/msrest-for-python | [MIT License](https://api.github.com/repos/azure/msrest-for-python/license) |
 | msrestazure | 0.6.4 | https://github.com/Azure/msrestazure-for-python | [MIT License](https://api.github.com/repos/azure/msrestazure-for-python/license) |
-| oauthlib | 3.1.0 | https://github.com/oauthlib/oauthlib | [BSD 3-Clause "New" or "Revised" License](https://api.github.com/repos/oauthlib/oauthlib/license) |
+| oauthlib | 3.1.1 | https://github.com/oauthlib/oauthlib | [BSD 3-Clause "New" or "Revised" License](https://api.github.com/repos/oauthlib/oauthlib/license) |
 | packaging | 20.9 | https://github.com/pypa/packaging | [Other](https://api.github.com/repos/pypa/packaging/license) |
 | paramiko | 2.7.2 | https://github.com/paramiko/paramiko/ | [GNU Lesser General Public License v2.1](https://api.github.com/repos/paramiko/paramiko/license) |
 | pathlib2 | 2.3.5 | https://github.com/mcmtroffaes/pathlib2 | [MIT License](https://api.github.com/repos/mcmtroffaes/pathlib2/license) |
@@ -201,7 +200,7 @@ Note that versions are default versions and can be changed in certain cases thro
 | requests-oauthlib | 1.3.0 | https://github.com/requests/requests-oauthlib | [ISC License](https://api.github.com/repos/requests/requests-oauthlib/license) |
 | requests | 2.25.1 | https://requests.readthedocs.io | Apache 2.0 |
 | ruamel.yaml.clib | 0.2.2 | https://sourceforge.net/p/ruamel-yaml-clib/code/ci/default/tree | MIT |
-| ruamel.yaml | 0.17.4 | https://sourceforge.net/p/ruamel-yaml/code/ci/default/tree | MIT license |
+| ruamel.yaml | 0.17.7 | https://sourceforge.net/p/ruamel-yaml/code/ci/default/tree | MIT license |
 | s3transfer | 0.4.2 | https://github.com/boto/s3transfer | [Apache License 2.0](https://api.github.com/repos/boto/s3transfer/license) |
 | scp | 0.13.3 | https://github.com/jbardin/scp.py | [Other](https://api.github.com/repos/jbardin/scp.py/license) |
 | semver | 2.13.0 | https://github.com/python-semver/python-semver | [BSD 3-Clause "New" or "Revised" License](https://api.github.com/repos/python-semver/python-semver/license) |
@@ -210,7 +209,7 @@ Note that versions are default versions and can be changed in certain cases thro
 | tabulate | 0.8.9 | https://github.com/astanin/python-tabulate | [MIT License](https://api.github.com/repos/astanin/python-tabulate/license) |
 | terraform-bin | 1.0.1 | https://github.com/epiphany-platform/terraform-bin | [Apache License 2.0](https://api.github.com/repos/epiphany-platform/terraform-bin/license) |
 | typing-extensions | 3.10.0.0 | https://github.com/python/typing/blob/master/typing_extensions/README.rst | PSF |
-| urllib3 | 1.26.4 | https://urllib3.readthedocs.io/ | MIT |
+| urllib3 | 1.26.5 | https://urllib3.readthedocs.io/ | MIT |
 | vsts-cd-manager | 1.0.2 | https://github.com/microsoft/vsts-cd-manager | [MIT License](https://api.github.com/repos/microsoft/vsts-cd-manager/license) |
 | vsts | 0.1.25 | https://github.com/Microsoft/vsts-python-api | [MIT License](https://api.github.com/repos/microsoft/vsts-python-api/license) |
 | websocket-client | 0.56.0 | https://github.com/websocket-client/websocket-client.git | BSD |
