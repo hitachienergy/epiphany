@@ -13,7 +13,6 @@ from cli.helpers.data_loader import load_json_obj
 from cli.helpers.naming_helpers import resource_name
 from cli.helpers.objdict_helpers import objdict_to_dict, dict_to_objdict
 from cli.version import VERSION
-from cli.helpers.query_yes_no import query_yes_no
 
 
 class InfrastructureBuilder(Step):
