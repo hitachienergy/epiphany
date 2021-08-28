@@ -23,7 +23,7 @@ def test_get_virtual_network_should_set_proper_values_to_model():
     assert actual.specification.address_space == '10.22.0.0/22'
 
 
-def test_get_security_group_should_set_proper_values_to_model():
+def test_get_network_security_group_should_set_proper_values_to_model():
     cluster_model = get_cluster_model(cluster_name='TestCluster')
     builder = InfrastructureBuilder([cluster_model])
 
@@ -46,6 +46,25 @@ def test_get_subnet_should_set_proper_values_to_model():
     assert actual.specification.cluster_name == 'testcluster'
 
 
+def test_get_availability_set_should_set_proper_values_to_model():
+    cluster_model = get_cluster_model(cluster_name='TestCluster')
+    availability_set = dict_to_objdict({
+        'kind': 'infrastructure/availability-set',
+        'provider': 'azure',
+        'name': 'availability-set',
+        'specification': {
+            'name': 'availability-set'
+        }
+    })
+
+    builder = InfrastructureBuilder([cluster_model, availability_set])
+
+    actual = builder.get_availability_set('availability-set')
+
+    assert actual.name == 'availability-set'
+    assert actual.specification.name == 'prefix-testcluster-availability-set-aset'
+
+
 def test_get_subnet_network_security_group_association_should_set_proper_values_to_model():
     cluster_model = get_cluster_model(cluster_name='TestCluster')
     builder = InfrastructureBuilder([cluster_model])
@@ -59,23 +78,6 @@ def test_get_subnet_network_security_group_association_should_set_proper_values_
     assert actual.specification.name == 'prefix-testcluster-component-ssga-1'
     assert actual.specification.subnet_name == 'prefix-testcluster-component-subnet-1'   
     assert actual.specification.security_group_name == 'prefix-testcluster-component-sg-1'
-
-
-
-def test_get_public_ip_should_set_proper_values_to_model():
-    cluster_model = get_cluster_model(cluster_name='TestCluster')
-    builder = InfrastructureBuilder([cluster_model])
-    component_value = dict_to_objdict({
-        'machine': 'kubernetes-master-machine'
-    })
-    vm_config = builder.get_virtual_machine(component_value)
-
-    actual = builder.get_public_ip('kubernetes_master', component_value, vm_config, 1)
-
-    assert actual.specification.name == 'prefix-testcluster-kubernetes-master-pubip-1'
-    assert actual.specification.allocation_method == 'Static'
-    assert actual.specification.idle_timeout_in_minutes == 30
-    assert actual.specification.sku == 'Standard'
 
 
 def test_get_network_interface_should_set_proper_values_to_model():
@@ -102,6 +104,22 @@ def test_get_network_interface_should_set_proper_values_to_model():
     assert actual.specification.use_public_ip == True
     assert actual.specification.public_ip_name == 'prefix-testcluster-kubernetes-master-pubip-1'
     assert actual.specification.enable_accelerated_networking == False
+
+
+def test_get_public_ip_should_set_proper_values_to_model():
+    cluster_model = get_cluster_model(cluster_name='TestCluster')
+    builder = InfrastructureBuilder([cluster_model])
+    component_value = dict_to_objdict({
+        'machine': 'kubernetes-master-machine'
+    })
+    vm_config = builder.get_virtual_machine(component_value)
+
+    actual = builder.get_public_ip('kubernetes_master', component_value, vm_config, 1)
+
+    assert actual.specification.name == 'prefix-testcluster-kubernetes-master-pubip-1'
+    assert actual.specification.allocation_method == 'Static'
+    assert actual.specification.idle_timeout_in_minutes == 30
+    assert actual.specification.sku == 'Standard'
 
 
 def test_get_storage_share_config_should_set_proper_values_to_model():
