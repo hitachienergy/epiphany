@@ -10,7 +10,6 @@ from cli.helpers.config_merger import merge_with_defaults
 from cli.helpers.objdict_helpers import objdict_to_dict, dict_to_objdict
 from cli.helpers.os_images import get_os_distro_normalized
 from cli.version import VERSION
-from cli.helpers.query_yes_no import query_yes_no
 
 class InfrastructureBuilder(Step):
     def __init__(self, docs, manifest_docs=[]):
