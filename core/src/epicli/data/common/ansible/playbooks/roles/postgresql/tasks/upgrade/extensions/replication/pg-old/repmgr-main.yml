@@ -36,7 +36,8 @@
         state: absent
       register: remove_repmgr_package
       when: not stat_repmgr_config_file.stat.exists
-         or config_file_header.stdout_lines[1] is match("# repmgr sample configuration file")
+         or (config_file_header.stdout_lines[1] is defined and
+             config_file_header.stdout_lines[1] is match("# repmgr sample configuration file"))
       module_defaults:
         yum: { lock_timeout: "{{ yum_lock_timeout }}" }
 
