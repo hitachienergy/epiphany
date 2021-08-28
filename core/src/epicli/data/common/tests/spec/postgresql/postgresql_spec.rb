@@ -509,7 +509,7 @@ if replicated && (listInventoryHosts("postgresql")[1].include? host_inventory['h
     end
     it "Delegate drop schema query to master node" do
       Net::SSH.start(listInventoryIPs("postgresql")[0], ENV['user'], keys: [ENV['keypath']], :keys_only => true) do|ssh|
-        result = ssh.exec!("sudo su - postgres -c \"psql -t -c 'DROP SCHEMA serverspec_test;'\" 2>&1")
+        result = ssh.exec!("sudo su - postgres -c \"psql -t -c 'DROP SCHEMA serverspec_test CASCADE;'\" 2>&1")
         expect(result).to match 'DROP SCHEMA'
       end
     end
