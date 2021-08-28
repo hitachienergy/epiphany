@@ -1,6 +1,5 @@
 from cli.engine.providers.azure.InfrastructureBuilder import InfrastructureBuilder
 from cli.helpers.objdict_helpers import dict_to_objdict
-import pytest
 
 
 def test_get_resource_group_should_set_proper_values_to_model():
@@ -37,7 +36,7 @@ def test_get_subnet_should_set_proper_values_to_model():
     subnet_definition = dict_to_objdict({
         'address_pool': '10.20.0.0/24',
         'availability_zone': 'eu-west-2a'
-    })    
+    })
     builder = InfrastructureBuilder([cluster_model])
     actual = builder.get_subnet(subnet_definition, 'component', 1)
 
@@ -71,12 +70,12 @@ def test_get_subnet_network_security_group_association_should_set_proper_values_
 
     actual = builder.get_subnet_network_security_group_association(
                                 'component',
-                                'prefix-testcluster-component-subnet-1', 
+                                'prefix-testcluster-component-subnet-1',
                                 'prefix-testcluster-component-sg-1',
                                 1)
 
     assert actual.specification.name == 'prefix-testcluster-component-ssga-1'
-    assert actual.specification.subnet_name == 'prefix-testcluster-component-subnet-1'   
+    assert actual.specification.subnet_name == 'prefix-testcluster-component-subnet-1'
     assert actual.specification.security_group_name == 'prefix-testcluster-component-sg-1'
 
 
@@ -92,10 +91,10 @@ def test_get_network_interface_should_set_proper_values_to_model():
                                 'kubernetes_master',
                                 component_value,
                                 vm_config,
-                                'prefix-testcluster-component-subnet-1', 
+                                'prefix-testcluster-component-subnet-1',
                                 'prefix-testcluster-component-sg-1',
                                 'prefix-testcluster-kubernetes-master-pubip-1',
-                                1)          
+                                1)
 
     assert actual.specification.name == 'prefix-testcluster-kubernetes-master-nic-1'
     assert actual.specification.security_group_name == 'prefix-testcluster-component-sg-1'
@@ -128,7 +127,7 @@ def test_get_storage_share_config_should_set_proper_values_to_model():
 
     actual = builder.get_storage_share_config()
 
-    assert actual.specification.name == 'prefix-testcluster-k8s-ss'   
+    assert actual.specification.name == 'prefix-testcluster-k8s-ss'
     assert actual.specification.storage_account_name == 'prefixtestclusterk8s'
     assert actual.specification.quota == 50
 

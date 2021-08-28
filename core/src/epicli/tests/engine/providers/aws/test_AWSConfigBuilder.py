@@ -27,7 +27,7 @@ def test_get_default_security_group_config_should_set_proper_values_to_model():
         'specification': {
             'name': 'prefix-testcluster-vpc'
         }
-    }) 
+    })
     builder = InfrastructureBuilder([cluster_model])
 
     actual = builder.get_default_security_group_config(vpc_config)
