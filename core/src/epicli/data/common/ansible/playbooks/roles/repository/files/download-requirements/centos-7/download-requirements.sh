@@ -517,11 +517,11 @@ readonly REPO_PREREQ_PACKAGES_DIR="${PACKAGES_DIR}/repo-prereqs"
 readonly SCRIPT_DIR="$(dirname $(readlink -f $0))" # want absolute path
 
 # files
-export CRANE_BIN="${SCRIPT_DIR}/crane"
 readonly SCRIPT_FILE_NAME=$(basename "$0")
 readonly LOG_FILE_NAME="${SCRIPT_FILE_NAME}.log"
 readonly LOG_FILE_PATH="${SCRIPT_DIR}/${LOG_FILE_NAME}"
 readonly YUM_CONFIG_BACKUP_FILE_PATH="${SCRIPT_DIR}/${SCRIPT_FILE_NAME}-yum-repos-backup-tmp-do-not-remove.tar"
+readonly CRANE_BIN="${SCRIPT_DIR}/crane"
 readonly INSTALLED_PACKAGES_FILE_PATH="${SCRIPT_DIR}/${SCRIPT_FILE_NAME}-installed-packages-list-do-not-remove.tmp"
 readonly PID_FILE_PATH="/var/run/${SCRIPT_FILE_NAME}.pid"
 readonly ADD_MULTIARCH_REPOSITORIES_SCRIPT="${SCRIPT_DIR}/add-repositories.multiarch.sh"
@@ -589,7 +589,7 @@ get_requirements_from_group 'IMAGES'               'images'                "$REQ
 
 # === Packages ===
 
-check_connection yum $(yum repolist --quiet | tail -n +2 | cut -d' ' -f1 | cut -d'/' -f1)
+check_connection yum $(yum repolist --quiet | tail -n +2 | cut -d' ' -f1 | cut -d'/' -f1 | sed 's/!//')
 
 # --- Backup yum repositories ---
 
@@ -736,13 +736,13 @@ fi
 
 # === Files ===
 
+check_connection wget $FILES
+
 create_directory "$FILES_DIR"
 
 if [[ -z "$FILES" ]]; then
     echol "No files to download"
 else
-    check_connection wget $(cat $FILES | head -n 1 | awk '{print $2}')  # test first url from the list
-
     # list of all files that will be downloaded
     echol "Files to be downloaded:"
     cat -n <<< "${FILES}"

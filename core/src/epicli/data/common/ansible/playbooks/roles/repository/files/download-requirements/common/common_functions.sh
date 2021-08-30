@@ -22,37 +22,6 @@ exit_with_error() {
 }
 
 
-__check_curl() {
-#
-# Use curl in silent mode to check if target `url` is available.
-#
-# :param $1: url to be tested
-#
-    (( $# > 0 )) || exit_with_error "__check_curl: no url provided"
-    local url=$1
-
-    echol "Testing connection to: \"${url}\" using curl..."
-
-    last_error=$(curl --show-error --silent $url 2>&1 >/dev/null) || exit_with_error "curl failed, reason: ($last_error)"
-}
-
-
-__check_wget() {
-#
-# Use wget in spider mode (without downloading resources) to check if target `url`
-# is available.
-#
-# :param $1: url to be tested
-#
-    (( $# > 0 )) || exit_with_error "__check_wget: no url provided"
-    local url=$1
-
-    echol "Testing connection to: \"${url}\" using wget..."
-
-    last_error=$(wget --spider $url 2>&1 >/dev/null) || exit_with_error "wget failed, reason: ($last_error)"
-}
-
-
 __at_least_one_test_pass() {
 #
 # Iterate over all arguments each time call test $function and check result.
@@ -69,6 +38,7 @@ __at_least_one_test_pass() {
     local failed_count=0
 
     for arg in $args; do
+        echol "- $arg..."
         $function $arg
         if (( $? != 0 )); then
             failed_count=$(( $failed_count + 1 ))
@@ -80,6 +50,61 @@ __at_least_one_test_pass() {
 }
 
 
+__test_address_curl() {
+#
+# Test address connection without downloading any resource.
+#
+# :param $1: url to be tested
+# :return: curl exit value
+#
+    last_error=$(curl --show-error --silent $1 2>&1 >/dev/null)
+    return $?
+}
+
+
+__check_curl() {
+#
+# Use curl in silent mode to check if target `url` is available.
+#
+# :param $@: urls to be tested
+# :return: 0 - success, 1 - failure
+#
+    echol "Testing curl connection:"
+
+    (( $# > 0 )) || exit_with_error "__check_curl: no url provided"
+
+    __at_least_one_test_pass __test_address_curl $@
+}
+
+
+__test_address_wget() {
+#
+# Test address connection without downloading any resource.
+#
+# :param $1: url to be tested
+# :return: wget exit value
+#
+    last_error=$(wget --spider $1 2>&1 >/dev/null)
+    return $?
+}
+
+
+__check_wget() {
+#
+# Use wget in spider mode (without downloading resources) to check if target `url`
+# is available.
+#
+# :param $@: urls to be tested
+# :return: 0 - success, 1 - failure
+#
+    echol "Testing wget connection:"
+
+    (( $# > 0 )) || exit_with_error "__check_wget: no url provided"
+
+    __at_least_one_test_pass __test_address_wget $@
+}
+
+
 __test_apt_repo() {
 #
 # Update a single repository.
@@ -87,7 +112,6 @@ __test_apt_repo() {
 # :param $1: repository to be updated
 # :return: apt return value
 #
-    echol "- $1..."
     last_error=$(apt update -o Dir::Etc::sourcelist=$1 2>&1 >/dev/null)
     return $?
 }
@@ -119,7 +143,6 @@ __test_yum_repo() {
 # :param $1: repository to be listed
 # :return: yum return value
 #
-    echol "- $1..."
     last_error=$(yum --quiet --disablerepo=* --enablerepo=$1 list available 2>&1 >/dev/null)
     return $?
 }
@@ -151,7 +174,6 @@ __test_crane_repo() {
 # :param $1: repository to be listed
 # :return: crane return value
 #
-    echol "- $1..."
     last_error=$($CRANE_BIN ls $1 2>&1 >/dev/null)
     return $?
 }

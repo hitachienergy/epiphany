@@ -29,7 +29,7 @@ deplist="${script_path}/.dependencies"
 retries="3"
 download_cmd="run_cmd_with_retries $retries apt-get download"
 add_repos="${script_path}/add-repositories.sh"
-export CRANE_BIN="${script_path}/crane"
+CRANE_BIN="${script_path}/crane"
 
 # arch
 arch=$(uname -m)
@@ -169,6 +169,8 @@ else
 fi
 
 printf "\n"
+
+check_connection wget $(for file in $files; do echo "$file"; done)
 
 # FILES
 # process files
