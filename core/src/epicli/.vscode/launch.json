@@ -34,7 +34,7 @@
             "cwd": "${workspaceFolder}",
             "env": { "PYTHONPATH": "${workspaceFolder}" },
             "console": "integratedTerminal",
-            "args": ["${workspaceFolder}/tests/", "--junitxml=${workspaceFolder}/tests/results/unit_test_results.xml"]
+            "args": ["--junitxml=${workspaceFolder}/test_results/unit_test_results.xml"]
         }
     ]
 }

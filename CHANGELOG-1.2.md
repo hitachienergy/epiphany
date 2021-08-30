@@ -21,6 +21,7 @@
 - [#2425](https://github.com/epiphany-platform/epiphany/issues/2425) - Feature-mapping - 'enabled: no' do nothing
 - [#2449](https://github.com/epiphany-platform/epiphany/issues/2449) - [Grafana] Unable to add Grafana repository
 - [#2485](https://github.com/epiphany-platform/epiphany/issues/2485) - [Upgrade] Refactor upgrade role to not include "specification" at top level
+- [#2521](https://github.com/epiphany-platform/epiphany/issues/2521) - Fix 2 unit tests that are marked to be skipped during test execution
 
 ### Updated
 

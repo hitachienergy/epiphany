@@ -121,7 +121,7 @@ dmypy.json
 
 # epicli specific
 external/
-tests/results/
+test_results/
 .terraform
 clusters
 .vscode
