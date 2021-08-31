@@ -16,7 +16,7 @@ RUN : INSTALL APT REQUIREMENTS \
     apt-utils dialog \
  && apt-get -q install -y --no-install-recommends \
     autossh curl gcc git git-lfs \
-    jq libcap2-bin libffi-dev lsb-release \
+    jq libc6-dev libcap2-bin libffi-dev lsb-release \
     make musl-dev openssh-client procps \
     psmisc ruby-full sudo tar \
     unzip vim \
@@ -46,7 +46,7 @@ RUN : INSTALL HELM BINARY \
 
 RUN : INSTALL GEM REQUIREMENTS \
  && gem install \
-    rake rspec_junit_formatter serverspec
+    rake rspec_junit_formatter serverspec solargraph
 
 COPY requirements.txt /
 
