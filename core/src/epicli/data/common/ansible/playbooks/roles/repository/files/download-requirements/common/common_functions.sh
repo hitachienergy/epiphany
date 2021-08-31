@@ -22,7 +22,7 @@ exit_with_error() {
 }
 
 
-_at_least_one_test_pass() {
+__at_least_one_test_pass() {
 #
 # Iterate over all arguments each time call test $function and check result.
 # If at least one call passes, function will yield success.
@@ -51,7 +51,7 @@ _at_least_one_test_pass() {
 }
 
 
-_test_address_curl() {
+__test_address_curl() {
 #
 # Test address connection without downloading any resource.
 #
@@ -63,7 +63,7 @@ _test_address_curl() {
 }
 
 
-_check_curl() {
+__check_curl() {
 #
 # Use curl in silent mode to check if target `url` is available.
 #
@@ -74,11 +74,11 @@ _check_curl() {
 
     (( $# > 0 )) || exit_with_error "_check_curl: no url provided"
 
-    _at_least_one_test_pass _test_address_curl $@
+    __at_least_one_test_pass __test_address_curl $@
 }
 
 
-_test_address_wget() {
+__test_address_wget() {
 #
 # Test address connection without downloading any resource.
 #
@@ -90,7 +90,7 @@ _test_address_wget() {
 }
 
 
-_check_wget() {
+__check_wget() {
 #
 # Use wget in spider mode (without downloading resources) to check if target `url`
 # is available.
@@ -102,11 +102,11 @@ _check_wget() {
 
     (( $# > 0 )) || exit_with_error "_check_wget: no url provided"
 
-    _at_least_one_test_pass _test_address_wget $@
+    __at_least_one_test_pass __test_address_wget $@
 }
 
 
-_test_apt_repo() {
+__test_apt_repo() {
 #
 # Update a single repository.
 #
@@ -118,7 +118,7 @@ _test_apt_repo() {
 }
 
 
-_check_apt() {
+__check_apt() {
 #
 # Use `apt update` to make sure that there is connection to repositories.
 #
@@ -132,12 +132,12 @@ _check_apt() {
 
     (( $UID == 0 )) || exit_with_error "apt needs to be run as a root"
 
-    _at_least_one_test_pass _test_apt_repo $repos
+    __at_least_one_test_pass __test_apt_repo $repos
     return $?
 }
 
 
-_test_yum_repo() {
+__test_yum_repo() {
 #
 # List packages from a single repository.
 #
@@ -149,7 +149,7 @@ _test_yum_repo() {
 }
 
 
-_check_yum() {
+__check_yum() {
 #
 # Use `yum list` to make sure that there is connection to repositories.
 # Query available packages for each repository.
@@ -162,12 +162,12 @@ _check_yum() {
     (( $# > 0 )) || exit_with_error "_check_yum: no repositories provided"
     local repos=$@
 
-    _at_least_one_test_pass _test_yum_repo $repos
+    __at_least_one_test_pass __test_yum_repo $repos
     return $?
 }
 
 
-_test_crane_repo() {
+__test_crane_repo() {
 #
 # List packages from a single repository.
 # Requires $CRANE_BIN to be defined
@@ -180,7 +180,7 @@ _test_crane_repo() {
 }
 
 
-_check_crane() {
+__check_crane() {
 #
 # Use `crane ls` to make sure that there is connection to repositories.
 # Query available packages for each repository.
@@ -193,7 +193,7 @@ _check_crane() {
     (( $# > 0 )) || exit_with_error "_check_crane: no repository provided"
     local repos=$@
 
-    _at_least_one_test_pass _test_crane_repo $repos
+    __at_least_one_test_pass __test_crane_repo $repos
     return $?
 }
 
