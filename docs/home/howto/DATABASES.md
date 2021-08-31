@@ -104,6 +104,10 @@ configurations containing two PostgreSQL servers.
 Privileged user is used to perform full backup of primary instance and replicate this at the beginning to secondary
 node. After that for replication only replication user with limited permissions is used for WAL replication.
 
+## How to stop PostgreSQL service in HA cluster
+
+In order to maintenance work sometimes PostgreSQL service needs to be stopped. Before this action repmgr service needs to be paused, see [manual page](https://repmgr.org/docs/dev/repmgrd-pausing.html) before. When repmgr service is paused steps from [PostgreSQL manual page](https://www.postgresql.org/docs/current/app-pg-ctl.html) may be applied or stop it as a regular systemd service.
+
 ## How to register database standby in repmgr cluster
 
 If one of database nodes has been recovered to desired state, you may want to re-attach it to database cluster. Execute
@@ -451,6 +455,11 @@ To remove the extension from database, run:
 ```sql
 DROP EXTENSION IF EXISTS pgaudit;
 ```
+
+## How to work with PostgreSQL connection pooling
+
+PostgreSQL connection pooling is described in [design documentaion page](https://github.com/epiphany-platform/epiphany/blob/develop/docs/design-docs/postgresql/connection-pooling.md).
+Properly configured application (kubernetes service) to use fully HA configuration should be set up to connect to pgbouncer service (kubernetes) instead directly to database host. This configuration provides all the benefits of user PostgreSQL in clusteres HA mode (including database failover). Both pgbouncer and pgpool stores database users and passwords in configuration files and needs to be restarted (pods) in case of PostgreSQL authentication changes like: create, alter username or password. Pods during restart process are refreshing stored database credentials automatically.
 
 ## How to configure PostgreSQL replication
 
