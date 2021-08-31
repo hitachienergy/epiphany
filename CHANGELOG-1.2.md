@@ -10,6 +10,7 @@
 - [#195](https://github.com/epiphany-platform/epiphany/issues/195) - Basic configuration type and schema validation
 - [#2434](https://github.com/epiphany-platform/epiphany/issues/2434) - Python 3 installation
 - [#2346](https://github.com/epiphany-platform/epiphany/issues/2346) - Allow more than 2 PostgreSQL nodes installation with repmgr
+- [#2531](https://github.com/epiphany-platform/epiphany/issues/2531) - Add Pylint configuration to epicli devcontainer
 
 ### Fixed
 
