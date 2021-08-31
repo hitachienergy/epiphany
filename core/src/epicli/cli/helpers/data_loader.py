@@ -1,12 +1,15 @@
 import os
 import sys
-from cli.helpers.yaml_helpers import safe_load_all, safe_load
-from collections import namedtuple
-import jinja2
-import json
-from cli.helpers.objdict_helpers import dict_to_objdict
-from jinja2 import Template
 import glob
+import json
+from collections import namedtuple
+
+import jinja2
+from jinja2 import Template
+
+from cli.helpers.yaml_helpers import safe_load_all, safe_load
+from cli.helpers.objdict_helpers import dict_to_objdict
+
 
 BASE_DIR = os.path.dirname(__file__)
 #TODO: Look at this in depth since by default sys.prefix should return /urs/local

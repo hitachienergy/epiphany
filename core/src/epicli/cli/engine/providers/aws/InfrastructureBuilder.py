@@ -214,7 +214,7 @@ class InfrastructureBuilder(Step):
         pub_key_path = self.cluster_model.specification.admin_user.key_path + '.pub'
         if os.path.isfile(pub_key_path):
             with open(pub_key_path, 'r') as stream:
-                public_key_config.specification.public_key = stream.read().rstrip()            
+                public_key_config.specification.public_key = stream.read().rstrip()
         else:
             raise Exception(f'SSH key path "{pub_key_path}" is not valid. Ansible run will fail.')
         return public_key_config
@@ -250,7 +250,7 @@ class InfrastructureBuilder(Step):
         machine_selector = component_value.machine
         model_with_defaults = select_first(self.docs, lambda x: x.kind == 'infrastructure/virtual-machine' and
                                                                  x.name == machine_selector)
-        
+
         # Merge with defaults
         if model_with_defaults is None:
             model_with_defaults = merge_with_defaults(self.cluster_model.provider, 'infrastructure/virtual-machine',

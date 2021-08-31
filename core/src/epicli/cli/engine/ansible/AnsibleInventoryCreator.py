@@ -1,8 +1,9 @@
+from collections import defaultdict
+
 from cli.helpers.doc_list_helpers import select_single
 from cli.helpers.naming_helpers import to_role_name
 from cli.engine.providers.provider_class_loader import provider_class_loader
 from cli.models.AnsibleInventoryItem import AnsibleInventoryItem
-from collections import defaultdict
 from cli.helpers.build_saver import save_inventory
 from cli.helpers.Step import Step
 
@@ -19,7 +20,7 @@ class AnsibleInventoryCreator(Step):
         return self
 
     def __exit__(self, exc_type, exc_value, traceback):
-        super().__exit__(exc_type, exc_value, traceback)
+        pass
 
     # todo: add login for ansible
     def create(self):

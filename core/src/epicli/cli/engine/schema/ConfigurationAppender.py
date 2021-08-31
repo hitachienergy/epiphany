@@ -49,4 +49,3 @@ class ConfigurationAppender(Step):
                     append_config(config)
 
         return configuration_docs
-

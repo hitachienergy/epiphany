@@ -5,7 +5,6 @@ import argparse
 import json
 import os
 import time
-import json
 import subprocess
 import platform
 import socket
@@ -432,7 +431,7 @@ def log_total_run_time():
 def exit_handler():
     ensure_vault_password_is_cleaned()
     log_total_run_time()
- 
+
 
 def dump_debug_info():
     def dump_external_debug_info(title, args):

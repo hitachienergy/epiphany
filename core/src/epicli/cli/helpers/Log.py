@@ -2,7 +2,7 @@ import logging
 import logging.handlers
 import threading
 import os
-import enum
+
 from pythonjsonlogger import jsonlogger
 from cli.helpers.build_saver import get_output_path
 from cli.helpers.Config import Config
@@ -96,6 +96,3 @@ class LogPipe(threading.Thread):
 
     def close(self):
         os.close(self.fdWrite)
-
-
-

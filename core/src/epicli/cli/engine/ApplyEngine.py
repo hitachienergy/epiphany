@@ -18,11 +18,11 @@ from cli.engine.terraform.TerraformTemplateGenerator import TerraformTemplateGen
 from cli.engine.terraform.TerraformFileCopier import TerraformFileCopier
 from cli.engine.terraform.TerraformRunner import TerraformRunner
 from cli.engine.ansible.AnsibleRunner import AnsibleRunner
-from cli.version import VERSION
 
 
 class ApplyEngine(Step):
     def __init__(self, input_data):
+        super().__init__(__name__)
         self.file = input_data.file
         self.skip_infrastructure = getattr(input_data, 'no_infra', False)
         self.skip_config = getattr(input_data, 'skip_config', False)

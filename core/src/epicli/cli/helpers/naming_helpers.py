@@ -1,6 +1,3 @@
-import random
-import string
-
 def to_role_name(feature_name):
     return feature_name.replace("-", "_")
 
@@ -28,7 +25,7 @@ def cluster_tag(prefix, cluster_name):
     if (not prefix) or (prefix == 'default'):
         return cluster_name.lower()
     else:
-        return '%s-%s' % (prefix.lower(), cluster_name.lower()) 
+        return '%s-%s' % (prefix.lower(), cluster_name.lower())
 
 
 def storage_account_name(prefix, cluster_name, storage_use):
@@ -37,13 +34,13 @@ def storage_account_name(prefix, cluster_name, storage_use):
         if len(prefix) > 8:
             pre = prefix[:8].lower()
         else:
-            pre = prefix.lower() 
+            pre = prefix.lower()
 
     sto = ''
     if len(storage_use) > 5:
         sto = storage_use[:5].lower()
     else:
-        sto = storage_use.lower()    
+        sto = storage_use.lower()
 
     clu = ''
     cn = cluster_name.replace('-', '')
@@ -54,4 +51,3 @@ def storage_account_name(prefix, cluster_name, storage_use):
         clu = cn.lower()
 
     return f'{pre}{clu}{sto}'
-    

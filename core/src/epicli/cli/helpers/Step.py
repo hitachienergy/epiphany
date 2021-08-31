@@ -1,6 +1,7 @@
 import time
-from cli.helpers.Log import Log
 from abc import ABCMeta
+
+from cli.helpers.Log import Log
 from cli.helpers.time_helpers import format_time
 
 
@@ -16,4 +17,3 @@ class Step(metaclass=ABCMeta):
     def __exit__(self, exc_type, exc_value, traceback):
         passed_time = format_time(time.time()-self.start)
         self.logger.info(f'Step finished in: {passed_time}')
-

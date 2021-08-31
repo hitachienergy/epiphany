@@ -89,7 +89,6 @@ def test_get_network_interface_should_set_proper_values_to_model():
 
     actual = builder.get_network_interface(
                                 'kubernetes_master',
-                                component_value,
                                 vm_config,
                                 'prefix-testcluster-component-subnet-1',
                                 'prefix-testcluster-component-sg-1',
@@ -100,9 +99,9 @@ def test_get_network_interface_should_set_proper_values_to_model():
     assert actual.specification.security_group_name == 'prefix-testcluster-component-sg-1'
     assert actual.specification.ip_configuration_name == 'prefix-testcluster-kubernetes-master-ipconf-1'
     assert actual.specification.subnet_name == 'prefix-testcluster-component-subnet-1'
-    assert actual.specification.use_public_ip == True
+    assert actual.specification.use_public_ip is True
     assert actual.specification.public_ip_name == 'prefix-testcluster-kubernetes-master-pubip-1'
-    assert actual.specification.enable_accelerated_networking == False
+    assert actual.specification.enable_accelerated_networking is False
 
 
 def test_get_public_ip_should_set_proper_values_to_model():
@@ -113,7 +112,7 @@ def test_get_public_ip_should_set_proper_values_to_model():
     })
     vm_config = builder.get_virtual_machine(component_value)
 
-    actual = builder.get_public_ip('kubernetes_master', component_value, vm_config, 1)
+    actual = builder.get_public_ip('kubernetes_master', vm_config, 1)
 
     assert actual.specification.name == 'prefix-testcluster-kubernetes-master-pubip-1'
     assert actual.specification.allocation_method == 'Static'

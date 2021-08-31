@@ -9,8 +9,7 @@ from cli.helpers.naming_helpers import to_feature_name, to_role_name
 from cli.helpers.ObjDict import ObjDict
 from cli.helpers.yaml_helpers import dump
 from cli.helpers.Config import Config
-from cli.helpers.data_loader import load_yaml_obj, types, load_yamls_file, load_all_documents_from_folder
-
+from cli.helpers.data_loader import load_yaml_obj, types, load_all_documents_from_folder
 from cli.engine.schema.DefaultMerger import DefaultMerger
 
 
@@ -46,7 +45,7 @@ class AnsibleVarsGenerator(Step):
         return self
 
     def __exit__(self, exc_type, exc_value, traceback):
-        super().__exit__(exc_type, exc_value, traceback)
+        pass
 
     def generate(self):
         self.logger.info('Generate Ansible vars')

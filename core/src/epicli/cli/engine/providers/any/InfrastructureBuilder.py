@@ -12,7 +12,7 @@ class InfrastructureBuilder(Step):
     def run(self):
         infrastructure_docs = select_all(self.docs, lambda x: x.kind.startswith('infrastructure/'))
 
-        for i in range(len(infrastructure_docs)): 
-            infrastructure_docs[i]['version'] = VERSION          
-    
+        for i in range(len(infrastructure_docs)):
+            infrastructure_docs[i]['version'] = VERSION
+
         return infrastructure_docs
