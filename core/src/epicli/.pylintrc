@@ -1,5 +1,6 @@
 [MASTER]
 
+
 # Specify a configuration file.
 #rcfile=
 
@@ -23,6 +24,7 @@ load-plugins=
     pylint.extensions.overlapping_exceptions,
     pylint.extensions.typing,
     pylint.extensions.redefined_variable_type,
+    pylint_junit,
 
 # Use multiple processes to speed up Pylint.
 jobs=1
@@ -80,12 +82,12 @@ disable=
 # Set the output format. Available formats are text, parseable, colorized, msvs
 # (visual studio) and html. You can also give a reporter class, eg
 # mypackage.mymodule.MyReporterClass.
-output-format=text
+output-format=junit
 
 # Put messages in a separate file for each module / package specified on the
 # command line instead of printing them on stdout. Reports (if any) will be
 # written in a file name "pylint_global.[txt|html]".
-files-output=no
+files-output=yes
 
 # Tells whether to display a full report or only the messages
 reports=no
