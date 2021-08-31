@@ -12,7 +12,7 @@ from cli.helpers.build_saver import copy_files_recursively
 
 class PrepareEngine(Step):
     PREPARE_PATH = f'{DATA_FOLDER_PATH}/common/ansible/playbooks/roles/repository/files/download-requirements'
-    COMMON_PATH = f'{DATA_FOLDER_PATH}/common/ansible/playbooks/roles/repository/files/download-requirements/common'
+    COMMON_PATH = f'{PREPARE_PATH}/common'
     CHARTS_PATH = f'{DATA_FOLDER_PATH}/common/ansible/playbooks/roles/helm_charts/files/system'
 
     def __init__(self, input_data):
@@ -38,7 +38,7 @@ class PrepareEngine(Step):
 
         # copy files to output dir
         copy_files_recursively(prepare_src, prepare_dst)
-        copy_files_recursively(self.COMMON_PATH, os.path.join(self.PREPARE_PATH, 'common'))
+        copy_files_recursively(self.COMMON_PATH, os.path.join(prepare_dst, 'common'))
         copy_files_recursively(self.CHARTS_PATH, charts_dst)
 
         # make sure the scripts are executable
