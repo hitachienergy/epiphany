@@ -589,7 +589,7 @@ get_requirements_from_group 'IMAGES'               'images'                "$REQ
 
 # === Packages ===
 
-check_connection yum $(yum repolist --quiet | tail -n +2 | cut -d' ' -f1 | cut -d'/' -f1 | sed 's/!//')
+check_connection yum $(yum repolist --quiet | tail -n +2 | cut -d' ' -f1 | cut -d'/' -f1 | sed 's/^!//')
 
 # --- Backup yum repositories ---
 

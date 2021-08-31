@@ -22,7 +22,7 @@ exit_with_error() {
 }
 
 
-__at_least_one_test_pass() {
+_at_least_one_test_pass() {
 #
 # Iterate over all arguments each time call test $function and check result.
 # If at least one call passes, function will yield success.
@@ -40,9 +40,10 @@ __at_least_one_test_pass() {
     for arg in $args; do
         echol "- $arg..."
         $function $arg
-        if (( $? != 0 )); then
-            failed_count=$(( $failed_count + 1 ))
-        fi
+
+        (( $? == 0 )) && return 0
+
+        failed_count=$(( $failed_count + 1 ))
     done
 
     (( $total_count != $failed_count )) || return 1
@@ -50,7 +51,7 @@ __at_least_one_test_pass() {
 }
 
 
-__test_address_curl() {
+_test_address_curl() {
 #
 # Test address connection without downloading any resource.
 #
@@ -62,7 +63,7 @@ __test_address_curl() {
 }
 
 
-__check_curl() {
+_check_curl() {
 #
 # Use curl in silent mode to check if target `url` is available.
 #
@@ -71,13 +72,13 @@ __check_curl() {
 #
     echol "Testing curl connection:"
 
-    (( $# > 0 )) || exit_with_error "__check_curl: no url provided"
+    (( $# > 0 )) || exit_with_error "_check_curl: no url provided"
 
-    __at_least_one_test_pass __test_address_curl $@
+    _at_least_one_test_pass _test_address_curl $@
 }
 
 
-__test_address_wget() {
+_test_address_wget() {
 #
 # Test address connection without downloading any resource.
 #
@@ -89,7 +90,7 @@ __test_address_wget() {
 }
 
 
-__check_wget() {
+_check_wget() {
 #
 # Use wget in spider mode (without downloading resources) to check if target `url`
 # is available.
@@ -99,13 +100,13 @@ __check_wget() {
 #
     echol "Testing wget connection:"
 
-    (( $# > 0 )) || exit_with_error "__check_wget: no url provided"
+    (( $# > 0 )) || exit_with_error "_check_wget: no url provided"
 
-    __at_least_one_test_pass __test_address_wget $@
+    _at_least_one_test_pass _test_address_wget $@
 }
 
 
-__test_apt_repo() {
+_test_apt_repo() {
 #
 # Update a single repository.
 #
@@ -117,7 +118,7 @@ __test_apt_repo() {
 }
 
 
-__check_apt() {
+_check_apt() {
 #
 # Use `apt update` to make sure that there is connection to repositories.
 #
@@ -126,17 +127,17 @@ __check_apt() {
 #
     echol "Testing apt connection:"
 
-    (( $# > 0 )) || exit_with_error "__check_apt: no repositories provided"
+    (( $# > 0 )) || exit_with_error "_check_apt: no repositories provided"
     local repos=$@
 
     (( $UID == 0 )) || exit_with_error "apt needs to be run as a root"
 
-    __at_least_one_test_pass __test_apt_repo $repos
+    _at_least_one_test_pass _test_apt_repo $repos
     return $?
 }
 
 
-__test_yum_repo() {
+_test_yum_repo() {
 #
 # List packages from a single repository.
 #
@@ -148,7 +149,7 @@ __test_yum_repo() {
 }
 
 
-__check_yum() {
+_check_yum() {
 #
 # Use `yum list` to make sure that there is connection to repositories.
 # Query available packages for each repository.
@@ -158,15 +159,15 @@ __check_yum() {
 #
     echol "Testing yum connection:"
 
-    (( $# > 0 )) || exit_with_error "__check_yum: no repositories provided"
+    (( $# > 0 )) || exit_with_error "_check_yum: no repositories provided"
     local repos=$@
 
-    __at_least_one_test_pass __test_yum_repo $repos
+    _at_least_one_test_pass _test_yum_repo $repos
     return $?
 }
 
 
-__test_crane_repo() {
+_test_crane_repo() {
 #
 # List packages from a single repository.
 # Requires $CRANE_BIN to be defined
@@ -179,7 +180,7 @@ __test_crane_repo() {
 }
 
 
-__check_crane() {
+_check_crane() {
 #
 # Use `crane ls` to make sure that there is connection to repositories.
 # Query available packages for each repository.
@@ -189,21 +190,21 @@ __check_crane() {
 #
     echol "Testing crane connection:"
 
-    (( $# > 0 )) || exit_with_error "__check_crane: no repository provided"
+    (( $# > 0 )) || exit_with_error "_check_crane: no repository provided"
     local repos=$@
 
-    __at_least_one_test_pass __test_crane_repo $repos
+    _at_least_one_test_pass _test_crane_repo $repos
     return $?
 }
 
 
 # Tools which can be tested:
 declare -A tools=(
-[curl]=__check_curl
-[wget]=__check_wget
-[apt]=__check_apt
-[yum]=__check_yum
-[crane]=__check_crane
+[curl]=_check_curl
+[wget]=_check_wget
+[apt]=_check_apt
+[yum]=_check_yum
+[crane]=_check_crane
 )
 
 
@@ -217,12 +218,12 @@ check_connection() {
 #
     [[ $internet_access_checks_enabled == "no" ]] && return 0
 
-    [[ $# -lt 1 ]] && exit_with_error "(tool) argument not provided"
+    [[ $# -lt 1 ]] && exit_with_error '"tool" argument not provided'
     local tool=$1
 
     shift  # discard tool variable
 
-    [[ ! -n ${tools[$tool]} ]] && exit_with_error "no such tool ($tool)"
+    [[ ! -n ${tools[$tool]} ]] && exit_with_error "no such tool: \"$tool\""
 
     (  # disable -e in order to handle non-zero return values
         set +e
@@ -232,7 +233,7 @@ check_connection() {
         if (( $? == 0 )); then
             echol "Connection successful."
         else
-            exit_with_error "Connection failure, reason: ($last_error)"
+            exit_with_error "Connection failure, reason: [$last_error]"
         fi
     )
 }

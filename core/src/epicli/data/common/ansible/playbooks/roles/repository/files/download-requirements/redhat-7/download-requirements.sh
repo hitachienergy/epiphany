@@ -608,7 +608,7 @@ get_requirements_from_group 'IMAGES'               'images'                "$REQ
 
 # --- Backup yum repositories ---
 
-check_connection yum $(yum repolist --quiet | tail -n +2 | cut -d' ' -f1 | cut -d'/' -f1 | sed 's/!//')
+check_connection yum $(yum repolist --quiet | tail -n +2 | cut -d' ' -f1 | cut -d'/' -f1 | sed 's/^!//')
 
 if [ -f "$YUM_CONFIG_BACKUP_FILE_PATH" ]; then
 	echol "Backup aleady exists: $YUM_CONFIG_BACKUP_FILE_PATH"
