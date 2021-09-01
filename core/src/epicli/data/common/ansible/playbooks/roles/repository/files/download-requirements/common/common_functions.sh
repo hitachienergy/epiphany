@@ -200,11 +200,11 @@ __check_crane() {
 
 # Tools which can be tested:
 declare -A tools=(
-[curl]=_check_curl
-[wget]=_check_wget
-[apt]=_check_apt
-[yum]=_check_yum
-[crane]=_check_crane
+[curl]=__check_curl
+[wget]=__check_wget
+[apt]=__check_apt
+[yum]=__check_yum
+[crane]=__check_crane
 )
 
 
