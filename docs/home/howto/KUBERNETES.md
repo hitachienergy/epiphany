@@ -213,7 +213,7 @@ Prerequisites: Epiphany cluster on Azure with at least a single VM with `elastic
 
 6. For more informations refer to documentation: <https://www.elastic.co/guide/en/kibana/current/index.html>
 
-## How to tunnel kubernetes dashboard from remote kubectl to your PC
+## How to tunnel Kubernetes Dashboard from remote kubectl to your PC
 
 1. SSH into server, and forward port 8001 to your machine `ssh -i epi_keys/id_rsa operations@40.67.255.155 -L 8001:localhost:8001` NOTE: substitute IP with your cluster master's IP.
 
@@ -224,3 +224,95 @@ Prerequisites: Epiphany cluster on Azure with at least a single VM with `elastic
 4. Now on your **local** machine navigate to `http://localhost:8001/api/v1/namespaces/kubernetes-dashboard/services/https:kubernetes-dashboard:/proxy/`
 
 5. When prompted to put in credentials, use admin token from the previous point.
+
+## How to run Keycloak on Kubernetes
+
+1. Enable Kubernetes master & node, repository and postgresql components in initial configuration manifest (yaml) by encreasing `count` value.
+
+``` yaml
+kind: epiphany-cluster
+title: Epiphany cluster Config
+provider: azure
+name: default
+specification:
+ components:
+    repository:
+      count: 1
+    kubernetes_master:
+      count: 1
+    kubernetes_node:
+      count: 2
+    postgresql:
+      count: 2
+```
+
+2. Enable `applications` in feature-mapping in initial configuration manifest.
+
+``` yaml
+---
+kind: configuration/feature-mapping
+title: Feature mapping to roles
+name: default
+specification:
+  available_roles:
+  [...]
+  - name: applications
+    enabled: true
+```
+
+3. Set `enabled: true` and adjust other parameters in `configuration/applications` kind.
+
+The default applications configuration available [here](https://github.com/epiphany-platform/epiphany/blob/develop/core/src/epicli/data/common/defaults/configuration/applications.yml)
+
+``` yaml
+
+---
+kind: configuration/applications
+title: Kubernetes Applications Config
+name: default
+specification:
+  applications:
+  [...]
+  - name: auth-service
+    enabled: true
+    image_path: epiphanyplatform/keycloak:14.0.0
+    use_local_image_registry: true
+    service:
+      name: as-testauthdb
+      port: 30104
+      replicas: 2
+      namespace: namespace-for-auth
+      admin_user: auth-service-username
+      admin_password: PASSWORD_TO_CHANGE
+    database:
+      name: auth-database-name
+      user: auth-db-user
+      password: PASSWORD_TO_CHANGE
+
+```
+To set specific database host IP address for Keyclock you have to provide additional parameter `address`:
+
+``` yaml
+    database:
+      address: 10.0.0.2
+```
+
+Note: If `database address` is not specified, epicli assumes that database instance doesn't exist and will create it.  
+
+By default, if `database address` is not specified and if Postgres is HA mode, Keycloak uses PGBouncer ClusterIP service name as database address.  
+If Postgres is in standalone mode, and `database address` is not specified, then it uses first Postgres host address from `inventory`.
+
+4. Run `epicli apply` on your configuration manifest.
+
+5. Log into GUI
+
+Note: Accessing the Keycloak GUI depends on your configuration.
+
+By default, Epiphany provides the following K8s Services for Keycloak: Headless and NodePort.
+The simplest way for reaching GUI is to use ssh tunnel with forwarding NodePort.  
+Example:  
+ `ssh -L 30104:localhost:30104 user@target_host -i ssh_key`
+
+If you need your GUI accesible outside, you would have to change your firewall rules.
+
+GUI should be reachable at: https://localhost:30104/auth
