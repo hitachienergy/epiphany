@@ -14,7 +14,7 @@ LICENSES = [
     },
     {
         "Name": "ansible-base",
-        "Version": "2.10.10",
+        "Version": "2.10.13",
         "Summary": "Radically simple IT automation",
         "Home-page": "https://ansible.com/",
         "Author": "Ansible, Inc.",
@@ -22,7 +22,7 @@ LICENSES = [
     },
     {
         "Name": "ansible",
-        "Version": "2.10.5",
+        "Version": "2.10.7",
         "Summary": "Radically simple IT automation",
         "Home-page": "https://ansible.com/",
         "Author": "Ansible, Inc.",
@@ -131,9 +131,9 @@ LICENSES = [
     },
     {
         "Name": "azure-core",
-        "Version": "1.14.0",
+        "Version": "1.17.0",
         "Summary": "Microsoft Azure Core Library for Python",
-        "Home-page": "https://github.com/Azure/azure-sdk-for-python/tree/master/sdk/core/azure-core",
+        "Home-page": "https://github.com/Azure/azure-sdk-for-python/tree/main/sdk/core/azure-core",
         "Author": "Microsoft Corporation",
         "License": "MIT License"
     },
@@ -182,7 +182,7 @@ LICENSES = [
     },
     {
         "Name": "azure-identity",
-        "Version": "1.6.0",
+        "Version": "1.6.1",
         "Summary": "Microsoft Azure Identity Library for Python",
         "Home-page": "https://github.com/Azure/azure-sdk-for-python/tree/master/sdk/identity/azure-identity",
         "Author": "Microsoft Corporation",
@@ -396,9 +396,9 @@ LICENSES = [
     },
     {
         "Name": "azure-mgmt-core",
-        "Version": "1.2.2",
+        "Version": "1.3.0",
         "Summary": "Microsoft Azure Management Core Library for Python",
-        "Home-page": "https://github.com/Azure/azure-sdk-for-python/tree/master/sdk/core/azure-mgmt-core",
+        "Home-page": "https://github.com/Azure/azure-sdk-for-python/tree/main/sdk/core/azure-mgmt-core",
         "Author": "Microsoft Corporation",
         "License": "MIT License"
     },
@@ -745,7 +745,7 @@ LICENSES = [
     },
     {
         "Name": "azure-mgmt-rdbms",
-        "Version": "8.1.0b4",
+        "Version": "8.1.0",
         "Summary": "Microsoft Azure RDBMS Management Client Library for Python",
         "Home-page": "https://github.com/Azure/azure-sdk-for-python",
         "Author": "Microsoft Corporation",
@@ -789,7 +789,7 @@ LICENSES = [
     },
     {
         "Name": "azure-mgmt-redis",
-        "Version": "7.0.0rc2",
+        "Version": "7.0.0",
         "Summary": "Microsoft Azure Redis Cache Management Client Library for Python",
         "Home-page": "https://github.com/Azure/azure-sdk-for-python",
         "Author": "Microsoft Corporation",
@@ -1042,7 +1042,7 @@ LICENSES = [
     },
     {
         "Name": "boto3",
-        "Version": "1.17.85",
+        "Version": "1.18.33",
         "Summary": "The AWS SDK for Python",
         "Home-page": "https://github.com/boto/boto3",
         "Author": "Amazon Web Services",
@@ -1053,7 +1053,7 @@ LICENSES = [
     },
     {
         "Name": "botocore",
-        "Version": "1.20.85",
+        "Version": "1.21.33",
         "Summary": "Low-level, data-driven core of boto 3.",
         "Home-page": "https://github.com/boto/botocore",
         "Author": "Amazon Web Services",
@@ -1072,11 +1072,22 @@ LICENSES = [
     },
     {
         "Name": "cffi",
-        "Version": "1.14.5",
+        "Version": "1.14.6",
         "Summary": "Foreign Function Interface for Python calling C code.",
         "Home-page": "http://cffi.readthedocs.org",
         "Author": "Armin Rigo, Maciej Fijalkowski",
         "License": "MIT"
+    },
+    {
+        "Name": "charset-normalizer",
+        "Version": "2.0.4",
+        "Summary": "The Real First Universal Charset Detector. Open, modern and actively maintained alternative to Chardet.",
+        "Home-page": "https://github.com/ousret/charset_normalizer",
+        "Author": "Ahmed TAHRI @Ousret",
+        "License": "MIT License",
+        "License URL": "https://api.github.com/repos/ousret/charset_normalizer/license",
+        "License repo": "MIT License\n\nCopyright (c) 2019 TAHRI Ahmed R.\n\nPermission is hereby granted, free of charge, to any person obtaining a copy\nof this software and associated documentation files (the \"Software\"), to deal\nin the Software without restriction, including without limitation the rights\nto use, copy, modify, merge, publish, distribute, sublicense, and/or sell\ncopies of the Software, and to permit persons to whom the Software is\nfurnished to do so, subject to the following conditions:\n\nThe above copyright notice and this permission notice shall be included in all\ncopies or substantial portions of the Software.\n\nTHE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR\nIMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,\nFITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE\nAUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER\nLIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,\nOUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE\nSOFTWARE.",
+        "License text": "MIT License\n\nCopyright (c) [year] [fullname]\n\nPermission is hereby granted, free of charge, to any person obtaining a copy\nof this software and associated documentation files (the \"Software\"), to deal\nin the Software without restriction, including without limitation the rights\nto use, copy, modify, merge, publish, distribute, sublicense, and/or sell\ncopies of the Software, and to permit persons to whom the Software is\nfurnished to do so, subject to the following conditions:\n\nThe above copyright notice and this permission notice shall be included in all\ncopies or substantial portions of the Software.\n\nTHE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR\nIMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,\nFITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE\nAUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER\nLIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,\nOUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE\nSOFTWARE.\n"
     },
     {
         "Name": "colorama",
@@ -1109,7 +1120,7 @@ LICENSES = [
     },
     {
         "Name": "humanfriendly",
-        "Version": "9.1",
+        "Version": "9.2",
         "Summary": "Human friendly output for text interfaces using Python",
         "Home-page": "https://humanfriendly.readthedocs.io",
         "Author": "Peter Odding",
@@ -1117,7 +1128,7 @@ LICENSES = [
     },
     {
         "Name": "idna",
-        "Version": "2.10",
+        "Version": "3.2",
         "Summary": "Internationalized Domain Names in Applications (IDNA)",
         "Home-page": "https://github.com/kjd/idna",
         "Author": "Kim Davies",
@@ -1136,7 +1147,7 @@ LICENSES = [
     },
     {
         "Name": "invoke",
-        "Version": "1.5.0",
+        "Version": "1.6.0",
         "Summary": "Pythonic task execution",
         "Home-page": "http://docs.pyinvoke.org",
         "Author": "Jeff Forcier",
@@ -1248,7 +1259,7 @@ LICENSES = [
     },
     {
         "Name": "msal",
-        "Version": "1.12.0",
+        "Version": "1.14.0",
         "Summary": "The Microsoft Authentication Library (MSAL) for Python library enables your app to access the Microsoft Cloud by supporting authentication of users with Microsoft Azure Active Directory accounts (AAD) and Microsoft Accounts (MSA) using industry standard OAuth2 and OpenID Connect.",
         "Home-page": "https://github.com/AzureAD/microsoft-authentication-library-for-python",
         "Author": "Microsoft Corporation",
@@ -1312,7 +1323,7 @@ LICENSES = [
     },
     {
         "Name": "pathlib2",
-        "Version": "2.3.5",
+        "Version": "2.3.6",
         "Summary": "Object-oriented filesystem paths",
         "Home-page": "https://github.com/mcmtroffaes/pathlib2",
         "Author": "Matthias C. M. Troffaes",
@@ -1323,7 +1334,7 @@ LICENSES = [
     },
     {
         "Name": "pkginfo",
-        "Version": "1.7.0",
+        "Version": "1.7.1",
         "Summary": "Query metadatdata from sdists / bdists / installed packages.",
         "Home-page": "https://code.launchpad.net/~tseaver/pkginfo/trunk",
         "Author": "Tres Seaver, Agendaless Consulting",
@@ -1362,7 +1373,7 @@ LICENSES = [
     },
     {
         "Name": "Pygments",
-        "Version": "2.9.0",
+        "Version": "2.10.0",
         "Summary": "Pygments is a syntax highlighting package written in Python.",
         "Home-page": "https://pygments.org/",
         "Author": "Georg Brandl",
@@ -1411,7 +1422,7 @@ LICENSES = [
     },
     {
         "Name": "pyrsistent",
-        "Version": "0.17.3",
+        "Version": "0.18.0",
         "Summary": "Persistent/Functional/Immutable data structures",
         "Home-page": "http://github.com/tobgu/pyrsistent/",
         "Author": "Tobias Gustafsson",
@@ -1422,15 +1433,17 @@ LICENSES = [
     },
     {
         "Name": "python-dateutil",
-        "Version": "2.8.1",
+        "Version": "2.8.2",
         "Summary": "Extensions to the standard Python datetime module",
-        "Home-page": "https://dateutil.readthedocs.io",
+        "Home-page": "https://github.com/dateutil/dateutil",
         "Author": "Gustavo Niemeyer",
-        "License": "Dual License"
+        "License": "Other",
+        "License URL": "https://api.github.com/repos/dateutil/dateutil/license",
+        "License repo": "Copyright 2017- Paul Ganssle <paul@ganssle.io>\nCopyright 2017- dateutil contributors (see AUTHORS file)\n\n   Licensed under the Apache License, Version 2.0 (the \"License\");\n   you may not use this file except in compliance with the License.\n   You may obtain a copy of the License at\n\n       http://www.apache.org/licenses/LICENSE-2.0\n\n   Unless required by applicable law or agreed to in writing, software\n   distributed under the License is distributed on an \"AS IS\" BASIS,\n   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n   See the License for the specific language governing permissions and\n   limitations under the License.\n\nThe above license applies to all contributions after 2017-12-01, as well as\nall contributions that have been re-licensed (see AUTHORS file for the list of\ncontributors who have re-licensed their code).\n--------------------------------------------------------------------------------\ndateutil - Extensions to the standard Python datetime module.\n\nCopyright (c) 2003-2011 - Gustavo Niemeyer <gustavo@niemeyer.net>\nCopyright (c) 2012-2014 - Tomi Pievil\u00e4inen <tomi.pievilainen@iki.fi>\nCopyright (c) 2014-2016 - Yaron de Leeuw <me@jarondl.net>\nCopyright (c) 2015-     - Paul Ganssle <paul@ganssle.io>\nCopyright (c) 2015-     - dateutil contributors (see AUTHORS file)\n\nAll rights reserved.\n\nRedistribution and use in source and binary forms, with or without\nmodification, are permitted provided that the following conditions are met:\n\n    * Redistributions of source code must retain the above copyright notice,\n      this list of conditions and the following disclaimer.\n    * Redistributions in binary form must reproduce the above copyright notice,\n      this list of conditions and the following disclaimer in the documentation\n      and/or other materials provided with the distribution.\n    * Neither the name of the copyright holder nor the names of its\n      contributors may be used to endorse or promote products derived from\n      this software without specific prior written permission.\n\nTHIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS\n\"AS IS\" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT\nLIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR\nA PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR\nCONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,\nEXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,\nPROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR\nPROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF\nLIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING\nNEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS\nSOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.\n\nThe above BSD License Applies to all code, even that also covered by Apache 2.0."
     },
     {
         "Name": "python-json-logger",
-        "Version": "2.0.1",
+        "Version": "2.0.2",
         "Summary": "A python library adding a json log formatter",
         "Home-page": "http://github.com/madzak/python-json-logger",
         "Author": "Zakaria Zajac",
@@ -1468,7 +1481,7 @@ LICENSES = [
     },
     {
         "Name": "requests",
-        "Version": "2.25.1",
+        "Version": "2.26.0",
         "Summary": "Python HTTP for Humans.",
         "Home-page": "https://requests.readthedocs.io",
         "Author": "Kenneth Reitz",
@@ -1476,7 +1489,7 @@ LICENSES = [
     },
     {
         "Name": "ruamel.yaml.clib",
-        "Version": "0.2.2",
+        "Version": "0.2.6",
         "Summary": "C version of reader, parser and emitter for ruamel.yaml derived from libyaml",
         "Home-page": "https://sourceforge.net/p/ruamel-yaml-clib/code/ci/default/tree",
         "Author": "Anthon van der Neut",
@@ -1484,7 +1497,7 @@ LICENSES = [
     },
     {
         "Name": "ruamel.yaml",
-        "Version": "0.17.7",
+        "Version": "0.17.16",
         "Summary": "ruamel.yaml is a YAML parser/emitter that supports roundtrip preservation of comments, seq/map flow style, and map key order",
         "Home-page": "https://sourceforge.net/p/ruamel-yaml/code/ci/default/tree",
         "Author": "Anthon van der Neut",
@@ -1492,7 +1505,7 @@ LICENSES = [
     },
     {
         "Name": "s3transfer",
-        "Version": "0.4.2",
+        "Version": "0.5.0",
         "Summary": "An Amazon S3 Transfer Manager",
         "Home-page": "https://github.com/boto/s3transfer",
         "Author": "Amazon Web Services",
@@ -1503,7 +1516,7 @@ LICENSES = [
     },
     {
         "Name": "scp",
-        "Version": "0.13.3",
+        "Version": "0.13.6",
         "Summary": "scp module for paramiko",
         "Home-page": "https://github.com/jbardin/scp.py",
         "Author": "James Bardin",
@@ -1568,7 +1581,7 @@ LICENSES = [
     },
     {
         "Name": "typing-extensions",
-        "Version": "3.10.0.0",
+        "Version": "3.10.0.2",
         "Summary": "Backported and Experimental Type Hints for Python 3.5+",
         "Home-page": "https://github.com/python/typing/blob/master/typing_extensions/README.rst",
         "Author": "Guido van Rossum, Jukka Lehtosalo, \u0141ukasz Langa, Michael Lee",
@@ -1576,7 +1589,7 @@ LICENSES = [
     },
     {
         "Name": "urllib3",
-        "Version": "1.26.5",
+        "Version": "1.26.6",
         "Summary": "HTTP library with thread-safe connection pooling, file post, and more.",
         "Home-page": "https://urllib3.readthedocs.io/",
         "Author": "Andrey Petrov",
@@ -1624,7 +1637,7 @@ LICENSES = [
     },
     {
         "Name": "zipp",
-        "Version": "3.4.1",
+        "Version": "3.5.0",
         "Summary": "Backport of pathlib-compatible object wrapper for zip files",
         "Home-page": "https://github.com/jaraco/zipp",
         "Author": "Jason R. Coombs",
