@@ -421,7 +421,7 @@ data:
 
     # - Life time -
 
-    child_life_time = 300
+    child_life_time = {{ data.pgpool.env.PGPOOL_CHILD_LIFE_TIME }}
                                       # Pool exits after being idle for this many seconds
     child_max_connections = 0
                                       # Pool exits after receiving that many connections
