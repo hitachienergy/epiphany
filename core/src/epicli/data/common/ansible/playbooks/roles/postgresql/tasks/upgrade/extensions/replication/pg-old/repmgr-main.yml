@@ -4,10 +4,47 @@
     file: defaults/upgrade.yml
     name: upgrade_defaults
 
-- name: Get information about installed packages as facts
+- name: repmgr for PG {{ upgrade_defaults.pg.version }} | Get information about installed packages as facts
   package_facts:
     manager: auto
   when: ansible_facts.packages is undefined
+
+# Fix issue from Epiphany < v1.1 - repmgr package was installed by default (unnecessarily)
+- name: Remove repmgr package if there is no config file or it is from package (non-Epiphany)
+  when: ansible_facts.packages[_repmgr_package_name] is defined
+  vars:
+    _repmgr_config_file_path: "{{ upgrade_defaults.repmgr.config_dir[ansible_os_family] }}/repmgr.conf"
+    _repmgr_package_name: "{{ upgrade_defaults.repmgr.package_name[ansible_os_family] }}"
+  block:
+    - name: repmgr for PG {{ upgrade_defaults.pg.version }} | Check if config file exists
+      stat:
+        path: "{{ _repmgr_config_file_path }}"
+        get_attributes: false
+        get_checksum: false
+        get_mime: false
+      register: stat_repmgr_config_file
+
+    - name: repmgr for PG {{ upgrade_defaults.pg.version }} | RedHat | Check if config file is from package
+      command: head -2 {{ _repmgr_config_file_path }}
+      register: config_file_header
+      changed_when: false
+      when: ansible_os_family == 'RedHat'
+
+    - name: repmgr for PG {{ upgrade_defaults.pg.version }} | Remove repmgr package if there is no config file or it is from package
+      package:
+        name: "{{ _repmgr_package_name }}"
+        state: absent
+      register: remove_repmgr_package
+      when: not stat_repmgr_config_file.stat.exists
+         or (config_file_header.stdout_lines[1] is defined and
+             config_file_header.stdout_lines[1] is match("# repmgr sample configuration file"))
+      module_defaults:
+        yum: { lock_timeout: "{{ yum_lock_timeout }}" }
+
+    - name: repmgr for PG {{ upgrade_defaults.pg.version }} | Refresh facts on installed packages
+      package_facts:
+        manager: auto
+      when: remove_repmgr_package.changed
 
 - name: Run upgrade if needed
   when: ansible_facts.packages[_repmgr_package_name] is defined

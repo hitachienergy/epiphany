@@ -507,15 +507,9 @@ if replicated && (listInventoryHosts("postgresql")[1].include? host_inventory['h
         expect(result).to match 'DROP TABLE'
       end
     end
-    it "Delegate drop table query to master node", :if => pgbouncer_enabled  do
-      Net::SSH.start(listInventoryIPs("postgresql")[0], ENV['user'], keys: [ENV['keypath']], :keys_only => true) do|ssh|
-        result = ssh.exec!("sudo su - postgres -c \"psql -t -c 'DROP TABLE serverspec_test.pgbtest;'\" 2>&1")
-        expect(result).to match 'DROP TABLE'
-      end
-    end
     it "Delegate drop schema query to master node" do
       Net::SSH.start(listInventoryIPs("postgresql")[0], ENV['user'], keys: [ENV['keypath']], :keys_only => true) do|ssh|
-        result = ssh.exec!("sudo su - postgres -c \"psql -t -c 'DROP SCHEMA serverspec_test;'\" 2>&1")
+        result = ssh.exec!("sudo su - postgres -c \"psql -t -c 'DROP SCHEMA serverspec_test CASCADE;'\" 2>&1")
         expect(result).to match 'DROP SCHEMA'
       end
     end
@@ -575,7 +569,7 @@ if pgaudit_enabled && countInventoryHosts("logging") > 0
 
     describe 'Check if Elasticsearch logs contain queries from PostrgeSQL database' do
       query = get_elasticsearch_query(message_pattern: 'serverspec_test*')
-      min_doc_hits = pgbouncer_enabled ? 11 : 6
+      min_doc_hits = pgbouncer_enabled ? 10 : 6
       command = get_query_command_with_retries(json_query: query, min_doc_hits: min_doc_hits)
       describe command(command) do
         its(:stdout) { should match /CREATE SCHEMA serverspec_test/ }
