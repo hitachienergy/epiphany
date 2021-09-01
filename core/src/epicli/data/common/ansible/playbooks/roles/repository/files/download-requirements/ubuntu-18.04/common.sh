@@ -8,15 +8,6 @@ usage() {
 	exit 1
 }
 
-echol() {
-	echo -e "$1" | tee --append "$logfile"
-}
-
-exit_with_error() {
-	echol "ERROR: $1"
-	exit 1
-}
-
 # params: <file_path>
 remove_file() {
 	local file_path="$1"
@@ -51,9 +42,9 @@ download_image() {
 	else
 		local tmp_file=$(mktemp)
 		echo "Downloading image: $1"
-		echo "Crane command is: ${crane_bin} pull --insecure --format=legacy ${image_name} ${dst_image}"
+		echo "Crane command is: ${CRANE_BIN} pull --insecure --format=legacy ${image_name} ${dst_image}"
 		# use temporary file for downloading to be safe from sudden interruptions (network, ctrl+c)
-		run_cmd_with_retries $retries ${crane_bin} pull --insecure --platform=${docker_platform} --format=legacy ${image_name} ${tmp_file} && chmod 644 ${tmp_file} && mv ${tmp_file} ${dst_image}
+		run_cmd_with_retries $retries ${CRANE_BIN} pull --insecure --platform=${docker_platform} --format=legacy ${image_name} ${tmp_file} && chmod 644 ${tmp_file} && mv ${tmp_file} ${dst_image}
 	fi
 }
 
