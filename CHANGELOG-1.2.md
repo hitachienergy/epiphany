@@ -34,6 +34,7 @@
 - [#2077](https://github.com/epiphany-platform/epiphany/issues/2077) - Upgrade PgAudit to v1.5.0
 - [#2453](https://github.com/epiphany-platform/epiphany/issues/2453) - Upgrade PgBouncer to v1.16.0 [standalone]
 - [#2457](https://github.com/epiphany-platform/epiphany/issues/2457) - Upgrade Docker-CE to v20.10.8
+- [#2511](https://github.com/epiphany-platform/epiphany/issues/2511) - Upgrade Python packages to at least the latest patch version.
 
 ### Deprecated
 

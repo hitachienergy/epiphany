@@ -1,10 +1,8 @@
 import sys
-import subprocess
 import json
 import os
 import urllib.request
 import logging
-from itertools import dropwhile, takewhile
 from functools import reduce
 from typing import Set, List, Dict
 import pkg_resources
@@ -13,7 +11,7 @@ import textwrap
 
 def get_dependencies_from_requirements() -> Set[str]:
     req = []
-    with open('.devcontainer/requirements.txt') as req_file:
+    with open('requirements.txt') as req_file:
         for line in req_file:
             req.append(line.split("==")[0])
     return req
@@ -92,7 +90,7 @@ def _main() -> None:
 
     licenses_content = textwrap.dedent(licenses_content) + json.dumps(all_deps_data, indent=4)
 
-    path = os.path.join(os.path.dirname(__file__), 'cli/licenses.py')
+    path = os.path.join(os.path.dirname(__file__), '../cli/licenses.py')
     with open(path, 'w') as file:
         file.write(licenses_content)
 
@@ -102,11 +100,6 @@ def _main() -> None:
     | --------- | ------- | ------------ | ------- |
     """)
 
-    dependencies_content = """\
-    <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-    <components xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">"""
-
-    count = 1
     for dep in all_deps_data: 
         dep_name = dep['Name']
         dep_version = dep['Version']
@@ -120,27 +113,9 @@ def _main() -> None:
             dep_line = f'| {dep_name} | {dep_version} | {dep_website} | {dep_license} |\n'
         dependencies_listing_content = dependencies_listing_content + dep_line
 
-        dependencies_content = dependencies_content + f"""
-        <component>
-            <id>{count}</id>
-            <name>{dep_name}</name>
-            <version>{dep_version}</version>
-            <license>{dep_license}</license>
-            <url>{dep_website}</url>
-            <source></source>
-        </component>"""
-        count=count+1
-
     path = os.path.join(os.path.dirname(__file__), 'DEPENDENCIES.md')
     with open(path, 'w') as file:
         file.write(dependencies_listing_content)
-
-    dependencies_content = dependencies_content + """
-    </components>
-    """
-    path = os.path.join(os.path.dirname(__file__), 'dependencies.xml')
-    with open(path, 'w') as file:
-        file.write(textwrap.dedent(dependencies_content))
 
 if __name__ == '__main__':
     _main()
