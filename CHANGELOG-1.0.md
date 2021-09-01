@@ -1,5 +1,11 @@
 # Changelog 1.0
 
+## [1.0.2] 2021-XX-XX
+
+### Added
+
+- [#2124](https://github.com/epiphany-platform/epiphany/issues/2124) - Added Internet connection test to download-requirements.sh
+
 ## [1.0.1] 2021-07-16
 
 ### Fixed
