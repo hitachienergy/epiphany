@@ -100,8 +100,8 @@ def test_get_launch_configuration_should_set_proper_values_to_model():
     assert actual.specification.size == 't2.micro.test'
     assert actual.specification.security_groups == ['aws-security-group-test1', 'aws-security-group-test2']
     assert actual.specification.disks == []
-    assert actual.specification.ebs_optimized == True
-    assert actual.specification.associate_public_ip == True
+    assert actual.specification.ebs_optimized is True
+    assert actual.specification.associate_public_ip is True
 
 
 def test_get_subnet_config_should_set_proper_values_to_model():

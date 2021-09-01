@@ -1,4 +1,5 @@
 import os
+
 from cli.engine.terraform.TerraformCommand import TerraformCommand
 from cli.engine.providers.azure.APIProxy import APIProxy
 from cli.helpers.Step import Step
@@ -16,7 +17,7 @@ class TerraformRunner(Step):
         self.new_env = os.environ.copy()
         self.terraform.init(env=self.new_env)
         if self.cluster_model.provider == 'azure':
-            self.azure_login()        
+            self.azure_login()
 
     def __enter__(self):
         super().__enter__()
@@ -30,9 +31,9 @@ class TerraformRunner(Step):
 
     def delete(self):
         self.terraform.destroy(auto_approve=True, env=self.new_env)
-        
+
     def azure_login(self):
-        # From the 4 methods terraform provides to login to 
+        # From the 4 methods terraform provides to login to
         # Azure we support (https://www.terraform.io/docs/providers/azurerm/auth/azure_cli.html):
         # - Authenticating to Azure using the Azure CLI
         # - Authenticating to Azure using a Service Principal and a Client Secret
@@ -52,7 +53,7 @@ class TerraformRunner(Step):
                 # Create the service principal, for now we use the default subscription
                 self.logger.info('Creating service principal')
                 cluster_name = self.cluster_model.specification.name.lower()
-                cluster_prefix = self.cluster_model.specification.prefix.lower()               
+                cluster_prefix = self.cluster_model.specification.prefix.lower()
                 resource_group_name = resource_name(cluster_prefix, cluster_name, 'rg')
                 sp = apiproxy.create_sp(resource_group_name, subscription['id'])
                 sp['subscriptionId'] = subscription['id']
@@ -65,7 +66,7 @@ class TerraformRunner(Step):
             subscription = apiproxy.login_sp(sp)
 
             if 'subscriptionId' in sp:
-                # Set active subscription if sp contains it. 
+                # Set active subscription if sp contains it.
                 apiproxy.set_active_subscribtion(sp['subscriptionId'])
                 self.new_env['ARM_SUBSCRIPTION_ID'] = sp['subscriptionId']
             else:

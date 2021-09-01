@@ -3,11 +3,11 @@ from copy import deepcopy
 
 from cli.helpers.Step import Step
 from cli.helpers.naming_helpers import resource_name, cluster_tag, storage_account_name
-from cli.helpers.doc_list_helpers import select_single, select_all
+from cli.helpers.doc_list_helpers import select_single
 from cli.helpers.doc_list_helpers import select_first
 from cli.helpers.data_loader import load_yaml_obj, types
 from cli.helpers.config_merger import merge_with_defaults
-from cli.helpers.objdict_helpers import objdict_to_dict, dict_to_objdict
+from cli.helpers.objdict_helpers import dict_to_objdict
 from cli.helpers.os_images import get_os_distro_normalized
 from cli.version import VERSION
 
@@ -56,11 +56,11 @@ class InfrastructureBuilder(Step):
 
             # For now only one subnet per component.
             if (len(component_value.subnets) > 1):
-                self.logger.warning(f'On Azure only one subnet per component is supported for now. Taking first and ignoring others.')
+                self.logger.warning('On Azure only one subnet per component is supported for now. Taking first and ignoring others.')
 
             # Add message for ignoring availabiltity zones if present.
             if 'availability_zone' in component_value.subnets[0]:
-                self.logger.warning(f'On Azure availability_zones are not supported yet. Ignoring definition.')
+                self.logger.warning('On Azure availability_zones are not supported yet. Ignoring definition.')
 
             subnet_definition = component_value.subnets[0]
             subnet = select_first(infrastructure, lambda item: item.kind == 'infrastructure/subnet' and
@@ -100,7 +100,6 @@ class InfrastructureBuilder(Step):
                 public_ip_name = ''
                 if self.cluster_model.specification.cloud.use_public_ips:
                     public_ip = self.get_public_ip(component_key,
-                                                   component_value,
                                                    vm_config,
                                                    index)
                     infrastructure.append(public_ip)
@@ -112,7 +111,6 @@ class InfrastructureBuilder(Step):
                     nsg_name = ''
 
                 network_interface = self.get_network_interface(component_key,
-                                                               component_value,
                                                                vm_config,
                                                                subnet.specification.name,
                                                                nsg_name,
@@ -120,7 +118,7 @@ class InfrastructureBuilder(Step):
                                                                index)
                 infrastructure.append(network_interface)
 
-                vm = self.get_vm(component_key, component_value, vm_config, availability_set,
+                vm = self.get_vm(component_key, vm_config, availability_set,
                                  network_interface.specification.name, index)
                 infrastructure.append(vm)
 
@@ -173,7 +171,7 @@ class InfrastructureBuilder(Step):
         ssga.specification.security_group_name = security_group_name
         return ssga
 
-    def get_network_interface(self, component_key, component_value, vm_config, subnet_name, security_group_name, public_ip_name, index):
+    def get_network_interface(self, component_key, vm_config, subnet_name, security_group_name, public_ip_name, index):
         network_interface = self.get_config_or_default(self.docs, 'infrastructure/network-interface')
         network_interface.specification.name = resource_name(self.cluster_prefix, self.cluster_name, 'nic' + '-' + str(index), component_key)
         network_interface.specification.use_network_security_groups = self.use_network_security_groups
@@ -185,7 +183,7 @@ class InfrastructureBuilder(Step):
         network_interface.specification.enable_accelerated_networking = vm_config.specification.network_interface.enable_accelerated_networking
         return network_interface
 
-    def get_public_ip(self, component_key, component_value, vm_config, index):
+    def get_public_ip(self, component_key, vm_config, index):
         public_ip = self.get_config_or_default(self.docs, 'infrastructure/public-ip')
         public_ip.specification.name = resource_name(self.cluster_prefix, self.cluster_name, 'pubip' + '-' + str(index), component_key)
         public_ip.specification.allocation_method = vm_config.specification.network_interface.public_ip.allocation_method
@@ -199,7 +197,7 @@ class InfrastructureBuilder(Step):
         storage_share.specification.storage_account_name = storage_account_name(self.cluster_prefix, self.cluster_name, 'k8s')
         return storage_share
 
-    def get_vm(self, component_key, component_value, vm_config, availability_set, network_interface_name, index):
+    def get_vm(self, component_key, vm_config, availability_set, network_interface_name, index):
         vm = dict_to_objdict(deepcopy(vm_config))
         vm.specification.name = resource_name(self.cluster_prefix, self.cluster_name, 'vm' + '-' + str(index), component_key)
         vm.specification.admin_username = self.cluster_model.specification.admin_user.name

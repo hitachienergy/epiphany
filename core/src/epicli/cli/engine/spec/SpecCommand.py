@@ -4,7 +4,6 @@ import shutil
 from subprocess import Popen, PIPE
 
 from cli.helpers.Log import LogPipe, Log
-from cli.helpers.Config import Config
 from cli.helpers.data_loader import DATA_FOLDER_PATH
 
 SPEC_TEST_PATH = DATA_FOLDER_PATH + '/common/tests'
@@ -14,22 +13,18 @@ class SpecCommand:
         self.logger = Log(__name__)
 
 
-    def __init__(self):
-        self.logger = Log(__name__)
-
-
     def check_dependencies(self):
-        required_gems = ['serverspec', 'rake', 'rspec_junit_formatter'] 
+        required_gems = ['serverspec', 'rake', 'rspec_junit_formatter']
 
         error_str = f'''Missing Ruby or one of the following Ruby gems: {', '.join(required_gems)}
 These need to be installed to run the cluster spec tests from epicli'''
 
-        if  shutil.which('ruby') == None or shutil.which('gem') == None:
+        if  shutil.which('ruby') is None or shutil.which('gem') is None:
             raise Exception(error_str)
 
         p = subprocess.Popen(['gem', 'query', '--local'], stdout=PIPE)
         out, err = p.communicate()
-        if all(n in out.decode('utf-8') for n in required_gems) == False: 
+        if all(n in out.decode('utf-8') for n in required_gems) is False:
             raise Exception(error_str)
 
 

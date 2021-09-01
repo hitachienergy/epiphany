@@ -1,8 +1,5 @@
 import os
 import stat
-import inspect
-import shutil
-from  os.path import dirname
 
 from cli.helpers.Step import Step
 from cli.helpers.data_loader import DATA_FOLDER_PATH
@@ -24,7 +21,7 @@ class PrepareEngine(Step):
         return self
 
     def __exit__(self, exc_type, exc_value, traceback):
-        super().__exit__(exc_type, exc_value, traceback)
+        pass
 
     def prepare(self):
         prepare_src = os.path.join(self.PREPARE_PATH, self.os)

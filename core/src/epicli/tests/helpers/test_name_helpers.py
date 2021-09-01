@@ -38,17 +38,17 @@ def test_cluster_tag_no_prefix1():
 
 def test_cluster_tag_no_prefix2():
     actual = cluster_tag('', 'Cluster')
-    assert actual == "cluster"  
+    assert actual == "cluster"
 
 
 def test_cluster_tag_no_prefix3():
     actual = cluster_tag(None, 'Cluster')
-    assert actual == "cluster"    
+    assert actual == "cluster"
 
 
 def test_cluster_tag():
     actual = cluster_tag('prefix', 'Cluster')
-    assert actual == "prefix-cluster" 
+    assert actual == "prefix-cluster"
 
 
 def test_storage_account_name_no_prefix1():
@@ -58,21 +58,20 @@ def test_storage_account_name_no_prefix1():
 
 def test_storage_account_name_no_prefix2():
     actual = storage_account_name('', 'Cluster', 'use')
-    assert actual == "clusteruse"  
+    assert actual == "clusteruse"
 
 
 def test_storage_account_name_no_prefix3():
     actual = storage_account_name(None, 'Cluster', 'use')
-    assert actual == "clusteruse"    
+    assert actual == "clusteruse"
 
 
 def test_storage_account_short():
     actual = storage_account_name('Prefix', 'Cluster', 'Use')
-    assert actual == "prefixclusteruse"   
+    assert actual == "prefixclusteruse"
 
 
 def test_storage_account_long():
     actual = storage_account_name('Prefix', 'SuperLongClusterName', 'SuperLongUse')
     assert len(actual) == 24
-    assert actual == "prefixsuperlongclussuper"            
-
+    assert actual == "prefixsuperlongclussuper"

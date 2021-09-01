@@ -1,7 +1,8 @@
+from pathlib import Path
+
 from cli.helpers.Step import Step
 from cli.helpers.build_saver import copy_file, get_terraform_path, remove_files_matching_glob
 from cli.helpers.data_loader import types, get_provider_subdir_path
-from pathlib import Path
 
 
 class TerraformFileCopier(Step):

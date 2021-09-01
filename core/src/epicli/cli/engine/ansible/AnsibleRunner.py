@@ -1,8 +1,6 @@
-import inspect
 import os
 import time
 import shutil
-from os.path import dirname
 
 from cli.engine.ansible.AnsibleCommand import AnsibleCommand
 from cli.engine.ansible.AnsibleInventoryCreator import AnsibleInventoryCreator
@@ -36,7 +34,7 @@ class AnsibleRunner(Step):
         return self
 
     def __exit__(self, exc_type, exc_value, traceback):
-        super().__exit__(exc_type, exc_value, traceback)
+        pass
 
     def playbook_path(self, name):
         if self.cluster_model != None:

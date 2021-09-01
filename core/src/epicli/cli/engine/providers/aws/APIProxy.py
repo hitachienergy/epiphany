@@ -1,4 +1,5 @@
 import boto3
+
 from cli.helpers.doc_list_helpers import select_single
 from cli.helpers.objdict_helpers import dict_to_objdict
 from cli.models.AnsibleHostModel import AnsibleHostModel
@@ -11,7 +12,7 @@ class APIProxy:
         credentials = self.cluster_model.specification.cloud.credentials
         self.session = boto3.session.Session(aws_access_key_id=credentials.key,
                                              aws_secret_access_key=credentials.secret,
-                                             region_name=self.cluster_model.specification.cloud.region)        
+                                             region_name=self.cluster_model.specification.cloud.region)
 
     def __enter__(self):
         return self

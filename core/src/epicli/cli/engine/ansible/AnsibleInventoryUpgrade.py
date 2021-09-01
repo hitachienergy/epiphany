@@ -1,14 +1,13 @@
-import os
-
 from ansible.parsing.dataloader import DataLoader
 from ansible.inventory.manager import InventoryManager
+
 from cli.helpers.Step import Step
 from cli.helpers.build_saver import get_inventory_path_for_build, check_build_output_version, BUILD_LEGACY
 from cli.models.AnsibleHostModel import AnsibleHostModel
 from cli.models.AnsibleInventoryItem import AnsibleInventoryItem
 from cli.helpers.build_saver import save_inventory
 from cli.helpers.objdict_helpers import dict_to_objdict
-from cli.helpers.data_loader import load_yamls_file, load_yaml_obj, types as data_types
+from cli.helpers.data_loader import load_yaml_obj, types as data_types
 from cli.helpers.doc_list_helpers import select_single
 from cli.helpers.objdict_helpers import merge_objdict
 from cli.helpers.data_loader import load_manifest_docs
@@ -20,7 +19,7 @@ class AnsibleInventoryUpgrade(Step):
         self.build_dir = build_dir
         self.backup_build_dir = backup_build_dir
         self.cluster_model = None
-        self.config_docs = config_docs 
+        self.config_docs = config_docs
         self.manifest_docs = []
 
     def __enter__(self):
@@ -28,7 +27,7 @@ class AnsibleInventoryUpgrade(Step):
         return self
 
     def __exit__(self, exc_type, exc_value, traceback):
-        super().__exit__(exc_type, exc_value, traceback)   
+        pass
 
     def get_role(self, inventory, role_name):
         for role in inventory:
@@ -40,11 +39,11 @@ class AnsibleInventoryUpgrade(Step):
         for i in range(len(inventory)):
             if inventory[i].role == role_name:
                 del inventory[i]
-                return       
+                return
 
     def rename_role(self, inventory, role_name, new_role_name):
         role = self.get_role(inventory, role_name)
-        if role != None:
+        if role is not None:
             role.role = new_role_name
 
     def get_new_config_roles(self):
@@ -55,7 +54,7 @@ class AnsibleInventoryUpgrade(Step):
         return roles
 
     def upgrade(self):
-        inventory_path = get_inventory_path_for_build(self.backup_build_dir)  
+        inventory_path = get_inventory_path_for_build(self.backup_build_dir)
         build_version = check_build_output_version(self.backup_build_dir)
 
         self.logger.info(f'Loading backup Ansible inventory: {inventory_path}')
@@ -72,7 +71,7 @@ class AnsibleInventoryUpgrade(Step):
                 new_inventory.append(AnsibleInventoryItem(key, new_hosts))
 
         if build_version == BUILD_LEGACY:
-            self.logger.info(f'Upgrading Ansible inventory Epiphany < 0.3.0')
+            self.logger.info('Upgrading Ansible inventory Epiphany < 0.3.0')
 
             # Epiphany < 0.3.0 did not have manifest file in build folder so lets create bare minimum cluster model from inventory
             self.cluster_model = dict_to_objdict({
@@ -98,7 +97,7 @@ class AnsibleInventoryUpgrade(Step):
             self.delete_role(new_inventory, 'linux')
             self.delete_role(new_inventory, 'reboot')
         else:
-            self.logger.info(f'Upgrading Ansible inventory Epiphany => 0.3.0')
+            self.logger.info('Upgrading Ansible inventory Epiphany => 0.3.0')
 
             # load cluster model from manifest
             self.manifest_docs = load_manifest_docs(self.backup_build_dir)
