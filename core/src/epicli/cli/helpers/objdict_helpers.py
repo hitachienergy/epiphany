@@ -2,7 +2,7 @@ from copy import deepcopy
 from collections.abc import Iterable
 
 from cli.helpers.ObjDict import ObjDict
-from cli.helpers.doc_list_helpers import select_all
+from cli.helpers.doc_list_helpers import select_first
 
 
 class DuplicatesInNamedListException(Exception):
