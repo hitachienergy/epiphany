@@ -4,7 +4,7 @@ from cli.helpers.objdict_helpers import objdict_to_dict, dict_to_objdict
 
 def safe_load_all(stream):
     yaml = YAML()
-    yaml.default_flow_style = False     
+    yaml.default_flow_style = False
     docs = list(yaml.load_all(stream))
     conv_docs = []
     for doc in docs:
@@ -21,7 +21,7 @@ def safe_load(stream):
 
 def dump_all(docs, stream):
     yaml = YAML()
-    yaml.default_flow_style = False    
+    yaml.default_flow_style = False
     doc2 = docs
     conv_docs = []
     for doc in doc2:
@@ -33,4 +33,3 @@ def dump(doc, stream):
     yaml = YAML()
     yaml.default_flow_style = False
     yaml.dump(objdict_to_dict(doc), stream)
-

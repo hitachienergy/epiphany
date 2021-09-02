@@ -26,7 +26,7 @@ class UpgradeEngine(Step):
         return self
 
     def __exit__(self, exc_type, exc_value, traceback):
-        super().__exit__(exc_type, exc_value, traceback)
+        pass
 
     def process_input_docs(self):
         # Check if we have input to load
@@ -39,13 +39,13 @@ class UpgradeEngine(Step):
         else:
             path_to_load = os.path.join(os.getcwd(), self.file)
         user_file_stream = open(path_to_load, 'r')
-        self.input_docs = safe_load_all(user_file_stream)    
+        self.input_docs = safe_load_all(user_file_stream)
 
         # Some basic checking on the input document(s)
         if len(self.input_docs) == 0:
-            raise Exception('No documents in input file.')            
-        if not hasattr(self.input_docs[0], 'provider'):      
-            raise Exception('Input document does not have a provider.')  
+            raise Exception('No documents in input file.')
+        if not hasattr(self.input_docs[0], 'provider'):
+            raise Exception('Input document does not have a provider.')
 
         # Merge the input docs with defaults
         with DefaultMerger(self.input_docs) as doc_merger:

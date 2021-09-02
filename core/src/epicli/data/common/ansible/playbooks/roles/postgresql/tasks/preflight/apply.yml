@@ -1,0 +1,35 @@
+---
+- name: PostgreSQL checks
+  run_once: true
+  delegate_to: localhost
+  block:
+    - name: Include postgresql vars from postgresql role
+      include_vars:
+        file: roles/postgresql/vars/main.yml
+        name: postgresql
+
+    - name: Check if PostgreSQL extensions are supported for the architecture
+      assert:
+        that: _unsupported_enabled_extensions | length == 0
+        fail_msg: >-
+          {{ _unsupported_enabled_extensions | map(attribute='name') | list | join(', ') }} extensions are not supported
+            for {{ _pg_arch }} and cannot be installed
+        success_msg: "All enabled PostgreSQL extensions are supported for current architecture"
+      vars:
+        _pg_arch: >-
+          {{ hostvars[groups['postgresql'][0]]['ansible_architecture'] }}
+        _defined: >-
+          {{ postgresql.specification.extensions
+            | dict2items(key_name='name', value_name='config')
+            | selectattr('config.enabled', 'defined')
+            | list }}
+        _undefined: >-
+          {{ postgresql.specification.extensions
+            | dict2items(key_name='name', value_name='config')
+            | selectattr('config.enabled', 'undefined')
+            | list }}
+        _enabled_extensions: >-
+          {{ (_defined | selectattr('config.enabled') | list) + _undefined }}
+        _unsupported_enabled_extensions: >-
+          {{ _enabled_extensions | selectattr('name', 'in', unsupported_postgres_extensions[_pg_arch]) | list }}
+

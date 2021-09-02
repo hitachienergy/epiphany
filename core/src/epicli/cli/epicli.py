@@ -5,7 +5,6 @@ import argparse
 import json
 import os
 import time
-import json
 import subprocess
 import platform
 import socket
@@ -290,6 +289,8 @@ def upgrade_parser(subparsers):
     sub_parser._action_groups.append(optional)
 
     def run_upgrade(args):
+        if not query_yes_no('Has backup been done?', default='no'):
+            return 0
         adjust_paths_from_build(args)
         with UpgradeEngine(args) as engine:
             return engine.upgrade()
@@ -430,7 +431,7 @@ def log_total_run_time():
 def exit_handler():
     ensure_vault_password_is_cleaned()
     log_total_run_time()
- 
+
 
 def dump_debug_info():
     def dump_external_debug_info(title, args):

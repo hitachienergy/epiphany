@@ -224,6 +224,8 @@ properties:
                   type: boolean
                 PGPOOL_MAX_POOL:
                   type: integer
+                PGPOOL_CHILD_LIFE_TIME:
+                  type: integer
                 PGPOOL_POSTGRES_PASSWORD_FILE:
                   type: string
                 PGPOOL_SR_CHECK_PASSWORD_FILE:
@@ -293,14 +295,6 @@ properties:
                   type: string
                 DB_LISTEN_PORT:
                   type: integer
-                LISTEN_ADDR:
-                  type: string
-                LISTEN_PORT:
-                  type: integer
-                AUTH_FILE:
-                  type: string
-                AUTH_TYPE:
-                  type: string
                 MAX_CLIENT_CONN:
                   type: integer
                 DEFAULT_POOL_SIZE:

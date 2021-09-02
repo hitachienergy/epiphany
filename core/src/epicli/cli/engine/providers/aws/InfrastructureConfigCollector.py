@@ -15,7 +15,7 @@ class InfrastructureConfigCollector(Step):
         return self
 
     def __exit__(self, exc_type, exc_value, traceback):
-        super().__exit__(exc_type, exc_value, traceback)
+        pass
 
     def run(self):
         with APIProxy(self.cluster_model, self.docs) as proxy:

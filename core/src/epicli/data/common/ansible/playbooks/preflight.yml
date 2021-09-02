@@ -4,6 +4,9 @@
 - hosts: all
   gather_facts: yes
   become: false  # user may be not added to sudoers
+  module_defaults:
+    shell:
+      executable: /bin/bash
   roles:
     - preflight
   environment:

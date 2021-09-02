@@ -1,0 +1,6 @@
+---
+- name: Prepare
+  hosts: postgresql
+  tasks:
+    - name: Add repositories for downloading dependencies
+      script: ../add-repos-redhat.sh

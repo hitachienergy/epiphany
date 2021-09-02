@@ -1,8 +1,10 @@
 import os
 import subprocess
+import time
+
 from cli.helpers.Log import LogPipe, Log
 from cli.helpers.Config import Config
-import time
+
 
 ansible_verbosity = ['NONE','-v','-vv','-vvv','-vvvv']
 
@@ -12,8 +14,6 @@ class AnsibleCommand:
         self.logger = Log(__name__)
         self.working_directory = working_directory
 
-    def __init__(self):
-        self.logger = Log(__name__)
 
     def run_task(self, hosts, inventory, module, args=None):
         cmd = ['ansible']

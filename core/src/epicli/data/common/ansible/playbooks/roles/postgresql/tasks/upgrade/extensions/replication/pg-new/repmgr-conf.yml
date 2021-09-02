@@ -1,0 +1,29 @@
+---
+- name: PostgreSQL | Extensions | repmgr | Get node id
+  command: >-
+    grep -Po '(?<=^node_id=)\d+' "{{ old_version.repmgr.config_dir[ansible_os_family] }}/repmgr.conf"
+  register: pg_node_id
+  changed_when: false
+
+- name: PostgreSQL | Extensions | repmgr | Copy configuration file
+  template:
+    src: roles/postgresql/templates/repmgr.conf.j2
+    dest: "{{ new_version.repmgr.config_dir[ansible_os_family] }}/repmgr.conf"
+    owner: postgres
+    group: postgres
+    mode: u=rw,g=,o=
+  vars:
+    _node_id: "{{ pg_node_id.stdout }}"
+    _pg_bin_dir: "{{ new_version.pg.bin_dir[ansible_os_family] }}"
+    _pg_data_dir: "{{ new_version.pg.data_dir[ansible_os_family] }}"
+    _pg_service_name: "{{ new_version.pg.service_name[ansible_os_family] }}"
+    _replication_user_name: "{{ manifest.specification.extensions.replication.replication_user_name }}"
+    _repmgr_database: "{{ manifest.specification.extensions.replication.repmgr_database }}"
+    _repmgr_service_name: "{{ new_version.repmgr.service_name[ansible_os_family] }}"
+
+- name: PostgreSQL | Extensions | repmgr | Debian | Update symlink to config file
+  file:
+    src: "{{ new_version.repmgr.config_dir[ansible_os_family] }}/repmgr.conf"
+    dest: /etc/repmgr.conf
+    state: link
+  when: ansible_os_family == 'Debian'

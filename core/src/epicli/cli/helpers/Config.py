@@ -140,7 +140,7 @@ class Config:
         @wait_for_pods.setter
         def wait_for_pods(self, wait_for_pods):
             if not wait_for_pods is None:
-                self._wait_for_pods = wait_for_pods                
+                self._wait_for_pods = wait_for_pods
 
         @property
         def upgrade_components(self):

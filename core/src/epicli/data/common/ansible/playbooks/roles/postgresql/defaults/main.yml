@@ -4,31 +4,43 @@ pg:
     Debian: /var/lib/postgresql
     RedHat: /var/lib/pgsql
   bin_dir:
-    Debian: /usr/lib/postgresql/10/bin
-    RedHat: /usr/pgsql-10/bin
+    Debian: /usr/lib/postgresql/13/bin
+    RedHat: /usr/pgsql-13/bin
   config_dir:
-    Debian: /etc/postgresql/10/main
-    RedHat: /var/lib/pgsql/10/data
+    Debian: /etc/postgresql/13/main
+    RedHat: /var/lib/pgsql/13/data
   data_dir:
-    Debian: /var/lib/postgresql/10/main
-    RedHat: /var/lib/pgsql/10/data
+    Debian: /var/lib/postgresql/13/main
+    RedHat: /var/lib/pgsql/13/data
   instantiated_service_name:
-    Debian: postgresql@10-main
+    Debian: postgresql@13-main
     RedHat: null
   service_name:
     Debian: postgresql
-    RedHat: postgresql-10
+    RedHat: postgresql-13
+  version: 13
+
+pgaudit:
+  package_name:
+    Debian: postgresql-13-pgaudit
+    RedHat: pgaudit15_13
+  version:
+    Debian: "1.5.0"
+    RedHat: "1.5.0"
 
 repmgr:
   bin_dir:
     Debian: /usr/bin
-    RedHat: /usr/pgsql-10/bin
+    RedHat: /usr/pgsql-13/bin
   config_dir:
-    Debian: /etc/postgresql/10/main
-    RedHat: /etc/repmgr/10
+    Debian: /etc/postgresql/13/main
+    RedHat: /etc/repmgr/13
+  package_name:
+    Debian: postgresql-13-repmgr
+    RedHat: repmgr13
   service_name:
     Debian: repmgrd
-    RedHat: repmgr10
+    RedHat: repmgr13
   version:
     Debian: "5.2.1"
     RedHat: "5.2.1"
@@ -46,3 +58,6 @@ pgbouncer:
   user:
     Debian: postgres
     RedHat: pgbouncer
+  version:
+    Debian: "1.16.0"
+    RedHat: "1.16.0"

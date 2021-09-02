@@ -1,8 +1,8 @@
-import pytest
+from collections import OrderedDict
 
+import pytest
 from cli.helpers.objdict_helpers import dict_to_objdict, objdict_to_dict, is_named_list, assert_unique_names_in_named_list, merge_objdict, DuplicatesInNamedListException, TypeMismatchException
 from cli.helpers.ObjDict import ObjDict
-from collections import OrderedDict
 
 
 def test_dict_to_objdict():
@@ -17,11 +17,11 @@ def test_dict_to_objdict():
     }
     converted = dict_to_objdict(base)
 
-    assert type(converted) is ObjDict
-    assert type(converted.field1) is ObjDict
-    assert type(converted.field1.field2) is ObjDict
-    assert type(converted.field1.field2.field3) is ObjDict
-    assert type(converted.field1.field2.field3.field4) is str
+    assert isinstance(converted, ObjDict)
+    assert isinstance(converted.field1, ObjDict)
+    assert isinstance(converted.field1.field2, ObjDict)
+    assert isinstance(converted.field1.field2.field3, ObjDict)
+    assert isinstance(converted.field1.field2.field3.field4, str)
     assert converted.field1.field2.field3.field4 == 'val'
 
 
@@ -37,11 +37,11 @@ def test_dict_to_objdict_different_dict_types():
     }
     converted = dict_to_objdict(base)
 
-    assert type(converted) is ObjDict
-    assert type(converted.field1) is ObjDict
-    assert type(converted.field1.field2) is ObjDict
-    assert type(converted.field1.field2.field3) is ObjDict
-    assert type(converted.field1.field2.field3.field4) is str
+    assert isinstance(converted, ObjDict)
+    assert isinstance(converted.field1, ObjDict)
+    assert isinstance(converted.field1.field2, ObjDict)
+    assert isinstance(converted.field1.field2.field3, ObjDict)
+    assert isinstance(converted.field1.field2.field3.field4, str)
     assert converted.field1.field2.field3.field4 == 'val'
 
 
@@ -61,13 +61,13 @@ def test_dict_to_objdict_nested_with_lists():
     }
     converted = dict_to_objdict(base)
 
-    assert type(converted) is ObjDict
-    assert type(converted.field1) is list
-    assert type(converted.field1[0]) is ObjDict
-    assert type(converted.field1[0].field2) is ObjDict
-    assert type(converted.field1[0].field2.field3) is list
-    assert type(converted.field1[0].field2.field3[0]) is ObjDict
-    assert type(converted.field1[0].field2.field3[0].field4) is str
+    assert isinstance(converted, ObjDict)
+    assert isinstance(converted.field1, list)
+    assert isinstance(converted.field1[0], ObjDict)
+    assert isinstance(converted.field1[0].field2, ObjDict)
+    assert isinstance(converted.field1[0].field2.field3, list)
+    assert isinstance(converted.field1[0].field2.field3[0], ObjDict)
+    assert isinstance(converted.field1[0].field2.field3[0].field4, str)
     assert converted.field1[0].field2.field3[0].field4 == 'val'
 
 
@@ -83,11 +83,11 @@ def test_objdict_to_dict():
     })
     converted = objdict_to_dict(base)
 
-    assert type(converted) is dict
-    assert type(converted['field1']) is dict
-    assert type(converted['field1']['field2']) is dict
-    assert type(converted['field1']['field2']['field3']) is dict
-    assert type(converted['field1']['field2']['field3']['field4']) is str
+    assert isinstance(converted, dict)
+    assert isinstance(converted['field1'], dict)
+    assert isinstance(converted['field1']['field2'], dict)
+    assert isinstance(converted['field1']['field2']['field3'], dict)
+    assert isinstance(converted['field1']['field2']['field3']['field4'], str)
     assert converted['field1']['field2']['field3']['field4'] == 'val'
 
 
@@ -121,7 +121,7 @@ def test_list_is_not_named_list():
         ]
     })
 
-    assert is_named_list(l['list']) == False
+    assert is_named_list(l['list']) is False
 
 
 def test_assert_unique_names_in_named_list():

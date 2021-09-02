@@ -13,7 +13,6 @@ from cli.helpers.data_loader import load_json_obj
 from cli.helpers.naming_helpers import resource_name
 from cli.helpers.objdict_helpers import objdict_to_dict, dict_to_objdict
 from cli.version import VERSION
-from cli.helpers.query_yes_no import query_yes_no
 
 
 class InfrastructureBuilder(Step):
@@ -143,7 +142,7 @@ class InfrastructureBuilder(Step):
         autoscaling_group.specification.name = resource_name(self.cluster_prefix, self.cluster_name, 'asg' + '-' + str(index), component_key)
         autoscaling_group.specification.count = component_value.count
         autoscaling_group.specification.subnet_names = [s.specification.name for s in subnets_to_create]
-        autoscaling_group.specification.availability_zones = list(set([s.specification.availability_zone for s in subnets_to_create]))
+        autoscaling_group.specification.availability_zones = [s.specification.availability_zone for s in subnets_to_create]
         autoscaling_group.specification.tags.append({'cluster_name': self.cluster_name})
         autoscaling_group.specification.tags.append({component_key: ''})
         return autoscaling_group
@@ -215,7 +214,7 @@ class InfrastructureBuilder(Step):
         pub_key_path = self.cluster_model.specification.admin_user.key_path + '.pub'
         if os.path.isfile(pub_key_path):
             with open(pub_key_path, 'r') as stream:
-                public_key_config.specification.public_key = stream.read().rstrip()            
+                public_key_config.specification.public_key = stream.read().rstrip()
         else:
             raise Exception(f'SSH key path "{pub_key_path}" is not valid. Ansible run will fail.')
         return public_key_config
@@ -251,7 +250,7 @@ class InfrastructureBuilder(Step):
         machine_selector = component_value.machine
         model_with_defaults = select_first(self.docs, lambda x: x.kind == 'infrastructure/virtual-machine' and
                                                                  x.name == machine_selector)
-        
+
         # Merge with defaults
         if model_with_defaults is None:
             model_with_defaults = merge_with_defaults(self.cluster_model.provider, 'infrastructure/virtual-machine',

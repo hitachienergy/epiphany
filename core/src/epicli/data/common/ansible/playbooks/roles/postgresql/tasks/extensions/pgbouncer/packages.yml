@@ -1,7 +1,11 @@
 ---
-- name: Extensions | PgBouncer | Install OS packages
+- name: Extensions | PgBouncer | Install package(s)
   package:
-    name: pgbouncer
+    name: "{{ _packages[ansible_os_family] }}"
     state: present
+  vars:
+    _packages:
+      Debian: "pgbouncer={{ pgbouncer.version.Debian + '-*' }}"
+      RedHat: "pgbouncer-{{ pgbouncer.version.RedHat }}"
   module_defaults:
     yum: { lock_timeout: "{{ yum_lock_timeout }}" }

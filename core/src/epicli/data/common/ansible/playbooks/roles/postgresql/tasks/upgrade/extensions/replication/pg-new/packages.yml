@@ -1,0 +1,14 @@
+---
+- name: PostgreSQL | Extensions | repmgr | Install package(s) for PostgreSQL {{ new_version.pg.version }}
+  package:
+    name: "{{ _packages[ansible_os_family] }}"
+    state: present
+  vars:
+    _packages:
+      Debian:
+        - "{{ new_version.repmgr.package_name.Debian }}={{ new_version.repmgr.version.Debian + '-*' }}"
+        - "repmgr-common={{ new_version.repmgr.version.Debian + '-*' }}"
+      RedHat:
+        - "{{ new_version.repmgr.package_name.RedHat }}-{{ new_version.repmgr.version.RedHat }}"
+  module_defaults:
+    yum: { lock_timeout: "{{ yum_lock_timeout }}" }

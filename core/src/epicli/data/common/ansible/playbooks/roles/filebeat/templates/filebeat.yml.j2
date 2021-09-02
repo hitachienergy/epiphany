@@ -179,21 +179,25 @@ setup.template.settings:
 # These settings control loading the sample dashboards to the Kibana index. Loading
 # the dashboards is disabled by default and can be enabled either by setting the
 # options here or by using the `setup` command.
-{% set dashboards_enabled = is_upgrade_run | ternary(existing_setup_dashboards.enabled | default(False), specification.kibana.dashboards.enabled) %}
-{% if dashboards_enabled == 'auto' %}
-  {% if groups.kibana is defined and groups.kibana | length > 0 %}
+{% set dashboards_enabled = is_upgrade_run | ternary(existing_setup_dashboards.enabled, specification.kibana.dashboards.enabled) %}
+{% if dashboards_enabled | lower == 'auto' %}
+  {% if group_names | intersect(['kibana', 'logging']) | count == 2 %}
 setup.dashboards.enabled: true
   {% else %}
 setup.dashboards.enabled: false
   {% endif %}
 {% else %}
-setup.dashboards.enabled: "{{ dashboards_enabled | lower }}"
+setup.dashboards.enabled: {{ dashboards_enabled | lower }}
 {% endif %}
 
 # The Elasticsearch index name.
 # This setting overwrites the index name defined in the dashboards and index pattern.
 # Example: "testbeat-*"
-{% set dashboards_index  = is_upgrade_run | ternary(specification.kibana.dashboards.index | default('filebeat-*'), specification.kibana.dashboards.index) %}
+{% if is_upgrade_run %}
+  {% set dashboards_index = 'filebeat-*' if (existing_setup_dashboards.index == 'null') else existing_setup_dashboards.index %}
+{% else %}
+  {% set dashboards_index = specification.kibana.dashboards.index %}
+{% endif %}
 setup.dashboards.index: "{{ dashboards_index }}"
 
 # The URL from where to download the dashboards archive. By default this URL
@@ -262,7 +266,11 @@ setup.kibana:
   {% if existing_setup_kibana.host is defined %}
   host: {{ existing_setup_kibana.host }}
   {% else %}
+    {% if groups.kibana is defined and groups.logging is defined and (groups.kibana | intersect(groups.logging) | count > 0) %}
+  host: {{ hostvars[groups.kibana | intersect(groups.logging) | first].ansible_hostname }}
+    {% else %}
   #host: "localhost:5601"
+    {% endif %}
   {% endif %}
   {% if existing_setup_kibana.username is defined %}
   username: {{ existing_setup_kibana.username }}

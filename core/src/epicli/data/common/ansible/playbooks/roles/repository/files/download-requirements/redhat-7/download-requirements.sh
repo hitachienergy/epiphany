@@ -7,6 +7,11 @@
 
 set -euo pipefail
 
+# set variables needed by common_functions
+readonly internet_access_checks_enabled="yes"
+readonly script_path="$(readlink -f $(dirname $0))"
+. "${script_path}/common/common_functions.sh"
+
 # === Functions (in alphabetical order) ===
 
 # params: <repo_id> <repo_url>
@@ -149,14 +154,6 @@ download_packages() {
 	fi
 }
 
-echol() {
-	echo -e "$@"
-	if [[ $CREATE_LOGFILE == 'yes' ]]; then
-		local timestamp=$(date +"%b %e %H:%M:%S")
-		echo -e "${timestamp}: $@" >> "$LOG_FILE_PATH"
-	fi
-}
-
 # params: <repo_id>
 enable_repo() {
 	local repo_id="$1"
@@ -166,11 +163,6 @@ enable_repo() {
 		yum-config-manager --enable "$repo_id" ||
 			exit_with_error "Command failed: yum-config-manager --enable \"$repo_id\""
 	fi
-}
-
-exit_with_error() {
-	echol "ERROR: $1"
-	exit 1
 }
 
 # desc: find repo id (set $1) based on given pattern
@@ -616,6 +608,8 @@ get_requirements_from_group 'IMAGES'               'images'                "$REQ
 
 # --- Backup yum repositories ---
 
+check_connection yum $(yum repolist --quiet | tail -n +2 | cut -d' ' -f1 | cut -d'/' -f1 | sed 's/^!//')
+
 if [ -f "$YUM_CONFIG_BACKUP_FILE_PATH" ]; then
 	echol "Backup aleady exists: $YUM_CONFIG_BACKUP_FILE_PATH"
 else
@@ -653,6 +647,9 @@ else
         echol "Crane binary already exists"
 	else
 		file_url=$(head -n 1 <<< "${CRANE}")
+
+		check_connection wget $file_url
+
 		echol "Downloading crane from: ${file_url}"
 		download_file "${file_url}" "${SCRIPT_DIR}"
 		tar_path="${SCRIPT_DIR}/${file_url##*/}"
@@ -768,9 +765,12 @@ fi
 
 create_directory "$FILES_DIR"
 
+check_connection wget $FILES
+
 if [[ -z "$FILES" ]]; then
     echol "No files to download"
 else
+
     # list of all files that will be downloaded
     echol "Files to be downloaded:"
     cat -n <<< "${FILES}"
@@ -790,6 +790,8 @@ else
 fi
 
 # === Images ===
+
+check_connection crane $(for image in $IMAGES; do splitted=(${image//:/ }); echo "${splitted[0]}"; done)
 
 create_directory "$IMAGES_DIR"
 

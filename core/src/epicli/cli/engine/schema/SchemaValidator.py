@@ -1,8 +1,9 @@
+from copy import deepcopy
+
 from jsonschema import validate, Draft7Validator
 from cli.helpers.data_loader import load_yaml_obj, types
 from cli.helpers.objdict_helpers import objdict_to_dict, dict_to_objdict, replace_yesno_with_booleans
 from cli.helpers.Step import Step
-from copy import deepcopy
 
 
 class SchemaValidator(Step):
@@ -39,7 +40,7 @@ class SchemaValidator(Step):
         except Exception as e:
             self.logger.error(f'Failed validating: {doc.kind}')
             self.logger.error(e)
-            raise Exception('Schema validation error, see the error above.')        
+            raise Exception('Schema validation error, see the error above.')
 
     def run_for_individual_documents(self):
         for doc in self.validation_docs:

@@ -1,10 +1,8 @@
-
 import os
-import sys
 
 from cli.helpers.Step import Step
 from cli.helpers.build_saver import save_manifest, get_build_path
-from cli.helpers.data_loader import load_all_yaml_objs, types, load_all_documents_from_folder
+from cli.helpers.data_loader import load_all_yaml_objs, types
 from cli.engine.ApplyEngine import ApplyEngine
 from cli.helpers.objdict_helpers import remove_value
 from cli.version import VERSION
@@ -24,11 +22,11 @@ class InitEngine(Step):
         return self
 
     def __exit__(self, exc_type, exc_value, traceback):
-        super().__exit__(exc_type, exc_value, traceback)  
+        pass
 
     def init(self):
         input = load_all_yaml_objs(types.DEFAULT, self.provider, 'configuration/minimal-cluster-config')
-        input[0].specification.name = self.name     
+        input[0].specification.name = self.name
 
         if self.is_full_config:
             config = self.get_config_docs(input)
@@ -48,10 +46,10 @@ class InitEngine(Step):
         # set the provider and version for all docs
         for doc in docs:
             doc['provider'] = self.provider
-            doc['version'] = VERSION  
+            doc['version'] = VERSION
 
         # remove SET_BY_AUTOMATION fields
-        remove_value(docs, 'SET_BY_AUTOMATION')  
+        remove_value(docs, 'SET_BY_AUTOMATION')
 
         # save document
         save_manifest(docs, self.name, self.name+'.yml')
@@ -65,8 +63,8 @@ class InitEngine(Step):
 
         # generate the config documents
         with ApplyEngine(args) as build:
-            config = build.dry_run() 
-        
+            config = build.dry_run()
+
         return config
 
     def get_infra_docs(self, input_docs):
@@ -80,7 +78,7 @@ class InitEngine(Step):
             # - network security rules
             # ...
             # So we add the defaults here.
-            # TODO: Check if we want to include possible other infrastructure documents.           
+            # TODO: Check if we want to include possible other infrastructure documents.
             infra = load_all_yaml_objs(types.DEFAULT, self.provider, 'infrastructure/virtual-machine')
-        
+
         return infra

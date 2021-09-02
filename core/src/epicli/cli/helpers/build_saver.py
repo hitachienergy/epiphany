@@ -1,13 +1,14 @@
-import distutils
 import shutil
 import os
+from pathlib import Path
 from os import listdir
 from os.path import isfile, join
 from distutils import dir_util
+
 from cli.helpers.data_loader import load_template_file, types
 from cli.helpers.yaml_helpers import dump_all, dump
 from cli.helpers.Config import Config
-from pathlib import Path
+
 
 TERRAFORM_OUTPUT_DIR = 'terraform/'
 MANIFEST_FILE_NAME = 'manifest.yml'
@@ -37,7 +38,7 @@ def save_sp(service_principle, cluster_name):
 
 
 def save_inventory(inventory, cluster_model, build_dir=None):
-    if build_dir == None:
+    if build_dir is None:
         cluster_name = cluster_model.specification.name
         build_dir = get_build_path(cluster_name)
     template = load_template_file(types.ANSIBLE, "common", "ansible_inventory")
@@ -97,7 +98,7 @@ def get_inventory_path_for_build(build_directory):
     if build_version == BUILD_LEGACY:
         files = [f for f in listdir(inventory) if isfile(join(inventory, f))]
         if len(files) != 1:
-            raise Exception(f'Not a valid legacy build directory.')
+            raise Exception('Not a valid legacy build directory.')
         return join(inventory, files[0])
 
 
@@ -140,11 +141,13 @@ def get_ansible_path(cluster_name):
         os.makedirs(ansible_dir)
     return ansible_dir
 
+
 def get_ansible_vault_path(cluster_name):
     ansible_vault_dir = os.path.join(get_build_path(cluster_name), ANSIBLE_VAULT_OUTPUT_DIR)
     if not os.path.exists(ansible_vault_dir):
         os.makedirs(ansible_vault_dir)
     return ansible_vault_dir
+
 
 def get_ansible_path_for_build(build_directory):
     ansible_dir = os.path.join(build_directory, ANSIBLE_OUTPUT_DIR)
@@ -152,8 +155,10 @@ def get_ansible_path_for_build(build_directory):
         os.makedirs(ansible_dir)
     return ansible_dir
 
+
 def copy_files_recursively(src, dst):
-    distutils.dir_util.copy_tree(src, dst)
+    dir_util.copy_tree(src, dst)
+
 
 def copy_file(src, dst):
     shutil.copy2(src, dst)

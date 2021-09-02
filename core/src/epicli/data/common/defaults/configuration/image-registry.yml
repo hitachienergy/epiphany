@@ -30,10 +30,10 @@ specification:
         - name: "istio/operator:1.8.1"
           file_name: operator-1.8.1.tar
         # postgres
-        - name: bitnami/pgpool:4.1.1-debian-10-r29
-          file_name: pgpool-4.1.1-debian-10-r29.tar
-        - name: "brainsam/pgbouncer:1.12"
-          file_name: pgbouncer-1.12.tar
+        - name: bitnami/pgpool:4.2.4
+          file_name: pgpool-4.2.4.tar
+        - name: bitnami/pgbouncer:1.16.0
+          file_name: pgbouncer-1.16.0.tar
       current:
         - name: "haproxy:2.2.2-alpine"
           file_name: haproxy-2.2.2-alpine.tar

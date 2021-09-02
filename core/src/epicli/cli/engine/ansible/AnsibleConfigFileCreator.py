@@ -1,7 +1,9 @@
 import os
+from collections import OrderedDict
+
 from cli.helpers.build_saver import save_ansible_config_file
 from cli.helpers.Step import Step
-from collections import OrderedDict
+
 
 class AnsibleConfigFileCreator(Step):
     def __init__(self, ansible_options, ansible_config_file_path):
@@ -15,7 +17,7 @@ class AnsibleConfigFileCreator(Step):
         return self
 
     def __exit__(self, exc_type, exc_value, traceback):
-        super().__exit__(exc_type, exc_value, traceback)
+        pass
 
     def get_setting(self, section, key):
         setting = None

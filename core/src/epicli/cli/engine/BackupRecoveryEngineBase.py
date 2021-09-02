@@ -39,7 +39,7 @@ class BackupRecoveryEngineBase(Step):
         return self
 
     def __exit__(self, exc_type, exc_value, traceback):
-        super().__exit__(exc_type, exc_value, traceback)
+        pass
 
     def _process_input_docs(self):
         """Load, validate and merge (with defaults) input yaml documents."""

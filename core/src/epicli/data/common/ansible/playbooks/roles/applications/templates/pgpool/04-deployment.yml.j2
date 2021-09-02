@@ -77,10 +77,10 @@ spec:
               mountPath: /opt/bitnami/pgpool/secrets/pgpool_admin_password
               subPath: pgpool_admin_password
             - name: pgpool-config-files
-              mountPath: /opt/bitnami/pgpool/conf/pgpool.conf
+              mountPath: /epiphany/bitnami/pgpool/conf/pgpool.conf
               subPath: pgpool.conf
             - name: pgpool-config-files
-              mountPath: /opt/bitnami/pgpool/conf/pool_hba.conf
+              mountPath: /epiphany/bitnami/pgpool/conf/pool_hba.conf
               subPath: pool_hba.conf
             - name: pgpool-shared-init-dir
               mountPath: /opt/bitnami/pgpool/conf/pool_passwd
@@ -91,6 +91,9 @@ spec:
             - name: pgpool-init-scripts
               mountPath: /docker-entrypoint-initdb.d/init_pcppass.sh
               subPath: init_pcppass.sh
+            - name: pgpool-init-scripts
+              mountPath: /docker-entrypoint-initdb.d/replace_config_files.sh
+              subPath: replace_config_files.sh
       initContainers:
 {#      pgpool-init container creates/synchronizes pool_passwd file, users with passwords are fetched directly from PostgreSQL server #}
         - name: pgpool-init
@@ -99,8 +102,9 @@ spec:
 {% else %}
           image: {{ data.image.path }}
 {% endif %}
-          command:
-            - /epiphany/scripts/init_pool_passwd_file.sh
+          command: ["/bin/sh", "-c"]
+          args: 
+            - /epiphany/scripts/init_pool_passwd_file.sh;
           envFrom:
             - configMapRef:
                 name: pgpool-container-env
@@ -113,6 +117,8 @@ spec:
               subPath: pgpool_postgres_password
             - name: pgpool-shared-init-dir
               mountPath: /epiphany/shared_dir
+            - name: pgpool-config-files
+              mountPath: /opt/bitnami/pgpool/conf
       volumes:
         - name: pgpool-init-scripts
           configMap:

@@ -1,0 +1,18 @@
+---
+- name: Verify
+  hosts: postgresql
+  gather_facts: true
+  tasks:
+    - name: Include common tasks
+      include_tasks: verify-common.yml
+
+    # status is reported as 'unknown', so not checked
+    - name: Verify that repmgr service exists and is running
+      vars:
+        _services:
+          Debian: repmgrd.service
+          RedHat: repmgr13.service
+      assert:
+        that:
+          - "{{ _services[ansible_os_family] in ansible_facts.services }}"
+          - "{{ ansible_facts.services[_services[ansible_os_family]].state == 'running' }}"

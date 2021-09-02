@@ -1,0 +1,24 @@
+---
+# Done so as after an upgrade there is no possibility to log in
+- name: PostgreSQL | Extensions | repmgr | Alter super user and replication user in PostgreSQL
+  become_user: postgres
+  vars:
+    _users:
+      - user: "{{ manifest.specification.extensions.replication.privileged_user_name }}"
+        password: "{{ manifest.specification.extensions.replication.privileged_user_password }}"
+      - user: "{{ manifest.specification.extensions.replication.replication_user_name }}"
+        password: "{{ manifest.specification.extensions.replication.replication_user_password }}"
+  postgresql_query:
+    query: "ALTER USER {{ item.user }} WITH PASSWORD '{{ item.password }}'"
+  loop: "{{ _users }}"
+  run_once: true
+  no_log: true
+
+- name: PostgreSQL | Extensions | repmgr | Register primary node
+  become_user: postgres
+  command: >-
+    {{ new_version.repmgr.bin_dir[ansible_os_family] }}/repmgr primary register
+      --superuser={{ manifest.specification.extensions.replication.privileged_user_name }}
+      --force
+  register: repmgr_primary_register
+  changed_when: repmgr_primary_register.rc == 0
