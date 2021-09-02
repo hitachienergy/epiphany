@@ -14,14 +14,14 @@ requests = ">=2.0.0,<3"
 
 [[package]]
 name = "ansible"
-version = "2.10.5"
+version = "2.10.7"
 description = "Radically simple IT automation"
 category = "main"
 optional = false
 python-versions = ">=2.7,!=3.0.*,!=3.1.*,!=3.2.*,!=3.3.*,!=3.4.*"
 
 [package.dependencies]
-ansible-base = ">=2.10.4,<2.11"
+ansible-base = ">=2.10.5,<2.11"
 
 [[package]]
 name = "ansible-base"
@@ -1359,14 +1359,14 @@ typecheck = ["mypy"]
 
 [[package]]
 name = "boto3"
-version = "1.18.30"
+version = "1.18.33"
 description = "The AWS SDK for Python"
 category = "main"
 optional = false
 python-versions = ">= 3.6"
 
 [package.dependencies]
-botocore = ">=1.21.30,<1.22.0"
+botocore = ">=1.21.33,<1.22.0"
 jmespath = ">=0.7.1,<1.0.0"
 s3transfer = ">=0.5.0,<0.6.0"
 
@@ -1375,7 +1375,7 @@ crt = ["botocore[crt] (>=1.21.0,<2.0a0)"]
 
 [[package]]
 name = "botocore"
-version = "1.21.30"
+version = "1.21.33"
 description = "Low-level, data-driven core of boto 3."
 category = "main"
 optional = false
@@ -1484,7 +1484,7 @@ python-versions = ">=3.5"
 
 [[package]]
 name = "importlib-metadata"
-version = "4.7.1"
+version = "4.8.1"
 description = "Read metadata from Python packages"
 category = "main"
 optional = false
@@ -1937,7 +1937,7 @@ rsa = ["oauthlib[signedtoken] (>=3.0.0)"]
 
 [[package]]
 name = "ruamel.yaml"
-version = "0.17.14"
+version = "0.17.16"
 description = "ruamel.yaml is a YAML parser/emitter that supports roundtrip preservation of comments, seq/map flow style, and map key order"
 category = "main"
 optional = false
@@ -2036,7 +2036,7 @@ python-versions = "*"
 
 [[package]]
 name = "typing-extensions"
-version = "3.10.0.0"
+version = "3.10.0.2"
 description = "Backported and Experimental Type Hints for Python 3.5+"
 category = "main"
 optional = false
@@ -2118,7 +2118,7 @@ testing = ["pytest (>=4.6)", "pytest-checkdocs (>=2.4)", "pytest-flake8", "pytes
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.7"
-content-hash = "8821812ff034808ef1d4a8319ec068d068e5f146130c87de4b4b5b299f46b937"
+content-hash = "c3f6ca79255d5abaaa4b08d83733257e9573902bcf2de802a3eda769ed424bf0"
 
 [metadata.files]
 adal = [
@@ -2126,7 +2126,7 @@ adal = [
     {file = "adal-1.2.7.tar.gz", hash = "sha256:d74f45b81317454d96e982fd1c50e6fb5c99ac2223728aea8764433a39f566f1"},
 ]
 ansible = [
-    {file = "ansible-2.10.5.tar.gz", hash = "sha256:9775229aae31336a624ca5afe5533fea5e49ef4daa96a96791dd9871b2d8b8d1"},
+    {file = "ansible-2.10.7.tar.gz", hash = "sha256:9ff024500116d53c460cb09ea92e3c9404119f100d1d1ff0de69a9dafca561d5"},
 ]
 ansible-base = [
     {file = "ansible-base-2.10.13.tar.gz", hash = "sha256:d2c29b1946e5ae08784a0762b8c48c32f835e4648d6f997a6c2a81b78ff4f3ad"},
@@ -2515,12 +2515,12 @@ bcrypt = [
     {file = "bcrypt-3.2.0.tar.gz", hash = "sha256:5b93c1726e50a93a033c36e5ca7fdcd29a5c7395af50a6892f5d9e7c6cfbfb29"},
 ]
 boto3 = [
-    {file = "boto3-1.18.30-py3-none-any.whl", hash = "sha256:542336dda9a728c250cf24aea6d87454136d9d6f3d8a84ec5a737a7edba3b932"},
-    {file = "boto3-1.18.30.tar.gz", hash = "sha256:9bf2a281a6df9f8948d3d322d532d03a1039f57a049a1aa2b72b4a28c9627013"},
+    {file = "boto3-1.18.33-py3-none-any.whl", hash = "sha256:461f659c06f9f56693cebbca70b11866f096021eafbd949a3c029c3a8adee6a4"},
+    {file = "boto3-1.18.33.tar.gz", hash = "sha256:596d2afda27ae3d9a10112a475aa25c4d6b5cf023919e370ad8e6c6ae04d57a6"},
 ]
 botocore = [
-    {file = "botocore-1.21.30-py3-none-any.whl", hash = "sha256:26ab09126dd05c968fbbcb894a1d623355e6119ff6d4a2bf5d292e3ad7cdd628"},
-    {file = "botocore-1.21.30.tar.gz", hash = "sha256:9b0b3dbc144178e2b803097abcc95712a03b8dde5a02e4335ac870bc6c129dd9"},
+    {file = "botocore-1.21.33-py3-none-any.whl", hash = "sha256:b321b570a0da4c6280e737d817c8f740bce0ef914f564e1c27246c7ae76b4c31"},
+    {file = "botocore-1.21.33.tar.gz", hash = "sha256:204327b9a33e3ae5207ff9acdd7d3b6d1f99f5dc9165a4d843d6f1a566f3006c"},
 ]
 certifi = [
     {file = "certifi-2021.5.30-py2.py3-none-any.whl", hash = "sha256:50b1e4f8446b06f41be7dd6338db18e0990601dce795c2b1686458aa7e8fa7d8"},
@@ -2610,8 +2610,8 @@ idna = [
     {file = "idna-3.2.tar.gz", hash = "sha256:467fbad99067910785144ce333826c71fb0e63a425657295239737f7ecd125f3"},
 ]
 importlib-metadata = [
-    {file = "importlib_metadata-4.7.1-py3-none-any.whl", hash = "sha256:9e04bf59076a15a9b6dd9c27806e8fcdf15280ba529c6a8cc3f4d5b4875bdd61"},
-    {file = "importlib_metadata-4.7.1.tar.gz", hash = "sha256:c4eb3dec5f697682e383a39701a7de11cd5c02daf8dd93534b69e3e6473f6b1b"},
+    {file = "importlib_metadata-4.8.1-py3-none-any.whl", hash = "sha256:b618b6d2d5ffa2f16add5697cf57a46c76a56229b0ed1c438322e4e95645bd15"},
+    {file = "importlib_metadata-4.8.1.tar.gz", hash = "sha256:f284b3e11256ad1e5d03ab86bb2ccd6f5339688ff17a4d797a0fe7df326f23b1"},
 ]
 invoke = [
     {file = "invoke-1.6.0-py2-none-any.whl", hash = "sha256:e6c9917a1e3e73e7ea91fdf82d5f151ccfe85bf30cc65cdb892444c02dbb5f74"},
@@ -2911,8 +2911,8 @@ requests-oauthlib = [
     {file = "requests_oauthlib-1.3.0-py3.7.egg", hash = "sha256:fa6c47b933f01060936d87ae9327fead68768b69c6c9ea2109c48be30f2d4dbc"},
 ]
 "ruamel.yaml" = [
-    {file = "ruamel.yaml-0.17.14-py3-none-any.whl", hash = "sha256:b59c548ba6a2a99a97a842db2321c5adf28470d1decb04bdd82ce9535936a2fa"},
-    {file = "ruamel.yaml-0.17.14.tar.gz", hash = "sha256:4185fcfa9e037fea9ffd0bb6172354a03ec98c21e462355d72e068c74e493512"},
+    {file = "ruamel.yaml-0.17.16-py3-none-any.whl", hash = "sha256:ea21da1198c4b41b8e7a259301cc9710d3b972bf8ba52f06218478e6802dd1f1"},
+    {file = "ruamel.yaml-0.17.16.tar.gz", hash = "sha256:1a771fc92d3823682b7f0893ad56cb5a5c87c48e62b5399d6f42c8759a583b33"},
 ]
 "ruamel.yaml.clib" = [
     {file = "ruamel.yaml.clib-0.2.6-cp35-cp35m-macosx_10_6_intel.whl", hash = "sha256:cfdb9389d888c5b74af297e51ce357b800dd844898af9d4a547ffc143fa56751"},
@@ -2971,9 +2971,9 @@ terraform-bin = [
     {file = "terraform_bin-1.0.1-py3-none-any.whl", hash = "sha256:af59ff1e59f620b7db88fd11411572aeab406d0759caa6028eaa01b9b3a9fc01"},
 ]
 typing-extensions = [
-    {file = "typing_extensions-3.10.0.0-py2-none-any.whl", hash = "sha256:0ac0f89795dd19de6b97debb0c6af1c70987fd80a2d62d1958f7e56fcc31b497"},
-    {file = "typing_extensions-3.10.0.0-py3-none-any.whl", hash = "sha256:779383f6086d90c99ae41cf0ff39aac8a7937a9283ce0a414e5dd782f4c94a84"},
-    {file = "typing_extensions-3.10.0.0.tar.gz", hash = "sha256:50b6f157849174217d0656f99dc82fe932884fb250826c18350e159ec6cdf342"},
+    {file = "typing_extensions-3.10.0.2-py2-none-any.whl", hash = "sha256:d8226d10bc02a29bcc81df19a26e56a9647f8b0a6d4a83924139f4a8b01f17b7"},
+    {file = "typing_extensions-3.10.0.2-py3-none-any.whl", hash = "sha256:f1d25edafde516b146ecd0613dabcc61409817af4766fbbcfb8d1ad4ec441a34"},
+    {file = "typing_extensions-3.10.0.2.tar.gz", hash = "sha256:49f75d16ff11f1cd258e1b988ccff82a3ca5570217d7ad8c5f48205dd99a677e"},
 ]
 urllib3 = [
     {file = "urllib3-1.26.6-py2.py3-none-any.whl", hash = "sha256:39fb8672126159acb139a7718dd10806104dec1e2f0f6c88aab05d17df10c8d4"},
