@@ -66,4 +66,4 @@ RUN : SETUP USER, CERTS AND OTHERS \
  && setcap 'cap_net_bind_service=+ep' /usr/bin/ssh \
  && /bin/bash /config-post.sh
 
-RUN echo alias epicli='"cd /workspaces/epiphany/core/src/epicli && PYTHONPATH=$(pwd) python3 cli/epicli.py"' >> /etc/bash.bashrc
+RUN echo alias epicli='"PYTHONPATH=/workspaces/epiphany/core/src/epicli && python3 -m cli.epicli"' >> /etc/bash.bashrc
