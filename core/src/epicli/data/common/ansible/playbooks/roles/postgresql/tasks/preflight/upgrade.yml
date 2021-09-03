@@ -15,25 +15,60 @@
     file: roles/postgresql/vars/manifest.yml
     name: pg_manifest
 
-- name: Check available disk space for PostgreSQL
+- name: Check available disk space for new PostgreSQL data dir
   block:
-    - name: Get filesystem info for PostgreSQL data directory
+    # Data dir may not exist yet so get info also for parent paths
+    - name: Look for target data directory
+      stat:
+        path: "{{ item }}"
+        follow: true
+        get_attributes: false
+        get_checksum: false
+        get_mime: false
+      register: stat_pg_new_data_dir
+      loop: "{{ [ pg_new.pg.data_dir[ansible_os_family] ] +
+                pg_new.pg.data_dir[ansible_os_family] | parent_paths(exclude=['/', '/var']) }}"
+
+    - name: Set fact on data directory destination
+      set_fact:
+        pg_new_data_dir_or_parent_path: "{{ stat_pg_new_data_dir.results | json_query('[?stat.exists].item') | first }}"
+
+    - name: Get filesystem for new data directory
       become: true
       shell: |-
         set -o pipefail && \
-        df --output=source {{ pg_new.pg.base_dir[ansible_os_family] }} | tail -1
-      args:
-        executable: /bin/bash
+        df --output=source {{ pg_new_data_dir_or_parent_path }} | tail -1
       changed_when: false
       register: pg_data_disk
+      args:
+        executable: /bin/bash
 
-    - name: Ensure that free space on {{ pg_data_disk.stdout }} is greater than 50%
-      assert:
-        that: mount.size_available > mount.size_total|float * 0.5
-        fail_msg: PostgreSQL disk space has reached 50% threshold
-        quiet: true
+    - name: Set facts on space on {{ pg_data_disk.stdout }}
+      set_fact:
+        data_dir_fs_used_mb: "{{ ((mount.size_total - mount.size_available) / 1024 / 1024) | int }}"
+        data_dir_fs_capacity_mb: "{{ (mount.size_total / 1024 / 1024) | int }}"
       vars:
-        mount: "{{ ansible_mounts | selectattr('device','equalto', pg_data_disk.stdout) | list | first }}"
+        mount: "{{ ansible_mounts | selectattr('device', '==', pg_data_disk.stdout) | first }}"
+
+    - name: Get size of old data directory
+      command: du -sm {{ pg_old.pg.data_dir[ansible_os_family] }}
+      register: du_data_dir
+      become: true
+      changed_when: false
+
+    - name: Set fact on size of old data directory
+      set_fact:
+        old_data_dir_size_mb: "{{ du_data_dir.stdout.split()[0] | int }}"
+
+    - name: Assert free space on {{ pg_data_disk.stdout }}
+      assert:
+        that: data_dir_fs_used_mb|int + old_data_dir_size_mb|int < 0.95 * data_dir_fs_capacity_mb|float
+        fail_msg: "{{ [ 'Not enough free space on PostgreSQL data disk to run upgrade' ] + _common }}"
+        success_msg: "{{ [ 'Test passed' ] + _common }}"
+      vars:
+        _common:
+          - "data_dir_fs_used_mb + old_data_dir_size_mb < 0.95 * data_dir_fs_capacity_mb"
+          - "{{ data_dir_fs_used_mb }} + {{ old_data_dir_size_mb }} < 0.95 * {{ data_dir_fs_capacity_mb }}"
 
 - name: Ensure that PostgreSQL cluster in version {{ pg_old.pg.version }} is present
   block:
