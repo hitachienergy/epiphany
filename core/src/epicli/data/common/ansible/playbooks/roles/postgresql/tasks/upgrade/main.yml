@@ -4,7 +4,7 @@
 #   * cluster is not healthy when repmgr is used
 #   * disk space condition is not met: space_used_on_data_dir_fs + old_data_dir_size < 0.95 * data_dir_fs_capacity
 
-- name: PostgreSQL | Get information about installed packages as facts
+- name: PostgreSQL | Get information on installed packages as facts
   package_facts:
     manager: auto
   when: ansible_facts.packages is undefined

@@ -15,7 +15,21 @@
     file: roles/postgresql/vars/manifest.yml
     name: pg_manifest
 
+- name: Check if upgrade was already run
+  stat:
+    path: "{{ pg_new.pg.data_dir[ansible_os_family] }}/PG_VERSION"
+    get_attributes: false
+    get_checksum: false
+    get_mime: false
+  become: true
+  register: stat_file_in_pg_new_data_dir
+
+- name: Set fact about PostgreSQL upgrade status
+  set_fact:
+    pg_upgrade_already_run: "{{ stat_file_in_pg_new_data_dir.stat.exists }}"
+
 - name: Check available disk space for new PostgreSQL data dir
+  when: not pg_upgrade_already_run
   block:
     # Data dir may not exist yet so get info also for parent paths
     - name: Look for target data directory
@@ -25,6 +39,7 @@
         get_attributes: false
         get_checksum: false
         get_mime: false
+      become: true
       register: stat_pg_new_data_dir
       loop: "{{ [ pg_new.pg.data_dir[ansible_os_family] ] +
                 pg_new.pg.data_dir[ansible_os_family] | parent_paths(exclude=['/', '/var']) }}"
@@ -34,10 +49,10 @@
         pg_new_data_dir_or_parent_path: "{{ stat_pg_new_data_dir.results | json_query('[?stat.exists].item') | first }}"
 
     - name: Get filesystem for new data directory
-      become: true
       shell: |-
         set -o pipefail && \
         df --output=source {{ pg_new_data_dir_or_parent_path }} | tail -1
+      become: true
       changed_when: false
       register: pg_data_disk
       args:
@@ -52,8 +67,8 @@
 
     - name: Get size of old data directory
       command: du -sm {{ pg_old.pg.data_dir[ansible_os_family] }}
-      register: du_data_dir
       become: true
+      register: du_data_dir
       changed_when: false
 
     - name: Set fact on size of old data directory
@@ -71,6 +86,7 @@
           - "{{ data_dir_fs_used_mb }} + {{ old_data_dir_size_mb }} < 0.95 * {{ data_dir_fs_capacity_mb }}"
 
 - name: Ensure that PostgreSQL cluster in version {{ pg_old.pg.version }} is present
+  when: not pg_upgrade_already_run
   block:
     - name: Get PostgreSQL version from data directory
       become: true
@@ -87,7 +103,9 @@
         quiet: true
 
 - name: Verify that PostgreSQL {{ pg_old.pg.version }} cluster is healthy
-  when: pg_manifest.specification.extensions.replication.enabled
+  when:
+    - not pg_upgrade_already_run
+    - pg_manifest.specification.extensions.replication.enabled
   become: true
   become_user: postgres
   # when there are two primary nodes (after failover) rc is non-zero
