@@ -4,6 +4,8 @@ from collections.abc import Iterable
 from cli.helpers.ObjDict import ObjDict
 from cli.helpers.doc_list_helpers import select_all
 
+TRUE_VALUES = ['y', 'Y', 'yes', 'Yes', 'YES','on', 'On', 'ON', 'true', 'True', 'TRUE']
+FALSE_VALUES = ['n', 'N', 'no', 'No', 'NO', 'off', 'Off', 'OFF', 'false', 'False', 'FALSE']
 
 class DuplicatesInNamedListException(Exception):
     pass
@@ -42,28 +44,28 @@ def is_named_list(l):
     return isinstance(l, Iterable) and all(hasattr(x, 'name') for x in l)
 
 
-def assert_unique_names_in_named_list(list, key, type): 
-    all_names = [x["name"] for x in list] 
-    for name in all_names: 
-        if all_names.count(name) > 1: 
+def assert_unique_names_in_named_list(list, key, type):
+    all_names = [x["name"] for x in list]
+    for name in all_names:
+        if all_names.count(name) > 1:
             raise DuplicatesInNamedListException( f'"name" field with value "{name}" occurs multiple times in list "{key}" in {type} definition.' )
 
 
-# to_merge is passed by reference, item under key is updated, extended or replaced 
+# to_merge is passed by reference, item under key is updated, extended or replaced
 def merge_list(to_merge, extend_by, key):
     if is_named_list(to_merge[key]) and is_named_list(extend_by):
         # ensure all items have unique names in to_merge and extend_by
-        assert_unique_names_in_named_list(to_merge[key], key, 'default')    
+        assert_unique_names_in_named_list(to_merge[key], key, 'default')
         assert_unique_names_in_named_list(extend_by, key, 'input')
 
         # Merge possible matched objects from extend_by to to_merge
-        for m_i in to_merge[key]:   
+        for m_i in to_merge[key]:
             count = select_all(extend_by, lambda x: x['name'] == m_i['name'])
             if len(count) == 1:
                 merge_objdict(m_i, count[0])
 
         # Add non-matched objects from extend_by to to_merge. Might be extra config used by projects.
-        for e_i in extend_by:   
+        for e_i in extend_by:
             count = select_all(to_merge[key], lambda x: x['name'] == e_i['name'])
             if len(count) == 0:
                 to_merge[key].append(e_i)
@@ -108,16 +110,16 @@ def remove_value(d, value):
                     del d[k]
 
 
-def replace_yesno_with_booleans(d):
+def replace_values_with_booleans(d):
     if isinstance(d, list):
         for dd in d:
-            replace_yesno_with_booleans(dd)
+            replace_values_with_booleans(dd)
     elif isinstance(d, ObjDict):
         for key, val in d.items():
             if isinstance(d[key], str):
-                if val == 'yes':        
+                if val in TRUE_VALUES:
                     d[key] = True
-                elif val == 'no':             
+                elif val in FALSE_VALUES:
                     d[key] = False
-            else:      
-                replace_yesno_with_booleans(d[key])
+            else:
+                replace_values_with_booleans(d[key])

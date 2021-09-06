@@ -1,7 +1,7 @@
 from collections import OrderedDict
 
 import pytest
-from cli.helpers.objdict_helpers import dict_to_objdict, objdict_to_dict, is_named_list, assert_unique_names_in_named_list, merge_objdict, DuplicatesInNamedListException, TypeMismatchException
+from cli.helpers.objdict_helpers import dict_to_objdict, objdict_to_dict, is_named_list, assert_unique_names_in_named_list, merge_objdict, DuplicatesInNamedListException, TypeMismatchException, replace_values_with_booleans
 from cli.helpers.ObjDict import ObjDict
 
 
@@ -341,3 +341,71 @@ def test_dict_merge_asserts_on_extend_named_list_with_duplicate_name():
     })
     with pytest.raises(DuplicatesInNamedListException):
         merge_objdict(base, extend_by)
+
+
+def test_replace_value_with_boolean_true_values():
+    objdict = ObjDict({
+        'field1': ObjDict({
+            'field2': ObjDict({
+                'value1': 'y',
+                'value2': 'Y',
+                'value3': 'yes',
+                'value4': 'Yes',
+                'value5': 'YES',
+                'value6': 'on',
+                'value7': 'On',
+                'value8': 'ON',
+                'value9': 'true',
+                'value10': 'True',
+                'value11': 'TRUE',
+            })
+        })
+    })
+
+    replace_values_with_booleans(objdict)
+
+    assert objdict.field1.field2.value1 == True
+    assert objdict.field1.field2.value2 == True
+    assert objdict.field1.field2.value3 == True
+    assert objdict.field1.field2.value4 == True
+    assert objdict.field1.field2.value5 == True
+    assert objdict.field1.field2.value6 == True
+    assert objdict.field1.field2.value7 == True
+    assert objdict.field1.field2.value8 == True
+    assert objdict.field1.field2.value9 == True
+    assert objdict.field1.field2.value10 == True
+    assert objdict.field1.field2.value11 == True
+
+
+def test_replace_value_with_boolean_false_values():
+    objdict = ObjDict({
+        'field1': ObjDict({
+            'field2': ObjDict({
+                'value1': 'n',
+                'value2': 'N',
+                'value3': 'no',
+                'value4': 'No',
+                'value5': 'NO',
+                'value6': 'off',
+                'value7': 'Off',
+                'value8': 'OFF',
+                'value9': 'false',
+                'value10': 'False',
+                'value11': 'FALSE',
+            })
+        })
+    })
+
+    replace_values_with_booleans(objdict)
+
+    assert objdict.field1.field2.value1 == False
+    assert objdict.field1.field2.value2 == False
+    assert objdict.field1.field2.value3 == False
+    assert objdict.field1.field2.value4 == False
+    assert objdict.field1.field2.value5 == False
+    assert objdict.field1.field2.value6 == False
+    assert objdict.field1.field2.value7 == False
+    assert objdict.field1.field2.value8 == False
+    assert objdict.field1.field2.value9 == False
+    assert objdict.field1.field2.value10 == False
+    assert objdict.field1.field2.value11 == False

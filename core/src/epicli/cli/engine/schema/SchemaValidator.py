@@ -2,7 +2,7 @@ from copy import deepcopy
 
 from jsonschema import validate, Draft7Validator
 from cli.helpers.data_loader import load_yaml_obj, types
-from cli.helpers.objdict_helpers import objdict_to_dict, dict_to_objdict, replace_yesno_with_booleans
+from cli.helpers.objdict_helpers import objdict_to_dict, dict_to_objdict, replace_values_with_booleans
 from cli.helpers.Step import Step
 
 
@@ -34,7 +34,7 @@ class SchemaValidator(Step):
 
     def validate_document(self, doc, schema):
         try:
-            replace_yesno_with_booleans(doc)
+            replace_values_with_booleans(doc)
             Draft7Validator.check_schema(schema)
             validate(instance=objdict_to_dict(doc), schema=schema)
         except Exception as e:
