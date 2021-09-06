@@ -63,17 +63,20 @@ class AnsibleVarsGenerator(Step):
             dump(clean_cluster_model, stream)
 
         if self.is_upgrade_run:
-            # For upgrade we always need common, repository, image_registry and node_exporter.
-            # - commmon is already provisioned from the cluster model constructed from the inventory
-            roles_with_defaults = ['repository', 'image_registry', 'node_exporter']
+            # For upgrade we always need common, repository, image_registry, node_exporter and postgresql. Common is
+            # already provisioned from the cluster model constructed from the inventory. As PostgreSQL configuration
+            # is changed between versions (e.g. wal_keep_segments -> wal_keep_size) and sometimes previous parameters
+            # are not compatible with the new ones, defaults are used for template processing
+            roles_with_defaults = ['repository', 'image_registry', 'node_exporter', 'postgresql']
             # now lets add any external configs we want to load
             roles_with_defaults = [*roles_with_defaults, *self.inventory_upgrade.get_new_config_roles()]
-            # In a special cases (like haproxy), where user specifies majority of the config, it's easier (and less awkward)
-            # to re-render config templates instead of modifying (for example with regular expressions) no-longer-compatible config files.
+            # In special cases (like haproxy), where user specifies majority of the config, it's easier (and less
+            # awkward) to re-render config templates instead of modifying (for example with regular expressions)
+            # no-longer-compatible config files.
             roles_with_manifest = ['filebeat', 'haproxy', 'ignite', 'postgresql', 'repository']
         else:
             roles_with_defaults = self.inventory_creator.get_enabled_roles()
-            roles_with_manifest = [] # applies only to upgrades
+            roles_with_manifest = []  # applies only to upgrades
 
         for role in roles_with_defaults:
             kind = 'configuration/' + to_feature_name(role)
