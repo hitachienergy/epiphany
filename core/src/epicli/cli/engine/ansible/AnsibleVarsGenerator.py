@@ -199,6 +199,11 @@ class AnsibleVarsGenerator(Step):
             # hoping that the shared-config doc from defaults will be enough
             return None
 
+        # Remove un-used supported_os list if present from shared/config from manifest so we avoid namedlist merging errors.
+        # This has been refactored in from Epicli 1.0.x and no longer needed at this stage.
+        if hasattr(shared_config_doc.specification, 'supported_os'):
+            del shared_config_doc.specification['supported_os']
+
         # Merge the shared config doc with defaults
         with DefaultMerger([shared_config_doc]) as doc_merger:
             shared_config_doc = doc_merger.run()[0]
