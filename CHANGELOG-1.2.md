@@ -12,6 +12,7 @@
 - [#2346](https://github.com/epiphany-platform/epiphany/issues/2346) - Allow more than 2 PostgreSQL nodes installation with repmgr
 - [#2124](https://github.com/epiphany-platform/epiphany/issues/2124) - Added Internet connection test to download-requirements.sh
 - [#2531](https://github.com/epiphany-platform/epiphany/issues/2531) - Add Pylint configuration to epicli devcontainer
+- [#1892](https://github.com/epiphany-platform/epiphany/issues/1892) - Add ansible-lint to epicli devcontainer
 
 ### Fixed
 

@@ -1,0 +1,32 @@
+{
+    // See https://go.microsoft.com/fwlink/?LinkId=733558
+    // for the documentation about the tasks.json format
+    "version": "2.0.0",
+    "tasks": [
+      {
+        "label": "Pytest",
+        "type": "shell",
+        "command": "mkdir -p test_results && pytest --junitxml=${workspaceFolder}/test_results/pytest_results.xml"
+      },
+      {
+        "label": "Pylint junit",
+        "type": "shell",
+        "command": "mkdir -p test_results && pylint --rcfile .pylintrc ./cli ./tests --output ${workspaceFolder}/test_results/pylint_results.xml"
+      },
+      {
+        "label": "Pylint terminal",
+        "type": "shell",
+        "command": "pylint --rcfile .pylintrc ./cli ./tests --output-format text"
+      },
+      {
+        "label": "Ansible-lint junit",
+        "type": "shell",
+        "command": "mkdir -p test_results && ansible-lint --nocolor -q -c .ansible-lint -p ${workspaceFolder}/data/common/ansible/playbooks/*.yml > ${workspaceFolder}/test_results/ansiblelint_results.txt ; ansible-lint-to-junit-xml ${workspaceFolder}/test_results/ansiblelint_results.txt > ${workspaceFolder}/test_results/ansiblelint_results.xml"
+      },
+      {
+        "label": "Ansible-lint terminal",
+        "type": "shell",
+        "command": "ansible-lint -q -c .ansible-lint -p ${workspaceFolder}/data/common/ansible/playbooks/*.yml"
+      }
+    ]
+  }
