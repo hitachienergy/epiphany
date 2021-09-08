@@ -13,6 +13,7 @@
 - [#2124](https://github.com/epiphany-platform/epiphany/issues/2124) - Added Internet connection test to download-requirements.sh
 - [#2531](https://github.com/epiphany-platform/epiphany/issues/2531) - Add Pylint configuration to epicli devcontainer
 - [#1892](https://github.com/epiphany-platform/epiphany/issues/1892) - Add ansible-lint to epicli devcontainer
+- [#2558](https://github.com/epiphany-platform/epiphany/issues/2558) - Add rubocop to epicli devcontainer
 
 ### Fixed
 
