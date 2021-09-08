@@ -35,6 +35,8 @@ class ApplyEngine(Step):
         self.infrastructure_docs = []
         self.manifest_docs = []
 
+        self.__ping_retries: int = input_data.ping_retries
+
     def __enter__(self):
         return self
 
@@ -174,7 +176,8 @@ class ApplyEngine(Step):
 
         # Run Ansible to provision infrastructure
         if not(self.skip_config):
-            with AnsibleRunner(self.cluster_model, docs, ansible_options=self.ansible_options) as ansible_runner:
+            with AnsibleRunner(self.cluster_model, docs, ansible_options=self.ansible_options,
+                               ping_retries=self.__ping_retries) as ansible_runner:
                 ansible_runner.apply()
 
         return 0
