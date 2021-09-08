@@ -27,6 +27,16 @@
         "label": "Ansible-lint terminal",
         "type": "shell",
         "command": "ansible-lint -q -c .ansible-lint -p ${workspaceFolder}/data/common/ansible/playbooks/*.yml"
+      },
+      {
+        "label": "Rubocop junit",
+        "type": "shell",
+        "command": "mkdir -p test_results && rubocop -c .rubocop.yml --require rubocop/formatter/junit_formatter --format RuboCop::Formatter::JUnitFormatter --out test_results/rubocop_results.xml"
+      }
+      {
+        "label": "Rubocop terminal",
+        "type": "shell",
+        "command": "rubocop -c .rubocop.yml"
       }
     ]
   }

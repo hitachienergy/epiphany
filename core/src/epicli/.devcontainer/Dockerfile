@@ -46,7 +46,7 @@ RUN : INSTALL HELM BINARY \
 
 RUN : INSTALL GEM REQUIREMENTS \
  && gem install \
-    rake rspec_junit_formatter serverspec solargraph
+    rake rspec_junit_formatter serverspec solargraph rubocop rubocop-junit_formatter
 
 COPY requirements.txt /
 
