@@ -4,8 +4,8 @@ from collections.abc import Iterable
 from cli.helpers.ObjDict import ObjDict
 from cli.helpers.doc_list_helpers import select_all
 
-TRUE_VALUES = ['y', 'Y', 'yes', 'Yes', 'YES','on', 'On', 'ON', 'true', 'True', 'TRUE']
-FALSE_VALUES = ['n', 'N', 'no', 'No', 'NO', 'off', 'Off', 'OFF', 'false', 'False', 'FALSE']
+YES_VALUES = ['y', 'Y', 'yes', 'Yes', 'YES']
+NO_VALUES = ['n', 'N', 'no', 'No', 'NO']
 
 class DuplicatesInNamedListException(Exception):
     pass
@@ -110,16 +110,16 @@ def remove_value(d, value):
                     del d[k]
 
 
-def replace_values_with_booleans(d):
+def replace_yesno_with_booleans(d):
     if isinstance(d, list):
         for dd in d:
-            replace_values_with_booleans(dd)
+            replace_yesno_with_booleans(dd)
     elif isinstance(d, ObjDict):
         for key, val in d.items():
             if isinstance(d[key], str):
-                if val in TRUE_VALUES:
+                if val in YES_VALUES:
                     d[key] = True
-                elif val in FALSE_VALUES:
+                elif val in NO_VALUES:
                     d[key] = False
             else:
-                replace_values_with_booleans(d[key])
+                replace_yesno_with_booleans(d[key])
