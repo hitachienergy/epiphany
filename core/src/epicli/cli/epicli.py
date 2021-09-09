@@ -423,9 +423,10 @@ def ensure_vault_password_is_cleaned():
 
 
 def log_total_run_time():
-    logger = Log('run_time')
-    passed_time = format_time(time.time()-start_time)
-    logger.info(f'Total run time: {passed_time}')
+    if Config().output_dir is not None:
+        logger = Log('run_time')
+        passed_time = format_time(time.time()-start_time)
+        logger.info(f'Total run time: {passed_time}')
 
 
 def exit_handler():
