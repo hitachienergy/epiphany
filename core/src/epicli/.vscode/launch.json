@@ -25,26 +25,6 @@
             // "args": ["test", "-b", "${workspaceFolder}/clusters/build/<DIR>", "-g", "<TEST_GROUP>"]
             // "args": ["upgrade", "-b", "${workspaceFolder}/clusters/build/<DIR>"]
             // "args": ["upgrade", "-b", "${workspaceFolder}/clusters/build/<DIR>","--upgrade-components","kafka,ignite"]
-        },
-        {
-            "name": "unit tests",
-            "type": "python",
-            "request": "launch",
-            "module": "pytest",
-            "cwd": "${workspaceFolder}",
-            "env": { "PYTHONPATH": "${workspaceFolder}" },
-            "console": "integratedTerminal",
-            "args": ["--junitxml=${workspaceFolder}/test_results/unit_test_results.xml"]
-        },
-        {
-            "name": "pylint",
-            "type": "python",
-            "request": "launch",
-            "module": "pylint",
-            "cwd": "${workspaceFolder}",
-            "env": { "PYTHONPATH": "${workspaceFolder}" },
-            "console": "integratedTerminal",
-            "args": ["--rcfile", ".pylintrc", "./cli", ">", "${workspaceFolder}/test_results/pylint_results.xml"]
         }
     ]
 }

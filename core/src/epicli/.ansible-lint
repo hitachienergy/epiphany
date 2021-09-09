@@ -1,0 +1,14 @@
+---
+skip_list:
+  - yaml
+warn_list:
+  - command-instead-of-module  # Using command rather than module
+  - command-instead-of-shell   # Use shell only when shell functionality is required
+  - experimental               # all rules tagged as experimental
+  - metadata                   # all metadata tests
+  - no-changed-when            # Commands should not change things if nothing needs doing
+  - package-latest             # Package installs should not use latest
+  - risky-shell-pipe           # Shells that use pipes should set the pipefail option
+  - risky-file-permissions     # File permissions unset or incorrect
+  - role-name                  # Galaxy role name standards
+  - unnamed-task               # All tasks should be named

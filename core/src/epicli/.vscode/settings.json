@@ -19,5 +19,8 @@
 
     // Ruby
     "ruby.format": false,
+    "ruby.lint": {
+        "rubocop": true
+    },
     "solargraph.formatting": true,
 }

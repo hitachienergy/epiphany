@@ -46,7 +46,7 @@ RUN : INSTALL HELM BINARY \
 
 RUN : INSTALL GEM REQUIREMENTS \
  && gem install \
-    rake rspec_junit_formatter serverspec solargraph
+    rake rspec_junit_formatter serverspec solargraph rubocop rubocop-junit_formatter
 
 COPY requirements.txt /
 
@@ -54,7 +54,7 @@ RUN : INSTALL PIP REQUIREMENTS \
  && pip install --disable-pip-version-check --no-cache-dir --default-timeout=100 \
     --requirement /requirements.txt \
  && pip install --disable-pip-version-check --no-cache-dir --default-timeout=100 \
-    poetry pylint pylint_junit pytest setuptools twine wheel
+    poetry pylint pylint_junit ansible-lint ansible-lint-to-junit-xml pytest setuptools twine wheel
 
 COPY cert/config-post.sh /
 
