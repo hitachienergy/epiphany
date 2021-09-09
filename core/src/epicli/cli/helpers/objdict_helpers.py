@@ -45,7 +45,6 @@ def is_named_list(l):
 
 
 def assert_unique_names_in_named_list(list, key, type):
-    all_names = [x["name"] for x in list]
     all_names = [x["name"] for x in list if hasattr(x, 'name')]
     for name in all_names:
         if all_names.count(name) > 1:

@@ -465,11 +465,11 @@ def test_replace_yesno_with_boolean_true_values():
 
     replace_yesno_with_booleans(objdict)
 
-    assert objdict.field1.field2.value1 == True
-    assert objdict.field1.field2.value2 == True
-    assert objdict.field1.field2.value3 == True
-    assert objdict.field1.field2.value4 == True
-    assert objdict.field1.field2.value5 == True
+    assert objdict.field1.field2.value1 is True
+    assert objdict.field1.field2.value2 is True
+    assert objdict.field1.field2.value3 is True
+    assert objdict.field1.field2.value4 is True
+    assert objdict.field1.field2.value5 is True
 
 
 def test_replace_yesno_with_boolean_false_values():
@@ -487,8 +487,8 @@ def test_replace_yesno_with_boolean_false_values():
 
     replace_yesno_with_booleans(objdict)
 
-    assert objdict.field1.field2.value1 == False
-    assert objdict.field1.field2.value2 == False
-    assert objdict.field1.field2.value3 == False
-    assert objdict.field1.field2.value4 == False
-    assert objdict.field1.field2.value5 == False
+    assert objdict.field1.field2.value1 is False
+    assert objdict.field1.field2.value2 is False
+    assert objdict.field1.field2.value3 is False
+    assert objdict.field1.field2.value4 is False
+    assert objdict.field1.field2.value5 is False
