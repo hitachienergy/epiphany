@@ -113,8 +113,15 @@ __test_apt_repo() {
 # :param $1: repository to be updated
 # :return: apt return value
 #
-    last_error=$(apt update -o Dir::Etc::sourcelist=$1 -o APT::Update::Error-Mode=any 2>&1 >/dev/null)
-    return $?
+    last_error=$(apt update -o Dir::Etc::sourcelist=$1 2>&1 >/dev/null)
+    local ret_val=$?
+
+    (( $ret_val == 0 )) || return $ret_val
+
+    # make sure that there were no error messages:
+    [[ -z $(echo "$last_error" | tr '[:upper:]' '[:lower:]' | grep 'err\|fail') ]] || return 1
+
+    return 0
 }
 
 
