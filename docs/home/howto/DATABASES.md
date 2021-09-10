@@ -181,13 +181,13 @@ installation will fail.
 ---
 
 PgBouncer and PgPool are provided as K8s deployments. By default, they are not installed. To deploy them you need to
-add "configuration/applications" document to your configuration yaml file, similar to the example below (`enabled` flags
+add `configuration/applications` document to your configuration yaml file, similar to the example below (`enabled` flags
 must be set as `true`):
 
 ```yaml
 ---
 kind: configuration/applications
-version: 0.6.0
+version: 1.2.0
 title: "Kubernetes Applications Config"
 provider: aws
 name: default
@@ -209,10 +209,10 @@ specification:
     resources: # Adjust to your configuration, see https://www.pgpool.net/docs/42/en/html/resource-requiremente.html
       limits:
         # cpu: 900m # Set according to your env
-        memory: 176Mi
+        memory: 310Mi
       requests:
         cpu: 250m # Adjust to your env, increase if possible
-        memory: 176Mi
+        memory: 310Mi
     pgpool:
       # https://github.com/bitnami/bitnami-docker-pgpool#configuration + https://github.com/bitnami/bitnami-docker-pgpool#environment-variables
       env:
@@ -224,7 +224,7 @@ specification:
         PGPOOL_ADMIN_USERNAME: epi_pgpool_admin # Pgpool administrator (local pcp user)
         PGPOOL_ENABLE_LOAD_BALANCING: false # set to 'false' if there is no replication
         PGPOOL_MAX_POOL: 4
-        PGPOOL_CHILD_LIFE_TIME: 0
+        PGPOOL_CHILD_LIFE_TIME: 300
         PGPOOL_POSTGRES_PASSWORD_FILE: /opt/bitnami/pgpool/secrets/pgpool_postgres_password
         PGPOOL_SR_CHECK_PASSWORD_FILE: /opt/bitnami/pgpool/secrets/pgpool_sr_check_password
         PGPOOL_ADMIN_PASSWORD_FILE: /opt/bitnami/pgpool/secrets/pgpool_admin_password
@@ -267,7 +267,8 @@ specification:
         MAX_CLIENT_CONN: 150
         DEFAULT_POOL_SIZE: 25
         RESERVE_POOL_SIZE: 25
-        POOL_MODE: transaction
+        POOL_MODE: session
+        CLIENT_IDLE_TIMEOUT: 0
 ```
 
 ### Default setup - main parameters
@@ -301,10 +302,10 @@ replicas: 3
 resources: # Adjust to your configuration, see https://www.pgpool.net/docs/41/en/html/resource-requiremente.html
   limits:
     # cpu: 900m # Set according to your env
-    memory: 176Mi
+    memory: 310Mi
   requests:
     cpu: 250m # Adjust to your env, increase if possible
-    memory: 176Mi
+    memory: 310Mi
 ```
 
 By default, each PgPool pod requires 176 MB of memory. This value has been determined based on
@@ -341,8 +342,12 @@ instance (pod). For example, having 2 pods (with MAX_CLIENT_CONN = 150) allows f
         MAX_CLIENT_CONN: 150
         DEFAULT_POOL_SIZE: 25
         RESERVE_POOL_SIZE: 25
-        POOL_MODE: transaction
+        POOL_MODE: session
+        CLIENT_IDLE_TIMEOUT: 0
 ```
+
+By default, `POOL_MODE` is set to `session` to be transparent for Pgbouncer client. This section should be adjusted depending on your desired configuration. Rotating connection modes are well described in [Official Pgbouncer documentation](https://www.pgbouncer.org/features.html).  
+If your client application doesn't manage sessions you can use `CLIENT_IDLE_TIMEOUT` to force session timeout.
 
 ##### PgPool
 

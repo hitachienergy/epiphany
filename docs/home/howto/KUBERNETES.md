@@ -260,12 +260,13 @@ specification:
     enabled: true
 ```
 
-3. Set `enabled: true` and adjust other parameters in `configuration/applications` kind.
+3. Enable required applications by setting `enabled: true` and adjust other parameters in `configuration/applications` kind.
 
 The default applications configuration available [here](https://github.com/epiphany-platform/epiphany/blob/develop/core/src/epicli/data/common/defaults/configuration/applications.yml)
 
-``` yaml
+Note: To get working with Pgbouncer, Keycloak requires Pgbouncer configuration parametr `POOL_MODE` set to `session`, see [Installing Pgbouncer and Pgpool](DATABASES.md#installing-pgbouncer-and-pgpool) section. The reason is that Keycloak uses SET SQL statements. For details see [SQL feature map for pooling modes](https://www.pgbouncer.org/features.html).
 
+``` yaml
 ---
 kind: configuration/applications
 title: Kubernetes Applications Config
@@ -288,8 +289,8 @@ specification:
       name: auth-database-name
       user: auth-db-user
       password: PASSWORD_TO_CHANGE
-
 ```
+
 To set specific database host IP address for Keyclock you have to provide additional parameter `address`:
 
 ``` yaml
