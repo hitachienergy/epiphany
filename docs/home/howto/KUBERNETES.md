@@ -255,7 +255,7 @@ title: Feature mapping to roles
 name: default
 specification:
   available_roles:
-  [...]
+  - _merge: true
   - name: applications
     enabled: true
 ```
@@ -273,7 +273,7 @@ title: Kubernetes Applications Config
 name: default
 specification:
   applications:
-  [...]
+  - _merge: true
   - name: auth-service
     enabled: true
     image_path: epiphanyplatform/keycloak:14.0.0

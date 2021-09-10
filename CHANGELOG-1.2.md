@@ -29,6 +29,7 @@
 - [#2521](https://github.com/epiphany-platform/epiphany/issues/2521) - Fix 2 unit tests that are marked to be skipped during test execution
 - [#2542](https://github.com/epiphany-platform/epiphany/issues/2542) - Non critical error in epicli if no 'path' is provided
 - [#1296](https://github.com/epiphany-platform/epiphany/issues/1296) - Epicli does not interpret alternative yaml boolean values as true booleans
+- [#1351](https://github.com/epiphany-platform/epiphany/issues/1351) -  Refactor Keycloak to work with Postgresql HA configuration
 
 ### Updated
 
