@@ -164,7 +164,8 @@ specification:
         MAX_CLIENT_CONN: 150
         DEFAULT_POOL_SIZE: 25
         RESERVE_POOL_SIZE: 25
-        POOL_MODE: transaction
+        POOL_MODE: session
+        CLIENT_IDLE_TIMEOUT: 0
 
 ## --- istio ---
 
