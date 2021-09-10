@@ -267,7 +267,7 @@
                   - '**************************************'
                   - Check {{ _upgrade_working_dir }}/{{ _pg_upgrade_log_filenames.main }} on host {{ inventory_hostname }} for upgrade results.
                   - If pg_upgrade generated any .sql files in {{ _upgrade_working_dir }}, run them.
-                  - 'For more information, refer to PostgreSQL docs ("Post-upgrade processing" section):'
+                  - 'For more information, refer to PostgreSQL docs ("Post-upgrade processing" step):'
                   - https://www.postgresql.org/docs/13/pgupgrade.html
                   - '**************************************'
 
