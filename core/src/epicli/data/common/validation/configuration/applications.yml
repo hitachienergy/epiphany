@@ -303,6 +303,8 @@ properties:
                   type: integer
                 POOL_MODE:
                   type: string
+                CLIENT_IDLE_TIMEOUT:
+                  type: integer
     - type: object
       properties:
         name:
