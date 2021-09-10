@@ -1,15 +1,16 @@
 import os
 from ruamel.yaml import YAML
+from collections import OrderedDict
 from cli.helpers.yaml_helpers import safe_load_all, safe_load
 from cli.helpers.objdict_helpers import dict_to_objdict
 from cli.helpers.build_saver import get_build_path, get_output_path, get_terraform_path, get_ansible_path,\
     get_ansible_vault_path, get_ansible_config_file_path, get_inventory_path, get_manifest_path,\
-    save_manifest, save_sp, save_inventory,\
+    save_manifest, save_sp, save_inventory, save_ansible_config_file,\
     TERRAFORM_OUTPUT_DIR, ANSIBLE_OUTPUT_DIR, ANSIBLE_VAULT_OUTPUT_DIR, INVENTORY_FILE_NAME,\
     MANIFEST_FILE_NAME, SP_FILE_NAME, INVENTORY_FILE_NAME
 
-CLUSTER_NAME = "test"
-OUTPUT_PATH = "/workspaces/epiphany/core/src/epicli/test_results/"
+CLUSTER_NAME = 'test'
+OUTPUT_PATH = '/workspaces/epiphany/core/src/epicli/test_results/'
 SPEC_OUTPUT_DIR = 'spec_tests/'
 TEST_DOCS = \
     [{'kind': 'epiphany-cluster',
@@ -53,6 +54,7 @@ TEST_CLUSTER_MODEL = \
           'default_os_image': 'default'},
       }
      }
+ANSIBLE_CONFIG_FILE_SETTINGS = [('defaults', {'interpreter_python': 'auto_legacy_silent', 'allow_world_readable_tmpfiles': 'true'})]
 
 # TODO: Check directory creation for tests
 # TODO: Sort imports
@@ -121,9 +123,21 @@ def test_save_inventory():
     f = open(os.path.join(OUTPUT_PATH, CLUSTER_NAME,
              INVENTORY_FILE_NAME), mode='r')
     inventory_content = f.read()
-    assert "test-1 ansible_host=10.0.0.1" in inventory_content
-    assert "test-2 ansible_host=10.0.0.2" in inventory_content
-    assert "test-3 ansible_host=10.0.0.3" in inventory_content
-    assert "test-4 ansible_host=10.0.0.4" in inventory_content
-    assert "ansible_user=operations" in inventory_content
-    assert "ansible_ssh_private_key_file=id_rsa" in inventory_content
+    assert 'test-1 ansible_host=10.0.0.1' in inventory_content
+    assert 'test-2 ansible_host=10.0.0.2' in inventory_content
+    assert 'test-3 ansible_host=10.0.0.3' in inventory_content
+    assert 'test-4 ansible_host=10.0.0.4' in inventory_content
+    assert 'ansible_user=operations' in inventory_content
+    assert 'ansible_ssh_private_key_file=id_rsa' in inventory_content
+
+
+def test_save_ansible_config_file():
+    config_file_settings = OrderedDict(ANSIBLE_CONFIG_FILE_SETTINGS)
+    ansible_config_file_path = os.path.join(
+        OUTPUT_PATH, CLUSTER_NAME, ANSIBLE_OUTPUT_DIR, 'ansible.cfg')
+    save_ansible_config_file(
+        config_file_settings, ansible_config_file_path)
+    f = open(ansible_config_file_path, mode='r')
+    ansible_config_file_content = f.read()
+    assert 'interpreter_python = auto_legacy_silent' in ansible_config_file_content
+    assert 'allow_world_readable_tmpfiles = true' in ansible_config_file_content
