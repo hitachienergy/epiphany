@@ -6,7 +6,7 @@ from cli.helpers.build_saver import get_build_path, get_output_path, get_terrafo
     get_ansible_vault_path, get_ansible_config_file_path, get_inventory_path, get_manifest_path,\
     save_manifest, save_sp, save_inventory,\
     TERRAFORM_OUTPUT_DIR, ANSIBLE_OUTPUT_DIR, ANSIBLE_VAULT_OUTPUT_DIR, INVENTORY_FILE_NAME,\
-    MANIFEST_FILE_NAME, SP_FILE_NAME
+    MANIFEST_FILE_NAME, SP_FILE_NAME, INVENTORY_FILE_NAME
 
 CLUSTER_NAME = "test"
 OUTPUT_PATH = "/workspaces/epiphany/core/src/epicli/test_results/"
@@ -36,10 +36,10 @@ TEST_CLUSTER_MODEL = \
     {'kind': 'epiphany-cluster',
      'title': 'Epiphany cluster Config',
      'provider': 'azure',
-     'name': 'test-rh1',
+     'name': CLUSTER_NAME,
      'specification':
      {'prefix': 'test',
-      'name': 'test-rh1',
+      'name': CLUSTER_NAME,
       'admin_user': {'name': 'operations', 'key_path': 'id_rsa'},
       'cloud':
       {
@@ -98,7 +98,7 @@ def test_get_ansible_config_file_path():
 
 
 def test_save_manifest():
-    save_manifest(TEST_DOCS, CLUSTER_NAME, manifest_name=MANIFEST_FILE_NAME)
+    save_manifest(TEST_DOCS, CLUSTER_NAME, MANIFEST_FILE_NAME)
     manifest_path = os.path.join(
         OUTPUT_PATH, CLUSTER_NAME, MANIFEST_FILE_NAME)
     manifest_stream = open(manifest_path, 'r')
@@ -117,5 +117,13 @@ def test_save_sp():
 
 def test_save_inventory():
     cluster_model = dict_to_objdict(TEST_CLUSTER_MODEL)
-    save_inventory(TEST_INVENTORY, cluster_model, build_dir=None)
-    assert 1 == 1
+    save_inventory(TEST_INVENTORY, cluster_model)
+    f = open(os.path.join(OUTPUT_PATH, CLUSTER_NAME,
+             INVENTORY_FILE_NAME), mode='r')
+    inventory_content = f.read()
+    assert "test-1 ansible_host=10.0.0.1" in inventory_content
+    assert "test-2 ansible_host=10.0.0.2" in inventory_content
+    assert "test-3 ansible_host=10.0.0.3" in inventory_content
+    assert "test-4 ansible_host=10.0.0.4" in inventory_content
+    assert "ansible_user=operations" in inventory_content
+    assert "ansible_ssh_private_key_file=id_rsa" in inventory_content
