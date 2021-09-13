@@ -2,7 +2,7 @@ from cli.helpers.Config import Config
 import shutil
 import os
 from cli.helpers.build_saver import save_manifest, MANIFEST_FILE_NAME
-from tests.helpers.constants import TEST_DOCS, CLUSTER_NAME_SAVE, CLUSTER_NAME_LOAD
+from tests.helpers.constants import TEST_DOCS, CLUSTER_NAME_SAVE, CLUSTER_NAME_LOAD, NON_EXISTING_CLUSTER
 
 
 def pytest_configure(config):
@@ -39,6 +39,7 @@ def pytest_unconfigure(config):
 def prepare_test_directory():
     shutil.rmtree(os.path.join(Config().output_dir, ), CLUSTER_NAME_LOAD)
     shutil.rmtree(os.path.join(Config().output_dir, ), CLUSTER_NAME_SAVE)
+    shutil.rmtree(os.path.join(Config().output_dir, ), NON_EXISTING_CLUSTER)
     prepare_test_data_for_load()
 
 

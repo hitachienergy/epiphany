@@ -3,7 +3,7 @@ import pytest
 from cli.helpers.build_saver import get_build_path
 from cli.helpers.data_loader import get_data_dir_path, get_provider_subdir_path, load_manifest_docs,\
     DATA_FOLDER_PATH
-from tests.helpers.constants import CLUSTER_NAME_LOAD, TEST_DOCS
+from tests.helpers.constants import CLUSTER_NAME_LOAD, TEST_DOCS, NON_EXISTING_CLUSTER
 
 SCRIPT_DIR = "/workspaces/epiphany/core/src/epicli/data"
 
@@ -22,6 +22,6 @@ def test_load_manifest_docs():
     assert docs == TEST_DOCS
 
 def test_load_not_existing_manifest_docs():
-    build_path = get_build_path(CLUSTER_NAME_LOAD + "aaaa")
+    build_path = get_build_path(NON_EXISTING_CLUSTER)
     with pytest.raises(Exception):
         load_manifest_docs(build_path)
