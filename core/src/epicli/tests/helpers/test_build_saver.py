@@ -59,16 +59,21 @@ ANSIBLE_CONFIG_FILE_SETTINGS = [('defaults', {
                                  'interpreter_python': 'auto_legacy_silent', 'allow_world_readable_tmpfiles': 'true'})]
 
 # TODO: Check directory creation for tests
-# TODO: Sort imports
 
 
 def test_get_output_path():
-    assert get_output_path() == os.path.join(OUTPUT_PATH)
+    output_path = os.path.join(OUTPUT_PATH)
+    result_path = get_output_path()
+    assert os.path.exists(output_path)
+    assert result_path == output_path
 
 
 def test_get_build_path():
-    assert get_build_path(CLUSTER_NAME) == os.path.join(
+    build_path = os.path.join(
         OUTPUT_PATH, CLUSTER_NAME)
+    result_path = get_build_path(CLUSTER_NAME)
+    assert os.path.exists(build_path)
+    assert result_path == build_path
 
 
 def test_get_inventory_path():
@@ -82,8 +87,11 @@ def test_get_manifest_path():
 
 
 def test_get_terraform_path():
-    assert get_terraform_path(CLUSTER_NAME) == os.path.join(
+    terraform_path = os.path.join(
         OUTPUT_PATH, CLUSTER_NAME, TERRAFORM_OUTPUT_DIR)
+    result_path = get_terraform_path(CLUSTER_NAME)
+    assert os.path.exists(terraform_path)
+    assert result_path == terraform_path
 
 
 def test_get_ansible_path():
@@ -92,8 +100,11 @@ def test_get_ansible_path():
 
 
 def test_get_ansible_vault_path():
-    assert get_ansible_vault_path(CLUSTER_NAME) == os.path.join(
+    ansible_vault_path = os.path.join(
         OUTPUT_PATH, CLUSTER_NAME, ANSIBLE_VAULT_OUTPUT_DIR)
+    result_path = get_ansible_vault_path(CLUSTER_NAME)
+    assert os.path.exists(ansible_vault_path)
+    assert result_path == ansible_vault_path
 
 
 def test_get_ansible_config_file_path():
@@ -108,9 +119,13 @@ def test_get_inventory_path_for_build():
 
 
 def test_get_ansible_path_for_build():
-    assert get_ansible_path_for_build(os.path.join(
-        OUTPUT_PATH, CLUSTER_NAME)) ==  os.path.join(
+    ansible_path_for_build_path = os.path.join(
         OUTPUT_PATH, CLUSTER_NAME, ANSIBLE_OUTPUT_DIR)
+    result_path = get_ansible_path_for_build(os.path.join(
+        OUTPUT_PATH, CLUSTER_NAME))
+    assert os.path.exists(ansible_path_for_build_path)
+    assert result_path == ansible_path_for_build_path
+
 
 def test_get_ansible_config_file_path_for_build():
     assert get_ansible_config_file_path_for_build(os.path.join(

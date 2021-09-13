@@ -1,5 +1,8 @@
 from cli.helpers.Config import Config
+import shutil
 import os
+
+CLUSTER_NAME = 'test'
 
 def pytest_configure(config):
     """
@@ -8,6 +11,7 @@ def pytest_configure(config):
     file after command line options have been parsed.
     """
     Config().output_dir = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'test_results/')
+    shutil.rmtree(os.path.join(Config().output_dir, ), CLUSTER_NAME)
 
 
 def pytest_sessionstart(session):
