@@ -1,4 +1,5 @@
 import os
+import pytest
 from cli.helpers.build_saver import get_build_path
 from cli.helpers.data_loader import get_data_dir_path, get_provider_subdir_path, load_manifest_docs,\
     DATA_FOLDER_PATH
@@ -20,3 +21,7 @@ def test_load_manifest_docs():
     docs = load_manifest_docs(build_path)
     assert docs == TEST_DOCS
 
+def test_load_not_existing_manifest_docs():
+    build_path = get_build_path(CLUSTER_NAME_LOAD + "aaaa")
+    with pytest.raises(Exception):
+        load_manifest_docs(build_path)
