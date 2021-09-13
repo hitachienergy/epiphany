@@ -2,11 +2,7 @@ from cli.helpers.Config import Config
 import shutil
 import os
 from cli.helpers.build_saver import save_manifest, MANIFEST_FILE_NAME
-from tests.helpers.constants import TEST_DOCS
-
-CLUSTER_NAME_SAVE = 'test-save'
-CLUSTER_NAME_LOAD = 'test-load'
-
+from tests.helpers.constants import TEST_DOCS, CLUSTER_NAME_SAVE, CLUSTER_NAME_LOAD
 
 
 def pytest_configure(config):

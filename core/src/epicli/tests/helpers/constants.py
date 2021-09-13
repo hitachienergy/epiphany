@@ -1,3 +1,5 @@
+CLUSTER_NAME_SAVE = 'test-save'
+CLUSTER_NAME_LOAD = 'test-load'
 TEST_DOCS = \
     [{'kind': 'epiphany-cluster',
       'title': 'Epiphany cluster Config',
