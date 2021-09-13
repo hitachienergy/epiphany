@@ -9,18 +9,11 @@ from cli.helpers.build_saver import get_build_path, get_output_path, get_terrafo
     get_ansible_config_file_path_for_build, get_ansible_path_for_build,\
     TERRAFORM_OUTPUT_DIR, ANSIBLE_OUTPUT_DIR, ANSIBLE_VAULT_OUTPUT_DIR, INVENTORY_FILE_NAME,\
     MANIFEST_FILE_NAME, SP_FILE_NAME
+from tests.helpers.constants import TEST_DOCS
 
-CLUSTER_NAME = 'test'
+CLUSTER_NAME = 'test-save'
 OUTPUT_PATH = '/workspaces/epiphany/core/src/epicli/test_results/'
 SPEC_OUTPUT_DIR = 'spec_tests/'
-TEST_DOCS = \
-    [{'kind': 'epiphany-cluster',
-      'title': 'Epiphany cluster Config',
-      'provider': 'any',
-      'name': 'default',
-      'specification': {'name': 'default',
-                        'admin_user': {'name': 'operations', 'key_path': 'id_rsa'}}},
-     {'kind': 'infrastructure/machine', 'provider': 'any', 'name': 'default-repository'}]
 TEST_SP = {'appId': 'xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxx',
            'displayName': 'test-rg',
            'name': 'http://test-rg',

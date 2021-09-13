@@ -1,8 +1,13 @@
 from cli.helpers.Config import Config
 import shutil
 import os
+from cli.helpers.build_saver import save_manifest, MANIFEST_FILE_NAME
+from tests.helpers.constants import TEST_DOCS
 
-CLUSTER_NAME = 'test'
+CLUSTER_NAME_SAVE = 'test-save'
+CLUSTER_NAME_LOAD = 'test-load'
+
+
 
 def pytest_configure(config):
     """
@@ -10,8 +15,9 @@ def pytest_configure(config):
     This hook is called for every plugin and initial conftest
     file after command line options have been parsed.
     """
-    Config().output_dir = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'test_results/')
-    shutil.rmtree(os.path.join(Config().output_dir, ), CLUSTER_NAME)
+    Config().output_dir = os.path.join(os.path.dirname(
+        os.path.realpath(__file__)), 'test_results/')
+    prepare_test_directory()
 
 
 def pytest_sessionstart(session):
@@ -32,3 +38,13 @@ def pytest_unconfigure(config):
     """
     called before test process is exited.
     """
+
+
+def prepare_test_directory():
+    shutil.rmtree(os.path.join(Config().output_dir, ), CLUSTER_NAME_LOAD)
+    shutil.rmtree(os.path.join(Config().output_dir, ), CLUSTER_NAME_SAVE)
+    prepare_test_data_for_load()
+
+
+def prepare_test_data_for_load():
+    save_manifest(TEST_DOCS, CLUSTER_NAME_LOAD, MANIFEST_FILE_NAME)
