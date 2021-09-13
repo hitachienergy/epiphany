@@ -6,6 +6,7 @@ from cli.helpers.objdict_helpers import dict_to_objdict
 from cli.helpers.build_saver import get_build_path, get_output_path, get_terraform_path, get_ansible_path,\
     get_ansible_vault_path, get_ansible_config_file_path, get_inventory_path, get_manifest_path,\
     save_manifest, save_sp, save_inventory, save_ansible_config_file, get_inventory_path_for_build,\
+    get_ansible_config_file_path_for_build,\
     TERRAFORM_OUTPUT_DIR, ANSIBLE_OUTPUT_DIR, ANSIBLE_VAULT_OUTPUT_DIR, INVENTORY_FILE_NAME,\
     MANIFEST_FILE_NAME, SP_FILE_NAME
 
@@ -104,6 +105,13 @@ def test_get_inventory_path_for_build():
     assert get_inventory_path_for_build(os.path.join(
         OUTPUT_PATH, CLUSTER_NAME)) == os.path.join(
         OUTPUT_PATH, CLUSTER_NAME, INVENTORY_FILE_NAME)
+
+
+def test_get_ansible_config_file_path_for_build():
+    assert get_ansible_config_file_path_for_build(os.path.join(
+        OUTPUT_PATH, CLUSTER_NAME)) == os.path.join(
+        OUTPUT_PATH, CLUSTER_NAME, ANSIBLE_OUTPUT_DIR,  "ansible.cfg")
+
 
 def test_save_manifest():
     save_manifest(TEST_DOCS, CLUSTER_NAME, MANIFEST_FILE_NAME)
