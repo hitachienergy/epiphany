@@ -9,7 +9,7 @@ from cli.helpers.build_saver import get_build_path, get_output_path, get_terrafo
     get_ansible_config_file_path_for_build, get_ansible_path_for_build,\
     TERRAFORM_OUTPUT_DIR, ANSIBLE_OUTPUT_DIR, ANSIBLE_VAULT_OUTPUT_DIR, INVENTORY_FILE_NAME,\
     MANIFEST_FILE_NAME, SP_FILE_NAME
-from tests.helpers.constants import TEST_DOCS, CLUSTER_NAME_SAVE, OUTPUT_PATH
+from tests.helpers.constants import TEST_DOCS, CLUSTER_NAME_SAVE, OUTPUT_PATH, TEST_CLUSTER_MODEL, TEST_INVENTORY
 
 
 TEST_SP = {'appId': 'xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxx',
@@ -17,35 +17,6 @@ TEST_SP = {'appId': 'xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxx',
            'name': 'http://test-rg',
            'password': 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx',
            'tenant': 'xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx'}
-TEST_INVENTORY = [{'hosts':
-                   [{'ip': '10.0.0.1', 'name': 'test-1'},
-                    {'ip': '10.0.0.2', 'name': 'test-2'}],
-                   'role': 'postgresql'},
-                  {'hosts':
-                   [{'ip': '10.0.0.3', 'name': 'test-3'},
-                    {'ip': '10.0.0.4', 'name': 'test-4'}],
-                   'role': 'filebeat'}]
-TEST_CLUSTER_MODEL = \
-    {'kind': 'epiphany-cluster',
-     'title': 'Epiphany cluster Config',
-     'provider': 'azure',
-     'name': CLUSTER_NAME_SAVE,
-     'specification':
-     {'prefix': 'test',
-      'name': CLUSTER_NAME_SAVE,
-      'admin_user': {'name': 'operations', 'key_path': 'id_rsa'},
-      'cloud':
-      {
-          'subscription_name': 'Test-Dev',
-          'vnet_address_pool': '10.1.0.0/20',
-          'use_public_ips': False,
-          'use_service_principal': False,
-          'region': 'West Europe',
-          'credentials': {'key': '1111-1111-1111',
-                          'secret': 'XXXXXXXXXXXXXXX'},
-          'default_os_image': 'default'},
-      }
-     }
 ANSIBLE_CONFIG_FILE_SETTINGS = [('defaults', {
                                  'interpreter_python': 'auto_legacy_silent', 'allow_world_readable_tmpfiles': 'true'})]
 
