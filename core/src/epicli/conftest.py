@@ -1,8 +1,10 @@
 from cli.helpers.Config import Config
+import json
 import shutil
 import os
 from cli.helpers.build_saver import save_manifest, MANIFEST_FILE_NAME
-from tests.helpers.constants import TEST_DOCS, CLUSTER_NAME_SAVE, CLUSTER_NAME_LOAD, NON_EXISTING_CLUSTER
+from tests.helpers.constants import TEST_DOCS, CLUSTER_NAME_SAVE, CLUSTER_NAME_LOAD, NON_EXISTING_CLUSTER,\
+    TEST_JSON, TEST_JSON_NAME
 
 
 def pytest_configure(config):
@@ -37,11 +39,18 @@ def pytest_unconfigure(config):
 
 
 def prepare_test_directory():
-    shutil.rmtree(os.path.join(Config().output_dir, ), CLUSTER_NAME_LOAD)
-    shutil.rmtree(os.path.join(Config().output_dir, ), CLUSTER_NAME_SAVE)
-    shutil.rmtree(os.path.join(Config().output_dir, ), NON_EXISTING_CLUSTER)
+    rm_existing(os.path.join(Config().output_dir, CLUSTER_NAME_LOAD))
+    rm_existing(os.path.join(Config().output_dir, CLUSTER_NAME_SAVE))
+    rm_existing(os.path.join(Config().output_dir, NON_EXISTING_CLUSTER))
+    rm_existing(os.path.join(Config().output_dir, TEST_JSON_NAME))
     prepare_test_data_for_load()
 
 
 def prepare_test_data_for_load():
     save_manifest(TEST_DOCS, CLUSTER_NAME_LOAD, MANIFEST_FILE_NAME)
+    with open(os.path.join(Config().output_dir, TEST_JSON_NAME), 'w') as out:
+        json.dump(TEST_JSON, out)
+
+def rm_existing(path):
+    if os.path.exists(path):
+        shutil.rmtree(path) if os.path.isdir(path) else os.remove(path)
