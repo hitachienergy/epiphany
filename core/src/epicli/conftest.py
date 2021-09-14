@@ -39,10 +39,8 @@ def pytest_unconfigure(config):
 
 
 def prepare_test_directory():
-    rm_existing(os.path.join(Config().output_dir, CLUSTER_NAME_LOAD))
-    rm_existing(os.path.join(Config().output_dir, CLUSTER_NAME_SAVE))
-    rm_existing(os.path.join(Config().output_dir, NON_EXISTING_CLUSTER))
-    rm_existing(os.path.join(Config().output_dir, TEST_JSON_NAME))
+    for path in [CLUSTER_NAME_LOAD, CLUSTER_NAME_SAVE, NON_EXISTING_CLUSTER, TEST_JSON_NAME]:
+        rm_existing(os.path.join(Config().output_dir, path))
     prepare_test_data_for_load()
 
 
