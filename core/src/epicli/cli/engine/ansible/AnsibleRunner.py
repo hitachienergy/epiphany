@@ -20,7 +20,7 @@ class AnsibleRunner(Step):
     ANSIBLE_PLAYBOOKS_PATH = DATA_FOLDER_PATH + '/common/ansible/playbooks/'
 
     def __init__(self, cluster_model=None, config_docs=None, build_dir=None, backup_build_dir=None,
-                 ansible_options=None):
+                 ansible_options=None, ping_retries: int = 5):
         super().__init__(__name__)
         self.cluster_model = cluster_model
         self.config_docs = config_docs
@@ -28,6 +28,7 @@ class AnsibleRunner(Step):
         self.backup_build_dir = backup_build_dir
         self.ansible_options = ansible_options
         self.ansible_command = AnsibleCommand()
+        self.__ping_retries: int = ping_retries
 
     def __enter__(self):
         super().__enter__()
@@ -57,7 +58,7 @@ class AnsibleRunner(Step):
         self.ansible_command.run_task_with_retries(inventory=inventory_path,
                                                    module="ping",
                                                    hosts="all",
-                                                   retries=5)
+                                                   retries=self.__ping_retries)
 
         self.logger.info('Checking preflight conditions on each machine')
         self.ansible_command.run_playbook_with_retries(inventory=inventory_path,

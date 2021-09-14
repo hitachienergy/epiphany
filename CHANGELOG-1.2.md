@@ -14,6 +14,7 @@
 - [#2531](https://github.com/epiphany-platform/epiphany/issues/2531) - Add Pylint configuration to epicli devcontainer
 - [#1892](https://github.com/epiphany-platform/epiphany/issues/1892) - Add ansible-lint to epicli devcontainer
 - [#2558](https://github.com/epiphany-platform/epiphany/issues/2558) - Add rubocop to epicli devcontainer
+- [#2271](https://github.com/epiphany-platform/epiphany/issues/2271) - Add more retries for running ansible ping command
 
 ### Fixed
 
