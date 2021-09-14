@@ -2,38 +2,38 @@ import os
 import pytest
 from cli.helpers.build_saver import get_build_path
 from cli.helpers.data_loader import get_data_dir_path, get_provider_subdir_path, load_manifest_docs, load_json_obj,\
-    load_template_file, types, load_yaml_obj, load_all_yaml_objs, DATA_FOLDER_PATH
+    load_template_file, types, load_yaml_obj, load_all_yaml_objs, load_file_from_path, DATA_FOLDER_PATH
 from tests.helpers.constants import CLUSTER_NAME_LOAD, TEST_DOCS, NON_EXISTING_CLUSTER, OUTPUT_PATH, TEST_INVENTORY, TEST_JSON,\
     TEST_JSON_NAME, TEST_CLUSTER_MODEL
 
 SCRIPT_DIR = "/workspaces/epiphany/core/src/epicli/data"
 TEST_MINIMAL_CLUSTER_CONFIG = {'kind': 'epiphany-cluster',
                                'title': 'Epiphany cluster Config',
-                                'provider': 'aws',
-                                'name': 'default',
-                                'specification': {'name': 'name',
-                                                  'prefix': 'prefix',
-                                                  'admin_user':
-                                                  {'name': 'operations',
-                                                   'key_path': '/user/.ssh/epiphany-operations/id_rsa'},
-                                                  'cloud':
-                                                  {'k8s_as_cloud_service': False,
-                                                   'use_public_ips': False,
-                                                   'credentials': {
-                                                       'key': 'XXXX-XXXX-XXXX',
-                                                       'secret': 'XXXXXXXXXXXXXXXX'
-                                                   },
-                                                      'default_os_image': 'default'},
-                                                  'components':
-                                                  {'repository': {'count': 1},
-                                                   'kubernetes_master': {'count': 1},
-                                                   'kubernetes_node': {'count': 2},
-                                                   'logging': {'count': 1},
-                                                   'monitoring': {'count': 1},
-                                                   'kafka': {'count': 2},
-                                                   'postgresql': {'count': 1},
-                                                   'load_balancer': {'count': 1},
-                                                   'rabbitmq': {'count': 1}}}}
+                               'provider': 'aws',
+                               'name': 'default',
+                               'specification': {'name': 'name',
+                                                 'prefix': 'prefix',
+                                                 'admin_user':
+                                                 {'name': 'operations',
+                                                  'key_path': '/user/.ssh/epiphany-operations/id_rsa'},
+                                                 'cloud':
+                                                 {'k8s_as_cloud_service': False,
+                                                  'use_public_ips': False,
+                                                  'credentials': {
+                                                      'key': 'XXXX-XXXX-XXXX',
+                                                      'secret': 'XXXXXXXXXXXXXXXX'
+                                                  },
+                                                  'default_os_image': 'default'},
+                                                 'components':
+                                                 {'repository': {'count': 1},
+                                                  'kubernetes_master': {'count': 1},
+                                                  'kubernetes_node': {'count': 2},
+                                                  'logging': {'count': 1},
+                                                  'monitoring': {'count': 1},
+                                                  'kafka': {'count': 2},
+                                                  'postgresql': {'count': 1},
+                                                  'load_balancer': {'count': 1},
+                                                  'rabbitmq': {'count': 1}}}}
 
 
 def test_get_data_dir_path():
@@ -82,5 +82,14 @@ def test_load_all_yaml_objs():
 
 
 def test_load_yaml_obj():
-    yaml_obj = load_yaml_obj(types.DEFAULT, "aws", 'configuration/minimal-cluster-config')
+    yaml_obj = load_yaml_obj(types.DEFAULT, 'aws',
+                             'configuration/minimal-cluster-config')
     assert yaml_obj == TEST_MINIMAL_CLUSTER_CONFIG
+
+
+def test_load_file_from_path():
+    path_to_file = os.path.realpath(
+        os.path.join(SCRIPT_DIR, DATA_FOLDER_PATH, 'aws', types.DEFAULT, 'configuration/minimal-cluster-config' + '.yml'))
+    loaded_file = load_file_from_path(
+        SCRIPT_DIR, path_to_file, types.DEFAULT, 'configuration/minimal-cluster-config')
+    assert loaded_file == [TEST_MINIMAL_CLUSTER_CONFIG]
