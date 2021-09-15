@@ -1,8 +1,10 @@
 import os
 import pytest
+import glob
 from cli.helpers.build_saver import get_build_path
 from cli.helpers.data_loader import get_data_dir_path, get_provider_subdir_path, load_manifest_docs, load_json_obj,\
-    load_template_file, types, load_yaml_obj, load_all_yaml_objs, load_file_from_path, DATA_FOLDER_PATH
+    load_template_file, types, load_yaml_obj, load_all_yaml_objs, load_file_from_path, load_all_documents_from_folder,\
+    DATA_FOLDER_PATH
 from tests.helpers.constants import CLUSTER_NAME_LOAD, TEST_DOCS, NON_EXISTING_CLUSTER, OUTPUT_PATH, TEST_INVENTORY, TEST_JSON,\
     TEST_JSON_NAME, TEST_CLUSTER_MODEL
 
@@ -93,3 +95,10 @@ def test_load_file_from_path():
     loaded_file = load_file_from_path(
         SCRIPT_DIR, path_to_file, types.DEFAULT, 'configuration/minimal-cluster-config')
     assert loaded_file == [TEST_MINIMAL_CLUSTER_CONFIG]
+
+
+def test_load_all_documents_from_folder():
+    defaults = load_all_documents_from_folder(
+        'common', 'defaults/configuration')
+    directory_path = os.path.join(SCRIPT_DIR, DATA_FOLDER_PATH, 'common', 'defaults/configuration')
+    assert len(defaults) == len(glob.glob(os.path.join(directory_path, '*.yml')))
