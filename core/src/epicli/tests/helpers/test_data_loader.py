@@ -9,33 +9,45 @@ from tests.helpers.constants import CLUSTER_NAME_LOAD, TEST_DOCS, NON_EXISTING_C
     TEST_JSON_NAME, TEST_CLUSTER_MODEL
 
 SCRIPT_DIR = "/workspaces/epiphany/core/src/epicli/data"
-TEST_MINIMAL_CLUSTER_CONFIG = {'kind': 'epiphany-cluster',
-                               'title': 'Epiphany cluster Config',
-                               'provider': 'aws',
-                               'name': 'default',
-                               'specification': {'name': 'name',
-                                                 'prefix': 'prefix',
-                                                 'admin_user':
-                                                 {'name': 'operations',
-                                                  'key_path': '/user/.ssh/epiphany-operations/id_rsa'},
-                                                 'cloud':
-                                                 {'k8s_as_cloud_service': False,
-                                                  'use_public_ips': False,
-                                                  'credentials': {
-                                                      'key': 'XXXX-XXXX-XXXX',
-                                                      'secret': 'XXXXXXXXXXXXXXXX'
-                                                  },
-                                                  'default_os_image': 'default'},
-                                                 'components':
-                                                 {'repository': {'count': 1},
-                                                  'kubernetes_master': {'count': 1},
-                                                  'kubernetes_node': {'count': 2},
-                                                  'logging': {'count': 1},
-                                                  'monitoring': {'count': 1},
-                                                  'kafka': {'count': 2},
-                                                  'postgresql': {'count': 1},
-                                                  'load_balancer': {'count': 1},
-                                                  'rabbitmq': {'count': 1}}}}
+TEST_MINIMAL_CLUSTER_CONFIG = {
+    'kind': 'epiphany-cluster',
+    'title': 'Epiphany cluster Config',
+    'provider': 'aws',
+    'name': 'default',
+    'specification':
+    {
+        'name': 'name',
+        'prefix': 'prefix',
+        'admin_user':
+        {
+            'name': 'operations',
+            'key_path': '/user/.ssh/epiphany-operations/id_rsa'
+        },
+        'cloud':
+        {
+            'k8s_as_cloud_service': False,
+            'use_public_ips': False,
+            'credentials':
+            {
+                'key': 'XXXX-XXXX-XXXX',
+                'secret': 'XXXXXXXXXXXXXXXX'
+            },
+            'default_os_image': 'default'
+        },
+        'components':
+        {
+            'repository': {'count': 1},
+            'kubernetes_master': {'count': 1},
+            'kubernetes_node': {'count': 2},
+            'logging': {'count': 1},
+            'monitoring': {'count': 1},
+            'kafka': {'count': 2},
+            'postgresql': {'count': 1},
+            'load_balancer': {'count': 1},
+            'rabbitmq': {'count': 1}
+        }
+    }
+}
 
 
 def test_get_data_dir_path():
@@ -100,5 +112,7 @@ def test_load_file_from_path():
 def test_load_all_documents_from_folder():
     defaults = load_all_documents_from_folder(
         'common', 'defaults/configuration')
-    directory_path = os.path.join(SCRIPT_DIR, DATA_FOLDER_PATH, 'common', 'defaults/configuration')
-    assert len(defaults) == len(glob.glob(os.path.join(directory_path, '*.yml')))
+    directory_path = os.path.join(
+        SCRIPT_DIR, DATA_FOLDER_PATH, 'common', 'defaults/configuration')
+    assert len(defaults) == len(
+        glob.glob(os.path.join(directory_path, '*.yml')))

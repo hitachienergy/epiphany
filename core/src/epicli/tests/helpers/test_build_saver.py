@@ -83,8 +83,8 @@ def test_get_inventory_path_for_build():
 def test_get_ansible_path_for_build():
     ansible_path_for_build_path = os.path.join(
         OUTPUT_PATH, CLUSTER_NAME_SAVE, ANSIBLE_OUTPUT_DIR)
-    result_path = get_ansible_path_for_build(os.path.join(
-        OUTPUT_PATH, CLUSTER_NAME_SAVE))
+    result_path = get_ansible_path_for_build(
+        os.path.join(OUTPUT_PATH, CLUSTER_NAME_SAVE))
     assert os.path.exists(ansible_path_for_build_path)
     assert result_path == ansible_path_for_build_path
 
@@ -106,8 +106,8 @@ def test_save_manifest():
 
 def test_save_sp():
     save_sp(TEST_SP, CLUSTER_NAME_SAVE)
-    sp_path = os.path.join(
-        OUTPUT_PATH, CLUSTER_NAME_SAVE, TERRAFORM_OUTPUT_DIR, SP_FILE_NAME)
+    sp_path = os.path.join(OUTPUT_PATH, CLUSTER_NAME_SAVE,
+                           TERRAFORM_OUTPUT_DIR, SP_FILE_NAME)
     sp_stream = open(sp_path, 'r')
     sp_file_content = safe_load(sp_stream)
     assert TEST_SP == sp_file_content
