@@ -13,6 +13,12 @@
       /bin/systemctl stop {{ repmgr.service_name[ansible_os_family] }}
     validate: 'visudo -cf %s'
 
+- name: Ascertain primary node
+  become_user: postgres
+  postgresql_info:
+    filter: in_recovery
+  register: in_recovery_state
+
 - name: Stop repmgr service
   block:
   - name: Stop repmgr on standby node
@@ -20,14 +26,14 @@
       name: "{{ repmgr.service_name[ansible_os_family] }}"
       state: stopped
     when:
-      - groups['postgresql'][1] == inventory_hostname
+      - in_recovery_state.in_recovery
 
   - name: Stop repmgr on primary node
     service:
       name: "{{ repmgr.service_name[ansible_os_family] }}"
       state: stopped
     when:
-      - groups['postgresql'][0] == inventory_hostname
+      - not in_recovery_state.in_recovery
   when:
     - component_vars.specification.extensions.replication.enabled | default(false)
 
@@ -155,7 +161,7 @@
         - "{{ recovery_dir }}/{{ snapshot_path | basename }}"
         - "{{ recovery_dir }}/{{ snapshot_path | basename }}.sha1"
   when:
-    - groups['postgresql'][0] == inventory_hostname
+    - not in_recovery_state.in_recovery
 
 - name: Configure repmgr on secondary node
   block:
@@ -232,7 +238,7 @@
       command: "{{ repmgr.bin_dir[ansible_os_family] }}/repmgr standby follow"
   when:
     - component_vars.specification.extensions.replication.enabled | default(false)
-    - groups['postgresql'][1] == inventory_hostname
+    - in_recovery_state.in_recovery
 
 - name: Restart repmgrd service
   service:
