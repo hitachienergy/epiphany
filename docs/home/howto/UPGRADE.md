@@ -1,6 +1,6 @@
-## Upgrade
+# Upgrade
 
-### Introduction
+## Introduction
 
 From Epicli 0.4.2 and up the CLI has the ability to perform upgrades on certain components on a cluster. The components
 it currently can upgrade and will add are:
@@ -37,9 +37,9 @@ Note about upgrade from pre-0.8 Epiphany:
   Azure size (2 CPUs, 7 GB RAM) machine, or its equivalent on AWS and on-prem installations. It's very related to
   amount of data you'll store inside. Please see [logging](./LOGGING.md) documentation for more details.
 
-### Online upgrade
+## Online upgrade
 
-#### Online prerequisites
+### Online prerequisites
 
 Your airgapped existing cluster should meet the following requirements:
 
@@ -58,7 +58,7 @@ Your airgapped existing cluster should meet the following requirements:
     - Has Epicli 0.4.2 or up running.
       *Note. To run Epicli check the [Prerequisites](./PREREQUISITES.md)*
 
-#### Start the online upgrade
+### Start the online upgrade
 
 Start the upgrade with:
 
@@ -69,9 +69,9 @@ epicli upgrade -b /buildoutput/
 This will backup and upgrade the Ansible inventory in the provided build folder `/buildoutput/` which will be used to
 perform the upgrade of the components.
 
-### Offline upgrade
+## Offline upgrade
 
-#### Offline prerequisites
+### Offline prerequisites
 
 Your airgapped existing cluster should meet the following requirements:
 
@@ -99,7 +99,7 @@ Before running `epicli`, check the [Prerequisites](./PREREQUISITES.md)
 
 ---
 
-#### Start the offline upgrade
+### Start the offline upgrade
 
 To upgrade the cluster components run the following steps:
 
@@ -135,7 +135,7 @@ To upgrade the cluster components run the following steps:
    perform the upgrade of the components. The `--offline-requirements` flag tells Epicli where to find the folder with
    requirements (`/requirementsoutput/`) prepared in steps 1 and 2 which is needed for the offline upgrade.
 
-### Additional parameters
+## Additional parameters
 
 The `epicli upgrade` command has additional flags:
 
@@ -151,7 +151,7 @@ The `epicli upgrade` command has additional flags:
    epicli upgrade -b /buildoutput/ --upgrade-components "kafka,filebeat"
    ```
 
-### Run *apply* after *upgrade*
+## Run *apply* after *upgrade*
 
 Currently, Epiphany does not fully support apply after upgrade. There is a possibility to re-apply configuration from
 newer version of Epicli but this needs some manual work from Administrator. Re-apply on already upgraded cluster needs
@@ -217,7 +217,7 @@ specification:
 ...
 ```
 
-### Kubernetes applications
+## Kubernetes applications
 
 To upgrade applications on Kubernetes to the desired version after `epicli upgrade` you have to:
 
@@ -234,16 +234,16 @@ The above link points to develop branch. Please choose the right branch that sui
 
 ---
 
-### How to upgrade Kafka
+## How to upgrade Kafka
 
-#### Kafka upgrade
+### Kafka upgrade
 
 Kafka will be automatically updated to the latest version supported by Epiphany. You can check the latest supported
 version [here](../COMPONENTS.md#epiphany-cluster-components). Kafka brokers are updated one by one - but the update
 procedure does not guarantee "zero downtime" because it depends on the number of available brokers, topic, and
 partitioning configuration.
 
-#### ZooKeeper upgrade
+### ZooKeeper upgrade
 
 Redundant ZooKeeper configuration is also recommended, since service restart is required during upgrade - it can cause
 ZooKeeper unavailability. Having **at least two ZooKeeper services** in *ZooKeepers ensemble* you can upgrade one and
@@ -252,7 +252,7 @@ then start with the rest **one by one**.
 More detailed information about ZooKeeper you can find
 in  [ZooKeeper documentation](https://cwiki.apache.org/confluence/display/ZOOKEEPER).
 
-### Open Distro for Elasticsearch upgrade
+## Open Distro for Elasticsearch upgrade
 
 ---
 **NOTE**
@@ -286,7 +286,7 @@ opendistro_for_elasticsearch:
 They are accessible via the defaults of `upgrade`
 role (`/usr/local/epicli/data/common/ansible/playbooks/roles/upgrade/defaults/main.yml`).
 
-### Node exporter upgrade
+## Node exporter upgrade
 
 ---
 **NOTE**
@@ -315,16 +315,16 @@ that is done automatically to v23.1.4. Upgrade is performed in offline mode afte
 [Rolling upgrade](https://www.rabbitmq.com/upgrade.html#rolling-upgrades) is not supported by Epiphany, and it is
 advised not to use this approach when Erlang needs to be upgraded.
 
-### Kubernetes upgrade
+## Kubernetes upgrade
 
-#### Prerequisites
+### Prerequisites
 
 Before K8s version upgrade make sure that deprecated API versions are not used:
 
 1. [v1.17](https://v1-17.docs.kubernetes.io/docs/setup/release/notes/#deprecations-and-removals)
 2. [v1.18](https://v1-18.docs.kubernetes.io/docs/setup/release/notes/#deprecation)
 
-#### Upgrade
+### Upgrade
 
 ---
 **NOTE**
@@ -357,7 +357,7 @@ Istio application configuration.**
 
 ---
 
-### PostgreSQL upgrade
+## PostgreSQL upgrade
 
 ---
 **NOTE**
@@ -366,15 +366,17 @@ Before upgrade procedure, make sure you have a data backup.
 
 ---
 
-#### Versions
+### Versions
 
-With the latest Epiphany version it's possible to upgrade PostgreSQL to v13 with new extension versions:
+Epiphany upgrades PostgreSQL 10 to 13 with the following extensions
+(for versions, see [COMPONENTS.md](../COMPONENTS.md#epiphany-cluster-components)):
 
-- PgAudit v1.5.0
-- PgBouncer v1.16.0
-- repmgr v5.2.1
+- PgAudit
+- PgBouncer
+- PgPool
+- repmgr
 
-#### Upgrade
+### Upgrade
 
 Upgrade procedure is based on [PostgreSQL documentation](https://www.postgresql.org/docs/13/pgupgrade.html) and
 requires downtime as there is a need to stop old service(s) and start new one(s).
@@ -389,20 +391,37 @@ limitations related to specifying parameters for upgrade:
   by [wal_keep_size](https://www.postgresql.org/docs/13/runtime-config-replication.html#GUC-WAL-KEEP-SIZE) with the
   default value of 500 MB. Previous parameter is not supported.
 
-- `archive_command` parameter for replication was set to `/bin/true` by default. It was planned to disable archiving,
+- `archive_command` parameter for replication is set to `/bin/true` by default. It was planned to disable archiving,
   but changes to `archive_mode` require a full PostgreSQL server restart, while `archive_command` changes can be applied
   via a normal configuration reload. See [documentation](https://repmgr.org/docs/repmgr.html#CONFIGURATION-POSTGRESQL).
 
 - There is no possibility to disable an extension after installation, so `specification.extensions.*.enabled: false`
   value will be ignored during upgrade if it was set to `true` during installation.
 
+### Manual actions
+
+Epiphany runs `pg_upgrade` (on primary node only) from a dedicated location (`pg_upgrade_working_dir`).
+For Ubuntu, this is `/var/lib/postgresql/upgrade/$PG_VERSION` and for RHEL/CentOS `/var/lib/pgsql/upgrade/$PG_VERSION`.
+Epiphany saves there output from `pg_upgrade` as logs which should be checked after the upgrade.
+
 #### Post-upgrade processing
 
-As p.13 of [PostgreSQL documentation](https://www.postgresql.org/docs/13/pgupgrade.html) states there might be some
-scripts generated after an upgrade. There is no clear description in which cases and what location they are created, so
-please check logs after the upgrade to see if additional steps are required.
+As the "Post-upgrade processing" step in [PostgreSQL documentation](https://www.postgresql.org/docs/13/pgupgrade.html) states
+if any post-upgrade processing is required, `pg_upgrade` will issue warnings as it completes.
+It will also generate SQL script files that must be run by the administrator. There is no clear description in which cases
+they are created, so please check logs in `pg_upgrade_working_dir` after the upgrade to see if additional steps are required.
 
-#### Old PostgreSQL data removal
+#### Statistics
+
+Because optimizer statistics are not transferred by `pg_upgrade`, you may need to run a command to regenerate that information
+after the upgrade. For this purpose, consider running `analyze_new_cluster.sh` script (created in `pg_upgrade_working_dir`)
+as `postgres` user.
+
+#### Delete old cluster
 
 For safety Epiphany does not remove old PostgreSQL data. This is a user responsibility to identify if data is ready to
-be removed and take care about that.
+be removed and take care about that. Once you are satisfied with the upgrade, you can delete the old cluster's data directories
+by running `delete_old_cluster.sh` script (created in `pg_upgrade_working_dir` on primary node) **on all nodes**.
+The script is not created if you have user-defined tablespaces inside the old data directory.
+You can also delete the old installation directories (e.g., `bin`, `share`). You may delete `pg_upgrade_working_dir`
+on primary node once the upgrade is completely over.

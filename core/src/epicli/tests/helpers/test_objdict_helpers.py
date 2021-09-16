@@ -1,7 +1,7 @@
 from collections import OrderedDict
 
 import pytest
-from cli.helpers.objdict_helpers import dict_to_objdict, objdict_to_dict, is_named_list, assert_unique_names_in_named_list, merge_objdict, DuplicatesInNamedListException, TypeMismatchException
+from cli.helpers.objdict_helpers import dict_to_objdict, objdict_to_dict, is_named_list, assert_unique_names_in_named_list, merge_objdict, DuplicatesInNamedListException, TypeMismatchException, replace_yesno_with_booleans
 from cli.helpers.ObjDict import ObjDict
 
 
@@ -442,3 +442,53 @@ def test_dict_atrribute_asserts_on_unknown_merge_mode():
     })
     with pytest.raises(AttributeError):
         merge_objdict(base, extend_by)
+
+
+def test_replace_yesno_with_boolean_true_values():
+    objdict = ObjDict({
+        'field1': ObjDict({
+            'field2': ObjDict({
+                'value1': 'y',
+                'value2': 'Y',
+                'value3': 'yes',
+                'value4': 'Yes',
+                'value5': 'YES',
+                'value6': 'on',
+                'value7': 'On',
+                'value8': 'ON',
+                'value9': 'true',
+                'value10': 'True',
+                'value11': 'TRUE',
+            })
+        })
+    })
+
+    replace_yesno_with_booleans(objdict)
+
+    assert objdict.field1.field2.value1 is True
+    assert objdict.field1.field2.value2 is True
+    assert objdict.field1.field2.value3 is True
+    assert objdict.field1.field2.value4 is True
+    assert objdict.field1.field2.value5 is True
+
+
+def test_replace_yesno_with_boolean_false_values():
+    objdict = ObjDict({
+        'field1': ObjDict({
+            'field2': ObjDict({
+                'value1': 'n',
+                'value2': 'N',
+                'value3': 'no',
+                'value4': 'No',
+                'value5': 'NO',
+            })
+        })
+    })
+
+    replace_yesno_with_booleans(objdict)
+
+    assert objdict.field1.field2.value1 is False
+    assert objdict.field1.field2.value2 is False
+    assert objdict.field1.field2.value3 is False
+    assert objdict.field1.field2.value4 is False
+    assert objdict.field1.field2.value5 is False

@@ -63,6 +63,8 @@ if [[ ! -f /etc/apt/sources.list ]]; then
     fi
 fi
 
+check_connection apt '/etc/apt/sources.list'
+
 # install prerequisites which might be missing
 prerequisites=(wget gpg curl tar)
 for i in ${prerequisites[@]}; do
