@@ -51,8 +51,7 @@ TEST_MINIMAL_CLUSTER_CONFIG = {
 
 
 def test_get_data_dir_path():
-    assert get_data_dir_path() == os.path.realpath(
-        os.path.join(SCRIPT_DIR, DATA_FOLDER_PATH))
+    assert get_data_dir_path() == os.path.realpath(os.path.join(SCRIPT_DIR, DATA_FOLDER_PATH))
 
 
 def test_get_provider_subdir_path():
@@ -79,8 +78,7 @@ def test_load_json_obj():
 
 def test_load_template_file():
     template = load_template_file(types.ANSIBLE, "common", "ansible_inventory")
-    content = template.render(inventory=TEST_INVENTORY,
-                              cluster_model=TEST_CLUSTER_MODEL)
+    content = template.render(inventory=TEST_INVENTORY, cluster_model=TEST_CLUSTER_MODEL)
     assert 'test-1 ansible_host=10.0.0.1' in content
     assert 'test-2 ansible_host=10.0.0.2' in content
     assert 'test-3 ansible_host=10.0.0.3' in content
@@ -90,14 +88,12 @@ def test_load_template_file():
 
 
 def test_load_all_yaml_objs():
-    yaml_objs = load_all_yaml_objs(
-        types.DEFAULT, "aws", 'configuration/minimal-cluster-config')
+    yaml_objs = load_all_yaml_objs(types.DEFAULT, "aws", 'configuration/minimal-cluster-config')
     assert yaml_objs == [TEST_MINIMAL_CLUSTER_CONFIG]
 
 
 def test_load_yaml_obj():
-    yaml_obj = load_yaml_obj(types.DEFAULT, 'aws',
-                             'configuration/minimal-cluster-config')
+    yaml_obj = load_yaml_obj(types.DEFAULT, 'aws', 'configuration/minimal-cluster-config')
     assert yaml_obj == TEST_MINIMAL_CLUSTER_CONFIG
 
 
@@ -110,9 +106,7 @@ def test_load_file_from_path():
 
 
 def test_load_all_documents_from_folder():
-    defaults = load_all_documents_from_folder(
-        'common', 'defaults/configuration')
-    directory_path = os.path.join(
-        SCRIPT_DIR, DATA_FOLDER_PATH, 'common', 'defaults/configuration')
+    defaults = load_all_documents_from_folder('common', 'defaults/configuration')
+    directory_path = os.path.join(SCRIPT_DIR, DATA_FOLDER_PATH, 'common', 'defaults/configuration')
     assert len(defaults) == len(
         glob.glob(os.path.join(directory_path, '*.yml')))
