@@ -3,6 +3,8 @@ from cli.helpers.doc_list_helpers import select_first
 from copy import deepcopy
 from collections.abc import Iterable
 
+YES_VALUES = ['y', 'Y', 'yes', 'Yes', 'YES']
+NO_VALUES = ['n', 'N', 'no', 'No', 'NO']
 
 class DuplicatesInNamedListException(Exception):
     pass
@@ -128,9 +130,9 @@ def replace_yesno_with_booleans(d):
     elif isinstance(d, ObjDict):
         for key, val in d.items():
             if isinstance(d[key], str):
-                if val == 'yes':
+                if val in YES_VALUES:
                     d[key] = True
-                elif val == 'no':
+                elif val in NO_VALUES:
                     d[key] = False
             else:
                 replace_yesno_with_booleans(d[key])
