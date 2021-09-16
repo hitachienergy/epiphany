@@ -50,16 +50,16 @@ TEST_MINIMAL_CLUSTER_CONFIG = {
     }
 }
 
-script_dir = os.path.dirname(os.path.realpath(__file__))
+SCRIPT_DIR = os.path.dirname(os.path.realpath(__file__))
 
 
 def test_get_data_dir_path():
-    assert get_data_dir_path() == os.path.realpath(os.path.join(script_dir, DATA_FOLDER_PATH))
+    assert get_data_dir_path() == os.path.realpath(os.path.join(SCRIPT_DIR, DATA_FOLDER_PATH))
 
 
 def test_get_provider_subdir_path():
     assert get_provider_subdir_path("terraform", "aws") == os.path.realpath(
-        os.path.join(script_dir, DATA_FOLDER_PATH, "aws", "terraform"))
+        os.path.join(SCRIPT_DIR, DATA_FOLDER_PATH, "aws", "terraform"))
 
 
 def test_load_manifest_docs():
@@ -102,12 +102,12 @@ def test_load_yaml_obj():
 
 def test_load_file_from_path():
     path_to_file = os.path.realpath(
-        os.path.join(script_dir, DATA_FOLDER_PATH, 'aws', types.DEFAULT, 'configuration/minimal-cluster-config.yml'))
-    loaded_file = load_file_from_path(script_dir, path_to_file, types.DEFAULT, 'configuration/minimal-cluster-config')
+        os.path.join(SCRIPT_DIR, DATA_FOLDER_PATH, 'aws', types.DEFAULT, 'configuration/minimal-cluster-config.yml'))
+    loaded_file = load_file_from_path(SCRIPT_DIR, path_to_file, types.DEFAULT, 'configuration/minimal-cluster-config')
     assert loaded_file == [TEST_MINIMAL_CLUSTER_CONFIG]
 
 
 def test_load_all_documents_from_folder():
     defaults = load_all_documents_from_folder('common', 'defaults/configuration')
-    directory_path = os.path.join(script_dir, DATA_FOLDER_PATH, 'common', 'defaults/configuration')
+    directory_path = os.path.join(SCRIPT_DIR, DATA_FOLDER_PATH, 'common', 'defaults/configuration')
     assert len(defaults) == len(glob.glob(os.path.join(directory_path, '*.yml')))
