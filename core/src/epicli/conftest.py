@@ -1,8 +1,10 @@
-from cli.helpers.Config import Config
+
 import json
-import shutil
 import os
+import shutil
+
 from cli.helpers.build_saver import save_manifest, MANIFEST_FILE_NAME
+from cli.helpers.Config import Config
 from tests.helpers.constants import TEST_DOCS, CLUSTER_NAME_SAVE, CLUSTER_NAME_LOAD, NON_EXISTING_CLUSTER,\
     TEST_JSON, TEST_JSON_NAME
 

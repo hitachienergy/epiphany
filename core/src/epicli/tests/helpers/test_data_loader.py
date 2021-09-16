@@ -1,12 +1,15 @@
-import os
-import pytest
 import glob
+import os
+
+import pytest
+
 from cli.helpers.build_saver import get_build_path
-from cli.helpers.data_loader import get_data_dir_path, get_provider_subdir_path, load_manifest_docs, load_json_obj,\
-    load_template_file, types, load_yaml_obj, load_all_yaml_objs, load_file_from_path, load_all_documents_from_folder,\
-    DATA_FOLDER_PATH
-from tests.helpers.constants import CLUSTER_NAME_LOAD, TEST_DOCS, NON_EXISTING_CLUSTER, OUTPUT_PATH, TEST_INVENTORY, TEST_JSON,\
+from tests.helpers.constants import CLUSTER_NAME_LOAD, NON_EXISTING_CLUSTER, TEST_DOCS,  OUTPUT_PATH, TEST_INVENTORY, TEST_JSON,\
     TEST_JSON_NAME, TEST_CLUSTER_MODEL
+from cli.helpers.data_loader import get_data_dir_path, get_provider_subdir_path, load_manifest_docs, load_json_obj,\
+    load_template_file, load_yaml_obj, load_all_yaml_objs, load_file_from_path, load_all_documents_from_folder, types,\
+    DATA_FOLDER_PATH
+
 
 SCRIPT_DIR = "/workspaces/epiphany/core/src/epicli/data"
 TEST_MINIMAL_CLUSTER_CONFIG = {
@@ -99,7 +102,7 @@ def test_load_yaml_obj():
 
 def test_load_file_from_path():
     path_to_file = os.path.realpath(
-        os.path.join(SCRIPT_DIR, DATA_FOLDER_PATH, 'aws', types.DEFAULT, 'configuration/minimal-cluster-config' + '.yml'))
+        os.path.join(SCRIPT_DIR, DATA_FOLDER_PATH, 'aws', types.DEFAULT, 'configuration/minimal-cluster-config.yml'))
     loaded_file = load_file_from_path(
         SCRIPT_DIR, path_to_file, types.DEFAULT, 'configuration/minimal-cluster-config')
     assert loaded_file == [TEST_MINIMAL_CLUSTER_CONFIG]

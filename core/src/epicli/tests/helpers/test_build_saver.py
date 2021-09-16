@@ -1,16 +1,17 @@
-import os
-from ruamel.yaml import YAML
 from collections import OrderedDict
-from cli.helpers.yaml_helpers import safe_load_all, safe_load
-from cli.helpers.objdict_helpers import dict_to_objdict
+import os
+
+from ruamel.yaml import YAML
+
 from cli.helpers.build_saver import get_build_path, get_output_path, get_terraform_path, get_ansible_path,\
     get_ansible_vault_path, get_ansible_config_file_path, get_inventory_path, get_manifest_path,\
     save_manifest, save_sp, save_inventory, save_ansible_config_file, get_inventory_path_for_build,\
     get_ansible_config_file_path_for_build, get_ansible_path_for_build,\
-    TERRAFORM_OUTPUT_DIR, ANSIBLE_OUTPUT_DIR, ANSIBLE_VAULT_OUTPUT_DIR, INVENTORY_FILE_NAME,\
-    MANIFEST_FILE_NAME, SP_FILE_NAME
-from tests.helpers.constants import TEST_DOCS, CLUSTER_NAME_SAVE, OUTPUT_PATH, TEST_CLUSTER_MODEL, TEST_INVENTORY
-
+    ANSIBLE_OUTPUT_DIR, ANSIBLE_VAULT_OUTPUT_DIR, INVENTORY_FILE_NAME, MANIFEST_FILE_NAME,\
+    SP_FILE_NAME, TERRAFORM_OUTPUT_DIR
+from tests.helpers.constants import CLUSTER_NAME_SAVE, OUTPUT_PATH, TEST_DOCS, TEST_CLUSTER_MODEL, TEST_INVENTORY
+from cli.helpers.objdict_helpers import dict_to_objdict
+from cli.helpers.yaml_helpers import safe_load_all, safe_load
 
 TEST_SP = {'appId': 'xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxx',
            'displayName': 'test-rg',
@@ -18,9 +19,9 @@ TEST_SP = {'appId': 'xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxx',
            'password': 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx',
            'tenant': 'xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx'}
 ANSIBLE_CONFIG_FILE_SETTINGS = [('defaults', {
-                                 'interpreter_python': 'auto_legacy_silent', 'allow_world_readable_tmpfiles': 'true'})]
-
-# TODO: Check directory creation for tests
+                                 'interpreter_python': 'auto_legacy_silent',
+                                 'allow_world_readable_tmpfiles': 'true'
+                                 })]
 
 
 def test_get_output_path():
