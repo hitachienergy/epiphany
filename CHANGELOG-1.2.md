@@ -1,6 +1,6 @@
 # Changelog 1.2
 
-## [1.2.0] YYYY-MM-DD
+## [1.2.0rc1] 2021-09-16
 
 ### Added
 
