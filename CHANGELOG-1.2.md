@@ -41,6 +41,7 @@
 - [#2453](https://github.com/epiphany-platform/epiphany/issues/2453) - Upgrade PgBouncer to v1.16.0 [standalone]
 - [#2457](https://github.com/epiphany-platform/epiphany/issues/2457) - Upgrade Docker-CE to v20.10.8
 - [#2511](https://github.com/epiphany-platform/epiphany/issues/2511) - Upgrade Python packages to at least the latest patch version.
+- [#2591](https://github.com/epiphany-platform/epiphany/issues/2591) - Update OS cloud images to the latest
 
 ### Deprecated
 
