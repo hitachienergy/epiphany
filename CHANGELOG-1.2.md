@@ -1,5 +1,11 @@
 # Changelog 1.2
 
+## [1.2.0] 2021-XX-XX
+
+### Updated
+
+- [#2591](https://github.com/epiphany-platform/epiphany/issues/2591) - Update OS cloud images to the latest
+
 ## [1.2.0rc1] 2021-09-16
 
 ### Added
