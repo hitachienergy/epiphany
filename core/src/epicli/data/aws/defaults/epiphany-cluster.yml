@@ -111,4 +111,4 @@ specification:
         - availability_zone: eu-west-2a
           address_pool: 10.1.1.0/24
         - availability_zone: eu-west-2b
-          address_pool: 10.1.2.0/24         
+          address_pool: 10.1.2.0/24
