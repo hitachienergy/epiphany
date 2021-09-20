@@ -1,44 +1,54 @@
 ---
-# Actions taken only when replication with repmgr is enabled
-- name: Add postgres user to sudoers file
-  lineinfile:
-    path: /etc/sudoers
-    line: >-
-      postgres ALL=(ALL:ALL) NOPASSWD:
-      /bin/systemctl start {{ pg.service_name[ansible_os_family] }},
-      /bin/systemctl stop {{ pg.service_name[ansible_os_family] }},
-      /bin/systemctl restart {{ pg.service_name[ansible_os_family] }},
-      /bin/systemctl reload {{ pg.service_name[ansible_os_family] }},
-      /bin/systemctl start {{ repmgr.service_name[ansible_os_family] }},
-      /bin/systemctl stop {{ repmgr.service_name[ansible_os_family] }}
-    validate: 'visudo -cf %s'
-
-- name: Ascertain primary node
+- name: Ascertain recovery status (primary node)
   become_user: postgres
   postgresql_info:
     filter: in_recovery
   register: in_recovery_state
 
-- name: Stop repmgr service
+- name:  repmgr | prepare service for database recovery
+  when: component_vars.specification.extensions.replication.enabled | default(false)
   block:
-  - name: Stop repmgr on standby node
-    service:
-      name: "{{ repmgr.service_name[ansible_os_family] }}"
-      state: stopped
-    when:
-      - in_recovery_state.in_recovery
+  # Actions taken only when replication with repmgr is enabled
+  - name: Add postgres user to sudoers file
+    lineinfile:
+      path: /etc/sudoers
+      line: >-
+        postgres ALL=(ALL:ALL) NOPASSWD:
+        /bin/systemctl start {{ pg.service_name[ansible_os_family] }},
+        /bin/systemctl stop {{ pg.service_name[ansible_os_family] }},
+        /bin/systemctl restart {{ pg.service_name[ansible_os_family] }},
+        /bin/systemctl reload {{ pg.service_name[ansible_os_family] }},
+        /bin/systemctl start {{ repmgr.service_name[ansible_os_family] }},
+        /bin/systemctl stop {{ repmgr.service_name[ansible_os_family] }}
+      validate: 'visudo -cf %s'
 
-  - name: Stop repmgr on primary node
+  - name: Search for primary node hostname
+    become_user: postgres
+    shell: |-
+      set -o pipefail && \
+      {{ repmgr.bin_dir[ansible_os_family] }}/repmgr cluster show \
+        | awk 'BEGIN{FS="|"} {gsub(/ /,""); if ($3 == "primary") print $2}'
+    args:
+      executable: /bin/bash
+    changed_when: false
+    register: pg_node_primary
+    failed_when: pg_node_primary.rc != 0 or pg_node_primary.stdout == ""
+
+  - name: Standby node | stop repmgr
+    when: in_recovery_state.in_recovery
     service:
       name: "{{ repmgr.service_name[ansible_os_family] }}"
       state: stopped
-    when:
-      - not in_recovery_state.in_recovery
-  when:
-    - component_vars.specification.extensions.replication.enabled | default(false)
+
+  - name: Primary node | stop repmgr
+    when: not in_recovery_state.in_recovery
+    service:
+      name: "{{ repmgr.service_name[ansible_os_family] }}"
+      state: stopped
 
 - name: Copy and restore backup files
   # Running on primary or only node
+  when: not in_recovery_state.in_recovery
   block:
     - name: Find snapshot archive
       import_tasks: common/find_snapshot_archive.yml
@@ -96,7 +106,7 @@
         path: "{{ pg.data_dir[ansible_os_family] }}/"
         state: absent
 
-    - name: Initialize database (RedHat)
+    - name: Initialize database
       block:
       - name: Ensure that data directory exists
         file:
@@ -106,16 +116,8 @@
           group: postgres
 
       - name: Initialize database
-        command: "/usr/pgsql-10/bin/postgresql-10-setup initdb {{ pg.service_name[ansible_os_family] }}"
-      when:
-        - ansible_os_family == 'RedHat'
-
-    - name: Initialize database (Debian)
-      become: yes
-      become_user: postgres
-      command: "/usr/lib/postgresql/10/bin/initdb -D {{ pg.data_dir[ansible_os_family] }}"
-      when:
-        - ansible_os_family == 'Debian'
+        become_user: postgres
+        command: "{{ pg.bin_dir[ansible_os_family] }}/initdb -D {{ pg.data_dir[ansible_os_family] }}"
 
     - name: Copy cached config files
       copy:
@@ -131,25 +133,20 @@
         state: started
 
     - name: Import database from dump file
-      become: yes
       become_user: postgres
       command: "psql -f /var/tmp/postgresql_restore_source/data/database_dump.sql postgres"
 
-    - name: Configure repmgr
-      #Repmgr on primary node
+    - name: Primary node | configure repmgr
+      when: component_vars.specification.extensions.replication.enabled | default(false)
       block:
       - name: Register primary node in repmgr
-        become: yes
         become_user: postgres
-        shell: "{{ repmgr.bin_dir[ansible_os_family] }}/repmgr -f {{ repmgr.config_dir[ansible_os_family] }}/repmgr.conf
-        --force --superuser={{ component_vars.specification.extensions.replication.privileged_user_name }} primary register -F"
+        shell: "repmgr --superuser={{ component_vars.specification.extensions.replication.privileged_user_name }} primary register --force"
 
-      - name: Start repmgr on primary node
+      - name: Primary node | start repmgr
         service:
           name: "{{ repmgr.service_name[ansible_os_family] }}"
           state: started
-      when:
-        - component_vars.specification.extensions.replication.enabled | default(false)
 
     - name: Remove created temporary files
       file:
@@ -160,10 +157,11 @@
         - "/var/tmp/postgresql_temp_config/"
         - "{{ recovery_dir }}/{{ snapshot_path | basename }}"
         - "{{ recovery_dir }}/{{ snapshot_path | basename }}.sha1"
-  when:
-    - not in_recovery_state.in_recovery
 
-- name: Configure repmgr on secondary node
+- name: Standby node(s) | configure repmgr
+  when:
+    - component_vars.specification.extensions.replication.enabled | default(false)
+    - in_recovery_state.in_recovery
   block:
     - name: Stop postgresql service
       service:
@@ -196,18 +194,17 @@
         path: "{{ pg.data_dir[ansible_os_family] }}/"
         state: absent
 
-    - name: Ensure that data directory exists (RedHat) #This needs to be check pn RedHat family sytems since not always location is created by init
+    - name: Ensure that data directory exists (RedHat)  # This check needs to be run on RedHat family systems since not always location is created by clone
+      when: ansible_os_family == 'RedHat'
       file:
         path: "{{ pg.data_dir[ansible_os_family] }}/"
         state: directory
         owner: postgres
         group: postgres
-      when:
-        - ansible_os_family == 'RedHat'
 
     - name: Clone content from primary node using repmgr
       become_user: postgres
-      shell: "{{ repmgr.bin_dir[ansible_os_family] }}/repmgr -f {{ repmgr.config_dir[ansible_os_family] }}/repmgr.conf -h {{ hostvars[groups['postgresql'][0]]['ansible_default_ipv4']['address'] }} -U {{ component_vars.specification.extensions.replication.privileged_user_name }} -d {{ component_vars.specification.extensions.replication.repmgr_database }} -p 5432 -F standby clone"
+      shell: "repmgr -h {{ pg_node_primary.stdout }} -U {{ component_vars.specification.extensions.replication.privileged_user_name }} -d {{ component_vars.specification.extensions.replication.repmgr_database }} -p 5432 standby clone --force"
 
     - name: Copy cached config files back to database configuration location
       copy:
@@ -220,11 +217,11 @@
     - name: Start postgresql service
       service:
         name: "{{ pg.service_name[ansible_os_family] }}"
-        state: restarted
+        state: started
 
     - name: Register secondary node to repmgr cluster
       become_user: postgres
-      shell: "{{ repmgr.bin_dir[ansible_os_family] }}/repmgr -f {{ repmgr.config_dir[ansible_os_family] }}/repmgr.conf standby register -F"
+      shell: "repmgr standby register --force"
 
     - name: Start repmgr service
       service:
@@ -232,17 +229,5 @@
         state: started
 
     - name: Rejoin secondary node to repmgr cluster
-      become: true
       become_user: postgres
-      become_method: sudo
-      command: "{{ repmgr.bin_dir[ansible_os_family] }}/repmgr standby follow"
-  when:
-    - component_vars.specification.extensions.replication.enabled | default(false)
-    - in_recovery_state.in_recovery
-
-- name: Restart repmgrd service
-  service:
-    name: "{{ repmgr.service_name[ansible_os_family] }}"
-    state: restarted
-  when:
-    - component_vars.specification.extensions.replication.enabled | default(false)
+      command: "repmgr standby follow"
