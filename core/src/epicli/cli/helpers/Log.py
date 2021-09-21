@@ -13,19 +13,20 @@ class ColorFormatter(logging.Formatter):
     red = '\x1b[31;21m'
     bold_red = '\x1b[31;1m'
     reset = '\x1b[0m'
-    lineformat =  Config().log_format
 
     FORMATS = {
-        logging.DEBUG: grey + lineformat + reset,
-        logging.INFO: grey + lineformat + reset,
-        logging.WARNING: yellow + lineformat + reset,
-        logging.ERROR: red + lineformat + reset,
-        logging.CRITICAL: bold_red + lineformat + reset
+        logging.DEBUG: grey + 'format' + reset,
+        logging.INFO: grey + 'format' + reset,
+        logging.WARNING: yellow + 'format' + reset,
+        logging.ERROR: red + 'format' + reset,
+        logging.CRITICAL: bold_red + 'format' + reset
     }
 
     def format(self, record):
+        config = Config()
         log_fmt = self.FORMATS.get(record.levelno)
-        formatter = logging.Formatter(log_fmt, datefmt=Config().log_date_format)
+        log_fmt = log_fmt.replace('format', config.log_format)
+        formatter = logging.Formatter(log_fmt, datefmt=config.log_date_format)
         return formatter.format(record)
 
 
