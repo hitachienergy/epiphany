@@ -8,6 +8,8 @@
 
 ### Fixed
 
+- [#2497](https://github.com/epiphany-platform/epiphany/issues/2497) - Fix epicli apply --full region values
+
 ### Updated
 
 ### Deprecated
