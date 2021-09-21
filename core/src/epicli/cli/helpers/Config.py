@@ -1,6 +1,11 @@
 import os
 from os.path import expanduser
 
+LOG_TYPES = ['plain', 'json']
+
+class InvalidLogTypeException(Exception):
+    pass
+
 class Config:
     class __ConfigBase:
         def __init__(self):
@@ -80,7 +85,10 @@ class Config:
         @log_type.setter
         def log_type(self, log_type):
             if not log_type is None:
-                self._log_type = log_type
+                if log_type in LOG_TYPES:
+                    self._log_type = log_type
+                else:
+                    raise InvalidLogTypeException( f'log_type "{log_type}" is not valid. Use one of: {LOG_TYPES}' )
 
         @property
         def validate_certs(self):

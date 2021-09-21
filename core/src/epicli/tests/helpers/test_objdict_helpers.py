@@ -453,12 +453,6 @@ def test_replace_yesno_with_boolean_true_values():
                 'value3': 'yes',
                 'value4': 'Yes',
                 'value5': 'YES',
-                'value6': 'on',
-                'value7': 'On',
-                'value8': 'ON',
-                'value9': 'true',
-                'value10': 'True',
-                'value11': 'TRUE',
             })
         })
     })
