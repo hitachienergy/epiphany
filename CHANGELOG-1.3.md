@@ -4,6 +4,7 @@
 
 ### Added
 
+- [#1487](https://github.com//epiphany-platform/epiphany/issues/1487) - Add RabbitMQ monitoring
 - [#2600](https://github.com/epiphany-platform/epiphany/issues/2600) - Change epicli output structure
 
 ### Fixed
