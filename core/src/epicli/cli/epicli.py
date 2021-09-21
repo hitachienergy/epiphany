@@ -44,13 +44,16 @@ def main():
     parser.add_argument('-l', '--log-file', dest='log_name', type=str,
                         help='The name of the log file written to the output directory')
     parser.add_argument('--log-format', dest='log_format', type=str,
-                        help='Format for the logging string.')
+                        help='''Format for the logging string. Uses the default Python log formatting,
+more information here: https://docs.python.org/3.7/library/logging.html''')
     parser.add_argument('--log-date-format', dest='log_date_format', type=str,
-                        help='Format for the logging date.')
+                        help='''Format for the logging date/time. Uses the default Python strftime formatting,
+more information here: https://docs.python.org/3.7/library/time.html#time.strftime''')
     parser.add_argument('--log-count', dest='log_count', type=str,
                         help='Roleover count where each CLI run will generate a new log.')
     parser.add_argument('--log-type', choices=['plain', 'json'], default='plain',
-                        dest='log_type', action='store', help='Type of logs.')
+                        dest='log_type', action='store', help='''Type of logs that will be written to the output file.
+Currently supported formats are plain text or JSON''')
     parser.add_argument('--validate-certs', choices=['true', 'false'], default='true', action='store',
                         dest='validate_certs',
                         help='''[Experimental]: Disables certificate checks for certain Ansible operations
