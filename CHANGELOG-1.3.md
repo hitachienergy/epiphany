@@ -8,6 +8,8 @@
 
 ### Fixed
 
+- [#1351](https://github.com/epiphany-platform/epiphany/issues/1351) -  Refactor Keycloak to work with Postgresql HA configuration
+
 ### Updated
 
 ### Deprecated
