@@ -1,6 +1,16 @@
 # Changelog 1.2
 
-## [1.2.0] YYYY-MM-DD
+## [1.2.0] 2021-XX-XX
+
+### Updated
+
+- [#2591](https://github.com/epiphany-platform/epiphany/issues/2591) - Update OS cloud images to the latest
+
+### Fixed
+
+- [#1351](https://github.com/epiphany-platform/epiphany/issues/1351) - Refactor Keycloak to work with Postgresql HA configuration
+ 
+## [1.2.0rc1] 2021-09-16
 
 ### Added
 
@@ -29,7 +39,6 @@
 - [#2521](https://github.com/epiphany-platform/epiphany/issues/2521) - Fix 2 unit tests that are marked to be skipped during test execution
 - [#2542](https://github.com/epiphany-platform/epiphany/issues/2542) - Non critical error in epicli if no 'path' is provided
 - [#1296](https://github.com/epiphany-platform/epiphany/issues/1296) - Epicli does not interpret alternative yaml boolean values as true booleans
-- [#1351](https://github.com/epiphany-platform/epiphany/issues/1351) - Refactor Keycloak to work with Postgresql HA configuration
 
 ### Updated
 
