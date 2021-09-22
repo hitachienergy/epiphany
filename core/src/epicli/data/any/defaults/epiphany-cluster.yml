@@ -8,18 +8,6 @@ specification:
   admin_user:
     name: operations # YOUR-ADMIN-USERNAME
     key_path: /root/.ssh/epiphany-operations/id_rsa # YOUR-SSH-KEY-PATH
-  cloud:
-    k8s_as_cloud_service: False
-    subscription_name: YOUR-SUB-NAME
-    vnet_address_pool: 10.1.0.0/20
-    use_public_ips: False # When not using public IPs you have to provide connectivity via private IPs (VPN)
-    use_service_principal: False
-    credentials: # todo change it to get credentials from vault
-      key: 3124-4124-4124
-      secret: DADFAFHCJHCAUYEAk
-    network:
-      use_network_security_groups: True
-    default_os_image: default
   components:
     kubernetes_master:
       count: 1
