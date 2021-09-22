@@ -2,6 +2,7 @@
 - name: PostgreSQL | Get {{ directory_path }} directory listing
   find:
     path: "{{ directory_path }}"
+    patterns: "{{ pattern }}"
     file_type: any
     hidden: true
   register: directory_content
