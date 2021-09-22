@@ -29,13 +29,6 @@
         backup: true
       register: db_connection_line
 
-    - name: Extensions | PgBouncer | Change pool mode
-      lineinfile:
-        path: /etc/pgbouncer/pgbouncer.ini
-        regexp: "^pool_mode ="
-        line: "pool_mode = transaction"
-      register: db_pool_mode_line
-
     - name: Extensions | PgBouncer | Change pgbouncer users configuration
       lineinfile:
         path: /etc/pgbouncer/userlist.txt
@@ -56,7 +49,7 @@
         mode: u=rw,go=r
 
     - name: Extensions | PgBouncer | Restart systemd service
-      when: db_connection_line.changed or db_pool_mode_line.changed or db_user_line.changed
+      when: db_connection_line.changed or db_user_line.changed
       systemd:
         name: pgbouncer
         state: restarted
