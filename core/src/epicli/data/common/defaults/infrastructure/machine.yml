@@ -1,7 +1,0 @@
-kind: infrastructure/virtual-machine
-title: "Virtual Machine Infra"
-provider: any
-name: default
-specification:
-  ip: TO_BE_SET
-  hostname: TO_BE_SET
