@@ -1,22 +1,9 @@
 ---
-- name: PostgreSQL | Query custom tablespaces
-  become_user: postgres
-  postgresql_query:
-    query: "select pg_tablespace_location(oid) as location from pg_tablespace where spcname not in ('pg_default', 'pg_global')"
-  delegate_to: "{{ pg_primary_node }}"
-  run_once: true
-  register: pg_custom_tablespaces
-
-- name: PostgreSQL | Set pg_custom_tablespace_locations fact
-  set_fact:
-    pg_custom_tablespace_locations: "{{ pg_custom_tablespace_locations | default([]) + [pg_tablespace.location] }}"
-  loop_control:
-    loop_var: pg_tablespace
-  loop: "{{ pg_custom_tablespaces.query_result }}"
-
 # 'repmgr standby clone' command uses 'pg_basebackup' that requires target directories to be empty
 # tablespace directories on a primary node are untouched
 - name: PostgreSQL | Clean up tablespace directories
+  vars:
+    pattern: '*'
   include_tasks: roles/postgresql/tasks/helpers/rm-dir-content.yml
   loop_control:
     loop_var: directory_path
