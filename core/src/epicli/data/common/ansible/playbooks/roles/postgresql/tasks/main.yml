@@ -18,6 +18,26 @@
           | map(attribute='name')
           | list }}
 
+- name: Check if postgres-one-node-cluster.flag exists
+  when:  groups['postgresql'] | length > 1
+  stat:
+    path: /var/lock/postgres-one-node-cluster.flag
+  register: postgres_one_node_lock
+
+- name: Set variable _pg_primary_node
+  when:  groups['postgresql'] | length > 1 and postgres_one_node_lock.stat.exists
+  set_fact:
+    _pg_primary_node: "{{ inventory_hostname }}"
+  delegate_facts: true
+  delegate_to: "{{ item }}"
+  loop: "{{ groups['postgresql'] }}"
+
+- name: Create lock file to identify one node installation
+  when: groups['postgresql'] | length == 1
+  file:
+    path: /var/lock/postgres-one-node-cluster.flag
+    state: touch
+
 - name: Check if repmgr.conf exists
   stat:
     path: "{{ repmgr.config_dir[ansible_os_family] }}/repmgr.conf"
@@ -35,7 +55,6 @@
   set_fact:
     pg_node_id: >-
       {{ repmgr_conf.stat.exists | ternary(repmgr_pg_node_id.stdout, groups.postgresql.index(inventory_hostname) + 1) }}
-
 - name: Install OS-specific packages
   package:
     name: "{{ _packages[ansible_os_family] }}"
@@ -74,15 +93,14 @@
     - /var/log/postgresql
     - "{{ pg.data_dir[ansible_os_family] }}" # Permissions should be u=rwx (0700) or u=rwx,g=rx (0750)
 
-- name: RedHat | Initialize database
-  when: ansible_os_family == 'RedHat'
+- name: Initialize database
   block:
-    - name: RedHat | Check initialization status
+    - name: Check initialization status
       stat:
         path: "{{ pg.config_dir[ansible_os_family] }}/pg_hba.conf"
       register: pg_hba_conf_stat
 
-    - name: RedHat | Initialize database
+    - name: Initialize database
       become_user: postgres
       when: not pg_hba_conf_stat.stat.exists
       command: "{{ pg.bin_dir[ansible_os_family] }}/initdb"
@@ -169,6 +187,12 @@
     loop_var: extension
   loop: "{{ enabled_extensions }}"
 
+- name: Remove /var/lock/postgres-one-node-cluster.flag file
+  when: groups['postgresql'] | length > 1
+  file:
+    path: /var/lock/postgres-one-node-cluster.flag
+    state: absent
+
 # PgPool is configured only if such K8s application is enabled
 - name: Extensions | Include PgPool vars from applications role
   include_vars:
@@ -186,17 +210,17 @@
                                                                  | map(attribute='pgpool')
                                                                  | list
                                                                  | first
-                                                                 | default({}) }}        
+                                                                 | default({}) }}
   block:
-    - name: Extensions | Set up PgPool | Ascertain primary node
+    - name: Extensions | Set up PgPool | Ascertain current primary node
       become_user: postgres
       postgresql_info:
         filter: in_recovery
       register: in_recovery_state
-    
+
     - name: Extensions | Include PgPool setup tasks
       include_tasks: extensions/pgpool/extension.yml
-      when: 
+      when:
         - not in_recovery_state.in_recovery
   when:
     - pgpool.keys()|length > 0
