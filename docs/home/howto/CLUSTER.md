@@ -215,10 +215,7 @@ To setup the cluster do the following steps:
     epicli prepare --os OS
     ```
 
-    Where OS should be `centos-7`, `redhat-7`, `ubuntu-18.04`. This will create a directory called `prepare_scripts` with the following files inside:
-
-    - download-requirements.sh
-    - requirements.txt
+    Where OS should be `centos-7`, `redhat-7`, `ubuntu-18.04`. This will create a directory called `prepare_scripts` with the needed files inside.
 
 2. The scripts in the `prepare_scripts` will be used to download all requirements. To do that copy the `prepare_scripts` folder over to the requirements machine and run the following command:
 
