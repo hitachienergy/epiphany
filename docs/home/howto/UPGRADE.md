@@ -109,11 +109,7 @@ To upgrade the cluster components run the following steps:
     epicli prepare --os OS
     ```
 
-   Where OS should be `centos-7`, `redhat-7`, `ubuntu-18.04`. This will create a directory called `prepare_scripts` with
-   the following files inside:
-
-    - download-requirements.sh
-    - requirements.txt
+   Where OS should be `centos-7`, `redhat-7`, `ubuntu-18.04`. This will create a directory called `prepare_scripts` with the needed files inside.
 
 2. The scripts in the `prepare_scripts` will be used to download all requirements. To do that, copy the `prepare_scripts`
    folder over to the requirements machine and run the following command:
@@ -375,6 +371,28 @@ Epiphany upgrades PostgreSQL 10 to 13 with the following extensions
 - PgBouncer
 - PgPool
 - repmgr
+
+### Prerequisites
+
+The prerequisites below are checked by the preflight script before upgrading PostgreSQL. Never the less its good to
+check these manually before doing any upgrade:
+
+- Diskspace: When Epiphany upgrades PostgreSQL 10 to 13 it will make a copy of the data directory on each node
+  to ensure easy recovery in the case of a failed data migration. It is up the the user to make sure there is
+  enough space available. The used rule is:
+
+  total storage used on the data volume + total size of the data directory < 95% of total size of the data volume
+
+  We use 95% of used storage after data directory copy as some space is needed during the upgrade.
+
+- Cluster health: Before starting the upgrade the state of the PostgreSQL cluster needs to be healthy. This means
+  that executing:
+
+  ```shell
+  repmgr cluster show
+  ```
+
+  Should not fail and return 0 as exit code.
 
 ### Upgrade
 
