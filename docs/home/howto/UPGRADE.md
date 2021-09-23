@@ -416,10 +416,6 @@ limitations related to specifying parameters for upgrade:
 - There is no possibility to disable an extension after installation, so `specification.extensions.*.enabled: false`
   value will be ignored during upgrade if it was set to `true` during installation.
 
-### Rollback
-
-TODO
-
 ### Manual actions
 
 Epiphany runs `pg_upgrade` (on primary node only) from a dedicated location (`pg_upgrade_working_dir`).
