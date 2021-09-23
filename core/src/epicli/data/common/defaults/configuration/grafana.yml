@@ -94,9 +94,6 @@ specification:
     # - dashboard_id: '358'
     #   revision_id: '1'
     #   datasource: 'Prometheus'
-    # - dashboard_id: '10991'
-    #   revision_id: '11'
-    #   datasource: 'Prometheus'
 
   # Deployer local folder with dashboard definitions in .json format
   grafana_dashboards_dir: "dashboards" # Replace with your dashboard directory if you have dashboards to include

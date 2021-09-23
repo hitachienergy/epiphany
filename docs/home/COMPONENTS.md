@@ -233,3 +233,4 @@ Note that versions are default versions and can be changed in certain cases thro
 | HAproxy Servers \| HAproxy | 367 | https://grafana.com/grafana/dashboards/367 | None |
 | Docker and Host Monitoring w/ Prometheus | 179 | https://grafana.com/grafana/dashboards/179 | [MIT License](https://github.com/vegasbrianc/prometheus/blob/master/LICENSE) |
 | Kubernetes pod and cluster monitoring (via Prometheus) | 6663 | https://grafana.com/grafana/dashboards/6663 | None |
+| RabbitMQ cluster monitoring (via Prometheus) | 10991 | https://grafana.com/grafana/dashboards/10991 | None |
