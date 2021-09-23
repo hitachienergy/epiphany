@@ -392,7 +392,7 @@ check these manually before doing any upgrade:
   repmgr cluster show
   ```
   
-  Should not fail should not fail and return 0 as exitcode.
+  Should not fail and return 0 as exit code.
 
 ### Upgrade
 
