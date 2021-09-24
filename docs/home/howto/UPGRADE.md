@@ -378,7 +378,7 @@ The prerequisites below are checked by the preflight script before upgrading Pos
 check these manually before doing any upgrade:
 
 - Diskspace: When Epiphany upgrades PostgreSQL 10 to 13 it will make a copy of the data directory on each node
-  to ensure easy recovery in the case of a failed data migration. It is up the the user to make sure there is
+  to ensure easy recovery in the case of a failed data migration. It is up to the user to make sure there is
   enough space available. The used rule is:
   
   total storage used on the data volume + total size of the data directory < 95% of total size of the data volume
