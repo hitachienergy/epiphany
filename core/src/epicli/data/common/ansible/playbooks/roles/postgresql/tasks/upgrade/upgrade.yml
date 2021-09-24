@@ -35,6 +35,7 @@
   set_fact:
     pg_primary_node: "{{ pg_primary_node_found.stdout | default('') }}"
 
+# postgresql_info module doesn't display tablespace locations, so it's requested
 - name: PostgreSQL | Query custom tablespaces
   become_user: postgres
   postgresql_query:
@@ -44,17 +45,8 @@
   register: pg_custom_tablespaces
 
 - name: PostgreSQL | Set 'pg_custom_tablespace_locations' fact
-  block:
-    - name: PostgreSQL | Initialize 'pg_custom_tablespace_locations' fact
-      set_fact:
-        pg_custom_tablespace_locations: [ ]
-
-    - name: PostgreSQL | Set 'pg_custom_tablespace_locations' fact
-      set_fact:
-        pg_custom_tablespace_locations: "{{ pg_custom_tablespace_locations + [pg_tablespace.location] }}"
-      loop_control:
-        loop_var: pg_tablespace
-      loop: "{{ pg_custom_tablespaces.query_result }}"
+  set_fact:
+    pg_custom_tablespace_locations: "{{ pg_custom_tablespaces.query_result | map(attribute='location') | list }}"
 
 - name: PostgreSQL | Upgrade
   block:
