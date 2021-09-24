@@ -15,6 +15,7 @@ data:
   DEFAULT_POOL_SIZE: '{{ data.pgbouncer.env.DEFAULT_POOL_SIZE }}'
   RESERVE_POOL_SIZE: '{{ data.pgbouncer.env.RESERVE_POOL_SIZE }}'
   POOL_MODE: '{{ data.pgbouncer.env.POOL_MODE }}'
+  CLIENT_IDLE_TIMEOUT: '{{ data.pgbouncer.env.CLIENT_IDLE_TIMEOUT }}'
 
 ---
 apiVersion: v1
@@ -318,9 +319,10 @@ data:
     max_client_conn = {{ data.pgbouncer.env.MAX_CLIENT_CONN }}
     default_pool_size = {{ data.pgbouncer.env.DEFAULT_POOL_SIZE }}
     reserve_pool_size = {{ data.pgbouncer.env.RESERVE_POOL_SIZE }}
+    client_idle_timeout = {{ data.pgbouncer.env.CLIENT_IDLE_TIMEOUT }}
     admin_users = postgres
     ignore_startup_parameters = extra_float_digits
     pidfile = /opt/bitnami/pgbouncer/tmp/pgbouncer.pid
-    
+
     # Log settings
     logfile = /opt/bitnami/pgbouncer/logs/pgbouncer.log
