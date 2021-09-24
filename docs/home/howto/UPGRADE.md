@@ -374,7 +374,7 @@ Epiphany upgrades PostgreSQL 10 to 13 with the following extensions
 
 ### Prerequisites
 
-The prerequisites below are checked by the preflight script before upgrading PostgreSQL. Never the less its good to
+The prerequisites below are checked by the preflight script before upgrading PostgreSQL. Never the less it's good to
 check these manually before doing any upgrade:
 
 - Diskspace: When Epiphany upgrades PostgreSQL 10 to 13 it will make a copy of the data directory on each node
