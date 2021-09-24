@@ -346,13 +346,22 @@
         _new_pg_service: "{{ new_version.pg.service_name[ansible_os_family] }}"
 
     - name: PostgreSQL | Extensions | repmgr | RedHat | Update repmgr symlink
+      when:
+        - ansible_os_family == 'RedHat'
+        - pg_is_repmgr_used
       file:
         src: "{{ new_version.repmgr.bin_dir.RedHat }}/repmgr"
         dest: "/usr/bin/repmgr"
         state: link
+
+    - name: PostgreSQL | Extensions | repmgr | Debian | Update REPMGRD_CONF in /etc/default/repmgrd
       when:
+        - ansible_os_family == 'Debian'
         - pg_is_repmgr_used
-        - ansible_os_family == 'RedHat'
+      replace:
+        path: /etc/default/repmgrd
+        regexp: ^REPMGRD_CONF=\"/etc/postgresql/{{ old_version.pg.version }}/main/repmgr.conf\"
+        replace: REPMGRD_CONF="/etc/postgresql/{{ new_version.pg.version }}/main/repmgr.conf"
 
     # Start and enable repmgr service
     - include_tasks: roles/postgresql/tasks/upgrade/extensions/replication/pg-new/repmgr-start-and-enable-service.yml
@@ -464,6 +473,15 @@
             - "{{ new_version.repmgr.package_name.RedHat }}"
       module_defaults:
         yum: { lock_timeout: "{{ yum_lock_timeout }}" }
+
+    - name: Rollback | Extensions | repmgr | Debian | Restore REPMGRD_CONF in /etc/default/repmgrd
+      when:
+        - ansible_os_family == 'Debian'
+        - pg_is_repmgr_used
+      replace:
+        path: /etc/default/repmgrd
+        regexp: ^REPMGRD_CONF=\"/etc/postgresql/{{ new_version.pg.version }}/main/repmgr.conf\"
+        replace: REPMGRD_CONF="/etc/postgresql/{{ old_version.pg.version }}/main/repmgr.conf"
 
     - name: Rollback | Start PG {{ old_version.pg.version }} service
       systemd:
