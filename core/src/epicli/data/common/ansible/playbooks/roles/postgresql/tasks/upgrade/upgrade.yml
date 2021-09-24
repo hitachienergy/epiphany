@@ -314,10 +314,20 @@
         - inventory_hostname != pg_primary_node
       include_tasks: roles/postgresql/tasks/upgrade/extensions/replication/pg-new/repmgr-register-standby.yml
 
-    - name: PostgreSQL | Enable PostgreSQL {{ new_version.pg.version }} service
+    - name: PostgreSQL | Disable {{ _old_pg_service }} service
+      when: _old_pg_service != new_version.pg.service_name[ansible_os_family]
       systemd:
-        name: "{{ new_version.pg.service_name[ansible_os_family] }}"
+        name: "{{ _old_pg_service }}"
+        enabled: false
+      vars:
+        _old_pg_service: "{{ old_version.pg.service_name[ansible_os_family] }}"
+
+    - name: PostgreSQL | Enable {{ _new_pg_service }} service
+      systemd:
+        name: "{{ _new_pg_service }}"
         enabled: true
+      vars:
+        _new_pg_service: "{{ new_version.pg.service_name[ansible_os_family] }}"
 
     - name: PostgreSQL | Extensions | repmgr | RedHat | Update repmgr symlink
       file:
