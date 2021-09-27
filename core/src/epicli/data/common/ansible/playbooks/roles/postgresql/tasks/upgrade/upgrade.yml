@@ -427,21 +427,21 @@
               - "{{ new_version.pg.service_name[ansible_os_family] }}"
               - "{{ new_version.pg.instantiated_service_name[ansible_os_family] }}"
 
-    - name: Rollback | Disable PG {{ new_version.pg.version }} service
-      when:
-        - ansible_facts.services[service_name + '.service'] is defined
-        - service_name != old_version.pg.service_name[ansible_os_family]
-      systemd:
-        name: "{{ service_name }}"
-        enabled: false
-        masked: "{{ True if (service_name == new_version.pg.instantiated_service_name[ansible_os_family]) else False }}"
-      loop_control:
-        loop_var: service_name
-      loop: "{{ _services | reject('==', '') }}"
-      vars:
-        _services:
-          - "{{ new_version.pg.service_name[ansible_os_family] }}"
-          - "{{ new_version.pg.instantiated_service_name[ansible_os_family] }}"
+        - name: Rollback | Disable PG {{ new_version.pg.version }} service
+          when:
+            - ansible_facts.services[service_name + '.service'] is defined
+            - service_name != old_version.pg.service_name[ansible_os_family]
+          systemd:
+            name: "{{ service_name }}"
+            enabled: false
+            masked: "{{ True if (service_name == new_version.pg.instantiated_service_name[ansible_os_family]) else False }}"
+          loop_control:
+            loop_var: service_name
+          loop: "{{ _services | reject('==', '') }}"
+          vars:
+            _services:
+              - "{{ new_version.pg.service_name[ansible_os_family] }}"
+              - "{{ new_version.pg.instantiated_service_name[ansible_os_family] }}"
 
     - name: Rollback | Remove PG {{ new_version.pg.version }} data directory
       file:
