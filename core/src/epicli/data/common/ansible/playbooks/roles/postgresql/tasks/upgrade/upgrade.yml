@@ -318,7 +318,7 @@
           postgresql_info:
             filter: version
           register: primary_node_pg_info
-          become: yes
+          become: true
           become_user: postgres
           delegate_to: "{{ pg_primary_node }}"
 
@@ -512,7 +512,7 @@
             filter: version
           register: pg_info
           ignore_errors: true  # PostgreSQL service may be stopped
-          become: yes
+          become: true
           become_user: postgres
           delegate_to: "{{ node }}"
           loop_control:
