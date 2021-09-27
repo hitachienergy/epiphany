@@ -14,7 +14,7 @@ Note that versions are default versions and can be changed in certain cases thro
 | Kafka                      | 2.6.0    | https://github.com/apache/kafka                       | [Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0) |
 | Zookeeper                  | 3.5.8    | https://github.com/apache/zookeeper                   | [Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0) |
 | RabbitMQ                   | 3.8.9    | https://github.com/rabbitmq/rabbitmq-server           | [Mozilla Public License](https://www.mozilla.org/en-US/MPL/)      |
-| Docker CE                  | 20.10.8  | https://github.com/docker/docker-ce/                  | [Apache License](https://www.apache.org/licenses/LICENSE-1.0)     |
+| Docker CE                  | 20.10.8  | https://docs.docker.com/engine/release-notes/         | [Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0) |
 | KeyCloak                   | 14.0.0   | https://github.com/keycloak/keycloak                  | [Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0) |
 | Elasticsearch OSS          | 7.10.2   | https://github.com/elastic/elasticsearch              | https://github.com/elastic/elasticsearch/blob/master/LICENSE.txt  |
 | Elasticsearch Curator OSS  | 5.8.3    | https://github.com/elastic/curator                    | https://github.com/elastic/curator/blob/master/LICENSE.txt        |
