@@ -147,6 +147,17 @@ describe 'Check if PostgreSQL service is running' do
   end
 end
 
+if os[:family] == 'redhat'
+  describe 'Check if only one PostgreSQL service is enabled' do
+    describe command("systemctl list-unit-files --type service --state enabled | grep -c 'postgresql-[0-9]'") do
+      it 'is expected to eq 1' do
+        expect(subject.stdout.to_i).to eq 1
+      end
+      its(:exit_status) { should eq 0 }
+    end
+  end
+end
+
 if replicated
   describe 'Check if repmgr service is running' do
     if os[:family] == 'redhat'
@@ -158,6 +169,30 @@ if replicated
       describe service('repmgrd') do
         it { should be_enabled }
         it { should be_running }
+      end
+    end
+  end
+
+  if os[:family] == 'redhat'
+    describe 'Check if only one repmgr service is enabled' do
+      describe command("systemctl list-unit-files --type service --state enabled | grep -c 'repmgr[0-9]'") do
+        it 'is expected to eq 1' do
+          expect(subject.stdout.to_i).to eq 1
+        end
+        its(:exit_status) { should eq 0 }
+      end
+    end
+  end
+
+  if os[:family] == 'ubuntu'
+    describe 'Check if repmgr service uses correct config file' do
+      describe command('systemctl status repmgrd') do
+        regexp = %r{ /etc/postgresql/13/main/repmgr\.conf }
+        it "is expected to match #{regexp.inspect}" do
+          # force_encoding used to work around https://github.com/sj26/rspec_junit_formatter/issues/67
+          expect(subject.stdout.force_encoding('UTF-8')).to match regexp
+        end
+        its(:exit_status) { should eq 0 }
       end
     end
   end
