@@ -52,7 +52,6 @@
 - [#2116](https://github.com/epiphany-platform/epiphany/issues/2116) - [AMD64/ARM64] Logstash updated to version 7.12.0
 - [#2297](https://github.com/epiphany-platform/epiphany/issues/2297) - Update Python dependencies to solve some security alerts
 - [#2362](https://github.com/epiphany-platform/epiphany/issues/2362) - Update Python dependencies to solve more of the security alerts
-- [#2457](https://github.com/epiphany-platform/epiphany/issues/2457) - Upgrade Docker-CE to v20.10.8
 
 ### Deprecated
 
