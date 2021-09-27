@@ -3,6 +3,7 @@
 Enable for Ubuntu (default):
 
 1. Enable "repository" component:
+
    ```yaml
    repository:
      count: 1
@@ -11,12 +12,15 @@ Enable for Ubuntu (default):
 Enable for RHEL on Azure:
 
 1. Enable "repository" component:
+
    ```yaml
    repository:
      count: 1
      machine: repository-machine-rhel
    ```
+
 2. Add repository VM definition to main config file:
+
    ```yaml
    kind: infrastructure/virtual-machine
    name: repository-machine-rhel
@@ -33,12 +37,15 @@ Enable for RHEL on Azure:
 Enable for RHEL on AWS:
 
 1. Enable "repository" component:
+
    ```yaml
    repository:
      count: 1
      machine: repository-machine-rhel
    ```
+
 2. Add repository VM definition to main config file:
+
    ```yaml
    kind: infrastructure/virtual-machine
    title: Virtual Machine Infra
@@ -52,12 +59,15 @@ Enable for RHEL on AWS:
 Enable for CentOS on Azure:
 
 1. Enable "repository" component:
+
    ```yaml
    repository:
      count: 1
      machine: repository-machine-centos
    ```
+
 2. Add repository VM definition to main config file:
+
    ```yaml
    kind: infrastructure/virtual-machine
    name: repository-machine-centos
@@ -74,12 +84,15 @@ Enable for CentOS on Azure:
 Enable for CentOS on AWS:
 
 1. Enable "repository" component:
+
    ```yaml
    repository:
      count: 1
      machine: repository-machine-centos
    ```
+
 2. Add repository VM definition to main config file:
+
    ```yaml
    kind: infrastructure/virtual-machine
    title: Virtual Machine Infra
@@ -93,11 +106,14 @@ Enable for CentOS on AWS:
 Disable:
 
 1. Disable "repository" component:
+
    ```yaml
    repository:
      count: 0
    ```
+
 2. Prepend "kubernetes\_master" mapping (or any other mapping if you don't deploy Kubernetes) with:
+
    ```yaml
    kubernetes_master:
      - repository
@@ -240,6 +256,7 @@ To setup the cluster do the following steps:
       key_path: /path/to/your/ssh/keys
       name: user_name
     ```
+
     Here you should specify the path to the SSH keys and the admin user name which will be used by Anisble to provision the cluster machines.
 
 5. Define the components you want to install and link them to the machines you want to install them on:
@@ -346,17 +363,22 @@ specification:
 ```
 
 1. Disable "repository" component:
+
    ```yaml
    repository:
      count: 0
    ```
+
 2. Prepend "kubernetes\_master" mapping (or any other mapping if you don't deploy Kubernetes) with:
+
    ```yaml
    kubernetes_master:
      - repository
      - image-registry
    ```
+
 3. Specify custom repository/registry in `configuration/shared-config`:
+
    ```yaml
    specification:
      custom_image_registry_address: "<ip-address>:5000"
@@ -402,6 +424,7 @@ To setup the cluster do the following steps from the provisioning machine:
       key_path: /path/to/your/ssh/keys
       name: user_name
     ```
+
     Here you should specify the path to the SSH keys and the admin user name which will be used by Anisble to provision the cluster machines.
 
     On `Azure` the name you specify will be configured as the admin name on the VM's.
@@ -442,7 +465,7 @@ To setup the cluster do the following steps from the provisioning machine:
 
     The [region](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Concepts.RegionsAndAvailabilityZones.html) lets you chose the most optimal place to deploy your cluster. The `subscription_name` is the Azure subscribtion under which you want to deploy the cluster.
 
-    Terraform will ask you to sign in to your Microsoft Azure subscibtion when it prepares to build/modify/destroy the infrastructure on `azure`. In case you need to share cluster managment with other people you can set the `use_service_principal` tag to true. This will create a service principle and uses it to manage the resources. 
+    Terraform will ask you to sign in to your Microsoft Azure subscibtion when it prepares to build/modify/destroy the infrastructure on `azure`. In case you need to share cluster managment with other people you can set the `use_service_principal` tag to true. This will create a service principle and uses it to manage the resources.
 
     If you already have a service principle and don't want to create a new one you can do the following. Make sure the `use_service_principal` tag is set to true. Then before you run `epicli apply -f yourcluster.yml` create the following folder structure from the path you are running Epicli:
 
@@ -774,12 +797,7 @@ specification:
 
 ## How to scale or cluster components
 
----
-**NOTE**
-
-Not all components are supported for this action. There is a bunch of issues referenced below in this document, [one](https://github.com/epiphany-platform/epiphany/issues/1574) of them is that disks are not removed for all components after downscale.
-
----
+Not all components are supported for this action. There is a bunch of issues referenced below in this document.
 
 Epiphany has the ability to automaticly scale and cluster certain components on cloud providers (AWS, Azure). To upscale or downscale a component the `count` number must be increased or decreased:
 
@@ -790,35 +808,60 @@ Epiphany has the ability to automaticly scale and cluster certain components on 
       ...
   ```
 
-Then when applying the changed configuration using Epicli additional VM's will be spawned and configured or removed. The following components support scaling/clustering:
+Then when applying the changed configuration using Epicli, additional VM's will be spawned and configured or removed. The following table shows what kind of operation component supports:
 
-- repository: In standard Epiphany deployment only one repository machine is required. Scaling up the repository component will create a new standalone VM. Scaling down will remove it in LIFO order (Last In, First Out). However even if you create more then one VM, by default all other components will use the first one.
-- kubernetes_master: When increased this will setup additional control plane nodes, but in the case of non-ha k8s cluster, existing control plane node must be promoted first. At the moment there is [no ability](https://github.com/epiphany-platform/epiphany/issues/1579) to downscale.
-- kubernetes_node: When increased this will setup additional nodes with `kubernetes_master`. There is [no ability](https://github.com/epiphany-platform/epiphany/issues/1580) to downscale.
-- ignite
-- kafka: When changed this will setup or remove additional nodes for the Kafka cluster. Note that there is an [issue](https://github.com/epiphany-platform/epiphany/issues/1576) that needs to be fixed before scaling usage.
-- load_balancer - Scaling up the load_balancer component will create a new standalone VM. Scaling down will remove it in LIFO order (Last In, First Out).
-- logging: Sometimes it works, but often there is an [issue](https://github.com/epiphany-platform/epiphany/issues/1575) with Kibana installation that needs to be resoved
-- monitoring - Scaling up the monitoring component will create a new standalone VM. Scaling down will remove it in LIFO order (Last In, First Out).
-- opendistro_for_elasticsearch: Works the same as `logging` component, without issues if there is no `kibana` part in feature mapping configuration.
-- postgresql: At the moment does not work correctly, there is an [issue](https://github.com/epiphany-platform/epiphany/issues/1577). When changed this will setup or remove additional nodes for Postgresql. Note that extra nodes can only be setup to do replication by adding the following additional `configuration/postgresql` configuration:
+Component | Scale up | Scale down | HA | Clustered |Known issues
+--- | --- | --- | --- | --- | ---
+Repository | :heavy_check_mark: | :heavy_check_mark: | :x: | :x: | --- |
+Monitoring | :heavy_check_mark: | :heavy_check_mark: | :x: | :x: | ---
+Logging | :heavy_check_mark: | :heavy_check_mark: | :x: | :x: | ---
+Kubernetes master | :heavy_check_mark: | :x: | :heavy_check_mark: | :heavy_check_mark: | [#1579](https://github.com/epiphany-platform/epiphany/issues/1579)
+Kubernetes node | :heavy_check_mark: | :x: | :heavy_check_mark: | :heavy_check_mark: | [#1580](https://github.com/epiphany-platform/epiphany/issues/1580)
+Ignite | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | ---
+Kafka | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | ---
+Load Balancer | :heavy_check_mark: | :heavy_check_mark: | :x: | :x: | ---
+Opendistro for elasticsearch | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | ---
+Postgresql | :x: | :x: | :heavy_check_mark: | :heavy_check_mark: | [#1577](https://github.com/epiphany-platform/epiphany/issues/1577)
+RabbitMQ | :heavy_check_mark: | :heavy_check_mark: | :x: | :heavy_check_mark: |  [#1578](https://github.com/epiphany-platform/epiphany/issues/1578), [#1309](https://github.com/epiphany-platform/epiphany/issues/1309)
+RabbitMQ K8s | :heavy_check_mark: | :heavy_check_mark: | :x: | :heavy_check_mark: | [#1486](https://github.com/epiphany-platform/epiphany/issues/1486)
+Keycloak K8s | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | ---
+Pgpool K8s | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | ---
+Pgbouncer K8s | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | ---
+Ignite K8s | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | ---
 
-  ```yaml
-  kind: configuration/postgresql
-  ...
-  specification:
-    replication:
-      enable: true
-      user: postgresql-replication-user
-      password: postgresql-replication-password
-      max_wal_senders: 5
-      wal_keep_segments: 32  
-    ...
-  ```
+Additional notes:
 
-- rabbitmq: At the moment downscaling is not supported, there is the known
-[issue](https://github.com/epiphany-platform/epiphany/issues/1578).
-If instance count is changed, then additional RabbitMQ nodes will be added or removed.
+- Repository:  
+In standard Epiphany deployment only one repository machine is required.  
+:arrow_up: Scaling up the repository component will create a new standalone VM.  
+:arrow_down: Scaling down will remove it in LIFO order (Last In, First Out).  
+However even if you create more then one VM, by default all other components will use the first one.
+- Kubernetes master:  
+:arrow_up: When increased this will setup additional control plane nodes, but in the case of non-ha k8s cluster, existing control plane node must be promoted first.  
+:arrow_down: At the moment there is no ability to downscale.
+- Kubernetes node:  
+:arrow_up: When increased this will setup additional nodes with `kubernetes_master`.  
+:arrow_down: There is no ability to downscale.
+- Kafka:  
+:arrow_up: When scaling up it will setup additional nodes for the Kafka cluster.  
+:arrow_down: When scaling down it will remove nodes from Kafka cluster.
+- Load balancer:  
+:arrow_up: Scaling up the load_balancer component will create a new standalone VM.  
+:arrow_down: Scaling down will remove it in LIFO order (Last In, First Out).
+- Logging:  
+:arrow_up:  Scaling up will create new VM with both Kibana and ODFE components inside.  
+ODFE will join the cluster but Kibana will be an standalone instance.  
+:arrow_down: When scaling down VM will be delted.
+- Monitoring -  
+:arrow_up: Scaling up the monitoring component will create a new standalone VM.  
+:arrow_down: Scaling down will remove it in LIFO order (Last In, First Out).
+- Postgresql:  
+:arrow_up: At the moment does not support scaling up. Check known issues.  
+:arrow_down: At the moment des not support scaling down. Check known issues.
+- RabbitMQ:  
+If instance count is changed, then additional RabbitMQ nodes will be added or removed.  
+:arrow_up: Will create new VM and adds it to the RabbitMQ cluster.  
+:arrow_down: At the moment scaling down will just remove VM. All data not processed on this VM will be purged. Check known issues.  
 Note that clustering requires a change in the `configuration/rabbitmq` document:
 
   ```yaml
@@ -829,6 +872,13 @@ Note that clustering requires a change in the `configuration/rabbitmq` document:
       is_clustered: true
   ...
   ```
+
+- RabbitMQ K8s:
+  Scaling is controled via replicas in StatefulSet. Rabbitmq on K8s uses plugin rabbitmq_peer_discovery_k8s to works in cluster.
+
+  Additional known issues:
+
+[#1574](https://github.com/epiphany-platform/epiphany/issues/1574) - Disks are not removed after downscale of any Epiphany component
 
 ## Multi master cluster
 
@@ -1036,6 +1086,7 @@ provider: azure
 This paragraph describes how to use a Docker container to download the requirements for air-gapped/offline installations. At this time we don't officially support this and we still recommend using a full distribution which is the same as the air-gapped cluster machines/VMs.
 
 A few points:
+
 - This only describes how to setup the Docker containers for downloading. The rest of the steps are similar as in the paragraph [here](./CLUSTER.md#how-to-create-an-epiphany-cluster-on-existing-air-gapped-infrastructure).
 - Main reason why you might want to give this a try is to download ```arm64``` architecture requirements on a ```x86_64``` machine. More information on the current state of ```arm64``` support can be found [here](./../ARM.md#arm).
 
@@ -1086,11 +1137,13 @@ After this you should be able to run the ```download-requirements.sh```  from th
 For CentOS you can use the following command to launch a container:
 
 arm64:
+
 ```shell
 docker run -v /shared_folder:/home --platform linux/arm64 --rm -it arm64v8/centos:7.9.2009
 ```
 
 x86_64:
+
 ```shell
 docker run -v /shared_folder:/home --platform linux/amd64 --rm -it amd64/centos:7.9.2009
 ```
