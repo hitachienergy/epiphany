@@ -1,11 +1,5 @@
 # Changelog 1.0
 
-## [1.0.2] 2021-xx-xx
-
-### Updated
-
-- [#2457](https://github.com/epiphany-platform/epiphany/issues/2457) - Upgrade Docker-CE to v20.10.8
-
 ## [1.0.1] 2021-07-16
 
 ### Fixed
