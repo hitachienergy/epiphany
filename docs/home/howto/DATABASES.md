@@ -45,9 +45,16 @@ This is because of security reasons. [Configuration needs to be tailored accordi
 ## How to set up PostgreSQL HA replication with repmgr cluster
 
 ---
-**NOTE**
+**NOTE 1**
 
 Replication (repmgr) extension is not supported on ARM.
+
+---
+
+---
+**NOTE 2**
+
+Changing number of PostgreSQL nodes is not supported by Epiphany after first apply. Before cluster deployment think over what kind of configuration you need, and how many PostgreSQL nodes will be needed.
 
 ---
 
