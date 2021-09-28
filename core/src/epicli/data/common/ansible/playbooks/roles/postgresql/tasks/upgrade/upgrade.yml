@@ -40,7 +40,7 @@
   become_user: postgres
   postgresql_query:
     query: "select pg_tablespace_location(oid) as location from pg_tablespace where spcname not in ('pg_default', 'pg_global')"
-  delegate_to: "{{ pg_primary_node }}"
+  delegate_to: "{{ (pg_primary_node|length > 0) | ternary(pg_primary_node, inventory_hostname) }}"
   run_once: true
   register: pg_custom_tablespaces
 
