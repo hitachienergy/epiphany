@@ -7,9 +7,27 @@ postgresql_host = '127.0.0.1'
 postgresql_default_port = 5432
 pgbouncer_default_port  = 6432
 
-primary_node_host = listInventoryHosts("postgresql")[0]
-primary_ip_host = listInventoryIPs("postgresql")[0]
-last_node_host = listInventoryHosts("postgresql")[-1]
+# Re-order postgres hosts to put primary node at the start of the host listing.
+# This because the primary node needs to run some table creation tests before tests are
+# run against any of the standby nodes.
+host_list = listInventoryHosts("postgresql")
+ip_list = listInventoryIPs("postgresql")
+primary_node_host = host_list[0]
+primary_node_ip = ip_list[0]
+last_node_host = "none"
+if host_list.size > 1
+  host_list.each_with_index do |value, index|
+    Net::SSH.start(ip_list[index], ENV['user'], keys: [ENV['keypath']], :keys_only => true) do|ssh|
+      result = ssh.exec!("sudo su - postgres -c \"repmgr node check --role\"")
+      if result.include? "primary"
+        primary_node_host = value
+        primary_node_ip = ip_list[index]
+      else
+        last_node_host = value
+      end
+    end    
+  end
+end
 
 config_docs = Hash.new
 for kind in ['logging', 'postgresql']
@@ -392,7 +410,7 @@ if replicated
 
   elsif host_inventory['hostname'] != primary_node_host
     if os[:family] == 'redhat'
-      describe 'Check PostgreSQL files for secondary node' do
+      describe 'Check PostgreSQL files for replica nodes' do
         let(:disable_sudo) { false }
         describe file('/var/lib/pgsql/.pgpass') do
           it { should exist }
@@ -401,7 +419,7 @@ if replicated
         end
       end
     elsif os[:family] == 'ubuntu'
-      describe 'Check PostgreSQL files for secondary node' do
+      describe 'Check PostgreSQL files for replica nodes' do
         let(:disable_sudo) { false }
         describe file('/var/lib/postgresql/.pgpass') do
           it { should exist }
@@ -537,25 +555,25 @@ end
 if replicated && (last_node_host.include? host_inventory['hostname'])
   describe 'Clean up' do
     it "Delegate drop table query to master node" do
-      Net::SSH.start(primary_ip_host, ENV['user'], keys: [ENV['keypath']], :keys_only => true) do|ssh|
+      Net::SSH.start(primary_node_ip, ENV['user'], keys: [ENV['keypath']], :keys_only => true) do|ssh|
         result = ssh.exec!("sudo su - postgres -c \"psql -t -c 'DROP TABLE serverspec_test.test;'\" 2>&1")
         expect(result).to match 'DROP TABLE'
       end
     end
     it "Delegate drop schema query to master node" do
-      Net::SSH.start(primary_ip_host, ENV['user'], keys: [ENV['keypath']], :keys_only => true) do|ssh|
+      Net::SSH.start(primary_node_ip, ENV['user'], keys: [ENV['keypath']], :keys_only => true) do|ssh|
         result = ssh.exec!("sudo su - postgres -c \"psql -t -c 'DROP SCHEMA serverspec_test CASCADE;'\" 2>&1")
         expect(result).to match 'DROP SCHEMA'
       end
     end
     it "Delegate drop user query to master node", :if => pgbouncer_enabled do
-      Net::SSH.start(primary_ip_host, ENV['user'], keys: [ENV['keypath']], :keys_only => true) do|ssh|
+      Net::SSH.start(primary_node_ip, ENV['user'], keys: [ENV['keypath']], :keys_only => true) do|ssh|
         result = ssh.exec!("sudo su - postgres -c \"psql -t -c 'DROP USER #{pg_user};'\" 2>&1")
         expect(result).to match 'DROP ROLE'
       end
     end
     it "Remove test user from userlist.txt", :if => pgbouncer_enabled do
-      Net::SSH.start(primary_ip_host, ENV['user'], keys: [ENV['keypath']], :keys_only => true) do|ssh|
+      Net::SSH.start(primary_node_ip, ENV['user'], keys: [ENV['keypath']], :keys_only => true) do|ssh|
         result = ssh.exec!("sudo su - -c \"sed -i '/#{pg_pass}/d' /etc/pgbouncer/userlist.txt && cat /etc/pgbouncer/userlist.txt\" 2>&1")
         expect(result).not_to match "#{pg_pass}"
       end
