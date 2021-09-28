@@ -7,6 +7,10 @@ postgresql_host = '127.0.0.1'
 postgresql_default_port = 5432
 pgbouncer_default_port  = 6432
 
+primary_node_host = listInventoryHosts("postgresql")[0]
+primary_ip_host = listInventoryIPs("postgresql")[0]
+last_node_host = listInventoryHosts("postgresql")[-1]
+
 config_docs = Hash.new
 for kind in ['logging', 'postgresql']
   config_docs[kind.to_sym] = readDataYaml("configuration/#{kind}")
@@ -278,10 +282,6 @@ if !replicated
 end
 
 if replicated
-
-  primary = listInventoryHosts("postgresql")[0]
-  secondary = listInventoryHosts("postgresql")[1]
-
   describe 'Display information about each registered node in the replication cluster' do
     let(:disable_sudo) { false }
     describe command("su - postgres -c \"repmgr cluster show\"") do
@@ -314,7 +314,7 @@ if replicated
     end
   end
 
-  if primary.include? host_inventory['hostname']
+  if primary_node_host.include? host_inventory['hostname']
     if os[:family] == 'redhat'
       describe 'Check PostgreSQL config files for master node' do
         let(:disable_sudo) { false }
@@ -390,7 +390,7 @@ if replicated
     queryForSelecting
     queryForAlteringTable
 
-  elsif secondary.include? host_inventory['hostname']
+  elsif host_inventory['hostname'] != primary_node_host
     if os[:family] == 'redhat'
       describe 'Check PostgreSQL files for secondary node' do
         let(:disable_sudo) { false }
@@ -437,7 +437,7 @@ end
 
 if pgbouncer_enabled
 
-  if listInventoryHosts("postgresql")[0].include? host_inventory['hostname']
+  if primary_node_host.include? host_inventory['hostname']
 
     describe 'Check if PGBouncer service is running' do
       describe service('pgbouncer') do
@@ -495,7 +495,7 @@ if pgbouncer_enabled
 
   end
 
-  if replicated || (listInventoryHosts("postgresql")[0].include? host_inventory['hostname'])
+  if replicated || (primary_node_host.include? host_inventory['hostname'])
 
     describe 'Select values from test tables' do
       let(:disable_sudo) { false }
@@ -534,28 +534,28 @@ if !replicated
 
 end
 
-if replicated && (listInventoryHosts("postgresql")[1].include? host_inventory['hostname'])
+if replicated && (last_node_host.include? host_inventory['hostname'])
   describe 'Clean up' do
     it "Delegate drop table query to master node" do
-      Net::SSH.start(listInventoryIPs("postgresql")[0], ENV['user'], keys: [ENV['keypath']], :keys_only => true) do|ssh|
+      Net::SSH.start(primary_ip_host, ENV['user'], keys: [ENV['keypath']], :keys_only => true) do|ssh|
         result = ssh.exec!("sudo su - postgres -c \"psql -t -c 'DROP TABLE serverspec_test.test;'\" 2>&1")
         expect(result).to match 'DROP TABLE'
       end
     end
     it "Delegate drop schema query to master node" do
-      Net::SSH.start(listInventoryIPs("postgresql")[0], ENV['user'], keys: [ENV['keypath']], :keys_only => true) do|ssh|
+      Net::SSH.start(primary_ip_host, ENV['user'], keys: [ENV['keypath']], :keys_only => true) do|ssh|
         result = ssh.exec!("sudo su - postgres -c \"psql -t -c 'DROP SCHEMA serverspec_test CASCADE;'\" 2>&1")
         expect(result).to match 'DROP SCHEMA'
       end
     end
     it "Delegate drop user query to master node", :if => pgbouncer_enabled do
-      Net::SSH.start(listInventoryIPs("postgresql")[0], ENV['user'], keys: [ENV['keypath']], :keys_only => true) do|ssh|
+      Net::SSH.start(primary_ip_host, ENV['user'], keys: [ENV['keypath']], :keys_only => true) do|ssh|
         result = ssh.exec!("sudo su - postgres -c \"psql -t -c 'DROP USER #{pg_user};'\" 2>&1")
         expect(result).to match 'DROP ROLE'
       end
     end
     it "Remove test user from userlist.txt", :if => pgbouncer_enabled do
-      Net::SSH.start(listInventoryIPs("postgresql")[0], ENV['user'], keys: [ENV['keypath']], :keys_only => true) do|ssh|
+      Net::SSH.start(primary_ip_host, ENV['user'], keys: [ENV['keypath']], :keys_only => true) do|ssh|
         result = ssh.exec!("sudo su - -c \"sed -i '/#{pg_pass}/d' /etc/pgbouncer/userlist.txt && cat /etc/pgbouncer/userlist.txt\" 2>&1")
         expect(result).not_to match "#{pg_pass}"
       end
@@ -567,7 +567,7 @@ end
 
 if pgaudit_enabled && countInventoryHosts("logging") > 0
 
-  if !replicated || (replicated && (listInventoryHosts("postgresql")[1].include? host_inventory['hostname']))
+  if !replicated || (replicated && (last_node_host.include? host_inventory['hostname']))
 
     def get_elasticsearch_query(message_pattern:, size: 20, with_sort: true)
       query_template = {
