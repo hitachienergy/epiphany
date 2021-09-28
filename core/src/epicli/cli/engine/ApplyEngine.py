@@ -123,6 +123,27 @@ class ApplyEngine(Step):
                 if prev_master_count > next_master_count:
                     raise Exception("ControlPlane downscale is not supported yet. Please revert your 'kubernetes_master' count to previous value or increase it to scale up Kubernetes.")
 
+    def assert_no_postgres_nodes_number_change(self):
+        components = self.cluster_model.specification.components
+
+        cluster_name = self.cluster_model.specification.name
+        inventory_path = get_inventory_path(cluster_name)
+
+        if os.path.isfile(inventory_path):
+            existing_inventory = InventoryManager(loader=DataLoader(), sources=inventory_path)
+
+            both_present = all([
+                'postgresql' in existing_inventory.list_groups(),
+                'postgresql' in components,
+            ])
+
+            if both_present:
+                prev_postgres_count = len(existing_inventory.list_hosts(pattern='postgresql'))
+                next_postgres_count = int(components['postgresql']['count'])
+
+                if prev_postgres_count != next_postgres_count:
+                    raise Exception("Postgresql scaling is not supported yet. Please revert your 'postgresql' count to previous value.")
+
     def assert_consistent_os_family(self):
         # Before this issue https://github.com/epiphany-platform/epiphany/issues/195 gets resolved,
         # we are forced to do assertion here.
@@ -144,6 +165,8 @@ class ApplyEngine(Step):
         self.process_input_docs()
 
         self.assert_no_master_downscale()
+
+        self.assert_no_postgres_nodes_number_change()
 
         self.process_infrastructure_docs()
 
