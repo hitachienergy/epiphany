@@ -26,12 +26,6 @@ unless ENV['spec_output']
   exit
 end
 
-# Delete the SSH_AUTH_SOCK env var which might be set inside the devcontainer as this
-# causes issues with a bug inside the Net::SSH package.
-if ENV['SSH_AUTH_SOCK']
-  ENV.delete('SSH_AUTH_SOCK')
-end
-
 groups = {}
 all_hosts = {}
 ungrouped_hosts = {}
