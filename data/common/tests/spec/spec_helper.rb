@@ -24,6 +24,7 @@ options = Net::SSH::Config.for(host)
 
 options[:user] = ENV['user']
 options[:keys] = ENV['keypath']
+options[:use_agent] = false
 
 set :host,        options[:host_name] || host
 set :ssh_options, options

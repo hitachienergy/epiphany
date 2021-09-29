@@ -7,26 +7,16 @@ postgresql_host = '127.0.0.1'
 postgresql_default_port = 5432
 pgbouncer_default_port  = 6432
 
-# Re-order postgres hosts to put primary node at the start of the host listing.
-# This because the primary node needs to run some table creation tests before tests are
-# run against any of the standby nodes.
-host_list = listInventoryHosts("postgresql")
-ip_list = listInventoryIPs("postgresql")
-primary_node_host = host_list[0]
-primary_node_ip = ip_list[0]
-last_node_host = "none"
-if host_list.size > 1
-  host_list.each_with_index do |value, index|
-    Net::SSH.start(ip_list[index], ENV['user'], keys: [ENV['keypath']], :keys_only => true) do|ssh|
-      result = ssh.exec!("sudo su - postgres -c \"repmgr node check --role\"")
-      if result.include? "primary"
-        primary_node_host = value
-        primary_node_ip = ip_list[index]
-      else
-        last_node_host = value
-      end
-    end    
-  end
+# Here we set the needed variables from ENV variables which are set in the Rakefile
+# where we order the postgres hosts:
+# pg_primary_node_host: primary node host.
+# pg_primary_node_ip: primary node ip.
+# pg_last_node_host: last standby node host (if present)
+primary_node_host = ENV['pg_primary_node_host']
+primary_node_ip = ENV['pg_primary_node_ip']
+last_node_host = 'none'
+if ENV['pg_last_node_host']
+  last_node_host = ENV['pg_last_node_host']
 end
 
 config_docs = Hash.new
@@ -553,27 +543,28 @@ if !replicated
 end
 
 if replicated && (last_node_host.include? host_inventory['hostname'])
+  ssh_options = Specinfra.backend.get_config(:ssh_options)
   describe 'Clean up' do
     it "Delegate drop table query to master node" do
-      Net::SSH.start(primary_node_ip, ENV['user'], keys: [ENV['keypath']], :keys_only => true) do|ssh|
+      Net::SSH.start(primary_node_ip, ENV['user'], ssh_options) do|ssh|
         result = ssh.exec!("sudo su - postgres -c \"psql -t -c 'DROP TABLE serverspec_test.test;'\" 2>&1")
         expect(result).to match 'DROP TABLE'
       end
     end
     it "Delegate drop schema query to master node" do
-      Net::SSH.start(primary_node_ip, ENV['user'], keys: [ENV['keypath']], :keys_only => true) do|ssh|
+      Net::SSH.start(primary_node_ip, ENV['user'], ssh_options) do|ssh|
         result = ssh.exec!("sudo su - postgres -c \"psql -t -c 'DROP SCHEMA serverspec_test CASCADE;'\" 2>&1")
         expect(result).to match 'DROP SCHEMA'
       end
     end
     it "Delegate drop user query to master node", :if => pgbouncer_enabled do
-      Net::SSH.start(primary_node_ip, ENV['user'], keys: [ENV['keypath']], :keys_only => true) do|ssh|
+      Net::SSH.start(primary_node_ip, ENV['user'], ssh_options) do|ssh|
         result = ssh.exec!("sudo su - postgres -c \"psql -t -c 'DROP USER #{pg_user};'\" 2>&1")
         expect(result).to match 'DROP ROLE'
       end
     end
     it "Remove test user from userlist.txt", :if => pgbouncer_enabled do
-      Net::SSH.start(primary_node_ip, ENV['user'], keys: [ENV['keypath']], :keys_only => true) do|ssh|
+      Net::SSH.start(primary_node_ip, ENV['user'], ssh_options) do|ssh|
         result = ssh.exec!("sudo su - -c \"sed -i '/#{pg_pass}/d' /etc/pgbouncer/userlist.txt && cat /etc/pgbouncer/userlist.txt\" 2>&1")
         expect(result).not_to match "#{pg_pass}"
       end
