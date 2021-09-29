@@ -77,7 +77,7 @@ if groups.has_key?("postgresql")
     pg_primary = {}
     pg_standy = {}
     groups["postgresql"].keys.each do |host|
-      Net::SSH.start(host, ENV['user'], keys: [ENV['keypath']], :keys_only => true) do|ssh|
+      Net::SSH.start(host, ENV['user'], keys: [ENV['keypath']], use_agent: false) do |ssh|
         result = ssh.exec!("sudo su - postgres -c \"repmgr node check --role\"")
         if result.include? "primary"
           pg_primary[host] = groups["postgresql"][host]

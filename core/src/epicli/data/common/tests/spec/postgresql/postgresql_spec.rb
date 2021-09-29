@@ -543,27 +543,28 @@ if !replicated
 end
 
 if replicated && (last_node_host.include? host_inventory['hostname'])
+  ssh_options = Specinfra.backend.get_config(:ssh_options)
   describe 'Clean up' do
     it "Delegate drop table query to master node" do
-      Net::SSH.start(primary_node_ip, ENV['user'], keys: [ENV['keypath']], :keys_only => true) do|ssh|
+      Net::SSH.start(primary_node_ip, ENV['user'], ssh_options) do|ssh|
         result = ssh.exec!("sudo su - postgres -c \"psql -t -c 'DROP TABLE serverspec_test.test;'\" 2>&1")
         expect(result).to match 'DROP TABLE'
       end
     end
     it "Delegate drop schema query to master node" do
-      Net::SSH.start(primary_node_ip, ENV['user'], keys: [ENV['keypath']], :keys_only => true) do|ssh|
+      Net::SSH.start(primary_node_ip, ENV['user'], ssh_options) do|ssh|
         result = ssh.exec!("sudo su - postgres -c \"psql -t -c 'DROP SCHEMA serverspec_test CASCADE;'\" 2>&1")
         expect(result).to match 'DROP SCHEMA'
       end
     end
     it "Delegate drop user query to master node", :if => pgbouncer_enabled do
-      Net::SSH.start(primary_node_ip, ENV['user'], keys: [ENV['keypath']], :keys_only => true) do|ssh|
+      Net::SSH.start(primary_node_ip, ENV['user'], ssh_options) do|ssh|
         result = ssh.exec!("sudo su - postgres -c \"psql -t -c 'DROP USER #{pg_user};'\" 2>&1")
         expect(result).to match 'DROP ROLE'
       end
     end
     it "Remove test user from userlist.txt", :if => pgbouncer_enabled do
-      Net::SSH.start(primary_node_ip, ENV['user'], keys: [ENV['keypath']], :keys_only => true) do|ssh|
+      Net::SSH.start(primary_node_ip, ENV['user'], ssh_options) do|ssh|
         result = ssh.exec!("sudo su - -c \"sed -i '/#{pg_pass}/d' /etc/pgbouncer/userlist.txt && cat /etc/pgbouncer/userlist.txt\" 2>&1")
         expect(result).not_to match "#{pg_pass}"
       end
