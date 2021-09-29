@@ -835,31 +835,28 @@ Additional notes:
 In standard Epiphany deployment only one repository machine is required.  
 :arrow_up: Scaling up the repository component will create a new standalone VM.  
 :arrow_down: Scaling down will remove it in LIFO order (Last In, First Out).  
-However even if you create more then one VM, by default all other components will use the first one.
+However even if you create more than one VM, by default all other components will use the first one.
 - Kubernetes master:  
-:arrow_up: When increased this will setup additional control plane nodes, but in the case of non-ha k8s cluster, existing control plane node must be promoted first.  
+:arrow_up: When increased this will setup additional control plane nodes, but in the case of non-ha k8s cluster, the existing control plane node must be promoted first.  
 :arrow_down: At the moment there is no ability to downscale.
 - Kubernetes node:  
 :arrow_up: When increased this will setup additional nodes with `kubernetes_master`.  
 :arrow_down: There is no ability to downscale.
-- Kafka:  
-:arrow_up: When scaling up it will setup additional nodes for the Kafka cluster.  
-:arrow_down: When scaling down it will remove nodes from Kafka cluster.
 - Load balancer:  
 :arrow_up: Scaling up the load_balancer component will create a new standalone VM.  
 :arrow_down: Scaling down will remove it in LIFO order (Last In, First Out).
 - Logging:  
 :arrow_up:  Scaling up will create new VM with both Kibana and ODFE components inside.  
-ODFE will join the cluster but Kibana will be an standalone instance.  
-:arrow_down: When scaling down VM will be delted.
-- Monitoring -  
+ODFE will join the cluster but Kibana will be a standalone instance.  
+:arrow_down: When scaling down VM will be deleted.
+- Monitoring:  
 :arrow_up: Scaling up the monitoring component will create a new standalone VM.  
 :arrow_down: Scaling down will remove it in LIFO order (Last In, First Out).
 - Postgresql:  
 :arrow_up: At the moment does not support scaling up. Check known issues.  
-:arrow_down: At the moment des not support scaling down. Check known issues.
+:arrow_down: At the moment does not support scaling down. Check known issues.
 - RabbitMQ:  
-If instance count is changed, then additional RabbitMQ nodes will be added or removed.  
+If the instance count is changed, then additional RabbitMQ nodes will be added or removed.  
 :arrow_up: Will create new VM and adds it to the RabbitMQ cluster.  
 :arrow_down: At the moment scaling down will just remove VM. All data not processed on this VM will be purged. Check known issues.  
 Note that clustering requires a change in the `configuration/rabbitmq` document:
@@ -876,9 +873,9 @@ Note that clustering requires a change in the `configuration/rabbitmq` document:
 - RabbitMQ K8s:
   Scaling is controled via replicas in StatefulSet. Rabbitmq on K8s uses plugin rabbitmq_peer_discovery_k8s to works in cluster.
 
-  Additional known issues:
+Additional known issues:
 
-[#1574](https://github.com/epiphany-platform/epiphany/issues/1574) - Disks are not removed after downscale of any Epiphany component
+- [#1574](https://github.com/epiphany-platform/epiphany/issues/1574) - Disks are not removed after downscale of any Epiphany component on Azure.
 
 ## Multi master cluster
 
