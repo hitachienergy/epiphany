@@ -296,12 +296,14 @@
               systemd:
                 name: "{{ new_version.pg.service_name[ansible_os_family] }}"
                 state: started
+                masked: false
 
             - name: PostgreSQL | Debian | Ensure that instantiated PostgreSQL {{ new_version.pg.version }} service started
               when: ansible_os_family == 'Debian'
               systemd:
                 name: "{{ new_version.pg.instantiated_service_name[ansible_os_family] }}"
                 state: started
+                masked: false
 
         - name: PostgreSQL | Extensions | repmgr | Register primary node
           when: pg_is_repmgr_used
