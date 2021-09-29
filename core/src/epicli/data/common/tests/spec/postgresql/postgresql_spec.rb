@@ -7,26 +7,16 @@ postgresql_host = '127.0.0.1'
 postgresql_default_port = 5432
 pgbouncer_default_port  = 6432
 
-# Re-order postgres hosts to put primary node at the start of the host listing.
-# This because the primary node needs to run some table creation tests before tests are
-# run against any of the standby nodes.
-host_list = listInventoryHosts("postgresql")
-ip_list = listInventoryIPs("postgresql")
-primary_node_host = host_list[0]
-primary_node_ip = ip_list[0]
-last_node_host = "none"
-if host_list.size > 1
-  host_list.each_with_index do |value, index|
-    Net::SSH.start(ip_list[index], ENV['user'], keys: [ENV['keypath']], :keys_only => true) do|ssh|
-      result = ssh.exec!("sudo su - postgres -c \"repmgr node check --role\"")
-      if result.include? "primary"
-        primary_node_host = value
-        primary_node_ip = ip_list[index]
-      else
-        last_node_host = value
-      end
-    end    
-  end
+# Here we set the needed variables from ENV variables which are set in the Rakefile
+# where we order the postgres hosts:
+# pg_primary_node_host: primary node host.
+# pg_primary_node_ip: primary node ip.
+# pg_last_node_host: last standby node host (if present)
+primary_node_host = ENV['pg_primary_node_host']
+primary_node_ip = ENV['pg_primary_node_ip']
+last_node_host = 'none'
+if ENV['pg_last_node_host']
+  last_node_host = ENV['pg_last_node_host']
 end
 
 config_docs = Hash.new
