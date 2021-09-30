@@ -839,7 +839,7 @@ However, even if you create more than one VM, by default all other components wi
 :arrow_up: When increased this will set up additional control plane nodes, but in the case of non-ha k8s cluster, the existing control plane node must be promoted first.  
 :arrow_down: At the moment there is no ability to downscale.
 - Kubernetes node:  
-:arrow_up: When increased this will set up additional nodes with `kubernetes_master`.  
+:arrow_up: When increased this will set up an additional node and join into the Kubernetes cluster.  
 :arrow_down: There is no ability to downscale.
 - Load balancer:  
 :arrow_up: Scaling up the load_balancer component will create a new standalone VM.  
