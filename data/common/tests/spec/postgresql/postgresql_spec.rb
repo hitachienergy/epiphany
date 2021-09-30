@@ -54,7 +54,7 @@ wal_keep_size = spec_doc["specification"]["config_file"]["parameter_groups"].det
 # Setting added in Epiphany v1.2
 password_encryption = 'md5'
 
-pg_user = 'testuser'
+pg_user = 'serverspec_testuser'
 pg_pass = 'testpass'
 
 pg_config_file_booleans = { "true": "(?:on|true|yes|1)", "false": "(?:off|false|no|0)" }
@@ -612,9 +612,8 @@ if pgaudit_enabled && countInventoryHosts("logging") > 0
     end
 
     describe 'Check if Elasticsearch logs contain queries from PostrgeSQL database' do
-      query = get_elasticsearch_query(message_pattern: 'serverspec_test*')
-      min_doc_hits = pgbouncer_enabled ? 10 : 6
-      command = get_query_command_with_retries(json_query: query, min_doc_hits: min_doc_hits)
+      query = get_elasticsearch_query(message_pattern: "serverspec_test* AND NOT #{pg_user}")
+      command = get_query_command_with_retries(json_query: query, min_doc_hits: 6)
       describe command(command) do
         its(:stdout) { should match /CREATE SCHEMA serverspec_test/ }
         its(:stdout) { should match /CREATE TABLE serverspec_test\.test/ }
@@ -626,8 +625,8 @@ if pgaudit_enabled && countInventoryHosts("logging") > 0
     end
 
     describe 'Check if Elasticsearch logs contain queries executed with PGBouncer', :if => pgbouncer_enabled do
-      query = get_elasticsearch_query(message_pattern: pg_user)
-      command = get_query_command_with_retries(json_query: query, min_doc_hits: 7)
+      query = get_elasticsearch_query(message_pattern: "#{pg_user} AND NOT MISC,SET")
+      command = get_query_command_with_retries(json_query: query, min_doc_hits: 6)
       describe command(command.squish) do
         its(:stdout) { should match /GRANT ALL ON SCHEMA serverspec_test to #{pg_user}/ }
         its(:stdout) { should match /GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA serverspec_test to #{pg_user}/ }
