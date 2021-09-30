@@ -3,7 +3,7 @@
 FROM python:3.7-slim AS build-epicli-wheel
 
 COPY . /src
-WORKDIR /src/core/src/epicli
+WORKDIR /src
 
 RUN python setup.py bdist_wheel
 
@@ -21,7 +21,7 @@ ARG USER_GID=$USER_UID
 
 ENV EPICLI_DOCKER_SHARED_DIR=/shared
 
-COPY --from=build-epicli-wheel /src/core/src/epicli/dist/ /epicli/
+COPY --from=build-epicli-wheel /src/dist/ /epicli/
 
 RUN apt-get update \
     && apt-get install --no-install-recommends -y \
