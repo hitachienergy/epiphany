@@ -51,8 +51,6 @@ RUN : INSTALL PIP REQUIREMENTS \
  && pip install --disable-pip-version-check --no-cache-dir --default-timeout=100 \
     poetry pylint pylint_junit ansible-lint ansible-lint-to-junit-xml yamllint pytest setuptools twine wheel
 
-COPY cert/config-post.sh /
-
 RUN : SETUP USER, CERTS AND OTHERS \
  && groupadd --gid $USER_GID $USERNAME \
  && useradd -s /bin/bash --uid $USER_UID --gid $USER_GID -m $USERNAME \
