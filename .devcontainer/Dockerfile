@@ -58,4 +58,4 @@ RUN : SETUP USER, CERTS AND OTHERS \
  && chmod ug=r,o= /etc/sudoers.d/$USERNAME \
  && setcap 'cap_net_bind_service=+ep' /usr/bin/ssh
 
-RUN echo alias epicli='"export PYTHONPATH=/workspaces/epiphany/core/src/epicli && python3 -m cli.epicli"' >> /etc/bash.bashrc
+RUN echo alias epicli='"export PYTHONPATH=/workspaces/epiphany && python3 -m cli.epicli"' >> /etc/bash.bashrc
