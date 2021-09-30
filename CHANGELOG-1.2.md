@@ -6,6 +6,7 @@
 
 - [#2591](https://github.com/epiphany-platform/epiphany/issues/2591) - Update OS cloud images to the latest
 - [#2578](https://github.com/epiphany-platform/epiphany/issues/2578) - Update documentation on how to upgrade PostgreSQL
+- [#2396](https://github.com/epiphany-platform/epiphany/issues/2396) - Update documentation about scaling up/down
 
 ### Fixed
 
