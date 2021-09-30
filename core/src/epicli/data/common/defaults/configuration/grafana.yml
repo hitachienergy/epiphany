@@ -76,6 +76,9 @@ specification:
     #   # PostgreSQL Database
     # - dashboard_id: '9628'
     #   datasource: 'Prometheus'
+    #   # RabbitMQ cluster monitoring (via Prometheus)
+    # - dashboard_id: '10991'
+    #   datasource: 'Prometheus'
     #   # 1 Node Exporter for Prometheus Dashboard EN v20201010
     # - dashboard_id: '11074'
     #   datasource: 'Prometheus'

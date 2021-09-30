@@ -179,6 +179,8 @@ https://grafana.com/api/dashboards/367/revisions/3/download grafana_dashboard_36
 https://grafana.com/api/dashboards/179/revisions/5/download grafana_dashboard_179.json
 # Kubernetes pod and cluster monitoring (via Prometheus)
 https://grafana.com/api/dashboards/6663/revisions/1/download grafana_dashboard_6663.json
+# RabbitMQ cluster monitoring (via Prometheus)
+https://grafana.com/api/dashboards/10991/revisions/11/download grafana_dashboard_10991.json
 
 [images]
 haproxy:2.2.2-alpine
