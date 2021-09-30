@@ -1,18 +1,6 @@
 # Changelog 1.2
 
-## [1.2.0] 2021-XX-XX
-
-### Updated
-
-- [#2591](https://github.com/epiphany-platform/epiphany/issues/2591) - Update OS cloud images to the latest
-- [#2578](https://github.com/epiphany-platform/epiphany/issues/2578) - Update documentation on how to upgrade PostgreSQL
-- [#2396](https://github.com/epiphany-platform/epiphany/issues/2396) - Update documentation about scaling up/down
-
-### Fixed
-
-- [#1351](https://github.com/epiphany-platform/epiphany/issues/1351) - Refactor Keycloak to work with Postgresql HA configuration
-
-## [1.2.0rc1] 2021-09-16
+## [1.2.0] 2021-09-30
 
 ### Added
 
@@ -41,6 +29,7 @@
 - [#2521](https://github.com/epiphany-platform/epiphany/issues/2521) - Fix 2 unit tests that are marked to be skipped during test execution
 - [#2542](https://github.com/epiphany-platform/epiphany/issues/2542) - Non critical error in epicli if no 'path' is provided
 - [#1296](https://github.com/epiphany-platform/epiphany/issues/1296) - Epicli does not interpret alternative yaml boolean values as true booleans
+- [#1351](https://github.com/epiphany-platform/epiphany/issues/1351) - Refactor Keycloak to work with Postgresql HA configuration
 
 ### Updated
 
@@ -53,11 +42,13 @@
 - [#2453](https://github.com/epiphany-platform/epiphany/issues/2453) - Upgrade PgBouncer to v1.16.0 [standalone]
 - [#2457](https://github.com/epiphany-platform/epiphany/issues/2457) - Upgrade Docker-CE to v20.10.8
 - [#2511](https://github.com/epiphany-platform/epiphany/issues/2511) - Upgrade Python packages to at least the latest patch version.
+- [#2591](https://github.com/epiphany-platform/epiphany/issues/2591) - Update OS cloud images to the latest
+- [#2578](https://github.com/epiphany-platform/epiphany/issues/2578) - Update documentation on how to upgrade PostgreSQL
+- [#2396](https://github.com/epiphany-platform/epiphany/issues/2396) - Update documentation about scaling up/down
 
 ### Deprecated
 
 - PgBouncer standalone installation will be removed in the next release.
-
 
 ### Breaking changes
 
