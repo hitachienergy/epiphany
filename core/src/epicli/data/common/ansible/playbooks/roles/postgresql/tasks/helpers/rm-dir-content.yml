@@ -1,0 +1,17 @@
+---
+- name: PostgreSQL | Get {{ directory_path }} directory listing
+  find:
+    path: "{{ directory_path }}"
+    patterns: "{{ pattern }}"
+    file_type: any
+    hidden: true
+  register: directory_content
+
+- name: PostgreSQL | Remove {{ directory_path }} directory content
+  file:
+    path: "{{ file.path }}"
+    state: absent
+  loop: "{{ directory_content.files }}"
+  loop_control:
+    loop_var: file
+    label: "{{ file.path }}"

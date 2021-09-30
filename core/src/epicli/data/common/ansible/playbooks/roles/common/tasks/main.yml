@@ -81,11 +81,13 @@
   changed_when: false
   when: ansible_selinux is defined and ansible_selinux != False and ansible_selinux.status == 'enabled'
 
-- name: Motd cross-bones
-  copy:
-    src: motd.tail
-    dest: /etc/motd
-    mode: 0644
+# motd is not used as Ubuntu has its own update-motd framework for dynamic motd generation
+# while for RedHat there is only /etc/motd that doesn't support simple configuration for colored output
+- name: Configure login message
+  template:
+    src: motd.j2
+    dest: /etc/profile.d/motd.sh
+    mode: u=rwx,go=rx
     owner: root
     group: root
 

@@ -1,4 +1,14 @@
 ---
+# 'repmgr standby clone' command uses 'pg_basebackup' that requires target directories to be empty
+# tablespace directories on a primary node are untouched
+- name: PostgreSQL | Clean up tablespace directories
+  vars:
+    pattern: '*'
+  include_tasks: roles/postgresql/tasks/helpers/rm-dir-content.yml
+  loop_control:
+    loop_var: directory_path
+  loop: "{{ pg_custom_tablespace_locations }}"
+
 - name: PostgreSQL | Extensions | repmgr | Clone standby node with repmgr
   become_user: postgres
   command: >-
@@ -21,12 +31,14 @@
       systemd:
         name: "{{ new_version.pg.service_name[ansible_os_family] }}"
         state: started
+        masked: false
 
     - name: PostgreSQL | Debian | Ensure that instantiated PostgreSQL {{ new_version.pg.version }} service started
       when: ansible_os_family == 'Debian'
       systemd:
         name: "{{ new_version.pg.instantiated_service_name[ansible_os_family] }}"
         state: started
+        masked: false
 
 - name: Extensions | repmgr | Register node with repmgr
   become_user: postgres

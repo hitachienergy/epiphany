@@ -35,6 +35,19 @@
   set_fact:
     pg_primary_node: "{{ pg_primary_node_found.stdout | default('') }}"
 
+# postgresql_info module doesn't display tablespace locations, so it's requested
+- name: PostgreSQL | Query custom tablespaces
+  become_user: postgres
+  postgresql_query:
+    query: "select pg_tablespace_location(oid) as location from pg_tablespace where spcname not in ('pg_default', 'pg_global')"
+  delegate_to: "{{ (pg_primary_node|length > 0) | ternary(pg_primary_node, inventory_hostname) }}"
+  run_once: true
+  register: pg_custom_tablespaces
+
+- name: PostgreSQL | Set 'pg_custom_tablespace_locations' fact
+  set_fact:
+    pg_custom_tablespace_locations: "{{ pg_custom_tablespaces.query_result | map(attribute='location') | list }}"
+
 - name: PostgreSQL | Upgrade
   block:
     # Step: Install the new PostgreSQL binaries
@@ -283,12 +296,14 @@
               systemd:
                 name: "{{ new_version.pg.service_name[ansible_os_family] }}"
                 state: started
+                masked: false
 
             - name: PostgreSQL | Debian | Ensure that instantiated PostgreSQL {{ new_version.pg.version }} service started
               when: ansible_os_family == 'Debian'
               systemd:
                 name: "{{ new_version.pg.instantiated_service_name[ansible_os_family] }}"
                 state: started
+                masked: false
 
         - name: PostgreSQL | Extensions | repmgr | Register primary node
           when: pg_is_repmgr_used
@@ -343,6 +358,14 @@
       file:
         path: "{{ new_version.pg.data_dir[ansible_os_family] }}"
         state: absent
+
+    - name: PostgreSQL | Rollback | Clean up migrated tablespace directories
+      vars:
+        pattern: "PG_{{ new_version.pg.version }}_*"
+      include_tasks: roles/postgresql/tasks/helpers/rm-dir-content.yml
+      loop_control:
+        loop_var: directory_path
+      loop: "{{ pg_custom_tablespace_locations }}"
 
     - name: Restore repmgr symlinks
       when: pg_is_repmgr_used
