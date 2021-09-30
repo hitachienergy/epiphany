@@ -21,7 +21,7 @@ Check bellow security diagram, which show how security groups are related to oth
 
 ## Azure Security groups
 
-List of all security groups and related services in Azure are described [here](https://github.com/epiphany-platform/epiphany/blob/develop/core/src/epicli/data/azure/defaults/infrastructure/virtual-machine.yml).
+List of all security groups and related services in Azure are described [here](https://github.com/epiphany-platform/epiphany/blob/develop/data/azure/defaults/infrastructure/virtual-machine.yml).
 
 Rules description:
 ```yaml
@@ -66,7 +66,7 @@ specification:
   prefix: azure
   admin_user:
     name: operations
-    key_path:  /workspaces/epiphany/core/src/epicli/clusters/keys/abb_rsa
+    key_path:  /workspaces/epiphany/clusters/keys/abb_rsa
   cloud:
     region: West Europe
     subscription_name: PUT_SUBSCRIPTION_NAME_HERE
@@ -203,7 +203,7 @@ specification:
 
 ## AWS Security groups
 
-List of all security groups and related services in AWS are described [here](https://github.com/epiphany-platform/epiphany/blob/develop/core/src/epicli/data/aws/defaults/infrastructure/virtual-machine.yml).
+List of all security groups and related services in AWS are described [here](https://github.com/epiphany-platform/epiphany/blob/develop/data/aws/defaults/infrastructure/virtual-machine.yml).
 
 Rules description:
 ```yaml
