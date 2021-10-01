@@ -62,7 +62,7 @@ For more information about how to setup Prometheus alerting rules, refer to [the
 
 ## How to enable Alertmanager
 
-Epiphany provides Alertmanager configuration via configuration manifest. To see default configuration please refer to [default Prometheus configuration file](https://github.com/epiphany-platform/epiphany/blob/develop/core/src/epicli/data/common/defaults/configuration/prometheus.yml).  
+Epiphany provides Alertmanager configuration via configuration manifest. To see default configuration please refer to [default Prometheus configuration file](https://github.com/epiphany-platform/epiphany/blob/develop/data/common/defaults/configuration/prometheus.yml).  
 To enable Alertmanager you have to modify configuration manifest:
 
 1. Enable Alermanager
@@ -192,7 +192,7 @@ specification:
 ### Enabling predefined Grafana dashboards
 
 Since v1.1.0 Epiphany provides predefined Grafana dashboards. These dashboards are available in online and offline deployment modes.
-To enable particular Grafana dashboard, refer to [default Grafana configuration file](https://github.com/epiphany-platform/epiphany/blob/develop/core/src/epicli/data/common/defaults/configuration/grafana.yml), copy `kind: configuration/grafana` section to your configuration manifest and uncomment desired dashboards.
+To enable particular Grafana dashboard, refer to [default Grafana configuration file](https://github.com/epiphany-platform/epiphany/blob/develop/data/common/defaults/configuration/grafana.yml), copy `kind: configuration/grafana` section to your configuration manifest and uncomment desired dashboards.
 
 Example:
 
