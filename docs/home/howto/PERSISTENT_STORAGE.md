@@ -186,7 +186,7 @@ specification:
 
 If `provider: aws` is specified, EFS storage is always created and can be used with persistent volumes created by the 
 user. It is possible to create a separate EFS and use it. For more information check Kubernetes 
-[NFS](https://kubernetes.io/docs/concepts/storage/volumes/#nfs) storage documentation. There is another way exists 
+[NFS](https://kubernetes.io/docs/concepts/storage/volumes/#nfs) storage documentation. There is another way
 to use EFS by [Amazon EFS CSI driver](https://docs.aws.amazon.com/eks/latest/userguide/efs-csi.html) but this approach
 is not supported by Epiphany's AWS provider.
 
