@@ -55,18 +55,14 @@ class AnsibleCommand:
         else:
             raise Exception(f'Failed running task after {str(retries)} retries')
 
-    def run_playbook(self, inventory, playbook_path, vault_file=None, extra_vars=None):
+    def run_playbook(self, inventory, playbook_path, vault_file=None):
         cmd = ['ansible-playbook']
 
         if inventory is not None and len(inventory) > 0:
-            cmd.extend(['-i', inventory])
+            cmd.extend(["-i", inventory])
 
         if vault_file is not None:
-            cmd.extend(['--vault-password-file', vault_file])
-
-        if extra_vars is not None:
-            variables = ' '.join([f"{variable}='{value}'" for variable, value in extra_vars.items()])
-            cmd.extend(['--extra-vars', variables])
+            cmd.extend(["--vault-password-file", vault_file])
 
         cmd.append(playbook_path)
 

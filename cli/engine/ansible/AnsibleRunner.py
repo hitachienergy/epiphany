@@ -1,7 +1,7 @@
 import datetime
 import os
-import shutil
 import time
+import shutil
 
 from cli.engine.ansible.AnsibleCommand import AnsibleCommand
 from cli.engine.ansible.AnsibleInventoryCreator import AnsibleInventoryCreator
@@ -15,7 +15,6 @@ from cli.helpers.build_io import (get_inventory_path, get_inventory_path_for_bui
 from cli.helpers.naming_helpers import to_role_name
 from cli.helpers.data_loader import BASE_DIR, types
 from cli.helpers.Config import Config
-from cli.version import VERSION
 
 
 class AnsibleRunner(Step):
@@ -123,13 +122,6 @@ class AnsibleRunner(Step):
         # pre-flight to prepare machines
         self.pre_flight(inventory_path)
 
-        self.ansible_command.run_playbook(inventory=inventory_path,
-                                          playbook_path=self.playbook_path(to_role_name('versioning')),
-                                          vault_file=Config().vault_password_location,
-                                          extra_vars={'mode': 'apply',
-                                                      'date': datetime.datetime.now().ctime(),
-                                                      'version': VERSION})
-
         # run roles
         enabled_roles = inventory_creator.get_enabled_roles()
         for role in enabled_roles:
@@ -160,12 +152,6 @@ class AnsibleRunner(Step):
 
         # pre-flight to prepare machines
         self.pre_flight(inventory_path)
-
-        self.ansible_command.run_playbook(inventory=inventory_path,
-                                          playbook_path=self.playbook_path(to_role_name('versioning')),
-                                          extra_vars={'mode': 'upgrade',
-                                                      'date': datetime.datetime.now().ctime(),
-                                                      'version': VERSION})
 
         # run image_registry playbook
         self.ansible_command.run_playbook(inventory=inventory_path,

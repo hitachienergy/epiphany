@@ -11,3 +11,41 @@
     - preflight
   environment:
     KUBECONFIG: "{{ kubeconfig.remote }}"
+
+
+- name: Ansible playbook for adding epicli version info for each component used
+  hosts: all
+  gather_facts: yes
+  become: true
+  become_method: sudo
+  vars:
+    history_file_content: |
+      deployments:
+        - version: {{ version }}
+          date: {{ ansible_date_time.date }} {{ ansible_date_time.time }}
+          mode: {{ is_upgrade_run | ternary('upgrade', 'apply') }}
+          state: started
+  tasks:
+    - name: Create epiphany directory if it does not exist
+      file:
+        path: /var/lib/epiphany/
+        state: directory
+        mode: u=rwx,go=rx
+
+    - name: Get history file status
+      stat:
+        path: /var/lib/epiphany/history.yml
+      register: history_file
+
+    - name: Add history info
+      lineinfile:
+        path: /var/lib/epiphany/history.yml
+        regexp: 'deployments:'
+        line: "{{ history_file_content }}"
+      when: history_file.stat.exists and history_file.stat.size > 0
+
+    - name: Create history file
+      copy:
+        dest: /var/lib/epiphany/history.yml
+        content: "{{ history_file_content }}"
+      when: not history_file.stat.exists or history_file.stat.size == 0
