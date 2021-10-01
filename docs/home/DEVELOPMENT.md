@@ -35,7 +35,7 @@ This document explains how to set up the preferred [VSCode](https://code.visuals
 
 ## Preparing the environment
 
-1. Open the epicli project folder ```/epiphany/core/src/epicli/``` with VSCode.
+1. Open the epicli project folder ```/epiphany/``` with VSCode.
 
 2. VSCode will tell you that the workspace has recommended extensions:
 
@@ -59,7 +59,7 @@ Now you have a fully working Epiphany development environment!
 
 ## Supplying data to the devcontainer
 
-The entire working directory (```/epiphany/core/src/epicli/```) is mounted inside the container. We recommend to create an additional directory called ```clusters``` there, in which you house your data YAMLs and SSH keys. This directory is already added to the .gitignore. When executing epicli commands from that directory this is also where any build output and logs are written to.
+The entire working directory (```/epiphany/```) is mounted inside the container. We recommend to create an additional directory called ```clusters``` there, in which you house your data YAMLs and SSH keys. This directory is already added to the .gitignore. When executing epicli commands from that directory this is also where any build output and logs are written to.
 
 ## Note for Windows users
 
@@ -84,7 +84,7 @@ For debugging, open the VSCode's Debug tab:
 
 ![debug](../assets/images/development/debug.png)
 
-By default there is one launch configuration called ```epicli```. This launch configuration can be found in ```/epiphany/core/src/epicli/.vscode/``` and looks like this:
+By default there is one launch configuration called ```epicli```. This launch configuration can be found in ```/epiphany/.vscode/``` and looks like this:
 
   ```json
     ...
@@ -183,4 +183,4 @@ Where the ```-b``` argument points to the build folder of a cluster. The ```-g``
 
 ## Epicli Python dependencies
 
-Information about how to manage the Epicli Python dependencies can be found [here.](../../core/src/epicli/.devcontainer/requirements.md#python-requirement-management)
+Information about how to manage the Epicli Python dependencies can be found [here.](../../.devcontainer/requirements.md#python-requirement-management)

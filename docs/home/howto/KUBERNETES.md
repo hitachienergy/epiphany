@@ -11,7 +11,7 @@ Currently, Epiphany provides the following predefined applications which may be 
 - pgbouncer
 - istio
 
-All of them have [default configuration](https://github.com/epiphany-platform/epiphany/blob/develop/core/src/epicli/data/common/defaults/configuration/applications.yml). The common parameters are: name, enabled, namespace, image_path and use_local_image_registry.  
+All of them have [default configuration](https://github.com/epiphany-platform/epiphany/blob/develop/data/common/defaults/configuration/applications.yml). The common parameters are: name, enabled, namespace, image_path and use_local_image_registry.  
 If you set `use_local_image_registry` to `false` in configuration manifest, you have to provide a valid docker image path in `image_path`. Kubernetes will try to pull image from `image_path` value externally.  
 To see what version of the application image is in local image registry please refer to [components list](../COMPONENTS.md).
 
@@ -262,7 +262,7 @@ specification:
 
 3. Enable required applications by setting `enabled: true` and adjust other parameters in `configuration/applications` kind.
 
-The default applications configuration available [here](https://github.com/epiphany-platform/epiphany/blob/develop/core/src/epicli/data/common/defaults/configuration/applications.yml)
+The default applications configuration available [here](https://github.com/epiphany-platform/epiphany/blob/develop/data/common/defaults/configuration/applications.yml)
 
 Note: To get working with Pgbouncer, Keycloak requires Pgbouncer configuration parametr `POOL_MODE` set to `session`, see [Installing Pgbouncer and Pgpool](DATABASES.md#installing-pgbouncer-and-pgpool) section. The reason is that Keycloak uses SET SQL statements. For details see [SQL feature map for pooling modes](https://www.pgbouncer.org/features.html).
 

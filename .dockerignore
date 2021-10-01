@@ -7,7 +7,7 @@
 # Include the following
 !README.md
 !LICENSE
-!core/src/epicli/.devcontainer/requirements.txt
-!core/src/epicli/cli/
-!core/src/epicli/data/
-!core/src/epicli/setup.py
+!.devcontainer/requirements.txt
+!cli/
+!data/
+!setup.py

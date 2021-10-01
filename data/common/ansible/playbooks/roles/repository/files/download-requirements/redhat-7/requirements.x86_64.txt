@@ -1,0 +1,233 @@
+# Put this file in the same directory as download script
+
+[packages-repo-prereqs]
+apr # for httpd
+apr-util # for httpd
+createrepo
+deltarpm # for createrepo
+httpd
+httpd-tools # for httpd
+mailcap # for httpd
+mod_ssl # for httpd
+python-chardet # for createrepo
+python-deltarpm # for createrepo
+python-kitchen # for createrepo
+redhat-logos # for httpd
+yum-utils
+
+[crane]
+https://github.com/google/go-containerregistry/releases/download/v0.4.1/go-containerregistry_Linux_x86_64.tar.gz
+
+[packages]
+audit # for docker-ce
+bash-completion
+c-ares # for pgbouncer
+ca-certificates
+cifs-utils
+conntrack-tools # for kubelet
+containerd.io
+container-selinux
+cri-tools-1.13.0
+curl
+dejavu-sans-fonts # for grafana
+docker-ce-20.10.8
+docker-ce-cli-20.10.8
+docker-ce-rootless-extras-20.10.8
+ebtables
+elasticsearch-curator-5.8.3
+elasticsearch-oss-7.10.2 # for opendistroforelasticsearch & logging roles
+ethtool
+filebeat-7.9.2
+firewalld
+fontconfig # for grafana
+fping
+fuse-overlayfs # for docker-ce-rootless-extras
+gnutls # for cifs-utils
+gssproxy # for nfs-utils
+htop
+iftop
+ipset # for firewalld
+java-1.8.0-openjdk-headless
+javapackages-tools # for java-1.8.0-openjdk-headless
+jq
+libini_config # for nfs-utils
+libselinux-python
+libsemanage-python
+libX11 # for grafana
+libxcb # for grafana
+libXcursor # for grafana
+libXt # for grafana
+logrotate
+logstash-oss-7.12.0
+net-tools
+nfs-utils
+nmap-ncat
+# Open Distro for Elasticsearch plugins are installed individually to not download them twice in different versions (as dependencies of opendistroforelasticsearch package)
+opendistro-alerting-1.13.1.*
+opendistro-index-management-1.13.1.*
+opendistro-job-scheduler-1.13.0.*
+opendistro-performance-analyzer-1.13.0.*
+opendistro-security-1.13.1.*
+opendistro-sql-1.13.0.*
+opendistroforelasticsearch-kibana-1.13.1 # kibana has shorter version
+openssl
+perl # for vim
+perl-Getopt-Long # for vim
+perl-libs # for vim
+perl-Pod-Perldoc # for vim
+perl-Pod-Simple # for vim
+perl-Pod-Usage # for vim
+pgaudit15_13-1.5.0
+pgbouncer-1.16.0
+policycoreutils-python # for container-selinux
+pyldb # for cifs-utils
+python-cffi # for python2-cryptography
+python-firewall # for firewalld
+python-kitchen # for yum-utils
+python-lxml # for java-1.8.0-openjdk-headless
+python-psycopg2
+python-pycparser # for python2-cryptography
+python-setuptools
+python-slip-dbus # for firewalld
+python2-cryptography # for Ansible (certificate modules)
+python3-3.6.8
+quota # for nfs-utils
+rabbitmq-server-3.8.9
+rh-haproxy18
+rh-haproxy18-haproxy-syspaths
+postgresql13-server
+repmgr10-5.2.1 # used to upgrade repmgr first
+repmgr13-5.2.1
+samba-client
+samba-client-libs # for samba-client
+samba-common
+samba-libs # for cifs-utils
+sysstat
+tar
+telnet
+tmux
+urw-base35-fonts # for grafana
+unzip
+vim-common # for vim
+vim-enhanced
+wget
+xorg-x11-font-utils # for grafana
+xorg-x11-server-utils # for grafana
+yum-plugin-versionlock
+yum-utils
+
+# to make remote-to-remote "synchronize" work in ansible
+rsync
+
+# K8s upgrade v1.17.7 (Epiphany v0.7.0), see https://github.com/kubernetes/release/pull/1375
+kubeadm-1.17.7-0
+kubectl-1.17.7-0
+kubelet-1.17.7-0
+# K8s upgrade v1.18.6 (Epiphany >= v0.7.1)
+kubeadm-1.18.6
+kubectl-1.18.6
+kubelet-1.18.6
+
+# Kubernetes Generic
+kubernetes-cni-0.7.5-0
+# kubernetes-cni-0.8.6-0 since K8s v1.18.6
+kubernetes-cni-0.8.6-0
+
+[files]
+# --- Packages ---
+# Github repository for erlang rpm is used since packagecloud repository is limited to a certain number of versions and erlang package from erlang-solutions repository is much more complex and bigger
+https://github.com/rabbitmq/erlang-rpm/releases/download/v23.1.5/erlang-23.1.5-1.el7.x86_64.rpm
+# Grafana package is not downloaded from repository since it was not reliable (issue #2449)
+https://dl.grafana.com/oss/release/grafana-7.3.5-1.x86_64.rpm
+# --- Exporters ---
+https://github.com/prometheus/haproxy_exporter/releases/download/v0.10.0/haproxy_exporter-0.10.0.linux-amd64.tar.gz
+https://repo1.maven.org/maven2/io/prometheus/jmx/jmx_prometheus_javaagent/0.14.0/jmx_prometheus_javaagent-0.14.0.jar
+https://github.com/danielqsj/kafka_exporter/releases/download/v1.2.0/kafka_exporter-1.2.0.linux-amd64.tar.gz
+https://github.com/prometheus/node_exporter/releases/download/v1.0.1/node_exporter-1.0.1.linux-amd64.tar.gz
+https://github.com/prometheus-community/postgres_exporter/releases/download/v0.9.0/postgres_exporter-0.9.0.linux-amd64.tar.gz
+# --- Misc ---
+https://archive.apache.org/dist/kafka/2.6.0/kafka_2.12-2.6.0.tgz
+https://github.com/prometheus/prometheus/releases/download/v2.10.0/prometheus-2.10.0.linux-amd64.tar.gz
+https://github.com/prometheus/alertmanager/releases/download/v0.17.0/alertmanager-0.17.0.linux-amd64.tar.gz
+https://archive.apache.org/dist/zookeeper/zookeeper-3.5.8/apache-zookeeper-3.5.8-bin.tar.gz
+https://archive.apache.org/dist/ignite/2.9.1/apache-ignite-2.9.1-bin.zip
+https://releases.hashicorp.com/vault/1.7.0/vault_1.7.0_linux_amd64.zip
+https://get.helm.sh/helm-v3.2.0-linux-amd64.tar.gz
+https://github.com/hashicorp/vault-helm/archive/v0.11.0.tar.gz
+# --- Helm charts ---
+https://helm.elastic.co/helm/filebeat/filebeat-7.9.2.tgz
+https://charts.bitnami.com/bitnami/node-exporter-1.1.2.tgz
+# --- Grafana Dashboards <url> <new filename> ---
+# Kubernetes Cluster
+https://grafana.com/api/dashboards/7249/revisions/1/download grafana_dashboard_7249.json
+# Kubernetes cluster monitoring (via Prometheus)
+https://grafana.com/api/dashboards/315/revisions/3/download grafana_dashboard_315.json
+# Node Exporter for Prometheus
+https://grafana.com/api/dashboards/11074/revisions/9/download grafana_dashboard_11074.json
+# Node Exporter Server Metrics
+https://grafana.com/api/dashboards/405/revisions/8/download grafana_dashboard_405.json
+# Postgres Overview
+https://grafana.com/api/dashboards/455/revisions/2/download grafana_dashboard_455.json
+# PostgreSQL Database
+https://grafana.com/api/dashboards/9628/revisions/7/download grafana_dashboard_9628.json
+# RabbitMQ Monitoring
+https://grafana.com/api/dashboards/4279/revisions/4/download grafana_dashboard_4279.json
+# Node Exporter Full
+https://grafana.com/api/dashboards/1860/revisions/23/download grafana_dashboard_1860.json
+# Kafka Exporter Overview
+https://grafana.com/api/dashboards/7589/revisions/5/download grafana_dashboard_7589.json
+# HAproxy Servers | HAproxy
+https://grafana.com/api/dashboards/367/revisions/3/download grafana_dashboard_367.json
+# Docker and Host Monitoring w/ Prometheus
+https://grafana.com/api/dashboards/179/revisions/5/download grafana_dashboard_179.json
+# Kubernetes pod and cluster monitoring (via Prometheus)
+https://grafana.com/api/dashboards/6663/revisions/1/download grafana_dashboard_6663.json
+# RabbitMQ cluster monitoring (via Prometheus)
+https://grafana.com/api/dashboards/10991/revisions/11/download grafana_dashboard_10991.json
+
+[images]
+haproxy:2.2.2-alpine
+kubernetesui/dashboard:v2.0.3
+kubernetesui/metrics-scraper:v1.0.4
+registry:2
+hashicorp/vault-k8s:0.10.0
+vault:1.7.0
+# applications
+epiphanyplatform/ignite:2.9.1
+bitnami/pgpool:4.2.4
+bitnami/pgbouncer:1.16.0
+# istio
+istio/pilot:1.8.1
+istio/proxyv2:1.8.1
+istio/operator:1.8.1
+epiphanyplatform/keycloak:14.0.0
+rabbitmq:3.8.9
+# K8s upgrade
+## v1.17.7
+k8s.gcr.io/kube-apiserver:v1.17.7
+k8s.gcr.io/kube-controller-manager:v1.17.7
+k8s.gcr.io/kube-scheduler:v1.17.7
+k8s.gcr.io/kube-proxy:v1.17.7
+k8s.gcr.io/coredns:1.6.5
+k8s.gcr.io/etcd:3.4.3-0
+k8s.gcr.io/pause:3.1
+quay.io/coreos/flannel:v0.12.0-amd64
+quay.io/coreos/flannel:v0.12.0
+calico/cni:v3.15.0
+calico/kube-controllers:v3.15.0
+calico/node:v3.15.0
+calico/pod2daemon-flexvol:v3.15.0
+## v1.18.6
+k8s.gcr.io/kube-apiserver:v1.18.6
+k8s.gcr.io/kube-controller-manager:v1.18.6
+k8s.gcr.io/kube-scheduler:v1.18.6
+k8s.gcr.io/kube-proxy:v1.18.6
+k8s.gcr.io/coredns:1.6.7
+k8s.gcr.io/etcd:3.4.3-0
+k8s.gcr.io/pause:3.2
+quay.io/coreos/flannel:v0.12.0-amd64
+quay.io/coreos/flannel:v0.12.0
+calico/cni:v3.15.0
+calico/kube-controllers:v3.15.0
+calico/node:v3.15.0
+calico/pod2daemon-flexvol:v3.15.0
