@@ -472,7 +472,7 @@ To set up the cluster do the following steps from the provisioning machine:
     /build/clustername/terraform
     ```
 
-    Where the `clustername` is the name you specified under `specification.name` in your cluster yaml. Then in `terraform` folder add the file named `sp.yml` and fill it with the service principle information like so:
+    Where the `clustername` is the name you specified under `specification.name` in your cluster yaml. Then in `terraform` folder add the file named `sp.yml` and fill it up with the service principal information like so:
 
     ```yaml
     appId: "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxx"
@@ -870,7 +870,7 @@ Note that clustering requires a change in the `configuration/rabbitmq` document:
   ```
 
 - RabbitMQ K8s:
-  Scaling is controlled via replicas in StatefulSet. Rabbitmq on K8s uses plugin rabbitmq_peer_discovery_k8s to works in cluster.
+  Scaling is controlled via replicas in StatefulSet. RabbitMQ on K8s uses plugin rabbitmq_peer_discovery_k8s to works in cluster.
 
 Additional known issues:
 
