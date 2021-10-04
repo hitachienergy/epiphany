@@ -27,11 +27,11 @@ The LTS version will be released once a year and will be supported for up to 3 y
 | 0.5.x | 17 Jan 2020 | 0.5.6 | 04 Nov 2020 | 19 Jan 2021 |
 | 0.6.x | 06 Apr 2020 | 0.6.2 | 09 Apr 2021 | 01 Apr 2021 |
 | 0.7.x | 01 Jul 2020 | 0.7.4 | 17 May 2021 | 30 Jun 2021 |
-| 0.8.x | 22 Oct 2020 | 0.8.3 | 17 Apr 2021 | est. 30 Sep 2021 |
-| 0.9.x | 19 Jan 2021 | 0.9.2 | 14 May 2021 | est. 30 Dec 2021 |
+| 0.8.x | 22 Oct 2020 | 0.8.3 | 17 Apr 2021 | 30 Sep 2021 |
+| 0.9.x | 19 Jan 2021 | 0.9.2 | 14 May 2021 | 30 Dec 2021 |
 | 1.0.x LTS| 01 Apr 2021 | 1.0.1 | 16 Jul 2021 | 01 Apr 2024 |
 | 1.1.x STS| 30 Jun 2021 | 1.1.0 | 30 Jun 2021 | 30 Dec 2021 |
-| 1.2.x STS| est. 30 Sep 2021 | - | - | est. 30 Mar 2021 |
+| 1.2.x STS| 30 Sep 2021 | 1.2.0 | 30 Sep 2021 | 30 Mar 2022 |
 | 1.3.x STS| est. 30 Dec 2021 | - | - | est. 30 Jun 2022 |
 | 2.0.x LTS| est. 01 Apr 2022 | - | - | est. 01 Apr 2025 |
 
