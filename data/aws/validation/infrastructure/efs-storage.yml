@@ -1,0 +1,24 @@
+"$id": "#/specification"
+title: "Efs-storage specification schema"
+description: "Efs-storage specification schema"
+type: object
+properties:
+  name:
+    type: string
+  token:
+    type: string
+  encrypted:
+    type: boolean
+  performance_mode:
+    type: string
+  throughput_mode:
+    type: string
+  mount_targets:
+    type: array
+    items:
+      type: object
+      properties:
+        name:
+          type: string
+        subnet_name:
+          type: string

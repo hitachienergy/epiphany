@@ -50,6 +50,7 @@
   - [How to run chaos on Epiphany Kubernetes cluster and monitor it with Grafana](./howto/KUBERNETES.md#how-to-run-chaos-on-epiphany-kubernetes-cluster-and-monitor-it-with-grafana)
   - [How to test the central logging features](./howto/KUBERNETES.md#how-to-test-the-central-logging-features)
   - [How to tunnel Kubernetes dashboard from remote kubectl to your PC](./howto/KUBERNETES.md#how-to-tunnel-kubernetes-dashboard-from-remote-kubectl-to-your-pc)
+  - [Kubernetes persistent storage](./howto/PERSISTENT_STORAGE.md)
 
 - [Helm](./howto/HELM.md)
   - [Helm "system" chart repository](./howto/HELM.md#helm-system-chart-repository)

@@ -89,7 +89,7 @@ specification:
   name: k8s1
   admin_user:
     name: ubuntu
-    key_path: /workspaces/epiphany/core/src/epicli/clusters/id_ed25519
+    key_path: /workspaces/epiphany/clusters/id_ed25519
   components:
     kubernetes_master:
       count: 3

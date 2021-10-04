@@ -1,0 +1,7 @@
+kind: infrastructure/machine
+title: "Virtual Machine Infra"
+provider: any
+name: default
+specification:
+  ip: TO_BE_SET_BY_USER
+  hostname: TO_BE_SET_BY_USER

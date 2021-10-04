@@ -1,0 +1,16 @@
+apiVersion: "v1"
+kind: "PersistentVolume"
+metadata:
+  name: {{ specification.storage.name }}
+  labels:
+    name: {{ specification.storage.name }}
+spec:
+  storageClassName: azurefile
+  capacity:
+    storage: {{ specification.storage.capacity }}Gi
+  accessModes:
+    - "ReadWriteMany"
+  azureFile:
+    secretName: azure-secret
+    shareName: k8s
+    readOnly: false
