@@ -22,8 +22,3 @@ properties:
           type: string
         subnet_name:
           type: string
-  security:
-    type: object
-    properties:
-      populate_sg_rules:
-        type: boolean
