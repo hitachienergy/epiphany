@@ -5,6 +5,8 @@ type: object
 properties:
   cluster_name:
     type: string
+  clustered:
+    type: boolean
   admin_password:
     type: string
   kibanaserver_password:
@@ -17,7 +19,8 @@ properties:
     type: boolean
   demo_users_to_remove:
     type: array
-    items: {}
+    items:
+      type: string
   paths:
     type: object
     properties:

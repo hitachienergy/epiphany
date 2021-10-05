@@ -1,0 +1,7 @@
+"$id": "#/specification"
+title: "Helm-charts specification schema"
+description: "Helm-charts specification schema"
+type: object
+properties:
+  apache_epirepo_path:
+    type: string
