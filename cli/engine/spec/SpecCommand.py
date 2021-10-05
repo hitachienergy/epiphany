@@ -53,8 +53,10 @@ These need to be installed to run the cluster spec tests from epicli'''
 
     @staticmethod
     def get_spec_groups():
-        groups = os.listdir(SPEC_TEST_PATH + '/spec')
-        groups.remove('spec_helper.rb')
-        groups = ['all'] + groups
+        listdir = os.listdir(f'{SPEC_TEST_PATH}/spec')
+        groups = ['all']
+        for entry in listdir:
+            if os.path.isdir(f'{SPEC_TEST_PATH}/spec/{entry}'):
+                groups = groups + [entry]
         sorted(groups, key=str.lower)
         return groups

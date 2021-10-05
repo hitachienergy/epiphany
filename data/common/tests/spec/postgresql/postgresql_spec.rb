@@ -7,6 +7,18 @@ postgresql_host = '127.0.0.1'
 postgresql_default_port = 5432
 pgbouncer_default_port  = 6432
 
+# Here we set the needed variables from ENV variables which are set in the Rakefile
+# where we order the postgres hosts:
+# pg_primary_node_host: primary node host.
+# pg_primary_node_ip: primary node ip.
+# pg_last_node_host: last standby node host (if present)
+primary_node_host = ENV['pg_primary_node_host']
+primary_node_ip = ENV['pg_primary_node_ip']
+last_node_host = 'none'
+if ENV['pg_last_node_host']
+  last_node_host = ENV['pg_last_node_host']
+end
+
 config_docs = Hash.new
 for kind in ['logging', 'postgresql']
   config_docs[kind.to_sym] = readDataYaml("configuration/#{kind}")
@@ -42,7 +54,7 @@ wal_keep_size = spec_doc["specification"]["config_file"]["parameter_groups"].det
 # Setting added in Epiphany v1.2
 password_encryption = 'md5'
 
-pg_user = 'testuser'
+pg_user = 'serverspec_testuser'
 pg_pass = 'testpass'
 
 pg_config_file_booleans = { "true": "(?:on|true|yes|1)", "false": "(?:off|false|no|0)" }
@@ -147,6 +159,17 @@ describe 'Check if PostgreSQL service is running' do
   end
 end
 
+if os[:family] == 'redhat'
+  describe 'Check if only one PostgreSQL service is enabled' do
+    describe command("systemctl list-unit-files --type service --state enabled | grep -c 'postgresql-[0-9]'") do
+      it 'is expected to eq 1' do
+        expect(subject.stdout.to_i).to eq 1
+      end
+      its(:exit_status) { should eq 0 }
+    end
+  end
+end
+
 if replicated
   describe 'Check if repmgr service is running' do
     if os[:family] == 'redhat'
@@ -158,6 +181,30 @@ if replicated
       describe service('repmgrd') do
         it { should be_enabled }
         it { should be_running }
+      end
+    end
+  end
+
+  if os[:family] == 'redhat'
+    describe 'Check if only one repmgr service is enabled' do
+      describe command("systemctl list-unit-files --type service --state enabled | grep -c 'repmgr[0-9]'") do
+        it 'is expected to eq 1' do
+          expect(subject.stdout.to_i).to eq 1
+        end
+        its(:exit_status) { should eq 0 }
+      end
+    end
+  end
+
+  if os[:family] == 'ubuntu'
+    describe 'Check if repmgr service uses correct config file' do
+      describe command('systemctl status repmgrd') do
+        regexp = %r{ /etc/postgresql/13/main/repmgr\.conf }
+        it "is expected to match #{regexp.inspect}" do
+          # force_encoding used to work around https://github.com/sj26/rspec_junit_formatter/issues/67
+          expect(subject.stdout.force_encoding('UTF-8')).to match regexp
+        end
+        its(:exit_status) { should eq 0 }
       end
     end
   end
@@ -243,10 +290,6 @@ if !replicated
 end
 
 if replicated
-
-  primary = listInventoryHosts("postgresql")[0]
-  secondary = listInventoryHosts("postgresql")[1]
-
   describe 'Display information about each registered node in the replication cluster' do
     let(:disable_sudo) { false }
     describe command("su - postgres -c \"repmgr cluster show\"") do
@@ -279,7 +322,7 @@ if replicated
     end
   end
 
-  if primary.include? host_inventory['hostname']
+  if primary_node_host.include? host_inventory['hostname']
     if os[:family] == 'redhat'
       describe 'Check PostgreSQL config files for master node' do
         let(:disable_sudo) { false }
@@ -355,9 +398,9 @@ if replicated
     queryForSelecting
     queryForAlteringTable
 
-  elsif secondary.include? host_inventory['hostname']
+  elsif host_inventory['hostname'] != primary_node_host
     if os[:family] == 'redhat'
-      describe 'Check PostgreSQL files for secondary node' do
+      describe 'Check PostgreSQL files for replica nodes' do
         let(:disable_sudo) { false }
         describe file('/var/lib/pgsql/.pgpass') do
           it { should exist }
@@ -366,7 +409,7 @@ if replicated
         end
       end
     elsif os[:family] == 'ubuntu'
-      describe 'Check PostgreSQL files for secondary node' do
+      describe 'Check PostgreSQL files for replica nodes' do
         let(:disable_sudo) { false }
         describe file('/var/lib/postgresql/.pgpass') do
           it { should exist }
@@ -402,7 +445,7 @@ end
 
 if pgbouncer_enabled
 
-  if listInventoryHosts("postgresql")[0].include? host_inventory['hostname']
+  if primary_node_host.include? host_inventory['hostname']
 
     describe 'Check if PGBouncer service is running' do
       describe service('pgbouncer') do
@@ -460,7 +503,7 @@ if pgbouncer_enabled
 
   end
 
-  if replicated || (listInventoryHosts("postgresql")[0].include? host_inventory['hostname'])
+  if replicated || (primary_node_host.include? host_inventory['hostname'])
 
     describe 'Select values from test tables' do
       let(:disable_sudo) { false }
@@ -499,28 +542,29 @@ if !replicated
 
 end
 
-if replicated && (listInventoryHosts("postgresql")[1].include? host_inventory['hostname'])
+if replicated && (last_node_host.include? host_inventory['hostname'])
+  ssh_options = Specinfra.backend.get_config(:ssh_options)
   describe 'Clean up' do
     it "Delegate drop table query to master node" do
-      Net::SSH.start(listInventoryIPs("postgresql")[0], ENV['user'], keys: [ENV['keypath']], :keys_only => true) do|ssh|
+      Net::SSH.start(primary_node_ip, ENV['user'], ssh_options) do|ssh|
         result = ssh.exec!("sudo su - postgres -c \"psql -t -c 'DROP TABLE serverspec_test.test;'\" 2>&1")
         expect(result).to match 'DROP TABLE'
       end
     end
     it "Delegate drop schema query to master node" do
-      Net::SSH.start(listInventoryIPs("postgresql")[0], ENV['user'], keys: [ENV['keypath']], :keys_only => true) do|ssh|
+      Net::SSH.start(primary_node_ip, ENV['user'], ssh_options) do|ssh|
         result = ssh.exec!("sudo su - postgres -c \"psql -t -c 'DROP SCHEMA serverspec_test CASCADE;'\" 2>&1")
         expect(result).to match 'DROP SCHEMA'
       end
     end
     it "Delegate drop user query to master node", :if => pgbouncer_enabled do
-      Net::SSH.start(listInventoryIPs("postgresql")[0], ENV['user'], keys: [ENV['keypath']], :keys_only => true) do|ssh|
+      Net::SSH.start(primary_node_ip, ENV['user'], ssh_options) do|ssh|
         result = ssh.exec!("sudo su - postgres -c \"psql -t -c 'DROP USER #{pg_user};'\" 2>&1")
         expect(result).to match 'DROP ROLE'
       end
     end
     it "Remove test user from userlist.txt", :if => pgbouncer_enabled do
-      Net::SSH.start(listInventoryIPs("postgresql")[0], ENV['user'], keys: [ENV['keypath']], :keys_only => true) do|ssh|
+      Net::SSH.start(primary_node_ip, ENV['user'], ssh_options) do|ssh|
         result = ssh.exec!("sudo su - -c \"sed -i '/#{pg_pass}/d' /etc/pgbouncer/userlist.txt && cat /etc/pgbouncer/userlist.txt\" 2>&1")
         expect(result).not_to match "#{pg_pass}"
       end
@@ -532,7 +576,7 @@ end
 
 if pgaudit_enabled && countInventoryHosts("logging") > 0
 
-  if !replicated || (replicated && (listInventoryHosts("postgresql")[1].include? host_inventory['hostname']))
+  if !replicated || (replicated && (last_node_host.include? host_inventory['hostname']))
 
     def get_elasticsearch_query(message_pattern:, size: 20, with_sort: true)
       query_template = {
@@ -568,9 +612,8 @@ if pgaudit_enabled && countInventoryHosts("logging") > 0
     end
 
     describe 'Check if Elasticsearch logs contain queries from PostrgeSQL database' do
-      query = get_elasticsearch_query(message_pattern: 'serverspec_test*')
-      min_doc_hits = pgbouncer_enabled ? 10 : 6
-      command = get_query_command_with_retries(json_query: query, min_doc_hits: min_doc_hits)
+      query = get_elasticsearch_query(message_pattern: "serverspec_test* AND NOT #{pg_user}")
+      command = get_query_command_with_retries(json_query: query, min_doc_hits: 6)
       describe command(command) do
         its(:stdout) { should match /CREATE SCHEMA serverspec_test/ }
         its(:stdout) { should match /CREATE TABLE serverspec_test\.test/ }
@@ -582,8 +625,8 @@ if pgaudit_enabled && countInventoryHosts("logging") > 0
     end
 
     describe 'Check if Elasticsearch logs contain queries executed with PGBouncer', :if => pgbouncer_enabled do
-      query = get_elasticsearch_query(message_pattern: pg_user)
-      command = get_query_command_with_retries(json_query: query, min_doc_hits: 7)
+      query = get_elasticsearch_query(message_pattern: "#{pg_user} AND NOT MISC,SET")
+      command = get_query_command_with_retries(json_query: query, min_doc_hits: 6)
       describe command(command.squish) do
         its(:stdout) { should match /GRANT ALL ON SCHEMA serverspec_test to #{pg_user}/ }
         its(:stdout) { should match /GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA serverspec_test to #{pg_user}/ }
