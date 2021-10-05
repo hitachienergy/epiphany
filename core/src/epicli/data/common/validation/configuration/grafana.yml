@@ -325,7 +325,7 @@ properties:
       key_file:
         type: string
       bucket:
-        type: string'
+        type: string
       path:
         type: string
   grafana_plugins:
