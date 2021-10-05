@@ -3,6 +3,10 @@ title: "Haproxy-exporter specification schema"
 description: "Haproxy-exporter specification schema"
 type: object
 properties:
+  version:
+    type: string
+  file_name:
+    type: string
   description:
     type: string
   web_listen_port:

@@ -46,7 +46,7 @@ properties:
           shared_preload_libraries:
             type: array
             items:
-              type: string
+              - type: string
           config_file_parameters:
             type: object
             properties:
@@ -82,16 +82,18 @@ properties:
             type: string
           replication_user_password:
             type: string
-          privileged_user_name:
+          priviledged_user_name:
             type: string
-          privileged_user_password:
+          priviledged_user_password:
             type: string
+          use_repmgr:
+            type: boolean
           repmgr_database:
             type: string
           shared_preload_libraries:
             type: array
             items:
-              type: string
+              - type: string
   logrotate:
     type: object
     properties:

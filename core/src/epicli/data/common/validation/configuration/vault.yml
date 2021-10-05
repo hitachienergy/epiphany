@@ -72,6 +72,8 @@ properties:
   files:
     type: object
     properties:
+      vault_package_file_name:
+        type: string
       vault_helm_chart_file_name:
         type: string
   vault_helm_chart_values:

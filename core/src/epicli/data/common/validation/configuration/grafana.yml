@@ -223,18 +223,6 @@ properties:
                     type: string
                   org_role:
                     type: string
-              - type: object
-                properties:
-                  group_dn:
-                    type: string
-                  org_role:
-                    type: string
-              - type: object
-                properties:
-                  group_dn:
-                    type: string
-                  org_role:
-                    type: string
         - type: object
           properties:
             name:
@@ -335,15 +323,14 @@ properties:
       provider:
         type: string
       key_file:
-        type: 'null'
+        type: string
       bucket:
-        type: 'null'
+        type: string'
       path:
-        type: 'null'
+        type: string
   grafana_plugins:
     type: array
     items:
-    - type: string
     - type: string
   grafana_alert_notifications:
     type: array
@@ -396,18 +383,6 @@ properties:
   grafana_api_keys:
     type: array
     items:
-    - type: object
-      properties:
-        name:
-          type: string
-        role:
-          type: string
-    - type: object
-      properties:
-        name:
-          type: string
-        role:
-          type: string
     - type: object
       properties:
         name:

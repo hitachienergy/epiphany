@@ -3,18 +3,6 @@ title: "Filebeat specification schema"
 description: "Filebeat specification schema"
 type: object
 properties:
-  kibana:
-    type: object
-    properties:
-      dashboards:
-        type: object
-        properties:
-          index:
-            type: string
-          enabled:
-            type: string
-  disable_helm_chart:
-    type: boolean
   postgresql_input:
     type: object
     properties:
