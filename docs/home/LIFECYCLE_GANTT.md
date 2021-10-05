@@ -17,7 +17,7 @@ section 0.6.x
 section 0.7.x
 0.7.x support cycle     :done, 2020-07-01, 2021-06-30
 section 0.8.x
-0.8.x support cycle     :active, 2020-10-22, 2021-09-30
+0.8.x support cycle     :done, 2020-10-22, 2021-09-30
 section 0.9.x
 0.9.x support cycle      :active, 2021-01-19, 2021-12-30
 section 1.0.x
