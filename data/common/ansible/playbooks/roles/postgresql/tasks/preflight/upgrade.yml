@@ -94,7 +94,7 @@
         src: "{{ pg_old.pg.data_dir[ansible_os_family] }}/PG_VERSION"
       register: slurp_pg_version
 
-    - name: Ensure that PostgreSQL cluster in version {{ pg_old.pg.version }} is present
+    - name: Assert PostgreSQL cluster in version {{ pg_old.pg.version }} is present
       assert:
         that:
           - slurp_pg_version['content'] | b64decode | trim is version(pg_old.pg.version, '==')
@@ -102,17 +102,33 @@
         success_msg: PostgreSQL cluster in version '{{ pg_old.pg.version }}' found
         quiet: true
 
-- name: Verify that PostgreSQL {{ pg_old.pg.version }} cluster is healthy
+- name: Assert old PostgreSQL cluster is healthy
   when:
     - not pg_upgrade_already_run
     - pg_manifest.specification.extensions.replication.enabled
   become: true
   become_user: postgres
-  # when there are two primary nodes (after failover) rc is non-zero
-  command: |-
-    {{ pg_old.repmgr.bin_dir[ansible_os_family] }}/repmgr \
-      -f {{ pg_old.repmgr.config_dir[ansible_os_family] }}/repmgr.conf \
-      cluster show --csv
-  changed_when: false
-  delegate_to: "{{ groups.postgresql[0] }}"
-  run_once: true
+  vars:
+    _repmgr_config_file: "{{ pg_old.repmgr.config_dir[ansible_os_family] }}/repmgr.conf"
+  block:
+    - name: Check if PostgreSQL {{ pg_old.pg.version }} cluster is healthy
+      # when there are two primary nodes (after failover) rc is non-zero
+      command: >-
+        {{ pg_old.repmgr.bin_dir[ansible_os_family] }}/repmgr -f {{ _repmgr_config_file }}
+        cluster show
+      run_once: true
+      changed_when: false
+
+    - name: Check if PostgreSQL {{ pg_old.pg.version }} cluster node is healthy
+      command: >-
+        {{ pg_old.repmgr.bin_dir[ansible_os_family] }}/repmgr -f {{ _repmgr_config_file }}
+        node check
+      register: repmgr_node_check
+      changed_when: false
+
+    - name: Assert PostgreSQL {{ pg_old.pg.version }} cluster node is healthy
+      assert:
+        that: not 'CRITICAL' in repmgr_node_check.stdout
+        fail_msg: "{{ ['CRITICAL keyword found in output:']
+                      + repmgr_node_check.stdout_lines | map('regex_replace', '^\t', '') }}"  # noqa no-tabs
+        quiet: "{{ not 'CRITICAL' in repmgr_node_check.stdout }}"  # for better formatting of 'fail_msg'

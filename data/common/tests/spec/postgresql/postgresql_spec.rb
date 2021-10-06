@@ -292,7 +292,7 @@ end
 if replicated
   describe 'Display information about each registered node in the replication cluster' do
     let(:disable_sudo) { false }
-    describe command("su - postgres -c \"repmgr cluster show\"") do
+    describe command("su - postgres -c 'repmgr cluster show'") do
       its(:stdout) { should match /primary.*\*.*running/ }
       its(:stdout) { should match /standby.*running/ }
       its(:exit_status) { should eq 0 }
@@ -301,8 +301,17 @@ if replicated
 
   describe 'Check repmgrd is running on each node in the cluster' do
     let(:disable_sudo) { false }
-    describe command("su - postgres -c \"repmgr service status\"") do
+    describe command("su - postgres -c 'repmgr service status'") do
       its(:stdout) { should_not match /not running/ }
+      its(:exit_status) { should eq 0 }
+    end
+  end
+
+  describe 'Run health checks on a node from a replication perspective' do
+    let(:disable_sudo) { false }
+    describe command("su - postgres -c 'repmgr node check'") do
+      its(:stdout) { should_not match %r{ CRITICAL } }
+      its(:stdout) { should_not match %r{ WARNING } }
       its(:exit_status) { should eq 0 }
     end
   end
