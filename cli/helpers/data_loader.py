@@ -49,7 +49,7 @@ def load_all_schema_objs_from_directory(file_type, provider, directory):
     directory_path = os.path.join(SCHEMA_DIR, provider, file_type, directory)
     docs = []
     for filename in glob.glob(os.path.join(directory_path, '*.yml')):
-        documents = load_all_schema_objs(filename, None, None)
+        documents = load_yamls_file(filename)
         docs += documents
     return docs
 

@@ -12,6 +12,8 @@ from cli.helpers.build_saver import get_build_path, get_output_path, get_terrafo
 from cli.helpers.objdict_helpers import dict_to_objdict
 from cli.helpers.yaml_helpers import safe_load_all, safe_load
 
+from tests.unit.helpers.constants import CLUSTER_NAME_SAVE, OUTPUT_PATH, TEST_DOCS, TEST_CLUSTER_MODEL, TEST_INVENTORY
+
 TEST_SP = {'appId': 'xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxx',
            'displayName': 'test-rg',
            'name': 'http://test-rg',
@@ -21,85 +23,11 @@ ANSIBLE_CONFIG_FILE_SETTINGS = [('defaults', {
                                  'interpreter_python': 'auto_legacy_silent',
                                  'allow_world_readable_tmpfiles': 'true'
                                  })]
-#OUTPUT_PATH = os.path.join(os.path.dirname(__file__), '../../test_results/')
-OUTPUT_PATH = '/workspaces/epiphany/test_results/'
-CLUSTER_NAME_SAVE = 'test-save'
-CLUSTER_NAME_LOAD = 'test-load'
-NON_EXISTING_CLUSTER = 'test-aaaa'
-TEST_DOCS = [
-    {
-        'kind': 'epiphany-cluster',
-        'title': 'Epiphany cluster Config',
-        'provider': 'any',
-        'name': 'default',
-        'specification':
-        {
-            'name': 'default',
-            'admin_user':
-            {
-                'name': 'operations',
-                'key_path': 'id_rsa'
-            }
-        }
-    },
-    {
-        'kind': 'infrastructure/machine',
-        'provider': 'any',
-        'name': 'default-repository'
-    }
-]
-TEST_JSON = {
-    'kind': 'epiphany-cluster',
-    'title': 'Epiphany cluster Config'
-}
-TEST_JSON_NAME = "test.json"
-TEST_CLUSTER_MODEL = {
-    'kind': 'epiphany-cluster',
-    'title': 'Epiphany cluster Config',
-    'provider': 'azure',
-    'name': CLUSTER_NAME_SAVE,
-    'specification': {
-        'prefix': 'test',
-        'name': CLUSTER_NAME_SAVE,
-        'admin_user': {
-            'name': 'operations',
-            'key_path': 'id_rsa'
-        },
-        'cloud': {
-            'subscription_name': 'Test-Dev',
-            'vnet_address_pool': '10.1.0.0/20',
-            'use_public_ips': False,
-            'use_service_principal': False,
-            'region': 'West Europe',
-            'credentials': {
-                'key': '1111-1111-1111',
-                'secret': 'XXXXXXXXXXXXXXX'
-            },
-            'default_os_image': 'default'
-        },
-    }
-}
-TEST_INVENTORY = [{
-    'hosts':
-    [{'ip': '10.0.0.1',
-      'name': 'test-1'},
-     {'ip': '10.0.0.2',
-     'name': 'test-2'}],
-    'role': 'postgresql'
-},
-    {
-    'hosts':
-    [{'ip': '10.0.0.3',
-      'name': 'test-3'},
-     {'ip': '10.0.0.4',
-     'name': 'test-4'}],
-    'role': 'filebeat'
-}]
 
 
 def test_get_output_path():
     output_path = os.path.join(OUTPUT_PATH)
-    result_path = get_output_path()
+    result_path =  os.path.normpath(get_output_path())
     assert os.path.exists(output_path)
     assert result_path == output_path
 
