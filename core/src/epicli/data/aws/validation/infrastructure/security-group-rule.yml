@@ -1,1 +1,19 @@
-$ref: '#/definitions/unvalidated_specification'
+"$id": "#/specification"
+title: "Security-group-rule specification schema"
+description: "Security-group-rule specification schema"
+type: object
+properties:
+  name:
+    type: string
+  protocol:
+    type: string
+  description:
+    type: string
+  direction:
+    type: string
+  destination_port_range:
+    type: string
+  source_address_prefix:
+    type: string
+  destination_address_prefix:
+    type: string

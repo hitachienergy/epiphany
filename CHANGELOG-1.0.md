@@ -1,10 +1,22 @@
 # Changelog 1.0
 
-## [1.0.2] 2021-XX-XX
+## [1.0.2] 2021-xx-xx
 
 ### Added
 
 - [#2124](https://github.com/epiphany-platform/epiphany/issues/2124) - Added Internet connection test to download-requirements.sh
+- [#195](https://github.com/epiphany-platform/epiphany/issues/195) - Basic configuration type and schema validation
+
+### Updated
+
+- [#1797](https://github.com/epiphany-platform/epiphany/issues/1797) - Upgrade Keycloak to v14.0.0
+
+### Fixed
+
+- [#2425](https://github.com/epiphany-platform/epiphany/issues/2425) - Feature-mapping - 'enabled: no' do nothing
+- [#1294](https://github.com/epiphany-platform/epiphany/issues/1294) - Implement proper merging of lists of dictionaries for epicli yaml docs
+- [#1370](https://github.com/epiphany-platform/epiphany/issues/1370) - Epicli does not correctly generate vars for Postgres
+- [#1296](https://github.com/epiphany-platform/epiphany/issues/1296) - Epicli does not interpret alternative yaml boolean values as true booleans
 
 ## [1.0.1] 2021-07-16
 

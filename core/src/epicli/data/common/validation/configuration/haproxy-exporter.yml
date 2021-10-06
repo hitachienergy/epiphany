@@ -1,1 +1,29 @@
-$ref: '#/definitions/unvalidated_specification'
+"$id": "#/specification"
+title: "Haproxy-exporter specification schema"
+description: "Haproxy-exporter specification schema"
+type: object
+properties:
+  version:
+    type: string
+  file_name:
+    type: string
+  description:
+    type: string
+  web_listen_port:
+    type: string
+  config_for_prometheus:
+    type: object
+    properties:
+      exporter_listen_port:
+        type: string
+      prometheus_config_dir:
+        type: string
+      file_sd_labels:
+        type: array
+        items:
+          type: object
+          properties:
+            label:
+              type: string
+            value:
+              type: string

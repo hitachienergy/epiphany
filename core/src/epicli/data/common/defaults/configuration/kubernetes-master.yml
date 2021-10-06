@@ -35,7 +35,7 @@ specification:
       expiration_days: 365 # values greater than 24855 are not recommended
       renew: false
     etcd_args:
-      encrypted: yes
+      encrypted: true
     kubeconfig:
       local:
         api_server:

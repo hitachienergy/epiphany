@@ -1,6 +1,6 @@
 "$id": "#/specification"
-title: "K8s specification schema"
-description: "K8s specification schema"
+title: "K8s-master specification schema"
+description: "K8s-master specification schema"
 type: object
 properties:
   advanced:

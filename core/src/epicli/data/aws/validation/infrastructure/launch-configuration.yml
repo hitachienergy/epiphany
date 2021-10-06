@@ -1,1 +1,52 @@
-$ref: '#/definitions/unvalidated_specification'
+"$id": "#/specification"
+title: "Launch-configuration specification schema"
+description: "Launch-configuration specification schema"
+type: object
+properties:
+  name:
+    type: string
+  image_id:
+    type: string
+  size:
+    type: string
+  key_name:
+    type: string
+  disks:
+    type: object
+    properties:
+      root:
+        type: object
+        properties:
+          volume_type:
+            type: string
+          volume_size:
+            type: integer
+          delete_on_termination:
+            type: boolean
+          encrypted:
+            type: boolean
+      additional_disks:
+        type: array
+        items:
+          type: object
+          properties:
+            device_name:
+              type: string
+            volume_type:
+              type: string
+            volume_size:
+              type: integer
+            delete_on_termination:
+              type: boolean
+            encrypted:
+              type: boolean
+  ebs_optimized:
+    type: boolean
+  associate_public_ip:
+    type: boolean
+  security_groups:
+    type: array
+    items:
+    - type: string
+  enable_monitoring:
+    type: boolean

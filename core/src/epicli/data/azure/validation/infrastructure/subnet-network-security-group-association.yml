@@ -1,1 +1,11 @@
-$ref: '#/definitions/unvalidated_specification'
+"$id": "#/specification"
+title: "Subnet-network-security-group-association specification schema"
+description: "Subnet-network-security-group-association specification schema"
+type: object
+properties:
+  name:
+    type: string
+  subnet_name:
+    type: string
+  security_group_name:
+    type: string

@@ -79,4 +79,3 @@ properties:
               enabled:
                 "$id": "#/properties/specification/properties/components/properties/kubernetes/properties/enabled"
                 type: boolean
-
