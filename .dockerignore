@@ -5,8 +5,7 @@
 *
 
 # Include the following
-!README.md
-!LICENSE
+!epicli
 !.devcontainer/requirements.txt
 !cli/
 !schema/

@@ -1,0 +1,3 @@
+#!/bin/bash
+export PYTHONPATH=/epicli 
+python3 -m cli.epicli $@
