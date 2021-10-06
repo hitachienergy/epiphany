@@ -11,7 +11,6 @@ ARG ISTIOCTL_VERSION=1.8.1
 ENV EPICLI_DOCKER_SHARED_DIR=/shared
 
 COPY . /epicli
-COPY epicli /bin/epicli
 
 RUN : INSTALL APT REQUIREMENTS \
     && apt-get update \
@@ -58,7 +57,10 @@ RUN : INSTALL APT REQUIREMENTS \
     && : SETUP SHARED DIRECTORY \
     && mkdir -p $EPICLI_DOCKER_SHARED_DIR \
     && chown $USERNAME $EPICLI_DOCKER_SHARED_DIR \
-    && chmod g+w $EPICLI_DOCKER_SHARED_DIR
+    && chmod g+w $EPICLI_DOCKER_SHARED_DIR \
+\
+    && : SETUP EPICLI COMMAND \
+    && mv /epicli/epicli /bin/epicli
 
 WORKDIR $EPICLI_DOCKER_SHARED_DIR
 
