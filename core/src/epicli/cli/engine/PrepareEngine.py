@@ -11,8 +11,9 @@ from cli.helpers.build_saver import copy_files_recursively
 
 
 class PrepareEngine(Step):
-    PREPARE_PATH = DATA_FOLDER_PATH + '/common/ansible/playbooks/roles/repository/files/download-requirements'
-    CHARTS_PATH = DATA_FOLDER_PATH + '/common/ansible/playbooks/roles/helm_charts/files/system'
+    PREPARE_PATH = f'{DATA_FOLDER_PATH}/common/ansible/playbooks/roles/repository/files/download-requirements'
+    COMMON_PATH = f'{PREPARE_PATH}/common'
+    CHARTS_PATH = f'{DATA_FOLDER_PATH}/common/ansible/playbooks/roles/helm_charts/files/system'
 
     def __init__(self, input_data):
         super().__init__(__name__)
@@ -27,7 +28,6 @@ class PrepareEngine(Step):
 
     def prepare(self):
         prepare_src = os.path.join(self.PREPARE_PATH, self.os)
-        charts_src = self.CHARTS_PATH
 
         prepare_dst = os.path.join(Config().output_dir, 'prepare_scripts')
         charts_dst = os.path.join(prepare_dst, 'charts', 'system')
@@ -38,7 +38,8 @@ class PrepareEngine(Step):
 
         # copy files to output dir
         copy_files_recursively(prepare_src, prepare_dst)
-        copy_files_recursively(charts_src, charts_dst)
+        copy_files_recursively(self.COMMON_PATH, os.path.join(prepare_dst, 'common'))
+        copy_files_recursively(self.CHARTS_PATH, charts_dst)
 
         # make sure the scripts are executable
         self.make_file_executable(os.path.join(prepare_dst, 'download-requirements.sh'))

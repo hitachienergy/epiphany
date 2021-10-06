@@ -7,6 +7,11 @@
 
 set -euo pipefail
 
+# set variables needed by common_functions
+readonly internet_access_checks_enabled="yes"
+readonly script_path="$(readlink -f $(dirname $0))"
+. "${script_path}/common/common_functions.sh"
+
 # === Functions (in alphabetical order) ===
 
 # params: <repo_id> <repo_url>
@@ -141,14 +146,6 @@ download_packages() {
 	fi
 }
 
-echol() {
-	echo -e "$@"
-	if [[ $CREATE_LOGFILE == 'yes' ]]; then
-		local timestamp=$(date +"%b %e %H:%M:%S")
-		echo -e "${timestamp}: $@" >> "$LOG_FILE_PATH"
-	fi
-}
-
 # params: <repo_id>
 enable_repo() {
 	local repo_id="$1"
@@ -158,11 +155,6 @@ enable_repo() {
 		yum-config-manager --enable "$repo_id" ||
 			exit_with_error "Command failed: yum-config-manager --enable \"$repo_id\""
 	fi
-}
-
-exit_with_error() {
-	echol "ERROR: $1"
-	exit 1
 }
 
 # desc: find repo id (set $1) based on given pattern
@@ -580,6 +572,8 @@ get_requirements_from_group 'IMAGES'               'images'                "$REQ
 
 # --- Backup yum repositories ---
 
+check_connection yum $(yum repolist --quiet | tail -n +2 | cut -d' ' -f1 | cut -d'/' -f1 | sed 's/^!//')
+
 if [ -f "$YUM_CONFIG_BACKUP_FILE_PATH" ]; then
 	echol "Backup aleady exists: $YUM_CONFIG_BACKUP_FILE_PATH"
 else
@@ -613,14 +607,21 @@ done
 if [[ -z "${CRANE}" ]] || [ $(wc -l <<< "${CRANE}") -ne 1 ] ; then
     exit_with_error "Crane binary download path undefined or more than one download path defined"
 else
-    file_url=$(head -n 1 <<< "${CRANE}")
-    echol "Downloading crane from: ${file_url}"
-    download_file "${file_url}" "${SCRIPT_DIR}"
-    tar_path="${SCRIPT_DIR}/${file_url##*/}"
-    echol "Unpacking crane from ${tar_path} to ${CRANE_BIN}"
-    run_cmd tar -xzf "${tar_path}" --directory "${SCRIPT_DIR}" "crane" --overwrite
-    [[ -x "${CRANE_BIN}" ]] || run_cmd chmod +x "${CRANE_BIN}"
-    remove_file "${tar_path}"
+	if [[ -x $CRANE_BIN ]]; then
+        echol "Crane binary already exists"
+	else
+		file_url=$(head -n 1 <<< "${CRANE}")
+
+		check_connection wget $file_url
+
+		echol "Downloading crane from: ${file_url}"
+		download_file "${file_url}" "${SCRIPT_DIR}"
+		tar_path="${SCRIPT_DIR}/${file_url##*/}"
+		echol "Unpacking crane from ${tar_path} to ${CRANE_BIN}"
+		run_cmd tar -xzf "${tar_path}" --directory "${SCRIPT_DIR}" "crane" --overwrite
+		[[ -x "${CRANE_BIN}" ]] || run_cmd chmod +x "${CRANE_BIN}"
+		remove_file "${tar_path}"
+	fi
 fi
 
 # --- Enable RHEL repos ---
@@ -844,11 +845,33 @@ fi
 
 create_directory "$FILES_DIR"
 
-for file in $FILES; do
-	download_file "$file" "$FILES_DIR"
-done
+check_connection wget $FILES
+
+if [[ -z "$FILES" ]]; then
+    echol "No files to download"
+else
+
+    # list of all files that will be downloaded
+    echol "Files to be downloaded:"
+    cat -n <<< "${FILES}"
+
+    printf "\n"
+
+    while IFS=' ' read -r url new_filename; do
+        # download files, check if new filename is provided
+        if [[ -z $new_filename ]]; then
+            download_file "$url" "$FILES_DIR"
+        elif [[ $new_filename = *" "* ]]; then
+            exit_with_error "wrong new filename for file: $url"
+        else
+            download_file "$url" "$FILES_DIR" "$new_filename"
+        fi
+    done <<< "$FILES"
+fi
 
 # === Images ===
+
+check_connection crane $(for image in $IMAGES; do splitted=(${image//:/ }); echo "${splitted[0]}"; done)
 
 create_directory "$IMAGES_DIR"
 

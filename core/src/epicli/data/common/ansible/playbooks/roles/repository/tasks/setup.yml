@@ -33,6 +33,11 @@
         dest: /tmp/epi-download-requirements/download-requirements.sh
         mode: a+x
 
+    - name: Copy common files for downloading requirements to repository host
+      copy:
+        src: download-requirements/common
+        dest: /tmp/epi-download-requirements
+
   when:
     - not offline_mode
     - not custom_repository_url
