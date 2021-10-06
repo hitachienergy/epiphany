@@ -1,3 +1,7 @@
+"$id": "#/specification"
+title: "Availability-set specification schema"
+description: "Availability-set specification schema"
+type: object
 required:
   - platform_fault_domain_count
   - platform_update_domain_count

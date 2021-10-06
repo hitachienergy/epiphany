@@ -1,6 +1,7 @@
 import time
 from cli.helpers.Log import Log
 from abc import ABCMeta
+from cli.helpers.time_helpers import format_time
 
 
 class Step(metaclass=ABCMeta):
@@ -9,9 +10,9 @@ class Step(metaclass=ABCMeta):
 
     def __enter__(self):
         self.start = time.time()
-        self.logger.info('Starting run')
+        self.logger.info('Starting step')
         return self
 
     def __exit__(self, exc_type, exc_value, traceback):
-        passed = int(round((time.time() - self.start) * 1000))
-        self.logger.info('Run done in ' + str(passed) + 'ms')
+        passed_time = format_time(time.time()-self.start)
+        self.logger.info(f'Step finished in: {passed_time}')
