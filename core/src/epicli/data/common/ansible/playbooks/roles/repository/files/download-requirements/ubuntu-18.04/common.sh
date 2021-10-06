@@ -4,15 +4,6 @@
 usage() {
 	echo "usage: ./$(basename $0) <download_dir>"
 	echo "       ./$(basename $0) /tmp/downloads"
-	[ -z "$1" ] || exit "$1"
-}
-
-echol() {
-	echo -e "$1" | tee --append $logfile
-}
-
-exit_with_error() {
-	echol "ERROR: $1"
 	exit 1
 }
 
@@ -44,6 +35,7 @@ download_image() {
 	local tag=${splited_image[1]}
 	local repo_basename=$(basename -- "$repository")
 	local dst_image="${dest_dir}/${repo_basename}-${tag}.tar"
+	local retries=3
 
 	#[[ ! -f $dst_image ]] || remove_file "$dst_image"
 	if [[ -f ${dst_image} ]]; then
@@ -51,9 +43,9 @@ download_image() {
 	else
 		local tmp_file=$(mktemp)
 		echo "Downloading image: $1"
-		echo "Crane command is: ${crane_bin} pull --insecure --format=legacy ${image_name} ${dst_image}"
+		echo "Crane command is: ${CRANE_BIN} pull --insecure --format=legacy ${image_name} ${dst_image}"
 		# use temporary file for downloading to be safe from sudden interruptions (network, ctrl+c)
-		 ${crane_bin} pull --insecure --format=legacy ${image_name} ${tmp_file} && chmod 644 ${tmp_file} && mv ${tmp_file} ${dst_image}
+		run_cmd_with_retries $retries ${CRANE_BIN} pull --insecure --format=legacy ${image_name} ${tmp_file} && chmod 644 ${tmp_file} && mv ${tmp_file} ${dst_image}
 	fi
 }
 

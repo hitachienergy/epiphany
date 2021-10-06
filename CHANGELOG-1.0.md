@@ -4,6 +4,7 @@
 
 ### Added
 
+- [#2124](https://github.com/epiphany-platform/epiphany/issues/2124) - Added Internet connection test to download-requirements.sh
 - [#195](https://github.com/epiphany-platform/epiphany/issues/195) - Basic configuration type and schema validation
 
 ### Updated
