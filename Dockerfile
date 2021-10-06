@@ -27,7 +27,7 @@ RUN : INSTALL APT REQUIREMENTS \
     && chmod +x ./kubectl \
     && mv ./kubectl /usr/local/bin/kubectl \
     && kubectl version --client \
-    && : INSTALL ISTIOCTl BINARY \
+    && : INSTALL ISTIOCTL BINARY \
     && curl -fsSLO https://github.com/istio/istio/releases/download/${ISTIOCTL_VERSION}/istioctl-${ISTIOCTL_VERSION}-linux-amd64.tar.gz \
     && tar -xzof istioctl-${ISTIOCTL_VERSION}-linux-amd64.tar.gz -C /usr/local/bin istioctl \
     && rm istioctl-${ISTIOCTL_VERSION}-linux-amd64.tar.gz \
