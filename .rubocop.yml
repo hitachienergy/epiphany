@@ -10,4 +10,4 @@
 # See https://docs.rubocop.org/rubocop/configuration
 AllCops:
   Include:
-    - data/common/tests/**/*.rb
+    - tests/spec/**/*.rb
