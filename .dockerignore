@@ -9,5 +9,8 @@
 !LICENSE
 !.devcontainer/requirements.txt
 !cli/
-!data/
-!setup.py
+!schema/
+!ansible/
+!terraform/
+!tests/spec/
+
