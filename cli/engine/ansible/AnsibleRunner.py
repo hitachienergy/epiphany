@@ -17,7 +17,7 @@ from cli.helpers.Config import Config
 
 
 class AnsibleRunner(Step):
-    ANSIBLE_PLAYBOOKS_PATH = os.path.join(BASE_DIR, types.ANSIBLE)
+    ANSIBLE_PLAYBOOKS_PATH = os.path.join(BASE_DIR, types.ANSIBLE, 'playbooks')
 
     def __init__(self, cluster_model=None, config_docs=None, build_dir=None, backup_build_dir=None,
                  ansible_options=None, ping_retries: int = 5):
