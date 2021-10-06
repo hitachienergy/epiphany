@@ -1,7 +1,7 @@
 from copy import deepcopy
 
 from jsonschema import validate, Draft7Validator
-from cli.helpers.data_loader import load_yaml_obj, types
+from cli.helpers.data_loader import load_schema_obj, types
 from cli.helpers.objdict_helpers import objdict_to_dict, dict_to_objdict, replace_yesno_with_booleans
 from cli.helpers.Step import Step
 
@@ -12,8 +12,8 @@ class SchemaValidator(Step):
         self.provider = provider
         self.validation_docs = validation_docs
 
-        base = load_yaml_obj(types.VALIDATION, self.provider, 'core/base')
-        self.definitions = load_yaml_obj(types.VALIDATION, self.provider, 'core/definitions')
+        base = load_schema_obj(types.VALIDATION, self.provider, 'core/base')
+        self.definitions = load_schema_obj(types.VALIDATION, self.provider, 'core/definitions')
 
         self.base_schema = dict_to_objdict(deepcopy(base))
         self.base_schema['definitions'] = self.definitions
@@ -45,7 +45,7 @@ class SchemaValidator(Step):
     def run_for_individual_documents(self):
         for doc in self.validation_docs:
             # Load document schema
-            schema = load_yaml_obj(types.VALIDATION, self.provider, doc.kind)
+            schema = load_schema_obj(types.VALIDATION, self.provider, doc.kind)
 
             # Include "definitions"
             schema['definitions'] = self.definitions
@@ -62,7 +62,7 @@ class SchemaValidator(Step):
     def run(self):
         for doc in self.validation_docs:
             schema = self.get_base_schema(doc.kind)
-            schema['properties']['specification'] = load_yaml_obj(types.VALIDATION, self.provider, doc.kind)
+            schema['properties']['specification'] = load_schema_obj(types.VALIDATION, self.provider, doc.kind)
             if hasattr(doc["specification"], 'name'):
                 name = doc["specification"]["name"]
                 self.logger.info(f'Validating: {doc.kind} - {name}')

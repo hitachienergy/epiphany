@@ -1,11 +1,13 @@
+import os
 from pathlib import Path
 
 from cli.helpers.Step import Step
 from cli.helpers.build_saver import copy_file, get_terraform_path, remove_files_matching_glob
-from cli.helpers.data_loader import types, get_provider_subdir_path
+from cli.helpers.data_loader import BASE_DIR, types
 
 
 class TerraformFileCopier(Step):
+    TERRAFORM_BASE_PATH = os.path.join(BASE_DIR, types.TERRAFORM)
 
     def __init__(self, cluster_model, infrastructure):
         super().__init__(__name__)
@@ -21,7 +23,7 @@ class TerraformFileCopier(Step):
         for doc in files:
             if doc.specification.enabled:
                 file_name = doc.specification.file_name
-                src_path = Path(get_provider_subdir_path(types.TERRAFORM, doc.provider)) / doc.kind / \
+                src_path = Path(os.path.join(TERRAFORM_BASE_PATH, doc.provider)) / doc.kind / \
                     doc.specification.os_distribution / file_name
                 if Path(src_path).is_file():
                     self.logger.info('Copying: ' + doc.kind + ' ---> ' + file_name)
