@@ -23,7 +23,7 @@ class TerraformFileCopier(Step):
         for doc in files:
             if doc.specification.enabled:
                 file_name = doc.specification.file_name
-                src_path = Path(os.path.join(TERRAFORM_BASE_PATH, doc.provider)) / doc.kind / \
+                src_path = Path(os.path.join(self.TERRAFORM_BASE_PATH, doc.provider)) / doc.kind / \
                     doc.specification.os_distribution / file_name
                 if Path(src_path).is_file():
                     self.logger.info('Copying: ' + doc.kind + ' ---> ' + file_name)
