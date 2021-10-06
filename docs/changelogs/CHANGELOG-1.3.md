@@ -15,6 +15,7 @@
 ### Updated
 
 - [#2494](https://github.com/epiphany-platform/epiphany/issues/2494) - Duplicated MOTD after ssh to servers
+- [#2454](https://github.com/epiphany-platform/epiphany/issues/2454) - Remove dependencies for K8s v1.17
 
 ### Deprecated
 
