@@ -60,7 +60,7 @@ RUN : INSTALL APT REQUIREMENTS \
     && chmod g+w $EPICLI_DOCKER_SHARED_DIR \
 \
     && : SETUP EPICLI COMMAND \
-    && mv /epicli/epicli /bin/epicli \
+    && mv /epicli/cli/epicli /bin/epicli \
     && chmod +x /bin/epicli
 
 WORKDIR $EPICLI_DOCKER_SHARED_DIR

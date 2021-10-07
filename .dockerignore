@@ -5,7 +5,6 @@
 *
 
 # Include the following
-!epicli
 !.devcontainer/requirements.txt
 !cli/
 !schema/
