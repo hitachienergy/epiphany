@@ -5,7 +5,7 @@ from os import listdir
 from os.path import isfile, join
 from distutils import dir_util
 
-from cli.helpers.data_loader import load_template_file, types
+from cli.helpers.data_loader import load_template_file, load_yamls_file, types
 from cli.helpers.yaml_helpers import dump_all, dump
 from cli.helpers.Config import Config
 
@@ -26,6 +26,13 @@ def save_manifest(docs, cluster_name, manifest_name=MANIFEST_FILE_NAME):
     with open(path, 'w') as stream:
         dump_all(docs, stream)
     return path
+
+
+def load_manifest(build_dir):
+    path_to_manifest = os.path.join(build_dir, MANIFEST_FILE_NAME)
+    if not os.path.isfile(path_to_manifest):
+        raise Exception('No manifest.yml inside the build folder')
+    return load_yamls_file(path_to_manifest)
 
 
 def save_sp(service_principle, cluster_name):

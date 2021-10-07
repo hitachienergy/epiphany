@@ -10,7 +10,7 @@ from cli.helpers.build_saver import copy_files_recursively, copy_file
 from cli.helpers.yaml_helpers import dump
 from cli.helpers.data_loader import load_yamls_file, load_schema_obj, types as data_types
 from cli.helpers.doc_list_helpers import select_single, ExpectedSingleResultException
-from cli.helpers.data_loader import load_manifest_docs
+from cli.helpers.data_loader import load_manifest
 
 from cli.engine.schema.SchemaValidator import SchemaValidator
 from cli.engine.schema.DefaultMerger import DefaultMerger
@@ -45,7 +45,7 @@ class BackupRecoveryEngineBase(Step):
         """Load, validate and merge (with defaults) input yaml documents."""
 
         # Get existing manifest config documents
-        self.manifest_docs = load_manifest_docs(self.build_directory)
+        self.manifest_docs = load_manifest(self.build_directory)
         self.cluster_model = select_single(self.manifest_docs, lambda x: x.kind == 'epiphany-cluster')
 
         # Load backup / recovery configuration documents

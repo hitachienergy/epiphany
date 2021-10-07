@@ -4,7 +4,7 @@ from cli.helpers.Step import Step
 from cli.helpers.build_saver import SPEC_OUTPUT_DIR, ANSIBLE_INVENTORY_FILE
 from cli.helpers.doc_list_helpers import select_single
 from cli.engine.spec.SpecCommand import SpecCommand
-from cli.helpers.data_loader import load_manifest_docs
+from cli.helpers.data_loader import load_manifest
 
 
 class TestEngine(Step):
@@ -22,7 +22,7 @@ class TestEngine(Step):
 
     def test(self):
         # get manifest documents
-        docs = load_manifest_docs(self.build_directory)
+        docs = load_manifest(self.build_directory)
         cluster_model = select_single(docs, lambda x: x.kind == 'epiphany-cluster')
 
         # get inventory

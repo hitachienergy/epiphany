@@ -10,7 +10,7 @@ from cli.helpers.objdict_helpers import dict_to_objdict
 from cli.helpers.data_loader import load_schema_obj, types as data_types
 from cli.helpers.doc_list_helpers import select_single
 from cli.helpers.objdict_helpers import merge_objdict
-from cli.helpers.data_loader import load_manifest_docs
+from cli.helpers.data_loader import load_manifest
 
 
 class AnsibleInventoryUpgrade(Step):
@@ -72,7 +72,7 @@ class AnsibleInventoryUpgrade(Step):
         self.logger.info('Upgrading Ansible inventory')
 
         # load cluster model from manifest
-        self.manifest_docs = load_manifest_docs(self.backup_build_dir)
+        self.manifest_docs = load_manifest(self.backup_build_dir)
         self.cluster_model = select_single(self.manifest_docs, lambda x: x.kind == 'epiphany-cluster')
 
         # Merge manifest cluster config with newer defaults
