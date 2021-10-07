@@ -3,7 +3,7 @@ import copy
 
 from cli.version import VERSION
 from cli.helpers.Step import Step
-from cli.helpers.build_saver import get_ansible_path, get_ansible_path_for_build, get_ansible_vault_path
+from cli.helpers.build_io import get_ansible_path, get_ansible_path_for_build, get_ansible_vault_path
 from cli.helpers.doc_list_helpers import select_first, select_single, ExpectedSingleResultException
 from cli.helpers.naming_helpers import to_feature_name, to_role_name
 from cli.helpers.ObjDict import ObjDict

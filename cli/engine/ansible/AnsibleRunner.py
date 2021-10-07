@@ -8,7 +8,7 @@ from cli.engine.ansible.AnsibleConfigFileCreator import AnsibleConfigFileCreator
 from cli.engine.ansible.AnsibleVarsGenerator import AnsibleVarsGenerator
 from cli.engine.ansible.AnsibleInventoryUpgrade import AnsibleInventoryUpgrade
 from cli.helpers.Step import Step
-from cli.helpers.build_saver import (get_inventory_path, get_inventory_path_for_build,
+from cli.helpers.build_io import (get_inventory_path, get_inventory_path_for_build,
     get_ansible_path, get_ansible_path_for_build, get_ansible_config_file_path, get_ansible_config_file_path_for_build,
     copy_files_recursively)
 from cli.helpers.naming_helpers import to_role_name
