@@ -7,7 +7,7 @@ from cli.helpers.build_saver import get_build_path, get_output_path, get_terrafo
     get_ansible_vault_path, get_ansible_config_file_path, get_inventory_path, get_manifest_path,\
     save_manifest, save_sp, save_inventory, save_ansible_config_file, get_inventory_path_for_build,\
     get_ansible_config_file_path_for_build, get_ansible_path_for_build,\
-    ANSIBLE_OUTPUT_DIR, ANSIBLE_VAULT_OUTPUT_DIR, ANSIBLE_INVENTORY_FILE, ANSIBLE_CFG_FILE,\
+    ANSIBLE_OUTPUT_DIR, ANSIBLE_VAULT_OUTPUT_DIR, ANSIBLE_INVENTORY_FILE, ANSIBLE_CFG_FILE, \
     MANIFEST_FILE_NAME, SP_FILE_NAME, TERRAFORM_OUTPUT_DIR
 from cli.helpers.objdict_helpers import dict_to_objdict
 from cli.helpers.yaml_helpers import safe_load_all, safe_load
@@ -123,7 +123,7 @@ def test_save_inventory():
 
 def test_save_ansible_config_file():
     config_file_settings = OrderedDict(ANSIBLE_CONFIG_FILE_SETTINGS)
-    ansible_config_file_path = os.path.join(OUTPUT_PATH, CLUSTER_NAME_SAVE, ANSIBLE_OUTPUT_DIR, ANSIBLE_CFG_FILE)
+    ansible_config_file_path = os.path.join(OUTPUT_PATH, CLUSTER_NAME_SAVE, ANSIBLE_OUTPUT_DIR, 'ANSIBLE_INVENTORY_FILE')
     save_ansible_config_file(config_file_settings, ansible_config_file_path)
     f = open(ansible_config_file_path, mode='r')
     ansible_config_file_content = f.read()

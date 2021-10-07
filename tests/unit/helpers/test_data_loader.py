@@ -57,7 +57,7 @@ def test_load_schema_obj():
 
 
 def test_load_all_schema_objs():
-    yaml_objs = load_all_schema_objs(types.DEFAULT, "aws", 'configuration/minimal-cluster-config')
+    yaml_objs = load_all_schema_objs(types.DEFAULT, 'aws', 'configuration/minimal-cluster-config')
     assert yaml_objs == [TEST_MINIMAL_CLUSTER_CONFIG]
 
 
@@ -68,7 +68,7 @@ def test_load_all_schema_objs_from_directory():
 
 
 def test_load_template_file():
-    template = load_template_file(types.ANSIBLE, "", "ansible_inventory")
+    template = load_template_file(types.ANSIBLE, '', 'inventory')
     content = template.render(inventory=TEST_INVENTORY, cluster_model=TEST_CLUSTER_MODEL)
     assert 'test-1 ansible_host=10.0.0.1' in content
     assert 'test-2 ansible_host=10.0.0.2' in content
