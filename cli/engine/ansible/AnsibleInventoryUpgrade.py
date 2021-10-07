@@ -7,7 +7,7 @@ from cli.models.AnsibleHostModel import AnsibleHostModel
 from cli.models.AnsibleInventoryItem import AnsibleInventoryItem
 from cli.helpers.build_saver import save_inventory
 from cli.helpers.objdict_helpers import dict_to_objdict
-from cli.helpers.data_loader import load_yaml_obj, types as data_types
+from cli.helpers.data_loader import load_schema_obj, types as data_types
 from cli.helpers.doc_list_helpers import select_single
 from cli.helpers.objdict_helpers import merge_objdict
 from cli.helpers.data_loader import load_manifest_docs
@@ -104,7 +104,7 @@ class AnsibleInventoryUpgrade(Step):
             self.cluster_model = select_single(self.manifest_docs, lambda x: x.kind == 'epiphany-cluster')
 
         # Merge manifest cluster config with newer defaults
-        default_cluster_model = load_yaml_obj(data_types.DEFAULT, 'common', 'epiphany-cluster')
+        default_cluster_model = load_schema_obj(data_types.DEFAULT, 'common', 'epiphany-cluster')
         merge_objdict(default_cluster_model, self.cluster_model)
         self.cluster_model = default_cluster_model
 

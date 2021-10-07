@@ -18,6 +18,7 @@ This represents the current status on: 05-25-2021
 | | Possibility to connect to other infra (EKS, AKS) | :x: | :x: | :heavy_check_mark: | :heavy_check_mark: |
 | VM | "Groups" with similar configuration | :heavy_check_mark: | :heavy_exclamation_mark: | :heavy_check_mark: | :heavy_check_mark: |
 | | Data disks | :x: | :x: | :heavy_check_mark: | :heavy_check_mark: |
+| | Shared storage (Azure Files, EFS) | :heavy_check_mark: | :heavy_check_mark: | :x: | :x: |
 | Easy configuration | | :heavy_check_mark: | :heavy_check_mark: | :x: | :x: |
 
 ## Notes
@@ -27,5 +28,5 @@ This represents the current status on: 05-25-2021
 
 ## Missing for Modules
 
-1. Currently the Azure BI module does not have a way to inplement security groups per subnets with rules configuration. An issue already exists for that [here](https://github.com/epiphany-platform/m-azure-basic-infrastructure/issues/80).
+1. Currently, the Azure BI module does not have a way to implement security groups per subnets with rules configuration. An issue already exists for that [here](https://github.com/epiphany-platform/m-azure-basic-infrastructure/issues/80).
 2. Both BI modules currently only gives a default configuration, which makes it hard to create a full component layout for a full cluster.

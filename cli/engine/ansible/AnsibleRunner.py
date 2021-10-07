@@ -12,12 +12,12 @@ from cli.helpers.build_saver import (get_inventory_path, get_inventory_path_for_
     get_ansible_path, get_ansible_path_for_build, get_ansible_config_file_path, get_ansible_config_file_path_for_build,
     copy_files_recursively)
 from cli.helpers.naming_helpers import to_role_name
-from cli.helpers.data_loader import DATA_FOLDER_PATH
+from cli.helpers.data_loader import BASE_DIR, types
 from cli.helpers.Config import Config
 
 
 class AnsibleRunner(Step):
-    ANSIBLE_PLAYBOOKS_PATH = DATA_FOLDER_PATH + '/common/ansible/playbooks/'
+    ANSIBLE_PLAYBOOKS_PATH = os.path.join(BASE_DIR, types.ANSIBLE, 'playbooks')
 
     def __init__(self, cluster_model=None, config_docs=None, build_dir=None, backup_build_dir=None,
                  ansible_options=None, ping_retries: int = 5):

@@ -4,9 +4,9 @@ import shutil
 from subprocess import Popen, PIPE
 
 from cli.helpers.Log import LogPipe, Log
-from cli.helpers.data_loader import DATA_FOLDER_PATH
+from cli.helpers.data_loader import BASE_DIR
 
-SPEC_TEST_PATH = DATA_FOLDER_PATH + '/common/tests'
+SPEC_TEST_PATH = BASE_DIR + '/tests/spec'
 
 class SpecCommand:
     def __init__(self):
@@ -53,8 +53,10 @@ These need to be installed to run the cluster spec tests from epicli'''
 
     @staticmethod
     def get_spec_groups():
-        groups = os.listdir(SPEC_TEST_PATH + '/spec')
-        groups.remove('spec_helper.rb')
-        groups = ['all'] + groups
+        listdir = os.listdir(f'{SPEC_TEST_PATH}/spec')
+        groups = ['all']
+        for entry in listdir:
+            if os.path.isdir(f'{SPEC_TEST_PATH}/spec/{entry}'):
+                groups = groups + [entry]
         sorted(groups, key=str.lower)
         return groups

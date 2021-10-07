@@ -3,6 +3,7 @@
 Enable for Ubuntu (default):
 
 1. Enable "repository" component:
+
    ```yaml
    repository:
      count: 1
@@ -11,12 +12,15 @@ Enable for Ubuntu (default):
 Enable for RHEL on Azure:
 
 1. Enable "repository" component:
+
    ```yaml
    repository:
      count: 1
      machine: repository-machine-rhel
    ```
+
 2. Add repository VM definition to main config file:
+
    ```yaml
    kind: infrastructure/virtual-machine
    name: repository-machine-rhel
@@ -33,12 +37,15 @@ Enable for RHEL on Azure:
 Enable for RHEL on AWS:
 
 1. Enable "repository" component:
+
    ```yaml
    repository:
      count: 1
      machine: repository-machine-rhel
    ```
+
 2. Add repository VM definition to main config file:
+
    ```yaml
    kind: infrastructure/virtual-machine
    title: Virtual Machine Infra
@@ -52,12 +59,15 @@ Enable for RHEL on AWS:
 Enable for CentOS on Azure:
 
 1. Enable "repository" component:
+
    ```yaml
    repository:
      count: 1
      machine: repository-machine-centos
    ```
+
 2. Add repository VM definition to main config file:
+
    ```yaml
    kind: infrastructure/virtual-machine
    name: repository-machine-centos
@@ -74,12 +84,15 @@ Enable for CentOS on Azure:
 Enable for CentOS on AWS:
 
 1. Enable "repository" component:
+
    ```yaml
    repository:
      count: 1
      machine: repository-machine-centos
    ```
+
 2. Add repository VM definition to main config file:
+
    ```yaml
    kind: infrastructure/virtual-machine
    title: Virtual Machine Infra
@@ -93,11 +106,14 @@ Enable for CentOS on AWS:
 Disable:
 
 1. Disable "repository" component:
+
    ```yaml
    repository:
      count: 0
    ```
+
 2. Prepend "kubernetes\_master" mapping (or any other mapping if you don't deploy Kubernetes) with:
+
    ```yaml
    kubernetes_master:
      - repository
@@ -108,12 +124,12 @@ Disable:
 
 *Please read first prerequisites related to [hostname requirements](./PREREQUISITES.md#hostname-requirements).*
 
-Epicli has the ability to setup a cluster on infrastructure provided by you. These can be either bare metal machines or VMs and should meet the following requirements:
+Epicli has the ability to set up a cluster on infrastructure provided by you. These can be either bare metal machines or VMs and should meet the following requirements:
 
-*Note. Hardware requirements are not listed since this dependends on use-case, component configuration etc.*
+*Note. Hardware requirements are not listed since this depends on use-case, component configuration etc.*
 
-1. The cluster machines/VMs are connected by a network (or virtual network of some sorts) and can communicate with each other
-and at least one of them (with `repository` role) has Internet access in order to download dependencies.
+1. The cluster machines/VMs are connected by a network (or virtual network of some sorts) and can communicate with each other.
+At least one of them (with `repository` role) has Internet access in order to download dependencies.
 If there is no Internet access, you can use [air gap feature (offline mode)](#how-to-create-an-epiphany-cluster-on-existing-air-gapped-infrastructure).
 2. The cluster machines/VMs are running one of the following Linux distributions:
     - RedHat 7.6+ and < 8
@@ -127,7 +143,7 @@ If there is no Internet access, you can use [air gap feature (offline mode)](#ho
     - Has Epicli running.
       *Note. To run Epicli check the [Prerequisites](./PREREQUISITES.md)*
 
-To setup the cluster do the following steps from the provisioning machine:
+To set up the cluster do the following steps from the provisioning machine:
 
 1. First generate a minimal data yaml file:
 
@@ -137,7 +153,7 @@ To setup the cluster do the following steps from the provisioning machine:
 
     The `any` provider will tell Epicli to create a minimal data config which does not contain any cloud provider related information. If you want full control you can add the `--full` flag which will give you a configuration with all parts of a cluster that can be configured.
 
-2. Open the configuration file and setup the  `admin_user` data:
+2. Open the configuration file and set up the  `admin_user` data:
 
     ```yaml
     admin_user:
@@ -145,7 +161,7 @@ To setup the cluster do the following steps from the provisioning machine:
       name: user_name
     ```
 
-    Here you should specify the path to the SSH keys and the admin user name which will be used by Anisble to provision the cluster machines.
+    Here you should specify the path to the SSH keys and the admin user name which will be used by Ansible to provision the cluster machines.
 
 3. Define the components you want to install and link them to the machines you want to install them on:
 
@@ -158,7 +174,7 @@ To setup the cluster do the following steps from the provisioning machine:
       - default-k8s-master
     ```
 
-    The `count` specifies how much machines you want to provision with this component. The `machines` tag is the array of machine names you want to install this component on. Note that the `count` and the number of `machines` defined must match. If you don't want to use a component you can set the `count` to 0 and remove the `machines` tag. Finally a machine can be used by multiple component since multiple components can be installed on one machine of desired.
+    The `count` specifies how many machines you want to provision with this component. The `machines` tag is the array of machine names you want to install this component on. Note that the `count` and the number of `machines` defined must match. If you don't want to use a component you can set the `count` to 0 and remove the `machines` tag. Finally, a machine can be used by multiple component since multiple components can be installed on one machine of desired.
 
     You will also find a bunch of `infrastructure/machine`  definitions like below:
 
@@ -171,15 +187,15 @@ To setup the cluster do the following steps from the provisioning machine:
       ip: 192.168.100.101
     ```
 
-    Each machine name used when setting up the component layout earlier must have such a configuration where the `name` tag matches with the defined one in the components. The `hostname` and `ip` fields must be filled to match the actual cluster machines you provide. Ansible will use this to match the machine to a component which in turn will determin which roles to install on the machine.
+    Each machine name used when setting up the component layout earlier must have such a configuration where the `name` tag matches with the defined one in the components. The `hostname` and `ip` fields must be filled to match the actual cluster machines you provide. Ansible will use this to match the machine to a component which in turn will determine which roles to install on the machine.
 
-4. Finally start the deployment with:
+4. Finally, start the deployment with:
 
     ```shell
     epicli apply -f newcluster.yml --no-infra
     ```
 
-    This will create the inventory for Ansible based on the component/machine definitions made inside the `newcluster.yml` and let Absible deploy it. Note that the `--no-infra` is important since it tells Epicli to skip the Terraform part.
+    This will create the inventory for Ansible based on the component/machine definitions made inside the `newcluster.yml` and let Ansible deploy it. Note that the `--no-infra` is important since it tells Epicli to skip the Terraform part.
 
 ## How to create an Epiphany cluster on existing air-gapped infrastructure
 
@@ -188,7 +204,7 @@ To setup the cluster do the following steps from the provisioning machine:
 Epicli has the ability to set up a cluster on air-gapped infrastructure provided by you. These can be either bare metal machines
 or VMs and should meet the following requirements:
 
-*Note. Hardware requirements are not listed since this dependends on use-case, component configuration etc.*
+*Note. Hardware requirements are not listed since this depends on use-case, component configuration etc.*
 
 1. The air-gapped cluster machines/VMs are connected by a network or virtual network of some sorts and can communicate with each other.
 2. The air-gapped cluster machines/VMs are running one of the following Linux distributions:
@@ -200,14 +216,14 @@ or VMs and should meet the following requirements:
 5. A requirements machine that:
     - Runs the same distribution as the air-gapped cluster machines/VMs (RedHat 7, CentOS 7, Ubuntu 18.04)
     - Has access to the internet.
-   If you don't have access to a similar machine/VM with internet access you can also try and download the requiments with a Docker container. More information [here](./CLUSTER.md#downloading-offline-requirements-with-a-docker-container).
+   If you don't have access to a similar machine/VM with internet access, you can also try to download the requirements with a Docker container. More information [here](./CLUSTER.md#downloading-offline-requirements-with-a-docker-container).
 6. A provisioning machine that:
     - Has access to the SSH keys
     - Is on the same network as your cluster machines
     - Has Epicli running.
       *Note. To run Epicli check the [Prerequisites](./PREREQUISITES.md)*
 
-To setup the cluster do the following steps:
+To set up the cluster do the following steps:
 
 1. First we need to get the tooling to prepare the requirements. On the provisioning machine run:
 
@@ -223,7 +239,7 @@ To setup the cluster do the following steps:
     download-requirements.sh /requirementsoutput/
     ```
 
-    This will start downloading all requirements and put them in the `/requirementsoutput/` folder. Once run succesfully the `/requirementsoutput/` needs to be copied to the provisioning machine to be used later on.
+    This will start downloading all requirements and put them in the `/requirementsoutput/` folder. Once run successfully the `/requirementsoutput/` needs to be copied to the provisioning machine to be used later on.
 
 3. Then generate a minimal data yaml file on the provisioning machine:
 
@@ -233,14 +249,15 @@ To setup the cluster do the following steps:
 
     The `any` provider will tell Epicli to create a minimal data config which does not contain any cloud provider related information. If you want full control you can add the `--full` flag which will give you a configuration with all parts of a cluster that can be configured.
 
-4. Open the configuration file and setup the  `admin_user` data:
+4. Open the configuration file and set up the  `admin_user` data:
 
     ```yaml
     admin_user:
       key_path: /path/to/your/ssh/keys
       name: user_name
     ```
-    Here you should specify the path to the SSH keys and the admin user name which will be used by Anisble to provision the cluster machines.
+
+    Here you should specify the path to the SSH keys and the admin user name which will be used by Ansible to provision the cluster machines.
 
 5. Define the components you want to install and link them to the machines you want to install them on:
 
@@ -253,7 +270,7 @@ To setup the cluster do the following steps:
       - default-k8s-master
     ```
 
-    The `count` specifies how much machines you want to provision with this component. The `machines` tag is the array of machine names you want to install this component on. Note that the `count` and the number of `machines` defined must match. If you don't want to use a component you can set the `count` to 0 and remove the `machines` tag. Finally a machine can be used by multiple component since multiple components can be installed on one machine of desired.
+    The `count` specifies how many machines you want to provision with this component. The `machines` tag is the array of machine names you want to install this component on. Note that the `count` and the number of `machines` defined must match. If you don't want to use a component you can set the `count` to 0 and remove the `machines` tag. Finally, a machine can be used by multiple component since multiple components can be installed on one machine of desired.
 
     You will also find a bunch of `infrastructure/machine`  definitions like below:
 
@@ -266,15 +283,15 @@ To setup the cluster do the following steps:
       ip: 192.168.100.101
     ```
 
-    Each machine name used when setting up the component layout earlier must have such a configuration where the `name` tag matches with the defined one in the components. The `hostname` and `ip` fields must be filled to match the actual cluster machines you provide. Ansible will use this to match the machine to a component which in turn will determin which roles to install on the machine.
+    Each machine name used when setting up the component layout earlier must have such a configuration where the `name` tag matches with the defined one in the components. The `hostname` and `ip` fields must be filled to match the actual cluster machines you provide. Ansible will use this to match the machine to a component which in turn will determine which roles to install on the machine.
 
-6. Finally start the deployment with:
+6. Finally, start the deployment with:
 
     ```shell
     epicli apply -f newcluster.yml --no-infra --offline-requirements /requirementsoutput/
     ```
 
-    This will create the inventory for Ansible based on the component/machine definitions made inside the `newcluster.yml` and let Absible deploy it. Note that the `--no-infra` is important since it tells Epicli to skip the Terraform part. The `--offline-requirements` tells Epicli it is an air-gapped installation and to use the  `/requirementsoutput/` requirements folder prepared in steps 1 and 2 as source for all requirements.
+    This will create the inventory for Ansible based on the component/machine definitions made inside the `newcluster.yml` and let Ansible deploy it. Note that the `--no-infra` is important since it tells Epicli to skip the Terraform part. The `--offline-requirements` tells Epicli it is an air-gapped installation and to use the  `/requirementsoutput/` requirements folder prepared in steps 1 and 2 as source for all requirements.
 
 ## How to create an Epiphany cluster using custom system repository and Docker image registry
 
@@ -301,7 +318,7 @@ The repository and image registry implementation must be compatible with already
 
 *Note. You can switch between custom repository/registry and offline/online installation methods. Keep in mind this will cause "imageRegistry" change in Kubernetes which in turn may cause short downtime.*
 
-By default Epiphany creates "repository" virtual machine for cloud environments. When custom repository and registry are used there is no need for additional empty VM.
+By default, Epiphany creates "repository" virtual machine for cloud environments. When custom repository and registry are used there is no need for additional empty VM.
 The following config snippet can illustrate how to mitigate this problem:
 
 ```yaml
@@ -346,17 +363,22 @@ specification:
 ```
 
 1. Disable "repository" component:
+
    ```yaml
    repository:
      count: 0
    ```
+
 2. Prepend "kubernetes\_master" mapping (or any other mapping if you don't deploy Kubernetes) with:
+
    ```yaml
    kubernetes_master:
      - repository
      - image-registry
    ```
+
 3. Specify custom repository/registry in `configuration/shared-config`:
+
    ```yaml
    specification:
      custom_image_registry_address: "<ip-address>:5000"
@@ -367,12 +389,12 @@ specification:
 
 *Please read first prerequisites related to [hostname requirements](./PREREQUISITES.md#hostname-requirements).*
 
-Epicli has the ability to setup a cluster on one of the following cloud providers:
+Epicli has the ability to set up a cluster on one of the following cloud providers:
 
 - Azure
 - AWS
 
-Under the hood it uses [Terraform](https://www.terraform.io/) to create the virtual infrastructure before it applies our [Anisble](https://www.ansible.com/) playbooks to provision the VMs.
+Under the hood it uses [Terraform](https://www.terraform.io/) to create the virtual infrastructure before it applies our [Ansible](https://www.ansible.com/) playbooks to provision the VMs.
 
 You need the following prerequisites:
 
@@ -384,7 +406,7 @@ You need the following prerequisites:
     - Has Epicli running.
       *Note. To run Epicli check the [Prerequisites](./PREREQUISITES.md)*
 
-To setup the cluster do the following steps from the provisioning machine:
+To set up the cluster do the following steps from the provisioning machine:
 
 1. First generate a minimal data yaml file:
 
@@ -394,26 +416,26 @@ To setup the cluster do the following steps from the provisioning machine:
 
     The `provider` flag should be either `aws` or `azure` and will tell Epicli to create a data config which contains the specifics for that cloud provider. If you want full control you can add the `--full` flag which will give you a config with all parts of a cluster that can be configured.
 
-2. Open the configuration file and setup the `admin_user` data:
+2. Open the configuration file and set up the `admin_user` data:
 
     ```yaml
-    admin_user:
     admin_user:
       key_path: /path/to/your/ssh/keys
       name: user_name
     ```
-    Here you should specify the path to the SSH keys and the admin user name which will be used by Anisble to provision the cluster machines.
+
+    Here you should specify the path to the SSH keys and the admin user name which will be used by Ansible to provision the cluster machines.
 
     On `Azure` the name you specify will be configured as the admin name on the VM's.
 
     For `AWS` the admin name is already specified and is dependent on the Linux distro image you are using for the VM's:
 
     - Username for Ubuntu Server: `ubuntu`
-    - Username for For Redhat: `ec2-user`
+    - Username for Redhat: `ec2-user`
 
-3. Setup the cloud specific data:
+3. Set up the cloud specific data:
 
-    To let Terraform access the cloud providers you need to setup some additional cloud configuration.
+    To let Terraform access the cloud providers you need to set up some additional cloud configuration.
 
     AWS:
 
@@ -440,9 +462,9 @@ To setup the cluster do the following steps from the provisioning machine:
       default_os_image: default
     ```
 
-    The [region](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Concepts.RegionsAndAvailabilityZones.html) lets you chose the most optimal place to deploy your cluster. The `subscription_name` is the Azure subscribtion under which you want to deploy the cluster.
+    The [region](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Concepts.RegionsAndAvailabilityZones.html) lets you chose the most optimal place to deploy your cluster. The `subscription_name` is the Azure subscription under which you want to deploy the cluster.
 
-    Terraform will ask you to sign in to your Microsoft Azure subscibtion when it prepares to build/modify/destroy the infrastructure on `azure`. In case you need to share cluster managment with other people you can set the `use_service_principal` tag to true. This will create a service principle and uses it to manage the resources. 
+    Terraform will ask you to sign in to your Microsoft Azure subscription when it prepares to build/modify/destroy the infrastructure on `azure`. In case you need to share cluster management with other people you can set the `use_service_principal` tag to true. This will create a service principle and uses it to manage the resources.
 
     If you already have a service principle and don't want to create a new one you can do the following. Make sure the `use_service_principal` tag is set to true. Then before you run `epicli apply -f yourcluster.yml` create the following folder structure from the path you are running Epicli:
 
@@ -450,7 +472,7 @@ To setup the cluster do the following steps from the provisioning machine:
     /build/clustername/terraform
     ```
 
-    Where the clustername is the name you specified under `specification.name` in your cluster yaml. Then in the terraform folder add the file named `sp.yml` and fill it with the service priciple information like so:
+    Where the `clustername` is the name you specified under `specification.name` in your cluster yaml. Then in `terraform` folder add the file named `sp.yml` and fill it up with the service principal information like so:
 
     ```yaml
     appId: "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxx"
@@ -461,7 +483,7 @@ To setup the cluster do the following steps from the provisioning machine:
     subscriptionId: "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxx"
     ```
 
-    Epicli will read this file and automaticly use it for authentication for resource creation and management.
+    Epicli will read this file and automatically use it for authentication for resource creation and management.
 
     For both `aws`and `azure` the following cloud attributes overlap:
     - `use_public_ips`: When `true`, the VMs will also have a direct interface to the internet. While this is easy for setting up a cluster for testing, it should not be used in production. A VPN setup should be used which we will document in a different section (TODO).
@@ -496,7 +518,7 @@ To setup the cluster do the following steps from the provisioning machine:
 
     This links to a `infrastructure/virtual-machine` document which can be found inside the same configuration file. It gives you full control over the VM config (size, storage, provision image, security etc.). More details on this will be documented in a different section (TODO).
 
-5. Finally start the deployment with:
+5. Finally, start the deployment with:
 
     ```shell
     epicli apply -f newcluster.yml
@@ -584,7 +606,7 @@ Sometimes it might be desirable to run an Epiphany cluster on a single machine. 
 - applications: For deploying the Keycloak authentication service
 - postgresql: To provide a database for Keycloak
 
-Note that components like logging and monitoring are missing since they do not provide much benefit in a single machine scenario. Also RabbitMQ is included over Kafka since that is much less resource intensive.
+Note that components like logging and monitoring are missing since they do not provide much benefit in a single machine scenario. Also, RabbitMQ is included over Kafka since that is much less resource intensive.
 
 To get started with a single machine cluster you can use the following template as a base. Note that some configurations are omitted:
 
@@ -712,11 +734,11 @@ specification:
 
 ## How to create custom cluster components
 
-Epiphany gives you the ability to define custom components. This allows you define a custom set of roles for a component you want to use in your cluster and can be usefull when you for example want to maximize usage of the available machines you have at your disposal.
+Epiphany gives you the ability to define custom components. This allows you to define a custom set of roles for a component you want to use in your cluster. It can be useful when you for example want to maximize usage of the available machines you have at your disposal.
 
 The first thing you will need to do is define it in the `configuration/feature-mapping` configuration. To get this configuration you can run `epicli init ... --full` command. In the `available_roles` roles section you can see all the available roles that Epiphany provides. The `roles_mapping` is where all the Epiphany components are defined and were you need to add your custom components.
 
-Below are parts of an example `configuration/feature-mapping` were we define an new `single_machine_new` component. We want to use Kafka instead of RabbitMQ and don`t need applications and postgress since we dont want a Keycloak deployment:
+Below are parts of an example `configuration/feature-mapping` were we define a new `single_machine_new` component. We want to use Kafka instead of RabbitMQ and don`t need applications and postgres since we don't want a Keycloak deployment:
 
 ```yaml
 kind: configuration/feature-mapping
@@ -770,18 +792,13 @@ specification:
       count: x
 ```
 
-*Note: After defining a new component you might also need to define aditional configurations for virtual machines and security rules depending on what you are trying to achieve.*
+*Note: After defining a new component you might also need to define additional configurations for virtual machines and security rules depending on what you are trying to achieve.*
 
 ## How to scale or cluster components
 
----
-**NOTE**
+Not all components are supported for this action. There is a bunch of issues referenced below in this document.
 
-Not all components are supported for this action. There is a bunch of issues referenced below in this document, [one](https://github.com/epiphany-platform/epiphany/issues/1574) of them is that disks are not removed for all components after downscale.
-
----
-
-Epiphany has the ability to automaticly scale and cluster certain components on cloud providers (AWS, Azure). To upscale or downscale a component the `count` number must be increased or decreased:
+Epiphany has the ability to automatically scale and cluster certain components on cloud providers (AWS, Azure). To upscale or downscale a component the `count` number must be increased or decreased:
 
   ```yaml
   components:
@@ -790,35 +807,57 @@ Epiphany has the ability to automaticly scale and cluster certain components on 
       ...
   ```
 
-Then when applying the changed configuration using Epicli additional VM's will be spawned and configured or removed. The following components support scaling/clustering:
+Then when applying the changed configuration using Epicli, additional VM's will be spawned and configured or removed. The following table shows what kind of operation component supports:
 
-- repository: In standard Epiphany deployment only one repository machine is required. Scaling up the repository component will create a new standalone VM. Scaling down will remove it in LIFO order (Last In, First Out). However even if you create more then one VM, by default all other components will use the first one.
-- kubernetes_master: When increased this will setup additional control plane nodes, but in the case of non-ha k8s cluster, existing control plane node must be promoted first. At the moment there is [no ability](https://github.com/epiphany-platform/epiphany/issues/1579) to downscale.
-- kubernetes_node: When increased this will setup additional nodes with `kubernetes_master`. There is [no ability](https://github.com/epiphany-platform/epiphany/issues/1580) to downscale.
-- ignite
-- kafka: When changed this will setup or remove additional nodes for the Kafka cluster. Note that there is an [issue](https://github.com/epiphany-platform/epiphany/issues/1576) that needs to be fixed before scaling usage.
-- load_balancer - Scaling up the load_balancer component will create a new standalone VM. Scaling down will remove it in LIFO order (Last In, First Out).
-- logging: Sometimes it works, but often there is an [issue](https://github.com/epiphany-platform/epiphany/issues/1575) with Kibana installation that needs to be resoved
-- monitoring - Scaling up the monitoring component will create a new standalone VM. Scaling down will remove it in LIFO order (Last In, First Out).
-- opendistro_for_elasticsearch: Works the same as `logging` component, without issues if there is no `kibana` part in feature mapping configuration.
-- postgresql: At the moment does not work correctly, there is an [issue](https://github.com/epiphany-platform/epiphany/issues/1577). When changed this will setup or remove additional nodes for Postgresql. Note that extra nodes can only be setup to do replication by adding the following additional `configuration/postgresql` configuration:
+Component | Scale up | Scale down | HA | Clustered |Known issues
+--- | --- | --- | --- | --- | ---
+Repository | :heavy_check_mark: | :heavy_check_mark: | :x: | :x: | --- |
+Monitoring | :heavy_check_mark: | :heavy_check_mark: | :x: | :x: | ---
+Logging | :heavy_check_mark: | :heavy_check_mark: | :x: | :x: | ---
+Kubernetes master | :heavy_check_mark: | :x: | :heavy_check_mark: | :heavy_check_mark: | [#1579](https://github.com/epiphany-platform/epiphany/issues/1579)
+Kubernetes node | :heavy_check_mark: | :x: | :heavy_check_mark: | :heavy_check_mark: | [#1580](https://github.com/epiphany-platform/epiphany/issues/1580)
+Ignite | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | ---
+Kafka | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | ---
+Load Balancer | :heavy_check_mark: | :heavy_check_mark: | :x: | :x: | ---
+Opendistro for elasticsearch | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | ---
+Postgresql | :x: | :x: | :heavy_check_mark: | :heavy_check_mark: | [#1577](https://github.com/epiphany-platform/epiphany/issues/1577)
+RabbitMQ | :heavy_check_mark: | :heavy_check_mark: | :x: | :heavy_check_mark: |  [#1578](https://github.com/epiphany-platform/epiphany/issues/1578), [#1309](https://github.com/epiphany-platform/epiphany/issues/1309)
+RabbitMQ K8s | :heavy_check_mark: | :heavy_check_mark: | :x: | :heavy_check_mark: | [#1486](https://github.com/epiphany-platform/epiphany/issues/1486)
+Keycloak K8s | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | ---
+Pgpool K8s | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | ---
+Pgbouncer K8s | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | ---
+Ignite K8s | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | ---
 
-  ```yaml
-  kind: configuration/postgresql
-  ...
-  specification:
-    replication:
-      enable: true
-      user: postgresql-replication-user
-      password: postgresql-replication-password
-      max_wal_senders: 5
-      wal_keep_segments: 32  
-    ...
-  ```
+Additional notes:
 
-- rabbitmq: At the moment downscaling is not supported, there is the known
-[issue](https://github.com/epiphany-platform/epiphany/issues/1578).
-If instance count is changed, then additional RabbitMQ nodes will be added or removed.
+- Repository:  
+In standard Epiphany deployment only one repository machine is required.  
+:arrow_up: Scaling up the repository component will create a new standalone VM.  
+:arrow_down: Scaling down will remove it in LIFO order (Last In, First Out).  
+However, even if you create more than one VM, by default all other components will use the first one.
+- Kubernetes master:  
+:arrow_up: When increased this will set up additional control plane nodes, but in the case of non-ha k8s cluster, the existing control plane node must be promoted first.  
+:arrow_down: At the moment there is no ability to downscale.
+- Kubernetes node:  
+:arrow_up: When increased this will set up an additional node and join into the Kubernetes cluster.  
+:arrow_down: There is no ability to downscale.
+- Load balancer:  
+:arrow_up: Scaling up the load_balancer component will create a new standalone VM.  
+:arrow_down: Scaling down will remove it in LIFO order (Last In, First Out).
+- Logging:  
+:arrow_up:  Scaling up will create new VM with both Kibana and ODFE components inside.  
+ODFE will join the cluster but Kibana will be a standalone instance.  
+:arrow_down: When scaling down VM will be deleted.
+- Monitoring:  
+:arrow_up: Scaling up the monitoring component will create a new standalone VM.  
+:arrow_down: Scaling down will remove it in LIFO order (Last In, First Out).
+- Postgresql:  
+:arrow_up: At the moment does not support scaling up. Check known issues.  
+:arrow_down: At the moment does not support scaling down. Check known issues.
+- RabbitMQ:  
+If the instance count is changed, then additional RabbitMQ nodes will be added or removed.  
+:arrow_up: Will create new VM and adds it to the RabbitMQ cluster.  
+:arrow_down: At the moment scaling down will just remove VM. All data not processed on this VM will be purged. Check known issues.  
 Note that clustering requires a change in the `configuration/rabbitmq` document:
 
   ```yaml
@@ -829,6 +868,13 @@ Note that clustering requires a change in the `configuration/rabbitmq` document:
       is_clustered: true
   ...
   ```
+
+- RabbitMQ K8s:
+  Scaling is controlled via replicas in StatefulSet. RabbitMQ on K8s uses plugin rabbitmq_peer_discovery_k8s to works in cluster.
+
+Additional known issues:
+
+- [#1574](https://github.com/epiphany-platform/epiphany/issues/1574) - Disks are not removed after downscale of any Epiphany component on Azure.
 
 ## Multi master cluster
 
@@ -851,7 +897,7 @@ Epiphany can deploy [HA Kubernetes clusters](../../design-docs/kubernetes-ha/kub
     promote_to_ha: false
   ```
 
-- the regular epcli apply cycle must be executed
+- the regular epicli apply cycle must be executed
 
 Epiphany can promote / convert older single-master clusters to HA mode (since v0.6). To achieve that, it is required that:
 
@@ -869,7 +915,7 @@ Epiphany can promote / convert older single-master clusters to HA mode (since v0
     promote_to_ha: true
   ```
 
-- the regular epcli apply cycle must be executed
+- the regular epicli apply cycle must be executed
 
 - since it is one-time operation, after successful promotion, the HA promotion must be disabled in the config:
 
@@ -904,13 +950,13 @@ Epiphany can scale-up existing HA clusters (including ones that were promoted). 
     promote_to_ha: false
   ```
 
-- the regular epcli apply cycle must be executed
+- the regular epicli apply cycle must be executed
 
 *Note: It is not supported yet to scale-down clusters (master count cannot be decreased).*
 
 ## Build artifacts
 
-Epiphany engine produce build artifacts during each deployment. Those artifacts contains:
+Epiphany engine produce build artifacts during each deployment. Those artifacts contain:
 
 - Generated terraform files.
 - Generated terraform state files.
@@ -918,13 +964,13 @@ Epiphany engine produce build artifacts during each deployment. Those artifacts 
 - Generated ansible files.
 - Azure login credentials for `service principal` if deploying to Azure.
 
-Artifacts contains sensitive data so it is important to keep it in safe place like `private GIT repository` or `storage with limited access`. Generated build is also important in case of scaling or updating cluster - you will it in build folder in order to edit your cluster.
+Artifacts contain sensitive data, so it is important to keep it in safe place like `private GIT repository` or `storage with limited access`. Generated build is also important in case of scaling or updating cluster - you will it in build folder in order to edit your cluster.
 
 Epiphany creates (or use if you don't specified it to create) service principal account which can manage all resources in subscription, please store build artifacts securely.
 
 ## Kafka replication and partition setting
 
-When planning Kafka installation you have to think about number of partitions and replicas since it is strongly related to throughput of Kafka and its reliability. By default Kafka's `replicas` number is set to 1 - you should change it in `core/src/ansible/roles/kafka/defaults` in order to have partitions replicated to many virtual machines.  
+When planning Kafka installation you have to think about number of partitions and replicas since it is strongly related to throughput of Kafka and its reliability. By default, Kafka's `replicas` number is set to 1 - you should change it in `core/src/ansible/roles/kafka/defaults` in order to have partitions replicated to many virtual machines.  
 
 ```yaml
   ...
@@ -937,7 +983,7 @@ You can read more [here](https://www.confluent.io/blog/how-choose-number-topics-
 
 ## RabbitMQ installation and setting
 
-To install RabbitMQ in single mode just add rabbitmq role to your data.yaml for your server and in general roles section. All configuration on RabbitMQ - e.g. user other than guest creation should be performed manually.
+To install RabbitMQ in single mode just add rabbitmq role to your data.yaml for your server and in general roles section. All configuration on RabbitMQ, e.g., user other than guest creation should be performed manually.
 
 ## How to use Azure availability sets
 
@@ -1015,7 +1061,7 @@ title: Epiphany cluster Config
 kind: infrastructure/availability-set
 name: kube-node  # Short and simple name is preferred
 specification:
-# The "name" attribute (ommited here) is generated automatically according to Epiphany's naming conventions
+# The "name" attribute (omitted here) is generated automatically according to Epiphany's naming conventions
   platform_fault_domain_count: 2
   platform_update_domain_count: 5
   managed: true
@@ -1024,7 +1070,7 @@ provider: azure
 kind: infrastructure/availability-set
 name: postgresql  # Short and simple name is preferred
 specification:
-# The "name" attribute (ommited here) is generated automatically according to Epiphany's naming conventions
+# The "name" attribute (omitted here) is generated automatically according to Epiphany's naming conventions
   platform_fault_domain_count: 2
   platform_update_domain_count: 5
   managed: true
@@ -1033,15 +1079,16 @@ provider: azure
 
 ## Downloading offline requirements with a Docker container
 
-This paragraph describes how to use a Docker container to download the requirements for air-gapped/offline installations. At this time we don't officially support this and we still recommend using a full distribution which is the same as the air-gapped cluster machines/VMs.
+This paragraph describes how to use a Docker container to download the requirements for air-gapped/offline installations. At this time we don't officially support this, and we still recommend using a full distribution which is the same as the air-gapped cluster machines/VMs.
 
 A few points:
-- This only describes how to setup the Docker containers for downloading. The rest of the steps are similar as in the paragraph [here](./CLUSTER.md#how-to-create-an-epiphany-cluster-on-existing-air-gapped-infrastructure).
+
+- This only describes how to set up the Docker containers for downloading. The rest of the steps are similar as in the paragraph [here](./CLUSTER.md#how-to-create-an-epiphany-cluster-on-existing-air-gapped-infrastructure).
 - Main reason why you might want to give this a try is to download ```arm64``` architecture requirements on a ```x86_64``` machine. More information on the current state of ```arm64``` support can be found [here](./../ARM.md#arm).
 
 ### Ubuntu 18.04
 
-For Ubuntu you can use the following command to launch a container:
+For Ubuntu, you can use the following command to launch a container:
 
 ```shell
 docker run -v /shared_folder:/home <--platform linux/amd64 or --platform linux/arm64> --rm -it ubuntu:18.04
@@ -1075,7 +1122,7 @@ When you are inside the container run the following commands to prepare for the 
 
 ```shell
 subscription-manager register # will ask for you credentials of your RedHat developer subscription and setup the container
-subscription-manager attach --auto # will enable the RedHat offical repositories
+subscription-manager attach --auto # will enable the RedHat official repositories
 chmod +x /home/download-requirements.sh # make the requirements script executable
 ```
 
@@ -1083,14 +1130,16 @@ After this you should be able to run the ```download-requirements.sh```  from th
 
 ### CentOS 7.x
 
-For CentOS you can use the following command to launch a container:
+For CentOS, you can use the following command to launch a container:
 
 arm64:
+
 ```shell
 docker run -v /shared_folder:/home --platform linux/arm64 --rm -it arm64v8/centos:7.9.2009
 ```
 
 x86_64:
+
 ```shell
 docker run -v /shared_folder:/home --platform linux/amd64 --rm -it amd64/centos:7.9.2009
 ```

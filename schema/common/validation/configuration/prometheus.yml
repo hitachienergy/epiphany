@@ -1,0 +1,134 @@
+"$id": "#/specification"
+title: "Prometheus specification schema"
+description: "Prometheus specification schema"
+type: object
+properties:
+  config_directory:
+    type: string
+  storage:
+    type: object
+    properties:
+      data_directory:
+        type: string
+  config_flags:
+    type: array
+    items:
+      type: string
+  metrics_path:
+    type: string
+  scrape_interval:
+    type: string
+  scrape_timeout:
+    type: string
+  evaluation_interval:
+    type: string
+  remote_write:
+    type: array
+    items:
+      items: {}
+  remote_read:
+    type: array
+    items:
+      items: {}
+  alertmanager:
+    type: object
+    properties:
+      enable:
+        type: boolean
+      alert_rules:
+        type: object
+        properties:
+          common:
+            type: boolean
+          container:
+            type: boolean
+          kafka:
+            type: boolean
+          node:
+            type: boolean
+          postgresql:
+            type: boolean
+          prometheus:
+            type: boolean
+      config:
+        type: object
+        properties:
+          global:
+            type: object
+            properties:
+              resolve_timeout:
+                type: string
+              smtp_from:
+                type: string
+              smtp_smarthost:
+                type: string
+              smtp_auth_username:
+                type: string
+              smtp_auth_password:
+                type: string
+              smtp_require_tls:
+                type: boolean
+          route:
+            type: object
+            properties:
+              group_by:
+                type: array
+                items:
+                  type: string
+              group_wait:
+                type: string
+              group_interval:
+                type: string
+              repeat_interval:
+                type: string
+              receiver:
+                type: string
+              routes:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    match_re:
+                      type: object
+                      properties:
+                        severity:
+                          type: string
+                    receiver:
+                      type: string
+                    continue:
+                      type: boolean
+          receivers:
+            type: array
+            items:
+              type: object
+              properties:
+                name:
+                  type: string
+                email_configs:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      to:
+                        type: string
+                slack_configs:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      api_url:
+                        type: string
+                pagerduty_configs:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      service_key:
+                        type: string
+                opsgenie_config:
+                  type: object
+                  properties:
+                    api_key:
+                      type: string
+                    api_url:
+                      type: string

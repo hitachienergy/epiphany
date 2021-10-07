@@ -21,12 +21,12 @@
       {
         "label": "Ansible-lint junit",
         "type": "shell",
-        "command": "mkdir -p test_results && ansible-lint --nocolor -q -c .ansible-lint -p ${workspaceFolder}/data/common/ansible/playbooks/*.yml > ${workspaceFolder}/test_results/ansiblelint_results.txt ; ansible-lint-to-junit-xml ${workspaceFolder}/test_results/ansiblelint_results.txt > ${workspaceFolder}/test_results/ansiblelint_results.xml"
+        "command": "mkdir -p test_results && ansible-lint --nocolor -q -c .ansible-lint -p ${workspaceFolder}/ansible/playbooks/*.yml > ${workspaceFolder}/test_results/ansiblelint_results.txt ; ansible-lint-to-junit-xml ${workspaceFolder}/test_results/ansiblelint_results.txt > ${workspaceFolder}/test_results/ansiblelint_results.xml"
       },
       {
         "label": "Ansible-lint terminal",
         "type": "shell",
-        "command": "ansible-lint -q -c .ansible-lint -p ${workspaceFolder}/data/common/ansible/playbooks/*.yml"
+        "command": "ansible-lint -q -c .ansible-lint -p ${workspaceFolder}/ansible/playbooks/*.yml"
       },
       {
         "label": "Rubocop junit",

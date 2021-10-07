@@ -1,0 +1,134 @@
+---
+- name: Include main defaults from 'postgresql' role
+  include_vars:
+    file: roles/postgresql/defaults/main.yml
+    name: pg_new
+
+- name: Include upgrade defaults from 'postgresql' role
+  include_vars:
+    file: roles/postgresql/defaults/upgrade.yml
+    name: pg_old
+
+# included to check if repmgr is used
+- name: Include manifest from 'postgresql' role
+  include_vars:
+    file: roles/postgresql/vars/manifest.yml
+    name: pg_manifest
+
+- name: Check if upgrade was already run
+  stat:
+    path: "{{ pg_new.pg.data_dir[ansible_os_family] }}/PG_VERSION"
+    get_attributes: false
+    get_checksum: false
+    get_mime: false
+  become: true
+  register: stat_file_in_pg_new_data_dir
+
+- name: Set fact about PostgreSQL upgrade status
+  set_fact:
+    pg_upgrade_already_run: "{{ stat_file_in_pg_new_data_dir.stat.exists }}"
+
+- name: Check available disk space for new PostgreSQL data dir
+  when: not pg_upgrade_already_run
+  block:
+    # Data dir may not exist yet so get info also for parent paths
+    - name: Look for target data directory
+      stat:
+        path: "{{ item }}"
+        follow: true
+        get_attributes: false
+        get_checksum: false
+        get_mime: false
+      become: true
+      register: stat_pg_new_data_dir
+      loop: "{{ [ pg_new.pg.data_dir[ansible_os_family] ] +
+                pg_new.pg.data_dir[ansible_os_family] | parent_paths(exclude=['/', '/var']) }}"
+
+    - name: Set fact on data directory destination
+      set_fact:
+        pg_new_data_dir_or_parent_path: "{{ stat_pg_new_data_dir.results | json_query('[?stat.exists].item') | first }}"
+
+    - name: Get filesystem for new data directory
+      shell: |-
+        set -o pipefail && \
+        df --output=source {{ pg_new_data_dir_or_parent_path }} | tail -1
+      become: true
+      changed_when: false
+      register: pg_data_disk
+      args:
+        executable: /bin/bash
+
+    - name: Set facts on space on {{ pg_data_disk.stdout }}
+      set_fact:
+        data_dir_fs_used_mb: "{{ ((mount.size_total - mount.size_available) / 1024 / 1024) | int }}"
+        data_dir_fs_capacity_mb: "{{ (mount.size_total / 1024 / 1024) | int }}"
+      vars:
+        mount: "{{ ansible_mounts | selectattr('device', '==', pg_data_disk.stdout) | first }}"
+
+    - name: Get size of old data directory
+      command: du -sm {{ pg_old.pg.data_dir[ansible_os_family] }}
+      become: true
+      register: du_data_dir
+      changed_when: false
+
+    - name: Set fact on size of old data directory
+      set_fact:
+        old_data_dir_size_mb: "{{ du_data_dir.stdout.split()[0] | int }}"
+
+    - name: Assert free space on {{ pg_data_disk.stdout }}
+      assert:
+        that: data_dir_fs_used_mb|int + old_data_dir_size_mb|int < 0.95 * data_dir_fs_capacity_mb|float
+        fail_msg: "{{ [ 'Not enough free space on PostgreSQL data disk to run upgrade' ] + _common }}"
+        success_msg: "{{ [ 'Test passed' ] + _common }}"
+      vars:
+        _common:
+          - "data_dir_fs_used_mb + old_data_dir_size_mb < 0.95 * data_dir_fs_capacity_mb"
+          - "{{ data_dir_fs_used_mb }} + {{ old_data_dir_size_mb }} < 0.95 * {{ data_dir_fs_capacity_mb }}"
+
+- name: Ensure that PostgreSQL cluster in version {{ pg_old.pg.version }} is present
+  when: not pg_upgrade_already_run
+  block:
+    - name: Get PostgreSQL version from data directory
+      become: true
+      slurp:
+        src: "{{ pg_old.pg.data_dir[ansible_os_family] }}/PG_VERSION"
+      register: slurp_pg_version
+
+    - name: Assert PostgreSQL cluster in version {{ pg_old.pg.version }} is present
+      assert:
+        that:
+          - slurp_pg_version['content'] | b64decode | trim is version(pg_old.pg.version, '==')
+        fail_msg: PostgreSQL cluster in version '{{ pg_old.pg.version }}' not found
+        success_msg: PostgreSQL cluster in version '{{ pg_old.pg.version }}' found
+        quiet: true
+
+- name: Assert old PostgreSQL cluster is healthy
+  when:
+    - not pg_upgrade_already_run
+    - pg_manifest.specification.extensions.replication.enabled
+  become: true
+  become_user: postgres
+  vars:
+    _repmgr_config_file: "{{ pg_old.repmgr.config_dir[ansible_os_family] }}/repmgr.conf"
+  block:
+    - name: Check if PostgreSQL {{ pg_old.pg.version }} cluster is healthy
+      # when there are two primary nodes (after failover) rc is non-zero
+      command: >-
+        {{ pg_old.repmgr.bin_dir[ansible_os_family] }}/repmgr -f {{ _repmgr_config_file }}
+        cluster show
+      run_once: true
+      changed_when: false
+
+    - name: Check if PostgreSQL {{ pg_old.pg.version }} cluster node is healthy
+      command: >-
+        {{ pg_old.repmgr.bin_dir[ansible_os_family] }}/repmgr -f {{ _repmgr_config_file }}
+        node check
+      register: repmgr_node_check
+      changed_when: false
+
+    - name: Assert PostgreSQL {{ pg_old.pg.version }} cluster node is healthy
+      assert:
+        that: not 'CRITICAL' in repmgr_node_check.stdout
+        fail_msg: "{{ ['CRITICAL keyword found in output:']
+                      + repmgr_node_check.stdout_lines | map('regex_replace', '^\t', '') }}"  # noqa no-tabs
+        quiet: "{{ not 'CRITICAL' in repmgr_node_check.stdout }}"  # for better formatting of 'fail_msg'
