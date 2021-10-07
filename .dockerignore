@@ -5,9 +5,10 @@
 *
 
 # Include the following
-!README.md
-!LICENSE
 !.devcontainer/requirements.txt
 !cli/
-!data/
-!setup.py
+!schema/
+!ansible/
+!terraform/
+!tests/spec/
+

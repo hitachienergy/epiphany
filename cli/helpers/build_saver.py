@@ -41,14 +41,14 @@ def save_inventory(inventory, cluster_model, build_dir=None):
     if build_dir is None:
         cluster_name = cluster_model.specification.name
         build_dir = get_build_path(cluster_name)
-    template = load_template_file(types.ANSIBLE, "common", "ansible_inventory")
+    template = load_template_file(types.ANSIBLE, '', 'ansible_inventory')
     content = template.render(inventory=inventory, cluster_model=cluster_model)
     file_path = os.path.join(build_dir, INVENTORY_FILE_NAME)
     save_to_file(file_path, content)
 
 
 def save_ansible_config_file(ansible_config_file_settings, ansible_config_file_path):
-    template = load_template_file(types.ANSIBLE, "common", "ansible.cfg")
+    template = load_template_file(types.ANSIBLE, '', 'ansible.cfg')
     content = template.render(ansible_config_file_settings=ansible_config_file_settings)
     save_to_file(ansible_config_file_path, content)
 

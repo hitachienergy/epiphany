@@ -4,9 +4,9 @@ import shutil
 from subprocess import Popen, PIPE
 
 from cli.helpers.Log import LogPipe, Log
-from cli.helpers.data_loader import DATA_FOLDER_PATH
+from cli.helpers.data_loader import BASE_DIR
 
-SPEC_TEST_PATH = DATA_FOLDER_PATH + '/common/tests'
+SPEC_TEST_PATH = BASE_DIR + '/tests/spec'
 
 class SpecCommand:
     def __init__(self):

@@ -1,4 +1,4 @@
-from cli.helpers.data_loader import load_yaml_obj, types
+from cli.helpers.data_loader import load_schema_obj, types
 from cli.helpers.config_merger import merge_with_defaults
 from cli.helpers.doc_list_helpers import select_first
 from cli.helpers.Step import Step
@@ -24,7 +24,7 @@ class ConfigurationAppender(Step):
         for document_kind in ConfigurationAppender.REQUIRED_DOCS:
             doc = select_first(self.input_docs, lambda x: x.kind == document_kind)
             if doc is None:
-                doc = load_yaml_obj(types.DEFAULT, 'common', document_kind)
+                doc = load_schema_obj(types.DEFAULT, 'common', document_kind)
                 self.logger.info("Adding: " + doc.kind)
                 append_config(doc)
             else:

@@ -3,7 +3,7 @@ import uuid
 from copy import deepcopy
 
 from cli.helpers.doc_list_helpers import select_first
-from cli.helpers.data_loader import load_yaml_obj, types
+from cli.helpers.data_loader import load_schema_obj, types
 from cli.helpers.config_merger import merge_with_defaults
 from cli.engine.providers.aws.APIProxy import APIProxy
 from cli.helpers.Step import Step
@@ -311,7 +311,7 @@ class InfrastructureBuilder(Step):
     def get_config_or_default(docs, kind):
         config = select_first(docs, lambda x: x.kind == kind)
         if config is None:
-            config = load_yaml_obj(types.DEFAULT, 'aws', kind)
+            config = load_schema_obj(types.DEFAULT, 'aws', kind)
             config['version'] = VERSION
         return config
 

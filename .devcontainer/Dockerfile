@@ -4,6 +4,10 @@ ARG USERNAME=vscode
 ARG USER_UID=1000
 ARG USER_GID=$USER_UID
 
+ARG HELM_VERSION=3.3.1
+ARG KUBECTL_VERSION=1.18.8
+ARG ISTIOCTL_VERSION=1.8.1
+
 RUN : INSTALL APT REQUIREMENTS \
  && export DEBIAN_FRONTEND=noninteractive \
  && apt-get -q update \
@@ -18,10 +22,6 @@ RUN : INSTALL APT REQUIREMENTS \
  && apt-get -q autoremove -y \
  && apt-get -q clean -y \
  && rm -rf /var/lib/apt/lists/*
-
-ARG HELM_VERSION=3.3.1
-ARG KUBECTL_VERSION=1.18.8
-ARG ISTIOCTL_VERSION=1.8.1
 
 RUN : INSTALL HELM BINARY \
  && curl -fsSLO https://get.helm.sh/helm-v${HELM_VERSION}-linux-amd64.tar.gz \
@@ -51,11 +51,12 @@ RUN : INSTALL PIP REQUIREMENTS \
  && pip install --disable-pip-version-check --no-cache-dir --default-timeout=100 \
     poetry pylint pylint_junit ansible-lint ansible-lint-to-junit-xml yamllint pytest setuptools twine wheel
 
-RUN : SETUP USER, CERTS AND OTHERS \
+RUN : SETUP USER AND OTHERS \
  && groupadd --gid $USER_GID $USERNAME \
  && useradd -s /bin/bash --uid $USER_UID --gid $USER_GID -m $USERNAME \
  && echo $USERNAME ALL=\(root\) NOPASSWD:ALL > /etc/sudoers.d/$USERNAME \
  && chmod ug=r,o= /etc/sudoers.d/$USERNAME \
  && setcap 'cap_net_bind_service=+ep' /usr/bin/ssh
 
-RUN echo alias epicli='"export PYTHONPATH=/workspaces/epiphany && python3 -m cli.epicli"' >> /etc/bash.bashrc
+RUN : SETUP EPICLI ALIAS \
+ && echo alias epicli='"export PYTHONPATH=/workspaces/epiphany && python3 -m cli.epicli"' >> /etc/bash.bashrc

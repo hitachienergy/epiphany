@@ -1,4 +1,4 @@
-#!/usr/bin/env py
+#!/usr/bin/env python3
 import atexit
 import sys
 import argparse

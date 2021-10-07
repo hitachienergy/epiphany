@@ -5,7 +5,7 @@ from cli.helpers.Step import Step
 from cli.helpers.naming_helpers import resource_name, cluster_tag, storage_account_name
 from cli.helpers.doc_list_helpers import select_single
 from cli.helpers.doc_list_helpers import select_first
-from cli.helpers.data_loader import load_yaml_obj, types
+from cli.helpers.data_loader import load_schema_obj, types
 from cli.helpers.config_merger import merge_with_defaults
 from cli.helpers.objdict_helpers import dict_to_objdict
 from cli.helpers.os_images import get_os_distro_normalized
@@ -262,6 +262,6 @@ class InfrastructureBuilder(Step):
     def get_config_or_default(docs, kind):
         config = select_first(docs, lambda x: x.kind == kind)
         if config is None:
-            config = load_yaml_obj(types.DEFAULT, 'azure', kind)
+            config = load_schema_obj(types.DEFAULT, 'azure', kind)
             config['version'] = VERSION
         return config

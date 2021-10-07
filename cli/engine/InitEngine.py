@@ -2,7 +2,7 @@ import os
 
 from cli.helpers.Step import Step
 from cli.helpers.build_saver import save_manifest, get_build_path
-from cli.helpers.data_loader import load_all_yaml_objs, types
+from cli.helpers.data_loader import load_all_schema_objs, types
 from cli.engine.ApplyEngine import ApplyEngine
 from cli.helpers.objdict_helpers import remove_value
 from cli.version import VERSION
@@ -25,7 +25,7 @@ class InitEngine(Step):
         pass
 
     def init(self):
-        input = load_all_yaml_objs(types.DEFAULT, self.provider, 'configuration/minimal-cluster-config')
+        input = load_all_schema_objs(types.DEFAULT, self.provider, 'configuration/minimal-cluster-config')
         input[0].specification.name = self.name
 
         if self.is_full_config:
@@ -80,6 +80,6 @@ class InitEngine(Step):
             # ...
             # So we add the defaults here.
             # TODO: Check if we want to include possible other infrastructure documents.
-            infra = load_all_yaml_objs(types.DEFAULT, self.provider, 'infrastructure/virtual-machine')
+            infra = load_all_schema_objs(types.DEFAULT, self.provider, 'infrastructure/virtual-machine')
 
         return infra

@@ -2,15 +2,15 @@ import os
 import stat
 
 from cli.helpers.Step import Step
-from cli.helpers.data_loader import DATA_FOLDER_PATH
+from cli.helpers.data_loader import BASE_DIR
 from cli.helpers.Config import Config
 from cli.helpers.build_saver import copy_files_recursively
 
 
 class PrepareEngine(Step):
-    PREPARE_PATH = f'{DATA_FOLDER_PATH}/common/ansible/playbooks/roles/repository/files/download-requirements'
+    PREPARE_PATH = f'{BASE_DIR}/ansible/playbooks/roles/repository/files/download-requirements'
     COMMON_PATH = f'{PREPARE_PATH}/common'
-    CHARTS_PATH = f'{DATA_FOLDER_PATH}/common/ansible/playbooks/roles/helm_charts/files/system'
+    CHARTS_PATH = f'{BASE_DIR}/ansible/playbooks/roles/helm_charts/files/system'
 
     def __init__(self, input_data):
         super().__init__(__name__)

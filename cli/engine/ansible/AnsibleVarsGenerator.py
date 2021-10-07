@@ -9,7 +9,7 @@ from cli.helpers.naming_helpers import to_feature_name, to_role_name
 from cli.helpers.ObjDict import ObjDict
 from cli.helpers.yaml_helpers import dump
 from cli.helpers.Config import Config
-from cli.helpers.data_loader import load_yaml_obj, types, load_all_documents_from_folder
+from cli.helpers.data_loader import load_schema_obj, types, load_all_schema_objs_from_directory
 from cli.engine.schema.DefaultMerger import DefaultMerger
 
 
@@ -29,7 +29,7 @@ class AnsibleVarsGenerator(Step):
         elif inventory_upgrade is not None and inventory_creator is None:
             self.cluster_model = inventory_upgrade.cluster_model
             self.config_docs = []
-            defaults = load_all_documents_from_folder('common', 'defaults/configuration')
+            defaults = load_all_schema_objs_from_directory(types.DEFAULT, 'common', 'configuration')
             for default in defaults:
                 config_doc = select_first(inventory_upgrade.config_docs, lambda x: x.kind == default.kind)
                 if config_doc is None:
@@ -120,7 +120,7 @@ class AnsibleVarsGenerator(Step):
         document = select_first(self.manifest_docs, lambda x: x.kind == kind)
         if document is None:
             # If there is no document provided by the user, then fallback to defaults
-            document = load_yaml_obj(types.DEFAULT, 'common', kind)
+            document = load_schema_obj(types.DEFAULT, 'common', kind)
             # Inject the required "version" attribute
             document['version'] = VERSION
 
@@ -151,7 +151,7 @@ class AnsibleVarsGenerator(Step):
 
         # Fallback if there is completely no trace of the shared-config doc
         if shared_config_doc is None:
-            shared_config_doc = load_yaml_obj(types.DEFAULT, 'common', 'configuration/shared-config')
+            shared_config_doc = load_schema_obj(types.DEFAULT, 'common', 'configuration/shared-config')
 
         self.set_vault_path(shared_config_doc)
         main_vars.update(shared_config_doc.specification)
