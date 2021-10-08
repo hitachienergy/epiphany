@@ -52,7 +52,7 @@ Run ``epicli backup`` command:
 epicli backup -f backup.yml -b build_folder
 ```
 
-If backup config is attached to cluster-config.yml, use this file instead ``backup.yml``
+If backup config is attached to cluster-config.yml, use this file instead of ``backup.yml``.
 
 ## 2. How to store backup
 
@@ -112,7 +112,7 @@ Run ``epicli recovery`` command:
 
 ``epicli recovery -f recovery.yml -b build_folder``
 
-If recovery config is attached to cluster-config.yml, use this file instead ``recovery.yml``
+If recovery config is attached to cluster-config.yml, use this file instead of ``recovery.yml``.
 
 ## 4. How backup and recovery work
 
