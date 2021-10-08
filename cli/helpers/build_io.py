@@ -131,9 +131,13 @@ def get_ansible_path_for_build(build_directory):
     return ansible_dir
 
 
-def remove_files_matching_glob(dir_path, pattern):
+def delete_files_matching_glob(dir_path, pattern):
     for file in Path(dir_path).glob(pattern):
         file.unlink()
+
+
+def delete_directory(dir_path):
+    shutil.rmtree(dir_path, ignore_errors=True)
 
 
 def copy_files_recursively(src, dst):

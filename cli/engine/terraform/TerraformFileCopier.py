@@ -2,7 +2,7 @@ import os
 from pathlib import Path
 
 from cli.helpers.Step import Step
-from cli.helpers.build_io import copy_file, get_terraform_path, remove_files_matching_glob
+from cli.helpers.build_io import copy_file, get_terraform_path, delete_files_matching_glob
 from cli.helpers.data_loader import BASE_DIR, types
 
 
@@ -17,7 +17,7 @@ class TerraformFileCopier(Step):
     def run(self):
         terraform_output_dir = get_terraform_path(self.cluster_model.specification.name)
         # '*.yml' would remove cli.helpers.build_io.SP_FILE_NAME
-        remove_files_matching_glob(terraform_output_dir, 'cloud-config.yml')
+        delete_files_matching_glob(terraform_output_dir, 'cloud-config.yml')
 
         files = filter(lambda x: x.kind == 'infrastructure/cloud-init-custom-data', self.infrastructure)
         for doc in files:

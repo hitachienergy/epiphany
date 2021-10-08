@@ -1,6 +1,5 @@
 import os
 import time
-import shutil
 
 from cli.engine.ansible.AnsibleCommand import AnsibleCommand
 from cli.engine.ansible.AnsibleInventoryCreator import AnsibleInventoryCreator
@@ -10,7 +9,7 @@ from cli.engine.ansible.AnsibleInventoryUpgrade import AnsibleInventoryUpgrade
 from cli.helpers.Step import Step
 from cli.helpers.build_io import (get_inventory_path, get_inventory_path_for_build,
     get_ansible_path, get_ansible_path_for_build, get_ansible_config_file_path, get_ansible_config_file_path_for_build,
-    copy_files_recursively)
+    copy_files_recursively, delete_directory)
 from cli.helpers.naming_helpers import to_role_name
 from cli.helpers.data_loader import BASE_DIR, types
 from cli.helpers.Config import Config
@@ -50,7 +49,7 @@ class AnsibleRunner(Step):
         else:
             ansible_dir = get_ansible_path_for_build(self.build_dir)
 
-        shutil.rmtree(ansible_dir, ignore_errors=True)
+        delete_directory(ansible_dir)
         copy_files_recursively(AnsibleRunner.ANSIBLE_PLAYBOOKS_PATH, ansible_dir)
 
     def pre_flight(self, inventory_path):

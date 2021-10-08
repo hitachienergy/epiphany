@@ -1,6 +1,5 @@
 import os
 import time
-import shutil
 import re
 
 from cli.helpers.Step import Step
@@ -9,6 +8,7 @@ from cli.engine.ansible.AnsibleRunner import AnsibleRunner
 from cli.helpers.yaml_helpers import safe_load_all
 from cli.engine.schema.DefaultMerger import DefaultMerger
 from cli.engine.schema.SchemaValidator import SchemaValidator
+from cli.helpers.build_io import copy_files_recursively
 
 
 class UpgradeEngine(Step):
@@ -75,7 +75,7 @@ class UpgradeEngine(Step):
         backup_dir_name = f'backup_{int(round(time.time() * 1000))}'
         self.backup_build_dir = os.path.join(self.build_dir, backup_dir_name )
         self.logger.info(f'Backing up build dir to "{self.backup_build_dir}"')
-        shutil.copytree(self.build_dir, self.backup_build_dir)
+        copy_files_recursively(self.build_dir, self.backup_build_dir)
 
     def upgrade(self):
         # backup existing build
