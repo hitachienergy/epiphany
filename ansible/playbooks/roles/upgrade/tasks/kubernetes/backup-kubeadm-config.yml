@@ -1,6 +1,15 @@
 ---
 # The kubeadm-config.yml file is no longer used during upgrade process,
 # but we keep it for backup and reference purposes.
-- name: k8s/master | Save kubeadm-config ConfigMap to file
+- name: k8s/master | Collect kubeadm-config ConfigMap
   command: >-
-    kubeadm config view > /etc/kubeadm/kubeadm-config.yml
+    kubectl get cm kubeadm-config -o yaml -n kube-system
+  register: kubeadm_config
+
+- name: k8s/master | Save kubeadm-config ConfigMap to file
+  copy:
+    content: "{{ kubeadm_config.stdout | to_nice_yaml(indent=2) }}"
+    dest: /etc/kubeadm/kubeadm-config.yml
+    owner: root
+    group: root
+    mode: u=rw
