@@ -903,7 +903,7 @@ Epiphany can promote / convert older single-master clusters to HA mode (since v0
 
 - the existing cluster is legacy single-master cluster
 
-- the existing cluster has been [upgraded](UPGRADE.md) to Kubernetes 1.17 first
+- the existing cluster has been [upgraded](UPGRADE.md) to Kubernetes 1.17 or above first
 
 - the HA mode and HA promotion must be enabled in `configuration/shared-config`:
 

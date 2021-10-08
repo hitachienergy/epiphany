@@ -6,13 +6,6 @@
   block:
     - name: "{{ _fail_msg }}"
       assert:
-        that: not promote_to_ha or ((server_version_major | int) > 1) or ((server_version_major | int) == 1) and ((server_version_minor | int) >= 17)
-        fail_msg: "{{ _fail_msg }}"
-      vars:
-        _fail_msg: "When promote_to_ha is enabled, kubernetes version must be 1.17 or newer (please upgrade your legacy cluster first)."
-
-    - name: "{{ _fail_msg }}"
-      assert:
         that: not promote_to_ha or use_ha_control_plane
         fail_msg: "{{ _fail_msg }}"
       vars:
