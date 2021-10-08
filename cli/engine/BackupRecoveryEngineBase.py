@@ -4,13 +4,10 @@ import copy
 from cli.version import VERSION
 from cli.helpers.Step import Step
 
-from cli.helpers.build_io import get_inventory_path_for_build
-from cli.helpers.build_io import copy_files_recursively, copy_file
-
+from cli.helpers.build_io import get_inventory_path_for_build, load_manifest, copy_files_recursively, copy_file
 from cli.helpers.yaml_helpers import dump
 from cli.helpers.data_loader import load_yamls_file, load_schema_obj, types as data_types
 from cli.helpers.doc_list_helpers import select_single, ExpectedSingleResultException
-from cli.helpers.data_loader import load_manifest
 
 from cli.engine.schema.SchemaValidator import SchemaValidator
 from cli.engine.schema.DefaultMerger import DefaultMerger

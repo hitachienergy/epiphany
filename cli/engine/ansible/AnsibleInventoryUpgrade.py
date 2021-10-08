@@ -5,12 +5,11 @@ from cli.helpers.Step import Step
 from cli.helpers.build_io import get_inventory_path_for_build
 from cli.models.AnsibleHostModel import AnsibleHostModel
 from cli.models.AnsibleInventoryItem import AnsibleInventoryItem
-from cli.helpers.build_io import save_inventory
+from cli.helpers.build_io import save_inventory, load_manifest
 from cli.helpers.objdict_helpers import dict_to_objdict
 from cli.helpers.data_loader import load_schema_obj, types as data_types
 from cli.helpers.doc_list_helpers import select_single
 from cli.helpers.objdict_helpers import merge_objdict
-from cli.helpers.data_loader import load_manifest
 
 
 class AnsibleInventoryUpgrade(Step):
