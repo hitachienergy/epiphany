@@ -136,13 +136,18 @@ class AnsibleVarsGenerator(Step):
     def populate_group_vars(self, ansible_dir):
         main_vars = ObjDict()
         main_vars['admin_user'] = self.cluster_model.specification.admin_user
-        main_vars['k8s_as_cloud_service'] = self.cluster_model.specification.cloud.k8s_as_cloud_service
         main_vars['validate_certs'] = Config().validate_certs
         main_vars['offline_requirements'] = Config().offline_requirements
         main_vars['wait_for_pods'] = Config().wait_for_pods
         main_vars['is_upgrade_run'] = self.is_upgrade_run
         main_vars['roles_with_generated_vars'] = sorted(self.roles_with_generated_vars)
         main_vars['upgrade_components'] = Config().upgrade_components
+
+        # Consider to move this to the provider level.
+        if self.cluster_model.provider != 'any':
+            main_vars['k8s_as_cloud_service'] = self.cluster_model.specification.cloud.k8s_as_cloud_service
+        else:
+            main_vars['k8s_as_cloud_service'] = False
 
         if self.is_upgrade_run:
             shared_config_doc = self.get_shared_config_from_manifest()
