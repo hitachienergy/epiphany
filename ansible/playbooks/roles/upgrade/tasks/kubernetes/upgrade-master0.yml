@@ -29,8 +29,14 @@
 
     # Note: Usage of the --config flag for reconfiguring the cluster during upgrade is not recommended since v1.16
     - name: k8s/master0 | Validate whether cluster is upgradeable
+      # Ignore CoreDNSUnsupportedPlugins error since coredns-migration does not support 'hosts' plugin.
+      # This issue is fixed in K8s v1.18, see https://github.com/kubernetes/kubernetes/pull/88482
       command: >-
+        {%- if version is version('1.18.0', '>=') -%}
           kubeadm upgrade plan v{{ version }}
+        {%- else -%}
+          kubeadm upgrade plan v{{ version }} --ignore-preflight-errors=CoreDNSUnsupportedPlugins
+        {%- endif -%}
       register: result
       until:
         - result is succeeded
@@ -40,8 +46,14 @@
 
     # Note: Usage of the --config flag for reconfiguring the cluster during upgrade is not recommended since v1.16
     - name: k8s/master0 | Upgrade K8s cluster to v{{ version }}
+      # Ignore CoreDNSUnsupportedPlugins error since coredns-migration does not support 'hosts' plugin.
+      # This issue is fixed in K8s v1.18, see https://github.com/kubernetes/kubernetes/pull/88482
       command: >-
+        {%- if version is version('1.18.0', '>=') -%}
           kubeadm upgrade apply -y v{{ version }}
+        {%- else -%}
+          kubeadm upgrade apply -y v{{ version }} --ignore-preflight-errors=CoreDNSUnsupportedPlugins
+        {%- endif -%}
       register: result
       until:
         - result is succeeded
@@ -64,10 +76,20 @@
 - name: k8s/master0 | Wait for cluster's readiness
   include_tasks: utils/wait.yml
 
+# Even though cluster is seen as ready here, the next task may occasionally fail with error like
+# "Error from server (NotFound): the server could not find the requested resource".
+# The following task prevents this issue.
+- name: k8s/master0 | Refresh api-resources cache
+  shell: kubectl api-resources --cached=false > /dev/null
+  when:
+    - version is version('1.18', '<')
+
 # 'kubeadm upgrade apply' overwrites Epiphany's customized CoreDNS so we patch it again.
 # This task restores 'hosts' plugin and should be run each time K8s was upgraded in order to support "--wait-for-pods" epicli feature (issue #1218).
 - name: k8s/master0 | Customize CoreDNS
   include_tasks: upgrade-coredns.yml
+  when:
+    - version is version('1.17.7', '>=') # Epiphany v0.7.0+
 
 - name: Upgrade CNI plugin (deployment then local pod)
   when:
