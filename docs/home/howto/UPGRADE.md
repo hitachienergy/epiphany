@@ -8,12 +8,11 @@ it currently can upgrade and will add are:
 ---
 **NOTE**
 
-Starting from v0.7.1 to the latest, Epiphany provides an ability to install K8s v1.18.6 only. There is an assertion to
-check whether K8s version is supported before running upgrade.
+There is an assertion to check whether K8s version is supported before running upgrade.
 
 ---
 
-- Kubernetes (master and nodes). At the moment only v1.18.6 is supported
+- Kubernetes (master and nodes). Supported versions: v1.18.6 (Epiphany 0.7.1+), v1.19.15 (Epiphany 1.3.0+)
 - common: Upgrades all common configurations to match them to current Epiphany version
 - repository: Adds the repository role needed for component installation in current Epiphany version
 - image_registry: Adds the image_registry role needed for offline installation in current Epiphany version
@@ -26,7 +25,7 @@ see [Run apply after upgrade](./UPGRADE.md#run-apply-after-upgrade) chapter for 
 Note about upgrade from pre-0.8 Epiphany:
 
 - If you need to upgrade a cluster deployed with `epicli` in version earlier than 0.8, you should make sure that you've got enough disk space on master (which
-  is used as repository) host. If you didn't extend OS disk on master during deployment process, you probably have only
+  is used as repository). If you didn't extend OS disk on master during deployment process, you probably have only
   32 GB disk which is not enough to properly upgrade cluster (we recommend at least 64 GB). Before you run upgrade, please extend
   OS disk on master machine according to cloud provider
   documentation: [AWS](https://aws.amazon.com/premiumsupport/knowledge-center/expand-root-ebs-linux/)
@@ -317,7 +316,7 @@ advised not to use this approach when Erlang needs to be upgraded.
 
 Before K8s version upgrade make sure that deprecated API versions are not used:
 
-1. [v1.18](https://v1-18.docs.kubernetes.io/docs/setup/release/notes/#deprecation)
+1. [v1.19](https://v1-19.docs.kubernetes.io/docs/setup/release/notes/#deprecation)
 
 ### Upgrade
 
