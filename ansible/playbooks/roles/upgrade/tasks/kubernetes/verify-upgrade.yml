@@ -11,7 +11,7 @@
           include_tasks: utils/wait-for-kube-apiserver.yml
 
         - name: k8s/verify | Include get-cluster-version.yml
-          include_tasks: get-cluster-version.yml  # sets cluster_version
+          include_tasks: get-cluster-version.yml  # sets cluster_version*
 
         - name: k8s/verify | Verify cluster version
           assert:
@@ -60,3 +60,11 @@
     - name: k8s/verify | Verify node status
       assert:
         that: "'Ready' in node_status_and_version.stdout"
+
+    - name: k8s/verify | Verify cgroup driver is set to systemd in kubelet config
+      lineinfile:
+        dest: /var/lib/kubelet/config.yaml
+        line: "cgroupDriver: systemd"
+      check_mode: true
+      register: cgroup_driver
+      failed_when: cgroup_driver.changed

@@ -11,3 +11,7 @@
   set_fact:
     cluster_version: >-
       {{ (cluster_version.stdout | from_yaml).serverVersion.gitVersion }}
+    cluster_version_major: >-
+      {{ (cluster_version.stdout | from_yaml).serverVersion.major }}
+    cluster_version_minor: >-
+      {{ (cluster_version.stdout | from_yaml).serverVersion.minor }}
