@@ -220,7 +220,7 @@ k8s.gcr.io/kube-scheduler:v1.19.15
 k8s.gcr.io/kube-proxy:v1.19.15
 k8s.gcr.io/coredns:1.7.0
 k8s.gcr.io/etcd:3.4.13-0
-k8s.gcr.io/pause:3.3
+k8s.gcr.io/pause:3.2
 quay.io/coreos/flannel:v0.14.0-arm64
 quay.io/coreos/flannel:v0.14.0
 calico/cni:v3.20.2
