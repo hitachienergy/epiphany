@@ -1,5 +1,5 @@
 ---
-- name: master0 preflight tasks
+- name: Wait for kube-apiserver and get cluster version
   delegate_to: "{{ groups.kubernetes_master[0] }}"
   block:
     - name: k8s | Include wait-for-kube-apiserver.yml
