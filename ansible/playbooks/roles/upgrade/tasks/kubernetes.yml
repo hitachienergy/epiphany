@@ -6,7 +6,7 @@
       import_tasks: kubernetes/utils/wait-for-kube-apiserver.yml
 
     - name: k8s | Include get-cluster-version.yml
-      import_tasks: kubernetes/get-cluster-version.yml # sets cluster_version*
+      import_tasks: kubernetes/get-cluster-version.yml # sets cluster_version
 
 - name: k8s | Include get-kubelet-version.yml
   import_tasks: kubernetes/get-kubelet-version.yml # sets kubelet_version
