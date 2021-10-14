@@ -1,10 +1,9 @@
 import os
 
 from cli.helpers.Step import Step
-from cli.helpers.build_saver import SPEC_OUTPUT_DIR, INVENTORY_FILE_NAME
+from cli.helpers.build_io import SPEC_OUTPUT_DIR, ANSIBLE_INVENTORY_FILE, load_manifest
 from cli.helpers.doc_list_helpers import select_single
 from cli.engine.spec.SpecCommand import SpecCommand
-from cli.helpers.data_loader import load_manifest_docs
 
 
 class TestEngine(Step):
@@ -22,13 +21,13 @@ class TestEngine(Step):
 
     def test(self):
         # get manifest documents
-        docs = load_manifest_docs(self.build_directory)
+        docs = load_manifest(self.build_directory)
         cluster_model = select_single(docs, lambda x: x.kind == 'epiphany-cluster')
 
         # get inventory
-        path_to_inventory = os.path.join(self.build_directory, INVENTORY_FILE_NAME)
+        path_to_inventory = os.path.join(self.build_directory, ANSIBLE_INVENTORY_FILE)
         if not os.path.isfile(path_to_inventory):
-            raise Exception(f'No "{INVENTORY_FILE_NAME}" inside the build directory: "{self.build_directory}"')
+            raise Exception(f'No "{ANSIBLE_INVENTORY_FILE}" inside the build directory: "{self.build_directory}"')
 
         # get admin user
         admin_user = cluster_model.specification.admin_user

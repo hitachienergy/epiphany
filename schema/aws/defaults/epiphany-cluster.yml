@@ -6,7 +6,7 @@ specification:
   prefix: default
   name: epiphanycluster
   admin_user:
-    name: operations # YOUR-ADMIN-USERNAME
+    name: ubuntu # YOUR-ADMIN-USERNAME
     key_path: /root/.ssh/epiphany-operations/id_rsa # YOUR-SSH-KEY-PATH
   cloud:
     k8s_as_cloud_service: False
