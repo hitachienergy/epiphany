@@ -1,0 +1,120 @@
+---
+# Step: Install the new PostgreSQL binaries
+
+# Ubuntu:
+# - 'main' cluster is created automatically and postgresql services are started
+# - database doesn't initialize automatically on second run
+# RHEL/CentOS:
+# - cluster name is empty, service is not started
+
+- name: Install PostgreSQL {{ new_version.pg.version }} package(s)
+  package:
+    name: "{{ new_version.pg.packages.common[ansible_os_family] +
+              new_version.pg.packages.version_specific[ansible_os_family] }}"
+    state: present
+  module_defaults:
+    yum: {lock_timeout: "{{ yum_lock_timeout }}"}
+
+- name: Stop and mask new PostgreSQL instantiated service
+  when: ansible_os_family == 'Debian'
+  vars:
+    _service: "{{ new_version.pg.instantiated_service_name.Debian }}"
+  block:
+    - name: Debian | Stop {{ _service }} service
+      systemd:
+        name: "{{ _service }}"
+        state: stopped
+
+    - name: Debian | Mask {{ _service }} service
+      systemd:
+        name: "{{ _service }}"
+        masked: true
+
+# Step: Initialize the new PostgreSQL cluster
+
+# This value is default but set explicitly to avoid errors
+- name: Ensure PostgreSQL {{ new_version.pg.version }} data directory has correct permissions
+  file:
+    path: "{{ new_version.pg.data_dir[ansible_os_family] }}"
+    state: directory
+    owner: postgres
+    group: postgres
+    mode: u=rwx,g=,o=  # Permissions should be u=rwx (0700) or u=rwx,g=rx (0750)
+
+- name: primary | Initialize database
+  command: "{{ new_version.pg.bin_dir[ansible_os_family] }}/initdb"
+  become_user: postgres
+  environment:
+    PGDATA: "{{ new_version.pg.data_dir[ansible_os_family] }}"
+  args:
+    creates: "{{ new_version.pg.data_dir[ansible_os_family] }}/PG_VERSION"
+  when: is_primary_node
+
+# Step: Install custom shared object files
+
+- name: Extensions | PgAudit | Include package(s) installation tasks
+  include_tasks: upgrade/extensions/pgaudit/packages.yml
+  when: is_pgaudit_used
+
+- name: Extensions | PgBouncer | Upgrade
+  when: is_pgbouncer_used
+  block:
+    - include_tasks: upgrade/extensions/pgbouncer/packages.yml
+
+    - name: Extensions | PgBouncer | Ensure that systemd service is started
+      systemd:
+        name: pgbouncer
+        state: started
+
+- name: Extensions | repmgr | Include package(s) installation tasks
+  include_tasks: upgrade/extensions/replication/pg-new/packages.yml
+  when: is_repmgr_used
+
+# Step: Adjust authentication
+
+- name: Extensions | repmgr | Update pgpass file
+  when: is_repmgr_used
+  vars:
+    _replication_user_name: "{{ upgrade_vars.specification.extensions.replication.replication_user_name }}"
+    _replication_user_password: "{{ upgrade_vars.specification.extensions.replication.replication_user_password }}"
+    _privileged_user_name: "{{ upgrade_vars.specification.extensions.replication.privileged_user_name }}"
+    _privileged_user_password: "{{ upgrade_vars.specification.extensions.replication.privileged_user_password }}"
+  template:
+    src: pgpass-repmgr.j2
+    dest: "{{ new_version.pg.base_dir[ansible_os_family] }}/.pgpass"
+    owner: postgres
+    group: postgres
+    mode: u=rw,g=,o=
+
+# Copy configuration files
+
+# Process the same configuration files as for 'apply'
+- name: Copy configuration files
+  vars:
+    _files:
+      - pg_hba.conf
+      - postgresql-epiphany.conf
+      - postgresql.conf
+    _pg_data_dir: "{{ new_version.pg.data_dir[ansible_os_family] }}"  # used in postgresql.conf
+    _extensions:
+      extensions:
+        pgaudit:
+          enabled: "{{ is_pgaudit_used }}"
+        replication:
+          enabled: "{{ is_repmgr_used }}"
+    # Values from manifest are used when it's not possible to do changes after 'apply'
+    # such as enabling/disabling extensions
+    _specification: "{{ upgrade_vars.specification | combine(_extensions, recursive=True) }}"
+  template:
+    src: "{{ file_name }}.j2"
+    dest: "{{ new_version.pg.config_dir[ansible_os_family] }}/{{ file_name }}"
+    owner: postgres
+    group: postgres
+    mode: u=rw,g=,o=
+    backup: true
+  loop_control:
+    loop_var: file_name
+  loop: "{{ _files }}"
+
+- include_tasks: upgrade/extensions/replication/pg-new/repmgr-conf.yml
+  when: is_repmgr_used
