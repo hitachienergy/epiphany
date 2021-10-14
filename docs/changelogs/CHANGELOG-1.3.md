@@ -7,6 +7,7 @@
 - [#1487](https://github.com//epiphany-platform/epiphany/issues/1487) - Add RabbitMQ monitoring
 - [#2600](https://github.com/epiphany-platform/epiphany/issues/2600) - Change epicli output structure
 - [#2655](https://github.com/epiphany-platform/epiphany/issues/2655) - Add 'repmgr node check' to upgrade preflight checks and auto-tests
+- [#2644](https://github.com/epiphany-platform/epiphany/issues/2644) - Add validation to check hostnames for on-prem deployment
 
 ### Fixed
 
