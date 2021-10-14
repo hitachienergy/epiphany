@@ -3,9 +3,9 @@ import os
 
 import pytest
 
-from cli.helpers.build_saver import get_build_path
+from cli.helpers.build_io import get_build_path
 from cli.helpers.data_loader import load_schema_obj, load_all_schema_objs, load_all_schema_objs_from_directory,\
-        load_template_file, load_json_obj, load_manifest_docs, types, SCHEMA_DIR
+        load_template_file, load_json_obj, types, SCHEMA_DIR
 
 from tests.unit.helpers.constants import CLUSTER_NAME_LOAD, NON_EXISTING_CLUSTER, TEST_DOCS,  OUTPUT_PATH, TEST_INVENTORY, TEST_JSON,\
     TEST_JSON_NAME, TEST_CLUSTER_MODEL
@@ -21,7 +21,7 @@ TEST_MINIMAL_CLUSTER_CONFIG = {
         'prefix': 'prefix',
         'admin_user':
         {
-            'name': 'operations',
+            'name': 'ubuntu',
             'key_path': '/user/.ssh/epiphany-operations/id_rsa'
         },
         'cloud':
@@ -57,7 +57,7 @@ def test_load_schema_obj():
 
 
 def test_load_all_schema_objs():
-    yaml_objs = load_all_schema_objs(types.DEFAULT, "aws", 'configuration/minimal-cluster-config')
+    yaml_objs = load_all_schema_objs(types.DEFAULT, 'aws', 'configuration/minimal-cluster-config')
     assert yaml_objs == [TEST_MINIMAL_CLUSTER_CONFIG]
 
 
@@ -68,7 +68,7 @@ def test_load_all_schema_objs_from_directory():
 
 
 def test_load_template_file():
-    template = load_template_file(types.ANSIBLE, "", "ansible_inventory")
+    template = load_template_file(types.ANSIBLE, '', 'inventory')
     content = template.render(inventory=TEST_INVENTORY, cluster_model=TEST_CLUSTER_MODEL)
     assert 'test-1 ansible_host=10.0.0.1' in content
     assert 'test-2 ansible_host=10.0.0.2' in content
@@ -83,13 +83,7 @@ def test_load_json_obj():
     assert loaded_json == TEST_JSON
 
 
-def test_load_manifest_docs():
-    build_path = get_build_path(CLUSTER_NAME_LOAD)
-    docs = load_manifest_docs(build_path)
-    assert docs == TEST_DOCS
-
-
 def test_load_not_existing_manifest_docs():
     build_path = get_build_path(NON_EXISTING_CLUSTER)
     with pytest.raises(Exception):
-        load_manifest_docs(build_path)
+        load_manifest(build_path)
