@@ -37,6 +37,15 @@
         path: /var/lib/epiphany/history.yml
       register: history_file
 
+    - name: Change previous running status from started to failed
+      lineinfile:
+        path: /var/lib/epiphany/history.yml
+        firstmatch: yes  # only first occurrence
+        backrefs: yes  # allows to use regexp groups
+        regexp: '(.*)state\: started'  # assuming that current status is always on top
+        line: '\1state: failed'
+      when: history_file.stat.exists and history_file.stat.size > 0
+
     - name: Add history info
       lineinfile:
         path: /var/lib/epiphany/history.yml

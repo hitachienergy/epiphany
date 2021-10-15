@@ -13,10 +13,10 @@
   become: true
   become_method: sudo
   tasks:
-  - name: Change current running status to complete
-    lineinfile:
-      path: /var/lib/epiphany/history.yml
-      firstmatch: yes  # only first occurrence
-      backrefs: yes  # allows to use regexp groups
-      regexp: '(.*)state\: started'  # assuming that current status is always on top
-      line: '\1state: completed'
+    - name: Change current running status to complete
+      lineinfile:
+        path: /var/lib/epiphany/history.yml
+        firstmatch: yes  # only first occurrence
+        backrefs: yes  # allows to use regexp groups
+        regexp: '(.*)state\: started'  # assuming that current status is always on top
+        line: '\1state: completed'
