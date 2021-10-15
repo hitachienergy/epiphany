@@ -1,3 +1,4 @@
+---
 - name: Start and enable repmgr service
   vars:
     _service_name: "{{ new_version.repmgr.service_name[ansible_os_family] }}"
