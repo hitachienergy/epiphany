@@ -46,7 +46,7 @@ specification:
                 value: 'on'
                 when: replication
               - name: archive_command
-                value: "'test ! -f /dbbackup/{{ inventory_hostname }}/backup/%f && gzip -c < %p > /dbbackup/{{ inventory_hostname }}/backup/%f'"
+                value: "'/bin/true'"
                 when: replication
       - name: REPLICATION
         subgroups:
