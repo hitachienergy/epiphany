@@ -28,6 +28,27 @@
   set_fact:
     pg_upgrade_already_run: "{{ stat_file_in_pg_new_data_dir.stat.exists }}"
 
+# This task is a temporary workaround for issue #2656
+# Can be removed when Epiphany v1.1 is out of support
+- name: Check if there is broken archive command from Epiphany v1.1
+  become_user: postgres
+  become: true
+  block:
+    - name: Get archive_command value
+      postgresql_query:
+        query: "SHOW archive_command"
+      register: pg_archive_command
+
+    - name: Set archive_command to a new default (/bin/true)
+      vars:
+        pg_invalid_archive_command: |-
+          test ! -f /dbbackup/{{ inventory_hostname }}/backup/%f && \
+            gzip -c < %p > /dbbackup/{{ inventory_hostname }}/backup/%f
+      when: pg_archive_command.query_result[0].archive_command == pg_invalid_archive_command
+      postgresql_set:
+        name: archive_command
+        value: /bin/true
+
 - name: Check available disk space for new PostgreSQL data dir
   when: not pg_upgrade_already_run
   block:
