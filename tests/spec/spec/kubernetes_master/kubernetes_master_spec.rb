@@ -9,7 +9,7 @@ describe 'Waiting for all pods to be ready' do
     its(:stdout) { should match /READY/ }
     its(:exit_status) { should eq 0 }
   end
-end 
+end
 
 describe 'Checking if kubelet service is running' do
   describe service('kubelet') do
@@ -41,7 +41,7 @@ describe 'Checking if there are any pods that have status other than Running' do
     its(:stdout) { should match /^$/ }
     its(:stderr) { should match /No resources found/ }
   end
-end  
+end
 
 describe 'Checking if the number of master nodes is the same as indicated in the inventory file' do
   describe command('kubectl get nodes --selector=node-role.kubernetes.io/master --no-headers | wc -l | tr -d "\n"') do
@@ -66,21 +66,21 @@ describe 'Checking if there are any nodes that have status other than Ready' do
     its(:stdout) { should_not match /Unknown/ }
     its(:stdout) { should_not match /SchedulingDisabled/ }
   end
-end  
+end
 
 describe 'Checking if the number of all nodes is the same as the number of Ready nodes' do
   describe command('out1=$(kubectl get nodes --no-headers | wc -l); out2=$(kubectl get nodes --no-headers | grep -wc Ready); if [ "$out1" = "$out2" ]; then echo "EQUAL"; else echo "NOT EQUAL"; fi') do
     its(:stdout) { should match /\bEQUAL\b/ }
     its(:stdout) { should_not match /NOT EQUAL/ }
   end
-end  
+end
 
 describe 'Checking the port on which to serve HTTPS with authentication and authorization' do
   describe port(kube_apiserver_secure_port) do
     let(:disable_sudo) { false }
     it { should be_listening }
   end
-end  
+end
 
 describe 'Checking secret creation using kubectl' do
 
@@ -114,7 +114,7 @@ describe 'Checking secret creation using kubectl' do
       its(:exit_status) { should eq 0 }
     end
   end
-end  
+end
 
 describe 'Checking kubernetes dashboard availability' do
   describe 'Checking if kubernetes-dashboard pod is running' do
@@ -175,7 +175,6 @@ describe 'Checking if kubernetes healthz endpoint is responding' do
   end
 end
 
-
 if countInventoryHosts("kubernetes_node") == 0
 
   describe 'Checking taints on Kubernetes master' do
@@ -186,7 +185,39 @@ if countInventoryHosts("kubernetes_node") == 0
     describe command('kubectl describe nodes | grep -i taints') do
       its(:stdout) { should match /<none>/ }
       its(:exit_status) { should eq 0 }
-    end    
+    end
   end
 
+end
+
+describe 'Check the container runtime cgroup driver' do
+  describe file('/var/lib/kubelet/config.yaml') do
+    let(:disable_sudo) { false }
+    its(:content_as_yaml) { should include('cgroupDriver' => 'systemd') }
+    its(:content_as_yaml) { should_not include('cgroupDriver' => 'cgroupfs') }
+  end
+end
+
+describe 'Check the kubelet config in ConfigMap' do
+  describe command("kubectl describe cm $(kubectl get cm -n kube-system \
+    | awk '/kubelet-config/{print $1}') -n kube-system | grep -i cgroupDriver") do
+    its(:stdout) { should match(/cgroupDriver: systemd/) }
+    its(:stdout) { should_not match(/cgroupDriver: cgroupfs/) }
+    its(:exit_status) { should eq 0 }
+  end
+end
+
+describe 'Check the docker cgroup and logging driver' do
+  describe file('/etc/docker/daemon.json') do
+    let(:disable_sudo) { false }
+    its(:content_as_json) { should include('exec-opts' => include('native.cgroupdriver=systemd')) }
+    its(:content_as_json) { should include('log-driver' => 'json-file') }
+    its(:content_as_json) { should_not include('exec-opts' => include('native.cgroupdriver=cgroupfs')) }
+  end
+  describe command('docker info | grep -i driver') do
+    let(:disable_sudo) { false }
+    its(:stdout) { should match(/Cgroup Driver: systemd/) }
+    its(:stdout) { should match(/Logging Driver: json-file/) }
+    its(:exit_status) { should eq 0 }
+  end
 end
