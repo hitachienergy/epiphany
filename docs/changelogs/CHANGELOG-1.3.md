@@ -11,6 +11,7 @@
 - [#2666](https://github.com/epiphany-platform/epiphany/issues/2666) - Project re-structure part 2
 - [#2547](https://github.com/epiphany-platform/epiphany/issues/2547) - Refactoring and removal of old code from Ansible inventory creator and upgrade
 - [#2644](https://github.com/epiphany-platform/epiphany/issues/2644) - Add validation to check hostnames for on-prem deployment
+- [#2703](https://github.com/epiphany-platform/epiphany/issues/2703) - Add tests for docker and kubelet cgroup driver
 
 ### Fixed
 
