@@ -190,7 +190,7 @@ if countInventoryHosts("kubernetes_node") == 0
 
 end
 
-describe 'Check the container runtime cgroup driver' do
+describe 'Check the kubelet cgroup driver' do
   describe file('/var/lib/kubelet/config.yaml') do
     let(:disable_sudo) { false }
     its(:content_as_yaml) { should include('cgroupDriver' => 'systemd') }
