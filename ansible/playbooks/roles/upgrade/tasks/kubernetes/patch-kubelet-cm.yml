@@ -1,6 +1,6 @@
 ---
 - name: k8s | Include get-cluster-version.yml
-  import_tasks: get-cluster-version.yml # sets cluster_version
+  include_tasks: get-cluster-version.yml # sets cluster_version
 
 - name: k8s | Get kubelet config from ConfigMap
   command: |-
