@@ -22,3 +22,10 @@ describe 'Check the docker cgroup and logging driver' do
     its(:exit_status) { should eq 0 }
   end
 end
+
+describe 'Check certificate rotation for the kubelet' do
+  describe file('/var/lib/kubelet/config.yaml') do
+    let(:disable_sudo) { false }
+    its(:content_as_yaml) { should include('rotateCertificates' => true) }
+  end
+end
