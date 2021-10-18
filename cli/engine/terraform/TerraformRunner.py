@@ -3,7 +3,7 @@ import os
 from cli.engine.terraform.TerraformCommand import TerraformCommand
 from cli.engine.providers.azure.APIProxy import APIProxy
 from cli.helpers.Step import Step
-from cli.helpers.build_saver import get_terraform_path, save_sp, SP_FILE_NAME
+from cli.helpers.build_io import get_terraform_path, save_sp, SP_FILE_NAME
 from cli.helpers.data_loader import load_yaml_file
 from cli.helpers.naming_helpers import resource_name
 

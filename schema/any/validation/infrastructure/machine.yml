@@ -1,10 +1,19 @@
+---
 "$id": "#/specification"
 title: "Machine specification schema"
 description: "Machine specification schema"
-specification:
-  type: object
-  properties:
-    hostname:
-      type: string
-    ip:
-      type: string
+type: object
+required:
+  - hostname
+  - ip
+properties:
+  hostname:
+    "$id": "#/properties/hostname"
+    description: >-
+      DNS-1123 subdomain must consist of lower case alphanumeric characters, '-' or '.',
+      and must start and end with an alphanumeric character
+    type: string
+    pattern: "^[a-z0-9]([-a-z0-9]*[a-z0-9])?(\\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*$"
+  ip:
+    "$id": "#/properties/ip"
+    type: string

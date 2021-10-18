@@ -4,7 +4,7 @@ import threading
 import os
 
 from pythonjsonlogger import jsonlogger
-from cli.helpers.build_saver import get_output_path
+from cli.helpers.build_io import get_output_path
 from cli.helpers.Config import Config
 
 class ColorFormatter(logging.Formatter):

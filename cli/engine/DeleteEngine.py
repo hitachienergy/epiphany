@@ -1,9 +1,7 @@
-import shutil
-
 from cli.helpers.Step import Step
 from cli.helpers.doc_list_helpers import select_single
 from cli.engine.terraform.TerraformRunner import TerraformRunner
-from cli.helpers.data_loader import load_manifest_docs
+from cli.helpers.build_io import delete_directory, load_manifest
 
 class DeleteEngine(Step):
     def __init__(self, input_data):
@@ -18,7 +16,7 @@ class DeleteEngine(Step):
         pass
 
     def delete(self):
-        docs = load_manifest_docs(self.build_directory)
+        docs = load_manifest(self.build_directory)
         cluster_model = select_single(docs, lambda x: x.kind == 'epiphany-cluster')
 
         if cluster_model.provider == 'any':
@@ -27,6 +25,6 @@ class DeleteEngine(Step):
         with TerraformRunner(cluster_model, docs) as tf_runner:
             tf_runner.delete()
 
-        shutil.rmtree(self.build_directory, ignore_errors=True)
+        delete_directory(self.build_directory)
 
         return 0

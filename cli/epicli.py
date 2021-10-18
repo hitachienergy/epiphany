@@ -24,7 +24,7 @@ from cli.version import VERSION
 from cli.licenses import LICENSES
 from cli.helpers.query_yes_no import query_yes_no
 from cli.helpers.input_query import prompt_for_password
-from cli.helpers.build_saver import save_to_file, get_output_path
+from cli.helpers.build_io import save_to_file, get_output_path
 from cli.engine.spec.SpecCommand import SpecCommand
 
 start_time = time.time()

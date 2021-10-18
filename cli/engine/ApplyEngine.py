@@ -5,8 +5,7 @@ from ansible.inventory.manager import InventoryManager
 
 from cli.helpers.Step import Step
 from cli.helpers.doc_list_helpers import select_single, select_all
-from cli.helpers.build_saver import save_manifest, get_inventory_path, get_manifest_path, get_build_path
-from cli.helpers.data_loader import load_manifest_docs
+from cli.helpers.build_io import save_manifest, load_manifest, get_inventory_path, get_manifest_path, get_build_path
 from cli.helpers.yaml_helpers import safe_load_all
 from cli.helpers.Log import Log
 from cli.helpers.os_images import get_os_distro_normalized
@@ -68,7 +67,7 @@ class ApplyEngine(Step):
 
     def process_infrastructure_docs(self):
         # Load any posible existing manifest docs
-        self.load_manifest_docs()
+        self.load_manifest()
 
         # Build the infrastructure docs
         with provider_class_loader(self.cluster_model.provider, 'InfrastructureBuilder')(
@@ -93,10 +92,10 @@ class ApplyEngine(Step):
                 [*self.configuration_docs, *self.infrastructure_docs]) as config_collector:
             config_collector.run()
 
-    def load_manifest_docs(self):
+    def load_manifest(self):
         path_to_manifest = get_manifest_path(self.cluster_model.specification.name)
         if os.path.isfile(path_to_manifest):
-            self.manifest_docs = load_manifest_docs(get_build_path(self.cluster_model.specification.name))
+            self.manifest_docs = load_manifest(get_build_path(self.cluster_model.specification.name))
 
     def assert_no_master_downscale(self):
         components = self.cluster_model.specification.components

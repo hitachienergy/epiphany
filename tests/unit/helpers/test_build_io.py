@@ -3,16 +3,17 @@ import os
 
 from ruamel.yaml import YAML
 
-from cli.helpers.build_saver import get_build_path, get_output_path, get_terraform_path, get_ansible_path,\
+from cli.helpers.build_io import get_build_path, get_output_path, get_terraform_path, get_ansible_path,\
     get_ansible_vault_path, get_ansible_config_file_path, get_inventory_path, get_manifest_path,\
-    save_manifest, save_sp, save_inventory, save_ansible_config_file, get_inventory_path_for_build,\
+    save_manifest, load_manifest, save_sp, save_inventory, save_ansible_config_file, get_inventory_path_for_build,\
     get_ansible_config_file_path_for_build, get_ansible_path_for_build,\
-    ANSIBLE_OUTPUT_DIR, ANSIBLE_VAULT_OUTPUT_DIR, INVENTORY_FILE_NAME, MANIFEST_FILE_NAME,\
-    SP_FILE_NAME, TERRAFORM_OUTPUT_DIR
+    ANSIBLE_OUTPUT_DIR, ANSIBLE_VAULT_OUTPUT_DIR, ANSIBLE_INVENTORY_FILE, ANSIBLE_CFG_FILE,\
+    MANIFEST_FILE_NAME, SP_FILE_NAME, TERRAFORM_OUTPUT_DIR
 from cli.helpers.objdict_helpers import dict_to_objdict
 from cli.helpers.yaml_helpers import safe_load_all, safe_load
 
-from tests.unit.helpers.constants import CLUSTER_NAME_SAVE, OUTPUT_PATH, TEST_DOCS, TEST_CLUSTER_MODEL, TEST_INVENTORY
+from tests.unit.helpers.constants import CLUSTER_NAME_SAVE, OUTPUT_PATH, TEST_DOCS, TEST_CLUSTER_MODEL, \
+    TEST_INVENTORY, CLUSTER_NAME_LOAD
 
 TEST_SP = {'appId': 'xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxx',
            'displayName': 'test-rg',
@@ -41,7 +42,7 @@ def test_get_build_path():
 
 def test_get_inventory_path():
     assert get_inventory_path(CLUSTER_NAME_SAVE) == os.path.join(
-        OUTPUT_PATH, CLUSTER_NAME_SAVE, INVENTORY_FILE_NAME)
+        OUTPUT_PATH, CLUSTER_NAME_SAVE, ANSIBLE_INVENTORY_FILE)
 
 
 def test_get_manifest_path():
@@ -70,13 +71,13 @@ def test_get_ansible_vault_path():
 
 def test_get_ansible_config_file_path():
     assert get_ansible_config_file_path(CLUSTER_NAME_SAVE) == os.path.join(
-        OUTPUT_PATH, CLUSTER_NAME_SAVE, ANSIBLE_OUTPUT_DIR, 'ansible.cfg')
+        OUTPUT_PATH, CLUSTER_NAME_SAVE, ANSIBLE_OUTPUT_DIR, ANSIBLE_CFG_FILE)
 
 
 def test_get_inventory_path_for_build():
     assert get_inventory_path_for_build(os.path.join(
         OUTPUT_PATH, CLUSTER_NAME_SAVE)) == os.path.join(
-        OUTPUT_PATH, CLUSTER_NAME_SAVE, INVENTORY_FILE_NAME)
+        OUTPUT_PATH, CLUSTER_NAME_SAVE, ANSIBLE_INVENTORY_FILE)
 
 
 def test_get_ansible_path_for_build():
@@ -89,7 +90,7 @@ def test_get_ansible_path_for_build():
 def test_get_ansible_config_file_path_for_build():
     assert get_ansible_config_file_path_for_build(os.path.join(
         OUTPUT_PATH, CLUSTER_NAME_SAVE)) == os.path.join(
-        OUTPUT_PATH, CLUSTER_NAME_SAVE, ANSIBLE_OUTPUT_DIR,  "ansible.cfg")
+        OUTPUT_PATH, CLUSTER_NAME_SAVE, ANSIBLE_OUTPUT_DIR,  ANSIBLE_CFG_FILE)
 
 
 def test_save_manifest():
@@ -98,6 +99,12 @@ def test_save_manifest():
     manifest_stream = open(manifest_path, 'r')
     manifest_file_content = safe_load_all(manifest_stream)
     assert TEST_DOCS == manifest_file_content
+
+
+def test_load_manifest():
+    build_path = get_build_path(CLUSTER_NAME_LOAD)
+    docs = load_manifest(build_path)
+    assert docs == TEST_DOCS
 
 
 def test_save_sp():
@@ -111,7 +118,7 @@ def test_save_sp():
 def test_save_inventory():
     cluster_model = dict_to_objdict(TEST_CLUSTER_MODEL)
     save_inventory(TEST_INVENTORY, cluster_model)
-    f = open(os.path.join(OUTPUT_PATH, CLUSTER_NAME_SAVE, INVENTORY_FILE_NAME), mode='r')
+    f = open(os.path.join(OUTPUT_PATH, CLUSTER_NAME_SAVE, ANSIBLE_INVENTORY_FILE), mode='r')
     inventory_content = f.read()
     assert 'test-1 ansible_host=10.0.0.1' in inventory_content
     assert 'test-2 ansible_host=10.0.0.2' in inventory_content
@@ -123,7 +130,7 @@ def test_save_inventory():
 
 def test_save_ansible_config_file():
     config_file_settings = OrderedDict(ANSIBLE_CONFIG_FILE_SETTINGS)
-    ansible_config_file_path = os.path.join(OUTPUT_PATH, CLUSTER_NAME_SAVE, ANSIBLE_OUTPUT_DIR, 'ansible.cfg')
+    ansible_config_file_path = os.path.join(OUTPUT_PATH, CLUSTER_NAME_SAVE, ANSIBLE_OUTPUT_DIR, ANSIBLE_CFG_FILE)
     save_ansible_config_file(config_file_settings, ansible_config_file_path)
     f = open(ansible_config_file_path, mode='r')
     ansible_config_file_content = f.read()
