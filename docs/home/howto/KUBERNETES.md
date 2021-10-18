@@ -14,7 +14,7 @@ Flannel is a default setting in Epiphany configuration.
 **NOTE**
 
 Calico is [not supported](https://docs.projectcalico.org/reference/public-cloud/azure) on Azure. To have an ability to
-use network policies, use Canal.
+use network policies, choose Canal.
 
 ---
 
