@@ -1,4 +1,13 @@
 ---
+# During HA control plane upgrade server address in kubeconfig is switched to local for
+#   * compatibility between client and server versions
+#   * identifying correct server version
+
+- name: k8s/master0 | Switch apiserver address to local
+  include_tasks: utils/set-local-apiserver.yml # sets kubectl_context_cluster
+  when:
+    - groups.kubernetes_master | length > 1
+
 - name: k8s/master0 | Wait for cluster's readiness
   include_tasks: utils/wait.yml
 
@@ -65,8 +74,6 @@
 # The following task prevents this issue.
 - name: k8s/master0 | Refresh api-resources cache
   shell: kubectl api-resources --cached=false > /dev/null
-  when:
-    - not upgrade_to_final_version
 
 # 'kubeadm upgrade apply' overwrites Epiphany's customized CoreDNS so we patch it again.
 # This task restores 'hosts' plugin and should be run each time K8s was upgraded in order to support "--wait-for-pods" epicli feature (issue #1218).
@@ -111,3 +118,10 @@
 
 - name: k8s/master0 | Verify component versions and node status
   include_tasks: kubernetes/verify-upgrade.yml
+
+- name: k8s/master0 | Switch apiserver address to HAProxy
+  command: |-
+    kubectl config set-cluster {{ kubectl_context_cluster.stdout }} --server=https://localhost:3446
+  when:
+    - groups.kubernetes_master | length > 1
+  changed_when: true
