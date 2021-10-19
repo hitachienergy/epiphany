@@ -1,8 +1,8 @@
 ---
-- name: k8s | Include get-cluster-version.yml
+- name: k8s/kubelet-cm | Include get-cluster-version.yml
   include_tasks: get-cluster-version.yml # sets cluster_version
 
-- name: k8s | Get kubelet config from ConfigMap
+- name: k8s/kubelet-cm | Get kubelet config from ConfigMap
   command: |-
     kubectl get cm kubelet-config-{{ cluster_version_major }}.{{ cluster_version_minor }} \
       --namespace kube-system \
@@ -13,7 +13,7 @@
   changed_when: false
   register: kubelet_config
 
-- name: 'k8s | Update kubelet ConfigMap with cgroupDriver: systemd'
+- name: 'k8s/kubelet-cm | Update kubelet ConfigMap with cgroupDriver: systemd'
   vars:
     _cgroup_driver:
       cgroupDriver: systemd
