@@ -5,16 +5,16 @@
     src: "{{ item }}"
     remote_src: true
   loop:
-    - "{{ specification.advanced.certificates.location }}/apiserver.crt"
-    - "{{ specification.advanced.certificates.location }}/apiserver.key"
+    - "{{ pki.location }}/apiserver.crt"
+    - "{{ pki.location }}/apiserver.key"
 
 - name: Delete apiserver.{crt,key}
   file:
     path: "{{ item }}"
     state: absent
   loop:
-    - "{{ specification.advanced.certificates.location }}/apiserver.crt"
-    - "{{ specification.advanced.certificates.location }}/apiserver.key"
+    - "{{ pki.location }}/apiserver.crt"
+    - "{{ pki.location }}/apiserver.key"
 
 - name: Render new certificates apiserver.{crt,key}
   shell: |
@@ -22,4 +22,4 @@
       --config /etc/kubeadm/kubeadm-config.yml
   args:
     executable: /bin/bash
-    creates: "{{ specification.advanced.certificates.location }}/apiserver.key"
+    creates: "{{ pki.location }}/apiserver.key"
