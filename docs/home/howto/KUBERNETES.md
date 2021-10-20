@@ -24,9 +24,9 @@ Use the following configuration to set up an appropriate CNI plugin:
     kind: configuration/kubernetes-master
     name: default
     specification:
-    advanced:
-      networking:
-      plugin: flannel
+      advanced:
+        networking:
+          plugin: flannel
    ```
 
 ## Kubernetes applications - overview
