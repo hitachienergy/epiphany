@@ -47,21 +47,31 @@
 - name: Check if there is broken archive command from Epiphany v1.1
   become_user: postgres
   become: true
+  when: not pg_upgrade_failed
   block:
     - name: Get archive_command value
       postgresql_query:
         query: "SHOW archive_command"
       register: pg_archive_command
+      changed_when: false
 
-    - name: Set archive_command to a new default (/bin/true)
+    - name: Set archive_command to a new default
       vars:
         pg_invalid_archive_command: |-
           test ! -f /dbbackup/{{ inventory_hostname }}/backup/%f && \
             gzip -c < %p > /dbbackup/{{ inventory_hostname }}/backup/%f
       when: pg_archive_command.query_result[0].archive_command == pg_invalid_archive_command
-      postgresql_set:
-        name: archive_command
-        value: /bin/true
+      block:
+        - name: Set archive_command to a new default (/bin/true)
+          postgresql_set:
+            name: archive_command
+            value: /bin/true
+          changed_when: true
+
+        - name: Reload PostgreSQL configuration
+          postgresql_query:
+            query: "SELECT pg_reload_conf()"
+          changed_when: true
 
 - name: Check available disk space for new PostgreSQL data dir
   when: not pg_upgrade_already_run
