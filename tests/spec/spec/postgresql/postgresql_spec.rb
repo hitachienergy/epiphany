@@ -199,7 +199,7 @@ if replicated
   if os[:family] == 'ubuntu'
     describe 'Check if repmgr service uses correct config file' do
       describe command('systemctl status repmgrd') do
-        regexp = %r{ /etc/postgresql/13/main/repmgr\.conf }
+        regexp = %r{ /etc/repmgr\.conf }
         it "is expected to match #{regexp.inspect}" do
           # force_encoding used to work around https://github.com/sj26/rspec_junit_formatter/issues/67
           expect(subject.stdout.force_encoding('UTF-8')).to match regexp

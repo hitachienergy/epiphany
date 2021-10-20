@@ -1,0 +1,8 @@
+---
+- name: Remove fallback files
+  file:
+    path: "{{ item }}"
+    state: absent
+  loop:
+    - "{{ old_version.pg.upgrade.custom_tablespaces_fallback_file_path }}"
+    - "{{ old_version.pg.upgrade.postgresql_info_fallback_file_path }}"

@@ -1,0 +1,27 @@
+---
+- name: Upgrade standby servers (clone standby node from primary and register)
+  when:
+    - is_repmgr_used
+    - is_standby_node
+  include_tasks: upgrade/extensions/replication/pg-new/standby-clone.yml
+
+# Disable old PostgreSQL service and enable new one
+- include_tasks: upgrade/nodes/common/switch-to-new-pg-service.yml
+  vars:
+    _node: standby
+
+# Start and enable repmgr service
+- name: Start and enable repmgr service
+  when: is_repmgr_used
+  vars:
+    _service_name: "{{ new_version.repmgr.service_name[ansible_os_family] }}"
+  block:
+    - name: standby | extensions | repmgr | Start {{ _service_name }} service
+      systemd:
+        name: "{{ _service_name }}"
+        state: started
+
+    - name: standby | extensions | repmgr | Enable {{ _service_name }} service
+      systemd:
+        name: "{{ _service_name }}"
+        enabled: true

@@ -15,6 +15,18 @@ pg:
   instantiated_service_name:
     Debian: postgresql@13-main
     RedHat: null
+  packages:
+    common:
+      Debian:
+        - postgresql-client-common
+        - postgresql-common
+      RedHat: []
+    version_specific:
+      Debian:
+        - postgresql-13
+        - postgresql-client-13
+      RedHat:
+        - postgresql13-server
   service_name:
     Debian: postgresql
     RedHat: postgresql-13

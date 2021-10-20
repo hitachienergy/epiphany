@@ -1,0 +1,149 @@
+---
+- name: Stop repmgr service on all nodes to avoid failover
+  when: is_repmgr_used
+  vars:
+    _service_name: "{{ old_version.repmgr.service_name[ansible_os_family] }}"
+  block:
+    - name: primary | extensions | repmgr | Stop {{ _service_name }} service
+      systemd:
+        name: "{{ _service_name }}"
+        state: stopped
+      delegate_to: "{{ node }}"
+      loop_control:
+        loop_var: node
+      loop: "{{ groups.postgresql }}"
+
+    - name: primary | extensions | repmgr | Disable {{ _service_name }} service
+      systemd:
+        name: "{{ _service_name }}"
+        enabled: false
+      delegate_to: "{{ node }}"
+      loop_control:
+        loop_var: node
+      loop: "{{ groups.postgresql }}"
+
+# Step: Stop all servers (i.e. old and new)
+
+# Standby servers can remain running until a later step. Check p.8 from https://www.postgresql.org/docs/13/pgupgrade.html
+
+- name: primary | Stop PostgreSQL services
+  systemd:
+    name: "{{ service_name }}"
+    state: stopped
+  loop_control:
+    loop_var: service_name
+  loop: "{{ _services | reject('==', '') | unique }}"
+  vars:
+    _services:
+      - "{{ old_version.pg.service_name[ansible_os_family] }}"
+      - "{{ new_version.pg.service_name[ansible_os_family] }}"
+      - "{{ old_version.pg.instantiated_service_name[ansible_os_family] }}"
+      - "{{ new_version.pg.instantiated_service_name[ansible_os_family] }}"
+
+# Step: Run pg_upgrade
+
+# --link is not used to be able to access old cluster once the new one is started after the upgrade
+# there is a preflight check to confirm that available disk space is enough
+# --clone is not used as only Btrfs and XFS file systems are supported for the current version
+# also with file copying there is an ability to create new data directory not on the same file system
+- name: Run pg_upgrade
+  become_user: postgres
+  module_defaults:
+    shell:
+      chdir: "{{ pg_upgrade_working_dir }}"  # 'pg_upgrade' creates scripts in the current directory
+      executable: /bin/bash
+  vars:
+    _new_version_config_dir: "{{ new_version.pg.config_dir[ansible_os_family] }}"  # to make command shorter
+    _pg_upgrade_log_filenames:
+      check: pg_upgrade-check-{{ ansible_date_time.iso8601_basic_short | replace('T','-') }}.log
+      main: pg_upgrade-{{ ansible_date_time.iso8601_basic_short | replace('T','-') }}.log
+  block:
+    # This check is not in the 'preflight' as at that stage new version is not available
+    # Checks:
+    #   * cluster versions
+    #   * database user is the install user
+    #   * database connection settings
+    #   * prepared transactions
+    #   * system-defined composite types in user tables
+    #   * reg* data types in user tables
+    #   * contrib/isn with bigint-passing mismatch
+    #   * tables WITH OIDS
+    #   * invalid "sql_identifier" user columns
+    #   * presence of required libraries
+    #   * database user is the install user
+    #   * prepared transactions
+    #   * new cluster tablespace directories
+    - name: primary | Run pg_upgrade with --check
+      shell: >-
+        set -o pipefail &&
+        {{ new_version.pg.bin_dir[ansible_os_family] }}/pg_upgrade
+        --old-datadir {{ old_version.pg.data_dir[ansible_os_family] }}
+        --new-datadir {{ new_version.pg.data_dir[ansible_os_family] }}
+        --old-bindir {{ old_version.pg.bin_dir[ansible_os_family] }}
+        --new-bindir {{ new_version.pg.bin_dir[ansible_os_family] }}
+        --old-options '-c config_file={{ old_version.pg.config_dir[ansible_os_family] }}/postgresql.conf'
+        --new-options '-c config_file={{ _new_version_config_dir }}/postgresql.conf -c hba_file={{ _new_version_config_dir }}/pg_hba.conf'
+        --socketdir /var/run/postgresql
+        --jobs {{ ansible_processor_vcpus }}
+        --check |&
+        tee {{ _log_filename }}; status=$?;
+        chmod go= {{ _log_filename }} && exit $status
+      register: pg_upgrade_check
+      vars:
+        _log_filename: "{{ _pg_upgrade_log_filenames.check }}"
+
+    - name: primary | Print pg_upgrade check output
+      debug:
+        var: pg_upgrade_check.stdout_lines
+
+    - name: primary | Run pg_upgrade
+      shell: >-
+        {{ new_version.pg.bin_dir[ansible_os_family] }}/pg_upgrade
+        --old-datadir {{ old_version.pg.data_dir[ansible_os_family] }}
+        --new-datadir {{ new_version.pg.data_dir[ansible_os_family] }}
+        --old-bindir {{ old_version.pg.bin_dir[ansible_os_family] }}
+        --new-bindir {{ new_version.pg.bin_dir[ansible_os_family] }}
+        --old-options '-c config_file={{ old_version.pg.config_dir[ansible_os_family] }}/postgresql.conf'
+        --new-options '-c config_file={{ _new_version_config_dir }}/postgresql.conf -c hba_file={{ _new_version_config_dir }}/pg_hba.conf'
+        --socketdir /var/run/postgresql
+        --jobs {{ ansible_processor_vcpus }} >> {{ _log_filename }} 2>&1; status=$?;
+        chmod go= {{ _log_filename }} && exit $status
+      vars:
+        _log_filename: "{{ _pg_upgrade_log_filenames.main }}"
+
+    - name: "NOTE: Please check upgrade results"
+      debug:
+        msg:
+          - '**************************************'
+          - Check {{ pg_upgrade_working_dir }}/{{ _pg_upgrade_log_filenames.main }} on host {{ inventory_hostname }} for upgrade results.
+          - If pg_upgrade generated any .sql files in {{ pg_upgrade_working_dir }}, run them.
+          - "For more information, refer to PostgreSQL docs ('Post-upgrade processing' step):"
+          - https://www.postgresql.org/docs/13/pgupgrade.html
+          - '**************************************'
+
+- name: Start new PostgreSQL service
+  block:
+    - name: Debian | Handle service masking
+      when: ansible_os_family == 'Debian'
+      block:
+        - name: primary | Debian | Mask {{ old_version.pg.instantiated_service_name.Debian }} service to avoid port conflict
+          systemd:
+            name: "{{ old_version.pg.instantiated_service_name[ansible_os_family] }}"
+            masked: true
+
+        - name: primary | Debian | Unmask {{ new_version.pg.instantiated_service_name.Debian }} service
+          systemd:
+            name: "{{ new_version.pg.instantiated_service_name[ansible_os_family] }}"
+            masked: false
+
+    - name: primary | Start PostgreSQL {{ new_version.pg.version }} service
+      systemd:
+        name: "{{ service_name }}"
+        state: started
+      loop_control:
+        loop_var: service_name
+      loop: "{{ _services | reject('==', '') }}"
+      vars:
+        _services:
+          - "{{ new_version.pg.service_name[ansible_os_family] }}"
+          - "{{ new_version.pg.instantiated_service_name[ansible_os_family] }}"

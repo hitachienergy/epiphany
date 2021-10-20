@@ -1,0 +1,7 @@
+---
+- name: "{{ _node_role }} | extensions | repmgr | Debian | Update REPMGRD_CONF in /etc/default/repmgrd"
+  when: ansible_os_family == 'Debian'
+  replace:
+    path: /etc/default/repmgrd
+    regexp: ^REPMGRD_CONF=\"/etc/postgresql/\d+/main/repmgr.conf\"
+    replace: REPMGRD_CONF="/etc/repmgr.conf"

@@ -1,0 +1,7 @@
+---
+- name: "{{ _node_role }} | extensions | repmgr | RedHat | Update repmgr symlink"
+  file:
+    src: "{{ new_version.repmgr.bin_dir.RedHat }}/repmgr"
+    dest: "/usr/bin/repmgr"
+    state: link
+  when: ansible_os_family == 'RedHat'
