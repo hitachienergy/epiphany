@@ -6,17 +6,16 @@
   roles:
     - postflight
 
-
-- name: Ansible playbook for changing the state of the current running version info
+- name: Change the state info of the previous epicli execution
   hosts: all
-  gather_facts: yes
+  gather_facts: true
   become: true
   become_method: sudo
   tasks:
     - name: Change current running status to complete
       lineinfile:
         path: /var/lib/epiphany/history.yml
-        firstmatch: yes  # only first occurrence
-        backrefs: yes  # allows to use regexp groups
+        firstmatch: true  # only first occurrence
+        backrefs: true  # allows to use regexp groups
         regexp: '(.*)state\: started'  # assuming that current status is always on top
         line: '\1state: completed'

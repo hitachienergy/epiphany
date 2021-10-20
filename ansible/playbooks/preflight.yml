@@ -2,7 +2,7 @@
 # Ansible playbook that checks if requirements are met
 
 - hosts: all
-  gather_facts: yes
+  gather_facts: true
   become: false  # user may be not added to sudoers
   module_defaults:
     shell:
@@ -13,9 +13,9 @@
     KUBECONFIG: "{{ kubeconfig.remote }}"
 
 
-- name: Ansible playbook for adding epicli version info for each component used
+- name: Add epicli version info for each component used
   hosts: all
-  gather_facts: yes
+  gather_facts: true
   become: true
   become_method: sudo
   vars:
@@ -40,8 +40,8 @@
     - name: Change previous running status from started to failed
       lineinfile:
         path: /var/lib/epiphany/history.yml
-        firstmatch: yes  # only first occurrence
-        backrefs: yes  # allows to use regexp groups
+        firstmatch: true  # only first occurrence
+        backrefs: true  # allows to use regexp groups
         regexp: '(.*)state\: started'  # assuming that current status is always on top
         line: '\1state: failed'
       when: history_file.stat.exists and history_file.stat.size > 0

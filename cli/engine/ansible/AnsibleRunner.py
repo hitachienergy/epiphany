@@ -1,7 +1,5 @@
-import datetime
 import os
 import time
-import shutil
 
 from cli.engine.ansible.AnsibleCommand import AnsibleCommand
 from cli.engine.ansible.AnsibleInventoryCreator import AnsibleInventoryCreator
