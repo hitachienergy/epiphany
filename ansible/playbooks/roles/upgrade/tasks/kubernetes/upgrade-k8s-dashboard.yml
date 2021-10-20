@@ -27,8 +27,9 @@
   when: upgrade_k8s_dashboard
   block:
     - name: k8s/master | Delete kubernetes-dashboard namespace
+      # this command can hang, so timeout is specified
       command: >-
-        kubectl delete ns kubernetes-dashboard --timeout=1m # this command can hang, so timeout is specified
+        kubectl delete ns kubernetes-dashboard --timeout=1m
 
     # Deploy new version of kubernetes-dashboard
     - name: k8s/master | Apply Kubernetes Dashboard
