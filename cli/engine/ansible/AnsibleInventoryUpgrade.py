@@ -2,15 +2,14 @@ from ansible.parsing.dataloader import DataLoader
 from ansible.inventory.manager import InventoryManager
 
 from cli.helpers.Step import Step
-from cli.helpers.build_saver import get_inventory_path_for_build, check_build_output_version, BUILD_LEGACY
+from cli.helpers.build_io import get_inventory_path_for_build
 from cli.models.AnsibleHostModel import AnsibleHostModel
 from cli.models.AnsibleInventoryItem import AnsibleInventoryItem
-from cli.helpers.build_saver import save_inventory
+from cli.helpers.build_io import save_inventory, load_manifest
 from cli.helpers.objdict_helpers import dict_to_objdict
 from cli.helpers.data_loader import load_schema_obj, types as data_types
 from cli.helpers.doc_list_helpers import select_single
 from cli.helpers.objdict_helpers import merge_objdict
-from cli.helpers.data_loader import load_manifest_docs
 
 
 class AnsibleInventoryUpgrade(Step):
@@ -55,7 +54,6 @@ class AnsibleInventoryUpgrade(Step):
 
     def upgrade(self):
         inventory_path = get_inventory_path_for_build(self.backup_build_dir)
-        build_version = check_build_output_version(self.backup_build_dir)
 
         self.logger.info(f'Loading backup Ansible inventory: {inventory_path}')
         loaded_inventory = InventoryManager(loader = DataLoader(), sources=inventory_path)
@@ -70,41 +68,14 @@ class AnsibleInventoryUpgrade(Step):
                     new_hosts.append(AnsibleHostModel(host.address, host.vars['ansible_host']))
                 new_inventory.append(AnsibleInventoryItem(key, new_hosts))
 
-        if build_version == BUILD_LEGACY:
-            self.logger.info('Upgrading Ansible inventory Epiphany < 0.3.0')
+        self.logger.info('Upgrading Ansible inventory')
 
-            # Epiphany < 0.3.0 did not have manifest file in build folder so lets create bare minimum cluster model from inventory
-            self.cluster_model = dict_to_objdict({
-                'provider': 'any',
-                'specification': {
-                    'admin_user': {
-                        'name': loaded_inventory.groups['all'].vars['ansible_user'],
-                        'key_path': loaded_inventory.groups['all'].vars['ansible_ssh_private_key_file']
-                    }
-                }
-            })
-
-            # Remap roles
-            self.rename_role(new_inventory, 'master', 'kubernetes_master')
-            self.rename_role(new_inventory, 'worker', 'kubernetes_node')
-            self.rename_role(new_inventory, 'deployments', 'applications')
-            self.rename_role(new_inventory, 'elasticsearch-curator', 'elasticsearch_curator')
-            self.rename_role(new_inventory, 'jmx-exporter', 'jmx_exporter')
-            self.rename_role(new_inventory, 'kafka-exporter', 'kafka_exporter')
-            self.rename_role(new_inventory, 'haproxy_tls_termination', 'haproxy')
-
-            # remove linux and reboot roles if present
-            self.delete_role(new_inventory, 'linux')
-            self.delete_role(new_inventory, 'reboot')
-        else:
-            self.logger.info('Upgrading Ansible inventory Epiphany => 0.3.0')
-
-            # load cluster model from manifest
-            self.manifest_docs = load_manifest_docs(self.backup_build_dir)
-            self.cluster_model = select_single(self.manifest_docs, lambda x: x.kind == 'epiphany-cluster')
+        # load cluster model from manifest
+        self.manifest_docs = load_manifest(self.backup_build_dir)
+        self.cluster_model = select_single(self.manifest_docs, lambda x: x.kind == 'epiphany-cluster')
 
         # Merge manifest cluster config with newer defaults
-        default_cluster_model = load_schema_obj(data_types.DEFAULT, 'common', 'epiphany-cluster')
+        default_cluster_model = load_schema_obj(data_types.DEFAULT, self.cluster_model.provider, 'epiphany-cluster')
         merge_objdict(default_cluster_model, self.cluster_model)
         self.cluster_model = default_cluster_model
 

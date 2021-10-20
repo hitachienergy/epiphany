@@ -5,7 +5,7 @@ from os import listdir
 from os.path import isfile, join
 from distutils import dir_util
 
-from cli.helpers.data_loader import load_template_file, types
+from cli.helpers.data_loader import load_template_file, load_yamls_file, types
 from cli.helpers.yaml_helpers import dump_all, dump
 from cli.helpers.Config import Config
 
@@ -13,13 +13,12 @@ from cli.helpers.Config import Config
 TERRAFORM_OUTPUT_DIR = 'terraform/'
 MANIFEST_FILE_NAME = 'manifest.yml'
 SP_FILE_NAME = 'sp.yml'
-INVENTORY_FILE_NAME = 'inventory'
+ANSIBLE_INVENTORY_FILE = 'inventory'
+ANSIBLE_CFG_FILE = 'ansible.cfg'
 ANSIBLE_OUTPUT_DIR = 'ansible/'
 ANSIBLE_VAULT_OUTPUT_DIR = 'vault/'
 SPEC_OUTPUT_DIR = 'spec_tests/'
 
-BUILD_EPICLI = 'BUILD_EPICLI'
-BUILD_LEGACY = 'BUILD_LEGACY_02X'
 
 def save_manifest(docs, cluster_name, manifest_name=MANIFEST_FILE_NAME):
     build_dir = get_build_path(cluster_name)
@@ -27,6 +26,13 @@ def save_manifest(docs, cluster_name, manifest_name=MANIFEST_FILE_NAME):
     with open(path, 'w') as stream:
         dump_all(docs, stream)
     return path
+
+
+def load_manifest(build_dir):
+    path_to_manifest = os.path.join(build_dir, MANIFEST_FILE_NAME)
+    if not os.path.isfile(path_to_manifest):
+        raise Exception('No manifest.yml inside the build folder')
+    return load_yamls_file(path_to_manifest)
 
 
 def save_sp(service_principle, cluster_name):
@@ -41,21 +47,16 @@ def save_inventory(inventory, cluster_model, build_dir=None):
     if build_dir is None:
         cluster_name = cluster_model.specification.name
         build_dir = get_build_path(cluster_name)
-    template = load_template_file(types.ANSIBLE, '', 'ansible_inventory')
+    template = load_template_file(types.ANSIBLE, '', ANSIBLE_INVENTORY_FILE)
     content = template.render(inventory=inventory, cluster_model=cluster_model)
-    file_path = os.path.join(build_dir, INVENTORY_FILE_NAME)
+    file_path = os.path.join(build_dir, ANSIBLE_INVENTORY_FILE)
     save_to_file(file_path, content)
 
 
 def save_ansible_config_file(ansible_config_file_settings, ansible_config_file_path):
-    template = load_template_file(types.ANSIBLE, '', 'ansible.cfg')
+    template = load_template_file(types.ANSIBLE, '', ANSIBLE_CFG_FILE)
     content = template.render(ansible_config_file_settings=ansible_config_file_settings)
     save_to_file(ansible_config_file_path, content)
-
-
-def remove_files_matching_glob(dir_path, pattern):
-    for file in Path(dir_path).glob(pattern):
-        file.unlink()
 
 
 def save_terraform_file(content, cluster_name, filename):
@@ -83,7 +84,7 @@ def get_build_path(cluster_name):
 
 
 def get_inventory_path(cluster_name):
-    return os.path.join(get_build_path(cluster_name), INVENTORY_FILE_NAME)
+    return os.path.join(get_build_path(cluster_name), ANSIBLE_INVENTORY_FILE)
 
 
 def get_manifest_path(cluster_name):
@@ -91,41 +92,15 @@ def get_manifest_path(cluster_name):
 
 
 def get_inventory_path_for_build(build_directory):
-    build_version = check_build_output_version(build_directory)
-    inventory =  os.path.join(build_directory, INVENTORY_FILE_NAME)
-    if build_version == BUILD_EPICLI:
-        return inventory
-    if build_version == BUILD_LEGACY:
-        files = [f for f in listdir(inventory) if isfile(join(inventory, f))]
-        if len(files) != 1:
-            raise Exception('Not a valid legacy build directory.')
-        return join(inventory, files[0])
+    return  os.path.join(build_directory, ANSIBLE_INVENTORY_FILE)
 
 
 def get_ansible_config_file_path(cluster_name):
-    return os.path.join(get_ansible_path(cluster_name), "ansible.cfg")
+    return os.path.join(get_ansible_path(cluster_name), ANSIBLE_CFG_FILE)
 
 
 def get_ansible_config_file_path_for_build(build_directory):
-    return os.path.join(get_ansible_path_for_build(build_directory), "ansible.cfg")
-
-
-def check_build_output_version(build_directory):
-    if not os.path.exists(build_directory):
-        raise Exception('Build directory does not exist')
-
-    manifest_path = os.path.join(build_directory, INVENTORY_FILE_NAME)
-
-    # if manifest is in the build root/inventory we are dealing with post 0.3.0
-    if os.path.exists(manifest_path) and not os.path.isdir(manifest_path):
-        return BUILD_EPICLI
-
-    # if manifest is in root/inventory/.... we are dealing with pre 0.3.0
-    if os.path.exists(manifest_path) and os.path.isdir(manifest_path):
-        return BUILD_LEGACY
-
-    # if we come here its a new run or upgrade in which case its EPICLI
-    return BUILD_EPICLI
+    return os.path.join(get_ansible_path_for_build(build_directory), ANSIBLE_CFG_FILE)
 
 
 def get_terraform_path(cluster_name):
@@ -154,6 +129,15 @@ def get_ansible_path_for_build(build_directory):
     if not os.path.exists(ansible_dir):
         os.makedirs(ansible_dir)
     return ansible_dir
+
+
+def delete_files_matching_glob(dir_path, pattern):
+    for file in Path(dir_path).glob(pattern):
+        file.unlink()
+
+
+def delete_directory(dir_path):
+    shutil.rmtree(dir_path, ignore_errors=True)
 
 
 def copy_files_recursively(src, dst):
