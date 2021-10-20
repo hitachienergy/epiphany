@@ -1,0 +1,94 @@
+---
+# Sets 'pg_primary_node' fact (based on inventory_hostname).
+# Only one primary node is supported. This fact is common for all play hosts.
+# 'pg_primary_node' is set based on 'is_primary_node' fact set in 'set_facts.yml'.
+# On re-run 'is_primary_node' fact is not available for already upgraded nodes, which are skipped,
+# thus we need to collect 'postgresql_info' again for these nodes.
+
+# Get current primary host (when PostgreSQL service is running) or last known (previously stored in file).
+- name: Get primary node
+  run_once: true
+  block:
+    - name: Set hosts without 'is_primary_node' fact
+      set_fact:
+        hosts_without_is_primary_fact: >-
+          {{ hosts_without_is_primary_fact | default([]) + ([host] if (hostvars[host].is_primary_node is undefined) else []) }}
+      loop_control:
+        loop_var: host
+      loop: "{{ ansible_play_hosts_all }}"
+
+    - name: Get PostgreSQL info on node role
+      block:
+        # Requires running PostgreSQL
+        - name: Collect PostgreSQL info
+          become: true
+          become_user: postgres
+          postgresql_info:
+            filter: in_recovery
+          register: postgresql_info_missing
+          delegate_to: "{{ node }}"
+          loop_control:
+            loop_var: node
+          loop: "{{ hosts_without_is_primary_fact }}"
+      rescue:
+        # Failure on first run or when upgrade has been completed is unexpected and unhandled
+        - name: Fail with message on unhandled failure
+          fail:
+            msg: "{{ ansible_failed_result.results | selectattr('failed') }}"
+          when: postgresql_upgrade_status != 'failed'
+
+        - name: rescue | Load '{{ old_version.pg.upgrade.postgresql_info_fallback_file_path }}'
+          slurp:
+            src: "{{ old_version.pg.upgrade.postgresql_info_fallback_file_path }}"
+          register: postgresql_info_fallback_yml
+          delegate_to: "{{ item.node }}"
+          loop_control:
+            label: "{{ item.node }}"
+          loop: "{{ ansible_failed_result.results }}"
+          when: item.failed
+
+    # Save result in file to use it as fallback on rerun
+    - name: Save 'postgresql_info' result in '{{ old_version.pg.upgrade.postgresql_info_fallback_file_path }}'
+      when: postgresql_info_missing.results[loop_index0] is not failed
+      copy:
+        content: "{{ postgresql_info_missing.results[loop_index0] | to_nice_yaml(indent=2) }}"
+        dest: "{{ old_version.pg.upgrade.postgresql_info_fallback_file_path }}"
+        mode: u=rw,go=
+      delegate_to: "{{ node }}"
+      loop_control:
+        index_var: loop_index0
+        loop_var: node
+      loop: "{{ hosts_without_is_primary_fact }}"
+
+    - name: Set 'is_primary_node' fact
+      set_fact:
+        is_primary_node: "{{ not item.in_recovery if (item is not failed) else
+                             not (_fallback_results[loop_index].content | b64decode | from_yaml).in_recovery }}"
+      vars:
+        _fallback_results: "{{ postgresql_info_fallback_yml.results | default([]) }}"
+      delegate_to: "{{ item.node }}"
+      delegate_facts: true
+      loop_control:
+        index_var: loop_index
+        label: "{{ item.node }}"
+      loop: "{{ postgresql_info_missing.results }}"
+
+    - name: Assert there is one primary node
+      assert:
+        that:
+          ansible_play_hosts_all | map('extract', hostvars) | selectattr('is_primary_node') | count == 1
+        quiet: true
+
+    - name: Set 'pg_primary_node' fact
+      set_fact:
+        pg_primary_node: "{{ _primary_nodes | first }}"
+      vars:
+        _is_primary_node_vars: "{{ ansible_play_hosts_all | map('extract', hostvars, ['is_primary_node']) }}"  # e.g. [false, true]
+        # 'dict' is used to workaround https://github.com/ansible/ansible/issues/60583
+        _primary_nodes: "{{ dict(ansible_play_hosts_all | zip(_is_primary_node_vars))
+                                                        | dict2items(key_name='hostname', value_name='is_primary_node')
+                                                        | json_query('[?is_primary_node].hostname') }}"
+
+    - name: Print detected primary node
+      debug:
+        msg: "Primary node: {{ pg_primary_node }}"

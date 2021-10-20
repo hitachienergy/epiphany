@@ -16,17 +16,31 @@
     name: pg_manifest
 
 - name: Check if upgrade was already run
-  stat:
-    path: "{{ pg_new.pg.data_dir[ansible_os_family] }}/PG_VERSION"
-    get_attributes: false
-    get_checksum: false
-    get_mime: false
   become: true
-  register: stat_file_in_pg_new_data_dir
+  block:
+    - name: Check if PostgreSQL {{ pg_new.pg.version }} data directory exists
+      stat:
+        path: "{{ pg_new.pg.data_dir[ansible_os_family] }}"
+      register: new_pg_data_dir
 
-- name: Set fact about PostgreSQL upgrade status
+    - name: Check if PostgreSQL {{ pg_new.pg.version }} data directory contains files
+      when: new_pg_data_dir.stat.exists
+      find:
+        paths: "{{ pg_new.pg.data_dir[ansible_os_family] }}"
+      register: new_pg_data_dir_files
+
+    - name: Check if upgrade was run but failed
+      stat:
+        path: "{{ pg_old.pg.upgrade.state_file_path }}"
+        get_attributes: false
+        get_checksum: false
+        get_mime: false
+      register: stat_pg_upgrade_state_file
+
+- name: Set facts on PostgreSQL upgrade status
   set_fact:
-    pg_upgrade_already_run: "{{ stat_file_in_pg_new_data_dir.stat.exists }}"
+    pg_upgrade_already_run: "{{ new_pg_data_dir.stat.exists and new_pg_data_dir_files.matched > 0 }}"
+    pg_upgrade_failed: "{{ stat_pg_upgrade_state_file.stat.exists }}"
 
 - name: Check available disk space for new PostgreSQL data dir
   when: not pg_upgrade_already_run
@@ -104,8 +118,9 @@
 
 - name: Assert old PostgreSQL cluster is healthy
   when:
-    - not pg_upgrade_already_run
     - pg_manifest.specification.extensions.replication.enabled
+    - not pg_upgrade_already_run
+    - not pg_upgrade_failed
   become: true
   become_user: postgres
   vars:
@@ -113,10 +128,10 @@
   block:
     - name: Check if PostgreSQL {{ pg_old.pg.version }} cluster is healthy
       # when there are two primary nodes (after failover) rc is non-zero
+      # run on all nodes by purpose (to check exit code)
       command: >-
         {{ pg_old.repmgr.bin_dir[ansible_os_family] }}/repmgr -f {{ _repmgr_config_file }}
         cluster show
-      run_once: true
       changed_when: false
 
     - name: Check if PostgreSQL {{ pg_old.pg.version }} cluster node is healthy

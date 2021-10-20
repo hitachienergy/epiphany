@@ -1,0 +1,66 @@
+#jinja2: lstrip_blocks: True
+#!/usr/bin/env bash
+{# This script is meant to be executed on primary node #}
+
+set -x
+
+# Rollback steps:
+{% if is_repmgr_used %}
+
+# - Stop and disable new repmgr service
+sudo systemctl stop {{ new_version.repmgr.service_name[ansible_os_family] }}
+sudo systemctl disable {{ new_version.repmgr.service_name[ansible_os_family] }}
+
+# - Restore repmgr symlink
+  {% if ansible_os_family == 'Debian' %}
+ln -sf {{ old_version.repmgr.config_dir.Debian }}/repmgr.conf /etc/repmgr.conf
+  {% elif ansible_os_family == 'RedHat' %}
+ln -sf {{ old_version.repmgr.bin_dir.RedHat }}/repmgr /bin/repmgr
+  {% endif %}
+{% endif %}
+
+# - Stop and disable new PostgreSQL service
+{% if ansible_os_family == 'Debian' %}
+sudo systemctl stop {{ new_version.pg.service_name.Debian }}
+sudo systemctl stop {{ new_version.pg.instantiated_service_name.Debian }}
+sudo systemctl mask {{ new_version.pg.instantiated_service_name.Debian }}
+{% elif ansible_os_family == 'RedHat' %}
+sudo systemctl stop {{ new_version.pg.service_name.RedHat }}
+sudo systemctl disable {{ new_version.pg.service_name.RedHat }}
+{% endif %}
+
+# - Start and enable old PostgreSQL service
+{% if ansible_os_family == 'Debian' %}
+sudo systemctl unmask {{ old_version.pg.instantiated_service_name.Debian }}
+sudo systemctl start {{ old_version.pg.service_name.Debian }}
+sudo systemctl start {{ old_version.pg.instantiated_service_name.Debian }}
+{% elif ansible_os_family == 'RedHat' %}
+sudo systemctl start {{ old_version.pg.service_name.RedHat }}
+sudo systemctl enable {{ old_version.pg.service_name.RedHat }}
+{% endif %}
+{% if is_repmgr_used %}
+
+# - Start and enable old repmgr service
+sudo systemctl start {{ old_version.repmgr.service_name[ansible_os_family] }}
+sudo systemctl enable {{ old_version.repmgr.service_name[ansible_os_family] }}
+{% endif %}
+
+# - Remove new data directory
+sudo rm -rf {{ new_version.pg.data_dir[ansible_os_family] }}
+{% if pg_custom_tablespace_locations | count > 0 %}
+
+# - Clean up migrated tablespace directories
+  {% for directory_path in pg_custom_tablespace_locations %}
+rm -f {{ directory_path }}/PG_{{ new_version.pg.version }}_*
+  {% endfor %}
+{% endif %}
+
+{% if is_repmgr_used and groups.postgresql | count > 0 %}
+set +x
+
+echo
+echo "Run the following commands on all stanby nodes:"
+echo
+echo "sudo systemctl start {{ old_version.repmgr.service_name[ansible_os_family] }}"
+echo "sudo systemctl enable {{ old_version.repmgr.service_name[ansible_os_family] }}"
+{% endif %}

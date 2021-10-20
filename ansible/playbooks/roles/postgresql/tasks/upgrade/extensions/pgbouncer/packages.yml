@@ -8,4 +8,4 @@
       Debian: "pgbouncer={{ new_version.pgbouncer.version.Debian + '-*' }}"
       RedHat: "pgbouncer-{{ new_version.pgbouncer.version.RedHat }}"
   module_defaults:
-    yum: { lock_timeout: "{{ yum_lock_timeout }}" }
+    yum: {lock_timeout: "{{ yum_lock_timeout }}"}

@@ -4,45 +4,70 @@
 #   * cluster is not healthy when repmgr is used
 #   * disk space condition is not met: space_used_on_data_dir_fs + old_data_dir_size < 0.95 * data_dir_fs_capacity
 
-- name: PostgreSQL | Get information on installed packages as facts
-  package_facts:
-    manager: auto
-  when: ansible_facts.packages is undefined
-
-- name: PostgreSQL | Include vars from 'postgresql' role
+- name: Include vars from 'postgresql' role
   include_vars:
     file: vars/main.yml
     name: upgrade_vars
 
-- name: PostgreSQL | Include manifest from 'postgresql' role
+- name: Include manifest from 'postgresql' role
   include_vars:
     file: vars/manifest.yml
     name: manifest
 
-- name: PostgreSQL | Include new version default variables
+- name: Include new version default variables
   include_vars:
     file: defaults/main.yml
     name: new_version
 
-- name: PostgreSQL | Include old version default variables
+- name: Include old version default variables
   include_vars:
     file: defaults/upgrade.yml
     name: old_version
 
-- name: PostgreSQL | Check if PostgreSQL {{ new_version.pg.version }} data directory exists or is empty
-  become: true
+- name: Set upgrade status
+  # values:
+  # - not_started (will be run for the first time)
+  # - completed
+  # - failed
   block:
-    - name: PostgreSQL | Get PostgreSQL {{ new_version.pg.version }} data directory stat information
+    # If state file exists it means the previous run failed
+    - name: Check if upgrade state file exists
       stat:
-        path: "{{ new_version.pg.data_dir[ansible_os_family] }}"
-      register: pg_data_dir
+        path: "{{ old_version.pg.upgrade.state_file_path }}"
+        get_attributes: false
+        get_checksum: false
+        get_mime: false
+      register: stat_upgrade_state_file
 
-    - name: PostgreSQL | Gather statistics about PostgreSQL {{ new_version.pg.version }} data directory content
-      when: pg_data_dir.stat.exists
-      find:
-        paths: "{{ new_version.pg.data_dir[ansible_os_family] }}"
-      register: pg_data_dir_files
+    - name: Check if new PostgreSQL data directory exists and is empty
+      block:
+        - name: Check if PostgreSQL {{ new_version.pg.version }} data directory exists
+          stat:
+            path: "{{ new_version.pg.data_dir[ansible_os_family] }}"
+          register: new_pg_data_dir
 
-- name: PostgreSQL | Include upgrade tasks
-  when: not pg_data_dir.stat.exists or pg_data_dir_files.matched == 0
-  include_tasks: roles/postgresql/tasks/upgrade/upgrade.yml
+        - name: Check if PostgreSQL {{ new_version.pg.version }} data directory is empty
+          when: new_pg_data_dir.stat.exists
+          find:
+            paths: "{{ new_version.pg.data_dir[ansible_os_family] }}"
+          register: files_in_new_pg_data_dir
+
+    - name: Set 'postgresql_upgrade_status' fact
+      set_fact:
+        postgresql_upgrade_status: "{{ 'failed' if (stat_upgrade_state_file.stat.exists) else
+                                       'not_started' if (not new_pg_data_dir.stat.exists
+                                                         or files_in_new_pg_data_dir.matched == 0) else
+                                       'completed' }}"
+
+- name: Print upgrade status
+  debug:
+    msg: "{{ _status_msg_map[postgresql_upgrade_status] }}"
+  vars:
+    _status_msg_map:
+      not_started: Run upgrade for the first time
+      completed: Host already upgraded, nothing to do
+      failed: Re-run upgrade after a failure
+
+- name: Include upgrade tasks
+  when: postgresql_upgrade_status != 'completed'
+  include_tasks: upgrade/run-upgrade.yml

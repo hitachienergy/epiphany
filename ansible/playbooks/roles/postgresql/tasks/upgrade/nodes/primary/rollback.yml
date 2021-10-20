@@ -1,0 +1,17 @@
+---
+- name: primary | rollback | Copy rollback script
+  become_user: postgres
+  template:
+    src: rollback-upgrade.sh.j2
+    dest: "{{ pg_upgrade_working_dir }}/rollback-upgrade.sh"
+    mode: u=rwx,g=r,o=
+
+- name: primary | rollback | Print info
+  debug:
+    msg:
+      - '**************************************'
+      - Before re-running upgrade you may need to revert some changes.
+      - Rollback is not run automatically.
+      - "You may examine and execute (as root) this script on {{ inventory_hostname }} host:"
+      - "{{ pg_upgrade_working_dir }}/rollback-upgrade.sh"
+      - '**************************************'
