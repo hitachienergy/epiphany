@@ -17,6 +17,7 @@
 
 - [#2497](https://github.com/epiphany-platform/epiphany/issues/2497) - Fix epicli apply --full region values
 - [#1743](https://github.com/epiphany-platform/epiphany/issues/1743) - Virtual machine "kind" mismatch
+- [#2656](https://github.com/epiphany-platform/epiphany/issues/2656) - WAL files are not removed from $PGDATA/pg_wal directory
 - [#1587](https://github.com/epiphany-platform/epiphany/issues/1587) - Duplicated SANs for K8s apiserver certificate
 
 ### Updated
