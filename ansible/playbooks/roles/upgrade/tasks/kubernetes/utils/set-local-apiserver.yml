@@ -1,6 +1,7 @@
 ---
 - name: k8s/utils | Get cluster name for the current kubectl context
   shell: |-
+    set -o pipefail && \
     kubectl config get-contexts \
       | awk 'NR==1 { for (col=1; col<=NF; col++) { columns[$col] = toupper(col) } }; \
              NR>1 { if ($1 ~ /^*/) print $columns["CLUSTER"]}'
