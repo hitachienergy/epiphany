@@ -90,11 +90,6 @@
     - name: k8s/master0 | Upgrade CNI plugin pod
       include_tasks: upgrade-cni-plugin-pod.yml
 
-- name: k8s/master0 | Upgrade Kubernetes Dashboard
-  include_tasks: upgrade-k8s-dashboard.yml
-  when:
-    - upgrade_to_final_version
-
 - name: k8s/master0 | Backup kubeadm-config.yml
   include_tasks: backup-kubeadm-config.yml
 

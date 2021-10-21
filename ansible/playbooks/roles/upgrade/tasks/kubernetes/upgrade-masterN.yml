@@ -22,7 +22,7 @@
 
     - name: k8s/masterN | Install kubelet and kubectl for {{ version }}
       include_tasks: >-
-          {{ ansible_os_family }}/install-packages.yml
+        {{ ansible_os_family }}/install-packages.yml
       when:
         - result is succeeded
 

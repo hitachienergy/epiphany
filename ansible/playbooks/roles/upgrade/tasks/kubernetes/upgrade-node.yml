@@ -27,7 +27,7 @@
 
     - name: k8s/node | Install packages
       include_tasks: >-
-          {{ ansible_os_family }}/install-packages.yml
+        {{ ansible_os_family }}/install-packages.yml
 
 - name: k8s/node | Upgrade CNI plugin pod
   import_tasks: upgrade-cni-plugin-pod.yml
