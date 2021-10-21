@@ -30,15 +30,6 @@
           when:
             - inventory_hostname in groups.kubernetes_master[1:]
 
-        # K8s dashboard upgraded only after control plane upgrade
-        # Otherwise there can be issues, such as hitting not upgraded apiserver by controller manager
-        # which results to forever terminating namespace after deletion
-        - name: k8s | Upgrade Kubernetes Dashboard
-          include_tasks: kubernetes/upgrade-k8s-dashboard.yml
-          when:
-            - upgrade_to_final_version
-            - inventory_hostname == groups.kubernetes_master[0]
-
     - name: Upgrade nodes
       when: kubelet_version is version('v' + version, '<=')
       block:

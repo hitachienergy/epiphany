@@ -60,6 +60,21 @@
   environment:
     KUBECONFIG: "{{ kubeconfig.remote }}"
 
+# K8s dashboard upgraded only after control plane upgrade
+# Otherwise there can be issues, such as hitting not upgraded apiserver by controller manager
+# which results to forever terminating namespace after deletion
+- hosts: kubernetes_master
+  become: true
+  become_method: sudo
+  tasks:
+    - include_role:
+        name: upgrade
+        tasks_from: kubernetes/upgrade-k8s-dashboard
+      run_once: true
+      when: "'kubernetes' in upgrade_components or upgrade_components|length == 0"
+  environment:
+    KUBECONFIG: "{{ kubeconfig.remote }}"
+
 - hosts: elasticsearch_curator
   become: true
   become_method: sudo
