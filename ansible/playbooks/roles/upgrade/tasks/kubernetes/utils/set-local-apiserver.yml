@@ -5,6 +5,8 @@
     kubectl config get-contexts \
       | awk 'NR==1 { for (col=1; col<=NF; col++) { columns[$col] = toupper(col) } }; \
              NR>1 { if ($1 ~ /^*/) print $columns["CLUSTER"]}'
+  args:
+    executable: /bin/bash
   register: kubectl_context_cluster
   changed_when: false
 
