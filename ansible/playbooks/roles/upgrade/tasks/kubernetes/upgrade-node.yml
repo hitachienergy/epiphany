@@ -48,7 +48,8 @@
   include_tasks: utils/uncordon.yml
 
 - name: k8s/node | Verify component versions and node status
-  include_tasks: verify-upgrade.yml
-  apply:
-    environment:
-      KUBECONFIG: /etc/kubernetes/kubelet.conf
+  include_tasks:
+    file: verify-upgrade.yml
+    apply:
+      environment:
+        KUBECONFIG: /etc/kubernetes/kubelet.conf
