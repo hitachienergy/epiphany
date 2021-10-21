@@ -26,10 +26,19 @@
 - name: Upgrade dashboard
   when: upgrade_k8s_dashboard
   block:
+    # Force removal is executed as often namespace is in Terminating state
+    # The cause issue is the controller manager is using the discovery API to list all available API group/versions,
+    # which is hitting the newer apiserver (which tells it about the 'v1' APIs), but when it comes to actually list
+    # those resources, it is hitting a different apiserver (running the older version),
+    # which means it is unable to list those resources as they don’t exist in the older version.
+
+    # Discovery failed for some groups, 2 failing: unable to retrieve the complete list of server APIs:
+    #       certificates.k8s.io/v1: the server could not find the requested resource
+    #       events.k8s.io/v1: the server could not find the requested resource
     - name: k8s/master | Delete kubernetes-dashboard namespace
-      # this command can hang, so timeout is specified
-      command: >-
-        kubectl delete ns kubernetes-dashboard --timeout=1m
+      include_tasks: utils/delete-ns.yml
+      vars:
+        namespace: kubernetes-dashboard
 
     # Deploy new version of kubernetes-dashboard
     - name: k8s/master | Apply Kubernetes Dashboard

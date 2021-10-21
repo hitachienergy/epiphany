@@ -1,0 +1,55 @@
+---
+- name: k8s/delete-ns | Delete {{ namespace }} namespace
+  # this command can hang, so timeout is specified
+  command: >-
+    kubectl delete ns {{ namespace }} --ignore-not-found=true --timeout=1m
+  register: kubectl_delete_ns
+  failed_when: false
+
+# Sometimes namespace hangs in Terminating state
+# Following tasks are based on https://github.com/kubernetes/kubernetes/issues/60807#issuecomment-739035290
+
+- name: Verify if namespace can be force deleted
+  when: kubectl_delete_ns.rc != 0
+  block:
+    - name: k8s/delete-ns | Check if any apiservice is unavailable
+      shell: |-
+        set -o pipefail && \
+        kubectl get apiservice \
+          | awk 'NR==1 { for (col=1; col<=NF; col++) { columns[$col] = toupper(col) } }; \
+                 NR>1 { if ($columns["AVAILABLE"] == "False") print $columns["NAME"]}'
+      changed_when: false
+      register: unavailable_apiservices
+
+    - name: k8s/delete-ns | Assert that all apiservices are availeble
+      assert:
+        that: unavailable_apiservices.stdout_lines | length == 0
+        fail_msg: >-
+          Unavailable apiservices found: {{ unavailable_apiservices.stdout_lines | join(', ') }}
+        success_msg: "There is no unavailable apiservices in the cluster"
+
+    - name: k8s/delete-ns | Find all resources that still exist in {{ namespace }} namespace
+      shell: |-
+        set -o pipefail && \
+        kubectl api-resources --verbs=list --namespaced --output=name \
+          | xargs -n 1 kubectl get --namespace={{ namespace }} --output=name 2>&1 \
+          | grep -v "^Warning" || [[ $? == 1 ]]
+      args:
+        executable: /bin/bash
+      changed_when: false
+      register: existing_resources
+
+    - name: k8s/delete-ns | Assert that there is no left resources in {{ namespace }} namespace
+      assert:
+        that: existing_resources.stdout_lines | length == 0
+        fail_msg: >-
+          Resources found in namespace {{ namespace }}: {{ existing_resources.stdout_lines | join(', ') }}
+        success_msg: "There is no resources in namespace {{ namespace }}"
+
+    - name: k8s/delete-ns | Force delete {{ namespace }} namespace
+      shell: |-
+        set -o pipefail && \
+        kubectl get ns {{ namespace }} --output=json \
+          | jq '.spec.finalizers = []' \
+          | kubectl replace --raw "/api/v1/namespaces/{{ namespace }}/finalize" -f -
+      changed_when: true
