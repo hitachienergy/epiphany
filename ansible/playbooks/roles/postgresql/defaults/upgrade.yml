@@ -20,6 +20,10 @@ pg:
   service_name:
     Debian: postgresql
     RedHat: postgresql-10
+  upgrade:
+    custom_tablespaces_fallback_file_path: /var/lib/epiphany/upgrade/state/custom-tablespaces.yml
+    postgresql_info_fallback_file_path: /var/lib/epiphany/upgrade/state/postgresql-info.yml
+    state_file_path: /var/lib/epiphany/upgrade/state/postgresql.uncompleted
   version: 10
 
 pgaudit:

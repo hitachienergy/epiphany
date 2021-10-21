@@ -388,8 +388,10 @@ check these manually before doing any upgrade:
 
   ```shell
   repmgr cluster show
+  repmgr node check
+  test $(repmgr node check | grep -c CRITICAL) -eq 0
   ```
-  
+
   Should not fail and return 0 as exit code.
 
 ### Upgrade
