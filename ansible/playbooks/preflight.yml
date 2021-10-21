@@ -15,13 +15,13 @@
 
 - name: Add epicli version info for each component used
   hosts: all
-  gather_facts: true
+  gather_facts: false
   become: true
   become_method: sudo
   vars:
     history_file_content: |
       deployments:
-        - version: {{ version }}
+        - version: {{ epiphany_version }}
           date: {{ ansible_date_time.date }} {{ ansible_date_time.time }}
           mode: {{ is_upgrade_run | ternary('upgrade', 'apply') }}
           state: started

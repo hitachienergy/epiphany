@@ -142,7 +142,7 @@ class AnsibleVarsGenerator(Step):
         main_vars['is_upgrade_run'] = self.is_upgrade_run
         main_vars['roles_with_generated_vars'] = sorted(self.roles_with_generated_vars)
         main_vars['upgrade_components'] = Config().upgrade_components
-        main_vars['version'] = VERSION
+        main_vars['epiphany_version'] = VERSION
 
         # Consider to move this to the provider level.
         if self.cluster_model.provider != 'any':
