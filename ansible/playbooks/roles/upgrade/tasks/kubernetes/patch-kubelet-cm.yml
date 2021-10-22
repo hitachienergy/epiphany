@@ -1,0 +1,31 @@
+---
+- name: k8s/kubelet-cm | Include get-cluster-version.yml
+  include_tasks: get-cluster-version.yml # sets cluster_version
+
+- name: k8s/kubelet-cm | Get kubelet config from ConfigMap
+  command: |-
+    kubectl get cm kubelet-config-{{ cluster_version_major }}.{{ cluster_version_minor }} \
+      --namespace kube-system \
+      --output=jsonpath={{ jsonpath }}
+  vars:
+    jsonpath: >-
+      '{.data.kubelet}'
+  changed_when: false
+  register: kubelet_config
+
+- name: 'k8s/kubelet-cm | Update kubelet ConfigMap with cgroupDriver: systemd'
+  vars:
+    _cgroup_driver:
+      cgroupDriver: systemd
+    _kubelet_desired_config: >-
+      {{ kubelet_config.stdout | from_yaml | combine(_cgroup_driver) | to_nice_yaml(indent=2) }}
+    _patch:
+      data:
+        kubelet: |
+          {{ _kubelet_desired_config }}
+  command: |-
+    kubectl patch cm kubelet-config-{{ cluster_version_major }}.{{ cluster_version_minor }} \
+      --namespace kube-system
+      --patch '{{ _patch | to_yaml }}'
+  register: patch_result
+  changed_when: not 'no change' in patch_result.stdout

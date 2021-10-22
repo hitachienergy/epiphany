@@ -1,0 +1,16 @@
+---
+- name: k8s/utils | Get cluster name for the current kubectl context
+  shell: |-
+    set -o pipefail && \
+    kubectl config get-contexts \
+      | awk 'NR==1 { for (col=1; col<=NF; col++) { columns[$col] = toupper(col) } }; \
+             NR>1 { if ($1 ~ /^*/) print $columns["CLUSTER"]}'
+  args:
+    executable: /bin/bash
+  register: kubectl_context_cluster
+  changed_when: false
+
+- name: k8s/utils | Set apiserver address to local
+  command: |-
+    kubectl config set-cluster {{ kubectl_context_cluster.stdout }} --server=https://localhost:6443
+  changed_when: true # it's assumed to be used only in HA mode as for single control plane node it's useless

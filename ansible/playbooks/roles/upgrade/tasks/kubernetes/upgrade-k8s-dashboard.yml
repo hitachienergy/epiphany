@@ -27,8 +27,9 @@
   when: upgrade_k8s_dashboard
   block:
     - name: k8s/master | Delete kubernetes-dashboard namespace
+      # --ignore-not-found is used to be able re-run upgrade if it fails
       command: >-
-        kubectl delete ns kubernetes-dashboard
+        kubectl delete ns kubernetes-dashboard --ignore-not-found=true
 
     # Deploy new version of kubernetes-dashboard
     - name: k8s/master | Apply Kubernetes Dashboard

@@ -5,7 +5,6 @@
 - name: k8s/node | Upgrade Docker  # this may restart Docker daemon
   include_tasks: docker.yml
 
-# This is considered a bugfix for existing clusters created prior Epiphany v0.10.x and after v0.5.x.
 - name: k8s/node | Replace cgroupfs driver with systemd driver
   include_tasks: patch-cgroup-driver.yml
   vars: { _requires_restart: true }
@@ -28,11 +27,7 @@
 
     - name: k8s/node | Install packages
       include_tasks: >-
-        {%- if cni_in_kubelet is undefined or not cni_in_kubelet -%}
-          {{ ansible_os_family }}/install-packages.yml
-        {%- else -%}
-          {{ ansible_os_family }}/install-packages-cni-in-kubelet.yml
-        {%- endif -%}
+        {{ ansible_os_family }}/install-packages.yml
 
 - name: k8s/node | Upgrade CNI plugin pod
   import_tasks: upgrade-cni-plugin-pod.yml
@@ -53,4 +48,8 @@
   include_tasks: utils/uncordon.yml
 
 - name: k8s/node | Verify component versions and node status
-  include_tasks: verify-upgrade.yml
+  include_tasks:
+    file: verify-upgrade.yml
+    apply:
+      environment:
+        KUBECONFIG: /etc/kubernetes/kubelet.conf

@@ -1,8 +1,8 @@
 ---
 - name: Get cluster version
   command: kubectl version --output yaml
-  register: cluster_version
-  until: cluster_version is success
+  register: kubectl_cluster_version
+  until: kubectl_cluster_version is success
   retries: 60
   delay: 5
   changed_when: false
@@ -10,4 +10,8 @@
 - name: Set cluster version as fact
   set_fact:
     cluster_version: >-
-      {{ (cluster_version.stdout | from_yaml).serverVersion.gitVersion }}
+      {{ (kubectl_cluster_version.stdout | from_yaml).serverVersion.gitVersion }}
+    cluster_version_major: >-
+      {{ (kubectl_cluster_version.stdout | from_yaml).serverVersion.major }}
+    cluster_version_minor: >-
+      {{ (kubectl_cluster_version.stdout | from_yaml).serverVersion.minor }}

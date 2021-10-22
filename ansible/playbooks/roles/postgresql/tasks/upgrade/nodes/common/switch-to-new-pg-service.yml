@@ -1,0 +1,14 @@
+---
+# On Ubuntu old instantiated service is already masked (disabled) and parent service has the same name for both PG versions
+
+# Disable old PostgreSQL service and enable new one
+- name: "{{ _node_role }} | Disable {{ old_version.pg.service_name[ansible_os_family] }} service"
+  when: new_version.pg.service_name[ansible_os_family] != old_version.pg.service_name[ansible_os_family]
+  systemd:
+    name: "{{ old_version.pg.service_name[ansible_os_family] }}"
+    enabled: false
+
+- name: "{{ _node_role }} | Enable {{ new_version.pg.service_name[ansible_os_family] }} service"
+  systemd:
+    name: "{{ new_version.pg.service_name[ansible_os_family] }}"
+    enabled: true
