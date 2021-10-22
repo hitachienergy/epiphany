@@ -26,9 +26,16 @@
       register: kubeadm_new_token
       when: not kubeadm_valid_token.stdout
 
+    - name: Load defaults from kubernetes_master role
+      include_vars:
+        file: roles/kubernetes_master/defaults/main.yml
+        name: kubernetes_master_defaults
+      when:
+        - kubernetes_master_defaults.pki.location is undefined
+
     - name: Get CA key hash
       shell: |
-        openssl x509 -pubkey -in /etc/kubernetes/pki/ca.crt \
+        openssl x509 -pubkey -in {{ kubernetes_master_defaults.pki.location }}/ca.crt \
         | openssl rsa -pubin -outform der 2>/dev/null \
         | openssl dgst -sha256 -hex \
         | sed 's/^.* //'

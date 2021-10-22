@@ -24,6 +24,13 @@
       register: command_kubeadm_configmap
       changed_when: false
 
+    - name: k8s | Load defaults from kubernetes_master role
+      include_vars:
+        file: roles/kubernetes_master/defaults/main.yml
+        name: kubernetes_master_defaults
+      when:
+        - kubernetes_master_defaults.pki.location is undefined
+
     # The following procedure ensures that etcd encryption is always enabled during subsequent kubeadm executions
     - name: k8s/master | Patch kubeadm-config configmap (patch-kubeadm-etcd-encryption.yml)
       when:
@@ -53,7 +60,7 @@
         _update1:
           apiServer:
             extraArgs:
-              encryption-provider-config: /etc/kubernetes/pki/etcd/etc-encryption.conf
+              encryption-provider-config: "{{ kubernetes_master_defaults.pki.location }}/etcd/etc-encryption.conf"
 
         _cluster_config_updated: >-
           {{ _cluster_config | combine(_update1, recursive=true) }}

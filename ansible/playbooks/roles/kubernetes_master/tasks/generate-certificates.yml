@@ -5,43 +5,43 @@
     _certificates_opt_mapping:
       - name: admin.conf
         kind: ['clientAuth']
-        target: "{{ specification.advanced.certificates.location }}/admin.conf"
+        target: "{{ pki.location }}/admin.conf"
         parent_ca: ca
       - name: apiserver-etcd-client
         kind: ['clientAuth']
-        target: "{{ specification.advanced.certificates.location }}/apiserver-etcd-client"
+        target: "{{ pki.location }}/apiserver-etcd-client"
         parent_ca: etcd/ca
       - name: apiserver-kubelet-client
         kind: ['clientAuth']
-        target: "{{ specification.advanced.certificates.location }}/apiserver-kubelet-client"
+        target: "{{ pki.location }}/apiserver-kubelet-client"
         parent_ca: ca
       - name: apiserver
         kind: ['serverAuth']
-        target: "{{ specification.advanced.certificates.location }}/apiserver"
+        target: "{{ pki.location }}/apiserver"
         parent_ca: ca
       - name: controller-manager.conf
         kind: ['clientAuth']
-        target: "{{ specification.advanced.certificates.location }}/controller-manager.conf"
+        target: "{{ pki.location }}/controller-manager.conf"
         parent_ca: ca
       - name: etcd-healthcheck-client
         kind: ['clientAuth']
-        target: "{{ specification.advanced.certificates.location }}/etcd/healthcheck-client"
+        target: "{{ pki.location }}/etcd/healthcheck-client"
         parent_ca: etcd/ca
       - name: etcd-peer
         kind: ['serverAuth', 'clientAuth']
-        target: "{{ specification.advanced.certificates.location }}/etcd/peer"
+        target: "{{ pki.location }}/etcd/peer"
         parent_ca: etcd/ca
       - name: etcd-server
         kind: ['serverAuth', 'clientAuth']
-        target: "{{ specification.advanced.certificates.location }}/etcd/server"
+        target: "{{ pki.location }}/etcd/server"
         parent_ca: etcd/ca
       - name: front-proxy-client
         kind: ['clientAuth']
-        target: "{{ specification.advanced.certificates.location }}/front-proxy-client"
+        target: "{{ pki.location }}/front-proxy-client"
         parent_ca: front-proxy-ca
       - name: scheduler.conf
         kind: ['clientAuth']
-        target: "{{ specification.advanced.certificates.location }}/scheduler.conf"
+        target: "{{ pki.location }}/scheduler.conf"
         parent_ca: ca
   block:
     - name: Create certificates_opt_mapping fact
@@ -61,9 +61,9 @@
 
     - name: Save old certificates
       synchronize:
-        src: "{{ specification.advanced.certificates.location }}/"
+        src: "{{ pki.location }}/"
         dest: >-
-          {{ specification.advanced.certificates.location | regex_replace('\\/$', '') }}-backup-{{ ansible_date_time.iso8601_basic_short }}
+          {{ pki.location | regex_replace('\\/$', '') }}-backup-{{ ansible_date_time.iso8601_basic_short }}
       delegate_to: "{{ inventory_hostname }}"
 
     - name: Ensure necessary directories exist
@@ -74,13 +74,13 @@
         group: root
         mode: u=rw
       loop:
-        - "{{ specification.advanced.certificates.location }}/csr"
-        - "{{ specification.advanced.certificates.location }}/ext"
+        - "{{ pki.location }}/csr"
+        - "{{ pki.location }}/ext"
 
     - name: Generate new CSR
       command: kubeadm alpha certs renew all --csr-only --csr-dir=csr
       args:
-        chdir: "{{ specification.advanced.certificates.location }}"
+        chdir: "{{ pki.location }}"
 
     # ansible openssl modules and openssl tool behave different, extensions file is necessary for openssl
     # https://github.com/openssl/openssl/issues/10458
@@ -91,14 +91,14 @@
           -in csr/{{ item.name }}.csr \
           | sed '1,3d;s/ Address//g;s/^[[:blank:]]*//;s/[[:blank:]]*$//'
       args:
-        chdir: "{{ specification.advanced.certificates.location }}"
+        chdir: "{{ pki.location }}"
       register: csr_info
       loop: "{{ certificates_opt_mapping }}"
 
     - name: Generate extension files
       template:
         src: certificate-v3.ext.j2
-        dest: "{{ specification.advanced.certificates.location }}/ext/{{ item.0.name }}.ext"
+        dest: "{{ pki.location }}/ext/{{ item.0.name }}.ext"
       loop: "{{ certificates_opt_mapping|zip(csr_info.results)|list }}"
 
     - name: Create signed certificates
@@ -111,12 +111,12 @@
           -CAcreateserial \
           -out {{ item.target }}.crt
       args:
-        chdir: "{{ specification.advanced.certificates.location }}"
+        chdir: "{{ pki.location }}"
       loop: "{{ certificates_opt_mapping }}"
 
     - name: Copy keys to certificates location and ensure that permissions are strict
       copy:
-        src: "{{ specification.advanced.certificates.location }}/csr/{{ item.name }}.key"
+        src: "{{ pki.location }}/csr/{{ item.name }}.key"
         remote_src: yes
         dest: "{{ item.target }}.key"
         owner: root
@@ -126,7 +126,7 @@
 
     - name: Remove csr and ext directories
       file:
-        path: "{{ specification.advanced.certificates.location }}/{{ item }}"
+        path: "{{ pki.location }}/{{ item }}"
         state: absent
       loop:
         - csr
@@ -134,7 +134,7 @@
 
     - name: Search for .conf certificates
       find:
-        paths: [ "{{ specification.advanced.certificates.location }}" ]
+        paths: [ "{{ pki.location }}" ]
         pattern: "*.conf.crt"
       register: _conf_certificates
 
@@ -160,12 +160,12 @@
           --client-key {{ item }}.key \
           --client-certificate {{ item }}.crt --embed-certs
       args:
-        chdir: "{{ specification.advanced.certificates.location }}"
+        chdir: "{{ pki.location }}"
       loop: "{{ conf_certificates }}"
 
     - name: Remove conf certificates
       file:
-        path: "{{ specification.advanced.certificates.location }}/{{ item }}"
+        path: "{{ pki.location }}/{{ item }}"
         state: absent
       loop:
         - 'admin.conf.crt'
