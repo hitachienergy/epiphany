@@ -6,25 +6,19 @@
 
 - name: Install kubeadm package
   vars:
-    install_cni_as_new_package: >-
-      {{ (ansible_facts.packages['kubernetes-cni'] is undefined
-          and (cni_in_kubelet is undefined or not cni_in_kubelet)) }}
-
     # unhold kubelet to avoid errors:
     # The following packages have unmet dependencies: kubelet : Conflicts: kubernetes-cni
     # The following packages have unmet dependencies: kubeadm : Depends: kubernetes-cni (>= 0.8.6)
-    packages_to_unhold: >-
-      {{ ['kubeadm', 'kubelet'] if (install_cni_as_new_package) else
-         ['kubeadm'] }}
+    packages_to_unhold:
+      - kubeadm
+      - kubelet
 
     _packages:
       kubeadm: "{{ version }}-00"
       kubelet: "{{ version }}-00"
       kubernetes-cni: "{{ cni_version }}-00"
 
-    packages_to_install: >-
-      {{ _packages if (install_cni_as_new_package)
-          else { 'kubeadm': _packages.kubeadm } }}
+    packages_to_install: "{{ _packages }}"
 
     packages_to_hold: "{{ packages_to_unhold | union(packages_to_install.keys() | list) }}"
 

@@ -233,3 +233,21 @@ describe 'Check certificate rotation for the kubelet' do
     its(:exit_status) { should eq 0 }
   end
 end
+
+describe 'Check Kubernetes namespace creation and deletion' do
+  ns_name = 'ns-spectest'
+  describe command("kubectl create ns #{ns_name}") do
+    its(:stdout) { should match %r{namespace/#{ns_name} created} }
+    its(:exit_status) { should eq 0 }
+  end
+  describe command("kubectl get ns #{ns_name} -o json") do
+    its(:stdout_as_json) { should include('metadata' => include('name' => ns_name.to_s)) }
+    its(:stdout_as_json) { should include('status' => include('phase' => 'Active')) }
+    its(:exit_status) { should eq 0 }
+  end
+  describe command("kubectl delete ns #{ns_name} --timeout=1m") do
+    its(:stdout) { should match %r{namespace "#{ns_name}" deleted} }
+    its(:stderr) { should_not match %r{error}i }
+    its(:exit_status) { should eq 0 }
+  end
+end
