@@ -10,6 +10,7 @@
 - [#2643](https://github.com/epiphany-platform/epiphany/issues/2643) - Restructure Epicli project folder
 - [#2666](https://github.com/epiphany-platform/epiphany/issues/2666) - Project re-structure part 2
 - [#2547](https://github.com/epiphany-platform/epiphany/issues/2547) - Refactoring and removal of old code from Ansible inventory creator and upgrade
+- [#2597](https://github.com/epiphany-platform/epiphany/issues/2597) - Ensure automatic PostgreSQL clusterization
 - [#2644](https://github.com/epiphany-platform/epiphany/issues/2644) - Add validation to check hostnames for on-prem deployment
 - [#2703](https://github.com/epiphany-platform/epiphany/issues/2703) - Add tests for docker and kubelet cgroup driver
 
