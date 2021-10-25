@@ -93,7 +93,6 @@ specification:
   extensions:
     ...
     replication:
-      enabled: true
       replication_user_name: epi_repmgr
       replication_user_password: PASSWORD_TO_CHANGE
       privileged_user_name: epi_repmgr_admin
@@ -104,9 +103,8 @@ specification:
     ...
 ```
 
-If `enabled` is set to `true` for `replication` extension, Epiphany will automatically create a cluster of primary and
-secondary server with replication user with name and password specified in configuration file. This is only possible for
-configurations containing two PostgreSQL servers.
+If the number of PostgreSQL nodes is higher than one Epiphany will automatically create a cluster of primary and
+secondary server with replication user with name and password specified in configuration file.
 
 Privileged user is used to perform full backup of primary instance and replicate this at the beginning to secondary
 node. After that for replication only replication user with limited permissions is used for WAL replication.
