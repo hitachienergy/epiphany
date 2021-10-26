@@ -5,7 +5,7 @@
         extensions:
           replication:
             enabled:
-              "{{ groups['postgresql'] | length > 1 }}"
+              "{{ ansible_architecture == 'x86_64' and groups['postgresql'] | length > 1 }}"
 
 - name: Combine 'replication' with 'specification'
   set_fact:
