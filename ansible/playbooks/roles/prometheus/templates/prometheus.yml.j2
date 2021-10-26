@@ -41,6 +41,13 @@ scrape_configs:
       - files:
           - "{{ specification.config_directory }}/file_sd/*.yml"
 
+{% if rabbitmq_monitoring_enabled %}
+  - job_name: 'rabbitmq-exporter'
+    static_configs:
+      - targets:
+          - "{{ groups['rabbitmq'][0] }}:15692"
+{% endif %}
+
 {% if bearer_token is defined %}
   - job_name: 'kubernetes-apiservers'
     kubernetes_sd_configs:

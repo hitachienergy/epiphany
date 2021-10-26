@@ -38,6 +38,15 @@
     broker_state: offline
   register: rabbitmq_plugins
 
+- name: Enable rabbitmq monitoring plugin
+  when: rabbitmq_monitoring_enabled
+  rabbitmq_plugin:
+    names: rabbitmq_prometheus,rabbitmq_management_agent,rabbitmq_web_dispatch
+    prefix: /usr/lib/rabbitmq
+    state: enabled
+    broker_state: offline
+    new_only: true
+
 - name: Restart service
   when:
     - config_file_stat.changed or env_file_stat.changed or rabbitmq_plugins.changed

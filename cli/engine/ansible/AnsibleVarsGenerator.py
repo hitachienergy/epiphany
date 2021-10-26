@@ -190,8 +190,7 @@ class AnsibleVarsGenerator(Step):
         self.clear_object(cluster_model, 'credentials')
         return cluster_model
 
-    def get_shared_config_from_manifest(self):
-        # Reuse shared config from existing manifest
+    def get_shared_config_from_manifest(self): # Reuse shared config from existing manifest
         # Shared config contains the use_ha_control_plane flag which is required during upgrades
 
         cluster_model = select_single(self.manifest_docs, lambda x: x.kind == 'epiphany-cluster')
@@ -209,6 +208,8 @@ class AnsibleVarsGenerator(Step):
         # This has been refactored in from Epicli 1.0.x and no longer needed at this stage.
         if hasattr(shared_config_doc.specification, 'supported_os'):
             del shared_config_doc.specification['supported_os']
+
+        shared_config_doc.specification['rabbitmq_monitoring_enabled'] = False
 
         # Merge the shared config doc with defaults
         with DefaultMerger([shared_config_doc]) as doc_merger:
