@@ -57,9 +57,9 @@
 
     - name: Set archive_command to a new default
       vars:
-        pg_invalid_archive_command: |-
-          test ! -f /dbbackup/{{ inventory_hostname }}/backup/%f && \
-            gzip -c < %p > /dbbackup/{{ inventory_hostname }}/backup/%f
+        pg_invalid_archive_command: >-
+          test ! -f /dbbackup/{{ inventory_hostname }}/backup/%f
+          && gzip -c < %p > /dbbackup/{{ inventory_hostname }}/backup/%f
       when: pg_archive_command.query_result[0].archive_command == pg_invalid_archive_command
       block:
         - name: Set archive_command to a new default (/bin/true)
