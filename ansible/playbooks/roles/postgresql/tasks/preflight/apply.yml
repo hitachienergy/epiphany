@@ -8,6 +8,14 @@
         file: roles/postgresql/vars/main.yml
         name: postgresql
 
+    - name: Assert no multiple nodes for ARM
+      assert:
+        that: groups['postgresql'] | length < 2
+        fail_msg: "Multiple PostgreSQL nodes installation is NOT supported for ARM architecture"
+        success_msg: "Single PostgreSQL node installation is supported for ARM architecture"
+      when:
+        - ansible_architecture == 'arm64'
+
     - name: Check if PostgreSQL extensions are supported for the architecture
       assert:
         that: _unsupported_enabled_extensions | length == 0
