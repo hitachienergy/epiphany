@@ -69,6 +69,7 @@
             path: "{{ pg_old.pg.config_dir[ansible_os_family] }}/postgresql-epiphany.conf"
             regexp: ^archive_command = 'test ! -f /dbbackup/.+?/backup/%f && gzip -c < %p > /dbbackup/.+?/backup/%f'
             replace: archive_command = '/bin/true'
+            backup: true
           # run as root to avoid warning: Module remote_tmp /var/lib/postgresql/.ansible/tmp did not exist and
           # was created with a mode of 0700, this may cause issues when running as another user. To avoid this,
           # create the remote_tmp dir with the correct permissions
