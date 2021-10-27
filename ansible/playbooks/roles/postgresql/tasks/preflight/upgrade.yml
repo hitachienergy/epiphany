@@ -51,26 +51,34 @@
   block:
     - name: Get archive_command value
       postgresql_query:
-        query: "SHOW archive_command"
+        query: SHOW archive_command
+        db: postgres
       register: pg_archive_command
       changed_when: false
 
     - name: Set archive_command to a new default
       vars:
-        pg_invalid_archive_command: |-
-          test ! -f /dbbackup/{{ inventory_hostname }}/backup/%f && \
-            gzip -c < %p > /dbbackup/{{ inventory_hostname }}/backup/%f
-      when: pg_archive_command.query_result[0].archive_command == pg_invalid_archive_command
+        _any_pg_hostname_regexp: "(?:{{ groups.postgresql | join('|') }})"
+        pg_invalid_archive_command_regexp: >-
+          test ! -f /dbbackup/{{ _any_pg_hostname_regexp }}/backup/%f
+          && gzip -c < %p > /dbbackup/{{ _any_pg_hostname_regexp }}/backup/%f
+      when: pg_archive_command.query_result[0].archive_command is match(pg_invalid_archive_command_regexp)
       block:
         - name: Set archive_command to a new default (/bin/true)
-          postgresql_set:
-            name: archive_command
-            value: /bin/true
-          changed_when: true
+          replace:
+            path: "{{ pg_old.pg.config_dir[ansible_os_family] }}/postgresql-epiphany.conf"
+            regexp: ^archive_command = 'test ! -f /dbbackup/.+?/backup/%f && gzip -c < %p > /dbbackup/.+?/backup/%f'
+            replace: archive_command = '/bin/true'
+            backup: true
+          # run as root to avoid warning: Module remote_tmp /var/lib/postgresql/.ansible/tmp did not exist and
+          # was created with a mode of 0700, this may cause issues when running as another user. To avoid this,
+          # create the remote_tmp dir with the correct permissions
+          become_user: root
 
         - name: Reload PostgreSQL configuration
           postgresql_query:
-            query: "SELECT pg_reload_conf()"
+            query: SELECT pg_reload_conf()
+            db: postgres
           changed_when: true
 
 - name: Check available disk space for new PostgreSQL data dir
