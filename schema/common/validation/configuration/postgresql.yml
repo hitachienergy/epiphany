@@ -76,8 +76,6 @@ properties:
       replication:
         type: object
         properties:
-          enabled:
-            type: boolean
           replication_user_name:
             type: string
           replication_user_password:
