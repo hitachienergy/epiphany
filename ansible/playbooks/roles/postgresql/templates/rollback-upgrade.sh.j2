@@ -8,8 +8,8 @@ set -x
 {% if is_repmgr_used %}
 
 # - Stop and disable new repmgr service
-sudo systemctl stop {{ new_version.repmgr.service_name[ansible_os_family] }}
-sudo systemctl disable {{ new_version.repmgr.service_name[ansible_os_family] }}
+systemctl stop {{ new_version.repmgr.service_name[ansible_os_family] }}
+systemctl disable {{ new_version.repmgr.service_name[ansible_os_family] }}
 
 # - Restore repmgr symlink
   {% if ansible_os_family == 'Debian' %}
@@ -21,37 +21,37 @@ ln -sf {{ old_version.repmgr.bin_dir.RedHat }}/repmgr /bin/repmgr
 
 # - Stop and disable new PostgreSQL service
 {% if ansible_os_family == 'Debian' %}
-sudo systemctl stop {{ new_version.pg.service_name.Debian }}
-sudo systemctl stop {{ new_version.pg.instantiated_service_name.Debian }}
-sudo systemctl mask {{ new_version.pg.instantiated_service_name.Debian }}
+systemctl stop {{ new_version.pg.service_name.Debian }}
+systemctl stop {{ new_version.pg.instantiated_service_name.Debian }}
+systemctl mask {{ new_version.pg.instantiated_service_name.Debian }}
 {% elif ansible_os_family == 'RedHat' %}
-sudo systemctl stop {{ new_version.pg.service_name.RedHat }}
-sudo systemctl disable {{ new_version.pg.service_name.RedHat }}
+systemctl stop {{ new_version.pg.service_name.RedHat }}
+systemctl disable {{ new_version.pg.service_name.RedHat }}
 {% endif %}
 
 # - Start and enable old PostgreSQL service
 {% if ansible_os_family == 'Debian' %}
-sudo systemctl unmask {{ old_version.pg.instantiated_service_name.Debian }}
-sudo systemctl start {{ old_version.pg.service_name.Debian }}
-sudo systemctl start {{ old_version.pg.instantiated_service_name.Debian }}
+systemctl unmask {{ old_version.pg.instantiated_service_name.Debian }}
+systemctl start {{ old_version.pg.service_name.Debian }}
+systemctl start {{ old_version.pg.instantiated_service_name.Debian }}
 {% elif ansible_os_family == 'RedHat' %}
-sudo systemctl start {{ old_version.pg.service_name.RedHat }}
-sudo systemctl enable {{ old_version.pg.service_name.RedHat }}
+systemctl start {{ old_version.pg.service_name.RedHat }}
+systemctl enable {{ old_version.pg.service_name.RedHat }}
 {% endif %}
 {% if is_repmgr_used %}
 
 # - Start and enable old repmgr service
-sudo systemctl start {{ old_version.repmgr.service_name[ansible_os_family] }}
-sudo systemctl enable {{ old_version.repmgr.service_name[ansible_os_family] }}
+systemctl start {{ old_version.repmgr.service_name[ansible_os_family] }}
+systemctl enable {{ old_version.repmgr.service_name[ansible_os_family] }}
 {% endif %}
 
 # - Remove new data directory
-sudo rm -rf {{ new_version.pg.data_dir[ansible_os_family] }}
+rm -rf {{ new_version.pg.data_dir[ansible_os_family] }}
 {% if pg_custom_tablespace_locations | count > 0 %}
 
 # - Clean up migrated tablespace directories
   {% for directory_path in pg_custom_tablespace_locations %}
-rm -f {{ directory_path }}/PG_{{ new_version.pg.version }}_*
+rm -rf {{ directory_path }}/PG_{{ new_version.pg.version }}_*
   {% endfor %}
 {% endif %}
 
