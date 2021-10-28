@@ -179,17 +179,17 @@
 
   - name: Check if replication previously enabled | Set previous version clustered status
     set_fact:
-      _previously_replication_enabled: "{{ stat_repmgr_config_file.stat.exists and not (config_file_header.stdout_lines[1] is defined and config_file_header.stdout_lines[1] is match('# repmgr sample configuration file')) }}"
+      _replication_previously_enabled: "{{ stat_repmgr_config_file.stat.exists and not (config_file_header.stdout_lines[1] is defined and config_file_header.stdout_lines[1] is match('# repmgr sample configuration file')) }}"
 
-- name: Debag
-  debug:
-    msg: "{{ stat_repmgr_config_file }}"
+  - name: Debag
+    debug:
+      msg: "{{ _replication_previously_enabled }}"
 
 - name: Assert old PostgreSQL cluster is healthy
   when:
     - not pg_upgrade_already_run
     - not pg_upgrade_failed
-    - _previously_replication_enabled
+    - _replication_previously_enabled
   become: true
   become_user: postgres
   vars:
