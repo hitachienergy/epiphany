@@ -2,6 +2,8 @@
 #!/usr/bin/env bash
 {# This script is meant to be executed on primary node #}
 
+[ $EUID -eq 0 ] || { echo "You have to run as root" && exit 1; }
+
 set -x
 
 # Rollback steps:
