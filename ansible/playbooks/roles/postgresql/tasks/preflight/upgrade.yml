@@ -155,11 +155,41 @@
         success_msg: PostgreSQL cluster in version '{{ pg_old.pg.version }}' found
         quiet: true
 
+- name: Check if replication previously enabled
+  become: true
+  become_user: postgres
+  vars:
+    _repmgr_config_file: "{{ pg_old.repmgr.config_dir[ansible_os_family] }}/repmgr.conf"
+  block:
+  - name: Check if replication previously enabled | Check if config file exists
+    stat:
+      path: "{{ _repmgr_config_file }}"
+      get_attributes: false
+      get_checksum: false
+      get_mime: false
+    register: stat_repmgr_config_file
+
+  - name: Check if replication previously enabled | RedHat | Check if config file is from package
+    when:
+      - ansible_os_family == 'RedHat'
+      - stat_repmgr_config_file.stat.exists
+    command: head -2 {{ _repmgr_config_file }}
+    register: config_file_header
+    changed_when: false
+
+  - name: Check if replication previously enabled | Set previous version clustered status
+    set_fact:
+      _previously_replication_enabled: "{{ stat_repmgr_config_file.stat.exists and not (config_file_header.stdout_lines[1] is defined and config_file_header.stdout_lines[1] is match('# repmgr sample configuration file')) }}"
+
+- name: Debag
+  debug:
+    msg: "{{ stat_repmgr_config_file }}"
+
 - name: Assert old PostgreSQL cluster is healthy
   when:
-    - pg_manifest.specification.extensions.replication.enabled
     - not pg_upgrade_already_run
     - not pg_upgrade_failed
+    - _previously_replication_enabled
   become: true
   become_user: postgres
   vars:
