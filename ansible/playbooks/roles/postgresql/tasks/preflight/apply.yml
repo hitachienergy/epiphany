@@ -14,7 +14,7 @@
         fail_msg: "Multiple PostgreSQL nodes installation is NOT supported for ARM architecture"
         success_msg: "Single PostgreSQL node installation is supported for ARM architecture"
       when:
-        - ansible_architecture == 'arm64'
+        - ansible_architecture == 'aarch64'
 
     - name: Check if PostgreSQL extensions are supported for the architecture
       assert:
