@@ -23,7 +23,7 @@
           --output=jsonpath={{ jsonpath }}
       vars:
         selector: >-
-          'node-role.kubernetes.io/master'
+          'node-role.kubernetes.io/control-plane'
         jsonpath: >-
           '{range .items[*]}{.metadata.name}{"\n"}{end}'
       register: kubectl_get_master_nodes

@@ -2,7 +2,7 @@
 - name: Get masters with NoSchedule
   vars:
     selector: >-
-      'node-role.kubernetes.io/master'
+      'node-role.kubernetes.io/control-plane'
     jsonpath: >-
       '{range .items[*]}{.metadata.name}{":"}{.spec.taints[?(@.effect == "NoSchedule")].effect}{"\n"}{end}'
   shell: |
@@ -24,7 +24,7 @@
 
 - name: Untaint all tainted masters
   command: |
-    kubectl taint node {{ item }} node-role.kubernetes.io/master:NoSchedule-
+    kubectl taint node {{ item }} node-role.kubernetes.io/control-plane:NoSchedule-
   loop: >-
     {{ tainted_masters_list.stdout_lines
     | map('regex_replace', '^([^:][^:]*):.*$', '\1')
