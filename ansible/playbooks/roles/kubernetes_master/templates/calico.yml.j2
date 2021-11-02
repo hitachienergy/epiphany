@@ -1,3 +1,5 @@
+# https://docs.projectcalico.org/manifests/calico.yaml
+
 ---
 # Source: calico/templates/calico-config.yaml
 # This ConfigMap is used to configure a self-hosted Calico installation.
@@ -3869,6 +3871,12 @@ spec:
           resources:
             requests:
               cpu: 250m
+          lifecycle:
+            preStop:
+              exec:
+                command:
+                  - /bin/calico-node
+                  - -shutdown
           livenessProbe:
             exec:
               command:
