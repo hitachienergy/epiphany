@@ -8,14 +8,30 @@
 
 - name: Change the state info of the previous epicli execution
   hosts: all
-  gather_facts: true
+  gather_facts: false
   become: true
   become_method: sudo
   tasks:
-    - name: Change current running status to complete
-      lineinfile:
-        path: /var/lib/epiphany/history.yml
-        firstmatch: true  # only first occurrence
-        backrefs: true  # allows to use regexp groups
-        regexp: '(.*)state\: started'  # assuming that current status is always on top
-        line: '\1state: completed'
+    - name: Load the history file
+      slurp:
+        src: /var/lib/epiphany/history.yml
+      register: history_file
+
+    - name: Parse history_file to yaml format and change the state
+      set_fact:
+        history_first_entry: >-
+          {{ history_file_yaml.deployments[0] | combine({'state': 'completed'})}}
+        history_other_entries: >-
+          {{ history_file_yaml.deployments[1:] }}
+      vars:
+        history_file_yaml: "{{ history_file.content | b64decode | from_yaml }}"
+
+    - name: Construct history file
+      set_fact:
+        new_history_file: >-
+          {{ {'deployments': [history_first_entry] + history_other_entries} }}
+
+    - name: Save newly constructed history file
+      copy:
+        content: "{{ new_history_file | to_nice_yaml }}"
+        dest: /var/lib/epiphany/history.yml

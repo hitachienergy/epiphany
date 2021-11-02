@@ -12,19 +12,19 @@
   environment:
     KUBECONFIG: "{{ kubeconfig.remote }}"
 
-
 - name: Add epicli version info for each component used
   hosts: all
-  gather_facts: false
+  gather_facts: true
   become: true
   become_method: sudo
   vars:
-    history_file_content: |
-      deployments:
-        - version: {{ epiphany_version }}
-          date: {{ ansible_date_time.date }} {{ ansible_date_time.time }}
-          mode: {{ is_upgrade_run | ternary('upgrade', 'apply') }}
-          state: started
+    history_last_entry: {}
+    history_other_entries: []
+    history_newest_entry:
+        version: "{{ epiphany_version }}"
+        date: "{{ ansible_date_time.date }} {{ ansible_date_time.time }}"
+        mode: "{{ is_upgrade_run | ternary('upgrade', 'apply') }}"
+        state: started
   tasks:
     - name: Create epiphany directory if it does not exist
       file:
@@ -37,24 +37,31 @@
         path: /var/lib/epiphany/history.yml
       register: history_file
 
-    - name: Change previous running status from started to failed
-      lineinfile:
-        path: /var/lib/epiphany/history.yml
-        firstmatch: true  # only first occurrence
-        backrefs: true  # allows to use regexp groups
-        regexp: '(.*)state\: started'  # assuming that current status is always on top
-        line: '\1state: failed'
+    - name: Load the history file
+      slurp:
+        src: /var/lib/epiphany/history.yml
+      register: history_file_handler
       when: history_file.stat.exists and history_file.stat.size > 0
 
-    - name: Add history info
-      lineinfile:
-        path: /var/lib/epiphany/history.yml
-        regexp: 'deployments:'
-        line: "{{ history_file_content }}"
+    - name: Parse history_file_handler content to yaml format
+      set_fact:
+        history_last_entry: "{{ history_file_yaml.deployments[0] }}"
+        history_other_entries: "{{ history_file_yaml.deployments[1:] }}"
+      vars:
+        history_file_yaml: "{{ history_file_handler.content | b64decode | from_yaml }}"
       when: history_file.stat.exists and history_file.stat.size > 0
 
-    - name: Create history file
+    - name: Check previous state and change it if needed
+      set_fact:
+        history_last_entry: "{{ history_last_entry | combine({'state': 'failed'})}}"
+      when: (history_last_entry) and (history_last_entry.state != 'completed')
+
+    - name: Construct new history file
+      set_fact:
+        new_history_file: >-
+          {{ {'deployments': [history_newest_entry] + history_last_entry | ternary([history_last_entry], []) + history_other_entries} }}
+
+    - name: Save the history file content
       copy:
+        content: "{{ new_history_file | to_nice_yaml }}"
         dest: /var/lib/epiphany/history.yml
-        content: "{{ history_file_content }}"
-      when: not history_file.stat.exists or history_file.stat.size == 0
