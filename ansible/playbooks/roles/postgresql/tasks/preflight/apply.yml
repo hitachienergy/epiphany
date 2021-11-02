@@ -8,6 +8,19 @@
         file: roles/postgresql/vars/main.yml
         name: postgresql
 
+    - name: Set if 'replication' is enabled
+      set_fact:
+        _spec:
+          specification:
+            extensions:
+              replication:
+                enabled:
+                  "{{ ansible_architecture == 'x86_64' and groups['postgresql'] | length > 1 }}"
+
+    - name: Combine 'replication' with 'specification'
+      set_fact:
+        postgresql: "{{ postgresql | combine(_spec, list_merge='append', recursive=True) }}"
+
     - name: Assert no multiple nodes for ARM
       assert:
         that: groups['postgresql'] | length < 2
