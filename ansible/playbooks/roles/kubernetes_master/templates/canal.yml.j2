@@ -1,3 +1,5 @@
+# https://docs.projectcalico.org/manifests/canal.yaml
+
 ---
 # Source: calico/templates/calico-config.yaml
 # This ConfigMap is used to configure a self-hosted Canal installation.
@@ -3602,7 +3604,6 @@ rules:
       - bgpconfigurations
       - ippools
       - ipamblocks
-      - ipamhandles
       - globalnetworkpolicies
       - globalnetworksets
       - networkpolicies
@@ -3810,6 +3811,9 @@ spec:
             # Use Kubernetes API as the backing datastore.
             - name: DATASTORE_TYPE
               value: "kubernetes"
+            # Configure route aggregation based on pod CIDR.
+            - name: USE_POD_CIDR
+              value: "true"
             # Wait for the datastore.
             - name: WAIT_FOR_DATASTORE
               value: "true"
@@ -3851,6 +3855,12 @@ spec:
           resources:
             requests:
               cpu: 250m
+          lifecycle:
+            preStop:
+              exec:
+                command:
+                  - /bin/calico-node
+                  - -shutdown
           livenessProbe:
             exec:
               command:
