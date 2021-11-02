@@ -14,7 +14,7 @@
       command: |
         kubectl drain {{ inventory_hostname }} \
           --ignore-daemonsets \
-          --delete-local-data
+          --delete-emptydir-data
       register: result
       until:
         - result is succeeded
