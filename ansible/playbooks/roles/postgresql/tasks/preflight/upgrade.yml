@@ -213,3 +213,10 @@
         fail_msg: "{{ ['CRITICAL keyword found in output:']
                       + repmgr_node_check.stdout_lines | map('regex_replace', '^\t', '') }}"  # noqa no-tabs
         quiet: "{{ not 'CRITICAL' in repmgr_node_check.stdout }}"  # for better formatting of 'fail_msg'
+
+- name: Assert there is only one PostgreSQL host or replication was enabled
+  when: pg_upgrade_needed
+  assert:
+    that: groups.postgresql | count < 2 or _pg_old_replication_enabled
+  fail_msg: Upgrade is not supported for configurations with more than one PostgreSQL primary node
+  quiet: true
