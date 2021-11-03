@@ -134,9 +134,9 @@ kubectl-1.19.15
 kubelet-1.19.15
 
 # K8s v1.20.12
-kubeadm-v1.20.12
-kubectl-v1.20.12
-kubelet-v1.20.12
+kubeadm-1.20.12
+kubectl-1.20.12
+kubelet-1.20.12
 
 # Kubernetes Generic
 kubernetes-cni-0.8.6-0 # since K8s v1.18.6
