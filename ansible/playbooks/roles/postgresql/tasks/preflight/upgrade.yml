@@ -218,5 +218,5 @@
   when: pg_upgrade_needed
   assert:
     that: groups.postgresql | count < 2 or _pg_old_replication_enabled
-  fail_msg: Upgrade is not supported for configurations with more than one PostgreSQL primary node
-  quiet: true
+    fail_msg: Upgrade is not supported for configurations with more than one PostgreSQL primary node
+    quiet: true
