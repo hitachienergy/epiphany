@@ -25,7 +25,6 @@
 - name: Untaint all tainted masters
   command: |-
     kubectl taint node {{ item }} \
-      node-role.kubernetes.io/control-plane:NoSchedule- \
       node-role.kubernetes.io/master:NoSchedule-
   loop: >-
     {{ tainted_masters_list.stdout_lines
