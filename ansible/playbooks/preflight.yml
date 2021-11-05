@@ -54,17 +54,18 @@
           vars:
             _history_file_yaml: "{{ history_file_handler.content | b64decode | from_yaml }}"
 
-    - name: Check previous state and change it if needed
+    - name: Check previous status and update if needed
       set_fact:
-        history_last_entry: "{{ history_last_entry | combine({'state': 'failed'})}}"
-      when: (history_last_entry) and (history_last_entry.state != 'completed')
+        history_latest_entry: "{{ history_latest_entry | combine({'status': 'failed'}) }}"
+      when:
+        - history_latest_entry.status is defined
+        - history_latest_entry.status != 'completed'
 
-    - name: Construct new history file
-      set_fact:
-        new_history_file: >-
-          {{ {'deployments': [history_newest_entry] + history_last_entry | ternary([history_last_entry], []) + history_other_entries} }}
-
-    - name: Save the history file content
+    - name: Update history and save to file
       copy:
-        content: "{{ new_history_file | to_nice_yaml }}"
+        content: "{{ _new_content | to_nice_yaml(indent=2) }}"
         dest: /var/lib/epiphany/history.yml
+      vars:
+        _new_content:
+          deployments: >-
+            {{ [history_new_entry] + history_latest_entry | ternary([history_latest_entry], []) + history_other_entries }}
