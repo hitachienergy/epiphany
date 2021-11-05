@@ -6,7 +6,7 @@
   roles:
     - postflight
 
-- name: Change the state info of the previous epicli execution
+- name: Update status in epicli execution history file
   hosts: all
   gather_facts: false
   become: true
