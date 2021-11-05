@@ -13,15 +13,19 @@
 - when: stat_kubeconfig.stat.exists
   block:
     - name: Get list of all master nodes
-      command: |
-        kubectl get nodes \
-          --selector={{ selector }} \
-          --output=jsonpath={{ jsonpath }}
+      # When Epiphany doesn't support K8s versions with old label,
+      # can be changed to command: "kubectl get nodes --selector={{ selector }} --output=jsonpath={{ jsonpath }}"
+      shell: |-
+        kubectl get nodes --output=json \
+          | jq --raw-output {{ query }}
+      args:
+        executable: /bin/bash
       vars:
-        selector: >-
-          'node-role.kubernetes.io/control-plane'
-        jsonpath: >-
-          '{range .items[*]}{.metadata.name}{"\n"}{end}'
+        query: >-
+          '.items[].metadata
+            | select (.labels."node-role.kubernetes.io/master" == ""
+              or .labels."node-role.kubernetes.io/control-plane" == "")
+            | .name'
       register: kubectl_get_master_nodes
       changed_when: false
 
@@ -72,15 +76,17 @@
     - when: stat_kubelet_conf.stat.exists
       block:
         - name: Get list of all worker nodes
-          shell: |
-            kubectl get nodes \
-              --selector={{ selector }} \
-              --output=jsonpath={{ jsonpath }}
+          # When Epiphany doesn't support K8s versions with old label,
+          # can be changed to command: "kubectl get nodes --selector={{ selector }} --output=jsonpath={{ jsonpath }}"
+          shell: |-
+            kubectl get nodes --output=json \
+              | jq --raw-output {{ query }}
           vars:
-            selector: >-
-              '!node-role.kubernetes.io/control-plane'
-            jsonpath: >-
-              '{range .items[*]}{.metadata.name}{"\n"}{end}'
+            query: >-
+              '.items[].metadata
+                | select (.labels."node-role.kubernetes.io/master" != ""
+                  and .labels."node-role.kubernetes.io/control-plane" != "")
+                | .name'
           environment:
             KUBECONFIG: /etc/kubernetes/kubelet.conf
           args:
