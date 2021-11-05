@@ -37,19 +37,22 @@
         path: /var/lib/epiphany/history.yml
       register: history_file
 
-    - name: Load the history file
-      slurp:
-        src: /var/lib/epiphany/history.yml
-      register: history_file_handler
-      when: history_file.stat.exists and history_file.stat.size > 0
+    - name: Parse history file
+      when:
+        - history_file.stat.exists
+        - history_file.stat.size > 0
+      block:
+        - name: Load history file
+          slurp:
+            src: /var/lib/epiphany/history.yml
+          register: history_file_handler
 
-    - name: Parse history_file_handler content to yaml format
-      set_fact:
-        history_last_entry: "{{ history_file_yaml.deployments[0] }}"
-        history_other_entries: "{{ history_file_yaml.deployments[1:] }}"
-      vars:
-        history_file_yaml: "{{ history_file_handler.content | b64decode | from_yaml }}"
-      when: history_file.stat.exists and history_file.stat.size > 0
+        - name: Parse history file
+          set_fact:
+            history_latest_entry: "{{ _history_file_yaml.deployments[0] }}"
+            history_other_entries: "{{ _history_file_yaml.deployments[1:] }}"
+          vars:
+            _history_file_yaml: "{{ history_file_handler.content | b64decode | from_yaml }}"
 
     - name: Check previous state and change it if needed
       set_fact:
