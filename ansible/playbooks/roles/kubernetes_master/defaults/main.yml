@@ -27,3 +27,6 @@ kubelet_custom_config:
 
 coredns_vars:
   known_hosts_file_name: coredns-known-hosts
+
+pki:
+  location: /etc/kubernetes/pki

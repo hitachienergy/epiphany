@@ -1,11 +1,21 @@
+---
+**NOTE**
+
+This tool is deprecated and needs to be adjusted according
+to [deprecation](https://github.com/kubernetes/kubernetes/pull/90513) of `--cgroup-driver` flag in `kubeadm-flags.env`
+since 1.19 version. Epicli ensures that cgroup driver is set to `systemd` during apply and upgrade.
+
+---
+
 [K8s documentation](https://kubernetes.io/docs/setup/production-environment/container-runtimes/#cgroup-drivers) states:
 
 > A single cgroup manager simplifies the view of what resources are being allocated and will by default have a more consistent view of the available and in-use resources.
 > When there are two cgroup managers on a system, you end up with two views of those resources.
 > In the field, people have reported cases where nodes that are configured to use cgroupfs for the kubelet and Docker, but systemd for the rest of the processes, become unstable under resource pressure.
 
-Unfortunately (before this workaround) Epiphany had never switched to the `systemd` cgroup driver for `docker` and `kubelet` services.
-Our aim here is to take an existing Epiphany cluster, patch worker nodes and perform memory and cpu stress tests on it.
+Unfortunately (before this workaround) Epiphany had never switched to the `systemd` cgroup driver for `docker`
+and `kubelet` services. Our aim here is to take an existing Epiphany cluster, patch worker nodes and perform memory and
+cpu stress tests on it.
 
 ## Requirements
 
@@ -31,7 +41,8 @@ Ansible will replace back `systemd` driver with `cgroupfs` driver.
 
 ## Procedure
 
-Ansible will sequentially (rolling update but **without waiting for pods to be `Ready`**) reconfigure `docker` and `kubelet` services on each worker node.
+Ansible will sequentially (rolling update but **without waiting for pods to be `Ready`**) reconfigure `docker`
+and `kubelet` services on each worker node.
 
 When there are any changes found in config files, ansible will (for each worker node):
 

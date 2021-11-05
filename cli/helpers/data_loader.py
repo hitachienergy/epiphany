@@ -18,7 +18,6 @@ BASE_DIR = (
     else BASE_DIR_DEV
 )
 SCHEMA_DIR = os.path.join(BASE_DIR, 'schema')
-MANIFEST_FILE_NAME = 'manifest.yml'
 
 Types = namedtuple('FileType', 'DEFAULT VALIDATION TERRAFORM ANSIBLE')
 types = Types(DEFAULT='defaults',
@@ -74,11 +73,3 @@ def load_json_obj(path_to_file):
     with open(path_to_file, 'r') as stream:
         obj = json.load(stream)
         return dict_to_objdict(obj)
-
-
-def load_manifest_docs(build_dir):
-    path_to_manifest = os.path.join(build_dir, MANIFEST_FILE_NAME)
-    if not os.path.isfile(path_to_manifest):
-        raise Exception('No manifest.yml inside the build folder')
-
-    return load_yamls_file(path_to_manifest)

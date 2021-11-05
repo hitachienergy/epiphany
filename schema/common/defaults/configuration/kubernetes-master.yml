@@ -2,8 +2,8 @@ kind: configuration/kubernetes-master
 title: Kubernetes Master Config
 name: default
 specification:
-  version: 1.18.6
-  cni_version: 0.8.6
+  version: 1.19.15
+  cni_version: 0.8.7
   cluster_name: "kubernetes-epiphany"
   allow_pods_on_master: False
   storage:
@@ -31,7 +31,6 @@ specification:
       plugin: flannel # valid options: calico, flannel, canal (due to lack of support for calico on Azure - use canal)
     imageRepository: k8s.gcr.io
     certificates:
-      location: /etc/kubernetes/pki
       expiration_days: 365 # values greater than 24855 are not recommended
       renew: false
     etcd_args:

@@ -23,12 +23,19 @@
     group: postgres
   when: ansible_os_family == 'Debian'
 
+- name: repmgr for PG {{ upgrade_defaults.pg.version }} | RedHat | Ensure symlink to repmgr exists
+  file:
+    src: "{{ upgrade_defaults.repmgr.bin_dir.RedHat }}/repmgr"
+    dest: "/usr/bin/repmgr"
+    state: link
+  when: ansible_os_family == 'RedHat'
+
 - name: repmgr for PG {{ upgrade_defaults.pg.version }} | Search for primary node
   become_user: postgres
   # command prints primary node name (hostname)
   shell: |-
     set -o pipefail && \
-    {{ upgrade_defaults.repmgr.bin_dir[ansible_os_family] }}/repmgr cluster show \
+    repmgr cluster show \
       | awk 'BEGIN{FS="|"} {gsub(/ /,""); if ($3 == "primary") print $2}'
   changed_when: false
   register: find_pg_primary_node
@@ -76,7 +83,7 @@
       RedHat:
         - "{{ _repmgr_package_name }}-{{ _target_version }}"
   module_defaults:
-    yum: { lock_timeout: "{{ yum_lock_timeout }}" }
+    yum: {lock_timeout: "{{ yum_lock_timeout }}"}
 
 - name: repmgr for PG {{ upgrade_defaults.pg.version }} | Update postgres user in sudoers file
   lineinfile:
@@ -161,7 +168,7 @@
   register: query_repmgr_version
   # 'installed_version' keeps only major version (e.g. '5.2')
   until: repmgr.version[ansible_os_family] is match(query_repmgr_version.query_result | json_query('[0].installed_version'))
-  retries: 10
+  retries: 30  # up to 10s of replication lag was observed during dump import
   delay: 1
   when: inventory_hostname != find_pg_primary_node.stdout
 

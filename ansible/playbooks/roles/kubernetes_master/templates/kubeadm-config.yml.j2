@@ -19,7 +19,7 @@ apiServer:
 {% endfor %}
   extraArgs: # https://kubernetes.io/docs/reference/command-line-tools-reference/kube-apiserver/
 {% if specification.advanced.etcd_args.encrypted | bool %}
-    encryption-provider-config: /etc/kubernetes/pki/etcd/etc-encryption.conf
+    encryption-provider-config: {{ pki.location }}/etcd/etc-encryption.conf
 {% endif %}
 {% for key, value in specification.advanced.api_server_args.items() %}
     {{ key }}: "{{ value }}"
@@ -44,4 +44,9 @@ networking:
 
 imageRepository: {{ image_registry_address }}/{{ specification.advanced.imageRepository }}
 
-certificatesDir: {{ specification.advanced.certificates.location }}
+certificatesDir: {{ pki.location }}
+---
+kind: KubeletConfiguration
+apiVersion: kubelet.config.k8s.io/v1beta1
+cgroupDriver: systemd
+rotateCertificates: true

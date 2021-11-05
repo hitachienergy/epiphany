@@ -1,0 +1,108 @@
+---
+- name: Get information on installed packages as facts
+  package_facts:
+    manager: auto
+  when: ansible_facts.packages is undefined
+
+# Disabling extensions is not supported, so these values are taken by check whether related packages are installed
+# It's possible to take these values from manifest, but as it can be overwritten, values are based on packages
+- name: Set facts on installed extensions
+  set_fact:
+    is_pgaudit_used: "{{ ansible_facts.packages.keys() | intersect(_packages.pgaudit) | count > 0 }}"
+    is_pgbouncer_used: "{{ ansible_facts.packages.pgbouncer is defined }}"  # package name is the same for all versions
+    is_repmgr_used: "{{ ansible_facts.packages.keys() | intersect(_packages.repmgr) | count > 0 }}"
+  vars:
+    _packages:
+      pgaudit:
+        - "{{ old_version.pgaudit.package_name[ansible_os_family] }}"
+        - "{{ new_version.pgaudit.package_name[ansible_os_family] }}"
+      repmgr:
+        - "{{ old_version.repmgr.package_name[ansible_os_family] }}"
+        - "{{ new_version.repmgr.package_name[ansible_os_family] }}"
+
+# Get current info on PostgreSQL instance (when running) or last known (previously stored in file)
+
+- name: Get PostgreSQL info on node role
+  block:
+    # Requires running PostgreSQL
+    - name: Get PostgreSQL info on node role
+      become: true
+      become_user: postgres
+      postgresql_info:
+        filter: in_recovery
+      register: postgresql_info
+  rescue:
+    # Failure on first run is unexpected and unhandled
+    - name: Fail with message on unhandled failure
+      fail:
+        msg: "{{ ansible_failed_result }}"
+      when: postgresql_upgrade_status != 'failed'
+
+    - name: rescue | Load '{{ old_version.pg.upgrade.postgresql_info_fallback_file_path }}'
+      slurp:
+        src: "{{ old_version.pg.upgrade.postgresql_info_fallback_file_path }}"
+      register: postgresql_info_yml
+
+# Save result in file to use it as fallback on rerun
+- name: Save 'postgresql_info' result in '{{ old_version.pg.upgrade.postgresql_info_fallback_file_path }}'
+  when: postgresql_info is not failed
+  copy:
+    content: "{{ postgresql_info | to_nice_yaml(indent=2) }}"
+    dest: "{{ old_version.pg.upgrade.postgresql_info_fallback_file_path }}"
+    mode: u=rw,go=
+
+- name: Set 'postgresql_info' fact based on last known result stored in fallback file
+  when: postgresql_info is failed
+  set_fact:
+    postgresql_info: "{{ postgresql_info_yml.content | b64decode | from_yaml }}"
+
+- name: Set facts on node role
+  set_fact:
+    is_primary_node: "{{ not postgresql_info.in_recovery }}"
+    is_standby_node: "{{ postgresql_info.in_recovery }}"
+
+# Set 'pg_primary_node' fact
+- include_tasks: get-primary-node.yml
+  when: pg_primary_node is undefined
+
+# Query custom tablespaces (when PostgreSQL is running) or load from fallback file
+# 'postgresql_info' module doesn't provide tablespace locations
+
+- name: Get custom tablespaces
+  block:
+    # Requires running PostgreSQL
+    - name: Query custom tablespaces
+      become_user: postgres
+      postgresql_query:
+        query: "select pg_tablespace_location(oid) as location from pg_tablespace where spcname not in ('pg_default', 'pg_global')"
+      delegate_to: "{{ pg_primary_node }}"
+      run_once: true
+      register: pg_custom_tablespaces
+
+    - name: PostgreSQL | Set 'pg_custom_tablespace_locations' fact
+      set_fact:
+        pg_custom_tablespace_locations: "{{ pg_custom_tablespaces.query_result | map(attribute='location') | list }}"
+  rescue:
+    # Failure on first run is unexpected and unhandled
+    - name: Fail with message on unhandled failure
+      fail:
+        msg: "{{ ansible_failed_result }}"
+      when: postgresql_upgrade_status != 'failed'
+
+    - name: rescue | Load '{{ old_version.pg.upgrade.custom_tablespaces_fallback_file_path }}'
+      slurp:
+        src: "{{ old_version.pg.upgrade.custom_tablespaces_fallback_file_path }}"
+      register: custom_tablespaces_yml
+
+# Save fact in file to use it as fallback on rerun
+- name: Save 'pg_custom_tablespace_locations' fact in '{{ old_version.pg.upgrade.custom_tablespaces_fallback_file_path }}'
+  when: pg_custom_tablespaces is not failed
+  copy:
+    content: "{{ pg_custom_tablespace_locations | to_nice_yaml(indent=2) }}"
+    dest: "{{ old_version.pg.upgrade.custom_tablespaces_fallback_file_path }}"
+    mode: u=rw,go=
+
+- name: Set 'pg_custom_tablespace_locations' fact based on result stored in fallback file
+  when: pg_custom_tablespaces is failed
+  set_fact:
+    pg_custom_tablespace_locations: "{{ custom_tablespaces_yml.content | b64decode | from_yaml }}"

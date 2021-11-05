@@ -1,0 +1,7 @@
+---
+- name: "{{ _node_role }} | extensions | repmgr | Debian | Update symlink to config file"
+  file:
+    src: "{{ new_version.repmgr.config_dir[ansible_os_family] }}/repmgr.conf"
+    dest: /etc/repmgr.conf
+    state: link
+  when: ansible_os_family == 'Debian'

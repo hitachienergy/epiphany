@@ -1,0 +1,5 @@
+---
+- name: "{{ _node_role }} | Remove upgrade state file"
+  file:
+    path: "{{ old_version.pg.upgrade.state_file_path }}"
+    state: absent

@@ -9,15 +9,6 @@ properties:
       certificates:
         type: object
         properties:
-          location:
-            title: location schema
-            "$id": "#/properties/specification/properties/advanced/properties/certificates/properties/location"
-            description: |-
-              Where the certificates should be stored
-            type: string
-            default: /etc/kubernetes/pki
-            examples:
-            - /etc/kubernetes/pki
           expiration_days:
             title: expiration_days schema
             "$id": "#/properties/specification/properties/advanced/properties/certificates/properties/expiration_days"
