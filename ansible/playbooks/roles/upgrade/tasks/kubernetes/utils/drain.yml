@@ -13,8 +13,12 @@
       run_once: true
       command: |
         kubectl drain {{ inventory_hostname }} \
-          --ignore-daemonsets \
-          --delete-emptydir-data
+            --ignore-daemonsets \
+          {%- if version is version('1.20', '<') -%}
+            --delete-local-data
+          {%- else -%}
+            --delete-emptydir-data
+          {%- endif -%}
       register: result
       until:
         - result is succeeded
