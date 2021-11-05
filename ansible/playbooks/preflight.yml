@@ -28,7 +28,7 @@
   tasks:
     - name: Create epiphany directory if it does not exist
       file:
-        path: /var/lib/epiphany/
+        path: /var/lib/epiphany
         state: directory
         mode: u=rwx,go=rx
 
