@@ -18,7 +18,7 @@
   become: true
   become_method: sudo
   vars:
-    history_last_entry: {}
+    history_latest_entry: {}
     history_other_entries: []
     history_newest_entry:
       version: "{{ epiphany_version }}"
