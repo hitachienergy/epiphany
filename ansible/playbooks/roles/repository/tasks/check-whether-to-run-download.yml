@@ -4,12 +4,12 @@
 
 - name: Check if flag file exists
   stat:
-    path: /var/tmp/epi-download-requirements/download-requirements-done.flag
+    path: "{{ download_requirements_flag }}"
   register: stat_flag_file
 
 - name: Remove download-requirements-done.flag file if expired
   file:
-    path: /var/tmp/epi-download-requirements/download-requirements-done.flag
+    path: "{{ download_requirements_flag }}"
     state: absent
   when:
     - stat_flag_file.stat.exists
@@ -17,5 +17,5 @@
 
 - name: Check whether to run download script
   stat:
-    path: /var/tmp/epi-download-requirements/download-requirements-done.flag
+    path: "{{ download_requirements_flag }}"
   register: stat_flag_file

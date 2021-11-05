@@ -1,0 +1,10 @@
+---
+- name: Install Debian family packages essential for repository to work
+  apt:
+    name:
+      - python3-yaml
+    state: present
+  register: result
+  retries: 3
+  delay: 1
+  until: result is succeeded

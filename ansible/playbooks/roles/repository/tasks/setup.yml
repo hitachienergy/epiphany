@@ -16,27 +16,37 @@
           'redhat-7' if (ansible_distribution == 'RedHat' and ansible_distribution_major_version == '7') else
           'ubuntu-20.04' if (ansible_distribution == 'Ubuntu' and ansible_distribution_version == '20.04') else None }}
 
-- name: Download Epiphany requirements on repository host # online mode
+- name: Set paths for download-requirements script
+  set_fact:
+    download_requirements_dir: "{{ _download_requirements_dir }}"
+    download_requirements_script: "{{ _download_requirements_dir }}/download-requirements.py"
+    download_requirements_flag: "{{ _download_requirements_dir }}/download-requirements-done.flag"
+  vars:
+    _download_requirements_dir: "/var/tmp/epi-download-requirements"
+
+- name: Setup venv and download Epiphany requirements on repository host  # online mode
   block:
-    - name: Check if OS distribution is supported
-      assert:
-        that: download_script_subdir | length > 0
-        fail_msg: "Your OS distribution is not supported"
+    - name: Install required packages for repository
+      include_tasks: "{{ ansible_os_family }}/install-packages.yml"
+
+    - name: Create download-requirements directory
+      file:
+        path: "{{ download_requirements_dir }}"
+        state: directory
 
     - name: Copy files for downloading requirements to repository host
-      copy:
-        src: download-requirements/{{ download_script_subdir }}/
-        dest: /var/tmp/epi-download-requirements
+      synchronize:
+        src: download-requirements/
+        dest: "{{ download_requirements_dir }}"
+        recursive: true
+        rsync_opts:
+          - "--exclude=tests"  # tests not needed
+          - "--exclude=__pycache__"
 
     - name: Make download script executable
       file:
-        dest: /var/tmp/epi-download-requirements/download-requirements.sh
+        dest: "{{ download_requirements_script }}"
         mode: a+x
-
-    - name: Copy common files for downloading requirements to repository host
-      copy:
-        src: download-requirements/common
-        dest: /var/tmp/epi-download-requirements
 
   when:
     - not offline_mode
