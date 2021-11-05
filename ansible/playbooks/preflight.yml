@@ -21,10 +21,10 @@
     history_last_entry: {}
     history_other_entries: []
     history_newest_entry:
-        version: "{{ epiphany_version }}"
-        date: "{{ ansible_date_time.date }} {{ ansible_date_time.time }}"
-        mode: "{{ is_upgrade_run | ternary('upgrade', 'apply') }}"
-        state: started
+      version: "{{ epiphany_version }}"
+      date: "{{ ansible_date_time.date }} {{ ansible_date_time.time }}"
+      mode: "{{ is_upgrade_run | ternary('upgrade', 'apply') }}"
+      status: started
   tasks:
     - name: Create epiphany directory if it does not exist
       file:
