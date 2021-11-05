@@ -26,12 +26,10 @@
       vars:
         history_file_yaml: "{{ history_file.content | b64decode | from_yaml }}"
 
-    - name: Construct history file
-      set_fact:
-        new_history_file: >-
-          {{ {'deployments': [history_first_entry] + history_other_entries} }}
-
-    - name: Save newly constructed history file
+    - name: Save updated history to file
       copy:
-        content: "{{ new_history_file | to_nice_yaml }}"
+        content: "{{ _new_content | to_nice_yaml(indent=2) }}"
         dest: /var/lib/epiphany/history.yml
+      vars:
+        _new_content:
+          deployments: "{{ [history_latest_entry] + history_other_entries }}"
