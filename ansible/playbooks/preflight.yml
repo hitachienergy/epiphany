@@ -12,7 +12,7 @@
   environment:
     KUBECONFIG: "{{ kubeconfig.remote }}"
 
-- name: Add epicli version info for each component used
+- name: Add entry to epicli execution history on each host
   hosts: all
   gather_facts: true
   become: true
