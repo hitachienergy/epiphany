@@ -17,7 +17,7 @@
         src: /var/lib/epiphany/history.yml
       register: history_file
 
-    - name: Parse history_file to yaml format and change the state
+    - name: Parse history file and update the status
       set_fact:
         history_first_entry: >-
           {{ history_file_yaml.deployments[0] | combine({'state': 'completed'})}}
