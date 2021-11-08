@@ -26,4 +26,4 @@ def test_sort():
 
     unordered_hosts.sort()
 
-    self.assertListEqual(EXPECTED_HOSTS, unordered_hosts)
+    assert EXPECTED_HOSTS == unordered_hosts
