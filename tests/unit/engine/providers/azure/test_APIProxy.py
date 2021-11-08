@@ -2,7 +2,7 @@ from unittest import mock, TestCase
 
 from cli.engine.providers.azure.APIProxy import APIProxy
 from cli.models.AnsibleHostModel import AnsibleOrderedHostModel
-from tests.unit.engine.providers.data.APIProxy_data import CLUSTER_MODEL, RUNNING_INSTANCES
+from tests.unit.engine.providers.data.APIProxy_data import CLUSTER_MODEL, RUNNING_INSTANCES_AZURE
 
 
 class APIProxyTest(TestCase):
@@ -17,8 +17,8 @@ class APIProxyTest(TestCase):
         """
 
         with mock.patch('cli.engine.providers.azure.APIProxy.Log', return_value='mock_Log') as mock_Log:
-            proxy = APIProxy(CLUSTER_MODEL('azure'), RUNNING_INSTANCES)
-            proxy.run = (lambda *args: RUNNING_INSTANCES)  # mock run with prepared data
+            proxy = APIProxy(CLUSTER_MODEL('azure'), RUNNING_INSTANCES_AZURE)
+            proxy.run = (lambda *args: RUNNING_INSTANCES_AZURE)  # mock run with prepared data
 
             EXPECTED_RESULT = [
                 AnsibleOrderedHostModel('prefix-cluster-service-vm-0', '20.73.105.240'),

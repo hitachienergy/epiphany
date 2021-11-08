@@ -104,7 +104,7 @@ def CLUSTER_MODEL(provider: str) -> ObjDict:
         'version': '1.3.0dev'
     })
 
-RUNNING_INSTANCES: List[List[Dict]] = [
+RUNNING_INSTANCES_AZURE: List[List[Dict]] = [
     [
         {'virtualMachine': {
             'name': 'prefix-cluster-service-vm-0',
