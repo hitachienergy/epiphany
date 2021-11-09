@@ -210,8 +210,6 @@ class AnsibleVarsGenerator(Step):
         if hasattr(shared_config_doc.specification, 'supported_os'):
             del shared_config_doc.specification['supported_os']
 
-        shared_config_doc.specification['rabbitmq_monitoring_enabled'] = False
-
         # Merge the shared config doc with defaults
         with DefaultMerger([shared_config_doc]) as doc_merger:
             shared_config_doc = doc_merger.run()[0]
