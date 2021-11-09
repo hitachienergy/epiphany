@@ -5,13 +5,13 @@
     filter: in_recovery
   register: in_recovery_state
 
-- name: Check if replication previously enabled
+- name: Check if replication was enabled
   become: true
   become_user: postgres
   vars:
     _repmgr_config_file: "{{ repmgr.config_dir[ansible_os_family] }}/repmgr.conf"
   block:
-  - name: Check if replication previously enabled | Check if config file exists
+  - name: Check if replication was enabled | Check if config file exists
     stat:
       path: "{{ _repmgr_config_file }}"
       get_attributes: false
@@ -19,7 +19,7 @@
       get_mime: false
     register: stat_repmgr_config_file
 
-  - name: Check if replication previously enabled | RedHat | Check if config file is from package
+  - name: Check if replication was enabled | RedHat | Check if config file is from package
     when:
       - ansible_os_family == 'RedHat'
       - stat_repmgr_config_file.stat.exists
@@ -27,7 +27,7 @@
     register: config_file_header
     changed_when: false
 
-  - name: Check if replication previously enabled | Set previous version clustered status
+  - name: Check if replication was enabled | Set replication enabled status
     set_fact:
       replication_enabled: "{{ stat_repmgr_config_file.stat.exists and not (config_file_header.stdout_lines[1] is defined and config_file_header.stdout_lines[1] is match('# repmgr sample configuration file')) }}"
 
