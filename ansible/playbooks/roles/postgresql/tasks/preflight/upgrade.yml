@@ -217,6 +217,6 @@
 - name: Assert there is only one PostgreSQL host or replication was enabled
   when: pg_upgrade_needed
   assert:
-    that: groups.postgresql | count < 2 or _pg_old_replication_enabled
+    that: groups.postgresql | count < 2 or pg_old_replication_enabled
     fail_msg: Upgrade is not supported for configurations with more than one PostgreSQL primary node
     quiet: true
