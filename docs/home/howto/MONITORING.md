@@ -334,7 +334,7 @@ During upgrade Epiphany takes `kibanaserver` (for Kibana) and `logstash` (for Fi
 
 ## How to enable RabbitMQ monitoring
 
-To enable RabbitMQ monitoring set `specification/rabbitmq_monitoring_enabled` in `configuration/default-config` section to `true`.
+To enable RabbitMQ monitoring set `specification/rabbitmq_monitoring_enabled` in `configuration/rabbitmq` section to `true`.
 This will:
 * enable RabbitMQ's plugin for Prometheus metrics exposure
 * add target for Prometheus to be able to scrape metrics from rabbitmq nodes
@@ -342,8 +342,8 @@ This will:
 
 ```yaml
 ---
-kind: configuration/shared-config
-title: Shared configuration that will be visible to all roles
+kind: configuration/rabbitmq
+title: RabbitMQ
 name: default
 specification:
   ...
