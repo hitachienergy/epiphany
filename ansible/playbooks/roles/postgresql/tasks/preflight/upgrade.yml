@@ -15,7 +15,7 @@
     file: roles/postgresql/vars/manifest.yml
     name: pg_manifest
 
-- name: Check if upgrade was already run
+- name: Check if upgrade is needed
   become: true
   block:
     - name: Check if PostgreSQL {{ pg_new.pg.version }} data directory exists
@@ -39,7 +39,7 @@
 
 - name: Set facts on PostgreSQL upgrade status
   set_fact:
-    pg_upgrade_already_run: "{{ new_pg_data_dir.stat.exists and new_pg_data_dir_files.matched > 0 }}"
+    pg_upgrade_needed: "{{ not new_pg_data_dir.stat.exists or new_pg_data_dir_files.matched == 0 }}"
     pg_upgrade_failed: "{{ stat_pg_upgrade_state_file.stat.exists }}"
 
 # This task is a temporary workaround for issue #2656
@@ -82,7 +82,7 @@
           changed_when: true
 
 - name: Check available disk space for new PostgreSQL data dir
-  when: not pg_upgrade_already_run
+  when: pg_upgrade_needed
   block:
     # Data dir may not exist yet so get info also for parent paths
     - name: Look for target data directory
@@ -139,7 +139,7 @@
           - "{{ data_dir_fs_used_mb }} + {{ old_data_dir_size_mb }} < 0.95 * {{ data_dir_fs_capacity_mb }}"
 
 - name: Ensure that PostgreSQL cluster in version {{ pg_old.pg.version }} is present
-  when: not pg_upgrade_already_run
+  when: pg_upgrade_needed
   block:
     - name: Get PostgreSQL version from data directory
       become: true
@@ -155,15 +155,14 @@
         success_msg: PostgreSQL cluster in version '{{ pg_old.pg.version }}' found
         quiet: true
 
-- name: Check if replication previously enabled
-  when:
-    - not pg_upgrade_already_run
+- name: Check if replication was enabled for old PostgreSQL version
+  when: pg_upgrade_needed
   become: true
   become_user: postgres
   vars:
     _repmgr_config_file: "{{ pg_old.repmgr.config_dir[ansible_os_family] }}/repmgr.conf"
   block:
-  - name: Check if replication previously enabled | Check if config file exists
+  - name: Check if replication was enabled | Check if config file exists
     stat:
       path: "{{ _repmgr_config_file }}"
       get_attributes: false
@@ -171,7 +170,7 @@
       get_mime: false
     register: stat_repmgr_config_file
 
-  - name: Check if replication previously enabled | RedHat | Check if config file is from package
+  - name: Check if replication was enabled | RedHat | Check if config file is from package
     when:
       - ansible_os_family == 'RedHat'
       - stat_repmgr_config_file.stat.exists
@@ -179,13 +178,13 @@
     register: config_file_header
     changed_when: false
 
-  - name: Check if replication previously enabled | Set previous version clustered status
+  - name: Check if replication was enabled | Set fact about replication status
     set_fact:
       pg_old_replication_enabled: "{{ stat_repmgr_config_file.stat.exists and not (config_file_header.stdout_lines[1] is defined and config_file_header.stdout_lines[1] is match('# repmgr sample configuration file')) }}"
 
 - name: Assert old PostgreSQL cluster is healthy
   when:
-    - not pg_upgrade_already_run
+    - pg_upgrade_needed
     - not pg_upgrade_failed
     - pg_old_replication_enabled
   become: true
@@ -214,3 +213,10 @@
         fail_msg: "{{ ['CRITICAL keyword found in output:']
                       + repmgr_node_check.stdout_lines | map('regex_replace', '^\t', '') }}"  # noqa no-tabs
         quiet: "{{ not 'CRITICAL' in repmgr_node_check.stdout }}"  # for better formatting of 'fail_msg'
+
+- name: Assert there is only one PostgreSQL host or replication was enabled
+  when: pg_upgrade_needed
+  assert:
+    that: groups.postgresql | count < 2 or _pg_old_replication_enabled
+    fail_msg: Upgrade is not supported for configurations with more than one PostgreSQL primary node
+    quiet: true
