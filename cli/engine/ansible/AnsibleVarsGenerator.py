@@ -190,7 +190,8 @@ class AnsibleVarsGenerator(Step):
         self.clear_object(cluster_model, 'credentials')
         return cluster_model
 
-    def get_shared_config_from_manifest(self): # Reuse shared config from existing manifest
+    def get_shared_config_from_manifest(self):
+        # Reuse shared config from existing manifest
         # Shared config contains the use_ha_control_plane flag which is required during upgrades
 
         cluster_model = select_single(self.manifest_docs, lambda x: x.kind == 'epiphany-cluster')

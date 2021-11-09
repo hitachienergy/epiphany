@@ -1,4 +1,10 @@
 ---
+- name: Load RabbitMQ's monitoring variable
+  include_vars:
+    file: roles/rabbitmq/vars/main.yml
+    name: specification.rabbitmq_monitoring_enabled
+  when: groups.rabbitmq is defined | count > 0
+
 - name: Configure prometheus
   template:
     src: "prometheus.yml.j2"

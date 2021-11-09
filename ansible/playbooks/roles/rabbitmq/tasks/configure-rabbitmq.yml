@@ -39,7 +39,9 @@
   register: rabbitmq_plugins
 
 - name: Enable rabbitmq monitoring plugin
-  when: rabbitmq_monitoring_enabled
+  when:
+    - specification.rabbitmq_monitoring_enabled is defined
+    - specification.rabbitmq_monitoring_enabled
   rabbitmq_plugin:
     names: rabbitmq_prometheus,rabbitmq_management_agent,rabbitmq_web_dispatch
     prefix: /usr/lib/rabbitmq

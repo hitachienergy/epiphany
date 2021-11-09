@@ -296,7 +296,7 @@ specification:
         destination_address_prefix: "0.0.0.0/0"
       - name: rabbitmq-exporter
         description: Allow Prometheus for RabbitMQ's data scrap
-        priority: 201
+        priority: 202
         direction: Inbound
         access: Allow
         protocol: Tcp

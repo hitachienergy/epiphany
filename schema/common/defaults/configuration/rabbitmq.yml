@@ -14,6 +14,8 @@ specification:
   rabbitmq_use_longname: AUTOCONFIGURED # true/false/AUTOCONFIGURED
   rabbitmq_policies: []
   rabbitmq_plugins: []
+  rabbitmq_monitoring_enabled: false
+
   custom_configurations: []
   cluster:
     is_clustered: false

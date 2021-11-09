@@ -23,17 +23,27 @@
       loop: "{{ grafana_online_dashboards }}"
       when: grafana_online_dashboards != []
 
+    - name: Load RabbitMQ's monitoring variable
+      include_vars:
+        file: roles/rabbitmq/vars/main.yml
+        name: specification.rabbitmq_monitoring_enabled
+      when: groups.rabbitmq is defined | count > 0
+
     - name: Set facts for RabbitMQ dashboard
       set_fact:
         rabbitmq_dashboard:
           - dashboard_id: '10991'
             datasource: 'Prometheus'
-      when: rabbitmq_monitoring_enabled
+      when:
+        - specification.rabbitmq_monitoring_enabled is defined
+        - specification.rabbitmq_monitoring_enabled
 
     - name: Extend external dashboards with RabbitMQ monitoring dashboard
       set_fact:
         grafana_external_dashboards: "{{ grafana_external_dashboards + rabbitmq_dashboard }}"
-      when: rabbitmq_monitoring_enabled
+      when:
+        - specification.rabbitmq_monitoring_enabled is defined
+        - specification.rabbitmq_monitoring_enabled
 
     - name: Download Grafana dashboards from local repository to temporary directory
       include_role:
