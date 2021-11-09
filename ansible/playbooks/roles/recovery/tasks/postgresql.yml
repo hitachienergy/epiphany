@@ -29,11 +29,11 @@
 
   - name: Check if replication previously enabled | Set previous version clustered status
     set_fact:
-      _replication_previously_enabled: "{{ stat_repmgr_config_file.stat.exists and not (config_file_header.stdout_lines[1] is defined and config_file_header.stdout_lines[1] is match('# repmgr sample configuration file')) }}"
+      replication_previously_enabled: "{{ stat_repmgr_config_file.stat.exists and not (config_file_header.stdout_lines[1] is defined and config_file_header.stdout_lines[1] is match('# repmgr sample configuration file')) }}"
 
 
 - name:  repmgr | prepare service for database recovery
-  when: _replication_previously_enabled
+  when: replication_previously_enabled
   block:
   # Actions taken only when replication with repmgr is enabled
   - name: Add postgres user to sudoers file
@@ -164,7 +164,7 @@
       command: "psql -f /var/tmp/postgresql_restore_source/data/database_dump.sql postgres"
 
     - name: Primary node | configure repmgr
-      when: _replication_previously_enabled
+      when: replication_previously_enabled
       block:
       - name: Register primary node in repmgr
         become_user: postgres
@@ -187,7 +187,7 @@
 
 - name: Standby node(s) | configure repmgr
   when:
-    - _replication_previously_enabled
+    - replication_previously_enabled
     - in_recovery_state.in_recovery
   block:
     - name: Stop postgresql service
