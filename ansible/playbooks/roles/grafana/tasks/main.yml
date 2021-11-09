@@ -32,6 +32,12 @@
   include_tasks: notifications.yml
   when: grafana_alert_notifications | length > 0
 
+- name: Load RabbitMQ's monitoring variable
+  include_vars:
+    file: roles/rabbitmq/vars/main.yml
+    name: specification.rabbitmq_monitoring_enabled
+  when: groups.rabbitmq is defined | count > 0
+
 - name: Include dashboards tasks
   include_tasks: dashboards.yml
-  when: (grafana_online_dashboards != []) or (grafana_external_dashboards != []) or (rabbitmq_monitoring_enabled)
+  when: (grafana_online_dashboards != []) or (grafana_external_dashboards != []) or (rabbitmq_monitoring_enabled is defined and rabbitmq_monitoring_enabled)

@@ -23,12 +23,6 @@
       loop: "{{ grafana_online_dashboards }}"
       when: grafana_online_dashboards != []
 
-    - name: Load RabbitMQ's monitoring variable
-      include_vars:
-        file: roles/rabbitmq/vars/main.yml
-        name: specification.rabbitmq_monitoring_enabled
-      when: groups.rabbitmq is defined | count > 0
-
     - name: Set facts for RabbitMQ dashboard
       set_fact:
         rabbitmq_dashboard:
