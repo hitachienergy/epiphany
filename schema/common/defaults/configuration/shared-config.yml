@@ -9,4 +9,3 @@ specification:
   vault_tmp_file_location: SET_BY_AUTOMATION
   use_ha_control_plane: False
   promote_to_ha: False
-  rabbitmq_monitoring_enabled: False
