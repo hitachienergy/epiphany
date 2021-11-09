@@ -10,7 +10,7 @@
 
     - name: Set if 'replication' is enabled
       set_fact:
-        _spec:
+        spec:
           specification:
             extensions:
               replication:
@@ -19,7 +19,7 @@
 
     - name: Combine 'replication' with 'specification'
       set_fact:
-        postgresql: "{{ postgresql | combine(_spec, list_merge='append', recursive=True) }}"
+        postgresql: "{{ postgresql | combine(spec, list_merge='append', recursive=True) }}"
 
     - name: Assert no multiple nodes for ARM
       assert:
