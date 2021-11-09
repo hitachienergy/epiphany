@@ -104,7 +104,7 @@ specification:
 ```
 
 If the number of PostgreSQL nodes is higher than one Epiphany will automatically create a cluster of primary and
-secondary server with replication user with name and password specified in configuration file.
+standby server(s) with replication users with name and password specified in configuration file.
 
 Privileged user is used to perform full backup of primary instance and replicate this at the beginning to secondary
 node. After that for replication only replication user with limited permissions is used for WAL replication.
