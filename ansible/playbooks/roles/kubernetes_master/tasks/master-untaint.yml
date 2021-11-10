@@ -2,6 +2,7 @@
 - name: Get masters with NoSchedule
   vars:
     go_template: >-
+      {% raw %}
       '{{ range $item := .items }}
          {{ range $taint := $item.spec.taints }}
            {{ if and ( or ( eq $taint.key "node-role.kubernetes.io/master")
@@ -11,6 +12,7 @@
            {{ end }}
          {{ end }}
        {{ end }}'
+      {% endraw %}
   command: |-
     kubectl get nodes -o go-template={{ go_template }}
   register: tainted_masters_list
