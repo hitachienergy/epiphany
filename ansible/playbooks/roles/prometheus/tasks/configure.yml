@@ -7,7 +7,7 @@
     - groups.rabbitmq is defined
     - groups.rabbitmq | length > 0
 
-- name: Set fact for RabbitMQ monitoring var
+- name: Set fact about RabbitMQ monitoring
   set_fact:
     rabbitmq_monitoring_enabled: "{{ rabbitmq_config.specification.rabbitmq_monitoring_enabled }}"
   when: rabbitmq_config is defined
