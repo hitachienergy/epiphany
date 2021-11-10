@@ -14,20 +14,24 @@
   register: tainted_masters_list
   changed_when: false
 
-- name: Decide if we want/need to untaint masters
-  vars:
-    nodeless: >-
-      {{ groups.kubernetes_node | default([]) | length == 0 }}
-  set_fact:
-    untaint_master: >-
-      {{ (tainted_masters_list.stdout_lines | length > 0) and (nodeless or specification.allow_pods_on_master) }}
-
 - name: Untaint all tainted masters
-  command: |-
-    kubectl taint node {{ item }} \
-      node-role.kubernetes.io/master:NoSchedule-
-  loop: >-
-    {{ tainted_masters_list.stdout_lines
-    | map('regex_replace', '^([^:][^:]*):.*$', '\1')
-    | list }}
-  when: untaint_master
+  vars:
+    # Filter empty lines out
+    tainted_control_plane_nodes: >-
+      {{ tainted_masters_list.stdout_lines | map('trim') | list | select() | list }}
+  block:
+    - name: Decide if we want/need to untaint masters
+      vars:
+        nodeless: >-
+          {{ groups.kubernetes_node | default([]) | length == 0 }}
+      set_fact:
+        untaint_master: >-
+          {{ (tainted_control_plane_nodes | length > 0) and (nodeless or specification.allow_pods_on_master) }}
+
+    - name: Untaint all tainted masters
+      command: |-
+        kubectl taint node {{ item }} \
+          node-role.kubernetes.io/master:NoSchedule-
+      loop: >-
+        {{ tainted_control_plane_nodes }}
+      when: untaint_master
