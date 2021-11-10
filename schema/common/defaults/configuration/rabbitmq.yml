@@ -15,7 +15,6 @@ specification:
   rabbitmq_policies: []
   rabbitmq_plugins: []
   rabbitmq_monitoring_enabled: false
-
   custom_configurations: []
   cluster:
     is_clustered: false

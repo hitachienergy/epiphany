@@ -1,9 +1,16 @@
 ---
-- name: Load RabbitMQ's monitoring variable
+- name: Load RabbitMQ's config vars
   include_vars:
     file: roles/rabbitmq/vars/main.yml
-    name: specification.rabbitmq_monitoring_enabled
-  when: groups.rabbitmq is defined | count > 0
+    name: rabbitmq_config
+  when:
+    - groups.rabbitmq is defined
+    - groups.rabbitmq | length > 0
+
+- name: Set fact for RabbitMQ monitoring var
+  set_fact:
+    rabbitmq_monitoring_enabled: "{{ rabbitmq_config.specification.rabbitmq_monitoring_enabled }}"
+  when: rabbitmq_config is defined
 
 - name: Configure prometheus
   template:
