@@ -1,19 +1,18 @@
 ---
 - name: Get masters with NoSchedule
   vars:
-    query: >-
-      '.items[].metadata
-        | select (.labels."node-role.kubernetes.io/master" == ""
-          or .labels."node-role.kubernetes.io/control-plane" == "")
-        | .name'
-  # When Epiphany doesn't support K8s versions with old label,
-  # can be changed to "kubectl get nodes --selector={{ selector }} --output=jsonpath={{ jsonpath }}"
-  shell: |-
-    kubectl get nodes --output=json \
-      | jq --raw-output {{ query }} \
-      | grep :NoSchedule
-  args:
-    executable: /bin/bash
+    go_template: >-
+      '{{ range $item := .items }}
+         {{ range $taint := $item.spec.taints }}
+           {{ if and ( or ( eq $taint.key "node-role.kubernetes.io/master")
+                          ( eq $taint.key "node-role.kubernetes.io/control-plane") )
+                     ( eq $taint.effect "NoSchedule") }}
+             {{ printf "%s\n" $item.metadata.name }}
+           {{ end }}
+         {{ end }}
+       {{ end }}'
+  command: |-
+    kubectl get nodes -o go-template={{ go_template }}
   register: tainted_masters_list
   failed_when: tainted_masters_list.rc == 2
   changed_when: false
