@@ -23,7 +23,7 @@
       loop: "{{ grafana_online_dashboards }}"
       when: grafana_online_dashboards != []
 
-      block:
+    - block:
         - name: Set fact for RabbitMQ dashboard
           set_fact:
             rabbitmq_dashboard:
