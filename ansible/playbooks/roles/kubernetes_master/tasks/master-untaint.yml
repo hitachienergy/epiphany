@@ -1,22 +1,17 @@
 ---
 - name: Get masters with NoSchedule
-  vars:
-    go_template: >-
-      {% raw %}
-      '{{ range $item := .items }}
-         {{ range $taint := $item.spec.taints }}
-           {{ if and ( or ( eq $taint.key "node-role.kubernetes.io/master")
-                          ( eq $taint.key "node-role.kubernetes.io/control-plane") )
-                     ( eq $taint.effect "NoSchedule") }}
-             {{ printf "%s\n" $item.metadata.name }}
-           {{ end }}
-         {{ end }}
-       {{ end }}'
-      {% endraw %}
-  command: |-
-    kubectl get nodes -o go-template={{ go_template }}
+  command: >-
+    kubectl get nodes --output go-template='
+    {{ '{{' }}range $item := .items{{ '}}' }}
+    {{ '{{' }}range $taint := $item.spec.taints{{ '}}' }}
+    {{ '{{' }}if and ( or ( eq $taint.key "node-role.kubernetes.io/master")
+    (eq $taint.key "node-role.kubernetes.io/control-plane") )
+    (eq $taint.effect "NoSchedule"){{ '}}' }}
+    {{ '{{' }}printf "%s\n" $item.metadata.name{{ '}}' }}
+    {{ '{{' }}end{{ '}}' }}
+    {{ '{{' }}end{{ '}}' }}
+    {{ '{{' }}end{{ '}}' }}'
   register: tainted_masters_list
-  failed_when: tainted_masters_list.rc == 2
   changed_when: false
 
 - name: Decide if we want/need to untaint masters
