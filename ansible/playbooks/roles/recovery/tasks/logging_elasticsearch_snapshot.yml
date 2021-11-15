@@ -1,12 +1,17 @@
 ---
+- name: Include default vars from opendistro_for_elasticsearch role
+  include_vars:
+    file: roles/opendistro_for_elasticsearch/defaults/main.yml
+    name: odfe
+
 - name: Set helper facts
   set_fact:
     elasticsearch_endpoint: >-
       https://{{ ansible_default_ipv4.address }}:9200
   vars:
     uri_template: &uri
-      client_cert: /etc/elasticsearch/kirk.pem
-      client_key: /etc/elasticsearch/kirk-key.pem
+      client_cert: "{{ odfe.certificates.dirs.certs }}/{{ odfe.certificates.files.admin.cert.filename }}"
+      client_key:  "{{ odfe.certificates.dirs.certs }}/{{ odfe.certificates.files.admin.key.filename }}"
       validate_certs: false
       body_format: json
 

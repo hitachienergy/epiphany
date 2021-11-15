@@ -2,7 +2,7 @@
 
 ### Introduction
 
-Epiphany provides solution to create full or partial backup and restore for some components, like:
+Epiphany provides solution to create full or partial backup and restore for some of components. Those supported components are listed below:
 
 - [Load Balancer](#load-balancer)
 - [Logging](#logging)
@@ -12,12 +12,12 @@ Epiphany provides solution to create full or partial backup and restore for some
 - [Kubernetes (only backup)](#kubernetes)
 
 Backup is created directly on the machine where component is running, and it is moved to the ``repository`` host via
-rsync. On the ``repository`` host backup files are stored in location ``/epibackup/mounted`` mounted on a local
+rsync. On the ``repository`` host backup files by default are stored in location ``/epibackup/mounted`` mounted on a local
 filesystem. See [How to store backup](#2-how-to-store-backup) chapter.
 
 ## 1. How to perform backup
 
-#### Backup configuration
+#### Backup configuration file and command
 
 Copy default configuration for backup from ``defaults/configuration/backup.yml`` into newly created backup.yml config
 file, and enable backup for chosen components by setting up ``enabled`` parameter to ``true``.
@@ -57,7 +57,7 @@ If backup config is attached to cluster-config.yml, use this file instead of ``b
 ## 2. How to store backup
 
 Backup location is defined in ``backup`` role as ``backup_destination_host`` and ``backup_destination_dir``. Default
-backup location is defined on ``repository`` host in location ``/epibackup/mounted/``. Use ``mounted`` location as mount
+backup location is defined on ``repository`` host inside location ``/epibackup/mounted/``. Use ``mounted`` location as mount
 point and mount storage you want to use. This might be:
 
 - Azure Blob Storage
@@ -65,19 +65,19 @@ point and mount storage you want to use. This might be:
 - NAS
 - Any other attached storage
 
-Ensure that mounted location has enough space, is reliable and is well protected against disaster.
+Ensure that mounted location contains enough free space, is reliable and is well protected against disaster.
 
 ---
 **NOTE**
 
 If you don't attach any storage into the mount point location, be aware that backups will be stored on the local
-machine. This is not recommended.
+machine's disk drive. This is not recommended.
 
 ---
 
 ## 3. How to perform recovery
 
-### Recovery configuration
+### Recovery configuration file and command
 
 Copy existing default configuration from ``defaults/configuration/recovery.yml`` into newly created recovery.yml config
 file, and set ``enabled`` parameter for component to recovery. It's possible to choose snapshot name by passing date and
