@@ -85,7 +85,6 @@ specification:
     pgbouncer:
       enabled: true
     replication:
-      enabled: true
       replication_user_name: epi_repmgr
       replication_user_password: PASSWORD_TO_CHANGE
       privileged_user_name: epi_repmgr_admin
