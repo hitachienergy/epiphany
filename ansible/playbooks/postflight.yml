@@ -5,3 +5,31 @@
   become_method: sudo
   roles:
     - postflight
+
+- name: Update status in epicli execution history file
+  hosts: all
+  gather_facts: false
+  become: true
+  become_method: sudo
+  tasks:
+    - name: Load the history file
+      slurp:
+        src: /var/lib/epiphany/history.yml
+      register: history_file
+
+    - name: Parse history file and update the status
+      set_fact:
+        history_latest_entry: >-
+          {{ _history_file_yaml.deployments[0] | combine({'status': 'completed'})}}
+        history_other_entries: >-
+          {{ _history_file_yaml.deployments[1:] }}
+      vars:
+        _history_file_yaml: "{{ history_file.content | b64decode | from_yaml }}"
+
+    - name: Save updated history to file
+      copy:
+        content: "{{ _new_content | to_nice_yaml(indent=2) }}"
+        dest: /var/lib/epiphany/history.yml
+      vars:
+        _new_content:
+          deployments: "{{ [history_latest_entry] + history_other_entries }}"
