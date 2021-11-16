@@ -27,6 +27,8 @@ properties:
     type: array
     items:
       items: {}
+  rabbitmq_monitoring_enabled:
+    type: boolean
   custom_configurations:
     type: array
     items:
