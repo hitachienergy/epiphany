@@ -21,11 +21,11 @@
       # can be changed to command: "kubectl get nodes --selector={{ selector }} --output=jsonpath={{ jsonpath }}"
       shell: |-
         kubectl get nodes --output=json \
-          | jq --raw-output {{ query }}
+          | jq --raw-output {{ _query }}
       args:
         executable: /bin/bash
       vars:
-        query: >-
+        _query: >-
           '.items[].metadata
             | select (.labels."node-role.kubernetes.io/master" == ""
               or .labels."node-role.kubernetes.io/control-plane" == "")

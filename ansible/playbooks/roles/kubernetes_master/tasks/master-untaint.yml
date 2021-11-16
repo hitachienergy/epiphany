@@ -18,7 +18,7 @@
   vars:
     # Filter empty lines out
     tainted_control_plane_nodes: >-
-      {{ tainted_masters_list.stdout_lines | map('trim') | list | select() | list }}
+      {{ tainted_masters_list.stdout_lines | map('trim') | select }}
   block:
     - name: Decide if we want/need to untaint masters
       vars:
