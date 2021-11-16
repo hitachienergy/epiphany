@@ -1,4 +1,16 @@
 ---
+- name: Set if 'replication' is enabled
+  set_fact:
+    spec:
+      extensions:
+        replication:
+          enabled:
+            "{{ ansible_architecture == 'x86_64' and groups['postgresql'] | length > 1 }}"
+
+- name: Combine 'replication' with 'specification'
+  set_fact:
+    specification: "{{ specification | combine(spec, list_merge='append', recursive=True) }}"
+
 - name: Set 'enabled_extensions' fact
   set_fact:
     enabled_extensions: >-

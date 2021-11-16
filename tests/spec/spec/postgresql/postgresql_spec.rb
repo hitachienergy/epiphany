@@ -35,7 +35,7 @@ if !ELASTICSEARCH[:host].nil?
   ELASTICSEARCH[:admin_password] = config_docs[:logging]["specification"]["admin_password"] || "admin"
 end
 
-replicated =           config_docs[:postgresql]["specification"]["extensions"]["replication"]["enabled"]
+replicated =           countInventoryHosts("postgresql") > 1
 replication_user =     config_docs[:postgresql]["specification"]["extensions"]["replication"]["replication_user_name"]
 replication_password = config_docs[:postgresql]["specification"]["extensions"]["replication"]["replication_user_password"]
 max_wal_senders =      config_docs[:postgresql]["specification"]["config_file"]["parameter_groups"].detect {|i| i["name"] == 'REPLICATION'}["subgroups"].detect {|i| i["name"] == "Sending Server(s)"}["parameters"].detect {|i| i["name"] == "max_wal_senders"}["value"]

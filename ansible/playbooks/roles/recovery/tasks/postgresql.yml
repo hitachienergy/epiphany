@@ -5,8 +5,35 @@
     filter: in_recovery
   register: in_recovery_state
 
+- name: Check if replication was enabled
+  become: true
+  become_user: postgres
+  vars:
+    _repmgr_config_file: "{{ repmgr.config_dir[ansible_os_family] }}/repmgr.conf"
+  block:
+  - name: Check if replication was enabled | Check if config file exists
+    stat:
+      path: "{{ _repmgr_config_file }}"
+      get_attributes: false
+      get_checksum: false
+      get_mime: false
+    register: stat_repmgr_config_file
+
+  - name: Check if replication was enabled | RedHat | Check if config file is from package
+    when:
+      - ansible_os_family == 'RedHat'
+      - stat_repmgr_config_file.stat.exists
+    command: head -2 {{ _repmgr_config_file }}
+    register: config_file_header
+    changed_when: false
+
+  - name: Check if replication was enabled | Set replication enabled status
+    set_fact:
+      replication_enabled: "{{ stat_repmgr_config_file.stat.exists and not (config_file_header.stdout_lines[1] is defined and config_file_header.stdout_lines[1] is match('# repmgr sample configuration file')) }}"
+
+
 - name:  repmgr | prepare service for database recovery
-  when: component_vars.specification.extensions.replication.enabled | default(false)
+  when: replication_enabled
   block:
   # Actions taken only when replication with repmgr is enabled
   - name: Add postgres user to sudoers file
@@ -137,7 +164,7 @@
       command: "psql -f /var/tmp/postgresql_restore_source/data/database_dump.sql postgres"
 
     - name: Primary node | configure repmgr
-      when: component_vars.specification.extensions.replication.enabled | default(false)
+      when: replication_enabled
       block:
       - name: Register primary node in repmgr
         become_user: postgres
@@ -160,7 +187,7 @@
 
 - name: Standby node(s) | configure repmgr
   when:
-    - component_vars.specification.extensions.replication.enabled | default(false)
+    - replication_enabled
     - in_recovery_state.in_recovery
   block:
     - name: Stop postgresql service
