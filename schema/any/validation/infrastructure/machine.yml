@@ -10,7 +10,7 @@ properties:
   hostname:
     "$id": "#/properties/hostname"
     description: >-
-      DNS-1123 subdomain must consist of lower case alphanumeric characters, '-' or '.',
+      A lowercase RFC 1123 subdomain must consist of lower case alphanumeric characters, '-' or '.',
       and must start and end with an alphanumeric character
     type: string
     pattern: "^[a-z0-9]([-a-z0-9]*[a-z0-9])?(\\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*$"
