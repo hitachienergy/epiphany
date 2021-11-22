@@ -12,7 +12,7 @@ Epiphany provides solution to create full or partial backup and restore for some
 - [Kubernetes (only backup)](#kubernetes)
 
 Backup is created directly on the machine where component is running, and it is moved to the ``repository`` host via
-rsync. On the ``repository`` host backup files by default are stored in location ``/epibackup/mounted`` mounted on a local
+rsync. On the ``repository`` host backup files are stored in location ``/epibackup/mounted`` mounted on a local
 filesystem. See [How to store backup](#2-how-to-store-backup) chapter.
 
 ## 1. How to perform backup
