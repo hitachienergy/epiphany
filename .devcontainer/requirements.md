@@ -60,4 +60,5 @@ The main reasons for this 2-way approach:
     For obtaining a GitHub Personal Access Token, check [here](https://help.github.com/en/github/authenticating-to-github/creating-a-personal-access-token-for-the-command-line).
     Only `public\_repo` scope is required.
 
-3. Copy the table content from the generated `DEPENDENCIES.md` to `epiphany\docs\home\COMPONENTS.md` replacing the content under the `Epicli Python dependencies` section.
+3. Copy the table content from the generated `DEPENDENCIES.md` to `epiphany\docs\home\COMPONENTS.md` replacing the content under the `Epicli Python dependencies` section. 
+   Always check if the `DEPENDENCIES.md` entries have empty or `UNKNOWN` values that might need manual additions.
