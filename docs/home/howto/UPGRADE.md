@@ -146,6 +146,12 @@ The `epicli upgrade` command has additional flags:
    epicli upgrade -b /buildoutput/ --upgrade-components "kafka,filebeat"
    ```
 
+   **NOTE**
+
+Parameter `--upgrade-components` should be use only for develop or testing purposes. Do not use this option for production enviroments, since it may generate additional errors when running `apply` after that kind of upgrade
+
+---
+
 ## Run *apply* after *upgrade*
 
 Currently, Epiphany does not fully support apply after upgrade. There is a possibility to re-apply configuration from

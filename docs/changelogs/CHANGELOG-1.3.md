@@ -24,6 +24,7 @@
 - [#1587](https://github.com/epiphany-platform/epiphany/issues/1587) - Duplicated SANs for K8s apiserver certificate
 - [#1661](https://github.com/epiphany-platform/epiphany/issues/1661) - Changing the default Kubernetes certificate location results in a cluster deployment error
 - [#2707](https://github.com/epiphany-platform/epiphany/issues/2707) - Fix logging component backup
+- [#2753](https://github.com/epiphany-platform/epiphany/issues/2753) - Failing offline upgrade: 'download_script_subdir' is undefined
 
 ### Updated
 
