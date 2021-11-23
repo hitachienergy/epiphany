@@ -61,4 +61,4 @@ The main reasons for this 2-way approach:
     Only `public\_repo` scope is required.
 
 3. Copy the table content from the generated `DEPENDENCIES.md` to `epiphany\docs\home\COMPONENTS.md` replacing the content under the `Epicli Python dependencies` section. 
-   Always check if the `DEPENDENCIES.md` entries have empty or `UNKNOWN` values that might need manual additions.
+   Always check if the `DEPENDENCIES.md` entries have empty or `UNKNOWN` values in the table that might need manual additions.
