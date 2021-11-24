@@ -15,6 +15,20 @@
           is not supported by this version of Epiphany which requires at least version 1.18.6.
           For more information, refer to the documentation.
         quiet: true
+
+    - name: Check number of unmanaged pods
+      become: true
+      command: kubectl get pods --all-namespaces -o custom-columns=CONTROLLER:.metadata.ownerReferences[].kind
+      register: no_unmanaged_pods
+      changed_when: false
+
+    - name: Check if cluster has any unmanaged pods
+      assert:
+        that: "{{ no_unmanaged_pods.stdout_lines | regex_findall('<none>') | length }} < 1"
+        fail_msg: >-
+          You have some pods that are not created by controller. Please remove them and then start upgrade once again.
+        quiet: true
+
   run_once: true
   delegate_to: "{{ groups.kubernetes_master[0] }}"
   when:
