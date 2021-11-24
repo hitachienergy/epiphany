@@ -1,6 +1,6 @@
 # Python requirement management
 
-## etup
+## Setup
 
 For package version and requirment management we currently use 2 different tools:
 
