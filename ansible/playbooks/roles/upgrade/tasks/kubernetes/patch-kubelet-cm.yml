@@ -12,6 +12,9 @@
       '{.data.kubelet}'
   changed_when: false
   register: kubelet_config
+  until: kubelet_config is success # added here because of frequent failures for single machine installation
+  retries: 60
+  delay: 1
 
 - name: 'k8s/kubelet-cm | Update kubelet ConfigMap with cgroupDriver: systemd'
   vars:

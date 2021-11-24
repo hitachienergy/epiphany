@@ -90,6 +90,7 @@ The list does not include ports that are bound to the loopback interface (localh
     - 5671 - AMQP with TLS (if TLS is enabled)
     - 5672 - AMQP
     - 15672 - HTTP API clients, management UI and rabbitmqadmin
+    - 15692 - rabbitmq-exporter for Prometheus
     - 25672 - distribution server
 
 11. PostgreSQL:

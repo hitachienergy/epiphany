@@ -18,7 +18,7 @@
 
     - name: k8s/node | Upgrade node config
       command: >-
-        kubeadm upgrade node --kubelet-version v{{ version }}
+        kubeadm upgrade node
       register: result
       until:
         - result is succeeded

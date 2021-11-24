@@ -55,7 +55,20 @@
     - import_role:
         name: upgrade
         tasks_from: kubernetes
-      vars: { ver: "1.19.15", cni_ver: "0.8.7", upgrade_to_final_version: true }
+      vars: { ver: "1.19.15", cni_ver: "0.8.7", upgrade_to_final_version: false }
+      when: "'kubernetes' in upgrade_components or upgrade_components|length == 0"
+  environment:
+    KUBECONFIG: "{{ kubeconfig.remote }}"
+
+- hosts: kubernetes_master:kubernetes_node
+  serial: 1
+  become: true
+  become_method: sudo
+  tasks:
+    - import_role:
+        name: upgrade
+        tasks_from: kubernetes
+      vars: { ver: "1.20.12", cni_ver: "0.8.7", upgrade_to_final_version: true }
       when: "'kubernetes' in upgrade_components or upgrade_components|length == 0"
   environment:
     KUBECONFIG: "{{ kubeconfig.remote }}"
