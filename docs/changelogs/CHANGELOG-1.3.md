@@ -14,6 +14,7 @@
 - [#2597](https://github.com/epiphany-platform/epiphany/issues/2597) - Ensure automatic PostgreSQL clusterization
 - [#2644](https://github.com/epiphany-platform/epiphany/issues/2644) - Add validation to check hostnames for on-prem deployment
 - [#2703](https://github.com/epiphany-platform/epiphany/issues/2703) - Add tests for docker and kubelet cgroup driver
+- [#1076](https://github.com/epiphany-platform/epiphany/issues/1076) - Add sorting entries in the inventory file
 
 ### Fixed
 
@@ -22,6 +23,7 @@
 - [#2656](https://github.com/epiphany-platform/epiphany/issues/2656) - WAL files are not removed from $PGDATA/pg_wal directory
 - [#1587](https://github.com/epiphany-platform/epiphany/issues/1587) - Duplicated SANs for K8s apiserver certificate
 - [#1661](https://github.com/epiphany-platform/epiphany/issues/1661) - Changing the default Kubernetes certificate location results in a cluster deployment error
+- [#2707](https://github.com/epiphany-platform/epiphany/issues/2707) - Fix logging component backup
 
 ### Updated
 
@@ -30,7 +32,8 @@
 - Upgrade Coredns to v1.7.0
 - Upgrade Kubernetes dashboard to v2.3.1
 - Upgrade Kubernetes metrics-scraper to v1.0.7
-- [#2093](https://github.com/epiphany-platform/epiphany/issues/2093) - Upgrade K8s to v1.19.15
+- [#2093](https://github.com/epiphany-platform/epiphany/issues/2093) - Upgrade K8s to v1.19.15 (transitional version)
+- [#2658](https://github.com/epiphany-platform/epiphany/issues/2658) - Upgrade K8s to v1.20.12
 - [#2494](https://github.com/epiphany-platform/epiphany/issues/2494) - Duplicated MOTD after ssh to servers
 - [#1974](https://github.com/epiphany-platform/epiphany/issues/1974) - [documentation] Azure Files Persistent Volume Support
 - [#2454](https://github.com/epiphany-platform/epiphany/issues/2454) - Remove dependencies for K8s v1.17

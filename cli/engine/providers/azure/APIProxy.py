@@ -6,7 +6,7 @@ from subprocess import Popen, PIPE
 from cli.helpers.Log import LogPipe, Log
 from cli.helpers.doc_list_helpers import select_first
 from cli.helpers.naming_helpers import resource_name, cluster_tag
-from cli.models.AnsibleHostModel import AnsibleHostModel
+from cli.models.AnsibleHostModel import AnsibleOrderedHostModel
 
 class APIProxy:
     def __init__(self, cluster_model, config_docs):
@@ -55,7 +55,7 @@ class APIProxy:
         look_for_public_ip = self.cluster_model.specification.cloud.use_public_ips
         cluster = cluster_tag(self.cluster_prefix, self.cluster_name)
         running_instances = self.run(self, f'az vm list-ip-addresses --ids $(az resource list --query "[?type==\'Microsoft.Compute/virtualMachines\' && tags.{component_key} == \'\' && tags.cluster == \'{cluster}\'].id" --output tsv)')
-        result = []
+        result: List[AnsibleOrderedHostModel] = []
         for instance in running_instances:
             if isinstance(instance, list):
                 instance = instance[0]
@@ -64,7 +64,10 @@ class APIProxy:
                 ip = instance['virtualMachine']['network']['publicIpAddresses'][0]['ipAddress']
             else:
                 ip = instance['virtualMachine']['network']['privateIpAddresses'][0]
-            result.append(AnsibleHostModel(name, ip))
+            result.append(AnsibleOrderedHostModel(name, ip))
+
+        result.sort()
+
         return result
 
     def get_storage_account_primary_key(self, storage_account_name):

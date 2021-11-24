@@ -78,7 +78,7 @@
         - "{{ pki.location }}/ext"
 
     - name: Generate new CSR
-      command: kubeadm alpha certs renew all --csr-only --csr-dir=csr
+      command: kubeadm certs renew all --csr-only --csr-dir=csr
       args:
         chdir: "{{ pki.location }}"
 

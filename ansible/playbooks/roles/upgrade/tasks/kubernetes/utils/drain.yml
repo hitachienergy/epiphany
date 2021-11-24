@@ -11,10 +11,12 @@
     - name: k8s/utils | Drain master or node in preparation for maintenance
       delegate_to: "{{ groups.kubernetes_master[0] }}"
       run_once: true
-      command: |
+      command: |-
         kubectl drain {{ inventory_hostname }} \
-          --ignore-daemonsets \
-          --delete-local-data
+          --ignore-daemonsets --{{ _delete_data_flag }}
+      vars:
+        _delete_data_flag: >-
+          {{ 'delete-emptydir-data' if version is version('1.21', '>=') else 'delete-local-data' }}
       register: result
       until:
         - result is succeeded

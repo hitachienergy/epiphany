@@ -16,6 +16,10 @@ Kibana:
 - [How to configure Kibana](#how-to-configure-kibana)
 - [How to configure default user password in Kibana](#how-to-configure-default-user-password-in-kibana)
 
+RabbitMQ:
+
+- [How to enable RabbitMQ monitoring](#how-to-enable-rabbitmq-monitoring)
+
 Azure:
 
 - [How to configure Azure additional monitoring and alerting](#how-to-configure-azure-additional-monitoring-and-alerting)
@@ -325,6 +329,26 @@ specification:
 ### Upgrade of Elasticsearch, Kibana and Filebeat
 
 During upgrade Epiphany takes `kibanaserver` (for Kibana) and `logstash` (for Filebeat) user passwords and re-applies them to upgraded configuration of Filebeat and Kibana. Epiphany upgrade of Open Distro, Kibana or Filebeat will fail if `kibanaserver` or `logstash` usernames were changed in configuration of Kibana, Filebeat or Open Distro for Elasticsearch.
+
+# RabbitMQ
+
+## How to enable RabbitMQ monitoring
+
+To enable RabbitMQ monitoring set `specification/rabbitmq_monitoring_enabled` in `configuration/rabbitmq` section to `true`.
+This will:
+* enable RabbitMQ's plugin for Prometheus metrics exposure
+* add target for Prometheus to be able to scrape metrics from rabbitmq nodes
+* download Grafana dashboard for displaying scraped metrics from RabbitMQ
+
+```yaml
+---
+kind: configuration/rabbitmq
+title: RabbitMQ
+name: default
+specification:
+  ...
+  rabbitmq_monitoring_enabled: true
+```
 
 # Azure
 

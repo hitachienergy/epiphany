@@ -47,7 +47,7 @@ For setting up en Epicli development environment please refer to this dedicated 
 
 ### Hostname requirements
 
-Epiphany supports only DNS-1123 subdomain that must consist of lower case alphanumeric characters, '-' or '.',
+Epiphany supports only a lowercase RFC 1123 subdomain that must consist of lower case alphanumeric characters, '-' or '.',
 and must start and end with an alphanumeric character.
 
 ### Note for Windows users
