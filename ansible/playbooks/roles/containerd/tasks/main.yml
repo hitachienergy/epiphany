@@ -1,0 +1,11 @@
+---
+- name: Install Containerd package
+  package:
+    name: containerd.io
+    state: present
+  module_defaults:
+    yum: { lock_timeout: "{{ yum_lock_timeout }}" }
+
+- include_tasks: configure-prerequisites.yml
+
+- include_tasks: configure-containerd.yml
