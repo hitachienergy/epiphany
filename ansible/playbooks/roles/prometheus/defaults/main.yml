@@ -4,10 +4,10 @@ prometheus_external_labels:
 
 prometheus:
   file_name:
-    x86_64: "prometheus-2.10.0.linux-amd64.tar.gz"
-    aarch64: "prometheus-2.10.0.linux-arm64.tar.gz"
+    x86_64: "prometheus-2.31.1.linux-amd64.tar.gz"
+    aarch64: "prometheus-2.31.1.linux-arm64.tar.gz"
 
 alertmanager:
   file_name:
-    x86_64: "alertmanager-0.17.0.linux-amd64.tar.gz"
-    aarch64: "alertmanager-0.17.0.linux-arm64.tar.gz"
+    x86_64: "alertmanager-0.23.0.linux-amd64.tar.gz"
+    aarch64: "alertmanager-0.23.0.linux-arm64.tar.gz"
