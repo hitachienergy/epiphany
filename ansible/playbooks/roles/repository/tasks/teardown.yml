@@ -4,9 +4,9 @@
 - name: Restore repositories to initial state
   block:
     - name: Re-enable system repositories
-      shell: /tmp/epi-repository-setup-scripts/enable-system-repos.sh
+      shell: /var/tmp/epi-repository-setup-scripts/enable-system-repos.sh
     - name: Disable epirepo
-      shell: /tmp/epi-repository-setup-scripts/disable-epirepo-client.sh
+      shell: /var/tmp/epi-repository-setup-scripts/disable-epirepo-client.sh
 
 - name: Restore /etc/cron.daily/rhui-update-client
   when:
@@ -60,7 +60,7 @@
 - name: Disable epirepo and clean up firewall rule
   block:
     - name: Disable epirepo server
-      shell: /tmp/epi-repository-setup-scripts/disable-repository-server.sh
+      shell: /var/tmp/epi-repository-setup-scripts/disable-repository-server.sh
 
     - name: Clean up temporary firewall rule for HTTP server
       include_tasks: firewall/clean-up-rule.yml
@@ -74,7 +74,7 @@
     state: absent
     path: "{{ item }}"
   loop:
-    - /tmp/epi-download-requirements
-    - /tmp/epi-repository-setup-scripts
+    - /var/tmp/epi-download-requirements
+    - /var/tmp/epi-repository-setup-scripts
     - /var/tmp/enabled-system-repos.txt
     - /var/tmp/enabled-system-repos.tar

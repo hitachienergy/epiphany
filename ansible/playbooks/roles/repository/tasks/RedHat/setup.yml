@@ -31,8 +31,8 @@
     - name: Create epirepo repository
       shell: >-
         set -o pipefail &&
-        /tmp/epi-repository-setup-scripts/create-repository.sh {{ specification.apache_epirepo_path }} {{ offline_mode | lower }} |&
-        tee /tmp/epi-repository-setup-scripts/create-repository.log
+        /var/tmp/epi-repository-setup-scripts/create-repository.sh {{ specification.apache_epirepo_path }} {{ offline_mode | lower }} |&
+        tee /var/tmp/epi-repository-setup-scripts/create-repository.log
 
     - name: Ensure HTTP port is not blocked by firewall
       include_tasks: firewall/add-rule.yml
@@ -48,10 +48,10 @@
 - name: Disable system repositories and set up epirepo
   block:
     - name: Create list of enabled repositories
-      shell: /tmp/epi-repository-setup-scripts/create-enabled-system-repos-list.sh
+      shell: /var/tmp/epi-repository-setup-scripts/create-enabled-system-repos-list.sh
     - name: Disable system repositories
-      shell: /tmp/epi-repository-setup-scripts/disable-system-repos.sh
+      shell: /var/tmp/epi-repository-setup-scripts/disable-system-repos.sh
     - name: Add and enable epirepo
       shell: >-
-        set -o pipefail && /tmp/epi-repository-setup-scripts/add-epirepo-client.sh {{ repository_url }} |&
-        tee /tmp/epi-repository-setup-scripts/add-epirepo-client.log
+        set -o pipefail && /var/tmp/epi-repository-setup-scripts/add-epirepo-client.sh {{ repository_url }} |&
+        tee /var/tmp/epi-repository-setup-scripts/add-epirepo-client.log

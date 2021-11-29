@@ -607,6 +607,21 @@ else
 	fi
 fi
 
+# --- Restore system repositories in case epirepo is enabled
+
+enable_system_repos_script="/var/tmp/epi-repository-setup-scripts/enable-system-repos.sh"
+disable_epirepo_client_script="/var/tmp/epi-repository-setup-scripts/disable-epirepo-client.sh"
+
+if [[ -f /etc/yum.repos.d/epirepo.repo ]]; then
+    if [[ -f /var/tmp/enabled-system-repos.txt && $enable_system_repos_script ]]; then
+        echol "OS repositories seems missing, restoring..."
+		$enable_system_repos_script || echol "Could not restore system repositories"
+		$disable_epirepo_client_script || echol "Could not disable epirepo"
+    else
+        echol "/var/tmp/enabled-system-repos.txt seems missing, you either know what you're doing or you need to fix your repositories"
+    fi
+fi
+
 # --- Install required packages unless present ---
 
 # repos can be enabled or disabled using the yum-config-manager command, which is provided by yum-utils package
