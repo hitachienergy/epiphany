@@ -4,9 +4,9 @@ name: default
 specification:
   ubuntu-18.04-x86_64:
     publisher: Canonical
-    offer: UbuntuServer
-    sku: 18.04-LTS
-    version: "18.04.202109130"
+    offer: 0001-com-ubuntu-server-focal
+    sku: 20_04-lts-gen2
+    version: "20.04.202111210"
   redhat-7-x86_64:
     publisher: RedHat
     offer: RHEL
