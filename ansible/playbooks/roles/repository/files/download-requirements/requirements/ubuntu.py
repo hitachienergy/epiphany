@@ -1,10 +1,11 @@
 from typing import Dict, List
+from requirements.crane import CRANE
+from requirements.files import FILES
+from requirements.images import IMAGES
 
 
 REQUIREMENTS_X86_64: Dict[str, List] = {
-    'crane': [
-        'https://github.com/google/go-containerregistry/releases/download/v0.4.1/go-containerregistry_Linux_x86_64.tar.gz'
-    ],
+    'crane': CRANE,
     'packages': [
         'adduser',
         'apt-transport-https',
@@ -204,107 +205,13 @@ REQUIREMENTS_X86_64: Dict[str, List] = {
         # kubernetes-cni-0.8.7 since K8s v1.19.15
         'kubernetes-cni=0.8.7-00*',
     ],
-    'files': [
+    'files': FILES + [
         # --- Packages ---
         # Switched from APT repo because there was only one (the latest) version available (issue #2262)
         'https://packages.elastic.co/curator/5/debian9/pool/main/e/elasticsearch-curator/elasticsearch-curator_5.8.3_amd64.deb',
         # Grafana package is not downloaded from repository since it was not reliable (issue #2449)
         'https://dl.grafana.com/oss/release/grafana_7.3.5_amd64.deb',
-        # --- Exporters ---
-        'https://github.com/prometheus/haproxy_exporter/releases/download/v0.10.0/haproxy_exporter-0.10.0.linux-amd64.tar.gz',
-        'https://repo1.maven.org/maven2/io/prometheus/jmx/jmx_prometheus_javaagent/0.14.0/jmx_prometheus_javaagent-0.14.0.jar',
-        'https://github.com/danielqsj/kafka_exporter/releases/download/v1.2.0/kafka_exporter-1.2.0.linux-amd64.tar.gz',
-        'https://github.com/prometheus/node_exporter/releases/download/v1.0.1/node_exporter-1.0.1.linux-amd64.tar.gz',
-        'https://github.com/prometheus-community/postgres_exporter/releases/download/v0.9.0/postgres_exporter-0.9.0.linux-amd64.tar.gz',
-        # --- Misc ---
-        'https://archive.apache.org/dist/kafka/2.6.0/kafka_2.12-2.6.0.tgz',
-        'https://archive.apache.org/dist/zookeeper/zookeeper-3.5.8/apache-zookeeper-3.5.8-bin.tar.gz',
-        'https://github.com/prometheus/alertmanager/releases/download/v0.17.0/alertmanager-0.17.0.linux-amd64.tar.gz',
-        'https://github.com/prometheus/prometheus/releases/download/v2.10.0/prometheus-2.10.0.linux-amd64.tar.gz',
-        'https://archive.apache.org/dist/ignite/2.9.1/apache-ignite-2.9.1-bin.zip',
-        'https://releases.hashicorp.com/vault/1.7.0/vault_1.7.0_linux_amd64.zip',
-        'https://get.helm.sh/helm-v3.2.0-linux-amd64.tar.gz',
-        'https://github.com/hashicorp/vault-helm/archive/v0.11.0.tar.gz',
-        # --- Helm charts ---
-        'https://charts.bitnami.com/bitnami/node-exporter-1.1.2.tgz',
-        'https://helm.elastic.co/helm/filebeat/filebeat-7.9.2.tgz',
-        # --- Grafana Dashboards <url> <new filename> ---
-        # Kubernetes Cluster
-        'https://grafana.com/api/dashboards/7249/revisions/1/download=grafana_dashboard_7249.json',
-        # Kubernetes cluster monitoring (via Prometheus)
-        'https://grafana.com/api/dashboards/315/revisions/3/download=grafana_dashboard_315.json',
-        # Node Exporter for Prometheus
-        'https://grafana.com/api/dashboards/11074/revisions/9/download=grafana_dashboard_11074.json',
-        # Node Exporter Server Metrics
-        'https://grafana.com/api/dashboards/405/revisions/8/download=grafana_dashboard_405.json',
-        # Postgres Overview
-        'https://grafana.com/api/dashboards/455/revisions/2/download=grafana_dashboard_455.json',
-        # PostgreSQL Database
-        'https://grafana.com/api/dashboards/9628/revisions/7/download=grafana_dashboard_9628.json',
-        # RabbitMQ Monitoring
-        'https://grafana.com/api/dashboards/4279/revisions/4/download=grafana_dashboard_4279.json',
-        # Node Exporter Full
-        'https://grafana.com/api/dashboards/1860/revisions/23/download=grafana_dashboard_1860.json',
-        # Kafka Exporter Overview
-        'https://grafana.com/api/dashboards/7589/revisions/5/download=grafana_dashboard_7589.json',
-        # HAproxy Servers | HAproxy
-        'https://grafana.com/api/dashboards/367/revisions/3/download=grafana_dashboard_367.json',
-        # Docker and Host Monitoring w/ Prometheus
-        'https://grafana.com/api/dashboards/179/revisions/5/download=grafana_dashboard_179.json',
-        # Kubernetes pod and cluster monitoring (via Prometheus)
-        'https://grafana.com/api/dashboards/6663/revisions/1/download=grafana_dashboard_6663.json',
-        # RabbitMQ cluster monitoring (via Prometheus)
-        'https://grafana.com/api/dashboards/10991/revisions/11/download=grafana_dashboard_10991.json'
+
     ],
-    'images': [
-        'haproxy:2.2.2-alpine',
-        'kubernetesui/dashboard:v2.3.1',
-        'kubernetesui/metrics-scraper:v1.0.7',
-        'registry:2',
-        'hashicorp/vault-k8s:0.10.0',
-        'vault:1.7.0',
-        # applications,
-        'epiphanyplatform/ignite:2.9.1',
-        'bitnami/pgpool:4.2.4',
-        'bitnami/pgbouncer:1.16.0',
-        # istio,
-        'istio/pilot:1.8.1',
-        'istio/proxyv2:1.8.1',
-        'istio/operator:1.8.1',
-        'epiphanyplatform/keycloak:14.0.0',
-        'rabbitmq:3.8.9',
-        # K8s,
-        ## v1.18.6,
-        'k8s.gcr.io/kube-apiserver:v1.18.6',
-        'k8s.gcr.io/kube-controller-manager:v1.18.6',
-        'k8s.gcr.io/kube-scheduler:v1.18.6',
-        'k8s.gcr.io/kube-proxy:v1.18.6',
-        'k8s.gcr.io/coredns:1.6.7',
-        'k8s.gcr.io/etcd:3.4.3-0',
-        'quay.io/coreos/flannel:v0.12.0-amd64',
-        'quay.io/coreos/flannel:v0.12.0',
-        'calico/cni:v3.15.0',
-        'calico/kube-controllers:v3.15.0',
-        'calico/node:v3.15.0',
-        'calico/pod2daemon-flexvol:v3.15.0',
-        ## v1.19.15,
-        'k8s.gcr.io/kube-apiserver:v1.19.15',
-        'k8s.gcr.io/kube-controller-manager:v1.19.15',
-        'k8s.gcr.io/kube-scheduler:v1.19.15',
-        'k8s.gcr.io/kube-proxy:v1.19.15',
-        ## v1.20.12,
-        'k8s.gcr.io/kube-apiserver:v1.20.12',
-        'k8s.gcr.io/kube-controller-manager:v1.20.12',
-        'k8s.gcr.io/kube-scheduler:v1.20.12',
-        'k8s.gcr.io/kube-proxy:v1.20.12',
-        'k8s.gcr.io/coredns:1.7.0',
-        'k8s.gcr.io/etcd:3.4.13-0',
-        'k8s.gcr.io/pause:3.2',
-        'quay.io/coreos/flannel:v0.14.0-amd64',
-        'quay.io/coreos/flannel:v0.14.0',
-        'calico/cni:v3.20.2',
-        'calico/kube-controllers:v3.20.2',
-        'calico/node:v3.20.2',
-        'calico/pod2daemon-flexvol:v3.20.2',
-    ]
+    'images': IMAGES
 }
