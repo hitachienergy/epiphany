@@ -2,7 +2,7 @@ kind: infrastructure/cloud-os-image-defaults
 title: "Cloud OS Image Defaults"
 name: default
 specification:
-  ubuntu-18.04-x86_64:
+  ubuntu-20.04-x86_64:
     publisher: Canonical
     offer: 0001-com-ubuntu-server-focal
     sku: 20_04-lts-gen2
