@@ -10,8 +10,8 @@ supported_oses:
       max: 7.9
   - name: Ubuntu
     version:
-      min: 18.04
-      max: 18.04
+      min: 20.04
+      max: 20.04
 
 # The list of unsupported K8s applications per architecture
 unsupported_apps:
