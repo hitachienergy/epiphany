@@ -32,9 +32,18 @@
       check_mode: false
       register: __prometheus_version
 
-    - name: Prometheus upgrade | Set version fact
+    # The following issue is also present in prometheus itself and fixed in newer versions:
+    # https://github.com/prometheus/node_exporter/issues/1271
+    # So we check both stderr and stdout just in case.
+    - name: Prometheus upgrade | Set version fact (stderr)
       set_fact:
         prometheus_version: "{{ __prometheus_version.stderr_lines[0].split(' ')[2] }}"
+      when: __prometheus_version.stderr_lines is defined and (__prometheus_version.stderr_lines|length>0)
+
+    - name: Prometheus upgrade | Set version fact (stdout)
+      set_fact:
+        prometheus_version: "{{ __prometheus_version.stdout_lines[0].split(' ')[2] }}"
+      when: __prometheus_version.stdout_lines is defined and (__prometheus_version.stdout_lines|length>0)
 
     - name: Prometheus upgrade | Print versions
       debug:
@@ -76,9 +85,18 @@
       check_mode: false
       register: __alertmanager_version
 
-    - name: AlertManager upgrade | Set version fact
+    # The following issue is also present in prometheus itself and fixed in newer versions: 
+    # https://github.com/prometheus/node_exporter/issues/1271
+    # So we check both stderr and stdout just in case.
+    - name: AlertManager upgrade | Set version fact (stderr)
       set_fact:
         alertmanager_version: "{{ __alertmanager_version.stderr_lines[0].split(' ')[2] }}"
+      when: __alertmanager_version.stderr_lines is defined and (__alertmanager_version.stderr_lines|length>0)
+
+    - name: AlertManager upgrade | Set version fact (stdout)
+      set_fact:
+        alertmanager_version: "{{ __alertmanager_version.stdout_lines[0].split(' ')[2] }}"
+      when: __alertmanager_version.stdout_lines is defined and (__alertmanager_version.stdout_lines|length>0)
 
     - name: AlertManager upgrade | Print versions
       debug:
@@ -102,44 +120,3 @@
 - name: Prometheus upgrade | Start services
   include_tasks: upgrade/start-services.yml
   when: prometheus_will_upgrade or alertmanager_will_upgrade
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

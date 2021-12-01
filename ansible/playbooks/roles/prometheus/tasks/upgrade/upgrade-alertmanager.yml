@@ -1,2 +1,29 @@
-- debug:
-    msg: "Upgrade AlertManager"
+---
+- name: AlertManager upgrade | Remove old versions ({{alertmanager_version}})
+  file:
+    path: /usr/local/bin/alertmanager
+    state: absent
+
+- name: AlertManager upgrade | Set AlertManager file name to install
+  set_fact:
+    binary_file_name: "{{ prometheus_defaults.alertmanager.file_name[ansible_architecture] }}"
+
+- name: AlertManager upgrade | Download AlertManager binaries
+  include_role:
+    name: download
+    tasks_from: download_file
+  vars:
+    file_name: "{{ binary_file_name }}"
+
+- name: AlertManager upgrade | Unpack AlertManager binary
+  become: true
+  unarchive:
+    src: "{{ download_directory }}/{{ binary_file_name }}"
+    remote_src: yes
+    dest: "/usr/local/bin"
+    creates: "/usr/local/bin/alertmanager"
+    extra_opts: [--strip-components=1]
+    mode: u=rwx,go=rx
+    owner: prometheus
+    group: prometheus
+  check_mode: false
