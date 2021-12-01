@@ -170,7 +170,7 @@ else
     cat -n "$deplist"
 
     # download dependencies (apt-get sandboxing warning when running as root are harmless)
-    cd "$dst_dir_packages" && xargs --no-run-if-empty --arg-file="$deplist" --delimiter='\n' -I{} bash -c ". ${script_path}/common.sh && ${download_cmd} {}" | tee -a "${LOG_FILE_PATH}"
+    cd "$dst_dir_packages" && xargs --no-run-if-empty --arg-file="$deplist" --delimiter='\n' -I{} bash -e -c ". ${script_path}/common.sh && ${download_cmd} {}" | tee -a "${LOG_FILE_PATH}"
     cd "$script_path"
 fi
 
