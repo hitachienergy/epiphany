@@ -12,13 +12,22 @@
   import_tasks: kubernetes/get-kubelet-version.yml # sets kubelet_version
   delegate_to: "{{ groups.kubernetes_master[0] }}"
 
+- name: Check for upgrade flag file
+  stat:
+    path: "{{ kubernetes.upgrade_flag_path }}"
+  register: lock_file_status
+
 - name: Upgrade masters then nodes
   vars:
     version: "{{ ver }}"
     cni_version: "{{ cni_ver }}"
   block:
+    - name: Create upgrade flag file
+      file:
+        path: "{{ kubernetes.upgrade_flag_path }}"
+        state: touch
+
     - name: Upgrade masters
-      when: cluster_version is version('v' + version, '<=')
       block:
         - name: k8s | Upgrade first master to v{{ version }}
           include_tasks: kubernetes/upgrade-master0.yml
@@ -31,7 +40,6 @@
             - inventory_hostname in groups.kubernetes_master[1:]
 
     - name: Upgrade nodes
-      when: kubelet_version is version('v' + version, '<=')
       block:
         - name: k8s | Upgrade node to v{{ version }}
           include_tasks: kubernetes/upgrade-node.yml
@@ -39,7 +47,14 @@
             - groups.kubernetes_node is defined
             - inventory_hostname in groups.kubernetes_node
 
+    - name: Remove k8s upgrade flag file
+      file:
+        path: "{{ kubernetes.upgrade_flag_path }}"
+        state: absent
+  when: >
+    lock_file_status.stat.exists or
+    cluster_version is version('v' + version, '<') or
+    kubelet_version is version('v' + version, '<')
+
 - name: k8s | Upgrade internal haproxy load-balancer
   import_tasks: kubernetes/upgrade-haproxy.yml
-
-# TODO: Create a flag file that the upgrade completed to not run it again for the same version next time

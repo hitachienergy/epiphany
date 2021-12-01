@@ -19,3 +19,6 @@ opendistro_for_elasticsearch:
       filename: demo2epiphany-certs-migration-root-CAs.pem
 
   upgrade_state_file_path: /etc/elasticsearch/epicli-upgrade-started.state
+
+kubernetes:
+  upgrade_flag_path: /tmp/kubernetes-upgrade-in-progress{{ ver }}.flag
