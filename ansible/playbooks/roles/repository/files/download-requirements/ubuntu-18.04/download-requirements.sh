@@ -60,8 +60,8 @@ disable_epirepo_client_script="/var/tmp/epi-repository-setup-scripts/disable-epi
 if [[ ! -f /etc/apt/sources.list ]]; then
     if [[ -f /var/tmp/enabled-system-repos.tar && -f $enable_system_repos_script ]]; then
         echol "OS repositories seems missing, restoring..."
-        $enable_system_repos_script || echol "Could not restore system repositories"
-        $disable_epirepo_client_script || echol "Could not disable epirepo"
+        $enable_system_repos_script || exit_with_error "Could not restore system repositories"
+        $disable_epirepo_client_script || exit_with_error "Could not disable epirepo"
     else
         echol "/etc/apt/sources.list seems missing, you either know what you're doing or you need to fix your repositories"
     fi
