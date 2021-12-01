@@ -1,2 +1,145 @@
-- debug:
-    msg: "LOL!:D"
+---
+# General things needed 
+- name: Prometheus | Include new version default variables
+  include_vars:
+    file: defaults/main.yml
+    name: prometheus_defaults
+
+- name: Prometheus | Populate service facts
+  service_facts:
+  when: ansible_facts.service is undefined
+  no_log: true
+
+
+# Prometheus upgrade
+- name: Prometheus upgrade | Set prometheus_will_upgrade fact
+  set_fact:
+    prometheus_will_upgrade: false
+
+- name: Prometheus upgrade | Check binary existance
+  stat:
+    path: /usr/local/bin/prometheus
+  register: prometheus_stat
+
+- name: Prometheus upgrade | Start upgrade
+  when:
+    - ansible_facts.services["prometheus.service"] is defined
+    - prometheus_stat.stat.exists
+  block:
+    - name: Prometheus upgrade | Get version
+      command: prometheus --version
+      changed_when: false
+      check_mode: false
+      register: __prometheus_version
+
+    - name: Prometheus upgrade | Set version fact
+      set_fact:
+        prometheus_version: "{{ __prometheus_version.stderr_lines[0].split(' ')[2] }}"
+
+    - name: Prometheus upgrade | Print versions
+      debug:
+        msg:
+          - "Installed version: {{ prometheus_version }}"
+          - "Target version: {{ prometheus_defaults.prometheus.version }}"
+
+    - name: Prometheus upgrade |  Check versions and set prometheus_will_upgrade
+      set_fact:
+        prometheus_will_upgrade: "{{ prometheus_defaults.prometheus.version is version(prometheus_version, '>') }}"
+
+    - name: Prometheus upgrade | Stop services
+      include_tasks: upgrade/stop-services.yml
+      when: prometheus_will_upgrade
+
+    - name: Prometheus upgrade | Upgrading Prometheus
+      include_tasks: upgrade/upgrade-prometheus.yml
+      when: prometheus_will_upgrade
+
+
+# AlertManager upgrade
+- name: AlertManager upgrade | Set alertmanager_will_upgrade fact
+  set_fact:
+    alertmanager_will_upgrade: false
+
+- name: AlertManager upgrade | Check binary existance
+  stat:
+    path: /usr/local/bin/alertmanager
+  register: alertmanager_stat
+
+- name: AlertManager upgrade | Start upgrade
+  when:
+    - ansible_facts.services["alertmanager.service"] is defined
+    - alertmanager_stat.stat.exists
+  block:
+    - name: AlertManager upgrade | Get version
+      command: alertmanager --version
+      changed_when: false
+      check_mode: false
+      register: __alertmanager_version
+
+    - name: AlertManager upgrade | Set version fact
+      set_fact:
+        alertmanager_version: "{{ __alertmanager_version.stderr_lines[0].split(' ')[2] }}"
+
+    - name: AlertManager upgrade | Print versions
+      debug:
+        msg:
+          - "Installed version: {{ alertmanager_version }}"
+          - "Target version: {{ prometheus_defaults.alertmanager.version }}"
+
+    - name: AlertManager upgrade | Check versions and set alertmanager_will_upgrade
+      set_fact:
+        alertmanager_will_upgrade: "{{ prometheus_defaults.alertmanager.version is version(alertmanager_version, '>') }}"
+
+    - name: AlertManager upgrade | Stop services
+      include_tasks: upgrade/stop-services.yml
+      when: alertmanager_will_upgrade and not prometheus_will_upgrade
+
+    - name: AlertManager upgrade | Upgrading AlertManager
+      include_tasks: upgrade/upgrade-alertmanager.yml
+      when: alertmanager_will_upgrade
+
+# Start services again if needed
+- name: Prometheus upgrade | Start services
+  include_tasks: upgrade/start-services.yml
+  when: prometheus_will_upgrade or alertmanager_will_upgrade
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
