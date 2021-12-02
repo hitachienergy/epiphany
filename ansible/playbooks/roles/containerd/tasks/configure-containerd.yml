@@ -14,9 +14,7 @@
     mode: u=rw,go=
     owner: root
     group: root
+  notify:
+    - Restart Containerd
 
-- name: Reload Containerd
-  systemd:
-    name: containerd
-    state: restarted
 

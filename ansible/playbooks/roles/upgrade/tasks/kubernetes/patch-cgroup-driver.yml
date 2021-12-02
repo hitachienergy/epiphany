@@ -25,32 +25,8 @@
     _output_str: >-
       {{ _input | combine(_cgroup_driver) | to_nice_yaml(indent=2) }}
 
-- name: k8s/cgroups | Read /etc/docker/daemon.json
-  slurp:
-    path: /etc/docker/daemon.json
-  register: slurp_etc_docker_daemon_json
-
-- name: k8s/cgroups | Process /etc/docker/daemon.json
-  set_fact:
-    etc_docker_daemon_json:
-      output: "{{ _output }}"
-      changed: "{{ _output['exec-opts'] != _exec_opts }}"
-  vars:
-    _input: >-
-      {{ slurp_etc_docker_daemon_json.content | b64decode | from_json }}
-
-    _exec_opts: >-
-      {{ _input['exec-opts'] | default([]) }}
-
-    _update:
-      exec-opts: >-
-        {{ _exec_opts | difference(['native.cgroupdriver=cgroupfs']) | union(['native.cgroupdriver=systemd']) }}
-
-    _output: >-
-      {{ _input | combine(_update, recursive=true) }}
-
 - name: k8s/cgroups | Perform cgroup driver patching (switch to systemd)
-  when: var_lib_kubelet_config_yaml.changed or etc_docker_daemon_json.changed
+  when: var_lib_kubelet_config_yaml.changed
   block:
     # At this point we assume that currently processed node has been drained already.
 
@@ -63,16 +39,7 @@
         group: root
         mode: preserve
 
-    - name: k8s/cgroups | Write /etc/docker/daemon.json
-      copy:
-        dest: /etc/docker/daemon.json
-        content: |
-          {{ etc_docker_daemon_json.output | to_nice_json(indent=2) }}
-        owner: root
-        group: root
-        mode: preserve
-
-    - name: k8s/cgroups | Restart kubelet and docker
-      include_tasks: utils/restart-kubelet-and-docker.yml
+    - name: k8s/cgroups | Restart kubelet
+      include_tasks: utils/restart-kubelet.yml
       when:
         - (_requires_restart is undefined) or _requires_restart

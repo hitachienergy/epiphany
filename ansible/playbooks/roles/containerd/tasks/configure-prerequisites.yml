@@ -14,12 +14,3 @@
   with_items:
     - overlay
     - br_netfilter
-
-- name: Provide 99-kubernetes-cri.conf file
-  become: true
-  copy:
-    src: 99-kubernetes-cri.conf
-    dest: /etc/sysctl.d/99-kubernetes-cri.conf
-    owner: root
-    group: root
-    mode: u=rw,go=

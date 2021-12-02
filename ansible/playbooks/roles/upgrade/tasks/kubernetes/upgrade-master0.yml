@@ -47,6 +47,12 @@
       delay: 30
       changed_when: false
 
+    - name: k8s/master0 | Add k8s annotation for containerd
+      delegate_to: "{{ groups.kubernetes_master[0] }}"
+      run_once: true
+      command: >-
+        kubectl annotate node {{ inventory_hostname }} --overwrite kubeadm.alpha.kubernetes.io/cri-socket=unix:///run/containerd/containerd.sock
+
     # Note: Usage of the --config flag for reconfiguring the cluster during upgrade is not recommended since v1.16
     - name: k8s/master0 | Upgrade K8s cluster to v{{ version }}
       command: >-
@@ -87,9 +93,6 @@
 - name: k8s/master0 | Backup kubeadm-config.yml
   include_tasks: backup-kubeadm-config.yml
 
-- name: k8s/master0 | Upgrade Docker  # this may restart Docker daemon
-  include_tasks: docker.yml
-
 - name: k8s/master0 | Patch kubelet ConfigMap with systemd cgroup driver
   include_tasks: patch-kubelet-cm.yml
 
@@ -99,8 +102,8 @@
   when:
     - upgrade_to_final_version
 
-- name: k8s/master0 | Restart kubelet and docker
-  include_tasks: utils/restart-kubelet-and-docker.yml
+- name: k8s/master0 | Restart kubelet
+  include_tasks: utils/restart-kubelet.yml
 
 - name: k8s/master0 | Uncordon master - mark master as schedulable
   include_tasks: utils/uncordon.yml
