@@ -1,11 +1,10 @@
 ---
 # Common Debian family specific tasks
 
-- name: Install selinux packages as prerequisite for SELinux module
+- name: Install prerequisites for selinux module
   apt:
     name:
-      - build-essential
-      - python-selinux
+      - python3-selinux
     update_cache: true
     state: present
   register: result
@@ -30,7 +29,7 @@
       - net-tools  # required by Ansible (module listen_ports_facts)
       - netcat
       - openssl
-      - python-setuptools
+      - python3-setuptools
       - rsync
       - software-properties-common
       - sshpass
