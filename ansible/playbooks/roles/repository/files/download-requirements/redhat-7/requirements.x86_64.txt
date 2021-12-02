@@ -161,7 +161,7 @@ https://get.helm.sh/helm-v3.2.0-linux-amd64.tar.gz
 https://github.com/hashicorp/vault-helm/archive/v0.11.0.tar.gz
 # --- Helm charts ---
 https://helm.elastic.co/helm/filebeat/filebeat-7.9.2.tgz
-https://charts.bitnami.com/bitnami/node-exporter-1.1.2.tgz
+https://charts.bitnami.com/bitnami/node-exporter-2.3.16.tgz
 # --- Grafana Dashboards <url> <new filename> ---
 # Kubernetes Cluster
 https://grafana.com/api/dashboards/7249/revisions/1/download grafana_dashboard_7249.json

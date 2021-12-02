@@ -8,7 +8,7 @@ specification:
       port: 9100
       targetPort: 9100 
   files:
-    node_exporter_helm_chart_file_name: node-exporter-1.1.2.tgz
+    node_exporter_helm_chart_file_name: node-exporter-2.3.16.tgz
   enabled_collectors:
     - conntrack
     - diskstats
