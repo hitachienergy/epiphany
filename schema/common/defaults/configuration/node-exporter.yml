@@ -32,10 +32,10 @@ specification:
     - "--web.listen-address=:9100"
     - '--log.level=info'
     - '--collector.diskstats.ignored-devices=^(ram|loop|fd)\d+$'
-    - '--collector.filesystem.ignored-mount-points=^/(sys|proc|dev|run)($|/)'
-    - '--collector.netdev.device-blacklist="^$"'
+    - '--collector.filesystem.mount-points-exclude=^/(sys|proc|dev|run)($|/)'
+    - '--collector.netdev.device-exclude="^$"'
     - '--collector.textfile.directory="/var/lib/prometheus/node-exporter"'
-    - '--collector.systemd.unit-whitelist="(kafka\.service|zookeeper\.service)"'
+    - '--collector.systemd.unit-include="(kafka\.service|zookeeper\.service)"'
 
   web_listen_port: "9100"
   web_listen_address: ""
