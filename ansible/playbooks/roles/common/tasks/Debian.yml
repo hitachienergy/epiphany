@@ -29,7 +29,6 @@
       - net-tools  # required by Ansible (module listen_ports_facts)
       - netcat
       - openssl
-      - python3-setuptools
       - rsync
       - software-properties-common
       - sshpass
