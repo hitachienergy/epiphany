@@ -24,7 +24,7 @@ if [[ "$is_offline_mode" == "true" ]]; then
   fi
 
   echo "Generating repository metadata..."
-  cd "${epi_repo_server_path}/packages" && /tmp/epi-repository-setup-scripts/dpkg-scanpackages -m . | gzip -9c > Packages.gz && cd "${script_path}"
+  cd "${epi_repo_server_path}/packages" && /var/tmp/epi-repository-setup-scripts/dpkg-scanpackages -m . | gzip -9c > Packages.gz && cd "${script_path}"
   echo "deb [trusted=yes] file:${epi_repo_server_path}/packages ./" > /etc/apt/sources.list.d/epilocal.list
   #apt update --assume-no # workaround for botched docker repository https://github.com/docker/for-linux/issues/812
   echo "Updating list of available packages..."
@@ -56,7 +56,7 @@ else
   # -m is important because it allow same packages with different versions
   # 'cd' is needed here becuase 'dpkg-scanpackages' prepends path to "Filename" field in Packages.gz
   # otherwise it would break package URL for apt
-  cd "${epi_repo_server_path}/packages" && /tmp/epi-repository-setup-scripts/dpkg-scanpackages -m . | gzip -9c > Packages.gz && cd "${script_path}"
+  cd "${epi_repo_server_path}/packages" && /var/tmp/epi-repository-setup-scripts/dpkg-scanpackages -m . | gzip -9c > Packages.gz && cd "${script_path}"
 fi
 
 systemctl start apache2

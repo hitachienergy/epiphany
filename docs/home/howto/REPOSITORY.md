@@ -51,7 +51,7 @@ journalctl -f -t download-requirements.sh
 If for some reason the download-requirements fails you can also always check the log afterwards on the repository machine here:
 
 ```shell
-/tmp/epi-download-requirements/log
+/var/tmp/epi-download-requirements/log
 ```
 
 ### Re-downloading requirements
@@ -67,7 +67,7 @@ This directory holds all the files being downloaded and removing it makes sure t
 If you want to re-download the requirements but the process finished successfully before, you might need to remove the following file:
 
 ```shell
-/tmp/epi-download-requirements/download-requirements-done.flag
+/var/tmp/epi-download-requirements/download-requirements-done.flag
 ```
 
 When this file is present and it isn't older than defined amount of time (2 hours by default), it enforces skipping re-downloading requirements.
@@ -80,7 +80,7 @@ To restore the original repository setup on a machine, you can execute the follo
 
 ```shell
 # Re-enable system repositories
-/tmp/epi-repository-setup-scripts/enable-system-repos.sh
+/var/tmp/epi-repository-setup-scripts/enable-system-repos.sh
 # Disable epirepo
-/tmp/epi-repository-setup-scripts/disable-epirepo-client.sh
+/var/tmp/epi-repository-setup-scripts/disable-epirepo-client.sh
 ```

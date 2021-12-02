@@ -52,12 +52,16 @@ echol "Docker platform: $docker_platform"
 
 [[ -f $input_file ]] || exit_with_error "File not found: $input_file"
 
-repos_backup_file="/tmp/epi-repository-setup-scripts/enable-system-repos.sh"
 # restore system repositories in case they're missing if ansible role gets interrupted
+
+enable_system_repos_script="/var/tmp/epi-repository-setup-scripts/enable-system-repos.sh"
+disable_epirepo_client_script="/var/tmp/epi-repository-setup-scripts/disable-epirepo-client.sh"
+
 if [[ ! -f /etc/apt/sources.list ]]; then
-    if [[ -f /var/tmp/enabled-system-repos.tar && -f $repos_backup_file ]]; then
+    if [[ -f /var/tmp/enabled-system-repos.tar && -f $enable_system_repos_script ]]; then
         echol "OS repositories seems missing, restoring..."
-        $repos_backup_file
+        $enable_system_repos_script || exit_with_error "Could not restore system repositories"
+        $disable_epirepo_client_script || exit_with_error "Could not disable epirepo"
     else
         echol "/etc/apt/sources.list seems missing, you either know what you're doing or you need to fix your repositories"
     fi
