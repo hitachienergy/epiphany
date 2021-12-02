@@ -21,6 +21,7 @@
 - [#2814](https://github.com/epiphany-platform/epiphany/issues/2814) - Add description how to enable TLS in Kibana
 - [#1076](https://github.com/epiphany-platform/epiphany/issues/2595) - Document connection protocols and ciphers
 - [#2665](https://github.com/epiphany-platform/epiphany/issues/2665) - Add Kubernetes prereqs to epicli preflight checks
+- [#2702](https://github.com/epiphany-platform/epiphany/issues/2702) - Use state flag file in K8s upgrades
 
 ### Fixed
 
