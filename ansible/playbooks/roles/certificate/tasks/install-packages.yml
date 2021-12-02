@@ -6,7 +6,7 @@
   vars:
     _packages:  # see docs of 'community.crypto.x509_certificate' module
       Debian:
-        - python-cryptography
+        - python3-cryptography
       RedHat:
         - python2-cryptography
   module_defaults:

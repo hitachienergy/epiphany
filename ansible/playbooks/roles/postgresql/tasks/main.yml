@@ -59,10 +59,10 @@
         - postgresql-common
         - postgresql-client-13
         - postgresql-13
-        - python-psycopg2 # required for PostgreSQL ansible management
+        - python3-psycopg2  # required for PostgreSQL ansible management
       RedHat:
         - postgresql13-server
-        - python-psycopg2 # required for PostgreSQL ansible management
+        - python-psycopg2  # required for PostgreSQL ansible management
   module_defaults:
     yum: { lock_timeout: "{{ yum_lock_timeout }}" }
 
