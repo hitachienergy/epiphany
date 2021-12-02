@@ -68,7 +68,6 @@ openssl
 postgresql-13
 python3-psycopg2
 python3-selinux
-python3-setuptools
 rabbitmq-server 3.8.9
 smbclient
 samba-common
