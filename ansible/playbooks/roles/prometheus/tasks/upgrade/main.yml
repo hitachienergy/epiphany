@@ -32,8 +32,7 @@
       check_mode: false
       register: __prometheus_version
 
-    # The following issue is also present in prometheus itself and fixed in newer versions:
-    # https://github.com/prometheus/node_exporter/issues/1271
+    # https://github.com/prometheus/prometheus/issues/5721
     # So we check both stderr and stdout just in case.
     - name: Prometheus upgrade | Set version fact (stderr)
       set_fact:
@@ -85,8 +84,8 @@
       check_mode: false
       register: __alertmanager_version
 
-    # The following issue is also present in prometheus itself and fixed in newer versions: 
-    # https://github.com/prometheus/node_exporter/issues/1271
+    # This issue below also effects AlertManager:
+    # https://github.com/prometheus/prometheus/issues/5721
     # So we check both stderr and stdout just in case.
     - name: AlertManager upgrade | Set version fact (stderr)
       set_fact:
