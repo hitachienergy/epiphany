@@ -43,8 +43,14 @@
 - [#2180](https://github.com/epiphany-platform/epiphany/issues/2180) - [documentation] Missing clear information about supported CNI plugins
 - [#2755](https://github.com/epiphany-platform/epiphany/issues/2755) - Upgrade Python dependencies to the latest
 
+### Removed
+
+- [#2680](https://github.com/epiphany-platform/epiphany/issues/2680) - Remove PgBouncer standalone installation
+
 ### Deprecated
 
 ### Breaking changes
+
+- PgBouncer available only as Kubernetes service
 
 ### Known issues
