@@ -1,0 +1,29 @@
+---
+- name: Populate service facts
+  service_facts:
+
+- name: Stop Docker daemon
+  systemd:
+    name: docker
+    state: stopped
+    enabled: no
+  when: "'docker.service' in ansible_facts.services"
+
+- name: Remove Docker packages
+  package:
+    name: "{{ _packages }}"
+    state: absent
+  vars:
+    _packages:
+      - docker-ce-cli
+      - docker-ce-rootless-extras
+      - docker-ce
+
+- name: Remove Docker sockets leftovers
+  file:
+    path: "{{ _paths }}"
+    state: absent
+  vars:
+    _paths:
+      - /var/run/docker.sock
+      - /var/run/dockershim.sock
