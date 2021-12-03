@@ -1,19 +1,19 @@
 ---
-- name: Prometheus upgrade | Start Prometheus service
+- name: Start Prometheus service
   systemd:
     state: started
     name: prometheus
   when:
     - ansible_facts.services["prometheus.service"] is defined
 
-- name: Prometheus upgrade | Start AlertManager service
+- name: Start AlertManager service
   systemd:
     state: started
     name: alertmanager
   when:
     - ansible_facts.services["alertmanager.service"] is defined
 
-- name: Prometheus upgrade | Start Grafana service
+- name: Start Grafana service
   systemd:
     state: started
     name: grafana-server
