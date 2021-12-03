@@ -8,7 +8,6 @@
 - name: Populate service facts
   service_facts:
   when: ansible_facts.service is undefined
-  no_log: true
 
 
 # Prometheus upgrade
