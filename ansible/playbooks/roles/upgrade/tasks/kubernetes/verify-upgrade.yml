@@ -64,3 +64,5 @@
   check_mode: true
   register: cgroup_driver
   failed_when: cgroup_driver.changed
+  when:
+    - upgrade_to_final_version
