@@ -50,7 +50,7 @@ Here are some materials concerning Epiphany tooling and cluster components - bot
     1. [HaProxy](http://www.haproxy.org/)
 7. Databases
     1. [PostgreSQL](https://www.postgresql.org/docs/)
-        - [Repmng](https://repmgr.org/)
+        - [repmgr](https://repmgr.org/)
         - [PGBouncer](https://www.pgbouncer.org/)
         - [PGPool](https://www.pgpool.net/mediawiki/index.php/Main_Page)
         - [PGAudit](https://www.pgaudit.org/)

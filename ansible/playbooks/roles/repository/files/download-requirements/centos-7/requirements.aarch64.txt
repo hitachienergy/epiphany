@@ -23,7 +23,6 @@ https://github.com/google/go-containerregistry/releases/download/v0.4.1/go-conta
 [packages]
 audit # for docker-ce
 bash-completion
-#c-ares # for pgbouncer
 ca-certificates
 cifs-utils
 conntrack-tools # for kubelet

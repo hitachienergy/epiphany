@@ -5,7 +5,6 @@ require 'multi_json'
 
 postgresql_host = '127.0.0.1'
 postgresql_default_port = 5432
-pgbouncer_default_port  = 6432
 
 # Here we set the needed variables from ENV variables which are set in the Rakefile
 # where we order the postgres hosts:
@@ -39,7 +38,6 @@ replicated =           countInventoryHosts("postgresql") > 1
 replication_user =     config_docs[:postgresql]["specification"]["extensions"]["replication"]["replication_user_name"]
 replication_password = config_docs[:postgresql]["specification"]["extensions"]["replication"]["replication_user_password"]
 max_wal_senders =      config_docs[:postgresql]["specification"]["config_file"]["parameter_groups"].detect {|i| i["name"] == 'REPLICATION'}["subgroups"].detect {|i| i["name"] == "Sending Server(s)"}["parameters"].detect {|i| i["name"] == "max_wal_senders"}["value"]
-pgbouncer_enabled =    config_docs[:postgresql]["specification"]["extensions"]["pgbouncer"]["enabled"]
 pgaudit_enabled =      config_docs[:postgresql]["specification"]["extensions"]["pgaudit"]["enabled"]
 
 if upgradeRun?
@@ -450,106 +448,9 @@ if replicated
   end
 end
 
-### Tests for PGBouncer
-
-if pgbouncer_enabled
-
-  if primary_node_host.include? host_inventory['hostname']
-
-    describe 'Check if PGBouncer service is running' do
-      describe service('pgbouncer') do
-        it { should be_enabled }
-        it { should be_running }
-      end
-    end
-
-    describe 'Create a test user' do
-      let(:disable_sudo) { false }
-      describe command("su - postgres -c \"psql -t -c \\\"CREATE USER #{pg_user} WITH PASSWORD '#{pg_pass}';\\\"\" 2>&1") do
-        its(:stdout) { should match /^CREATE ROLE$/ }
-        its(:exit_status) { should eq 0 }
-      end
-    end
-
-    describe 'Add user to userlist.txt' do
-      let(:disable_sudo) { false }
-      describe command("echo \\\"#{pg_user}\\\" \\\"#{pg_pass}\\\" >> /etc/pgbouncer/userlist.txt && systemctl restart pgbouncer") do
-        its(:exit_status) { should eq 0 }
-      end
-    end
-
-    describe 'Grant privileges on schema to user' do
-      let(:disable_sudo) { false }
-      describe command("su - postgres -c \"psql -t -c 'GRANT ALL ON SCHEMA serverspec_test to #{pg_user}; GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA serverspec_test to #{pg_user};'\" 2>&1") do
-        its(:stdout) { should match /^GRANT$/ }
-        its(:exit_status) { should eq 0 }
-      end
-    end
-
-    describe 'Create a test table' do
-      let(:disable_sudo) { false }
-      describe command("psql -h #{postgresql_host} -p #{pgbouncer_default_port} -U #{pg_user} postgres -c 'CREATE TABLE serverspec_test.pgbtest (col varchar(20));' 2>&1") do
-        its(:stdout) { should match /^CREATE TABLE$/ }
-        its(:exit_status) { should eq 0 }
-      end
-    end
-
-    describe 'Insert values into the test table' do
-      let(:disable_sudo) { false }
-      describe command("psql -h #{postgresql_host} -p #{pgbouncer_default_port} -U #{pg_user} postgres -c \"INSERT INTO serverspec_test.pgbtest (col) values ('PGBSUCCESS');\" 2>&1") do
-        its(:stdout) { should match /^INSERT 0 1$/ }
-        its(:exit_status) { should eq 0 }
-      end
-    end
-
-    describe 'Select values from the test table' do
-      let(:disable_sudo) { false }
-      describe command("psql -h #{postgresql_host} -p #{pgbouncer_default_port} -U #{pg_user} postgres -c 'SELECT col from serverspec_test.pgbtest;' 2>&1") do
-        its(:stdout) { should match /\bPGBSUCCESS\b/ }
-        its(:exit_status) { should eq 0 }
-      end
-    end
-
-  end
-
-  if replicated || (primary_node_host.include? host_inventory['hostname'])
-
-    describe 'Select values from test tables' do
-      let(:disable_sudo) { false }
-      describe command("PGPASSWORD=#{pg_pass} psql -h #{postgresql_host} -p #{postgresql_default_port} -U #{pg_user} postgres -c 'SELECT * from serverspec_test.test;' 2>&1") do
-        its(:stdout) { should match /\bSUCCESS\b/ }
-        its(:exit_status) { should eq 0 }
-      end
-      describe command("PGPASSWORD=#{pg_pass} psql -h #{postgresql_host} -p #{postgresql_default_port} -U #{pg_user} postgres -c 'SELECT col from serverspec_test.pgbtest;' 2>&1") do
-        its(:stdout) { should match /\bPGBSUCCESS\b/ }
-        its(:exit_status) { should eq 0 }
-      end
-    end
-
-  end
-
-end
-
 ### Cleaning up
 
-if !replicated
-  queryForDropping
-
-  if pgbouncer_enabled
-    describe 'Drop test user' do
-      let(:disable_sudo) { false }
-      describe command("su - postgres -c \"psql -t -c 'DROP USER #{pg_user};'\" 2>&1") do
-        its(:stdout) { should match /^DROP ROLE$/ }
-        its(:exit_status) { should eq 0 }
-      end
-      describe command("su - -c \"sed -i '/#{pg_pass}/d' /etc/pgbouncer/userlist.txt && cat /etc/pgbouncer/userlist.txt\" 2>&1") do
-        its(:stdout) { should_not match /#{pg_pass}/ }
-        its(:exit_status) { should eq 0 }
-      end
-    end
-  end
-
-end
+queryForDropping unless replicated
 
 if replicated && (last_node_host.include? host_inventory['hostname'])
   ssh_options = Specinfra.backend.get_config(:ssh_options)
@@ -564,18 +465,6 @@ if replicated && (last_node_host.include? host_inventory['hostname'])
       Net::SSH.start(primary_node_ip, ENV['user'], ssh_options) do|ssh|
         result = ssh.exec!("sudo su - postgres -c \"psql -t -c 'DROP SCHEMA serverspec_test CASCADE;'\" 2>&1")
         expect(result).to match 'DROP SCHEMA'
-      end
-    end
-    it "Delegate drop user query to master node", :if => pgbouncer_enabled do
-      Net::SSH.start(primary_node_ip, ENV['user'], ssh_options) do|ssh|
-        result = ssh.exec!("sudo su - postgres -c \"psql -t -c 'DROP USER #{pg_user};'\" 2>&1")
-        expect(result).to match 'DROP ROLE'
-      end
-    end
-    it "Remove test user from userlist.txt", :if => pgbouncer_enabled do
-      Net::SSH.start(primary_node_ip, ENV['user'], ssh_options) do|ssh|
-        result = ssh.exec!("sudo su - -c \"sed -i '/#{pg_pass}/d' /etc/pgbouncer/userlist.txt && cat /etc/pgbouncer/userlist.txt\" 2>&1")
-        expect(result).not_to match "#{pg_pass}"
       end
     end
   end
@@ -629,20 +518,6 @@ if pgaudit_enabled && countInventoryHosts("logging") > 0
         its(:stdout) { should match /INSERT INTO serverspec_test\.test/ }
         its(:stdout) { should match /DROP TABLE serverspec_test\.test/ }
         its(:stdout) { should match /DROP SCHEMA serverspec_test/ }
-        its(:exit_status) { should eq 0 }
-      end
-    end
-
-    describe 'Check if Elasticsearch logs contain queries executed with PGBouncer', :if => pgbouncer_enabled do
-      query = get_elasticsearch_query(message_pattern: "#{pg_user} AND NOT MISC,SET")
-      command = get_query_command_with_retries(json_query: query, min_doc_hits: 6)
-      describe command(command.squish) do
-        its(:stdout) { should match /GRANT ALL ON SCHEMA serverspec_test to #{pg_user}/ }
-        its(:stdout) { should match /GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA serverspec_test to #{pg_user}/ }
-        its(:stdout) { should match /CREATE TABLE serverspec_test\.pgbtest/ }
-        its(:stdout) { should match /INSERT INTO serverspec_test\.pgbtest/ }
-        its(:stdout) { should match /CREATE USER #{pg_user} WITH PASSWORD/ }
-        its(:stdout) { should match /DROP USER #{pg_user}/ }
         its(:exit_status) { should eq 0 }
       end
     end
