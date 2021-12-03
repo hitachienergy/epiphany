@@ -94,13 +94,16 @@
       set_fact:
         alertmanager_will_upgrade: "{{ prometheus_defaults.alertmanager.version is version(alertmanager_version, '>') }}"
 
-    - name: Stop services
-      include_tasks: upgrade/stop-services.yml
-      when: alertmanager_will_upgrade and not prometheus_will_upgrade
-
-    - name: Upgrade AlertManager
-      include_tasks: upgrade/upgrade-alertmanager.yml
+    - name: Perform upgrade
       when: alertmanager_will_upgrade
+      block:
+        - name: Stop services
+          include_tasks: upgrade/stop-services.yml
+          when: not prometheus_will_upgrade
+
+        - name: Upgrade AlertManager
+          include_tasks: upgrade/upgrade-alertmanager.yml
+
 
 # Start services again if needed
 - name: Start services
