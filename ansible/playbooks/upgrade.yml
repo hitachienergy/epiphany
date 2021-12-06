@@ -229,6 +229,7 @@
     - include_role:
         name: kafka_exporter
         tasks_from: upgrade/main
+      vars: { lock_file: /var/tmp/kafka-exporter-upgrade-in-progress.flag }
       when: "'kafka-exporter' in upgrade_components or upgrade_components|length == 0"
 
 - hosts: rabbitmq

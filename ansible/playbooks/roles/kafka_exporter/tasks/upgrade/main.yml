@@ -1,0 +1,96 @@
+---
+- name: Upgrade | Kafka Exporter | Check for upgrade flag file
+  stat:
+    path: "{{ lock_file }}"
+  register: lock_file_status
+
+- name: Upgrade | Kafka Exporter | Preflight check
+  when: not lock_file_status.stat.exists
+  block:
+  - name: Upgrade | Kafka Exporter | Create upgrade flag file
+    file:
+      path: "{{ lock_file }}"
+      state: touch
+
+  - name: Upgrade | Kafka Exporter | Get installed version
+    shell: >-
+      set -o pipefail &&
+      /opt/kafka_exporter/kafka_exporter --version &> >(grep -E kafka_exporter.*version | awk '{ print $3 }')
+    register: kafka_exporter_installed_version
+
+  - name: Upgrade | Kafka Exporter | Set installed version as variable
+    set_fact:
+      kafka_exporter_version_old: "{{ kafka_exporter_installed_version.stdout }}"
+
+  - name: Upgrade | Kafka Exporter | Avoid risk of downgrade
+    when: kafka_exporter_version_old is not version( kafka_exporter.version, '<' )
+    block:
+    - name: Upgrade | Kafka Exporter | Remove upgrade flag file
+      file:
+        path: "{{ lock_file }}"
+        state: absent
+
+    - name: Upgrade | Kafka Exporter | Fail task
+      fail:
+        msg: Kafka Exporter in newer version already installed!
+
+- name: Upgrade | Kafka Exporter | Run upgrade tasks
+  when: lock_file_status.stat.exists or kafka_exporter_version_old is version( kafka_exporter.version, '<' )
+  block:
+    - name: Upgrade | Kafka Exporter | Stop service
+      systemd:
+        name: kafka-exporter
+        state: stopped
+
+    - name: Upgrade | Kafka Exporter | Set file name to install
+      set_fact:
+        kafka_exporter_file_name: "{{ kafka_exporter.file_name[ansible_architecture] }}"
+
+    - name: Upgrade | Kafka Exporter | Download package
+      include_role:
+        name: download
+        tasks_from: download_file
+      vars:
+        file_name: "{{ kafka_exporter_file_name }}"
+
+    - name: Upgrade | Kafka Exporter | Remove previous version binary
+      file:
+        path: "/opt/kafka_exporter/kafka_exporter"
+        state: absent
+
+    - name: Upgrade | Kafka Exporter | Unpack binary
+      become: true
+      unarchive:
+        remote_src: yes
+        src: "{{ download_directory }}/{{ kafka_exporter_file_name }}"
+        dest: "/opt/kafka_exporter"
+        creates: "/opt/kafka_exporter/kafka_exporter"
+        extra_opts: [--strip-components=1]
+        mode: 0755
+        owner: root
+        group: kafka_exporter
+      check_mode: false
+
+    - name: Upgrade | Kafka Exporter | Update service
+      template:
+        src: kafka-exporter.service.j2
+        dest: /etc/systemd/system/kafka-exporter.service
+        owner: root
+        group: root
+        mode: 0644
+
+    - name: Upgrade | Kafka Exporter | Daemon reload
+      systemd:
+        daemon_reload: yes
+        enabled: yes
+        name: kafka-exporter.service
+
+    - name: Upgrade | Kafka Exporter | Start service
+      systemd:
+        name: kafka-exporter
+        state: started
+
+- name: Upgrade | Kafka Exporter | Remove upgrade flag file
+  file:
+    path: "{{ lock_file }}"
+    state: absent
