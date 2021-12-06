@@ -199,7 +199,7 @@ apiServer:
     audit-log-maxbackup: "10"
     audit-log-maxsize: "200"
     audit-log-path: "/var/log/apiserver/audit.log"
-    enable-admission-plugins: "AlwaysPullImages,DenyEscalatingExec,NamespaceLifecycle,ServiceAccount,NodeRestriction"
+    enable-admission-plugins: "AlwaysPullImages,NamespaceLifecycle,ServiceAccount,NodeRestriction"
     profiling: "False"
 controllerManager:
   extraArgs: # https://kubernetes.io/docs/reference/command-line-tools-reference/kube-controller-manager/

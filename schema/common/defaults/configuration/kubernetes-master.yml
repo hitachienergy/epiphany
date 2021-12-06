@@ -15,7 +15,7 @@ specification:
   advanced: # modify only if you are sure what value means
     api_server_args: # https://kubernetes.io/docs/reference/command-line-tools-reference/kube-apiserver/
       profiling: false
-      enable-admission-plugins: "AlwaysPullImages,DenyEscalatingExec,NamespaceLifecycle,ServiceAccount,NodeRestriction"
+      enable-admission-plugins: "AlwaysPullImages,NamespaceLifecycle,ServiceAccount,NodeRestriction"
       audit-log-path: "/var/log/apiserver/audit.log"
       audit-log-maxbackup: 10
       audit-log-maxsize: 200
