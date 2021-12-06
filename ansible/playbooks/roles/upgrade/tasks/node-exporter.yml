@@ -126,6 +126,7 @@
         mode: u=rw,go=r
       vars:
         exporter_service_description: "{{ exporter_defaults.exporter.service.description }}"
+        specification: "{{ exporter_vars.specification }}"
 
     - name: Node Exporter as System Service | Start exporter
       systemd:
