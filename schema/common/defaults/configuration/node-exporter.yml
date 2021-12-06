@@ -31,8 +31,8 @@ specification:
   config_flags:
     - "--web.listen-address=:9100"
     - '--log.level=info'
-    - '--collector.diskstats.ignored-devices=^/(ram|loop|fd/)\d+$'
-    - '--collector.filesystem.mount-points-exclude=^/(sys|proc|dev|run)($|/)'
+    - '--collector.diskstats.ignored-devices=^(ram|loop|fd)\d+$'
+    - '--collector.filesystem.mount-points-exclude=^(sys|proc|dev|run)($|)'
     - '--collector.netdev.device-exclude="^$"'
     - '--collector.textfile.directory=/var/lib/prometheus/node-exporter'
     - '--collector.systemd.unit-include="(kafka\.service|zookeeper\.service)"'
