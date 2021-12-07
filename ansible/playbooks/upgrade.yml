@@ -276,3 +276,12 @@
         name: postgresql
         tasks_from: upgrade/main
       when: "'postgresql' in upgrade_components or upgrade_components|length == 0"
+
+- hosts: prometheus
+  become: true
+  become_method: sudo
+  tasks:
+    - include_role:
+        name: prometheus
+        tasks_from: upgrade/main
+      when: "'prometheus' in upgrade_components or upgrade_components|length == 0"

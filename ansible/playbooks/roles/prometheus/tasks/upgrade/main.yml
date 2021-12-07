@@ -1,0 +1,137 @@
+---
+# General things needed
+- name: Include new version of defaults
+  include_vars:
+    file: defaults/main.yml
+    name: prometheus_defaults
+
+- name: Include upgrade defaults
+  include_vars:
+    file: defaults/upgrade.yml
+    name: upgrade_defaults
+
+- name: Populate service facts
+  service_facts:
+  when: ansible_facts.service is undefined
+
+# If state file exists it means the previous run failed
+- name: Check for upgrade state file
+  stat:
+    path: "{{ upgrade_defaults.state_file_path }}"
+    get_attributes: false
+    get_checksum: false
+    get_mime: false
+  register: state_file_status
+
+- name: Create upgrade state file
+  copy:
+    dest: "{{ upgrade_defaults.state_file_path }}"
+    content: Upgrade started
+    mode: u=rw,g=r,o=
+
+# Prometheus upgrade
+- name: Set prometheus_will_upgrade fact
+  set_fact:
+    prometheus_will_upgrade: false
+
+- name: Check Prometheus binary existance
+  stat:
+    path: /usr/local/bin/prometheus
+  register: prometheus_stat
+
+- name: Start Prometheus upgrade
+  when:
+    - ansible_facts.services["prometheus.service"] is defined
+    - prometheus_stat.stat.exists
+  block:
+    - name: Get Prometheus version
+      command: prometheus --version
+      changed_when: false
+      check_mode: false
+      become: false
+      register: _prometheus_version
+
+    - name: Set Prometheus version fact
+      set_fact:
+        prometheus_version: "{{ _prometheus_version[_stream][0].split(' ')[2] }}"
+      vars:
+        _stream: "{{ 'stdout_lines' if _prometheus_version.stdout_lines else 'stderr_lines' }}"
+
+    - name: Print Prometheus versions
+      debug:
+        msg:
+          - "Installed version: {{ prometheus_version }}"
+          - "Target version: {{ prometheus_defaults.prometheus.version }}"
+
+    - name: Check versions and set prometheus_will_upgrade
+      set_fact:
+        prometheus_will_upgrade: "{{ prometheus_defaults.prometheus.version is version(prometheus_version, '>') or state_file_status.stat.exists }}"
+
+    - name: Perform upgrade
+      when: prometheus_will_upgrade
+      block:
+        - name: Stop services
+          include_tasks: upgrade/stop-services.yml
+
+        - name: Upgrade Prometheus
+          include_tasks: upgrade/upgrade-prometheus.yml
+
+
+# AlertManager upgrade
+- name: Set alertmanager_will_upgrade fact
+  set_fact:
+    alertmanager_will_upgrade: false
+
+- name: Check binary AlertManager existance
+  stat:
+    path: /usr/local/bin/alertmanager
+  register: alertmanager_stat
+
+- name: Start AlertManager upgrade
+  when:
+    - ansible_facts.services["alertmanager.service"] is defined
+    - alertmanager_stat.stat.exists
+  block:
+    - name: Get AlertManager version
+      command: alertmanager --version
+      become: false
+      changed_when: false
+      check_mode: false
+      register: _alertmanager_version
+
+    - name: Set AlertManager version fact
+      set_fact:
+        alertmanager_version: "{{ _alertmanager_version[_stream][0].split(' ')[2] }}"
+      vars:
+        _stream: "{{ 'stdout_lines' if _alertmanager_version.stdout_lines else 'stderr_lines' }}"
+
+    - name: Print AlertManager versions
+      debug:
+        msg:
+          - "Installed version: {{ alertmanager_version }}"
+          - "Target version: {{ prometheus_defaults.alertmanager.version }}"
+
+    - name: Check versions and set alertmanager_will_upgrade
+      set_fact:
+        alertmanager_will_upgrade: "{{ prometheus_defaults.alertmanager.version is version(alertmanager_version, '>') or state_file_status.stat.exists }}"
+
+    - name: Perform upgrade
+      when: alertmanager_will_upgrade
+      block:
+        - name: Stop services
+          include_tasks: upgrade/stop-services.yml
+          when: not prometheus_will_upgrade
+
+        - name: Upgrade AlertManager
+          include_tasks: upgrade/upgrade-alertmanager.yml
+
+
+# Start services again if needed
+- name: Start services
+  include_tasks: upgrade/start-services.yml
+  when: prometheus_will_upgrade or alertmanager_will_upgrade
+
+- name: "Remove upgrade state file"
+  file:
+    path: "{{ upgrade_defaults.state_file_path }}"
+    state: absent
