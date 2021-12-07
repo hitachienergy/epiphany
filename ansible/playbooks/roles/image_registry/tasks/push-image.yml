@@ -3,9 +3,21 @@
   become: true
   vars:
     new_image_tag: "{{ image_registry_address }}/{{ docker_image.name }}"
-  block:
-    - name: Tag {{ docker_image.name }} image with {{ new_image_tag }}
-      command: docker tag {{ docker_image.name }} {{ new_image_tag }}
+  <<: &tag_and_push
+    block:
+      - name: Tag {{ docker_image.name }} image with {{ new_image_tag }}
+        command: docker tag {{ docker_image.name }} {{ new_image_tag }}
 
-    - name: Push {{ docker_image.name }} image to registry
-      command: docker push {{ new_image_tag }}
+      - name: Push {{ docker_image.name }} image to registry
+        command: docker push {{ new_image_tag }}
+
+# Temporary workaround related to # https://github.com/kubernetes/kubeadm/issues/2525
+# TODO: Remove when K8s versions before 1.21 (Coredns < 1.8) are unsupported
+- name: Push Coredns image to local registry
+  become: true
+  when:
+    - "'coredns' in docker_image.name"
+    - not "'coredns/coredns' in docker_image.name"
+  vars:
+    new_image_tag: "{{ image_registry_address }}/{{ docker_image.name | replace('coredns', 'coredns/coredns') }}"
+  <<: *tag_and_push
