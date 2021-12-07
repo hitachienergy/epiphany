@@ -18,7 +18,7 @@
     - k8s_as_cloud_service
   block:
     - name: Get information about helm releases
-      command: helm list --output json
+      command: helm list -A --output json
       register: helm_list
 
     - name: Check if node exporter release exist in default namespace and set fact
