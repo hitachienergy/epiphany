@@ -69,6 +69,7 @@
     - name: Push generic and current version images to registry
       vars:
         docker_image: "{{ item }}"
+        new_image_tag: "{{ image_registry_address }}/{{ item.name }}"
       include_tasks: push-image.yml
       loop: "{{ generic_and_current_images }}"
 
@@ -80,11 +81,22 @@
             docker_image: "{{ item }}"
           include_tasks: load-image.yml
           loop: "{{ legacy_images }}"
-          when: legacy_images | count > 0
 
         - name: Push legacy version images to registry
           vars:
             docker_image: "{{ item }}"
+            new_image_tag: "{{ image_registry_address }}/{{ item.name }}"
           include_tasks: push-image.yml
           loop: "{{ legacy_images }}"
-          when: legacy_images | count > 0
+
+        # Temporary workaround related to # https://github.com/kubernetes/kubeadm/issues/2525
+        # TODO: Remove when K8s versions before 1.21 (Coredns < 1.8) are unsupported
+        - name: Push old Coredens images using a new path
+          vars:
+            images_to_push: "{{ legacy_images
+                                  | selectattr('name', 'search', 'coredns')
+                                  | rejectattr('name', 'search', 'coredns/coredns') }}"
+            docker_image: "{{ item }}"
+            new_image_tag: "{{ image_registry_address }}/{{ item.name | replace('coredns', 'coredns/coredns') }}"
+          include_tasks: push-image.yml
+          loop: "{{ images_to_push }}"
