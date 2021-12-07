@@ -34,7 +34,7 @@ specification:
     - '--collector.diskstats.ignored-devices=^(ram|loop|fd)\\d+$'
     - '--collector.filesystem.ignored-mount-points=^/(sys|proc|dev|run)($|/)'
     - '--collector.netdev.device-blacklist="^$"'
-    - '--collector.textfile.directory="/var/lib/prometheus/node-exporter"'
+    - '--collector.textfile.directory=/var/lib/prometheus/node-exporter'
     - '--collector.systemd.unit-whitelist=(kafka.service|zookeeper.service)'
 
   web_listen_port: "9100"
