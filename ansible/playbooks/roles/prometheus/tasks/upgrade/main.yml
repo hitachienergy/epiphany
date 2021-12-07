@@ -49,6 +49,8 @@
       changed_when: false
       check_mode: false
       register: _prometheus_version
+      environment:
+        PATH: '/usr/local/bin:{{ ansible_env.PATH }}'
 
     - name: Set Prometheus version fact
       set_fact:
@@ -96,6 +98,8 @@
       changed_when: false
       check_mode: false
       register: _alertmanager_version
+      environment:
+        PATH: '/usr/local/bin:{{ ansible_env.PATH }}'      
 
     - name: Set AlertManager version fact
       set_fact:
