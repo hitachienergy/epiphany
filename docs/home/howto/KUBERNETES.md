@@ -385,7 +385,7 @@ To set specific database host IP address for Keycloak you have to provide additi
 
 Note: If `database address` is not specified, epicli assumes that database instance doesn't exist and will create it.
 
-By default, if `database address` is not specified and if Postgres is HA mode, Keycloak uses PGBouncer ClusterIP service
+By default, if `database address` is not specified and if Postgres is HA mode, Keycloak uses PGBouncer `ClusterIP` service
 name as database address.  
 If Postgres is in standalone mode, and `database address` is not specified, then it uses first Postgres host address
 from `inventory`.

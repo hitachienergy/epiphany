@@ -200,10 +200,6 @@ specification:
   extensions:
     pgaudit:
       enabled: yes
-    pgbouncer:
-      enabled: no
-    replication:
-      enabled: no
 title: Postgresql
 ---        
 kind: configuration/rabbitmq

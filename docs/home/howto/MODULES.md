@@ -231,10 +231,7 @@ AWS:
           pgaudit.log_relation: 'on # separate log entry for each relation'
           pgaudit.log_statement_once: 'off'
           pgaudit.log_parameter: 'on'
-      pgbouncer:
-        enabled: false
       replication:
-        enabled: false
         replication_user_name: epi_repmgr
         replication_user_password: PASSWORD_TO_CHANGE
         privileged_user_name: epi_repmgr_admin

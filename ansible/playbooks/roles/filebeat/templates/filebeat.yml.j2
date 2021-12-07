@@ -99,7 +99,6 @@ filebeat.inputs:
 - type: log
   enabled: true
   paths:
-    - {{ postgresql_defaults.pgbouncer.logfile[ansible_os_family] }}*
     - /var/log/postgresql/repmgr.log*
   exclude_files: [".gz$"]
 {% endif %}

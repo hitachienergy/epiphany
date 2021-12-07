@@ -56,20 +56,3 @@ repmgr:
   version:
     Debian: "5.2.1"
     RedHat: "5.2.1"
-
-pgbouncer:
-  group:
-    Debian: postgres
-    RedHat: pgbouncer
-  logfile:
-    Debian: /var/log/postgresql/pgbouncer.log
-    RedHat: /var/log/pgbouncer/pgbouncer.log
-  pidfile:
-    Debian: /var/run/postgresql/pgbouncer.pid
-    RedHat: /var/run/pgbouncer/pgbouncer.pid
-  user:
-    Debian: postgres
-    RedHat: pgbouncer
-  version:
-    Debian: "1.16.0"
-    RedHat: "1.16.0"

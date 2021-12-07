@@ -114,5 +114,4 @@ add_repo_as_file 'elasticsearch-curator-5' "$ELASTICSEARCH_CURATOR_REPO_CONF"
 add_repo_as_file 'kubernetes' "$KUBERNETES_REPO_CONF"
 add_repo_as_file 'opendistroforelasticsearch' "$OPENDISTRO_REPO_CONF"
 add_repo_as_file 'postgresql-13' "$POSTGRESQL_REPO_CONF"
-add_repo_as_file 'postgresql-common' "$POSTGRESQL_COMMON_REPO_CONF" # for pgbouncer
 add_repo_as_file 'rabbitmq' "$RABBITMQ_SERVER_REPO_CONF"
