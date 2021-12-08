@@ -27,7 +27,7 @@
 
 - name: Set JMX Exporter file name to install
   set_fact:
-    exporter_file_name: "{{ specification.file_name }}"
+    exporter_file_name: "{{ jmx_exporter_bin_filename }}"
 
 - name: Download JMX Exporter binaries
   include_role:
@@ -39,7 +39,7 @@
 - name: Copy JMX Exporter binaries
   copy:
     src: "{{ download_directory }}/{{ exporter_file_name }}"
-    dest: "/opt/jmx-exporter/{{ exporter_file_name }}"
+    dest: "{{ jmx_exporter_directory }}/{{ exporter_file_name }}"
     owner: "{{ specification.jmx_exporter_user }}"
     group: "{{ specification.jmx_exporter_group }}"
     remote_src: yes
@@ -47,7 +47,7 @@
 - name: Prometheus jmx | symlink jar
   become: yes
   file:
-    src: "/opt/jmx-exporter/{{ exporter_file_name }}"
+    src: "{{ jmx_exporter_directory }}/{{ exporter_file_name }}"
     path: "{{ specification.jmx_path }}"
     force: yes
     state: link

@@ -270,6 +270,19 @@
   environment:
     KUBECONFIG: "{{ kubeconfig.local }}"
 
+- hosts: jmx_exporter
+  serial: 1
+  become: true
+  become_method: sudo
+  module_defaults:
+    shell:
+      executable: /bin/bash
+  tasks:
+    - include_role:
+        name: jmx_exporter
+        tasks_from: upgrade/main
+      when: "'jmx_exporter' in upgrade_components or upgrade_components|length == 0"
+
 # === postgresql ===
 
 - hosts: postgresql

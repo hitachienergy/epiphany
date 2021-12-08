@@ -1,0 +1,62 @@
+---
+
+- name: Get installed jmx-exporter version
+  shell: >-
+    unzip -p /opt/jmx-exporter/jmx_prometheus_javaagent.jar META-INF/MANIFEST.MF \
+    | awk '$1 == "Implementation-Version:" {print $2}'
+  register: installed_jmx_exporter_version
+
+- name: Set version facts
+  set_fact:
+    jmx_exporter_version:
+      old: "{{ installed_jmx_exporter_version.stdout }}"
+      new: "{{ jmx_exporter_version }}"
+
+- name: Upgrade | jmx-exporter
+  when: jmx_exporter_version.old is version( jmx_exporter_version.new, '<' )
+  block:
+    - name: Download jmx-exporter binaries
+      include_role:
+        name: download
+        tasks_from: download_file
+      vars:
+        file_name: "{{ jmx_exporter_bin_filename }}"
+
+    - name: Copy jmx-exporter binaries to jmx-exporter directory
+      copy:
+        src: "{{ download_directory }}/{{ jmx_exporter_bin_filename }}"
+        dest: "{{ jmx_exporter_directory }}/{{ jmx_exporter_bin_filename }}"
+        owner: "{{ specification.jmx_exporter_user }}"
+        group: "{{ specification.jmx_exporter_group }}"
+        remote_src: yes
+
+    - name: Get installed jmx-exporter binary path
+      stat:
+        path: "{{ specification.jmx_path }}"
+        get_attributes: false
+        get_checksum: false
+        get_mime: false
+      register: linked_jmx
+
+    - name: Reconfigure {{ specification.jmx_path }} symlink to point to the new version
+      file:
+        dest: "{{ specification.jmx_path }}"
+        state: link
+        src: "{{ jmx_exporter_directory }}/{{ jmx_exporter_bin_filename }}"
+        force: yes
+
+    - name: Run systemctl daemon-reload  # zookeeper and kafka configure jmx-exporter via systemd units
+      systemd:
+        state: restarted
+        daemon_reload: true
+        name: "{{ item }}"
+      with_items:
+        - zookeeper
+        - kafka
+
+    - name: Remove previous binary version
+      file:
+        path: "{{ linked_jmx.stat.lnk_target }}"
+        state: absent
+
+...

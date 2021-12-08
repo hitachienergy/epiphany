@@ -252,6 +252,7 @@ def upgrade_parser(subparsers):
         'grafana',
         'ignite',
         'image_registry',
+        'jmx_exporter',
         'kafka',
         'kafka_exporter',
         'kibana',
