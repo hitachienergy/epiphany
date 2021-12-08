@@ -37,9 +37,6 @@
   set_fact:
     binary_file_name: "{{ prometheus.file_name[ansible_architecture] }}"
 
-- name: Package
-  debug: msg="{{ binary_file_name }}"
-
 - name: Download Prometheus binaries
   include_role:
     name: download

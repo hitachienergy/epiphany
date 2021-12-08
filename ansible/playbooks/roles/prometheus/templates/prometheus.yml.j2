@@ -50,6 +50,15 @@ scrape_configs:
       {% endfor %}
 {% endif %}
 
+{% if haproxy_monitoring_enabled is defined and haproxy_monitoring_enabled %}
+  - job_name: 'haproxy'
+    static_configs:
+      - targets:
+      {% for haproxy_node in groups['haproxy'] %}
+          - "{{ haproxy_node }}:{{ haproxy_monitoring_port }}"
+      {% endfor %}
+{% endif %}
+
 {% if bearer_token is defined %}
   - job_name: 'kubernetes-apiservers'
     kubernetes_sd_configs:
@@ -84,7 +93,7 @@ scrape_configs:
       insecure_skip_verify: true
     bearer_token: "{{ bearer_token }}"
     relabel_configs:
-    - source_labels: 
+    - source_labels:
       - __meta_kubernetes_endpoints_name
       regex: 'node-exporter'
       action: keep
