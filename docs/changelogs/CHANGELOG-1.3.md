@@ -44,7 +44,6 @@
 - [#2180](https://github.com/epiphany-platform/epiphany/issues/2180) - [documentation] Missing clear information about supported CNI plugins
 - [#2755](https://github.com/epiphany-platform/epiphany/issues/2755) - Upgrade Python dependencies to the latest
 - [#2700](https://github.com/epiphany-platform/epiphany/issues/2700) - Upgrade Prometheus to 2.31.1 and AlertManager to 0.23.0
-- [#2774](https://github.com/epiphany-platform/epiphany/issues/2774) - Issue creating service principle on Azure
 
 ### Removed
 
