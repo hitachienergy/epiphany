@@ -96,7 +96,6 @@ The list does not include ports that are bound to the loopback interface (localh
 11. PostgreSQL:
 
     - 5432 - PostgreSQL server
-    - 6432 - PgBouncer
 
 12. Kubernetes:
 

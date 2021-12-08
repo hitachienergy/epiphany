@@ -16,31 +16,8 @@ For this reason, MD5 password encryption is set up and this is not configurable 
 
 ## How to set up PostgreSQL connection pooling
 
-PostgreSQL connection pooling in Epiphany is served by PgBouncer application. It is available as Kubernetes `ClusterIP` or standalone package.
-The [Kubernetes based installation](#how-to-set-up-pgbouncer-pgpool-and-postgresql-parameters) works together with PgPool so it supports PostgreSQL HA setup.
-The standalone installation (described below) is deprecated and **will be removed** in the next release.
-
----
-**NOTE**
-
-PgBouncer extension is not supported on ARM.
-
----
-
-PgBouncer is installed only on PostgreSQL primary node. This needs to be enabled in configuration yaml file:
-
-```yaml
-kind: configuration/postgresql
-specification:
-  extensions:
-    ...
-    pgbouncer:
-      enabled: yes
-    ...
-```
-
-PgBouncer listens on standard port 6432. Basic configuration is just template, with very limited access to database.
-This is because of security reasons. [Configuration needs to be tailored according component documentation and stick to security rules and best practices](http://www.pgbouncer.org/).
+PostgreSQL connection pooling in Epiphany is served by [PgBouncer K8s application](#how-to-set-up-pgbouncer-pgpool-and-postgresql-parameters).
+It is available as `ClusterIP` service and works together with PgPool so it supports PostgreSQL HA setup.
 
 ## How to set up PostgreSQL HA replication with repmgr cluster
 

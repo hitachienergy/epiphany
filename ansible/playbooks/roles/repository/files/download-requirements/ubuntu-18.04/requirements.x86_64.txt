@@ -143,7 +143,6 @@ libsmbclient
 
 # postgres related packages
 # if version is not specified, it's not related to postgres version and the latest is used
-pgbouncer 1.16.0
 pgdg-keyring
 postgresql-13-pgaudit 1.5.0
 postgresql-10-repmgr 5.2.1
@@ -215,8 +214,8 @@ https://github.com/prometheus-community/postgres_exporter/releases/download/v0.9
 # --- Misc ---
 https://archive.apache.org/dist/kafka/2.6.0/kafka_2.12-2.6.0.tgz
 https://archive.apache.org/dist/zookeeper/zookeeper-3.5.8/apache-zookeeper-3.5.8-bin.tar.gz
-https://github.com/prometheus/alertmanager/releases/download/v0.17.0/alertmanager-0.17.0.linux-amd64.tar.gz
-https://github.com/prometheus/prometheus/releases/download/v2.10.0/prometheus-2.10.0.linux-amd64.tar.gz
+https://github.com/prometheus/alertmanager/releases/download/v0.23.0/alertmanager-0.23.0.linux-amd64.tar.gz
+https://github.com/prometheus/prometheus/releases/download/v2.31.1/prometheus-2.31.1.linux-amd64.tar.gz
 https://archive.apache.org/dist/ignite/2.9.1/apache-ignite-2.9.1-bin.zip
 https://releases.hashicorp.com/vault/1.7.0/vault_1.7.0_linux_amd64.zip
 https://get.helm.sh/helm-v3.2.0-linux-amd64.tar.gz

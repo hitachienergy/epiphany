@@ -56,16 +56,6 @@
   include_tasks: upgrade/extensions/pgaudit/packages.yml
   when: is_pgaudit_used
 
-- name: Extensions | PgBouncer | Upgrade
-  when: is_pgbouncer_used
-  block:
-    - include_tasks: upgrade/extensions/pgbouncer/packages.yml
-
-    - name: Extensions | PgBouncer | Ensure that systemd service is started
-      systemd:
-        name: pgbouncer
-        state: started
-
 - name: Extensions | repmgr | Include package(s) installation tasks
   include_tasks: upgrade/extensions/replication/pg-new/packages.yml
   when: is_repmgr_used

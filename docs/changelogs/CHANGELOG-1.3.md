@@ -54,4 +54,6 @@
 
 ### Breaking changes
 
+- PgBouncer available only as Kubernetes service
+
 ### Known issues

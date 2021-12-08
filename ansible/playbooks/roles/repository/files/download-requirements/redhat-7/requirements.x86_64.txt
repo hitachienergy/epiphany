@@ -21,7 +21,6 @@ https://github.com/google/go-containerregistry/releases/download/v0.4.1/go-conta
 [packages]
 audit # for docker-ce
 bash-completion
-c-ares # for pgbouncer
 ca-certificates
 cifs-utils
 conntrack-tools # for kubelet
@@ -78,7 +77,6 @@ perl-Pod-Perldoc # for vim
 perl-Pod-Simple # for vim
 perl-Pod-Usage # for vim
 pgaudit15_13-1.5.0
-pgbouncer-1.16.0
 policycoreutils-python # for container-selinux
 pyldb # for cifs-utils
 python-cffi # for python2-cryptography
@@ -152,8 +150,8 @@ https://github.com/prometheus/node_exporter/releases/download/v1.0.1/node_export
 https://github.com/prometheus-community/postgres_exporter/releases/download/v0.9.0/postgres_exporter-0.9.0.linux-amd64.tar.gz
 # --- Misc ---
 https://archive.apache.org/dist/kafka/2.6.0/kafka_2.12-2.6.0.tgz
-https://github.com/prometheus/prometheus/releases/download/v2.10.0/prometheus-2.10.0.linux-amd64.tar.gz
-https://github.com/prometheus/alertmanager/releases/download/v0.17.0/alertmanager-0.17.0.linux-amd64.tar.gz
+https://github.com/prometheus/prometheus/releases/download/v2.31.1/prometheus-2.31.1.linux-amd64.tar.gz
+https://github.com/prometheus/alertmanager/releases/download/v0.23.0/alertmanager-0.23.0.linux-amd64.tar.gz
 https://archive.apache.org/dist/zookeeper/zookeeper-3.5.8/apache-zookeeper-3.5.8-bin.tar.gz
 https://archive.apache.org/dist/ignite/2.9.1/apache-ignite-2.9.1-bin.zip
 https://releases.hashicorp.com/vault/1.7.0/vault_1.7.0_linux_amd64.zip

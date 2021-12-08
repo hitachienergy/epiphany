@@ -21,7 +21,6 @@
 #    - pg_primary_node
 # 2) extensions
 #    - is_pgaudit_used
-#    - is_pgbouncer_used
 #    - is_repmgr_used
 - include_tasks: upgrade/nodes/common/set-facts.yml
 
