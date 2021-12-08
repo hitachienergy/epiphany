@@ -92,11 +92,15 @@ backend {{ back.name }}
 
 {%- if specification.stats is defined and specification.stats.enable == True %}
 listen stats
-    bind  {{ specification.stats.bind_address }}
+    bind  {{ specification.stats.bind_address }}:{{ specification.stats.port }}
     stats enable
     stats refresh 10s
     stats admin if { src 127.0.0.1 }
     stats hide-version  # Hide HAProxy version
     stats uri {{ specification.stats.uri }}
     stats auth {{ specification.stats.user }}:{{ specification.stats.password }}
+
+    {%- if specification.stats.metrics.enable == True %}
+    http-request use-service prometheus-exporter if { path /metrics }
+    {%- endif %}
 {%- endif %}
