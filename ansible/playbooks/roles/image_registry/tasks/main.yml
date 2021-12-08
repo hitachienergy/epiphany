@@ -88,15 +88,3 @@
             new_image_tag: "{{ image_registry_address }}/{{ item.name }}"
           include_tasks: push-image.yml
           loop: "{{ legacy_images }}"
-
-        # Temporary workaround related to # https://github.com/kubernetes/kubeadm/issues/2525
-        # TODO: Remove when K8s versions before 1.21 (Coredns < 1.8) are unsupported
-        - name: Push old Coredens images using a new path
-          vars:
-            images_to_push: "{{ legacy_images
-                                  | selectattr('name', 'search', 'coredns')
-                                  | rejectattr('name', 'search', 'coredns/coredns') }}"
-            docker_image: "{{ item }}"
-            new_image_tag: "{{ image_registry_address }}/{{ item.name | replace('coredns', 'coredns/coredns') }}"
-          include_tasks: push-image.yml
-          loop: "{{ images_to_push }}"
