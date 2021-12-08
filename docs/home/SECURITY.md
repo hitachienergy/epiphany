@@ -21,7 +21,6 @@ This setting can be changed in Epiphany yaml configuration files.
 
 Additional to users created by each component Epiphany creates also users and groups:
 
-- haproxy_exporter/haproxy_exporter
 - kafka_exporter/kafka_exporter
 - node_exporter/node_exporter
 - jmx-exporter/jmx-exporter
