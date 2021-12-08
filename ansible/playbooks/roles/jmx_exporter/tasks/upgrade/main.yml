@@ -32,15 +32,15 @@
 
     - name: Get installed jmx-exporter binary path
       stat:
-        path: "{{ specification.jmx_path }}"
+        path: "{{ prometheus_jmx_exporter_path }}"
         get_attributes: false
         get_checksum: false
         get_mime: false
       register: linked_jmx
 
-    - name: Reconfigure {{ specification.jmx_path }} symlink to point to the new version
+    - name: Reconfigure {{ prometheus_jmx_exporter_path }} symlink to point to the new version
       file:
-        dest: "{{ specification.jmx_path }}"
+        dest: "{{ prometheus_jmx_exporter_path }}"
         state: link
         src: "{{ jmx_exporter_directory }}/{{ jmx_exporter_bin_filename }}"
         force: yes

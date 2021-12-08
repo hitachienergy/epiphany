@@ -17,7 +17,7 @@ Restart=on-failure
 Environment="KAFKA_HEAP_OPTS={{ specification.kafka_var.heap_opts }}"
 Environment="LOG_DIR={{ specification.kafka_var.log_dir }}"
 {% if exporter.stat.exists %}
-Environment="KAFKA_OPTS={{ javax_debug }} -javaagent:{{ specification.prometheus_jmx_path }}={{ specification.prometheus_jmx_exporter_web_listen_port }}:{{ specification.prometheus_jmx_config }}"
+Environment="KAFKA_OPTS={{ javax_debug }} -javaagent:{{ prometheus_jmx_exporter_path }}={{ specification.prometheus_jmx_exporter_web_listen_port }}:{{ specification.prometheus_jmx_config }}"
 {% else %}
 Environment="KAFKA_OPTS={{ javax_debug }}"
 {% endif %}

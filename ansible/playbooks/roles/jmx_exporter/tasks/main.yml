@@ -48,6 +48,6 @@
   become: yes
   file:
     src: "{{ jmx_exporter_directory }}/{{ exporter_file_name }}"
-    path: "{{ specification.jmx_path }}"
+    path: "{{ prometheus_jmx_exporter_path }}"
     force: yes
     state: link

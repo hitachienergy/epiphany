@@ -2,7 +2,6 @@ kind: configuration/jmx-exporter
 title: "JMX exporter"
 name: default
 specification:
-  jmx_path: /opt/jmx-exporter/jmx_prometheus_javaagent.jar # Changing it requires also change for same variable in Kafka and Zookeeper configs.  # Todo Zookeeper and Kafka to use this variable
   jmx_jars_directory: /opt/jmx-exporter/jars
   jmx_exporter_user: jmx-exporter
   jmx_exporter_group: jmx-exporter
