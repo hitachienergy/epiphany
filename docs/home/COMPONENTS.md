@@ -66,139 +66,144 @@ Note that versions are default versions and can be changed in certain cases thro
 | argcomplete | 1.12.3 | https://github.com/kislyuk/argcomplete | [Apache License 2.0](https://api.github.com/repos/kislyuk/argcomplete/license) |
 | attrs | 21.2.0 | https://www.attrs.org/ | MIT |
 | azure-appconfiguration | 1.1.1 | https://github.com/Azure/azure-sdk-for-python/tree/master/sdk/appconfiguration/azure-appconfiguration | MIT License |
-| azure-batch | 10.0.0 | https://github.com/Azure/azure-sdk-for-python | [MIT License](https://api.github.com/repos/azure/azure-sdk-for-python/license) |
-| azure-cli-core | 2.23.0 | https://github.com/Azure/azure-cli | [MIT License](https://api.github.com/repos/azure/azure-cli/license) |
+| azure-batch | 11.0.0 | https://github.com/Azure/azure-sdk-for-python | [MIT License](https://api.github.com/repos/azure/azure-sdk-for-python/license) |
+| azure-cli-core | 2.31.0 | https://github.com/Azure/azure-cli | [MIT License](https://api.github.com/repos/azure/azure-cli/license) |
 | azure-cli-telemetry | 1.0.6 | https://github.com/Azure/azure-cli | [MIT License](https://api.github.com/repos/azure/azure-cli/license) |
-| azure-cli | 2.23.0 | https://github.com/Azure/azure-cli | [MIT License](https://api.github.com/repos/azure/azure-cli/license) |
+| azure-cli | 2.31.0 | https://github.com/Azure/azure-cli | [MIT License](https://api.github.com/repos/azure/azure-cli/license) |
 | azure-common | 1.1.27 | https://github.com/Azure/azure-sdk-for-python | [MIT License](https://api.github.com/repos/azure/azure-sdk-for-python/license) |
-| azure-core | 1.20.1 | https://github.com/Azure/azure-sdk-for-python/tree/main/sdk/core/azure-core | MIT License |
+| azure-core | 1.21.1 | https://github.com/Azure/azure-sdk-for-python/tree/main/sdk/core/azure-core | MIT License |
 | azure-cosmos | 3.2.0 | https://github.com/Azure/azure-documentdb-python | [MIT License](https://api.github.com/repos/azure/azure-documentdb-python/license) |
 | azure-datalake-store | 0.0.52 | https://github.com/Azure/azure-data-lake-store-python | [Other](https://api.github.com/repos/azure/azure-data-lake-store-python/license) |
-| azure-functions-devops-build | 0.0.22 | https://github.com/Azure/azure-functions-devops-build | [MIT License](https://api.github.com/repos/azure/azure-functions-devops-build/license) |
 | azure-graphrbac | 0.60.0 | https://github.com/Azure/azure-sdk-for-python | [MIT License](https://api.github.com/repos/azure/azure-sdk-for-python/license) |
 | azure-identity | 1.7.1 | https://github.com/Azure/azure-sdk-for-python/tree/main/sdk/identity/azure-identity | MIT License |
 | azure-keyvault-administration | 4.0.0b3 | https://github.com/Azure/azure-sdk-for-python/tree/master/sdk/keyvault/azure-keyvault-administration | MIT License |
+| azure-keyvault-keys | 4.5.0b5 | https://github.com/Azure/azure-sdk-for-python/tree/main/sdk/keyvault/azure-keyvault-keys | MIT License |
 | azure-keyvault | 1.1.0 | https://github.com/Azure/azure-sdk-for-python | [MIT License](https://api.github.com/repos/azure/azure-sdk-for-python/license) |
 | azure-loganalytics | 0.1.1 | https://github.com/Azure/azure-sdk-for-python | [MIT License](https://api.github.com/repos/azure/azure-sdk-for-python/license) |
-| azure-mgmt-advisor | 2.0.1 | https://github.com/Azure/azure-sdk-for-python | [MIT License](https://api.github.com/repos/azure/azure-sdk-for-python/license) |
+| azure-mgmt-advisor | 9.0.0 | https://github.com/Azure/azure-sdk-for-python | [MIT License](https://api.github.com/repos/azure/azure-sdk-for-python/license) |
 | azure-mgmt-apimanagement | 0.2.0 | https://github.com/Azure/azure-sdk-for-python | [MIT License](https://api.github.com/repos/azure/azure-sdk-for-python/license) |
-| azure-mgmt-appconfiguration | 1.0.1 | https://github.com/Azure/azure-sdk-for-python | [MIT License](https://api.github.com/repos/azure/azure-sdk-for-python/license) |
-| azure-mgmt-applicationinsights | 0.1.1 | https://github.com/Azure/azure-sdk-for-python | [MIT License](https://api.github.com/repos/azure/azure-sdk-for-python/license) |
+| azure-mgmt-appconfiguration | 2.0.0 | https://github.com/Azure/azure-sdk-for-python | [MIT License](https://api.github.com/repos/azure/azure-sdk-for-python/license) |
+| azure-mgmt-applicationinsights | 1.0.0 | https://github.com/Azure/azure-sdk-for-python | [MIT License](https://api.github.com/repos/azure/azure-sdk-for-python/license) |
 | azure-mgmt-authorization | 0.61.0 | https://github.com/Azure/azure-sdk-for-python | [MIT License](https://api.github.com/repos/azure/azure-sdk-for-python/license) |
-| azure-mgmt-batch | 9.0.0 | https://github.com/Azure/azure-sdk-for-python | [MIT License](https://api.github.com/repos/azure/azure-sdk-for-python/license) |
-| azure-mgmt-batchai | 2.0.0 | https://github.com/Azure/azure-sdk-for-python | [MIT License](https://api.github.com/repos/azure/azure-sdk-for-python/license) |
-| azure-mgmt-billing | 1.0.0 | https://github.com/Azure/azure-sdk-for-python | [MIT License](https://api.github.com/repos/azure/azure-sdk-for-python/license) |
+| azure-mgmt-batch | 16.0.0 | https://github.com/Azure/azure-sdk-for-python | [MIT License](https://api.github.com/repos/azure/azure-sdk-for-python/license) |
+| azure-mgmt-batchai | 7.0.0b1 | https://github.com/Azure/azure-sdk-for-python | [MIT License](https://api.github.com/repos/azure/azure-sdk-for-python/license) |
+| azure-mgmt-billing | 6.0.0 | https://github.com/Azure/azure-sdk-for-python | [MIT License](https://api.github.com/repos/azure/azure-sdk-for-python/license) |
 | azure-mgmt-botservice | 0.3.0 | https://github.com/Azure/azure-sdk-for-python | [MIT License](https://api.github.com/repos/azure/azure-sdk-for-python/license) |
 | azure-mgmt-cdn | 11.0.0 | https://github.com/Azure/azure-sdk-for-python | [MIT License](https://api.github.com/repos/azure/azure-sdk-for-python/license) |
-| azure-mgmt-cognitiveservices | 6.3.0 | https://github.com/Azure/azure-sdk-for-python | [MIT License](https://api.github.com/repos/azure/azure-sdk-for-python/license) |
-| azure-mgmt-compute | 20.0.0 | https://github.com/Azure/azure-sdk-for-python | [MIT License](https://api.github.com/repos/azure/azure-sdk-for-python/license) |
+| azure-mgmt-cognitiveservices | 13.0.0 | https://github.com/Azure/azure-sdk-for-python | [MIT License](https://api.github.com/repos/azure/azure-sdk-for-python/license) |
+| azure-mgmt-compute | 23.1.0 | https://github.com/Azure/azure-sdk-for-python | [MIT License](https://api.github.com/repos/azure/azure-sdk-for-python/license) |
 | azure-mgmt-consumption | 2.0.0 | https://github.com/Azure/azure-sdk-for-python | [MIT License](https://api.github.com/repos/azure/azure-sdk-for-python/license) |
-| azure-mgmt-containerinstance | 1.5.0 | https://github.com/Azure/azure-sdk-for-python | [MIT License](https://api.github.com/repos/azure/azure-sdk-for-python/license) |
-| azure-mgmt-containerregistry | 3.0.0rc17 | https://github.com/Azure/azure-sdk-for-python | [MIT License](https://api.github.com/repos/azure/azure-sdk-for-python/license) |
-| azure-mgmt-containerservice | 11.1.0 | https://github.com/Azure/azure-sdk-for-python | [MIT License](https://api.github.com/repos/azure/azure-sdk-for-python/license) |
+| azure-mgmt-containerinstance | 9.1.0 | https://github.com/Azure/azure-sdk-for-python | [MIT License](https://api.github.com/repos/azure/azure-sdk-for-python/license) |
+| azure-mgmt-containerregistry | 8.2.0 | https://github.com/Azure/azure-sdk-for-python | [MIT License](https://api.github.com/repos/azure/azure-sdk-for-python/license) |
+| azure-mgmt-containerservice | 16.1.0 | https://github.com/Azure/azure-sdk-for-python | [MIT License](https://api.github.com/repos/azure/azure-sdk-for-python/license) |
 | azure-mgmt-core | 1.3.0 | https://github.com/Azure/azure-sdk-for-python/tree/main/sdk/core/azure-mgmt-core | MIT License |
-| azure-mgmt-cosmosdb | 6.2.0 | https://github.com/Azure/azure-sdk-for-python | [MIT License](https://api.github.com/repos/azure/azure-sdk-for-python/license) |
-| azure-mgmt-databoxedge | 0.2.0 | https://github.com/Azure/azure-sdk-for-python | [MIT License](https://api.github.com/repos/azure/azure-sdk-for-python/license) |
+| azure-mgmt-cosmosdb | 7.0.0b2 | https://github.com/Azure/azure-sdk-for-python | [MIT License](https://api.github.com/repos/azure/azure-sdk-for-python/license) |
+| azure-mgmt-databoxedge | 1.0.0 | https://github.com/Azure/azure-sdk-for-python | [MIT License](https://api.github.com/repos/azure/azure-sdk-for-python/license) |
 | azure-mgmt-datalake-analytics | 0.2.1 | https://github.com/Azure/azure-sdk-for-python | [MIT License](https://api.github.com/repos/azure/azure-sdk-for-python/license) |
 | azure-mgmt-datalake-nspkg | 3.0.1 | https://github.com/Azure/azure-sdk-for-python | [MIT License](https://api.github.com/repos/azure/azure-sdk-for-python/license) |
 | azure-mgmt-datalake-store | 0.5.0 | https://github.com/Azure/azure-sdk-for-python | [MIT License](https://api.github.com/repos/azure/azure-sdk-for-python/license) |
-| azure-mgmt-datamigration | 4.1.0 | https://github.com/Azure/azure-sdk-for-python | [MIT License](https://api.github.com/repos/azure/azure-sdk-for-python/license) |
+| azure-mgmt-datamigration | 10.0.0 | https://github.com/Azure/azure-sdk-for-python | [MIT License](https://api.github.com/repos/azure/azure-sdk-for-python/license) |
 | azure-mgmt-deploymentmanager | 0.2.0 | https://github.com/Azure/azure-sdk-for-python | [MIT License](https://api.github.com/repos/azure/azure-sdk-for-python/license) |
 | azure-mgmt-devtestlabs | 4.0.0 | https://github.com/Azure/azure-sdk-for-python | [MIT License](https://api.github.com/repos/azure/azure-sdk-for-python/license) |
 | azure-mgmt-dns | 8.0.0 | https://github.com/Azure/azure-sdk-for-python | [MIT License](https://api.github.com/repos/azure/azure-sdk-for-python/license) |
-| azure-mgmt-eventgrid | 3.0.0rc9 | https://github.com/Azure/azure-sdk-for-python | [MIT License](https://api.github.com/repos/azure/azure-sdk-for-python/license) |
-| azure-mgmt-eventhub | 4.1.0 | https://github.com/Azure/azure-sdk-for-python | [MIT License](https://api.github.com/repos/azure/azure-sdk-for-python/license) |
-| azure-mgmt-hdinsight | 2.2.0 | https://github.com/Azure/azure-sdk-for-python | [MIT License](https://api.github.com/repos/azure/azure-sdk-for-python/license) |
+| azure-mgmt-eventgrid | 9.0.0 | https://github.com/Azure/azure-sdk-for-python | [MIT License](https://api.github.com/repos/azure/azure-sdk-for-python/license) |
+| azure-mgmt-eventhub | 9.1.0 | https://github.com/Azure/azure-sdk-for-python | [MIT License](https://api.github.com/repos/azure/azure-sdk-for-python/license) |
+| azure-mgmt-extendedlocation | 1.0.0 | https://github.com/Azure/azure-sdk-for-python | [MIT License](https://api.github.com/repos/azure/azure-sdk-for-python/license) |
+| azure-mgmt-hdinsight | 9.0.0 | https://github.com/Azure/azure-sdk-for-python | [MIT License](https://api.github.com/repos/azure/azure-sdk-for-python/license) |
 | azure-mgmt-imagebuilder | 0.4.0 | https://github.com/Azure/azure-sdk-for-python | [MIT License](https://api.github.com/repos/azure/azure-sdk-for-python/license) |
-| azure-mgmt-iotcentral | 4.1.0 | https://github.com/Azure/azure-sdk-for-python | [MIT License](https://api.github.com/repos/azure/azure-sdk-for-python/license) |
-| azure-mgmt-iothub | 0.12.0 | https://github.com/Azure/azure-sdk-for-python | [MIT License](https://api.github.com/repos/azure/azure-sdk-for-python/license) |
-| azure-mgmt-iothubprovisioningservices | 0.2.0 | https://github.com/Azure/azure-sdk-for-python | [MIT License](https://api.github.com/repos/azure/azure-sdk-for-python/license) |
-| azure-mgmt-keyvault | 9.0.0 | https://github.com/Azure/azure-sdk-for-python | [MIT License](https://api.github.com/repos/azure/azure-sdk-for-python/license) |
+| azure-mgmt-iotcentral | 9.0.0 | https://github.com/Azure/azure-sdk-for-python | [MIT License](https://api.github.com/repos/azure/azure-sdk-for-python/license) |
+| azure-mgmt-iothub | 2.1.0 | https://github.com/Azure/azure-sdk-for-python | [MIT License](https://api.github.com/repos/azure/azure-sdk-for-python/license) |
+| azure-mgmt-iothubprovisioningservices | 0.3.0 | https://github.com/Azure/azure-sdk-for-python | [MIT License](https://api.github.com/repos/azure/azure-sdk-for-python/license) |
+| azure-mgmt-keyvault | 9.3.0 | https://github.com/Azure/azure-sdk-for-python | [MIT License](https://api.github.com/repos/azure/azure-sdk-for-python/license) |
 | azure-mgmt-kusto | 0.3.0 | https://github.com/Azure/azure-sdk-for-python | [MIT License](https://api.github.com/repos/azure/azure-sdk-for-python/license) |
-| azure-mgmt-loganalytics | 8.0.0 | https://github.com/Azure/azure-sdk-for-python | [MIT License](https://api.github.com/repos/azure/azure-sdk-for-python/license) |
+| azure-mgmt-loganalytics | 11.0.0 | https://github.com/Azure/azure-sdk-for-python | [MIT License](https://api.github.com/repos/azure/azure-sdk-for-python/license) |
 | azure-mgmt-managedservices | 1.0.0 | https://github.com/Azure/azure-sdk-for-python | [MIT License](https://api.github.com/repos/azure/azure-sdk-for-python/license) |
 | azure-mgmt-managementgroups | 0.2.0 | https://github.com/Azure/azure-sdk-for-python | [MIT License](https://api.github.com/repos/azure/azure-sdk-for-python/license) |
-| azure-mgmt-maps | 0.1.0 | https://github.com/Azure/azure-sdk-for-python | [MIT License](https://api.github.com/repos/azure/azure-sdk-for-python/license) |
+| azure-mgmt-maps | 2.0.0 | https://github.com/Azure/azure-sdk-for-python | [MIT License](https://api.github.com/repos/azure/azure-sdk-for-python/license) |
 | azure-mgmt-marketplaceordering | 1.1.0 | https://github.com/Azure/azure-sdk-for-python | [MIT License](https://api.github.com/repos/azure/azure-sdk-for-python/license) |
-| azure-mgmt-media | 3.1.0 | https://github.com/Azure/azure-sdk-for-python | [MIT License](https://api.github.com/repos/azure/azure-sdk-for-python/license) |
+| azure-mgmt-media | 7.0.0 | https://github.com/Azure/azure-sdk-for-python | [MIT License](https://api.github.com/repos/azure/azure-sdk-for-python/license) |
 | azure-mgmt-monitor | 2.0.0 | https://github.com/Azure/azure-sdk-for-python | [MIT License](https://api.github.com/repos/azure/azure-sdk-for-python/license) |
 | azure-mgmt-msi | 0.2.0 | https://github.com/Azure/azure-sdk-for-python | [MIT License](https://api.github.com/repos/azure/azure-sdk-for-python/license) |
-| azure-mgmt-netapp | 2.0.0 | https://github.com/Azure/azure-sdk-for-python | [MIT License](https://api.github.com/repos/azure/azure-sdk-for-python/license) |
-| azure-mgmt-network | 18.0.0 | https://github.com/Azure/azure-sdk-for-python | [MIT License](https://api.github.com/repos/azure/azure-sdk-for-python/license) |
+| azure-mgmt-netapp | 5.1.0 | https://github.com/Azure/azure-sdk-for-python | [MIT License](https://api.github.com/repos/azure/azure-sdk-for-python/license) |
+| azure-mgmt-network | 19.3.0 | https://github.com/Azure/azure-sdk-for-python | [MIT License](https://api.github.com/repos/azure/azure-sdk-for-python/license) |
 | azure-mgmt-nspkg | 3.0.2 | https://github.com/Azure/azure-sdk-for-python | [MIT License](https://api.github.com/repos/azure/azure-sdk-for-python/license) |
-| azure-mgmt-policyinsights | 0.5.0 | https://github.com/Azure/azure-sdk-for-python | [MIT License](https://api.github.com/repos/azure/azure-sdk-for-python/license) |
-| azure-mgmt-privatedns | 0.1.0 | https://github.com/Azure/azure-sdk-for-python | [MIT License](https://api.github.com/repos/azure/azure-sdk-for-python/license) |
-| azure-mgmt-rdbms | 8.1.0 | https://github.com/Azure/azure-sdk-for-python | [MIT License](https://api.github.com/repos/azure/azure-sdk-for-python/license) |
-| azure-mgmt-recoveryservices | 0.4.0 | https://github.com/Azure/azure-sdk-for-python | [MIT License](https://api.github.com/repos/azure/azure-sdk-for-python/license) |
-| azure-mgmt-recoveryservicesbackup | 0.11.0 | https://github.com/Azure/azure-sdk-for-python | [MIT License](https://api.github.com/repos/azure/azure-sdk-for-python/license) |
-| azure-mgmt-redhatopenshift | 0.1.0 | https://github.com/Azure/azure-sdk-for-python | [MIT License](https://api.github.com/repos/azure/azure-sdk-for-python/license) |
-| azure-mgmt-redis | 7.0.0 | https://github.com/Azure/azure-sdk-for-python | [MIT License](https://api.github.com/repos/azure/azure-sdk-for-python/license) |
+| azure-mgmt-policyinsights | 1.0.0 | https://github.com/Azure/azure-sdk-for-python | [MIT License](https://api.github.com/repos/azure/azure-sdk-for-python/license) |
+| azure-mgmt-privatedns | 1.0.0 | https://github.com/Azure/azure-sdk-for-python | [MIT License](https://api.github.com/repos/azure/azure-sdk-for-python/license) |
+| azure-mgmt-rdbms | 10.0.0 | https://github.com/Azure/azure-sdk-for-python | [MIT License](https://api.github.com/repos/azure/azure-sdk-for-python/license) |
+| azure-mgmt-recoveryservices | 2.0.0 | https://github.com/Azure/azure-sdk-for-python | [MIT License](https://api.github.com/repos/azure/azure-sdk-for-python/license) |
+| azure-mgmt-recoveryservicesbackup | 3.0.0 | https://github.com/Azure/azure-sdk-for-python | [MIT License](https://api.github.com/repos/azure/azure-sdk-for-python/license) |
+| azure-mgmt-redhatopenshift | 1.0.0 | https://github.com/Azure/azure-sdk-for-python | [MIT License](https://api.github.com/repos/azure/azure-sdk-for-python/license) |
+| azure-mgmt-redis | 13.0.0 | https://github.com/Azure/azure-sdk-for-python | [MIT License](https://api.github.com/repos/azure/azure-sdk-for-python/license) |
 | azure-mgmt-relay | 0.1.0 | https://github.com/Azure/azure-sdk-for-python | [MIT License](https://api.github.com/repos/azure/azure-sdk-for-python/license) |
 | azure-mgmt-reservations | 0.6.0 | https://github.com/Azure/azure-sdk-for-python | [MIT License](https://api.github.com/repos/azure/azure-sdk-for-python/license) |
-| azure-mgmt-resource | 12.1.0 | https://github.com/Azure/azure-sdk-for-python | [MIT License](https://api.github.com/repos/azure/azure-sdk-for-python/license) |
+| azure-mgmt-resource | 20.0.0 | https://github.com/Azure/azure-sdk-for-python | [MIT License](https://api.github.com/repos/azure/azure-sdk-for-python/license) |
 | azure-mgmt-search | 8.0.0 | https://github.com/Azure/azure-sdk-for-python | [MIT License](https://api.github.com/repos/azure/azure-sdk-for-python/license) |
-| azure-mgmt-security | 0.6.0 | https://github.com/Azure/azure-sdk-for-python | [MIT License](https://api.github.com/repos/azure/azure-sdk-for-python/license) |
-| azure-mgmt-servicebus | 0.6.0 | https://github.com/Azure/azure-sdk-for-python | [MIT License](https://api.github.com/repos/azure/azure-sdk-for-python/license) |
-| azure-mgmt-servicefabric | 0.5.0 | https://github.com/Azure/azure-sdk-for-python | [MIT License](https://api.github.com/repos/azure/azure-sdk-for-python/license) |
+| azure-mgmt-security | 2.0.0b1 | https://github.com/Azure/azure-sdk-for-python | [MIT License](https://api.github.com/repos/azure/azure-sdk-for-python/license) |
+| azure-mgmt-servicebus | 6.0.0 | https://github.com/Azure/azure-sdk-for-python | [MIT License](https://api.github.com/repos/azure/azure-sdk-for-python/license) |
+| azure-mgmt-servicefabric | 1.0.0 | https://github.com/Azure/azure-sdk-for-python | [MIT License](https://api.github.com/repos/azure/azure-sdk-for-python/license) |
 | azure-mgmt-servicefabricmanagedclusters | 1.0.0 | https://github.com/Azure/azure-sdk-for-python | [MIT License](https://api.github.com/repos/azure/azure-sdk-for-python/license) |
-| azure-mgmt-signalr | 0.4.0 | https://github.com/Azure/azure-sdk-for-python | [MIT License](https://api.github.com/repos/azure/azure-sdk-for-python/license) |
-| azure-mgmt-sql | 0.26.0 | https://github.com/Azure/azure-sdk-for-python | [MIT License](https://api.github.com/repos/azure/azure-sdk-for-python/license) |
-| azure-mgmt-sqlvirtualmachine | 0.5.0 | https://github.com/Azure/azure-sdk-for-python | [MIT License](https://api.github.com/repos/azure/azure-sdk-for-python/license) |
-| azure-mgmt-storage | 17.1.0 | https://github.com/Azure/azure-sdk-for-python | [MIT License](https://api.github.com/repos/azure/azure-sdk-for-python/license) |
-| azure-mgmt-synapse | 0.6.0 | https://github.com/Azure/azure-sdk-for-python | [MIT License](https://api.github.com/repos/azure/azure-sdk-for-python/license) |
+| azure-mgmt-servicelinker | 1.0.0b1 | https://github.com/Azure/azure-sdk-for-python | [MIT License](https://api.github.com/repos/azure/azure-sdk-for-python/license) |
+| azure-mgmt-signalr | 1.0.0 | https://github.com/Azure/azure-sdk-for-python | [MIT License](https://api.github.com/repos/azure/azure-sdk-for-python/license) |
+| azure-mgmt-sql | 3.0.1 | https://github.com/Azure/azure-sdk-for-python | [MIT License](https://api.github.com/repos/azure/azure-sdk-for-python/license) |
+| azure-mgmt-sqlvirtualmachine | 1.0.0b1 | https://github.com/Azure/azure-sdk-for-python | [MIT License](https://api.github.com/repos/azure/azure-sdk-for-python/license) |
+| azure-mgmt-storage | 19.0.0 | https://github.com/Azure/azure-sdk-for-python | [MIT License](https://api.github.com/repos/azure/azure-sdk-for-python/license) |
+| azure-mgmt-synapse | 2.1.0b3 | https://github.com/Azure/azure-sdk-for-python | [MIT License](https://api.github.com/repos/azure/azure-sdk-for-python/license) |
 | azure-mgmt-trafficmanager | 0.51.0 | https://github.com/Azure/azure-sdk-for-python | [MIT License](https://api.github.com/repos/azure/azure-sdk-for-python/license) |
-| azure-mgmt-web | 2.0.0 | https://github.com/Azure/azure-sdk-for-python | [MIT License](https://api.github.com/repos/azure/azure-sdk-for-python/license) |
-| azure-multiapi-storage | 0.6.2 | https://github.com/Azure/azure-multiapi-storage-python | [MIT License](https://api.github.com/repos/azure/azure-multiapi-storage-python/license) |
+| azure-mgmt-web | 4.0.0 | https://github.com/Azure/azure-sdk-for-python | [MIT License](https://api.github.com/repos/azure/azure-sdk-for-python/license) |
+| azure-multiapi-storage | 0.7.0 | https://github.com/Azure/azure-multiapi-storage-python | [MIT License](https://api.github.com/repos/azure/azure-multiapi-storage-python/license) |
 | azure-nspkg | 3.0.2 | https://github.com/Azure/azure-sdk-for-python | [MIT License](https://api.github.com/repos/azure/azure-sdk-for-python/license) |
 | azure-storage-common | 1.4.2 | https://github.com/Azure/azure-storage-python | [MIT License](https://api.github.com/repos/azure/azure-storage-python/license) |
 | azure-synapse-accesscontrol | 0.5.0 | https://github.com/Azure/azure-sdk-for-python | [MIT License](https://api.github.com/repos/azure/azure-sdk-for-python/license) |
-| azure-synapse-artifacts | 0.6.0 | https://github.com/Azure/azure-sdk-for-python | [MIT License](https://api.github.com/repos/azure/azure-sdk-for-python/license) |
+| azure-synapse-artifacts | 0.9.0 | https://github.com/Azure/azure-sdk-for-python | [MIT License](https://api.github.com/repos/azure/azure-sdk-for-python/license) |
+| azure-synapse-managedprivateendpoints | 0.3.0 | https://github.com/Azure/azure-sdk-for-python | [MIT License](https://api.github.com/repos/azure/azure-sdk-for-python/license) |
 | azure-synapse-spark | 0.2.0 | https://github.com/Azure/azure-sdk-for-python | [MIT License](https://api.github.com/repos/azure/azure-sdk-for-python/license) |
 | bcrypt | 3.2.0 | https://github.com/pyca/bcrypt/ | [Apache License 2.0](https://api.github.com/repos/pyca/bcrypt/license) |
 | boto3 | 1.20.11 | https://github.com/boto/boto3 | [Apache License 2.0](https://api.github.com/repos/boto/boto3/license) |
 | botocore | 1.23.11 | https://github.com/boto/botocore | [Apache License 2.0](https://api.github.com/repos/boto/botocore/license) |
 | certifi | 2021.10.8 | https://certifiio.readthedocs.io/en/latest/ | MPL-2.0 |
 | cffi | 1.15.0 | http://cffi.readthedocs.org | MIT |
-| charset-normalizer | 2.0.7 | https://github.com/ousret/charset_normalizer | [MIT License](https://api.github.com/repos/ousret/charset_normalizer/license) |
+| chardet | 3.0.4 | https://github.com/chardet/chardet | [GNU Lesser General Public License v2.1](https://api.github.com/repos/chardet/chardet/license) |
+| charset-normalizer | 2.0.9 | https://github.com/ousret/charset_normalizer | [MIT License](https://api.github.com/repos/ousret/charset_normalizer/license) |
 | colorama | 0.4.4 | https://github.com/tartley/colorama | [BSD 3-Clause "New" or "Revised" License](https://api.github.com/repos/tartley/colorama/license) |
 | cryptography | 3.3.2 | https://github.com/pyca/cryptography | [Other](https://api.github.com/repos/pyca/cryptography/license) |
+| Deprecated | 1.2.13 | https://github.com/tantale/deprecated | [MIT License](https://api.github.com/repos/tantale/deprecated/license) |
+| Antergos Linux | 2015.10 (ISO-Rolling) | https://github.com/python-distro/distro | [Apache License 2.0](https://api.github.com/repos/python-distro/distro/license) |
 | fabric | 2.6.0 | http://fabfile.org | BSD |
-| humanfriendly | 9.2 | https://humanfriendly.readthedocs.io | MIT |
+| humanfriendly | 10.0 | https://humanfriendly.readthedocs.io | MIT |
 | idna | 3.3 | https://github.com/kjd/idna | [BSD 3-Clause "New" or "Revised" License](https://api.github.com/repos/kjd/idna/license) |
 | importlib-metadata | 1.7.0 | http://importlib-metadata.readthedocs.io/ | Apache Software License |
 | importlib-resources | 5.4.0 | https://github.com/python/importlib_resources | [Other](https://api.github.com/repos/python/importlib_resources/license) |
 | invoke | 1.6.0 | http://docs.pyinvoke.org | BSD |
 | isodate | 0.6.0 | https://github.com/gweis/isodate/ | BSD |
-| javaproperties | 0.5.1 | https://github.com/jwodder/javaproperties | [MIT License](https://api.github.com/repos/jwodder/javaproperties/license) |
+| javaproperties | 0.5.2 | https://github.com/jwodder/javaproperties | [MIT License](https://api.github.com/repos/jwodder/javaproperties/license) |
 | Jinja2 | 3.0.3 | https://palletsprojects.com/p/jinja/ | BSD-3-Clause |
 | jmespath | 0.10.0 | https://github.com/jmespath/jmespath.py | [Other](https://api.github.com/repos/jmespath/jmespath.py/license) |
-| jsmin | 2.2.2 | https://github.com/tikitu/jsmin/ | [MIT License](https://api.github.com/repos/tikitu/jsmin/license) |
-| jsondiff | 1.2.0 | https://github.com/ZoomerAnalytics/jsondiff | [MIT License](https://api.github.com/repos/zoomeranalytics/jsondiff/license) |
+| jsondiff | 1.3.0 | https://github.com/ZoomerAnalytics/jsondiff | [MIT License](https://api.github.com/repos/zoomeranalytics/jsondiff/license) |
 | jsonschema | 4.2.1 | https://github.com/Julian/jsonschema | [MIT License](https://api.github.com/repos/julian/jsonschema/license) |
-| knack | 0.8.2 | https://github.com/microsoft/knack | [MIT License](https://api.github.com/repos/microsoft/knack/license) |
+| knack | 0.9.0 | https://github.com/microsoft/knack | [MIT License](https://api.github.com/repos/microsoft/knack/license) |
 | MarkupSafe | 2.0.1 | https://palletsprojects.com/p/markupsafe/ | BSD-3-Clause |
-| mock | 4.0.3 | http://mock.readthedocs.org/en/latest/ | [BSD 2-Clause "Simplified" License](https://github.com/testing-cabal/mock/blob/master/LICENSE.txt) |
-| msal-extensions | 0.3.0 | https://github.com/AzureAD/microsoft-authentication-extensions-for-python | [MIT License](https://github.com/AzureAD/microsoft-authentication-extensions-for-python/blob/dev/LICENSE) |
+| msal-extensions | 0.3.0 | https://github.com/AzureAD/microsoft-authentication-extensions-for-python | [MIT License](https://github.com/AzureAD/
 | msal | 1.16.0 | https://github.com/AzureAD/microsoft-authentication-library-for-python | [Other](https://api.github.com/repos/azuread/microsoft-authentication-library-for-python/license) |
 | msrest | 0.6.21 | https://github.com/Azure/msrest-for-python | [MIT License](https://api.github.com/repos/azure/msrest-for-python/license) |
 | msrestazure | 0.6.4 | https://github.com/Azure/msrestazure-for-python | [MIT License](https://api.github.com/repos/azure/msrestazure-for-python/license) |
 | oauthlib | 3.1.1 | https://github.com/oauthlib/oauthlib | [BSD 3-Clause "New" or "Revised" License](https://api.github.com/repos/oauthlib/oauthlib/license) |
 | packaging | 20.9 | https://github.com/pypa/packaging | [Other](https://api.github.com/repos/pypa/packaging/license) |
-| paramiko | 2.8.0 | https://paramiko.org | LGPL |
+| paramiko | 2.8.1 | https://paramiko.org | LGPL |
 | pathlib2 | 2.3.6 | https://github.com/mcmtroffaes/pathlib2 | [MIT License](https://api.github.com/repos/mcmtroffaes/pathlib2/license) |
-| pkginfo | 1.8.1 | https://code.launchpad.net/~tseaver/pkginfo/trunk | MIT |
+| pkginfo | 1.8.2 | https://code.launchpad.net/~tseaver/pkginfo/trunk | MIT |
 | portalocker | 1.7.1 | https://github.com/WoLpH/portalocker | [Other](https://api.github.com/repos/wolph/portalocker/license) |
 | psutil | 5.8.0 | https://github.com/giampaolo/psutil | [BSD 3-Clause "New" or "Revised" License](https://api.github.com/repos/giampaolo/psutil/license) |
 | pycparser | 2.21 | https://github.com/eliben/pycparser | [Other](https://api.github.com/repos/eliben/pycparser/license) |
+| PyGithub | 1.55 | https://github.com/pygithub/pygithub | [GNU Lesser General Public License v3.0](https://api.github.com/repos/pygithub/pygithub/license) |
 | Pygments | 2.10.0 | https://pygments.org/ | BSD License |
-| PyJWT | 1.7.1 | http://github.com/jpadilla/pyjwt | [MIT License](https://api.github.com/repos/jpadilla/pyjwt/license) |
+| PyJWT | 2.3.0 | https://github.com/jpadilla/pyjwt | [MIT License](https://api.github.com/repos/jpadilla/pyjwt/license) |
 | PyNaCl | 1.4.0 | https://github.com/pyca/pynacl/ | [Apache License 2.0](https://api.github.com/repos/pyca/pynacl/license) |
 | pyOpenSSL | 21.0.0 | https://pyopenssl.org/ | Apache License, Version 2.0 |
 | pyparsing | 3.0.6 | https://github.com/pyparsing/pyparsing/ | [MIT License](https://api.github.com/repos/pyparsing/pyparsing/license) |
 | pyrsistent | 0.18.0 | http://github.com/tobgu/pyrsistent/ | [MIT License](https://api.github.com/repos/tobgu/pyrsistent/license) |
+| PySocks | 1.7.1 | https://github.com/Anorov/PySocks | [Other](https://api.github.com/repos/anorov/pysocks/license) |
 | python-dateutil | 2.8.2 | https://github.com/dateutil/dateutil | [Other](https://api.github.com/repos/dateutil/dateutil/license) |
 | python-json-logger | 2.0.2 | http://github.com/madzak/python-json-logger | [BSD 2-Clause "Simplified" License](https://api.github.com/repos/madzak/python-json-logger/license) |
-| pytz | 2019.1 | http://pythonhosted.org/pytz | MIT |
 | PyYAML | 6.0 | https://pyyaml.org/ | MIT |
 | requests-oauthlib | 1.3.0 | https://github.com/requests/requests-oauthlib | [ISC License](https://api.github.com/repos/requests/requests-oauthlib/license) |
 | requests | 2.26.0 | https://requests.readthedocs.io | Apache 2.0 |
@@ -213,9 +218,8 @@ Note that versions are default versions and can be changed in certain cases thro
 | terraform-bin | 1.0.1 | https://github.com/epiphany-platform/terraform-bin | [Apache License 2.0](https://api.github.com/repos/epiphany-platform/terraform-bin/license) |
 | typing_extensions | 4.0.0 | https://github.com/python/typing/blob/master/typing_extensions | [Other](https://github.com/python/typing/blob/master/typing_extensions/LICENSE) |
 | urllib3 | 1.26.7 | https://urllib3.readthedocs.io/ | MIT |
-| vsts-cd-manager | 1.0.2 | https://github.com/microsoft/vsts-cd-manager | [MIT License](https://api.github.com/repos/microsoft/vsts-cd-manager/license) |
-| vsts | 0.1.25 | https://github.com/Microsoft/vsts-python-api | [MIT License](https://api.github.com/repos/microsoft/vsts-python-api/license) |
 | websocket-client | 0.56.0 | https://github.com/websocket-client/websocket-client.git | BSD |
+| wrapt | 1.13.3 | https://github.com/GrahamDumpleton/wrapt | [BSD 2-Clause "Simplified" License](https://api.github.com/repos/grahamdumpleton/wrapt/license) |
 | xmltodict | 0.12.0 | https://github.com/martinblech/xmltodict | [MIT License](https://api.github.com/repos/martinblech/xmltodict/license) |
 | zipp | 3.6.0 | https://github.com/jaraco/zipp | [MIT License](https://api.github.com/repos/jaraco/zipp/license) |
 
