@@ -49,8 +49,6 @@ specification:
       enabled: true
     - name: haproxy
       enabled: true
-    - name: haproxy-exporter
-      enabled: true
     - name: vault
       enabled: true
     - name: applications
@@ -80,7 +78,6 @@ specification:
       - firewall
     load_balancer:
       - haproxy
-      - haproxy-exporter
       - node-exporter
       - filebeat
       - firewall
