@@ -23,20 +23,30 @@
       when:
         - kubernetes_master_defaults.pki.location is undefined
 
+    - name: k8s/utils | Get kubeadm-config configmap
+      command: |
+        kubectl get configmap kubeadm-config \
+          --namespace kube-system \
+          --output yaml
+      register: command_kubeadm_configmap
+      changed_when: false
+
     # The following procedure ensures that etcd encryption is always enabled during subsequent kubeadm executions
     # Starting from K8s v1.21 support for DenyEscalatingExec admission plugin is removed,
     # but it was specified in Epiphany's default values
     - name: k8s/master | Patch kubeadm-config configmap (patch-kubeadm-apiserver.yml)
-      when: >-
-        _kubeadm_api_server_extra_args['encryption-provider-config'] is undefined or
-        (version is version('1.21', '==') and _kubeadm_api_server_extra_args['enable-admission-plugins'] is defined)
-      include_tasks:
-        file: utils/patch-kubeadm-cm.yml
-        apply:
-          environment:
-            # Render an altered kubeadm-config configmap document
-            KUBEADM_CONFIGMAP_DOCUMENT: >-
-              {{ _document | combine(_update2, recursive=true) | to_nice_yaml(indent=2) }}
+      when: _kubeadm_api_server_extra_args['encryption-provider-config'] is undefined or
+        (version is version('1.21', '>=')
+        and version is version('1.22', '<')
+        and _kubeadm_api_server_extra_args['enable-admission-plugins'] is defined)
+      command: |
+        kubectl patch configmap kubeadm-config \
+          --namespace kube-system \
+          --patch "$KUBEADM_CONFIGMAP_DOCUMENT"
+      environment:
+        # Render an altered kubeadm-config configmap document
+        KUBEADM_CONFIGMAP_DOCUMENT: >-
+          {{ _document | combine(_update2, recursive=true) | to_nice_yaml(indent=2) }}
       vars:
         # Parse yaml payload
         _document: >-
@@ -50,8 +60,7 @@
           {{ _cluster_config.apiServer.extraArgs }}
 
         _kubeadm_supported_admission_plugins: >-
-          {{ _kubeadm_api_server_extra_args.enable-admission-plugins
-              | split(',')
+          {{ _kubeadm_api_server_extra_args['enable-admission-plugins'].split(',')
               | difference(['DenyEscalatingExec'])
               | join(',') }}
 
@@ -60,9 +69,9 @@
           apiServer:
             extraArgs:
               encryption-provider-config: {{ kubernetes_master_defaults.pki.location }}/etcd/etc-encryption.conf
-              {% if version is version('1.21', '==') %}
+          {% if version is version('1.21', '>=') and version is version('1.22', '<') %}
               enable-admission-plugins: {{ _kubeadm_supported_admission_plugins }}
-              {% endif %}
+          {% endif %}
 
         _cluster_config_updated: >-
           {{ _cluster_config | combine(_update1|from_yaml, recursive=true) }}
