@@ -188,8 +188,8 @@
   serial: 1
   tasks:
     - import_role:
-        name: upgrade
-        tasks_from: grafana
+        name: grafana
+        tasks_from: upgrade/main
       when: "'grafana' in upgrade_components or upgrade_components|length == 0"
 
 - hosts: zookeeper
