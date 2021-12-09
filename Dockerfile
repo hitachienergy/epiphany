@@ -35,7 +35,7 @@ RUN : INSTALL APT REQUIREMENTS \
 \
     && : INSTALL GEM REQUIREMENTS \
     && gem install \
-        rake rspec_junit_formatter serverspec \
+        bcrypt_pbkdf ed25519 rake rspec_junit_formatter serverspec \
 \
     && : INSTALL PIP REQUIREMENTS \
     && pip install --disable-pip-version-check --no-cache-dir --default-timeout=100 \
