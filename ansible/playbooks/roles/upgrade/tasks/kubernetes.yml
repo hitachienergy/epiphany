@@ -14,7 +14,7 @@
 
 - name: Check for upgrade flag file
   stat:
-    path: "{{ kubernetes.upgrade_flag_path }}"
+    path: "{{ kubernetes.upgrade_state_file_path }}"
   register: lock_file_status
 
 - name: Upgrade masters then nodes
@@ -22,13 +22,16 @@
     version: "{{ ver }}"
     cni_version: "{{ cni_ver }}"
   block:
-    - name: Create upgrade flag file
-      file:
-        path: "{{ kubernetes.upgrade_flag_path }}"
-        state: touch
-
     - name: Upgrade masters
+      when: >
+        lock_file_status.stat.exists or
+        cluster_version is version('v' + version, '<')
       block:
+        - name: Create upgrade flag file
+          file:
+            path: "{{ kubernetes.upgrade_state_file_path }}"
+            state: touch
+
         - name: k8s | Upgrade first master to v{{ version }}
           include_tasks: kubernetes/upgrade-master0.yml
           when:
@@ -39,22 +42,31 @@
           when:
             - inventory_hostname in groups.kubernetes_master[1:]
 
+        - name: Remove k8s upgrade flag file
+          file:
+            path: "{{ kubernetes.upgrade_state_file_path }}"
+            state: absent
+
     - name: Upgrade nodes
+      when: >
+        lock_file_status.stat.exists or
+        kubelet_version is version('v' + version, '<')
       block:
+        - name: Create upgrade flag file
+          file:
+            path: "{{ kubernetes.upgrade_state_file_path }}"
+            state: touch
+
         - name: k8s | Upgrade node to v{{ version }}
           include_tasks: kubernetes/upgrade-node.yml
           when:
             - groups.kubernetes_node is defined
             - inventory_hostname in groups.kubernetes_node
 
-    - name: Remove k8s upgrade flag file
-      file:
-        path: "{{ kubernetes.upgrade_flag_path }}"
-        state: absent
-  when: >
-    lock_file_status.stat.exists or
-    cluster_version is version('v' + version, '<') or
-    kubelet_version is version('v' + version, '<')
+        - name: Remove k8s upgrade flag file
+          file:
+            path: "{{ kubernetes.upgrade_state_file_path }}"
+            state: absent
 
 - name: k8s | Upgrade internal haproxy load-balancer
   import_tasks: kubernetes/upgrade-haproxy.yml
