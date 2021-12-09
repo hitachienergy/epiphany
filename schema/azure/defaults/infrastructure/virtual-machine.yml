@@ -18,7 +18,7 @@ specification:
     publisher: Canonical
     offer: 0001-com-ubuntu-server-focal
     sku: 20_04-lts-gen2
-    version: "20.04.202111210" # Never put latest on anything! Need to always pin the version number but testing we can get away with it
+    version: "20.04.202112020" # Never put latest on anything! Need to always pin the version number but testing we can get away with it
   storage_os_disk:
     delete_on_termination: false
     managed: false

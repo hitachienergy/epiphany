@@ -6,7 +6,7 @@ specification:
     publisher: Canonical
     offer: 0001-com-ubuntu-server-focal
     sku: 20_04-lts-gen2
-    version: "20.04.202111210"
+    version: "20.04.202112020"
   redhat-7-x86_64:
     publisher: RedHat
     offer: RHEL
