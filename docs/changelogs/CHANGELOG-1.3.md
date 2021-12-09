@@ -26,6 +26,7 @@
 - [#2707](https://github.com/epiphany-platform/epiphany/issues/2707) - Fix logging component backup
 - [#2753](https://github.com/epiphany-platform/epiphany/issues/2753) - Failing offline upgrade: 'download_script_subdir' is undefined
 - [#2718](https://github.com/epiphany-platform/epiphany/issues/2718) - Failed epicli upgrade may lead to broken repository machine (disabled system repos)
+- [#1221](https://github.com/epiphany-platform/epiphany/issues/1221) - Kafka-exporter service doesn't start after restarting kafka VMs
 - [#2774](https://github.com/epiphany-platform/epiphany/issues/2774) - Issue creating service principle on Azure
 
 ### Updated
@@ -44,6 +45,7 @@
 - [#2180](https://github.com/epiphany-platform/epiphany/issues/2180) - [documentation] Missing clear information about supported CNI plugins
 - [#2755](https://github.com/epiphany-platform/epiphany/issues/2755) - Upgrade Python dependencies to the latest
 - [#2700](https://github.com/epiphany-platform/epiphany/issues/2700) - Upgrade Prometheus to 2.31.1 and AlertManager to 0.23.0
+- [#2748](https://github.com/epiphany-platform/epiphany/issues/2748) - Upgrade Kafka exporter to the version 1.4.2
 
 ### Removed
 
