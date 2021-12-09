@@ -217,8 +217,7 @@
       vars: { lock_file: /var/tmp/kafka-upgrade-in-progress.flag }
       when: "'kafka' in upgrade_components or upgrade_components|length == 0"
 
-#  kafka-exporter upgrade
-- hosts: kafka
+- hosts: kafka_exporter
   serial: 1
   become: true
   become_method: sudo
@@ -230,7 +229,7 @@
         name: kafka_exporter
         tasks_from: upgrade/main
       vars: { lock_file: /var/tmp/kafka-exporter-upgrade-in-progress.flag }
-      when: "'kafka-exporter' in upgrade_components or upgrade_components|length == 0"
+      when: "'kafka_exporter' in upgrade_components or upgrade_components|length == 0"
 
 - hosts: rabbitmq
   become: true
