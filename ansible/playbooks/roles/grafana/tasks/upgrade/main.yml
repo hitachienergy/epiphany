@@ -26,11 +26,6 @@
   set_fact:
     grafana_will_upgrade: false
 
-- name: Check Grafana binary existance
-  stat:
-    path: /usr/sbin/grafana-server
-  register: grafana_stat
-
 - name: Start Grafana upgrade
   when:
     - ansible_facts.services["grafana.service"] is defined
