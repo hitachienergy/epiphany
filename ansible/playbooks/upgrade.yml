@@ -281,6 +281,7 @@
     - include_role:
         name: jmx_exporter
         tasks_from: upgrade/main
+      vars: { lock_file: /var/tmp/jmx-exporter-upgrade-in-progress.flag }
       when: "'jmx_exporter' in upgrade_components or upgrade_components|length == 0"
 
 # === postgresql ===

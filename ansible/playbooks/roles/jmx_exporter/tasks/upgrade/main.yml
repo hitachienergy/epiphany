@@ -1,20 +1,55 @@
 ---
 
-- name: Get installed jmx-exporter version
-  shell: >-
-    unzip -p /opt/jmx-exporter/jmx_prometheus_javaagent.jar META-INF/MANIFEST.MF \
-    | awk '$1 == "Implementation-Version:" {print $2}'
-  register: installed_jmx_exporter_version
+- name: Check for upgrade flag file
+  stat:
+    path: "{{ lock_file }}"
+  register: lock_file_status
 
-- name: Set version facts
-  set_fact:
-    jmx_exporter_version:
-      old: "{{ installed_jmx_exporter_version.stdout }}"
-      new: "{{ jmx_exporter_version }}"
+- name: Preflight check
+  when: not lock_file_status.stat.exists
+  block:
+  - name: Check for binary
+    stat:
+      path: "{{ prometheus_jmx_exporter_path }}"
+    register: jmx_exporter_binary
+
+  - name: Inform and fail if JMX exporter binary is missing
+    when: not jmx_exporter_binary.stat.exists
+    fail:
+      msg: >
+        There is no JMX exporter binary at all,
+        re-apply your configuration or remove jmx_exporter role from inventory
+
+  - name: Verify installed version
+    when: jmx_exporter_binary.stat.exists
+    block:
+    - name: Get installed jmx-exporter version
+      shell: >-
+        unzip -p /opt/jmx-exporter/jmx_prometheus_javaagent.jar META-INF/MANIFEST.MF \
+        | awk '$1 == "Implementation-Version:" {print $2}'
+      register: installed_jmx_exporter_version
+
+    - name: Set version facts
+      set_fact:
+        jmx_exporter_version:
+          old: "{{ installed_jmx_exporter_version.stdout }}"
+          new: "{{ jmx_exporter_version }}"
+
+    - name: Avoiding risk of downgrade
+      when: jmx_exporter_version.old is not version( jmx_exporter_version.new, '<' )
+      debug:
+        msg: "Skipping upgrade: JMX Exporter in newer version already installed!"
 
 - name: Upgrade | jmx-exporter
-  when: jmx_exporter_version.old is version( jmx_exporter_version.new, '<' )
+  when: >
+    jmx_exporter_version.old is version( jmx_exporter_version.new, '<' ) or
+    lock_file_status.stat.exists
   block:
+    - name: Create upgrade flag file
+      file:
+        path: "{{ lock_file }}"
+        state: touch
+
     - name: Download jmx-exporter binaries
       include_role:
         name: download
@@ -59,4 +94,8 @@
         path: "{{ linked_jmx.stat.lnk_target }}"
         state: absent
 
+    - name: Remove upgrade flag file
+      file:
+        path: "{{ lock_file }}"
+        state: absent
 ...
