@@ -87,8 +87,6 @@ specification:
         pgaudit.log_relation: 'on # separate log entry for each relation' # default is 'off'
         pgaudit.log_statement_once: 'off' # same as default
         pgaudit.log_parameter: 'on' # default is 'off'
-    pgbouncer:
-      enabled: false
     replication:
       replication_user_name: epi_repmgr
       replication_user_password: PASSWORD_TO_CHANGE
@@ -98,9 +96,6 @@ specification:
       shared_preload_libraries:
         - repmgr
   logrotate:
-    pgbouncer:
-      period: weekly
-      rotations: 5
     # Configuration partly based on /etc/logrotate.d/postgresql-common provided by 'postgresql-common' package from Ubuntu repo.
       # PostgreSQL from Ubuntu repo:
         # By default 'logging_collector' is disabled, so 'log_directory' parameter is ignored.

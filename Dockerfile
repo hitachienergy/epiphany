@@ -15,7 +15,7 @@ COPY . /epicli
 RUN : INSTALL APT REQUIREMENTS \
     && apt-get update \
     && apt-get install --no-install-recommends -y \
-        autossh curl gcc jq libcap2-bin libffi-dev make musl-dev openssh-client procps psmisc ruby-full sudo tar unzip vim \
+        autossh curl gcc jq libcap2-bin libc6-dev libffi-dev make musl-dev openssh-client procps psmisc ruby-full sudo tar unzip vim \
 \
     && : INSTALL HELM BINARY \
     && curl -fsSLO https://get.helm.sh/helm-v${HELM_VERSION}-linux-amd64.tar.gz \
@@ -35,7 +35,7 @@ RUN : INSTALL APT REQUIREMENTS \
 \
     && : INSTALL GEM REQUIREMENTS \
     && gem install \
-        rake rspec_junit_formatter serverspec \
+        bcrypt_pbkdf ed25519 rake rspec_junit_formatter serverspec \
 \
     && : INSTALL PIP REQUIREMENTS \
     && pip install --disable-pip-version-check --no-cache-dir --default-timeout=100 \

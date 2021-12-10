@@ -102,4 +102,3 @@ unsupported_postgres_extensions:
   x86_64: []
   aarch64:
     - replication
-    - pgbouncer

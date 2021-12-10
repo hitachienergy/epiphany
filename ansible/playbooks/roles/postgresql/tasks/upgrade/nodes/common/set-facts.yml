@@ -9,7 +9,6 @@
 - name: Set facts on installed extensions
   set_fact:
     is_pgaudit_used: "{{ ansible_facts.packages.keys() | intersect(_packages.pgaudit) | count > 0 }}"
-    is_pgbouncer_used: "{{ ansible_facts.packages.pgbouncer is defined }}"  # package name is the same for all versions
     is_repmgr_used: "{{ ansible_facts.packages.keys() | intersect(_packages.repmgr) | count > 0 }}"
   vars:
     _packages:

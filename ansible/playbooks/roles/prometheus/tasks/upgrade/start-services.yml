@@ -1,0 +1,21 @@
+---
+- name: Start Prometheus service
+  systemd:
+    state: started
+    name: prometheus
+  when:
+    - ansible_facts.services["prometheus.service"] is defined
+
+- name: Start AlertManager service
+  systemd:
+    state: started
+    name: alertmanager
+  when:
+    - ansible_facts.services["alertmanager.service"] is defined
+
+- name: Start Grafana service
+  systemd:
+    state: started
+    name: grafana-server
+  when:
+    - ansible_facts.services["grafana-server.service"] is defined

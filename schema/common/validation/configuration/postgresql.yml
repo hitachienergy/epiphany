@@ -68,11 +68,6 @@ properties:
                 type: string
               pgaudit.log_parameter:
                 type: string
-      pgbouncer:
-        type: object
-        properties:
-          enabled:
-            type: boolean
       replication:
         type: object
         properties:
@@ -93,12 +88,5 @@ properties:
   logrotate:
     type: object
     properties:
-      pgbouncer:
-        type: object
-        properties:
-          period:
-            type: string
-          rotations:
-            type: integer
       postgresql:
         type: string

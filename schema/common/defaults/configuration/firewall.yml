@@ -92,7 +92,6 @@ specification:
       enabled: true
       ports:
         - 5432/tcp
-        - 6432/tcp #PGBouncer
     prometheus:
       enabled: true
       ports:

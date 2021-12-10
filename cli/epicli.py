@@ -253,6 +253,7 @@ def upgrade_parser(subparsers):
         'ignite',
         'image_registry',
         'kafka',
+        'kafka_exporter',
         'kibana',
         'kubernetes',
         'load_balancer',
@@ -260,6 +261,7 @@ def upgrade_parser(subparsers):
         'node_exporter',
         'opendistro_for_elasticsearch',
         'postgresql',
+        'prometheus',
         'rabbitmq',
         'zookeeper',
         ])

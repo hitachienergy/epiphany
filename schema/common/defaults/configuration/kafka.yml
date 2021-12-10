@@ -66,7 +66,7 @@ specification:
       network_threads: 3 # The number of threads handling network requests
       io_threads: 8 # The number of threads doing disk I/O
       send_buffer_bytes: 102400 # The send buffer (SO_SNDBUF) used by the socket server
-      receive_buffer_bytes: 102400 # The receive buffer (SO_RCVBUF) used by the socket server      
+      receive_buffer_bytes: 102400 # The receive buffer (SO_RCVBUF) used by the socket server
       request_max_bytes: 104857600 # The maximum size of a request that the socket server will accept (protection against OOM)
   zookeeper_set_acl: false
   zookeeper_hosts: "{{ groups['zookeeper']|join(':2181,') }}:2181"

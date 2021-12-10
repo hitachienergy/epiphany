@@ -9,15 +9,15 @@
   debug:
     var: offline_mode
 
+- name: Set directory name for download script
+  set_fact:
+    download_script_subdir: >-
+      {{ 'centos-7' if (ansible_distribution == 'CentOS' and ansible_distribution_major_version == '7') else
+          'redhat-7' if (ansible_distribution == 'RedHat' and ansible_distribution_major_version == '7') else
+          'ubuntu-18.04' if (ansible_distribution == 'Ubuntu' and ansible_distribution_version == '18.04') else None }}
+
 - name: Download Epiphany requirements on repository host # online mode
   block:
-    - name: Set directory name for download script
-      set_fact:
-        download_script_subdir: >-
-          {{ 'centos-7' if (ansible_distribution == 'CentOS' and ansible_distribution_major_version == '7') else
-             'redhat-7' if (ansible_distribution == 'RedHat' and ansible_distribution_major_version == '7') else
-             'ubuntu-18.04' if (ansible_distribution == 'Ubuntu' and ansible_distribution_version == '18.04') else None }}
-
     - name: Check if OS distribution is supported
       assert:
         that: download_script_subdir | length > 0
@@ -26,17 +26,17 @@
     - name: Copy files for downloading requirements to repository host
       copy:
         src: download-requirements/{{ download_script_subdir }}/
-        dest: /tmp/epi-download-requirements
+        dest: /var/tmp/epi-download-requirements
 
     - name: Make download script executable
       file:
-        dest: /tmp/epi-download-requirements/download-requirements.sh
+        dest: /var/tmp/epi-download-requirements/download-requirements.sh
         mode: a+x
 
     - name: Copy common files for downloading requirements to repository host
       copy:
         src: download-requirements/common
-        dest: /tmp/epi-download-requirements
+        dest: /var/tmp/epi-download-requirements
 
   when:
     - not offline_mode
@@ -46,13 +46,13 @@
 - name: Copy repository client configuration scripts
   copy:
     src: client/{{ ansible_os_family }}/
-    dest: /tmp/epi-repository-setup-scripts
+    dest: /var/tmp/epi-repository-setup-scripts
     mode: a+x
 
 - name: Copy repository server configuration scripts
   copy:
     src: server/{{ ansible_os_family }}/
-    dest: /tmp/epi-repository-setup-scripts
+    dest: /var/tmp/epi-repository-setup-scripts
     mode: a+x
   when:
     - not custom_repository_url
@@ -88,7 +88,7 @@
     - inventory_hostname in target_repository_hostnames
 
 # Put it down here as the script download-requirements.sh relies on some files
-# in the folder /tmp/epi-repository-setup-scripts that until now it should be available
+# in the folder /var/tmp/epi-repository-setup-scripts that until now it should be available
 - name: Download Epiphany requirements
   include_tasks: download-requirements.yml
   when:

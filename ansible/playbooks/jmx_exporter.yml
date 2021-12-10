@@ -2,7 +2,7 @@
 
 - hosts: all
   gather_facts: yes
-  tasks: [ ]  
+  tasks: [ ]
 
 - hosts: jmx_exporter
   become: true
