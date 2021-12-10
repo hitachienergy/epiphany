@@ -3,7 +3,7 @@
 
 - name: Check if jmx exporter is available
   stat:
-    path: "{{ specification.prometheus_jmx_path }}"
+    path: "{{ prometheus_jmx_exporter_path }}"
   register: exporter
 
 - include_tasks: setup-kafka.yml

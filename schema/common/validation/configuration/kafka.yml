@@ -152,8 +152,6 @@ properties:
     type: string
   jmx_exporter_group:
     type: string
-  prometheus_jmx_path:
-    type: string
   prometheus_jmx_exporter_web_listen_port:
     type: integer
   prometheus_jmx_config:

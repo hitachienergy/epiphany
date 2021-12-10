@@ -1,0 +1,4 @@
+jmx_exporter_bin_filename: "jmx_prometheus_javaagent-0.16.1.jar"
+jmx_exporter_version: 0.16.1
+jmx_exporter_directory: /opt/jmx-exporter
+prometheus_jmx_exporter_path: /opt/jmx-exporter/jmx_prometheus_javaagent.jar
