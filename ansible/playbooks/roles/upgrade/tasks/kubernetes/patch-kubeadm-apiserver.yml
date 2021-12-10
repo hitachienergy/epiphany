@@ -35,10 +35,10 @@
     # Starting from K8s v1.21 support for DenyEscalatingExec admission plugin is removed,
     # but it was specified in Epiphany's default values
     - name: k8s/master | Patch kubeadm-config configmap (patch-kubeadm-apiserver.yml)
-      when: _kubeadm_api_server_extra_args['encryption-provider-config'] is undefined or
-        (version is version('1.21', '>=')
-        and version is version('1.22', '<')
-        and _kubeadm_api_server_extra_args['enable-admission-plugins'] is defined)
+      when: _kubeadm_api_server_extra_args['encryption-provider-config'] is undefined
+         or (version is version('1.21', '>=')
+             and version is version('1.22', '<')
+             and _kubeadm_api_server_extra_args['enable-admission-plugins'] is defined)
       command: |
         kubectl patch configmap kubeadm-config \
           --namespace kube-system \
