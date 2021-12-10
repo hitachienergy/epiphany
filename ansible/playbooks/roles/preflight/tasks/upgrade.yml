@@ -24,7 +24,7 @@
 
     - name: Check if cluster has any unmanaged pods
       assert:
-        that: "{{ no_unmanaged_pods.stdout_lines | regex_findall('<none>') | length }} != 0"
+        that: "{{ no_unmanaged_pods.stdout_lines | regex_findall('<none>') | length }} == 0"
         fail_msg: >-
           You have some pods that are not created by controller. Please remove them and then start upgrade once again.
         quiet: true
