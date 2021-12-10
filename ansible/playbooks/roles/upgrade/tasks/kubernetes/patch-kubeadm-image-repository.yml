@@ -2,7 +2,7 @@
 - name: k8s/master | Patch imageRepository in kubeadm-config ConfigMap
   run_once: true
   block:
-    - name: k8s/utils | Get kubeadm-config configmap
+    - name: k8s/master | Get kubeadm-config configmap
       command: |
         kubectl get configmap kubeadm-config \
           --namespace kube-system \
