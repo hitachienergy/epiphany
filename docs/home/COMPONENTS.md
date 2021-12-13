@@ -26,7 +26,7 @@ Note that versions are default versions and can be changed in certain cases thro
 | Filebeat Helm Chart        | 7.9.2    | https://github.com/elastic/helm-charts                | [Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0) |
 | Logstash OSS               | 7.12.0   | https://github.com/elastic/logstash                   | [Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0) |
 | Prometheus                 | 2.31.1   | https://github.com/prometheus/prometheus              | [Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0) |
-| Grafana                    | 8.2.5    | https://github.com/grafana/grafana                    | [Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0) |
+| Grafana                    | 8.3.2    | https://github.com/grafana/grafana                    | [Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0) |
 | Node Exporter              | 1.0.1    | https://github.com/prometheus/node_exporter           | [Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0) |
 | Bitnami Node Exporter Helm Chart      | 1.1.2    | https://github.com/bitnami/charts          | [Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0) |
 | Kafka Exporter             | 1.4.2    | https://github.com/danielqsj/kafka_exporter           | [Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0) |
