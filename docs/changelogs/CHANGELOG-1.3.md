@@ -18,6 +18,7 @@
 
 ### Fixed
 
+- [#2657](https://github.com/epiphany-platform/epiphany/issues/2657) - Add preflight check which stop upgrade is such pods exists
 - [#2497](https://github.com/epiphany-platform/epiphany/issues/2497) - Fix epicli apply --full region values
 - [#1743](https://github.com/epiphany-platform/epiphany/issues/1743) - Virtual machine "kind" mismatch
 - [#2656](https://github.com/epiphany-platform/epiphany/issues/2656) - WAL files are not removed from $PGDATA/pg_wal directory
@@ -46,6 +47,7 @@
 - [#2755](https://github.com/epiphany-platform/epiphany/issues/2755) - Upgrade Python dependencies to the latest
 - [#2700](https://github.com/epiphany-platform/epiphany/issues/2700) - Upgrade Prometheus to 2.31.1 and AlertManager to 0.23.0
 - [#2748](https://github.com/epiphany-platform/epiphany/issues/2748) - Upgrade Kafka exporter to the version 1.4.2
+- [#2750](https://github.com/epiphany-platform/epiphany/issues/2750) - Upgrade JMX exporter to the newest version
 
 ### Removed
 

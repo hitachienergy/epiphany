@@ -26,7 +26,7 @@
 
 - name: Check if jmx exporter is available
   stat:
-    path: "{{ prometheus_jmx_path }}"
+    path: "{{ prometheus_jmx_exporter_path }}"
   register: exporter
 
 - name: Set Zookeeper variable with version name
