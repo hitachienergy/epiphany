@@ -12,10 +12,10 @@
   import_tasks: kubernetes/get-kubelet-version.yml # sets kubelet_version
   delegate_to: "{{ groups.kubernetes_master[0] }}"
 
-- name: Check for upgrade flag file
+- name: Check for upgrade state file
   stat:
     path: "{{ kubernetes.upgrade_state_file_path }}"
-  register: lock_file_status
+  register: upgrade_state_file_status
 
 - name: Upgrade masters then nodes
   vars:
@@ -24,13 +24,14 @@
   block:
     - name: Upgrade masters
       when: >
-        lock_file_status.stat.exists or
+        upgrade_state_file_status.stat.exists or
         cluster_version is version('v' + version, '<')
       block:
-        - name: Create upgrade flag file
-          file:
-            path: "{{ kubernetes.upgrade_state_file_path }}"
-            state: touch
+        - name: Create upgrade state file
+          copy:
+            dest: "{{ kubernetes.upgrade_state_file_path }}"
+            content: Upgrade started
+            mode: u=rw,g=r,o=
 
         - name: k8s | Upgrade first master to v{{ version }}
           include_tasks: kubernetes/upgrade-master0.yml
@@ -42,20 +43,21 @@
           when:
             - inventory_hostname in groups.kubernetes_master[1:]
 
-        - name: Remove k8s upgrade flag file
+        - name: Remove k8s upgrade state file
           file:
             path: "{{ kubernetes.upgrade_state_file_path }}"
             state: absent
 
     - name: Upgrade nodes
       when: >
-        lock_file_status.stat.exists or
+        upgrade_state_file_status.stat.exists or
         kubelet_version is version('v' + version, '<')
       block:
-        - name: Create upgrade flag file
-          file:
-            path: "{{ kubernetes.upgrade_state_file_path }}"
-            state: touch
+        - name: Create upgrade state file
+          copy:
+            dest: "{{ kubernetes.upgrade_state_file_path }}"
+            content: Upgrade started
+            mode: u=rw,g=r,o=
 
         - name: k8s | Upgrade node to v{{ version }}
           include_tasks: kubernetes/upgrade-node.yml
@@ -63,7 +65,7 @@
             - groups.kubernetes_node is defined
             - inventory_hostname in groups.kubernetes_node
 
-        - name: Remove k8s upgrade flag file
+        - name: Remove k8s upgrade state file
           file:
             path: "{{ kubernetes.upgrade_state_file_path }}"
             state: absent
