@@ -24,6 +24,12 @@ apiServer:
 {% for key, value in specification.advanced.api_server_args.items() %}
     {{ key }}: "{{ value }}"
 {% endfor %}
+  extraVolumes:
+    - name: apiserver-log
+      hostPath: /var/log/apiserver
+      mountPath: /var/log/apiserver
+      readOnly: false
+      pathType: DirectoryOrCreate
 
 controllerManager:
   extraArgs: # https://kubernetes.io/docs/reference/command-line-tools-reference/kube-controller-manager/

@@ -36,6 +36,7 @@
     # but it was specified in Epiphany's default values
     - name: k8s/master | Patch kubeadm-config configmap (patch-kubeadm-apiserver.yml)
       when: _kubeadm_api_server_extra_args['encryption-provider-config'] is undefined
+         or _cluster_config.apiServer['extraVolumes'] is undefined
          or (version is version('1.21', '>=')
              and version is version('1.22', '<')
              and _kubeadm_api_server_extra_args['enable-admission-plugins'] is defined)
@@ -72,6 +73,12 @@
           {% if version is version('1.21', '>=') and version is version('1.22', '<') %}
               enable-admission-plugins: {{ _kubeadm_supported_admission_plugins }}
           {% endif %}
+            extraVolumes:
+              - name: apiserver-log
+                hostPath: /var/log/apiserver
+                mountPath: /var/log/apiserver
+                readOnly: false
+                pathType: DirectoryOrCreate
 
         _cluster_config_updated: >-
           {{ _cluster_config | combine(_update1|from_yaml, recursive=true) }}

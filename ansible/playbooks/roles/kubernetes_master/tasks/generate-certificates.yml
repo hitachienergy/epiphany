@@ -78,7 +78,7 @@
         - "{{ pki.location }}/ext"
 
     - name: Generate new CSR
-      command: kubeadm certs renew all --csr-only --csr-dir=csr
+      command: kubeadm certs generate-csr --cert-dir=csr
       args:
         chdir: "{{ pki.location }}"
 
@@ -117,7 +117,7 @@
     - name: Copy keys to certificates location and ensure that permissions are strict
       copy:
         src: "{{ pki.location }}/csr/{{ item.name }}.key"
-        remote_src: yes
+        remote_src: true
         dest: "{{ item.target }}.key"
         owner: root
         group: root
