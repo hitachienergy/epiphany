@@ -319,13 +319,21 @@
     shell:
       executable: /bin/bash
   tasks:
-    # step 1: upgrade repmgr
+    # step 1: prepare (python3-psycopg2 may be removed by Ubuntu release upgrade)
+    - include_role:
+        name: postgresql
+        tasks_from: upgrade/nodes/common/ensure-ansible-requirements
+      when:
+        - ansible_os_family == 'Debian'
+        - "'postgresql' in upgrade_components or upgrade_components|length == 0"
+
+    # step 2: upgrade repmgr
     - include_role:
         name: postgresql
         tasks_from: upgrade/extensions/replication/pg-old/repmgr-main
       when: "'postgresql' in upgrade_components or upgrade_components|length == 0"
 
-    # step 2: upgrade postgresql
+    # step 3: upgrade postgresql
     - include_role:
         name: postgresql
         tasks_from: upgrade/main
