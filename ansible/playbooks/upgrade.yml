@@ -187,7 +187,7 @@
   become_method: sudo
   serial: 1
   tasks:
-    - import_role:
+    - include_role:
         name: grafana
         tasks_from: upgrade/main
       when: "'grafana' in upgrade_components or upgrade_components|length == 0"

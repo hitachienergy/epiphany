@@ -9,10 +9,6 @@
     file: defaults/upgrade.yml
     name: upgrade_defaults
 
-- name: Populate service facts
-  service_facts:
-  when: ansible_facts.service is undefined
-
 # If state file exists it means the previous run failed
 - name: Check for upgrade state file
   stat:
