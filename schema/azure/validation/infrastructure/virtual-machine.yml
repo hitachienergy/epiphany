@@ -5,6 +5,8 @@ type: object
 properties:
   name:
     type: string
+  hostname:
+    type: string
   admin_username:
     type: string
   admin_password:

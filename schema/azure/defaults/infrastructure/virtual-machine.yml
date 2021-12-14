@@ -4,6 +4,7 @@ provider: azure
 name: default
 specification:
   name: SET_BY_AUTOMATION
+  hostname: SET_BY_AUTOMATION
   admin_username: SET_BY_AUTOMATION
   admin_password: SET_BY_AUTOMATION
   public_key: SET_BY_AUTOMATION
