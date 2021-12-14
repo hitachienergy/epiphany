@@ -9,6 +9,14 @@
     file: defaults/upgrade.yml
     name: upgrade_defaults
 
+- name: Assert that grafana package is installed
+  assert:
+    that: ansible_facts.packages['grafana'] is defined
+    fail_msg:
+      - grafana package not found, nothing to upgrade.
+      - Re-apply your configuration or remove grafana group from Ansible inventory.
+    quiet: true
+
 # If state file exists it means the previous run failed
 - name: Check for upgrade state file
   stat:
@@ -23,9 +31,8 @@
     grafana_will_upgrade: false
 
 - name: Start Grafana upgrade
-  when:
-    - ansible_facts.services["grafana.service"] is defined
-    - grafana_stat.stat.exists
+  when: grafana_target_version is version(grafana_installed_version, '>')
+     or state_file_status.stat.exists
   block:
     - name: Upgrade Grafana
       when: ansible_facts.packages['grafana'] is defined
