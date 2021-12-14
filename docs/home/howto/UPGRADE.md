@@ -322,8 +322,9 @@ advised not to use this approach when Erlang needs to be upgraded.
 
 Before K8s version upgrade make sure that deprecated API versions are not used:
 
-1. [v1.19](https://v1-19.docs.kubernetes.io/docs/setup/release/notes/#deprecation)
-1. [v1.20](https://v1-20.docs.kubernetes.io/docs/setup/release/notes/#deprecation)
+- [v1.19](https://v1-19.docs.kubernetes.io/docs/setup/release/notes/#deprecation)
+- [v1.20](https://v1-20.docs.kubernetes.io/docs/setup/release/notes/#deprecation)
+- [v1.21](https://github.com/kubernetes/kubernetes/blob/master/CHANGELOG/CHANGELOG-1.21.md)
 
 ### Upgrade
 

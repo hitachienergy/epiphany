@@ -3717,7 +3717,7 @@ spec:
         # It can be deleted if this is a fresh installation, or if you have already
         # upgraded to use calico-ipam.
         - name: upgrade-ipam
-          image: {{ image_registry_address }}/calico/cni:v3.20.2
+          image: {{ image_registry_address }}/calico/cni:v3.20.3
           command: ["/opt/cni/bin/calico-ipam", "-upgrade"]
           envFrom:
           - configMapRef:
@@ -3744,7 +3744,7 @@ spec:
         # This container installs the CNI binaries
         # and CNI network config file on each node.
         - name: install-cni
-          image: {{ image_registry_address }}/calico/cni:v3.20.2
+          image: {{ image_registry_address }}/calico/cni:v3.20.3
           command: ["/opt/cni/bin/install"]
           envFrom:
           - configMapRef:
@@ -3785,7 +3785,7 @@ spec:
         # Adds a Flex Volume Driver that creates a per-pod Unix Domain Socket to allow Dikastes
         # to communicate with Felix over the Policy Sync API.
         - name: flexvol-driver
-          image: {{ image_registry_address }}/calico/pod2daemon-flexvol:v3.20.2
+          image: {{ image_registry_address }}/calico/pod2daemon-flexvol:v3.20.3
           volumeMounts:
           - name: flexvol-driver-host
             mountPath: /host/driver
@@ -3796,7 +3796,7 @@ spec:
         # container programs network policy and routes on each
         # host.
         - name: calico-node
-          image: {{ image_registry_address }}/calico/node:v3.20.2
+          image: {{ image_registry_address }}/calico/node:v3.20.3
           envFrom:
           - configMapRef:
               # Allow KUBERNETES_SERVICE_HOST and KUBERNETES_SERVICE_PORT to be overridden for eBPF mode.
@@ -4015,7 +4015,7 @@ spec:
       priorityClassName: system-cluster-critical
       containers:
         - name: calico-kube-controllers
-          image: {{ image_registry_address }}/calico/kube-controllers:v3.20.2
+          image: {{ image_registry_address }}/calico/kube-controllers:v3.20.3
           env:
             # Choose which controllers to run.
             - name: ENABLED_CONTROLLERS

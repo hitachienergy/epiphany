@@ -33,12 +33,11 @@
 ### Updated
 
 - Upgrade Flannel to v0.14.0
-- Upgrade Calico and Canal to v3.20.2
-- Upgrade Coredns to v1.7.0
+- Upgrade Calico and Canal to v3.20.3
+- Upgrade Coredns to v1.8.0
 - Upgrade Kubernetes dashboard to v2.3.1
 - Upgrade Kubernetes metrics-scraper to v1.0.7
-- [#2093](https://github.com/epiphany-platform/epiphany/issues/2093) - Upgrade K8s to v1.19.15 (transitional version)
-- [#2658](https://github.com/epiphany-platform/epiphany/issues/2658) - Upgrade K8s to v1.20.12
+- [#2659](https://github.com/epiphany-platform/epiphany/issues/2659) - Upgrade K8s to v1.21.7
 - [#2494](https://github.com/epiphany-platform/epiphany/issues/2494) - Duplicated MOTD after ssh to servers
 - [#1974](https://github.com/epiphany-platform/epiphany/issues/1974) - [documentation] Azure Files Persistent Volume Support
 - [#2454](https://github.com/epiphany-platform/epiphany/issues/2454) - Remove dependencies for K8s v1.17
