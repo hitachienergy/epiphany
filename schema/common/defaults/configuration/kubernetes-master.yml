@@ -12,6 +12,11 @@ specification:
     enable: True
     capacity: 50 # GB
     data: {} #AUTOMATED - data specific to cloud provider
+  apiserver:
+    logrotate:
+      maxsize: 10M
+      period: daily
+      rotations: 6
   advanced: # modify only if you are sure what value means
     api_server_args: # https://kubernetes.io/docs/reference/command-line-tools-reference/kube-apiserver/
       profiling: false

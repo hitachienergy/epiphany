@@ -1,4 +1,9 @@
 ---
+- name: k8s/masterN | Load vars from kubernetes_master role
+  include_vars:
+    file: roles/kubernetes_master/vars/main.yml
+    name: kubernetes_master_vars
+
 - name: k8s/masterN | Switch apiserver address to local
   include_tasks: utils/set-local-apiserver.yml # sets kubectl_context_cluster
 
@@ -60,3 +65,12 @@
   command: |-
     kubectl config set-cluster {{ kubectl_context_cluster.stdout }} --server=https://localhost:3446
   changed_when: true
+
+- name: k8s/masterN | Configure apiserver logrotate
+  include_role:
+    name: kubernetes_common
+    tasks_from: configure-logrotate.yml
+  vars:
+    _maxsize: "{{ kubernetes_master_vars.specification.apiserver.logrotate.maxsize }}"
+    _period: "{{ kubernetes_master_vars.specification.apiserver.logrotate.period }}"
+    _rotations: "{{ kubernetes_master_vars.specification.apiserver.logrotate.rotations }}"

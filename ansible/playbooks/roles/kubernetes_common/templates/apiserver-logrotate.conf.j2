@@ -1,0 +1,16 @@
+# {{ansible_managed}}
+
+/var/log/apiserver/*.log {
+  maxsize {{ _maxsize }}
+  {{ _period }}
+  rotate {{ _rotations }}
+  copytruncate
+  delaycompress
+  compress
+  notifempty
+  missingok
+  su root root
+  nomail
+  # to have multiple unique filenames per day when dateext option is set
+  dateformat -%Y%m%dH%H
+}

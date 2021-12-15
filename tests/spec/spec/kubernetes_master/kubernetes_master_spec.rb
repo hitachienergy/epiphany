@@ -251,3 +251,10 @@ describe 'Check Kubernetes namespace creation and deletion' do
     its(:exit_status) { should eq 0 }
   end
 end
+
+describe 'Check Kubernetes apiserver logrotate configuration file' do
+  describe file('/etc/logrotate.d/k8s-apiserver') do
+    it { should exist }
+    it { should be_a_file }
+  end
+end
