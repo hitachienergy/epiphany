@@ -15,6 +15,6 @@
 - name: load_balancer | Upgrade haproxy service (runc)
   include_role:
     name: haproxy
-    vars_from: manifest
+    vars_from: main
   vars:
     haproxy_upgrade_enabled: true

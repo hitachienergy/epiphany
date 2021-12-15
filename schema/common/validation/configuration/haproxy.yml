@@ -33,6 +33,10 @@ properties:
         properties:
           enable:
             type: boolean
+          bind_address:
+            type: string
+          port:
+            type: integer
   frontend:
     type: array
     items:

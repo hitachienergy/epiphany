@@ -22,10 +22,6 @@
     - "{{ ansible_distribution | lower }}.yml"
     - "{{ ansible_os_family | lower }}.yml"
 
-- name: "Check if Alertmanager is enabled"
-  set_fact:
-    is_alertmanager_enabled: "{{ specification.alertmanager.enable | bool and (specification.alertmanager.config.receivers | length>0 ) }}"
-
 - name: Include install
   include_tasks: install.yml
 

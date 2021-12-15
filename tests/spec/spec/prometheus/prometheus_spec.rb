@@ -6,7 +6,7 @@ kube_apiserver_secure_port = 6443
 alertmanager_host = 'localhost'
 alertmanager_port = 9093
 kubelet_port = 10250
-haproxy_port = 9000
+haproxy_metrics_port = 9101
 
 describe 'Check if Prometheus user exists' do
   describe group('prometheus') do
@@ -106,7 +106,7 @@ describe 'Check Prometheus configuration if exist HAproxy target' do
     listInventoryHosts("haproxy").each do |val|
         describe command("cat /etc/prometheus/prometheus.yml") do
         let(:disable_sudo) { false }
-        its(:stdout) { should include "#{val}:#{haproxy_port}" }
+        its(:stdout) { should include "#{val}:#{haproxy_metrics_port}" }
         end
     end
 end
@@ -114,7 +114,7 @@ end
 describe 'Check connection HAproxy metrics endpoint' do
       listInventoryHosts("haproxy").each do |val|
           let(:disable_sudo) { false }
-          describe command("curl -o /dev/null -s -w '%{http_code}' #{val}:#{haproxy_port}/metrics") do
+          describe command("curl -o /dev/null -s -w '%{http_code}' #{val}:#{haproxy_metrics_port}/metrics") do
             it "is expected to be equal" do
               expect(subject.stdout.to_i).to eq 200
             end

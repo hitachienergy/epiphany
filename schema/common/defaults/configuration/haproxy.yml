@@ -10,13 +10,15 @@ specification:
 
   stats:
     enable: true
-    bind_address: "*"
+    bind_address: 127.0.0.1
     port: 9000
     uri: "/haproxy?stats"
     user: operations
     password: your-haproxy-stats-pwd
-    metrics:
-      enable: true
+  metrics:
+    enable: true
+    bind_address: "*"
+    port: 9101
   frontend:
     - name: https_front
       port: 443

@@ -432,7 +432,7 @@ specification:
         access: Allow
         protocol: Tcp
         source_port_range: "*"
-        destination_port_range: "9000"
+        destination_port_range: "9101"
         source_address_prefix: "10.1.0.0/20"
         destination_address_prefix: "0.0.0.0/0"
 ---

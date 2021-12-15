@@ -17,9 +17,9 @@
 - name: Remove haproxy_exporter | Remove system user
   user:
     name: haproxy_exporter
-    remove: true
+    state: absent
 
 - name: Remove haproxy_exporter | Remove system group
   group:
     name: haproxy_exporter
-    remove: true
+    state: absent
