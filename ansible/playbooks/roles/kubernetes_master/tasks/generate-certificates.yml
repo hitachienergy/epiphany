@@ -4,43 +4,43 @@
     # https://kubernetes.io/docs/setup/best-practices/certificates/#all-certificates
     _certificates_opt_mapping:
       - name: admin.conf
-        kind: ['clientAuth']
+        kind: [ 'clientAuth' ]
         target: "{{ pki.location }}/admin.conf"
         parent_ca: ca
       - name: apiserver-etcd-client
-        kind: ['clientAuth']
+        kind: [ 'clientAuth' ]
         target: "{{ pki.location }}/apiserver-etcd-client"
         parent_ca: etcd/ca
       - name: apiserver-kubelet-client
-        kind: ['clientAuth']
+        kind: [ 'clientAuth' ]
         target: "{{ pki.location }}/apiserver-kubelet-client"
         parent_ca: ca
       - name: apiserver
-        kind: ['serverAuth']
+        kind: [ 'serverAuth' ]
         target: "{{ pki.location }}/apiserver"
         parent_ca: ca
       - name: controller-manager.conf
-        kind: ['clientAuth']
+        kind: [ 'clientAuth' ]
         target: "{{ pki.location }}/controller-manager.conf"
         parent_ca: ca
-      - name: etcd-healthcheck-client
-        kind: ['clientAuth']
+      - name: etcd/healthcheck-client
+        kind: [ 'clientAuth' ]
         target: "{{ pki.location }}/etcd/healthcheck-client"
         parent_ca: etcd/ca
-      - name: etcd-peer
-        kind: ['serverAuth', 'clientAuth']
+      - name: etcd/peer
+        kind: [ 'serverAuth', 'clientAuth' ]
         target: "{{ pki.location }}/etcd/peer"
         parent_ca: etcd/ca
-      - name: etcd-server
-        kind: ['serverAuth', 'clientAuth']
+      - name: etcd/server
+        kind: [ 'serverAuth', 'clientAuth' ]
         target: "{{ pki.location }}/etcd/server"
         parent_ca: etcd/ca
       - name: front-proxy-client
-        kind: ['clientAuth']
+        kind: [ 'clientAuth' ]
         target: "{{ pki.location }}/front-proxy-client"
         parent_ca: front-proxy-ca
       - name: scheduler.conf
-        kind: ['clientAuth']
+        kind: [ 'clientAuth' ]
         target: "{{ pki.location }}/scheduler.conf"
         parent_ca: ca
   block:
@@ -53,10 +53,13 @@
             - certificates_renewal_list is defined
             - item.name in certificates_renewal_list
           loop: "{{ _certificates_opt_mapping }}"
+          loop_control:
+            label: "{{ item.name }}"
 
         - name: Set default certificates_opt_mapping fact value
           set_fact:
             certificates_opt_mapping: "{{ _certificates_opt_mapping }}"
+            certificates_renewal_list: "{{ _certificates_opt_mapping | map(attribute='name') }}"
           when: certificates_renewal_list is not defined
 
     - name: Save old certificates
@@ -76,15 +79,20 @@
       loop:
         - "{{ pki.location }}/csr"
         - "{{ pki.location }}/ext"
+        - "{{ pki.location }}/ext/etcd"
 
     - name: Generate new CSR
-      command: kubeadm certs generate-csr --cert-dir=csr
+      command: |-
+        kubeadm certs generate-csr \
+          --cert-dir=csr \
+          --kubeconfig-dir=csr \
+          --config=/etc/kubeadm/kubeadm-config.yml
       args:
         chdir: "{{ pki.location }}"
 
     # ansible openssl modules and openssl tool behave different, extensions file is necessary for openssl
     # https://github.com/openssl/openssl/issues/10458
-    - name: Register SAN extension for all csr files
+    - name: Register SAN extension for all CSR files
       shell: |-
         openssl req -text -noout \
           -reqopt no_subject,no_header,no_version,no_serial,no_signame,no_validity,no_issuer,no_pubkey,no_sigdump,no_aux \
@@ -94,12 +102,16 @@
         chdir: "{{ pki.location }}"
       register: csr_info
       loop: "{{ certificates_opt_mapping }}"
+      loop_control:
+        label: "{{ item.name }}"
 
     - name: Generate extension files
       template:
         src: certificate-v3.ext.j2
         dest: "{{ pki.location }}/ext/{{ item.0.name }}.ext"
       loop: "{{ certificates_opt_mapping|zip(csr_info.results)|list }}"
+      loop_control:
+        label: "{{ item.0.name }}"
 
     - name: Create signed certificates
       command: |-
@@ -113,8 +125,12 @@
       args:
         chdir: "{{ pki.location }}"
       loop: "{{ certificates_opt_mapping }}"
+      loop_control:
+        label: "{{ item.name }}"
 
     - name: Copy keys to certificates location and ensure that permissions are strict
+      vars:
+        _conf_files: "{{ certificates_opt_mapping | selectattr('name', 'search', '.conf') }}"
       copy:
         src: "{{ pki.location }}/csr/{{ item.name }}.key"
         remote_src: true
@@ -122,48 +138,50 @@
         owner: root
         group: root
         mode: u=rw
-      loop: "{{ certificates_opt_mapping }}"
-
-    - name: Remove csr and ext directories
-      file:
-        path: "{{ pki.location }}/{{ item }}"
-        state: absent
-      loop:
-        - csr
-        - ext
-
-    - name: Search for .conf certificates
-      find:
-        paths: [ "{{ pki.location }}" ]
-        pattern: "*.conf.crt"
-      register: _conf_certificates
-
-    - name: Set conf_certificates fact
-      set_fact:
-        conf_certificates: >-
-          {{ _conf_certificates.files
-            | map(attribute='path')
-            | map('basename')
-            | map('regex_replace', '\.crt$', '')
-            | list }}
+      loop: "{{ certificates_opt_mapping | difference(_conf_files) }}"
+      loop_control:
+        label: "{{ item.name }}"
 
     - name: Update conf files with embedded certs
-      environment:
-        KUBECONFIG: "/etc/kubernetes/{{ item }}"
       vars:
-        conf_account_mapping:
+        _kubeconfig_cn_mapping:
           admin.conf: "kubernetes-admin"
           scheduler.conf: "system:kube-scheduler"
           controller-manager.conf: "system:kube-controller-manager"
-      command: |
-        kubectl config set-credentials {{ conf_account_mapping[item] }} \
-          --client-key {{ item }}.key \
-          --client-certificate {{ item }}.crt --embed-certs
-      args:
-        chdir: "{{ pki.location }}"
-      loop: "{{ conf_certificates }}"
+        conf_files_to_update: "{{ _kubeconfig_cn_mapping.keys() | intersect() }}"
+      block:
+        - name: Slurp kubeconfig files
+          slurp:
+            src: "{{ pki.location }}/csr/{{ item }}"
+          register: kubeconfig_files_content
+          loop: "{{ _kubeconfig_cn_mapping.keys() | intersect(certificates_renewal_list) }}"
 
-    - name: Remove conf certificates
+        - name: Create kubeconfig key files
+          vars:
+            _content: "{{ config_file.content | b64decode | from_yaml }}"
+          copy:
+            content: "{{ _content.users.0.user['client-key-data'] | b64decode }}"
+            dest: "{{ pki.location }}/{{ config_file.item }}.key"
+            owner: root
+            group: root
+            mode: u=rw
+          loop: "{{ kubeconfig_files_content.results }}"
+          loop_control:
+            loop_var: config_file
+            label: "{{ config_file.item }}"
+
+        - name: Update conf files with embedded certs
+          environment:
+            KUBECONFIG: "/etc/kubernetes/{{ item.key }}"
+          command: |-
+            kubectl config set-credentials {{ item.value }} \
+              --client-key {{ item.key }}.key \
+              --client-certificate {{ item.key }}.crt --embed-certs
+          args:
+            chdir: "{{ pki.location }}"
+          loop: "{{ _kubeconfig_cn_mapping | dict2items | selectattr('key', 'in', certificates_renewal_list) }}"
+
+    - name: Remove conf certificates and temporary directories
       file:
         path: "{{ pki.location }}/{{ item }}"
         state: absent
@@ -174,6 +192,8 @@
         - 'scheduler.conf.key'
         - 'controller-manager.conf.crt'
         - 'controller-manager.conf.key'
+        - 'csr'
+        - 'ext'
 
     - name: Restart systemd services
       when:
