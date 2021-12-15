@@ -3,6 +3,18 @@ title: "K8s-master specification schema"
 description: "K8s-master specification schema"
 type: object
 properties:
+  logrotate:
+    type: object
+    properties:
+      apiserver:
+        type: object
+        properties:
+          maxsize:
+            type: string
+          period:
+            type: string
+          rotations:
+            type: integer
   advanced:
     type: object
     properties:

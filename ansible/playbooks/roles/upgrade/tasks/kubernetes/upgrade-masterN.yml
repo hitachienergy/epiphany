@@ -68,9 +68,10 @@
 
 - name: k8s/masterN | Configure apiserver logrotate
   include_role:
-    name: kubernetes_common
+    name: kubernetes_master
     tasks_from: configure-logrotate.yml
   vars:
-    _maxsize: "{{ kubernetes_master_vars.specification.apiserver.logrotate.maxsize }}"
-    _period: "{{ kubernetes_master_vars.specification.apiserver.logrotate.period }}"
-    _rotations: "{{ kubernetes_master_vars.specification.apiserver.logrotate.rotations }}"
+    _is_upgrade_run: true
+    _maxsize: "{{ kubernetes_master_vars.specification.logrotate.apiserver.maxsize }}"
+    _period: "{{ kubernetes_master_vars.specification.logrotate.apiserver.period }}"
+    _rotations: "{{ kubernetes_master_vars.specification.logrotate.apiserver.rotations }}"

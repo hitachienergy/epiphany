@@ -12,8 +12,8 @@ specification:
     enable: True
     capacity: 50 # GB
     data: {} #AUTOMATED - data specific to cloud provider
-  apiserver:
-    logrotate:
+  logrotate:
+    apiserver:
       maxsize: 10M
       period: daily
       rotations: 6

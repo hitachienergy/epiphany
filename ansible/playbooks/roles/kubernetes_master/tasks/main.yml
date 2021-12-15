@@ -108,3 +108,10 @@
   include_role:
     name: helm
     tasks_from: install-bin
+
+- include_tasks: configure-logrotate.yml
+  vars:
+    _is_upgrade_run: false
+    _maxsize: "{{ specification.logrotate.apiserver.maxsize }}"
+    _period: "{{ specification.logrotate.apiserver.period }}"
+    _rotations: "{{ specification.logrotate.apiserver.rotations }}"

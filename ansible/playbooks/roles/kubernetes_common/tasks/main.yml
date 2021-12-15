@@ -25,10 +25,4 @@
     - net.bridge.bridge-nf-call-iptables
     - net.bridge.bridge-nf-call-ip6tables
 
-- include_tasks: configure-logrotate.yml
-  vars:
-    _maxsize: "{{ specification.apiserver.logrotate.maxsize }}"
-    _period: "{{ specification.apiserver.logrotate.period }}"
-    _rotations: "{{ specification.apiserver.logrotate.rotations }}"
-
 - include_tasks: gather-facts.yml
