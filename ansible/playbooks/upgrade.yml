@@ -331,6 +331,15 @@
         tasks_from: upgrade/main
       when: "'postgresql' in upgrade_components or upgrade_components|length == 0"
 
+- hosts: postgresql
+  become: true
+  become_method: sudo
+  tasks:
+    - import_role:
+        name: upgrade
+        tasks_from: postgres-exporter
+      when: "'postgresql_exporter' in upgrade_components or upgrade_components|length == 0"
+
 - hosts: prometheus
   become: true
   become_method: sudo

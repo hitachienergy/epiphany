@@ -60,6 +60,7 @@
 - [#2699](https://github.com/epiphany-platform/epiphany/issues/2699) - Upgrade Grafana to 8.3.2
 - [#2788](https://github.com/epiphany-platform/epiphany/issues/2788) - Upgrade Log4j in Open Distro for Elasticsearch
 - [#2661](https://github.com/epiphany-platform/epiphany/issues/2661) - Update K8s documentation according to the latest version Epiphany supports
+- [#2752](https://github.com/epiphany-platform/epiphany/issues/2752) - Upgrade postgresql exporter to the version 0.10.0
 
 ### Removed
 

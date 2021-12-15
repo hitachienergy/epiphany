@@ -69,7 +69,7 @@ class AnsibleVarsGenerator(Step):
             # are not compatible with the new ones, defaults are used for template processing
             roles_with_defaults = [
                 'repository', 'image_registry', 'node_exporter',
-                'postgresql', 'kafka_exporter', 'jmx_exporter'
+                'postgresql', 'kafka_exporter', 'jmx_exporter', 'postgresql_exporter'
                 ]
             # now lets add any external configs we want to load
             roles_with_defaults = [*roles_with_defaults, *self.inventory_upgrade.get_new_config_roles()]
