@@ -45,7 +45,7 @@
 - [#2180](https://github.com/epiphany-platform/epiphany/issues/2180) - [documentation] Missing clear information about supported CNI plugins
 - [#2755](https://github.com/epiphany-platform/epiphany/issues/2755) - Upgrade Python dependencies to the latest
 - [#2700](https://github.com/epiphany-platform/epiphany/issues/2700) - Upgrade Prometheus to 2.31.1 and AlertManager to 0.23.0
-- [#2748](https://github.com/epiphany-platform/epiphany/issues/2748) - Upgrade Kafka exporter to the version 1.4.2
+- [#2748](https://github.com/epiphany-platform/epiphany/issues/2748) - Upgrade Kafka exporter to the version 1.4.0
 - [#2750](https://github.com/epiphany-platform/epiphany/issues/2750) - Upgrade JMX exporter to the newest version
 
 ### Removed
