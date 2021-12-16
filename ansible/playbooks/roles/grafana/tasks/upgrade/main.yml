@@ -36,13 +36,13 @@
     grafana_installed_version: "{{ ansible_facts.packages['grafana'][0].version }}"
     grafana_target_version: "{{ grafana_versions.grafana_version }}"
 
-- name: Grafana | Print versions
+- name: Print versions
   debug:
     msg:
       - "Installed version: {{ grafana_installed_version }}"
       - "Target version: {{ grafana_target_version }}"
 
-- name: Start Grafana upgrade
+- name: Upgrade Grafana
   when: grafana_target_version is version(grafana_installed_version, '>')
      or state_file_status.stat.exists
   block:
@@ -55,20 +55,17 @@
     - name: Stop Grafana service
       systemd:
         state: stopped
-        name: grafana
+        name: grafana-server
 
     # Since we do not manage custom resources like plugins (it's up to the user), upgrading grafana by just installing new binary is considered complete here.
     # https://grafana.com/docs/grafana/latest/installation/upgrading/
-    - name: Run installation process
-      import_role:
-        name: grafana
-        tasks_from: install
+    - name: Run installation tasks
+      include_tasks: install.yml
 
-    # Start services again if needed
-    - name: start Grafana service
+    - name: Start Grafana service
       systemd:
         state: started
-        name: grafana
+        name: grafana-server
 
     - name: Remove upgrade state file
       file:
