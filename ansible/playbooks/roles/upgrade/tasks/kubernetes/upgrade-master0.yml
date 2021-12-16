@@ -1,9 +1,4 @@
 ---
-- name: k8s/master0 | Load vars from kubernetes_master role
-  include_vars:
-    file: roles/kubernetes_master/vars/main.yml
-    name: kubernetes_master_vars
-
 # During HA control plane upgrade server address in kubeconfig is switched to local for
 #   * compatibility between client and server versions
 #   * identifying correct server version
@@ -119,13 +114,3 @@
   when:
     - groups.kubernetes_master | length > 1
   changed_when: true
-
-- name: k8s/master0 | Configure apiserver logrotate
-  include_role:
-    name: kubernetes_master
-    tasks_from: configure-logrotate.yml
-  vars:
-    _is_upgrade_run: true
-    _maxsize: "{{ kubernetes_master_vars.specification.logrotate.apiserver.maxsize }}"
-    _period: "{{ kubernetes_master_vars.specification.logrotate.apiserver.period }}"
-    _rotations: "{{ kubernetes_master_vars.specification.logrotate.apiserver.rotations }}"

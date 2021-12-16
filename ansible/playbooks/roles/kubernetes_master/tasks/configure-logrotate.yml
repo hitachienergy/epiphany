@@ -1,9 +1,0 @@
----
-- name: Copy logrotate config
-  template:
-    dest: /etc/logrotate.d/k8s-apiserver
-    src: apiserver-logrotate.conf.j2
-    force: "{{ not is_upgrade_run }}"
-    owner: root
-    group: root
-    mode: u=rw,go=r
