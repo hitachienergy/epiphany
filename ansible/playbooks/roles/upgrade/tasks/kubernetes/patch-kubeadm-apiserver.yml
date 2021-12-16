@@ -75,7 +75,7 @@
           {% endif %}
             extraVolumes:
               - name: apiserver-log
-                hostPath: /var/log/apiserver
+                hostPath: /var/log/kubernetes/audit/
                 mountPath: /var/log/apiserver
                 readOnly: false
                 pathType: DirectoryOrCreate
