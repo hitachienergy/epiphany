@@ -85,7 +85,8 @@ def CLUSTER_MODEL(provider: str) -> ObjDict:
                 'use_service_principal': False,
                 'region': 'West Europe',
                 'network': {'use_network_security_groups': True},
-                'default_os_image': 'default'
+                'default_os_image': 'default',
+                'hostname_domain_extension': ''
             },
             'components': {
                 'service': {
