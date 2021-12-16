@@ -63,14 +63,14 @@ class AnsibleVarsGenerator(Step):
             dump(clean_cluster_model, stream)
 
         if self.is_upgrade_run:
-            # Common is already provisioned from the cluster model constructed from the inventory.
-            # As PostgreSQL configuration is changed between versions (e.g. wal_keep_segments -> wal_keep_size)
-            # and sometimes previous parameters are not compatible with the new ones,
-            # defaults are used for template processing
+            # For upgrade we always need common, repository, image_registry, node_exporter and postgresql. Common is
+            # already provisioned from the cluster model constructed from the inventory. As PostgreSQL configuration
+            # is changed between versions (e.g. wal_keep_segments -> wal_keep_size) and sometimes previous parameters
+            # are not compatible with the new ones, defaults are used for template processing
             roles_with_defaults = [
-                'image_registry', 'jmx_exporter', 'kafka_exporter', 'kubernetes_master',
-                'node_exporter', 'postgresql', 'repository'
-            ]
+                'repository', 'image_registry', 'node_exporter',
+                'postgresql', 'kafka_exporter', 'jmx_exporter'
+                ]
             # now lets add any external configs we want to load
             roles_with_defaults = [*roles_with_defaults, *self.inventory_upgrade.get_new_config_roles()]
             # In special cases (like haproxy), where user specifies majority of the config, it's easier (and less
