@@ -8,7 +8,7 @@ specification:
   config_flags:
     - "--web.listen-address=:9308" # Address to listen on for web interface and telemetry.
     - '--web.telemetry-path=/metrics' # Path under which to expose metrics.
-    - '--verbosity=0'
+    - '--log.enable-sarama'
     - '--topic.filter=.*' # Regex that determines which topics to collect.
     - '--group.filter=.*' # Regex that determines which consumer groups to collect.
     #- '--tls.insecure-skip-tls-verify' # If true, the server's certificate will not be checked for validity. This will make your HTTPS connections insecure.
