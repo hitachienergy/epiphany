@@ -30,12 +30,11 @@ class InfrastructureBuilder(Step):
         manifest_cluster_model = select_first(self.manifest_docs, lambda x: x.kind == 'epiphany-cluster')
         if self.manifest_docs:
             if 'hostname_domain_extension' in manifest_cluster_model.specification.cloud:
-                if manifest_cluster_model.specification.cloud.hostname_domain_extension != '':
-                    old_hostname_domain_extension = manifest_cluster_model.specification.cloud.hostname_domain_extension
-                    if old_hostname_domain_extension != self.hostname_domain_extension:
-                        self.logger.warning(f"Re-applying a different hostname_domain_extension might lead to data loss and/or other issues. Preserving the previous hostname_domain_extension: '{old_hostname_domain_extension}'.")
-                        self.cluster_model.specification.cloud.hostname_domain_extension = old_hostname_domain_extension
-                        self.hostname_domain_extension = old_hostname_domain_extension
+                old_hostname_domain_extension = manifest_cluster_model.specification.cloud.hostname_domain_extension
+                if old_hostname_domain_extension != self.hostname_domain_extension:
+                    self.logger.warning(f"Re-applying a different hostname_domain_extension might lead to data loss and/or other issues. Preserving the previous hostname_domain_extension: '{old_hostname_domain_extension}'.")
+                    self.cluster_model.specification.cloud.hostname_domain_extension = old_hostname_domain_extension
+                    self.hostname_domain_extension = old_hostname_domain_extension
 
     def run(self):
         infrastructure = []
