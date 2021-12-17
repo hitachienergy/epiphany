@@ -60,4 +60,4 @@
 
 ### Known issues
 
-- Kafka exporter for Prometheus: Performance issue on large clusters. We use verion 1.4.0 since 1.4.1 and 1.4.2 contain critical bug (see https://github.com/danielqsj/kafka_exporter/issues/273). For release notes, see https://github.com/danielqsj/kafka_exporter/releases.
+- Kafka exporter for Prometheus: Performance issue on large clusters. We use version 1.4.0 since 1.4.1 and 1.4.2 contain critical bug (see https://github.com/danielqsj/kafka_exporter/issues/273). For release notes, see https://github.com/danielqsj/kafka_exporter/releases.
