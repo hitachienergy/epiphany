@@ -24,11 +24,11 @@ apiServer:
 {% for key, value in specification.advanced.api_server_args.items() %}
     {{ key }}: "{{ value }}"
 {% endfor %}
-    audit-log-path: "/var/log/apiserver/audit.log"
+    audit-log-path: "/var/log/kubernetes/audit/audit.log"
   extraVolumes:
     - name: apiserver-log
-      hostPath: /var/log/kubernetes/audit
-      mountPath: /var/log/apiserver
+      hostPath: /var/log/kubernetes/audit/
+      mountPath: /var/log/kubernetes/audit/
       readOnly: false
       pathType: DirectoryOrCreate
 

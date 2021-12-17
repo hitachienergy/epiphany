@@ -73,10 +73,11 @@
           {% if version is version('1.21', '>=') and version is version('1.22', '<') %}
               enable-admission-plugins: {{ _kubeadm_supported_admission_plugins }}
           {% endif %}
+              audit-log-path: "/var/log/kubernetes/audit/audit.log"
             extraVolumes:
               - name: apiserver-log
                 hostPath: /var/log/kubernetes/audit/
-                mountPath: /var/log/apiserver
+                mountPath: /var/log/kubernetes/audit/
                 readOnly: false
                 pathType: DirectoryOrCreate
 
