@@ -44,7 +44,7 @@ All of them have
 [default configuration](https://github.com/epiphany-platform/epiphany/blob/develop/schema/common/defaults/configuration/applications.yml).
 The common parameters are: name, enabled, namespace, image_path and use_local_image_registry.
 If you set `use_local_image_registry` to `false` in configuration manifest, you have to provide a valid docker image
-path in `image_path`. Kubernetes will try to pull image from `image_path` value externally.  
+path in `image_path`. Kubernetes will try to pull image from `image_path` value externally.
 To see what version of the application image is in local image registry please refer
 to [components list](../COMPONENTS.md).
 
@@ -385,8 +385,8 @@ To set specific database host IP address for Keycloak you have to provide additi
 
 Note: If `database address` is not specified, epicli assumes that database instance doesn't exist and will create it.
 
-By default, if `database address` is not specified and if Postgres is HA mode, Keycloak uses PGBouncer `ClusterIP` service
-name as database address.  
+By default, if `database address` is not specified and if Postgres is HA mode, Keycloak uses PGBouncer `ClusterIP`
+service name as database address.
 If Postgres is in standalone mode, and `database address` is not specified, then it uses first Postgres host address
 from `inventory`.
 
@@ -404,3 +404,22 @@ Example:
 If you need your GUI accessible outside, you would have to change your firewall rules.
 
 GUI should be reachable at: https://localhost:30104/auth
+
+## Audit logs
+
+Audit logs are stored in `/var/log/kubernetes/audit/` directory on control plane nodes.
+There is a possibility to configure a rotation:
+
+```yaml
+kind: configuration/kubernetes-master
+title: Kubernetes Master Config
+name: default
+specification:
+  advanced:
+    api_server_args:
+      audit-log-maxbackup: 10
+      audit-log-maxsize: 200
+```
+
+Refer to K8s [documentation](https://kubernetes.io/docs/tasks/debug-application-cluster/audit/#log-backend) to check the
+meaning of these values. Default values are specified in the sample above.
