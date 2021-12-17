@@ -1,7 +1,6 @@
 [Unit]
 Description=Kafka Daemon
 After=zookeeper.service
-Wants=kafka-exporter.service
 
 {% if specification.kafka_var.javax_net_debug is defined %}
 {%      set javax_debug = '-Djavax.net.debug=' ~ specification.kafka_var.javax_net_debug %}
