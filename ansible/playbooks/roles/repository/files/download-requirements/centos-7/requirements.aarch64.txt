@@ -149,7 +149,7 @@ kubernetes-cni-0.8.7-0 # since K8s v1.19.15
 # Github repository for erlang rpm is used since packagecloud repository is limited to a certain number of versions and erlang package from erlang-solutions repository is much more complex and bigger
 https://packages.erlang-solutions.com/erlang/rpm/centos/7/aarch64/esl-erlang_23.1.5-1~centos~7_arm64.rpm
 # Grafana package is not downloaded from repository since it was not reliable (issue #2449)
-https://dl.grafana.com/oss/release/grafana-7.3.5-1.aarch64.rpm
+https://dl.grafana.com/oss/release/grafana-8.3.2-1.aarch64.rpm
 # --- Exporters ---
 https://github.com/prometheus/haproxy_exporter/releases/download/v0.10.0/haproxy_exporter-0.10.0.linux-arm64.tar.gz
 https://github.com/danielqsj/kafka_exporter/releases/download/v1.4.2/kafka_exporter-1.4.2.linux-arm64.tar.gz
@@ -190,7 +190,7 @@ https://grafana.com/api/dashboards/7589/revisions/5/download grafana_dashboard_7
 # HAproxy Servers | HAproxy
 https://grafana.com/api/dashboards/367/revisions/3/download grafana_dashboard_367.json
 # Docker and Host Monitoring w/ Prometheus
-https://grafana.com/api/dashboards/179/revisions/5/download grafana_dashboard_179.json
+https://grafana.com/api/dashboards/179/revisions/7/download grafana_dashboard_179.json
 # Kubernetes pod and cluster monitoring (via Prometheus)
 https://grafana.com/api/dashboards/6663/revisions/1/download grafana_dashboard_6663.json
 # RabbitMQ cluster monitoring (via Prometheus)
