@@ -60,4 +60,4 @@
 
 ### Known issues
 
-- Upgrading Kubernetes to the latest available version 1.22 breaks Vault and Istio components as versions are not compatible. The issue is not fixed as these components are beeing considered for deprecation
+- Upgrading Kubernetes to the latest available version 1.22 breaks the Vault and Istio components as versions are not compatible. The issues are not being addressed as these components are being considered for deprecation and removal in subsequent releases.
