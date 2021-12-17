@@ -123,8 +123,8 @@ class ApplyEngine(Step):
                     raise Exception("ControlPlane downscale is not supported yet. Please revert your 'kubernetes_master' count to previous value or increase it to scale up Kubernetes.")
 
     def assert_no_postgres_nodes_number_change(self):
+        self.process_configuration_docs()
         components = self.cluster_model.specification.components
-
         cluster_name = self.cluster_model.specification.name
         inventory_path = get_inventory_path(cluster_name)
 
@@ -140,7 +140,21 @@ class ApplyEngine(Step):
                 prev_postgres_count = len(existing_inventory.list_hosts(pattern='postgresql'))
                 next_postgres_count = int(components['postgresql']['count'])
 
-                if prev_postgres_count != next_postgres_count:
+                # To avoid situation where the postgres is configured on some other host different then postgres
+                if next_postgres_count == 0:
+                    postgres_role_mapping_exists = False
+
+                    for object in self.configuration_docs:
+                        if object.kind == 'configuration/feature-mapping':
+                            for available_role in object.specification.available_roles:
+                                if (available_role.name == 'postgresql') and (available_role.enabled == True):
+                                    postgres_role_mapping_exists = True
+                                    break;
+                    if postgres_role_mapping_exists:
+                        pass
+                    else:
+                        raise Exception("Postgresql scaling is not supported yet. Please revert your 'postgresql' count to previous value.")
+                elif prev_postgres_count != next_postgres_count:
                     raise Exception("Postgresql scaling is not supported yet. Please revert your 'postgresql' count to previous value.")
 
     def assert_consistent_os_family(self):
