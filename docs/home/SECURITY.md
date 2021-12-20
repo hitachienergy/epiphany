@@ -147,6 +147,82 @@ The list does not include ports that are bound to the loopback interface (localh
 
     - 8200 - REST API
 
+### Ciphers used by components in Epiphany
+
+1. OS services:
+
+    - SSH
+      - ciphers:  
+      chacha20-poly1305@openssh.com,aes256-gcm@openssh.com,aes128-gcm@openssh.com,aes256-ctr,aes192-ctr,aes128-ctr
+      - macs:  
+      hmac-sha2-512-etm@openssh.com,hmac-sha2-256-etm@openssh.com,umac-128-etm@openssh.com,hmac-sha2-512,hmac-sha2-256,umac-128@openssh.com
+      - kexalgorithms:  
+      curve25519-sha256@libssh.org,ecdh-sha2-nistp521,ecdh-sha2-nistp384,ecdh-sha2-nistp256,diffie-hellman-group-exchange-sha256
+
+2. Prometheus exporters:
+
+
+
+3. Zookeeper:
+
+
+4. Kafka:
+
+    - protocols:  
+      TLSv1.2,TLSv1.1,TLSv1
+
+    - ciphersuites:  
+      Depends on version of Java and for Java versions older than 8u161 on JCE policy file. From update 8u161 JCE policy file is not needed to enable restricted ciphers as all ciphers are enabled by default. Documentation about ciphers is available under [link](https://docs.oracle.com/javase/8/docs/technotes/guides/security/SunProviders.html).
+
+5. Elasticsearch:
+
+6. Kibana:
+
+7. Prometheus:
+
+8. Alertmanager:
+
+9. Grafana:
+
+10. RabbitMQ:
+
+11. PostgreSQL:
+
+
+12. Kubernetes:
+
+    - ciphersuites:  
+    ECDHE-RSA-AES256-GCM-SHA384
+    ECDHE-RSA-AES256-SHA
+    AES256-GCM-SHA384
+    AES256-SHA
+    ECDHE-RSA-AES128-GCM-SHA256
+    ECDHE-RSA-AES128-SHA
+    AES128-GCM-SHA256
+    AES128-SHA
+    ECDHE-RSA-DES-CBC3-SHA
+    DES-CBC3-SHA
+
+    - protocols:  
+    TLSv1.2
+
+
+
+13. Kubernetes apps:
+
+
+14. HAProxy:
+
+
+15. Ignite:
+
+16. Repository:
+
+
+17. Hashicorp Vault:
+
+
+
 #### Notes
 
 1. JMX:
