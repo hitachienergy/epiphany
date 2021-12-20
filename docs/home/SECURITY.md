@@ -159,14 +159,16 @@ The list does not include ports that are bound to the loopback interface (localh
       - kexalgorithms:  
       curve25519-sha256@libssh.org,ecdh-sha2-nistp521,ecdh-sha2-nistp384,ecdh-sha2-nistp256,diffie-hellman-group-exchange-sha256
 
-2. Prometheus exporters:
+2. HAProxy:
+
+    - protocols:  
+      TLSv1.2
+
+    - ciphersuites:  
+      ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20-POLY1305:DHE-RSA-AES128-GCM-SHA256:DHE-RSA-AES256-GCM-SHA384
 
 
-
-3. Zookeeper:
-
-
-4. Kafka:
+3. Kafka:
 
     - protocols:  
       TLSv1.2,TLSv1.1,TLSv1
@@ -174,13 +176,9 @@ The list does not include ports that are bound to the loopback interface (localh
     - ciphersuites:  
       Depends on version of Java and for Java versions older than 8u161 on JCE policy file. From update 8u161 JCE policy file is not needed to enable restricted ciphers as all ciphers are enabled by default. Documentation about ciphers is available under [link](https://docs.oracle.com/javase/8/docs/technotes/guides/security/SunProviders.html).
 
-5. Elasticsearch:
+4. Elasticsearch:
 
-6. Kibana:
-
-7. Prometheus:
-
-8. Alertmanager:
+5. Kibana:
 
 9. Grafana:
 
@@ -211,7 +209,7 @@ The list does not include ports that are bound to the loopback interface (localh
 13. Kubernetes apps:
 
 
-14. HAProxy:
+
 
 
 15. Ignite:
