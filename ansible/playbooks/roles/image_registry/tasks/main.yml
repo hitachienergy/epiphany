@@ -69,6 +69,7 @@
     - name: Push generic and current version images to registry
       vars:
         docker_image: "{{ item }}"
+        new_image_tag: "{{ image_registry_address }}/{{ item.name }}"
       include_tasks: push-image.yml
       loop: "{{ generic_and_current_images }}"
 
@@ -80,11 +81,10 @@
             docker_image: "{{ item }}"
           include_tasks: load-image.yml
           loop: "{{ legacy_images }}"
-          when: legacy_images | count > 0
 
         - name: Push legacy version images to registry
           vars:
             docker_image: "{{ item }}"
+            new_image_tag: "{{ image_registry_address }}/{{ item.name }}"
           include_tasks: push-image.yml
           loop: "{{ legacy_images }}"
-          when: legacy_images | count > 0

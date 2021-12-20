@@ -42,6 +42,10 @@ networking:
   podSubnet: "10.244.0.0/16"
   serviceSubnet: {{ specification.advanced.networking.serviceSubnet }}
 
+# https://github.com/kubernetes/kubeadm/issues/2525
+dns:
+  imageRepository: {{ image_registry_address }}/{{ specification.advanced.imageRepository }}/coredns
+
 imageRepository: {{ image_registry_address }}/{{ specification.advanced.imageRepository }}
 
 certificatesDir: {{ pki.location }}

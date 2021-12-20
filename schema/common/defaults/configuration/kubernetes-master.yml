@@ -2,7 +2,7 @@ kind: configuration/kubernetes-master
 title: Kubernetes Master Config
 name: default
 specification:
-  version: 1.20.12
+  version: 1.21.7
   cni_version: 0.8.7
   cluster_name: "kubernetes-epiphany"
   allow_pods_on_master: False
@@ -15,7 +15,7 @@ specification:
   advanced: # modify only if you are sure what value means
     api_server_args: # https://kubernetes.io/docs/reference/command-line-tools-reference/kube-apiserver/
       profiling: false
-      enable-admission-plugins: "AlwaysPullImages,DenyEscalatingExec,NamespaceLifecycle,ServiceAccount,NodeRestriction"
+      enable-admission-plugins: "AlwaysPullImages,NamespaceLifecycle,ServiceAccount,NodeRestriction"
       audit-log-path: "/var/log/apiserver/audit.log"
       audit-log-maxbackup: 10
       audit-log-maxsize: 200

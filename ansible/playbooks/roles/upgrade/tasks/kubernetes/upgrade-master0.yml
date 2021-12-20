@@ -16,11 +16,11 @@
 # If config is incomplete, kubeadm rewrites the kube-apiserver.yaml manifest file without the etcd feature enabled.
 # In turn, this causes Kubernetes components such as the controller-manager to lose ability to read internal (kube-system) secrets, then
 # any upgrade attempt freezes and the cluster at hand becomes unusable.
-- name: k8s/master0 | Make sure the etcd encryption feature is properly configured (if enabled)
-  include_tasks: patch-kubeadm-etcd-encryption.yml
+- name: k8s/master0 | Make sure the apiserver settings are correct
+  include_tasks: patch-kubeadm-apiserver.yml
 
 - name: k8s/master0 | Update imageRepository in kubeadm-config ConfigMap
-  include_tasks: update-kubeadm-image-repository.yml
+  include_tasks: patch-kubeadm-image-repository.yml
 
 - name: k8s/master0 | Reconfigure rabbitmq application
   include_tasks: reconfigure-rabbitmq-app.yml
