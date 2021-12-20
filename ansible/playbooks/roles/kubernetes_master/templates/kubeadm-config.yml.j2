@@ -26,7 +26,7 @@ apiServer:
 {% endfor %}
     audit-log-path: "/var/log/kubernetes/audit/audit.log"
   extraVolumes:
-    - name: apiserver-log
+    - name: apiserver-audit-log
       hostPath: /var/log/kubernetes/audit/
       mountPath: /var/log/kubernetes/audit/
       readOnly: false
