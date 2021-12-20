@@ -32,6 +32,41 @@
     - groups.kubernetes_master | length > 0
     - "'applications' in roles_with_generated_vars" # there is a case with disabled applications by custom feature mapping
 
+- name: Kubernetes checks
+  block:
+    - name: Check if K8s node has enough memory
+      assert:
+        that: ansible_memtotal_mb >= 2048
+        fail_msg: >-
+          At least 2 GB of RAM per machine is required.
+          Check documentation: https://kubernetes.io/docs/setup/production-environment/tools/kubeadm/install-kubeadm/#before-you-begin.
+        quiet: true
+
+    - name: Check if K8s node has enough CPUs
+      assert:
+        that: ansible_processor_vcpus >= 2
+        fail_msg: >-
+          At least 2 CPUs is required.
+          Check documentation: https://kubernetes.io/docs/setup/production-environment/tools/kubeadm/install-kubeadm/#before-you-begin.
+        quiet: true
+
+    - name: Get K8s cluster version
+      command: swapon --show --noheadings
+      register: swapon
+      changed_when: false
+
+    - name: Check if swap is disabled on K8s node
+      assert:
+        that: swapon.stdout_lines | length == 0
+        fail_msg: >-
+          Swap must be disabled in order for the kubelet to work properly.
+          Check documentation: https://kubernetes.io/docs/setup/production-environment/tools/kubeadm/install-kubeadm/#before-you-begin.
+        quiet: true
+  when:
+    - groups.kubernetes_master is defined
+    - groups.kubernetes_master | length > 0
+    - "['kubernetes_master', 'kubernetes_node'] | intersect(group_names) | length > 0"
+
 - name: PostgreSQL checks
   include_tasks: roles/postgresql/tasks/preflight/apply.yml
   when:
