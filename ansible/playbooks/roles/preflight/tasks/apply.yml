@@ -50,7 +50,7 @@
           Check documentation: https://kubernetes.io/docs/setup/production-environment/tools/kubeadm/install-kubeadm/#before-you-begin.
         quiet: true
 
-    - name: Get K8s cluster version
+    - name: Get swap info
       command: swapon --show --noheadings
       register: swapon
       changed_when: false
