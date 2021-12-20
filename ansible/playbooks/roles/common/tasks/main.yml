@@ -1,5 +1,4 @@
 ---
-
 - name: Print admin_user.name
   debug:
     msg: "{{ admin_user.name }}"
@@ -27,7 +26,7 @@
 
 - name: Remove swap from /etc/fstab
   mount:
-    backup: yes
+    backup: true
     fstype: swap
     path: swap
     state: absent
@@ -72,7 +71,7 @@
 - name: Disable SELinux at next reboot
   selinux:
     state: disabled
-  ignore_errors: yes
+  ignore_errors: true
   when: ansible_selinux is defined and ansible_selinux != False and ansible_selinux.status == 'enabled'
 
 - name: Set SELinux in permissive mode until the machine is rebooted
@@ -110,7 +109,7 @@
   template:
     src: hosts.j2
     dest: /etc/hosts
-    mode: 0644
+    mode: u=rw,o=r
     owner: root
     group: root
 
@@ -118,11 +117,11 @@
   tags:
     - epiuser
 
-- include_tasks: os_users.yml
+- include_tasks: os-users.yml
   when:
     - specification.users is defined and specification.users | list | length > 0
   tags:
-    - os_users
+    - os-users
 
 - include_tasks: security.yml
   tags:
