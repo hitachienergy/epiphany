@@ -189,6 +189,9 @@ The list does not include ports that are bound to the loopback interface (localh
 
 12. Kubernetes:
 
+    - protocols:  
+    TLSv1.2
+
     - ciphersuites:  
     ECDHE-RSA-AES256-GCM-SHA384
     ECDHE-RSA-AES256-SHA
@@ -200,9 +203,6 @@ The list does not include ports that are bound to the loopback interface (localh
     AES128-SHA
     ECDHE-RSA-DES-CBC3-SHA
     DES-CBC3-SHA
-
-    - protocols:  
-    TLSv1.2
 
 
 
