@@ -4,6 +4,7 @@
 
 ### Added
 
+- [#2782](https://github.com/epiphany-platform/epiphany/issues/2782#issuecomment-998596068) - Assure Node-Exporter is upgraded in its relevant namespace
 - [#1306](https://github.com/epiphany-platform/epiphany/issues/1306) - Allow to check on VMs which epicli version was used to deploy/upgrade components
 - [#1487](https://github.com//epiphany-platform/epiphany/issues/1487) - Add RabbitMQ monitoring
 - [#2600](https://github.com/epiphany-platform/epiphany/issues/2600) - Change epicli output structure
@@ -32,6 +33,7 @@
 
 ### Updated
 
+- Upgrade Node-Exporter to v1.3.1
 - Upgrade Flannel to v0.14.0
 - Upgrade Calico and Canal to v3.20.3
 - Upgrade Coredns to v1.8.0
