@@ -123,12 +123,13 @@ class ApplyEngine(Step):
                     raise Exception("ControlPlane downscale is not supported yet. Please revert your 'kubernetes_master' count to previous value or increase it to scale up Kubernetes.")
 
     def assert_no_postgres_nodes_number_change(self):
-        self.process_configuration_docs()
+        feature_mappings = select_all(self.input_docs, lambda x: x.kind == 'configuration/feature-mapping')
         components = self.cluster_model.specification.components
         cluster_name = self.cluster_model.specification.name
         inventory_path = get_inventory_path(cluster_name)
 
         if os.path.isfile(inventory_path):
+            exception_string = "Postgresql scaling is not supported yet. Please revert your 'postgresql' count to previous value."
             existing_inventory = InventoryManager(loader=DataLoader(), sources=inventory_path)
 
             both_present = all([
@@ -144,18 +145,16 @@ class ApplyEngine(Step):
                 if next_postgres_count == 0:
                     postgres_role_mapping_exists = False
 
-                    for object in self.configuration_docs:
+                    for object in feature_mappings:
                         if object.kind == 'configuration/feature-mapping':
                             for available_role in object.specification.available_roles:
                                 if (available_role.name == 'postgresql') and (available_role.enabled == True):
                                     postgres_role_mapping_exists = True
                                     break;
-                    if postgres_role_mapping_exists:
-                        pass
-                    else:
-                        raise Exception("Postgresql scaling is not supported yet. Please revert your 'postgresql' count to previous value.")
+                    if not postgres_role_mapping_exists:
+                        raise Exception(exception_string)
                 elif prev_postgres_count != next_postgres_count:
-                    raise Exception("Postgresql scaling is not supported yet. Please revert your 'postgresql' count to previous value.")
+                    raise Exception(exception_string)
 
     def assert_consistent_os_family(self):
         # Before this issue https://github.com/epiphany-platform/epiphany/issues/195 gets resolved,
