@@ -1,0 +1,16 @@
+---
+- name: Check if K8s node has enough memory
+  assert:
+    that: ansible_memtotal_mb >= 2048
+    fail_msg: >-
+      At least 2 GB of RAM per machine is required.
+      Check documentation: https://kubernetes.io/docs/setup/production-environment/tools/kubeadm/install-kubeadm/#before-you-begin.
+    quiet: true
+
+- name: Check if K8s node has enough CPUs
+  assert:
+    that: ansible_processor_vcpus >= 2
+    fail_msg: >-
+      At least 2 CPUs is required.
+      Check documentation: https://kubernetes.io/docs/setup/production-environment/tools/kubeadm/install-kubeadm/#before-you-begin.
+    quiet: true
