@@ -102,78 +102,13 @@
 # For apply mode, demo certificate files are removed based only on their names. For upgrade mode,
 # public key fingerprints are checked to protect against unintentional deletion (what takes additional time).
 
-# Remove demo certificate files
-- include_tasks:
+- name: Remove demo certificate files
+  include_tasks:
     file: "{{ is_upgrade_run | ternary('remove-known-demo-certs.yml', 'remove-demo-certs.yml') }}"
   when: not certificates.files.demo.opendistro_security.allow_unsafe_democertificates
 
-- name: Log4j patch
-  block:
-    - name: "opendistro_for_elasticsearch : Log4j patch - get archive"
-      include_role:
-        name: download
-        tasks_from: download_file
-      vars:
-        file_name: "{{ log4j_file_name }}"
-
-    - name: Log4j patch - extract archive
-      unarchive:
-        dest: /tmp/
-        src: "{{ download_directory }}/{{ log4j_file_name }}"
-        remote_src: true
-        list_files: true
-      register: unarchive_list_files
-
-    - name: Log4j patch - Copy new jars
-      register: log4j_patch
-      copy:
-        src: "{{ item.src }}"
-        dest: "{{ item.dest }}"
-        owner: elasticsearch
-        group: root
-        mode: u=rw,g=r,o=
-        remote_src: true
-      loop:
-        - { src: "{{ download_directory }}/{{ log4j_api }}",       dest: /usr/share/elasticsearch/lib/ }
-        - { src: "{{ download_directory }}/{{ log4j_api }}",       dest: /usr/share/elasticsearch/performance-analyzer-rca/lib/ }
-        - { src: "{{ download_directory }}/{{ log4j_api }}",       dest: /usr/share/elasticsearch/plugins/opendistro-performance-analyzer/performance-analyzer-rca/lib/ }
-        - { src: "{{ download_directory }}/{{ log4j_core }}",      dest: /usr/share/elasticsearch/lib/ }
-        - { src: "{{ download_directory }}/{{ log4j_core }}",      dest: /usr/share/elasticsearch/performance-analyzer-rca/lib/ }
-        - { src: "{{ download_directory }}/{{ log4j_core }}",      dest: /usr/share/elasticsearch/plugins/opendistro-performance-analyzer/performance-analyzer-rca/lib/ }
-        - { src: "{{ download_directory }}/{{ log4j_slfj_impl }}", dest: /usr/share/elasticsearch/plugins/opendistro_security/ }
-      vars:
-        log4j_core: "{{ unarchive_list_files.files | select('contains', 'log4j-api-2.17.0.jar') | first }}"
-        log4j_api: "{{ unarchive_list_files.files | select('contains', 'log4j-core-2.17.0.jar') | first }}"
-        log4j_slfj_impl: "{{ unarchive_list_files.files | select('contains', 'log4j-slf4j-impl-2.17.0.jar') | first }}"
-
-    - name: Log4j patch - cleanup
-      block:
-      - name: Log4j patch - remove old jars
-        file:
-          state: absent
-          path: "{{ item }}"
-        loop:
-          - /usr/share/elasticsearch/plugins/opendistro-performance-analyzer/performance-analyzer-rca/lib/log4j-api-2.13.0.jar
-          - /usr/share/elasticsearch/plugins/opendistro-performance-analyzer/performance-analyzer-rca/lib/log4j-core-2.13.0.jar
-          - /usr/share/elasticsearch/performance-analyzer-rca/lib/log4j-api-2.13.0.jar
-          - /usr/share/elasticsearch/performance-analyzer-rca/lib/log4j-core-2.13.0.jar
-          - /usr/share/elasticsearch/lib/log4j-api-2.11.1.jar
-          - /usr/share/elasticsearch/lib/log4j-core-2.11.1.jar
-          - /usr/share/elasticsearch/plugins/opendistro_security/log4j-slf4j-impl-2.11.1.jar
-
-      - name: Log4j patch - Delete temporary dir
-        file:
-          dest: "{{ download_directory }}/{{ _archive_root_dir }}"
-          state: absent
-        vars:
-          _archive_root_dir: >-
-            {{ unarchive_list_files.files | first | dirname }}
-
-- name: Restart opendistro-performance-analyzer service
-  systemd:
-    name: opendistro-performance-analyzer
-    state: restarted
-  when: log4j_patch.changed
+- name: Include log4j patch
+  include_tasks: log4j-patch.yml
 
 - name: Restart elasticsearch service
   systemd:
