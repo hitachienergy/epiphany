@@ -44,11 +44,12 @@ Generate a new minimum cluster definition:
 epicli init -p aws -n demo
 ```
 
-This minimum file definition is fine to start with, if you need more control over the infrastructure created you can also create a full definition:
+This minimum file definition is fine to start with, however if you need more control over the infrastructure created you can also create a full definition:
 
 ```shell
 epicli init -p aws -n demo --full
 ```
+and this will create a cluster definition with all available in Epiphany components.
 
 You will need to modify a few values (like your AWS secrets, directory path for SSH keys). Once you are done with `demo.yml` you can start cluster deployment by executing:
 
