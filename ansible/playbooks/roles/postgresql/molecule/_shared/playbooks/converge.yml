@@ -1,0 +1,30 @@
+---
+- name: Converge
+  hosts: postgresql
+  become: true
+  become_method: sudo
+  gather_facts: true
+  module_defaults:
+    shell:
+      executable: /bin/bash
+  tasks:
+    - name: Include postgresql config defaults
+      include_vars:
+        file: ../vars/config-defaults.yml
+        name: defaults
+
+    - name: Include molecule variables to overwrite default config values
+      include_vars:
+        file: ../vars/config-override.yml
+        name: molecule
+
+    - name: Override default configuration
+      set_fact:
+        specification: "{{ defaults.specification | combine(molecule.specification, recursive=true) }}"
+
+    - name: Include postgresql role
+      include_role:
+        name: postgresql
+      vars:
+        yum_lock_timeout: 300 # https://github.com/ansible/ansible/issues/57189
+        roles_with_generated_vars: [ ] # don't execute PgPool related tasks
