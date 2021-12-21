@@ -33,7 +33,7 @@
     - name: Avoiding risk of downgrade
       when: kafka_exporter_version_old is not version( kafka_exporter.version, '<' )
       debug:
-        msg: "Skipping upgrade: Kafka Exporter in newer version already installed!"
+        msg: "Skipping upgrade: Kafka Exporter in the same or newer version already installed!"
 
 - name: Run upgrade tasks
   when: lock_file_status.stat.exists or kafka_exporter_version_old is version( kafka_exporter.version, '<' )
