@@ -43,12 +43,7 @@
 - [Kubernetes](./howto/KUBERNETES.md)
   - [How to expose service through HA Proxy load balancer](./howto/KUBERNETES.md#how-to-expose-service-through-ha-proxy-load-balancer)
   - [How to do Kubernetes RBAC](./howto/KUBERNETES.md#how-to-do-kubernetes-rbac)
-  - [How to run an example app](./howto/KUBERNETES.md#how-to-run-an-example-app)
   - [How to set resource requests and limits for Containers](./howto/KUBERNETES.md#how-to-set-resource-requests-and-limits-for-containers)
-  - [How to run CronJobs](./howto/KUBERNETES.md#how-to-run-cronjobs)
-  - [How to test the monitoring features](./howto/KUBERNETES.md#how-to-test-the-monitoring-features)
-  - [How to run chaos on Epiphany Kubernetes cluster and monitor it with Grafana](./howto/KUBERNETES.md#how-to-run-chaos-on-epiphany-kubernetes-cluster-and-monitor-it-with-grafana)
-  - [How to test the central logging features](./howto/KUBERNETES.md#how-to-test-the-central-logging-features)
   - [How to tunnel Kubernetes dashboard from remote kubectl to your PC](./howto/KUBERNETES.md#how-to-tunnel-kubernetes-dashboard-from-remote-kubectl-to-your-pc)
   - [Kubernetes persistent storage](./howto/PERSISTENT_STORAGE.md)
 

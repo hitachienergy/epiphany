@@ -306,7 +306,7 @@ name: default
 specification:
   custom_image_registry_address: "10.50.2.1:5000"
   custom_repository_url: "http://10.50.2.1:8080/epirepo"
-  use_ha_control_plane: true
+  use_ha_control_plane: false
 ```
 
 The repository and image registry implementation must be compatible with already existing Ansible code:
@@ -449,7 +449,7 @@ To set up the cluster do the following steps from the provisioning machine:
       default_os_image: default
     ```
 
-    The [region](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Concepts.RegionsAndAvailabilityZones.html) lets you chose the most optimal place to deploy your cluster. The `key` and `secret` are needed by Terraform and can be generated in the AWS console. More information about that [here](https://docs.aws.amazon.com/general/latest/gr/aws-sec-cred-types.html#access-keys-and-secret-access-keys)
+    The [region](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Concepts.RegionsAndAvailabilityZones.html) lets you chose the optimal place to deploy your cluster. The `key` and `secret` are needed by Terraform and can be generated in the AWS console. More information about that [here](https://docs.aws.amazon.com/general/latest/gr/aws-sec-cred-types.html#access-keys-and-secret-access-keys)
 
     Azure:
 

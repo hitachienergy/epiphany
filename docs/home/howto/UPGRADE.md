@@ -224,7 +224,7 @@ To upgrade applications on Kubernetes to the desired version after `epicli upgra
 
 - generate new configuration manifest using `epicli init`
 - in case of generating minimal configuration manifest (without --full argument), copy and
-  paste [the default configuration](https://github.com/epiphany-platform/epiphany/blob/develop/data/common/defaults/configuration/applications.yml)
+  paste [the default configuration](https://github.com/epiphany-platform/epiphany/blob/develop/schema/common/defaults/configuration/applications.yml)
   into it
 - run `epicli apply`
 
@@ -241,7 +241,7 @@ The above link points to develop branch. Please choose the right branch that sui
 
 Kafka will be automatically updated to the latest version supported by Epiphany. You can check the latest supported
 version [here](../COMPONENTS.md#epiphany-cluster-components). Kafka brokers are updated one by one - but the update
-procedure does not guarantee "zero downtime" because it depends on the number of available brokers, topic, and
+procedure does not guarantee "zero downtime" because it depends on the number of available brokers, topics, and
 partitioning configuration.
 
 ### ZooKeeper upgrade
@@ -262,7 +262,7 @@ Before upgrade procedure make sure you have a data backup!
 
 ---
 
-In Epiphany v1.0.0 we provided upgrade elasticsearch-oss package to v7.10.2 and opendistro-\* plugins package to
+Since Epiphany v1.0.0 we provide upgrade elasticsearch-oss package to v7.10.2 and opendistro-\* plugins package to
 v1.13.\*. Upgrade will be performed automatically when the upgrade procedure detects your `logging`
 , `opendistro_for_elasticsearch` or `kibana` hosts.
 
@@ -297,8 +297,7 @@ with [breaking changes](https://github.com/prometheus/node_exporter/releases/tag
 
 ---
 
-Starting from Epiphany v0.8.0 it's possible to upgrade node exporter to v1.0.1. Upgrade will be performed automatically
-when the upgrade procedure detects node exporter hosts.
+Starting from Epiphany v0.8.0 it's possible to upgrade node exporter accorrig to [components](https://github.com/epiphany-platform/epiphany/blob/develop/docs/home/COMPONENTS.md) file. Upgrade will be performed automatically when the upgrade procedure detects node exporter hosts.
 
 ## RabbitMQ upgrade
 
@@ -311,7 +310,7 @@ information visit RabbitMQ [site](https://www.rabbitmq.com/upgrade.html).
 
 ---
 
-With the latest Epiphany version it's possible to upgrade RabbitMQ to v3.8.9. It requires Erlang system packages upgrade
+With the version of Epiphany 0.9 it's possible to upgrade RabbitMQ to v3.8.9. It requires Erlang system packages upgrade
 that is done automatically to v23.1.4. Upgrade is performed in offline mode after stopping all RabbitMQ nodes.
 [Rolling upgrade](https://www.rabbitmq.com/upgrade.html#rolling-upgrades) is not supported by Epiphany, and it is
 advised not to use this approach when Erlang needs to be upgraded.

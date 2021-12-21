@@ -33,17 +33,17 @@ We can also check state of Kubernetes nodes using the command:
 
 ```shell
 root@primary01:~# kubectl get nodes --kubeconfig=/etc/kubernetes/admin.conf
-NAME                                         STATUS   ROLES    AGE   VERSION
-primary01                                    Ready    master   24h   v1.17.7
-node01                                       Ready    <none>   23h   v1.17.7
-node02                                       Ready    <none>   23h   v1.17.7
+NAME                                         STATUS   ROLES                  AGE   VERSION
+primary01                                    Ready    control-plane,master   24h   v1.21.7
+node01                                       Ready    <none>                 23h   v1.21.7
+node02                                       Ready    <none>                 23h   v1.21.7
 ```
 
 We can get additional information about Kubernetes components:
 
 ```shell
 root@primary01:~# kubectl cluster-info --kubeconfig=/etc/kubernetes/admin.conf
-Kubernetes master is running at https://primary01:6443
+Kubernetes control plane is running at https://primary01:6443
 CoreDNS is running at https://primary01:6443/api/v1/namespaces/kube-system/services/kube-dns:dns/proxy
 ```
 
@@ -51,16 +51,6 @@ We can also check status of pods in all namespaces using the command:
 
 ```shell
 kubectl get pods -A --kubeconfig=/etc/kubernetes/admin.conf
-```
-
-We can get additional information about components statuses:
-
-```shell
-root@primary01:~# kubectl get cs --kubeconfig=/etc/kubernetes/admin.conf
-NAME                 STATUS    MESSAGE             ERROR
-controller-manager   Healthy   ok
-scheduler            Healthy   ok
-etcd-0               Healthy   {"health":"true"}
 ```
 
 For more detailed information please refer to [official documentation](https://kubernetes.io/docs/reference/kubectl/overview/)
