@@ -20,7 +20,9 @@ pg:
       Debian:
         - postgresql-client-common
         - postgresql-common
-      RedHat: []
+        - python-psycopg2 # required for PostgreSQL ansible management
+      RedHat:
+        - python-psycopg2 # required for PostgreSQL ansible management
     version_specific:
       Debian:
         - postgresql-13
