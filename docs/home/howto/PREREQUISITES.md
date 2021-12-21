@@ -23,7 +23,7 @@ docker pull epiphanyplatform/epicli:TAG
 
 Where `TAG` should be replaced with an existing tag.
 
-*Check [here](https://cloud.docker.com/u/epiphanyplatform/repository/docker/epiphanyplatform/epicli) for the available tags.*
+*Check [here](https://hub.docker.com/r/epiphanyplatform/epicli/tags?page=1&ordering=last_updated) for the available tags.*
 
 ### Running the Epicli image
 
