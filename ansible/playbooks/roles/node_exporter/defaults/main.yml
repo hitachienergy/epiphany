@@ -1,12 +1,12 @@
 ---
 exporter:
-  version: "1.0.1"
+  version: "1.3.1"
   service:
     description: "Service that runs Prometheus Node Exporter"
     name: prometheus-node-exporter
     file_name:
-      x86_64: "node_exporter-1.0.1.linux-amd64.tar.gz"
-      aarch64: "node_exporter-1.0.1.linux-arm64.tar.gz"
+      x86_64: "node_exporter-1.3.1.linux-amd64.tar.gz"
+      aarch64: "node_exporter-1.3.1.linux-arm64.tar.gz"
 node_exporter_helm_chart_name: node-exporter
 # Use dedicated namespace for monitoring charts such as node exporter in case of k8s as cloud service.
 monitoring_chart_namespace: epi-monitoring

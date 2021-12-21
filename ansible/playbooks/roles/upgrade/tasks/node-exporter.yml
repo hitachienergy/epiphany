@@ -105,6 +105,14 @@
         mode: u=rwx,g=rx,o=
         state: directory
 
+    - name: Node Exporter as System Service | Create /var/lib/prometheus/node-exporter/textfile_collector directory
+      file:
+        path: /var/lib/prometheus/node-exporter/textfile_collector
+        owner: root
+        group: node_exporter
+        mode: u=rwx,g=rx,o=
+        state: directory
+
     - name: Node Exporter as System Service | Unpack binary
       unarchive:
         remote_src: true
@@ -126,6 +134,7 @@
         mode: u=rw,go=r
       vars:
         exporter_service_description: "{{ exporter_defaults.exporter.service.description }}"
+        specification: "{{ exporter_vars.specification }}"
 
     - name: Node Exporter as System Service | Start exporter
       systemd:
