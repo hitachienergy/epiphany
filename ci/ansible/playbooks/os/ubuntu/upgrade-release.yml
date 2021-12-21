@@ -1,0 +1,85 @@
+---
+# Based on https://ubuntu.com/server/docs/upgrade-introduction
+
+- name: Upgrade Ubuntu to the latest release
+  hosts: all
+  become: true
+  vars:
+    reboot_connect_timeout: 5  # maximum seconds to wait for a successful connection to the managed hosts before trying again
+    reboot_timeout: 300  # default 600
+  tasks:
+    - when: ansible_os_family == 'Debian'
+      block:
+        - name: Print OS version before upgrade
+          debug:
+            var: ansible_distribution_version
+
+        # 1) Fully update the system
+        - name: Update apt cache
+          apt:
+            update_cache: true
+            force_apt_get: true
+            cache_valid_time: 3600  # 1h
+
+        - name: Upgrade packages
+          apt:
+            upgrade: safe  # do not remove packages
+
+        # 2) Reboot the system (to use the latest kernel)
+        - name: Check if reboot is required
+          register: stat_reboot_file
+          stat:
+            path: /var/run/reboot-required
+            get_attributes: false
+            get_checksum: false
+            get_mime: false
+
+        - name: Reboot host
+          reboot:
+            msg: Reboot initiated by Ansible due to kernel update
+            connect_timeout: "{{ reboot_connect_timeout }}"
+            reboot_timeout: "{{ reboot_timeout }}"
+          when: stat_reboot_file.stat.exists
+
+        # 3) Remove unused packages
+        - name: Remove unused packages
+          apt:
+            autoremove: true
+            purge: true
+
+        # 4) Upgrade OS release
+        - name: Upgrade OS release
+          command: do-release-upgrade -f DistUpgradeViewNonInteractive
+          retries: 3  # for network related errors like 'unable to contact snap store'
+          delay: 1
+          register: result
+          until: result.rc == 0
+
+        # 5) Reboot the system (to use the latest kernel)
+        - name: Check if reboot is required
+          register: stat_reboot_file
+          stat:
+            path: /var/run/reboot-required
+            get_attributes: false
+            get_checksum: false
+            get_mime: false
+
+        - name: Reboot host after release upgrade
+          reboot:
+            msg: Reboot initiated by Ansible due to kernel update
+            connect_timeout: "{{ reboot_connect_timeout }}"
+            reboot_timeout: "{{ reboot_timeout }}"
+          when: stat_reboot_file.stat.exists
+
+        - name: Refresh Ansible facts
+          ansible.builtin.setup:
+            gather_subset:
+              - min
+
+        - name: Print kernel after upgrade
+          debug:
+            var: ansible_kernel
+
+        - name: Print OS version after upgrade
+          debug:
+            var: ansible_distribution_version
