@@ -422,4 +422,4 @@ specification:
 ```
 
 Refer to K8s [documentation](https://kubernetes.io/docs/tasks/debug-application-cluster/audit/#log-backend) to check the
-meaning of these values. Default values are specified in the sample above.
+meaning of these values. The sample above shows the defaults.
