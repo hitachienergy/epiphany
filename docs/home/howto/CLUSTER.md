@@ -469,10 +469,10 @@ To set up the cluster do the following steps from the provisioning machine:
     If you already have a service principle and don't want to create a new one you can do the following. Make sure the `use_service_principal` tag is set to true. Then before you run `epicli apply -f yourcluster.yml` create the following folder structure from the path you are running Epicli:
 
     ```shell
-    /build/clustername/terraform
+    /path/to/build_dir/clustername/terraform
     ```
 
-    Where the `clustername` is the name you specified under `specification.name` in your cluster yaml. Then in `terraform` folder add the file named `sp.yml` and fill it up with the service principal information like so:
+    Where the `clustername` is the name you specified under `specification.name` in your cluster definition yaml. Then in `terraform` folder add the file named `sp.yml` and fill it up with the service principal information like so:
 
     ```yaml
     appId: "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxx"
