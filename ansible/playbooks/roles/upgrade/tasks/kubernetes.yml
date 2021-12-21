@@ -1,6 +1,8 @@
 ---
 - name: Wait for kube-apiserver and get cluster version
-  delegate_to: "{{ groups.kubernetes_master[0] }}"
+  delegate_to: >-
+    {{ inventory_hostname if inventory_hostname in groups.kubernetes_master else
+      groups.kubernetes_master[0] }}
   block:
     - name: k8s | Include wait-for-kube-apiserver.yml
       import_tasks: kubernetes/utils/wait-for-kube-apiserver.yml
