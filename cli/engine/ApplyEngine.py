@@ -142,9 +142,8 @@ class ApplyEngine(Step):
             postgres_available = [x for x in feature_mapping.specification.available_roles if x.name == 'postgresql']
             if postgres_available[0].enabled:
                 for key, roles in feature_mapping.specification.roles_mapping.items():
-                    if ('postgresql') in roles:
-                        if key in components:
-                            next_postgres_node_count = next_postgres_node_count + components[key].count
+                    if ('postgresql') in roles and key in components:
+                        next_postgres_node_count = next_postgres_node_count + components[key].count
 
             if prev_postgres_node_count != next_postgres_node_count:
                     raise Exception("Postgresql scaling is not supported yet. Please revert your 'postgresql' node count to previous value.")
