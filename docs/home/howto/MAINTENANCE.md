@@ -35,9 +35,9 @@ We can also check state of Kubernetes nodes using the command:
 ```shell
 root@primary01:~# kubectl get nodes --kubeconfig=/etc/kubernetes/admin.conf
 NAME                                         STATUS   ROLES                  AGE   VERSION
-primary01                                    Ready    control-plane,master   24h   v1.21.7
-node01                                       Ready    <none>                 23h   v1.21.7
-node02                                       Ready    <none>                 23h   v1.21.7
+primary01                                    Ready    control-plane,master   23h   vx.xx.x
+node01                                       Ready    <none>                 23h   vx.xx.x
+node02                                       Ready    <none>                 23h   vx.xx.x
 ```
 
 We can get additional information about Kubernetes components:
