@@ -20,14 +20,14 @@ use network policies, choose Canal.
 
 Use the following configuration to set up an appropriate CNI plugin:
 
-   ```yaml
-    kind: configuration/kubernetes-master
-    name: default
-    specification:
-      advanced:
-        networking:
-          plugin: flannel
-   ```
+```yaml
+kind: configuration/kubernetes-master
+name: default
+specification:
+  advanced:
+    networking:
+      plugin: flannel
+```
 
 ## Kubernetes applications - overview
 
@@ -41,10 +41,9 @@ Currently, Epiphany provides the following predefined applications which may be 
 - istio
 
 All of them have
-[default configuration](https://github.com/epiphany-platform/epiphany/blob/develop/schema/common/defaults/configuration/applications.yml).
-The common parameters are: name, enabled, namespace, image_path and use_local_image_registry.
-If you set `use_local_image_registry` to `false` in configuration manifest, you have to provide a valid docker image
-path in `image_path`. Kubernetes will try to pull image from `image_path` value externally.  
+[default configuration](https://github.com/epiphany-platform/epiphany/blob/develop/schema/common/defaults/configuration/applications.yml). The common parameters are: name, enabled, namespace, image_path and use_local_image_registry. If you
+set `use_local_image_registry` to `false` in configuration manifest, you have to provide a valid docker image path
+in `image_path`. Kubernetes will try to pull image from `image_path` value externally.  
 To see what version of the application image is in local image registry please refer
 to [components list](../COMPONENTS.md).
 
@@ -99,7 +98,7 @@ When you specify a Pod, it is strongly recommended specifying how much CPU and m
 Requests are what the Container is guaranteed to get. If a Container requests a resource, Kubernetes will only schedule
 it on a node that can give it that resource. Limits make sure a Container never goes above a certain value. For more
 details about the difference between requests and limits,
-see [Kubernetes docs](https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/#requests-and-limits).
+see [Kubernetes docs](https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/#requests-and-limits)
 
 For more information, see the links below:
 
@@ -128,13 +127,13 @@ For more information, see the links below:
 1. Enable Kubernetes master & node, repository and postgresql components in initial configuration manifest (yaml) by
    increasing `count` value.
 
-``` yaml
+```yaml
 kind: epiphany-cluster
 title: Epiphany cluster Config
 provider: azure
 name: default
 specification:
- components:
+  components:
     repository:
       count: 1
     kubernetes_master:
@@ -147,61 +146,62 @@ specification:
 
 2. Enable `applications` in feature-mapping in initial configuration manifest.
 
-``` yaml
+```yaml
 ---
 kind: configuration/feature-mapping
 title: Feature mapping to roles
 name: default
 specification:
   available_roles:
-  - name: applications
-    enabled: true
+    - name: applications
+      enabled: true
 ```
 
 3. Enable required applications by setting `enabled: true` and adjust other parameters in `configuration/applications`
    kind.
 
-The default applications configuration is available [here](https://github.com/epiphany-platform/epiphany/blob/develop/schema/common/defaults/configuration/applications.yml)
+The default applications configuration is
+available [here](https://github.com/epiphany-platform/epiphany/blob/develop/schema/common/defaults/configuration/applications.yml)
 
 Note: To get working with Pgbouncer, Keycloak requires Pgbouncer configuration parameter `POOL_MODE` set to `session`,
 see [Installing Pgbouncer and Pgpool](DATABASES.md#installing-pgbouncer-and-pgpool) section. The reason is that Keycloak
 uses SET SQL statements. For details see [SQL feature map for pooling modes](https://www.pgbouncer.org/features.html).
 
-``` yaml
+```yaml
 ---
 kind: configuration/applications
 title: Kubernetes Applications Config
 name: default
 specification:
   applications:
-  - name: auth-service
-    enabled: true
-    image_path: epiphanyplatform/keycloak:14.0.0
-    use_local_image_registry: true
-    service:
-      name: as-testauthdb
-      port: 30104
-      replicas: 2
-      namespace: namespace-for-auth
-      admin_user: auth-service-username
-      admin_password: PASSWORD_TO_CHANGE
-    database:
-      name: auth-database-name
-      user: auth-db-user
-      password: PASSWORD_TO_CHANGE
+    - name: auth-service
+      enabled: true
+      image_path: epiphanyplatform/keycloak:14.0.0
+      use_local_image_registry: true
+      service:
+        name: as-testauthdb
+        port: 30104
+        replicas: 2
+        namespace: namespace-for-auth
+        admin_user: auth-service-username
+        admin_password: PASSWORD_TO_CHANGE
+      database:
+        name: auth-database-name
+        user: auth-db-user
+        password: PASSWORD_TO_CHANGE
 ```
 
 To set specific database host IP address for Keycloak you have to provide additional parameter `address`:
 
-``` yaml
-    database:
-      address: 10.0.0.2
+```yaml
+database:
+  address: 10.0.0.2
 ```
 
 Note: If `database address` is not specified, epicli assumes that database instance doesn't exist and will create it.
 
-By default, if `database address` is not specified and if Postgres is HA mode, Keycloak uses PGBouncer `ClusterIP` service
-name as database address.  
+By default, if `database address` is not specified and if Postgres is HA mode, Keycloak uses PGBouncer `ClusterIP`
+service name as database address.  
 If Postgres is in standalone mode, and `database address` is not specified, then it uses first Postgres host address
 from `inventory`.
 

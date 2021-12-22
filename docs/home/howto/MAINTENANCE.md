@@ -6,14 +6,14 @@ This part of the documentations covers the topic how to check if each component 
 
 #### - Docker
 
-To verify that Docker services are up and running you can first check the status of the Docker service
-with the following command:
+To verify that Docker services are up and running you can first check the status of the Docker service with the
+following command:
 
 ```shell
 systemctl status docker
 ```
 
-Additionally you can check also if the command:
+Additionally, you can check also if the command:
 
 ```shell
 docker info
@@ -23,7 +23,8 @@ doesn't return any error. You can also find there useful information about your 
 
 #### - Kubernetes
 
-First to check if everything is working fine we need to check verify status of Kubernetes kubelet service with the command:
+First to check if everything is working fine we need to check verify status of Kubernetes kubelet service with the
+command:
 
 ```shell
 systemctl status kubelet
@@ -53,7 +54,8 @@ We can also check status of pods in all namespaces using the command:
 kubectl get pods -A --kubeconfig=/etc/kubernetes/admin.conf
 ```
 
-For more detailed information please refer to [official documentation](https://kubernetes.io/docs/reference/kubectl/overview/)
+For more detailed information please refer
+to [official documentation](https://kubernetes.io/docs/reference/kubectl/overview/)
 
 #### - Keycloak
 
@@ -71,7 +73,8 @@ To check status of HAProxy we can use the command:
 systemctl status haproxy
 ```
 
-Additionally we can check if the application is listening on ports defined in the file haproxy.cfg running netstat command.
+Additionally, we can check if the application is listening on ports defined in the file haproxy.cfg running netstat
+command.
 
 #### - Prometheus
 
@@ -123,7 +126,7 @@ We can check if service is listening on 9200 (API communication port):
 netstat -antup | grep 9200
 ```
 
-We can also check if service is listening on 9300 (nodes coummunication port):
+We can also check if service is listening on 9300 (nodes communication port):
 
 ```shell
 netstat -antup | grep 9300
@@ -175,8 +178,8 @@ systemctl status postgresql
 systemctl status postgresql-10
 ```
 
-where postgresql-10 is only an example, because the number differs from version to version. Please refer to your
-version number in case of using this command.
+where postgresql-10 is only an example, because the number differs from version to version. Please refer to your version
+number in case of using this command.
 
 We can also check if PostgreSQL service is listening at the port 5432:
 
@@ -201,5 +204,5 @@ with command:
 /var/run/postgresql:5432 - accepting connections
 ```
 
-where the path /usr/pgsql-10/bin/pg_isready is only an example, because the number differs from version to version. Please refer to your
-version number in case of using this command.
+where the path /usr/pgsql-10/bin/pg_isready is only an example, because the number differs from version to version.
+Please refer to your version number in case of using this command.
