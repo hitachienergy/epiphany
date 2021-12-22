@@ -15,3 +15,4 @@
   # It looks strange but old and new version has different response syntax for that command :(
   when:
   - (postgres_exporter_current_version.stdout == "(built") or (postgres_exporter_current_version.stdout is version (exporter_defaults.exporter.version, '<'))
+  
