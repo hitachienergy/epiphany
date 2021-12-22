@@ -32,12 +32,12 @@
 
 ### Updated
 
-- Upgrade Flannel to v0.14.0
-- Upgrade Calico and Canal to v3.20.3
-- Upgrade Coredns to v1.8.0
-- Upgrade Kubernetes dashboard to v2.3.1
-- Upgrade Kubernetes metrics-scraper to v1.0.7
-- [#2659](https://github.com/epiphany-platform/epiphany/issues/2659) - Upgrade K8s to v1.21.7
+- [#2660](https://github.com/epiphany-platform/epiphany/issues/2660) - Upgrade K8s to v1.22.4
+  - Upgrade Calico and Canal to v3.20.3
+  - Upgrade Coredns to v1.8.4
+  - Upgrade Flannel to v0.14.0
+  - Upgrade Kubernetes dashboard to v2.3.1
+  - Upgrade Kubernetes metrics-scraper to v1.0.7
 - [#2494](https://github.com/epiphany-platform/epiphany/issues/2494) - Duplicated MOTD after ssh to servers
 - [#1974](https://github.com/epiphany-platform/epiphany/issues/1974) - [documentation] Azure Files Persistent Volume Support
 - [#2454](https://github.com/epiphany-platform/epiphany/issues/2454) - Remove dependencies for K8s v1.17
@@ -62,4 +62,5 @@
 
 ### Known issues
 
+- Upgrading Kubernetes to the latest available version 1.22 breaks the Vault and Istio components as versions are not compatible. The issues are not being addressed as these components are being considered for deprecation and removal in subsequent releases.
 - Kafka exporter for Prometheus: Performance issue on large clusters. We use version 1.4.0 since 1.4.1 and 1.4.2 contain critical bug (see https://github.com/danielqsj/kafka_exporter/issues/273). For release notes, see https://github.com/danielqsj/kafka_exporter/releases.

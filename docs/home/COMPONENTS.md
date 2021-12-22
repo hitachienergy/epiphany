@@ -6,13 +6,13 @@ Note that versions are default versions and can be changed in certain cases thro
 
 | Component                  | Version  | Repo/Website                                          | License                                                           |
 | -------------------------- | -------- | ----------------------------------------------------- | ----------------------------------------------------------------- |
-| Kubernetes                 | 1.21.7   | https://github.com/kubernetes/kubernetes              | [Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0) |
+| Kubernetes                 | 1.22.4   | https://github.com/kubernetes/kubernetes              | [Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0) |
 | Kubernetes Dashboard       | 2.3.1    | https://github.com/kubernetes/dashboard               | [Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0) |
 | Kubernetes metrics-scraper | 1.0.7    | https://github.com/kubernetes-sigs/dashboard-metrics-scraper | [Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0) |
 | Calico                     | 3.20.3   | https://github.com/projectcalico/calico               | [Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0) |
 | Flannel                    | 0.14.0   | https://github.com/coreos/flannel/                    | [Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0)     |
 | Canal                      | 3.20.3   | https://github.com/projectcalico/calico               | [Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0) |
-| Coredns                    | 1.8.0    | https://github.com/coredns/coredns                    | [Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0) |
+| Coredns                    | 1.8.4    | https://github.com/coredns/coredns                    | [Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0) |
 | Kafka                      | 2.6.0    | https://github.com/apache/kafka                       | [Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0) |
 | Zookeeper                  | 3.5.8    | https://github.com/apache/zookeeper                   | [Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0) |
 | RabbitMQ                   | 3.8.9    | https://github.com/rabbitmq/rabbitmq-server           | [Mozilla Public License](https://www.mozilla.org/en-US/MPL/)      |
