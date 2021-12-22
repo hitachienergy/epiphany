@@ -185,6 +185,12 @@ The list does not include ports that are bound to the loopback interface (localh
 
 5. Kibana:
 
+    - protocols:  
+      TLSv1.1,TLSv1.2
+
+    - ciphersuites:  
+      ECDHE-RSA-AES128-GCM-SHA256 ECDHE-RSA-AES256-GCM-SHA384 ECDHE-RSA-AES128-SHA256 ECDHE-RSA-AES256-SHA384 ECDHE-RSA-AES256-SHA ECDHE-RSA-AES128-SHA AES256-GCM-SHA384 AES128-GCM-SHA256 AES256-SHA256 AES128-SHA256 AES256-SHA AES128-SHA
+      
 9. Grafana:
 
 10. RabbitMQ:
