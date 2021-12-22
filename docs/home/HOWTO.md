@@ -45,7 +45,8 @@
   - [How to do Kubernetes RBAC](./howto/KUBERNETES.md#how-to-do-kubernetes-rbac)
   - [How to set resource requests and limits for Containers](./howto/KUBERNETES.md#how-to-set-resource-requests-and-limits-for-containers)
   - [How to tunnel Kubernetes dashboard from remote kubectl to your PC](./howto/KUBERNETES.md#how-to-tunnel-kubernetes-dashboard-from-remote-kubectl-to-your-pc)
-  - [Kubernetes persistent storage](./howto/PERSISTENT_STORAGE.md)
+  - [Persistent storage](./howto/kubernetes/PERSISTENT_STORAGE.md)
+  - [Certificate management](./howto/kubernetes/CERTIFICATES.md)
 
 - [Helm](./howto/HELM.md)
   - [Helm "system" chart repository](./howto/HELM.md#helm-system-chart-repository)
@@ -82,7 +83,6 @@
   - [How to turn on Hashicorp Vault integration with k8s](./howto/SECURITY.md#how-to-turn-on-hashicorp-vault-integration-with-k8s)
 
 - [Databases](./howto/DATABASES.md)
-  - [How to migrate from PostgreSQL installed from Software Collections to installed from PostgreSQL repository](./howto/DATABASES.md#how-to-migrate-from-postgresql-installed-from-software-collections-to-installed-from-postgresql-repository)
   - [How to configure PostgreSQL](./howto/DATABASES.md#how-to-configure-postgresql)
   - [How to configure PostgreSQL replication](./howto/DATABASES.md#how-to-set-up-postgresql-ha-replication-with-repmgr-cluster)
   - [How to set up PostgreSQL connection pooling](./howto/DATABASES.md#how-to-set-up-postgresql-connection-pooling)
