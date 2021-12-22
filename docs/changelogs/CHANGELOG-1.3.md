@@ -32,12 +32,12 @@
 
 ### Updated
 
-- Upgrade Flannel to v0.14.0
-- Upgrade Calico and Canal to v3.20.3
-- Upgrade Coredns to v1.8.4
-- Upgrade Kubernetes dashboard to v2.3.1
-- Upgrade Kubernetes metrics-scraper to v1.0.7
 - [#2660](https://github.com/epiphany-platform/epiphany/issues/2660) - Upgrade K8s to v1.22.4
+  - Upgrade Calico and Canal to v3.20.3
+  - Upgrade Coredns to v1.8.4
+  - Upgrade Flannel to v0.14.0
+  - Upgrade Kubernetes dashboard to v2.3.1
+  - Upgrade Kubernetes metrics-scraper to v1.0.7
 - [#2494](https://github.com/epiphany-platform/epiphany/issues/2494) - Duplicated MOTD after ssh to servers
 - [#1974](https://github.com/epiphany-platform/epiphany/issues/1974) - [documentation] Azure Files Persistent Volume Support
 - [#2454](https://github.com/epiphany-platform/epiphany/issues/2454) - Remove dependencies for K8s v1.17
@@ -48,6 +48,7 @@
 - [#2748](https://github.com/epiphany-platform/epiphany/issues/2748) - Upgrade Kafka exporter to the version 1.4.0
 - [#2750](https://github.com/epiphany-platform/epiphany/issues/2750) - Upgrade JMX exporter to the newest version
 - [#2699](https://github.com/epiphany-platform/epiphany/issues/2699) - Upgrade Grafana to 8.3.2
+- [#2661](https://github.com/epiphany-platform/epiphany/issues/2661) - Update K8s documentation according to the latest version Epiphany supports
 
 ### Removed
 

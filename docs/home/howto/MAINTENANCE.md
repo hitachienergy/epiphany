@@ -6,14 +6,14 @@ This part of the documentations covers the topic how to check if each component 
 
 #### - Docker
 
-To verify that Docker services are up and running you can first check the status of the Docker service
-with the following command:
+To verify that Docker services are up and running you can first check the status of the Docker service with the
+following command:
 
 ```shell
 systemctl status docker
 ```
 
-Additionally you can check also if the command:
+Additionally, you can check also if the command:
 
 ```shell
 docker info
@@ -23,7 +23,8 @@ doesn't return any error. You can also find there useful information about your 
 
 #### - Kubernetes
 
-First to check if everything is working fine we need to check verify status of Kubernetes kubelet service with the command:
+First to check if everything is working fine we need to check verify status of Kubernetes kubelet service with the
+command:
 
 ```shell
 systemctl status kubelet
@@ -33,17 +34,17 @@ We can also check state of Kubernetes nodes using the command:
 
 ```shell
 root@primary01:~# kubectl get nodes --kubeconfig=/etc/kubernetes/admin.conf
-NAME                                         STATUS   ROLES    AGE   VERSION
-primary01                                    Ready    master   24h   v1.17.7
-node01                                       Ready    <none>   23h   v1.17.7
-node02                                       Ready    <none>   23h   v1.17.7
+NAME                                         STATUS   ROLES                  AGE   VERSION
+primary01                                    Ready    control-plane,master   23h   vx.xx.x
+node01                                       Ready    <none>                 23h   vx.xx.x
+node02                                       Ready    <none>                 23h   vx.xx.x
 ```
 
 We can get additional information about Kubernetes components:
 
 ```shell
 root@primary01:~# kubectl cluster-info --kubeconfig=/etc/kubernetes/admin.conf
-Kubernetes master is running at https://primary01:6443
+Kubernetes control plane is running at https://primary01:6443
 CoreDNS is running at https://primary01:6443/api/v1/namespaces/kube-system/services/kube-dns:dns/proxy
 ```
 
@@ -53,17 +54,8 @@ We can also check status of pods in all namespaces using the command:
 kubectl get pods -A --kubeconfig=/etc/kubernetes/admin.conf
 ```
 
-We can get additional information about components statuses:
-
-```shell
-root@primary01:~# kubectl get cs --kubeconfig=/etc/kubernetes/admin.conf
-NAME                 STATUS    MESSAGE             ERROR
-controller-manager   Healthy   ok
-scheduler            Healthy   ok
-etcd-0               Healthy   {"health":"true"}
-```
-
-For more detailed information please refer to [official documentation](https://kubernetes.io/docs/reference/kubectl/overview/)
+For more detailed information please refer
+to [official documentation](https://kubernetes.io/docs/reference/kubectl/overview/)
 
 #### - Keycloak
 
@@ -81,7 +73,8 @@ To check status of HAProxy we can use the command:
 systemctl status haproxy
 ```
 
-Additionally we can check if the application is listening on ports defined in the file haproxy.cfg running netstat command.
+Additionally, we can check if the application is listening on ports defined in the file haproxy.cfg running netstat
+command.
 
 #### - Prometheus
 
@@ -133,7 +126,7 @@ We can check if service is listening on 9200 (API communication port):
 netstat -antup | grep 9200
 ```
 
-We can also check if service is listening on 9300 (nodes coummunication port):
+We can also check if service is listening on 9300 (nodes communication port):
 
 ```shell
 netstat -antup | grep 9300
@@ -185,8 +178,8 @@ systemctl status postgresql
 systemctl status postgresql-10
 ```
 
-where postgresql-10 is only an example, because the number differs from version to version. Please refer to your
-version number in case of using this command.
+where postgresql-10 is only an example, because the number differs from version to version. Please refer to your version
+number in case of using this command.
 
 We can also check if PostgreSQL service is listening at the port 5432:
 
@@ -211,5 +204,5 @@ with command:
 /var/run/postgresql:5432 - accepting connections
 ```
 
-where the path /usr/pgsql-10/bin/pg_isready is only an example, because the number differs from version to version. Please refer to your
-version number in case of using this command.
+where the path /usr/pgsql-10/bin/pg_isready is only an example, because the number differs from version to version.
+Please refer to your version number in case of using this command.
