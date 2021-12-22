@@ -1,32 +1,6 @@
 ---
 - name: Check if upgrade from current K8s version is supported
   block:
-    - name: Check disk space for single machine installation
-      when: "'repository' in group_names"
-      block:
-        - name: Get filesystem for /var directory
-          shell: |-
-            set -o pipefail && \
-            df --output=source /var | tail -1
-          become: true
-          changed_when: false
-          register: var_data_disk
-          args:
-            executable: /bin/bash
-
-        - name: Set facts on space on {{ var_data_disk.stdout }}
-          set_fact:
-            var_dir_fs_free_mb: "{{ (mount.size_available / 1024 / 1024) | int }}"
-          vars:
-            mount: "{{ ansible_mounts | selectattr('device', '==', var_data_disk.stdout) | first }}"
-
-        - name: Check free disk space
-          assert:
-            that: var_dir_fs_free_mb|int >= 16384
-            fail_msg: >-
-              K8s control plane node that hosts repository must have more than 16 GB free disk space
-            quiet: true
-
     - name: Get K8s cluster version
       become: true
       command: kubectl version --output yaml
@@ -55,4 +29,3 @@
           You have some pods that are not created by controller. Please remove them and then start upgrade once again.
         quiet: true
   run_once: true
-  delegate_to: "{{ groups.kubernetes_master[0] }}"

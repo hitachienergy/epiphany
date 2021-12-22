@@ -1,4 +1,11 @@
 ---
+- name: Repository checks
+  include_tasks: roles/repository/tasks/preflight/upgrade.yml
+  when:
+    - groups.repository is defined
+    - groups.repository | length == 1
+    - "'repository' in group_names"
+
 - name: Kubernetes checks
   include_tasks: roles/kubernetes_master/tasks/preflight/upgrade.yml
   when:
