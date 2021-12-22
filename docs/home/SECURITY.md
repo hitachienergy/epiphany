@@ -167,7 +167,6 @@ The list does not include ports that are bound to the loopback interface (localh
     - ciphersuites:  
       ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20-POLY1305:DHE-RSA-AES128-GCM-SHA256:DHE-RSA-AES256-GCM-SHA384
 
-
 3. Kafka:
 
     - protocols:  
@@ -176,7 +175,13 @@ The list does not include ports that are bound to the loopback interface (localh
     - ciphersuites:  
       Depends on version of Java and for Java versions older than 8u161 on JCE policy file. From update 8u161 JCE policy file is not needed to enable restricted ciphers as all ciphers are enabled by default. Documentation about ciphers is available under [link](https://docs.oracle.com/javase/8/docs/technotes/guides/security/SunProviders.html).
 
-4. Elasticsearch:
+4. Open Distro:
+
+    - protocols:  
+      TLSv1.1,TLSv1.2
+
+    - ciphersuites:  
+      ECDHE-RSA-AES256-GCM-SHA384 ECDHE-RSA-AES128-GCM-SHA256 DHE-RSA-AES256-GCM-SHA384 DHE-RSA-AES128-GCM-SHA256 ECDHE-RSA-AES256-SHA384  ECDHE-RSA-AES128-SHA256 DHE-RSA-AES256-SHA256 DHE-RSA-AES128-SHA256 ECDHE-RSA-AES256-SHA ECDHE-RSA-AES128-SHA DHE-RSA-AES256-SHA DHE-RSA-AES128-SHA
 
 5. Kibana:
 
