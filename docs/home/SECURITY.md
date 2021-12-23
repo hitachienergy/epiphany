@@ -147,7 +147,10 @@ The list does not include ports that are bound to the loopback interface (localh
 
     - 8200 - REST API
 
-### Ciphers used by components in Epiphany
+### Protocols and ciphers used by components in Epiphany
+
+Below you can find list of cipersuites and protocols used for communication set in Epiphany on per component basis. This
+doesn't contains information about deprecated components: Apache Ignite, Istio, Hashicorp Vault.
 
 1. OS services:
 
@@ -207,10 +210,7 @@ The list does not include ports that are bound to the loopback interface (localh
     - ciphersuites:  
       ECDHE-ECDSA-AES256-GCM-SHA384 ECDHE-RSA-AES256-GCM-SHA384 ECDH-ECDSA-AES256-GCM-SHA384 ECDH-RSA-AES256-GCM-SHA384 DHE-RSA-AES256-GCM-SHA384 DHE-DSS-AES256-GCM-SHA384 ECDHE-ECDSA-AES128-GCM-SHA256 ECDHE-RSA-AES128-GCM-SHA256 ECDH-ECDSA-AES128-GCM-SHA256 ECDH-RSA-AES128-GCM-SHA256 DHE-RSA-AES128-GCM-SHA256 DHE-DSS-AES128-GCM-SHA256
 
-11. PostgreSQL:
-
-
-12. Kubernetes:
+11. Kubernetes:
 
     - protocols:  
       TLSv1.2
@@ -222,18 +222,13 @@ The list does not include ports that are bound to the loopback interface (localh
 
 13. Kubernetes apps:
 
+    - Keycloak:
 
+        - protocols:  
+          TLSv1.2
 
-
-
-15. Ignite:
-
-16. Repository:
-
-
-17. Hashicorp Vault:
-
-
+        - ciphers:  
+          ECDHE-RSA-AES256-GCM-SHA384 ECDHE-RSA-AES256-SHA384 ECDHE-RSA-AES256-SHA DHE-RSA-AES256-GCM-SHA384 DHE-RSA-AES256-SHA256 DHE-RSA-AES256-SHA AES256-GCM-SHA384 AES256-SHA256 AES256-SHA ECDHE-RSA-AES128-GCM-SHA256 ECDHE-RSA-AES128-SHA256 ECDHE-RSA-AES128-SHA DHE-RSA-AES128-GCM-SHA256 DHE-RSA-AES128-SHA256 DHE-RSA-AES128-SHA AES128-GCM-SHA256 AES128-SHA256 AES128-SHA
 
 #### Notes
 
