@@ -34,7 +34,7 @@
                               | list
                               | first }}
 
-    - name: Reinstall Node Exporter as DaemonSet within for K8s as cloud service mode
+    - name: Reinstall Node Exporter as DaemonSet for K8s as cloud service mode
       when:
         - node_exporter_release_exists
       block:
