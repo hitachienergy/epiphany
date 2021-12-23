@@ -1,4 +1,5 @@
-- name: ensure group {{ admin_user.name }} exists
+---
+- name: Ensure group {{ admin_user.name }} exists
   group:
     name: "{{ admin_user.name }}"
     state: present
@@ -8,7 +9,7 @@
     name: "{{ admin_user.name }}"
     shell: /bin/bash
     groups: "{{ admin_user.name }},wheel"
-    append: yes
+    append: true
   when: ansible_os_family == "RedHat"
 
 - name: Ensure user {{ admin_user.name }} exists, has correct shell, and groups, and no password
@@ -16,7 +17,7 @@
     name: "{{ admin_user.name }}"
     shell: /bin/bash
     groups: "{{ admin_user.name }},sudo"
-    append: yes
+    append: true
   when: ansible_os_family == "Debian"
 
 - name: Set NOPASSWD in /etc/sudoers for wheel group
