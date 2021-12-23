@@ -33,12 +33,12 @@
 
 ### Updated
 
-- Upgrade Node-Exporter to v1.3.1
 - Upgrade Flannel to v0.14.0
 - Upgrade Calico and Canal to v3.20.3
 - Upgrade Coredns to v1.8.0
 - Upgrade Kubernetes dashboard to v2.3.1
 - Upgrade Kubernetes metrics-scraper to v1.0.7
+- [#2747](https://github.com/epiphany-platform/epiphany/issues/2747) - Upgrade Node-Exporter to v1.3.1
 - [#2659](https://github.com/epiphany-platform/epiphany/issues/2659) - Upgrade K8s to v1.21.7
 - [#2494](https://github.com/epiphany-platform/epiphany/issues/2494) - Duplicated MOTD after ssh to servers
 - [#1974](https://github.com/epiphany-platform/epiphany/issues/1974) - [documentation] Azure Files Persistent Volume Support
