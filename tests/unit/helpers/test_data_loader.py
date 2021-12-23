@@ -22,7 +22,7 @@ TEST_MINIMAL_CLUSTER_CONFIG = {
         'admin_user':
         {
             'name': 'ubuntu',
-            'key_path': '/user/.ssh/epiphany-operations/id_rsa'
+            'key_path': '/shared/.ssh/epiphany-operations/id_rsa'
         },
         'cloud':
         {
