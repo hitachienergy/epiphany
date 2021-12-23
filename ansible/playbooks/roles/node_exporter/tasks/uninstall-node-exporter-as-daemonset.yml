@@ -6,4 +6,4 @@
   become: false
   run_once: true
 
-  command: helm uninstall -n {{ node_exporter_release_ns }} {{ node_exporter_helm_chart_name }}
+  command: "helm uninstall -n {{ node_exporter_release_ns }} {{ node_exporter_helm_chart_name }}"
