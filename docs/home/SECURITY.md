@@ -147,7 +147,7 @@ The list does not include ports that are bound to the loopback interface (localh
 
     - 8200 - REST API
 
-### Protocols and ciphers used by components in Epiphany
+### Connection protocols and ciphers used by components in Epiphany
 
 Below you can find list of cipersuites and protocols used for communication set in Epiphany on per component basis. This
 doesn't contains information about deprecated components: Apache Ignite, Istio, Hashicorp Vault.
