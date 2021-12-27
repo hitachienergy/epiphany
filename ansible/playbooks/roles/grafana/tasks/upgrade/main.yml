@@ -71,3 +71,6 @@
       file:
         path: "{{ upgrade_defaults.state_file_path }}"
         state: absent
+
+- name: Run password change
+  include_tasks: upgrade/password_change.yml
