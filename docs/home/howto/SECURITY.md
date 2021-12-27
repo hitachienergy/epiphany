@@ -249,6 +249,33 @@ specification:
 Please be careful about boolean values as they need to be double quoted
 and written in lowercase form. Otherwise RabbitMQ startup will fail.
 
+## How to use TLS/SSL certificate with Kibana
+
+For this moment is not possible to automatically expose Kibana via https with using of Epiphany, but this can be easily performed
+manually.
+
+First you need to geenerate certificate in .pem format.
+
+After that you need to add to your kibana configuration file in:
+
+```bash
+/etc/kibana/kibana.yml
+```
+
+lines similar to those from the example below:
+
+```
+server.ssl.enabled: true
+server.ssl.certificate: /path_to_your_certificate.pem
+server.ssl.key: /path_to_your_key.pem
+```
+
+To verify if the Kibana server is serving you can use for example command:
+
+```bash
+openssl s_client -connect your_ip:5601
+```
+
 ## How to enable AWS disk encryption
 
 ### EC2 Root volumes
