@@ -254,7 +254,7 @@ and written in lowercase form. Otherwise RabbitMQ startup will fail.
 For this moment is not possible to automatically expose Kibana via https with using of Epiphany, but this can be easily performed
 manually.
 
-First you need to geenerate certificate in .pem format.
+First you need to generate certificate in .pem format.
 
 After that, you need to change Kibana configuration file (```/etc/kibana/kibana.yml```) by adding and adjusting following lines:
 
