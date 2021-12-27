@@ -6,7 +6,7 @@
   roles:
     - postflight
 
-- name: Update status in epicli execution history file
+- name: Update status in epicli execution history file and set login message
   hosts: all
   gather_facts: false
   become: true
@@ -33,3 +33,10 @@
       vars:
         _new_content:
           deployments: "{{ [history_latest_entry] + history_other_entries }}"
+
+    - name: Set login messgae
+      include_role:
+        name: common
+        tasks_from: login-message.yml
+      vars:
+        _version: "{{ history_latest_entry.version }}"

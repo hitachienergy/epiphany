@@ -11,8 +11,9 @@
       changed_when: false
 
     - name: k8s/master | Patch kubeadm-config configmap (update-kubeadm-image-repository.yml)
-      when:
-        - _image_repository_updated != _image_repository  # skip the task if nothing changed
+      # skip the task if nothing changed
+      # starting from K8s v1.21 (Coredns v1.8) dns.imageRepository is updated
+      when: _image_repository_updated != _image_repository or version is version('1.21', '>=')
       command: |
         kubectl patch configmap kubeadm-config \
           --namespace kube-system \
@@ -21,7 +22,6 @@
         # Render an altered kubeadm-config configmap document
         KUBEADM_CONFIGMAP_DOCUMENT: >-
           {{ _document | combine(_update2, recursive=true) | to_nice_yaml(indent=2) }}
-
       vars:
         # Parse yaml payload
         _document: >-
@@ -42,11 +42,15 @@
           {%- endif -%}
 
         # Prepare the cluster config patch
-        _update1:
-          imageRepository: "{{ _image_repository_updated }}"
+        _update1: |-
+          imageRepository: {{ _image_repository_updated }}
+          {% if version is version('1.21', '>=') %}
+          dns:
+            imageRepository: {{ _image_repository_updated }}/coredns
+          {% endif %}
 
         _cluster_config_updated: >-
-          {{ _cluster_config | combine(_update1, recursive=true) }}
+          {{ _cluster_config | combine(_update1|from_yaml, recursive=true) }}
 
         # Prepare the final update for the whole document
         _update2:

@@ -24,6 +24,13 @@ apiServer:
 {% for key, value in specification.advanced.api_server_args.items() %}
     {{ key }}: "{{ value }}"
 {% endfor %}
+    audit-log-path: "/var/log/kubernetes/audit/audit.log"
+  extraVolumes:
+    - name: apiserver-audit-log
+      hostPath: /var/log/kubernetes/audit/
+      mountPath: /var/log/kubernetes/audit/
+      readOnly: false
+      pathType: DirectoryOrCreate
 
 controllerManager:
   extraArgs: # https://kubernetes.io/docs/reference/command-line-tools-reference/kube-controller-manager/
@@ -41,6 +48,10 @@ networking:
   dnsDomain: {{ specification.advanced.networking.dnsDomain }}
   podSubnet: "10.244.0.0/16"
   serviceSubnet: {{ specification.advanced.networking.serviceSubnet }}
+
+# https://github.com/kubernetes/kubeadm/issues/2525
+dns:
+  imageRepository: {{ image_registry_address }}/{{ specification.advanced.imageRepository }}/coredns
 
 imageRepository: {{ image_registry_address }}/{{ specification.advanced.imageRepository }}
 

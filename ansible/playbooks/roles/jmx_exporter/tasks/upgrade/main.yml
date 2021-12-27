@@ -38,7 +38,7 @@
     - name: Avoiding risk of downgrade
       when: jmx_exporter_version.old is not version( jmx_exporter_version.new, '<' )
       debug:
-        msg: "Skipping upgrade: JMX Exporter in newer version already installed!"
+        msg: "Skipping upgrade: JMX Exporter in the same or newer version already installed!"
 
 - name: Upgrade | jmx-exporter
   when: >
