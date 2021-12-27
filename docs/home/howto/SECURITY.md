@@ -256,13 +256,7 @@ manually.
 
 First you need to geenerate certificate in .pem format.
 
-After that you need to add to your kibana configuration file in:
-
-```bash
-/etc/kibana/kibana.yml
-```
-
-lines similar to those from the example below:
+After that, you need to change Kibana configuration file (```/etc/kibana/kibana.yml```) by adding and adjusting following lines:
 
 ```
 server.ssl.enabled: true
