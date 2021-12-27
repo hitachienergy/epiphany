@@ -16,7 +16,7 @@ changes made in settings of your antivirus/antimalware solution.
 
 ### Users and roles created by epiphany
 
-By default, Epiphany creates user operations that is used to connect to machines with admin rights on every machine.
+By default, Epiphany creates user 'operations' that is used to connect to machines with admin rights on every machine.
 This setting can be changed in Epiphany yaml configuration files.
 
 Additional to users created by each component Epiphany creates also users and groups:
