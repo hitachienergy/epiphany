@@ -15,6 +15,7 @@
 - [#2644](https://github.com/epiphany-platform/epiphany/issues/2644) - Add validation to check hostnames for on-prem deployment
 - [#2703](https://github.com/epiphany-platform/epiphany/issues/2703) - Add tests for docker and kubelet cgroup driver
 - [#1076](https://github.com/epiphany-platform/epiphany/issues/1076) - Add sorting entries in the inventory file
+- [#1076](https://github.com/epiphany-platform/epiphany/issues/2595) - Document connection protocols and ciphers
 
 ### Fixed
 
