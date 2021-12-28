@@ -38,3 +38,4 @@
   systemd:
     state: started
     name: postgres-exporter.service
+
