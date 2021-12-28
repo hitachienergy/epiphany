@@ -4,7 +4,7 @@ from ansible.parsing.dataloader import DataLoader
 from ansible.inventory.manager import InventoryManager
 
 from cli.helpers.Step import Step
-from cli.helpers.doc_list_helpers import select_single, select_all
+from cli.helpers.doc_list_helpers import select_single, select_all, select_first
 from cli.helpers.build_io import save_manifest, load_manifest, get_inventory_path, get_manifest_path, get_build_path
 from cli.helpers.yaml_helpers import safe_load_all
 from cli.helpers.Log import Log
@@ -17,6 +17,7 @@ from cli.engine.terraform.TerraformTemplateGenerator import TerraformTemplateGen
 from cli.engine.terraform.TerraformFileCopier import TerraformFileCopier
 from cli.engine.terraform.TerraformRunner import TerraformRunner
 from cli.engine.ansible.AnsibleRunner import AnsibleRunner
+from cli.helpers.data_loader import load_schema_obj, types
 
 
 class ApplyEngine(Step):
@@ -123,25 +124,29 @@ class ApplyEngine(Step):
                     raise Exception("ControlPlane downscale is not supported yet. Please revert your 'kubernetes_master' count to previous value or increase it to scale up Kubernetes.")
 
     def assert_no_postgres_nodes_number_change(self):
-        components = self.cluster_model.specification.components
+        feature_mapping = select_first(self.input_docs, lambda x: x.kind == 'configuration/feature-mapping')
+        if feature_mapping:
+            with DefaultMerger([feature_mapping]) as doc_merger:
+                feature_mapping = doc_merger.run()
+            feature_mapping = feature_mapping[0]
+        else:
+            feature_mapping = load_schema_obj(types.DEFAULT, 'common', 'configuration/feature-mapping')
 
-        cluster_name = self.cluster_model.specification.name
-        inventory_path = get_inventory_path(cluster_name)
+        components = self.cluster_model.specification.components
+        inventory_path = get_inventory_path(self.cluster_model.specification.name)
 
         if os.path.isfile(inventory_path):
+            next_postgres_node_count = 0
             existing_inventory = InventoryManager(loader=DataLoader(), sources=inventory_path)
+            prev_postgres_node_count = len(existing_inventory.list_hosts(pattern='postgresql'))
+            postgres_available = [x for x in feature_mapping.specification.available_roles if x.name == 'postgresql']
+            if postgres_available[0].enabled:
+                for key, roles in feature_mapping.specification.roles_mapping.items():
+                    if ('postgresql') in roles and key in components:
+                        next_postgres_node_count = next_postgres_node_count + components[key].count
 
-            both_present = all([
-                'postgresql' in existing_inventory.list_groups(),
-                'postgresql' in components,
-            ])
-
-            if both_present:
-                prev_postgres_count = len(existing_inventory.list_hosts(pattern='postgresql'))
-                next_postgres_count = int(components['postgresql']['count'])
-
-                if prev_postgres_count != next_postgres_count:
-                    raise Exception("Postgresql scaling is not supported yet. Please revert your 'postgresql' count to previous value.")
+            if prev_postgres_node_count != next_postgres_node_count:
+                    raise Exception("Postgresql scaling is not supported yet. Please revert your 'postgresql' node count to previous value.")
 
     def assert_consistent_os_family(self):
         # Before this issue https://github.com/epiphany-platform/epiphany/issues/195 gets resolved,

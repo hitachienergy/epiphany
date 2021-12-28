@@ -6,7 +6,7 @@ specification:
   name: name
   admin_user:
     name: operations # YOUR-ADMIN-USERNAME
-    key_path: /user/.ssh/epiphany-operations/id_rsa # YOUR-SSH-KEY-PATH
+    key_path: /shared/.ssh/epiphany-operations/id_rsa # YOUR-SSH-KEY-PATH
   components:
     repository:
       count: 1
