@@ -18,6 +18,7 @@ specification:
     network:
       use_network_security_groups: True
     default_os_image: default
+    hostname_domain_extension: '' # Domain name that will be added to every machines hostname with a . seperator
   components:
     kubernetes_master:
       count: 1

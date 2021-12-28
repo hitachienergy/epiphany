@@ -1,0 +1,18 @@
+---
+# Before version 1.3 Epiphany updated /etc/motd file, so this task is necessary for upgrades
+# Can be removed after 1.2 deprecation
+- name: Truncate /etc/motd file
+  copy:
+    dest: /etc/motd
+    content: ""
+    force: true
+
+# motd is not used as Ubuntu has its own update-motd framework for dynamic motd generation
+# while for RedHat there is only /etc/motd that doesn't support simple configuration for colored output
+- name: Configure login message
+  template:
+    src: login-message.sh.j2
+    dest: /etc/profile.d/login-message.sh
+    mode: u=rwx,go=rx
+    owner: root
+    group: root
