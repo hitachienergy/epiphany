@@ -206,7 +206,7 @@ doesn't contain information about potentially deprecated components: Apache Igni
       ECDHE-RSA-AES256-SHA ECDHE-RSA-AES128-SHA AES256-GCM-SHA384 AES128-GCM-SHA256 AES256-SHA256 AES128-SHA256
       AES256-SHA AES128-SHA
 
-9. Grafana:
+6. Grafana:
 
     - protocols:  
       TLSv1.2
@@ -215,7 +215,7 @@ doesn't contain information about potentially deprecated components: Apache Igni
       ECDHE-RSA-AES128-GCM-SHA256 ECDHE-RSA-AES256-GCM-SHA384 ECDHE-RSA-AES128-SHA ECDHE-RSA-AES256-SHA
       AES128-GCM-SHA256 AES256-GCM-SHA384 AES128-SHA AES256-SHA
 
-10. RabbitMQ:
+7. RabbitMQ:
 
     - protocols:  
       TLSv1.3, TLSv1.2
@@ -225,7 +225,7 @@ doesn't contain information about potentially deprecated components: Apache Igni
       DHE-RSA-AES256-GCM-SHA384 DHE-DSS-AES256-GCM-SHA384 ECDHE-ECDSA-AES128-GCM-SHA256 ECDHE-RSA-AES128-GCM-SHA256
       ECDH-ECDSA-AES128-GCM-SHA256 ECDH-RSA-AES128-GCM-SHA256 DHE-RSA-AES128-GCM-SHA256 DHE-DSS-AES128-GCM-SHA256
 
-11. Kubernetes:
+8. Kubernetes:
 
     - protocols:  
       TLSv1.2
@@ -234,8 +234,7 @@ doesn't contain information about potentially deprecated components: Apache Igni
       ECDHE-RSA-AES256-GCM-SHA384 ECDHE-RSA-AES256-SHA AES256-GCM-SHA384 AES256-SHA ECDHE-RSA-AES128-GCM-SHA256
       ECDHE-RSA-AES128-SHA AES128-GCM-SHA256 AES128-SHA ECDHE-RSA-DES-CBC3-SHA DES-CBC3-SHA
 
-
-13. Kubernetes apps:
+9. Kubernetes apps:
 
     - Keycloak:
 
