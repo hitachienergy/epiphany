@@ -15,6 +15,7 @@
 - [#2644](https://github.com/epiphany-platform/epiphany/issues/2644) - Add validation to check hostnames for on-prem deployment
 - [#2703](https://github.com/epiphany-platform/epiphany/issues/2703) - Add tests for docker and kubelet cgroup driver
 - [#1076](https://github.com/epiphany-platform/epiphany/issues/1076) - Add sorting entries in the inventory file
+- [#2785](https://github.com/epiphany-platform/epiphany/issues/2785) - Add configuration option to Keycloak for PROXY_ADDRESS_FORWARDING env. variable
 - [#2814](https://github.com/epiphany-platform/epiphany/issues/2814) - Add description how to enable TLS in Kibana
 - [#1076](https://github.com/epiphany-platform/epiphany/issues/2595) - Document connection protocols and ciphers
 
