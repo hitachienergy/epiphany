@@ -25,7 +25,7 @@ resource "azurerm_virtual_machine" "{{ specification.name }}" {
   }
 
   os_profile {
-    computer_name  = "{{ specification.name }}"
+    computer_name  = "{{ specification.hostname }}"
     admin_username = "{{ specification.admin_username }}"
     {%- if specification.os_type == "windows" %}
     admin_password = "{{ specification.admin_password }}"
