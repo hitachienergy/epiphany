@@ -215,7 +215,7 @@ https://packages.elastic.co/curator/5/debian9/pool/main/e/elasticsearch-curator/
 # Grafana package is not downloaded from repository since it was not reliable (issue #2449)
 https://dl.grafana.com/oss/release/grafana_8.3.2_amd64.deb
 # --- Exporters ---
-https://github.com/danielqsj/kafka_exporter/releases/download/v1.4.2/kafka_exporter-1.4.2.linux-amd64.tar.gz
+https://github.com/danielqsj/kafka_exporter/releases/download/v1.4.0/kafka_exporter-1.4.0.linux-amd64.tar.gz
 https://repo1.maven.org/maven2/io/prometheus/jmx/jmx_prometheus_javaagent/0.16.1/jmx_prometheus_javaagent-0.16.1.jar
 https://github.com/prometheus/node_exporter/releases/download/v1.3.1/node_exporter-1.3.1.linux-amd64.tar.gz
 https://github.com/prometheus-community/postgres_exporter/releases/download/v0.9.0/postgres_exporter-0.9.0.linux-amd64.tar.gz
@@ -251,8 +251,8 @@ https://grafana.com/api/dashboards/4279/revisions/4/download grafana_dashboard_4
 https://grafana.com/api/dashboards/1860/revisions/23/download grafana_dashboard_1860.json
 # Kafka Exporter Overview
 https://grafana.com/api/dashboards/7589/revisions/5/download grafana_dashboard_7589.json
-# HAproxy Servers | HAproxy
-https://grafana.com/api/dashboards/367/revisions/3/download grafana_dashboard_367.json
+# HaProxy backend (or frontend/servers)
+https://grafana.com/api/dashboards/789/revisions/1/download grafana_dashboard_789.json
 # Docker and Host Monitoring w/ Prometheus
 https://grafana.com/api/dashboards/179/revisions/7/download grafana_dashboard_179.json
 # Kubernetes pod and cluster monitoring (via Prometheus)

@@ -1,5 +1,5 @@
 ---
-- name: "Check if Alertmanager is enabled"
+- name: Check if Alertmanager is enabled
   set_fact:
     is_alertmanager_enabled: "{{ specification.alertmanager.enable | bool and (specification.alertmanager.config.receivers | length>0 ) }}"
 
