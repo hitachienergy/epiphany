@@ -1,0 +1,11 @@
+---
+grafana_version: 8.3.2
+
+grafana_package:
+  filename:
+    Debian:
+      aarch64: null
+      x86_64: grafana_8.3.2_amd64.deb
+    RedHat:
+      aarch64: grafana-8.3.2-1.aarch64.rpm
+      x86_64: grafana-8.3.2-1.x86_64.rpm

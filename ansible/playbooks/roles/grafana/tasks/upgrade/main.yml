@@ -1,0 +1,73 @@
+---
+- name: Get information on installed packages as facts
+  package_facts:
+    manager: auto
+
+  when: ansible_facts.packages is undefined
+- name: Include new version of defaults
+  include_vars:
+    file: defaults/versions.yml
+    name: grafana_versions
+
+- name: Include upgrade defaults
+  include_vars:
+    file: defaults/upgrade.yml
+    name: upgrade_defaults
+
+- name: Assert that grafana package is installed
+  assert:
+    that: ansible_facts.packages['grafana'] is defined
+    fail_msg:
+      - grafana package not found, nothing to upgrade.
+      - Re-apply your configuration or remove grafana group from Ansible inventory.
+    quiet: true
+
+# If state file exists it means the previous run failed
+- name: Check for upgrade state file
+  stat:
+    path: "{{ upgrade_defaults.state_file_path }}"
+    get_attributes: false
+    get_checksum: false
+    get_mime: false
+  register: state_file_status
+
+- name: Set Grafana version facts
+  set_fact:
+    grafana_installed_version: "{{ ansible_facts.packages['grafana'][0].version }}"
+    grafana_target_version: "{{ grafana_versions.grafana_version }}"
+
+- name: Print versions
+  debug:
+    msg:
+      - "Installed version: {{ grafana_installed_version }}"
+      - "Target version: {{ grafana_target_version }}"
+
+- name: Upgrade Grafana
+  when: grafana_target_version is version(grafana_installed_version, '>')
+     or state_file_status.stat.exists
+  block:
+    - name: Create upgrade state file
+      copy:
+        dest: "{{ upgrade_defaults.state_file_path }}"
+        content: Upgrade started
+        mode: u=rw,g=r,o=
+
+    - name: Stop Grafana service
+      systemd:
+        state: stopped
+        name: grafana-server
+
+    # Since we do not manage custom resources like plugins (it's up to the user), upgrading grafana by just installing new binary is considered complete here.
+    # https://grafana.com/docs/grafana/latest/installation/upgrading/
+    - name: Run installation tasks
+      include_tasks: install.yml
+
+    - name: Start Grafana service
+      systemd:
+        state: started
+        name: grafana-server
+
+    - name: Remove upgrade state file
+      file:
+        path: "{{ upgrade_defaults.state_file_path }}"
+        state: absent

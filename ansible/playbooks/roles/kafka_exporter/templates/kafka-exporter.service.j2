@@ -1,6 +1,7 @@
 #jinja2: trim_blocks:False
 [Unit]
 Description={{ specification.description }}
+After=kafka.service
 
 [Service]
 User=kafka_exporter
