@@ -2,7 +2,7 @@
 
 kafka_instances: "--kafka.server={{ groups['kafka']|join(':9092 --kafka.server=') }}:9092"
 kafka_exporter:
-  version: 1.4.2
+  version: 1.4.0
   file_name:
-    x86_64: "kafka_exporter-1.4.2.linux-amd64.tar.gz"
-    aarch64: "kafka_exporter-1.4.2.linux-arm64.tar.gz"
+    x86_64: "kafka_exporter-1.4.0.linux-amd64.tar.gz"
+    aarch64: "kafka_exporter-1.4.0.linux-arm64.tar.gz"

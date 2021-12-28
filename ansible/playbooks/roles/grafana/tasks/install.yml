@@ -1,4 +1,13 @@
 ---
+- name: Load Grafana version vars
+  include_vars:
+    file: roles/grafana/defaults/versions.yml
+    name: grafana_version_vars
+
+- name: Set Grafana package facts
+  set_fact:
+    grafana_package: "{{ grafana_version_vars.grafana_package }}"
+
 - name: Remove conflicting grafana packages
   package:
     name: grafana-data
