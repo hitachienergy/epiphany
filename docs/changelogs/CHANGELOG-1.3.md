@@ -15,10 +15,7 @@
 - [#2644](https://github.com/epiphany-platform/epiphany/issues/2644) - Add validation to check hostnames for on-prem deployment
 - [#2703](https://github.com/epiphany-platform/epiphany/issues/2703) - Add tests for docker and kubelet cgroup driver
 - [#1076](https://github.com/epiphany-platform/epiphany/issues/1076) - Add sorting entries in the inventory file
-<<<<<<< HEAD
 - [#2814](https://github.com/epiphany-platform/epiphany/issues/2814) - Add description how to enable TLS in Kibana
-=======
->>>>>>> 48077bb9f3993d41bfb80df8ffabe9cb898a1ca5
 - [#1076](https://github.com/epiphany-platform/epiphany/issues/2595) - Document connection protocols and ciphers
 
 ### Fixed
