@@ -211,7 +211,6 @@
 - hosts: grafana
   become: true
   become_method: sudo
-  gather_facts: true
   serial: 1
   tasks:
     - include_role:
