@@ -40,7 +40,7 @@
 
     - name: Log4j patch - cleanup
       block:
-      - name: Log4j patch - remove old jars
+      - name: Log4j patch | Remove old jars
         file:
           state: absent
           path: "{{ item }}"
