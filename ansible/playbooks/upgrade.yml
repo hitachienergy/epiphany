@@ -331,7 +331,7 @@
         tasks_from: upgrade/main
       when: "'postgresql' in upgrade_components or upgrade_components|length == 0"
 
-- hosts: postgresql
+- hosts: postgres_exporter
   become: true
   become_method: sudo
   tasks:

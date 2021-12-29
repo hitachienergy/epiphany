@@ -3,16 +3,30 @@
   shell: /opt/postgres_exporter/postgres_exporter --version 2>&1 | grep postgres_exporter | awk '{print $3}'
   register: postgres_exporter_current_version
 
+- name: Include upgrade defaults
+  include_vars:
+    file: roles/postgres_exporter/defaults/upgrade.yml
+    name: upgrade_defaults
+
 - name: Postgres Exporter | Include defaults from postgres_exporter role
   include_vars:
     file: roles/postgres_exporter/defaults/main.yml
     name: exporter_defaults
 
-- name: Ugrade postgres_exporter
+# If state file exists it means the previous run failed
+- name: Check for upgrade state file
+  stat:
+    path: "{{ upgrade_defaults.state_file_path }}"
+    get_attributes: false
+    get_checksum: false
+    get_mime: false
+  register: state_file_status
+
+- name: Upgrade postgres_exporter
   include_role:
     name: postgres_exporter
     tasks_from: upgrade
   # It looks strange but old and new version has different response syntax for that command :(
   when:
-  - (postgres_exporter_current_version.stdout == "(built") or (postgres_exporter_current_version.stdout is version (exporter_defaults.exporter.version, '<'))
-  
+  - (postgres_exporter_current_version.stdout == "(built") or (postgres_exporter_current_version.stdout is version (exporter_defaults.exporter.version, '<')) or (state_file_status.stat.exists)
+

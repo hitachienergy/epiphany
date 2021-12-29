@@ -3,6 +3,17 @@
   set_fact:
     exporter_file_name: "{{ exporter.file_name[ansible_architecture] }}"
 
+- name: Include upgrade defaults
+  include_vars:
+    file: defaults/upgrade.yml
+    name: upgrade_defaults
+
+- name: Create upgrade state file
+  copy:
+    dest: "{{ upgrade_defaults.state_file_path }}"
+    content: Upgrade started
+    mode: u=rw,g=r,o=
+
 - name: Download Postgres Exporter binaries
   include_role:
     name: download
@@ -39,3 +50,7 @@
     state: started
     name: postgres-exporter.service
 
+- name: "Remove upgrade state file"
+  file:
+    path: "{{ upgrade_defaults.state_file_path }}"
+    state: absent
