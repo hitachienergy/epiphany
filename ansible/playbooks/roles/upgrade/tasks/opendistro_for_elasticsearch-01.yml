@@ -18,7 +18,7 @@
 - name: ODFE | Log4j patch
   include_role:
     name: opendistro_for_elasticsearch
-    tasks_from: log4j-patch
+    tasks_from: patch-log4j
   when: odfe_defaults.log4j_file_name is defined
 
 - name: Restart elasticsearch service
