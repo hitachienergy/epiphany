@@ -18,21 +18,30 @@
       import_tasks: kubernetes/utils/wait-for-kube-apiserver.yml
 
     - name: k8s | Include get-cluster-version.yml
-      import_tasks: kubernetes/get-cluster-version.yml # sets cluster_version
+      import_tasks: kubernetes/get-cluster-version.yml
+
+    - name: k8s | Set cluster version facts
+      set_fact:
+        initial_cluster_version: "{{ _cluster_version }}"
+        cluster_version: "{{ _cluster_version }}"
+      vars:
+        _cluster_version: "{{ (kubectl_cluster_version.stdout | from_yaml).serverVersion.gitVersion }}"
 
 - name: k8s | Include get-kubelet-version.yml
-  import_tasks: kubernetes/get-kubelet-version.yml # sets kubelet_version
+  import_tasks: kubernetes/get-kubelet-version.yml
   delegate_to: "{{ groups.kubernetes_master[0] }}"
 
-- name: Check upgrade state file for master
-  stat:
-    path: "{{ kubernetes.upgrade_master_state_file_path }}"
-  register: upgrade_master_state_file_status
+- name: k8s | Set kubelet version as fact
+  set_fact:
+    initial_kubelet_version: "{{ kubelet_version.stdout }}"
 
-- name: Check upgrade state file for node
+- name: Check if upgrade state file exists
   stat:
-    path: "{{ kubernetes.upgrade_node_state_file_path }}"
-  register: upgrade_node_state_file_status
+    path: "{{ kubernetes.upgrade_state_file_path }}"
+    get_attributes: false
+    get_checksum: false
+    get_mime: false
+  register: k8s_upgrade_state_file_status
 
 - name: Upgrade masters then nodes
   vars:
@@ -40,13 +49,14 @@
     cni_version: "{{ cni_ver }}"
   block:
     - name: Upgrade masters
-      when: >
-        upgrade_master_state_file_status.stat.exists or
-        cluster_version is version('v' + version, '<')
+      when:
+        - inventory_hostname in groups.kubernetes_master
+        - k8s_upgrade_state_file_status.stat.exists
+          or initial_cluster_version is version('v' + version, '<')
       block:
-        - name: Create k8s upgrade state file for masters
+        - name: Create K8s upgrade state file on master node
           copy:
-            dest: "{{ kubernetes.upgrade_master_state_file_path }}"
+            dest: "{{ kubernetes.upgrade_state_file_path }}"
             content: Upgrade started
             mode: u=rw,g=r,o=
 
@@ -60,33 +70,31 @@
           when:
             - inventory_hostname in groups.kubernetes_master[1:]
 
-        - name: Remove k8s upgrade state file for masters
+        - name: Remove K8s upgrade state file on master node
           file:
-            path: "{{ kubernetes.upgrade_master_state_file_path }}"
+            path: "{{ kubernetes.upgrade_state_file_path }}"
             state: absent
 
     - name: Upgrade nodes
-      when: >
-        upgrade_node_state_file_status.stat.exists or
-        kubelet_version is version('v' + version, '<')
+      when:
+        - groups.kubernetes_node is defined
+        - inventory_hostname in groups.kubernetes_node
+        - k8s_upgrade_state_file_status.stat.exists
+          or initial_kubelet_version is version('v' + version, '<')
       block:
-        - name: Create k8s upgrade state file for nodes
+        - name: Create K8s upgrade state file on node
           copy:
-            dest: "{{ kubernetes.upgrade_node_state_file_path }}"
+            dest: "{{ kubernetes.upgrade_state_file_path }}"
             content: Upgrade started
             mode: u=rw,g=r,o=
 
         - name: k8s | Upgrade node to v{{ version }}
           include_tasks: kubernetes/upgrade-node.yml
-          when:
-            - groups.kubernetes_node is defined
-            - inventory_hostname in groups.kubernetes_node
 
-        - name: Remove k8s upgrade state file for nodes
+        - name: Remove K8s upgrade state file on node
           file:
-            path: "{{ kubernetes.upgrade_node_state_file_path }}"
+            path: "{{ kubernetes.upgrade_state_file_path }}"
             state: absent
-
 
 - name: k8s/master | Switch apiserver address to HAProxy
   command: |-
