@@ -1,7 +1,7 @@
 
 - name: Log4j patch
   block:
-    - name: "opendistro_for_elasticsearch : Log4j patch - get archive"
+    - name: "opendistro_for_elasticsearch : Log4j patch | Get archive"
       include_role:
         name: download
         tasks_from: download_file
