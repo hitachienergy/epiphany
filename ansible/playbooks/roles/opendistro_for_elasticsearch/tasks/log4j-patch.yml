@@ -8,7 +8,7 @@
       vars:
         file_name: "{{ log4j_file_name }}"
 
-    - name: Log4j patch - extract archive
+    - name: Log4j patch | Extract archive
       unarchive:
         dest: /tmp/
         src: "{{ download_directory }}/{{ log4j_file_name }}"
