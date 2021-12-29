@@ -53,7 +53,7 @@
           - /usr/share/elasticsearch/lib/log4j-core-2.11.1.jar
           - /usr/share/elasticsearch/plugins/opendistro_security/log4j-slf4j-impl-2.11.1.jar
 
-      - name: Log4j patch - Delete temporary dir
+      - name: Log4j patch | Delete temporary dir
         file:
           dest: "{{ download_directory }}/{{ _archive_root_dir }}"
           state: absent
