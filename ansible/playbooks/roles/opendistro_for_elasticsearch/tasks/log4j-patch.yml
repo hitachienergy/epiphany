@@ -16,7 +16,7 @@
         list_files: true
       register: unarchive_list_files
 
-    - name: Log4j patch - Copy new jars
+    - name: Log4j patch | Copy new jars
       register: log4j_patch
       copy:
         src: "{{ item.src }}"
