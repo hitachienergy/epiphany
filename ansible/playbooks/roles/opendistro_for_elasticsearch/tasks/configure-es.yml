@@ -108,7 +108,7 @@
   when: not certificates.files.demo.opendistro_security.allow_unsafe_democertificates
 
 - name: Include log4j patch
-  include_tasks: log4j-patch.yml
+  include_tasks: patch-log4j.yml
 
 - name: Restart elasticsearch service
   systemd:
