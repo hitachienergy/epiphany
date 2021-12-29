@@ -41,6 +41,7 @@
     group: prometheus
     mode: u=rw,g=r,o=
     validate: "/usr/local/bin/promtool check config %s"
+    backup: true
   notify:
     - Restart Prometheus
 

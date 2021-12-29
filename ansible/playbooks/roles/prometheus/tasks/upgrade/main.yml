@@ -135,5 +135,46 @@
     path: "{{ upgrade_defaults.state_file_path }}"
     state: absent
 
+- name: Load Prometheus vars
+  include_vars:
+    file: vars/main.yml
+
+# Can be removed after 1.2 deprecation
+- name: Find haproxy-exporter targets
+  find:
+    paths: "/etc/prometheus/file_sd"
+    patterns: "^haproxy-exporter.*.yml$"
+    use_regex: true
+  register: haproxy_exporter_filesd
+
+- name: Remove haproxy-exporter targets
+  file:
+    path: "{{ item }}"
+    state: absent
+  loop: "{{ haproxy_exporter_filesd.files | map(attribute='path') }}"
+
+- name: Slurp Prometheus config
+  slurp:
+    src: /etc/prometheus/prometheus.yml
+  register: _prometheus_config
+
+- name: Reconfigure Prometheus | Set facts
+  block:
+  - name: Reconfigure Prometheus | Set facts
+    set_fact:
+      api_server_address: "{{ item.kubernetes_sd_configs | map(attribute='api_server') | first }}"
+      bearer_token: "{{ item.kubernetes_sd_configs | map(attribute='bearer_token') | first }}"
+    when: '"kubernetes_sd_configs" in {{ item }}'
+    with_items: "{{ prometheus_config.scrape_configs }}"
+    vars:
+      prometheus_config: "{{ _prometheus_config.content | b64decode | from_yaml }}"
+    no_log: true
+    register: set_prometheus_facts
+
+  rescue:
+  - name: Reconfigure Prometheus | Show error log
+    debug:
+      msg: "{{ set_prometheus_facts }}"
+
 - name: Reconfigure Prometheus
   include_tasks: configure.yml
