@@ -33,6 +33,7 @@
   args:
     chdir: "{{ pki.location }}"
   register: apiserver_certificate_info
+  changed_when: false
 
 - name: Regenerate apiserver certificates
   when: kubernetes_common.automation_designated_master != inventory_hostname or not is_first_deployment

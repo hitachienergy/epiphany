@@ -306,7 +306,7 @@ name: default
 specification:
   custom_image_registry_address: "10.50.2.1:5000"
   custom_repository_url: "http://10.50.2.1:8080/epirepo"
-  use_ha_control_plane: true
+  use_ha_control_plane: false
 ```
 
 The repository and image registry implementation must be compatible with already existing Ansible code:
@@ -449,7 +449,7 @@ To set up the cluster do the following steps from the provisioning machine:
       default_os_image: default
     ```
 
-    The [region](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Concepts.RegionsAndAvailabilityZones.html) lets you chose the most optimal place to deploy your cluster. The `key` and `secret` are needed by Terraform and can be generated in the AWS console. More information about that [here](https://docs.aws.amazon.com/general/latest/gr/aws-sec-cred-types.html#access-keys-and-secret-access-keys)
+    The [region](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Concepts.RegionsAndAvailabilityZones.html) lets you chose the optimal place to deploy your cluster. The `key` and `secret` are needed by Terraform and can be generated in the AWS console. More information about that [here](https://docs.aws.amazon.com/general/latest/gr/aws-sec-cred-types.html#access-keys-and-secret-access-keys)
 
     Azure:
 
@@ -469,10 +469,10 @@ To set up the cluster do the following steps from the provisioning machine:
     If you already have a service principle and don't want to create a new one you can do the following. Make sure the `use_service_principal` tag is set to true. Then before you run `epicli apply -f yourcluster.yml` create the following folder structure from the path you are running Epicli:
 
     ```shell
-    /build/clustername/terraform
+    /path/to/build_dir/clustername/terraform
     ```
 
-    Where the `clustername` is the name you specified under `specification.name` in your cluster yaml. Then in `terraform` folder add the file named `sp.yml` and fill it up with the service principal information like so:
+    Where the `clustername` is the name you specified under `specification.name` in your cluster definition yaml. Then in `terraform` folder add the file named `sp.yml` and fill it up with the service principal information like so:
 
     ```yaml
     appId: "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxx"

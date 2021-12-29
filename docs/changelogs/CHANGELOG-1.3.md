@@ -15,6 +15,10 @@
 - [#2644](https://github.com/epiphany-platform/epiphany/issues/2644) - Add validation to check hostnames for on-prem deployment
 - [#2703](https://github.com/epiphany-platform/epiphany/issues/2703) - Add tests for docker and kubelet cgroup driver
 - [#1076](https://github.com/epiphany-platform/epiphany/issues/1076) - Add sorting entries in the inventory file
+- [#2768](https://github.com/epiphany-platform/epiphany/issues/2768) - Add posibility to provide custom hostnames
+- [#2785](https://github.com/epiphany-platform/epiphany/issues/2785) - Add configuration option to Keycloak for PROXY_ADDRESS_FORWARDING env. variable
+- [#2814](https://github.com/epiphany-platform/epiphany/issues/2814) - Add description how to enable TLS in Kibana
+- [#1076](https://github.com/epiphany-platform/epiphany/issues/2595) - Document connection protocols and ciphers
 
 ### Fixed
 
@@ -29,27 +33,29 @@
 - [#2718](https://github.com/epiphany-platform/epiphany/issues/2718) - Failed epicli upgrade may lead to broken repository machine (disabled system repos)
 - [#1221](https://github.com/epiphany-platform/epiphany/issues/1221) - Kafka-exporter service doesn't start after restarting kafka VMs
 - [#2774](https://github.com/epiphany-platform/epiphany/issues/2774) - Issue creating service principle on Azure
+- [#2737](https://github.com/epiphany-platform/epiphany/issues/2737) - Fix asserting number of postgres nodes
 
 ### Updated
 
-- Upgrade Flannel to v0.14.0
-- Upgrade Calico and Canal to v3.20.3
-- Upgrade Coredns to v1.8.0
-- Upgrade Kubernetes dashboard to v2.3.1
-- Upgrade Kubernetes metrics-scraper to v1.0.7
-- [#2659](https://github.com/epiphany-platform/epiphany/issues/2659) - Upgrade K8s to v1.21.7
+- [#2660](https://github.com/epiphany-platform/epiphany/issues/2660) - Upgrade K8s to v1.22.4
+  - Upgrade Calico and Canal to v3.20.3
+  - Upgrade Coredns to v1.8.4
+  - Upgrade Flannel to v0.14.0
+  - Upgrade Kubernetes dashboard to v2.3.1
+  - Upgrade Kubernetes metrics-scraper to v1.0.7
 - [#2494](https://github.com/epiphany-platform/epiphany/issues/2494) - Duplicated MOTD after ssh to servers
+- [#2715](https://github.com/epiphany-platform/epiphany/issues/2715) - Change user login message to show current epicli version
 - [#1974](https://github.com/epiphany-platform/epiphany/issues/1974) - [documentation] Azure Files Persistent Volume Support
 - [#2454](https://github.com/epiphany-platform/epiphany/issues/2454) - Remove dependencies for K8s v1.17
 - [#2537](https://github.com/epiphany-platform/epiphany/issues/2537) - [PostgreSQL] [upgrade] Do not remove new packages automatically in rollback
 - [#2180](https://github.com/epiphany-platform/epiphany/issues/2180) - [documentation] Missing clear information about supported CNI plugins
 - [#2755](https://github.com/epiphany-platform/epiphany/issues/2755) - Upgrade Python dependencies to the latest
 - [#2700](https://github.com/epiphany-platform/epiphany/issues/2700) - Upgrade Prometheus to 2.31.1 and AlertManager to 0.23.0
-- [#2748](https://github.com/epiphany-platform/epiphany/issues/2748) - Upgrade Kafka exporter to the version 1.4.2
+- [#2748](https://github.com/epiphany-platform/epiphany/issues/2748) - Upgrade Kafka exporter to the version 1.4.0
 - [#2750](https://github.com/epiphany-platform/epiphany/issues/2750) - Upgrade JMX exporter to the newest version
 - [#2699](https://github.com/epiphany-platform/epiphany/issues/2699) - Upgrade Grafana to 8.3.2
 - [#2788](https://github.com/epiphany-platform/epiphany/issues/2788) - Upgrade Log4j in Open Distro for Elasticsearch
-
+- [#2661](https://github.com/epiphany-platform/epiphany/issues/2661) - Update K8s documentation according to the latest version Epiphany supports
 
 ### Removed
 
@@ -62,3 +68,6 @@
 - PgBouncer available only as Kubernetes service
 
 ### Known issues
+
+- Upgrading Kubernetes to the latest available version 1.22 breaks the Vault and Istio components as versions are not compatible. The issues are not being addressed as these components are being considered for deprecation and removal in subsequent releases.
+- Kafka exporter for Prometheus: Performance issue on large clusters. We use version 1.4.0 since 1.4.1 and 1.4.2 contain critical bug (see https://github.com/danielqsj/kafka_exporter/issues/273). For release notes, see https://github.com/danielqsj/kafka_exporter/releases.
