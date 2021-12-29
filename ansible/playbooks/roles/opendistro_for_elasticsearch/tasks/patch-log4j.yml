@@ -34,9 +34,9 @@
         - { src: "{{ download_directory }}/{{ log4j_core }}",      dest: /usr/share/elasticsearch/plugins/opendistro-performance-analyzer/performance-analyzer-rca/lib/ }
         - { src: "{{ download_directory }}/{{ log4j_slfj_impl }}", dest: /usr/share/elasticsearch/plugins/opendistro_security/ }
       vars:
-        log4j_core: "{{ unarchive_list_files.files | select('contains', 'log4j-api-2.17.0.jar') | first }}"
-        log4j_api: "{{ unarchive_list_files.files | select('contains', 'log4j-core-2.17.0.jar') | first }}"
-        log4j_slfj_impl: "{{ unarchive_list_files.files | select('contains', 'log4j-slf4j-impl-2.17.0.jar') | first }}"
+        log4j_api: "{{ unarchive_list_files.files | select('contains', 'log4j-api-2.17.1.jar') | first }}"
+        log4j_core: "{{ unarchive_list_files.files | select('contains', 'log4j-core-2.17.1.jar') | first }}"
+        log4j_slfj_impl: "{{ unarchive_list_files.files | select('contains', 'log4j-slf4j-impl-2.17.1.jar') | first }}"
 
     - name: Log4j patch - cleanup
       block:
