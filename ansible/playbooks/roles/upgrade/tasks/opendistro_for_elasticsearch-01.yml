@@ -15,7 +15,7 @@
     file: roles/opendistro_for_elasticsearch/defaults/main.yml
     name: odfe_defaults
 
-- name: ODFE | Log4j patch
+- name: ODFE | Patch log4j
   include_role:
     name: opendistro_for_elasticsearch
     tasks_from: patch-log4j
