@@ -1,36 +1,13 @@
 ---
-- name: Check if upgrade from current K8s version is supported
-  block:
-    - name: Get K8s cluster version
-      become: true
-      command: kubectl version --output yaml
-      register: cluster_version
-      changed_when: false
+- name: Repository checks
+  include_tasks: roles/repository/tasks/preflight/upgrade.yml
+  when:
+    - groups.repository is defined
+    - groups.repository | length == 1
+    - "'repository' in group_names"
 
-    - name: k8s | Check if upgrade from current K8s version is supported
-      assert:
-        that: "'{{ (cluster_version.stdout | from_yaml).serverVersion.gitVersion }}' is version('v1.18.6', '>=')"
-        fail_msg: >-
-          Your Kubernetes version ({{ (cluster_version.stdout | from_yaml).serverVersion.gitVersion }})
-          is not supported by this version of Epiphany which requires at least version 1.18.6.
-          For more information, refer to the documentation.
-        quiet: true
-
-    - name: Check number of unmanaged pods
-      become: true
-      command: kubectl get pods --all-namespaces -o custom-columns=CONTROLLER:.metadata.ownerReferences[].kind
-      register: no_unmanaged_pods
-      changed_when: false
-
-    - name: Check if cluster has any unmanaged pods
-      assert:
-        that: "{{ no_unmanaged_pods.stdout_lines | regex_findall('<none>') | length }} == 0"
-        fail_msg: >-
-          You have some pods that are not created by controller. Please remove them and then start upgrade once again.
-        quiet: true
-
-  run_once: true
-  delegate_to: "{{ groups.kubernetes_master[0] }}"
+- name: Kubernetes checks
+  include_tasks: roles/kubernetes_master/tasks/preflight/upgrade.yml
   when:
     - "'kubernetes' in upgrade_components or upgrade_components|length == 0" # K8s is going to be upgraded
     - groups.kubernetes_master is defined

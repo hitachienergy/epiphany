@@ -32,6 +32,13 @@
     - groups.kubernetes_master | length > 0
     - "'applications' in roles_with_generated_vars" # there is a case with disabled applications by custom feature mapping
 
+- name: Kubernetes checks
+  include_tasks: roles/kubernetes_master/tasks/preflight/apply.yml
+  when:
+    - groups.kubernetes_master is defined
+    - groups.kubernetes_master | length > 0
+    - "'kubernetes_master' in group_names"
+
 - name: PostgreSQL checks
   include_tasks: roles/postgresql/tasks/preflight/apply.yml
   when:

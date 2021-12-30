@@ -5,7 +5,7 @@
 ### Added
 
 - [#1306](https://github.com/epiphany-platform/epiphany/issues/1306) - Allow to check on VMs which epicli version was used to deploy/upgrade components
-- [#1487](https://github.com//epiphany-platform/epiphany/issues/1487) - Add RabbitMQ monitoring
+- [#1487](https://github.com/epiphany-platform/epiphany/issues/1487) - Add RabbitMQ monitoring
 - [#2600](https://github.com/epiphany-platform/epiphany/issues/2600) - Change epicli output structure
 - [#2655](https://github.com/epiphany-platform/epiphany/issues/2655) - Add 'repmgr node check' to upgrade preflight checks and auto-tests
 - [#2643](https://github.com/epiphany-platform/epiphany/issues/2643) - Restructure Epicli project folder
@@ -19,6 +19,7 @@
 - [#2785](https://github.com/epiphany-platform/epiphany/issues/2785) - Add configuration option to Keycloak for PROXY_ADDRESS_FORWARDING env. variable
 - [#2814](https://github.com/epiphany-platform/epiphany/issues/2814) - Add description how to enable TLS in Kibana
 - [#1076](https://github.com/epiphany-platform/epiphany/issues/2595) - Document connection protocols and ciphers
+- [#2665](https://github.com/epiphany-platform/epiphany/issues/2665) - Add Kubernetes prereqs to epicli preflight checks
 
 ### Fixed
 
