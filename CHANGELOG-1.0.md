@@ -17,6 +17,7 @@
 - [#1294](https://github.com/epiphany-platform/epiphany/issues/1294) - Implement proper merging of lists of dictionaries for epicli yaml docs
 - [#1370](https://github.com/epiphany-platform/epiphany/issues/1370) - Epicli does not correctly generate vars for Postgres
 - [#1296](https://github.com/epiphany-platform/epiphany/issues/1296) - Epicli does not interpret alternative yaml boolean values as true booleans
+- [#2774](https://github.com/epiphany-platform/epiphany/issues/2774) - Issue creating service principle on Azure
 
 ## [1.0.1] 2021-07-16
 

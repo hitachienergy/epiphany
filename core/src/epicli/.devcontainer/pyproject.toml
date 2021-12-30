@@ -13,8 +13,8 @@ jsonschema = "*"
 python-json-logger = "*"
 ansible = "==2.10.5"
 terraform-bin = "*"
-azure-cli = "==2.8.0"
 "ruamel.yaml" = "*"
+azure-cli = "2.29.0"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
