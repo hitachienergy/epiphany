@@ -48,6 +48,10 @@ gnupg2
 htop
 iftop
 jq
+
+# for dpkg-scanpackages
+libdpkg-perl
+
 libfontconfig1
 logrotate
 logstash-oss 1:7.12.0
