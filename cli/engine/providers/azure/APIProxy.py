@@ -59,7 +59,10 @@ class APIProxy:
         for instance in running_instances:
             if isinstance(instance, list):
                 instance = instance[0]
-            name = instance['virtualMachine']['name']
+            if self.cluster_model.specification.cloud.hostname_domain_extension != '':
+                name = instance['virtualMachine']['name'] + f'.{self.cluster_model.specification.cloud.hostname_domain_extension}'
+            else:
+                name = instance['virtualMachine']['name']
             if look_for_public_ip:
                 ip = instance['virtualMachine']['network']['publicIpAddresses'][0]['ipAddress']
             else:

@@ -16,6 +16,10 @@
 - [#2644](https://github.com/epiphany-platform/epiphany/issues/2644) - Add validation to check hostnames for on-prem deployment
 - [#2703](https://github.com/epiphany-platform/epiphany/issues/2703) - Add tests for docker and kubelet cgroup driver
 - [#1076](https://github.com/epiphany-platform/epiphany/issues/1076) - Add sorting entries in the inventory file
+- [#2768](https://github.com/epiphany-platform/epiphany/issues/2768) - Add posibility to provide custom hostnames
+- [#2785](https://github.com/epiphany-platform/epiphany/issues/2785) - Add configuration option to Keycloak for PROXY_ADDRESS_FORWARDING env. variable
+- [#2814](https://github.com/epiphany-platform/epiphany/issues/2814) - Add description how to enable TLS in Kibana
+- [#1076](https://github.com/epiphany-platform/epiphany/issues/2595) - Document connection protocols and ciphers
 
 ### Fixed
 
@@ -30,6 +34,7 @@
 - [#2718](https://github.com/epiphany-platform/epiphany/issues/2718) - Failed epicli upgrade may lead to broken repository machine (disabled system repos)
 - [#1221](https://github.com/epiphany-platform/epiphany/issues/1221) - Kafka-exporter service doesn't start after restarting kafka VMs
 - [#2774](https://github.com/epiphany-platform/epiphany/issues/2774) - Issue creating service principle on Azure
+- [#2737](https://github.com/epiphany-platform/epiphany/issues/2737) - Fix asserting number of postgres nodes
 
 ### Updated
 
@@ -41,6 +46,7 @@
   - Upgrade Kubernetes metrics-scraper to v1.0.7
 - [#2747](https://github.com/epiphany-platform/epiphany/issues/2747) - Upgrade Node-Exporter to v1.3.1
 - [#2494](https://github.com/epiphany-platform/epiphany/issues/2494) - Duplicated MOTD after ssh to servers
+- [#2715](https://github.com/epiphany-platform/epiphany/issues/2715) - Change user login message to show current epicli version
 - [#1974](https://github.com/epiphany-platform/epiphany/issues/1974) - [documentation] Azure Files Persistent Volume Support
 - [#2454](https://github.com/epiphany-platform/epiphany/issues/2454) - Remove dependencies for K8s v1.17
 - [#2537](https://github.com/epiphany-platform/epiphany/issues/2537) - [PostgreSQL] [upgrade] Do not remove new packages automatically in rollback
@@ -50,6 +56,7 @@
 - [#2748](https://github.com/epiphany-platform/epiphany/issues/2748) - Upgrade Kafka exporter to the version 1.4.0
 - [#2750](https://github.com/epiphany-platform/epiphany/issues/2750) - Upgrade JMX exporter to the newest version
 - [#2699](https://github.com/epiphany-platform/epiphany/issues/2699) - Upgrade Grafana to 8.3.2
+- [#2788](https://github.com/epiphany-platform/epiphany/issues/2788) - Upgrade Log4j in Open Distro for Elasticsearch
 - [#2661](https://github.com/epiphany-platform/epiphany/issues/2661) - Update K8s documentation according to the latest version Epiphany supports
 
 ### Removed
