@@ -5,8 +5,6 @@ type: object
 properties:
   cluster_name:
     type: string
-  clustered:
-    type: boolean
   admin_password:
     type: string
   kibanaserver_password:
