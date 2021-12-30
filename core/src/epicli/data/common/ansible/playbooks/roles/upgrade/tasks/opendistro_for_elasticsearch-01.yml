@@ -14,6 +14,19 @@
   include_vars:
     file: roles/opendistro_for_elasticsearch/defaults/main.yml
 
+- name: ODFE | Patch log4j
+  include_role:
+    name: opendistro_for_elasticsearch
+    tasks_from: patch-log4j
+  when: odfe_defaults.log4j_file_name is defined
+
+- name: Restart elasticsearch service
+  systemd:
+    name: elasticsearch
+    state: restarted
+  register: restart_elasticsearch
+  when: odfe_defaults.log4j_file_name is defined and log4j_patch.changed
+
 - name: ODFE | Print elasticsearch-oss versions
   debug:
     msg:

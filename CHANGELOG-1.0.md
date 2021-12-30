@@ -19,6 +19,7 @@
 - [#1296](https://github.com/epiphany-platform/epiphany/issues/1296) - Epicli does not interpret alternative yaml boolean values as true booleans
 - [#2774](https://github.com/epiphany-platform/epiphany/issues/2774) - Issue creating service principle on Azure
 - [#2768](https://github.com/epiphany-platform/epiphany/issues/2768) - Add posibility to provide custom hostnames
+- [#2788](https://github.com/epiphany-platform/epiphany/issues/2788) - Upgrade Log4j in Open Distro for Elasticsearch
 
 ## [1.0.1] 2021-07-16
 
