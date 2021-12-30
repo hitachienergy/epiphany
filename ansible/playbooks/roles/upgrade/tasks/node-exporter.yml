@@ -20,8 +20,9 @@
     - name: Get information about helm releases
       command: "helm list --all-namespaces --output json --filter {{ exporter_defaults.node_exporter_helm_chart_name }}"
       register: helm_list
+      changed_when: false
 
-    - name: Check if node exporter release exist in default namespace and set fact
+    - name: Check if node exporter release exist and set fact
       set_fact:
         node_exporter_release_exists: >-
           {{ _namespace | ternary(true, false) }}
