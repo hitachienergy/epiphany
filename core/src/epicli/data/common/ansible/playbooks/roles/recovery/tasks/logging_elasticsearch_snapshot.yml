@@ -1,12 +1,17 @@
 ---
+- name: Include default vars from opendistro_for_elasticsearch role
+  include_vars:
+    file: roles/opendistro_for_elasticsearch/defaults/main.yml
+    name: odfe
+
 - name: Set helper facts
   set_fact:
     elasticsearch_endpoint: >-
       https://{{ ansible_default_ipv4.address }}:9200
   vars:
     uri_template: &uri
-      client_cert: /etc/elasticsearch/kirk.pem
-      client_key: /etc/elasticsearch/kirk-key.pem
+      client_cert: "{{ odfe.certificates.dirs.certs }}/{{ odfe.certificates.files.admin.cert.filename }}"
+      client_key:  "{{ odfe.certificates.dirs.certs }}/{{ odfe.certificates.files.admin.key.filename }}"
       validate_certs: false
       body_format: json
 
@@ -64,23 +69,6 @@
 
 - name: Ensure all kibana and filebeat instances are stopped, then restore the snapshot
 
-  always:
-    - name: Start all kibana instances
-      delegate_to: "{{ item }}"
-      systemd:
-        name: kibana
-        state: started
-        enabled: true
-      loop: "{{ groups.kibana | default([]) }}"
-
-    - name: Start all filebeat instances
-      delegate_to: "{{ item }}"
-      systemd:
-        name: filebeat
-        state: started
-        enabled: true
-      loop: "{{ groups.filebeat | default([]) }}"
-
   block:
     - name: Stop all kibana instances
       delegate_to: "{{ item }}"
@@ -115,3 +103,24 @@
         <<: *uri
         url: "{{ elasticsearch_endpoint }}/_snapshot/{{ elasticsearch_snapshot_repository_name }}/{{ snapshot_name }}/_restore"
         method: POST
+
+  always:
+    - name: Start all kibana instances
+      delegate_to: "{{ item }}"
+      systemd:
+        name: kibana
+        state: started
+        enabled: true
+      loop: "{{ groups.kibana | default([]) }}"
+
+    - name: Start all filebeat instances
+      delegate_to: "{{ item }}"
+      systemd:
+        name: filebeat
+        state: started
+        enabled: true
+      register: filebeat
+      until: filebeat.status.ActiveState == "active"
+      retries: 30
+      delay: 10
+      loop: "{{ groups.filebeat | default([]) }}"
