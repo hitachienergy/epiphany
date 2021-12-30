@@ -102,10 +102,13 @@
 # For apply mode, demo certificate files are removed based only on their names. For upgrade mode,
 # public key fingerprints are checked to protect against unintentional deletion (what takes additional time).
 
-# Remove demo certificate files
-- include_tasks:
+- name: Remove demo certificate files
+  include_tasks:
     file: "{{ is_upgrade_run | ternary('remove-known-demo-certs.yml', 'remove-demo-certs.yml') }}"
   when: not certificates.files.demo.opendistro_security.allow_unsafe_democertificates
+
+- name: Include log4j patch
+  include_tasks: patch-log4j.yml
 
 - name: Restart elasticsearch service
   systemd:
@@ -113,9 +116,10 @@
     state: restarted
   register: restart_elasticsearch
   when: change_config.changed
-     or change_jvm_config.changed
-     or install_elasticsearch_package.changed
-     or (install_opendistro_packages is defined and install_opendistro_packages.changed)
+    or log4j_patch.changed
+    or change_jvm_config.changed
+    or install_elasticsearch_package.changed
+    or (install_opendistro_packages is defined and install_opendistro_packages.changed)
 
 - name: Enable and start elasticsearch service
   systemd:
