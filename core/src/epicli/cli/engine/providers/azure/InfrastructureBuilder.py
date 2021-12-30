@@ -24,6 +24,18 @@ class InfrastructureBuilder(Step):
         self.docs = docs
         self.manifest_docs = manifest_docs
 
+        # Check if there is a hostname_domain_extension we already applied and we want to retain.
+        # The same as VM images we want to preserve hostname_domain_extension over versions.
+        self.hostname_domain_extension = self.cluster_model.specification.cloud.hostname_domain_extension
+        manifest_cluster_model = select_first(self.manifest_docs, lambda x: x.kind == 'epiphany-cluster')
+        if self.manifest_docs:
+            if 'hostname_domain_extension' in manifest_cluster_model.specification.cloud:
+                old_hostname_domain_extension = manifest_cluster_model.specification.cloud.hostname_domain_extension
+                if old_hostname_domain_extension != self.hostname_domain_extension:
+                    self.logger.warning(f"Re-applying a different hostname_domain_extension might lead to data loss and/or other issues. Preserving the previous hostname_domain_extension: '{old_hostname_domain_extension}'.")
+                    self.cluster_model.specification.cloud.hostname_domain_extension = old_hostname_domain_extension
+                    self.hostname_domain_extension = old_hostname_domain_extension        
+
     def run(self):
         infrastructure = []
 
@@ -202,6 +214,10 @@ class InfrastructureBuilder(Step):
     def get_vm(self, component_key, component_value, vm_config, availability_set, network_interface_name, index):
         vm = dict_to_objdict(deepcopy(vm_config))
         vm.specification.name = resource_name(self.cluster_prefix, self.cluster_name, 'vm' + '-' + str(index), component_key)
+        if self.hostname_domain_extension != '':
+            vm.specification.hostname = resource_name(self.cluster_prefix, self.cluster_name, 'vm' + '-' + str(index) + f'.{self.hostname_domain_extension}', component_key)
+        else:
+            vm.specification.hostname = vm.specification.name        
         vm.specification.admin_username = self.cluster_model.specification.admin_user.name
         vm.specification.network_interface_name = network_interface_name
         vm.specification.tags.append({'cluster': cluster_tag(self.cluster_prefix, self.cluster_name)})
