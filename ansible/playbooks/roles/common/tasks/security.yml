@@ -14,7 +14,7 @@
     dest: /etc/ssh/sshd_config
     owner: root
     group: root
-    mode: '0644'
+    mode: u=rw,o=r
     backup: true
 
 # Ansible's replace module hangs without an error,

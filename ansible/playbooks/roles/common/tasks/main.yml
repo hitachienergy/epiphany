@@ -1,5 +1,4 @@
 ---
-
 - name: Print admin_user.name
   debug:
     msg: "{{ admin_user.name }}"
@@ -27,7 +26,7 @@
 
 - name: Remove swap from /etc/fstab
   mount:
-    backup: yes
+    backup: true
     fstype: swap
     path: swap
     state: absent
@@ -72,7 +71,7 @@
 - name: Disable SELinux at next reboot
   selinux:
     state: disabled
-  ignore_errors: yes
+  ignore_errors: true
   when: ansible_selinux is defined and ansible_selinux != False and ansible_selinux.status == 'enabled'
 
 - name: Set SELinux in permissive mode until the machine is rebooted
@@ -80,24 +79,6 @@
   ignore_errors: true
   changed_when: false
   when: ansible_selinux is defined and ansible_selinux != False and ansible_selinux.status == 'enabled'
-
-# Before version 1.3 Epiphany updated /etc/motd file, so this task is necessary for upgrades
-# Can be removed after 1.2 deprecation
-- name: Truncate /etc/motd file
-  copy:
-    dest: /etc/motd
-    content: ""
-    force: true
-
-# motd is not used as Ubuntu has its own update-motd framework for dynamic motd generation
-# while for RedHat there is only /etc/motd that doesn't support simple configuration for colored output
-- name: Configure login message
-  template:
-    src: motd.j2
-    dest: /etc/profile.d/motd.sh
-    mode: u=rwx,go=rx
-    owner: root
-    group: root
 
 - name: Prompt colors
   copy:
@@ -110,7 +91,7 @@
   template:
     src: hosts.j2
     dest: /etc/hosts
-    mode: 0644
+    mode: u=rw,o=r
     owner: root
     group: root
 
@@ -118,11 +99,11 @@
   tags:
     - epiuser
 
-- include_tasks: os_users.yml
+- include_tasks: os-users.yml
   when:
     - specification.users is defined and specification.users | list | length > 0
   tags:
-    - os_users
+    - os-users
 
 - include_tasks: security.yml
   tags:

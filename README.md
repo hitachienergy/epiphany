@@ -32,7 +32,7 @@ We currently use Terraform and Ansible for our automation orchestration. All aut
 
 ### Epicli
 
-Use the following command to see a full run-down of all commands and flags:
+Use the following command to see a full run-down of all [epicli](https://github.com/epiphany-platform/epiphany/blob/develop/docs/home/howto/PREREQUISITES.md#run-epicli-from-docker-image) commands and flags:
 
 ```shell
 epicli --help
@@ -44,20 +44,21 @@ Generate a new minimum cluster definition:
 epicli init -p aws -n demo
 ```
 
-This minimum file definition is fine to start with, if you need more control over the infrastructure created you can also create a full definition:
+This minimum file definition is fine to start with, however if you need more control over the infrastructure created you can also create a full definition:
 
 ```shell
 epicli init -p aws -n demo --full
 ```
+and this will create a cluster definition with all available in Epiphany components.
 
 You will need to modify a few values (like your AWS secrets, directory path for SSH keys). Once you are done with `demo.yml` you can start cluster deployment by executing:
 
 ```shell
 epicli apply -f demo.yml
 ```
-You will be asked for a password that will be used for encryption of some of build artifacts. More information [here](docs/home/howto/SECURITY.md#how-to-run-epicli-with-password)
+You will be asked for a password that will be used for encryption of some of build artifacts. More information [here](docs/home/howto/SECURITY.md#how-to-run-epicli-with-password).
 
-Since version 0.7 epicli has an option to backup/recovery some of its components. More information [here](https://github.com/epiphany-platform/epiphany/blob/develop/docs/home/howto/BACKUP.md)
+Since version 0.7 epicli has an option to backup/recovery some of its components. More information [here](https://github.com/epiphany-platform/epiphany/blob/develop/docs/home/howto/BACKUP.md).
 ```shell
 epicli backup -f <file.yml> -b <build_folder>
 epicli recovery -f <file.yml> -b <build_folder>

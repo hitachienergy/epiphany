@@ -15,13 +15,13 @@
         block: |
           # to have multiple unique filenames per day when dateext option is set
           dateformat -%Y%m%dH%H
-        backup: yes
+        backup: true
 
     - name: Copy logrotate script from /etc/cron.daily to /etc/cron.hourly
       copy:
         src: /etc/cron.daily/logrotate
         dest: /etc/cron.hourly/logrotate
-        remote_src: yes
+        remote_src: true
         mode: preserve
       register: copy_logrotate_script
 
