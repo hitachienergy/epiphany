@@ -1,85 +1,120 @@
 ---
 # Based on https://ubuntu.com/server/docs/upgrade-introduction
 
-- name: Upgrade Ubuntu to the latest release
+- name: Upgrade Ubuntu release
   hosts: all
   become: true
   vars:
-    reboot_connect_timeout: 5  # maximum seconds to wait for a successful connection to the managed hosts before trying again
-    reboot_timeout: 300  # default 600
-  tasks:
-    - when: ansible_os_family == 'Debian'
-      block:
-        - name: Print OS version before upgrade
-          debug:
-            var: ansible_distribution_version
+    target_os_version: 20.04
 
-        # 1) Fully update the system
+    apt:
+      tmp_config_file: 99-disable-auto-upgrades-tmp
+    reboot:
+      connect_timeout: 5  # maximum seconds to wait for a successful connection to the managed hosts before trying again
+      timeout: 300  # default 600
+  tasks:
+    - name: Upgrade OS release
+      when:
+        - ansible_os_family == 'Debian'
+        - ansible_distribution_version is version(target_os_version, '<')
+      block:
+        - &print_os_facts
+          name: Print OS facts
+          debug:
+            msg:
+              - "ansible_distribution_version: {{ ansible_distribution_version }}"
+              - "ansible_kernel: {{ ansible_kernel }}"
+
+        # 1) Disable auto-upgrades to avoid apt lock error
+
+        - name: Disable auto-upgrades
+          copy:
+            dest: /etc/apt/apt.conf.d/{{ apt.tmp_config_file }}
+            content: |-
+              # Temporary file created by Ansible on OS release upgrade time
+              APT::Periodic::Enable "0";
+            mode: u=rw,g=r,o=r
+
+        # 2) Wait for release of apt lock
+
+        - name: Wait for release of apt lock
+          command: apt-get check
+          retries: 600  # 10 min
+          delay: 1
+          until: result is succeeded
+          register: result
+          changed_when: false
+          args:
+            warn: false  # do not suggest apt module
+
+        # 3) Fully update the system
+
         - name: Update apt cache
           apt:
             update_cache: true
             force_apt_get: true
-            cache_valid_time: 3600  # 1h
+            cache_valid_time: 3600  # 1 h
 
-        - name: Upgrade packages
+        - name: Install all updates
           apt:
-            upgrade: safe  # do not remove packages
+            upgrade: safe  # equivalent of 'apt upgrade'
 
-        # 2) Reboot the system (to use the latest kernel)
-        - name: Check if reboot is required
-          register: stat_reboot_file
-          stat:
-            path: /var/run/reboot-required
-            get_attributes: false
-            get_checksum: false
-            get_mime: false
+        # 4) Reboot the system (to use the latest kernel)
 
-        - name: Reboot host
-          reboot:
-            msg: Reboot initiated by Ansible due to kernel update
-            connect_timeout: "{{ reboot_connect_timeout }}"
-            reboot_timeout: "{{ reboot_timeout }}"
-          when: stat_reboot_file.stat.exists
+        - &reboot_host_if_needed
+          name: Reboot host when needed
+          block:
+            - name: Check if reboot is required
+              register: stat_reboot_file
+              stat:
+                path: /var/run/reboot-required
+                get_attributes: false
+                get_checksum: false
+                get_mime: false
 
-        # 3) Remove unused packages
+            - name: Reboot host
+              reboot:
+                msg: Reboot initiated by Ansible due to kernel update
+                connect_timeout: "{{ reboot.connect_timeout }}"
+                reboot_timeout: "{{ reboot.timeout }}"
+              when: stat_reboot_file.stat.exists
+
+        # 5) Remove unused packages
+
         - name: Remove unused packages
           apt:
             autoremove: true
             purge: true
 
-        # 4) Upgrade OS release
+        # 6) Upgrade OS release
+
         - name: Upgrade OS release
           command: do-release-upgrade -f DistUpgradeViewNonInteractive
           retries: 3  # for network related errors like 'unable to contact snap store'
           delay: 1
+          until: result is succeeded
           register: result
-          until: result.rc == 0
 
-        # 5) Reboot the system (to use the latest kernel)
-        - name: Check if reboot is required
-          register: stat_reboot_file
-          stat:
-            path: /var/run/reboot-required
-            get_attributes: false
-            get_checksum: false
-            get_mime: false
+        # 7) Reboot the system (to use the latest kernel)
 
-        - name: Reboot host after release upgrade
-          reboot:
-            msg: Reboot initiated by Ansible due to kernel update
-            connect_timeout: "{{ reboot_connect_timeout }}"
-            reboot_timeout: "{{ reboot_timeout }}"
-          when: stat_reboot_file.stat.exists
+        - *reboot_host_if_needed
 
-        - name: Refresh Ansible facts
-          ansible.builtin.setup:
-            gather_subset:
-              - min
+        - name: Refresh Ansible facts  # for verification
+          setup:
+            gather_subset: min
 
-        - name: Print kernel after upgrade
-          debug:
-            var: ansible_kernel
+    # 8) Ensure apt config is restored
 
-        - name: Print OS version after upgrade
-          debug:
-            var: ansible_distribution_version
+    - name: Remove temporary apt config file
+      file:
+        path: /etc/apt/apt.conf.d/{{ apt.tmp_config_file }}
+        state: absent
+
+    # 9) Verify OS version
+
+    - *print_os_facts
+
+    - name: Assert OS version
+      assert:
+        that: ansible_distribution_version is version(target_os_version, '>=')
+        quiet: true
