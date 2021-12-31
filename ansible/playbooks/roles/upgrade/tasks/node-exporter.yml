@@ -74,7 +74,7 @@
   set_fact:
     exporter_current_version: "{{ exporter_current_version_out.stdout_lines[0] | regex_replace('^.*version ([0-9.]+) .*$', '\\1') }}"
 
-- name: Node Exporter as System Service | Print version
+- name: Node Exporter as System Service | Print versions
   debug:
     msg:
       - "Installed version: {{ exporter_current_version }}"
