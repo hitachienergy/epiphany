@@ -55,7 +55,7 @@
       when:
         - node_exporter_release_exists
         - exporter_defaults.exporter.version != node_exporter_current_version or
-          node_exporter_release_ns == "default"
+          exporter_defaults.monitoring_chart_namespace != node_exporter_release_ns
       block:
         - name: "Include uninstall task for Node Exporter as DaemonSet in {{ node_exporter_release_ns }} ns for K8s as cloud service mode"
           include_role:
