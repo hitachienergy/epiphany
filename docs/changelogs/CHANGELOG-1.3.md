@@ -4,6 +4,7 @@
 
 ### Added
 
+- [#2782](https://github.com/epiphany-platform/epiphany/issues/2782) - Assure Node-Exporter is upgraded in its relevant namespace
 - [#1306](https://github.com/epiphany-platform/epiphany/issues/1306) - Allow to check on VMs which epicli version was used to deploy/upgrade components
 - [#1487](https://github.com/epiphany-platform/epiphany/issues/1487) - Add RabbitMQ monitoring
 - [#2600](https://github.com/epiphany-platform/epiphany/issues/2600) - Change epicli output structure
@@ -45,6 +46,7 @@
   - Upgrade Flannel to v0.14.0
   - Upgrade Kubernetes dashboard to v2.3.1
   - Upgrade Kubernetes metrics-scraper to v1.0.7
+- [#2747](https://github.com/epiphany-platform/epiphany/issues/2747) - Upgrade Node-Exporter to v1.3.1
 - [#2494](https://github.com/epiphany-platform/epiphany/issues/2494) - Duplicated MOTD after ssh to servers
 - [#2715](https://github.com/epiphany-platform/epiphany/issues/2715) - Change user login message to show current epicli version
 - [#1974](https://github.com/epiphany-platform/epiphany/issues/1974) - [documentation] Azure Files Persistent Volume Support
