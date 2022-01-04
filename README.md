@@ -2,6 +2,11 @@
 [![GitHub release](https://img.shields.io/github/v/release/epiphany-platform/epiphany.svg)](https://github.com/epiphany-platform/epiphany/releases)
 [![Github license](https://img.shields.io/github/license/epiphany-platform/epiphany)](https://github.com/epiphany-platform/epiphany/releases)
 
+## Deprecation Note
+
+At the link presented below you can find the information about deprecated components with plan of removal from Epiphany.
+[Deprecation Note](docs/home/DEPRECATION-NOTE.md)
+
 ## Overview
 
 Epiphany at its core is a full automation of Kubernetes and Docker plus additional builtin services/components like:
@@ -83,7 +88,6 @@ Find more information using table of contents below - especially the [How-to gui
   - [Security](docs/home/SECURITY.md)
   - [Troubleshooting](docs/home/TROUBLESHOOTING.md)
   - [Changelog](CHANGELOG.md)
-  - [Deprecation Note](docs/home/DEPRECATION-NOTE.md)
   - [Release policy and lifecycle](docs/home/LIFECYCLE.md)
 - Architecture
   - [Logical View](docs/architecture/logical-view.md)
