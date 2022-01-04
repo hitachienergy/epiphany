@@ -17,7 +17,6 @@ Exporter | Component | Description
 `Node exporter` | OS/Hardware metrics | [description](https://prometheus.io/docs/guides/node-exporter/)
 `Kafka exporter` | Kafka metrics | [description](https://github.com/danielqsj/kafka_exporter)
 `JMX exporter` | JVM metrics (Kafka, Zookeeper) | [description](https://github.com/prometheus/jmx_exporter)
-`HAProxy exporter` | HAProxy metrics | [description](https://github.com/prometheus/haproxy_exporter)
 `cAdvisor` | Container metrics (Kubernetes, Docker) | [description](https://prometheus.io/docs/guides/cadvisor/)
 
 ### Prometheus

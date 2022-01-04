@@ -30,7 +30,6 @@ Note that versions are default versions and can be changed in certain cases thro
 | Node Exporter              | 1.3.1    | https://github.com/prometheus/node_exporter           | [Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0) |
 | Bitnami Node Exporter Helm Chart      | 1.1.2    | https://github.com/bitnami/charts          | [Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0) |
 | Kafka Exporter             | 1.4.0    | https://github.com/danielqsj/kafka_exporter           | [Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0) |
-| HAProxy Exporter           | 0.10.0   | https://github.com/prometheus/haproxy_exporter        | [Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0) |
 | JMX Exporter               | 0.16.1   | https://github.com/prometheus/jmx_exporter            | [Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0) |
 | Postgres Exporter          | 0.9.0    | https://github.com/prometheus-community/postgres_exporter | [Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0) |
 | PostgreSQL                 | 13       | https://www.postgresql.org/                           | [PostgreSQL license](http://www.postgresql.org/about/licence/)    |
@@ -237,7 +236,7 @@ Note that versions are default versions and can be changed in certain cases thro
 | RabbitMQ Monitoring | 4279 | https://grafana.com/grafana/dashboards/4279 | [MIT License](https://github.com/kbudde/rabbitmq_exporter/blob/main/LICENSE) |
 | Node Exporter Full | 1860 | https://grafana.com/grafana/dashboards/1860 | [LGPL-3.0 License](https://github.com/rfrail3/grafana-dashboards/blob/master/LICENSE) |
 | Kafka Exporter Overview | 7589 | https://grafana.com/grafana/dashboards/7589 | [Apache License 2.0](https://github.com/danielqsj/kafka_exporter/blob/master/LICENSE) |
-| HAproxy Servers \| HAproxy | 367 | https://grafana.com/grafana/dashboards/367 | None |
+| HaProxy backend (or frontend/servers) | 789 | https://grafana.com/grafana/dashboards/367 | None, [Source Code](https://github.com/tcheronneau/grafana_dashboard) | |
 | Docker and Host Monitoring w/ Prometheus | 179 | https://grafana.com/grafana/dashboards/179 | [MIT License](https://github.com/vegasbrianc/prometheus/blob/master/LICENSE) |
 | Kubernetes pod and cluster monitoring (via Prometheus) | 6663 | https://grafana.com/grafana/dashboards/6663 | None |
-| RabbitMQ cluster monitoring (via Prometheus) | 10991 | https://grafana.com/grafana/dashboards/10991 | None |
+| RabbitMQ cluster monitoring (via Prometheus) | 10991 | https://grafana.com/grafana/dashboards/10991 | [License](https://github.com/rabbitmq/rabbitmq-server/blob/master/LICENSE), [Source Code](https://github.com/rabbitmq/rabbitmq-server/blob/master/deps/rabbitmq_prometheus/docker/grafana/dashboards/RabbitMQ-Overview.json) |

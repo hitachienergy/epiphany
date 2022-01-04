@@ -20,12 +20,23 @@ properties:
         type: boolean
       bind_address:
         type: string
+      port:
+        type: integer
       uri:
         type: string
       user:
         type: string
       password:
         type: string
+      metrics:
+        type: object
+        properties:
+          enable:
+            type: boolean
+          bind_address:
+            type: string
+          port:
+            type: integer
   frontend:
     type: array
     items:

@@ -6,6 +6,7 @@ kube_apiserver_secure_port = 6443
 alertmanager_host = 'localhost'
 alertmanager_port = 9093
 kubelet_port = 10250
+haproxy_metrics_port = 9101
 
 describe 'Check if Prometheus user exists' do
   describe group('prometheus') do
@@ -101,24 +102,24 @@ describe 'Check connection to Node Exporter hosts' do
     end
 end
 
-describe 'Check configuration files for HAProxy Exporter' do
-    listInventoryHosts("haproxy_exporter").each do |val|
-        describe command("ls /etc/prometheus/file_sd") do
+describe 'Check Prometheus configuration if exist HAproxy target' do
+    listInventoryHosts("haproxy").each do |val|
+        describe command("cat /etc/prometheus/prometheus.yml") do
         let(:disable_sudo) { false }
-        its(:stdout) { should match /haproxy-exporter-#{val}.yml/ }
+        its(:stdout) { should include "#{val}:#{haproxy_metrics_port}" }
         end
     end
 end
 
-describe 'Check connection to HAProxy Exporter hosts' do
-    listInventoryHosts("haproxy_exporter").each do |val|
-        let(:disable_sudo) { false }
-        describe command("curl -o /dev/null -s -w '%{http_code}' $(grep -oP \"(?<=targets: \\\[\').*(?=\'\\\])\" /etc/prometheus/file_sd/haproxy-exporter-#{val}.yml)/metrics") do
-          it "is expected to be equal" do
-            expect(subject.stdout.to_i).to eq 200
+describe 'Check connection HAproxy metrics endpoint' do
+      listInventoryHosts("haproxy").each do |val|
+          let(:disable_sudo) { false }
+          describe command("curl -o /dev/null -s -w '%{http_code}' #{val}:#{haproxy_metrics_port}/metrics") do
+            it "is expected to be equal" do
+              expect(subject.stdout.to_i).to eq 200
+            end
           end
-        end
-    end
+      end
 end
 
 describe 'Check configuration files for JMX Exporter' do
@@ -257,7 +258,7 @@ end
 #         its(:stdout) { should_not match /FAILED/ }
 #         its(:exit_status) { should eq 0 }
 #       end
-#     end 
+#     end
 
 #   describe 'Check if it is possible to create a rule checking if node is up' do
 #     describe command("cp -p /etc/prometheus/rules/UpDown.rules /etc/prometheus/rules/TEST_RULE.rules && sed -i 's/UpDown/TEST_RULE/g; s/down/up/g; s/== 0/== 1/g; \
@@ -279,8 +280,8 @@ end
 #       its(:stdout) { should match /READY/ }
 #       its(:exit_status) { should eq 0 }
 #     end
-#   end 
-  
+#   end
+
 #   # Tests for Alertmanager assuming monitoring.alerts.enable == true and monitoring.alerts.handlers.mail.enable == true
 
 #   if readDataYaml["monitoring"]["alerts"]["handlers"]["mail"]["enable"] == true
@@ -290,7 +291,7 @@ end
 #         let(:disable_sudo) { false }
 #         it { should be_listening }
 #       end
-#     end 
+#     end
 
 #     describe 'Check if Alertmanager service is running' do
 #       describe service('alertmanager') do
@@ -319,7 +320,7 @@ end
 #       describe command("curl -XPOST -d '[{\"labels\":{\"alertname\":\"TEST ALERT\", \"severity\":\"critical\"}}]' #{alertmanager_host}:#{alertmanager_port}/api/v1/alerts") do
 #         its(:stdout_as_json) { should include('status' => 'success') }
 #       end
-#     end 
+#     end
 
 #   end
 # end

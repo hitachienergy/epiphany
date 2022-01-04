@@ -222,7 +222,6 @@ There are many monitoring components deployed with Epiphany that you can visuali
 List of monitoring components - so called exporters:
 
 - cAdvisor
-- HAProxy Exporter
 - JMX Exporter
 - Kafka Exporter
 - Node Exporter
@@ -329,6 +328,27 @@ specification:
 ### Upgrade of Elasticsearch, Kibana and Filebeat
 
 During upgrade Epiphany takes `kibanaserver` (for Kibana) and `logstash` (for Filebeat) user passwords and re-applies them to upgraded configuration of Filebeat and Kibana. Epiphany upgrade of Open Distro, Kibana or Filebeat will fail if `kibanaserver` or `logstash` usernames were changed in configuration of Kibana, Filebeat or Open Distro for Elasticsearch.
+
+# HAProxy
+
+## How to enable HAProxy monitoring
+
+HAProxy metrics are enabled by default. To disable change `specification/metrics/enable` to `false`:
+
+```yaml
+kind: configuration/haproxy
+title: "HAProxy"
+provider: any
+name: default
+specification:
+  metrics:
+    enable: true
+    bind_address: "*"
+    port: 9101
+```
+
+You can also change the rest of parameters but note, that you would have to change your security group as well.
+
 
 # RabbitMQ
 

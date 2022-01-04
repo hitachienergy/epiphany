@@ -3,8 +3,9 @@ require 'spec_helper'
 haproxy_host = 'localhost'
 haproxy_front_port = 443
 haproxy_stats_port = 9000
+haproxy_metrics_port = 9101
 
-# Running systemctl status command as "is-active" returns "unknown" in result 
+# Running systemctl status command as "is-active" returns "unknown" in result
 # https://bugzilla.redhat.com/show_bug.cgi?id=1073481
 
 describe 'Checking HAProxy service status' do
@@ -37,7 +38,10 @@ describe 'Checking if the ports are open' do
   describe port(haproxy_stats_port) do
     it { should be_listening }
   end
-end 
+  describe port(haproxy_metrics_port) do
+    it { should be_listening }
+  end
+end
 
 describe 'Checking SSL certificates' do
   describe file('/etc/ssl/haproxy') do
@@ -84,3 +88,18 @@ describe 'Checking HAProxy HTTP status code for stats page' do
   end
 end
 
+describe 'Checking HAProxy HTTP status code for metrics page' do
+  describe command("curl -k -o /dev/null -s -w '%{http_code}' http://#{haproxy_host}:#{haproxy_metrics_port}/metrics") do
+    it "is expected to be equal" do
+      expect(subject.stdout.to_i).to eq 200
+    end
+  end
+end
+
+describe 'Checking if it is possible to collect the metrics from HAProxy' do
+  describe command("curl -s http://#{haproxy_host}:#{haproxy_metrics_port}/metrics") do
+    its(:stdout) { should include "haproxy_process_nbthread" }
+    its(:stdout) { should include "haproxy_process_current_tasks" }
+    its(:exit_status) { should eq 0 }
+  end
+end
