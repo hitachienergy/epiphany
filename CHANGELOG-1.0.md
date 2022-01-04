@@ -23,6 +23,7 @@
 - [#1221](https://github.com/epiphany-platform/epiphany/issues/1221) - kafka-exporter service doesn't start after restarting kafka VMs
 - [#2332](https://github.com/epiphany-platform/epiphany/issues/2332) - [Elasticsearch] Error when having multiple VMs and non-clustered mode
 - [#2707](https://github.com/epiphany-platform/epiphany/issues/2707) - Fix logging component backup
+- [#2831](https://github.com/epiphany-platform/epiphany/issues/2831) - Fix postgres-exporter service errror: Error opening connection to database
 
 ## [1.0.1] 2021-07-16
 
