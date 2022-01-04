@@ -12,7 +12,7 @@ There is an assertion to check whether K8s version is supported before running u
 
 ---
 
-- Kubernetes (master and nodes). Supported versions: v1.18.6 (Epiphany 0.7.1+), v1.20.12 (Epiphany 1.3.0+)
+- Kubernetes (master and nodes). Supported versions: v1.18.6 (Epiphany 0.7.1+), v1.22.4 (Epiphany 1.3.0+)
 - common: Upgrades all common configurations to match them to current Epiphany version
 - repository: Adds the repository role needed for component installation in current Epiphany version
 - image_registry: Adds the image_registry role needed for offline installation in current Epiphany version
