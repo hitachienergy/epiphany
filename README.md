@@ -2,11 +2,6 @@
 [![GitHub release](https://img.shields.io/github/v/release/epiphany-platform/epiphany.svg)](https://github.com/epiphany-platform/epiphany/releases)
 [![Github license](https://img.shields.io/github/license/epiphany-platform/epiphany)](https://github.com/epiphany-platform/epiphany/releases)
 
-## Deprecation Note
-
-At the link presented below you can find the information about deprecated components with plan of removal from Epiphany.
-[Deprecation Note](docs/home/DEPRECATION-NOTE.md)
-
 ## Overview
 
 Epiphany at its core is a full automation of Kubernetes and Docker plus additional builtin services/components like:
@@ -32,6 +27,11 @@ We currently use Terraform and Ansible for our automation orchestration. All aut
 ## Note about documentation
 
 - The documentation is a moving target. Always check the latest documentation on the develop branch. There is a big chance that whatever you are looking for is already added/updated or improved there.
+
+## Deprecation Note
+
+At the link presented below you can find the information about deprecated components with plan of removal from Epiphany.
+[Deprecation Note](docs/home/DEPRECATION-NOTE.md)
 
 ## Quickstart
 
