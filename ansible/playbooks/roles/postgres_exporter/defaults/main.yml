@@ -6,3 +6,4 @@ exporter:
     aarch64: "postgres_exporter-0.10.0.linux-arm64.tar.gz"
   service:
     description: "Service that runs Postgres Exporter"
+  binary_path: /opt/postgres_exporter/postgres_exporter

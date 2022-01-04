@@ -335,10 +335,11 @@
   become: true
   become_method: sudo
   tasks:
-    - import_role:
-        name: upgrade
-        tasks_from: postgres-exporter
-      when: "'postgresql_exporter' in upgrade_components or upgrade_components|length == 0"
+    - include_role:
+        name: postgres_exporter
+        tasks_from: upgrade/main
+      vars: { lock_file: /var/tmp/postgres-exporter-upgrade-in-progress.flag }
+      when: "'postgres_exporter' in upgrade_components or upgrade_components|length == 0"
 
 - hosts: prometheus
   become: true

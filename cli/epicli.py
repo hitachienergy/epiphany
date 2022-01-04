@@ -262,7 +262,7 @@ def upgrade_parser(subparsers):
         'node_exporter',
         'opendistro_for_elasticsearch',
         'postgresql',
-        'postgresql_exporter',
+        'postgres_exporter',
         'prometheus',
         'rabbitmq',
         'zookeeper',

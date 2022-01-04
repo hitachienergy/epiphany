@@ -50,7 +50,7 @@
     remote_src: yes
     src: "{{ download_directory }}/{{ exporter_file_name }}"
     dest: "/opt/postgres_exporter"
-    creates: "/opt/postgres_exporter/postgres_exporter"
+    creates: "{{ exporter.binary_path }}"
     extra_opts: [--strip-components=1]
     mode: u=rwx,go=rx
     owner: root
