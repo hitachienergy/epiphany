@@ -135,10 +135,6 @@
     path: "{{ upgrade_defaults.state_file_path }}"
     state: absent
 
-- name: Load Prometheus vars
-  include_vars:
-    file: vars/main.yml
-
 # Can be removed after 1.2 deprecation
 - name: Find haproxy-exporter targets
   find:
@@ -152,29 +148,34 @@
     path: "{{ item }}"
     state: absent
   loop: "{{ haproxy_exporter_filesd.files | map(attribute='path') }}"
+  notify: Restart Prometheus
 
-- name: Slurp Prometheus config
-  slurp:
-    src: /etc/prometheus/prometheus.yml
-  register: _prometheus_config
-
-- name: Reconfigure Prometheus | Set facts
+- name: Check HAproxy
+  when:
+    - groups.haproxy is defined
+    - groups.haproxy | length > 0
   block:
-  - name: Reconfigure Prometheus | Set facts
-    set_fact:
-      api_server_address: "{{ item.kubernetes_sd_configs | map(attribute='api_server') | first }}"
-      bearer_token: "{{ item.kubernetes_sd_configs | map(attribute='bearer_token') | first }}"
-    when: '"kubernetes_sd_configs" in {{ item }}'
-    with_items: "{{ prometheus_config.scrape_configs }}"
-    vars:
-      prometheus_config: "{{ _prometheus_config.content | b64decode | from_yaml }}"
-    no_log: true
-    register: set_prometheus_facts
+    - name: Load HAproxy's config vars
+      include_vars:
+        file: roles/haproxy/vars/main.yml
+        name: haproxy_config
 
-  rescue:
-  - name: Reconfigure Prometheus | Show error log
-    debug:
-      msg: "{{ set_prometheus_facts }}"
+    - name: Set fact about HAproxy monitoring
+      set_fact:
+        haproxy_monitoring_enabled: "{{ haproxy_config.specification.metrics.enable }}"
+        haproxy_monitoring_port: "{{ haproxy_config.specification.metrics.port }}"
 
-- name: Reconfigure Prometheus
-  include_tasks: configure.yml
+    - name: Add HAproxy target to Prometheus config
+      when: haproxy_monitoring_enabled
+      blockinfile:
+        path: /etc/prometheus/prometheus.yml
+        backup: true
+        block: |2
+            - job_name: 'haproxy'
+              static_configs:
+                - targets:
+                  {% for haproxy_node in groups['haproxy'] -%}
+                  - "{{ haproxy_node }}:{{ haproxy_monitoring_port }}"
+                  {% endfor %}
+        insertafter: 'scrape_configs:'
+      notify: Restart Prometheus
