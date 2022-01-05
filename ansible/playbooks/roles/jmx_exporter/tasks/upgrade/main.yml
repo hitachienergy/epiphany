@@ -41,9 +41,7 @@
         msg: "Skipping upgrade: JMX Exporter in the same or newer version already installed!"
 
 - name: Upgrade | jmx-exporter
-  when: >
-    jmx_exporter_version.old is version( jmx_exporter_version.new, '<' ) or
-    lock_file_status.stat.exists
+  when: lock_file_status.stat.exists or jmx_exporter_version.old is version( jmx_exporter_version.new, '<' )
   block:
     - name: Create upgrade flag file
       file:
