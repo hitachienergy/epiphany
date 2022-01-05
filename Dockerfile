@@ -32,6 +32,11 @@ RUN : INSTALL APT REQUIREMENTS \
     && tar -xzof istioctl-${ISTIOCTL_VERSION}-linux-amd64.tar.gz -C /usr/local/bin istioctl \
     && rm istioctl-${ISTIOCTL_VERSION}-linux-amd64.tar.gz \
     && chmod +x /usr/local/bin/istioctl \
+    && : INSTALL TERRAFORM BINARY \
+    && curl -fsSLO https://releases.hashicorp.com/terraform/${TERRAFORM_VERSION}/terraform_${TERRAFORM_VERSION}_linux_amd64.zip \
+    && unzip terraform_${TERRAFORM_VERSION}_linux_amd64.zip -d /usr/local/bin \
+    && rm terraform_${TERRAFORM_VERSION}_linux_amd64.zip \
+    && terraform version \
 \
     && : INSTALL GEM REQUIREMENTS \
     && gem install \
