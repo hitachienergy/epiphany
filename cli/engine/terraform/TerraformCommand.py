@@ -42,7 +42,7 @@ class TerraformCommand:
             cmd.append(f'-state={self.working_directory}/terraform.tfstate')
 
         if auto_approve:
-            cmd.append('-input=false')
+            cmd.append('-auto-approve')
 
         cmd.append('-no-color')
 
