@@ -1,22 +1,24 @@
 ---
+- name: k8s | Wait for kube-apiserver
+  delegate_to: >-
+    {{ inventory_hostname if inventory_hostname in groups.kubernetes_master else
+      groups.kubernetes_master[0] }}
+  import_tasks: kubernetes/utils/wait-for-kube-apiserver.yml
+
 # During HA control plane upgrade server address in kubeconfig is switched to local for
 #   * compatibility between client and server versions
 #   * identifying correct server version
-
 - name: k8s/master | Switch apiserver address to local
   include_tasks: kubernetes/utils/set-local-apiserver.yml # sets kubectl_context_cluster
   when:
     - groups.kubernetes_master | length > 1
     - inventory_hostname in groups.kubernetes_master
 
-- name: Wait for kube-apiserver and get cluster version
+- name: Get cluster version and set version facts
   delegate_to: >-
     {{ inventory_hostname if inventory_hostname in groups.kubernetes_master else
       groups.kubernetes_master[0] }}
   block:
-    - name: k8s | Include wait-for-kube-apiserver.yml
-      import_tasks: kubernetes/utils/wait-for-kube-apiserver.yml
-
     - name: k8s | Include get-cluster-version.yml
       import_tasks: kubernetes/get-cluster-version.yml
 
