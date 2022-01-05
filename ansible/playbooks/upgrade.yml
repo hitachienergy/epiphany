@@ -331,6 +331,16 @@
         tasks_from: upgrade/main
       when: "'postgresql' in upgrade_components or upgrade_components|length == 0"
 
+- hosts: postgres_exporter
+  become: true
+  become_method: sudo
+  tasks:
+    - include_role:
+        name: postgres_exporter
+        tasks_from: upgrade/main
+      vars: { lock_file: /var/tmp/postgres-exporter-upgrade-in-progress.flag }
+      when: "'postgres_exporter' in upgrade_components or upgrade_components|length == 0"
+
 - hosts: prometheus
   become: true
   become_method: sudo
