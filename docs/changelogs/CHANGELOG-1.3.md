@@ -4,6 +4,7 @@
 
 ### Added
 
+- [#1331](https://github.com/epiphany-platform/epiphany/issues/1331) - Support for Ubuntu 20.04 LTS
 - [#2782](https://github.com/epiphany-platform/epiphany/issues/2782) - Assure Node-Exporter is upgraded in its relevant namespace
 - [#1306](https://github.com/epiphany-platform/epiphany/issues/1306) - Allow to check on VMs which epicli version was used to deploy/upgrade components
 - [#1487](https://github.com/epiphany-platform/epiphany/issues/1487) - Add RabbitMQ monitoring
@@ -69,6 +70,7 @@
 
 ### Removed
 
+- Support for Ubuntu 18.04
 - [#2680](https://github.com/epiphany-platform/epiphany/issues/2680) - Remove PgBouncer standalone installation
 - [#1739](https://github.com/epiphany-platform/epiphany/issues/1739) - Replace standalone HAproxy-exporter by embedded one
 
@@ -76,6 +78,7 @@
 
 ### Breaking changes
 
+- Ubuntu 18.04 is not supported. For Ubuntu, only release 20.04 is supported and upgrade from 18.04 is not handled by Epiphany.
 - PgBouncer available only as Kubernetes service
 
 ### Known issues
