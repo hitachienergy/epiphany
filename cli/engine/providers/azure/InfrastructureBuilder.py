@@ -86,8 +86,8 @@ class InfrastructureBuilder(Step):
                     nsg = self.get_network_security_group(component_key,
                                                             vm_config.specification.security.rules,
                                                             0)
-                    infrastructure.append(nsg)
 
+                    infrastructure.append(nsg)
                     subnet_nsg_association = self.get_subnet_network_security_group_association(component_key,
                                                                                         subnet.specification.name,
                                                                                         nsg.specification.name,
@@ -105,9 +105,6 @@ class InfrastructureBuilder(Step):
                     if availability_set is not None:
                         infrastructure.append(availability_set)
 
-            #TODO: For now we create the VM infrastructure compatible with the Epiphany 2.x
-            #      code line but later we might want to look at scale sets to achieve the same result:
-            #      https://www.terraform.io/docs/providers/azurerm/r/virtual_machine_scale_set.html
             for index in range(vm_count):
                 public_ip_name = ''
                 if self.cluster_model.specification.cloud.use_public_ips:
@@ -117,18 +114,21 @@ class InfrastructureBuilder(Step):
                     infrastructure.append(public_ip)
                     public_ip_name = public_ip.specification.name
 
-                if self.use_network_security_groups:
-                    nsg_name = nsg.specification.name
-                else:
-                    nsg_name = ''
-
                 network_interface = self.get_network_interface(component_key,
                                                                vm_config,
                                                                subnet.specification.name,
-                                                               nsg_name,
                                                                public_ip_name,
+                                                               subnet_nsg_association.specification.name,
                                                                index)
                 infrastructure.append(network_interface)
+
+                if self.use_network_security_groups:
+                    nic_nsg_association = self.get_network_interface_security_group_association(
+                                                               component_key,
+                                                               network_interface.specification.name,
+                                                               nsg.specification.name,
+                                                               index)
+                    infrastructure.append(nic_nsg_association)
 
                 vm = self.get_vm(component_key, vm_config, availability_set,
                                  network_interface.specification.name, index)
@@ -183,11 +183,18 @@ class InfrastructureBuilder(Step):
         ssga.specification.security_group_name = security_group_name
         return ssga
 
-    def get_network_interface(self, component_key, vm_config, subnet_name, security_group_name, public_ip_name, index):
+    def get_network_interface_security_group_association(self, component_key, network_interface_name, security_group_name, index):
+        nsga = self.get_config_or_default(self.docs, 'infrastructure/network-interface-security-group-association')
+        nsga.specification.name = resource_name(self.cluster_prefix, self.cluster_name, 'nsga' + '-' + str(index), component_key)
+        nsga.specification.network_interface_name = network_interface_name
+        nsga.specification.security_group_name = security_group_name
+        return nsga
+
+    def get_network_interface(self, component_key, vm_config, subnet_name, public_ip_name, security_group_association_name, index):
         network_interface = self.get_config_or_default(self.docs, 'infrastructure/network-interface')
         network_interface.specification.name = resource_name(self.cluster_prefix, self.cluster_name, 'nic' + '-' + str(index), component_key)
         network_interface.specification.use_network_security_groups = self.use_network_security_groups
-        network_interface.specification.security_group_name = security_group_name
+        network_interface.specification.security_group_association_name = security_group_association_name
         network_interface.specification.ip_configuration_name = resource_name(self.cluster_prefix, self.cluster_name, 'ipconf' + '-' + str(index), component_key)
         network_interface.specification.subnet_name = subnet_name
         network_interface.specification.use_public_ip = self.cluster_model.specification.cloud.use_public_ips
