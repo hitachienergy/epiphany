@@ -1,16 +1,36 @@
 ---
-- name: Load RabbitMQ's config vars
-  include_vars:
-    file: roles/rabbitmq/vars/main.yml
-    name: rabbitmq_config
+- name: Check if Alertmanager is enabled
+  set_fact:
+    is_alertmanager_enabled: "{{ specification.alertmanager.enable | bool and (specification.alertmanager.config.receivers | length>0 ) }}"
+
+- name: Check RabbitMQ
   when:
     - groups.rabbitmq is defined
     - groups.rabbitmq | length > 0
+  block:
+    - name: Load RabbitMQ's config vars
+      include_vars:
+        file: roles/rabbitmq/vars/main.yml
+        name: rabbitmq_config
 
-- name: Set fact about RabbitMQ monitoring
-  set_fact:
-    rabbitmq_monitoring_enabled: "{{ rabbitmq_config.specification.rabbitmq_monitoring_enabled }}"
-  when: rabbitmq_config is defined
+    - name: Set fact about RabbitMQ monitoring
+      set_fact:
+        rabbitmq_monitoring_enabled: "{{ rabbitmq_config.specification.rabbitmq_monitoring_enabled }}"
+
+- name: Check HAproxy
+  when:
+    - groups.haproxy is defined
+    - groups.haproxy | length > 0
+  block:
+    - name: Load HAproxy's config vars
+      include_vars:
+        file: roles/haproxy/vars/main.yml
+        name: haproxy_config
+
+    - name: Set fact about HAproxy monitoring
+      set_fact:
+        haproxy_monitoring_enabled: "{{ haproxy_config.specification.metrics.enable }}"
+        haproxy_monitoring_port: "{{ haproxy_config.specification.metrics.port }}"
 
 - name: Configure prometheus
   template:
@@ -21,6 +41,7 @@
     group: prometheus
     mode: u=rw,g=r,o=
     validate: "/usr/local/bin/promtool check config %s"
+    backup: true
   notify:
     - Restart Prometheus
 

@@ -21,7 +21,6 @@ This setting can be changed in Epiphany yaml configuration files.
 
 Additional to users created by each component Epiphany creates also users and groups:
 
-- haproxy_exporter/haproxy_exporter
 - kafka_exporter/kafka_exporter
 - node_exporter/node_exporter
 - jmx-exporter/jmx-exporter
@@ -123,8 +122,8 @@ different values. The list does not include ports that are bound to the loopback
 
     - 443 - HTTPS frontend
     - 9000 - stats page
-    - unconfigurable random UDP port from ephemeral range* - local connection to rsyslog UDP server (remote access not
-      needed), see note [[3]](#notes)
+    - 9101 - metrics
+    - unconfigurable random UDP port from ephemeral range* - local connection to rsyslog UDP server (remote access not needed), see note [[3]](#notes)
 
     **NOTE:** Not applicable for Ubuntu where UNIX socket is used (deb package's default).
 

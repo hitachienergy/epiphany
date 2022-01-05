@@ -65,6 +65,7 @@
 ### Removed
 
 - [#2680](https://github.com/epiphany-platform/epiphany/issues/2680) - Remove PgBouncer standalone installation
+- [#1739](https://github.com/epiphany-platform/epiphany/issues/1739) - Replace standalone HAproxy-exporter by embedded one
 
 ### Deprecated
 

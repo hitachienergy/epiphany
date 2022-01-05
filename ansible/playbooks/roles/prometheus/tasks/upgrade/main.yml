@@ -125,7 +125,6 @@
         - name: Upgrade AlertManager
           include_tasks: upgrade/upgrade-alertmanager.yml
 
-
 # Start services again if needed
 - name: Start services
   include_tasks: upgrade/start-services.yml
@@ -135,3 +134,48 @@
   file:
     path: "{{ upgrade_defaults.state_file_path }}"
     state: absent
+
+# Can be removed after 1.2 deprecation
+- name: Find haproxy-exporter targets
+  find:
+    paths: "/etc/prometheus/file_sd"
+    patterns: "^haproxy-exporter.*.yml$"
+    use_regex: true
+  register: haproxy_exporter_filesd
+
+- name: Remove haproxy-exporter targets
+  file:
+    path: "{{ item }}"
+    state: absent
+  loop: "{{ haproxy_exporter_filesd.files | map(attribute='path') }}"
+  notify: Restart Prometheus
+
+- name: Check HAproxy
+  when:
+    - groups.haproxy is defined
+    - groups.haproxy | length > 0
+  block:
+    - name: Load HAproxy's config vars
+      include_vars:
+        file: roles/haproxy/vars/main.yml
+        name: haproxy_config
+
+    - name: Set fact about HAproxy monitoring
+      set_fact:
+        haproxy_monitoring_enabled: "{{ haproxy_config.specification.metrics.enable }}"
+        haproxy_monitoring_port: "{{ haproxy_config.specification.metrics.port }}"
+
+    - name: Add HAproxy target to Prometheus config
+      when: haproxy_monitoring_enabled
+      blockinfile:
+        path: /etc/prometheus/prometheus.yml
+        backup: true
+        block: |2
+            - job_name: 'haproxy'
+              static_configs:
+                - targets:
+                  {% for haproxy_node in groups['haproxy'] -%}
+                  - "{{ haproxy_node }}:{{ haproxy_monitoring_port }}"
+                  {% endfor %}
+        insertafter: 'scrape_configs:'
+      notify: Restart Prometheus
