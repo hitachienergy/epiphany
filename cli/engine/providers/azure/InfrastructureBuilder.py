@@ -122,6 +122,7 @@ class InfrastructureBuilder(Step):
                                                                index)
                 infrastructure.append(network_interface)
 
+                security_group_association_name = ''
                 if self.use_network_security_groups:
                     nic_nsg_association = self.get_network_interface_security_group_association(
                                                                component_key,
@@ -129,9 +130,14 @@ class InfrastructureBuilder(Step):
                                                                nsg.specification.name,
                                                                index)
                     infrastructure.append(nic_nsg_association)
+                    security_group_association_name = nic_nsg_association.specification.name
 
-                vm = self.get_vm(component_key, vm_config, availability_set,
-                                 network_interface.specification.name, index)
+                vm = self.get_vm(component_key,
+                                 vm_config,
+                                 availability_set,
+                                 network_interface.specification.name,
+                                 security_group_association_name,
+                                 index)
                 infrastructure.append(vm)
 
         first_vm_doc = select_first(infrastructure, lambda x: x.kind == 'infrastructure/virtual-machine')
@@ -216,7 +222,7 @@ class InfrastructureBuilder(Step):
         storage_share.specification.storage_account_name = storage_account_name(self.cluster_prefix, self.cluster_name, 'k8s')
         return storage_share
 
-    def get_vm(self, component_key, vm_config, availability_set, network_interface_name, index):
+    def get_vm(self, component_key, vm_config, availability_set, network_interface_name, security_group_association_name, index):
         vm = dict_to_objdict(deepcopy(vm_config))
         vm.specification.name = resource_name(self.cluster_prefix, self.cluster_name, 'vm' + '-' + str(index), component_key)
         if self.hostname_domain_extension != '':
@@ -225,6 +231,8 @@ class InfrastructureBuilder(Step):
             vm.specification.hostname = vm.specification.name
         vm.specification.admin_username = self.cluster_model.specification.admin_user.name
         vm.specification.network_interface_name = network_interface_name
+        vm.specification.use_network_security_groups = self.use_network_security_groups
+        vm.specification.security_group_association_name = security_group_association_name
         vm.specification.tags.append({'cluster': cluster_tag(self.cluster_prefix, self.cluster_name)})
         vm.specification.tags.append({component_key: ''})
         if vm_config.specification.os_type == 'windows':

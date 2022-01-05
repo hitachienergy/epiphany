@@ -25,6 +25,9 @@ resource "azurerm_network_interface" "{{ specification.name }}" {
     {%- endif %}
   }
 
+  # Terraform has issues with destroying/creating resources with security_group_association:
+  # https://github.com/hashicorp/terraform/issues/24663
+  # Thats why we add depends_on to guide through the right path.
   {%- if specification.use_network_security_groups == true %}
   depends_on = [azurerm_subnet_network_security_group_association.{{ specification.security_group_association_name }}]
   {%- endif %}
