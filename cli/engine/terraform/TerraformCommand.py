@@ -29,17 +29,22 @@ class TerraformCommand:
 
     @staticmethod
     def run(self, command, env, auto_approve=False, auto_retries=1):
-        cmd = ['terraform', command]
+        cmd = ['terraform']
 
-        if auto_approve:
-            cmd.append('--auto-approve')
+        # global options
+        cmd.append(f'-chdir={self.working_directory}')
 
+        # command
+        cmd.append(command)
+
+        # command options
         if command == self.APPLY_COMMAND or command == self.DESTROY_COMMAND:
             cmd.append(f'-state={self.working_directory}/terraform.tfstate')
 
-        cmd.append('-no-color')
+        if auto_approve:
+            cmd.append('-input=false')
 
-        cmd.append(self.working_directory)
+        cmd.append('-no-color')
 
         cmd = ' '.join(cmd)
         self.logger.info(f'Running: "{cmd}"')
