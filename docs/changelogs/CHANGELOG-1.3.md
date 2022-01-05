@@ -78,7 +78,8 @@
 
 ### Breaking changes
 
-- Ubuntu 18.04 is not supported. For Ubuntu, only release 20.04 is supported and upgrade from 18.04 is not handled by Epiphany.
+- **Ubuntu 18.04 is not supported**. For Ubuntu, only release 20.04 is supported and upgrade from 18.04 is not handled by Epiphany.
+For more information, see [How to upgrade from Ubuntu 18.04 to 20.04](../home/howto/OS_UPGRADE.md#how-to-upgrade-from-ubuntu-1804-to-2004).
 - PgBouncer available only as Kubernetes service
 
 ### Known issues
