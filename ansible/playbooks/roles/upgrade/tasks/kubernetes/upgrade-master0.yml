@@ -1,13 +1,4 @@
 ---
-# During HA control plane upgrade server address in kubeconfig is switched to local for
-#   * compatibility between client and server versions
-#   * identifying correct server version
-
-- name: k8s/master0 | Switch apiserver address to local
-  include_tasks: utils/set-local-apiserver.yml # sets kubectl_context_cluster
-  when:
-    - groups.kubernetes_master | length > 1
-
 - name: k8s/master0 | Wait for cluster's readiness
   include_tasks: utils/wait.yml
 
@@ -107,10 +98,3 @@
 
 - name: k8s/master0 | Verify component versions and node status
   include_tasks: kubernetes/verify-upgrade.yml
-
-- name: k8s/master0 | Switch apiserver address to HAProxy
-  command: |-
-    kubectl config set-cluster {{ kubectl_context_cluster.stdout }} --server=https://localhost:3446
-  when:
-    - groups.kubernetes_master | length > 1
-  changed_when: true
