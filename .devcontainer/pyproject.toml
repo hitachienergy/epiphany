@@ -12,7 +12,6 @@ boto3 = "*"
 jsonschema = "*"
 python-json-logger = "*"
 ansible = "==2.10.7"
-terraform-bin = "*"
 "ruamel.yaml" = "*"
 azure-cli = "2.29.0"
 

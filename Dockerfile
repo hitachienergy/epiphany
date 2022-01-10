@@ -7,6 +7,7 @@ ARG USER_GID=$USER_UID
 ARG HELM_VERSION=3.3.1
 ARG KUBECTL_VERSION=1.22.4
 ARG ISTIOCTL_VERSION=1.8.1
+ARG TERRAFORM_VERSION=0.12.31
 
 ENV EPICLI_DOCKER_SHARED_DIR=/shared
 
@@ -32,6 +33,11 @@ RUN : INSTALL APT REQUIREMENTS \
     && tar -xzof istioctl-${ISTIOCTL_VERSION}-linux-amd64.tar.gz -C /usr/local/bin istioctl \
     && rm istioctl-${ISTIOCTL_VERSION}-linux-amd64.tar.gz \
     && chmod +x /usr/local/bin/istioctl \
+    && : INSTALL TERRAFORM BINARY \
+    && curl -fsSLO https://releases.hashicorp.com/terraform/${TERRAFORM_VERSION}/terraform_${TERRAFORM_VERSION}_linux_amd64.zip \
+    && unzip terraform_${TERRAFORM_VERSION}_linux_amd64.zip -d /usr/local/bin \
+    && rm terraform_${TERRAFORM_VERSION}_linux_amd64.zip \
+    && terraform version \
 \
     && : INSTALL GEM REQUIREMENTS \
     && gem install \
