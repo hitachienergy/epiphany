@@ -1,4 +1,6 @@
-#!/bin/bash -eu
+#!/usr/bin/env bash
+
+set -euo pipefail
 
 epi_repo_server_path=$1 # /var/www/html/epirepo is the default
 is_offline_mode=$2 # true/false
