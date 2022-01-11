@@ -61,7 +61,7 @@ if [[ "$is_offline_mode" == "true" ]]; then
   apt_update
 else
   # online mode
-  install_apache
+  # apache2 and libdpkg-perl already installed by Ansible
   generate_repo_metadata "$epi_repo_server_path"
 fi
 

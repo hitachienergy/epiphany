@@ -1,6 +1,14 @@
 ---
 - name: Create epirepo and start HTTP server
   block:
+    - name: Install packages required to create repository (online mode)
+      apt:
+        name:
+          - apache2
+          - libdpkg-perl  # required by dpkg-scanpackages script
+        cache_valid_time: 3600  # 1 h
+      when: not offline_mode
+
     - name: Create epirepo repository
       shell: >-
         set -o pipefail &&
