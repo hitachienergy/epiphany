@@ -47,7 +47,51 @@ specification:
 
 ## How to use TLS/SSL certificate with HA Proxy
 
-TODO
+HAProxy Load Balancer provides possibility to use TLS/SSL certificate to secure connection. This feature is called HAProxy SSL Termination.
+
+In basic configuration created by Epiphany SSL Termination is enabled by default:
+
+```yaml
+kind: configuration/haproxy
+title: HAProxy
+name: default
+specification:
+  frontend:
+  - name: https_front
+    port: 443
+    https: true
+    backend:
+    - http_back1
+```
+
+Basic configuration uses ```test``` self-signed certificate generated during configuration.
+
+To use other certificates than default copy ```*pem``` files inside ```files``` folder included into ```haproxy``` role. In running ```epicli``` container absolute path is:
+```bash
+/usr/local/epicli/data/common/ansible/playbooks/roles/haproxy/files
+```
+
+Re-apply configuration will copy those files into location ```/etc/ssl/haproxy/``` and add appropriate configurations into haproxy configuration file.
+
+Default ```self_signed_*``` parameters visible in configuration files are ignored when user's certificates are placed in ```haproxy/files``` location described above.
+
+### TLS / SSL Parameters description:
+
+| Parameter name | Default value | Description |
+| - | - | - |
+| self_signed_certificate_name | self-signed-fullchain.pem | certificate name (ignored when user's cert in use) |
+| self_signed_private_key_name | self-signed-privkey.pem | private key name (ignored when user's cert in use) |
+| self_signed_concatenated_cert_name | self-signed-test.tld.pem |concatenated certificate name (ignored when user's cert in use) |
+| frontend / name | https_front | frontend name (mandatory for every frontend) |
+| frontend / port | 443 | frontend binding port (mandatory, must be unique across all machine) |
+| frontend / https | true | defines if https is used |
+| backend / name | http_back1 | backend name (at least one is mandatory) |
+| backend / servers | kubernetes_node | list of backends (at least one is mandatory) |
+| backend / port | 30104 | backend port (mandatory) |
+| backend / https | false | must be set true if backend use https (will skip ssl verification between heproxy and backend) |
+
+For more information about HA Proxy SSL Termination please check HA Proxy blog [post](https://www.haproxy.com/blog/haproxy-ssl-termination/).
+
 
 ## How to use TLS/SSL with Kafka
 
