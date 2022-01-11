@@ -10,10 +10,10 @@ specification:
   redhat-7-x86_64:
     publisher: RedHat
     offer: RHEL
-    sku: 7-LVM
-    version: "7.9.2021051701"
+    sku: 7lvm-gen2
+    version: "7.9.2021121604"
   centos-7-x86_64:
     publisher: OpenLogic
     offer: CentOS
-    sku: "7_9"
-    version: "7.9.2021071900"
+    sku: "7_9-gen2"
+    version: "7.9.2021071901"

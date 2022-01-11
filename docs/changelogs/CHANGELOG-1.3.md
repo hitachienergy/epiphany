@@ -63,6 +63,7 @@
 - [#2788](https://github.com/epiphany-platform/epiphany/issues/2788) - Upgrade Log4j in Open Distro for Elasticsearch
 - [#2661](https://github.com/epiphany-platform/epiphany/issues/2661) - Update K8s documentation according to the latest version Epiphany supports
 - [#2752](https://github.com/epiphany-platform/epiphany/issues/2752) - Upgrade postgresql exporter to the version 0.10.0
+- [#2856](https://github.com/epiphany-platform/epiphany/issues/2856) - Update cloud OS images to the latest
 
 ### Removed
 
