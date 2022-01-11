@@ -30,8 +30,8 @@ Enable for RHEL on Azure:
      storage_image_reference:
        publisher: RedHat
        offer: RHEL
-       sku: 7-LVM
-       version: "7.9.2021051701"
+       sku: 7lvm-gen2
+       version: "7.9.2021121604"
    ```
 
 Enable for RHEL on AWS:
@@ -53,7 +53,7 @@ Enable for RHEL on AWS:
    provider: aws
    based_on: repository-machine
    specification:
-     os_full_name: RHEL-7.9_HVM-20210208-x86_64-0-Hourly2-GP2
+     os_full_name: RHEL-7.9_HVM-20211005-x86_64-0-Hourly2-GP2
    ```
 
 Enable for CentOS on Azure:
@@ -77,8 +77,8 @@ Enable for CentOS on Azure:
      storage_image_reference:
        publisher: OpenLogic
        offer: CentOS
-       sku: "7_9"
-       version: "7.9.2021071900"
+       sku: "7_9-gen2"
+       version: "7.9.2021071901"
    ```
 
 Enable for CentOS on AWS:
@@ -543,8 +543,8 @@ specification:
   storage_image_reference:
     publisher: RedHat
     offer: RHEL
-    sku: "7-LVM"
-    version: "7.9.2021051701"
+    sku: "7lvm-gen2"
+    version: "7.9.2021121604"
   storage_os_disk:
     disk_size_gb: 64
 ```
@@ -561,8 +561,8 @@ specification:
   storage_image_reference:
     publisher: OpenLogic
     offer: CentOS
-    sku: "7_9"
-    version: "7.9.2021071900"
+    sku: "7_9-gen2"
+    version: "7.9.2021071901"
 ```
 
 ### How to disable merging LVM logical volumes
