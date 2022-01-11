@@ -3,6 +3,7 @@ import os
 from ansible.parsing.dataloader import DataLoader
 from ansible.inventory.manager import InventoryManager
 
+from version import VERSION
 from cli.helpers.Step import Step
 from cli.helpers.doc_list_helpers import select_single, select_all, select_first
 from cli.helpers.build_io import save_manifest, load_manifest, get_inventory_path, get_manifest_path, get_build_path
@@ -67,9 +68,6 @@ class ApplyEngine(Step):
             schema_validator.run()
 
     def process_infrastructure_docs(self):
-        # Load any posible existing manifest docs
-        self.load_manifest()
-
         # Build the infrastructure docs
         with provider_class_loader(self.cluster_model.provider, 'InfrastructureBuilder')(
                 self.input_docs, self.manifest_docs) as infrastructure_builder:
@@ -97,6 +95,14 @@ class ApplyEngine(Step):
         path_to_manifest = get_manifest_path(self.cluster_model.specification.name)
         if os.path.isfile(path_to_manifest):
             self.manifest_docs = load_manifest(get_build_path(self.cluster_model.specification.name))
+
+    def assert_incompatible_terraform(self):
+        cluster_model = select_first(self.manifest_docs, lambda x: x.kind == 'epiphany-cluster')
+        if cluster_model:
+            old_major_version = int(cluster_model.version.split('.')[0])
+            new_major_version = int(VERSION.split('.')[0])
+            if old_major_version == 1 and new_major_version == 2:
+                raise Exception("You are trying to re-apply a Epiphany 2.x configuration against an existing Epiphany 1.x cluster. The Terraform is not compatible between these versions and require manual actions described in the documentation.")
 
     def assert_no_master_downscale(self):
         components = self.cluster_model.specification.components
@@ -171,6 +177,10 @@ class ApplyEngine(Step):
         self.assert_no_master_downscale()
 
         self.assert_no_postgres_nodes_number_change()
+
+        self.load_manifest()
+
+        self.assert_incompatible_terraform()
 
         self.process_infrastructure_docs()
 
