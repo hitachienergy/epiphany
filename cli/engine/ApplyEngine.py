@@ -102,7 +102,7 @@ class ApplyEngine(Step):
             old_major_version = int(cluster_model.version.split('.')[0])
             new_major_version = int(VERSION.split('.')[0])
             if old_major_version == 1 and new_major_version == 2:
-                raise Exception("You are trying to re-apply a Epiphany 2.x configuration against an existing Epiphany 1.x cluster. The Terraform is not compatible between these versions and require manual actions described in the documentation.")
+                raise Exception("You are trying to re-apply a Epiphany 2.x configuration against an existing Epiphany 1.x cluster. The Terraform is not compatible between these versions and requires manual action described in the documentation.")
 
     def assert_no_master_downscale(self):
         components = self.cluster_model.specification.components
