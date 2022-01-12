@@ -14,14 +14,14 @@ Issue: [2833](https://github.com/epiphany-platform/epiphany/issues/2833)
 
 - Hashicorp Vault
 
-The role related to Hashicorp Vault has never been developed beyond MVP/PoC stage and cannot be used for production usage and causes troubles with new Kubernetes versions.
+The role related to Hashicorp Vault has never been developed beyond MVP/PoC stage and cannot be used for production usage. It also causes troubles with upgrade to new Kubernetes versions.
 
 Planed removal: Epiphany 2.0
 Issue: [2834](https://github.com/epiphany-platform/epiphany/issues/2834)
 
 - Istio
 
-We are considering replacement of Istio component with the different solutions and Istio causes problems during upgrade of Kubernetes.
+We are considering replacement of Istio component with different solution. Additionally, Istio causes problems during upgrade of Kubernetes.
 
 Planed removal: Epiphany 2.0
 Issue: [2836](https://github.com/epiphany-platform/epiphany/issues/2836)
