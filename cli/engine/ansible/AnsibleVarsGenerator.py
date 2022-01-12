@@ -68,7 +68,7 @@ class AnsibleVarsGenerator(Step):
             # is changed between versions (e.g. wal_keep_segments -> wal_keep_size) and sometimes previous parameters
             # are not compatible with the new ones, defaults are used for template processing
             roles_with_defaults = [
-                'grafana', 'haproxy', 'image_registry', 'jmx_exporter', 'kafka_exporter',
+                'haproxy', 'image_registry', 'jmx_exporter', 'kafka_exporter',
                 'node_exporter', 'postgresql', 'repository'
                 ]
             # now lets add any external configs we want to load
