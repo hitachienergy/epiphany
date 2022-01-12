@@ -10,7 +10,7 @@ platforms:
     <<: &instance
       groups:
         - postgresql
-      image: geerlingguy/docker-ubuntu1804-ansible:python2
+      image: geerlingguy/docker-ubuntu2004-ansible
       pre_build_image: true
       capabilities:
         - SYS_ADMIN
@@ -31,9 +31,5 @@ provisioner:
     prepare: ../_shared/playbooks/prepare.yml
     converge: ../_shared/playbooks/converge.yml
     verify: ../_shared/playbooks/verify.yml
-  inventory:
-    group_vars:
-      postgresql:
-        ansible_python_interpreter: /usr/bin/python2
 verifier:
   name: ansible
