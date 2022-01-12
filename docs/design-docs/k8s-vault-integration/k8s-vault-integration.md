@@ -1,6 +1,6 @@
 # Epiphany Platform Kubernetes with Hashicorp Vault integration
 
-Affected version: 0.7.x
+Affected version: Left for future reference. Hashicorp Vault has been removed in Epiphany 2.0.
 
 ## 1. Introduction
 

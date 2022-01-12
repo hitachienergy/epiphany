@@ -28,7 +28,6 @@ Additional to users created by each component Epiphany creates also users and gr
 - rabbitmq/rabbitmq
 - zookeeper/zookeeper
 - kafka/kafka
-- vault/vault
 
 Other accounts created by each component you can find in the documentation of these components.
 
@@ -146,14 +145,10 @@ different values. The list does not include ports that are bound to the loopback
     - 80 - deb/rpm package repository (httpd is stopped at the end of installation)
     - 5000 - Docker image registry
 
-17. Hashicorp Vault:
-
-    - 8200 - REST API
-
 ### Connection protocols and ciphers used by components in Epiphany
 
 Below you can find list of cipersuites and protocols used for communication set in Epiphany on per component basis. This
-doesn't contain information about potentially deprecated components: Apache Ignite, Istio, Hashicorp Vault.
+doesn't contain information about potentially deprecated components: Apache Ignite, Istio.
 
 1. OS services:
 
