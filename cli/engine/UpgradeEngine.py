@@ -15,7 +15,8 @@ class UpgradeEngine(Step):
     def __init__(self, input_data):
         super().__init__(__name__)
         self.build_dir = input_data.build_directory
-        self.ansible_options = {'profile_tasks': getattr(input_data, 'profile_ansible_tasks', False)}
+        self.ansible_options = {'forks': getattr(input_data, 'ansible_forks'),
+                                'profile_tasks': getattr(input_data, 'profile_ansible_tasks', False)}
         self.file = getattr(input_data, 'file', "")
         self.backup_build_dir = ''
         self.ansible_command = AnsibleCommand()

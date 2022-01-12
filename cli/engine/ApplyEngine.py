@@ -26,7 +26,8 @@ class ApplyEngine(Step):
         self.file = input_data.file
         self.skip_infrastructure = getattr(input_data, 'no_infra', False)
         self.skip_config = getattr(input_data, 'skip_config', False)
-        self.ansible_options = {'profile_tasks': getattr(input_data, 'profile_ansible_tasks', False)}
+        self.ansible_options = {'forks': getattr(input_data, 'ansible_forks'),
+                                'profile_tasks': getattr(input_data, 'profile_ansible_tasks', False)}
         self.logger = Log(__name__)
 
         self.cluster_model = None
