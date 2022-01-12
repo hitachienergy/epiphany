@@ -82,6 +82,9 @@ specification:
     #   # 1 Node Exporter for Prometheus Dashboard EN v20201010
     # - dashboard_id: '11074'
     #   datasource: 'Prometheus'
+    #   # HaProxy backend (or frontend/servers)
+    # - dashboard_id: '789'
+    #   datasource: 'Prometheus'
 
   # Get dashboards from https://grafana.com/dashboards. Only for online mode
   grafana_online_dashboards: []

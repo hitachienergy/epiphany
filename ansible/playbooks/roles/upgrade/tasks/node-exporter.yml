@@ -17,31 +17,52 @@
     - k8s_as_cloud_service is defined
     - k8s_as_cloud_service
   block:
-    - name: Get information about helm releases
-      command: helm list --output json
+    - name: Get information about node-exporter helm releases
+      command: "helm list --all-namespaces --output json --filter {{ exporter_defaults.node_exporter_helm_chart_name }}"
       register: helm_list
+      changed_when: false
 
-    - name: Check if node exporter release exist in default namespace and set fact
+    - name: Check if node exporter release exist and set fact
       set_fact:
         node_exporter_release_exists: >-
-          {{ _names | ternary(true, false) }}
+          {{ _namespace | ternary(true, false) }}
+        node_exporter_release_ns: >-
+          {{ _namespace }}
+        node_exporter_current_version: >-
+          {{ _version }}
       vars:
-        _names: >-
+        _namespace: >-
           {{ helm_list.stdout | from_json
-                              | map(attribute='name')
-                              | select('==', exporter_defaults.node_exporter_helm_chart_name)
-                              | list }}
+                              | map(attribute='namespace')
+                              | list
+                              | first
+                              | default('') }}
 
-    - name: Reinstall Node Exporter as DaemonSet from default namespace to dedicated namespace for "k8s as cloud service"
+        _version: >-
+          {{ helm_list.stdout | from_json
+                              | map(attribute='app_version')
+                              | list
+                              | first
+                              | default('') }}
+
+    - name: Node Exporter as DaemonSet | Print versions
+      debug:
+        msg:
+          - "Installed version: {{ node_exporter_current_version }}"
+          - "Target version: {{ exporter_defaults.exporter.version }}"
+
+    - name: Reinstall Node Exporter as DaemonSet for K8s as cloud service mode
       when:
         - node_exporter_release_exists
+        - exporter_defaults.exporter.version != node_exporter_current_version or
+          exporter_defaults.monitoring_chart_namespace != node_exporter_release_ns
       block:
-        - name: Include uninstall task for Node Exporter as DaemonSet in default namespace for "k8s as cloud service"
+        - name: "Include uninstall task for Node Exporter as DaemonSet in {{ node_exporter_release_ns }} ns for K8s as cloud service mode"
           include_role:
             name: node_exporter
             tasks_from: uninstall-node-exporter-as-daemonset.yml
 
-        - name: Include install task for Node Exporter as DaemonSet in dedicated namespace for "k8s as cloud service"
+        - name: "Include install task for Node Exporter as DaemonSet in {{ node_exporter_release_ns }} ns for K8s as cloud service mode"
           include_role:
             name: node_exporter
             tasks_from: install-node-exporter-as-daemonset.yml
@@ -71,7 +92,7 @@
   set_fact:
     exporter_current_version: "{{ exporter_current_version_out.stdout_lines[0] | regex_replace('^.*version ([0-9.]+) .*$', '\\1') }}"
 
-- name: Node Exporter as System Service | Print version
+- name: Node Exporter as System Service | Print versions
   debug:
     msg:
       - "Installed version: {{ exporter_current_version }}"

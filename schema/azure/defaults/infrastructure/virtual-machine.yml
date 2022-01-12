@@ -4,6 +4,7 @@ provider: azure
 name: default
 specification:
   name: SET_BY_AUTOMATION
+  hostname: SET_BY_AUTOMATION
   admin_username: SET_BY_AUTOMATION
   admin_password: SET_BY_AUTOMATION
   public_key: SET_BY_AUTOMATION
@@ -15,9 +16,9 @@ specification:
   use_cloud_init_custom_data: SET_BY_AUTOMATION
   storage_image_reference:
     publisher: Canonical
-    offer: UbuntuServer
-    sku: 18.04-LTS
-    version: "18.04.202109130" # Never put latest on anything! Need to always pin the version number but testing we can get away with it
+    offer: 0001-com-ubuntu-server-focal
+    sku: 20_04-lts-gen2
+    version: "20.04.202201100" # Never put latest on anything! Need to always pin the version number but testing we can get away with it
   storage_os_disk:
     delete_on_termination: false
     managed: false
@@ -424,8 +425,8 @@ specification:
   security:
     rules:
       - _merge: true
-      - name: haproxy_exporter
-        description: Allow haproxy_exporter traffic
+      - name: haproxy_metrics
+        description: Allow haproxy_metrics traffic
         priority: 201
         direction: Inbound
         access: Allow
@@ -434,7 +435,6 @@ specification:
         destination_port_range: "9101"
         source_address_prefix: "10.1.0.0/20"
         destination_address_prefix: "0.0.0.0/0"
-
 ---
 kind: infrastructure/virtual-machine
 title: "Virtual Machine Infra"

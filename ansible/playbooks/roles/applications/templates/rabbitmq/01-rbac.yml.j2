@@ -7,7 +7,7 @@ metadata:
 
 ---
 kind: Role
-apiVersion: rbac.authorization.k8s.io/v1beta1
+apiVersion: rbac.authorization.k8s.io/v1
 metadata:
   name: {{ rabbitmq_service_name }}-endpoint-reader
   namespace: {{ namespace_name }}
@@ -18,7 +18,7 @@ rules:
 
 ---
 kind: RoleBinding
-apiVersion: rbac.authorization.k8s.io/v1beta1
+apiVersion: rbac.authorization.k8s.io/v1
 metadata:
   name: {{ rabbitmq_service_name }}-endpoint-reader
   namespace: {{ namespace_name }}

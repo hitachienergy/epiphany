@@ -1,9 +1,9 @@
-# PKI certificates management
+## PKI certificates management
 
-## TLS certificates in a cluster
+### TLS certificates in a cluster
 
-It's possible to regenerate Kubernetes control plane certificates with Epiphany.
-To do so, additional configuration should be specified.
+It's possible to regenerate Kubernetes control plane certificates with Epiphany. To do so, additional configuration
+should be specified.
 
 ```yaml
 kind: configuration/kubernetes-master
@@ -25,12 +25,13 @@ Parameters (optional):
 ---
 **NOTE**
 
-Usage of values greater than 24855 for `expiration_days` is not possible.
-For more information see [discussion](https://groups.google.com/g/mailing.openssl.users/c/3kK_f0ywCZQ) about that.
+Usage of values greater than 24855 for `expiration_days` is not possible. For more information
+see [discussion](https://groups.google.com/g/mailing.openssl.users/c/3kK_f0ywCZQ) about that.
 
 ---
 
-When `epicly apply` executes, if `renew` option is set to `true`, following certificates will be renewed with expiration period defined by `expiration_days`:
+When `epicly apply` executes, if `renew` option is set to `true`, following certificates will be renewed with expiration
+period defined by `expiration_days`:
 
 1. admin.conf
 2. apiserver
@@ -46,16 +47,18 @@ When `epicly apply` executes, if `renew` option is set to `true`, following cert
 ---
 **NOTE**
 
-kubelet.conf is not renewed because kubelet is configured for automatic certificate renewal.
-To verify that, navigate to `/var/lib/kubelet/` and check `config.yaml` file, where `rotateCertificates` setting is `true` by default.
+kubelet.conf is not renewed because kubelet is configured for automatic certificate renewal. To verify that, navigate
+to `/var/lib/kubelet/` and check `config.yaml` file, where `rotateCertificates` setting is `true` by default.
 
 ---
 
-## CA certificates rotation
+### CA certificates rotation
 
-This part cannot be done by Epiphany. Refer to official Kubernetes [documentation](https://kubernetes.io/docs/tasks/tls/manual-rotation-of-ca-certificates/) to perform this task.
+This part cannot be done by Epiphany. Refer to official
+Kubernetes [documentation](https://kubernetes.io/docs/tasks/tls/manual-rotation-of-ca-certificates/) to perform this
+task.
 
-## References
+### References
 
 1. [Best practices](https://kubernetes.io/docs/setup/best-practices/certificates/)
 2. [Certificates management by kubeadm](https://kubernetes.io/docs/tasks/administer-cluster/kubeadm/kubeadm-certs/)

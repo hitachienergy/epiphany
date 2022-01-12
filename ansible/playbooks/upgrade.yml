@@ -81,7 +81,20 @@
     - import_role:
         name: upgrade
         tasks_from: kubernetes
-      vars: { ver: "1.21.7", cni_ver: "0.8.7", upgrade_to_final_version: true }
+      vars: { ver: "1.21.7", cni_ver: "0.8.7", upgrade_to_final_version: false }
+      when: "'kubernetes' in upgrade_components or upgrade_components|length == 0"
+  environment:
+    KUBECONFIG: "{{ kubeconfig.remote }}"
+
+- hosts: kubernetes_master:kubernetes_node
+  serial: 1
+  become: true
+  become_method: sudo
+  tasks:
+    - import_role:
+        name: upgrade
+        tasks_from: kubernetes
+      vars: { ver: "1.22.4", cni_ver: "0.8.7", upgrade_to_final_version: true }
       when: "'kubernetes' in upgrade_components or upgrade_components|length == 0"
   environment:
     KUBECONFIG: "{{ kubeconfig.remote }}"
@@ -306,17 +319,35 @@
     shell:
       executable: /bin/bash
   tasks:
-    # step 1: upgrade repmgr
+    # step 1: prepare (python3-psycopg2 may be removed by Ubuntu release upgrade)
+    - include_role:
+        name: postgresql
+        tasks_from: upgrade/nodes/common/ensure-ansible-requirements
+      when:
+        - ansible_os_family == 'Debian'
+        - "'postgresql' in upgrade_components or upgrade_components|length == 0"
+
+    # step 2: upgrade repmgr
     - include_role:
         name: postgresql
         tasks_from: upgrade/extensions/replication/pg-old/repmgr-main
       when: "'postgresql' in upgrade_components or upgrade_components|length == 0"
 
-    # step 2: upgrade postgresql
+    # step 3: upgrade postgresql
     - include_role:
         name: postgresql
         tasks_from: upgrade/main
       when: "'postgresql' in upgrade_components or upgrade_components|length == 0"
+
+- hosts: postgres_exporter
+  become: true
+  become_method: sudo
+  tasks:
+    - include_role:
+        name: postgres_exporter
+        tasks_from: upgrade/main
+      vars: { lock_file: /var/tmp/postgres-exporter-upgrade-in-progress.flag }
+      when: "'postgres_exporter' in upgrade_components or upgrade_components|length == 0"
 
 - hosts: prometheus
   become: true

@@ -30,23 +30,29 @@
             mode: u=rw,go=r
 
         - block:
-            - name: Join to Kubernetes cluster
-              shell: |
-                kubeadm join \
-                  --config /etc/kubeadm/kubeadm-join-node.yml
-              args:
-                executable: /bin/bash
-              register: kubeadm_join_result
+            - <<: &soft-join
+                name: Join to Kubernetes cluster
+                command: |-
+                  kubeadm join \
+                    --config /etc/kubeadm/kubeadm-join-node.yml
+                register: kubeadm_join_result
 
           rescue:
-            - name: Join to cluster with ignores
-              shell: |
-                kubeadm join \
-                  --config /etc/kubeadm/kubeadm-join-node.yml \
-                  --ignore-preflight-errors all
-              args:
-                executable: /bin/bash
-              register: kubeadm_join_result
+            - name: Attempt to join with kubeadm reset
+              when: kubeadm_join_result.stderr is search('/etc/kubernetes/kubelet.conf already exists')
+              block:
+                - name: Reset node
+                  command: kubeadm reset --force
+
+                - <<: *soft-join
+
+              rescue:
+                - name: Join to cluster with ignores
+                  command: |-
+                    kubeadm join \
+                      --config /etc/kubeadm/kubeadm-join-node.yml \
+                      --ignore-preflight-errors all
+                  register: kubeadm_join_result
 
           always:
             - name: Display kubeadm join stderr if any

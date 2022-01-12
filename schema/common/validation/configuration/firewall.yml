@@ -53,15 +53,6 @@ properties:
             type: array
             items:
               type: string
-      haproxy_exporter:
-        type: object
-        properties:
-          enabled:
-            type: boolean
-          ports:
-            type: array
-            items:
-              type: string
       ignite:
         type: object
         properties:

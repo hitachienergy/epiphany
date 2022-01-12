@@ -1,5 +1,5 @@
 ---
-- name: Copy apiserver.{crt,key}
+- name: Backup apiserver.{crt,key}
   copy:
     dest: "{{ item }}.OLD"
     src: "{{ item }}"

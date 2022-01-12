@@ -47,7 +47,51 @@ specification:
 
 ## How to use TLS/SSL certificate with HA Proxy
 
-TODO
+HAProxy Load Balancer provides possibility to use TLS/SSL certificate to secure connection. This feature is called HAProxy SSL Termination.
+
+In basic configuration created by Epiphany SSL Termination is enabled by default:
+
+```yaml
+kind: configuration/haproxy
+title: HAProxy
+name: default
+specification:
+  frontend:
+  - name: https_front
+    port: 443
+    https: true
+    backend:
+    - http_back1
+```
+
+Basic configuration uses ```test``` self-signed certificate generated during configuration.
+
+To use other certificates than default copy ```*pem``` files inside ```files``` folder included into ```haproxy``` role. In running ```epicli``` container absolute path is:
+```bash
+/usr/local/epicli/data/common/ansible/playbooks/roles/haproxy/files
+```
+
+Re-apply configuration will copy those files into location ```/etc/ssl/haproxy/``` and add appropriate configurations into haproxy configuration file.
+
+Default ```self_signed_*``` parameters visible in configuration files are ignored when user's certificates are placed in ```haproxy/files``` location described above.
+
+### TLS / SSL Parameters description:
+
+| Parameter name | Default value | Description |
+| - | - | - |
+| self_signed_certificate_name | self-signed-fullchain.pem | certificate name (ignored when user's cert in use) |
+| self_signed_private_key_name | self-signed-privkey.pem | private key name (ignored when user's cert in use) |
+| self_signed_concatenated_cert_name | self-signed-test.tld.pem |concatenated certificate name (ignored when user's cert in use) |
+| frontend / name | https_front | frontend name (mandatory for every frontend) |
+| frontend / port | 443 | frontend binding port (mandatory, must be unique across all machine) |
+| frontend / https | true | defines if https is used |
+| backend / name | http_back1 | backend name (at least one is mandatory) |
+| backend / servers | kubernetes_node | list of backends (at least one is mandatory) |
+| backend / port | 30104 | backend port (mandatory) |
+| backend / https | false | must be set true if backend use https (will skip ssl verification between heproxy and backend) |
+
+For more information about HA Proxy SSL Termination please check HA Proxy blog [post](https://www.haproxy.com/blog/haproxy-ssl-termination/).
+
 
 ## How to use TLS/SSL with Kafka
 
@@ -248,6 +292,28 @@ specification:
 
 Please be careful about boolean values as they need to be double quoted
 and written in lowercase form. Otherwise RabbitMQ startup will fail.
+
+## How to use TLS/SSL certificate with Kibana
+
+For this moment it is not possible to automatically expose Kibana via https with using of Epiphany, but this can be 
+easily performed manually.
+
+First, you need to generate certificate in .pem format.
+
+After that, you need to change Kibana configuration file (```/etc/kibana/kibana.yml```) by adding and adjusting
+following lines:
+
+```yaml
+server.ssl.enabled: true
+server.ssl.certificate: /path_to_your_certificate.pem
+server.ssl.key: /path_to_your_key.pem
+```
+
+To verify if the Kibana server is up and running you can use, for example, following command:
+
+```bash
+openssl s_client -connect your_ip:5601
+```
 
 ## How to enable AWS disk encryption
 

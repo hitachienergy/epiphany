@@ -110,11 +110,19 @@ properties:
         default: 'default'
         examples:
         - default
-        - ubuntu-18.04-x86_64
+        - ubuntu-20.04-x86_64
         - redhat-7-x86_64
         - centos-7-x86_64
         - centos-7-arm64
-        pattern: ^(default|ubuntu-18.04-x86_64|redhat-7-x86_64|centos-7-x86_64|centos-7-arm64)$
+        pattern: ^(default|ubuntu-20.04-x86_64|redhat-7-x86_64|centos-7-x86_64|centos-7-arm64)$
+      hostname_domain_extension:
+        "$id": "#/properties/specification/properties/cloud/properties/hostname_domain_extension"
+        type: string
+        title: The hostname_domain_extension Schema
+        default: ''
+        examples:
+        - extension
+        pattern: "^[a-zA-Z0-9.-]{0,20}$"
   components:
     "$id": "#/properties/components"
     type: object

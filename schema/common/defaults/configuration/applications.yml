@@ -67,6 +67,7 @@ specification:
       namespace: namespace-for-auth
       admin_user: auth-service-username
       admin_password: PASSWORD_TO_CHANGE
+      proxy_address_forwarding: false # Enabling proxy address forwarding when behind HAProxy.
     database:
       name: auth-database-name
       #port: "5432" # leave it when default

@@ -209,6 +209,10 @@ spec:
               name: "{{ auth_service_name }}-db"
         - name: X509_CA_BUNDLE
           value: "/var/run/secrets/kubernetes.io/serviceaccount/ca.crt"
+{% if data.service.proxy_address_forwarding is defined and data.service.proxy_address_forwarding %}
+        - name: PROXY_ADDRESS_FORWARDING
+          value: "true"
+{% endif %}
       containers:
       - command:
         - /scripts/keycloak.sh
@@ -241,6 +245,10 @@ spec:
               name: "{{ auth_service_name }}-db"
         - name: X509_CA_BUNDLE
           value: "/var/run/secrets/kubernetes.io/serviceaccount/ca.crt"
+{% if data.service.proxy_address_forwarding is defined and data.service.proxy_address_forwarding %}
+        - name: PROXY_ADDRESS_FORWARDING
+          value: "true"
+{% endif %}
 {% if use_epiphany_image_registry %}
         image: {{ image_registry_address }}/{{ data.image_path }}
 {% else %}
