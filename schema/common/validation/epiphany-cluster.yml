@@ -110,11 +110,11 @@ properties:
         default: 'default'
         examples:
         - default
-        - ubuntu-18.04-x86_64
+        - ubuntu-20.04-x86_64
         - redhat-7-x86_64
         - centos-7-x86_64
         - centos-7-arm64
-        pattern: ^(default|ubuntu-18.04-x86_64|redhat-7-x86_64|centos-7-x86_64|centos-7-arm64)$
+        pattern: ^(default|ubuntu-20.04-x86_64|redhat-7-x86_64|centos-7-x86_64|centos-7-arm64)$
       hostname_domain_extension:
         "$id": "#/properties/specification/properties/cloud/properties/hostname_domain_extension"
         type: string

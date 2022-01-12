@@ -24,7 +24,7 @@ If applicable, add config files to help explain your problem.
 
 **Environment**
 - Cloud provider: [AWS | Azure | All | None]
-- OS: [e.g. Ubuntu 18.04.4 LTS, you can use `cat /etc/os-release`]
+- OS: [e.g. Ubuntu 20.04.3 LTS, you can use `cat /etc/os-release`]
 
 **epicli version**: [`epicli --version`]
 

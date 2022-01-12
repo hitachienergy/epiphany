@@ -7,7 +7,7 @@ def get_os_distro_normalized(vm_doc):
     }
     if vm_doc.provider == "azure":
         # Example image offers:
-        # - UbuntuServer
+        # - 0001-com-ubuntu-server-focal
         # - RHEL
         # - CentOS
         for indicator in expected_indicators:
@@ -15,7 +15,7 @@ def get_os_distro_normalized(vm_doc):
                 return expected_indicators[indicator]
     if vm_doc.provider == "aws":
         # Example public/official AMI names:
-        # - ubuntu/images/hvm-ssd/ubuntu-bionic-18.04-amd64-server-20210907
+        # - ubuntu/images/hvm-ssd/ubuntu-focal-20.04-amd64-server-20220110
         # - RHEL-7.9_HVM-20211005-x86_64-0-Hourly2-GP2
         # - CentOS 7.9.2009 x86_64
         for indicator in expected_indicators:

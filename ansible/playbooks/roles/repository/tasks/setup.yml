@@ -14,7 +14,7 @@
     download_script_subdir: >-
       {{ 'centos-7' if (ansible_distribution == 'CentOS' and ansible_distribution_major_version == '7') else
           'redhat-7' if (ansible_distribution == 'RedHat' and ansible_distribution_major_version == '7') else
-          'ubuntu-18.04' if (ansible_distribution == 'Ubuntu' and ansible_distribution_version == '18.04') else None }}
+          'ubuntu-20.04' if (ansible_distribution == 'Ubuntu' and ansible_distribution_version == '20.04') else None }}
 
 - name: Download Epiphany requirements on repository host # online mode
   block:

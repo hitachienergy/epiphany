@@ -49,10 +49,9 @@
   become: true
   when: not pg_upgrade_failed
   block:
+    # Cannot use 'postgresql_query' here since Ubuntu upgrade may remove python3-psycopg2
     - name: Get archive_command value
-      postgresql_query:
-        query: SHOW archive_command
-        db: postgres
+      command: psql -t -c 'SHOW archive_command'
       register: pg_archive_command
       changed_when: false
 
@@ -62,7 +61,7 @@
         pg_invalid_archive_command_regexp: >-
           test ! -f /dbbackup/{{ _any_pg_hostname_regexp }}/backup/%f
           && gzip -c < %p > /dbbackup/{{ _any_pg_hostname_regexp }}/backup/%f
-      when: pg_archive_command.query_result[0].archive_command is match(pg_invalid_archive_command_regexp)
+      when: pg_archive_command.stdout is match(pg_invalid_archive_command_regexp)
       block:
         - name: Set archive_command to a new default (/bin/true)
           replace:
@@ -76,9 +75,7 @@
           become_user: root
 
         - name: Reload PostgreSQL configuration
-          postgresql_query:
-            query: SELECT pg_reload_conf()
-            db: postgres
+          command: psql -c 'SELECT pg_reload_conf()'
           changed_when: true
 
 - name: Check available disk space for new PostgreSQL data dir

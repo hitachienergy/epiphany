@@ -1,0 +1,14 @@
+---
+# python3-psycopg2 may be removed by Ubuntu release upgrade
+- name: Ensure requirements of PostgreSQL Ansible modules
+  package:
+    name: "{{ _packages[ansible_os_family] }}"
+    state: present
+  vars:
+    _packages:
+      Debian:
+        - python3-psycopg2
+      RedHat:
+        - python-psycopg2
+  module_defaults:
+    yum: {lock_timeout: "{{ yum_lock_timeout }}"}
