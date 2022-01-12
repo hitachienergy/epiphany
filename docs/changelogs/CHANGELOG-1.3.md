@@ -41,6 +41,7 @@
 - [#2774](https://github.com/epiphany-platform/epiphany/issues/2774) - Issue creating service principle on Azure
 - [#2737](https://github.com/epiphany-platform/epiphany/issues/2737) - Fix asserting number of postgres nodes
 - [#1175](https://github.com/epiphany-platform/epiphany/issues/1175) - Task 'Join to Kubernetes cluster' may fail when Ansible vault already exists
+- [#2420](https://github.com/epiphany-platform/epiphany/issues/2420) - Changing Grafana admin password in the apply mode
 
 ### Updated
 
