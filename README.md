@@ -30,7 +30,7 @@ We currently use Terraform and Ansible for our automation orchestration. All aut
 
 ## Deprecation Note
 
-At the link presented below you can find the information about deprecated components with plan of removal from Epiphany.
+At the link presented below you can find the information about deprecated components with plan of removal from Epiphany.  
 [Deprecation Note](docs/home/DEPRECATION-NOTE.md)
 
 ## Quickstart
