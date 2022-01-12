@@ -24,6 +24,9 @@
   include_tasks: api_keys.yml
   when: grafana_api_keys | length > 0
 
+- name: Include password change tasks
+  include_tasks: password_change.yml
+
 - name: Include datasources tasks
   include_tasks: datasources.yml
   when: grafana_datasources != []
