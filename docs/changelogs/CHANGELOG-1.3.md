@@ -23,6 +23,7 @@
 - [#2665](https://github.com/epiphany-platform/epiphany/issues/2665) - Add Kubernetes prereqs to epicli preflight checks
 - [#633](https://github.com/epiphany-platform/epiphany/issues/633) - DOC: How to use TLS/SSL certificate with HA Proxy
 - [#2702](https://github.com/epiphany-platform/epiphany/issues/2702) - Use state flag file in K8s upgrades
+- [#2840](https://github.com/epiphany-platform/epiphany/issues/2840) - Create deprecation notes documentation
 
 ### Fixed
 
