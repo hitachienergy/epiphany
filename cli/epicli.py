@@ -207,6 +207,8 @@ def apply_parser(subparsers):
                             help='Enable Ansible profile_tasks plugin for timing tasks. (developer/debug option)')
     optional.add_argument('--ping-retries', dest='ping_retries', type=int, required=False, action='store', default=5,
                             help='Number of pings after which Ansible will fail.')
+    optional.add_argument('--ansible-forks', dest='ansible_forks', type=int, required=False, action='store', default=10,
+                            help='Sets the number of forks in ansible.cfg.')
     sub_parser._action_groups.append(optional)
 
     def run_apply(args):
@@ -297,6 +299,8 @@ def upgrade_parser(subparsers):
                             help='Provides comma separated list of components for upgrade selected from the following: [' + ', '.join(map(str, component_list)) + ']')
     optional.add_argument('--ping-retries', dest='ping_retries', type=int, required=False, action='store', default=5,
                             help='Number of pings after which Ansible will fail.')
+    optional.add_argument('--ansible-forks', dest='ansible_forks', type=int, required=False, action='store', default=10,
+                            help='Sets the number of forks in ansible.cfg.')
     sub_parser._action_groups.append(optional)
 
     def run_upgrade(args):
