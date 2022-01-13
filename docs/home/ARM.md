@@ -46,7 +46,6 @@ Besides making sure that the selected providers, operating systems, components a
 | auth-service | :heavy_check_mark: |
 | pgpool | :x: |
 | pgbouncer | :x: |
-| istio | :x: |
 
 ***Notes***
 

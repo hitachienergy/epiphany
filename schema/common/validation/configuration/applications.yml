@@ -324,12 +324,3 @@ properties:
               type: array
               items:
               - type: string
-            istio:
-              type: string
-        istio_spec:
-          type: object
-          properties:
-            profile:
-              type: string
-            name:
-              type: string

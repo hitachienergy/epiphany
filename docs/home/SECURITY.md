@@ -129,11 +129,11 @@ different values. The list does not include ports that are bound to the loopback
 
     - 80 - deb/rpm package repository (httpd is stopped at the end of installation)
     - 5000 - Docker image registry
-    
+
 ### Connection protocols and ciphers used by components in Epiphany
 
 Below you can find list of cipersuites and protocols used for communication set in Epiphany on per component basis. This
-doesn't contain information about potentially deprecated components: Apache Ignite, Istio.
+doesn't contain information about potentially deprecated components: Apache Ignite,.
 
 1. OS services:
 
