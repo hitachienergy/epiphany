@@ -35,7 +35,6 @@
   environment:
     KUBECONFIG: "{{ kubeconfig.remote }}"
 
-
 - hosts: kubernetes_master:kubernetes_node
   serial: 1
   become: true

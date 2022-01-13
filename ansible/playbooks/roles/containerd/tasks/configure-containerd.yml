@@ -16,5 +16,3 @@
     group: root
   notify:
     - Restart Containerd
-
-
