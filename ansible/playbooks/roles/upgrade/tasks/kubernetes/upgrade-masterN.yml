@@ -32,17 +32,14 @@
 - name: k8s/masterN | Backup kubeadm-config.yml
   include_tasks: backup-kubeadm-config.yml
 
-- name: k8s/masterN | Upgrade Docker  # this may restart Docker daemon
-  include_tasks: docker.yml
-
 - name: k8s/masterN | Replace cgroupfs driver with systemd driver
   include_tasks: patch-cgroup-driver.yml
   vars: { _requires_restart: false }  # it will be properly restarted anyways
   when:
     - upgrade_to_final_version
 
-- name: k8s/masterN | Restart kubelet and docker
-  include_tasks: utils/restart-kubelet-and-docker.yml
+- name: k8s/masterN | Restart kubelet
+  include_tasks: utils/restart-kubelet.yml
 
 - name: k8s/masterN | Wait for cluster's readiness
   include_tasks: utils/wait.yml
