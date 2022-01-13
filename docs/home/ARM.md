@@ -29,7 +29,6 @@ Besides making sure that the selected providers, operating systems, components a
 | monitoring | :heavy_check_mark: | :x: | :x: |
 | load_balancer | :heavy_check_mark: | :x: | :x: |
 | postgresql | :heavy_check_mark: | :x: | :x: |
-| ignite | :heavy_check_mark: | :x: | :x: |
 | opendistro_for_elasticsearch | :heavy_check_mark: | :x: | :x: |
 | single_machine | :heavy_check_mark: | :x: | :x: |
 
@@ -43,7 +42,6 @@ Besides making sure that the selected providers, operating systems, components a
 
 | Application | Supported |
 | - | - |
-| ignite-stateless | :heavy_check_mark: |
 | rabbitmq | :heavy_check_mark: |
 | auth-service | :heavy_check_mark: |
 | pgpool | :x: |
@@ -95,9 +93,6 @@ specification:
     rabbitmq:
       count: 2
       machine: rabbitmq-machine-arm
-    ignite:
-      count: 2
-      machine: ignite-machine-arm
     opendistro_for_elasticsearch:
       count: 1
       machine: opendistro-machine-arm
@@ -165,14 +160,6 @@ kind: infrastructure/virtual-machine
 name: rabbitmq-machine-arm
 provider: any
 based_on: rabbitmq-machine
-specification:
-  hostname: hostname
-  ip: x.x.x.x
----
-kind: infrastructure/virtual-machine
-name: ignite-machine-arm
-provider: any
-based_on: ignite-machine
 specification:
   hostname: hostname
   ip: x.x.x.x
@@ -263,19 +250,6 @@ specification:
       #cluster:
         #is_clustered: true #redundant in in-Kubernetes installation, it will always be clustered
         #cookie: "cookieSetFromDataYaml" #optional - default value will be random generated string
-  - name: ignite-stateless
-    enabled: yes
-    image_path: "epiphanyplatform/ignite:2.9.1" # it will be part of the image path: {{local_repository}}/{{image_path}}
-    use_local_image_registry: true
-    namespace: ignite
-    service:
-      rest_nodeport: 32300
-      sql_nodeport: 32301
-      thinclients_nodeport: 32302
-    replicas: 2
-    enabled_plugins:
-    - ignite-kubernetes # required to work on K8s
-    - ignite-rest-http
 ---
 kind: configuration/vault
 title: Vault Config
@@ -361,12 +335,6 @@ specification:
       subnets:
         - availability_zone: eu-west-1a
           address_pool: 10.1.8.0/24
-    ignite:
-      count: 2
-      machine: ignite-machine-arm
-      subnets:
-        - availability_zone: eu-west-1a
-          address_pool: 10.1.9.0/24
     opendistro_for_elasticsearch:
       count: 1
       machine: opendistro-machine-arm
@@ -442,13 +410,6 @@ provider: aws
 based_on: rabbitmq-machine
 specification:
   size: a1.medium
----
-kind: infrastructure/virtual-machine
-name: ignite-machine-arm
-provider: aws
-based_on: ignite-machine
-specification:
-  size: a1.large
 ---
 kind: infrastructure/virtual-machine
 name: opendistro-machine-arm
@@ -538,19 +499,6 @@ specification:
       #cluster:
         #is_clustered: true #redundant in in-Kubernetes installation, it will always be clustered
         #cookie: "cookieSetFromDataYaml" #optional - default value will be random generated string
-  - name: ignite-stateless
-    enabled: yes
-    image_path: "epiphanyplatform/ignite:2.9.1" # it will be part of the image path: {{local_repository}}/{{image_path}}
-    use_local_image_registry: true
-    namespace: ignite
-    service:
-      rest_nodeport: 32300
-      sql_nodeport: 32301
-      thinclients_nodeport: 32302
-    replicas: 2
-    enabled_plugins:
-    - ignite-kubernetes # required to work on K8s
-    - ignite-rest-http
 ---
 kind: configuration/vault
 title: Vault Config
