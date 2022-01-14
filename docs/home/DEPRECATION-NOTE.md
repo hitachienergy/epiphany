@@ -26,11 +26,9 @@ Apache Ignite is prone to 1.x log4j issue.
 Removed: Epiphany 2.0
 Issue: [2837](https://github.com/epiphany-platform/epiphany/issues/2837)
 
-The list of components to be deprecated:
-
 - Logstash
 
 The functionality that the Logstash is serving in Epiphany - exporting csv can right now be achieved using the Open Distro for Elasticsearch plugin. The Logstash in this version is prone to log4j issue and this is also the reason why should be removed.
 
-Planed removal: Epiphany 2.0
+Removed: Epiphany 2.0
 Issue: [2833](https://github.com/epiphany-platform/epiphany/issues/2833)

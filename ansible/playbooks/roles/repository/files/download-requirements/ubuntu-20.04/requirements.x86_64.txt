@@ -54,7 +54,6 @@ libdpkg-perl
 
 libfontconfig1
 logrotate
-logstash-oss 1:7.12.0
 netcat
 net-tools
 nfs-common
