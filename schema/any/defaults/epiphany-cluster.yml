@@ -41,10 +41,6 @@ specification:
       count: 0
       machine: rabbitmq-machine
       configuration: default
-    ignite:
-      count: 0
-      machine: ignite-machine
-      configuration: default
     opendistro_for_elasticsearch:
       count: 0
       machine: logging-machine

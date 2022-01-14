@@ -68,12 +68,6 @@ specification:
       configuration: default
       subnets:
         - address_pool: 10.1.8.0/24
-    ignite:
-      count: 0
-      machine: ignite-machine
-      configuration: default
-      subnets:
-        - address_pool: 10.1.9.0/24
     opendistro_for_elasticsearch:
       count: 0
       machine: logging-machine

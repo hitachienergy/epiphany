@@ -51,8 +51,6 @@ specification:
       enabled: true
     - name: applications
       enabled: true
-    - name: ignite
-      enabled: true
 
   roles_mapping:
     kafka:
@@ -122,11 +120,6 @@ specification:
       - firewall
     kubernetes_node:
       - kubernetes-node
-      - node-exporter
-      - filebeat
-      - firewall
-    ignite:
-      - ignite
       - node-exporter
       - filebeat
       - firewall
