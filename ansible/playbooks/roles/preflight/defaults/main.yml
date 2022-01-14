@@ -37,7 +37,6 @@ unsupported_roles:
       - helm
       - zookeeper
       - haproxy
-      - vault
       - logging
       - elasticsearch_curator
       - opendistro_for_elasticsearch
@@ -77,7 +76,6 @@ unsupported_roles:
       - helm
       - zookeeper
       - haproxy
-      - vault
       - logging
       - elasticsearch_curator
       - opendistro_for_elasticsearch

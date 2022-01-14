@@ -49,8 +49,6 @@ specification:
       enabled: true
     - name: haproxy
       enabled: true
-    - name: vault
-      enabled: true
     - name: applications
       enabled: true
     - name: ignite
@@ -115,7 +113,6 @@ specification:
       - rabbitmq
       - postgresql
       - firewall
-      - vault
     kubernetes_master:
       - kubernetes-master
       - helm
@@ -123,7 +120,6 @@ specification:
       - node-exporter
       - filebeat
       - firewall
-      - vault
     kubernetes_node:
       - kubernetes-node
       - node-exporter
