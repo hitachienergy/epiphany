@@ -162,9 +162,7 @@ https://archive.apache.org/dist/kafka/2.6.0/kafka_2.12-2.6.0.tgz
 https://github.com/prometheus/prometheus/releases/download/v2.31.1/prometheus-2.31.1.linux-amd64.tar.gz
 https://github.com/prometheus/alertmanager/releases/download/v0.23.0/alertmanager-0.23.0.linux-amd64.tar.gz
 https://archive.apache.org/dist/zookeeper/zookeeper-3.5.8/apache-zookeeper-3.5.8-bin.tar.gz
-https://releases.hashicorp.com/vault/1.7.0/vault_1.7.0_linux_amd64.zip
 https://get.helm.sh/helm-v3.2.0-linux-amd64.tar.gz
-https://github.com/hashicorp/vault-helm/archive/v0.11.0.tar.gz
 https://archive.apache.org/dist/logging/log4j/2.17.1/apache-log4j-2.17.1-bin.tar.gz
 # --- Helm charts ---
 https://helm.elastic.co/helm/filebeat/filebeat-7.9.2.tgz
@@ -202,8 +200,6 @@ haproxy:2.2.2-alpine
 kubernetesui/dashboard:v2.3.1
 kubernetesui/metrics-scraper:v1.0.7
 registry:2
-hashicorp/vault-k8s:0.10.0
-vault:1.7.0
 # applications
 bitnami/pgpool:4.2.4
 bitnami/pgbouncer:1.16.0

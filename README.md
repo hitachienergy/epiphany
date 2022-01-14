@@ -12,7 +12,6 @@ Epiphany at its core is a full automation of Kubernetes and Docker plus addition
 - HAProxy for loadbalancing
 - Postgres and Elasticsearch for data storage
 - KeyCloak for authentication
-- Vault (MVP) for protecting secrets and other sensitive data
 - Helm as package manager for Kubernetes
 
 The following target platforms are available: AWS, Azure and on-prem installation.

@@ -250,13 +250,6 @@ specification:
       #cluster:
         #is_clustered: true #redundant in in-Kubernetes installation, it will always be clustered
         #cookie: "cookieSetFromDataYaml" #optional - default value will be random generated string
----
-kind: configuration/vault
-title: Vault Config
-name: default
-provider: any
-specification:
-  vault_enabled: true
 ```
 
 ### ```AWS``` provider
@@ -499,13 +492,6 @@ specification:
       #cluster:
         #is_clustered: true #redundant in in-Kubernetes installation, it will always be clustered
         #cookie: "cookieSetFromDataYaml" #optional - default value will be random generated string
----
-kind: configuration/vault
-title: Vault Config
-name: default
-provider: aws
-specification:
-  vault_enabled: true
 ```
 
 ### ```Azure``` provider
