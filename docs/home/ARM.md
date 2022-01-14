@@ -276,13 +276,6 @@ specification:
     enabled_plugins:
     - ignite-kubernetes # required to work on K8s
     - ignite-rest-http
----
-kind: configuration/vault
-title: Vault Config
-name: default
-provider: any
-specification:
-  vault_enabled: true
 ```
 
 ### ```AWS``` provider
@@ -551,13 +544,6 @@ specification:
     enabled_plugins:
     - ignite-kubernetes # required to work on K8s
     - ignite-rest-http
----
-kind: configuration/vault
-title: Vault Config
-name: default
-provider: aws
-specification:
-  vault_enabled: true
 ```
 
 ### ```Azure``` provider

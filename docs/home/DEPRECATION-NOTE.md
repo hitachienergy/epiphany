@@ -3,6 +3,15 @@
 This page is related to our components deprecation plan. Components listed below are marked as deprecated with plan of removal
 in Epiphany version 2.0.
 
+The list of components removed:
+
+- Hashicorp Vault
+
+The role related to Hashicorp Vault has never been developed beyond MVP/PoC stage and cannot be used for production usage. It also causes troubles with upgrade to new Kubernetes versions.
+
+Removed: Epiphany 2.0
+Issue: [2834](https://github.com/epiphany-platform/epiphany/issues/2834)
+
 The list of components to be deprecated:
 
 - Logstash
@@ -11,13 +20,6 @@ The functionality that the Logstash is serving in Epiphany - exporting csv can r
 
 Planed removal: Epiphany 2.0
 Issue: [2833](https://github.com/epiphany-platform/epiphany/issues/2833)
-
-- Hashicorp Vault
-
-The role related to Hashicorp Vault has never been developed beyond MVP/PoC stage and cannot be used for production usage. It also causes troubles with upgrade to new Kubernetes versions.
-
-Planed removal: Epiphany 2.0
-Issue: [2834](https://github.com/epiphany-platform/epiphany/issues/2834)
 
 - Istio
 

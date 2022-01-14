@@ -351,7 +351,6 @@ specification:
       - node-exporter
       - filebeat
       - firewall
-      - vault
 ---
 kind: configuration/shared-config
 title: Shared configuration that will be visible to all roles

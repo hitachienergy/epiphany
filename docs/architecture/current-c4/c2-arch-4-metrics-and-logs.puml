@@ -15,7 +15,6 @@ Container_Boundary(epiphany, "Epiphany managed environment"){
     Container(lb, "Load Balancer", "HAProxy")
     Container(messages, "Message Broker", "RabbitMQ")
     Container(memdb, "In-Memory Database", "Apache Ignite")
-    Container(vault, "Vault", "Hashicorp Vault")
     Container(repository, "Repository", "Apache")
     Container(auth, "Authentication and Authorization", "Keycloak")
 
@@ -28,7 +27,6 @@ Container_Boundary(epiphany, "Epiphany managed environment"){
     Rel(orchestrator, logging, "sends logs")
     Rel(repository, logging, "sends logs")
     Rel(memdb, logging, "sends logs")
-    Rel(vault, logging, "sends logs")
     Rel(auth, logging, "sends logs")
 
     Rel(monitoring, streams, "scraps metrics")
@@ -40,7 +38,6 @@ Container_Boundary(epiphany, "Epiphany managed environment"){
     Rel(monitoring, orchestrator, "scraps metrics")
     Rel(monitoring, repository, "scraps metrics")
     Rel(monitoring, memdb, "scraps metrics")
-    Rel(monitoring, vault, "scraps metrics")
     Rel(monitoring, auth, "scraps metrics")
 }
 

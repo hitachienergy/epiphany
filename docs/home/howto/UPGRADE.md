@@ -215,7 +215,6 @@ specification:
       - node-exporter
       - filebeat
       - firewall
-      - vault
       - repository      # add repository here
       - image-registry  # add image-registry here
 ...

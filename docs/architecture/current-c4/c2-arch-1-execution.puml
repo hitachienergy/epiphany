@@ -15,7 +15,6 @@ Container_Boundary(epiphany, "Epiphany managed environment"){
     Container(lb, "Load Balancer", "HAProxy")
     Container(messages, "Message Broker", "RabbitMQ")
     Container(memdb, "In-Memory Database", "Apache Ignite")
-    Container(vault, "Vault", "Hashicorp Vault")
     Container(repository, "Repository", "Apache")
     Container(auth, "Authentication and Authorization", "Keycloak")
 
@@ -36,7 +35,6 @@ Rel(monitoring, provider, "executes on")
 Rel(streams, provider, "executes on")
 Rel(rdb, provider, "executes on")
 Rel(lb, provider, "executes on")
-Rel(vault, provider, "executes on")
 Rel(repository, provider, "executes on")
 Rel(messages, provider, "can execute on")
 
