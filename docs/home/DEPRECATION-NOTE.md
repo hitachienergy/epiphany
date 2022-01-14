@@ -12,6 +12,20 @@ The role related to Hashicorp Vault has never been developed beyond MVP/PoC stag
 Removed: Epiphany 2.0
 Issue: [2834](https://github.com/epiphany-platform/epiphany/issues/2834)
 
+- Istio
+
+We are considering replacement of Istio component with different solution. Additionally, Istio causes problems during upgrade of Kubernetes.
+
+Removed: Epiphany 2.0
+Issue: [2836](https://github.com/epiphany-platform/epiphany/issues/2836)
+
+- Apache Ignite
+
+Apache Ignite is prone to 1.x log4j issue.
+
+Removed: Epiphany 2.0
+Issue: [2837](https://github.com/epiphany-platform/epiphany/issues/2837)
+
 The list of components to be deprecated:
 
 - Logstash
@@ -20,17 +34,3 @@ The functionality that the Logstash is serving in Epiphany - exporting csv can r
 
 Planed removal: Epiphany 2.0
 Issue: [2833](https://github.com/epiphany-platform/epiphany/issues/2833)
-
-- Istio
-
-We are considering replacement of Istio component with different solution. Additionally, Istio causes problems during upgrade of Kubernetes.
-
-Planed removal: Epiphany 2.0
-Issue: [2836](https://github.com/epiphany-platform/epiphany/issues/2836)
-
-- Apache Ignite
-
-Apache Ignite is prone to 1.x log4j issue.
-
-Planed removal: Epiphany 2.0
-Issue: [2837](https://github.com/epiphany-platform/epiphany/issues/2837)
