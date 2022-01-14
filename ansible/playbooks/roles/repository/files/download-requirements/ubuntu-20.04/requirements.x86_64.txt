@@ -199,7 +199,6 @@ https://archive.apache.org/dist/kafka/2.6.0/kafka_2.12-2.6.0.tgz
 https://archive.apache.org/dist/zookeeper/zookeeper-3.5.8/apache-zookeeper-3.5.8-bin.tar.gz
 https://github.com/prometheus/alertmanager/releases/download/v0.23.0/alertmanager-0.23.0.linux-amd64.tar.gz
 https://github.com/prometheus/prometheus/releases/download/v2.31.1/prometheus-2.31.1.linux-amd64.tar.gz
-https://archive.apache.org/dist/ignite/2.9.1/apache-ignite-2.9.1-bin.zip
 https://get.helm.sh/helm-v3.2.0-linux-amd64.tar.gz
 https://archive.apache.org/dist/logging/log4j/2.17.1/apache-log4j-2.17.1-bin.tar.gz
 # --- Helm charts ---
@@ -239,7 +238,6 @@ kubernetesui/dashboard:v2.3.1
 kubernetesui/metrics-scraper:v1.0.7
 registry:2
 # applications
-epiphanyplatform/ignite:2.9.1
 bitnami/pgpool:4.2.4
 bitnami/pgbouncer:1.16.0
 # istio

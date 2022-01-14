@@ -74,7 +74,6 @@
         paths: /tmp
         patterns:
           - keycloak*.tar
-          - ignite*.tar
           - etcd*.tar
           - node*.tar
           - dashboard*.tar

@@ -92,8 +92,6 @@
   - [How to start working with OpenDistro for Elasticsearch](./howto/DATABASES.md#how-to-start-working-with-opendistro-for-elasticsearch)
   - [How to manage Opendistro for Elasticsearch data](./howto/LOGGING.md#how-to-manage-opendistro-for-elasticsearch-data)
   - [How to export Elasticsearch data to csv format](./howto/LOGGING.md#how-to-export-elasticsearch-data-to-csv-format)
-  - [How to start working with Apache Ignite Stateful setup](./howto/DATABASES.md#how-to-start-working-with-apache-ignite-stateful-setup)
-  - [How to start working with Apache Ignite Stateless setup](./howto/DATABASES.md#how-to-start-working-with-apache-ignite-stateless-setup)
 
 - [Backup and Recovery](./howto/BACKUP.md)
   - [Epiphany backup and restore](./howto/BACKUP.md#epiphany-backup-and-restore)

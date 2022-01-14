@@ -33,7 +33,6 @@ specification:
 
 Currently, Epiphany provides the following predefined applications which may be deployed with epicli:
 
-- ignite
 - rabbitmq
 - auth-service (Keycloak)
 - pgpool

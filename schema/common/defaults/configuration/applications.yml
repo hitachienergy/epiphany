@@ -4,22 +4,6 @@ name: default
 specification:
   applications:
 
-## --- ignite ---
-
-  - name: ignite-stateless
-    enabled: false
-    image_path: "epiphanyplatform/ignite:2.9.1" # it will be part of the image path: {{local_repository}}/{{image_path}}
-    use_local_image_registry: true
-    namespace: ignite
-    service:
-      rest_nodeport: 32300
-      sql_nodeport: 32301
-      thinclients_nodeport: 32302
-    replicas: 1
-    enabled_plugins:
-    - ignite-kubernetes # required to work on K8s
-    - ignite-rest-http
-
 # Abstract these configs to separate default files and add
 # the ability to add custom application roles.
 

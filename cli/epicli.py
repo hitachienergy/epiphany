@@ -252,7 +252,6 @@ def upgrade_parser(subparsers):
         'elasticsearch_curator',
         'filebeat',
         'grafana',
-        'ignite',
         'image_registry',
         'jmx_exporter',
         'kafka',
