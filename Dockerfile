@@ -25,7 +25,7 @@ RUN : INSTALL APT REQUIREMENTS \
     && curl -fsSLO https://storage.googleapis.com/kubernetes-release/release/v${KUBECTL_VERSION}/bin/linux/amd64/kubectl \
     && chmod +x ./kubectl \
     && mv ./kubectl /usr/local/bin/kubectl \
-    && kubectl version --client
+    && kubectl version --client \
 \
     && : INSTALL GEM REQUIREMENTS \
     && gem install \
