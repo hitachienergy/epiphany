@@ -638,8 +638,6 @@ specification:
       count: 0
     rabbitmq:
       count: 0
-    ignite:
-      count: 0
     opendistro_for_elasticsearch:
       count: 0
     single_machine:
@@ -820,7 +818,6 @@ Monitoring | :heavy_check_mark: | :heavy_check_mark: | :x: | :x: | ---
 Logging | :heavy_check_mark: | :heavy_check_mark: | :x: | :x: | ---
 Kubernetes master | :heavy_check_mark: | :x: | :heavy_check_mark: | :heavy_check_mark: | [#1579](https://github.com/epiphany-platform/epiphany/issues/1579)
 Kubernetes node | :heavy_check_mark: | :x: | :heavy_check_mark: | :heavy_check_mark: | [#1580](https://github.com/epiphany-platform/epiphany/issues/1580)
-Ignite | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | ---
 Kafka | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | ---
 Load Balancer | :heavy_check_mark: | :heavy_check_mark: | :x: | :x: | ---
 Opendistro for elasticsearch | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | ---
@@ -830,7 +827,6 @@ RabbitMQ K8s | :heavy_check_mark: | :heavy_check_mark: | :x: | :heavy_check_mark
 Keycloak K8s | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | ---
 Pgpool K8s | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | ---
 Pgbouncer K8s | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | ---
-Ignite K8s | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | ---
 
 Additional notes:
 

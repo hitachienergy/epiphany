@@ -1,5 +1,0 @@
----
-- name: Deploy Ignite
-  include_tasks: deploy-k8s-app.yml
-  vars:
-    app_dir_name: "{{ data.name }}"

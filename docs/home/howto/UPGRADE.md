@@ -194,8 +194,6 @@ specification:
       count: 1
     rabbitmq:
       count: 0
-    ignite:
-      count: 0
     opendistro_for_elasticsearch:
       count: 0
   name: clustername

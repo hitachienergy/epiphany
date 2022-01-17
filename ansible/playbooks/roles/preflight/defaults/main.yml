@@ -53,7 +53,6 @@ unsupported_roles:
       - postgresql
       - postgres_exporter
       - applications
-      - ignite
   - distro: CentOS
     arch: x86_64
     roles: []  # all supported
@@ -92,7 +91,6 @@ unsupported_roles:
       - postgresql
       - postgres_exporter
       - applications
-      - ignite
 
 unsupported_postgres_extensions:
   x86_64: []

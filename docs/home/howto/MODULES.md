@@ -263,19 +263,6 @@ AWS:
   name: default
   specification:
     applications:
-      - name: ignite-stateless
-        enabled: false
-        image_path: "epiphanyplatform/ignite:2.9.1"
-        use_local_image_registry: false
-        namespace: ignite
-        service:
-          rest_nodeport: 32300
-          sql_nodeport: 32301
-          thinclients_nodeport: 32302
-        replicas: 1
-        enabled_plugins:
-          - ignite-kubernetes
-          - ignite-rest-http
       - name: rabbitmq
         enabled: false
         image_path: rabbitmq:3.8.3

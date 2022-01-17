@@ -20,7 +20,7 @@ with a dash `-` as a delimiter.
 | Type | Required | Description | Examples |
 | ---- | -------- | ----------- | -------- |
 | Owner | yes | The name of the person or team which resource belongs to | epiphany |
-| Application or service name | no | Name of the application, workload, or service that the resource is a part of | kafka, ignite, opendistro |
+| Application or service name | no | Name of the application, workload, or service that the resource is a part of | kafka, opendistro |
 | Environment | no | The stage of the development lifecycle for the workload that the resource supports | prod, dev, qa |
 | VM group | no | The name of VM group that resource is created for | group-0 |
 

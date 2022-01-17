@@ -19,7 +19,6 @@ Container_Boundary(epiphany, "Epiphany managed environment"){
     Container(rdb, "Relational Database", "PostrgreSQL")
     Container(lb, "Load Balancer", "HAProxy")
     Container(messages, "Message Broker", "RabbitMQ")
-    Container(memdb, "In-Memory Database", "Apache Ignite")
     Container(repository, "Repository", "Apache")
     Container(auth, "Authentication and Authorization", "Keycloak")
 

@@ -55,10 +55,6 @@ properties:
         type: array
         items:
           type: string
-      ignite:
-        type: array
-        items:
-          type: string
       opendistro_for_elasticsearch:
         type: array
         items:

@@ -1,6 +1,0 @@
----
-- include_tasks: install-java.yml
-
-- include_tasks: install-ignite.yml
-
-- include_tasks: configure.yml
