@@ -33,9 +33,6 @@ logging:
 ...
 ```
 
-> Optional feature (role) available for logging: **logstash**
-> more details here: [link](https://github.com/epiphany-platform/epiphany/blob/develop/docs/home/howto/LOGGING.md#how-to-export-elasticsearch-data-to-csv-format)
-
 The `logging` role replaced `elasticsearch` role. This change was done to enable Elasticsearch usage also for data
 storage - not only for logs as it was till 0.5.0.
 
@@ -222,53 +219,6 @@ Check more details about the plugin and how to export reports in the
 
 You can easily check enabled default plugins for Kibana using the following command on the logging machine:
 `./bin/kibana-plugin list` in Kibana directory.
-
-## How to export Elasticsearch data to CSV format
-
-Since v0.8 Epiphany provides the possibility to export data from Elasticsearch to CSV using Logstash *(logstash-oss)* along
-with *logstash-input-elasticsearch* and *logstash-output-csv* plugins.
-
-To install Logstash in your cluster add **logstash** to feature mapping for *logging, opendistro_for_elasticsearch* or *
-elasticsearch* group.
-
----
-**NOTE**
-
-To check plugin versions following command can be used
-
-```shell
-/usr/share/logstash/bin/logstash-plugin list --verbose
-```
-
----
-
-Epiphany provides a basic configuration file `(logstash-export.conf.template)` as template for your data export. This
-file has to be modified according to your Elasticsearch configuration and data you want to export.
-
----
-**NOTE**
-
-Exporting data is not automated. It has to be invoked manually. Logstash daemon is disabled by default after
-installation.
-
----
-
-Run Logstash to export data:  
-`/usr/share/logstash/bin/logstash -f /etc/logstash/logstash-export.conf`
-
-More details about configuration
-of [input](https://www.elastic.co/guide/en/logstash/current/plugins-inputs-elasticsearch.html)
-and [output](https://www.elastic.co/guide/en/logstash/current/plugins-outputs-csv.html) plugins.
-
----
-**NOTE**
-
-At the moment input plugin doesn't officially support skipping certificate validation for secure connection to
-Elasticsearch. For non-production environment you can easily disable it by adding new line:
-
-`ssl_options[:verify] = false` right after other ssl_options definitions in file:
-
-`/usr/share/logstash/vendor/bundle/jruby/2.5.0/gems/logstash-input-elasticsearch-*/lib/logstash/inputs/elasticsearch.rb`
 
 ---
 

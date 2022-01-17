@@ -42,7 +42,6 @@ unsupported_roles:
       - elasticsearch
       - kibana
       - filebeat
-      - logstash
       - prometheus
       - grafana
       - node_exporter
@@ -80,7 +79,6 @@ unsupported_roles:
       - elasticsearch
       - kibana
       - filebeat
-      - logstash
       - prometheus
       - grafana
       - node_exporter
