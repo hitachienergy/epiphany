@@ -48,16 +48,3 @@ ERROR org.apache.kafka.common.errors.InvalidReplicationFactorException: Replicat
 This issue is saying the a replication of 1 is being attempted but there are no brokers '0'. This means that the kafka broker(s) are not running any longer. Kafka will start and attempt to establish connections etc. and if unable it will shutdown and log the message. So, when the verification script runs it will not be able to find a local broker (runs on each broker).
 
 Take a look at syslog/dmesg and run `sudo systemctl status kafka`. Most likely it is related to security (TLS/SSL) and/or network but it can also be incorrect settings in the config file `/opt/kafka/config/server.properties`. Correct and rerun the automation.
-
-## Networking
-
-Epicli uses Ansible to configure machines in cluster. Several tasks in Epiphany rely on ```ansible_default_ipv4``` variable.
-In some specific configuration (mostly on-prem), this variable might be fetched wrong. Those cases are:
-- more than one network interface per machine,
-- changes in hardware configuration (add or remove network interface / rename interface),
-- lack / wrong / multiplied default routing configuration.
-
-When ```ansible_default_ipv4``` is not equal to machine ip address used in inventory, installation fail with relevant error message.
-
-This means that machine's default routing configuration needs to be modified to use the same network interface (and ip address) used in inventory file.
-Here you can read more about [routing configuration](http://linux-ip.net/html/basic-changing.html#basic-changing-default)
