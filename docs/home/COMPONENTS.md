@@ -39,7 +39,6 @@ Note that versions are default versions and can be changed in certain cases thro
 | Pgpool                     | 4.2.4    | https://www.pgpool.net/                               | [License](https://www.pgpool.net/mediawiki/index.php/pgpool-II_License) |
 | Alertmanager               | 0.23.0   | https://github.com/prometheus/alertmanager            | [Apache License 2.0](https://github.com/prometheus/alertmanager/blob/master/LICENSE) |
 | Apache2                    | 2.4.29   | https://httpd.apache.org/                             | [Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0) |
-| Istio                      | 1.8.1    | https://github.com/istio/istio                        | [Apache License 2.0](https://github.com/istio/istio/blob/master/LICENSE) |
 
 ## Epicli binary dependencies
 

@@ -17,7 +17,6 @@ supported_oses:
 unsupported_apps:
   x86_64: []
   aarch64:
-    - istio
     - pgbouncer
     - pgpool
 

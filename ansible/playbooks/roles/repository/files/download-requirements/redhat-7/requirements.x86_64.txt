@@ -203,10 +203,6 @@ registry:2
 # applications
 bitnami/pgpool:4.2.4
 bitnami/pgbouncer:1.16.0
-# istio
-istio/pilot:1.8.1
-istio/proxyv2:1.8.1
-istio/operator:1.8.1
 epiphanyplatform/keycloak:14.0.0
 rabbitmq:3.8.9
 # K8s
