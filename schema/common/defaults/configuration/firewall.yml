@@ -14,7 +14,6 @@ specification:
         - 30104/tcp       # auth-service
         - 30672/tcp       # rabbitmq-amqp
         - 31672/tcp       # rabbitmq-http (management)
-        - 32300-32302/tcp # ignite
     common: # for all inventory hosts
       enabled: true
       ports:
@@ -28,14 +27,6 @@ specification:
       ports:
         - 443/tcp
         - 9000/tcp # stats and metrics
-    ignite:
-      enabled: true
-      ports:
-        - 8080/tcp  # REST API
-        - 10800/tcp # thin client connection
-        - 11211/tcp # JDBC
-        - 47100/tcp # local communication
-        - 47500/tcp # local discovery
     image_registry:
       enabled: true
       ports:

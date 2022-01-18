@@ -10,14 +10,13 @@ supported_oses:
       max: 7.9
   - name: Ubuntu
     version:
-      min: 18.04
-      max: 18.04
+      min: 20.04
+      max: 20.04
 
 # The list of unsupported K8s applications per architecture
 unsupported_apps:
   x86_64: []
   aarch64:
-    - istio
     - pgbouncer
     - pgpool
 
@@ -37,14 +36,12 @@ unsupported_roles:
       - helm
       - zookeeper
       - haproxy
-      - vault
       - logging
       - elasticsearch_curator
       - opendistro_for_elasticsearch
       - elasticsearch
       - kibana
       - filebeat
-      - logstash
       - prometheus
       - grafana
       - node_exporter
@@ -54,7 +51,6 @@ unsupported_roles:
       - postgresql
       - postgres_exporter
       - applications
-      - ignite
   - distro: CentOS
     arch: x86_64
     roles: []  # all supported
@@ -77,14 +73,12 @@ unsupported_roles:
       - helm
       - zookeeper
       - haproxy
-      - vault
       - logging
       - elasticsearch_curator
       - opendistro_for_elasticsearch
       - elasticsearch
       - kibana
       - filebeat
-      - logstash
       - prometheus
       - grafana
       - node_exporter
@@ -94,7 +88,6 @@ unsupported_roles:
       - postgresql
       - postgres_exporter
       - applications
-      - ignite
 
 unsupported_postgres_extensions:
   x86_64: []

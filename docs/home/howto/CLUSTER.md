@@ -30,8 +30,8 @@ Enable for RHEL on Azure:
      storage_image_reference:
        publisher: RedHat
        offer: RHEL
-       sku: 7-LVM
-       version: "7.9.2021051701"
+       sku: 7lvm-gen2
+       version: "7.9.2021121604"
    ```
 
 Enable for RHEL on AWS:
@@ -53,7 +53,7 @@ Enable for RHEL on AWS:
    provider: aws
    based_on: repository-machine
    specification:
-     os_full_name: RHEL-7.9_HVM-20210208-x86_64-0-Hourly2-GP2
+     os_full_name: RHEL-7.9_HVM-20211005-x86_64-0-Hourly2-GP2
    ```
 
 Enable for CentOS on Azure:
@@ -77,8 +77,8 @@ Enable for CentOS on Azure:
      storage_image_reference:
        publisher: OpenLogic
        offer: CentOS
-       sku: "7_9"
-       version: "7.9.2021071900"
+       sku: "7_9-gen2"
+       version: "7.9.2021071901"
    ```
 
 Enable for CentOS on AWS:
@@ -134,7 +134,7 @@ If there is no Internet access, you can use [air gap feature (offline mode)](#ho
 2. The cluster machines/VMs are running one of the following Linux distributions:
     - RedHat 7.6+ and < 8
     - CentOS 7.6+ and < 8
-    - Ubuntu 18.04
+    - Ubuntu 20.04
 3. The cluster machines/VMs are accessible through SSH with a set of SSH keys you provide and configure on each machine yourself (key-based authentication).
 4. The user used for SSH connection (`admin_user`) has passwordless root privileges through `sudo`.
 5. A provisioning machine that:
@@ -210,11 +210,11 @@ or VMs and should meet the following requirements:
 2. The air-gapped cluster machines/VMs are running one of the following Linux distributions:
     - RedHat 7.6+ and < 8
     - CentOS 7.6+ and < 8
-    - Ubuntu 18.04
+    - Ubuntu 20.04
 3. The cluster machines/VMs are accessible through SSH with a set of SSH keys you provide and configure on each machine yourself (key-based authentication).
 4. The user used for SSH connection (`admin_user`) has passwordless root privileges through `sudo`.
 5. A requirements machine that:
-    - Runs the same distribution as the air-gapped cluster machines/VMs (RedHat 7, CentOS 7, Ubuntu 18.04)
+    - Runs the same distribution as the air-gapped cluster machines/VMs (RedHat 7, CentOS 7, Ubuntu 20.04)
     - Has access to the internet.
    If you don't have access to a similar machine/VM with internet access, you can also try to download the requirements with a Docker container. More information [here](./CLUSTER.md#downloading-offline-requirements-with-a-docker-container).
 6. A provisioning machine that:
@@ -231,7 +231,7 @@ To set up the cluster do the following steps:
     epicli prepare --os OS
     ```
 
-    Where OS should be `centos-7`, `redhat-7`, `ubuntu-18.04`. This will create a directory called `prepare_scripts` with the needed files inside.
+    Where OS should be `centos-7`, `redhat-7`, `ubuntu-20.04`. This will create a directory called `prepare_scripts` with the needed files inside.
 
 2. The scripts in the `prepare_scripts` will be used to download all requirements. To do that copy the `prepare_scripts` folder over to the requirements machine and run the following command:
 
@@ -351,7 +351,6 @@ specification:
       - node-exporter
       - filebeat
       - firewall
-      - vault
 ---
 kind: configuration/shared-config
 title: Shared configuration that will be visible to all roles
@@ -490,7 +489,7 @@ To set up the cluster do the following steps from the provisioning machine:
     - `default_os_image`: Lets you more easily select Epiphany team validated and tested OS images. When one is selected, it will be applied to **every** `infrastructure/virtual-machine` document in the cluster regardless of user defined ones.
                   The following values are accepted:
                   - `default`: Applies user defined `infrastructure/virtual-machine` documents when generating a new configuration.
-                  - `ubuntu-18.04-x86_64`: Applies the latest validated and tested Ubuntu 18.04 image to all `infrastructure/virtual-machine` documents on `x86_64` on Azure and AWS.
+                  - `ubuntu-20.04-x86_64`: Applies the latest validated and tested Ubuntu 20.04 image to all `infrastructure/virtual-machine` documents on `x86_64` on Azure and AWS.
                   - `redhat-7-x86_64`: Applies the latest validated and tested RedHat 7.x image to all `infrastructure/virtual-machine` documents on `x86_64` on Azure and AWS.
                   - `centos-7-x86_64`: Applies the latest validated and tested CentOS 7.x image to all `infrastructure/virtual-machine` documents on `x86_64` on Azure and AWS.
                   - `centos-7-arm64`: Applies the latest validated and tested CentOS 7.x image to all `infrastructure/virtual-machine` documents on `arm64` on AWS. Azure currently doesn't support `arm64`.
@@ -543,8 +542,8 @@ specification:
   storage_image_reference:
     publisher: RedHat
     offer: RHEL
-    sku: "7-LVM"
-    version: "7.9.2021051701"
+    sku: "7lvm-gen2"
+    version: "7.9.2021121604"
   storage_os_disk:
     disk_size_gb: 64
 ```
@@ -561,8 +560,8 @@ specification:
   storage_image_reference:
     publisher: OpenLogic
     offer: CentOS
-    sku: "7_9"
-    version: "7.9.2021071900"
+    sku: "7_9-gen2"
+    version: "7.9.2021071901"
 ```
 
 ### How to disable merging LVM logical volumes
@@ -638,8 +637,6 @@ specification:
     load_balancer:
       count: 0
     rabbitmq:
-      count: 0
-    ignite:
       count: 0
     opendistro_for_elasticsearch:
       count: 0
@@ -821,7 +818,6 @@ Monitoring | :heavy_check_mark: | :heavy_check_mark: | :x: | :x: | ---
 Logging | :heavy_check_mark: | :heavy_check_mark: | :x: | :x: | ---
 Kubernetes master | :heavy_check_mark: | :x: | :heavy_check_mark: | :heavy_check_mark: | [#1579](https://github.com/epiphany-platform/epiphany/issues/1579)
 Kubernetes node | :heavy_check_mark: | :x: | :heavy_check_mark: | :heavy_check_mark: | [#1580](https://github.com/epiphany-platform/epiphany/issues/1580)
-Ignite | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | ---
 Kafka | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | ---
 Load Balancer | :heavy_check_mark: | :heavy_check_mark: | :x: | :x: | ---
 Opendistro for elasticsearch | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | ---
@@ -831,7 +827,6 @@ RabbitMQ K8s | :heavy_check_mark: | :heavy_check_mark: | :x: | :heavy_check_mark
 Keycloak K8s | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | ---
 Pgpool K8s | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | ---
 Pgbouncer K8s | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | ---
-Ignite K8s | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | ---
 
 Additional notes:
 
@@ -1091,15 +1086,15 @@ A few points:
 - This only describes how to set up the Docker containers for downloading. The rest of the steps are similar as in the paragraph [here](./CLUSTER.md#how-to-create-an-epiphany-cluster-on-existing-air-gapped-infrastructure).
 - Main reason why you might want to give this a try is to download ```arm64``` architecture requirements on a ```x86_64``` machine. More information on the current state of ```arm64``` support can be found [here](./../ARM.md#arm).
 
-### Ubuntu 18.04
+### Ubuntu 20.04
 
 For Ubuntu, you can use the following command to launch a container:
 
 ```shell
-docker run -v /shared_folder:/home <--platform linux/amd64 or --platform linux/arm64> --rm -it ubuntu:18.04
+docker run -v /shared_folder:/home <--platform linux/amd64 or --platform linux/arm64> --rm -it ubuntu:20.04
 ```
 
-As the ```ubuntu:18.04``` image is multi-arch you can include ```--platform linux/amd64``` or ```--platform linux/arm64``` to run the container as the specified architecture. The ```/shared_folder``` should be a folder on your local machine containing the required scripts.
+As the ```ubuntu:20.04``` image is multi-arch you can include ```--platform linux/amd64``` or ```--platform linux/arm64``` to run the container as the specified architecture. The ```/shared_folder``` should be a folder on your local machine containing the required scripts.
 
 When you are inside the container run the following commands to prepare for the running of the ```download-requirements.sh``` script:
 

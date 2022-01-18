@@ -6,7 +6,6 @@ ARG USER_GID=$USER_UID
 
 ARG HELM_VERSION=3.3.1
 ARG KUBECTL_VERSION=1.22.4
-ARG ISTIOCTL_VERSION=1.8.1
 ARG TERRAFORM_VERSION=1.1.3
 
 RUN : INSTALL APT REQUIREMENTS \
@@ -34,11 +33,6 @@ RUN : INSTALL HELM BINARY \
  && chmod +x ./kubectl \
  && mv ./kubectl /usr/local/bin/kubectl \
  && kubectl version --client \
- && : INSTALL ISTIOCTl BINARY \
- && curl -fsSLO https://github.com/istio/istio/releases/download/${ISTIOCTL_VERSION}/istioctl-${ISTIOCTL_VERSION}-linux-amd64.tar.gz \
- && tar -xzof istioctl-${ISTIOCTL_VERSION}-linux-amd64.tar.gz -C /usr/local/bin istioctl \
- && rm istioctl-${ISTIOCTL_VERSION}-linux-amd64.tar.gz \
- && chmod +x /usr/local/bin/istioctl \
  && : INSTALL TERRAFORM BINARY \
  && curl -fsSLO https://releases.hashicorp.com/terraform/${TERRAFORM_VERSION}/terraform_${TERRAFORM_VERSION}_linux_amd64.zip \
  && unzip terraform_${TERRAFORM_VERSION}_linux_amd64.zip -d /usr/local/bin \

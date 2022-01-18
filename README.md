@@ -12,7 +12,6 @@ Epiphany at its core is a full automation of Kubernetes and Docker plus addition
 - HAProxy for loadbalancing
 - Postgres and Elasticsearch for data storage
 - KeyCloak for authentication
-- Vault (MVP) for protecting secrets and other sensitive data
 - Helm as package manager for Kubernetes
 
 The following target platforms are available: AWS, Azure and on-prem installation.
@@ -27,6 +26,11 @@ We currently use Terraform and Ansible for our automation orchestration. All aut
 ## Note about documentation
 
 - The documentation is a moving target. Always check the latest documentation on the develop branch. There is a big chance that whatever you are looking for is already added/updated or improved there.
+
+## Deprecation Note
+
+At the link presented below you can find the information about deprecated components with plan of removal from Epiphany.  
+[Deprecation Note](docs/home/DEPRECATION-NOTE.md)
 
 ## Quickstart
 

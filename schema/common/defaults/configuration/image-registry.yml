@@ -13,22 +13,10 @@ specification:
           file_name: keycloak-14.0.0.tar
         - name: "rabbitmq:3.8.9"
           file_name: rabbitmq-3.8.9.tar
-        - name: "epiphanyplatform/ignite:2.9.1"
-          file_name: ignite-2.9.1.tar
         - name: "kubernetesui/dashboard:v2.3.1"
           file_name: dashboard-v2.3.1.tar
         - name: "kubernetesui/metrics-scraper:v1.0.7"
           file_name: metrics-scraper-v1.0.7.tar
-        - name: "vault:1.7.0"
-          file_name: vault-1.7.0.tar
-        - name: "hashicorp/vault-k8s:0.10.0"
-          file_name: vault-k8s-0.10.0.tar
-        - name: "istio/proxyv2:1.8.1"
-          file_name: proxyv2-1.8.1.tar
-        - name: "istio/pilot:1.8.1"
-          file_name: pilot-1.8.1.tar
-        - name: "istio/operator:1.8.1"
-          file_name: operator-1.8.1.tar
         # postgres
         - name: bitnami/pgpool:4.2.4
           file_name: pgpool-4.2.4.tar
@@ -138,16 +126,10 @@ specification:
           file_name: keycloak-14.0.0.tar
         - name: "rabbitmq:3.8.9"
           file_name: rabbitmq-3.8.9.tar
-        - name: "epiphanyplatform/ignite:2.9.1"
-          file_name: ignite-2.9.1.tar
         - name: "kubernetesui/dashboard:v2.3.1"
           file_name: dashboard-v2.3.1.tar
         - name: "kubernetesui/metrics-scraper:v1.0.7"
           file_name: metrics-scraper-v1.0.7.tar
-        - name: "vault:1.7.0"
-          file_name: vault-1.7.0.tar
-        - name: "hashicorp/vault-k8s:0.10.0"
-          file_name: vault-k8s-0.10.0.tar
       current:
         - name: "haproxy:2.2.2-alpine"
           file_name: haproxy-2.2.2-alpine.tar

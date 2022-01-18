@@ -1,7 +1,4 @@
 ---
-- name: k8s/masterN | Switch apiserver address to local
-  include_tasks: utils/set-local-apiserver.yml # sets kubectl_context_cluster
-
 - name: k8s/masterN | Drain master in preparation for maintenance
   include_tasks: utils/drain.yml
 
@@ -55,8 +52,3 @@
 
 - name: k8s/masterN | Verify component versions and node status
   include_tasks: kubernetes/verify-upgrade.yml
-
-- name: k8s/masterN | Switch apiserver address to HAProxy
-  command: |-
-    kubectl config set-cluster {{ kubectl_context_cluster.stdout }} --server=https://localhost:3446
-  changed_when: true

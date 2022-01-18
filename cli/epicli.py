@@ -167,8 +167,8 @@ def prepare_parser(subparsers):
     required = sub_parser.add_argument_group('required arguments')
 
     #required
-    required.add_argument('--os', type=str, required=True, dest='os', choices=['ubuntu-18.04', 'redhat-7', 'centos-7'],
-                            help='The OS to prepare the offline requirements for: ubuntu-18.04|redhat-7|centos-7')
+    required.add_argument('--os', type=str, required=True, dest='os', choices=['ubuntu-20.04', 'redhat-7', 'centos-7'],
+                            help='The OS to prepare the offline requirements for: ubuntu-20.04|redhat-7|centos-7')
 
     #optional
     sub_parser._action_groups.append(optional)
@@ -207,6 +207,8 @@ def apply_parser(subparsers):
                             help='Enable Ansible profile_tasks plugin for timing tasks. (developer/debug option)')
     optional.add_argument('--ping-retries', dest='ping_retries', type=int, required=False, action='store', default=10,
                             help='Number of pings after which Ansible will fail.')
+    optional.add_argument('--ansible-forks', dest='ansible_forks', type=int, required=False, action='store', default=10,
+                            help='Sets the number of forks in ansible.cfg.')
     sub_parser._action_groups.append(optional)
 
     def run_apply(args):
@@ -250,7 +252,6 @@ def upgrade_parser(subparsers):
         'elasticsearch_curator',
         'filebeat',
         'grafana',
-        'ignite',
         'image_registry',
         'jmx_exporter',
         'kafka',
@@ -262,6 +263,7 @@ def upgrade_parser(subparsers):
         'node_exporter',
         'opendistro_for_elasticsearch',
         'postgresql',
+        'postgres_exporter',
         'prometheus',
         'rabbitmq',
         'zookeeper',
@@ -296,6 +298,8 @@ def upgrade_parser(subparsers):
                             help='Provides comma separated list of components for upgrade selected from the following: [' + ', '.join(map(str, component_list)) + ']')
     optional.add_argument('--ping-retries', dest='ping_retries', type=int, required=False, action='store', default=10,
                             help='Number of pings after which Ansible will fail.')
+    optional.add_argument('--ansible-forks', dest='ansible_forks', type=int, required=False, action='store', default=10,
+                            help='Sets the number of forks in ansible.cfg.')
     sub_parser._action_groups.append(optional)
 
     def run_upgrade(args):

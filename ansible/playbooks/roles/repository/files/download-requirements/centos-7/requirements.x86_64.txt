@@ -59,7 +59,6 @@ libxcb # for grafana
 libXcursor # for grafana
 libXt # for grafana
 logrotate
-logstash-oss-7.12.0
 net-tools
 nfs-utils
 nmap-ncat
@@ -158,16 +157,13 @@ https://dl.grafana.com/oss/release/grafana-8.3.2-1.x86_64.rpm
 https://github.com/danielqsj/kafka_exporter/releases/download/v1.4.0/kafka_exporter-1.4.0.linux-amd64.tar.gz
 https://repo1.maven.org/maven2/io/prometheus/jmx/jmx_prometheus_javaagent/0.16.1/jmx_prometheus_javaagent-0.16.1.jar
 https://github.com/prometheus/node_exporter/releases/download/v1.3.1/node_exporter-1.3.1.linux-amd64.tar.gz
-https://github.com/prometheus-community/postgres_exporter/releases/download/v0.9.0/postgres_exporter-0.9.0.linux-amd64.tar.gz
+https://github.com/prometheus-community/postgres_exporter/releases/download/v0.10.0/postgres_exporter-0.10.0.linux-amd64.tar.gz
 # --- Misc ---
 https://archive.apache.org/dist/kafka/2.6.0/kafka_2.12-2.6.0.tgz
 https://github.com/prometheus/prometheus/releases/download/v2.31.1/prometheus-2.31.1.linux-amd64.tar.gz
 https://github.com/prometheus/alertmanager/releases/download/v0.23.0/alertmanager-0.23.0.linux-amd64.tar.gz
 https://archive.apache.org/dist/zookeeper/zookeeper-3.5.8/apache-zookeeper-3.5.8-bin.tar.gz
-https://archive.apache.org/dist/ignite/2.9.1/apache-ignite-2.9.1-bin.zip
-https://releases.hashicorp.com/vault/1.7.0/vault_1.7.0_linux_amd64.zip
 https://get.helm.sh/helm-v3.2.0-linux-amd64.tar.gz
-https://github.com/hashicorp/vault-helm/archive/v0.11.0.tar.gz
 https://archive.apache.org/dist/logging/log4j/2.17.1/apache-log4j-2.17.1-bin.tar.gz
 # --- Helm charts ---
 https://helm.elastic.co/helm/filebeat/filebeat-7.9.2.tgz
@@ -205,16 +201,9 @@ haproxy:2.2.2-alpine
 kubernetesui/dashboard:v2.3.1
 kubernetesui/metrics-scraper:v1.0.7
 registry:2
-hashicorp/vault-k8s:0.10.0
-vault:1.7.0
 # applications
-epiphanyplatform/ignite:2.9.1
 bitnami/pgpool:4.2.4
 bitnami/pgbouncer:1.16.0
-# istio
-istio/pilot:1.8.1
-istio/proxyv2:1.8.1
-istio/operator:1.8.1
 epiphanyplatform/keycloak:14.0.0
 rabbitmq:3.8.9
 # K8s

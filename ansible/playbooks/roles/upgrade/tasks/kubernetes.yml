@@ -1,16 +1,49 @@
 ---
-- name: Wait for kube-apiserver and get cluster version
-  delegate_to: "{{ groups.kubernetes_master[0] }}"
-  block:
-    - name: k8s | Include wait-for-kube-apiserver.yml
-      import_tasks: kubernetes/utils/wait-for-kube-apiserver.yml
+- name: k8s | Wait for kube-apiserver
+  delegate_to: >-
+    {{ inventory_hostname if inventory_hostname in groups.kubernetes_master else
+      groups.kubernetes_master[0] }}
+  import_tasks: kubernetes/utils/wait-for-kube-apiserver.yml
 
+# During HA control plane upgrade server address in kubeconfig is switched to local for
+#   * compatibility between client and server versions
+#   * identifying correct server version
+- name: k8s/master | Switch apiserver address to local
+  include_tasks: kubernetes/utils/set-local-apiserver.yml # sets kubectl_context_cluster
+  when:
+    - groups.kubernetes_master | length > 1
+    - inventory_hostname in groups.kubernetes_master
+
+- name: Get cluster version and set version facts
+  delegate_to: >-
+    {{ inventory_hostname if inventory_hostname in groups.kubernetes_master else
+      groups.kubernetes_master[0] }}
+  block:
     - name: k8s | Include get-cluster-version.yml
-      import_tasks: kubernetes/get-cluster-version.yml # sets cluster_version
+      import_tasks: kubernetes/get-cluster-version.yml
+
+    - name: k8s | Set cluster version facts
+      set_fact:
+        initial_cluster_version: "{{ _cluster_version }}"
+        cluster_version: "{{ _cluster_version }}"
+      vars:
+        _cluster_version: "{{ (kubectl_cluster_version.stdout | from_yaml).serverVersion.gitVersion }}"
 
 - name: k8s | Include get-kubelet-version.yml
-  import_tasks: kubernetes/get-kubelet-version.yml # sets kubelet_version
+  import_tasks: kubernetes/get-kubelet-version.yml
   delegate_to: "{{ groups.kubernetes_master[0] }}"
+
+- name: k8s | Set kubelet version as fact
+  set_fact:
+    initial_kubelet_version: "{{ kubelet_version.stdout }}"
+
+- name: Check if upgrade state file exists
+  stat:
+    path: "{{ kubernetes.upgrade_state_file_path }}"
+    get_attributes: false
+    get_checksum: false
+    get_mime: false
+  register: k8s_upgrade_state_file_status
 
 - name: Upgrade masters then nodes
   vars:
@@ -18,8 +51,17 @@
     cni_version: "{{ cni_ver }}"
   block:
     - name: Upgrade masters
-      when: cluster_version is version('v' + version, '<=')
+      when:
+        - inventory_hostname in groups.kubernetes_master
+        - k8s_upgrade_state_file_status.stat.exists
+          or initial_cluster_version is version('v' + version, '<')
       block:
+        - name: Create K8s upgrade state file on master node
+          copy:
+            dest: "{{ kubernetes.upgrade_state_file_path }}"
+            content: Upgrade started
+            mode: u=rw,g=r,o=
+
         - name: k8s | Upgrade first master to v{{ version }}
           include_tasks: kubernetes/upgrade-master0.yml
           when:
@@ -30,16 +72,39 @@
           when:
             - inventory_hostname in groups.kubernetes_master[1:]
 
+        - name: Remove K8s upgrade state file on master node
+          file:
+            path: "{{ kubernetes.upgrade_state_file_path }}"
+            state: absent
+
     - name: Upgrade nodes
-      when: kubelet_version is version('v' + version, '<=')
+      when:
+        - groups.kubernetes_node is defined
+        - inventory_hostname in groups.kubernetes_node
+        - k8s_upgrade_state_file_status.stat.exists
+          or initial_kubelet_version is version('v' + version, '<')
       block:
+        - name: Create K8s upgrade state file on node
+          copy:
+            dest: "{{ kubernetes.upgrade_state_file_path }}"
+            content: Upgrade started
+            mode: u=rw,g=r,o=
+
         - name: k8s | Upgrade node to v{{ version }}
           include_tasks: kubernetes/upgrade-node.yml
-          when:
-            - groups.kubernetes_node is defined
-            - inventory_hostname in groups.kubernetes_node
+
+        - name: Remove K8s upgrade state file on node
+          file:
+            path: "{{ kubernetes.upgrade_state_file_path }}"
+            state: absent
+
+- name: k8s/master | Switch apiserver address to HAProxy
+  command: |-
+    kubectl config set-cluster {{ kubectl_context_cluster.stdout }} --server=https://localhost:3446
+  when:
+    - groups.kubernetes_master | length > 1
+    - inventory_hostname in groups.kubernetes_master
+  changed_when: true
 
 - name: k8s | Upgrade internal haproxy load-balancer
   import_tasks: kubernetes/upgrade-haproxy.yml
-
-# TODO: Create a flag file that the upgrade completed to not run it again for the same version next time

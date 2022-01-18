@@ -17,6 +17,10 @@
 
 ### Removed
 
+- [#2834](https://github.com/epiphany-platform/epiphany/issues/2834) - Removal of Hashicorp Vault component
+- [#2833](https://github.com/epiphany-platform/epiphany/issues/2833) - Removal of Logstash component
+- [#2836](https://github.com/epiphany-platform/epiphany/issues/2836) - Removal of Istio component
+- [#2837](https://github.com/epiphany-platform/epiphany/issues/2837) - Removal of Apache Ignite component
 
 ### Deprecated
 
@@ -26,4 +30,3 @@
 - Upgrade of Terraform components in issue [#2825](https://github.com/epiphany-platform/epiphany/issues/2825) will make running re-apply with infrastructure break on existing 1.x clusters. Advice is deploy a new cluster and migrate data. If needed a manual upgrade path is described [here.](../home/howto/UPGRADE.md#terraform-upgrade-from-epiphany-1.x-to-2.x)
 
 ### Known issues
-

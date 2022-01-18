@@ -285,8 +285,6 @@ specification:
       count: 0
     rabbitmq:
       count: 0
-    ignite:
-      count: 0
     opendistro_for_elasticsearch:
       count: 0
     single_machine:

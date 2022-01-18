@@ -44,10 +44,12 @@ class AnsibleConfigFileCreator(Step):
                 self.ansible_config_file_settings[section][key] = value
 
     def process_ansible_options(self):
+        self.add_setting('defaults', 'allow_world_readable_tmpfiles', 'true')  # workaround for delegate_to with become_user
         if self.ansible_options['profile_tasks']:
             self.add_setting('defaults', 'callback_whitelist', ['profile_tasks'])
-        self.add_setting('defaults', 'interpreter_python', 'auto_legacy_silent')
-        self.add_setting('defaults', 'allow_world_readable_tmpfiles', 'true')  # workaround for delegate_to with become_user
+        self.add_setting('defaults', 'forks', self.ansible_options['forks'])
+        # Ubuntu 18 upgraded to 20 has Python 2 and 3 so 'auto_legacy' doesn't work for PostgreSQL Ansible modules
+        self.add_setting('defaults', 'interpreter_python', 'auto')
 
     def create(self):
         self.logger.info('Creating ansible.cfg')

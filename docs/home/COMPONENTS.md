@@ -24,25 +24,20 @@ Note that versions are default versions and can be changed in certain cases thro
 | Opendistro for Elasticsearch Kibana   | 1.13.1   | https://opendistro.github.io/for-elasticsearch-docs/docs/kibana/ | [Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0) |
 | Filebeat                   | 7.9.2    | https://github.com/elastic/beats                      | [Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0) |
 | Filebeat Helm Chart        | 7.9.2    | https://github.com/elastic/helm-charts                | [Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0) |
-| Logstash OSS               | 7.12.0   | https://github.com/elastic/logstash                   | [Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0) |
 | Prometheus                 | 2.31.1   | https://github.com/prometheus/prometheus              | [Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0) |
 | Grafana                    | 8.3.2    | https://github.com/grafana/grafana                    | [Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0) |
 | Node Exporter              | 1.3.1    | https://github.com/prometheus/node_exporter           | [Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0) |
 | Bitnami Node Exporter Helm Chart      | 1.1.2    | https://github.com/bitnami/charts          | [Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0) |
 | Kafka Exporter             | 1.4.0    | https://github.com/danielqsj/kafka_exporter           | [Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0) |
 | JMX Exporter               | 0.16.1   | https://github.com/prometheus/jmx_exporter            | [Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0) |
-| Postgres Exporter          | 0.9.0    | https://github.com/prometheus-community/postgres_exporter | [Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0) |
+| Postgres Exporter          | 0.10.0    | https://github.com/prometheus-community/postgres_exporter | [Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0) |
 | PostgreSQL                 | 13       | https://www.postgresql.org/                           | [PostgreSQL license](http://www.postgresql.org/about/licence/)    |
 | HAProxy                    | 2.2.2    | https://www.haproxy.org/                              | [GNU General Public License 2.0](https://www.gnu.org/licenses/old-licenses/gpl-2.0.html) |
 | PgAudit                    | 1.5.0    | https://github.com/pgaudit/pgaudit                    | [PostgreSQL license](http://www.postgresql.org/about/licence/)    |
 | repmgr                     | 5.2.1    | https://github.com/EnterpriseDB/repmgr                | [GNU General Public License 3.0](https://github.com/EnterpriseDB/repmgr/blob/master/LICENSE) |
 | Pgpool                     | 4.2.4    | https://www.pgpool.net/                               | [License](https://www.pgpool.net/mediawiki/index.php/pgpool-II_License) |
 | Alertmanager               | 0.23.0   | https://github.com/prometheus/alertmanager            | [Apache License 2.0](https://github.com/prometheus/alertmanager/blob/master/LICENSE) |
-| Apache Ignite              | 2.9.1    | https://github.com/apache/ignite                      | [Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0) |
 | Apache2                    | 2.4.29   | https://httpd.apache.org/                             | [Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0) |
-| Hashicorp Vault            | 1.7.0    | https://github.com/hashicorp/vault                    | [Mozilla Public License 2.0](https://github.com/hashicorp/vault/blob/master/LICENSE) |
-| Hashicorp Vault Helm Chart | 0.11.0   | https://github.com/hashicorp/vault-helm               | [Mozilla Public License 2.0](https://github.com/hashicorp/vault-helm/blob/master/LICENSE.md) |
-| Istio                      | 1.8.1    | https://github.com/istio/istio                        | [Apache License 2.0](https://github.com/istio/istio/blob/master/LICENSE) |
 
 ## Epicli binary dependencies
 

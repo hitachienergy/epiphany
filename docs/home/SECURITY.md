@@ -28,7 +28,6 @@ Additional to users created by each component Epiphany creates also users and gr
 - rabbitmq/rabbitmq
 - zookeeper/zookeeper
 - kafka/kafka
-- vault/vault
 
 Other accounts created by each component you can find in the documentation of these components.
 
@@ -115,7 +114,6 @@ different values. The list does not include ports that are bound to the loopback
 13. Kubernetes apps:
 
     - 30104 - auth-service (Keycloak)
-    - 32300-32302 - Ignite (REST API, SQL port, Thin clients)
     - 30672,31672 - RabbitMQ (AMQP, management)
 
 14. HAProxy:
@@ -127,33 +125,14 @@ different values. The list does not include ports that are bound to the loopback
 
     **NOTE:** Not applicable for Ubuntu where UNIX socket is used (deb package's default).
 
-15. Ignite:
-
-    - 8080 - REST API
-    - 10800-10809* - JDBC Thin Driver
-    - 11211-11220* - JDBC Client Driver
-    - 47100-47109* - communication SPI
-    - 47500-47509* - discovery SPI
-    - 49112 - JMX (remote access), limited by Epiphany to be accessible only through SSH tunnel (
-      java.rmi.server.hostname=127.0.0.1)
-    - unconfigurable random port from ephemeral range - JMX (for local access only), see note [[1]](#notes)
-
-    **NOTE:** By default, only the first port from the range is used (port ranges are handy when starting multiple grid
-    nodes on the same machine)
-
-16. Repository:
+15. Repository:
 
     - 80 - deb/rpm package repository (httpd is stopped at the end of installation)
     - 5000 - Docker image registry
 
-17. Hashicorp Vault:
-
-    - 8200 - REST API
-
 ### Connection protocols and ciphers used by components in Epiphany
 
-Below you can find list of cipersuites and protocols used for communication set in Epiphany on per component basis. This
-doesn't contain information about potentially deprecated components: Apache Ignite, Istio, Hashicorp Vault.
+Below you can find list of cipersuites and protocols used for communication set in Epiphany on per component basis.
 
 1. OS services:
 

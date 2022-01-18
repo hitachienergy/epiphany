@@ -1,9 +1,0 @@
----
-- hosts: all
-  tasks: []
-
-- hosts: logstash
-  become: true
-  become_method: sudo
-  roles:
-    - logstash
