@@ -1,5 +1,16 @@
 ---
-- name: Extensions | repmgr | Install package(s)
+# On Ubuntu there is dependent 'repmgr-common' package.
+# apt module doesn't support --allow-downgrades (see https://github.com/ansible/ansible/issues/29451)
+# so we keep installed version if it's newer.
+- name: Set target version for repmgr-common package
+  set_fact:
+    _installed_version: "{{ ansible_facts.packages['repmgr-common'][0].version }}"
+    _target_version: "{{ repmgr.version.Debian }}"
+  when:
+    - ansible_os_family == 'Debian'
+    - ansible_facts.packages['repmgr-common'] is defined
+
+- name: Extensions | repmgr | Install package(s) Debian
   package:
     name: "{{ _packages[ansible_os_family] }}"
     state: present
@@ -8,7 +19,20 @@
       Debian:
         - "{{ repmgr.package_name.Debian }}={{ repmgr.version.Debian + '-*' }}"
         - "repmgr-common={{ repmgr.version.Debian + '-*' }}"
+  module_defaults:
+    yum: { lock_timeout: "{{ yum_lock_timeout }}" }
+  when:
+    - ansible_os_family == 'Debian'
+    - _installed_version is not defined or _installed_version is version( _target_version, '==' )
+
+- name: Extensions | repmgr | Install package RedHat
+  package:
+    name: "{{ _packages[ansible_os_family] }}"
+    state: present
+  vars:
+    _packages:
       RedHat:
         - "{{ repmgr.package_name.RedHat }}-{{ repmgr.version.RedHat }}"
   module_defaults:
     yum: { lock_timeout: "{{ yum_lock_timeout }}" }
+  when: ansible_os_family == 'RedHat'
