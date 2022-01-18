@@ -467,7 +467,7 @@ From Epiphany 1.x to 2.x the Terraform stack received the following major update
 
 These introduce some breaking changes which will require manual steps for upgrading an existing 1.x clusters. As this is not straight forward we recommend deploying a new cluster on 2.x and migrating data instead.
 
-If you do want to upgrade a 1.x manually it will require you to upgrade between a few different versions of Terraform. The basic steps are described below for each provider. As always insure backup of any data required.
+If you do want to upgrade a 1.x manually it will require you to upgrade between a few different versions of Terraform. The basic steps are described below for each provider. As always ensure backup of any data required.
 
 Final note is that you can also leave the Terraform in place and use the `--no-infra` flag to skip applying the new Terraform scripts. This however makes you unable to make any changes to your cluster layout.
 
