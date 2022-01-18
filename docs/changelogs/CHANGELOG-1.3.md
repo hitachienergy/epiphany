@@ -43,9 +43,7 @@
 - [#2737](https://github.com/epiphany-platform/epiphany/issues/2737) - Fix asserting number of postgres nodes
 - [#1175](https://github.com/epiphany-platform/epiphany/issues/1175) - Task 'Join to Kubernetes cluster' may fail when Ansible vault already exists
 - [#2420](https://github.com/epiphany-platform/epiphany/issues/2420) - Changing Grafana admin password in the apply mode
-- [#2653](https://github.com/epiphany-platform/epiphany/issues/2653) - Epicli is failing in air-gapped infra mode
 - [#2873](https://github.com/epiphany-platform/epiphany/issues/2873) - Epicli backup fails on schema validation
-- [#2877](https://github.com/epiphany-platform/epiphany/issues/2877) - PostgreSQL backup fails on Ubuntu due to permission issue
 
 ### Updated
 
