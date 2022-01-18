@@ -220,7 +220,7 @@ end
 describe 'Check the OCI-spec' do
   describe command('crictl --runtime-endpoint unix:///run/containerd/containerd.sock info') do
     let(:disable_sudo) { false }
-    its(:content_as_yaml) { should include('defaultRuntimeName' => 'runc') }
+    its(:stdout) { should contain('\"defaultRuntimeName\": \"runc\"') }
   end
 end
 
@@ -230,8 +230,8 @@ describe 'Check certificate rotation for the kubelet' do
     its(:content_as_yaml) { should include('rotateCertificates' => true) }
   end
   describe command("kubectl describe cm $(kubectl get cm -n kube-system \
-    | awk '/kubelet-config/{print $1}') -n kube-system | grep -i rotateCertificates") do
-    its(:stdout) { should match(/rotateCertificates: true/) }
+    | awk '/kubelet-config/{print $1}') -n kube-system") do
+    its(:stdout) { should contain('rotateCertificates: true') }
     its(:exit_status) { should eq 0 }
   end
 end
