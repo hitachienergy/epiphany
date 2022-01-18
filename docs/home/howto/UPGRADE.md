@@ -444,7 +444,7 @@ Notes:
 
 #### v0.12.6 => v0.13.x
 
-Official documentation can be found here: https://www.terraform.io/language/upgrade-guides/0-13
+The official documentation can be found here: https://www.terraform.io/language/upgrade-guides/0-13
 
 General steps:
 - Download the latest Terraform v0.13.x: https://releases.hashicorp.com/terraform/
@@ -458,7 +458,7 @@ General steps:
 
 #### v0.13.x => v0.14.x
 
-Official documentation can be found here: https://www.terraform.io/language/upgrade-guides/0-14
+The official documentation can be found here: https://www.terraform.io/language/upgrade-guides/0-14
 
 General steps:
 - Download the latest Terraform v0.14.x: https://releases.hashicorp.com/terraform/
@@ -473,7 +473,7 @@ General steps:
 
 Note: From v0.14.x we can upgrade straight to v1.0.x. No need to upgrade to v0.15.x first.
 
-Official documentation can be found here: https://www.terraform.io/language/upgrade-guides/1-0
+The official documentation can be found here: https://www.terraform.io/language/upgrade-guides/1-0
 
 General steps:
 - Download the latest Terraform v1.0.x: https://releases.hashicorp.com/terraform/
@@ -488,7 +488,7 @@ General steps:
 
 In this step we also force the upgrade from Azurerm provider 1.38.0 to 2.91.0 which requires a few more steps to resolve some pending issues.
 
-Official documentation can be found here: https://www.terraform.io/language/upgrade-guides/1-1
+The official documentation can be found here: https://www.terraform.io/language/upgrade-guides/1-1
 
 General steps:
 - Run epicli to generate new Azurerm provider Terraform scripts:
@@ -524,7 +524,7 @@ Notes:
 
 #### v0.12.6 => v0.13.x
 
-Official documentation can be found here: https://www.terraform.io/language/upgrade-guides/0-13
+The official documentation can be found here: https://www.terraform.io/language/upgrade-guides/0-13
 
 General steps:
 - Download the latest Terraform v0.13.x: https://releases.hashicorp.com/terraform/
@@ -538,7 +538,7 @@ General steps:
 
 #### v0.13.x => v0.14.x
 
-Official documentation can be found here: https://www.terraform.io/language/upgrade-guides/0-14
+The official documentation can be found here: https://www.terraform.io/language/upgrade-guides/0-14
 
 General steps:
 - Download the latest Terraform v0.14.x: https://releases.hashicorp.com/terraform/
@@ -553,7 +553,7 @@ General steps:
 
 Note: From v0.14.x we can upgrade straight to v1.0.x. No need to upgrade to v0.15.x first.
 
-Official documentation can be found here: https://www.terraform.io/language/upgrade-guides/1-0
+The official documentation can be found here: https://www.terraform.io/language/upgrade-guides/1-0
 
 General steps:
 - Download the latest Terraform v1.0.x: https://releases.hashicorp.com/terraform/
@@ -567,7 +567,7 @@ General steps:
 
 In this step we also force the upgrade from AWS provider 2.26 to 3.71.0 which requires a few more steps to resolve some pending issues.
 
-Official documentation can be found here: https://www.terraform.io/language/upgrade-guides/1-1
+The official documentation can be found here: https://www.terraform.io/language/upgrade-guides/1-1
 
 General steps:
 - Run epicli to generate the new AWS provider Terraform scripts:
