@@ -11,6 +11,6 @@
 #####################################################
 
 resource "azurerm_network_interface_security_group_association" "{{ specification.name }}" {
-  network_interface_id      = "${azurerm_network_interface.{{ specification.network_interface_name }}.id}"
-  network_security_group_id = "${azurerm_network_security_group.{{ specification.security_group_name }}.id}"
+  network_interface_id      = azurerm_network_interface.{{ specification.network_interface_name }}.id
+  network_security_group_id = azurerm_network_security_group.{{ specification.security_group_name }}.id
 }
