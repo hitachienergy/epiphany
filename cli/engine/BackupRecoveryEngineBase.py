@@ -4,7 +4,8 @@ import copy
 from cli.version import VERSION
 from cli.helpers.Step import Step
 
-from cli.helpers.build_io import get_inventory_path_for_build, load_manifest, copy_files_recursively, copy_file
+from cli.helpers.build_io import (get_inventory_path_for_build, load_manifest, copy_files_recursively, copy_file,
+    get_ansible_config_file_path_for_build)
 from cli.helpers.yaml_helpers import dump
 from cli.helpers.data_loader import load_yamls_file, load_schema_obj, types as data_types
 from cli.helpers.doc_list_helpers import select_single, ExpectedSingleResultException
@@ -30,6 +31,7 @@ class BackupRecoveryEngineBase(Step):
         self.backup_doc = None
         self.recovery_doc = None
         self.ansible_command = AnsibleCommand()
+        self.ansible_config_file_path = get_ansible_config_file_path_for_build(input_data.build_directory)
 
     def __enter__(self):
         super().__enter__()

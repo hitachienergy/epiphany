@@ -1,3 +1,4 @@
+import os
 from cli.helpers.doc_list_helpers import select_single
 from cli.engine.BackupRecoveryEngineBase import BackupRecoveryEngineBase
 
@@ -19,6 +20,10 @@ class BackupEngine(BackupRecoveryEngineBase):
         backup_doc = select_single(self.configuration_docs, lambda x: x.kind == 'configuration/backup')
 
         self._update_role_files_and_vars('backup', backup_doc)
+
+        # Set env
+        self.logger.info(f'ANSIBLE_CONFIG={self.ansible_config_file_path}')
+        os.environ["ANSIBLE_CONFIG"] = self.ansible_config_file_path
 
         # Execute all enabled component playbooks sequentially
         for component_name, component_config in sorted(backup_doc.specification.components.items()):
