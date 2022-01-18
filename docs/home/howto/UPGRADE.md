@@ -480,7 +480,7 @@ Notes:
 
 #### v0.12.6 => v0.13.x
 
-Offical documentation can be found here: https://www.terraform.io/language/upgrade-guides/0-13
+Official documentation can be found here: https://www.terraform.io/language/upgrade-guides/0-13
 
 General steps:
 - Download the latest Terraform v0.13.x: https://releases.hashicorp.com/terraform/
