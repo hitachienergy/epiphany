@@ -13,7 +13,5 @@
         - import_role:
             name: backup
             tasks_from: postgresql
-          vars:
-            ansible_ssh_pipelining: true
   vars_files:
     - roles/postgresql/defaults/main.yml
