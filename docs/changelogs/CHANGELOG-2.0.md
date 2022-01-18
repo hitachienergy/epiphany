@@ -7,13 +7,15 @@
 
 ### Fixed
 
+[#1569](https://github.com/epiphany-platform/epiphany/issues/1569) - Azure unmanaged disks not suppored by Epiphany but there is misleading setting in the default configuration
 
 ### Updated
 
-- [#2825](https://github.com/epiphany-platform/epiphany/issues/2825) - Research upgrade for Terraform
-  - Terraform 0.12.6 to 1.1.3
+- [#2825](https://github.com/epiphany-platform/epiphany/issues/2825) - Upgrade Terraform and providers
+  - Terraform 0.12.6 to 1.1.3 ([#2706](https://github.com/epiphany-platform/epiphany/issues/2706))
   - Azurerm provider 1.38.0 to 2.91.0
   - AWS provider 2.26 to 3.71.0
+  - Upgraded Azure-cli 2.29 to 2.32
 
 ### Removed
 
