@@ -465,7 +465,7 @@ From Epiphany 1.x to 2.x the Terraform stack received the following major update
 - Azurerm provider 1.38.0 to 2.91.0
 - AWS provider 2.26 to 3.71.0
 
-These introduce some breaking changes which will require manual steps for upgrading an existing 1.x clusters. As this is not straight forward we recommand deploying a new cluster on 2.x and migrating data instead.
+These introduce some breaking changes which will require manual steps for upgrading an existing 1.x clusters. As this is not straight forward we recommend deploying a new cluster on 2.x and migrating data instead.
 
 If you do want to upgrade a 1.x manually it will require you to upgrade between a few different versions of Terraform. The basic steps are described below for each provider. As always insure backup of any data required.
 
