@@ -18,7 +18,7 @@
 - [#1294](https://github.com/epiphany-platform/epiphany/issues/1294) - Implement proper merging of lists of dictionaries for epicli yaml docs
 - [#1370](https://github.com/epiphany-platform/epiphany/issues/1370) - Epicli does not correctly generate vars for Postgres
 - [#1296](https://github.com/epiphany-platform/epiphany/issues/1296) - Epicli does not interpret alternative yaml boolean values as true booleans
-- [#2774](https://github.com/epiphany-platform/epiphany/issues/2774) - Issue creating service principle on Azure
+- [#2774](https://github.com/epiphany-platform/epiphany/issues/2774) - Issue creating service principal on Azure
 - [#2788](https://github.com/epiphany-platform/epiphany/issues/2788) - Upgrade Log4j in Open Distro for Elasticsearch
 - [#1221](https://github.com/epiphany-platform/epiphany/issues/1221) - kafka-exporter service doesn't start after restarting kafka VMs
 - [#2332](https://github.com/epiphany-platform/epiphany/issues/2332) - [Elasticsearch] Error when having multiple VMs and non-clustered mode
