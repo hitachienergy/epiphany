@@ -146,7 +146,7 @@ class ApplyEngine(Step):
                     if ('postgresql') in roles and key in components:
                         next_postgres_node_count = next_postgres_node_count + components[key].count
 
-            if prev_postgres_node_count != next_postgres_node_count:
+            if prev_postgres_node_count > 0 and prev_postgres_node_count != next_postgres_node_count:
                     raise Exception("Postgresql scaling is not supported yet. Please revert your 'postgresql' node count to previous value.")
 
     def assert_consistent_os_family(self):
