@@ -7,7 +7,7 @@
 
 ### Fixed
 
-[#1569](https://github.com/epiphany-platform/epiphany/issues/1569) - Azure unmanaged disks not suppored by Epiphany but there is misleading setting in the default configuration
+[#1569](https://github.com/epiphany-platform/epiphany/issues/1569) - Azure unmanaged disks not supported by Epiphany but there is misleading setting in the default configuration
 
 ### Updated
 
