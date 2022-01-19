@@ -3,7 +3,7 @@ import os
 from ansible.parsing.dataloader import DataLoader
 from ansible.inventory.manager import InventoryManager
 
-from version import VERSION
+from cli.version import VERSION
 from cli.helpers.Step import Step
 from cli.helpers.doc_list_helpers import select_single, select_all, select_first
 from cli.helpers.build_io import save_manifest, load_manifest, get_inventory_path, get_manifest_path, get_build_path
