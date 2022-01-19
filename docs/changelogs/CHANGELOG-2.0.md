@@ -1,6 +1,6 @@
-# Changelog 1.3
+# Changelog 2.0
 
-## [1.3.0] YYYY-MM-DD
+## [2.0.0] YYYY-MM-DD
 
 ### Added
 
