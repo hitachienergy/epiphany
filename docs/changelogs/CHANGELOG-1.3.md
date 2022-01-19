@@ -45,6 +45,7 @@
 - [#2420](https://github.com/epiphany-platform/epiphany/issues/2420) - Changing Grafana admin password in the apply mode
 - [#2873](https://github.com/epiphany-platform/epiphany/issues/2873) - Epicli backup fails on schema validation
 - [#2877](https://github.com/epiphany-platform/epiphany/issues/2877) - PostgreSQL backup fails on Ubuntu due to permission issue
+- [#2894](https://github.com/epiphany-platform/epiphany/issues/2894) - System repositories are not restored on epicli re-run
 
 ### Updated
 
