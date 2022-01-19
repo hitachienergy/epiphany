@@ -46,6 +46,7 @@
 - [#2873](https://github.com/epiphany-platform/epiphany/issues/2873) - Epicli backup fails on schema validation
 - [#2886](https://github.com/epiphany-platform/epiphany/issues/2886) - [Ubuntu] [PostgreSQL] Apply command fails after upgrading from v1.0.x LTS to v1.3.0
 - [#2894](https://github.com/epiphany-platform/epiphany/issues/2894) - System repositories are not restored on epicli re-run
+- [#2904](https://github.com/epiphany-platform/epiphany/issues/2904) - Not possible to add PostgreSQL component to existing environment
 
 ### Updated
 
