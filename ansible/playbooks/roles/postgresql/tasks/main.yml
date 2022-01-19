@@ -198,17 +198,17 @@
                                                                  | map(attribute='pgpool')
                                                                  | list
                                                                  | first
-                                                                 | default({}) }}        
+                                                                 | default({}) }}
   block:
     - name: Extensions | Set up PgPool | Ascertain primary node
       become_user: postgres
       postgresql_info:
         filter: in_recovery
       register: in_recovery_state
-    
+
     - name: Extensions | Include PgPool setup tasks
       include_tasks: extensions/pgpool/extension.yml
-      when: 
+      when:
         - not in_recovery_state.in_recovery
   when:
     - pgpool.keys()|length > 0
