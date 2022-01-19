@@ -6,7 +6,6 @@ ARG USER_GID=$USER_UID
 
 ARG HELM_VERSION=3.3.1
 ARG KUBECTL_VERSION=1.22.4
-ARG ISTIOCTL_VERSION=1.8.1
 
 RUN : INSTALL APT REQUIREMENTS \
  && export DEBIAN_FRONTEND=noninteractive \
@@ -32,12 +31,7 @@ RUN : INSTALL HELM BINARY \
  && curl -fsSLO https://storage.googleapis.com/kubernetes-release/release/v${KUBECTL_VERSION}/bin/linux/amd64/kubectl \
  && chmod +x ./kubectl \
  && mv ./kubectl /usr/local/bin/kubectl \
- && kubectl version --client \
- && : INSTALL ISTIOCTl BINARY \
- && curl -fsSLO https://github.com/istio/istio/releases/download/${ISTIOCTL_VERSION}/istioctl-${ISTIOCTL_VERSION}-linux-amd64.tar.gz \
- && tar -xzof istioctl-${ISTIOCTL_VERSION}-linux-amd64.tar.gz -C /usr/local/bin istioctl \
- && rm istioctl-${ISTIOCTL_VERSION}-linux-amd64.tar.gz \
- && chmod +x /usr/local/bin/istioctl
+ && kubectl version --client
 
 RUN : INSTALL GEM REQUIREMENTS \
  && gem install \

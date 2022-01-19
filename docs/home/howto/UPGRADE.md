@@ -194,8 +194,6 @@ specification:
       count: 1
     rabbitmq:
       count: 0
-    ignite:
-      count: 0
     opendistro_for_elasticsearch:
       count: 0
   name: clustername
@@ -215,7 +213,6 @@ specification:
       - node-exporter
       - filebeat
       - firewall
-      - vault
       - repository      # add repository here
       - image-registry  # add image-registry here
 ...
@@ -330,39 +327,6 @@ Before K8s version upgrade make sure that deprecated API versions are not used:
 - [v1.20](https://v1-20.docs.kubernetes.io/docs/setup/release/notes/#deprecation)
 - [v1.21](https://github.com/kubernetes/kubernetes/blob/master/CHANGELOG/CHANGELOG-1.21.md)
 - [v1.22](https://github.com/kubernetes/kubernetes/blob/master/CHANGELOG/CHANGELOG-1.22.md)
-
-### Upgrade
-
----
-**NOTE**
-
-If the K8s cluster that is going to be upgraded has the Istio control plane application deployed, issues can occur. The
-default [profiles](https://istio.io/latest/docs/setup/additional-setup/config-profiles/) we currently support for
-installing Istio only deploy a single replica for the control services with a `PodDisruptionBudgets` value of 0. This
-will result in the following error while draining pods during an upgrade:
-
-```shell
-Cannot evict pod as it would violate the pods disruption budget.
-```
-
-As we currently don't support any kind of advanced configuration of the Istio control plane components outside the
-default profiles, we need to scale up all components manually before the upgrade. This can be done with the following
-command:
-
-```shell
-kubectl scale deploy -n istio-system --replicas=2 --all 
-```
-
-After the upgrade, the deployments can be scaled down to the original capacity:
-
-```shell
-kubectl scale deploy -n istio-system --replicas=1 --all 
-```
-
-**Note: The ```istio-system``` namespace value is the default value and should be set to whatever is being used in the
-Istio application configuration.**
-
----
 
 ## PostgreSQL upgrade
 

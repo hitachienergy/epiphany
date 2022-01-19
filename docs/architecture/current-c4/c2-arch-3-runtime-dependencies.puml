@@ -16,8 +16,6 @@ Container_Boundary(epiphany, "Epiphany managed environment"){
     Container(rdb, "Relational Database", "PostrgreSQL")
     Container(lb, "Load Balancer", "HAProxy")
     Container(messages, "Message Broker", "RabbitMQ")
-    Container(memdb, "In-Memory Database", "Apache Ignite")
-    Container(vault, "Vault", "Hashicorp Vault")
     Container(repository, "Repository", "Apache")
     Container(auth, "Authentication and Authorization", "Keycloak")
 
@@ -25,7 +23,6 @@ Container_Boundary(epiphany, "Epiphany managed environment"){
 
     Rel(lb, orchestrator, "sends traffic to")
 
-    Rel(vault, orchestrator, "injects secrets to")
 }
 
 System(workload, "Application", "Provides business value.")
@@ -39,7 +36,6 @@ Rel(workload, rdb, "uses")
 Rel(workload, memdb, "uses")
 Rel(workload, messages, "uses")
 Rel(workload, auth, "uses")
-Rel(workload, vault, "uses")
 Rel(logging, workload, "transfers logs from")
 Rel(monitoring, workload, "scraps metrics from")
 

@@ -132,7 +132,6 @@
 | https://github.com/prometheus/prometheus/releases/download/v2.10.0/prometheus-2.10.0.linux-arm64.tar.gz | + | dedicated package | + |
 | https://github.com/prometheus/alertmanager/releases/download/v0.17.0/alertmanager-0.17.0.linux-arm64.tar.gz | + | dedicated package | + |
 | https://archive.apache.org/dist/zookeeper/zookeeper-3.5.8/apache-zookeeper-3.5.8-bin.tar.gz | + | shell scripts + jar libraries | --- |
-| https://archive.apache.org/dist/ignite/2.9.1/apache-ignite-2.9.1-bin.zip | + | shell scripts + jar libraries | --- |
 | https://releases.hashicorp.com/vault/1.7.0/vault_1.7.0_linux_arm64.zip | + | dedicated package | --- |
 | https://get.helm.sh/helm-v3.2.0-linux-arm64.tar.gz | + | dedicated package | --- |
 | https://github.com/hashicorp/vault-helm/archive/v0.9.0.tar.gz | + | yaml files | --- |

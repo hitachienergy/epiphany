@@ -80,8 +80,6 @@
   - [How to authenticate to Azure AD app](./howto/SECURITY.md#how-to-authenticate-to-azure-ad-app)
   - [How to run epicli with password](./howto/SECURITY.md#how-to-run-epicli-with-password)
   - [How to make kubectl work for non-root user on master node](./howto/SECURITY.md#how-to-make-kubectl-work-for-non-root-user-on-master-node)
-  - [How to turn on Hashicorp Vault functionality](./howto/SECURITY.md#how-to-turn-on-hashicorp-vault-functionality)
-  - [How to turn on Hashicorp Vault integration with k8s](./howto/SECURITY.md#how-to-turn-on-hashicorp-vault-integration-with-k8s)
 
 - [Databases](./howto/DATABASES.md)
   - [How to configure PostgreSQL](./howto/DATABASES.md#how-to-configure-postgresql)
@@ -93,9 +91,6 @@
   - [How to set up PostgreSQL audit logging](./howto/DATABASES.md#how-to-set-up-postgresql-audit-logging)
   - [How to start working with OpenDistro for Elasticsearch](./howto/DATABASES.md#how-to-start-working-with-opendistro-for-elasticsearch)
   - [How to manage Opendistro for Elasticsearch data](./howto/LOGGING.md#how-to-manage-opendistro-for-elasticsearch-data)
-  - [How to export Elasticsearch data to csv format](./howto/LOGGING.md#how-to-export-elasticsearch-data-to-csv-format)
-  - [How to start working with Apache Ignite Stateful setup](./howto/DATABASES.md#how-to-start-working-with-apache-ignite-stateful-setup)
-  - [How to start working with Apache Ignite Stateless setup](./howto/DATABASES.md#how-to-start-working-with-apache-ignite-stateless-setup)
 
 - [Backup and Recovery](./howto/BACKUP.md)
   - [Epiphany backup and restore](./howto/BACKUP.md#epiphany-backup-and-restore)
@@ -115,7 +110,6 @@
 
 - [Centralized Logging](./howto/LOGGING.md)
   - [Centralized logging setup](./howto/LOGGING.md#centralized-logging-setup)
-  - [How to export Elasticsearch data to csv format](./howto/LOGGING.md#how-to-export-elasticsearch-data-to-csv-format)
   - [How to add multiline support for Filebeat logs](./howto/LOGGING.md#how-to-add-multiline-support-for-filebeat-logs)
   - [How to deploy Filebeat as Daemonset in K8s](./howto/LOGGING.md#how-to-deploy-filebeat-as-daemonset-in-k8s)
 

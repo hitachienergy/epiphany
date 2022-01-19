@@ -69,14 +69,14 @@ class AnsibleVarsGenerator(Step):
             # are not compatible with the new ones, defaults are used for template processing
             roles_with_defaults = [
                 'haproxy', 'image_registry', 'jmx_exporter', 'kafka_exporter',
-                'node_exporter', 'postgresql', 'repository'
+                'node_exporter', 'postgres_exporter', 'postgresql', 'repository'
                 ]
             # now lets add any external configs we want to load
             roles_with_defaults = [*roles_with_defaults, *self.inventory_upgrade.get_new_config_roles()]
             # In special cases (like haproxy), where user specifies majority of the config, it's easier (and less
             # awkward) to re-render config templates instead of modifying (for example with regular expressions)
             # no-longer-compatible config files.
-            roles_with_manifest = ['filebeat', 'ignite', 'postgresql', 'repository']
+            roles_with_manifest = ['filebeat', 'postgresql', 'repository']
         else:
             roles_with_defaults = self.inventory_creator.get_enabled_roles()
             roles_with_manifest = []  # applies only to upgrades

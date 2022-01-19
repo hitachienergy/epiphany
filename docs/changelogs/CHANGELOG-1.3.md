@@ -25,6 +25,7 @@
 - [#633](https://github.com/epiphany-platform/epiphany/issues/633) - DOC: How to use TLS/SSL certificate with HA Proxy
 - [#2702](https://github.com/epiphany-platform/epiphany/issues/2702) - Use state flag file in K8s upgrades
 - [#2840](https://github.com/epiphany-platform/epiphany/issues/2840) - Create deprecation notes documentation
+- [#2860](https://github.com/epiphany-platform/epiphany/issues/2860) - Increase the number of forks in Ansible from default (5) to configure more hosts in parallel
 
 ### Fixed
 
@@ -42,6 +43,10 @@
 - [#2737](https://github.com/epiphany-platform/epiphany/issues/2737) - Fix asserting number of postgres nodes
 - [#1175](https://github.com/epiphany-platform/epiphany/issues/1175) - Task 'Join to Kubernetes cluster' may fail when Ansible vault already exists
 - [#2420](https://github.com/epiphany-platform/epiphany/issues/2420) - Changing Grafana admin password in the apply mode
+- [#2873](https://github.com/epiphany-platform/epiphany/issues/2873) - Epicli backup fails on schema validation
+- [#2894](https://github.com/epiphany-platform/epiphany/issues/2894) - System repositories are not restored on epicli re-run
+- [#2886](https://github.com/epiphany-platform/epiphany/issues/2886) - [Ubuntu] [PostgreSQL] Apply command fails after upgrading from v1.0.x LTS to v1.3.0
+- [#2904](https://github.com/epiphany-platform/epiphany/issues/2904) - Not possible to add PostgreSQL component to existing environment
 
 ### Updated
 

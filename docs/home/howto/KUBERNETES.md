@@ -33,12 +33,10 @@ specification:
 
 Currently, Epiphany provides the following predefined applications which may be deployed with epicli:
 
-- ignite
 - rabbitmq
 - auth-service (Keycloak)
 - pgpool
 - pgbouncer
-- istio
 
 All of them have
 [default configuration](https://github.com/epiphany-platform/epiphany/blob/develop/schema/common/defaults/configuration/applications.yml).

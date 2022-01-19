@@ -6,7 +6,6 @@ ARG USER_GID=$USER_UID
 
 ARG HELM_VERSION=3.3.1
 ARG KUBECTL_VERSION=1.22.4
-ARG ISTIOCTL_VERSION=1.8.1
 
 ENV EPICLI_DOCKER_SHARED_DIR=/shared
 
@@ -27,11 +26,6 @@ RUN : INSTALL APT REQUIREMENTS \
     && chmod +x ./kubectl \
     && mv ./kubectl /usr/local/bin/kubectl \
     && kubectl version --client \
-    && : INSTALL ISTIOCTL BINARY \
-    && curl -fsSLO https://github.com/istio/istio/releases/download/${ISTIOCTL_VERSION}/istioctl-${ISTIOCTL_VERSION}-linux-amd64.tar.gz \
-    && tar -xzof istioctl-${ISTIOCTL_VERSION}-linux-amd64.tar.gz -C /usr/local/bin istioctl \
-    && rm istioctl-${ISTIOCTL_VERSION}-linux-amd64.tar.gz \
-    && chmod +x /usr/local/bin/istioctl \
 \
     && : INSTALL GEM REQUIREMENTS \
     && gem install \

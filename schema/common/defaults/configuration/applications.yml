@@ -4,22 +4,6 @@ name: default
 specification:
   applications:
 
-## --- ignite ---
-
-  - name: ignite-stateless
-    enabled: false
-    image_path: "epiphanyplatform/ignite:2.9.1" # it will be part of the image path: {{local_repository}}/{{image_path}}
-    use_local_image_registry: true
-    namespace: ignite
-    service:
-      rest_nodeport: 32300
-      sql_nodeport: 32301
-      thinclients_nodeport: 32302
-    replicas: 1
-    enabled_plugins:
-    - ignite-kubernetes # required to work on K8s
-    - ignite-rest-http
-
 # Abstract these configs to separate default files and add
 # the ability to add custom application roles.
 
@@ -167,17 +151,3 @@ specification:
         RESERVE_POOL_SIZE: 25
         POOL_MODE: session
         CLIENT_IDLE_TIMEOUT: 0
-
-## --- istio ---
-
-  - name: istio
-    enabled: false
-    use_local_image_registry: true
-    namespaces:
-      operator: istio-operator # namespace where operator will be deployed
-      watched: # list of namespaces which operator will watch
-        - istio-system
-      istio: istio-system # namespace where istio control plane will be deployed
-    istio_spec:
-      profile: default # Check all possibilities https://istio.io/latest/docs/setup/additional-setup/config-profiles/
-      name: istiocontrolplane

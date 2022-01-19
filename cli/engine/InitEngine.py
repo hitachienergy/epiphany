@@ -60,6 +60,7 @@ class InitEngine(Step):
     def get_config_docs(self, input_docs):
         cluster_config_path = save_manifest(input_docs, self.name, self.name + '.yml')
         args = type('obj', (object,), {'file': cluster_config_path})()
+        args.ansible_forks = 10  # TODO: remove these workarounds
         args.ping_retries = 5
 
         # generate the config documents
