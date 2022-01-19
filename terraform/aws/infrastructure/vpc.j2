@@ -11,14 +11,14 @@
 #####################################################
 
 resource "aws_vpc" "{{ specification.name }}" {
-  cidr_block = "{{ specification.address_pool }}"
-  instance_tenancy = "default"
-  enable_dns_support = "true"
+  cidr_block           = "{{ specification.address_pool }}"
+  instance_tenancy     = "default"
+  enable_dns_support   = "true"
   enable_dns_hostnames = "true"
 
   tags = {
-      Name = "{{ specification.name }}"
-      cluster_name = "{{ specification.cluster_name }}"
-      cluster_version = "{{ version }}"
+    Name            = "{{ specification.name }}"
+    cluster_name    = "{{ specification.cluster_name }}"
+    cluster_version = "{{ version }}"
   }
 }
