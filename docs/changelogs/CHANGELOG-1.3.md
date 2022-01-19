@@ -44,7 +44,6 @@
 - [#1175](https://github.com/epiphany-platform/epiphany/issues/1175) - Task 'Join to Kubernetes cluster' may fail when Ansible vault already exists
 - [#2420](https://github.com/epiphany-platform/epiphany/issues/2420) - Changing Grafana admin password in the apply mode
 - [#2873](https://github.com/epiphany-platform/epiphany/issues/2873) - Epicli backup fails on schema validation
-- [#2877](https://github.com/epiphany-platform/epiphany/issues/2877) - PostgreSQL backup fails on Ubuntu due to permission issue
 - [#2886](https://github.com/epiphany-platform/epiphany/issues/2886) - [Ubuntu] [PostgreSQL] Apply command fails after upgrading from v1.0.x LTS to v1.3.0
 - [#2894](https://github.com/epiphany-platform/epiphany/issues/2894) - System repositories are not restored on epicli re-run
 
