@@ -1,8 +1,10 @@
-# Changelog 1.3
+# Changelog 2.0
 
-## [1.3.0] YYYY-MM-DD
+## [2.0.0] YYYY-MM-DD
 
 ### Added
+
+- [#2701](https://github.com/epiphany-platform/epiphany/issues/2701) - Epicli prepare - generate files in separate directory
 
 ### Fixed
 
