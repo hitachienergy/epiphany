@@ -44,6 +44,7 @@
 - [#1175](https://github.com/epiphany-platform/epiphany/issues/1175) - Task 'Join to Kubernetes cluster' may fail when Ansible vault already exists
 - [#2420](https://github.com/epiphany-platform/epiphany/issues/2420) - Changing Grafana admin password in the apply mode
 - [#2873](https://github.com/epiphany-platform/epiphany/issues/2873) - Epicli backup fails on schema validation
+- [#2894](https://github.com/epiphany-platform/epiphany/issues/2894) - System repositories are not restored on epicli re-run
 
 ### Updated
 
