@@ -1,7 +1,7 @@
 ---
 - name: ODFE | Get size of upgrade state file
   stat:
-    path: "{{ opendistro_for_elasticsearch.upgrade_state_file_path }}"
+    path: "{{ opensearch.upgrade_state_file_path }}"
     get_attributes: false
     get_checksum: false
     get_mime: false
@@ -15,4 +15,4 @@
     - name: ODFE | Save cluster health to upgrade state file
       copy:
         content: "{{ cluster_health.json }}"
-        dest: "{{ opendistro_for_elasticsearch.upgrade_state_file_path }}"
+        dest: "{{ opensearch.upgrade_state_file_path }}"

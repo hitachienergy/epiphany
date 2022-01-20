@@ -23,9 +23,9 @@ elasticsearch.hosts:
   {% for host in groups['logging'] %}
   - "https://{{hostvars[host]['ansible_hostname']}}:9200"
   {% endfor %}
-{% elif 'opendistro_for_elasticsearch' in group_names %}
+{% elif 'opensearch' in group_names %}
   # Data hosts:
-  {% for host in groups['opendistro_for_elasticsearch'] %}
+  {% for host in groups['opensearch'] %}
   - "https://{{hostvars[host]['ansible_hostname']}}:9200"
   {% endfor %}
 {% endif %}
@@ -37,7 +37,7 @@ elasticsearch.username: kibanaserver
   {# mode: apply -#}
   {% if 'logging' in group_names -%}
     {% set password = opendistro_for_logging_vars.specification.kibanaserver_password -%}
-  {% elif 'opendistro_for_elasticsearch' in group_names -%}
+  {% elif 'opensearch' in group_names -%}
     {% set password = opendistro_for_data_vars.specification.kibanaserver_password -%}
   {% endif %}
 {% else -%}

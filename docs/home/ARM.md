@@ -29,7 +29,7 @@ Besides making sure that the selected providers, operating systems, components a
 | monitoring | :heavy_check_mark: | :x: | :x: |
 | load_balancer | :heavy_check_mark: | :x: | :x: |
 | postgresql | :heavy_check_mark: | :x: | :x: |
-| opendistro_for_elasticsearch | :heavy_check_mark: | :x: | :x: |
+| opensearch | :heavy_check_mark: | :x: | :x: |
 | single_machine | :heavy_check_mark: | :x: | :x: |
 
 ***Notes***
@@ -92,9 +92,9 @@ specification:
     rabbitmq:
       count: 2
       machine: rabbitmq-machine-arm
-    opendistro_for_elasticsearch:
+    opensearch:
       count: 1
-      machine: opendistro-machine-arm
+      machine: opensearch-machine-arm
     repository:
       count: 1
       machine: repository-machine-arm
@@ -164,7 +164,7 @@ specification:
   ip: x.x.x.x
 ---
 kind: infrastructure/virtual-machine
-name: opendistro-machine-arm
+name: opensearch-machine-arm
 provider: any
 based_on: logging-machine
 specification:
@@ -327,9 +327,9 @@ specification:
       subnets:
         - availability_zone: eu-west-1a
           address_pool: 10.1.8.0/24
-    opendistro_for_elasticsearch:
+    opensearch:
       count: 1
-      machine: opendistro-machine-arm
+      machine: opensearch-machine-arm
       subnets:
         - availability_zone: eu-west-1a
           address_pool: 10.1.10.0/24
@@ -404,7 +404,7 @@ specification:
   size: a1.medium
 ---
 kind: infrastructure/virtual-machine
-name: opendistro-machine-arm
+name: opensearch-machine-arm
 provider: aws
 based_on: logging-machine
 specification:

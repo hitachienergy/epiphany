@@ -13,9 +13,9 @@
     - { limit_type: 'soft', limit_item: 'memlock', value: unlimited }
     - { limit_type: 'hard', limit_item: 'memlock', value: unlimited }
 
-- include_tasks: install-es.yml
+- include_tasks: install-ops.yml
 
-- include_tasks: install-opendistro.yml
+- include_tasks: install-ops-plugins.yml
 
 - name: Include configuration tasks
-  include_tasks: configure-es.yml
+  include_tasks: configure-ops.yml

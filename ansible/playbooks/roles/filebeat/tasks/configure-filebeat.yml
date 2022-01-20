@@ -7,7 +7,7 @@
     name: postgresql_defaults
   when: "'postgresql' in group_names"
 
-# Do not select Kibana configured to use ES deployed by 'opendistro_for_elasticsearch' role
+# Do not select Kibana configured to use ES deployed by 'opensearch' role
 - name: Set value for setup.kibana.host
   set_fact:
     setup_kibana_host: >-

@@ -1,6 +1,6 @@
 "$id": "#/specification"
-title: "Opendistro-for-elasticsearch specification schema"
-description: "Opendistro-for-elasticsearch specification schema"
+title: "opensearch-for-elasticsearch specification schema"
+description: "opensearch-for-elasticsearch specification schema"
 type: object
 properties:
   cluster_name:

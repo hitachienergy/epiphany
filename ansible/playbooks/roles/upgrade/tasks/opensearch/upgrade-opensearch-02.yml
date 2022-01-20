@@ -1,9 +1,9 @@
 ---
 # This file contains flow that cannot be run in parallel on multiple hosts because of rolling upgrades.
-# It's run after upgrade-elasticsearch-01.yml so some facts are already set.
+# It's run after upgrade-opensearch-01.yml so some facts are already set.
 
 # Run migration procedure - the second (serial) part
-- include_tasks: opendistro_for_elasticsearch/migrate-from-demo-certs-02.yml
+- include_tasks: opensearch/migrate-from-demo-certs-02.yml
   when:
     - es_api.cert_type == 'demo'
     - es_clustered  # rolling upgrade only for clustered installation
@@ -14,7 +14,7 @@
   tags: [ never, debug ]  # only runs when debug or never tag requested
 
 - name: ODFE | Prepare cluster for rolling upgrade
-  include_tasks: opendistro_for_elasticsearch/utils/prepare-cluster-for-node-restart.yml
+  include_tasks: opensearch/utils/prepare-cluster-for-node-restart.yml
   when: es_clustered
 
 - name: ODFE | Stop elasticsearch service
@@ -24,13 +24,13 @@
 
 - name: ODFE | Include Elasticsearch installation tasks
   include_role:
-    name: opendistro_for_elasticsearch
-    tasks_from: install-es.yml
+    name: opensearch
+    tasks_from: install-ops.yml
 
 - name: ODFE | Include Elasticsearch configuration tasks
   include_role:
-    name: opendistro_for_elasticsearch
-    tasks_from: configure-es.yml
+    name: opensearch
+    tasks_from: configure-ops.yml
   vars:
     _old: "{{ existing_config.main }}"
     # Keep the same data structure as for apply mode
@@ -48,9 +48,9 @@
             enforce_hostname_verification: "{{ _old['opendistro_security.ssl.transport.enforce_hostname_verification'] }}"
 
     _demo_DNs:
-      admin: "{{ opendistro_for_elasticsearch.certs_migration.demo_DNs.admin }}"
-      node:  "{{ opendistro_for_elasticsearch.certs_migration.demo_DNs.node }}"
-    _dual_root_ca_filename: "{{ opendistro_for_elasticsearch.certs_migration.dual_root_ca.filename }}"
+      admin: "{{ opensearch.certs_migration.demo_DNs.admin }}"
+      node:  "{{ opensearch.certs_migration.demo_DNs.node }}"
+    _dual_root_ca_filename: "{{ opensearch.certs_migration.dual_root_ca.filename }}"
     _epiphany_root_ca_filename: "{{ certificates.files.root_ca.cert.filename }}"
     _updated_existing_config:
       opendistro_security.authcz.admin_dn: "{{ _old['opendistro_security.authcz.admin_dn'] | reject('search', _demo_DNs.admin) }}"
@@ -66,12 +66,12 @@
     existing_es_config: "{{ _old | combine(_updated_existing_config) }}"
 
 - name: ODFE | Include upgrade plugins tasks
-  include_tasks: opendistro_for_elasticsearch/upgrade-plugins.yml
+  include_tasks: opensearch/upgrade-plugins.yml
 
 # Restart elasticsearch service (unconditionally to ensure this task is not skipped in case of rerunning after interruption)
-- include_tasks: opendistro_for_elasticsearch/utils/restart-node.yml
+- include_tasks: opensearch/utils/restart-node.yml
   vars:
-    daemon_reload: true # opendistro-performance-analyzer provides opendistro-performance-analyzer.service
+    daemon_reload: true # opensearch-performance-analyzer provides opensearch-performance-analyzer.service
     target_inventory_hostname: "{{ inventory_hostname }}"
 
 # Post-upgrade tasks
@@ -79,18 +79,18 @@
 - name: Re-enable shard allocation
   when: es_clustered
   block:
-    - include_tasks: opendistro_for_elasticsearch/utils/enable-shard-allocation.yml
+    - include_tasks: opensearch/utils/enable-shard-allocation.yml
 
-    - include_tasks: opendistro_for_elasticsearch/utils/wait-for-shard-allocation.yml
+    - include_tasks: opensearch/utils/wait-for-shard-allocation.yml
 
 # Read cluster health status from before the upgrade
 - name: Load upgrade state file
   slurp:
-    src: "{{ opendistro_for_elasticsearch.upgrade_state_file_path }}"
+    src: "{{ opensearch.upgrade_state_file_path }}"
   register: slurp_upgrade_state_file
 
 # Verify cluster status
-- include_tasks: opendistro_for_elasticsearch/utils/wait-for-cluster-status.yml
+- include_tasks: opensearch/utils/wait-for-cluster-status.yml
   when: not es_clustered or
         (es_clustered and inventory_hostname == ansible_play_hosts_all[-1])  # for 'green' status at least 2 nodes must be already upgraded
   vars:
@@ -99,11 +99,11 @@
 
 - name: ODFE | Remove dual root CA temporary file
   file:
-    path: "{{ (certificates.dirs.certs, opendistro_for_elasticsearch.certs_migration.dual_root_ca.filename) | path_join }}"
+    path: "{{ (certificates.dirs.certs, opensearch.certs_migration.dual_root_ca.filename) | path_join }}"
     state: absent
   when: es_api.cert_type == 'Epiphany'
 
 - name: ODFE | Remove upgrade state file
   file:
-    path: "{{ opendistro_for_elasticsearch.upgrade_state_file_path }}"
+    path: "{{ opensearch.upgrade_state_file_path }}"
     state: absent

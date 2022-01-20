@@ -15,7 +15,7 @@
 - name: Include logging configuration tasks
   include_tasks: setup-logging.yml
 
-- name: Load variables from logging/opendistro_for_elasticsearch role
+- name: Load variables from logging/opensearch role
   when: context is undefined or context != "upgrade"
   block:
     - name: Load variables from logging role
@@ -24,11 +24,11 @@
         name: opendistro_for_logging_vars
       when: "'logging' in group_names"
 
-    - name: Load variables from opendistro_for_elasticsearch role
+    - name: Load variables from opensearch role
       include_vars:
-        file: roles/opendistro_for_elasticsearch/vars/main.yml
+        file: roles/opensearch/vars/main.yml
         name: opendistro_for_data_vars
-      when: "'opendistro_for_elasticsearch' in group_names"
+      when: "'opensearch' in group_names"
 
 - name: Update Kibana configuration file
   template:

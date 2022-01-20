@@ -253,7 +253,7 @@ By default Kibana adjusts the UTC time in `@timestamp` to the browser's local ti
 ## How to configure default user passwords for Kibana - Open Distro, Open Distro for Elasticsearch and Filebeat
 
 To configure admin password for Kibana - Open Distro and Open Distro for Elasticsearch you need to follow the procedure below.
-There are separate procedures for `logging` and `opendistro-for-elasticsearch` roles since most of the times for `opendistro-for-elasticsearch`, `kibanaserver` and `logstash` users are not required to be present.
+There are separate procedures for `logging` and `opensearch-for-elasticsearch` roles since most of the times for `opensearch-for-elasticsearch`, `kibanaserver` and `logstash` users are not required to be present.
 
 ### Logging component
 
@@ -299,7 +299,7 @@ in  [Logging role](#-logging-role).
 ### Open Distro for Elasticsearch component
 
 By default Epiphany removes all demo users except `admin` user. Those users are listed in `demo_users_to_remove` section
-of `configuration/opendistro-for-elasticsearch` doc. If you want to keep `kibanaserver` user (needed by default Epiphany installation of Kibana),
+of `configuration/opensearch-for-elasticsearch` doc. If you want to keep `kibanaserver` user (needed by default Epiphany installation of Kibana),
 you need to remove it from `demo_users_to_remove` list and set `kibanaserver_user_active` to `true` in order to change the default password.
 We strongly advice to set different password for each user.
 
@@ -307,7 +307,7 @@ To change `admin` user's password, change value for `admin_password` key. For `k
 and `logstash_password` keys respectively.
 
 ```yaml
-kind: configuration/opendistro-for-elasticsearch
+kind: configuration/opensearch-for-elasticsearch
 title: Open Distro for Elasticsearch Config
 name: default
 specification:

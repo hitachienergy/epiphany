@@ -36,8 +36,8 @@ logging:
 The `logging` role replaced `elasticsearch` role. This change was done to enable Elasticsearch usage also for data
 storage - not only for logs as it was till 0.5.0.
 
-Default configuration of `logging` and `opendistro_for_elasticsearch` roles is identical (
-./DATABASES.md#how-to-start-working-with-opendistro-for-elasticsearch). To modify configuration of centralized logging
+Default configuration of `logging` and `opensearch` roles is identical (
+./DATABASES.md#how-to-start-working-with-opensearch-for-elasticsearch). To modify configuration of centralized logging
 adjust and use the following defaults in your manifest:
 
 ```yaml

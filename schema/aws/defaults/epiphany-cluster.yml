@@ -80,7 +80,7 @@ specification:
       subnets:
         - availability_zone: eu-west-2a
           address_pool: 10.1.8.0/24
-    opendistro_for_elasticsearch:
+    opensearch:
       count: 0
       machine: logging-machine
       configuration: default

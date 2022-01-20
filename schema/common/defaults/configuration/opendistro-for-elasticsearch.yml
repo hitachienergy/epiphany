@@ -1,4 +1,4 @@
-kind: configuration/opendistro-for-elasticsearch
+kind: configuration/opensearch-for-elasticsearch
 title: Open Distro for Elasticsearch Config
 name: default
 specification:

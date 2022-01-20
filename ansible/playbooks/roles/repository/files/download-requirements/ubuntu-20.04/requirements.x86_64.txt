@@ -59,12 +59,12 @@ net-tools
 nfs-common
 # for nfs-common
 libtirpc3
-opendistro-alerting 1.13.1
-opendistro-index-management 1.13.1
-opendistro-job-scheduler 1.13.0
-opendistro-performance-analyzer 1.13.0
-opendistro-security 1.13.1
-opendistro-sql 1.13.0
+opensearch-alerting 1.13.1
+opensearch-index-management 1.13.1
+opensearch-job-scheduler 1.13.0
+opensearch-performance-analyzer 1.13.0
+opensearch-security 1.13.1
+opensearch-sql 1.13.0
 opendistroforelasticsearch-kibana 1.13.1
 openjdk-8-jre-headless
 openssl

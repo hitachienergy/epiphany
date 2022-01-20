@@ -50,7 +50,7 @@ Version 0.10 won't be supported anymore. Instead, we introduced version 1.0 whic
 
 ### Breaking changes
 
-- Feature `elasticsearch` removed in favor of `opendistro-for-elasticsearch`.
+- Feature `elasticsearch` removed in favor of `opensearch-for-elasticsearch`.
 
 ### Known issues
 

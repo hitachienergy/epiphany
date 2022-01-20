@@ -38,7 +38,7 @@ unsupported_roles:
       - haproxy
       - logging
       - elasticsearch_curator
-      - opendistro_for_elasticsearch
+      - opensearch
       - elasticsearch
       - kibana
       - filebeat
@@ -75,7 +75,7 @@ unsupported_roles:
       - haproxy
       - logging
       - elasticsearch_curator
-      - opendistro_for_elasticsearch
+      - opensearch
       - elasticsearch
       - kibana
       - filebeat

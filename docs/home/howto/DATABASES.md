@@ -475,14 +475,14 @@ specification:
     ...
     logging:
       count: 1
-    opendistro_for_elasticsearch:
+    opensearch:
       count: 2
 ```
 
 **Installation with more than one node will always be clustered** - Option to configure the non-clustered installation of more than one node for Open Distro is not supported.
 
 ```yaml
-kind: configuration/opendistro-for-elasticsearch
+kind: configuration/opensearch-for-elasticsearch
 title: OpenDistro for Elasticsearch Config
 name: default
 specification:
@@ -490,7 +490,7 @@ specification:
 ```
 
 By default, Kibana is deployed only for `logging` component. If you want to deploy Kibana
-for `opendistro_for_elasticsearch` you have to modify feature mapping. Use below configuration in your manifest.
+for `opensearch` you have to modify feature mapping. Use below configuration in your manifest.
 
 ```yaml
 kind: configuration/feature-mapping
@@ -498,12 +498,12 @@ title: "Feature mapping to roles"
 name: default
 specification:
   roles_mapping:
-    opendistro_for_elasticsearch:
-      - opendistro-for-elasticsearch
+    opensearch:
+      - opensearch-for-elasticsearch
       - node-exporter
       - filebeat
       - firewall
       - kibana
 ```
 
-Filebeat running on `opendistro_for_elasticsearch` hosts will always point to centralized logging hosts (./LOGGING.md).
+Filebeat running on `opensearch` hosts will always point to centralized logging hosts (./LOGGING.md).

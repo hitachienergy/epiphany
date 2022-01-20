@@ -285,7 +285,7 @@ specification:
       count: 0
     rabbitmq:
       count: 0
-    opendistro_for_elasticsearch:
+    opensearch:
       count: 0
     single_machine:
       count: 0

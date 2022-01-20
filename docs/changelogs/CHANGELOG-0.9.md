@@ -38,7 +38,7 @@
 
 ### Deprecated
 
-- Elasticsearch OSS v6 (feature name: `elasticsearch`), succesor: Elasticsearch OSS v7 (feature name: `opendistro-for-elasticsearch`). It may be removed in the next major release.
+- Elasticsearch OSS v6 (feature name: `elasticsearch`), succesor: Elasticsearch OSS v7 (feature name: `opensearch-for-elasticsearch`). It may be removed in the next major release.
 
 ### Breaking changes
 

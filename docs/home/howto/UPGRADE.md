@@ -194,7 +194,7 @@ specification:
       count: 1
     rabbitmq:
       count: 0
-    opendistro_for_elasticsearch:
+    opensearch:
       count: 0
   name: clustername
   prefix: 'prefix'
@@ -262,9 +262,9 @@ Before upgrade procedure make sure you have a data backup!
 
 ---
 
-Since Epiphany v1.0.0 we provide upgrade elasticsearch-oss package to v7.10.2 and opendistro-\* plugins package to
+Since Epiphany v1.0.0 we provide upgrade elasticsearch-oss package to v7.10.2 and opensearch-\* plugins package to
 v1.13.\*. Upgrade will be performed automatically when the upgrade procedure detects your `logging`
-, `opendistro_for_elasticsearch` or `kibana` hosts.
+, `opensearch` or `kibana` hosts.
 
 Upgrade of Elasticsearch uses API calls (GET, PUT, POST) which requires an admin TLS certificate. By default, Epiphany
 generates self-signed certificates for this purpose but if you use your own, you have to provide the admin certificate's
@@ -277,7 +277,7 @@ logging:
       cert_path: /etc/elasticsearch/custom-admin.pem
       key_path: /etc/elasticsearch/custom-admin-key.pem
 
-opendistro_for_elasticsearch:
+opensearch:
   upgrade_config:
     custom_admin_certificate:
       cert_path: /etc/elasticsearch/custom-admin.pem

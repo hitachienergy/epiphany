@@ -17,7 +17,7 @@ specification:
       enabled: true
     - name: logging
       enabled: true
-    - name: opendistro-for-elasticsearch
+    - name: opensearch-for-elasticsearch
       enabled: true
     - name: elasticsearch-curator
       enabled: true
@@ -121,8 +121,8 @@ specification:
       - node-exporter
       - filebeat
       - firewall
-    opendistro_for_elasticsearch:
-      - opendistro-for-elasticsearch
+    opensearch:
+      - opensearch-for-elasticsearch
       - node-exporter
       - filebeat
       - firewall

@@ -1,0 +1,18 @@
+---
+- name: ODFE plugins | Assert that opensearch-* packages are installed
+  assert:
+    that: ansible_facts.packages['{{ item }}'] is defined
+    fail_msg: "Missing package to upgrade: {{ item }}"
+    quiet: true
+  loop:
+    - opensearch-alerting
+    - opensearch-index-management
+    - opensearch-job-scheduler
+    - opensearch-performance-analyzer
+    - opensearch-security
+    - opensearch-sql
+
+- name: ODFE plugins | Upgrade opensearch-* packages
+  include_role:
+    name: opensearch
+    tasks_from: install-ops-plugins.yml

@@ -34,7 +34,7 @@
 - name: Provide Elasticsearch configuration file
   template:
     backup: yes
-    src: elasticsearch.yml.j2
+    src: opensearch.yml.j2
     dest: /etc/elasticsearch/elasticsearch.yml
     owner: root
     group: elasticsearch

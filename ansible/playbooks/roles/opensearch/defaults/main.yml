@@ -3,11 +3,9 @@
 
 versions:
   RedHat:
-    elasticsearch_oss: "7.10.2"
-    opendistro: "1.13.*"
+    ops_version: "1.2.3"
   Debian:
-    elasticsearch_oss: "7.10.2"
-    opendistro: "1.13.*"
+    ops_version: "1.2.3"
 certificates:
   dirs:
     certs:  /etc/elasticsearch
@@ -61,3 +59,4 @@ ports:
   http:      9200  # defaults to range but we want static port
   transport: 9300  # defaults to range but we want static port
 log4j_file_name: apache-log4j-2.17.1-bin.tar.gz
+ops_user: opensearch

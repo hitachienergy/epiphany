@@ -261,7 +261,7 @@ def upgrade_parser(subparsers):
         'load_balancer',
         'logging',
         'node_exporter',
-        'opendistro_for_elasticsearch',
+        'opensearch',
         'postgresql',
         'postgres_exporter',
         'prometheus',

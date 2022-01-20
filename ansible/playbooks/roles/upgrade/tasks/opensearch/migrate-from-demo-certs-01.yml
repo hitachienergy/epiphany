@@ -20,7 +20,7 @@
     certs_to_concatenate:
       - "{{ (certificates.dirs.certs, certificates.files.demo.root_ca.cert)     | path_join }}"
       - "{{ (certificates.dirs.certs, certificates.files.root_ca.cert.filename) | path_join }}"
-    target_path: "{{ (certificates.dirs.certs, opendistro_for_elasticsearch.certs_migration.dual_root_ca.filename) | path_join }}"
+    target_path: "{{ (certificates.dirs.certs, opensearch.certs_migration.dual_root_ca.filename) | path_join }}"
 
 - name: ODFE | Load /etc/elasticsearch/elasticsearch.yml
   slurp:
@@ -60,12 +60,12 @@
     _updated_settings:
       opendistro_security.authcz.admin_dn: >-
         {{ _old_content['opendistro_security.authcz.admin_dn'] | default([]) | map('replace', ', ', ',')
-                                                               | union([opendistro_for_elasticsearch.certs_migration.demo_DNs.admin] + [_epiphany_DNs.admin]) }}
+                                                               | union([opensearch.certs_migration.demo_DNs.admin] + [_epiphany_DNs.admin]) }}
       opendistro_security.nodes_dn: >-
         {{ _old_content['opendistro_security.nodes_dn'] | default([])
-                                                        | union([opendistro_for_elasticsearch.certs_migration.demo_DNs.node] + _epiphany_nodes_dn) }}
+                                                        | union([opensearch.certs_migration.demo_DNs.node] + _epiphany_nodes_dn) }}
 
-      opendistro_security.ssl.http.pemtrustedcas_filepath:      "{{ opendistro_for_elasticsearch.certs_migration.dual_root_ca.filename }}"
-      opendistro_security.ssl.transport.pemtrustedcas_filepath: "{{ opendistro_for_elasticsearch.certs_migration.dual_root_ca.filename }}"
+      opendistro_security.ssl.http.pemtrustedcas_filepath:      "{{ opensearch.certs_migration.dual_root_ca.filename }}"
+      opendistro_security.ssl.transport.pemtrustedcas_filepath: "{{ opensearch.certs_migration.dual_root_ca.filename }}"
     _patched_content: >-
       {{ _old_content | combine(_updated_settings) }}

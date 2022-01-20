@@ -55,7 +55,7 @@ properties:
         type: array
         items:
           type: string
-      opendistro_for_elasticsearch:
+      opensearch:
         type: array
         items:
           type: string

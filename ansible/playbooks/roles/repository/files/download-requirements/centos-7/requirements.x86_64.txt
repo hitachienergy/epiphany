@@ -63,12 +63,12 @@ net-tools
 nfs-utils
 nmap-ncat
 # Open Distro for Elasticsearch plugins are installed individually to not download them twice in different versions (as dependencies of opendistroforelasticsearch package)
-opendistro-alerting-1.13.1.*
-opendistro-index-management-1.13.1.*
-opendistro-job-scheduler-1.13.0.*
-opendistro-performance-analyzer-1.13.0.*
-opendistro-security-1.13.1.*
-opendistro-sql-1.13.0.*
+opensearch-alerting-1.13.1.*
+opensearch-index-management-1.13.1.*
+opensearch-job-scheduler-1.13.0.*
+opensearch-performance-analyzer-1.13.0.*
+opensearch-security-1.13.1.*
+opensearch-sql-1.13.0.*
 opendistroforelasticsearch-kibana-1.13.1 # kibana has shorter version
 openssl
 perl # for vim

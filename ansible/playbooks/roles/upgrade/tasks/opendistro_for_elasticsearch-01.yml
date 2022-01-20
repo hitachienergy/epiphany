@@ -10,14 +10,14 @@
     fail_msg: elasticsearch-oss package not found, nothing to upgrade
     quiet: true
 
-- name: ODFE | Include defaults from opendistro_for_elasticsearch role
+- name: ODFE | Include defaults from opensearch role
   include_vars:
-    file: roles/opendistro_for_elasticsearch/defaults/main.yml
+    file: roles/opensearch/defaults/main.yml
     name: odfe_defaults
 
 - name: ODFE | Patch log4j
   include_role:
-    name: opendistro_for_elasticsearch
+    name: opensearch
     tasks_from: patch-log4j
   when: odfe_defaults.log4j_file_name is defined
 
@@ -37,14 +37,14 @@
 # If state file exists it means the previous run failed
 - name: ODFE | Check if upgrade state file exists
   stat:
-    path: "{{ opendistro_for_elasticsearch.upgrade_state_file_path }}"
+    path: "{{ opensearch.upgrade_state_file_path }}"
     get_attributes: false
     get_checksum: false
     get_mime: false
   register: stat_upgrade_state_file
 
 - name: ODFE | Upgrade Elasticsearch and ODFE plugins (part 1/2)
-  include_tasks: opendistro_for_elasticsearch/upgrade-elasticsearch-01.yml
+  include_tasks: opensearch/upgrade-opensearch-01.yml
   when:  _target_version is version(ansible_facts.packages['elasticsearch-oss'][0].version, '>')
      or (_target_version is version(ansible_facts.packages['elasticsearch-oss'][0].version, '==')
          and stat_upgrade_state_file.stat.exists)

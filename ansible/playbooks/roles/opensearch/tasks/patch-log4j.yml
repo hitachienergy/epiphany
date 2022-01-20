@@ -1,7 +1,7 @@
 ---
 - name: Log4j patch
   block:
-    - name: "opendistro_for_elasticsearch : Log4j patch | Get archive"
+    - name: "opensearch : Log4j patch | Get archive"
       include_role:
         name: download
         tasks_from: download_file
@@ -28,10 +28,10 @@
       loop:
         - { src: "{{ download_directory }}/{{ log4j_api }}",       dest: /usr/share/elasticsearch/lib/ }
         - { src: "{{ download_directory }}/{{ log4j_api }}",       dest: /usr/share/elasticsearch/performance-analyzer-rca/lib/ }
-        - { src: "{{ download_directory }}/{{ log4j_api }}",       dest: /usr/share/elasticsearch/plugins/opendistro-performance-analyzer/performance-analyzer-rca/lib/ }
+        - { src: "{{ download_directory }}/{{ log4j_api }}",       dest: /usr/share/elasticsearch/plugins/opensearch-performance-analyzer/performance-analyzer-rca/lib/ }
         - { src: "{{ download_directory }}/{{ log4j_core }}",      dest: /usr/share/elasticsearch/lib/ }
         - { src: "{{ download_directory }}/{{ log4j_core }}",      dest: /usr/share/elasticsearch/performance-analyzer-rca/lib/ }
-        - { src: "{{ download_directory }}/{{ log4j_core }}",      dest: /usr/share/elasticsearch/plugins/opendistro-performance-analyzer/performance-analyzer-rca/lib/ }
+        - { src: "{{ download_directory }}/{{ log4j_core }}",      dest: /usr/share/elasticsearch/plugins/opensearch-performance-analyzer/performance-analyzer-rca/lib/ }
         - { src: "{{ download_directory }}/{{ log4j_slfj_impl }}", dest: /usr/share/elasticsearch/plugins/opendistro_security/ }
       vars:
         log4j_api: "{{ unarchive_list_files.files | select('contains', 'log4j-api-2.17.1.jar') | first }}"
@@ -45,8 +45,8 @@
           state: absent
           path: "{{ item }}"
         loop:
-          - /usr/share/elasticsearch/plugins/opendistro-performance-analyzer/performance-analyzer-rca/lib/log4j-api-2.13.0.jar
-          - /usr/share/elasticsearch/plugins/opendistro-performance-analyzer/performance-analyzer-rca/lib/log4j-core-2.13.0.jar
+          - /usr/share/elasticsearch/plugins/opensearch-performance-analyzer/performance-analyzer-rca/lib/log4j-api-2.13.0.jar
+          - /usr/share/elasticsearch/plugins/opensearch-performance-analyzer/performance-analyzer-rca/lib/log4j-core-2.13.0.jar
           - /usr/share/elasticsearch/performance-analyzer-rca/lib/log4j-api-2.13.0.jar
           - /usr/share/elasticsearch/performance-analyzer-rca/lib/log4j-core-2.13.0.jar
           - /usr/share/elasticsearch/lib/log4j-api-2.11.1.jar
@@ -61,8 +61,8 @@
           _archive_root_dir: >-
             {{ unarchive_list_files.files | first | dirname }}
 
-- name: Restart opendistro-performance-analyzer service
+- name: Restart opensearch-performance-analyzer service
   systemd:
-    name: opendistro-performance-analyzer
+    name: opensearch-performance-analyzer
     state: restarted
   when: log4j_patch.changed

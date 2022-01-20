@@ -4,7 +4,7 @@
 - name: ODFE | Create upgrade state file
   become: true
   file:
-    path: "{{ opendistro_for_elasticsearch.upgrade_state_file_path }}"
+    path: "{{ opensearch.upgrade_state_file_path }}"
     state: touch
     mode: u=rw,g=r,o=
 
@@ -127,7 +127,7 @@
 
 - name: Generate self-signed certificates
   include_role:
-    name: opendistro_for_elasticsearch
+    name: opensearch
     tasks_from: generate-certs
   when: es_api.cert_type != 'custom'
 

@@ -12,6 +12,6 @@
 
 - name: Install and configure OpenDistro for Elasticsearch
   import_role:
-    name: opendistro_for_elasticsearch
+    name: opensearch
   vars:
-    specification: "{{ logging_vars.specification }}"  # to override opendistro_for_elasticsearch specification
+    specification: "{{ logging_vars.specification }}"  # to override opensearch specification

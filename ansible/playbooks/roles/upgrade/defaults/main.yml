@@ -5,7 +5,7 @@ logging:
       cert_path: /etc/elasticsearch/custom-admin.pem
       key_path:  /etc/elasticsearch/custom-admin-key.pem
 
-opendistro_for_elasticsearch:
+opensearch:
   upgrade_config:
     custom_admin_certificate:
       cert_path: /etc/elasticsearch/custom-admin.pem
