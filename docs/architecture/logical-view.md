@@ -54,7 +54,7 @@ Docker containers | Kubernetes components that run in a container
 `Filebeat`, unlike `Grafana`, pushes data to database (`Elasticsearch`) instead of pulling them.
 [Read more](https://www.elastic.co/products/beats/filebeat) about `Filebeat`.
 
-### Elasticsearch
+### opensearch
 
 `Elasticsearch` is highly scalable and full-text search enabled analytics engine. Epiphany Platform uses it for storage and analysis of logs.
 

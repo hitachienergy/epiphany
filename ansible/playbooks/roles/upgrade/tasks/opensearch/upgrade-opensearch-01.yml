@@ -10,7 +10,7 @@
 
 - name: ODFE | Ensure elasticsearch service is running
   systemd:
-    name: elasticsearch
+    name: opensearch
     enabled: yes
     state: started
   register: elasticsearch_state
@@ -54,7 +54,7 @@
 - name: ODFE | Get information on root CA certificate
   community.crypto.x509_certificate_info:
     # 'pemtrustedcas_filepath' is a relative path
-    path: "{{ ('/etc/elasticsearch', existing_config.main['opendistro_security.ssl.transport.pemtrustedcas_filepath']) | path_join }}"
+    path: "{{ ('/etc/elasticsearch', existing_config.main['opensearch_security.ssl.transport.pemtrustedcas_filepath']) | path_join }}"
   register: _root_ca_info
 
 - name: ODFE | Check if demo or Epiphany certificates are in use  # self-signed

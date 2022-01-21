@@ -112,12 +112,12 @@ To check status of Node Exporter we can use the command:
 status prometheus-node-exporter
 ```
 
-#### - Elasticsearch
+#### - opensearch
 
 To check status of Elasticsearch we can use the command:
 
 ```shell
-systemct status elasticsearch
+systemct status opensearch
 ```
 
 We can check if service is listening on 9200 (API communication port):

@@ -15,4 +15,4 @@
     content: "{{ _files.results | map(attribute='content') | map('b64decode') | join('') }}"
     mode: u=rw,g=r,o=
     owner: root
-    group: elasticsearch
+    group: opensearch

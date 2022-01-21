@@ -50,7 +50,7 @@
 
 - [#854](https://github.com/epiphany-platform/epiphany/issues/854) - PostgreSQL: PGBouncer implementation
 - [#905](https://github.com/epiphany-platform/epiphany/pull/905) - PostgreSQL: pgAudit extension for audit logging
-- PostgreSQL: Send logs to Elasticsearch
+- PostgreSQL: Send logs to opensearch
 - [#915](https://github.com/epiphany-platform/epiphany/pull/915) - PostgreSQL: Add logrotate configuration
 
 ### Fixed
@@ -82,7 +82,7 @@
 - [#381](https://github.com/epiphany-platform/epiphany/issues/381) - Add AWS EC2 Root Volume encryption
 - [#782](https://github.com/epiphany-platform/epiphany/issues/781) - All disks encryption documentation - AWS
 - [#782](https://github.com/epiphany-platform/epiphany/issues/782) - All disks encryption documentation - Azure
-- [#784](https://github.com/epiphany-platform/epiphany/issues/784) - Switch to Open Distro for Elasticsearch
+- [#784](https://github.com/epiphany-platform/epiphany/issues/784) - Switch to Open Distro for opensearch
   - [Data storage](/docs/home/howto/DATABASES.md#how-to-start-working-with-opensearch-for-elasticsearch)
   - [Centralized logging](/docs/home/howto/LOGGING.md#centralized-logging-setup)
 

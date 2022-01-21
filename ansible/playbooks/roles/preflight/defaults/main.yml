@@ -39,7 +39,7 @@ unsupported_roles:
       - logging
       - elasticsearch_curator
       - opensearch
-      - elasticsearch
+      - opensearch
       - kibana
       - filebeat
       - prometheus
@@ -76,7 +76,7 @@ unsupported_roles:
       - logging
       - elasticsearch_curator
       - opensearch
-      - elasticsearch
+      - opensearch
       - kibana
       - filebeat
       - prometheus

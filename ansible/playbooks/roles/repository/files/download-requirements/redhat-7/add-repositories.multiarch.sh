@@ -15,7 +15,7 @@ ELASTIC_6_REPO_CONF=$(cat <<'EOF'
 name=Elastic repository for 6.x packages
 baseurl=https://artifacts.elastic.co/packages/oss-6.x/yum
 gpgcheck=1
-gpgkey=https://artifacts.elastic.co/GPG-KEY-elasticsearch
+gpgkey=https://artifacts.elastic.co/GPG-KEY-opensearch
 enabled=1
 autorefresh=1
 type=rpm-md
@@ -27,7 +27,7 @@ ELASTICSEARCH_7_REPO_CONF=$(cat <<'EOF'
 name=Elasticsearch repository for 7.x packages
 baseurl=https://artifacts.elastic.co/packages/oss-7.x/yum
 gpgcheck=1
-gpgkey=https://artifacts.elastic.co/GPG-KEY-elasticsearch
+gpgkey=https://artifacts.elastic.co/GPG-KEY-opensearch
 enabled=1
 autorefresh=1
 type=rpm-md
@@ -39,7 +39,7 @@ ELASTICSEARCH_CURATOR_REPO_CONF=$(cat <<'EOF'
 name=CentOS/RHEL 7 repository for Elasticsearch Curator 5.x packages
 baseurl=https://packages.elastic.co/curator/5/centos/7
 gpgcheck=1
-gpgkey=https://packages.elastic.co/GPG-KEY-elasticsearch
+gpgkey=https://packages.elastic.co/GPG-KEY-opensearch
 enabled=1
 EOF
 )
@@ -57,10 +57,10 @@ EOF
 
 OPENDISTRO_REPO_CONF=$(cat <<'EOF'
 [opendistroforelasticsearch-artifacts-repo]
-name=Release RPM artifacts of OpenDistroForElasticsearch
+name=Release RPM artifacts of OpenDistroForopensearch
 baseurl=https://d3g5vo6xdbdb9a.cloudfront.net/yum/noarch/
 enabled=1
-gpgkey=https://d3g5vo6xdbdb9a.cloudfront.net/GPG-KEY-opendistroforelasticsearch
+gpgkey=https://d3g5vo6xdbdb9a.cloudfront.net/GPG-KEY-opendistroforopensearch
 gpgcheck=1
 repo_gpgcheck=1
 autorefresh=1

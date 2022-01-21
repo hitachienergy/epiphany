@@ -111,31 +111,31 @@ cluster.initial_master_nodes: ["{{ ansible_hostname }}"]
 
 ######## Start OpenDistro for Elasticsearch Security Configuration ########
 # WARNING: revise all the lines below before you go into production
-opendistro_security.ssl.transport.pemcert_filepath: {{ node_cert_filename.transport }}
-opendistro_security.ssl.transport.pemkey_filepath: {{ node_key_filename.transport }}
-opendistro_security.ssl.transport.pemtrustedcas_filepath: {{ root_ca_cert_filename.transport }}
-opendistro_security.ssl.transport.enforce_hostname_verification: {{ specification.opendistro_security.ssl.transport.enforce_hostname_verification | lower }}
-opendistro_security.ssl.http.enabled: true
-opendistro_security.ssl.http.pemcert_filepath: {{ node_cert_filename.http }}
-opendistro_security.ssl.http.pemkey_filepath: {{ node_key_filename.http }}
-opendistro_security.ssl.http.pemtrustedcas_filepath: {{ root_ca_cert_filename.http }}
-opendistro_security.allow_unsafe_democertificates: {{ opendistro_security_allow_unsafe_democertificates | lower }}
-opendistro_security.allow_default_init_securityindex: true
-opendistro_security.authcz.admin_dn:
+opensearch_security.ssl.transport.pemcert_filepath: {{ node_cert_filename.transport }}
+opensearch_security.ssl.transport.pemkey_filepath: {{ node_key_filename.transport }}
+opensearch_security.ssl.transport.pemtrustedcas_filepath: {{ root_ca_cert_filename.transport }}
+opensearch_security.ssl.transport.enforce_hostname_verification: {{ specification.opensearch_security.ssl.transport.enforce_hostname_verification | lower }}
+opensearch_security.ssl.http.enabled: true
+opensearch_security.ssl.http.pemcert_filepath: {{ node_cert_filename.http }}
+opensearch_security.ssl.http.pemkey_filepath: {{ node_key_filename.http }}
+opensearch_security.ssl.http.pemtrustedcas_filepath: {{ root_ca_cert_filename.http }}
+opensearch_security.allow_unsafe_democertificates: {{ opensearch_security_allow_unsafe_democertificates | lower }}
+opensearch_security.allow_default_init_securityindex: true
+opensearch_security.authcz.admin_dn:
 {% for dn in admin_dn %}
   - '{{ dn }}'
 {% endfor %}
 {% if nodes_dn | count > 0 %}
-opendistro_security.nodes_dn:
+opensearch_security.nodes_dn:
   {% for dn in nodes_dn %}
   - '{{ dn }}'
   {% endfor %}
 {% endif %}
 
-opendistro_security.audit.type: internal_elasticsearch
-opendistro_security.enable_snapshot_restore_privilege: true
-opendistro_security.check_snapshot_restore_write_privileges: true
-opendistro_security.restapi.roles_enabled: ["all_access", "security_rest_api_access"]
+opensearch_security.audit.type: internal_opensearch
+opensearch_security.enable_snapshot_restore_privilege: true
+opensearch_security.check_snapshot_restore_write_privileges: true
+opensearch_security.restapi.roles_enabled: ["all_access", "security_rest_api_access"]
 cluster.routing.allocation.disk.threshold_enabled: false
 node.max_local_storage_nodes: 3
 ######## End OpenDistro for Elasticsearch Security Configuration ########

@@ -35,7 +35,7 @@ properties:
     properties:
       Xmx:
         type: string
-  opendistro_security:
+  opensearch_security:
     type: object
     properties:
       ssl:

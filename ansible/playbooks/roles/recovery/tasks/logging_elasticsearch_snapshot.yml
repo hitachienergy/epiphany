@@ -56,8 +56,8 @@
 - name: Change snapshot directory permissions
   file:
     path: "{{ elasticsearch_snapshot_repository_location }}/"
-    owner: elasticsearch
-    group: elasticsearch
+    owner: opensearch
+    group: opensearch
     recurse: true
 
 - name: Reconstruct the snapshot_name

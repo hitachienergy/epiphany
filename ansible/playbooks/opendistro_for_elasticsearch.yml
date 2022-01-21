@@ -1,5 +1,5 @@
 ---
-# Ansible playbook for installing Elasticsearch
+# Ansible playbook for installing opensearch
 
 - hosts: opensearch
   become: true

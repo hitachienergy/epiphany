@@ -10,7 +10,7 @@
     content: "{{ _patched_content | to_nice_yaml }}"
     mode: u=rw,g=rw,o=
     owner: root
-    group: elasticsearch
+    group: opensearch
     backup: true
   vars:
     _epiphany_subjects:
@@ -29,20 +29,20 @@
     _old_content: >-
       {{ _elasticsearch_yml.content | b64decode | from_yaml }}
     _updated_settings:
-      opendistro_security.authcz.admin_dn: >-
-        {{ _old_content['opendistro_security.authcz.admin_dn'] | default([]) | map('replace', ', ', ',')
+      opensearch_security.authcz.admin_dn: >-
+        {{ _old_content['opensearch_security.authcz.admin_dn'] | default([]) | map('replace', ', ', ',')
                                                                | union([_epiphany_DNs.admin]) }}
-      opendistro_security.nodes_dn: >-
-        {{ _old_content['opendistro_security.nodes_dn'] | default([])
+      opensearch_security.nodes_dn: >-
+        {{ _old_content['opensearch_security.nodes_dn'] | default([])
                                                         | union([_epiphany_DNs.node]) }}
 
-      opendistro_security.ssl.http.pemcert_filepath: "{{ certificates.files.node.cert.filename }}"
-      opendistro_security.ssl.http.pemkey_filepath:  "{{ certificates.files.node.key.filename }}"
-      opendistro_security.ssl.transport.pemcert_filepath: "{{ certificates.files.node.cert.filename }}"
-      opendistro_security.ssl.transport.pemkey_filepath:  "{{ certificates.files.node.key.filename }}"
+      opensearch_security.ssl.http.pemcert_filepath: "{{ certificates.files.node.cert.filename }}"
+      opensearch_security.ssl.http.pemkey_filepath:  "{{ certificates.files.node.key.filename }}"
+      opensearch_security.ssl.transport.pemcert_filepath: "{{ certificates.files.node.cert.filename }}"
+      opensearch_security.ssl.transport.pemkey_filepath:  "{{ certificates.files.node.key.filename }}"
 
-      opendistro_security.ssl.http.pemtrustedcas_filepath:      "{{ certificates.files.root_ca.cert.filename }}"
-      opendistro_security.ssl.transport.pemtrustedcas_filepath: "{{ certificates.files.root_ca.cert.filename }}"
+      opensearch_security.ssl.http.pemtrustedcas_filepath:      "{{ certificates.files.root_ca.cert.filename }}"
+      opensearch_security.ssl.transport.pemtrustedcas_filepath: "{{ certificates.files.root_ca.cert.filename }}"
 
     _patched_content: >-
       {{ _old_content | combine(_updated_settings) }}

@@ -46,7 +46,7 @@
         content: "{{ _patched_content | to_nice_yaml }}"
         mode: u=rw,g=rw,o=
         owner: root
-        group: elasticsearch
+        group: opensearch
         backup: true
       delegate_to: "{{ target_inventory_hostname }}"
       delegate_facts: true
@@ -62,10 +62,10 @@
         _old_content: >-
           {{ _elasticsearch_yml.results[loop_index0].content | b64decode | from_yaml }}
         _updated_settings:
-          opendistro_security.ssl.http.pemcert_filepath: "{{ _epiphany_node_cert.cert_filename }}"
-          opendistro_security.ssl.http.pemkey_filepath:  "{{ _epiphany_node_cert.key_filename }}"
-          opendistro_security.ssl.transport.pemcert_filepath: "{{ _epiphany_node_cert.cert_filename }}"
-          opendistro_security.ssl.transport.pemkey_filepath:  "{{ _epiphany_node_cert.key_filename }}"
+          opensearch_security.ssl.http.pemcert_filepath: "{{ _epiphany_node_cert.cert_filename }}"
+          opensearch_security.ssl.http.pemkey_filepath:  "{{ _epiphany_node_cert.key_filename }}"
+          opensearch_security.ssl.transport.pemcert_filepath: "{{ _epiphany_node_cert.cert_filename }}"
+          opensearch_security.ssl.transport.pemkey_filepath:  "{{ _epiphany_node_cert.key_filename }}"
         _patched_content: >-
           {{ _old_content | combine(_updated_settings) }}
 

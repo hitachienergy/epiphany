@@ -8,10 +8,10 @@
 #    3. Save cluster status to file       (done in pre-migration part)
 #    4. Create dual root CA file for the migration (demo + Epiphany root CAs concatenated), needed temporarily
 #    5. Patch the following properties in existing elasticsearch.yml:
-#       a) opendistro_security.authcz.admin_dn - add Epiphany admin cert
-#       b) opendistro_security.nodes_dn        - by default not present, add all Epiphany node certs
-#       c) opendistro_security.ssl.http.pemtrustedcas_filepath      - replace demo root CA with the dual root CA file
-#       d) opendistro_security.ssl.transport.pemtrustedcas_filepath - replace demo root CA with the dual root CA file
+#       a) opensearch_security.authcz.admin_dn - add Epiphany admin cert
+#       b) opensearch_security.nodes_dn        - by default not present, add all Epiphany node certs
+#       c) opensearch_security.ssl.http.pemtrustedcas_filepath      - replace demo root CA with the dual root CA file
+#       d) opensearch_security.ssl.transport.pemtrustedcas_filepath - replace demo root CA with the dual root CA file
 # B) Serial part (node by node) - tasks from migrate-from-demo-certs-02.yml
 
 # Create dual root CA transitional file
@@ -33,7 +33,7 @@
     content: "{{ _patched_content | to_nice_yaml }}"
     mode: u=rw,g=rw,o=
     owner: root
-    group: elasticsearch
+    group: opensearch
     backup: true
   vars:
     _epiphany_subjects:
@@ -58,14 +58,14 @@
     _old_content: >-
       {{ _elasticsearch_yml.content | b64decode | from_yaml }}
     _updated_settings:
-      opendistro_security.authcz.admin_dn: >-
-        {{ _old_content['opendistro_security.authcz.admin_dn'] | default([]) | map('replace', ', ', ',')
+      opensearch_security.authcz.admin_dn: >-
+        {{ _old_content['opensearch_security.authcz.admin_dn'] | default([]) | map('replace', ', ', ',')
                                                                | union([opensearch.certs_migration.demo_DNs.admin] + [_epiphany_DNs.admin]) }}
-      opendistro_security.nodes_dn: >-
-        {{ _old_content['opendistro_security.nodes_dn'] | default([])
+      opensearch_security.nodes_dn: >-
+        {{ _old_content['opensearch_security.nodes_dn'] | default([])
                                                         | union([opensearch.certs_migration.demo_DNs.node] + _epiphany_nodes_dn) }}
 
-      opendistro_security.ssl.http.pemtrustedcas_filepath:      "{{ opensearch.certs_migration.dual_root_ca.filename }}"
-      opendistro_security.ssl.transport.pemtrustedcas_filepath: "{{ opensearch.certs_migration.dual_root_ca.filename }}"
+      opensearch_security.ssl.http.pemtrustedcas_filepath:      "{{ opensearch.certs_migration.dual_root_ca.filename }}"
+      opensearch_security.ssl.transport.pemtrustedcas_filepath: "{{ opensearch.certs_migration.dual_root_ca.filename }}"
     _patched_content: >-
       {{ _old_content | combine(_updated_settings) }}

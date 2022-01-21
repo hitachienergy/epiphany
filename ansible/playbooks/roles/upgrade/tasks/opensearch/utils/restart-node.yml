@@ -12,7 +12,7 @@
 
 - name: ODFE | Restart elasticsearch service
   systemd:
-    name: elasticsearch
+    name: opensearch
     state: restarted
     daemon_reload: "{{ daemon_reload | default(omit) }}"
 

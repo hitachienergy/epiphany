@@ -1,5 +1,5 @@
-kind: configuration/opensearch-for-elasticsearch
-title: Open Distro for Elasticsearch Config
+kind: configuration/opensearch-for-opensearch
+title: OpenSearch Config
 name: default
 specification:
   cluster_name: EpiphanyElastic
@@ -16,12 +16,12 @@ specification:
   - logstash
   - kibanaserver
   paths:
-    data: /var/lib/elasticsearch
-    repo: /var/lib/elasticsearch-snapshots
-    logs: /var/log/elasticsearch
+    data: /var/lib/opensearch
+    repo: /var/lib/opensearch-snapshots
+    logs: /var/log/opensearch
   jvm_options:
     Xmx: 1g # see https://www.elastic.co/guide/en/elasticsearch/reference/7.9/heap-size.html
-  opendistro_security:
+  opensearch_security:
     ssl:
       transport:
         enforce_hostname_verification: true

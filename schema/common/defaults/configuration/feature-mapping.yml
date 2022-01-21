@@ -17,7 +17,7 @@ specification:
       enabled: true
     - name: logging
       enabled: true
-    - name: opensearch-for-elasticsearch
+    - name: opensearch-for-opensearch
       enabled: true
     - name: elasticsearch-curator
       enabled: true
@@ -122,7 +122,7 @@ specification:
       - filebeat
       - firewall
     opensearch:
-      - opensearch-for-elasticsearch
+      - opensearch-for-opensearch
       - node-exporter
       - filebeat
       - firewall

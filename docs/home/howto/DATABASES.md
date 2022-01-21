@@ -455,9 +455,9 @@ Properly configured application (kubernetes service) to use fully HA configurati
 PostgreSQL native replication is now deprecated and removed.
 Use [PostgreSQL HA replication with repmgr](#how-to-set-up-postgresql-ha-replication-with-repmgr-cluster) instead.
 
-## How to start working with OpenDistro for Elasticsearch
+## How to start working with OpenDistro for opensearch
 
-OpenDistro for Elasticsearch
+OpenDistro for opensearch
 is [an Apache 2.0-licensed distribution of Elasticsearch enhanced with enterprise security, alerting, SQL](https://opendistro.github.io/for-elasticsearch/).
 In order to start working with OpenDistro change machines count to value greater than 0 in your cluster configuration:
 
@@ -482,7 +482,7 @@ specification:
 **Installation with more than one node will always be clustered** - Option to configure the non-clustered installation of more than one node for Open Distro is not supported.
 
 ```yaml
-kind: configuration/opensearch-for-elasticsearch
+kind: configuration/opensearch-for-opensearch
 title: OpenDistro for Elasticsearch Config
 name: default
 specification:
@@ -499,7 +499,7 @@ name: default
 specification:
   roles_mapping:
     opensearch:
-      - opensearch-for-elasticsearch
+      - opensearch-for-opensearch
       - node-exporter
       - filebeat
       - firewall

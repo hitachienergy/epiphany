@@ -1,7 +1,7 @@
 ---
 - name: Configure OS limits (open files, processes and locked-in-memory address space)
   pam_limits:
-    domain: elasticsearch
+    domain: opensearch
     limit_type: "{{ item.limit_type }}"
     limit_item: "{{ item.limit_item }}"
     value: "{{ item.value }}"
@@ -15,7 +15,7 @@
 
 - include_tasks: install-ops.yml
 
-- include_tasks: install-ops-plugins.yml
+# - include_tasks: install-ops-plugins.yml
 
-- name: Include configuration tasks
-  include_tasks: configure-ops.yml
+# - name: Include configuration tasks
+#   include_tasks: configure-ops.yml

@@ -48,9 +48,9 @@ specification:
   cluster_name: EpiphanyElastic
   clustered: True
   paths:
-    data: /var/lib/elasticsearch
-    repo: /var/lib/elasticsearch-snapshots
-    logs: /var/log/elasticsearch
+    data: /var/lib/opensearch
+    repo: /var/lib/opensearch-snapshots
+    logs: /var/log/opensearch
 ```
 
 ## How to manage Opendistro for Elasticsearch data

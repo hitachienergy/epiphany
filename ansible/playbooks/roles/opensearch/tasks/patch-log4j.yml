@@ -21,7 +21,7 @@
       copy:
         src: "{{ item.src }}"
         dest: "{{ item.dest }}"
-        owner: elasticsearch
+        owner: opensearch
         group: root
         mode: u=rw,g=r,o=
         remote_src: true
@@ -32,7 +32,7 @@
         - { src: "{{ download_directory }}/{{ log4j_core }}",      dest: /usr/share/elasticsearch/lib/ }
         - { src: "{{ download_directory }}/{{ log4j_core }}",      dest: /usr/share/elasticsearch/performance-analyzer-rca/lib/ }
         - { src: "{{ download_directory }}/{{ log4j_core }}",      dest: /usr/share/elasticsearch/plugins/opensearch-performance-analyzer/performance-analyzer-rca/lib/ }
-        - { src: "{{ download_directory }}/{{ log4j_slfj_impl }}", dest: /usr/share/elasticsearch/plugins/opendistro_security/ }
+        - { src: "{{ download_directory }}/{{ log4j_slfj_impl }}", dest: /usr/share/elasticsearch/plugins/opensearch_security/ }
       vars:
         log4j_api: "{{ unarchive_list_files.files | select('contains', 'log4j-api-2.17.1.jar') | first }}"
         log4j_core: "{{ unarchive_list_files.files | select('contains', 'log4j-core-2.17.1.jar') | first }}"
@@ -51,7 +51,7 @@
           - /usr/share/elasticsearch/performance-analyzer-rca/lib/log4j-core-2.13.0.jar
           - /usr/share/elasticsearch/lib/log4j-api-2.11.1.jar
           - /usr/share/elasticsearch/lib/log4j-core-2.11.1.jar
-          - /usr/share/elasticsearch/plugins/opendistro_security/log4j-slf4j-impl-2.11.1.jar
+          - /usr/share/elasticsearch/plugins/opensearch_security/log4j-slf4j-impl-2.11.1.jar
 
       - name: Log4j patch | Delete temporary dir
         file:

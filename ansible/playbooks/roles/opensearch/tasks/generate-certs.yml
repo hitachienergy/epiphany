@@ -6,7 +6,7 @@
     state: directory
     path: "{{ certificates.dirs.ca_key }}"
     owner: root
-    group: elasticsearch
+    group: opensearch
     mode: u=rwx,g=rx,o=  # elasticsearch.service requires 'rx' for group
 
 # csr files are kept only for idempotency
@@ -15,7 +15,7 @@
     state: directory
     path: "{{ certificates.dirs.csr }}"
     owner: root
-    group: elasticsearch
+    group: opensearch
     mode: u=rwx,g=rx,o=  # CSR file doesn't contain private key
 
 - name: Generate keys and certificates on first node
@@ -26,19 +26,19 @@
       type: RSA
       mode: u=rw,go=
       owner: root
-      group: elasticsearch
+      group: opensearch
       format: pkcs8
     community.crypto.openssl_csr:
       mode: u=rw,g=r,o=
       owner: root
-      group: elasticsearch
+      group: opensearch
       use_common_name_for_san: false
     community.crypto.x509_certificate:
       selfsigned_digest: sha256
       ownca_digest: sha256
       mode: u=rw,g=r,o=
       owner: root
-      group: elasticsearch
+      group: opensearch
   block:
     # --- Generate CA root certificate ---
 
@@ -122,7 +122,7 @@
   module_defaults:
     copy:
       owner: root
-      group: elasticsearch
+      group: opensearch
   block:
     - name: Get certificate files from the first host
       slurp:
@@ -173,7 +173,7 @@
     type: RSA
     mode: u=rw,g=r,o=  # elasticsearch.service requires 'r' for group
     owner: root
-    group: elasticsearch
+    group: opensearch
     return_content: false
   register: node_key
 
@@ -200,7 +200,7 @@
     use_common_name_for_san: false
     mode: u=rw,g=r,o=
     owner: root
-    group: elasticsearch
+    group: opensearch
   register: node_csr
   vars:
     _unique_hostnames: "{{ [ansible_hostname, ansible_nodename, ansible_fqdn] | unique }}"
@@ -218,4 +218,4 @@
     ownca_digest: sha256
     mode: u=rw,go=r
     owner: root
-    group: elasticsearch
+    group: opensearch

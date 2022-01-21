@@ -8,7 +8,7 @@ versions:
     ops_version: "1.2.3"
 certificates:
   dirs:
-    certs:  /etc/elasticsearch
+    certs:  /etc/opensearch
     ca_key: /etc/elasticsearch/private
     csr:    /etc/elasticsearch/csr
   dn_attributes_order: ['CN', 'OU', 'O', 'L', 'S', 'C', 'DC']
@@ -22,8 +22,8 @@ certificates:
       node:
         cert: esnode.pem
         key:  esnode-key.pem
-      opendistro_security:
-        allow_unsafe_democertificates: false  # if 'false' all demo files must be removed to start Elasticsearch
+      opensearch_security:
+        allow_unsafe_democertificates: false  # if 'false' all demo files must be removed to start opensearch
     common:
       subject: &common-subject
         O: Epiphany

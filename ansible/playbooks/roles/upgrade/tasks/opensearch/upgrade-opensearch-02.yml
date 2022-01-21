@@ -19,7 +19,7 @@
 
 - name: ODFE | Stop elasticsearch service
   systemd:
-    name: elasticsearch
+    name: opensearch
     state: stopped
 
 - name: ODFE | Include Elasticsearch installation tasks
@@ -40,12 +40,12 @@
       clustered: "{{ 'True' if _old['discovery.seed_hosts'] | length > 1 else 'False' }}"
       paths:
         data: "{{ _old['path.data'] }}"
-        repo: "{{ _old['path.repo'] | default('/var/lib/elasticsearch-snapshots') }}"  # absent in Epiphany v0.6 thus we use default
+        repo: "{{ _old['path.repo'] | default('/var/lib/opensearch-snapshots') }}"  # absent in Epiphany v0.6 thus we use default
         logs: "{{ _old['path.logs'] }}"
-      opendistro_security:
+      opensearch_security:
         ssl:
           transport:
-            enforce_hostname_verification: "{{ _old['opendistro_security.ssl.transport.enforce_hostname_verification'] }}"
+            enforce_hostname_verification: "{{ _old['opensearch_security.ssl.transport.enforce_hostname_verification'] }}"
 
     _demo_DNs:
       admin: "{{ opensearch.certs_migration.demo_DNs.admin }}"
@@ -53,12 +53,12 @@
     _dual_root_ca_filename: "{{ opensearch.certs_migration.dual_root_ca.filename }}"
     _epiphany_root_ca_filename: "{{ certificates.files.root_ca.cert.filename }}"
     _updated_existing_config:
-      opendistro_security.authcz.admin_dn: "{{ _old['opendistro_security.authcz.admin_dn'] | reject('search', _demo_DNs.admin) }}"
-      opendistro_security.nodes_dn: "{{ _old['opendistro_security.nodes_dn'] | default([]) | reject('search', _demo_DNs.node) }}"
-      opendistro_security.ssl.http.pemtrustedcas_filepath: >-
-        {{ _old['opendistro_security.ssl.http.pemtrustedcas_filepath']      | replace(_dual_root_ca_filename, _epiphany_root_ca_filename) }}
-      opendistro_security.ssl.transport.pemtrustedcas_filepath: >-
-        {{ _old['opendistro_security.ssl.transport.pemtrustedcas_filepath'] | replace(_dual_root_ca_filename, _epiphany_root_ca_filename) }}
+      opensearch_security.authcz.admin_dn: "{{ _old['opensearch_security.authcz.admin_dn'] | reject('search', _demo_DNs.admin) }}"
+      opensearch_security.nodes_dn: "{{ _old['opensearch_security.nodes_dn'] | default([]) | reject('search', _demo_DNs.node) }}"
+      opensearch_security.ssl.http.pemtrustedcas_filepath: >-
+        {{ _old['opensearch_security.ssl.http.pemtrustedcas_filepath']      | replace(_dual_root_ca_filename, _epiphany_root_ca_filename) }}
+      opensearch_security.ssl.transport.pemtrustedcas_filepath: >-
+        {{ _old['opensearch_security.ssl.transport.pemtrustedcas_filepath'] | replace(_dual_root_ca_filename, _epiphany_root_ca_filename) }}
 
       http.port:      "{{ _old['http.port']      | default(odfe_defaults.ports.http) }}"
       transport.port: "{{ _old['transport.port'] | default(odfe_defaults.ports.transport) }}"
