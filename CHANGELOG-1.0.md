@@ -6,6 +6,7 @@
 
 - [#2124](https://github.com/epiphany-platform/epiphany/issues/2124) - Added Internet connection test to download-requirements.sh
 - [#195](https://github.com/epiphany-platform/epiphany/issues/195) - Basic configuration type and schema validation
+- [#2768](https://github.com/epiphany-platform/epiphany/issues/2768) - Add posibility to provide custom hostnames
 
 ### Updated
 
@@ -17,6 +18,13 @@
 - [#1294](https://github.com/epiphany-platform/epiphany/issues/1294) - Implement proper merging of lists of dictionaries for epicli yaml docs
 - [#1370](https://github.com/epiphany-platform/epiphany/issues/1370) - Epicli does not correctly generate vars for Postgres
 - [#1296](https://github.com/epiphany-platform/epiphany/issues/1296) - Epicli does not interpret alternative yaml boolean values as true booleans
+- [#2774](https://github.com/epiphany-platform/epiphany/issues/2774) - Issue creating service principal on Azure
+- [#2788](https://github.com/epiphany-platform/epiphany/issues/2788) - Upgrade Log4j in Open Distro for Elasticsearch
+- [#1221](https://github.com/epiphany-platform/epiphany/issues/1221) - kafka-exporter service doesn't start after restarting kafka VMs
+- [#2332](https://github.com/epiphany-platform/epiphany/issues/2332) - [Elasticsearch] Error when having multiple VMs and non-clustered mode
+- [#2707](https://github.com/epiphany-platform/epiphany/issues/2707) - Fix logging component backup
+- [#2831](https://github.com/epiphany-platform/epiphany/issues/2831) - Fix postgres-exporter service errror: Error opening connection to database
+- [#2894](https://github.com/epiphany-platform/epiphany/issues/2894) - System repositories are not restored on epicli re-run
 
 ## [1.0.1] 2021-07-16
 

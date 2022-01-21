@@ -12,6 +12,7 @@ specification:
     k8s_as_cloud_service: False
     use_public_ips: False # When not using public IPs you have to provide connectivity via private IPs (VPN)
     default_os_image: default
+    hostname_domain_extension: '' # Domain name that will be added to every machines hostname with a . seperator
   components:
     repository:
       count: 1

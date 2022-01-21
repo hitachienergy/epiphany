@@ -31,7 +31,14 @@ def get_pkg_data(pkgname: str, pat:str) -> str:
         logging.warning('Failed to get license information for package: ' + pkgname)
         return None
     pkg = pkgs[0]
-    pkg_data = {}
+    pkg_data = {
+        'Name': '',
+        'Version': '',
+        'Summary': '',
+        'Home-page': '',
+        'Author': '',
+        'License': ''
+    }
     for line in pkg.get_metadata_lines('METADATA'):
         try:
             (key, value) = line.split(': ', 1)

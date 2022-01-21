@@ -35,6 +35,7 @@ retries="3"
 download_cmd="run_cmd_with_retries $retries apt-get download"
 add_repos="${script_path}/add-repositories.sh"
 CRANE_BIN="${script_path}/crane"
+apt_sources_list="/etc/apt/sources.list"
 
 # to download everything, add "--recurse" flag but then you will get much more packages (e.g. 596 vs 319)
 deplist_cmd() {
@@ -46,16 +47,16 @@ deplist_cmd() {
 
 repos_backup_file="/tmp/epi-repository-setup-scripts/enable-system-repos.sh"
 # restore system repositories in case they're missing if ansible role gets interrupted
-if [[ ! -f /etc/apt/sources.list ]]; then
+if [[ ! -f $apt_sources_list || ! -s $apt_sources_list ]]; then
     if [[ -f /var/tmp/enabled-system-repos.tar ]] && [[ -f ${repos_backup_file} ]]; then
         echol "OS repositories seems missing, restoring..."
         ${repos_backup_file}
     else
-        echol "/etc/apt/sources.list seems missing, you either know what you're doing or you need to fix your repositories"
+        echol "$apt_sources_list seems missing or is empty, you either know what you're doing or you need to fix your repositories"
     fi
 fi
 
-check_connection apt '/etc/apt/sources.list'
+check_connection apt $apt_sources_list
 
 # install prerequisites which might be missing
 apt install -y wget gpg curl tar
