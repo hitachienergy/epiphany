@@ -60,11 +60,6 @@ resource "azurerm_virtual_machine" "{{ specification.name }}" {
     disk_size_gb      = "{{ specification.storage_os_disk.disk_size_gb }}"
     {%- if specification.storage_os_disk.managed %}
     managed_disk_type = "{{ specification.storage_os_disk.managed_disk_type | lower }}"
-    {%- else %}
-    #TODO: Container storage
-    #{%- if specification.storage_container.enable %}
-    #vhd_uri          = "${azurerm_storage_account.sa.primary_blob_endpoint}${azurerm_storage_container.storage_container_{{ specification.name }}.name}/{{ specification.name }}-${format("%03d", count.index + 1)}-os-disk.vhd"
-    #{%- endif %}
     {%- endif %}
   }
 
