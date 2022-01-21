@@ -441,6 +441,8 @@ Notes:
 - If you made any manual changes to your cluster infrastructure outside of Terraform this might cause issues.
 - Some resources might be changed or added which are usually security-groups and security-groups-association or NIC's. This is normal behaviour and is ok, just make sure no other resources like VM's are included when reviewing the `terraform plan` output.
 - Only run `terraform apply` if `terraform plan` shows your infrastructure does not match the configuration.
+- Manual Terraform upgrade up to v1.0.x should be completed before running `epicli apply` command with Epiphany 2.x.
+- Terraform can be installed as a binary package or by using package managers, see more: https://learn.hashicorp.com/tutorials/terraform/install-cli
 
 #### v0.12.6 => v0.13.x
 
@@ -487,6 +489,7 @@ General steps:
 #### v1.0.x => v1.1.3
 
 In this step we also force the upgrade from Azurerm provider 1.38.0 to 2.91.0 which requires a few more steps to resolve some pending issues.
+At this point, the steps assume that you are already running Epiphany 2.x image.
 
 The official documentation can be found here: https://www.terraform.io/language/upgrade-guides/1-1
 
@@ -521,6 +524,8 @@ General steps:
 Notes:
 - If you made any manual changes to your cluster infrastructure outside of Terraform this might cause issues.
 - Only run `terraform apply` if `terraform plan` shows your infrastructure does not match the configuration.
+- Manual Terraform ugrade up to v1.0.x should be completed before running `epicli apply` command with Epiphany 2.x.
+- Terraform can be installed as a binary package or by using package managers, see more: https://learn.hashicorp.com/tutorials/terraform/install-cli
 
 #### v0.12.6 => v0.13.x
 
@@ -566,6 +571,7 @@ General steps:
 #### v1.0.x => v1.1.3
 
 In this step we also force the upgrade from AWS provider 2.26 to 3.71.0 which requires a few more steps to resolve some pending issues.
+At this point, the steps assume that you are already running Epiphany 2.x image.
 
 The official documentation can be found here: https://www.terraform.io/language/upgrade-guides/1-1
 

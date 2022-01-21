@@ -1,4 +1,5 @@
 import os
+import sys
 
 from ansible.parsing.dataloader import DataLoader
 from ansible.inventory.manager import InventoryManager
@@ -10,6 +11,7 @@ from cli.helpers.build_io import save_manifest, load_manifest, get_inventory_pat
 from cli.helpers.yaml_helpers import safe_load_all
 from cli.helpers.Log import Log
 from cli.helpers.os_images import get_os_distro_normalized
+from cli.helpers.query_yes_no import query_yes_no
 from cli.engine.providers.provider_class_loader import provider_class_loader
 from cli.engine.schema.DefaultMerger import DefaultMerger
 from cli.engine.schema.SchemaValidator import SchemaValidator
@@ -103,7 +105,10 @@ class ApplyEngine(Step):
             old_major_version = int(cluster_model.version.split('.')[0])
             new_major_version = int(VERSION.split('.')[0])
             if old_major_version == 1 and new_major_version == 2:
-                raise Exception("You are trying to re-apply a Epiphany 2.x configuration against an existing Epiphany 1.x cluster. The Terraform is not compatible between these versions and requires manual action described in the documentation.")
+                if not query_yes_no("You are trying to re-apply a Epiphany 2.x configuration against an existing Epiphany 1.x cluster."
+                                    "The Terraform is not compatible between these versions and requires manual action described in the documentation."
+                                    "If you haven't done Terraform upgrade yet, it will break your cluster. Do you want to continue?"):
+                    sys.exit(0)
 
     def assert_no_master_downscale(self):
         components = self.cluster_model.specification.components
@@ -181,7 +186,9 @@ class ApplyEngine(Step):
 
         self.load_manifest()
 
-        self.assert_incompatible_terraform()
+        # assertions needs to be executed before save_manifest overides the manifest
+        if not self.skip_infrastructure:
+            self.assert_incompatible_terraform()
 
         self.process_infrastructure_docs()
 
