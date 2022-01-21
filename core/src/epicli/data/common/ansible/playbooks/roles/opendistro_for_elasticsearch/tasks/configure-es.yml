@@ -121,16 +121,6 @@
     or install_elasticsearch_package.changed
     or (install_opendistro_packages is defined and install_opendistro_packages.changed)
 
-- name: Restart elasticsearch service
-  systemd:
-    name: elasticsearch
-    state: restarted
-  register: restart_elasticsearch
-  when: change_config.changed
-     or change_jvm_config.changed
-     or install_elasticsearch_package.changed
-     or (install_opendistro_packages is defined and install_opendistro_packages.changed)
-
 - name: Enable and start elasticsearch service
   systemd:
     name: elasticsearch
