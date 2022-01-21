@@ -14,7 +14,7 @@ specification:
     - '--topic.filter=.*' # Regex that determines which topics to collect.
     - '--group.filter=.*' # Regex that determines which consumer groups to collect.
     #- '--tls.insecure-skip-tls-verify' # If true, the server's certificate will not be checked for validity. This will make your HTTPS connections insecure.
-    - '--kafka.version=2.0.0'
+    - '--kafka.version=2.6.0'
     #- '--sasl.enabled' # Connect using SASL/PLAIN.
     #- '--sasl.handshake' # Only set this to false if using a non-Kafka SASL proxy
     #- '--sasl.username=""'
