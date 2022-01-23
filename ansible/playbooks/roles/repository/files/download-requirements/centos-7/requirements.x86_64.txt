@@ -36,7 +36,6 @@ docker-ce-cli-20.10.8
 docker-ce-rootless-extras-20.10.8
 ebtables
 elasticsearch-curator-5.8.3
-elasticsearch-oss-7.10.2 # for opendistroforelasticsearch & logging roles
 ethtool
 filebeat-7.9.2
 firewalld
@@ -62,14 +61,6 @@ logrotate
 net-tools
 nfs-utils
 nmap-ncat
-# Open Distro for Elasticsearch plugins are installed individually to not download them twice in different versions (as dependencies of opendistroforelasticsearch package)
-opensearch-alerting-1.13.1.*
-opensearch-index-management-1.13.1.*
-opensearch-job-scheduler-1.13.0.*
-opensearch-performance-analyzer-1.13.0.*
-opensearch-security-1.13.1.*
-opensearch-sql-1.13.0.*
-opendistroforelasticsearch-kibana-1.13.1 # kibana has shorter version
 openssl
 perl # for vim
 perl-Getopt-Long # for vim
@@ -195,6 +186,8 @@ https://grafana.com/api/dashboards/179/revisions/7/download grafana_dashboard_17
 https://grafana.com/api/dashboards/6663/revisions/1/download grafana_dashboard_6663.json
 # RabbitMQ cluster monitoring (via Prometheus)
 https://grafana.com/api/dashboards/10991/revisions/11/download grafana_dashboard_10991.json
+# OpenSearch
+https://artifacts.opensearch.org/releases/bundle/opensearch/1.2.4/opensearch-1.2.4-linux-x64.tar.gz
 
 [images]
 haproxy:2.2.2-alpine

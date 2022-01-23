@@ -3,14 +3,14 @@
 
 versions:
   RedHat:
-    ops_version: "1.2.3"
+    ops_version: "1.2.4"
   Debian:
-    ops_version: "1.2.3"
+    ops_version: "1.2.4"
 certificates:
   dirs:
     certs:  /etc/opensearch
-    ca_key: /etc/elasticsearch/private
-    csr:    /etc/elasticsearch/csr
+    ca_key: /etc/opensearch/private
+    csr:    /etc/opensearch/csr
   dn_attributes_order: ['CN', 'OU', 'O', 'L', 'S', 'C', 'DC']
   files:
     demo:
@@ -59,4 +59,11 @@ ports:
   http:      9200  # defaults to range but we want static port
   transport: 9300  # defaults to range but we want static port
 log4j_file_name: apache-log4j-2.17.1-bin.tar.gz
+# ToDo: move these variables out of here:
 ops_user: opensearch
+ops_home: /usr/share/opensearch
+ops_conf_dir: /usr/share/opensearch/config
+ops_plugin_bin_path: /usr/share/opensearch/bin/opensearch-plugin
+ops_sec_plugin_conf_path: /usr/share/opensearch/plugins/opensearch-security/securityconfig
+ops_sec_plugin_tools_path: /usr/share/opensearch/plugins/opensearch-security/tools
+ops_api_port: 9200

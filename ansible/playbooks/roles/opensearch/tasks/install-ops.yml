@@ -1,48 +1,35 @@
 ---
-- name: OpenSearch Install | Download opensearch {{ os_version }}
-  get_url:
-    url: "{{ os_download_url }}/{{ os_version }}/opensearch-{{ versions[ansible_os_family].ops_version }}-linux-x64.tar.gz"
-    dest: "/tmp/opensearch.tar.gz"
-  register: download
+- name: Download Opensearch
+  include_role:
+    name: download
+    tasks_from: download_file
+  vars:
+    file_name: "opensearch-{{ versions[ansible_os_family].ops_version }}-linux-x64.tar.gz"
 
-- name: OpenSearch Install | Create opensearch user
+- name: OpenSearch Install | Ensure Opensearch service user exists
   user:
     name: "{{ ops_user }}"
     state: present
     shell: /bin/bash
-  when: download.changed
 
-- name: OpenSearch Install | Create home directory
+- name: OpenSearch Install | Ensure home directory exists
   file:
-    path: "{{ os_home }}"
+    path: "{{ ops_home }}"
     state: directory
     owner: "{{ ops_user }}"
     group: "{{ ops_user }}"
-  when: download.changed
+
+- name: OpenSearch Install | Ensure config directory exists
+  file:
+    path: "/etc/opensearch"
+    state: directory
+    owner: "{{ ops_user }}"
+    group: "{{ ops_user }}"
 
 - name: OpenSearch Install | Extract the tar file
-  command: chdir=/tmp/ tar -xvzf opensearch.tar.gz -C "{{ os_home }}" --strip-components=1
-  when: download.changed
-
-- name: OpenSearch Install | Copy Configuration File
-  template:
-    src: opensearch.yml
-    dest: "{{os_conf_dir}}/opensearch.yml"
-    owner: "{{ ops_user }}"
-    group: "{{ ops_user }}"
-    mode: 0644
-    backup: yes
-
-- name: OpenSearch Install | Copy jvm.options File for Instance
-  template:
-    src: jvm.options
-    dest: "{{os_conf_dir}}/jvm.options"
-    owner: "{{ ops_user }}"
-    group: "{{ ops_user }}"
-    mode: 0644
-    force: yes
+  command: "chdir=/tmp/ tar -xvzf opensearch-{{ versions[ansible_os_family].ops_version }}-linux-x64.tar.gz -C {{ ops_home }} --strip-components=1"
 
 - name: OpenSearch Install | create systemd service
   template:
-    src: opensearch.service
-    dest: "{{ systemctl_path }}/opensearch.service"
+    src: opensearch.service.j2
+    dest: "/etc/systemd/system/opensearch.service"

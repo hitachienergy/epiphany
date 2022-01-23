@@ -35,7 +35,6 @@ docker-ce-20.10.8
 docker-ce-cli-20.10.8
 docker-ce-rootless-extras-20.10.8
 ebtables
-elasticsearch-oss-7.10.2 # for opendistroforelasticsearch & logging roles
 ethtool
 filebeat-7.9.2
 firewalld
@@ -61,14 +60,6 @@ logrotate
 net-tools
 nfs-utils
 nmap-ncat
-# Open Distro for Elasticsearch plugins are installed individually to not download them twice in different versions (as dependencies of opendistroforelasticsearch package)
-opensearch-alerting-1.13.1.*
-opensearch-index-management-1.13.1.*
-opensearch-job-scheduler-1.13.0.*
-opensearch-performance-analyzer-1.13.0.*
-opensearch-security-1.13.1.*
-opensearch-sql-1.13.0.*
-opendistroforelasticsearch-kibana-1.13.1 # kibana has shorter version
 openssl
 unixODBC # for erlang
 perl # for vim

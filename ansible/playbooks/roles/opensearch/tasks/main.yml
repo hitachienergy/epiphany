@@ -17,5 +17,5 @@
 
 # - include_tasks: install-ops-plugins.yml
 
-# - name: Include configuration tasks
-#   include_tasks: configure-ops.yml
+- name: Include configuration tasks
+  include_tasks: configure-ops.yml
