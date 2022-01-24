@@ -31,15 +31,12 @@
       register: command_kubeadm_configmap
       changed_when: false
 
-    # The following procedure ensures that etcd encryption is always enabled during subsequent kubeadm executions
-    # Starting from K8s v1.21 support for DenyEscalatingExec admission plugin is removed,
-    # but it was specified in Epiphany's default values
+    # The following procedure ensures that
+    #   - etcd encryption is always enabled during subsequent kubeadm executions
+    #   - DenyEscalatingExec admission plugin is not used as unsupported (it was specified in Epiphany's default values before v1.3)
+    #   - apiserver audit logging is enabled
+    #   - apiserver certSANs are configured the same way as for apply (GitHub issue #1520)
     - name: k8s/master | Patch kubeadm-config configmap (patch-kubeadm-apiserver.yml)
-      when: _kubeadm_api_server_extra_args['encryption-provider-config'] is undefined
-         or _cluster_config.apiServer['extraVolumes'] is undefined
-         or (version is version('1.21', '>=')
-             and version is version('1.22', '<')
-             and _kubeadm_api_server_extra_args['enable-admission-plugins'] is defined)
       command: |
         kubectl patch configmap kubeadm-config \
           --namespace kube-system \
@@ -68,6 +65,14 @@
         # Prepare the cluster config patch
         _update1: |-
           apiServer:
+            certSANs:
+          {% set address_list = ['127.0.0.1'] %}
+          {% for host in groups['kubernetes_master'] %}
+          {%   set _ = address_list.extend([ hostvars[host]['ansible_default_ipv4']['address'], hostvars[host]['ansible_host'] ]) %}
+          {% endfor %}
+          {% for address in address_list|unique %}
+              - {{ address }}
+          {% endfor %}
             extraArgs:
               encryption-provider-config: {{ kubernetes_master_defaults.pki.location }}/etcd/etc-encryption.conf
           {% if version is version('1.21', '>=') and version is version('1.22', '<') %}
