@@ -1,6 +1,9 @@
 ---
-- include_tasks: remove-docker.yml
-  when: is_upgrade_run
+- name: Remove Docker
+  include_tasks: remove-docker.yml
+  when:
+    - is_upgrade_run
+    - inventory_hostname not in groups.image_registry
 
 - name: Install Containerd package
   package:
@@ -9,8 +12,11 @@
   module_defaults:
     yum: { lock_timeout: "{{ yum_lock_timeout }}" }
 
-- include_tasks: configure-prerequisites.yml
-- include_tasks: configure-containerd.yml
+- name: Configure prerequisites
+  include_tasks: configure-prerequisites.yml
+
+- name: Configure Containerd
+  include_tasks: configure-containerd.yml
 
 - name: Append Containerd to kubelet config
   replace:

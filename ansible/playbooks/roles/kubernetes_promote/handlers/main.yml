@@ -2,7 +2,7 @@
 - name: Restart controller-manager
   shell: |
     crictl ps \
-      --name=\kube-controller-manager' -q \
+      --name='kube-controller-manager' -q \
     | xargs --no-run-if-empty crictl stop --timeout=0
   args:
     executable: /bin/bash
