@@ -46,14 +46,6 @@
 
                 - <<: *soft-join
 
-              rescue:
-                - name: Join to cluster with ignores
-                  command: |-
-                    kubeadm join \
-                      --config /etc/kubeadm/kubeadm-join-node.yml \
-                      --ignore-preflight-errors all
-                  register: kubeadm_join_result
-
           always:
             - name: Display kubeadm join stderr if any
               debug:
