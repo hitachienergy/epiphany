@@ -6,7 +6,13 @@
 
 ### Fixed
 
+- [#2669](https://github.com/epiphany-platform/epiphany/issues/2669) - Restarting the installation process can cause certificate problems if K8s was not fully configured
+
 ### Updated
+
+- [#2828](https://github.com/epiphany-platform/epiphany/issues/2828) - K8s improvements
+  - Re-generate apiserver certificates only by purpose
+  - Do not ignore preflight errors in `kubeadm join`
 
 ### Removed
 
