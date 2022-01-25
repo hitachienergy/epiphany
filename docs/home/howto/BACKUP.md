@@ -51,6 +51,29 @@ epicli backup -f backup.yml -b build_folder
 
 If backup config is attached to cluster-config.yml use this file instead ``backup.yml``
 
+---
+**NOTE for Epiphany versions < 1.0.2**
+
+After releasing Epiphany v1.0.1 we found a [bug](https://github.com/epiphany-platform/epiphany/issues/2920) in the backup
+functionality. Only RHEL/CentOS based clusters with standalone (non-K8s) RabbitMQ component are affected.
+
+To work around this issue, install `python3` package (by yourself) on the first host of the `rabbitmq` group from your
+Ansible inventory file **before** running `epicli backup` command.
+
+Alternatively, if you're fine with excluding RabbitMQ from the automated backup, you can just set in your config file:
+
+```
+kind: configuration/backup
+...
+specification:
+  components:
+    rabbitmq:
+      enabled: false
+...
+```
+
+---
+
 ## 2. How to store backup
 
 Backup location is defined in ``backup`` role as ``backup_destination_host`` and ``backup_destination_dir``.
