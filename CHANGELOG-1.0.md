@@ -2,6 +2,11 @@
 
 ## [1.0.2] 2021-xx-xx
 
+### NOTE ###
+
+Before running `epicli backup` for RHEL/CentOS based cluster with standalone (non-K8s) RabbitMQ component,
+read note in [this doc](docs/home/howto/BACKUP.md#1-how-to-perform-backup).
+
 ### Added
 
 - [#2124](https://github.com/epiphany-platform/epiphany/issues/2124) - Added Internet connection test to download-requirements.sh
@@ -14,6 +19,7 @@
 
 ### Fixed
 
+- [#2920](https://github.com/epiphany-platform/epiphany/issues/2920) - [RHEL/CentOS] RabbitMQ backup fails: /usr/bin/env: python3: No such file or directory
 - [#2425](https://github.com/epiphany-platform/epiphany/issues/2425) - Feature-mapping - 'enabled: no' do nothing
 - [#1294](https://github.com/epiphany-platform/epiphany/issues/1294) - Implement proper merging of lists of dictionaries for epicli yaml docs
 - [#1370](https://github.com/epiphany-platform/epiphany/issues/1370) - Epicli does not correctly generate vars for Postgres
