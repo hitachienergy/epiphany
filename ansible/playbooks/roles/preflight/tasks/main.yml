@@ -58,3 +58,13 @@
         path: /etc/systemd/system/default.target.wants/epiphany-lvm-merge.service
         state: absent
         timeout: 300
+
+- include_vars:
+    file: roles/common/vars/main.yml
+    name: common_vars
+
+- name: Validate network configuration
+  when: common_vars.provider == "any"
+  assert:
+    that: ansible_default_ipv4.address == hostvars[inventory_hostname].ansible_host
+    fail_msg: "ansible_default_ipv4.address is {{ ansible_default_ipv4.address }} but inventory uses ip: {{ hostvars[inventory_hostname].ansible_host }}. Check default routing configuration, read more in troubleshooting document"

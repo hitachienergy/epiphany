@@ -17,6 +17,10 @@ properties:
     type: string
   availability_set_name:
     type: string
+  use_network_security_groups:
+    type: boolean
+  security_group_association_name:
+    type: string
   tags:
     type: array
     items:
