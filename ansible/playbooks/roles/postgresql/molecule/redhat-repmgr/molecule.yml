@@ -27,8 +27,8 @@ platforms:
 provisioner:
   name: ansible
   playbooks:
-    prepare: prepare.yml
-    converge: converge.yml
-    verify: ../verify-repmgr.yml
+    prepare: ../_shared/playbooks/prepare.yml
+    converge: ../_shared/playbooks/converge.yml
+    verify: ../_shared/playbooks/verify.yml
 verifier:
   name: ansible

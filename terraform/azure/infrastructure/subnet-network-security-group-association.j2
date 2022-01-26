@@ -11,6 +11,6 @@
 #####################################################
 
 resource "azurerm_subnet_network_security_group_association" "{{ specification.name }}" {
-  subnet_id                 = "${azurerm_subnet.{{ specification.subnet_name }}.id}"
-  network_security_group_id = "${azurerm_network_security_group.{{ specification.security_group_name }}.id}"
+  subnet_id                 = azurerm_subnet.{{ specification.subnet_name }}.id
+  network_security_group_id = azurerm_network_security_group.{{ specification.security_group_name }}.id
 }

@@ -12,8 +12,8 @@
 
 resource "azurerm_virtual_machine" "{{ specification.name }}" {
   name                  = "{{ specification.name }}"
-  location              = "${azurerm_resource_group.rg.location}"
-  resource_group_name   = "${azurerm_resource_group.rg.name}"
+  location              = azurerm_resource_group.rg.location
+  resource_group_name   = azurerm_resource_group.rg.name
   vm_size               = "{{ specification.size }}"
   network_interface_ids = ["${azurerm_network_interface.{{ specification.network_interface_name }}.id}"]
 
@@ -31,7 +31,7 @@ resource "azurerm_virtual_machine" "{{ specification.name }}" {
     admin_password = "{{ specification.admin_password }}"
     {%- endif %}
     {%- if specification.storage_image_reference.offer == "RHEL" and specification.use_cloud_init_custom_data %}
-    custom_data = "${file("${path.module}/cloud-config.yml")}"
+    custom_data    = file("${path.module}/cloud-config.yml")
     {%- endif %}
   }
 
@@ -40,7 +40,7 @@ resource "azurerm_virtual_machine" "{{ specification.name }}" {
     disable_password_authentication = true
     ssh_keys {
       path     = "/home/{{ specification.admin_username }}/.ssh/authorized_keys"
-      key_data = "${file("{{ specification.public_key }}")}"
+      key_data = file("{{ specification.public_key }}")
     }
   }
   {%- endif %}
@@ -49,22 +49,17 @@ resource "azurerm_virtual_machine" "{{ specification.name }}" {
   # windows specific stuff here maybe... hopefully never.
   {%- endif %}
 
-  {%- if specification.storage_os_disk.managed != true %}
+  {%- if specification.storage_os_disk.managed %}
   delete_os_disk_on_termination = "{{ specification.storage_os_disk.delete_on_termination | lower }}"
   {%- endif %}
 
   storage_os_disk {
-    name          = "{{ specification.name }}-os-disk"
-    caching       = "{{ specification.storage_os_disk.caching }}"
-    create_option = "{{ specification.storage_os_disk.create_option }}"
-    disk_size_gb  = "{{ specification.storage_os_disk.disk_size_gb }}"
-    {%- if specification.storage_os_disk.managed != true %}
+    name              = "{{ specification.name }}-os-disk"
+    caching           = "{{ specification.storage_os_disk.caching }}"
+    create_option     = "{{ specification.storage_os_disk.create_option }}"
+    disk_size_gb      = "{{ specification.storage_os_disk.disk_size_gb }}"
+    {%- if specification.storage_os_disk.managed %}
     managed_disk_type = "{{ specification.storage_os_disk.managed_disk_type | lower }}"
-    {%- else %}
-    #TODO: Container storage
-    #{%- if specification.storage_container.enable %}
-    #vhd_uri       = "${azurerm_storage_account.sa.primary_blob_endpoint}${azurerm_storage_container.storage_container_{{ specification.name }}.name}/{{ specification.name }}-${format("%03d", count.index + 1)}-os-disk.vhd"
-    #{%- endif %}
     {%- endif %}
   }
 
@@ -77,7 +72,14 @@ resource "azurerm_virtual_machine" "{{ specification.name }}" {
   }
 
   {%- if specification.availability_set_name is defined and specification.availability_set_name != "SET_BY_AUTOMATION" %}
-  availability_set_id = "${azurerm_availability_set.{{ specification.availability_set_name }}.id}"
+  availability_set_id = azurerm_availability_set.{{ specification.availability_set_name }}.id
+  {%- endif %}
+
+  # Terraform has issues with destroying/creating resources with security_group_association:
+  # https://github.com/hashicorp/terraform/issues/24663
+  # Thats why we add depends_on to guide through the right path.
+  {%- if specification.use_network_security_groups == true %}
+  depends_on = [azurerm_network_interface_security_group_association.{{ specification.security_group_association_name }}]
   {%- endif %}
 
   #TODO:

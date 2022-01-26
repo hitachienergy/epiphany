@@ -205,7 +205,7 @@ def apply_parser(subparsers):
                             help='Password that will be used to encrypt build artifacts.')
     optional.add_argument('--profile-ansible-tasks', dest='profile_ansible_tasks', action="store_true",
                             help='Enable Ansible profile_tasks plugin for timing tasks. (developer/debug option)')
-    optional.add_argument('--ping-retries', dest='ping_retries', type=int, required=False, action='store', default=5,
+    optional.add_argument('--ping-retries', dest='ping_retries', type=int, required=False, action='store', default=10,
                             help='Number of pings after which Ansible will fail.')
     optional.add_argument('--ansible-forks', dest='ansible_forks', type=int, required=False, action='store', default=10,
                             help='Sets the number of forks in ansible.cfg.')
@@ -296,7 +296,7 @@ def upgrade_parser(subparsers):
                             help='Enable Ansible profile_tasks plugin for timing tasks. (developer/debug option)')
     optional.add_argument('--upgrade-components', dest='upgrade_components', type=comma_separated_type(component_list), required=False,
                             help='Provides comma separated list of components for upgrade selected from the following: [' + ', '.join(map(str, component_list)) + ']')
-    optional.add_argument('--ping-retries', dest='ping_retries', type=int, required=False, action='store', default=5,
+    optional.add_argument('--ping-retries', dest='ping_retries', type=int, required=False, action='store', default=10,
                             help='Number of pings after which Ansible will fail.')
     optional.add_argument('--ansible-forks', dest='ansible_forks', type=int, required=False, action='store', default=10,
                             help='Sets the number of forks in ansible.cfg.')

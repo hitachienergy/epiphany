@@ -10,8 +10,7 @@
 # {{ specification.name }}
 #####################################################
 
-
 resource "azurerm_resource_group" "rg" {
-    name = "{{ specification.name }}"
-    location = "{{ specification.region }}"
+  name     = "{{ specification.name }}"
+  location = "{{ specification.region }}"
 }

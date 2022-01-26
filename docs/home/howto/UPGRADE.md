@@ -421,3 +421,172 @@ directories by running `delete_old_cluster.sh` script (created in `pg_upgrade_wo
 nodes**. The script is not created if you have user-defined tablespaces inside the old data directory. You can also
 delete the old installation directories (e.g., `bin`, `share`). You may delete `pg_upgrade_working_dir`
 on primary node once the upgrade is completely over.
+
+## Terraform upgrade from Epiphany 1.x to 2.x
+
+From Epiphany 1.x to 2.x the Terraform stack received the following major updates:
+- Terraform 0.12.6 to 1.1.3
+- Azurerm provider 1.38.0 to 2.91.0
+- AWS provider 2.26 to 3.71.0
+
+These introduce some breaking changes which will require manual steps for upgrading an existing 1.x clusters. As this is not straight forward we recommend deploying a new cluster on 2.x and migrating data instead.
+
+If you do want to upgrade a 1.x manually it will require you to upgrade between a few different versions of Terraform. The basic steps are described below for each provider. As always ensure backup of any data required.
+
+Final note is that you can also leave the Terraform in place and use the `--no-infra` flag to skip applying the new Terraform scripts. This however makes you unable to make any changes to your cluster layout.
+
+### Azure
+
+Notes:
+- If you made any manual changes to your cluster infrastructure outside of Terraform this might cause issues.
+- Some resources might be changed or added which are usually security-groups and security-groups-association or NIC's. This is normal behaviour and is ok, just make sure no other resources like VM's are included when reviewing the `terraform plan` output.
+- Only run `terraform apply` if `terraform plan` shows your infrastructure does not match the configuration.
+- Manual Terraform upgrade up to v1.0.x should be completed before running `epicli apply` command with Epiphany 2.x.
+- Terraform can be installed as a binary package or by using package managers, see more: https://learn.hashicorp.com/tutorials/terraform/install-cli
+
+#### v0.12.6 => v0.13.x
+
+The official documentation can be found here: https://www.terraform.io/language/upgrade-guides/0-13
+
+General steps:
+- Download the latest Terraform v0.13.x: https://releases.hashicorp.com/terraform/
+- Run the following sets of commands in the `build/clustername/terraform` folder and follow the steps if asked:
+  ```shell
+  terraform init
+  terraform 0.13upgrade
+  terraform plan
+  terraform apply (if needed)
+  ```
+
+#### v0.13.x => v0.14.x
+
+The official documentation can be found here: https://www.terraform.io/language/upgrade-guides/0-14
+
+General steps:
+- Download the latest Terraform v0.14.x: https://releases.hashicorp.com/terraform/
+- Run the following sets of commands in the `build/clustername/terraform` folder and follow the steps if asked:
+  ```shell
+  terraform init
+  terraform plan
+  terraform apply (if needed)
+  ```
+
+#### v0.14.x => v1.0.x
+
+Note: From v0.14.x we can upgrade straight to v1.0.x. No need to upgrade to v0.15.x first.
+
+The official documentation can be found here: https://www.terraform.io/language/upgrade-guides/1-0
+
+General steps:
+- Download the latest Terraform v1.0.x: https://releases.hashicorp.com/terraform/
+- Run the following sets of commands in the `build/clustername/terraform` folder and follow the steps if asked:
+  ```shell
+  terraform init
+  terraform plan
+  terraform apply (if needed)
+  ```
+
+#### v1.0.x => v1.1.3
+
+In this step we also force the upgrade from Azurerm provider 1.38.0 to 2.91.0 which requires a few more steps to resolve some pending issues.
+At this point, the steps assume that you are already running Epiphany 2.x image.
+
+The official documentation can be found here: https://www.terraform.io/language/upgrade-guides/1-1
+
+General steps:
+- Run epicli to generate new Azurerm provider Terraform scripts:
+  ```shell
+  epicli apply -f data.yml
+  ```
+  After the Terraform scripts generation `terraform init ...` will result in the following error:
+  `Error: Failed to query available provider packages`
+- To fix the issue from previous step manually run from the epicli container in `build/clustername/terraform`:
+  ```shell
+  terraform init -upgrade
+  ```
+- Now re-run epicli again:
+  ```shell
+  epicli apply -f data.yml
+  ```
+  This might succeed but depending on the cluster configuration this might lead to several errors for each NIC:
+  `Error: A resource with the ID "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/prefix-name-rg/providers/Microsoft.Network/networkInterfaces/prefix-name-component-nic-x|/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/prefix-name-rg/providers/Microsoft.Network/networkSecurityGroups/prefix-name-component-nsg-x" already exists - to be managed via Terraform this resource needs to be imported into the State. Please see the resource documentation for "azurerm_network_interface_security_group_association" for more information.`
+- To resolve the above error we need to import the azurerm_network_interface_security_group_association for each NIC by using the `terraform input` command for each of the above errors using the ID and the propper name from the xxx_prefix-name-component-nsga-x.tf Terraform resources like so:
+  ```shell
+  terraform import 'azurerm_network_interface_security_group_association.prefix-name-component-nsga-0' '/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/prefix-name-rg/providers/Microsoft.Network/networkInterfaces/prefix-name-component-nic-x|/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/prefix-name-rg/providers/Microsoft.Network/networkSecurityGroups/prefix-name-component-nsg-x'
+  ```
+- Once all azurerm_network_interface_security_group_association are imported sucessfully you can re-run epicli apply one more time:
+  ```shell
+  epicli apply -f data.yml
+  ```
+
+### AWS
+
+Notes:
+- If you made any manual changes to your cluster infrastructure outside of Terraform this might cause issues.
+- Only run `terraform apply` if `terraform plan` shows your infrastructure does not match the configuration.
+- Manual Terraform ugrade up to v1.0.x should be completed before running `epicli apply` command with Epiphany 2.x.
+- Terraform can be installed as a binary package or by using package managers, see more: https://learn.hashicorp.com/tutorials/terraform/install-cli
+
+#### v0.12.6 => v0.13.x
+
+The official documentation can be found here: https://www.terraform.io/language/upgrade-guides/0-13
+
+General steps:
+- Download the latest Terraform v0.13.x: https://releases.hashicorp.com/terraform/
+- Run the following sets of commands in the `build/clustername/terraform` folder and follow the steps if asked:
+  ```shell
+  terraform init
+  terraform 0.13upgrade
+  terraform plan
+  terraform apply (if needed)
+  ```
+
+#### v0.13.x => v0.14.x
+
+The official documentation can be found here: https://www.terraform.io/language/upgrade-guides/0-14
+
+General steps:
+- Download the latest Terraform v0.14.x: https://releases.hashicorp.com/terraform/
+- Run the following sets of commands in the `build/clustername/terraform` folder and follow the steps if asked:
+  ```shell
+  terraform init
+  terraform plan
+  terraform apply (if needed)
+  ```
+
+#### v0.14.x => v1.0.x
+
+Note: From v0.14.x we can upgrade straight to v1.0.x. No need to upgrade to v0.15.x first.
+
+The official documentation can be found here: https://www.terraform.io/language/upgrade-guides/1-0
+
+General steps:
+- Download the latest Terraform v1.0.x: https://releases.hashicorp.com/terraform/
+- Run the following sets of commands in the `build/clustername/terraform` folder and follow the steps if asked:
+  ```shell
+  terraform init
+  terraform plan
+  terraform apply (if needed)
+  ```
+#### v1.0.x => v1.1.3
+
+In this step we also force the upgrade from AWS provider 2.26 to 3.71.0 which requires a few more steps to resolve some pending issues.
+At this point, the steps assume that you are already running Epiphany 2.x image.
+
+The official documentation can be found here: https://www.terraform.io/language/upgrade-guides/1-1
+
+General steps:
+- Run epicli to generate the new AWS provider Terraform scripts:
+  ```shell
+  epicli apply -f data.yml
+  ```
+  After the Terraform scripts generation `terraform init ...` will result in the following error:
+  `Error: Failed to query available provider packages`
+- To fix the issue from previous step manually run from the epicli container in `build/clustername/terraform`:
+  ```shell
+  terraform init -upgrade
+  ```
+- Now re-run epicli again:
+  ```shell
+  epicli apply -f data.yml
+  ```

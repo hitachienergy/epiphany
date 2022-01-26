@@ -13,7 +13,7 @@
 
 
 resource "aws_resourcegroups_group" "{{ specification.name }}" {
-  name        = "{{ specification.name }}"
+  name = "{{ specification.name }}"
 
   resource_query {
     query = <<JSON
