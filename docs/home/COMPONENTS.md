@@ -165,8 +165,6 @@ Note that versions are default versions and can be changed in certain cases thro
 | fabric | 2.6.0 | http://fabfile.org | BSD |
 | humanfriendly | 10.0 | https://humanfriendly.readthedocs.io | MIT |
 | idna | 3.3 | https://github.com/kjd/idna | [BSD 3-Clause "New" or "Revised" License](https://api.github.com/repos/kjd/idna/license) |
-| importlib-metadata | 1.7.0 | http://importlib-metadata.readthedocs.io/ | Apache Software License |
-| importlib-resources | 5.4.0 | https://github.com/python/importlib_resources | [Other](https://api.github.com/repos/python/importlib_resources/license) |
 | invoke | 1.6.0 | http://docs.pyinvoke.org | BSD |
 | isodate | 0.6.1 | https://github.com/gweis/isodate/ | [BSD 3-Clause "New" or "Revised" License](https://api.github.com/repos/gweis/isodate/license) |
 | javaproperties | 0.5.2 | https://github.com/jwodder/javaproperties | [MIT License](https://api.github.com/repos/jwodder/javaproperties/license) |
@@ -176,7 +174,7 @@ Note that versions are default versions and can be changed in certain cases thro
 | jsonschema | 4.2.1 | https://github.com/Julian/jsonschema | [MIT License](https://api.github.com/repos/julian/jsonschema/license) |
 | knack | 0.9.0 | https://github.com/microsoft/knack | [MIT License](https://api.github.com/repos/microsoft/knack/license) |
 | MarkupSafe | 2.0.1 | https://palletsprojects.com/p/markupsafe/ | BSD-3-Clause |
-| msal-extensions | 0.3.0 | https://github.com/AzureAD/microsoft-authentication-extensions-for-python | [MIT License](https://github.com/AzureAD/microsoft-authentication-extensions-for-python/LICENSE) |
+| msal-extensions | 0.3.1 | https://github.com/AzureAD/microsoft-authentication-extensions-for-python | MIT |
 | msal | 1.16.0 | https://github.com/AzureAD/microsoft-authentication-library-for-python | [Other](https://api.github.com/repos/azuread/microsoft-authentication-library-for-python/license) |
 | msrest | 0.6.21 | https://github.com/Azure/msrest-for-python | [MIT License](https://api.github.com/repos/azure/msrest-for-python/license) |
 | msrestazure | 0.6.4 | https://github.com/Azure/msrestazure-for-python | [MIT License](https://api.github.com/repos/azure/msrestazure-for-python/license) |
@@ -201,7 +199,6 @@ Note that versions are default versions and can be changed in certain cases thro
 | PyYAML | 6.0 | https://pyyaml.org/ | MIT |
 | requests-oauthlib | 1.3.0 | https://github.com/requests/requests-oauthlib | [ISC License](https://api.github.com/repos/requests/requests-oauthlib/license) |
 | requests | 2.27.0 | https://requests.readthedocs.io | Apache 2.0 |
-| ruamel.yaml.clib | 0.2.6 | https://sourceforge.net/p/ruamel-yaml-clib/code/ci/default/tree | MIT |
 | ruamel.yaml | 0.17.17 | https://sourceforge.net/p/ruamel-yaml/code/ci/default/tree | MIT license |
 | s3transfer | 0.5.0 | https://github.com/boto/s3transfer | [Apache License 2.0](https://api.github.com/repos/boto/s3transfer/license) |
 | scp | 0.13.6 | https://github.com/jbardin/scp.py | [Other](https://api.github.com/repos/jbardin/scp.py/license) |
@@ -209,12 +206,10 @@ Note that versions are default versions and can be changed in certain cases thro
 | six | 1.16.0 | https://github.com/benjaminp/six | [MIT License](https://api.github.com/repos/benjaminp/six/license) |
 | sshtunnel | 0.1.5 | https://github.com/pahaz/sshtunnel | [MIT License](https://api.github.com/repos/pahaz/sshtunnel/license) |
 | tabulate | 0.8.9 | https://github.com/astanin/python-tabulate | [MIT License](https://api.github.com/repos/astanin/python-tabulate/license) |
-| typing_extensions | 4.0.0 | https://github.com/python/typing/blob/master/typing_extensions | [Other](https://github.com/python/typing/blob/master/typing_extensions/LICENSE) |
 | urllib3 | 1.26.7 | https://urllib3.readthedocs.io/ | MIT |
 | websocket-client | 0.56.0 | https://github.com/websocket-client/websocket-client.git | BSD |
 | wrapt | 1.13.3 | https://github.com/GrahamDumpleton/wrapt | [BSD 2-Clause "Simplified" License](https://api.github.com/repos/grahamdumpleton/wrapt/license) |
 | xmltodict | 0.12.0 | https://github.com/martinblech/xmltodict | [MIT License](https://api.github.com/repos/martinblech/xmltodict/license) |
-| zipp | 3.6.0 | https://github.com/jaraco/zipp | [MIT License](https://api.github.com/repos/jaraco/zipp/license) |
 
 ## Predefined Grafana dashboards
 
