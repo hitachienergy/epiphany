@@ -4,7 +4,10 @@
 
 ### Added
 
+- [#2812](https://github.com/epiphany-platform/epiphany/issues/2812) - Extend K8s config validation
+
 ### Fixed
+
 - [#2653](https://github.com/epiphany-platform/epiphany/issues/2653) - Epicli is failing in air-gapped infra mode
 
 ### Updated
