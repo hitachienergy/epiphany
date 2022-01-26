@@ -1,6 +1,6 @@
 # Changelog 1.0
 
-## [1.0.2] 2021-xx-xx
+## [1.0.2] 2022-01-26
 
 ### NOTE ###
 
@@ -12,10 +12,6 @@ read note in [this doc](docs/home/howto/BACKUP.md#1-how-to-perform-backup).
 - [#2124](https://github.com/epiphany-platform/epiphany/issues/2124) - Added Internet connection test to download-requirements.sh
 - [#195](https://github.com/epiphany-platform/epiphany/issues/195) - Basic configuration type and schema validation
 - [#2768](https://github.com/epiphany-platform/epiphany/issues/2768) - Add posibility to provide custom hostnames
-
-### Updated
-
-- [#1797](https://github.com/epiphany-platform/epiphany/issues/1797) - Upgrade Keycloak to v14.0.0
 
 ### Fixed
 
