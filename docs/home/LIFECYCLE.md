@@ -32,7 +32,7 @@ The LTS version will be released once a year and will be supported for up to 3 y
 | [1.0.x LTS](../changelogs/CHANGELOG-1.0.md) | 01 Apr 2021 | 1.0.1 | 16 Jul 2021 | 01 Apr 2024 |
 | [1.1.x STS](../changelogs/CHANGELOG-1.1.md) | 30 Jun 2021 | 1.1.0 | 30 Jun 2021 | 30 Dec 2021 |
 | [1.2.x STS](../changelogs/CHANGELOG-1.2.md) | 30 Sep 2021 | 1.2.0 | 30 Sep 2021 | 30 Mar 2022 |
-| [1.3.x STS](../changelogs/CHANGELOG-1.3.md) | est. 30 Dec 2021 | - | - | est. 30 Jun 2022 |
+| [1.3.x STS](../changelogs/CHANGELOG-1.3.md) | 19 Jan 2022 | 1.3.0 | 19 Jan 2022 | 30 Jun 2022 |
 | 2.0.x LTS | est. 01 Apr 2022 | - | - | est. 01 Apr 2025 |
 
 ![lifecycle](../assets/images/lifecycle.png)

@@ -11,22 +11,24 @@
 #####################################################
 
 resource "azurerm_network_interface" "{{ specification.name }}" {
-  name                      = "{{ specification.name }}"
-  location                  = "${azurerm_resource_group.rg.location}"
-  resource_group_name       = "${azurerm_resource_group.rg.name}"
-  {%- if specification.use_network_security_groups == true %}
-  network_security_group_id = "${azurerm_network_security_group.{{ specification.security_group_name }}.id}"
-  {%- endif %}
+  name                          = "{{ specification.name }}"
+  location                      = azurerm_resource_group.rg.location
+  resource_group_name           = azurerm_resource_group.rg.name
   enable_accelerated_networking = "{{ specification.enable_accelerated_networking | lower }}"
 
   ip_configuration {
     name                          = "{{ specification.ip_configuration_name }}"
-    subnet_id                     = "${azurerm_subnet.{{ specification.subnet_name }}.id}"
+    subnet_id                     = azurerm_subnet.{{ specification.subnet_name }}.id
     private_ip_address_allocation = "Dynamic" #TODO: Check if we need this configurable again and set the private_ip_address field.
     {%- if specification.use_public_ip %}
-    public_ip_address_id  = "${azurerm_public_ip.{{ specification.public_ip_name }}.id}"
+    public_ip_address_id          = azurerm_public_ip.{{ specification.public_ip_name }}.id
     {%- endif %}
   }
+
+  # Terraform has issues with destroying/creating resources with security_group_association:
+  # https://github.com/hashicorp/terraform/issues/24663
+  # Thats why we add depends_on to guide through the right path.
+  {%- if specification.use_network_security_groups == true %}
+  depends_on = [azurerm_subnet_network_security_group_association.{{ specification.security_group_association_name }}]
+  {%- endif %}
 }
-
-

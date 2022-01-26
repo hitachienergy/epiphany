@@ -10,8 +10,7 @@
 # {{ specification.name }}
 #####################################################
 
-
 resource "aws_route_table_association" "{{ specification.name }}" {
-    subnet_id = "${aws_subnet.{{ specification.subnet_name }}.id}"
-    route_table_id = "${aws_route_table.{{ specification.route_table_name }}.id}"
+  subnet_id      = aws_subnet.{{ specification.subnet_name }}.id
+  route_table_id = aws_route_table.{{ specification.route_table_name }}.id
 }
