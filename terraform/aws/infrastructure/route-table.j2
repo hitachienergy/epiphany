@@ -10,17 +10,16 @@
 # {{ specification.name }}
 #####################################################
 
-
 resource "aws_route_table" "{{ specification.name }}" {
-    vpc_id = "${aws_vpc.{{ specification.vpc_name }}.id}"
-    route {
-        cidr_block = "{{ specification.route.cidr_block }}"
-        gateway_id = "${ aws_internet_gateway.{{ specification.route.gateway_name }}.id}"
-    }
+  vpc_id = aws_vpc.{{ specification.vpc_name }}.id
+  route {
+    cidr_block = "{{ specification.route.cidr_block }}"
+    gateway_id = aws_internet_gateway.{{ specification.route.gateway_name }}.id
+  }
 
-    tags = {
-        Name = "web-table"
-        cluster_name = "{{ specification.cluster_name }}"
-        cluster_version = "{{ version }}"
-    }
+  tags = {
+    Name            = "web-table"
+    cluster_name    = "{{ specification.cluster_name }}"
+    cluster_version = "{{ version }}"
+  }
 }

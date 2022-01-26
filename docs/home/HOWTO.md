@@ -64,6 +64,7 @@
   - [RabbitMQ upgrade](./howto/UPGRADE.md#rabbitmq-upgrade)
   - [Kubernetes upgrade](./howto/UPGRADE.md#kubernetes-upgrade)
   - [PostgreSQL upgrade](./howto/UPGRADE.md#postgresql-upgrade)
+  - [Terraform upgrade from Epiphany 1.x to 2.x](./howto/UPGRADE.md#terraform-upgrade-from-epiphany-1.x-to-2.x)
 
 - [Security](./howto/SECURITY.md)
   - [How to add/remove additional users to/from OS](./howto/SECURITY.md#how-to-addremove-additional-users-tofrom-os)

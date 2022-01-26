@@ -7,7 +7,7 @@ properties:
     type: string
   use_network_security_groups:
     type: boolean
-  security_group_name:
+  security_group_association_name:
     type: string
   ip_configuration_name:
     type: string

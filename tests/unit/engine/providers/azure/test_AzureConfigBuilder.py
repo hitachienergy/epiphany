@@ -79,6 +79,21 @@ def test_get_subnet_network_security_group_association_should_set_proper_values_
     assert actual.specification.security_group_name == 'prefix-testcluster-component-sg-1'
 
 
+def test_get_network_interface_security_group_association_should_set_proper_values_to_model():
+    cluster_model = get_cluster_model(cluster_name='TestCluster')
+    builder = InfrastructureBuilder([cluster_model])
+
+    actual = builder.get_network_interface_security_group_association(
+                                'component',
+                                'prefix-testcluster-component-nic-1',
+                                'prefix-testcluster-component-sg-1',
+                                1)
+
+    assert actual.specification.name == 'prefix-testcluster-component-nsga-1'
+    assert actual.specification.network_interface_name == 'prefix-testcluster-component-nic-1'
+    assert actual.specification.security_group_name == 'prefix-testcluster-component-sg-1'
+
+
 def test_get_network_interface_should_set_proper_values_to_model():
     cluster_model = get_cluster_model(cluster_name='TestCluster')
     builder = InfrastructureBuilder([cluster_model])
@@ -91,12 +106,12 @@ def test_get_network_interface_should_set_proper_values_to_model():
                                 'kubernetes_master',
                                 vm_config,
                                 'prefix-testcluster-component-subnet-1',
-                                'prefix-testcluster-component-sg-1',
                                 'prefix-testcluster-kubernetes-master-pubip-1',
+                                'prefix-testcluster-component-sga-1',
                                 1)
 
     assert actual.specification.name == 'prefix-testcluster-kubernetes-master-nic-1'
-    assert actual.specification.security_group_name == 'prefix-testcluster-component-sg-1'
+    assert actual.specification.security_group_association_name == 'prefix-testcluster-component-sga-1'
     assert actual.specification.ip_configuration_name == 'prefix-testcluster-kubernetes-master-ipconf-1'
     assert actual.specification.subnet_name == 'prefix-testcluster-component-subnet-1'
     assert actual.specification.use_public_ip is True
