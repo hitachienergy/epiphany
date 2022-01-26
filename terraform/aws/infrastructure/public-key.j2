@@ -10,7 +10,6 @@
 # {{ specification.name }}
 #####################################################
 
-
 resource "aws_key_pair" "{{ specification.name }}" {
   key_name   = "{{ specification.key_name }}"
   public_key = "{{ specification.public_key }}"

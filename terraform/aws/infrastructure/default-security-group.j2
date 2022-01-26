@@ -11,14 +11,13 @@
 #####################################################
 
 resource "aws_default_security_group" "{{ specification.name }}" {
-  vpc_id = "${aws_vpc.{{ specification.vpc_name }}.id}"
+  vpc_id = aws_vpc.{{ specification.vpc_name }}.id
 
-  {% for rule in specification.rules %}
-
+{% for rule in specification.rules %}
 {%- if rule.direction | lower in ["inbound", "ingress"] %}
- ingress {
+  ingress {
 {%- else %}
- egress {
+  egress {
 {%- endif %}
    {%- if rule.protocol | lower in ["all", "*", "-1"] %}
     protocol    = -1
@@ -28,12 +27,11 @@ resource "aws_default_security_group" "{{ specification.name }}" {
     from_port   = {{ rule.destination_port_range }}
     to_port     = {{ rule.destination_port_range }}
 {%- if rule.direction | lower in ["inbound", "ingress"] %}
- cidr_blocks = ["{{ rule.source_address_prefix }}"]
+    cidr_blocks = ["{{ rule.source_address_prefix }}"]
 {%- else %}
- cidr_blocks = ["{{ rule.destination_address_prefix }}"]
+    cidr_blocks = ["{{ rule.destination_address_prefix }}"]
 {%- endif %}
 
-}
+  }
 {%- endfor %}
-
 }

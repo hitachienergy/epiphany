@@ -1,0 +1,11 @@
+"$id": "#/specification"
+title: "Network-interface-security-group-association specification schema"
+description: "Network-interface-security-group-association specification schema"
+type: object
+properties:
+  name:
+    type: string
+  network_interface_name:
+    type: string
+  security_group_name:
+    type: string
