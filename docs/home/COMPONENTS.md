@@ -53,7 +53,6 @@ Note that versions are default versions and can be changed in certain cases thro
 | Component | Version | Repo/Website | License |
 | --------- | ------- | ------------ | ------- |
 | adal | 1.2.7 | https://github.com/AzureAD/azure-activedirectory-library-for-python | [Other](https://api.github.com/repos/azuread/azure-activedirectory-library-for-python/license) |
-| ansible-base | 2.10.15 | https://ansible.com/ | GPLv3+ |
 | ansible | 2.10.7 | https://ansible.com/ | GPLv3+ |
 | antlr4-python3-runtime | 4.7.2 | http://www.antlr.org | BSD |
 | applicationinsights | 0.11.10 | https://github.com/Microsoft/ApplicationInsights-Python | [MIT License](https://api.github.com/repos/microsoft/applicationinsights-python/license) |

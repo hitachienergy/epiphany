@@ -11,9 +11,9 @@ jinja2 = "*"
 boto3 = "*"
 jsonschema = "*"
 python-json-logger = "*"
-ansible = "==2.10.7"
 "ruamel.yaml" = "*"
 azure-cli = "^2.32.0"
+ansible = "^5.2.0"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
