@@ -1,0 +1,13 @@
+server.port: 5601
+server.host: "{{ hostvars[inventory_hostname]['ansible_host'] }}"
+opensearch.hosts: ["{{ ops_nodes_dashboards }}"]
+opensearch.ssl.verificationMode: none
+opensearch.username: "{{ ops_dashboards_user }}"
+opensearch.password: "{{ ops_dashboards_password }}"
+opensearch.requestHeadersWhitelist: [ authorization,securitytenant ]
+
+opensearch_security.multitenancy.enabled: true
+opensearch_security.multitenancy.tenants.preferred: ["Private", "Global"]
+opensearch_security.readonly_mode.roles: ["kibana_read_only"]
+# Use this setting if you are running dashboards without https
+opensearch_security.cookie.secure: false

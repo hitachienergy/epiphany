@@ -1,16 +1,6 @@
 #jinja2: lstrip_blocks: True
 # {{ ansible_managed }}
-# ======================== Elasticsearch Configuration =========================
-#
-# NOTE: Elasticsearch comes with reasonable defaults for most settings.
-#       Before you set out to tweak and tune the configuration, make sure you
-#       understand what are you trying to accomplish and the consequences.
-#
-# The primary way of configuring a node is via this file. This template lists
-# the most important settings you may want to configure for a production cluster.
-#
-# Please consult the documentation for further information on configuration options:
-# https://www.elastic.co/guide/en/elasticsearch/reference/index.html
+# ======================== OpenSearch Configuration =========================
 #
 # ---------------------------------- Cluster -----------------------------------
 #
@@ -32,15 +22,15 @@ node.name: {{ ansible_hostname }}
 #
 # Path to directory where to store the data (separate multiple locations by comma):
 #
-path.data: {{ specification.paths.data }}
+# path.data: {{ specification.paths.ops_data }}
 #
 # Path to directory where the shared storage should be mounted:
 #
-path.repo: {{ specification.paths.repo }}
+# path.repo: {{ specification.paths.ops_repo }}
 #
 # Path to log files:
 #
-path.logs: {{ specification.paths.logs }}
+# path.logs: {{ specification.paths.ops_logs }}
 #
 # ----------------------------------- Memory -----------------------------------
 #
@@ -52,7 +42,7 @@ path.logs: {{ specification.paths.logs }}
 # on the system and that the owner of the process is allowed to use this
 # limit.
 #
-# Elasticsearch performs poorly when the system is swapping the memory.
+# OpenSearch performs poorly when the system is swapping the memory.
 #
 # ---------------------------------- Network -----------------------------------
 #
@@ -109,33 +99,33 @@ cluster.initial_master_nodes: ["{{ ansible_hostname }}"]
 #
 #action.destructive_requires_name: true
 
-######## Start OpenDistro for Elasticsearch Security Configuration ########
+######## OpenSearch Security Configuration ########
 # WARNING: revise all the lines below before you go into production
-opensearch_security.ssl.transport.pemcert_filepath: {{ node_cert_filename.transport }}
-opensearch_security.ssl.transport.pemkey_filepath: {{ node_key_filename.transport }}
-opensearch_security.ssl.transport.pemtrustedcas_filepath: {{ root_ca_cert_filename.transport }}
-opensearch_security.ssl.transport.enforce_hostname_verification: {{ specification.opensearch_security.ssl.transport.enforce_hostname_verification | lower }}
-opensearch_security.ssl.http.enabled: true
-opensearch_security.ssl.http.pemcert_filepath: {{ node_cert_filename.http }}
-opensearch_security.ssl.http.pemkey_filepath: {{ node_key_filename.http }}
-opensearch_security.ssl.http.pemtrustedcas_filepath: {{ root_ca_cert_filename.http }}
-opensearch_security.allow_unsafe_democertificates: {{ opensearch_security_allow_unsafe_democertificates | lower }}
-opensearch_security.allow_default_init_securityindex: true
-opensearch_security.authcz.admin_dn:
+plugins.security.ssl.transport.pemcert_filepath: "{{ certificates.dirs.certs }}/{{ node_cert_filename.transport }}"
+plugins.security.ssl.transport.pemkey_filepath: "{{ certificates.dirs.certs }}/{{ node_key_filename.transport }}"
+plugins.security.ssl.transport.pemtrustedcas_filepath: "{{ certificates.dirs.certs }}/{{ root_ca_cert_filename.transport }}"
+plugins.security.ssl.transport.enforce_hostname_verification: {{ specification.opensearch_security.ssl.transport.enforce_hostname_verification | lower }}
+plugins.security.ssl.http.enabled: true
+plugins.security.ssl.http.pemcert_filepath: "{{ certificates.dirs.certs }}/{{ node_cert_filename.http }}"
+plugins.security.ssl.http.pemkey_filepath: "{{ certificates.dirs.certs }}/{{ node_key_filename.http }}"
+plugins.security.ssl.http.pemtrustedcas_filepath: "{{ certificates.dirs.certs }}/{{ root_ca_cert_filename.http }}"
+plugins.security.allow_unsafe_democertificates: {{ opensearch_security_allow_unsafe_democertificates | lower }}
+plugins.security.allow_default_init_securityindex: true
+plugins.security.authcz.admin_dn:
 {% for dn in admin_dn %}
   - '{{ dn }}'
 {% endfor %}
 {% if nodes_dn | count > 0 %}
-opensearch_security.nodes_dn:
+plugins.security.nodes_dn:
   {% for dn in nodes_dn %}
   - '{{ dn }}'
   {% endfor %}
 {% endif %}
 
-opensearch_security.audit.type: internal_opensearch
-opensearch_security.enable_snapshot_restore_privilege: true
-opensearch_security.check_snapshot_restore_write_privileges: true
-opensearch_security.restapi.roles_enabled: ["all_access", "security_rest_api_access"]
+plugins.security.audit.type: internal_opensearch
+plugins.security.enable_snapshot_restore_privilege: true
+plugins.security.check_snapshot_restore_write_privileges: true
+plugins.security.restapi.roles_enabled: ["all_access", "security_rest_api_access"]
 cluster.routing.allocation.disk.threshold_enabled: false
 node.max_local_storage_nodes: 3
-######## End OpenDistro for Elasticsearch Security Configuration ########
+######## End OpenSearch Security Configuration ########

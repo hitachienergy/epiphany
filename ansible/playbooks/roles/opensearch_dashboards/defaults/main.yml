@@ -1,0 +1,28 @@
+---
+versions:
+  RedHat:
+    ops_dashboards_version: "1.2.0"
+  Debian:
+    ops_dashboards_version: "1.2.0"
+ops_nodes: |-
+        {% for item in groups['ops-cluster'] -%}
+          {{ hostvars[item]['ip'] }}{% if not loop.last %}","{% endif %}
+        {%- endfor %}
+
+populate_inventory_to_hosts_file: true
+
+ops_dashboards_user: "{{ specification.ops_dashboards_user }}"
+ops_dashboards_password: "{{ specification.ops_dashboards_password }}"
+ops_user: "{{ specification.ops_user }}"
+ops_download_url:  https://artifacts.opensearch.org/releases/bundle/opensearch
+ops_dashboards_home: "{{ specification.ops_dashboards_home }}"
+ops_dashboards_conf_dir: "{{ specification.ops_dashboards_conf_dir }}"
+ops_plugin_bin_path: "{{ specification.ops_plugin_bin_path }}"
+
+ops_api_port: 9200
+ops_nodes_dashboards: |-
+        {% for item in groups['opensearch_dashboards'] -%}
+          https://{{ hostvars[item]['ansible_host'] }}:{{ ops_api_port }}{% if not loop.last %}","{% endif %}
+        {%- endfor %}
+
+systemctl_path: /etc/systemd/system

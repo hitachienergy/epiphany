@@ -1,0 +1,37 @@
+---
+- name: Download Opensearch dashbaords {{ versions[ansible_os_family].ops_dashboards_version }}
+  include_role:
+    name: download
+    tasks_from: download_file
+  vars:
+    file_name: "opensearch-dashboards-{{ versions[ansible_os_family].ops_dashboards_version }}-linux-x64.tar.gz"
+
+- name: Create opensearch Dashboards user
+  user:
+    name: "{{ ops_dashboards_user }}"
+    state: present
+    shell: /bin/bash
+
+- name: Create home directory
+  file:
+    path: "{{ ops_dashboards_home }}"
+    state: directory
+    owner: "{{ ops_dashboards_user }}"
+    group: "{{ ops_dashboards_user }}"
+
+- name: Extract the tar file
+  command: "chdir=/tmp/ tar -xvzf opensearch-dashboards-{{ versions[ansible_os_family].ops_dashboards_version }}-linux-x64.tar.gz -C {{ ops_dashboards_home }} --strip-components=1"
+
+- name: Copy Configuration File
+  template:
+    src: opensearch_dashboards.yml.j2
+    dest: "{{ ops_dashboards_conf_dir }}/opensearch_dashboards.yml"
+    owner: "{{ ops_dashboards_user }}"
+    group: "{{ ops_dashboards_user }}"
+    mode: 0644
+    backup: yes
+
+- name: Create systemd service
+  template:
+    src: dashboards.service
+    dest: "{{ systemctl_path }}/dashboards.service"

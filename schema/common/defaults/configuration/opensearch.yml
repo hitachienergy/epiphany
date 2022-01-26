@@ -2,8 +2,9 @@ kind: configuration/opensearch-for-opensearch
 title: OpenSearch Config
 name: default
 specification:
-  cluster_name: EpiphanyElastic
+  cluster_name: EpiphanyOpensearch
   clustered: true
+  ops_user: opensearch
   admin_password: PASSWORD_TO_CHANGE
   kibanaserver_password: PASSWORD_TO_CHANGE
   kibanaserver_user_active: false
@@ -16,11 +17,15 @@ specification:
   - logstash
   - kibanaserver
   paths:
-    data: /var/lib/opensearch
-    repo: /var/lib/opensearch-snapshots
-    logs: /var/log/opensearch
+    ops_home: /usr/share/opensearch
+    ops_conf_dir: /usr/share/opensearch/config
+    ops_log_dir: /var/log/opensearch
+    ops_plugin_bin_path: /usr/share/opensearch/bin/opensearch-plugin
+    ops_repo: /var/lib/opensearch-snapshots
+    ops_data: /var/lib/opensearch
+    ops_logs: /var/log/opensearch
   jvm_options:
-    Xmx: 1g # see https://www.elastic.co/guide/en/elasticsearch/reference/7.9/heap-size.html
+    Xmx: 1g
   opensearch_security:
     ssl:
       transport:

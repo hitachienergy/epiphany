@@ -486,7 +486,7 @@ kind: configuration/opensearch-for-opensearch
 title: OpenDistro for Elasticsearch Config
 name: default
 specification:
-  cluster_name: EpiphanyElastic
+  cluster_name: EpiphanyOpensearch
 ```
 
 By default, Kibana is deployed only for `logging` component. If you want to deploy Kibana

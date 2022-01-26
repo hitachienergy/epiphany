@@ -13,6 +13,9 @@
     - { limit_type: 'soft', limit_item: 'memlock', value: unlimited }
     - { limit_type: 'hard', limit_item: 'memlock', value: unlimited }
 
+- name: Tune the system settings
+  import_tasks: tune.yml
+
 - include_tasks: install-ops.yml
 
 # - include_tasks: install-ops-plugins.yml

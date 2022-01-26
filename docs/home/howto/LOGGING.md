@@ -45,7 +45,7 @@ kind: configuration/logging
 title: Logging Config
 name: default
 specification:
-  cluster_name: EpiphanyElastic
+  cluster_name: EpiphanyOpensearch
   clustered: True
   paths:
     data: /var/lib/opensearch

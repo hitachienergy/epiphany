@@ -6,30 +6,28 @@
   vars:
     file_name: "opensearch-{{ versions[ansible_os_family].ops_version }}-linux-x64.tar.gz"
 
-- name: OpenSearch Install | Ensure Opensearch service user exists
+- name: Ensure Opensearch service user exists
   user:
     name: "{{ ops_user }}"
     state: present
     shell: /bin/bash
 
-- name: OpenSearch Install | Ensure home directory exists
+- name: Ensure directory structure exists
   file:
-    path: "{{ ops_home }}"
+    path: "{{ item }}"
     state: directory
     owner: "{{ ops_user }}"
     group: "{{ ops_user }}"
+  with_items:
+    - "{{ ops_home }}"
+    - "{{ ops_log_dir }}"
+    - "{{ ops_conf_dir }}"
+    - "{{ certificates.dirs.certs }}"
 
-- name: OpenSearch Install | Ensure config directory exists
-  file:
-    path: "/etc/opensearch"
-    state: directory
-    owner: "{{ ops_user }}"
-    group: "{{ ops_user }}"
-
-- name: OpenSearch Install | Extract the tar file
+- name: Extract the tar file
   command: "chdir=/tmp/ tar -xvzf opensearch-{{ versions[ansible_os_family].ops_version }}-linux-x64.tar.gz -C {{ ops_home }} --strip-components=1"
 
-- name: OpenSearch Install | create systemd service
+- name: Create systemd service
   template:
     src: opensearch.service.j2
-    dest: "/etc/systemd/system/opensearch.service"
+    dest: "{{ systemctl_path }}/opensearch.service"
