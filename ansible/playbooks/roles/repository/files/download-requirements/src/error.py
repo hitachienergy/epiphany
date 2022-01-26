@@ -10,3 +10,13 @@ class CriticalError(Exception):
     def __init__(self, msg: str):
         super().__init__()
         logging.error(msg)
+
+
+class PackageNotfound(Exception):
+    """
+    Raised when there was no package found by the query tool.
+    """
+
+    def __init__(self, msg: str):
+        super().__init__()
+        logging.debug(msg)

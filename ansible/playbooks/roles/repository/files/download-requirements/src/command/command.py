@@ -13,7 +13,7 @@ class Command:
     def __init__(self, process_name: str, retries: int, pipe_args: List[str] = None):
         self.__proc_name: str = process_name
         self.__retries: int = retries
-        self.__pipe_args: List[str] = pipe_args  # used for __pipe__
+        self.__pipe_args: List[str] = pipe_args  # used for __or__
 
     def name(self) -> str:
         return self.__proc_name
@@ -70,8 +70,10 @@ class Command:
         for count in range(self.__retries):
             logging.debug(f'[{count + 1}/{self.__retries}] Running: {whole_process_name}')
 
-            lproc = subprocess.Popen([self.__proc_name] + self.__pipe_args, stdout=subprocess.PIPE)
-            rproc = subprocess.Popen([command.name()] + command.pipe_args(), stdin=lproc.stdout, stdout=subprocess.PIPE)
+            lproc = subprocess.Popen([self.__proc_name] + self.__pipe_args, stdout=subprocess.PIPE,
+                                     stderr=subprocess.PIPE)
+            rproc = subprocess.Popen([command.name()] + command.pipe_args(), stdin=lproc.stdout, stdout=subprocess.PIPE,
+                                     stderr=subprocess.PIPE)
             lproc.stdout.close()  # Allow proc1 to receive a SIGPIPE if proc2 exits.
 
             output = rproc.communicate()[0].decode()
@@ -81,3 +83,15 @@ class Command:
             logging.warn(lproc.stderr if not lproc.returncode == 0 else rproc.stderr)
 
         raise CriticalError('Retries count reached maximum!')
+
+    def _run_and_filter(self, args: List[str]) -> List[str]:
+        """
+        Run subprocess and return list of filtered stdout lines
+
+        :param args: run subprocess with these args
+        :returns: filtered output lines from the subprocess stdout
+        """
+        raw_output = self.run(args).stdout
+
+        elems: List[str] = [elem for elem in raw_output.split('\n')]
+        return list(filter(lambda elem: elem != '', elems))  # filter empty lines

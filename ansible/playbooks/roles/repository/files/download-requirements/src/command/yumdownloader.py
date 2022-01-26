@@ -25,5 +25,6 @@ class Yumdownloader(Command):
         args.append(f'--archlist={arch}')
         args.append(f'--exclude={exclude}')
         args.append(f'--destdir={str(destdir)}')
+        args.extend(packages)
 
         self.run(args)

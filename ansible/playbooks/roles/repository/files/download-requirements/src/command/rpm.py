@@ -22,7 +22,7 @@ class Rpm(Command):
                            '--quiet',
                            f'{package}']
 
-        if self.run(args).returncode == 0:
+        if self.run(args, accept_nonzero_returncode=True).returncode == 0:
             return True
 
         return False
@@ -34,3 +34,15 @@ class Rpm(Command):
         :key: key to be added
         """
         self.run(['--import', key])
+
+    def get_package_capabilities(self, filename: str) -> List[str]:
+        args: List[str] = ['-q',
+                           '--provides',
+                           filename]
+        return self._run_and_filter(args)
+
+    def which_packages_provides_file(self, filename: str) -> List[str]:
+        args: List[str] = ['-q',
+                           '--whatprovides',
+                           filename]
+        return self._run_and_filter(args)

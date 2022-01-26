@@ -81,7 +81,7 @@ class Tar(Command):
 
         short_flags.append('f')
 
-        if absolute_name == True:
+        if absolute_name:
             tar_params.append('--absolute_name')
 
         if directory is not None:

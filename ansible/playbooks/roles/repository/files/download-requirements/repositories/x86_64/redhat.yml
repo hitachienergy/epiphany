@@ -79,16 +79,6 @@ repositories:
       enabled=1
       gpgcheck=1
 
-      #postgresql_common:
-    #gpgkeys:
-      #- https://download.postgresql.org/pub/repos/yum/RPM-GPG-KEY-PGDG
-    #data: |
-      #[pgdg-common]
-      #name=PostgreSQL common for RHEL/CentOS $releasever - $basearch
-      #baseurl=https://download.postgresql.org/pub/repos/yum/common/redhat/rhel-$releasever-$basearch
-      #enabled=1
-      #gpgcheck=1
-
   rabbitmq:
     gpgkeys:
       - https://packagecloud.io/rabbitmq/rabbitmq-server/gpgkey

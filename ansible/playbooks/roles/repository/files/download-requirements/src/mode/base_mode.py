@@ -121,6 +121,15 @@ class BaseMode:
         """
         raise NotImplementedError
 
+    def _download_crane_binary(self, url: str, dest: Path):
+        """
+        Run command for downloading `crane` on target OS.
+
+        :param url: to be downloded
+        :param dest: under which filename dashboard will be saved
+        """
+        raise NotImplementedError
+
     def __download_files(self):
         """
         Download files under `self._requirements['files']`
@@ -137,7 +146,7 @@ class BaseMode:
             except CriticalError:
                 logging.warn(f'Could not download file: {file["url"]}')
 
-    def _download_dashboards(self):
+    def __download_dashboards(self):
         """
         Download dashboards under `self._requirements['dashboards']`
         """
@@ -154,7 +163,7 @@ class BaseMode:
             except CriticalError:
                 logging.warn(f'Could not download file: {dashboard["name"]}')
 
-    def _download_crane(self):
+    def __download_crane(self):
         """
         Download Crane package if needed and setup it's environment
         """
@@ -165,7 +174,7 @@ class BaseMode:
             logging.debug(f'crane - checksum ok, skipped')
             return
 
-        self._tools.wget.download(self._requirements['crane'][0]['url'], crane_package_path)
+        self._download_crane_binary(self._requirements['crane'][0]['url'], crane_package_path)
         self._tools.tar.unpack(crane_package_path, 'crane', directory=self._cfg.dest_dir)
         chmod(crane_path, 0o0755)
 
@@ -217,13 +226,13 @@ class BaseMode:
         self._use_backup_repositories()
         logging.info('Done checking backup repositories.')
 
-        logging.info('Adding third party repositories...')
-        self._add_third_party_repositories()
-        logging.info('Done adding third party repositories.')
-
         logging.info('Installing base packages...')
         self._install_base_packages()
         logging.info('Done installing base packages.')
+
+        logging.info('Adding third party repositories...')
+        self._add_third_party_repositories()
+        logging.info('Done adding third party repositories.')
 
         logging.info('Downloading packages...')
         self._download_packages()
@@ -234,11 +243,11 @@ class BaseMode:
         logging.info('Done downloading files.')
 
         logging.info('Downloading dashboards...')
-        self._download_dashboards()
+        self.__download_dashboards()
         logging.info('Done downloading dashboards.')
 
         logging.info('Downloading Crane...')
-        self._download_crane()
+        self.__download_crane()
         logging.info('Done downloading Crane.')
 
         logging.info('Downloading images...')

@@ -46,6 +46,17 @@ class Yum(Command):
         no_ask: str = '-y' if assume_yes else ''
         self.run(['install', no_ask, package])
 
+    def remove(self, package: str,
+               assume_yes: bool = True):
+        """
+        Interface for `yum remove -y`
+
+        :param package: packaged to be removed
+        :param assume_yes: if set to True, -y flag will be used
+        """
+        no_ask: str = '-y' if assume_yes else ''
+        self.run(['remove', no_ask, package])
+
     def is_repo_enabled(self, repo: str) -> bool:
         output = self.run(['repolist',
                            'enabled']).stdout
@@ -91,3 +102,9 @@ class Yum(Command):
             args.append('fast')
 
         self.run(args)
+
+    def list_all_repo_info(self) -> List[str]:
+        args: List[str] = ['repolist',
+                           '-v',
+                           'all']
+        return self._run_and_filter(args)

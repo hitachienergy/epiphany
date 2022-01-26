@@ -26,6 +26,7 @@ class DebianFamilyMode(BaseMode):
     def __init__(self, config: Config):
         super().__init__(config)
         self.__create_repo_paths()
+        self.__installed_packages: List[str] = []
 
     def _construct_toolchain(self) -> Toolchain:
         return DebianFamilyToolchain(self._cfg.retries)
@@ -48,6 +49,17 @@ class DebianFamilyMode(BaseMode):
                 logging.warn(f'{str(sources)} seems to be missing, you either know what you are doing or '
                               'you need to fix your repositories')
 
+    def _install_base_packages(self):
+        # install prerequisites which might be missing
+        installed_packages = self._tools.apt.list_installed_packages()
+
+        logging.info('Installing base packages:')
+        for package in ['wget', 'gpg', 'curl', 'tar']:
+            if package not in installed_packages:
+                self._tools.apt.install(package, assume_yes=True)
+                self.__installed_packages.append(package)
+                logging.info(f'- {package}')
+
     def _add_third_party_repositories(self):
         # backup custom repositories to avoid possible conflicts
         for repo_file in Path('/etc/apt/sources.list.d').iterdir():
@@ -68,16 +80,6 @@ class DebianFamilyMode(BaseMode):
                 repo_handler.write(data['content'])
 
         self._tools.apt.update()
-
-    def _install_base_packages(self):
-        # install prerequisites which might be missing
-        installed_packages = self._tools.dpkg.list_installed_packages()
-
-        logging.info('Installing base packages:')
-        for package in ['wget', 'gpg', 'curl', 'tar']:
-            if package not in installed_packages:
-                self._tools.apt.install(package, assume_yes=True)
-                logging.info(f'- {package}')
 
     def _download_packages(self):
         for package in self._requirements['packages']:
@@ -118,6 +120,9 @@ class DebianFamilyMode(BaseMode):
     def _download_dashboard(self, dashboard: str, output_file: Path):
         self._tools.wget.download(dashboard, output_document=output_file)
 
+    def _download_crane_binary(self, url: str, dest: Path):
+        self._tools.wget.download(url, dest)
+
     def _cleanup(self):
         # cleaning up 3rd party repositories
         for data in self._repositories.values():
@@ -128,3 +133,7 @@ class DebianFamilyMode(BaseMode):
         for repo_file in Path('/etc/apt/sources.list.d').iterdir():
             if repo_file.name.endswith('.bak'):
                 move(str(repo_file.absolute()), str(repo_file.with_suffix('').absolute()))
+
+        # remove installed packages
+        for package in self.__installed_packages:
+            self._tools.apt.remove(package)

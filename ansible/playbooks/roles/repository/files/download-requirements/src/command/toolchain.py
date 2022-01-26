@@ -2,7 +2,6 @@ from src.command.apt import Apt
 from src.command.apt_cache import AptCache
 from src.command.apt_key import AptKey
 from src.command.crane import Crane
-from src.command.dpkg import Dpkg
 from src.command.repoquery import Repoquery
 from src.command.rpm import Rpm
 from src.command.tar import Tar
@@ -49,4 +48,3 @@ class DebianFamilyToolchain(Toolchain):
         self.apt = Apt(retries)
         self.apt_cache = AptCache(retries)
         self.apt_key = AptKey(retries)
-        self.dpkg = Dpkg(retries)
