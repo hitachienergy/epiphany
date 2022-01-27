@@ -3,7 +3,7 @@
   set_fact:
     pki_backup_dir: "{{ pki.location | regex_replace('\\/$', '') }}-backup-{{ ansible_date_time.iso8601_basic_short }}"
 
-- name: Save current certificates
+- name: Back up current certificates
   synchronize:
     src: "{{ pki.location }}/"
     dest: "{{ pki_backup_dir }}"

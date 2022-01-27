@@ -31,7 +31,7 @@
       register: command_kubeadm_configmap
       changed_when: false
 
-    # The following procedure ensures that
+    # The following procedure ensures that:
     #   - etcd encryption is always enabled during subsequent kubeadm executions
     #   - DenyEscalatingExec admission plugin is not used as unsupported (it was specified in Epiphany's default values before v1.3)
     #   - apiserver audit logging is enabled
