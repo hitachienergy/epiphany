@@ -43,6 +43,7 @@ Add any other context or screenshots about the feature request here.
 - [ ] Automated tests passed (QA pipelines)
   - [ ] apply
   - [ ] upgrade
+  - [ ] backup/restore
 - [ ] Idempotency tested
 - [ ] All conversations in PR resolved
 - [ ] Solution meets requirements and is done according to design doc
