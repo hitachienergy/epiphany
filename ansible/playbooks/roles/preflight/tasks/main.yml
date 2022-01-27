@@ -39,17 +39,22 @@
     - common_vars.provider == "any"
     - common_vars.specification.cloud is undefined
   block:
-  - name: Validate if ansible_default_ipv4.address matches address from inventory
-    when: ansible_default_ipv4 | length > 0
-    assert:
-      that:
-        - ansible_default_ipv4.address == hostvars[inventory_hostname].ansible_host
-      fail_msg:  "ansible_default_ipv4.address is {{ ansible_default_ipv4.address }} but inventory uses ip: {{ hostvars[inventory_hostname].ansible_host }}. Check default routing configuration, read more in troubleshooting document"
+    - name: Assert default route is defined
+      assert:
+        that: ansible_default_ipv4.address is defined
+        fail_msg: >-
+          ansible_default_ipv4.address is undefined. Check default routing configuration,
+          read more in troubleshooting document
+        quiet: true
 
-  - name: Empty value exception
-    when: ansible_default_ipv4 | length == 0
-    fail:
-      msg: "ansible_default_ipv4 is empty. Check default routing configuration, read more in troubleshooting document"
+    - name: Validate if ansible_default_ipv4.address matches address from inventory
+      when: ansible_default_ipv4.address is defined
+      assert:
+        that: ansible_default_ipv4.address == hostvars[inventory_hostname].ansible_host
+        fail_msg:  >-
+          ansible_default_ipv4.address is {{ ansible_default_ipv4.address }} but inventory uses ip: {{ hostvars[inventory_hostname].ansible_host }}.
+          Check default routing configuration, read more in troubleshooting document
+        quiet: true
 
 - include_tasks: apply.yml
   when: not is_upgrade_run
