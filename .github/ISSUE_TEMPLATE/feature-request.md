@@ -23,16 +23,27 @@ Add any other context or screenshots about the feature request here.
 
 **DoD checklist**
 
-* [ ] Changelog updated
-* [ ] COMPONENTS.md updated / doesn't need to be updated
-* [ ] Schema updated / doesn't need to be updated
-* [ ] Feature has automated tests
-* [ ] Automated tests passed (QA pipelines)
-  * [ ] apply
-  * [ ] upgrade
-* [ ] Idempotency tested
-* [ ] Documentation added / updated / doesn't need to be updated
-* [ ] All conversations in PR resolved
-* [ ] Solution meets requirements and is done according to design doc
-* [ ] Usage compliant with license
-* [ ] Backport tasks created / doesn't need to be backported
+- Changelog
+  - [ ] updated
+  - [ ] not needed
+- COMPONENTS.md
+  - [ ] updated
+  - [ ] not needed
+- Schema
+  - [ ] updated
+  - [ ] not needed
+- Backport tasks
+  - [ ] created
+  - [ ] not needed
+- Documentation
+  - [ ] added
+  - [ ] updated
+  - [ ] not needed
+- [ ] Feature has automated tests
+- [ ] Automated tests passed (QA pipelines)
+  - [ ] apply
+  - [ ] upgrade
+- [ ] Idempotency tested
+- [ ] All conversations in PR resolved
+- [ ] Solution meets requirements and is done according to design doc
+- [ ] Usage compliant with license
