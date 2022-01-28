@@ -256,7 +256,7 @@ def upgrade_parser(subparsers):
         'jmx_exporter',
         'kafka',
         'kafka_exporter',
-        'kibana',
+        'opensearch_dashboards',
         'kubernetes',
         'load_balancer',
         'logging',
