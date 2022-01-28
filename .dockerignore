@@ -5,6 +5,7 @@
 *
 
 # Include the following
+!VERSION
 !.devcontainer/requirements.txt
 !cli/
 !schema/
