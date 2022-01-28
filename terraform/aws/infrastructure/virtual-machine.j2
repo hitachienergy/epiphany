@@ -16,9 +16,7 @@ resource "aws_instance" "{{ specification.name }}" {
   associate_public_ip_address = "{{ specification.associate_public_ip | lower  }}"
   key_name                    = "{{ specification.key_name }}"
   subnet_id                   = aws_subnet.{{ specification.subnet_name }}.id
-
-  # security group
-  security_groups   = [{% for security_group in specification.security_groups %}aws_security_group.{{ security_group }}.id{% if not loop.last %}, {% endif %}{% endfor %}]
+  vpc_security_group_ids      = [{% for security_group in specification.security_groups %}aws_security_group.{{ security_group }}.id{% if not loop.last %}, {% endif %}{% endfor %}]
 
   # storage
   ebs_optimized = "{{ specification.ebs_optimized | lower }}"
@@ -33,6 +31,6 @@ resource "aws_instance" "{{ specification.name }}" {
     cluster_name    = "{{ specification.cluster_name }}"
     cluster_version = "{{ version }}"
     component_key   = "{{ specification.component_key }}"
-    Name            = "{{ specification.name }}"
+    name            = "{{ specification.name }}"
   }
 }
