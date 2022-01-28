@@ -32,5 +32,5 @@ assignees: ''
 * [ ] Release pipeline performed
 * [ ] GitHub release exists with correct content (links)
 * [ ] `docker pull` command from the release description tested
-* [ ] Version bumped to the next in develop branch (in version.txt.py)
+* [ ] Version bumped to the next in develop branch (in VERSION file)
 * [ ] Releases updated in ZenHub
