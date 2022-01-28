@@ -4,6 +4,7 @@
 
 ### Added
 
+- [#2701](https://github.com/epiphany-platform/epiphany/issues/2701) - Epicli prepare - generate files in separate directory
 
 ### Fixed
 
