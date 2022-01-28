@@ -32,11 +32,11 @@
   args:
     executable: /bin/bash
   changed_when: false
-  register: apiserver_cert
+  register: apiserver_certificate_san
 
 - name: Check presence of each control plane address in SANs list
   set_fact:
-    san_search_results: "{{ san_search_results | default([]) + [apiserver_cert.stdout is search(item)] }}"
+    san_search_results: "{{ san_search_results | default([]) + [apiserver_certificate_san.stdout is search(item)] }}"
   loop: >-
     {{ (groups['kubernetes_master'] | map('extract', hostvars, ['ansible_default_ipv4', 'address']) | list)
       + (groups['kubernetes_master'] | map('extract', hostvars, ['ansible_host']) | list) }}
@@ -48,7 +48,7 @@
       command: openssl x509 -enddate -noout -in apiserver.crt
       args:
         chdir: "{{ pki.location }}"
-      register: apiserver_certificate_info
+      register: apiserver_certificate_enddate
       changed_when: false
 
     - name: Extend kubeadm config
@@ -58,7 +58,7 @@
             certSANs: >-
               {{ (groups['kubernetes_master'] | map('extract', hostvars, ['ansible_default_ipv4', 'address']) | list)
               + (groups['kubernetes_master'] | map('extract', hostvars, ['ansible_host']) | list)
-              + [ '127.0.0.1' ] | unique }}
+              + [ '127.0.0.1' ] }}
       include_role:
         name: kubernetes_common
         tasks_from: extend-kubeadm-config
@@ -73,7 +73,7 @@
           vars:
             certificates_renewal_list:
               - apiserver
-            valid_days: "{{ apiserver_certificate_info.stdout | openssl_date2days }}"
+            valid_days: "{{ apiserver_certificate_enddate.stdout | openssl_date2days }}"
           include_tasks: generate-certificates.yml
 
         - name: Restart apiserver

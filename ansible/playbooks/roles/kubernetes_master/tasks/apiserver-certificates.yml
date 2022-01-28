@@ -24,6 +24,7 @@
           --config /etc/kubeadm/kubeadm-config.yml
       args:
         creates: "{{ pki.location }}/apiserver.key"
+
   rescue:
     - name: Restore apiserver.{crt,key}
       copy:
@@ -33,3 +34,7 @@
       loop:
         - "{{ pki.location }}/apiserver.crt"
         - "{{ pki.location }}/apiserver.key"
+
+    - name: Fail certificates generation
+      fail:
+        msg: Apiserver certificates generation failed, restored an initial state

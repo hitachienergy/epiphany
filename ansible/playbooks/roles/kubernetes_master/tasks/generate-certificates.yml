@@ -205,6 +205,10 @@
         dest: "{{ pki.location | regex_replace('\\/$', '') }}"
       delegate_to: "{{ inventory_hostname }}"
 
+    - name: Fail certificates generation
+      fail:
+        msg: Certificates generation failed, restored an initial state
+
 
 - name: Restart systemd services
   when:
