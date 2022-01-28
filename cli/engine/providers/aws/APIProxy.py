@@ -2,7 +2,7 @@ import boto3
 
 from cli.helpers.doc_list_helpers import select_single
 from cli.helpers.objdict_helpers import dict_to_objdict
-from cli.models.AnsibleHostModel import AnsibleHostModel
+from cli.models.AnsibleHostModel import AnsibleOrderedHostModel
 
 
 class APIProxy:
@@ -46,12 +46,15 @@ class APIProxy:
                 }]
         )
 
-        result = []
+        result: List[AnsibleOrderedHostModel] = []
+
         for instance in running_instances:
             if look_for_public_ip:
-                result.append(AnsibleHostModel(instance.public_dns_name, instance.public_ip_address))
+                result.append(AnsibleOrderedHostModel(instance.public_dns_name, instance.public_ip_address))
             else:
-                result.append(AnsibleHostModel(instance.private_dns_name, instance.private_ip_address))
+                result.append(AnsibleOrderedHostModel(instance.private_dns_name, instance.private_ip_address))
+
+        result.sort()
         return result
 
     def get_image_id(self, os_full_name):

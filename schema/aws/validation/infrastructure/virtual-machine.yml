@@ -20,7 +20,7 @@ properties:
   security_groups:
     type: array
     items:
-      items: string
+      type: string
   authorized_to_efs:
     type: boolean
   mount_efs:
