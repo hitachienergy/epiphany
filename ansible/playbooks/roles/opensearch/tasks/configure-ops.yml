@@ -5,15 +5,15 @@
   file:
     path: "{{ specification.paths.ops_repo }}/"
     state: directory
-    owner: "{{ ops_user }}"
-    group: "{{ ops_user }}"
+    owner: "{{ specification.ops_user }}"
+    group: "{{ specification.ops_user }}"
     mode: u=rwx,go=
 
 - name: Provide JVM configuration file
   template:
     backup: yes
     src: jvm.options.j2
-    dest: "{{ ops_conf_dir }}/jvm.options"
+    dest: "{{ specification.paths.ops_conf_dir }}/jvm.options"
     owner: root
     group: opensearch
     mode: ug=rw,o=
@@ -35,7 +35,7 @@
   template:
     backup: yes
     src: opensearch.yml.j2
-    dest: "{{ ops_conf_dir }}/opensearch.yml"
+    dest: "{{ specification.paths.ops_conf_dir }}/opensearch.yml"
     owner: root
     group: opensearch
     mode: ug=rw,o=

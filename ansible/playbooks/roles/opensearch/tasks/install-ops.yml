@@ -8,7 +8,7 @@
 
 - name: Ensure Opensearch service user exists
   user:
-    name: "{{ ops_user }}"
+    name: "{{ specification.ops_user }}"
     state: present
     shell: /bin/bash
 
@@ -16,16 +16,16 @@
   file:
     path: "{{ item }}"
     state: directory
-    owner: "{{ ops_user }}"
-    group: "{{ ops_user }}"
+    owner: "{{ specification.ops_user }}"
+    group: "{{ specification.ops_user }}"
   with_items:
-    - "{{ ops_home }}"
-    - "{{ ops_log_dir }}"
-    - "{{ ops_conf_dir }}"
+    - "{{ specification.paths.ops_home }}"
+    - "{{ specification.paths.ops_log_dir }}"
+    - "{{ specification.paths.ops_conf_dir }}"
     - "{{ certificates.dirs.certs }}"
 
 - name: Extract the tar file
-  command: "chdir=/tmp/ tar -xvzf opensearch-{{ versions[ansible_os_family].ops_version }}-linux-x64.tar.gz -C {{ ops_home }} --strip-components=1"
+  command: "chdir=/tmp/ tar -xvzf opensearch-{{ versions[ansible_os_family].ops_version }}-linux-x64.tar.gz -C {{ specification.paths.ops_home }} --strip-components=1"
 
 - name: Create systemd service
   template:
