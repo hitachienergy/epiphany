@@ -45,59 +45,6 @@ def test_get_efs_config_should_set_proper_values_to_model():
     assert actual.specification.name == 'prefix-testcluster-efs'
 
 
-def test_get_autoscaling_group_should_set_proper_values_to_model():
-    cluster_model = get_cluster_model(cluster_name='TestCluster')
-    component_value = dict_to_objdict({
-        'machine': 'default',
-        'count': 4
-    })
-    subnets = [
-        dict_to_objdict({'specification': {
-            'name': 'subnet1'
-        }})
-    ]
-
-    builder = InfrastructureBuilder([cluster_model])
-
-    actual = builder.get_autoscaling_group('TestComponent', component_value, subnets, 1)
-
-    assert actual.specification.cluster_name == 'testcluster'
-    assert actual.specification.name == 'prefix-testcluster-testcomponent-asg-1'
-    assert actual.specification.count == 4
-    assert actual.specification.subnet_name == 'subnet1'
-    assert {'cluster_name': 'testcluster'} in actual.specification.tags
-    assert {'TestComponent': ''} in actual.specification.tags
-
-
-def test_get_launch_configuration_should_set_proper_values_to_model():
-    cluster_model = get_cluster_model(cluster_name='TestCluster')
-    autoscaling_group = dict_to_objdict({
-        'specification': {
-            'size': 't2.micro.test',
-            'disks': [],
-            'ebs_optimized': True
-        }
-    })
-    security_groups_to_create = [
-        dict_to_objdict({'specification': {
-            'name': 'aws-security-group-test1',
-        }}),
-        dict_to_objdict({'specification': {
-            'name': 'aws-security-group-test2',
-        }})
-    ]
-    builder = InfrastructureBuilder([cluster_model])
-
-    actual = builder.get_launch_configuration(autoscaling_group, 'TestComponent', security_groups_to_create)
-
-    assert actual.specification.name == 'prefix-testcluster-testcomponent-launch-config'
-    assert actual.specification.size == 't2.micro.test'
-    assert actual.specification.security_groups == ['aws-security-group-test1', 'aws-security-group-test2']
-    assert actual.specification.disks == []
-    assert actual.specification.ebs_optimized is True
-    assert actual.specification.associate_public_ip is True
-
-
 def test_get_subnet_config_should_set_proper_values_to_model():
     cluster_model = get_cluster_model(cluster_name='TestCluster')
     component_value = dict_to_objdict({
