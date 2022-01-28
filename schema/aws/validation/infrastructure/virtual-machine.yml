@@ -5,4 +5,84 @@ type: object
 properties:
   name:
     type: string
-#TODO
+  cluster_name:
+    type: string
+  component_key:
+    type: string
+  image_id:
+    type: string
+  key_name:
+    type: string
+  subnet_name:
+    type: string
+  associate_public_ip:
+    type: string
+  security_groups:
+    type: array
+    items:
+      items: string
+  authorized_to_efs:
+    type: boolean
+  mount_efs:
+    type: boolean
+  size:
+    type: string
+  os_full_name:
+    type: string
+  os_type:
+    type: string
+  ebs_optimized:
+    type: boolean
+  disks:
+    type: object
+    properties:
+      root:
+        type: object
+        properties:
+          volume_type:
+            type: string
+          volume_size:
+            type: integer
+          delete_on_termination:
+            type: boolean
+          encrypted:
+            type: boolean
+      additional_disks:
+        type: array
+        items:
+          type: object
+          properties:
+            device_name:
+              type: string
+            volume_type:
+              type: string
+            volume_size:
+              type: integer
+            delete_on_termination:
+              type: boolean
+            encrypted:
+              type: boolean
+  security:
+    type: object
+    properties:
+      rules:
+        type: array
+        items:
+          type: object
+          properties:
+            name:
+              type: string
+            description:
+              type: string
+            direction:
+              type: string
+            protocol:
+              type: string
+            destination_port_range:
+              type: string
+            source_address_prefix:
+              type: string
+            destination_address_prefix:
+              type: string
+              enum:
+              - 0.0.0.0/0
