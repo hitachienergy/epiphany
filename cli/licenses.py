@@ -1,4 +1,4 @@
-# This is a generated file so don`t change this manually. 
+# This is a generated file so don`t change this manually.
 # To re-generate run 'python gen-dependency-info.py <GitHub_PAT>' from the project root.
 
 LICENSES = [
@@ -13,8 +13,16 @@ LICENSES = [
         "License repo": "The MIT License (MIT)\n\nCopyright (c) Microsoft Corporation. \nAll rights reserved.\n\nThis code is licensed under the MIT License.\n\nPermission is hereby granted, free of charge, to any person obtaining a copy\nof this software and associated documentation files(the \"Software\"), to deal\nin the Software without restriction, including without limitation the rights\nto use, copy, modify, merge, publish, distribute, sublicense, and / or sell\ncopies of the Software, and to permit persons to whom the Software is\nfurnished to do so, subject to the following conditions :\n\nThe above copyright notice and this permission notice shall be included in\nall copies or substantial portions of the Software.\n\nTHE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR\nIMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,\nFITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.IN NO EVENT SHALL THE\nAUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER\nLIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,\nOUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN\nTHE SOFTWARE."
     },
     {
+        "Name": "ansible-core",
+        "Version": "2.12.1",
+        "Summary": "Radically simple IT automation",
+        "Home-page": "https://ansible.com/",
+        "Author": "Ansible, Inc.",
+        "License": "GPLv3+"
+    },
+    {
         "Name": "ansible",
-        "Version": "2.10.7",
+        "Version": "5.2.0",
         "Summary": "Radically simple IT automation",
         "Home-page": "https://ansible.com/",
         "Author": "Ansible, Inc.",
@@ -52,7 +60,7 @@ LICENSES = [
     },
     {
         "Name": "attrs",
-        "Version": "21.2.0",
+        "Version": "21.4.0",
         "Summary": "Classes Without Boilerplate",
         "Home-page": "https://www.attrs.org/",
         "Author": "Hynek Schlawack",
@@ -943,7 +951,7 @@ LICENSES = [
     },
     {
         "Name": "azure-mgmt-synapse",
-        "Version": "2.1.0b3",
+        "Version": "2.1.0b4",
         "Summary": "Microsoft Azure Synapse Management Client Library for Python",
         "Home-page": "https://github.com/Azure/azure-sdk-for-python",
         "Author": "Microsoft Corporation",
@@ -1064,7 +1072,7 @@ LICENSES = [
     },
     {
         "Name": "boto3",
-        "Version": "1.20.11",
+        "Version": "1.20.43",
         "Summary": "The AWS SDK for Python",
         "Home-page": "https://github.com/boto/boto3",
         "Author": "Amazon Web Services",
@@ -1075,7 +1083,7 @@ LICENSES = [
     },
     {
         "Name": "botocore",
-        "Version": "1.23.11",
+        "Version": "1.23.43",
         "Summary": "Low-level, data-driven core of boto 3.",
         "Home-page": "https://github.com/boto/botocore",
         "Author": "Amazon Web Services",
@@ -1135,10 +1143,10 @@ LICENSES = [
     },
     {
         "Name": "cryptography",
-        "Version": "3.3.2",
+        "Version": "36.0.1",
         "Summary": "cryptography is a package which provides cryptographic recipes and primitives to Python developers.",
         "Home-page": "https://github.com/pyca/cryptography",
-        "Author": "The cryptography developers",
+        "Author": "The Python Cryptographic Authority and individual contributors",
         "License": "Other",
         "License URL": "https://api.github.com/repos/pyca/cryptography/license",
         "License repo": "This software is made available under the terms of *either* of the licenses\nfound in LICENSE.APACHE or LICENSE.BSD. Contributions to cryptography are made\nunder the terms of *both* these licenses.\n\nThe code used in the OS random engine is derived from CPython, and is licensed\nunder the terms of the PSF License Agreement.\n"
@@ -1242,7 +1250,7 @@ LICENSES = [
     },
     {
         "Name": "jsondiff",
-        "Version": "1.3.0",
+        "Version": "1.3.1",
         "Summary": "Diff JSON and JSON-like structures in Python",
         "Home-page": "https://github.com/ZoomerAnalytics/jsondiff",
         "Author": "Zoomer Analytics LLC",
@@ -1253,7 +1261,7 @@ LICENSES = [
     },
     {
         "Name": "jsonschema",
-        "Version": "4.2.1",
+        "Version": "4.4.0",
         "Summary": "An implementation of JSON Schema validation for Python",
         "Home-page": "https://github.com/Julian/jsonschema",
         "Author": "Julian Berman",
@@ -1344,7 +1352,7 @@ LICENSES = [
     },
     {
         "Name": "paramiko",
-        "Version": "2.9.1",
+        "Version": "2.9.2",
         "Summary": "SSH2 protocol library",
         "Home-page": "https://paramiko.org",
         "Author": "Jeff Forcier",
@@ -1413,7 +1421,7 @@ LICENSES = [
     },
     {
         "Name": "Pygments",
-        "Version": "2.11.1",
+        "Version": "2.11.2",
         "Summary": "Pygments is a syntax highlighting package written in Python.",
         "Home-page": "https://pygments.org/",
         "Author": "Georg Brandl",
@@ -1451,7 +1459,7 @@ LICENSES = [
     },
     {
         "Name": "pyparsing",
-        "Version": "3.0.6",
+        "Version": "3.0.7",
         "Summary": "Python parsing module",
         "Home-page": "https://github.com/pyparsing/pyparsing/",
         "Author": "Paul McGuire",
@@ -1462,7 +1470,7 @@ LICENSES = [
     },
     {
         "Name": "pyrsistent",
-        "Version": "0.18.0",
+        "Version": "0.18.1",
         "Summary": "Persistent/Functional/Immutable data structures",
         "Home-page": "http://github.com/tobgu/pyrsistent/",
         "Author": "Tobias Gustafsson",
@@ -1523,15 +1531,34 @@ LICENSES = [
     },
     {
         "Name": "requests",
-        "Version": "2.27.0",
+        "Version": "2.27.1",
         "Summary": "Python HTTP for Humans.",
         "Home-page": "https://requests.readthedocs.io",
         "Author": "Kenneth Reitz",
         "License": "Apache 2.0"
     },
     {
+        "Name": "resolvelib",
+        "Version": "0.5.5",
+        "Summary": "Resolve abstract dependencies into concrete ones",
+        "Home-page": "https://github.com/sarugaku/resolvelib",
+        "Author": "Tzu-ping Chung",
+        "License": "ISC License",
+        "License URL": "https://api.github.com/repos/sarugaku/resolvelib/license",
+        "License repo": "Copyright (c) 2018, Tzu-ping Chung <uranusjr@gmail.com>\n\nPermission to use, copy, modify, and distribute this software for any\npurpose with or without fee is hereby granted, provided that the above\ncopyright notice and this permission notice appear in all copies.\n\nTHE SOFTWARE IS PROVIDED \"AS IS\" AND THE AUTHOR DISCLAIMS ALL WARRANTIES\nWITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF\nMERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR\nANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES\nWHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN\nACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF\nOR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.\n",
+        "License text": "ISC License\n\nCopyright (c) [year], [fullname]\n\nPermission to use, copy, modify, and/or distribute this software for any\npurpose with or without fee is hereby granted, provided that the above\ncopyright notice and this permission notice appear in all copies.\n\nTHE SOFTWARE IS PROVIDED \"AS IS\" AND THE AUTHOR DISCLAIMS ALL WARRANTIES\nWITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF\nMERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR\nANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES\nWHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN\nACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF\nOR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.\n"
+    },
+    {
+        "Name": "ruamel.yaml.clib",
+        "Version": "0.2.6",
+        "Summary": "C version of reader, parser and emitter for ruamel.yaml derived from libyaml",
+        "Home-page": "https://sourceforge.net/p/ruamel-yaml-clib/code/ci/default/tree",
+        "Author": "Anthon van der Neut",
+        "License": "MIT"
+    },
+    {
         "Name": "ruamel.yaml",
-        "Version": "0.17.17",
+        "Version": "0.17.20",
         "Summary": "ruamel.yaml is a YAML parser/emitter that supports roundtrip preservation of comments, seq/map flow style, and map key order",
         "Home-page": "https://sourceforge.net/p/ruamel-yaml/code/ci/default/tree",
         "Author": "Anthon van der Neut",
@@ -1604,7 +1631,7 @@ LICENSES = [
     },
     {
         "Name": "urllib3",
-        "Version": "1.26.7",
+        "Version": "1.26.8",
         "Summary": "HTTP library with thread-safe connection pooling, file post, and more.",
         "Home-page": "https://urllib3.readthedocs.io/",
         "Author": "Andrey Petrov",
