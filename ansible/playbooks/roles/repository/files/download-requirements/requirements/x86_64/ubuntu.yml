@@ -1,420 +1,184 @@
 ---
 packages:
-  - name: 'adduser'
-    sha256: 5f7ea9d1d52a2a9c349468f89d160230e21c8542faed1b1a97c23bce873e17b4
-
-  - name: 'apt-transport-https'
-    sha256: 1c9d16d9ba2aeb4dbbc5c709d01ac215acf78418a6a52ebccb46cb51173db975
-
-  - name: 'auditd'
-    sha256: 3ddfcbb88001810307903781d7310e002fe0521eee43f088b90b4230e955da54
-
-  - name: 'bash-completion'
-    sha256: 65b7b824b86e6c270b134959de41c6328caf0c4378e34a65eaaf33fe72c3bbb6
-
-  - name: 'ca-certificates'
-    sha256: 8179442c9c582fd71fd3817a579bf5fe9503412c1e879d3ba4f0ed9a761e54f4
-
-  - name: 'cifs-utils'
-    sha256: 0498cb78158f0c64cb70063f2fc9a5322d7abc422a043718a4f63aa18c3d259b
-
-  - name: 'containerd.io'
-    sha256: 5730728b1e82003eb32edc5462d46dfa9f443a4425410cf37094607ecfeb6662
-
-  - name: 'cri-tools=1.13.0*'
-    sha256: 4ff4588f5589826775f4a3bebd95aec5b9fb591ba8fb89a62845ffa8efe8cf22
-
-  - name: 'curl'
-    sha256: 648169e7ef8aef23a8b5c6880cb6a96f51a00ecc81d8e92a3988a8a0e54870a5
-
-  - name: 'docker-ce=5:20.10.8*'
-    sha256: d76024725ece03ee4b675e074b58998a63b3f0b773fd18fcf682e3fe4c08b07c
-
-  - name: 'docker-ce-cli=5:20.10.8*'
-    sha256: d76024725ece03ee4b675e074b58998a63b3f0b773fd18fcf682e3fe4c08b07c
-
-  - name: 'docker-ce-rootless-extras=5:20.10.8*'
-    sha256: 0cf15642ffe305a3abc8876973ca7290b9758cee895cad8316980e9633c5c597
-
-  - name: 'ebtables'
-    sha256: 7f880e5b09ca162900160dbd7d15739780b4c65427e9cabb30f41e48a2cef3ae
+  - 'adduser'
+  - 'apt-transport-https'
+  - 'auditd'
+  - 'bash-completion'
+  - 'ca-certificates'
+  - 'cifs-utils'
+  - 'containerd.io'
+  - 'cri-tools=1.13.0*'
+  - 'curl'
+  - 'docker-ce=5:20.10.8*'
+  - 'docker-ce-cli=5:20.10.8*'
+  - 'docker-ce-rootless-extras=5:20.10.8*'
+  - 'ebtables'
 
   # for opendistroforelasticsearch & logging roles
-  - name: 'elasticsearch-oss=7.10.2*'
-    sha256: ab68bdad718d7c3d5c206328f3301493016dc85dcbb39aca9de83dfadffcc25e
+  - 'elasticsearch-oss=7.10.2*'
 
   # Erlang packages must be compatible with RabbitMQ version.
   # Metapackages such as erlang and erlang-nox must only be used
   # with apt version pinning. They do not pin their dependency versions.
   # List based on: https://www.rabbitmq.com/install-debian.html#installing-erlang-package
-  - name: 'erlang-asn1=1:23.1.5*'
-    sha256: bce3b3db06d4f3ae3487ea539fea39d77f11cefe510ac6642a718acee725989a
-
-  - name: 'erlang-base=1:23.1.5*'
-    sha256: 943d8f7f299dd27a2b91993a26cc18988039d83c504934d18fe6dbde16f7bd6e
-
-  - name: 'erlang-crypto=1:23.1.5*'
-    sha256: d00e867f3d4508d78fbffab226c8247af937a9ffde46c2e77257ce1f258144f9
-
-  - name: 'erlang-eldap=1:23.1.5*'
-    sha256: 2b982eb5da6adbd450f2f1791349f983fd2fc47bcb3b1c8a1f80412001e3261f
-
-  - name: 'erlang-ftp=1:23.1.5*'
-    sha256: 59653ae7cdc921ba66fd0cdbdda9730bccdab84f92b78bf2b6bafdfc580abada
-
-  - name: 'erlang-inets=1:23.1.5*'
-    sha256: 7b54b1e86e7c20c0fde33a10d3fb448baba05bf5afc27c56ed8b9d7f31f934c7
-
-  - name: 'erlang-mnesia=1:23.1.5*'
-    sha256: 4060bac983ca1975a6f8701e3bfcb9044a642dcd64a52f0e2873e5e758306924
-
-  - name: 'erlang-os-mon=1:23.1.5*'
-    sha256: 9deee80e525470ddc1aeddd84e16726440dc9d66d174ce72535fcd56c39e10ab
-
-  - name: 'erlang-parsetools=1:23.1.5*'
-    sha256: 4ccd3a68fa3e3511b23f86e139b27ba0d3c3fa6c99a6ae2f0bf4334d28a9f432
-
-  - name: 'erlang-public-key=1:23.1.5*'
-    sha256: d2117428607738461cafc450c8711deb1d0afeb9c7144746007a032e66e98983
-
-  - name: 'erlang-runtime-tools=1:23.1.5*'
-    sha256: cf86b47be619c29180349473956f248ba2827b5433316e6fca97d512cee40c27
-
-  - name: 'erlang-snmp=1:23.1.5*'
-    sha256: f5f3165e2d2ac31b005fe3f422d59c09fb34a226679b5217f9c2e302d380106b
-
-  - name: 'erlang-ssl=1:23.1.5*'
-    sha256: a15ffb59182926d0e84465a0bd18f133d45293abcc0f848fd52014d749c3defe
-
-  - name: 'erlang-syntax-tools=1:23.1.5*'
-    sha256: eea9b02271461289ca339087f551dd326fa68dc67929998ac8370e7b44d4046f
-
-  - name: 'erlang-tftp=1:23.1.5*'
-    sha256: 1c97ead185ffaf838bbcfd9a25f2a7c334496a63b4e597dbd682efad7537e457
-
-  - name: 'erlang-tools=1:23.1.5*'
-    sha256: 96ba6054e5e7a64fe88c621f560270c8cc1967e8b10ff8a040e6460d37c215ae
-
-  - name: 'erlang-xmerl=1:23.1.5*'
-    sha256: 393aab19e8e43b047230dcf8d83310e1da2bd45d9bb2646eb0b2eeb9b2b703cd
-
-  - name: 'ethtool'
-    sha256: 886ac450953213f5e557c26c35449c2781020615c545af050c13aa71a870ed55
-
-  - name: 'filebeat=7.9.2*'
-    sha256: aed2a5be60bcbfdba3cc816e936793adf8e4a04c08498817c4ee57cdedfbe114
-
-  - name: 'firewalld'
-    sha256: fce416886c3b303412d2fddb75002bf174a4167a5fc2deb79d918d6d14389132
-
-  - name: 'fping'
-    sha256: 1af2189ef67e6d83da5446758f51429ecb1ed0d61bfda947b0b2a7808bbecd47
-
-  - name: 'gnupg2'
-    sha256: 5306077067dc9acb3070dffb24c56ea53c12cf75434068709d3a42a07ed20cfa
-
-  - name: 'htop'
-    sha256: c803ab48c0f2e097283a2e0673914a758f10779a26a947a77d36a1e4353e85d6
-
-  - name: 'iftop'
-    sha256: 710571e93c98c1624f705358da70863953f438fd7983f662ba8e121f91270681
-
-  - name: 'jq'
-    sha256: 8e4c8223f6ec158dc6c2a0d065b76c337bb7664e35cbbecd2ad02142d3b83470
+  - 'erlang-asn1=1:23.1.5*'
+  - 'erlang-base=1:23.1.5*'
+  - 'erlang-crypto=1:23.1.5*'
+  - 'erlang-eldap=1:23.1.5*'
+  - 'erlang-ftp=1:23.1.5*'
+  - 'erlang-inets=1:23.1.5*'
+  - 'erlang-mnesia=1:23.1.5*'
+  - 'erlang-os-mon=1:23.1.5*'
+  - 'erlang-parsetools=1:23.1.5*'
+  - 'erlang-public-key=1:23.1.5*'
+  - 'erlang-runtime-tools=1:23.1.5*'
+  - 'erlang-snmp=1:23.1.5*'
+  - 'erlang-ssl=1:23.1.5*'
+  - 'erlang-syntax-tools=1:23.1.5*'
+  - 'erlang-tftp=1:23.1.5*'
+  - 'erlang-tools=1:23.1.5*'
+  - 'erlang-xmerl=1:23.1.5*'
+  - 'ethtool'
+  - 'filebeat=7.9.2*'
+  - 'firewalld'
+  - 'fping'
+  - 'gnupg2'
+  - 'htop'
+  - 'iftop'
+  - 'jq'
 
   # for dpkg-scanpackages
-  - name: 'libdpkg-perl'
-    sha256: b7f34bb3574e2fae9054649d87a69e8d28a0f2c6a616d07a4f294d5462bb161c
-
-  - name: 'libfontconfig1'
-    sha256: 7ca5523936a9b8e42f60c0f01c232145809387e5680b05c7bce0bea31844a522
-
-  - name: 'logrotate'
-    sha256: ba2b0ec4c730524deede0ff929fa66283f4bf6d76ea1de9d8fc48fa17a2309f4
-
-  - name: 'netcat'
-    sha256: f43ecd8753da0ddd048ea49c45c81a7bd7dbbe80b144ea9764cdae34a8472362
-
-  - name: 'net-tools'
-    sha256: 591808d272508bcafb28ab0b151e0d03a0c922a7f7f7e6469b41ec64c46b4a90
-
-  - name: 'nfs-common'
-    sha256: a3bc69c0b628784ad21278c2be271299351d992b165d87990b57aee7d38a5e84
+  - 'libdpkg-perl'
+  - 'libfontconfig1'
+  - 'logrotate'
+  - 'netcat'
+  - 'net-tools'
+  - 'nfs-common'
 
   # for nfs-common
-  - name: 'libtirpc3'
-    sha256: f82219f75dd5b498b65a3251557d77eed386248c6c2832b7d253b6797993e432
-
-  - name: 'opendistro-alerting=1.13.1*'
-    sha256: 291ae3f318dc1bc7a03467ac5e5c1d89cf8f8154a4263e8c6a5948961353a431
-
-  - name: 'opendistro-index-management=1.13.1*'
-    sha256: 409d8608a21c35fcc150356bb6777eac9630f4d97621cf903adbbb08db915e1a
-
-  - name: 'opendistro-job-scheduler=1.13.0*'
-    sha256: 807b441968b70fef36b0e7cf24214803222bf61b3ec61ae62d77793a13c68a9a
-
-  - name: 'opendistro-performance-analyzer=1.13.0*'
-    sha256: f25b6f78bda5e1a4db36daa9f2e37ed405fe50b4b2fdf491fc5cca0ba227bc6b
-
-  - name: 'opendistro-security=1.13.1*'
-    sha256: bb378292cdce7c4c6efe15edf3dbf6afc045f17ce6412b124a32b5fb3c92847a
-
-  - name: 'opendistro-sql=1.13.0*'
-    sha256: 99c340d6e292fbf69e4660ca7f0751afeef29468dd4c271b8a19d15a28c71aa6
-
-  - name: 'opendistroforelasticsearch-kibana=1.13.1*'
-    sha256: 1f5becee8cd5456b4f02b8a02c90f3edc1143d8f22423306170f39996390312a
-
-  - name: 'openjdk-8-jre-headless'
-    sha256: c64dc41216d3f6ab34053e2134558c9071a16bbe417ccd91818edef7783aa065
-
-  - name: 'openssl'
-    sha256: 89e000938ab7145862ee476223c8344163083187457dc10f647a73c7b9463e33
-
-  - name: 'postgresql-13'
-    sha256: 115898f868fef4d90e76e203e6824ba72e4f7f2c8c599cffc6c2857592ace0bf
-
-  - name: 'python3-psycopg2'
-    sha256: b2b4e219d8c30ca172d9275582cb57587948d0a9397274b6eea36add6f9e4ee1
-
-  - name: 'python3-selinux'
-    sha256: 1fae8d1c046067356d67fa556d7129edf8dc1748ad91db0dbfd4bf64373d654d
-
-  - name: 'rabbitmq-server=3.8.9*'
-    sha256: 7cec0bf07a56480c51cf8cc920fc9a9747d304f0d533b28b1bbc5ea2a30f52da
-
-  - name: 'smbclient'
-    sha256: 99cca29bb05d23ca8f03ffe8d83adbce8557d998e2dbe49fff01ce97db3590d1
-
-  - name: 'samba-common'
-    sha256: 9a2245a5b9476a06378b59a681846158544dd9e357c46f27497a34dae45a1fd8
-
-  - name: 'smbclient'
-    sha256: 99cca29bb05d23ca8f03ffe8d83adbce8557d998e2dbe49fff01ce97db3590d1
-
-  - name: 'software-properties-common'
-    sha256: acd6bfc18262a8e99fa6da4fbcf4f6d35225c93dfa04f7cf20c1f41774f3c1d0
-
-  - name: 'sshpass'
-    sha256: b31772d638e8debf2c7422bb6e2531da14964e378e31d9c46cba372bc4bd2e0a
-
-  - name: 'sysstat'
-    sha256: b6a002446c2d339c1d52be3359666b91e13f7cc78fa716e031b942b8e328b8ee
+  - 'libtirpc3'
+  - 'opendistro-alerting=1.13.1*'
+  - 'opendistro-index-management=1.13.1*'
+  - 'opendistro-job-scheduler=1.13.0*'
+  - 'opendistro-performance-analyzer=1.13.0*'
+  - 'opendistro-security=1.13.1*'
+  - 'opendistro-sql=1.13.0*'
+  - 'opendistroforelasticsearch-kibana=1.13.1*'
+  - 'openjdk-8-jre-headless'
+  - 'openssl'
+  - 'postgresql-13'
+  - 'python3-psycopg2'
+  - 'python3-selinux'
+  - 'rabbitmq-server=3.8.9*'
+  - 'smbclient'
+  - 'samba-common'
+  - 'software-properties-common'
+  - 'sshpass'
+  - 'sysstat'
 
   # for sysstat
-  - name: 'libsensors5'
-    sha256: 80a057d35c1b60717368325aacca6f61b009c8314ec8d96de415eba099c2d52f
-
-  - name: 'tar'
-    sha256: 95de9ec03ea555bb836a6f4a98680773ca5175dd4d8175fba9e6cd60f10e51b0
-
-  - name: 'telnet'
-    sha256: 65e6bf503f79c257f2e8d9111b12ec16725f7810424334f83dcb0cdc1f7d9d09
-
-  - name: 'tmux'
-    sha256: a290fc9e6979cd1d755559e3a85cf2675bb5f697a4fae453c46f52bf4993eeb0
-
-  - name: 'unzip'
-    sha256: b1e596aec8566f86b4fc36e626a06938d95ff524caecd97dcf9d1951eec87aea
-
-  - name: 'vim'
-    sha256: c0a2d158eb8dcadef082755ed41203568c86189b8510714d7cb2144fdb09159d
+  - 'tar'
+  - 'telnet'
+  - 'tmux'
+  - 'unzip'
+  - 'vim'
 
   # to make remote-to-remote "synchronize" work in ansible
-  - name: 'rsync'
-    sha256: f3f3edc2c9460a56c45ceaa3e8ee825d4f97a8e7d6e8cf7a68f74e9c87f0566e
+  - 'rsync'
 
   # for curl, issue #869
-  - name: 'libcurl4'
-    sha256: 7c293bf1948c545ba659eae20ae6bc68c5bbf3f3ca9fbf2612dd6027064b54b3
+  - 'libcurl4'
 
   # for openjdk-8-jre-headless
-  - name: 'libnss3'
-    sha256: ca624bc066d67f4f0aa71ed32abe507f62d02eb001dd3cc840d96270a3572e48
-
-  - name: 'libcups2'
-    sha256: 7b8d329aab2d1a10af0e2dc3877dbb5588b16afdb409354a78673bc207bfd223
-
-  - name: 'libavahi-client3'
-    sha256: d2fda1d966f1970b05773e497c870b1ebee3044c34db4decfa9052ba73395ed5
-
-  - name: 'libavahi-common3'
-    sha256: c830b27d2c9a2b74731909108108c715199cf5cbdc70eb33a000121e9f688008
-
-  - name: 'libjpeg8'
-    sha256: baaecbc8e7ef55fc1887365721a7771f7d533fabca38fca878668b9c8f7ee13f
-
-  - name: 'libfontconfig1'
-    sha256: 7ca5523936a9b8e42f60c0f01c232145809387e5680b05c7bce0bea31844a522
-
-  - name: 'libxtst6'
-    sha256: 0e74134a90e54827e14324ae8e44abd057f0b0dd3d3bc15ac616a9b0215f3be9
-
-  - name: 'fontconfig-config'
-    sha256: 80b090925c52aff3f4681b361c9823b041c42c57cca58b5baf2541bafc25fed9
+  - 'libnss3'
+  - 'libcups2'
+  - 'libavahi-client3'
+  - 'libavahi-common3'
+  - 'libjpeg8'
+  - 'libxtst6'
+  - 'fontconfig-config'
 
   # for rabbit/erlang
-  - name: 'libodbc1'
-    sha256: 59ac60f7462e019ec19e615133fd8393853747bda3c1620e922a1d1ba49a4bf8
+  - 'libodbc1'
 
   # for air-gap repo installation
-  - name: 'apache2'
-    sha256: c6509e10f14ce311c77a43c8a731d0ab4114b63f35cf7cf40fb9349986a1a388
-
-  - name: 'apache2-bin'
-    sha256: 233d6fbe9b17e4b762f3e2ce15ae3a707f27504453da72f211027e62e1f0067b
-
-  - name: 'apache2-utils'
-    sha256: c6509e10f14ce311c77a43c8a731d0ab4114b63f35cf7cf40fb9349986a1a388
+  - 'apache2'
+  - 'apache2-bin'
+  - 'apache2-utils'
 
   # for jq
-  - name: 'libjq1'
-    sha256: 5aafb335442d3a694b28204e390c831de9efc3f3a18245328840d406edc8a163
+  - 'libjq1'
 
   # for gnupg2
-  - name: 'gnupg'
-    sha256: 868e3e9430202263f95fc8b6c92e62bd6cb44158aa5b095d9766f1bfa3794d29
-
-  - name: 'gpg'
-    sha256: 3df951e429460cf5837c3f387f014e6440efc9002839327f1b6e43e6d0d9f195
-
-  - name: 'gpg-agent'
-    sha256: 8f76c2622351bc2d1bd2c3f2628a328d262c2c04bac7bad8d7044c44d262c562
-
-  # for azure
-  - name: 'smbclient'
-    sha256: 99cca29bb05d23ca8f03ffe8d83adbce8557d998e2dbe49fff01ce97db3590d1
-
-  - name: 'samba-libs'
-    sha256: e170dfbf741570e4aae97f4b040106d51ae3ae89a52006663328acf56129404a
-
-  - name: 'libsmbclient'
-    sha256: 4677d358e332e61015ed7c3d49c774bea963963d3fb6f4a176464f9c90d52d54
+  - 'gnupg'
+  - 'gpg'
+  - 'gpg-agent'
+  - 'samba-libs'
+  - 'libsmbclient'
 
   # postgres related packages
   # if version is not specified, it's not related to postgres version and the latest is used
-  - name: 'pgdg-keyring'
-    sha256: 48c435aeff4a9a9949bcfac639505a5ba050fd1439e2ee5de3af1a942dd97c74
-
-  - name: 'postgresql-13-pgaudit=1.5.0*'
-    sha256: 862c53510538812e3a77201c7b6588539a82f969fbedf7b3f6eb4772adcb0e16
-
-  - name: 'postgresql-10-repmgr=5.2.1*'
-    sha256: 84d4fa03bd5035492fdda1ec4af942b1a6fab5232614c28b6de8630c44b0fe1d
-
-  - name: 'postgresql-13-repmgr=5.2.1*'
-    sha256: 8764b52c72a2eb389266a4e6482dba47dfbc609537ca6991a452f838596b6b7e
-
-  - name: 'postgresql-client-13'
-    sha256: dd58155a6f371e4ff2d2813f80f109dd675b653d12c4c939f10d6794d07a0cad
-
-  - name: 'postgresql-client-common'
-    sha256: 2088256e1d84f3efe39c45d71a92e743dad2b24f76b062eb96683b34ba6cae29
-
-  - name: 'postgresql-common'
-    sha256: 0793d00857f1b28f29fdfa50bc2119b15327d4d701d2bac9481fa143c410e0da
-
-  - name: 'repmgr-common=5.2.1*'
-    sha256: c0ab02a35d4f6c2fd7b4f5a632fe12fc69214f443a511427e383d51826e861d9
+  - 'pgdg-keyring'
+  - 'postgresql-13-pgaudit=1.5.0*'
+  - 'postgresql-10-repmgr=5.2.1*'
+  - 'postgresql-13-repmgr=5.2.1*'
+  - 'postgresql-client-13'
+  - 'postgresql-client-common'
+  - 'postgresql-common'
+  - 'repmgr-common=5.2.1*'
 
   # for firewalld
-  - name: 'ipset'
-    sha256: 74369990cfd5b2f6fcfa13b7b9d084c930bd9a60644f7be845d978cda648b57d
-
-  - name: 'python3-decorator'
-    sha256: bde6c1bc1bf6d26999b7b2e569888a29babd5d6a31c4ad6cb81633ed9f97204b
-
-  - name: 'python3-selinux'
-    sha256: 1fae8d1c046067356d67fa556d7129edf8dc1748ad91db0dbfd4bf64373d654d
-
-  - name: 'python3-slip'
-    sha256: 3b6a5bcead4ea193a0a7921a7268274a012d8ba455e7cb99393059bffa13da14
-
-  - name: 'python3-slip-dbus'
-    sha256: c183f91d0d79e8c605cc5695fe6bb1197017ab37549cc5652dbb1c547c75881d
+  - 'ipset'
+  - 'python3-decorator'
+  - 'python3-slip'
+  - 'python3-slip-dbus'
 
   # for ansible module postgresql_query in role postgres-exporter
-  - name: 'libpq5'
-    sha256: 6e171f03d74fbe062abdcac330d10b9e3cb6d5e70849e8d8d92af11dc7ca9822
-
-  - name: 'python3-psycopg2'
-    sha256: b2b4e219d8c30ca172d9275582cb57587948d0a9397274b6eea36add6f9e4ee1
-
-  - name: 'python3-jmespath'
-    sha256: ef40ebbbc21db690f9a68177d9ab734e402f39236f2bc46ea3d75baa48d75e3a
+  - 'libpq5'
+  - 'python3-jmespath'
 
   # for Ansible (certificate modules)
-  - name: 'python3-cryptography'
-    sha256: df7fc94dc9cd20da991147f56c7e2e2d54e1c27f10018aad8096b0c74a6b4550
+  - 'python3-cryptography'
 
   # for python3-cryptography
-  - name: 'python3-cffi-backend'
-    sha256: b32482717cd8712359c58a796f76b4984598bb588d9635a1097b7a6ff391c334
+  - 'python3-cffi-backend'
 
   # K8s v1.18.6 (Epiphany >= v0.7.1)
-  - name: 'kubeadm=1.18.6*'
-    sha256: a93baa2c0b6220df4fd3e1c54d0e93ff34a5281b9205720d1f10e3a96498bf9e
-
-  - name: 'kubectl=1.18.6*'
-    sha256: 637b120b480b3ede53b93a140bc9d40df648e0ae1415da4a4d2584e1989fee92
-
-  - name: 'kubelet=1.18.6*'
-    sha256: 104709951795724cd57228d458da3adc3746c77447132f2e1317666b321eebbb
+  - 'kubeadm=1.18.6*'
+  - 'kubectl=1.18.6*'
+  - 'kubelet=1.18.6*'
 
   # K8s v1.19.15 (Epiphany >= v1.3, transitional version)
-  - name: 'kubeadm=1.19.15*'
-    sha256: a93baa2c0b6220df4fd3e1c54d0e93ff34a5281b9205720d1f10e3a96498bf9e
-
-  - name: 'kubectl=1.19.15*'
-    sha256: 637b120b480b3ede53b93a140bc9d40df648e0ae1415da4a4d2584e1989fee92
-
-  - name: 'kubelet=1.19.15*'
-    sha256: 104709951795724cd57228d458da3adc3746c77447132f2e1317666b321eebbb
+  - 'kubeadm=1.19.15*'
+  - 'kubectl=1.19.15*'
+  - 'kubelet=1.19.15*'
 
   # K8s v1.20.12 (Epiphany >= v1.3, transitional version)
-  - name: 'kubeadm=1.20.12*'
-    sha256: a93baa2c0b6220df4fd3e1c54d0e93ff34a5281b9205720d1f10e3a96498bf9e
-
-  - name: 'kubectl=1.20.12*'
-    sha256: 637b120b480b3ede53b93a140bc9d40df648e0ae1415da4a4d2584e1989fee92
-
-  - name: 'kubelet=1.20.12*'
-    sha256: 104709951795724cd57228d458da3adc3746c77447132f2e1317666b321eebbb
+  - 'kubeadm=1.20.12*'
+  - 'kubectl=1.20.12*'
+  - 'kubelet=1.20.12*'
 
   # K8s v1.21.7 (Epiphany >= v1.3, transitional version)
-  - name: 'kubeadm=1.21.7*'
-    sha256: a93baa2c0b6220df4fd3e1c54d0e93ff34a5281b9205720d1f10e3a96498bf9e
-
-  - name: 'kubectl=1.21.7*'
-    sha256: 637b120b480b3ede53b93a140bc9d40df648e0ae1415da4a4d2584e1989fee92
-
-  - name: 'kubelet=1.21.7*'
-    sha256: 104709951795724cd57228d458da3adc3746c77447132f2e1317666b321eebbb
+  - 'kubeadm=1.21.7*'
+  - 'kubectl=1.21.7*'
+  - 'kubelet=1.21.7*'
 
   # K8s v1.22.4
-  - name: 'kubeadm=1.22.4*'
-    sha256: a93baa2c0b6220df4fd3e1c54d0e93ff34a5281b9205720d1f10e3a96498bf9e
-
-  - name: 'kubectl=1.22.4*'
-    sha256: 637b120b480b3ede53b93a140bc9d40df648e0ae1415da4a4d2584e1989fee92
-
-  - name: 'kubelet=1.22.4*'
-    sha256: 104709951795724cd57228d458da3adc3746c77447132f2e1317666b321eebbb
+  - 'kubeadm=1.22.4*'
+  - 'kubectl=1.22.4*'
+  - 'kubelet=1.22.4*'
 
   # Kubernetes Generic
   # kubernetes-cni-0.8.6 since K8s v1.18.6
-  - name: 'kubernetes-cni=0.8.6-00*'
-    sha256: ca2303ea0eecadf379c65bad855f9ad7c95c16502c0e7b3d50edcb53403c500f
+  - 'kubernetes-cni=0.8.6-00*'
 
   # kubernetes-cni-0.8.7 since K8s v1.19.15
-  - name: 'kubernetes-cni=0.8.7-00*'
-    sha256: ca2303ea0eecadf379c65bad855f9ad7c95c16502c0e7b3d50edcb53403c500f
+  - 'kubernetes-cni=0.8.7-00*'
 
 files:
   # Switched from APT repo because there was only one (the latest) version available (issue #2262)
-  - url: 'https://packages.elastic.co/curator/5/debian9/pool/main/e/elasticsearch-curator/elasticsearch-curator_5.8.3_amd64.deb'
+  'https://packages.elastic.co/curator/5/debian9/pool/main/e/elasticsearch-curator/elasticsearch-curator_5.8.3_amd64.deb':
     sha256: 575a41184899678d9769a8ea120134ec329c41967c94586c1aa6439aa68d4829
   # Grafana package is not downloaded from repository since it was not reliable (issue #2449)
-  - url: 'https://dl.grafana.com/oss/release/grafana_8.3.2_amd64.deb'
+  'https://dl.grafana.com/oss/release/grafana_8.3.2_amd64.deb':
     sha256: 3f5ecf5726223314aa3147a24c732cc9ccede86b7d703d4835a6fc69d0fffff8

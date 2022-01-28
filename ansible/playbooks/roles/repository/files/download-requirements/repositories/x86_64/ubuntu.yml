@@ -1,53 +1,44 @@
 ---
 repositories:
-  elastic_6:
-    key: 'https://artifacts.elastic.co/GPG-KEY-elasticsearch'
+  elastic-6.x:
     content: 'deb https://artifacts.elastic.co/packages/oss-6.x/apt stable main'
-    path: '/etc/apt/sources.list.d/elastic-6.x.list'
-
-  kubernetes':
-    key: 'https://packages.cloud.google.com/apt/doc/apt-key.gpg'
-    content: 'deb http://apt.kubernetes.io/ kubernetes-xenial main'
-    path: '/etc/apt/sources.list.d/kubernetes.list'
-
-  erlang_solutions':
-    key: 'https://packages.erlang-solutions.com/ubuntu/erlang_solutions.asc'
-    content: 'deb https://packages.erlang-solutions.com/ubuntu focal contrib'
-    path: '/etc/apt/sources.list.d/erlang-23.x.list'
-
-  rabbitmq_server':
-    key: 'https://packagecloud.io/rabbitmq/rabbitmq-server/gpgkey'
-    content: 'deb https://packagecloud.io/rabbitmq/rabbitmq-server/ubuntu bionic main'
-    path: '/etc/apt/sources.list.d/rabbitmq.list'
-
-  docker_ce':
-    key: 'https://download.docker.com/linux/ubuntu/gpg'
-    content: 'deb [arch=amd64] https://download.docker.com/linux/ubuntu focal stable'
-    path: '/etc/apt/sources.list.d/docker-ce.list'
-
-  elastic_7':
     key: 'https://artifacts.elastic.co/GPG-KEY-elasticsearch'
+
+  kubernetes:
+    content: 'deb http://apt.kubernetes.io/ kubernetes-xenial main'
+    key: 'https://packages.cloud.google.com/apt/doc/apt-key.gpg'
+
+  erlang-23.x:
+    content: 'deb https://packages.erlang-solutions.com/ubuntu focal contrib'
+    key: 'https://packages.erlang-solutions.com/ubuntu/erlang_solutions.asc'
+
+  rabbitmq:
+    content: 'deb https://packagecloud.io/rabbitmq/rabbitmq-server/ubuntu bionic main'
+    key: 'https://packagecloud.io/rabbitmq/rabbitmq-server/gpgkey'
+
+  docker-ce:
+    content: 'deb [arch=amd64] https://download.docker.com/linux/ubuntu focal stable'
+    key: 'https://download.docker.com/linux/ubuntu/gpg'
+
+  elastic-7.x:
     content: 'deb https://artifacts.elastic.co/packages/oss-7.x/apt stable main'
-    path: '/etc/apt/sources.list.d/elastic-7.x.list'
+    key: 'https://artifacts.elastic.co/GPG-KEY-elasticsearch'
 
-  opendistroforelasticsearch':
-    key: 'https://d3g5vo6xdbdb9a.cloudfront.net/GPG-KEY-opendistroforelasticsearch'
+  opendistroforelasticsearch:
     content: 'deb https://d3g5vo6xdbdb9a.cloudfront.net/apt stable main'
-    path: '/etc/apt/sources.list.d/opendistroforelasticsearch.list'
+    key: 'https://d3g5vo6xdbdb9a.cloudfront.net/GPG-KEY-opendistroforelasticsearch'
 
-  postgresql':
-    key: 'https://www.postgresql.org/media/keys/ACCC4CF8.asc'
+  # postgresql
+  pgdg:
     content: 'deb http://apt.postgresql.org/pub/repos/apt focal-pgdg main'
-    path: '/etc/apt/sources.list.d/pgdg.list'
-
-  # Historical packages from apt.postgresql.org
-  postgresql-archive':
     key: 'https://www.postgresql.org/media/keys/ACCC4CF8.asc'
+
+  # postgresql historical packages from apt.postgresql.org
+  pgdg-archive:
     content: 'deb http://apt-archive.postgresql.org/pub/repos/apt focal-pgdg-archive main'
-    path: '/etc/apt/sources.list.d/pgdg-archive.list'
+    key: 'https://www.postgresql.org/media/keys/ACCC4CF8.asc'
 
   # Provides repmgr
-  2ndquadrant':
-    key: 'https://dl.2ndquadrant.com/gpg-key.asc'
+  2ndquadrant-dl-default-release:
     content: 'deb https://dl.2ndquadrant.com/default/release/apt focal-2ndquadrant main'
-    path: '/etc/apt/sources.list.d/2ndquadrant-dl-default-release.list'
+    key: 'https://dl.2ndquadrant.com/gpg-key.asc'

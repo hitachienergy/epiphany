@@ -14,8 +14,8 @@ class Yumdownloader(Command):
 
     def download_packages(self, packages: List[str],
                           arch: str,
-                          exclude: str,
                           destdir: Path,
+                          exclude: str = '',
                           quiet: bool = True):
         args: List[str] = []
 
@@ -23,7 +23,10 @@ class Yumdownloader(Command):
             args.append('--quiet')
 
         args.append(f'--archlist={arch}')
-        args.append(f'--exclude={exclude}')
+
+        if exclude:
+            args.append(f'--exclude={exclude}')
+
         args.append(f'--destdir={str(destdir)}')
         args.extend(packages)
 

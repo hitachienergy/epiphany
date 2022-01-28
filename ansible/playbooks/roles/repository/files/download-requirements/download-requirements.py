@@ -23,7 +23,7 @@ def main(argv: List[str]) -> int:
     try:
         time_begin = datetime.datetime.now()
         if getuid() != 0:
-            print('Error: Needs to be run as root!')
+            print('Error: Needs to be run as root.')
             return 1
 
         config = Config(argv)

@@ -1,21 +1,12 @@
 from pathlib import Path
 from shutil import move
-from typing import List
+from typing import Dict, List
 import logging
 import os
 
 from src.command.toolchain import DebianFamilyToolchain, Toolchain
 from src.config import Config
 from src.mode.base_mode import BaseMode, get_sha256
-
-
-def checksum_matching(sha256sum: str, matching_pkgs: List[Path]) -> bool:
-    # check whether any of the matching file has valid checksum
-    for pkg in matching_pkgs:
-        if sha256sum == get_sha256(pkg):
-            return True
-
-    return False
 
 
 class DebianFamilyMode(BaseMode):
@@ -33,7 +24,7 @@ class DebianFamilyMode(BaseMode):
 
     def __create_repo_paths(self):
         for repo in self._repositories.keys():
-            self._repositories[repo]['path'] = Path(self._repositories[repo]['path'])
+            self._repositories[repo]['path'] = Path('/etc/apt/sources.list.d') / f'{repo}.list'
 
     def _use_backup_repositories(self):
         sources = Path('/etc/apt/sources.list')
@@ -82,42 +73,56 @@ class DebianFamilyMode(BaseMode):
         self._tools.apt.update()
 
     def _download_packages(self):
-        for package in self._requirements['packages']:
-            pkg_base_name = package['name'].split('=')[0]
-            pkg_dir = self._cfg.dest_packages / pkg_base_name
+        packages: Dict[str, Dict] = self._requirements['packages']
+        for package in packages:
+            version: str = ''
+            try:
+                package_base_name, version = package.split('=')  # some packages are in form of `package=version*`
+            except ValueError:
+                package_base_name = package
+
+            pkg_dir = self._cfg.dest_packages / package_base_name
             pkg_dir.mkdir(exist_ok=True, parents=True)  # make sure that the dir exists
+
+            package_info = self._tools.apt_cache.get_package_info(package_base_name, version.strip('*'))
 
             # Files downloaded by `apt download` cannot have custom names
             # and they always starts with a package name + versioning and other info.
             # Find if there is a file corresponding with it's package name
-            matching_pkgs: List[Path] = [pkg_file for pkg_file in pkg_dir.iterdir() if
-                                         pkg_file.name.startswith(pkg_base_name)]
+            try:
+                version = package_info['Version'].split(':')[-1]
+                found_pkg: Path = [pkg_file for pkg_file in pkg_dir.iterdir() if
+                                   pkg_file.name.startswith(f'{package_info["Package"]}_') and
+                                   version in pkg_file.name][0]
 
-            if checksum_matching(package['sha256'], matching_pkgs):
-                logging.debug(f'- {package["name"]} - checksum ok, skipped')
-                continue
+                if get_sha256(found_pkg) == package_info['SHA256']:
+                    logging.debug(f'- {package} - checksum ok, skipped')
+                    continue
 
-            logging.info(f'- {package["name"]}')
+            except IndexError:
+                pass  # package not found
+
+            logging.info(f'- {package}')
 
             # path needs to be changed since `apt download` does not allow to set target dir
             os.chdir(pkg_dir)
 
             # resolve dependencies for target package and if needed, download them first
-            deps: List[str] = self._tools.apt_cache.get_package_dependencies(package['name'])
+            deps: List[str] = self._tools.apt_cache.get_package_dependencies(package_base_name)
 
             for dep in deps:
                 logging.info(f'-- {dep}')
                 self._tools.apt.download(dep)
 
             # finally download target package
-            self._tools.apt.download(package['name'])
+            self._tools.apt.download(package)
 
         os.chdir(self._cfg.script_path)
 
     def _download_file(self, file: str):
         self._tools.wget.download(file, directory_prefix=self._cfg.dest_files)
 
-    def _download_dashboard(self, dashboard: str, output_file: Path):
+    def _download_grafana_dashboard(self, dashboard: str, output_file: Path):
         self._tools.wget.download(dashboard, output_document=output_file)
 
     def _download_crane_binary(self, url: str, dest: Path):

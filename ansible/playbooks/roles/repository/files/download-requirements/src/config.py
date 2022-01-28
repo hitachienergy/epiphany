@@ -24,7 +24,7 @@ class OSArch(Enum):
 
 class Config:
     def __init__(self, argv: List[str]):
-        self.dest_dashboards: Path
+        self.dest_grafana_dashboards: Path
         self.dest_dir: Path
         self.dest_files: Path
         self.dest_images: Path
@@ -56,10 +56,10 @@ class Config:
         lines.append(f'OS Type: {self.os_type.value}')
         lines.append(f'Script location: {str(self.script_path.absolute())}')
         lines.append(f'Directories used:')
-        lines.append(f'- dashboards: {str(self.dest_dashboards)}')
-        lines.append(f'- files:      {str(self.dest_files)}')
-        lines.append(f'- images:     {str(self.dest_images)}')
-        lines.append(f'- packages:   {str(self.dest_packages)}')
+        lines.append(f'- files:              {str(self.dest_files)}')
+        lines.append(f'- grafana dashboards: {str(self.dest_grafana_dashboards)}')
+        lines.append(f'- images:             {str(self.dest_images)}')
+        lines.append(f'- packages:           {str(self.dest_packages)}')
 
         lines.append(f'Enable repos backup: {"Yes" if self.enable_backup else "No"}')
         if self.enable_backup:
@@ -135,6 +135,8 @@ class Config:
         raise CriticalError('Could not detect OS type')
 
     def __setup_logger(self, log_level: str, log_file: Path, no_logfile: bool):
+        logging.getLogger('poyo').setLevel(logging.WARNING)  # remove poyo debugging
+
         # setup the logger:
         log_levels = {
             # map input log level to Python's logging library
@@ -177,7 +179,7 @@ class Config:
         # add required arguments:
         self.os_type = self.__detect_os_type() if args['os_type'][0] == 'detect' else self.__get_matching_os_type(args['os_type'][0])
         self.dest_dir = args['destination_dir'][0]
-        self.dest_dashboards = self.dest_dir / 'dashboards'
+        self.dest_grafana_dashboards = self.dest_dir / 'grafana_dashboards'
         self.dest_files = self.dest_dir / 'files'
         self.dest_images = self.dest_dir / 'images'
         self.dest_packages = self.dest_dir / 'packages'

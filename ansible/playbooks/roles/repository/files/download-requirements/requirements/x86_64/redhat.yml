@@ -1,276 +1,153 @@
 ---
 prereq-packages:
   # packages-repo-prereqs
-  - name: 'apr'  # for httpd
-    sha256: abc
-  - name: 'apr-util'  # for httpd
-    sha256: abc
-  - name: 'createrepo'
-    sha256: abc
-  - name: 'deltarpm'  # for createrepo
-    sha256: abc
-  - name: 'httpd'
-    sha256: abc
-  - name: 'httpd-tools'  # for httpd
-    sha256: abc
-  - name: 'mailcap'  # for httpd
-    sha256: abc
-  - name: 'mod_ssl'  # for httpd
-    sha256: abc
-  - name: 'python-chardet'  # for createrepo
-    sha256: abc
-  - name: 'python-deltarpm'  # for createrepo
-    sha256: abc
-  - name: 'python-kitchen'  # for createrepo
-    sha256: abc
-  - name: 'redhat-logos'  # for httpd
-    sha256: abc
-  - name: 'yum-utils'
-    sha256: abc
+  - 'apr'  # for httpd
+  - 'apr-util'  # for httpd
+  - 'createrepo'
+  - 'deltarpm'  # for createrepo
+  - 'httpd'
+  - 'httpd-tools'  # for httpd
+  - 'mailcap'  # for httpd
+  - 'mod_ssl'  # for httpd
+  - 'python-chardet'  # for createrepo
+  - 'python-deltarpm'  # for createrepo
+  - 'python-kitchen'  # for createrepo
+  - 'redhat-logos'  # for httpd
+  - 'yum-utils'
 
 packages:
-  - name: 'audit'  # for docker-ce
-    sha256: abc
-  - name: 'bash-completion'
-    sha256: abc
-  - name: 'ca-certificates'
-    sha256: abc
-  - name: 'cifs-utils'
-    sha256: abc
-  - name: 'conntrack-tools'  # for kubelet
-    sha256: abc
-  - name: 'containerd.io'
-    sha256: abc
-  - name: 'container-selinux'
-    sha256: abc
-  - name: 'cri-tools-1.13.0'
-    sha256: abc
-  - name: 'curl'
-    sha256: abc
-  - name: 'dejavu-sans-fonts'  # for grafana
-    sha256: abc
-  - name: 'docker-ce-20.10.8'
-    sha256: abc
-  - name: 'docker-ce-cli-20.10.8'
-    sha256: abc
-  - name: 'docker-ce-rootless-extras-20.10.8'
-    sha256: abc
-  - name: 'ebtables'
-    sha256: abc
-  - name: 'elasticsearch-curator-5.8.3'
-    sha256: abc
-  - name: 'elasticsearch-oss-7.10.2'  # for opendistroforelasticsearch & logging roles
-    sha256: abc
-  - name: 'ethtool'
-    sha256: abc
-  - name: 'filebeat-7.9.2'
-    sha256: abc
-  - name: 'firewalld'
-    sha256: abc
-  - name: 'fontconfig'  # for grafana
-    sha256: abc
-  - name: 'fping'
-    sha256: abc
-  - name: 'fuse-overlayfs'  # for docker-ce-rootless-extras
-    sha256: abc
-  - name: 'gnutls'  # for cifs-utils
-    sha256: abc
-  - name: 'gssproxy'  # for nfs-utils
-    sha256: abc
-  - name: 'htop'
-    sha256: abc
-  - name: 'iftop'
-    sha256: abc
-  - name: 'ipset'  # for firewalld
-    sha256: abc
-  - name: 'java-1.8.0-openjdk-headless'
-    sha256: abc
-  - name: 'javapackages-tools'  # for java-1.8.0-openjdk-headless
-    sha256: abc
-  - name: 'jq'
-    sha256: abc
-  - name: 'libini_config'  # for nfs-utils
-    sha256: abc
-  - name: 'libselinux-python'
-    sha256: abc
-  - name: 'libsemanage-python'
-    sha256: abc
-  - name: 'libX11'  # for grafana
-    sha256: abc
-  - name: 'libxcb'  # for grafana
-    sha256: abc
-  - name: 'libXcursor'  # for grafana
-    sha256: abc
-  - name: 'libXt'  # for grafana
-    sha256: abc
-  - name: 'logrotate'
-    sha256: abc
-  - name: 'net-tools'
-    sha256: abc
-  - name: 'nfs-utils'
-    sha256: abc
-  - name: 'nmap-ncat'
-    sha256: abc
+  - 'audit'  # for docker-ce
+  - 'bash-completion'
+  - 'ca-certificates'
+  - 'cifs-utils'
+  - 'conntrack-tools'  # for kubelet
+  - 'containerd.io'
+  - 'container-selinux'
+  - 'cri-tools-1.13.0'
+  - 'curl'
+  - 'dejavu-sans-fonts'  # for grafana
+  - 'docker-ce-20.10.8'
+  - 'docker-ce-cli-20.10.8'
+  - 'docker-ce-rootless-extras-20.10.8'
+  - 'ebtables'
+  - 'elasticsearch-curator-5.8.3'
+  - 'elasticsearch-oss-7.10.2'  # for opendistroforelasticsearch & logging roles
+  - 'ethtool'
+  - 'filebeat-7.9.2'
+  - 'firewalld'
+  - 'fontconfig'  # for grafana
+  - 'fping'
+  - 'fuse-overlayfs'  # for docker-ce-rootless-extras
+  - 'gnutls'  # for cifs-utils
+  - 'gssproxy'  # for nfs-utils
+  - 'htop'
+  - 'iftop'
+  - 'ipset'  # for firewalld
+  - 'java-1.8.0-openjdk-headless'
+  - 'javapackages-tools'  # for java-1.8.0-openjdk-headless
+  - 'jq'
+  - 'libini_config'  # for nfs-utils
+  - 'libselinux-python'
+  - 'libsemanage-python'
+  - 'libX11'  # for grafana
+  - 'libxcb'  # for grafana
+  - 'libXcursor'  # for grafana
+  - 'libXt'  # for grafana
+  - 'logrotate'
+  - 'net-tools'
+  - 'nfs-utils'
+  - 'nmap-ncat'
 
   # Open Distro for Elasticsearch plugins are installed individually to not download them twice in different versions (as dependencies of opendistroforelasticsearch package)
-  - name: 'opendistro-alerting-1.13.1.*'
-    sha256: abc
-  - name: 'opendistro-index-management-1.13.1.*'
-    sha256: abc
-  - name: 'opendistro-job-scheduler-1.13.0.*'
-    sha256: abc
-  - name: 'opendistro-performance-analyzer-1.13.0.*'
-    sha256: abc
-  - name: 'opendistro-security-1.13.1.*'
-    sha256: abc
-  - name: 'opendistro-sql-1.13.0.*'
-    sha256: abc
-  - name: 'opendistroforelasticsearch-kibana-1.13.1'  # kibana has shorter version
-    sha256: abc
-  - name: 'openssl'
-    sha256: abc
-  - name: 'perl'  # for vim
-    sha256: abc
-  - name: 'perl-Getopt-Long'  # for vim
-    sha256: abc
-  - name: 'perl-libs'  # for vim
-    sha256: abc
-  - name: 'perl-Pod-Perldoc'  # for vim
-    sha256: abc
-  - name: 'perl-Pod-Simple'  # for vim
-    sha256: abc
-  - name: 'perl-Pod-Usage'  # for vim
-    sha256: abc
-  - name: 'pgaudit15_13-1.5.0'
-    sha256: abc
-  - name: 'policycoreutils-python'  # for container-selinux
-    sha256: abc
-  - name: 'pyldb'  # for cifs-utils
-    sha256: abc
-  - name: 'python-cffi'  # for python2-cryptography
-    sha256: abc
-  - name: 'python-firewall'  # for firewalld
-    sha256: abc
-  - name: 'python-kitchen'  # for yum-utils
-    sha256: abc
-  - name: 'python-lxml'  # for java-1.8.0-openjdk-headless
-    sha256: abc
-  - name: 'python-psycopg2'
-    sha256: abc
-  - name: 'python-pycparser'  # for python2-cryptography
-    sha256: abc
-  - name: 'python-setuptools'
-    sha256: abc
-  - name: 'python-slip-dbus'  # for firewalld
-    sha256: abc
-  - name: 'python2-cryptography'  # for Ansible (certificate modules)
-    sha256: abc
-  - name: 'python3-3.6.8'
-    sha256: abc
-  - name: 'quota'  # for nfs-utils
-    sha256: abc
-  - name: 'rabbitmq-server-3.8.9'
-    sha256: abc
-  - name: 'rh-haproxy18'
-    sha256: abc
-  - name: 'rh-haproxy18-haproxy-syspaths'
-    sha256: abc
-  - name: 'postgresql13-server'
-    sha256: abc
-  - name: 'repmgr10-5.2.1'  # used to upgrade repmgr first
-    sha256: abc
-  - name: 'repmgr13-5.2.1'
-    sha256: abc
-  - name: 'samba-client'
-    sha256: abc
-  - name: 'samba-client-libs'  # for samba-client
-    sha256: abc
-  - name: 'samba-common'
-    sha256: abc
-  - name: 'samba-libs'  # for cifs-utils
-    sha256: abc
-  - name: 'sysstat'
-    sha256: abc
-  - name: 'tar'
-    sha256: abc
-  - name: 'telnet'
-    sha256: abc
-  - name: 'tmux'
-    sha256: abc
-  - name: 'urw-base35-fonts'  # for grafana
-    sha256: abc
-  - name: 'unzip'
-    sha256: abc
-  - name: 'vim-common'  # for vim
-    sha256: abc
-  - name: 'vim-enhanced'
-    sha256: abc
-  - name: 'wget'
-    sha256: abc
-  - name: 'xorg-x11-font-utils'  # for grafana
-    sha256: abc
-  - name: 'xorg-x11-server-utils'  # for grafana
-    sha256: abc
-  - name: 'yum-plugin-versionlock'
-    sha256: abc
-  - name: 'yum-utils'
-    sha256: abc
+  - 'opendistro-alerting-1.13.1.*'
+  - 'opendistro-index-management-1.13.1.*'
+  - 'opendistro-job-scheduler-1.13.0.*'
+  - 'opendistro-performance-analyzer-1.13.0.*'
+  - 'opendistro-security-1.13.1.*'
+  - 'opendistro-sql-1.13.0.*'
+  - 'opendistroforelasticsearch-kibana-1.13.1'  # kibana has shorter version
+  - 'openssl'
+  - 'perl'  # for vim
+  - 'perl-Getopt-Long'  # for vim
+  - 'perl-libs'  # for vim
+  - 'perl-Pod-Perldoc'  # for vim
+  - 'perl-Pod-Simple'  # for vim
+  - 'perl-Pod-Usage'  # for vim
+  - 'pgaudit15_13-1.5.0'
+  - 'policycoreutils-python'  # for container-selinux
+  - 'pyldb'  # for cifs-utils
+  - 'python-cffi'  # for python2-cryptography
+  - 'python-firewall'  # for firewalld
+  - 'python-kitchen'  # for yum-utils
+  - 'python-lxml'  # for java-1.8.0-openjdk-headless
+  - 'python-psycopg2'
+  - 'python-pycparser'  # for python2-cryptography
+  - 'python-setuptools'
+  - 'python-slip-dbus'  # for firewalld
+  - 'python2-cryptography'  # for Ansible (certificate modules)
+  - 'python3-3.6.8'
+  - 'quota'  # for nfs-utils
+  - 'rabbitmq-server-3.8.9'
+  - 'rh-haproxy18'
+  - 'rh-haproxy18-haproxy-syspaths'
+  - 'postgresql13-server'
+  - 'repmgr10-5.2.1'  # used to upgrade repmgr first
+  - 'repmgr13-5.2.1'
+  - 'samba-client'
+  - 'samba-client-libs'  # for samba-client
+  - 'samba-common'
+  - 'samba-libs'  # for cifs-utils
+  - 'sysstat'
+  - 'tar'
+  - 'telnet'
+  - 'tmux'
+  - 'urw-base35-fonts'  # for grafana
+  - 'unzip'
+  - 'vim-common'  # for vim
+  - 'vim-enhanced'
+  - 'wget'
+  - 'xorg-x11-font-utils'  # for grafana
+  - 'xorg-x11-server-utils'  # for grafana
+  - 'yum-plugin-versionlock'
+  - 'yum-utils'
 
   # to make remote-to-remote "synchronize" work in ansible
-  - name: 'rsync'
-    sha256: abc
+  - 'rsync'
 
   # K8s v1.18.6 (Epiphany >= v0.7.1)
-  - name: 'kubeadm-1.18.6'
-    sha256: abc
-  - name: 'kubectl-1.18.6'
-    sha256: abc
-  - name: 'kubelet-1.18.6'
-    sha256: abc
+  - 'kubeadm-1.18.6'
+  - 'kubectl-1.18.6'
+  - 'kubelet-1.18.6'
 
   # K8s v1.19.15 (Epiphany >= v1.3 transitional version)
-  - name: 'kubeadm-1.19.15'
-    sha256: abc
-  - name: 'kubectl-1.19.15'
-    sha256: abc
-  - name: 'kubelet-1.19.15'
-    sha256: abc
+  - 'kubeadm-1.19.15'
+  - 'kubectl-1.19.15'
+  - 'kubelet-1.19.15'
 
   # K8s v1.20.12
-  - name: 'kubeadm-1.20.12'
-    sha256: abc
-  - name: 'kubectl-1.20.12'
-    sha256: abc
-  - name: 'kubelet-1.20.12'
-    sha256: abc
+  - 'kubeadm-1.20.12'
+  - 'kubectl-1.20.12'
+  - 'kubelet-1.20.12'
 
   # K8s v1.21.7 (Epiphany >= v1.3, transitional version)
-  - name: 'kubeadm-1.21.7'
-    sha256: abc
-  - name: 'kubectl-1.21.7'
-    sha256: abc
-  - name: 'kubelet-1.21.7'
-    sha256: abc
+  - 'kubeadm-1.21.7'
+  - 'kubectl-1.21.7'
+  - 'kubelet-1.21.7'
 
   # K8s v1.22.4
-  - name: 'kubeadm-1.22.4'
-    sha256: abc
-  - name: 'kubectl-1.22.4'
-    sha256: abc
-  - name: 'kubelet-1.22.4'
-    sha256: abc
+  - 'kubeadm-1.22.4'
+  - 'kubectl-1.22.4'
+  - 'kubelet-1.22.4'
 
   # Kubernetes Generic
-  - name: 'kubernetes-cni-0.8.6-0'  # since K8s v1.18.6
-    sha256: abc
-  - name: 'kubernetes-cni-0.8.7-0'  # since K8s v1.19.15
-    sha256: abc
+  - 'kubernetes-cni-0.8.6-0'  # since K8s v1.18.6
+  - 'kubernetes-cni-0.8.7-0'  # since K8s v1.19.15
 
 files:
   # Github repository for erlang rpm is used since packagecloud repository is limited to a certain number of versions and erlang package from erlang-solutions repository is much more complex and bigger
-  - url: 'https://github.com/rabbitmq/erlang-rpm/releases/download/v23.1.5/erlang-23.1.5-1.el7.x86_64.rpm'
+  'https://github.com/rabbitmq/erlang-rpm/releases/download/v23.1.5/erlang-23.1.5-1.el7.x86_64.rpm':
     sha256: abc
 
   # Grafana package is not downloaded from repository since it was not reliable (issue #2449)
-  - url: 'https://dl.grafana.com/oss/release/grafana-7.3.5-1.x86_64.rpm'
+  'https://dl.grafana.com/oss/release/grafana-7.3.5-1.x86_64.rpm':
     sha256: abc

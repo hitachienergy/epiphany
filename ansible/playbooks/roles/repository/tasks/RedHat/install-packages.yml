@@ -3,15 +3,8 @@
   yum:
     name:
       - python3  # python3.6 by default on RHEL7
-      - rh-python36-PyYAML
     state: present
   register: result
   retries: 3
   delay: 1
   until: result is succeeded
-
-- name: Create symlink to PyYAML for python3.6  # Needed on RHEL7
-  file:
-    src: /opt/rh/rh-python36/root/usr/lib64/python3.6/site-packages/yaml
-    dest: /usr/lib64/python3.6/site-packages/yaml
-    state: link

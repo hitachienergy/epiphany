@@ -2,14 +2,24 @@ import logging
 from collections import defaultdict
 from os import chmod
 from pathlib import Path
-from typing import Dict, List
+from typing import Any, Dict
 from hashlib import sha256
 
-import yaml
+from poyo import parse_string, PoyoException
 
 from src.command.toolchain import Toolchain
 from src.config import Config
 from src.error import CriticalError
+
+
+def load_yaml_file(filename: Path) -> Any:
+    try:
+        with open(filename, encoding="utf-8") as req_handler:
+            return parse_string(req_handler.read())
+    except PoyoException as exc:
+        logging.error(exc)
+    except Exception:
+        logging.error(f'Failed loading: {filename}')
 
 
 def get_sha256(req_path: Path) -> str:
@@ -38,7 +48,7 @@ class BaseMode:
         self._cfg = config
 
         self._repositories: Dict[str, Dict] = self.__parse_repositories()
-        self._requirements: Dict[str, List[Dict]] = self.__parse_requirements()
+        self._requirements: Dict[str, Any] = self.__parse_requirements()
 
         self._tools: Toolchain = self._construct_toolchain()
 
@@ -48,27 +58,24 @@ class BaseMode:
 
         :returns: parsed repositories data
         """
-        stream = open(self._cfg.repo_path / f'{self._cfg.distro_subdir}.yml')
-        return yaml.safe_load(stream)['repositories']
+        return load_yaml_file(self._cfg.repo_path / f'{self._cfg.distro_subdir}.yml')['repositories']
 
-    def __parse_requirements(self) -> Dict[str, List[Dict]]:
+    def __parse_requirements(self) -> Dict[str, Any]:
         """
         Load requirements for target architecture/distro from a yaml file.
 
         :returns: parsed requirements data
         """
-        reqs = defaultdict(list)
+        reqs = defaultdict(dict)
 
         # target distro requirements
-        stream = open(self._cfg.reqs_path / f'{self._cfg.distro_subdir}.yml')
-        content = yaml.safe_load(stream)
-        for key in content.keys():
-            reqs[key].extend(content[key])
+        content = load_yaml_file(self._cfg.reqs_path / f'{self._cfg.distro_subdir}.yml')
+        reqs['packages'] = content['packages']
+        reqs['files'].update(content['files'])
 
-        for common_reqs in ['crane', 'files', 'images', 'dashboards']:
-            stream = open(self._cfg.reqs_path / f'{common_reqs}.yml')
-            content = yaml.safe_load(stream)
-            reqs[common_reqs].extend(content[common_reqs])
+        for common_reqs in ['cranes', 'files', 'images', 'grafana-dashboards']:
+            content = load_yaml_file(self._cfg.reqs_path / f'{common_reqs}.yml')
+            reqs[common_reqs].update(content[common_reqs])
 
         return reqs
 
@@ -112,9 +119,9 @@ class BaseMode:
         """
         raise NotImplementedError
 
-    def _download_dashboard(self, dashboard: str, output_file: Path):
+    def _download_grafana_dashboard(self, dashboard: str, output_file: Path):
         """
-        Run command for downloading `dashboard` on target OS.
+        Run command for downloading `grafana dashboard` on target OS.
 
         :param dashboard: to be downloded
         :param output_file: under which filename dashboard will be saved
@@ -134,34 +141,36 @@ class BaseMode:
         """
         Download files under `self._requirements['files']`
         """
-        for file in self._requirements['files']:
+        files: Dict[str, Dict] = self._requirements['files']
+        for file in files:
             try:
-                filepath = self._cfg.dest_files / file['url'].split('/')[-1]
-                if file['sha256'] == get_sha256(filepath):
-                    logging.debug(f'- {file["url"]} - checksum ok, skipped')
+                filepath = self._cfg.dest_files / file.split('/')[-1]
+                if files[file]['sha256'] == get_sha256(filepath):
+                    logging.debug(f'- {file} - checksum ok, skipped')
                     continue
 
-                logging.info(f'- {file["url"]}')
-                self._download_file(file['url'])
+                logging.info(f'- {file}')
+                self._download_file(file)
             except CriticalError:
-                logging.warn(f'Could not download file: {file["url"]}')
+                logging.warn(f'Could not download file: {file}')
 
-    def __download_dashboards(self):
+    def __download_grafana_dashboards(self):
         """
-        Download dashboards under `self._requirements['dashboards']`
+        Download grafana dashboards under `self._requirements['grafana-dashboards']`
         """
-        for dashboard in self._requirements['dashboards']:
+        dashboards: Dict[str, Dict] = self._requirements['grafana-dashboards']
+        for dashboard in dashboards:
             try:
-                output_file = self._cfg.dest_dashboards / f'{dashboard["name"]}.json'
+                output_file = self._cfg.dest_grafana_dashboards / f'{dashboard}.json'
 
-                if dashboard['sha256'] == get_sha256(output_file):
-                    logging.debug(f'- {dashboard["name"]} - checksum ok, skipped')
+                if dashboards[dashboard]['sha256'] == get_sha256(output_file):
+                    logging.debug(f'- {dashboard} - checksum ok, skipped')
                     continue
 
-                logging.info(f'- {dashboard["name"]}')
-                self._download_dashboard(dashboard['url'], output_file)
+                logging.info(f'- {dashboard}')
+                self._download_grafana_dashboard(dashboards[dashboard]['url'], output_file)
             except CriticalError:
-                logging.warn(f'Could not download file: {dashboard["name"]}')
+                logging.warn(f'Could not download grafana dashboard: {dashboard}')
 
     def __download_crane(self):
         """
@@ -170,11 +179,13 @@ class BaseMode:
         crane_path = self._cfg.dest_dir / 'crane'
         crane_package_path = Path(f'{crane_path}.tar.gz')
 
-        if self._requirements['crane'][0]['sha256'] == get_sha256(crane_package_path):
+        cranes = self._requirements['cranes']
+        first_crane = next(iter(cranes))  # right now we use only single crane source
+        if cranes[first_crane]['sha256'] == get_sha256(crane_package_path):
             logging.debug(f'crane - checksum ok, skipped')
             return
 
-        self._download_crane_binary(self._requirements['crane'][0]['url'], crane_package_path)
+        self._download_crane_binary(first_crane, crane_package_path)
         self._tools.tar.unpack(crane_package_path, 'crane', directory=self._cfg.dest_dir)
         chmod(crane_path, 0o0755)
 
@@ -188,19 +199,20 @@ class BaseMode:
         Download images under `self._requirements['images']` using Crane
         """
         platform: str = 'linux/amd64' if self._cfg.os_arch.X86_64 else 'linux/arm64'
-        for image in self._requirements['images']:
+        images = self._requirements['images']
+        for image in images:
             try:
-                url, version = image['name'].split(':')
+                url, version = image.split(':')
                 filename = Path(f'{url.split("/")[-1]}_{version}.tar')  # format: image_version.tar
 
-                if image['sha256'] == get_sha256(self._cfg.dest_images / filename):
-                    logging.debug(f'- {image["name"]} - checksum ok, skipped')
+                if images[image]['sha256'] == get_sha256(self._cfg.dest_images / filename):
+                    logging.debug(f'- {image} - checksum ok, skipped')
                     continue
 
-                logging.info(f'- {image["name"]}')
-                self._tools.crane.pull(image['name'], self._cfg.dest_images / filename, platform)
+                logging.info(f'- {image}')
+                self._tools.crane.pull(image, self._cfg.dest_images / filename, platform)
             except CriticalError:
-                logging.warn(f'Could not download image: `{image["name"]}`')
+                logging.warn(f'Could not download image: `{image}`')
 
     def _cleanup(self):
         """
@@ -217,8 +229,8 @@ class BaseMode:
             :class:`Exception`: on I/O OS failures
         """
         # add required directories
-        self._cfg.dest_dashboards.mkdir(exist_ok=True, parents=True)
         self._cfg.dest_files.mkdir(exist_ok=True, parents=True)
+        self._cfg.dest_grafana_dashboards.mkdir(exist_ok=True, parents=True)
         self._cfg.dest_images.mkdir(exist_ok=True, parents=True)
         self._cfg.dest_packages.mkdir(exist_ok=True, parents=True)
 
@@ -242,9 +254,9 @@ class BaseMode:
         self.__download_files()
         logging.info('Done downloading files.')
 
-        logging.info('Downloading dashboards...')
-        self.__download_dashboards()
-        logging.info('Done downloading dashboards.')
+        logging.info('Downloading grafana dashboards...')
+        self.__download_grafana_dashboards()
+        logging.info('Done downloading grafana dashboards.')
 
         logging.info('Downloading Crane...')
         self.__download_crane()

@@ -1,7 +1,7 @@
 import logging
 import shutil
 from pathlib import Path
-from typing import List
+from typing import Dict, List
 
 from src.command.command import Command
 from src.command.toolchain import RedHatFamilyToolchain, Toolchain
@@ -88,13 +88,13 @@ class RedHatFamilyMode(BaseMode):
         for repo in self._repositories:
             repo_filepath = Path('/etc/yum.repos.d') / f'{repo}.repo'
             content = self._repositories[repo]['data']
-            content = content + f'\ngpgkey={" ".join(self._repositories[repo]["gpgkeys"])}'
+            content = content + f'\ngpgkey={" ".join(self._repositories[repo]["gpg_keys"])}'
 
             if not self._tools.yum.is_repo_enabled(repo):
                 with open(repo_filepath, mode='w') as repo_handler:
                     repo_handler.write(content)
 
-                for key in self._repositories[repo]['gpgkeys']:
+                for key in self._repositories[repo]['gpg_keys']:
                     self._tools.rpm.import_key(key)
 
             self._tools.yum.accept_keys()
@@ -154,13 +154,17 @@ class RedHatFamilyMode(BaseMode):
         prereqs_dir.mkdir(exist_ok=True, parents=True)
 
         collected_prereqs: List[str] = []
-        for prereq_pkg in self._requirements['prereq-packages']:
-            packages = self._tools.repoquery.query(prereq_pkg['name'],
+        prereq_packages: List[str] = self._requirements['prereq-packages']
+        for prereq_pkg in prereq_packages:
+            packages = self._tools.repoquery.query(prereq_pkg,
                                                    queryformat='%{ui_nevra}',
                                                    arch=self._cfg.os_arch.value)
 
-            if get_sha256(packages[0]) == prereq_pkg['sha256']:
-                continue
+            try:
+                if get_sha256(packages[0]) == self._tools.yumdb.get_sha256(prereq_pkg):
+                    continue
+            except KeyError:
+                pass  # no sha256 available for this package
 
             collected_prereqs.extend(packages)
 
@@ -174,24 +178,25 @@ class RedHatFamilyMode(BaseMode):
     def _download_packages(self):
         self.__download_prereq_packages()
 
-        for package in self._requirements['packages']:
+        packages: List[str] = self._requirements['packages']
+        for package in packages:
             # package itself
             packages_to_download: List[str] = []
-            package_name = self._tools.repoquery.query(package['name'],
+            package_name = self._tools.repoquery.query(package,
                                                        queryformat='%{ui_nevra}',
                                                        arch=self._cfg.os_arch.value)[0]
 
-            package_dir_name = self._cfg.dest_packages / package['name']
+            package_dir_name = self._cfg.dest_packages / package
             package_file = package_dir_name / package_name
 
-            if get_sha256(package_file) == package['sha256']:
+            if get_sha256(package_file) == self._tools.yumdb.get_sha256(package):
                 continue
 
             packages_to_download.append(package_name)
 
             # dependencies
             try:
-                packages_to_download.extend(self._tools.repoquery.query(package['name'],
+                packages_to_download.extend(self._tools.repoquery.query(package,
                                                                         queryformat='%{name}.%{arch}',
                                                                         arch=self._cfg.os_arch.value,
                                                                         requires=True,
@@ -210,7 +215,7 @@ class RedHatFamilyMode(BaseMode):
     def _download_file(self, file: str):
         self._tools.wget.download(file, directory_prefix=self._cfg.dest_files, additional_params=False)
 
-    def _download_dashboard(self, dashboard: str, output_file: Path):
+    def _download_grafana_dashboard(self, dashboard: str, output_file: Path):
         self._tools.wget.download(dashboard, output_document=output_file, additional_params=False)
 
     def _download_crane_binary(self, url: str, dest: Path):

@@ -27,7 +27,8 @@
 - name: Setup venv and download Epiphany requirements on repository host  # online mode
   block:
     - name: Install required packages for repository
-      include_tasks: "{{ ansible_os_family }}/install-packages.yml"
+      include_tasks: "RedHat/install-packages.yml"
+      when: ansible_os_family == "RedHat"
 
     - name: Create download-requirements directory
       file:
