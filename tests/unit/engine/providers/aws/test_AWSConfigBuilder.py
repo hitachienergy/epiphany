@@ -53,12 +53,7 @@ def test_get_autoscaling_group_should_set_proper_values_to_model():
     })
     subnets = [
         dict_to_objdict({'specification': {
-            'name': 'subnet1',
-            'availability_zone': 'availabilityzone1'
-        }}),
-        dict_to_objdict({'specification': {
-            'name': 'subnet2',
-            'availability_zone': 'availabilityzone2'
+            'name': 'subnet1'
         }})
     ]
 
@@ -69,8 +64,7 @@ def test_get_autoscaling_group_should_set_proper_values_to_model():
     assert actual.specification.cluster_name == 'testcluster'
     assert actual.specification.name == 'prefix-testcluster-testcomponent-asg-1'
     assert actual.specification.count == 4
-    assert actual.specification.subnet_names == ['subnet1', 'subnet2']
-    assert actual.specification.availability_zones == ['availabilityzone1', 'availabilityzone2']
+    assert actual.specification.subnet_name == 'subnet1'
     assert {'cluster_name': 'testcluster'} in actual.specification.tags
     assert {'TestComponent': ''} in actual.specification.tags
 
@@ -107,8 +101,7 @@ def test_get_launch_configuration_should_set_proper_values_to_model():
 def test_get_subnet_config_should_set_proper_values_to_model():
     cluster_model = get_cluster_model(cluster_name='TestCluster')
     component_value = dict_to_objdict({
-        'address_pool': '10.20.0.0/24',
-        'availability_zone': 'eu-west-2a'
+        'address_pool': '10.20.0.0/24'
     })
     builder = InfrastructureBuilder([cluster_model])
 
@@ -117,7 +110,6 @@ def test_get_subnet_config_should_set_proper_values_to_model():
     assert actual.specification.name == 'prefix-testcluster-component-subnet-1'
     assert actual.specification.vpc_name == 'my-test-vpc'
     assert actual.specification.cidr_block == '10.20.0.0/24'
-    assert actual.specification.availability_zone == 'eu-west-2a'
 
 
 def test_get_security_group_should_set_proper_values_to_model():

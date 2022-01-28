@@ -3,52 +3,36 @@
 #####################################################
 #####################################################
 # This file can be used as a base template to build other Terraform files. It attempts to use as much
-# Terraform interpolation as possible by creating Terraform variables instead of changing inline
+# Terraform interprolation as possible by creating Terraform variables instead of changing inline
 # this approach provides an easier way to do creative looping, fetch IDs of created resources etc.
 #####################################################
 #####################################################
 # {{ specification.name }}
 #####################################################
 
-resource "aws_autoscaling_group" "{{ specification.name }}" {
-  name                 = "{{ specification.name }}"
-  max_size             = "{{ specification.count }}"
-  min_size             = "{{ specification.count }}"
-  desired_capacity     = "{{ specification.count }}"
-  force_delete         = "true"
-  launch_configuration = aws_launch_configuration.{{ specification.launch_configuration }}.name
+resource "aws_instance" "{{ specification.name }}" {
+  ami                         = "{{ specification.image_id }}"
+  instance_type               = "{{ specification.size }}"
+  associate_public_ip_address = "{{ specification.associate_public_ip | lower  }}"
+  key_name                    = "{{ specification.key_name }}"
+  subnet_id                   = aws_subnet.{{ specification.subnet_name }}.id
 
-  vpc_zone_identifier = [
-  {%- for name in specification.subnet_names %}
-    aws_subnet.{{ name }}.id,
-  {%- endfor %}
-  ]
+  # security group
+  security_groups   = [{% for security_group in specification.security_groups %}aws_security_group.{{ security_group }}.id{% if not loop.last %}, {% endif %}{% endfor %}]
 
-  tag {
-    key                 = "cluster_name"
-    value               = "{{ specification.cluster_name }}"
-    propagate_at_launch = "true"
+  # storage
+  ebs_optimized = "{{ specification.ebs_optimized | lower }}"
+  root_block_device {
+    volume_type           = "{{ specification.disks.root.volume_type }}"
+    volume_size           = "{{ specification.disks.root.volume_size }}"
+    delete_on_termination = "{{ specification.disks.root.delete_on_termination | lower }}"
+    encrypted             = "{{ specification.disks.root.encrypted | lower }}"
   }
 
-  tag {
-    key                 = "cluster_version"
-    value               = "{{ version }}"
-    propagate_at_launch = "true"
+  tags = {
+    cluster_name    = "{{ specification.cluster_name }}"
+    cluster_version = "{{ version }}"
+    component_key   = "{{ specification.component_key }}"
+    Name            = "{{ specification.name }}"
   }
-
-  tag {
-    key                 = "Name"
-    value               = "{{ specification.name }}"
-    propagate_at_launch = "true"
-  }
-
-  {%- for tag in specification.tags %}
-  tag {
-    {%- for tag_key, tag_value in tag.items() %}
-    key                 = "{{ tag_key }}"
-    value               = "{{ tag_value }}"
-    {%- endfor %}
-    propagate_at_launch = "true"
-  }
-  {%- endfor %}
 }

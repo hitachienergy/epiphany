@@ -37,8 +37,8 @@ class APIProxy:
                     'Values': [vpc_id]
                 },
                 {
-                    'Name': 'tag:'+component_key,
-                    'Values': ['']
+                    'Name': 'tag:component_key',
+                    'Values': [component_key]
                 },
                 {
                     'Name': 'tag:cluster_name',
