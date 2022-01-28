@@ -16,7 +16,7 @@ properties:
   subnet_name:
     type: string
   associate_public_ip:
-    type: string
+    type: boolean
   security_groups:
     type: array
     items:
