@@ -22,8 +22,14 @@ class InfrastructureBuilder(Step):
         self.cluster_name = self.cluster_model.specification.name.lower()
         self.cluster_prefix = self.cluster_model.specification.prefix.lower()
         self.use_network_security_groups = self.cluster_model.specification.cloud.network.use_network_security_groups
+        self.use_public_ips = self.cluster_model.specification.cloud.use_public_ips
         self.docs = docs
         self.manifest_docs = manifest_docs
+
+        # If there are no security groups Ansible provisioning will fail because
+        # SSH is not allowed then with public IPs on Azure.
+        if not(self.use_network_security_groups) and self.use_public_ips:
+            self.logger.warning('Use of security groups has been disabled and public IP are used. Ansible run will fail because SSH will not be allowed.')
 
     def run(self):
         infrastructure = []
@@ -48,9 +54,6 @@ class InfrastructureBuilder(Step):
         infrastructure.append(route_table)
 
         efs_config = self.get_efs_config()
-
-        if not(self.use_network_security_groups):
-            self.logger.warning('The "use_network_security_groups" flag is currently ignored on AWS')
 
         for component_key, component_value in self.cluster_model.specification.components.items():
             vm_count = component_value['count']
@@ -83,11 +86,12 @@ class InfrastructureBuilder(Step):
                                                                             subnet.specification.name, 0)
                 infrastructure.append(route_table_association)
 
-                security_group = self.get_security_group(subnet, component_key, vpc_name, 0)
-                for rule in vm_config.specification.security.rules:
-                    if not self.rule_exists_in_list(security_group.specification.rules, rule):
-                        security_group.specification.rules.append(rule)
-                infrastructure.append(security_group)
+                if self.use_network_security_groups:
+                    security_group = self.get_security_group(subnet, component_key, vpc_name, 0)
+                    for rule in vm_config.specification.security.rules:
+                        if not self.rule_exists_in_list(security_group.specification.rules, rule):
+                            security_group.specification.rules.append(rule)
+                    infrastructure.append(security_group)
 
             for index in range(vm_count):
                 vm = self.get_vm(component_key,
@@ -135,7 +139,9 @@ class InfrastructureBuilder(Step):
         vm.specification.component_key = component_key
         vm.specification.subnet_name = subnet.specification.name
         vm.specification.key_name = public_key_config.specification.key_name
-        vm.specification.security_groups = [security_group.specification.name]
+        vm.specification.use_network_security_groups = self.use_network_security_groups
+        if self.use_network_security_groups:
+            vm.specification.security_groups = [security_group.specification.name]
         vm.specification.associate_public_ip = self.cluster_model.specification.cloud.use_public_ips
         with APIProxy(self.cluster_model, []) as proxy:
             vm.specification.image_id = proxy.get_image_id(vm.specification.os_full_name)

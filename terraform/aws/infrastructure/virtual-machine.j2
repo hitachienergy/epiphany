@@ -16,7 +16,9 @@ resource "aws_instance" "{{ specification.name }}" {
   associate_public_ip_address = "{{ specification.associate_public_ip | lower  }}"
   key_name                    = "{{ specification.key_name }}"
   subnet_id                   = aws_subnet.{{ specification.subnet_name }}.id
+  {%- if specification.use_network_security_groups == true %}
   vpc_security_group_ids      = [{% for security_group in specification.security_groups %}aws_security_group.{{ security_group }}.id{% if not loop.last %}, {% endif %}{% endfor %}]
+  {%- endif %}
 
   # storage
   ebs_optimized = "{{ specification.ebs_optimized | lower }}"

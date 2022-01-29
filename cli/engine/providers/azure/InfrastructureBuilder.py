@@ -24,6 +24,11 @@ class InfrastructureBuilder(Step):
         self.docs = docs
         self.manifest_docs = manifest_docs
 
+        # If there are no security groups Ansible provisioning will fail because
+        # SSH is not allowed then with public IPs on Azure.
+        if not(self.use_network_security_groups) and self.use_public_ips:
+            self.logger.warning('Use of security groups has been disabled and public IP are used. Ansible run will fail because SSH will not be allowed.')
+
         # Check if there is a hostname_domain_extension we already applied and we want to retain.
         # The same as VM images we want to preserve hostname_domain_extension over versions.
         self.hostname_domain_extension = self.cluster_model.specification.cloud.hostname_domain_extension
@@ -60,11 +65,6 @@ class InfrastructureBuilder(Step):
             vm_config = self.get_virtual_machine(component_value)
             # Set property that controls cloud-init.
             vm_config.specification['use_cloud_init_custom_data'] = cloud_init_custom_data.specification.enabled
-
-            # If there are no security groups Ansible provisioning will fail because
-            # SSH is not allowed then with public IPs on Azure.
-            if not(self.use_network_security_groups) and self.use_public_ips:
-                 self.logger.warning('Use of security groups has been disabled and public IP are used. Ansible run will fail because SSH will not be allowed.')
 
             # For now only one subnet per component.
             if (len(component_value.subnets) > 1):

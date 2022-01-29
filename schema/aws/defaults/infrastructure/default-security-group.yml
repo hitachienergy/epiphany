@@ -13,4 +13,3 @@ specification:
 #      destination_port_range: "22"
 #      source_address_prefix: "10.1.0.0/22"
 #      destination_address_prefix: "*"
-
