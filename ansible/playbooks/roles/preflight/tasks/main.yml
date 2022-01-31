@@ -30,31 +30,37 @@
 
 - include_tasks: check-os.yml
 
+- name: Check routing configuration
+  shell: |-
+    set -o pipefail && \
+    ip route show default 0.0.0.0/0
+  register: default_routing_configuration_number
+  failed_when: default_routing_configuration_number.rc != 0
+  args:
+    executable: /bin/bash
+
+- name: Assert only one default routing configuration exists
+  assert:
+    that: default_routing_configuration_number.stdout_lines | length == 1
+    fail_msg: >-
+      Too many or none default routing configuration. Check default routing,
+      read more in troubleshooting document
+    quiet: true
+
 - include_vars:
     file: roles/common/vars/main.yml
     name: common_vars
 
-- name: Validate network configuration
+- name: Validate if ansible_default_ipv4.address matches address from inventory
   when:
     - common_vars.provider == "any"
     - common_vars.specification.cloud is undefined
-  block:
-    - name: Assert default route is defined
-      assert:
-        that: ansible_default_ipv4.address is defined
-        fail_msg: >-
-          ansible_default_ipv4.address is undefined. Check default routing configuration,
-          read more in troubleshooting document
-        quiet: true
-
-    - name: Validate if ansible_default_ipv4.address matches address from inventory
-      when: ansible_default_ipv4.address is defined
-      assert:
-        that: ansible_default_ipv4.address == hostvars[inventory_hostname].ansible_host
-        fail_msg:  >-
-          ansible_default_ipv4.address is {{ ansible_default_ipv4.address }} but inventory uses ip: {{ hostvars[inventory_hostname].ansible_host }}.
-          Check default routing configuration, read more in troubleshooting document
-        quiet: true
+  assert:
+    that: ansible_default_ipv4.address == hostvars[inventory_hostname].ansible_host
+    fail_msg:  >-
+      ansible_default_ipv4.address is {{ ansible_default_ipv4.address }} but inventory uses ip: {{ hostvars[inventory_hostname].ansible_host }}.
+      Check default routing configuration, read more in troubleshooting document
+    quiet: true
 
 - include_tasks: apply.yml
   when: not is_upgrade_run
