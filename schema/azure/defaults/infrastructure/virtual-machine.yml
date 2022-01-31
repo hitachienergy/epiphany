@@ -10,6 +10,8 @@ specification:
   public_key: SET_BY_AUTOMATION
   network_interface_name: SET_BY_AUTOMATION
   availability_set_name: SET_BY_AUTOMATION  # Please don't change this default value, keep it "SET_BY_AUTOMATION"
+  use_network_security_groups: SET_BY_AUTOMATION
+  security_group_association_name: SET_BY_AUTOMATION  
   tags: []
   os_type: linux
   size: Standard_DS1_v2
@@ -21,7 +23,7 @@ specification:
     version: "20.04.202201100" # Never put latest on anything! Need to always pin the version number but testing we can get away with it
   storage_os_disk:
     delete_on_termination: false
-    managed: false
+    managed: true
     caching: ReadWrite
     create_option: FromImage
     disk_size_gb: 32

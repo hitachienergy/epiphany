@@ -84,11 +84,6 @@ Terraform : 1..4 map to the following Terraform verbosity levels:
             3: DEBUG
             4: TRACE''')
 
-    # some arguments we don't want available when running from the docker image.
-    if not config.docker_cli:
-        parser.add_argument('-o', '--output', dest='output_dir', type=str,
-                            help='Directory where the CLI should write it`s output.')
-
     # setup subparsers
     subparsers = parser.add_subparsers()
     prepare_parser(subparsers)
@@ -110,7 +105,7 @@ Terraform : 1..4 map to the following Terraform verbosity levels:
     # add some arguments to the general config so we can easily use them throughout the CLI
     args = parser.parse_args(arguments)
 
-    config.output_dir = getattr(args, 'output_dir', None)
+    config.output_dir = None
     config.log_file = args.log_name
     config.log_format = args.log_format
     config.log_date_format = args.log_date_format
@@ -171,6 +166,9 @@ def prepare_parser(subparsers):
                             help='The OS to prepare the offline requirements for: ubuntu-20.04|redhat-7|centos-7')
 
     #optional
+    optional.add_argument('-o', '--output_dir', dest='output_dir', type=str, required=False,
+                            help='Output directory for the offline requirement scripts.',
+                            default=None)
     sub_parser._action_groups.append(optional)
 
     def run_prepare(args):
@@ -205,7 +203,7 @@ def apply_parser(subparsers):
                             help='Password that will be used to encrypt build artifacts.')
     optional.add_argument('--profile-ansible-tasks', dest='profile_ansible_tasks', action="store_true",
                             help='Enable Ansible profile_tasks plugin for timing tasks. (developer/debug option)')
-    optional.add_argument('--ping-retries', dest='ping_retries', type=int, required=False, action='store', default=5,
+    optional.add_argument('--ping-retries', dest='ping_retries', type=int, required=False, action='store', default=10,
                             help='Number of pings after which Ansible will fail.')
     optional.add_argument('--ansible-forks', dest='ansible_forks', type=int, required=False, action='store', default=10,
                             help='Sets the number of forks in ansible.cfg.')
@@ -296,7 +294,7 @@ def upgrade_parser(subparsers):
                             help='Enable Ansible profile_tasks plugin for timing tasks. (developer/debug option)')
     optional.add_argument('--upgrade-components', dest='upgrade_components', type=comma_separated_type(component_list), required=False,
                             help='Provides comma separated list of components for upgrade selected from the following: [' + ', '.join(map(str, component_list)) + ']')
-    optional.add_argument('--ping-retries', dest='ping_retries', type=int, required=False, action='store', default=5,
+    optional.add_argument('--ping-retries', dest='ping_retries', type=int, required=False, action='store', default=10,
                             help='Number of pings after which Ansible will fail.')
     optional.add_argument('--ansible-forks', dest='ansible_forks', type=int, required=False, action='store', default=10,
                             help='Sets the number of forks in ansible.cfg.')
