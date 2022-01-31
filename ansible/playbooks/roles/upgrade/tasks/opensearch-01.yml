@@ -1,41 +1,64 @@
 ---
-- name: ODFE | Get information about installed packages as facts
+- name: OPS | Get information about installed packages as facts
   package_facts:
     manager: auto
   when: ansible_facts.packages is undefined
 
-- name: ODFE | Assert that elasticsearch-oss package is installed
+- name: OPS | Assert that elasticsearch-oss package is installed
   assert:
     that: ansible_facts.packages['elasticsearch-oss'] is defined
     fail_msg: elasticsearch-oss package not found, nothing to upgrade
     quiet: true
 
-- name: ODFE | Include defaults from opensearch role
+- name: OPS | Include defaults from opensearch role
   include_vars:
     file: roles/opensearch/defaults/main.yml
-    name: odfe_defaults
+    name: ops_defaults
 
-- name: ODFE | Patch log4j
+- name: OPS | Include vars from opensearch role  # requires epicli upgrade -f <manifest>.yml
+  include_vars:
+    file: roles/opensearch/vars/main.yml
+    name: ops_vars
+
+- name: Ensure Opensearch service user exists
+  user:
+    name: "{{ ops_vars.specification.ops_user }}"
+    state: present
+    shell: /bin/bash
+
+- name: Ensure directory structure exists
+  file:
+    path: "{{ item }}"
+    state: directory
+    owner: "{{ ops_vars.specification.ops_user }}"
+    group: "{{ ops_vars.specification.ops_user }}"
+  with_items:
+    - "{{ ops_vars.specification.paths.ops_home }}"
+    - "{{ ops_vars.specification.paths.ops_log_dir }}"
+    - "{{ ops_vars.specification.paths.ops_conf_dir }}"
+    - "{{ ops_defaults.certificates.dirs.certs }}"
+
+- name: OPS | Patch log4j
   include_role:
     name: opensearch
     tasks_from: patch-log4j
-  when: odfe_defaults.log4j_file_name is defined
+  when: ops_defaults.log4j_file_name is defined
 
 - name: Restart elasticsearch service
   systemd:
     name: opensearch
     state: restarted
   register: restart_opensearch
-  when: odfe_defaults.log4j_file_name is defined and log4j_patch.changed
+  when: ops_defaults.log4j_file_name is defined and log4j_patch.changed
 
-- name: ODFE | Print elasticsearch-oss versions
+- name: OPS | Print elasticsearch-oss versions
   debug:
     msg:
       - "Installed version: {{ ansible_facts.packages['elasticsearch-oss'][0].version }}"
-      - "Target version: {{ odfe_defaults.versions[ansible_os_family].elasticsearch_oss }}"
+      - "Target version: {{ ops_defaults.versions[ansible_os_family].ops_version }}"
 
 # If state file exists it means the previous run failed
-- name: ODFE | Check if upgrade state file exists
+- name: OPS | Check if upgrade state file exists
   stat:
     path: "{{ opensearch.upgrade_state_file_path }}"
     get_attributes: false
@@ -43,10 +66,11 @@
     get_mime: false
   register: stat_upgrade_state_file
 
-- name: ODFE | Upgrade Elasticsearch and ODFE plugins (part 1/2)
+- name: OPS | Upgrade Elasticsearch and ODFE plugins (part 1/2)
   include_tasks: opensearch/upgrade-opensearch-01.yml
-  when:  _target_version is version(ansible_facts.packages['elasticsearch-oss'][0].version, '>')
-     or (_target_version is version(ansible_facts.packages['elasticsearch-oss'][0].version, '==')
-         and stat_upgrade_state_file.stat.exists)
+  # This check will be reenabled when the upgrade will be done again within sinlge product
+  # when:  _target_version is version(ansible_facts.packages['elasticsearch-oss'][0].version, '>')
+  #    or (_target_version is version(ansible_facts.packages['elasticsearch-oss'][0].version, '==')
+  #        and stat_upgrade_state_file.stat.exists)
   vars:
-    _target_version: "{{ odfe_defaults.versions[ansible_os_family].elasticsearch_oss }}"
+    _target_version: "{{ ops_defaults.versions[ansible_os_family].ops_version }}"
