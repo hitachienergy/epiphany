@@ -10,7 +10,7 @@ controlPlaneEndpoint: "localhost:3446"
 apiServer:
   timeoutForControlPlane: 4m0s
   certSANs:
-{% set address_list = ['127.0.0.1'] %}
+{% set address_list = ['127.0.0.1', 'localhost'] %}
 {% for host in groups['kubernetes_master'] %}
 {%   set _ = address_list.extend([ hostvars[host]['ansible_default_ipv4']['address'], hostvars[host]['ansible_host'] ]) %}
 {% endfor %}
