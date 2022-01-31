@@ -10,7 +10,7 @@
 
 - name: ODFE | Ensure elasticsearch service is running
   systemd:
-    name: opensearch
+    name: elasticsearch
     enabled: yes
     state: started
   register: elasticsearch_state
