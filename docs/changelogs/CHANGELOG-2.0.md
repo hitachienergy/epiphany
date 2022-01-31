@@ -4,6 +4,7 @@
 
 ### Added
 
+- [#959](https://github.com/epiphany-platform/epiphany/issues/959) - Add usage of use_network_security_groups to disable NSG on AWS
 
 ### Fixed
 
