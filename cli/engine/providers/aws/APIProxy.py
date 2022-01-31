@@ -26,9 +26,7 @@ class APIProxy:
         cluster_name = self.cluster_model.specification.name.lower()
         look_for_public_ip = self.cluster_model.specification.cloud.use_public_ips
         vpc_id = self.get_vpc_id()
-
-        ec2 = self.session.resource('ec2')
-        running_instances = ec2.instances.filter(
+        running_instances = self.session.resource('ec2').instances.filter(
             Filters=[{
                 'Name': 'instance-state-name',
                 'Values': ['running']
