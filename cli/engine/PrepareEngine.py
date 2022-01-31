@@ -15,6 +15,7 @@ class PrepareEngine(Step):
     def __init__(self, input_data):
         super().__init__(__name__)
         self.os = input_data.os
+        self.output_dir = input_data.output_dir
 
     def __enter__(self):
         super().__enter__()
@@ -26,7 +27,11 @@ class PrepareEngine(Step):
     def prepare(self):
         prepare_src = os.path.join(self.PREPARE_PATH, self.os)
 
-        prepare_dst = os.path.join(Config().output_dir, 'prepare_scripts')
+        if self.output_dir:
+            prepare_dst = os.path.join(Config().output_dir, self.output_dir)
+        else:
+            prepare_dst = os.path.join(Config().output_dir, 'prepare_scripts_' + self.os.replace('-', '_').replace('.', ''))
+
         charts_dst = os.path.join(prepare_dst, 'charts', 'system')
 
         if not os.path.exists(prepare_src):

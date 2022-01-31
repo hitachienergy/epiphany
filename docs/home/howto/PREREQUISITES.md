@@ -8,10 +8,10 @@ There are 2 ways to get the image, build it locally yourself or pull it from the
 
     - Docker
 
-2. Open a terminal in the root directory of the Epiphany source code and run:
+2. Open a terminal in the root directory of the Epiphany repository:
 
 ```bash
-TAG=$(cat core/src/epicli/cli/version.txt.py)
+TAG=$(cat VERSION)
 docker build --file Dockerfile --tag epicli:${TAG} .
 ```
 
