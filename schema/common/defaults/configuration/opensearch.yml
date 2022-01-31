@@ -1,4 +1,4 @@
-kind: configuration/opensearch-for-opensearch
+kind: configuration/opensearch
 title: OpenSearch Config
 name: default
 specification:
