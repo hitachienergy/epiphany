@@ -36,7 +36,7 @@ def test_get_default_security_group_config_should_set_proper_values_to_model():
 
 
 def test_get_efs_config_should_set_proper_values_to_model():
-    cluster_model = get_cluster_model(cluster_name='TestCluster', address_pool='10.20.0.0/22') 
+    cluster_model = get_cluster_model(cluster_name='TestCluster', address_pool='10.20.0.0/22')
     builder = InfrastructureBuilder([cluster_model])
 
     actual = builder.get_efs_config()
@@ -127,4 +127,3 @@ def get_cluster_model(address_pool='10.22.0.0/22', cluster_name='EpiphanyTestClu
         }
     })
     return cluster_model
-
