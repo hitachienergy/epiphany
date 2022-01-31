@@ -18,7 +18,7 @@ opensearch:
     dual_root_ca:
       filename: demo2epiphany-certs-migration-root-CAs.pem
 
-  upgrade_state_file_path: /etc/elasticsearch/epicli-upgrade-started.state
+  upgrade_state_file_path: /var/lib/epiphany/upgrade/state/opensearch-upgrade.uncompleted
 
 kubernetes:
   upgrade_state_file_path: /var/lib/epiphany/upgrade/state/kubernetes-{{ ver }}.uncompleted
