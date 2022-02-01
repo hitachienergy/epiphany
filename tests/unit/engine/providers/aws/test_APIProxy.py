@@ -12,8 +12,10 @@ def test_get_ips_for_feature(mocker: MockerFixture):
 
     mocker.patch('cli.engine.providers.azure.APIProxy.Log')
     mocker.patch('boto3.session.Session')
+
+    # mock proxy with prepared data
     proxy = APIProxy(CLUSTER_MODEL('aws'), [])
-    proxy.get_vpc_id = (lambda *args: 'vpc_id')  # mock run with prepared data
+    proxy.get_vpc_id = (lambda *args: 'vpc_id')
     proxy.session.resource('ec2').instances.filter = (lambda Filters = []: RUNNING_INSTANCES_AWS)
 
     EXPECTED_RESULT = [
