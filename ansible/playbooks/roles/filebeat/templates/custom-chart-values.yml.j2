@@ -52,6 +52,9 @@ filebeatConfig:
 {% if (k8s_as_cloud_service is defined and k8s_as_cloud_service) or ('kubernetes_master' in groups or 'kubernetes_node' in groups) %}
     - type: container
       enabled: true
+      format: cri
+      paths:
+        - /var/log/containers/*.log
 {% if specification.container_input.multiline is defined %}
       multiline:
 {% for k, v in specification.container_input.multiline.items() %}
@@ -62,7 +65,11 @@ filebeatConfig:
       processors:
         - add_kubernetes_metadata:
             in_cluster: {{ 'true' if filebeat_as_daemonset is defined else 'false' }}
-
+        - dissect:
+            tokenizer: "/var/log/containers/%{container.pod.name}_%{container.namespace}_%{container.uuid}.log"
+            field: "log.file.path"
+            target_prefix: ""
+            overwrite_keys: true
 {% endif %}
 
 {# -------------------------- Filebeat modules -------------------------- #}

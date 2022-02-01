@@ -1,6 +1,8 @@
+# Included in containerd role
 ---
 - name: Populate service facts
   service_facts:
+  when: ansible_facts.services is undefined
 
 - name: Stop Docker daemon
   systemd:

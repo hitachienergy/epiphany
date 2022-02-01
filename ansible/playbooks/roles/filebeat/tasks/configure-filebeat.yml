@@ -25,6 +25,32 @@
     mode: u=rw,go=
   register: modify_filebeat_yml
 
+- name: Append new field definition
+  blockinfile:
+    path: /etc/filebeat/fields.yml
+    backup: true
+    block: |2
+      - key: containerd
+        title: "Containerd"
+        description: >
+          Reading data from containerd log filepath.
+        short_config: true
+        fields:
+          - name: containerd
+            type: group
+            description: >
+              Contains extra fields for containerd logs.
+            fields:
+              - name: container.pod.name
+                type: text
+                format: string
+              - name: container.uuid
+                type: text
+                format: string
+              - name: container.namespace
+                type: text
+                format: string
+
 - name: Start/restart and enable filebeat service
   when: groups.logging[0] is defined
   block:

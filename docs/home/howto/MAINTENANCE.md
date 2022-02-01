@@ -6,8 +6,7 @@ This part of the documentations covers the topic how to check if each component 
 
 #### - Kubernetes
 
-First to check if everything is working fine you need to check verify status of Kubernetes kubelet service with the
-command:
+Verify status of Kubernetes kubelet service with the command:
 
 ```shell
 systemctl status kubelet
@@ -15,7 +14,7 @@ systemctl status kubelet
 
 ##### - kubectl
 
-You can also check state of Kubernetes nodes using the `kubectl` command:
+Check state of Kubernetes nodes using the `kubectl` command:
 
 ```shell
 root@primary01:~# kubectl get nodes --kubeconfig=/etc/kubernetes/admin.conf
@@ -25,7 +24,7 @@ node01                                       Ready    <none>                 23h
 node02                                       Ready    <none>                 23h   vx.xx.x
 ```
 
-You can get additional information about Kubernetes components:
+Get additional information about Kubernetes components:
 
 ```shell
 root@primary01:~# kubectl cluster-info --kubeconfig=/etc/kubernetes/admin.conf
@@ -33,7 +32,7 @@ Kubernetes control plane is running at https://primary01:6443
 CoreDNS is running at https://primary01:6443/api/v1/namespaces/kube-system/services/kube-dns:dns/proxy
 ```
 
-You can also check status of pods in all namespaces using the command:
+Check status of pods in all namespaces using the command:
 
 ```shell
 kubectl get pods -A --kubeconfig=/etc/kubernetes/admin.conf
@@ -65,7 +64,7 @@ crictl ps -a
 ```
 
 The crictl tool provides the possibility to run a sandbox container which may be useful for debugging purposes.
-For more information please refer to [the official documentation](https://kubernetes.io/docs/tasks/debug-application-cluster/crictl).
+For more information, refer to [the official documentation](https://kubernetes.io/docs/tasks/debug-application-cluster/crictl).
 
 #### - Keycloak
 

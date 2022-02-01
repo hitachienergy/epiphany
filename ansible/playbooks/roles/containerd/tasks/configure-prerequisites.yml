@@ -1,6 +1,5 @@
 ---
 - name: Provide containerd.conf file
-  become: true
   copy:
     src: containerd.conf
     dest: /etc/modules-load.d/containerd.conf
@@ -9,8 +8,7 @@
     mode: u=rw,go=
 
 - name: Load modules
-  command: "modprobe {{ item }}"
-  become: true
-  with_items:
+  command: modprobe {{ item }}
+  loop:
     - overlay
     - br_netfilter
