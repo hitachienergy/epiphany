@@ -19,6 +19,9 @@
   - Azurerm provider 1.38.0 to 2.91.0
   - AWS provider 2.26 to 3.71.0
   - Upgraded Azure-cli 2.29 to 2.32
+- [#2847](https://github.com/epiphany-platform/epiphany/issues/2847) - Upgrade Ansible to 5.2.0
+  - Ansible 2.10.15 to 5.2.0
+  - Python 3.7 to 3.10
 
 ### Removed
 
