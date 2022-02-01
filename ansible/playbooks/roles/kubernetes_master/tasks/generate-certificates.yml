@@ -209,7 +209,6 @@
       fail:
         msg: Certificates generation failed, restored an initial state
 
-
 - name: Restart systemd services
   when:
     - services_to_restart is defined
