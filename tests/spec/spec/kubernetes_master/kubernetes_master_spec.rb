@@ -187,7 +187,6 @@ if countInventoryHosts("kubernetes_node") == 0
       its(:exit_status) { should eq 0 }
     end
   end
-
 end
 
 describe 'Check the kubelet cgroup driver' do
@@ -215,12 +214,24 @@ describe 'Check the containerd' do
   describe command("kubectl get nodes -o jsonpath='{.items[].status.nodeInfo.containerRuntimeVersion}'") do
     its(:stdout) { should include('containerd://1.4.12') }
   end
+  describe file('/etc/containerd/config.toml') do
+    let(:disable_sudo) { false }
+    its(:content) { should match(/SystemdCgroup = true/) }
+  end
 end
 
 describe 'Check the OCI-spec' do
   describe command('crictl --runtime-endpoint unix:///run/containerd/containerd.sock info') do
     let(:disable_sudo) { false }
-    its(:stdout) { should contain('\"defaultRuntimeName\": \"runc\"') }
+    its(:stdout) { should match('\"defaultRuntimeName\": \"runc\"') }
+  end
+end
+
+describe 'Check the kubelet cgroup driver' do
+  describe file('/var/lib/kubelet/config.yaml') do
+    let(:disable_sudo) { false }
+    its(:content_as_yaml) { should include('cgroupDriver' => 'systemd') }
+    its(:content_as_yaml) { should_not include('cgroupDriver' => 'cgroupfs') }
   end
 end
 

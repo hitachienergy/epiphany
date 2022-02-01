@@ -58,7 +58,7 @@
       path: /var/lib/kubelet/kubeadm-flags.env
       regexp: '{{ item.regexp }}'
       replace: '{{ item.replace }}'
-      backup: yes
+      backup: true
     loop:
       - { regexp: '^(KUBELET_KUBEADM_ARGS=\")(.*)(--container-runtime=[a-zA-Z0-9_]+)(.*)', replace: '\1\2--container-runtime=remote\4' }
       - { regexp: '^(KUBELET_KUBEADM_ARGS=\")(.*)(--container-runtime-endpoint=.*\.sock)(.*)', replace: '\1\2--container-runtime-endpoint=/run/containerd/containerd.sock\4' }

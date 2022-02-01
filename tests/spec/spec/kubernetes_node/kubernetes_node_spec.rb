@@ -5,6 +5,10 @@ describe 'Check the containerd' do
     let(:disable_sudo) { false }
     its(:stdout) { should include('RuntimeName:  containerd') }
   end
+  describe file('/etc/containerd/config.toml') do
+    let(:disable_sudo) { false }
+    its(:content) { should match(/SystemdCgroup = true/) }
+  end
 end
 
 describe 'Check the kubelet cgroup driver' do
