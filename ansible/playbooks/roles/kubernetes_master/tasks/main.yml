@@ -25,8 +25,13 @@
         - import_tasks: master-join.yml
 
 - name: Collect subject alternative names of apiserver certificate
-  command: openssl x509 -in apiserver.crt -ext subjectAltName -noout
+  # -ext option is not used as it requires newer openssl version
+  shell: |-
+    set -o pipefail && \
+    openssl x509 -in apiserver.crt -text -noout \
+      | grep DNS:
   args:
+    executable: /bin/bash
     chdir: "{{ pki.location }}"
   changed_when: false
   register: apiserver_certificate_san
