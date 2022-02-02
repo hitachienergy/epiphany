@@ -3,6 +3,7 @@ title: Logging Config
 name: default
 specification:
   cluster_name: EpiphanyOpensearch
+  odfe_migration: false
   ops_user: opensearch
   admin_password: PASSWORD_TO_CHANGE
   kibanaserver_password: PASSWORD_TO_CHANGE
