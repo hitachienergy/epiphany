@@ -68,9 +68,10 @@ class BaseMode:
         """
         reqs = defaultdict(dict)
 
-        # target distro requirements
-        content = load_yaml_file(self._cfg.reqs_path / f'{self._cfg.distro_subdir}.yml')
+        content = load_yaml_file(self._cfg.reqs_path / f'{self._cfg.distro_subdir}/packages.yml')
         reqs['packages'] = content['packages']
+
+        content = load_yaml_file(self._cfg.reqs_path / f'{self._cfg.distro_subdir}/files.yml')
         reqs['files'].update(content['files'])
 
         for common_reqs in ['cranes', 'files', 'images', 'grafana-dashboards']:

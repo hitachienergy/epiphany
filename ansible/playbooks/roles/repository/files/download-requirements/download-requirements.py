@@ -15,7 +15,6 @@ from src.mode.red_hat_family_mode import RedHatFamilyMode
 MODES: Dict[OSType, BaseMode] = {
     OSType.Ubuntu: DebianFamilyMode,
     OSType.RedHat: RedHatFamilyMode,
-    OSType.CentOS: RedHatFamilyMode
 }
 
 

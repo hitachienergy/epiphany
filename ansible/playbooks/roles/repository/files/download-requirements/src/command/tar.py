@@ -52,7 +52,7 @@ class Tar(Command):
 
     def unpack(self, filename: Path,
                target: str = '',
-               absolute_name: bool = False,
+               absolute_names: bool = False,
                directory: Path = None,
                overwrite: bool = True,
                strip_components: int = 0,
@@ -63,7 +63,7 @@ class Tar(Command):
 
         :param filename: file to be extracted
         :param target: name for the output file
-        :param absolute_name: use abs path names
+        :param absolute_names: use abs path names
         :param directory: change directory before doing any actions
         :param overwrite: overwrite existing files when extracting
         :param strip_components: strip leading components from file names on extraction
@@ -81,8 +81,8 @@ class Tar(Command):
 
         short_flags.append('f')
 
-        if absolute_name:
-            tar_params.append('--absolute_name')
+        if absolute_names:
+            tar_params.append('--absolute-names')
 
         if directory is not None:
             tar_params.extend(['--directory', str(directory)])

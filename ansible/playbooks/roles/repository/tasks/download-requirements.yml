@@ -6,7 +6,13 @@
     Run download-requirements script, this can take a long time
     You can check progress on repository host with: journalctl -f -t download-requirements.py
   shell: >-
-    set -o pipefail && "{{ download_requirements_script }}" /var/www/html/epirepo "{{ ansible_distribution }}" --no-logfile |&
+    set -o pipefail &&
+    "{{ download_requirements_script }}" \
+        /var/www/html/epirepo \
+        "{{ download_requirements_os_name }}" \
+        --enable-repos-backup \
+        --repos-backup-file /var/tmp/enabled-system-repos.tar \
+        --no-logfile |&
     tee >(systemd-cat --identifier=download-requirements.py)
   args:
     executable: /bin/bash

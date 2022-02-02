@@ -142,12 +142,3 @@ packages:
   # Kubernetes Generic
   - 'kubernetes-cni-0.8.6-0'  # since K8s v1.18.6
   - 'kubernetes-cni-0.8.7-0'  # since K8s v1.19.15
-
-files:
-  # Github repository for erlang rpm is used since packagecloud repository is limited to a certain number of versions and erlang package from erlang-solutions repository is much more complex and bigger
-  'https://github.com/rabbitmq/erlang-rpm/releases/download/v23.1.5/erlang-23.1.5-1.el7.x86_64.rpm':
-    sha256: abc
-
-  # Grafana package is not downloaded from repository since it was not reliable (issue #2449)
-  'https://dl.grafana.com/oss/release/grafana-7.3.5-1.x86_64.rpm':
-    sha256: abc

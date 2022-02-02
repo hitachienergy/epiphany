@@ -9,9 +9,9 @@
   debug:
     var: offline_mode
 
-- name: Set directory name for download script
+- name: Set OS name for download script
   set_fact:
-    download_script_subdir: >-
+    download_requirements_os_name: >-
       {{ 'centos-7' if (ansible_distribution == 'CentOS' and ansible_distribution_major_version == '7') else
           'redhat-7' if (ansible_distribution == 'RedHat' and ansible_distribution_major_version == '7') else
           'ubuntu-20.04' if (ansible_distribution == 'Ubuntu' and ansible_distribution_version == '20.04') else None }}
@@ -83,8 +83,24 @@
       offline_mode or
       not stat_flag_file.stat.exists  # do not clean up when skipping download
   vars:
-    _requirements_file_path: download-requirements/{{ download_script_subdir }}/requirements.{{ ansible_architecture }}.txt
-    requirements_file_lines: "{{ lookup('file', _requirements_file_path).split('\n') }}"
+    # general paths:
+    _reqs_dir: download-requirements/requirements
+    _file_reqs_path: "{{ _reqs_dir }}/files.yml"
+    _grafana_dashboard_reqs_path: "{{ _reqs_dir }}/grafana_dashboards.yml"
+    _image_reqs_path: "{{ _reqs_dir }}/images.yml"
+
+    # target distro files:
+    _reqs_distro_dir: "{{ _reqs_dir }}/{{ ansible_architecture }}/{{ ansible_distribution | lower }}"
+    _distro_file_reqs_path: "{{ _reqs_distro_dir }}/files.yml"
+    _package_reqs_path: "{{ _reqs_distro_dir }}/packages.yml"
+
+    # contents:
+    _file_reqs: "{{ lookup('file', _file_reqs_path) | from_yaml }}"
+    _grafana_dashboard_reqs: "{{ lookup('file', _grafana_dashboard_reqs_path) | from_yaml }}"
+    _image_reqs: "{{ lookup('file', _image_reqs_path) | from_yaml }}"
+
+    _distro_file_reqs: "{{ lookup('file', _distro_file_reqs_path) | from_yaml }}"
+    _package_reqs: "{{ lookup('file', _package_reqs_path) | from_yaml }}"
 
 - name: |-
     Copy requirements for offline installation to repository host, this can take a long time

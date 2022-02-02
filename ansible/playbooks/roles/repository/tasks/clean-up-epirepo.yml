@@ -25,18 +25,28 @@
   register: files_in_epirepo
   loop:  # loop used by purpose to have separated results
     - "{{ _apache_epirepo_path }}/files"
+    - "{{ _apache_epirepo_path }}/grafana-dashboards"
     - "{{ _apache_epirepo_path }}/images"
+
+- name: Create full list of files
+  set_fact:
+    all_files: "{{ _all_files }}"
+  vars:
+    _reqs_file_keys: "{{ _file_reqs['files'].keys() | list }}"
+    _reqs_distro_file_keys: "{{ _distro_file_reqs['files'].keys() | list }}"
+    _all_files: _reqs_file_keys | union(_reqs_distro_file_keys)
 
 - name: Remove old files from epirepo
   file:
     state: absent
     path: "{{ _apache_epirepo_path }}/files/{{ item }}"
   vars:
-    files_found: "{{ files_in_epirepo.results[0].files | map(attribute='path') | map('basename') }}"
-    files_to_preserve: "{{ requirements_file_lines | select('match', 'https?://')
-                                                   | map('regex_replace', '\\s+#.*$', '')
-                                                   | map('trim')
-                                                   | map('regex_replace', '^.+[/\\s](?P<filename>[\\S]+)$', '\\g<filename>') }}"
+    files_to_preserve: "{{ all_files | select('match', 'https?://')
+                                     | map('regex_replace', '\\s+#.*$', '')
+                                     | map('trim')
+                                     | map('regex_replace', '^.+[/\\s](?P<filename>[\\S]+)$', '\\g<filename>') }}"
+    files_found: "{{ files_in_epirepo.results[0].files | map(attribute='path')
+                                                       | map('basename') }}"
     files_to_remove: "{{ files_found | difference(files_to_preserve) }}"
   loop: "{{ files_to_remove }}"
 

@@ -11,9 +11,8 @@ from src.error import CriticalError
 
 class OSType(Enum):
     """ Supported distribution types """
-    Ubuntu='ubuntu'
-    RedHat='redhat'
-    CentOS='centos'
+    Ubuntu='ubuntu-20.04'
+    RedHat='redhat-7'
 
 
 class OSArch(Enum):
@@ -78,8 +77,10 @@ class Config:
         # required arguments:
         parser.add_argument('destination_dir', metavar='DEST_DIR', type=Path, action='store', nargs='+',
                             help='requirements will be downloaded to this directory')
+
+        supported_os: str = "|".join([os.value for os in list(OSType)])
         parser.add_argument('os_type', metavar='OS_TYPE', type=str, action='store', nargs='+',
-                            help='which of the supported OS will be used: (`centos`, `debian`, `redhat`, `detect`)\n'
+                            help=f'which of the supported OS will be used: ({supported_os}|detect)\n'
                             'when using `detect`, script will try to find out which OS is being used')
 
         # optional arguments:
@@ -96,7 +97,7 @@ class Config:
                             default=Path('./download-requirements.log'),
                             help='logs will be saved to this file')
         parser.add_argument('--log-level', metavar='LOG_LEVEL', type=str, action='store', dest='log_level',
-                            default='info', help='set up log level, available levels: (`error`, `warn`, `info`, `debug`)')
+                            default='info', help='set up log level, available levels: (error|warn|info|debug`)')
         parser.add_argument('--no-logfile', action='store_true', dest='no_logfile',
                             help='no logfile will be created')
 

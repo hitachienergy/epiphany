@@ -32,9 +32,9 @@ class DebianFamilyMode(BaseMode):
             if self._cfg.repos_backup_file.exists() and self._cfg.enable_backup:
                 logging.warn('OS repositories seems missing, restoring...')
                 self._tools.tar.unpack(filename=self._cfg.repos_backup_file,
-                                       target='.',
                                        directory=Path('/'),
-                                       absolute_name=True,
+                                       absolute_names=True,
+                                       uncompress=True,
                                        verbose=True)
             else:
                 logging.warn(f'{str(sources)} seems to be missing, you either know what you are doing or '
@@ -73,6 +73,9 @@ class DebianFamilyMode(BaseMode):
         self._tools.apt.update()
 
     def _download_packages(self):
+        # path needs to be changed since `apt download` does not allow to set target dir
+        os.chdir(self._cfg.dest_packages)
+
         packages: Dict[str, Dict] = self._requirements['packages']
         for package in packages:
             version: str = ''
@@ -81,9 +84,6 @@ class DebianFamilyMode(BaseMode):
             except ValueError:
                 package_base_name = package
 
-            pkg_dir = self._cfg.dest_packages / package_base_name
-            pkg_dir.mkdir(exist_ok=True, parents=True)  # make sure that the dir exists
-
             package_info = self._tools.apt_cache.get_package_info(package_base_name, version.strip('*'))
 
             # Files downloaded by `apt download` cannot have custom names
@@ -91,7 +91,7 @@ class DebianFamilyMode(BaseMode):
             # Find if there is a file corresponding with it's package name
             try:
                 version = package_info['Version'].split(':')[-1]
-                found_pkg: Path = [pkg_file for pkg_file in pkg_dir.iterdir() if
+                found_pkg: Path = [pkg_file for pkg_file in self._cfg.dest_packages.iterdir() if
                                    pkg_file.name.startswith(f'{package_info["Package"]}_') and
                                    version in pkg_file.name][0]
 
@@ -103,9 +103,6 @@ class DebianFamilyMode(BaseMode):
                 pass  # package not found
 
             logging.info(f'- {package}')
-
-            # path needs to be changed since `apt download` does not allow to set target dir
-            os.chdir(pkg_dir)
 
             # resolve dependencies for target package and if needed, download them first
             deps: List[str] = self._tools.apt_cache.get_package_dependencies(package_base_name)

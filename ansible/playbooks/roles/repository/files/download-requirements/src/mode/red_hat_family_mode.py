@@ -1,13 +1,13 @@
 import logging
 import shutil
 from pathlib import Path
-from typing import Dict, List
+from typing import List
 
 from src.command.command import Command
 from src.command.toolchain import RedHatFamilyToolchain, Toolchain
 from src.config import Config
 from src.error import PackageNotfound
-from src.mode.base_mode import BaseMode, get_sha256
+from src.mode.base_mode import BaseMode
 
 
 class RedHatFamilyMode(BaseMode):
@@ -29,9 +29,9 @@ class RedHatFamilyMode(BaseMode):
             if self._cfg.repos_backup_file.exists() and self._cfg.enable_backup:
                 logging.warn('OS repositories seems missing, restoring...')
                 self._tools.tar.unpack(filename=self._cfg.repos_backup_file,
-                                       target='.',
                                        directory=Path('/'),
-                                       absolute_name=True,
+                                       absolute_names=True,
+                                       uncompress=False,
                                        verbose=True)
             else:
                 logging.warn(f'{str(sources)} seems to be missing, you either know what you are doing or '
@@ -156,17 +156,9 @@ class RedHatFamilyMode(BaseMode):
         collected_prereqs: List[str] = []
         prereq_packages: List[str] = self._requirements['prereq-packages']
         for prereq_pkg in prereq_packages:
-            packages = self._tools.repoquery.query(prereq_pkg,
-                                                   queryformat='%{ui_nevra}',
-                                                   arch=self._cfg.os_arch.value)
-
-            try:
-                if get_sha256(packages[0]) == self._tools.yumdb.get_sha256(prereq_pkg):
-                    continue
-            except KeyError:
-                pass  # no sha256 available for this package
-
-            collected_prereqs.extend(packages)
+            collected_prereqs.extend(self._tools.repoquery.query(prereq_pkg,
+                                                                 queryformat='%{ui_nevra}',
+                                                                 arch=self._cfg.os_arch.value))
 
         if collected_prereqs:
             self._tools.yumdownloader.download_packages(collected_prereqs,
@@ -186,12 +178,6 @@ class RedHatFamilyMode(BaseMode):
                                                        queryformat='%{ui_nevra}',
                                                        arch=self._cfg.os_arch.value)[0]
 
-            package_dir_name = self._cfg.dest_packages / package
-            package_file = package_dir_name / package_name
-
-            if get_sha256(package_file) == self._tools.yumdb.get_sha256(package):
-                continue
-
             packages_to_download.append(package_name)
 
             # dependencies
@@ -204,12 +190,10 @@ class RedHatFamilyMode(BaseMode):
             except PackageNotfound:
                 pass  # no dependencies for `package`
 
-            package_dir_name.mkdir(exist_ok=True, parents=True)
-
             self._tools.yumdownloader.download_packages(packages_to_download,
                                                         arch=self._cfg.os_arch.value,
                                                         exclude='*i686',
-                                                        destdir=package_dir_name)
+                                                        destdir=self._cfg.dest_packages)
             logging.info(f'- {packages_to_download}')
 
     def _download_file(self, file: str):
