@@ -29,7 +29,7 @@ class InfrastructureBuilder(Step):
         # If there are no security groups Ansible provisioning will fail because
         # SSH is not allowed then with public IPs on Azure.
         if not(self.use_network_security_groups) and self.use_public_ips:
-            self.logger.warning('Use of security groups has been disabled and public IP are used. Ansible run will fail because SSH will not be allowed.')
+            self.logger.warning('Use of security groups has been disabled and public IPs are used. Ansible run will fail because SSH will not be allowed.')
 
     def run(self):
         infrastructure = []
