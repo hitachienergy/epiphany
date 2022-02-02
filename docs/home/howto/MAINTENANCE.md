@@ -43,7 +43,7 @@ to [the official documentation](https://kubernetes.io/docs/reference/kubectl/ove
 
 ##### - crictl
 
-You can also check state of Kubernetes components using the `crictl` command:
+Check state of Kubernetes components using the `crictl` command:
 
 List all pods:
 
@@ -76,7 +76,7 @@ kubectl get pods --kubeconfig=/etc/kubernetes/admin.conf --namespace=keycloak_se
 
 #### - HAProxy
 
-To check status of HAProxy you can use the command:
+To check status of HAProxy, use the command:
 
 ```shell
 systemctl status haproxy
@@ -87,13 +87,13 @@ command.
 
 #### - Prometheus
 
-To check status of Prometheus you can use the command:
+To check status of Prometheus, use the command:
 
 ```shell
 systemctl status prometheus
 ```
 
-You can also check if Prometheus service is listening at the port 9090:
+Check if Prometheus service is listening at the port 9090:
 
 ```shell
 netstat -antup | grep 9090
@@ -101,13 +101,13 @@ netstat -antup | grep 9090
 
 #### - Grafana
 
-To check status of Grafana you can use the command:
+To check status of Grafana, use the command:
 
 ```shell
 systemctl status grafana-server
 ```
 
-You can also check if Grafana service is listening at the port 3000:
+Check if Grafana service is listening at the port 3000:
 
 ```shell
 netstat -antup | grep 3000
@@ -115,7 +115,7 @@ netstat -antup | grep 3000
 
 #### - Prometheus Node Exporter
 
-To check status of Node Exporter you can use the command:
+To check status of Node Exporter, use the command:
 
 ```shell
 status prometheus-node-exporter
@@ -123,25 +123,25 @@ status prometheus-node-exporter
 
 #### - Elasticsearch
 
-To check status of Elasticsearch you can use the command:
+To check status of Elasticsearch, use the command:
 
 ```shell
 systemct status elasticsearch
 ```
 
-You can check if service is listening on 9200 (API communication port):
+Check if service is listening on 9200 (API communication port):
 
 ```shell
 netstat -antup | grep 9200
 ```
 
-You can also check if service is listening on 9300 (nodes communication port):
+Check if service is listening on 9300 (nodes communication port):
 
 ```shell
 netstat -antup | grep 9300
 ```
 
-You can also check status of Elasticsearch cluster:
+Check status of Elasticsearch cluster:
 
 ```shell
 <IP>:9200/_cluster/health
@@ -151,13 +151,13 @@ You can do this using curl or any other equivalent tool.
 
 #### - Kibana
 
-To check status of Kibana you can use the command:
+To check status of Kibana, use the command:
 
 ```shell
 systemctl status kibana
 ```
 
-You can also check if Kibana service is listening at the port 5601:
+Check if Kibana service is listening at the port 5601:
 
 ```shell
 netstat -antup | grep 5601
@@ -165,7 +165,7 @@ netstat -antup | grep 5601
 
 #### - Filebeat
 
-To check status of Filebeat you can use the command:
+To check status of Filebeat, use the command:
 
 ```shell
 systemctl status filebeat
@@ -173,7 +173,7 @@ systemctl status filebeat
 
 #### - PostgreSQL
 
-To check status of PostgreSQL you can use commands:
+To check status of PostgreSQL, use commands:
 
 - on Ubuntu:
 
@@ -190,13 +190,13 @@ systemctl status postgresql-10
 where postgresql-10 is only an example, because the number differs from version to version. Please refer to your version
 number in case of using this command.
 
-You can also check if PostgreSQL service is listening at the port 5432:
+Check if PostgreSQL service is listening at the port 5432:
 
 ```shell
 netstat -antup | grep 5432
 ```
 
-You can also use the pg_isready command, to get information if the PostgreSQL server is running and accepting connections
+Use the pg_isready command, to get information if the PostgreSQL server is running and accepting connections
 with command:
 
 - on Ubuntu:
