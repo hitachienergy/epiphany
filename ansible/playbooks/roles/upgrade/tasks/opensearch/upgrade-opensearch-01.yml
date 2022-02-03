@@ -1,14 +1,14 @@
 ---
 # This file contains only pre-upgrade tasks that can be run in parallel on all hosts
 
-- name: ODFE | Create upgrade state file
+- name: OPS | Create upgrade state file
   become: true
   file:
     path: "{{ opensearch.upgrade_state_file_path }}"
     state: touch
     mode: u=rw,g=r,o=
 
-- name: ODFE | Ensure elasticsearch service is running
+- name: OPS | Ensure elasticsearch service is running
   systemd:
     name: elasticsearch
     enabled: yes
@@ -18,16 +18,16 @@
 # Sets 'existing_config' fact
 - include_tasks: utils/get-config-from-files.yml
 
-- name: ODFE | Set common facts
+- name: OPS | Set common facts
   set_fact:
-    certificates:      "{{ odfe_defaults.certificates }}"
+    certificates:      "{{ ops_defaults.certificates }}"
     es_host:           "{{ existing_config.main['network.host']   | default('_local_') }}"
-    es_http_port:      "{{ existing_config.main['http.port']      | default(odfe_defaults.ports.http) }}"
-    es_transport_port: "{{ existing_config.main['transport.port'] | default(odfe_defaults.ports.transport) }}"
+    es_http_port:      "{{ existing_config.main['http.port']      | default(ops_defaults.ports.http) }}"
+    es_transport_port: "{{ existing_config.main['transport.port'] | default(ops_defaults.ports.transport) }}"
     es_clustered:      "{{ (existing_config.main['discovery.seed_hosts'] | length > 1) | ternary(True, False) }}"
     es_node_name:      "{{ existing_config.main['node.name'] }}"
 
-- name: ODFE | Wait for elasticsearch service to start up
+- name: OPS | Wait for elasticsearch service to start up
   wait_for:
     port: "{{ es_transport_port }}"
     host: "{{ es_host if (es_host is not regex('^_.+_$')) else '0.0.0.0' }}"  # 0.0.0.0 means any IP
@@ -51,20 +51,20 @@
     name: certificate
     tasks_from: install-packages  # requirements for Ansible certificate modules
 
-- name: ODFE | Get information on root CA certificate
+- name: OPS | Get information on root CA certificate
   community.crypto.x509_certificate_info:
     # 'pemtrustedcas_filepath' is a relative path
-    path: "{{ ('/etc/elasticsearch', existing_config.main['opensearch_security.ssl.transport.pemtrustedcas_filepath']) | path_join }}"
+    path: "{{ ('/etc/elasticsearch', existing_config.main['opendistro_security.ssl.transport.pemtrustedcas_filepath']) | path_join }}"
   register: _root_ca_info
 
-- name: ODFE | Check if demo or Epiphany certificates are in use  # self-signed
+- name: OPS | Check if demo or Epiphany certificates are in use  # self-signed
   set_fact:
     _is_demo_cert_in_use:     "{{ 'True' if _root_ca_info.subject.commonName == 'Example Com Inc. Root CA'      else 'False' }}"
     _is_epiphany_cert_in_use: "{{ 'True' if _root_ca_info.subject.commonName == 'Epiphany Managed ODFE Root CA' else 'False' }}"
 
 # For custom admin cert (non-demo and non-Epiphany), we use workaround (upgrade_config.custom_admin_certificate).
 # The workaround should be replaced after implementing task #2127.
-- name: ODFE | Set API access facts
+- name: OPS | Set API access facts
   set_fact:
     es_api:
       cert_path: "{{ _cert_path[_cert_type] }}"
