@@ -7,7 +7,7 @@ from cli.helpers.Config import Config
 from cli.helpers.build_io import copy_files_recursively
 
 
-class PrepareEngine(Step):
+class Prepare(Step):
     PREPARE_PATH = f'{BASE_DIR}/ansible/playbooks/roles/repository/files/download-requirements'
     COMMON_PATH = f'{PREPARE_PATH}/common'
     CHARTS_PATH = f'{BASE_DIR}/ansible/playbooks/roles/helm_charts/files/system'

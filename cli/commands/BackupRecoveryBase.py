@@ -10,18 +10,18 @@ from cli.helpers.yaml_helpers import dump
 from cli.helpers.data_loader import load_yamls_file, load_schema_obj, types as data_types
 from cli.helpers.doc_list_helpers import select_single, ExpectedSingleResultException
 
-from cli.engine.schema.SchemaValidator import SchemaValidator
-from cli.engine.schema.DefaultMerger import DefaultMerger
+from cli.schema.SchemaValidator import SchemaValidator
+from cli.schema.DefaultMerger import DefaultMerger
 
-from cli.engine.ansible.AnsibleCommand import AnsibleCommand
-from cli.engine.ansible.AnsibleRunner import AnsibleRunner
+from cli.ansible.AnsibleCommand import AnsibleCommand
+from cli.ansible.AnsibleRunner import AnsibleRunner
 
 
-class BackupRecoveryEngineBase(Step):
+class BackupRecoveryBase(Step):
     """Perform backup and recovery operations (abstract base class)."""
 
     def __init__(self, input_data):
-        # super(BackupRecoveryEngineBase, self).__init__(__name__) needs to be called in any subclass
+        # super(BackupRecoveryBase, self).__init__(__name__) needs to be called in any subclass
         self.file = input_data.file
         self.build_directory = input_data.build_directory
         self.manifest_docs = list()

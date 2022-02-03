@@ -1,14 +1,14 @@
 import os
 from cli.helpers.doc_list_helpers import select_single
-from cli.engine.BackupRecoveryEngineBase import BackupRecoveryEngineBase
+from cli.commands.BackupRecoveryBase import BackupRecoveryBase
 
 
-class BackupEngine(BackupRecoveryEngineBase):
+class Backup(BackupRecoveryBase):
     """Perform backup operations."""
 
     def __init__(self, input_data):
-        super(BackupRecoveryEngineBase, self).__init__(__name__)  # late call of the Step.__init__(__name__)
-        super(BackupEngine, self).__init__(input_data)
+        super(BackupRecoveryBase, self).__init__(__name__)  # late call of the Step.__init__(__name__)
+        super(Backup, self).__init__(input_data)
 
     def backup(self):
         """Backup all enabled components."""

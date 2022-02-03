@@ -3,15 +3,15 @@ import time
 import re
 
 from cli.helpers.Step import Step
-from cli.engine.ansible.AnsibleCommand import AnsibleCommand
-from cli.engine.ansible.AnsibleRunner import AnsibleRunner
+from cli.ansible.AnsibleCommand import AnsibleCommand
+from cli.ansible.AnsibleRunner import AnsibleRunner
 from cli.helpers.yaml_helpers import safe_load_all
-from cli.engine.schema.DefaultMerger import DefaultMerger
-from cli.engine.schema.SchemaValidator import SchemaValidator
+from cli.schema.DefaultMerger import DefaultMerger
+from cli.schema.SchemaValidator import SchemaValidator
 from cli.helpers.build_io import copy_files_recursively
 
 
-class UpgradeEngine(Step):
+class Upgrade(Step):
     def __init__(self, input_data):
         super().__init__(__name__)
         self.build_dir = input_data.build_directory

@@ -5,7 +5,7 @@ from copy import deepcopy
 from cli.helpers.doc_list_helpers import select_first
 from cli.helpers.data_loader import load_schema_obj, types
 from cli.helpers.config_merger import merge_with_defaults
-from cli.engine.providers.aws.APIProxy import APIProxy
+from cli.providers.aws.APIProxy import APIProxy
 from cli.helpers.Step import Step
 from cli.helpers.doc_list_helpers import select_single, select_all
 from cli.helpers.build_io import get_terraform_path

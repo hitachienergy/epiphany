@@ -3,10 +3,10 @@ import os
 from cli.helpers.Step import Step
 from cli.helpers.build_io import SPEC_OUTPUT_DIR, ANSIBLE_INVENTORY_FILE, load_manifest
 from cli.helpers.doc_list_helpers import select_single
-from cli.engine.spec.SpecCommand import SpecCommand
+from cli.spec.SpecCommand import SpecCommand
 
 
-class TestEngine(Step):
+class Test(Step):
     def __init__(self, input_data):
         super().__init__(__name__)
         self.build_directory = input_data.build_directory

@@ -2,7 +2,7 @@ from collections import defaultdict
 
 from cli.helpers.doc_list_helpers import select_single
 from cli.helpers.naming_helpers import to_role_name
-from cli.engine.providers.provider_class_loader import provider_class_loader
+from cli.providers.provider_class_loader import provider_class_loader
 from cli.models.AnsibleInventoryItem import AnsibleInventoryItem
 from cli.helpers.build_io import save_inventory
 from cli.helpers.Step import Step

@@ -1,9 +1,9 @@
 from cli.helpers.Step import Step
 from cli.helpers.doc_list_helpers import select_single
-from cli.engine.terraform.TerraformRunner import TerraformRunner
+from cli.terraform.TerraformRunner import TerraformRunner
 from cli.helpers.build_io import delete_directory, load_manifest
 
-class DeleteEngine(Step):
+class Delete(Step):
     def __init__(self, input_data):
         super().__init__(__name__)
         self.build_directory = input_data.build_directory

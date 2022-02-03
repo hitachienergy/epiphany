@@ -6,11 +6,11 @@ from cli.helpers.data_loader import load_all_schema_objs, types
 from cli.helpers.objdict_helpers import remove_value
 from cli.version import VERSION
 from cli.helpers.doc_list_helpers import select_all
-from cli.engine.schema.ConfigurationAppender import ConfigurationAppender
-from cli.engine.schema.DefaultMerger import DefaultMerger
+from cli.schema.ConfigurationAppender import ConfigurationAppender
+from cli.schema.DefaultMerger import DefaultMerger
 
 
-class InitEngine(Step):
+class Init(Step):
     def __init__(self, input_data):
         super().__init__(__name__)
         self.provider = input_data.provider

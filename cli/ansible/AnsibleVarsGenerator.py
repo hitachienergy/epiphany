@@ -10,7 +10,7 @@ from cli.helpers.ObjDict import ObjDict
 from cli.helpers.yaml_helpers import dump
 from cli.helpers.Config import Config
 from cli.helpers.data_loader import load_schema_obj, types, load_all_schema_objs_from_directory
-from cli.engine.schema.DefaultMerger import DefaultMerger
+from cli.schema.DefaultMerger import DefaultMerger
 
 
 class AnsibleVarsGenerator(Step):
