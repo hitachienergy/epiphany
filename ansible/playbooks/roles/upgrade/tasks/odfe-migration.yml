@@ -1,0 +1,35 @@
+---
+- name: ODFE migr | Ensure elasticsearch service is running
+  systemd:
+    name: elasticsearch
+    enabled: yes
+    state: started
+  register: elasticsearch_state
+
+- include_tasks: opensearch/utils/get-config-from-files.yml  # Sets 'existing_config' fact
+
+- name: ODFE migr | Set common facts
+  set_fact:
+    certificates:      "{{ ops_defaults.certificates }}"
+    es_host:           "{{ existing_config.main['network.host']   | default('_local_') }}"
+    es_http_port:      "{{ existing_config.main['http.port']      | default(ops_defaults.ports.http) }}"
+    es_transport_port: "{{ existing_config.main['transport.port'] | default(ops_defaults.ports.transport) }}"
+    es_clustered:      "{{ (existing_config.main['discovery.seed_hosts'] | length > 1) | ternary(True, False) }}"
+    es_node_name:      "{{ existing_config.main['node.name'] }}"
+
+- name: ODFE migr | Prepare for ODFE to OPS migration
+  include_tasks:
+    file: opensearch/utils/prepare-cluster-for-node-restart.yml
+    apply:
+      delegate_to: "{{ target_inventory_hostname }}"
+      delegate_facts: true
+  loop: "{{ ansible_play_hosts_all }}"
+  loop_control:
+    loop_var: target_inventory_hostname
+  vars:
+    es_api:
+      cert_type: Epiphany
+      cert_path: &epi_cert_path "{{ (certificates.dirs.certs, certificates.files.admin.cert.filename) | path_join }}"
+      key_path:  &epi_key_path  "{{ (certificates.dirs.certs, certificates.files.admin.key.filename)  | path_join }}"
+      url: https://{{ es_host }}:{{ es_http_port }}
+    fail_msg: API access test failed.
