@@ -35,12 +35,6 @@ Issue: [2833](https://github.com/epiphany-platform/epiphany/issues/2833)
 
 ## Next steps
 
-If Logstash is installed in your cluster, and you plan Epiphany upgrade from v1.x to v2.x, it is recommended to remove Logstash from your machines.
-
-**RedHat clusters**:
-1. Check if Logstash package is installed: `sudo yum info logstash-oss`
-2. Remove: `sudo yum remove logstash-oss`
-
-**Debian clusters**:
-1. Check if Logstash package is installed: `sudo apt --installed list | grep logstash-oss`
-2. Remove: `sudo apt-get remove logstash-oss`
+If you plan Epiphany upgrade from v1.x to v2.x and Logstash is installed in your cluster but you don't use it, it is recommended to:
+- remove `logstash` group, if present, from `inventory` file
+- remove Logstash from machines (recommended way is to use `apt`/`yum` according to your OS)
