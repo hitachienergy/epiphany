@@ -17,6 +17,18 @@
     es_clustered:      "{{ (existing_config.main['discovery.seed_hosts'] | length > 1) | ternary(True, False) }}"
     es_node_name:      "{{ existing_config.main['node.name'] }}"
 
+- name: ODFE migr | Assure Elastisearch files location will be used
+  set_fact:
+    certificates:
+      dirs:
+        certs:  "/etc/elasticsearch"
+        ca_key: "/etc/elasticsearch/private"
+        csr:    "/etc/elasticsearch/csr"
+      files:
+        admin:
+          cert: "epiphany-admin.pem"
+          key:  "epiphany-admin-key.pem"
+
 - name: ODFE migr | Prepare for ODFE to OPS migration
   include_tasks:
     file: opensearch/utils/prepare-cluster-for-node-restart.yml
@@ -29,7 +41,7 @@
   vars:
     es_api:
       cert_type: Epiphany
-      cert_path: &epi_cert_path "{{ (certificates.dirs.certs, certificates.files.admin.cert.filename) | path_join }}"
-      key_path:  &epi_key_path  "{{ (certificates.dirs.certs, certificates.files.admin.key.filename)  | path_join }}"
+      cert_path: &epi_cert_path "{{ (certificates.dirs.certs, certificates.files.admin.cert) | path_join }}"
+      key_path:  &epi_key_path  "{{ (certificates.dirs.certs, certificates.files.admin.key)  | path_join }}"
       url: https://{{ es_host }}:{{ es_http_port }}
     fail_msg: API access test failed.
