@@ -21,11 +21,11 @@
       args:
         executable: /bin/bash
 
-    - name: Assert two most prioritized routes have unique metric
+    - name: Assert two most prioritized default routes have unique metric
       assert:
         that: "default_routing_configuration_metric_values.stdout_lines[0] != default_routing_configuration_metric_values.stdout_lines[1]"
         fail_msg:  >-
-          There is more than one default route with duplicated metrics value.
+          At least two default routes have the same metric value.
           Check routing configuration, read more in troubleshooting document.
 
 - include_vars:
