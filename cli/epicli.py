@@ -501,7 +501,7 @@ def dump_debug_info():
         dump_external_debug_info('TERRAFORM VERSION', ['terraform', '--version'])
         dump_external_debug_info('RUBY VERSION', ['ruby', '--version'])
         dump_external_debug_info('RUBY GEM VERSION', ['gem', '--version'])
-        dump_external_debug_info('RUBY INSTALLED GEMS', ['gem', 'query', '--local'])
+        dump_external_debug_info('RUBY INSTALLED GEMS', ['gem', 'list', '--local'])
 
         dump_file.write('\n\n*****LOG******\n')
         log_path = os.path.join(get_output_path(), config.log_file)
