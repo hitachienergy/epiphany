@@ -3,7 +3,6 @@ title: "Epiphany cluster Config"
 provider: any
 name: "default"
 specification:
-  prefix: default
   name: epiphanycluster
   admin_user:
     name: operations # YOUR-ADMIN-USERNAME
@@ -11,45 +10,34 @@ specification:
   components:
     kubernetes_master:
       count: 1
-      machine: kubernetes-master-machine
       configuration: default
     kubernetes_node:
       count: 2
-      machine: kubernetes-node-machine
       configuration: default
     logging:
       count: 1
-      machine: logging-machine
       configuration: default
     monitoring:
       count: 1
-      machine: monitoring-machine
       configuration: default
     kafka:
       count: 2
-      machine: kafka-machine
       configuration: default
     postgresql:
       count: 0
-      machine: postgresql-machine
       configuration: default
     load_balancer:
       count: 1
-      machine: load-balancer-machine
       configuration: default
     rabbitmq:
       count: 0
-      machine: rabbitmq-machine
       configuration: default
     opendistro_for_elasticsearch:
       count: 0
-      machine: logging-machine
       configuration: default
     repository:
       count: 1
-      machine: repository-machine
       configuration: default
     single_machine:
       count: 0
-      machine: single-machine
       configuration: default

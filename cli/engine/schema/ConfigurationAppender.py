@@ -7,7 +7,7 @@ from cli.helpers.doc_list_helpers import select_single
 
 
 class ConfigurationAppender(Step):
-    REQUIRED_DOCS = ['configuration/feature-mapping', 'configuration/shared-config', 'epiphany-cluster']
+    REQUIRED_DOCS = ['epiphany-cluster', 'configuration/feature-mapping', 'configuration/shared-config']
 
     def __init__(self, input_docs):
         super().__init__(__name__)
