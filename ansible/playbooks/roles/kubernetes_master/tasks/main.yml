@@ -98,7 +98,6 @@
   block:
     - name: Save kubeadm config to file
       when:
-        - kubernetes_common.automation_designated_master != inventory_hostname
         - san_search_results is all # kubeadm config was not extended/saved for apiserver cert generation
       vars:
         dest_file: /etc/kubeadm/kubeadm-config.yml
