@@ -17,6 +17,7 @@
 - [#2828](https://github.com/epiphany-platform/epiphany/issues/2828) - K8s improvements
   - Re-generate apiserver certificates only by purpose
   - Do not ignore preflight errors in `kubeadm join`
+  - Update documentation about control plane certificates renewal
 - [#2825](https://github.com/epiphany-platform/epiphany/issues/2825) - Upgrade Terraform and providers
   - Terraform 0.12.6 to 1.1.3 ([#2706](https://github.com/epiphany-platform/epiphany/issues/2706))
   - Azurerm provider 1.38.0 to 2.91.0
