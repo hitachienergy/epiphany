@@ -49,7 +49,7 @@ class APIProxy:
         for instance in running_instances:
             hostname = ''
             for tag in instance.tags:
-                if tag['Key'] == 'name':
+                if tag['Key'] == 'Name':
                     hostname = tag['Value']
             if look_for_public_ip:
                 result.append(AnsibleOrderedHostModel(hostname, instance.public_ip_address))

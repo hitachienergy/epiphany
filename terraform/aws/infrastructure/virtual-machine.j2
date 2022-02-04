@@ -33,6 +33,6 @@ resource "aws_instance" "{{ specification.name }}" {
     cluster_name    = "{{ specification.cluster_name }}"
     cluster_version = "{{ version }}"
     component_key   = "{{ specification.component_key }}"
-    name            = "{{ specification.name }}"
+    Name            = "{{ specification.name }}"
   }
 }
