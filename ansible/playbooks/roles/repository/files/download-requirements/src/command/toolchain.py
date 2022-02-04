@@ -8,7 +8,6 @@ from src.command.tar import Tar
 from src.command.wget import Wget
 from src.command.yum import Yum
 from src.command.yum_config_manager import YumConfigManager
-from src.command.yumdb import Yumdb
 from src.command.yumdownloader import Yumdownloader
 
 
@@ -35,7 +34,6 @@ class RedHatFamilyToolchain(Toolchain):
         self.rpm = Rpm(retries)
         self.yum = Yum(retries)
         self.yum_config_manager = YumConfigManager(retries)
-        self.yumdb = Yumdb(retries)
         self.yumdownloader = Yumdownloader(retries)
 
 

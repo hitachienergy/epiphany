@@ -3,12 +3,12 @@ from collections import defaultdict
 from os import chmod
 from pathlib import Path
 from typing import Any, Dict
-from hashlib import sha256
 
 from poyo import parse_string, PoyoException
 
 from src.command.toolchain import Toolchain
 from src.config import Config
+from src.crypt import get_sha1, get_sha256
 from src.error import CriticalError
 
 
@@ -20,22 +20,6 @@ def load_yaml_file(filename: Path) -> Any:
         logging.error(exc)
     except Exception:
         logging.error(f'Failed loading: {filename}')
-
-
-def get_sha256(req_path: Path) -> str:
-    """
-    Calculate sha256 value for `req_path` file.
-
-    :param req_path: of which file to calculate sha256
-    :returns: calculated sha256 value, "-1" if file not found
-    """
-    try:
-        with open(req_path, mode='rb') as req_file:
-            shagen = sha256()
-            shagen.update(req_file.read())
-            return shagen.hexdigest()
-    except FileNotFoundError:
-        return "-1"
 
 
 class BaseMode:
@@ -74,9 +58,12 @@ class BaseMode:
         content = load_yaml_file(self._cfg.reqs_path / f'{self._cfg.distro_subdir}/files.yml')
         reqs['files'].update(content['files'])
 
-        for common_reqs in ['cranes', 'files', 'images', 'grafana-dashboards']:
-            content = load_yaml_file(self._cfg.reqs_path / f'{common_reqs}.yml')
+        for common_reqs in ['cranes', 'files', 'images']:
+            content = load_yaml_file(self._cfg.reqs_path / f'{self._cfg.os_arch.value}/{common_reqs}.yml')
             reqs[common_reqs].update(content[common_reqs])
+
+        content = load_yaml_file(self._cfg.reqs_path / 'grafana-dashboards.yml')
+        reqs['grafana-dashboards'].update(content['grafana-dashboards'])
 
         return reqs
 
@@ -206,7 +193,7 @@ class BaseMode:
                 url, version = image.split(':')
                 filename = Path(f'{url.split("/")[-1]}_{version}.tar')  # format: image_version.tar
 
-                if images[image]['sha256'] == get_sha256(self._cfg.dest_images / filename):
+                if images[image]['sha1'] == get_sha1(self._cfg.dest_images / filename):
                     logging.debug(f'- {image} - checksum ok, skipped')
                     continue
 

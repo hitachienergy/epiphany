@@ -19,3 +19,15 @@ def test_interface_install(mocker):
     ''' Check argument construction for `apt install -y package` '''
     with CommandRunMock(mocker, Apt(1).install, {'package': 'vim', 'assume_yes': True}) as call_args:
         assert call_args == ['apt', 'install', '-y', 'vim']
+
+
+def test_interface_remove(mocker):
+    ''' Check argument construction for `apt remove -y package` '''
+    with CommandRunMock(mocker, Apt(1).remove, {'package': 'vim', 'assume_yes': True}) as call_args:
+        assert call_args == ['apt', 'remove', '-y', 'vim']
+
+
+def test_interface_list_installed_packages(mocker):
+    ''' Check argument construction for `apt list` '''
+    with CommandRunMock(mocker, Apt(1).list_installed_packages) as call_args:
+        assert call_args == ['apt', 'list', '--installed']

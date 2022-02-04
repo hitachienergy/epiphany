@@ -34,10 +34,13 @@ class CommandRunMock:
 
         spy = self.__mocker.spy(subprocess, 'run')
 
-        if self.__args:
-            self.__func(**self.__args)
-        else:
-            self.__func()
+        try:
+            if self.__args:
+                self.__func(**self.__args)
+            else:
+                self.__func()
+        except Exception:
+            pass
 
         return spy.call_args[0][0]
 
