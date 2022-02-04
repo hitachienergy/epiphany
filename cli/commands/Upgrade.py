@@ -3,8 +3,8 @@ import time
 import re
 
 from cli.helpers.Step import Step
-from cli.ansible.AnsibleCommand import AnsibleCommand
-from cli.ansible.AnsibleRunner import AnsibleRunner
+from cli.ansibler.AnsibleCommand import AnsibleCommand
+from cli.ansibler.AnsibleRunner import AnsibleRunner
 from cli.helpers.yaml_helpers import safe_load_all
 from cli.schema.DefaultMerger import DefaultMerger
 from cli.schema.SchemaValidator import SchemaValidator

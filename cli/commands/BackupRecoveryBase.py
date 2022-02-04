@@ -13,8 +13,8 @@ from cli.helpers.doc_list_helpers import select_single, ExpectedSingleResultExce
 from cli.schema.SchemaValidator import SchemaValidator
 from cli.schema.DefaultMerger import DefaultMerger
 
-from cli.ansible.AnsibleCommand import AnsibleCommand
-from cli.ansible.AnsibleRunner import AnsibleRunner
+from cli.ansibler.AnsibleCommand import AnsibleCommand
+from cli.ansibler.AnsibleRunner import AnsibleRunner
 
 
 class BackupRecoveryBase(Step):

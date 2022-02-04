@@ -1,11 +1,11 @@
 import os
 import time
 
-from cli.ansible.AnsibleCommand import AnsibleCommand
-from cli.ansible.AnsibleInventoryCreator import AnsibleInventoryCreator
-from cli.ansible.AnsibleConfigFileCreator import AnsibleConfigFileCreator
-from cli.ansible.AnsibleVarsGenerator import AnsibleVarsGenerator
-from cli.ansible.AnsibleInventoryUpgrade import AnsibleInventoryUpgrade
+from cli.ansibler.AnsibleCommand import AnsibleCommand
+from cli.ansibler.AnsibleInventoryCreator import AnsibleInventoryCreator
+from cli.ansibler.AnsibleConfigFileCreator import AnsibleConfigFileCreator
+from cli.ansibler.AnsibleVarsGenerator import AnsibleVarsGenerator
+from cli.ansibler.AnsibleInventoryUpgrade import AnsibleInventoryUpgrade
 from cli.helpers.Step import Step
 from cli.helpers.build_io import (get_inventory_path, get_inventory_path_for_build,
     get_ansible_path, get_ansible_path_for_build, get_ansible_config_file_path, get_ansible_config_file_path_for_build,

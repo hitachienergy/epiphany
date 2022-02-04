@@ -16,7 +16,7 @@ from cli.schema.ConfigurationAppender import ConfigurationAppender
 from cli.terraform.TerraformTemplateGenerator import TerraformTemplateGenerator
 from cli.terraform.TerraformFileCopier import TerraformFileCopier
 from cli.terraform.TerraformRunner import TerraformRunner
-from cli.ansible.AnsibleRunner import AnsibleRunner
+from cli.ansibler.AnsibleRunner import AnsibleRunner
 from cli.helpers.data_loader import load_schema_obj, types
 
 

@@ -1,10 +1,13 @@
 import shutil
 import os
+
 from pathlib import Path
 from os import listdir
 from os.path import isfile, join
 from distutils import dir_util
-import ansible as ai
+
+from ansible.parsing.dataloader import DataLoader
+from ansible.inventory.manager import InventoryManager
 
 from cli.helpers.data_loader import load_template_file, load_yamls_file, types
 from cli.helpers.yaml_helpers import dump_all, dump
@@ -55,10 +58,7 @@ def save_inventory(inventory, cluster_model, build_dir=None):
 
 
 def load_inventory(inventory_path):
-    inventory = ai.inventory.manager.InventoryManager(
-        loader=ai.parsing.dataloader.DataLoader(),
-        sources=inventory_path
-    )
+    inventory = InventoryManager(loader=DataLoader(), sources=inventory_path)
     return inventory
 
 
