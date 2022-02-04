@@ -66,7 +66,7 @@ class InfrastructureBuilder(Step):
 
             # For now only one subnet per component.
             if (len(component_value.subnets) > 1):
-                self.logger.warning('On Azure only one subnet per component is supported for now. Taking first and ignoring others.')
+                self.logger.warning('On AWS only one subnet per component is supported for now. Taking first and ignoring others.')
 
             subnet_definition = component_value.subnets[0]
             subnet = select_first(infrastructure, lambda item: item.kind == 'infrastructure/subnet' and
