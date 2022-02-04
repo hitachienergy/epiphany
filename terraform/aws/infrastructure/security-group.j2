@@ -17,6 +17,7 @@ resource "aws_security_group" "{{ specification.name }}" {
   tags = {
     cluster_name    = "{{ specification.cluster_name }}"
     cluster_version = "{{ version }}"
+    Name            = "{{ specification.name }}"
   }
 {% for rule in specification.rules %}
 {%- if rule.direction | lower in ["inbound", "ingress"] %}
