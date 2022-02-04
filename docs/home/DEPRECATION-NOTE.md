@@ -50,7 +50,8 @@ There are a few installation approaches that influence the removal of Ignite.
 #### Standalone installation on VMs
 
 To remove Ignite application in this case, it's necessary to destroy related infrastructure part with following
-configuration. To be sure about compatibility of applied changes, use the same epicli version.
+configuration. The `epicli apply` command with `--skip-config` flag may be used to run only Terraform part and skip
+Ansible role provisioning. To be sure about compatibility of applied changes, use the same epicli version.
 
 ```yaml
 ---
