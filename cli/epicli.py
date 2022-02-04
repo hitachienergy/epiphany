@@ -9,23 +9,23 @@ import subprocess
 import platform
 import socket
 
-from cli.engine.ApplyEngine import ApplyEngine
-from cli.engine.BackupEngine import BackupEngine
-from cli.engine.DeleteEngine import DeleteEngine
-from cli.engine.InitEngine import InitEngine
-from cli.engine.PrepareEngine import PrepareEngine
-from cli.engine.RecoveryEngine import RecoveryEngine
-from cli.engine.UpgradeEngine import UpgradeEngine
-from cli.engine.TestEngine import TestEngine
-from cli.helpers.Log import Log
-from cli.helpers.Config import Config
-from cli.helpers.time_helpers import format_time
+from cli.src.command.Apply import Apply
+from cli.src.command.Backup import Backup
+from cli.src.command.Delete import Delete
+from cli.src.command.Init import Init
+from cli.src.command.Prepare import Prepare
+from cli.src.command.Recovery import Recovery
+from cli.src.command.Upgrade import Upgrade
+from cli.src.command.Test import Test
+from cli.src.helpers.Log import Log
+from cli.src.helpers.Config import Config
+from cli.src.helpers.time_helpers import format_time
 from cli.version import VERSION
 from cli.licenses import LICENSES
-from cli.helpers.query_yes_no import query_yes_no
-from cli.helpers.input_query import prompt_for_password
-from cli.helpers.build_io import save_to_file, get_output_path
-from cli.engine.spec.SpecCommand import SpecCommand
+from cli.src.helpers.query_yes_no import query_yes_no
+from cli.src.helpers.input_query import prompt_for_password
+from cli.src.helpers.build_io import save_to_file, get_output_path
+from cli.src.spec.SpecCommand import SpecCommand
 
 start_time = time.time()
 
@@ -150,8 +150,8 @@ def init_parser(subparsers):
     def run_init(args):
         Config().output_dir = os.getcwd()
 
-        with InitEngine(args) as engine:
-            return engine.init()
+        with Init(args) as cmd:
+            return cmd.init()
 
     sub_parser.set_defaults(func=run_init)
 
@@ -173,8 +173,8 @@ def prepare_parser(subparsers):
 
     def run_prepare(args):
         adjust_paths_from_output_dir()
-        with PrepareEngine(args) as engine:
-            return engine.prepare()
+        with Prepare(args) as cmd:
+            return cmd.prepare()
 
     sub_parser.set_defaults(func=run_prepare)
 
@@ -212,8 +212,8 @@ def apply_parser(subparsers):
     def run_apply(args):
         adjust_paths_from_file(args)
         ensure_vault_password_is_set(args)
-        with ApplyEngine(args) as engine:
-            return engine.apply()
+        with Apply(args) as cmd:
+            return cmd.apply()
 
     sub_parser.set_defaults(func=run_apply)
 
@@ -234,8 +234,8 @@ def delete_parser(subparsers):
         if not query_yes_no('Do you really want to delete your cluster?'):
             return 0
         adjust_paths_from_build(args)
-        with DeleteEngine(args) as engine:
-            return engine.delete()
+        with Delete(args) as cmd:
+            return cmd.delete()
 
     sub_parser.set_defaults(func=run_delete)
 
@@ -304,8 +304,8 @@ def upgrade_parser(subparsers):
         if not query_yes_no('Has backup been done?', default='no'):
             return 0
         adjust_paths_from_build(args)
-        with UpgradeEngine(args) as engine:
-            return engine.upgrade()
+        with Upgrade(args) as cmd:
+            return cmd.upgrade()
 
     sub_parser.set_defaults(func=run_upgrade)
 
@@ -328,8 +328,8 @@ def test_parser(subparsers):
     def run_test(args):
         experimental_query()
         adjust_paths_from_build(args)
-        with TestEngine(args) as engine:
-            return engine.test()
+        with Test(args) as cmd:
+            return cmd.test()
 
     sub_parser.set_defaults(func=run_test)
 
@@ -354,8 +354,8 @@ def backup_parser(subparsers):
 
     def run_backup(args):
         adjust_paths_from_file(args)
-        with BackupEngine(args) as engine:
-            return engine.backup()
+        with Backup(args) as cmd:
+            return cmd.backup()
 
     sub_parser.set_defaults(func=run_backup)
 
@@ -382,8 +382,8 @@ def recovery_parser(subparsers):
         if not query_yes_no('Do you really want to perform recovery?'):
             return 0
         adjust_paths_from_file(args)
-        with RecoveryEngine(args) as engine:
-            return engine.recovery()
+        with Recovery(args) as cmd:
+            return cmd.recovery()
 
     sub_parser.set_defaults(func=run_recovery)
 
