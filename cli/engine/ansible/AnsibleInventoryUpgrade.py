@@ -1,12 +1,8 @@
-from ansible.parsing.dataloader import DataLoader
-from ansible.inventory.manager import InventoryManager
-
 from cli.helpers.Step import Step
 from cli.helpers.build_io import get_inventory_path_for_build
 from cli.models.AnsibleHostModel import AnsibleHostModel
 from cli.models.AnsibleInventoryItem import AnsibleInventoryItem
-from cli.helpers.build_io import save_inventory, load_manifest
-from cli.helpers.objdict_helpers import dict_to_objdict
+from cli.helpers.build_io import save_inventory, load_manifest, load_inventory
 from cli.helpers.data_loader import load_schema_obj, types as data_types
 from cli.helpers.doc_list_helpers import select_single
 from cli.helpers.objdict_helpers import merge_objdict
@@ -56,7 +52,7 @@ class AnsibleInventoryUpgrade(Step):
         inventory_path = get_inventory_path_for_build(self.backup_build_dir)
 
         self.logger.info(f'Loading backup Ansible inventory: {inventory_path}')
-        loaded_inventory = InventoryManager(loader = DataLoader(), sources=inventory_path)
+        loaded_inventory = load_inventory(inventory_path)
 
         # move loaded inventory to templating structure
         new_inventory = []

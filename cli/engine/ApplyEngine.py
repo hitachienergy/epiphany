@@ -1,13 +1,10 @@
 import os
 import sys
 
-from ansible.parsing.dataloader import DataLoader
-from ansible.inventory.manager import InventoryManager
-
 from cli.version import VERSION
 from cli.helpers.Step import Step
 from cli.helpers.doc_list_helpers import select_single, select_all, select_first
-from cli.helpers.build_io import save_manifest, load_manifest, get_inventory_path, get_manifest_path, get_build_path
+from cli.helpers.build_io import save_manifest, load_manifest, get_inventory_path, get_manifest_path, get_build_path, load_inventory
 from cli.helpers.yaml_helpers import safe_load_all
 from cli.helpers.Log import Log
 from cli.helpers.os_images import get_os_distro_normalized
@@ -121,7 +118,7 @@ class ApplyEngine(Step):
         inventory_path = get_inventory_path(cluster_name)
 
         if os.path.isfile(inventory_path):
-            existing_inventory = InventoryManager(loader=DataLoader(), sources=inventory_path)
+            existing_inventory = load_inventory(inventory_path)
 
             both_present = all([
                 'kubernetes_master' in existing_inventory.list_groups(),
@@ -149,7 +146,7 @@ class ApplyEngine(Step):
 
         if os.path.isfile(inventory_path):
             next_postgres_node_count = 0
-            existing_inventory = InventoryManager(loader=DataLoader(), sources=inventory_path)
+            existing_inventory = load_inventory(inventory_path)
             prev_postgres_node_count = len(existing_inventory.list_hosts(pattern='postgresql'))
             postgres_available = [x for x in feature_mapping.specification.available_roles if x.name == 'postgresql']
             if postgres_available[0].enabled:
