@@ -32,3 +32,9 @@ The functionality that the Logstash is serving in Epiphany - exporting csv can r
 
 Removed: Epiphany 2.0
 Issue: [2833](https://github.com/epiphany-platform/epiphany/issues/2833)
+
+## Next steps
+
+If you plan Epiphany upgrade from v1.x to v2.x and Logstash is installed in your cluster but you don't use it, it is recommended to:
+- remove `logstash` group, if present, from `inventory` file
+- remove Logstash from machines (recommended way is to use `apt`/`yum` according to your OS)
