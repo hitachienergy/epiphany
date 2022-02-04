@@ -27,7 +27,7 @@ class AnsibleRunner(Step):
         self.backup_build_dir = backup_build_dir
         self.ansible_options = ansible_options
         self.ansible_command = AnsibleCommand()
-        self.__ping_retries: int = ping_retries
+        self.ping_retries: int = ping_retries
 
     def __enter__(self):
         super().__enter__()
@@ -57,7 +57,7 @@ class AnsibleRunner(Step):
         self.ansible_command.run_task_with_retries(inventory=inventory_path,
                                                    module="ping",
                                                    hosts="all",
-                                                   retries=self.__ping_retries)
+                                                   retries=self.ping_retries)
 
         self.logger.info('Checking preflight conditions on each machine')
         self.ansible_command.run_playbook_with_retries(inventory=inventory_path,
@@ -106,7 +106,6 @@ class AnsibleRunner(Step):
         # create inventory
         inventory_creator = AnsibleInventoryCreator(self.cluster_model, self.config_docs)
         inventory_creator.create()
-        time.sleep(10)
 
         # create ansible.cfg
         ansible_config_file_path = get_ansible_config_file_path(self.cluster_model.specification.name)

@@ -39,7 +39,7 @@ class ApplyEngine(Step):
         self.infrastructure_docs = []
         self.manifest_docs = []
 
-        self.__ping_retries: int = input_data.ping_retries
+        self.ping_retries: int = input_data.ping_retries
 
     def __enter__(self):
         return self
@@ -196,7 +196,7 @@ class ApplyEngine(Step):
 
         self.assert_consistent_os_family()
 
-        if not (self.skip_infrastructure or self.is_provider_any(self.cluster_model)):
+        if not (self.skip_infrastructure or self.cluster_model['provider'] == 'any'):
             # Generate terraform templates
             with TerraformTemplateGenerator(self.cluster_model, self.infrastructure_docs) as template_generator:
                 template_generator.run()
@@ -222,19 +222,7 @@ class ApplyEngine(Step):
         # Run Ansible to provision infrastructure
         if not(self.skip_config):
             with AnsibleRunner(self.cluster_model, docs, ansible_options=self.ansible_options,
-                               ping_retries=self.__ping_retries) as ansible_runner:
+                               ping_retries=self.ping_retries) as ansible_runner:
                 ansible_runner.apply()
 
         return 0
-
-    def dry_run(self):
-
-        self.process_input_docs()
-
-        self.process_configuration_docs()
-
-        return [*self.configuration_docs, *self.infrastructure_docs]
-
-    @staticmethod
-    def is_provider_any(cluster_model):
-        return cluster_model["provider"] == "any"
