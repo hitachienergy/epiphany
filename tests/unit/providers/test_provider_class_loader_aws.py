@@ -1,7 +1,7 @@
-from cli.engine.providers.provider_class_loader import provider_class_loader
-from cli.engine.providers.aws.InfrastructureBuilder import InfrastructureBuilder
-from cli.engine.providers.aws.APIProxy import APIProxy
-from cli.engine.providers.aws.InfrastructureConfigCollector import InfrastructureConfigCollector
+from cli.providers.provider_class_loader import provider_class_loader
+from cli.providers.aws.InfrastructureBuilder import InfrastructureBuilder
+from cli.providers.aws.APIProxy import APIProxy
+from cli.providers.aws.InfrastructureConfigCollector import InfrastructureConfigCollector
 
 
 def test_provider_class_loader_infrastructurebuilder_aws():

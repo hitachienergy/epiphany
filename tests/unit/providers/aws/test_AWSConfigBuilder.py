@@ -1,4 +1,4 @@
-from cli.engine.providers.aws.InfrastructureBuilder import InfrastructureBuilder
+from cli.providers.aws.InfrastructureBuilder import InfrastructureBuilder
 from cli.helpers.objdict_helpers import dict_to_objdict
 
 def test_get_resource_group_should_set_proper_values_to_model():

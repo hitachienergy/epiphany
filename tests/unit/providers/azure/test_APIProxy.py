@@ -1,8 +1,8 @@
 from pytest_mock import MockerFixture
 
-from cli.engine.providers.azure.APIProxy import APIProxy
+from cli.providers.azure.APIProxy import APIProxy
 from cli.models.AnsibleHostModel import AnsibleOrderedHostModel
-from tests.unit.engine.providers.data.APIProxy_data import CLUSTER_MODEL, RUNNING_INSTANCES_AZURE
+from tests.unit.providers.data.APIProxy_data import CLUSTER_MODEL, RUNNING_INSTANCES_AZURE
 
 
 def test_get_ips_for_feature(mocker: MockerFixture):
@@ -10,7 +10,7 @@ def test_get_ips_for_feature(mocker: MockerFixture):
     Make sure that hostnames in inventory are sorted.
     """
 
-    mocker.patch('cli.engine.providers.azure.APIProxy.Log')
+    mocker.patch('cli.providers.azure.APIProxy.Log')
     proxy = APIProxy(CLUSTER_MODEL('azure'), RUNNING_INSTANCES_AZURE)
     proxy.run = (lambda *args: RUNNING_INSTANCES_AZURE)  # mock run with prepared data
 

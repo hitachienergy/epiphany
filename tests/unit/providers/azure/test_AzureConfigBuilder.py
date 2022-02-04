@@ -1,4 +1,4 @@
-from cli.engine.providers.azure.InfrastructureBuilder import InfrastructureBuilder
+from cli.providers.azure.InfrastructureBuilder import InfrastructureBuilder
 from cli.helpers.objdict_helpers import dict_to_objdict
 
 
