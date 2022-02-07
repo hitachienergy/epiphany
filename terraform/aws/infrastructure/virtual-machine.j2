@@ -27,6 +27,11 @@ resource "aws_instance" "{{ specification.name }}" {
     volume_size           = "{{ specification.disks.root.volume_size }}"
     delete_on_termination = "{{ specification.disks.root.delete_on_termination | lower }}"
     encrypted             = "{{ specification.disks.root.encrypted | lower }}"
+    tags = {
+      cluster_name        = "{{ specification.cluster_name }}"
+      cluster_version     = "{{ version }}"
+      Name                = "{{ specification.name }}-os-volume"
+    }
   }
 
   tags = {
