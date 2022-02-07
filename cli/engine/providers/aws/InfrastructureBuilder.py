@@ -124,12 +124,14 @@ class InfrastructureBuilder(Step):
     def get_default_security_group_config(self, vpc_config):
         sg_config = self.get_config_or_default(self.docs, 'infrastructure/default-security-group')
         sg_config.specification.vpc_name = vpc_config.specification.name
+        sg_config.specification.cluster_name = self.cluster_name
         return sg_config
 
     def get_efs_config(self):
         efs_config = self.get_config_or_default(self.docs, 'infrastructure/efs-storage')
         efs_config.specification.token = "aws-efs-token-" + self.cluster_name
         efs_config.specification.name = resource_name(self.cluster_prefix, self.cluster_name, 'efs')
+        efs_config.specification.cluster_name = self.cluster_name
         return efs_config
 
     def get_vm(self, component_key, vm_config, subnet, public_key_config, security_group, index):

@@ -13,6 +13,12 @@
 resource "aws_default_security_group" "{{ specification.name }}" {
   vpc_id = aws_vpc.{{ specification.vpc_name }}.id
 
+  tags = {
+    cluster_name    = "{{ specification.cluster_name }}"
+    cluster_version = "{{ version }}"
+    Name            = "{{ specification.name }}"
+  }  
+
 {% for rule in specification.rules %}
 {%- if rule.direction | lower in ["inbound", "ingress"] %}
   ingress {
