@@ -1,36 +1,91 @@
 ---
-- name: Kibana migr | Stop elasticsearch service
-  systemd:
-    name: elasticsearch
-    enabled: yes
-    state: stopped
-  register: elasticsearch_state
+- name: Kibana migr | Load deafults from Opensearch Dashboards role
+  include_vars:
+    file: roles/opensearch_dashboards/defaults/main.yml
 
-- name: Download Opensearch
+- name: Kibana migr | Load vars from Opensearch Dashboards role  # requires epicli upgrade -f <manifest>.yml
+  include_vars:
+    file: roles/opensearch_dashboards/vars/main.yml
+
+- name: Kibana migr | Stop Kibana service
+  systemd:
+    name: kibana
+    enabled: no
+    state: stopped
+
+- name: Kibana migr | Download Opensearch Dashboards binary
   include_role:
     name: download
     tasks_from: download_file
   vars:
     file_name: "opensearch-dashboards-{{ versions[ansible_os_family].opsd_version }}-linux-x64.tar.gz"
 
-- name: Extract the tar file
-  command: "chdir=/tmp/ tar -xvzf opensearch-{{ versions[ansible_os_family].ops_version }}-linux-x64.tar.gz -C {{ specification.paths.ops_home }} --strip-components=1"
+- name: Kibana migr | Create opensearch-dashboards user
+  user:
+    name: "{{ specification.opsd_user }}"
+    password: "{{ specification.opsd_password }}"
+    state: present
+    shell: /bin/bash
+
+- name: Kibana migr | Create OPSD directories
+  file:
+    path: "{{ item }}"
+    state: directory
+    owner: "{{ specification.opsd_user }}"
+    group: "{{ specification.opsd_user }}"
+    mode: ug=rwx,o=rx
+  with_items:
+    - "{{ specification.paths.opsd_log_dir }}"
+    - "{{ specification.paths.opsd_home }}"
+
+- name: Kibana migr | Extract the tar file
+  unarchive:
+    src: "/tmp/opensearch-dashboards-{{ versions[ansible_os_family].opsd_version }}-linux-x64.tar.gz"
+    dest: "{{ specification.paths.opsd_home }}"
+    owner: "{{ specification.opsd_user }}"
+    remote_src: yes
+    extra_opts:
+    - --strip-components=1
 
 - name: Kibana migr | Clone kibana settings
   copy:
-    src: /etc/kibana/kibana.yml  # Hardoced for testing purposes only
-    dest: "{{ specification.paths.ops_conf_dir }}/opensearch_dashboards.yml"
+    src: /etc/kibana/kibana.yml  # Hardcoded for testing purposes only
+    dest: "{{ specification.paths.opsd_conf_dir }}/opensearch_dashboards.yml"
     remote_src: yes
-    owner: opensearch
+    owner: "{{ specification.opsd_user }}"
     group: root
     mode: ug=rw,o=
     backup: yes
 
 - name: Kibana migr | Porting kibana settings to OpenSearch Dashboards
   replace:
-    path: "{{ specification.paths.ops_conf_dir }}/opensearch_dashboards.yml"
+    path: "{{ specification.paths.opsd_conf_dir }}/opensearch_dashboards.yml"
     regexp: "{{ item.1 }}"
     replace: "{{ item.2 }}"
   with_items:
   - { 1: 'elasticsearch', 2: 'opensearch' }
-  - { 1: 'kibana', 2: 'opensearchDashboards' }
+  - { 1: 'kibana', 2: 'opensearchdashboards' }
+  - { 1: 'opendistro_security', 2: 'opensearch_security' }
+# OPS claims to not recognize these 3 following Kibana variables
+  - { 1: 'newsfeed.enabled', 2: '#newsfeed.enabled' }
+  - { 1: 'telemetry.optIn', 2: '#telemetry.optIn' }
+  - { 1: 'telemetry.enabled', 2: '#telemetry.enabled' }
+
+- name: Kibana migr | Create OPSD systemd service
+  template:
+    src: roles/opensearch_dashboards/templates/dashboards.service
+    dest: "{{ systemctl_path }}/dashboards.service"
+
+- name: Kibana migr | Assure Opensearch Dashboards service is started
+  service:
+    name: dashboards
+    state: started
+    enabled: yes
+
+- name: Kibana migr | Get all the installed dashboards plugins
+  command: "sudo -u {{ specification.opsd_user }} {{ specification.paths.opsd_plugin_bin_path }} list"
+  register: list_plugins
+
+- name: Kibana migr | Show all the installed dashboards plugins
+  debug:
+    msg: "{{ list_plugins.stdout }}"

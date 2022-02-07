@@ -198,16 +198,6 @@
   vars:
     current_group_name: opensearch
 
-- hosts: kibana
-  become: true
-  become_method: sudo
-  serial: 1
-  tasks:
-    - import_role:
-        name: upgrade
-        tasks_from: kibana
-      when: "'kibana' in upgrade_components or upgrade_components|length == 0"
-
 - hosts: grafana
   become: true
   become_method: sudo

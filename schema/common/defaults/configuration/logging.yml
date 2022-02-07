@@ -5,6 +5,8 @@ specification:
   cluster_name: EpiphanyOpensearch
   odfe_migration: false
   ops_user: opensearch
+  opsd_user: opensearchboard
+  opsd_password: PASSWORD_TO_CHANGE
   admin_password: PASSWORD_TO_CHANGE
   kibanaserver_password: PASSWORD_TO_CHANGE
   kibanaserver_user_active: true
@@ -22,6 +24,9 @@ specification:
     ops_repo: /var/lib/opensearch-snapshots
     ops_data: /var/lib/opensearch
     ops_logs: /var/log/opensearch
+    opsd_home: /usr/share/opensearch-dashboards
+    opsd_conf_dir: /usr/share/opensearch-dashboards/config
+    opsd_plugin_bin_path: /usr/share/opensearch-dashboards/bin/opensearch-dashboards-plugin
   jvm_options:
     Xmx: 1g
   opensearch_security:

@@ -7,12 +7,12 @@ After=network-online.target
 RuntimeDirectory=opensearch-dashboards
 PrivateTmp=true
 
-WorkingDirectory={{ ops_dashboards_home }}
+WorkingDirectory={{ specification.paths.opsd_home }}
 
-User={{ ops_user }}
-Group={{ ops_user }}
+User={{ specification.opsd_user }}
+Group={{ specification.opsd_user }}
 
-ExecStart={{ ops_dashboards_home }}/bin/opensearch-dashboards -q
+ExecStart={{ specification.paths.opsd_home }}/bin/opensearch-dashboards -q
 
 StandardOutput=journal
 StandardError=inherit

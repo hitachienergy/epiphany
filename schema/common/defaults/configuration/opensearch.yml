@@ -25,6 +25,7 @@ specification:
     ops_repo: /var/lib/opensearch-snapshots
     ops_data: /var/lib/opensearch
     ops_logs: /var/log/opensearch
+    opsd_home: /usr/share/opensearch-dashboards
   jvm_options:
     Xmx: 1g
   opensearch_security:

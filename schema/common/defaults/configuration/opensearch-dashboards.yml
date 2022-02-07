@@ -1,11 +1,11 @@
 kind: configuration/opensearch-dashboards
-title: "OpenSearch-dashboards"
+title: "OpenSearch-Dashboards"
 name: default
 specification:
-  ops_dashboards_user: admin
-  ops_dashboards_password: PASSWORD_TO_CHANGE
-  ops_user: opensearch
-  ops_dashboards_log_dir: /var/log/opensearchdashboards
-  ops_dashboards_home: /usr/share/opensearch-dashboards
-  ops_dashboards_conf_dir: /usr/share/opensearch-dashboards/config
-  ops_plugin_bin_path: /usr/share/opensearch-dashboards/bin/opensearch-dashboards-plugin
+  opsd_user: opensearchdboard
+  opsd_password: PASSWORD_TO_CHANGE
+  paths:
+    opsd_home: /usr/share/opensearch-dashboards
+    opsd_conf_dir: /usr/share/opensearch-dashboards/config
+    opsd_plugin_bin_path: /usr/share/opensearch-dashboards/bin/opensearch-dashboards-plugin
+    opsd_log_dir: /var/log/opensearchdashboards

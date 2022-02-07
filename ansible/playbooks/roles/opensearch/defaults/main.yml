@@ -4,10 +4,8 @@
 versions:
   RedHat:
     ops_version: "1.2.4"
-    opsd_version: "1.2.0"
   Debian:
     ops_version: "1.2.4"
-    opsd_version: "1.2.0"
 certificates:
   dirs:  # must be under the config directory, specified using a relative path
     certs:  /usr/share/opensearch/config/cert

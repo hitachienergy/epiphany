@@ -1,9 +1,9 @@
 ---
 versions:
   RedHat:
-    ops_dashboards_version: "1.2.0"
+    opsd_version: "1.2.0"
   Debian:
-    ops_dashboards_version: "1.2.0"
+    opsd_version: "1.2.0"
 ops_nodes: |-
         {% for item in groups['ops-cluster'] -%}
           {{ hostvars[item]['ip'] }}{% if not loop.last %}","{% endif %}
