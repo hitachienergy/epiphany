@@ -25,8 +25,7 @@ specification:
       delete_on_termination: true
       encrypted: true
     additional_disks: []
-#      - name: disk1
-#        device_name: "/dev/sdb"
+#      - device_name: "/dev/sdb"
 #        volume_type: gp2
 #        volume_size: 60
 #        delete_on_termination: true
