@@ -9,7 +9,7 @@ Note that versions are default versions and can be changed in certain cases thro
 | Kubernetes                 | 1.22.4   | https://github.com/kubernetes/kubernetes              | [Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0) |
 | Kubernetes Dashboard       | 2.3.1    | https://github.com/kubernetes/dashboard               | [Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0) |
 | Kubernetes metrics-scraper | 1.0.7    | https://github.com/kubernetes-sigs/dashboard-metrics-scraper | [Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0) |
-| Containerd                 | 1.4.12   | https://github.com/containerd/containerd | [Apache License 2.0](https://github.com/containerd/containerd/blob/main/LICENSE) |
+| containerd                 | 1.4.12   | https://github.com/containerd/containerd | [Apache License 2.0](https://github.com/containerd/containerd/blob/main/LICENSE) |
 | Calico                     | 3.20.3   | https://github.com/projectcalico/calico               | [Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0) |
 | Flannel                    | 0.14.0   | https://github.com/coreos/flannel/                    | [Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0)     |
 | Canal                      | 3.20.3   | https://github.com/projectcalico/calico               | [Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0) |

@@ -26,12 +26,13 @@
   register: modify_filebeat_yml
 
 - name: Append new field definition
+  when: k8s_as_cloud_service is not defined
   blockinfile:
     path: /etc/filebeat/fields.yml
     backup: true
     block: |2
       - key: containerd
-        title: "Containerd"
+        title: "containerd"
         description: >
           Reading data from containerd log filepath.
         short_config: true
@@ -41,13 +42,13 @@
             description: >
               Contains extra fields for containerd logs.
             fields:
-              - name: container.pod.name
+              - name: kubernetes.pod.name
                 type: text
                 format: string
-              - name: container.uuid
+              - name: kubernetes.namespace
                 type: text
                 format: string
-              - name: container.namespace
+              - name: container.id
                 type: text
                 format: string
 

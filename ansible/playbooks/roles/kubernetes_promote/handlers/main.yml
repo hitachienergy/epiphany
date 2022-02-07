@@ -1,16 +1,16 @@
 ---
 - name: Restart controller-manager
-  shell: |
-    crictl ps \
-      --name='kube-controller-manager' -q \
+  shell: >-
+    set -o pipefail &&
+    crictl ps --name='kube-controller-manager' -q \
     | xargs --no-run-if-empty crictl stop --timeout=0
   args:
     executable: /bin/bash
 
 - name: Restart scheduler
-  shell: |
-    crictl ps \
-      --name='kube-scheduler' -q \
+  shell: >-
+    set -o pipefail &&
+    crictl ps --name='kube-scheduler' -q \
     | xargs --no-run-if-empty crictl stop --timeout=0
   args:
     executable: /bin/bash
@@ -21,10 +21,10 @@
     state: restarted
 
 - name: Restart kube-proxy
-  shell: |
-    crictl ps \
-      --name='kube-proxy' -q \
-      | xargs --no-run-if-empty crictl stop --timeout=0
+  shell: >-
+    set -o pipefail &&
+    crictl ps --name='kube-proxy' -q \
+    | xargs --no-run-if-empty crictl stop --timeout=0
   args:
     executable: /bin/bash
 

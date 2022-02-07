@@ -123,10 +123,8 @@ filebeat.inputs:
   {% endif %}
 
   processors:
-    - add_kubernetes_metadata:
-        in_cluster: {{ 'true' if filebeat_as_daemonset is defined else 'false' }}
     - dissect:
-        tokenizer: "/var/log/containers/%{container.pod.name}_%{container.namespace}_%{container.uuid}.log"
+        tokenizer: "/var/log/containers/%{kubernetes.pod.name}_%{kubernetes.namespace}_%{container.id}.log"
         field: "log.file.path"
         target_prefix: ""
         overwrite_keys: true

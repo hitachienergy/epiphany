@@ -1,4 +1,8 @@
 ---
+- name: Get information on installed packages
+  package_facts:
+  when: ansible_facts.packages is undefined
+
 - name: Remove Docker
   block:
   - name: Stop Kubelet before Docker removal
@@ -15,20 +19,28 @@
   when:
     - is_upgrade_run
     - inventory_hostname not in groups.image_registry
+    - ansible_facts.packages['docker-ce'] is defined
 
-- name: Install Containerd package
+- name: Install containerd package
   package:
-    name: containerd.io
+    name: "{{ _packages[ansible_os_family] }}"
     state: present
+  vars:
+    _packages:
+      Debian:
+        - containerd.io={{ containerd_version }}-*
+      RedHat:
+        - containerd.io-{{ containerd_version }}
   module_defaults:
     yum: { lock_timeout: "{{ yum_lock_timeout }}" }
 
 - name: Configure prerequisites
   include_tasks: configure-prerequisites.yml
 
-- name: Configure Containerd
+- name: Configure containerd
   include_tasks: configure-containerd.yml
 
+# To be replaced by filter plugin (https://github.com/epiphany-platform/epiphany/issues/2943)
 - name: Reconfigure kubelet args
   when: is_upgrade_run
   block:

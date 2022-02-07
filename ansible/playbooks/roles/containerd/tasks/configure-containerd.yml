@@ -1,5 +1,5 @@
 ---
-- name: Create Containerd dir
+- name: Create containerd dir
   file:
     path: /etc/containerd
     state: directory
@@ -7,7 +7,7 @@
     group: root
     mode: u=rw,go=r
 
-- name: Provide Containerd config
+- name: Provide containerd config
   template:
     src: config.toml.j2
     dest: /etc/containerd/config.toml
@@ -15,4 +15,4 @@
     owner: root
     group: root
   notify:
-    - Restart Containerd
+    - Restart containerd

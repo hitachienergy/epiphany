@@ -8,19 +8,13 @@
     name: opendistro_for_logging_vars
   when: groups.logging is defined
 
-- name: Filebeat as DaemonSet
+- name: Include installation tasks for Filebeat as DaemonSet for "k8s as cloud service"
+  include_tasks: install-filebeat-as-daemonset.yml
   when:
     - k8s_as_cloud_service is defined
     - k8s_as_cloud_service
     - groups.logging is defined
     - groups.logging | length > 0
-  block:
-    - name: Include installation tasks for Filebeat as DaemonSet for "k8s as cloud service"
-      include_tasks: install-filebeat-as-daemonset.yml
-
-    - name: Set fact filebeat_as_daemonset
-      set_fact:
-        filebeat_as_daemonset: true
 
 - name: Include auditd configuration tasks
   include_tasks: configure-auditd.yml
