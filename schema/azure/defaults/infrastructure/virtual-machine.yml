@@ -11,7 +11,7 @@ specification:
   network_interface_name: SET_BY_AUTOMATION
   availability_set_name: SET_BY_AUTOMATION  # Please don't change this default value, keep it "SET_BY_AUTOMATION"
   use_network_security_groups: SET_BY_AUTOMATION
-  security_group_association_name: SET_BY_AUTOMATION  
+  security_group_association_name: SET_BY_AUTOMATION
   tags: []
   os_type: linux
   size: Standard_DS1_v2
@@ -28,6 +28,12 @@ specification:
     create_option: FromImage
     disk_size_gb: 32
     managed_disk_type: Premium_LRS
+  additional_disks: []
+    # - storage_account_type: Premium_LRS
+    #   create_option: Empty
+    #   disk_size_gb: 32
+    #   device_name: "/dev/sdb"
+    #   mountpoint: /var/pvs
   network_interface:
     enable_accelerated_networking: false
     private_ip:
