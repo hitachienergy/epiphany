@@ -170,7 +170,7 @@
   delay: 1
   run_once: true
 
-- name: "ODFE migr | Set Opensearch admin password {{ specification.ops_password }}"
+- name: ODFE migr | Set Opensearch admin passwor
   uri:
     url: "https://{{ inventory_hostname }}:{{ ports.http }}/_opendistro/_security/api/internalusers"
     method: PATCH
@@ -193,7 +193,29 @@
   retries: 5
   delay: 1
   run_once: true
-  # when: admin_check_response.status == 200
+  when: admin_check_response.status == 200
+
+- name: ODFE migr | Set kibanaserver user password
+  uri:
+    url: "https://{{ inventory_hostname }}:{{ ports.http }}/_opendistro/_security/api/internalusers"
+    method: PATCH
+    status_code: [200]
+    body:
+      - op: "replace"
+        path: "/kibanaserver"
+        value:
+          password: "{{ specification.kibanaserver_password }}"
+          reserved: "true"
+          description: "kibanaserver user"
+    client_cert: "{{ certificates.dirs.certs }}/{{ certificates.files.admin.cert }}"
+    client_key:  "{{ certificates.dirs.certs }}/{{ certificates.files.admin.key }}"
+    body_format: json
+    validate_certs: no
+  register: uri_response
+  until: uri_response is success
+  retries: 5
+  delay: 1
+  run_once: true
 
 - name: ODFE migr | Check the opensearch status
   command: curl https://{{ inventory_hostname }}:{{ ports.http }}/_cluster/health?pretty -u 'admin:{{ specification.admin_password }}' -k

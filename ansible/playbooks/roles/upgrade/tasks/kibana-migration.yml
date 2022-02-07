@@ -64,7 +64,7 @@
     replace: "{{ item.2 }}"
   with_items:
   - { 1: 'elasticsearch', 2: 'opensearch' }
-  - { 1: 'kibana', 2: 'opensearchdashboards' }
+  - { 1: '/kibana', 2: '/opensearchdashboards' }
   - { 1: 'opendistro_security', 2: 'opensearch_security' }
 # OPS claims to not recognize these 3 following Kibana variables
   - { 1: 'newsfeed.enabled', 2: '#newsfeed.enabled' }
