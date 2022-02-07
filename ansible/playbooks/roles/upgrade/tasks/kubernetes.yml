@@ -1,5 +1,5 @@
 ---
-- name: k8s | Wait for kube-apiserver
+- name: k8s/{{ node_role }} | Wait for kube-apiserver
   delegate_to: >-
     {{ inventory_hostname if inventory_hostname in groups.kubernetes_master else
       groups.kubernetes_master[0] }}
@@ -8,22 +8,20 @@
 # During HA control plane upgrade server address in kubeconfig is switched to local for
 #   * compatibility between client and server versions
 #   * identifying correct server version
-- name: k8s/master | Switch apiserver address to local
+- name: k8s/{{ node_role }} | Switch apiserver address to local
   include_tasks: kubernetes/utils/set-local-apiserver.yml # sets kubectl_context_cluster
   when:
     - groups.kubernetes_master | length > 1
     - inventory_hostname in groups.kubernetes_master
 
-# TODO: checked on the first master node, should be changed?
-- name: k8s | Include get-kubelet-version.yml
+- name: k8s/{{ node_role }} | Include get-kubelet-version.yml
   import_tasks: kubernetes/get-kubelet-version.yml
-  delegate_to: "{{ groups.kubernetes_master[0] }}"
 
-- name: k8s | Set kubelet version as fact
+- name: k8s/{{ node_role }} | Set kubelet version as fact
   set_fact:
     initial_kubelet_version: "{{ kubelet_version.stdout }}"
 
-- name: Check if upgrade state file exists
+- name: k8s/{{ node_role }} | Check if upgrade state file exists
   stat:
     path: "{{ kubernetes.upgrade_state_file_path }}"
     get_attributes: false
@@ -45,19 +43,17 @@
         content: Upgrade started
         mode: u=rw,g=r,o=
 
-    # TODO task names
-    - name: k8s | Upgrade first master to v{{ version }}
+    - name: k8s/{{ node_role }} | Upgrade first master to v{{ version }}
       include_tasks: kubernetes/upgrade-master0.yml
       when:
         - inventory_hostname == groups.kubernetes_master[0]
 
-    - name: k8s | Upgrade next master to v{{ version }}
+    - name: k8s/{{ node_role }} | Upgrade next master to v{{ version }}
       include_tasks: kubernetes/upgrade-masterN.yml
       when:
-        - groups.kubernetes_master | length > 1 # TODO check if necessary
         - inventory_hostname in groups.kubernetes_master[1:]
 
-    - name: k8s | Upgrade node to v{{ version }}
+    - name: k8s/{{ node_role }} | Upgrade node to v{{ version }}
       when:
         - groups.kubernetes_node is defined
         - inventory_hostname in groups.kubernetes_node
@@ -68,7 +64,7 @@
         path: "{{ kubernetes.upgrade_state_file_path }}"
         state: absent
 
-- name: k8s/master | Switch apiserver address to HAProxy
+- name: k8s/{{ node_role }} | Switch apiserver address to HAProxy
   command: |-
     kubectl config set-cluster {{ kubectl_context_cluster.stdout }} --server=https://localhost:3446
   when:
@@ -76,5 +72,5 @@
     - inventory_hostname in groups.kubernetes_master
   changed_when: true
 
-- name: k8s | Upgrade internal haproxy load-balancer
+- name: k8s/{{ node_role }} | Upgrade internal haproxy load-balancer
   import_tasks: kubernetes/upgrade-haproxy.yml
