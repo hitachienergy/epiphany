@@ -118,12 +118,6 @@
   when: change_config.changed
     or change_jvm_config.changed
 
-- name: Enable and start opensearch service
-  systemd:
-    name: opensearch
-    state: started
-    enabled: yes
-
 - name: Change default users
   when: not is_upgrade_run
   block:

@@ -1,4 +1,15 @@
 ---
+- name: OPS | Get information about installed packages as facts
+  package_facts:
+    manager: auto
+  when: ansible_facts.packages is undefined
+
+- name: OPS | Print elasticsearch ond opensearch versions
+  debug:
+    msg:
+      - "Elasticsearch version curently installed: {{ ansible_facts.packages['elasticsearch-oss'][0].version }}"
+      - "Opensearch version to be installed: {{ ops_defaults.versions[ansible_os_family].ops_version }}"
+
 - name: ODFE migr | Ensure elasticsearch service is running
   systemd:
     name: elasticsearch
@@ -45,3 +56,153 @@
       key_path:  &epi_key_path  "{{ (certificates.dirs.certs, certificates.files.admin.key)  | path_join }}"
       url: https://{{ es_host }}:{{ es_http_port }}
     fail_msg: API access test failed.
+
+- name: ODFE migr | Stop elasticsearch service
+  systemd:
+    name: elasticsearch
+    enabled: yes
+    state: stopped
+  register: elasticsearch_state
+
+- name: ODFE migr | Include vars 1/2 for Opensearch binaries instalaltion
+  include_vars:
+    file: roles/opensearch/defaults/main.yml
+
+- name: ODFE migr | Include vars 2/2 for Opensearch binaries instalaltion
+  include_vars:
+    file: roles/opensearch/vars/main.yml
+
+- name: ODFE migr | Inastall Opensearch binaries
+  include_tasks: roles/opensearch/tasks/install-ops.yml
+
+- name: ODFE migr | Copy data and logs directories
+  copy:
+    src: "/var/lib/elasticsearch"  # Hardoced for testing purposes only
+    dest: "{{ specification.paths.ops_data }}"
+    remote_src: yes
+    directory_mode: yes
+
+- name: ODFE migr | Copy snapshots directories
+  copy:
+    src: "/var/lib/elasticsearch-snapshots"  # Hardoced for testing purposes only
+    dest: "{{ specification.paths.ops_repo }}"
+    remote_src: yes
+    directory_mode: yes
+
+- name: ODFE migr | Prepare a list of certs and keys to OPS directories
+  find:
+    paths: "/etc/elasticsearch/"
+    patterns: "*pem"
+  register: pem_files
+
+- name: ODFE migr | Copy a list of certs and keys to OPS directories
+  copy:
+    src: "{{ item.path }}"
+    dest: "{{ specification.paths.ops_conf_dir }}/"
+    remote_src: yes
+  with_items: "{{ pem_files.files }}"
+
+- name: ODFE migr | Clone JVM configuration file
+  copy:
+    src: /etc/elasticsearch/jvm.options  # Hardoced for testing purposes only
+    dest: "{{ specification.paths.ops_conf_dir }}/jvm.options"
+    remote_src: yes
+    owner: root
+    group: opensearch
+    mode: ug=rw,o=
+    backup: yes
+
+- name: ODFE migr | Update JVM configuration file
+  replace:
+    path: "{{ specification.paths.ops_conf_dir }}/jvm.options"
+    regexp: "{{ item.1 }}"
+    replace: "{{ item.2 }}"
+  with_items:
+  - { 1: 'elasticsearch', 2: 'opensearch' }
+  - { 1: '\${ES_TMPDIR}', 2: '/tmp' }
+
+- name: ODFE migr | Clone main configuration file
+  copy:
+    src: /etc/elasticsearch/elasticsearch.yml  # Hardoced for testing purposes only
+    dest: "{{ specification.paths.ops_conf_dir }}/opensearch.yml"
+    remote_src: yes
+    owner: root
+    group: opensearch
+    mode: ug=rw,o=
+    backup: yes
+
+- name: ODFE migr | Update main configuration file
+  replace:
+    path: "{{ specification.paths.ops_conf_dir }}/opensearch.yml"
+    regexp: "{{ item.1 }}"
+    replace: "{{ item.2 }}"
+  with_items:
+    - { 1: 'elasticsearch', 2: 'opensearch' }
+    # - { 1: 'EpiphanyElastic', 2: 'EpiphanyOpensearch' }
+    - { 1: 'opendistro_security.', 2: 'plugins.security.' }
+
+- name: ODFE migr | Start opensearch service
+  systemd:
+    name: opensearch
+    state: started
+    enabled: yes
+  register: restart_opensearch
+
+- name: ODFE migr | Wait for opensearch to startup
+  wait_for:
+    port: 9200
+    host: "{{ ansible_default_ipv4.address | default(ansible_all_ipv4_addresses[0]) }}"
+    sleep: 6
+
+
+# - name: ODFE migr | Check if default admin user exists
+#   uri:
+#     url: "https://{{ inventory_hostname }}:{{ ports.http }}/_opendistro/_security/api/internalusers/admin"
+#     method: GET
+#     # 404 code is used there as someone can remove admin user on its own.
+#     status_code: [200, 404]
+#     validate_certs: no
+#     url_username: admin
+#     url_password: admin
+#   register: admin_check_response
+#   until: admin_check_response is success
+#   retries: 60
+#   delay: 1
+#   run_once: true
+
+- name: ODFE migr | Set Opensearch admin password
+  uri:
+    url: "https://{{ inventory_hostname }}:{{ ports.http }}/_opendistro/_security/api/internalusers"
+    method: PATCH
+    status_code: [200]
+    body:
+      - op: "replace"
+        path: "/admin"
+        value:
+          password: "{{ specification.admin_password }}"
+          reserved: "true"
+          backend_roles:
+            - "admin"
+          description: "Admin user"
+    client_cert: "{{ certificates.dirs.certs }}/{{ certificates.files.admin.cert }}"
+    client_key:  "{{ certificates.dirs.certs }}/{{ certificates.files.admin.key }}"
+    body_format: json
+    validate_certs: no
+  register: uri_response
+  until: uri_response is success
+  retries: 5
+  delay: 1
+  run_once: true
+  # when: admin_check_response.status == 200
+
+- name: ODFE migr | Check the opensearch status
+  command: curl https://{{ inventory_hostname }}:{{ ports.http }}/_cluster/health?pretty -u 'admin:{{ specification.admin_password }}' -k
+  register: ops_status
+
+- debug:
+    msg: "Cluster {{ inventory_hostname }}: {{ specification.admin_password }}"
+
+- name: ODFE migr | Show the opensearch status
+  debug:
+    msg: "{{ ops_status.stdout }}"
+  failed_when: "'number_of_nodes' not in ops_status.stdout"

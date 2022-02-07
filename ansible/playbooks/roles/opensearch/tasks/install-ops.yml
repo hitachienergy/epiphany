@@ -22,6 +22,8 @@
     - "{{ specification.paths.ops_home }}"
     - "{{ specification.paths.ops_log_dir }}"
     - "{{ specification.paths.ops_conf_dir }}"
+    - "{{ specification.paths.ops_data }}"
+    - "{{ specification.paths.ops_logs }}"
     - "{{ certificates.dirs.certs }}"
 
 - name: Extract the tar file
@@ -29,5 +31,5 @@
 
 - name: Create systemd service
   template:
-    src: opensearch.service.j2
+    src: roles/opensearch/templates/opensearch.service.j2
     dest: "{{ systemctl_path }}/opensearch.service"

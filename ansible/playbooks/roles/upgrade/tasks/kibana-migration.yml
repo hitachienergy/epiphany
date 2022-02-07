@@ -1,0 +1,36 @@
+---
+- name: Kibana migr | Stop elasticsearch service
+  systemd:
+    name: elasticsearch
+    enabled: yes
+    state: stopped
+  register: elasticsearch_state
+
+- name: Download Opensearch
+  include_role:
+    name: download
+    tasks_from: download_file
+  vars:
+    file_name: "opensearch-dashboards-{{ versions[ansible_os_family].opsd_version }}-linux-x64.tar.gz"
+
+- name: Extract the tar file
+  command: "chdir=/tmp/ tar -xvzf opensearch-{{ versions[ansible_os_family].ops_version }}-linux-x64.tar.gz -C {{ specification.paths.ops_home }} --strip-components=1"
+
+- name: Kibana migr | Clone kibana settings
+  copy:
+    src: /etc/kibana/kibana.yml  # Hardoced for testing purposes only
+    dest: "{{ specification.paths.ops_conf_dir }}/opensearch_dashboards.yml"
+    remote_src: yes
+    owner: opensearch
+    group: root
+    mode: ug=rw,o=
+    backup: yes
+
+- name: Kibana migr | Porting kibana settings to OpenSearch Dashboards
+  replace:
+    path: "{{ specification.paths.ops_conf_dir }}/opensearch_dashboards.yml"
+    regexp: "{{ item.1 }}"
+    replace: "{{ item.2 }}"
+  with_items:
+  - { 1: 'elasticsearch', 2: 'opensearch' }
+  - { 1: 'kibana', 2: 'opensearchDashboards' }

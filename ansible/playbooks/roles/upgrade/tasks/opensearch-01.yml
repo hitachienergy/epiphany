@@ -81,3 +81,10 @@
   when: ops_vars.specification.odfe_migration
   vars:
     current_group_name: logging
+
+- include_role:
+    name: upgrade
+    tasks_from: kibana-migration
+  when: ops_vars.specification.odfe_migration
+  vars:
+    current_group_name: logging
