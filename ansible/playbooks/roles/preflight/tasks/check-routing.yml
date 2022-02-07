@@ -1,5 +1,6 @@
 ---
 - name: Check routing configuration
+  become: true
   command: ip route show default 0.0.0.0/0
   register: ip_route_show_default
 
@@ -14,6 +15,7 @@
   when: ip_route_show_default.stdout_lines | length > 1
   block:
     - name: Get metric values
+      become: true
       shell: |-
         set -o pipefail && \
         ip route show default 0.0.0.0/0 | awk '{if (! /metric/) print 0; else for (x=1;x<NF;x++) if ($x == "metric") print $(x+1) }'
