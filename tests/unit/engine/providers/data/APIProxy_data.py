@@ -201,7 +201,7 @@ class AWSMockInstance:
     def __init__(self, name, ip):
         self.tags = []
         self.tags.append({
-            'Key': 'name',
+            'Key': 'Name',
             'Value': name,
         })
         self.private_ip_address = ip
