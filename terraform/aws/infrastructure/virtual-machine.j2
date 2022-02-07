@@ -34,6 +34,16 @@ resource "aws_instance" "{{ specification.name }}" {
     }
   }
 
+{% for disk in specification.disks.additional_disks %}
+  ebs_block_device {
+    device_name           = "{{ disk.device_name }}"
+    volume_type           = "{{ disk.volume_type }}"
+    volume_size           = "{{ disk.volume_size }}"
+    encrypted             = "{{ disk.encrypted | lower }}"
+    delete_on_termination = "{{ disk.delete_on_termination | lower }}"
+  }
+{%- endfor %}
+
   tags = {
     cluster_name    = "{{ specification.cluster_name }}"
     cluster_version = "{{ version }}"
