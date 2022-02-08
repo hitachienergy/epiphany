@@ -14,8 +14,9 @@
 - [#1569](https://github.com/epiphany-platform/epiphany/issues/1569) - Azure unmanaged disks not supported by Epiphany but there is misleading setting in the default configuration
 - [#2832](https://github.com/epiphany-platform/epiphany/issues/2832) - Make the DoD checklist clear
 - [#2853](https://github.com/epiphany-platform/epiphany/issues/2853) - Change autoscaling_group approach in AWS provider in favor of plain VM creation.
-
 - [#2669](https://github.com/epiphany-platform/epiphany/issues/2669) - Restarting the installation process can cause certificate problems if K8s was not fully configured
+- [#2944](https://github.com/epiphany-platform/epiphany/issues/2944) - Refactor InitEngine class to be agnostic to changes in ApplyEngine and UpgradeEngine
+- [#2945](https://github.com/epiphany-platform/epiphany/issues/2945) - epicli apply sleeps 10 seconds after creating inventory
 
 ### Updated
 
