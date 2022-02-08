@@ -98,7 +98,7 @@ resource "azurerm_managed_disk" "{{ specification.name }}-data-disk-{{ loop.inde
 resource "azurerm_virtual_machine_data_disk_attachment" "{{ specification.name }}-disk-attachment-{{ loop.index0 }}" {
   managed_disk_id    = azurerm_managed_disk.{{ specification.name }}-data-disk-{{ loop.index0 }}.id
   virtual_machine_id = azurerm_virtual_machine.{{ specification.name }}.id
-  lun                = "{{ loop.index * 10 }}"
+  lun                = "{{ loop.index0 }}"
   caching            = "ReadWrite"
 }
   {%- endfor %}
