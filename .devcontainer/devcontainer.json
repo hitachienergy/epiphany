@@ -6,6 +6,8 @@
         "redhat.ansible",
         // Common
         "shardulm94.trailing-spaces",
+        // Git
+        "eamodio.gitlens",
         // Jinja
         "samuelcolvin.jinjahtml",
         // Markdown
