@@ -28,5 +28,5 @@
     "settings": {
         "python.pythonPath": "/usr/local/bin/python"
     },
-    "runArgs": [ "-u", "vscode" ]
+    "remoteUser": "vscode",
 }
