@@ -21,7 +21,7 @@ class UpgradeEngine(Step):
         self.backup_build_dir = ''
         self.ansible_command = AnsibleCommand()
         self.input_docs = []
-        self.__ping_retries: int = input_data.ping_retries
+        self.ping_retries: int = input_data.ping_retries
 
     def __enter__(self):
         super().__enter__()
@@ -88,7 +88,7 @@ class UpgradeEngine(Step):
         # Run Ansible to upgrade infrastructure
         with AnsibleRunner(build_dir=self.build_dir, backup_build_dir=self.backup_build_dir,
                            ansible_options=self.ansible_options, config_docs=self.input_docs,
-                           ping_retries=self.__ping_retries) as ansible_runner:
+                           ping_retries=self.ping_retries) as ansible_runner:
             ansible_runner.upgrade()
 
         return 0

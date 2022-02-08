@@ -490,9 +490,7 @@ def dump_debug_info():
         dump_file.write('\n\n*****PYTHON******\n')
         dump_file.write(f'python_version: {platform.python_version()}\n')
         dump_file.write(f'python_build: {platform.python_build()}\n')
-        dump_file.write(f'python_revision: {platform.python_revision()}\n')
         dump_file.write(f'python_compiler: {platform.python_compiler()}\n')
-        dump_file.write(f'python_branch: {platform.python_branch()}\n')
         dump_file.write(f'python_implementation: {platform.python_implementation()}\n')
 
         dump_external_debug_info('ANSIBLE VERSION', ['ansible', '--version'])
@@ -501,7 +499,7 @@ def dump_debug_info():
         dump_external_debug_info('TERRAFORM VERSION', ['terraform', '--version'])
         dump_external_debug_info('RUBY VERSION', ['ruby', '--version'])
         dump_external_debug_info('RUBY GEM VERSION', ['gem', '--version'])
-        dump_external_debug_info('RUBY INSTALLED GEMS', ['gem', 'query', '--local'])
+        dump_external_debug_info('RUBY INSTALLED GEMS', ['gem', 'list', '--local'])
 
         dump_file.write('\n\n*****LOG******\n')
         log_path = os.path.join(get_output_path(), config.log_file)
