@@ -90,12 +90,12 @@ def _main() -> None:
 
     # Write licenses 'cli/licenses.py'
     licenses_content = """\
-    # This is a generated file so don`t change this manually. 
+    # This is a generated file so don`t change this manually.
     # To re-generate run 'python gen-dependency-info.py <GitHub_PAT>' from the project root.
 
     LICENSES = """
 
-    licenses_content = textwrap.dedent(licenses_content) + json.dumps(all_deps_data, indent=4)
+    licenses_content = f"{textwrap.dedent(licenses_content)}{json.dumps(all_deps_data, indent=4)}\n"
 
     path = os.path.join(os.path.dirname(__file__), '../cli/licenses.py')
     with open(path, 'w') as file:
@@ -107,7 +107,7 @@ def _main() -> None:
     | --------- | ------- | ------------ | ------- |
     """)
 
-    for dep in all_deps_data: 
+    for dep in all_deps_data:
         dep_name = dep['Name']
         dep_version = dep['Version']
         dep_website = dep['Home-page']
