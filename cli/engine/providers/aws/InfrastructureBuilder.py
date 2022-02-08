@@ -212,10 +212,10 @@ class InfrastructureBuilder(Step):
         return public_key_config
 
     def add_security_rules_inbound_efs(self, infrastructure, security_group):
-        vm_allowed_to_efs = select_all(infrastructure, lambda item: item.kind == 'infrastructure/virtual-machine' and
+        vms_allowed_to_efs = select_all(infrastructure, lambda item: item.kind == 'infrastructure/virtual-machine' and
                                                       item.specification.authorized_to_efs)
 
-        for vm in vm_allowed_to_efs:
+        for vm in vms_allowed_to_efs:
             subnet = select_single(infrastructure, lambda item: item.kind == 'infrastructure/subnet' and
                                                                 item.specification.name == vm.specification.subnet_name)
 
