@@ -1,0 +1,36 @@
+---
+- name: Prepare configuration and upgrade/install Helm chart
+  when: rook_enabled
+  become: true
+  run_once: true
+
+  block:
+    - name: Download Rook's Chart File
+      include_role:
+        name: download
+        tasks_from: download_file
+      vars:
+        file_name: "{{ rook_helm_chart_file_name }}"
+
+    # - name: Copy configuration Helm chart file (custom-chart-values.yml.j2)
+    #   template:
+    #     dest: "{{ download_directory }}/custom-chart-values.yml"
+    #     src: custom-chart-values.yml.j2
+
+    # - name: Install Rook using Helm chart
+    #   shell: |
+    #     helm -n {{ rook_chart_namespace }} upgrade --install \
+    #       -f {{ download_directory }}/custom-chart-values.yml \
+    #       {{ rook_helm_chart_name }} \
+    #       {{ download_directory }}/{{ rook_helm_chart_file_name }} --create-namespace
+    #   environment:
+    #     KUBECONFIG: "{{ kubeconfig.remote }}"
+
+    - name: Install Rook using Helm chart
+      shell: |
+        helm -n {{ rook_chart_namespace }} upgrade --install \
+          -f {{ download_directory }}/custom-chart-values.yml \
+          {{ rook_helm_chart_name }} \
+          {{ download_directory }}/{{ rook_helm_chart_file_name }} --create-namespace
+      environment:
+        KUBECONFIG: "{{ kubeconfig.remote }}"

@@ -1,0 +1,7 @@
+---
+rook_helm_chart_file_name: rook-ceph-v1.8.1.tgz
+rook_chart_namespace: rook-ceph
+rook_helm_chart_name: rook-ceph
+rook_enabled: true
+kubeconfig:
+  remote: /etc/kubernetes/admin.conf
