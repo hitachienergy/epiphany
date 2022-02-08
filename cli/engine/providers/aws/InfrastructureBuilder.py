@@ -82,8 +82,8 @@ class InfrastructureBuilder(Step):
                     self.efs_add_mount_target_config(efs_config, subnet)
 
                 route_table_association = self.get_route_table_association(route_table.specification.name,
-                                                                            component_key,
-                                                                            subnet.specification.name, 0)
+                                                                             component_key,
+                                                                             subnet.specification.name, 0)
                 infrastructure.append(route_table_association)
 
                 if self.use_network_security_groups:
