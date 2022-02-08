@@ -25,8 +25,11 @@
         // YAML
         "redhat.vscode-yaml",
     ],
+    "mounts": [
+        "source=${localEnv:HOME}${localEnv:USERPROFILE}/.ssh,target=/home/vscode/.ssh,type=bind",
+    ],
     "settings": {
-        "python.pythonPath": "/usr/local/bin/python"
+        "python.pythonPath": "/usr/local/bin/python",
     },
     "remoteUser": "vscode",
 }
