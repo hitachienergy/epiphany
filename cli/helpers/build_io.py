@@ -57,8 +57,7 @@ def save_inventory(inventory, cluster_model, build_dir=None):
 
 
 def load_inventory(inventory_path):
-    inventory = InventoryManager(loader=DataLoader(), sources=inventory_path)
-    return inventory
+    return InventoryManager(loader=DataLoader(), sources=inventory_path)
 
 
 def save_ansible_config_file(ansible_config_file_settings, ansible_config_file_path):
