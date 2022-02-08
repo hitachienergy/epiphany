@@ -34,8 +34,7 @@ def test_get_network_security_group_should_set_proper_values_to_model():
 def test_get_subnet_should_set_proper_values_to_model():
     cluster_model = get_cluster_model(cluster_name='TestCluster')
     subnet_definition = dict_to_objdict({
-        'address_pool': '10.20.0.0/24',
-        'availability_zone': 'eu-west-2a'
+        'address_pool': '10.20.0.0/24'
     })
     builder = InfrastructureBuilder([cluster_model])
     actual = builder.get_subnet(subnet_definition, 'component', 1)

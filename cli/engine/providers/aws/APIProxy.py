@@ -2,7 +2,7 @@ import boto3
 
 from cli.helpers.doc_list_helpers import select_single
 from cli.helpers.objdict_helpers import dict_to_objdict
-from cli.models.AnsibleHostModel import AnsibleHostModel
+from cli.models.AnsibleHostModel import AnsibleOrderedHostModel
 
 
 class APIProxy:
@@ -26,9 +26,7 @@ class APIProxy:
         cluster_name = self.cluster_model.specification.name.lower()
         look_for_public_ip = self.cluster_model.specification.cloud.use_public_ips
         vpc_id = self.get_vpc_id()
-
-        ec2 = self.session.resource('ec2')
-        running_instances = ec2.instances.filter(
+        running_instances = self.session.resource('ec2').instances.filter(
             Filters=[{
                 'Name': 'instance-state-name',
                 'Values': ['running']
@@ -37,8 +35,8 @@ class APIProxy:
                     'Values': [vpc_id]
                 },
                 {
-                    'Name': 'tag:'+component_key,
-                    'Values': ['']
+                    'Name': 'tag:component_key',
+                    'Values': [component_key]
                 },
                 {
                     'Name': 'tag:cluster_name',
@@ -46,12 +44,19 @@ class APIProxy:
                 }]
         )
 
-        result = []
+        result: List[AnsibleOrderedHostModel] = []
+
         for instance in running_instances:
+            hostname = ''
+            for tag in instance.tags:
+                if tag['Key'] == 'Name':
+                    hostname = tag['Value']
             if look_for_public_ip:
-                result.append(AnsibleHostModel(instance.public_dns_name, instance.public_ip_address))
+                result.append(AnsibleOrderedHostModel(hostname, instance.public_ip_address))
             else:
-                result.append(AnsibleHostModel(instance.private_dns_name, instance.private_ip_address))
+                result.append(AnsibleOrderedHostModel(hostname, instance.private_ip_address))
+
+        result.sort()
         return result
 
     def get_image_id(self, os_full_name):
