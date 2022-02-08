@@ -86,7 +86,11 @@ def CLUSTER_MODEL(provider: str) -> ObjDict:
                 'region': 'West Europe',
                 'network': {'use_network_security_groups': True},
                 'default_os_image': 'default',
-                'hostname_domain_extension': ''
+                'hostname_domain_extension': '',
+                'credentials': {
+                    'key': 'key',
+                    'secret': 'secret'
+                }
             },
             'components': {
                 'service': {
@@ -191,4 +195,22 @@ RUNNING_INSTANCES_AZURE: List[List[Dict]] = [
             'resourceGroup': 'prefix-cluster-rg'}
         }
     ]
+]
+
+class AWSMockInstance:
+    def __init__(self, name, ip):
+        self.tags = []
+        self.tags.append({
+            'Key': 'Name',
+            'Value': name,
+        })
+        self.private_ip_address = ip
+        self.public_ip_address = ip
+
+RUNNING_INSTANCES_AWS: List[Dict] = [
+    AWSMockInstance('prefix-cluster-service-vm-4', '20.73.105.54'),
+    AWSMockInstance('prefix-cluster-service-vm-1', '20.73.105.188'),
+    AWSMockInstance('prefix-cluster-service-vm-3', '20.73.105.33'),
+    AWSMockInstance('prefix-cluster-service-vm-0', '20.73.105.240'),
+    AWSMockInstance('prefix-cluster-service-vm-2', '20.73.105.18')
 ]

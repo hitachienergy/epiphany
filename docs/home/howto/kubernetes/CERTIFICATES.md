@@ -2,6 +2,19 @@
 
 ### TLS certificates in a cluster
 
+---
+**NOTE**
+
+1. There are issues encountered for K8s HA clusters when certificates renewal is enabled and applied
+   after `kubeadm reset`. If you restored control plane VMs from snapshots or used this command and plan to
+   run `epicli apply`, make sure that `renew` option is set to `false`.
+
+
+2. By default, kubeadm sets certificates expiration period to 1 year. If the cluster is upgraded, and different
+   expiration period is required, run `epicli apply` with appropriate configuration.
+
+---
+
 It's possible to regenerate Kubernetes control plane certificates with Epiphany. To do so, additional configuration
 should be specified.
 

@@ -22,8 +22,14 @@ class InfrastructureBuilder(Step):
         self.cluster_name = self.cluster_model.specification.name.lower()
         self.cluster_prefix = self.cluster_model.specification.prefix.lower()
         self.use_network_security_groups = self.cluster_model.specification.cloud.network.use_network_security_groups
+        self.use_public_ips = self.cluster_model.specification.cloud.use_public_ips
         self.docs = docs
         self.manifest_docs = manifest_docs
+
+        # If there are no security groups Ansible provisioning will fail because
+        # SSH is not allowed then with public IPs on AWS.
+        if not(self.use_network_security_groups) and self.use_public_ips:
+            self.logger.warning('Use of security groups has been disabled and public IPs are used. Ansible run will fail because SSH will not be allowed.')
 
     def run(self):
         infrastructure = []
@@ -49,62 +55,52 @@ class InfrastructureBuilder(Step):
 
         efs_config = self.get_efs_config()
 
-        if not(self.use_network_security_groups):
-            self.logger.warning('The "use_network_security_groups" flag is currently ignored on AWS')
-
         for component_key, component_value in self.cluster_model.specification.components.items():
-            if component_value['count'] < 1:
+            vm_count = component_value['count']
+            if vm_count < 1:
                 continue
 
-            subnets_to_create = []
-            security_groups_to_create = []
-            subnet_index = 0
-            asg_index = 0
-            for subnet_definition in component_value.subnets:  # todo extract to another method or class
-                subnet = select_first(infrastructure, lambda item: item.kind == 'infrastructure/subnet' and
-                                      item.specification.cidr_block == subnet_definition['address_pool'])
-                security_group = select_first(infrastructure, lambda item: item.kind == 'infrastructure/security-group' and
-                                              item.specification.cidr_block == subnet_definition['address_pool'])
+            # The vm config also contains some other stuff we use for network and security config.
+            # So get it here and pass it allong.
+            vm_config = self.get_virtual_machine(component_value)
 
-                if subnet is None:
-                    subnet = self.get_subnet(subnet_definition, component_key, vpc_name, subnet_index)
-                    infrastructure.append(subnet)
+            # For now only one subnet per component.
+            if (len(component_value.subnets) > 1):
+                self.logger.warning('On AWS only one subnet per component is supported for now. Taking first and ignoring others.')
 
-                    security_group = self.get_security_group(subnet, component_key, vpc_name, subnet_index)
-                    infrastructure.append(security_group)
+            subnet_definition = component_value.subnets[0]
+            subnet = select_first(infrastructure, lambda item: item.kind == 'infrastructure/subnet' and
+                                    item.specification.cidr_block == subnet_definition['address_pool'])
+            security_group = select_first(infrastructure, lambda item: item.kind == 'infrastructure/security-group' and
+                                            item.specification.cidr_block == subnet_definition['address_pool'])
 
-                    route_table_association = self.get_route_table_association(route_table.specification.name,
-                                                                               component_key,
-                                                                               subnet.specification.name, subnet_index)
-                    infrastructure.append(route_table_association)
-                    subnet_index += 1
+            if subnet is None:
+                subnet = self.get_subnet(subnet_definition, component_key, vpc_name, 0)
+                infrastructure.append(subnet)
 
-                subnets_to_create.append(subnet)
-                security_groups_to_create.append(security_group)
-
-            autoscaling_group = self.get_autoscaling_group(component_key, component_value, subnets_to_create, asg_index)
-
-            for security_group in security_groups_to_create:
-                for rule in autoscaling_group.specification.security.rules:
-                    if not self.rule_exists_in_list(security_group.specification.rules, rule):
-                        security_group.specification.rules.append(rule)
-
-            launch_configuration = self.get_launch_configuration(autoscaling_group, component_key,
-                                                                 security_groups_to_create)
-
-            launch_configuration.specification.key_name = public_key_config.specification.key_name
-
-            self.set_image_id_for_launch_configuration(self.cluster_model, self.docs, launch_configuration,
-                                                       autoscaling_group)
-            autoscaling_group.specification.launch_configuration = launch_configuration.specification.name
-
-            if autoscaling_group.specification.mount_efs:
-                for subnet in subnets_to_create:
+                if vm_config.specification.mount_efs:
                     self.efs_add_mount_target_config(efs_config, subnet)
 
-            infrastructure.append(autoscaling_group)
-            infrastructure.append(launch_configuration)
-            asg_index += 1
+                route_table_association = self.get_route_table_association(route_table.specification.name,
+                                                                             component_key,
+                                                                             subnet.specification.name, 0)
+                infrastructure.append(route_table_association)
+
+                if self.use_network_security_groups:
+                    security_group = self.get_security_group(subnet, component_key, vpc_name, 0)
+                    for rule in vm_config.specification.security.rules:
+                        if not self.rule_exists_in_list(security_group.specification.rules, rule):
+                            security_group.specification.rules.append(rule)
+                    infrastructure.append(security_group)
+
+            for index in range(vm_count):
+                vm = self.get_vm(component_key,
+                                 vm_config,
+                                 subnet,
+                                 public_key_config,
+                                 security_group,
+                                 index)
+                infrastructure.append(vm)
 
         if self.has_efs_any_mounts(efs_config):
             infrastructure.append(efs_config)
@@ -128,40 +124,36 @@ class InfrastructureBuilder(Step):
     def get_default_security_group_config(self, vpc_config):
         sg_config = self.get_config_or_default(self.docs, 'infrastructure/default-security-group')
         sg_config.specification.vpc_name = vpc_config.specification.name
+        sg_config.specification.cluster_name = self.cluster_name
         return sg_config
 
     def get_efs_config(self):
         efs_config = self.get_config_or_default(self.docs, 'infrastructure/efs-storage')
         efs_config.specification.token = "aws-efs-token-" + self.cluster_name
         efs_config.specification.name = resource_name(self.cluster_prefix, self.cluster_name, 'efs')
+        efs_config.specification.cluster_name = self.cluster_name
         return efs_config
 
-    def get_autoscaling_group(self, component_key, component_value, subnets_to_create, index):
-        autoscaling_group = dict_to_objdict(deepcopy(self.get_virtual_machine(component_value)))
-        autoscaling_group.specification.cluster_name = self.cluster_name
-        autoscaling_group.specification.name = resource_name(self.cluster_prefix, self.cluster_name, 'asg' + '-' + str(index), component_key)
-        autoscaling_group.specification.count = component_value.count
-        autoscaling_group.specification.subnet_names = [s.specification.name for s in subnets_to_create]
-        autoscaling_group.specification.availability_zones = [s.specification.availability_zone for s in subnets_to_create]
-        autoscaling_group.specification.tags.append({'cluster_name': self.cluster_name})
-        autoscaling_group.specification.tags.append({component_key: ''})
-        return autoscaling_group
-
-    def get_launch_configuration(self, autoscaling_group, component_key, security_groups_to_create):
-        launch_configuration = self.get_config_or_default(self.docs, 'infrastructure/launch-configuration')
-        launch_configuration.specification.name = resource_name(self.cluster_prefix, self.cluster_name, 'launch-config', component_key)
-        launch_configuration.specification.size = autoscaling_group.specification.size
-        launch_configuration.specification.security_groups = [s.specification.name for s in security_groups_to_create]
-        launch_configuration.specification.disks = autoscaling_group.specification.disks
-        launch_configuration.specification.ebs_optimized = autoscaling_group.specification.ebs_optimized
-        launch_configuration.specification.associate_public_ip = self.cluster_model.specification.cloud.use_public_ips
-        return launch_configuration
+    def get_vm(self, component_key, vm_config, subnet, public_key_config, security_group, index):
+        vm = dict_to_objdict(deepcopy(vm_config))
+        vm.specification.name = resource_name(self.cluster_prefix, self.cluster_name, 'vm' + '-' + str(index), component_key)
+        vm.specification.cluster_name = self.cluster_name
+        vm.specification.component_key = component_key
+        vm.specification.subnet_name = subnet.specification.name
+        vm.specification.key_name = public_key_config.specification.key_name
+        vm.specification.use_network_security_groups = self.use_network_security_groups
+        if self.use_network_security_groups:
+            vm.specification.security_groups = [security_group.specification.name]
+        vm.specification.associate_public_ip = self.cluster_model.specification.cloud.use_public_ips
+        with APIProxy(self.cluster_model, []) as proxy:
+            vm.specification.image_id = proxy.get_image_id(vm.specification.os_full_name)
+        return vm
 
     def get_subnet(self, subnet_definition, component_key, vpc_name, index):
         subnet = self.get_config_or_default(self.docs, 'infrastructure/subnet')
         subnet.specification.vpc_name = vpc_name
         subnet.specification.cidr_block = subnet_definition['address_pool']
-        subnet.specification.availability_zone = subnet_definition['availability_zone']
+
         subnet.specification.name = resource_name(self.cluster_prefix, self.cluster_name, 'subnet' + '-' + str(index), component_key)
         subnet.specification.cluster_name = self.cluster_name
         return subnet
@@ -220,26 +212,25 @@ class InfrastructureBuilder(Step):
         return public_key_config
 
     def add_security_rules_inbound_efs(self, infrastructure, security_group):
-        ags_allowed_to_efs = select_all(infrastructure, lambda item: item.kind == 'infrastructure/virtual-machine' and
+        vms_allowed_to_efs = select_all(infrastructure, lambda item: item.kind == 'infrastructure/virtual-machine' and
                                                       item.specification.authorized_to_efs)
 
-        for asg in ags_allowed_to_efs:
-            for subnet_in_asg in asg.specification.subnet_names:
-                subnet = select_single(infrastructure, lambda item: item.kind == 'infrastructure/subnet' and
-                                                                   item.specification.name == subnet_in_asg)
+        for vm in vms_allowed_to_efs:
+            subnet = select_single(infrastructure, lambda item: item.kind == 'infrastructure/subnet' and
+                                                                item.specification.name == vm.specification.subnet_name)
 
-                rule_defined = select_first(security_group.specification.rules, lambda item: item.source_address_prefix == subnet.specification.cidr_block
-                                                                                            and item.destination_port_range == 2049)
-                if rule_defined is None:
-                    rule = self.get_config_or_default(self.docs, 'infrastructure/security-group-rule')
-                    rule.specification.name = 'sg-rule-nfs-default-from-'+subnet.specification.name
-                    rule.specification.description = 'NFS inbound for '+subnet.specification.name
-                    rule.specification.direction = 'ingress'
-                    rule.specification.protocol = 'tcp'
-                    rule.specification.destination_port_range = "2049"
-                    rule.specification.source_address_prefix = subnet.specification.cidr_block
-                    rule.specification.destination_address_prefix = '*'
-                    security_group.specification.rules.append(rule.specification)
+            rule_defined = select_first(security_group.specification.rules, lambda item: item.source_address_prefix == subnet.specification.cidr_block
+                                                                                        and item.destination_port_range == 2049)
+            if rule_defined is None:
+                rule = self.get_config_or_default(self.docs, 'infrastructure/security-group-rule')
+                rule.specification.name = 'sg-rule-nfs-default-from-'+subnet.specification.name
+                rule.specification.description = 'NFS inbound for '+subnet.specification.name
+                rule.specification.direction = 'ingress'
+                rule.specification.protocol = 'tcp'
+                rule.specification.destination_port_range = "2049"
+                rule.specification.source_address_prefix = subnet.specification.cidr_block
+                rule.specification.destination_address_prefix = '*'
+                security_group.specification.rules.append(rule.specification)
 
         rules = []
         for rule in security_group.specification.rules:
@@ -287,13 +278,10 @@ class InfrastructureBuilder(Step):
 
     @staticmethod
     def efs_add_mount_target_config(efs_config, subnet):
-        target = select_first(efs_config.specification.mount_targets,
-                              lambda item: item['availability_zone'] == subnet.specification.availability_zone)
-        if target is None:
-            efs_config.specification.mount_targets.append(
-                {'name': 'efs-'+subnet.specification.name+'-mount',
-                 'subnet_name': subnet.specification.name,
-                 'availability_zone': subnet.specification.availability_zone})
+        efs_config.specification.mount_targets.append(
+            {'name': 'efs-'+subnet.specification.name+'-mount',
+             'subnet_name': subnet.specification.name})
+
 
     @staticmethod
     def has_efs_any_mounts(efs_config):
@@ -301,11 +289,6 @@ class InfrastructureBuilder(Step):
             return True
         return False
 
-    @staticmethod
-    def set_image_id_for_launch_configuration(cluster_model, docs, launch_configuration, autoscaling_group):
-        with APIProxy(cluster_model, docs) as proxy:
-            image_id = proxy.get_image_id(autoscaling_group.specification.os_full_name)
-            launch_configuration.specification.image_id = image_id
 
     @staticmethod
     def get_config_or_default(docs, kind):
@@ -314,6 +297,7 @@ class InfrastructureBuilder(Step):
             config = load_schema_obj(types.DEFAULT, 'aws', kind)
             config['version'] = VERSION
         return config
+
 
     @staticmethod
     def rule_exists_in_list(rule_list, rule_to_check):
