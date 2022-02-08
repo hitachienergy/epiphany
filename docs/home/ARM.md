@@ -279,66 +279,52 @@ specification:
       count: 2
       machine: kafka-machine-arm
       subnets:
-        - availability_zone: eu-west-1a
-          address_pool: 10.1.5.0/24
+        - address_pool: 10.1.5.0/24
     kubernetes_master:
       count: 1
       machine: kubernetes-master-machine-arm
       subnets:
-        - availability_zone: eu-west-1a
-          address_pool: 10.1.1.0/24
-        - availability_zone: eu-west-1b
-          address_pool: 10.1.2.0/24
+        - address_pool: 10.1.1.0/24
     kubernetes_node:
       count: 3
       machine: kubernetes-node-machine-arm
       subnets:
-        - availability_zone: eu-west-1a
-          address_pool: 10.1.1.0/24
-        - availability_zone: eu-west-1b
-          address_pool: 10.1.2.0/24
+        - address_pool: 10.1.1.0/24
     load_balancer:
       count: 1
       machine: lb-machine-arm
       subnets:
-        - availability_zone: eu-west-1a
-          address_pool: 10.1.7.0/24
+        - address_pool: 10.1.7.0/24
     logging:
       count: 2
       machine: logging-machine-arm
       subnets:
-        - availability_zone: eu-west-1a
-          address_pool: 10.1.3.0/24
+        - address_pool: 10.1.3.0/24
     monitoring:
       count: 1
       machine: monitoring-machine-arm
       subnets:
-        - availability_zone: eu-west-1a
-          address_pool: 10.1.4.0/24
+        - address_pool: 10.1.4.0/24
     postgresql:
       count: 1
       machine: postgresql-machine-arm
       subnets:
-        - availability_zone: eu-west-1a
-          address_pool: 10.1.6.0/24
+        - address_pool: 10.1.6.0/24
     rabbitmq:
       count: 2
       machine: rabbitmq-machine-arm
       subnets:
-        - availability_zone: eu-west-1a
-          address_pool: 10.1.8.0/24
+        - address_pool: 10.1.8.0/24
     opendistro_for_elasticsearch:
       count: 1
       machine: opendistro-machine-arm
       subnets:
-        - availability_zone: eu-west-1a
-          address_pool: 10.1.10.0/24
+        - address_pool: 10.1.10.0/24
     repository:
       count: 1
       machine: repository-machine-arm
       subnets:
-        - availability_zone: eu-west-1a
-          address_pool: 10.1.11.0/24
+        - address_pool: 10.1.11.0/24
 ---
 kind: infrastructure/virtual-machine
 title: "Virtual Machine Infra"

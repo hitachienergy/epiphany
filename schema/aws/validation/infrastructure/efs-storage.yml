@@ -5,6 +5,8 @@ type: object
 properties:
   name:
     type: string
+  cluster_name:
+    type: string
   token:
     type: string
   encrypted:
