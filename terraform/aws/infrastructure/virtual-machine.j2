@@ -45,7 +45,7 @@ resource "aws_instance" "{{ specification.name }}" {
     tags = {
       cluster_name        = "{{ specification.cluster_name }}"
       cluster_version     = "{{ version }}"
-      Name                = "{{ specification.name }}-data-disk-{{ loop.index }}"
+      Name                = "{{ specification.name }}-data-disk-{{ loop.index0 }}"
     }
   }
 {%- endfor %}
