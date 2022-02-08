@@ -4,6 +4,7 @@ provider: aws
 name: default
 specification:
   name: SET_BY_AUTOMATION
+  cluster_name: SET_BY_AUTOMATION
   token: SET_BY_AUTOMATION
   encrypted: true
   performance_mode: "generalPurpose"

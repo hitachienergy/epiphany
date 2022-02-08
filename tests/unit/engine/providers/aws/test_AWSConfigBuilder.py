@@ -36,7 +36,7 @@ def test_get_default_security_group_config_should_set_proper_values_to_model():
 
 
 def test_get_efs_config_should_set_proper_values_to_model():
-    cluster_model = get_cluster_model(cluster_name='TestCluster', address_pool='10.20.0.0/22') 
+    cluster_model = get_cluster_model(cluster_name='TestCluster', address_pool='10.20.0.0/22')
     builder = InfrastructureBuilder([cluster_model])
 
     actual = builder.get_efs_config()
@@ -45,70 +45,10 @@ def test_get_efs_config_should_set_proper_values_to_model():
     assert actual.specification.name == 'prefix-testcluster-efs'
 
 
-def test_get_autoscaling_group_should_set_proper_values_to_model():
-    cluster_model = get_cluster_model(cluster_name='TestCluster')
-    component_value = dict_to_objdict({
-        'machine': 'default',
-        'count': 4
-    })
-    subnets = [
-        dict_to_objdict({'specification': {
-            'name': 'subnet1',
-            'availability_zone': 'availabilityzone1'
-        }}),
-        dict_to_objdict({'specification': {
-            'name': 'subnet2',
-            'availability_zone': 'availabilityzone2'
-        }})
-    ]
-
-    builder = InfrastructureBuilder([cluster_model])
-
-    actual = builder.get_autoscaling_group('TestComponent', component_value, subnets, 1)
-
-    assert actual.specification.cluster_name == 'testcluster'
-    assert actual.specification.name == 'prefix-testcluster-testcomponent-asg-1'
-    assert actual.specification.count == 4
-    assert actual.specification.subnet_names == ['subnet1', 'subnet2']
-    assert actual.specification.availability_zones == ['availabilityzone1', 'availabilityzone2']
-    assert {'cluster_name': 'testcluster'} in actual.specification.tags
-    assert {'TestComponent': ''} in actual.specification.tags
-
-
-def test_get_launch_configuration_should_set_proper_values_to_model():
-    cluster_model = get_cluster_model(cluster_name='TestCluster')
-    autoscaling_group = dict_to_objdict({
-        'specification': {
-            'size': 't2.micro.test',
-            'disks': [],
-            'ebs_optimized': True
-        }
-    })
-    security_groups_to_create = [
-        dict_to_objdict({'specification': {
-            'name': 'aws-security-group-test1',
-        }}),
-        dict_to_objdict({'specification': {
-            'name': 'aws-security-group-test2',
-        }})
-    ]
-    builder = InfrastructureBuilder([cluster_model])
-
-    actual = builder.get_launch_configuration(autoscaling_group, 'TestComponent', security_groups_to_create)
-
-    assert actual.specification.name == 'prefix-testcluster-testcomponent-launch-config'
-    assert actual.specification.size == 't2.micro.test'
-    assert actual.specification.security_groups == ['aws-security-group-test1', 'aws-security-group-test2']
-    assert actual.specification.disks == []
-    assert actual.specification.ebs_optimized is True
-    assert actual.specification.associate_public_ip is True
-
-
 def test_get_subnet_config_should_set_proper_values_to_model():
     cluster_model = get_cluster_model(cluster_name='TestCluster')
     component_value = dict_to_objdict({
-        'address_pool': '10.20.0.0/24',
-        'availability_zone': 'eu-west-2a'
+        'address_pool': '10.20.0.0/24'
     })
     builder = InfrastructureBuilder([cluster_model])
 
@@ -117,7 +57,6 @@ def test_get_subnet_config_should_set_proper_values_to_model():
     assert actual.specification.name == 'prefix-testcluster-component-subnet-1'
     assert actual.specification.vpc_name == 'my-test-vpc'
     assert actual.specification.cidr_block == '10.20.0.0/24'
-    assert actual.specification.availability_zone == 'eu-west-2a'
 
 
 def test_get_security_group_should_set_proper_values_to_model():
@@ -188,4 +127,3 @@ def get_cluster_model(address_pool='10.22.0.0/22', cluster_name='EpiphanyTestClu
         }
     })
     return cluster_model
-

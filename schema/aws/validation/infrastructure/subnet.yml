@@ -11,5 +11,3 @@ properties:
     type: string
   cluster_name:
     type: string
-  availability_zone:
-    type: string

@@ -4,18 +4,26 @@
 
 ### Added
 
+- [#959](https://github.com/epiphany-platform/epiphany/issues/959) - Add usage of use_network_security_groups to disable NSG on AWS
 - [#2701](https://github.com/epiphany-platform/epiphany/issues/2701) - Epicli prepare - generate files in separate directory
+- [#2812](https://github.com/epiphany-platform/epiphany/issues/2812) - Extend K8s config validation
 
 ### Fixed
 
 - [#2653](https://github.com/epiphany-platform/epiphany/issues/2653) - Epicli is failing in air-gapped infra mode
 - [#1569](https://github.com/epiphany-platform/epiphany/issues/1569) - Azure unmanaged disks not supported by Epiphany but there is misleading setting in the default configuration
 - [#2832](https://github.com/epiphany-platform/epiphany/issues/2832) - Make the DoD checklist clear
+- [#2853](https://github.com/epiphany-platform/epiphany/issues/2853) - Change autoscaling_group approach in AWS provider in favor of plain VM creation.
+- [#2669](https://github.com/epiphany-platform/epiphany/issues/2669) - Restarting the installation process can cause certificate problems if K8s was not fully configured
 - [#2944](https://github.com/epiphany-platform/epiphany/issues/2944) - Refactor InitEngine class to be agnostic to changes in ApplyEngine and UpgradeEngine
 - [#2945](https://github.com/epiphany-platform/epiphany/issues/2945) - epicli apply sleeps 10 seconds after creating inventory
 
 ### Updated
 
+- [#2828](https://github.com/epiphany-platform/epiphany/issues/2828) - K8s improvements
+  - Re-generate apiserver certificates only by purpose
+  - Do not ignore preflight errors in `kubeadm join`
+  - Update documentation about control plane certificates renewal
 - [#2825](https://github.com/epiphany-platform/epiphany/issues/2825) - Upgrade Terraform and providers
   - Terraform 0.12.6 to 1.1.3 ([#2706](https://github.com/epiphany-platform/epiphany/issues/2706))
   - Azurerm provider 1.38.0 to 2.91.0
@@ -37,6 +45,6 @@
 
 ### Breaking changes
 
-- Upgrade of Terraform components in issue [#2825](https://github.com/epiphany-platform/epiphany/issues/2825) will make running re-apply with infrastructure break on existing 1.x clusters. The advice is to deploy a new cluster and migrate data. If needed a manual upgrade path is described [here.](../home/howto/UPGRADE.md#terraform-upgrade-from-epiphany-1.x-to-2.x)
+- Upgrade of Terraform components in issue [#2825](https://github.com/epiphany-platform/epiphany/issues/2825) and [#2853](https://github.com/epiphany-platform/epiphany/issues/2853) will make running re-apply with infrastructure break on existing 1.x clusters. The advice is to deploy a new cluster and migrate data. If needed a manual upgrade path is described [here.](../home/howto/UPGRADE.md#terraform-upgrade-from-epiphany-1.x-to-2.x)
 
 ### Known issues
