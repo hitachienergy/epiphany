@@ -18,6 +18,7 @@
 - [#2669](https://github.com/epiphany-platform/epiphany/issues/2669) - Restarting the installation process can cause certificate problems if K8s was not fully configured
 - [#2944](https://github.com/epiphany-platform/epiphany/issues/2944) - Refactor InitEngine class to be agnostic to changes in ApplyEngine and UpgradeEngine
 - [#2945](https://github.com/epiphany-platform/epiphany/issues/2945) - epicli apply sleeps 10 seconds after creating inventory
+- [#2968](https://github.com/epiphany-platform/epiphany/issues/2968) - `epicli init` should generate `specification.cloud.subscription_name` for minimal cluster config
 
 ### Updated
 
