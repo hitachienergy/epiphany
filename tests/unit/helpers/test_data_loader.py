@@ -3,8 +3,8 @@ import os
 
 import pytest
 
-from cli.helpers.build_io import get_build_path
-from cli.helpers.data_loader import load_schema_obj, load_all_schema_objs, load_all_schema_objs_from_directory,\
+from cli.src.helpers.build_io import get_build_path
+from cli.src.helpers.data_loader import load_schema_obj, load_all_schema_objs, load_all_schema_objs_from_directory,\
         load_template_file, load_json_obj, types, SCHEMA_DIR
 
 from tests.unit.helpers.constants import CLUSTER_NAME_LOAD, NON_EXISTING_CLUSTER, TEST_DOCS,  OUTPUT_PATH, TEST_INVENTORY, TEST_JSON,\
