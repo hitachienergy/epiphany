@@ -13,6 +13,7 @@
 - [#805](https://github.com/epiphany-platform/epiphany/issues/805) - Refactor download-requirements script
 - [#2858](https://github.com/epiphany-platform/epiphany/issues/2858) - Make Ruby spec tests code compliant with rubocop lint rules
 - [#2888](https://github.com/epiphany-platform/epiphany/issues/2888) - Define additional disks with defined sizes to VMs for Azure
+- [#2812](https://github.com/epiphany-platform/epiphany/issues/2812) - Extend K8s config validation
 
 ### Fixed
 
