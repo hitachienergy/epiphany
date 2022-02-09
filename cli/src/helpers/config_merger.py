@@ -1,8 +1,8 @@
 from copy import deepcopy
 
-from cli.src.helpers.doc_list_helpers import select_first
 from cli.src.helpers.data_loader import load_all_schema_objs, types
-from cli.src.helpers.objdict_helpers import merge_objdict, dict_to_objdict
+from cli.src.helpers.doc_list_helpers import select_first
+from cli.src.helpers.objdict_helpers import dict_to_objdict, merge_objdict
 from cli.version import VERSION
 
 

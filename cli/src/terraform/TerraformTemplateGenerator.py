@@ -1,6 +1,7 @@
-from cli.src.helpers.Step import Step
-from cli.src.helpers.build_io import save_terraform_file, get_terraform_path, delete_files_matching_glob
+from cli.src.helpers.build_io import (delete_files_matching_glob,
+                                      get_terraform_path, save_terraform_file)
 from cli.src.helpers.data_loader import load_template_file, types
+from cli.src.Step import Step
 
 
 class TerraformTemplateGenerator(Step):

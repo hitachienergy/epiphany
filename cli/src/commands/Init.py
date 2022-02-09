@@ -1,6 +1,6 @@
 import os
 
-from cli.src.helpers.Step import Step
+from cli.src.Step import Step
 from cli.src.helpers.build_io import save_manifest, get_build_path
 from cli.src.helpers.data_loader import load_all_schema_objs, types
 from cli.src.helpers.objdict_helpers import remove_value

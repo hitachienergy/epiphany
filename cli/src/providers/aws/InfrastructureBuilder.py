@@ -2,16 +2,15 @@ import os
 import uuid
 from copy import deepcopy
 
-from cli.src.helpers.doc_list_helpers import select_first
-from cli.src.helpers.data_loader import load_schema_obj, types
-from cli.src.helpers.config_merger import merge_with_defaults
-from cli.src.providers.aws.APIProxy import APIProxy
-from cli.src.helpers.Step import Step
-from cli.src.helpers.doc_list_helpers import select_single, select_all
 from cli.src.helpers.build_io import get_terraform_path
-from cli.src.helpers.data_loader import load_json_obj
+from cli.src.helpers.config_merger import merge_with_defaults
+from cli.src.helpers.data_loader import load_json_obj, load_schema_obj, types
+from cli.src.helpers.doc_list_helpers import (select_all, select_first,
+                                              select_single)
 from cli.src.helpers.naming_helpers import resource_name
-from cli.src.helpers.objdict_helpers import objdict_to_dict, dict_to_objdict
+from cli.src.helpers.objdict_helpers import dict_to_objdict, objdict_to_dict
+from cli.src.providers.aws.APIProxy import APIProxy
+from cli.src.Step import Step
 from cli.version import VERSION
 
 

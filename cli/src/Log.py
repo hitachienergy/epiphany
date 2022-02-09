@@ -1,11 +1,13 @@
 import logging
 import logging.handlers
-import threading
 import os
+import threading
 
 from pythonjsonlogger import jsonlogger
+
+from cli.src.Config import Config
 from cli.src.helpers.build_io import get_output_path
-from cli.src.helpers.Config import Config
+
 
 class ColorFormatter(logging.Formatter):
     grey = '\x1b[38;21m'

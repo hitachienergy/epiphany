@@ -1,4 +1,4 @@
-from cli.src.helpers.Step import Step
+from cli.src.Step import Step
 from cli.src.helpers.doc_list_helpers import select_single
 from cli.src.terraform.TerraformRunner import TerraformRunner
 from cli.src.helpers.build_io import delete_directory, load_manifest

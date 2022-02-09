@@ -1,17 +1,14 @@
-import shutil
 import os
-from pathlib import Path
+import shutil
+from distutils import dir_util
 from os import listdir
 from os.path import isfile, join
-from distutils import dir_util
+from pathlib import Path
 
-from ansible.parsing.dataloader import DataLoader
-from ansible.inventory.manager import InventoryManager
-
-from cli.src.helpers.data_loader import load_template_file, load_yamls_file, types
-from cli.src.helpers.yaml_helpers import dump_all, dump
-from cli.src.helpers.Config import Config
-
+from cli.src.Config import Config
+from cli.src.helpers.data_loader import (load_template_file, load_yamls_file,
+                                         types)
+from cli.src.helpers.yaml_helpers import dump, dump_all
 
 TERRAFORM_OUTPUT_DIR = 'terraform/'
 MANIFEST_FILE_NAME = 'manifest.yml'
@@ -54,10 +51,6 @@ def save_inventory(inventory, cluster_model, build_dir=None):
     content = template.render(inventory=inventory, cluster_model=cluster_model)
     file_path = os.path.join(build_dir, ANSIBLE_INVENTORY_FILE)
     save_to_file(file_path, content)
-
-
-def load_inventory(inventory_path):
-    return InventoryManager(loader=DataLoader(), sources=inventory_path)
 
 
 def save_ansible_config_file(ansible_config_file_settings, ansible_config_file_path):

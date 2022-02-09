@@ -1,7 +1,8 @@
 import os
 import subprocess
-from cli.src.helpers.Log import LogPipe, Log
-from cli.src.helpers.Config import Config
+
+from cli.src.Config import Config
+from cli.src.Log import Log, LogPipe
 
 terraform_verbosity = ['ERROR','WARN','INFO','DEBUG','TRACE']
 

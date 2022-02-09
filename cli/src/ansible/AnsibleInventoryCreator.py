@@ -1,11 +1,11 @@
 from collections import defaultdict
 
+from cli.src.helpers.build_io import save_inventory
 from cli.src.helpers.doc_list_helpers import select_single
 from cli.src.helpers.naming_helpers import to_role_name
-from cli.src.providers.provider_class_loader import provider_class_loader
 from cli.src.models.AnsibleInventoryItem import AnsibleInventoryItem
-from cli.src.helpers.build_io import save_inventory
-from cli.src.helpers.Step import Step
+from cli.src.providers.provider_class_loader import provider_class_loader
+from cli.src.Step import Step
 
 
 class AnsibleInventoryCreator(Step):

@@ -1,5 +1,6 @@
 from ruamel.yaml import YAML
-from cli.src.helpers.objdict_helpers import objdict_to_dict, dict_to_objdict
+
+from cli.src.helpers.objdict_helpers import dict_to_objdict, objdict_to_dict
 
 
 def safe_load_all(stream):

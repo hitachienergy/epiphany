@@ -2,7 +2,7 @@ import os
 import copy
 
 from cli.version import VERSION
-from cli.src.helpers.Step import Step
+from cli.src.Step import Step
 
 from cli.src.helpers.build_io import (get_inventory_path_for_build, load_manifest, copy_files_recursively, copy_file,
     get_ansible_config_file_path_for_build)

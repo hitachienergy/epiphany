@@ -1,14 +1,14 @@
 import os
-import time
 import re
+import time
 
-from cli.src.helpers.Step import Step
 from cli.src.ansible.AnsibleCommand import AnsibleCommand
 from cli.src.ansible.AnsibleRunner import AnsibleRunner
+from cli.src.helpers.build_io import copy_files_recursively
 from cli.src.helpers.yaml_helpers import safe_load_all
 from cli.src.schema.DefaultMerger import DefaultMerger
 from cli.src.schema.SchemaValidator import SchemaValidator
-from cli.src.helpers.build_io import copy_files_recursively
+from cli.src.Step import Step
 
 
 class Upgrade(Step):

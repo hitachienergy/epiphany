@@ -1,5 +1,6 @@
 from math import floor
 
+
 def format_time(secs):
     """Formats seconds to a time string with the format: "Xh Xm X.XXs", "Xm X.XXs", "X.XXs"
 

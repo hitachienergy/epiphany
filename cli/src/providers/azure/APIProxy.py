@@ -1,12 +1,13 @@
 import json
 import re
 import time
-from subprocess import Popen, PIPE
+from subprocess import PIPE, Popen
 
-from cli.src.helpers.Log import LogPipe, Log
 from cli.src.helpers.doc_list_helpers import select_first
-from cli.src.helpers.naming_helpers import resource_name, cluster_tag
+from cli.src.helpers.naming_helpers import cluster_tag, resource_name
+from cli.src.Log import Log, LogPipe
 from cli.src.models.AnsibleHostModel import AnsibleOrderedHostModel
+
 
 class APIProxy:
     def __init__(self, cluster_model, config_docs):

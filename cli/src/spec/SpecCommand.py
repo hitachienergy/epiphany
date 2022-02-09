@@ -1,10 +1,10 @@
 import os
-import subprocess
 import shutil
-from subprocess import Popen, PIPE
+import subprocess
+from subprocess import PIPE, Popen
 
-from cli.src.helpers.Log import LogPipe, Log
 from cli.src.helpers.data_loader import BASE_DIR
+from cli.src.Log import Log, LogPipe
 
 SPEC_TEST_PATH = BASE_DIR + '/tests/spec'
 

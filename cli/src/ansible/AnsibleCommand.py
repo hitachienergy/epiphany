@@ -2,9 +2,8 @@ import os
 import subprocess
 import time
 
-from cli.src.helpers.Log import LogPipe, Log
-from cli.src.helpers.Config import Config
-
+from cli.src.Config import Config
+from cli.src.Log import Log, LogPipe
 
 ansible_verbosity = ['NONE','-v','-vv','-vvv','-vvvv']
 

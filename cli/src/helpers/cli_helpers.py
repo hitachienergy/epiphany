@@ -1,6 +1,21 @@
+import getpass
 import sys
 
-from cli.src.helpers.Config import Config
+from cli.src.Config import Config
+
+
+def prompt_for_value(prompt):
+    input_text = ''
+    while input_text == '':
+        input_text = input(prompt)
+    return input_text
+
+
+def prompt_for_password(prompt):
+    password = ''
+    while password == '':
+        password = getpass.getpass(prompt)
+    return password
 
 
 def query_yes_no(question, default="yes"):

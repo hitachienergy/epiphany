@@ -1,9 +1,11 @@
 from copy import deepcopy
 
-from jsonschema import validate, Draft7Validator
+from jsonschema import Draft7Validator, validate
+
 from cli.src.helpers.data_loader import load_schema_obj, types
-from cli.src.helpers.objdict_helpers import objdict_to_dict, dict_to_objdict, replace_yesno_with_booleans
-from cli.src.helpers.Step import Step
+from cli.src.helpers.objdict_helpers import (dict_to_objdict, objdict_to_dict,
+                                             replace_yesno_with_booleans)
+from cli.src.Step import Step
 
 
 class SchemaValidator(Step):

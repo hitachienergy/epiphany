@@ -1,5 +1,5 @@
-from cli.src.helpers.Step import Step
 from cli.src.helpers.doc_list_helpers import select_single
+from cli.src.Step import Step
 
 
 class InfrastructureConfigCollector(Step):

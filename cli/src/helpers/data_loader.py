@@ -1,17 +1,18 @@
-import os
 import glob
 import json
+import os
 from collections import namedtuple
 
 import jinja2
+from ansible.inventory.manager import InventoryManager
+from ansible.parsing.dataloader import DataLoader
 from jinja2 import Template
 
-from cli.src.helpers.yaml_helpers import safe_load_all, safe_load
 from cli.src.helpers.objdict_helpers import dict_to_objdict
-
+from cli.src.helpers.yaml_helpers import safe_load, safe_load_all
 
 BASE_DIR_PROD = '/epicli'
-BASE_DIR_DEV = os.path.join(os.path.dirname(__file__), '../../../')
+BASE_DIR_DEV = '/workspaces/epiphany'
 BASE_DIR = (
     BASE_DIR_PROD
     if os.path.exists(BASE_DIR_PROD)
@@ -73,3 +74,6 @@ def load_json_obj(path_to_file):
     with open(path_to_file, 'r') as stream:
         obj = json.load(stream)
         return dict_to_objdict(obj)
+
+def load_inventory(inventory_path):
+    return InventoryManager(loader=DataLoader(), sources=inventory_path)

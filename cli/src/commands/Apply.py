@@ -1,23 +1,27 @@
 import os
 import sys
 
-from cli.version import VERSION
-from cli.src.helpers.Step import Step
-from cli.src.helpers.doc_list_helpers import select_single, select_all, select_first
-from cli.src.helpers.build_io import save_manifest, load_manifest, get_inventory_path, get_manifest_path, get_build_path, load_inventory
+from cli.src.ansible.AnsibleRunner import AnsibleRunner
+from cli.src.helpers.build_io import (get_build_path, get_inventory_path,
+                                      get_manifest_path, load_inventory,
+                                      load_manifest, save_manifest)
+from cli.src.helpers.cli_helpers import query_yes_no
+from cli.src.helpers.data_loader import load_schema_obj, types
+from cli.src.helpers.doc_list_helpers import (select_all, select_first,
+                                              select_single)
+from cli.src.helpers.naming_helpers import get_os_name_normalized
 from cli.src.helpers.yaml_helpers import safe_load_all
-from cli.src.helpers.Log import Log
-from cli.src.helpers.os_images import get_os_distro_normalized
-from cli.src.helpers.query_yes_no import query_yes_no
+from cli.src.Log import Log
 from cli.src.providers.provider_class_loader import provider_class_loader
+from cli.src.schema.ConfigurationAppender import ConfigurationAppender
 from cli.src.schema.DefaultMerger import DefaultMerger
 from cli.src.schema.SchemaValidator import SchemaValidator
-from cli.src.schema.ConfigurationAppender import ConfigurationAppender
-from cli.src.terraform.TerraformTemplateGenerator import TerraformTemplateGenerator
+from cli.src.Step import Step
 from cli.src.terraform.TerraformFileCopier import TerraformFileCopier
 from cli.src.terraform.TerraformRunner import TerraformRunner
-from cli.src.ansible.AnsibleRunner import AnsibleRunner
-from cli.src.helpers.data_loader import load_schema_obj, types
+from cli.src.terraform.TerraformTemplateGenerator import \
+    TerraformTemplateGenerator
+from cli.version import VERSION
 
 
 class Apply(Step):
@@ -167,7 +171,7 @@ class Apply(Step):
         )
 
         os_indicators = {
-            get_os_distro_normalized(vm_doc)
+            get_os_name_normalized(vm_doc)
             for vm_doc in virtual_machine_docs
         }
 

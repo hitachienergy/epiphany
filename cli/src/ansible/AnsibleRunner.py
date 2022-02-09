@@ -2,17 +2,21 @@ import os
 import time
 
 from cli.src.ansible.AnsibleCommand import AnsibleCommand
-from cli.src.ansible.AnsibleInventoryCreator import AnsibleInventoryCreator
 from cli.src.ansible.AnsibleConfigFileCreator import AnsibleConfigFileCreator
-from cli.src.ansible.AnsibleVarsGenerator import AnsibleVarsGenerator
+from cli.src.ansible.AnsibleInventoryCreator import AnsibleInventoryCreator
 from cli.src.ansible.AnsibleInventoryUpgrade import AnsibleInventoryUpgrade
-from cli.src.helpers.Step import Step
-from cli.src.helpers.build_io import (get_inventory_path, get_inventory_path_for_build,
-    get_ansible_path, get_ansible_path_for_build, get_ansible_config_file_path, get_ansible_config_file_path_for_build,
-    copy_files_recursively, delete_directory)
-from cli.src.helpers.naming_helpers import to_role_name
+from cli.src.ansible.AnsibleVarsGenerator import AnsibleVarsGenerator
+from cli.src.Config import Config
+from cli.src.helpers.build_io import (copy_files_recursively, delete_directory,
+                                      get_ansible_config_file_path,
+                                      get_ansible_config_file_path_for_build,
+                                      get_ansible_path,
+                                      get_ansible_path_for_build,
+                                      get_inventory_path,
+                                      get_inventory_path_for_build)
 from cli.src.helpers.data_loader import BASE_DIR, types
-from cli.src.helpers.Config import Config
+from cli.src.helpers.naming_helpers import to_role_name
+from cli.src.Step import Step
 
 
 class AnsibleRunner(Step):

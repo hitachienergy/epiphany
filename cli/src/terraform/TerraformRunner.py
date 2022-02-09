@@ -1,11 +1,12 @@
 import os
 
-from cli.src.terraform.TerraformCommand import TerraformCommand
-from cli.src.providers.azure.APIProxy import APIProxy
-from cli.src.helpers.Step import Step
-from cli.src.helpers.build_io import get_terraform_path, save_sp, SP_FILE_NAME
+from cli.src.helpers.build_io import SP_FILE_NAME, get_terraform_path, save_sp
 from cli.src.helpers.data_loader import load_yaml_file
 from cli.src.helpers.naming_helpers import resource_name
+from cli.src.providers.azure.APIProxy import APIProxy
+from cli.src.Step import Step
+from cli.src.terraform.TerraformCommand import TerraformCommand
+
 
 class TerraformRunner(Step):
 

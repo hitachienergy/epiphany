@@ -1,8 +1,8 @@
-from copy import deepcopy
 from collections.abc import Iterable
+from copy import deepcopy
 
-from cli.src.helpers.ObjDict import ObjDict
 from cli.src.helpers.doc_list_helpers import select_first
+from cli.src.helpers.ObjDict import ObjDict
 
 YES_VALUES = ['y', 'Y', 'yes', 'Yes', 'YES']
 NO_VALUES = ['n', 'N', 'no', 'No', 'NO']

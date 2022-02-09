@@ -2,7 +2,7 @@ import os
 from collections import OrderedDict
 
 from cli.src.helpers.build_io import save_ansible_config_file
-from cli.src.helpers.Step import Step
+from cli.src.Step import Step
 
 
 class AnsibleConfigFileCreator(Step):

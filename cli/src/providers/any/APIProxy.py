@@ -1,5 +1,5 @@
 from cli.src.helpers.doc_list_helpers import select_first
-from cli.src.helpers.Log import Log
+from cli.src.Log import Log
 from cli.src.models.AnsibleHostModel import AnsibleOrderedHostModel
 
 

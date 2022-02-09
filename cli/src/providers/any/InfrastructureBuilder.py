@@ -1,6 +1,7 @@
-from cli.src.helpers.Step import Step
-from cli.src.helpers.doc_list_helpers import select_single, select_all
+from cli.src.helpers.doc_list_helpers import select_all, select_single
+from cli.src.Step import Step
 from cli.version import VERSION
+
 
 class InfrastructureBuilder(Step):
     def __init__(self, docs, manifest_docs=[]):

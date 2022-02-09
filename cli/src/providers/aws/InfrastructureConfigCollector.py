@@ -1,6 +1,6 @@
-from cli.src.helpers.Step import Step
+from cli.src.helpers.doc_list_helpers import select_first, select_single
 from cli.src.providers.aws.APIProxy import APIProxy
-from cli.src.helpers.doc_list_helpers import select_single, select_first
+from cli.src.Step import Step
 
 
 class InfrastructureConfigCollector(Step):

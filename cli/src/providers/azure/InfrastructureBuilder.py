@@ -1,15 +1,16 @@
 import os
 from copy import deepcopy
 
-from cli.src.helpers.Step import Step
-from cli.src.helpers.naming_helpers import resource_name, cluster_tag, storage_account_name
-from cli.src.helpers.doc_list_helpers import select_single
-from cli.src.helpers.doc_list_helpers import select_first
-from cli.src.helpers.data_loader import load_schema_obj, types
 from cli.src.helpers.config_merger import merge_with_defaults
+from cli.src.helpers.data_loader import load_schema_obj, types
+from cli.src.helpers.doc_list_helpers import select_first, select_single
+from cli.src.helpers.naming_helpers import (cluster_tag, resource_name,
+                                            storage_account_name)
 from cli.src.helpers.objdict_helpers import dict_to_objdict
-from cli.src.helpers.os_images import get_os_distro_normalized
+from cli.src.helpers.naming_helpers import get_os_name_normalized
+from cli.src.Step import Step
 from cli.version import VERSION
+
 
 class InfrastructureBuilder(Step):
     def __init__(self, docs, manifest_docs=[]):
@@ -138,7 +139,7 @@ class InfrastructureBuilder(Step):
 
         first_vm_doc = select_first(infrastructure, lambda x: x.kind == 'infrastructure/virtual-machine')
         if first_vm_doc is not None:
-            cloud_init_custom_data.specification['os_distribution'] = get_os_distro_normalized(first_vm_doc)
+            cloud_init_custom_data.specification['os_distribution'] = get_os_name_normalized(first_vm_doc)
 
         infrastructure.append(cloud_init_custom_data)
 

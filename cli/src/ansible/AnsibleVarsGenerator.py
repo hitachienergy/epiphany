@@ -1,16 +1,20 @@
-import os
 import copy
+import os
 
-from cli.version import VERSION
-from cli.src.helpers.Step import Step
-from cli.src.helpers.build_io import get_ansible_path, get_ansible_path_for_build, get_ansible_vault_path
-from cli.src.helpers.doc_list_helpers import select_first, select_single, ExpectedSingleResultException
+from cli.src.Config import Config
+from cli.src.helpers.build_io import (get_ansible_path,
+                                      get_ansible_path_for_build,
+                                      get_ansible_vault_path)
+from cli.src.helpers.data_loader import (load_all_schema_objs_from_directory,
+                                         load_schema_obj, types)
+from cli.src.helpers.doc_list_helpers import (ExpectedSingleResultException,
+                                              select_first, select_single)
 from cli.src.helpers.naming_helpers import to_feature_name, to_role_name
 from cli.src.helpers.ObjDict import ObjDict
 from cli.src.helpers.yaml_helpers import dump
-from cli.src.helpers.Config import Config
-from cli.src.helpers.data_loader import load_schema_obj, types, load_all_schema_objs_from_directory
 from cli.src.schema.DefaultMerger import DefaultMerger
+from cli.src.Step import Step
+from cli.version import VERSION
 
 
 class AnsibleVarsGenerator(Step):

@@ -1,31 +1,30 @@
 #!/usr/bin/env python3
-import atexit
-import sys
 import argparse
+import atexit
 import json
 import os
-import time
-import subprocess
 import platform
 import socket
+import subprocess
+import sys
+import time
 
+from cli.licenses import LICENSES
 from cli.src.commands.Apply import Apply
 from cli.src.commands.Backup import Backup
 from cli.src.commands.Delete import Delete
 from cli.src.commands.Init import Init
 from cli.src.commands.Prepare import Prepare
 from cli.src.commands.Recovery import Recovery
-from cli.src.commands.Upgrade import Upgrade
 from cli.src.commands.Test import Test
-from cli.src.helpers.Log import Log
-from cli.src.helpers.Config import Config
+from cli.src.commands.Upgrade import Upgrade
+from cli.src.Config import Config
+from cli.src.helpers.build_io import get_output_path, save_to_file
+from cli.src.helpers.cli_helpers import prompt_for_password, query_yes_no
 from cli.src.helpers.time_helpers import format_time
-from cli.version import VERSION
-from cli.licenses import LICENSES
-from cli.src.helpers.query_yes_no import query_yes_no
-from cli.src.helpers.input_query import prompt_for_password
-from cli.src.helpers.build_io import save_to_file, get_output_path
+from cli.src.Log import Log
 from cli.src.spec.SpecCommand import SpecCommand
+from cli.version import VERSION
 
 start_time = time.time()
 

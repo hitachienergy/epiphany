@@ -1,9 +1,8 @@
-from cli.src.helpers.data_loader import load_schema_obj, types
 from cli.src.helpers.config_merger import merge_with_defaults
-from cli.src.helpers.doc_list_helpers import select_first
-from cli.src.helpers.Step import Step
+from cli.src.helpers.data_loader import load_schema_obj, types
+from cli.src.helpers.doc_list_helpers import select_first, select_single
+from cli.src.Step import Step
 from cli.version import VERSION
-from cli.src.helpers.doc_list_helpers import select_single
 
 
 class ConfigurationAppender(Step):

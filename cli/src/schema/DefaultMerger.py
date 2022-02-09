@@ -1,7 +1,8 @@
 from cli.src.helpers.data_loader import load_all_schema_objs, types
-from cli.src.helpers.objdict_helpers import merge_objdict, replace_yesno_with_booleans
 from cli.src.helpers.doc_list_helpers import select_first
-from cli.src.helpers.Step import Step
+from cli.src.helpers.objdict_helpers import (merge_objdict,
+                                             replace_yesno_with_booleans)
+from cli.src.Step import Step
 from cli.version import VERSION
 
 

@@ -1,8 +1,8 @@
 import time
 from abc import ABCMeta
 
-from cli.src.helpers.Log import Log
 from cli.src.helpers.time_helpers import format_time
+from cli.src.Log import Log
 
 
 class Step(metaclass=ABCMeta):
