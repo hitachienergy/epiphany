@@ -27,8 +27,12 @@
 - name: Setup venv and download Epiphany requirements on repository host  # online mode
   block:
     - name: Install required packages for repository
-      include_tasks: "RedHat/install-packages.yml"
-      when: ansible_os_family == "RedHat"
+      include_tasks: "{{ ansible_os_family }}/install-packages.yml"
+
+    - name: Install Poyo library for YAML support
+      pip:
+        name: poyo==0.5.0
+        executable: pip3
 
     - name: Create download-requirements directory
       file:
@@ -85,22 +89,24 @@
   vars:
     # general paths:
     _reqs_dir: download-requirements/requirements
-    _file_reqs_path: "{{ _reqs_dir }}/files.yml"
-    _grafana_dashboard_reqs_path: "{{ _reqs_dir }}/grafana_dashboards.yml"
-    _image_reqs_path: "{{ _reqs_dir }}/images.yml"
+    _arch_dir: "{{ _reqs_dir }}/{{ ansible_architecture }}"
+    _dist_dir: "{{ _arch_dir }}/{{ download_requirements_os_name }}"
 
-    # target distro files:
-    _reqs_distro_dir: "{{ _reqs_dir }}/{{ ansible_architecture }}/{{ ansible_distribution | lower }}"
-    _distro_file_reqs_path: "{{ _reqs_distro_dir }}/files.yml"
-    _package_reqs_path: "{{ _reqs_distro_dir }}/packages.yml"
+    # file paths:
+    _files_layout:
+      distro_files: "{{ _dist_dir }}/files.yml"
+      distro_packages: "{{ _dist_dir }}/packages.yml"
+      files: "{{ _arch_dir }}/files.yml"
+      grafana-dashboards: "{{ _reqs_dir }}/grafana-dashboards.yml"
+      images: "{{ _arch_dir }}/images.yml"
 
     # contents:
-    _file_reqs: "{{ lookup('file', _file_reqs_path) | from_yaml }}"
-    _grafana_dashboard_reqs: "{{ lookup('file', _grafana_dashboard_reqs_path) | from_yaml }}"
-    _image_reqs: "{{ lookup('file', _image_reqs_path) | from_yaml }}"
-
-    _distro_file_reqs: "{{ lookup('file', _distro_file_reqs_path) | from_yaml }}"
-    _package_reqs: "{{ lookup('file', _package_reqs_path) | from_yaml }}"
+    _files_content:
+      distro_files: "{{ lookup('file', _files_layout['distro_files']) | from_yaml }}"
+      # distro_packages: "{{ lookup('file', _files_layout['distro_packages']) | from_yaml }}"
+      files: "{{ lookup('file', _files_layout['files']) | from_yaml }}"
+      # grafana-dashboards: "{{ lookup('file', _files_layout['grafana-dashboards']) | from_yaml }}"
+      # images: "{{ lookup('file', _files_layout['images']) | from_yaml }}"
 
 - name: |-
     Copy requirements for offline installation to repository host, this can take a long time

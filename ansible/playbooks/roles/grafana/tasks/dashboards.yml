@@ -46,6 +46,7 @@
         file_name: "grafana_dashboard_{{ item.dashboard_id }}.json"
         download_directory: "{{ tmp_dashboards.path }}/{{ item.dashboard_id }}.json"
         force: true # to keep indepotency (avoid HTTP Error 304: Not Modified)
+        _subdir: grafana_dashboards
       loop: "{{ grafana_external_dashboards }}"
       when: grafana_external_dashboards != []
 

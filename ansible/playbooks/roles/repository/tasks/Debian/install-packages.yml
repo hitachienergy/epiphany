@@ -1,8 +1,7 @@
 ---
-- name: Install RedHat family packages for repository to work
-  yum:
+- name: Install Debian family packages for repository to work
+  apt:
     name:
-      - python3  # python3.6 by default on RHEL7
       - python3-pip
     state: present
   register: result

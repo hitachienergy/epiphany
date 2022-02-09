@@ -50,7 +50,7 @@ class BaseMode:
 
         :returns: parsed requirements data
         """
-        reqs = defaultdict(dict)
+        reqs: Dict = defaultdict(dict)
 
         content = load_yaml_file(self._cfg.reqs_path / f'{self._cfg.distro_subdir}/packages.yml')
         reqs['packages'] = content['packages']
@@ -170,7 +170,7 @@ class BaseMode:
         cranes = self._requirements['cranes']
         first_crane = next(iter(cranes))  # right now we use only single crane source
         if cranes[first_crane]['sha256'] == get_sha256(crane_package_path):
-            logging.debug(f'crane - checksum ok, skipped')
+            logging.debug('crane - checksum ok, skipped')
             return
 
         self._download_crane_binary(first_crane, crane_package_path)
@@ -191,7 +191,7 @@ class BaseMode:
         for image in images:
             try:
                 url, version = image.split(':')
-                filename = Path(f'{url.split("/")[-1]}_{version}.tar')  # format: image_version.tar
+                filename = Path(f'{url.split("/")[-1]}-{version}.tar')  # format: image_version.tar
 
                 if images[image]['sha1'] == get_sha1(self._cfg.dest_images / filename):
                     logging.debug(f'- {image} - checksum ok, skipped')

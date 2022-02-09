@@ -34,11 +34,11 @@ class DebianFamilyMode(BaseMode):
                 self._tools.tar.unpack(filename=self._cfg.repos_backup_file,
                                        directory=Path('/'),
                                        absolute_names=True,
-                                       uncompress=True,
+                                       uncompress=False,
                                        verbose=True)
             else:
                 logging.warn(f'{str(sources)} seems to be missing, you either know what you are doing or '
-                              'you need to fix your repositories')
+                             'you need to fix your repositories')
 
     def _install_base_packages(self):
         # install prerequisites which might be missing
@@ -77,6 +77,7 @@ class DebianFamilyMode(BaseMode):
         os.chdir(self._cfg.dest_packages)
 
         packages: Dict[str, Dict] = self._requirements['packages']
+        packages_to_download: List[str] = []
         for package in packages:
             version: str = ''
             try:
@@ -102,16 +103,14 @@ class DebianFamilyMode(BaseMode):
             except IndexError:
                 pass  # package not found
 
-            logging.info(f'- {package}')
-
             # resolve dependencies for target package and if needed, download them first
             deps: List[str] = self._tools.apt_cache.get_package_dependencies(package_base_name)
 
-            for dep in deps:
-                logging.info(f'-- {dep}')
-                self._tools.apt.download(dep)
+            packages_to_download.extend(deps)
+            packages_to_download.append(package)
 
-            # finally download target package
+        for package in set(packages_to_download):
+            logging.info(f'- {package}')
             self._tools.apt.download(package)
 
         os.chdir(self._cfg.script_path)

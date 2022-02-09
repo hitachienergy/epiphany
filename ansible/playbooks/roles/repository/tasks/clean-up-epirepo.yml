@@ -25,16 +25,14 @@
   register: files_in_epirepo
   loop:  # loop used by purpose to have separated results
     - "{{ _apache_epirepo_path }}/files"
-    - "{{ _apache_epirepo_path }}/grafana-dashboards"
+    - "{{ _apache_epirepo_path }}/grafana_dashboards"
     - "{{ _apache_epirepo_path }}/images"
 
 - name: Create full list of files
   set_fact:
     all_files: "{{ _all_files }}"
   vars:
-    _reqs_file_keys: "{{ _file_reqs['files'].keys() | list }}"
-    _reqs_distro_file_keys: "{{ _distro_file_reqs['files'].keys() | list }}"
-    _all_files: _reqs_file_keys | union(_reqs_distro_file_keys)
+    _all_files: "{{ (_files_content['distro_files']['files'].keys() | list) | union(_files_content['files']['files'].keys() | list) }}"
 
 - name: Remove old files from epirepo
   file:

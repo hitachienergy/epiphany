@@ -11,14 +11,14 @@ from src.error import CriticalError
 
 class OSType(Enum):
     """ Supported distribution types """
-    Ubuntu='ubuntu-20.04'
-    RedHat='redhat-7'
+    Ubuntu = 'ubuntu-20.04'
+    RedHat = 'redhat-7'
 
 
 class OSArch(Enum):
     """ Supported architecture types """
-    X86_64='x86_64'
-    ARM64='arm64'
+    X86_64 = 'x86_64'
+    ARM64 = 'arm64'
 
 
 class Config:
@@ -54,7 +54,7 @@ class Config:
         lines.append(f'OS Arch: {self.os_arch.value}')
         lines.append(f'OS Type: {self.os_type.value}')
         lines.append(f'Script location: {str(self.script_path.absolute())}')
-        lines.append(f'Directories used:')
+        lines.append('Directories used:')
         lines.append(f'- files:              {str(self.dest_files)}')
         lines.append(f'- grafana dashboards: {str(self.dest_grafana_dashboards)}')
         lines.append(f'- images:             {str(self.dest_images)}')
@@ -92,7 +92,6 @@ class Config:
         parser.add_argument('--retries-count', '-r', metavar='COUNT', type=int, action='store', dest='retries',
                             default=3, help='how many retries before stopping operation')
 
-
         parser.add_argument('--log-file', '-l', metavar='LOG_FILE', type=Path, action='store', dest='log_file',
                             default=Path('./download-requirements.log'),
                             help='logs will be saved to this file')
@@ -111,10 +110,10 @@ class Config:
         :raise: on failure - CriticalError
         """
 
-        for os in OSType:
-            if os.value.upper() in os_type.upper():
-                logging.info(f'Found Matching OS: `{os.value}`')
-                return os
+        for ost in OSType:
+            if ost.value.upper() in os_type.upper():
+                logging.info(f'Found Matching OS: `{ost.value}`')
+                return ost
 
         raise CriticalError('Could not detect OS type')
 

@@ -25,4 +25,5 @@ def get_sha256(req_path: Path) -> str:
 
 
 def get_sha1(req_path: Path) -> str:
+    """ For larger files sha1 algorithm is significantly faster than sha256 """
     return get_hash(req_path, sha1)

@@ -1,7 +1,7 @@
 import logging
 import shutil
 from pathlib import Path
-from typing import List
+from typing import List, Set
 
 from src.command.command import Command
 from src.command.toolchain import RedHatFamilyToolchain, Toolchain
@@ -35,7 +35,7 @@ class RedHatFamilyMode(BaseMode):
                                        verbose=True)
             else:
                 logging.warn(f'{str(sources)} seems to be missing, you either know what you are doing or '
-                              'you need to fix your repositories')
+                             'you need to fix your repositories')
 
     def _install_base_packages(self):
         # some packages are from EPEL repo
@@ -109,7 +109,7 @@ class RedHatFamilyMode(BaseMode):
                 self._tools.yum_config_manager.add_repo('https://download.docker.com/linux/centos/docker-ce.repo')
                 self._tools.yum.accept_keys()
 
-        for repo in ['https://dl.2ndquadrant.com/default/release/get/10/rpm', # for repmgr
+        for repo in ['https://dl.2ndquadrant.com/default/release/get/10/rpm',  # for repmgr
                      'https://dl.2ndquadrant.com/default/release/get/13/rpm']:
             Command('curl', self._cfg.retries, [repo]) | Command('bash', self._cfg.retries)  # curl {repo} | bash
 
@@ -148,7 +148,7 @@ class RedHatFamilyMode(BaseMode):
             if cdir.name in repoinfo:
                 shutil.rmtree(str(cdir))
 
-    def __download_prereq_packages(self):
+    def __download_prereq_packages(self) -> Set[str]:
         # download requirements (fixed versions)
         prereqs_dir = self._cfg.dest_packages / 'repo-prereqs'
         prereqs_dir.mkdir(exist_ok=True, parents=True)
@@ -160,20 +160,23 @@ class RedHatFamilyMode(BaseMode):
                                                                  queryformat='%{ui_nevra}',
                                                                  arch=self._cfg.os_arch.value))
 
-        if collected_prereqs:
-            self._tools.yumdownloader.download_packages(collected_prereqs,
+        unique_collected_prereqs: Set = set(collected_prereqs)
+        for prereq in unique_collected_prereqs:
+            self._tools.yumdownloader.download_packages([prereq],
                                                         arch=self._cfg.os_arch.value,
                                                         exclude='*i686',
                                                         destdir=prereqs_dir)
-            logging.info(f'- {collected_prereqs}')
+            logging.info(f'- {prereq}')
+
+        return unique_collected_prereqs
 
     def _download_packages(self):
-        self.__download_prereq_packages()
+        downloaded_prereqs: Set = self.__download_prereq_packages()
 
         packages: List[str] = self._requirements['packages']
+        packages_to_download: List[str] = []
         for package in packages:
             # package itself
-            packages_to_download: List[str] = []
             package_name = self._tools.repoquery.query(package,
                                                        queryformat='%{ui_nevra}',
                                                        arch=self._cfg.os_arch.value)[0]
@@ -190,11 +193,13 @@ class RedHatFamilyMode(BaseMode):
             except PackageNotfound:
                 pass  # no dependencies for `package`
 
-            self._tools.yumdownloader.download_packages(packages_to_download,
-                                                        arch=self._cfg.os_arch.value,
-                                                        exclude='*i686',
-                                                        destdir=self._cfg.dest_packages)
-            logging.info(f'- {packages_to_download}')
+        for package in set(packages_to_download):
+            if package not in downloaded_prereqs:
+                logging.info(f'- {package}')
+                self._tools.yumdownloader.download_packages([package],
+                                                            arch=self._cfg.os_arch.value,
+                                                            exclude='*i686',
+                                                            destdir=self._cfg.dest_packages)
 
     def _download_file(self, file: str):
         self._tools.wget.download(file, directory_prefix=self._cfg.dest_files, additional_params=False)
