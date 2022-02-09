@@ -10,7 +10,7 @@ from cli.src.helpers.objdict_helpers import dict_to_objdict
 from cli.src.helpers.yaml_helpers import safe_load, safe_load_all
 
 BASE_DIR_PROD = '/epicli'
-BASE_DIR_DEV = '/workspaces/epiphany'
+BASE_DIR_DEV = os.path.join(os.path.dirname(__file__), '../../../')
 BASE_DIR = (
     BASE_DIR_PROD
     if os.path.exists(BASE_DIR_PROD)
