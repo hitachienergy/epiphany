@@ -8,6 +8,7 @@
 - [#2701](https://github.com/epiphany-platform/epiphany/issues/2701) - Epicli prepare - generate files in separate directory
 - [#2812](https://github.com/epiphany-platform/epiphany/issues/2812) - Extend K8s config validation
 - [#2888](https://github.com/epiphany-platform/epiphany/issues/2888) - Define additional disks with defined sizes to VMs for Azure
+- [#2812](https://github.com/epiphany-platform/epiphany/issues/2812) - Extend K8s config validation
 
 ### Fixed
 
