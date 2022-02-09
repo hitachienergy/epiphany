@@ -29,7 +29,6 @@
     - name: Install Rook using Helm chart
       shell: |
         helm -n {{ rook_chart_namespace }} upgrade --install \
-          -f {{ download_directory }}/custom-chart-values.yml \
           {{ rook_helm_chart_name }} \
           {{ download_directory }}/{{ rook_helm_chart_file_name }} --create-namespace
       environment:
