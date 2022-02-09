@@ -4,8 +4,6 @@ import os
 from collections import namedtuple
 
 import jinja2
-from ansible.inventory.manager import InventoryManager
-from ansible.parsing.dataloader import DataLoader
 from jinja2 import Template
 
 from cli.src.helpers.objdict_helpers import dict_to_objdict
@@ -74,6 +72,3 @@ def load_json_obj(path_to_file):
     with open(path_to_file, 'r') as stream:
         obj = json.load(stream)
         return dict_to_objdict(obj)
-
-def load_inventory(inventory_path):
-    return InventoryManager(loader=DataLoader(), sources=inventory_path)

@@ -5,6 +5,9 @@ from os import listdir
 from os.path import isfile, join
 from pathlib import Path
 
+from ansible.inventory.manager import InventoryManager
+from ansible.parsing.dataloader import DataLoader
+
 from cli.src.Config import Config
 from cli.src.helpers.data_loader import (load_template_file, load_yamls_file,
                                          types)
@@ -51,6 +54,10 @@ def save_inventory(inventory, cluster_model, build_dir=None):
     content = template.render(inventory=inventory, cluster_model=cluster_model)
     file_path = os.path.join(build_dir, ANSIBLE_INVENTORY_FILE)
     save_to_file(file_path, content)
+
+
+def load_inventory(inventory_path):
+    return InventoryManager(loader=DataLoader(), sources=inventory_path)
 
 
 def save_ansible_config_file(ansible_config_file_settings, ansible_config_file_path):
