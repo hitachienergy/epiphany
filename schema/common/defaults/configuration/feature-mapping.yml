@@ -113,6 +113,7 @@ specification:
       - kubernetes-master
       - helm
       - applications
+      - rook
       - node-exporter
       - filebeat
       - firewall
