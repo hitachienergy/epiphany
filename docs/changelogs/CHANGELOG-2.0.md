@@ -20,6 +20,7 @@
 - [#2448](https://github.com/epiphany-platform/epiphany/issues/2448) - Passwordless SSH communication for postgres user between DB nodes
 - [#2821](https://github.com/epiphany-platform/epiphany/issues/2821) - Node Exporter preflight checks
 - [#2888](https://github.com/epiphany-platform/epiphany/issues/2888) - Define additional disks with defined sizes to VMs for Azure
+- [#2812](https://github.com/epiphany-platform/epiphany/issues/2812) - Extend K8s config validation
 
 ### Fixed
 
