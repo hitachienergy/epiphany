@@ -6,7 +6,7 @@ When running the Epicli container on Windows you might get such errors when tryi
 
 Azure:
 ```
-INFO cli.engine.terraform.TerraformCommand - Error: Error reading queue properties for AzureRM Storage Account "cluster": queues.Client#GetServiceProperties: Failure responding to request: StatusCode=403 -- Original Error: autorest/azure: error response cannot be parsed: "\ufeff<?xml version=\"1.0\" encoding=\"utf-8\"?><Error><Code>AuthenticationFailed</Code><Message>Server failed to authenticate the request. Make sure the value of Authorization header is formed correctly including the signature.\nRequestId:cba2935f-1003-006f-071d-db55f6000000\nTime:2020-02-04T05:38:45.4268197Z</Message><AuthenticationErrorDetail>Request date header too old: 'Fri, 31 Jan 2020 12:28:37 GMT'</AuthenticationErrorDetail></Error>" error: invalid character 'ï' looking for beginning of value
+INFO cli.src.terraform.TerraformCommand - Error: Error reading queue properties for AzureRM Storage Account "cluster": queues.Client#GetServiceProperties: Failure responding to request: StatusCode=403 -- Original Error: autorest/azure: error response cannot be parsed: "\ufeff<?xml version=\"1.0\" encoding=\"utf-8\"?><Error><Code>AuthenticationFailed</Code><Message>Server failed to authenticate the request. Make sure the value of Authorization header is formed correctly including the signature.\nRequestId:cba2935f-1003-006f-071d-db55f6000000\nTime:2020-02-04T05:38:45.4268197Z</Message><AuthenticationErrorDetail>Request date header too old: 'Fri, 31 Jan 2020 12:28:37 GMT'</AuthenticationErrorDetail></Error>" error: invalid character 'ï' looking for beginning of value
 ```
 
 AWS:
