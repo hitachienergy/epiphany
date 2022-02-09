@@ -1,6 +1,6 @@
 ---
-- name: Prepare configuration and upgrade/install Helm chart
-  when: rook_enabled
+- name: Prepare configuration and upgrade/install Rook Helm chart
+  when: specification.enabled
   become: true
   run_once: true
 
