@@ -1,20 +1,21 @@
-import os
 import copy
-
-from cli.version import VERSION
-from cli.src.Step import Step
-
-from cli.src.helpers.build_io import (get_inventory_path_for_build, load_manifest, copy_files_recursively, copy_file,
-    get_ansible_config_file_path_for_build)
-from cli.src.helpers.yaml_helpers import dump
-from cli.src.helpers.data_loader import load_yamls_file, load_schema_obj, types as data_types
-from cli.src.helpers.doc_list_helpers import select_single, ExpectedSingleResultException
-
-from cli.src.schema.SchemaValidator import SchemaValidator
-from cli.src.schema.DefaultMerger import DefaultMerger
+import os
 
 from cli.src.ansible.AnsibleCommand import AnsibleCommand
 from cli.src.ansible.AnsibleRunner import AnsibleRunner
+from cli.src.helpers.build_io import (copy_file, copy_files_recursively,
+                                      get_ansible_config_file_path_for_build,
+                                      get_inventory_path_for_build,
+                                      load_manifest)
+from cli.src.helpers.data_loader import load_schema_obj, load_yamls_file
+from cli.src.helpers.data_loader import types as data_types
+from cli.src.helpers.doc_list_helpers import (ExpectedSingleResultException,
+                                              select_single)
+from cli.src.helpers.yaml_helpers import dump
+from cli.src.schema.DefaultMerger import DefaultMerger
+from cli.src.schema.SchemaValidator import SchemaValidator
+from cli.src.Step import Step
+from cli.version import VERSION
 
 
 class BackupRecoveryBase(Step):

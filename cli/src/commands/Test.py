@@ -1,9 +1,10 @@
 import os
 
-from cli.src.Step import Step
-from cli.src.helpers.build_io import SPEC_OUTPUT_DIR, ANSIBLE_INVENTORY_FILE, load_manifest
+from cli.src.helpers.build_io import (ANSIBLE_INVENTORY_FILE, SPEC_OUTPUT_DIR,
+                                      load_manifest)
 from cli.src.helpers.doc_list_helpers import select_single
 from cli.src.spec.SpecCommand import SpecCommand
+from cli.src.Step import Step
 
 
 class Test(Step):

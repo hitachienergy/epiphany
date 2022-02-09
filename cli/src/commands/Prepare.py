@@ -1,10 +1,10 @@
 import os
 import stat
 
-from cli.src.Step import Step
-from cli.src.helpers.data_loader import BASE_DIR
 from cli.src.Config import Config
 from cli.src.helpers.build_io import copy_files_recursively
+from cli.src.helpers.data_loader import BASE_DIR
+from cli.src.Step import Step
 
 
 class Prepare(Step):

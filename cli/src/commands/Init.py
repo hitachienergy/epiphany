@@ -1,13 +1,13 @@
 import os
 
-from cli.src.Step import Step
-from cli.src.helpers.build_io import save_manifest, get_build_path
+from cli.src.helpers.build_io import get_build_path, save_manifest
 from cli.src.helpers.data_loader import load_all_schema_objs, types
-from cli.src.helpers.objdict_helpers import remove_value
-from cli.version import VERSION
 from cli.src.helpers.doc_list_helpers import select_all
+from cli.src.helpers.objdict_helpers import remove_value
 from cli.src.schema.ConfigurationAppender import ConfigurationAppender
 from cli.src.schema.DefaultMerger import DefaultMerger
+from cli.src.Step import Step
+from cli.version import VERSION
 
 
 class Init(Step):
