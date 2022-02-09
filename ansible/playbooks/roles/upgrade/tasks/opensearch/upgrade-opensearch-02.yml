@@ -8,26 +8,26 @@
     - es_api.cert_type == 'demo'
     - es_clustered  # rolling upgrade only for clustered installation
 
-- name: ODFE | Print API facts
+- name: OPS | Print API facts
   debug:
     var: es_api
   tags: [ never, debug ]  # only runs when debug or never tag requested
 
-- name: ODFE | Prepare cluster for rolling upgrade
+- name: OPS | Prepare cluster for rolling upgrade
   include_tasks: opensearch/utils/prepare-cluster-for-node-restart.yml
   when: es_clustered
 
-- name: ODFE | Stop elasticsearch service
+- name: OPS | Stop elasticsearch service
   systemd:
     name: opensearch
     state: stopped
 
-- name: ODFE | Include Elasticsearch installation tasks
+- name: OPS | Include Elasticsearch installation tasks
   include_role:
     name: opensearch
     tasks_from: install-ops.yml
 
-- name: ODFE | Include Elasticsearch configuration tasks
+- name: OPS | Include Elasticsearch configuration tasks
   include_role:
     name: opensearch
     tasks_from: configure-ops.yml
@@ -65,7 +65,7 @@
 
     existing_es_config: "{{ _old | combine(_updated_existing_config) }}"
 
-- name: ODFE | Include upgrade plugins tasks
+- name: OPS | Include upgrade plugins tasks
   include_tasks: opensearch/upgrade-plugins.yml
 
 # Restart elasticsearch service (unconditionally to ensure this task is not skipped in case of rerunning after interruption)
@@ -97,13 +97,13 @@
     initial_status: "{{ (slurp_upgrade_state_file.content | b64decode | from_json)['status'] }}"
     expected_status: "{{ [ initial_status, 'green'] | unique }}"
 
-- name: ODFE | Remove dual root CA temporary file
+- name: OPS | Remove dual root CA temporary file
   file:
     path: "{{ (certificates.dirs.certs, opensearch.certs_migration.dual_root_ca.filename) | path_join }}"
     state: absent
   when: es_api.cert_type == 'Epiphany'
 
-- name: ODFE | Remove upgrade state file
+- name: OPS | Remove upgrade state file
   file:
     path: "{{ opensearch.upgrade_state_file_path }}"
     state: absent

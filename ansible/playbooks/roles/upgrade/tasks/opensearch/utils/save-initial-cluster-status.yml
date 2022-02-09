@@ -1,5 +1,5 @@
 ---
-- name: ODFE | Get size of upgrade state file
+- name: OPS | Get size of upgrade state file
   stat:
     path: "{{ opensearch.upgrade_state_file_path }}"
     get_attributes: false
@@ -12,7 +12,7 @@
   block:
     - include_tasks: get-cluster-health.yml
 
-    - name: ODFE | Save cluster health to upgrade state file
+    - name: OPS | Save cluster health to upgrade state file
       copy:
         content: "{{ cluster_health.json }}"
         dest: "{{ opensearch.upgrade_state_file_path }}"

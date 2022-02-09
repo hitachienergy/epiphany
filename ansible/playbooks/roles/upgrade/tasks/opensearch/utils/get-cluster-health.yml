@@ -4,7 +4,7 @@
 # - es_api.cert_path
 # - es_api.key_path
 
-- name: ODFE | Get cluster health
+- name: OPS | Get cluster health
   uri:
     url: "{{ es_api.url }}/_cluster/health"
     method: GET

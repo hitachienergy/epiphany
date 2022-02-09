@@ -49,7 +49,7 @@
 
 - name: Kibana migr | Clone kibana settings
   copy:
-    src: /etc/kibana/kibana.yml  # Hardcoded for testing purposes only
+    src: /etc/kibana/kibana.yml
     dest: "{{ specification.paths.opsd_conf_dir }}/opensearch_dashboards.yml"
     remote_src: yes
     owner: "{{ specification.opsd_user }}"

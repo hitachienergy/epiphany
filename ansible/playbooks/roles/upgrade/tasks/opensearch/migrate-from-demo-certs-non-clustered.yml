@@ -1,5 +1,5 @@
 ---
-- name: ODFE | Load /etc/elasticsearch/elasticsearch.yml
+- name: OPS | Load /etc/elasticsearch/elasticsearch.yml
   slurp:
     src: /etc/elasticsearch/elasticsearch.yml
   register: _elasticsearch_yml

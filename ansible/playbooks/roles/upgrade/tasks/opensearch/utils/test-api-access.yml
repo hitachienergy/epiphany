@@ -5,7 +5,7 @@
 # - es_api.key_path
 # - es_api.url
 
-- name: ODFE | Test API access using {{ es_api.cert_type }} certificate
+- name: OPS | Test API access using {{ es_api.cert_type }} certificate
   uri:
     client_cert: "{{ es_api.cert_path }}"
     client_key:  "{{ es_api.key_path }}"

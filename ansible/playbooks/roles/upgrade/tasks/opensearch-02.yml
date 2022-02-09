@@ -1,6 +1,6 @@
 ---
 # If state file exists, it means upgrade has been started by the previous play and should be continued
-- name: ODFE | Check if upgrade state file exists
+- name: OPS | Check if upgrade state file exists
   stat:
     path: "{{ opensearch.upgrade_state_file_path }}"
     get_attributes: false
@@ -8,6 +8,6 @@
     get_mime: false
   register: stat_upgrade_state_file
 
-- name: ODFE | Upgrade Elasticsearch and ODFE plugins (part 2/2)
+- name: OPS | Upgrade Elasticsearch and ODFE plugins (part 2/2)
   include_tasks: opensearch/upgrade-opensearch-02.yml
   when: stat_upgrade_state_file.stat.exists

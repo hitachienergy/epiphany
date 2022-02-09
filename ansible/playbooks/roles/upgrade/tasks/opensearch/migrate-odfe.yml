@@ -52,8 +52,8 @@
   vars:
     es_api:
       cert_type: Epiphany
-      cert_path: &epi_cert_path "{{ (certificates.dirs.certs, certificates.files.admin.cert) | path_join }}"
-      key_path:  &epi_key_path  "{{ (certificates.dirs.certs, certificates.files.admin.key)  | path_join }}"
+      cert_path: "{{ (certificates.dirs.certs, certificates.files.admin.cert) | path_join }}"
+      key_path:  "{{ (certificates.dirs.certs, certificates.files.admin.key)  | path_join }}"
       url: https://{{ es_host }}:{{ es_http_port }}
     fail_msg: API access test failed.
 
@@ -64,30 +64,26 @@
     state: stopped
   register: elasticsearch_state
 
-- name: ODFE migr | Include vars 1/2 for Opensearch binaries instalaltion
+- name: ODFE migr | Include defaults Opensearch binaries instalaltion
   include_vars:
     file: roles/opensearch/defaults/main.yml
 
-- name: ODFE migr | Include vars 2/2 for Opensearch binaries instalaltion
+- name: ODFE migr | Include vars for Opensearch binaries instalaltion
   include_vars:
     file: roles/opensearch/vars/main.yml
 
 - name: ODFE migr | Inastall Opensearch binaries
   include_tasks: roles/opensearch/tasks/install-ops.yml
 
-- name: ODFE migr | Copy data and logs directories
+- name: ODFE migr | Copy ES directories to OPS directories
   copy:
-    src: "/var/lib/elasticsearch"  # Hardcoded for testing purposes only
-    dest: "{{ specification.paths.ops_data }}"
+    src: "{{ item.1 }}"
+    dest: "{{ item.2 }}"
     remote_src: yes
     directory_mode: yes
-
-- name: ODFE migr | Copy snapshots directories
-  copy:
-    src: "/var/lib/elasticsearch-snapshots"  # Hardcoded for testing purposes only
-    dest: "{{ specification.paths.ops_repo }}"
-    remote_src: yes
-    directory_mode: yes
+  with_items:
+  - { 1: "/var/lib/elasticsearch-snapshots", 2: "{{ specification.paths.ops_repo }}" }
+  - { 1: "/var/lib/elasticsearch", 2: "{{ specification.paths.ops_data }}" }
 
 - name: ODFE migr | Prepare a list of certs and keys to OPS directories
   find:
@@ -104,7 +100,7 @@
 
 - name: ODFE migr | Clone JVM configuration file
   copy:
-    src: /etc/elasticsearch/jvm.options  # Hardcoded for testing purposes only
+    src: /etc/elasticsearch/jvm.options
     dest: "{{ specification.paths.ops_conf_dir }}/jvm.options"
     remote_src: yes
     owner: root
@@ -123,7 +119,7 @@
 
 - name: ODFE migr | Clone main configuration file
   copy:
-    src: /etc/elasticsearch/elasticsearch.yml  # Hardcoded for testing purposes only
+    src: /etc/elasticsearch/elasticsearch.yml
     dest: "{{ specification.paths.ops_conf_dir }}/opensearch.yml"
     remote_src: yes
     owner: root
@@ -138,7 +134,7 @@
     replace: "{{ item.2 }}"
   with_items:
     - { 1: 'elasticsearch', 2: 'opensearch' }
-    # - { 1: 'EpiphanyElastic', 2: 'EpiphanyOpensearch' }
+    - { 1: 'EpiphanyElastic', 2: 'EpiphanyOpensearch' }
     - { 1: 'opendistro_security.', 2: 'plugins.security.' }
 
 - name: ODFE migr | Start opensearch service
@@ -195,6 +191,21 @@
   run_once: true
   when: admin_check_response.status == 200
 
+- name: ODFE migr | Check if kibanaserver user exists
+  uri:
+    url: "https://{{ inventory_hostname }}:{{ ports.http }}/_opendistro/_security/api/internalusers/kibanaserver"
+    method: GET
+    # 404 code is used there as someone can remove admin user on its own.
+    status_code: [200, 404]
+    validate_certs: no
+    client_cert: "{{ certificates.dirs.certs }}/{{ certificates.files.admin.cert }}"
+    client_key:  "{{ certificates.dirs.certs }}/{{ certificates.files.admin.key }}"
+  register: kibanaserver_check_response
+  until: kibanaserver_check_response is success
+  retries: 60
+  delay: 1
+  run_once: true
+
 - name: ODFE migr | Set kibanaserver user password
   uri:
     url: "https://{{ inventory_hostname }}:{{ ports.http }}/_opendistro/_security/api/internalusers"
@@ -216,6 +227,7 @@
   retries: 5
   delay: 1
   run_once: true
+  when: kibanaserver_check_response.status == 200
 
 - name: ODFE migr | Check the opensearch status
   command: curl https://{{ inventory_hostname }}:{{ ports.http }}/_cluster/health?pretty -u 'admin:{{ specification.admin_password }}' -k
@@ -225,3 +237,20 @@
   debug:
     msg: "{{ ops_status.stdout }}"
   failed_when: "'number_of_nodes' not in ops_status.stdout"
+
+- name: ODFE migr | Reenable shard allocation for the cluster
+  include_tasks:
+    file: opensearch/utils/enable-shard-allocation.yml
+    apply:
+      delegate_to: "{{ target_inventory_hostname }}"
+      delegate_facts: true
+  loop: "{{ ansible_play_hosts_all }}"
+  loop_control:
+    loop_var: target_inventory_hostname
+  vars:
+    es_api:
+      cert_type: Epiphany
+      cert_path: "{{ (certificates.dirs.certs, certificates.files.admin.cert) | path_join }}"
+      key_path:  "{{ (certificates.dirs.certs, certificates.files.admin.key)  | path_join }}"
+      url: https://{{ es_host }}:{{ es_http_port }}
+    fail_msg: API access test failed.

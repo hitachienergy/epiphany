@@ -77,14 +77,14 @@
 
 - include_role:
     name: upgrade
-    tasks_from: odfe-migration
+    tasks_from: opensearch/migrate-odfe
   when: ops_vars.specification.odfe_migration
   vars:
     current_group_name: logging
 
 - include_role:
     name: upgrade
-    tasks_from: kibana-migration
+    tasks_from: opensearch/migrate-kibana
   when: ops_vars.specification.odfe_migration
   vars:
     current_group_name: logging

@@ -4,7 +4,7 @@
 # - es_api.cert_path
 # - es_api.key_path
 
-- name: ODFE | Wait for the cluster to finish shard allocation
+- name: OPS | Wait for the cluster to finish shard allocation
   uri:
     url: "{{ es_api.url }}/_cluster/health"
     method: GET

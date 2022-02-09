@@ -22,7 +22,7 @@
       - "{{ (certificates.dirs.certs, certificates.files.root_ca.cert.filename) | path_join }}"
     target_path: "{{ (certificates.dirs.certs, opensearch.certs_migration.dual_root_ca.filename) | path_join }}"
 
-- name: ODFE | Load /etc/elasticsearch/elasticsearch.yml
+- name: OPS | Load /etc/elasticsearch/elasticsearch.yml
   slurp:
     src: /etc/elasticsearch/elasticsearch.yml
   register: _elasticsearch_yml
