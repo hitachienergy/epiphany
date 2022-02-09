@@ -31,6 +31,8 @@
 - [#2942](https://github.com/epiphany-platform/epiphany/issues/2942) - rsync command fails trying to copy artifacts
 - [#2930](https://github.com/epiphany-platform/epiphany/issues/2930) - Backup/recovery commands fail when default configuration for backup attached to cluster-config.yml
 
+- [#2669](https://github.com/epiphany-platform/epiphany/issues/2669) - Restarting the installation process can cause certificate problems if K8s was not fully configured
+
 ### Updated
 
 - [#2828](https://github.com/epiphany-platform/epiphany/issues/2828) - K8s improvements
