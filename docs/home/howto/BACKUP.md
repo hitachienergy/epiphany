@@ -17,17 +17,18 @@ filesystem. See [How to store backup](#2-how-to-store-backup) chapter.
 
 ## 1. How to perform backup
 
-#### Backup configuration file and command
+### Backup configuration file and command
 
 Copy default configuration for backup from ``defaults/configuration/backup.yml`` into newly created backup.yml config
-file, and enable backup for chosen components by setting up ``enabled`` parameter to ``true``.
+file, supply correct provider and enable backup for chosen components by setting up ``enabled`` parameter to ``true``.
 
 This config may also be attached to cluster-config.yml
 
-```
+```yaml
 kind: configuration/backup
 title: Backup Config
 name: default
+provider: azure
 specification:
   components:
     load_balancer:
@@ -48,7 +49,7 @@ specification:
 
 Run ``epicli backup`` command:
 
-```
+```shell
 epicli backup -f backup.yml -b build_folder
 ```
 
@@ -80,15 +81,16 @@ machine's disk drive. This is not recommended.
 ### Recovery configuration file and command
 
 Copy existing default configuration from ``defaults/configuration/recovery.yml`` into newly created recovery.yml config
-file, and set ``enabled`` parameter for component to recovery. It's possible to choose snapshot name by passing date and
-time part of snapshot name. If snapshot name is not provided, the latest one will be restored.
+file, supply correct provider and set ``enabled`` parameter for component to recovery. It's possible to choose snapshot
+name by passing date and time part of snapshot name. If snapshot name is not provided, the latest one will be restored.
 
 This config may also be attached to cluster-config.yml
 
-```
+```yaml
 kind: configuration/recovery
 title: Recovery Config
 name: default
+provider: azure
 specification:
   components:
     load_balancer:
@@ -110,7 +112,9 @@ specification:
 
 Run ``epicli recovery`` command:
 
-``epicli recovery -f recovery.yml -b build_folder``
+```shell
+epicli recovery -f recovery.yml -b build_folder
+```
 
 If recovery config is attached to cluster-config.yml, use this file instead of ``recovery.yml``.
 
