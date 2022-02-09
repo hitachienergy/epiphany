@@ -253,6 +253,15 @@ then start with the rest **one by one**.
 More detailed information about ZooKeeper you can find
 in  [ZooKeeper documentation](https://cwiki.apache.org/confluence/display/ZOOKEEPER).
 
+## Migration from Open Distro for Elasticsearch & Kibana to OpenSearch an OpenSearch Dashboards
+
+---
+**NOTE**
+
+Make sure you have a backup before proceeding to migration steps described below !
+
+---
+
 ## Open Distro for Elasticsearch upgrade
 
 ---
