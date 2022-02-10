@@ -1,7 +1,7 @@
 require 'spec_helper'
 
 describe 'Check the containerd' do
-  describe command('crictl --runtime-endpoint unix:///run/containerd/containerd.sock version') do
+  describe command('crictl version') do
     let(:disable_sudo) { false }
     its(:stdout) { should include('RuntimeName:  containerd') }
   end

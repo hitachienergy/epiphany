@@ -207,7 +207,7 @@ describe 'Check the kubelet config in ConfigMap' do
 end
 
 describe 'Check the containerd' do
-  describe command('crictl --runtime-endpoint unix:///run/containerd/containerd.sock version') do
+  describe command('crictl version') do
     let(:disable_sudo) { false }
     its(:stdout) { should include('RuntimeName:  containerd') }
   end
@@ -221,7 +221,7 @@ describe 'Check the containerd' do
 end
 
 describe 'Check the OCI-spec' do
-  describe command('crictl --runtime-endpoint unix:///run/containerd/containerd.sock info') do
+  describe command('crictl info') do
     let(:disable_sudo) { false }
     its(:stdout) { should match('\"defaultRuntimeName\": \"runc\"') }
   end

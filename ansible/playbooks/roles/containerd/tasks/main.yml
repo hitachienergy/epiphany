@@ -77,3 +77,11 @@
       regexp: '^(KUBELET_KUBEADM_ARGS=\")(.*)(\")$'
       replace: '\1\2 --container-runtime-endpoint=/run/containerd/containerd.sock"'
     when: kubelet_kubeadmn_args_content.find('--container-runtime-endpoint') == -1
+
+- name: Provide crictl.yaml file
+  copy:
+    src: crictl.yaml
+    dest: /etc/crictl.yaml
+    owner: root
+    group: root
+    mode: u=rw,go=r
