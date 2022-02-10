@@ -1,19 +1,13 @@
 ## How to enable/disable Epiphany service user
 
-To enable/disable Epiphany service user you can use tool from our repository. You can find this in directory `tools/service_user_disable_enable` under name `service-user-disable-enable.yml`.
+There are a few ways to perform such task in Linux. To lock/unlock any user you can use the standard tools,
+such as `usermod -l/-u`, `passwd --lock/--unlock`, `chage -E 0/-1`. Check `man` pages for more information.
 
-To use this you need to have Ansible installed on machine from which you want to execute this.
+Locking can also be done by changing the shell to `/sbin/nologin`, `/dev/null`, or `/bin/false` by manual editing of
+`/etc/passwd` file or using `usermod` command:
 
-To disable user you need to run command:
-
-```sh
-ansible-playbook -i inventory --extra-vars "operation=disable name=your_service_user_name" service-user-disable-enable.yml
-```
-
-To enable user you need to run command:
-
-```sh
-ansible-playbook -i inventory --extra-vars "operation=enable name=your_service_user_name" service-user-disable-enable.yml
+```shell
+usermod -s /sbin/nologin <user>
 ```
 
 ## How to add/remove additional users to/from OS
@@ -291,7 +285,7 @@ specification:
 ```
 
 Please be careful about boolean values as they need to be double quoted
-and written in lowercase form. Otherwise RabbitMQ startup will fail.
+and written in lowercase form. Otherwise, RabbitMQ startup will fail.
 
 ## How to use TLS/SSL certificate with Kibana
 
