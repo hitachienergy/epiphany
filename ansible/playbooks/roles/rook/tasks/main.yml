@@ -3,7 +3,6 @@
   when: specification.enabled
   become: true
   run_once: true
-
   block:
     - name: Download Rook's Chart File
       include_role:
@@ -12,21 +11,24 @@
       vars:
         file_name: "{{ rook_helm_chart_file_name }}"
 
-    # - name: Copy configuration Helm chart file (custom-chart-values.yml.j2)
-    #   template:
-    #     dest: "{{ download_directory }}/custom-chart-values.yml"
-    #     src: custom-chart-values.yml.j2
+    - name: Create configuration Helm chart file (custom-chart-values.yml)
+      when: specification.config is defined
+      copy:
+        content: "{{ specification.config }}"
+        dest: "{{ download_directory }}/custom-chart-values.yml"
 
-    # - name: Install Rook using Helm chart
-    #   shell: |
-    #     helm -n {{ rook_chart_namespace }} upgrade --install \
-    #       -f {{ download_directory }}/custom-chart-values.yml \
-    #       {{ rook_helm_chart_name }} \
-    #       {{ download_directory }}/{{ rook_helm_chart_file_name }} --create-namespace
-    #   environment:
-    #     KUBECONFIG: "{{ kubeconfig.remote }}"
+    - name: Install Rook using Helm chart with values from custom-chart-values.yml
+      when: specification.config is defined
+      shell: |
+        helm -n {{ rook_chart_namespace }} upgrade --install \
+          -f {{ download_directory }}/custom-chart-values.yml \
+          {{ rook_helm_chart_name }} \
+          {{ download_directory }}/{{ rook_helm_chart_file_name }} --create-namespace
+      environment:
+        KUBECONFIG: "{{ kubeconfig.remote }}"
 
-    - name: Install Rook using Helm chart
+    - name: Install Rook using Helm chart with default values
+      when: not specification.config is defined
       shell: |
         helm -n {{ rook_chart_namespace }} upgrade --install \
           {{ rook_helm_chart_name }} \
