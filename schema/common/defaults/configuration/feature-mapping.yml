@@ -49,6 +49,8 @@ specification:
       enabled: true
     - name: applications
       enabled: true
+    - name: rook
+      enabled: true
 
   roles_mapping:
     kafka:
