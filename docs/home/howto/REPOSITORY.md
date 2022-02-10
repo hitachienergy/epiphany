@@ -36,8 +36,8 @@ Downloading requirements is one of the most sensitive steps in deploying a new c
 When you see the following output from epicli, requirements are being downloaded:
 
 ```shell
-INFO cli.engine.ansible.AnsibleCommand - TASK [repository : Run download-requirements script, this can take a long time
-INFO cli.engine.ansible.AnsibleCommand - You can check progress on repository host with: journalctl -f -t download-requirements.sh] ***
+INFO cli.src.ansible.AnsibleCommand - TASK [repository : Run download-requirements script, this can take a long time
+INFO cli.src.ansible.AnsibleCommand - You can check progress on repository host with: journalctl -f -t download-requirements.sh] ***
 ```
 
 As noted this process can take a long time depending on the connection and as downloading requirements is being done by a shell script, the ```Ansible``` process cannot return any realtime information.
