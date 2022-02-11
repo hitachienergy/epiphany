@@ -37,6 +37,7 @@ class Apply(Step):
         self.inventory = None
 
         self.cluster_model = None
+        self.cluster_name = ''
         self.configuration_docs = []
         self.infrastructure_docs = []
         self.all_docs = []
@@ -59,13 +60,19 @@ class Apply(Step):
         user_file_stream = open(path_to_load, 'r')
         self.input_docs = safe_load_all(user_file_stream)
 
+        # Get the cluster model and name
+        self.cluster_model = select_single(self.input_docs, lambda x: x.kind == 'epiphany-cluster')
+        if self.cluster_model is None:
+            raise Exception('No cluster model defined in input YAML file')
+        self.cluster_name = self.cluster_model.specification.name
+
         # Load possible manifest when doing a re-apply
-        path_to_manifest = get_manifest_path(self.cluster_model.specification.name)
+        path_to_manifest = get_manifest_path(self.cluster_name)
         if os.path.isfile(path_to_manifest):
-            self.manifest_docs = load_manifest(path_to_manifest)
+            self.manifest_docs = load_manifest(get_build_path(self.cluster_name))
 
         # Load possible inventory when doing re-apply
-        path_to_inventory = get_inventory_path(self.cluster_model.specification.name)
+        path_to_inventory = get_inventory_path(self.cluster_name)
         if os.path.isfile(path_to_inventory):
             self.inventory = load_inventory(path_to_inventory)
 
@@ -74,11 +81,6 @@ class Apply(Step):
         # Merge the input docs with defaults
         with DefaultMerger(self.input_docs) as doc_merger:
             self.input_docs = doc_merger.run()
-
-        # Get the cluster model.
-        self.cluster_model = select_single(self.input_docs, lambda x: x.kind == 'epiphany-cluster')
-        if self.cluster_model is None:
-            raise Exception('No cluster model defined in input YAML file')
 
         # Validate cluster model.
         with SchemaValidator(self.cluster_model.provider, [self.cluster_model]) as schema_validator:
@@ -109,7 +111,7 @@ class Apply(Step):
         self.assert_consistent_os_family()
 
         # Save manifest as we have all information for Terraform apply
-        save_manifest(self.all_docs, self.cluster_model.specification.name)
+        save_manifest(self.all_docs, self.cluster_name)
 
 
     def run_terraform(self):
@@ -126,7 +128,7 @@ class Apply(Step):
             config_collector.run()
 
         # Save manifest again as we have some new information for Ansible apply
-        save_manifest(self.all_docs, self.cluster_model.specification.name)
+        save_manifest(self.all_docs, self.cluster_name)
 
 
     def run_ansible(self):
