@@ -6,7 +6,7 @@ from cli.src.models.AnsibleHostModel import AnsibleOrderedHostModel
 
 
 class APIProxy:
-    def __init__(self, cluster_model, config_docs):
+    def __init__(self, cluster_model, config_docs=[]):
         self.cluster_model = cluster_model
         self.config_docs = config_docs
         credentials = self.cluster_model.specification.cloud.credentials
@@ -58,6 +58,9 @@ class APIProxy:
 
         result.sort()
         return result
+
+    def login(self, env=None):
+        pass
 
     def get_image_id(self, os_full_name):
         ec2 = self.session.resource('ec2')

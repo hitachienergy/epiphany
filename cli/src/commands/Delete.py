@@ -24,7 +24,7 @@ class Delete(Step):
             raise Exception('Delete works only for cloud providers')
 
         with TerraformRunner(cluster_model, docs) as tf_runner:
-            tf_runner.delete()
+            tf_runner.destroy()
 
         delete_directory(self.build_directory)
 

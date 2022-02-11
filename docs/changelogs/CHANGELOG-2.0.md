@@ -8,6 +8,7 @@
 - [#2701](https://github.com/epiphany-platform/epiphany/issues/2701) - Epicli prepare - generate files in separate directory
 - [#2812](https://github.com/epiphany-platform/epiphany/issues/2812) - Extend K8s config validation
 - [#2950](https://github.com/epiphany-platform/epiphany/issues/2950) - CLI refactor to make it more consistant
+- [#2974](https://github.com/epiphany-platform/epiphany/issues/2974) - Refactor Apply command
 
 ### Fixed
 
