@@ -90,7 +90,6 @@ class AnsibleVarsGenerator(Step):
 
             document = select_first(self.config_docs, lambda x: x.kind == kind)
             if document is None:
-                self.logger.warn('No config document for enabled role: ' + role)
                 continue
             document.specification['provider'] = self.cluster_model.provider
 
