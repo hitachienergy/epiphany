@@ -8,3 +8,5 @@
   become_method: sudo
   roles:
     - rook
+  environment:
+    KUBECONFIG: "{{ kubeconfig.remote }}"

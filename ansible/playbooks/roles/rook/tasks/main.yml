@@ -24,8 +24,6 @@
           -f {{ download_directory }}/custom-chart-values.yml \
           {{ rook_helm_chart_name }} \
           {{ download_directory }}/{{ rook_helm_chart_file_name }} --create-namespace
-      environment:
-        KUBECONFIG: "{{ kubeconfig.remote }}"
 
     - name: Install Rook using Helm chart with default values
       when: not specification.config is defined
@@ -33,5 +31,3 @@
         helm -n {{ rook_chart_namespace }} upgrade --install \
           {{ rook_helm_chart_name }} \
           {{ download_directory }}/{{ rook_helm_chart_file_name }} --create-namespace
-      environment:
-        KUBECONFIG: "{{ kubeconfig.remote }}"
