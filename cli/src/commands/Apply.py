@@ -82,6 +82,9 @@ class Apply(Step):
         with DefaultMerger(self.input_docs) as doc_merger:
             self.input_docs = doc_merger.run()
 
+        # Update cluster model after merging
+        self.cluster_model = select_single(self.input_docs, lambda x: x.kind == 'epiphany-cluster')
+
         # Validate cluster model.
         with SchemaValidator(self.cluster_model.provider, [self.cluster_model]) as schema_validator:
             schema_validator.run()
