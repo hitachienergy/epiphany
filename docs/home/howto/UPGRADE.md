@@ -281,6 +281,8 @@ epicli upgrade -b <path>/<tto-your-build-folder> --upgrade-components "logging" 
 ```
 The default value of the  `odfe_migration` parameter is set to _false_.
 
+All described below remarks related to TLS certificates of the  Open Distro upgrade stay valid. You should plan and test all your upgrade activities before proceeding on the production.
+
 <br>
 
 ## Open Distro for Elasticsearch upgrade
