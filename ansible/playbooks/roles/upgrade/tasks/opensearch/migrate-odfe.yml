@@ -7,17 +7,18 @@
 - name: OPS | Print elasticsearch ond opensearch versions
   debug:
     msg:
-      - "Elasticsearch version curently installed: {{ ansible_facts.packages['elasticsearch-oss'][0].version }}"
+      - "Elasticsearch version currently installed: {{ ansible_facts.packages['elasticsearch-oss'][0].version }}"
       - "Opensearch version to be installed: {{ ops_defaults.versions[ansible_os_family].ops_version }}"
 
-- name: ODFE migr | Ensure elasticsearch service is running
+- name: ODFE migr | Ensure elasticsearch cluster is up and running
   systemd:
     name: elasticsearch
     enabled: yes
-    state: started
+    state: restarted
   register: elasticsearch_state
 
-- include_tasks: opensearch/utils/get-config-from-files.yml  # Sets 'existing_config' fact
+- name: ODFE migr | Set existing_config facts
+  include_tasks: opensearch/utils/get-config-from-files.yml
 
 - name: ODFE migr | Set common facts
   set_fact:
@@ -28,7 +29,7 @@
     es_clustered:      "{{ (existing_config.main['discovery.seed_hosts'] | length > 1) | ternary(True, False) }}"
     es_node_name:      "{{ existing_config.main['node.name'] }}"
 
-- name: ODFE migr | Assure Elastisearch files location will be used
+- name: ODFE migr | Assure Elasticsearch files location will be used in following tasks
   set_fact:
     certificates:
       dirs:
@@ -46,7 +47,7 @@
     apply:
       delegate_to: "{{ target_inventory_hostname }}"
       delegate_facts: true
-  loop: "{{ ansible_play_hosts_all }}"
+  loop: "{{ groups.logging | default([]) }}"
   loop_control:
     loop_var: target_inventory_hostname
   vars:
@@ -57,14 +58,16 @@
       url: https://{{ es_host }}:{{ es_http_port }}
     fail_msg: API access test failed.
 
-- include_tasks:
+- name: ODFE migr | Run core migration tasks individually on each node
+  include_tasks:
     file: opensearch/migrate-odfe-serial.yml
     apply:
           delegate_to: "{{ target_hostname }}"
           delegate_facts: true
-  loop: "{{ groups.filebeat | default([]) }}"
+  loop: "{{ groups.logging | default([]) }}"
   loop_control:
     loop_var: target_hostname
+  run_once: true
 
 - name: ODFE migr | Check if default admin user exists
   uri:
@@ -81,7 +84,7 @@
   delay: 1
   run_once: true
 
-- name: ODFE migr | Set Opensearch admin passwor
+- name: ODFE migr | Set Opensearch admin password
   uri:
     url: "https://{{ inventory_hostname }}:{{ ports.http }}/_opendistro/_security/api/internalusers"
     method: PATCH

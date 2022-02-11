@@ -3,15 +3,15 @@
 - name: ODFE migr | Stop elasticsearch service
   systemd:
     name: elasticsearch
-    enabled: yes
+    enabled: no
     state: stopped
   register: elasticsearch_state
 
-- name: ODFE migr | Include defaults Opensearch binaries instalaltion
+- name: ODFE migr | Include defaults Opensearch binaries installation
   include_vars:
     file: roles/opensearch/defaults/main.yml
 
-- name: ODFE migr | Include vars for Opensearch binaries instalaltion
+- name: ODFE migr | Include vars for Opensearch binaries installation
   include_vars:
     file: roles/opensearch/vars/main.yml
 
