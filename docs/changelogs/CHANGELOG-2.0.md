@@ -9,6 +9,7 @@
 - [#2812](https://github.com/epiphany-platform/epiphany/issues/2812) - Extend K8s config validation
 - [#2950](https://github.com/epiphany-platform/epiphany/issues/2950) - CLI refactor to make it more consistant
 - [#2974](https://github.com/epiphany-platform/epiphany/issues/2974) - Refactor Apply command
+- [#2976](https://github.com/epiphany-platform/epiphany/issues/2976) - Allow for custom Terraform scripts
 
 ### Fixed
 
