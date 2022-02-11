@@ -253,7 +253,7 @@ then start with the rest **one by one**.
 More detailed information about ZooKeeper you can find
 in  [ZooKeeper documentation](https://cwiki.apache.org/confluence/display/ZOOKEEPER).
 
-## Migration from Open Distro for Elasticsearch & Kibana to OpenSearch an OpenSearch Dashboards
+## Migration from Open Distro for Elasticsearch & Kibana to OpenSearch and OpenSearch Dashboards
 
 ---
 **NOTE**
@@ -261,7 +261,7 @@ in  [ZooKeeper documentation](https://cwiki.apache.org/confluence/display/ZOOKEE
 Make sure you have a backup before proceeding to migration steps described below !
 
 ---
-Following the decision of Elastic NV on ceasing open source options available for Elasticsearch and Kibana and releasing them under the Elastic license (more info [here](https://github.com/epiphany-platform/epiphany/issues/2870)) Epiphany team decided to implement a mechanism of autoamtic migration from  Elasticsearch 7.10.2 to Opensearch 1.2.4.
+Following the decision of Elastic NV on ceasing open source options available for Elasticsearch and Kibana and releasing them under the Elastic license (more info [here](https://github.com/epiphany-platform/epiphany/issues/2870)) Epiphany team decided to implement a mechanism of automatic migration from  Elasticsearch 7.10.2 to Opensearch 1.2.4.
 
 The migration can be fired by placing `odfe_migration` switch in your manifest file:
 ```yaml

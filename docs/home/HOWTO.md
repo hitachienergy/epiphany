@@ -59,7 +59,7 @@
   - [Run apply after upgrade](./howto/UPGRADE.md#run-apply-after-upgrade)
   - [Kubernetes applications](./howto/UPGRADE.md#kubernetes-applications)
   - [Kafka upgrade](./howto/UPGRADE.md#how-to-upgrade-kafka)
-  - [Migration from Open Distro for Elasticsearch to OpenSearch](./howto/UPGRADE.md#migration-from-open-distro-for-elasticsearch--kibana-to-opensearch-an-opensearch-dashboards)
+  - [Migration from Open Distro for Elasticsearch to OpenSearch](./howto/UPGRADE.md#migration-from-open-distro-for-elasticsearch--kibana-to-opensearch-and-opensearch-dashboards)
   - [Open Distro for Elasticsearch upgrade](./howto/UPGRADE.md#open-distro-for-elasticsearch-upgrade)
   - [Node exporter upgrade](./howto/UPGRADE.md#node-exporter-upgrade)
   - [RabbitMQ upgrade](./howto/UPGRADE.md#rabbitmq-upgrade)
