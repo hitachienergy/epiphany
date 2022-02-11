@@ -161,8 +161,8 @@ def prepare_parser(subparsers):
     required = sub_parser.add_argument_group('required arguments')
 
     #required
-    required.add_argument('--os', type=str, required=True, dest='os', choices=['ubuntu-20.04', 'redhat-7', 'centos-7'],
-                          help='The OS to prepare the offline requirements for: ubuntu-20.04|redhat-7|centos-7')
+    required.add_argument('--os', type=str, required=True, dest='os', choices=['ubuntu-20.04', 'redhat-7'],
+                          help='The OS to prepare the offline requirements for: ubuntu-20.04|redhat-7')
     required.add_argument('--arch', type=str, required=True, dest='arch', choices=['x86_64', 'arm64'],
                           help="The OS's architecture type to be used: x86_64|arm64")
 

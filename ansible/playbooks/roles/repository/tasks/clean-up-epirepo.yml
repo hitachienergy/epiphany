@@ -30,23 +30,21 @@
 
 - name: Create full list of files
   set_fact:
-    all_files: "{{ _all_files }}"
-  vars:
-    _all_files: "{{ (_files_content['distro_files']['files'].keys() | list) | union(_files_content['files']['files'].keys() | list) }}"
+    all_files: "{{ (_files_content['distro_files']['files'].keys() | list) | union(_files_content['files']['files'].keys() | list) }}"
 
 - name: Remove old files from epirepo
   file:
     state: absent
     path: "{{ _apache_epirepo_path }}/files/{{ item }}"
   vars:
-    files_to_preserve: "{{ all_files | select('match', 'https?://')
-                                     | map('regex_replace', '\\s+#.*$', '')
-                                     | map('trim')
-                                     | map('regex_replace', '^.+[/\\s](?P<filename>[\\S]+)$', '\\g<filename>') }}"
-    files_found: "{{ files_in_epirepo.results[0].files | map(attribute='path')
-                                                       | map('basename') }}"
-    files_to_remove: "{{ files_found | difference(files_to_preserve) }}"
-  loop: "{{ files_to_remove }}"
+    _files_to_preserve: "{{ all_files | select('match', 'https?://')
+                                      | map('regex_replace', '\\s+#.*$', '')
+                                      | map('trim')
+                                      | map('regex_replace', '^.+[/\\s](?P<filename>[\\S]+)$', '\\g<filename>') }}"
+    _files_found: "{{ files_in_epirepo.results[0].files | map(attribute='path')
+                                                        | map('basename') }}"
+    _files_to_remove: "{{ _files_found | difference(_files_to_preserve) }}"
+  loop: "{{ _files_to_remove }}"
 
 - name: Load variables from "image_registry" role  # generated also in upgrade mode
   include_vars:

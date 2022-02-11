@@ -31,7 +31,7 @@ class Prepare(Step):
         repositories_arch_path: Path = repositories_path / f'{self.arch}'
 
         if not repositories_arch_path.exists():
-            raise Exception(f'Unsupported Arch type: {self.arch}. Currently supported: x86_64|arm64')
+            raise Exception(f'Unsupported arch type: {self.arch}. Currently supported: x86_64|arm64')
 
         repositories_file_path: Path = repositories_arch_path / f'{self.os}.yml'
 
@@ -39,7 +39,7 @@ class Prepare(Step):
         arch_path: Path = requirements_path / self.arch
 
         if not arch_path.exists():
-            raise Exception(f'Unsupported Arch type: {self.arch}. Currently supported: x86_64|arm64')
+            raise Exception(f'Unsupported arch type: {self.arch}. Currently supported: x86_64|arm64')
 
         distro_path: Path = arch_path / self.os
 
@@ -61,7 +61,6 @@ class Prepare(Step):
             repositories_file_path:                         dest_path / 'repositories',
             requirements_path / 'grafana-dashboards.yml':   dest_path / 'requirements',
             self.PREPARE_PATH / 'download-requirements.py': dest_path,
-            self.PREPARE_PATH / 'poyo':                     dest_path / 'poyo',
             self.PREPARE_PATH / 'src':                      dest_path / 'src',
         }
 
