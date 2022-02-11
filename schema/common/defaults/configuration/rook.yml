@@ -1,3 +1,4 @@
+---
 kind: configuration/rook
 title: "Kubernetes Rook Config"
 name: default
