@@ -17,7 +17,6 @@ class TerraformRunner(Step):
         self.infrastructure_docs = infrastructure_docs
         self.terraform = TerraformCommand(get_terraform_path(self.cluster_model.specification.name))
         self.new_env = os.environ.copy()
-        self.terraform.init(env=self.new_env)
         apiproxy = provider_class_loader(self.cluster_model.provider, 'APIProxy')(self.cluster_model, [])
         apiproxy.login(self.new_env)
 
@@ -38,6 +37,7 @@ class TerraformRunner(Step):
             file_copier.run()
 
         # Run terraform apply
+        self.terraform.init(env=self.new_env)
         self.terraform.apply(auto_approve=True, env=self.new_env)
 
     def destroy(self):
