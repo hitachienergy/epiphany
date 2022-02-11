@@ -261,6 +261,27 @@ in  [ZooKeeper documentation](https://cwiki.apache.org/confluence/display/ZOOKEE
 Make sure you have a backup before proceeding to migration steps described below !
 
 ---
+Following the decision of Elastic NV on ceasing open source options available for Elasticsearch and Kibana and releasing them under the Elastic license (more info [here](https://github.com/epiphany-platform/epiphany/issues/2870)) Epiphany team decided to implement a mechanism of autoamtic migration from  Elasticsearch 7.10.2 to Opensearch 1.2.4.
+
+The migration can be fired by placing `odfe_migration` switch in your manifest file:
+```yaml
+[..]
+---
+kind: configuration/logging
+title: Logging Config
+[..]
+specification:
+  [..]
+  odfe_migration: true  # <<-------
+  [..]
+```
+and running the `upgrade` command against the logging component of your Epiphany installation, together with a `-f` option:
+```
+epicli upgrade -b <path>/<tto-your-build-folder> --upgrade-components "logging" -f <path-to>/<your-manifest>.yml
+```
+The default value of the  `odfe_migration` parameter is set to _false_.
+
+<br>
 
 ## Open Distro for Elasticsearch upgrade
 
