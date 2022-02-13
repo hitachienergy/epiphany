@@ -1177,3 +1177,5 @@ The Terraform scripts Epicli creates will have the following naming convention:
 xxx_resourc-name-nr.tf
 ```
 When Epicli is run/re-run any Terraform scripts which will start with the ```xxx_*.tf``` will be removed and regenerated. The custom user Terraform scripts need to have a different naming convention. If everything is ok Epicli will apply the cluster Terraform scripts allongside the custom scripts created by the user.
+
+If you need to define any additional security rules for component subnets for custom infrastructure you can check the documentation [here](./SECURITY_GROUPS.md).
