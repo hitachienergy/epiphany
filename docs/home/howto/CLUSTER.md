@@ -1153,3 +1153,27 @@ chmod +x /home/download-requirements.sh # make the requirements script executabl
 ```
 
 After this you should be able to run the ```download-requirements.sh```  from the ```home``` folder.
+
+## How to additional custom Terraform templates
+
+For both cloud providers (AWS, Azure) Epicli generates the following terraform components for deploying a cluster:
+
+- VPC (AWS) or VNet (Azure)
+- Subnets inside the VPC or VNet
+- Security rules between the subnets
+- Virtual machines with network interfaces deployed in the different subnets
+
+Sometimes it is required to have additional resources like VPN access or other cloud native resources like EKS or AKS to this infrastructure. Epiphany gives the user the ability to add these additional resources during or after the cluster creation.
+
+Inside the Epicli container one can create the following folder before creation or add their custom Terraform resources here after initial cluster creation:
+
+```shell
+/shared/build/clustername/terraform
+```
+
+The Terraform scripts Epicli creates will have the following naming convention:
+
+```shell
+xxx_resourc-name-nr.tf
+```
+When Epicli is run/re-run any Terraform scripts which will start with the ```xxx_*.tf``` will be removed and regenerated. The custom user Terraform scripts need to have a different naming convention. If everything is ok Epicli will apply the cluster Terraform scripts allongside the custom scripts created by the user.
