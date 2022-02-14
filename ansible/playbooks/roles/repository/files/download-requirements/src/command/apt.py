@@ -17,7 +17,6 @@ class Apt(Command):
         """
         self.run(['update'])
 
-
     def download(self, package: str):
         """
         Interface for `apt download package`

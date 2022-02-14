@@ -4,7 +4,6 @@ from typing import Dict, List
 import logging
 import os
 
-from src.command.toolchain import DebianFamilyToolchain, Toolchain
 from src.config import Config
 from src.mode.base_mode import BaseMode, get_sha256
 
@@ -18,9 +17,6 @@ class DebianFamilyMode(BaseMode):
         super().__init__(config)
         self.__create_repo_paths()
         self.__installed_packages: List[str] = []
-
-    def _construct_toolchain(self) -> Toolchain:
-        return DebianFamilyToolchain(self._cfg.retries)
 
     def __create_repo_paths(self):
         for repo in self._repositories.keys():

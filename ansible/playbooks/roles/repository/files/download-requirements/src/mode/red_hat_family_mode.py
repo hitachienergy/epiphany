@@ -4,7 +4,6 @@ from pathlib import Path
 from typing import List, Set
 
 from src.command.command import Command
-from src.command.toolchain import RedHatFamilyToolchain, Toolchain
 from src.config import Config
 from src.error import PackageNotfound
 from src.mode.base_mode import BaseMode
@@ -19,9 +18,6 @@ class RedHatFamilyMode(BaseMode):
         super().__init__(config)
         self.__base_packages: List[str] = ['yum-utils', 'wget', 'curl', 'tar']
         self.__installed_packages: List[str] = []
-
-    def _construct_toolchain(self) -> Toolchain:
-        return RedHatFamilyToolchain(self._cfg.retries)
 
     def _use_backup_repositories(self):
         sources = Path('/etc/yum.repos.d/epirepo.repo')

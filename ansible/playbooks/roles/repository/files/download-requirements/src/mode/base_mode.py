@@ -6,7 +6,7 @@ from typing import Any, Dict
 
 from poyo import parse_string, PoyoException
 
-from src.command.toolchain import Toolchain
+from src.command.toolchain import Toolchain, TOOLCHAINS
 from src.config import Config
 from src.crypt import get_sha1, get_sha256
 from src.error import CriticalError
@@ -33,8 +33,7 @@ class BaseMode:
 
         self._repositories: Dict[str, Dict] = self.__parse_repositories()
         self._requirements: Dict[str, Any] = self.__parse_requirements()
-
-        self._tools: Toolchain = self._construct_toolchain()
+        self._tools: Toolchain = TOOLCHAINS[self._cfg.os_type](self._cfg.retries)
 
     def __parse_repositories(self) -> Dict[str, Dict]:
         """
@@ -66,14 +65,6 @@ class BaseMode:
         reqs['grafana-dashboards'].update(content['grafana-dashboards'])
 
         return reqs
-
-    def _construct_toolchain(self) -> Toolchain:
-        """
-        Setup suitable toolchain for target OS.
-
-        :returns: newly constructed toolchain object
-        """
-        raise NotImplementedError
 
     def _use_backup_repositories(self):
         """
