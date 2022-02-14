@@ -72,11 +72,3 @@
         checksum: true
         private_key: "{{ private_key_file.path }}"
       loop: "{{ artifacts }}"
-      #   Legacy code used in earlier version of Ansible
-      #   rsync_opts:
-      #     - --rsh={{ rsh }}
-      # vars:
-      #   # this fixes / replaces incorrect path to the private key file that synchronize provides
-      #   # (setting private_key parameter has no effect whatsoever, looks like a bug tbh)
-      #   rsh: >-
-      #     /usr/bin/ssh -S none -i {{ private_key_file.path }} -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null
