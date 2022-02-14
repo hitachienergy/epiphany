@@ -1,0 +1,73 @@
+---
+- name: Ensure openssh packages are installed
+  package:
+    name: "{{ _packages[ansible_os_family] }}"
+    state: present
+  vars:
+    _packages:
+      Debian:
+        - openssh-client
+        - openssh-server
+      RedHat:
+        - openssh-clients
+        - openssh-server
+
+- name: Ensure sshd is started and enabled
+  systemd:
+    name: sshd
+    enabled: true
+    state: started
+
+- name: Set getent_passwd fact
+  getent:
+    database: passwd
+    key: "{{ username }}"
+    split: ":"
+
+- become_user: "{{ username }}"
+  vars:
+    home_dir: "{{ ansible_facts.getent_passwd[username][4] }}"
+  block:
+    - name: Ensure {{ home_dir }}/.ssh directory exists
+      file:
+        path: "{{ home_dir }}/.ssh/"
+        state: directory
+        mode: u=rwx,go=
+
+    - name: Generate openssh keypair
+      openssh_keypair:
+        path: "{{ home_dir }}/.ssh/id_ed25519"
+        type: ed25519
+        regenerate: full_idempotence
+      register: openssh_keypair
+
+    - name: Add public key to authorized_keys
+      when: host != inventory_hostname
+      delegate_to: "{{ host }}"
+      authorized_key:
+        user: "{{ username }}"
+        state: present
+        key: "{{ openssh_keypair.public_key }}"
+      loop: "{{ groups['postgresql'] }}"
+      loop_control:
+        loop_var: host
+
+    - name: Run ssh-keyscan
+      when: host != inventory_hostname
+      command: "ssh-keyscan {{ hostvars[host]['ansible_default_ipv4']['address'] }}"
+      changed_when: false
+      loop: "{{ groups['postgresql'] }}"
+      loop_control:
+        loop_var: host
+      register: ssh_known_host_results
+
+    - name: Ensure public keys are in {{ home_dir }}/.ssh/known_host
+      when: host_info.host != inventory_hostname
+      known_hosts:
+        name: "{{ hostvars[host_info.host]['ansible_default_ipv4']['address'] }}"
+        key: "{{ host_info.stdout }}"
+        path: "{{ home_dir }}/.ssh/known_hosts"
+      loop: "{{ ssh_known_host_results.results }}"
+      loop_control:
+        loop_var: host_info
+        label: "{{ host_info.host }}"
