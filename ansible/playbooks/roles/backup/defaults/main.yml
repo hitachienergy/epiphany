@@ -2,5 +2,5 @@
 backup_dir: /epibackup
 backup_destination_dir: "{{ backup_dir }}/mounted"
 backup_destination_host: "{{ groups.repository[0] if (custom_repository_url | default(false)) else (resolved_repository_hostname | default(groups.repository[0])) }}"
-elasticsearch_snapshot_repository_name: epiphany
-elasticsearch_snapshot_repository_location: /var/lib/opensearch-snapshots
+opensearch_snapshot_repository_name: epiphany
+opensearch_snapshot_repository_location: /var/lib/opensearch-snapshots

@@ -6,7 +6,7 @@
 
 - name: Set helper facts
   set_fact:
-    elasticsearch_endpoint: >-
+    opensearch_endpoint: >-
       https://{{ ansible_default_ipv4.address }}:9200
   vars:
     uri_template: &uri
@@ -18,7 +18,7 @@
 - name: Check cluster health
   uri:
     <<: *uri
-    url: "{{ elasticsearch_endpoint }}/_cluster/health"
+    url: "{{ opensearch_endpoint }}/_cluster/health"
     method: GET
   register: uri_response
   until: uri_response is success
@@ -45,17 +45,17 @@
   import_tasks: common/clear_directories.yml
   vars:
     dirs_to_clear:
-      - "{{ elasticsearch_snapshot_repository_location }}/"
+      - "{{ opensearch_snapshot_repository_location }}/"
 
 - name: Extract the archive
   unarchive:
-    dest: "{{ elasticsearch_snapshot_repository_location }}/"
+    dest: "{{ opensearch_snapshot_repository_location }}/"
     src: "{{ recovery_dir }}/{{ snapshot_path | basename }}"
     remote_src: true
 
 - name: Change snapshot directory permissions
   file:
-    path: "{{ elasticsearch_snapshot_repository_location }}/"
+    path: "{{ opensearch_snapshot_repository_location }}/"
     owner: opensearch
     group: opensearch
     recurse: true
@@ -89,19 +89,19 @@
     - name: Close all indices
       uri:
         <<: *uri
-        url: "{{ elasticsearch_endpoint }}/_all/_close"
+        url: "{{ opensearch_endpoint }}/_all/_close"
         method: POST
 
     - name: Delete all indices
       uri:
         <<: *uri
-        url: "{{ elasticsearch_endpoint }}/_all"
+        url: "{{ opensearch_endpoint }}/_all"
         method: DELETE
 
     - name: Restore the snapshot
       uri:
         <<: *uri
-        url: "{{ elasticsearch_endpoint }}/_snapshot/{{ elasticsearch_snapshot_repository_name }}/{{ snapshot_name }}/_restore"
+        url: "{{ opensearch_endpoint }}/_snapshot/{{ opensearch_snapshot_repository_name }}/{{ snapshot_name }}/_restore"
         method: POST
 
   always:
