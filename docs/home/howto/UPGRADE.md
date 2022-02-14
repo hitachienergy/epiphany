@@ -277,11 +277,13 @@ specification:
 ```
 and running the `upgrade` command against the logging component of your Epiphany installation, together with a `-f` option:
 ```
-epicli upgrade -b <path>/<tto-your-build-folder> --upgrade-components "logging" -f <path-to>/<your-manifest>.yml
+epicli upgrade -b <path-to>/<your-build-folder> --upgrade-components "logging" -f <path-to>/<your-manifest>.yml
 ```
 The default value of the  `odfe_migration` parameter is set to _false_.
 
 All described below remarks related to TLS certificates of the  Open Distro upgrade stay valid. You should plan and test all your upgrade activities before proceeding on the production.
+
+Migration of Elasticsearch Curator is not supported. More info on use of Curator in OpenSearch environment can be found [here](https://github.com/opensearch-project/OpenSearch/issues/1352).
 
 <br>
 
