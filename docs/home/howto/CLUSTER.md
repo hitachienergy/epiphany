@@ -1165,17 +1165,18 @@ For both cloud providers (AWS, Azure) Epicli generates the following terraform c
 
 Sometimes it is required to have additional resources like VPN access or other cloud native resources like EKS or AKS to this infrastructure. Epiphany gives the user the ability to add these additional resources during or after the cluster creation.
 
-Inside the Epicli container one can create the following folder before creation or add their custom Terraform resources here after initial cluster creation:
+The Terraform scripts Epicli generates will have the following naming convention:
+
+```shell
+xxx_resourc-name-nr.tf
+```
+
+And will be placed in the following folder:
 
 ```shell
 /shared/build/clustername/terraform
 ```
 
-The Terraform scripts Epicli creates will have the following naming convention:
-
-```shell
-xxx_resourc-name-nr.tf
-```
-When Epicli is run/re-run any Terraform scripts which will start with the ```xxx_*.tf``` will be removed and regenerated. The custom user Terraform scripts need to have a different naming convention. If everything is ok Epicli will apply the cluster Terraform scripts allongside the custom scripts created by the user.
+When Epicli is run/re-run any Terraform scripts which will start with the ```xxx_*.tf``` filter  will be removed and regenerated. The user can make custom Terraform scripts and place them allongside the Epicli generated ones and these will be applied/re-applied during the Epicli run.
 
 If you need to define any additional security rules for component subnets for custom infrastructure you can check the documentation [here](./SECURITY_GROUPS.md).
