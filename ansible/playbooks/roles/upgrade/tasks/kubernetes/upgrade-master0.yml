@@ -38,6 +38,9 @@
       delay: 30
       changed_when: false
 
+    - name: k8s/master0 | Include set-cluster-version.yml
+      include_tasks: set-cluster-version.yml # sets cluster_version
+
     # Note: Usage of the --config flag for reconfiguring the cluster during upgrade is not recommended since v1.16
     - name: k8s/master0 | Upgrade K8s cluster to v{{ version }}
       command: >-
