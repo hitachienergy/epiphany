@@ -7,7 +7,8 @@
 - [#959](https://github.com/epiphany-platform/epiphany/issues/959) - Add usage of use_network_security_groups to disable NSG on AWS
 - [#2701](https://github.com/epiphany-platform/epiphany/issues/2701) - Epicli prepare - generate files in separate directory
 - [#2812](https://github.com/epiphany-platform/epiphany/issues/2812) - Extend K8s config validation
-- [#2950](https://github.com/epiphany-platform/epiphany/issues/2950) - CLI refactor to make it more consistant
+- [#2950](https://github.com/epiphany-platform/epiphany/issues/2950) - CLI refactor to make it more consistent
+- [#2448](https://github.com/epiphany-platform/epiphany/issues/2448) - Passwordless SSH communication for postgres user between DB nodes
 
 ### Fixed
 
@@ -20,6 +21,7 @@
 - [#2945](https://github.com/epiphany-platform/epiphany/issues/2945) - epicli apply sleeps 10 seconds after creating inventory
 - [#2968](https://github.com/epiphany-platform/epiphany/issues/2968) - `epicli init` should generate `specification.cloud.subscription_name` for minimal cluster config
 - [#2940](https://github.com/epiphany-platform/epiphany/issues/2940) - firewalld.service unit could not be found on host however ansible_facts sees it as defined
+- [#2728](https://github.com/epiphany-platform/epiphany/issues/2728) - PostgreSQL's configuration files located outside the data directory are not copied by repmgr
 
 ### Updated
 
