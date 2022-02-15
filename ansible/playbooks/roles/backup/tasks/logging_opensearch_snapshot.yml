@@ -65,34 +65,34 @@
       retries: "{{ (12 * 3600 // 10) | int }}"  # 12h
       delay: 10
 
-- name: Find all snapshots
-  uri:
-    <<: *uri
-    url: "{{ opensearch_endpoint }}/_snapshot/{{ opensearch_snapshot_repository_name }}/_all"
-    method: GET
-  register: uri_response
+    - name: Find all snapshots
+      uri:
+        <<: *uri
+        url: "{{ opensearch_endpoint }}/_snapshot/{{ opensearch_snapshot_repository_name }}/_all"
+        method: GET
+      register: uri_response
 
-- name: Delete old snapshots
-  uri:
-    <<: *uri
-    url: "{{ opensearch_endpoint }}/_snapshot/{{ opensearch_snapshot_repository_name }}/{{ item }}"
-    method: DELETE
-  loop: >-
-    {{ uri_response.json.snapshots | map(attribute='snapshot') | reject('equalto', snapshot_name) | list }}
+    - name: Delete old snapshots
+      uri:
+        <<: *uri
+        url: "{{ opensearch_endpoint }}/_snapshot/{{ opensearch_snapshot_repository_name }}/{{ item }}"
+        method: DELETE
+      loop: >-
+        {{ uri_response.json.snapshots | map(attribute='snapshot') | reject('equalto', snapshot_name) | list }}
 
-- name: Create snapshot archive
-  import_tasks: common/create_snapshot_archive.yml
-  vars:
-    snapshot_prefix: "elasticsearch_snapshot"
-    dirs_to_archive:
-      - "{{ opensearch_snapshot_repository_location }}/"
+    - name: Create snapshot archive
+      import_tasks: common/create_snapshot_archive.yml
+      vars:
+        snapshot_prefix: "opensearch_snapshot"
+        dirs_to_archive:
+          - "{{ opensearch_snapshot_repository_location }}/"
 
-- name: Create snapshot checksum
-  import_tasks: common/create_snapshot_checksum.yml
+    - name: Create snapshot checksum
+      import_tasks: common/create_snapshot_checksum.yml
 
-- name: Transfer artifacts via rsync
-  import_tasks: common/download_via_rsync.yml
-  vars:
-    artifacts:
-      - "{{ snapshot_path }}"
-      - "{{ snapshot_path }}.sha1"
+    - name: Transfer artifacts via rsync
+      import_tasks: common/download_via_rsync.yml
+      vars:
+        artifacts:
+          - "{{ snapshot_path }}"
+          - "{{ snapshot_path }}.sha1"

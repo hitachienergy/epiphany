@@ -1,8 +1,13 @@
 ---
+- name: Include vars from opensearch role
+  include_vars:
+    file: roles/opensearch_dashboards/vars/main.yml
+    name: opsd_vars
+
 - name: Find snapshot archive
   import_tasks: common/find_snapshot_archive.yml
   vars:
-    snapshot_prefix: "elasticsearch_etc"
+    snapshot_prefix: "opsd_conf_dir"
     snapshot_name: "{{ specification.components.logging.snapshot_name }}"
 
 - name: Transfer the archive via rsync
@@ -15,24 +20,24 @@
 - name: Verify snapshot checksum
   import_tasks: common/verify_snapshot_checksum.yml
 
-- name: Stop elasticsearch service
+- name: Stop OPSD service
   systemd:
-    name: opensearch
+    name: dashboards
     state: stopped
 
 - name: Clear directories
   import_tasks: common/clear_directories.yml
   vars:
     dirs_to_clear:
-      - /etc/elasticsearch/
+      - "{{ opsd_vars.specification.paths.ops_conf_dir }}"
 
 - name: Extract the archive
   unarchive:
-    dest: /etc/elasticsearch/
+    dest: "{{ opsd_vars.specification.paths.ops_conf_dir }}"
     src: "{{ recovery_dir }}/{{ snapshot_path | basename }}"
     remote_src: true
 
-- name: Start elasticsearch service
+- name: Start OPSD service
   systemd:
-    name: opensearch
+    name: dashboards
     state: started
