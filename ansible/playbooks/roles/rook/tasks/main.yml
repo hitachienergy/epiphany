@@ -4,6 +4,14 @@
   become: true
   run_once: true
   block:
+
+    - name: RedHat fix | Create helm's binary symlink
+      file:
+        src: "/usr/local/bin/helm"
+        dest: "/usr/bin/helm"
+        state: link
+      when: ansible_os_family == 'RedHat'
+
     - name: Download Rook's Chart File
       include_role:
         name: download
