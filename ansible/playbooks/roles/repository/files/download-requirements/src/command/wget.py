@@ -41,8 +41,7 @@ class Wget(Command):
             output_params.extend(self.__download_params)
 
         if output_document is not None:
-            output_params.append('-O')
-            output_params.append(str(output_document))
+            output_params.append(f'--output-document={str(output_document)}')
 
         if directory_prefix is not None:
             output_params.append(f'--directory-prefix={str(directory_prefix)}')

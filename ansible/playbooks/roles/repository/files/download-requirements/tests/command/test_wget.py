@@ -11,5 +11,5 @@ def test_builder_download(mocker):
                                                    'directory_prefix': Path('/custom/prefix'),
                                                    'ip_family': IPFamily.IPV4}) as call_args:
         assert call_args == ['wget', '--no-use-server-timestamps', '--continue', '--show-progress',
-                             '-O', '/var/log/output_name', '--directory-prefix=/custom/prefix',
+                             '--output-document=/var/log/output_name', '--directory-prefix=/custom/prefix',
                              '--prefer-family=IPv4', 'http://some.url.com']
