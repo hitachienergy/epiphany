@@ -147,6 +147,44 @@
   run_once: true
   when: kibanaserver_check_response.status == 200
 
+- name: ODFE migr | Check if logstash user exists
+  uri:
+    url: "https://{{ inventory_hostname }}:{{ ports.http }}/_opendistro/_security/api/internalusers/logstash"
+    method: GET
+    # 404 code is used there as someone can remove admin user on its own.
+    status_code: [200, 404]
+    validate_certs: no
+    client_cert: "{{ certificates.dirs.certs }}/{{ certificates.files.admin.cert }}"
+    client_key:  "{{ certificates.dirs.certs }}/{{ certificates.files.admin.key }}"
+  register: logstash_check_response
+  until: logstash_check_response is success
+  retries: 60
+  delay: 1
+  run_once: true
+
+- name: ODFE migr | Set logstash user password
+  uri:
+    url: "https://{{ inventory_hostname }}:{{ ports.http }}/_opendistro/_security/api/internalusers"
+    method: PATCH
+    status_code: [200]
+    body:
+      - op: "replace"
+        path: "/logstash"
+        value:
+          password: "{{ specification.logstash_password }}"
+          reserved: "true"
+          description: "logstash user"
+    client_cert: "{{ certificates.dirs.certs }}/{{ certificates.files.admin.cert }}"
+    client_key:  "{{ certificates.dirs.certs }}/{{ certificates.files.admin.key }}"
+    body_format: json
+    validate_certs: no
+  register: uri_response
+  until: uri_response is success
+  retries: 5
+  delay: 1
+  run_once: true
+  when: logstash_check_response.status == 200
+
 - name: ODFE migr | Check the opensearch status
   command: curl https://{{ inventory_hostname }}:{{ ports.http }}/_cluster/health?pretty -u 'admin:{{ specification.admin_password }}' -k
   register: ops_status
