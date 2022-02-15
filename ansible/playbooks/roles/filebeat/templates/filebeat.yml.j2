@@ -181,7 +181,7 @@ setup.template.settings:
 {% set dashboards_enabled = is_upgrade_run | ternary(existing_setup_dashboards.enabled, specification.kibana.dashboards.enabled) %}
 {% if dashboards_enabled | lower == 'auto' %}
   {% if group_names | intersect(['kibana', 'logging']) | count == 2 %}
-setup.dashboards.enabled: true
+setup.dashboards.enabled: false  # A workaround. More info: https://github.com/opensearch-project/OpenSearch-Dashboards/issues/656#issuecomment-978036236
   {% else %}
 setup.dashboards.enabled: false
   {% endif %}
