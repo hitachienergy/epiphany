@@ -117,7 +117,7 @@ class APIProxy:
                 # No subscriptionId in sp.yml so use the default one from Azure SP login.
                 env['ARM_SUBSCRIPTION_ID'] = subscription[0]['id']
 
-             # Set other environment variables for Terraform when working with Azure and service principal.
+            # Set other environment variables for Terraform when working with Azure and service principal.
             env['ARM_TENANT_ID'] = sp['tenant']
             env['ARM_CLIENT_ID'] = sp['appId']
             env['ARM_CLIENT_SECRET'] = sp['password']
