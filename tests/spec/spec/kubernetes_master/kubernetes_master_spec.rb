@@ -11,6 +11,13 @@ describe 'Waiting for all pods to be ready' do
   end
 end
 
+describe 'Check if containerd service is enabled/running' do
+  describe service('containerd') do
+    it { should be_enabled }
+    it { should be_running }
+  end
+end
+
 describe 'Checking if kubelet service is running' do
   describe service('kubelet') do
     it { should be_enabled }

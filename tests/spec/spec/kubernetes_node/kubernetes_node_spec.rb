@@ -1,5 +1,12 @@
 require 'spec_helper'
 
+describe 'Check if containerd service is enabled/running' do
+  describe service('containerd') do
+    it { should be_enabled }
+    it { should be_running }
+  end
+end
+
 describe 'Check the containerd' do
   describe command('crictl version') do
     let(:disable_sudo) { false }
