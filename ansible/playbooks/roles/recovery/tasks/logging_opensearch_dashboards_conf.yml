@@ -29,11 +29,11 @@
   import_tasks: common/clear_directories.yml
   vars:
     dirs_to_clear:
-      - "{{ opsd_vars.specification.paths.ops_conf_dir }}"
+      - "{{ opsd_vars.specification.paths.opsd_conf_dir }}"
 
 - name: Extract the archive
   unarchive:
-    dest: "{{ opsd_vars.specification.paths.ops_conf_dir }}"
+    dest: "{{ opsd_vars.specification.paths.opsd_conf_dir }}"
     src: "{{ recovery_dir }}/{{ snapshot_path | basename }}"
     remote_src: true
 

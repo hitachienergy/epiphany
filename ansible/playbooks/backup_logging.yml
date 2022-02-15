@@ -32,6 +32,6 @@
             name: component_vars
         - import_role:
             name: backup
-            tasks_from: logging_opensearch_dashboards_etc
+            tasks_from: logging_opensearch_dashboards_conf
           vars:
             snapshot_name: "{{ hostvars[groups.logging.0].snapshot_name }}"
