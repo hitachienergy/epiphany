@@ -11,14 +11,6 @@ ops_nodes: |-
 
 populate_inventory_to_hosts_file: true
 
-opsd_user: "{{ specification.ops_dashboards_user }}"
-opsd_password: "{{ specification.ops_dashboards_password }}"
-ops_user: "{{ specification.ops_user }}"
-ops_download_url:  https://artifacts.opensearch.org/releases/bundle/opensearch
-opsd_home: "{{ specification.ops_dashboards_home }}"
-opsd_conf_dir: "{{ specification.ops_dashboards_conf_dir }}"
-ops_plugin_bin_path: "{{ specification.ops_plugin_bin_path }}"
-
 ops_api_port: 9200
 ops_nodes_dashboards: |-
         {% for item in groups['opensearch_dashboards'] -%}
