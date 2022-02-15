@@ -20,7 +20,7 @@
 - name: Verify snapshot checksum
   import_tasks: common/verify_snapshot_checksum.yml
 
-- name: Stop elasticsearch service
+- name: Stop OpenSearch service
   systemd:
     name: opensearch
     state: stopped

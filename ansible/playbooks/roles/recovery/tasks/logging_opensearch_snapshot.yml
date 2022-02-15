@@ -70,10 +70,10 @@
 - name: Ensure all OPSD and filebeat instances are stopped, then restore the snapshot
 
   block:
-    - name: Stop all kibana instances
+    - name: Stop all OPS Dashboards instances
       delegate_to: "{{ item }}"
       systemd:
-        name: dashoboard
+        name: dashboards
         state: stopped
         enabled: false
       loop: "{{ groups.kibana | default([]) }}"
@@ -105,10 +105,10 @@
         method: POST
 
   always:
-    - name: Start all kibana instances
+    - name: Start all OPS Dashboards instances
       delegate_to: "{{ item }}"
       systemd:
-        name: kibana
+        name: dashboards
         state: started
         enabled: true
       loop: "{{ groups.kibana | default([]) }}"
