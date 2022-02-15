@@ -22,16 +22,14 @@ class Toolchain:
     """
 
     def __init__(self, retries: int):
-        self.__retries: int = retries
-
         self.crane = Crane(retries)
         self.tar = Tar()
         self.wget = Wget(retries)
         self.pip = Pip(retries)
 
-    def _install_wget(self):
+    def _install_pip(self):
         """
-        Used for offline mode to ensure that wget is installed on target OS.
+        Used for offline mode, install pip package
         """
         raise NotImplementedError
 
@@ -39,13 +37,10 @@ class Toolchain:
         """
         Used for offline mode to ensure that pip is installed on target OS
         """
-
         try:  # check if pip is installed
             import pip
         except ModuleNotFoundError:  # pip missing
-            self._install_wget()
-            self.wget.download('https://bootstrap.pypa.io/get-pip.py', additional_params=False)
-            Command('python3', self.__retries).run(['get-pip.py'])
+            self._install_pip()
 
 
 class RedHatFamilyToolchain(Toolchain):
@@ -62,8 +57,8 @@ class RedHatFamilyToolchain(Toolchain):
         self.yum_config_manager = YumConfigManager(retries)
         self.yumdownloader = Yumdownloader(retries)
 
-    def _install_wget(self):
-        self.yum.install('wget')
+    def _install_pip(self):
+        self.yum.install('python3-pip')
 
 
 class DebianFamilyToolchain(Toolchain):
@@ -78,8 +73,8 @@ class DebianFamilyToolchain(Toolchain):
         self.apt_cache = AptCache(retries)
         self.apt_key = AptKey(retries)
 
-    def _install_wget(self):
-        self.apt.install('wget')
+    def _install_pip(self):
+        self.apt.install('python3-pip')
 
 
 TOOLCHAINS: Dict[OSType, Toolchain] = {
