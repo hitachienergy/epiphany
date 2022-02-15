@@ -141,6 +141,7 @@ class InfrastructureBuilder(Step):
         vm.specification.subnet_name = subnet.specification.name
         vm.specification.key_name = public_key_config.specification.key_name
         vm.specification.use_network_security_groups = self.use_network_security_groups
+        vm.specification.availability_zone = subnet.specification.availability_zone
         if self.use_network_security_groups:
             vm.specification.security_groups = [security_group.specification.name]
         vm.specification.associate_public_ip = self.cluster_model.specification.cloud.use_public_ips
@@ -152,7 +153,7 @@ class InfrastructureBuilder(Step):
         subnet = self.get_config_or_default(self.docs, 'infrastructure/subnet')
         subnet.specification.vpc_name = vpc_name
         subnet.specification.cidr_block = subnet_definition['address_pool']
-
+        subnet.specification.availability_zone = subnet_definition['availability_zone']
         subnet.specification.name = resource_name(self.cluster_prefix, self.cluster_name, 'subnet' + '-' + str(index), component_key)
         subnet.specification.cluster_name = self.cluster_name
         return subnet
