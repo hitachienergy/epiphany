@@ -2,6 +2,7 @@
   systemd:
     name: containerd
     state: restarted
+    enabled: true
 
 - name: Restart kubelet
   systemd:
