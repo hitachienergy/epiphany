@@ -68,7 +68,7 @@
 - [#2748](https://github.com/epiphany-platform/epiphany/issues/2748) - Upgrade Kafka exporter to the version 1.4.0
 - [#2750](https://github.com/epiphany-platform/epiphany/issues/2750) - Upgrade JMX exporter to the newest version
 - [#2699](https://github.com/epiphany-platform/epiphany/issues/2699) - Upgrade Grafana to 8.3.2
-- [#2788](https://github.com/epiphany-platform/epiphany/issues/2788) - Upgrade Log4j in Open Distro for opensearch
+- [#2788](https://github.com/epiphany-platform/epiphany/issues/2788) - Upgrade Log4j in Open Distro for ElasticSearch
 - [#2661](https://github.com/epiphany-platform/epiphany/issues/2661) - Update K8s documentation according to the latest version Epiphany supports
 - [#2752](https://github.com/epiphany-platform/epiphany/issues/2752) - Upgrade postgresql exporter to the version 0.10.0
 - [#2856](https://github.com/epiphany-platform/epiphany/issues/2856) - Update cloud OS images to the latest
