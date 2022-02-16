@@ -28,26 +28,26 @@ SchemaTypes = namedtuple('SchemaTypes', 'DEFAULT VALIDATION')
 schema_types = SchemaTypes(DEFAULT='defaults', VALIDATION='validation')
 
 
-def load_schema_obj(file_type, provider, kind):
-    path_to_file = os.path.join(SCHEMA_DIR, provider, file_type, kind+'.yml')
+def load_schema_obj(schema_type, provider, kind):
+    path_to_file = os.path.join(SCHEMA_DIR, provider, schema_type, kind+'.yml')
     if os.path.isfile(path_to_file):
         return load_yaml_file(path_to_file)
     else:
-        path_to_file = os.path.join(SCHEMA_DIR, 'common', file_type, kind + '.yml')
+        path_to_file = os.path.join(SCHEMA_DIR, 'common', schema_type, kind + '.yml')
         return load_yaml_file(path_to_file)
 
 
-def load_all_schema_objs(file_type, provider, kind):
-    path_to_file = os.path.join(SCHEMA_DIR, provider, file_type, kind+'.yml')
+def load_all_schema_objs(schema_type, provider, kind):
+    path_to_file = os.path.join(SCHEMA_DIR, provider, schema_type, kind+'.yml')
     if os.path.isfile(path_to_file):
         return load_yamls_file(path_to_file)
     else:
-        path_to_file = os.path.join(SCHEMA_DIR, 'common', file_type, kind + '.yml')
+        path_to_file = os.path.join(SCHEMA_DIR, 'common', schema_type, kind + '.yml')
         return load_yamls_file(path_to_file)
 
 
-def load_all_schema_objs_from_directory(file_type, provider, directory):
-    directory_path = os.path.join(SCHEMA_DIR, provider, file_type, directory)
+def load_all_schema_objs_from_directory(schema_type, provider, directory):
+    directory_path = os.path.join(SCHEMA_DIR, provider, schema_type, directory)
     docs = []
     for filename in glob.glob(os.path.join(directory_path, '*.yml')):
         documents = load_yamls_file(filename)
