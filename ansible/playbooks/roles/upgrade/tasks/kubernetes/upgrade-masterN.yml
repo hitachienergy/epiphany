@@ -7,6 +7,10 @@
     - name: k8s/masterN | Install kubeadm
       include_tasks: "{{ ansible_os_family }}/install-kubeadm.yml"
 
+    - name: k8s/master0 | Add k8s annotation for containerd
+      command: >-
+        kubectl annotate node {{ inventory_hostname }} --overwrite kubeadm.alpha.kubernetes.io/cri-socket=unix:///run/containerd/containerd.sock
+
     - name: k8s/masterN | Upgrade master {{ inventory_hostname }}
       command: >-
         kubeadm upgrade node

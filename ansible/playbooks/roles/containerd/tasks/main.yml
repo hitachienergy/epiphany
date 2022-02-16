@@ -40,6 +40,10 @@
 - name: Configure containerd
   include_tasks: configure-containerd.yml
 
+- name: Configure kubelet-env
+  include_tasks: configure-kubelet-env.yml
+  when: is_upgrade_run
+
 - name: Provide crictl.yaml file
   copy:
     src: crictl.yaml

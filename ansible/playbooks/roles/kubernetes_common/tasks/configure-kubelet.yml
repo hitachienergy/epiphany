@@ -41,7 +41,7 @@
     name: containerd
     tasks_from: configure-kubelet-env
   when:
-    - is_upgrade_run or inventory_hostname in groups.image_registry
+    - inventory_hostname in groups.image_registry
 
 - name: Restart kubelet service
   systemd:
