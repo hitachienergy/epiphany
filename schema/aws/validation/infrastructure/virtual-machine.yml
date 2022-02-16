@@ -88,5 +88,3 @@ properties:
               type: string
             destination_address_prefix:
               type: string
-              enum:
-              - 0.0.0.0/0
