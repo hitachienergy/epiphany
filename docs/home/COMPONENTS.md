@@ -18,10 +18,6 @@ Note that versions are default versions and can be changed in certain cases thro
 | RabbitMQ                   | 3.8.9    | https://github.com/rabbitmq/rabbitmq-server           | [Mozilla Public License](https://www.mozilla.org/en-US/MPL/)      |
 | Docker CE                  | 20.10.8  | https://docs.docker.com/engine/release-notes/         | [Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0) |
 | KeyCloak                   | 14.0.0   | https://github.com/keycloak/keycloak                  | [Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0) |
-| Elasticsearch OSS          | 7.10.2   | https://github.com/elastic/elasticsearch              | https://github.com/elastic/elasticsearch/blob/master/LICENSE.txt  |
-| Elasticsearch Curator OSS  | 5.8.3    | https://github.com/elastic/curator                    | https://github.com/elastic/curator/blob/master/LICENSE.txt        |
-| Opendistro for Elasticsearch          | 1.13.x   | https://opendistro.github.io/for-elasticsearch/                  | [Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0) |
-| Opendistro for Elasticsearch Kibana   | 1.13.1   | https://opendistro.github.io/for-elasticsearch-docs/docs/kibana/ | [Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0) |
 | Filebeat                   | 7.9.2    | https://github.com/elastic/beats                      | [Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0) |
 | Filebeat Helm Chart        | 7.9.2    | https://github.com/elastic/helm-charts                | [Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0) |
 | Prometheus                 | 2.31.1   | https://github.com/prometheus/prometheus              | [Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0) |
@@ -181,6 +177,8 @@ Note that versions are default versions and can be changed in certain cases thro
 | msrest | 0.6.21 | https://github.com/Azure/msrest-for-python | [MIT License](https://api.github.com/repos/azure/msrest-for-python/license) |
 | msrestazure | 0.6.4 | https://github.com/Azure/msrestazure-for-python | [MIT License](https://api.github.com/repos/azure/msrestazure-for-python/license) |
 | oauthlib | 3.1.1 | https://github.com/oauthlib/oauthlib | [BSD 3-Clause "New" or "Revised" License](https://api.github.com/repos/oauthlib/oauthlib/license) |
+| OpenSearch  | 1.2.4 | https://github.com/opensearch-project/OpenSearch | [Apache License 2.0](https://www.apache.org/licenses/) |
+| OpenSearch Dashboards  | 1.2.0 | https://github.com/opensearch-project/OpenSearch-Dashboards | [Apache License 2.0](https://www.apache.org/licenses/) |
 | packaging | 20.9 | https://github.com/pypa/packaging | [Other](https://api.github.com/repos/pypa/packaging/license) |
 | paramiko | 2.9.1 | https://paramiko.org | LGPL |
 | pathlib2 | 2.3.6 | https://github.com/mcmtroffaes/pathlib2 | [MIT License](https://api.github.com/repos/mcmtroffaes/pathlib2/license) |

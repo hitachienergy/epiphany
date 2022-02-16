@@ -3,6 +3,7 @@
 ## [2.0.0] YYYY-MM-DD
 
 ### Added
+- [#2870](https://github.com/epiphany-platform/epiphany/issues/2870) - OpenDistro for ElasticSearch project migrated to OpenSearch
 
 
 ### Fixed
@@ -24,6 +25,7 @@
 - [#2833](https://github.com/epiphany-platform/epiphany/issues/2833) - Removal of Logstash component
 - [#2836](https://github.com/epiphany-platform/epiphany/issues/2836) - Removal of Istio component
 - [#2837](https://github.com/epiphany-platform/epiphany/issues/2837) - Removal of Apache Ignite component
+- [#2870](https://github.com/epiphany-platform/epiphany/issues/2870) - Migration of OpenDistro for ElasticSearch
 
 ### Deprecated
 
