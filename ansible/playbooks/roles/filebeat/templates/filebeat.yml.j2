@@ -178,16 +178,21 @@ setup.template.settings:
 # These settings control loading the sample dashboards to the Kibana index. Loading
 # the dashboards is disabled by default and can be enabled either by setting the
 # options here or by using the `setup` command.
-{% set dashboards_enabled = is_upgrade_run | ternary(existing_setup_dashboards.enabled, specification.kibana.dashboards.enabled) %}
-{% if dashboards_enabled | lower == 'auto' %}
-  {% if group_names | intersect(['kibana', 'logging']) | count == 2 %}
-setup.dashboards.enabled: false  # A workaround. More info: https://github.com/opensearch-project/OpenSearch-Dashboards/issues/656#issuecomment-978036236
-  {% else %}
+#
+#    Below logic commented out as a workaround for problem with filebeat till the time OPS team will resolve it.
+#    More info: https://github.com/opensearch-project/OpenSearch-Dashboards/issues/656#issuecomment-978036236
+#    A static value is used instead:
 setup.dashboards.enabled: false
-  {% endif %}
-{% else %}
-setup.dashboards.enabled: {{ dashboards_enabled | lower }}
-{% endif %}
+# {% set dashboards_enabled = is_upgrade_run | ternary(existing_setup_dashboards.enabled, specification.kibana.dashboards.enabled) %}
+# {% if dashboards_enabled | lower == 'auto' %}
+#  {% if group_names | intersect(['kibana', 'logging']) | count == 2 %}
+# setup.dashboards.enabled: true
+#  {% else %}
+#setup.dashboards.enabled: false
+#  {% endif %}
+#{% else %}
+#setup.dashboards.enabled: {{ dashboards_enabled | lower }}
+#{% endif %}
 
 # The Elasticsearch index name.
 # This setting overwrites the index name defined in the dashboards and index pattern.

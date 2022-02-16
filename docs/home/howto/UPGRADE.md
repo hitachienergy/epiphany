@@ -277,8 +277,9 @@ specification:
 ```
 and running the `upgrade` command against the logging component of your Epiphany installation, together with a `-f` option:
 ```
-epicli upgrade -b <path-to>/<your-build-folder> --upgrade-components "logging" -f <path-to>/<your-manifest>.yml
+epicli upgrade -b <path-to>/<your-build-folder> --upgrade-components "logging,filebeat" -f <path-to>/<your-manifest>.yml
 ```
+Keep in mind, that for the current version of OPS/OPSD it is necessary to include the `filebeat` component along with the loggging  one in order to implement the workaround for _Kibana API not available_ [bug](https://github.com/opensearch-project/OpenSearch-Dashboards/issues/656#issuecomment-978036236).
 The default value of the  `odfe_migration` parameter is set to _false_.
 
 All described below remarks related to TLS certificates of the  Open Distro upgrade stay valid. You should plan and test all your upgrade activities before proceeding on the production.
