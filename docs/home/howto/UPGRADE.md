@@ -261,7 +261,10 @@ in  [ZooKeeper documentation](https://cwiki.apache.org/confluence/display/ZOOKEE
 Make sure you have a backup before proceeding to migration steps described below !
 
 ---
-Following the decision of Elastic NV on ceasing open source options available for Elasticsearch and Kibana and releasing them under the Elastic license (more info [here](https://github.com/epiphany-platform/epiphany/issues/2870)) Epiphany team decided to implement a mechanism of automatic migration from  Elasticsearch 7.10.2 to Opensearch 1.2.4.
+Following the decision of Elastic NV<sup>[1]</sup> on ceasing open source options available for Elasticsearch and Kibana and releasing them under the Elastic license (more info [here](https://github.com/epiphany-platform/epiphany/issues/2870)) Epiphany team decided to implement a mechanism of automatic migration from  ElasticSearch 7.10.2 to OpenSearch 1.2.4.
+
+It is important to remember that while the new platform makes an effort to continue to support a broad set of third party tools (ie. Beats tools) however there can be some drawbacks or even malfunctions came across all over the way as not everything have been tested or have explicitly been added to OpenSearch compatibility scope<sup>[2]</sup>.
+Additionally some of the components (ie. ElasticSearch Curator) or some embedded service accounts ( ie. _kibanaserver_) can be still found in OpenSearch environment but they will be successfully phased out.
 
 The migration can be fired by placing `odfe_migration` switch in your manifest file:
 ```yaml
@@ -285,6 +288,11 @@ The default value of the  `odfe_migration` parameter is set to _false_.
 All described below remarks related to TLS certificates of the  Open Distro upgrade stay valid. You should plan and test all your upgrade activities before proceeding on the production.
 
 Migration of Elasticsearch Curator is not supported. More info on use of Curator in OpenSearch environment can be found [here](https://github.com/opensearch-project/OpenSearch/issues/1352).
+
+<sup>[1]</sup> https://www.elastic.co/pricing/faq/licensing#what-are-the-key-changes-being-made-to-the-elastic-license
+
+<sup>[2]</sup> https://opensearch.org/docs/latest/clients/agents-and-ingestion-tools/index/
+
 
 <br>
 
