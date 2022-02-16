@@ -117,7 +117,7 @@ class Apply(Step):
         save_manifest(self.all_docs, self.cluster_name)
 
 
-    def run_terraform(self):
+    def apply_terraform(self):
         if  self.skip_infrastructure or self.cluster_model['provider'] == 'any':
             return
 
@@ -134,7 +134,7 @@ class Apply(Step):
         save_manifest(self.all_docs, self.cluster_name)
 
 
-    def run_ansible(self):
+    def apply_ansible(self):
         if self.skip_config:
             return
 
@@ -150,11 +150,11 @@ class Apply(Step):
 
         self.validate_documents()
 
-        self.run_terraform()
+        self.apply_terraform()
 
         self.collect_infrastructure_config()
 
-        self.run_ansible()
+        self.apply_ansible()
 
         return 0
 
