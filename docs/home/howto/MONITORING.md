@@ -307,7 +307,7 @@ To change `admin` user's password, change value for `admin_password` key. For `k
 and `logstash_password` keys respectively.
 
 ```yaml
-kind: configuration/opensearch-for-opensearch
+kind: configuration/opendistro-for-elasticsearch
 title: OpenSearch Config
 name: default
 specification:
