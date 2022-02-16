@@ -6,7 +6,7 @@ from cli.src.helpers.build_io import (get_build_path, get_inventory_path,
                                       get_manifest_path, load_inventory,
                                       load_manifest, save_manifest)
 from cli.src.helpers.cli_helpers import query_yes_no
-from cli.src.helpers.data_loader import load_schema_obj, types
+from cli.src.helpers.data_loader import load_schema_obj, schema_types
 from cli.src.helpers.doc_list_helpers import (select_all, select_first,
                                               select_single)
 from cli.src.helpers.naming_helpers import get_os_name_normalized
@@ -220,7 +220,7 @@ class Apply(Step):
                 feature_mapping = doc_merger.run()
             feature_mapping = feature_mapping[0]
         else:
-            feature_mapping = load_schema_obj(types.DEFAULT, 'common', 'configuration/feature-mapping')
+            feature_mapping = load_schema_obj(schema_types.DEFAULT, 'common', 'configuration/feature-mapping')
 
         components = self.cluster_model.specification.components
         if self.inventory:

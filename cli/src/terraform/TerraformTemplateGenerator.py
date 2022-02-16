@@ -1,6 +1,6 @@
 from cli.src.helpers.build_io import (delete_files_matching_glob,
                                       get_terraform_path, save_terraform_file)
-from cli.src.helpers.data_loader import load_template_file, types
+from cli.src.helpers.data_loader import load_template_file, template_types
 from cli.src.Step import Step
 
 
@@ -26,6 +26,6 @@ class TerraformTemplateGenerator(Step):
 
             self.logger.info('Generating: ' + doc.kind + ' ---> ' + terraform_file_name)
 
-            template = load_template_file(types.TERRAFORM, doc.provider, doc.kind)
+            template = load_template_file(template_types.TERRAFORM, doc.provider, doc.kind)
             content = template.render(doc)
             save_terraform_file(content, self.cluster_model.specification.name, terraform_file_name)

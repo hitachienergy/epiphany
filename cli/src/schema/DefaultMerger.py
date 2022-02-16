@@ -1,4 +1,4 @@
-from cli.src.helpers.data_loader import load_all_schema_objs, types
+from cli.src.helpers.data_loader import load_all_schema_objs, schema_types
 from cli.src.helpers.doc_list_helpers import select_first
 from cli.src.helpers.objdict_helpers import (merge_objdict,
                                              replace_yesno_with_booleans)
@@ -16,7 +16,7 @@ class DefaultMerger(Step):
 
         for doc in self.docs:
             replace_yesno_with_booleans(doc)
-            files_with_defaults = load_all_schema_objs(types.DEFAULT, doc.provider, doc.kind)
+            files_with_defaults = load_all_schema_objs(schema_types.DEFAULT, doc.provider, doc.kind)
             self.logger.info('Merging: ' + doc.kind+' name: '+doc.name)
             merged = self.merge_parent(files_with_defaults, doc)
             merged_docs.append(merged)

@@ -8,7 +8,7 @@ from cli.src.helpers.build_io import (copy_file, copy_files_recursively,
                                       get_inventory_path_for_build,
                                       load_manifest)
 from cli.src.helpers.data_loader import load_schema_obj, load_yamls_file
-from cli.src.helpers.data_loader import types as data_types
+from cli.src.helpers.data_loader import schema_types
 from cli.src.helpers.doc_list_helpers import (ExpectedSingleResultException,
                                               select_single)
 from cli.src.helpers.yaml_helpers import dump
@@ -73,7 +73,7 @@ class BackupRecoveryBase(Step):
                 document = select_single(self.configuration_docs, lambda x: x.kind == kind)
             except ExpectedSingleResultException:
                 # If there is no document provided by the user, then fallback to defaults
-                document = load_schema_obj(data_types.DEFAULT, 'common', kind)
+                document = load_schema_obj(schema_types.DEFAULT, 'common', kind)
                 # Inject the required "version" attribute
                 document['version'] = VERSION
                 # Copy the "provider" value from the cluster model
@@ -91,7 +91,7 @@ class BackupRecoveryBase(Step):
 
         # Copy role files
         roles_build_path = os.path.join(self.build_directory, 'ansible/roles', action)
-        roles_source_path = os.path.join(AnsibleRunner.ANSIBLE_PLAYBOOKS_PATH, 'roles', action)
+        roles_source_path = os.path.join(ANSIBLE_PLAYBOOKS_PATH, 'roles', action)
         copy_files_recursively(roles_source_path, roles_build_path)
 
         # Render role vars
@@ -108,7 +108,7 @@ class BackupRecoveryBase(Step):
 
         # Copy playbook file
         playbook_build_path = os.path.join(self.build_directory, 'ansible', f'{action}_{component}.yml')
-        playbook_source_path = os.path.join(AnsibleRunner.ANSIBLE_PLAYBOOKS_PATH, f'{action}_{component}.yml')
+        playbook_source_path = os.path.join(ANSIBLE_PLAYBOOKS_PATH, f'{action}_{component}.yml')
         copy_file(playbook_source_path, playbook_build_path)
 
         # Run the playbook

@@ -1,16 +1,15 @@
 import os
 import shutil
 from distutils import dir_util
-from os import listdir
-from os.path import isfile, join
 from pathlib import Path
 
 from ansible.inventory.manager import InventoryManager
 from ansible.parsing.dataloader import DataLoader
 
 from cli.src.Config import Config
-from cli.src.helpers.data_loader import (load_template_file, load_yamls_file,
-                                         types)
+from cli.src.helpers.data_loader import (ANSIBLE_PLAYBOOK_PATH,
+                                         load_template_file, load_yamls_file,
+                                         template_types)
 from cli.src.helpers.yaml_helpers import dump, dump_all
 
 TERRAFORM_OUTPUT_DIR = 'terraform/'
@@ -50,7 +49,7 @@ def save_inventory(inventory, cluster_model, build_dir=None):
     if build_dir is None:
         cluster_name = cluster_model.specification.name
         build_dir = get_build_path(cluster_name)
-    template = load_template_file(types.ANSIBLE, '', ANSIBLE_INVENTORY_FILE)
+    template = load_template_file(template_types.ANSIBLE, '', ANSIBLE_INVENTORY_FILE)
     content = template.render(inventory=inventory, cluster_model=cluster_model)
     file_path = os.path.join(build_dir, ANSIBLE_INVENTORY_FILE)
     save_to_file(file_path, content)
@@ -61,7 +60,7 @@ def load_inventory(inventory_path):
 
 
 def save_ansible_config_file(ansible_config_file_settings, ansible_config_file_path):
-    template = load_template_file(types.ANSIBLE, '', ANSIBLE_CFG_FILE)
+    template = load_template_file(template_types.ANSIBLE, '', ANSIBLE_CFG_FILE)
     content = template.render(ansible_config_file_settings=ansible_config_file_settings)
     save_to_file(ansible_config_file_path, content)
 
