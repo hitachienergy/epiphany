@@ -2,12 +2,12 @@
 supported_oses:
   - name: CentOS
     version:
-      min: 7.6
-      max: 7.9
+      min: 8.5
+      max: 8.9
   - name: RedHat
     version:
-      min: 7.6
-      max: 7.9
+      min: 8.5
+      max: 8.9
   - name: Ubuntu
     version:
       min: 20.04
