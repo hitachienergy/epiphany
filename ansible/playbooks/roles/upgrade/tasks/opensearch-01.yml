@@ -38,20 +38,6 @@
     - "{{ ops_vars.specification.paths.ops_conf_dir }}"
     - "{{ ops_defaults.certificates.dirs.certs }}"
 
-# TODO: Remove this part of code
-# - name: OPS | Patch log4j
-#   include_role:
-#     name: opensearch
-#     tasks_from: patch-log4j
-#   when: ops_defaults.log4j_file_name is defined
-
-# - name: Restart elasticsearch service
-#   systemd:
-#     name: elasticsearch
-#     state: restarted
-#   register: restart_opensearch
-#   when: ops_defaults.log4j_file_name is defined and log4j_patch.changed
-
 - name: OPS | Print elasticsearch ond opensearch versions
   debug:
     msg:

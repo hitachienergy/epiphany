@@ -107,9 +107,6 @@
     file: "{{ is_upgrade_run | ternary('remove-known-demo-certs.yml', 'remove-demo-certs.yml') }}"
   when: not certificates.files.demo.opensearch_security.allow_unsafe_democertificates
 
-# - name: Include log4j patch
-#   include_tasks: patch-log4j.yml
-
 - name: Restart opensearch service
   systemd:
     name: opensearch
