@@ -1,5 +1,4 @@
 ---
-# NOTE: Keep in mind compatibility matrix for Open Distro https://opendistro.github.io/for-elasticsearch-docs/docs/install/plugins/#plugin-compatibility
 - name: Install opensearch-* packages
   package:
     name: "{{ _packages[ansible_os_family] }}"

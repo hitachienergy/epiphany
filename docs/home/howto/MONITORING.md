@@ -11,10 +11,10 @@ Grafana:
 - [How to setup default admin password and user in Grafana](#how-to-setup-default-admin-password-and-user-in-grafana)
 - [Import and create Grafana dashboards](#import-and-create-grafana-dashboards)
 
-Kibana:
+OpenSearch Dashboards:
 
-- [How to configure Kibana](#how-to-configure-kibana)
-- [How to configure default user password in Kibana](#how-to-configure-default-user-password-in-kibana)
+- [How to configure Dashboards](#how-to-configure-opensearch-dashboards)
+- [How to configure default passwords for service users in OpenSearch Dashboards, OpenSearch and Filebeat](#how-to-configure-default-passwords-for-service-users-in-opensearch-dashboards-opensearch-and-filebeat)
 
 RabbitMQ:
 
@@ -231,7 +231,7 @@ When dashboard creation or import succeeds you will see it on your dashboard lis
 
 *Note: For some dashboards, there is no data to visualize until there is traffic activity for the monitored component.*
 
-# OpenSearch Dashboard
+# OpenSearch Dashboards
 
 OpenSearch Dashboards ( a Kibana successor ) is an open source search and analytics visualization layer. It also serves as a user interface for many OpenSearch project plugins. For more information please refer to [the official website](https://opensearch.org/docs/latest/dashboards/index/).
 
@@ -288,12 +288,12 @@ specification:
 
 #### OpenSearch Dashboards ( Kibana ) role
 
-To set password for `kibanaserver` user, which is used by Dashboards for communication with OpenSearch backend follow the procedure 
+To set password for `kibanaserver` user, which is used by Dashboards for communication with OpenSearch Dashboards backend follow the procedure 
 described in [Logging role](#logging-role).
 
 #### Filebeat role
 
-To set password of `logstash` user, which is used by Filebeat for communication with Open Distro Elasticsearch backend follow the procedure described 
+To set password of `logstash` user, which is used by Filebeat for communication with OpenSearch Dashboards backend follow the procedure described 
 in  [Logging role](#-logging-role).
 
 ### OpenSearch component
