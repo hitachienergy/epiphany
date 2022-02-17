@@ -58,8 +58,7 @@ specification:
 ```
 
 ## How to manage OpenSearch data
-OpenSearch
-Elasticsearch stores data using JSON documents, and an Index is a collection of documents. As in every database, it's
+OpenSearch stores data using JSON documents, and an Index is a collection of documents. As in every database, it's
 crucial to correctly maintain data in this one. It's almost impossible to deliver database configuration which will fit
 to every type of project and data stored in. Epiphany deploys preconfigured OpenSearch instance but this
 configuration may not meet any single user requirements. That's why, before going to production, stack configuration should be tailored to the
@@ -92,8 +91,8 @@ specification:
 
 If it's required to have OpenSearch instance which works in cluster formation configuration, except setting up more than one
 machine in yaml config file please acquaint dedicated
-support [article](https://opendistro.github.io/for-elasticsearch-docs/docs/elasticsearch/cluster/) and adjust
-Elasticsearch configuration file.
+support [article](https://opensearch.org/docs/latest/troubleshoot/index/) and adjust
+OpenSearch configuration file.
 
 We also want to strongly encourage you to get familiar with a bunch of plugins and policies available along with OpenSearch with the following ones among them:
 

@@ -24,8 +24,8 @@ metrics from different kinds of exporters.
 
 ## Logging
 
-Epiphany uses `Elasticsearch` as key-value database with `Filebeat` for gathering logs and `Kibana` as user interface to write queries and analyze logs.
+Epiphany uses `OpenSearch` as key-value database with `Filebeat` for gathering logs and `OpenSearch Dashboards` as user interface to write queries and analyze logs.
 
 ![Logging process view](diagrams/process-view/logging-process-view.svg)
 
-`Filebeat` gathers OS and application logs and ships them to `Elasticsearch`. Queries from `Kibana` are run against `Elasticsearch` key-value database.
+`Filebeat` gathers OS and application logs and ships them to `OpenSearch`. Queries from `Kibana` are run against `OpenSearch` key-value database.

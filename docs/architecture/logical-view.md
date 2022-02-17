@@ -51,14 +51,14 @@ Source | Purpose
 /var/log/zookeeper/version-2/* | Zookeeper's logs
 Docker containers | Kubernetes components that run in a container
 
-`Filebeat`, unlike `Grafana`, pushes data to database (`Elasticsearch`) instead of pulling them.
+`Filebeat`, unlike `Grafana`, pushes data to database (`OpenSearch`) instead of pulling them.
 [Read more](https://www.elastic.co/products/beats/filebeat) about `Filebeat`.
 
-### opensearch
+### OpenSearch
 
-`Elasticsearch` is highly scalable and full-text search enabled analytics engine. Epiphany Platform uses it for storage and analysis of logs.
+`OpenSearch` is highly scalable and full-text search enabled analytics engine. Epiphany Platform uses it for storage and analysis of logs.
 
-[Read more](https://www.elastic.co/guide/en/elasticsearch/reference/7.x/index.html)
+[Read more](https://opensearch.org/docs/latest)
 
 ### Elasticsearch Curator
 
@@ -66,9 +66,9 @@ Docker containers | Kubernetes components that run in a container
 
 [Read more](https://www.elastic.co/guide/en/elasticsearch/client/curator/5.8/index.html)
 
-### Kibana
+### OpenSearch Dashboards
 
-`Kibana` like `Grafana` is used in Epiphany for visualization, in addition it has full text search capabilities. `Kibana` uses `Elasticsearch` as datasource for logs, it allows to create full text queries, dashboards and analytics that are performed on logs.
+`OpenSearch Dashboards` like `Grafana` is used in Epiphany for visualization,It uses `OpenSearch` as datasource for logs, it allows to create full text queries, dashboards and analytics that are performed on logs.
 
 [Read more](https://www.elastic.co/products/kibana)
 

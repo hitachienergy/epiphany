@@ -481,7 +481,7 @@ specification:
 **Installation with more than one node will always be clustered** - Option to configure the non-clustered installation of more than one node for OpenSearch is not supported.
 
 ```yaml
-kind: configuration/opendistro-for-elasticsearch
+kind: configuration/opensearch
 title: OpenSearch Config
 name: default
 specification:

@@ -42,8 +42,8 @@ Here are some materials concerning Epiphany tooling and cluster components - bot
     2. [RabbitMQ](https://www.rabbitmq.com/)
         - [RabbitMQ Getting started](https://www.rabbitmq.com/getstarted.html)
 5. Central logging
-    1. [Elasticsearch](https://www.elastic.co/guide/en/elasticsearch/reference/current/index.html)
-    2. [Kibana](https://www.elastic.co/guide/en/kibana/current/index.html)
+    1. [OpenSearch Dashboards](https://opensearch.org/docs/latest/dashboards/index/)
+    2. [OpenSearch](https://opensearch.org/docs/latest)
     3. [Filebeat](https://www.elastic.co/guide/en/beats/filebeat/current/index.html)
         - Beats platform reference(https://www.elastic.co/guide/en/beats/libbeat/current/index.html)
 6. Load Balancing

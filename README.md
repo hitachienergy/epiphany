@@ -8,9 +8,9 @@ Epiphany at its core is a full automation of Kubernetes and Docker plus addition
 
 - Kafka or RabbitMQ for high speed messaging/events
 - Prometheus and Alertmanager for monitoring with Graphana for visualization
-- Elasticsearch and Kibana for centralized logging (OpenDistro)
+- OpenSearch for centralized logging
 - HAProxy for loadbalancing
-- Postgres and Elasticsearch for data storage
+- Postgres and OpenSearch for data storage
 - KeyCloak for authentication
 - Helm as package manager for Kubernetes
 
