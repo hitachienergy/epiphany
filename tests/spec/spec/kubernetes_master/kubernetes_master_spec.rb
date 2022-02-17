@@ -11,6 +11,13 @@ describe 'Waiting for all pods to be ready' do
   end
 end
 
+describe 'Check if containerd service is enabled/running' do
+  describe service('containerd') do
+    it { should be_enabled }
+    it { should be_running }
+  end
+end
+
 describe 'Checking if kubelet service is running' do
   describe service('kubelet') do
     it { should be_enabled }
@@ -187,7 +194,6 @@ if countInventoryHosts("kubernetes_node") == 0
       its(:exit_status) { should eq 0 }
     end
   end
-
 end
 
 describe 'Check the kubelet cgroup driver' do
@@ -207,18 +213,32 @@ describe 'Check the kubelet config in ConfigMap' do
   end
 end
 
-describe 'Check the docker cgroup and logging driver' do
-  describe file('/etc/docker/daemon.json') do
+describe 'Check the containerd' do
+  describe command('crictl version') do
     let(:disable_sudo) { false }
-    its(:content_as_json) { should include('exec-opts' => include('native.cgroupdriver=systemd')) }
-    its(:content_as_json) { should include('log-driver' => 'json-file') }
-    its(:content_as_json) { should_not include('exec-opts' => include('native.cgroupdriver=cgroupfs')) }
+    its(:stdout) { should include('RuntimeName:  containerd') }
   end
-  describe command('docker info | grep -i driver') do
+  describe command("kubectl get nodes -o jsonpath='{.items[].status.nodeInfo.containerRuntimeVersion}'") do
+    its(:stdout) { should include('containerd://1.4.12') }
+  end
+  describe file('/etc/containerd/config.toml') do
     let(:disable_sudo) { false }
-    its(:stdout) { should match(/Cgroup Driver: systemd/) }
-    its(:stdout) { should match(/Logging Driver: json-file/) }
-    its(:exit_status) { should eq 0 }
+    its(:content) { should match(/SystemdCgroup = true/) }
+  end
+end
+
+describe 'Check the OCI-spec' do
+  describe command('crictl info') do
+    let(:disable_sudo) { false }
+    its(:stdout) { should match('\"defaultRuntimeName\": \"runc\"') }
+  end
+end
+
+describe 'Check the kubelet cgroup driver' do
+  describe file('/var/lib/kubelet/config.yaml') do
+    let(:disable_sudo) { false }
+    its(:content_as_yaml) { should include('cgroupDriver' => 'systemd') }
+    its(:content_as_yaml) { should_not include('cgroupDriver' => 'cgroupfs') }
   end
 end
 
@@ -228,8 +248,8 @@ describe 'Check certificate rotation for the kubelet' do
     its(:content_as_yaml) { should include('rotateCertificates' => true) }
   end
   describe command("kubectl describe cm $(kubectl get cm -n kube-system \
-    | awk '/kubelet-config/{print $1}') -n kube-system | grep -i rotateCertificates") do
-    its(:stdout) { should match(/rotateCertificates: true/) }
+    | awk '/kubelet-config/{print $1}') -n kube-system") do
+    its(:stdout) { should contain('rotateCertificates: true') }
     its(:exit_status) { should eq 0 }
   end
 end

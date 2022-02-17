@@ -212,7 +212,7 @@
 - name: Restart systemd services
   when:
     - services_to_restart is defined
-    - services_to_restart | difference(['docker', 'kubelet']) | length == 0
+    - services_to_restart | difference(['containerd', 'kubelet']) | length == 0
   block:
     - name: Restart services
       systemd:
