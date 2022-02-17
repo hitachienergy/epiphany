@@ -92,14 +92,14 @@ class Yum(Command):
 
         return False
 
-    def makecache(self, fast: bool = True,
+    def makecache(self, timer: bool = True,
                   assume_yes: bool = True):
         args: List[str] = ['makecache']
 
         args.append('-y' if assume_yes else '')
 
-        if fast:
-            args.append('fast')
+        if timer:
+            args.append('timer')
 
         self.run(args)
 

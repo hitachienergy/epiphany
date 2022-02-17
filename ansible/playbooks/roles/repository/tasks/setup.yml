@@ -12,8 +12,8 @@
 - name: Set OS name for download script
   set_fact:
     download_requirements_os_name: >-
-      {{ 'centos-7' if (ansible_distribution == 'CentOS' and ansible_distribution_major_version == '7') else
-          'redhat-7' if (ansible_distribution == 'RedHat' and ansible_distribution_major_version == '7') else
+      {{ 'centos-8' if (ansible_distribution == 'CentOS' and ansible_distribution_major_version == '8') else
+          'redhat-8' if (ansible_distribution == 'RedHat' and ansible_distribution_major_version == '8') else
           'ubuntu-20.04' if (ansible_distribution == 'Ubuntu' and ansible_distribution_version == '20.04') else None }}
 
 - name: Download Epiphany requirements on repository host  # online mode

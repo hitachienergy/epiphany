@@ -146,7 +146,7 @@ class RedHatFamilyMode(BaseMode):
         prereq_packages: List[str] = self._requirements['prereq-packages']
         for prereq_pkg in prereq_packages:
             collected_prereqs.extend(self._tools.repoquery.query(prereq_pkg,
-                                                                 queryformat='%{ui_nevra}',
+                                                                 queryformat='%{name}-%{version}-%{release}.%{arch}',
                                                                  arch=self._cfg.os_arch.value))
 
         unique_collected_prereqs: Set = set(collected_prereqs)
@@ -167,7 +167,7 @@ class RedHatFamilyMode(BaseMode):
         for package in packages:
             # package itself
             package_name = self._tools.repoquery.query(package,
-                                                       queryformat='%{ui_nevra}',
+                                                       queryformat='%{name}-%{version}-%{release}.%{arch}',
                                                        arch=self._cfg.os_arch.value)[0]
 
             packages_to_download.append(package_name)
