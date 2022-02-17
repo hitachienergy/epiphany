@@ -13,7 +13,6 @@ packages:
   - 'docker-ce-cli=5:20.10.8*'
   - 'docker-ce-rootless-extras=5:20.10.8*'
   - 'ebtables'
-
   # for opendistroforelasticsearch & logging roles
   - 'elasticsearch-oss=7.10.2*'
 
@@ -77,6 +76,7 @@ packages:
   - 'sysstat'
 
   # for sysstat
+  - 'libsensors5'
   - 'tar'
   - 'telnet'
   - 'tmux'

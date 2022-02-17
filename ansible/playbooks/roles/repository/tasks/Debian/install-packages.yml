@@ -4,6 +4,7 @@
     name:
       - python3-pip
     state: present
+    update_cache: true
   register: result
   retries: 3
   delay: 1
