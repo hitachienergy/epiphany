@@ -29,20 +29,20 @@ schema_types = SchemaTypes(DEFAULT='defaults', VALIDATION='validation')
 
 
 def load_schema_obj(schema_type, provider, kind):
-    path_to_file = os.path.join(SCHEMA_DIR, provider, schema_type, kind+'.yml')
+    path_to_file = os.path.join(SCHEMA_DIR, provider, schema_type, f'{kind}.yml')
     if os.path.isfile(path_to_file):
         return load_yaml_file(path_to_file)
     else:
-        path_to_file = os.path.join(SCHEMA_DIR, 'common', schema_type, kind + '.yml')
+        path_to_file = os.path.join(SCHEMA_DIR, 'common', schema_type, f'{kind}.yml')
         return load_yaml_file(path_to_file)
 
 
 def load_all_schema_objs(schema_type, provider, kind):
-    path_to_file = os.path.join(SCHEMA_DIR, provider, schema_type, kind+'.yml')
+    path_to_file = os.path.join(SCHEMA_DIR, provider, schema_type, f'{kind}.yml')
     if os.path.isfile(path_to_file):
         return load_yamls_file(path_to_file)
     else:
-        path_to_file = os.path.join(SCHEMA_DIR, 'common', schema_type, kind + '.yml')
+        path_to_file = os.path.join(SCHEMA_DIR, 'common', schema_type, f'{kind}.yml')
         return load_yamls_file(path_to_file)
 
 

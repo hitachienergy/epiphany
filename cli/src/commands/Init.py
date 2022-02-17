@@ -61,5 +61,5 @@ class Init(Step):
         # save document
         save_manifest(docs, self.name, f'{ self.name }.yml')
 
-        self.logger.info('Initialized new configuration and saved it to "' + os.path.join(get_build_path(self.name), self.name + '.yml') + '"')
+        self.logger.info('Initialized new configuration and saved it to "' + os.path.join(get_build_path(self.name), f'{ self.name }.yml') + '"')
         return 0
