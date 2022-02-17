@@ -60,6 +60,8 @@ class APIProxy:
         return result
 
     def login(self, env=None):
+        # Pass to match the interface of the 'aws' provider APIProxy. For 'was' provider we already login with
+        # key and secret when we create the BOTO3 session.
         pass
 
     def get_image_id(self, os_full_name):

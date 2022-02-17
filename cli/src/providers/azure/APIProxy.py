@@ -41,7 +41,7 @@ class APIProxy:
         tenant = sp_data['tenant']
         return self.run(self, f'az login --service-principal -u \'{appId}\' -p \'{password}\' --tenant \'{tenant}\'', False)
 
-    def set_active_subscribtion(self, subscription_id):
+    def set_active_subscription(self, subscription_id):
         self.run(self, f'az account set --subscription {subscription_id}')
 
     def get_active_subscribtion(self):
@@ -85,14 +85,14 @@ class APIProxy:
         if not self.cluster_model.specification.cloud.use_service_principal:
             # Account
             subscription = self.login_account()
-            self.set_active_subscribtion(subscription['id'])
+            self.set_active_subscription(subscription['id'])
         else:
             # Service principal
             sp_file = os.path.join(get_terraform_path(self.cluster_model.specification.name), SP_FILE_NAME)
             if not os.path.exists(sp_file):
                 # If no service principal exists or is defined we created one and for that we need to login using an account
                 subscription = self.login_account()
-                self.set_active_subscribtion(subscription['id'])
+                self.set_active_subscription(subscription['id'])
 
                 # Create the service principal, for now we use the default subscription
                 self.logger.info('Creating service principal')
@@ -111,7 +111,7 @@ class APIProxy:
 
             if 'subscriptionId' in sp:
                 # Set active subscription if sp contains it.
-                self.set_active_subscribtion(sp['subscriptionId'])
+                self.set_active_subscription(sp['subscriptionId'])
                 env['ARM_SUBSCRIPTION_ID'] = sp['subscriptionId']
             else:
                 # No subscriptionId in sp.yml so use the default one from Azure SP login.

@@ -29,4 +29,5 @@ class APIProxy:
         return result
 
     def login(self, env=None):
+        # Pass to match the interface of the 'any' provider APIProxy. For 'any' provider we don't need a login.
         pass
