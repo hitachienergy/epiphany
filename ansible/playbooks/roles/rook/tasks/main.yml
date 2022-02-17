@@ -22,28 +22,44 @@
         - "{{ rook_helm_chart_file_name }}"
         - "{{ rook_helm_cluster_chart_file_name }}"
 
-    - name: Create configuration Helm chart file (custom-chart-values.yml)
-      when: specification.config is defined
+    - name: Create custom configuration for operator Helm chart file (operator-custom-chart-values.yml)
+      when: specification.operator_chart_values is defined
       copy:
-        content: "{{ specification.config }}"
-        dest: "{{ download_directory }}/custom-chart-values.yml"
+        content: "{{ specification.operator_chart_values }}"
+        dest: "{{ download_directory }}/operator-custom-chart-values.yml"
 
-    - name: Install Rook operator using Helm chart with values from custom-chart-values.yml
-      when: specification.config is defined
+    - name: Create custom configuration for cluster Helm chart file (cluster-custom-chart-values.yml)
+      when: specification.cluster_chart_values is defined
+      copy:
+        content: "{{ specification.cluster_chart_values }}"
+        dest: "{{ download_directory }}/cluster-custom-chart-values.yml"
+
+    - name: Install Rook operator using Helm chart with values from operator-custom-chart-values.yml
+      when: specification.operator_chart_values is defined
       shell: |
         helm -n {{ rook_chart_namespace }} upgrade --install \
-          -f {{ download_directory }}/custom-chart-values.yml \
+          -f {{ download_directory }}/operator-custom-chart-values.yml \
           {{ rook_helm_chart_name }} \
           {{ download_directory }}/{{ rook_helm_chart_file_name }} --create-namespace
 
     - name: Install Rook operator using Helm chart with default values
-      when: not specification.config is defined
+      when: not specification.operator_chart_values is defined
       shell: |
         helm -n {{ rook_chart_namespace }} upgrade --install \
           {{ rook_helm_chart_name }} \
           {{ download_directory }}/{{ rook_helm_chart_file_name }} --create-namespace
 
+    - name: Create Rook cluster with values from cluster-custom-chart-values.yml
+      when: specification.cluster_chart_values is defined
+      shell: |
+        helm -n {{ rook_chart_namespace }} upgrade --install \
+          --set operatorNamespace={{ rook_chart_namespace }} \
+          -f {{ download_directory }}/cluster-custom-chart-values.yml \
+          {{ rook_helm_cluster_chart_name }} \
+          {{ download_directory }}/{{ rook_helm_cluster_chart_file_name }} --create-namespace
+
     - name: Create Rook cluster with default values
+      when: not specification.cluster_chart_values is defined
       shell: |
         helm -n {{ rook_chart_namespace }} upgrade --install \
           --set operatorNamespace={{ rook_chart_namespace }} \
