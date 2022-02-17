@@ -15,5 +15,5 @@ enabled=1
 gpgcheck=0
 EOF
 
-yum makecache fast
-yum repolist
+dnf makecache timer
+dnf repolist

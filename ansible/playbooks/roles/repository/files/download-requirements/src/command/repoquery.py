@@ -17,6 +17,7 @@ class Repoquery(Command):
                 arch: str,
                 requires: bool,
                 resolve: bool,
+                quiet: bool,
                 output_handler: Callable) -> List[str]:
         """
         Run generic query using `repoquery` tool.
@@ -39,6 +40,9 @@ class Repoquery(Command):
 
         if resolve:
             args.append('--resolve')
+
+        if quiet:
+            args.append('--quiet')
 
         args.extend(['--queryformat', queryformat])
         args.append(f'--archlist={arch},noarch')
