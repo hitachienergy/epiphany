@@ -30,7 +30,7 @@ metadata:
   namespace: {{ namespace_name }}
 data:
   enabled_plugins: |
-      [rabbitmq_management,rabbitmq_peer_discovery_k8s].
+      [{% for plugin in rabbitmq_plugins %}{{ plugin }}{% if not loop.last %},{% endif %}{% endfor %}].
   rabbitmq.conf: |
       listeners.tcp.default = {{ amqp_port }}
       # To allow custom configs like vm_memory_high_watermark define it via custom_configurations in data.yaml
