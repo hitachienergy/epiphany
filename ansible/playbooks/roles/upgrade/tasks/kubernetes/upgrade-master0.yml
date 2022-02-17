@@ -41,9 +41,15 @@
     - name: k8s/master0 | Include set-cluster-version.yml
       include_tasks: set-cluster-version.yml # sets cluster_version
 
+    # Retries needed for HA deployment (random failures)
     - name: k8s/master0 | Add k8s annotation for containerd
       command: >-
         kubectl annotate node {{ inventory_hostname }} --overwrite kubeadm.alpha.kubernetes.io/cri-socket=unix:///run/containerd/containerd.sock
+      register: result
+      until:
+        - result is succeeded
+      retries: 30
+      delay: 1
 
     # Note: Usage of the --config flag for reconfiguring the cluster during upgrade is not recommended since v1.16
     - name: k8s/master0 | Upgrade K8s cluster to v{{ version }}
