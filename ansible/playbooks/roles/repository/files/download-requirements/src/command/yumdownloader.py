@@ -22,7 +22,7 @@ class Yumdownloader(Command):
         if quiet:
             args.append('--quiet')
 
-        args.append(f'--archlist={arch}')
+        args.append(f'--arch={arch},noarch')
 
         if exclude:
             args.append(f'--exclude={exclude}')
