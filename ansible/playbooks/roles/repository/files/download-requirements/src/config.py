@@ -16,7 +16,7 @@ class OSType(Enum):
     Subdirs match always with value[0] name.
     """
     Ubuntu = ['ubuntu-20.04']
-    RedHat = ['redhat-7', 'rhel-7']
+    RedHat = ['redhat-8', 'rhel-8']
 
 
 class OSArch(Enum):
