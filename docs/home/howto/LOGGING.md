@@ -1,46 +1,50 @@
 # Centralized logging setup
 
-For centralized logging Epiphany uses [OpenDistro for Elasticsearch](https://opendistro.github.io/for-elasticsearch/).
-In order to enable centralized logging, be sure that `count` property for `logging` feature is greater than 0 in your
+For centralized logging Epiphany uses [OpenSearch](https://opensearch.org/) stack - an opensource successor<sup>[1]</sup> of Elasticsearch & Kibana projects.
+
+In order to enable centralized logging, be sure to set `count` property for `logging` feature to the value greater than 0 in your
 configuration manifest.
 
 ```yaml
 kind: epiphany-cluster
-...
+[...]
 specification:
-  ...
+  [...]
   components:
     kubernetes_master:
       count: 1
     kubernetes_node:
       count: 0
-    ...
+    [...]
     logging:
-      count: 1
-    ...
+      count: 1  # <<------
+    [...]
 ```
 
 ## Default feature mapping for logging
 
+Below example shows a default feature mapping for logging:
 ```yaml
-...
-logging:
-  - logging
-  - kibana
-  - node-exporter
-  - filebeat
-  - firewall
+[...]
+roles_mapping:
+[...]
+  logging:
+    - logging
+    - kibana
+    - node-exporter
+    - filebeat
+    - firewall
 ...
 ```
 
-The `logging` role replaced `elasticsearch` role. This change was done to enable Elasticsearch usage also for data
+The `logging` role has replaced `elasticsearch` role. This change was done to enable Elasticsearch usage also for data
 storage - not only for logs as it was till 0.5.0.
 
-Default configuration of `logging` and `opensearch` roles is identical (
-./DATABASES.md#how-to-start-working-with-opensearch-for-elasticsearch). To modify configuration of centralized logging
-adjust and use the following defaults in your manifest:
+Default configuration of `logging` and `opensearch` roles is identical ( more info [here](./DATABASES.md#how-to-start-working-with-opensearch) ). To modify configuration of centralized logging
+adjust to your needs the following default values in your manifest:
 
 ```yaml
+[...]
 kind: configuration/logging
 title: Logging Config
 name: default
@@ -269,3 +273,8 @@ specification:
 ```
 
 Note: Setting `specification.kibana.dashboards.enabled` to `true` not providing Kibana will result in a Filebeat crash.
+
+<br>
+
+---
+<sup>[1] More information about migrating from Elasticsearch & Kibana to OpenSearch & OpenSearch Dashboards can be found [here](./UPGRADE.md#migration-from-open-distro-for-elasticsearch--kibana-to-opensearch-and-opensearch-dashboards).</sup>

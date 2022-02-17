@@ -91,8 +91,8 @@
   - [How to switchover database nodes](./howto/DATABASES.md#how-to-switchover-database-nodes)
   - [How to set up PGBouncer, PgPool and PostgreSQL parameters](./howto/DATABASES.md#how-to-set-up-pgbouncer-pgpool-and-postgresql-parameters)
   - [How to set up PostgreSQL audit logging](./howto/DATABASES.md#how-to-set-up-postgresql-audit-logging)
-  - [How to start working with OpenDistro for Elasticsearch](./howto/DATABASES.md#how-to-start-working-with-opensearch-for-elasticsearch)
-  - [How to manage Opendistro for Elasticsearch data](./howto/LOGGING.md#how-to-manage-opensearch-for-elasticsearch-data)
+  - [How to start working with OpenDistro for Elasticsearch](./howto/DATABASES.md#how-to-start-working-with-opendistro-for-elasticsearch)
+  - [How to manage Opendistro for Elasticsearch data](./howto/LOGGING.md#how-to-manage-opendistro-for-elasticsearch-data)
 
 - [Backup and Recovery](./howto/BACKUP.md)
   - [Epiphany backup and restore](./howto/BACKUP.md#epiphany-backup-and-restore)

@@ -83,7 +83,7 @@
 - [#782](https://github.com/epiphany-platform/epiphany/issues/781) - All disks encryption documentation - AWS
 - [#782](https://github.com/epiphany-platform/epiphany/issues/782) - All disks encryption documentation - Azure
 - [#784](https://github.com/epiphany-platform/epiphany/issues/784) - Switch to Open Distro for ElasticSearch
-  - [Data storage](/docs/home/howto/DATABASES.md#how-to-start-working-with-opensearch-for-elasticsearch)
+  - [Data storage](/docs/home/howto/DATABASES.md#how-to-start-working-with-opendistro-for-elasticsearch)
   - [Centralized logging](/docs/home/howto/LOGGING.md#centralized-logging-setup)
 
 - [#755](https://github.com/epiphany-platform/epiphany/issues/755) - Create Ansible playbook to install Apache Ignite as a service on VM
