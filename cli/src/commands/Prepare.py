@@ -58,7 +58,7 @@ class Prepare(Step):
             arch_path / 'images.yml':                       dest_path / f'requirements/{self.arch}',
             charts_path:                                    dest_path / 'charts/system',
             distro_path / 'packages.yml':                   dest_path / f'requirements/{self.arch}/{self.os}',
-            repositories_file_path:                         dest_path / 'repositories',
+            repositories_file_path:                         dest_path / f'repositories/{self.arch}',
             requirements_path / 'grafana-dashboards.yml':   dest_path / 'requirements',
             self.PREPARE_PATH / 'download-requirements.py': dest_path,
             self.PREPARE_PATH / 'src':                      dest_path / 'src',

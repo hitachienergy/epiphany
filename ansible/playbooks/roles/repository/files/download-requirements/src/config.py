@@ -31,6 +31,7 @@ class Config:
         self.distro_subdir: Path
         self.enable_backup: bool
         self.log_file: Path
+        self.is_log_file_enabled: bool
         self.os_arch: OSArch
         self.os_type: OSType
         self.repo_path: Path
@@ -64,7 +65,9 @@ class Config:
         if self.enable_backup:
             lines.append(f'Repos backup file: {str(self.repos_backup_file)}')
 
-        lines.append(f'Log file location: {str(self.log_file.absolute())}')
+        if self.is_log_file_enabled:
+            lines.append(f'Log file location: {str(self.log_file.absolute())}')
+
         lines.append(f'Retries count: {self.retries}')
 
         lines.append('-' * LINE_SIZE)
@@ -189,5 +192,6 @@ class Config:
         self.os_arch = OSArch(os.uname().machine)
         self.repos_backup_file = Path(args['repos_backup_file'])
         self.retries = args['retries']
+        self.is_log_file_enabled = False if args['no_logfile'] else True
 
         self.distro_subdir = Path(f'{self.os_arch.value}/{self.os_type.value}')
