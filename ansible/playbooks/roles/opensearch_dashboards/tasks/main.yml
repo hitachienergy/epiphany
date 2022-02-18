@@ -22,7 +22,7 @@
     enabled: yes
 
 - name: Get all the installed dashboards plugins
-  command: "sudo -u {{ ops_dashboards_user }} {{ ops_plugin_bin_path }} list"
+  command: "sudo -u {{ specification.opsd_user }} {{ specification.paths.opsd_plugin_bin_path }} list"
   register: list_plugins
 
 - name: Show all the installed dashboards plugins

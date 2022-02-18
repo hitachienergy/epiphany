@@ -1,33 +1,39 @@
 ---
-- name: Download Opensearch dashbaords {{ versions[ansible_os_family].ops_dashboards_version }}
+- name: Download Opensearch dashbaords
   include_role:
     name: download
     tasks_from: download_file
   vars:
-    file_name: "opensearch-dashboards-{{ versions[ansible_os_family].ops_dashboards_version }}-linux-x64.tar.gz"
+    file_name: "opensearch-dashboards-{{ versions[ansible_os_family].opsd_version }}-linux-x64.tar.gz"
 
-- name: Create opensearch Dashboards user
+- name: Create OpenSearch Dashboards user
   user:
-    name: "{{ ops_dashboards_user }}"
+    name: "{{ specification.opsd_user }}"
     state: present
     shell: /bin/bash
 
 - name: Create home directory
   file:
-    path: "{{ ops_dashboards_home }}"
+    path: "{{ specification.paths.opsd_home }}"
     state: directory
-    owner: "{{ ops_dashboards_user }}"
-    group: "{{ ops_dashboards_user }}"
+    owner: "{{ specification.opsd_user }}"
+    group: "{{ specification.opsd_user }}"
 
-- name: Extract the tar file
-  command: "chdir=/tmp/ tar -xvzf opensearch-dashboards-{{ versions[ansible_os_family].ops_dashboards_version }}-linux-x64.tar.gz -C {{ ops_dashboards_home }} --strip-components=1"
+- name: Extract the OPSD tar file
+  unarchive:
+    src: "/tmp/opensearch-dashboards-{{ versions[ansible_os_family].opsd_version }}-linux-x64.tar.gz"
+    dest: "{{ specification.paths.opsd_home }}"
+    owner: "{{ specification.opsd_user }}"
+    remote_src: yes
+    extra_opts:
+    - --strip-components=1
 
 - name: Copy Configuration File
   template:
     src: opensearch_dashboards.yml.j2
-    dest: "{{ ops_dashboards_conf_dir }}/opensearch_dashboards.yml"
-    owner: "{{ ops_dashboards_user }}"
-    group: "{{ ops_dashboards_user }}"
+    dest: "{{ specification.paths.opsd_conf_dir }}/opensearch_dashboards.yml"
+    owner: "{{ specification.opsd_user }}"
+    group: "{{ specification.opsd_user }}"
     mode: 0644
     backup: yes
 

@@ -2,8 +2,8 @@ server.port: 5601
 server.host: "{{ hostvars[inventory_hostname]['ansible_host'] }}"
 opensearch.hosts: ["{{ ops_nodes_dashboards }}"]
 opensearch.ssl.verificationMode: none
-opensearch.username: "{{ ops_dashboards_user }}"
-opensearch.password: "{{ ops_dashboards_password }}"
+opensearch.username: "{{ specification.opsd_user }}"
+opensearch.password: "{{ specification.opsd_password }}"
 opensearch.requestHeadersWhitelist: [ authorization,securitytenant ]
 
 opensearch_security.multitenancy.enabled: true

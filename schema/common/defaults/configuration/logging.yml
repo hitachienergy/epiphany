@@ -24,9 +24,10 @@ specification:
     ops_repo: /var/lib/opensearch-snapshots
     ops_data: /var/lib/opensearch
     ops_logs: /var/log/opensearch
+    ops_perftop_home: /usr/share/opensearch/perftop
+    opsd_plugin_bin_path: /usr/share/opensearch-dashboards/bin/opensearch-dashboards-plugin
     opsd_home: /usr/share/opensearch-dashboards
     opsd_conf_dir: /usr/share/opensearch-dashboards/config
-    opsd_plugin_bin_path: /usr/share/opensearch-dashboards/bin/opensearch-dashboards-plugin
   jvm_options:
     Xmx: 1g
   opensearch_security:
