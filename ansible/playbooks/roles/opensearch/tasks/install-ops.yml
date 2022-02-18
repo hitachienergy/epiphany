@@ -4,7 +4,10 @@
     name: download
     tasks_from: download_file
   vars:
-    file_name: "opensearch-{{ versions[ansible_os_family].ops_version }}-linux-x64.tar.gz"
+    file_name: "{{ item }}"
+  with_items:
+    - "opensearch-{{ versions[ansible_os_family].ops_version }}-linux-x64.tar.gz"
+    - "opensearch-perf-top-{{ versions[ansible_os_family].ops_perftop_version }}-linux-x64.zip"
 
 - name: Ensure Opensearch service user exists
   user:
@@ -20,13 +23,14 @@
     group: "{{ specification.ops_user }}"
   with_items:
     - "{{ specification.paths.ops_home }}"
+    - "{{ specification.paths.ops_perftop_home }}"
     - "{{ specification.paths.ops_log_dir }}"
     - "{{ specification.paths.ops_conf_dir }}"
     - "{{ specification.paths.ops_data }}"
     - "{{ specification.paths.ops_logs }}"
     - "{{ certificates.dirs.certs }}"
 
-- name: Extract the tar file
+- name: Extract the OPS tar file
   unarchive:
     src: "/tmp/opensearch-{{ versions[ansible_os_family].ops_version }}-linux-x64.tar.gz"
     dest: "{{ specification.paths.ops_home }}"
@@ -34,6 +38,13 @@
     remote_src: yes
     extra_opts:
     - --strip-components=1
+
+- name: Extract OPS PerfTop the tar file
+  unarchive:
+    src: "/tmp/opensearch-perf-top-{{ versions[ansible_os_family].ops_perftop_version }}-linux-x64.zip"
+    dest: "{{ specification.paths.ops_perftop_home }}"
+    owner: "{{ specification.ops_user }}"
+    remote_src: yes
 
 - name: Create systemd service
   template:
