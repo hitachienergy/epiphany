@@ -12,12 +12,12 @@ Version 0.10 won't be supported anymore. Instead, we introduced version 1.0 whic
 - [#1798](https://github.com/epiphany-platform/epiphany/issues/1798) - Additional alerts for Prometheus
 - [#1355](https://github.com/epiphany-platform/epiphany/issues/1355) - Updating cloud based OS images - configuration required for Azure RHEL LVM images
 - [#2081](https://github.com/epiphany-platform/epiphany/issues/2081) - Replace Skopeo with Crane
-- [#1323](https://github.com/epiphany-platform/epiphany/issues/1323) - Documentation how to handle data in Opendistro for opensearch
+- [#1323](https://github.com/epiphany-platform/epiphany/issues/1323) - Documentation how to handle data in Opendistro for Elasticsearch
 - [#1789](https://github.com/epiphany-platform/epiphany/issues/1789) - [Ubuntu] Add retry feature for downloading packages in download-requirements.sh
 
 ### Fixed
 
-- [#1870](https://github.com/epiphany-platform/epiphany/issues/1870) - Do not install Filebeat when there is no opensearch
+- [#1870](https://github.com/epiphany-platform/epiphany/issues/1870) - Do not install Filebeat when there is no Elasticsearch
 - [#1881](https://github.com/epiphany-platform/epiphany/issues/1881) - epicli: wrong informations in help messages
 - [#1959](https://github.com/epiphany-platform/epiphany/issues/1959) - Network traffic not allowed from load balancer's subnet to Kubernetes's subnet in AWS
 - [#1991](https://github.com/epiphany-platform/epiphany/issues/1991) - When custom repo is used backup/recovery stops working
