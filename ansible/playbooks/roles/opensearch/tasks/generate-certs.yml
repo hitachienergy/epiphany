@@ -5,18 +5,18 @@
   file:
     state: directory
     path: "{{ certificates.dirs.ca_key }}"
-    owner: root
+    owner: opensearch
     group: opensearch
-    mode: u=rwx,g=rx,o=  # elasticsearch.service requires 'rx' for group
+    mode: u=rwx,g=rwx,o=
 
 # csr files are kept only for idempotency
 - name: Create directory for CSR files
   file:
     state: directory
     path: "{{ certificates.dirs.csr }}"
-    owner: root
+    owner: opensearch
     group: opensearch
-    mode: u=rwx,g=rx,o=  # CSR file doesn't contain private key
+    mode: u=rwx,g=rwx,o=  # CSR file doesn't contain private key
 
 - name: Generate keys and certificates on first node
   when: inventory_hostname == ansible_play_hosts_all[0]
@@ -25,20 +25,17 @@
       size: 2048  # based on ODFE docs
       type: RSA
       mode: u=rw,go=
-      owner: root
-      group: opensearch
+      owner: opensearch
       format: pkcs8
     community.crypto.openssl_csr:
       mode: u=rw,g=r,o=
-      owner: root
-      group: opensearch
+      owner: opensearch
       use_common_name_for_san: false
     community.crypto.x509_certificate:
       selfsigned_digest: sha256
       ownca_digest: sha256
       mode: u=rw,g=r,o=
-      owner: root
-      group: opensearch
+      owner: opensearch
   block:
     # --- Generate CA root certificate ---
 
@@ -171,9 +168,9 @@
     format: pkcs8
     size: 2048
     type: RSA
-    mode: u=rw,g=r,o=  # elasticsearch.service requires 'r' for group
-    owner: root
-    group: opensearch
+    mode: u=rw,g=r,o=
+    owner: opensearch
+    # group: opensearch
     return_content: false
   register: node_key
 
@@ -199,8 +196,8 @@
     subjectAltName: "{{ _dns_list + [ 'IP:' + ansible_default_ipv4.address ] }}"
     use_common_name_for_san: false
     mode: u=rw,g=r,o=
-    owner: root
-    group: opensearch
+    owner: opensearch
+    # group: opensearch
   register: node_csr
   vars:
     _unique_hostnames: "{{ [ansible_hostname, ansible_nodename, ansible_fqdn] | unique }}"
@@ -217,5 +214,5 @@
     ownca_not_after: "{{ certificates.files.node.cert.ownca_not_after }}"
     ownca_digest: sha256
     mode: u=rw,go=r
-    owner: root
-    group: opensearch
+    owner: opensearch
+    # group: opensearch
