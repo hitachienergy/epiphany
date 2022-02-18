@@ -1,8 +1,43 @@
-## Kubernetes persistent storage
+# Kubernetes Persistent Storage
 
-Epiphany supports [Azure Files](https://docs.microsoft.com/en-us/azure/storage/files/storage-files-introduction)
-and [Amazon EFS](https://docs.aws.amazon.com/efs/latest/ug/how-it-works.html) storage types to use as Kubernetes
-persistent volumes.
+In Epiphany there are two supported ways of setting up Kubernetes Persistent Storage:
+- Rook/Ceph Cluster Storage with disks resources created by Epiphany
+- [Azure Files](https://docs.microsoft.com/en-us/azure/storage/files/storage-files-introduction)
+or [Amazon EFS](https://docs.aws.amazon.com/efs/latest/ug/how-it-works.html) storage types to use as Kubernetes persistent volumes
+
+## Kubernetes Rook/Ceph Cluster Storage
+
+Rook provides distributed storage systems for Kubernetes installed with Epiphany.
+It provides capabilities:
+- self-managing
+- self-scaling
+- self-healing
+- upgrading
+- migration
+- disaster recovery
+- monitoring
+
+Epiphany supports Rook with Ceph storage, other options provided by Rook - Cassandra, NFS are not supported.
+
+In Epiphany Rook/Ceph is installed with using Helm Chart and may be configured according to needs with overriding default Helm Chart values with adding them to proper sections in Epiphany `configuration/rook`.
+
+More information about Helm Chart values may be found:
+- [Helm Operator](https://github.com/rook/rook/blob/master/Documentation/helm-operator.md)
+- [Helm Ceph Cluster](https://github.com/rook/rook/blob/master/Documentation/helm-ceph-cluster.md)
+
+Sample configuration files that can be used in Epiphany `configuration/rook`:
+- [Helm Operator](https://raw.githubusercontent.com/rook/rook/v1.8.5/deploy/charts/rook-ceph/values.yaml)
+- [Helm Ceph Cluster](https://raw.githubusercontent.com/rook/rook/v1.8.5/deploy/charts/rook-ceph-cluster/values.yaml)
+
+More informations about Rook with Ceph storage may be found in the official Rook [documentation](https://rook.io/docs/rook/v1.8/).
+
+### Rook/Ceph Cluster Storage - Azure
+
+To create Rook/Ceph Cluster Storage first you need to add empty disk resource to Kubernetes cluster created by Epiphany.
+
+### Rook/Ceph Cluster Storage - AWS
+
+### Rook/Ceph Cluster Storage - On Prem
 
 ### Azure
 
