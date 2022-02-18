@@ -61,9 +61,8 @@
           _archive_root_dir: >-
             {{ unarchive_list_files.files | first | dirname }}
 
-# TODO: add instllation of PerfAn to opensearch role
-# - name: Restart opensearch-performance-analyzer service
-#   systemd:
-#     name: opensearch-performance-analyzer
-#     state: restarted
-#   when: log4j_patch.changed
+- name: Restart opensearch-performance-analyzer service
+  systemd:
+    name: opensearch-performance-analyzer
+    state: restarted
+  when: log4j_patch.changed
