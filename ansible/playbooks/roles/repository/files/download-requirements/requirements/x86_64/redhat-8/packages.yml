@@ -3,15 +3,13 @@ prereq-packages:
   # packages-repo-prereqs
   - 'apr'  # for httpd
   - 'apr-util'  # for httpd
-  - 'createrepo'
-  - 'deltarpm'  # for createrepo
+  - 'createrepo_c'
+  - 'drpm'  # for createrepo
   - 'httpd'
   - 'httpd-tools'  # for httpd
   - 'mailcap'  # for httpd
   - 'mod_ssl'  # for httpd
-  - 'python-chardet'  # for createrepo
-  - 'python-deltarpm'  # for createrepo
-  - 'python-kitchen'  # for createrepo
+  - 'python3-chardet'  # for createrepo
   - 'redhat-logos'  # for httpd
   - 'yum-utils'
 
@@ -24,13 +22,13 @@ packages:
     - 'conntrack-tools'  # for kubelet
     - 'containerd.io-1.5.11'
     - 'container-selinux'
-    - 'cri-tools-1.13.0'
+    - 'cri-tools'
     - 'curl'
     - 'dejavu-sans-fonts'  # for grafana
     - 'docker-ce-20.10.8'
     - 'docker-ce-cli-20.10.8'
     - 'docker-ce-rootless-extras-20.10.8'
-    - 'ebtables'
+    - 'iptables-ebtables'
     - 'elasticsearch-curator-5.8.3'
     - 'elasticsearch-oss-7.10.2'  # for opendistroforelasticsearch & logging roles
     - 'ethtool'
@@ -48,8 +46,8 @@ packages:
     - 'javapackages-tools'  # for java-1.8.0-openjdk-headless
     - 'jq'
     - 'libini_config'  # for nfs-utils
-    - 'libselinux-python'
-    - 'libsemanage-python'
+    - 'python3-libselinux'
+    - 'python3-libsemanage'
     - 'libX11'  # for grafana
     - 'libxcb'  # for grafana
     - 'libXcursor'  # for grafana
@@ -75,22 +73,19 @@ packages:
     - 'perl-Pod-Simple'  # for vim
     - 'perl-Pod-Usage'  # for vim
     - 'pgaudit15_13-1.5.0'
-    - 'policycoreutils-python'  # for container-selinux
-    - 'pyldb'  # for cifs-utils
-    - 'python-cffi'  # for python2-cryptography
-    - 'python-firewall'  # for firewalld
-    - 'python-kitchen'  # for yum-utils
-    - 'python-lxml'  # for java-1.8.0-openjdk-headless
-    - 'python-psycopg2'
-    - 'python-pycparser'  # for python2-cryptography
-    - 'python-setuptools'
-    - 'python-slip-dbus'  # for firewalld
-    - 'python2-cryptography'  # for Ansible (certificate modules)
-    - 'python3-3.6.8'
+    - 'python3-policycoreutils'  # for container-selinux
+    - 'python3-ldb'  # for cifs-utils
+    - 'python3-cffi'  # for python2-cryptography
+    - 'python3-firewall'  # for firewalld
+    - 'python3-lxml'  # for java-1.8.0-openjdk-headless
+    - 'python3-psycopg2'
+    - 'python3-pycparser'  # for python2-cryptography
+    - 'python3-setuptools'
+    - 'python3-slip-dbus'  # for firewalld
+    - 'python3-cryptography'  # for Ansible (certificate modules)
+    - 'python36'
     - 'quota'  # for nfs-utils
     - 'rabbitmq-server-3.8.9'
-    - 'rh-haproxy18'
-    - 'rh-haproxy18-haproxy-syspaths'
     - 'postgresql13-server'
     - 'repmgr10-5.2.1'  # used to upgrade repmgr first
     - 'repmgr13-5.2.1'
