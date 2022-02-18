@@ -10,9 +10,13 @@ from src.error import CriticalError
 
 
 class OSType(Enum):
-    """ Supported distribution types """
-    Ubuntu = 'ubuntu-20.04'
-    RedHat = 'redhat-7'
+    """
+    Supported distribution types.
+    Values are lists of possible distro names.
+    Subdirs match always with value[0] name.
+    """
+    Ubuntu = ['ubuntu-20.04']
+    RedHat = ['redhat-7', 'rhel-7']
 
 
 class OSArch(Enum):
@@ -53,7 +57,7 @@ class Config:
         lines.append('-' * LINE_SIZE)
 
         lines.append(f'OS Arch: {self.os_arch.value}')
-        lines.append(f'OS Type: {self.os_type.value}')
+        lines.append(f'OS Type: {self.os_type.value[0]}')
         lines.append(f'Script location: {str(self.script_path.absolute())}')
         lines.append('Directories used:')
         lines.append(f'- files:              {str(self.dest_files)}')
@@ -81,7 +85,7 @@ class Config:
         parser.add_argument('destination_dir', metavar='DEST_DIR', type=Path, action='store', nargs='+',
                             help='requirements will be downloaded to this directory')
 
-        supported_os: str = "|".join([os.value for os in list(OSType)])
+        supported_os: str = "|".join([f'{"|".join(os.value)}' for os in list(OSType)])
         parser.add_argument('os_type', metavar='OS_TYPE', type=str, action='store', nargs='+',
                             help=f'which of the supported OS will be used: ({supported_os}|detect)\n'
                             'when using `detect`, script will try to find out which OS is being used')
@@ -114,9 +118,10 @@ class Config:
         """
 
         for ost in OSType:
-            if os_type.upper() in ost.value.upper():
-                logging.info(f'Found Matching OS: `{ost.value}`')
-                return ost
+            for os_name in ost.value:
+                if os_type.upper() in os_name.upper():
+                    logging.info(f'Found Matching OS: `{ost.value}`')
+                    return ost
 
         raise CriticalError('Could not detect OS type')
 
@@ -194,4 +199,4 @@ class Config:
         self.retries = args['retries']
         self.is_log_file_enabled = False if args['no_logfile'] else True
 
-        self.distro_subdir = Path(f'{self.os_arch.value}/{self.os_type.value}')
+        self.distro_subdir = Path(f'{self.os_arch.value}/{self.os_type.value[0]}')

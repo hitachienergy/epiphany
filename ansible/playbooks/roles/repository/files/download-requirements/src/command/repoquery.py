@@ -45,9 +45,9 @@ class Repoquery(Command):
         output = self.run(args).stdout
         # yumdownloader doesn't set error code if repoquery returns empty output
         if not output:
-            raise PackageNotfound(f'repquery failed for package `{package}`, reason: package not found')
+            raise PackageNotfound(f'repoquery failed for package `{package}`, reason: package not found')
         elif 'error' in output:
-            raise CriticalError(f'repquery failed for package `{package}`, reason: `{output}`')
+            raise CriticalError(f'repoquery failed for package `{package}`, reason: `{output}`')
 
         packages: List[str] = []
         for line in output.split('\n'):
@@ -55,4 +55,3 @@ class Repoquery(Command):
                 packages.append(line)
 
         return packages
-
