@@ -25,25 +25,32 @@
     mode: u=rw,go=
   register: modify_filebeat_yml
 
-- name: Set Filebeat to be started after Docker
-  when: (groups['kubernetes_master'] is defined and inventory_hostname in groups['kubernetes_master'])
-     or (groups['kubernetes_node'] is defined and inventory_hostname in groups['kubernetes_node'])
-  block:
-    - name: Create directory (filebeat.service.d)
-      file:
-        path: /etc/systemd/system/filebeat.service.d
-        state: directory
-
-    - name: Copy drop-in configuration file (extra-dependencies.conf)
-      template:
-        dest: /etc/systemd/system/filebeat.service.d/extra-dependencies.conf
-        src: extra-dependencies.conf.j2
-      register: modify_filebeat_unit_dependencies
-
-    - name: Run systemctl daemon-reload
-      systemd:
-        daemon_reload: true
-      when: modify_filebeat_unit_dependencies.changed
+- name: Append new field definition
+  when: k8s_as_cloud_service is not defined
+  blockinfile:
+    path: /etc/filebeat/fields.yml
+    backup: true
+    block: |2
+      - key: containerd
+        title: "containerd"
+        description: >
+          Reading data from containerd log filepath.
+        short_config: true
+        fields:
+          - name: containerd
+            type: group
+            description: >
+              Contains extra fields for containerd logs.
+            fields:
+              - name: kubernetes.pod.name
+                type: text
+                format: string
+              - name: kubernetes.namespace
+                type: text
+                format: string
+              - name: container.id
+                type: text
+                format: string
 
 - name: Start/restart and enable filebeat service
   when: groups.logging[0] is defined
@@ -58,7 +65,6 @@
         name: filebeat
         state: restarted
       when: modify_filebeat_yml.changed
-         or modify_filebeat_unit_dependencies.changed
          or enable_module.changed
          or install_filebeat_package.changed
 

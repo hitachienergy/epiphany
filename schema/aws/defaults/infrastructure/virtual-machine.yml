@@ -11,6 +11,7 @@ specification:
   subnet_name: SET_BY_AUTOMATION
   associate_public_ip: SET_BY_AUTOMATION
   use_network_security_groups: SET_BY_AUTOMATION
+  availability_zone: SET_BY_AUTOMATION
   security_groups: [] # SET_BY_AUTOMATION
   authorized_to_efs: false
   mount_efs: false

@@ -1,0 +1,10 @@
+- name: Restart containerd
+  systemd:
+    name: containerd
+    state: restarted
+    enabled: true
+
+- name: Restart kubelet
+  systemd:
+    name: kubelet
+    state: restarted

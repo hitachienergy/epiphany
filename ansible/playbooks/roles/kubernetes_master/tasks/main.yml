@@ -86,10 +86,8 @@
         - name: Restart apiserver
           shell: |-
             set -o pipefail && \
-            docker ps \
-              --filter 'name=kube-apiserver_kube-apiserver' \
-              --format '{{ "{{.ID}}" }}' \
-            | xargs --no-run-if-empty docker kill
+            crictl ps --name='kube-apiserver' -q \
+            | xargs --no-run-if-empty crictl stop --timeout=0
           args:
             executable: /bin/bash
 
@@ -109,7 +107,7 @@
       vars:
         valid_days: "{{ specification.advanced.certificates.expiration_days }}"
         services_to_restart:
-          - docker
+          - containerd
       include_tasks: generate-certificates.yml
 
 # kubeadm-config.yml can appear not only on 'automation_designated_master' in 2 cases:

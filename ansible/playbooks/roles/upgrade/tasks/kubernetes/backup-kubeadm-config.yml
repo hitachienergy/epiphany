@@ -1,10 +1,15 @@
 ---
 # The kubeadm-config.yml file is no longer used during upgrade process,
 # but we keep it for backup and reference purposes.
+# Retries needed for HA deployment (random failures)
 - name: k8s/master | Collect kubeadm-config ConfigMap
   command: >-
     kubectl get cm kubeadm-config -o yaml -n kube-system
   register: kubeadm_config
+  until:
+    - kubeadm_config is succeeded
+  retries: 30
+  delay: 1
 
 - name: k8s/master | Save kubeadm-config ConfigMap to file
   copy:

@@ -19,6 +19,7 @@ resource "aws_instance" "{{ specification.name }}" {
   {%- if specification.use_network_security_groups == true %}
   vpc_security_group_ids      = [{% for security_group in specification.security_groups %}aws_security_group.{{ security_group }}.id{% if not loop.last %}, {% endif %}{% endfor %}]
   {%- endif %}
+  availability_zone           = "{{ specification.availability_zone }}"
 
   # storage
   ebs_optimized = "{{ specification.ebs_optimized | lower }}"

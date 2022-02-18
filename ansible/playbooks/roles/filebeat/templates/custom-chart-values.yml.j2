@@ -50,39 +50,24 @@ filebeatConfig:
 {# -------------------------- Kubernetes input -------------------------- #}
 
 {% if (k8s_as_cloud_service is defined and k8s_as_cloud_service) or ('kubernetes_master' in groups or 'kubernetes_node' in groups) %}
-    - type: docker
+    - type: container
       enabled: true
-      containers.ids: "*"
-{% if specification.docker_input.multiline is defined %}
+      format: cri
+      paths:
+        - /var/log/containers/*.log
+{% if specification.container_input.multiline is defined %}
       multiline:
-{% for k, v in specification.docker_input.multiline.items() %}
+{% for k, v in specification.container_input.multiline.items() %}
         {{ k }}: {{ v }}
 {% endfor %}
 {% endif %}
 
       processors:
-        - add_docker_metadata:
-        - rename:
-            fields:
-              - from: docker.container.labels.io.kubernetes.container.name
-                to: kubernetes.container.name
-              - from: container.labels.io_kubernetes_container_name
-                to: kubernetes.container.name
-
-              - from: docker.container.labels.io.kubernetes.pod.name
-                to: kubernetes.pod.name
-              - from: container.labels.io_kubernetes_pod_name
-                to: kubernetes.pod.name
-
-              - from: docker.container.labels.io.kubernetes.pod.namespace
-                to: kubernetes.namespace
-              - from: container.labels.io_kubernetes_pod_namespace
-                to: kubernetes.namespace
-            ignore_missing: true
-            fail_on_error: true
-        - drop_fields:
-            fields:
-              - docker
+        - add_kubernetes_metadata:
+          in_cluster: true
+          matchers:
+          - logs_path:
+              logs_path: "/var/log/containers/"
 {% endif %}
 
 {# -------------------------- Filebeat modules -------------------------- #}
