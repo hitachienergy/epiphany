@@ -4,7 +4,7 @@ from pathlib import Path
 from shutil import copy, copytree
 from typing import Dict
 
-from cli.src.Config import Config
+from cli.src.Config import Config, SUPPORTED_OS
 from cli.src.helpers.data_loader import BASE_DIR
 from cli.src.Step import Step
 
@@ -27,28 +27,20 @@ class Prepare(Step):
         pass
 
     def prepare(self) -> int:
+        if self.arch not in SUPPORTED_OS[self.os]:
+            raise Exception(f'Error: chosen arch: {self.arch} is not supported for os: {self.os}')
+
         repositories_path: Path = self.PREPARE_PATH / 'repositories'
         repositories_arch_path: Path = repositories_path / f'{self.arch}'
-
-        if not repositories_arch_path.exists():
-            raise Exception(f'Unsupported arch type: {self.arch}. Currently supported: x86_64|arm64')
-
         repositories_file_path: Path = repositories_arch_path / f'{self.os}.yml'
 
         requirements_path: Path = self.PREPARE_PATH / 'requirements'
         arch_path: Path = requirements_path / self.arch
-
-        if not arch_path.exists():
-            raise Exception(f'Unsupported arch type: {self.arch}. Currently supported: x86_64|arm64')
-
         distro_path: Path = arch_path / self.os
-
-        if not arch_path.exists():
-            raise Exception(f'Unsupported OS: {self.os} for chosen arch: {self.arch}. '
-                            'Currently supported OS: redhat-7|ubuntu-20.04')
 
         dest_path: Path = Path(Config().output_dir)
         dest_path /= self.output_dir if self.output_dir else 'prepare_scripts'
+
         charts_path = dest_path / 'charts/system'
 
         # source : destination

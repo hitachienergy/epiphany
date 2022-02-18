@@ -114,7 +114,7 @@ class Config:
         """
 
         for ost in OSType:
-            if ost.value.upper() in os_type.upper():
+            if os_type.upper() in ost.value.upper():
                 logging.info(f'Found Matching OS: `{ost.value}`')
                 return ost
 
@@ -127,13 +127,13 @@ class Config:
         Check this file to find out on which distro this script is ran.
         """
 
-        os_release = Path('/etc/os-relase')
+        os_release = Path('/etc/os-release')
 
         if os_release.exists():
             with open(os_release) as os_release_handler:
-                for line in os_release_handler.readline():
-                    if 'NAME' in line:
-                        return self.__get_matching_os_type(line.split('=')[1])
+                for line in os_release_handler.readlines():
+                    if 'ID' in line:
+                        return self.__get_matching_os_type(line.split('=')[1].replace('"', '').strip())
 
         raise CriticalError('Could not detect OS type')
 
