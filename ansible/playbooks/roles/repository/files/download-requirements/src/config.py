@@ -1,7 +1,7 @@
 import logging
 import os
 import sys
-from argparse import ArgumentParser, RawTextHelpFormatter
+from argparse import ArgumentParser, RawTextHelpFormatter, SUPPRESS
 from enum import Enum
 from pathlib import Path
 from typing import List
@@ -27,25 +27,30 @@ class OSArch(Enum):
 
 class Config:
     def __init__(self, argv: List[str]):
-        self.dest_grafana_dashboards: Path
         self.dest_dir: Path
         self.dest_files: Path
+        self.dest_grafana_dashboards: Path
         self.dest_images: Path
         self.dest_packages: Path
         self.distro_subdir: Path
         self.enable_backup: bool
-        self.log_file: Path
         self.is_log_file_enabled: bool
+        self.log_file: Path
         self.os_arch: OSArch
         self.os_type: OSType
+        self.pip_installed: bool = False
+        self.poyo_installed: bool = False
         self.repo_path: Path
         self.repos_backup_file: Path
         self.reqs_path: Path
+        self.rerun: bool
         self.retries: int
         self.script_path: Path
 
         self.__add_args(argv)
-        self.__log_info_summary()
+
+        if not self.rerun:
+            self.__log_info_summary()
 
     def __log_info_summary(self):
         """
@@ -107,6 +112,14 @@ class Config:
         parser.add_argument('--no-logfile', action='store_true', dest='no_logfile',
                             help='no logfile will be created')
 
+        # offline mode rerun options:
+        parser.add_argument('--rerun', action='store_true', dest='rerun',
+                            default=False, help=SUPPRESS)
+        parser.add_argument('--pip-installed', action='store_true', dest='pip_installed',
+                            default=False, help=SUPPRESS)
+        parser.add_argument('--poyo-installed', action='store_true', dest='poyo_installed',
+                            default=False, help=SUPPRESS)
+
         return parser
 
     def __get_matching_os_type(self, os_type: str) -> OSType:
@@ -120,7 +133,7 @@ class Config:
         for ost in OSType:
             for os_name in ost.value:
                 if os_type.upper() in os_name.upper():
-                    logging.info(f'Found Matching OS: `{ost.value[0]}`')
+                    logging.debug(f'Found Matching OS: `{ost.value[0]}`')
                     return ost
 
         raise CriticalError('Could not detect OS type')
@@ -200,3 +213,8 @@ class Config:
         self.is_log_file_enabled = False if args['no_logfile'] else True
 
         self.distro_subdir = Path(f'{self.os_arch.value}/{self.os_type.value[0]}')
+
+        # offline mode
+        self.rerun = args['rerun']
+        self.pip_installed = args['pip_installed']
+        self.poyo_installed = args['poyo_installed']

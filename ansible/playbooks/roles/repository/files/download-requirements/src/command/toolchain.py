@@ -1,3 +1,4 @@
+import logging
 from typing import Dict
 
 from src.command.apt import Apt
@@ -33,14 +34,26 @@ class Toolchain:
         """
         raise NotImplementedError
 
-    def ensure_pip(self):
+    def uninstall_pip(self):
+        """
+        Used for offline mode, install pip package
+        """
+        raise NotImplementedError
+
+    def ensure_pip(self) -> bool:
         """
         Used for offline mode to ensure that pip is installed on target OS
+        :returns: True - pip had to be installed, False - pip already installed
         """
         try:  # check if pip is installed
             import pip
+            return False
+
         except ModuleNotFoundError:  # pip missing
+            logging.info('pip3 not installed, try installing...')
             self._install_pip()
+            logging.info('Done.')
+            return True
 
 
 class RedHatFamilyToolchain(Toolchain):
@@ -60,6 +73,9 @@ class RedHatFamilyToolchain(Toolchain):
     def _install_pip(self):
         self.yum.install('python3-pip')
 
+    def uninstall_pip(self):
+        self.yum.remove('python3-pip')
+
 
 class DebianFamilyToolchain(Toolchain):
     """
@@ -75,6 +91,9 @@ class DebianFamilyToolchain(Toolchain):
 
     def _install_pip(self):
         self.apt.install('python3-pip')
+
+    def uninstall_pip(self):
+        self.apt.remove('python3-pip')
 
 
 TOOLCHAINS: Dict[OSType, Toolchain] = {

@@ -13,13 +13,14 @@ class Pip(Command):
 
     def install(self, package: str,
                 version: str = '',
-                user: bool = False):
+                user: bool = False) -> bool:
         """
         Interface for `pip install`
 
         :param package: to install
         :param version: in which version `package` to install
         :param user: install in user's directory
+        :returns: True - package had to be installed, False - package already installed
         """
         args: List[str] = ['install']
 
@@ -30,5 +31,31 @@ class Pip(Command):
 
         if user:
             args.append('--user')
+
+        output = self.run(args).stdout
+
+        if f'Requirement already satisfied: {package}' in output:
+            return False
+
+        return True
+
+    def uninstall(self, package: str,
+                  version: str = '',
+                  ensure_yes: bool = True):
+        """
+        Interface for `pip uninstall`
+
+        :param package: to uninstall
+        :param version: in which version `package` to uninstall
+        """
+        args: List[str] = ['uninstall']
+
+        if version:
+            package = f'{package}{version}'
+
+        if ensure_yes:
+            args.append('-y')
+
+        args.append(package)
 
         self.run(args)
