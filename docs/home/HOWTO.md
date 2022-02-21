@@ -34,7 +34,7 @@
   - [How to configure scalable Prometheus setup](./howto/MONITORING.md#how-to-configure-scalable-prometheus-setup)
   - [Import and create Grafana dashboards](./howto/MONITORING.md#import-and-create-grafana-dashboards)
   - [How to setup default admin password and user in Grafana](./howto/MONITORING.md#how-to-setup-default-admin-password-and-user-in-grafana)
-  - [How to configure Dashboards](./howto/MONITORING.md#how-to-configure-opensearch-dashboards)
+  - [How to configure OpenSearch Dashboards](./howto/MONITORING.md#how-to-configure-opensearch-dashboards)
   - [How to configure default passwords for service users in OpenSearch Dashboards, OpenSearch and Filebeat](./howto/MONITORING.md#how-to-configure-default-passwords-for-service-users-in-opensearch-dashboards-opensearch-and-filebeat)
   - [How to configure scalable Prometheus setup](./howto/MONITORING.md#how-to-configure-scalable-prometheus-setup)
   - [How to configure Azure additional monitoring and alerting](./howto/MONITORING.md#how-to-configure-azure-additional-monitoring-and-alerting)
