@@ -457,7 +457,7 @@ Use [PostgreSQL HA replication with repmgr](#how-to-set-up-postgresql-ha-replica
 
 ## How to start working with Opensearch
 
-OpenSearch is the [successor](https://opendistro.github.io/for-elasticsearch-docs/) of OpenDistro for ElasticSearch project. Epipahny is providing an [automated solution](https://github.com/romsok24/epiphany/blob/feature/migr-ODFE-OpenSearch-2870/docs/home/howto/UPGRADE.md#migration-from-open-distro-for-elasticsearch--kibana-to-opensearch-and-opensearch-dashboards) for migrating your existing ODFE installation to OpenSearch.
+OpenSearch is the [successor](https://opendistro.github.io/for-elasticsearch-docs/) of OpenDistro for ElasticSearch project. Epipahny is providing an [automated solution](./UPGRADE.md#migration-from-open-distro-for-elasticsearch--kibana-to-opensearch-and-opensearch-dashboards) for migrating your existing ODFE installation to OpenSearch.
 On the other hand, if you plan to just start working with OpenSearch - change machines count to value greater than 0 in your cluster configuration:
 
 ```yaml
