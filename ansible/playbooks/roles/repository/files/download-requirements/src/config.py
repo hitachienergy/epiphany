@@ -186,7 +186,7 @@ class Config:
 
         # add required arguments:
         self.os_type = self.__detect_os_type() if args['os_type'][0] == 'detect' else self.__get_matching_os_type(args['os_type'][0])
-        self.dest_dir = args['destination_dir'][0]
+        self.dest_dir = args['destination_dir'][0].absolute()
         self.dest_grafana_dashboards = self.dest_dir / 'grafana_dashboards'
         self.dest_files = self.dest_dir / 'files'
         self.dest_images = self.dest_dir / 'images'
