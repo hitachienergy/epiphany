@@ -50,7 +50,7 @@
 
 - [#854](https://github.com/epiphany-platform/epiphany/issues/854) - PostgreSQL: PGBouncer implementation
 - [#905](https://github.com/epiphany-platform/epiphany/pull/905) - PostgreSQL: pgAudit extension for audit logging
-- PostgreSQL: Send logs to elasticsearch
+- PostgreSQL: Send logs to Elasticsearch
 - [#915](https://github.com/epiphany-platform/epiphany/pull/915) - PostgreSQL: Add logrotate configuration
 
 ### Fixed
