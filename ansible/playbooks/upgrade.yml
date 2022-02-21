@@ -218,14 +218,16 @@
         tasks_from: upgrade/main
       when: "'grafana' in upgrade_components or upgrade_components|length == 0"
 
+# === kafka ===
+
 - hosts: zookeeper
   serial: 1
   become: true
   become_method: sudo
   tasks:
-    - import_role:
-        name: upgrade
-        tasks_from: zookeeper
+    - include_role:
+        name: zookeeper
+        tasks_from: upgrade/main
       vars: { lock_file: /var/tmp/zookeeper-upgrade-in-progress.flag }
       when: "'zookeeper' in upgrade_components or upgrade_components|length == 0"
 
