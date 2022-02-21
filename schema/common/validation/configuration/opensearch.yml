@@ -5,6 +5,8 @@ type: object
 properties:
   cluster_name:
     type: string
+  odfe_migration:
+    type: boolean
   clustered:
     type: boolean
   admin_password:
