@@ -180,14 +180,9 @@ class RedHatFamilyMode(BaseMode):
             packages_to_download.append(package_name)
 
             # dependencies
-            try:
-                packages_to_download.extend(self._tools.repoquery.query(package,
-                                                                        queryformat='%{name}.%{arch}',
-                                                                        arch=self._cfg.os_arch.value,
-                                                                        requires=True,
-                                                                        resolve=True))
-            except PackageNotfound:
-                pass  # no dependencies for `package`
+            packages_to_download.extend(self._tools.repoquery.get_dependencies(package,
+                                                                               queryformat='%{name}.%{arch}',
+                                                                               arch=self._cfg.os_arch.value))
 
         for package in set(packages_to_download):
             if package not in downloaded_prereqs:

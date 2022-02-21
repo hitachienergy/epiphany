@@ -54,6 +54,11 @@ class BaseMode:
         content = load_yaml_file(self._cfg.reqs_path / f'{self._cfg.distro_subdir}/packages.yml')
         reqs['packages'] = content['packages']
 
+        try:
+            reqs['prereq-packages'] = content['prereq-packages']
+        except KeyError:
+            pass  # prereq packages are only for some distros
+
         content = load_yaml_file(self._cfg.reqs_path / f'{self._cfg.distro_subdir}/files.yml')
         reqs['files'].update(content['files'])
 
