@@ -42,5 +42,5 @@ systemctl restart kibana
 echo "==== Kibana restarted ===="
 
 echo "==== Restarting Elasticsearch ===="
-systemctl restart opensearch
+systemctl restart elasticsearch
 echo "==== Elasticsearch restarted ===="

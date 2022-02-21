@@ -14,4 +14,4 @@
   import_role:
     name: opensearch
   vars:
-    specification: "{{ logging_vars.specification }}"  # to override opensearch specification
+    specification: "{{ logging_vars.specification }}"  # to override OpenSearch specification

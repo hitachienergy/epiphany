@@ -61,12 +61,12 @@
 | net-tools | + | | + |
 | nfs-utils | + | | + |
 | nmap-ncat | + | | ? |
-| opensearch-alerting-1.10.1* | + | | + |
-| opensearch-index-management-1.10.1* | + | | + |
-| opensearch-job-scheduler-1.10.1* | + | | + |
-| opensearch-performance-analyzer-1.10.1* | + | | + |
-| opensearch-security-1.10.1* | + | | + |
-| opensearch-sql-1.10.1* | + | | + |
+| elasticsearch-alerting-1.10.1* | + | | + |
+| elasticsearch-index-management-1.10.1* | + | | + |
+| elasticsearch-job-scheduler-1.10.1* | + | | + |
+| elasticsearch-performance-analyzer-1.10.1* | + | | + |
+| elasticsearch-security-1.10.1* | + | | + |
+| elasticsearch-sql-1.10.1* | + | | + |
 | opendistroforelasticsearch-kibana-1.10.1* | --- | opendistroforelasticsearch-kibana-1.13.0 | + |
 | openssl | + | | + |
 | perl | + | | + |

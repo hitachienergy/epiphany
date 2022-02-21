@@ -1,5 +1,5 @@
 ---
-# Ansible playbook for installing opensearch
+# Ansible playbook for installing OpenSearch
 
 - hosts: opensearch
   become: true

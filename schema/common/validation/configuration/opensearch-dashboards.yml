@@ -1,5 +1,5 @@
 kind: configuration/opensearch-dashboards
-title: "OpenSearch-dashboards"
+title: "OpenSearch Dashboards specification schema"
 name: default
 specification:
   ops_dashboards_log_dir: /var/log/opensearchdashboards

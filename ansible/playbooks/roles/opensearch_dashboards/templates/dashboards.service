@@ -1,5 +1,5 @@
 [Unit]
-Description=opensearch-dashboards
+Description=OpenSearch Dashboards
 Wants=network-online.target
 After=network-online.target
 

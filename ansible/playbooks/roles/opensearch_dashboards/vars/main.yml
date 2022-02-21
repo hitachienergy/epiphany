@@ -1,3 +1,3 @@
 ---
-# vars file for opensearch
+# vars file for openseOpenSearcharch
 java: "{{ es_java | default('java-1.8.0-openjdk.x86_64') }}"

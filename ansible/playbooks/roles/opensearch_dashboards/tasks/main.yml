@@ -15,7 +15,7 @@
 - name: include dashboards installation
   include: dashboards.yml
 
-- name: Make sure opensearch dashboards is started
+- name: Make sure OpenSearch Ddashboards is started
   service:
     name: dashboards
     state: started

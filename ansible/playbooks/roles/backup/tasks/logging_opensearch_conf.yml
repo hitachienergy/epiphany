@@ -1,5 +1,5 @@
 ---
-- name: Include default vars from opensearch role
+- name: Include default vars from OpenSearch role
   include_vars:
     file: roles/opensearch/defaults/main.yml
     name: ops_def

@@ -4,7 +4,7 @@
     manager: auto
   when: ansible_facts.packages is undefined
 
-- name: OPS | Print elasticsearch ond opensearch versions
+- name: OPS | Print ElasticSearch ond OpenSearch versions
   debug:
     msg:
       - "Elasticsearch version currently installed: {{ ansible_facts.packages['elasticsearch-oss'][0].version }}"
@@ -185,11 +185,11 @@
   run_once: true
   when: logstash_check_response.status == 200
 
-- name: ODFE migr | Check the opensearch status
+- name: ODFE migr | Check the OpenSearch status
   command: curl https://{{ inventory_hostname }}:{{ ports.http }}/_cluster/health?pretty -u 'admin:{{ specification.admin_password }}' -k
   register: ops_status
 
-- name: ODFE migr | Show the opensearch status
+- name: ODFE migr | Show the OpenSearch status
   debug:
     msg: "{{ ops_status.stdout }}"
   failed_when: "'number_of_nodes' not in ops_status.stdout"

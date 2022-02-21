@@ -112,7 +112,7 @@ To check status of Node Exporter we can use the command:
 status prometheus-node-exporter
 ```
 
-#### - opensearch
+#### - OpenSearch
 
 To check status of OpenSearch we can use the command:
 

@@ -10,7 +10,7 @@
     fail_msg: elasticsearch-oss package not found, nothing to upgrade
     quiet: true
 
-- name: OPS | Include defaults from opensearch role
+- name: OPS | Include defaults from OpenSearch role
   include_vars:
     file: roles/opensearch/defaults/main.yml
     name: ops_defaults
@@ -38,7 +38,7 @@
     - "{{ ops_vars.specification.paths.ops_conf_dir }}"
     - "{{ ops_defaults.certificates.dirs.certs }}"
 
-- name: OPS | Print elasticsearch ond opensearch versions
+- name: OPS | Print ElasticSearch ond OpenSearch versions
   debug:
     msg:
       - "Installed version: {{ ansible_facts.packages['elasticsearch-oss'][0].version }}"

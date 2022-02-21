@@ -21,7 +21,7 @@ Components that Health Monitor should check:
 - Prometheus
 - Kafka
 - ZooKeeper
-- opensearch
+- OpenSearch
 - RabbitMQ
 
 `*` means MVP version.

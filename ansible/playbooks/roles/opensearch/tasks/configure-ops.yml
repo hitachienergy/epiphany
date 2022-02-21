@@ -31,7 +31,7 @@
 
     - include_tasks: generate-certs.yml
 
-- name: Provide opensearch configuration file
+- name: Provide OpenSearch configuration file
   template:
     backup: yes
     src: opensearch.yml.j2
@@ -98,7 +98,7 @@
     transport_port: "{{ is_upgrade_run | ternary(existing_es_config['transport.port'], ports.transport) }}"
 
 # When 'opensearch_security.allow_unsafe_democertificates' is set to 'false' all demo certificate files must be removed,
-# otherwise opensearch service doesn't start.
+# otherwise OpenSearch service doesn't start.
 # For apply mode, demo certificate files are removed based only on their names. For upgrade mode,
 # public key fingerprints are checked to protect against unintentional deletion (what takes additional time).
 
@@ -107,7 +107,7 @@
     file: "{{ is_upgrade_run | ternary('remove-known-demo-certs.yml', 'remove-demo-certs.yml') }}"
   when: not certificates.files.demo.opensearch_security.allow_unsafe_democertificates
 
-- name: Restart opensearch service
+- name: Restart OpenSearch service
   systemd:
     name: opensearch
     state: restarted
@@ -119,7 +119,7 @@
 - name: Change default users
   when: not is_upgrade_run
   block:
-    - name: Wait for opensearch service to start up
+    - name: Wait for OpenSearch service to start up
       when: restart_opensearch.changed
       wait_for:
         port: 9200

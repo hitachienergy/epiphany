@@ -25,7 +25,7 @@ certificates:
         cert: esnode.pem
         key:  esnode-key.pem
       opensearch_security:
-        allow_unsafe_democertificates: false  # if 'false' all demo files must be removed to start opensearch
+        allow_unsafe_democertificates: false  # if 'false' all demo files must be removed to start OpenSearch
     common:
       subject: &common-subject
         O: Epiphany

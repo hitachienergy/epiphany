@@ -66,4 +66,4 @@
 
 ### Known issues
 
-- [1647](https://github.com/epiphany-platform/epiphany/issues/1647) - `epicli upgrade` fails on `[opensearch : Provide jvm configuration file]` task
+- [1647](https://github.com/epiphany-platform/epiphany/issues/1647) - `epicli upgrade` fails on `[elasticsearch : Provide jvm configuration file]` task

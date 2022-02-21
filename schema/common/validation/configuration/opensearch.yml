@@ -1,6 +1,6 @@
 "$id": "#/specification"
 title: "opensearch schema"
-description: "opensearch specification schema"
+description: "OpenSearch specification schema"
 type: object
 properties:
   cluster_name:

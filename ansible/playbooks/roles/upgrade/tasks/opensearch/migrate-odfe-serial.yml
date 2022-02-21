@@ -83,7 +83,7 @@
     - { 1: 'EpiphanyElastic', 2: 'EpiphanyOpensearch' }
     - { 1: 'opendistro_security.', 2: 'plugins.security.' }
 
-- name: ODFE migr | Start opensearch service
+- name: ODFE migr | Start OpenSearch service
   systemd:
     name: opensearch
     state: started
