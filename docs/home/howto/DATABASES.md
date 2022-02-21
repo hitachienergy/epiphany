@@ -501,7 +501,7 @@ specification:
       - node-exporter
       - filebeat
       - firewall
-      - kibana
+      - opensearch-dashboards
 ```
 
 Filebeat running on `opensearch` hosts will always point to centralized logging hosts ( [more info](./LOGGING.md) ).

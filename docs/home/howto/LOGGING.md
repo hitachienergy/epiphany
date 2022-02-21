@@ -30,7 +30,7 @@ roles_mapping:
 [...]
   logging:
     - logging
-    - kibana
+    - opensearch-dashboards
     - node-exporter
     - filebeat
     - firewall
