@@ -120,7 +120,7 @@ class Config:
         for ost in OSType:
             for os_name in ost.value:
                 if os_type.upper() in os_name.upper():
-                    logging.info(f'Found Matching OS: `{ost.value}`')
+                    logging.info(f'Found Matching OS: `{ost.value[0]}`')
                     return ost
 
         raise CriticalError('Could not detect OS type')

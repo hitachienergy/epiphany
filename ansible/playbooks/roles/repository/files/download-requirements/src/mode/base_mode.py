@@ -167,11 +167,10 @@ class BaseMode:
         first_crane = next(iter(cranes))  # right now we use only single crane source
         if cranes[first_crane]['sha256'] == get_sha256(crane_package_path):
             logging.debug('crane - checksum ok, skipped')
-            return
-
-        self._download_crane_binary(first_crane, crane_package_path)
-        self._tools.tar.unpack(crane_package_path, 'crane', directory=self._cfg.dest_dir)
-        chmod(crane_path, 0o0755)
+        else:
+            self._download_crane_binary(first_crane, crane_package_path)
+            self._tools.tar.unpack(crane_package_path, 'crane', directory=self._cfg.dest_dir)
+            chmod(crane_path, 0o0755)
 
         # create symlink to the crane file so that it'll be visible in shell
         crane_symlink = Path('/usr/bin/crane')
