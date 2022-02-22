@@ -6,7 +6,7 @@
   copy:
     remote_src: yes
     src: /opt/zookeeper/conf/
-    dest: /opt/zookeeper-{{ zookeeper_version }}/conf
+    dest: "{{ zookeeper_install_dir }}}/conf"
     mode: preserve
 
 - name: Link /opt/zookeeper to recently installed version

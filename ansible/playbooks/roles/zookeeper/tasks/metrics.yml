@@ -5,7 +5,7 @@
     append: yes
 
 - name: prometheus jmx | configuration file
-  become: yes
+  become: true
   copy:
     dest: "{{ prometheus_jmx_config }}"
     src: jmx-zookeeper-config.yml
