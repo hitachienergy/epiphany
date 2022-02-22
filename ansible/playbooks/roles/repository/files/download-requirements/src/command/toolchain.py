@@ -28,7 +28,7 @@ class Toolchain:
         self.wget = Wget(retries)
         self.pip = Pip(retries)
 
-    def _install_pip(self):
+    def install_pip(self):
         """
         Used for offline mode, install pip package
         """
@@ -36,7 +36,7 @@ class Toolchain:
 
     def uninstall_pip(self):
         """
-        Used for offline mode, install pip package
+        Used for offline mode, uninstall pip package
         """
         raise NotImplementedError
 
@@ -70,7 +70,7 @@ class RedHatFamilyToolchain(Toolchain):
         self.yum_config_manager = YumConfigManager(retries)
         self.yumdownloader = Yumdownloader(retries)
 
-    def _install_pip(self):
+    def install_pip(self):
         self.yum.install('python3-pip')
 
     def uninstall_pip(self):
@@ -89,7 +89,7 @@ class DebianFamilyToolchain(Toolchain):
         self.apt_cache = AptCache(retries)
         self.apt_key = AptKey(retries)
 
-    def _install_pip(self):
+    def install_pip(self):
         self.apt.install('python3-pip')
 
     def uninstall_pip(self):

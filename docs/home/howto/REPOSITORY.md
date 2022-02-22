@@ -37,7 +37,7 @@ When you see the following output from epicli, requirements are being downloaded
 
 ```shell
 INFO cli.src.ansible.AnsibleCommand - TASK [repository : Run download-requirements script, this can take a long time
-INFO cli.src.ansible.AnsibleCommand - You can check progress on repository host with: journalctl -f -t download-requirements.sh] ***
+INFO cli.src.ansible.AnsibleCommand - You can check progress on repository host with: journalctl -f -t download-requirements.py] ***
 ```
 
 As noted this process can take a long time depending on the connection and as downloading requirements is being done by a shell script, the ```Ansible``` process cannot return any realtime information.
@@ -45,7 +45,7 @@ As noted this process can take a long time depending on the connection and as do
 To view the progress during the downloading (realtime output from the logs), one can SSH into the repository machine and run:
 
 ```shell
-journalctl -f -t download-requirements.sh
+journalctl -f -t download-requirements.py
 ```
 
 If for some reason the download-requirements fails you can also always check the log afterwards on the repository machine here:
