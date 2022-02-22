@@ -10,7 +10,7 @@ images:
     sha1: 5a0052e2afd3eef3ae638be21938b29b1d608ebe
 
   'registry:2':
-    sha1: b0c13a1c15fc7f2948ed2f971bd5dbf424460349
+    sha1: 6afd2766e6880c62cb80d1ea85dbcc20d6ef16a4
 
   # applications
   'bitnami/pgpool:4.2.4':

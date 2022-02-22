@@ -40,7 +40,6 @@ class DebianFamilyMode(BaseMode):
         # install prerequisites which might be missing
         installed_packages = self._tools.apt.list_installed_packages()
 
-        logging.info('Installing base packages:')
         for package in ['wget', 'gpg', 'curl', 'tar']:
             if package not in installed_packages:
                 self._tools.apt.install(package, assume_yes=True)
