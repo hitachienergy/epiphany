@@ -176,6 +176,7 @@ class BaseMode:
         crane_symlink = Path('/usr/bin/crane')
         if not crane_symlink.exists():
             crane_symlink.symlink_to(crane_path)
+            self._cfg.dest_crane_symlink = crane_symlink
 
     def _download_images(self):
         """
@@ -248,6 +249,12 @@ class BaseMode:
         logging.info('Downloading images...')
         self._download_images()
         logging.info('Done downloading images.')
+
+        if self._cfg.dest_crane_symlink is not None:
+            if self._cfg.dest_crane_symlink.exists():
+                logging.debug(f'Removing `crane` symlink: {str(self._cfg.dest_crane_symlink)}...')
+                self._cfg.dest_crane_symlink.unlink()
+                logging.debug('Done.')
 
         logging.info('Running cleanup...')
         self._cleanup()

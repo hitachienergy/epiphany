@@ -27,6 +27,7 @@ class OSArch(Enum):
 
 class Config:
     def __init__(self, argv: List[str]):
+        self.dest_crane_symlink: Path = None
         self.dest_dir: Path
         self.dest_files: Path
         self.dest_grafana_dashboards: Path
@@ -90,7 +91,7 @@ class Config:
         parser.add_argument('destination_dir', metavar='DEST_DIR', type=Path, action='store', nargs='+',
                             help='requirements will be downloaded to this directory')
 
-        supported_os: str = "|".join([f'{"|".join(os.value[0])}' for os in list(OSType)])
+        supported_os: str = "|".join([os.value[0] for os in list(OSType)])
         parser.add_argument('os_type', metavar='OS_TYPE', type=str, action='store', nargs='+',
                             help=f'which of the supported OS will be used: ({supported_os}|detect)\n'
                             'when using `detect`, script will try to find out which OS is being used')
