@@ -9,34 +9,42 @@
   debug:
     var: offline_mode
 
-- name: Set directory name for download script
+- name: Set OS name for download script
   set_fact:
-    download_script_subdir: >-
+    download_requirements_os_name: >-
       {{ 'centos-7' if (ansible_distribution == 'CentOS' and ansible_distribution_major_version == '7') else
           'redhat-7' if (ansible_distribution == 'RedHat' and ansible_distribution_major_version == '7') else
           'ubuntu-20.04' if (ansible_distribution == 'Ubuntu' and ansible_distribution_version == '20.04') else None }}
 
-- name: Download Epiphany requirements on repository host # online mode
+- name: Download Epiphany requirements on repository host  # online mode
   block:
-    - name: Check if OS distribution is supported
-      assert:
-        that: download_script_subdir | length > 0
-        fail_msg: "Your OS distribution is not supported"
+    - name: Install required packages for repository
+      include_tasks: "{{ ansible_os_family }}/install-packages.yml"
+
+    - name: Install Poyo library for YAML support
+      pip:
+        name: poyo==0.5.0
+        executable: pip3
+        extra_args: --user
+
+    - name: Create download-requirements directory
+      file:
+        path: "{{ download_requirements_dir }}"
+        state: directory
 
     - name: Copy files for downloading requirements to repository host
-      copy:
-        src: download-requirements/{{ download_script_subdir }}/
-        dest: /var/tmp/epi-download-requirements
+      synchronize:
+        src: download-requirements/
+        dest: "{{ download_requirements_dir }}"
+        recursive: true
+        rsync_opts:
+          - "--exclude=tests"  # tests not needed
+          - "--exclude=__pycache__"
 
     - name: Make download script executable
       file:
-        dest: /var/tmp/epi-download-requirements/download-requirements.sh
+        dest: "{{ download_requirements_script }}"
         mode: a+x
-
-    - name: Copy common files for downloading requirements to repository host
-      copy:
-        src: download-requirements/common
-        dest: /var/tmp/epi-download-requirements
 
   when:
     - not offline_mode
@@ -72,8 +80,20 @@
       offline_mode or
       not stat_flag_file.stat.exists  # do not clean up when skipping download
   vars:
-    _requirements_file_path: download-requirements/{{ download_script_subdir }}/requirements.{{ ansible_architecture }}.txt
-    requirements_file_lines: "{{ lookup('file', _requirements_file_path).split('\n') }}"
+    # general paths:
+    _reqs_dir: download-requirements/requirements
+    _arch_dir: "{{ _reqs_dir }}/{{ ansible_architecture }}"
+    _distro_dir: "{{ _arch_dir }}/{{ download_requirements_os_name }}"
+
+    # file paths:
+    _files_layout:
+      distro_files: "{{ _distro_dir }}/files.yml"
+      files: "{{ _arch_dir }}/files.yml"
+
+    # contents:
+    _files_content:
+      distro_files: "{{ lookup('file', _files_layout['distro_files']) | from_yaml }}"
+      files: "{{ lookup('file', _files_layout['files']) | from_yaml }}"
 
 - name: |-
     Copy requirements for offline installation to repository host, this can take a long time

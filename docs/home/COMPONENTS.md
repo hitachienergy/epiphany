@@ -213,6 +213,7 @@ Note that versions are default versions and can be changed in certain cases thro
 | websocket-client | 0.56.0 | https://github.com/websocket-client/websocket-client.git | BSD |
 | wrapt | 1.13.3 | https://github.com/GrahamDumpleton/wrapt | [BSD 2-Clause "Simplified" License](https://api.github.com/repos/grahamdumpleton/wrapt/license) |
 | xmltodict | 0.12.0 | https://github.com/martinblech/xmltodict | [MIT License](https://api.github.com/repos/martinblech/xmltodict/license) |
+| poyo | 0.5.0 | https://github.com/hackebrot/poyo | [MIT License](https://github.com/hackebrot/poyo/blob/main/LICENSE) |
 
 ## Predefined Grafana dashboards
 

@@ -9,6 +9,8 @@ import subprocess
 import sys
 import time
 
+from typing import List
+
 from cli.licenses import LICENSES
 from cli.src.commands.Apply import Apply
 from cli.src.commands.Backup import Backup
@@ -18,7 +20,7 @@ from cli.src.commands.Prepare import Prepare
 from cli.src.commands.Recovery import Recovery
 from cli.src.commands.Test import Test
 from cli.src.commands.Upgrade import Upgrade
-from cli.src.Config import Config
+from cli.src.Config import Config, SUPPORTED_OS
 from cli.src.helpers.build_io import get_output_path, save_to_file
 from cli.src.helpers.cli_helpers import prompt_for_password, query_yes_no
 from cli.src.helpers.time_helpers import format_time
@@ -160,14 +162,19 @@ def prepare_parser(subparsers):
     optional = sub_parser._action_groups.pop()
     required = sub_parser.add_argument_group('required arguments')
 
-    #required
-    required.add_argument('--os', type=str, required=True, dest='os', choices=['ubuntu-20.04', 'redhat-7', 'centos-7'],
-                            help='The OS to prepare the offline requirements for: ubuntu-20.04|redhat-7|centos-7')
+    #  required
+    supported_os: List[str] = list(SUPPORTED_OS.keys())
+    required.add_argument('--os', type=str, required=True, dest='os', choices=supported_os,
+                          help=f'The OS to prepare the offline requirements for: {"|".join(supported_os)}')
 
-    #optional
+    supported_arch: List[str] = list(set([arch for archs in SUPPORTED_OS.values() for arch in archs]))
+    required.add_argument('--arch', type=str, required=True, dest='arch', choices=supported_arch,
+                          help=f'The OS architecture type to be used: {"|".join(supported_arch)}')
+
+    #  optional
     optional.add_argument('-o', '--output_dir', dest='output_dir', type=str, required=False,
-                            help='Output directory for the offline requirement scripts.',
-                            default=None)
+                          help='Output directory for the offline requirement scripts.',
+                          default=None)
     sub_parser._action_groups.append(optional)
 
     def run_prepare(args):

@@ -17,7 +17,7 @@ RUN : INSTALL APT REQUIREMENTS \
     autossh curl gcc git git-lfs iputils-ping \
     jq libc6-dev libcap2-bin libffi-dev lsb-release \
     make musl-dev openssh-client procps \
-    psmisc ruby-full sudo tar \
+    psmisc rsync ruby-full sudo tar \
     unzip vim \
  && apt-get -q autoremove -y \
  && apt-get -q clean -y \
