@@ -7,7 +7,7 @@
     append: yes
 
 - name: prometheus jmx | configuration file
-  become: yes
+  become: true
   copy:
     dest: "{{ specification.prometheus_jmx_config }}"
     src: jmx-kafka-config.yml

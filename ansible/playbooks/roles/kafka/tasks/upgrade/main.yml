@@ -1,11 +1,6 @@
 ---
-- name: Include defaults from kafka role
-  include_vars:
-    file: roles/kafka/defaults/main.yml
-    name: kafka_defaults
-
 - name: Include pre-flight checks
-  include_tasks: kafka/preflight-check.yml
+  include_tasks: upgrade/preflight-check.yml
 
 - name: Get installed Kafka version
   shell: >-
@@ -13,13 +8,9 @@
     /opt/kafka/bin/kafka-server-start.sh --version | grep Commit | grep -oP '^\d+\.\d+\.\d+'
   register: result
 
-- name: Set common facts
+- name: Set old Kafka version fact
   set_fact:
-    kafka_version:
-      old: "{{ result.stdout }}"
-      new: "{{ kafka_defaults.kafka_version }}"
-    scala_version: "{{ kafka_defaults.scala_version }}"
-    kafka_bin_filename: "{{ kafka_defaults.kafka_bin_filename }}"
+    old_kafka_version: "{{ result.stdout }}"
 
 - name: Check for upgrade flag file
   stat:
@@ -34,20 +25,18 @@
         state: touch
 
     - name: Stop Kafka service
-      service:
-        name: kafka
-        state: stopped
+      include_tasks: common/stop.yml
 
     - name: Include update Kafka properties tasks
-      include_tasks: kafka/update-properties.yml
+      include_tasks: upgrade/update-properties.yml
 
     - name: Include Kafka upgrade tasks
-      include_tasks: kafka/install-upgrade.yml
+      include_tasks: upgrade/install-upgrade.yml
 
     - name: Include set Kafka version tasks
-      include_tasks: kafka/set-updated-version.yml
+      include_tasks: upgrade/set-updated-version.yml
   when:
-    - lock_file_status.stat.exists or kafka_version.old is version( kafka_version.new, '<' )
+    - lock_file_status.stat.exists or old_kafka_version is version( kafka_version, '<' )
 
 - name: Remove Kafka upgrade flag file
   file:

@@ -13,5 +13,4 @@
 - include_tasks: metrics.yml
   when: exporter.stat.exists
 
-- include_tasks: start.yml
-
+- include_tasks: common/start.yml

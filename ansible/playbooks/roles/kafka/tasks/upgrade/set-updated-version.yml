@@ -10,7 +10,4 @@
     line: "inter.broker.protocol.version={{ kafka_version.new }}"
 
 - name: Start kafka service
-  systemd:
-    name: kafka
-    state: started
-    daemon-reload: yes
+  include_tasks: common/start.yml

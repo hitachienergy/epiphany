@@ -24,16 +24,8 @@
   module_defaults:
     yum: { lock_timeout: "{{ yum_lock_timeout }}" }
 
-- name: Set Kafka file name to install
-  set_fact:
-    kafka_file_name: "{{ kafka_bin_filename }}"
-
-- name: Download Kafka binaries
-  include_role:
-    name: download
-    tasks_from: download_file
-  vars:
-    file_name: "{{ kafka_file_name }}"
+- name: Download and unpack Kafka's binary
+  include_tasks: common/download_and_unpack_binary.yml
 
 - name: Add Kafka's bin dir to the PATH
   copy:
@@ -41,31 +33,11 @@
     dest: "/etc/profile.d/kafka_path.sh"
     mode: 0755
 
-- name: Check for Kafka package
-  stat:
-    path: /opt/kafka_{{ scala_version }}-{{ kafka_version }}/bin/kafka-server-start.sh
-  register: kafka_package
-
-- name: Uncompress the Kafka tar
-  unarchive:
-    remote_src: yes
-    creates: /opt/kafka_{{ scala_version }}-{{ kafka_version }}
-    src: "{{ download_directory }}/{{ kafka_file_name }}"
-    dest: /opt
-  when: not kafka_package.stat.exists
-
-- name: Change ownership on kafka directory.
-  file:
-    path: /opt/kafka_{{ scala_version }}-{{ kafka_version }}
-    state: directory
-    owner: kafka
-    group: kafka
-
 - name: Link /opt/kafka to the right version
   file:
-    dest: /opt/kafka
+    path: /opt/kafka
     state: link
-    src: /opt/kafka_{{ scala_version }}-{{ kafka_version }}
+    src: "{{ kafka_install_dir }}"
 
 - name: Create systemd config
   template:
@@ -78,7 +50,8 @@
     - restart kafka
 
 - name: Reload daemon
-  command: systemctl daemon-reload
+  systemd:
+    daemon-reload: yes
 
 - name: Create data_dir
   file:
@@ -114,7 +87,7 @@
 # Setup log4j.properties
 - name: Create log4j.properties
   file:
-    dest: "{{ specification.kafka_var.conf_dir }}/log4j.properties"
+    path: "{{ specification.kafka_var.conf_dir }}/log4j.properties"
     owner: "{{ specification.kafka_var.user }}"
     group: "{{ specification.kafka_var.group }}"
     mode: 0644

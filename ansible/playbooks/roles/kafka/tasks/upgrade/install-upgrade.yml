@@ -1,45 +1,24 @@
 ---
-- name: Set Kafka installation file name as fact
-  set_fact:
-    kafka_installation_file_name: "kafka_{{ scala_version }}-{{ kafka_version.new }}.tgz"
-
-- name: Download Kafka binaries
-  include_role:
-    name: download
-    tasks_from: download_file
-  vars:
-    file_name: "{{ kafka_installation_file_name }}"
-
-- name: Uncompress Kafka installation file
-  unarchive:
-    remote_src: yes
-    src: "{{ download_directory }}/{{ kafka_installation_file_name }}"
-    dest: /opt
-
-- name: Change ownership on kafka directory
-  file:
-    path: /opt/kafka_{{ scala_version }}-{{ kafka_version.new }}
-    state: directory
-    owner: kafka
-    group: kafka
+- name: Download and unpack Kafka's binary
+  include_tasks: common/download_and_unpack_binary.yml
 
 - name: Copy configuration from previous version
   copy:
     remote_src: yes
     src: /opt/kafka/config/
-    dest: /opt/kafka_{{ scala_version }}-{{ kafka_version.new }}/config
+    dest: "{{ kafka_install_dir}}/config"
     mode: preserve
 
 - name: Link /opt/kafka to recently installed version
   file:
     dest: /opt/kafka
     state: link
-    src: /opt/kafka_{{ scala_version }}-{{ kafka_version.new }}
+    src: "{{ kafka_install_dir}}"
     force: yes
 
 - name: Remove previous version binaries
   file:
-    path: /opt/kafka_{{ scala_version }}-{{ kafka_version.old }}
+    path: /opt/kafka_{{ scala_version }}-{{ old_kafka_version }}
     state: absent
 
 - name: Get log.dirs property
