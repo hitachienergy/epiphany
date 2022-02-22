@@ -10,6 +10,7 @@
 - [#2950](https://github.com/epiphany-platform/epiphany/issues/2950) - CLI refactor to make it more consistant
 - [#2844](https://github.com/epiphany-platform/epiphany/issues/2844) - Refactor K8s upgrade task in order to simplify its flow
 - [#2716](https://github.com/epiphany-platform/epiphany/issues/2716) - Change container runtime to containerd
+- [#805](https://github.com/epiphany-platform/epiphany/issues/805) - Refactor download-requirements script
 
 ### Fixed
 

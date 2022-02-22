@@ -1,10 +1,20 @@
 import os
 from os.path import expanduser
+from typing import Dict, List
+
 
 LOG_TYPES = ['plain', 'json']
 
+
+SUPPORTED_OS: Dict[str, List[str]] = {
+    'ubuntu-20.04': ['x86_64'],
+    'redhat-7': ['x86_64']
+}
+
+
 class InvalidLogTypeException(Exception):
     pass
+
 
 class Config:
     class __ConfigBase:
