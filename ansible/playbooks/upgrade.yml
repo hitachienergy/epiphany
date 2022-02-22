@@ -239,9 +239,9 @@
     shell:
       executable: /bin/bash
   tasks:
-    - import_role:
-        name: upgrade
-        tasks_from: kafka
+    - include_role:
+        name: kafka
+        tasks_from: upgrade/main
       vars: { lock_file: /var/tmp/kafka-upgrade-in-progress.flag }
       when: "'kafka' in upgrade_components or upgrade_components|length == 0"
 
