@@ -51,7 +51,7 @@ class Toolchain:
 
         except ModuleNotFoundError:  # pip missing
             logging.info('pip3 not installed, try installing...')
-            self._install_pip()
+            self.install_pip()
             logging.info('Done.')
             return True
 
