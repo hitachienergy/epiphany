@@ -2,9 +2,6 @@
 - name: k8s/node | Drain node in preparation for maintenance
   include_tasks: utils/drain.yml
 
-- name: k8s/node | Upgrade Docker  # this may restart Docker daemon
-  include_tasks: docker.yml
-
 - name: k8s/node | Replace cgroupfs driver with systemd driver
   include_tasks: patch-cgroup-driver.yml
   vars: { _requires_restart: true }

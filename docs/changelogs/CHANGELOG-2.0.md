@@ -10,6 +10,8 @@
 - [#2950](https://github.com/epiphany-platform/epiphany/issues/2950) - CLI refactor to make it more consistant
 - [#2844](https://github.com/epiphany-platform/epiphany/issues/2844) - Refactor K8s upgrade task in order to simplify its flow
 - [#2985](https://github.com/epiphany-platform/epiphany/issues/2985) - Make RabbitMQ Plugins configurable
+- [#2716](https://github.com/epiphany-platform/epiphany/issues/2716) - Change container runtime to containerd
+- [#805](https://github.com/epiphany-platform/epiphany/issues/805) - Refactor download-requirements script
 
 ### Fixed
 
@@ -51,9 +53,10 @@
 
 ### Deprecated
 
-
 ### Breaking changes
 
 - Upgrade of Terraform components in issue [#2825](https://github.com/epiphany-platform/epiphany/issues/2825) and [#2853](https://github.com/epiphany-platform/epiphany/issues/2853) will make running re-apply with infrastructure break on existing 1.x clusters. The advice is to deploy a new cluster and migrate data. If needed a manual upgrade path is described [here.](../home/howto/UPGRADE.md#terraform-upgrade-from-epiphany-1.x-to-2.x)
+- Kubernetes container runtime changed. Dockershim and Docker are no longer on Kubernetes hosts.
+- Filebeat `docker` input replaced by `container` input. New field provided for Filebeat as system service installation: `container.id`. Field `kubernetes.container.name` is no longer valid.
 
 ### Known issues

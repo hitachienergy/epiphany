@@ -209,12 +209,11 @@ or VMs and should meet the following requirements:
 1. The air-gapped cluster machines/VMs are connected by a network or virtual network of some sorts and can communicate with each other.
 2. The air-gapped cluster machines/VMs are running one of the following Linux distributions:
     - RedHat 7.6+ and < 8
-    - CentOS 7.6+ and < 8
     - Ubuntu 20.04
 3. The cluster machines/VMs are accessible through SSH with a set of SSH keys you provide and configure on each machine yourself (key-based authentication).
 4. The user used for SSH connection (`admin_user`) has passwordless root privileges through `sudo`.
 5. A requirements machine that:
-    - Runs the same distribution as the air-gapped cluster machines/VMs (RedHat 7, CentOS 7, Ubuntu 20.04)
+    - Runs the same distribution as the air-gapped cluster machines/VMs (RedHat 7, Ubuntu 20.04)
     - Has access to the internet.
    If you don't have access to a similar machine/VM with internet access, you can also try to download the requirements with a Docker container. More information [here](./CLUSTER.md#downloading-offline-requirements-with-a-docker-container).
 6. A provisioning machine that:
@@ -228,18 +227,26 @@ To set up the cluster do the following steps:
 1. First we need to get the tooling to prepare the requirements. On the provisioning machine run:
 
     ```shell
-    epicli prepare --os OS
+    epicli prepare --os OS --arch ARCH
     ```
 
-    Where OS should be `centos-7`, `redhat-7`, `ubuntu-20.04`. This will create a directory called `prepare_scripts` with the needed files inside.
+    Where:
+    - OS should be `redhat-7`, `ubuntu-20.04`
+    - ARCH should be `x86_64`, `arm64`
+
+    This will create a directory called `prepare_scripts` with the needed files inside.
 
 2. The scripts in the `prepare_scripts` will be used to download all requirements. To do that copy the `prepare_scripts` folder over to the requirements machine and run the following command:
 
     ```shell
-    download-requirements.sh /requirementsoutput/
+    download-requirements.py /requirementsoutput/ OS
     ```
 
-    This will start downloading all requirements and put them in the `/requirementsoutput/` folder. Once run successfully the `/requirementsoutput/` needs to be copied to the provisioning machine to be used later on.
+    Where:
+    - OS should be `redhat-7`, `ubuntu-20.04`, `detect`
+    - /requirementsoutput/ where to output downloaded requirements
+
+    This will run the download-requirements script for target OS type and save requirements under /requirementsoutput/. Once run successfully the `/requirementsoutput/` needs to be copied to the provisioning machine to be used later on.
 
 3. Then generate a minimal data yaml file on the provisioning machine:
 
@@ -1096,15 +1103,15 @@ docker run -v /shared_folder:/home <--platform linux/amd64 or --platform linux/a
 
 As the ```ubuntu:20.04``` image is multi-arch you can include ```--platform linux/amd64``` or ```--platform linux/arm64``` to run the container as the specified architecture. The ```/shared_folder``` should be a folder on your local machine containing the required scripts.
 
-When you are inside the container run the following commands to prepare for the running of the ```download-requirements.sh``` script:
+When you are inside the container run the following commands to prepare for the running of the ```download-requirements.py``` script:
 
 ```shell
 apt-get update # update the package manager
-apt-get install sudo # install sudo so we can make the download-requirements.sh executable and run it as root
-sudo chmod +x /home/download-requirements.sh # make the requirements script executable
+apt-get install sudo # install sudo so we can make the download-requirements.py executable and run it as root
+sudo chmod +x /home/download-requirements.py # make the requirements script executable
 ```
 
-After this you should be able to run the ```download-requirements.sh``` from the ```home``` folder.
+After this you should be able to run the ```download-requirements.py``` from the ```home``` folder.
 
 ### RedHat 7.x
 
@@ -1116,40 +1123,14 @@ docker run -v /shared_folder:/home <--platform linux/amd64 or --platform linux/a
 
 As the ```registry.access.redhat.com/ubi7/ubi:7.9``` image is multi-arch you can include ```--platform linux/amd64``` or ```--platform linux/arm64``` to run the container as the specified architecture. The ```/shared_folder``` should be a folder on your local machine containing the requirement scripts.
 
-For running the ```download-requirements.sh``` script you will need a RedHat developer subscription to register the running container and make sure you can access to official Redhat repos for the packages needed. More information on getting this free subscription [here](https://developers.redhat.com/articles/getting-red-hat-developer-subscription-what-rhel-users-need-know).
+For running the ```download-requirements.py``` script you will need a RedHat developer subscription to register the running container and make sure you can access to official Redhat repos for the packages needed. More information on getting this free subscription [here](https://developers.redhat.com/articles/getting-red-hat-developer-subscription-what-rhel-users-need-know).
 
-When you are inside the container run the following commands to prepare for the running of the ```download-requirements.sh``` script:
+When you are inside the container run the following commands to prepare for the running of the ```download-requirements.py``` script:
 
 ```shell
 subscription-manager register # will ask for you credentials of your RedHat developer subscription and setup the container
 subscription-manager attach --auto # will enable the RedHat official repositories
-chmod +x /home/download-requirements.sh # make the requirements script executable
+chmod +x /home/download-requirements.py # make the requirements script executable
 ```
 
-After this you should be able to run the ```download-requirements.sh```  from the ```home``` folder.
-
-### CentOS 7.x
-
-For CentOS, you can use the following command to launch a container:
-
-arm64:
-
-```shell
-docker run -v /shared_folder:/home --platform linux/arm64 --rm -it arm64v8/centos:7.9.2009
-```
-
-x86_64:
-
-```shell
-docker run -v /shared_folder:/home --platform linux/amd64 --rm -it amd64/centos:7.9.2009
-```
-
-The ```/shared_folder``` should be a folder on your local machine containing the requirement scripts.
-
-When you are inside the container run the following commands to prepare for the running of the ```download-requirements.sh``` script:
-
-```shell
-chmod +x /home/download-requirements.sh # make the requirements script executable
-```
-
-After this you should be able to run the ```download-requirements.sh```  from the ```home``` folder.
+After this you should be able to run the ```download-requirements.py```  from the ```home``` folder.

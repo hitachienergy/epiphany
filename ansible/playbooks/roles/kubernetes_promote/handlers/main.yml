@@ -1,19 +1,17 @@
 ---
 - name: Restart controller-manager
-  shell: |
-    docker ps \
-      --filter 'name=kube-controller-manager_kube-controller-manager' \
-      --format '{{ "{{.ID}}" }}' \
-    | xargs --no-run-if-empty docker kill
+  shell: >-
+    set -o pipefail &&
+    crictl ps --name='kube-controller-manager' -q \
+    | xargs --no-run-if-empty crictl stop --timeout=0
   args:
     executable: /bin/bash
 
 - name: Restart scheduler
-  shell: |
-    docker ps \
-      --filter 'name=kube-scheduler_kube-scheduler' \
-      --format '{{ "{{.ID}}" }}' \
-    | xargs --no-run-if-empty docker kill
+  shell: >-
+    set -o pipefail &&
+    crictl ps --name='kube-scheduler' -q \
+    | xargs --no-run-if-empty crictl stop --timeout=0
   args:
     executable: /bin/bash
 
@@ -23,11 +21,10 @@
     state: restarted
 
 - name: Restart kube-proxy
-  shell: |
-    docker ps \
-      --filter 'name=kube-proxy_kube-proxy' \
-      --format '{{ "{{.ID}}" }}' \
-    | xargs --no-run-if-empty docker kill
+  shell: >-
+    set -o pipefail &&
+    crictl ps --name='kube-proxy' -q \
+    | xargs --no-run-if-empty crictl stop --timeout=0
   args:
     executable: /bin/bash
 

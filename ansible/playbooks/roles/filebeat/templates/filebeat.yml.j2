@@ -112,8 +112,9 @@ filebeat.inputs:
 
 - type: container
   enabled: true
+  format: cri
   paths:
-    - /var/lib/docker/containers/*/*.log
+    - /var/log/containers/*.log
   {% if specification.container_input.multiline is defined %}
   multiline:
     {% for k, v in specification.container_input.multiline.items() %}
@@ -122,21 +123,11 @@ filebeat.inputs:
   {% endif %}
 
   processors:
-    - add_docker_metadata:
-        labels.dedot: false
-    - rename:
-        fields:
-          - from: container.labels.io.kubernetes.container.name
-            to: kubernetes.container.name
-          - from: container.labels.io.kubernetes.pod.name
-            to: kubernetes.pod.name
-          - from: container.labels.io.kubernetes.pod.namespace
-            to: kubernetes.namespace
-        ignore_missing: true
-        fail_on_error: true
-    - drop_fields:
-        fields:
-          - container # Drop all fields added by 'add_docker_metadata' that were not renamed
+    - dissect:
+        tokenizer: "/var/log/containers/%{kubernetes.pod.name}_%{kubernetes.namespace}_%{container.id}.log"
+        field: "log.file.path"
+        target_prefix: ""
+        overwrite_keys: true
 {% endif %}
 
 # ============================== Filebeat modules ==============================

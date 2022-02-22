@@ -1,7 +1,7 @@
 ---
 - name: "Download file {{ file_name }}"
   get_url:
-    url: "{{ url | default(repository_url + '/files/' + file_name) }}"
+    url: "{{ url | default(repository_url + '/' + _subdir | default('files') + '/' + file_name) }}"
     dest: "{{ download_directory }}"
     validate_certs: "{{ validate_certs }}"
     force: "{{ force | default(false) }}"
