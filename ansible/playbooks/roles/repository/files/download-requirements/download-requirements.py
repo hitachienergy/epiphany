@@ -49,15 +49,15 @@ def cleanup(config: Config):
     """
     tools = TOOLCHAINS[config.os_type](config.retries)
 
-    logging.info('Uninstalling 3rd party python modules:')
     if config.poyo_installed:
+        logging.info('Uninstalling 3rd party python modules:')
         tools.pip.uninstall('poyo', '==0.5.0')
-    logging.info('Done.')
+        logging.info('Done.')
 
-    logging.info('Uninstalling pip3...')
     if config.pip_installed:
+        logging.info('Uninstalling pip3...')
         tools.uninstall_pip()
-    logging.info('Done.')
+        logging.info('Done.')
 
 
 def main(argv: List[str]) -> int:
