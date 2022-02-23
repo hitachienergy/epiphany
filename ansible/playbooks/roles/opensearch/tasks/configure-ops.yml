@@ -119,7 +119,7 @@
 - name: Change default users
   when: not is_upgrade_run
   block:
-    - name: Wait for OpenSearch service to start up
+    - name: Wait for opensearch service to start up
       when: restart_opensearch.changed
       wait_for:
         port: 9200
