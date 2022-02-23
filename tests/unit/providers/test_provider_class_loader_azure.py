@@ -1,7 +1,8 @@
-from cli.src.providers.provider_class_loader import provider_class_loader
-from cli.src.providers.azure.InfrastructureBuilder import InfrastructureBuilder
 from cli.src.providers.azure.APIProxy import APIProxy
-from cli.src.providers.azure.InfrastructureConfigCollector import InfrastructureConfigCollector
+from cli.src.providers.azure.InfrastructureBuilder import InfrastructureBuilder
+from cli.src.providers.azure.InfrastructureConfigCollector import \
+    InfrastructureConfigCollector
+from cli.src.providers.provider_class_loader import provider_class_loader
 
 
 def test_provider_class_loader_infrastructurebuilder_azure():

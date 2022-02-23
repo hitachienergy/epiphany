@@ -1,4 +1,6 @@
-from cli.src.helpers.naming_helpers import to_role_name, to_feature_name, resource_name, cluster_tag, storage_account_name
+from cli.src.helpers.naming_helpers import (cluster_tag, resource_name,
+                                            storage_account_name,
+                                            to_feature_name, to_role_name)
 
 
 def test_to_role_name():

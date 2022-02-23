@@ -1,19 +1,31 @@
-from collections import OrderedDict
 import os
+from collections import OrderedDict
 
+import pytest
 from ruamel.yaml import YAML
 
-from cli.src.helpers.build_io import get_build_path, get_output_path, get_terraform_path, get_ansible_path,\
-    get_ansible_vault_path, get_ansible_config_file_path, get_inventory_path, get_manifest_path,\
-    save_manifest, load_manifest, save_sp, save_inventory, save_ansible_config_file, get_inventory_path_for_build,\
-    get_ansible_config_file_path_for_build, get_ansible_path_for_build,\
-    ANSIBLE_OUTPUT_DIR, ANSIBLE_VAULT_OUTPUT_DIR, ANSIBLE_INVENTORY_FILE, ANSIBLE_CFG_FILE,\
-    MANIFEST_FILE_NAME, SP_FILE_NAME, TERRAFORM_OUTPUT_DIR
+from cli.src.helpers.build_io import (ANSIBLE_CFG_FILE, ANSIBLE_INVENTORY_FILE,
+                                      ANSIBLE_OUTPUT_DIR,
+                                      ANSIBLE_VAULT_OUTPUT_DIR,
+                                      MANIFEST_FILE_NAME, SP_FILE_NAME,
+                                      TERRAFORM_OUTPUT_DIR,
+                                      get_ansible_config_file_path,
+                                      get_ansible_config_file_path_for_build,
+                                      get_ansible_path,
+                                      get_ansible_path_for_build,
+                                      get_ansible_vault_path, get_build_path,
+                                      get_inventory_path,
+                                      get_inventory_path_for_build,
+                                      get_manifest_path, get_output_path,
+                                      get_terraform_path, load_manifest,
+                                      save_ansible_config_file, save_inventory,
+                                      save_manifest, save_sp)
 from cli.src.helpers.objdict_helpers import dict_to_objdict
-from cli.src.helpers.yaml_helpers import safe_load_all, safe_load
-
-from tests.unit.helpers.constants import CLUSTER_NAME_SAVE, OUTPUT_PATH, TEST_DOCS, TEST_CLUSTER_MODEL, \
-    TEST_INVENTORY, CLUSTER_NAME_LOAD
+from cli.src.helpers.yaml_helpers import safe_load, safe_load_all
+from tests.unit.helpers.constants import (CLUSTER_NAME_LOAD, CLUSTER_NAME_SAVE,
+                                          NON_EXISTING_CLUSTER, OUTPUT_PATH,
+                                          TEST_CLUSTER_MODEL, TEST_DOCS,
+                                          TEST_INVENTORY)
 
 TEST_SP = {'appId': 'xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxx',
            'displayName': 'test-rg',
@@ -105,6 +117,12 @@ def test_load_manifest():
     build_path = get_build_path(CLUSTER_NAME_LOAD)
     docs = load_manifest(build_path)
     assert docs == TEST_DOCS
+
+
+def test_load_not_existing_manifest_docs():
+    build_path = get_build_path(NON_EXISTING_CLUSTER)
+    with pytest.raises(Exception):
+        load_manifest(build_path)
 
 
 def test_save_sp():

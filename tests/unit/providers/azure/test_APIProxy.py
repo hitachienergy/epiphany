@@ -1,8 +1,9 @@
 from pytest_mock import MockerFixture
 
-from cli.src.providers.azure.APIProxy import APIProxy
 from cli.src.models.AnsibleHostModel import AnsibleOrderedHostModel
-from tests.unit.providers.data.APIProxy_data import CLUSTER_MODEL, RUNNING_INSTANCES_AZURE
+from cli.src.providers.azure.APIProxy import APIProxy
+from tests.unit.providers.data.APIProxy_data import (CLUSTER_MODEL,
+                                                     RUNNING_INSTANCES_AZURE)
 
 
 def test_get_ips_for_feature(mocker: MockerFixture):
