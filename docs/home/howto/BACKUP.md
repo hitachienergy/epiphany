@@ -22,8 +22,6 @@ filesystem. See [How to store backup](#2-how-to-store-backup) chapter.
 Copy default configuration for backup from ``defaults/configuration/backup.yml`` into newly created backup.yml config
 file, supply correct provider and enable backup for chosen components by setting up ``enabled`` parameter to ``true``.
 
-This config may also be attached to cluster-config.yml
-
 ```yaml
 kind: configuration/backup
 title: Backup Config
@@ -52,8 +50,6 @@ Run ``epicli backup`` command:
 ```shell
 epicli backup -f backup.yml -b build_folder
 ```
-
-If backup config is attached to cluster-config.yml, use this file instead of ``backup.yml``.
 
 ## 2. How to store backup
 
@@ -84,8 +80,6 @@ Copy existing default configuration from ``defaults/configuration/recovery.yml``
 file, supply correct provider and set ``enabled`` parameter for component to recovery. It's possible to choose snapshot
 name by passing date and time part of snapshot name. If snapshot name is not provided, the latest one will be restored.
 
-This config may also be attached to cluster-config.yml
-
 ```yaml
 kind: configuration/recovery
 title: Recovery Config
@@ -115,8 +109,6 @@ Run ``epicli recovery`` command:
 ```shell
 epicli recovery -f recovery.yml -b build_folder
 ```
-
-If recovery config is attached to cluster-config.yml, use this file instead of ``recovery.yml``.
 
 ## 4. How backup and recovery work
 
