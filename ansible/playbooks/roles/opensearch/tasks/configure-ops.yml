@@ -98,7 +98,7 @@
     transport_port: "{{ is_upgrade_run | ternary(existing_es_config['transport.port'], ports.transport) }}"
 
 # When 'opensearch_security.allow_unsafe_democertificates' is set to 'false' all demo certificate files must be removed,
-# otherwise OpenSearch service doesn't start.
+# otherwise opensearch service doesn't start.
 # For apply mode, demo certificate files are removed based only on their names. For upgrade mode,
 # public key fingerprints are checked to protect against unintentional deletion (what takes additional time).
 
