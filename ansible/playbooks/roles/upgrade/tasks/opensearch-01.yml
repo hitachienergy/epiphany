@@ -42,7 +42,7 @@
   debug:
     msg:
       - "Installed version: {{ ansible_facts.packages['elasticsearch-oss'][0].version }}"
-      - "Target version: {{ ops_defaults.versions[ansible_os_family].ops_version }}"
+      - "Target version: {{ ops_defaults.versions[ansible_os_family].opensearch }}"
 
 # If state file exists it means the previous run failed
 - name: OPS | Check if upgrade state file exists
@@ -59,7 +59,7 @@
      or (_target_version is version(ansible_facts.packages['elasticsearch-oss'][0].version, '==')
          and stat_upgrade_state_file.stat.exists)
   vars:
-    _target_version: "{{ ops_defaults.versions[ansible_os_family].ops_version }}"
+    _target_version: "{{ ops_defaults.versions[ansible_os_family].opensearch }}"
 
 - include_role:
     name: upgrade
