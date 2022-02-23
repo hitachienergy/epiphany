@@ -12,8 +12,8 @@
       {{ ansible_date_time.iso8601_basic_short | replace('T','-') }}
   vars:
     uri_template: &uri
-      client_cert: "{{ ops_def.certificates.dirs.certs }}/{{ ops_def.certificates.files.admin.cert.filename }}"
-      client_key:  "{{ ops_def.certificates.dirs.certs }}/{{ ops_def.certificates.files.admin.key.filename }}"
+      client_cert: "{{ opensearch_defaults.certificates.dirs.certs }}/{{ opensearch_defaults.certificates.files.admin.cert.filename }}"
+      client_key:  "{{ opensearch_defaults.certificates.dirs.certs }}/{{ opensearch_defaults.certificates.files.admin.key.filename }}"
       validate_certs: false
       body_format: json
 
