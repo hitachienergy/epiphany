@@ -17,7 +17,7 @@
 - name: Create snapshot archive
   import_tasks: common/create_snapshot_archive.yml
   vars:
-    snapshot_prefix: "opsd_conf_dir"
+    snapshot_prefix: "opensearch_dashboards_conf_dir"
     dirs_to_archive:
       - "{{ opsd_def.specification.paths.opsd_conf_dir }}"
 
