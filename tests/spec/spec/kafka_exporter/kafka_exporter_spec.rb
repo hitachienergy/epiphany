@@ -31,11 +31,11 @@ describe 'Checking if the ports are open' do
     let(:disable_sudo) { false }
     it { should be_listening }
   end
-end 
+end
 
 describe 'Checking if it is possible to collect the metrics' do
   describe command("curl -s #{kafka_exporter_host}:#{kafka_exporter_web_listen_port}/metrics | grep -i kafka") do
-    its(:stdout) { should match /kafka/ }
+    its(:stdout) { should match(/kafka/) }
     its(:exit_status) { should eq 0 }
   end
 end

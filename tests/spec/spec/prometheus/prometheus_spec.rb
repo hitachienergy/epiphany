@@ -5,7 +5,7 @@ prometheus_port = 9090
 kube_apiserver_secure_port = 6443
 alertmanager_host = 'localhost'
 alertmanager_port = 9093
-kubelet_port = 10250
+kubelet_port = 10_250
 haproxy_metrics_port = 9101
 
 describe 'Check if Prometheus user exists' do
@@ -35,7 +35,7 @@ describe 'Check Prometheus directories and files' do
     it { should be_owned_by('prometheus').or be_owned_by('root') }
     it { should be_grouped_into 'prometheus' }
   end
-  describe file("/etc/prometheus/prometheus.yml") do
+  describe file('/etc/prometheus/prometheus.yml') do
     it { should exist }
     it { should be_a_file }
     it { should be_readable }
@@ -58,168 +58,166 @@ end
 
 describe 'Check Prometheus health' do
   describe command("curl -o /dev/null -s -w '%{http_code}' #{prometheus_host}:#{prometheus_port}/graph") do
-    it "is expected to be equal" do
+    it 'is expected to be equal' do
       expect(subject.stdout.to_i).to eq 200
     end
   end
   describe command("curl #{prometheus_host}:#{prometheus_port}/-/ready") do
-    its(:stdout) { should match /^Prometheus is Ready.$/ }
+    its(:stdout) { should match(/^Prometheus is Ready.$/) }
   end
   describe command("curl #{prometheus_host}:#{prometheus_port}/-/healthy") do
-    its(:stdout) { should match /^Prometheus is Healthy.$/ }
+    its(:stdout) { should match(/^Prometheus is Healthy.$/) }
   end
 end
 
 describe 'Check if Prometheus is serving metrics about itself' do
-    describe command("curl -o /dev/null -s -w '%{http_code}' #{prometheus_host}:#{prometheus_port}/metrics") do
-      it "is expected to be equal" do
-        expect(subject.stdout.to_i).to eq 200
-      end
-    end
-    describe command("curl #{prometheus_host}:#{prometheus_port}/metrics") do
-      its(:stdout) { should_not match /^$/ }
+  describe command("curl -o /dev/null -s -w '%{http_code}' #{prometheus_host}:#{prometheus_port}/metrics") do
+    it 'is expected to be equal' do
+      expect(subject.stdout.to_i).to eq 200
     end
   end
-
+  describe command("curl #{prometheus_host}:#{prometheus_port}/metrics") do
+    its(:stdout) { should_not match(/^$/) }
+  end
+end
 
 describe 'Check configuration files for Node exporter' do
-    listInventoryHosts("node_exporter").each do |val|
-        describe command("ls /etc/prometheus/file_sd") do
-        let(:disable_sudo) { false }
-        its(:stdout) { should match /node-#{val}.yml/ }
-        end
+  listInventoryHosts('node_exporter').each do |val|
+    describe command('ls /etc/prometheus/file_sd') do
+      let(:disable_sudo) { false }
+      its(:stdout) { should match(/node-#{val}.yml/) }
     end
+  end
 end
 
 describe 'Check connection to Node Exporter hosts' do
-    listInventoryHosts("node_exporter").each do |val|
-        let(:disable_sudo) { false }
-        describe command("curl -o /dev/null -s -w '%{http_code}' $(grep -oP \"(?<=targets: \\\[\').*(?=\'\\\])\" /etc/prometheus/file_sd/node-#{val}.yml)/metrics") do
-          it "is expected to be equal" do
-            expect(subject.stdout.to_i).to eq 200
-          end
-        end
+  listInventoryHosts('node_exporter').each do |val|
+    let(:disable_sudo) { false }
+    describe command("curl -o /dev/null -s -w '%{http_code}' $(grep -oP \"(?<=targets: \\\[\').*(?=\'\\\])\" /etc/prometheus/file_sd/node-#{val}.yml)/metrics") do
+      it 'is expected to be equal' do
+        expect(subject.stdout.to_i).to eq 200
+      end
     end
+  end
 end
 
 describe 'Check Prometheus configuration if exist HAproxy target' do
-    listInventoryHosts("haproxy").each do |val|
-        describe command("cat /etc/prometheus/prometheus.yml") do
-        let(:disable_sudo) { false }
-        its(:stdout) { should include "#{val}:#{haproxy_metrics_port}" }
-        end
+  listInventoryHosts('haproxy').each do |val|
+    describe command('cat /etc/prometheus/prometheus.yml') do
+      let(:disable_sudo) { false }
+      its(:stdout) { should include "#{val}:#{haproxy_metrics_port}" }
     end
+  end
 end
 
 describe 'Check connection HAproxy metrics endpoint' do
-      listInventoryHosts("haproxy").each do |val|
-          let(:disable_sudo) { false }
-          describe command("curl -o /dev/null -s -w '%{http_code}' #{val}:#{haproxy_metrics_port}/metrics") do
-            it "is expected to be equal" do
-              expect(subject.stdout.to_i).to eq 200
-            end
-          end
+  listInventoryHosts('haproxy').each do |val|
+    let(:disable_sudo) { false }
+    describe command("curl -o /dev/null -s -w '%{http_code}' #{val}:#{haproxy_metrics_port}/metrics") do
+      it 'is expected to be equal' do
+        expect(subject.stdout.to_i).to eq 200
       end
+    end
+  end
 end
 
 describe 'Check configuration files for JMX Exporter' do
-    listInventoryHosts("jmx_exporter").each do |val|
-        describe command("ls /etc/prometheus/file_sd") do
-        let(:disable_sudo) { false }
-        its(:stdout) { should match /kafka-jmx-#{val}.yml/ }
-        its(:stdout) { should match /zookeeper-jmx-#{val}.yml/ }
-        end
+  listInventoryHosts('jmx_exporter').each do |val|
+    describe command('ls /etc/prometheus/file_sd') do
+      let(:disable_sudo) { false }
+      its(:stdout) { should match(/kafka-jmx-#{val}.yml/) }
+      its(:stdout) { should match(/zookeeper-jmx-#{val}.yml/) }
     end
+  end
 end
 
 describe 'Check connection to JMX Exporter hosts' do
-    listInventoryHosts("jmx_exporter").each do |val|
-        let(:disable_sudo) { false }
-        describe command("curl -o /dev/null -s -w '%{http_code}' $(grep -oP \"(?<=targets: \\\[\').*(?=\'\\\])\" /etc/prometheus/file_sd/kafka-jmx-#{val}.yml)/metrics") do
-          it "is expected to be equal" do
-            expect(subject.stdout.to_i).to eq 200
-          end
-        end
-        describe command("curl -o /dev/null -s -w '%{http_code}' $(grep -oP \"(?<=targets: \\\[\').*(?=\'\\\])\" /etc/prometheus/file_sd/zookeeper-jmx-#{val}.yml)/metrics") do
-        it "is expected to be equal" do
-          expect(subject.stdout.to_i).to eq 200
-        end
+  listInventoryHosts('jmx_exporter').each do |val|
+    let(:disable_sudo) { false }
+    describe command("curl -o /dev/null -s -w '%{http_code}' $(grep -oP \"(?<=targets: \\\[\').*(?=\'\\\])\" /etc/prometheus/file_sd/kafka-jmx-#{val}.yml)/metrics") do
+      it 'is expected to be equal' do
+        expect(subject.stdout.to_i).to eq 200
       end
     end
+    describe command("curl -o /dev/null -s -w '%{http_code}' $(grep -oP \"(?<=targets: \\\[\').*(?=\'\\\])\" /etc/prometheus/file_sd/zookeeper-jmx-#{val}.yml)/metrics") do
+      it 'is expected to be equal' do
+        expect(subject.stdout.to_i).to eq 200
+      end
+    end
+  end
 end
 
 describe 'Check configuration files for Kafka Exporter hosts' do
-    listInventoryHosts("kafka_exporter").each do |val|
-        describe command("ls /etc/prometheus/file_sd") do
-        let(:disable_sudo) { false }
-        its(:stdout) { should match /kafka-exporter-#{val}.yml/ }
-        end
+  listInventoryHosts('kafka_exporter').each do |val|
+    describe command('ls /etc/prometheus/file_sd') do
+      let(:disable_sudo) { false }
+      its(:stdout) { should match(/kafka-exporter-#{val}.yml/) }
     end
+  end
 end
 
 describe 'Check connection to Kafka Exporter hosts' do
-    listInventoryHosts("kafka_exporter").each do |val|
-        let(:disable_sudo) { false }
-        describe command("curl -o /dev/null -s -w '%{http_code}' $(grep -oP \"(?<=targets: \\\[\').*(?=\'\\\])\" /etc/prometheus/file_sd/kafka-exporter-#{val}.yml)/metrics") do
-          it "is expected to be equal" do
-            expect(subject.stdout.to_i).to eq 200
-          end
-        end
+  listInventoryHosts('kafka_exporter').each do |val|
+    let(:disable_sudo) { false }
+    describe command("curl -o /dev/null -s -w '%{http_code}' $(grep -oP \"(?<=targets: \\\[\').*(?=\'\\\])\" /etc/prometheus/file_sd/kafka-exporter-#{val}.yml)/metrics") do
+      it 'is expected to be equal' do
+        expect(subject.stdout.to_i).to eq 200
+      end
     end
+  end
 end
 
 describe 'Check connection to Kubernetes API server' do
-    listInventoryHosts("kubernetes_master").each do |val|
-        let(:disable_sudo) { false }
-        describe command("curl -o /dev/null -s -w '%{http_code}' -k -H \"Authorization: Bearer $(grep -A 6 kubernetes-apiservers /etc/prometheus/prometheus.yml \
+  listInventoryHosts('kubernetes_master').each do |val|
+    let(:disable_sudo) { false }
+    describe command("curl -o /dev/null -s -w '%{http_code}' -k -H \"Authorization: Bearer $(grep -A 6 kubernetes-apiservers /etc/prometheus/prometheus.yml \
         | awk '/bearer_token/ {print $2}' | tr -d '\"')\" https://#{val}:#{kube_apiserver_secure_port}/metrics") do
-          it "is expected to be equal" do
-            expect(subject.stdout.to_i).to eq 200
-          end
-        end
+      it 'is expected to be equal' do
+        expect(subject.stdout.to_i).to eq 200
+      end
     end
+  end
 end
 
 describe 'Check connection to Kubernetes cAdvisor' do
-    let(:disable_sudo) { false }
-    listInventoryHosts("kubernetes_master").each do |val_m|
-        describe command("curl -o /dev/null -s -w '%{http_code}' -k -H \"Authorization: Bearer $(grep -A 6 kubernetes-cadvisor /etc/prometheus/prometheus.yml \
+  let(:disable_sudo) { false }
+  listInventoryHosts('kubernetes_master').each do |val_m|
+    describe command("curl -o /dev/null -s -w '%{http_code}' -k -H \"Authorization: Bearer $(grep -A 6 kubernetes-cadvisor /etc/prometheus/prometheus.yml \
         | awk '/bearer_token/ {print $2}' | tr -d '\"')\" https://#{val_m}:#{kubelet_port}/metrics/cadvisor") do
-            it "is expected to be equal" do
-                expect(subject.stdout.to_i).to eq 200
-            end
-        end
+      it 'is expected to be equal' do
+        expect(subject.stdout.to_i).to eq 200
       end
-    listInventoryHosts("kubernetes_node").each do |val_w|
-        describe command("curl -o /dev/null -s -w '%{http_code}' -k -H \"Authorization: Bearer $(grep -A 6 kubernetes-cadvisor /etc/prometheus/prometheus.yml \
-        | awk '/bearer_token/ {print $2}' | tr -d '\"')\" https://#{val_w}:#{kubelet_port}/metrics/cadvisor") do
-            it "is expected to be equal" do
-                expect(subject.stdout.to_i).to eq 200
-            end
-        end
     end
+  end
+  listInventoryHosts('kubernetes_node').each do |val_w|
+    describe command("curl -o /dev/null -s -w '%{http_code}' -k -H \"Authorization: Bearer $(grep -A 6 kubernetes-cadvisor /etc/prometheus/prometheus.yml \
+        | awk '/bearer_token/ {print $2}' | tr -d '\"')\" https://#{val_w}:#{kubelet_port}/metrics/cadvisor") do
+      it 'is expected to be equal' do
+        expect(subject.stdout.to_i).to eq 200
+      end
+    end
+  end
 end
 
 describe 'Check connection to Kubernetes nodes' do
-    let(:disable_sudo) { false }
-    listInventoryHosts("kubernetes_master").each do |val_m|
-        describe command("curl -o /dev/null -s -w '%{http_code}' -k -H \"Authorization: Bearer $(grep -A 6 kubernetes-nodes /etc/prometheus/prometheus.yml \
+  let(:disable_sudo) { false }
+  listInventoryHosts('kubernetes_master').each do |val_m|
+    describe command("curl -o /dev/null -s -w '%{http_code}' -k -H \"Authorization: Bearer $(grep -A 6 kubernetes-nodes /etc/prometheus/prometheus.yml \
         | awk '/bearer_token/ {print $2}' | tr -d '\"')\" https://#{val_m}:#{kubelet_port}/metrics") do
-            it "is expected to be equal" do
-                expect(subject.stdout.to_i).to eq 200
-            end
-        end
+      it 'is expected to be equal' do
+        expect(subject.stdout.to_i).to eq 200
       end
-    listInventoryHosts("kubernetes_node").each do |val_w|
-        describe command("curl -o /dev/null -s -w '%{http_code}' -k -H \"Authorization: Bearer $(grep -A 6 kubernetes-nodes /etc/prometheus/prometheus.yml \
-        | awk '/bearer_token/ {print $2}' | tr -d '\"')\" https://#{val_w}:#{kubelet_port}/metrics") do
-            it "is expected to be equal" do
-                expect(subject.stdout.to_i).to eq 200
-            end
-        end
     end
+  end
+  listInventoryHosts('kubernetes_node').each do |val_w|
+    describe command("curl -o /dev/null -s -w '%{http_code}' -k -H \"Authorization: Bearer $(grep -A 6 kubernetes-nodes /etc/prometheus/prometheus.yml \
+        | awk '/bearer_token/ {print $2}' | tr -d '\"')\" https://#{val_w}:#{kubelet_port}/metrics") do
+      it 'is expected to be equal' do
+        expect(subject.stdout.to_i).to eq 200
+      end
+    end
+  end
 end
-
 
 # # Tests for Alertmanager assuming monitoring.alerts.enable == true
 
