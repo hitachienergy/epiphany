@@ -19,7 +19,7 @@
   vars:
     snapshot_prefix: "opensearch_dashboards_conf_dir"
     dirs_to_archive:
-      - "{{ opsd_def.specification.paths.opsd_conf_dir }}"
+      - "{{ opensearch_dashboards_vars.specification.paths.opensearch_dashboards_conf_dir }}"
 
 - name: Create snapshot checksum
   import_tasks: common/create_snapshot_checksum.yml
