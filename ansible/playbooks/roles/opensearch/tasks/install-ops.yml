@@ -5,7 +5,7 @@
     tasks_from: download_file
   vars:
     file_name: "{{ item }}"
-  with_items:
+  loop:
     - "opensearch-{{ versions[ansible_os_family].opensearch }}-linux-x64.tar.gz"
     - "opensearch-perf-top-{{ versions[ansible_os_family].opensearch_perftop }}-linux-x64.zip"
 
