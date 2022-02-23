@@ -21,7 +21,7 @@
     state: directory
     owner: "{{ specification.opensearch_user }}"
     group: "{{ specification.opensearch_user }}"
-  with_items:
+  loop:
     - "{{ specification.paths.opensearch_home }}"
     - "{{ specification.paths.opensearch_perftop_home }}"
     - "{{ specification.paths.opensearch_log_dir }}"
