@@ -170,7 +170,7 @@
     type: RSA
     mode: u=rw,g=r,o=
     owner: opensearch
-    # group: opensearch
+    group: opensearch
     return_content: false
   register: node_key
 
@@ -197,7 +197,7 @@
     use_common_name_for_san: false
     mode: u=rw,g=r,o=
     owner: opensearch
-    # group: opensearch
+    group: opensearch
   register: node_csr
   vars:
     _unique_hostnames: "{{ [ansible_hostname, ansible_nodename, ansible_fqdn] | unique }}"
@@ -215,4 +215,4 @@
     ownca_digest: sha256
     mode: u=rw,go=r
     owner: opensearch
-    # group: opensearch
+    group: opensearch
