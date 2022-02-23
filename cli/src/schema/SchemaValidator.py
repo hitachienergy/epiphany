@@ -47,11 +47,7 @@ class SchemaValidator(Step):
     def run_for_individual_documents(self):
         for doc in self.validation_docs:
             # Load document schema
-            if 'backup' in doc.kind or 'recovery' in doc.kind:
-                schema = load_schema_obj(types.VALIDATION, self.provider, doc.kind)
-            else:
-                schema = self.get_base_schema(doc.kind)
-                schema['properties']['specification'] = load_schema_obj(types.VALIDATION, self.provider, doc.kind)
+            schema = load_schema_obj(types.VALIDATION, self.provider, doc.kind)
 
             # Include "definitions"
             schema['definitions'] = self.definitions
