@@ -17,8 +17,6 @@
       validate_certs: false
       body_format: json
 
-- debug: var=snapshot_name
-
 - name: Check cluster health
   uri:
     <<: *uri
