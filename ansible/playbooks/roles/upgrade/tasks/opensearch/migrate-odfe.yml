@@ -11,11 +11,25 @@
       - "Opensearch version to be installed: {{ ops_defaults.versions[ansible_os_family].ops_version }}"
 
 - name: ODFE migr | Ensure elasticsearch cluster is up and running
-  systemd:
-    name: elasticsearch
-    enabled: yes
-    state: restarted
-  register: elasticsearch_state
+  block:
+  - name: OPS | Include vars from opensearch role  # requires epicli upgrade -f <manifest>.yml
+    include_vars:
+      file: roles/opensearch/vars/main.yml
+      name: ops_vars
+
+  - name: ODFE migr | Ensure elasticsearch cluster is up and running
+    systemd:
+      name: elasticsearch
+      enabled: yes
+      state: restarted
+    register: elasticsearch_state
+  rescue:
+  - name: ODFE migr | Suggest potential problem solution and fail
+    fail:
+      msg: "Are you trying to migrate from ODFE ( ops_vars.specification.odfe_migration: true ) on an already migrated server?"
+    when:
+    - ops_vars.specification.odfe_migration == true
+
 
 - name: ODFE migr | Set existing_config facts
   include_tasks: opensearch/utils/get-config-from-files.yml
