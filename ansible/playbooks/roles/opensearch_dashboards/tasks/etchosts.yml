@@ -3,8 +3,8 @@
   blockinfile:
     dest: /etc/hosts
     block: |-
-      {% for item in groups['dashboards'] %}
-      {{ hostvars[item]['ip'] }} {{ item }}.{{ domain_name }} {{ item }}
+      {% for item in groups['opensearch_dashboards'] %}
+      {{ hostvars[item]['ansible_host'] }} {{ hostvars[item]['ansible_facts']['fqdn'] }} {{ item }}
       {% endfor %}
     state: present
     create: yes
