@@ -61,4 +61,3 @@ ports:
   http:      9200  # defaults to range but we want static port
   transport: 9300  # defaults to range but we want static port
 log4j_file_name: apache-log4j-2.17.1-bin.tar.gz
-systemctl_path: /etc/systemd/system

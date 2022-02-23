@@ -16,5 +16,3 @@ opensearch_nodes_dashboards: |-
         {% for item in groups['opensearch_dashboards'] -%}
           https://{{ hostvars[item]['ansible_host'] }}:{{ opensearch_api_port }}{% if not loop.last %}","{% endif %}
         {%- endfor %}
-
-systemctl_path: /etc/systemd/system

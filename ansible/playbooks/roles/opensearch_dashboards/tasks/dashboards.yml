@@ -40,4 +40,4 @@
 - name: Create systemd service
   template:
     src: dashboards.service
-    dest: "{{ systemctl_path }}/dashboards.service"
+    dest: /etc/systemd/system/dashboards.service

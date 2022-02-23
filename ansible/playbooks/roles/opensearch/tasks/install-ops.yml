@@ -49,4 +49,4 @@
 - name: Create systemd service
   template:
     src: roles/opensearch/templates/opensearch.service.j2
-    dest: "{{ systemctl_path }}/opensearch.service"
+    dest: "/etc/systemd/system/opensearch.service"

@@ -74,7 +74,7 @@
 - name: Kibana migr | Create OPSD systemd service
   template:
     src: roles/opensearch_dashboards/templates/dashboards.service
-    dest: "{{ systemctl_path }}/dashboards.service"
+    dest: /etc/systemd/system/dashboards.service
 
 - name: Kibana migr | Assure Opensearch Dashboards service is started
   service:
