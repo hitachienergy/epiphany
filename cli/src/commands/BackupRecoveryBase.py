@@ -50,8 +50,8 @@ class BackupRecoveryBase(Step):
 
         # Load only backup / recovery configuration documents
         loaded_docs = load_yamls_file(self.file)
-        self.input_docs = select_all(loaded_docs, lambda x: x.kind == ('configuration/backup','configuration/recovery'))
-        if self.input_docs < 1:
+        self.input_docs = select_all(loaded_docs, lambda x: x.kind in ['configuration/backup', 'configuration/recovery'])
+        if len(self.input_docs) < 1:
             raise Exception('No documents for backup or recovery in input file.')
 
         # Validate input documents
