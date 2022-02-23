@@ -1,13 +1,5 @@
 ---
 # This file is meant to be also used by upgrade role
-
-versions:
-  RedHat:
-    opensearch: "1.2.4"
-    opensearch_perftop: "1.1.0.0"
-  Debian:
-    opensearch: "1.2.4"
-    opensearch_perftop: "1.1.0.0"
 certificates:
   dirs:
     certs:  /usr/share/opensearch/config

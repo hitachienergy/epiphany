@@ -1,9 +1,4 @@
 ---
-versions:
-  RedHat:
-    opsd_version: "1.2.0"
-  Debian:
-    opsd_version: "1.2.0"
 opensearch_nodes: |-
         {% for item in groups['ops-cluster'] -%}
           {{ hostvars[item]['ip'] }}{% if not loop.last %}","{% endif %}

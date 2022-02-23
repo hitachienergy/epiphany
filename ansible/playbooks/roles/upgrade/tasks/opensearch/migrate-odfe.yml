@@ -8,7 +8,7 @@
   debug:
     msg:
       - "Elasticsearch version currently installed: {{ ansible_facts.packages['elasticsearch-oss'][0].version }}"
-      - "Opensearch version to be installed: {{ opensearch_defaults.versions[ansible_os_family].opensearch }}"
+      - "Opensearch version to be installed: {{opensearch_ver }}"
 
 - name: ODFE migr | Ensure elasticsearch cluster is up and running
   block:

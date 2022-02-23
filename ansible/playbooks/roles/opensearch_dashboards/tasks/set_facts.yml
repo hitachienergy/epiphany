@@ -1,0 +1,10 @@
+---
+- name: Set the name of binary to download for x86_64 family
+  set_fact:
+    opsd_version: "1.2.0-linux-x64.tar.gz"
+  when: ansible_architecture == "x86_64"
+
+- name: Set the name of binary to download for arm64 family
+  set_fact:
+    opsd_version: "1.2.0-linux-arm64.tar.gz"
+  when: ansible_architecture == "aarch64"

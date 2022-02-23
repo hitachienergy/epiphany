@@ -1,10 +1,13 @@
 ---
+- name: Define the filename for the download task
+  include_tasks: set_facts.yml
+
 - name: Download Opensearch dashbaords
   include_role:
     name: download
     tasks_from: download_file
   vars:
-    file_name: "opensearch-dashboards-{{ versions[ansible_os_family].opsd_version }}-linux-x64.tar.gz"
+    file_name: "opensearch-dashboards-{{ opsd_version }}"
 
 - name: Create OpenSearch Dashboards user
   user:
@@ -21,7 +24,7 @@
 
 - name: Extract the OPSD tar file
   unarchive:
-    src: "/tmp/opensearch-dashboards-{{ versions[ansible_os_family].opsd_version }}-linux-x64.tar.gz"
+    src: "/tmp/opensearch-dashboards-{{ opsd_version }}"
     dest: "{{ specification.paths.opsd_home }}"
     owner: "{{ specification.opsd_user }}"
     remote_src: yes

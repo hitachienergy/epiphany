@@ -1,4 +1,7 @@
 ---
+- name: Define the filenames for the download task
+  include_tasks: roles/opensearch/tasks/set_facts.yml
+
 - name: Download Opensearch
   include_role:
     name: download
@@ -6,8 +9,8 @@
   vars:
     file_name: "{{ item }}"
   loop:
-    - "opensearch-{{ versions[ansible_os_family].opensearch }}-linux-x64.tar.gz"
-    - "opensearch-perf-top-{{ versions[ansible_os_family].opensearch_perftop }}-linux-x64.zip"
+    - "opensearch-{{ opensearch_ver }}"
+    - "opensearch-perf-top-{{ opensearch_perftop_ver }}"
 
 - name: Ensure Opensearch service user exists
   user:
@@ -32,7 +35,7 @@
 
 - name: Extract the OPS tar file
   unarchive:
-    src: "/tmp/opensearch-{{ versions[ansible_os_family].opensearch }}-linux-x64.tar.gz"
+    src: "/tmp/opensearch-{{ opensearch_ver }}"
     dest: "{{ specification.paths.opensearch_home }}"
     owner: "{{ specification.opensearch_user }}"
     remote_src: yes
@@ -41,7 +44,7 @@
 
 - name: Extract OPS PerfTop the tar file
   unarchive:
-    src: "/tmp/opensearch-perf-top-{{ versions[ansible_os_family].opensearch_perftop }}-linux-x64.zip"
+    src: "/tmp/opensearch-perf-top-{{ opensearch_perftop_ver }}"
     dest: "{{ specification.paths.opensearch_perftop_home }}"
     owner: "{{ specification.opensearch_user }}"
     remote_src: yes
