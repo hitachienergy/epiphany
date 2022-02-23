@@ -13,16 +13,16 @@
 - name: OPS | Include defaults from OpenSearch role
   include_vars:
     file: roles/opensearch/defaults/main.yml
-    name: ops_defaults
+    name: opensearch_defaults
 
 - name: OPS | Include vars from opensearch role  # requires epicli upgrade -f <manifest>.yml
   include_vars:
     file: roles/opensearch/vars/main.yml
-    name: ops_vars
+    name: opensearch_vars
 
 - name: Ensure Opensearch service user exists
   user:
-    name: "{{ ops_vars.specification.ops_user }}"
+    name: "{{ opensearch_vars.specification.opensearch_user }}"
     state: present
     shell: /bin/bash
 
@@ -30,19 +30,19 @@
   file:
     path: "{{ item }}"
     state: directory
-    owner: "{{ ops_vars.specification.ops_user }}"
-    group: "{{ ops_vars.specification.ops_user }}"
+    owner: "{{ opensearch_vars.specification.opensearch_user }}"
+    group: "{{ opensearch_vars.specification.opensearch_user }}"
   with_items:
-    - "{{ ops_vars.specification.paths.ops_home }}"
-    - "{{ ops_vars.specification.paths.ops_log_dir }}"
-    - "{{ ops_vars.specification.paths.ops_conf_dir }}"
-    - "{{ ops_defaults.certificates.dirs.certs }}"
+    - "{{ opensearch_vars.specification.paths.opensearch_home }}"
+    - "{{ opensearch_vars.specification.paths.opensearch_log_dir }}"
+    - "{{ opensearch_vars.specification.paths.opensearch_conf_dir }}"
+    - "{{ opensearch_defaults.certificates.dirs.certs }}"
 
 - name: OPS | Print ElasticSearch ond OpenSearch versions
   debug:
     msg:
       - "Installed version: {{ ansible_facts.packages['elasticsearch-oss'][0].version }}"
-      - "Target version: {{ ops_defaults.versions[ansible_os_family].opensearch }}"
+      - "Target version: {{ opensearch_defaults.versions[ansible_os_family].opensearch }}"
 
 # If state file exists it means the previous run failed
 - name: OPS | Check if upgrade state file exists
@@ -59,18 +59,18 @@
      or (_target_version is version(ansible_facts.packages['elasticsearch-oss'][0].version, '==')
          and stat_upgrade_state_file.stat.exists)
   vars:
-    _target_version: "{{ ops_defaults.versions[ansible_os_family].opensearch }}"
+    _target_version: "{{ opensearch_defaults.versions[ansible_os_family].opensearch }}"
 
 - include_role:
     name: upgrade
     tasks_from: opensearch/migrate-odfe
-  when: ops_vars.specification.odfe_migration
+  when: opensearch_vars.specification.odfe_migration
   vars:
     current_group_name: logging
 
 - include_role:
     name: upgrade
     tasks_from: opensearch/migrate-kibana
-  when: ops_vars.specification.odfe_migration
+  when: opensearch_vars.specification.odfe_migration
   vars:
     current_group_name: logging

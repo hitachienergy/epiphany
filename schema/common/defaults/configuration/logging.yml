@@ -3,7 +3,7 @@ title: Logging Config
 name: default
 specification:
   cluster_name: EpiphanyOpensearch
-  ops_user: opensearch
+  opensearch_user: opensearch
   opsd_user: opensearchboard
   opsd_password: PASSWORD_TO_CHANGE
   admin_password: PASSWORD_TO_CHANGE
@@ -16,14 +16,14 @@ specification:
   - readall
   - snapshotrestore
   paths:
-    ops_home: /usr/share/opensearch
-    ops_conf_dir: /usr/share/opensearch/config
-    ops_log_dir: /var/log/opensearch
-    ops_plugin_bin_path: /usr/share/opensearch/bin/opensearch-plugin
-    ops_repo: /var/lib/opensearch-snapshots
-    ops_data: /var/lib/opensearch
-    ops_logs: /var/log/opensearch
-    ops_perftop_home: /usr/share/opensearch/perftop
+    opensearch_home: /usr/share/opensearch
+    opensearch_conf_dir: /usr/share/opensearch/config
+    opensearch_log_dir: /var/log/opensearch
+    opensearch_plugin_bin_path: /usr/share/opensearch/bin/opensearch-plugin
+    opensearch_repo: /var/lib/opensearch-snapshots
+    opensearch_data: /var/lib/opensearch
+    opensearch_logs: /var/log/opensearch
+    opensearch_perftop_home: /usr/share/opensearch/perftop
     opsd_plugin_bin_path: /usr/share/opensearch-dashboards/bin/opensearch-dashboards-plugin
     opsd_home: /usr/share/opensearch-dashboards
     opsd_conf_dir: /usr/share/opensearch-dashboards/config

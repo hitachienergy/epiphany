@@ -1,6 +1,6 @@
 server.port: 5601
 server.host: "{{ hostvars[inventory_hostname]['ansible_host'] }}"
-opensearch.hosts: ["{{ ops_nodes_dashboards }}"]
+opensearch.hosts: ["{{ opensearch_nodes_dashboards }}"]
 opensearch.ssl.verificationMode: none
 opensearch.username: "{{ specification.opsd_user }}"
 opensearch.password: "{{ specification.opsd_password }}"

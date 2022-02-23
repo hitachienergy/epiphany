@@ -8,14 +8,14 @@
   debug:
     msg:
       - "Elasticsearch version currently installed: {{ ansible_facts.packages['elasticsearch-oss'][0].version }}"
-      - "Opensearch version to be installed: {{ ops_defaults.versions[ansible_os_family].opensearch }}"
+      - "Opensearch version to be installed: {{ opensearch_defaults.versions[ansible_os_family].opensearch }}"
 
 - name: ODFE migr | Ensure elasticsearch cluster is up and running
   block:
   - name: OPS | Include vars from opensearch role  # requires epicli upgrade -f <manifest>.yml
     include_vars:
       file: roles/opensearch/vars/main.yml
-      name: ops_vars
+      name: opensearch_vars
 
   - name: ODFE migr | Ensure elasticsearch cluster is up and running
     systemd:
@@ -26,9 +26,9 @@
   rescue:
   - name: ODFE migr | Suggest potential problem solution and fail
     fail:
-      msg: "Are you trying to migrate from ODFE ( ops_vars.specification.odfe_migration: true ) on an already migrated server?"
+      msg: "Are you trying to migrate from ODFE ( opensearch_vars.specification.odfe_migration: true ) on an already migrated server?"
     when:
-    - ops_vars.specification.odfe_migration == true
+    - opensearch_vars.specification.odfe_migration == true
 
 
 - name: ODFE migr | Set existing_config facts
@@ -36,10 +36,10 @@
 
 - name: ODFE migr | Set common facts
   set_fact:
-    certificates:      "{{ ops_defaults.certificates }}"
+    certificates:      "{{ opensearch_defaults.certificates }}"
     es_host:           "{{ existing_config.main['network.host']   | default('_local_') }}"
-    es_http_port:      "{{ existing_config.main['http.port']      | default(ops_defaults.ports.http) }}"
-    es_transport_port: "{{ existing_config.main['transport.port'] | default(ops_defaults.ports.transport) }}"
+    es_http_port:      "{{ existing_config.main['http.port']      | default(opensearch_defaults.ports.http) }}"
+    es_transport_port: "{{ existing_config.main['transport.port'] | default(opensearch_defaults.ports.transport) }}"
     es_clustered:      "{{ (existing_config.main['discovery.seed_hosts'] | length > 1) | ternary(True, False) }}"
     es_node_name:      "{{ existing_config.main['node.name'] }}"
 
@@ -107,7 +107,7 @@
       - op: "replace"
         path: "/admin"
         value:
-          password: "{{ specification.ops_password }}"
+          password: "{{ specification.opensearch_password }}"
           reserved: "true"
           backend_roles:
             - "admin"
@@ -201,12 +201,12 @@
 
 - name: ODFE migr | Check the OpenSearch status
   command: curl https://{{ inventory_hostname }}:{{ ports.http }}/_cluster/health?pretty -u 'admin:{{ specification.admin_password }}' -k
-  register: ops_status
+  register: opensearch_status
 
 - name: ODFE migr | Show the OpenSearch status
   debug:
-    msg: "{{ ops_status.stdout }}"
-  failed_when: "'number_of_nodes' not in ops_status.stdout"
+    msg: "{{ opensearch_status.stdout }}"
+  failed_when: "'number_of_nodes' not in opensearch_status.stdout"
 
 - name: ODFE migr | Reenable shard allocation for the cluster
   include_tasks:

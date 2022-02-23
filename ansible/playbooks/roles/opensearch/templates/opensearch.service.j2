@@ -7,12 +7,12 @@ After=network-online.target
 RuntimeDirectory=opensearch
 PrivateTmp=true
 
-WorkingDirectory={{ specification.paths.ops_home }}
+WorkingDirectory={{ specification.paths.opensearch_home }}
 
-User={{ specification.ops_user }}
-Group={{ specification.ops_user }}
+User={{ specification.opensearch_user }}
+Group={{ specification.opensearch_user }}
 
-ExecStart={{ specification.paths.ops_home }}/bin/opensearch -p {{ specification.paths.ops_home }}/opensearch.pid -q
+ExecStart={{ specification.paths.opensearch_home }}/bin/opensearch -p {{ specification.paths.opensearch_home }}/opensearch.pid -q
 
 StandardOutput=journal
 StandardError=inherit

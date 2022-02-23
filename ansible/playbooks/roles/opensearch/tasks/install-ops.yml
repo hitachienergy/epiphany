@@ -11,7 +11,7 @@
 
 - name: Ensure Opensearch service user exists
   user:
-    name: "{{ specification.ops_user }}"
+    name: "{{ specification.opensearch_user }}"
     state: present
     shell: /bin/bash
 
@@ -19,22 +19,22 @@
   file:
     path: "{{ item }}"
     state: directory
-    owner: "{{ specification.ops_user }}"
-    group: "{{ specification.ops_user }}"
+    owner: "{{ specification.opensearch_user }}"
+    group: "{{ specification.opensearch_user }}"
   with_items:
-    - "{{ specification.paths.ops_home }}"
-    - "{{ specification.paths.ops_perftop_home }}"
-    - "{{ specification.paths.ops_log_dir }}"
-    - "{{ specification.paths.ops_conf_dir }}"
-    - "{{ specification.paths.ops_data }}"
-    - "{{ specification.paths.ops_logs }}"
+    - "{{ specification.paths.opensearch_home }}"
+    - "{{ specification.paths.opensearch_perftop_home }}"
+    - "{{ specification.paths.opensearch_log_dir }}"
+    - "{{ specification.paths.opensearch_conf_dir }}"
+    - "{{ specification.paths.opensearch_data }}"
+    - "{{ specification.paths.opensearch_logs }}"
     - "{{ certificates.dirs.certs }}"
 
 - name: Extract the OPS tar file
   unarchive:
     src: "/tmp/opensearch-{{ versions[ansible_os_family].opensearch }}-linux-x64.tar.gz"
-    dest: "{{ specification.paths.ops_home }}"
-    owner: "{{ specification.ops_user }}"
+    dest: "{{ specification.paths.opensearch_home }}"
+    owner: "{{ specification.opensearch_user }}"
     remote_src: yes
     extra_opts:
     - --strip-components=1
@@ -42,8 +42,8 @@
 - name: Extract OPS PerfTop the tar file
   unarchive:
     src: "/tmp/opensearch-perf-top-{{ versions[ansible_os_family].opensearch_perftop }}-linux-x64.zip"
-    dest: "{{ specification.paths.ops_perftop_home }}"
-    owner: "{{ specification.ops_user }}"
+    dest: "{{ specification.paths.opensearch_perftop_home }}"
+    owner: "{{ specification.opensearch_user }}"
     remote_src: yes
 
 - name: Create systemd service

@@ -3,19 +3,19 @@
 
 - name: Ensure snapshot folder exists
   file:
-    path: "{{ specification.paths.ops_repo }}/"
+    path: "{{ specification.paths.opensearch_repo }}/"
     state: directory
-    owner: "{{ specification.ops_user }}"
-    group: "{{ specification.ops_user }}"
+    owner: "{{ specification.opensearch_user }}"
+    group: "{{ specification.opensearch_user }}"
     mode: u=rwx,go=
 
 - name: Provide JVM configuration file
   template:
     backup: yes
     src: jvm.options.j2
-    dest: "{{ specification.paths.ops_conf_dir }}/jvm.options"
-    owner: "{{ specification.ops_user }}"
-    group: "{{ specification.ops_user }}"
+    dest: "{{ specification.paths.opensearch_conf_dir }}/jvm.options"
+    owner: "{{ specification.opensearch_user }}"
+    group: "{{ specification.opensearch_user }}"
     mode: ug=rw,o=
   register: change_jvm_config
   vars:
@@ -35,9 +35,9 @@
   template:
     backup: yes
     src: opensearch.yml.j2
-    dest: "{{ specification.paths.ops_conf_dir }}/opensearch.yml"
-    owner: "{{ specification.ops_user }}"
-    group: "{{ specification.ops_user }}"
+    dest: "{{ specification.paths.opensearch_conf_dir }}/opensearch.yml"
+    owner: "{{ specification.opensearch_user }}"
+    group: "{{ specification.opensearch_user }}"
     mode: ug=rw,o=
   register: change_config
   vars:

@@ -7,7 +7,7 @@
 - name: Include vars from opensearch role
   include_vars:
     file: roles/opensearch/vars/main.yml
-    name: ops_vars
+    name: opensearch_vars
 
 - name: Assert that the snapshot_name fact is defined and valid
   assert:
@@ -24,7 +24,7 @@
   vars:
     snapshot_prefix: "opensearch_conf"
     dirs_to_archive:
-      - "{{ ops_vars.specification.paths.ops_conf_dir }}"
+      - "{{ opensearch_vars.specification.paths.opensearch_conf_dir }}"
 
 - name: Create snapshot checksum
   import_tasks: common/create_snapshot_checksum.yml

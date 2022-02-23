@@ -28,8 +28,8 @@
     mode: ug=rwx,o=
     directory_mode: yes
   with_items:
-  - { 1: "/var/lib/elasticsearch-snapshots/", 2: "{{ specification.paths.ops_repo }}/" }
-  - { 1: "/var/lib/elasticsearch", 2: "{{ specification.paths.ops_data }}" }
+  - { 1: "/var/lib/elasticsearch-snapshots/", 2: "{{ specification.paths.opensearch_repo }}/" }
+  - { 1: "/var/lib/elasticsearch", 2: "{{ specification.paths.opensearch_data }}" }
 
 - name: ODFE migr | Prepare a list of ESS certs and keys
   find:
@@ -40,14 +40,14 @@
 - name: ODFE migr | Copy a list of certs and keys to OPS directories
   copy:
     src: "{{ item.path }}"
-    dest: "{{ specification.paths.ops_conf_dir }}/"
+    dest: "{{ specification.paths.opensearch_conf_dir }}/"
     remote_src: yes
   with_items: "{{ pem_files.files }}"
 
 - name: ODFE migr | Clone JVM configuration file
   copy:
     src: /etc/elasticsearch/jvm.options
-    dest: "{{ specification.paths.ops_conf_dir }}/jvm.options"
+    dest: "{{ specification.paths.opensearch_conf_dir }}/jvm.options"
     remote_src: yes
     owner: root
     group: opensearch
@@ -56,7 +56,7 @@
 
 - name: ODFE migr | Update JVM configuration file
   replace:
-    path: "{{ specification.paths.ops_conf_dir }}/jvm.options"
+    path: "{{ specification.paths.opensearch_conf_dir }}/jvm.options"
     regexp: "{{ item.1 }}"
     replace: "{{ item.2 }}"
   with_items:
@@ -66,7 +66,7 @@
 - name: ODFE migr | Clone main configuration file
   copy:
     src: /etc/elasticsearch/elasticsearch.yml
-    dest: "{{ specification.paths.ops_conf_dir }}/opensearch.yml"
+    dest: "{{ specification.paths.opensearch_conf_dir }}/opensearch.yml"
     remote_src: yes
     owner: root
     group: opensearch
@@ -75,7 +75,7 @@
 
 - name: ODFE migr | Update main configuration file
   replace:
-    path: "{{ specification.paths.ops_conf_dir }}/opensearch.yml"
+    path: "{{ specification.paths.opensearch_conf_dir }}/opensearch.yml"
     regexp: "{{ item.1 }}"
     replace: "{{ item.2 }}"
   with_items:

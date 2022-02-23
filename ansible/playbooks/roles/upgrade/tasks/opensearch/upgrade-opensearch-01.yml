@@ -20,10 +20,10 @@
 
 - name: OPS | Set common facts
   set_fact:
-    certificates:      "{{ ops_defaults.certificates }}"
+    certificates:      "{{ opensearch_defaults.certificates }}"
     es_host:           "{{ existing_config.main['network.host']   | default('_local_') }}"
-    es_http_port:      "{{ existing_config.main['http.port']      | default(ops_defaults.ports.http) }}"
-    es_transport_port: "{{ existing_config.main['transport.port'] | default(ops_defaults.ports.transport) }}"
+    es_http_port:      "{{ existing_config.main['http.port']      | default(opensearch_defaults.ports.http) }}"
+    es_transport_port: "{{ existing_config.main['transport.port'] | default(opensearch_defaults.ports.transport) }}"
     es_clustered:      "{{ (existing_config.main['discovery.seed_hosts'] | length > 1) | ternary(True, False) }}"
     es_node_name:      "{{ existing_config.main['node.name'] }}"
 
