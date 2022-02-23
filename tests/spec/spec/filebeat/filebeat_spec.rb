@@ -44,16 +44,6 @@ describe 'Check Filebeat directories and config files' do
   end
 end
 
-if hostInGroups?('kubernetes_master') || hostInGroups?('kubernetes_node')
-  describe 'Check extra configuration for master/worker roles - setting Filebeat to be started after Docker' do
-    describe file('/etc/systemd/system/filebeat.service.d/extra-dependencies.conf') do
-      it { should exist }
-      it { should be_a_file }
-      its(:content) { should match(/After=docker\.service/) }
-    end
-  end
-end
-
 if es_logstash_user_is_active
   listInventoryHosts('logging').each do |val|
     describe 'Check the connection to the Elasticsearch hosts' do
