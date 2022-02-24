@@ -7,8 +7,9 @@ from cli.src.helpers.build_io import (copy_file, copy_files_recursively,
                                       get_ansible_config_file_path_for_build,
                                       get_inventory_path_for_build,
                                       load_manifest)
-from cli.src.helpers.data_loader import load_schema_obj, load_yamls_file
-from cli.src.helpers.data_loader import schema_types
+from cli.src.helpers.data_loader import (ANSIBLE_PLAYBOOKS_PATH,
+                                         load_schema_obj, load_yamls_file,
+                                         schema_types)
 from cli.src.helpers.doc_list_helpers import (ExpectedSingleResultException,
                                               select_single)
 from cli.src.helpers.yaml_helpers import dump
