@@ -19,4 +19,4 @@
 - include_tasks: install-opensearch.yml
 
 - name: Include configuration tasks
-  include_tasks: configure-ops.yml
+  include_tasks: configure-opensearch.yml
