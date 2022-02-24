@@ -49,7 +49,7 @@
     owner: "{{ specification.opensearch_user }}"
     remote_src: yes
 
-- name: Create systemd service
+- name: Create opensearch.service unit file
   template:
     src: roles/opensearch/templates/opensearch.service.j2
     dest: "/etc/systemd/system/opensearch.service"
