@@ -7,10 +7,15 @@
     name: download
     tasks_from: download_file
   vars:
-    file_name: "{{ item }}"
-  loop:
-    - "opensearch-{{ opensearch_ver }}"
-    - "opensearch-perf-top-{{ opensearch_perftop_ver }}"
+    file_name: "opensearch-{{ opensearch_ver }}"
+
+- name: Download PerfTop
+  include_role:
+    name: download
+    tasks_from: download_file
+  vars:
+    file_name: "opensearch-perf-top-{{ opensearch_perftop_ver }}"
+  when: ansible_architecture == "x86_64"  # Perftop is not yet supported on ARM (https://github.com/opensearch-project/perftop/issues/26)
 
 - name: Ensure Opensearch service user exists
   user:
@@ -48,6 +53,7 @@
     dest: "{{ specification.paths.opensearch_perftop_home }}"
     owner: "{{ specification.opensearch_user }}"
     remote_src: yes
+  when: ansible_architecture == "x86_64"  # Perftop is not yet supported on ARM (https://github.com/opensearch-project/perftop/issues/26)
 
 - name: Create opensearch.service unit file
   template:

@@ -191,7 +191,7 @@ https://artifacts.opensearch.org/releases/bundle/opensearch/1.2.4/opensearch-1.2
 # OpenSearch Dashboards
 https://artifacts.opensearch.org/releases/bundle/opensearch-dashboards/1.2.0/opensearch-dashboards-1.2.0-linux-x64.tar.gz
 # OpenSearch PerfTop
-https://github.com/opensearch-project/perftop/releases/download/1.1.0.0/opensearch-perf-top-1.1.0.0-linux-x64.zip
+https://github.com/opensearch-project/perftop/releases/download/1.2.0.0/opensearch-perf-top-1.2.0.0-linux-x64.zip
 
 
 [images]

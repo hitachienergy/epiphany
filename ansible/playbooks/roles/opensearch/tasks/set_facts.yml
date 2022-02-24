@@ -2,11 +2,11 @@
 - name: Set the name of binary to download for x86_64 family
   set_fact:
     opensearch_ver: "1.2.4-linux-x64.tar.gz"
-    opensearch_perftop_ver: "1.1.0.0-linux-x64.zip"
+    opensearch_perftop_ver: "1.2.0.0-linux-x64.zip"
   when: ansible_architecture == "x86_64"
 
 - name: Set the name of binary to download for arm64 family
   set_fact:
     opensearch_ver: "1.2.4-linux-arm64.tar.gz"
-    opensearch_perftop_ver: "1.1.0.0-arm64.zip"
+    # Perftop is not supported on ARM (https://github.com/opensearch-project/perftop/issues/26)
   when: ansible_architecture == "aarch64"
