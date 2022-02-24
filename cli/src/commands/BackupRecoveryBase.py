@@ -7,7 +7,7 @@ from cli.src.helpers.build_io import (copy_file, copy_files_recursively,
                                       get_ansible_config_file_path_for_build,
                                       get_inventory_path_for_build,
                                       load_manifest)
-from cli.src.helpers.data_loader import (ANSIBLE_PLAYBOOKS_PATH,
+from cli.src.helpers.data_loader import (ANSIBLE_PLAYBOOK_PATH,
                                          load_schema_obj, load_yamls_file,
                                          schema_types)
 from cli.src.helpers.doc_list_helpers import (ExpectedSingleResultException,
@@ -92,7 +92,7 @@ class BackupRecoveryBase(Step):
 
         # Copy role files
         roles_build_path = os.path.join(self.build_directory, 'ansible/roles', action)
-        roles_source_path = os.path.join(ANSIBLE_PLAYBOOKS_PATH, 'roles', action)
+        roles_source_path = os.path.join(ANSIBLE_PLAYBOOK_PATH, 'roles', action)
         copy_files_recursively(roles_source_path, roles_build_path)
 
         # Render role vars
@@ -109,7 +109,7 @@ class BackupRecoveryBase(Step):
 
         # Copy playbook file
         playbook_build_path = os.path.join(self.build_directory, 'ansible', f'{action}_{component}.yml')
-        playbook_source_path = os.path.join(ANSIBLE_PLAYBOOKS_PATH, f'{action}_{component}.yml')
+        playbook_source_path = os.path.join(ANSIBLE_PLAYBOOK_PATH, f'{action}_{component}.yml')
         copy_file(playbook_source_path, playbook_build_path)
 
         # Run the playbook
