@@ -4,7 +4,7 @@ from cli.src.models.AnsibleHostModel import AnsibleOrderedHostModel
 
 
 class APIProxy:
-    def __init__(self, cluster_model, config_docs):
+    def __init__(self, cluster_model, config_docs=[]):
         self.cluster_model = cluster_model
         self.config_docs = config_docs
         self.logger = Log(__name__)
@@ -27,3 +27,7 @@ class APIProxy:
         result.sort()
 
         return result
+
+    def login(self, env=None):
+        # Pass to match the interface of the 'any' provider APIProxy. For 'any' provider we don't need a login.
+        pass

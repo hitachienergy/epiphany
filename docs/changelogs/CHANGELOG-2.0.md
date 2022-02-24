@@ -9,6 +9,8 @@
 - [#2812](https://github.com/epiphany-platform/epiphany/issues/2812) - Extend K8s config validation
 - [#2950](https://github.com/epiphany-platform/epiphany/issues/2950) - CLI refactor to make it more consistant
 - [#2844](https://github.com/epiphany-platform/epiphany/issues/2844) - Refactor K8s upgrade task in order to simplify its flow
+- [#2974](https://github.com/epiphany-platform/epiphany/issues/2974) - Refactor Apply command
+- [#2976](https://github.com/epiphany-platform/epiphany/issues/2976) - Allow for custom Terraform scripts
 - [#2716](https://github.com/epiphany-platform/epiphany/issues/2716) - Change container runtime to containerd
 - [#805](https://github.com/epiphany-platform/epiphany/issues/805) - Refactor download-requirements script
 - [#2858](https://github.com/epiphany-platform/epiphany/issues/2858) - Make Ruby spec tests code compliant with rubocop lint rules
