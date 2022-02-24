@@ -2,7 +2,7 @@
 
 - name: prometheus jmx | add kafka user to correct jmx exporter user
   user:
-    name: "{{ specification.kafka_var.user }}"
+    name: "{{ specification.user }}"
     groups: "{{ specification.jmx_exporter_group }}"
     append: yes
 
@@ -11,8 +11,8 @@
   copy:
     dest: "{{ specification.prometheus_jmx_config }}"
     src: jmx-kafka-config.yml
-    owner: "{{ specification.kafka_var.user }}"
-    group: "{{ specification.kafka_var.group }}"
+    owner: "{{ specification.user }}"
+    group: "{{ specification.group }}"
     mode: 0644
 
 - name: delegated | create prometheus system group

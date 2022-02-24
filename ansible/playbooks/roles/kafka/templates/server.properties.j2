@@ -11,23 +11,23 @@ auto.create.topics.enable=true
 delete.topic.enable=true
 
 #default replication factors for automatically created topics
-default.replication.factor={{ specification.kafka_var.default_replication_factor }}
+default.replication.factor={{ specification.default_replication_factor }}
 
 #The replication factor for the offsets topic (set higher to ensure availability). Internal topic creation will fail until the cluster size meets this replication factor requirement.
-offsets.topic.replication.factor={{ specification.kafka_var.offsets_topic_replication_factor }}
+offsets.topic.replication.factor={{ specification.offsets_topic_replication_factor }}
 
 #Offsets older than this retention period will be discarded
-offsets.retention.minutes={{ specification.kafka_var.offset_retention_minutes }}
+offsets.retention.minutes={{ specification.offset_retention_minutes }}
 
 #The maximum number of incremental fetch sessions that we will maintain
-max.incremental.fetch.session.cache.slots={{ specification.kafka_var.max_incremental_fetch_session_cache_slots }}
+max.incremental.fetch.session.cache.slots={{ specification.max_incremental_fetch_session_cache_slots }}
 
 #Enable controlled shutdown of the server
-controlled.shutdown.enable={{ specification.kafka_var.controlled_shutdown_enable | lower }}
+controlled.shutdown.enable={{ specification.controlled_shutdown_enable | lower }}
 
 #Number of fetcher threads used to replicate messages from a source broker. 
 #Increasing this value can increase the degree of I/O parallelism in the follower broker.
-num.replica.fetchers={{ specification.kafka_var.num_replica_fetchers }}
+num.replica.fetchers={{ specification.num_replica_fetchers }}
 
 #The number of bytes of messages to attempt to fetch for each partition. 
 #This is not an absolute maximum, if the first record batch in the first 
@@ -35,10 +35,10 @@ num.replica.fetchers={{ specification.kafka_var.num_replica_fetchers }}
 #the record batch will still be returned to ensure that progress can be made. 
 #The maximum record batch size accepted by the broker is defined 
 #via message.max.bytes (broker config) or max.message.bytes (topic config).
-replica.fetch.max.bytes={{ specification.kafka_var.replica_fetch_max_bytes }}
+replica.fetch.max.bytes={{ specification.replica_fetch_max_bytes }}
 
 #The socket receive buffer for network requests
-replica.socket.receive.buffer.bytes={{ specification.kafka_var.replica_socket_receive_buffer_bytes }}
+replica.socket.receive.buffer.bytes={{ specification.replica_socket_receive_buffer_bytes }}
 
 ############################# Socket Server Settings #############################
   {%- endif %}
@@ -50,10 +50,10 @@ replica.socket.receive.buffer.bytes={{ specification.kafka_var.replica_socket_re
 #     listeners = listener_name://host_name:port
 #   EXAMPLE:
 #     listeners = PLAINTEXT://your.host.name:9092
-{% if specification.kafka_var.security.ssl.enabled -%}
-listeners=SSL://{{ inventory_hostname }}:{{ specification.kafka_var.security.ssl.port }}
+{% if specification.security.ssl.enabled -%}
+listeners=SSL://{{ inventory_hostname }}:{{ specification.security.ssl.port }}
 {% else %}
-listeners=PLAINTEXT://{{ ansible_default_ipv4.address }}:{{ specification.kafka_var.port }}
+listeners=PLAINTEXT://{{ ansible_default_ipv4.address }}:{{ specification.port }}
 {%- endif %}
 
 # Hostname and port the broker will advertise to producers and consumers. If not set,
@@ -65,47 +65,47 @@ listeners=PLAINTEXT://{{ ansible_default_ipv4.address }}:{{ specification.kafka_
 #listener.security.protocol.map=PLAINTEXT:PLAINTEXT,SSL:SSL,SASL_PLAINTEXT:SASL_PLAINTEXT,SASL_SSL:SASL_SSL
 
 # The number of threads handling network requests
-num.network.threads={{ specification.kafka_var.socket_settings.network_threads }}
+num.network.threads={{ specification.socket_settings.network_threads }}
 
 # The number of threads doing disk I/O
-num.io.threads={{ specification.kafka_var.socket_settings.io_threads }}
+num.io.threads={{ specification.socket_settings.io_threads }}
 
 # The send buffer (SO_SNDBUF) used by the socket server
-socket.send.buffer.bytes={{ specification.kafka_var.socket_settings.send_buffer_bytes }}
+socket.send.buffer.bytes={{ specification.socket_settings.send_buffer_bytes }}
 
 # The receive buffer (SO_RCVBUF) used by the socket server
-socket.receive.buffer.bytes={{ specification.kafka_var.socket_settings.receive_buffer_bytes }}
+socket.receive.buffer.bytes={{ specification.socket_settings.receive_buffer_bytes }}
 
 # The maximum size of a request that the socket server will accept (protection against OOM)
-socket.request.max.bytes={{ specification.kafka_var.socket_settings.request_max_bytes }}
+socket.request.max.bytes={{ specification.socket_settings.request_max_bytes }}
 
 ############################# Security #########################################
 
 # Security protocol used to communicate between brokers
 
-{% if specification.kafka_var.security.ssl.enabled -%}
+{% if specification.security.ssl.enabled -%}
 # If not enabled it should default to PLAINTEXT
-security.inter.broker.protocol={{ specification.kafka_var.security.inter_broker_protocol }}
+security.inter.broker.protocol={{ specification.security.inter_broker_protocol }}
 
 #### Encryption Settings ####
-ssl.endpoint.identification.algorithm={{ specification.kafka_var.security.ssl.endpoint_identification_algorithm }}
+ssl.endpoint.identification.algorithm={{ specification.security.ssl.endpoint_identification_algorithm }}
 
-ssl.keystore.location={{ specification.kafka_var.security.ssl.server.keystore_location }}
-ssl.keystore.password={{ specification.kafka_var.security.ssl.server.passwords.keystore }}
-ssl.truststore.location={{ specification.kafka_var.security.ssl.server.truststore_location }}
-ssl.truststore.password={{ specification.kafka_var.security.ssl.server.passwords.truststore }}
-ssl.key.password={{ specification.kafka_var.security.ssl.server.passwords.key }}
+ssl.keystore.location={{ specification.security.ssl.server.keystore_location }}
+ssl.keystore.password={{ specification.security.ssl.server.passwords.keystore }}
+ssl.truststore.location={{ specification.security.ssl.server.truststore_location }}
+ssl.truststore.password={{ specification.security.ssl.server.passwords.truststore }}
+ssl.key.password={{ specification.security.ssl.server.passwords.key }}
 
-ssl.client.auth={{ specification.kafka_var.security.ssl.client_auth }}
+ssl.client.auth={{ specification.security.ssl.client_auth }}
 {%- endif %}
 
-{% if specification.kafka_var.security.authentication.enabled %}
-{% if specification.kafka_var.security.authentication.authentication_method == "sasl" -%}
+{% if specification.security.authentication.enabled %}
+{% if specification.security.authentication.authentication_method == "sasl" -%}
 #### Authentication Settings ####
 # SASL mechanism used for inter-broker communication.
-sasl.mechanism.inter.broker.protocol={{ specification.kafka_var.security.authentication.sasl_mechanism_inter_broker_protocol }}
+sasl.mechanism.inter.broker.protocol={{ specification.security.authentication.sasl_mechanism_inter_broker_protocol }}
 
-sasl.enabled.mechanisms={{ specification.kafka_var.security.sasl_authentication.enabled_mechanisms }}
+sasl.enabled.mechanisms={{ specification.security.sasl_authentication.enabled_mechanisms }}
 
 # The list of SASL mechanisms enabled in the Kafka server. The list may contain any mechanism
 # for which a security provider is available. Only GSSAPI is enabled by default.
@@ -113,23 +113,23 @@ sasl.enabled.mechanisms={{ specification.kafka_var.security.sasl_authentication.
 
 ############################# ACLs #############################################
 # The authorizer class that should be used for authorization
-authorizer.class.name={{ specification.kafka_var.security.authorization.authorizer_class_name }}
+authorizer.class.name={{ specification.security.authorization.authorizer_class_name }}
 
 # If a Resource R has no associated ACLs, no one other than super users is allowed to access R. If you want to change that behavior, set this property to true
-allow.everyone.if.no.acl.found={{ specification.kafka_var.security.authorization.allow_everyone_if_no_acl_found }}
+allow.everyone.if.no.acl.found={{ specification.security.authorization.allow_everyone_if_no_acl_found }}
 
-{% if specification.kafka_var.security.authentication.enabled and specification.kafka_var.security.authorization.enabled -%}
+{% if specification.security.authentication.enabled and specification.security.authorization.enabled -%}
 
-{% if specification.kafka_var.security.authentication.authentication_method == "certificates" -%}
+{% if specification.security.authentication.authentication_method == "certificates" -%}
 {% set super_users = groups['kafka'] %}
-{% if specification.kafka_var.security.authorization.super_users is defined -%}
-{% set super_users = super_users + specification.kafka_var.security.authorization.super_users  %}
+{% if specification.security.authorization.super_users is defined -%}
+{% set super_users = super_users + specification.security.authorization.super_users  %}
 {%- endif %}
 super.users=User:CN={{ super_users | list | join(';User:CN=') }};
 {%- endif %}
 
-{% if specification.kafka_var.security.authentication.authentication_method == "sasl" and specification.kafka_var.security.authorization.super_users is defined -%}
-super.users={{ specification.kafka_var.security.authorization.super_users }}
+{% if specification.security.authentication.authentication_method == "sasl" and specification.security.authorization.super_users is defined -%}
+super.users={{ specification.security.authorization.super_users }}
 {%- endif %}
 
 {%- endif %}
@@ -138,20 +138,20 @@ super.users={{ specification.kafka_var.security.authorization.super_users }}
 ############################# Log Basics #############################
 
 # A comma seperated list of directories under which to store log files
-log.dirs={{ specification.kafka_var.data_dir }}
+log.dirs={{ specification.data_dir }}
 
 # The default number of log partitions per topic. More partitions allow greater
 # parallelism for consumption, but this will also result in more files across
 # the brokers.
-num.partitions={{ specification.kafka_var.partitions }}
+num.partitions={{ specification.partitions }}
 
 # The number of threads per data directory to be used for log recovery at startup and flushing at shutdown.
 # This value is recommended to be increased for installations with data dirs located in RAID array.
-num.recovery.threads.per.data.dir={{ specification.kafka_var.num_recovery_threads_per_data_dir }}
+num.recovery.threads.per.data.dir={{ specification.num_recovery_threads_per_data_dir }}
 
 # When a producer sets acks to "all" (or "-1"), this configuration specifies the minimum number 
 # of replicas that must acknowledge a write for the write to be considered successful.
-min.insync.replicas={{ specification.kafka_var.min_insync_replicas }}
+min.insync.replicas={{ specification.min_insync_replicas }}
 
 ############################# Log Flush Policy #############################
 
@@ -178,11 +178,11 @@ min.insync.replicas={{ specification.kafka_var.min_insync_replicas }}
 # from the end of the log.
 
 # The minimum age of a log file to be eligible for deletion due to age
-log.retention.hours={{ specification.kafka_var.log_retention_hours }}
+log.retention.hours={{ specification.log_retention_hours }}
 
 # A size-based retention policy for logs. Segments are pruned from the log as long as the remaining
 # segments don't drop below log.retention.bytes. Functions independently of log.retention.hours.
-log.retention.bytes={{ specification.kafka_var.log_retention_bytes }}
+log.retention.bytes={{ specification.log_retention_bytes }}
 
 # The maximum size of a log segment file. When this size is reached a new log segment will be created.
 log.segment.bytes=1073741824

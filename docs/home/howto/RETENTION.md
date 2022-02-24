@@ -22,23 +22,22 @@ kind: configuration/kafka
 title: "Kafka"
 name: default
 specification:
-    kafka_var:
-        partitions: 8
-        log_retention_hours: 168
-        log_retention_bytes: -1
+    partitions: 8
+    log_retention_hours: 168
+    log_retention_bytes: -1
 ```
 
 ### Configuration parameters
 
-#### specification.kafka_var.partitions
+#### specification.partitions
 
 Sets [num.partitions](https://kafka.apache.org/documentation/#brokerconfigs_num.partitions) parameter
 
-#### specification.kafka_var.log_retention_hours
+#### specification.log_retention_hours
 
 Sets [log.retention.hours](https://kafka.apache.org/documentation/#brokerconfigs_log.retention.bytes) parameter
 
-#### specification.kafka_var.log_retention_bytes
+#### specification.log_retention_bytes
 
 Sets [log.retention.bytes](https://kafka.apache.org/documentation/#brokerconfigs_log.retention.bytes) parameter
 

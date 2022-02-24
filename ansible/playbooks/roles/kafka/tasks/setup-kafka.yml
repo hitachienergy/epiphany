@@ -1,14 +1,14 @@
 ---
 - name: Setup group
   group:
-    name: "{{ specification.kafka_var.group }}"
+    name: "{{ specification.group }}"
     system: yes
 
 - name: Setup user
   user:
-    name: "{{ specification.kafka_var.user }}"
+    name: "{{ specification.user }}"
     system: yes
-    group: "{{ specification.kafka_var.group }}"
+    group: "{{ specification.group }}"
     shell: "/usr/sbin/nologin"
 
 - name: Install Java package
@@ -55,31 +55,31 @@
 
 - name: Create data_dir
   file:
-    path: "{{ specification.kafka_var.data_dir }}"
+    path: "{{ specification.data_dir }}"
     state: directory
-    owner: "{{ specification.kafka_var.user }}"
-    group: "{{ specification.kafka_var.group }}"
+    owner: "{{ specification.user }}"
+    group: "{{ specification.group }}"
     mode: 0755
 
 - name: Remove lost+found in the datadir
   file:
-    path: "{{ specification.kafka_var.data_dir }}/lost+found"
+    path: "{{ specification.data_dir }}/lost+found"
     state: absent
 
 - name: Create log_dir
   file:
-    path: "{{ specification.kafka_var.log_dir }}"
+    path: "{{ specification.log_dir }}"
     state: directory
-    owner: "{{ specification.kafka_var.user }}"
-    group: "{{ specification.kafka_var.group }}"
+    owner: "{{ specification.user }}"
+    group: "{{ specification.group }}"
     mode: 0755
 
 - name: Create /etc/kafka directory
   file:
     path: /etc/kafka
     state: directory
-    owner: "{{ specification.kafka_var.user }}"
-    group: "{{ specification.kafka_var.group }}"
+    owner: "{{ specification.user }}"
+    group: "{{ specification.group }}"
 
 # - name: link conf_dir to /opt/kafka/config
 #   file: dest=/etc/kafka owner=kafka group=kafka state=link src=/opt/kafka/config
@@ -87,23 +87,23 @@
 # Setup log4j.properties
 - name: Create log4j.properties
   file:
-    path: "{{ specification.kafka_var.conf_dir }}/log4j.properties"
-    owner: "{{ specification.kafka_var.user }}"
-    group: "{{ specification.kafka_var.group }}"
+    path: "{{ specification.conf_dir }}/log4j.properties"
+    owner: "{{ specification.user }}"
+    group: "{{ specification.group }}"
     mode: 0644
 
 - name: Generate certificate
   include_tasks: generate-certificates.yml
   when:
-    - specification.kafka_var.security.ssl.enabled is defined
-    - specification.kafka_var.security.ssl.enabled
+    - specification.security.ssl.enabled is defined
+    - specification.security.ssl.enabled
 
 # Setup server.properties
 - name: Create server.properties
   template:
-    dest: "{{ specification.kafka_var.conf_dir }}/server.properties"
-    owner: "{{ specification.kafka_var.user }}"
-    group: "{{ specification.kafka_var.group }}"
+    dest: "{{ specification.conf_dir }}/server.properties"
+    owner: "{{ specification.user }}"
+    group: "{{ specification.group }}"
     # Was 0640
     mode: 0644
     src: server.properties.j2
@@ -114,7 +114,7 @@
 - name: Delete meta.properties
   become: true
   file:
-    path: "{{ specification.kafka_var.data_dir }}/meta.properties"
+    path: "{{ specification.data_dir }}/meta.properties"
     state: absent
   when: create_server_properties.changed
 
@@ -128,7 +128,7 @@
 
 - name: configure system settings, file descriptors and number of threads for kafka
   pam_limits:
-    domain: "{{ specification.kafka_var.user }}"
+    domain: "{{ specification.user }}"
     limit_type: "{{ item.limit_type }}"
     limit_item: "{{ item.limit_item }}"
     value: "{{item.value}}"

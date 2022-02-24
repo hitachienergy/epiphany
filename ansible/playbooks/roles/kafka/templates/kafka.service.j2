@@ -2,8 +2,8 @@
 Description=Kafka Daemon
 After=zookeeper.service
 
-{% if specification.kafka_var.javax_net_debug is defined %}
-{%      set javax_debug = '-Djavax.net.debug=' ~ specification.kafka_var.javax_net_debug %}
+{% if specification.javax_net_debug is defined %}
+{%      set javax_debug = '-Djavax.net.debug=' ~ specification.javax_net_debug %}
 {% else %}
 {%      set javax_debug = '' %}
 {% endif %}
@@ -14,14 +14,14 @@ User=kafka
 Group=kafka
 LimitNOFILE=32768
 Restart=on-failure
-Environment="KAFKA_HEAP_OPTS={{ specification.kafka_var.heap_opts }}"
-Environment="LOG_DIR={{ specification.kafka_var.log_dir }}"
+Environment="KAFKA_HEAP_OPTS={{ specification.heap_opts }}"
+Environment="LOG_DIR={{ specification.log_dir }}"
 {% if exporter.stat.exists %}
 Environment="KAFKA_OPTS={{ javax_debug }} -javaagent:{{ prometheus_jmx_exporter_path }}={{ specification.prometheus_jmx_exporter_web_listen_port }}:{{ specification.prometheus_jmx_config }}"
 {% else %}
 Environment="KAFKA_OPTS={{ javax_debug }}"
 {% endif %}
-Environment="KAFKA_JMX_OPTS={{ specification.kafka_var.jmx_opts }}"
+Environment="KAFKA_JMX_OPTS={{ specification.jmx_opts }}"
 ExecStart=/opt/kafka/bin/kafka-server-start.sh /opt/kafka/config/server.properties
 
 [Install]
