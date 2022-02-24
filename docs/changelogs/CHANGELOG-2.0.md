@@ -12,6 +12,7 @@
 - [#2716](https://github.com/epiphany-platform/epiphany/issues/2716) - Change container runtime to containerd
 - [#805](https://github.com/epiphany-platform/epiphany/issues/805) - Refactor download-requirements script
 - [#2858](https://github.com/epiphany-platform/epiphany/issues/2858) - Make Ruby spec tests code compliant with rubocop lint rules
+- [#2888](https://github.com/epiphany-platform/epiphany/issues/2888) - Define additional disks with defined sizes to VMs for Azure
 
 ### Fixed
 
