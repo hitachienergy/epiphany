@@ -26,6 +26,7 @@
 - [#2940](https://github.com/epiphany-platform/epiphany/issues/2940) - firewalld.service unit could not be found on host however ansible_facts sees it as defined
 - [#2979](https://github.com/epiphany-platform/epiphany/issues/2979) - Restore the possibility of choosing the availability zone in AWS
 - [#2984](https://github.com/epiphany-platform/epiphany/issues/2984) - Validation blocks overwriting of destination_address_prefix in NSG rules, which is 0.0.0.0/0 by default
+- [#2989](https://github.com/epiphany-platform/epiphany/issues/2989) - Task `Remove swap from /etc/fstab` does not remove swap entry from file
 
 ### Updated
 
