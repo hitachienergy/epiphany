@@ -10,7 +10,7 @@ from cli.src.helpers.build_io import (copy_file, copy_files_recursively,
 from cli.src.helpers.data_loader import load_schema_obj, load_yamls_file
 from cli.src.helpers.data_loader import types as data_types
 from cli.src.helpers.doc_list_helpers import (ExpectedSingleResultException,
-                                              select_single)
+                                              select_single, select_all)
 from cli.src.helpers.yaml_helpers import dump
 from cli.src.schema.DefaultMerger import DefaultMerger
 from cli.src.schema.SchemaValidator import SchemaValidator
@@ -48,8 +48,11 @@ class BackupRecoveryBase(Step):
         self.manifest_docs = load_manifest(self.build_directory)
         self.cluster_model = select_single(self.manifest_docs, lambda x: x.kind == 'epiphany-cluster')
 
-        # Load backup / recovery configuration documents
-        self.input_docs = load_yamls_file(self.file)
+        # Load only backup / recovery configuration documents
+        loaded_docs = load_yamls_file(self.file)
+        self.input_docs = select_all(loaded_docs, lambda x: x.kind in ['configuration/backup', 'configuration/recovery'])
+        if len(self.input_docs) < 1:
+            raise Exception('No documents for backup or recovery in input file.')
 
         # Validate input documents
         with SchemaValidator(self.cluster_model.provider, self.input_docs) as schema_validator:
