@@ -25,12 +25,12 @@
 - name: OPS | Include Elasticsearch installation tasks
   include_role:
     name: opensearch
-    tasks_from: install-ops.yml
+    tasks_from: install-opensearch.yml
 
 - name: OPS | Include Elasticsearch configuration tasks
   include_role:
     name: opensearch
-    tasks_from: configure-ops.yml
+    tasks_from: configure-opensearch.yml
   vars:
     _old: "{{ existing_config.main }}"
     # Keep the same data structure as for apply mode

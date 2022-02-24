@@ -16,7 +16,7 @@
     file: roles/opensearch/vars/main.yml
 
 - name: ODFE migr | Inastall Opensearch binaries
-  include_tasks: roles/opensearch/tasks/install-ops.yml
+  include_tasks: roles/opensearch/tasks/install-opensearch.yml
 
 - name: ODFE migr | Copy ES directories to OPS directories
   copy:
