@@ -42,7 +42,7 @@
     extra_opts:
     - --strip-components=1
 
-- name: Extract OPS PerfTop the tar file
+- name: Extract OpenSearch PerfTop tar file
   unarchive:
     src: "/tmp/opensearch-perf-top-{{ opensearch_perftop_ver }}"
     dest: "{{ specification.paths.opensearch_perftop_home }}"
