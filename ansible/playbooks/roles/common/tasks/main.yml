@@ -27,7 +27,7 @@
 - name: Remove swap from /etc/fstab
   lineinfile:
     path: /etc/fstab
-    regexp: ^((?!#).*\sswap\s.*\d\s+\d$)
+    regexp: ^(?!#).*\sswap\s.*\d\s+\d$
     state: absent
     backup: yes
   tags:
