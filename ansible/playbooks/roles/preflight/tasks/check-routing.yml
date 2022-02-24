@@ -1,0 +1,46 @@
+---
+- name: Check routing configuration
+  become: true
+  command: ip route show default 0.0.0.0/0
+  register: ip_route_show_default
+
+- name: Assert default route exists
+  assert:
+    that: ip_route_show_default.stdout_lines | length > 0
+    fail_msg: >-
+      No default route configured. At least one is required, read more in troubleshooting document.
+    quiet: true
+
+- name: Validate metric values if multiple default routes exist
+  when: ip_route_show_default.stdout_lines | length > 1
+  block:
+    - name: Get metric values
+      become: true
+      shell: |-
+        set -o pipefail && \
+        ip route show default 0.0.0.0/0 | awk '{if (! /metric/) print 0; else for (x=1;x<NF;x++) if ($x == "metric") print $(x+1) }'
+      register: default_routing_configuration_metric_values
+      args:
+        executable: /bin/bash
+
+    - name: Assert two most prioritized default routes have unique metric
+      assert:
+        that: "default_routing_configuration_metric_values.stdout_lines[0] != default_routing_configuration_metric_values.stdout_lines[1]"
+        fail_msg:  >-
+          At least two default routes have the same metric value.
+          Check routing configuration, read more in troubleshooting document.
+
+- include_vars:
+    file: roles/common/vars/main.yml
+    name: common_vars
+
+- name: Validate if ansible_default_ipv4.address matches address from inventory
+  when:
+    - common_vars.provider == "any"
+    - common_vars.specification.cloud is undefined
+  assert:
+    that: ansible_default_ipv4.address == ansible_host
+    fail_msg:  >-
+      ansible_default_ipv4.address is {{ ansible_default_ipv4.address }} but inventory uses ip: {{ ansible_host }}.
+      Check default routing configuration, read more in troubleshooting document.
+    quiet: true

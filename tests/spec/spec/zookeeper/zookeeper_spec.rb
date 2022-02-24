@@ -17,7 +17,6 @@ describe 'Check if ZooKeeper service is running' do
 end
 
 describe 'Check if the ports are open' do
-
   # check port for client connections
   describe port(zookeeper_client_port) do
     let(:disable_sudo) { false } # required for RHEL
@@ -27,14 +26,14 @@ describe 'Check if the ports are open' do
   # check port for follower connections to the leader
   describe command("if /opt/zookeeper/bin/zkServer.sh status | grep 'Mode: leader'; then netstat -tunl | grep #{zookeeper_peer_port}; else echo 'not leader'; fi") do
     let(:disable_sudo) { false }
-    its(:stdout) { should match /#{zookeeper_peer_port}|not leader/ }
+    its(:stdout) { should match(/#{zookeeper_peer_port}|not leader/) }
     its(:exit_status) { should eq 0 }
   end
 
   # check port for leader election
   describe command("if /opt/zookeeper/bin/zkServer.sh status | grep 'Mode: standalone'; then echo 'standalone'; else netstat -tunl | grep #{zookeeper_leader_port}; fi") do
     let(:disable_sudo) { false }
-    its(:stdout) { should match /#{zookeeper_leader_port}|standalone/ }
+    its(:stdout) { should match(/#{zookeeper_leader_port}|standalone/) }
     its(:exit_status) { should eq 0 }
   end
 
@@ -74,8 +73,8 @@ describe 'Check ZooKeeper status' do
   describe command('/opt/zookeeper/bin/zkServer.sh status 2>&1') do
     let(:disable_sudo) { false }
     let(:sudo_options) { '-u zookeeper' }
-    its(:stdout) { should match /Mode: leader|Mode: follower|Mode: standalone/ }
-    its(:stdout) { should_not match /Error contacting service. It is probably not running./ }
+    its(:stdout) { should match(/Mode: leader|Mode: follower|Mode: standalone/) }
+    its(:stdout) { should_not match(/Error contacting service. It is probably not running./) }
   end
 end
 
@@ -83,7 +82,7 @@ describe 'Check ZooKeeper client' do
   describe command("echo 'quit' | /opt/zookeeper/bin/zkCli.sh -server #{zookeeper_host}:#{zookeeper_client_port}") do
     let(:disable_sudo) { false }
     let(:sudo_options) { '-u zookeeper' }
-    its(:stdout) { should match /Welcome to ZooKeeper!/ }
+    its(:stdout) { should match(/Welcome to ZooKeeper!/) }
     its(:exit_status) { should eq 0 }
   end
 end

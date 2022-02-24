@@ -5,15 +5,13 @@ require 'yaml'
 
 set :backend, :ssh
 
-
-
 if ENV['ASK_SUDO_PASSWORD']
   begin
     require 'highline/import'
   rescue LoadError
-    fail "highline is not available. Try installing it."
+    raise 'highline is not available. Try installing it.'
   end
-  set :sudo_password, ask("Enter sudo password: ") { |q| q.echo = false }
+  set :sudo_password, ask('Enter sudo password: ') { |q| q.echo = false }
 else
   set :sudo_password, ENV['SUDO_PASSWORD']
 end
@@ -41,91 +39,89 @@ set :shell, '/bin/bash'
 # Set PATH
 # set :path, '/sbin:/usr/local/sbin:$PATH'
 
-  def countInventoryHosts(role)
-    file = File.open(ENV['inventory'], "rb")
-    input = file.read
-    file.close
-      if input.include? "[#{role}]"
-        rows = input.split("[#{role}]")[1].split("[")[0]
-        counter = rows.scan(/ansible_host/).count
-      else counter = 0
-      end
-    return counter
+def countInventoryHosts(role)
+  file = File.open(ENV['inventory'], 'rb')
+  input = file.read
+  file.close
+  if input.include? "[#{role}]"
+    rows = input.split("[#{role}]")[1].split('[')[0]
+    counter = rows.scan(/ansible_host/).count
+  else
+    counter = 0
   end
+  counter
+end
 
-  def getBuildDirPath()
-    pn = Pathname.new(ENV['inventory'])
-    return pn.dirname
+def getBuildDirPath
+  pn = Pathname.new(ENV['inventory'])
+  pn.dirname
+end
+
+def hostInGroups?(role)
+  file = File.open(ENV['inventory'], 'rb')
+  input = file.read
+  file.close
+  if input.include? "[#{role}]"
+    rows = input.split("[#{role}]")[1].split('[')[0]
+    rows =~ /\b#{ENV['TARGET_HOST']}\b/
+  else
+    false
   end
+end
 
-  def hostInGroups?(role)
-    file = File.open(ENV['inventory'], "rb")
-    input = file.read
-    file.close
-      if input.include? "[#{role}]"
-        rows = input.split("[#{role}]")[1].split("[")[0]
-        return rows =~ /\b#{ENV['TARGET_HOST']}\b/
-      else return false
-      end
+def readDataYaml(kind)
+  path = ENV['inventory'].dup
+  path.sub! 'inventory', 'manifest.yml'
+  datayaml = []
+  YAML.load_stream(File.read(path)) do |ruby|
+    datayaml << ruby
   end
+  # returns nil if kind not found
+  datayaml.select { |x| x['kind'] == kind }[0]
+end
 
-  def readDataYaml(kind)
-    path = ENV['inventory'].dup
-    path.sub! 'inventory' , 'manifest.yml'
-    datayaml = []
-    YAML.load_stream(File.read path) do |ruby|
-      datayaml << ruby
+def readYaml(path)
+  docs = []
+  YAML.load_stream(File.read(path)) do |ruby|
+    docs << ruby
+  end
+  docs
+end
+
+def listInventoryHosts(role)
+  file = File.open(ENV['inventory'], 'rb')
+  input = file.read
+  file.close
+  list = []
+  if input.include? "[#{role}]"
+    rows = input.split("[#{role}]")[1].split('[')[0]
+    rows.each_line do |line|
+      list << line.split.first if line[0] != '#' and line =~ /(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})/
     end
-    # returns nil if kind not found
-    return datayaml.select {|x| x["kind"] == kind }[0]
   end
+  list
+end
 
-  def readYaml(path)
-    docs = []
-    YAML.load_stream(File.read path) do |ruby|
-      docs << ruby
+def listInventoryIPs(role)
+  file = File.open(ENV['inventory'], 'rb')
+  input = file.read
+  file.close
+  list = []
+  if input.include? "[#{role}]"
+    rows = input.split("[#{role}]")[1].split('[')[0]
+    rows.each_line do |line|
+      list << line.split('=').last.strip if line[0] != '#' and line =~ /(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})/
     end
-    return docs
   end
+  list
+end
 
-  def listInventoryHosts(role)
-    file = File.open(ENV['inventory'], "rb")
-    input = file.read
-    file.close
-    list = []
-    if input.include? "[#{role}]"
-      rows = input.split("[#{role}]")[1].split("[")[0]
-      rows.each_line do |line|
-        if line[0] != '#' and line =~ /(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})/
-          list << line.split.first
-        end
-      end
-    end
-    return list
-  end
+def upgradeRun?
+  all_group_vars_file_path = getBuildDirPath + 'ansible/group_vars/all.yml'
+  docs = readYaml(all_group_vars_file_path)
+  docs[0]['is_upgrade_run']
+end
 
-  def listInventoryIPs(role)
-    file = File.open(ENV['inventory'], "rb")
-    input = file.read
-    file.close
-    list = []
-    if input.include? "[#{role}]"
-      rows = input.split("[#{role}]")[1].split("[")[0]
-      rows.each_line do |line|
-        if line[0] != '#' and line =~ /(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})/
-          list << line.split('=').last.strip
-        end
-      end
-    end
-    return list
-  end
-
-  def upgradeRun?
-    all_group_vars_file_path = getBuildDirPath() + "ansible/group_vars/all.yml"
-    docs = readYaml(all_group_vars_file_path)
-    return docs[0]["is_upgrade_run"]
-  end
-
-  def getRoleDirPath(role)
-    return getBuildDirPath() + "ansible/roles" + role
-  end
+def getRoleDirPath(role)
+  getBuildDirPath + 'ansible/roles' + role
+end

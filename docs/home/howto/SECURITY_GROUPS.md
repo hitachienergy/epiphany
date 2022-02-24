@@ -253,26 +253,19 @@ specification:
       machine: repository-machine
       configuration: default
       subnets:
-      - availability_zone: eu-central-1a
-        address_pool: 10.1.11.0/24
+      - address_pool: 10.1.11.0/24
     kubernetes_master:
       count: 1
       machine: kubernetes-master-machine
       configuration: default
       subnets:
-      - availability_zone: eu-central-1a
-        address_pool: 10.1.1.0/24
-      - availability_zone: eu-central-1b
-        address_pool: 10.1.2.0/24
+      - address_pool: 10.1.1.0/24
     kubernetes_node:
       count: 2
       machine: kubernetes-node-machine
       configuration: default
       subnets:
-      - availability_zone: eu-central-1a
-        address_pool: 10.1.1.0/24
-      - availability_zone: eu-central-1b
-        address_pool: 10.1.2.0/24
+      - address_pool: 10.1.1.0/24
     logging:
       count: 0
     monitoring:

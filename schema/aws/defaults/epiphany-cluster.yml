@@ -25,54 +25,50 @@ specification:
       machine: kubernetes-master-machine
       configuration: default
       subnets:
-        - availability_zone: eu-west-2a
-          address_pool: 10.1.1.0/24
-        - availability_zone: eu-west-2b
-          address_pool: 10.1.2.0/24
+        - address_pool: 10.1.1.0/24
+          availability_zone: eu-west-2a
     kubernetes_node:
       count: 2
       machine: kubernetes-node-machine
       configuration: default
       subnets:
-        - availability_zone: eu-west-2a
-          address_pool: 10.1.1.0/24
-        - availability_zone: eu-west-2b
-          address_pool: 10.1.2.0/24
+        - address_pool: 10.1.1.0/24
+          availability_zone: eu-west-2a
     logging:
       count: 1
       machine: logging-machine
       configuration: default
       subnets:
-        - availability_zone: eu-west-2a
-          address_pool: 10.1.3.0/24
+        - address_pool: 10.1.3.0/24
+          availability_zone: eu-west-2a
     monitoring:
       count: 1
       machine: monitoring-machine
       configuration: default
       subnets:
-        - availability_zone: eu-west-2a
-          address_pool: 10.1.4.0/24
+        - address_pool: 10.1.4.0/24
+          availability_zone: eu-west-2a
     kafka:
       count: 2
       machine: kafka-machine
       configuration: default
       subnets:
-        - availability_zone: eu-west-2a
-          address_pool: 10.1.5.0/24
+        - address_pool: 10.1.5.0/24
+          availability_zone: eu-west-2a
     postgresql:
       count: 0
       machine: postgresql-machine
       configuration: default
       subnets:
-        - availability_zone: eu-west-2a
-          address_pool: 10.1.6.0/24
+        - address_pool: 10.1.6.0/24
+          availability_zone: eu-west-2a
     load_balancer:
       count: 1
       machine: load-balancer-machine
       configuration: default
       subnets:
-        - availability_zone: eu-west-2a
-          address_pool: 10.1.7.0/24
+        - address_pool: 10.1.7.0/24
+          availability_zone: eu-west-2a
     rabbitmq:
       count: 0
       machine: rabbitmq-machine
@@ -85,21 +81,19 @@ specification:
       machine: logging-machine
       configuration: default
       subnets:
-        - availability_zone: eu-west-2a
-          address_pool: 10.1.10.0/24
+        - address_pool: 10.1.10.0/24
+          availability_zone: eu-west-2a
     repository:
       count: 1
       machine: repository-machine
       configuration: default
       subnets:
-        - availability_zone: eu-west-2a
-          address_pool: 10.1.11.0/24
+        - address_pool: 10.1.11.0/24
+          availability_zone: eu-west-2a
     single_machine:
       count: 0
       machine: single-machine
       configuration: default
       subnets:
-        - availability_zone: eu-west-2a
-          address_pool: 10.1.1.0/24
-        - availability_zone: eu-west-2b
-          address_pool: 10.1.2.0/24
+        - address_pool: 10.1.1.0/24
+          availability_zone: eu-west-2a

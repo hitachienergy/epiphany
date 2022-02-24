@@ -1,4 +1,4 @@
-from cli.helpers.time_helpers import format_time
+from cli.src.helpers.time_helpers import format_time
 
 
 def test_format_time_only_seconds():

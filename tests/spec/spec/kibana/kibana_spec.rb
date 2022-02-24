@@ -2,8 +2,8 @@ require 'spec_helper'
 
 # Configurable passwords for ES users were introduced in v0.10.0.
 # For testing upgrades, we use the default password for now but it should be read from kibana.yml (remote host).
-es_kibanaserver_user_password  = readDataYaml("configuration/logging")["specification"]["kibanaserver_password"] || "kibanaserver"
-es_kibanaserver_user_is_active = readDataYaml("configuration/logging")["specification"]["kibanaserver_user_active"]
+es_kibanaserver_user_password  = readDataYaml('configuration/logging')['specification']['kibanaserver_password'] || 'kibanaserver'
+es_kibanaserver_user_is_active = readDataYaml('configuration/logging')['specification']['kibanaserver_user_active']
 es_kibanaserver_user_is_active = true if es_kibanaserver_user_is_active.nil?
 
 es_api_port         = 9200
@@ -37,7 +37,7 @@ describe 'Check Kibana directories and config files' do
     it { should exist }
     it { should be_a_directory }
   end
-  describe file("/etc/kibana/kibana.yml") do
+  describe file('/etc/kibana/kibana.yml') do
     it { should exist }
     it { should be_a_file }
   end
@@ -55,22 +55,22 @@ describe 'Check if non-empty Kibana log file exists' do
 end
 
 if es_kibanaserver_user_is_active
-  listInventoryHosts("logging").each do |val|
+  listInventoryHosts('logging').each do |val|
     describe 'Check the connection to the Elasticsearch hosts' do
       let(:disable_sudo) { false }
       describe command("curl -k -u kibanaserver:#{es_kibanaserver_user_password} -o /dev/null -s -w '%{http_code}' https://#{val}:#{es_api_port}") do
-        it "is expected to be equal" do
+        it 'is expected to be equal' do
           expect(subject.stdout.to_i).to eq 200
         end
       end
     end
   end
 
-  listInventoryHosts("kibana").each do |val|
+  listInventoryHosts('kibana').each do |val|
     describe 'Check Kibana app HTTP status code' do
       let(:disable_sudo) { false }
       describe command("curl -u kibanaserver:#{es_kibanaserver_user_password} -o /dev/null -s -w '%{http_code}' http://#{val}:#{kibana_default_port}/app/kibana") do
-        it "is expected to be equal" do
+        it 'is expected to be equal' do
           expect(subject.stdout.to_i).to eq 200
         end
       end
@@ -78,7 +78,7 @@ if es_kibanaserver_user_is_active
   end
 end
 
-listInventoryHosts("kibana").each do |val|
+listInventoryHosts('kibana').each do |val|
   describe 'Check Kibana health' do
     let(:disable_sudo) { false }
     describe command("curl http://#{val}:#{kibana_default_port}/api/status") do

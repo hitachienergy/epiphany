@@ -1,8 +1,8 @@
 import pytest
 
-from cli.helpers.doc_list_helpers import select_first, select_all
-from cli.helpers.doc_list_helpers import select_single, ExpectedSingleResultException
-from cli.helpers.ObjDict import ObjDict
+from cli.src.helpers.doc_list_helpers import select_first, select_all
+from cli.src.helpers.doc_list_helpers import select_single, ExpectedSingleResultException
+from cli.src.helpers.ObjDict import ObjDict
 
 DATA = [ObjDict({'index': 1, 'name': 'test-name-1'}),
         ObjDict({'index': 2, 'name': 'test-name23'}),

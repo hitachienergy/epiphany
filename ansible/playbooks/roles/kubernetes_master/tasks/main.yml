@@ -1,8 +1,4 @@
 ---
-- name: Set is_first_deployment fact
-  set_fact:
-    is_first_deployment: false
-
 - when: use_ha_control_plane
   block:
     - name: Configure internal load-balancer (HAProxy)
@@ -28,21 +24,29 @@
         - import_tasks: copy-kubernetes-pki.yml
         - import_tasks: master-join.yml
 
-- name: Collect current apiserver certificate 'not_after' date by openssl
-  command: openssl x509 -enddate -noout -in apiserver.crt
+- name: Collect subject alternative names of apiserver certificate
+  # -ext option is not used as it requires newer openssl version
+  shell: |-
+    set -o pipefail && \
+    openssl x509 -in apiserver.crt -text -noout \
+      | grep DNS:
   args:
+    executable: /bin/bash
     chdir: "{{ pki.location }}"
-  register: apiserver_certificate_info
   changed_when: false
+  register: apiserver_certificate_san
+
+- name: Check presence of each control plane address in SANs list
+  set_fact:
+    san_search_results: "{{ san_search_results | default([]) + [apiserver_certificate_san.stdout is search(item)] }}"
+  loop: >-
+    {{ (groups['kubernetes_master'] | map('extract', hostvars, ['ansible_default_ipv4', 'address']) | list)
+      + (groups['kubernetes_master'] | map('extract', hostvars, ['ansible_host']) | list) }}
 
 - name: Regenerate apiserver certificates
-  when: kubernetes_common.automation_designated_master != inventory_hostname or not is_first_deployment
-# It's almost always necessary to regenerate apiserver certificates for designated and non-designated masters
-# because of a few points:
-# a. Update certificates for old clusters have to be supported
-# b. Execution order is not defined, so when cluster is promoted to HA,
-#    non-designated masters may join cluster before designated master's certificate update
+  when: "not (san_search_results is all)"
   block:
+    # Executed on all hosts as /etc/kubeadm/kubeadm-config.yml is required for apiserver certificate generation
     - name: Extend kubeadm config
       vars:
         update:
@@ -50,49 +54,70 @@
             certSANs: >-
               {{ (groups['kubernetes_master'] | map('extract', hostvars, ['ansible_default_ipv4', 'address']) | list)
               + (groups['kubernetes_master'] | map('extract', hostvars, ['ansible_host']) | list)
-              + [ 'localhost', '127.0.0.1' ] | unique }}
+              + [ '127.0.0.1', 'localhost' ] }}
       include_role:
         name: kubernetes_common
         tasks_from: extend-kubeadm-config
 
-    - name: Backup and generate apiserver certificates with latest kubeadm config
-      include_tasks: apiserver-certificates.yml
+    - name: Update in-cluster configuration
+      run_once: true
+      include_role:
+        name: kubernetes_common
+        tasks_from: update-in-cluster-config
 
-# kubeadm certs renewal uses the existing certificates as the authoritative source for attributes (Common Name, Organization, SAN, etc.)
-# instead of the kubeadm-config ConfigMap, so it's not possible to combine this step with previous ones
-# See https://kubernetes.io/docs/tasks/administer-cluster/kubeadm/kubeadm-certs/#manual-certificate-renewal
-- name: Update apiserver certificate expiration date
-  when: not (specification.advanced.certificates.renew | bool)
-  block:
-    - name: Regenerate apiserver certificate with previous expiration value
-      vars:
-        certificates_renewal_list:
-          - apiserver
-        valid_days: "{{ apiserver_certificate_info.stdout | openssl_date2days }}"
-      include_tasks: generate-certificates.yml
+    # When specification.advanced.certificates.renew is set to true, certificate will be re-generated later
+    - name: Update apiserver certificate expiration date
+      when: not specification.advanced.certificates.renew
+      block:
+        - name: Collect current apiserver certificate 'not_after' date by openssl
+          command: openssl x509 -enddate -noout -in apiserver.crt
+          args:
+            chdir: "{{ pki.location }}"
+          register: apiserver_certificate_enddate
+          changed_when: false
 
-    - name: Restart apiserver
-      shell: |
-        docker ps \
-          --filter 'name=kube-apiserver_kube-apiserver' \
-          --format '{{ "{{.ID}}" }}' \
-        | xargs --no-run-if-empty docker kill
-      args:
-        executable: /bin/bash
+        - name: Regenerate apiserver certificate with previous expiration value
+          vars:
+            certificates_renewal_list:
+              - apiserver
+            valid_days: "{{ apiserver_certificate_enddate.stdout | openssl_date2days }}"
+          include_tasks: generate-certificates.yml
 
-- name: Update in-cluster configuration
-  when: kubernetes_common.automation_designated_master == inventory_hostname
-  include_role:
-    name: kubernetes_common
-    tasks_from: update-in-cluster-config
+        - name: Restart apiserver
+          shell: |-
+            set -o pipefail && \
+            crictl ps --name='kube-apiserver' -q \
+            | xargs --no-run-if-empty crictl stop --timeout=0
+          args:
+            executable: /bin/bash
 
 - name: Regenerate all certificates
-  when: specification.advanced.certificates.renew | bool
-  vars:
-    valid_days: "{{ specification.advanced.certificates.expiration_days }}"
-    services_to_restart:
-      - docker
-  include_tasks: generate-certificates.yml
+  when: specification.advanced.certificates.renew
+  block:
+    - name: Save kubeadm config to file
+      when:
+        - san_search_results is all # kubeadm config was not extended/saved for apiserver cert generation
+      vars:
+        dest_file: /etc/kubeadm/kubeadm-config.yml
+      include_role:
+        name: kubernetes_common
+        tasks_from: save-in-cluster-config
+
+    - name: Regenerate certificates
+      vars:
+        valid_days: "{{ specification.advanced.certificates.expiration_days }}"
+        services_to_restart:
+          - containerd
+      include_tasks: generate-certificates.yml
+
+# kubeadm-config.yml can appear not only on 'automation_designated_master' in 2 cases:
+# - the number of control-plane nodes was changed -> apiserver certificate had to be updated
+# - the file was created to renew all certificates
+- name: Ensure kubeadm-config.yml exists only on 'automation_designated_master'
+  when: kubernetes_common.automation_designated_master != inventory_hostname
+  file:
+    path: /etc/kubeadm/kubeadm-config.yml
+    state: absent
 
 - import_tasks: master-untaint.yml
 

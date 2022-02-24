@@ -9,7 +9,7 @@ haproxy_metrics_port = 9101
 # https://bugzilla.redhat.com/show_bug.cgi?id=1073481
 
 describe 'Checking HAProxy service status' do
-  describe command("systemctl status haproxy > /dev/null") do
+  describe command('systemctl status haproxy > /dev/null') do
     its(:exit_status) { should eq 0 }
   end
 end
@@ -48,14 +48,14 @@ describe 'Checking SSL certificates' do
     it { should exist }
     it { should be_a_directory }
   end
-  describe command("ls -1 /etc/ssl/haproxy/*.pem 2>/dev/null | wc -l") do
-    it "is expected to be gt 0" do
+  describe command('ls -1 /etc/ssl/haproxy/*.pem 2>/dev/null | wc -l') do
+    it 'is expected to be gt 0' do
       expect(subject.stdout.to_i).to be > 0
     end
     its(:exit_status) { should eq 0 }
   end
   describe command("echo 'Q' | openssl s_client -connect #{haproxy_host}:#{haproxy_front_port}") do
-    its(:stdout) { should match /^CONNECTED/ }
+    its(:stdout) { should match(/^CONNECTED/) }
     its(:exit_status) { should eq 0 }
   end
 end
@@ -78,19 +78,19 @@ end
 describe 'Checking HAProxy HTTP status code for stats page' do
   describe command("curl -k --user $(awk '/stats auth/ {print $3}' /etc/haproxy/haproxy.cfg) -o /dev/null -s -w '%{http_code}' \
   http://#{haproxy_host}:#{haproxy_stats_port}$(awk '/stats uri/ {print $3}' /etc/haproxy/haproxy.cfg)") do
-    it "is expected to be equal" do
+    it 'is expected to be equal' do
       expect(subject.stdout.to_i).to eq 200
     end
   end
   describe command("curl -k --user $(awk '/stats auth/ {print $3}' /etc/haproxy/haproxy.cfg) \
   http://#{haproxy_host}:#{haproxy_stats_port}$(awk '/stats uri/ {print $3}' /etc/haproxy/haproxy.cfg)") do
-    its(:stdout) { should match /Statistics Report for HAProxy/ }
+    its(:stdout) { should match(/Statistics Report for HAProxy/) }
   end
 end
 
 describe 'Checking HAProxy HTTP status code for metrics page' do
   describe command("curl -k -o /dev/null -s -w '%{http_code}' http://#{haproxy_host}:#{haproxy_metrics_port}/metrics") do
-    it "is expected to be equal" do
+    it 'is expected to be equal' do
       expect(subject.stdout.to_i).to eq 200
     end
   end
@@ -98,8 +98,8 @@ end
 
 describe 'Checking if it is possible to collect the metrics from HAProxy' do
   describe command("curl -s http://#{haproxy_host}:#{haproxy_metrics_port}/metrics") do
-    its(:stdout) { should include "haproxy_process_nbthread" }
-    its(:stdout) { should include "haproxy_process_current_tasks" }
+    its(:stdout) { should include 'haproxy_process_nbthread' }
+    its(:stdout) { should include 'haproxy_process_current_tasks' }
     its(:exit_status) { should eq 0 }
   end
 end

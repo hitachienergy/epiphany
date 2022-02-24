@@ -11,45 +11,45 @@ specification:
   components:
     kubernetes_master:
       count: 1
-      machine: kubernetes-master-machine
+      machines: []
       configuration: default
     kubernetes_node:
       count: 2
-      machine: kubernetes-node-machine
+      machines: []
       configuration: default
     logging:
       count: 1
-      machine: logging-machine
+      machines: []
       configuration: default
     monitoring:
       count: 1
-      machine: monitoring-machine
+      machines: []
       configuration: default
     kafka:
       count: 2
-      machine: kafka-machine
+      machines: []
       configuration: default
     postgresql:
       count: 0
-      machine: postgresql-machine
+      machines: []
       configuration: default
     load_balancer:
       count: 1
-      machine: load-balancer-machine
+      machines: []
       configuration: default
     rabbitmq:
       count: 0
-      machine: rabbitmq-machine
+      machines: []
       configuration: default
     opensearch:
       count: 0
-      machine: logging-machine
+      machines: []
       configuration: default
     repository:
       count: 1
-      machine: repository-machine
+      machines: []
       configuration: default
     single_machine:
       count: 0
-      machine: single-machine
+      machines: []
       configuration: default

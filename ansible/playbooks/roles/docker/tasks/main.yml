@@ -1,5 +1,9 @@
 ---
-# Docker (used by master & worker as dependency)
+# Docker (used by image_registry)
+- name: Include containerd defauts
+  include_vars:
+    file: roles/containerd/defaults/main.yml
+    name: containerd_defaults
 
 - name: Install Docker packages
   package:
@@ -8,12 +12,12 @@
   vars:
     _packages:
       Debian:
-        - containerd.io
+        - containerd.io={{ containerd_defaults.containerd_version }}-*
         - docker-ce-cli={{ docker_version.Debian }}
         - docker-ce-rootless-extras={{ docker_version.Debian }}
         - docker-ce={{ docker_version.Debian }}
       RedHat:
-        - containerd.io
+        - containerd.io-{{ containerd_defaults.containerd_version }}
         - docker-ce-cli-{{ docker_version.RedHat }}
         - docker-ce-rootless-extras-{{ docker_version.RedHat }}
         - docker-ce-{{ docker_version.RedHat }}

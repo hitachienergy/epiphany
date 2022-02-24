@@ -143,21 +143,27 @@ To upgrade the cluster components run the following steps:
 1. First we need to get the tooling to prepare the requirements for the upgrade. On the provisioning machine run:
 
     ```shell
-    epicli prepare --os OS
+    epicli prepare --os OS --arch ARCH
     ```
 
-   Where OS should be `centos-7`, `redhat-7`, `ubuntu-20.04`. This will create a directory called `prepare_scripts` with
-   the needed files inside.
+    Where:
+    - OS should be `redhat-7`, `ubuntu-20.04`
+    - ARCH should be `x86_64`, `arm64`
+
+   This will create a directory called `prepare_scripts` with the needed files inside.
 
 2. The scripts in the `prepare_scripts` will be used to download all requirements. To do that, copy
    the `prepare_scripts` folder over to the requirements machine and run the following command:
 
     ```shell
-    download-requirements.sh /requirementsoutput/
+    download-requirements.py /requirementsoutput/ OS
     ```
 
-   This will start downloading all requirements and put them in the `/requirementsoutput/` folder. Once run successfully
-   the `/requirementsoutput/` needs to be copied to the provisioning machine to be used later on.
+    Where:
+    - OS should be `redhat-7`, `ubuntu-20.04`, `detect`
+    - /requirementsoutput/ where to output downloaded requirements
+
+    This will run the download-requirements script for target OS type and save requirements under /requirementsoutput/. Once run successfully the `/requirementsoutput/` needs to be copied to the provisioning machine to be used later on.
 
 3. Finally, start the upgrade with:
 
@@ -511,6 +517,7 @@ From Epiphany 1.x to 2.x the Terraform stack received the following major update
 - Terraform 0.12.6 to 1.1.3
 - Azurerm provider 1.38.0 to 2.91.0
 - AWS provider 2.26 to 3.71.0
+- Removal of auto-scaling-groups in favor of plain EC2 instances on AWS.
 
 These introduce some breaking changes which will require manual steps for upgrading an existing 1.x clusters. As this is not straight forward we recommend deploying a new cluster on 2.x and migrating data instead.
 
@@ -604,72 +611,4 @@ General steps:
 
 ### AWS
 
-Notes:
-- If you made any manual changes to your cluster infrastructure outside of Terraform this might cause issues.
-- Only run `terraform apply` if `terraform plan` shows your infrastructure does not match the configuration.
-- Manual Terraform ugrade up to v1.0.x should be completed before running `epicli apply` command with Epiphany 2.x.
-- Terraform can be installed as a binary package or by using package managers, see more: https://learn.hashicorp.com/tutorials/terraform/install-cli
-
-#### v0.12.6 => v0.13.x
-
-The official documentation can be found here: https://www.terraform.io/language/upgrade-guides/0-13
-
-General steps:
-- Download the latest Terraform v0.13.x: https://releases.hashicorp.com/terraform/
-- Run the following sets of commands in the `build/clustername/terraform` folder and follow the steps if asked:
-  ```shell
-  terraform init
-  terraform 0.13upgrade
-  terraform plan
-  terraform apply (if needed)
-  ```
-
-#### v0.13.x => v0.14.x
-
-The official documentation can be found here: https://www.terraform.io/language/upgrade-guides/0-14
-
-General steps:
-- Download the latest Terraform v0.14.x: https://releases.hashicorp.com/terraform/
-- Run the following sets of commands in the `build/clustername/terraform` folder and follow the steps if asked:
-  ```shell
-  terraform init
-  terraform plan
-  terraform apply (if needed)
-  ```
-
-#### v0.14.x => v1.0.x
-
-Note: From v0.14.x we can upgrade straight to v1.0.x. No need to upgrade to v0.15.x first.
-
-The official documentation can be found here: https://www.terraform.io/language/upgrade-guides/1-0
-
-General steps:
-- Download the latest Terraform v1.0.x: https://releases.hashicorp.com/terraform/
-- Run the following sets of commands in the `build/clustername/terraform` folder and follow the steps if asked:
-  ```shell
-  terraform init
-  terraform plan
-  terraform apply (if needed)
-  ```
-#### v1.0.x => v1.1.3
-
-In this step we also force the upgrade from AWS provider 2.26 to 3.71.0 which requires a few more steps to resolve some pending issues.
-At this point, the steps assume that you are already running Epiphany 2.x image.
-
-The official documentation can be found here: https://www.terraform.io/language/upgrade-guides/1-1
-
-General steps:
-- Run epicli to generate the new AWS provider Terraform scripts:
-  ```shell
-  epicli apply -f data.yml
-  ```
-  After the Terraform scripts generation `terraform init ...` will result in the following error:
-  `Error: Failed to query available provider packages`
-- To fix the issue from previous step manually run from the epicli container in `build/clustername/terraform`:
-  ```shell
-  terraform init -upgrade
-  ```
-- Now re-run epicli again:
-  ```shell
-  epicli apply -f data.yml
-  ```
+The Terraform for AWS deployments between Epiphany 1.x and 2.x is not compatible and migration is not possible without destruction of the enviroment. The only options is to deploy a new cluster and migrate the data.

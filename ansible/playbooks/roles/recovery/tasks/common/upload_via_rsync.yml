@@ -70,12 +70,5 @@
         dest: "{{ recovery_dir }}/"
         src: "{{ item }}"
         checksum: true
-        rsync_opts:
-          - --rsh={{ rsh }}
-      vars:
-        # this fixes / replaces incorrect path to the private key file that synchronize provides
-        # (setting private_key parameter has no effect whatsoever, looks like a bug tbh)
-        rsh: >-
-          /usr/bin/ssh -S none -i {{ private_key_file.path }} -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null
-      loop: >-
-        {{ artifacts }}
+        private_key: "{{ private_key_file.path }}"
+      loop: "{{ artifacts }}"

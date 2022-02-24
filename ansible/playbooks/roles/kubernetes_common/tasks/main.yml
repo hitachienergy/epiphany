@@ -8,6 +8,7 @@
     state: present
     reload: yes
 
+# Check needed only for RHEL
 - name: Check if bridge-nf-call-iptables key exists
   command: "sysctl net.bridge.bridge-nf-call-iptables"
   failed_when: false
@@ -21,7 +22,7 @@
     value: "1"
     reload: yes
   when: sysctl_bridge_nf_call_iptables.rc == 0
-  with_items:
+  loop:
     - net.bridge.bridge-nf-call-iptables
     - net.bridge.bridge-nf-call-ip6tables
 

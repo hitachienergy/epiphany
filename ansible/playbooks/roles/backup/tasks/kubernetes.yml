@@ -49,11 +49,13 @@
 
     - name: Save etcd snapshot
       shell: |
-        docker run \
-        -v "{{ backup_temp_dir.path }}/:/backup/" \
-        --network host \
+        ctr --namespace k8s.io \
+        run \
+        --mount type=bind,src={{ backup_temp_dir.path }}/,dst=/backup/,options=rbind:rw \
+        --net-host \
         --env ETCDCTL_API=3 \
         --rm "{{ etcd_image_name.stdout | trim }}" \
+        etcd \
         etcdctl \
         --endpoints https://127.0.0.1:2379 \
         --cacert /backup/pki/etcd/ca.crt \

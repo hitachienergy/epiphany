@@ -6,6 +6,8 @@
         "redhat.ansible",
         // Common
         "shardulm94.trailing-spaces",
+        // Git
+        "eamodio.gitlens",
         // Jinja
         "samuelcolvin.jinjahtml",
         // Markdown
@@ -23,8 +25,11 @@
         // YAML
         "redhat.vscode-yaml",
     ],
+    "mounts": [
+        "source=${localEnv:HOME}${localEnv:USERPROFILE}/.ssh,target=/home/vscode/.ssh,type=bind",
+    ],
     "settings": {
-        "python.pythonPath": "/usr/local/bin/python"
+        "python.pythonPath": "/usr/local/bin/python",
     },
-    "runArgs": [ "-u", "vscode" ]
+    "remoteUser": "vscode",
 }

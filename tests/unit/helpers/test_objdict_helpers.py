@@ -1,8 +1,8 @@
 from collections import OrderedDict
 
 import pytest
-from cli.helpers.objdict_helpers import dict_to_objdict, objdict_to_dict, is_named_list, assert_unique_names_in_named_list, merge_objdict, DuplicatesInNamedListException, TypeMismatchException, replace_yesno_with_booleans
-from cli.helpers.ObjDict import ObjDict
+from cli.src.helpers.objdict_helpers import dict_to_objdict, objdict_to_dict, is_named_list, assert_unique_names_in_named_list, merge_objdict, DuplicatesInNamedListException, TypeMismatchException, replace_yesno_with_booleans
+from cli.src.helpers.ObjDict import ObjDict
 
 
 def test_dict_to_objdict():

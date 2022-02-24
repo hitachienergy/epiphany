@@ -13,6 +13,6 @@ class String
   #    bar }.squish                      # => "foo bar"
   # " foo   bar    \n   \t   boo".squish # => "foo bar boo"
   def squish
-    self.split(' ').join(' ')
+    split(' ').join(' ')
   end
 end

@@ -1,35 +1,34 @@
 "$id": "#/specification"
-title: "Virtual-machine specification schema"
-description: "Virtual-machine specification schema"
+title: "Virtual machine specification schema"
+description: "Virtual machine specification schema"
 type: object
 properties:
   name:
     type: string
-  count:
-    type: integer
-  subnet_names:
-    type: array
-    items:
-      type: string
-  availability_zones:
-    type: array
-    items:
-      type: string
-  launch_configuration:
-    type: string
   cluster_name:
     type: string
+  component_key:
+    type: string
+  image_id:
+    type: string
+  key_name:
+    type: string
+  subnet_name:
+    type: string
+  associate_public_ip:
+    type: boolean
+  use_network_security_groups:
+    type: boolean
+  availability_zone:
+    type: string
+  security_groups:
+    type: array
+    items:
+      type: string
   authorized_to_efs:
     type: boolean
   mount_efs:
     type: boolean
-  tags:
-    type: array
-    items:
-      type: object
-      properties:
-        version:
-          type: string
   size:
     type: string
   os_full_name:

@@ -1,6 +1,6 @@
 from typing import List
 
-from cli.models.AnsibleHostModel import AnsibleOrderedHostModel
+from cli.src.models.AnsibleHostModel import AnsibleOrderedHostModel
 
 
 def test_sort():

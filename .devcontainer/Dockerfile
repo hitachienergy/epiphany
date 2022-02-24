@@ -1,4 +1,4 @@
-FROM python:3.7-slim
+FROM python:3.10-slim
 
 ARG USERNAME=vscode
 ARG USER_UID=1000
@@ -14,10 +14,10 @@ RUN : INSTALL APT REQUIREMENTS \
  && apt-get -q install -y --no-install-recommends \
     apt-utils dialog \
  && apt-get -q install -y --no-install-recommends \
-    autossh curl gcc git git-lfs \
+    autossh curl gcc git git-lfs iputils-ping \
     jq libc6-dev libcap2-bin libffi-dev lsb-release \
     make musl-dev openssh-client procps \
-    psmisc ruby-full sudo tar \
+    psmisc rsync ruby-full sudo tar \
     unzip vim \
  && apt-get -q autoremove -y \
  && apt-get -q clean -y \

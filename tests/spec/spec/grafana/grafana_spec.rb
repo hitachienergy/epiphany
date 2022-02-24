@@ -33,7 +33,7 @@ describe 'Checking Grafana directories and files' do
     it { should be_owned_by 'root' }
     it { should be_grouped_into 'grafana' }
   end
-  describe file("/etc/grafana/grafana.ini") do
+  describe file('/etc/grafana/grafana.ini') do
     it { should exist }
     it { should be_a_file }
     it { should be_readable }
@@ -42,11 +42,11 @@ end
 
 describe 'Checking self signed SSL certificates' do
   let(:disable_sudo) { false }
-  describe x509_private_key("/etc/grafana/ssl/grafana_key.key") do
+  describe x509_private_key('/etc/grafana/ssl/grafana_key.key') do
     it { should be_valid }
     it { should have_matching_certificate('/etc/grafana/ssl/grafana_cert.pem') }
   end
-  describe x509_certificate("/etc/grafana/ssl/grafana_cert.pem") do
+  describe x509_certificate('/etc/grafana/ssl/grafana_cert.pem') do
     it { should be_certificate }
     it { should be_valid }
   end
@@ -70,11 +70,11 @@ describe 'Checking if the ports are open' do
     let(:disable_sudo) { false }
     it { should be_listening }
   end
-end 
+end
 
 describe 'Checking Grafana health' do
   describe command("curl -o /dev/null -s -w '%{http_code}' -k https://#{grafana_host}:#{grafana_port}/login") do
-    it "is expected to be equal" do
+    it 'is expected to be equal' do
       expect(subject.stdout.to_i).to eq 200
     end
   end
@@ -96,7 +96,7 @@ describe 'Checking Prometheus datasource availability' do
   let(:disable_sudo) { false }
   describe command("curl -k -o /dev/null -s -w '%{http_code}' -u $(grep 'admin_user' /etc/grafana/grafana.ini | awk '{print $3}'):$(grep 'admin_password' /etc/grafana/grafana.ini | awk '{print $3}') \
   https://#{grafana_host}:#{grafana_port}/api/datasources/proxy/1/api/v1/query?query=2%2B2") do
-    it "is expected to be equal" do
+    it 'is expected to be equal' do
       expect(subject.stdout.to_i).to eq 200
     end
   end

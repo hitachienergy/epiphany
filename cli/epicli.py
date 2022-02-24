@@ -1,31 +1,32 @@
 #!/usr/bin/env python3
-import atexit
-import sys
 import argparse
+import atexit
 import json
 import os
-import time
-import subprocess
 import platform
 import socket
+import subprocess
+import sys
+import time
 
-from cli.engine.ApplyEngine import ApplyEngine
-from cli.engine.BackupEngine import BackupEngine
-from cli.engine.DeleteEngine import DeleteEngine
-from cli.engine.InitEngine import InitEngine
-from cli.engine.PrepareEngine import PrepareEngine
-from cli.engine.RecoveryEngine import RecoveryEngine
-from cli.engine.UpgradeEngine import UpgradeEngine
-from cli.engine.TestEngine import TestEngine
-from cli.helpers.Log import Log
-from cli.helpers.Config import Config
-from cli.helpers.time_helpers import format_time
-from cli.version import VERSION
+from typing import List
+
 from cli.licenses import LICENSES
-from cli.helpers.query_yes_no import query_yes_no
-from cli.helpers.input_query import prompt_for_password
-from cli.helpers.build_io import save_to_file, get_output_path
-from cli.engine.spec.SpecCommand import SpecCommand
+from cli.src.commands.Apply import Apply
+from cli.src.commands.Backup import Backup
+from cli.src.commands.Delete import Delete
+from cli.src.commands.Init import Init
+from cli.src.commands.Prepare import Prepare
+from cli.src.commands.Recovery import Recovery
+from cli.src.commands.Test import Test
+from cli.src.commands.Upgrade import Upgrade
+from cli.src.Config import Config, SUPPORTED_OS
+from cli.src.helpers.build_io import get_output_path, save_to_file
+from cli.src.helpers.cli_helpers import prompt_for_password, query_yes_no
+from cli.src.helpers.time_helpers import format_time
+from cli.src.Log import Log
+from cli.src.spec.SpecCommand import SpecCommand
+from cli.version import VERSION
 
 start_time = time.time()
 
@@ -84,11 +85,6 @@ Terraform : 1..4 map to the following Terraform verbosity levels:
             3: DEBUG
             4: TRACE''')
 
-    # some arguments we don't want available when running from the docker image.
-    if not config.docker_cli:
-        parser.add_argument('-o', '--output', dest='output_dir', type=str,
-                            help='Directory where the CLI should write it`s output.')
-
     # setup subparsers
     subparsers = parser.add_subparsers()
     prepare_parser(subparsers)
@@ -110,7 +106,7 @@ Terraform : 1..4 map to the following Terraform verbosity levels:
     # add some arguments to the general config so we can easily use them throughout the CLI
     args = parser.parse_args(arguments)
 
-    config.output_dir = getattr(args, 'output_dir', None)
+    config.output_dir = None
     config.log_file = args.log_name
     config.log_format = args.log_format
     config.log_date_format = args.log_date_format
@@ -155,8 +151,8 @@ def init_parser(subparsers):
     def run_init(args):
         Config().output_dir = os.getcwd()
 
-        with InitEngine(args) as engine:
-            return engine.init()
+        with Init(args) as cmd:
+            return cmd.init()
 
     sub_parser.set_defaults(func=run_init)
 
@@ -166,17 +162,25 @@ def prepare_parser(subparsers):
     optional = sub_parser._action_groups.pop()
     required = sub_parser.add_argument_group('required arguments')
 
-    #required
-    required.add_argument('--os', type=str, required=True, dest='os', choices=['ubuntu-20.04', 'redhat-7', 'centos-7'],
-                            help='The OS to prepare the offline requirements for: ubuntu-20.04|redhat-7|centos-7')
+    #  required
+    supported_os: List[str] = list(SUPPORTED_OS.keys())
+    required.add_argument('--os', type=str, required=True, dest='os', choices=supported_os,
+                          help=f'The OS to prepare the offline requirements for: {"|".join(supported_os)}')
 
-    #optional
+    supported_arch: List[str] = list(set([arch for archs in SUPPORTED_OS.values() for arch in archs]))
+    required.add_argument('--arch', type=str, required=True, dest='arch', choices=supported_arch,
+                          help=f'The OS architecture type to be used: {"|".join(supported_arch)}')
+
+    #  optional
+    optional.add_argument('-o', '--output_dir', dest='output_dir', type=str, required=False,
+                          help='Output directory for the offline requirement scripts.',
+                          default=None)
     sub_parser._action_groups.append(optional)
 
     def run_prepare(args):
         adjust_paths_from_output_dir()
-        with PrepareEngine(args) as engine:
-            return engine.prepare()
+        with Prepare(args) as cmd:
+            return cmd.prepare()
 
     sub_parser.set_defaults(func=run_prepare)
 
@@ -214,8 +218,8 @@ def apply_parser(subparsers):
     def run_apply(args):
         adjust_paths_from_file(args)
         ensure_vault_password_is_set(args)
-        with ApplyEngine(args) as engine:
-            return engine.apply()
+        with Apply(args) as cmd:
+            return cmd.apply()
 
     sub_parser.set_defaults(func=run_apply)
 
@@ -236,8 +240,8 @@ def delete_parser(subparsers):
         if not query_yes_no('Do you really want to delete your cluster?'):
             return 0
         adjust_paths_from_build(args)
-        with DeleteEngine(args) as engine:
-            return engine.delete()
+        with Delete(args) as cmd:
+            return cmd.delete()
 
     sub_parser.set_defaults(func=run_delete)
 
@@ -306,8 +310,8 @@ def upgrade_parser(subparsers):
         if not query_yes_no('Has backup been done?', default='no'):
             return 0
         adjust_paths_from_build(args)
-        with UpgradeEngine(args) as engine:
-            return engine.upgrade()
+        with Upgrade(args) as cmd:
+            return cmd.upgrade()
 
     sub_parser.set_defaults(func=run_upgrade)
 
@@ -330,8 +334,8 @@ def test_parser(subparsers):
     def run_test(args):
         experimental_query()
         adjust_paths_from_build(args)
-        with TestEngine(args) as engine:
-            return engine.test()
+        with Test(args) as cmd:
+            return cmd.test()
 
     sub_parser.set_defaults(func=run_test)
 
@@ -356,8 +360,8 @@ def backup_parser(subparsers):
 
     def run_backup(args):
         adjust_paths_from_file(args)
-        with BackupEngine(args) as engine:
-            return engine.backup()
+        with Backup(args) as cmd:
+            return cmd.backup()
 
     sub_parser.set_defaults(func=run_backup)
 
@@ -384,8 +388,8 @@ def recovery_parser(subparsers):
         if not query_yes_no('Do you really want to perform recovery?'):
             return 0
         adjust_paths_from_file(args)
-        with RecoveryEngine(args) as engine:
-            return engine.recovery()
+        with Recovery(args) as cmd:
+            return cmd.recovery()
 
     sub_parser.set_defaults(func=run_recovery)
 
@@ -492,9 +496,7 @@ def dump_debug_info():
         dump_file.write('\n\n*****PYTHON******\n')
         dump_file.write(f'python_version: {platform.python_version()}\n')
         dump_file.write(f'python_build: {platform.python_build()}\n')
-        dump_file.write(f'python_revision: {platform.python_revision()}\n')
         dump_file.write(f'python_compiler: {platform.python_compiler()}\n')
-        dump_file.write(f'python_branch: {platform.python_branch()}\n')
         dump_file.write(f'python_implementation: {platform.python_implementation()}\n')
 
         dump_external_debug_info('ANSIBLE VERSION', ['ansible', '--version'])
@@ -503,7 +505,7 @@ def dump_debug_info():
         dump_external_debug_info('TERRAFORM VERSION', ['terraform', '--version'])
         dump_external_debug_info('RUBY VERSION', ['ruby', '--version'])
         dump_external_debug_info('RUBY GEM VERSION', ['gem', '--version'])
-        dump_external_debug_info('RUBY INSTALLED GEMS', ['gem', 'query', '--local'])
+        dump_external_debug_info('RUBY INSTALLED GEMS', ['gem', 'list', '--local'])
 
         dump_file.write('\n\n*****LOG******\n')
         log_path = os.path.join(get_output_path(), config.log_file)

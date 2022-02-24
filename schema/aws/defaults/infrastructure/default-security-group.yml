@@ -4,6 +4,7 @@ provider: aws
 name: default-security-group
 specification:
   name: default-security-group
+  cluster_name: SET_BY_AUTOMATION
   vpc_name: SET_BY_AUTOMATION
   rules: []
 #    - name: ssh
@@ -13,4 +14,3 @@ specification:
 #      destination_port_range: "22"
 #      source_address_prefix: "10.1.0.0/22"
 #      destination_address_prefix: "*"
-

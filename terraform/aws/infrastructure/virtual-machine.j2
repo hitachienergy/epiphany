@@ -10,45 +10,51 @@
 # {{ specification.name }}
 #####################################################
 
-resource "aws_autoscaling_group" "{{ specification.name }}" {
-  name                 = "{{ specification.name }}"
-  max_size             = "{{ specification.count }}"
-  min_size             = "{{ specification.count }}"
-  desired_capacity     = "{{ specification.count }}"
-  force_delete         = "true"
-  launch_configuration = aws_launch_configuration.{{ specification.launch_configuration }}.name
+resource "aws_instance" "{{ specification.name }}" {
+  ami                         = "{{ specification.image_id }}"
+  instance_type               = "{{ specification.size }}"
+  associate_public_ip_address = "{{ specification.associate_public_ip | lower  }}"
+  key_name                    = "{{ specification.key_name }}"
+  subnet_id                   = aws_subnet.{{ specification.subnet_name }}.id
+  {%- if specification.use_network_security_groups == true %}
+  vpc_security_group_ids      = [{% for security_group in specification.security_groups %}aws_security_group.{{ security_group }}.id{% if not loop.last %}, {% endif %}{% endfor %}]
+  {%- endif %}
+  availability_zone           = "{{ specification.availability_zone }}"
 
-  vpc_zone_identifier = [
-  {%- for name in specification.subnet_names %}
-    aws_subnet.{{ name }}.id,
-  {%- endfor %}
-  ]
-
-  tag {
-    key                 = "cluster_name"
-    value               = "{{ specification.cluster_name }}"
-    propagate_at_launch = "true"
+  # storage
+  ebs_optimized = "{{ specification.ebs_optimized | lower }}"
+  root_block_device {
+    volume_type           = "{{ specification.disks.root.volume_type }}"
+    volume_size           = "{{ specification.disks.root.volume_size }}"
+    delete_on_termination = "{{ specification.disks.root.delete_on_termination | lower }}"
+    encrypted             = "{{ specification.disks.root.encrypted | lower }}"
+    tags = {
+      cluster_name        = "{{ specification.cluster_name }}"
+      cluster_version     = "{{ version }}"
+      Name                = "{{ specification.name }}-os-disk"
+    }
   }
 
-  tag {
-    key                 = "cluster_version"
-    value               = "{{ version }}"
-    propagate_at_launch = "true"
-  }
+{% for disk in specification.disks.additional_disks %}
+  ebs_block_device {
+    device_name           = "{{ disk.device_name }}"
+    volume_type           = "{{ disk.volume_type }}"
+    volume_size           = "{{ disk.volume_size }}"
+    encrypted             = "{{ disk.encrypted | lower }}"
+    delete_on_termination = "{{ disk.delete_on_termination | lower }}"
 
-  tag {
-    key                 = "Name"
-    value               = "{{ specification.name }}"
-    propagate_at_launch = "true"
+    tags = {
+      cluster_name        = "{{ specification.cluster_name }}"
+      cluster_version     = "{{ version }}"
+      Name                = "{{ specification.name }}-data-disk-{{ loop.index0 }}"
+    }
   }
+{%- endfor %}
 
-  {%- for tag in specification.tags %}
-  tag {
-    {%- for tag_key, tag_value in tag.items() %}
-    key                 = "{{ tag_key }}"
-    value               = "{{ tag_value }}"
-    {%- endfor %}
-    propagate_at_launch = "true"
+  tags = {
+    cluster_name    = "{{ specification.cluster_name }}"
+    cluster_version = "{{ version }}"
+    component_key   = "{{ specification.component_key }}"
+    Name            = "{{ specification.name }}"
   }
-  {%- endfor %}
 }

@@ -1,5 +1,15 @@
 ---
-- name: Generate certificates block
+- name: Set pki_backup_dir fact
+  set_fact:
+    pki_backup_dir: "{{ pki.location | regex_replace('\\/$', '') }}-backup-{{ ansible_date_time.iso8601_basic_short }}"
+
+- name: Back up current certificates
+  synchronize:
+    src: "{{ pki.location }}/"
+    dest: "{{ pki_backup_dir }}"
+  delegate_to: "{{ inventory_hostname }}"
+
+- name: Generate certificates
   vars:
     # https://kubernetes.io/docs/setup/best-practices/certificates/#all-certificates
     _certificates_opt_mapping:
@@ -61,13 +71,6 @@
             certificates_opt_mapping: "{{ _certificates_opt_mapping }}"
             certificates_renewal_list: "{{ _certificates_opt_mapping | map(attribute='name') }}"
           when: certificates_renewal_list is not defined
-
-    - name: Save old certificates
-      synchronize:
-        src: "{{ pki.location }}/"
-        dest: >-
-          {{ pki.location | regex_replace('\\/$', '') }}-backup-{{ ansible_date_time.iso8601_basic_short }}
-      delegate_to: "{{ inventory_hostname }}"
 
     - name: Ensure necessary directories exist
       file:
@@ -195,20 +198,31 @@
         - 'csr'
         - 'ext'
 
-    - name: Restart systemd services
-      when:
-        - services_to_restart is defined
-        - services_to_restart | difference(['docker', 'kubelet']) | length == 0
-      block:
-        - name: Restart services
-          systemd:
-            name: "{{ item }}"
-            state: restarted
-          loop: "{{ services_to_restart }}"
+  rescue:
+    - name: Restore certificates
+      synchronize:
+        src: "{{ pki_backup_dir }}/"
+        dest: "{{ pki.location | regex_replace('\\/$', '') }}"
+      delegate_to: "{{ inventory_hostname }}"
 
-        - name: Wait until cluster is available
-          command: kubectl cluster-info
-          retries: 50
-          delay: 1
-          register: result
-          until: result is succeeded and "running" in result.stdout
+    - name: Fail certificates generation
+      fail:
+        msg: Certificates generation failed, restored an initial state
+
+- name: Restart systemd services
+  when:
+    - services_to_restart is defined
+    - services_to_restart | difference(['containerd', 'kubelet']) | length == 0
+  block:
+    - name: Restart services
+      systemd:
+        name: "{{ item }}"
+        state: restarted
+      loop: "{{ services_to_restart }}"
+
+    - name: Wait until cluster is available
+      command: kubectl cluster-info
+      retries: 60
+      delay: 1
+      register: result
+      until: result is succeeded and "running" in result.stdout

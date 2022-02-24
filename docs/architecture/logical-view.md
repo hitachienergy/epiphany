@@ -49,7 +49,7 @@ Source | Purpose
 /var/log/secure | Logs from authentication and authorization
 /var/log/syslog | System logs and events
 /var/log/zookeeper/version-2/* | Zookeeper's logs
-Docker containers | Kubernetes components that run in a container
+Containers | Kubernetes components that run in a container
 
 `Filebeat`, unlike `Grafana`, pushes data to database (`OpenSearch`) instead of pulling them.
 [Read more](https://www.elastic.co/products/beats/filebeat) about `Filebeat`.
