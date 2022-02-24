@@ -33,7 +33,7 @@
     - "{{ specification.paths.opensearch_logs }}"
     - "{{ certificates.dirs.certs }}"
 
-- name: Extract the OPS tar file
+- name: Extract OpenSearch tar file
   unarchive:
     src: "/tmp/opensearch-{{ opensearch_ver }}"
     dest: "{{ specification.paths.opensearch_home }}"
