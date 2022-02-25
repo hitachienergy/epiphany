@@ -46,6 +46,7 @@ class Repoquery(Command):
 
         args.extend(['--queryformat', queryformat])
         args.append(f'--archlist={arch},noarch')
+        args.append('--assumeyes')  # to import GPG keys
         args.append(package)
 
         output = self.run(args).stdout
