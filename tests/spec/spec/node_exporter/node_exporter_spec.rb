@@ -20,7 +20,7 @@ describe 'Checking Node Exporter directories and files' do
     it { should exist }
     it { should be_a_directory }
   end
-  describe file("/opt/node_exporter/node_exporter") do
+  describe file('/opt/node_exporter/node_exporter') do
     it { should exist }
     it { should be_a_file }
     it { should be_executable }
@@ -39,11 +39,11 @@ describe 'Checking if the ports are open' do
     let(:disable_sudo) { false }
     it { should be_listening }
   end
-end 
+end
 
 describe 'Checking Node Exporter HTTP status code' do
   describe command("curl -o /dev/null -s -w '%{http_code}' #{node_exporter_host}:#{node_exporter_port}") do
-    it "is expected to be equal" do
+    it 'is expected to be equal' do
       expect(subject.stdout.to_i).to eq 200
     end
   end

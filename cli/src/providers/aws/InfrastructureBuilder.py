@@ -4,7 +4,8 @@ from copy import deepcopy
 
 from cli.src.helpers.build_io import get_terraform_path
 from cli.src.helpers.config_merger import merge_with_defaults
-from cli.src.helpers.data_loader import load_json_obj, load_schema_obj, types
+from cli.src.helpers.data_loader import (load_json_obj, load_schema_obj,
+                                         schema_types)
 from cli.src.helpers.doc_list_helpers import (select_all, select_first,
                                               select_single)
 from cli.src.helpers.naming_helpers import resource_name
@@ -294,7 +295,7 @@ class InfrastructureBuilder(Step):
     def get_config_or_default(docs, kind):
         config = select_first(docs, lambda x: x.kind == kind)
         if config is None:
-            config = load_schema_obj(types.DEFAULT, 'aws', kind)
+            config = load_schema_obj(schema_types.DEFAULT, 'aws', kind)
             config['version'] = VERSION
         return config
 

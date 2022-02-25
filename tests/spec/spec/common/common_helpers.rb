@@ -1,13 +1,11 @@
 def lvm_installed?
-  cmd = "sudo which lvs"
+  cmd = 'sudo which lvs'
   result = Specinfra.backend.run_command(cmd)
   if result.success?
-    return true
+    true
+  elsif result.stderr.include?('no lvs in ') or result.stderr.empty?
+    false
   else
-    if result.stderr.include?("no lvs in ") or result.stderr.empty?
-      return false
-    else
-      raise(result.stderr)
-    end
+    raise(result.stderr)
   end
 end

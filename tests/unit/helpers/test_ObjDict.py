@@ -1,4 +1,5 @@
 import pytest
+
 from cli.src.helpers.ObjDict import ObjDict
 
 obj = ObjDict({'read': 1, 'set_existing_field': 1, 'delete_existing_field': 1})

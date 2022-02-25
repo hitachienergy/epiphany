@@ -17,34 +17,37 @@ BASE_DIR = (
     else BASE_DIR_DEV
 )
 SCHEMA_DIR = os.path.join(BASE_DIR, 'schema')
+TERRAFORM_PATH = os.path.join(BASE_DIR, 'terraform')
+ANSIBLE_PATH = os.path.join(BASE_DIR, 'ansible')
+ANSIBLE_PLAYBOOK_PATH = os.path.join(ANSIBLE_PATH, 'playbooks')
 
-Types = namedtuple('FileType', 'DEFAULT VALIDATION TERRAFORM ANSIBLE')
-types = Types(DEFAULT='defaults',
-              VALIDATION='validation',
-              TERRAFORM='terraform',
-              ANSIBLE='ansible')
+TemplateTypes = namedtuple('TemplateTypes', 'TERRAFORM ANSIBLE')
+template_types = TemplateTypes(TERRAFORM='terraform', ANSIBLE='ansible')
+
+SchemaTypes = namedtuple('SchemaTypes', 'DEFAULT VALIDATION')
+schema_types = SchemaTypes(DEFAULT='defaults', VALIDATION='validation')
 
 
-def load_schema_obj(file_type, provider, kind):
-    path_to_file = os.path.join(SCHEMA_DIR, provider, file_type, kind+'.yml')
+def load_schema_obj(schema_type, provider, kind):
+    path_to_file = os.path.join(SCHEMA_DIR, provider, schema_type, f'{kind}.yml')
     if os.path.isfile(path_to_file):
         return load_yaml_file(path_to_file)
     else:
-        path_to_file = os.path.join(SCHEMA_DIR, 'common', file_type, kind + '.yml')
+        path_to_file = os.path.join(SCHEMA_DIR, 'common', schema_type, f'{kind}.yml')
         return load_yaml_file(path_to_file)
 
 
-def load_all_schema_objs(file_type, provider, kind):
-    path_to_file = os.path.join(SCHEMA_DIR, provider, file_type, kind+'.yml')
+def load_all_schema_objs(schema_type, provider, kind):
+    path_to_file = os.path.join(SCHEMA_DIR, provider, schema_type, f'{kind}.yml')
     if os.path.isfile(path_to_file):
         return load_yamls_file(path_to_file)
     else:
-        path_to_file = os.path.join(SCHEMA_DIR, 'common', file_type, kind + '.yml')
+        path_to_file = os.path.join(SCHEMA_DIR, 'common', schema_type, f'{kind}.yml')
         return load_yamls_file(path_to_file)
 
 
-def load_all_schema_objs_from_directory(file_type, provider, directory):
-    directory_path = os.path.join(SCHEMA_DIR, provider, file_type, directory)
+def load_all_schema_objs_from_directory(schema_type, provider, directory):
+    directory_path = os.path.join(SCHEMA_DIR, provider, schema_type, directory)
     docs = []
     for filename in glob.glob(os.path.join(directory_path, '*.yml')):
         documents = load_yamls_file(filename)
@@ -62,8 +65,8 @@ def load_yamls_file(path_to_file):
         return safe_load_all(stream)
 
 
-def load_template_file(file_type, provider, kind):
-    path_to_file = os.path.join(BASE_DIR, file_type, provider, kind + '.j2')
+def load_template_file(template_type, provider, kind):
+    path_to_file = os.path.join(BASE_DIR, template_type, provider, kind + '.j2')
     with open(path_to_file, 'r') as stream:
         return Template(stream.read(), undefined=jinja2.StrictUndefined)
 

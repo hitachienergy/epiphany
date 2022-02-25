@@ -2,12 +2,13 @@ import os
 from copy import deepcopy
 
 from cli.src.helpers.config_merger import merge_with_defaults
-from cli.src.helpers.data_loader import load_schema_obj, types
+from cli.src.helpers.data_loader import load_schema_obj, schema_types
 from cli.src.helpers.doc_list_helpers import select_first, select_single
-from cli.src.helpers.naming_helpers import (cluster_tag, resource_name,
+from cli.src.helpers.naming_helpers import (cluster_tag,
+                                            get_os_name_normalized,
+                                            resource_name,
                                             storage_account_name)
 from cli.src.helpers.objdict_helpers import dict_to_objdict
-from cli.src.helpers.naming_helpers import get_os_name_normalized
 from cli.src.Step import Step
 from cli.version import VERSION
 
@@ -290,6 +291,6 @@ class InfrastructureBuilder(Step):
     def get_config_or_default(docs, kind):
         config = select_first(docs, lambda x: x.kind == kind)
         if config is None:
-            config = load_schema_obj(types.DEFAULT, 'azure', kind)
+            config = load_schema_obj(schema_types.DEFAULT, 'azure', kind)
             config['version'] = VERSION
         return config

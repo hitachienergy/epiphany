@@ -6,7 +6,7 @@ from cli.src.helpers.build_io import (get_ansible_path,
                                       get_ansible_path_for_build,
                                       get_ansible_vault_path)
 from cli.src.helpers.data_loader import (load_all_schema_objs_from_directory,
-                                         load_schema_obj, types)
+                                         load_schema_obj, schema_types)
 from cli.src.helpers.doc_list_helpers import (ExpectedSingleResultException,
                                               select_first, select_single)
 from cli.src.helpers.naming_helpers import to_feature_name, to_role_name
@@ -33,7 +33,7 @@ class AnsibleVarsGenerator(Step):
         elif inventory_upgrade is not None and inventory_creator is None:
             self.cluster_model = inventory_upgrade.cluster_model
             self.config_docs = []
-            defaults = load_all_schema_objs_from_directory(types.DEFAULT, 'common', 'configuration')
+            defaults = load_all_schema_objs_from_directory(schema_types.DEFAULT, 'common', 'configuration')
             for default in defaults:
                 config_doc = select_first(inventory_upgrade.config_docs, lambda x: x.kind == default.kind)
                 if config_doc is None:
@@ -90,7 +90,6 @@ class AnsibleVarsGenerator(Step):
 
             document = select_first(self.config_docs, lambda x: x.kind == kind)
             if document is None:
-                self.logger.warn('No config document for enabled role: ' + role)
                 continue
             document.specification['provider'] = self.cluster_model.provider
 
@@ -164,7 +163,7 @@ class AnsibleVarsGenerator(Step):
 
         # Fallback if there is completely no trace of the shared-config doc
         if shared_config_doc is None:
-            shared_config_doc = load_schema_obj(types.DEFAULT, 'common', 'configuration/shared-config')
+            shared_config_doc = load_schema_obj(schema_types.DEFAULT, 'common', 'configuration/shared-config')
 
         self.set_vault_path(shared_config_doc)
         main_vars.update(shared_config_doc.specification)

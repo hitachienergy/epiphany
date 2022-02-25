@@ -7,10 +7,11 @@ from cli.src.helpers.build_io import (copy_file, copy_files_recursively,
                                       get_ansible_config_file_path_for_build,
                                       get_inventory_path_for_build,
                                       load_manifest)
-from cli.src.helpers.data_loader import load_schema_obj, load_yamls_file
-from cli.src.helpers.data_loader import types as data_types
+from cli.src.helpers.data_loader import (ANSIBLE_PLAYBOOK_PATH,
+                                         load_schema_obj, load_yamls_file,
+                                         schema_types)
 from cli.src.helpers.doc_list_helpers import (ExpectedSingleResultException,
-                                              select_single)
+                                              select_single, select_all)
 from cli.src.helpers.yaml_helpers import dump
 from cli.src.schema.DefaultMerger import DefaultMerger
 from cli.src.schema.SchemaValidator import SchemaValidator
@@ -48,8 +49,11 @@ class BackupRecoveryBase(Step):
         self.manifest_docs = load_manifest(self.build_directory)
         self.cluster_model = select_single(self.manifest_docs, lambda x: x.kind == 'epiphany-cluster')
 
-        # Load backup / recovery configuration documents
-        self.input_docs = load_yamls_file(self.file)
+        # Load only backup / recovery configuration documents
+        loaded_docs = load_yamls_file(self.file)
+        self.input_docs = select_all(loaded_docs, lambda x: x.kind in ['configuration/backup', 'configuration/recovery'])
+        if len(self.input_docs) < 1:
+            raise Exception('No documents for backup or recovery in input file.')
 
         # Validate input documents
         with SchemaValidator(self.cluster_model.provider, self.input_docs) as schema_validator:
@@ -73,7 +77,7 @@ class BackupRecoveryBase(Step):
                 document = select_single(self.configuration_docs, lambda x: x.kind == kind)
             except ExpectedSingleResultException:
                 # If there is no document provided by the user, then fallback to defaults
-                document = load_schema_obj(data_types.DEFAULT, 'common', kind)
+                document = load_schema_obj(schema_types.DEFAULT, 'common', kind)
                 # Inject the required "version" attribute
                 document['version'] = VERSION
                 # Copy the "provider" value from the cluster model
@@ -91,7 +95,7 @@ class BackupRecoveryBase(Step):
 
         # Copy role files
         roles_build_path = os.path.join(self.build_directory, 'ansible/roles', action)
-        roles_source_path = os.path.join(AnsibleRunner.ANSIBLE_PLAYBOOKS_PATH, 'roles', action)
+        roles_source_path = os.path.join(ANSIBLE_PLAYBOOK_PATH, 'roles', action)
         copy_files_recursively(roles_source_path, roles_build_path)
 
         # Render role vars
@@ -108,7 +112,7 @@ class BackupRecoveryBase(Step):
 
         # Copy playbook file
         playbook_build_path = os.path.join(self.build_directory, 'ansible', f'{action}_{component}.yml')
-        playbook_source_path = os.path.join(AnsibleRunner.ANSIBLE_PLAYBOOKS_PATH, f'{action}_{component}.yml')
+        playbook_source_path = os.path.join(ANSIBLE_PLAYBOOK_PATH, f'{action}_{component}.yml')
         copy_file(playbook_source_path, playbook_build_path)
 
         # Run the playbook

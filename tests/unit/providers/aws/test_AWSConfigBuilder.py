@@ -1,5 +1,6 @@
-from cli.src.providers.aws.InfrastructureBuilder import InfrastructureBuilder
 from cli.src.helpers.objdict_helpers import dict_to_objdict
+from cli.src.providers.aws.InfrastructureBuilder import InfrastructureBuilder
+
 
 def test_get_resource_group_should_set_proper_values_to_model():
     cluster_model = get_cluster_model(cluster_name='TestCluster', address_pool='10.20.0.0/22')
