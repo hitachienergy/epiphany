@@ -70,13 +70,13 @@
 - name: Ensure all OPSD and filebeat instances are stopped, then restore the snapshot
 
   block:
-    - name: Stop all OPS Dashboards instances
+    - name: Stop allOpenSearch Dashboards instances
       delegate_to: "{{ item }}"
       systemd:
         name: opensearch-dashboards
         state: stopped
         enabled: false
-      loop: "{{ groups.kibana | default([]) }}"
+      loop: "{{ groups.opensearch_dashboards | default([]) }}"
 
     - name: Stop all filebeat instances
       delegate_to: "{{ item }}"
@@ -105,13 +105,13 @@
         method: POST
 
   always:
-    - name: Start all OPS Dashboards instances
+    - name: Start allOpenSearch Dashboards instances
       delegate_to: "{{ item }}"
       systemd:
         name: opensearch-dashboards
         state: started
         enabled: true
-      loop: "{{ groups.kibana | default([]) }}"
+      loop: "{{ groups.opensearch_dashboards | default([]) }}"
 
     - name: Start all filebeat instances
       delegate_to: "{{ item }}"
