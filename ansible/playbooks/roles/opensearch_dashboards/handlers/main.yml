@@ -1,3 +1,6 @@
 ---
 - name: restart dashboards
-  systemd: name=dashboards state=restarted enabled=yes
+  systemd:
+   name: dashboards
+   state: restarted
+   enabled: yes
