@@ -15,7 +15,7 @@
 - name: Get all the installed dashboards plugins
   command: "{{ specification.paths.opsd_plugin_bin_path }} list"
   become: true
-  become_user: "{{ specification.opsd_user }}"
+  become_user: "{{ specification.dashboards_user }}"
   register: list_plugins
 
 - name: Show all the installed dashboards plugins
