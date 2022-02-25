@@ -6,7 +6,7 @@
 - name: Include dashboards installation
   include_tasks: dashboards.yml
 
-- name: Make sure OpenSearch Ddashboards is started
+- name: Make sure OpenSearch Dashboards is started
   service:
     name: dashboards
     state: started
