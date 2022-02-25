@@ -57,5 +57,5 @@
 
 - name: Create opensearch.service unit file
   template:
-    src: opensearch.service.j2
+    src: roles/opensearch/templates/opensearch.service.j2
     dest: "/etc/systemd/system/opensearch.service"
