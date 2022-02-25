@@ -2,8 +2,9 @@
 - name: Install RedHat family packages for repository to work
   yum:
     name:
-      - python3  # python3.6 by default on RHEL7
+      - python36
       - python3-pip
+      - rsync
     state: present
   register: result
   retries: 3
