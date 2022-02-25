@@ -86,7 +86,7 @@
     enabled: yes
 
 - name: Kibana migr | Get all the installed dashboards plugins
-  command: "{{ specification.opsd_user }} {{ specification.paths.opsd_plugin_bin_path }} list"
+  command: "{{ specification.paths.opsd_plugin_bin_path }} list"
   become: true
   register: list_plugins
 
