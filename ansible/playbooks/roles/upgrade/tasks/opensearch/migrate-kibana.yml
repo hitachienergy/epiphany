@@ -74,10 +74,10 @@
   - { 1: 'telemetry.optIn', 2: '#telemetry.optIn' }
   - { 1: 'telemetry.enabled', 2: '#telemetry.enabled' }
 
-- name: Kibana migr | Create OPSD systemd service
+- name: Kibana migr | Create OpenSearch Dashboards service
   template:
-    src: roles/opensearch_dashboards/templates/dashboards.service
-    dest: /etc/systemd/system/dashboards.service
+    src: roles/opensearch_dashboards/templates/opensearch-dashboards.service.j2
+    dest: /etc/systemd/system/opensearch-dashboards.service
 
 - name: Kibana migr | Assure Opensearch Dashboards service is started
   service:
@@ -88,6 +88,7 @@
 - name: Kibana migr | Get all the installed dashboards plugins
   command: "{{ specification.paths.opsd_plugin_bin_path }} list"
   become: true
+  become_user: "{{ specification.opsd_user }}"
   register: list_plugins
 
 - name: Kibana migr | Show all the installed dashboards plugins
