@@ -12,8 +12,8 @@
 - name: Populate the nodes to /etc/hosts
   import_tasks: etchosts.yml
 
-- name: include dashboards installation
-  include: dashboards.yml
+- name: Include dashboards installation
+  include_tasks: dashboards.yml
 
 - name: Make sure OpenSearch Ddashboards is started
   service:
