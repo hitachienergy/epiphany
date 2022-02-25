@@ -79,7 +79,7 @@ class Repoquery(Command):
             elif 'error' in output:
                 raise CriticalError(f'repoquery failed for package `{package}`, reason: `{output}`, command: `{self.command()}`')
 
-        return self.__query(package, queryformat, arch, False, False, output_handler)
+        return self.__query(package, queryformat, arch, False, False, True, output_handler)
 
     def get_dependencies(self, package: str, queryformat: str, arch: str) -> List[str]:
         """
@@ -98,4 +98,4 @@ class Repoquery(Command):
             if 'error' in output:
                 raise CriticalError(f'repoquery failed for package `{package}`, reason: `{output}`, command: `{self.command()}`')
 
-        return self.__query(package, queryformat, arch, True, True, output_handler)
+        return self.__query(package, queryformat, arch, True, True, True, output_handler)
