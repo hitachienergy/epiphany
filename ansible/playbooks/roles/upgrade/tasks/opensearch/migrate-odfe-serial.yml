@@ -61,7 +61,7 @@
     replace: "{{ item.2 }}"
   with_items:
   - { 1: 'elasticsearch', 2: 'opensearch' }
-  - { 1: '\${ES_TMPDIR}', 2: '/tmp' }
+  - { 1: '\${ES_TMPDIR}', 2: '${OPENSEARCH_TMPDIR}' }
 
 - name: ODFE migr | Clone main configuration file
   copy:
