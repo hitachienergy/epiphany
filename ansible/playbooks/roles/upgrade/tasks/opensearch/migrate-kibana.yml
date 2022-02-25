@@ -81,7 +81,7 @@
 
 - name: Kibana migr | Assure Opensearch Dashboards service is started
   service:
-    name: dashboards
+    name: opensearch-dashboards
     state: started
     enabled: yes
 

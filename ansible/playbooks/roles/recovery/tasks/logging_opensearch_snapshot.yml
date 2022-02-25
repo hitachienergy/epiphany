@@ -73,7 +73,7 @@
     - name: Stop all OPS Dashboards instances
       delegate_to: "{{ item }}"
       systemd:
-        name: dashboards
+        name: opensearch-dashboards
         state: stopped
         enabled: false
       loop: "{{ groups.kibana | default([]) }}"
@@ -108,7 +108,7 @@
     - name: Start all OPS Dashboards instances
       delegate_to: "{{ item }}"
       systemd:
-        name: dashboards
+        name: opensearch-dashboards
         state: started
         enabled: true
       loop: "{{ groups.kibana | default([]) }}"

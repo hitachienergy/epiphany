@@ -8,7 +8,7 @@
 
 - name: Make sure OpenSearch Dashboards is started
   service:
-    name: dashboards
+    name: opensearch-dashboards
     state: started
     enabled: yes
 

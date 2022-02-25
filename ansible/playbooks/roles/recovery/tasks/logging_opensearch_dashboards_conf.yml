@@ -22,7 +22,7 @@
 
 - name: Stop OPSD service
   systemd:
-    name: dashboards
+    name: opensearch-dashboards
     state: stopped
 
 - name: Clear directories
@@ -39,5 +39,5 @@
 
 - name: Start OPSD service
   systemd:
-    name: dashboards
+    name: opensearch-dashboards
     state: started

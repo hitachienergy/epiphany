@@ -1,6 +1,6 @@
 ---
 - name: Restart dashboards
   systemd:
-   name: dashboards
+   name: opensearch-dashboards
    state: restarted
    enabled: yes

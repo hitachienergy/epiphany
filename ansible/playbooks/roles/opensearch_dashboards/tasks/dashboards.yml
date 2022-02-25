@@ -40,7 +40,7 @@
     mode: 0644
     backup: yes
 
-- name: Create systemd service
+- name: Create opensearch-dashboards.service unit file
   template:
-    src: dashboards.service
-    dest: /etc/systemd/system/dashboards.service
+    src: opensearch-dashboards.service.j2
+    dest: /etc/systemd/system/opensearch-dashboards.service
