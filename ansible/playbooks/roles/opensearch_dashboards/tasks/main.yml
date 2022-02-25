@@ -9,9 +9,6 @@
     state: disabled
   when: (ansible_distribution != "Ubuntu") and (ansible_distribution != "Amazon")
 
-- name: Populate the nodes to /etc/hosts
-  import_tasks: etchosts.yml
-
 - name: Include dashboards installation
   include_tasks: dashboards.yml
 
