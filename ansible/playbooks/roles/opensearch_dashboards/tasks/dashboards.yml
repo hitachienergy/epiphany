@@ -22,7 +22,7 @@
     owner: "{{ specification.opsd_user }}"
     group: "{{ specification.opsd_user }}"
 
-- name: Extract the OPSD tar file
+- name: Extract OpenSearch Dashboards tar file
   unarchive:
     src: "/tmp/opensearch-dashboards-{{ opsd_version }}"
     dest: "{{ specification.paths.opsd_home }}"
