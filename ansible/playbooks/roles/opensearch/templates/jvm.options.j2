@@ -51,9 +51,7 @@
 14-:-XX:InitiatingHeapOccupancyPercent=30
 
 ## JVM temporary directory
-# Workaround for: opensearch[38222]: ERROR: Temporary file directory [${ES_TMPDIR}] does not exist or is not accessible
-# -Djava.io.tmpdir=${ES_TMPDIR}
--Djava.io.tmpdir=/tmp
+-Djava.io.tmpdir=${OPENSEARCH_TMPDIR}
 
 ## heap dumps
 
