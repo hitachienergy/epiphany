@@ -1,6 +1,6 @@
 ---
 supported_oses:
-  - name: CentOS
+  - name: AlmaLinux
     version:
       min: 8.5
       max: 8.9
