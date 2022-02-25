@@ -104,7 +104,7 @@ packages:
     - 'wget'
     - 'xorg-x11-font-utils'  # for grafana
     - 'xorg-x11-server-utils'  # for grafana
-    - 'yum-plugin-versionlock'
+    - 'python3-dnf-plugin-versionlock'
     - 'yum-utils'
 
     # to make remote-to-remote "synchronize" work in ansible
