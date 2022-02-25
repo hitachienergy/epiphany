@@ -8,7 +8,7 @@
       assert:
         that: select_distro | count > 0
         fail_msg: >-
-          Your OS distribution doesn't meet requirements.
+          Your OS distribution '{{ ansible_distribution }}' doesn't meet requirements.
           One of the following is required: {{ supported_oses | map(attribute='name') | join(', ') }}
         success_msg: OS distribution check passed
 
