@@ -31,7 +31,7 @@
     extra_opts:
     - --strip-components=1
 
-- name: Copy Configuration File
+- name: Copy configuration file
   template:
     src: opensearch_dashboards.yml.j2
     dest: "{{ specification.paths.opsd_conf_dir }}/opensearch_dashboards.yml"

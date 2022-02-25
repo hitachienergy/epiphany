@@ -1,5 +1,5 @@
 ---
-- name: restart dashboards
+- name: Restart dashboards
   systemd:
    name: dashboards
    state: restarted
