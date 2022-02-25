@@ -3,12 +3,6 @@
 - hostname:
     name: "{{ inventory_hostname }}"
 
-# Disabling for Amazon Linux 2 as selinux is disabled by default.
-- name: Disable the selinux
-  selinux:
-    state: disabled
-  when: (ansible_distribution != "Ubuntu") and (ansible_distribution != "Amazon")
-
 - name: Include dashboards installation
   include_tasks: dashboards.yml
 
@@ -19,7 +13,8 @@
     enabled: yes
 
 - name: Get all the installed dashboards plugins
-  command: "sudo -u {{ specification.opsd_user }} {{ specification.paths.opsd_plugin_bin_path }} list"
+  command: "{{ specification.opsd_user }} {{ specification.paths.opsd_plugin_bin_path }} list"
+  become: true
   register: list_plugins
 
 - name: Show all the installed dashboards plugins
