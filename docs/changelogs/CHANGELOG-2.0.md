@@ -16,6 +16,7 @@
 - [#805](https://github.com/epiphany-platform/epiphany/issues/805) - Refactor download-requirements script
 - [#2858](https://github.com/epiphany-platform/epiphany/issues/2858) - Make Ruby spec tests code compliant with rubocop lint rules
 - [#2975](https://github.com/epiphany-platform/epiphany/issues/2975) - Copy only required files
+- [#2991](https://github.com/epiphany-platform/epiphany/issues/2991) - Add automatic backup creation for download requirements
 
 ### Fixed
 

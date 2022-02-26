@@ -27,6 +27,8 @@ class OSArch(Enum):
 
 class Config:
     def __init__(self, argv: List[str]):
+        self.dest_backup_created: Path
+        self.dest_backup_loaded: Path
         self.dest_crane_symlink: Path = None
         self.dest_dir: Path
         self.dest_files: Path
@@ -42,7 +44,6 @@ class Config:
         self.pip_installed: bool = False
         self.poyo_installed: bool = False
         self.repo_path: Path
-        self.repos_backup_file: Path
         self.reqs_path: Path
         self.rerun: bool
         self.retries: int
@@ -73,7 +74,7 @@ class Config:
 
         lines.append(f'Enable repos backup: {"Yes" if self.enable_backup else "No"}')
         if self.enable_backup:
-            lines.append(f'Repos backup file: {str(self.repos_backup_file)}')
+            lines.append(f'Repos backup file: {str(self.dest_backup_loaded)}')
 
         if self.is_log_file_enabled:
             lines.append(f'Log file location: {str(self.log_file.absolute())}')
@@ -109,7 +110,7 @@ class Config:
                             default=Path('./download-requirements.log'),
                             help='logs will be saved to this file')
         parser.add_argument('--log-level', metavar='LOG_LEVEL', type=str, action='store', dest='log_level',
-                            default='info', help='set up log level, available levels: (error|warn|info|debug`)')
+                            default='info', help='set up log level, available levels: (error|warn|info|debug)')
         parser.add_argument('--no-logfile', action='store_true', dest='no_logfile',
                             help='no logfile will be created')
 
@@ -192,6 +193,7 @@ class Config:
         self.script_path = Path(argv[0]).absolute().parents[0]
         self.repo_path = self.script_path / 'repositories'
         self.reqs_path = self.script_path / 'requirements'
+        self.dest_backup_created = self.script_path / 'enabled-system-repos.tar'
 
         args = self.__create_parser().parse_args(argv[1:]).__dict__
 
@@ -209,7 +211,7 @@ class Config:
         # add optional arguments
         self.enable_backup = args['enable_backup']
         self.os_arch = OSArch(os.uname().machine)
-        self.repos_backup_file = Path(args['repos_backup_file'])
+        self.dest_backup_loaded = Path(args['repos_backup_file'])
         self.retries = args['retries']
         self.is_log_file_enabled = False if args['no_logfile'] else True
 

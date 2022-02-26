@@ -19,12 +19,22 @@ class RedHatFamilyMode(BaseMode):
         self.__base_packages: List[str] = ['yum-utils', 'wget', 'curl', 'tar']
         self.__installed_packages: List[str] = []
 
+    def _create_backup_repositories(self):
+        if self._cfg.enable_backup and not self._cfg.dest_backup_created.exists():
+            logging.debug('Creating backup for system repositories...')
+            self._tools.tar.pack(self._cfg.dest_backup_created,
+                                 [Path('/etc/yum.repos.d/')],
+                                 verbose=True,
+                                 directory=Path('/'),
+                                 verify=True)
+            logging.debug('Done.')
+
     def _use_backup_repositories(self):
         sources = Path('/etc/yum.repos.d/epirepo.repo')
         if sources.exists() and sources.stat().st_size:
-            if self._cfg.repos_backup_file.exists() and self._cfg.enable_backup:
+            if self._cfg.dest_backup_loaded.exists() and self._cfg.enable_backup:
                 logging.warn('OS repositories seems missing, restoring...')
-                self._tools.tar.unpack(filename=self._cfg.repos_backup_file,
+                self._tools.tar.unpack(filename=self._cfg.dest_backup_loaded,
                                        directory=Path('/'),
                                        absolute_names=True,
                                        uncompress=False,
@@ -48,9 +58,6 @@ class RedHatFamilyMode(BaseMode):
                 self.__installed_packages.append(package)
 
     def __enable_repos(self, repo_id_patterns: List[str]):
-        """
-        :param repo_id_patterns:
-        """
         for repo in self._tools.yum.find_rhel_repo_id(repo_id_patterns):
             if not self._tools.yum.is_repo_enabled(repo):
                 self._tools.yum_config_manager.enable_repo(repo)
