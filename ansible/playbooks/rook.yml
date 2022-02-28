@@ -1,0 +1,12 @@
+---
+- hosts: repository
+  gather_facts: true
+  tasks: []
+
+- hosts: kubernetes_master
+  become: true
+  become_method: sudo
+  roles:
+    - rook
+  environment:
+    KUBECONFIG: "{{ kubeconfig.remote }}"
