@@ -1,0 +1,7 @@
+"$id": "#/specification"
+title: "Rook specification schema"
+description: "Rook specification schema"
+type: object
+properties:
+  enabled:
+    type: boolean

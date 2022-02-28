@@ -1,0 +1,6 @@
+---
+kind: configuration/rook
+title: "Kubernetes Rook Config"
+name: default
+specification:
+    enabled: false
