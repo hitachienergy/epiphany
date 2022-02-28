@@ -1,0 +1,52 @@
+---
+- name: Copy files for downloading requirements to repository host
+  block:
+    - name: Set facts for download requirements dirs and files
+      set_fact:
+        _dirs:
+          - "{{ _repo_arch_dir }}/"
+          - "{{ _reqs_distro_dir }}/"
+          - "src/"
+
+        _files:
+          - "{{ _repo_file }}"
+          - "{{ _req_files['cranes'] }}"
+          - "{{ _req_files['files'] }}"
+          - "{{ _req_files['grafana_dashboards'] }}"
+          - "{{ _req_files['images'] }}"
+          - "{{ _req_files['package_files'] }}"
+          - "{{ _req_files['repo_files'] }}"
+          - "download-requirements.py"
+          - "src/"
+
+      vars:
+        # general paths:
+        _reqs_dir: "requirements"
+        _reqs_arch_dir: "{{ _reqs_dir }}/{{ _arch_type }}"
+        _reqs_distro_dir: "{{ _reqs_arch_dir }}/{{ _os_type }}"
+
+        _repo_dir: "repositories"
+        _repo_arch_dir: "{{ _repo_dir }}/{{ _arch_type }}"
+
+        # file paths:
+        _req_files:
+          cranes: "{{ _reqs_arch_dir }}/cranes.yml"
+          files: "{{ _reqs_arch_dir }}/files.yml"
+          grafana_dashboards: "{{ _reqs_dir }}/grafana-dashboards.yml"
+          images: "{{ _reqs_arch_dir }}/images.yml"
+          package_files: "{{ _reqs_distro_dir }}/packages.yml"
+          repo_files: "{{ _reqs_distro_dir }}/files.yml"
+
+        _repo_file: "{{ _repo_arch_dir }}/{{ _os_type }}.yml"
+
+    - name: Create dirs on the remote
+      file:
+        path: "{{ download_requirements_dir }}/{{ item }}"
+        state: directory
+      loop: "{{ _dirs }}"
+
+    - name: Copy download requirements files to the remote
+      synchronize:
+        src: "download-requirements/{{ item }}"
+        dest: "{{ download_requirements_dir }}/{{ item }}"
+      loop: "{{ _files }}"
