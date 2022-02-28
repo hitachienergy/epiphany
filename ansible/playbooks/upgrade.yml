@@ -138,65 +138,30 @@
 
 # === logging ===
 
-# Some pre-upgrade tasks can be run in parallel (what saves time) while others must be run in serial (to support rolling upgrades).
-# Such a separation in Ansible can be applied only at play level thus we have two plays below.
-
-# play 1/2: pre-upgrade parallel tasks
 - hosts: logging
   become: true
   become_method: sudo
   tasks:
     - include_role:
         name: upgrade
-        tasks_from: opensearch-01
-      when: "'logging' in upgrade_components or upgrade_components|length == 0"
-  vars:
-    current_group_name: logging
-
-# play 2/2: serial tasks
-- hosts: logging
-  become: true
-  become_method: sudo
-  gather_facts: false  # gathered by previous play
-  serial: 1
-  tasks:
-    - include_role:
-        name: upgrade
-        tasks_from: opensearch-02
+        tasks_from: opensearch
       when: "'logging' in upgrade_components or upgrade_components|length == 0"
   vars:
     current_group_name: logging
 
 # === opensearch ===
 
-# Some pre-upgrade tasks can be run in parallel (what saves time) while others must be run in serial (to support rolling upgrades).
-# Such a separation in Ansible can be applied only at play level thus we have two plays below.
-
-# play 1/2: parallel tasks
 - hosts: opensearch
   become: true
   become_method: sudo
   tasks:
     - include_role:
         name: upgrade
-        tasks_from: opensearch-01
+        tasks_from: opensearc
       when: "'opensearch' in upgrade_components or upgrade_components|length == 0"
   vars:
     current_group_name: opensearch
 
-# play 2/2: serial tasks
-- hosts: opensearch
-  become: true
-  become_method: sudo
-  gather_facts: false  # gathered by previous play
-  serial: 1
-  tasks:
-    - include_role:
-        name: upgrade
-        tasks_from: opensearch-02
-      when: "'opensearch' in upgrade_components or upgrade_components|length == 0"
-  vars:
-    current_group_name: opensearch
 
 - hosts: grafana
   become: true
