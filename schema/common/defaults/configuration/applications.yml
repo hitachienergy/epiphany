@@ -24,7 +24,7 @@ specification:
       #amqp_port: 5672 #optional - default 5672
       plugins: # optional list of RabbitMQ plugins
         - rabbitmq_management
-        - rabbitmq_management_agent
+        - rabbitmq_peer_discovery_k8s
       policies: # optional list of RabbitMQ policies
         - name: ha-policy2
           pattern: ".*"

@@ -9,6 +9,7 @@
 - [#2812](https://github.com/epiphany-platform/epiphany/issues/2812) - Extend K8s config validation
 - [#2950](https://github.com/epiphany-platform/epiphany/issues/2950) - CLI refactor to make it more consistant
 - [#2844](https://github.com/epiphany-platform/epiphany/issues/2844) - Refactor K8s upgrade task in order to simplify its flow
+- [#2985](https://github.com/epiphany-platform/epiphany/issues/2985) - Make RabbitMQ Plugins configurable
 - [#2974](https://github.com/epiphany-platform/epiphany/issues/2974) - Refactor Apply command
 - [#2976](https://github.com/epiphany-platform/epiphany/issues/2976) - Allow for custom Terraform scripts
 - [#2716](https://github.com/epiphany-platform/epiphany/issues/2716) - Change container runtime to containerd
@@ -28,6 +29,7 @@
 - [#2940](https://github.com/epiphany-platform/epiphany/issues/2940) - firewalld.service unit could not be found on host however ansible_facts sees it as defined
 - [#2979](https://github.com/epiphany-platform/epiphany/issues/2979) - Restore the possibility of choosing the availability zone in AWS
 - [#2984](https://github.com/epiphany-platform/epiphany/issues/2984) - Validation blocks overwriting of destination_address_prefix in NSG rules, which is 0.0.0.0/0 by default
+- [#2966](https://github.com/epiphany-platform/epiphany/issues/2966) - `epicli init --full` does not generate configuration for OpenDistro
 - [#2942](https://github.com/epiphany-platform/epiphany/issues/2942) - rsync command fails trying to copy artifacts
 - [#2930](https://github.com/epiphany-platform/epiphany/issues/2930) - Backup/recovery commands fail when default configuration for backup attached to cluster-config.yml
 
