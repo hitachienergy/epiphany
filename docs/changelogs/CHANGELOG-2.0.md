@@ -21,6 +21,8 @@
 - [#2821](https://github.com/epiphany-platform/epiphany/issues/2821) - Node Exporter preflight checks
 - [#2888](https://github.com/epiphany-platform/epiphany/issues/2888) - Define additional disks with defined sizes to VMs for Azure
 - [#2812](https://github.com/epiphany-platform/epiphany/issues/2812) - Extend K8s config validation
+- [#2890](https://github.com/epiphany-platform/epiphany/issues/2890) - Rook/Ceph Kubernetes Native Storage for Azure Kubernetes non-AKS cluster
+- [#1452](https://github.com/epiphany-platform/epiphany/issues/1452) - Create Kubernetes Native Storage Epiphany configuration for Azure provider
 
 ### Fixed
 
