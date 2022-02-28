@@ -90,6 +90,25 @@ specification:
 
 #### Create disks for Rook/Ceph Cluster Storage - AWS
 
+To define additional empty disk resources for Rook/Ceph Cluster Storage on AWS, use `specification.disks.additional_disks`:
+```yaml
+---
+kind: infrastructure/virtual-machine
+title: Virtual Machine Infra
+provider: aws
+name: kubernetes-node-machine
+specification:
+  size: t3.medium
+  authorized_to_efs: true
+  mount_efs: true
+  disks:
+    additional_disks:
+      - volume_type: gp2
+        volume_size: 64
+        delete_on_termination: false
+        encrypted: true
+```
+
 #### Create disks for Rook/Ceph Cluster Storage - On Prem
 
 ### Azure
