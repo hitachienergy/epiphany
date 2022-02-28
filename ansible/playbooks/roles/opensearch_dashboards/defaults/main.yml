@@ -1,11 +1,4 @@
 ---
-opensearch_nodes: |-
-        {% for item in groups['ops-cluster'] -%}
-          {{ hostvars[item]['ip'] }}{% if not loop.last %}","{% endif %}
-        {%- endfor %}
-
-populate_inventory_to_hosts_file: true
-
 opensearch_api_port: 9200
 opensearch_nodes_dashboards: |-
         {% for item in groups['opensearch_dashboards'] -%}
