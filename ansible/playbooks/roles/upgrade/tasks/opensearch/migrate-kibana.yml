@@ -93,3 +93,9 @@
 - name: Kibana migr | Show all the installed dashboards plugins
   debug:
     msg: "{{ list_plugins.stdout }}"
+
+- name: Kibana migr | Prevent Filebeat API access problem  # Workaround for https://github.com/opensearch-project/OpenSearch-Dashboards/issues/656
+  replace:
+    path: /etc/filebeat/filebeat.yml
+    regexp: 'setup.dashboards.enabled: true'
+    replace: 'setup.dashboards.enabled: false'
