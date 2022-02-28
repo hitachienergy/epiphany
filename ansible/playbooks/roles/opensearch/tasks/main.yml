@@ -14,7 +14,7 @@
     - { limit_type: 'hard', limit_item: 'memlock', value: unlimited }
 
 - name: Tune the system settings
-  import_tasks: configure-sysctl.yml
+  include_tasks: configure-sysctl.yml
 
 - include_tasks: install-opensearch.yml
 
