@@ -38,3 +38,9 @@ files:
 
   'https://helm.elastic.co/helm/filebeat/filebeat-7.9.2.tgz':
     sha256: 5140b4c4473ca33a0af4c3f70545dcc89735c0a179d974ebc150f1f28ac229ab
+
+  'https://charts.rook.io/release/rook-ceph-v1.8.5.tgz':
+    sha256: 11a425c16a8513e9cf7a2d6de396ea6e5166a03a63a8bf883d4f2098ab35b268
+
+  'https://charts.rook.io/release/rook-ceph-cluster-v1.8.5.tgz':
+    sha256: 58695a740845091c10426266e7b345fe6185ee5a3b86f1f2d6e52a55af8503c1
