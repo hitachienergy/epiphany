@@ -156,3 +156,28 @@ images:
 
   'calico/pod2daemon-flexvol:v3.20.3':
     sha1: 97c1b7ac90aa5a0f5c52e7f137549e598ff80f3e
+
+  # --- Rook ---
+  'k8s.gcr.io/sig-storage/csi-attacher:v3.4.0':
+    sha1: 8567876a11c527e9d406d3f3efa09e3cee437985
+
+  'k8s.gcr.io/sig-storage/csi-node-driver-registrar:v2.5.0':
+    sha1: 07104d23bbb224f81ef6b8fd379b01a7cbba0946
+
+  'k8s.gcr.io/sig-storage/csi-provisioner:v3.1.0':
+    sha1: 55c9d55eb0f2cbe9e37e5464e578b2d7fa45f8f8
+
+  'k8s.gcr.io/sig-storage/csi-resizer:v1.4.0':
+    sha1: 289bafda08f126423dcf7ad78f08a5d8ed57a82e
+
+  'k8s.gcr.io/sig-storage/csi-snapshotter:v5.0.1':
+    sha1: 8deb564fde820c7f795d8b425f867d4194edd088
+
+  'quay.io/ceph/ceph:v16.2.7':
+    sha1: 039717f406243b516fead5c36d2d5698c458bf21
+
+  'quay.io/cephcsi/cephcsi:v3.5.1':
+    sha1: 2f89fc81c6665f4daf9df2edf3fbb45caa45891c
+
+  'rook/ceph:v1.8.5':
+    sha1: 96b3efbc626deec6c1db31e43d8d8d6fe8186174
