@@ -35,16 +35,12 @@
 - [#2966](https://github.com/epiphany-platform/epiphany/issues/2966) - `epicli init --full` does not generate configuration for OpenDistro
 - [#2942](https://github.com/epiphany-platform/epiphany/issues/2942) - rsync command fails trying to copy artifacts
 - [#2930](https://github.com/epiphany-platform/epiphany/issues/2930) - Backup/recovery commands fail when default configuration for backup attached to cluster-config.yml
-<<<<<<< HEAD
 - [#2989](https://github.com/epiphany-platform/epiphany/issues/2989) - Task `Remove swap from /etc/fstab` does not remove swap entry from file
-<<<<<<< HEAD
 - [#2907](https://github.com/epiphany-platform/epiphany/issues/2907) - Backup/recovery commands fail when executed directly after upgrade
-<<<<<<< HEAD
 - [#3025](https://github.com/epiphany-platform/epiphany/issues/3025) - Running yum commands may hang waiting for user input
 - [#2728](https://github.com/epiphany-platform/epiphany/issues/2728) - PostgreSQL's configuration files located outside the data directory are not copied by repmgr
 - [#3029](https://github.com/epiphany-platform/epiphany/issues/3029) - [RHEL] Single machine upgrade fails on preflight check: 'dict object' has no attribute 'size_available'
 - [#2803](https://github.com/epiphany-platform/epiphany/issues/2803) - Refactor: rename 'kafka_var' setting
-
 
 ### Updated
 
