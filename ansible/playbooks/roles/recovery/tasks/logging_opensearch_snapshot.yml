@@ -105,7 +105,7 @@
         method: POST
 
   always:
-    - name: Start allOpenSearch Dashboards instances
+    - name: Start all OpenSearch Dashboards instances
       delegate_to: "{{ item }}"
       systemd:
         name: opensearch-dashboards
