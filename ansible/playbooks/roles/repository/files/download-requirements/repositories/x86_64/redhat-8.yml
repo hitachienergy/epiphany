@@ -66,6 +66,7 @@ repositories:
       baseurl=https://download.postgresql.org/pub/repos/yum/13/redhat/rhel-$releasever-$basearch
       enabled=1
       gpgcheck=1
+      module_hotfixes=true
     gpg_keys:
       - https://download.postgresql.org/pub/repos/yum/RPM-GPG-KEY-PGDG
 
