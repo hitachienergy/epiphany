@@ -105,7 +105,15 @@ specification:
         delete_on_termination: false
         encrypted: true
 ```
-More information about AWS block devices: [ebs_block_device](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/instance#ebs_block_device)
+Currently Epiphany support the following parameters for `additional_disks` specification: 
+- device_name
+- volume_type
+- volume_size
+- encrypted
+- delete_on_termination
+- tags
+
+More information about AWS block devices and its parameters: [ebs_block_device](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/instance#ebs_block_device)
 
 
 #### Create disks for Rook/Ceph Cluster Storage - On Prem
