@@ -1,17 +1,17 @@
 ---
 # Sets facts on existing configuration
 
-- name: OPS | Load /etc/elasticsearch/elasticsearch.yml
+- name: OpenSearch | Load /etc/elasticsearch/elasticsearch.yml
   slurp:
     src: /etc/elasticsearch/elasticsearch.yml
   register: _elasticsearch_yml
 
-- name: OPS | Get Xmx value from /etc/elasticsearch/jvm.options
+- name: OpenSearch | Get Xmx value from /etc/elasticsearch/jvm.options
   command: grep -oP '(?<=^-Xmx)\d+[kKmMgG]?' /etc/elasticsearch/jvm.options
   register: _grep_xmx
   changed_when: false
 
-- name: OPS | Set existing configuration facts
+- name: OpenSearch | Set existing configuration facts
   set_fact:
     existing_config:
       main: "{{ _elasticsearch_yml.content | b64decode | from_yaml }}"

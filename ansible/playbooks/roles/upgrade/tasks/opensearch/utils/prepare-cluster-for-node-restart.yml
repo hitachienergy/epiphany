@@ -16,7 +16,7 @@
       body_format: json
   block:
     # It's safe to run this task many times regardless of the state
-    - name: OPS | Disable shard allocation for the cluster
+    - name: OpenSearch | Disable shard allocation for the cluster
       uri:
         url: "{{ es_api.url }}/_cluster/settings"
         method: PUT
@@ -35,7 +35,7 @@
     # In epicli 0.7.x there is ES 7.3.2 but this step is optional.
     - name: Handle flush failure
       block:
-        - name: OPS | Perform a synced flush (optional step)
+        - name: OpenSearch | Perform a synced flush (optional step)
           uri:
             url: "{{ es_api.url }}/_flush"
             method: POST
@@ -46,7 +46,7 @@
           retries: 120
           delay: 1
       rescue:
-        - name: OPS | Print warning
+        - name: OpenSearch | Print warning
           debug:
             msg:
               - "WARNING: flush command failed"

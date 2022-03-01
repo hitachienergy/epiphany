@@ -1,5 +1,5 @@
 ---
-- name: OPS | Assert input parameters
+- name: OpenSearch | Assert input parameters
   assert:
     that:
       - es_api.cert_path is defined
@@ -8,7 +8,7 @@
       - es_api.key_path  is defined
     quiet: true
 
-- name: OPS | Get info on files
+- name: OpenSearch | Get info on files
   stat:
     path: "{{ item }}"
     get_attributes: false
@@ -20,7 +20,7 @@
     - "{{ es_api.key_path }}"
 
 # Specific case for custom certificates (we don't know the paths so they have to be specified manually)
-- name: OPS | Assert files exist
+- name: OpenSearch | Assert files exist
   assert:
     that: stat_result.stat.exists
     fail_msg: "{{ _custom_cert_fail_msg if (es_api.cert_type == 'custom') else _common_fail_msg }}"

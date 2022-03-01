@@ -6,7 +6,7 @@
 # - target_inventory_hostname
 # - hostvars[target_inventory_hostname].es_node_name
 
-- name: OPS | Wait for Elasticsearch node to join the cluster
+- name: OpenSearch | Wait for Elasticsearch node to join the cluster
   uri:
     url: "{{ es_api.url }}/_cat/nodes?h=name"
     method: GET

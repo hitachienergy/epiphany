@@ -1,5 +1,5 @@
 ---
-- name: OPS | Assert input parameters
+- name: OpenSearch | Assert input parameters
   assert:
     that:
       - es_api.cert_path is defined
@@ -13,7 +13,7 @@
 # Sets 'test_api_access'
 - include_tasks: test-api-access.yml
 
-- name: OPS | Assert API access
+- name: OpenSearch | Assert API access
   assert:
     that: test_api_access.status == 200
     fail_msg:

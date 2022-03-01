@@ -1,10 +1,10 @@
 ---
-- name: OPS | Get information about installed packages as facts
+- name: OpenSearch | Get information about installed packages as facts
   package_facts:
     manager: auto
   when: ansible_facts.packages is undefined
 
-- name: OPS | Print ElasticSearch ond OpenSearch versions
+- name: OpenSearch | Print ElasticSearch ond OpenSearch versions
   debug:
     msg:
       - "Elasticsearch version currently installed: {{ ansible_facts.packages['elasticsearch-oss'][0].version }}"
@@ -12,7 +12,7 @@
 
 - name: ODFE migr | Ensure elasticsearch cluster is up and running
   block:
-  - name: OPS | Include vars from opensearch role  # requires epicli upgrade -f <manifest>.yml
+  - name: OpenSearch | Include vars from opensearch role  # requires epicli upgrade -f <manifest>.yml
     include_vars:
       file: roles/opensearch/vars/main.yml
       name: opensearch_vars

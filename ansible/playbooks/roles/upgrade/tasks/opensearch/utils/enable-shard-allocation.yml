@@ -4,7 +4,7 @@
 # - es_api.cert_path
 # - es_api.key_path
 
-- name: OPS | Enable shard allocation for the cluster
+- name: OpenSearch | Enable shard allocation for the cluster
   uri:
     url: "{{ es_api.url }}/_cluster/settings"
     method: PUT

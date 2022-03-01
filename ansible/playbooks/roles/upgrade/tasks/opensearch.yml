@@ -1,35 +1,35 @@
 ---
-- name: OPS | Get information about installed packages as facts
+- name: OpenSearch | Get information about installed packages as facts
   package_facts:
     manager: auto
   when: ansible_facts.packages is undefined
 
-- name: OPS | Assert that elasticsearch-oss package is installed
+- name: OpenSearch | Assert that elasticsearch-oss package is installed
   assert:
     that: ansible_facts.packages['elasticsearch-oss'] is defined
     fail_msg: elasticsearch-oss package not found, nothing to upgrade
     quiet: true
 
-- name: OPS | Include defaults from OpenSearch role
+- name: OpenSearch | Include defaults from OpenSearch role
   include_vars:
     file: roles/opensearch/defaults/main.yml
     name: opensearch_defaults
 
-- name: OPS | Include vars from opensearch role  # requires epicli upgrade -f <manifest>.yml
+- name: OpenSearch | Include vars from opensearch role  # requires epicli upgrade -f <manifest>.yml
   include_vars:
     file: roles/opensearch/vars/main.yml
     name: opensearch_vars
 
-- name: OPS | Set the versions of OpenSearch
+- name: OpenSearch | Set the versions of OpenSearch
   include_tasks: roles/opensearch/tasks/set_facts.yml
 
-- name: OPS | Ensure Opensearch service user exists
+- name: OpenSearch | Ensure Opensearch service user exists
   user:
     name: "{{ opensearch_vars.specification.opensearch_user }}"
     state: present
     shell: /bin/bash
 
-- name: OPS | Ensure directory structure exists
+- name: OpenSearch | Ensure directory structure exists
   file:
     path: "{{ item }}"
     state: directory
@@ -41,14 +41,14 @@
     - "{{ opensearch_vars.specification.paths.opensearch_conf_dir }}"
     - "{{ opensearch_defaults.certificates.dirs.certs }}"
 
-- name: OPS | Print ElasticSearch ond OpenSearch versions
+- name: OpenSearch | Print ElasticSearch ond OpenSearch versions
   debug:
     msg:
       - "Installed version: {{ ansible_facts.packages['elasticsearch-oss'][0].version }}"
       - "Target version: {{ opensearch_ver.split('-')[0] }}"
 
 # If state file exists it means the previous run failed
-- name: OPS | Check if upgrade state file exists
+- name: OpenSearch | Check if upgrade state file exists
   stat:
     path: "{{ opensearch.upgrade_state_file_path }}"
     get_attributes: false

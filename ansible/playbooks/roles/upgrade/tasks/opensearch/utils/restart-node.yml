@@ -10,18 +10,18 @@
 # - daemon_reload
 # - skip_waiting_for_status
 
-- name: OPS | Restart elasticsearch service
+- name: OpenSearch | Restart elasticsearch service
   systemd:
     name: opensearch
     state: restarted
     daemon_reload: "{{ daemon_reload | default(omit) }}"
 
-- name: OPS | Wait for Elasticsearch transport port to become available
+- name: OpenSearch | Wait for Elasticsearch transport port to become available
   wait_for:
     port: "{{ es_transport_port }}"
     host: "{{ hostvars[target_inventory_hostname].es_host }}"
 
-- name: OPS | Wait for Elasticsearch http port to become available
+- name: OpenSearch | Wait for Elasticsearch http port to become available
   wait_for:
     port: "{{ es_http_port }}"
     host: "{{ hostvars[target_inventory_hostname].es_host }}"
