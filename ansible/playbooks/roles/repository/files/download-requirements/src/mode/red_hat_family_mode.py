@@ -32,9 +32,9 @@ class RedHatFamilyMode(BaseMode):
     def _use_backup_repositories(self):
         sources = Path('/etc/yum.repos.d/epirepo.repo')
         if sources.exists() and sources.stat().st_size:
-            if self._cfg.dest_backup_loaded.exists() and self._cfg.enable_backup:
+            if self._cfg.repos_backup_file.exists() and self._cfg.enable_backup:
                 logging.warn('OS repositories seems missing, restoring...')
-                self._tools.tar.unpack(filename=self._cfg.dest_backup_loaded,
+                self._tools.tar.unpack(filename=self._cfg.repos_backup_file,
                                        directory=Path('/'),
                                        absolute_names=True,
                                        uncompress=False,
