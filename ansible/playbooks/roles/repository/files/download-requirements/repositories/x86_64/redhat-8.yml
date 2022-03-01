@@ -1,15 +1,5 @@
 ---
 repositories:
-  docker-ce-stable-patched:
-    data: |
-      [docker-ce-stable-patched]
-      name=Docker CE Stable - patched centos/7/$basearch/stable
-      baseurl=https://download.docker.com/linux/centos/7/$basearch/stable
-      enabled=1
-      gpgcheck=1
-    gpg_keys:
-      - https://download.docker.com/linux/centos/gpg
-
   elastic-6:
     data: |
       [elastic-6]
