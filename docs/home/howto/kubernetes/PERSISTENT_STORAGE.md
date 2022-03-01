@@ -68,9 +68,9 @@ Sample configuration files that can be used in Epiphany `configuration/rook`:
 
 More informations about Rook with Ceph storage may be found in the official Rook [documentation](https://rook.io/docs/rook/v1.8/).
 
-### Create disks for Rook/Ceph Cluster Storage - Azure
+#### Create disks for Rook/Ceph Cluster Storage - Azure
 
-To create Rook/Ceph Cluster Storage on Azure first you need to add empty disk resource to Kubernetes cluster in key `specification.additional_disks`.
+To create Rook/Ceph Cluster Storage on Azure first you need to add empty disk resource to Kubernetes cluster in key `specification.additional_disks`, under `kind: infrastructure/virtual-machine` for configuration of kubernetes node machine:
 
 ```yaml
 ---
@@ -90,7 +90,7 @@ specification:
 
 #### Create disks for Rook/Ceph Cluster Storage - AWS
 
-To define additional empty disk resources for Rook/Ceph Cluster Storage on AWS, use `specification.disks.additional_disks`:
+To define additional empty disk resources for Rook/Ceph Cluster Storage on AWS, use `specification.disks.additional_disks` under `kind: infrastructure/virtual-machine` for configuration of kubernetes node machine:
 ```yaml
 ---
 kind: infrastructure/virtual-machine
@@ -98,9 +98,6 @@ title: Virtual Machine Infra
 provider: aws
 name: kubernetes-node-machine
 specification:
-  size: t3.medium
-  authorized_to_efs: true
-  mount_efs: true
   disks:
     additional_disks:
       - volume_type: gp2
@@ -108,6 +105,8 @@ specification:
         delete_on_termination: false
         encrypted: true
 ```
+More information about AWS block devices: [ebs_block_device](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/instance#ebs_block_device)
+
 
 #### Create disks for Rook/Ceph Cluster Storage - On Prem
 
