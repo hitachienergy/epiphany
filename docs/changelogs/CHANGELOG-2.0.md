@@ -33,6 +33,7 @@
 - [#2942](https://github.com/epiphany-platform/epiphany/issues/2942) - rsync command fails trying to copy artifacts
 - [#2930](https://github.com/epiphany-platform/epiphany/issues/2930) - Backup/recovery commands fail when default configuration for backup attached to cluster-config.yml
 - [#2989](https://github.com/epiphany-platform/epiphany/issues/2989) - Task `Remove swap from /etc/fstab` does not remove swap entry from file
+- [#2907](https://github.com/epiphany-platform/epiphany/issues/2907) - Backup/recovery commands fail when executed directly after upgrade
 
 ### Updated
 
