@@ -37,7 +37,7 @@ class RedHatFamilyMode(BaseMode):
         if self._tools.rpm.is_package_installed('epel-release'):
             self._tools.yum.remove('epel-release')
 
-        self._tools.yum.install('https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm')
+        self._tools.yum.install('https://dl.fedoraproject.org/pub/epel/epel-release-latest-8.noarch.rpm')
         self.__installed_packages.append('epel-release')
 
         self.__remove_yum_cache_for_untracked_repos()
