@@ -88,15 +88,9 @@ class RedHatFamilyMode(BaseMode):
 
             self._tools.yum.accept_keys()
 
-        # Official Docker CE repository, added with https://download.docker.com/linux/centos/docker-ce.repo,
-        # has broken URL (https://download.docker.com/linux/centos/7Server/x86_64/stable) for longer time.
-        # So direct (patched) link is used first if available.
-        if self._tools.yum.is_repo_available('docker-ce-stable-patched'):
-            self._tools.yum_config_manager.disable_repo('docker-ce-stable-patched')
-
-            if not self._tools.yum.is_repo_enabled('docker-ce'):
-                self._tools.yum_config_manager.add_repo('https://download.docker.com/linux/centos/docker-ce.repo')
-                self._tools.yum.accept_keys()
+        if not self._tools.yum.is_repo_enabled('docker-ce'):
+            self._tools.yum_config_manager.add_repo('https://download.docker.com/linux/centos/docker-ce.repo')
+            self._tools.yum.accept_keys()
 
         for repo in ['https://dl.2ndquadrant.com/default/release/get/10/rpm',  # for repmgr
                      'https://dl.2ndquadrant.com/default/release/get/13/rpm']:
