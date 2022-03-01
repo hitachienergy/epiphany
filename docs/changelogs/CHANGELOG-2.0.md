@@ -24,6 +24,8 @@
 - [#2812](https://github.com/epiphany-platform/epiphany/issues/2812) - Extend K8s config validation
 - [#2890](https://github.com/epiphany-platform/epiphany/issues/2890) - Rook/Ceph Kubernetes Native Storage for Azure Kubernetes non-AKS cluster
 - [#1452](https://github.com/epiphany-platform/epiphany/issues/1452) - Create Kubernetes Native Storage Epiphany configuration for Azure provider
+- [#2891](https://github.com/epiphany-platform/epiphany/issues/2891) - Rook/Ceph Kubernetes Native Storage for AWS non-EKS
+- [#2887](https://github.com/epiphany-platform/epiphany/issues/2887) - Create Kubernetes Native Storage Epiphany configuration for AWS provider
 
 ### Fixed
 
