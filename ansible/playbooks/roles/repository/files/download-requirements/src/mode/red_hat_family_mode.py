@@ -20,9 +20,9 @@ class RedHatFamilyMode(BaseMode):
         self.__installed_packages: List[str] = []
 
     def _create_backup_repositories(self):
-        if self._cfg.enable_backup and not self._cfg.dest_backup_created.exists():
+        if self._cfg.enable_backup and not self._cfg.repos_backup_file.exists():
             logging.debug('Creating backup for system repositories...')
-            self._tools.tar.pack(self._cfg.dest_backup_created,
+            self._tools.tar.pack(self._cfg.repos_backup_file,
                                  [Path('/etc/yum.repos.d/')],
                                  verbose=True,
                                  directory=Path('/'),

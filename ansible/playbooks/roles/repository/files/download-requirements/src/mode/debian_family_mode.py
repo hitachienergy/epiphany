@@ -23,9 +23,9 @@ class DebianFamilyMode(BaseMode):
             self._repositories[repo]['path'] = Path('/etc/apt/sources.list.d') / f'{repo}.list'
 
     def _create_backup_repositories(self):
-        if self._cfg.enable_backup and not self._cfg.dest_backup_created.exists():
+        if self._cfg.enable_backup and not self._cfg.repos_backup_file.exists():
             logging.debug('Creating backup for system repositories...')
-            self._tools.tar.pack(self._cfg.dest_backup_created,
+            self._tools.tar.pack(self._cfg.repos_backup_file,
                                  targets=[Path('/etc/apt/sources.list'),
                                           Path('/etc/apt/sources.list.d')],
                                  verbose=True,

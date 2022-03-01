@@ -73,7 +73,7 @@ class BaseMode:
 
     def _create_backup_repositories(self):
         """
-        Create a backup for the system repository files under the /etc directory.
+        Create a backup of package repository files under the /etc directory.
         """
         raise NotImplementedError
 
