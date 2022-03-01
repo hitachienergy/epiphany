@@ -74,7 +74,6 @@
     path: /opt/zookeeper
     state: link
     src: "{{ zookeeper_install_dir }}"
-  # force: ?
 
 - name: Add Zookeeper's bin dir to the PATH
   copy:

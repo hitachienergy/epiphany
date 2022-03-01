@@ -1,5 +1,4 @@
 ---
-
 - name: Download Kafka binaries
   include_role:
     name: download

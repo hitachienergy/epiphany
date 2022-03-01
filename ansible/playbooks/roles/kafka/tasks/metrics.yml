@@ -13,7 +13,7 @@
     src: jmx-kafka-config.yml
     owner: "{{ specification.user }}"
     group: "{{ specification.group }}"
-    mode: 0644
+    mode: u=rx,go=r
 
 - name: delegated | create prometheus system group
   group:
@@ -52,7 +52,7 @@
     src: file_sd_config.yml.j2
     owner: root
     group: root
-    mode: 0644
+    mode: u=rx,go=r
   delegate_to: "{{ item }}"
   notify: restart prometheus
   with_inventory_hostnames:

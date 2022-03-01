@@ -1,5 +1,4 @@
 ---
-
 - name: Enable and Start Kafka
   service:
     name: kafka

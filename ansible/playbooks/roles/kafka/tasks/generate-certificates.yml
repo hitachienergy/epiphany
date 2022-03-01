@@ -4,7 +4,7 @@
     state: directory
     owner: "{{ specification.user }}"
     group: "{{ specification.group }}"
-    mode: "0755"
+    mode: u=rwx,go=rx
 
 - name: Check if keystore exists on broker
   stat:
@@ -13,11 +13,11 @@
   register: keystore_exists
 
 - name: Generate keystore for each server
-  shell: keytool -keystore {{ specification.security.ssl.server.keystore_location }} \
-         -alias localhost -validity {{ specification.security.ssl.server.cert_validity }} -genkey -keyalg RSA \
-         -noprompt -storepass {{ specification.security.ssl.server.passwords.keystore }} \
-         -keypass {{ specification.security.ssl.server.passwords.key }} \
-         -dname "CN={{ inventory_hostname }}" -ext SAN="DNS:{{ inventory_hostname }}"
+  command: keytool -keystore {{ specification.security.ssl.server.keystore_location }} \
+           -alias localhost -validity {{ specification.security.ssl.server.cert_validity }} -genkey -keyalg RSA \
+           -noprompt -storepass {{ specification.security.ssl.server.passwords.keystore }} \
+           -keypass {{ specification.security.ssl.server.passwords.key }} \
+           -dname "CN={{ inventory_hostname }}" -ext SAN="DNS:{{ inventory_hostname }}"
   when:
     - not keystore_exists.stat.exists
 
@@ -81,7 +81,7 @@
     - not trustore_exists.stat.exists
 
 - name: Check if CA certificate is already imported
-  shell: keytool -list -v -keystore {{ specification.security.ssl.server.keystore_location }} \
+  shell: set -o pipefail && keytool -list -v -keystore {{ specification.security.ssl.server.keystore_location }} \
          -storepass {{ specification.security.ssl.server.passwords.keystore }} \
          | grep -i "Alias name" | grep -i "caroot"
   failed_when: "caroot_exists.rc == 2"

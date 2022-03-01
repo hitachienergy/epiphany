@@ -1,5 +1,4 @@
 ---
-
 - name: Stop Kafka
   systemd:
     name: kafka

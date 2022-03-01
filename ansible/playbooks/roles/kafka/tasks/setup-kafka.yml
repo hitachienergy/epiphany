@@ -31,7 +31,7 @@
   copy:
     content: "export PATH=$PATH:/opt/kafka/bin"
     dest: "/etc/profile.d/kafka_path.sh"
-    mode: 0755
+    mode: u=rwx,go=rx
 
 - name: Link /opt/kafka to the right version
   file:
@@ -44,7 +44,7 @@
     dest: /etc/systemd/system/kafka.service
     owner: root
     group: root
-    mode: 0644
+    mode: u=rw,go=r
     src: kafka.service.j2
   notify:
     - restart kafka
@@ -59,7 +59,7 @@
     state: directory
     owner: "{{ specification.user }}"
     group: "{{ specification.group }}"
-    mode: 0755
+    mode: u=rwx,go=rx
 
 - name: Remove lost+found in the datadir
   file:
@@ -72,7 +72,7 @@
     state: directory
     owner: "{{ specification.user }}"
     group: "{{ specification.group }}"
-    mode: 0755
+    mode: u=rwx,go=rx
 
 - name: Create /etc/kafka directory
   file:
@@ -90,7 +90,7 @@
     path: "{{ specification.conf_dir }}/log4j.properties"
     owner: "{{ specification.user }}"
     group: "{{ specification.group }}"
-    mode: 0644
+    mode: u=rw,go=r
 
 - name: Generate certificate
   include_tasks: generate-certificates.yml
@@ -105,7 +105,7 @@
     owner: "{{ specification.user }}"
     group: "{{ specification.group }}"
     # Was 0640
-    mode: 0644
+    mode: u=rw,go=r
     src: server.properties.j2
   register: create_server_properties
   notify:
@@ -123,7 +123,7 @@
     dest: /etc/logrotate.d/kafka
     owner: root
     group: root
-    mode: 0644
+    mode: u=rw,go=r
     src: logrotate.conf.j2
 
 - name: configure system settings, file descriptors and number of threads for kafka
