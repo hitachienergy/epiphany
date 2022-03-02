@@ -16,6 +16,7 @@ class RedHatFamilyMode(BaseMode):
 
     def __init__(self, config: Config):
         super().__init__(config)
+        self.__archs: List[str] = [config.os_arch.value, 'noarch']
         self.__base_packages: List[str] = ['yum-utils', 'wget', 'curl', 'tar']
         self.__installed_packages: List[str] = []
 
@@ -141,7 +142,7 @@ class RedHatFamilyMode(BaseMode):
         for prereq_pkg in prereq_packages:
             collected_prereqs.extend(self._tools.repoquery.query(prereq_pkg,
                                                                  queryformat='%{name}-%{version}-%{release}.%{arch}',
-                                                                 arch=self._cfg.os_arch.value))
+                                                                 archlist=self.__archs))
 
         unique_collected_prereqs: Set = set(collected_prereqs)
         for prereq in unique_collected_prereqs:
@@ -158,18 +159,19 @@ class RedHatFamilyMode(BaseMode):
 
         packages: List[str] = self._requirements['packages']
         packages_to_download: List[str] = []
+
         for package in packages:
             # package itself
             package_name = self._tools.repoquery.query(package,
                                                        queryformat='%{name}-%{version}-%{release}.%{arch}',
-                                                       arch=self._cfg.os_arch.value)[0]
+                                                       archlist=self.__archs)[0]
 
             packages_to_download.append(package_name)
 
             # dependencies
             packages_to_download.extend(self._tools.repoquery.get_dependencies(package,
                                                                                queryformat='%{name}.%{arch}',
-                                                                               arch=self._cfg.os_arch.value))
+                                                                               archlist=self.__archs))
 
         for package in set(packages_to_download):
             if package not in downloaded_prereqs:
