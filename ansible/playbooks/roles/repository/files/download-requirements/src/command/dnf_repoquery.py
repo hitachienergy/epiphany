@@ -4,29 +4,28 @@ from src.command.command import Command
 from src.error import CriticalError, PackageNotfound
 
 
-class Repoquery(Command):
+class DnfRepoquery(Command):
     """
-    Interface for `repoquery`
+    Interface for `dnf repoquery`
     """
 
     def __init__(self, retries: int):
-        super().__init__('repoquery', retries)
+        super().__init__('dnf', retries)  # repoquery would require yum-utils package
 
     def __query(self, package: str,
                 queryformat: str,
-                arch: str,
+                archlist: List[str],
                 requires: bool,
                 resolve: bool,
-                quiet: bool,
                 output_handler: Callable) -> List[str]:
         """
-        Run generic query using `repoquery` tool.
+        Run generic query using `dnf repoquery` command.
 
         :param package: data will be returned for this `package`
         :param queryformat: specify custom query output format
-        :param arch: limit query output to this architecture
-        :param requires: list groups required by group
-        :param resolve: resolve dependencies for `package`
+        :param archlist: limit results to these architectures
+        :param requires: get capabilities that the package depends on
+        :param resolve: resolve capabilities to originating package(s)
         :param output_handler: different queries produce different outputs, use specific output handler
         :raises:
             :class:`CriticalError`: can be raised on exceeding retries or when error occurred
@@ -35,18 +34,19 @@ class Repoquery(Command):
         """
         args: List[str] = []
 
+        args.append('repoquery')
+        args.append(f'--archlist={",".join(archlist)}')
+        args.append('--assumeyes')  # to import GPG keys
+        args.append('--latest-limit=1')
+        args.append(f'--queryformat={queryformat}')
+        args.append('--quiet')
+
         if requires:
             args.append('--requires')
 
         if resolve:
             args.append('--resolve')
 
-        if quiet:
-            args.append('--quiet')
-
-        args.extend(['--queryformat', queryformat])
-        args.append(f'--archlist={arch},noarch')
-        args.append('--assumeyes')  # to import GPG keys
         args.append(package)
 
         output = self.run(args).stdout
@@ -60,13 +60,13 @@ class Repoquery(Command):
 
         return packages
 
-    def query(self, package: str, queryformat: str, arch: str) -> List[str]:
+    def query(self, package: str, queryformat: str, archlist: List[str]) -> List[str]:
         """
-        Generic query to yum database.
+        Generic query to dnf database.
 
         :param package: data will be returned for this `package`
         :param queryformat: specify custom query output format
-        :param arch: limit query output to this architecture
+        :param archlist: limit results to these architectures
         :raises:
             :class:`CriticalError`: can be raised on exceeding retries or when error occurred
             :class:`PackageNotfound`: when query did not return any package info
@@ -80,15 +80,15 @@ class Repoquery(Command):
             elif 'error' in output:
                 raise CriticalError(f'repoquery failed for package `{package}`, reason: `{output}`')
 
-        return self.__query(package, queryformat, arch, False, False, True, output_handler)
+        return self.__query(package, queryformat, archlist, False, False, output_handler)
 
-    def get_dependencies(self, package: str, queryformat: str, arch: str) -> List[str]:
+    def get_dependencies(self, package: str, queryformat: str, archlist: List[str]) -> List[str]:
         """
         Get all dependencies for `package`.
 
         :param package: data will be returned for this `package`
         :param queryformat: specify custom query output format
-        :param arch: limit query output to this architecture
+        :param archlist: limit results to these architectures
         :raises:
             :class:`CriticalError`: can be raised on exceeding retries or when error occurred
         :returns: query result
@@ -99,4 +99,4 @@ class Repoquery(Command):
             if 'error' in output:
                 raise CriticalError(f'repoquery failed for package `{package}`, reason: `{output}`')
 
-        return self.__query(package, queryformat, arch, True, True, True, output_handler)
+        return self.__query(package, queryformat, archlist, True, True, output_handler)
