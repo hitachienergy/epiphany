@@ -20,7 +20,7 @@
   become_method: sudo
   pre_tasks:
     - import_role:
-        name: docker
+        name: containerd
         tasks_from: main
     - import_role:
         name: kubernetes_common

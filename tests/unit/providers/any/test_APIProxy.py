@@ -1,7 +1,7 @@
 from pytest_mock import MockerFixture
 
-from cli.src.providers.any.APIProxy import APIProxy
 from cli.src.models.AnsibleHostModel import AnsibleOrderedHostModel
+from cli.src.providers.any.APIProxy import APIProxy
 from tests.unit.providers.data.APIProxy_data import CLUSTER_MODEL, CONFIG_DOC
 
 

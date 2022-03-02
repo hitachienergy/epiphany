@@ -4,7 +4,8 @@ from copy import deepcopy
 
 from cli.src.helpers.build_io import get_terraform_path
 from cli.src.helpers.config_merger import merge_with_defaults
-from cli.src.helpers.data_loader import load_json_obj, load_schema_obj, types
+from cli.src.helpers.data_loader import (load_json_obj, load_schema_obj,
+                                         schema_types)
 from cli.src.helpers.doc_list_helpers import (select_all, select_first,
                                               select_single)
 from cli.src.helpers.naming_helpers import resource_name
@@ -141,6 +142,7 @@ class InfrastructureBuilder(Step):
         vm.specification.subnet_name = subnet.specification.name
         vm.specification.key_name = public_key_config.specification.key_name
         vm.specification.use_network_security_groups = self.use_network_security_groups
+        vm.specification.availability_zone = subnet.specification.availability_zone
         if self.use_network_security_groups:
             vm.specification.security_groups = [security_group.specification.name]
         vm.specification.associate_public_ip = self.cluster_model.specification.cloud.use_public_ips
@@ -152,7 +154,7 @@ class InfrastructureBuilder(Step):
         subnet = self.get_config_or_default(self.docs, 'infrastructure/subnet')
         subnet.specification.vpc_name = vpc_name
         subnet.specification.cidr_block = subnet_definition['address_pool']
-
+        subnet.specification.availability_zone = subnet_definition['availability_zone']
         subnet.specification.name = resource_name(self.cluster_prefix, self.cluster_name, 'subnet' + '-' + str(index), component_key)
         subnet.specification.cluster_name = self.cluster_name
         return subnet
@@ -293,7 +295,7 @@ class InfrastructureBuilder(Step):
     def get_config_or_default(docs, kind):
         config = select_first(docs, lambda x: x.kind == kind)
         if config is None:
-            config = load_schema_obj(types.DEFAULT, 'aws', kind)
+            config = load_schema_obj(schema_types.DEFAULT, 'aws', kind)
             config['version'] = VERSION
         return config
 

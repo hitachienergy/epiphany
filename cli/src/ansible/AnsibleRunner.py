@@ -14,14 +14,12 @@ from cli.src.helpers.build_io import (copy_files_recursively, delete_directory,
                                       get_ansible_path_for_build,
                                       get_inventory_path,
                                       get_inventory_path_for_build)
-from cli.src.helpers.data_loader import BASE_DIR, types
+from cli.src.helpers.data_loader import ANSIBLE_PLAYBOOK_PATH
 from cli.src.helpers.naming_helpers import to_role_name
 from cli.src.Step import Step
 
 
 class AnsibleRunner(Step):
-    ANSIBLE_PLAYBOOKS_PATH = os.path.join(BASE_DIR, types.ANSIBLE, 'playbooks')
-
     def __init__(self, cluster_model=None, config_docs=None, build_dir=None, backup_build_dir=None,
                  ansible_options=None, ping_retries: int = 5):
         super().__init__(__name__)
@@ -54,7 +52,7 @@ class AnsibleRunner(Step):
             ansible_dir = get_ansible_path_for_build(self.build_dir)
 
         delete_directory(ansible_dir)
-        copy_files_recursively(AnsibleRunner.ANSIBLE_PLAYBOOKS_PATH, ansible_dir)
+        copy_files_recursively(ANSIBLE_PLAYBOOK_PATH, ansible_dir)
 
     def pre_flight(self, inventory_path):
         self.logger.info('Checking connection to each machine')

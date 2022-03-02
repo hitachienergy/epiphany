@@ -105,21 +105,27 @@ To upgrade the cluster components run the following steps:
 1. First we need to get the tooling to prepare the requirements for the upgrade. On the provisioning machine run:
 
     ```shell
-    epicli prepare --os OS
+    epicli prepare --os OS --arch ARCH
     ```
 
-   Where OS should be `centos-7`, `redhat-7`, `ubuntu-20.04`. This will create a directory called `prepare_scripts` with
-   the needed files inside.
+    Where:
+    - OS should be `redhat-7`, `ubuntu-20.04`
+    - ARCH should be `x86_64`, `arm64`
+
+   This will create a directory called `prepare_scripts` with the needed files inside.
 
 2. The scripts in the `prepare_scripts` will be used to download all requirements. To do that, copy
    the `prepare_scripts` folder over to the requirements machine and run the following command:
 
     ```shell
-    download-requirements.sh /requirementsoutput/
+    download-requirements.py /requirementsoutput/ OS
     ```
 
-   This will start downloading all requirements and put them in the `/requirementsoutput/` folder. Once run successfully
-   the `/requirementsoutput/` needs to be copied to the provisioning machine to be used later on.
+    Where:
+    - OS should be `redhat-7`, `ubuntu-20.04`, `detect`
+    - /requirementsoutput/ where to output downloaded requirements
+
+    This will run the download-requirements script for target OS type and save requirements under /requirementsoutput/. Once run successfully the `/requirementsoutput/` needs to be copied to the provisioning machine to be used later on.
 
 3. Finally, start the upgrade with:
 

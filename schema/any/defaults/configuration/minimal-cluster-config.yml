@@ -46,6 +46,10 @@ specification:
       count: 1
       machines:
         - default-rabbitmq
+    opendistro_for_elasticsearch:
+      count: 1
+      machines:
+        - default-opendistro
 ---
 kind: infrastructure/machine
 provider: any
@@ -123,3 +127,10 @@ name: default-rabbitmq
 specification:
   hostname: rabbitmq # YOUR-MACHINE-HOSTNAME
   ip: 192.168.100.111 # YOUR-MACHINE-IP
+---
+kind: infrastructure/machine
+provider: any
+name: default-opendistro
+specification:
+  hostname: opendistro # YOUR-MACHINE-HOSTNAME
+  ip: 192.168.100.112 # YOUR-MACHINE-IP

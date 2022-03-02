@@ -1,8 +1,11 @@
 import json
 import re
 import time
+import os
 from subprocess import PIPE, Popen
 
+from cli.src.helpers.build_io import SP_FILE_NAME, get_terraform_path, save_sp
+from cli.src.helpers.data_loader import load_yaml_file
 from cli.src.helpers.doc_list_helpers import select_first
 from cli.src.helpers.naming_helpers import cluster_tag, resource_name
 from cli.src.Log import Log, LogPipe
@@ -10,7 +13,7 @@ from cli.src.models.AnsibleHostModel import AnsibleOrderedHostModel
 
 
 class APIProxy:
-    def __init__(self, cluster_model, config_docs):
+    def __init__(self, cluster_model, config_docs=[]):
         self.cluster_model = cluster_model
         self.cluster_name = self.cluster_model.specification.name.lower()
         self.cluster_prefix = self.cluster_model.specification.prefix.lower()
@@ -38,7 +41,7 @@ class APIProxy:
         tenant = sp_data['tenant']
         return self.run(self, f'az login --service-principal -u \'{appId}\' -p \'{password}\' --tenant \'{tenant}\'', False)
 
-    def set_active_subscribtion(self, subscription_id):
+    def set_active_subscription(self, subscription_id):
         self.run(self, f'az account set --subscription {subscription_id}')
 
     def get_active_subscribtion(self):
@@ -73,6 +76,51 @@ class APIProxy:
         result.sort()
 
         return result
+
+    def login(self, env=None):
+        # From the 4 methods terraform provides to login to
+        # Azure we support (https://www.terraform.io/docs/providers/azurerm/auth/azure_cli.html):
+        # - Authenticating to Azure using the Azure CLI
+        # - Authenticating to Azure using a Service Principal and a Client Secret
+        if not self.cluster_model.specification.cloud.use_service_principal:
+            # Account
+            subscription = self.login_account()
+            self.set_active_subscription(subscription['id'])
+        else:
+            # Service principal
+            sp_file = os.path.join(get_terraform_path(self.cluster_model.specification.name), SP_FILE_NAME)
+            if not os.path.exists(sp_file):
+                # If no service principal exists or is defined we created one and for that we need to login using an account
+                subscription = self.login_account()
+                self.set_active_subscription(subscription['id'])
+
+                # Create the service principal, for now we use the default subscription
+                self.logger.info('Creating service principal')
+                cluster_name = self.cluster_model.specification.name.lower()
+                cluster_prefix = self.cluster_model.specification.prefix.lower()
+                resource_group_name = resource_name(cluster_prefix, cluster_name, 'rg')
+                sp = self.create_sp(resource_group_name, subscription['id'])
+                sp['subscriptionId'] = subscription['id']
+                save_sp(sp, self.cluster_model.specification.name)
+            else:
+                self.logger.info('Using service principal from file')
+                sp = load_yaml_file(sp_file)
+
+            # Login as SP and get the default subscription.
+            subscription = self.login_sp(sp)
+
+            if 'subscriptionId' in sp:
+                # Set active subscription if sp contains it.
+                self.set_active_subscription(sp['subscriptionId'])
+                env['ARM_SUBSCRIPTION_ID'] = sp['subscriptionId']
+            else:
+                # No subscriptionId in sp.yml so use the default one from Azure SP login.
+                env['ARM_SUBSCRIPTION_ID'] = subscription[0]['id']
+
+            # Set other environment variables for Terraform when working with Azure and service principal.
+            env['ARM_TENANT_ID'] = sp['tenant']
+            env['ARM_CLIENT_ID'] = sp['appId']
+            env['ARM_CLIENT_SECRET'] = sp['password']
 
     def get_storage_account_primary_key(self, storage_account_name):
         keys = self.run(self, f'az storage account keys list -g \'{self.resource_group_name}\' -n \'{storage_account_name}\'')

@@ -18,6 +18,7 @@
         url: "https://grafana.com/api/dashboards/{{ item.dashboard_id }}/revisions/{{ item.revision_id }}/download"
         file_name: "grafana_dashboard_{{ item.dashboard_id }}.json"
         download_directory: "{{ tmp_dashboards.path }}/{{ item.dashboard_id }}.json"
+        _subdir: "grafana_dashboards"
         retries: 5
         delay: 2
       loop: "{{ grafana_online_dashboards }}"
@@ -45,6 +46,7 @@
         file_name: "grafana_dashboard_{{ item.dashboard_id }}.json"
         download_directory: "{{ tmp_dashboards.path }}/{{ item.dashboard_id }}.json"
         force: true # to keep indepotency (avoid HTTP Error 304: Not Modified)
+        _subdir: grafana_dashboards
       loop: "{{ grafana_external_dashboards }}"
       when: grafana_external_dashboards != []
 

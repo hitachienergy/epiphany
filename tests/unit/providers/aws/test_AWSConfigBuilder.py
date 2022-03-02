@@ -1,5 +1,6 @@
-from cli.src.providers.aws.InfrastructureBuilder import InfrastructureBuilder
 from cli.src.helpers.objdict_helpers import dict_to_objdict
+from cli.src.providers.aws.InfrastructureBuilder import InfrastructureBuilder
+
 
 def test_get_resource_group_should_set_proper_values_to_model():
     cluster_model = get_cluster_model(cluster_name='TestCluster', address_pool='10.20.0.0/22')
@@ -48,7 +49,8 @@ def test_get_efs_config_should_set_proper_values_to_model():
 def test_get_subnet_config_should_set_proper_values_to_model():
     cluster_model = get_cluster_model(cluster_name='TestCluster')
     component_value = dict_to_objdict({
-        'address_pool': '10.20.0.0/24'
+        'address_pool': '10.20.0.0/24',
+        'availability_zone': 'eu-westa'
     })
     builder = InfrastructureBuilder([cluster_model])
 
@@ -57,6 +59,7 @@ def test_get_subnet_config_should_set_proper_values_to_model():
     assert actual.specification.name == 'prefix-testcluster-component-subnet-1'
     assert actual.specification.vpc_name == 'my-test-vpc'
     assert actual.specification.cidr_block == '10.20.0.0/24'
+    assert actual.specification.availability_zone == 'eu-westa'
 
 
 def test_get_security_group_should_set_proper_values_to_model():

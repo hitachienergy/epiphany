@@ -19,6 +19,8 @@ properties:
     type: boolean
   use_network_security_groups:
     type: boolean
+  availability_zone:
+    type: string
   security_groups:
     type: array
     items:
@@ -86,5 +88,3 @@ properties:
               type: string
             destination_address_prefix:
               type: string
-              enum:
-              - 0.0.0.0/0
