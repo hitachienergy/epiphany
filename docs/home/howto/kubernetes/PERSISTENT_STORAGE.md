@@ -22,51 +22,10 @@ Epiphany supports Rook with Ceph storage, other options provided by Rook - Cassa
 ### Rook/Ceph General Configuration
 
 To add Rook/Ceph support in Epiphany you need to add to your cluster configuration two elements:
-- storage (for cloud deployments - can be automatically created by Epiphany)
+- Storage (for cloud deployments - can be automatically created by Epiphany)
 - Rook/Ceph
 
-Adding the storage is described below in separate sections for Azure, AWS and on premise environments.
-
-To enable Rook support add to your cluster configuration the section like below:
-
-```yaml
----
-kind: configuration/rook
-title: "Kubernetes Rook Config"
-provider: azure
-name: default
-specification:
-    enabled: true
-```
-
-The key `specification.enabled` must be set to true to install Rook/Ceph component. This will install Rook/Ceph with default values. To override default values provided by Rook you need to add to `configuration/rook` keys:
-- `specification.operator_chart_values` - to override Rook Operator Helm Chart default values
-- `specification.cluster_chart_values` - to override Rook Cluster Helm Chart default values
-
-```yaml
----
-kind: configuration/rook
-title: "Kubernetes Rook Config"
-provider: azure
-name: default
-specification:
-    enabled: true
-    operator_chart_values: |
-      ...
-    cluster_chart_values: |
-      ...
-```
-Values nested below the `operator_chart_values` and `cluster_chart_values` keys are respectively Helm Chart values for Rook Operator and Rook Ceph Cluster.
-
-More information about Helm Chart values may be found:
-- [Helm Operator](https://github.com/rook/rook/blob/master/Documentation/helm-operator.md)
-- [Helm Ceph Cluster](https://github.com/rook/rook/blob/master/Documentation/helm-ceph-cluster.md)
-
-Sample configuration files that can be used in Epiphany `configuration/rook`:
-- [Helm Operator](https://raw.githubusercontent.com/rook/rook/v1.8.5/deploy/charts/rook-ceph/values.yaml)
-- [Helm Ceph Cluster](https://raw.githubusercontent.com/rook/rook/v1.8.5/deploy/charts/rook-ceph-cluster/values.yaml)
-
-More informations about Rook with Ceph storage may be found in the official Rook [documentation](https://rook.io/docs/rook/v1.8/).
+Adding the storage is described below in separate sections for Azure, AWS and on premise environments. Rook/Ceph configuration in Epiphany is described after add disk paragraphs.
 
 #### Create disks for Rook/Ceph Cluster Storage - Azure
 
@@ -118,6 +77,50 @@ More information about AWS block devices and its parameters: [ebs_block_device](
 
 #### Create disks for Rook/Ceph Cluster Storage - On Prem
 
+To add disks to Rook/Ceph Cluster Storage you need to attach first raw devices to Kubernetes nodes machines and all raw devices will be used as Rook/Ceph devices.
+
+#### Rook/Ceph Configuration
+
+To enable Rook support add to your cluster configuration the section like below:
+
+```yaml
+---
+kind: configuration/rook
+title: "Kubernetes Rook Config"
+provider: azure
+name: default
+specification:
+    enabled: true
+```
+
+The key `specification.enabled` must be set to true to install Rook/Ceph component. This will install Rook/Ceph with default values. To override default values provided by Rook you need to add to `configuration/rook` keys:
+- `specification.operator_chart_values` - to override Rook Operator Helm Chart default values
+- `specification.cluster_chart_values` - to override Rook Cluster Helm Chart default values
+
+```yaml
+---
+kind: configuration/rook
+title: "Kubernetes Rook Config"
+provider: azure
+name: default
+specification:
+    enabled: true
+    operator_chart_values: |
+      ...
+    cluster_chart_values: |
+      ...
+```
+Values nested below the `operator_chart_values` and `cluster_chart_values` keys are respectively Helm Chart values for Rook Operator and Rook Ceph Cluster.
+
+More information about Helm Chart values may be found:
+- [Helm Operator](https://github.com/rook/rook/blob/master/Documentation/helm-operator.md)
+- [Helm Ceph Cluster](https://github.com/rook/rook/blob/master/Documentation/helm-ceph-cluster.md)
+
+Sample configuration files that can be used in Epiphany `configuration/rook`:
+- [Helm Operator](https://raw.githubusercontent.com/rook/rook/v1.8.5/deploy/charts/rook-ceph/values.yaml)
+- [Helm Ceph Cluster](https://raw.githubusercontent.com/rook/rook/v1.8.5/deploy/charts/rook-ceph-cluster/values.yaml)
+
+More informations about Rook with Ceph storage may be found in the official Rook [documentation](https://rook.io/docs/rook/v1.8/).
 ### Azure
 
 #### Infrastructure
