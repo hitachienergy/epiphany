@@ -7,7 +7,7 @@ from src.command.apt_key import AptKey
 from src.command.command import Command
 from src.command.crane import Crane
 from src.command.pip import Pip
-from src.command.repoquery import Repoquery
+from src.command.dnf_repoquery import DnfRepoquery
 from src.command.rpm import Rpm
 from src.command.tar import Tar
 from src.command.wget import Wget
@@ -64,7 +64,7 @@ class RedHatFamilyToolchain(Toolchain):
     def __init__(self, retries: int):
         super().__init__(retries)
 
-        self.repoquery = Repoquery(retries)
+        self.repoquery = DnfRepoquery(retries)
         self.rpm = Rpm(retries)
         self.yum = Yum(retries)
         self.yum_config_manager = YumConfigManager(retries)
