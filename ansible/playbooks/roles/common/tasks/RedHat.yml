@@ -34,6 +34,7 @@
       - openssl
       - python-setuptools
       - python3
+      - python3-dnf-plugin-versionlock
       - rsync
       - sysstat
       - tar
@@ -41,8 +42,6 @@
       - tmux
       - unzip
       - vim
-      - yum-utils
-      - yum-versionlock
     state: present
   register: result
   retries: 3
