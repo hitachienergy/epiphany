@@ -13,10 +13,9 @@ def test_interface_pack(mocker):
                                              'preserve': True,
                                              'absolute_names': True,
                                              'directory': Path('/some/directory'),
-                                             'ignore_failed_read': True,
                                              'verify': True}) as call_args:
         assert call_args == ['tar', '-czvpf', '/tmp/package.tar.gz',
-                             '--absolute-names', '--directory', '/some/directory', '--ignore-failed-read', '--verify', '*']
+                             '--absolute-names', '--directory', '/some/directory', '--verify', '*']
 
 
 def test_interface_unpack(mocker):
