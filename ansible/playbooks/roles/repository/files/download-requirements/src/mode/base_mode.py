@@ -77,12 +77,6 @@ class BaseMode:
         """
         raise NotImplementedError
 
-    def _use_backup_repositories(self):
-        """
-        Check if there were any critical issues and if so, try to restore the state using backup.
-        """
-        raise NotImplementedError
-
     def _add_third_party_repositories(self):
         """
         Add third party repositories for target OS's package manager.
@@ -210,6 +204,17 @@ class BaseMode:
         """
         pass
 
+    def __restore_repositories(self):
+        """
+        Restore the state of repository files under the /etc dir.
+        """
+        if self._cfg.repos_backup_file.exists() and self._cfg.repos_backup_file.stat().st_size:
+            self._tools.tar.unpack(filename=self._cfg.repos_backup_file,
+                                   directory=Path('/'),
+                                   absolute_names=True,
+                                   uncompress=False,
+                                   verbose=True)
+
     def run(self):
         """
         Run target mode.
@@ -224,10 +229,7 @@ class BaseMode:
         self._cfg.dest_images.mkdir(exist_ok=True, parents=True)
         self._cfg.dest_packages.mkdir(exist_ok=True, parents=True)
 
-        logging.info('Checking backup repositories...')
         self._create_backup_repositories()
-        self._use_backup_repositories()
-        logging.info('Done checking backup repositories.')
 
         logging.info('Installing base packages...')
         self._install_base_packages()
@@ -266,3 +268,7 @@ class BaseMode:
         logging.info('Running cleanup...')
         self._cleanup()
         logging.info('Done running cleanup.')
+
+        logging.info('Restoring system repositories...')
+        self.__restore_repositories()
+        logging.info('Done restoring system repositories.')

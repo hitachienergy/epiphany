@@ -23,7 +23,6 @@ class Tar(Command):
              # long flags:
              absolute_names: bool = False,
              directory: Path = None,
-             ignore_failed_read: bool = False,
              verify: bool = False):
         """
         Create a tar archive.
@@ -37,7 +36,6 @@ class Tar(Command):
 
         :param absolute_names: don't strip leading slashes from file names
         :param directory: change directory before doing any actions
-        :param ignore_failed_read: do not exit with nonzero on unreadable files
         :param verify: check file integrity
         """
         short_flags: List[str] = ['-c']  # -czvf flags
@@ -61,9 +59,6 @@ class Tar(Command):
 
         if directory is not None:
             tar_params.extend(['--directory', str(directory)])
-
-        if ignore_failed_read:
-            tar_params.append('--ignore-failed-read')
 
         if verify:
             tar_params.append('--verify')

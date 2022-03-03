@@ -10,7 +10,6 @@
     "{{ download_requirements_script }}" \
         /var/www/html/epirepo \
         "{{ download_requirements_os_name }}" \
-        --enable-repos-backup \
         --repos-backup-file /var/tmp/enabled-system-repos.tar \
         --no-logfile |&
     tee >(systemd-cat --identifier=download-requirements.py)

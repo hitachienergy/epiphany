@@ -23,7 +23,7 @@ class DebianFamilyMode(BaseMode):
             self._repositories[repo]['path'] = Path('/etc/apt/sources.list.d') / f'{repo}.list'
 
     def _create_backup_repositories(self):
-        if self._cfg.enable_backup and not self._cfg.repos_backup_file.exists():
+        if not self._cfg.repos_backup_file.exists():
             logging.debug('Creating backup for system repositories...')
             self._tools.tar.pack(self._cfg.repos_backup_file,
                                  targets=[Path('/etc/apt/sources.list'),
@@ -31,23 +31,8 @@ class DebianFamilyMode(BaseMode):
                                  verbose=True,
                                  preserve=True,
                                  absolute_names=True,
-                                 ignore_failed_read=True,
                                  verify=True)
             logging.debug('Done.')
-
-    def _use_backup_repositories(self):
-        sources = Path('/etc/apt/sources.list')
-        if not sources.exists() or not sources.stat().st_size:
-            if self._cfg.repos_backup_file.exists() and self._cfg.enable_backup:
-                logging.warn('OS repositories seems missing, restoring...')
-                self._tools.tar.unpack(filename=self._cfg.repos_backup_file,
-                                       directory=Path('/'),
-                                       absolute_names=True,
-                                       uncompress=False,
-                                       verbose=True)
-            else:
-                logging.warn(f'{str(sources)} seems to be missing, you either know what you are doing or '
-                             'you need to fix your repositories')
 
     def _install_base_packages(self):
         # install prerequisites which might be missing
@@ -138,10 +123,9 @@ class DebianFamilyMode(BaseMode):
             if data['path'].exists():
                 data['path'].unlink()
 
-        # restore masked custom repositories to their original names
+        # removed custom repositories to their original names
         for repo_file in Path('/etc/apt/sources.list.d').iterdir():
-            if repo_file.name.endswith('.bak'):
-                move(str(repo_file.absolute()), str(repo_file.with_suffix('').absolute()))
+            repo_file.unlink()
 
         # remove installed packages
         for package in self.__installed_packages:

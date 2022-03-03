@@ -34,7 +34,6 @@ class Config:
         self.dest_images: Path
         self.dest_packages: Path
         self.distro_subdir: Path
-        self.enable_backup: bool
         self.is_log_file_enabled: bool
         self.log_file: Path
         self.os_arch: OSArch
@@ -70,10 +69,7 @@ class Config:
         lines.append(f'- grafana dashboards: {str(self.dest_grafana_dashboards)}')
         lines.append(f'- images:             {str(self.dest_images)}')
         lines.append(f'- packages:           {str(self.dest_packages)}')
-
-        lines.append(f'Enable repos backup: {"Yes" if self.enable_backup else "No"}')
-        if self.enable_backup:
-            lines.append(f'Repos backup file: {str(self.repos_backup_file)}')
+        lines.append(f'Repos backup file: {str(self.repos_backup_file)}')
 
         if self.is_log_file_enabled:
             lines.append(f'Log file location: {str(self.log_file.absolute())}')
@@ -97,8 +93,6 @@ class Config:
                             'when using `detect`, script will try to find out which OS is being used')
 
         # optional arguments:
-        parser.add_argument('--enable-repos-backup', '-b', action='store_true', dest='enable_backup', default=False,
-                            help=('when used, backup archive for packages will be created and used')),
         parser.add_argument('--repos-backup-file', metavar='BACKUP_FILE', action='store',
                             dest='repos_backup_file', default='/var/tmp/enabled-system-repos.tar',
                             help='path to a backup file')
@@ -207,7 +201,6 @@ class Config:
         self.dest_packages = self.dest_dir / 'packages'
 
         # add optional arguments
-        self.enable_backup = args['enable_backup']
         self.os_arch = OSArch(os.uname().machine)
         self.repos_backup_file = Path(args['repos_backup_file'])
         self.retries = args['retries']

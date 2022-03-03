@@ -20,7 +20,7 @@ class RedHatFamilyMode(BaseMode):
         self.__installed_packages: List[str] = []
 
     def _create_backup_repositories(self):
-        if self._cfg.enable_backup and not self._cfg.repos_backup_file.exists():
+        if not self._cfg.repos_backup_file.exists() or not self._cfg.repos_backup_file.stat().st_size:
             logging.debug('Creating backup for system repositories...')
             self._tools.tar.pack(self._cfg.repos_backup_file,
                                  [Path('/etc/yum.repos.d/')],
@@ -28,20 +28,6 @@ class RedHatFamilyMode(BaseMode):
                                  directory=Path('/'),
                                  verify=True)
             logging.debug('Done.')
-
-    def _use_backup_repositories(self):
-        sources = Path('/etc/yum.repos.d/epirepo.repo')
-        if sources.exists() and sources.stat().st_size:
-            if self._cfg.repos_backup_file.exists() and self._cfg.enable_backup:
-                logging.warn('OS repositories seems missing, restoring...')
-                self._tools.tar.unpack(filename=self._cfg.repos_backup_file,
-                                       directory=Path('/'),
-                                       absolute_names=True,
-                                       uncompress=False,
-                                       verbose=True)
-            else:
-                logging.warn(f'{str(sources)} seems to be missing, you either know what you are doing or '
-                             'you need to fix your repositories')
 
     def _install_base_packages(self):
         # some packages are from EPEL repo
@@ -209,10 +195,9 @@ class RedHatFamilyMode(BaseMode):
         self._tools.wget.download(url, dest, additional_params=False)
 
     def _cleanup(self):
-        # restore repo files
+        # remove repo files
         for repo_file in Path('/etc/yum.repos.d').iterdir():
-            if repo_file.name.endswith('.bak'):
-                shutil.move(str(repo_file.absolute()), str(repo_file.with_suffix('').absolute()))
+            repo_file.unlink()
 
         # remove installed packages
         for package in self.__installed_packages:
