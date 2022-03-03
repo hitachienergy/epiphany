@@ -50,7 +50,7 @@ class DnfRepoquery(Command):
         args.append(package)
 
         output = self.run(args).stdout
-        # yumdownloader doesn't set error code if repoquery returns empty output
+        # dnf download doesn't set error code if repoquery returns empty output TODO: verify this
         output_handler(output)
 
         packages: List[str] = []

@@ -11,9 +11,9 @@ from src.command.dnf_repoquery import DnfRepoquery
 from src.command.rpm import Rpm
 from src.command.tar import Tar
 from src.command.wget import Wget
-from src.command.yum import Yum
-from src.command.yum_config_manager import YumConfigManager
-from src.command.yumdownloader import Yumdownloader
+from src.command.dnf import Dnf
+from src.command.dnf_config_manager import DnfConfigManager
+from src.command.dnf_download import DnfDownload
 from src.config import OSType
 
 
@@ -66,15 +66,15 @@ class RedHatFamilyToolchain(Toolchain):
 
         self.repoquery = DnfRepoquery(retries)
         self.rpm = Rpm(retries)
-        self.yum = Yum(retries)
-        self.yum_config_manager = YumConfigManager(retries)
-        self.yumdownloader = Yumdownloader(retries)
+        self.dnf = Dnf(retries)
+        self.dnf_config_manager = DnfConfigManager(retries)
+        self.dnf_download = DnfDownload(retries)
 
     def install_pip(self):
-        self.yum.install('python3-pip')
+        self.dnf.install('python3-pip')
 
     def uninstall_pip(self):
-        self.yum.remove('python3-pip')
+        self.dnf.remove('python3-pip')
 
 
 class DebianFamilyToolchain(Toolchain):
