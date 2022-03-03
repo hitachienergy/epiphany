@@ -157,7 +157,7 @@
   tasks:
     - include_role:
         name: upgrade
-        tasks_from: opensearc
+        tasks_from: opensearch
       when: "'opensearch' in upgrade_components or upgrade_components|length == 0"
   vars:
     current_group_name: opensearch
