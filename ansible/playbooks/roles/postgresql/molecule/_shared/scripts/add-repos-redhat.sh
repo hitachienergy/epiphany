@@ -21,7 +21,7 @@ add_repo_as_file() {
             import_repo_gpg_keys "${gpg_key_urls[@]}" 3
         fi
         # to accept import of repo's GPG key (for repo_gpgcheck=1)
-        yum -y repolist >/dev/null || exit_with_error "Command failed: yum -y repolist"
+        dnf repolist -y >/dev/null || exit_with_error "Command failed: dnf repolist -y"
     fi
 }
 
@@ -37,10 +37,10 @@ add_repo_from_script() {
 disable_repo() {
     local repo_id="$1"
 
-    if yum repolist enabled | grep --quiet "$repo_id"; then
+    if dnf repolist | grep --quiet "$repo_id"; then
         echol "Disabling repository: $repo_id"
-        yum-config-manager --disable "$repo_id" ||
-            exit_with_error "Command failed: yum-config-manager --disable \"$repo_id\""
+        dnf config-manager --set-disabled "$repo_id" ||
+            exit_with_error "Command failed: dnf config-manager --set-disabled \"$repo_id\""
     fi
 }
 
@@ -66,7 +66,7 @@ import_repo_gpg_keys() {
 is_repo_enabled() {
     local repo_id="$1"
 
-    if yum repolist | grep --quiet "$repo_id"; then
+    if dnf repolist | grep --quiet "$repo_id"; then
         echol "Repository $repo_id already enabled"
         return 0
     else
