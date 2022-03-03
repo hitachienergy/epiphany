@@ -3,20 +3,20 @@ from typing import List
 from src.command.command import Command
 
 
-class Yum(Command):
+class Dnf(Command):
     """
-    Interface for `yum`
+    Interface for `dnf`
     """
 
     def __init__(self, retries: int):
-        super().__init__('yum', retries)
+        super().__init__('dnf', retries)
 
     def update(self, enablerepo: str,
                      package: str = None,
                      disablerepo: str = '*',
                      assume_yes: bool = True):
         """
-        Interface for `yum update`
+        Interface for `dnf update`
 
         :param enablerepo:
         :param package:
@@ -25,7 +25,8 @@ class Yum(Command):
         """
         update_parameters: List[str] = ['update']
 
-        update_parameters.append('-y' if assume_yes else '')
+        if assume_yes:
+            update_parameters.append('-y')
 
         if package is not None:
             update_parameters.append(package)
@@ -38,7 +39,7 @@ class Yum(Command):
     def install(self, package: str,
                 assume_yes: bool = True):
         """
-        Interface for `yum install -y`
+        Interface for `dnf install -y`
 
         :param package: packaged to be installed
         :param assume_yes: if set to True, -y flag will be used
@@ -49,7 +50,7 @@ class Yum(Command):
     def remove(self, package: str,
                assume_yes: bool = True):
         """
-        Interface for `yum remove -y`
+        Interface for `dnf remove -y`
 
         :param package: packaged to be removed
         :param assume_yes: if set to True, -y flag will be used
@@ -59,7 +60,7 @@ class Yum(Command):
 
     def is_repo_enabled(self, repo: str) -> bool:
         output = self.run(['repolist',
-                           'enabled']).stdout
+                           '--enabled']).stdout
         if repo in output:
             return True
 
@@ -67,7 +68,8 @@ class Yum(Command):
 
     def find_rhel_repo_id(self, patterns: List[str]) -> List[str]:
         output = self.run(['repolist',
-                           'all']).stdout
+                           '--all',
+                           '--quiet']).stdout
 
         repos: List[str] = []
         for line in output.split('\n'):
@@ -79,13 +81,13 @@ class Yum(Command):
 
     def accept_keys(self):
         # to accept import of repo's GPG key (for repo_gpgcheck=1)
-        self.run(['-y', 'repolist'])
+        self.run(['repolist', '-y'])
 
     def is_repo_available(self, repo: str) -> bool:
-        retval = self.run(['-q',
+        retval = self.run(['repoinfo',
                            '--disablerepo=*',
                            f'--enablerepo={repo}',
-                           'repoinfo']).returncode
+                           '--quiet']).returncode
 
         if retval == 0:
             return True
@@ -96,15 +98,16 @@ class Yum(Command):
                   assume_yes: bool = True):
         args: List[str] = ['makecache']
 
-        args.append('-y' if assume_yes else '')
-
         if timer:
             args.append('timer')
 
+        if assume_yes:
+            args.append('-y')
+
         self.run(args)
 
-    def list_all_repo_info(self) -> List[str]:
-        args: List[str] = ['repolist',
-                           '-v',
-                           'all']
+    def list_all_repos_info(self) -> List[str]:
+        args: List[str] = ['repoinfo',
+                           '--all',
+                           '--quiet']
         return self._run_and_filter(args)
