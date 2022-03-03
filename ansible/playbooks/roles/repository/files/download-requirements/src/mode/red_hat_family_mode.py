@@ -27,6 +27,8 @@ class RedHatFamilyMode(BaseMode):
                                  verbose=True,
                                  directory=Path('/'),
                                  verify=True)
+
+            self._cfg.was_backup_created = True
             logging.debug('Done.')
 
     def _install_base_packages(self):

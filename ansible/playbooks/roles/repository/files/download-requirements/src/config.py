@@ -46,6 +46,7 @@ class Config:
         self.rerun: bool
         self.retries: int
         self.script_path: Path
+        self.was_backup_created: bool = False
 
         self.__add_args(argv)
 

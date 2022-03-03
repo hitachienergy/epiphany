@@ -209,11 +209,13 @@ class BaseMode:
         Restore the state of repository files under the /etc dir.
         """
         if self._cfg.repos_backup_file.exists() and self._cfg.repos_backup_file.stat().st_size:
+            logging.info('Restoring repository files...')
             self._tools.tar.unpack(filename=self._cfg.repos_backup_file,
                                    directory=Path('/'),
                                    absolute_names=True,
                                    uncompress=False,
                                    verbose=True)
+            logging.info('Done restoring repository files.')
 
     def run(self):
         """
@@ -230,6 +232,9 @@ class BaseMode:
         self._cfg.dest_packages.mkdir(exist_ok=True, parents=True)
 
         self._create_backup_repositories()
+
+        if not self._cfg.was_backup_created:
+            self.__restore_repositories()
 
         logging.info('Installing base packages...')
         self._install_base_packages()
@@ -269,6 +274,4 @@ class BaseMode:
         self._cleanup()
         logging.info('Done running cleanup.')
 
-        logging.info('Restoring system repositories...')
         self.__restore_repositories()
-        logging.info('Done restoring system repositories.')
