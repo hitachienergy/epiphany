@@ -106,12 +106,12 @@ cluster.initial_master_nodes: ["{{ ansible_hostname }}"]
 ######## OpenSearch Security Configuration ########
 # WARNING: revise all the lines below before you go into production
 plugins.security.ssl.transport.pemcert_filepath: "{{ certificates.dirs.certs }}/{{ node_cert_filename.transport }}"
-plugins.security.ssl.transport.pemkey_filepath: "{{ certificates.dirs.certs }}/{{ node_key_filename.transport }}"
+plugins.security.ssl.transport.pemkey_filepath: "{{ certificates.dirs.ca_key }}/{{ node_key_filename.transport }}"
 plugins.security.ssl.transport.pemtrustedcas_filepath: "{{ certificates.dirs.certs }}/{{ root_ca_cert_filename.transport }}"
 plugins.security.ssl.transport.enforce_hostname_verification: {{ specification.opensearch_security.ssl.transport.enforce_hostname_verification | lower }}
 plugins.security.ssl.http.enabled: true
 plugins.security.ssl.http.pemcert_filepath: "{{ certificates.dirs.certs }}/{{ node_cert_filename.http }}"
-plugins.security.ssl.http.pemkey_filepath: "{{ certificates.dirs.certs }}/{{ node_key_filename.http }}"
+plugins.security.ssl.http.pemkey_filepath: "{{ certificates.dirs.ca_key }}/{{ node_key_filename.http }}"
 plugins.security.ssl.http.pemtrustedcas_filepath: "{{ certificates.dirs.certs }}/{{ root_ca_cert_filename.http }}"
 plugins.security.allow_unsafe_democertificates: {{ opensearch_security_allow_unsafe_democertificates | lower }}
 plugins.security.allow_default_init_securityindex: true
