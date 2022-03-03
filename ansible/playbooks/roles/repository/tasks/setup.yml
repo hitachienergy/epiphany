@@ -33,13 +33,10 @@
         state: directory
 
     - name: Copy files for downloading requirements to repository host
-      synchronize:
-        src: download-requirements/
-        dest: "{{ download_requirements_dir }}"
-        recursive: true
-        rsync_opts:
-          - "--exclude=tests"  # tests not needed
-          - "--exclude=__pycache__"
+      include_tasks: copy-download-requirements.yml
+      vars:
+        _os_type: "{{ download_requirements_os_name }}"
+        _arch_type: "{{ ansible_architecture }}"
 
     - name: Make download script executable
       file:

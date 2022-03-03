@@ -15,6 +15,7 @@
 - [#2716](https://github.com/epiphany-platform/epiphany/issues/2716) - Change container runtime to containerd
 - [#805](https://github.com/epiphany-platform/epiphany/issues/805) - Refactor download-requirements script
 - [#2858](https://github.com/epiphany-platform/epiphany/issues/2858) - Make Ruby spec tests code compliant with rubocop lint rules
+- [#2975](https://github.com/epiphany-platform/epiphany/issues/2975) - Copy only required files
 - [#2448](https://github.com/epiphany-platform/epiphany/issues/2448) - Passwordless SSH communication for postgres user between DB nodes
 
 ### Fixed
@@ -34,6 +35,7 @@
 - [#2942](https://github.com/epiphany-platform/epiphany/issues/2942) - rsync command fails trying to copy artifacts
 - [#2930](https://github.com/epiphany-platform/epiphany/issues/2930) - Backup/recovery commands fail when default configuration for backup attached to cluster-config.yml
 - [#2989](https://github.com/epiphany-platform/epiphany/issues/2989) - Task `Remove swap from /etc/fstab` does not remove swap entry from file
+- [#2907](https://github.com/epiphany-platform/epiphany/issues/2907) - Backup/recovery commands fail when executed directly after upgrade
 - [#2728](https://github.com/epiphany-platform/epiphany/issues/2728) - PostgreSQL's configuration files located outside the data directory are not copied by repmgr
 
 ### Updated
