@@ -1,19 +1,21 @@
 ---
 prereq-packages:
-  # packages-repo-prereqs
-  - 'almalinux-logos-httpd'  # for httpd
-  - 'apr'  # for httpd
-  - 'apr-util'  # for httpd
-  - 'apr-util-bdb'  # for httpd (weak)
-  - 'apr-util-openssl'  # for httpd (weak)
+  # prereq-packages are downloaded without dependencies because of air-gapped mode (dnf localinstall)
+  # --- createrepo ---
   - 'createrepo_c'
   - 'createrepo_c-libs'
-  - 'drpm'  # for createrepo
+  - 'drpm'
+  # --- httpd ---
+  - 'almalinux-logos-httpd'
+  - 'apr'
+  - 'apr-util'
+  - 'apr-util-bdb'  # weak
+  - 'apr-util-openssl'  # weak
   - 'httpd'
   - 'httpd-filesystem'
   - 'httpd-tools'
-  - 'mailcap'  # for httpd
-  - 'mod_http2'  # for httpd
+  - 'mailcap'
+  - 'mod_http2'
 
 packages:
   - 'audit'  # for docker-ce
@@ -74,6 +76,7 @@ packages:
   - 'perl-Pod-Simple'  # for vim
   - 'perl-Pod-Usage'  # for vim
   - 'pgaudit15_13-1.5.0'
+  - 'python3-dnf-plugin-versionlock'
   - 'python3-policycoreutils'  # for container-selinux
   - 'python3-ldb'  # for cifs-utils
   - 'python3-cffi'  # for python2-cryptography
@@ -105,8 +108,6 @@ packages:
   - 'wget'
   - 'xorg-x11-font-utils'  # for grafana
   - 'xorg-x11-server-utils'  # for grafana
-  - 'python3-dnf-plugin-versionlock'
-  - 'dnf-utils'
 
   # to make remote-to-remote "synchronize" work in ansible
   - 'rsync'

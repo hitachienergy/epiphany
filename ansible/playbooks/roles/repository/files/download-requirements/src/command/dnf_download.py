@@ -4,30 +4,31 @@ from typing import List
 from src.command.command import Command
 
 
-class Yumdownloader(Command):
+class DnfDownload(Command):
     """
-    Interface for `yumdownloader`
+    Interface for `dnf download`
     """
 
     def __init__(self, retries: int):
-        super().__init__('yumdownloader', retries)
+        super().__init__('dnf', retries)
 
     def download_packages(self, packages: List[str],
-                          arch: str,
+                          archlist: List[str],
                           destdir: Path,
                           exclude: str = '',
                           quiet: bool = True):
         args: List[str] = []
 
-        if quiet:
-            args.append('--quiet')
-
-        args.append(f'--arch={arch},noarch')
+        args.append('download')
+        args.append(f'--archlist={",".join(archlist)}')
+        args.append(f'--destdir={str(destdir)}')
 
         if exclude:
             args.append(f'--exclude={exclude}')
 
-        args.append(f'--destdir={str(destdir)}')
+        if quiet:
+            args.append('--quiet')
+
         args.extend(packages)
 
         self.run(args)
