@@ -29,6 +29,8 @@
     state: directory
     owner: "{{ specification.opensearch_user }}"
     group: "{{ specification.opensearch_user }}"
+    mode: '0740'
+    recurse: yes
   loop:
     - "{{ specification.paths.opensearch_home }}"
     - "{{ specification.paths.opensearch_perftop_home }}"

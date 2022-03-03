@@ -35,6 +35,8 @@
     state: directory
     owner: "{{ opensearch_vars.specification.opensearch_user }}"
     group: "{{ opensearch_vars.specification.opensearch_user }}"
+    mode: '0740'
+    recurse: yes
   with_items:
     - "{{ opensearch_vars.specification.paths.opensearch_home }}"
     - "{{ opensearch_vars.specification.paths.opensearch_log_dir }}"
