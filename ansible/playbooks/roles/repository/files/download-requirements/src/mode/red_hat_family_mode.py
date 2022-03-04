@@ -4,7 +4,7 @@ from pathlib import Path
 from typing import List, Set
 
 from src.command.command import Command
-from src.config import Config
+from src.config.config import Config
 from src.error import PackageNotfound
 from src.mode.base_mode import BaseMode
 
