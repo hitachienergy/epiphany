@@ -14,7 +14,7 @@ from src.command.wget import Wget
 from src.command.dnf import Dnf
 from src.command.dnf_config_manager import DnfConfigManager
 from src.command.dnf_download import DnfDownload
-from src.config import OSType
+from src.config.os_type import OSFamily
 
 
 class Toolchain:
@@ -96,7 +96,7 @@ class DebianFamilyToolchain(Toolchain):
         self.apt.remove('python3-pip')
 
 
-TOOLCHAINS: Dict[OSType, Toolchain] = {
-    OSType.RedHat: RedHatFamilyToolchain,
-    OSType.Ubuntu: DebianFamilyToolchain
+TOOLCHAINS: Dict[OSFamily, Toolchain] = {
+    OSFamily.Debian: DebianFamilyToolchain,
+    OSFamily.RedHat: RedHatFamilyToolchain
 }

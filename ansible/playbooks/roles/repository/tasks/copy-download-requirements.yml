@@ -1,10 +1,11 @@
 ---
 - name: Copy files for downloading requirements to repository host
+  # requires: (_arch_type, _family_type, _os_type)
   block:
     - name: Set facts for download requirements dirs and files
       set_fact:
         _dirs:
-          - "{{ _repo_arch_dir }}/"
+          - "{{ _repo_family_dir }}/"
           - "{{ _reqs_distro_dir }}/"
           - "src/"
 
@@ -15,7 +16,7 @@
           - "{{ _req_files['grafana_dashboards'] }}"
           - "{{ _req_files['images'] }}"
           - "{{ _req_files['package_files'] }}"
-          - "{{ _req_files['repo_files'] }}"
+          - "{{ _req_files['family_files'] }}"
           - "download-requirements.py"
           - "src/"
 
@@ -23,10 +24,12 @@
         # general paths:
         _reqs_dir: "requirements"
         _reqs_arch_dir: "{{ _reqs_dir }}/{{ _arch_type }}"
-        _reqs_distro_dir: "{{ _reqs_arch_dir }}/{{ _os_type }}"
+        _reqs_family_dir: "{{ _reqs_arch_dir }}/{{ _family_type }}"
+        _reqs_distro_dir: "{{ _reqs_family_dir }}/{{ _os_type }}"
 
         _repo_dir: "repositories"
         _repo_arch_dir: "{{ _repo_dir }}/{{ _arch_type }}"
+        _repo_family_dir: "{{ _repo_arch_dir }}/{{ _family_type }}"
 
         # file paths:
         _req_files:
@@ -35,9 +38,9 @@
           grafana_dashboards: "{{ _reqs_dir }}/grafana-dashboards.yml"
           images: "{{ _reqs_arch_dir }}/images.yml"
           package_files: "{{ _reqs_distro_dir }}/packages.yml"
-          repo_files: "{{ _reqs_distro_dir }}/files.yml"
+          family_files: "{{ _reqs_family_dir }}/files.yml"
 
-        _repo_file: "{{ _repo_arch_dir }}/{{ _os_type }}.yml"
+        _repo_file: "{{ _repo_family_dir }}/{{ _family_type }}.yml"
 
     - name: Create dirs on the remote
       file:
