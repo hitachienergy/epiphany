@@ -21,7 +21,7 @@
     name: download
     tasks_from: download_file
   vars:
-    file_name: "opensearch-dashboards-{{ opsd_version }}"
+    file_name: "opensearch-dashboards-{{ opensearchdash_version }}"
 
 - name: Kibana migr | Create opensearch-dashboards user
   user:
@@ -38,13 +38,13 @@
     group: "{{ specification.dashboards_user }}"
     mode: ug=rwx,o=rx
   with_items:
-    - "{{ specification.paths.opsd_log_dir }}"
-    - "{{ specification.paths.opsd_home }}"
+    - "{{ specification.paths.opensearchdash_log_dir }}"
+    - "{{ specification.paths.opensearchdash_home }}"
 
 - name: Kibana migr | Extract the tar file
   unarchive:
-    src: "/tmp/opensearch-dashboards-{{ opsd_version }}"
-    dest: "{{ specification.paths.opsd_home }}"
+    src: "/tmp/opensearch-dashboards-{{ opensearchdash_version }}"
+    dest: "{{ specification.paths.opensearchdash_home }}"
     owner: "{{ specification.dashboards_user }}"
     remote_src: yes
     extra_opts:
@@ -53,7 +53,7 @@
 - name: Kibana migr | Clone kibana settings
   copy:
     src: /etc/kibana/kibana.yml
-    dest: "{{ specification.paths.opsd_conf_dir }}/opensearch_dashboards.yml"
+    dest: "{{ specification.paths.opensearchdash_conf_dir }}/opensearch_dashboards.yml"
     remote_src: yes
     owner: "{{ specification.dashboards_user }}"
     group: root
@@ -62,7 +62,7 @@
 
 - name: Kibana migr | Porting kibana settings to OpenSearch Dashboards
   replace:
-    path: "{{ specification.paths.opsd_conf_dir }}/opensearch_dashboards.yml"
+    path: "{{ specification.paths.opensearchdash_conf_dir }}/opensearch_dashboards.yml"
     regexp: "{{ item.1 }}"
     replace: "{{ item.2 }}"
   with_items:
@@ -86,7 +86,7 @@
     enabled: yes
 
 - name: Kibana migr | Get all the installed dashboards plugins
-  command: "{{ specification.paths.opsd_plugin_bin_path }} list"
+  command: "{{ specification.paths.opensearchdash_plugin_bin_path }} list"
   become: false  # This command can not be run as root user
   register: list_plugins
 

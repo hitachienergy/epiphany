@@ -13,7 +13,7 @@
     enabled: yes
 
 - name: Get all the installed dashboards plugins
-  command: "{{ specification.paths.opsd_plugin_bin_path }} list"
+  command: "{{ specification.paths.opensearchdash_plugin_bin_path }} list"
   become: false  # This command can not be run as root user
   register: list_plugins
 

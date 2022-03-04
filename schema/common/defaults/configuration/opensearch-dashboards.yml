@@ -5,7 +5,7 @@ specification:
   dashboards_user: opensearchdboard
   dashboards_password: PASSWORD_TO_CHANGE
   paths:
-    opsd_home: /usr/share/opensearch-dashboards
-    opsd_conf_dir: /usr/share/opensearch-dashboards/config
-    opsd_plugin_bin_path: /usr/share/opensearch-dashboards/bin/opensearch-dashboards-plugin
-    opsd_log_dir: /var/log/opensearchdashboards
+    opensearchdash_home: /usr/share/opensearch-dashboards
+    opensearchdash_conf_dir: /usr/share/opensearch-dashboards/config
+    opensearchdash_plugin_bin_path: /usr/share/opensearch-dashboards/bin/opensearch-dashboards-plugin
+    opensearchdash_log_dir: /var/log/opensearchdashboards

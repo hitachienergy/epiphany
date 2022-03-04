@@ -7,7 +7,7 @@
     name: download
     tasks_from: download_file
   vars:
-    file_name: "opensearch-dashboards-{{ opsd_version }}"
+    file_name: "opensearch-dashboards-{{ opensearchdash_version }}"
 
 - name: Create OpenSearch Dashboards user
   user:
@@ -17,15 +17,15 @@
 
 - name: Create home directory
   file:
-    path: "{{ specification.paths.opsd_home }}"
+    path: "{{ specification.paths.opensearchdash_home }}"
     state: directory
     owner: "{{ specification.dashboards_user }}"
     group: "{{ specification.dashboards_user }}"
 
 - name: Extract OpenSearch Dashboards tar file
   unarchive:
-    src: "/tmp/opensearch-dashboards-{{ opsd_version }}"
-    dest: "{{ specification.paths.opsd_home }}"
+    src: "/tmp/opensearch-dashboards-{{ opensearchdash_version }}"
+    dest: "{{ specification.paths.opensearchdash_home }}"
     owner: "{{ specification.dashboards_user }}"
     remote_src: yes
     extra_opts:
@@ -34,7 +34,7 @@
 - name: Copy configuration file
   template:
     src: opensearch_dashboards.yml.j2
-    dest: "{{ specification.paths.opsd_conf_dir }}/opensearch_dashboards.yml"
+    dest: "{{ specification.paths.opensearchdash_conf_dir }}/opensearch_dashboards.yml"
     owner: "{{ specification.dashboards_user }}"
     group: "{{ specification.dashboards_user }}"
     mode: 0644
