@@ -33,9 +33,12 @@ class RedHatFamilyMode(BaseMode):
 
     def _install_base_packages(self):
         # some packages are from EPEL repo
-        if not self._tools.rpm.is_package_installed('epel-release'):
-            self._tools.yum.install('https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm')
-            self.__installed_packages.append('epel-release')
+        # make sure that we reinstall it before proceeding
+        if self._tools.rpm.is_package_installed('epel-release'):
+            self._tools.yum.remove('epel-release')
+
+        self._tools.yum.install('https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm')
+        self.__installed_packages.append('epel-release')
 
         self.__remove_yum_cache_for_untracked_repos()
         self._tools.yum.makecache(True)
@@ -51,11 +54,6 @@ class RedHatFamilyMode(BaseMode):
                 self._tools.yum_config_manager.enable_repo(repo)
 
     def _add_third_party_repositories(self):
-        # backup custom repositories to avoid possible conflicts
-        for repo_file in Path('/etc/yum.repos.d/').iterdir():
-            if repo_file.name.endswith('.repo'):
-                shutil.copy(str(repo_file), f'{repo_file}.bak')
-
         # Fix for RHUI client certificate expiration [#2318]
         if self._tools.yum.is_repo_enabled('rhui-microsoft-azure-rhel'):
             self._tools.yum.update('rhui-microsoft-azure-rhel*')

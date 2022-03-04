@@ -47,11 +47,6 @@ class DebianFamilyMode(BaseMode):
                 logging.info(f'- {package}')
 
     def _add_third_party_repositories(self):
-        # backup custom repositories to avoid possible conflicts
-        for repo_file in Path('/etc/apt/sources.list.d').iterdir():
-            if repo_file.name.endswith('.list'):
-                repo_file.rename(f'{repo_file}.bak')
-
         # add third party keys
         for repo in self._repositories:
             data = self._repositories[repo]
