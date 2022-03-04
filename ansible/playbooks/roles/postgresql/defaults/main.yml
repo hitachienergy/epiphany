@@ -22,7 +22,7 @@ pg:
         - postgresql-common
         - python3-psycopg2  # required by postgresql_* Ansible modules
       RedHat:
-        - python-psycopg2  # required by postgresql_* Ansible modules
+        - python3-psycopg2  # required by postgresql_* Ansible modules
     version_specific:
       Debian:
         - postgresql-13
