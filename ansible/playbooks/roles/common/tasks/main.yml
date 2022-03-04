@@ -69,7 +69,7 @@
   notify: restart waagent
 
 - name: Disable SELinux at next reboot
-  selinux:
+  ansible.posix.selinux:
     state: disabled
   ignore_errors: true
   when: ansible_selinux is defined and ansible_selinux != False and ansible_selinux.status == 'enabled'
