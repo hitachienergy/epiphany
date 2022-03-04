@@ -17,5 +17,5 @@
   file:
     path: "{{ kafka_install_dir }}"
     state: directory
-    owner: kafka
-    group: kafka
+    owner: "{{ specification.user }}"
+    group: "{{ specification.group }}"
