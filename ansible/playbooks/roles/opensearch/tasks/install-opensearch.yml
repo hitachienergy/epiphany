@@ -29,7 +29,7 @@
     state: directory
     owner: "{{ specification.opensearch_user }}"
     group: "{{ specification.opensearch_user }}"
-    mode: '0740'
+    mode: u=rwx,go=r
     recurse: yes
   loop:
     - "{{ specification.paths.opensearch_home }}"
