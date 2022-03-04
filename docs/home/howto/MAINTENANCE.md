@@ -123,7 +123,7 @@ status prometheus-node-exporter
 
 #### - OpenSearch
 
-To check status of OpenSearch we can use the command:
+To check the status of OpenSearch we can use the command:
 
 ```shell
 systemct status opensearch
@@ -141,7 +141,7 @@ Check if service is listening on 9300 (nodes communication port):
 netstat -antup | grep 9300
 ```
 
-We can also check status of OpenSearch cluster:
+We can also check the status of OpenSearch cluster:
 
 ```shell
 <IP>:9200/_cluster/health

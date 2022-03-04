@@ -68,9 +68,9 @@ Containers | Kubernetes components that run in a container
 
 ### OpenSearch Dashboards
 
-`OpenSearch Dashboards` like `Grafana` is used in Epiphany for visualization,It uses `OpenSearch` as datasource for logs, it allows to create full text queries, dashboards and analytics that are performed on logs.
+`OpenSearch Dashboards` like `Grafana` is used in Epiphany for visualization. It uses `OpenSearch` as datasource for logs, it allows to create full text queries, dashboards and analytics that are performed on logs.
 
-[Read more](https://www.elastic.co/products/kibana)
+[Read more](https://opensearch.org/docs/latest/dashboards/index/)
 
 ## Computing
 
