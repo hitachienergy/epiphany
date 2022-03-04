@@ -18,6 +18,11 @@
          'ubuntu-20.04' if (ansible_distribution == 'Ubuntu' and ansible_distribution_version == '20.04') else
          'detect' }}
 
+    download_requirements_family_name: >-
+      {{ 'redhat' if (ansible_distribution == 'AlmaLinux' and ansible_distribution_major_version == '8') else
+         'redhat' if (ansible_distribution == 'RedHat' and ansible_distribution_major_version == '8') else
+         'debian' if (ansible_distribution == 'Ubuntu' and ansible_distribution_version == '20.04') }}
+
 - name: Download Epiphany requirements on repository host  # online mode
   block:
     - name: Install required packages for repository
@@ -37,8 +42,9 @@
     - name: Copy files for downloading requirements to repository host
       include_tasks: copy-download-requirements.yml
       vars:
-        _os_type: "{{ download_requirements_os_name }}"
         _arch_type: "{{ ansible_architecture }}"
+        _family_type: "{{ download_requirements_family_name }}"
+        _os_type: "{{ download_requirements_os_name }}"
 
     - name: Make download script executable
       file:

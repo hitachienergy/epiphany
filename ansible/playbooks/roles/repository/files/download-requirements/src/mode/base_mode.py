@@ -7,7 +7,7 @@ from typing import Any, Dict
 from poyo import parse_string, PoyoException
 
 from src.command.toolchain import Toolchain, TOOLCHAINS
-from src.config import Config
+from src.config.config import Config
 from src.crypt import get_sha1, get_sha256
 from src.error import CriticalError, ChecksumMismatch
 
@@ -33,7 +33,7 @@ class BaseMode:
 
         self._repositories: Dict[str, Dict] = self.__parse_repositories()
         self._requirements: Dict[str, Any] = self.__parse_requirements()
-        self._tools: Toolchain = TOOLCHAINS[self._cfg.os_type](self._cfg.retries)
+        self._tools: Toolchain = TOOLCHAINS[self._cfg.os_type.os_family](self._cfg.retries)
 
     def __parse_repositories(self) -> Dict[str, Dict]:
         """
@@ -41,16 +41,30 @@ class BaseMode:
 
         :returns: parsed repositories data
         """
-        return load_yaml_file(self._cfg.repo_path / f'{self._cfg.distro_subdir}.yml')['repositories']
+        common_repository_file = self._cfg.repo_path / f'{self._cfg.family_subdir}/{self._cfg.os_type.os_family.value}.yml'
+        distro_repository_file = self._cfg.repo_path / f'{self._cfg.distro_subdir}/{self._cfg.os_type.os_name}.yml'
+
+        repos: Dict[str, Dict] = {}
+        if common_repository_file.exists():
+            repos.update(load_yaml_file(common_repository_file)['repositories'])
+
+        if distro_repository_file.exists():
+            repos.update(load_yaml_file(distro_repository_file)['repositories'])
+
+        if not repos:
+            raise CriticalError('No repositories found')
+
+        return repos
 
     def __parse_requirements(self) -> Dict[str, Any]:
         """
-        Load requirements for target architecture/distro from a yaml file.
+        Load requirements for target architecture/distro from yaml files.
 
         :returns: parsed requirements data
         """
         reqs: Dict = defaultdict(dict)
 
+        # parse packages:
         content = load_yaml_file(self._cfg.reqs_path / f'{self._cfg.distro_subdir}/packages.yml')
         reqs['packages'] = content['packages']
 
@@ -64,9 +78,10 @@ class BaseMode:
             content = load_yaml_file(distro_files)
             reqs['files'].update(content['files'])
 
-        for common_reqs in ['cranes', 'files', 'images']:
-            content = load_yaml_file(self._cfg.reqs_path / f'{self._cfg.os_arch.value}/{common_reqs}.yml')
-            reqs[common_reqs].update(content[common_reqs])
+        # parse common arch files:
+        for common_arch_reqs in ['cranes', 'files', 'images']:
+            content = load_yaml_file(self._cfg.reqs_path / f'{self._cfg.os_arch.value}/{common_arch_reqs}.yml')
+            reqs[common_arch_reqs].update(content[common_arch_reqs])
 
         content = load_yaml_file(self._cfg.reqs_path / 'grafana-dashboards.yml')
         reqs['grafana-dashboards'].update(content['grafana-dashboards'])
