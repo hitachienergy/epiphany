@@ -41,6 +41,7 @@ packages:
     - 'fontconfig'  # for grafana
     - 'fping'
     - 'fuse-overlayfs'  # for docker-ce-rootless-extras
+    - 'fuse3'  # for docker-ce-rootless-extras
     - 'gnutls'  # for cifs-utils
     - 'gssproxy'  # for nfs-utils
     - 'htop'
@@ -100,6 +101,7 @@ packages:
     - 'samba-client-libs'  # for samba-client
     - 'samba-common'
     - 'samba-libs'  # for cifs-utils
+    - 'slirp4netns' # for docker-ce-rootless-extras
     - 'sysstat'
     - 'tar'
     - 'telnet'
