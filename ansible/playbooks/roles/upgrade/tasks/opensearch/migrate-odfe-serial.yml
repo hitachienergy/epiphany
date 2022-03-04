@@ -23,7 +23,7 @@
     src: "{{ item.1 }}"
     dest: "{{ item.2 }}"
     remote_src: yes
-    owner: opensearch
+    owner: "{{ opensearch_vars.specification.opensearch_user }}"
     group: root
     mode: ug=rwx,o=
     directory_mode: yes

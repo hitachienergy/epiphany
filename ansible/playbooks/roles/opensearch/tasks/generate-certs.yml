@@ -5,7 +5,7 @@
   file:
     state: directory
     path: "{{ certificates.dirs.ca_key }}"
-    owner: opensearch
+    owner: "{{ specification.opensearch_user }}"
     group: opensearch
     mode: u=rwx,g=rwx,o=
 
@@ -14,7 +14,7 @@
   file:
     state: directory
     path: "{{ certificates.dirs.csr }}"
-    owner: opensearch
+    owner: "{{ specification.opensearch_user }}"
     group: opensearch
     mode: u=rwx,g=rwx,o=  # CSR file doesn't contain private key
 
@@ -25,17 +25,17 @@
       size: 2048  # based on ODFE docs
       type: RSA
       mode: u=rw,go=
-      owner: opensearch
+      owner: "{{ specification.opensearch_user }}"
       format: pkcs8
     community.crypto.openssl_csr:
       mode: u=rw,g=r,o=
-      owner: opensearch
+      owner: "{{ specification.opensearch_user }}"
       use_common_name_for_san: false
     community.crypto.x509_certificate:
       selfsigned_digest: sha256
       ownca_digest: sha256
       mode: u=rw,g=r,o=
-      owner: opensearch
+      owner: "{{ specification.opensearch_user }}"
   block:
     # --- Generate CA root certificate ---
 
@@ -169,7 +169,7 @@
     size: 2048
     type: RSA
     mode: u=rw,g=r,o=
-    owner: opensearch
+    owner: "{{ specification.opensearch_user }}"
     group: opensearch
     return_content: false
   register: node_key
@@ -196,7 +196,7 @@
     subjectAltName: "{{ _dns_list + [ 'IP:' + ansible_default_ipv4.address ] }}"
     use_common_name_for_san: false
     mode: u=rw,g=r,o=
-    owner: opensearch
+    owner: "{{ specification.opensearch_user }}"
     group: opensearch
   register: node_csr
   vars:
@@ -214,5 +214,5 @@
     ownca_not_after: "{{ certificates.files.node.cert.ownca_not_after }}"
     ownca_digest: sha256
     mode: u=rw,go=r
-    owner: opensearch
+    owner: "{{ specification.opensearch_user }}"
     group: opensearch
