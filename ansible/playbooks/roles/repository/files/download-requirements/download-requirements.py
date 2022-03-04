@@ -7,7 +7,8 @@ from typing import List
 import sys
 
 from src.command.toolchain import TOOLCHAINS
-from src.config import Config, OSType
+from src.config.config import Config
+from src.config.os_type import OSType
 from src.error import CriticalError
 
 
@@ -47,7 +48,7 @@ def cleanup(config: Config):
     Remove any 3rd party modules and tools.
     Used for offline mode.
     """
-    tools = TOOLCHAINS[config.os_type](config.retries)
+    tools = TOOLCHAINS[config.os_type.os_family](config.retries)
 
     if config.poyo_installed:
         logging.info('Uninstalling 3rd party python modules:')
