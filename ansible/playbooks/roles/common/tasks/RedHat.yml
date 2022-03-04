@@ -20,21 +20,19 @@
     name:
       - bash-completion
       - curl
-      - ebtables
       - ethtool
       - fping
       - htop
       - iftop
+      - iptables-ebtables
       - jq
-      - libselinux-python
-      - libsemanage-python
       - logrotate
       - nc
-      - net-tools  # required by Ansible (module listen_ports_facts)
+      - net-tools  # for Ansible (listen_ports_facts module)
       - openssl
-      - python-setuptools
       - python3
       - python3-dnf-plugin-versionlock
+      - python3-libselinux  # for Ansible (selinux module)
       - rsync
       - sysstat
       - tar

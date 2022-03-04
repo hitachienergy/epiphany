@@ -71,7 +71,7 @@
 # Will change current mode from 'enforcing' to 'permissive' (until the next reboot)
 # and mode in config file to 'disabled' (will take effect next reboot).
 - name: Disable SELinux
-  selinux:
+  ansible.posix.selinux:
     state: disabled
   when: ansible_selinux.status == 'enabled'
 
