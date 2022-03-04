@@ -9,6 +9,6 @@
       Debian:
         - python3-psycopg2
       RedHat:
-        - python-psycopg2
+        - python3-psycopg2
   module_defaults:
     yum: {lock_timeout: "{{ yum_lock_timeout }}"}
