@@ -4,7 +4,7 @@ from typing import Dict, List
 import logging
 import os
 
-from src.config import Config
+from src.config.config import Config
 from src.mode.base_mode import BaseMode, get_sha256
 
 
