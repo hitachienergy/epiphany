@@ -39,7 +39,9 @@ class Prepare(Step):
         distro_path: Path = arch_path / self.os
 
         dest_path: Path = Path(Config().output_dir)
-        dest_path /= self.output_dir if self.output_dir else 'prepare_scripts'
+        os = self.os.replace('-', '_').replace('.', '')
+        arch = self.arch.replace('-', '_').replace('.', '')
+        dest_path /= self.output_dir if self.output_dir else f'prepare_scripts_{os}_{arch}'
 
         charts_path = dest_path / 'charts/system'
 

@@ -19,25 +19,26 @@ class RedHatFamilyMode(BaseMode):
         self.__base_packages: List[str] = ['yum-utils', 'wget', 'curl', 'tar']
         self.__installed_packages: List[str] = []
 
-    def _use_backup_repositories(self):
-        sources = Path('/etc/yum.repos.d/epirepo.repo')
-        if sources.exists() and sources.stat().st_size:
-            if self._cfg.repos_backup_file.exists() and self._cfg.enable_backup:
-                logging.warn('OS repositories seems missing, restoring...')
-                self._tools.tar.unpack(filename=self._cfg.repos_backup_file,
-                                       directory=Path('/'),
-                                       absolute_names=True,
-                                       uncompress=False,
-                                       verbose=True)
-            else:
-                logging.warn(f'{str(sources)} seems to be missing, you either know what you are doing or '
-                             'you need to fix your repositories')
+    def _create_backup_repositories(self):
+        if not self._cfg.repos_backup_file.exists() or not self._cfg.repos_backup_file.stat().st_size:
+            logging.debug('Creating backup for system repositories...')
+            self._tools.tar.pack(self._cfg.repos_backup_file,
+                                 [Path('/etc/yum.repos.d/')],
+                                 verbose=True,
+                                 directory=Path('/'),
+                                 verify=True)
+
+            self._cfg.was_backup_created = True
+            logging.debug('Done.')
 
     def _install_base_packages(self):
         # some packages are from EPEL repo
-        if not self._tools.rpm.is_package_installed('epel-release'):
-            self._tools.yum.install('https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm')
-            self.__installed_packages.append('epel-release')
+        # make sure that we reinstall it before proceeding
+        if self._tools.rpm.is_package_installed('epel-release'):
+            self._tools.yum.remove('epel-release')
+
+        self._tools.yum.install('https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm')
+        self.__installed_packages.append('epel-release')
 
         self.__remove_yum_cache_for_untracked_repos()
         self._tools.yum.makecache(True)
@@ -48,19 +49,11 @@ class RedHatFamilyMode(BaseMode):
                 self.__installed_packages.append(package)
 
     def __enable_repos(self, repo_id_patterns: List[str]):
-        """
-        :param repo_id_patterns:
-        """
         for repo in self._tools.yum.find_rhel_repo_id(repo_id_patterns):
             if not self._tools.yum.is_repo_enabled(repo):
                 self._tools.yum_config_manager.enable_repo(repo)
 
     def _add_third_party_repositories(self):
-        # backup custom repositories to avoid possible conflicts
-        for repo_file in Path('/etc/yum.repos.d/').iterdir():
-            if repo_file.name.endswith('.repo'):
-                shutil.copy(str(repo_file), f'{repo_file}.bak')
-
         # Fix for RHUI client certificate expiration [#2318]
         if self._tools.yum.is_repo_enabled('rhui-microsoft-azure-rhel'):
             self._tools.yum.update('rhui-microsoft-azure-rhel*')
@@ -202,10 +195,9 @@ class RedHatFamilyMode(BaseMode):
         self._tools.wget.download(url, dest, additional_params=False)
 
     def _cleanup(self):
-        # restore repo files
+        # remove repo files
         for repo_file in Path('/etc/yum.repos.d').iterdir():
-            if repo_file.name.endswith('.bak'):
-                shutil.move(str(repo_file.absolute()), str(repo_file.with_suffix('').absolute()))
+            repo_file.unlink()
 
         # remove installed packages
         for package in self.__installed_packages:

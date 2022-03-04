@@ -22,19 +22,19 @@ class DebianFamilyMode(BaseMode):
         for repo in self._repositories.keys():
             self._repositories[repo]['path'] = Path('/etc/apt/sources.list.d') / f'{repo}.list'
 
-    def _use_backup_repositories(self):
-        sources = Path('/etc/apt/sources.list')
-        if not sources.exists() or not sources.stat().st_size:
-            if self._cfg.repos_backup_file.exists() and self._cfg.enable_backup:
-                logging.warn('OS repositories seems missing, restoring...')
-                self._tools.tar.unpack(filename=self._cfg.repos_backup_file,
-                                       directory=Path('/'),
-                                       absolute_names=True,
-                                       uncompress=False,
-                                       verbose=True)
-            else:
-                logging.warn(f'{str(sources)} seems to be missing, you either know what you are doing or '
-                             'you need to fix your repositories')
+    def _create_backup_repositories(self):
+        if not self._cfg.repos_backup_file.exists():
+            logging.debug('Creating backup for system repositories...')
+            self._tools.tar.pack(self._cfg.repos_backup_file,
+                                 targets=[Path('/etc/apt/sources.list'),
+                                          Path('/etc/apt/sources.list.d')],
+                                 verbose=True,
+                                 preserve=True,
+                                 absolute_names=True,
+                                 verify=True)
+
+            self._cfg.was_backup_created = True
+            logging.debug('Done.')
 
     def _install_base_packages(self):
         # install prerequisites which might be missing
@@ -47,11 +47,6 @@ class DebianFamilyMode(BaseMode):
                 logging.info(f'- {package}')
 
     def _add_third_party_repositories(self):
-        # backup custom repositories to avoid possible conflicts
-        for repo_file in Path('/etc/apt/sources.list.d').iterdir():
-            if repo_file.name.endswith('.list'):
-                repo_file.rename(f'{repo_file}.bak')
-
         # add third party keys
         for repo in self._repositories:
             data = self._repositories[repo]
@@ -125,10 +120,9 @@ class DebianFamilyMode(BaseMode):
             if data['path'].exists():
                 data['path'].unlink()
 
-        # restore masked custom repositories to their original names
+        # removed custom repositories to their original names
         for repo_file in Path('/etc/apt/sources.list.d').iterdir():
-            if repo_file.name.endswith('.bak'):
-                move(str(repo_file.absolute()), str(repo_file.with_suffix('').absolute()))
+            repo_file.unlink()
 
         # remove installed packages
         for package in self.__installed_packages:

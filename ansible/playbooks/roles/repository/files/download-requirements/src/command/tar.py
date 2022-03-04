@@ -13,66 +13,91 @@ class Tar(Command):
         super().__init__('tar', 1)
 
     def pack(self, filename: Path,
-             target: str,
-             directory: Path = None,
-             verbose: bool = False,
+             targets: List[Path],
+
+             # short flags:
              compress: bool = False,
+             verbose: bool = False,
+             preserve: bool = False,
+
+             # long flags:
+             absolute_names: bool = False,
+             directory: Path = None,
              verify: bool = False):
         """
-        Create a tar archive
+        Create a tar archive.
 
         :param filename: name for the archive to be created
-        :param target: files to be archived
-        :param directory: change directory before doing any actions
+        :param targets: files to be archived
+
+        :param compress: use zlib compression
         :param verbose: use verbose mode
-        :param uncompress: use zlib compression
+        :param preserve: extract information about file permissions
+
+        :param absolute_names: don't strip leading slashes from file names
+        :param directory: change directory before doing any actions
         :param verify: check file integrity
         """
         short_flags: List[str] = ['-c']  # -czvf flags
         tar_params: List[str] = [str(filename)]  # all the other params
 
+        # short flags:
         if compress:
             short_flags.append('z')
 
         if verbose:
             short_flags.append('v')
 
+        if preserve:
+            short_flags.append('p')
+
         short_flags.append('f')
 
-        if verify:
-            tar_params.append('--verify')
+        # long flags:
+        if absolute_names:
+            tar_params.append('--absolute-names')
 
         if directory is not None:
             tar_params.extend(['--directory', str(directory)])
 
-        if target:
-            tar_params.append(target)
+        if verify:
+            tar_params.append('--verify')
+
+        for target in targets:
+            tar_params.append(str(target))
 
         self.run([''.join(short_flags)] + tar_params)
 
     def unpack(self, filename: Path,
-               target: str = '',
+               target: Path = None,
+
+               # short flags:
+               uncompress: bool = True,
+               verbose: bool = False,
+
+               # long flags:
                absolute_names: bool = False,
                directory: Path = None,
                overwrite: bool = True,
-               strip_components: int = 0,
-               uncompress: bool = True,
-               verbose: bool = False):
+               strip_components: int = 0):
         """
-        Unpack a tar archive
+        Unpack a tar archive.
 
         :param filename: file to be extracted
         :param target: name for the output file
+
+        :param uncompress: use zlib compression
+        :param verbose: use verbose mode
+
         :param absolute_names: use abs path names
         :param directory: change directory before doing any actions
         :param overwrite: overwrite existing files when extracting
         :param strip_components: strip leading components from file names on extraction
-        :param uncompress: use zlib compression
-        :param verbose: use verbose mode
         """
         short_flags: List[str] = ['-x']  # -xzvf flags
         tar_params: List[str] = [str(filename)]  # all the other params
 
+        # short flags
         if uncompress:
             short_flags.append('z')
 
@@ -81,6 +106,7 @@ class Tar(Command):
 
         short_flags.append('f')
 
+        # long flags
         if absolute_names:
             tar_params.append('--absolute-names')
 
@@ -90,10 +116,10 @@ class Tar(Command):
         if strip_components:
             tar_params.append(f'--strip-components={str(strip_components)}')
 
-        if target:
-            tar_params.append(target)
-
         if overwrite:
             tar_params.append('--overwrite')
+
+        if target is not None:
+            tar_params.append(str(target))
 
         self.run([''.join(short_flags)] + tar_params)
