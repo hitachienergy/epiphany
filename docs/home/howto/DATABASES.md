@@ -455,9 +455,9 @@ Properly configured application (kubernetes service) to use fully HA configurati
 PostgreSQL native replication is now deprecated and removed.
 Use [PostgreSQL HA replication with repmgr](#how-to-set-up-postgresql-ha-replication-with-repmgr-cluster) instead.
 
-## How to start working with Opensearch
+## How to start working with OpenSearch
 
-OpenSearch is the [successor](https://opendistro.github.io/for-elasticsearch-docs/) of OpenDistro for ElasticSearch project. Epipahny is providing an [automated solution](./UPGRADE.md#migration-from-open-distro-for-elasticsearch--kibana-to-opensearch-and-opensearch-dashboards) for migrating your existing ODFE installation to OpenSearch.
+OpenSearch is the [successor](https://opendistro.github.io/for-elasticsearch-docs/) of OpenDistro for ElasticSearch project. Epiphany is providing an [automated solution](./UPGRADE.md#migration-from-open-distro-for-elasticsearch--kibana-to-opensearch-and-opensearch-dashboards) for migrating your existing ODFE installation to OpenSearch.
 On the other hand, if you plan to just start working with OpenSearch - change machines count to value greater than 0 in your cluster configuration:
 
 ```yaml
@@ -485,7 +485,7 @@ kind: configuration/opensearch
 title: OpenSearch Config
 name: default
 specification:
-  cluster_name: EpiphanyOpensearch
+  cluster_name: EpiphanyOpenSearch
 ```
 
 By default, OpenSearch Dashboards ( previously Kibana component )  is deployed only for `logging` component. If you want to deploy it
