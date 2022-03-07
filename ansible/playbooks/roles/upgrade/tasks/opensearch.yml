@@ -20,9 +20,6 @@
     file: roles/opensearch/vars/main.yml
     name: opensearch_vars
 
-- name: OpenSearch | Set the versions of OpenSearch
-  include_tasks: roles/opensearch/tasks/set_facts.yml
-
 - name: OpenSearch | Ensure Opensearch service user exists
   user:
     name: "{{ opensearch_vars.specification.opensearch_user }}"
@@ -47,7 +44,7 @@
   debug:
     msg:
       - "Installed version: {{ ansible_facts.packages['elasticsearch-oss'][0].version }}"
-      - "Target version: {{ opensearch_ver.split('-')[0] }}"
+      - "Target version: {{ opensearch_defaults.file_name_version.opensearch[ansible_architecture].split('-')[1] }}"
 
 # If state file exists it means the previous run failed
 - name: OpenSearch | Check if upgrade state file exists

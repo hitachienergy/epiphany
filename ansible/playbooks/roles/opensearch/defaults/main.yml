@@ -1,5 +1,12 @@
 ---
 # This file is meant to be also used by upgrade role
+file_name_version:
+  opensearch:
+    x86_64: opensearch-1.2.4-linux-x64.tar.gz
+    aarch64: opensearch-1.2.4-linux-arm64.tar.gz
+  opensearch_perftop:
+    x86_64: opensearch-perf-top-1.2.0.0-linux-x64.zip
+    # Perftop is not supported on ARM (https://github.com/opensearch-project/perftop/issues/26)
 certificates:
   dirs:
     certs:  /usr/share/opensearch/config

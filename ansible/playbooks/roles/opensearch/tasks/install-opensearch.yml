@@ -1,20 +1,17 @@
 ---
-- name: Define the filenames for the download task
-  include_tasks: roles/opensearch/tasks/set_facts.yml
-
 - name: Download Opensearch
   include_role:
     name: download
     tasks_from: download_file
   vars:
-    file_name: "opensearch-{{ opensearch_ver }}"
+    file_name: "{{ file_name_version.opensearch[ansible_architecture]  }}"
 
 - name: Download PerfTop
   include_role:
     name: download
     tasks_from: download_file
   vars:
-    file_name: "opensearch-perf-top-{{ opensearch_perftop_ver }}"
+    file_name: "{{ file_name_version.opensearch_perftop[ansible_architecture]  }}"
   when: ansible_architecture == "x86_64"  # Perftop is not yet supported on ARM (https://github.com/opensearch-project/perftop/issues/26)
 
 - name: Ensure Opensearch service user exists
@@ -42,7 +39,7 @@
 
 - name: Extract OpenSearch tar file
   unarchive:
-    src: "/tmp/opensearch-{{ opensearch_ver }}"
+    src: "/tmp/{{ file_name_version.opensearch[ansible_architecture]  }}"
     dest: "{{ specification.paths.opensearch_home }}"
     owner: "{{ specification.opensearch_user }}"
     remote_src: yes
@@ -51,7 +48,7 @@
 
 - name: Extract OpenSearch PerfTop tar file
   unarchive:
-    src: "/tmp/opensearch-perf-top-{{ opensearch_perftop_ver }}"
+    src: "/tmp/{{ file_name_version.opensearch_perftop[ansible_architecture]  }}"
     dest: "{{ specification.paths.opensearch_perftop_home }}"
     owner: "{{ specification.opensearch_user }}"
     remote_src: yes
