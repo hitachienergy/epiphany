@@ -1,4 +1,5 @@
 ---
+# Added to solve an issue with finding the repository server by download rook helm chart task
 - hosts: repository
   gather_facts: true
   tasks: []
