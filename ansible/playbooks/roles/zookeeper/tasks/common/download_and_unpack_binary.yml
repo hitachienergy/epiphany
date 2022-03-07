@@ -7,10 +7,10 @@
     file_name: "{{ zookeeper_bin_filename }}"
 
 - name: Create {{ zookeeper_install_dir }} directory
-  become: yes
+  become: true
   file:
     path: "{{ zookeeper_install_dir }}"
-    recurse: yes
+    recurse: true
     owner: "{{ zookeeper_user }}"
     group: "{{ zookeeper_group }}"
     mode: u=rwx,g=rx,o=rx
@@ -19,7 +19,7 @@
 - name: Unpack Zookeeper-{{ zookeeper_version }} binary
   become: true
   unarchive:
-    remote_src: yes
+    remote_src: true
     src: "{{ download_directory }}/{{ zookeeper_bin_filename }}"
     dest: "{{ zookeeper_install_dir }}"
     creates: "{{ zookeeper_install_dir }}/bin"

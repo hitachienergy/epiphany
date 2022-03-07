@@ -2,13 +2,13 @@
 - name: Create Zookeeper group
   group:
     name: "{{ zookeeper_group }}"
-    system: yes
+    system: true
 
 - name: Create Zookeeper user
   user:
     name: "{{ zookeeper_user }}"
     group: "{{ zookeeper_group }}"
-    system: yes
+    system: true
     shell: "/usr/sbin/nologin"
 
 - name: Install Java package
@@ -91,7 +91,7 @@
 - name: Enable and start Zookeeper service
   service:
     name: zookeeper
-    enabled: yes
+    enabled: true
     state: started
 
 - include_tasks: metrics.yml

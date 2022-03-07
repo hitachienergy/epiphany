@@ -4,7 +4,7 @@
   user:
     name: "{{ specification.user }}"
     groups: "{{ specification.jmx_exporter_group }}"
-    append: yes
+    append: true
 
 - name: prometheus jmx | configuration file
   become: true

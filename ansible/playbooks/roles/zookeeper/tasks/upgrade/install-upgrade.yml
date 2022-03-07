@@ -4,7 +4,7 @@
 
 - name: Copy configuration from previous version
   copy:
-    remote_src: yes
+    remote_src: true
     src: /opt/zookeeper/conf/
     dest: "{{ zookeeper_install_dir }}}/conf"
     mode: preserve
@@ -14,7 +14,7 @@
     path: /opt/zookeeper
     state: link
     src: "{{ zookeeper_install_dir }}"
-    force: yes
+    force: true
 
 - name: Reconfigure Zookeeper service to use symbolic link
   lineinfile:
@@ -43,7 +43,7 @@
   systemd:
     name: zookeeper
     state: started
-    daemon-reload: yes
+    daemon-reload: true
 
 - name: Remove previous version binaries
   file:

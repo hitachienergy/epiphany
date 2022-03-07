@@ -14,7 +14,7 @@
     dest: /opt/kafka
     state: link
     src: "{{ kafka_install_dir}}"
-    force: yes
+    force: true
 
 - name: Remove previous version binaries
   file:

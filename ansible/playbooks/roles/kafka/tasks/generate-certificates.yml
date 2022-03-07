@@ -56,7 +56,7 @@
   slurp:
     src: "{{ specification.security.ssl.server.keystore_location | dirname }}/{{ item }}"
     dest: "{{ specification.security.ssl.server.local_cert_download_path }}/{{ item }}"
-    flat: yes
+    flat: true
   loop:
     - "ca-cert"
     - "ca-key"

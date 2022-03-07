@@ -2,7 +2,7 @@
   user:
     name: "{{ zookeeper_user }}"
     groups: "{{ jmx_exporter_group }}"
-    append: yes
+    append: true
 
 - name: prometheus jmx | configuration file
   become: true

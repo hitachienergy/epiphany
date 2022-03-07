@@ -5,7 +5,7 @@
   service:
     name: kafka
     state: restarted
-    enabled: yes
+    enabled: true
   retries: 10
   delay: 10
 

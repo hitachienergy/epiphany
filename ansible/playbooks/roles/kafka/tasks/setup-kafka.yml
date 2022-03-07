@@ -2,12 +2,12 @@
 - name: Setup group
   group:
     name: "{{ specification.group }}"
-    system: yes
+    system: true
 
 - name: Setup user
   user:
     name: "{{ specification.user }}"
-    system: yes
+    system: true
     group: "{{ specification.group }}"
     shell: "/usr/sbin/nologin"
 
@@ -51,7 +51,7 @@
 
 - name: Reload daemon
   systemd:
-    daemon-reload: yes
+    daemon-reload: true
 
 - name: Create data_dir
   file:
