@@ -16,6 +16,7 @@
 - [#805](https://github.com/epiphany-platform/epiphany/issues/805) - Refactor download-requirements script
 - [#2858](https://github.com/epiphany-platform/epiphany/issues/2858) - Make Ruby spec tests code compliant with rubocop lint rules
 - [#2975](https://github.com/epiphany-platform/epiphany/issues/2975) - Copy only required files
+- [#2991](https://github.com/epiphany-platform/epiphany/issues/2991) - Add automatic backup creation for download requirements
 - [#2448](https://github.com/epiphany-platform/epiphany/issues/2448) - Passwordless SSH communication for postgres user between DB nodes
 
 ### Fixed
@@ -60,6 +61,7 @@
 - [#2836](https://github.com/epiphany-platform/epiphany/issues/2836) - Removal of Istio component
 - [#2837](https://github.com/epiphany-platform/epiphany/issues/2837) - Removal of Apache Ignite component
 - [#2927](https://github.com/epiphany-platform/epiphany/issues/2927) - Review Epiphany tools (remove outdated)
+- [#2864](https://github.com/epiphany-platform/epiphany/issues/2864) - Remove unnecessary design docs
 
 ### Deprecated
 

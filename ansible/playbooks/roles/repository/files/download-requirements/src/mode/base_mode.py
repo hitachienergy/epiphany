@@ -71,15 +71,15 @@ class BaseMode:
 
         return reqs
 
-    def _use_backup_repositories(self):
+    def _create_backup_repositories(self):
         """
-        Check if there were any critical issues and if so, try to restore the state using backup
+        Create a backup of package repository files under the /etc directory.
         """
         raise NotImplementedError
 
     def _add_third_party_repositories(self):
         """
-        Add third party repositories for target OS's package manager
+        Add third party repositories for target OS's package manager.
         """
         raise NotImplementedError
 
@@ -91,7 +91,7 @@ class BaseMode:
 
     def _download_packages(self):
         """
-        Download packages under `self._requirements['packages']` using target OS's package manager
+        Download packages under `self._requirements['packages']` using target OS's package manager.
         """
         raise NotImplementedError
 
@@ -140,7 +140,7 @@ class BaseMode:
 
     def __download_grafana_dashboards(self):
         """
-        Download grafana dashboards under `self._requirements['grafana-dashboards']`
+        Download grafana dashboards under `self._requirements['grafana-dashboards']`.
         """
         dashboards: Dict[str, Dict] = self._requirements['grafana-dashboards']
         for dashboard in dashboards:
@@ -158,7 +158,7 @@ class BaseMode:
 
     def __download_crane(self):
         """
-        Download Crane package if needed and setup it's environment
+        Download Crane package if needed and setup it's environment.
         """
         crane_path = self._cfg.dest_dir / 'crane'
         crane_package_path = Path(f'{crane_path}.tar.gz')
@@ -169,7 +169,7 @@ class BaseMode:
             logging.debug('crane - checksum ok, skipped')
         else:
             self._download_crane_binary(first_crane, crane_package_path)
-            self._tools.tar.unpack(crane_package_path, 'crane', directory=self._cfg.dest_dir)
+            self._tools.tar.unpack(crane_package_path, Path('crane'), directory=self._cfg.dest_dir)
             chmod(crane_path, 0o0755)
 
         # create symlink to the crane file so that it'll be visible in shell
@@ -180,7 +180,7 @@ class BaseMode:
 
     def _download_images(self):
         """
-        Download images under `self._requirements['images']` using Crane
+        Download images under `self._requirements['images']` using Crane.
         """
         platform: str = 'linux/amd64' if self._cfg.os_arch.X86_64 else 'linux/arm64'
         images = self._requirements['images']
@@ -200,9 +200,22 @@ class BaseMode:
 
     def _cleanup(self):
         """
-        Optional step for cleanup routines
+        Optional step for cleanup routines.
         """
         pass
+
+    def __restore_repositories(self):
+        """
+        Restore the state of repository files under the /etc dir.
+        """
+        if self._cfg.repos_backup_file.exists() and self._cfg.repos_backup_file.stat().st_size:
+            logging.info('Restoring repository files...')
+            self._tools.tar.unpack(filename=self._cfg.repos_backup_file,
+                                   directory=Path('/'),
+                                   absolute_names=True,
+                                   uncompress=False,
+                                   verbose=True)
+            logging.info('Done restoring repository files.')
 
     def run(self):
         """
@@ -218,9 +231,10 @@ class BaseMode:
         self._cfg.dest_images.mkdir(exist_ok=True, parents=True)
         self._cfg.dest_packages.mkdir(exist_ok=True, parents=True)
 
-        logging.info('Checking backup repositories...')
-        self._use_backup_repositories()
-        logging.info('Done checking backup repositories.')
+        self._create_backup_repositories()
+
+        if not self._cfg.was_backup_created:
+            self.__restore_repositories()
 
         logging.info('Installing base packages...')
         self._install_base_packages()
@@ -259,3 +273,5 @@ class BaseMode:
         logging.info('Running cleanup...')
         self._cleanup()
         logging.info('Done running cleanup.')
+
+        self.__restore_repositories()
