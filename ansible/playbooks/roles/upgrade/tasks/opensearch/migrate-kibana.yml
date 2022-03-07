@@ -1,33 +1,33 @@
 ---
-- name: Kibana migr | Load deafults from Opensearch Dashboards role
+- name: Kibana migration | Load deafults from Opensearch Dashboards role
   include_vars:
     file: roles/opensearch_dashboards/defaults/main.yml
 
-- name: Kibana migr | Load vars from Opensearch Dashboards role  # requires epicli upgrade -f <manifest>.yml
+- name: Kibana migration | Load vars from Opensearch Dashboards role  # requires epicli upgrade -f <manifest>.yml
   include_vars:
     file: roles/opensearch_dashboards/vars/main.yml
 
-- name: Kibana migr | Stop Kibana service
+- name: Kibana migration | Stop Kibana service
   systemd:
     name: kibana
     enabled: no
     state: stopped
 
-- name: Kibana migr | Download Opensearch Dashboards binary
+- name: Kibana migration | Download Opensearch Dashboards binary
   include_role:
     name: download
     tasks_from: download_file
   vars:
     file_name: "{{ file_name_version.opensearch_dashboards[ansible_architecture] }}"
 
-- name: Kibana migr | Create opensearch-dashboards user
+- name: Kibana migration | Create opensearch-dashboards user
   user:
     name: "{{ specification.dashboards_os_user }}"
     password: "{{ specification.dashboards_password }}"
     state: present
     shell: /bin/bash
 
-- name: Kibana migr | Create OPSD directories
+- name: Kibana migration | Create OPSD directories
   file:
     path: "{{ item }}"
     state: directory
@@ -38,16 +38,16 @@
     - "{{ specification.paths.opensearchdash_log_dir }}"
     - "{{ specification.paths.opensearchdash_home }}"
 
-- name: Kibana migr | Extract the tar file
+- name: Kibana migration | Extract the tar file
   unarchive:
-    src: "/tmp/{{ file_name_version.opensearch_dashboards[ansible_architecture] }}"
+    src: "{{ download_directory }}/{{ file_name_version.opensearch_dashboards[ansible_architecture] }}"
     dest: "{{ specification.paths.opensearchdash_home }}"
     owner: "{{ specification.dashboards_os_user }}"
     remote_src: yes
     extra_opts:
     - --strip-components=1
 
-- name: Kibana migr | Clone kibana settings
+- name: Kibana migration | Clone kibana settings
   copy:
     src: /etc/kibana/kibana.yml
     dest: "{{ specification.paths.opensearchdash_conf_dir }}/opensearch_dashboards.yml"
@@ -57,7 +57,7 @@
     mode: ug=rw,o=
     backup: yes
 
-- name: Kibana migr | Porting kibana settings to OpenSearch Dashboards
+- name: Kibana migration | Porting kibana settings to OpenSearch Dashboards
   replace:
     path: "{{ specification.paths.opensearchdash_conf_dir }}/opensearch_dashboards.yml"
     regexp: "{{ item.1 }}"
@@ -71,27 +71,27 @@
   - { 1: 'telemetry.optIn', 2: '#telemetry.optIn' }
   - { 1: 'telemetry.enabled', 2: '#telemetry.enabled' }
 
-- name: Kibana migr | Create OpenSearch Dashboards service
+- name: Kibana migration | Create OpenSearch Dashboards service
   template:
     src: roles/opensearch_dashboards/templates/opensearch-dashboards.service.j2
     dest: /etc/systemd/system/opensearch-dashboards.service
 
-- name: Kibana migr | Assure Opensearch Dashboards service is started
+- name: Kibana migration | Assure Opensearch Dashboards service is started
   service:
     name: opensearch-dashboards
     state: started
     enabled: yes
 
-- name: Kibana migr | Get all the installed dashboards plugins
+- name: Kibana migration | Get all the installed dashboards plugins
   command: "{{ specification.paths.opensearchdash_plugin_bin_path }} list"
   become: false  # This command can not be run as root user
   register: list_plugins
 
-- name: Kibana migr | Show all the installed dashboards plugins
+- name: Kibana migration | Show all the installed dashboards plugins
   debug:
     msg: "{{ list_plugins.stdout }}"
 
-- name: Kibana migr | Prevent Filebeat API access problem  # Workaround for https://github.com/opensearch-project/OpenSearch-Dashboards/issues/656
+- name: Kibana migration | Prevent Filebeat API access problem  # Workaround for https://github.com/opensearch-project/OpenSearch-Dashboards/issues/656
   replace:
     path: /etc/filebeat/filebeat.yml
     regexp: 'setup.dashboards.enabled: true'
