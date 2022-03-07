@@ -44,7 +44,7 @@
     state: directory
     owner: root
     group: prometheus
-    mode: 0750
+    mode: u=rwx,g=rx,o=
   delegate_to: "{{ node }}"
   loop_control:
     loop_var: node

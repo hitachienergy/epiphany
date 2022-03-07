@@ -10,5 +10,5 @@
     dest: "/home/{{ admin_user.name }}/kafka_producer_consumer.py"
     owner: "{{ admin_user.name }}"
     group: "{{ admin_user.name }}"
-    mode: 0755
+    mode: u=rwx,go=rx
     src: kafka_producer_consumer.py.j2
