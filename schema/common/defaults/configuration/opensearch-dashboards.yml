@@ -2,7 +2,7 @@ kind: configuration/opensearch-dashboards
 title: "OpenSearch-Dashboards"
 name: default
 specification:
-  dashboards_user: opensearchdboard
+  dashboards_os_user: opensearchdboard
   dashboards_password: PASSWORD_TO_CHANGE
   paths:
     opensearchdash_home: /usr/share/opensearch-dashboards

@@ -28,7 +28,7 @@
     fail:
       msg: "Are you trying to migrate from ODFE ( opensearch_vars.specification.odfe_migration: true ) on an already migrated server?"
     when:
-    - opensearch_vars.specification.odfe_migration == true
+    - opensearch_vars.specification.odfe_migration
 
 
 - name: ODFE migr | Set existing_config facts

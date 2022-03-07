@@ -22,7 +22,7 @@
 
 - name: Kibana migr | Create opensearch-dashboards user
   user:
-    name: "{{ specification.dashboards_user }}"
+    name: "{{ specification.dashboards_os_user }}"
     password: "{{ specification.dashboards_password }}"
     state: present
     shell: /bin/bash
@@ -31,8 +31,8 @@
   file:
     path: "{{ item }}"
     state: directory
-    owner: "{{ specification.dashboards_user }}"
-    group: "{{ specification.dashboards_user }}"
+    owner: "{{ specification.dashboards_os_user }}"
+    group: "{{ specification.dashboards_os_user }}"
     mode: ug=rwx,o=rx
   with_items:
     - "{{ specification.paths.opensearchdash_log_dir }}"
@@ -42,7 +42,7 @@
   unarchive:
     src: "/tmp/{{ file_name_version.opensearch_dashboards[ansible_architecture] }}"
     dest: "{{ specification.paths.opensearchdash_home }}"
-    owner: "{{ specification.dashboards_user }}"
+    owner: "{{ specification.dashboards_os_user }}"
     remote_src: yes
     extra_opts:
     - --strip-components=1
@@ -52,7 +52,7 @@
     src: /etc/kibana/kibana.yml
     dest: "{{ specification.paths.opensearchdash_conf_dir }}/opensearch_dashboards.yml"
     remote_src: yes
-    owner: "{{ specification.dashboards_user }}"
+    owner: "{{ specification.dashboards_os_user }}"
     group: root
     mode: ug=rw,o=
     backup: yes

@@ -9,8 +9,8 @@ PrivateTmp=true
 
 WorkingDirectory={{ specification.paths.opensearchdash_home }}
 
-User={{ specification.dashboards_user }}
-Group={{ specification.dashboards_user }}
+User={{ specification.dashboards_os_user }}
+Group={{ specification.dashboards_os_user }}
 
 ExecStart={{ specification.paths.opensearchdash_home }}/bin/opensearch-dashboards -q
 

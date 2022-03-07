@@ -8,7 +8,7 @@
 
 - name: Create OpenSearch Dashboards user
   user:
-    name: "{{ specification.dashboards_user }}"
+    name: "{{ specification.dashboards_os_user }}"
     state: present
     shell: /bin/bash
 
@@ -16,14 +16,14 @@
   file:
     path: "{{ specification.paths.opensearchdash_home }}"
     state: directory
-    owner: "{{ specification.dashboards_user }}"
-    group: "{{ specification.dashboards_user }}"
+    owner: "{{ specification.dashboards_os_user }}"
+    group: "{{ specification.dashboards_os_user }}"
 
 - name: Extract OpenSearch Dashboards tar file
   unarchive:
     src: "/tmp/{{ file_name_version.opensearch_dashboards[ansible_architecture] }}"
     dest: "{{ specification.paths.opensearchdash_home }}"
-    owner: "{{ specification.dashboards_user }}"
+    owner: "{{ specification.dashboards_os_user }}"
     remote_src: yes
     extra_opts:
     - --strip-components=1
@@ -32,8 +32,8 @@
   template:
     src: opensearch_dashboards.yml.j2
     dest: "{{ specification.paths.opensearchdash_conf_dir }}/opensearch_dashboards.yml"
-    owner: "{{ specification.dashboards_user }}"
-    group: "{{ specification.dashboards_user }}"
+    owner: "{{ specification.dashboards_os_user }}"
+    group: "{{ specification.dashboards_os_user }}"
     mode: 0644
     backup: yes
 
