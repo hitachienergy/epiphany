@@ -2,7 +2,7 @@ kind: configuration/logging
 title: Logging Config
 name: default
 specification:
-  cluster_name: EpiphanyOpensearch
+  cluster_name: EpiphanyOpenSearch
   opensearch_user: opensearch
   opsd_user: opensearchboard
   opsd_password: PASSWORD_TO_CHANGE
