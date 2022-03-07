@@ -3,6 +3,9 @@
 
 - name: Check if jmx exporter is available
   stat:
+    get_attributes: false
+    get_checksum: false
+    get_mime: false
     path: "{{ prometheus_jmx_exporter_path }}"
   register: exporter
 

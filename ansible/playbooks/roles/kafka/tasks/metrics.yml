@@ -20,9 +20,10 @@
     name: prometheus
     system: true
     state: present
-  delegate_to: "{{ item }}"
-  with_inventory_hostnames:
-    - prometheus
+  delegate_to: "{{ node }}"
+  loop_control:
+    loop_var: node
+  loop: "{{ groups.prometheus }}"
 
 - name: delegated | create prometheus system user
   user:
@@ -31,9 +32,11 @@
     shell: "/usr/sbin/nologin"
     group: prometheus
     createhome: false
-  delegate_to: "{{ item }}"
-  with_inventory_hostnames:
-    - prometheus
+  delegate_to: "{{ node }}"
+  loop_control:
+    loop_var: node
+  loop: "{{ groups.prometheus }}"
+
 
 - name: delegated | create file_sd for service discovery configs
   file:
@@ -42,9 +45,10 @@
     owner: root
     group: prometheus
     mode: 0750
-  delegate_to: "{{ item }}"
-  with_inventory_hostnames:
-    - prometheus
+  delegate_to: "{{ node }}"
+  loop_control:
+    loop_var: node
+  loop: "{{ groups.prometheus }}"
 
 - name: delegated | copy file_sd_config to prometheus hosts
   template:
@@ -53,7 +57,9 @@
     owner: root
     group: root
     mode: u=rx,go=r
-  delegate_to: "{{ item }}"
-  notify: restart prometheus
-  with_inventory_hostnames:
-    - prometheus
+  notify: Restart prometheus
+  delegate_to: "{{ node }}"
+  loop_control:
+    loop_var: node
+  loop: "{{ groups.prometheus }}"
+

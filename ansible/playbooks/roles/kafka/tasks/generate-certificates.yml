@@ -9,6 +9,9 @@
 - name: Check if keystore exists on broker
   stat:
     path: "{{ specification.security.ssl.server.keystore_location }}"
+    get_attributes: false
+    get_checksum: false
+    get_mime: false
   changed_when: false
   register: keystore_exists
 
@@ -24,17 +27,20 @@
 - name: Check if signing certificate exists
   stat:
     path: "{{ specification.security.ssl.server.keystore_location | dirname }}/ca-cert"
+    get_attributes: false
+    get_checksum: false
+    get_mime: false
   register: signing_certificate_exists
   changed_when: false
   when:
     - groups['kafka'][0] == inventory_hostname
 
 - name: Generate signing certificate
-  shell: openssl req -new -x509 -keyout {{ specification.security.ssl.server.keystore_location | dirname }}/ca-key \
-         -out {{ specification.security.ssl.server.keystore_location | dirname }}/ca-cert \
-         -days {{ specification.security.ssl.server.cert_validity }} \
-         -subj "/CN={{ inventory_hostname }}" \
-         --passout pass:{{ specification.security.ssl.server.passwords.key }}
+  command: openssl req -new -x509 -keyout {{ specification.security.ssl.server.keystore_location | dirname }}/ca-key \
+           -out {{ specification.security.ssl.server.keystore_location | dirname }}/ca-cert \
+           -days {{ specification.security.ssl.server.cert_validity }} \
+           -subj "/CN={{ inventory_hostname }}" \
+           --passout pass:{{ specification.security.ssl.server.passwords.key }}
   when:
     - groups['kafka'][0] == inventory_hostname
     - not signing_certificate_exists.stat.exists
@@ -47,7 +53,7 @@
   delegate_to: localhost
 
 - name: Fetching files
-  fetch:
+  slurp:
     src: "{{ specification.security.ssl.server.keystore_location | dirname }}/{{ item }}"
     dest: "{{ specification.security.ssl.server.local_cert_download_path }}/{{ item }}"
     flat: yes
@@ -70,13 +76,16 @@
 - name: Check if trustore exists
   stat:
     path: "{{ specification.security.ssl.server.truststore_location }}"
+    get_attributes: false
+    get_checksum: false
+    get_mime: false
   register: trustore_exists
 
 - name: Create trustore
-  shell: keytool -noprompt -keystore "{{ specification.security.ssl.server.truststore_location }}" -alias CARoot \
-         -import -file "{{ specification.security.ssl.server.keystore_location | dirname }}/ca-cert" \
-         -storepass {{ specification.security.ssl.server.passwords.keystore }} \
-         -keypass {{ specification.security.ssl.server.passwords.key }}
+  command: keytool -noprompt -keystore "{{ specification.security.ssl.server.truststore_location }}" -alias CARoot \
+           -import -file "{{ specification.security.ssl.server.keystore_location | dirname }}/ca-cert" \
+           -storepass {{ specification.security.ssl.server.passwords.keystore }} \
+           -keypass {{ specification.security.ssl.server.passwords.key }}
   when:
     - not trustore_exists.stat.exists
 
@@ -99,35 +108,35 @@
   register: signed_cert_exists
 
 - name: Export certificate to sign certificate with CA
-  shell: keytool -noprompt -keystore {{ specification.security.ssl.server.keystore_location }} \
-         -alias localhost -certreq \
-         -file "{{ specification.security.ssl.server.keystore_location | dirname }}/cert-file" \
-         -storepass {{ specification.security.ssl.server.passwords.keystore }} \
-         -keypass {{ specification.security.ssl.server.passwords.key }}
+  command: keytool -noprompt -keystore {{ specification.security.ssl.server.keystore_location }} \
+           -alias localhost -certreq \
+           -file "{{ specification.security.ssl.server.keystore_location | dirname }}/cert-file" \
+           -storepass {{ specification.security.ssl.server.passwords.keystore }} \
+           -keypass {{ specification.security.ssl.server.passwords.key }}
   when:
     - signed_cert_exists.rc == 1
 
 - name: Signing certificate with CA
-  shell: openssl x509 -req -CA "{{ specification.security.ssl.server.keystore_location | dirname }}/ca-cert" \
-         -CAkey "{{ specification.security.ssl.server.keystore_location | dirname }}/ca-key" \
-         -in "{{ specification.security.ssl.server.keystore_location | dirname }}/cert-file" \
-         -out "{{ specification.security.ssl.server.keystore_location | dirname }}/cert-signed" \
-         -days {{ specification.security.ssl.server.cert_validity }} -CAcreateserial \
-         -passin pass:{{ specification.security.ssl.server.passwords.key }}
+  command: openssl x509 -req -CA "{{ specification.security.ssl.server.keystore_location | dirname }}/ca-cert" \
+           -CAkey "{{ specification.security.ssl.server.keystore_location | dirname }}/ca-key" \
+           -in "{{ specification.security.ssl.server.keystore_location | dirname }}/cert-file" \
+           -out "{{ specification.security.ssl.server.keystore_location | dirname }}/cert-signed" \
+           -days {{ specification.security.ssl.server.cert_validity }} -CAcreateserial \
+           -passin pass:{{ specification.security.ssl.server.passwords.key }}
   when:
     - signed_cert_exists.rc == 1
 
 - name: Import certificate CA
-  shell: keytool -noprompt -keystore {{ specification.security.ssl.server.keystore_location }} -alias CARoot \
-         -import -file "{{ specification.security.ssl.server.keystore_location | dirname }}/ca-cert" \
-         -storepass {{ specification.security.ssl.server.passwords.keystore }}
+  command: keytool -noprompt -keystore {{ specification.security.ssl.server.keystore_location }} -alias CARoot \
+           -import -file "{{ specification.security.ssl.server.keystore_location | dirname }}/ca-cert" \
+           -storepass {{ specification.security.ssl.server.passwords.keystore }}
   when:
     - caroot_exists.rc == 1
 
 - name: Import certificate signed by CA
-  shell: keytool -noprompt -keystore {{ specification.security.ssl.server.keystore_location }} -alias localhost \
-         -import -file "{{ specification.security.ssl.server.keystore_location | dirname }}/cert-signed" \
-         -storepass {{ specification.security.ssl.server.passwords.keystore }}
+  command: keytool -noprompt -keystore {{ specification.security.ssl.server.keystore_location }} -alias localhost \
+           -import -file "{{ specification.security.ssl.server.keystore_location | dirname }}/cert-signed" \
+           -storepass {{ specification.security.ssl.server.passwords.keystore }}
   when:
     - signed_cert_exists.rc == 1
 

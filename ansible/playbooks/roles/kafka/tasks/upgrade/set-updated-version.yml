@@ -1,6 +1,9 @@
 ---
 - name: Check if server.properties file exists
   stat:
+    get_attributes: false
+    get_checksum: false
+    get_mime: false
     path: /opt/kafka/config/server.properties
 
 - name: Modify inter.broker.protocol.version property

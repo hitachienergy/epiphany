@@ -47,7 +47,7 @@
     mode: u=rw,go=r
     src: kafka.service.j2
   notify:
-    - restart kafka
+    - Restart kafka
 
 - name: Reload daemon
   systemd:
@@ -109,7 +109,7 @@
     src: server.properties.j2
   register: create_server_properties
   notify:
-    - restart kafka
+    - Restart kafka
 
 - name: Delete meta.properties
   become: true
@@ -139,7 +139,7 @@
     - { limit_type: 'hard', limit_item: 'memlock', value: unlimited }
 
 - name: reload settings from all system configuration files
-  shell: sysctl --system
+  command: sysctl --system
 
 # SASL Setup
 # - name: copy SASL config file

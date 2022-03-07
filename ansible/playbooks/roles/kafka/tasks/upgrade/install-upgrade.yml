@@ -4,7 +4,7 @@
 
 - name: Copy configuration from previous version
   copy:
-    remote_src: yes
+    remote_src: true
     src: /opt/kafka/config/
     dest: "{{ kafka_install_dir}}/config"
     mode: preserve

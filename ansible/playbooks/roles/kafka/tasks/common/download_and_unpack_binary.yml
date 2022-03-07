@@ -8,7 +8,7 @@
 
 - name: Uncompress the Kafka tar
   unarchive:
-    remote_src: yes
+    remote_src: true
     creates: "{{ kafka_install_dir }}"
     src: "{{ download_directory }}/{{ kafka_bin_filename }}"
     dest: /opt

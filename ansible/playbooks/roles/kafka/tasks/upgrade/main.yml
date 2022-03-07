@@ -8,13 +8,16 @@
     /opt/kafka/bin/kafka-server-start.sh --version | grep Commit | grep -oP '^\d+\.\d+\.\d+'
   register: result
 
-- name: Set old Kafka version fact
+- name: Set old_kafka_version fact
   set_fact:
     old_kafka_version: "{{ result.stdout }}"
 
 - name: Check for upgrade flag file
   stat:
     path: "{{ lock_file }}"
+    get_attributes: false
+    get_checksum: false
+    get_mime: false
   register: lock_file_status
 
 - name: Include upgrade tasks
