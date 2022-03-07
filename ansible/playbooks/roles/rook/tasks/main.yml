@@ -4,7 +4,6 @@
   become: true
   run_once: true
   block:
-
     - name: RedHat fix | Create helm's binary symlink
       file:
         src: "/usr/local/bin/helm"
