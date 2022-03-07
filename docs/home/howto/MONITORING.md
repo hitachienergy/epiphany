@@ -233,7 +233,7 @@ When dashboard creation or import succeeds you will see it on your dashboard lis
 
 # OpenSearch Dashboards
 
-OpenSearch Dashboards ( a Kibana successor ) is an open source search and analytics visualization layer. It also serves as a user interface for many OpenSearch project plugins. For more information please refer to [the official website](https://opensearch.org/docs/latest/dashboards/index/).
+OpenSearch Dashboards ( a Kibana counterpart ) is an open source search and analytics visualization layer. It also serves as a user interface for many OpenSearch project plugins. For more information please refer to [the official website](https://opensearch.org/docs/latest/dashboards/index/).
 
 ## How to configure OpenSearch Dashboards
 
