@@ -21,7 +21,7 @@
 
 - name: Extract OpenSearch Dashboards tar file
   unarchive:
-    src: "/tmp/{{ file_name_version.opensearch_dashboards[ansible_architecture] }}"
+    src: "{{ download_directory }}/{{ file_name_version.opensearch_dashboards[ansible_architecture] }}"
     dest: "{{ specification.paths.opensearchdash_home }}"
     owner: "{{ specification.dashboards_os_user }}"
     remote_src: yes

@@ -39,7 +39,7 @@
 
 - name: Extract OpenSearch tar file
   unarchive:
-    src: "/tmp/{{ file_name_version.opensearch[ansible_architecture]  }}"
+    src: "{{ download_directory }}/{{ file_name_version.opensearch[ansible_architecture]  }}"
     dest: "{{ specification.paths.opensearch_home }}"
     owner: "{{ specification.opensearch_user }}"
     remote_src: yes
@@ -48,7 +48,7 @@
 
 - name: Extract OpenSearch PerfTop tar file
   unarchive:
-    src: "/tmp/{{ file_name_version.opensearch_perftop[ansible_architecture]  }}"
+    src: "{{ download_directory }}/{{ file_name_version.opensearch_perftop[ansible_architecture]  }}"
     dest: "{{ specification.paths.opensearch_perftop_home }}"
     owner: "{{ specification.opensearch_user }}"
     remote_src: yes
