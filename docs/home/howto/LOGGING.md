@@ -1,6 +1,6 @@
 # Centralized logging setup
 
-For centralized logging Epiphany uses [OpenSearch](https://opensearch.org/) stack - an opensource successor<sup>[1]</sup> of Elasticsearch & Kibana projects.
+For centralized logging Epiphany uses [Open Search](https://opensearch.org/) stack - an opensource successor<sup>[1]</sup> of Elasticsearch & Kibana projects.
 
 In order to enable centralized logging, be sure to set `count` property for `logging` feature to the value greater than 0 in your
 configuration manifest.
