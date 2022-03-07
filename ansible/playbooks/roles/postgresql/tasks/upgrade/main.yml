@@ -68,6 +68,14 @@
       completed: Host already upgraded, nothing to do
       failed: Re-run upgrade after a failure
 
+# Passwordless access for 'postgres' user was added in Epiphany v2.0
+# When it's not required to support upgrade from previous versions, this task can be removed
+- name: Configure ssh for 'postgres' user
+  when: groups['postgresql']|length > 1
+  vars:
+    username: postgres
+  include_tasks: helpers/configure-ssh-access.yml
+
 - name: Include upgrade tasks
   when: postgresql_upgrade_status != 'completed'
   include_tasks: upgrade/run-upgrade.yml
