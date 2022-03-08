@@ -1,17 +1,22 @@
 ---
 prereq-packages:
-  # packages-repo-prereqs
-  - 'apr'  # for httpd
-  - 'apr-util'  # for httpd
+  # --- createrepo ---
   - 'createrepo_c'
-  - 'drpm'  # for createrepo
+  - 'createrepo_c-libs'
+  - 'drpm'
+  # --- httpd ---
+  - 'apr'
+  - 'apr-util'
+  - 'apr-util-bdb'  # weak
+  - 'apr-util-openssl'  # weak
   - 'httpd'
-  - 'httpd-tools'  # for httpd
-  - 'mailcap'  # for httpd
+  - 'httpd-filesystem'
+  - 'httpd-tools'
+  - 'mailcap'
+  - 'mod_http2'
   - 'mod_ssl'  # for httpd
   - 'python3-chardet'  # for createrepo
-  - 'redhat-logos'  # for httpd
-  - 'yum-utils'
+  - 'redhat-logos-httpd'
 
 packages:
   - 'audit'  # for docker-ce
@@ -35,7 +40,9 @@ packages:
   - 'firewalld'
   - 'fontconfig'  # for grafana
   - 'fping'
+  # - 'fuse-common'  # for docker-ce-rootless-extras / temporary disabled
   - 'fuse-overlayfs'  # for docker-ce-rootless-extras
+  - 'fuse3'  # for docker-ce-rootless-extras
   - 'gnutls'  # for cifs-utils
   - 'gssproxy'  # for nfs-utils
   - 'htop'
@@ -47,6 +54,8 @@ packages:
   - 'libini_config'  # for nfs-utils
   - 'python3-libselinux'
   - 'python3-libsemanage'
+  - 'slirp4netns' # for docker-ce
+  - 'libslirp' # for docker-ce
   - 'libX11'  # for grafana
   - 'libxcb'  # for grafana
   - 'libXcursor'  # for grafana
@@ -55,6 +64,7 @@ packages:
   - 'net-tools'
   - 'nfs-utils'
   - 'nmap-ncat'
+  - 'policycoreutils-python-utils' # for containerd
 
   # Open Distro for Elasticsearch plugins are installed individually to not download them twice in different versions (as dependencies of opendistroforelasticsearch package)
   - 'opendistro-alerting-1.13.1.*'
@@ -104,7 +114,7 @@ packages:
   - 'xorg-x11-font-utils'  # for grafana
   - 'xorg-x11-server-utils'  # for grafana
   - 'python3-dnf-plugin-versionlock'
-  - 'yum-utils'
+  - 'dnf-utils'
 
   # to make remote-to-remote "synchronize" work in ansible
   - 'rsync'
