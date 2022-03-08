@@ -22,7 +22,7 @@
 
 - name: OpenSearch | Ensure Opensearch service user exists
   user:
-    name: "{{ opensearch_vars.specification.opensearch_user }}"
+    name: "{{ opensearch_vars.specification.opensearch_os_user }}"
     state: present
     shell: /bin/bash
 
@@ -30,8 +30,8 @@
   file:
     path: "{{ item }}"
     state: directory
-    owner: "{{ opensearch_vars.specification.opensearch_user }}"
-    group: "{{ opensearch_vars.specification.opensearch_user }}"
+    owner: "{{ opensearch_vars.specification.opensearch_os_user }}"
+    group: "{{ opensearch_vars.specification.opensearch_os_user }}"
     mode: u=rw,go=r
     recurse: yes
   with_items:

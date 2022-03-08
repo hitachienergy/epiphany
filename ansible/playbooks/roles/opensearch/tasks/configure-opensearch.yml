@@ -5,8 +5,8 @@
   file:
     path: "{{ specification.paths.opensearch_repo }}/"
     state: directory
-    owner: "{{ specification.opensearch_user }}"
-    group: "{{ specification.opensearch_user }}"
+    owner: "{{ specification.opensearch_os_user }}"
+    group: "{{ specification.opensearch_os_user }}"
     mode: u=rwx,go=
 
 - name: Provide JVM configuration file
@@ -14,8 +14,8 @@
     backup: yes
     src: jvm.options.j2
     dest: "{{ specification.paths.opensearch_conf_dir }}/jvm.options"
-    owner: "{{ specification.opensearch_user }}"
-    group: "{{ specification.opensearch_user }}"
+    owner: "{{ specification.opensearch_os_user }}"
+    group: "{{ specification.opensearch_os_user }}"
     mode: ug=rw,o=
   register: change_jvm_config
   vars:
@@ -36,8 +36,8 @@
     backup: yes
     src: opensearch.yml.j2
     dest: "{{ specification.paths.opensearch_conf_dir }}/opensearch.yml"
-    owner: "{{ specification.opensearch_user }}"
-    group: "{{ specification.opensearch_user }}"
+    owner: "{{ specification.opensearch_os_user }}"
+    group: "{{ specification.opensearch_os_user }}"
     mode: ug=rw,o=
   register: change_config
   vars:

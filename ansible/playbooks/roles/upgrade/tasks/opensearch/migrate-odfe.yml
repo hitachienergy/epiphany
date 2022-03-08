@@ -10,31 +10,29 @@
       - "Elasticsearch version currently installed: {{ ansible_facts.packages['elasticsearch-oss'][0].version }}"
       - "Opensearch version to be installed: {{ opensearch_defaults.file_name_version.opensearch[ansible_architecture].split('-')[1] }}"
 
-- name: ODFE migr | Ensure elasticsearch cluster is up and running
+- name: ODFE migration | Ensure elasticsearch cluster is up and running
   block:
   - name: OpenSearch | Include vars from opensearch role  # requires epicli upgrade -f <manifest>.yml
     include_vars:
       file: roles/opensearch/vars/main.yml
       name: opensearch_vars
 
-  - name: ODFE migr | Ensure elasticsearch cluster is up and running
+  - name: ODFE migration | Ensure elasticsearch cluster is up and running
     systemd:
       name: elasticsearch
       enabled: yes
       state: restarted
     register: elasticsearch_state
   rescue:
-  - name: ODFE migr | Suggest potential problem solution and fail
+  - name: ODFE migration | Suggest potential problem solution and fail
     fail:
       msg: "Are you trying to migrate from ODFE ( opensearch_vars.specification.odfe_migration: true ) on an already migrated server?"
-    when:
-    - opensearch_vars.specification.odfe_migration
+    when: opensearch_vars.specification.odfe_migration
 
-
-- name: ODFE migr | Set existing_config facts
+- name: ODFE migration | Set existing_config facts
   include_tasks: opensearch/utils/get-config-from-files.yml
 
-- name: ODFE migr | Set common facts
+- name: ODFE migration | Set common facts
   set_fact:
     certificates:      "{{ opensearch_defaults.certificates }}"
     es_host:           "{{ existing_config.main['network.host']   | default('_local_') }}"
@@ -43,7 +41,7 @@
     es_clustered:      "{{ (existing_config.main['discovery.seed_hosts'] | length > 1) | ternary(True, False) }}"
     es_node_name:      "{{ existing_config.main['node.name'] }}"
 
-- name: ODFE migr | Assure Elasticsearch files location will be used in following tasks
+- name: ODFE migration | Assure Elasticsearch files location will be used in following tasks
   set_fact:
     certificates:
       dirs:
@@ -55,7 +53,7 @@
           cert: "epiphany-admin.pem"
           key:  "epiphany-admin-key.pem"
 
-- name: ODFE migr | Prepare for ODFE to OPS migration
+- name: ODFE migration | Prepare for ODFE to OPS migration
   include_tasks:
     file: opensearch/utils/prepare-cluster-for-node-restart.yml
     apply:
@@ -72,7 +70,7 @@
       url: https://{{ es_host }}:{{ es_http_port }}
     fail_msg: API access test failed.
 
-- name: ODFE migr | Run core migration tasks individually on each node
+- name: ODFE migration | Run core migration tasks individually on each node
   include_tasks:
     file: opensearch/migrate-odfe-serial.yml
     apply:
@@ -83,7 +81,7 @@
     loop_var: target_hostname
   run_once: true
 
-- name: ODFE migr | Check if default admin user exists
+- name: ODFE migration | Check if default admin user exists
   uri:
     url: "https://{{ inventory_hostname }}:{{ ports.http }}/_opendistro/_security/api/internalusers/admin"
     method: GET
@@ -98,7 +96,7 @@
   delay: 1
   run_once: true
 
-- name: ODFE migr | Set Opensearch admin password
+- name: ODFE migration | Set Opensearch admin password
   uri:
     url: "https://{{ inventory_hostname }}:{{ ports.http }}/_opendistro/_security/api/internalusers"
     method: PATCH
@@ -107,7 +105,7 @@
       - op: "replace"
         path: "/admin"
         value:
-          password: "{{ specification.opensearch_password }}"
+          password: "{{ specification.admin_password }}"
           reserved: "true"
           backend_roles:
             - "admin"
@@ -123,7 +121,7 @@
   run_once: true
   when: admin_check_response.status == 200
 
-- name: ODFE migr | Check if kibanaserver user exists
+- name: ODFE migration | Check if kibanaserver user exists
   uri:
     url: "https://{{ inventory_hostname }}:{{ ports.http }}/_opendistro/_security/api/internalusers/kibanaserver"
     method: GET
@@ -138,7 +136,7 @@
   delay: 1
   run_once: true
 
-- name: ODFE migr | Set kibanaserver user password
+- name: ODFE migration | Set kibanaserver user password
   uri:
     url: "https://{{ inventory_hostname }}:{{ ports.http }}/_opendistro/_security/api/internalusers"
     method: PATCH
@@ -161,7 +159,7 @@
   run_once: true
   when: kibanaserver_check_response.status == 200
 
-- name: ODFE migr | Check if logstash user exists
+- name: ODFE migration | Check if logstash user exists
   uri:
     url: "https://{{ inventory_hostname }}:{{ ports.http }}/_opendistro/_security/api/internalusers/logstash"
     method: GET
@@ -176,7 +174,7 @@
   delay: 1
   run_once: true
 
-- name: ODFE migr | Set logstash user password
+- name: ODFE migration | Set logstash user password
   uri:
     url: "https://{{ inventory_hostname }}:{{ ports.http }}/_opendistro/_security/api/internalusers"
     method: PATCH
@@ -199,16 +197,16 @@
   run_once: true
   when: logstash_check_response.status == 200
 
-- name: ODFE migr | Check the OpenSearch status
+- name: ODFE migration | Check the OpenSearch status
   command: curl https://{{ inventory_hostname }}:{{ ports.http }}/_cluster/health?pretty -u 'admin:{{ specification.admin_password }}' -k
   register: opensearch_status
 
-- name: ODFE migr | Show the OpenSearch status
+- name: ODFE migration | Show the OpenSearch status
   debug:
     msg: "{{ opensearch_status.stdout }}"
   failed_when: "'number_of_nodes' not in opensearch_status.stdout"
 
-- name: ODFE migr | Reenable shard allocation for the cluster
+- name: ODFE migration | Reenable shard allocation for the cluster
   include_tasks:
     file: opensearch/utils/enable-shard-allocation.yml
     apply:

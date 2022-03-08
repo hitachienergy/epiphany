@@ -3,9 +3,9 @@ title: Logging Config
 name: default
 specification:
   cluster_name: EpiphanyOpenSearch
-  opensearch_user: opensearch
-  opsd_user: opensearchboard
-  opsd_password: PASSWORD_TO_CHANGE
+  opensearch_os_user: opensearch
+  dashboards_os_user: opensearchboard
+  dashboards_os_user_password: PASSWORD_TO_CHANGE
   admin_password: PASSWORD_TO_CHANGE
   kibanaserver_password: PASSWORD_TO_CHANGE
   kibanaserver_user_active: true

@@ -16,7 +16,7 @@
 
 - name: Ensure Opensearch service user exists
   user:
-    name: "{{ specification.opensearch_user }}"
+    name: "{{ specification.opensearch_os_user }}"
     state: present
     shell: /bin/bash
 
@@ -24,8 +24,8 @@
   file:
     path: "{{ item }}"
     state: directory
-    owner: "{{ specification.opensearch_user }}"
-    group: "{{ specification.opensearch_user }}"
+    owner: "{{ specification.opensearch_os_user }}"
+    group: "{{ specification.opensearch_os_user }}"
     mode: u=rwx,go=r
     recurse: yes
   loop:
@@ -41,7 +41,7 @@
   unarchive:
     src: "{{ download_directory }}/{{ file_name_version.opensearch[ansible_architecture]  }}"
     dest: "{{ specification.paths.opensearch_home }}"
-    owner: "{{ specification.opensearch_user }}"
+    owner: "{{ specification.opensearch_os_user }}"
     remote_src: yes
     extra_opts:
     - --strip-components=1
@@ -50,7 +50,7 @@
   unarchive:
     src: "{{ download_directory }}/{{ file_name_version.opensearch_perftop[ansible_architecture]  }}"
     dest: "{{ specification.paths.opensearch_perftop_home }}"
-    owner: "{{ specification.opensearch_user }}"
+    owner: "{{ specification.opensearch_os_user }}"
     remote_src: yes
   when: ansible_architecture == "x86_64"  # Perftop is not yet supported on ARM (https://github.com/opensearch-project/perftop/issues/26)
 

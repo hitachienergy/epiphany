@@ -9,8 +9,8 @@ PrivateTmp=true
 
 WorkingDirectory={{ specification.paths.opensearch_home }}
 
-User={{ specification.opensearch_user }}
-Group={{ specification.opensearch_user }}
+User={{ specification.opensearch_os_user }}
+Group={{ specification.opensearch_os_user }}
 
 ExecStart={{ specification.paths.opensearch_home }}/bin/opensearch -p {{ specification.paths.opensearch_home }}/opensearch.pid -q
 

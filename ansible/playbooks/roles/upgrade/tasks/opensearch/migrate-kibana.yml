@@ -23,7 +23,7 @@
 - name: Kibana migration | Create opensearch-dashboards user
   user:
     name: "{{ specification.dashboards_os_user }}"
-    password: "{{ specification.dashboards_password }}"
+    password: "{{ specification.dashboards_os_user_password }}"
     state: present
     shell: /bin/bash
 
