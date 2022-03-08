@@ -50,6 +50,7 @@
   file:
     path: "{{ specification.security.ssl.server.local_cert_download_path }}"
     state: directory
+    mode: u=rwx,go=
   delegate_to: localhost
 
 - name: Fetching files
@@ -65,8 +66,9 @@
 
 - name: Copy signing certificate and key to brokers
   copy:
-     src: "{{ specification.security.ssl.server.local_cert_download_path }}/{{ item }}"
-     dest: "{{ specification.security.ssl.server.keystore_location | dirname }}/"
+    src: "{{ specification.security.ssl.server.local_cert_download_path }}/{{ item }}"
+    dest: "{{ specification.security.ssl.server.keystore_location | dirname }}/"
+    mode: preserve
   loop:
     - "ca-cert"
     - "ca-key"
@@ -99,7 +101,7 @@
 
 - name: Check if certificate signed by CA is already imported
   shell: |-
-         keytool -list -v -keystore {{ specification.security.ssl.server.keystore_location }} \
+         set -o pipefail && keytool -list -v -keystore {{ specification.security.ssl.server.keystore_location }} \
          -storepass {{ specification.security.ssl.server.passwords.keystore }} \
          -alias localhost \
          | grep -i 'Certificate chain length: 2'

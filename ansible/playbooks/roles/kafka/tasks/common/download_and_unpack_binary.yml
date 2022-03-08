@@ -17,5 +17,6 @@
   file:
     path: "{{ kafka_install_dir }}"
     state: directory
+    mode: u=rwx,go=rx
     owner: "{{ specification.user }}"
     group: "{{ specification.group }}"

@@ -6,7 +6,7 @@
   register: current_kafka_version_property
   failed_when:
     - result.rc == 2
-  changed_when: False
+  changed_when: false
 
 - name: Add current_kafka_version property
   lineinfile:
@@ -21,7 +21,7 @@
   register: inter_broker_protocol_version_property
   failed_when:
     - result.rc == 2
-  changed_when: False
+  changed_when: false
 
 - name: Add inter.broker.protocol.version property
   lineinfile:

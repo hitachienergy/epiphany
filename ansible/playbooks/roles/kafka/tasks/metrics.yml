@@ -62,4 +62,3 @@
   loop_control:
     loop_var: node
   loop: "{{ groups.prometheus }}"
-

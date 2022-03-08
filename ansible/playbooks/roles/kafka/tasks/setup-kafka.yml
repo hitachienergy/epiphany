@@ -22,7 +22,8 @@
       RedHat:
         - java-1.8.0-openjdk-headless
   module_defaults:
-    yum: { lock_timeout: "{{ yum_lock_timeout }}" }
+    yum:
+      lock_timeout: "{{ yum_lock_timeout }}"
 
 - name: Download and unpack Kafka's binary
   include_tasks: common/download_and_unpack_binary.yml
@@ -74,7 +75,7 @@
     group: "{{ specification.group }}"
     mode: u=rwx,go=rx
 
-- name: Create /etc/kafka directory
+- name: Create /etc/kafka directory  # noqa risky-file-permissions
   file:
     path: /etc/kafka
     state: directory
@@ -131,12 +132,24 @@
     domain: "{{ specification.user }}"
     limit_type: "{{ item.limit_type }}"
     limit_item: "{{ item.limit_item }}"
-    value: "{{item.value}}"
-  with_items:
-    - { limit_type: '-', limit_item: 'nofile', value: 128000 }
-    - { limit_type: '-', limit_item: 'nproc', value: 128000 }
-    - { limit_type: 'soft', limit_item: 'memlock', value: unlimited }
-    - { limit_type: 'hard', limit_item: 'memlock', value: unlimited }
+    value: "{{ item.value }}"
+  loop:
+    -
+      limit_type: '-'
+      limit_item: 'nofile'
+      value: 128000
+    -
+      limit_type: '-'
+      limit_item: 'nproc'
+      value: 128000
+    -
+      limit_type: 'soft'
+      limit_item: 'memlock'
+      value: unlimited
+    -
+      limit_type: 'hard'
+      limit_item: 'memlock'
+      value: unlimited
 
 - name: reload settings from all system configuration files
   command: sysctl --system
