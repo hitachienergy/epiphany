@@ -22,7 +22,8 @@
       RedHat:
         - java-1.8.0-openjdk-headless
   module_defaults:
-    yum: { lock_timeout: "{{ yum_lock_timeout }}" }
+    yum:
+      lock_timeout: "{{ yum_lock_timeout }}"
 
 - name: Download and unpack Zookeeper's binary
   include_tasks: common/download_and_unpack_binary.yml
@@ -31,6 +32,7 @@
   file:
     path: "{{ item }}"
     state: directory
+    mode: u=rwx,go=rx
     owner: "{{ zookeeper_user }}"
     group: "{{ zookeeper_group }}"
   with_items:
@@ -42,9 +44,12 @@
 - name: Check if jmx exporter is available
   stat:
     path: "{{ prometheus_jmx_exporter_path }}"
+    get_attributes: false
+    get_checksum: false
+    get_mime: false
   register: exporter
 
-- name: Create Zookeeper service
+- name: Create Zookeeper service  # noqa risky-file-permissions (https://github.com/ansible-community/ansible-lint/pull/1030)
   template:
     src: zookeeper.service.j2
     dest: /lib/systemd/system/zookeeper.service
@@ -59,9 +64,10 @@
     dest: /var/lib/zookeeper/myid
     owner: "{{ zookeeper_user }}"
     group: "{{ zookeeper_group }}"
+    mode: preserve
   notify: Restart zookeeper
 
-- name: Configure Zookeeper
+- name: Configure Zookeeper  # noqa risky-file-permissions (https://github.com/ansible-community/ansible-lint/pull/1030)
   template:
     src: zoo.cfg.j2
     dest: "{{ zookeeper_install_dir }}/conf/zoo.cfg"
@@ -81,7 +87,7 @@
     dest: "/etc/profile.d/zookeeper_path.sh"
     mode: u=rwx,g=rx,o=rx
 
-- name: Update the log4j config with saner production values
+- name: Update the log4j config with saner production values  # noqa risky-file-permissions (https://github.com/ansible-community/ansible-lint/pull/1030)
   template:
     src: log4j.properties.j2
     dest: "{{ zookeeper_install_dir }}/conf/log4j.properties"
