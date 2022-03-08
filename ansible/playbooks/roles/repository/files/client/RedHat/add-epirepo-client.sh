@@ -13,6 +13,7 @@ name=epirepo
 baseurl=$REPOSITORY_URL/packages/
 enabled=1
 gpgcheck=0
+module_hotfixes=true
 EOF
 
 dnf makecache timer
