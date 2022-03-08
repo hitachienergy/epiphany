@@ -6,7 +6,7 @@
       - app_dir_name is defined
 
 - name: "{{ app_dir_name | capitalize }} | Create temporary directory (app)"
-  file:
+  file: # noqa risky-file-permissions (temporary directory)
     path: "{{ deployment_tmp_root_dir }}/{{ app_dir_name }}"
     state: directory
 
@@ -88,17 +88,18 @@
         - name: "{{ app_dir_name | capitalize }} | Write stderr to logs when encryption failed"
           when: encrypted_templates is failure
           debug:
-             var: encrypted_templates.stderr_lines
+            var: encrypted_templates.stderr_lines
           no_log: false  # needed for displaying what went wrong
 
         - name: "{{ app_dir_name | capitalize }} | Save encrypted templates into {{ deployment_tmp_root_dir }}/{{ app_dir_name }}/debug.yml"
           when: encrypted_templates is success
-          copy:
+          copy: # noqa risky-file-permissions (temporary directory)
             dest: "{{ deployment_tmp_root_dir }}/{{ app_dir_name }}/debug.yml"
             # To be able to successfully parse yaml payload we need to remove the custom "!vault" tag
             content: >-
               {{ (encrypted_templates.stdout | regex_replace('!vault', '') | from_yaml).concatenated_templates }}
             decrypt: false
+            mode: ugo=r
 
     - name: "{{ app_dir_name | capitalize }} | Print original error and fail"
       fail:

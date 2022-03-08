@@ -15,7 +15,7 @@
         _cookie_secret_name: >-
           {{ rabbitmq_service_name }}-cookie
         _template: >-
-          {{ '{{.data.cookie}}' }}
+          {{ '{{ .data.cookie }}' }}
 
     - name: Use existing erlang cookie
       set_fact:
