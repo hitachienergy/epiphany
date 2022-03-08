@@ -25,13 +25,13 @@
       when: specification.operator_chart_values is defined
       copy:
         content: "{{ specification.operator_chart_values }}"
-        dest: "{{ download_directory }}/operator-custom-chart-values.yml"
+        dest: "{{ download_directory }}/operator-custom-chart-values.yml" # noqa risky-file-permissions
 
     - name: Create custom configuration for cluster Helm chart file (cluster-custom-chart-values.yml)
       when: specification.cluster_chart_values is defined
       copy:
         content: "{{ specification.cluster_chart_values }}"
-        dest: "{{ download_directory }}/cluster-custom-chart-values.yml"
+        dest: "{{ download_directory }}/cluster-custom-chart-values.yml" # noqa risky-file-permissions
 
     - name: Install Rook operator using Helm chart with values from operator-custom-chart-values.yml
       when: specification.operator_chart_values is defined
