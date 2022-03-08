@@ -36,7 +36,7 @@
     - name: Install Rook operator using Helm chart with values from operator-custom-chart-values.yml
       when: specification.operator_chart_values is defined
       shell: |
-        helm -n {{ rook_chart_namespace }} upgrade --install \
+        helm -n {{ specification.rook_namespace }} upgrade --install \
           -f {{ download_directory }}/operator-custom-chart-values.yml \
           {{ rook_helm_chart_name }} \
           {{ download_directory }}/{{ rook_helm_chart_file_name }} --create-namespace
@@ -44,15 +44,15 @@
     - name: Install Rook operator using Helm chart with default values
       when: not specification.operator_chart_values is defined
       shell: |
-        helm -n {{ rook_chart_namespace }} upgrade --install \
+        helm -n {{ specification.rook_namespace }} upgrade --install \
           {{ rook_helm_chart_name }} \
           {{ download_directory }}/{{ rook_helm_chart_file_name }} --create-namespace
 
     - name: Create Rook cluster with values from cluster-custom-chart-values.yml
       when: specification.cluster_chart_values is defined
       shell: |
-        helm -n {{ rook_chart_namespace }} upgrade --install \
-          --set operatorNamespace={{ rook_chart_namespace }} \
+        helm -n {{ specification.rook_namespace }} upgrade --install \
+          --set operatorNamespace={{ specification.rook_namespace }} \
           -f {{ download_directory }}/cluster-custom-chart-values.yml \
           {{ rook_helm_cluster_chart_name }} \
           {{ download_directory }}/{{ rook_helm_cluster_chart_file_name }} --create-namespace
@@ -60,7 +60,7 @@
     - name: Create Rook cluster with default values
       when: not specification.cluster_chart_values is defined
       shell: |
-        helm -n {{ rook_chart_namespace }} upgrade --install \
-          --set operatorNamespace={{ rook_chart_namespace }} \
+        helm -n {{ specification.rook_namespace }} upgrade --install \
+          --set operatorNamespace={{ specification.rook_namespace }} \
           {{ rook_helm_cluster_chart_name }} \
           {{ download_directory }}/{{ rook_helm_cluster_chart_file_name }} --create-namespace
