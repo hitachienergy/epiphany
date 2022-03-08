@@ -20,19 +20,20 @@
     name:
       - bash-completion
       - curl
+      - iptables-ebtables
       - ethtool
       - fping
       - htop
       - iftop
-      - iptables-ebtables
       - jq
+      - python3-libselinux
+      - python3-libsemanage
       - logrotate
       - nc
-      - net-tools  # for Ansible (listen_ports_facts module)
+      - net-tools  # required by Ansible (module listen_ports_facts)
       - openssl
+      - python3-setuptools
       - python3
-      - python3-dnf-plugin-versionlock
-      - python3-libselinux  # for Ansible (selinux module)
       - rsync
       - sysstat
       - tar
@@ -40,6 +41,7 @@
       - tmux
       - unzip
       - vim
+      - dnf-utils
     state: present
   register: result
   retries: 3
