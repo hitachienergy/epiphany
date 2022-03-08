@@ -16,7 +16,8 @@
 - name: Tune the system settings
   include_tasks: configure-sysctl.yml
 
-- include_tasks: install-opensearch.yml
+- name: Include installation tasks
+  include_tasks: install-opensearch.yml
 
 - name: Include configuration tasks
   include_tasks: configure-opensearch.yml
