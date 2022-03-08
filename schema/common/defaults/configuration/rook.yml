@@ -3,4 +3,5 @@ kind: configuration/rook
 title: "Kubernetes Rook Config"
 name: default
 specification:
+    rook_namespace: rook-ceph
     enabled: false

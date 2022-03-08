@@ -5,3 +5,5 @@ type: object
 properties:
   enabled:
     type: boolean
+  rook_namespace:
+    type: string
