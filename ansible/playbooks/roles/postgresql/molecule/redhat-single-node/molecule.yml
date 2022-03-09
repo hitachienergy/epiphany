@@ -9,7 +9,7 @@ platforms:
   - name: instance-1
     groups:
       - postgresql
-    image: geerlingguy/docker-centos7-ansible
+    image: registry.access.redhat.com/ubi8/ubi-init
     pre_build_image: true
     capabilities:
       - SYS_ADMIN
@@ -17,6 +17,7 @@ platforms:
     tmpfs:
       - /run
       - /tmp
+    tty: true
     volumes:
       - /sys/fs/cgroup:/sys/fs/cgroup:ro
 provisioner:
