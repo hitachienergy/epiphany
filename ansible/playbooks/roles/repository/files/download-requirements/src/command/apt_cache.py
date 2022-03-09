@@ -34,7 +34,7 @@ class AptCache(Command):
                 if 'Candidate' in line:
                     return line.split(': ')[-1]
 
-        raise CriticalError(f'Candidate for {package} not found.')
+        raise CriticalError(f'Candidate for {package} not found, command: `{self.command()}`')
 
     def get_package_info(self, package: str, version: str = '') -> Dict[str, str]:
         """

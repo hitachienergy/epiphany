@@ -14,12 +14,16 @@ class Command:
         self.__proc_name: str = process_name
         self.__retries: int = retries
         self.__pipe_args: List[str] = pipe_args  # used for __or__
+        self.__command: str = ''
 
     def name(self) -> str:
         return self.__proc_name
 
     def pipe_args(self) -> List[str]:
         return self.__pipe_args or []
+
+    def command(self) -> str:
+        return self.__command
 
     def run(self, args: List[str],
             capture_output: bool = True,
@@ -35,13 +39,15 @@ class Command:
         process_args = [self.__proc_name]
         process_args.extend(args)
 
+        self.__command = f'{self.__proc_name} {" ".join(args)}'
+
         additional_args = {'encoding': 'utf-8'}
         if capture_output:
             additional_args['stdout'] = subprocess.PIPE
             additional_args['stderr'] = subprocess.PIPE
 
         for count in range(self.__retries):
-            logging.debug(f'[{count + 1}/{self.__retries}] Running: {self.__proc_name} {" ".join(args)} ')
+            logging.debug(f'[{count + 1}/{self.__retries}] Running: `{self.__command}`')
 
             process = subprocess.run(process_args, **additional_args)
 
@@ -53,7 +59,7 @@ class Command:
 
             logging.warn(process.stderr)
 
-        raise CriticalError('Retries count reached maximum!')
+        raise CriticalError(f'Retries count reached maximum, command: `{self.__command}`')
 
     def __or__(self, command) -> str:
         """
@@ -65,10 +71,10 @@ class Command:
         """
         lproc_name = f'{self.__proc_name} {" ".join(self.__pipe_args)}'
         rproc_name = f'{command.name()} {" ".join(command.pipe_args())}'
-        whole_process_name = f'{lproc_name} | {rproc_name}'
+        self.__command = f'{lproc_name} | {rproc_name}'
 
         for count in range(self.__retries):
-            logging.debug(f'[{count + 1}/{self.__retries}] Running: {whole_process_name}')
+            logging.debug(f'[{count + 1}/{self.__retries}] Running: `{self.__command}`')
 
             lproc = subprocess.Popen([self.__proc_name] + self.__pipe_args, stdout=subprocess.PIPE,
                                      stderr=subprocess.PIPE)
@@ -82,7 +88,7 @@ class Command:
 
             logging.warn(lproc.stderr if not lproc.returncode == 0 else rproc.stderr)
 
-        raise CriticalError('Retries count reached maximum!')
+        raise CriticalError(f'Retries count reached maximum, command: `{self.__command}`')
 
     def _run_and_filter(self, args: List[str]) -> List[str]:
         """
@@ -92,6 +98,4 @@ class Command:
         :returns: filtered output lines from the subprocess stdout
         """
         raw_output = self.run(args).stdout
-
-        elems: List[str] = [elem for elem in raw_output.split('\n')]
-        return list(filter(lambda elem: elem != '', elems))  # filter empty lines
+        return list(filter(lambda elem: elem != '', raw_output.split('\n')))  # filter empty lines
