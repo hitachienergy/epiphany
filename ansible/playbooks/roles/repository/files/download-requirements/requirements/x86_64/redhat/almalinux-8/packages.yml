@@ -28,7 +28,6 @@ packages:
   - 'cri-tools'
   - 'curl'
   - 'dejavu-sans-fonts'  # for grafana
-  - 'dnf-plugins-core'  # for python3-dnf-plugin-versionlock
   - 'docker-ce-20.10.8'
   - 'docker-ce-cli-20.10.8'
   - 'docker-ce-rootless-extras-20.10.8'
@@ -79,8 +78,6 @@ packages:
   - 'pkgconf-pkg-config'  # for bash-completion
   - 'python3-cffi'  # for python3-cryptography
   - 'python3-cryptography'
-  - 'python3-dnf-plugin-versionlock'
-  - 'python3-dnf-plugins-core'  # for python3-dnf-plugin-versionlock
   - 'python3-firewall'  # for firewalld
   - 'python3-ldb'  # for cifs-utils
   - 'python3-libselinux'
