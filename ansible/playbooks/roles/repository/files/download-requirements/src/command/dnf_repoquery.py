@@ -37,6 +37,7 @@ class DnfRepoquery(Command):
         args.append('repoquery')
         args.append(f'--archlist={",".join(archlist)}')
         args.append('--assumeyes')  # to import GPG keys
+        args.append('--disableplugin=subscription-manager')
         args.append('--latest-limit=1')
         args.append(f'--queryformat={queryformat}')
         args.append('--quiet')
