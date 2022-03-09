@@ -280,14 +280,15 @@ class BaseMode:
         self._cfg.dest_images.mkdir(exist_ok=True, parents=True)
         self._cfg.dest_packages.mkdir(exist_ok=True, parents=True)
 
+        # provides tar which is required for backup
+        logging.info('Installing base packages...')
+        self._install_base_packages()
+        logging.info('Done installing base packages.')
+
         self._create_backup_repositories()
 
         if not self._cfg.was_backup_created:
             self.__restore_repositories()
-
-        logging.info('Installing base packages...')
-        self._install_base_packages()
-        logging.info('Done installing base packages.')
 
         logging.info('Adding third party repositories...')
         self._add_third_party_repositories()
