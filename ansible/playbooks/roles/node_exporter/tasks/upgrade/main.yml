@@ -1,14 +1,16 @@
 ---
 - name: Node Exporter | Include defaults from node_exporter role
   include_vars:
-    file: roles/node_exporter/defaults/main.yml
+    file: defaults/main.yml
     name: exporter_defaults
 
 - name: Node Exporter | Include specification vars from node_exporter role
   include_vars:
-    file: roles/node_exporter/vars/main.yml
+    file: vars/main.yml
     name: exporter_vars
 
+# Re-installation in a different namespace was added in Epiphany v1.3
+# Everything related to that topic can be removed when versions before 1.3 are unsupported, including preflight checks
 - name: Node Exporter as DaemonSet | Prepare fact about helm release and reinstall daemonset if release exists
   delegate_to: localhost
   become: false
@@ -86,6 +88,7 @@
 - name: Node Exporter as System Service | Collect version
   shell: >-
     /opt/node_exporter/node_exporter --version 2>&1
+  changed_when: false
   register: exporter_current_version_out
 
 - name: Node Exporter as System Service | Set exporter_current_version fact
@@ -140,7 +143,7 @@
         src: "{{ download_directory }}/{{ exporter_file_name }}"
         dest: /opt/node_exporter
         creates: /opt/node_exporter/node_exporter
-        extra_opts: [--strip-components=1]
+        extra_opts: [ --strip-components=1 ]
         mode: u=rwx,go=rx
         owner: root
         group: node_exporter
