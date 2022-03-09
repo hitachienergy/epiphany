@@ -40,7 +40,6 @@ packages:
   - 'firewalld'
   - 'fontconfig'  # for grafana
   - 'fping'
-  # - 'fuse-common'  # for docker-ce-rootless-extras / temporary disabled
   - 'fuse-overlayfs'  # for docker-ce-rootless-extras
   - 'fuse3'  # for docker-ce-rootless-extras
   - 'gnutls'  # for cifs-utils
