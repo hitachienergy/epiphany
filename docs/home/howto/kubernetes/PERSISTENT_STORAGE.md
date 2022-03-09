@@ -87,10 +87,21 @@ To enable Rook support add to your cluster configuration the section like below:
 ---
 kind: configuration/rook
 title: "Kubernetes Rook Config"
-provider: azure
 name: default
 specification:
     enabled: true
+```
+
+If you want to install rook and rook cluster in the namespace different than `rook-ceph`, you need to add key `rook_namespace` with desired namespace name as value like in the sample below.
+
+```yaml
+---
+kind: configuration/rook
+title: "Kubernetes Rook Config"
+name: default
+specification:
+    enabled: true
+    rook_namespace: your-rook-namespace
 ```
 
 The key `specification.enabled` must be set to true to install Rook/Ceph component. This will install Rook/Ceph with default values. To override default values provided by Rook you need to add to `configuration/rook` keys:
@@ -101,7 +112,6 @@ The key `specification.enabled` must be set to true to install Rook/Ceph compone
 ---
 kind: configuration/rook
 title: "Kubernetes Rook Config"
-provider: azure
 name: default
 specification:
     enabled: true
