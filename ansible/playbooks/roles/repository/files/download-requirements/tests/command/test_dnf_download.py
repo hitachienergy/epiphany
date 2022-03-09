@@ -16,5 +16,6 @@ def test_interface_download_packages(mocker):
                              'download',
                              '--archlist=some_arch,noarch',
                              '--destdir=/some/path',
+                             '--disableplugin=subscription-manager',
                              '--exclude=*',
                              '--quiet']
