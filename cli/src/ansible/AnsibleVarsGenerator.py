@@ -127,7 +127,7 @@ class AnsibleVarsGenerator(Step):
         document = select_first(self.manifest_docs, lambda x: x.kind == kind)
         if document is None:
             # If there is no document provided by the user, then fallback to defaults
-            document = load_schema_obj(types.DEFAULT, 'common', kind)
+            document = load_schema_obj(schema_types.DEFAULT, 'common', kind)
             # Inject the required "version" attribute
             document['version'] = VERSION
 
