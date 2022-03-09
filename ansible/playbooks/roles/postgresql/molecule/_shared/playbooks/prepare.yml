@@ -2,5 +2,13 @@
 - name: Prepare
   hosts: postgresql
   tasks:
+    - name: Install requirements
+      package:
+        name:
+          - glibc-langpack-en  # provides 'en_US.UTF-8' locale
+          - iproute  # for ansible_default_ipv4
+          - sudo
+      when: ansible_os_family == 'RedHat'
+
     - name: Add repositories for downloading dependencies
       script: "../scripts/add-repos-{{ ansible_os_family|lower }}.sh"
