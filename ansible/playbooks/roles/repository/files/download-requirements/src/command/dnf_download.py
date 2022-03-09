@@ -22,7 +22,7 @@ class DnfDownload(Command):
         args.append('download')
         args.append(f'--archlist={",".join(archlist)}')
         args.append(f'--destdir={str(destdir)}')
-        args.append('--disableplugin=subscription-manager')
+        args.append('--disableplugin=subscription-manager')  # to speed up download
 
         if exclude:
             args.append(f'--exclude={exclude}')
