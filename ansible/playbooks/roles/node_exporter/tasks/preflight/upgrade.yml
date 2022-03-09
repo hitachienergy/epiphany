@@ -18,6 +18,6 @@
         that: node_exporter_helm_list.stdout_lines|length == 1
         fail_msg: |
           Multiple Helm installations of Node Exporter are not supported or there is nothing to upgrade.
-          `helm list output`:
+          `helm list` output:
           {{ node_exporter_helm_list.stdout_lines }}
         success_msg: There is only one Node Exporter release.
