@@ -51,7 +51,6 @@ packages:
   - 'javapackages-tools'  # for java-1.8.0-openjdk-headless
   - 'jq'
   - 'libini_config'  # for nfs-utils
-  - 'python3-libselinux'
   - 'libX11'  # for grafana
   - 'libxcb'  # for grafana
   - 'libXcursor'  # for grafana
@@ -78,21 +77,22 @@ packages:
   - 'pgaudit15_13-1.5.0'
   - 'pkgconf'  # for bash-completion
   - 'pkgconf-pkg-config'  # for bash-completion
+  - 'python3-cffi'  # for python3-cryptography
+  - 'python3-cryptography'
   - 'python3-dnf-plugin-versionlock'
   - 'python3-dnf-plugins-core'  # for python3-dnf-plugin-versionlock
-  - 'python3-policycoreutils'  # for container-selinux
-  - 'python3-ldb'  # for cifs-utils
-  - 'python3-cffi'  # for python3-cryptography
   - 'python3-firewall'  # for firewalld
+  - 'python3-ldb'  # for cifs-utils
+  - 'python3-libselinux'
   - 'python3-lxml'  # for java-1.8.0-openjdk-headless
+  - 'python3-policycoreutils'  # for container-selinux
   - 'python3-psycopg2'
   - 'python3-pycparser'  # for python3-cryptography
   - 'python3-slip-dbus'  # for firewalld
-  - 'python3-cryptography'  # for Ansible (certificate modules)
   - 'python36'  # there is no python3 package
   - 'quota'  # for nfs-utils
   - 'rabbitmq-server-3.8.9'
-  - 'rsync'  # for Ansible (synchronize module)
+  - 'rsync'
   - 'postgresql13-server'
   - 'repmgr10-5.2.1'  # used to upgrade repmgr first
   - 'repmgr13-5.2.1'
