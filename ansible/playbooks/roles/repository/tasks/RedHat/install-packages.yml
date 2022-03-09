@@ -4,7 +4,7 @@
     name:
       - python36
       - python3-pip
-      - rsync
+      - rsync  # for Ansible (synchronize module)
     state: present
   register: result
   retries: 3
