@@ -114,7 +114,6 @@ packages:
     - 'xorg-x11-font-utils'  # for grafana
     - 'xorg-x11-server-utils'  # for grafana
     - 'python3-dnf-plugin-versionlock'
-    - 'dnf-utils'
 
     # to make remote-to-remote "synchronize" work in ansible
     - 'rsync'
