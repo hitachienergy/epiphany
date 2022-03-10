@@ -26,7 +26,9 @@ packages:
     - 'conntrack-tools'  # for kubelet
     - 'containerd.io-1.4.12'
     - 'container-selinux'
+    - 'copy-jdk-configs'  # for java-1.8.0-openjdk-headless
     - 'cri-tools'
+    - 'cups-libs'  # for java-1.8.0-openjdk-headless
     - 'curl'
     - 'dejavu-sans-fonts'  # for grafana
     - 'docker-ce-20.10.8'
@@ -48,7 +50,6 @@ packages:
     - 'ipset'  # for firewalld
     - 'iptables-ebtables'
     - 'java-1.8.0-openjdk-headless'
-    - 'javapackages-tools'  # for java-1.8.0-openjdk-headless
     - 'jq'
     - 'libini_config'  # for nfs-utils
     - 'libX11'  # for grafana
