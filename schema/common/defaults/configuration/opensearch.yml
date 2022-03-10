@@ -6,6 +6,7 @@ specification:
   odfe_migration: false
   clustered: true
   opensearch_os_user: opensearch
+  opensearch_os_group: opensearch
   admin_password: PASSWORD_TO_CHANGE
   kibanaserver_password: PASSWORD_TO_CHANGE
   kibanaserver_user_active: false

@@ -4,6 +4,7 @@ name: default
 specification:
   cluster_name: EpiphanyOpenSearch
   opensearch_os_user: opensearch
+  opensearch_os_group: opensearch
   dashboards_os_user: opensearchboard
   dashboards_os_user_password: PASSWORD_TO_CHANGE
   admin_password: PASSWORD_TO_CHANGE
