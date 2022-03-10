@@ -5,6 +5,7 @@ specification:
   dashboards_os_user: opensearchdboard
   dashboards_os_user_password: PASSWORD_TO_CHANGE
   dashboards_user: kibanaserver
+  dashboards_user_password: PASSWORD_TO_CHANGE
   paths:
     opensearchdash_home: /usr/share/opensearch-dashboards
     opensearchdash_conf_dir: /usr/share/opensearch-dashboards/config
