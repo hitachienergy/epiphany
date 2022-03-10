@@ -1,5 +1,6 @@
 ---
 prereq-packages:
+  # prereq-packages are downloaded without dependencies because of air-gapped mode (dnf localinstall)
   # --- createrepo ---
   - 'createrepo_c'
   - 'createrepo_c-libs'
@@ -14,8 +15,6 @@ prereq-packages:
   - 'httpd-tools'
   - 'mailcap'
   - 'mod_http2'
-  - 'mod_ssl'  # for httpd
-  - 'python3-chardet'  # for createrepo
   - 'redhat-logos-httpd'
 
 packages:
@@ -33,7 +32,6 @@ packages:
     - 'docker-ce-20.10.8'
     - 'docker-ce-cli-20.10.8'
     - 'docker-ce-rootless-extras-20.10.8'
-    - 'iptables-ebtables'
     - 'elasticsearch-curator-5.8.3'
     - 'elasticsearch-oss-7.10.2'  # for opendistroforelasticsearch & logging roles
     - 'ethtool'
@@ -48,14 +46,11 @@ packages:
     - 'htop'
     - 'iftop'
     - 'ipset'  # for firewalld
+    - 'iptables-ebtables'
     - 'java-1.8.0-openjdk-headless'
     - 'javapackages-tools'  # for java-1.8.0-openjdk-headless
     - 'jq'
     - 'libini_config'  # for nfs-utils
-    - 'python3-libselinux'
-    - 'python3-libsemanage'
-    - 'slirp4netns' # for docker-ce
-    - 'libslirp' # for docker-ce
     - 'libX11'  # for grafana
     - 'libxcb'  # for grafana
     - 'libXcursor'  # for grafana
@@ -64,8 +59,6 @@ packages:
     - 'net-tools'
     - 'nfs-utils'
     - 'nmap-ncat'
-    - 'policycoreutils-python-utils' # for containerd
-
     # Open Distro for Elasticsearch plugins are installed individually to not download them twice in different versions (as dependencies of opendistroforelasticsearch package)
     - 'opendistro-alerting-1.13.1.*'
     - 'opendistro-index-management-1.13.1.*'
@@ -82,19 +75,22 @@ packages:
     - 'perl-Pod-Simple'  # for vim
     - 'perl-Pod-Usage'  # for vim
     - 'pgaudit15_13-1.5.0'
-    - 'python3-policycoreutils'  # for container-selinux
-    - 'python3-ldb'  # for cifs-utils
-    - 'python3-cffi'  # for python2-cryptography
+    - 'pkgconf'  # for bash-completion
+    - 'pkgconf-pkg-config'  # for bash-completion
+    - 'python3-cffi'  # for python3-cryptography
+    - 'python3-cryptography'
     - 'python3-firewall'  # for firewalld
+    - 'python3-ldb'  # for cifs-utils
+    - 'python3-libselinux'
     - 'python3-lxml'  # for java-1.8.0-openjdk-headless
+    - 'python3-policycoreutils'  # for container-selinux
     - 'python3-psycopg2'
-    - 'python3-pycparser'  # for python2-cryptography
-    - 'python3-setuptools'
+    - 'python3-pycparser'  # for python3-cryptography
     - 'python3-slip-dbus'  # for firewalld
-    - 'python3-cryptography'  # for Ansible (certificate modules)
-    - 'python36'
+    - 'python36'  # there is no python3 package
     - 'quota'  # for nfs-utils
     - 'rabbitmq-server-3.8.9'
+    - 'rsync'
     - 'postgresql13-server'
     - 'repmgr10-5.2.1'  # used to upgrade repmgr first
     - 'repmgr13-5.2.1'
@@ -102,6 +98,7 @@ packages:
     - 'samba-client-libs'  # for samba-client
     - 'samba-common'
     - 'samba-libs'  # for cifs-utils
+    - 'slirp4netns' # for docker-ce-rootless-extras
     - 'sysstat'
     - 'tar'
     - 'telnet'
@@ -113,10 +110,6 @@ packages:
     - 'wget'
     - 'xorg-x11-font-utils'  # for grafana
     - 'xorg-x11-server-utils'  # for grafana
-    - 'python3-dnf-plugin-versionlock'
-
-    # to make remote-to-remote "synchronize" work in ansible
-    - 'rsync'
 
     # K8s v1.18.6 (Epiphany >= v0.7.1)
     - 'kubeadm-1.18.6'
