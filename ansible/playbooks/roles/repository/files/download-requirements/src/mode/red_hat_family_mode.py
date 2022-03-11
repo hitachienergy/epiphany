@@ -17,7 +17,7 @@ class RedHatFamilyMode(BaseMode):
     def __init__(self, config: Config):
         super().__init__(config)
         self.__archs: List[str] = [config.os_arch.value, 'noarch']
-        self.__base_packages: List[str] = ['curl', 'tar', 'wget']
+        self.__base_packages: List[str] = ['curl', 'wget']
         self.__installed_packages: List[str] = []
 
     def _create_backup_repositories(self):
@@ -44,6 +44,10 @@ class RedHatFamilyMode(BaseMode):
 
         self.__remove_dnf_cache_for_untracked_repos()
         self._tools.dnf.makecache(True)
+
+        # tar does not come by default from image. We install it, but don't want to remove it
+        if not self._tools.rpm.is_package_installed('tar'):
+            self._tools.dnf.install('tar')
 
         for package in self.__base_packages:
             if not self._tools.rpm.is_package_installed(package):
