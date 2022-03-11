@@ -4,13 +4,8 @@ ARG USERNAME=vscode
 ARG USER_UID=1000
 ARG USER_GID=$USER_UID
 
-COPY cert/cert.md cert/*.crt /usr/local/share/ca-certificates/
-COPY cert/cert.md cert/*.pem /
-COPY cert/config-pre.sh /
-
 RUN : INSTALL APT REQUIREMENTS \
  && export DEBIAN_FRONTEND=noninteractive \
- && /bin/bash /config-pre.sh \
  && apt-get -q update \
  && apt-get -q install -y --no-install-recommends \
     apt-utils dialog \
@@ -56,12 +51,9 @@ RUN : INSTALL PIP REQUIREMENTS \
  && pip install --disable-pip-version-check --no-cache-dir --default-timeout=100 \
     poetry pylint pytest pytest_mock setuptools twine wheel
 
-COPY cert/config-post.sh /
-
 RUN : SETUP USER, CERTS AND OTHERS \
  && groupadd --gid $USER_GID $USERNAME \
  && useradd -s /bin/bash --uid $USER_UID --gid $USER_GID -m $USERNAME \
  && echo $USERNAME ALL=\(root\) NOPASSWD:ALL > /etc/sudoers.d/$USERNAME \
  && chmod ug=r,o= /etc/sudoers.d/$USERNAME \
- && setcap 'cap_net_bind_service=+ep' /usr/bin/ssh \
- && /bin/bash /config-post.sh
+ && setcap 'cap_net_bind_service=+ep' /usr/bin/ssh
