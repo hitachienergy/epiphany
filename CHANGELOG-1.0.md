@@ -5,6 +5,7 @@
 ### Added
 
 - [#2976](https://github.com/epiphany-platform/epiphany/issues/2976) - Allow for custom Terraform scripts
+- [#1076](https://github.com/epiphany-platform/epiphany/issues/1076) - Add sorting entries in the inventory file
 
 ### Fixed
 

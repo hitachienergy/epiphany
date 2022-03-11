@@ -54,7 +54,7 @@ RUN : INSTALL PIP REQUIREMENTS \
  && pip install --disable-pip-version-check --no-cache-dir --default-timeout=100 \
     --requirement /requirements.txt \
  && pip install --disable-pip-version-check --no-cache-dir --default-timeout=100 \
-    poetry pylint pytest setuptools twine wheel
+    poetry pylint pytest pytest_mock setuptools twine wheel
 
 COPY cert/config-post.sh /
 
