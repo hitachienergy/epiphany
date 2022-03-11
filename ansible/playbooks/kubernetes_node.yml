@@ -7,7 +7,8 @@
   become: true
   become_method: sudo
   pre_tasks:
-    - import_role:
+    - name: Gather facts
+      import_role:
         name: kubernetes_common
         tasks_from: gather-facts
   vars_files:
@@ -19,10 +20,12 @@
   become: true
   become_method: sudo
   pre_tasks:
-    - import_role:
+    - name: Import containerd role
+      import_role:
         name: containerd
         tasks_from: main
-    - import_role:
+    - name: Import kubernetes_common role
+      import_role:
         name: kubernetes_common
         tasks_from: main
   vars_files:
@@ -36,6 +39,7 @@
   roles:
     - kubernetes_node
   post_tasks:
-    - import_role:
+    - name: Run update-kubelet from kubernetes_promote role
+      import_role:
         name: kubernetes_promote
         tasks_from: update-kubelet
