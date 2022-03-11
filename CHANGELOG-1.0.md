@@ -8,6 +8,8 @@
 
 ### Fixed
 
+- [#2989](https://github.com/epiphany-platform/epiphany/issues/2989) - Task `Remove swap from /etc/fstab` does not remove swap entry from file
+
 ## [1.0.2] 2022-01-26
 
 ### NOTE ###
