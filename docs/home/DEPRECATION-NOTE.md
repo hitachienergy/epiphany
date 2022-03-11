@@ -72,7 +72,7 @@ When custom feature-mapping was used, following actions are required for removal
 - remove folders in format `/opt/ignite_<version>`
 - if there are no applications dependent on `openjdk` packages, such as Kafka/Zookeeper, remove them:
   - `openjdk-8-jre-headless` for Ubuntu
-  - `java-1.8.0-openjdk-headless` for RHEL/CentOS
+  - `java-1.8.0-openjdk-headless` for RHEL
 
 #### Installation as a K8s application
 
