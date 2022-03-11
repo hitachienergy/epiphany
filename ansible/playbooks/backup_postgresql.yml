@@ -7,10 +7,12 @@
   tasks:
     - when: specification.components.postgresql.enabled | default(false)
       block:
-        - include_vars:
+        - name: Include postgresql vars
+          include_vars:
             file: roles/postgresql/vars/main.yml
             name: component_vars
-        - import_role:
+        - name: Run postgresql backup tasks
+          import_role:
             name: backup
             tasks_from: postgresql
   vars_files:

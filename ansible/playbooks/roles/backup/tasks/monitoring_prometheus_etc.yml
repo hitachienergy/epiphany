@@ -7,7 +7,8 @@
       - snapshot_name | length > 0
     fail_msg: The snapshot_name fact must be defined and must be a non-empty string.
 
-- debug: var=snapshot_name
+- name: Display snapshot name
+  debug: var=snapshot_name
 
 - name: Create snapshot archive
   import_tasks: common/create_snapshot_archive.yml

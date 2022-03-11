@@ -4,7 +4,8 @@
     snapshot_name: >-
       {{ ansible_date_time.iso8601_basic_short | replace('T','-') }}
 
-- debug: var=snapshot_name
+- name: Display snapshot name
+  debug: var=snapshot_name
 
 - name: Create snapshot archive
   import_tasks: common/create_snapshot_archive.yml
