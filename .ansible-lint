@@ -26,15 +26,17 @@ quiet: true
 
 ################
 # Tags to skip #
+# https://ansible-lint.readthedocs.io/en/latest/default_rules.html?highlight=skip_list
 ################
-skip_list: 
-  - '602' # Allow compare to empty string
-  - '106' # Role name
-  - '204' # Allow string length greater than 160 chars
-  - '301' # False positives for running command shells
-  - '303' # Allow git commands for push, add, etc...
-  - '305' # Allow use of shell when you want
-  - '503' # Allow step to run like handler
+skip_list:
+  - empty-string-compare
+  - role-name
+  - no-changed-when
+  - command-instead-of-module
+  - command-instead-of-shell
+  - no-handler
+  - meta-no-info
+  - package-latest
 
 ##################
 # Tags to follow #
