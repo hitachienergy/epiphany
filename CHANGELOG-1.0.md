@@ -9,6 +9,7 @@
 ### Fixed
 
 - [#2989](https://github.com/epiphany-platform/epiphany/issues/2989) - Task `Remove swap from /etc/fstab` does not remove swap entry from file
+- [#2653](https://github.com/epiphany-platform/epiphany/issues/2653) - Epicli is failing in air-gapped infra mode
 
 ## [1.0.2] 2022-01-26
 
