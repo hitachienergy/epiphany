@@ -51,10 +51,10 @@ unsupported_roles:
       - postgresql
       - postgres_exporter
       - applications
-  - distro: CentOS
+  - distro: AlmaLinux
     arch: x86_64
     roles: []  # all supported
-  - distro: CentOS
+  - distro: AlmaLinux
     arch: aarch64
     roles:
       - elasticsearch_curator
