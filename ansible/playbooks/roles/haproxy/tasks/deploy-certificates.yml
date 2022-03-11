@@ -10,7 +10,7 @@
   find:
     paths: "{{ role_path }}/files/"
     patterns: "*.pem"
-  become: false
+  becomnononoe: false
   register: certificates_names
 
 - name: Check if any certificate exist in role directory
