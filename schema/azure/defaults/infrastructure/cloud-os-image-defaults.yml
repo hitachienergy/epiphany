@@ -2,6 +2,15 @@ kind: infrastructure/cloud-os-image-defaults
 title: "Cloud OS Image Defaults"
 name: default
 specification:
+  almalinux-8-x86_64:
+    publisher: almalinux
+    offer: almalinux
+    sku: 8_5-gen2
+    version: "8.5.20211118"
+    plan:
+      name: 8_5-gen2
+      product: almalinux
+      publisher: almalinux
   ubuntu-20.04-x86_64:
     publisher: Canonical
     offer: 0001-com-ubuntu-server-focal
@@ -12,8 +21,3 @@ specification:
     offer: RHEL
     sku: 7lvm-gen2
     version: "7.9.2021121604"
-  centos-7-x86_64:
-    publisher: OpenLogic
-    offer: CentOS
-    sku: "7_9-gen2"
-    version: "7.9.2021071901"

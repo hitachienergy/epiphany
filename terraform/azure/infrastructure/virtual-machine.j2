@@ -24,6 +24,14 @@ resource "azurerm_virtual_machine" "{{ specification.name }}" {
     version   = "{{ specification.storage_image_reference.version }}"
   }
 
+  {%- if specification.plan is defined %}
+  plan {
+    name      = "{{ specification.plan.name }}"
+    product   = "{{ specification.plan.product }}"
+    publisher = "{{ specification.plan.publisher }}"
+  }
+  {%- endif %}
+
   os_profile {
     computer_name  = "{{ specification.hostname }}"
     admin_username = "{{ specification.admin_username }}"
