@@ -25,6 +25,6 @@
   copy:
     src: /etc/hosts
     dest: /var/lib/epiphany/{{ coredns_vars.known_hosts_file_name }}
-    remote_src: yes
+    remote_src: true
     mode: preserve
   when: kubectl_patch.changed

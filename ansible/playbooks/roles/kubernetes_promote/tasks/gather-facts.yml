@@ -9,7 +9,7 @@
       vars:
         jsonpath: >-
           '{.data.ClusterConfiguration}'
-      register: ClusterConfiguration
+      register: cluster_configuration
       changed_when: false
 
     - name: Decide if Kubernetes runs in HA mode already
@@ -19,4 +19,4 @@
       vars:
         set_fact:
           kubernetes_already_ha: >-
-              {{ ((ClusterConfiguration.stdout | from_yaml).controlPlaneEndpoint | default('')).startswith('localhost') }}
+              {{ ((cluster_configuration.stdout | from_yaml).controlPlaneEndpoint | default('')).startswith('localhost') }}

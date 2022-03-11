@@ -23,7 +23,7 @@
       systemd:
         name: "{{ haproxy_service }}"
         state: stopped
-      when: ansible_facts.services["{{ haproxy_service }}.service"] is defined
+      when: ansible_facts.services["haproxy_service.service"] is defined
 
     - name: Remove {{ haproxy_service }} rootfs data (upgrade)
       file:

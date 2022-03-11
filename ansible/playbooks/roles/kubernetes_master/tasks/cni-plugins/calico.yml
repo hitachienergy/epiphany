@@ -5,7 +5,7 @@
     - name: Check if /etc/NetworkManager/conf.d exists
       stat:
         path: /etc/NetworkManager/conf.d
-        get_attributes: no
+        get_attributes: false
       register: network_manager_conf_d_stat
 
     # https://docs.projectcalico.org/maintenance/troubleshoot/troubleshooting#configure-networkmanager

@@ -7,10 +7,12 @@
   become: true
   become_method: sudo
   pre_tasks:
-    - import_role:
+    - name: Import containerd role
+      import_role:
         name: containerd
         tasks_from: main
-    - import_role:
+    - name: Import kubernetes_common role
+      import_role:
         name: kubernetes_common
         tasks_from: main
   vars_files:
@@ -25,10 +27,12 @@
   roles:
     - kubernetes_master
   post_tasks:
-    - import_role:
+    - name: Run update-master task from kubernetes_promote role
+      import_role:
         name: kubernetes_promote
         tasks_from: update-master
-    - import_role:
+    - name: Run update-kubelet from kubernetes_promote role
+      import_role:
         name: kubernetes_promote
         tasks_from: update-kubelet
   environment:
@@ -38,7 +42,8 @@
   become: true
   become_method: sudo
   tasks:
-    - import_role:
+    - name: Run update-image-registry from kubernetes_master role
+      import_role:
         name: kubernetes_master
         tasks_from: update-image-registry
   environment:
@@ -48,7 +53,8 @@
   become: true
   become_method: sudo
   post_tasks:
-    - import_role:
+    - name: Run copy-kubeconfig from kubernetes_master role
+      import_role:
         name: kubernetes_master
         tasks_from: copy-kubeconfig
   environment:
