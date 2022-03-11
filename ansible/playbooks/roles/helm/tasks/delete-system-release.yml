@@ -8,11 +8,8 @@
 # - helm_release_name
 
 - name: Uninstall Helm release '{{ helm_release_name }}'
-
   delegate_to: localhost
   become: false
   run_once: true
-
-  environment: { KUBECONFIG: "{{ vault_location }}/../kubeconfig" }
-
+  environment: {KUBECONFIG: "{{ vault_location }}/../kubeconfig"}
   command: helm -n {{ system_chart_namespace }} uninstall {{ helm_release_name }}
