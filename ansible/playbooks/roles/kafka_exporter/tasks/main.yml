@@ -25,26 +25,26 @@
     file_name: "{{ exporter_file_name }}"
 
 - name: Create /opt/kafka_exporter directory
-  become: yes
+  become: true
   file:
     path: "{{ item }}"
-    recurse: yes
+    recurse: true
     owner: root
     group: kafka_exporter
-    mode: 0750
+    mode: u=rwx, g=rx, o=
     state: directory
   with_items:
-  - /opt/kafka_exporter
+    - /opt/kafka_exporter
 
 - name: Unpack kafka_exporter binary
   become: true
   unarchive:
-    remote_src: yes
+    remote_src: true
     src: "{{ download_directory }}/{{ exporter_file_name }}"
     dest: "/opt/kafka_exporter"
     creates: "/opt/kafka_exporter/kafka_exporter"
     extra_opts: [--strip-components=1]
-    mode: 0755
+    mode: u=rwx, go=rx
     owner: root
     group: kafka_exporter
   check_mode: false
@@ -57,12 +57,12 @@
     dest: /etc/systemd/system/kafka-exporter.service
     owner: root
     group: root
-    mode: 0644
+    mode: u=rw, go=r
 
 - name: Configure systemd to use kafka-exporter service
   systemd:
-    daemon_reload: yes
-    enabled: yes
+    daemon_reload: true
+    enabled: true
     name: kafka-exporter.service
 
 - name: Start Kafka exporter
@@ -76,7 +76,7 @@
     src: file_sd_config.yml.j2
     owner: root
     group: root
-    mode: 0644
+    mode: u=rw, go=r
   delegate_to: "{{ item }}"
   with_inventory_hostnames:
     - prometheus
