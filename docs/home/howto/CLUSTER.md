@@ -2,123 +2,70 @@
 
 Enable for Ubuntu (default):
 
-1. Enable "repository" component:
+1. Enable `repository` component:
 
-   ```yaml
-   repository:
-     count: 1
-   ```
+    ```yaml
+    specification:
+    ...
+      components:
+        repository:
+          count: 1
+    ```
 
-Enable for RHEL on Azure:
+Enable for AlmaLinux on AWS/Azure:
 
-1. Enable "repository" component:
+1. Enable `repository` component and specify `default_os_image`:
 
-   ```yaml
-   repository:
-     count: 1
-     machine: repository-machine-rhel
-   ```
+    ```yaml
+    specification:
+    ...
+      cloud:
+        default_os_image: almalinux-8-x86_64
+        ...
+      components:
+        repository:
+          count: 1
+    ```
 
-2. Add repository VM definition to main config file:
+Enable for RHEL on AWS/Azure:
 
-   ```yaml
-   kind: infrastructure/virtual-machine
-   name: repository-machine-rhel
-   provider: azure
-   based_on: repository-machine
-   specification:
-     storage_image_reference:
-       publisher: RedHat
-       offer: RHEL
-       sku: 7lvm-gen2
-       version: "7.9.2021121604"
-   ```
+1. Enable `repository` component and specify `default_os_image`:
 
-Enable for RHEL on AWS:
-
-1. Enable "repository" component:
-
-   ```yaml
-   repository:
-     count: 1
-     machine: repository-machine-rhel
-   ```
-
-2. Add repository VM definition to main config file:
-
-   ```yaml
-   kind: infrastructure/virtual-machine
-   title: Virtual Machine Infra
-   name: repository-machine-rhel
-   provider: aws
-   based_on: repository-machine
-   specification:
-     os_full_name: RHEL-7.9_HVM-20211005-x86_64-0-Hourly2-GP2
-   ```
-
-Enable for CentOS on Azure:
-
-1. Enable "repository" component:
-
-   ```yaml
-   repository:
-     count: 1
-     machine: repository-machine-centos
-   ```
-
-2. Add repository VM definition to main config file:
-
-   ```yaml
-   kind: infrastructure/virtual-machine
-   name: repository-machine-centos
-   provider: azure
-   based_on: repository-machine
-   specification:
-     storage_image_reference:
-       publisher: OpenLogic
-       offer: CentOS
-       sku: "7_9-gen2"
-       version: "7.9.2021071901"
-   ```
-
-Enable for CentOS on AWS:
-
-1. Enable "repository" component:
-
-   ```yaml
-   repository:
-     count: 1
-     machine: repository-machine-centos
-   ```
-
-2. Add repository VM definition to main config file:
-
-   ```yaml
-   kind: infrastructure/virtual-machine
-   title: Virtual Machine Infra
-   name: repository-machine-centos
-   provider: aws
-   based_on: repository-machine
-   specification:
-     os_full_name: "CentOS 7.9.2009 x86_64"
-   ```
+    ```yaml
+    specification:
+    ...
+      cloud:
+        default_os_image: rhel-8-x86_64
+        ...
+      components:
+        repository:
+          count: 1
+    ```
 
 Disable:
 
-1. Disable "repository" component:
+1. Disable `repository` component:
 
-   ```yaml
-   repository:
-     count: 0
-   ```
+    ```yaml
+    specification:
+    ...
+      components:
+        repository:
+          count: 0
+    ```
 
-2. Prepend "kubernetes\_master" mapping (or any other mapping if you don't deploy Kubernetes) with:
+2. Prepend `kubernetes_master` mapping (or any other mapping if you don't deploy Kubernetes) with:
 
-   ```yaml
-   kubernetes_master:
-     - repository
-     - image-registry
-   ```
+    ```yaml
+    kind: configuration/feature-mapping
+    specification:
+    ...
+      roles_mapping:
+      ...
+        kubernetes_master:
+          - repository
+          - image-registry
+    ```
 
 ## How to create an Epiphany cluster on existing infrastructure
 
@@ -132,8 +79,8 @@ Epicli has the ability to set up a cluster on infrastructure provided by you. Th
 At least one of them (with `repository` role) has Internet access in order to download dependencies.
 If there is no Internet access, you can use [air gap feature (offline mode)](#how-to-create-an-epiphany-cluster-on-existing-air-gapped-infrastructure).
 2. The cluster machines/VMs are running one of the following Linux distributions:
+    - AlmaLinux 8.5+
     - RedHat 7.6+ and < 8
-    - CentOS 7.6+ and < 8
     - Ubuntu 20.04
 3. The cluster machines/VMs are accessible through SSH with a set of SSH keys you provide and configure on each machine yourself (key-based authentication).
 4. The user used for SSH connection (`admin_user`) has passwordless root privileges through `sudo`.
@@ -231,7 +178,7 @@ To set up the cluster do the following steps:
     ```
 
     Where:
-    - OS should be `redhat-7`, `ubuntu-20.04`
+    - OS should be `almalinux-8`, `redhat-7`, `ubuntu-20.04`
     - ARCH should be `x86_64`, `arm64`
 
     This will create a directory called `prepare_scripts` with the needed files inside.
@@ -243,7 +190,7 @@ To set up the cluster do the following steps:
     ```
 
     Where:
-    - OS should be `redhat-7`, `ubuntu-20.04`, `detect`
+    - OS should be `almalinux-8`, `redhat-7`, `ubuntu-20.04`, `detect`
     - /requirementsoutput/ where to output downloaded requirements
 
     This will run the download-requirements script for target OS type and save requirements under /requirementsoutput/. Once run successfully the `/requirementsoutput/` needs to be copied to the provisioning machine to be used later on.
@@ -368,7 +315,7 @@ specification:
   custom_repository_url: "http://<ip-address>:8080/epirepo"
 ```
 
-1. Disable "repository" component:
+1. Disable `repository` component:
 
    ```yaml
    repository:
@@ -498,8 +445,8 @@ To set up the cluster do the following steps from the provisioning machine:
                   - `default`: Applies user defined `infrastructure/virtual-machine` documents when generating a new configuration.
                   - `ubuntu-20.04-x86_64`: Applies the latest validated and tested Ubuntu 20.04 image to all `infrastructure/virtual-machine` documents on `x86_64` on Azure and AWS.
                   - `redhat-7-x86_64`: Applies the latest validated and tested RedHat 7.x image to all `infrastructure/virtual-machine` documents on `x86_64` on Azure and AWS.
-                  - `centos-7-x86_64`: Applies the latest validated and tested CentOS 7.x image to all `infrastructure/virtual-machine` documents on `x86_64` on Azure and AWS.
-                  - `centos-7-arm64`: Applies the latest validated and tested CentOS 7.x image to all `infrastructure/virtual-machine` documents on `arm64` on AWS. Azure currently doesn't support `arm64`.
+                  - `almalinux-8-x86_64`: Applies the latest validated and tested AlmaLinux 8.x image to all `infrastructure/virtual-machine` documents on `x86_64` on Azure and AWS.
+                  - `almalinux-8-arm64`: Applies the latest validated and tested AlmaLinux 8.x image to all `infrastructure/virtual-machine` documents on `arm64` on AWS. Azure currently doesn't support `arm64`.
                   The images which will be used for these values will be updated and tested on regular basis.
 
 4. Define the components you want to install:
@@ -553,22 +500,6 @@ specification:
     version: "7.9.2021121604"
   storage_os_disk:
     disk_size_gb: 64
-```
-
-### Note for CentOS Azure images
-
-Epiphany supports CentOS 7 images with RAW partitioning (recommended) and LVM as well.
-
-Example config:
-
-```yaml
-kind: infrastructure/virtual-machine
-specification:
-  storage_image_reference:
-    publisher: OpenLogic
-    offer: CentOS
-    sku: "7_9-gen2"
-    version: "7.9.2021071901"
 ```
 
 ### How to disable merging LVM logical volumes
