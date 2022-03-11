@@ -6,4 +6,5 @@
       - "{{ repository_url }}/files/{{ versions.redhat.erlang_filename[ansible_architecture] }}"
       - rabbitmq-server-{{ versions.redhat.rabbitmq }}
     update_cache: true
+    disable_gpg_check: true  # erlang installed from URL
     state: present

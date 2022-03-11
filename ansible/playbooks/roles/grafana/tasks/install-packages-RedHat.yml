@@ -3,6 +3,6 @@
   yum:
     name: "{{ _package_url }}"
     state: present
-    disable_gpg_check: true  # TODO: download https://packages.grafana.com/gpg.key but as grafana-gpg.key then install it from epirepo using `rpm_key` module
+    disable_gpg_check: true  # installed from URL
   module_defaults:
     yum: { lock_timeout: "{{ yum_lock_timeout }}" }
