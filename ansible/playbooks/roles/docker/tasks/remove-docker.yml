@@ -8,10 +8,10 @@
   systemd:
     name: docker
     state: stopped
-    enabled: no
+    enabled: false
   when:
-  - "'docker.service' in ansible_facts.services"
-  - ansible_facts.services['docker.service']['status'] != 'not-found'
+    - "'docker.service' in ansible_facts.services"
+    - ansible_facts.services['docker.service']['status'] != 'not-found'
 
 - name: Remove Docker packages
   package:
