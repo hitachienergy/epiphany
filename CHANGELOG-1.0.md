@@ -1,5 +1,13 @@
 # Changelog 1.0
 
+## [1.0.2] 2022-xx-xx
+
+### Added
+
+- [#2976](https://github.com/epiphany-platform/epiphany/issues/2976) - Allow for custom Terraform scripts
+
+### Fixed
+
 ## [1.0.2] 2022-01-26
 
 ### NOTE ###

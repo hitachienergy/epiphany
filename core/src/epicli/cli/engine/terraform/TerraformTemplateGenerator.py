@@ -12,8 +12,9 @@ class TerraformTemplateGenerator(Step):
 
     def run(self):
         terraform_output_dir = get_terraform_path(self.cluster_model.specification.name)
-        # Remove generated .tf files (not tfstate).
-        remove_files_matching_glob(terraform_output_dir, '*.tf')
+
+        # Only remove epicli generated .tf files, not tfstate or user created files.
+        remove_files_matching_glob(terraform_output_dir, '[0-9][0-9][0-9]_*.tf')
 
         templates = filter(lambda x: x.kind != 'infrastructure/cloud-init-custom-data', self.infrastructure)
         for idx, doc in enumerate(templates):
