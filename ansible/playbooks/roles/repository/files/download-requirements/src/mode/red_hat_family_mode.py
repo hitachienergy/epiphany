@@ -187,7 +187,8 @@ class RedHatFamilyMode(BaseMode):
                                                             destdir=self._cfg.dest_packages)
 
     def _download_file(self, file: str):
-        self._tools.wget.download(file, directory_prefix=self._cfg.dest_files, additional_params=False)
+        output_path: Path = self._cfg.dest_packages if file.endswith('.rpm') else self._cfg.dest_files
+        self._tools.wget.download(file, directory_prefix=output_path, additional_params=False)
 
     def _download_grafana_dashboard(self, dashboard: str, output_file: Path):
         self._tools.wget.download(dashboard, output_document=output_file, additional_params=False)
