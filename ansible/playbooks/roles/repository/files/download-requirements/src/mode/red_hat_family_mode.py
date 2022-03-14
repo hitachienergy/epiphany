@@ -1,7 +1,7 @@
 import logging
 import shutil
 from pathlib import Path
-from typing import List, Set
+from typing import Dict, List, Set
 
 from src.command.command import Command
 from src.config.config import Config
@@ -109,33 +109,14 @@ class RedHatFamilyMode(BaseMode):
 
     def __remove_dnf_cache_for_untracked_repos(self):
         # clean metadata for upgrades (when the same package can be downloaded from changed repo)
-
-        whatprovides: List[str] = self._tools.rpm.which_packages_provides_file('system-release(releasever)')
-        capabilities: List[str] = self._tools.rpm.get_package_capabilities(whatprovides[0])
-        releasever: str = ''
-        for cap in capabilities:
-            if 'system-release(releasever)' in cap:
-                releasever = cap.split('=')[-1].replace(' ', '')
-                break
-
-        cachedir: str = ''
-        with open('/etc/yum.conf') as yum_conf:
-            for line in yum_conf.readlines():
-                if 'cachedir' in line:
-                    cachedir = line.split('=')[-1].replace('\n', '')
-                    break
-
-        cachedir = cachedir.replace('$basearch', self._cfg.os_arch.value)
-        cachedir = cachedir.replace('$releasever', releasever)
-
-        cachedirs = [cdir for cdir in Path(cachedir).iterdir() if cdir.is_dir()]
         repoinfo: List[str] = self._tools.dnf.list_all_repos_info()
-        repoinfo = list(filter(lambda elem: 'Repo-id' in elem, repoinfo))
-        repoinfo = [repo.split(':')[-1].replace(' ', '').split('/')[0] for repo in repoinfo]
+        repocaches: List[str] = [repodir for repodir in Path('/var/cache/dnf').iterdir() if repodir.is_dir()]
 
-        for cdir in cachedirs:
-            if cdir.name in repoinfo:
-                shutil.rmtree(str(cdir))
+        for repo in repoinfo:
+            if repo['Repo-status'] == 'disabled':
+                for repocache in repocaches:
+                    if repocache.name.startswith(repo['Repo-id']):
+                        shutil.rmtree(str(repocache))
 
     def __download_prereq_packages(self) -> Set[str]:
         # download requirements (fixed versions)
