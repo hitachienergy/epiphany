@@ -1,6 +1,7 @@
 from typing import List
 
 from src.command.command import Command
+from src.error import CriticalError
 
 
 class Yum(Command):
@@ -44,7 +45,10 @@ class Yum(Command):
         :param assume_yes: if set to True, -y flag will be used
         """
         no_ask: str = '-y' if assume_yes else ''
-        self.run(['install', no_ask, package])
+        output = self.run(['install', no_ask, package], accept_nonzero_returncode=True).stdout
+
+        if not 'already installed' in output:
+            raise CriticalError(f'yum install failed for `{package}`, reason `{output}`')
 
     def remove(self, package: str,
                assume_yes: bool = True):
