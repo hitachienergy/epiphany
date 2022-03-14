@@ -1,4 +1,4 @@
-from typing import List
+from typing import Dict, List
 
 from src.command.command import Command
 from src.error import CriticalError
@@ -114,9 +114,22 @@ class Dnf(Command):
 
         self.run(args)
 
-    def list_all_repo_info(self) -> List[str]:
+    def list_all_repos_info(self) -> List[Dict[str, str]]:
+        """
+        Query repoinfo and construct info per repository.
+        """
         args: List[str] = ['repoinfo',
                            '--all',
                            '--quiet',
                            '-y']
-        return self._run_and_filter(args)
+        raw_output = self.run(args).stdout
+        elems: List[str] = list(raw_output.split('\n\n'))
+        repoinfo: List[List[str]] = [{} for _ in range(len(elems))]
+
+        for elem_idx, elem in enumerate(elems):
+            for line in elem.split('\n'):
+                if line:
+                    key, value = line.split(':', 1)
+                    repoinfo[elem_idx][key.strip()] = value.strip()
+
+        return repoinfo
