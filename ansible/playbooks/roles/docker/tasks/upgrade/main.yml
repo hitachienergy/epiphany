@@ -1,8 +1,6 @@
 ---
-- name: Include get-server-version from docker role # this sets result
-  include_role:
-    name: docker
-    tasks_from: get-server-version
+- name: Include get-server-version # this sets result
+  include_tasks: get-server-version.yml
 
 - name: Print version of Docker server
   debug:
@@ -30,15 +28,44 @@
   when:
     - is_docker_updatable
 
-# Install Docker in current version
-- name: Install Docker # this may restart Docker daemon
-  import_role:
-    name: docker
+# Install Docker in current version - this may restart Docker daemon
+- name: Include containerd defauts
+  include_vars:
+    file: roles/containerd/defaults/main.yml
+    name: containerd_defaults
 
-- name: Include get-server-version from docker role # this sets result
-  include_role:
-    name: docker
-    tasks_from: get-server-version
+- name: Get information about installed packages as facts
+  package_facts:
+    manager: auto
+  changed_when: false
+
+- name: Set containerd_installed_version fact
+  set_fact:
+    containerd_installed_version: "{{ ansible_facts.packages['containerd.io'][0].version }}"
+
+- name: Fetch list of packages to install for running distribution
+  set_fact:
+    docker_packages: "{{ docker_packages[ansible_os_family] }}"
+
+# In Epiphany v1.3 containerd.io is installed as the latest available in the packages repositories, and in Epiphany v2.0
+# we specify installed version. In order to avoid downgrade we need to update the packages list.
+- name: Update packages list if containerd.io version already satisfied
+  set_fact:
+    docker_packages: "{{ docker_packages | difference (docker_packages | select('match','containerd.io+')) }}"
+  when: containerd_installed_version is version(containerd_defaults.containerd_version, '>')
+
+- name: Install Docker packages
+  package:
+    name: "{{ docker_packages }}"
+    state: present
+  module_defaults:
+    yum: { lock_timeout: "{{ yum_lock_timeout }}" }
+
+- name: Include configure-docker
+  include_tasks: configure-docker.yml
+
+- name: Include get-server-version # this sets result
+  include_tasks: get-server-version.yml
 
 - name: Print version of Docker server
   debug:

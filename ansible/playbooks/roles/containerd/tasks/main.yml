@@ -1,26 +1,4 @@
 ---
-- name: Get information on installed packages
-  package_facts:
-  when: ansible_facts.packages is undefined
-
-- name: Remove Docker
-  block:
-    - name: Stop Kubelet before Docker removal
-      systemd:
-        name: kubelet
-        state: stopped
-      notify:
-        - Restart kubelet
-
-    - name: Remove Docker
-      include_role:
-        name: docker
-        tasks_from: remove-docker.yml
-  when:
-    - is_upgrade_run
-    - inventory_hostname not in groups.image_registry
-    - ansible_facts.packages['docker-ce'] is defined
-
 - name: Install containerd package
   package:
     name: "{{ _packages[ansible_os_family] }}"
@@ -39,10 +17,6 @@
 
 - name: Configure containerd
   include_tasks: configure-containerd.yml
-
-- name: Configure kubelet-env
-  include_tasks: configure-kubelet-env.yml
-  when: is_upgrade_run
 
 - name: Provide crictl.yaml file
   copy:
