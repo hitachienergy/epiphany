@@ -43,6 +43,7 @@
 - [#3029](https://github.com/epiphany-platform/epiphany/issues/3029) - [RHEL] Single machine upgrade fails on preflight check: 'dict object' has no attribute 'size_available'
 - [#2803](https://github.com/epiphany-platform/epiphany/issues/2803) - Refactor: rename 'kafka_var' setting
 - [#2995](https://github.com/epiphany-platform/epiphany/issues/2995) - Update expired RHUI client certificate before installing any RHEL packages
+- [#3006](https://github.com/epiphany-platform/epiphany/issues/3006) - install 'containerd.io=1.4.12-*' failed, when upgrade from v1.3.0 to 2.0.0dev
 
 ### Updated
 
