@@ -1,5 +1,4 @@
 from pathlib import Path
-from shutil import move
 from typing import Dict, List
 import logging
 import os
@@ -66,7 +65,7 @@ class DebianFamilyMode(BaseMode):
         # path needs to be changed since `apt download` does not allow to set target dir
         os.chdir(self._cfg.dest_packages)
 
-        packages: Dict[str, Dict] = self._requirements['packages']
+        packages: Dict[str, Dict] = self._requirements['packages']['from_repo']
         packages_to_download: List[str] = []
         for package in packages:
             version: str = ''
@@ -105,9 +104,8 @@ class DebianFamilyMode(BaseMode):
 
         os.chdir(self._cfg.script_path)
 
-    def _download_file(self, file: str):
-        output_path: Path = self._cfg.dest_packages if file.endswith('.deb') else self._cfg.dest_files
-        self._tools.wget.download(file, directory_prefix=output_path)
+    def _download_file(self, file: str, dest: Path):
+        self._tools.wget.download(file, directory_prefix=dest)
 
     def _download_grafana_dashboard(self, dashboard: str, output_file: Path):
         self._tools.wget.download(dashboard, output_document=output_file)

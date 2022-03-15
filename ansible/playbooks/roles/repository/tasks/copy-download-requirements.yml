@@ -15,9 +15,10 @@
           - "{{ _req_files['grafana_dashboards'] }}"
           - "{{ _req_files['images'] }}"
           - "{{ _req_files['package_files'] }}"
-          - "{{ _req_files['repo_files'] }}"
           - "download-requirements.py"
           - "src/"
+
+        _repo_files: "{{ _req_files['repo_files'] }}"  # optional repo files
 
       vars:
         # general paths:
@@ -50,3 +51,15 @@
         src: "download-requirements/{{ item }}"
         dest: "{{ download_requirements_dir }}/{{ item }}"
       loop: "{{ _files }}"
+
+    - name: Get stats of optional repo files
+      stat:
+        path: "download-requirements/{{ _repo_files }}"
+      register: repo_files_stats
+
+    - name: Copy optional repo files
+      synchronize:
+        src: "download-requirements/{{ _repo_files }}"
+        dest: "{{ download_requirements_dir }}/{{ _repo_files }}"
+      when:
+        - repo_files_stats.stat.exists

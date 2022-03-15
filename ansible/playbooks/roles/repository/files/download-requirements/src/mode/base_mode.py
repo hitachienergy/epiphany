@@ -91,15 +91,16 @@ class BaseMode:
 
     def _download_packages(self):
         """
-        Download packages under `self._requirements['packages']` using target OS's package manager.
+        Download packages `self._requirements['packages']['from_repo']` using target OS's package manager.
         """
         raise NotImplementedError
 
-    def _download_file(self, file: str):
+    def _download_file(self, file: str, dest: Path):
         """
         Run command for downloading `file` on target OS.
 
         :param file: to be downloaded
+        :param path: where to save the file
         """
         raise NotImplementedError
 
@@ -121,11 +122,13 @@ class BaseMode:
         """
         raise NotImplementedError
 
-    def __download_files(self):
+    def __download_files(self, files: Dict[str, Dict], dest: Path):
         """
         Download files under `self._requirements['files']`
+
+        :param files: to be downloaded
+        :param dest: where to save the files
         """
-        files: Dict[str, Dict] = self._requirements['files']
         for file in files:
             try:
                 filepath = self._cfg.dest_files / file.split('/')[-1]
@@ -134,7 +137,7 @@ class BaseMode:
                     continue
 
                 logging.info(f'- {file}')
-                self._download_file(file)
+                self._download_file(file, dest)
             except CriticalError:
                 logging.warn(f'Could not download file: {file}')
 
@@ -244,12 +247,16 @@ class BaseMode:
         self._add_third_party_repositories()
         logging.info('Done adding third party repositories.')
 
-        logging.info('Downloading packages...')
+        logging.info('Downloading packages from repos...')
         self._download_packages()
-        logging.info('Done downloading packages.')
+        logging.info('Done downloading packages from repos.')
+
+        logging.info('Downloading packages from urls...')
+        self.__download_files(self._requirements['packages']['from_url'], self._cfg.dest_packages)
+        logging.info('Done downloading packages from urls.')
 
         logging.info('Downloading files...')
-        self.__download_files()
+        self.__download_files(self._requirements['files'], self._cfg.dest_files)
         logging.info('Done downloading files.')
 
         logging.info('Downloading grafana dashboards...')
