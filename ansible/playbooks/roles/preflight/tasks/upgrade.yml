@@ -21,3 +21,11 @@
     - groups.postgresql is defined
     - groups.postgresql | length > 0
     - "'postgresql' in group_names" # run only on PostgreSQL hosts
+
+- name: Node Exporter in K8s checks
+  include_tasks: roles/node_exporter/tasks/preflight/upgrade.yml
+  when:
+    - "'node_exporter' in upgrade_components or upgrade_components|length == 0"
+    - k8s_as_cloud_service is defined and k8s_as_cloud_service
+    - "'node_exporter' in group_names"
+    - "'kubernetes_master' in group_names"

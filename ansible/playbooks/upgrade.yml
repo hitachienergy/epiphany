@@ -280,9 +280,9 @@
   become: true
   become_method: sudo
   tasks:
-    - import_role:
-        name: upgrade
-        tasks_from: node-exporter
+    - include_role:
+        name: node_exporter
+        tasks_from: upgrade/main
       when: "'node_exporter' in upgrade_components or upgrade_components|length == 0"
   environment:
     KUBECONFIG: "{{ kubeconfig.local }}"

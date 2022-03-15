@@ -58,7 +58,8 @@ class Yum(Command):
         self.run(['remove', no_ask, package])
 
     def is_repo_enabled(self, repo: str) -> bool:
-        output = self.run(['repolist',
+        output = self.run(['-y',
+                           'repolist',
                            'enabled']).stdout
         if repo in output:
             return True
@@ -66,7 +67,8 @@ class Yum(Command):
         return False
 
     def find_rhel_repo_id(self, patterns: List[str]) -> List[str]:
-        output = self.run(['repolist',
+        output = self.run(['-y',
+                           'repolist',
                            'all']).stdout
 
         repos: List[str] = []
@@ -104,7 +106,8 @@ class Yum(Command):
         self.run(args)
 
     def list_all_repo_info(self) -> List[str]:
-        args: List[str] = ['repolist',
+        args: List[str] = ['-y',
+                           'repolist',
                            '-v',
                            'all']
         return self._run_and_filter(args)

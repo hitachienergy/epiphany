@@ -1,0 +1,23 @@
+---
+- name: Check that only one Node Exporter Helm release is installed
+  run_once: true
+  block:
+    - name: Include defaults from node_exporter role
+      include_vars:
+        file: roles/node_exporter/defaults/main.yml
+        name: exporter_defaults
+
+    - name: Get information about node-exporter helm releases
+      become: true
+      command: "helm list --all-namespaces --output json --filter {{ exporter_defaults.node_exporter_helm_chart_name }}"
+      register: node_exporter_helm_list
+      changed_when: false
+
+    - name: Assert node-exported installed only in one namespace
+      assert:
+        that: node_exporter_helm_list.stdout_lines|length == 1
+        fail_msg: |
+          Multiple Helm installations of Node Exporter are not supported or there is nothing to upgrade.
+          `helm list` output:
+          {{ node_exporter_helm_list.stdout_lines }}
+        success_msg: There is only one Node Exporter release.
