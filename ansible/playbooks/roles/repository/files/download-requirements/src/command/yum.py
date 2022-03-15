@@ -45,10 +45,11 @@ class Yum(Command):
         :param assume_yes: if set to True, -y flag will be used
         """
         no_ask: str = '-y' if assume_yes else ''
-        output = self.run(['install', no_ask, package], accept_nonzero_returncode=True).stdout
+        proc = self.run(['install', no_ask, package], accept_nonzero_returncode=True)
 
-        if not 'already installed' in output:
-            raise CriticalError(f'yum install failed for `{package}`, reason `{output}`')
+        if proc.returncode != 0:
+            if not 'does not update' in proc.stdout:  # trying to reinstall package with url
+                raise CriticalError(f'yum install failed for `{package}`, reason `{proc.stdout}`')
 
     def remove(self, package: str,
                assume_yes: bool = True):
