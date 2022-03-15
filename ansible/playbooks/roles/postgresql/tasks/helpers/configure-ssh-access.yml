@@ -79,16 +79,20 @@
         regenerate: full_idempotence
       register: openssh_keypair
 
-    - name: Add public key to authorized_keys
-      when: host != inventory_hostname
-      delegate_to: "{{ host }}"
+    - name: Set pg_authorized_keys fact
+      set_fact:
+        pg_authorized_keys: "{{ groups['postgresql'] | map('extract', hostvars)
+                                  | map(attribute='openssh_keypair.public_key')
+                                  | list
+                                  | join('\n') }}"
+
+    # There was an attempt to add each key in a loop,
+    # but from time to time not all keys are in place and that leads to connection issues
+    - name: Add public keys to authorized_keys
       authorized_key:
         user: "{{ username }}"
         state: present
-        key: "{{ openssh_keypair.public_key }}"
-      loop: "{{ groups['postgresql'] }}"
-      loop_control:
-        loop_var: host
+        key: "{{ pg_authorized_keys }}"
 
     - name: Run ssh-keyscan
       when: host != inventory_hostname
