@@ -60,7 +60,8 @@ class BaseMode:
             pass  # prereq packages are only for some distros
 
         content = load_yaml_file(self._cfg.reqs_path / f'{self._cfg.distro_subdir}/files.yml')
-        reqs['files'].update(content['files'])
+        if content:
+            reqs['files'].update(content['files'])
 
         for common_reqs in ['cranes', 'files', 'images']:
             content = load_yaml_file(self._cfg.reqs_path / f'{self._cfg.os_arch.value}/{common_reqs}.yml')
