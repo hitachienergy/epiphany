@@ -1,16 +1,16 @@
 ---
 - name: Create log directory for Kibana
   file:
-    path: "{{ specification.kibana_log_dir }"
+    path: "{{ specification.kibana_log_dir }}"
     state: directory
-    mode: u=rwx, go=rx
+    mode: u=rwx,go=rx
 
 - name: Create logfile for Kibana
   copy:
     dest: "{{ specification.kibana_log_dir }}/kibana.log"
     owner: kibana
     group: kibana
-    mode: u=rw, go=r
+    mode: u=rw,go=r
     force: false
     content: ""
 
@@ -19,12 +19,12 @@
     path: "{{ specification.kibana_log_dir }}/kibana.log"
     owner: kibana
     group: kibana
-    mode: u=rw, go=r
+    mode: u=rw,go=r
 
 - name: Copy logrotate config
   template:
     dest: /etc/logrotate.d/kibana
     owner: root
     group: root
-    mode: u=rw, go=r
+    mode: u=rw,go=r
     src: logrotate.conf.j2

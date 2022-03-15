@@ -42,7 +42,7 @@
       file:
         path: "{{ lock_file }}"
         state: touch
-        mode: u=rw, go=r
+        mode: u=rw,go=r
 
     - name: Stop service
       systemd:
@@ -73,7 +73,7 @@
         dest: "/opt/kafka_exporter"
         creates: "/opt/kafka_exporter/kafka_exporter"
         extra_opts: [--strip-components=1]
-        mode: u=rwx, go=rx
+        mode: u=rwx,go=rx
         owner: root
         group: kafka_exporter
       check_mode: false
@@ -84,7 +84,7 @@
         dest: /etc/systemd/system/kafka-exporter.service
         owner: root
         group: root
-        mode: u=rw, go=r
+        mode: u=rw,go=r
 
     - name: Daemon reload
       systemd:

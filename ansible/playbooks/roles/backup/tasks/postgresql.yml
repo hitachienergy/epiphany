@@ -42,7 +42,7 @@
         src: "{{ pg.config_dir[ansible_os_family] }}/{{ item }}"
         dest: "/var/tmp/{{ snapshot_name  }}/configs"
         remote_src: true
-        mode: permisive
+        mode: preserve
       loop: "{{ config_files.stdout_lines|flatten(levels=1) }}"
 
     - name: Create snapshot archive

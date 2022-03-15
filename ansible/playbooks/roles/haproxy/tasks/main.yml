@@ -6,7 +6,7 @@
   template:
     dest: /etc/haproxy/haproxy.cfg
     src: haproxy.cfg.j2
-    mode: u=rwx, go=rx
+    mode: u=rwx,go=rx
   register: template_haproxy_cfg
 
 - name: Setup and start haproxy runc-based systemd service

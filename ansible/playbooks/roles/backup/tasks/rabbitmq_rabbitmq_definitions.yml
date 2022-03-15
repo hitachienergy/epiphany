@@ -26,7 +26,7 @@
   file:
     path: /var/lib/rabbitmq/definitions/
     state: directory
-    mode: u=rwx, go=rx
+    mode: u=rwx,go=rx
 
 - name: Save definitions in a json file
   shell: |

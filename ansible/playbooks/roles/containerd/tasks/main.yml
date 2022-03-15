@@ -16,10 +16,10 @@
       include_role:
         name: docker
         tasks_from: remove-docker.yml
-      when:
-        - is_upgrade_run
-        - inventory_hostname not in groups.image_registry
-        - ansible_facts.packages['docker-ce'] is defined
+  when:
+    - is_upgrade_run
+    - inventory_hostname not in groups.image_registry
+    - ansible_facts.packages['docker-ce'] is defined
 
 - name: Install containerd package
   package:

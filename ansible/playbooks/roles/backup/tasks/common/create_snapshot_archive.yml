@@ -57,7 +57,7 @@
   file:
     path: "{{ backup_dir }}/"
     state: directory
-    mode: u=rwx, go=rx
+    mode: u=rwx,go=rx
 
 - name: Create the archive
   archive:
@@ -65,4 +65,4 @@
     path: "{{ paths_to_archive }}"
     format: gz
     force_archive: true
-    mode: ug=rx, o=r
+    mode: ug=rx,o=r

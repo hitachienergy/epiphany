@@ -47,7 +47,7 @@
       file:
         path: "{{ lock_file }}"
         state: touch
-        mode: u=rwx, go=r
+        mode: u=rwx,go=r
 
     - name: Download jmx-exporter binaries
       include_role:
@@ -63,7 +63,7 @@
         owner: "{{ specification.jmx_exporter_user }}"
         group: "{{ specification.jmx_exporter_group }}"
         remote_src: true
-        mode: permisive
+        mode: preserve
 
     - name: Get installed jmx-exporter binary path
       stat:

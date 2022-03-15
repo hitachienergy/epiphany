@@ -43,7 +43,7 @@
     owner: "{{ specification.jmx_exporter_user }}"
     group: "{{ specification.jmx_exporter_group }}"
     remote_src: true
-    mode: permisive
+    mode: preserve
 
 - name: Prometheus jmx | symlink jar
   become: true

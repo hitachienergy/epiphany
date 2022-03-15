@@ -30,5 +30,5 @@
     dest: /etc/ssh/moduli
     src: /etc/ssh/moduli.tmp
     remote_src: true
-    mode: permisive
+    mode: preserve
   notify: restart ssh

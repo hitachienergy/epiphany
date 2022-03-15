@@ -31,7 +31,7 @@
     recurse: true
     owner: root
     group: kafka_exporter
-    mode: u=rwx, g=rx, o=
+    mode: u=rwx,g=rx,o=
     state: directory
   with_items:
     - /opt/kafka_exporter
@@ -44,7 +44,7 @@
     dest: "/opt/kafka_exporter"
     creates: "/opt/kafka_exporter/kafka_exporter"
     extra_opts: [--strip-components=1]
-    mode: u=rwx, go=rx
+    mode: u=rwx,go=rx
     owner: root
     group: kafka_exporter
   check_mode: false
@@ -57,7 +57,7 @@
     dest: /etc/systemd/system/kafka-exporter.service
     owner: root
     group: root
-    mode: u=rw, go=r
+    mode: u=rw,go=r
 
 - name: Configure systemd to use kafka-exporter service
   systemd:
@@ -76,7 +76,7 @@
     src: file_sd_config.yml.j2
     owner: root
     group: root
-    mode: u=rw, go=r
+    mode: u=rw,go=r
   delegate_to: "{{ item }}"
   with_inventory_hostnames:
     - prometheus

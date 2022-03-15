@@ -11,7 +11,7 @@
   file:
     dest: "/usr/local/bin/helm-{{ newest_archive_version }}/"
     state: directory
-    mode: u=rwx, go=rx
+    mode: u=rwx,go=rx
 
 - name: Unpack Helm binary
   unarchive:

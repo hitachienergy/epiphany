@@ -101,7 +101,7 @@
           file:
             path: "{{ vault_location }}/helm/{{ helm_release_name }}"
             state: directory
-            mode: u=rwx, go=rx
+            mode: u=rwx,go=rx
 
         - name: Save encrypted values into {{ vault_location }}/helm/{{ helm_release_name }}/debug.yml
           when: encrypted_values is success
@@ -111,7 +111,7 @@
             content: >-
               {{ (encrypted_values.stdout | regex_replace('!vault', '') | from_yaml).rendered_values }}
             decrypt: false
-            mode: u=rwx, go=r
+            mode: u=rwx,go=r
 
         - name: Print original error and fail
           fail:

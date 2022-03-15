@@ -86,7 +86,7 @@
     dest: /etc/profile.d/operations.sh
     owner: root
     group: root
-    mode: permisive
+    mode: preserve
 
 - name: Hosts
   template:

@@ -15,7 +15,7 @@
   file:
     path: "{{ backup_dir }}/"
     state: directory
-    mode: u=rwx, go=rx
+    mode: u=rwx,go=rx
 
 - name: Calculate the checksum
   stat:
