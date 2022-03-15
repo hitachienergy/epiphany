@@ -163,9 +163,11 @@
           become_user: postgres
           command: >-
             {{ repmgr.bin_dir[ansible_os_family] }}/repmgr standby clone
-              -h {{ hostvars[groups.postgresql[0]].ansible_default_ipv4.address }}
+              -h {{ hostvars[_pg_primary_node].ansible_default_ipv4.address }}
               -U {{ specification.extensions.replication.privileged_user_name }}
               -d {{ specification.extensions.replication.repmgr_database }} -p 5432 --force
+              --copy-external-config-files=samepath
+              --remote-user=postgres
 
         - name: Extensions | repmgr | Start PostgreSQL service
           systemd:
@@ -176,7 +178,7 @@
           become_user: postgres
           command: >-
             {{ repmgr.bin_dir[ansible_os_family] }}/repmgr standby register --force
-              --upstream-conninfo='host={{ hostvars[groups['postgresql'][0]]['ansible_default_ipv4']['address'] }},
+              --upstream-conninfo='host={{ hostvars[_pg_primary_node]['ansible_default_ipv4']['address'] }},
                   user={{ specification.extensions.replication.replication_user_name }},
                   dbname={{ specification.extensions.replication.repmgr_database }},
                   connect_timeout=2'
