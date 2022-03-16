@@ -16,10 +16,10 @@ def load_yaml_file(filename: Path) -> Any:
     try:
         with open(filename, encoding="utf-8") as req_handler:
             return parse_string(req_handler.read())
-    except PoyoException as exc:
-        logging.error(exc)
-    except Exception:
-        logging.error(f'Failed loading: {filename}')
+    except PoyoException as pexc:
+        raise CriticalError(f'Failed loading: `{pexc}`') from pexc
+    except Exception as err:
+        raise CriticalError(f'Failed loading: `{filename}`') from err
 
 
 class BaseMode:
@@ -59,8 +59,9 @@ class BaseMode:
         except KeyError:
             pass  # prereq packages are only for some distros
 
-        content = load_yaml_file(self._cfg.reqs_path / f'{self._cfg.distro_subdir}/files.yml')
-        if content:
+        distro_files: Path = self._cfg.reqs_path / f'{self._cfg.distro_subdir}/files.yml'
+        if distro_files.exists():  # distro files are optional
+            content = load_yaml_file(distro_files)
             reqs['files'].update(content['files'])
 
         for common_reqs in ['cranes', 'files', 'images']:
@@ -132,7 +133,7 @@ class BaseMode:
         """
         for file in files:
             try:
-                filepath = self._cfg.dest_files / file.split('/')[-1]
+                filepath = dest / file.split('/')[-1]
                 if files[file]['sha256'] == get_sha256(filepath):
                     logging.debug(f'- {file} - checksum ok, skipped')
                     continue
