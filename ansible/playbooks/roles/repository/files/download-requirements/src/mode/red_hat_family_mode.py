@@ -186,8 +186,8 @@ class RedHatFamilyMode(BaseMode):
                                                             exclude='*i686',
                                                             destdir=self._cfg.dest_packages)
 
-    def _download_file(self, file: str, dest: Path):
-        self._tools.wget.download(file, directory_prefix=dest, additional_params=False)
+    def _download_file(self, url: str, dest: Path):
+        self._tools.wget.download(url, output_document=dest, additional_params=False)
 
     def _download_grafana_dashboard(self, dashboard: str, output_file: Path):
         self._tools.wget.download(dashboard, output_document=output_file, additional_params=False)

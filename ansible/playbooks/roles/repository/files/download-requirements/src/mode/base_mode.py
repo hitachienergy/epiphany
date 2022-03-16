@@ -97,11 +97,11 @@ class BaseMode:
         """
         raise NotImplementedError
 
-    def _download_file(self, file: str, dest: Path):
+    def _download_file(self, url: str, dest: Path):
         """
         Run command for downloading `file` on target OS.
 
-        :param file: to be downloaded
+        :param url: to be downloaded
         :param path: where to save the file
         """
         raise NotImplementedError
@@ -139,7 +139,7 @@ class BaseMode:
                     continue
 
                 logging.info(f'- {file}')
-                self._download_file(file, dest)
+                self._download_file(file, filepath)
             except CriticalError:
                 logging.warn(f'Could not download file: {file}')
 

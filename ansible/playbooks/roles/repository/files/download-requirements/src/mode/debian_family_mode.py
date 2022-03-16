@@ -104,8 +104,8 @@ class DebianFamilyMode(BaseMode):
 
         os.chdir(self._cfg.script_path)
 
-    def _download_file(self, file: str, dest: Path):
-        self._tools.wget.download(file, directory_prefix=dest)
+    def _download_file(self, url: str, dest: Path):
+        self._tools.wget.download(url, output_document=dest)
 
     def _download_grafana_dashboard(self, dashboard: str, output_file: Path):
         self._tools.wget.download(dashboard, output_document=output_file)
