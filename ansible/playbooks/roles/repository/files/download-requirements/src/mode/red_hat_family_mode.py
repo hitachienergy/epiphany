@@ -163,7 +163,7 @@ class RedHatFamilyMode(BaseMode):
     def _download_packages(self):
         downloaded_prereqs: Set = self.__download_prereq_packages()
 
-        packages: List[str] = self._requirements['packages']
+        packages: List[str] = self._requirements['packages']['from_repo']
         packages_to_download: List[str] = []
         for package in packages:
             # package itself
