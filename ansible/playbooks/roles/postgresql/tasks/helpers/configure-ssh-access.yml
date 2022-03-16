@@ -1,0 +1,116 @@
+---
+- name: Ensure openssh packages are installed
+  package:
+    name: "{{ _packages[ansible_os_family] }}"
+    state: present
+  vars:
+    _packages:
+      Debian:
+        - openssh-client
+        - openssh-server
+      RedHat:
+        - openssh-clients
+        - openssh-server
+
+- name: Ensure sshd is started and enabled
+  systemd:
+    name: sshd
+    enabled: true
+    state: started
+
+- name: Set getent_passwd fact
+  getent:
+    database: passwd
+    key: "{{ username }}"
+    split: ":"
+
+- become_user: "{{ username }}"
+  vars:
+    home_dir: "{{ ansible_facts.getent_passwd[username][4] }}"
+    ssh_key_type: ed25519
+    ssh_key_path: "{{ home_dir }}/.ssh/id_{{ ssh_key_type }}"
+    ssh_key_backup_path: "{{ home_dir }}/.ssh/id_{{ ssh_key_type }}.bkp"
+  block:
+    - name: Ensure {{ home_dir }}/.ssh directory exists
+      file:
+        path: "{{ home_dir }}/.ssh/"
+        state: directory
+        mode: u=rwx,go=
+
+    # Backup is recommended for full_idempotence option:
+    # https://docs.ansible.com/ansible/latest/collections/community/crypto/openssh_keypair_module.html#parameter-regenerate
+    - name: Backup ssh key
+      block:
+        - name: Check if file {{ ssh_key_path }} exists
+          stat:
+            path: "{{ ssh_key_path }}"
+            get_attributes: false
+            get_checksum: true
+            get_mime: false
+          register: ssh_key
+
+        - name: Check if backup file {{ ssh_key_backup_path }} exists
+          stat:
+            path: "{{ ssh_key_backup_path }}"
+            get_attributes: false
+            get_checksum: true
+            get_mime: false
+          register: ssh_key_backup
+
+        - name: Backup {{ ssh_key_path }}
+          when:
+            - ssh_key.stat.exists
+            - not ssh_key_backup.stat.exists or ssh_key.stat.checksum != ssh_key_backup.stat.checksum
+          copy:
+            src: "{{ ssh_key_path }}"
+            dest: "{{ ssh_key_backup_path }}"
+            remote_src: true
+            force: true
+          register: copy_result
+          # set status to changed only when file is overwritten not to fail Molecule idempotence test for the first run
+          changed_when:
+            - copy_result.changed
+            - ssh_key_backup.stat.exists
+
+    - name: Generate openssh keypair
+      openssh_keypair:
+        path: "{{ ssh_key_path }}"
+        type: "{{ ssh_key_type }}"
+        regenerate: full_idempotence
+      register: openssh_keypair
+
+    - name: Set pg_authorized_keys fact
+      set_fact:
+        pg_authorized_keys: "{{ groups['postgresql'] | map('extract', hostvars)
+                                  | map(attribute='openssh_keypair.public_key')
+                                  | list
+                                  | difference([openssh_keypair.public_key])
+                                  | join('\n') }}"
+
+    # There was an attempt to add each key in a loop,
+    # but from time to time not all keys are in place and that leads to connection issues
+    - name: Add public keys to authorized_keys
+      authorized_key:
+        user: "{{ username }}"
+        state: present
+        key: "{{ pg_authorized_keys }}"
+
+    - name: Run ssh-keyscan
+      when: host != inventory_hostname
+      command: "ssh-keyscan {{ hostvars[host]['ansible_default_ipv4']['address'] }}"
+      changed_when: false
+      loop: "{{ groups['postgresql'] }}"
+      loop_control:
+        loop_var: host
+      register: ssh_known_host_results
+
+    - name: Ensure public keys are in {{ home_dir }}/.ssh/known_host
+      when: host_info.host != inventory_hostname
+      known_hosts:
+        name: "{{ hostvars[host_info.host]['ansible_default_ipv4']['address'] }}"
+        key: "{{ host_info.stdout }}"
+        path: "{{ home_dir }}/.ssh/known_hosts"
+      loop: "{{ ssh_known_host_results.results }}"
+      loop_control:
+        loop_var: host_info
+        label: "{{ host_info.host }}"

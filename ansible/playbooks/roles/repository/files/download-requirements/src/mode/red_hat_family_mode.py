@@ -35,7 +35,8 @@ class RedHatFamilyMode(BaseMode):
         # some packages are from EPEL repo
         # make sure that we reinstall it before proceeding
         if self._tools.rpm.is_package_installed('epel-release'):
-            self._tools.yum.remove('epel-release')
+            if not Path('/etc/yum.repos.d/epel-testing.repo').exists() or not Path('/etc/yum.repos.d/epel.repo').exists():
+                self._tools.yum.remove('epel-release')
 
         self._tools.yum.install('https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm')
         self.__installed_packages.append('epel-release')
