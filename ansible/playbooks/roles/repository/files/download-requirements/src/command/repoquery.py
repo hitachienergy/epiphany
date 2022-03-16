@@ -71,9 +71,9 @@ class Repoquery(Command):
         def output_handler(output: str):
             """ In addition to errors, handle missing packages """
             if not output:
-                raise PackageNotfound(f'repoquery failed for package `{package}`, reason: package not found')
+                raise PackageNotfound(f'repoquery failed for package `{package}`, reason: package not found, command: `{self.command()}`')
             elif 'error' in output:
-                raise CriticalError(f'repoquery failed for package `{package}`, reason: `{output}`')
+                raise CriticalError(f'repoquery failed for package `{package}`, reason: `{output}`, command: `{self.command()}`')
 
         return self.__query(package, queryformat, arch, False, False, output_handler)
 
@@ -92,6 +92,6 @@ class Repoquery(Command):
         def output_handler(output: str):
             """ Handle errors """
             if 'error' in output:
-                raise CriticalError(f'repoquery failed for package `{package}`, reason: `{output}`')
+                raise CriticalError(f'repoquery failed for package `{package}`, reason: `{output}`, command: `{self.command()}`')
 
         return self.__query(package, queryformat, arch, True, True, output_handler)
