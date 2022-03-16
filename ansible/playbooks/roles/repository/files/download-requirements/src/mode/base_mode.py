@@ -140,6 +140,10 @@ class BaseMode:
 
                 logging.info(f'- {file}')
                 self._download_file(file, filepath)
+
+                if files[file]['sha256'] != get_sha256(filepath):
+                    raise CriticalError(f'- {file} - download failed due to checksum mismatch, '
+                                         'WARNING someone might have replaced the file')
             except CriticalError:
                 logging.warn(f'Could not download file: {file}')
 
@@ -158,6 +162,10 @@ class BaseMode:
 
                 logging.info(f'- {dashboard}')
                 self._download_grafana_dashboard(dashboards[dashboard]['url'], output_file)
+
+                if dashboards[dashboard]['sha256'] != get_sha256(output_file):
+                    raise CriticalError(f'- {dashboard} - download failed due to checksum mismatch, '
+                                         'WARNING someone might have replaced the file')
             except CriticalError:
                 logging.warn(f'Could not download grafana dashboard: {dashboard}')
 
@@ -174,6 +182,11 @@ class BaseMode:
             logging.debug('crane - checksum ok, skipped')
         else:
             self._download_crane_binary(first_crane, crane_package_path)
+
+            if cranes[first_crane]['sha256'] != get_sha256(crane_package_path):
+                raise CriticalError('crane - download failed due to checksum mismatch, '
+                                    'WARNING someone might have replaced the file')
+
             self._tools.tar.unpack(crane_package_path, Path('crane'), directory=self._cfg.dest_dir)
             chmod(crane_path, 0o0755)
 
@@ -200,6 +213,11 @@ class BaseMode:
 
                 logging.info(f'- {image}')
                 self._tools.crane.pull(image, self._cfg.dest_images / filename, platform)
+
+                if images[image]['sha1'] != get_sha1(self._cfg.dest_images / filename):
+                    raise CriticalError(f'- {image} - download failed due to checksum mismatch, '
+                                         'WARNING someone might have replaced the file')
+
             except CriticalError:
                 logging.warn(f'Could not download image: `{image}`')
 
