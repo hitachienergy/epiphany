@@ -218,7 +218,7 @@ describe 'Check the containerd' do
     its(:stdout) { should include('RuntimeName:  containerd') }
   end
   describe command("kubectl get nodes -o jsonpath='{.items[].status.nodeInfo.containerRuntimeVersion}'") do
-    its(:stdout) { should include('containerd://1.5.10') }
+    its(:stdout) { should include('containerd://1.4.12') }
   end
   describe file('/etc/containerd/config.toml') do
     let(:disable_sudo) { false }

@@ -13,9 +13,8 @@
   become: true
   become_method: sudo
   tasks:
-    - include_role:
+    - import_role:
         name: docker
-        tasks_from: upgrade/main
       when: "'image_registry' in upgrade_components or upgrade_components|length == 0"
 
 - hosts: kubernetes_master

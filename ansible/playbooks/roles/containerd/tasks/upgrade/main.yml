@@ -3,11 +3,10 @@
   package_facts:
     manager: auto
 
-- name: Set containerd_installed_version fact
-  set_fact:
-    containerd_installed_version: "{{ ansible_facts.packages['containerd.io'][0].version }}"
-
 - name: Remove Docker
+  when:
+    - inventory_hostname not in groups.image_registry
+    - ansible_facts.packages['docker-ce'] is defined
   block:
   - name: Stop Kubelet before Docker removal
     systemd:
@@ -20,11 +19,8 @@
     include_role:
       name: docker
       tasks_from: remove-docker.yml
-  when:
-    - inventory_hostname not in groups.image_registry
-    - ansible_facts.packages['docker-ce'] is defined
 
-- name: Install newer containerd package if required
+- name: Install containerd.io package
   package:
     name: "{{ _packages[ansible_os_family] }}"
     state: present
@@ -35,8 +31,9 @@
       RedHat:
         - containerd.io-{{ containerd_version }}
   module_defaults:
-    yum: { lock_timeout: "{{ yum_lock_timeout }}" }
-  when: containerd_installed_version is version(containerd_version, '<')
+    yum: { lock_timeout: "{{ yum_lock_timeout }}",
+           allow_downgrade: true }
+    apt: { allow_downgrade: true }
 
 - name: Configure prerequisites
   include_tasks: configure-prerequisites.yml
