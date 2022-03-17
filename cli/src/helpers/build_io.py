@@ -1,6 +1,6 @@
 import os
 import shutil
-from distutils import dir_util
+
 from pathlib import Path
 
 from ansible.inventory.manager import InventoryManager
@@ -147,7 +147,7 @@ def delete_directory(dir_path):
 
 
 def copy_files_recursively(src, dst):
-    dir_util.copy_tree(src, dst)
+    shutil.copytree(src, dst, dirs_exist_ok=True)
 
 
 def copy_file(src, dst):
