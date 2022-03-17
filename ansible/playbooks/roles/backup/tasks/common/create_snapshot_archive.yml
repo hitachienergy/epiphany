@@ -1,13 +1,13 @@
 ---
 # Invoke with (example):
 # - set_fact:
-#    snapshot_prefix: "haproxy_etc"
-#    snapshot_name: "20200526-102034"
-#    dirs_to_archive:
-#      - /etc/haproxy/
-#      - /etc/ssl/haproxy/
-#    files_to_archive:
-#      - /var/lib/rabbitmq/definitions/definitions-{{ snapshot_name }}.json
+#     snapshot_prefix: "haproxy_etc"
+#     snapshot_name: "20200526-102034"
+#     dirs_to_archive:
+#       - /etc/haproxy/
+#       - /etc/ssl/haproxy/
+#     files_to_archive:
+#       - /var/lib/rabbitmq/definitions/definitions-{{ snapshot_name }}.json
 
 - name: Assert that the snapshot_prefix fact is defined and valid
   assert:

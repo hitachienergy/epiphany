@@ -25,6 +25,7 @@
       block:
         - name: Get installed jmx-exporter version
           shell: >-
+            set -o pipefail &&
             unzip -p /opt/jmx-exporter/jmx_prometheus_javaagent.jar META-INF/MANIFEST.MF \
             | awk '$1 == "Implementation-Version:" {print $2}'
           register: installed_jmx_exporter_version

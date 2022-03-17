@@ -1,7 +1,7 @@
 ---
 # Invoke with (example):
 # - set_fact:
-#    snapshot_path: "{{ backup_dir }}/{{ snapshot_prefix }}_{{ snapshot_name }}.tar.gz"
+#     snapshot_path: "{{ backup_dir }}/{{ snapshot_prefix }}_{{ snapshot_name }}.tar.gz"
 
 - name: Assert that the snapshot_path fact is defined and valid
   assert:

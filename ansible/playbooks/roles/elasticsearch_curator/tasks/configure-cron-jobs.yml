@@ -83,11 +83,11 @@
     # NOTE: name should be unique since changing it will result in a new cron task being created
     name: "Elasticsearch Curator job that deletes indices, config_hash: {{ item.config_hash }}"
     job: "{{ item.cmd }}"
-    minute: "{{ item.cron.minute       | default('*') }}"
-    hour: "{{ item.cron.hour         | default('*') }}"
-    day: "{{ item.cron.day          | default('*') }}"
-    weekday: "{{ item.cron.weekday      | default('*') }}"
-    month: "{{ item.cron.month        | default('*') }}"
+    minute: "{{ item.cron.minute | default('*') }}"
+    hour: "{{ item.cron.hour | default('*') }}"
+    day: "{{ item.cron.day | default('*') }}"
+    weekday: "{{ item.cron.weekday | default('*') }}"
+    month: "{{ item.cron.month | default('*') }}"
     disabled: "{{ not (item.cron.enabled | default(True)) }}"
   loop: "{{ curator_cron_jobs }}"
   when:

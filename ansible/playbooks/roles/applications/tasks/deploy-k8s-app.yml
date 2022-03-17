@@ -93,7 +93,7 @@
 
         - name: "{{ app_dir_name | capitalize }} | Save encrypted templates into {{ deployment_tmp_root_dir }}/{{ app_dir_name }}/debug.yml"
           when: encrypted_templates is success
-          copy: # noqa risky-file-permissions (temporary directory)
+          copy:
             dest: "{{ deployment_tmp_root_dir }}/{{ app_dir_name }}/debug.yml"
             # To be able to successfully parse yaml payload we need to remove the custom "!vault" tag
             content: >-

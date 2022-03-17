@@ -13,11 +13,11 @@
           include_vars:
             file: roles/prometheus/vars/main.yml
             name: component_vars
-        - name: Run prometheus backup tasks
+        - name: Run prometheus backup tasks - create snapshot
           import_role:
             name: backup
             tasks_from: monitoring_prometheus_snapshot
-        - name: Run prometheus archive tasks
+        - name: Run prometheus backup tasks - archive /etc/prometheus dir
           import_role:
             name: backup
             tasks_from: monitoring_prometheus_etc

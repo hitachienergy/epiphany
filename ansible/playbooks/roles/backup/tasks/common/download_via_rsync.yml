@@ -1,9 +1,9 @@
 ---
 # Invoke with (example):
 # - set_fact:
-#    artifacts:
-#      - /tmp/artifact1
-#      - /tmp/artifact2
+#     artifacts:
+#       - /tmp/artifact1
+#       - /tmp/artifact2
 
 - name: Assert that the "artifacts" fact is defined and valid
   assert:
