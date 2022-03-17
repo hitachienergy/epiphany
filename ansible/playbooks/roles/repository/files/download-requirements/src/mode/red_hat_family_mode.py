@@ -195,11 +195,11 @@ class RedHatFamilyMode(BaseMode):
     def _download_crane_binary(self, url: str, dest: Path):
         self._tools.wget.download(url, dest, additional_params=False)
 
-    def _cleanup(self):
-        # remove repo files
-        for repo_file in Path('/etc/yum.repos.d').iterdir():
-            repo_file.unlink()
+    def _additional_restore_repositories_steps(self):
+        for repofile in Path('/etc/yum.repos.d').iterdir():
+            repofile.unlink()
 
+    def _cleanup(self):
         # remove installed packages
         for package in self.__installed_packages:
             if self._tools.rpm.is_package_installed(package):

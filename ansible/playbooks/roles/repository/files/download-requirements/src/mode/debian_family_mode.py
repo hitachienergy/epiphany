@@ -113,15 +113,15 @@ class DebianFamilyMode(BaseMode):
     def _download_crane_binary(self, url: str, dest: Path):
         self._tools.wget.download(url, dest)
 
+    def _additional_restore_repositories_steps(self):
+        for repofile in Path('/etc/apt/sources.list.d').iterdir():
+            repofile.unlink()
+
     def _cleanup(self):
         # cleaning up 3rd party repositories
         for data in self._repositories.values():
             if data['path'].exists():
                 data['path'].unlink()
-
-        # removed custom repositories to their original names
-        for repo_file in Path('/etc/apt/sources.list.d').iterdir():
-            repo_file.unlink()
 
         # remove installed packages
         for package in self.__installed_packages:

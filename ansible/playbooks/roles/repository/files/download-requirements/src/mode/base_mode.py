@@ -209,12 +209,19 @@ class BaseMode:
         """
         pass
 
+    def _additional_restore_repositories_steps(self):
+        """
+        Additional routines before unpacking repositories
+        """
+        pass
+
     def __restore_repositories(self):
         """
         Restore the state of repository files under the /etc dir.
         """
         if self._cfg.repos_backup_file.exists() and self._cfg.repos_backup_file.stat().st_size:
             logging.info('Restoring repository files...')
+            self._additional_restore_repositories_steps()
             self._tools.tar.unpack(filename=self._cfg.repos_backup_file,
                                    directory=Path('/'),
                                    absolute_names=True,
