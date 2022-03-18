@@ -14,7 +14,7 @@
       set_fact:
         var_dir_fs_free_mb: "{{ (_mount.size_available / 1024 / 1024) | int }}"
       vars:
-        _mount: "{{ ansible_mounts | selectattr('device', '==', var_data_disk.stdout) | first }}"
+        _mount: "{{ ansible_mounts | selectattr('size_available', 'defined') | selectattr('device', '==', var_data_disk.stdout) | first }}"
 
     - name: Check free disk space
       assert:
