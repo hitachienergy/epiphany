@@ -16,8 +16,8 @@ specification:
     offer: 0001-com-ubuntu-server-focal
     sku: 20_04-lts-gen2
     version: "20.04.202204190"
-  redhat-7-x86_64:
+  redhat-8-x86_64:
     publisher: RedHat
-    offer: RHEL
-    sku: 7lvm-gen2
-    version: "7.9.2021121604"
+    offer: rhel-raw
+    sku: 8-raw-gen2
+    version: "8.5.2022031406"
