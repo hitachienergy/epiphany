@@ -1,42 +1,56 @@
 {
-    // See https://go.microsoft.com/fwlink/?LinkId=733558
-    // for the documentation about the tasks.json format
+    // See https://go.microsoft.com/fwlink/?LinkId=733558 for the documentation about the tasks.json format
+    "problemMatcher": [],
+    "type": "shell",
     "version": "2.0.0",
     "tasks": [
       {
+        "label": "Ensure test_results directory",
+        "command": "mkdir -p ${workspaceFolder}/test_results",
+        "presentation": {
+          "echo": false,
+          "reveal": "silent",
+          "showReuseMessage": false,
+        }
+      },
+      {
         "label": "Pytest",
-        "type": "shell",
-        "command": "mkdir -p test_results && pytest --junitxml=${workspaceFolder}/test_results/pytest_results.xml"
+        "command": "pytest --junitxml=${workspaceFolder}/test_results/pytest_results.xml",
+        "dependsOn": ["Ensure test_results directory"],
+        "group": "test",
       },
       {
         "label": "Pylint junit",
-        "type": "shell",
-        "command": "mkdir -p test_results && pylint --rcfile .pylintrc ./cli ./tests --output ${workspaceFolder}/test_results/pylint_results.xml"
+        "command": "pylint --rcfile .pylintrc ./cli ./tests --output ${workspaceFolder}/test_results/pylint_results.xml",
+        "dependsOn": ["Ensure test_results directory"],
+        "group": "test",
       },
       {
         "label": "Pylint terminal",
-        "type": "shell",
-        "command": "pylint --rcfile .pylintrc ./cli ./tests --output-format text"
+        "command": "pylint --rcfile .pylintrc ./cli ./tests --output-format text",
+        "group": "test",
       },
       {
         "label": "Ansible-lint junit",
-        "type": "shell",
-        "command": "mkdir -p test_results && ansible-lint --nocolor -q -c .ansible-lint -p ${workspaceFolder}/ansible/playbooks/*.yml > ${workspaceFolder}/test_results/ansiblelint_results.txt ; ansible-lint-to-junit-xml ${workspaceFolder}/test_results/ansiblelint_results.txt > ${workspaceFolder}/test_results/ansiblelint_results.xml"
+        "command": "ansible-lint --nocolor -q -c .ansible-lint -p ${workspaceFolder}/ansible/playbooks/*.yml > ${workspaceFolder}/test_results/ansiblelint_results.txt ; ansible-lint-to-junit-xml ${workspaceFolder}/test_results/ansiblelint_results.txt > ${workspaceFolder}/test_results/ansiblelint_results.xml",
+        "dependsOn": ["Ensure test_results directory"],
+        "group": "test",
       },
       {
         "label": "Ansible-lint terminal",
-        "type": "shell",
-        "command": "ansible-lint -q -c .ansible-lint -p ${workspaceFolder}/ansible/playbooks/*.yml"
+        "command": "ansible-lint -q -c .ansible-lint -p ${workspaceFolder}/ansible/playbooks/*.yml",
+        "group": "test",
       },
       {
         "label": "Rubocop junit",
-        "type": "shell",
-        "command": "mkdir -p test_results && rubocop -c .rubocop.yml --require rubocop/formatter/junit_formatter --format RuboCop::Formatter::JUnitFormatter --out test_results/rubocop_results.xml"
+        "command": "rubocop -c .rubocop.yml --require rubocop/formatter/junit_formatter --format RuboCop::Formatter::JUnitFormatter --out test_results/rubocop_results.xml",
+        "dependsOn": ["Ensure test_results directory"],
+        "group": "test",
       },
       {
         "label": "Rubocop terminal",
-        "type": "shell",
-        "command": "rubocop -c .rubocop.yml"
+        "command": "rubocop -c .rubocop.yml",
+        "group": "test",
       }
     ]
   }
