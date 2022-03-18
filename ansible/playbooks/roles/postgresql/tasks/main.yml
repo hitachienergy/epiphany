@@ -75,6 +75,12 @@
     - /var/log/postgresql
     - "{{ pg.data_dir[ansible_os_family] }}" # Permissions should be u=rwx (0700) or u=rwx,g=rx (0750)
 
+- name: Configure ssh for 'postgres' user
+  when: groups['postgresql']|length > 1
+  vars:
+    username: postgres
+  include_tasks: helpers/configure-ssh-access.yml
+
 - name: RedHat | Initialize database
   when: ansible_os_family == 'RedHat'
   block:

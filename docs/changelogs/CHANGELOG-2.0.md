@@ -7,7 +7,7 @@
 - [#959](https://github.com/epiphany-platform/epiphany/issues/959) - Add usage of use_network_security_groups to disable NSG on AWS
 - [#2701](https://github.com/epiphany-platform/epiphany/issues/2701) - Epicli prepare - generate files in separate directory
 - [#2812](https://github.com/epiphany-platform/epiphany/issues/2812) - Extend K8s config validation
-- [#2950](https://github.com/epiphany-platform/epiphany/issues/2950) - CLI refactor to make it more consistant
+- [#2950](https://github.com/epiphany-platform/epiphany/issues/2950) - CLI refactor to make it more consistent
 - [#2844](https://github.com/epiphany-platform/epiphany/issues/2844) - Refactor K8s upgrade task in order to simplify its flow
 - [#2985](https://github.com/epiphany-platform/epiphany/issues/2985) - Make RabbitMQ Plugins configurable
 - [#2974](https://github.com/epiphany-platform/epiphany/issues/2974) - Refactor Apply command
@@ -17,6 +17,7 @@
 - [#2858](https://github.com/epiphany-platform/epiphany/issues/2858) - Make Ruby spec tests code compliant with rubocop lint rules
 - [#2975](https://github.com/epiphany-platform/epiphany/issues/2975) - Copy only required files
 - [#2991](https://github.com/epiphany-platform/epiphany/issues/2991) - Add automatic backup creation for download requirements
+- [#2448](https://github.com/epiphany-platform/epiphany/issues/2448) - Passwordless SSH communication for postgres user between DB nodes
 - [#2821](https://github.com/epiphany-platform/epiphany/issues/2821) - Node Exporter preflight checks
 
 ### Fixed
@@ -37,6 +38,8 @@
 - [#2930](https://github.com/epiphany-platform/epiphany/issues/2930) - Backup/recovery commands fail when default configuration for backup attached to cluster-config.yml
 - [#2989](https://github.com/epiphany-platform/epiphany/issues/2989) - Task `Remove swap from /etc/fstab` does not remove swap entry from file
 - [#2907](https://github.com/epiphany-platform/epiphany/issues/2907) - Backup/recovery commands fail when executed directly after upgrade
+- [#3025](https://github.com/epiphany-platform/epiphany/issues/3025) - Running yum commands may hang waiting for user input
+- [#2728](https://github.com/epiphany-platform/epiphany/issues/2728) - PostgreSQL's configuration files located outside the data directory are not copied by repmgr
 
 ### Updated
 

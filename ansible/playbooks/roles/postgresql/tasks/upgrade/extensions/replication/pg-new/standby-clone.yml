@@ -25,9 +25,11 @@
   become_user: postgres
   command: >-
     {{ new_version.repmgr.bin_dir[ansible_os_family] }}/repmgr standby clone
-      -h {{ pg_primary_node }}
+      -h {{ hostvars[pg_primary_node].ansible_default_ipv4.address }}
       -U {{ manifest.specification.extensions.replication.privileged_user_name }}
       -d {{ manifest.specification.extensions.replication.repmgr_database }} -p 5432 --force
+      --copy-external-config-files=samepath
+      --remote-user=postgres
   register: repmgr_standby_clone
   changed_when: repmgr_standby_clone.rc == 0
 
