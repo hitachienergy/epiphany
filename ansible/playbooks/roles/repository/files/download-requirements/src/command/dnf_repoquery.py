@@ -12,7 +12,7 @@ class DnfRepoquery(Command):
     def __init__(self, retries: int):
         super().__init__('dnf', retries)  # repoquery would require yum-utils package
 
-    def __query(self, package: str,
+    def __query(self, packages: List[str],
                 queryformat: str,
                 archlist: List[str],
                 requires: bool,
@@ -21,7 +21,7 @@ class DnfRepoquery(Command):
         """
         Run generic query using `dnf repoquery` command.
 
-        :param package: data will be returned for this `package`
+        :param packages: data will be returned for those `packages`
         :param queryformat: specify custom query output format
         :param archlist: limit results to these architectures
         :param requires: get capabilities that the package depends on
@@ -48,7 +48,7 @@ class DnfRepoquery(Command):
         if resolve:
             args.append('--resolve')
 
-        args.append(package)
+        args.extend(packages)
 
         output = self.run(args).stdout
         # dnf download doesn't set error code if repoquery returns empty output TODO: verify this
@@ -61,11 +61,11 @@ class DnfRepoquery(Command):
 
         return packages
 
-    def query(self, package: str, queryformat: str, archlist: List[str]) -> List[str]:
+    def query(self, packages: List[str], queryformat: str, archlist: List[str]) -> List[str]:
         """
         Generic query to dnf database.
 
-        :param package: data will be returned for this `package`
+        :param packages: data will be returned for those `packages`
         :param queryformat: specify custom query output format
         :param archlist: limit results to these architectures
         :raises:
@@ -77,17 +77,17 @@ class DnfRepoquery(Command):
         def output_handler(output: str):
             """ In addition to errors, handle missing packages """
             if not output:
-                raise PackageNotfound(f'repoquery failed for package `{package}`, reason: package not found, command: `{self.command()}`')
+                raise PackageNotfound(f'repoquery failed for package `{packages}`, reason: package not found')
             elif 'error' in output:
-                raise CriticalError(f'repoquery failed for package `{package}`, reason: `{output}`, command: `{self.command()}`')
+                raise CriticalError(f'repoquery failed for package `{packages}`, reason: `{output}`')
 
-        return self.__query(package, queryformat, archlist, False, False, output_handler)
+        return self.__query(packages, queryformat, archlist, False, False, output_handler)
 
-    def get_dependencies(self, package: str, queryformat: str, archlist: List[str]) -> List[str]:
+    def get_dependencies(self, packages: List[str], queryformat: str, archlist: List[str]) -> List[str]:
         """
         Get all dependencies for `package`.
 
-        :param package: data will be returned for this `package`
+        :param packages: data will be returned for those `packages`
         :param queryformat: specify custom query output format
         :param archlist: limit results to these architectures
         :raises:
@@ -98,6 +98,6 @@ class DnfRepoquery(Command):
         def output_handler(output: str):
             """ Handle errors """
             if 'error' in output:
-                raise CriticalError(f'repoquery failed for package `{package}`, reason: `{output}`, command: `{self.command()}`')
+                raise CriticalError(f'repoquery failed for package `{packages}`, reason: `{output}`')
 
-        return self.__query(package, queryformat, archlist, True, True, output_handler)
+        return self.__query(packages, queryformat, archlist, True, True, output_handler)
