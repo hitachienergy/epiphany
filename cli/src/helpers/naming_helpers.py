@@ -71,7 +71,7 @@ def get_os_name_normalized(vm_doc):
     if vm_doc.provider == "aws":
         # Example public/official AMI names:
         # - ubuntu/images/hvm-ssd/ubuntu-focal-20.04-amd64-server-20220110
-        # - RHEL-7.9_HVM-20211005-x86_64-0-Hourly2-GP2
+        # - RHEL-8.5_HVM-20220127-x86_64-3-Hourly2-GP2
         # - AlmaLinux OS 8.5.20211116 x86_64
         for indicator in expected_indicators:
             if indicator in vm_doc.specification.os_full_name.lower():
