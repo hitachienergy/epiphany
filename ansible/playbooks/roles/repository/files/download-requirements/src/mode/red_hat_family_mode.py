@@ -130,14 +130,12 @@ class RedHatFamilyMode(BaseMode):
                                                                  queryformat='%{name}-%{version}-%{release}.%{arch}',
                                                                  archlist=self.__archs))
 
-        unique_collected_prereqs: Set = set(collected_prereqs)
-        for prereq in unique_collected_prereqs:
-            self._tools.dnf_download.download_packages([prereq],
-                                                        archlist=self.__archs,
-                                                        exclude='*i686',
-                                                        destdir=prereqs_dir)
-            logging.info(f'- {prereq}')
-
+        unique_collected_prereqs = [package for package in set(collected_prereqs)]
+        logging.info(f'{unique_collected_prereqs}')
+        self._tools.dnf_download.download_packages(unique_collected_prereqs,
+                                                    archlist=self.__archs,
+                                                    exclude='*i686',
+                                                    destdir=prereqs_dir)
         return unique_collected_prereqs
 
     def _download_packages(self):
@@ -159,13 +157,12 @@ class RedHatFamilyMode(BaseMode):
                                                                                queryformat='%{name}.%{arch}',
                                                                                archlist=self.__archs))
 
-        for package in set(packages_to_download):
-            if package not in downloaded_prereqs:
-                logging.info(f'- {package}')
-                self._tools.dnf_download.download_packages([package],
-                                                            archlist=self.__archs,
-                                                            exclude='*i686',
-                                                            destdir=self._cfg.dest_packages)
+        fitered_packages = [package for package in set(packages_to_download) if package not in downloaded_prereqs]
+        logging.info(f'{fitered_packages}')
+        self._tools.dnf_download.download_packages(fitered_packages,
+                                                    archlist=self.__archs,
+                                                    exclude='*i686',
+                                                    destdir=self._cfg.dest_packages)
 
     def _download_file(self, file: str):
         self._tools.wget.download(file, directory_prefix=self._cfg.dest_files, additional_params=False)
