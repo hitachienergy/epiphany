@@ -113,7 +113,7 @@ class DebianFamilyMode(BaseMode):
     def _download_crane_binary(self, url: str, dest: Path):
         self._tools.wget.download(url, dest)
 
-    def _additional_restore_repositories_steps(self):
+    def _clean_up_repository_files(self):
         for repofile in Path('/etc/apt/sources.list.d').iterdir():
             repofile.unlink()
 

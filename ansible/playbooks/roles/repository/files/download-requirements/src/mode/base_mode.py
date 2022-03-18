@@ -209,9 +209,9 @@ class BaseMode:
         """
         pass
 
-    def _additional_restore_repositories_steps(self):
+    def _clean_up_repository_files(self):
         """
-        Additional routines before unpacking repositories
+        Additional routines before unpacking backup to remove repository files under the /etc directory.
         """
         pass
 
@@ -221,7 +221,7 @@ class BaseMode:
         """
         if self._cfg.repos_backup_file.exists() and self._cfg.repos_backup_file.stat().st_size:
             logging.info('Restoring repository files...')
-            self._additional_restore_repositories_steps()
+            self._clean_up_repository_files()
             self._tools.tar.unpack(filename=self._cfg.repos_backup_file,
                                    directory=Path('/'),
                                    absolute_names=True,

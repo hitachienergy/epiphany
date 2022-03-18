@@ -3,5 +3,5 @@
 
 - name: Install elasticsearch-curator package
   apt:
-    deb: "{{ repository_url }}/packages/{{ curator_package.filename.Debian }}"
+    deb: "{{ curator_package.package_name.Debian }}"
     state: present
