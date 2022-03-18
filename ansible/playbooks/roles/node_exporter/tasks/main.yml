@@ -4,7 +4,7 @@
   when: >
     k8s_as_cloud_service is not defined or
     not k8s_as_cloud_service or
-    k8s_as_cloud_service is defined and k8s_as_cloud_service and not 'kubernetes_master' in group_names
+    k8s_as_cloud_service is defined and k8s_as_cloud_service and not 'kubernetes_master' in group_names and not 'kubernetes_node' in group_names
 
 - name: Include installation tasks for Node Exporter as DaemonSet for "k8s as cloud service"
   include_tasks: apply/daemonset.yml
