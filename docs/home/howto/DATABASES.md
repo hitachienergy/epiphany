@@ -115,25 +115,23 @@ https://repmgr.org/docs/5.2/repmgr-standby-register.html
 For some reason you may want to switchover database nodes (promote standby to primary and demote existing primary to
 standby).
 
-1. Configure passwordless SSH communication for postgres user between database nodes.
-
-2. Test and run initial login between nodes to authenticate host (if host authentication is enabled).
+1. Test and run initial login between nodes to authenticate host (if host authentication is enabled).
 
 Execute commands listed below on actual standby node
 
-3. Confirm that standby you want to promote is registered in repmgr cluster:
+2. Confirm that standby you want to promote is registered in repmgr cluster:
 
 ```bash
 repmgr cluster show
 ```
 
-4. Run switchover:
+3. Run switchover:
 
 ```bash
 repmgr standby switchover
 ```
 
-5. Run command from step 3 and check status. For more details or troubleshooting, see repmgr manual:
+4. Run command from step 3 and check status. For more details or troubleshooting, see repmgr manual:
    https://repmgr.org/docs/5.2/repmgr-standby-switchover.html
 
 ## How to set up PgBouncer, PgPool and PostgreSQL parameters
