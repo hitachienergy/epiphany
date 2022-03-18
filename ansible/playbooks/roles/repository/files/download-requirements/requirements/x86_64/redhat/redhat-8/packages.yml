@@ -51,9 +51,9 @@ packages:
   - 'iptables'  # for iptables-ebtables
   - 'java-1.8.0-openjdk-headless'
   - 'jq'
-  - 'libibverbs'  # for for iptables
+  - 'libibverbs'  # for libpcap
   - 'libini_config'  # for nfs-utils
-  - 'libpcap'  # for nmap
+  - 'libpcap'  # for iftop & iptables
   - 'libX11'  # for grafana
   - 'libxcb'  # for grafana
   - 'libXcursor'  # for grafana
@@ -63,6 +63,8 @@ packages:
   - 'net-tools'
   - 'nfs-utils'
   - 'nmap-ncat'
+  - 'nss'  # for java-1.8.0-openjdk-headless
+  - 'nss-softokn'  # for nss
   # Open Distro for Elasticsearch plugins are installed individually to not download them twice in different versions (as dependencies of opendistroforelasticsearch package)
   - 'opendistro-alerting-1.13.1.*'
   - 'opendistro-index-management-1.13.1.*'
@@ -87,7 +89,7 @@ packages:
   - 'python3-ldb'  # for cifs-utils
   - 'python3-libselinux'
   - 'python3-lxml'  # for java-1.8.0-openjdk-headless
-  - 'python3-nftables'  # for firewalld
+  - 'python3-nftables'  # for python3-firewall
   - 'python3-policycoreutils'  # for container-selinux
   - 'python3-psycopg2'
   - 'python3-pycparser'  # for python3-cryptography
@@ -95,7 +97,6 @@ packages:
   - 'python36'  # there is no python3 package
   - 'quota'  # for nfs-utils
   - 'rabbitmq-server-3.8.9'
-  - 'rdma-core'
   - 'rsync'
   - 'postgresql13-server'
   - 'repmgr10-5.2.1'  # used to upgrade repmgr first
