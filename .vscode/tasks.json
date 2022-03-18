@@ -20,35 +20,47 @@
       "group": "test",
     },
     {
-      "label": "Pylint junit",
+      "label": "Pylint epicli [junit]",
       "command": "pylint --rcfile .pylintrc ./cli ./tests --output ${workspaceFolder}/test_results/pylint_results.xml",
       "dependsOn": ["Ensure test_results directory"],
       "group": "test",
     },
     {
-      "label": "Pylint terminal",
+      "label": "Pylint epicli [terminal]",
       "command": "pylint --rcfile .pylintrc ./cli ./tests --output-format text",
       "group": "test",
     },
     {
-      "label": "Ansible-lint junit",
+      "label": "Pylint download-requirements",
+      "command": "pylint",
+      "args": [
+        "--rcfile", ".pylintrc",
+        "--output-format", "text",
+        "./ansible/playbooks/roles/repository/files/download-requirements/download-requirements.py",
+        "./ansible/playbooks/roles/repository/files/download-requirements/src",
+        "./ansible/playbooks/roles/repository/files/download-requirements/tests",
+      ],
+      "group": "test",
+    },
+    {
+      "label": "Ansible-lint [junit]",
       "command": "ansible-lint --nocolor -q -c .ansible-lint -p ${workspaceFolder}/ansible/playbooks/*.yml > ${workspaceFolder}/test_results/ansiblelint_results.txt ; ansible-lint-to-junit-xml ${workspaceFolder}/test_results/ansiblelint_results.txt > ${workspaceFolder}/test_results/ansiblelint_results.xml",
       "dependsOn": ["Ensure test_results directory"],
       "group": "test",
     },
     {
-      "label": "Ansible-lint terminal",
+      "label": "Ansible-lint [terminal]",
       "command": "ansible-lint -q -c .ansible-lint -p ${workspaceFolder}/ansible/playbooks/*.yml",
       "group": "test",
     },
     {
-      "label": "Rubocop junit",
+      "label": "Rubocop [junit]",
       "command": "rubocop -c .rubocop.yml --require rubocop/formatter/junit_formatter --format RuboCop::Formatter::JUnitFormatter --out test_results/rubocop_results.xml",
       "dependsOn": ["Ensure test_results directory"],
       "group": "test",
     },
     {
-      "label": "Rubocop terminal",
+      "label": "Rubocop [terminal]",
       "command": "rubocop -c .rubocop.yml",
       "group": "test",
     }
