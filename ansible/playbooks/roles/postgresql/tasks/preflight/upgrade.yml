@@ -113,7 +113,11 @@
         data_dir_fs_used_mb: "{{ ((mount.size_total - mount.size_available) / 1024 / 1024) | int }}"
         data_dir_fs_capacity_mb: "{{ (mount.size_total / 1024 / 1024) | int }}"
       vars:
-        mount: "{{ ansible_mounts | selectattr('device', '==', pg_data_disk.stdout) | first }}"
+        mount: >-
+          {{ ansible_mounts | selectattr('size_available', 'defined')
+                            | selectattr('size_total', 'defined')
+                            | selectattr('device', '==', pg_data_disk.stdout)
+                            | first }}
 
     - name: Get size of old data directory
       command: du -sm {{ pg_old.pg.data_dir[ansible_os_family] }}
