@@ -18,7 +18,7 @@
           - "download-requirements.py"
           - "src/"
 
-        _repo_files: "{{ _req_files['repo_files'] }}"  # optional repo files
+        _distro_files: "{{ _req_files['distro_files'] }}"  # optional repo files
 
       vars:
         # general paths:
@@ -36,7 +36,7 @@
           grafana_dashboards: "{{ _reqs_dir }}/grafana-dashboards.yml"
           images: "{{ _reqs_arch_dir }}/images.yml"
           package_files: "{{ _reqs_distro_dir }}/packages.yml"
-          repo_files: "{{ _reqs_distro_dir }}/files.yml"
+          distro_files: "{{ _reqs_distro_dir }}/files.yml"
 
         _repo_file: "{{ _repo_arch_dir }}/{{ _os_type }}.yml"
 
@@ -54,12 +54,12 @@
 
     - name: Get stats of optional repo files
       stat:
-        path: "download-requirements/{{ _repo_files }}"
-      register: repo_files_stats
+        path: "download-requirements/{{ _distro_files }}"
+      register: distro_files_stats
 
     - name: Copy optional repo files
       synchronize:
-        src: "download-requirements/{{ _repo_files }}"
-        dest: "{{ download_requirements_dir }}/{{ _repo_files }}"
+        src: "download-requirements/{{ _distro_files }}"
+        dest: "{{ download_requirements_dir }}/{{ _distro_files }}"
       when:
-        - repo_files_stats.stat.exists
+        - distro_files_stats.stat.exists
