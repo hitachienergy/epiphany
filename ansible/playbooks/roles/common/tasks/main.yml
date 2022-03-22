@@ -68,17 +68,12 @@
     - disableswap
   notify: restart waagent
 
-- name: Disable SELinux at next reboot
+# Will change current mode from 'enforcing' to 'permissive' (until the next reboot)
+# and mode in config file to 'disabled' (will take effect next reboot).
+- name: Disable SELinux
   selinux:
-    state: disabled # noqa ignore-errors
-  ignore_errors: true
-  when: ansible_selinux is defined and not ansible_selinux and ansible_selinux.status == 'enabled'
-
-- name: Set SELinux in permissive mode until the machine is rebooted
-  command: setenforce 0
-  ignore_errors: true # noqa ignore-errors
-  changed_when: false
-  when: ansible_selinux is defined and not ansible_selinux and ansible_selinux.status == 'enabled'
+    state: disabled
+  when: ansible_selinux.status == 'enabled'
 
 - name: Prompt colors
   copy:
