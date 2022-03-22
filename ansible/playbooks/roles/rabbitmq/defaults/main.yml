@@ -8,7 +8,7 @@ versions:
     erlang: 1:23.1.*
     rabbitmq: 3.8.9*
   redhat:
-    erlang_filename: 
-      x86_64: erlang-23.1.5-1.el7.x86_64.rpm
-      aarch64: esl-erlang_23.1.5-1~centos~7_arm64.rpm  
+    erlang_package:
+      x86_64: erlang-23.1.5-*
+      aarch64: esl-erlang-23.1.5-*
     rabbitmq: 3.8.9

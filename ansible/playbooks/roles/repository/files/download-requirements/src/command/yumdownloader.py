@@ -17,7 +17,7 @@ class Yumdownloader(Command):
                           destdir: Path,
                           exclude: str = '',
                           quiet: bool = True):
-        args: List[str] = []
+        args: List[str] = ['-y']
 
         if quiet:
             args.append('--quiet')

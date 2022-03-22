@@ -16,10 +16,10 @@ def load_yaml_file(filename: Path) -> Any:
     try:
         with open(filename, encoding="utf-8") as req_handler:
             return parse_string(req_handler.read())
-    except PoyoException as exc:
-        logging.error(exc)
-    except Exception:
-        logging.error(f'Failed loading: {filename}')
+    except PoyoException as pexc:
+        raise CriticalError(f'Failed loading: `{pexc}`') from pexc
+    except Exception as err:
+        raise CriticalError(f'Failed loading: `{filename}`') from err
 
 
 class BaseMode:
@@ -59,8 +59,10 @@ class BaseMode:
         except KeyError:
             pass  # prereq packages are only for some distros
 
-        content = load_yaml_file(self._cfg.reqs_path / f'{self._cfg.distro_subdir}/files.yml')
-        reqs['files'].update(content['files'])
+        distro_files: Path = self._cfg.reqs_path / f'{self._cfg.distro_subdir}/files.yml'
+        if distro_files.exists():  # distro files are optional
+            content = load_yaml_file(distro_files)
+            reqs['files'].update(content['files'])
 
         for common_reqs in ['cranes', 'files', 'images']:
             content = load_yaml_file(self._cfg.reqs_path / f'{self._cfg.os_arch.value}/{common_reqs}.yml')
@@ -91,15 +93,16 @@ class BaseMode:
 
     def _download_packages(self):
         """
-        Download packages under `self._requirements['packages']` using target OS's package manager.
+        Download packages `self._requirements['packages']['from_repo']` using target OS's package manager.
         """
         raise NotImplementedError
 
-    def _download_file(self, file: str):
+    def _download_file(self, url: str, dest: Path):
         """
         Run command for downloading `file` on target OS.
 
-        :param file: to be downloaded
+        :param url: to be downloaded
+        :param path: where to save the file
         """
         raise NotImplementedError
 
@@ -121,20 +124,22 @@ class BaseMode:
         """
         raise NotImplementedError
 
-    def __download_files(self):
+    def __download_files(self, files: Dict[str, Dict], dest: Path):
         """
         Download files under `self._requirements['files']`
+
+        :param files: to be downloaded
+        :param dest: where to save the files
         """
-        files: Dict[str, Dict] = self._requirements['files']
         for file in files:
             try:
-                filepath = self._cfg.dest_files / file.split('/')[-1]
+                filepath = dest / file.split('/')[-1]
                 if files[file]['sha256'] == get_sha256(filepath):
                     logging.debug(f'- {file} - checksum ok, skipped')
                     continue
 
                 logging.info(f'- {file}')
-                self._download_file(file)
+                self._download_file(file, filepath)
             except CriticalError:
                 logging.warn(f'Could not download file: {file}')
 
@@ -204,12 +209,19 @@ class BaseMode:
         """
         pass
 
+    def _clean_up_repository_files(self):
+        """
+        Additional routines before unpacking backup to remove repository files under the /etc directory.
+        """
+        pass
+
     def __restore_repositories(self):
         """
         Restore the state of repository files under the /etc dir.
         """
         if self._cfg.repos_backup_file.exists() and self._cfg.repos_backup_file.stat().st_size:
             logging.info('Restoring repository files...')
+            self._clean_up_repository_files()
             self._tools.tar.unpack(filename=self._cfg.repos_backup_file,
                                    directory=Path('/'),
                                    absolute_names=True,
@@ -244,12 +256,16 @@ class BaseMode:
         self._add_third_party_repositories()
         logging.info('Done adding third party repositories.')
 
-        logging.info('Downloading packages...')
+        logging.info('Downloading packages from repos...')
         self._download_packages()
-        logging.info('Done downloading packages.')
+        logging.info('Done downloading packages from repos.')
+
+        logging.info('Downloading packages from urls...')
+        self.__download_files(self._requirements['packages']['from_url'], self._cfg.dest_packages)
+        logging.info('Done downloading packages from urls.')
 
         logging.info('Downloading files...')
-        self.__download_files()
+        self.__download_files(self._requirements['files'], self._cfg.dest_files)
         logging.info('Done downloading files.')
 
         logging.info('Downloading grafana dashboards...')

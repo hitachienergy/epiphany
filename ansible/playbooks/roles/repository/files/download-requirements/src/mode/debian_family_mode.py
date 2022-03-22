@@ -1,5 +1,4 @@
 from pathlib import Path
-from shutil import move
 from typing import Dict, List
 import logging
 import os
@@ -66,7 +65,7 @@ class DebianFamilyMode(BaseMode):
         # path needs to be changed since `apt download` does not allow to set target dir
         os.chdir(self._cfg.dest_packages)
 
-        packages: Dict[str, Dict] = self._requirements['packages']
+        packages: Dict[str, Dict] = self._requirements['packages']['from_repo']
         packages_to_download: List[str] = []
         for package in packages:
             version: str = ''
@@ -105,8 +104,8 @@ class DebianFamilyMode(BaseMode):
 
         os.chdir(self._cfg.script_path)
 
-    def _download_file(self, file: str):
-        self._tools.wget.download(file, directory_prefix=self._cfg.dest_files)
+    def _download_file(self, url: str, dest: Path):
+        self._tools.wget.download(url, output_document=dest)
 
     def _download_grafana_dashboard(self, dashboard: str, output_file: Path):
         self._tools.wget.download(dashboard, output_document=output_file)
@@ -114,15 +113,15 @@ class DebianFamilyMode(BaseMode):
     def _download_crane_binary(self, url: str, dest: Path):
         self._tools.wget.download(url, dest)
 
+    def _clean_up_repository_files(self):
+        for repofile in Path('/etc/apt/sources.list.d').iterdir():
+            repofile.unlink()
+
     def _cleanup(self):
         # cleaning up 3rd party repositories
         for data in self._repositories.values():
             if data['path'].exists():
                 data['path'].unlink()
-
-        # removed custom repositories to their original names
-        for repo_file in Path('/etc/apt/sources.list.d').iterdir():
-            repo_file.unlink()
 
         # remove installed packages
         for package in self.__installed_packages:

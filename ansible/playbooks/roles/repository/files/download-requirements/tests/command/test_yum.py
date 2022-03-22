@@ -27,10 +27,10 @@ def test_interface_remove(mocker):
 def test_interface_is_repo_enabled(mocker):
     ''' Check argument construction for `yum repolist enabled` '''
     with CommandRunMock(mocker, Yum(1).is_repo_enabled, {'repo': 'some_repo'}) as call_args:
-        assert call_args == ['yum', 'repolist', 'enabled']
+        assert call_args == ['yum', '-y', 'repolist', 'enabled']
 
 
 def test_interface_find_rhel_repo_id(mocker):
     ''' Check argument construction for `yum repolist all` '''
     with CommandRunMock(mocker, Yum(1).find_rhel_repo_id, {'patterns': ['pat1', 'pat2']}) as call_args:
-        assert call_args == ['yum', 'repolist', 'all']
+        assert call_args == ['yum', '-y', 'repolist', 'all']

@@ -11,4 +11,4 @@ def test_interface_download_packages(mocker):
                                                                      'arch': 'some_arch',
                                                                      'destdir': Path('/some/path'),
                                                                      'exclude': '*'}) as call_args:
-        assert call_args == ['yumdownloader', '--quiet', '--archlist=some_arch', '--exclude=*', '--destdir=/some/path']
+        assert call_args == ['yumdownloader', '-y', '--quiet', '--archlist=some_arch', '--exclude=*', '--destdir=/some/path']

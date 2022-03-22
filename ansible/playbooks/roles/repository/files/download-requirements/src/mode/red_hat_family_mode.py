@@ -163,7 +163,7 @@ class RedHatFamilyMode(BaseMode):
     def _download_packages(self):
         downloaded_prereqs: Set = self.__download_prereq_packages()
 
-        packages: List[str] = self._requirements['packages']
+        packages: List[str] = self._requirements['packages']['from_repo']
         packages_to_download: List[str] = []
         for package in packages:
             # package itself
@@ -186,8 +186,8 @@ class RedHatFamilyMode(BaseMode):
                                                             exclude='*i686',
                                                             destdir=self._cfg.dest_packages)
 
-    def _download_file(self, file: str):
-        self._tools.wget.download(file, directory_prefix=self._cfg.dest_files, additional_params=False)
+    def _download_file(self, url: str, dest: Path):
+        self._tools.wget.download(url, output_document=dest, additional_params=False)
 
     def _download_grafana_dashboard(self, dashboard: str, output_file: Path):
         self._tools.wget.download(dashboard, output_document=output_file, additional_params=False)
@@ -195,11 +195,11 @@ class RedHatFamilyMode(BaseMode):
     def _download_crane_binary(self, url: str, dest: Path):
         self._tools.wget.download(url, dest, additional_params=False)
 
-    def _cleanup(self):
-        # remove repo files
-        for repo_file in Path('/etc/yum.repos.d').iterdir():
-            repo_file.unlink()
+    def _clean_up_repository_files(self):
+        for repofile in Path('/etc/yum.repos.d').iterdir():
+            repofile.unlink()
 
+    def _cleanup(self):
         # remove installed packages
         for package in self.__installed_packages:
             if self._tools.rpm.is_package_installed(package):

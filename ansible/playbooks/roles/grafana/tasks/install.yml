@@ -15,7 +15,7 @@
 
 - include_tasks: install-packages-{{ ansible_os_family }}.yml
   vars:
-    _package_url: "{{ repository_url }}/files/{{ grafana_package.filename[ansible_os_family][ansible_architecture] }}"
+    _package_name: "{{ grafana_package[ansible_os_family][ansible_architecture] }}"
 
 - name: Recursively chown /etc/grafana (fix permissions)
   file:

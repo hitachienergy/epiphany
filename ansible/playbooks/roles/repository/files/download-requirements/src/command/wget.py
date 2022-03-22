@@ -19,7 +19,6 @@ class Wget(Command):
         super().__init__('wget', retries)
         self.__download_params: List[str] = [
             '--no-use-server-timestamps',
-            '--continue',
             '--show-progress'
         ]
 
