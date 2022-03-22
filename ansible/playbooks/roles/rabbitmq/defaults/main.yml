@@ -9,6 +9,6 @@ versions:
     rabbitmq: 3.8.9*
   redhat:
     erlang_package:
-      x86_64: erlang
+      x86_64: erlang-23.1.5-*
       aarch64: esl-erlang
     rabbitmq: 3.8.9
