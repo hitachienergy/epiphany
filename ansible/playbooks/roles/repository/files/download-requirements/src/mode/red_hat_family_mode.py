@@ -54,31 +54,10 @@ class RedHatFamilyMode(BaseMode):
                 self._tools.dnf.install(package)
                 self.__installed_packages.append(package)
 
-    def __enable_repos(self, repo_id_patterns: List[str]):
-        for repo in self._tools.dnf.find_rhel_repo_id(repo_id_patterns):
-            if not self._tools.dnf.is_repo_enabled(repo):
-                self._tools.dnf_config_manager.enable_repo(repo)
-
     def _add_third_party_repositories(self):
         # Fix for RHUI client certificate expiration [#2318]
         if self._tools.dnf.is_repo_enabled('rhui-microsoft-azure-rhel'):
             self._tools.dnf.update('rhui-microsoft-azure-rhel*')
-
-        # -> rhel-7-server-extras-rpms # for container-selinux package, this repo has different id names on clouds
-        # About rhel-7-server-extras-rpms: https://access.redhat.com/solutions/3418891
-        repo_id_patterns = ['rhel-7-server-extras-rpms',
-                            'rhui-rhel-7-server-rhui-extras-rpms',
-                            'rhui-REGION-rhel-server-extras',
-                            'rhel-7-server-rhui-extras-rpms']  # on-prem|Azure|AWS7.8|AWS7.9
-        self.__enable_repos(repo_id_patterns)
-
-        # -> rhel-server-rhscl-7-rpms # for Red Hat Software Collections (RHSCL), this repo has different id names on clouds
-        # About rhel-server-rhscl-7-rpms: https://access.redhat.com/solutions/472793
-        repo_id_patterns = ['rhel-server-rhscl-7-rpms',
-                            'rhui-rhel-server-rhui-rhscl-7-rpms',
-                            'rhui-REGION-rhel-server-rhscl',
-                            'rhel-server-rhui-rhscl-7-rpms']  # on-prem|Azure|AWS7.8|AWS7.9
-        self.__enable_repos(repo_id_patterns)
 
         for repo in self._repositories:
             repo_filepath = Path('/etc/yum.repos.d') / f'{repo}.repo'
@@ -125,17 +104,18 @@ class RedHatFamilyMode(BaseMode):
 
         collected_prereqs: List[str] = []
         prereq_packages: List[str] = self._requirements['prereq-packages']
-        for prereq_pkg in prereq_packages:
-            collected_prereqs.extend(self._tools.repoquery.query(prereq_pkg,
-                                                                 queryformat='%{name}-%{version}-%{release}.%{arch}',
-                                                                 archlist=self.__archs))
+        list_prereq_packages = list(set(prereq_packages))
+
+        collected_prereqs.extend(self._tools.repoquery.query(list_prereq_packages,
+                                                             queryformat='%{name}-%{version}-%{release}.%{arch}',
+                                                             archlist=self.__archs))
 
         unique_collected_prereqs = [package for package in set(collected_prereqs)]
         logging.info(f'{unique_collected_prereqs}')
         self._tools.dnf_download.download_packages(unique_collected_prereqs,
-                                                    archlist=self.__archs,
-                                                    exclude='*i686',
-                                                    destdir=prereqs_dir)
+                                                   archlist=self.__archs,
+                                                   exclude='*i686',
+                                                   destdir=prereqs_dir)
         return unique_collected_prereqs
 
     def _download_packages(self):
@@ -143,26 +123,26 @@ class RedHatFamilyMode(BaseMode):
 
         packages: List[str] = self._requirements['packages']
         packages_to_download: List[str] = []
+        list_packages_to_download = list(set(packages))
+        # package itself
+        package_name = self._tools.repoquery.query(list_packages_to_download,
+                                                   queryformat='%{name}-%{version}-%{release}.%{arch}',
+                                                   archlist=self.__archs)
 
-        for package in packages:
-            # package itself
-            package_name = self._tools.repoquery.query(package,
-                                                       queryformat='%{name}-%{version}-%{release}.%{arch}',
-                                                       archlist=self.__archs)[0]
+        packages_to_download.extend(package_name)
 
-            packages_to_download.append(package_name)
+        # dependencies
+        packages_to_download.extend(self._tools.repoquery.get_dependencies(list(set(packages_to_download)),
+                                                                           queryformat='%{name}.%{arch}',
+                                                                           archlist=self.__archs))
 
-            # dependencies
-            packages_to_download.extend(self._tools.repoquery.get_dependencies(package,
-                                                                               queryformat='%{name}.%{arch}',
-                                                                               archlist=self.__archs))
-
+        packages_to_download.extend(list_packages_to_download)
         fitered_packages = [package for package in set(packages_to_download) if package not in downloaded_prereqs]
         logging.info(f'{fitered_packages}')
         self._tools.dnf_download.download_packages(fitered_packages,
-                                                    archlist=self.__archs,
-                                                    exclude='*i686',
-                                                    destdir=self._cfg.dest_packages)
+                                                   archlist=self.__archs,
+                                                   exclude='*i686',
+                                                   destdir=self._cfg.dest_packages)
 
     def _download_file(self, file: str):
         self._tools.wget.download(file, directory_prefix=self._cfg.dest_files, additional_params=False)
