@@ -5,14 +5,16 @@
 - name: Update 'imageRepository' field in kubeadm configmap
   when: kubernetes_common.automation_designated_master == inventory_hostname
   block:
-    - include_role:
+    - name: Include extend-kubeadm-config from kubernetes_common
+      include_role:
         name: kubernetes_common
         tasks_from: extend-kubeadm-config
       vars:
         update:
           imageRepository: "{{ image_registry_address }}/{{ specification.advanced.imageRepository }}"
 
-    - include_role:
+    - name: Include update-in-cluster-config from kubernetes_common
+      include_role:
         name: kubernetes_common
         tasks_from: update-in-cluster-config
 

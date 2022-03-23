@@ -7,33 +7,33 @@
 - name: Preflight check
   when: not lock_file_status.stat.exists
   block:
-  - name: Check for binary
-    stat:
-      path: /opt/kafka_exporter/kafka_exporter
-    register: kafka_exporter_binary
+    - name: Check for binary
+      stat:
+        path: /opt/kafka_exporter/kafka_exporter
+      register: kafka_exporter_binary
 
-  - name: Information about missing binary
-    when: not kafka_exporter_binary.stat.exists
-    fail:
-      msg: "There is no kafka_exporter binary at all, re-apply your configuration or remove kafka_exporter role from inventory"
+    - name: Information about missing binary
+      when: not kafka_exporter_binary.stat.exists
+      fail:
+        msg: "There is no kafka_exporter binary at all, re-apply your configuration or remove kafka_exporter role from inventory"
 
-  - name: Get installed version
-    when: kafka_exporter_binary.stat.exists
-    block:
-    - name: Read installed version
-      shell: >-
-        set -o pipefail &&
-        /opt/kafka_exporter/kafka_exporter --version &> >(grep -E kafka_exporter.*version | awk '{ print $3 }')
-      register: kafka_exporter_installed_version
+    - name: Get installed version
+      when: kafka_exporter_binary.stat.exists
+      block:
+        - name: Read installed version
+          shell: >-
+            set -o pipefail &&
+            /opt/kafka_exporter/kafka_exporter --version &> >(grep -E kafka_exporter.*version | awk '{ print $3 }')
+          register: kafka_exporter_installed_version
 
-    - name: Set installed version as variable
-      set_fact:
-        kafka_exporter_version_old: "{{ kafka_exporter_installed_version.stdout }}"
+        - name: Set installed version as variable
+          set_fact:
+            kafka_exporter_version_old: "{{ kafka_exporter_installed_version.stdout }}"
 
-    - name: Avoiding risk of downgrade
-      when: kafka_exporter_version_old is not version( kafka_exporter.version, '<' )
-      debug:
-        msg: "Skipping upgrade: Kafka Exporter in the same or newer version already installed!"
+        - name: Avoiding risk of downgrade
+          when: kafka_exporter_version_old is not version( kafka_exporter.version, '<' )
+          debug:
+            msg: "Skipping upgrade: Kafka Exporter in the same or newer version already installed!"
 
 - name: Run upgrade tasks
   when: lock_file_status.stat.exists or kafka_exporter_version_old is version( kafka_exporter.version, '<' )
@@ -42,6 +42,7 @@
       file:
         path: "{{ lock_file }}"
         state: touch
+        mode: u=rw,go=r
 
     - name: Stop service
       systemd:
@@ -67,12 +68,12 @@
     - name: Unpack binary
       become: true
       unarchive:
-        remote_src: yes
+        remote_src: true
         src: "{{ download_directory }}/{{ kafka_exporter_file_name }}"
         dest: "/opt/kafka_exporter"
         creates: "/opt/kafka_exporter/kafka_exporter"
         extra_opts: [--strip-components=1]
-        mode: 0755
+        mode: u=rwx,go=rx
         owner: root
         group: kafka_exporter
       check_mode: false
@@ -83,12 +84,12 @@
         dest: /etc/systemd/system/kafka-exporter.service
         owner: root
         group: root
-        mode: 0644
+        mode: u=rw,go=r
 
     - name: Daemon reload
       systemd:
-        daemon_reload: yes
-        enabled: yes
+        daemon_reload: true
+        enabled: true
         name: kafka-exporter.service
 
     - name: Start service

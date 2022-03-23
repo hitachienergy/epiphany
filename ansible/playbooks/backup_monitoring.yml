@@ -9,13 +9,16 @@
   tasks:
     - when: specification.components.monitoring.enabled | default(false)
       block:
-        - include_vars:
+        - name: Include prometheus vars
+          include_vars:
             file: roles/prometheus/vars/main.yml
             name: component_vars
-        - import_role:
+        - name: Run prometheus backup tasks - create snapshot
+          import_role:
             name: backup
             tasks_from: monitoring_prometheus_snapshot
-        - import_role:
+        - name: Run prometheus backup tasks - archive /etc/prometheus dir
+          import_role:
             name: backup
             tasks_from: monitoring_prometheus_etc
 
@@ -27,10 +30,12 @@
   tasks:
     - when: specification.components.monitoring.enabled | default(false)
       block:
-        - include_vars:
+        - name: Include grafana vars
+          include_vars:
             file: roles/grafana/vars/main.yml
             name: component_vars
-        - import_role:
+        - name: Run grafana backup tasks
+          import_role:
             name: backup
             tasks_from: monitoring_grafana_data
           vars:

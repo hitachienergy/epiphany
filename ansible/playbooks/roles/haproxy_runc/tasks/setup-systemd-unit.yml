@@ -7,8 +7,7 @@
       - haproxy_service_needs_restart is defined
 
 - name: Discover runc binary
-  shell: |
-    which runc
+  command: which runc
   register: shell_which_runc
   changed_when: false
 
@@ -20,6 +19,7 @@
   template:
     dest: /etc/systemd/system/{{ haproxy_service }}.service
     src: haproxy.service.j2
+    mode: u=rwx,go=r
   register: template_haproxy_service
 
 - name: Mark {{ haproxy_service }} service to be restarted

@@ -6,4 +6,4 @@
     name: elasticsearch-curator-{{ curator_version }}
     state: present
   module_defaults:
-    yum: { lock_timeout: "{{ yum_lock_timeout }}" }
+    yum: {lock_timeout: "{{ yum_lock_timeout }}"}

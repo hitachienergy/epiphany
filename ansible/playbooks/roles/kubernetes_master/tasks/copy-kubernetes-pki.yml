@@ -75,6 +75,7 @@
               {% for item in kubernetes_pki_files_encrypted_stdout %}
               {{ item }}
               {% endfor %}
+            mode: u=rw,go=r
           no_log: true
 
 - name: Load PKI variables

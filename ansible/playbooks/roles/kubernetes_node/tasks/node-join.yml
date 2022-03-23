@@ -1,7 +1,8 @@
 ---
 - when: not kubernetes_common.node_already_joined
   block:
-    - include_role:
+    - name: Run ensure-token task from kubernetes_common role
+      include_role:
         name: kubernetes_common
         tasks_from: ensure-token
 

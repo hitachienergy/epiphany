@@ -3,7 +3,7 @@
 - name: Create jmx-exporter group
   group:
     name: "{{ specification.jmx_exporter_group }}"
-    system: yes
+    system: true
 
 - name: Create jmx-exporter user
   user:
@@ -11,19 +11,19 @@
     group: "{{ specification.jmx_exporter_group }}"
     shell: "/usr/sbin/nologin"
     createhome: false
-    system: yes
+    system: true
 
 - name: jmx-exporter | create directories
-  become: yes
+  become: true
   file:
     path: "{{ item }}"
-    recurse: yes
+    recurse: true
     owner: root
     group: "{{ specification.jmx_exporter_group }}"
     mode: 0750
     state: directory
   with_items:
-  - "{{ specification.jmx_jars_directory }}"
+    - "{{ specification.jmx_jars_directory }}"
 
 - name: Set JMX Exporter file name to install
   set_fact:
@@ -42,12 +42,13 @@
     dest: "{{ jmx_exporter_directory }}/{{ exporter_file_name }}"
     owner: "{{ specification.jmx_exporter_user }}"
     group: "{{ specification.jmx_exporter_group }}"
-    remote_src: yes
+    remote_src: true
+    mode: preserve
 
 - name: Prometheus jmx | symlink jar
-  become: yes
+  become: true
   file:
     src: "{{ jmx_exporter_directory }}/{{ exporter_file_name }}"
     path: "{{ prometheus_jmx_exporter_path }}"
-    force: yes
+    force: true
     state: link

@@ -23,6 +23,7 @@
       template:
         dest: "{{ download_directory }}/custom-chart-values.yml"
         src: custom-chart-values.yml.j2
+        mode: u=rwx,go=r
 
     - name: Install Filebeat using custom Helm chart (custom-chart-values.yml)
       command: |

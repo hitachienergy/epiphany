@@ -9,7 +9,7 @@
   block:
     - include_tasks: "{{ ansible_os_family }}.yml"
   module_defaults:
-    yum: { lock_timeout: "{{ yum_lock_timeout }}" }
+    yum: {lock_timeout: "{{ yum_lock_timeout }}"}
 
 - name: Print environment variables
   debug:
@@ -29,7 +29,7 @@
     path: /etc/fstab
     regexp: ^(?!#).*\sswap\s.*\d\s+\d$
     state: absent
-    backup: yes
+    backup: true
   tags:
     - disableswap
 
@@ -68,17 +68,12 @@
     - disableswap
   notify: restart waagent
 
-- name: Disable SELinux at next reboot
+# Will change current mode from 'enforcing' to 'permissive' (until the next reboot)
+# and mode in config file to 'disabled' (will take effect next reboot).
+- name: Disable SELinux
   selinux:
     state: disabled
-  ignore_errors: true
-  when: ansible_selinux is defined and ansible_selinux != False and ansible_selinux.status == 'enabled'
-
-- name: Set SELinux in permissive mode until the machine is rebooted
-  command: setenforce 0
-  ignore_errors: true
-  changed_when: false
-  when: ansible_selinux is defined and ansible_selinux != False and ansible_selinux.status == 'enabled'
+  when: ansible_selinux.status == 'enabled'
 
 - name: Prompt colors
   copy:
@@ -86,6 +81,7 @@
     dest: /etc/profile.d/operations.sh
     owner: root
     group: root
+    mode: preserve
 
 - name: Hosts
   template:
@@ -122,4 +118,4 @@
     owner: root
     group: root
   loop:
-    - { path: /var/lib/epiphany/upgrade/state }
+    - {path: /var/lib/epiphany/upgrade/state}

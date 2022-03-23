@@ -13,11 +13,12 @@
   vars:
     uri_template: &uri
       client_cert: "{{ odfe.certificates.dirs.certs }}/{{ odfe.certificates.files.admin.cert.filename }}"
-      client_key:  "{{ odfe.certificates.dirs.certs }}/{{ odfe.certificates.files.admin.key.filename }}"
+      client_key: "{{ odfe.certificates.dirs.certs }}/{{ odfe.certificates.files.admin.key.filename }}"
       validate_certs: false
       body_format: json
 
-- debug: var=snapshot_name
+- name: Display snapshot name
+  debug: var=snapshot_name
 
 - name: Check cluster health
   uri:

@@ -3,10 +3,11 @@
   file:
     path: /etc/ssl/haproxy/
     state: directory
+    mode: u=rwx,go=rx
 
 - name: Find certificate files in role directory
-  local_action:
-    module: find
+  delegate_to: localhost
+  find:
     paths: "{{ role_path }}/files/"
     patterns: "*.pem"
   become: false
@@ -24,6 +25,7 @@
       copy:
         dest: /etc/ssl/haproxy/
         src: "{{ item.path }}"
+        mode: preserve
       loop: "{{ certificates_names.files }}"
 
 - name: Handle "remote" certificates
@@ -37,6 +39,7 @@
         dest: /etc/ssl/haproxy/
         src: /tmp/{{ specification.self_signed_concatenated_cert_name }}
         remote_src: true
+        mode: preserve
 
 - name: Find certificate files in haproxy directory  # needed in templates
   find:
@@ -48,8 +51,10 @@
   file:
     path: /etc/haproxy/
     state: directory
+    mode: u=rwx,go=rx
 
 - name: Copy dhparam config
   copy:
     dest: /etc/haproxy/dhparam
     src: dhparam
+    mode: preserve

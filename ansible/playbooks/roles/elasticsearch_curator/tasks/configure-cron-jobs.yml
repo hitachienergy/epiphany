@@ -32,7 +32,7 @@
                    'config_hash': item | regex_replace('.*config_hash: ([a-f0-9]+).*', '\1')
                  } ] }}
       loop_control:
-        extended: yes
+        extended: true
       loop: "{{ crontab.stdout_lines }}"
       when:
         - item is regex('^#ansible', ignorecase=True)
@@ -64,8 +64,8 @@
         label: "{{ curator_test_cmd }}"
       loop: "{{ curator_cron_jobs }}"
       when:
-       - managed_curator_cron_jobs is undefined
-         or (managed_curator_cron_jobs | selectattr('config_hash','equalto', item.config_hash) | list | count == 0)
+        - managed_curator_cron_jobs is undefined
+          or (managed_curator_cron_jobs | selectattr('config_hash','equalto', item.config_hash) | list | count == 0)
 
     - name: Check test results
       assert:
@@ -83,11 +83,11 @@
     # NOTE: name should be unique since changing it will result in a new cron task being created
     name: "Elasticsearch Curator job that deletes indices, config_hash: {{ item.config_hash }}"
     job: "{{ item.cmd }}"
-    minute:   "{{ item.cron.minute       | default('*') }}"
-    hour:     "{{ item.cron.hour         | default('*') }}"
-    day:      "{{ item.cron.day          | default('*') }}"
-    weekday:  "{{ item.cron.weekday      | default('*') }}"
-    month:    "{{ item.cron.month        | default('*') }}"
+    minute: "{{ item.cron.minute | default('*') }}"
+    hour: "{{ item.cron.hour | default('*') }}"
+    day: "{{ item.cron.day | default('*') }}"
+    weekday: "{{ item.cron.weekday | default('*') }}"
+    month: "{{ item.cron.month | default('*') }}"
     disabled: "{{ not (item.cron.enabled | default(True)) }}"
   loop: "{{ curator_cron_jobs }}"
   when:

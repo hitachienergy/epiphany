@@ -9,12 +9,15 @@
   tasks:
     - when: specification.components.rabbitmq.enabled | default(false)
       block:
-        - include_vars:
+        - name: Include rabbitmq vars
+          include_vars:
             file: roles/rabbitmq/vars/main.yml
             name: component_vars
-        - import_role:
+        - name: Run rabbitmq backup tasks
+          import_role:
             name: backup
             tasks_from: rabbitmq_rabbitmq_definitions
-        - import_role:
+        - name: Run elasticsearch archive tasks
+          import_role:
             name: backup
             tasks_from: rabbitmq_rabbitmq_etc

@@ -4,7 +4,8 @@
     snapshot_name: >-
       {{ ansible_date_time.iso8601_basic_short | replace('T','-') }}
 
-- debug: var=snapshot_name
+- name: Display snapshot name
+  debug: var=snapshot_name
 
 - name: Ensure management api is enabled
   shell: |
@@ -25,6 +26,7 @@
   file:
     path: /var/lib/rabbitmq/definitions/
     state: directory
+    mode: u=rwx,go=rx
 
 - name: Save definitions in a json file
   shell: |

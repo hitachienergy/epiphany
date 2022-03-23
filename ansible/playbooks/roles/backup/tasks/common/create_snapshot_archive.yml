@@ -1,13 +1,13 @@
 ---
 # Invoke with (example):
-#- set_fact:
-#    snapshot_prefix: "haproxy_etc"
-#    snapshot_name: "20200526-102034"
-#    dirs_to_archive:
-#      - /etc/haproxy/
-#      - /etc/ssl/haproxy/
-#    files_to_archive:
-#      - /var/lib/rabbitmq/definitions/definitions-{{ snapshot_name }}.json
+# - set_fact:
+#     snapshot_prefix: "haproxy_etc"
+#     snapshot_name: "20200526-102034"
+#     dirs_to_archive:
+#       - /etc/haproxy/
+#       - /etc/ssl/haproxy/
+#     files_to_archive:
+#       - /var/lib/rabbitmq/definitions/definitions-{{ snapshot_name }}.json
 
 - name: Assert that the snapshot_prefix fact is defined and valid
   assert:
@@ -57,6 +57,7 @@
   file:
     path: "{{ backup_dir }}/"
     state: directory
+    mode: u=rwx,go=rx
 
 - name: Create the archive
   archive:
@@ -64,3 +65,4 @@
     path: "{{ paths_to_archive }}"
     format: gz
     force_archive: true
+    mode: ug=rx,o=r

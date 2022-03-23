@@ -15,7 +15,7 @@
     shell: /bin/bash
     group: "{{ item.name }}"
     groups: "wheel"
-    append: yes
+    append: true
   when:
     - ansible_os_family == "RedHat"
     - item.sudo is defined and item.sudo
@@ -29,7 +29,7 @@
     shell: /bin/bash
     group: "{{ item.name }}"
     groups: "sudo"
-    append: yes
+    append: true
   when:
     - ansible_os_family == "Debian"
     - item.sudo is defined and item.sudo
@@ -42,7 +42,7 @@
     name: "{{ item.name }}"
     shell: /bin/bash
     group: "{{ item.name }}"
-    append: yes
+    append: true
   when:
     - ansible_os_family == "RedHat"
     - not (item.sudo is defined and item.sudo)
@@ -55,7 +55,7 @@
     name: "{{ item.name }}"
     shell: /bin/bash
     group: "{{ item.name }}"
-    append: yes
+    append: true
   when:
     - ansible_os_family == "Debian"
     - not (item.sudo is defined and item.sudo)

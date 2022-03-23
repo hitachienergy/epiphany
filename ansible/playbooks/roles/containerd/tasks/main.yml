@@ -5,17 +5,17 @@
 
 - name: Remove Docker
   block:
-  - name: Stop Kubelet before Docker removal
-    systemd:
-      name: kubelet
-      state: stopped
-    notify:
-    - Restart kubelet
+    - name: Stop Kubelet before Docker removal
+      systemd:
+        name: kubelet
+        state: stopped
+      notify:
+        - Restart kubelet
 
-  - name: Remove Docker
-    include_role:
-      name: docker
-      tasks_from: remove-docker.yml
+    - name: Remove Docker
+      include_role:
+        name: docker
+        tasks_from: remove-docker.yml
   when:
     - is_upgrade_run
     - inventory_hostname not in groups.image_registry
@@ -32,7 +32,7 @@
       RedHat:
         - containerd.io-{{ containerd_version }}
   module_defaults:
-    yum: { lock_timeout: "{{ yum_lock_timeout }}" }
+    yum: {lock_timeout: "{{ yum_lock_timeout }}"}
 
 - name: Configure prerequisites
   include_tasks: configure-prerequisites.yml

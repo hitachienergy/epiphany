@@ -4,8 +4,8 @@
     snapshot_name: >-
       {{ ansible_date_time.iso8601_basic_short | replace('T','-') }}
 
-- debug:
-    var: snapshot_name
+- name: Display snapshot name
+  debug: var=snapshot_name
 
 - name: Ascertain primary node
   become: true
@@ -17,51 +17,52 @@
 - name: Create and export backup
   when: not in_recovery_state.in_recovery
   block:
-  - name: Create temporary directories for backup files
-    file:
-      path: "/var/tmp/{{ snapshot_name }}/{{ item }}"
-      state: directory
-      mode: 0777
-    loop:
-      - data
-      - configs
+    - name: Create temporary directories for backup files
+      file:
+        path: "/var/tmp/{{ snapshot_name }}/{{ item }}"
+        state: directory
+        mode: ugo=rwx
+      loop:
+        - data
+        - configs
 
-  - name: Create database snapshot
-    become: yes
-    become_user: postgres
-    command: "pg_dumpall -f /var/tmp/{{ snapshot_name }}/data/database_dump.sql"
+    - name: Create database snapshot
+      become: true
+      become_user: postgres
+      command: "pg_dumpall -f /var/tmp/{{ snapshot_name }}/data/database_dump.sql"
 
-  - name: Search for config files to back up
-    shell: "find *.conf"
-    args:
-      chdir: "{{ pg.config_dir[ansible_os_family] }}"
-    register: config_files
+    - name: Search for config files to back up
+      shell: "find *.conf"
+      args:
+        chdir: "{{ pg.config_dir[ansible_os_family] }}"
+      register: config_files
 
-  - name: Copy config files into temporary location
-    copy:
-      src: "{{ pg.config_dir[ansible_os_family] }}/{{ item }}"
-      dest: "/var/tmp/{{ snapshot_name  }}/configs"
-      remote_src: yes
-    loop: "{{ config_files.stdout_lines|flatten(levels=1) }}"
+    - name: Copy config files into temporary location
+      copy:
+        src: "{{ pg.config_dir[ansible_os_family] }}/{{ item }}"
+        dest: "/var/tmp/{{ snapshot_name  }}/configs"
+        remote_src: true
+        mode: preserve
+      loop: "{{ config_files.stdout_lines|flatten(levels=1) }}"
 
-  - name: Create snapshot archive
-    import_tasks: common/create_snapshot_archive.yml
-    vars:
-      snapshot_prefix: "postgresql"
-      dirs_to_archive:
-        - /var/tmp/{{ snapshot_name  }}/
+    - name: Create snapshot archive
+      import_tasks: common/create_snapshot_archive.yml
+      vars:
+        snapshot_prefix: "postgresql"
+        dirs_to_archive:
+          - /var/tmp/{{ snapshot_name  }}/
 
-  - name: Create snapshot checksum
-    import_tasks: common/create_snapshot_checksum.yml
+    - name: Create snapshot checksum
+      import_tasks: common/create_snapshot_checksum.yml
 
-  - name: Transfer artifacts via rsync
-    import_tasks: common/download_via_rsync.yml
-    vars:
-      artifacts:
-        - "{{ snapshot_path }}"
-        - "{{ snapshot_path }}.sha1"
+    - name: Transfer artifacts via rsync
+      import_tasks: common/download_via_rsync.yml
+      vars:
+        artifacts:
+          - "{{ snapshot_path }}"
+          - "{{ snapshot_path }}.sha1"
 
-  - name: Remove temporary files and content
-    file:
-      path: "/var/tmp/{{ snapshot_name  }}/"
-      state: absent
+    - name: Remove temporary files and content
+      file:
+        path: "/var/tmp/{{ snapshot_name  }}/"
+        state: absent

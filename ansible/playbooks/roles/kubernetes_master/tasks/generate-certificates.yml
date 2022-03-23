@@ -14,43 +14,43 @@
     # https://kubernetes.io/docs/setup/best-practices/certificates/#all-certificates
     _certificates_opt_mapping:
       - name: admin.conf
-        kind: [ 'clientAuth' ]
+        kind: ['clientAuth']
         target: "{{ pki.location }}/admin.conf"
         parent_ca: ca
       - name: apiserver-etcd-client
-        kind: [ 'clientAuth' ]
+        kind: ['clientAuth']
         target: "{{ pki.location }}/apiserver-etcd-client"
         parent_ca: etcd/ca
       - name: apiserver-kubelet-client
-        kind: [ 'clientAuth' ]
+        kind: ['clientAuth']
         target: "{{ pki.location }}/apiserver-kubelet-client"
         parent_ca: ca
       - name: apiserver
-        kind: [ 'serverAuth' ]
+        kind: ['serverAuth']
         target: "{{ pki.location }}/apiserver"
         parent_ca: ca
       - name: controller-manager.conf
-        kind: [ 'clientAuth' ]
+        kind: ['clientAuth']
         target: "{{ pki.location }}/controller-manager.conf"
         parent_ca: ca
       - name: etcd/healthcheck-client
-        kind: [ 'clientAuth' ]
+        kind: ['clientAuth']
         target: "{{ pki.location }}/etcd/healthcheck-client"
         parent_ca: etcd/ca
       - name: etcd/peer
-        kind: [ 'serverAuth', 'clientAuth' ]
+        kind: ['serverAuth', 'clientAuth']
         target: "{{ pki.location }}/etcd/peer"
         parent_ca: etcd/ca
       - name: etcd/server
-        kind: [ 'serverAuth', 'clientAuth' ]
+        kind: ['serverAuth', 'clientAuth']
         target: "{{ pki.location }}/etcd/server"
         parent_ca: etcd/ca
       - name: front-proxy-client
-        kind: [ 'clientAuth' ]
+        kind: ['clientAuth']
         target: "{{ pki.location }}/front-proxy-client"
         parent_ca: front-proxy-ca
       - name: scheduler.conf
-        kind: [ 'clientAuth' ]
+        kind: ['clientAuth']
         target: "{{ pki.location }}/scheduler.conf"
         parent_ca: ca
   block:
@@ -112,6 +112,7 @@
       template:
         src: certificate-v3.ext.j2
         dest: "{{ pki.location }}/ext/{{ item.0.name }}.ext"
+        mode: u=rw,g=r,o=
       loop: "{{ certificates_opt_mapping|zip(csr_info.results)|list }}"
       loop_control:
         label: "{{ item.0.name }}"

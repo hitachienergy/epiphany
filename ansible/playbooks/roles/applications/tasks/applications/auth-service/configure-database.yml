@@ -16,27 +16,27 @@
     set_fact:
       postgres_primary: "{{ item.item }}"
     with_items: "{{ in_recovery_state.results }}"
-    when: item.in_recovery == false
+    when: not item.in_recovery
 
 - name: Auth-service | Manage db objects
   block:
-  - name: Auth-service | Create database for Epiphany Auth Service
-    delegate_to: "{{ _primary_node }}"
-    become: true
-    become_user: postgres
-    postgresql_db:
-      name: "{{ data.database.name }}"
+    - name: Auth-service | Create database for Epiphany Auth Service
+      delegate_to: "{{ _primary_node }}"
+      become: true
+      become_user: postgres
+      postgresql_db:
+        name: "{{ data.database.name }}"
 
-  - name: Auth-service | Add Postresql user
-    delegate_to: "{{ _primary_node }}"
-    become: true
-    become_user: postgres
-    postgresql_user:
-      db: "{{ data.database.name }}"
-      name: "{{ data.database.user }}"
-      password: "{{ data.database.password }}"
-      role_attr_flags: CREATEDB,NOSUPERUSER
-      expires: infinity
+    - name: Auth-service | Add Postresql user
+      delegate_to: "{{ _primary_node }}"
+      become: true
+      become_user: postgres
+      postgresql_user:
+        db: "{{ data.database.name }}"
+        name: "{{ data.database.user }}"
+        password: "{{ data.database.password }}"
+        role_attr_flags: CREATEDB,NOSUPERUSER
+        expires: infinity
 
   vars:
     _primary_node: >-

@@ -34,10 +34,12 @@
         - Restart controller-manager
         - Restart scheduler
 
-    - meta: flush_handlers
+    - name: Flush handlers
+      meta: flush_handlers
 
     - name: Get kube-proxy config map
       shell: |
+        set -o pipefail &&
         kubectl get configmap kube-proxy \
           --namespace kube-system \
           --output yaml \

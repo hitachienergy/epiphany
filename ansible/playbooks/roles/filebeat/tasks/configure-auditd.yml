@@ -5,6 +5,7 @@
   template:
     dest: /etc/audit/rules.d/audit-epi.rules
     src: audit-epi.rules.j2
+    mode: u=rwx,go=r
   register: modify_audit_epi_rules
 
 - name: Start/restart and enable auditd service

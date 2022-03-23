@@ -10,7 +10,7 @@
       RedHat:
         - opendistroforelasticsearch-kibana-{{ kibana_version[ansible_os_family] }}
   module_defaults:
-    yum: { lock_timeout: "{{ yum_lock_timeout }}" }
+    yum: {lock_timeout: "{{ yum_lock_timeout }}"}
 
 - name: Include logging configuration tasks
   include_tasks: setup-logging.yml
@@ -32,7 +32,7 @@
 
 - name: Update Kibana configuration file
   template:
-    backup: yes
+    backup: true
     src: kibana.yml.j2
     dest: /etc/kibana/kibana.yml
     owner: kibana
@@ -50,7 +50,7 @@
   service:
     name: kibana
     state: started
-    enabled: yes
+    enabled: true
 
 - name: Wait for kibana to start listening
   wait_for:

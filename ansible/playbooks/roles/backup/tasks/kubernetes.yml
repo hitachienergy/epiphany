@@ -40,12 +40,14 @@
         dest: "{{ backup_temp_dir.path }}/etcd_ver.txt"
         content: |-
           {{ etcd_image_name.stdout | trim }}
+        mode: ugo=r
 
     - name: Save kubernetes PKI
       copy:
         src: /etc/kubernetes/pki  # do not put / at the end here!
         dest: "{{ backup_temp_dir.path }}/"
         remote_src: true
+        mode: preserve
 
     - name: Save etcd snapshot
       shell: |
@@ -80,6 +82,7 @@
             src: "{{ stat_kubeadm_config_yml.stat.path }}"
             dest: "{{ backup_temp_dir.path }}/"
             remote_src: true
+            mode: preserve
 
     - name: Create snapshot archive
       import_tasks: common/create_snapshot_archive.yml

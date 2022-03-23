@@ -24,7 +24,7 @@
 
   always:
     - name: "{{ _app_dir_name | capitalize }} | Append processed template {{ template_path }}"
-      set_fact:
+      set_fact: # noqa var-naming (issue: https://github.com/ansible-community/ansible-lint/issues/1680)
         "{{ output_fact_name }}": >-
           {{ hostvars[inventory_hostname][output_fact_name] ~ _newline ~ processed_template }}
       vars:

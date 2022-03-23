@@ -1,9 +1,9 @@
 ---
 # Invoke with (example):
-#- set_fact:
-#    artifacts:
-#      - /tmp/artifact1
-#      - /tmp/artifact2
+# - set_fact:
+#     artifacts:
+#       - /tmp/artifact1
+#       - /tmp/artifact2
 
 - name: Assert that the "artifacts" fact is defined and valid
   assert:
@@ -40,6 +40,7 @@
       file:
         path: ~/.ssh/
         state: directory
+        mode: u=rwx,go=
 
     - name: Create a temporary file path to hold the private key in
       tempfile:
@@ -68,6 +69,7 @@
       file:
         path: "{{ backup_destination_dir }}/"
         state: directory
+        mode: u=rwx,go=rx
 
     - name: Use rsync to copy all artifacts
       synchronize:

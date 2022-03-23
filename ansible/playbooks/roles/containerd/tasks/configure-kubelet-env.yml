@@ -4,36 +4,42 @@
     - Restart containerd
     - Restart kubelet
   block:
-  - name: Get kubeadm-flags.env file content
-    slurp:
-      src: /var/lib/kubelet/kubeadm-flags.env
-    register: kubelet_kubeadm_args
+    - name: Get kubeadm-flags.env file content
+      slurp:
+        src: /var/lib/kubelet/kubeadm-flags.env
+      register: kubelet_kubeadm_args
 
-  - name: Set kubelet_kubeadmn_args_content
-    set_fact:
-      kubelet_kubeadmn_args_content: "{{ kubelet_kubeadm_args.content | b64decode }}"
+    - name: Set kubelet_kubeadmn_args_content
+      set_fact:
+        kubelet_kubeadmn_args_content: "{{ kubelet_kubeadm_args.content | b64decode }}"
 
-  - name: Modify container-runtime
-    replace:
-      path: /var/lib/kubelet/kubeadm-flags.env
-      regexp: '{{ item.regexp }}'
-      replace: '{{ item.replace }}'
-      backup: true
-    loop:
-      - { regexp: '^(KUBELET_KUBEADM_ARGS=\")(.*)(--container-runtime=[a-zA-Z0-9_]+)(.*)', replace: '\1\2--container-runtime=remote\4' }
-      - { regexp: '^(KUBELET_KUBEADM_ARGS=\")(.*)(--container-runtime-endpoint=.*\.sock)(.*)', replace: '\1\2--container-runtime-endpoint=/run/containerd/containerd.sock\4' }
-    when: kubelet_kubeadmn_args_content.find('--container-runtime') != -1
+    - name: Modify container-runtime
+      replace:
+        path: /var/lib/kubelet/kubeadm-flags.env
+        regexp: '{{ item.regexp }}'
+        replace: '{{ item.replace }}'
+        backup: true
+      loop:
+        - {
+          regexp: '^(KUBELET_KUBEADM_ARGS=\")(.*)(--container-runtime=[a-zA-Z0-9_]+)(.*)',
+          replace: '\1\2--container-runtime=remote\4'
+        }
+        - {
+          regexp: '^(KUBELET_KUBEADM_ARGS=\")(.*)(--container-runtime-endpoint=.*\.sock)(.*)',
+          replace: '\1\2--container-runtime-endpoint=/run/containerd/containerd.sock\4'
+        }
+      when: kubelet_kubeadmn_args_content.find('--container-runtime') != -1
 
-  - name: Append container-runtime to kubelet config
-    replace:
-      path: /var/lib/kubelet/kubeadm-flags.env
-      regexp: '^(KUBELET_KUBEADM_ARGS=\")(.*)(\")$'
-      replace: '\1\2 --container-runtime=remote"'
-    when: kubelet_kubeadmn_args_content.find('--container-runtime') == -1
+    - name: Append container-runtime to kubelet config
+      replace:
+        path: /var/lib/kubelet/kubeadm-flags.env
+        regexp: '^(KUBELET_KUBEADM_ARGS=\")(.*)(\")$'
+        replace: '\1\2 --container-runtime=remote"'
+      when: kubelet_kubeadmn_args_content.find('--container-runtime') == -1
 
-  - name: Append container-runtime-endpoint to kubelet config
-    replace:
-      path: /var/lib/kubelet/kubeadm-flags.env
-      regexp: '^(KUBELET_KUBEADM_ARGS=\")(.*)(\")$'
-      replace: '\1\2 --container-runtime-endpoint=/run/containerd/containerd.sock"'
-    when: kubelet_kubeadmn_args_content.find('--container-runtime-endpoint') == -1
+    - name: Append container-runtime-endpoint to kubelet config
+      replace:
+        path: /var/lib/kubelet/kubeadm-flags.env
+        regexp: '^(KUBELET_KUBEADM_ARGS=\")(.*)(\")$'
+        replace: '\1\2 --container-runtime-endpoint=/run/containerd/containerd.sock"'
+      when: kubelet_kubeadmn_args_content.find('--container-runtime-endpoint') == -1

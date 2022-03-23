@@ -6,7 +6,7 @@
     name: net.ipv4.ip_forward
     value: "1"
     state: present
-    reload: yes
+    reload: true
 
 # Check needed only for RHEL
 - name: Check if bridge-nf-call-iptables key exists
@@ -20,7 +20,7 @@
     name: "{{ item }}"
     state: present
     value: "1"
-    reload: yes
+    reload: true
   when: sysctl_bridge_nf_call_iptables.rc == 0
   loop:
     - net.bridge.bridge-nf-call-iptables

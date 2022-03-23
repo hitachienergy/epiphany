@@ -9,7 +9,8 @@
     uri_template: &uri
       body_format: json
 
-- debug: var=snapshot_name
+- name: Display snapshot name
+  debug: var=snapshot_name
 
 - name: Trigger snapshot creation
   uri:
@@ -25,7 +26,8 @@
   set_fact:
     prometheus_snapshot_name: "{{ uri_response.json.data.name }}"
 
-- debug: var=prometheus_snapshot_name
+- name: Display snapshot name
+  debug: var=prometheus_snapshot_name
 
 - name: Create, transfer and cleanup snapshot
   always:

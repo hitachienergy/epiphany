@@ -44,6 +44,7 @@
     # Update and render json payload
     content: |
       {{ _updated_document | to_nice_json }}
+    mode: u=rwx,go=rx
   vars:
     # Parse json payload
     _document: >-

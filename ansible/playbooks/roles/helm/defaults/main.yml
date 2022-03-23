@@ -7,4 +7,3 @@ system_chart_repo_url: "{{ (custom_repository_url | default('http://localhost/ep
 helm_archive_regexp:
   x86_64: "^helm-v([0-9.]+)-linux-amd64.tar.gz$"
   aarch64: "^helm-v([0-9.]+)-linux-arm64.tar.gz$"
-

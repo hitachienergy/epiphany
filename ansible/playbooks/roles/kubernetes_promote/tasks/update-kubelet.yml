@@ -15,4 +15,5 @@
         - Restart kube-proxy
         - Mark Kubernetes as already HA
 
-    - meta: flush_handlers
+    - name: Flush handlers
+      meta: flush_handlers

@@ -8,37 +8,38 @@
 - name: Preflight check
   when: not lock_file_status.stat.exists
   block:
-  - name: Check for binary
-    stat:
-      path: "{{ prometheus_jmx_exporter_path }}"
-    register: jmx_exporter_binary
+    - name: Check for binary
+      stat:
+        path: "{{ prometheus_jmx_exporter_path }}"
+      register: jmx_exporter_binary
 
-  - name: Inform and fail if JMX exporter binary is missing
-    when: not jmx_exporter_binary.stat.exists
-    fail:
-      msg: >
-        There is no JMX exporter binary at all,
-        re-apply your configuration or remove jmx_exporter role from inventory
+    - name: Inform and fail if JMX exporter binary is missing
+      when: not jmx_exporter_binary.stat.exists
+      fail:
+        msg: >
+          There is no JMX exporter binary at all,
+          re-apply your configuration or remove jmx_exporter role from inventory
 
-  - name: Verify installed version
-    when: jmx_exporter_binary.stat.exists
-    block:
-    - name: Get installed jmx-exporter version
-      shell: >-
-        unzip -p /opt/jmx-exporter/jmx_prometheus_javaagent.jar META-INF/MANIFEST.MF \
-        | awk '$1 == "Implementation-Version:" {print $2}'
-      register: installed_jmx_exporter_version
+    - name: Verify installed version
+      when: jmx_exporter_binary.stat.exists
+      block:
+        - name: Get installed jmx-exporter version
+          shell: >-
+            set -o pipefail &&
+            unzip -p /opt/jmx-exporter/jmx_prometheus_javaagent.jar META-INF/MANIFEST.MF \
+            | awk '$1 == "Implementation-Version:" {print $2}'
+          register: installed_jmx_exporter_version
 
-    - name: Set version facts
-      set_fact:
-        jmx_exporter_version:
-          old: "{{ installed_jmx_exporter_version.stdout }}"
-          new: "{{ jmx_exporter_version }}"
+        - name: Set version facts
+          set_fact:
+            jmx_exporter_version:
+              old: "{{ installed_jmx_exporter_version.stdout }}"
+              new: "{{ jmx_exporter_version }}"
 
-    - name: Avoiding risk of downgrade
-      when: jmx_exporter_version.old is not version( jmx_exporter_version.new, '<' )
-      debug:
-        msg: "Skipping upgrade: JMX Exporter in the same or newer version already installed!"
+        - name: Avoiding risk of downgrade
+          when: jmx_exporter_version.old is not version( jmx_exporter_version.new, '<' )
+          debug:
+            msg: "Skipping upgrade: JMX Exporter in the same or newer version already installed!"
 
 - name: Upgrade | jmx-exporter
   when: lock_file_status.stat.exists or jmx_exporter_version.old is version( jmx_exporter_version.new, '<' )
@@ -47,6 +48,7 @@
       file:
         path: "{{ lock_file }}"
         state: touch
+        mode: u=rwx,go=r
 
     - name: Download jmx-exporter binaries
       include_role:
@@ -61,7 +63,8 @@
         dest: "{{ jmx_exporter_directory }}/{{ jmx_exporter_bin_filename }}"
         owner: "{{ specification.jmx_exporter_user }}"
         group: "{{ specification.jmx_exporter_group }}"
-        remote_src: yes
+        remote_src: true
+        mode: preserve
 
     - name: Get installed jmx-exporter binary path
       stat:
@@ -76,7 +79,7 @@
         dest: "{{ prometheus_jmx_exporter_path }}"
         state: link
         src: "{{ jmx_exporter_directory }}/{{ jmx_exporter_bin_filename }}"
-        force: yes
+        force: true
 
     - name: Run systemctl daemon-reload  # zookeeper and kafka configure jmx-exporter via systemd units
       systemd:
@@ -96,4 +99,3 @@
       file:
         path: "{{ lock_file }}"
         state: absent
-...

@@ -24,17 +24,19 @@
         {{ kubernetes_common.haproxy_master_names | zip(kubernetes_common.haproxy_master_ipv4s) | list }}
 
 - name: Configure and start haproxy "distributed" load-balancer
-  vars: { haproxy_service: haproxy-k8s }
+  vars: {haproxy_service: haproxy-k8s}
   block:
     - name: Ensure /etc/{{ haproxy_service }}/ directory exists
       file:
         path: /etc/{{ haproxy_service }}/
         state: directory
+        mode: u=rwx,go=rx
 
     - name: Render haproxy config
       template:
         dest: /etc/{{ haproxy_service }}/haproxy.cfg
         src: haproxy.cfg.j2
+        mode: u=rwx,go=r
       register: template_haproxy_cfg
 
     - name: Setup and start {{ haproxy_service }} service

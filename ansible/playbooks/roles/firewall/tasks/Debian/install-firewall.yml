@@ -6,14 +6,14 @@
   systemd:
     name: ufw
     state: stopped
-    enabled: no
+    enabled: false
   when: ansible_facts.services['ufw'] is defined
 
 - name: Remove ufw package
   apt:
     name: ufw
     state: absent
-    purge: yes
+    purge: true
 
 - name: Install firewalld package
   block:
@@ -31,14 +31,14 @@
           systemd:
             name: firewalld
             state: stopped
-            enabled: no
+            enabled: false
 
         # On RHEL firewalld service is initially masked, so mask it for consistency
         # This task is separated by purpose to mask service AFTER it was stopped
         - name: Mask firewalld service
           systemd:
             name: firewalld
-            masked: yes
+            masked: true
       when:
         - install_firewalld.changed
   when:

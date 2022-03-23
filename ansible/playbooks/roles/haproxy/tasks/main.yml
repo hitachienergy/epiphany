@@ -6,10 +6,11 @@
   template:
     dest: /etc/haproxy/haproxy.cfg
     src: haproxy.cfg.j2
+    mode: u=rwx,go=rx
   register: template_haproxy_cfg
 
 - name: Setup and start haproxy runc-based systemd service
-  include_role: { name: haproxy_runc }
+  include_role: {name: haproxy_runc}
   vars:
     haproxy_service: haproxy
     extra_mounts:

@@ -12,6 +12,7 @@
   template:
     dest: "{{ pki.location }}/etcd/etc-encryption.conf"
     src: etc-encryption.conf.j2
+    mode: u=rw,g=r,o=
     force: false  # please keep it "false" here, otherwise the secret will change and your cluster will start failing eventually
   vars:
     etcd_encryption_secret: >-
