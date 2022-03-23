@@ -107,15 +107,15 @@ class RedHatFamilyMode(BaseMode):
         list_prereq_packages = list(set(prereq_packages))
 
         collected_prereqs.extend(self._tools.repoquery.query(list_prereq_packages,
-                                                            queryformat='%{name}-%{version}-%{release}.%{arch}',
-                                                            archlist=self.__archs))
+                                                             queryformat='%{name}-%{version}-%{release}.%{arch}',
+                                                             archlist=self.__archs))
 
         unique_collected_prereqs = [package for package in set(collected_prereqs)]
         logging.info(f'{unique_collected_prereqs}')
         self._tools.dnf_download.download_packages(unique_collected_prereqs,
-                                                    archlist=self.__archs,
-                                                    exclude='*i686',
-                                                    destdir=prereqs_dir)
+                                                   archlist=self.__archs,
+                                                   exclude='*i686',
+                                                   destdir=prereqs_dir)
         return unique_collected_prereqs
 
     def _download_packages(self):
@@ -126,23 +126,23 @@ class RedHatFamilyMode(BaseMode):
         list_packages_to_download = list(set(packages))
         # package itself
         package_name = self._tools.repoquery.query(list_packages_to_download,
-                                                    queryformat='%{name}-%{version}-%{release}.%{arch}',
-                                                    archlist=self.__archs)
+                                                   queryformat='%{name}-%{version}-%{release}.%{arch}',
+                                                   archlist=self.__archs)
 
         packages_to_download.extend(package_name)
 
         # dependencies
         packages_to_download.extend(self._tools.repoquery.get_dependencies(list(set(packages_to_download)),
-                                                                            queryformat='%{name}.%{arch}',
-                                                                            archlist=self.__archs))
+                                                                           queryformat='%{name}.%{arch}',
+                                                                           archlist=self.__archs))
 
         packages_to_download.extend(list_packages_to_download)
         fitered_packages = [package for package in set(packages_to_download) if package not in downloaded_prereqs]
         logging.info(f'{fitered_packages}')
         self._tools.dnf_download.download_packages(fitered_packages,
-                                                    archlist=self.__archs,
-                                                    exclude='*i686',
-                                                    destdir=self._cfg.dest_packages)
+                                                   archlist=self.__archs,
+                                                   exclude='*i686',
+                                                   destdir=self._cfg.dest_packages)
 
     def _download_file(self, file: str):
         self._tools.wget.download(file, directory_prefix=self._cfg.dest_files, additional_params=False)

@@ -24,7 +24,7 @@ class DnfRepoquery(Command):
         :param packages: data will be returned for those `packages`
         :param queryformat: specify custom query output format
         :param archlist: limit results to these architectures
-        :param requires: get capabilities that the package depends on
+        :param requires: get capabilities that the packages depend on
         :param resolve: resolve capabilities to originating package(s)
         :param output_handler: different queries produce different outputs, use specific output handler
         :raises:
@@ -77,15 +77,15 @@ class DnfRepoquery(Command):
         def output_handler(output: str):
             """ In addition to errors, handle missing packages """
             if not output:
-                raise PackageNotfound(f'repoquery failed for package `{packages}`, reason: package not found')
+                raise PackageNotfound(f'repoquery failed for packages `{packages}`, reason: some of package(s) not found')
             elif 'error' in output:
-                raise CriticalError(f'repoquery failed for package `{packages}`, reason: `{output}`')
+                raise CriticalError(f'repoquery failed for packages `{packages}`, reason: `{output}`')
 
         return self.__query(packages, queryformat, archlist, False, False, output_handler)
 
     def get_dependencies(self, packages: List[str], queryformat: str, archlist: List[str]) -> List[str]:
         """
-        Get all dependencies for `package`.
+        Get all dependencies for `packages`.
 
         :param packages: data will be returned for those `packages`
         :param queryformat: specify custom query output format
@@ -98,6 +98,6 @@ class DnfRepoquery(Command):
         def output_handler(output: str):
             """ Handle errors """
             if 'error' in output:
-                raise CriticalError(f'repoquery failed for package `{packages}`, reason: `{output}`')
+                raise CriticalError(f'repoquery failed for packages `{packages}`, reason: `{output}`')
 
         return self.__query(packages, queryformat, archlist, True, True, output_handler)
