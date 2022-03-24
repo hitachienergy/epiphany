@@ -104,9 +104,8 @@ class RedHatFamilyMode(BaseMode):
 
         collected_prereqs: List[str] = []
         prereq_packages: List[str] = self._requirements['prereq-packages']
-        list_prereq_packages = list(set(prereq_packages))
 
-        collected_prereqs.extend(self._tools.repoquery.query(list_prereq_packages,
+        collected_prereqs.extend(self._tools.repoquery.query(prereq_packages,
                                                              queryformat='%{name}-%{version}-%{release}.%{arch}',
                                                              archlist=self.__archs))
 
