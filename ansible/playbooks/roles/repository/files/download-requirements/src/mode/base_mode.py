@@ -2,7 +2,7 @@ import logging
 from collections import defaultdict
 from os import chmod
 from pathlib import Path
-from typing import Any, Dict
+from typing import Any, Dict, List
 
 from poyo import parse_string, PoyoException
 
@@ -56,6 +56,44 @@ class BaseMode:
 
         return repos
 
+    def __parse_packages(self) -> Dict[str, Any]:
+        """
+        Load packages for target architecture/distro from yaml files.
+
+        :returns: parsed packages data
+        """
+
+        prereq_packages: List[str] = []
+        packages_from_repo: List[str] = []
+        packages_from_url: Dict[str, Dict] = {}
+
+        input_files: List[Path] = [
+            self._cfg.reqs_path / f'{self._cfg.family_subdir}/packages.yml',
+            self._cfg.reqs_path / f'{self._cfg.distro_subdir}/packages.yml'
+        ]
+
+        for file in input_files:
+            if file.exists():
+                content = load_yaml_file(file)
+                if 'prereq-packages' in content:
+                    prereq_packages += content['prereq-packages']
+
+                if 'packages' in content:
+                    if 'from_repo' in content['packages']:
+                        packages_from_repo += content['packages']['from_repo']
+
+                    if 'from_url' in content['packages']:
+                        packages_from_url.update(content['packages']['from_url'])
+
+        reqs = {
+            'packages': {'from_repo': packages_from_repo, 'from_url': packages_from_url}
+        }
+
+        if len(prereq_packages) > 0:  # not present for Debian family
+            reqs['prereq-packages'] = prereq_packages
+
+        return reqs
+
     def __parse_requirements(self) -> Dict[str, Any]:
         """
         Load requirements for target architecture/distro from yaml files.
@@ -64,15 +102,13 @@ class BaseMode:
         """
         reqs: Dict = defaultdict(dict)
 
-        # parse packages:
-        content = load_yaml_file(self._cfg.reqs_path / f'{self._cfg.distro_subdir}/packages.yml')
-        reqs['packages'] = content['packages']
+        required_packages: Dict = self.__parse_packages()
+        if 'prereq-packages' in required_packages:
+            reqs['prereq-packages'] = required_packages['prereq-packages']
 
-        try:
-            reqs['prereq-packages'] = content['prereq-packages']
-        except KeyError:
-            pass  # prereq packages are only for some distros
+        reqs['packages'] = required_packages['packages']
 
+        # parse distro files:
         distro_files: Path = self._cfg.reqs_path / f'{self._cfg.distro_subdir}/files.yml'
         if distro_files.exists():  # distro files are optional
             content = load_yaml_file(distro_files)

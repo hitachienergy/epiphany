@@ -15,11 +15,11 @@
           - "{{ _req_files['files'] }}"
           - "{{ _req_files['grafana_dashboards'] }}"
           - "{{ _req_files['images'] }}"
-          - "{{ _req_files['package_files'] }}"
+          - "{{ _req_files['distro_packages'] }}"
           - "download-requirements.py"
           - "src/"
 
-        _distro_files: "{{ _req_files['distro_files'] }}"  # optional distro files
+        _family_packages: "{{ _req_files['family_packages'] }}"  # optional
 
       vars:
         # general paths:
@@ -35,11 +35,11 @@
         # file paths:
         _req_files:
           cranes: "{{ _reqs_arch_dir }}/cranes.yml"
+          distro_packages: "{{ _reqs_distro_dir }}/packages.yml"
+          family_packages: "{{ _reqs_family_dir }}/packages.yml"
           files: "{{ _reqs_arch_dir }}/files.yml"
           grafana_dashboards: "{{ _reqs_dir }}/grafana-dashboards.yml"
           images: "{{ _reqs_arch_dir }}/images.yml"
-          package_files: "{{ _reqs_distro_dir }}/packages.yml"
-          distro_files: "{{ _reqs_distro_dir }}/files.yml"
 
         _repo_file: "{{ _repo_family_dir }}/{{ _family_type }}.yml"
 
@@ -49,20 +49,14 @@
         state: directory
       loop: "{{ _dirs }}"
 
-    - name: Copy download requirements files to the remote
+    - name: Copy download requirements files
       synchronize:
         src: "download-requirements/{{ item }}"
         dest: "{{ download_requirements_dir }}/{{ item }}"
       loop: "{{ _files }}"
 
-    - name: Get stats of optional distro files
-      stat:
-        path: "download-requirements/{{ _distro_files }}"
-      register: distro_files_stats
-
-    - name: Copy optional distro files
+    - name: Copy RedHat family specific download requirements file
       synchronize:
-        src: "download-requirements/{{ _distro_files }}"
-        dest: "{{ download_requirements_dir }}/{{ _distro_files }}"
-      when:
-        - distro_files_stats.stat.exists
+        src: "download-requirements/{{ _family_packages }}"
+        dest: "{{ download_requirements_dir }}/{{ _family_packages }}"
+      when: ansible_os_family == 'RedHat'
