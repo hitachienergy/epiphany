@@ -69,13 +69,20 @@
     - not custom_repository_url
     - inventory_hostname in target_repository_hostnames
 
-- include_tasks: clean-up-epirepo.yml
-  when:
-    - is_upgrade_run
-    - inventory_hostname in target_repository_hostnames
-    - custom_repository_url or
-      offline_mode or
-      not stat_flag_file.stat.exists  # do not clean up when skipping download
+- name: Clean up epirepo
+  block:
+  - name: Get stats of optional distro files
+    stat:
+      path: "{{ _files_layout['distro_files'] }}"
+    register: distro_files_stats
+
+  - name: Run the clean up script
+    include_tasks: clean-up-epirepo.yml
+    vars:
+      # contents:
+      _files_content:
+        distro_files: "{{ lookup('file', _files_layout['distro_files']) | from_yaml if distro_files_stats.stat.exists else {'files': {}} }}"
+        files: "{{ lookup('file', _files_layout['files']) | from_yaml }}"
   vars:
     # general paths:
     _reqs_dir: download-requirements/requirements
@@ -86,11 +93,12 @@
     _files_layout:
       distro_files: "{{ _distro_dir }}/files.yml"
       files: "{{ _arch_dir }}/files.yml"
-
-    # contents:
-    _files_content:
-      distro_files: "{{ lookup('file', _files_layout['distro_files']) | from_yaml }}"
-      files: "{{ lookup('file', _files_layout['files']) | from_yaml }}"
+  when:
+    - is_upgrade_run
+    - inventory_hostname in target_repository_hostnames
+    - custom_repository_url or
+      offline_mode or
+      not stat_flag_file.stat.exists  # do not clean up when skipping download
 
 - name: |-
     Copy requirements for offline installation to repository host, this can take a long time
