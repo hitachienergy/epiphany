@@ -14,7 +14,6 @@
         "davidanson.vscode-markdownlint",
         // Python
         "ms-python.python",
-        "littlefoxteam.vscode-python-test-adapter",
         // Ruby
         "rebornix.Ruby",
         "castwide.solargraph",
@@ -29,6 +28,7 @@
         "source=${localEnv:HOME}${localEnv:USERPROFILE}/.ssh,target=/home/vscode/.ssh,type=bind",
     ],
     "settings": {
+        "python.envFile": "${workspaceFolder}/.devcontainer/python.env",
         "python.pythonPath": "/usr/local/bin/python",
     },
     "remoteUser": "vscode",
