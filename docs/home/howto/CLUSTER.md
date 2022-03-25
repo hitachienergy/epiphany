@@ -479,28 +479,18 @@ To set up the cluster do the following steps from the provisioning machine:
 
 ### Note for RHEL Azure images
 
-Epiphany currently supports RHEL 7 LVM partitioned images attached to standard RHEL repositories. For more details, refer to [Azure documentation](https://docs.microsoft.com/en-us/azure/virtual-machines/workloads/redhat/redhat-images#rhel-7-image-types).
+Epiphany currently supports RHEL 8 RAW-partitioned images (`rhel-raw` [offer](https://azuremarketplace.microsoft.com/en-us/marketplace/apps/redhat.rhel-raw))
+attached to standard RHEL repositories. For more details, refer to [Azure documentation](https://docs.microsoft.com/en-us/azure/virtual-machines/workloads/redhat/redhat-images).
 
-Epiphany uses cloud-init custom data in order to merge small logical volumes (`homelv`, `optlv`, `tmplv` and `varlv`)
-into the `rootlv` and extends it (with underlying filesystem) by the current free space in its volume group.
-The `usrlv` LV, which has 10G, is not merged since it would require a reboot. The merging is required to deploy a cluster,
-however, [it can be disabled](#how-to-disable-merging-lvm-logical-volumes) for troubleshooting since it performs some administrative tasks (such as remounting filesystems or restarting services).
+In the past Epiphany supported LVM-partitioned images (`RHEL` [offer](https://azuremarketplace.microsoft.com/en-us/marketplace/apps/redhat.rhel-20190605))
+which require merging small logical volumes in order to deploy a cluster. This feature is still present but not tested.
+It uses cloud-init custom data to merge small logical volumes (`homelv`, `optlv`, `tmplv` and `varlv`)
+into the `rootlv` which is extended (with underlying filesystem) by the current free space in its volume group.
+The `usrlv` LV, which has 10G, is not merged since it would require a reboot.
+The merging [can be disabled](#how-to-disable-merging-lvm-logical-volumes) for troubleshooting since it performs some
+administrative tasks (such as remounting filesystems or restarting services).
 
-NOTE: RHEL 7 LVM images require at least 64 GB for OS disk.
-
-Example config:
-
-```yaml
-kind: infrastructure/virtual-machine
-specification:
-  storage_image_reference:
-    publisher: RedHat
-    offer: RHEL
-    sku: "7lvm-gen2"
-    version: "7.9.2021121604"
-  storage_os_disk:
-    disk_size_gb: 64
-```
+NOTE: RHEL LVM images require at least 64 GB for OS disk.
 
 ### How to disable merging LVM logical volumes
 
