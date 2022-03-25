@@ -1,24 +1,55 @@
 ---
+- name: Drain nodes in preparation for maintenance
+  when:
+    - groups.kubernetes_node is defined
+    - groups.kubernetes_node | length > 0
+  block:
+    - name: Wait for kube-apiserver
+      include_role:
+        name: upgrade
+        tasks_from: kubernetes/utils/wait-for-kube-apiserver.yml
+        apply:
+          delegate_to: >-
+            {{ inventory_hostname if inventory_hostname in groups.kubernetes_master else
+               groups.kubernetes_master[0] }}
+
+    - name: Include get-kubelet-version.yml
+      include_role:
+        name: upgrade
+        tasks_from: kubernetes/get-kubelet-version.yml
+        apply:
+          delegate_to: "{{ groups.kubernetes_master[0] }}"
+
+    - name: Set kubelet version as fact
+      set_fact:
+        initial_kubelet_version: "{{ kubelet_version.stdout[1:] }}"
+
+    - name: Drain {{ inventory_hostname }}
+      include_role:
+        name: upgrade
+        tasks_from: kubernetes/utils/drain.yml
+      vars:
+        version: "{{ initial_kubelet_version }}"
+
 - name: Get information on installed packages
   package_facts:
     manager: auto
 
-- name: Remove Docker
+- name: Stop involved services before Docker removal
   when:
     - inventory_hostname not in groups.image_registry
     - ansible_facts.packages['docker-ce'] is defined
   block:
-  - name: Stop Kubelet before Docker removal
-    systemd:
-      name: kubelet
-      state: stopped
-    notify:
-    - Restart kubelet
+    - name: Stop Kubelet
+      systemd:
+        name: kubelet
+        state: stopped
 
-  - name: Remove Docker
-    include_role:
-      name: docker
-      tasks_from: remove-docker.yml
+    - name: Stop Docker
+      systemd:
+        name: kubelet
+        state: stopped
+        enabled: false
 
 - name: Install containerd.io package
   package:
@@ -44,6 +75,20 @@
 - name: Configure kubelet-env
   include_tasks: configure-kubelet-env.yml
 
+# There are already bandlers responsible for restart these services however it is required
+# to restart them earlier, before Uncordoning the hosts
+- name: Restart containerd
+  systemd:
+    name: containerd
+    state: restarted
+    enabled: true
+
+- name: Restart kubelet
+  systemd:
+    name: kubelet
+    state: restarted
+    enabled: true
+
 - name: Provide crictl.yaml file
   copy:
     src: crictl.yaml
@@ -51,3 +96,24 @@
     owner: root
     group: root
     mode: u=rw,go=r
+
+- name: Remove Docker
+  include_role:
+    name: docker
+    tasks_from: remove-docker.yml
+  when:
+    - inventory_hostname not in groups.image_registry
+    - ansible_facts.packages['docker-ce'] is defined
+
+- name: Wait for cluster's readiness
+  include_role:
+    name: upgrade
+    tasks_from: kubernetes/utils/wait.yml
+
+- name: Uncordon master or node - mark as schedulable
+  when:
+    - groups.kubernetes_node is defined
+    - groups.kubernetes_node | length > 0
+  include_role:
+    name: upgrade
+    tasks_from: kubernetes/utils/uncordon.yml

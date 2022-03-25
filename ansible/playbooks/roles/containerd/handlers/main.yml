@@ -8,3 +8,4 @@
   systemd:
     name: kubelet
     state: restarted
+    enabled: true
