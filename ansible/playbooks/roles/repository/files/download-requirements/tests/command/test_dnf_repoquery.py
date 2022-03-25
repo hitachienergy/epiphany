@@ -5,7 +5,7 @@ from src.command.dnf_repoquery import DnfRepoquery
 
 def test_interface_query(mocker):
     ''' Check argument construction for `dnf repoquery` - generic query '''
-    with CommandRunMock(mocker, DnfRepoquery(1).query, {'package': 'vim',
+    with CommandRunMock(mocker, DnfRepoquery(1).query, {'packages': ['tar', 'vim'],
                                                         'queryformat': 'some_format',
                                                         'archlist': ['some_arch', 'noarch']}) as call_args:
         assert call_args == ['dnf',
@@ -16,12 +16,13 @@ def test_interface_query(mocker):
                              '--latest-limit=1',
                              '--queryformat=some_format',
                              '--quiet',
+                             'tar',
                              'vim'
                             ]
 
 def test_interface_get_dependencies(mocker):
     ''' Check argument construction for `repoquery` - dependencies query '''
-    with CommandRunMock(mocker, DnfRepoquery(1).get_dependencies, {'package': 'vim',
+    with CommandRunMock(mocker, DnfRepoquery(1).get_dependencies, {'packages': ['tar', 'vim'],
                                                                    'queryformat': 'some_format',
                                                                    'archlist': ['some_arch', 'noarch']}) as call_args:
         assert call_args == ['dnf',
@@ -34,5 +35,6 @@ def test_interface_get_dependencies(mocker):
                              '--quiet',
                              '--requires',
                              '--resolve',
+                             'tar',
                              'vim'
                             ]
