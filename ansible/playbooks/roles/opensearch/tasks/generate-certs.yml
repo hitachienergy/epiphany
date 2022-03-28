@@ -136,27 +136,27 @@
     - name: Copy CA private key to other hosts
       copy:
         content: "{{ slurp_certs.results[0].content | b64decode }}"
-        dest:    "{{ certificates.dirs.ca_key }}/{{ certificates.files.root_ca.key.filename }}"
+        dest: "{{ certificates.dirs.ca_key }}/{{ certificates.files.root_ca.key.filename }}"
         mode: u=rw,go=
       no_log: true  # sensitive data
 
     - name: Copy root CA to other hosts
       copy:
         content: "{{ slurp_certs.results[1].content | b64decode }}"
-        dest:    "{{ certificates.dirs.certs }}/{{ certificates.files.root_ca.cert.filename }}"
+        dest: "{{ certificates.dirs.certs }}/{{ certificates.files.root_ca.cert.filename }}"
         mode: u=rw,g=r,o=
 
     - name: Copy admin private key to other hosts
       copy:
         content: "{{ slurp_certs.results[2].content | b64decode }}"
-        dest:    "{{ certificates.dirs.certs }}/{{ certificates.files.admin.key.filename }}"
+        dest: "{{ certificates.dirs.certs }}/{{ certificates.files.admin.key.filename }}"
         mode: u=rw,go=
       no_log: true  # sensitive data
 
     - name: Copy admin certificate to other hosts
       copy:
         content: "{{ slurp_certs.results[3].content | b64decode }}"
-        dest:    "{{ certificates.dirs.certs }}/{{ certificates.files.admin.cert.filename }}"
+        dest: "{{ certificates.dirs.certs }}/{{ certificates.files.admin.cert.filename }}"
         mode: u=rw,g=r,o=
       no_log: true  # sensitive data
 

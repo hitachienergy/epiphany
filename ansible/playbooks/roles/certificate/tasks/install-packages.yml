@@ -10,4 +10,4 @@
       RedHat:
         - python3-cryptography
   module_defaults:
-    yum: { lock_timeout: "{{ yum_lock_timeout }}" }
+    yum: {lock_timeout: "{{ yum_lock_timeout }}"}

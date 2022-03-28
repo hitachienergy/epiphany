@@ -32,7 +32,7 @@
     owner: "{{ specification.opensearch_os_user }}"
     group: "{{ specification.opensearch_os_group }}"
     mode: u=rwx,go=r
-    recurse: yes
+    recurse: true
   loop:
     - "{{ specification.paths.opensearch_home }}"
     - "{{ specification.paths.opensearch_perftop_home }}"
@@ -47,19 +47,20 @@
     src: "{{ download_directory }}/{{ file_name_version.opensearch[ansible_architecture]  }}"
     dest: "{{ specification.paths.opensearch_home }}"
     owner: "{{ specification.opensearch_os_user }}"
-    remote_src: yes
+    remote_src: true
     extra_opts:
-    - --strip-components=1
+      - --strip-components=1
 
 - name: Extract OpenSearch PerfTop tar file
   unarchive:
     src: "{{ download_directory }}/{{ file_name_version.opensearch_perftop[ansible_architecture]  }}"
     dest: "{{ specification.paths.opensearch_perftop_home }}"
     owner: "{{ specification.opensearch_os_user }}"
-    remote_src: yes
+    remote_src: true
   when: ansible_architecture == "x86_64"  # Perftop is not yet supported on ARM (https://github.com/opensearch-project/perftop/issues/26)
 
 - name: Create opensearch.service unit file
   template:
     src: roles/opensearch/templates/opensearch.service.j2
     dest: "/etc/systemd/system/opensearch.service"
+    mode: u=rwx,go=rx

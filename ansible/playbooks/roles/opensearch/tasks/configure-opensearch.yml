@@ -11,7 +11,7 @@
 
 - name: Provide JVM configuration file
   template:
-    backup: yes
+    backup: true
     src: jvm.options.j2
     dest: "{{ specification.paths.opensearch_conf_dir }}/jvm.options"
     owner: "{{ specification.opensearch_os_user }}"
@@ -24,8 +24,8 @@
 - name: Generate certificates
   when: not is_upgrade_run  # in upgrade mode certs are required at early stage and should be already generated
   block:
-    # Install requirements for Ansible certificate modules
-    - include_role:
+    - name: Install requirements for Ansible certificate modules
+      include_role:
         name: certificate
         tasks_from: install-packages.yml
 
@@ -33,7 +33,7 @@
 
 - name: Provide OpenSearch configuration file
   template:
-    backup: yes
+    backup: true
     src: opensearch.yml.j2
     dest: "{{ specification.paths.opensearch_conf_dir }}/opensearch.yml"
     owner: "{{ specification.opensearch_os_user }}"
@@ -64,11 +64,11 @@
            certificates.files.root_ca.cert.filename }}
     _epiphany_subjects:
       admin: "{{ certificates.files.admin.cert.subject }}"
-      node:  "{{ certificates.files.node.cert.subject }}"
+      node: "{{ certificates.files.node.cert.subject }}"
     _epiphany_dn_attributes:
       admin: "{{ certificates.dn_attributes_order | intersect(_epiphany_subjects.admin.keys()) }}"
-      node:  "{{ certificates.dn_attributes_order | intersect(_epiphany_subjects.node.keys()) }}"
-    _epiphany_DNs:
+      node: "{{ certificates.dn_attributes_order | intersect(_epiphany_subjects.node.keys()) }}"
+    _epiphany_dns:
       admin: >-
         {{ _epiphany_dn_attributes.admin | zip(_epiphany_dn_attributes.admin | map('extract', _epiphany_subjects.admin))
                                          | map('join','=') | join(',') }}
@@ -77,7 +77,7 @@
                                         | map('join','=') | join(',') }}
     admin_dn: >-
       {{ existing_es_config['opensearch_security.authcz.admin_dn'] if (is_upgrade_run) else
-         [ _epiphany_DNs.admin ] }}
+         [ _epiphany_dns.admin ] }}
     _epiphany_nodes_dn: >-
       {%- if groups[current_group_name] | length > 1 -%}
         {%- set nodes_to_iterate = ansible_play_hosts_all -%}
@@ -86,7 +86,7 @@
       {%- endif -%}
       {%- for node in nodes_to_iterate -%}
         {%- if loop.first -%}[{%- endif -%}
-          '{{ _epiphany_DNs.node.split(',') | map('regex_replace', '^CN=.+$', 'CN=' + hostvars[node].ansible_nodename) | join(',') }}'
+          '{{ _epiphany_dns.node.split(',') | map('regex_replace', '^CN=.+$', 'CN=' + hostvars[node].ansible_nodename) | join(',') }}'
         {%- if not loop.last -%},{%- else -%}]{%- endif -%}
       {%- endfor -%}
     nodes_dn: >-
@@ -94,7 +94,7 @@
          _epiphany_nodes_dn }}
     opensearch_security_allow_unsafe_democertificates: "{{ certificates.files.demo.opensearch_security.allow_unsafe_democertificates }}"
 
-    http_port:      "{{ is_upgrade_run | ternary(existing_es_config['http.port'],      ports.http) }}"
+    http_port: "{{ is_upgrade_run | ternary(existing_es_config['http.port'],      ports.http) }}"
     transport_port: "{{ is_upgrade_run | ternary(existing_es_config['transport.port'], ports.transport) }}"
 
 # When 'opensearch_security.allow_unsafe_democertificates' is set to 'false' all demo certificate files must be removed,
@@ -111,7 +111,7 @@
   systemd:
     name: opensearch
     state: restarted
-    enabled: yes
+    enabled: true
   register: restart_opensearch
   when: change_config.changed
     or change_jvm_config.changed
@@ -131,7 +131,7 @@
       vars:
         uri_template: &uri
           client_cert: "{{ certificates.dirs.certs }}/{{ certificates.files.admin.cert.filename }}"
-          client_key:  "{{ certificates.dirs.certs }}/{{ certificates.files.admin.key.filename }}"
+          client_key: "{{ certificates.dirs.certs }}/{{ certificates.files.admin.key.filename }}"
           validate_certs: false
           body_format: json
 

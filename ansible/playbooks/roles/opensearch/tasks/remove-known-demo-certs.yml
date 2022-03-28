@@ -6,12 +6,12 @@
   vars:
     demo_files:
       certs:
-        - { filename: "{{ certificates.files.demo.admin.cert }}",   public_key_sha1_fingerprint: 53:01:c4:6a:c8:9c:dd:ab:1d:2d:d9:9a:a9:c6:01:43:38:66:2c:ee }
-        - { filename: "{{ certificates.files.demo.node.cert }}",    public_key_sha1_fingerprint: 6e:d8:94:2c:4a:a1:d2:b4:d4:5e:65:0f:66:d6:a9:35:23:a2:77:52 }
-        - { filename: "{{ certificates.files.demo.root_ca.cert }}", public_key_sha1_fingerprint: 4c:8a:cc:d1:9f:a5:23:6f:4a:9d:d3:bb:8f:0d:05:ab:5b:e3:f4:59 }
+        - {filename: "{{ certificates.files.demo.admin.cert }}", public_key_sha1_fingerprint: 53:01:c4:6a:c8:9c:dd:ab:1d:2d:d9:9a:a9:c6:01:43:38:66:2c:ee}
+        - {filename: "{{ certificates.files.demo.node.cert }}", public_key_sha1_fingerprint: 6e:d8:94:2c:4a:a1:d2:b4:d4:5e:65:0f:66:d6:a9:35:23:a2:77:52}
+        - {filename: "{{ certificates.files.demo.root_ca.cert }}", public_key_sha1_fingerprint: 4c:8a:cc:d1:9f:a5:23:6f:4a:9d:d3:bb:8f:0d:05:ab:5b:e3:f4:59}
       keys:
-        - { filename: "{{ certificates.files.demo.admin.key }}", public_key_sha1_fingerprint: 53:01:c4:6a:c8:9c:dd:ab:1d:2d:d9:9a:a9:c6:01:43:38:66:2c:ee }
-        - { filename: "{{ certificates.files.demo.node.key }}",  public_key_sha1_fingerprint: 6e:d8:94:2c:4a:a1:d2:b4:d4:5e:65:0f:66:d6:a9:35:23:a2:77:52 }
+        - {filename: "{{ certificates.files.demo.admin.key }}", public_key_sha1_fingerprint: 53:01:c4:6a:c8:9c:dd:ab:1d:2d:d9:9a:a9:c6:01:43:38:66:2c:ee}
+        - {filename: "{{ certificates.files.demo.node.key }}", public_key_sha1_fingerprint: 6e:d8:94:2c:4a:a1:d2:b4:d4:5e:65:0f:66:d6:a9:35:23:a2:77:52}
   block:
     - name: Check if known demo certificates exist
       stat:
@@ -60,5 +60,5 @@
         label: "{{ item.filename }}"
       vars:
         _query: "[*].{ filename: item, public_key_sha1_fingerprint: public_key_fingerprints.sha1 }"
-        _demo_certs:     "{{ _demo_certs_info.results     | json_query(_query) }}"
+        _demo_certs: "{{ _demo_certs_info.results | json_query(_query) }}"
         _demo_cert_keys: "{{ _demo_cert_keys_info.results | json_query(_query) }}"
