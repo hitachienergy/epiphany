@@ -1,11 +1,6 @@
 ---
-- name: Include defaults from zookeeper role
-  include_vars:
-    file: roles/zookeeper/defaults/main.yml
-    name: zookeeper_defaults
-
 - name: Include pre-flight checks
-  include_tasks: zookeeper/preflight-check.yml
+  include_tasks: upgrade/preflight-check.yml
 
 - name: Get installed Zookeeper's version
   stat:
@@ -41,9 +36,10 @@
         state: stopped
 
     - name: Include upgrade Zookeeper task
-      include_tasks: zookeeper/install-upgrade.yml
+      include_tasks: upgrade/install-upgrade.yml
   when:
-    - lock_file_status.stat.exists or before_upgrade_zookeeper_version is version( zookeeper_defaults.zookeeper_version, '<' )
+    - lock_file_status.stat.exists
+      or before_upgrade_zookeeper_version is version( zookeeper_version, '<' )
 
 - name: Remove Zookeeper upgrade flag file
   file:

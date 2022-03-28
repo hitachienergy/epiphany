@@ -2,8 +2,8 @@
 # Ansible playbook that makes sure the base items for all nodes are installed
 
 - hosts: all
-  gather_facts: yes
-  tasks: [ ]
+  gather_facts: true
+  tasks: []
 
 - hosts: zookeeper
   become: true

@@ -1,0 +1,34 @@
+---
+- name: Download and unpack Kafka's binary
+  include_tasks: common/download_and_unpack_binary.yml
+
+- name: Copy configuration from previous version
+  copy:
+    remote_src: true
+    src: /opt/kafka/config/
+    dest: "{{ kafka_install_dir }}/config"
+    mode: preserve
+
+- name: Link /opt/kafka to recently installed version
+  file:
+    dest: /opt/kafka
+    state: link
+    src: "{{ kafka_install_dir }}"
+    force: true
+
+- name: Remove previous version binaries
+  file:
+    path: /opt/kafka_{{ scala_version }}-{{ old_kafka_version }}
+    state: absent
+
+- name: Get log.dirs property
+  shell: >-
+    set -o pipefail &&
+    grep log.dirs /opt/kafka/config/server.properties | awk -F'=' '{print $2}'
+  register: log_dirs
+  changed_when: false
+
+- name: Remove lost+found directory from log.dirs
+  file:
+    path: "{{ log_dirs.stdout }}/lost+found"
+    state: absent

@@ -1,0 +1,30 @@
+---
+- name: Download Zookeeper binary
+  include_role:
+    name: download
+    tasks_from: download_file
+  vars:
+    file_name: "{{ zookeeper_bin_filename }}"
+
+- name: Create {{ zookeeper_install_dir }} directory
+  become: true
+  file:
+    path: "{{ zookeeper_install_dir }}"
+    recurse: true
+    owner: "{{ zookeeper_user }}"
+    group: "{{ zookeeper_group }}"
+    mode: u=rwx,g=rx,o=rx
+    state: directory
+
+- name: Unpack Zookeeper-{{ zookeeper_version }} binary
+  become: true
+  unarchive:
+    remote_src: true
+    src: "{{ download_directory }}/{{ zookeeper_bin_filename }}"
+    dest: "{{ zookeeper_install_dir }}"
+    creates: "{{ zookeeper_install_dir }}/bin"
+    extra_opts: [--strip-components=1]
+    mode: u=rwx,g=rx,o=rx
+    owner: "{{ zookeeper_user }}"
+    group: "{{ zookeeper_group }}"
+  check_mode: false
