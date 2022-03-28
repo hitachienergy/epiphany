@@ -169,16 +169,21 @@ setup.template.settings:
 # These settings control loading the sample dashboards to the Kibana index. Loading
 # the dashboards is disabled by default and can be enabled either by setting the
 # options here or by using the `setup` command.
-{% set dashboards_enabled = is_upgrade_run | ternary(existing_setup_dashboards.enabled, specification.kibana.dashboards.enabled) %}
-{% if dashboards_enabled | lower == 'auto' %}
-  {% if group_names | intersect(['kibana', 'logging']) | count == 2 %}
-setup.dashboards.enabled: true
-  {% else %}
+#
+#    Below logic commented out as a workaround for problem with filebeat till the time OPS team will resolve it.
+#    More info: https://github.com/opensearch-project/OpenSearch-Dashboards/issues/656#issuecomment-978036236
+#    A static value is used instead:
 setup.dashboards.enabled: false
-  {% endif %}
-{% else %}
-setup.dashboards.enabled: {{ dashboards_enabled | lower }}
-{% endif %}
+# {% set dashboards_enabled = is_upgrade_run | ternary(existing_setup_dashboards.enabled, specification.kibana.dashboards.enabled) %}
+# {% if dashboards_enabled | lower == 'auto' %}
+#  {% if group_names | intersect(['kibana', 'logging']) | count == 2 %}
+# setup.dashboards.enabled: true
+#  {% else %}
+#setup.dashboards.enabled: false
+#  {% endif %}
+#{% else %}
+#setup.dashboards.enabled: {{ dashboards_enabled | lower }}
+#{% endif %}
 
 # The Elasticsearch index name.
 # This setting overwrites the index name defined in the dashboards and index pattern.
@@ -369,14 +374,14 @@ processors:
 #monitoring.enabled: false
 
 # Sets the UUID of the Elasticsearch cluster under which monitoring data for this
-# Filebeat instance will appear in the Stack Monitoring UI. If output.elasticsearch
+# Filebeat instance will appear in the Stack Monitoring UI. If output.OpenSearch
 # is enabled, the UUID is derived from the Elasticsearch cluster referenced by output.elasticsearch.
 #monitoring.cluster_uuid:
 
 # Uncomment to send the metrics to Elasticsearch. Most settings from the
 # Elasticsearch output are accepted here as well.
 # Note that the settings should point to your Elasticsearch *monitoring* cluster.
-# Any setting that is not set is automatically inherited from the Elasticsearch
+# Any setting that is not set is automatically inherited from the OpenSearch
 # output configuration, so if you have the Elasticsearch output configured such
 # that it is pointing to your Elasticsearch monitoring cluster, you can simply
 # uncomment the following line.

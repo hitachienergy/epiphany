@@ -20,7 +20,7 @@
         - name: Run elasticsearch archive tasks
           import_role:
             name: backup
-            tasks_from: logging_elasticsearch_etc
+            tasks_from: logging_opensearch_conf
 
 - hosts: kibana[0]
   gather_facts: true
@@ -30,13 +30,13 @@
   tasks:
     - when: specification.components.logging.enabled | default(false)
       block:
-        - name: Include kibana vars
+        - name: Include opensearch_dashboards vars
           include_vars:
-            file: roles/kibana/vars/main.yml
+            file: roles/opensearch_dashboards/vars/main.yml
             name: component_vars
-        - name: Run kibana backup tasks
+        - name: Run opensearch_dashboards backup tasks
           import_role:
             name: backup
-            tasks_from: logging_kibana_etc
+            tasks_from: logging_opensearch_dashboards_conf
           vars:
             snapshot_name: "{{ hostvars[groups.logging.0].snapshot_name }}"

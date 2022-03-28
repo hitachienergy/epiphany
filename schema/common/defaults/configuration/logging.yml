@@ -2,7 +2,11 @@ kind: configuration/logging
 title: Logging Config
 name: default
 specification:
-  cluster_name: EpiphanyElastic
+  cluster_name: EpiphanyOpenSearch
+  opensearch_os_user: opensearch
+  opensearch_os_group: opensearch
+  dashboards_os_user: opensearchboard
+  dashboards_os_user_password: PASSWORD_TO_CHANGE
   admin_password: PASSWORD_TO_CHANGE
   kibanaserver_password: PASSWORD_TO_CHANGE
   kibanaserver_user_active: true
@@ -13,12 +17,20 @@ specification:
   - readall
   - snapshotrestore
   paths:
-    data: /var/lib/elasticsearch
-    repo: /var/lib/elasticsearch-snapshots
-    logs: /var/log/elasticsearch
+    opensearch_home: /usr/share/opensearch
+    opensearch_conf_dir: /usr/share/opensearch/config
+    opensearch_log_dir: /var/log/opensearch
+    opensearch_plugin_bin_path: /usr/share/opensearch/bin/opensearch-plugin
+    opensearch_repo: /var/lib/opensearch-snapshots
+    opensearch_data: /var/lib/opensearch
+    opensearch_logs: /var/log/opensearch
+    opensearch_perftop_home: /usr/share/opensearch/perftop
+    opsd_plugin_bin_path: /usr/share/opensearch-dashboards/bin/opensearch-dashboards-plugin
+    opsd_home: /usr/share/opensearch-dashboards
+    opsd_conf_dir: /usr/share/opensearch-dashboards/config
   jvm_options:
-    Xmx: 1g # see https://www.elastic.co/guide/en/elasticsearch/reference/7.9/heap-size.html
-  opendistro_security:
+    Xmx: 1g
+  opensearch_security:
     ssl:
       transport:
         enforce_hostname_verification: true

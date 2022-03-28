@@ -1,5 +1,43 @@
 # Upgrade
-
+- [Upgrade](#upgrade)
+  - [Introduction](#introduction)
+  - [Online upgrade](#online-upgrade)
+    - [Online prerequisites](#online-prerequisites)
+    - [Start the online upgrade](#start-the-online-upgrade)
+  - [Offline upgrade](#offline-upgrade)
+    - [Offline prerequisites](#offline-prerequisites)
+    - [Start the offline upgrade](#start-the-offline-upgrade)
+  - [Additional parameters](#additional-parameters)
+  - [Run *apply* after *upgrade*](#run-apply-after-upgrade)
+  - [Kubernetes applications](#kubernetes-applications)
+  - [How to upgrade Kafka](#how-to-upgrade-kafka)
+    - [Kafka upgrade](#kafka-upgrade)
+    - [ZooKeeper upgrade](#zookeeper-upgrade)
+  - [Migration from Open Distro for Elasticsearch & Kibana to OpenSearch and OpenSearch Dashboards](#migration-from-open-distro-for-elasticsearch--kibana-to-opensearch-and-opensearch-dashboards)
+  - [Open Distro for Elasticsearch upgrade](#open-distro-for-elasticsearch-upgrade)
+  - [Node exporter upgrade](#node-exporter-upgrade)
+  - [RabbitMQ upgrade](#rabbitmq-upgrade)
+  - [Kubernetes upgrade](#kubernetes-upgrade)
+    - [Prerequisites](#prerequisites)
+  - [PostgreSQL upgrade](#postgresql-upgrade)
+    - [Versions](#versions)
+    - [Prerequisites](#prerequisites-1)
+    - [Upgrade](#upgrade-1)
+    - [Manual actions](#manual-actions)
+      - [Post-upgrade processing](#post-upgrade-processing)
+      - [Statistics](#statistics)
+      - [Delete old cluster](#delete-old-cluster)
+  - [Terraform upgrade from Epiphany 1.x to 2.x](#terraform-upgrade-from-epiphany-1x-to-2x)
+    - [Azure](#azure)
+      - [v0.12.6 => v0.13.x](#v0126--v013x)
+      - [v0.13.x => v0.14.x](#v013x--v014x)
+      - [v0.14.x => v1.0.x](#v014x--v10x)
+      - [v1.0.x => v1.1.3](#v10x--v113)
+    - [AWS](#aws)
+      - [v0.12.6 => v0.13.x](#v0126--v013x-1)
+      - [v0.13.x => v0.14.x](#v013x--v014x-1)
+      - [v0.14.x => v1.0.x](#v014x--v10x-1)
+      - [v1.0.x => v1.1.3](#v10x--v113-1)
 ## Introduction
 
 From Epicli 0.4.2 and up the CLI has the ability to perform upgrades on certain components on a cluster. The components
@@ -200,7 +238,7 @@ specification:
       count: 1
     rabbitmq:
       count: 0
-    opendistro_for_elasticsearch:
+    opensearch:
       count: 0
   name: clustername
   prefix: 'prefix'
@@ -260,6 +298,51 @@ then start with the rest **one by one**.
 More detailed information about ZooKeeper you can find
 in  [ZooKeeper documentation](https://cwiki.apache.org/confluence/display/ZOOKEEPER).
 
+## Migration from Open Distro for Elasticsearch & Kibana to OpenSearch and OpenSearch Dashboards
+
+---
+**NOTE**
+
+Make sure you have a backup before proceeding to migration steps described below !
+
+---
+Following the decision of Elastic NV<sup>[1]</sup> on ceasing open source options available for Elasticsearch and Kibana and releasing them under the Elastic license (more info [here](https://github.com/epiphany-platform/epiphany/issues/2870)) Epiphany team decided to implement a mechanism of automatic migration from  ElasticSearch 7.10.2 to OpenSearch 1.2.4.
+
+It is important to remember that while the new platform makes an effort to continue to support a broad set of third party tools (ie. Beats tools) however there can be some drawbacks or even malfunctions came across all over the way as not everything have been tested or have explicitly been added to OpenSearch compatibility scope<sup>[2]</sup>.
+Additionally some of the components (ie. ElasticSearch Curator) or some embedded service accounts ( ie. _kibanaserver_) can be still found in OpenSearch environment but they will be successfully phased out.
+
+The migration can be fired by placing `odfe_migration` switch in your manifest file:
+```yaml
+[..]
+---
+kind: configuration/logging
+title: Logging Config
+[..]
+specification:
+  [..]
+  odfe_migration: true  # <<-------
+  [..]
+```
+and running the `upgrade` command against the logging component of your Epiphany installation, together with a `-f` option:
+```
+epicli upgrade -b <path-to>/<your-build-folder> --upgrade-components "logging,filebeat" -f <path-to>/<your-manifest>.yml
+```
+Keep in mind, that for the current version of OPS/OPSD it is necessary to include the `filebeat` component along with the loggging  one in order to implement the workaround for _Kibana API not available_ [bug](https://github.com/opensearch-project/OpenSearch-Dashboards/issues/656#issuecomment-978036236).
+The default value of the  `odfe_migration` parameter is set to _false_.
+
+All described below remarks related to TLS certificates of the  Open Distro upgrade stay valid. You should plan and test all your upgrade activities before proceeding on the production.
+
+Upgrade of the ESS/ODFE versions not shipped with the previous Epiphany releases is not supported. If your environment is customized it needs to be standardized ( as described in [this](https://opensearch.org/docs/latest/upgrade-to/upgrade-to/#upgrade-paths) table ) prior to running the subject migration.
+
+Migration of Elasticsearch Curator is not supported. More info on use of Curator in OpenSearch environment can be found [here](https://github.com/opensearch-project/OpenSearch/issues/1352).
+
+<sup>[1]</sup> https://www.elastic.co/pricing/faq/licensing#what-are-the-key-changes-being-made-to-the-elastic-license
+
+<sup>[2]</sup> https://opensearch.org/docs/latest/clients/agents-and-ingestion-tools/index/
+
+
+<br>
+
 ## Open Distro for Elasticsearch upgrade
 
 ---
@@ -269,9 +352,9 @@ Before upgrade procedure make sure you have a data backup!
 
 ---
 
-Since Epiphany v1.0.0 we provide upgrade elasticsearch-oss package to v7.10.2 and opendistro-\* plugins package to
+Since Epiphany v1.0.0 we provide upgrade elasticsearch-oss package to v7.10.2 and opensearch-\* plugins package to
 v1.13.\*. Upgrade will be performed automatically when the upgrade procedure detects your `logging`
-, `opendistro_for_elasticsearch` or `kibana` hosts.
+, `opensearch` or `kibana` hosts.
 
 Upgrade of Elasticsearch uses API calls (GET, PUT, POST) which requires an admin TLS certificate. By default, Epiphany
 generates self-signed certificates for this purpose but if you use your own, you have to provide the admin certificate's
@@ -284,7 +367,7 @@ logging:
       cert_path: /etc/elasticsearch/custom-admin.pem
       key_path: /etc/elasticsearch/custom-admin-key.pem
 
-opendistro_for_elasticsearch:
+opensearch:
   upgrade_config:
     custom_admin_certificate:
       cert_path: /etc/elasticsearch/custom-admin.pem

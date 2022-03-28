@@ -71,7 +71,7 @@ specification:
       enabled: true
       ports:
         - 9100/tcp
-    opendistro_for_elasticsearch:
+    opensearch:
       enabled: true
       ports:
         - 9200/tcp

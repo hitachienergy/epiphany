@@ -1,0 +1,22 @@
+---
+
+- hostname:
+    name: "{{ inventory_hostname }}"
+
+- name: Include dashboards installation
+  include_tasks: dashboards.yml
+
+- name: Make sure OpenSearch Dashboards is started
+  service:
+    name: opensearch-dashboards
+    state: started
+    enabled: yes
+
+- name: Get all the installed dashboards plugins
+  command: "{{ specification.paths.opensearchdash_plugin_bin_path }} list"
+  become: false  # This command can not be run as root user
+  register: list_plugins
+
+- name: Show all the installed dashboards plugins
+  debug:
+    msg: "{{ list_plugins.stdout }}"
