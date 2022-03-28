@@ -15,7 +15,7 @@
       register: node_exporter_helm_list
       changed_when: false
 
-    - name: Assert node-exported installed only in one namespace
+    - name: Assert node-exporter installed only in one namespace
       assert:
         that: node_exporter_helm_list.stdout_lines|length == 1
         fail_msg: |

@@ -48,7 +48,8 @@
         get_mime: false
       register: stat_kubeconfig
 
-    - assert:
+    - name: Assert that local kubeconfig exists
+      assert:
         that: stat_kubeconfig.stat.exists
         fail_msg: >-
           Kubeconfig file is not found. Copy/create it at {{ kubeconfig.local }}.
