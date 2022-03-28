@@ -1,5 +1,11 @@
 # Changelog 1.3
 
+## [1.3.1] 2022-xx-xx
+
+### Fixed
+
+- [#2997](https://github.com/epiphany-platform/epiphany/issues/2997) - Doubled HAProxy entries in prometheus.yml after upgrade
+
 ## [1.3.0] 2022-01-19
 
 ### Added
