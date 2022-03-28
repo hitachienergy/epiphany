@@ -36,9 +36,6 @@
     manager: auto
 
 - name: Stop involved services before Docker removal
-  when:
-    - inventory_hostname not in groups.image_registry
-    - ansible_facts.packages['docker-ce'] is defined
   block:
     - name: Stop Kubelet
       systemd:
@@ -50,6 +47,9 @@
         name: kubelet
         state: stopped
         enabled: false
+      when:
+        - inventory_hostname not in groups.image_registry
+        - ansible_facts.packages['docker-ce'] is defined
 
 - name: Install containerd.io package
   package:
@@ -75,8 +75,8 @@
 - name: Configure kubelet-env
   include_tasks: configure-kubelet-env.yml
 
-# There are already bandlers responsible for restart these services however it is required
-# to restart them earlier, before Uncordoning the hosts
+# There are already bandlers responsible for restart of these services however it is required
+# to restart them earlier, before uncordoning the hosts
 - name: Restart containerd
   systemd:
     name: containerd
