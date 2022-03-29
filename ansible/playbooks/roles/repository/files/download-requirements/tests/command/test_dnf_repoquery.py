@@ -11,11 +11,11 @@ def test_interface_query(mocker):
         assert call_args == ['dnf',
                              'repoquery',
                              '--archlist=some_arch,noarch',
-                             '--assumeyes',
                              '--disableplugin=subscription-manager',
                              '--latest-limit=1',
                              '--queryformat=some_format',
                              '--quiet',
+                             '-y',
                              'tar',
                              'vim'
                             ]
@@ -28,13 +28,13 @@ def test_interface_get_dependencies(mocker):
         assert call_args == ['dnf',
                              'repoquery',
                              '--archlist=some_arch,noarch',
-                             '--assumeyes',
                              '--disableplugin=subscription-manager',
                              '--latest-limit=1',
                              '--queryformat=some_format',
                              '--quiet',
                              '--requires',
                              '--resolve',
+                             '-y',
                              'tar',
                              'vim'
                             ]

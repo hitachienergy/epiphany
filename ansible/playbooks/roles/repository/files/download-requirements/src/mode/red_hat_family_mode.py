@@ -1,11 +1,10 @@
 import logging
 import shutil
 from pathlib import Path
-from typing import Dict, List, Set
+from typing import List
 
 from src.command.command import Command
 from src.config.config import Config
-from src.error import PackageNotfound
 from src.mode.base_mode import BaseMode
 
 
@@ -97,48 +96,49 @@ class RedHatFamilyMode(BaseMode):
                     if repocache.name.startswith(repo['Repo-id']):
                         shutil.rmtree(str(repocache))
 
-    def __download_prereq_packages(self) -> Set[str]:
+    def __download_prereq_packages(self) -> List[str]:
         # download requirements (fixed versions)
         prereqs_dir = self._cfg.dest_packages / 'repo-prereqs'
         prereqs_dir.mkdir(exist_ok=True, parents=True)
 
-        collected_prereqs: List[str] = []
-        prereq_packages: List[str] = self._requirements['prereq-packages']
+        prereq_packages: list[str] = sorted(set(self._requirements['prereq-packages']))
 
-        collected_prereqs.extend(self._tools.repoquery.query(prereq_packages,
-                                                             queryformat='%{name}-%{version}-%{release}.%{arch}',
-                                                             archlist=self.__archs))
+        collected_prereqs: list[str] = self._tools.repoquery.query(prereq_packages,
+                                                                   queryformat='%{name}-%{version}-%{release}.%{arch}',
+                                                                   archlist=self.__archs)
 
-        unique_collected_prereqs = [package for package in set(collected_prereqs)]
-        logging.info(f'{unique_collected_prereqs}')
-        self._tools.dnf_download.download_packages(unique_collected_prereqs,
+        logging.info('- prereq-packages to download: %s', collected_prereqs)
+
+        self._tools.dnf_download.download_packages(collected_prereqs,
                                                    archlist=self.__archs,
                                                    exclude='*i686',
                                                    destdir=prereqs_dir)
-        return unique_collected_prereqs
+        return collected_prereqs
 
     def _download_packages(self):
-        downloaded_prereqs: Set = self.__download_prereq_packages()
+        downloaded_prereq_packages: list[str] = self.__download_prereq_packages()
 
-        packages: List[str] = self._requirements['packages']['from_repo']
-        packages_to_download: List[str] = []
-        list_packages_to_download = list(set(packages))
-        # package itself
-        package_name = self._tools.repoquery.query(list_packages_to_download,
-                                                   queryformat='%{name}-%{version}-%{release}.%{arch}',
-                                                   archlist=self.__archs)
+        packages: list[str] = sorted(set(self._requirements['packages']['from_repo']))
 
-        packages_to_download.extend(package_name)
+        # packages
+        queried_packages: list[str] = self._tools.repoquery.query(packages,
+                                                                  queryformat='%{name}-%{version}-%{release}.%{arch}',
+                                                                  archlist=self.__archs)
+
+        packages_to_download: list[str] = sorted(set(queried_packages).difference(downloaded_prereq_packages))
+
+        logging.info('- packages to download: %s', packages_to_download)
 
         # dependencies
-        packages_to_download.extend(self._tools.repoquery.get_dependencies(list(set(packages_to_download)),
-                                                                           queryformat='%{name}.%{arch}',
-                                                                           archlist=self.__archs))
+        dependencies: list[str] = self._tools.repoquery.get_dependencies(packages_to_download,
+                                                                         queryformat='%{name}.%{arch}',
+                                                                         archlist=self.__archs)
 
-        packages_to_download.extend(list_packages_to_download)
-        fitered_packages = [package for package in set(packages_to_download) if package not in downloaded_prereqs]
-        logging.info(f'{fitered_packages}')
-        self._tools.dnf_download.download_packages(fitered_packages,
+        logging.info('- dependencies to download: %s', dependencies)
+
+        packages_to_download = sorted(packages_to_download + dependencies)
+
+        self._tools.dnf_download.download_packages(packages_to_download,
                                                    archlist=self.__archs,
                                                    exclude='*i686',
                                                    destdir=self._cfg.dest_packages)
