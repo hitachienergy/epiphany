@@ -7,9 +7,16 @@
 # https://docs.microsoft.com/en-us/azure/virtual-machines/workloads/redhat/redhat-rhui#update-expired-rhui-client-certificate-on-a-vm
 # TODO: Needs to be updated for RHEL 8
 - name: Update repository certificates
-  command: yum update -y --disablerepo='*' --enablerepo='*microsoft*'
+  yum:
+    enablerepo: "*microsoft*"
+    disablerepo: "*"
+    state: "latest"
+    update_only: true
+    name: "*"
   when:
-    - common_vars.provider == "azure" and ansible_distribution_major_version == "7"
+    - common_vars.provider == "azure"
+    - ansible_distribution == "RedHat"
+    - ansible_distribution_major_version == "7"
 
 - name: Install RedHat family packages for repository to work
   yum:
