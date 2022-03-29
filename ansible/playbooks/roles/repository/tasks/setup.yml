@@ -14,7 +14,7 @@
     # TODO: test AlmaLinux on Azure & AWS
     download_requirements_os_name: >-
       {{ 'almalinux-8' if (ansible_distribution == 'AlmaLinux' and ansible_distribution_major_version == '8') else
-         'redhat-8' if (ansible_distribution == 'RedHat' and ansible_distribution_major_version == '8') else
+         'rhel-8' if (ansible_distribution == 'RedHat' and ansible_distribution_major_version == '8') else
          'ubuntu-20.04' if (ansible_distribution == 'Ubuntu' and ansible_distribution_version == '20.04') else
          'detect' }}
 
@@ -23,9 +23,9 @@
     - name: Install required packages for repository
       include_tasks: "{{ ansible_os_family }}/install-packages.yml"
 
-    - name: Install Poyo library for YAML support
+    - name: Install PyYAML library for YAML support
       pip:
-        name: poyo==0.5.0
+        name: PyYAML==6.0
         executable: pip3
         extra_args: --user
 

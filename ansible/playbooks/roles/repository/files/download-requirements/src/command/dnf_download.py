@@ -17,9 +17,8 @@ class DnfDownload(Command):
                           destdir: Path,
                           exclude: str = '',
                           quiet: bool = True):
-        args: List[str] = ['-y']
+        args: List[str] = ['download']
 
-        args.append('download')
         args.append(f'--archlist={",".join(archlist)}')
         args.append(f'--destdir={str(destdir)}')
         args.append('--disableplugin=subscription-manager')  # to speed up download
@@ -30,6 +29,11 @@ class DnfDownload(Command):
         if quiet:
             args.append('--quiet')
 
-        args.extend(packages)
+        args.append('-y')
+
+        if packages:
+            args.extend(packages)
+        else:
+            raise ValueError('packages: list cannot be empty')
 
         self.run(args)

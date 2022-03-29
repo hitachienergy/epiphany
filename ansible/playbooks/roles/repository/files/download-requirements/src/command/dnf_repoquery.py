@@ -36,7 +36,6 @@ class DnfRepoquery(Command):
 
         args.append('repoquery')
         args.append(f'--archlist={",".join(archlist)}')
-        args.append('--assumeyes')  # to import GPG keys
         args.append('--disableplugin=subscription-manager')  # to speed up querying
         args.append('--latest-limit=1')
         args.append(f'--queryformat={queryformat}')
@@ -47,6 +46,8 @@ class DnfRepoquery(Command):
 
         if resolve:
             args.append('--resolve')
+
+        args.append('-y')  # to import GPG keys
 
         args.extend(packages)
 
@@ -92,6 +93,7 @@ class DnfRepoquery(Command):
         :param archlist: limit results to these architectures
         :raises:
             :class:`CriticalError`: can be raised on exceeding retries or when error occurred
+            :class:`ValueError`: when `packages` list is empty
         :returns: query result
         """
 
@@ -100,4 +102,7 @@ class DnfRepoquery(Command):
             if 'error' in output:
                 raise CriticalError(f'repoquery failed for packages `{packages}`, reason: `{output}`')
 
-        return self.__query(packages, queryformat, archlist, True, True, output_handler)
+        if packages:
+            return self.__query(packages, queryformat, archlist, True, True, output_handler)
+        else:
+            raise ValueError('packages: list cannot be empty')
