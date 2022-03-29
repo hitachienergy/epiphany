@@ -9,7 +9,7 @@ from poyo import parse_string, PoyoException
 from src.command.toolchain import Toolchain, TOOLCHAINS
 from src.config import Config
 from src.crypt import get_sha1, get_sha256
-from src.error import CriticalError
+from src.error import CriticalError, ChecksumMismatch
 
 
 def load_yaml_file(filename: Path) -> Any:
@@ -142,10 +142,10 @@ class BaseMode:
                 self._download_file(file, filepath)
 
                 if files[file]['sha256'] != get_sha256(filepath):
-                    raise CriticalError(f'- {file} - download failed due to checksum mismatch, '
-                                         'WARNING someone might have replaced the file')
+                    raise ChecksumMismatch(f'- {file}')
+
             except CriticalError:
-                logging.warn(f'Could not download file: {file}')
+                logging.warning(f'Could not download file: {file}')
 
     def __download_grafana_dashboards(self):
         """
@@ -164,10 +164,10 @@ class BaseMode:
                 self._download_grafana_dashboard(dashboards[dashboard]['url'], output_file)
 
                 if dashboards[dashboard]['sha256'] != get_sha256(output_file):
-                    raise CriticalError(f'- {dashboard} - download failed due to checksum mismatch, '
-                                         'WARNING someone might have replaced the file')
+                    raise ChecksumMismatch(f'- {dashboard}')
+
             except CriticalError:
-                logging.warn(f'Could not download grafana dashboard: {dashboard}')
+                logging.warning(f'Could not download grafana dashboard: {dashboard}')
 
     def __download_crane(self):
         """
@@ -184,8 +184,7 @@ class BaseMode:
             self._download_crane_binary(first_crane, crane_package_path)
 
             if cranes[first_crane]['sha256'] != get_sha256(crane_package_path):
-                raise CriticalError('crane - download failed due to checksum mismatch, '
-                                    'WARNING someone might have replaced the file')
+                raise ChecksumMismatch('crane')
 
             self._tools.tar.unpack(crane_package_path, Path('crane'), directory=self._cfg.dest_dir)
             chmod(crane_path, 0o0755)
@@ -207,19 +206,24 @@ class BaseMode:
                 url, version = image.split(':')
                 filename = Path(f'{url.split("/")[-1]}-{version}.tar')  # format: image_version.tar
 
-                if images[image]['sha1'] == get_sha1(self._cfg.dest_images / filename):
+                image_file = self._cfg.dest_images / filename
+                if images[image]['sha1'] == get_sha1(image_file):
                     logging.debug(f'- {image} - checksum ok, skipped')
                     continue
 
                 logging.info(f'- {image}')
-                self._tools.crane.pull(image, self._cfg.dest_images / filename, platform)
+                self._tools.crane.pull(image, image_file, platform)
 
-                if images[image]['sha1'] != get_sha1(self._cfg.dest_images / filename):
-                    raise CriticalError(f'- {image} - download failed due to checksum mismatch, '
-                                         'WARNING someone might have replaced the file')
+                if images[image]['sha1'] != get_sha1(image_file):
+                    try:
+                        if images[image]['allow_mismatch']:
+                            logging.warning('- {image} - allow_mismatch flag used, continuing download')
+                            continue
+                    except KeyError:
+                        raise ChecksumMismatch(f'- {image}')
 
             except CriticalError:
-                logging.warn(f'Could not download image: `{image}`')
+                logging.warning(f'Could not download image: `{image}`')
 
     def _cleanup(self):
         """
