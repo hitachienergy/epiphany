@@ -49,8 +49,6 @@
           include_tasks:  uninstall-daemonset.yml
 
         - name: "Include install task for Node Exporter as DaemonSet in {{ node_exporter_release_ns }} ns for K8s as cloud service mode"
-          include_role:
-            name: node_exporter
-            tasks_from: daemonset.yml
+          include_tasks: apply/daemonset.yml
           vars:
             specification: "{{ exporter_vars.specification }}"
