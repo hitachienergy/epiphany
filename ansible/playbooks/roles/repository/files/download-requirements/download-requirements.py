@@ -18,10 +18,10 @@ def install_missing_modules(config: Config):
     """
     tools = TOOLCHAINS[config.os_type](config.retries)
     config.pip_installed = tools.ensure_pip()
-    config.poyo_installed = tools.pip.install('poyo', '==0.5.0', user=True)
+    config.pyyaml_installed = tools.pip.install('PyYAML', '==6.0', user=True)
 
-    if config.poyo_installed:
-        logging.debug('Installed `poyo==0.5.0` library')
+    if config.pyyaml_installed:
+        logging.debug('Installed `PyYAML==6.0` library')
 
 
 def rerun_download_requirements(config: Config):
@@ -36,8 +36,8 @@ def rerun_download_requirements(config: Config):
     if config.pip_installed:
         additional_args.append('--pip-installed')
 
-    if config.poyo_installed:
-        additional_args.append('--poyo-installed')
+    if config.pyyaml_installed:
+        additional_args.append('--pyyaml-installed')
 
     execv(__file__, sys.argv + additional_args)
 
@@ -49,9 +49,9 @@ def cleanup(config: Config):
     """
     tools = TOOLCHAINS[config.os_type.os_family](config.retries)
 
-    if config.poyo_installed:
+    if config.pyyaml_installed:
         logging.info('Uninstalling 3rd party python modules:')
-        tools.pip.uninstall('poyo', '==0.5.0')
+        tools.pip.uninstall('PyYAML', '==6.0')
         logging.info('Done.')
 
     if config.pip_installed:

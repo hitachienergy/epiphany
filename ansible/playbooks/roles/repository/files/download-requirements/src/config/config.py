@@ -24,7 +24,7 @@ class Config:
         self.os_arch: OSArch
         self.os_type: OSType
         self.pip_installed: bool = False
-        self.poyo_installed: bool = False
+        self.pyyaml_installed: bool = False
         self.repo_path: Path
         self.repos_backup_file: Path
         self.reqs_path: Path
@@ -99,7 +99,7 @@ class Config:
                             default=False, help=SUPPRESS)
         parser.add_argument('--pip-installed', action='store_true', dest='pip_installed',
                             default=False, help=SUPPRESS)
-        parser.add_argument('--poyo-installed', action='store_true', dest='poyo_installed',
+        parser.add_argument('--pyyaml-installed', action='store_true', dest='pyyaml_installed',
                             default=False, help=SUPPRESS)
 
         return parser
@@ -138,7 +138,6 @@ class Config:
         raise CriticalError('Could not detect OS type')
 
     def __setup_logger(self, log_level: str, log_file: Path, no_logfile: bool):
-        logging.getLogger('poyo').setLevel(logging.WARNING)  # remove poyo debugging
 
         # setup the logger:
         log_levels = {
@@ -203,4 +202,4 @@ class Config:
         # offline mode
         self.rerun = args['rerun']
         self.pip_installed = args['pip_installed']
-        self.poyo_installed = args['poyo_installed']
+        self.pyyaml_installed = args['pyyaml_installed']
