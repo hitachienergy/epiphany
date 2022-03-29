@@ -2,12 +2,13 @@ import logging
 from collections import defaultdict
 from os import chmod
 from pathlib import Path
-from typing import Any, Dict, List
+from typing import Any, Dict
 
-from poyo import parse_string, PoyoException
+import yaml
 
 from src.command.toolchain import Toolchain, TOOLCHAINS
 from src.config.config import Config, OSArch
+from src.config.os_type import OSFamily
 from src.crypt import SHA_ALGORITHMS
 from src.downloader import Downloader
 from src.error import CriticalError, ChecksumMismatch
@@ -16,9 +17,9 @@ from src.error import CriticalError, ChecksumMismatch
 def load_yaml_file(filename: Path) -> Any:
     try:
         with open(filename, encoding="utf-8") as req_handler:
-            return parse_string(req_handler.read())
-    except PoyoException as pexc:
-        raise CriticalError(f'Failed loading: `{pexc}`') from pexc
+            return yaml.safe_load(req_handler)
+    except yaml.YAMLError as yaml_err:
+        raise CriticalError(f'Failed loading: `{yaml_err}`') from yaml_err
     except Exception as err:
         raise CriticalError(f'Failed loading: `{filename}`') from err
 
@@ -60,38 +61,33 @@ class BaseMode:
     def __parse_packages(self) -> Dict[str, Any]:
         """
         Load packages for target architecture/distro from yaml files.
+        Input file at distro level is mandatory but at family level optional.
 
         :returns: parsed packages data
         """
+        distro_level_file: Path = self._cfg.reqs_path / self._cfg.distro_subdir / 'packages.yml'
+        family_level_file: Path = self._cfg.reqs_path / self._cfg.family_subdir / 'packages.yml'
 
-        prereq_packages: List[str] = []
-        packages_from_repo: List[str] = []
-        packages_from_url: Dict[str, Dict] = {}
-
-        input_files: List[Path] = [
-            self._cfg.reqs_path / f'{self._cfg.family_subdir}/packages.yml',
-            self._cfg.reqs_path / f'{self._cfg.distro_subdir}/packages.yml'
-        ]
-
-        for file in input_files:
-            if file.exists():
-                content = load_yaml_file(file)
-                if 'prereq-packages' in content:
-                    prereq_packages += content['prereq-packages']
-
-                if 'packages' in content:
-                    if 'from_repo' in content['packages']:
-                        packages_from_repo += content['packages']['from_repo']
-
-                    if 'from_url' in content['packages']:
-                        packages_from_url.update(content['packages']['from_url'])
+        distro_doc = load_yaml_file(distro_level_file)
 
         reqs = {
-            'packages': {'from_repo': packages_from_repo, 'from_url': packages_from_url}
+            'packages': distro_doc['packages'],
+            'prereq-packages': []
         }
 
-        if len(prereq_packages) > 0:  # not present for Debian family
-            reqs['prereq-packages'] = prereq_packages
+        if self._cfg.os_type.os_family == OSFamily.RedHat:
+            reqs['prereq-packages'] = distro_doc['prereq-packages']
+
+        if family_level_file.exists():
+            family_doc = load_yaml_file(family_level_file)
+
+            reqs['packages']['from_repo'] += family_doc['packages']['from_repo']
+
+            # distro level has precedence
+            reqs['packages']['from_url'] = {**family_doc['packages']['from_url'], **distro_doc['packages']['from_url']}
+
+            if self._cfg.os_type.os_family == OSFamily.RedHat:
+                reqs['prereq-packages'] += family_doc['prereq-packages']
 
         return reqs
 
@@ -103,11 +99,7 @@ class BaseMode:
         """
         reqs: Dict = defaultdict(dict)
 
-        required_packages: Dict = self.__parse_packages()
-        if 'prereq-packages' in required_packages:
-            reqs['prereq-packages'] = required_packages['prereq-packages']
-
-        reqs['packages'] = required_packages['packages']
+        reqs.update(self.__parse_packages())
 
         # parse distro files:
         distro_files: Path = self._cfg.reqs_path / f'{self._cfg.distro_subdir}/files.yml'

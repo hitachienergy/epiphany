@@ -25,7 +25,7 @@ class OSConfig:
 class OSType(Enum):
     """ Supported operating system types """
     Almalinux = OSConfig(OSFamily.RedHat, 'almalinux-8')
-    RHEL = OSConfig(OSFamily.RedHat, 'redhat-8', ['rhel-8'])
+    RHEL = OSConfig(OSFamily.RedHat, 'rhel-8')
     Ubuntu = OSConfig(OSFamily.Debian, 'ubuntu-20.04')
 
     @property
