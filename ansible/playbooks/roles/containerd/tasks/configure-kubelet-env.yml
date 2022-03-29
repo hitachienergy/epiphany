@@ -4,18 +4,10 @@
     - Restart containerd
     - Restart kubelet
   block:
-<<<<<<< HEAD
     - name: Get kubeadm-flags.env file content
       slurp:
         src: /var/lib/kubelet/kubeadm-flags.env
       register: kubelet_kubeadm_args
-=======
-  - name: Get kubeadm-flags.env file content
-    slurp:
-      src: /var/lib/kubelet/kubeadm-flags.env
-    register: kubelet_kubeadm_args
-    changed_when: true
->>>>>>> 7c717c8e (enhance containerd replacement with draining nodes)
 
     - name: Set kubelet_kubeadmn_args_content
       set_fact:

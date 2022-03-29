@@ -1,4 +1,41 @@
 ---
+- name: Patch stateful apps
+  when:
+    - inventory_hostname == groups.kubernetes_master[0]
+  block:
+    - name: k8s/master | Patch rabbitmq's statefulset
+      include_role:
+        name: upgrade
+        tasks_from: kubernetes/utils/patch-statefulset.yml
+      vars:
+        image_regexp: 'rabbitmq:.*'
+
+    - command: kubectl get statefulsets --all-namespaces --output json
+      register: command_get_statefulsets
+      changed_when: false
+
+    - command: kubectl delete pods --namespace {{ item }} --all
+      loop: "{{ _namespaces }}"
+      when: _namespaces | length > 0
+      vars:
+        _namespaces: >-
+          {%- set output = [] -%}
+          {%- for item in (command_get_statefulsets.stdout | from_json)["items"] -%}
+            {%- for container in item.spec.template.spec.containers -%}
+              {%- if '/rabbitmq:' in container.image -%}
+                {{- output.append(item.metadata.namespace) -}}
+              {%- endif -%}
+            {%- endfor -%}
+          {%- endfor -%}
+          {{- output | unique -}}
+
+    - name: k8s/master | Patch keycloak's statefulset
+      include_role:
+        name: upgrade
+        tasks_from: kubernetes/utils/patch-statefulset.yml
+      vars:
+        image_regexp: '.*/keycloak:.*'
+
 - name: Drain nodes in preparation for maintenance
   when:
     - groups.kubernetes_node is defined
