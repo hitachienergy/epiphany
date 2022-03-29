@@ -36,7 +36,6 @@
   when:
     - k8s_as_cloud_service is defined
     - k8s_as_cloud_service
-    - is_upgrade_run
   delegate_to: localhost
   run_once: true
   block:
