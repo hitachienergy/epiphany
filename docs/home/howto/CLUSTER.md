@@ -178,7 +178,7 @@ To set up the cluster do the following steps:
     ```
 
     Where:
-    - OS should be `almalinux-8`, `redhat-7`, `ubuntu-20.04`
+    - OS should be `almalinux-8`, `rhel-8`, `ubuntu-20.04`
     - ARCH should be `x86_64`, `arm64`
 
     This will create a directory called `prepare_scripts` with the needed files inside.
@@ -190,7 +190,7 @@ To set up the cluster do the following steps:
     ```
 
     Where:
-    - OS should be `almalinux-8`, `redhat-7`, `ubuntu-20.04`, `detect`
+    - OS should be `almalinux-8`, `rhel-8`, `ubuntu-20.04`, `detect`
     - /requirementsoutput/ where to output downloaded requirements
 
     This will run the download-requirements script for target OS type and save requirements under /requirementsoutput/. Once run successfully the `/requirementsoutput/` needs to be copied to the provisioning machine to be used later on.
@@ -384,7 +384,7 @@ To set up the cluster do the following steps from the provisioning machine:
     For `AWS` the admin name is already specified and is dependent on the Linux distro image you are using for the VM's:
 
     - Username for Ubuntu Server: `ubuntu`
-    - Username for Redhat: `ec2-user`
+    - Username for AlmaLinux/RHEL: `ec2-user`
 
 3. Set up the cloud specific data:
 

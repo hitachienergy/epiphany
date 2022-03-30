@@ -16,7 +16,7 @@ def install_missing_modules(config: Config):
     Install 3rd party missing modules.
     Used for offline mode.
     """
-    tools = TOOLCHAINS[config.os_type](config.retries)
+    tools = TOOLCHAINS[config.os_type.os_family](config.retries)
     config.pip_installed = tools.ensure_pip()
     config.pyyaml_installed = tools.pip.install('PyYAML', '==6.0', user=True)
 

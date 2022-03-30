@@ -14,7 +14,7 @@ class Prepare(Step):
     CHARTS_PATH: Path = Path(f'{BASE_DIR}/ansible/playbooks/roles/helm_charts/files/system')
     FAMILY_MAPPER: Dict[str, str] = {
         'almalinux': 'redhat',
-        'redhat':    'redhat',
+        'rhel':      'redhat',
         'ubuntu':    'debian'
     }
 
@@ -66,6 +66,10 @@ class Prepare(Step):
             self.PREPARE_PATH / 'download-requirements.py': dest_path,
             self.PREPARE_PATH / 'src':                      dest_path / 'src',
         }
+
+        family_packages: Path = family_path / 'packages.yml'
+        if self.os_family == 'redhat':
+            download_requirements_paths[family_packages] = dest_path / f'requirements/{self.arch}/{self.os_family}'
 
         family_files: Path = family_path / 'files.yml'
         if family_files.exists():  # specific files for target family are optional
