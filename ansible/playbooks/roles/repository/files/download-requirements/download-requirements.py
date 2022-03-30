@@ -17,11 +17,10 @@ def install_missing_modules(config: Config):
     Used for offline mode.
     """
     tools = TOOLCHAINS[config.os_type.os_family](config.retries)
-    config.pip_installed = tools.ensure_pip()
-    config.pyyaml_installed = tools.pip.install('PyYAML', '==6.0', user=True)
+    config.pyyaml_installed = tools.ensure_pyyaml()
 
     if config.pyyaml_installed:
-        logging.debug('Installed `PyYAML==6.0` library')
+        logging.debug(f'Installed {tools.pyyaml_package} package')
 
 
 def rerun_download_requirements(config: Config):
@@ -32,10 +31,7 @@ def rerun_download_requirements(config: Config):
     """
     additional_args: List[str] = ['--rerun']
 
-    # carry over info about installed 3rd party tools and modules:
-    if config.pip_installed:
-        additional_args.append('--pip-installed')
-
+    # carry over info about installed 3rd party modules:
     if config.pyyaml_installed:
         additional_args.append('--pyyaml-installed')
 
@@ -44,19 +40,14 @@ def rerun_download_requirements(config: Config):
 
 def cleanup(config: Config):
     """
-    Remove any 3rd party modules and tools.
+    Remove any 3rd party modules.
     Used for offline mode.
     """
     tools = TOOLCHAINS[config.os_type.os_family](config.retries)
 
     if config.pyyaml_installed:
-        logging.info('Uninstalling 3rd party python modules:')
-        tools.pip.uninstall('PyYAML', '==6.0')
-        logging.info('Done.')
-
-    if config.pip_installed:
-        logging.info('Uninstalling pip3...')
-        tools.uninstall_pip()
+        logging.info(f'Uninstalling {tools.pyyaml_package} package...')
+        tools.uninstall_pyyaml()
         logging.info('Done.')
 
 
