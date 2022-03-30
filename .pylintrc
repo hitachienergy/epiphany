@@ -39,7 +39,9 @@ unsafe-load-any-extension=no
 extension-pkg-allow-list=
 
 # Minimum supported python version
-py-version = 3.10
+# 3.6 is required because of download-requirements.py (python3 = python36 on RHEL 8)
+# Pylint doesn't support per-directory configuration (WIP: https://github.com/PyCQA/pylint/issues/618)
+py-version=3.6
 
 
 [MESSAGES CONTROL]

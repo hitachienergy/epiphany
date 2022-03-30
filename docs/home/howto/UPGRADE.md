@@ -109,7 +109,7 @@ To upgrade the cluster components run the following steps:
     ```
 
     Where:
-    - OS should be `almalinux-8`, `redhat-7`, `ubuntu-20.04`
+    - OS should be `almalinux-8`, `rhel-8`, `ubuntu-20.04`
     - ARCH should be `x86_64`, `arm64`
 
    This will create a directory called `prepare_scripts` with the needed files inside.
@@ -122,7 +122,7 @@ To upgrade the cluster components run the following steps:
     ```
 
     Where:
-    - OS should be `almalinux-8`, `redhat-7`, `ubuntu-20.04`, `detect`
+    - OS should be `almalinux-8`, `rhel-8`, `ubuntu-20.04`, `detect`
     - /requirementsoutput/ where to output downloaded requirements
 
     This will run the download-requirements script for target OS type and save requirements under /requirementsoutput/. Once run successfully the `/requirementsoutput/` needs to be copied to the provisioning machine to be used later on.
