@@ -3,7 +3,7 @@
   yum:
     name:
       - python36
-      - python3-pip
+      - python3-pyyaml
       - rsync  # for Ansible (synchronize module)
     state: present
   register: result
