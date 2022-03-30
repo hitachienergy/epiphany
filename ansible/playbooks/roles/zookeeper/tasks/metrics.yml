@@ -2,10 +2,10 @@
   user:
     name: "{{ zookeeper_user }}"
     groups: "{{ jmx_exporter_group }}"
-    append: yes
+    append: true
 
 - name: prometheus jmx | configuration file
-  become: yes
+  become: true
   copy:
     dest: "{{ prometheus_jmx_config }}"
     src: jmx-zookeeper-config.yml

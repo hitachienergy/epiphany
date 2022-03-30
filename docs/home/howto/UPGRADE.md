@@ -249,6 +249,7 @@ Kafka will be automatically updated to the latest version supported by Epiphany.
 version [here](../COMPONENTS.md#epiphany-cluster-components). Kafka brokers are updated one by one - but the update
 procedure does not guarantee "zero downtime" because it depends on the number of available brokers, topics, and
 partitioning configuration.
+Note that old Kafka binaries are removed during upgrade.
 
 ### ZooKeeper upgrade
 

@@ -3,6 +3,9 @@
 
 - name: Check if jmx exporter is available
   stat:
+    get_attributes: false
+    get_checksum: false
+    get_mime: false
     path: "{{ prometheus_jmx_exporter_path }}"
   register: exporter
 
@@ -13,5 +16,4 @@
 - include_tasks: metrics.yml
   when: exporter.stat.exists
 
-- include_tasks: start.yml
-
+- include_tasks: common/start.yml

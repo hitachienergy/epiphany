@@ -6,12 +6,12 @@
   register: current_kafka_version_property
   failed_when:
     - result.rc == 2
-  changed_when: False
+  changed_when: false
 
 - name: Add current_kafka_version property
   lineinfile:
     path: /opt/kafka/config/server.properties
-    line: "CURRENT_KAFKA_VERSION={{ kafka_version.old }}"
+    line: "CURRENT_KAFKA_VERSION={{ old_kafka_version }}"
   when: current_kafka_version_property.stdout == ""
 
 - name: Check if inter.broker.protocol.version property is defined
@@ -21,10 +21,10 @@
   register: inter_broker_protocol_version_property
   failed_when:
     - result.rc == 2
-  changed_when: False
+  changed_when: false
 
 - name: Add inter.broker.protocol.version property
   lineinfile:
     path: /opt/kafka/config/server.properties
-    line: "inter.broker.protocol.version={{ kafka_version.old }}"
+    line: "inter.broker.protocol.version={{ old_kafka_version }}"
   when: inter_broker_protocol_version_property.stdout == ""

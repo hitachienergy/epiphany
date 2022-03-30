@@ -1,14 +1,14 @@
 ---
 - name: Setup group
   group:
-    name: "{{ specification.kafka_var.group }}"
-    system: yes
+    name: "{{ specification.group }}"
+    system: true
 
 - name: Setup user
   user:
-    name: "{{ specification.kafka_var.user }}"
-    system: yes
-    group: "{{ specification.kafka_var.group }}"
+    name: "{{ specification.user }}"
+    system: true
+    group: "{{ specification.group }}"
     shell: "/usr/sbin/nologin"
 
 - name: Install Java package
@@ -22,91 +22,65 @@
       RedHat:
         - java-1.8.0-openjdk-headless
   module_defaults:
-    yum: { lock_timeout: "{{ yum_lock_timeout }}" }
+    yum:
+      lock_timeout: "{{ yum_lock_timeout }}"
 
-- name: Set Kafka file name to install
-  set_fact:
-    kafka_file_name: "{{ kafka_bin_filename }}"
-
-- name: Download Kafka binaries
-  include_role:
-    name: download
-    tasks_from: download_file
-  vars:
-    file_name: "{{ kafka_file_name }}"
+- name: Download and unpack Kafka's binary
+  include_tasks: common/download_and_unpack_binary.yml
 
 - name: Add Kafka's bin dir to the PATH
   copy:
     content: "export PATH=$PATH:/opt/kafka/bin"
     dest: "/etc/profile.d/kafka_path.sh"
-    mode: 0755
-
-- name: Check for Kafka package
-  stat:
-    path: /opt/kafka_{{ scala_version }}-{{ kafka_version }}/bin/kafka-server-start.sh
-  register: kafka_package
-
-- name: Uncompress the Kafka tar
-  unarchive:
-    remote_src: yes
-    creates: /opt/kafka_{{ scala_version }}-{{ kafka_version }}
-    src: "{{ download_directory }}/{{ kafka_file_name }}"
-    dest: /opt
-  when: not kafka_package.stat.exists
-
-- name: Change ownership on kafka directory.
-  file:
-    path: /opt/kafka_{{ scala_version }}-{{ kafka_version }}
-    state: directory
-    owner: kafka
-    group: kafka
+    mode: u=rwx,go=rx
 
 - name: Link /opt/kafka to the right version
   file:
-    dest: /opt/kafka
+    path: /opt/kafka
     state: link
-    src: /opt/kafka_{{ scala_version }}-{{ kafka_version }}
+    src: "{{ kafka_install_dir }}"
 
 - name: Create systemd config
   template:
     dest: /etc/systemd/system/kafka.service
     owner: root
     group: root
-    mode: 0644
+    mode: u=rw,go=r
     src: kafka.service.j2
   notify:
-    - restart kafka
+    - Restart kafka
 
 - name: Reload daemon
-  command: systemctl daemon-reload
+  systemd:
+    daemon-reload: true
 
 - name: Create data_dir
   file:
-    path: "{{ specification.kafka_var.data_dir }}"
+    path: "{{ specification.data_dir }}"
     state: directory
-    owner: "{{ specification.kafka_var.user }}"
-    group: "{{ specification.kafka_var.group }}"
-    mode: 0755
+    owner: "{{ specification.user }}"
+    group: "{{ specification.group }}"
+    mode: u=rwx,go=rx
 
 - name: Remove lost+found in the datadir
   file:
-    path: "{{ specification.kafka_var.data_dir }}/lost+found"
+    path: "{{ specification.data_dir }}/lost+found"
     state: absent
 
 - name: Create log_dir
   file:
-    path: "{{ specification.kafka_var.log_dir }}"
+    path: "{{ specification.log_dir }}"
     state: directory
-    owner: "{{ specification.kafka_var.user }}"
-    group: "{{ specification.kafka_var.group }}"
-    mode: 0755
+    owner: "{{ specification.user }}"
+    group: "{{ specification.group }}"
+    mode: u=rwx,go=rx
 
-- name: Create /etc/kafka directory
+- name: Create /etc/kafka directory  # noqa risky-file-permissions
   file:
     path: /etc/kafka
     state: directory
-    owner: "{{ specification.kafka_var.user }}"
-    group: "{{ specification.kafka_var.group }}"
+    owner: "{{ specification.user }}"
+    group: "{{ specification.group }}"
 
 # - name: link conf_dir to /opt/kafka/config
 #   file: dest=/etc/kafka owner=kafka group=kafka state=link src=/opt/kafka/config
@@ -114,34 +88,34 @@
 # Setup log4j.properties
 - name: Create log4j.properties
   file:
-    dest: "{{ specification.kafka_var.conf_dir }}/log4j.properties"
-    owner: "{{ specification.kafka_var.user }}"
-    group: "{{ specification.kafka_var.group }}"
-    mode: 0644
+    path: "{{ specification.conf_dir }}/log4j.properties"
+    owner: "{{ specification.user }}"
+    group: "{{ specification.group }}"
+    mode: u=rw,go=r
 
 - name: Generate certificate
   include_tasks: generate-certificates.yml
   when:
-    - specification.kafka_var.security.ssl.enabled is defined
-    - specification.kafka_var.security.ssl.enabled
+    - specification.security.ssl.enabled is defined
+    - specification.security.ssl.enabled
 
 # Setup server.properties
 - name: Create server.properties
   template:
-    dest: "{{ specification.kafka_var.conf_dir }}/server.properties"
-    owner: "{{ specification.kafka_var.user }}"
-    group: "{{ specification.kafka_var.group }}"
+    dest: "{{ specification.conf_dir }}/server.properties"
+    owner: "{{ specification.user }}"
+    group: "{{ specification.group }}"
     # Was 0640
-    mode: 0644
+    mode: u=rw,go=r
     src: server.properties.j2
   register: create_server_properties
   notify:
-    - restart kafka
+    - Restart kafka
 
 - name: Delete meta.properties
   become: true
   file:
-    path: "{{ specification.kafka_var.data_dir }}/meta.properties"
+    path: "{{ specification.data_dir }}/meta.properties"
     state: absent
   when: create_server_properties.changed
 
@@ -150,23 +124,35 @@
     dest: /etc/logrotate.d/kafka
     owner: root
     group: root
-    mode: 0644
+    mode: u=rw,go=r
     src: logrotate.conf.j2
 
 - name: configure system settings, file descriptors and number of threads for kafka
   pam_limits:
-    domain: "{{ specification.kafka_var.user }}"
+    domain: "{{ specification.user }}"
     limit_type: "{{ item.limit_type }}"
     limit_item: "{{ item.limit_item }}"
-    value: "{{item.value}}"
-  with_items:
-    - { limit_type: '-', limit_item: 'nofile', value: 128000 }
-    - { limit_type: '-', limit_item: 'nproc', value: 128000 }
-    - { limit_type: 'soft', limit_item: 'memlock', value: unlimited }
-    - { limit_type: 'hard', limit_item: 'memlock', value: unlimited }
+    value: "{{ item.value }}"
+  loop:
+    -
+      limit_type: '-'
+      limit_item: 'nofile'
+      value: 128000
+    -
+      limit_type: '-'
+      limit_item: 'nproc'
+      value: 128000
+    -
+      limit_type: 'soft'
+      limit_item: 'memlock'
+      value: unlimited
+    -
+      limit_type: 'hard'
+      limit_item: 'memlock'
+      value: unlimited
 
 - name: reload settings from all system configuration files
-  shell: sysctl --system
+  command: sysctl --system
 
 # SASL Setup
 # - name: copy SASL config file

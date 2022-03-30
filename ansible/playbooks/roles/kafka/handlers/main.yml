@@ -1,20 +1,22 @@
 ---
 # Handlers for Kafka
 
-- name: restart kafka
+- name: Restart kafka
   service:
     name: kafka
     state: restarted
-    enabled: yes
+    enabled: true
   retries: 10
   delay: 10
 
-- name: restart prometheus
+- name: Restart prometheus
   become: true
   systemd:
     daemon_reload: true
     name: prometheus
     state: restarted
-  delegate_to: "{{ item }}"
-  with_inventory_hostnames:
-    - prometheus
+  delegate_to: "{{ node }}"
+  loop_control:
+    loop_var: node
+  loop: "{{ groups.prometheus }}"
+  when: groups.prometheus is defined

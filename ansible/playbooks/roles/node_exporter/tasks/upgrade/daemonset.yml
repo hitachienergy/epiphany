@@ -1,0 +1,54 @@
+# Re-installation in a different namespace was added in Epiphany v1.3
+# Everything related to that topic can be removed when versions before 1.3 are unsupported, including preflight checks
+- name: Node Exporter as DaemonSet | Prepare fact about helm release and reinstall daemonset if release exists
+  delegate_to: localhost
+  become: false
+  run_once: true
+  block:
+    - name: Get information about node-exporter helm releases
+      command: "helm list --all-namespaces --output json --filter {{ exporter_defaults.node_exporter_helm_chart_name }}"
+      register: helm_list
+      changed_when: false
+
+    - name: Check if node exporter release exist and set fact
+      set_fact:
+        node_exporter_release_exists: >-
+          {{ _namespace | ternary(true, false) }}
+        node_exporter_release_ns: >-
+          {{ _namespace }}
+        node_exporter_current_version: >-
+          {{ _version }}
+      vars:
+        _namespace: >-
+          {{ helm_list.stdout | from_json
+                              | map(attribute='namespace')
+                              | list
+                              | first
+                              | default('') }}
+
+        _version: >-
+          {{ helm_list.stdout | from_json
+                              | map(attribute='app_version')
+                              | list
+                              | first
+                              | default('') }}
+
+    - name: Node Exporter as DaemonSet | Print versions
+      debug:
+        msg:
+          - "Installed version: {{ node_exporter_current_version }}"
+          - "Target version: {{ exporter_defaults.exporter.version }}"
+
+    - name: Reinstall Node Exporter as DaemonSet for K8s as cloud service mode
+      when:
+        - node_exporter_release_exists
+        - exporter_defaults.exporter.version != node_exporter_current_version or
+          exporter_defaults.monitoring_chart_namespace != node_exporter_release_ns
+      block:
+        - name: "Include uninstall task for Node Exporter as DaemonSet in {{ node_exporter_release_ns }} ns for K8s as cloud service mode"
+          include_tasks:  uninstall-daemonset.yml
+
+        - name: "Include install task for Node Exporter as DaemonSet in {{ node_exporter_release_ns }} ns for K8s as cloud service mode"
+          include_tasks: apply/daemonset.yml
+          vars:
+            specification: "{{ exporter_vars.specification }}"

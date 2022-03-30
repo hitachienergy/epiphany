@@ -14,8 +14,8 @@ files:
     sha256: 1d1a008c5e29673b404a9ce119b7516fa59974aeda2f47d4a0446d102abce8a1
 
   # --- Misc ---
-  'https://archive.apache.org/dist/kafka/2.6.0/kafka_2.12-2.6.0.tgz':
-    sha256: 086bf9ca1fcbe2abe5c62e73d6f172adb1ee5a5b42732e153fb4d4ec82dab69f
+  'https://archive.apache.org/dist/kafka/2.8.1/kafka_2.12-2.8.1.tgz':
+    sha256: 175a4134efc569a586d58916cd16ce70f868b13dea2b5a3d12a67b1395d59f98
 
   'https://archive.apache.org/dist/zookeeper/zookeeper-3.5.8/apache-zookeeper-3.5.8-bin.tar.gz':
     sha256: c35ed6786d59b73920243f1a324d24c2ddfafb379041d7a350cc9a341c52caf3

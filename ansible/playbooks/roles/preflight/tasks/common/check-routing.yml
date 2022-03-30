@@ -26,7 +26,7 @@
     - name: Assert two most prioritized default routes have unique metric
       assert:
         that: "default_routing_configuration_metric_values.stdout_lines[0] != default_routing_configuration_metric_values.stdout_lines[1]"
-        fail_msg:  >-
+        fail_msg: >-
           At least two default routes have the same metric value.
           Check routing configuration, read more in troubleshooting document.
 
@@ -40,7 +40,7 @@
     - common_vars.specification.cloud is undefined
   assert:
     that: ansible_default_ipv4.address == ansible_host
-    fail_msg:  >-
+    fail_msg: >-
       ansible_default_ipv4.address is {{ ansible_default_ipv4.address }} but inventory uses ip: {{ ansible_host }}.
       Check default routing configuration, read more in troubleshooting document.
     quiet: true

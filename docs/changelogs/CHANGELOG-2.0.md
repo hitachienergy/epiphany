@@ -18,6 +18,7 @@
 - [#2975](https://github.com/epiphany-platform/epiphany/issues/2975) - Copy only required files
 - [#2991](https://github.com/epiphany-platform/epiphany/issues/2991) - Add automatic backup creation for download requirements
 - [#2448](https://github.com/epiphany-platform/epiphany/issues/2448) - Passwordless SSH communication for postgres user between DB nodes
+- [#2821](https://github.com/epiphany-platform/epiphany/issues/2821) - Node Exporter preflight checks
 
 ### Fixed
 
@@ -41,6 +42,7 @@
 - [#2728](https://github.com/epiphany-platform/epiphany/issues/2728) - PostgreSQL's configuration files located outside the data directory are not copied by repmgr
 - [#3029](https://github.com/epiphany-platform/epiphany/issues/3029) - [RHEL] Single machine upgrade fails on preflight check: 'dict object' has no attribute 'size_available'
 - [#2997](https://github.com/epiphany-platform/epiphany/issues/2997) - Doubled HAProxy entries in prometheus.yml after upgrade
+- [#2803](https://github.com/epiphany-platform/epiphany/issues/2803) - Refactor: rename 'kafka_var' setting
 
 ### Updated
 
@@ -56,6 +58,7 @@
 - [#2847](https://github.com/epiphany-platform/epiphany/issues/2847) - Upgrade Ansible to 5.2.0
   - Ansible 2.10.15 to 5.2.0
   - Python 3.7 to 3.10
+- [#2871](https://github.com/epiphany-platform/epiphany/issues/2871) - Upgrade Kafka to 2.8.1
 
 ### Removed
 

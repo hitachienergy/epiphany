@@ -101,3 +101,13 @@
       file:
         path: "{{ lock_file }}"
         state: absent
+
+    - name: Set kafka_exporter_upgraded flag
+      set_fact:
+        kafka_exporter_upgraded: True
+
+# Between versions v1.3 and v2.0 there is no kafka-exporter version upgrade, but there is kafka upgrade
+# For this reason kafka-exporter service definition needs to be updated
+- name: Verify if kafka-exporter service definition needs to be updated
+  include_tasks: upgrade/verify-service-definition.yml
+  when: kafka_exporter_upgraded is not defined

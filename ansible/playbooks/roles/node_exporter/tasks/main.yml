@@ -1,7 +1,13 @@
 ---
 - name: Include installation tasks for Node Exporter as System Service
-  include_tasks: apply/install-node-exporter-as-system-service.yml
+  include_tasks: apply/system-service.yml
+  when: >
+    k8s_as_cloud_service is not defined or
+    not k8s_as_cloud_service or
+    k8s_as_cloud_service is defined and k8s_as_cloud_service and not 'kubernetes_master' in group_names and not 'kubernetes_node' in group_names
 
 - name: Include installation tasks for Node Exporter as DaemonSet for "k8s as cloud service"
-  when: k8s_as_cloud_service is defined and k8s_as_cloud_service
-  include_tasks: apply/install-node-exporter-as-daemonset.yml
+  include_tasks: apply/daemonset.yml
+  when:
+    - k8s_as_cloud_service is defined
+    - k8s_as_cloud_service

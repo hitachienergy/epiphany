@@ -1,0 +1,22 @@
+---
+- name: Download Kafka binaries
+  include_role:
+    name: download
+    tasks_from: download_file
+  vars:
+    file_name: "{{ kafka_bin_filename }}"
+
+- name: Uncompress the Kafka tar
+  unarchive:
+    remote_src: true
+    creates: "{{ kafka_install_dir }}"
+    src: "{{ download_directory }}/{{ kafka_bin_filename }}"
+    dest: /opt
+
+- name: Change ownership on Kafka directory
+  file:
+    path: "{{ kafka_install_dir }}"
+    state: directory
+    mode: u=rwx,go=rx
+    owner: "{{ specification.user }}"
+    group: "{{ specification.group }}"

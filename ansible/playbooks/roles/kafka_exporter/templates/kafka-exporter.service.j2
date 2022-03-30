@@ -7,7 +7,7 @@ After=kafka.service
 User=kafka_exporter
 Group=kafka_exporter
 ExecStartPre=/bin/bash -c '(while ! ss -H -t -l -n sport = :9092 | grep -q "^LISTEN.*:9092"; do echo "Waiting for Kafka Broker port to be listening..."; sleep 2; done)'
-ExecStart=/opt/kafka_exporter/kafka_exporter {{ kafka_instances }} {% for flag in specification.config_flags %} {{ flag }} {% endfor %}
+ExecStart=/opt/kafka_exporter/kafka_exporter {{ kafka_instances }} {% for flag in specification.config_flags %} {{ flag }} {% endfor %} --kafka.version=2.8.1
 SyslogIdentifier=kafka_exporter
 Restart=always
 

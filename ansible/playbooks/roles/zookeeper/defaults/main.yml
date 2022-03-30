@@ -5,6 +5,7 @@ zookeeper_bin_filename: "apache-zookeeper-3.5.8-bin.tar.gz"
 
 zookeeper_hosts: "{{ groups['zookeeper'] }}"
 
+zookeeper_install_dir: "/opt/zookeeper-{{ zookeeper_version }}"
 zookeeper_data_dir: /var/lib/zookeeper
 zookeeper_log_dir: /var/log/zookeeper
 

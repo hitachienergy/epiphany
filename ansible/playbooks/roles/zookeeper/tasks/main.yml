@@ -2,13 +2,13 @@
 - name: Create Zookeeper group
   group:
     name: "{{ zookeeper_group }}"
-    system: yes
+    system: true
 
 - name: Create Zookeeper user
   user:
     name: "{{ zookeeper_user }}"
     group: "{{ zookeeper_group }}"
-    system: yes
+    system: true
     shell: "/usr/sbin/nologin"
 
 - name: Install Java package
@@ -22,62 +22,17 @@
       RedHat:
         - java-1.8.0-openjdk-headless
   module_defaults:
-    yum: { lock_timeout: "{{ yum_lock_timeout }}" }
+    yum:
+      lock_timeout: "{{ yum_lock_timeout }}"
 
-- name: Check if jmx exporter is available
-  stat:
-    path: "{{ prometheus_jmx_exporter_path }}"
-  register: exporter
-
-- name: Set Zookeeper variable with version name
-  set_fact:
-    zookeeper_name: "zookeeper-{{ zookeeper_version }}"
-  changed_when: false
-
-- name: Set Zookeeper install dir for {{ zookeeper_name }}
-  set_fact:
-    zookeeper_install_dir: "/opt/{{ zookeeper_name }}"
-
-- name: Set Zookeeper file name to install
-  set_fact:
-    zookeeper_file_name: "{{ zookeeper_bin_filename }}"
-
-- name: Download Zookeeper binaries
-  include_role:
-    name: download
-    tasks_from: download_file
-  vars:
-    file_name: "{{ zookeeper_file_name }}"
-
-- name: Create {{ zookeeper_install_dir }} directories
-  become: yes
-  file:
-    path: "{{ item }}"
-    recurse: yes
-    owner: "{{ zookeeper_user }}"
-    group: "{{ zookeeper_group }}"
-    mode: u=rwx,g=rx,o=
-    state: directory
-  with_items:
-  - "{{ zookeeper_install_dir }}"
-
-- name: Unpack {{ zookeeper_name }} binary
-  become: true
-  unarchive:
-    remote_src: yes
-    src: "{{ download_directory }}/{{ zookeeper_file_name }}"
-    dest: "{{ zookeeper_install_dir }}"
-    creates: "{{ zookeeper_install_dir }}/bin"
-    extra_opts: [--strip-components=1]
-    mode: u=rwx,g=rx,o=rx
-    owner: "{{ zookeeper_user }}"
-    group: "{{ zookeeper_group }}"
-  check_mode: false
+- name: Download and unpack Zookeeper's binary
+  include_tasks: common/download_and_unpack_binary.yml
 
 - name: Create directories
   file:
     path: "{{ item }}"
     state: directory
+    mode: u=rwx,go=rx
     owner: "{{ zookeeper_user }}"
     group: "{{ zookeeper_group }}"
   with_items:
@@ -86,7 +41,15 @@
     - "{{ zookeeper_install_dir }}/conf"
     - "/etc/zookeeper/conf"
 
-- name: Create Zookeeper service
+- name: Check if jmx exporter is available
+  stat:
+    path: "{{ prometheus_jmx_exporter_path }}"
+    get_attributes: false
+    get_checksum: false
+    get_mime: false
+  register: exporter
+
+- name: Create Zookeeper service  # noqa risky-file-permissions (https://github.com/ansible-community/ansible-lint/pull/1030)
   template:
     src: zookeeper.service.j2
     dest: /lib/systemd/system/zookeeper.service
@@ -101,9 +64,10 @@
     dest: /var/lib/zookeeper/myid
     owner: "{{ zookeeper_user }}"
     group: "{{ zookeeper_group }}"
+    mode: preserve
   notify: Restart zookeeper
 
-- name: Configure Zookeeper
+- name: Configure Zookeeper  # noqa risky-file-permissions (https://github.com/ansible-community/ansible-lint/pull/1030)
   template:
     src: zoo.cfg.j2
     dest: "{{ zookeeper_install_dir }}/conf/zoo.cfg"
@@ -112,7 +76,10 @@
   notify: Restart zookeeper
 
 - name: Link /opt/zookeeper to the right version
-  file: path=/opt/zookeeper state=link src="{{ zookeeper_install_dir }}"
+  file:
+    path: /opt/zookeeper
+    state: link
+    src: "{{ zookeeper_install_dir }}"
 
 - name: Add Zookeeper's bin dir to the PATH
   copy:
@@ -120,23 +87,18 @@
     dest: "/etc/profile.d/zookeeper_path.sh"
     mode: u=rwx,g=rx,o=rx
 
-- name: Update the log4j config with saner production values
+- name: Update the log4j config with saner production values  # noqa risky-file-permissions (https://github.com/ansible-community/ansible-lint/pull/1030)
   template:
     src: log4j.properties.j2
     dest: "{{ zookeeper_install_dir }}/conf/log4j.properties"
   notify:
     - Restart zookeeper
 
-- name: Enable Zookeeper service
+- name: Enable and start Zookeeper service
   service:
     name: zookeeper
-    enabled: yes
-
-- name: Start Zookeeper
-  service:
-    name: zookeeper
+    enabled: true
     state: started
-    enabled: yes
 
 - include_tasks: metrics.yml
   when: exporter.stat.exists
