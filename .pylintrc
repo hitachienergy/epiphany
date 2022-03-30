@@ -112,6 +112,9 @@ evaluation=10.0 - ((float(5 * error + warning + refactor + convention) / stateme
 # function parameter format
 logging-modules=logging
 
+disable=
+    logging-fstring-interpolation
+
 
 [MISCELLANEOUS]
 

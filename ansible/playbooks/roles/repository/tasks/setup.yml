@@ -23,12 +23,6 @@
     - name: Install required packages for repository
       include_tasks: "{{ ansible_os_family }}/install-packages.yml"
 
-    - name: Install PyYAML library for YAML support
-      pip:
-        name: PyYAML==6.0
-        executable: pip3
-        extra_args: --user
-
     - name: Create download-requirements directory
       file:
         path: "{{ download_requirements_dir }}"
