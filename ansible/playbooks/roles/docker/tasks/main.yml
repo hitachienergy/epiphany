@@ -10,8 +10,8 @@
     name: "{{ docker_packages[ansible_os_family] }}"
     state: present
   module_defaults:
-    yum: { lock_timeout: "{{ yum_lock_timeout }}",
-           allow_downgrade: true }  # This solves problem with containerd.io versioning
-    apt: { allow_downgrade: true }
+    yum: {lock_timeout: "{{ yum_lock_timeout }}",
+          allow_downgrade: true}  # This solves problem with containerd.io versioning
+    apt: {allow_downgrade: true}
 
 - include_tasks: configure-docker.yml

@@ -1,0 +1,27 @@
+---
+- name: Wait for kube-apiserver
+  include_role:
+    name: upgrade
+    tasks_from: kubernetes/utils/wait-for-kube-apiserver.yml
+    apply:
+      delegate_to: >-
+        {{ inventory_hostname if inventory_hostname in groups.kubernetes_master else
+            groups.kubernetes_master[0] }}
+
+- name: Include get-kubelet-version.yml
+  include_role:
+    name: upgrade
+    tasks_from: kubernetes/get-kubelet-version.yml
+    apply:
+      delegate_to: "{{ groups.kubernetes_master[0] }}"
+
+- name: Set kubelet version as fact
+  set_fact:
+    initial_kubelet_version: "{{ kubelet_version.stdout[1:] }}"
+
+- name: Drain {{ inventory_hostname }}
+  include_role:
+    name: upgrade
+    tasks_from: kubernetes/utils/drain.yml
+  vars:
+    version: "{{ initial_kubelet_version }}"
