@@ -1,6 +1,8 @@
 ---
 - name: Check that only one Node Exporter Helm release is installed
   run_once: true
+  environment:
+    PATH: "{{ ansible_env.PATH }}:/usr/local/bin"
   block:
     - name: Include defaults from node_exporter role
       include_vars:
@@ -13,7 +15,7 @@
       register: node_exporter_helm_list
       changed_when: false
 
-    - name: Assert node-exported installed only in one namespace
+    - name: Assert node-exporter installed only in one namespace
       assert:
         that: node_exporter_helm_list.stdout_lines|length == 1
         fail_msg: |
