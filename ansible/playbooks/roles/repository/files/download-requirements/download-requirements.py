@@ -1,10 +1,11 @@
 #!/usr/bin/python3
 import datetime
 import logging
+import shlex
+import sys
+
 from os import execv, getuid
 from typing import List
-
-import sys
 
 from src.command.toolchain import TOOLCHAINS
 from src.config.config import Config
@@ -35,7 +36,11 @@ def rerun_download_requirements(config: Config):
     if config.pyyaml_installed:
         additional_args.append('--pyyaml-installed')
 
-    execv(__file__, sys.argv + additional_args)
+    cmd: List[str] = [sys.executable, __file__] + sys.argv[1:] + additional_args
+    quoted_cmd: str = " ".join([shlex.quote(i) for i in cmd])
+    logging.debug(f'Rerunning as: `{quoted_cmd}`')
+
+    execv(sys.executable, cmd)
 
 
 def cleanup(config: Config):
