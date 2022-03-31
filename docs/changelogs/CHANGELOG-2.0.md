@@ -44,6 +44,7 @@
 - [#2997](https://github.com/epiphany-platform/epiphany/issues/2997) - Doubled HAProxy entries in prometheus.yml after upgrade
 - [#2803](https://github.com/epiphany-platform/epiphany/issues/2803) - Refactor: rename 'kafka_var' setting
 - [#2995](https://github.com/epiphany-platform/epiphany/issues/2995) - Update expired RHUI client certificate before installing any RHEL packages
+- [#3049](https://github.com/epiphany-platform/epiphany/issues/3049) - HAProxy upgrade fails on re-run trying to remove haproxy_exporter
 
 ### Updated
 
