@@ -12,7 +12,7 @@
     tasks_from: download_file
   vars:
     file_name: "{{ file_name_version.opensearch_perftop[ansible_architecture]  }}"
-  when: ansible_architecture == "x86_64"  # Perftop is not yet supported on ARM (https://github.com/opensearch-project/perftop/issues/26)
+  when: ansible_architecture == "x86_64" # Perftop is not yet supported on ARM (https://github.com/opensearch-project/perftop/issues/26)
 
 - name: Ensure Opensearch service OS group exists
   group:
@@ -24,6 +24,9 @@
     name: "{{ specification.opensearch_os_user }}"
     state: present
     shell: /bin/bash
+    groups: "{{ specification.opensearch_os_group }}"
+    home: "{{ specification.paths.opensearch_home  }}"
+    create_home: false
 
 - name: Ensure directory structure exists
   file:
@@ -31,7 +34,7 @@
     state: directory
     owner: "{{ specification.opensearch_os_user }}"
     group: "{{ specification.opensearch_os_group }}"
-    mode: u=rwx,go=r
+    mode: u=rwx,go=rx
     recurse: true
   loop:
     - "{{ specification.paths.opensearch_home }}"
@@ -57,10 +60,10 @@
     dest: "{{ specification.paths.opensearch_perftop_home }}"
     owner: "{{ specification.opensearch_os_user }}"
     remote_src: true
-  when: ansible_architecture == "x86_64"  # Perftop is not yet supported on ARM (https://github.com/opensearch-project/perftop/issues/26)
+  when: ansible_architecture == "x86_64" # Perftop is not yet supported on ARM (https://github.com/opensearch-project/perftop/issues/26)
 
 - name: Create opensearch.service unit file
   template:
     src: roles/opensearch/templates/opensearch.service.j2
     dest: "/etc/systemd/system/opensearch.service"
-    mode: u=rwx,go=rx
+    mode: u=rw,go=r

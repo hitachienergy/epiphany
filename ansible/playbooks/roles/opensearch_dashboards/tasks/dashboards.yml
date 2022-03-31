@@ -1,32 +1,32 @@
 ---
-- name: Download Opensearch dashbaords
+- name: Download Opensearch dashboards
   include_role:
     name: download
     tasks_from: download_file
   vars:
     file_name: "{{ file_name_version.opensearch_dashboards[ansible_architecture] }}"
 
+- name: Ensure Opensearch service OS group exists
+  group:
+    name: "{{ specification.dashboards_os_group }}"
+    state: present
+
 - name: Create OpenSearch Dashboards user
   user:
     name: "{{ specification.dashboards_os_user }}"
     state: present
     shell: /bin/bash
-
-- name: Create home directory
-  file:
-    path: "{{ specification.paths.opensearchdash_home }}"
-    state: directory
-    owner: "{{ specification.dashboards_os_user }}"
-    group: "{{ specification.dashboards_os_user }}"
+    group: "{{ specification.dashboards_os_group }}"
+    home: "{{ specification.paths.opensearchdash_home }}"
 
 - name: Extract OpenSearch Dashboards tar file
   unarchive:
     src: "{{ download_directory }}/{{ file_name_version.opensearch_dashboards[ansible_architecture] }}"
     dest: "{{ specification.paths.opensearchdash_home }}"
     owner: "{{ specification.dashboards_os_user }}"
-    remote_src: yes
+    remote_src: true
     extra_opts:
-    - --strip-components=1
+      - --strip-components=1
 
 - name: Copy configuration file
   template:
@@ -34,10 +34,11 @@
     dest: "{{ specification.paths.opensearchdash_conf_dir }}/opensearch_dashboards.yml"
     owner: "{{ specification.dashboards_os_user }}"
     group: "{{ specification.dashboards_os_user }}"
-    mode: 0644
-    backup: yes
+    mode: u=rw,go=r
+    backup: true
 
 - name: Create opensearch-dashboards.service unit file
   template:
     src: opensearch-dashboards.service.j2
     dest: /etc/systemd/system/opensearch-dashboards.service
+    mode: u=rw,go=r

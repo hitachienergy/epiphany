@@ -16,16 +16,16 @@ describe 'Check if opensearch user exists' do
   end
   describe user('opensearch') do
     it { should exist }
-    #it { should belong_to_group 'opensearch' }
+    it { should belong_to_group 'opensearch' }
   end
 end
-describe 'Check if opensearchdboard user exists' do
-  describe group('opensearchdboard') do
+describe 'Check if opensearch_dashboards user exists' do
+  describe group('opensearch_dashboards') do
     it { should exist }
   end
-  describe user('opensearchdboard') do
+  describe user('opensearch_dashboards') do
     it { should exist }
-    it { should belong_to_group 'opensearchdboard' }
+    it { should belong_to_group 'opensearch_dashboards' }
   end
 end
 describe 'Check Elasticsearch directories and config files' do

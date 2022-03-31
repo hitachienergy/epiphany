@@ -1,5 +1,5 @@
 server.port: 5601
-server.host: "{{ ansible_host }}"
+server.host: "{{ inventory_hostname }}"
 opensearch.hosts: ["{{ opensearch_nodes_dashboards }}"]
 opensearch.ssl.verificationMode: none
 opensearch.username: "{{ specification.dashboards_user }}"

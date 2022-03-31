@@ -2,7 +2,8 @@ kind: configuration/opensearch-dashboards
 title: "OpenSearch-Dashboards"
 name: default
 specification:
-  dashboards_os_user: opensearchdboard
+  dashboards_os_user: opensearch_dashboards
+  dashboards_os_group: opensearch_dashboards
   dashboards_os_user_password: PASSWORD_TO_CHANGE
   dashboards_user: kibanaserver
   dashboards_user_password: PASSWORD_TO_CHANGE

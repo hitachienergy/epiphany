@@ -70,9 +70,9 @@ transport.port: {{ transport_port }}
 # The default list of hosts is ["127.0.0.1", "[::1]"]
 #
 {% if groups[current_group_name] | length > 1 -%}
-discovery.seed_hosts: [{% for host in groups[current_group_name] %}"{{hostvars[host]['ansible_default_ipv4']['address']}}"{%- if not loop.last -%},{% endif %}{% endfor %}]
+discovery.seed_hosts: [{% for host in groups[current_group_name] %}"{{ hostvars[host]['ansible_hostname'] }}"{%- if not loop.last -%},{% endif %}{% endfor %}]
 {% else %}
-discovery.seed_hosts: ["{{ ansible_default_ipv4.address | default(ansible_all_ipv4_addresses[0]) }}"]
+discovery.seed_hosts: ["{{ ansible_hostname }}"]
 {% endif %}
 #
 # Bootstrap the cluster using an initial set of master-eligible nodes:
@@ -81,7 +81,7 @@ discovery.seed_hosts: ["{{ ansible_default_ipv4.address | default(ansible_all_ip
 cluster.initial_master_nodes: []
 {% else %}
   {% if groups[current_group_name] | length > 1 %}
-cluster.initial_master_nodes: [{% for host in groups[current_group_name] %}"{{hostvars[host]['ansible_hostname']}}"{%- if not loop.last -%},{% endif %}{% endfor %}]
+cluster.initial_master_nodes: [{% for host in groups[current_group_name] %}"{{ hostvars[host]['ansible_hostname'] }}"{%- if not loop.last -%},{% endif %}{% endfor %}]
   {% else %}
 cluster.initial_master_nodes: ["{{ ansible_hostname }}"]
   {% endif %}
