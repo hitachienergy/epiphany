@@ -1,8 +1,9 @@
+---
 # Based on https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/8/html-single/upgrading_from_rhel_7_to_rhel_8/index
 # and partially on https://docs.microsoft.com/en-us/azure/virtual-machines/workloads/redhat/redhat-in-place-upgrade
 # Limitations: ansible connection as root is not possible,
 # root login via ssh is an Inhibitor of release upgrade using LEAPP
----
+
 - name: In-place RHEL release upgrade
   hosts: "{{ target | default('all') }}"
   become: true
@@ -170,6 +171,7 @@
           yum:
             name: "{{ installed_kernel_devel_packages[1:] }}"
             state: absent
+
 
     ### UPGRADE ###
     - name: Provide leapp answer about pam_pkcs11_module removal
@@ -341,21 +343,22 @@
             connect_timeout: "{{ reboot.connect_timeout }}"
             reboot_timeout: "{{ reboot.update_timeout }}"
 
-    # Only for debuggin purposes while we solve the rejected certs after applying new crypto-policies
-    - name: Manual checks
-      pause:
-        prompt: Manually check ssh connectivity, crypto policies status and cloud-init service
-
-    - name: Set default crypto-policies  # Ensures sshd hostkey if still valid
-      command: update-crypto-policies --set FUTURE
-
-    - name:  Reboot to apply system-wide crypto-policies
+    - name: Reboot to apply system-wide crypto-policies
       reboot:
         msg: Reboot initiated by Ansible due to crypto-policies update
         connect_timeout: "{{ reboot.connect_timeout }}"
         reboot_timeout: "{{ reboot.update_timeout }}"
 
-    - name: Remove cloud-init cache # Initially populated with python2 dependencies that are unmet in RHEL8
+    - name: Disable ssh hostkey deletion  # Avoids regeneration of the hostkey thus maintaining ansible connection
+      when: provider == 'azure'
+      lineinfile:
+        dest: /etc/cloud/cloud.cfg
+        regexp: '^ssh_deletekeys: 1'
+        line: 'ssh_deletekeys: 0'
+        state: present
+      register: cloud_init_ssh_deletion_option
+
+    - name: Remove cloud-init cache  # Initially populated with python2 dependencies that are unmet in RHEL8
       when: provider == 'azure'
       block:
         - name: Find files holding the cloud-init service cache
@@ -371,11 +374,20 @@
             state: absent
           loop: "{{ cloud_init_cache.files }}"
 
-    - name: Restart cloud-init service # Azure /mnt mount point is cloud-init dependent
+    - name: Restart cloud-init service  # Azure /mnt mount point is cloud-init dependent
       when: provider == 'azure'
       service:
         name: cloud-init
         state: restarted
+
+    - name: Set suggested cloud config file
+      when: provider == "azure"
+      copy:
+        remote_src: true
+        src: /etc/cloud/cloud.cfg.rpmnew
+        dest: /etc/cloud/cloud.cfg
+        backup: true
+        force: true
 
     - name: Remount azure specific cloud-init filesystem
       when: provider == 'azure'
