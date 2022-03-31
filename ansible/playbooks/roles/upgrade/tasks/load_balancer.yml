@@ -10,7 +10,9 @@
 - name: load_balancer | Remove haproxy-exporter
   include_tasks:
     file: "legacy-haproxy/remove-haproxy-exporter.yml"
-  when: ansible_facts.services["prometheus-haproxy-exporter.service"] is defined
+  when:
+    - ansible_facts.services['prometheus-haproxy-exporter.service'] is defined
+    - ansible_facts.services['prometheus-haproxy-exporter.service']['status'] != 'not-found'
 
 - name: load_balancer | Upgrade haproxy service (runc)
   include_role:

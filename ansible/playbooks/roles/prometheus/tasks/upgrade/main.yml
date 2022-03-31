@@ -76,7 +76,6 @@
         - name: Upgrade Prometheus
           include_tasks: upgrade/upgrade-prometheus.yml
 
-
 # AlertManager upgrade
 - name: Set alertmanager_will_upgrade fact
   set_fact:
@@ -154,21 +153,32 @@
   when:
     - groups.haproxy is defined
     - groups.haproxy | length > 0
+  vars:
+    prometheus_config_path: /etc/prometheus/prometheus.yml
   block:
     - name: Load HAproxy's config vars
       include_vars:
         file: roles/haproxy/vars/main.yml
         name: haproxy_config
 
-    - name: Set fact about HAproxy monitoring
-      set_fact:
-        haproxy_monitoring_enabled: "{{ haproxy_config.specification.metrics.enable }}"
-        haproxy_monitoring_port: "{{ haproxy_config.specification.metrics.port }}"
+    - name: Get content of Prometheus config
+      slurp:
+        src: "{{ prometheus_config_path }}"
+      register: prometheus_config_encoded
 
     - name: Add HAproxy target to Prometheus config
-      when: haproxy_monitoring_enabled
+      when:
+        - haproxy_monitoring_enabled
+        - not haproxy_job_configured
+      vars:
+        prometheus_config_decoded: "{{ prometheus_config_encoded.content | b64decode | from_yaml }}"
+        haproxy_monitoring_enabled: "{{ haproxy_config.specification.metrics.enable }}"
+        haproxy_monitoring_port: "{{ haproxy_config.specification.metrics.port }}"
+        haproxy_job_configured: "{{ prometheus_config_decoded['scrape_configs'] | default([])
+                                                                                | selectattr('job_name', '==', 'haproxy')
+                                                                                | length > 0 }}"
       blockinfile:
-        path: /etc/prometheus/prometheus.yml
+        path: "{{ prometheus_config_path }}"
         backup: true
         block: |2
             - job_name: 'haproxy'

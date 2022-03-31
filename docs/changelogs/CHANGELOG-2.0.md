@@ -41,8 +41,10 @@
 - [#3025](https://github.com/epiphany-platform/epiphany/issues/3025) - Running yum commands may hang waiting for user input
 - [#2728](https://github.com/epiphany-platform/epiphany/issues/2728) - PostgreSQL's configuration files located outside the data directory are not copied by repmgr
 - [#3029](https://github.com/epiphany-platform/epiphany/issues/3029) - [RHEL] Single machine upgrade fails on preflight check: 'dict object' has no attribute 'size_available'
+- [#2997](https://github.com/epiphany-platform/epiphany/issues/2997) - Doubled HAProxy entries in prometheus.yml after upgrade
 - [#2803](https://github.com/epiphany-platform/epiphany/issues/2803) - Refactor: rename 'kafka_var' setting
 - [#2995](https://github.com/epiphany-platform/epiphany/issues/2995) - Update expired RHUI client certificate before installing any RHEL packages
+- [#3049](https://github.com/epiphany-platform/epiphany/issues/3049) - HAProxy upgrade fails on re-run trying to remove haproxy_exporter
 - [#3006](https://github.com/epiphany-platform/epiphany/issues/3006) - install 'containerd.io=1.4.12-*' failed, when upgrade from v1.3.0 to 2.0.0dev
 
 ### Updated
