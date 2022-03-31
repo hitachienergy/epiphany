@@ -187,6 +187,21 @@
         reboot_timeout: "{{ reboot.upgrade_timeout }}"
 
     ### POST-UPGRADE -- CLEAN-UP AND VERIFICATION ###
+    - name: Use suggested sshd_config file as default
+      block:
+        - name: Set suggested sshd config file
+          copy:
+            remote_src: true
+            src: /etc/ssh/sshd_config.rpmnew
+            dest: /etc/ssh/sshd_config
+            backup: true
+            force: true
+
+        - name: Restart ssh server
+          service:
+            name: sshd
+            state: restarted
+
     - name: Verify post-upgrade state
       block:
         - name: Gather post-upgrade facts
@@ -311,12 +326,34 @@
     - *UPDATE_PACKAGES
 
     # SELINUX configuration restore
-    - name: Re-enable SELinux
+    - name: Re-enable SElinux
       when:
         - not pre_upgrade_selinux_status.stdout == "disabled"
         - pre_upgrade_selinux_mode == "Enforcing"
-      ansible.posix.selinux:
-        state: enforcing
+      block:
+        - name: Re-enable SELinux
+          ansible.posix.selinux:
+            state: enforcing
+
+        - name: Reboot to ensure selinux enforcement
+          reboot:
+            msg: Reboot initiated by Ansible due to selinux update
+            connect_timeout: "{{ reboot.connect_timeout }}"
+            reboot_timeout: "{{ reboot.update_timeout }}"
+
+    # Only for debuggin purposes while we solve the rejected certs after applying new crypto-policies
+    - name: Manual checks
+      pause:
+        prompt: Manually check ssh connectivity, crypto policies status and cloud-init service
+
+    - name: Set default crypto-policies  # Ensures sshd hostkey if still valid
+      command: update-crypto-policies --set FUTURE
+
+    - name:  Reboot to apply system-wide crypto-policies
+      reboot:
+        msg: Reboot initiated by Ansible due to crypto-policies update
+        connect_timeout: "{{ reboot.connect_timeout }}"
+        reboot_timeout: "{{ reboot.update_timeout }}"
 
     - name: Remove cloud-init cache # Initially populated with python2 dependencies that are unmet in RHEL8
       when: provider == 'azure'
