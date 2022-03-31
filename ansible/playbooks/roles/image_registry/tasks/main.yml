@@ -43,7 +43,7 @@
 
     - name: Check if registry is running
       become: true
-      command: docker ps -q -f 'ancestor=registry:2' -f 'status=running'
+      command: docker ps -q -f 'ancestor=registry:2.8.0' -f 'status=running'
       register: regitry_up_check
       changed_when: false
 
