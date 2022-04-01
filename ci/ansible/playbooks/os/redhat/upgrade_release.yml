@@ -1,17 +1,16 @@
 ---
 # Based on https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/8/html-single/upgrading_from_rhel_7_to_rhel_8/index
 # and partially on https://docs.microsoft.com/en-us/azure/virtual-machines/workloads/redhat/redhat-in-place-upgrade
+
+# This play requires a Leapp metadata archive (tied to a particular subcription},
+# path to this archive must be provided via external vars using the leapp_archive key
+
 # Limitations: ansible connection as root is not possible,
 # root login via ssh is an Inhibitor of release upgrade using LEAPP
 
 - name: In-place RHEL release upgrade
   hosts: "{{ target | default('all') }}"
   become: true
-  connection: paramiko # Ensures connection stability during leapp utility execution
-
-  vars_files:
-    - leapp_metadata.yml
-
   vars:
     required_minor_version: 7.9 # Minimal version from which an upgrade is possible
 
@@ -44,6 +43,8 @@
       connect_timeout: 5 # maximum seconds to wait for a successful connection to the managed hosts before next trial
       update_timeout: 500
       upgrade_timeout: 3600 # Long wait required by Leapp utility service
+
+    ansible_command_timeout: 3600
 
   tasks:
     ### PRE-UPGRADE ###
@@ -116,11 +117,9 @@
         name: "{{ leapp_dependencies.packages[provider] }}"
         state: present
 
-    # The following leapp_metadata archive is tied to a subscription,
-    # thus it has been encrypted to avoid licensing conflicts
-    - name: Create leapp metadata archive
+    - name: Copy leapp metadata archive
       copy:
-        content: "{{ metadata_archive | b64decode }}"
+        src: "{{ leapp_archive }}"
         dest: /etc/leapp/files/leapp-data15.tar.gz
 
     - name: Unarchive leapp metadata
@@ -189,13 +188,21 @@
         reboot_timeout: "{{ reboot.upgrade_timeout }}"
 
     ### POST-UPGRADE -- CLEAN-UP AND VERIFICATION ###
+
+    # Ensure ansible connection and waagent-network-setup restart after deletion of python2
+    - name: Force ansible to discover the new python interpreter for the rest of the play
+      vars:
+        ansible_python_interpreter: /usr/bin/python3
+      setup:
+        gather_subset: '!all'
+
     - name: Use suggested sshd_config file as default
       block:
         - name: Set suggested sshd config file
           copy:
-            remote_src: true
             src: /etc/ssh/sshd_config.rpmnew
             dest: /etc/ssh/sshd_config
+            remote_src: true
             backup: true
             force: true
 
@@ -272,10 +279,10 @@
         - name: Register remaining RHEL7 packages
           shell: "rpm -qa | grep -e '\\.el7' | grep -vE '^(gpg-pubkey|libmodulemd|katello-ca-consumer)'"
           register: remaining_rhel7_packages
-          ignore_errors: true
+          failed_when: remaining_rhel7_packages.rc > 1
 
         - name: Remove remaining RHEL7 packages
-          when: not remaining_rhel7_packages.failed
+          when: remaining_rhel7_packages.stdout_lines | length > 1
           dnf:
             name: "{{ remaining_rhel7_packages.stdout_lines }}"
             state: absent
@@ -285,10 +292,11 @@
           args:
             chdir: /lib/modules
           register: old_kernel_versions
-          ignore_errors: true
+          failed_when: old_kernel_versions.rc != 2
+
 
         - name: Remove weak modules from old kernels
-          when: not old_kernel_versions.failed
+          when: old_kernel_versions.stdout_lines | length > 1
           shell: "[ -x /usr/sbin/weak-modules ] && /usr/sbin/weak-modules --remove-kernel {{ item }}"
           loop: "{{ old_kernel_versions.stdout_lines }}"
 
@@ -323,7 +331,8 @@
     - name: Unset Red Hat subscription manager to consume the latest RHEL content
       when: provider == 'non_cloud'
       command: 'subscription-manager release --unset'
-      ignore_errors: true
+      register: subscription-manager-cmd
+      failed_when: subscription-manager-cmd.rc > 1 # May return code 1 even when correctly subscribed if system purpose is not defined
 
     - *UPDATE_PACKAGES
 
@@ -393,25 +402,13 @@
       when: provider == 'azure'
       shell: 'umount /mnt; mount /mnt'
 
-    - name: Restart temp-disk-dataloss-warning service
+    - name: Restart waagent-network-setup and temp-disk-dataloss-warning services
       when: provider == 'azure'
       service:
-        name: temp-disk-dataloss-warning
+        name:
+         - waagent-network-setup
+         - temp-disk-dataloss-warning
         state: restarted
-
-    - name: Ensure waagent-network-setup service can be started
-      when: provider == 'azure'
-      block:
-        - name: Link python path to python3 executable
-          file:
-            src: /etc/alternatives/python3
-            dest: /usr/bin/python
-            state: link
-
-        - name: Restart waagent-network-setup service # Pre-upgrade systemd unit is specified using old python path
-          service:
-            name: waagent-network-setup
-            state: restarted
 
     - name: Reset the state of systemd failing units
       command: systemctl reset-failed
