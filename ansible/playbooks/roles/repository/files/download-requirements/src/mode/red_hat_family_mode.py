@@ -16,7 +16,7 @@ class RedHatFamilyMode(BaseMode):
     def __init__(self, config: Config):
         super().__init__(config)
         self.__archs: List[str] = [config.os_arch.value, 'noarch']
-        self.__base_packages: List[str] = ['curl', 'wget']
+        self.__base_packages: List[str] = ['curl', 'python3-dnf-plugins-core', 'wget']
         self.__installed_packages: List[str] = []
 
     def _create_backup_repositories(self):
