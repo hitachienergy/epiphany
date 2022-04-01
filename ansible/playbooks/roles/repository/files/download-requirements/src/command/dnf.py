@@ -50,7 +50,7 @@ class Dnf(Command):
 
         if proc.returncode != 0:
             if not 'does not update' in proc.stdout:  # trying to reinstall package with url
-                raise CriticalError(f'yum install failed for `{package}`, reason `{proc.stdout}`')
+                raise CriticalError(f'dnf install failed for `{package}`, reason `{proc.stdout}`')
 
     def remove(self, package: str,
                assume_yes: bool = True):

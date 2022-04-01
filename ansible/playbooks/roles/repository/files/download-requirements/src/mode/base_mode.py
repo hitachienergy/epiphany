@@ -2,13 +2,12 @@ import logging
 from collections import defaultdict
 from os import chmod
 from pathlib import Path
-from typing import Any, Dict
+from typing import Any, Dict, List
 
 import yaml
 
 from src.command.toolchain import Toolchain, TOOLCHAINS
 from src.config.config import Config
-from src.config.os_type import OSFamily
 from src.crypt import get_sha1, get_sha256
 from src.error import CriticalError, ChecksumMismatch
 
@@ -57,38 +56,13 @@ class BaseMode:
 
         return repos
 
-    def __parse_packages(self) -> Dict[str, Any]:
+    def _parse_packages(self) -> Dict[str, Any]:
         """
-        Load packages for target architecture/distro from yaml files.
-        Input file at distro level is mandatory but at family level optional.
+        Load packages for target architecture/distro from yaml file(s).
 
         :returns: parsed packages data
         """
-        distro_level_file: Path = self._cfg.reqs_path / self._cfg.distro_subdir / 'packages.yml'
-        family_level_file: Path = self._cfg.reqs_path / self._cfg.family_subdir / 'packages.yml'
-
-        distro_doc = load_yaml_file(distro_level_file)
-
-        reqs = {
-            'packages': distro_doc['packages'],
-            'prereq-packages': []
-        }
-
-        if self._cfg.os_type.os_family == OSFamily.RedHat:
-            reqs['prereq-packages'] = distro_doc['prereq-packages']
-
-        if family_level_file.exists():
-            family_doc = load_yaml_file(family_level_file)
-
-            reqs['packages']['from_repo'] += family_doc['packages']['from_repo']
-
-            # distro level has precedence
-            reqs['packages']['from_url'] = {**family_doc['packages']['from_url'], **distro_doc['packages']['from_url']}
-
-            if self._cfg.os_type.os_family == OSFamily.RedHat:
-                reqs['prereq-packages'] += family_doc['prereq-packages']
-
-        return reqs
+        raise NotImplementedError
 
     def __parse_requirements(self) -> Dict[str, Any]:
         """
@@ -98,7 +72,7 @@ class BaseMode:
         """
         reqs: Dict = defaultdict(dict)
 
-        reqs.update(self.__parse_packages())
+        reqs.update(self._parse_packages())
 
         # parse distro files:
         distro_files: Path = self._cfg.reqs_path / f'{self._cfg.distro_subdir}/files.yml'
