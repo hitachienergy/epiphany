@@ -1,0 +1,101 @@
+---
+# TODO Refactor containerd role upgrade tasks (https://github.com/epiphany-platform/epiphany/issues/3048)
+- name: Patch stateful apps
+  include_tasks: upgrade/patch-statesfulset.yml
+  when:
+    - inventory_hostname == groups.kubernetes_master[0]
+
+- name: Drain nodes in preparation for maintenance
+  include_tasks: upgrade/drain-nodes.yml
+  when:
+    - groups.kubernetes_node is defined
+    - groups.kubernetes_node | length > 0
+
+- name: Get information on installed packages
+  package_facts:
+    manager: auto
+
+- name: Stop involved services before Docker removal
+  block:
+    - name: Stop Kubelet
+      systemd:
+        name: kubelet
+        state: stopped
+
+    - name: Stop Docker
+      systemd:
+        name: kubelet
+        state: stopped
+        enabled: false
+      when:
+        - inventory_hostname not in groups.image_registry
+        - ansible_facts.packages['docker-ce'] is defined
+
+- name: Install containerd.io package
+  package:
+    name: "{{ _packages[ansible_os_family] }}"
+    state: present
+  vars:
+    _packages:
+      Debian:
+        - containerd.io={{ containerd_version }}-*
+      RedHat:
+        - containerd.io-{{ containerd_version }}
+  module_defaults:
+    yum: {lock_timeout: "{{ yum_lock_timeout }}",
+          allow_downgrade: true}
+    apt: {allow_downgrade: true}
+
+- name: Configure prerequisites
+  include_tasks: configure-prerequisites.yml
+
+- name: Configure containerd
+  include_tasks: configure-containerd.yml
+
+- name: Configure kubelet-env
+  include_tasks: configure-kubelet-env.yml
+
+# There are already bandlers responsible for restart of these services however it is required
+# to restart them earlier, before uncordoning the hosts
+# TODO Refactor containerd role upgrade tasks (https://github.com/epiphany-platform/epiphany/issues/3048)
+- name: Restart containerd
+  systemd:
+    name: containerd
+    state: restarted
+    enabled: true
+
+- name: Restart kubelet
+  systemd:
+    name: kubelet
+    state: restarted
+    enabled: true
+
+- name: Provide crictl.yaml file
+  copy:
+    src: crictl.yaml
+    dest: /etc/crictl.yaml
+    owner: root
+    group: root
+    mode: u=rw,go=r
+
+- name: Remove Docker
+  include_role:
+    name: docker
+    tasks_from: remove-docker.yml
+  when:
+    - inventory_hostname not in groups.image_registry
+    - ansible_facts.packages['docker-ce'] is defined
+
+# TODO Refactor containerd role upgrade tasks (https://github.com/epiphany-platform/epiphany/issues/3048)
+- name: Wait for cluster's readiness
+  include_role:
+    name: upgrade
+    tasks_from: kubernetes/utils/wait.yml
+
+- name: Uncordon master or node - mark as schedulable
+  when:
+    - groups.kubernetes_node is defined
+    - groups.kubernetes_node | length > 0
+  include_role:
+    name: upgrade
+    tasks_from: kubernetes/utils/uncordon.yml

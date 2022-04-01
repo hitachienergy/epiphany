@@ -40,9 +40,9 @@
   become: true
   become_method: sudo
   tasks:
-    - import_role:
+    - include_role:
         name: containerd
-        tasks_from: main
+        tasks_from: upgrade/main
       when: "'kubernetes' in upgrade_components or upgrade_components|length == 0"
   environment:
     KUBECONFIG: "{{ kubeconfig.remote }}"

@@ -14,3 +14,15 @@ docker_daemon_defaults:
 docker_version:
   Debian: "5:20.10.8*" # * is needed to match a version such as '5:19.03.14~3-0~ubuntu-bionic'
   RedHat: "20.10.8"
+
+docker_packages:
+  Debian:
+    - containerd.io={{ containerd_defaults.containerd_version }}-*
+    - docker-ce-cli={{ docker_version.Debian }}
+    - docker-ce-rootless-extras={{ docker_version.Debian }}
+    - docker-ce={{ docker_version.Debian }}
+  RedHat:
+    - containerd.io-{{ containerd_defaults.containerd_version }}
+    - docker-ce-cli-{{ docker_version.RedHat }}
+    - docker-ce-rootless-extras-{{ docker_version.RedHat }}
+    - docker-ce-{{ docker_version.RedHat }}
