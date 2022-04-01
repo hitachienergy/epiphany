@@ -96,13 +96,13 @@ class DnfRepoquery(Command):
             :class:`ValueError`: when `packages` list is empty
         :returns: query result
         """
+        # repoquery without KEY argument will query dependencies for all packages
+        if not packages:
+            raise ValueError('packages: list cannot be empty')
 
         def output_handler(output: str):
             """ Handle errors """
             if 'error' in output:
-                raise CriticalError(f'repoquery failed for packages `{packages}`, reason: `{output}`')
+                raise CriticalError(f'dnf repoquery failed for packages `{packages}`, reason: `{output}`')
 
-        if packages:
-            return self.__query(packages, queryformat, archlist, True, True, output_handler)
-        else:
-            raise ValueError('packages: list cannot be empty')
+        return self.__query(packages, queryformat, archlist, True, True, output_handler)

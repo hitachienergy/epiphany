@@ -11,7 +11,6 @@
 
 - name: Set OS name for download script
   set_fact:
-    # TODO: test AlmaLinux on Azure & AWS
     download_requirements_os_name: >-
       {{ 'almalinux-8' if (ansible_distribution == 'AlmaLinux' and ansible_distribution_major_version == '8') else
          'rhel-8' if (ansible_distribution == 'RedHat' and ansible_distribution_major_version == '8') else

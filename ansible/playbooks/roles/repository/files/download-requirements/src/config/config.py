@@ -23,7 +23,6 @@ class Config:
         self.log_file: Path
         self.os_arch: OSArch
         self.os_type: OSType
-        self.pip_installed: bool = False
         self.pyyaml_installed: bool = False
         self.repo_path: Path
         self.repos_backup_file: Path
@@ -96,8 +95,6 @@ class Config:
 
         # offline mode rerun options:
         parser.add_argument('--rerun', action='store_true', dest='rerun',
-                            default=False, help=SUPPRESS)
-        parser.add_argument('--pip-installed', action='store_true', dest='pip_installed',
                             default=False, help=SUPPRESS)
         parser.add_argument('--pyyaml-installed', action='store_true', dest='pyyaml_installed',
                             default=False, help=SUPPRESS)
@@ -201,5 +198,4 @@ class Config:
 
         # offline mode
         self.rerun = args['rerun']
-        self.pip_installed = args['pip_installed']
         self.pyyaml_installed = args['pyyaml_installed']
