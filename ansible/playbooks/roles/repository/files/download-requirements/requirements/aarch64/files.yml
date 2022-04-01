@@ -1,0 +1,40 @@
+---
+files:
+  # --- Exporters ---
+  'https://github.com/danielqsj/kafka_exporter/releases/download/v1.4.0/kafka_exporter-1.4.0.linux-arm64.tar.gz':
+    sha256: 95ff0c723f3cdb6967b54c0208a5d0e67ad59dc53c1907a401cb8a448e53ec96
+
+  'https://repo1.maven.org/maven2/io/prometheus/jmx/jmx_prometheus_javaagent/0.16.1/jmx_prometheus_javaagent-0.16.1.jar':
+    sha256: 0ddc6834f854c03d5795305193c1d33132a24fbd406b4b52828602f5bc30777e
+
+  'https://github.com/prometheus/node_exporter/releases/download/v1.3.1/node_exporter-1.3.1.linux-arm64.tar.gz':
+    sha256: f19f35175f87d41545fa7d4657e834e3a37c1fe69f3bf56bc031a256117764e7
+
+  'https://github.com/prometheus-community/postgres_exporter/releases/download/v0.10.0/postgres_exporter-0.10.0.linux-arm64.tar.gz':
+    sha256: 82a1a4e07c7140f8e55532dbbdfea3bbba33dafc7ef0a221601bb2fd5359ff03
+
+  # --- Misc ---
+  'https://archive.apache.org/dist/kafka/2.8.1/kafka_2.12-2.8.1.tgz':
+    sha256: 175a4134efc569a586d58916cd16ce70f868b13dea2b5a3d12a67b1395d59f98
+
+  'https://archive.apache.org/dist/zookeeper/zookeeper-3.5.8/apache-zookeeper-3.5.8-bin.tar.gz':
+    sha256: c35ed6786d59b73920243f1a324d24c2ddfafb379041d7a350cc9a341c52caf3
+
+  'https://github.com/prometheus/alertmanager/releases/download/v0.23.0/alertmanager-0.23.0.linux-arm64.tar.gz':
+    sha256: afa44f350797032ceb714598900cfdddbf81d6ef03d2ecbfc0221cc2cb28a6b9
+
+  'https://github.com/prometheus/prometheus/releases/download/v2.31.1/prometheus-2.31.1.linux-arm64.tar.gz':
+    sha256: a7b4694b96cbf38b63ca92d05a6d3a2cf6df50a85a4d2a3fe2d758a65dcbec3b
+
+  'https://get.helm.sh/helm-v3.2.0-linux-arm64.tar.gz':
+    sha256: cd11f0ed12a658f3b78392528814350a508d2c53d8da7f04145909e94bda10f1
+
+  'https://archive.apache.org/dist/logging/log4j/2.17.1/apache-log4j-2.17.1-bin.tar.gz':
+    sha256: b876c20c9d318d77a39c0c2e095897b2bb1cd100c7859643f8c7c8b0fc6d5961
+
+  # --- Helm charts ---
+  'https://charts.bitnami.com/bitnami/node-exporter-2.3.17.tgz':
+    sha256: ec586fabb775a4f05510386899cf348391523c89ff5a1d4097b0592e675ade7f
+
+  'https://helm.elastic.co/helm/filebeat/filebeat-7.9.2.tgz':
+    sha256: 5140b4c4473ca33a0af4c3f70545dcc89735c0a179d974ebc150f1f28ac229ab
