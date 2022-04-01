@@ -30,10 +30,6 @@ class DnfDownload(Command):
             args.append('--quiet')
 
         args.append('-y')
-
-        if packages:
-            args.extend(packages)
-        else:
-            raise ValueError('packages: list cannot be empty')
+        args.extend(packages)
 
         self.run(args)

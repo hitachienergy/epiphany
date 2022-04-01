@@ -1,11 +1,11 @@
 import logging
 import shutil
 from pathlib import Path
-from typing import List
+from typing import Any, Dict, List
 
 from src.command.command import Command
 from src.config.config import Config
-from src.mode.base_mode import BaseMode
+from src.mode.base_mode import BaseMode, load_yaml_file
 
 
 class RedHatFamilyMode(BaseMode):
@@ -36,7 +36,7 @@ class RedHatFamilyMode(BaseMode):
         # make sure that we reinstall it before proceeding
         if self._tools.rpm.is_package_installed('epel-release'):
             if not self._tools.dnf.is_repo_enabled('epel') or not self._tools.dnf.is_repo_enabled('epel-modular'):
-                self._tools.yum.remove('epel-release')
+                self._tools.dnf.remove('epel-release')
 
         self._tools.dnf.install('https://dl.fedoraproject.org/pub/epel/epel-release-latest-8.noarch.rpm')
         self.__installed_packages.append('epel-release')
@@ -56,7 +56,7 @@ class RedHatFamilyMode(BaseMode):
     def _add_third_party_repositories(self):
         # Fix for RHUI client certificate expiration [#2318]
         if self._tools.dnf.is_repo_enabled('rhui-microsoft-azure-rhel'):
-            self._tools.dnf.update('rhui-microsoft-azure-rhel*')
+            self._tools.dnf.update(enablerepo='rhui-microsoft-azure-rhel*')
 
         for repo in self._repositories:
             repo_filepath = Path('/etc/yum.repos.d') / f'{repo}.repo'
@@ -96,14 +96,33 @@ class RedHatFamilyMode(BaseMode):
                     if repocache.name.startswith(repo['Repo-id']):
                         shutil.rmtree(str(repocache))
 
+    def _parse_packages(self) -> Dict[str, Any]:
+        distro_level_file: Path = self._cfg.reqs_path / self._cfg.distro_subdir / 'packages.yml'
+        family_level_file: Path = self._cfg.reqs_path / self._cfg.family_subdir / 'packages.yml'
+
+        distro_doc = load_yaml_file(distro_level_file)
+        family_doc = load_yaml_file(family_level_file)
+
+        reqs: Dict = {
+            'packages': distro_doc['packages'],
+            'prereq-packages': distro_doc['prereq-packages'] + family_doc['prereq-packages']
+        }
+
+        reqs['packages']['from_repo'] += family_doc['packages']['from_repo']
+
+        # distro level has precedence
+        reqs['packages']['from_url'] = {**family_doc['packages']['from_url'], **distro_doc['packages']['from_url']}
+
+        return reqs
+
     def __download_prereq_packages(self) -> List[str]:
         # download requirements (fixed versions)
         prereqs_dir = self._cfg.dest_packages / 'repo-prereqs'
         prereqs_dir.mkdir(exist_ok=True, parents=True)
 
-        prereq_packages: list[str] = sorted(set(self._requirements['prereq-packages']))
+        prereq_packages: List[str] = sorted(set(self._requirements['prereq-packages']))
 
-        collected_prereqs: list[str] = self._tools.repoquery.query(prereq_packages,
+        collected_prereqs: List[str] = self._tools.repoquery.query(prereq_packages,
                                                                    queryformat='%{name}-%{version}-%{release}.%{arch}',
                                                                    archlist=self.__archs)
 
@@ -116,21 +135,21 @@ class RedHatFamilyMode(BaseMode):
         return collected_prereqs
 
     def _download_packages(self):
-        downloaded_prereq_packages: list[str] = self.__download_prereq_packages()
+        downloaded_prereq_packages: List[str] = self.__download_prereq_packages()
 
-        packages: list[str] = sorted(set(self._requirements['packages']['from_repo']))
+        packages: List[str] = sorted(set(self._requirements['packages']['from_repo']))
 
         # packages
-        queried_packages: list[str] = self._tools.repoquery.query(packages,
+        queried_packages: List[str] = self._tools.repoquery.query(packages,
                                                                   queryformat='%{name}-%{version}-%{release}.%{arch}',
                                                                   archlist=self.__archs)
 
-        packages_to_download: list[str] = sorted(set(queried_packages).difference(downloaded_prereq_packages))
+        packages_to_download: List[str] = sorted(set(queried_packages) - set(downloaded_prereq_packages))
 
         logging.info('- packages to download: %s', packages_to_download)
 
         # dependencies
-        dependencies: list[str] = self._tools.repoquery.get_dependencies(packages_to_download,
+        dependencies: List[str] = self._tools.repoquery.get_dependencies(packages_to_download,
                                                                          queryformat='%{name}.%{arch}',
                                                                          archlist=self.__archs)
 
