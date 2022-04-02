@@ -224,9 +224,9 @@ class InfrastructureBuilder(Step):
         vm = dict_to_objdict(deepcopy(vm_config))
         vm.specification.name = resource_name(self.cluster_prefix, self.cluster_name, 'vm' + '-' + str(index), component_key)
         if self.hostname_domain_extension != '':
-            vm.specification.hostname = resource_name(self.cluster_prefix, self.cluster_name, 'vm' + '-' + str(index) + f'.{self.hostname_domain_extension}', component_key)
+            vm.specification.hostname = resource_name(self.cluster_prefix, self.cluster_name, 'vm' + '-' + str(index) + f'.{self.hostname_domain_extension}', component_key.replace('kubernetes', 'k8s'))
         else:
-            vm.specification.hostname = vm.specification.name
+            vm.specification.hostname = resource_name(self.cluster_prefix, self.cluster_name, 'vm' + '-' + str(index), component_key.replace('kubernetes', 'k8s'))
         vm.specification.admin_username = self.cluster_model.specification.admin_user.name
         vm.specification.network_interface_name = network_interface_name
         vm.specification.use_network_security_groups = self.use_network_security_groups
