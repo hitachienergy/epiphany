@@ -223,6 +223,7 @@ class InfrastructureBuilder(Step):
     def get_vm(self, component_key, vm_config, availability_set, network_interface_name, security_group_association_name, index):
         vm = dict_to_objdict(deepcopy(vm_config))
         vm.specification.name = resource_name(self.cluster_prefix, self.cluster_name, 'vm' + '-' + str(index), component_key)
+        # K8s hostnames are modified in the scope of https://github.com/epiphany-platform/epiphany/issues/2996
         if self.hostname_domain_extension != '':
             vm.specification.hostname = resource_name(self.cluster_prefix, self.cluster_name, 'vm' + '-' + str(index) + f'.{self.hostname_domain_extension}', component_key.replace('kubernetes', 'k8s'))
         else:
