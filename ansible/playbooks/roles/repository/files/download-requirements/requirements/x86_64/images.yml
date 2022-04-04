@@ -162,7 +162,7 @@ images:
     sha1: f076bd75359c6449b965c48eb8bad96c6d40790d
 
   'k8s.gcr.io/sig-storage/csi-node-driver-registrar:v2.5.0':
-    sha1: 07104d23bbb224f81ef6b8fd379b01a7cbba0946
+    sha1: 129eb73c8e118e5049fee3d273b2d477c547e080
 
   'k8s.gcr.io/sig-storage/csi-provisioner:v3.1.0':
     sha1: 55c9d55eb0f2cbe9e37e5464e578b2d7fa45f8f8
