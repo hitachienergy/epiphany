@@ -171,7 +171,7 @@ images:
     sha1: ce5c57454254c195762c1f58e1d902d7e81ea669
 
   'k8s.gcr.io/sig-storage/csi-snapshotter:v5.0.1':
-    sha1: 8deb564fde820c7f795d8b425f867d4194edd088
+    sha1: be1cf43617eea007629c0eb99149a99b6498f889
 
   'quay.io/ceph/ceph:v16.2.7':
     sha1: 039717f406243b516fead5c36d2d5698c458bf21
