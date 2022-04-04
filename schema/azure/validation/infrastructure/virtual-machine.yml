@@ -7,6 +7,8 @@ properties:
     type: string
   hostname:
     type: string
+  alt_component_name:
+    type: string
   admin_username:
     type: string
   admin_password:

@@ -5,6 +5,7 @@ name: default
 specification:
   name: SET_BY_AUTOMATION
   hostname: SET_BY_AUTOMATION
+  alt_component_name: '' # GH issue #2996. Used to modify hostname part, e.g. kubernetes-master -> k8s-master
   admin_username: SET_BY_AUTOMATION
   admin_password: SET_BY_AUTOMATION
   public_key: SET_BY_AUTOMATION

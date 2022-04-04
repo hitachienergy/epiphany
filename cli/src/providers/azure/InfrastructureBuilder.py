@@ -65,6 +65,11 @@ class InfrastructureBuilder(Step):
             # The vm config also contains some other stuff we use for network and security config.
             # So get it here and pass it allong.
             vm_config = self.get_virtual_machine(component_value)
+
+            alt_component_name = vm_config.specification['alt_component_name']
+            if alt_component_name and alt_component_name.strip():
+                component_key = alt_component_name
+
             # Set property that controls cloud-init.
             vm_config.specification['use_cloud_init_custom_data'] = cloud_init_custom_data.specification.enabled
 
@@ -223,11 +228,10 @@ class InfrastructureBuilder(Step):
     def get_vm(self, component_key, vm_config, availability_set, network_interface_name, security_group_association_name, index):
         vm = dict_to_objdict(deepcopy(vm_config))
         vm.specification.name = resource_name(self.cluster_prefix, self.cluster_name, 'vm' + '-' + str(index), component_key)
-        # K8s hostnames are modified in the scope of https://github.com/epiphany-platform/epiphany/issues/2996
         if self.hostname_domain_extension != '':
-            vm.specification.hostname = resource_name(self.cluster_prefix, self.cluster_name, 'vm' + '-' + str(index) + f'.{self.hostname_domain_extension}', component_key.replace('kubernetes', 'k8s'))
+            vm.specification.hostname = resource_name(self.cluster_prefix, self.cluster_name, 'vm' + '-' + str(index) + f'.{self.hostname_domain_extension}', component_key)
         else:
-            vm.specification.hostname = resource_name(self.cluster_prefix, self.cluster_name, 'vm' + '-' + str(index), component_key.replace('kubernetes', 'k8s'))
+            vm.specification.hostname = vm.specification.name
         vm.specification.admin_username = self.cluster_model.specification.admin_user.name
         vm.specification.network_interface_name = network_interface_name
         vm.specification.use_network_security_groups = self.use_network_security_groups
