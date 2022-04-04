@@ -168,7 +168,7 @@ images:
     sha1: 2b45e5a3432cb89f3aec59584c1fa92c069e7a38
 
   'k8s.gcr.io/sig-storage/csi-resizer:v1.4.0':
-    sha1: 289bafda08f126423dcf7ad78f08a5d8ed57a82e
+    sha1: ce5c57454254c195762c1f58e1d902d7e81ea669
 
   'k8s.gcr.io/sig-storage/csi-snapshotter:v5.0.1':
     sha1: 8deb564fde820c7f795d8b425f867d4194edd088
