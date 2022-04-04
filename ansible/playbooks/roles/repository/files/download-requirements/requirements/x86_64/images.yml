@@ -159,7 +159,7 @@ images:
 
   # --- Rook ---
   'k8s.gcr.io/sig-storage/csi-attacher:v3.4.0':
-    sha1: 8567876a11c527e9d406d3f3efa09e3cee437985
+    sha1: f076bd75359c6449b965c48eb8bad96c6d40790d
 
   'k8s.gcr.io/sig-storage/csi-node-driver-registrar:v2.5.0':
     sha1: 07104d23bbb224f81ef6b8fd379b01a7cbba0946
