@@ -78,6 +78,24 @@ resource "azurerm_virtual_machine" "{{ specification.name }}" {
   depends_on = [azurerm_network_interface_security_group_association.{{ specification.security_group_association_name }}]
   {%- endif %}
 
-  #TODO:
-  # storage_data_disk
 }
+
+{%- if specification.additional_disks is defined %}
+  {%- for disk in specification.additional_disks %}
+resource "azurerm_managed_disk" "{{ specification.name }}-data-disk-{{ loop.index0 }}" {
+  name                 = "{{ specification.name }}-data-disk-{{ loop.index0 }}"
+  location             = azurerm_resource_group.rg.location
+  resource_group_name  = azurerm_resource_group.rg.name
+  storage_account_type = "{{ disk.storage_account_type }}"
+  create_option        = "Empty"
+  disk_size_gb         = "{{ disk.disk_size_gb }}"
+}
+
+resource "azurerm_virtual_machine_data_disk_attachment" "{{ specification.name }}-disk-attachment-{{ loop.index0 }}" {
+  managed_disk_id    = azurerm_managed_disk.{{ specification.name }}-data-disk-{{ loop.index0 }}.id
+  virtual_machine_id = azurerm_virtual_machine.{{ specification.name }}.id
+  lun                = "{{ loop.index0 }}"
+  caching            = "ReadWrite"
+}
+  {%- endfor %}
+{%- endif %}
