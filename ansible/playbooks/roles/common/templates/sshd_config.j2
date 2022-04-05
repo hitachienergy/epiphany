@@ -42,9 +42,3 @@ ChallengeResponseAuthentication no
 # PAM authentication, then enable this but set PasswordAuthentication
 # and ChallengeResponseAuthentication to 'no'.
 UsePAM yes
-{# On Ubuntu 20.04 UsePrivilegeSeparation is deprecated #}
-{% if ansible_os_family == 'RedHat' %}
-# Use kernel sandbox mechanisms where possible in unprivileged processes
-# Systrace on OpenBSD, Seccomp on Linux, seatbelt on MacOSX/Darwin, rlimit elsewhere.
-UsePrivilegeSeparation sandbox
-{% endif %}
