@@ -444,7 +444,7 @@ To set up the cluster do the following steps from the provisioning machine:
                   The following values are accepted:
                   - `default`: Applies user defined `infrastructure/virtual-machine` documents when generating a new configuration.
                   - `ubuntu-20.04-x86_64`: Applies the latest validated and tested Ubuntu 20.04 image to all `infrastructure/virtual-machine` documents on `x86_64` on Azure and AWS.
-                  - `redhat-8-x86_64`: Applies the latest validated and tested RedHat 8.x image to all `infrastructure/virtual-machine` documents on `x86_64` on Azure and AWS.
+                  - `rhel-8-x86_64`: Applies the latest validated and tested RedHat 8.x image to all `infrastructure/virtual-machine` documents on `x86_64` on Azure and AWS.
                   - `almalinux-8-x86_64`: Applies the latest validated and tested AlmaLinux 8.x image to all `infrastructure/virtual-machine` documents on `x86_64` on Azure and AWS.
                   - `almalinux-8-arm64`: Applies the latest validated and tested AlmaLinux 8.x image to all `infrastructure/virtual-machine` documents on `arm64` on AWS. Azure currently doesn't support `arm64`.
                   The images which will be used for these values will be updated and tested on regular basis.
