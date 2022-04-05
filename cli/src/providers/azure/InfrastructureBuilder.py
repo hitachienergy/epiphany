@@ -236,7 +236,7 @@ class InfrastructureBuilder(Step):
         else:
             vm.specification.hostname = resource_name(self.cluster_prefix, self.cluster_name, 'vm' + '-' + str(index), host_component_key)
         if len(vm.specification.hostname) > 64:
-            raise Exception('Linux host name cannot exceed 64 characters in length. Consider setting alt_component_name property.')
+            raise Exception(f'Linux host name cannot exceed 64 characters in length, yours is {vm.specification.hostname}. Consider setting alt_component_name property.')
         vm.specification.admin_username = self.cluster_model.specification.admin_user.name
         vm.specification.network_interface_name = network_interface_name
         vm.specification.use_network_security_groups = self.use_network_security_groups
