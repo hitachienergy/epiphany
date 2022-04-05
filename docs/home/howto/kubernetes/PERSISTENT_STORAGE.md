@@ -127,10 +127,11 @@ More information about Helm Chart values may be found:
 - [Helm Ceph Cluster](https://github.com/rook/rook/blob/master/Documentation/helm-ceph-cluster.md)
 
 Sample configuration files that can be used in Epiphany `configuration/rook`:
-- [Helm Operator](https://raw.githubusercontent.com/rook/rook/v1.8.5/deploy/charts/rook-ceph/values.yaml)
-- [Helm Ceph Cluster](https://raw.githubusercontent.com/rook/rook/v1.8.5/deploy/charts/rook-ceph-cluster/values.yaml)
+- [Helm Operator](https://raw.githubusercontent.com/rook/rook/v1.8.8/deploy/charts/rook-ceph/values.yaml)
+- [Helm Ceph Cluster](https://raw.githubusercontent.com/rook/rook/v1.8.8/deploy/charts/rook-ceph-cluster/values.yaml)
 
 More informations about Rook with Ceph storage may be found in the official Rook [documentation](https://rook.io/docs/rook/v1.8/).
+
 ### Azure
 
 #### Infrastructure
