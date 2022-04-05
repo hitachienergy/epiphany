@@ -179,5 +179,5 @@ images:
   'quay.io/cephcsi/cephcsi:v3.5.1':
     sha1: 51dee9ea8ad76fb95ebd16f951e8ffaaaba95eb6
 
-  'rook/ceph:v1.8.5':
-    sha1: a70ecb9007032e4374ba01c1a3140e3136ed298b
+  'rook/ceph:v1.8.8':
+    sha1: f34039b17b18f5a855b096d48ff787b4013615e4
