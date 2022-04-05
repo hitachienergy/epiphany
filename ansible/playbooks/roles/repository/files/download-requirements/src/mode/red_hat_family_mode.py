@@ -87,14 +87,26 @@ class RedHatFamilyMode(BaseMode):
 
     def __remove_dnf_cache_for_untracked_repos(self):
         # clean metadata for upgrades (when the same package can be downloaded from changed repo)
-        repoinfo: List[str] = self._tools.dnf.list_all_repos_info()
-        repocaches: List[str] = [repodir for repodir in Path('/var/cache/dnf').iterdir() if repodir.is_dir()]
+        repocaches: List[str] = list(Path('/var/cache/dnf').iterdir())
 
-        for repo in repoinfo:
-            if repo['Repo-status'] == 'disabled':
-                for repocache in repocaches:
-                    if repocache.name.startswith(repo['Repo-id']):
+        repo_names = [
+            '2ndquadrant',
+            'docker-ce',
+            'epel',
+            'microsoft',
+            'rhui',
+        ] + list(self._repositories.keys())
+
+        for repocache in repocaches:
+            matched_files = [repocache.name.startswith(repo_name) for repo_name in repo_names]
+            if any(matched_files):
+                try:
+                    if repocache.is_dir():
                         shutil.rmtree(str(repocache))
+                    else:
+                        repocache.unlink()
+                except FileNotFoundError:
+                    logging.debug('__remove_dnf_cache_for_untracked_repos: cache file already removed')
 
     def _parse_packages(self) -> Dict[str, Any]:
         distro_level_file: Path = self._cfg.reqs_path / self._cfg.distro_subdir / 'packages.yml'
@@ -180,3 +192,5 @@ class RedHatFamilyMode(BaseMode):
         for package in self.__installed_packages:
             if self._tools.rpm.is_package_installed(package):
                 self._tools.dnf.remove(package)
+
+        self.__remove_dnf_cache_for_untracked_repos()

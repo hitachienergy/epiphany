@@ -2,7 +2,7 @@ import logging
 from collections import defaultdict
 from os import chmod
 from pathlib import Path
-from typing import Any, Dict, List
+from typing import Any, Dict
 
 import yaml
 

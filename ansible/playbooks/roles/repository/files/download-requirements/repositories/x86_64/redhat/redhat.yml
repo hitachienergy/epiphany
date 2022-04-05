@@ -24,7 +24,7 @@ repositories:
     gpg_keys:
       - https://artifacts.elastic.co/GPG-KEY-elasticsearch
 
-  elasticsearch-curator-5:
+  curator-5:
     data: |
       [curator-5]
       name=CentOS/RHEL 7 repository for Elasticsearch Curator 5.x packages
@@ -59,7 +59,7 @@ repositories:
     gpg_keys:
       - https://d3g5vo6xdbdb9a.cloudfront.net/GPG-KEY-opendistroforelasticsearch
 
-  postgresql-13:
+  pgdg13:
     data: |
       [pgdg13]
       name=PostgreSQL 13 for RHEL/CentOS $releasever - $basearch
