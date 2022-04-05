@@ -45,8 +45,8 @@ images:
   'k8s.gcr.io/etcd:3.4.3-0':
     sha1: 6ee82ddb1bbc7f1831c42046612b8bcfbb171b45
 
-  'quay.io/coreos/flannel:v0.12.0-amd64':
-    sha1: 3516522e779373983992095e61eb6615edd50d1f
+  'quay.io/coreos/flannel:v0.12.0-arm64':
+    sha1: 6ea3e517fd9e80a148ffd830d951424c66b2e1c9
 
   'quay.io/coreos/flannel:v0.12.0':
     sha1: 2cb6ce8f1361886225526767c4a0422c039453c8
@@ -139,8 +139,8 @@ images:
   'k8s.gcr.io/pause:3.5':
     sha1: bf3e3420df62f093f94c41d2b7a62b874dcbfc28
 
-  'quay.io/coreos/flannel:v0.14.0-amd64':
-    sha1: cff47465996a51de4632b53abf1fca873f147027
+  'quay.io/coreos/flannel:v0.14.0-arm64':
+    sha1: 626ba4d28dc453fd32f738583164cd2a05da1549
 
   'quay.io/coreos/flannel:v0.14.0':
     sha1: a487a36f7b31677e50e74b96b944f27fbce5ac13

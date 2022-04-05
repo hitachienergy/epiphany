@@ -85,6 +85,7 @@ packages:
     - 'pgaudit15_13-1.5.0'
     - 'pkgconf'  # for bash-completion
     - 'pkgconf-pkg-config'  # for bash-completion
+    - 'postgresql13-server'
     - 'python3-cffi'  # for python3-cryptography
     - 'python3-cryptography'
     - 'python3-firewall'  # for firewalld
@@ -99,10 +100,8 @@ packages:
     - 'python36'  # there is no python3 package
     - 'quota'  # for nfs-utils
     - 'rabbitmq-server-3.8.9'
+    - 'rdma-core'
     - 'rsync'
-    - 'postgresql13-server'
-    - 'repmgr10-5.2.1'  # used to upgrade repmgr first
-    - 'repmgr13-5.2.1'
     - 'samba-client'
     - 'samba-client-libs'  # for samba-client
     - 'samba-common'

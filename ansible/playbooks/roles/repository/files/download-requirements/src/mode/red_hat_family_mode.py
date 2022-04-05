@@ -36,7 +36,7 @@ class RedHatFamilyMode(BaseMode):
         # make sure that we reinstall it before proceeding
         if self._tools.rpm.is_package_installed('epel-release'):
             if not self._tools.dnf.is_repo_enabled('epel') or not self._tools.dnf.is_repo_enabled('epel-modular'):
-                self._tools.yum.remove('epel-release')
+                self._tools.dnf.remove('epel-release')
 
         self._tools.dnf.install('https://dl.fedoraproject.org/pub/epel/epel-release-latest-8.noarch.rpm')
         self.__installed_packages.append('epel-release')
@@ -76,14 +76,16 @@ class RedHatFamilyMode(BaseMode):
             self._tools.dnf_config_manager.add_repo('https://download.docker.com/linux/centos/docker-ce.repo')
             self._tools.dnf.accept_keys()
 
-        for repo in ['https://dl.2ndquadrant.com/default/release/get/10/rpm',  # for repmgr
-                     'https://dl.2ndquadrant.com/default/release/get/13/rpm']:
-            Command('curl', self._cfg.retries, [repo]) | Command('bash', self._cfg.retries)  # curl {repo} | bash
+        # repmgr is supported only with x86_64 architecture
+        if 'x86_64' in self.__archs:
+            for repo in ['https://dl.2ndquadrant.com/default/release/get/10/rpm',  # for repmgr
+                        'https://dl.2ndquadrant.com/default/release/get/13/rpm']:
+                Command('curl', self._cfg.retries, [repo]) | Command('bash', self._cfg.retries)  # curl {repo} | bash
 
-        # script adds 2 repositories, only 1 is required
-        for repo in ['2ndquadrant-dl-default-release-pg10-debug',
-                     '2ndquadrant-dl-default-release-pg13-debug']:
-            self._tools.dnf_config_manager.disable_repo(repo)
+            # script adds 2 repositories, only 1 is required
+            for repo in ['2ndquadrant-dl-default-release-pg10-debug',
+                        '2ndquadrant-dl-default-release-pg13-debug']:
+                self._tools.dnf_config_manager.disable_repo(repo)
 
     def __remove_dnf_cache_for_untracked_repos(self):
         # clean metadata for upgrades (when the same package can be downloaded from changed repo)
