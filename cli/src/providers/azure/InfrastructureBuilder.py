@@ -66,10 +66,6 @@ class InfrastructureBuilder(Step):
             # So get it here and pass it allong.
             vm_config = self.get_virtual_machine(component_value)
 
-            alt_component_name = vm_config.specification['alt_component_name']
-            if alt_component_name and alt_component_name.strip():
-                component_key = alt_component_name
-
             # Set property that controls cloud-init.
             vm_config.specification['use_cloud_init_custom_data'] = cloud_init_custom_data.specification.enabled
 
@@ -228,10 +224,17 @@ class InfrastructureBuilder(Step):
     def get_vm(self, component_key, vm_config, availability_set, network_interface_name, security_group_association_name, index):
         vm = dict_to_objdict(deepcopy(vm_config))
         vm.specification.name = resource_name(self.cluster_prefix, self.cluster_name, 'vm' + '-' + str(index), component_key)
+
+        # component_key is not changed as it requieres further changes in Ansible configuration
+        alt_component_name = vm.specification.alt_component_name
+        host_component_key = component_key
+        if alt_component_name and alt_component_name.strip():
+            host_component_key = alt_component_name
+
         if self.hostname_domain_extension != '':
-            vm.specification.hostname = resource_name(self.cluster_prefix, self.cluster_name, 'vm' + '-' + str(index) + f'.{self.hostname_domain_extension}', component_key)
+            vm.specification.hostname = resource_name(self.cluster_prefix, self.cluster_name, 'vm' + '-' + str(index) + f'.{self.hostname_domain_extension}', host_component_key)
         else:
-            vm.specification.hostname = vm.specification.name
+            vm.specification.hostname = resource_name(self.cluster_prefix, self.cluster_name, 'vm' + '-' + str(index), host_component_key)
         if len(vm.specification.hostname) > 64:
             raise Exception('Linux host name cannot exceed 64 characters in length. Consider setting alt_component_name property.')
         vm.specification.admin_username = self.cluster_model.specification.admin_user.name
