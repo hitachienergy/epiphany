@@ -122,6 +122,7 @@ properties:
         default: ''
         examples:
         - extension
+        pattern: "^[a-zA-Z0-9.-]+$"
   components:
     "$id": "#/properties/components"
     type: object
