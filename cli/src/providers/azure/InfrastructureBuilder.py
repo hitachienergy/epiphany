@@ -225,7 +225,7 @@ class InfrastructureBuilder(Step):
         vm = dict_to_objdict(deepcopy(vm_config))
         vm.specification.name = resource_name(self.cluster_prefix, self.cluster_name, 'vm' + '-' + str(index), component_key)
 
-        # component_key is not changed as it requieres further changes in Ansible configuration
+        # component_key is not changed as it requires further changes in Ansible configuration
         alt_component_name = vm.specification.alt_component_name
         host_component_key = component_key
         if alt_component_name and alt_component_name.strip():

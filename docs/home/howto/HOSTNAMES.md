@@ -26,14 +26,15 @@ Changing this configuration leads to replacement of component's virtual machines
 
 ---
 
-Usually component names are predefined, but there is an ability to change that.
+Usually component names are predefined, but there is an ability to change them in host names.
 There might be such a need when `hostname_domain_extension` is set, and it results in exceeding the length limit.
-For example, to change `kubernetes-master` to `k8s-master` following config:
+For example, to change `kubernetes-master` to `k8s-cp`, use following config:
 
 ```yaml
 ---
 kind: infrastructure/virtual-machine
 provider: azure
+name: kubernetes-master-machine
 specification:
-  alt_component_name: k8s-master
+  alt_component_name: k8s-cp
 ```
