@@ -44,7 +44,7 @@
       update_timeout: 500
       upgrade_timeout: 3600 # Long wait required by Leapp utility service
 
-    ansible_command_timeout: 3600
+    ansible_command_timeout: 3600  # Avoid connection dropping during leapp reboots
 
   tasks:
     ### PRE-UPGRADE ###
@@ -193,8 +193,10 @@
     - name: Force ansible to discover the new python interpreter for the rest of the play
       vars:
         ansible_python_interpreter: /usr/bin/python3
-      setup:
-        gather_subset: '!all'
+      file:
+        src: /usr/bin/python3
+        dest: /usr/bin/python
+        state: link
 
     - name: Use suggested sshd_config file as default
       block:
@@ -405,10 +407,11 @@
     - name: Restart waagent-network-setup and temp-disk-dataloss-warning services
       when: provider == 'azure'
       service:
-        name:
+        name: "{{ item }}"
+        state: restarted
+      loop:
          - waagent-network-setup
          - temp-disk-dataloss-warning
-        state: restarted
 
     - name: Reset the state of systemd failing units
       command: systemctl reset-failed
@@ -422,3 +425,8 @@
         that: "'0 loaded units listed' in failed_services.stdout"
         fail_msg: "{{ failed_services.stdout_lines }}"
         quiet: true
+
+    - name: Remove temporary python link  # Initially created to prevent ansible connection drop during update
+      file:
+        path: /usr/bin/python
+        state: absent
