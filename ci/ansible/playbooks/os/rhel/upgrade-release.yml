@@ -101,7 +101,8 @@
         name: "*"
         state: latest
 
-    - name: Reboot system # to load kernel from latest minor version if any
+    - &REBOOT_SYSTEM
+      name: Reboot system # to load kernel from latest minor version if any
       reboot:
         msg: Reboot initiated by Ansible due to release upgrade
         connect_timeout: "{{ reboot.connect_timeout }}"
@@ -213,7 +214,8 @@
             name: sshd
             state: restarted
 
-    - name: Verify post-upgrade state
+    - &GATHER_FACTS
+      name: Verify post-upgrade state
       block:
         - name: Gather post-upgrade facts
           setup:
@@ -425,6 +427,36 @@
         that: "'0 loaded units listed' in failed_services.stdout"
         fail_msg: "{{ failed_services.stdout_lines }}"
         quiet: true
+
+    - name: Update release to 8.5
+      block:
+      - name: Determine if 8.5 is the latest version
+        command: dnf --releasever 8.5 update  # Will fail when 8.5 is not the latest
+        register: is_8_5_latest_version_available
+        failed_when: is_8_5_latest_version_available.rc > 1
+
+      - name: Unlock release to latest  # Mirrors will not point to 8.5 when it is the latest
+        when: is_8_5_latest_version_available.rc == 1
+        file:
+          path: /etc/dnf/vars/releasever
+          state: absent
+
+      - name: Set release to 8.5
+        when: is_8_5_latest_version_available.rc == 0
+        command: echo 8.5 > /etc/dnf/vars/releasever
+
+      - *UPDATE_PACKAGES
+
+      - *REBOOT_SYSTEM  # 8.5 brings a new kernel update
+
+      - name: Gather post-update facts
+        setup:
+          gather_subset: "!min"
+
+      - name: Assert update to 8.5 succeeded
+        assert:
+          that: ansible_distribution_version == "8.5"
+          quiet: true
 
     - name: Remove temporary python link  # Initially created to prevent ansible connection drop during update
       file:
