@@ -110,7 +110,7 @@ class RedHatFamilyMode(BaseMode):
             '2ndquadrant',
             'docker-ce',
             'epel',
-        ] + list(self._repositories.keys())
+        ] + [self._repositories[key]['id'] for key in self._repositories.keys()]
 
         for repocache in repocaches:
             matched_ids = [repocache.name.startswith(repo_name) for repo_name in id_names]
