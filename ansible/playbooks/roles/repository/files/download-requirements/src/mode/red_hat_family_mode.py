@@ -1,3 +1,4 @@
+import configparser
 import logging
 import shutil
 from pathlib import Path
@@ -18,6 +19,21 @@ class RedHatFamilyMode(BaseMode):
         self.__archs: List[str] = [config.os_arch.value, 'noarch']
         self.__base_packages: List[str] = ['curl', 'python3-dnf-plugins-core', 'wget']
         self.__installed_packages: List[str] = []
+        self.__dnf_cache_path: Path = Path('/var/cache/dnf')
+
+        try:
+            dnf_config = configparser.ConfigParser()
+            with Path('/etc/dnf/dnf.conf').open() as dnf_config_file:
+                dnf_config.read(dnf_config_file)
+
+            self.__dnf_cache_path = Path(dnf_config['main']['cachedir'])
+        except FileNotFoundError:
+            logging.debug('RedHatFamilyMode.__init__(): dnf config file not found')
+        except configparser.Error as e:
+            logging.debug(f'RedHatFamilyMode.__init__(): {e}')
+        except KeyError:
+            pass
+
 
     def _create_backup_repositories(self):
         if not self._cfg.repos_backup_file.exists() or not self._cfg.repos_backup_file.stat().st_size:
@@ -41,7 +57,7 @@ class RedHatFamilyMode(BaseMode):
         self._tools.dnf.install('https://dl.fedoraproject.org/pub/epel/epel-release-latest-8.noarch.rpm')
         self.__installed_packages.append('epel-release')
 
-        self.__remove_dnf_cache_for_untracked_repos()
+        self.__remove_dnf_cache_for_custom_repos()
         self._tools.dnf.makecache(True)
 
         # tar does not come by default from image. We install it, but don't want to remove it
@@ -60,12 +76,13 @@ class RedHatFamilyMode(BaseMode):
 
         for repo in self._repositories:
             repo_filepath = Path('/etc/yum.repos.d') / f'{repo}.repo'
-            content = self._repositories[repo]['data']
-            content = content + f'\ngpgkey={" ".join(self._repositories[repo]["gpg_keys"])}'
+            content = [f'[{self._repositories[repo]["id"]}]',
+                       self._repositories[repo]['data'],
+                       f'gpgkey={" ".join(self._repositories[repo]["gpg_keys"])}']
 
             if not self._tools.dnf.is_repo_enabled(repo):
                 with open(repo_filepath, mode='w') as repo_handler:
-                    repo_handler.write(content)
+                    repo_handler.write('\n'.join(content))
 
                 for key in self._repositories[repo]['gpg_keys']:
                     self._tools.rpm.import_key(key)
@@ -85,16 +102,26 @@ class RedHatFamilyMode(BaseMode):
                      '2ndquadrant-dl-default-release-pg13-debug']:
             self._tools.dnf_config_manager.disable_repo(repo)
 
-    def __remove_dnf_cache_for_untracked_repos(self):
+    def __remove_dnf_cache_for_custom_repos(self):
         # clean metadata for upgrades (when the same package can be downloaded from changed repo)
-        repoinfo: List[str] = self._tools.dnf.list_all_repos_info()
-        repocaches: List[str] = [repodir for repodir in Path('/var/cache/dnf').iterdir() if repodir.is_dir()]
+        repocaches: List[str] = list(self.__dnf_cache_path.iterdir())
 
-        for repo in repoinfo:
-            if repo['Repo-status'] == 'disabled':
-                for repocache in repocaches:
-                    if repocache.name.startswith(repo['Repo-id']):
+        id_names = [
+            '2ndquadrant',
+            'docker-ce',
+            'epel',
+        ] + [self._repositories[key]['id'] for key in self._repositories.keys()]
+
+        for repocache in repocaches:
+            matched_ids = [repocache.name.startswith(repo_name) for repo_name in id_names]
+            if any(matched_ids):
+                try:
+                    if repocache.is_dir():
                         shutil.rmtree(str(repocache))
+                    else:
+                        repocache.unlink()
+                except FileNotFoundError:
+                    logging.debug('__remove_dnf_cache_for_custom_repos: cache directory already removed')
 
     def _parse_packages(self) -> Dict[str, Any]:
         distro_level_file: Path = self._cfg.reqs_path / self._cfg.distro_subdir / 'packages.yml'
@@ -180,3 +207,5 @@ class RedHatFamilyMode(BaseMode):
         for package in self.__installed_packages:
             if self._tools.rpm.is_package_installed(package):
                 self._tools.dnf.remove(package)
+
+        self.__remove_dnf_cache_for_custom_repos()
