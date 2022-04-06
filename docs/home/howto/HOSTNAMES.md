@@ -7,6 +7,8 @@ There is an ability to modify host names with Epiphany only in Azure.
 - Linux host name cannot exceed 64 characters in length.
 - Kubernetes names must be no more than 63 characters.
 
+Due to the statements above, `azure` provider verifies whether host names exceed limitation of 63 characters.
+
 ## Generation rule
 
 By default, host name is generated automatically using the following rules:
