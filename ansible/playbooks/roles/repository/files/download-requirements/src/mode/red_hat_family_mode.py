@@ -32,7 +32,7 @@ class RedHatFamilyMode(BaseMode):
         except configparser.Error as e:
             logging.debug(f'RedHatFamilyMode.__init__(): {e}')
         except KeyError:
-            logging.debug('RedHatFamilyMode.__init__(): cachedir not defined in dnf config file')
+            pass
 
 
     def _create_backup_repositories(self):
@@ -121,7 +121,7 @@ class RedHatFamilyMode(BaseMode):
                     else:
                         repocache.unlink()
                 except FileNotFoundError:
-                    logging.debug('__remove_dnf_cache_for_custom_repos: cache file already removed')
+                    logging.debug('__remove_dnf_cache_for_custom_repos: cache directory already removed')
 
     def _parse_packages(self) -> Dict[str, Any]:
         distro_level_file: Path = self._cfg.reqs_path / self._cfg.distro_subdir / 'packages.yml'
