@@ -236,7 +236,7 @@ class InfrastructureBuilder(Step):
         else:
             vm.specification.hostname = vm.specification.name
         if component_key in ['kubernetes_master', 'kubernetes_node'] and len(vm.specification.hostname) > 63:
-            raise Exception(f'Kubernetes node name part must be no more than 63 characters, yours is {vm.specification.hostname}. Consider setting alt_component_name property.')
+            raise Exception(f'Kubernetes names must be no more than 63 characters, yours is {vm.specification.hostname}. Consider setting alt_component_name property.')
         elif len(vm.specification.hostname) > 64:
             raise Exception(f'Linux host name cannot exceed 64 characters in length, yours is {vm.specification.hostname}. Consider setting alt_component_name property.')
         vm.specification.admin_username = self.cluster_model.specification.admin_user.name
