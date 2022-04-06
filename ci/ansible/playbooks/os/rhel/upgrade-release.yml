@@ -94,6 +94,15 @@
         value: 1
       loop: "{{ leapp_dependencies.repos[provider] }}"
 
+    - name: Update repository certificates
+      when: provider == "azure"
+      yum:
+        enablerepo: "*microsoft*"
+        disablerepo: "*"
+        state: "latest"
+        update_only: true
+        name: "*"
+
     - &UPDATE_PACKAGES
       name: Update all packages in current major version
       yum:
