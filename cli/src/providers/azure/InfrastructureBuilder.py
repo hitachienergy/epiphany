@@ -65,7 +65,6 @@ class InfrastructureBuilder(Step):
             # The vm config also contains some other stuff we use for network and security config.
             # So get it here and pass it allong.
             vm_config = self.get_virtual_machine(component_value)
-
             # Set property that controls cloud-init.
             vm_config.specification['use_cloud_init_custom_data'] = cloud_init_custom_data.specification.enabled
 
@@ -132,6 +131,7 @@ class InfrastructureBuilder(Step):
                     security_group_association_name = nic_nsg_association.specification.name
 
                 vm = self.get_vm(component_key,
+                                 component_value['alt_component_name'],
                                  vm_config,
                                  availability_set,
                                  network_interface.specification.name,
@@ -221,10 +221,9 @@ class InfrastructureBuilder(Step):
         storage_share.specification.storage_account_name = storage_account_name(self.cluster_prefix, self.cluster_name, 'k8s')
         return storage_share
 
-    def get_vm(self, component_key, vm_config, availability_set, network_interface_name, security_group_association_name, index):
+    def get_vm(self, component_key, alt_component_name, vm_config, availability_set, network_interface_name, security_group_association_name, index):
         vm = dict_to_objdict(deepcopy(vm_config))
 
-        alt_component_name = vm.specification.alt_component_name
         host_component_key = component_key
         if alt_component_name and alt_component_name.strip():
             host_component_key = alt_component_name
