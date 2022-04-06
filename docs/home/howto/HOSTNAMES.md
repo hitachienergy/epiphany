@@ -1,15 +1,15 @@
 # Hostnames
 
-Epiphany manages host names only for Azure as this is
-[required](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/virtual_machine#computer_name) by Terraform.
+There is an ability to modify host names with Epiphany only in Azure.
 
 ## Limitations
 
-Linux host name cannot exceed 64 characters in length.
+- Linux host name cannot exceed 64 characters in length.
+- Kubernetes node name part must be no more than 63 characters.
 
 ## Generation rule
 
-By default, it generates automatically using the following rules:
+By default, host name is generated automatically using the following rules:
 
 1. If `hostname_domain_extension` is set in `epiphany-cluster` configuration:
 `<cluster_prefix>-<cluster_name>-<component_name>-vm-<index>.<hostname_domain_extension>`
