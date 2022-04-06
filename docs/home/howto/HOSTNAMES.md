@@ -34,9 +34,14 @@ For example, to change `kubernetes-master` to `k8s-cp`, use following config:
 
 ```yaml
 ---
-kind: infrastructure/virtual-machine
+kind: epiphany-cluster
+title: Epiphany cluster Config
 provider: azure
-name: kubernetes-master-machine
+name: default
 specification:
-  alt_component_name: k8s-cp
+  ...
+  components:
+    kubernetes_master:
+      count: 1
+      alt_component_name: k8s-cp
 ```
