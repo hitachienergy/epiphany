@@ -49,10 +49,6 @@ resource "azurerm_virtual_machine" "{{ specification.name }}" {
   # windows specific stuff here maybe... hopefully never.
   {%- endif %}
 
-  {%- if specification.storage_os_disk.managed %}
-  delete_os_disk_on_termination = "{{ specification.storage_os_disk.delete_on_termination | lower }}"
-  {%- endif %}
-
   storage_os_disk {
     name              = "{{ specification.name }}-os-disk"
     caching           = "{{ specification.storage_os_disk.caching }}"

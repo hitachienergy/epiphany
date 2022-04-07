@@ -22,7 +22,6 @@ specification:
     sku: 20_04-lts-gen2
     version: "20.04.202201100" # Never put latest on anything! Need to always pin the version number but testing we can get away with it
   storage_os_disk:
-    delete_on_termination: false
     managed: true
     caching: ReadWrite
     create_option: FromImage
