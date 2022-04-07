@@ -11,6 +11,9 @@ from cli.helpers.objdict_helpers import dict_to_objdict
 from cli.helpers.os_images import get_os_distro_normalized
 from cli.version import VERSION
 
+HOST_NAME_MAX_LENGTH = 63
+
+
 class InfrastructureBuilder(Step):
     def __init__(self, docs, manifest_docs=[]):
         super().__init__(__name__)
@@ -130,8 +133,12 @@ class InfrastructureBuilder(Step):
                                                                index)
                 infrastructure.append(network_interface)
 
-                vm = self.get_vm(component_key, vm_config, availability_set,
-                                 network_interface.specification.name, index)
+                vm = self.get_vm(component_key,
+                                 component_value['alt_component_name'],
+                                 vm_config,
+                                 availability_set,
+                                 network_interface.specification.name,
+                                 index)
                 infrastructure.append(vm)
 
         first_vm_doc = select_first(infrastructure, lambda x: x.kind == 'infrastructure/virtual-machine')
@@ -209,13 +216,16 @@ class InfrastructureBuilder(Step):
         storage_share.specification.storage_account_name = storage_account_name(self.cluster_prefix, self.cluster_name, 'k8s')
         return storage_share
 
-    def get_vm(self, component_key, vm_config, availability_set, network_interface_name, index):
+    def get_vm(self, component_key, alt_component_name, vm_config, availability_set, network_interface_name, index):
         vm = dict_to_objdict(deepcopy(vm_config))
-        vm.specification.name = resource_name(self.cluster_prefix, self.cluster_name, 'vm' + '-' + str(index), component_key)
+        host_component_key = alt_component_name if alt_component_name and alt_component_name.strip() else component_key
+        vm.specification.name = resource_name(self.cluster_prefix, self.cluster_name, f'vm-{index}', host_component_key)
         if self.hostname_domain_extension != '':
-            vm.specification.hostname = resource_name(self.cluster_prefix, self.cluster_name, 'vm' + '-' + str(index) + f'.{self.hostname_domain_extension}', component_key)
+            vm.specification.hostname = resource_name(self.cluster_prefix, self.cluster_name, f'vm-{index}.{self.hostname_domain_extension}', host_component_key)
         else:
             vm.specification.hostname = vm.specification.name
+        if len(vm.specification.hostname) > HOST_NAME_MAX_LENGTH:
+            raise Exception(f'Host name cannot exceed {HOST_NAME_MAX_LENGTH} characters in length, yours is {vm.specification.hostname}. Consider setting alt_component_name property.')
         vm.specification.admin_username = self.cluster_model.specification.admin_user.name
         vm.specification.network_interface_name = network_interface_name
         vm.specification.tags.append({'cluster': cluster_tag(self.cluster_prefix, self.cluster_name)})
