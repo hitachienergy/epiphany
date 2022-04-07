@@ -21,13 +21,6 @@
         - "{{ rook_helm_chart_file_name }}"
         - "{{ rook_helm_cluster_chart_file_name }}"
 
-    - name: Fail when configuration for operator and cluster chart are not defined
-      fail:
-        msg: "You need to configure operator_chart_values and cluster_chart_values when rook is enabled"
-      when:
-        - specification.operator_chart_values is not defined or
-          specification.cluster_chart_values is not defined
-
     - name: Create configuration for operator Helm chart file (operator-custom-chart-values.yml)
       copy:
         content: "{{ specification.operator_chart_values }}"
