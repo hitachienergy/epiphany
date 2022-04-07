@@ -8,12 +8,12 @@
   vars:
     _packages:
       Debian:
-        - containerd.io
+        - containerd.io={{ containerd_version }}-*
         - docker-ce-cli={{ docker_version.Debian }}
         - docker-ce-rootless-extras={{ docker_version.Debian }}
         - docker-ce={{ docker_version.Debian }}
       RedHat:
-        - containerd.io
+        - containerd.io-{{ containerd_version }}
         - docker-ce-cli-{{ docker_version.RedHat }}
         - docker-ce-rootless-extras-{{ docker_version.RedHat }}
         - docker-ce-{{ docker_version.RedHat }}

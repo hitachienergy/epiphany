@@ -3,5 +3,5 @@
   apt:
     update_cache: true
     name:
-      - containerd.io  # provides "runc"
+      - containerd.io={{ containerd_version }}-*  # provides "runc"
     state: present
