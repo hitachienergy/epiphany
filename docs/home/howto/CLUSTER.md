@@ -569,6 +569,11 @@ Epicli has a delete command to remove a cluster from a cloud provider (AWS, Azur
 
 From the defined cluster build folder it will take the information needed to remove the resources from the cloud provider.
 
+### Note for Azure cloud provider
+
+Make sure you can safely remove OS and data disks - Epiphany does not support cluster removal from Azure
+while preserving existing disks.
+
 ## Single machine cluster
 
 *Please read first prerequisites related to [hostname requirements](./PREREQUISITES.md#hostname-requirements).*
