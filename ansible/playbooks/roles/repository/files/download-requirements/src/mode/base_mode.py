@@ -217,7 +217,7 @@ class BaseMode:
                 if images[image]['sha1'] != get_sha1(image_file):
                     try:
                         if images[image]['allow_mismatch']:
-                            logging.warning('- {image} - allow_mismatch flag used, continue downloading')
+                            logging.warning(f'- {image} - allow_mismatch flag used, continue downloading')
                             continue
                     except KeyError:
                         raise ChecksumMismatch(f'- {image}')

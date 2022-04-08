@@ -36,16 +36,18 @@
       when:
         - check_docker.rc == 0
 
-    - name: Check if previous version registry is running and kill it if needed
+    - name: Check if previous version registry is running and stop it if needed
       become: true
       block:
         - name: Get current running registry container
           command: "{% raw %}docker ps --format '{{ .Image }}' -f 'name=registry' -f 'status=running'{% endraw %}"
           register: running_registry_images
 
-        - name: Kill previous version running registry
-          command: docker kill -q -f '{{ running_registry_images.stdout }}'
-          when: specification.registry_image.name != '{{ running_registry_images.stdout }}'
+        - name: Stop previous version running registry
+          command: docker stop '{{ running_registry_images.stdout }}'
+          when:
+            - running_registry_images.stdout
+            - specification.registry_image.name != running_registry_images.stdout
       when: is_upgrade_run
 
     - name: Load registry image
@@ -56,7 +58,7 @@
     - name: Check if registry is running
       become: true
       command: docker ps -q -f 'ancestor={{ specification.registry_image.name }}' -f 'status=running'
-      register: current_regitry_up_check
+      register: current_registry_up_check
       changed_when: false
 
     # todo run registry with SSL - generate/copy certs, mount it to registry container
@@ -65,7 +67,7 @@
       command: >-
         docker run -d -e REGISTRY_HTTP_ADDR=0.0.0.0:5000 -p 5000:5000 --restart=always
         --name epiphany-registry {{ specification.registry_image.name }}
-      when: current_regitry_up_check.stdout | length == 0
+      when: current_registry_up_check.stdout | length == 0
 
     - name: Set images to load
       set_fact:
