@@ -8,7 +8,7 @@ import yaml
 
 from src.command.toolchain import Toolchain, TOOLCHAINS
 from src.config.config import Config
-from src.config.os_type import OSFamily
+from src.config.os_type import OSFamily, OSArch
 from src.crypt import get_sha1, get_sha256
 from src.error import CriticalError
 
@@ -230,7 +230,7 @@ class BaseMode:
         """
         Download images under `self._requirements['images']` using Crane.
         """
-        platform: str = 'linux/amd64' if self._cfg.os_arch.X86_64 else 'linux/arm64'
+        platform: str = 'linux/amd64' if self._cfg.os_arch == OSArch.X86_64 else 'linux/arm64'
         images = self._requirements['images']
         for image in images:
             try:
