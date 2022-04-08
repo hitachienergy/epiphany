@@ -37,6 +37,7 @@ skip_list:
   - no-handler
   - meta-no-info
   - package-latest
+  - fqcn-builtins
 
 ##################
 # Tags to follow #
