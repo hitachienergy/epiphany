@@ -66,3 +66,4 @@
           --set operatorNamespace={{ specification.rook_namespace }} \
           {{ rook_helm_cluster_chart_name }} \
           {{ download_directory }}/{{ rook_helm_cluster_chart_file_name }} --create-namespace
+
