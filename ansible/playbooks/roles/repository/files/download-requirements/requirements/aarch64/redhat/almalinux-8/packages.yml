@@ -1,0 +1,10 @@
+---
+# Distribution specific packages
+
+prereq-packages:
+  # prereq-packages are downloaded without dependencies because of air-gapped mode (dnf localinstall)
+  - almalinux-logos-httpd  # for httpd
+
+packages:
+  from_repo: []
+  from_url: {}

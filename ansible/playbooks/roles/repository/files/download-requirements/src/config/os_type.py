@@ -5,7 +5,7 @@ from typing import Dict, List
 class OSArch(Enum):
     """ Supported architecture types """
     X86_64 = 'x86_64'
-    ARM64 = 'arm64'
+    ARM64 = 'aarch64'
 
 
 class OSFamily(Enum):
@@ -48,5 +48,7 @@ SUPPORTED_OS_TYPES: Dict[OSArch, OSConfig] = {
         OSType.RHEL,
         OSType.Ubuntu
     ],
-    OSArch.ARM64: []
+    OSArch.ARM64: [
+        OSType.Almalinux
+    ]
 }

@@ -1,0 +1,83 @@
+---
+repositories:
+  elastic-6:
+    data: |
+      [elastic-6]
+      name=Elastic repository for 6.x packages
+      baseurl=https://artifacts.elastic.co/packages/oss-6.x/yum
+      gpgcheck=1
+      enabled=1
+      autorefresh=1
+      type=rpm-md
+    gpg_keys:
+      - https://artifacts.elastic.co/GPG-KEY-elasticsearch
+
+  elasticsearch-7:
+    data: |
+      [elasticsearch-7.x]
+      name=Elasticsearch repository for 7.x packages
+      baseurl=https://artifacts.elastic.co/packages/oss-7.x/yum
+      gpgcheck=1
+      enabled=1
+      autorefresh=1
+      type=rpm-md
+    gpg_keys:
+      - https://artifacts.elastic.co/GPG-KEY-elasticsearch
+
+  elasticsearch-curator-5:
+    data: |
+      [curator-5]
+      name=CentOS/RHEL 7 repository for Elasticsearch Curator 5.x packages
+      baseurl=https://packages.elastic.co/curator/5/centos/7
+      gpgcheck=1
+      enabled=1
+    gpg_keys:
+      - https://packages.elastic.co/GPG-KEY-elasticsearch
+
+  kubernetes:
+    data: |
+      [kubernetes]
+      name=Kubernetes
+      baseurl=https://packages.cloud.google.com/yum/repos/kubernetes-el7-$basearch
+      enabled=1
+      gpgcheck=1
+      repo_gpgcheck=1
+    gpg_keys:
+      - https://packages.cloud.google.com/yum/doc/yum-key.gpg
+      - https://packages.cloud.google.com/yum/doc/rpm-package-key.gpg
+
+  opendistroforelasticsearch:
+    data: |
+      [opendistroforelasticsearch-artifacts-repo]
+      name=Release RPM artifacts of OpenDistroForElasticsearch
+      baseurl=https://d3g5vo6xdbdb9a.cloudfront.net/yum/noarch/
+      enabled=1
+      gpgcheck=1
+      repo_gpgcheck=1
+      autorefresh=1
+      type=rpm-md
+    gpg_keys:
+      - https://d3g5vo6xdbdb9a.cloudfront.net/GPG-KEY-opendistroforelasticsearch
+
+  postgresql-13:
+    data: |
+      [pgdg13]
+      name=PostgreSQL 13 for RHEL/CentOS $releasever - $basearch
+      baseurl=https://download.postgresql.org/pub/repos/yum/13/redhat/rhel-$releasever-$basearch
+      enabled=1
+      gpgcheck=1
+      module_hotfixes=true
+    gpg_keys:
+      - https://download.postgresql.org/pub/repos/yum/RPM-GPG-KEY-PGDG
+
+  rabbitmq:
+    data: |
+      [rabbitmq-server]
+      name=rabbitmq-rpm
+      baseurl=https://packagecloud.io/rabbitmq/rabbitmq-server/el/7/$basearch
+      gpgcheck=1
+      repo_gpgcheck=1
+      sslcacert=/etc/pki/tls/certs/ca-bundle.crt
+      enabled=1
+    gpg_keys:
+      - https://packagecloud.io/rabbitmq/rabbitmq-server/gpgkey

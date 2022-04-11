@@ -1,0 +1,227 @@
+---
+# Common packages for RedHat OS family
+
+prereq-packages:
+  # prereq-packages are downloaded without dependencies because of air-gapped mode (dnf localinstall)
+  # --- createrepo ---
+  - 'createrepo_c'
+  - 'createrepo_c-libs'
+  - 'drpm'
+  # --- httpd ---
+  - 'apr'
+  - 'apr-util'
+  - 'apr-util-bdb'  # weak
+  - 'apr-util-openssl'  # weak
+  - 'httpd'
+  - 'httpd-filesystem'
+  - 'httpd-tools'
+  - 'mailcap'
+  - 'mod_http2'
+
+packages:
+  from_repo:
+    - 'audit'  # for docker-ce
+    - 'bash-completion'
+    - 'ca-certificates'
+    - 'cifs-utils'
+    - 'conntrack-tools'  # for kubelet
+    - 'containerd.io-1.4.12'
+    - 'container-selinux'
+    - 'copy-jdk-configs'  # for java-1.8.0-openjdk-headless
+    - 'cri-tools'
+    - 'cups-libs'  # for java-1.8.0-openjdk-headless
+    - 'curl'
+    - 'dejavu-sans-fonts'  # for grafana
+    - 'docker-ce-20.10.8'
+    - 'docker-ce-cli-20.10.8'
+    - 'docker-ce-rootless-extras-20.10.8'
+    - 'elasticsearch-curator-5.8.3'
+    - 'elasticsearch-oss-7.10.2'  # for opendistroforelasticsearch & logging roles
+    - 'ethtool'
+    - 'filebeat-7.9.2'
+    - 'firewalld'
+    - 'fontconfig'  # for grafana
+    - 'fping'
+    - 'fuse-overlayfs'  # for docker-ce-rootless-extras
+    - 'fuse3'  # for docker-ce-rootless-extras
+    - 'gnutls'  # for cifs-utils
+    - 'gssproxy'  # for nfs-utils
+    - 'htop'
+    - 'iftop'
+    - 'ipset'  # for firewalld
+    - 'iptables'  # for iptables-ebtables
+    - 'iptables-ebtables'
+    - 'java-1.8.0-openjdk-headless'
+    - 'jq'
+    - 'libibverbs'  # for libpcap
+    - 'libini_config'  # for nfs-utils
+    - 'libpcap'  # for iftop & iptables
+    - 'libX11'  # for grafana
+    - 'libxcb'  # for grafana
+    - 'libXcursor'  # for grafana
+    - 'libXt'  # for grafana
+    - 'logrotate'
+    - 'mcpp'  # for grafana
+    - 'net-tools'
+    - 'nfs-utils'
+    - 'nmap-ncat'
+    - 'nss'  # for java-1.8.0-openjdk-headless
+    - 'nss-softokn'  # for nss
+    # Open Distro for Elasticsearch plugins are installed individually to not download them twice in different versions (as dependencies of opendistroforelasticsearch package)
+    - 'opendistro-alerting-1.13.1.*'
+    - 'opendistro-index-management-1.13.1.*'
+    - 'opendistro-job-scheduler-1.13.0.*'
+    - 'opendistro-performance-analyzer-1.13.0.*'
+    - 'opendistro-security-1.13.1.*'
+    - 'opendistro-sql-1.13.0.*'
+    - 'opendistroforelasticsearch-kibana-1.13.1'  # kibana has shorter version
+    - 'openssl'
+    - 'perl'  # for vim
+    - 'perl-Getopt-Long'  # for vim
+    - 'perl-libs'  # for vim
+    - 'perl-Pod-Perldoc'  # for vim
+    - 'perl-Pod-Simple'  # for vim
+    - 'perl-Pod-Usage'  # for vim
+    - 'pgaudit15_13-1.5.0'
+    - 'pkgconf'  # for bash-completion
+    - 'pkgconf-pkg-config'  # for bash-completion
+    - 'postgresql13-server'
+    - 'python3-cffi'  # for python3-cryptography
+    - 'python3-cryptography'
+    - 'python3-firewall'  # for firewalld
+    - 'python3-ldb'  # for cifs-utils
+    - 'python3-libselinux'
+    - 'python3-lxml'  # for java-1.8.0-openjdk-headless
+    - 'python3-nftables'  # for python3-firewall
+    - 'python3-policycoreutils'  # for container-selinux
+    - 'python3-psycopg2'
+    - 'python3-pycparser'  # for python3-cryptography
+    - 'python3-slip-dbus'  # for firewalld
+    - 'python36'  # there is no python3 package
+    - 'quota'  # for nfs-utils
+    - 'rabbitmq-server-3.8.9'
+    - 'rdma-core'
+    - 'rsync'
+    - 'samba-client'
+    - 'samba-client-libs'  # for samba-client
+    - 'samba-common'
+    - 'samba-libs'  # for cifs-utils
+    - 'slirp4netns'  # for docker-ce-rootless-extras
+    - 'sysstat'
+    - 'tar'
+    - 'telnet'
+    - 'tmux'
+    - 'urw-base35-fonts'  # for grafana
+    - 'unzip'
+    - 'vim-common'  # for vim
+    - 'vim-enhanced'
+    - 'wget'
+    - 'xorg-x11-font-utils'  # for grafana
+    - 'xorg-x11-server-utils'  # for grafana
+    # Erlang dependencies:
+    - 'SDL'
+    - 'adwaita-cursor-theme'
+    - 'adwaita-icon-theme'
+    - 'at-spi2-atk'
+    - 'at-spi2-core'
+    - 'atk'
+    - 'cairo'
+    - 'cairo-gobject'
+    - 'colord-libs'
+    - 'dejavu-fonts-common'
+    - 'dejavu-sans-mono-fonts'
+    - 'fontpackages-filesystem'
+    - 'fribidi'
+    - 'gdk-pixbuf2'
+    - 'gdk-pixbuf2-modules'
+    - 'glib-networking'
+    - 'graphite2'
+    - 'gsettings-desktop-schemas'
+    - 'gtk-update-icon-cache'
+    - 'gtk3'
+    - 'harfbuzz'
+    - 'hicolor-icon-theme'
+    - 'jasper-libs'
+    - 'jbigkit-libs'
+    - 'lcms2'
+    - 'libICE'
+    - 'libSM'
+    - 'libX11-common'
+    - 'libX11-xcb'
+    - 'libXau'
+    - 'libXcomposite'
+    - 'libXdamage'
+    - 'libXext'
+    - 'libXfixes'
+    - 'libXft'
+    - 'libXi'
+    - 'libXinerama'
+    - 'libXrandr'
+    - 'libXrender'
+    - 'libXtst'
+    - 'libXxf86vm'
+    - 'libdatrie'
+    - 'libdrm'
+    - 'libepoxy'
+    - 'libglvnd'
+    - 'libglvnd-glx'
+    - 'libjpeg-turbo'
+    - 'libmodman'
+    - 'libmspack'
+    - 'libproxy'
+    - 'libsoup'
+    - 'libthai'
+    - 'libtiff'
+    - 'libtool-ltdl'
+    - 'libwayland-client'
+    - 'libwayland-cursor'
+    - 'libwayland-egl'
+    - 'libxshmfence'
+    - 'mesa-libGL'
+    - 'mesa-libGLU'
+    - 'mesa-libglapi'
+    - 'pango'
+    - 'pixman'
+    - 'rest'
+    - 'unixODBC'
+    - 'wxBase3'
+    - 'wxGTK3'
+    - 'wxGTK3-gl'
+    - 'wxGTK3-i18n'
+
+    # K8s v1.18.6 (Epiphany >= v0.7.1)
+    - 'kubeadm-1.18.6'
+    - 'kubectl-1.18.6'
+    - 'kubelet-1.18.6'
+
+    # K8s v1.19.15 (Epiphany >= v1.3 transitional version)
+    - 'kubeadm-1.19.15'
+    - 'kubectl-1.19.15'
+    - 'kubelet-1.19.15'
+
+    # K8s v1.20.12
+    - 'kubeadm-1.20.12'
+    - 'kubectl-1.20.12'
+    - 'kubelet-1.20.12'
+
+    # K8s v1.21.7 (Epiphany >= v1.3, transitional version)
+    - 'kubeadm-1.21.7'
+    - 'kubectl-1.21.7'
+    - 'kubelet-1.21.7'
+
+    # K8s v1.22.4
+    - 'kubeadm-1.22.4'
+    - 'kubectl-1.22.4'
+    - 'kubelet-1.22.4'
+
+    # Kubernetes Generic
+    - 'kubernetes-cni-0.8.6-0'  # since K8s v1.18.6
+    - 'kubernetes-cni-0.8.7-0'  # since K8s v1.19.15
+
+  from_url:
+    # Github repository for erlang rpm is used since packagecloud repository is limited to a certain number of versions and erlang package from erlang-solutions repository is much more complex and bigger
+    'http://packages.erlang-solutions.com/erlang/rpm/centos/8/aarch64/esl-erlang_23.1.5-1~centos~8_arm64.rpm':
+      sha256: 9c135d300a66fe399a764da0070e49b8cd5a356516d2904dd0521f80da1a1ecb
+    # Grafana package is not downloaded from repository since it was not reliable (issue #2449)
+    'https://dl.grafana.com/oss/release/grafana-8.3.2-1.aarch64.rpm':
+      sha256: a05354a9363decc3a2b036a58f827e0a4d086791ba73d7cc4b9f05afb592f4d1
