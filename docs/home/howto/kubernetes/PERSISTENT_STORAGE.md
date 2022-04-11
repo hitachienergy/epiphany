@@ -104,9 +104,7 @@ specification:
     rook_namespace: your-rook-namespace
 ```
 
-The key `specification.enabled` must be set to true to install Rook/Ceph component. Epiphany configuration file provides set of
-parameters that are used for Rook/Ceph installation with default values. To override default values provided by Rook you need
-to adjust `configuration/rook` keys:
+The key `specification.enabled` must be set to true to install Rook/Ceph component. This will install Rook/Ceph with default values. To override default values provided by Rook you need to add to `configuration/rook` keys:
 - `specification.operator_chart_values` - to override Rook Operator Helm Chart default values
 - `specification.cluster_chart_values` - to override Rook Cluster Helm Chart default values
 
@@ -123,7 +121,6 @@ specification:
       ...
 ```
 Values nested below the `operator_chart_values` and `cluster_chart_values` keys are respectively Helm Chart values for Rook Operator and Rook Ceph Cluster.
-It is important to ensure that configuration of operator and chart values matches configuration of your cluster.
 
 More information about Helm Chart values may be found:
 - [Helm Operator](https://github.com/rook/rook/blob/master/Documentation/helm-operator.md)
