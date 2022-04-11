@@ -6,6 +6,10 @@ specification:
   rook_namespace: rook-ceph
   enabled: false
   operator_chart_values:
+    image:
+      repository: rook/ceph
+      tag: VERSION
+      pullPolicy: IfNotPresent
     crds:
       enabled: true
     resources:
@@ -35,6 +39,146 @@ specification:
       enableOMAPGenerator: false
       provisionerReplicas: 2
       allowUnsupportedVersion: false
+      csiRBDProvisionerResource: |
+        - name : csi-provisioner
+          resource:
+            requests:
+              memory: 128Mi
+              cpu: 100m
+            limits:
+              memory: 256Mi
+              cpu: 200m
+        - name : csi-resizer
+          resource:
+            requests:
+              memory: 128Mi
+              cpu: 100m
+            limits:
+              memory: 256Mi
+              cpu: 200m
+        - name : csi-attacher
+          resource:
+            requests:
+              memory: 128Mi
+              cpu: 100m
+            limits:
+              memory: 256Mi
+              cpu: 200m
+        - name : csi-snapshotter
+          resource:
+            requests:
+              memory: 128Mi
+              cpu: 100m
+            limits:
+              memory: 256Mi
+              cpu: 200m
+        - name : csi-rbdplugin
+          resource:
+            requests:
+              memory: 512Mi
+              cpu: 250m
+            limits:
+              memory: 1Gi
+              cpu: 500m
+        - name : liveness-prometheus
+          resource:
+            requests:
+              memory: 128Mi
+              cpu: 50m
+            limits:
+              memory: 256Mi
+              cpu: 100m
+      csiRBDPluginResource: |
+        - name : driver-registrar
+          resource:
+            requests:
+              memory: 128Mi
+              cpu: 50m
+            limits:
+              memory: 256Mi
+              cpu: 100m
+        - name : csi-rbdplugin
+          resource:
+            requests:
+              memory: 512Mi
+              cpu: 250m
+            limits:
+              memory: 1Gi
+              cpu: 500m
+        - name : liveness-prometheus
+          resource:
+            requests:
+              memory: 128Mi
+              cpu: 50m
+            limits:
+              memory: 256Mi
+              cpu: 100m
+      csiCephFSProvisionerResource: |
+        - name : csi-provisioner
+          resource:
+            requests:
+              memory: 128Mi
+              cpu: 100m
+            limits:
+              memory: 256Mi
+              cpu: 200m
+        - name : csi-resizer
+          resource:
+            requests:
+              memory: 128Mi
+              cpu: 100m
+            limits:
+              memory: 256Mi
+              cpu: 200m
+        - name : csi-attacher
+          resource:
+            requests:
+              memory: 128Mi
+              cpu: 100m
+            limits:
+              memory: 256Mi
+              cpu: 200m
+        - name : csi-cephfsplugin
+          resource:
+            requests:
+              memory: 512Mi
+              cpu: 250m
+            limits:
+              memory: 1Gi
+              cpu: 500m
+        - name : liveness-prometheus
+          resource:
+            requests:
+              memory: 128Mi
+              cpu: 50m
+            limits:
+              memory: 256Mi
+              cpu: 100m
+      csiCephFSPluginResource: |
+        - name : driver-registrar
+          resource:
+            requests:
+              memory: 128Mi
+              cpu: 50m
+            limits:
+              memory: 256Mi
+              cpu: 100m
+        - name : csi-cephfsplugin
+          resource:
+            requests:
+              memory: 512Mi
+              cpu: 250m
+            limits:
+              memory: 1Gi
+              cpu: 500m
+        - name : liveness-prometheus
+          resource:
+            requests:
+              memory: 128Mi
+              cpu: 50m
+            limits:
+              memory: 256Mi
+              cpu: 100m
       forceCephFSKernelClient: true
       volumeReplication:
         enabled: false
@@ -54,12 +198,19 @@ specification:
     operatorNamespace: rook-ceph
     toolbox:
       enabled: false
-      image: rook/ceph:v1.8.8
+      image: rook/ceph:VERSION
       tolerations: []
       affinity: {}
-      resources: {}
+      resources:
+        limits:
+          cpu: "500m"
+          memory: "1Gi"
+        requests:
+          cpu: "100m"
+          memory: "128Mi"
     monitoring:
       enabled: false
+      createPrometheusRules: false
       rulesNamespaceOverride:
     pspEnable: true
     cephClusterSpec:
@@ -74,7 +225,8 @@ specification:
         count: 3
         allowMultiplePerNode: false
       mgr:
-        count: 1
+        count: 2
+        allowMultiplePerNode: false
         modules:
           - name: pg_autoscaler
             enabled: true
@@ -90,8 +242,65 @@ specification:
           dataSource: zero
           iteration: 1
         allowUninstallWithVolumes: false
+      resources:
+        mgr:
+          limits:
+            cpu: "1000m"
+            memory: "1Gi"
+          requests:
+            cpu: "500m"
+            memory: "512Mi"
+        mon:
+          limits:
+            cpu: "2000m"
+            memory: "2Gi"
+          requests:
+            cpu: "1000m"
+            memory: "1Gi"
+        osd:
+          limits:
+            cpu: "2000m"
+            memory: "4Gi"
+          requests:
+            cpu: "1000m"
+            memory: "4Gi"
+        prepareosd:
+          limits:
+            cpu: "500m"
+            memory: "200Mi"
+          requests:
+            cpu: "500m"
+            memory: "50Mi"
+        mgr-sidecar:
+          limits:
+            cpu: "500m"
+            memory: "100Mi"
+          requests:
+            cpu: "100m"
+            memory: "40Mi"
+        crashcollector:
+          limits:
+            cpu: "500m"
+            memory: "60Mi"
+          requests:
+            cpu: "100m"
+            memory: "60Mi"
+        logcollector:
+          limits:
+            cpu: "500m"
+            memory: "1Gi"
+          requests:
+            cpu: "100m"
+            memory: "100Mi"
+        cleanup:
+          limits:
+            cpu: "500m"
+            memory: "1Gi"
+          requests:
+            cpu: "500m"
+            memory: "100Mi"
       removeOSDsIfOutAndSafeToRemove: false
-      storage:
+      storage: # cluster level storage configuration and selection
         useAllNodes: true
         useAllDevices: true
       disruptionManagement:
@@ -157,6 +366,13 @@ specification:
           metadataServer:
             activeCount: 1
             activeStandby: true
+            resources:
+              limits:
+                cpu: "2000m"
+                memory: "4Gi"
+              requests:
+                cpu: "1000m"
+                memory: "4Gi"
         storageClass:
           enabled: true
           isDefault: false
@@ -204,6 +420,13 @@ specification:
           preservePoolsOnDelete: true
           gateway:
             port: 80
+            resources:
+              limits:
+                cpu: "2000m"
+                memory: "2Gi"
+              requests:
+                cpu: "1000m"
+                memory: "1Gi"
             instances: 1
           healthCheck:
             bucket:
