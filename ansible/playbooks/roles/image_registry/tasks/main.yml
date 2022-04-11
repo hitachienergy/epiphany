@@ -54,8 +54,12 @@
             container_name: "{{ running_registry_containers.stdout }}"
           when: running_registry_containers.changed
 
-        - name: Stop previous version running registry container
-          command: docker stop '{{ container_name }}'
+        - block:
+            - name: Stop previous version running registry container
+              command: docker stop '{{ container_name }}'
+
+            - name: Kill previous version running registry container
+              command: docker rm '{{ container_name }}'
           when:
             - container_name is defined
             - container_name | length > 0
