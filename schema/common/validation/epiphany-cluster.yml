@@ -92,6 +92,11 @@ properties:
             type: string
             title: The Secret Schema
             pattern: "^(.*)$"
+          token:
+            "$id": "#/properties/specification/properties/cloud/properties/credentials/properties/token"
+            type: string
+            title: The session token
+            pattern: "^(.*)$"
       network:
         "$id": "#/properties/specification/properties/cloud/properties/network"
         type: object
