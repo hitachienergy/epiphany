@@ -39,15 +39,26 @@
     - name: Check if previous version registry is running and stop it if needed
       become: true
       block:
-        - name: Get current running registry container
+        - name: Get current running registry image name
           command: "{% raw %}docker ps --format '{{ .Image }}' -f 'name=registry' -f 'status=running'{% endraw %}"
-          register: running_registry_images
+          register: running_registry_image
 
-        - name: Stop previous version running registry
-          command: docker stop '{{ running_registry_images.stdout }}'
+        - name: Get current running registry container names
+          command: "{% raw %}docker ps --format '{{ .Names }}' -f 'name=registry' -f 'status=running'{% endraw %}"
+          register: running_registry_containers
           when:
-            - running_registry_images.stdout
-            - specification.registry_image.name != running_registry_images.stdout
+            - running_registry_image.stdout
+            - specification.registry_image.name != running_registry_image.stdout
+
+        - set_fact:
+            container_name: "{{ running_registry_containers.stdout }}"
+          when: running_registry_containers.changed
+
+        - name: Stop previous version running registry container
+          command: docker stop '{{ container_name }}'
+          when:
+            - container_name is defined
+            - container_name | length > 0
       when: is_upgrade_run
 
     - name: Load registry image
