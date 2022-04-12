@@ -208,7 +208,7 @@ class BaseMode:
         if image['sha1'] != get_sha1(image_file):
             try:
                 if image['allow_mismatch']:
-                    logging.warning('- allow_mismatch flag used, continue downloading')
+                    logging.warning(f'{image_file.name} - allow_mismatch flag used, continue downloading')
                     return True
 
                 return False
@@ -228,15 +228,13 @@ class BaseMode:
                 url, version = image.split(':')
                 filename = Path(f'{url.split("/")[-1]}-{version}.tar')  # format: image_version.tar
 
-                logging.info(f'- {image}')
-
                 image_file = self._cfg.dest_images / filename
                 if image_file.exists():
                     if self.__is_image_checksum_ok(images[image], image_file):
                         logging.debug(f'- {image} - checksum ok, skipped')
                         continue
-                    else:
-                        raise ChecksumMismatch(f'- {image}')
+
+                logging.info(f'- {image}')
 
                 self._tools.crane.pull(image, image_file, platform)
 
