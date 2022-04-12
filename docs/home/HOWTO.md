@@ -68,6 +68,7 @@
   - [Terraform upgrade from Epiphany 1.x to 2.x](./howto/UPGRADE.md#terraform-upgrade-from-epiphany-1.x-to-2.x)
 
 - [Security](./howto/SECURITY.md)
+  - [How to run epicli with temporary AWS credentials](./howto/SECURITY.md#how-to-run-epicli-with-temporary-aws-credentials)
   - [How to add/remove additional users to/from OS](./howto/SECURITY.md#how-to-addremove-additional-users-tofrom-os)
   - [How to enable/disable Epiphany service user](./howto/SECURITY.md#how-to-enabledisable-epiphany-service-user)
   - [How to use TLS/SSL certificate with HA Proxy](./howto/SECURITY.md#how-to-use-tlsssl-certificate-with-ha-proxy)
