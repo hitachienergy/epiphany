@@ -2,6 +2,8 @@ import logging
 from collections import defaultdict
 from os import chmod
 from pathlib import Path
+from shutil import move
+from tempfile import mkstemp
 from typing import Any, Dict
 
 from poyo import parse_string, PoyoException
@@ -208,7 +210,7 @@ class BaseMode:
         if image['sha1'] != get_sha1(image_file):
             try:
                 if image['allow_mismatch']:
-                    logging.warning(f'{image_file.name} - allow_mismatch flag used, continue downloading')
+                    logging.warning(f'{image_file.name} - allow_mismatch flag used')
                     return True
 
                 return False
@@ -236,12 +238,16 @@ class BaseMode:
 
                 logging.info(f'- {image}')
 
-                self._tools.crane.pull(image, image_file, platform)
+                tmpimage = Path(mkstemp()[1])
+                chmod(tmpimage, 0o0644)
 
-                if self.__is_image_checksum_ok(images[image], image_file):
-                    logging.debug(f'- {image} - checksum ok, skipped')
+                self._tools.crane.pull(image, tmpimage, platform)
+
+                if self.__is_image_checksum_ok(images[image], tmpimage):
+                    move(str(tmpimage), str(image_file))
                     continue
                 else:
+                    tmpimage.unlink()
                     raise ChecksumMismatch(f'- {image}')
 
             except CriticalError:
