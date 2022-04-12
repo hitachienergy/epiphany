@@ -59,12 +59,13 @@ name: kubernetes-node-machine
 specification:
   disks:
     additional_disks:
-      - volume_type: gp2
+      - device_name: "/dev/sdb"
+        volume_type: gp2
         volume_size: 64
         delete_on_termination: false
         encrypted: true
 ```
-Currently Epiphany support the following parameters for `additional_disks` specification: 
+Currently Epiphany support the following parameters for `additional_disks` specification:
 - device_name
 - volume_type
 - volume_size

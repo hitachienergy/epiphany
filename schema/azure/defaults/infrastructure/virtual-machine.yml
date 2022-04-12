@@ -27,6 +27,9 @@ specification:
     create_option: FromImage
     disk_size_gb: 32
     managed_disk_type: Premium_LRS
+  additional_disks: []
+    # - storage_account_type: Premium_LRS
+    #   disk_size_gb: 32
   network_interface:
     enable_accelerated_networking: false
     private_ip:
