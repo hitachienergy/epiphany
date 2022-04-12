@@ -219,8 +219,10 @@ class BaseMode:
                         if images[image]['allow_mismatch']:
                             logging.warning(f'- {image} - allow_mismatch flag used, continue downloading')
                             continue
-                    except KeyError:
+
                         raise ChecksumMismatch(f'- {image}')
+                    except KeyError as ke:
+                        raise ChecksumMismatch(f'- {image}') from ke
 
             except CriticalError:
                 logging.warning(f'Could not download image: `{image}`')
