@@ -1,5 +1,11 @@
 # Changelog 2.0
 
+## [2.0.1] YYYY-MM-DD
+
+### Added
+
+- [#3057](https://github.com/epiphany-platform/epiphany/issues/3057) - Additional AWS authentication option
+
 ## [2.0.0] YYYY-MM-DD
 
 ### Added

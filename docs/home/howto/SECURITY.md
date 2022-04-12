@@ -3,7 +3,7 @@
 There is a [possibility](https://docs.aws.amazon.com/IAM/latest/UserGuide/id_credentials_temp_use-resources.html)
 to generate temporary AWS credentials to manage resources.
 
-To use this feature so, first create temporary credentials:
+To use this feature, first create temporary credentials:
 
 ```shell
 aws sts get-session-token --duration-seconds <duration> --serial-number <mfa_serial_number> --token-code <mfa_token>
