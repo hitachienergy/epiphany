@@ -7,7 +7,11 @@
 
 # ansible-playbook -e leapp_archive=/absolute/path/leapp-data15.tar.gz
 
-# Limitations: ansible connection as root is not supported
+# Requirements:
+# - System attached to RHUI repositories or Red Hat subscription ('non_cloud' provider)
+
+# Limitations:
+# - Ansible connection as root is not supported (PermitRootLogin)
 
 - name: In-place RHEL release upgrade
   hosts: "{{ target | default('all') }}"
@@ -104,10 +108,6 @@
         - name: Print detected provider
           debug:
             var: provider
-
-    - name: Ensure Redhat subcription on non-cloud hosted systems
-      when: provider == 'non_cloud'
-      include_tasks: register_subscription.yml
 
     - name: Register SELinux state
       set_fact:
