@@ -460,10 +460,16 @@
                 name: waagent
                 state: restarted
 
+            - name: Wait for new waagent-network-setup.service unit file
+              wait_for:
+                path: /usr/lib/systemd/system/waagent-network-setup.service
+                state: present
+
             - name: Restart waagent-network-setup service
               systemd:
                 name: waagent-network-setup
                 state: restarted
+                daemon_reload: true
 
     ## Verify services
 
