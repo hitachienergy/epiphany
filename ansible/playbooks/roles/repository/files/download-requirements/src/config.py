@@ -158,7 +158,7 @@ class Config:
         log_levels = {
             # map input log level to Python's logging library
             'error': logging.ERROR,
-            'warn': logging.WARN,
+            'warn': logging.WARNING,
             'info': logging.INFO,
             'debug': logging.DEBUG
         }

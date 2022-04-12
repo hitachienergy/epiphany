@@ -7,8 +7,8 @@ from typing import List
 import sys
 
 from src.command.toolchain import TOOLCHAINS
-from src.config import Config, OSType
-from src.error import CriticalError
+from src.config import Config
+from src.error import DownloadRequirementsError
 
 
 def install_missing_modules(config: Config):
@@ -82,7 +82,7 @@ def main(argv: List[str]) -> int:
 
         time_end = datetime.datetime.now() - time_begin
         logging.info(f'Total execution time: {str(time_end).split(".")[0]}')
-    except CriticalError:
+    except DownloadRequirementsError:
         return 1
 
     return 0
