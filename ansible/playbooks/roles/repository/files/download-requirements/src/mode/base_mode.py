@@ -195,6 +195,28 @@ class BaseMode:
             crane_symlink.symlink_to(crane_path)
             self._cfg.dest_crane_symlink = crane_symlink
 
+    def __is_image_checksum_ok(self, image: Dict[str, str], image_file: Path) -> bool:
+        """
+        Check if checksum matches with `image` and downloaded image `image_file`.
+
+        :param image: an entry from the requirements file corresponding to the downloaded file
+        :param image_file: existing image file
+        :returns: True - checksum ok, False - otherwise
+        :raises:
+            :class:`ChecksumMismatch`: can be raised on failed checksum and missing allow_mismatch flag
+        """
+        if image['sha1'] != get_sha1(image_file):
+            try:
+                if image['allow_mismatch']:
+                    logging.warning('- allow_mismatch flag used, continue downloading')
+                    return True
+
+                return False
+            except KeyError:
+                return False
+
+        return True
+
     def _download_images(self):
         """
         Download images under `self._requirements['images']` using Crane.
@@ -206,23 +228,23 @@ class BaseMode:
                 url, version = image.split(':')
                 filename = Path(f'{url.split("/")[-1]}-{version}.tar')  # format: image_version.tar
 
-                image_file = self._cfg.dest_images / filename
-                if images[image]['sha1'] == get_sha1(image_file):
-                    logging.debug(f'- {image} - checksum ok, skipped')
-                    continue
-
                 logging.info(f'- {image}')
+
+                image_file = self._cfg.dest_images / filename
+                if image_file.exists():
+                    if self.__is_image_checksum_ok(images[image], image_file):
+                        logging.debug(f'- {image} - checksum ok, skipped')
+                        continue
+                    else:
+                        raise ChecksumMismatch(f'- {image}')
+
                 self._tools.crane.pull(image, image_file, platform)
 
-                if images[image]['sha1'] != get_sha1(image_file):
-                    try:
-                        if images[image]['allow_mismatch']:
-                            logging.warning(f'- {image} - allow_mismatch flag used, continue downloading')
-                            continue
-
-                        raise ChecksumMismatch(f'- {image}')
-                    except KeyError as ke:
-                        raise ChecksumMismatch(f'- {image}') from ke
+                if self.__is_image_checksum_ok(images[image], image_file):
+                    logging.debug(f'- {image} - checksum ok, skipped')
+                    continue
+                else:
+                    raise ChecksumMismatch(f'- {image}')
 
             except CriticalError:
                 logging.warning(f'Could not download image: `{image}`')
