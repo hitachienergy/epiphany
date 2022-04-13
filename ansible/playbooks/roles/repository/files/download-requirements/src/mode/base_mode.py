@@ -98,7 +98,7 @@ class BaseMode:
                             requirement_file: Path,
                             sha_algorithm: str) -> bool:
         """
-        Check if checksum matches with `requirement` and downloaded image `requirement_file`.
+        Check if checksum matches with `requirement` and downloaded file `requirement_file`.
 
         :param requirements: data from parsed requirements file
         :param requirement: an entry from the requirements corresponding to the downloaded file
