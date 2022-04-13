@@ -1,5 +1,11 @@
 # Changelog 2.0
 
+## [2.0.1] YYYY-MM-DD
+
+### Updated
+
+- [#3061](https://github.com/epiphany-platform/epiphany/issues/3061) - Upgrade Keycloak to v17.0.1
+
 ## [2.0.0] YYYY-MM-DD
 
 ### Added
