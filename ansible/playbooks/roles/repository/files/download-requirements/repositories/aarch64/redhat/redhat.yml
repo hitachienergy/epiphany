@@ -1,8 +1,8 @@
 ---
 repositories:
   elastic-6:
+    id: elastic-6
     data: |
-      [elastic-6]
       name=Elastic repository for 6.x packages
       baseurl=https://artifacts.elastic.co/packages/oss-6.x/yum
       gpgcheck=1
@@ -13,8 +13,8 @@ repositories:
       - https://artifacts.elastic.co/GPG-KEY-elasticsearch
 
   elasticsearch-7:
+    id: elasticsearch-7.x
     data: |
-      [elasticsearch-7.x]
       name=Elasticsearch repository for 7.x packages
       baseurl=https://artifacts.elastic.co/packages/oss-7.x/yum
       gpgcheck=1
@@ -25,8 +25,8 @@ repositories:
       - https://artifacts.elastic.co/GPG-KEY-elasticsearch
 
   elasticsearch-curator-5:
+    id: curator-5
     data: |
-      [curator-5]
       name=CentOS/RHEL 7 repository for Elasticsearch Curator 5.x packages
       baseurl=https://packages.elastic.co/curator/5/centos/7
       gpgcheck=1
@@ -35,8 +35,8 @@ repositories:
       - https://packages.elastic.co/GPG-KEY-elasticsearch
 
   kubernetes:
+    id: kubernetes
     data: |
-      [kubernetes]
       name=Kubernetes
       baseurl=https://packages.cloud.google.com/yum/repos/kubernetes-el7-$basearch
       enabled=1
@@ -47,8 +47,8 @@ repositories:
       - https://packages.cloud.google.com/yum/doc/rpm-package-key.gpg
 
   opendistroforelasticsearch:
+    id: opendistroforelasticsearch-artifacts-repo
     data: |
-      [opendistroforelasticsearch-artifacts-repo]
       name=Release RPM artifacts of OpenDistroForElasticsearch
       baseurl=https://d3g5vo6xdbdb9a.cloudfront.net/yum/noarch/
       enabled=1
@@ -60,8 +60,8 @@ repositories:
       - https://d3g5vo6xdbdb9a.cloudfront.net/GPG-KEY-opendistroforelasticsearch
 
   postgresql-13:
+    id: pgdg13
     data: |
-      [pgdg13]
       name=PostgreSQL 13 for RHEL/CentOS $releasever - $basearch
       baseurl=https://download.postgresql.org/pub/repos/yum/13/redhat/rhel-$releasever-$basearch
       enabled=1
@@ -71,8 +71,8 @@ repositories:
       - https://download.postgresql.org/pub/repos/yum/RPM-GPG-KEY-PGDG
 
   rabbitmq:
+    id: rabbitmq-server
     data: |
-      [rabbitmq-server]
       name=rabbitmq-rpm
       baseurl=https://packagecloud.io/rabbitmq/rabbitmq-server/el/7/$basearch
       gpgcheck=1
