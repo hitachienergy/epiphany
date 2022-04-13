@@ -1,70 +1,71 @@
 ---
-- name: Kibana migration | Load deafults from Opensearch Dashboards role
+- name: Kibana migration | Load deafults from OpenSearch Dashboards role
   include_vars:
     file: roles/opensearch_dashboards/defaults/main.yml
 
-- name: Kibana migration | Load vars from Opensearch Dashboards role  # requires epicli upgrade -f <manifest>.yml
+- name: Kibana migration | Load vars from OpenSearch Dashboards role
   include_vars:
     file: roles/opensearch_dashboards/vars/main.yml
 
-- name: Kibana migration | Stop Kibana service
-  systemd:
-    name: kibana
-    enabled: no
-    state: stopped
-
-- name: Kibana migration | Download Opensearch Dashboards binary
+- name: Kibana migration | Download OpenSearch Dashboards binary
   include_role:
     name: download
     tasks_from: download_file
   vars:
     file_name: "{{ file_name_version.opensearch_dashboards[ansible_architecture] }}"
 
-- name: Kibana migration | Create opensearch-dashboards user
+- name: Kibana migration | Create OpenSearch Dashboards OS group
+  group:
+    name: "{{ specification.dashboards_os_group }}"
+    state: present
+
+- name: Kibana migration | Create OpenSearch Dashboards OS user
   user:
     name: "{{ specification.dashboards_os_user }}"
-    password: "{{ specification.dashboards_os_user_password }}"
     state: present
     shell: /bin/bash
+    group: "{{ specification.dashboards_os_group }}"
+    home: "{{ specification.paths.dashboards_home }}"
+    create_home: false
 
-- name: Kibana migration | Create OPSD directories
+- name: Kibana migration | Create OpenSearch Dashboards directories
   file:
     path: "{{ item }}"
     state: directory
     owner: "{{ specification.dashboards_os_user }}"
-    group: "{{ specification.dashboards_os_user }}"
+    group: "{{ specification.dashboards_os_group }}"
     mode: ug=rwx,o=rx
   with_items:
-    - "{{ specification.paths.opensearchdash_log_dir }}"
-    - "{{ specification.paths.opensearchdash_home }}"
+    - "{{ specification.paths.dashboards_log_dir }}"
+    - "{{ specification.paths.dashboards_home }}"
 
 - name: Kibana migration | Extract the tar file
   unarchive:
     src: "{{ download_directory }}/{{ file_name_version.opensearch_dashboards[ansible_architecture] }}"
-    dest: "{{ specification.paths.opensearchdash_home }}"
+    dest: "{{ specification.paths.dashboards_home }}"
     owner: "{{ specification.dashboards_os_user }}"
-    remote_src: yes
+    group: "{{ specification.dashboards_os_group }}"
+    remote_src: true
     extra_opts:
     - --strip-components=1
 
-- name: Kibana migration | Clone kibana settings
+- name: Kibana migration | Clone Kibana settings
   copy:
     src: /etc/kibana/kibana.yml
-    dest: "{{ specification.paths.opensearchdash_conf_dir }}/opensearch_dashboards.yml"
-    remote_src: yes
+    dest: "{{ specification.paths.dashboards_conf_dir }}/opensearch_dashboards.yml"
+    remote_src: true
     owner: "{{ specification.dashboards_os_user }}"
-    group: root
+    group: "{{ specification.dashboards_os_group }}"
     mode: ug=rw,o=
-    backup: yes
 
-- name: Kibana migration | Porting kibana settings to OpenSearch Dashboards
+- name: Kibana migration | Porting Kibana settings to OpenSearch Dashboards
   replace:
-    path: "{{ specification.paths.opensearchdash_conf_dir }}/opensearch_dashboards.yml"
+    path: "{{ specification.paths.dashboards_conf_dir }}/opensearch_dashboards.yml"
     regexp: "{{ item.1 }}"
     replace: "{{ item.2 }}"
   with_items:
   - { 1: 'elasticsearch', 2: 'opensearch' }
-  - { 1: '/kibana', 2: '/opensearchdashboards' }
+  - { 1: '/kibana', 2: '/opensearch-dashboards' }
   - { 1: 'opendistro_security', 2: 'opensearch_security' }
 # OPS claims to not recognize these 3 following Kibana variables
   - { 1: 'newsfeed.enabled', 2: '#newsfeed.enabled' }
@@ -75,15 +76,22 @@
   template:
     src: roles/opensearch_dashboards/templates/opensearch-dashboards.service.j2
     dest: /etc/systemd/system/opensearch-dashboards.service
+    mode: u=rw,go=r
 
-- name: Kibana migration | Assure Opensearch Dashboards service is started
+- name: Kibana migration | Stop Kibana service
+  systemd:
+    name: kibana
+    enabled: false
+    state: stopped
+
+- name: Kibana migration | Assure OpenSearch Dashboards service is started
   service:
     name: opensearch-dashboards
     state: started
-    enabled: yes
+    enabled: true
 
 - name: Kibana migration | Get all the installed dashboards plugins
-  command: "{{ specification.paths.opensearchdash_plugin_bin_path }} list"
+  command: "{{ specification.paths.dashboards_plugin_bin_path }} list"
   become: false  # This command can not be run as root user
   register: list_plugins
 

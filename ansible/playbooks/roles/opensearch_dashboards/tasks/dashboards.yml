@@ -1,28 +1,28 @@
 ---
-- name: Download Opensearch dashboards
+- name: Download OpenSearch dashboards
   include_role:
     name: download
     tasks_from: download_file
   vars:
     file_name: "{{ file_name_version.opensearch_dashboards[ansible_architecture] }}"
 
-- name: Ensure Opensearch service OS group exists
+- name: Create OpenSearch Dashboards OS group
   group:
     name: "{{ specification.dashboards_os_group }}"
     state: present
 
-- name: Create OpenSearch Dashboards user
+- name: Create OpenSearch Dashboards OS user
   user:
     name: "{{ specification.dashboards_os_user }}"
     state: present
     shell: /bin/bash
     group: "{{ specification.dashboards_os_group }}"
-    home: "{{ specification.paths.opensearchdash_home }}"
+    home: "{{ specification.paths.dashboards_home }}"
 
 - name: Extract OpenSearch Dashboards tar file
   unarchive:
     src: "{{ download_directory }}/{{ file_name_version.opensearch_dashboards[ansible_architecture] }}"
-    dest: "{{ specification.paths.opensearchdash_home }}"
+    dest: "{{ specification.paths.dashboards_home }}"
     owner: "{{ specification.dashboards_os_user }}"
     remote_src: true
     extra_opts:
@@ -31,7 +31,7 @@
 - name: Copy configuration file
   template:
     src: opensearch_dashboards.yml.j2
-    dest: "{{ specification.paths.opensearchdash_conf_dir }}/opensearch_dashboards.yml"
+    dest: "{{ specification.paths.dashboards_conf_dir }}/opensearch_dashboards.yml"
     owner: "{{ specification.dashboards_os_user }}"
     group: "{{ specification.dashboards_os_user }}"
     mode: u=rw,go=r

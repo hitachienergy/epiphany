@@ -4,67 +4,57 @@
     manager: auto
   when: ansible_facts.packages is undefined
 
-- name: OpenSearch | Assert that elasticsearch-oss package is installed
-  assert:
-    that: ansible_facts.packages['elasticsearch-oss'] is defined
-    fail_msg: elasticsearch-oss package not found, nothing to upgrade
-    quiet: true
+- name: OpenSearch | Run migration from ODFE
+  when:
+    - ansible_facts.packages['elasticsearch-oss'] is defined
+  block:
+    - name: OpenSearch | Include defaults from OpenSearch role
+      include_vars:
+        file: roles/opensearch/defaults/main.yml
 
-- name: OpenSearch | Include defaults from OpenSearch role
-  include_vars:
-    file: roles/opensearch/defaults/main.yml
-    name: opensearch_defaults
+    - name: OpenSearch | Include vars from OpenSearch role
+      include_vars:
+        file: roles/opensearch/vars/main.yml
 
-- name: OpenSearch | Include vars from opensearch role  # requires epicli upgrade -f <manifest>.yml
-  include_vars:
-    file: roles/opensearch/vars/main.yml
-    name: opensearch_vars
+    - name: OpenSearch | Ensure OpenSearch service OS group exists
+      group:
+        name: "{{ specification.opensearch_os_group }}"
+        state: present
 
-- name: OpenSearch | Ensure Opensearch service user exists
-  user:
-    name: "{{ opensearch_vars.specification.opensearch_os_user }}"
-    state: present
-    shell: /bin/bash
+    - name: OpenSearch | Ensure OpenSearch service OS user exists
+      user:
+        name: "{{ specification.opensearch_os_user }}"
+        state: present
+        shell: /bin/bash
+        groups: "{{ specification.opensearch_os_group }}"
+        home: "{{ specification.paths.opensearch_home  }}"
+        create_home: false
 
-- name: OpenSearch | Ensure directory structure exists
-  file:
-    path: "{{ item }}"
-    state: directory
-    owner: "{{ opensearch_vars.specification.opensearch_os_user }}"
-    group: "{{ opensearch_vars.specification.opensearch_os_user }}"
-    mode: u=rw,go=r
-    recurse: yes
-  with_items:
-    - "{{ opensearch_vars.specification.paths.opensearch_home }}"
-    - "{{ opensearch_vars.specification.paths.opensearch_log_dir }}"
-    - "{{ opensearch_vars.specification.paths.opensearch_conf_dir }}"
-    - "{{ opensearch_defaults.certificates.dirs.certs }}"
+    - name: OpenSearch | Ensure directory structure exists
+      file:
+        path: "{{ item }}"
+        state: directory
+        owner: "{{ specification.opensearch_os_user }}"
+        group: "{{ specification.opensearch_os_group }}"
+        mode: u=rw,go=r
+        recurse: true
+      with_items:
+        - "{{ specification.paths.opensearch_home }}"
+        - "{{ specification.paths.opensearch_log_dir }}"
+        - "{{ specification.paths.opensearch_conf_dir }}"
+        - "{{ certificates.dirs.certs }}"
 
-- name: OpenSearch | Print ElasticSearch ond OpenSearch versions
-  debug:
-    msg:
-      - "Installed version: {{ ansible_facts.packages['elasticsearch-oss'][0].version }}"
-      - "Target version: {{ opensearch_defaults.file_name_version.opensearch[ansible_architecture].split('-')[1] }}"
+    - name: OpenSearch | Run ODFE migration tasks
+      include_role:
+        name: upgrade
+        tasks_from: opensearch/migrate-odfe
 
-# If state file exists it means the previous run failed
-- name: OpenSearch | Check if upgrade state file exists
-  stat:
-    path: "{{ opensearch.upgrade_state_file_path }}"
-    get_attributes: false
-    get_checksum: false
-    get_mime: false
-  register: stat_upgrade_state_file
+    - name: OpenSearch | Run Kibana migration tasks
+      include_role:
+        name: upgrade
+        tasks_from: opensearch/migrate-kibana
 
-- include_role:
-    name: upgrade
-    tasks_from: opensearch/migrate-odfe
-  when: opensearch_vars.specification.odfe_migration
-  vars:
-    current_group_name: logging
-
-- include_role:
-    name: upgrade
-    tasks_from: opensearch/migrate-kibana
-  when: opensearch_vars.specification.odfe_migration
-  vars:
-    current_group_name: logging
+    - name: OpenSearch | Cleanup
+      include_role:
+        name: upgrade
+        tasks_from: opensearch/cleanup

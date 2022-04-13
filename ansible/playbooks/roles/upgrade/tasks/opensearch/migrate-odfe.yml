@@ -8,52 +8,40 @@
   debug:
     msg:
       - "Elasticsearch version currently installed: {{ ansible_facts.packages['elasticsearch-oss'][0].version }}"
-      - "Opensearch version to be installed: {{ opensearch_defaults.file_name_version.opensearch[ansible_architecture].split('-')[1] }}"
+      - "OpenSearch version to be installed: {{ file_name_version.opensearch[ansible_architecture].split('-')[1] }}"
 
 - name: ODFE migration | Ensure elasticsearch cluster is up and running
-  block:
-  - name: OpenSearch | Include vars from opensearch role  # requires epicli upgrade -f <manifest>.yml
-    include_vars:
-      file: roles/opensearch/vars/main.yml
-      name: opensearch_vars
-
-  - name: ODFE migration | Ensure elasticsearch cluster is up and running
-    systemd:
-      name: elasticsearch
-      enabled: yes
-      state: restarted
-    register: elasticsearch_state
-  rescue:
-  - name: ODFE migration | Suggest potential problem solution and fail
-    fail:
-      msg: "Are you trying to migrate from ODFE ( opensearch_vars.specification.odfe_migration: true ) on an already migrated server?"
-    when: opensearch_vars.specification.odfe_migration
+  systemd:
+    name: elasticsearch
+    enabled: true
+    state: started
+  register: elasticsearch_state
 
 - name: ODFE migration | Set existing_config facts
   include_tasks: opensearch/utils/get-config-from-files.yml
 
 - name: ODFE migration | Set common facts
   set_fact:
-    certificates:      "{{ opensearch_defaults.certificates }}"
-    es_host:           "{{ existing_config.main['network.host']   | default('_local_') }}"
-    es_http_port:      "{{ existing_config.main['http.port']      | default(opensearch_defaults.ports.http) }}"
-    es_transport_port: "{{ existing_config.main['transport.port'] | default(opensearch_defaults.ports.transport) }}"
-    es_clustered:      "{{ (existing_config.main['discovery.seed_hosts'] | length > 1) | ternary(True, False) }}"
-    es_node_name:      "{{ existing_config.main['node.name'] }}"
+    certificates: "{{ certificates }}"
+    es_host: "{{ existing_config.main['network.host'] | default('_local_') }}"
+    es_http_port: "{{ existing_config.main['http.port'] | default(ports.http) }}"
+    es_transport_port: "{{ existing_config.main['transport.port'] | default(ports.transport) }}"
+    es_clustered: "{{ (existing_config.main['discovery.seed_hosts'] | length > 1) | ternary(True, False) }}"
+    es_node_name: "{{ existing_config.main['node.name'] }}"
 
 - name: ODFE migration | Assure Elasticsearch files location will be used in following tasks
   set_fact:
     certificates:
       dirs:
-        certs:  "/etc/elasticsearch"
+        certs: "/etc/elasticsearch"
         ca_key: "/etc/elasticsearch/private"
-        csr:    "/etc/elasticsearch/csr"
+        csr: "/etc/elasticsearch/csr"
       files:
         admin:
           cert: "epiphany-admin.pem"
           key:  "epiphany-admin-key.pem"
 
-- name: ODFE migration | Prepare for ODFE to OPS migration
+- name: ODFE migration | Prepare ODFE to OpenSearch migration
   include_tasks:
     file: opensearch/utils/prepare-cluster-for-node-restart.yml
     apply:
@@ -68,7 +56,7 @@
       cert_path: "{{ (certificates.dirs.certs, certificates.files.admin.cert) | path_join }}"
       key_path:  "{{ (certificates.dirs.certs, certificates.files.admin.key)  | path_join }}"
       url: https://{{ es_host }}:{{ es_http_port }}
-    fail_msg: API access test failed.
+    fail_msg: API access test failed
 
 - name: ODFE migration | Run core migration tasks individually on each node
   include_tasks:
@@ -87,7 +75,7 @@
     method: GET
     # 404 code is used there as someone can remove admin user on its own.
     status_code: [200, 404]
-    validate_certs: no
+    validate_certs: false
     client_cert: "{{ certificates.dirs.certs }}/{{ certificates.files.admin.cert }}"
     client_key:  "{{ certificates.dirs.certs }}/{{ certificates.files.admin.key }}"
   register: admin_check_response
@@ -96,7 +84,7 @@
   delay: 1
   run_once: true
 
-- name: ODFE migration | Set Opensearch admin password
+- name: ODFE migration | Set OpenSearch admin password
   uri:
     url: "https://{{ inventory_hostname }}:{{ ports.http }}/_opendistro/_security/api/internalusers"
     method: PATCH
@@ -113,7 +101,7 @@
     client_cert: "{{ certificates.dirs.certs }}/{{ certificates.files.admin.cert }}"
     client_key:  "{{ certificates.dirs.certs }}/{{ certificates.files.admin.key }}"
     body_format: json
-    validate_certs: no
+    validate_certs: false
   register: uri_response
   until: uri_response is success
   retries: 5
@@ -127,7 +115,7 @@
     method: GET
     # 404 code is used there as someone can remove admin user on its own.
     status_code: [200, 404]
-    validate_certs: no
+    validate_certs: false
     client_cert: "{{ certificates.dirs.certs }}/{{ certificates.files.admin.cert }}"
     client_key:  "{{ certificates.dirs.certs }}/{{ certificates.files.admin.key }}"
   register: kibanaserver_check_response
@@ -151,7 +139,7 @@
     client_cert: "{{ certificates.dirs.certs }}/{{ certificates.files.admin.cert }}"
     client_key:  "{{ certificates.dirs.certs }}/{{ certificates.files.admin.key }}"
     body_format: json
-    validate_certs: no
+    validate_certs: false
   register: uri_response
   until: uri_response is success
   retries: 5
@@ -165,7 +153,7 @@
     method: GET
     # 404 code is used there as someone can remove admin user on its own.
     status_code: [200, 404]
-    validate_certs: no
+    validate_certs: false
     client_cert: "{{ certificates.dirs.certs }}/{{ certificates.files.admin.cert }}"
     client_key:  "{{ certificates.dirs.certs }}/{{ certificates.files.admin.key }}"
   register: logstash_check_response
@@ -185,11 +173,13 @@
         value:
           password: "{{ specification.logstash_password }}"
           reserved: "true"
+          backend_roles:
+            - "logstash"
           description: "logstash user"
     client_cert: "{{ certificates.dirs.certs }}/{{ certificates.files.admin.cert }}"
     client_key:  "{{ certificates.dirs.certs }}/{{ certificates.files.admin.key }}"
     body_format: json
-    validate_certs: no
+    validate_certs: false
   register: uri_response
   until: uri_response is success
   retries: 5

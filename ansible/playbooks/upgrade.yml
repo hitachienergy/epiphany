@@ -162,7 +162,6 @@
   vars:
     current_group_name: opensearch
 
-
 - hosts: grafana
   become: true
   become_method: sudo
