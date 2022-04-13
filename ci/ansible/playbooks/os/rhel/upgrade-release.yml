@@ -478,9 +478,10 @@
 
     - *SET_FAILED_SERVICES_FACT
 
+    # user@<UID>.service may fail due to bug that is fixed in RHEL 8.5 (https://access.redhat.com/solutions/5931241)
     - name: Assert there are no failed services
       assert:
-        that: failed_services | count == 0
+        that: failed_services | reject('match', 'user@') | count == 0
         fail_msg: "Failed service(s) found: {{ failed_services | join(', ') }}"
         quiet: true
 
